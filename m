@@ -2,127 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 216562D46FC
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 17:42:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FC102D4733
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 17:55:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731322AbgLIQl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 11:41:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56508 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730729AbgLIQls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 11:41:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607532021;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+jGrHAn9GUIrs8Ra1rFpgmHTiOEDLJjF3aG6CIDIa+8=;
-        b=HARCd2KzJQ26JPgtlWlPz8JD8xhxGTB3hCQEVxguoGt/Es0UPeas53dwzJTGoMQO/8n1a6
-        pJFwrN1ibn91xhAicLeftwPvfFn2o0+AfIwreovnmNhgdq3cGmp5DEtA5O/3IwUhHBGNnc
-        bJJEoi8nVBi9CYAwKE+qMXPdfiLtVGo=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-123-Xw7fU_jeN6CrNVj7y2t1kw-1; Wed, 09 Dec 2020 11:40:17 -0500
-X-MC-Unique: Xw7fU_jeN6CrNVj7y2t1kw-1
-Received: by mail-wm1-f72.google.com with SMTP id u123so555192wmu.5
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 08:40:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=+jGrHAn9GUIrs8Ra1rFpgmHTiOEDLJjF3aG6CIDIa+8=;
-        b=CSeC4P6S0UQ9kZzm5V6jktZ4DJGdkdbKWNFWYQqxRdHlPjo9kn+lvLNynor4Lk4t+O
-         94rc8xkpFVTMkgrT+V70uTCdypR2DNZQJD1WCkI9PcDJowpqMP8hqiqEF557hgPMp7kJ
-         ypbbt885ywQzySP5Q1XcHWobIb0zqbNFF2iSXBDXEWCQBET53gTPnh0+qBo3xOggJ8kj
-         a2q36HENyhK32T3aufHkDQqnkMzcz7M73ak4ORtfcws6mi/6TFY7JNTkHdSJRVMmpcD6
-         TbAJJplgys9fUuSvZXGbdmLzIwwkS6LsjM8xHBIYq2Mj5/dn1yl+YcynP9v6DMHf01Ps
-         Ktpw==
-X-Gm-Message-State: AOAM533Pw/bZL//Scb7SY7cdPbJecJMywMVkV+GwvWFCV+haG9CR3cTX
-        OufwYVSiuKWh8gyZNBD5TyKwBcvmPt8g2i8GOjcdBGZzKaFU5hlgeJyni4ppPLt5irZVCmnlGi3
-        5FVt2Tbofps5t3hNF
-X-Received: by 2002:a1c:309:: with SMTP id 9mr3622928wmd.80.1607532015909;
-        Wed, 09 Dec 2020 08:40:15 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxKiRyP/pwQqvg7FbWGR99gfbi/awWLui2V+X/U0Gp/xDTPN3vypnb2UTe2id7W8nuQMU1GKQ==
-X-Received: by 2002:a1c:309:: with SMTP id 9mr3622921wmd.80.1607532015760;
-        Wed, 09 Dec 2020 08:40:15 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id x17sm4191476wro.40.2020.12.09.08.40.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 08:40:14 -0800 (PST)
-Date:   Wed, 9 Dec 2020 17:40:13 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Martin Zaharinov <micron10@gmail.com>
-Cc:     "linux-kernel@vger kernel. org" <linux-kernel@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
-Subject: Re: Urgent: BUG: PPP ioctl Transport endpoint is not connected
-Message-ID: <20201209164013.GA21199@linux.home>
-References: <83C781EB-5D66-426E-A216-E1B846A3EC8A@gmail.com>
+        id S1732000AbgLIQwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 11:52:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729345AbgLIQwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 11:52:34 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42096C0613CF
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 08:51:54 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kn2gy-0006Rl-Ly; Wed, 09 Dec 2020 17:51:52 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1kn2gx-00008D-19; Wed, 09 Dec 2020 17:51:51 +0100
+Date:   Wed, 9 Dec 2020 17:51:48 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>, mci@pengutronix.de
+Cc:     netdev@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de
+Subject: Re: [PATCH] net: ethernet: fec: Clear stale flag in IEVENT register
+ before MII transfers
+Message-ID: <20201209165148.6kbntgmjopymomx5@pengutronix.de>
+References: <20201209102959.2131-1-u.kleine-koenig@pengutronix.de>
+ <20201209144413.GJ2611606@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vbllrhxuquf4jur4"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <83C781EB-5D66-426E-A216-E1B846A3EC8A@gmail.com>
+In-Reply-To: <20201209144413.GJ2611606@lunn.ch>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 09, 2020 at 04:47:52PM +0200, Martin Zaharinov wrote:
-> Hi All
-> 
-> I have problem with latest kernel release 
-> And the problem is base on this late problem :
-> 
-> 
-> https://www.mail-archive.com/search?l=netdev@vger.kernel.org&q=subject:%22Re%5C%3A+ppp%5C%2Fpppoe%2C+still+panic+4.15.3+in+ppp_push%22&o=newest&f=1
-> 
-> I have same problem in kernel 5.6 > now I use kernel 5.9.13 and have same problem.
-> 
-> 
-> In kernel 5.9.13 now don’t have any crashes in dimes but in one moment accel service stop with defunct and in log have many of this line :
-> 
-> 
-> error: vlan608: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> error: vlan617: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> error: vlan679: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
-> 
-> In one moment connected user bump double or triple and after that service defunct and need wait to drop all session to start .
-> 
-> I talk with accel-ppp team and they said this is kernel related problem and to back to kernel 4.14 there is not this problem.
-> 
-> Problem is come after kernel 4.15 > and not have solution to this moment.
 
-I'm sorry, I don't understand.
-Do you mean that v4.14 worked fine (no crash, no ioctl() error)?
-Did the problem start appearing in v4.15? Or did v4.15 work and the
-problem appeared in v4.16?
+--vbllrhxuquf4jur4
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Please help to find the problem.
-> 
-> Last time in link I see is make changes in ppp_generic.c 
-> 
-> ppp_lock(ppp);
->         spin_lock_bh(&pch->downl);
->         if (!pch->chan) {
->                 /* Don't connect unregistered channels */
->                 spin_unlock_bh(&pch->downl);
->                 ppp_unlock(ppp);
->                 ret = -ENOTCONN;
->                 goto outl;
->         }
->         spin_unlock_bh(&pch->downl);
-> 
-> 
-> But this fix only to don’t display error and freeze system 
-> The problem is stay and is to big.
+Hi Andrew,
 
-Do you use accel-ppp's unit-cache option? Does the problem go away if
-you stop using it?
+On Wed, Dec 09, 2020 at 03:44:13PM +0100, Andrew Lunn wrote:
+> On Wed, Dec 09, 2020 at 11:29:59AM +0100, Uwe Kleine-K=F6nig wrote:
+> Do you have
+>=20
+> ommit 1e6114f51f9d4090390fcec2f5d67d8cc8dc4bfc
+> Author: Greg Ungerer <gerg@linux-m68k.org>
+> Date:   Wed Oct 28 15:22:32 2020 +1000
+>=20
+>     net: fec: fix MDIO probing for some FEC hardware blocks
+>    =20
+>     Some (apparently older) versions of the FEC hardware block do not like
+>     the MMFR register being cleared to avoid generation of MII events at
+>     initialization time. The action of clearing this register results in =
+no
+>     future MII events being generated at all on the problem block. This m=
+eans
+>     the probing of the MDIO bus will find no PHYs.
+>    =20
+>     Create a quirk that can be checked at the FECs MII init time so that
+>     the right thing is done. The quirk is set as appropriate for the FEC
+>     hardware blocks that are known to need this.
+>=20
+> in your tree?
 
-> 
-> Please help to fix.
-> 
-> 
-> 
+Unless I did something wrong I also saw the failure with v5.10-rc$latest
+earlier today.
 
+=2E.. some time later ...
+
+Argh, I checked my git reflog and the newest release I tested was
+5.9-rc8.
+
+I wonder if my patch is a simpler and more straight forward fix for the
+problem however, but that might also be because I don't understand the
+comment touched by 1e6114f51f9d4090390fcec2f5d67d8cc8dc4bfc without
+checking the reference manual (which I didn't).
+
+@Marian: As it's you who has to work on this i.MX25 machine, can you
+maybe test if using a kernel > 5.10-rc3 (or cherry-picking
+1e6114f51f9d4090390fcec2f5d67d8cc8dc4bfc) fixes the problem for you?
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--vbllrhxuquf4jur4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl/RAKEACgkQwfwUeK3K
+7Ak3VQf+Ogr70EBy+POvEXFZKGXcb458OT5Ar8JyVSDGLV/RXVpwKZxIMs99l6a3
+DFqtyAk6anA3dLrKvQaYeWDjNWUXR60EjRHTUDuWwA+wa1BjAxjIH7pT4Zu1sQRF
+VpIHwg0TD5kG4VL8VakZIZnTvji7h2TnOTPtGdqTfGWuIqAWx7Fg17XH/ay0PfhE
+g/JllLUimmUn20mpqDrkFlvIB51bKsDZFutsADAZuHFNZY+Jem+UDQsLZDqZIRpG
+m1lloJcnaXCPXUwu7KbK8oZSnlGXCe6QnRFCSTfthlnHHZu/dwDMRhqxI09+mDQS
+V+VXxcM3SkDtSJk3b8tVp9/76UhOng==
+=FmSA
+-----END PGP SIGNATURE-----
+
+--vbllrhxuquf4jur4--
