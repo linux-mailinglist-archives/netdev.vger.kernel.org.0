@@ -2,148 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 294C42D4C87
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 22:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09BF22D4CA6
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 22:17:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387942AbgLIVIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 16:08:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729913AbgLIVIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 16:08:47 -0500
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CB3C0613CF
-        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 13:08:07 -0800 (PST)
-Received: by mail-il1-x144.google.com with SMTP id y9so3039344ilb.0
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 13:08:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bpuqDtXXMpnY72P/EAHR6IqnS06f0VeKtnbAYGA9GKo=;
-        b=ZGFa+amhEA1jElZh9amG8SwDyJt375Uh+8roIenvN2AUV7gYvjuvIrYK/6gLmD0RQt
-         c/gU0RIghAhbisxGxIQteIM+Anbba3lRN5Sx1qdQI6vLmuL3c5mTPTYumGbEeG5GzMjW
-         8gRzUVLNWosoE3y6/3esOWHXi0Cg91cUTAvWQx/lBB6yXa6poHzMwR83AFquJCzE5v4R
-         U3P7BEP+Yr9obrdv6iNPGM/PUjLKqbbPVpfI0LxR2rvPTCjH76DusqVHZBaaBlNrug1T
-         S9u8/0HBqbyKaB2OgjUNcEh+iektnSfEMr0i9sMVKMWF+Dy2Yhax91uT3tyfCOCZyNdg
-         ZiPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bpuqDtXXMpnY72P/EAHR6IqnS06f0VeKtnbAYGA9GKo=;
-        b=nuxqt0NqWMBdPJwvtdI1gq+c4BLcRjSSpgdcizGWmCLF0SVn4aLZvj59VKcnbFEjw3
-         y53n1pgLj3zQ609VPpnKKtHXY1whiHTkMp6I2yy4ot5LKUQPHjiSqWrcCFSlCq+UNaeF
-         sVF8s00oYXlUQ6MFgtrhxE+45tl7HhCAe1VejiBkQsFR+It9KT/xK5ub8630SvTVZVfP
-         UA9SCl43MOtV3B+lm1icv8cQWI/ZCvhX9rcsK/15dTtwvQWrwcY8vN0pOXYd8uIDH0QO
-         w9mJsofSQAZQSgT+sxM2TtIg+MtDcYDIvIIGXXgQAQDwv0THnMPL29eqXsT3TePoc029
-         N0QA==
-X-Gm-Message-State: AOAM5323R7niFjt95EC4AhDtX8FonEAavmUecNlGDXaC2hZ0YBdZBDdw
-        8PxrgFMKEbFuejy5P7ALzRG8zNVQPDC6UGnNT1/I5w==
-X-Google-Smtp-Source: ABdhPJwPDL+bHdEJnU8jj+M2st6uy35/KJNmnOwC5gDRxdetRaztANKxN3ZwCrR4khkTF0a4HMqvpnD4kP+lxbsyXSI=
-X-Received: by 2002:a92:d0ca:: with SMTP id y10mr5796513ila.68.1607548086465;
- Wed, 09 Dec 2020 13:08:06 -0800 (PST)
+        id S2387699AbgLIVOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 16:14:37 -0500
+Received: from mga11.intel.com ([192.55.52.93]:24061 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725765AbgLIVOe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 16:14:34 -0500
+IronPort-SDR: o+tDPgE4UR/yVSGd15PMDV6x3CWjUEuCVVFQVrR6ybE13frLIbj/cEiIzyL4cvqpwmyrwijD1y
+ r4H+1Vf4JIFg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="170641628"
+X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
+   d="scan'208";a="170641628"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 13:13:53 -0800
+IronPort-SDR: ke1naeWSz/dzeGqLzezkoQlyufTE9E+ry1yMz4c5LU+vFpO4ATURbNm9UPFm4tsl+SV475hddh
+ GpdB1AlqlJLQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
+   d="scan'208";a="408228639"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga001.jf.intel.com with ESMTP; 09 Dec 2020 13:13:52 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [net-next v4 0/9][pull request] 100GbE Intel Wired LAN Driver Updates 2020-12-09
+Date:   Wed,  9 Dec 2020 13:13:03 -0800
+Message-Id: <20201209211312.3850588-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <cki.4066A31294.UNMQ21P718@redhat.com> <CABE0yyi9gS8nao0n1Dts_Og80R71h8PUkizy4rM9E9E3QbJwvA@mail.gmail.com>
- <CABE0yyj997uCwzHoob8q2Ckd2i5Pv1k+JDRbF3fnn11_R2XN1Q@mail.gmail.com>
- <20201209092052.19a39676@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <CANn89iL8akG+u6sq4r7gxpWKMoDSKuCbgFvDPrrG+J85zC1KNg@mail.gmail.com>
- <CANn89iKcKATT902n6C1-Hi0ey0Ep20dD88nTTLLH9NNF6Pex5w@mail.gmail.com>
- <838391ff7ffa5dbfb79f30c6d31292c80415af18.camel@kernel.org>
- <CANn89iK+fU7LGH--JXx_FLxawr7rs1t-crLGtkbPAXsoiZMi8A@mail.gmail.com> <ygnhsg8ek8dr.fsf@nvidia.com>
-In-Reply-To: <ygnhsg8ek8dr.fsf@nvidia.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 9 Dec 2020 22:07:54 +0100
-Message-ID: <CANn89iJVWfb=2i7oU1=D55rOyQnBbbikf+Mc6XHMkY7YX-yGEw@mail.gmail.com>
-Subject: =?UTF-8?B?UmU6IOKdjCBGQUlMOiBUZXN0IHJlcG9ydCBmb3Iga2VybmVsIDUuMTAuMC1yYzYgKG1haQ==?=
-        =?UTF-8?B?bmxpbmUua2VybmVsLm9yZyk=?=
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jianlin Shi <jishi@redhat.com>,
-        CKI Project <cki-project@redhat.com>,
-        netdev <netdev@vger.kernel.org>, skt-results-master@redhat.com,
-        Yi Zhang <yi.zhang@redhat.com>,
-        Memory Management <mm-qe@redhat.com>,
-        Jan Stancek <jstancek@redhat.com>,
-        Jianwen Ji <jiji@redhat.com>, Hangbin Liu <haliu@redhat.com>,
-        Ondrej Moris <omoris@redhat.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Changhui Zhong <czhong@redhat.com>,
-        Xiong Zhou <xzhou@redhat.com>,
-        Rachel Sibley <rasibley@redhat.com>,
-        David Arcari <darcari@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 9, 2020 at 9:54 PM Vlad Buslov <vladbu@nvidia.com> wrote:
->
-> On Wed 09 Dec 2020 at 20:50, Eric Dumazet <edumazet@google.com> wrote:
-> > On Wed, Dec 9, 2020 at 7:34 PM Saeed Mahameed <saeed@kernel.org> wrote:
-> >>
-> >> On Wed, 2020-12-09 at 19:05 +0100, Eric Dumazet wrote:
-> >> > On Wed, Dec 9, 2020 at 6:35 PM Eric Dumazet <edumazet@google.com>
-> >> > wrote:
-> >> > > Hmm... maybe the ECN stuff has always been buggy then, and nobody
-> >> > > cared...
-> >> > >
-> >> >
-> >> > Wait a minute, maybe this part was not needed,
-> >> >
-> >> > diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-> >> > index
-> >> > 8ae9ce2014a4a3ba7b962a209e28d1f65d4a83bd..896a7eb61d70340f69b9d3be0f7
-> >> > 95fbaab1458dd
-> >> > 100644
-> >> > --- a/drivers/net/geneve.c
-> >> > +++ b/drivers/net/geneve.c
-> >> > @@ -270,7 +270,7 @@ static void geneve_rx(struct geneve_dev *geneve,
-> >> > struct geneve_sock *gs,
-> >> >                         goto rx_error;
-> >> >                 break;
-> >> >         default:
-> >> > -               goto rx_error;
-> >> > +               break;
-> >> >         }
-> >> >         oiph = skb_network_header(skb);
-> >> >         skb_reset_network_header(skb);
-> >> >
-> >> >
-> >> > > On Wed, Dec 9, 2020 at 6:20 PM Jakub Kicinski <kuba@kernel.org>
-> >> > > wrote:
-> >> > > > Eric, could this possibly be commit 4179b00c04d1 ("geneve: pull
-> >> > > > IP
-> >> > > > header before ECN decapsulation")?
-> >> > > >
-> >>
-> >> We've bisected an issue in our CI to this patch, something about geneve
-> >> TC offload traffic not passing, I don't have all the details, Maybe
-> >> Vlad can chime in.
-> >>
-> >
-> > Yes, I think the patch I sent should fix this, ETH_P_ARP should not be
-> > dropped ;)
-> >
-> > I am testing this before offical patch submission.
-> >
-> > Thanks !
->
-> Hi Eric,
->
-> Your patch fixed TC geneve tests for me, but some of more complex OVS
-> tests are still failing. I'll try to provide details tomorrow.
->
-> Regards,
-> Vlad
->
+This series contains updates to ice driver only.
 
-I think I need to study a bit more the original syzbot report.
+Bruce changes the allocation of ice_flow_prof_params from stack to heap to
+avoid excessive stack usage. Corrects a misleading comment and silences a
+sparse warning that is not a problem.
 
-Apparently, network header should have been pulled already before
-hitting geneve_rx()
+Paul allows for HW initialization to continue if PHY abilities cannot
+be obtained.
 
-Jakub, please revert my patch, I need to fix the syzbot issue differently.
+Jeb removes bypassing FW link override and reading Option ROM and
+netlist information for non-E810 devices as this is now available on
+other devices.
 
-Thanks !
+Nick removes vlan_ena field as this information can be gathered by
+checking num_vlan.
+
+Jake combines format strings and debug prints to the same line.
+
+Simon adds a space to fix string concatenation.
+
+v4: Drop ACL patches. Change PHY abilities failure message from debug to
+warning.
+v3: Fix email address for DaveM and fix character in cover letter
+v2: Expand on commit message for patch 3 to show example usage/commands.
+    Reduce number of defensive checks being done.
+
+The following are changes since commit afae3cc2da100ead3cd6ef4bb1fb8bc9d4b817c5:
+  net: atheros: simplify the return expression of atl2_phy_setup_autoneg_adv()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Bruce Allan (3):
+  ice: cleanup stack hog
+  ice: cleanup misleading comment
+  ice: silence static analysis warning
+
+Jacob Keller (1):
+  ice: join format strings to same line as ice_debug
+
+Jeb Cramer (2):
+  ice: Enable Support for FW Override (E82X)
+  ice: Remove gate to OROM init
+
+Nick Nunley (1):
+  ice: Remove vlan_ena from vsi structure
+
+Paul M Stillwell Jr (1):
+  ice: don't always return an error for Get PHY Abilities AQ command
+
+Simon Perron Caissy (1):
+  ice: Add space to unknown speed
+
+ drivers/net/ethernet/intel/ice/ice.h          |   1 -
+ drivers/net/ethernet/intel/ice/ice_common.c   | 109 ++++++------------
+ drivers/net/ethernet/intel/ice/ice_controlq.c |  42 +++----
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |  24 ++--
+ drivers/net/ethernet/intel/ice/ice_flow.c     |  53 +++++----
+ drivers/net/ethernet/intel/ice/ice_main.c     |  13 +--
+ drivers/net/ethernet/intel/ice/ice_nvm.c      |  61 +++-------
+ drivers/net/ethernet/intel/ice/ice_sched.c    |  21 ++--
+ drivers/net/ethernet/intel/ice/ice_switch.c   |  15 +--
+ 9 files changed, 117 insertions(+), 222 deletions(-)
+
+-- 
+2.26.2
+
