@@ -2,124 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C28F42D4C20
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 21:43:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 951AC2D4C47
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 21:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387729AbgLIUnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 15:43:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727782AbgLIUnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 15:43:13 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98127C0613D6
-        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 12:42:33 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id p4so1884991pfg.0
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 12:42:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hq4Pf3LlOZU16NK1/OH7MUMpzig08/p4poxwoVH6YWU=;
-        b=s8CSsjyYzTFBgLy0UULYrobsW+Aox/amoIPHwd86zpLI0f3VptTwixs/sRJSL/+HXH
-         C1Hi6yl9da7rSirYkbOo3zDo4k8OXfSjguW1Bxt10ySG5YGqHIpWvYLDp2YDQ+myqoHL
-         he20vpDY7unG9GauAR828SL4DnZQGlQTkEPxBZveq/cvH7MM2LTYyZ7uDTwnXMzFHpfH
-         VYcihCLD5png+Rs4tYLKlMebfJcaLYiHmxpAhTtQp6b5DGb/VZVNC0REsN42fSTZxZIa
-         6kh+rCllFxEkuwWpWJmimEJeaai6HUTzE2u+lccp5Vu3DIr2Usv83b64u90cfviz29gQ
-         cDDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hq4Pf3LlOZU16NK1/OH7MUMpzig08/p4poxwoVH6YWU=;
-        b=ENvWhPDRDFmX94br+IotewTzndfl0w0rllFyv1uKAUE1iEJ+cY1/GkFQ3JKSbpmFgJ
-         LdqdF3ae3nGwj8xGjRW/c83VLkWTYUyl42a+GrMjFKPmK8uNULv8S9Wl/K5dgN/Hy6N7
-         le3bxQx2+0+VaWS21gfIGTmEeFtgRaZdy93VqxBYx69KvAJccD58hVoIz0btq+i5lkeU
-         +7uKQmbpgbqrunN0oaJ+DRjUKsvY3vJxB3jXS9AXk/Pp6xoOLQYF+jhyLjfnkDx9NRFw
-         M/EMNUXStJsFbCfSdzVoMfzwlhHQmGX8HPTSGsrZ/9a+lmOW3qENOiTeU84VAw3MJekg
-         L8jQ==
-X-Gm-Message-State: AOAM531PwCvpEVDWh78k84TXo7Xhe2wVLQwyitwt8Bn6dH77OPGrlZFE
-        HpSLCXSrGYLvft+gCSesEB/82JnXFqY7e8gf
-X-Google-Smtp-Source: ABdhPJzLGzieNsHBqm/1Yj3hYZHXarCk06Np3wbpjzBFVuRSQUfsi0kmS8sfAsMq+gklkTNaFpfrFQ==
-X-Received: by 2002:a17:90b:46ca:: with SMTP id jx10mr3838665pjb.208.1607546552547;
-        Wed, 09 Dec 2020 12:42:32 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id y14sm3684096pfo.142.2020.12.09.12.42.31
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 12:42:32 -0800 (PST)
-Date:   Wed, 9 Dec 2020 12:42:28 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 210569] New: ping over geneve would fail
-Message-ID: <20201209124228.79075241@hermes.local>
+        id S2387436AbgLIUz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 15:55:29 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:14453 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729804AbgLIUz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 15:55:27 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fd139970001>; Wed, 09 Dec 2020 12:54:47 -0800
+Received: from reg-r-vrt-018-180.nvidia.com (172.20.13.39) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Wed, 9 Dec 2020 20:54:42 +0000
+References: <cki.4066A31294.UNMQ21P718@redhat.com> <CABE0yyi9gS8nao0n1Dts_Og80R71h8PUkizy4rM9E9E3QbJwvA@mail.gmail.com> <CABE0yyj997uCwzHoob8q2Ckd2i5Pv1k+JDRbF3fnn11_R2XN1Q@mail.gmail.com> <20201209092052.19a39676@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com> <CANn89iL8akG+u6sq4r7gxpWKMoDSKuCbgFvDPrrG+J85zC1KNg@mail.gmail.com> <CANn89iKcKATT902n6C1-Hi0ey0Ep20dD88nTTLLH9NNF6Pex5w@mail.gmail.com> <838391ff7ffa5dbfb79f30c6d31292c80415af18.camel@kernel.org> <CANn89iK+fU7LGH--JXx_FLxawr7rs1t-crLGtkbPAXsoiZMi8A@mail.gmail.com>
+User-agent: mu4e 1.4.12; emacs 26.2.90
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Eric Dumazet <edumazet@google.com>
+CC:     Saeed Mahameed <saeed@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jianlin Shi <jishi@redhat.com>,
+        CKI Project <cki-project@redhat.com>,
+        netdev <netdev@vger.kernel.org>, <skt-results-master@redhat.com>,
+        Yi Zhang <yi.zhang@redhat.com>,
+        Memory Management <mm-qe@redhat.com>,
+        Jan Stancek <jstancek@redhat.com>,
+        Jianwen Ji <jiji@redhat.com>, Hangbin Liu <haliu@redhat.com>,
+        Ondrej Moris <omoris@redhat.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Changhui Zhong <czhong@redhat.com>,
+        Xiong Zhou <xzhou@redhat.com>,
+        Rachel Sibley <rasibley@redhat.com>,
+        David Arcari <darcari@redhat.com>
+Subject: Re: =?utf-8?Q?=E2=9D=8C?= FAIL: Test report for kernel 5.10.0-rc6
+ (mainline.kernel.org)
+In-Reply-To: <CANn89iK+fU7LGH--JXx_FLxawr7rs1t-crLGtkbPAXsoiZMi8A@mail.gmail.com>
+Date:   Wed, 9 Dec 2020 22:54:40 +0200
+Message-ID: <ygnhsg8ek8dr.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1607547287; bh=mE9KAPYArifMWST5mxBKcbC+LI/egUE1GlqKJdGdC+4=;
+        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
+         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=QKzYEujc4Vh7J/AMwpce9x3n0Sid28rJ22SWBL0mGvPrjXkgyWpFVUVqw5GuoaRwc
+         CNkiu0I9IjJ+/NRCHks8nKg8WF/egYv+CpjIa07ht3nH3ucMZjHWOcsjF0PAtuhxtp
+         14bhwtOerIOOIEm8FPEMfyb5U6vdPt5USyufPtQRRe2skpBsTCZtOfidMnwtO8Vflp
+         Q1uX0LLSRB+UvsZ0lQsq1KWoYZFOgDHbGQwrxCX4wcm73RHFXJnGTVLwDcKF1bItys
+         YHD96/z0EpKGoNX1beWQcNgHHNfW+watqe6VTbX3NYvz080CJl9ToGEGMoYDmTnPZe
+         EtBFEVa/9QlbA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed 09 Dec 2020 at 20:50, Eric Dumazet <edumazet@google.com> wrote:
+> On Wed, Dec 9, 2020 at 7:34 PM Saeed Mahameed <saeed@kernel.org> wrote:
+>>
+>> On Wed, 2020-12-09 at 19:05 +0100, Eric Dumazet wrote:
+>> > On Wed, Dec 9, 2020 at 6:35 PM Eric Dumazet <edumazet@google.com>
+>> > wrote:
+>> > > Hmm... maybe the ECN stuff has always been buggy then, and nobody
+>> > > cared...
+>> > >
+>> >
+>> > Wait a minute, maybe this part was not needed,
+>> >
+>> > diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+>> > index
+>> > 8ae9ce2014a4a3ba7b962a209e28d1f65d4a83bd..896a7eb61d70340f69b9d3be0f7
+>> > 95fbaab1458dd
+>> > 100644
+>> > --- a/drivers/net/geneve.c
+>> > +++ b/drivers/net/geneve.c
+>> > @@ -270,7 +270,7 @@ static void geneve_rx(struct geneve_dev *geneve,
+>> > struct geneve_sock *gs,
+>> >                         goto rx_error;
+>> >                 break;
+>> >         default:
+>> > -               goto rx_error;
+>> > +               break;
+>> >         }
+>> >         oiph = skb_network_header(skb);
+>> >         skb_reset_network_header(skb);
+>> >
+>> >
+>> > > On Wed, Dec 9, 2020 at 6:20 PM Jakub Kicinski <kuba@kernel.org>
+>> > > wrote:
+>> > > > Eric, could this possibly be commit 4179b00c04d1 ("geneve: pull
+>> > > > IP
+>> > > > header before ECN decapsulation")?
+>> > > >
+>>
+>> We've bisected an issue in our CI to this patch, something about geneve
+>> TC offload traffic not passing, I don't have all the details, Maybe
+>> Vlad can chime in.
+>>
+>
+> Yes, I think the patch I sent should fix this, ETH_P_ARP should not be
+> dropped ;)
+>
+> I am testing this before offical patch submission.
+>
+> Thanks !
 
+Hi Eric,
 
-Begin forwarded message:
+Your patch fixed TC geneve tests for me, but some of more complex OVS
+tests are still failing. I'll try to provide details tomorrow.
 
-Date: Wed, 09 Dec 2020 02:04:16 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 210569] New: ping over geneve would fail
+Regards,
+Vlad
 
-
-https://bugzilla.kernel.org/show_bug.cgi?id=210569
-
-            Bug ID: 210569
-           Summary: ping over geneve would fail
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.10.0-rc6
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: high
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: jishi@redhat.com
-        Regression: No
-
-ping over geneve would fail on 5.10.0-rc6 after commit 
-Kernel repo: https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-Commit: 55fd59b003f6 - Merge
-git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
-
-reproducer:
-
-ip netns add client                                                             
-ip netns add server                                                             
-ip link add veth0_c type veth peer name veth0_s                                 
-ip link set veth0_c netns client                                                
-ip link set veth0_s netns server                                                
-ip netns exec client ip link set lo up                                          
-ip netns exec client ip link set veth0_c up                                     
-ip netns exec server ip link set lo up                                          
-ip netns exec server ip link set veth0_s up                                     
-ip netns exec client ip addr add 2000::1/64 dev veth0_c                         
-ip netns exec client ip addr add 10.10.0.1/24 dev veth0_c                       
-ip netns exec server ip addr add 2000::2/64 dev veth0_s                         
-ip netns exec server ip addr add 10.10.0.2/24 dev veth0_s                       
-ip netns exec client ping 10.10.0.2 -c 2                                        
-ip netns exec client ping6 2000::2 -c 2                                         
-ip netns exec client ip link add geneve1 type geneve vni 1234 remote 10.10.0.2
-ttl 64                 
-ip netns exec server ip link add geneve1 type geneve vni 1234 remote 10.10.0.1
-ttl 64                 
-ip netns exec client ip link set geneve1 up                                     
-ip netns exec client ip addr add 1.1.1.1/24 dev geneve1                         
-ip netns exec server ip link set geneve1 up                                     
-ip netns exec server ip addr add 1.1.1.2/24 dev geneve1
-ip netns exec client ping 1.1.1.2 -c 3
-
--- 
-You are receiving this mail because:
-You are the assignee for the bug.
