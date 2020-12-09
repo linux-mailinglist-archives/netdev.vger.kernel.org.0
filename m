@@ -2,277 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 940B92D3C47
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 08:32:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA182D3C70
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 08:43:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgLIHb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 02:31:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60640 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727844AbgLIHbn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 02:31:43 -0500
-From:   saeed@kernel.org
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        david.m.ertman@intel.com, dan.j.williams@intel.com,
-        kiran.patil@intel.com, gregkh@linuxfoundation.org,
-        Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next v2 14/14] net/mlx5: Add devlink subfunction port documentation
-Date:   Tue,  8 Dec 2020 23:29:34 -0800
-Message-Id: <20201209072934.1272819-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201209072934.1272819-1-saeed@kernel.org>
-References: <20201209072934.1272819-1-saeed@kernel.org>
+        id S1727021AbgLIHma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 02:42:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725968AbgLIHma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 02:42:30 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B1BC0613CF
+        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 23:41:50 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id m19so661255ejj.11
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 23:41:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=m3421Ub0KlIhhH/zoEz+MDKzqnaht2bd8LwblfeqHmw=;
+        b=ICE3NXOe2Ko+onyTU092mQ+zJbo+hr4zXukVw7sqz4iiJHl+Sw3YnnRlQKK3jiTcjo
+         qn/JJOuvNb7mXW/U8O3ZZ+GA4eGQXquLNs05EkPtzIIAlEc5K44BLxgmjMBG4XIR35Pm
+         IJO+d78IYCWthJnPH2q6Jfh8ehzbaMfaqaKRs/1M2AA0A+ELIqxVIXV8d11rJ5fspaAX
+         lzHlxXCevgS02kBwiQO/ITZ6JyxlMEdza8v5LxIMNoUw8uH/1APVRSXz5bNJuU7mFd7D
+         W35f1TOZRHU90+my9H4Lc/3Va1y1ZSEWxTpSaqkWxMyInW4UlVhMnWc6M6tUAOWjTmzE
+         4YEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=m3421Ub0KlIhhH/zoEz+MDKzqnaht2bd8LwblfeqHmw=;
+        b=mcxGXKqvb0VKP2UmT5x/E+AQg67fkFDE0ZHLQDnzypDKyCR5lQ8UVIKr+aABsWMOOO
+         qmeKXx7cwaTwsrGHSnOUeYUfY1BUcOg+hGtbkIAr2B7xqVv9MkkZ4zjUXbfA46Wsxxbt
+         hP/8mugzTNOrerC2sxbr5ApBJjnPy1rlyutEVkIyAd0ytYHBvhriMosF9LZmf1eZX8Ew
+         AWiiQYQulEtoS0Oi2jzGzfh3B1hkn4WMeGBGQKV2IeRU0YS/jvaSUjYmk/GOduhZFh42
+         6bzUF8l0P5QZC23QLD7CpeoSedz4E484WA6JsoYcS+2xeDnfefS3BGRhuF2SbtGZeVLY
+         Y9lw==
+X-Gm-Message-State: AOAM531lLtfWs3BVH2iQrxvC1G5+PVOofTuFB0vSWkMJKyfUKVqupUc2
+        1VsbI1gQZwv7QgUEjdIPUo0=
+X-Google-Smtp-Source: ABdhPJw2QBzIT0kIqzNqpVAY/7RNpug8VHJPiMC8/cIPVSIVJm5U7XXWXVwn3BjjuawDspGKpWnYEQ==
+X-Received: by 2002:a17:906:5fc9:: with SMTP id k9mr971447ejv.70.1607499708784;
+        Tue, 08 Dec 2020 23:41:48 -0800 (PST)
+Received: from [132.68.43.153] ([132.68.43.153])
+        by smtp.gmail.com with ESMTPSA id w10sm652592ejq.121.2020.12.08.23.41.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Dec 2020 23:41:48 -0800 (PST)
+Subject: Re: [PATCH v1 net-next 04/15] net/tls: expose get_netdev_for_sock
+To:     David Ahern <dsahern@gmail.com>,
+        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
+        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de,
+        sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
+        viro@zeniv.linux.org.uk, edumazet@google.com
+Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com
+References: <20201207210649.19194-1-borisp@mellanox.com>
+ <20201207210649.19194-5-borisp@mellanox.com>
+ <f38e30af-f4c0-9adc-259a-5e54214e16b1@gmail.com>
+From:   Boris Pismenny <borispismenny@gmail.com>
+Message-ID: <104d25c4-d0d3-234d-4d15-8e5d6ef1ce28@gmail.com>
+Date:   Wed, 9 Dec 2020 09:41:46 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <f38e30af-f4c0-9adc-259a-5e54214e16b1@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+On 09/12/2020 3:06, David Ahern wrote:
+> On 12/7/20 2:06 PM, Boris Pismenny wrote:
+>> get_netdev_for_sock is a utility that is used to obtain
+>> the net_device structure from a connected socket.
+>>
+>> Later patches will use this for nvme-tcp DDP and DDP CRC offloads.
+>>
+>> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
+>> Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+>> ---
+>>  include/net/sock.h   | 17 +++++++++++++++++
+>>  net/tls/tls_device.c | 20 ++------------------
+>>  2 files changed, 19 insertions(+), 18 deletions(-)
+>>
+>> diff --git a/include/net/sock.h b/include/net/sock.h
+>> index 093b51719c69..a8f7393ea433 100644
+>> --- a/include/net/sock.h
+>> +++ b/include/net/sock.h
+>> @@ -2711,4 +2711,21 @@ void sock_set_sndtimeo(struct sock *sk, s64 secs);
+>>  
+>>  int sock_bind_add(struct sock *sk, struct sockaddr *addr, int addr_len);
+>>  
+>> +/* Assume that the socket is already connected */
+>> +static inline struct net_device *get_netdev_for_sock(struct sock *sk, bool hold)
+>> +{
+>> +	struct dst_entry *dst = sk_dst_get(sk);
+>> +	struct net_device *netdev = NULL;
+>> +
+>> +	if (likely(dst)) {
+>> +		netdev = dst->dev;
+> 
+> I noticed you grab this once when the offload is configured. The dst
+> device could change - e.g., ECMP, routing changes. I'm guessing that
+> does not matter much for the use case - you are really wanting to
+> configure queues and zc buffers for a flow with the device; the netdev
+> is an easy gateway to get to it.
+> 
+> But, data center deployments tend to have redundant access points --
+> either multipath for L3 or bond for L2. For the latter, this offload
+> setup won't work - dst->dev will be the bond, the bond does not support
+> the offload, so user is out of luck.
+> 
 
-Add documentation for subfunction management using devlink
-port.
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
-Changelog:
-v1->v2:
- - new patch
----
- .../device_drivers/ethernet/mellanox/mlx5.rst | 204 ++++++++++++++++++
- 1 file changed, 204 insertions(+)
-
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index a5eb22793bb9..07e38c044355 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -12,6 +12,8 @@ Contents
- - `Enabling the driver and kconfig options`_
- - `Devlink info`_
- - `Devlink parameters`_
-+- `mlx5 subfunction`_
-+- `mlx5 port function`_
- - `Devlink health reporters`_
- - `mlx5 tracepoints`_
- 
-@@ -181,6 +183,208 @@ User command examples:
-       values:
-          cmode driverinit value true
- 
-+mlx5 subfunction
-+================
-+mlx5 supports subfunctions management using devlink port (see :ref:`Documentation/networking/devlink/devlink-port.rst <devlink_port>`) interface.
-+
-+A Subfunction has its own function capabilities and its own resources. This
-+means a subfunction has its own dedicated queues(txq, rxq, cq, eq). These queues
-+are neither shared nor stealed from the parent PCI function.
-+
-+When subfunction is RDMA capable, it has its own QP1, GID table and rdma
-+resources neither shared nor stealed from the parent PCI function.
-+
-+A subfunction has dedicated window in PCI BAR space that is not shared
-+with ther other subfunctions or parent PCI function. This ensures that all
-+class devices of the subfunction accesses only assigned PCI BAR space.
-+
-+A Subfunction supports eswitch representation through which it supports tc
-+offloads. User must configure eswitch to send/receive packets from/to
-+subfunction port.
-+
-+Subfunctions share PCI level resources such as PCI MSI-X IRQs with
-+ther other subfunctions and/or with its parent PCI function.
-+
-+Example mlx5 software, system and device view::
-+
-+       _______
-+      | admin |
-+      | user  |----------
-+      |_______|         |
-+          |             |
-+      ____|____       __|______            _________________
-+     |         |     |         |          |                 |
-+     | devlink |     | tc tool |          |    user         |
-+     | tool    |     |_________|          | applications    |
-+     |_________|         |                |_________________|
-+           |             |                   |          |
-+           |             |                   |          |         Userspace
-+ +---------|-------------|-------------------|----------|--------------------+
-+           |             |           +----------+   +----------+   Kernel
-+           |             |           |  netdev  |   | rdma dev |
-+           |             |           +----------+   +----------+
-+   (devlink port add/del |              ^               ^
-+    port function set)   |              |               |
-+           |             |              +---------------|
-+      _____|___          |              |        _______|_______
-+     |         |         |              |       | mlx5 class    |
-+     | devlink |   +------------+       |       |   drivers     |
-+     | kernel  |   | rep netdev |       |       |(mlx5_core,ib) |
-+     |_________|   +------------+       |       |_______________|
-+           |             |              |               ^
-+   (devlink ops)         |              |          (probe/remove)
-+  _________|________     |              |           ____|________
-+ | subfunction      |    |     +---------------+   | subfunction |
-+ | management driver|-----     | subfunction   |---|  driver     |
-+ | (mlx5_core)      |          | auxiliary dev |   | (mlx5_core) |
-+ |__________________|          +---------------+   |_____________|
-+           |                                            ^
-+  (sf add/del, vhca events)                             |
-+           |                                      (device add/del)
-+      _____|____                                    ____|________
-+     |          |                                  | subfunction |
-+     |  PCI NIC |---- activate/deactive events---->| host driver |
-+     |__________|                                  | (mlx5_core) |
-+                                                   |_____________|
-+
-+Subfunction is created using devlink port interface.
-+
-+- Change device to switchdev mode::
-+
-+    $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
-+
-+- Add a devlink port of subfunction flaovur::
-+
-+    $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-+
-+- Show a devlink port of the subfunction::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Delete a devlink port of subfunction after use::
-+
-+    $ devlink port del pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-+
-+mlx5 port function
-+==================
-+mlx5 driver provides mechanism to setup PCI VF/SF port function
-+attributes in unified way for smartnic and non-smartnic NICs.
-+
-+This is supported only when eswitch mode is set to switchdev. Port function
-+configuration of the PCI VF/SF is supported through devlink eswitch port.
-+
-+Port function attributes should be set before PCI VF/SF is enumerated by the
-+driver.
-+
-+MAC address setup
-+-----------------
-+mlx5 driver provides mechanism to setup the MAC address of the PCI VF/SF.
-+
-+Configured MAC address of the PCI VF/SF will be used by netdevice and rdma
-+device created for the PCI VF/SF.
-+
-+- Get MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/2 hw_addr 00:11:22:33:44:55
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:11:22:33:44:55
-+
-+- Get MAC address of the SF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcivf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:88:88
-+
-+SF state setup
-+--------------
-+To use the SF, user must active the SF using SF port function state attribute.
-+
-+- Get state of the SF identified by its unique devlink port index::
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state inactive opstate detached
-+
-+- Activate the function and verify its state is active::
-+
-+   $ devlink port function set ens2f0npf0sf88 state active
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state active opstate detached
-+
-+Upon function activation, PF driver instance gets the event from the device that
-+particular SF was activated. It's the cue to put the device on bus, probe it and
-+instantiate devlink instance and class specific auxiliary devices for it.
-+
-+- Show the auxiliary device and port of the subfunction::
-+
-+    $ devlink dev show
-+    devlink dev show auxiliary/mlx5_core.sf.4
-+
-+    $ devlink port show auxiliary/mlx5_core.sf.4/1
-+    auxiliary/mlx5_core.sf.4/1: type eth netdev p0sf88 flavour virtual port 0 splittable false
-+
-+    $ rdma link show mlx5_0/1
-+    link mlx5_0/1 state ACTIVE physical_state LINK_UP netdev p0sf88
-+
-+    $ rdma dev show
-+    8: rocep6s0f1: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d113 sys_image_guid 248a:0703:00b3:d112
-+    13: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
-+
-+- Subfunction auxilary device and class device hierarchy::
-+
-+                 mlx5_core.sf.4
-+          (subfunction auxilary device)
-+                       /\
-+                      /  \
-+                     /    \
-+                    /      \
-+                   /        \
-+      mlx5_core.eth.4     mlx5_core.rdma.4
-+     (sf eth aux dev)     (sf rdma aux dev)
-+         |                      |
-+         |                      |
-+      p0sf88                  mlx5_0
-+     (sf netdev)          (sf rdma device)
-+
-+Additionally SF port also gets the event when the driver attaches to the
-+auxiliary device of the subfunction. This results in changing the operational
-+state of the function. This provides visiblity to user to decide when it is
-+safe to delete the SF port for graceful termination of the subfunction.
-+
-+- Show the SF port operational state::
-+
-+    $ devlink port show ens2f0npf0sf88
-+    pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+      function:
-+        hw_addr 00:00:00:00:88:88 state active opstate attached
-+
- Devlink health reporters
- ========================
- 
--- 
-2.26.2
-
+You are correct, and bond support is currently under review for TLS,
+i.e., search for "TLS TX HW offload for Bond". The same approach that
+is applied there is relevant here. More generally, this offload is
+very similar in concept to TLS offload (tls_device).
