@@ -2,150 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52D572D44DF
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 15:56:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EC422D44E4
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 15:57:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733142AbgLIOzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 09:55:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        id S1733219AbgLIO4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 09:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733146AbgLIOz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 09:55:28 -0500
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18714C0613CF
-        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 06:54:48 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id p126so1965356oif.7
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 06:54:48 -0800 (PST)
+        with ESMTP id S1732558AbgLIO4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 09:56:41 -0500
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03739C0613CF
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 06:56:01 -0800 (PST)
+Received: by mail-wr1-x444.google.com with SMTP id i9so2065995wrc.4
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 06:56:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hShlS2uVS2d9bHdBgdptUW1uO7X52rcjvewYBmPnugc=;
-        b=mRoruZHNfu19Yb+tSUpKXXL5gKUvr9Kcaq62eYiEWOyget+j6YP8E8xTfViXpHGqUo
-         Hb51DKMPYauiMKeieF+0DZX4+XxROvI1IDZAdNg3XGYP03nBrjcDfdVRwQ8JljxTDgdG
-         TIUMRHcl//AV+RIzSlnEwOSbhB6zm5e8JpbV7pSbIkaDKjJ+pvhNWtsocdhmpD2twtns
-         b9zvfsqUMaBromdknPzrVWcGyQmUVoVkew3lUp4uJHlGTrSKp1oDElGK7HrJywOshYM/
-         nkgpow3D4/H69GyOF6PKuCH6wYg2/0kZ7eci6XoE2lVi6YbetkegR+xlpQAGGiHCVQdH
-         BlCg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=DvbvG6mQGm3snXcxs0szgugtcoGkSBwdHyd4ZKjZrVE=;
+        b=oB8cX+Z4rNWyS4GCSBB/ODF7O05C4eQUADsbe2lrGqcdXoTFeqmv0cr+zaiHT8Ozpd
+         ja3YSzbYRXWWLfMIvVIlnQKC5cGHMtSaqzUHqmSQLwnlAPnYZLvYSfP5nfSCItu/uMe5
+         QicDJlzLCj10J5iZFEuiJ4jMSNuqkAt+kQ6+5d7JXhfk1zsdyp+9rkZ1llgrGZfms/qw
+         2zDxF1GU049XQUfxzKX8URR6CqvdIjhUr+92PJPPxMs44PlQeYxNy5QKN9uFahftV8E5
+         WWA+tz2y+TiiIqg5QqlrR0iWuX3sBh78XmSRKuz+LWOvcNLeZQCVdBhE4PrWlps0rsXQ
+         XBnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hShlS2uVS2d9bHdBgdptUW1uO7X52rcjvewYBmPnugc=;
-        b=ozgDJq14Nl3AOAeOFqGl4q1T+4JzoDsteygmn+Qn/sNWjciY5U4asaCjHVM5UyvbXn
-         tMo/IfA5w12k8fM9FN4Xh1exmsfQW+Cv54iFJJX/Y8fkhu8LkCHTsMJvNZ61Mi1JQkuE
-         aE31OWMj4g+9e5oQOuWQyc5u/+Ni9GRh+jSqem1OxWyv/FK6rwFPoFJjQOX+BdEhABzr
-         Y+eFIb3lvxQIPJwgtTRwQ3IhH9ebwfgsg+rUS2o1uNn/Po7RlKZURSm947IruvqBm37G
-         pqbCAHwvRJFqtTRUcLZCZeBm3TWeJ0PGCFQQ/iqIH84fLZ7w7ytmdoHNvDhXIXQDjnVK
-         OTlQ==
-X-Gm-Message-State: AOAM532/PYE1gW/mAHi4iGyLaSRYK0K6slI0z3QaphfQ89J+dP0YW0QM
-        oREfRiEbgynQOsIS4Cn+Eu/8tauYXnE2yg==
-X-Google-Smtp-Source: ABdhPJxAeu2Qyo69bHU2oHAANmQYU3W17dJZ+EAIxC7DoR5UkEDO8cMWQ2G8M2qLCgJ18ff3Iavz5A==
-X-Received: by 2002:a54:4799:: with SMTP id o25mr1978228oic.33.1607525687177;
-        Wed, 09 Dec 2020 06:54:47 -0800 (PST)
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com. [209.85.161.51])
-        by smtp.gmail.com with ESMTPSA id w66sm376492oib.0.2020.12.09.06.54.46
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Dec 2020 06:54:46 -0800 (PST)
-Received: by mail-oo1-f51.google.com with SMTP id q20so437195oos.12
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 06:54:46 -0800 (PST)
-X-Received: by 2002:a9f:2356:: with SMTP id 80mr1862380uae.92.1607525369794;
- Wed, 09 Dec 2020 06:49:29 -0800 (PST)
-MIME-Version: 1.0
-References: <20201209143707.13503-1-erez.geva.ext@siemens.com> <20201209143707.13503-2-erez.geva.ext@siemens.com>
-In-Reply-To: <20201209143707.13503-2-erez.geva.ext@siemens.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 9 Dec 2020 09:48:53 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScWkYn0Ur+aSuz1cREbQJO0fB6powOm8PFxze4v8JwBaw@mail.gmail.com>
-Message-ID: <CA+FuTScWkYn0Ur+aSuz1cREbQJO0fB6powOm8PFxze4v8JwBaw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] Add TX sending hardware timestamp.
-To:     Erez Geva <erez.geva.ext@siemens.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-arch@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Eyal Birger <eyal.birger@gmail.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Jon Rosen <jrosen@cisco.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mao Wenan <maowenan@huawei.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Andrei Vagin <avagin@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Or Cohen <orcohen@paloaltonetworks.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Xie He <xie.he.0141@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vladis Dronov <vdronov@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Ines Molzahn <ines.molzahn@siemens.com>,
-        Simon Sudler <simon.sudler@siemens.com>,
-        Andreas Meisinger <andreas.meisinger@siemens.com>,
-        Andreas Bucher <andreas.bucher@siemens.com>,
-        Henning Schild <henning.schild@siemens.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Andreas Zirkler <andreas.zirkler@siemens.com>,
-        Ermin Sakic <ermin.sakic@siemens.com>,
-        An Ninh Nguyen <anninh.nguyen@siemens.com>,
-        Michael Saenger <michael.saenger@siemens.com>,
-        Bernd Maehringer <bernd.maehringer@siemens.com>,
-        Gisela Greinert <gisela.greinert@siemens.com>,
-        Erez Geva <ErezGeva2@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DvbvG6mQGm3snXcxs0szgugtcoGkSBwdHyd4ZKjZrVE=;
+        b=didVpMnIjewQZbU8qeWXrl+T28m94o30twf/bOGH4OYc5i+9heZWvHeZczw0I9AqRl
+         0vb/NKj3U36CgrTNmD5kMM+mIOFr5tV6EZTwGBWJaGaOmWMpGUGbVP9m4AHiBexrgvMf
+         q/UECOfpRVORsHbQUEV8V7ik7HAjzGk8Y6QPPP+Dg1FRZWkSI+/ePTTkhUaoiEDYYMtd
+         4gYz/PxbBPbjRn57xnStxR4oiwDXxMhzFzjxC/9Lxg0kFS0jQ79ostaVKSbfluarnYYI
+         aCiLKC07B6BJqgM3MxG2R35FoQWS0SswUb79poryWcuaBiDUSzud+Jtbk40k4L+fKw6E
+         +CKg==
+X-Gm-Message-State: AOAM530C0F8pA/qSUOc2cBH57USbXBtZUiRm5z7AQ46Q/ZzPSGAsMoX0
+        ex48h1lLxFpPXLOGBedwDsTQSoBcmymhEpbV
+X-Google-Smtp-Source: ABdhPJyXtOpUmw7LcWmrd+o1rvAd+cU6WaHd2Ay85/a7Q5EWljbi+Y/+LpQK+VhbCaTiH62+JIMX2w==
+X-Received: by 2002:adf:ed12:: with SMTP id a18mr3132543wro.5.1607525759683;
+        Wed, 09 Dec 2020 06:55:59 -0800 (PST)
+Received: from localhost.localdomain ([2a01:e0a:490:8730:c728:53f6:5e7e:2f63])
+        by smtp.gmail.com with ESMTPSA id i11sm3782219wrm.1.2020.12.09.06.55.58
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 09 Dec 2020 06:55:59 -0800 (PST)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     kuba@kernel.org
+Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        Hemant Kumar <hemantk@codeaurora.org>
+Subject: [PATCH 1/3] bus: mhi: core: Add helper API to return number of free TREs
+Date:   Wed,  9 Dec 2020 16:03:01 +0100
+Message-Id: <1607526183-25652-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 9, 2020 at 9:37 AM Erez Geva <erez.geva.ext@siemens.com> wrote:
->
-> Configure and send TX sending hardware timestamp from
->  user space application to the socket layer,
->  to provide to the TC ETC Qdisc, and pass it to
->  the interface network driver.
->
->  - New flag for the SO_TXTIME socket option.
->  - New access auxiliary data header to pass the
->    TX sending hardware timestamp.
->  - Add the hardware timestamp to the socket cookie.
->  - Copy the TX sending hardware timestamp to the socket cookie.
->
-> Signed-off-by: Erez Geva <erez.geva.ext@siemens.com>
+From: Hemant Kumar <hemantk@codeaurora.org>
 
-Hardware offload of pacing is definitely useful.
+Introduce mhi_get_free_desc_count() API to return number
+of TREs available to queue buffer. MHI clients can use this
+API to know before hand if ring is full without calling queue
+API.
 
-I don't think this needs a new separate h/w variant of SO_TXTIME.
+Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/core/main.c | 12 ++++++++++++
+ include/linux/mhi.h         |  9 +++++++++
+ 2 files changed, 21 insertions(+)
 
-Indeed, we want pacing offload to work for existing applications.
+diff --git a/drivers/bus/mhi/core/main.c b/drivers/bus/mhi/core/main.c
+index 54d9c80..a24ba4f 100644
+--- a/drivers/bus/mhi/core/main.c
++++ b/drivers/bus/mhi/core/main.c
+@@ -303,6 +303,18 @@ int mhi_destroy_device(struct device *dev, void *data)
+ 	return 0;
+ }
+ 
++int mhi_get_free_desc_count(struct mhi_device *mhi_dev,
++				enum dma_data_direction dir)
++{
++	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
++	struct mhi_chan *mhi_chan = (dir == DMA_TO_DEVICE) ?
++		mhi_dev->ul_chan : mhi_dev->dl_chan;
++	struct mhi_ring *tre_ring = &mhi_chan->tre_ring;
++
++	return get_nr_avail_ring_elements(mhi_cntrl, tre_ring);
++}
++EXPORT_SYMBOL_GPL(mhi_get_free_desc_count);
++
+ void mhi_notify(struct mhi_device *mhi_dev, enum mhi_callback cb_reason)
+ {
+ 	struct mhi_driver *mhi_drv;
+diff --git a/include/linux/mhi.h b/include/linux/mhi.h
+index 09f786e..25c69a0 100644
+--- a/include/linux/mhi.h
++++ b/include/linux/mhi.h
+@@ -616,6 +616,15 @@ void mhi_set_mhi_state(struct mhi_controller *mhi_cntrl,
+ void mhi_notify(struct mhi_device *mhi_dev, enum mhi_callback cb_reason);
+ 
+ /**
++ * mhi_get_free_desc_count - Get transfer ring length
++ * Get # of TD available to queue buffers
++ * @mhi_dev: Device associated with the channels
++ * @dir: Direction of the channel
++ */
++int mhi_get_free_desc_count(struct mhi_device *mhi_dev,
++				enum dma_data_direction dir);
++
++/**
+  * mhi_prepare_for_power_up - Do pre-initialization before power up.
+  *                            This is optional, call this before power up if
+  *                            the controller does not want bus framework to
+-- 
+2.7.4
 
-It only requires that pacing qdiscs, both sch_etf and sch_fq,
-optionally skip queuing in their .enqueue callback and instead allow
-the skb to pass to the device driver as is, with skb->tstamp set. Only
-to devices that advertise support for h/w pacing offload.
