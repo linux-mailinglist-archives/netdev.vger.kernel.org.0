@@ -2,104 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02E932D3F10
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 10:47:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CA412D3F18
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 10:49:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729456AbgLIJqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 04:46:52 -0500
-Received: from so254-31.mailgun.net ([198.61.254.31]:43141 "EHLO
-        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728984AbgLIJqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 04:46:52 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607507186; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=TT4m8+gnciHFxdRsn31IdGNUoKU41SWMx8jAAS1/Yyg=; b=YXLE42VwWscwQJdhAWT3l+5xX0Y/j0YkkWKQjyfDHR/7h9J2Ust9JOk9dGhMsa8VVdDpbQCQ
- 6Xxw27bi43BmWeFhGNRzz/+hi5aA5nyFNYJC5U0Dyo7KIn86SE2Csool3P7zXs92J1KBFK0u
- 0TR3lG9LEGhSpfRuk+o4AnqH5Ms=
-X-Mailgun-Sending-Ip: 198.61.254.31
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 5fd09cd8fab0cd4073d52210 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 09 Dec 2020 09:46:00
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EC25DC433ED; Wed,  9 Dec 2020 09:45:59 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id EE07FC433C6;
-        Wed,  9 Dec 2020 09:45:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EE07FC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Cc:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-Subject: Re: [PATCH wireless] iwlwifi: fw: simplify the iwl_fw_dbg_collect_trig()
-References: <20201209092835.20630-1-zhengyongjun3@huawei.com>
-Date:   Wed, 09 Dec 2020 11:45:54 +0200
-In-Reply-To: <20201209092835.20630-1-zhengyongjun3@huawei.com> (Zheng
-        Yongjun's message of "Wed, 9 Dec 2020 17:28:35 +0800")
-Message-ID: <87im9bb9d9.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729088AbgLIJsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 04:48:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728010AbgLIJsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 04:48:07 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22BCC0613D6;
+        Wed,  9 Dec 2020 01:47:27 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id t6so657993plq.1;
+        Wed, 09 Dec 2020 01:47:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b4A649US2RSjSG56Wpb3xGYDuFzhFS6kVon+ebN8Xnw=;
+        b=dr6evVSuCSSujnXd69aFKGCFoZKyB8grToLAabFTKI8pxrk9OaRujwctoy0rv8fcAF
+         c8WuOKZYh7EqArO07lXp49Aj3qPrs+biAo8YEwxD3sA8Gb5q1/b4jCkvv7zcRkAb2vyW
+         xZtLOmst5oUXbx3cPMBTAFH9My6uH8LSjaZWmLT2LvrG35Zz7gPKtCnx3WT+ZsblI/ly
+         v8SIetipSMLRStjoOGjT3uZJjj0QErxtzrhWWQ16ZJ1ulqeQpUvXvtquxenSzjjKWUPw
+         I8+K0rwOPHvPE6h2eYdNaWlEUdo2rC7L7qMUWW0NwOsosrQeBofKPaM30rHEvZZc/qjm
+         HVzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b4A649US2RSjSG56Wpb3xGYDuFzhFS6kVon+ebN8Xnw=;
+        b=R2T+YRLaykfXTFGd8Bq2P2mY8c7ETniLFqWz/dW41jMMfnjBEETF+8wI2Bld85lYXg
+         DUIjw+cMDcppFgDoDzHaFxV0Hts8gxdjmtJpgSmVYHuggXyoBMXzwvrxwrmtdBXZhUB9
+         88ifsFIoQBJUctUmvjKpi8nuVUnu7ahYgapc6Z7zfDXqXT7xbRT5CInDA9+Umy3TgYSK
+         MRMXYu1bVWA/f9FQJ7jxkqtmIi8RXo1wqzkfHMEDp3sGoa6YBt0zT2v6ywplJKMkeblw
+         nKyDo/XX1uPNTHlFaOMhccCdSdB3wmi0SpbWKJv7/AFKI0lf5RvERyrDGdzIDEYIiAz5
+         b0WQ==
+X-Gm-Message-State: AOAM530hcpmifnoMBWIDR2hIdOuxl1ddcUWveKUdHr5HfIDOHWH0buG1
+        FaMNVzyRyEQsJhoSQDGPTZK27XL9ucBhhCi0OjA=
+X-Google-Smtp-Source: ABdhPJyOnGX5jcPCCCm50Oz3Ae5/LQ4R8o6L2HZgYTu2pH+jeczjkvYYioVg4w9Dd2gZudE0zGW6ivi+aXcEHJMgVBA=
+X-Received: by 2002:a17:902:6b45:b029:d6:c43e:ad13 with SMTP id
+ g5-20020a1709026b45b02900d6c43ead13mr1440385plt.77.1607507247288; Wed, 09 Dec
+ 2020 01:47:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201126063557.1283-1-ms@dev.tdt.de> <20201126063557.1283-5-ms@dev.tdt.de>
+ <CAJht_EMZqcPdE5n3Vp+jJa1sVk9+vbwd-Gbi8Xqy19bEdbNNuA@mail.gmail.com>
+ <CAJht_ENukJrnh6m8FLrHBwnKKyZpzk6uGWhS4_eUCyDzrCG3eA@mail.gmail.com> <3e314d2786857cbd5aaee8b83a0e6daa@dev.tdt.de>
+In-Reply-To: <3e314d2786857cbd5aaee8b83a0e6daa@dev.tdt.de>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Wed, 9 Dec 2020 01:47:16 -0800
+Message-ID: <CAJht_ENOhnS7A6997CAP5qhn10NMYSVD3xOxcbPGQFLGb8z_Sg@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 4/5] net/x25: fix restart request/confirm handling
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zheng Yongjun <zhengyongjun3@huawei.com> writes:
-
-> Simplify the return expression.
+On Wed, Dec 9, 2020 at 1:41 AM Martin Schiller <ms@dev.tdt.de> wrote:
 >
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-> ---
->  drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-> index ab4a8b942c81..9393fcb62076 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-> @@ -2558,7 +2558,7 @@ int iwl_fw_dbg_collect_trig(struct iwl_fw_runtime *fwrt,
->  			    struct iwl_fw_dbg_trigger_tlv *trigger,
->  			    const char *fmt, ...)
->  {
-> -	int ret, len = 0;
-> +	int len = 0;
->  	char buf[64];
->  
->  	if (iwl_trans_dbg_ini_valid(fwrt->trans))
-> @@ -2580,13 +2580,8 @@ int iwl_fw_dbg_collect_trig(struct iwl_fw_runtime *fwrt,
->  		len = strlen(buf) + 1;
->  	}
->  
-> -	ret = iwl_fw_dbg_collect(fwrt, le32_to_cpu(trigger->id), buf, len,
-> +	return iwl_fw_dbg_collect(fwrt, le32_to_cpu(trigger->id), buf, len,
->  				 trigger);
-> -
-> -	if (ret)
-> -		return ret;
-> -
-> -	return 0;
->  }
->  IWL_EXPORT_SYMBOL(iwl_fw_dbg_collect_trig);
+> Right.
+> By the way: A "Restart Collision" is in practice a very common event to
+> establish the Layer 3.
 
-Up to Luca of course, but I prefer the original style.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Oh, I see. Thanks!
