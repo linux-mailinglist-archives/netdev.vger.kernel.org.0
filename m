@@ -2,105 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2C342D45CB
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:50:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 223592D45C8
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:50:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729598AbgLIPu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 10:50:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39957 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726456AbgLIPuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 10:50:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607528928;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=pxtrL3FuwLm6to1JoqqYIg5sQTY8SBBkqlL1fyreDPs=;
-        b=iQp+kwvRmPS0wwa8BoYsfuErsJcS+oK2p9Da3XIE7d/Udv51AWr4jHhxsiM+GFHBK+oLFM
-        ED6DMUC/fWN/3HYHmO9XPkJyQKXF/Z8+LRmRYc7DCbVf1g4UxXYNXE+8sFT23Vl55F4vrS
-        9yAlzHHP9U/Z30kfSV0fF2gzskk7NtM=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-151-BMbrQEszNKynmW7sO6QW6w-1; Wed, 09 Dec 2020 10:48:45 -0500
-X-MC-Unique: BMbrQEszNKynmW7sO6QW6w-1
-Received: by mail-wr1-f70.google.com with SMTP id x10so825665wrs.2
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 07:48:45 -0800 (PST)
+        id S1728826AbgLIPtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 10:49:53 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:55325 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726757AbgLIPtw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 10:49:52 -0500
+Received: by mail-io1-f71.google.com with SMTP id j25so1507885iog.22
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 07:49:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=pxtrL3FuwLm6to1JoqqYIg5sQTY8SBBkqlL1fyreDPs=;
-        b=f169NX5snTn9NUuKiGPL8QRILusU7xd0/tM5XYxRH4rDrW/RpWOKQqAvhKgJIvIcLx
-         4iV+1L9l9B9txPmDytxwfgodRoTRIWcq9Ky6Xoj48FUDeBtckEduuU7rCmPHCrIDI/io
-         q9GQJx3eq/hEyOkLWqvYzuO6mhU6a6j6qxDT24XwSQZDAypsp8kyX/2hduG6tmAXHLjr
-         yXbkiI1xGgs98qyFeCHirGFy97O4ZHlTcq6p1IAqxIFMPedwNQdwK2mazLFNhgvuL9OC
-         xVy2mR/igUIQafG2lP44SlIVeYykZHyNBmIU50o5z1ssIAv8pwYGQSb41XdVEsHHfxaz
-         KQMg==
-X-Gm-Message-State: AOAM533yp6gF787DPuvB952q9+FaF+na/dT565L7I+nniCapiw/w+uir
-        1yIJ2yyXlS/YuJVR4P8lQQBpAstf7JxGir/Y6pCGJA1kNJRVLIcimpRmZxCy7StnPRpWMRvL4nE
-        aEyHc5udK7bA4jsdU
-X-Received: by 2002:a5d:4ccf:: with SMTP id c15mr3419609wrt.237.1607528924460;
-        Wed, 09 Dec 2020 07:48:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw4SHt7t7bJl9dEK2lZByvyKIDpLCLQfyY4oyAMLP8agqVfgoex4dJXfHH2RFmFeDD+BKfpqw==
-X-Received: by 2002:a5d:4ccf:: with SMTP id c15mr3419595wrt.237.1607528924281;
-        Wed, 09 Dec 2020 07:48:44 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id c9sm4519476wrn.65.2020.12.09.07.48.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 07:48:43 -0800 (PST)
-Date:   Wed, 9 Dec 2020 16:48:41 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net] net: sched: Fix dump of MPLS_OPT_LSE_LABEL attribute in
- cls_flower
-Message-ID: <0e248b0464673b412d428666d10b6d3c208809bf.1607528860.git.gnault@redhat.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=yeGmm0MG4HbaGBkCEsUlCG6OY5l6+vaGEd6w4DBQHNw=;
+        b=W/TH3DvV0zirZRE6+WsWG0f2g4I4OphMpR11PiO9fJYeUAVZUneo1NWI3HQzVhZYBj
+         WTJkstHMIYnUZ+P/sUSBV98Tfz08J8DA4TK3QLxkCB1UfycBMk+67CaeDLZmopI79ywI
+         K1hDKJ/eHSGLcnAFmGNGOLifxYPJv+GbIWbw3L02OqpSFdo6L08ly4C939JzU85qlq4v
+         Rx03lihlyL1pSIteWQtXnHCuoZRUlbW4s6XmVY+wHb6P795ub2RaUQqYTeOrAmHKEB5m
+         0i8hFfgUuoama4LsObvvK7k00jys8EQQHrSpQmRJKQuJ7kt5136nYA698kdRcFgzyJcw
+         ebBw==
+X-Gm-Message-State: AOAM532dJDHrP72dpljLSnyKU3JdmaSFOTpyRMoZVjTDDT73gmoU6BM2
+        xUJUF+4hnotqzEWoPQ/oZs8jjamrT1vX1XCqFXOWDpJ1m+rS
+X-Google-Smtp-Source: ABdhPJwg9I+mcg1YDkCZsYwVQlfQO7HdRJG0Q1KyIJutqIWYltfuwWGQEo+XNuAIl2CuVhN4yacwB2lde2u4YdYVy8OhXA7wJVEp
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Received: by 2002:a92:d11:: with SMTP id 17mr3821470iln.84.1607528951520;
+ Wed, 09 Dec 2020 07:49:11 -0800 (PST)
+Date:   Wed, 09 Dec 2020 07:49:11 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001f22d305b60a00a4@google.com>
+Subject: KASAN: use-after-free Write in rtl_fw_do_work (2)
+From:   syzbot <syzbot+65be4277f3c489293939@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, davem@davemloft.net, kuba@kernel.org,
+        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pkshih@realtek.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL is a u32 attribute (MPLS label is
-20 bits long).
+Hello,
 
-Fixes the following bug:
+syzbot found the following issue on:
 
- $ tc filter add dev ethX ingress protocol mpls_uc \
-     flower mpls lse depth 2 label 256             \
-     action drop
+HEAD commit:    b175d273 USB: legotower: fix logical error in recent commit
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+console output: https://syzkaller.appspot.com/x/log.txt?x=12ee7c87500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d24ee9ecd7ce968e
+dashboard link: https://syzkaller.appspot.com/bug?extid=65be4277f3c489293939
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
- $ tc filter show dev ethX ingress
-   filter protocol mpls_uc pref 49152 flower chain 0
-   filter protocol mpls_uc pref 49152 flower chain 0 handle 0x1
-     eth_type 8847
-     mpls
-       lse depth 2 label 0  <-- invalid label 0, should be 256
-   ...
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Fixes: 61aec25a6db5 ("cls_flower: Support filtering on multiple MPLS Label Stack Entries")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+65be4277f3c489293939@syzkaller.appspotmail.com
+
+usb 5-1: Direct firmware load for rtlwifi/rtl8192cufw.bin failed with error -2
+rtlwifi: Loading alternative firmware rtlwifi/rtl8192cufw.bin
+rtlwifi: Selected firmware is not available
+==================================================================
+BUG: KASAN: use-after-free in rtl_fw_do_work.cold+0x68/0x6a drivers/net/wireless/realtek/rtlwifi/core.c:93
+Write of size 4 at addr ffff8881454cff50 by task kworker/0:6/7379
+
+CPU: 0 PID: 7379 Comm: kworker/0:6 Not tainted 5.10.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events request_firmware_work_func
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xae/0x4c8 mm/kasan/report.c:385
+ __kasan_report mm/kasan/report.c:545 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
+ rtl_fw_do_work.cold+0x68/0x6a drivers/net/wireless/realtek/rtlwifi/core.c:93
+ request_firmware_work_func+0x12c/0x230 drivers/base/firmware_loader/main.c:1079
+ process_one_work+0x933/0x1520 kernel/workqueue.c:2272
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
+ kthread+0x38c/0x460 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+
+The buggy address belongs to the page:
+page:00000000f54435b3 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1454cf
+flags: 0x200000000000000()
+raw: 0200000000000000 0000000000000000 ffffea00051533c8 0000000000000000
+raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8881454cfe00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8881454cfe80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff8881454cff00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                                 ^
+ ffff8881454cff80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff8881454d0000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+
+
 ---
- net/sched/cls_flower.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index fed18fd2c50b..1319986693fc 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -2424,8 +2424,8 @@ static int fl_dump_key_mpls_opt_lse(struct sk_buff *skb,
- 			return err;
- 	}
- 	if (lse_mask->mpls_label) {
--		err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL,
--				 lse_key->mpls_label);
-+		err = nla_put_u32(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL,
-+				  lse_key->mpls_label);
- 		if (err)
- 			return err;
- 	}
--- 
-2.21.3
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
