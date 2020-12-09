@@ -2,97 +2,529 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA962D388E
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 03:04:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CEFB2D3894
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 03:08:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgLICEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 21:04:00 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:56325 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725808AbgLICDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 21:03:52 -0500
-Received: by mail-il1-f197.google.com with SMTP id r20so137426ilh.23
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 18:03:36 -0800 (PST)
+        id S1726137AbgLICHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 21:07:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33184 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725789AbgLICHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 21:07:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607479567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fjX3QkifyLydUXt9avB5hNV0ZqXerXREz2PP73//2Q0=;
+        b=ZdF6f+8HVzT/0mrD8ZmET0v1RDlXUVZT+kuSKQKYrwZFzrb4lZ2IdjEL1d5FlT9kkSVD2Y
+        FK5yDdz9F/C+AMK16f+YZTgEENnoT5CeCysnDkTC9oc1IB/0dAVTz17PqDkwmOsq6MaBcC
+        /N5mB0g7UaYDvadGsSKKHgj8L2enp/8=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-121-5W3bY92KN3KgEYBv6ip_eg-1; Tue, 08 Dec 2020 21:06:01 -0500
+X-MC-Unique: 5W3bY92KN3KgEYBv6ip_eg-1
+Received: by mail-oi1-f199.google.com with SMTP id e203so35972oib.6
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 18:06:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=E9xG3iyNfrP/GYWZb90Sp2F2EzhvTQUjhkBvmN3+tHQ=;
-        b=F6DY5IKEakSa7P42XXYUYfmqJTDlqb+V6XwF2znHNRtvRND/m2wv4YH7vw9xbCEr0v
-         XZoRrcge7E4g5rkdqMAxPEiqkrXAvnsBGhk5+rHbt49/VPHbK1xU71c463dVvRlsFw+n
-         Q3SU5q4TWJ8qlZYEgLvbJgnbcjfdUmLDI0q6RSyPt01mz4VV6drN56Hb1O3mI2yDuxw7
-         8ss0jDbyl1iUVEY4VFiaTNJ65vzIHz/XDivSeulp7m8DgTlbSoUMAIiBkUoodeq/aFeu
-         R9K0qvFmS78c/JLHMazdxjqGPaeWPh74//fI4T0WklirT6NEXghpYty9j6M7yYXgqPYC
-         OQMg==
-X-Gm-Message-State: AOAM53017gl58+MnM+WA8PnxjmxELbnlt5fOMeZYk7oTbTYZGwDe41hl
-        yRajdn5e+74hRLLM1WyJzOE+abrUK9FOFI85ZCckwu6PnO6b
-X-Google-Smtp-Source: ABdhPJy19747t00bDr/yvHnDjwY30zBiNJh90X9rO+k25E5A1LootuscWyCobb3YfQ/0Bd1TTGw741aXKN47A0bE60I/9cIfy63y
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fjX3QkifyLydUXt9avB5hNV0ZqXerXREz2PP73//2Q0=;
+        b=q63iXYbCKEI8A4O6EzAnFjOanupcTZw1CYS25Cwr5wU4mBbZWxiRXxwSr9Z18m7rtb
+         NwURGbqf6vihkGYrXNfzJPXVQKsnp2QFMuiXcLpEA5lCllVICfuWcQrljDKs7wf0gHOO
+         N050FYtwjRGBX3fWdJa4Uyl3xkm8WOfGKXV6bsKUZ0S3SJjcEHm/42/7PEOgcK8Y2vXs
+         1RlFDN++7B1T2boH9LNlf3HOAkY+j8bG0qulvl+ozzUUhbricNZPL09iEaTmW+Rp0g+1
+         qVPWlMtWSZryzS/5+Sx8Bsvr/IVyhKKyfqake04guxitPMBGBSI72lgpy6c6ej8CXuLv
+         sgXg==
+X-Gm-Message-State: AOAM532TgP4Ny8Br3FIxGxfSry2tIiNjk755anllzI7Deqb1PWEEIWOo
+        L17HNoRKl6bHSWVp7JgwKLiPaQCRrHdPjlawY3k7C1NzAIRtX8YlYOoACg/1n2QF4X0iNUEIb5A
+        LKOPs/DLoGWgNrU9ZaowreHK/fZmcay9M
+X-Received: by 2002:a9d:a4f:: with SMTP id 73mr13358otg.238.1607479560849;
+        Tue, 08 Dec 2020 18:06:00 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwdZq7fiXEzAWRq07kR7CFZz57B5ZnTMno7335XJ0CgeApWtbW6FOOOvQyKuvYKcODrMKU4yuW94vEo2GgD6Pc=
+X-Received: by 2002:a9d:a4f:: with SMTP id 73mr13340otg.238.1607479560467;
+ Tue, 08 Dec 2020 18:06:00 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:39a:: with SMTP id y26mr313956jap.14.1607479391017;
- Tue, 08 Dec 2020 18:03:11 -0800 (PST)
-Date:   Tue, 08 Dec 2020 18:03:11 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000015e0c705b5fe7627@google.com>
-Subject: WARNING in ieee80211_start_next_roc
-From:   syzbot <syzbot+c3a167b5615df4ccd7fb@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <cki.4066A31294.UNMQ21P718@redhat.com> <CABE0yyi9gS8nao0n1Dts_Og80R71h8PUkizy4rM9E9E3QbJwvA@mail.gmail.com>
+In-Reply-To: <CABE0yyi9gS8nao0n1Dts_Og80R71h8PUkizy4rM9E9E3QbJwvA@mail.gmail.com>
+From:   Jianlin Shi <jishi@redhat.com>
+Date:   Wed, 9 Dec 2020 10:05:14 +0800
+Message-ID: <CABE0yyj997uCwzHoob8q2Ckd2i5Pv1k+JDRbF3fnn11_R2XN1Q@mail.gmail.com>
+Subject: =?UTF-8?B?UmU6IOKdjCBGQUlMOiBUZXN0IHJlcG9ydCBmb3Iga2VybmVsIDUuMTAuMC1yYzYgKG1haQ==?=
+        =?UTF-8?B?bmxpbmUua2VybmVsLm9yZyk=?=
+To:     CKI Project <cki-project@redhat.com>, netdev@vger.kernel.org
+Cc:     skt-results-master@redhat.com, Yi Zhang <yi.zhang@redhat.com>,
+        Memory Management <mm-qe@redhat.com>,
+        Jan Stancek <jstancek@redhat.com>,
+        Jianwen Ji <jiji@redhat.com>, Hangbin Liu <haliu@redhat.com>,
+        Ondrej Moris <omoris@redhat.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Changhui Zhong <czhong@redhat.com>,
+        Xiong Zhou <xzhou@redhat.com>,
+        Rachel Sibley <rasibley@redhat.com>,
+        David Arcari <darcari@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi ,
 
-syzbot found the following issue on:
+I reported a bug in bugzilla.kernel.org for geneve issue:
+https://bugzilla.kernel.org/show_bug.cgi?id=3D210569
 
-HEAD commit:    e87297fa Merge tag 'drm-fixes-2020-12-04' of git://anongit..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17d9c9d3500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e49433cfed49b7d9
-dashboard link: https://syzkaller.appspot.com/bug?extid=c3a167b5615df4ccd7fb
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=171f77e3500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1603469b500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+c3a167b5615df4ccd7fb@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 8533 at net/mac80211/offchannel.c:401 ieee80211_start_next_roc+0x1f4/0x240 net/mac80211/offchannel.c:401
-Modules linked in:
-CPU: 1 PID: 8533 Comm: kworker/u4:1 Not tainted 5.10.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy4 ieee80211_scan_work
-RIP: 0010:ieee80211_start_next_roc+0x1f4/0x240 net/mac80211/offchannel.c:401
-Code: d0 21 00 00 48 89 ef 48 89 c2 e8 77 7f 0b 00 5b 5d e9 d0 f4 28 f9 e8 cb f4 28 f9 48 89 ef e8 c3 73 ff ff eb 8d e8 bc f4 28 f9 <0f> 0b eb 84 48 c7 c7 9c df ec 8c e8 1c 73 6a f9 e9 2f fe ff ff e8
-RSP: 0018:ffffc9000167fb80 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffffffff88470edd
-RDX: ffff88801f861a40 RSI: ffffffff88470fc4 RDI: 0000000000000001
-RBP: ffff8880292c0c80 R08: 0000000000000001 R09: ffffffff8ebaf727
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
-R13: dffffc0000000000 R14: 0000000000000001 R15: ffff8880292c25b8
-FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fff0e86f950 CR3: 000000001d954000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __ieee80211_scan_completed+0x602/0xed0 net/mac80211/scan.c:477
- ieee80211_scan_work+0x3dd/0x1a90 net/mac80211/scan.c:1119
- process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Thanks & Best Regards,
+Jianlin Shi
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Tue, Dec 8, 2020 at 9:38 AM Jianlin Shi <jishi@redhat.com> wrote:
+>
+> Hi ,
+>
+>
+> On Tue, Dec 8, 2020 at 8:25 AM CKI Project <cki-project@redhat.com> wrote=
+:
+>>
+>>
+>> Hello,
+>>
+>> We ran automated tests on a recent commit from this kernel tree:
+>>
+>>        Kernel repo: https://git.kernel.org/pub/scm/linux/kernel/git/torv=
+alds/linux.git
+>>             Commit: 7059c2c00a21 - Merge branch 'for-linus' of git://git=
+.kernel.org/pub/scm/linux/kernel/git/dtor/input
+>>
+>> The results of these automated tests are provided below.
+>>
+>>     Overall result: FAILED (see details below)
+>>              Merge: OK
+>>            Compile: OK
+>>  Selftests compile: FAILED
+>>              Tests: FAILED
+>>
+>>     Pipeline: https://xci32.lab.eng.rdu2.redhat.com/cki-project/cki-pipe=
+line/-/pipelines/619303
+>>
+>>     Check out our dashboard including known failures tagged by our bot a=
+t
+>>       https://datawarehouse.internal.cki-project.org/kcidb/revisions/774=
+8
+>>
+>> One or more kernel tests failed:
+>>
+>>     s390x:
+>>      =E2=9D=8C LTP
+>>      =E2=9D=8C Networking tunnel: geneve basic test
+>>
+>>     ppc64le:
+>>      =E2=9D=8C Boot test
+>>      =E2=9D=8C LTP
+>>      =E2=9D=8C Networking tunnel: geneve basic test
+>>
+>>     aarch64:
+>>      =E2=9D=8C storage: software RAID testing
+>>      =E2=9D=8C LTP
+>>      =E2=9D=8C Networking tunnel: geneve basic test
+>>
+>>     x86_64:
+>>      =E2=9D=8C LTP
+>>      =E2=9D=8C Networking tunnel: geneve basic test
+>
+>
+> the basic traffic over geneve would fail, could you help to check. Should=
+ we report a bug or not?
+>
+>
+> ip netns add client
+>
+> ip netns add server
+>
+>
+>
+> ip link add veth0_c type veth peer name veth0_s
+>
+> ip link set veth0_c netns client
+>
+> ip link set veth0_s netns server
+>
+>
+>
+> ip netns exec client ip link set lo up
+>
+> ip netns exec client ip link set veth0_c up
+>
+>
+>
+> ip netns exec server ip link set lo up
+>
+> ip netns exec server ip link set veth0_s up
+>
+>
+>
+>
+>
+> ip netns exec client ip addr add 2000::1/64 dev veth0_c
+>
+> ip netns exec client ip addr add 10.10.0.1/24 dev veth0_c
+>
+>
+>
+> ip netns exec server ip addr add 2000::2/64 dev veth0_s
+>
+> ip netns exec server ip addr add 10.10.0.2/24 dev veth0_s
+>
+>
+>
+> ip netns exec client ping 10.10.0.2 -c 2
+>
+> ip netns exec client ping6 2000::2 -c 2
+>
+>
+>
+> ip netns exec client ip link add geneve1 type geneve vni 1234 remote 10.1=
+0.0.2 ttl 64
+>
+> ip netns exec server ip link add geneve1 type geneve vni 1234 remote 10.1=
+0.0.1 ttl 64
+>
+>
+>
+> ip netns exec client ip link set geneve1 up
+>
+> ip netns exec client ip addr add 1.1.1.1/24 dev geneve1
+>
+> ip netns exec server ip link set geneve1 up
+>
+> ip netns exec server ip addr add 1.1.1.2/24 dev geneve1
+> ip netns exec client ping 1.1.1.2 -c 3
+>
+>
+>>
+>>      =E2=9D=8C storage: software RAID testing
+>>
+>> We hope that these logs can help you find the problem quickly. For the f=
+ull
+>> detail on our testing procedures, please scroll to the bottom of this me=
+ssage.
+>>
+>> Please reply to this email if you have any questions about the tests tha=
+t we
+>> ran or if you have any suggestions on how to make future tests more effe=
+ctive.
+>>
+>>         ,-.   ,-.
+>>        ( C ) ( K )  Continuous
+>>         `-',-.`-'   Kernel
+>>           ( I )     Integration
+>>            `-'
+>> ________________________________________________________________________=
+______
+>>
+>> Compile testing
+>> ---------------
+>>
+>> We compiled the kernel for 4 architectures:
+>>
+>>     aarch64:
+>>       make options: make -j30 INSTALL_MOD_STRIP=3D1 targz-pkg
+>>
+>>     ppc64le:
+>>       make options: make -j30 INSTALL_MOD_STRIP=3D1 targz-pkg
+>>
+>>     s390x:
+>>       make options: make -j30 INSTALL_MOD_STRIP=3D1 targz-pkg
+>>
+>>     x86_64:
+>>       make options: make -j30 INSTALL_MOD_STRIP=3D1 targz-pkg
+>>
+>>
+>> We built the following selftests:
+>>
+>>   x86_64:
+>>       net: OK
+>>       bpf: fail
+>>       install and packaging: OK
+>>
+>> You can find the full log (build-selftests.log) in the artifact storage =
+above.
+>>
+>>
+>> Hardware testing
+>> ----------------
+>> All the testing jobs are listed here:
+>>
+>>   https://beaker.engineering.redhat.com/jobs/?jobsearch-0.table=3DWhiteb=
+oard&jobsearch-0.operation=3Dcontains&jobsearch-0.value=3Dcki%40gitlab%3A61=
+9303
+>>
+>> We booted each kernel and ran the following tests:
+>>
+>>   aarch64:
+>>     Host 1: https://beaker.engineering.redhat.com/recipes/9156933
+>>        =E2=9C=85 Boot test
+>>        =E2=9C=85 selinux-policy: serge-testsuite
+>>        =E2=9D=8C storage: software RAID testing
+>>        =E2=9C=85 stress: stress-ng
+>>         =E2=9D=8C xfstests - ext4
+>>         =E2=9C=85 xfstests - xfs
+>>         =E2=9C=85 xfstests - btrfs
+>>         =E2=9D=8C IPMI driver test
+>>         =E2=9C=85 IPMItool loop stress test
+>>         =E2=9C=85 Storage blktests
+>>         =E2=9C=85 Storage block - filesystem fio test
+>>         =E2=9C=85 Storage block - queue scheduler test
+>>         =E2=9C=85 Storage nvme - tcp
+>>         =E2=9C=85 Storage: swraid mdadm raid_module test
+>>
+>>     Host 2: https://beaker.engineering.redhat.com/recipes/9156932
+>>        =E2=9C=85 Boot test
+>>        =E2=9C=85 ACPI table test
+>>        =E2=9C=85 ACPI enabled test
+>>        =E2=9D=8C LTP
+>>        =E2=9C=85 Loopdev Sanity
+>>        =E2=9C=85 Memory: fork_mem
+>>        =E2=9C=85 Memory function: memfd_create
+>>        =E2=9C=85 AMTU (Abstract Machine Test Utility)
+>>        =E2=9C=85 Networking bridge: sanity
+>>        =E2=9C=85 Networking socket: fuzz
+>>        =E2=9C=85 Networking: igmp conformance test
+>>        =E2=9C=85 Networking route: pmtu
+>>        =E2=9C=85 Networking route_func - local
+>>        =E2=9C=85 Networking route_func - forward
+>>        =E2=9C=85 Networking TCP: keepalive test
+>>        =E2=9C=85 Networking UDP: socket
+>>        =E2=9D=8C Networking tunnel: geneve basic test
+>>        =E2=9C=85 Networking tunnel: gre basic
+>>        =E2=9C=85 L2TP basic test
+>>        =E2=9C=85 Networking tunnel: vxlan basic
+>>        =E2=9C=85 Networking ipsec: basic netns - transport
+>>        =E2=9C=85 Networking ipsec: basic netns - tunnel
+>>        =E2=9C=85 Libkcapi AF_ALG test
+>>        =E2=9C=85 pciutils: update pci ids test
+>>        =E2=9C=85 ALSA PCM loopback test
+>>        =E2=9C=85 ALSA Control (mixer) Userspace Element test
+>>        =E2=9C=85 storage: SCSI VPD
+>>         =E2=9C=85 CIFS Connectathon
+>>         =E2=9C=85 POSIX pjd-fstest suites
+>>         =E2=9C=85 Firmware test suite
+>>         =E2=9C=85 jvm - jcstress tests
+>>         =E2=9C=85 Memory function: kaslr
+>>         =E2=9C=85 Ethernet drivers sanity
+>>         =E2=9C=85 Networking firewall: basic netfilter test
+>>         =E2=9C=85 audit: audit testsuite test
+>>         =E2=9C=85 trace: ftrace/tracer
+>>         =E2=9C=85 kdump - kexec_boot
+>>
+>>   ppc64le:
+>>     Host 1: https://beaker.engineering.redhat.com/recipes/9156935
+>>        =E2=9D=8C Boot test
+>>        =E2=9A=A1=E2=9A=A1=E2=9A=A1 selinux-policy: serge-testsuite
+>>        =E2=9A=A1=E2=9A=A1=E2=9A=A1 storage: software RAID testing
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 xfstests - ext4
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 xfstests - xfs
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 xfstests - btrfs
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 IPMI driver test
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 IPMItool loop stress test
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage blktests
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage block - filesystem fio test
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage block - queue scheduler test
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage nvme - tcp
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage: swraid mdadm raid_module te=
+st
+>>
+>>     Host 2: https://beaker.engineering.redhat.com/recipes/9156934
+>>        =E2=9C=85 Boot test
+>>        =E2=9D=8C LTP
+>>        =E2=9C=85 Loopdev Sanity
+>>        =E2=9C=85 Memory: fork_mem
+>>        =E2=9C=85 Memory function: memfd_create
+>>        =E2=9C=85 AMTU (Abstract Machine Test Utility)
+>>        =E2=9C=85 Networking bridge: sanity
+>>        =E2=9C=85 Networking socket: fuzz
+>>        =E2=9C=85 Networking route: pmtu
+>>        =E2=9C=85 Networking route_func - local
+>>        =E2=9C=85 Networking route_func - forward
+>>        =E2=9C=85 Networking TCP: keepalive test
+>>        =E2=9C=85 Networking UDP: socket
+>>        =E2=9D=8C Networking tunnel: geneve basic test
+>>        =E2=9C=85 Networking tunnel: gre basic
+>>        =E2=9C=85 L2TP basic test
+>>        =E2=9C=85 Networking tunnel: vxlan basic
+>>        =E2=9C=85 Networking ipsec: basic netns - tunnel
+>>        =E2=9C=85 Libkcapi AF_ALG test
+>>        =E2=9C=85 pciutils: update pci ids test
+>>        =E2=9C=85 ALSA PCM loopback test
+>>        =E2=9C=85 ALSA Control (mixer) Userspace Element test
+>>         =E2=9C=85 CIFS Connectathon
+>>         =E2=9C=85 POSIX pjd-fstest suites
+>>         =E2=9C=85 jvm - jcstress tests
+>>         =E2=9C=85 Memory function: kaslr
+>>         =E2=9C=85 Ethernet drivers sanity
+>>         =E2=9C=85 Networking firewall: basic netfilter test
+>>         =E2=9C=85 audit: audit testsuite test
+>>         =E2=9C=85 trace: ftrace/tracer
+>>
+>>   s390x:
+>>     Host 1: https://beaker.engineering.redhat.com/recipes/9156940
+>>        =E2=9C=85 Boot test
+>>        =E2=9C=85 selinux-policy: serge-testsuite
+>>        =E2=9C=85 stress: stress-ng
+>>         =E2=9C=85 Storage blktests
+>>         =E2=9D=8C Storage nvme - tcp
+>>         =E2=9C=85 Storage: swraid mdadm raid_module test
+>>
+>>     Host 2: https://beaker.engineering.redhat.com/recipes/9156939
+>>        =E2=9C=85 Boot test
+>>        =E2=9D=8C LTP
+>>        =E2=9C=85 Loopdev Sanity
+>>        =E2=9C=85 Memory: fork_mem
+>>        =E2=9C=85 Memory function: memfd_create
+>>        =E2=9C=85 AMTU (Abstract Machine Test Utility)
+>>        =E2=9C=85 Networking bridge: sanity
+>>        =E2=9C=85 Networking route: pmtu
+>>        =E2=9C=85 Networking route_func - local
+>>        =E2=9C=85 Networking route_func - forward
+>>        =E2=9C=85 Networking TCP: keepalive test
+>>        =E2=9C=85 Networking UDP: socket
+>>        =E2=9D=8C Networking tunnel: geneve basic test
+>>        =E2=9C=85 Networking tunnel: gre basic
+>>        =E2=9C=85 L2TP basic test
+>>        =E2=9C=85 Networking tunnel: vxlan basic
+>>        =E2=9C=85 Networking ipsec: basic netns - transport
+>>        =E2=9C=85 Networking ipsec: basic netns - tunnel
+>>        =E2=9C=85 Libkcapi AF_ALG test
+>>         =E2=9C=85 CIFS Connectathon
+>>         =E2=9C=85 POSIX pjd-fstest suites
+>>         =E2=9C=85 jvm - jcstress tests
+>>         =E2=9C=85 Memory function: kaslr
+>>         =E2=9C=85 Ethernet drivers sanity
+>>         =E2=9C=85 Networking firewall: basic netfilter test
+>>         =E2=9D=8C audit: audit testsuite test
+>>         =E2=9C=85 trace: ftrace/tracer
+>>
+>>   x86_64:
+>>     Host 1: https://beaker.engineering.redhat.com/recipes/9156936
+>>        =E2=9C=85 Boot test
+>>        =E2=9C=85 ACPI table test
+>>        =E2=9D=8C LTP
+>>        =E2=9C=85 Loopdev Sanity
+>>        =E2=9C=85 Memory: fork_mem
+>>        =E2=9C=85 Memory function: memfd_create
+>>        =E2=9C=85 AMTU (Abstract Machine Test Utility)
+>>        =E2=9C=85 Networking bridge: sanity
+>>        =E2=9C=85 Networking socket: fuzz
+>>        =E2=9C=85 Networking: igmp conformance test
+>>        =E2=9C=85 Networking route: pmtu
+>>        =E2=9C=85 Networking route_func - local
+>>        =E2=9C=85 Networking route_func - forward
+>>        =E2=9C=85 Networking TCP: keepalive test
+>>        =E2=9C=85 Networking UDP: socket
+>>        =E2=9D=8C Networking tunnel: geneve basic test
+>>        =E2=9C=85 Networking tunnel: gre basic
+>>        =E2=9C=85 L2TP basic test
+>>        =E2=9C=85 Networking tunnel: vxlan basic
+>>        =E2=9C=85 Networking ipsec: basic netns - transport
+>>        =E2=9C=85 Networking ipsec: basic netns - tunnel
+>>        =E2=9C=85 Libkcapi AF_ALG test
+>>        =E2=9C=85 pciutils: sanity smoke test
+>>        =E2=9C=85 pciutils: update pci ids test
+>>        =E2=9C=85 ALSA PCM loopback test
+>>        =E2=9C=85 ALSA Control (mixer) Userspace Element test
+>>        =E2=9C=85 storage: SCSI VPD
+>>         =E2=9C=85 CIFS Connectathon
+>>         =E2=9C=85 POSIX pjd-fstest suites
+>>         =E2=9C=85 Firmware test suite
+>>         =E2=9C=85 jvm - jcstress tests
+>>         =E2=9C=85 Memory function: kaslr
+>>         =E2=9C=85 Ethernet drivers sanity
+>>         =E2=9C=85 Networking firewall: basic netfilter test
+>>         =E2=9C=85 audit: audit testsuite test
+>>         =E2=9C=85 trace: ftrace/tracer
+>>         =E2=9C=85 kdump - kexec_boot
+>>
+>>     Host 2: https://beaker.engineering.redhat.com/recipes/9156937
+>>        =E2=9C=85 Boot test
+>>         =E2=9C=85 kdump - sysrq-c
+>>         =E2=9C=85 kdump - file-load
+>>
+>>     Host 3: https://beaker.engineering.redhat.com/recipes/9156938
+>>
+>>        =E2=9A=A1 Internal infrastructure issues prevented one or more te=
+sts (marked
+>>        with =E2=9A=A1=E2=9A=A1=E2=9A=A1) from running on this architectu=
+re.
+>>        This is not the fault of the kernel that was tested.
+>>
+>>        =E2=9C=85 Boot test
+>>        =E2=9C=85 selinux-policy: serge-testsuite
+>>        =E2=9D=8C storage: software RAID testing
+>>        =E2=9C=85 stress: stress-ng
+>>         =E2=9D=8C CPU: Frequency Driver Test
+>>         =E2=9C=85 CPU: Idle Test
+>>         =E2=9D=8C xfstests - ext4
+>>         =E2=9C=85 xfstests - xfs
+>>         =E2=9C=85 xfstests - btrfs
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 IPMI driver test
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 IPMItool loop stress test
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 power-management: cpupower/sanity te=
+st
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage blktests
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage block - filesystem fio test
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage block - queue scheduler test
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage nvme - tcp
+>>         =E2=9A=A1=E2=9A=A1=E2=9A=A1 Storage: swraid mdadm raid_module te=
+st
+>>
+>>   Test sources: https://gitlab.com/cki-project/kernel-tests
+>>     Pull requests are welcome for new tests or improvements to existing =
+tests!
+>>
+>> Aborted tests
+>> -------------
+>> Tests that didn't complete running successfully are marked with =E2=9A=
+=A1=E2=9A=A1=E2=9A=A1.
+>> If this was caused by an infrastructure issue, we try to mark that
+>> explicitly in the report.
+>>
+>> Waived tests
+>> ------------
+>> If the test run included waived tests, they are marked with . Such tests=
+ are
+>> executed but their results are not taken into account. Tests are waived =
+when
+>> their results are not reliable enough, e.g. when they're just introduced=
+ or are
+>> being fixed.
+>>
+>> Testing timeout
+>> ---------------
+>> We aim to provide a report within reasonable timeframe. Tests that haven=
+'t
+>> finished running yet are marked with =E2=8F=B1.
+>>
+>> Reproducing results
+>> -------------------
+>> Click on a link below to access a web page that allows you to adjust the
+>> Beaker job and re-run any failed tests. These links are generated for
+>> failed or aborted tests that are not waived. Please adjust the Beaker
+>> job whiteboard string in the web page so that it is easy for you to find
+>> and so that it is not confused with a regular CKI job.
+>>
+>> After clicking the "Submit the job!" button, a dialog will open that sho=
+uld
+>> contain a link to the newly submitted Beaker job.
+>>
+>>   https://beaker-respin.internal.cki-project.org/respin?whiteboard=3Dres=
+pin_job_4794082&recipe_id=3D9156933&recipe_id=3D9156932&job_id=3D4794082
+>>   https://beaker-respin.internal.cki-project.org/respin?whiteboard=3Dres=
+pin_job_4794083&recipe_id=3D9156935&recipe_id=3D9156934&job_id=3D4794083
+>>   https://beaker-respin.internal.cki-project.org/respin?whiteboard=3Dres=
+pin_job_4794085&recipe_id=3D9156939&job_id=3D4794085
+>>   https://beaker-respin.internal.cki-project.org/respin?whiteboard=3Dres=
+pin_job_4794084&recipe_id=3D9156936&recipe_id=3D9156938&job_id=3D4794084
+>>
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
