@@ -2,101 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8CC12D3B5C
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 07:19:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19A1B2D3B62
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 07:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727648AbgLIGTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 01:19:05 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:27960 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727248AbgLIGS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 01:18:59 -0500
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B96CEEI003098;
-        Wed, 9 Dec 2020 01:18:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=Hz9gTquuKb3ajrCO3XkOvA6lNzISLdwW/yC9WKSbZls=;
- b=ZHUF7O0tq7+jCkHR33NLPy5G8K9t5cxWeo8HIm0rUwMAPJBEuEw6Gs1wg2o6+f72tpyk
- sqdNaJqQybxgAPpEhbWK/m1ehgOSLxcl6dSHn78Q8/vXMy3IR4yyHS5tTuVa1GdBNPvU
- LN//8PYju/wGpBhnX8V7GiH+j+0iZWwlc2voa9foNp2lDNVzRLFYqskabk9cOg5KwLvO
- 5RxhixkI3ges32K/MNSe1Ahm9iOaN7SjVPVqlwuyvWIqSovCVg9mcXyusVQp22eqV6xt
- Ck5s43JjmXEBloG+8xFFp+FH3Ai53yF1LRPMLy4s1uZezD2Hb9i1QtbScHGJbSyjrOKL Pw== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 359wwkthfq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Dec 2020 01:18:17 -0500
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B96C7RF008861;
-        Wed, 9 Dec 2020 06:18:16 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma02dal.us.ibm.com with ESMTP id 3581u9vnjw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Dec 2020 06:18:16 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B96IEsB12321492
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Dec 2020 06:18:14 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C91BB6A051;
-        Wed,  9 Dec 2020 06:18:14 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 432F26A047;
-        Wed,  9 Dec 2020 06:18:14 +0000 (GMT)
-Received: from pompom.ibm.com (unknown [9.85.139.133])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  9 Dec 2020 06:18:14 +0000 (GMT)
-From:   Lijun Pan <ljp@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Lijun Pan <ljp@linux.ibm.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>
-Subject: [PATCH net-next 3/3] use __netdev_notify_peers in hyperv
-Date:   Wed,  9 Dec 2020 00:18:11 -0600
-Message-Id: <20201209061811.48524-4-ljp@linux.ibm.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20201209061811.48524-1-ljp@linux.ibm.com>
-References: <20201209061811.48524-1-ljp@linux.ibm.com>
+        id S1727988AbgLIGVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 01:21:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59228 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726718AbgLIGVp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 01:21:45 -0500
+Date:   Wed, 9 Dec 2020 08:21:00 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607494864;
+        bh=/JNDa/e+VUwp3PfZgTT/W850EJGQatfgwghGNsJk2LQ=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ji0d8dHw/kMB7xyQ82EN1q6oQoQAasEjgmwq5I6KApROX2vY9gOZlP+if/FvCyTWF
+         rXbBXFTa6zEVoPfMXv8WcD6LL4vHR3nfo5iml9n6N6HqbgTvDMMJfOHKXJ1bFg9AGv
+         LK26PAN/WcWIr8R+X8WpIU4ToKbbQdDNWnsoSjP/b8TXtP948naZJGjt4qEcSYML+j
+         PNmInj2LwZP8tbhzmEtQm71r0DW0TCZqUgD+z5o2ns8MNgsCWGB79atKwHj8yAMspE
+         UtfOTTe7GATdFgRn21B0M1J60Neq7QCUg3H3mk3khw19AnYlZh7VIIaSw94onDNjR/
+         wbljBNs3OX4oQ==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Zou Wei <zou_wei@huawei.com>, saeedm@nvidia.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] net/mlx5_core: remove unused including
+ <generated/utsrelease.h>
+Message-ID: <20201209062100.GK4430@unreal>
+References: <1607343240-39155-1-git-send-email-zou_wei@huawei.com>
+ <20201208112226.1bb31229@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-09_03:2020-12-08,2020-12-09 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=1 phishscore=0 adultscore=0 malwarescore=0 spamscore=0
- mlxscore=0 lowpriorityscore=0 mlxlogscore=999 bulkscore=0 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012090037
+In-Reply-To: <20201208112226.1bb31229@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Start to use the lockless version of netdev_notify_peers.
+On Tue, Dec 08, 2020 at 11:22:26AM -0800, Jakub Kicinski wrote:
+> On Mon, 7 Dec 2020 20:14:00 +0800 Zou Wei wrote:
+> > Remove including <generated/utsrelease.h> that don't need it.
+> >
+> > Signed-off-by: Zou Wei <zou_wei@huawei.com>
+> > ---
+> >  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 1 -
+> >  1 file changed, 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> > index 989c70c..82ecc161 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> > @@ -30,7 +30,6 @@
+> >   * SOFTWARE.
+> >   */
+> >
+> > -#include <generated/utsrelease.h>
+> >  #include <linux/mlx5/fs.h>
+> >  #include <net/switchdev.h>
+> >  #include <net/pkt_cls.h>
 
-Cc: Haiyang Zhang <haiyangz@microsoft.com>
-Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
----
- drivers/net/hyperv/netvsc_drv.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Jakub,
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index d17bbc75f5e7..4e3dac7bb944 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2130,10 +2130,10 @@ static void netvsc_link_change(struct work_struct *w)
- 		break;
- 	}
- 
--	rtnl_unlock();
--
- 	if (notify)
--		netdev_notify_peers(net);
-+		__netdev_notify_peers(net);
-+
-+	rtnl_unlock();
- 
- 	/* link_watch only sends one notification with current state per
- 	 * second, handle next reconfig event in 2 seconds.
--- 
-2.23.0
+You probably doesn't have latest net-next.
 
+In the commit 17a7612b99e6 ("net/mlx5_core: Clean driver version and
+name"), I removed "strlcpy(drvinfo->version, UTS_RELEASE,
+sizeof(drvinfo->version));" line.
+
+The patch is ok, but should have Fixes line.
+Fixes: 17a7612b99e6 ("net/mlx5_core: Clean driver version and name")
+
+Thanks
+
+>
+>
+> drivers/net/ethernet/mellanox/mlx5/core/en_rep.c: In function ‘mlx5e_rep_get_drvinfo’:
+> drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:66:28: error: ‘UTS_RELEASE’ undeclared (first use in this function); did you mean ‘CSS_RELEASED’?
+>    66 |  strlcpy(drvinfo->version, UTS_RELEASE, sizeof(drvinfo->version));
+>       |                            ^~~~~~~~~~~
+>       |                            CSS_RELEASED
+> drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:66:28: note: each undeclared identifier is reported only once for each function it appears in
+> make[6]: *** [drivers/net/ethernet/mellanox/mlx5/core/en_rep.o] Error 1
+> make[5]: *** [drivers/net/ethernet/mellanox/mlx5/core] Error 2
+> make[4]: *** [drivers/net/ethernet/mellanox] Error 2
+> make[3]: *** [drivers/net/ethernet] Error 2
+> make[2]: *** [drivers/net] Error 2
+> make[2]: *** Waiting for unfinished jobs....
+> make[1]: *** [drivers] Error 2
+> make: *** [__sub-make] Error 2
