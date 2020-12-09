@@ -2,77 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ED7C2D3B4D
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 07:14:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AF2F2D3B5B
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 07:19:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728018AbgLIGLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 01:11:42 -0500
-Received: from foss.arm.com ([217.140.110.172]:57976 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725878AbgLIGLj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 01:11:39 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 524C513D5;
-        Tue,  8 Dec 2020 22:10:54 -0800 (PST)
-Received: from entos-thunderx2-desktop.shanghai.arm.com (entos-thunderx2-desktop.shanghai.arm.com [10.169.212.215])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1F1983F66B;
-        Tue,  8 Dec 2020 22:10:47 -0800 (PST)
-From:   Jianyong Wu <jianyong.wu@arm.com>
-To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
-        suzuki.poulose@arm.com, Andre.Przywara@arm.com,
-        steven.price@arm.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve.Capper@arm.com, justin.he@arm.com, jianyong.wu@arm.com,
-        nd@arm.com
-Subject: [PATCH v16 9/9] arm64: Add kvm capability check extension for ptp_kvm
-Date:   Wed,  9 Dec 2020 14:09:32 +0800
-Message-Id: <20201209060932.212364-10-jianyong.wu@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201209060932.212364-1-jianyong.wu@arm.com>
-References: <20201209060932.212364-1-jianyong.wu@arm.com>
+        id S1727051AbgLIGS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 01:18:56 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:15160 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725878AbgLIGSz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 01:18:55 -0500
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B95cGTh111611
+        for <netdev@vger.kernel.org>; Wed, 9 Dec 2020 01:18:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=LKe+xdz2PdFcE1oixNWGESeCsb0Uy5wyY41bcbK8/uA=;
+ b=ry7okDYs4YCbwZ85Ew5iGGgicapRZYrop6Lat92LOY2lcavx4IEBDlRQ9GaDB5jFz03/
+ wy9rYd6d1ytzUygBWohhEMKlI3AP7OYs8iHivdwxmHfN5ISJTL0kRH3DZCg1bY0CPR0U
+ 68JLuv0eRnJ+hWnhJzkoLcvMae9FJI2lt+QOHFXwN39Q+7WQybKkrMPGIrhuhYAdXg9X
+ 5IznMy4LcYkmjZBDVWaXg8rGFTxd+8u2A98BZUsNiup2xZUflVF7gI03YMMpsPm5CEXu
+ pphpgQbUNx5QphTeLCCXSdh6d7aeXoYqdzHu8XpBZLib06FTl9wqpi+ZuzCZVgbuwTq6 kA== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 35ahbdty8c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 01:18:15 -0500
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B96BwJf031082
+        for <netdev@vger.kernel.org>; Wed, 9 Dec 2020 06:18:14 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma01dal.us.ibm.com with ESMTP id 3581u9cnmk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 06:18:14 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B96ICdM18022756
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Dec 2020 06:18:12 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 910426A04D;
+        Wed,  9 Dec 2020 06:18:12 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 21B176A047;
+        Wed,  9 Dec 2020 06:18:12 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.139.133])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Dec 2020 06:18:11 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net-next 0/3] lockless version of netdev_notify_peers
+Date:   Wed,  9 Dec 2020 00:18:08 -0600
+Message-Id: <20201209061811.48524-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-09_03:2020-12-08,2020-12-09 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 suspectscore=1
+ mlxlogscore=929 malwarescore=0 clxscore=1015 priorityscore=1501 mlxscore=0
+ bulkscore=0 spamscore=0 impostorscore=0 lowpriorityscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012090037
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let userspace check if there is kvm ptp service in host.
-Before VMs migrate to another host, VMM may check if this
-cap is available to determine the next behavior.
+This series introduce the lockless version of netdev_notify_peers
+and then apply it to the relevant drivers.
 
-Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-Suggested-by: Marc Zyngier <maz@kernel.org>
----
- arch/arm64/kvm/arm.c     | 1 +
- include/uapi/linux/kvm.h | 1 +
- 2 files changed, 2 insertions(+)
+In v1, a more appropriate name __netdev_notify_peers is used;
+netdev_notify_peers is converted to call the new helper. 
 
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index f60f4a5e1a22..1bb1f64f9bb5 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -199,6 +199,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_ARM_INJECT_EXT_DABT:
- 	case KVM_CAP_SET_GUEST_DEBUG:
- 	case KVM_CAP_VCPU_ATTRIBUTES:
-+	case KVM_CAP_PTP_KVM:
- 		r = 1;
- 		break;
- 	case KVM_CAP_ARM_SET_DEVICE_ADDR:
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index ca41220b40b8..797c40bbc31f 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1053,6 +1053,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_X86_USER_SPACE_MSR 188
- #define KVM_CAP_X86_MSR_FILTER 189
- #define KVM_CAP_ENFORCE_PV_FEATURE_CPUID 190
-+#define KVM_CAP_PTP_KVM 191
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
+Lijun Pan (3):
+  net: core: introduce __netdev_notify_peers
+  use __netdev_notify_peers in ibmvnic
+  use __netdev_notify_peers in hyperv
+
+ drivers/net/ethernet/ibm/ibmvnic.c |  9 +++------
+ drivers/net/hyperv/netvsc_drv.c    |  6 +++---
+ include/linux/netdevice.h          |  1 +
+ net/core/dev.c                     | 22 ++++++++++++++++++++--
+ 4 files changed, 27 insertions(+), 11 deletions(-)
+
 -- 
-2.17.1
+2.23.0
 
