@@ -2,110 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C51D22D4400
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 15:14:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBC6B2D440B
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 15:19:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732812AbgLIOMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 09:12:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
+        id S1732873AbgLIORh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 09:17:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729294AbgLIOM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 09:12:26 -0500
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2A7C0613CF
-        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 06:11:44 -0800 (PST)
-Received: by mail-lf1-x141.google.com with SMTP id a12so3283600lfl.6
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 06:11:44 -0800 (PST)
+        with ESMTP id S1729725AbgLIORh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 09:17:37 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D5CC0613D6
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 06:16:56 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id g20so2367020ejb.1
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 06:16:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=KqQBQ8JEzuTx6ws8mjH1rnUiDuokMJvmtk0iwFMRJEI=;
-        b=DeUlVCq29VRyUIVjV6zQtsE35mU5ulnm73WxZdwOIyH5wXbq6xahlqiVLgs876Sjjd
-         MBMFjAH5t/oZeJhf3oFtrOWjFDYa7zDvoy60Uno2Dt49ncVHZVDqQ71oj++ofR7IPPVD
-         ca/fNT6UcYQrlp0/UrfRdc54Qv8kXlopeMQ/qIEe4vrK0Vhs0XnxlsExsx0j6ImQBta2
-         PMZEwnk7Sg08M8bKDHkaejHbbLovwTCcQ7TUWI/G9psv8Ro7YrKbt/K/nunrn7Qc4nsq
-         0PFvhy/Z0X3lmo3wnlMOoaoXN12X1LwJlobee6eLlvYtuRcz8JeBjs89z7I1nDW5XG1z
-         3MYg==
+        d=essensium.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=0BawNQzW+1YSRYczgI/IFlRkYH5dyypysXXzW34PR7E=;
+        b=dkyx9kMe5DMSqgUmXwOtMhFctIqTIUtmaN+ySfS8QZ1drhelQDc8Wi4MDwAhkK2ITC
+         SQT+Isol2VuZPjLqfFSvL/jRAc24jhxwIEgQiSRKea0lmw2Mo8awtzjKWRM1Btg0r+q6
+         8vaBBsXnXKK5iHIy3DiX/M63QbVUIryHytQppdPJedtYA++yZrfkBOtIvdUQDFRQUH6T
+         fozdx5fy0En6iwLV1WqtayPKGpr+cv4iuVgYNwvwcnXmaYe0GILNPFrw71SAk/OQV1Wh
+         8+r4OtsOGO4STSTT2fa+JRRBKfMfiqesI9VF2uxtVkuKMOgeviKvVC3aviOsjL4UctF7
+         VSaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=KqQBQ8JEzuTx6ws8mjH1rnUiDuokMJvmtk0iwFMRJEI=;
-        b=oFSKY9m/XOqssPbZ/d3xxtsqLCp+0TQhGqYDVi6AoY4VqWBIihH0ktl7S3Q8HKri6l
-         1yqaMVuAbEP0ExsdeAf0/iJgwUB8/gUZE0Yc8V2NVSevh1J/VVJefR8QXnftQdTDITQV
-         +0fP/bN+uZ/0UPRUL1QKIT193jBrK7GgvAJdQetiDDf8q4Thjd8ikcC6eMTgQkvvleiM
-         IOnGfqApdqTRi0ATTB9MJToOmwN6FGHhIaC5rZF+99+KlhQ0JmiEXAiKq+rUaC7t1kww
-         IvOdgJBpScWI3QUflO5AvuCO4lt5SUZoeMihVH5REW1uoxyk+fQtdNPwjQ5WW849kz7g
-         cuEA==
-X-Gm-Message-State: AOAM531OBtTtoY580MUnddyRi5dD0zJPihrvRZN5xzbfOcoslJICO/Zm
-        1ApggqoCllogqWWB7uLztlr/p9LNWFY/lhUn
-X-Google-Smtp-Source: ABdhPJzrkWlsoeUPqnFcCIZgNYwCoV7A4ClqyW/ebfgIqTgwwEQ7fhPWca2jDim6G5lP2Gm69nQygg==
-X-Received: by 2002:a19:6e4c:: with SMTP id q12mr1104085lfk.162.1607523102984;
-        Wed, 09 Dec 2020 06:11:42 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id a1sm182068lfg.282.2020.12.09.06.11.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 06:11:42 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-In-Reply-To: <20201209105326.boulnhj5hoaooppz@skbuf>
-References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-3-tobias@waldekranz.com> <20201208112350.kuvlaxqto37igczk@skbuf> <87mtyo5n40.fsf@waldekranz.com> <20201208163751.4c73gkdmy4byv3rp@skbuf> <87k0tr5q98.fsf@waldekranz.com> <20201209105326.boulnhj5hoaooppz@skbuf>
-Date:   Wed, 09 Dec 2020 15:11:41 +0100
-Message-ID: <87eejz5asi.fsf@waldekranz.com>
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0BawNQzW+1YSRYczgI/IFlRkYH5dyypysXXzW34PR7E=;
+        b=k63ISHc+LKJvqpXGqxnwGAgvSUZAE8JmIQTYT/U7BcM6UCPr94+RuZNyqabnOfN/zO
+         uZcKepVZwTZ1QkZQB+Rk3WNVHBFQdm0BMd53OHqeJEXQ6iJW2baMIPE0CNuI8FgMnXU4
+         KtXlwEynxIuJyfZIuFU6RuY0C5PQBsCmyvTrA8BxqUpJigiSoTS+5kADI5zalk9m+SeF
+         putQwosbqoxPWFxJdTmXwOMwK+1u5EJayZ3dJCo0SFHBHaxRTNsb9mU8A368B8GOtec3
+         fuhGdmA8naBbRQ8hAoQsEHTIKIsvdUKKE6ArxpSoJBbkgR+jb4aBfX5fEx0Crpmo/nq6
+         nvdQ==
+X-Gm-Message-State: AOAM533GCX3wBZ7BQMUR+AZeb3oqDXdY01SWGSDG+kuJ9kX2DpCfOaSL
+        7w1vrzeS4Gt4uX4IfQJ4QEJqVpsv5o/5Mw==
+X-Google-Smtp-Source: ABdhPJyUoz168raWJN7okvkHdEQFynLKIfbDBJSmvFlwAFMJcfpQxLxUBFZiUnoF5+QHV3lBIgl43w==
+X-Received: by 2002:a17:906:60d2:: with SMTP id f18mr2174495ejk.528.1607523415333;
+        Wed, 09 Dec 2020 06:16:55 -0800 (PST)
+Received: from [10.8.0.46] (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
+        by smtp.gmail.com with ESMTPSA id x9sm1622565ejd.99.2020.12.09.06.16.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Dec 2020 06:16:54 -0800 (PST)
+Subject: Re: [PATCH net 1/4] net: freescale/fman: Split the main resource
+ region reservation
+To:     Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20201203135039.31474-1-patrick.havelange@essensium.com>
+ <20201203135039.31474-2-patrick.havelange@essensium.com>
+ <AM6PR04MB39764190C3CC885EAA84E8B3ECF20@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <e488ed95-3672-fdcb-d678-fdd4eb9a8b4b@essensium.com>
+ <AM6PR04MB3976F905489C0CB2ECD1A6FAECCC0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+From:   Patrick Havelange <patrick.havelange@essensium.com>
+Message-ID: <8c28d03a-8831-650c-cf17-9a744d084479@essensium.com>
+Date:   Wed, 9 Dec 2020 15:16:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <AM6PR04MB3976F905489C0CB2ECD1A6FAECCC0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 09, 2020 at 12:53, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Wed, Dec 09, 2020 at 09:37:39AM +0100, Tobias Waldekranz wrote:
->> I will remove `struct dsa_lag` in v4.
->
-> Ok, thanks.
-> It would be nice if you could also make .port_lag_leave return an int code.
-
-Sure.
-
-> And I think that .port_lag_change passes more arguments than needed to
-> the driver.
-
-You mean the `struct netdev_lag_lower_state_info`? Fine by me, it was
-mostly to avoid hiding state from the driver if anyone needed it.
-
->> > I don't think the DSA switch tree is private to anyone.
+>>> area. I'm assuming this is the problem you are trying to address here,
+>>> besides the stack corruption issue.
 >>
->> Well I need somewhere to store the association from LAG netdev to LAG
->> ID. These IDs are shared by all chips in the tree. It could be
->> replicated on each ds of course, but that does not feel quite right.
->
-> The LAG ID does not have significance beyond the mv88e6xxx driver, does
-> it? And even there, it's just a number. You could recalculate all IDs
-> dynamically upon every join/leave, and they would be consistent by
-> virtue of the fact that you use a formula which ensures consistency
-> without storing the LAG ID anywhere. Like, say, the LAG ID is to be
-> determined by the first struct dsa_port in the DSA switch tree that has
-> dp->bond == lag_dev. The ID itself can be equal to (dp->ds->index *
-> MAX_NUM_PORTS + dp->index). All switches will agree on what is the first
-> dp in dst, since they iterate in the same way, and any LAG join/leave
-> will notify all of them. It has to be like this anyway.
+>> Yes exactly.
+>> I did not add this behaviour (having a main region and subdrivers using
+>> subregions), I'm just trying to correct what is already there.
+>> For example: this is some content of /proc/iomem for one board I'm
+>> working with, with the current existing code:
+>> ffe400000-ffe4fdfff : fman
+>>     ffe4e0000-ffe4e0fff : mac
+>>     ffe4e2000-ffe4e2fff : mac
+>>     ffe4e4000-ffe4e4fff : mac
+>>     ffe4e6000-ffe4e6fff : mac
+>>     ffe4e8000-ffe4e8fff : mac
+>>
+>> and now with my patches:
+>> ffe400000-ffe4fdfff : /soc@ffe000000/fman@400000
+>>     ffe400000-ffe480fff : fman
+>>     ffe488000-ffe488fff : fman-port
+>>     ffe489000-ffe489fff : fman-port
+>>     ffe48a000-ffe48afff : fman-port
+>>     ffe48b000-ffe48bfff : fman-port
+>>     ffe48c000-ffe48cfff : fman-port
+>>     ffe4a8000-ffe4a8fff : fman-port
+>>     ffe4a9000-ffe4a9fff : fman-port
+>>     ffe4aa000-ffe4aafff : fman-port
+>>     ffe4ab000-ffe4abfff : fman-port
+>>     ffe4ac000-ffe4acfff : fman-port
+>>     ffe4c0000-ffe4dffff : fman
+>>     ffe4e0000-ffe4e0fff : mac
+>>     ffe4e2000-ffe4e2fff : mac
+>>     ffe4e4000-ffe4e4fff : mac
+>>     ffe4e6000-ffe4e6fff : mac
+>>     ffe4e8000-ffe4e8fff : mac
+>>
+>>> While for the latter I think we can
+>>> put together a quick fix, for the former I'd like to take a bit of time
+>>> to select the best fix, if one is really needed. So, please, let's split
+>>> the two problems and first address the incorrect stack memory use.
+>>
+>> I have no idea how you can fix it without a (more correct this time)
+>> dummy region passed as parameter (and you don't want to use the first
+>> patch). But then it will be useless to do the call anyway, as it won't
+>> do any proper verification at all, so it could also be removed entirely,
+>> which begs the question, why do it at all in the first place (the
+>> devm_request_mem_region).
+>>
+>> I'm not an expert in that part of the code so feel free to correct me if
+>> I missed something.
+>>
+>> BR,
+>>
+>> Patrick H.
+> 
+> Hi, Patrick,
+> 
+> the DPAA entities are described in the device tree. Adding some hardcoding in
+> the driver is not really the solution for this problem. And I'm not sure we have
 
-This will not work for mv88e6xxx. The ID is not just an internal number
-used by the driver. If that was the case we could just as well use the
-LAG netdev pointer for this purpose. This ID is configured in hardware,
-and it is shared between blocks in the switch, we can not just
-dynamically change them. Neither can we use your formula since this is a
-4-bit field.
+I'm not seeing any problem here, the offsets used by the fman driver 
+were already there, I just reorganized them in 2 blocks.
 
-Another issue is how we are going to handle this in the tagger now,
-since we can no longer call dsa_lag_dev_by_id. I.e. with `struct
-dsa_lag` we could resolve the LAG ID (which is the only source
-information we have in the tag) to the corresponding netdev. This
-information is now only available in mv88e6xxx driver. I am not sure how
-I am supposed to conjure it up. Ideas?
+> a clear problem statement to start with. Can you help me on that part?
+
+- The current call to __devm_request_region in fman_port.c is not correct.
+
+One way to fix this is to use devm_request_mem_region, however this 
+requires that the main fman would not be reserving the whole region. 
+This leads to the second problem:
+- Make sure the main fman driver is not reserving the whole region.
+
+Is that clearer like this ?
+
+Patrick H.
+
+> 
+> Madalin
+> 
