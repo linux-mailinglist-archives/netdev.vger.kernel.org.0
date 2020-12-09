@@ -2,109 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 223592D45C8
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 374152D463D
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 17:02:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728826AbgLIPtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 10:49:53 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:55325 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726757AbgLIPtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 10:49:52 -0500
-Received: by mail-io1-f71.google.com with SMTP id j25so1507885iog.22
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 07:49:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=yeGmm0MG4HbaGBkCEsUlCG6OY5l6+vaGEd6w4DBQHNw=;
-        b=W/TH3DvV0zirZRE6+WsWG0f2g4I4OphMpR11PiO9fJYeUAVZUneo1NWI3HQzVhZYBj
-         WTJkstHMIYnUZ+P/sUSBV98Tfz08J8DA4TK3QLxkCB1UfycBMk+67CaeDLZmopI79ywI
-         K1hDKJ/eHSGLcnAFmGNGOLifxYPJv+GbIWbw3L02OqpSFdo6L08ly4C939JzU85qlq4v
-         Rx03lihlyL1pSIteWQtXnHCuoZRUlbW4s6XmVY+wHb6P795ub2RaUQqYTeOrAmHKEB5m
-         0i8hFfgUuoama4LsObvvK7k00jys8EQQHrSpQmRJKQuJ7kt5136nYA698kdRcFgzyJcw
-         ebBw==
-X-Gm-Message-State: AOAM532dJDHrP72dpljLSnyKU3JdmaSFOTpyRMoZVjTDDT73gmoU6BM2
-        xUJUF+4hnotqzEWoPQ/oZs8jjamrT1vX1XCqFXOWDpJ1m+rS
-X-Google-Smtp-Source: ABdhPJwg9I+mcg1YDkCZsYwVQlfQO7HdRJG0Q1KyIJutqIWYltfuwWGQEo+XNuAIl2CuVhN4yacwB2lde2u4YdYVy8OhXA7wJVEp
+        id S1732084AbgLIQAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 11:00:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55458 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731418AbgLIQAs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 11:00:48 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607529607;
+        bh=nPYVPZb8lF5AdNA/ZSa58MqKVIKgV5e+WU4mYaQy1hY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=O4pqR+kgMVViT91hgn8Dhj5xDIqGJ9+wWNjcsRPwEA6FYVyMBE0VjqXJxL2eVKZtR
+         DXXIXD5/q8Nv66w7ut1Tnh9o4gz0R5RRqV43VYItyLwRjthnNqV2Z2d6fvKc4wii2w
+         DFHDua+6I6cMXi6Ql/hd8gL2K2Y0JaVYYxfcCa8Lw5WH0sQc8DkUaAkDxZfdYopJBo
+         hw4AKSSLNJ6WO5we5tC3rLmQ1Ybz38v4BxNjUMUVEL/O8gGSregRRIw2PlZf6KMaAd
+         5WEqiMsd3OhBJW6QbT2zM84lVD8an0SbyO1Pp4/Y+dzS5sKa5HuHFiJFETnfBzwRBT
+         hDEKH6TpofVXg==
 MIME-Version: 1.0
-X-Received: by 2002:a92:d11:: with SMTP id 17mr3821470iln.84.1607528951520;
- Wed, 09 Dec 2020 07:49:11 -0800 (PST)
-Date:   Wed, 09 Dec 2020 07:49:11 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001f22d305b60a00a4@google.com>
-Subject: KASAN: use-after-free Write in rtl_fw_do_work (2)
-From:   syzbot <syzbot+65be4277f3c489293939@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, davem@davemloft.net, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pkshih@realtek.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v4 0/5] selftests/bpf: xsk selftests
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160752960729.12976.12661383715171656742.git-patchwork-notify@kernel.org>
+Date:   Wed, 09 Dec 2020 16:00:07 +0000
+References: <20201207215333.11586-1-weqaar.a.janjua@intel.com>
+In-Reply-To: <20201207215333.11586-1-weqaar.a.janjua@intel.com>
+To:     Weqaar Janjua <weqaar.janjua@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        ast@kernel.org, yhs@fb.com, magnus.karlsson@gmail.com,
+        bjorn.topel@intel.com, weqaar.a.janjua@intel.com, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        anders.roxell@linaro.org, jonathan.lemon@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello:
 
-syzbot found the following issue on:
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-HEAD commit:    b175d273 USB: legotower: fix logical error in recent commit
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=12ee7c87500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d24ee9ecd7ce968e
-dashboard link: https://syzkaller.appspot.com/bug?extid=65be4277f3c489293939
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+On Mon,  7 Dec 2020 21:53:28 +0000 you wrote:
+> This patch set adds AF_XDP selftests based on veth to selftests/bpf.
+> 
+> # Topology:
+> # ---------
+> #                 -----------
+> #               _ | Process | _
+> #              /  -----------  \
+> #             /        |        \
+> #            /         |         \
+> #      -----------     |     -----------
+> #      | Thread1 |     |     | Thread2 |
+> #      -----------     |     -----------
+> #           |          |          |
+> #      -----------     |     -----------
+> #      |  xskX   |     |     |  xskY   |
+> #      -----------     |     -----------
+> #           |          |          |
+> #      -----------     |     ----------
+> #      |  vethX  | --------- |  vethY |
+> #      -----------   peer    ----------
+> #           |          |          |
+> #      namespaceX      |     namespaceY
+> 
+> [...]
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Here is the summary with links:
+  - [bpf-next,v4,1/5] selftests/bpf: xsk selftests framework
+    https://git.kernel.org/bpf/bpf-next/c/a89052572ebb
+  - [bpf-next,v4,2/5] selftests/bpf: xsk selftests - SKB POLL, NOPOLL
+    https://git.kernel.org/bpf/bpf-next/c/facb7cb2e909
+  - [bpf-next,v4,3/5] selftests/bpf: xsk selftests - DRV POLL, NOPOLL
+    https://git.kernel.org/bpf/bpf-next/c/9103a8594d93
+  - [bpf-next,v4,4/5] selftests/bpf: xsk selftests - Socket Teardown - SKB, DRV
+    https://git.kernel.org/bpf/bpf-next/c/6674bf66560a
+  - [bpf-next,v4,5/5] selftests/bpf: xsk selftests - Bi-directional Sockets - SKB, DRV
+    https://git.kernel.org/bpf/bpf-next/c/7d20441eb05e
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+65be4277f3c489293939@syzkaller.appspotmail.com
-
-usb 5-1: Direct firmware load for rtlwifi/rtl8192cufw.bin failed with error -2
-rtlwifi: Loading alternative firmware rtlwifi/rtl8192cufw.bin
-rtlwifi: Selected firmware is not available
-==================================================================
-BUG: KASAN: use-after-free in rtl_fw_do_work.cold+0x68/0x6a drivers/net/wireless/realtek/rtlwifi/core.c:93
-Write of size 4 at addr ffff8881454cff50 by task kworker/0:6/7379
-
-CPU: 0 PID: 7379 Comm: kworker/0:6 Not tainted 5.10.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events request_firmware_work_func
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x4c8 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- rtl_fw_do_work.cold+0x68/0x6a drivers/net/wireless/realtek/rtlwifi/core.c:93
- request_firmware_work_func+0x12c/0x230 drivers/base/firmware_loader/main.c:1079
- process_one_work+0x933/0x1520 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x38c/0x460 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-The buggy address belongs to the page:
-page:00000000f54435b3 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1454cf
-flags: 0x200000000000000()
-raw: 0200000000000000 0000000000000000 ffffea00051533c8 0000000000000000
-raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8881454cfe00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881454cfe80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff8881454cff00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                                                 ^
- ffff8881454cff80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881454d0000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
