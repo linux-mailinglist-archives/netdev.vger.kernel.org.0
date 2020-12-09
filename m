@@ -2,166 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EDEF2D4D05
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 22:39:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F7BC2D4D32
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 23:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388328AbgLIVjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 16:39:46 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55862 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388151AbgLIVjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 16:39:46 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0B9LUVD5005111;
-        Wed, 9 Dec 2020 13:38:54 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0220;
- bh=izfymyWcsZOH3Y9nDlf5e7f09A0DgndtpBpTv7JLuG4=;
- b=gVYzPCUrj6lMBaSVdVdqjT5VCWePMkgJQ4KyJlgXIsI0c4O9UpZcFfG3OvNuUP2eiG8W
- OE/o6/1fW2vg46R+n6YjLH4bu9W2sztUOh1YqKViPMEwaCg0QFVeMpw7AVk+Xl/yJB/W
- a+6TP7Uiq7RCeZ7S1lig9uJbDtFYwEnrIWJdXT4F4PKiNPXnQ2TKHTpxFVC9gx8CwUoe
- w8i7VHITCcbN/TiPILxr0CMC3nyJctLIb0rnMjQPPbRGPO4E5VV+UQ7fno46OjpGTlNh
- MszuUcicUU78ZJTaBh5CtoQ9DOxkHWKnnszBzivacs5eZr1YYWjR8FGtcdLlli8Dp1g9 KQ== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3588etdgfj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 09 Dec 2020 13:38:54 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 9 Dec
- 2020 13:38:53 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
- by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Wed, 9 Dec 2020 13:38:53 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E8E8Lnnirt76KWiZd30ndfutqTLg+iYSa4ePn0ddQmukHR8dM9rFyzV1nCQmS8QDmECjXZoj7BWNSCiiEUrSG/KPEcK8mw4W8LizhuIUV6Ko5su9lXd6RrJjcQLYwfVLm2VF+FkcaCGWcK610WsS/kaKhUQmDhu88GxxQuWD6uWaDd10w1igDvGWegNdUvRQJ6fhATl7XgvghZe9/T9Cja6jSyhvk5knR7h2f9UA2xtRVsIukjdTRAMAwK2rH6wCPXsQCvnT6kKzxrmPNmtyG4wICaMbpYCvngBMrovw8Haa16DJeEcb2rvpzmtkSteXN4Dgk1PN4PDadp3ZtpHkOA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=izfymyWcsZOH3Y9nDlf5e7f09A0DgndtpBpTv7JLuG4=;
- b=dRZSyaD2sTHyxmm49Rsz0og8/17h4tUm101cpzjX7QNUiunKmhE7LHFsodW9khb3dAaQ9HYCBfHmx70hzRGoQG7nf0zL0MQpKwhGH9hbY+EGJUwtTEbnu/hX85ddw8psw93JeH7DD0bYLglM//hJNAUd7LIq3QMMafB2bZXvFJQ828gPgxBWe65HA9r7k7fdrZel+3UhbcLm+x62d8vuYihubO/d7tjwbG2q80vfWtY8MkmJGVd/nmUSOSj1vZj78iFodtFiVCcBBF/F9iED0swyAuWSOpHP5t8MQ4lUzrd/1MFLbxv6AHYAcVxiEcbBGCBKVwPZJhjsA2mrT94kTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        id S2388404AbgLIWCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 17:02:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50016 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388362AbgLIWCJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 17:02:09 -0500
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C90EC0613CF
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 14:01:29 -0800 (PST)
+Received: by mail-lj1-x243.google.com with SMTP id b10so1969403ljp.6
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 14:01:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=izfymyWcsZOH3Y9nDlf5e7f09A0DgndtpBpTv7JLuG4=;
- b=KAZ2h0hS28EETFq6QMZvfqoxhviS3fTY42B9PRCYnr0NdUq/0bqsNbobatcxlvXyDgGy4mbMO6FTVasvdh6Gc6lY/JSz18DVHQSoJpqxoKSwPzTy2MWMPKcm2/RLa3W21KYhAZwWhBECEHvGYcVPe5qXCMsHUS8NhluduXgKMUs=
-Received: from BN6PR18MB1587.namprd18.prod.outlook.com (2603:10b6:404:129::18)
- by BN6PR1801MB1938.namprd18.prod.outlook.com (2603:10b6:405:63::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Wed, 9 Dec
- 2020 21:38:52 +0000
-Received: from BN6PR18MB1587.namprd18.prod.outlook.com
- ([fe80::7d88:7c97:70dc:ddc9]) by BN6PR18MB1587.namprd18.prod.outlook.com
- ([fe80::7d88:7c97:70dc:ddc9%10]) with mapi id 15.20.3632.023; Wed, 9 Dec 2020
- 21:38:52 +0000
-From:   Mickey Rachamim <mickeyr@marvell.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Vadym Kochan [C]" <vkochan@marvell.com>,
-        "Taras Chornyi [C]" <tchornyi@marvell.com>
-Subject: RE: [EXT] Re: [PATCH v2] MAINTAINERS: Add entry for Marvell Prestera
- Ethernet Switch driver
-Thread-Topic: [EXT] Re: [PATCH v2] MAINTAINERS: Add entry for Marvell Prestera
- Ethernet Switch driver
-Thread-Index: AQHWyyYV4P4pQ1rY10yROtXpmQsQsqnsWDCAgACYJDCAAHq2gIAAJoqAgAEdnzCAAEonAIAAVEkQ
-Date:   Wed, 9 Dec 2020 21:38:52 +0000
-Message-ID: <BN6PR18MB15873CD07E1B6BB1B6C21DE8BACC0@BN6PR18MB1587.namprd18.prod.outlook.com>
-References: <20201205164300.28581-1-mickeyr@marvell.com>
- <20201207161533.7f68fd7f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <BN6PR18MB158772742FFF0A17D023F591BACD0@BN6PR18MB1587.namprd18.prod.outlook.com>
- <20201208083917.0db80132@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <20201208105713.6c95830b@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <BN6PR18MB158771FD8335348CB75D4D92BACC0@BN6PR18MB1587.namprd18.prod.outlook.com>
- <20201209162454.GD2602479@lunn.ch>
-In-Reply-To: <20201209162454.GD2602479@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [109.186.111.41]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a68ad106-702e-4449-2330-08d89c8ad2c6
-x-ms-traffictypediagnostic: BN6PR1801MB1938:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR1801MB19384133DEBDD7664507920CBACC0@BN6PR1801MB1938.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LkCyy+lYbZHRvXZ1fe47AcpVyZbxp0FFOMG9LkX3X0zyMvmdTQ21rtYI2lo5vAiOXAdH+h1a+RK9f6pNWRRNh4nzSO2vEBfDs4HAI90tY/824D/pfW0YlehHzj9xG7PEitnBUJ2mR2JxyLjwFQGSLbddhmbxaFaPWsH4yKNmI2fkW1GiQQvZRcxU0k2OhR/udTiiCrj5NytrpIxFaV8DZod8jHYqC1pWQT0z75Vu5XQmFffW6WTfrVi86IXpUGX8+JCmwcD2gBQEM3CWjvs+7NDwFTPPNMjtOIexiYF49J9h7y2fVQEzEfPX6nBubo7q
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR18MB1587.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(366004)(376002)(55016002)(107886003)(508600001)(33656002)(9686003)(76116006)(52536014)(6916009)(5660300002)(186003)(8936002)(2906002)(64756008)(71200400001)(7696005)(8676002)(26005)(66946007)(86362001)(6506007)(66476007)(66446008)(66556008)(4326008)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?m8rKkvmGD7mR4eo5fsOlUKW6fXekrtBJXxorSsrp/1phQOs0C/L9j0G6746Y?=
- =?us-ascii?Q?WsJTQs/a02Q5hgYIFgaufXMkqmBNLKjlh9EG7+0mu1Xvdh6Olgdnj0VWr5H+?=
- =?us-ascii?Q?OGq8iebrOrPCq+pgerhkPZ/NOZkfPY0i4FdVGloAjheifiGD2b0MsBoNARlx?=
- =?us-ascii?Q?4U7Z6M+CGmm7lLj4zQU739j7vy9Up7m9WG4MiSS0BgYfX0fXuA2YsWsV1M/F?=
- =?us-ascii?Q?mCDugm9iff6ONMGYfBVc5fVSMYkRzDq/3EkzcUUfIU5KG+Mg2BboFYXRDmlt?=
- =?us-ascii?Q?EeJvtPA7GimL4CiGc88dh+KPeH9RxDrHHMdj10hbNexmwTVEuDokUjosjJx6?=
- =?us-ascii?Q?XCMW1y5GTHv4r+f5gW1H1NyWqIsbqkHwNEvuFov/qD+onLDquyFUXKAGv0S9?=
- =?us-ascii?Q?BuOBl0D7tW6uUacBM9O3aXcXstMjTM3mP1GZLTZ+XH57EZPiMNbAEbV18Rvg?=
- =?us-ascii?Q?xhRwrutfRAVbl6KZuRw3x24gn+FjYlJirv5EM2KIxg8BPsorsWVjaro/K9VY?=
- =?us-ascii?Q?OLaq0mh9OHdAo3NlmDtwDzOHu7Y8kdHuvoWMrfs60OZn8dmVhikZL/gOOsK6?=
- =?us-ascii?Q?Ny269ly17XwNR5RAPOhqJT/gjnbzPBO/KtbxuzLpO9QJ2pCHHgwSkfv47Y8F?=
- =?us-ascii?Q?zbVXPy4Hju/CTgzxFUAV8tQCjMPquxGA0/jnU8Ttt2+bAokTmkzjUkA7kJfT?=
- =?us-ascii?Q?K6xVoMDEM7Q9pN1hLiXDzJAsMCk30ZfIf/F0M3KMBmAtpkA60Kx/Vv/w5dpV?=
- =?us-ascii?Q?atoRr5/btTBu/yN/uZoxMtr1sUuXOmSne3BjEoa6ampGFgaFJG8ZxbX0lRse?=
- =?us-ascii?Q?hAiofEci200UX+ALRtNeeDfX8TQLlmJgwZD3YK+jPo7yFrkbNHmZ9sESnYGN?=
- =?us-ascii?Q?/wlSp0fhFEy/Ba+PqPwb+uMqk4t0B1v4FZfi4j7RJdFtATP8lueEQJTKZyXV?=
- =?us-ascii?Q?85RfUtKd6Txfp8eG6hnRgfhsEH7rbT2wufuFsnA2uC0=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=miKoPhaR6tge0AOD1ax8PnV3WqppucZ1KoOp5F/obJk=;
+        b=kK0rnyxtfW6JuURXq19JwgrdG049nKJ1vCGTuq9NZNoDiI368+yX8Y+9YIYu8FkEQc
+         b9vXL4OvtL2KUR94uEEzPg+d8RY4fJZYqfpyzp29X5hrW3+dXBKfBcVjUMSo2pXNjaoY
+         96Oeob+00sfwQiLaiyLJjNhJcUyctnxBaevGWL59aeb9RlitFXpoP1hDGU8uvdbm0j+T
+         jJhtMzVrylmZC1N92YyB7Hz8vYO8gEsuV3GqgVwjRq9/JVJRrL3mO1PS+cMI3mEbxDmy
+         RnCiVcTMmJCFPf18fNe8Su7AZrDLHeim+ouRtMM0JyuLvySfEqcP+XrxlYPHGWzbmJO8
+         CeTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=miKoPhaR6tge0AOD1ax8PnV3WqppucZ1KoOp5F/obJk=;
+        b=LaeyF+QHbdpFwjzE0wy+LU21izWrGbEDkq49pO7q1MuP+iQmJMoHB/JqWYvzdzkn6d
+         hvGjMvYB0qf+dQ+dv73u1YASbHwpO3JMD+nAwgnHpU0wEBXepfY3b4BsNWQjmjyP1pKy
+         Ty0+52nmPUgebpcm86lEeRE3ONIDon3MGGfN9IjNC8cbgtXmwPnhP7wovffgNA44nc7Y
+         YbqrM0VqcnqqIiMbtxOe0OVM1kLqes7cSKhZkCkDMk2KbLGba/waGtwqSgdepuHqrbdQ
+         ub9tv4ul6F0YI9sVZso48svcG1JYd7oRPAaE59tOIyhdCi7XbZJJ+QAG1qmP4dg9Zj5E
+         bu4g==
+X-Gm-Message-State: AOAM531CIaSNjn75wkk1XA6VjgihRDwK7kO6hdp26jFlmR10znLzBTQN
+        A+kAC016ucaaHQg4/IEJ58TdXqjOP0Lj0N/1
+X-Google-Smtp-Source: ABdhPJw1u/AEqb1HBFpjDmeUSpVf2vvoen1K2nwt/YdJNY1p1KL9YxLCS81rB0bA0l3SPt2FtNF8TQ==
+X-Received: by 2002:a2e:9898:: with SMTP id b24mr1863308ljj.248.1607551287302;
+        Wed, 09 Dec 2020 14:01:27 -0800 (PST)
+Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
+        by smtp.gmail.com with ESMTPSA id p15sm296948lfk.111.2020.12.09.14.01.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Dec 2020 14:01:26 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
+In-Reply-To: <20201209160440.evuv26c7cnkqdb22@skbuf>
+References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-3-tobias@waldekranz.com> <20201208112350.kuvlaxqto37igczk@skbuf> <87mtyo5n40.fsf@waldekranz.com> <20201208163751.4c73gkdmy4byv3rp@skbuf> <87k0tr5q98.fsf@waldekranz.com> <20201209105326.boulnhj5hoaooppz@skbuf> <87eejz5asi.fsf@waldekranz.com> <20201209160440.evuv26c7cnkqdb22@skbuf>
+Date:   Wed, 09 Dec 2020 23:01:25 +0100
+Message-ID: <878sa663m2.fsf@waldekranz.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR18MB1587.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a68ad106-702e-4449-2330-08d89c8ad2c6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2020 21:38:52.6856
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +kQMluJ/0tetc2DUDYodUmZsISOHF5oV58Ox3WwNd2z4zgA4bwb7yzlhN883djeLpnremha2Uxt9Mkq0ygFxQw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1801MB1938
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-09_18:2020-12-09,2020-12-09 signatures=0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,=20
+On Wed, Dec 09, 2020 at 18:04, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Wed, Dec 09, 2020 at 03:11:41PM +0100, Tobias Waldekranz wrote:
+>> On Wed, Dec 09, 2020 at 12:53, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> > And I think that .port_lag_change passes more arguments than needed to
+>> > the driver.
+>> 
+>> You mean the `struct netdev_lag_lower_state_info`? Fine by me, it was
+>> mostly to avoid hiding state from the driver if anyone needed it.
+>
+> There are two approaches really.
+> Either you extract the useful information from it, which you already do,
+> and in that case you don't need to provide the structure from the netdev
+> notifier to the driver, or you let the driver pick it up. Either way is
+> fine with me, but having both seems redundant.
 
-> > You can see that only yesterday (Dec 8th) we had the first official=20
-> > merge on this repo - this is the reason for the lack of commits.
-> > Marvell Switching group took strategic decision to open some aspects=20
-> > of the Prestera family devices with the Open Source community and this=
-=20
-> > is the first step.
->=20
-> > As you realized - it will be used as a queue for all the features=20
-> > targeted to be upstreamed.  New features are expected to be sent to=20
-> > net-next very soon. (Like ACL/LAG/LLDP etc...)
->=20
-> Hi Mickey
->=20
-> I would actually expect this repo to hold a linux tree, probably based on=
- net-next, and with a number of patches on top adding Prestera features, on=
-e by one.
+Consider it cut.
 
-A Buildroot based repo that includes specific platform patches will became =
-public in the upcoming days. (As part of Marvell-Switching GitHub)
->=20
-> Given your current structure, i don't see a direct path for this code int=
-o mainline.
->=20
+>> >> > I don't think the DSA switch tree is private to anyone.
+>> >>
+>> >> Well I need somewhere to store the association from LAG netdev to LAG
+>> >> ID. These IDs are shared by all chips in the tree. It could be
+>> >> replicated on each ds of course, but that does not feel quite right.
+>> >
+>> > The LAG ID does not have significance beyond the mv88e6xxx driver, does
+>> > it? And even there, it's just a number. You could recalculate all IDs
+>> > dynamically upon every join/leave, and they would be consistent by
+>> > virtue of the fact that you use a formula which ensures consistency
+>> > without storing the LAG ID anywhere. Like, say, the LAG ID is to be
+>> > determined by the first struct dsa_port in the DSA switch tree that has
+>> > dp->bond == lag_dev. The ID itself can be equal to (dp->ds->index *
+>> > MAX_NUM_PORTS + dp->index). All switches will agree on what is the first
+>> > dp in dst, since they iterate in the same way, and any LAG join/leave
+>> > will notify all of them. It has to be like this anyway.
+>> 
+>> This will not work for mv88e6xxx. The ID is not just an internal number
+>> used by the driver. If that was the case we could just as well use the
+>> LAG netdev pointer for this purpose. This ID is configured in hardware,
+>> and it is shared between blocks in the switch, we can not just
+>> dynamically change them. Neither can we use your formula since this is a
+>> 4-bit field.
+>> 
+>> Another issue is how we are going to handle this in the tagger now,
+>> since we can no longer call dsa_lag_dev_by_id. I.e. with `struct
+>> dsa_lag` we could resolve the LAG ID (which is the only source
+>> information we have in the tag) to the corresponding netdev. This
+>> information is now only available in mv88e6xxx driver. I am not sure how
+>> I am supposed to conjure it up. Ideas?
+>
+> Yeah, ok, I get your point. I was going to say that:
+> (a) accessing the bonding interface in the fast path seems to be a
+>     mv88e6xxx problem
+> (b) the LAG IDs that you are making DSA fabricate are not necessarily
+>     the ones that other drivers will use, due to various other
+>     constraints (e.g. ocelot)
 
-Assuming the discussion is still on the 'W:' line;
-I went over tens of 'W:' lines in the ./MAINTAINERS file and unfortunately =
-I couldn't see the above standard is really fulfilled.
-> 	Andrew
->=20
-Mickey.
+It is not the Fibonacci sequence or anything, it is an integer in the
+range 0..num_lags-1. I realize that some hardware probably allocate IDs
+from some shared (and thus possibly non-contiguous) pool. Maybe ocelot
+works like that. But it seems reasonable to think that at least some
+other drivers could make use of a linear range.
+
+> so basically my point was that I think you are adding a lot of infra in
+> core DSA that only mv88e6xxx will use.
+
+Message received.
+
+> My practical proposal would have been to keep a 16-entry bonding pointer
+> array private in mv88e6xxx, which you could retrieve via:
+>
+> 	struct dsa_port *cpu_dp = netdev->dsa_ptr;
+> 	struct dsa_switch *ds = cpu_dp->ds;
+> 	struct mv88e6xxx_chip *chip = ds->priv;
+>
+> 	skb->dev = chip->lags[source_port];
+>
+> This is just how I would do it. It would not be the first tagger that
+> accesses driver private data prior to knowing the net device. It would,
+> however, mean that we know for sure that the mv88e6xxx device will
+> always be top-of-tree in a cascaded setup. And this is in conflict with
+> what I initially said, that the dst is not private to anyone.
+
+Indeed. I am trying to keep up.
+
+> I think that there is a low practical risk that the assumption will not
+> hold true basically forever. But I also see why you might like your
+> approach more. Maybe Vivien, Andrew, Florian could also chime in and we
+> can see if struct dsa_lag "bothers" anybody else except me (bothers in
+> the sense that it's an unnecessary complication to hold in DSA). We
+> could, of course, also take the middle ground, which would be to keep
+> the 16-entry array of bonding net_device pointers in DSA, and you could
+> still call your dsa_lag_dev_by_id() and pretend it's generic, and that
+> would just look up that table. Even with this middle ground, we are
+> getting rid of the port lists and of the reference counting, which is
+> still a welcome simplification in my book.
+
+Yeah I agree that we can trim it down to just the array. Going beyond
+that point, i.e. doing something like how sja1105 works, is more painful
+but possible if Andrew can live with it.
