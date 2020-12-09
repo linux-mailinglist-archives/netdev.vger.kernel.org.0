@@ -2,139 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0115B2D3B20
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 07:05:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5692D3B44
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 07:14:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727679AbgLIGEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 01:04:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726825AbgLIGEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 01:04:41 -0500
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F65C0613CF;
-        Tue,  8 Dec 2020 22:04:01 -0800 (PST)
-Received: by mail-oi1-x243.google.com with SMTP id q25so585555oij.10;
-        Tue, 08 Dec 2020 22:04:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=xw4WlY+gecPL6DnhDENOYEz8RjK6qkVO+Z0UKbUq6rg=;
-        b=blwLBC8I1ol4VExUBqHsBtI6x0pnw4U9cZxawk5zq5P+jhWlGmVILWBjufi50F8loU
-         WojsXW9aVAUWw+4Y2PdjbPOPLwoIt0/7GeopTLMG/+jEXSEkZ5ecA+zXjjnTOk2uFwG7
-         kmJYGE2S/K0UHiFUvZWmmh8ia3O7af3Mzii4qhds/1x8YS+2dCtKR6TVPDHsPBeuqZBH
-         cmpb3ZwZM+WWRyXmI1MsedriU66ezUuOKPPIXns6a50R8arW1J2ghUj7okehG7uCsxYX
-         q/+CVLJolt7dnHvij8gBSy5bmiRz9mSDVAW85kW5GawlUZMk5mJCo5pzhzdEMHHOAcz/
-         EMug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=xw4WlY+gecPL6DnhDENOYEz8RjK6qkVO+Z0UKbUq6rg=;
-        b=GlZ9s5E3ItNFgzye+6/aTz1IwJNwcfLnaQRawVXhyB01D3egz9HCHN2OCfbVjANj/s
-         YUix7XNVFdvbdtI+vWA7mU9E2sdZcArergx26qa/at3sVFayPomTeXoGx4NTx5RpbnZe
-         xNt/q9YhCl11aItwTuYnhcVyCuuuOeYEfybwecw6NHCsbfMH1NqMu/aJXoJJZBTX2Uq3
-         uYNJ3xi6Gj1sQA//BkPoQNey051Melbt0wVn9nrC/YfzIGQOja5pBZf0ZXYYzrisL4vy
-         P2a84LuyYhEXaAVdkaQdxG1b53Yukg2ykd/3aXw0cNMNyjfCNFVuXlbqjl53BOkTEywL
-         j25g==
-X-Gm-Message-State: AOAM530IKbswzWAPAWYaMqpY9vz5h5SIt2trIY/CrvWeyaoAxO3QRxxb
-        e5V6koq085B3T3YPiPsuIA5DELQfdBs=
-X-Google-Smtp-Source: ABdhPJzV0J/ZAp54eywd2BpQ5szxmUsuNU04Mn+rnJMPMdPd0aR0tQNtc8qfELb8e1bBcroRKkVURA==
-X-Received: by 2002:aca:6287:: with SMTP id w129mr702445oib.82.1607493840475;
-        Tue, 08 Dec 2020 22:04:00 -0800 (PST)
-Received: from localhost ([184.21.204.5])
-        by smtp.gmail.com with ESMTPSA id v123sm159783oie.20.2020.12.08.22.03.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Dec 2020 22:03:59 -0800 (PST)
-Date:   Tue, 08 Dec 2020 22:03:51 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        alardam@gmail.com, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
-        ast@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        hawk@kernel.org, jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
-        intel-wired-lan@lists.osuosl.org,
-        Marek Majtyka <marekx.majtyka@intel.com>
-Message-ID: <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
-In-Reply-To: <20201207230755.GB27205@ranger.igk.intel.com>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
- <20201204102901.109709-2-marekx.majtyka@intel.com>
- <878sad933c.fsf@toke.dk>
- <20201204124618.GA23696@ranger.igk.intel.com>
- <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
- <20201207135433.41172202@carbon>
- <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
- <20201207230755.GB27205@ranger.igk.intel.com>
-Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1725892AbgLIGKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 01:10:47 -0500
+Received: from foss.arm.com ([217.140.110.172]:57756 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725878AbgLIGKp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 01:10:45 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE0941042;
+        Tue,  8 Dec 2020 22:09:53 -0800 (PST)
+Received: from entos-thunderx2-desktop.shanghai.arm.com (entos-thunderx2-desktop.shanghai.arm.com [10.169.212.215])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B07303F66B;
+        Tue,  8 Dec 2020 22:09:47 -0800 (PST)
+From:   Jianyong Wu <jianyong.wu@arm.com>
+To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, maz@kernel.org,
+        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
+        suzuki.poulose@arm.com, Andre.Przywara@arm.com,
+        steven.price@arm.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, justin.he@arm.com, jianyong.wu@arm.com,
+        nd@arm.com
+Subject: [PATCH v16 0/9] Enable ptp_kvm for arm/arm64
+Date:   Wed,  9 Dec 2020 14:09:23 +0800
+Message-Id: <20201209060932.212364-1-jianyong.wu@arm.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Mon, Dec 07, 2020 at 12:52:22PM -0800, John Fastabend wrote:
-> > Jesper Dangaard Brouer wrote:
-> > > On Fri, 4 Dec 2020 16:21:08 +0100
-> > > Daniel Borkmann <daniel@iogearbox.net> wrote:
+Currently, we offen use ntp (sync time with remote network clock)
+to sync time in VM. But the precision of ntp is subject to network delay
+so it's difficult to sync time in a high precision.
 
-[...] pruning the thread to answer Jesper.
+kvm virtual ptp clock (ptp_kvm) offers another way to sync time in VM,
+as the remote clock locates in the host instead of remote network clock.
+It targets to sync time between guest and host in virtualization
+environment and in this way, we can keep the time of all the VMs running
+in the same host in sync. In general, the delay of communication between
+host and guest is quiet small, so ptp_kvm can offer time sync precision
+up to in order of nanosecond. Please keep in mind that ptp_kvm just
+limits itself to be a channel which transmit the remote clock from
+host to guest and leaves the time sync jobs to an application, eg. chrony,
+in usersapce in VM.
 
-> > > 
-> > > Use-case(2): Disable XDP_TX on a driver to save hardware TX-queue
-> > > resources, as the use-case is only DDoS.  Today we have this problem
-> > > with the ixgbe hardware, that cannot load XDP programs on systems with
-> > > more than 192 CPUs.
-> > 
-> > The ixgbe issues is just a bug or missing-feature in my opinion.
-> 
-> Not a bug, rather HW limitation?
+How ptp_kvm works:
+After ptp_kvm initialized, there will be a new device node under
+/dev called ptp%d. A guest userspace service, like chrony, can use this
+device to get host walltime, sometimes also counter cycle, which depends
+on the service it calls. Then this guest userspace service can use those
+data to do the time sync for guest.
+here is a rough sketch to show how kvm ptp clock works.
 
-Well hardware has some max queue limit. Likely <192 otherwise I would
-have kept doing queue per core on up to 192. But, ideally we should
-still load and either share queues across multiple cores or restirct
-down to a subset of CPUs. Do you need 192 cores for a 10gbps nic,
-probably not. Yes, it requires some extra care, but should be doable
-if someone cares enough. I gather current limitation/bug is because
-no one has that configuration and/or has complained loud enough.
+|----------------------------|              |--------------------------|
+|       guest userspace      |              |          host            |
+|ioctl -> /dev/ptp%d         |              |                          |
+|       ^   |                |              |                          |
+|----------------------------|              |                          |
+|       |   | guest kernel   |              |                          |
+|       |   V      (get host walltime/counter cycle)                   |
+|      ptp_kvm -> hypercall - - - - - - - - - - ->hypercall service    |
+|                         <- - - - - - - - - - - -                     |
+|----------------------------|              |--------------------------|
 
-> 
-> > 
-> > I think we just document that XDP_TX consumes resources and if users
-> > care they shouldn't use XD_TX in programs and in that case hardware
-> > should via program discovery not allocate the resource. This seems
-> > cleaner in my opinion then more bits for features.
-> 
-> But what if I'm with some limited HW that actually has a support for XDP
-> and I would like to utilize XDP_TX?
-> 
-> Not all drivers that support XDP consume Tx resources. Recently igb got
-> support and it shares Tx queues between netstack and XDP.
+1. time sync service in guest userspace call ptp device through /dev/ptp%d.
+2. ptp_kvm module in guest receives this request then invoke hypercall to route
+into host kernel to request host walltime/counter cycle.
+3. ptp_kvm hypercall service in host response to the request and send data back.
+4. ptp (not ptp_kvm) in guest copy the data to userspace.
 
-Makes sense to me.
+This ptp_kvm implementation focuses itself to step 2 and 3 and step 2 works
+in guest comparing step 3 works in host kernel.
 
-> 
-> I feel like we should have a sort-of best effort approach in case we
-> stumble upon the XDP_TX in prog being loaded and query the driver if it
-> would be able to provide the Tx resources on the current system, given
-> that normally we tend to have a queue per core.
+change log:
 
-Why do we need to query? I guess you want some indication from the
-driver its not going to be running in the ideal NIC configuraition?
-I guess printing a warning would be the normal way to show that. But,
-maybe your point is you want something easier to query?
+from v15 to v16:
+        (1) remove ARM_PTP_NONE_COUNTER suggested by Marc.
+        (2) add more detail for ptp_kvm doc.
+        (3) fix ci issues reported by test robot.
 
-> 
-> In that case igb would say yes, ixgbe would say no and prog would be
-> rejected.
+from v14 to v15:
+        (1) enable ptp_kvm on arm32 guest, also ptp_kvm has been tested
+on both arm64 and arm32 guest running on arm64 kvm host.
+        (2) move arch-agnostic part of ptp_kvm.rst into timekeeping.rst.
+        (3) rename KVM_CAP_ARM_PTP_KVM to KVM_CAP_PTP_KVM as it should be
+arch agnostic.
+        (4) add description for KVM_CAP_PTP_KVM in Documentation/virt/kvm/api.rst.
+        (5) adjust dependency in Kconfig for ptp_kvm.
+        (6) refine multi-arch process in driver/ptp/Makefile.
+        (7) fix make pdfdocs htmldocs issue for ptp_kvm doc.
+        (8) address other issues from comments in v14.
+        (9) fold hypercall service of ptp_kvm as a function.
+        (10) rebase to 5.10-rc3.
 
-I think the driver should load even if it can't meet the queue per
-core quota. Refusing to load at all or just dropping packets on the
-floor is not very friendly. I think we agree on that point.
+from v13 to v14
+        (1) rebase code on 5.9-rc3.
+        (2) add a document to introduce implementation of PTP_KVM on
+arm64.
+        (3) fix comments issue in hypercall.c.
+        (4) export arm_smccc_1_1_get_conduit using EXPORT_SYMBOL_GPL.
+        (5) fix make issue on x86 reported by kernel test robot.
+
+from v12 to v13:
+        (1) rebase code on 5.8-rc1.
+        (2) this patch set base on 2 patches of 1/8 and 2/8 from Will Decon.
+        (3) remove the change to ptp device code of extend getcrosststamp.
+        (4) remove the mechanism of letting user choose the counter type in
+ptp_kvm for arm64.
+        (5) add virtual counter option in ptp_kvm service to let user choose
+the specific counter explicitly.
+
+from v11 to v12:
+        (1) rebase code on 5.7-rc6 and rebase 2 patches from Will Decon
+including 1/11 and 2/11. as these patches introduce discover mechanism of
+vendor smccc service.
+        (2) rebase ptp_kvm hypercall service from standard smccc to vendor
+smccc and add ptp_kvm to vendor smccc service discover mechanism.
+        (3) add detail of why we need ptp_kvm and how ptp_kvm works in cover
+letter.
+
+from v10 to v11:
+        (1) rebase code on 5.7-rc2.
+        (2) remove support for arm32, as kvm support for arm32 will be
+removed [1]
+        (3) add error report in ptp_kvm initialization.
+
+from v9 to v10:
+        (1) change code base to v5.5.
+        (2) enable ptp_kvm both for arm32 and arm64.
+        (3) let user choose which of virtual counter or physical counter
+should return when using crosstimestamp mode of ptp_kvm for arm/arm64.
+        (4) extend input argument for getcrosstimestamp API.
+
+from v8 to v9:
+        (1) move ptp_kvm.h to driver/ptp/
+        (2) replace license declaration of ptp_kvm.h the same with other
+header files in the same directory.
+
+from v7 to v8:
+        (1) separate adding clocksource id for arm_arch_counter as a
+single patch.
+        (2) update commit message for patch 4/8.
+        (3) refine patch 7/8 and patch 8/8 to make them more independent.
+
+from v5 to v6:
+        (1) apply Mark's patch[4] to get SMCCC conduit.
+        (2) add mechanism to recognize current clocksource by add
+clocksouce_id value into struct clocksource instead of method in patch-v5.
+        (3) rename kvm_arch_ptp_get_clock_fn into
+kvm_arch_ptp_get_crosststamp.
+
+from v4 to v5:
+        (1) remove hvc delay compensasion as it should leave to userspace.
+        (2) check current clocksource in hvc call service.
+        (3) expose current clocksource by adding it to
+system_time_snapshot.
+        (4) add helper to check if clocksource is arm_arch_counter.
+        (5) rename kvm_ptp.c to ptp_kvm_common.c
+
+from v3 to v4:
+        (1) fix clocksource of ptp_kvm to arch_sys_counter.
+        (2) move kvm_arch_ptp_get_clock_fn into arm_arch_timer.c
+        (3) subtract cntvoff before return cycles from host.
+        (4) use ktime_get_snapshot instead of getnstimeofday and
+get_current_counterval to return time and counter value.
+        (5) split ktime and counter into two 32-bit block respectively
+to avoid Y2038-safe issue.
+        (6) set time compensation to device time as half of the delay of
+hvc call.
+        (7) add ARM_ARCH_TIMER as dependency of ptp_kvm for
+arm64.
+
+from v2 to v3:
+        (1) fix some issues in commit log.
+        (2) add some receivers in send list.
+
+from v1 to v2:
+        (1) move arch-specific code from arch/ to driver/ptp/
+        (2) offer mechanism to inform userspace if ptp_kvm service is
+available.
+        (3) separate ptp_kvm code for arm64 into hypervisor part and
+guest part.
+        (4) add API to expose monotonic clock and counter value.
+        (5) refine code: remove no necessary part and reconsitution.
+
+[1] https://patchwork.kernel.org/cover/11373351/
+
+
+Jianyong Wu (6):
+  ptp: Reorganize ptp_kvm module to make it arch-independent.
+  clocksource: Add clocksource id for arm arch counter
+  arm64/kvm: Add hypercall service for kvm ptp.
+  ptp: arm/arm64: Enable ptp_kvm for arm/arm64
+  doc: add ptp_kvm introduction for arm64 support
+  arm64: Add kvm capability check extension for ptp_kvm
+
+Thomas Gleixner (1):
+  time: Add mechanism to recognize clocksource in time_get_snapshot
+
+Will Deacon (2):
+  arm64: Probe for the presence of KVM hypervisor
+  arm/arm64: KVM: Advertise KVM UID to guests via SMCCC
+
+ Documentation/virt/kvm/api.rst              |  9 ++
+ Documentation/virt/kvm/arm/index.rst        |  1 +
+ Documentation/virt/kvm/arm/ptp_kvm.rst      | 31 +++++++
+ Documentation/virt/kvm/timekeeping.rst      | 35 ++++++++
+ arch/arm/kernel/setup.c                     |  5 ++
+ arch/arm64/kernel/setup.c                   |  1 +
+ arch/arm64/kvm/arm.c                        |  1 +
+ arch/arm64/kvm/hypercalls.c                 | 86 ++++++++++++++++--
+ drivers/clocksource/arm_arch_timer.c        | 31 +++++++
+ drivers/firmware/smccc/smccc.c              | 37 ++++++++
+ drivers/ptp/Kconfig                         |  2 +-
+ drivers/ptp/Makefile                        |  2 +
+ drivers/ptp/ptp_kvm_arm.c                   | 45 ++++++++++
+ drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} | 84 +++++-------------
+ drivers/ptp/ptp_kvm_x86.c                   | 96 +++++++++++++++++++++
+ include/linux/arm-smccc.h                   | 59 +++++++++++++
+ include/linux/clocksource.h                 |  6 ++
+ include/linux/clocksource_ids.h             | 12 +++
+ include/linux/ptp_kvm.h                     | 16 ++++
+ include/linux/timekeeping.h                 | 12 +--
+ include/uapi/linux/kvm.h                    |  1 +
+ kernel/time/clocksource.c                   |  2 +
+ kernel/time/timekeeping.c                   |  1 +
+ 23 files changed, 498 insertions(+), 77 deletions(-)
+ create mode 100644 Documentation/virt/kvm/arm/ptp_kvm.rst
+ create mode 100644 drivers/ptp/ptp_kvm_arm.c
+ rename drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} (60%)
+ create mode 100644 drivers/ptp/ptp_kvm_x86.c
+ create mode 100644 include/linux/clocksource_ids.h
+ create mode 100644 include/linux/ptp_kvm.h
+
+-- 
+2.17.1
+
