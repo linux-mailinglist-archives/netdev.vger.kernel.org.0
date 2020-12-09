@@ -2,86 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4EB2D4F0E
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 00:53:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 056942D4F18
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 00:54:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730352AbgLIXvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 18:51:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35372 "EHLO mail.kernel.org"
+        id S1726954AbgLIXxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 18:53:23 -0500
+Received: from mga06.intel.com ([134.134.136.31]:19330 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730136AbgLIXuu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 18:50:50 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607557809;
-        bh=6oddy/+FICuvS8AKCKJYtcKhaUZoK14CoUjage/C0Q0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JD6ArBjRMNLfQVHkJuhribxOkQ/8nSHAqhU7wrUdwLWMy3/wmZCb/W8qS1x792Gy5
-         EBT2aF4I7kzw9hQsH35yEdecWmIKWTMx/u74OEB5dpJfYXUhx9TOSufmSuIbm7nKOu
-         D27Qs5o7C9VwRkzsn9eReB7QvmTnIrty0LV6LXjk+mMq6mF+WGtSa86wCbBz5zbrbd
-         /ysdnGKDbaSI4gKefl22ORUR4L6TrvK70q8J8900AJICAO6pS6MvCQ0JG+ZyprXrmu
-         ynRlS8K1YfYKavj2/5GLmg8Fu0xXl6WpWU6nTozhzzkGSUFTDZaBZL+j5JTT9pbDuK
-         lfa+rTU/uoBew==
+        id S1726439AbgLIXxX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 18:53:23 -0500
+IronPort-SDR: iqYMOZyxpz3tEcxP4hN0xyUWGGExa6iV2Zbr5zvYRNsCxXRUYc+3eKrC4ZtWwh+/Kyj0Hk1K8G
+ CbCau92bcuIQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="235763087"
+X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
+   d="scan'208";a="235763087"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 15:51:37 -0800
+IronPort-SDR: CkG4U1GDebA82f+LBnIZEUjvE2RpYUlhHs6zXl1qEb3sC0ky5wwwtLCD3gR7+DJi1wpC68ywsr
+ JmhL9lpLldaA==
+X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
+   d="scan'208";a="318582179"
+Received: from mjmartin-nuc02.amr.corp.intel.com ([10.254.111.12])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 15:51:37 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, geliangtang@gmail.com,
+        mptcp@lists.01.org
+Subject: [PATCH net-next 00/11] mptcp: Add port parameter to ADD_ADDR option
+Date:   Wed,  9 Dec 2020 15:51:17 -0800
+Message-Id: <20201209235128.175473-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v5 0/9] XDP Redirect implementation for ENA driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160755780949.1337.9921603526592047855.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Dec 2020 23:50:09 +0000
-References: <20201208180208.26111-1-shayagr@amazon.com>
-In-Reply-To: <20201208180208.26111-1-shayagr@amazon.com>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, dwmw@amazon.com,
-        zorik@amazon.com, matua@amazon.com, saeedb@amazon.com,
-        msw@amazon.com, aliguori@amazon.com, nafea@amazon.com,
-        gtzalik@amazon.com, netanel@amazon.com, alisaidi@amazon.com,
-        benh@amazon.com, akiyano@amazon.com, sameehj@amazon.com,
-        ndagan@amazon.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The ADD_ADDR MPTCP option is used to announce available IP addresses
+that a peer may connect to when adding more TCP subflows to an existing
+MPTCP connection. There is an optional port number field in that
+ADD_ADDR header, and this patch set adds capability for that port number
+to be sent and received.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Patches 1, 2, and 4 refactor existing ADD_ADDR code to simplify implementation
+of port number support.
 
-On Tue, 8 Dec 2020 20:01:59 +0200 you wrote:
-> Hi all,
-> ENA is adding XDP Redirect support for its driver and some other
-> small tweaks.
-> 
-> This series adds the following:
-> 
-> - Make log messages in the driver have a uniform format using
->   netdev_* function
-> - Improve code readability
-> - Add support for XDP Redirect
-> 
-> [...]
+Patches 3 and 5 are the main functional changes, for sending and
+receiving the port number in the MPTCP ADD_ADDR option.
 
-Here is the summary with links:
-  - [net-next,v5,1/9] net: ena: use constant value for net_device allocation
-    https://git.kernel.org/netdev/net-next/c/ce74496a1575
-  - [net-next,v5,2/9] net: ena: add device distinct log prefix to files
-    https://git.kernel.org/netdev/net-next/c/da580ca8de2c
-  - [net-next,v5,3/9] net: ena: store values in their appropriate variables types
-    https://git.kernel.org/netdev/net-next/c/e9548fdf93bc
-  - [net-next,v5,4/9] net: ena: fix coding style nits
-    https://git.kernel.org/netdev/net-next/c/1e5847395eeb
-  - [net-next,v5,5/9] net: ena: aggregate stats increase into a function
-    https://git.kernel.org/netdev/net-next/c/89dd735e8c1e
-  - [net-next,v5,6/9] net: ena: use xdp_frame in XDP TX flow
-    https://git.kernel.org/netdev/net-next/c/e8223eeff021
-  - [net-next,v5,7/9] net: ena: introduce XDP redirect implementation
-    https://git.kernel.org/netdev/net-next/c/a318c70ad152
-  - [net-next,v5,8/9] net: ena: use xdp_return_frame() to free xdp frames
-    https://git.kernel.org/netdev/net-next/c/f8b91f255a05
-  - [net-next,v5,9/9] net: ena: introduce ndo_xdp_xmit() function for XDP_REDIRECT
-    https://git.kernel.org/netdev/net-next/c/f1a255891303
+Patch 6 sends the ADD_ADDR option with port number on a bare TCP ACK,
+since the extra length of the option may run in to cases where
+sufficient TCP option space is not available on a data packet.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Patch 7 plumbs in port number support for the in-kernel MPTCP path
+manager.
 
+Patches 8-11 add some optional debug output and a little more cleanup
+refactoring.
+
+
+Geliang Tang (11):
+  mptcp: unify ADD_ADDR and echo suboptions writing
+  mptcp: unify ADD_ADDR and ADD_ADDR6 suboptions writing
+  mptcp: add port support for ADD_ADDR suboption writing
+  mptcp: use adding up size to get ADD_ADDR length
+  mptcp: add the outgoing ADD_ADDR port support
+  mptcp: send out dedicated packet for ADD_ADDR using port
+  mptcp: add port parameter for mptcp_pm_announce_addr
+  mptcp: print out port and ahmac when receiving ADD_ADDR
+  mptcp: drop rm_addr_signal flag
+  mptcp: rename add_addr_signal and mptcp_add_addr_status
+  mptcp: use the variable sk instead of open-coding
+
+ include/net/mptcp.h    |   1 +
+ net/mptcp/options.c    | 103 ++++++++++++++++++++++++++---------------
+ net/mptcp/pm.c         |  40 +++++++++++-----
+ net/mptcp/pm_netlink.c |  31 +++++++++----
+ net/mptcp/protocol.h   |  50 ++++++++++++--------
+ 5 files changed, 146 insertions(+), 79 deletions(-)
+
+-- 
+2.29.2
 
