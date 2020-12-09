@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A602D4EB7
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 00:26:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1547B2D4EDE
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 00:41:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733152AbgLIXY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 18:24:57 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:47492 "EHLO vps0.lunn.ch"
+        id S2388745AbgLIXlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 18:41:13 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47518 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725885AbgLIXY5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 18:24:57 -0500
+        id S1727028AbgLIXlN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 18:41:13 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kn8oZ-00B8Oc-0L; Thu, 10 Dec 2020 00:24:07 +0100
-Date:   Thu, 10 Dec 2020 00:24:06 +0100
+        id 1kn94G-00B8S3-JC; Thu, 10 Dec 2020 00:40:20 +0100
+Date:   Thu, 10 Dec 2020 00:40:20 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Pavana Sharma <pavana.sharma@digi.com>
 Cc:     ashkan.boldaji@digi.com, clang-built-linux@googlegroups.com,
@@ -24,38 +24,69 @@ Cc:     ashkan.boldaji@digi.com, clang-built-linux@googlegroups.com,
         linux-kernel@vger.kernel.org, lkp@intel.com, marek.behun@nic.cz,
         netdev@vger.kernel.org, robh+dt@kernel.org,
         vivien.didelot@gmail.com
-Subject: Re: [PATCH v11 3/4] net: dsa: mv88e6xxx: Change serdes lane
- parameter type  from u8 type to int
-Message-ID: <20201209232406.GH2649111@lunn.ch>
+Subject: Re: [PATCH v11 4/4] net: dsa: mv88e6xxx: Add support for mv88e6393x
+ family of Marvell
+Message-ID: <20201209234020.GI2649111@lunn.ch>
 References: <cover.1607488953.git.pavana.sharma@digi.com>
- <cc16a07f381973b0f4c987090bc307c8f854181d.1607488953.git.pavana.sharma@digi.com>
+ <9db13ff47826f8bf9d08ec7cdc194c2187868a40.1607488953.git.pavana.sharma@digi.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cc16a07f381973b0f4c987090bc307c8f854181d.1607488953.git.pavana.sharma@digi.com>
+In-Reply-To: <9db13ff47826f8bf9d08ec7cdc194c2187868a40.1607488953.git.pavana.sharma@digi.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->On Wed, Dec 09, 2020 at 03:05:17PM +1000, Pavana Sharma wrote:
-> Returning 0 is no more an error case with MV88E6393 family
-> which has serdes lane numbers 0, 9 or 10.
-> So with this change .serdes_get_lane will return lane number
-> or -errno (-ENODEV or -EOPNOTSUPP).
-> 
-> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+> +/* Support 10, 100, 200, 1000, 2500, 5000, 10000 Mbps (e.g. 88E6393X)
+> + * This function adds new speed 5000 supported by Amethyst family.
+> + * Function mv88e6xxx_port_set_speed_duplex() can't be used as the register
+> + * values for speeds 2500 & 5000 conflict.
+> + */
 
-I see here you did actually act on my comment. Thanks.
+Thanks, that should stop my or somebody else trying to wrong combine
+them.
 
-But i also said:
+> +/* Offset 0x10 & 0x11: EPC */
+> +
+> +static int mv88e6393x_epc_wait_ready(struct mv88e6xxx_chip *chip, int port)
+> +{
+> +	int bit = __bf_shf(MV88E6393X_PORT_EPC_CMD_BUSY);
+> +
+> +	return mv88e6xxx_port_wait_bit(chip, port, MV88E6393X_PORT_EPC_CMD, bit, 0);
+> +}
 
-> Other than that:
-> 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+To follow the naming convention, this should really be called mv88e6393x_port_epc_wait_ready
 
-Please add such tags to new versions of the patches. It then makes it
-easier for everybody to know the review state of the patches, which
-have been reviewed and deemed O.K, and which need more review.
 
-     Thanks
-	Andrew
+> +int mv88e6393x_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port,
+> +	    int lane, bool enable)
+
+It can be hard to tell in a diff, but the indentation looks wrong
+here. 'int lane' should line up with 'struct'.
+
+> +{
+> +	u8 cmode = chip->ports[port].cmode;
+> +	int err = 0;
+> +
+> +	switch (cmode) {
+> +	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+> +	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+> +	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
+> +	case MV88E6XXX_PORT_STS_CMODE_5GBASER:
+> +	case MV88E6XXX_PORT_STS_CMODE_10GBASER:
+> +		err = mv88e6390_serdes_irq_enable_sgmii(chip, lane, enable);
+> +	}
+> +
+> +	return err;
+> +}
+> +
+> +irqreturn_t mv88e6393x_serdes_irq_status(struct mv88e6xxx_chip *chip, int port,
+> +				 int lane)
+
+Maybe here as well?
+
+> +int mv88e6393x_setup_errata(struct mv88e6xxx_chip *chip)
+
+It should have _serdes_ in the name to follow the naming convention.
+
+   Andrew
