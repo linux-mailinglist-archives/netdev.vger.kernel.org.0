@@ -2,107 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40DD82D45C3
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2C342D45CB
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730557AbgLIPrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 10:47:09 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:20766 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727059AbgLIPrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 10:47:08 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607528805; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=y1Wmae3WtsmaxXmUIENiy1KGHxXjyeq1imlrpIn8Kmg=; b=MhXCjk+ggjeyFojCTBkfOL9/1b1Hf3pKnDaWPG1QuGOImF+UHtbYiskbw8+wUIdfTAmjr0hG
- Mbkfu3HB79J6v/CA1PlbH07B1IW0yEDsopVa1kUhPnpebu2F1vRyihwGyvybF6IwcfUXiA1q
- Dc4KZvg4ii0jSBE81OGaICbESS0=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 5fd0f15cce88b59ab8f41e9b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 09 Dec 2020 15:46:36
- GMT
-Sender: jhugo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C216DC433ED; Wed,  9 Dec 2020 15:46:35 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: jhugo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id BBB3AC433C6;
-        Wed,  9 Dec 2020 15:46:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BBB3AC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
-Subject: Re: [PATCH 2/3] net: mhi: Get RX queue size from MHI core
-To:     Loic Poulain <loic.poulain@linaro.org>, kuba@kernel.org
-Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net
-References: <1607526183-25652-1-git-send-email-loic.poulain@linaro.org>
- <1607526183-25652-2-git-send-email-loic.poulain@linaro.org>
-From:   Jeffrey Hugo <jhugo@codeaurora.org>
-Message-ID: <dba2d62f-ff2a-8925-e2e5-20c951d230c5@codeaurora.org>
-Date:   Wed, 9 Dec 2020 08:46:34 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1729598AbgLIPu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 10:50:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39957 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726456AbgLIPuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 10:50:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607528928;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=pxtrL3FuwLm6to1JoqqYIg5sQTY8SBBkqlL1fyreDPs=;
+        b=iQp+kwvRmPS0wwa8BoYsfuErsJcS+oK2p9Da3XIE7d/Udv51AWr4jHhxsiM+GFHBK+oLFM
+        ED6DMUC/fWN/3HYHmO9XPkJyQKXF/Z8+LRmRYc7DCbVf1g4UxXYNXE+8sFT23Vl55F4vrS
+        9yAlzHHP9U/Z30kfSV0fF2gzskk7NtM=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-151-BMbrQEszNKynmW7sO6QW6w-1; Wed, 09 Dec 2020 10:48:45 -0500
+X-MC-Unique: BMbrQEszNKynmW7sO6QW6w-1
+Received: by mail-wr1-f70.google.com with SMTP id x10so825665wrs.2
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 07:48:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=pxtrL3FuwLm6to1JoqqYIg5sQTY8SBBkqlL1fyreDPs=;
+        b=f169NX5snTn9NUuKiGPL8QRILusU7xd0/tM5XYxRH4rDrW/RpWOKQqAvhKgJIvIcLx
+         4iV+1L9l9B9txPmDytxwfgodRoTRIWcq9Ky6Xoj48FUDeBtckEduuU7rCmPHCrIDI/io
+         q9GQJx3eq/hEyOkLWqvYzuO6mhU6a6j6qxDT24XwSQZDAypsp8kyX/2hduG6tmAXHLjr
+         yXbkiI1xGgs98qyFeCHirGFy97O4ZHlTcq6p1IAqxIFMPedwNQdwK2mazLFNhgvuL9OC
+         xVy2mR/igUIQafG2lP44SlIVeYykZHyNBmIU50o5z1ssIAv8pwYGQSb41XdVEsHHfxaz
+         KQMg==
+X-Gm-Message-State: AOAM533yp6gF787DPuvB952q9+FaF+na/dT565L7I+nniCapiw/w+uir
+        1yIJ2yyXlS/YuJVR4P8lQQBpAstf7JxGir/Y6pCGJA1kNJRVLIcimpRmZxCy7StnPRpWMRvL4nE
+        aEyHc5udK7bA4jsdU
+X-Received: by 2002:a5d:4ccf:: with SMTP id c15mr3419609wrt.237.1607528924460;
+        Wed, 09 Dec 2020 07:48:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw4SHt7t7bJl9dEK2lZByvyKIDpLCLQfyY4oyAMLP8agqVfgoex4dJXfHH2RFmFeDD+BKfpqw==
+X-Received: by 2002:a5d:4ccf:: with SMTP id c15mr3419595wrt.237.1607528924281;
+        Wed, 09 Dec 2020 07:48:44 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id c9sm4519476wrn.65.2020.12.09.07.48.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Dec 2020 07:48:43 -0800 (PST)
+Date:   Wed, 9 Dec 2020 16:48:41 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net] net: sched: Fix dump of MPLS_OPT_LSE_LABEL attribute in
+ cls_flower
+Message-ID: <0e248b0464673b412d428666d10b6d3c208809bf.1607528860.git.gnault@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <1607526183-25652-2-git-send-email-loic.poulain@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/9/2020 8:03 AM, Loic Poulain wrote:
-> The RX queue size can be determined at runtime by retrieveing the
+TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL is a u32 attribute (MPLS label is
+20 bits long).
 
-retrieving
+Fixes the following bug:
 
-> number of available transfer descriptors
-> 
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
->   drivers/net/mhi_net.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
-> index 8e72d94..0333e07 100644
-> --- a/drivers/net/mhi_net.c
-> +++ b/drivers/net/mhi_net.c
-> @@ -256,9 +256,6 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
->   	mhi_netdev->mdev = mhi_dev;
->   	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
->   
-> -	/* All MHI net channels have 128 ring elements (at least for now) */
-> -	mhi_netdev->rx_queue_sz = 128;
-> -
->   	INIT_DELAYED_WORK(&mhi_netdev->rx_refill, mhi_net_rx_refill_work);
->   	u64_stats_init(&mhi_netdev->stats.rx_syncp);
->   	u64_stats_init(&mhi_netdev->stats.tx_syncp);
-> @@ -268,6 +265,9 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
->   	if (err)
->   		goto out_err;
->   
-> +	/* Number of transfer descriptors determines size of the queue */
-> +	mhi_netdev->rx_queue_sz = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
-> +
->   	err = register_netdev(ndev);
->   	if (err)
->   		goto out_err;
-> 
+ $ tc filter add dev ethX ingress protocol mpls_uc \
+     flower mpls lse depth 2 label 256             \
+     action drop
 
+ $ tc filter show dev ethX ingress
+   filter protocol mpls_uc pref 49152 flower chain 0
+   filter protocol mpls_uc pref 49152 flower chain 0 handle 0x1
+     eth_type 8847
+     mpls
+       lse depth 2 label 0  <-- invalid label 0, should be 256
+   ...
 
+Fixes: 61aec25a6db5 ("cls_flower: Support filtering on multiple MPLS Label Stack Entries")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+ net/sched/cls_flower.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index fed18fd2c50b..1319986693fc 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -2424,8 +2424,8 @@ static int fl_dump_key_mpls_opt_lse(struct sk_buff *skb,
+ 			return err;
+ 	}
+ 	if (lse_mask->mpls_label) {
+-		err = nla_put_u8(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL,
+-				 lse_key->mpls_label);
++		err = nla_put_u32(skb, TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL,
++				  lse_key->mpls_label);
+ 		if (err)
+ 			return err;
+ 	}
 -- 
-Jeffrey Hugo
-Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+2.21.3
+
