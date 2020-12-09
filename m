@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C5932D45A1
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:42:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1986F2D45BC
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728759AbgLIPly (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 10:41:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
+        id S1730863AbgLIPpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 10:45:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727559AbgLIPlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 10:41:49 -0500
-Received: from mail-oo1-xc41.google.com (mail-oo1-xc41.google.com [IPv6:2607:f8b0:4864:20::c41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48EF2C0613CF;
-        Wed,  9 Dec 2020 07:41:09 -0800 (PST)
-Received: by mail-oo1-xc41.google.com with SMTP id f8so481999oou.0;
-        Wed, 09 Dec 2020 07:41:09 -0800 (PST)
+        with ESMTP id S1730836AbgLIPpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 10:45:18 -0500
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32681C0613CF;
+        Wed,  9 Dec 2020 07:44:37 -0800 (PST)
+Received: by mail-ot1-x344.google.com with SMTP id o11so1766310ote.4;
+        Wed, 09 Dec 2020 07:44:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JKPWvTeOUAWWeTIgOEQ1k8P3eL2U5OpItcuMAQW7INo=;
-        b=Hj1UiESjeBP5AmevOGTf6A/W9xJJvcS3eDm6cx5dIVkGB8z9kyiJU9VEWE62VFfK7l
-         vi5RDj6WXNGqyogY0y/J23YIc9PVB+X/RLLaJsH4hgFHGmtGTcj838loYr7v45jPADEM
-         c8pGvqNrHlcFVoS3KArXTLKNlihTDX8l3gtgkTN46MG2BnpFrAqK0oCeKwcEUKgBin8i
-         Q/l7aeUKq4r6Cyh8RwFekPmwVh731B3bk5b7wYpETBZW5Yfy8qYasFeIpuj4hPOdnvJy
-         udHwy3wRrb8ER4U6/yVFZTzkjTPA1vceeNB6oU60zxlcCA+2H3je1A4AF4ACJzA6XEo1
-         lBTw==
+        bh=L9Pq6BNyXG8ajxZyez3wZsQ0mKu/8ydF/Z7laX598Co=;
+        b=sn11wMPpiZyhhkIWsiIm01K/deqwOxQ5hJ3ajWCWQ0rjiAhA9iuHbUrzz4PiSP/KIN
+         gQ6bU2F0CYPk9f5AZHuPamZlk1giLV3ZzMEsY+56niIQbjnitaBHta+t145GUDQbvqJI
+         D02+U/LYN1/g9pExDtsEAT1LBGm1p6Oa8TqF+rsv9DXS2O/AMrU1ZKDZjGq0m86YFzt1
+         eEXlyQFAog26HzPxIkhad8O0mo3dcXHaL2noTuPPDz6h/PZif8mCc1lqD16uHg43mwwZ
+         C0xrVS6NU95pKKzi1MN1UY+VWl+nV4ZSNMd1fSq8L9bh7YdbylHIY6vtds/+wciLT6aC
+         uDbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JKPWvTeOUAWWeTIgOEQ1k8P3eL2U5OpItcuMAQW7INo=;
-        b=QWlaqjQvabw2GkcFhnSLDbiVtwAxYCk8vKo6Sg7tXN832KX9M1TenNvW/c8YDaImvc
-         ELMjXSR0VZDB+hKynIRmc0EiXPMY1ZuJ1WxSFv5XcH4GKNiNqnRPY2Sj1p3bbAKiTBQg
-         IfV5FgPEaXadCjxjrLT+RnqcsyjfmDB82YLmkExG7X7nTpU6S8McBCoVn5/X003r2j3Z
-         Zoms/rzc9f+U8zlDOMzhBChIEkXVkRWeCRXxge+yTbl50U9iafU5wWbed22f2Gdj4aTp
-         Gdu80xLn56kICFRbD5LDSioBf6KregqxiYdH+1sVVpxk8477T/FzN36iv2lVuzY0fK1I
-         n2XA==
-X-Gm-Message-State: AOAM533SIvdx1yYGPj6LeOAicXht0fAUbqrDD8Efp+nA+1ggVob0Xvj2
-        1smhmkRnLW61YhUGgsGOOBU=
-X-Google-Smtp-Source: ABdhPJyK21rORfCNf9dRwuUVrVhlTAdISKYwMWBuQTlPCNLLU+QgFl/G7zg79dKi4UhOwnu0HK/6fw==
-X-Received: by 2002:a4a:9563:: with SMTP id n32mr2334087ooi.53.1607528468662;
-        Wed, 09 Dec 2020 07:41:08 -0800 (PST)
+        bh=L9Pq6BNyXG8ajxZyez3wZsQ0mKu/8ydF/Z7laX598Co=;
+        b=hs9dXlPkERT+f6v8SdCOHaiLDmOQzLxiq3+mDdPGj6Mi5H6Ub+HtLSGsDx79bKWkQi
+         fpqrqcNO3Lsc+TUvhl3FPKznkhdCjchZzBrRxGuXOLGAEsV0F9clePJ0qI70iPekltsV
+         KcP2jMF5ZTQX4ESfb1eBNw62jAeQpffirQ1BfBEE0UIc3mDHYf+XCmGiwEE10YkGKHHa
+         EoiBpesstjkjVueaId00m86Xlxwy65lyB3oRh/2UFnvQ8sq9AnbKgtCrSt0tuQQ4SpHk
+         cRqF3ijpbQptGYJp0vDt7cacg42HkW5m/zFd7m0y5P5CoSUzV/5m+ojuDoPzw6Pg3S7W
+         l9jg==
+X-Gm-Message-State: AOAM532dcsXNftApY/vrIfp4d7CIoY1Ym33mbj3OvWcbvC6BnIhNB7KA
+        ePjnWqIUTnKOB9NP9Dh5ryM=
+X-Google-Smtp-Source: ABdhPJwf3/fYJzlqB2LPqMIKJHGAdXaozX1tdzHebBwDewhAxnnjKAvPoU3ss3ZqGK6l69aHoKypNg==
+X-Received: by 2002:a05:6830:1b7b:: with SMTP id d27mr2393689ote.132.1607528676657;
+        Wed, 09 Dec 2020 07:44:36 -0800 (PST)
 Received: from Davids-MacBook-Pro.local ([8.48.134.51])
-        by smtp.googlemail.com with ESMTPSA id r25sm454194otp.23.2020.12.09.07.41.05
+        by smtp.googlemail.com with ESMTPSA id v13sm381328ook.13.2020.12.09.07.44.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Dec 2020 07:41:07 -0800 (PST)
+        Wed, 09 Dec 2020 07:44:36 -0800 (PST)
 Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
 To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>
@@ -72,8 +72,8 @@ References: <20201204102901.109709-1-marekx.majtyka@intel.com>
  <20201209095454.GA36812@ranger.igk.intel.com>
  <20201209125223.49096d50@carbon>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com>
-Date:   Wed, 9 Dec 2020 08:41:05 -0700
+Message-ID: <6913010d-2fd6-6713-94e9-8f5b8ad4b708@gmail.com>
+Date:   Wed, 9 Dec 2020 08:44:33 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
  Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
@@ -86,25 +86,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/9/20 4:52 AM, Jesper Dangaard Brouer wrote:
->>> still load and either share queues across multiple cores or restirct
->>> down to a subset of CPUs.  
->>
->> And that's the missing piece of logic, I suppose.
->>
->>> Do you need 192 cores for a 10gbps nic, probably not.  
->>
->> Let's hear from Jesper :p
-> 
-> LOL - of-cause you don't need 192 cores.  With XDP I will claim that
-> you only need 2 cores (with high GHz) to forward 10gbps wirespeed small
-> packets.
+> But I have redesigned the ndo_xdp_xmit call to take a bulk of packets
+> (up-to 16) so it should not be a problem to solve this by sharing
+> TX-queue and talking a lock per 16 packets.  I still recommend that,
+> for fallback case,  you allocated a number a TX-queue and distribute
+> this across CPUs to avoid hitting a congested lock (above measurements
+> are the optimal non-congested atomic lock operation)
 
-You don't need 192 for 10G on Rx. However, if you are using XDP_REDIRECT
-from VM tap devices the next device (presumably the host NIC) does need
-to be able to handle the redirect.
-
-My personal experience with this one is mlx5/ConnectX4-LX with a limit
-of 63 queues and a server with 96 logical cpus. If the vhost thread for
-the tap device runs on a cpu that does not have an XDP TX Queue, the
-packet is dropped. This is a really bizarre case to debug as some
-packets go out fine while others are dropped.
+I have been meaning to ask you why 16 for the XDP batching? If the
+netdev budget is 64, why not something higher like 32 or 64?
