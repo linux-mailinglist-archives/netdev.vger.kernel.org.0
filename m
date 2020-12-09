@@ -2,218 +2,382 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A792D4176
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 12:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31A5E2D41C7
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 13:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731059AbgLILyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 06:54:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38658 "EHLO
+        id S1731346AbgLIMJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 07:09:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59308 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731081AbgLILyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 06:54:09 -0500
+        by vger.kernel.org with ESMTP id S1730658AbgLIMJA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 07:09:00 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607514762;
+        s=mimecast20190719; t=1607515652;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Bn51LdHRNaBLMGJFIDHKNY3UzL8ceDzRM+1UkGzDc6U=;
-        b=Bh/dSOQ7E+FWoiJ4QnmSGTiY8NWECAmBGanvzxlbve/mDyDVN6tTdPEc5Kyz2OcBXV1jOK
-        ef2B2lKGTKmw1YWjuu+g7oSsZdzWIbyWqEpKjMs+O/3qkHRZkzUf7sqvYMbLnNokZPKD/I
-        3TvOJGHMzivWFh7JMhYyBn/kNj2DjGo=
+        bh=EI2t+HFkPKWNaFVT9j6bEYQiDKkB0etJP05t9i5hSaM=;
+        b=i1BLTKatgoDIOPC6Zbz8PevuIWodZY3LPHHAJJliwgF4116KCzPLXMbJfCJxBA0HlQsQ+A
+        cHjF0c43/Cy3t7+T6J/oNHkusc3Q0quyOG/xBIzrdDgdezrkRzDlBpomFdHVSAM0fKxQy5
+        sC4b9ks/xKr3pkN4E+Iq+2wlzqBW6QM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-572-Cg46o7bWOtyId69R_7_9DQ-1; Wed, 09 Dec 2020 06:52:39 -0500
-X-MC-Unique: Cg46o7bWOtyId69R_7_9DQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-80-ybL7k7rkOTaPDAaHx72vcA-1; Wed, 09 Dec 2020 07:07:26 -0500
+X-MC-Unique: ybL7k7rkOTaPDAaHx72vcA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5B9AD107ACF8;
-        Wed,  9 Dec 2020 11:52:37 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3DA3B1002393;
-        Wed,  9 Dec 2020 11:52:28 +0000 (UTC)
-Date:   Wed, 9 Dec 2020 12:52:23 +0100
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        alardam@gmail.com, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
-        ast@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        hawk@kernel.org, jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
-        intel-wired-lan@lists.osuosl.org,
-        Marek Majtyka <marekx.majtyka@intel.com>
-Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
-Message-ID: <20201209125223.49096d50@carbon>
-In-Reply-To: <20201209095454.GA36812@ranger.igk.intel.com>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
-        <20201204102901.109709-2-marekx.majtyka@intel.com>
-        <878sad933c.fsf@toke.dk>
-        <20201204124618.GA23696@ranger.igk.intel.com>
-        <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
-        <20201207135433.41172202@carbon>
-        <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
-        <20201207230755.GB27205@ranger.igk.intel.com>
-        <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
-        <20201209095454.GA36812@ranger.igk.intel.com>
-Organization: Red Hat Inc.
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4B900107ACE4;
+        Wed,  9 Dec 2020 12:07:24 +0000 (UTC)
+Received: from [10.36.113.83] (ovpn-113-83.ams2.redhat.com [10.36.113.83])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1DA625D719;
+        Wed,  9 Dec 2020 12:07:13 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Maciej Fijalkowski" <maciej.fijalkowski@intel.com>
+Cc:     "Lorenzo Bianconi" <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
+        brouer@redhat.com, lorenzo.bianconi@redhat.com, jasowang@redhat.com
+Subject: Re: [PATCH v5 bpf-next 13/14] bpf: add new frame_length field to the
+ XDP ctx
+Date:   Wed, 09 Dec 2020 13:07:11 +0100
+Message-ID: <170BF39B-894D-495F-93E0-820EC7880328@redhat.com>
+In-Reply-To: <20201209111047.GB36812@ranger.igk.intel.com>
+References: <cover.1607349924.git.lorenzo@kernel.org>
+ <0547d6f752e325f56a8e5f6466b50e81ff29d65f.1607349924.git.lorenzo@kernel.org>
+ <20201208221746.GA33399@ranger.igk.intel.com>
+ <96C89134-A747-4E05-AA11-CB6EA1420900@redhat.com>
+ <20201209111047.GB36812@ranger.igk.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Dec 2020 10:54:54 +0100
-Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
-
-> On Tue, Dec 08, 2020 at 10:03:51PM -0800, John Fastabend wrote:
-> > > On Mon, Dec 07, 2020 at 12:52:22PM -0800, John Fastabend wrote:  
-> > > > Jesper Dangaard Brouer wrote:  
-> > > > > On Fri, 4 Dec 2020 16:21:08 +0100
-> > > > > Daniel Borkmann <daniel@iogearbox.net> wrote:  
-> > 
-> > [...] pruning the thread to answer Jesper.  
-> 
-> I think you meant me, but thanks anyway for responding :)
-
-I was about to say that ;-)
-
-> > > > > 
-> > > > > Use-case(2): Disable XDP_TX on a driver to save hardware TX-queue
-> > > > > resources, as the use-case is only DDoS.  Today we have this problem
-> > > > > with the ixgbe hardware, that cannot load XDP programs on systems with
-> > > > > more than 192 CPUs.  
-> > > > 
-> > > > The ixgbe issues is just a bug or missing-feature in my opinion.  
-> > > 
-> > > Not a bug, rather HW limitation?  
-> > 
-> > Well hardware has some max queue limit. Likely <192 otherwise I would
-> > have kept doing queue per core on up to 192. But, ideally we should  
-> 
-> Data sheet states its 128 Tx qs for ixgbe.
-
-I likely remember wrong, maybe it was only ~96 CPUs.  I do remember that
-some TX queue were reserved for something else, and QA reported issues
-(as I don't have this high end system myself).
 
 
-> > still load and either share queues across multiple cores or restirct
-> > down to a subset of CPUs.  
-> 
-> And that's the missing piece of logic, I suppose.
-> 
-> > Do you need 192 cores for a 10gbps nic, probably not.  
-> 
-> Let's hear from Jesper :p
+On 9 Dec 2020, at 12:10, Maciej Fijalkowski wrote:
 
-LOL - of-cause you don't need 192 cores.  With XDP I will claim that
-you only need 2 cores (with high GHz) to forward 10gbps wirespeed small
-packets.
+> On Wed, Dec 09, 2020 at 11:35:13AM +0100, Eelco Chaudron wrote:
+>>
+>>
+>> On 8 Dec 2020, at 23:17, Maciej Fijalkowski wrote:
+>>
+>>> On Mon, Dec 07, 2020 at 05:32:42PM +0100, Lorenzo Bianconi wrote:
+>>>> From: Eelco Chaudron <echaudro@redhat.com>
+>>>>
+>>>> This patch adds a new field to the XDP context called frame_length,
+>>>> which will hold the full length of the packet, including fragments
+>>>> if existing.
+>>>
+>>> The approach you took for ctx access conversion is barely described 
+>>> :/
+>>
+>> You are right, I should have added some details on why I have chosen 
+>> to take
+>> this approach. The reason is, to avoid a dedicated entry in the 
+>> xdp_frame
+>> structure and maintaining it in the various eBPF helpers.
+>>
+>> I'll update the commit message in the next revision to include this.
+>>
+>>>>
+>>>> eBPF programs can determine if fragments are present using 
+>>>> something
+>>>> like:
+>>>>
+>>>>   if (ctx->data_end - ctx->data < ctx->frame_length) {
+>>>>     /* Fragements exists. /*
+>>>>   }
+>>>>
+>>>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>>>> ---
+>>>>  include/net/xdp.h              | 22 +++++++++
+>>>>  include/uapi/linux/bpf.h       |  1 +
+>>>>  kernel/bpf/verifier.c          |  2 +-
+>>>>  net/core/filter.c              | 83
+>>>> ++++++++++++++++++++++++++++++++++
+>>>>  tools/include/uapi/linux/bpf.h |  1 +
+>>>>  5 files changed, 108 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/include/net/xdp.h b/include/net/xdp.h
+>>>> index 09078ab6644c..e54d733c90ed 100644
+>>>> --- a/include/net/xdp.h
+>>>> +++ b/include/net/xdp.h
+>>>> @@ -73,8 +73,30 @@ struct xdp_buff {
+>>>>  	void *data_hard_start;
+>>>>  	struct xdp_rxq_info *rxq;
+>>>>  	struct xdp_txq_info *txq;
+>>>> +	/* If any of the bitfield lengths for frame_sz or mb below 
+>>>> change,
+>>>> +	 * make sure the defines here are also updated!
+>>>> +	 */
+>>>> +#ifdef __BIG_ENDIAN_BITFIELD
+>>>> +#define MB_SHIFT	  0
+>>>> +#define MB_MASK		  0x00000001
+>>>> +#define FRAME_SZ_SHIFT	  1
+>>>> +#define FRAME_SZ_MASK	  0xfffffffe
+>>>> +#else
+>>>> +#define MB_SHIFT	  31
+>>>> +#define MB_MASK		  0x80000000
+>>>> +#define FRAME_SZ_SHIFT	  0
+>>>> +#define FRAME_SZ_MASK	  0x7fffffff
+>>>> +#endif
+>>>> +#define FRAME_SZ_OFFSET() offsetof(struct xdp_buff,
+>>>> __u32_bit_fields_offset)
+>>>> +#define MB_OFFSET()	  offsetof(struct xdp_buff,
+>>>> __u32_bit_fields_offset)
+>>>> +	/* private: */
+>>>> +	u32 __u32_bit_fields_offset[0];
+>>>
+>>> Why? I don't get that. Please explain.
+>>
+>> I was trying to find an easy way to extract the data/fields, maybe 
+>> using BTF
+>> but had no luck.
+>> So I resorted back to an existing approach in sk_buff, see
+>> https://elixir.bootlin.com/linux/v5.10-rc7/source/include/linux/skbuff.h#L780
+>>
+>>> Also, looking at all the need for masking/shifting, I wonder if it 
+>>> would
+>>> be better to have u32 frame_sz and u8 mb...
+>>
+>> Yes, I agree having u32 would be way better, even for u32 for the mb 
+>> field.
+>> I’ve seen other code converting flags to u32 for easy access in the 
+>> eBPF
+>> context structures.
+>>
+>> I’ll see there are some comments in general on the bit definitions 
+>> for mb,
+>> but I’ll try to convince them to use u32 for both in the next 
+>> revision, as I
+>> think for the xdp_buff structure size is not a real problem ;)
+>
+> Generally people were really strict on xdp_buff extensions as we 
+> didn't
+> want to end up with another skb-like monster. I think Jesper somewhere
+> said that one cacheline is max for that. With your tmp_reg[2] you 
+> exceed
+> that from what I see, but I might be short on coffee.
 
-The point is that this only works, when we avoid atomic lock operations
-per packet and bulk NIC PCIe tail/doorbell.  It was actually John's
-invention/design to have a dedicated TX queue per core to avoid the
-atomic lock operation per packet when queuing packets to the NIC.
+Guess you are right! I got confused with xdp_md, guess I did not have 
+enough coffee when I replied :)
 
- 10G @64B give budget of 67.2 ns (241 cycles @ 3.60GHz)
- Atomic lock operation use:[1]
- - Type:spin_lock_unlock         Per elem: 34 cycles(tsc) 9.485 ns
- - Type:spin_lock_unlock_irqsave Per elem: 61 cycles(tsc) 17.125 ns
- (And atomic can affect Inst per cycle)
+The common use case will not hit the second cache line (if src reg != 
+dst reg), but it might happen.
 
-But I have redesigned the ndo_xdp_xmit call to take a bulk of packets
-(up-to 16) so it should not be a problem to solve this by sharing
-TX-queue and talking a lock per 16 packets.  I still recommend that,
-for fallback case,  you allocated a number a TX-queue and distribute
-this across CPUs to avoid hitting a congested lock (above measurements
-are the optimal non-congested atomic lock operation)
+>>
+>>>> +	/* public: */
+>>>>  	u32 frame_sz:31; /* frame size to deduce data_hard_end/reserved
+>>>> tailroom*/
+>>>>  	u32 mb:1; /* xdp non-linear buffer */
+>>>> +
+>>>> +	/* Temporary registers to make conditional access/stores 
+>>>> possible.
+>>>> */
+>>>> +	u64 tmp_reg[2];
+>>>
+>>> IMHO this kills the bitfield approach we have for vars above.
+>>
+>> See above…
+>>
+>>>>  };
+>>>>
+>>>>  /* Reserve memory area at end-of data area.
+>>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>>> index 30b477a26482..62c50ab28ea9 100644
+>>>> --- a/include/uapi/linux/bpf.h
+>>>> +++ b/include/uapi/linux/bpf.h
+>>>> @@ -4380,6 +4380,7 @@ struct xdp_md {
+>>>>  	__u32 rx_queue_index;  /* rxq->queue_index  */
+>>>>
+>>>>  	__u32 egress_ifindex;  /* txq->dev->ifindex */
+>>>> +	__u32 frame_length;
+>>>>  };
+>>>>
+>>>>  /* DEVMAP map-value layout
+>>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+>>>> index 93def76cf32b..c50caea29fa2 100644
+>>>> --- a/kernel/bpf/verifier.c
+>>>> +++ b/kernel/bpf/verifier.c
+>>>> @@ -10526,7 +10526,7 @@ static int convert_ctx_accesses(struct
+>>>> bpf_verifier_env *env)
+>>>>  	const struct bpf_verifier_ops *ops = env->ops;
+>>>>  	int i, cnt, size, ctx_field_size, delta = 0;
+>>>>  	const int insn_cnt = env->prog->len;
+>>>> -	struct bpf_insn insn_buf[16], *insn;
+>>>> +	struct bpf_insn insn_buf[32], *insn;
+>>>>  	u32 target_size, size_default, off;
+>>>>  	struct bpf_prog *new_prog;
+>>>>  	enum bpf_access_type type;
+>>>> diff --git a/net/core/filter.c b/net/core/filter.c
+>>>> index 4c4882d4d92c..278640db9e0a 100644
+>>>> --- a/net/core/filter.c
+>>>> +++ b/net/core/filter.c
+>>>> @@ -8908,6 +8908,7 @@ static u32 xdp_convert_ctx_access(enum
+>>>> bpf_access_type type,
+>>>>  				  struct bpf_insn *insn_buf,
+>>>>  				  struct bpf_prog *prog, u32 *target_size)
+>>>>  {
+>>>> +	int ctx_reg, dst_reg, scratch_reg;
+>>>>  	struct bpf_insn *insn = insn_buf;
+>>>>
+>>>>  	switch (si->off) {
+>>>> @@ -8954,6 +8955,88 @@ static u32 xdp_convert_ctx_access(enum
+>>>> bpf_access_type type,
+>>>>  		*insn++ = BPF_LDX_MEM(BPF_W, si->dst_reg, si->dst_reg,
+>>>>  				      offsetof(struct net_device, ifindex));
+>>>>  		break;
+>>>> +	case offsetof(struct xdp_md, frame_length):
+>>>> +		/* Need tmp storage for src_reg in case src_reg == dst_reg,
+>>>> +		 * and a scratch reg */
+>>>> +		scratch_reg = BPF_REG_9;
+>>>> +		dst_reg = si->dst_reg;
+>>>> +
+>>>> +		if (dst_reg == scratch_reg)
+>>>> +			scratch_reg--;
+>>>> +
+>>>> +		ctx_reg = (si->src_reg == si->dst_reg) ? scratch_reg - 1 :
+>>>> si->src_reg;
+>>>> +		while (dst_reg == ctx_reg || scratch_reg == ctx_reg)
+>>>> +			ctx_reg--;
+>>>> +
+>>>> +		/* Save scratch registers */
+>>>> +		if (ctx_reg != si->src_reg) {
+>>>> +			*insn++ = BPF_STX_MEM(BPF_DW, si->src_reg, ctx_reg,
+>>>> +					      offsetof(struct xdp_buff,
+>>>> +						       tmp_reg[1]));
+>>>> +
+>>>> +			*insn++ = BPF_MOV64_REG(ctx_reg, si->src_reg);
+>>>> +		}
+>>>> +
+>>>> +		*insn++ = BPF_STX_MEM(BPF_DW, ctx_reg, scratch_reg,
+>>>> +				      offsetof(struct xdp_buff, tmp_reg[0]));
+>>>
+>>> Why don't you push regs to stack, use it and then pop it back? That 
+>>> way
+>>> I
+>>> suppose you could avoid polluting xdp_buff with tmp_reg[2].
+>>
+>> There is no “real” stack in eBPF, only a read-only frame pointer, 
+>> and as we
+>> are replacing a single instruction, we have no info on what we can 
+>> use as
+>> scratch space.
+>
+> Uhm, what? You use R10 for stack operations. Verifier tracks the stack
+> depth used by programs and then it is passed down to JIT so that 
+> native
+> asm will create a properly sized stack frame.
+>
+> From the top of my head I would let know xdp_convert_ctx_access of a
+> current stack depth and use it for R10 stores, so your scratch space 
+> would
+> be R10 + (stack depth + 8), R10 + (stack_depth + 16).
 
-[1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/time_bench_sample.c
+Other instances do exactly the same, i.e. put some scratch registers in 
+the underlying data structure, so I reused this approach. From the 
+current information in the callback, I was not able to determine the 
+current stack_depth. With "real" stack above, I meant having a pop/push 
+like instruction.
 
-> > Yes, it requires some extra care, but should be doable
-> > if someone cares enough. I gather current limitation/bug is because
-> > no one has that configuration and/or has complained loud enough.  
-> 
-> I would say we're safe for queue per core approach for newer devices where
-> we have thousands of queues to play with. Older devices combined with big
-> cpu count can cause us some problems.
-> 
-> Wondering if drivers could have a problem when user would do something
-> weird as limiting the queue count to a lower value than cpu count and then
-> changing the irq affinity?
+I do not know the verifier code well enough, but are you suggesting I 
+can get the current stack_depth from the verifier in the 
+xdp_convert_ctx_access() callback? If so any pointers?
 
-Not sure what you mean.
+> Problem with that would be the fact that convert_ctx_accesses() 
+> happens to
+> be called after the check_max_stack_depth(), so probably stack_depth 
+> of a
+> prog that has frame_length accesses would have to be adjusted earlier.
 
-But for XDP RX-side we use softirq NAPI guarantee to guard against
-concurrent access to our (per-cpu) data structures.
+Ack, need to learn more on the verifier part…
 
-> >   
-> > >   
-> > > > 
-> > > > I think we just document that XDP_TX consumes resources and if users
-> > > > care they shouldn't use XD_TX in programs and in that case hardware
-> > > > should via program discovery not allocate the resource. This seems
-> > > > cleaner in my opinion then more bits for features.  
-> > > 
-> > > But what if I'm with some limited HW that actually has a support for XDP
-> > > and I would like to utilize XDP_TX?
-> > > 
-> > > Not all drivers that support XDP consume Tx resources. Recently igb got
-> > > support and it shares Tx queues between netstack and XDP.  
-> > 
-> > Makes sense to me.
-> >   
-> > > 
-> > > I feel like we should have a sort-of best effort approach in case we
-> > > stumble upon the XDP_TX in prog being loaded and query the driver if it
-> > > would be able to provide the Tx resources on the current system, given
-> > > that normally we tend to have a queue per core.  
-> > 
-> > Why do we need to query? I guess you want some indication from the
-> > driver its not going to be running in the ideal NIC configuraition?
-> > I guess printing a warning would be the normal way to show that. But,
-> > maybe your point is you want something easier to query?  
-> 
-> I meant that given Jesper's example, what should we do? You don't have Tx
-> resources to pull at all. Should we have a data path for that case that
-> would share Tx qs between XDP/netstack? Probably not.
-> 
-
-I think ixgbe should have a fallback mode, where it allocated e.g. 32
-TX-queue for XDP xmits or even just same amount as RX-queues (I think
-XDP_TX and XDP_REDIRECT can share these TX-queues dedicated to XDP).
-When in fallback mode a lock need to be taken (sharded across CPUs),
-but ndo_xdp_xmit will bulk up-to 16 packets, so it should not matter
-too much.
-
-I do think ixgbe should output a dmesg log message, to say it is in XDP
-fallback mode with X number of TX-queues.  For us QA usually collect
-the dmesg output after a test run.
-
-   
-> > > 
-> > > In that case igb would say yes, ixgbe would say no and prog would be
-> > > rejected.  
-> > 
-> > I think the driver should load even if it can't meet the queue per
-> > core quota. Refusing to load at all or just dropping packets on the
-> > floor is not very friendly. I think we agree on that point.  
-> 
-> Agreed on that. But it needs some work. I can dabble on that a bit.
-> 
-
-I will really appreciate if Intel can fix this in the ixgbe driver, and
-implement a fallback method.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+>>
+>>>> +
+>>>> +		/* What does this code do?
+>>>> +		 *   dst_reg = 0
+>>>> +		 *
+>>>> +		 *   if (!ctx_reg->mb)
+>>>> +		 *      goto no_mb:
+>>>> +		 *
+>>>> +		 *   dst_reg = (struct xdp_shared_info *)xdp_data_hard_end(xdp)
+>>>> +		 *   dst_reg = dst_reg->data_length
+>>>> +		 *
+>>>> +		 * NOTE: xdp_data_hard_end() is xdp->hard_start +
+>>>> +		 *       xdp->frame_sz - sizeof(shared_info)
+>>>> +		 *
+>>>> +		 * no_mb:
+>>>> +		 *   dst_reg += ctx_reg->data_end - ctx_reg->data
+>>>> +		 */
+>>>> +		*insn++ = BPF_MOV64_IMM(dst_reg, 0);
+>>>> +
+>>>> +		*insn++ = BPF_LDX_MEM(BPF_W, scratch_reg, ctx_reg, MB_OFFSET());
+>>>> +		*insn++ = BPF_ALU32_IMM(BPF_AND, scratch_reg, MB_MASK);
+>>>> +		*insn++ = BPF_JMP_IMM(BPF_JEQ, scratch_reg, 0, 7); /*goto no_mb;
+>>>> */
+>>>> +
+>>>> +		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_buff,
+>>>> +						       data_hard_start),
+>>>> +				      dst_reg, ctx_reg,
+>>>> +				      offsetof(struct xdp_buff, data_hard_start));
+>>>> +		*insn++ = BPF_LDX_MEM(BPF_W, scratch_reg, ctx_reg,
+>>>> +				      FRAME_SZ_OFFSET());
+>>>> +		*insn++ = BPF_ALU32_IMM(BPF_AND, scratch_reg, FRAME_SZ_MASK);
+>>>> +		*insn++ = BPF_ALU32_IMM(BPF_RSH, scratch_reg, FRAME_SZ_SHIFT);
+>>>> +		*insn++ = BPF_ALU64_REG(BPF_ADD, dst_reg, scratch_reg);
+>>>> +		*insn++ = BPF_ALU64_IMM(BPF_SUB, dst_reg,
+>>>> +					SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
+>>>> +		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_shared_info,
+>>>> +						       data_length),
+>>>> +				      dst_reg, dst_reg,
+>>>> +				      offsetof(struct xdp_shared_info,
+>>>> +					       data_length));
+>>>> +
+>>>> +		/* no_mb: */
+>>>> +		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_buff, 
+>>>> data_end),
+>>>> +				      scratch_reg, ctx_reg,
+>>>> +				      offsetof(struct xdp_buff, data_end));
+>>>> +		*insn++ = BPF_ALU64_REG(BPF_ADD, dst_reg, scratch_reg);
+>>>> +		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct xdp_buff, data),
+>>>> +				      scratch_reg, ctx_reg,
+>>>> +				      offsetof(struct xdp_buff, data));
+>>>> +		*insn++ = BPF_ALU64_REG(BPF_SUB, dst_reg, scratch_reg);
+>>>> +
+>>>> +		/* Restore scratch registers */
+>>>> +		*insn++ = BPF_LDX_MEM(BPF_DW, scratch_reg, ctx_reg,
+>>>> +				      offsetof(struct xdp_buff, tmp_reg[0]));
+>>>> +
+>>>> +		if (ctx_reg != si->src_reg)
+>>>> +			*insn++ = BPF_LDX_MEM(BPF_DW, ctx_reg, ctx_reg,
+>>>> +					      offsetof(struct xdp_buff,
+>>>> +						       tmp_reg[1]));
+>>>> +		break;
+>>>>  	}
+>>>>
+>>>>  	return insn - insn_buf;
+>>>> diff --git a/tools/include/uapi/linux/bpf.h
+>>>> b/tools/include/uapi/linux/bpf.h
+>>>> index 30b477a26482..62c50ab28ea9 100644
+>>>> --- a/tools/include/uapi/linux/bpf.h
+>>>> +++ b/tools/include/uapi/linux/bpf.h
+>>>> @@ -4380,6 +4380,7 @@ struct xdp_md {
+>>>>  	__u32 rx_queue_index;  /* rxq->queue_index  */
+>>>>
+>>>>  	__u32 egress_ifindex;  /* txq->dev->ifindex */
+>>>> +	__u32 frame_length;
+>>>>  };
+>>>>
+>>>>  /* DEVMAP map-value layout
+>>>> -- 
+>>>> 2.28.0
+>>>>
+>>
 
