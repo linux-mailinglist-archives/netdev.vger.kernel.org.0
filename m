@@ -2,93 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D74FC2D2520
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:58:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F73A2D24BC
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:40:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727665AbgLHH6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 02:58:13 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:56752 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727074AbgLHH6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 02:58:13 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607414267; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=2Mn2Pc9dXqsIJzPbjlcSc+dZ+VvEsmsUdo0W18MYg2E=;
- b=Nl//Y/EafZOMRVd+4U8UNdTbfE+dtlLmkosk+5cNWZWCZTf9JmVxX0JukckPf6VmC3TqHirV
- Ue9UHWBbDlLswJgWBFq2CjkisfRjMGWvBoq2WwFw3OBUJcDS1rJ/JVQYvqFjozB9iBUjGSNg
- O4vpjd5zmb7tUcO/JeOJ4jpL6GE=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 5fcf31fab50fb3818a95590c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 08 Dec 2020 07:57:46
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D2DA6C43461; Tue,  8 Dec 2020 07:57:45 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B32C6C433C6;
-        Tue,  8 Dec 2020 07:57:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B32C6C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727187AbgLHHkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 02:40:05 -0500
+Received: from mga11.intel.com ([192.55.52.93]:50127 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726734AbgLHHkF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 02:40:05 -0500
+IronPort-SDR: UzZ2G44LoUWFbwXEjYjw7MTwEPz+vnbTTQSUKq8km2oHKPTad3NrFPrAfHzGICm7viYZakOmIm
+ 5ZiNM4sljeUQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9828"; a="170337875"
+X-IronPort-AV: E=Sophos;i="5.78,401,1599548400"; 
+   d="scan'208";a="170337875"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2020 23:39:20 -0800
+IronPort-SDR: MUBL+F5W9P6LV33aAaKRMThtmIRsq2LlA4ii15Djhj1gQftAAjCp7lwt+6d75TOs0a1M3mR53d
+ MG3hMjTXz3zg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,401,1599548400"; 
+   d="scan'208";a="363530493"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.238.154.69])
+  by orsmga008.jf.intel.com with ESMTP; 07 Dec 2020 23:39:19 -0800
+From:   Zhu Yanjun <yanjun.zhu@intel.com>
+To:     zyjzyj2000@gmail.com, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     Zhu Yanjun <yanjun.zhu@intel.com>
+Subject: [PATCH v2 1/1] xdp: avoid calling kfree twice
+Date:   Wed,  9 Dec 2020 00:03:15 -0500
+Message-Id: <20201209050315.5864-1-yanjun.zhu@intel.com>
+X-Mailer: git-send-email 2.18.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3] ath10k: add option for chip-id based BDF selection
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20201207231824.v3.1.Ia6b95087ca566f77423f3802a78b946f7b593ff5@changeid>
-References: <20201207231824.v3.1.Ia6b95087ca566f77423f3802a78b946f7b593ff5@changeid>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, kuabhs@chromium.org,
-        linux-wireless@vger.kernel.org, ath10k@lists.infradead.org,
-        pillair@codeaurora.org, briannorris@chromium.org,
-        dianders@chromium.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20201208075745.D2DA6C43461@smtp.codeaurora.org>
-Date:   Tue,  8 Dec 2020 07:57:45 +0000 (UTC)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abhishek Kumar <kuabhs@chromium.org> wrote:
+In the function xdp_umem_pin_pages, if npgs != umem->npgs and
+npgs >= 0, the function xdp_umem_unpin_pages is called. In this
+function, kfree is called to handle umem->pgs, and then in the
+function xdp_umem_pin_pages, kfree is called again to handle
+umem->pgs. Eventually, umem->pgs is freed twice.
 
-> In some devices difference in chip-id should be enough to pick
-> the right BDF. Add another support for chip-id based BDF selection.
-> With this new option, ath10k supports 2 fallback options.
-> 
-> The board name with chip-id as option looks as follows
-> board name 'bus=snoc,qmi-board-id=ff,qmi-chip-id=320'
-> 
-> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
-> Tested-on: QCA6174 HW3.2 WLAN.RM.4.4.1-00157-QCARMSWPZ-1
-> Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> Reviewed-by: Rakesh Pillai <pillair@codeaurora.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
+Signed-off-by: Zhu Yanjun <yanjun.zhu@intel.com>
+---
+ net/xdp/xdp_umem.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
-Two new checkpatch (using ath10k-check) warnings:
-
-drivers/net/wireless/ath/ath10k/core.c:1509: line length of 92 exceeds 90 columns
-drivers/net/wireless/ath/ath10k/core.c:1518: line length of 92 exceeds 90 columns
-
-Fixed those in the pending branch.
-
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 56a28a686988..01b31c56cead 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -97,7 +97,6 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+ {
+ 	unsigned int gup_flags = FOLL_WRITE;
+ 	long npgs;
+-	int err;
+ 
+ 	umem->pgs = kcalloc(umem->npgs, sizeof(*umem->pgs),
+ 			    GFP_KERNEL | __GFP_NOWARN);
+@@ -112,20 +111,14 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+ 	if (npgs != umem->npgs) {
+ 		if (npgs >= 0) {
+ 			umem->npgs = npgs;
+-			err = -ENOMEM;
+-			goto out_pin;
++			xdp_umem_unpin_pages(umem);
++			return -ENOMEM;
+ 		}
+-		err = npgs;
+-		goto out_pgs;
++		kfree(umem->pgs);
++		umem->pgs = NULL;
++		return (int)npgs;
+ 	}
+ 	return 0;
+-
+-out_pin:
+-	xdp_umem_unpin_pages(umem);
+-out_pgs:
+-	kfree(umem->pgs);
+-	umem->pgs = NULL;
+-	return err;
+ }
+ 
+ static int xdp_umem_account_pages(struct xdp_umem *umem)
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20201207231824.v3.1.Ia6b95087ca566f77423f3802a78b946f7b593ff5@changeid/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.18.4
 
