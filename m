@@ -2,23 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3A0A2D45AE
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:45:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 126222D4634
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:59:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730557AbgLIPnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 10:43:15 -0500
-Received: from thoth.sbs.de ([192.35.17.2]:55305 "EHLO thoth.sbs.de"
+        id S1730619AbgLIP67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 10:58:59 -0500
+Received: from david.siemens.de ([192.35.17.14]:59031 "EHLO david.siemens.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726110AbgLIPnO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 10:43:14 -0500
-X-Greylist: delayed 3797 seconds by postgrey-1.27 at vger.kernel.org; Wed, 09 Dec 2020 10:43:13 EST
+        id S1729303AbgLIP67 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 10:58:59 -0500
 Received: from mail1.siemens.de (mail1.siemens.de [139.23.33.14])
-        by thoth.sbs.de (8.15.2/8.15.2) with ESMTPS id 0B9EbPmO022112
+        by david.siemens.de (8.15.2/8.15.2) with ESMTPS id 0B9EbS7n007624
         (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Dec 2020 15:37:25 +0100
+        Wed, 9 Dec 2020 15:37:28 +0100
 Received: from tsnlaptop.atstm41.nbgm.siemens.de ([144.145.220.34])
-        by mail1.siemens.de (8.15.2/8.15.2) with ESMTP id 0B9EbGp1002581;
-        Wed, 9 Dec 2020 15:37:22 +0100
+        by mail1.siemens.de (8.15.2/8.15.2) with ESMTP id 0B9EbGp2002581;
+        Wed, 9 Dec 2020 15:37:25 +0100
 From:   Erez Geva <erez.geva.ext@siemens.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arch@vger.kernel.org,
@@ -79,9 +78,9 @@ Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Gisela Greinert <gisela.greinert@siemens.com>,
         Erez Geva <erez.geva.ext@siemens.com>,
         Erez Geva <ErezGeva2@gmail.com>
-Subject: [PATCH 1/3] Add TX sending hardware timestamp.
-Date:   Wed,  9 Dec 2020 15:37:04 +0100
-Message-Id: <20201209143707.13503-2-erez.geva.ext@siemens.com>
+Subject: [PATCH 2/3] Pass TX sending hardware timestamp to a socket's buffer.
+Date:   Wed,  9 Dec 2020 15:37:05 +0100
+Message-Id: <20201209143707.13503-3-erez.geva.ext@siemens.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201209143707.13503-1-erez.geva.ext@siemens.com>
 References: <20201209143707.13503-1-erez.geva.ext@siemens.com>
@@ -91,101 +90,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Configure and send TX sending hardware timestamp from
- user space application to the socket layer,
- to provide to the TC ETC Qdisc, and pass it to
- the interface network driver.
+Pass TX sending hardware timestamp from the socket layer to
+ a socket's buffer. The TC ETC Qdisc will pass it
+ to the interface network driver.
 
- - New flag for the SO_TXTIME socket option.
- - New access auxiliary data header to pass the
-   TX sending hardware timestamp.
- - Add the hardware timestamp to the socket cookie.
- - Copy the TX sending hardware timestamp to the socket cookie.
+ - Add the hardware timestamp to the IP cork, to support
+   the use of IP/UDP with the TX sending hardware timestamp
+   when sending through the TC ETF Qdisc
+ - Pass the TX sending hardware timestamp to a socket's buffer
+   using the hardware timestamp on the socket's buffer shared information.
+
+ Note: The socket buffer's hardware timestamp is used by
+       the network interface driver to send the actual sending timestamp
+       back to the application.
+       The timestamp is used by the TC ETF before the buffer
+       arrives in the network interface driver.
 
 Signed-off-by: Erez Geva <erez.geva.ext@siemens.com>
 ---
- include/net/sock.h                | 2 ++
- include/uapi/asm-generic/socket.h | 3 +++
- include/uapi/linux/net_tstamp.h   | 3 ++-
- net/core/sock.c                   | 9 +++++++++
- 4 files changed, 16 insertions(+), 1 deletion(-)
+ include/net/inet_sock.h | 1 +
+ net/ipv4/ip_output.c    | 2 ++
+ net/ipv4/raw.c          | 1 +
+ net/ipv6/ip6_output.c   | 2 ++
+ net/ipv6/raw.c          | 1 +
+ net/packet/af_packet.c  | 3 +++
+ 6 files changed, 10 insertions(+)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index a5c6ae78df77..dd5bfd42b4e2 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -859,6 +859,7 @@ enum sock_flags {
- 	SOCK_SELECT_ERR_QUEUE, /* Wake select on error queue */
- 	SOCK_RCU_FREE, /* wait rcu grace period in sk_destruct() */
- 	SOCK_TXTIME,
-+	SOCK_HW_TXTIME,
- 	SOCK_XDP, /* XDP is attached */
- 	SOCK_TSTAMP_NEW, /* Indicates 64 bit timestamps always */
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index 89163ef8cf4b..e74e8dabf63d 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -160,6 +160,7 @@ struct inet_cork {
+ 	char			priority;
+ 	__u16			gso_size;
+ 	u64			transmit_time;
++	u64			transmit_hw_time;
+ 	u32			mark;
  };
-@@ -1690,6 +1691,7 @@ void sk_send_sigurg(struct sock *sk);
  
- struct sockcm_cookie {
- 	u64 transmit_time;
-+	u64 transmit_hw_time;
- 	u32 mark;
- 	u16 tsflags;
- };
-diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
-index 77f7c1638eb1..16265b00c25a 100644
---- a/include/uapi/asm-generic/socket.h
-+++ b/include/uapi/asm-generic/socket.h
-@@ -119,6 +119,9 @@
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 879b76ae4435..416598c864e3 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1282,6 +1282,7 @@ static int ip_setup_cork(struct sock *sk, struct inet_cork *cork,
+ 	cork->mark = ipc->sockc.mark;
+ 	cork->priority = ipc->priority;
+ 	cork->transmit_time = ipc->sockc.transmit_time;
++	cork->transmit_hw_time = ipc->sockc.transmit_hw_time;
+ 	cork->tx_flags = 0;
+ 	sock_tx_timestamp(sk, ipc->sockc.tsflags, &cork->tx_flags);
  
- #define SO_DETACH_REUSEPORT_BPF 68
+@@ -1545,6 +1546,7 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
+ 	skb->priority = (cork->tos != -1) ? cork->priority: sk->sk_priority;
+ 	skb->mark = cork->mark;
+ 	skb->tstamp = cork->transmit_time;
++	skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(cork->transmit_hw_time);
+ 	/*
+ 	 * Steal rt from cork.dst to avoid a pair of atomic_inc/atomic_dec
+ 	 * on dst refcount
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 7d26e0f8bdae..213a47fb2df8 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -378,6 +378,7 @@ static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
+ 	skb->priority = sk->sk_priority;
+ 	skb->mark = sockc->mark;
+ 	skb->tstamp = sockc->transmit_time;
++	skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(sockc->transmit_hw_time);
+ 	skb_dst_set(skb, &rt->dst);
+ 	*rtp = NULL;
  
-+#define SO_HW_TXTIME		69
-+#define SCM_HW_TXTIME		SO_HW_TXTIME
-+
- #if !defined(__KERNEL__)
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 749ad72386b2..8cff05f5aa8a 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1375,6 +1375,7 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
+ 	cork->base.length = 0;
  
- #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
-diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
-index 7ed0b3d1c00a..dd51c9a99b1f 100644
---- a/include/uapi/linux/net_tstamp.h
-+++ b/include/uapi/linux/net_tstamp.h
-@@ -162,8 +162,9 @@ struct scm_ts_pktinfo {
- enum txtime_flags {
- 	SOF_TXTIME_DEADLINE_MODE = (1 << 0),
- 	SOF_TXTIME_REPORT_ERRORS = (1 << 1),
-+	SOF_TXTIME_USE_HW_TIMESTAMP = (1 << 2),
+ 	cork->base.transmit_time = ipc6->sockc.transmit_time;
++	cork->base.transmit_hw_time = ipc6->sockc.transmit_hw_time;
  
--	SOF_TXTIME_FLAGS_LAST = SOF_TXTIME_REPORT_ERRORS,
-+	SOF_TXTIME_FLAGS_LAST = SOF_TXTIME_USE_HW_TIMESTAMP,
- 	SOF_TXTIME_FLAGS_MASK = (SOF_TXTIME_FLAGS_LAST - 1) |
- 				 SOF_TXTIME_FLAGS_LAST
- };
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 727ea1cc633c..317dce54321b 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1227,6 +1227,8 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 			break;
- 		}
- 		sock_valbool_flag(sk, SOCK_TXTIME, true);
-+		sock_valbool_flag(sk, SOCK_HW_TXTIME,
-+				  sk_txtime.flags & SOF_TXTIME_USE_HW_TIMESTAMP);
- 		sk->sk_clockid = sk_txtime.clockid;
- 		sk->sk_txtime_deadline_mode =
- 			!!(sk_txtime.flags & SOF_TXTIME_DEADLINE_MODE);
-@@ -2378,6 +2380,13 @@ int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
- 			return -EINVAL;
- 		sockc->transmit_time = get_unaligned((u64 *)CMSG_DATA(cmsg));
- 		break;
-+	case SCM_HW_TXTIME:
-+		if (!sock_flag(sk, SOCK_HW_TXTIME))
-+			return -EINVAL;
-+		if (cmsg->cmsg_len != CMSG_LEN(sizeof(u64)))
-+			return -EINVAL;
-+		sockc->transmit_hw_time = get_unaligned((u64 *)CMSG_DATA(cmsg));
-+		break;
- 	/* SCM_RIGHTS and SCM_CREDENTIALS are semantically in SOL_UNIX. */
- 	case SCM_RIGHTS:
- 	case SCM_CREDENTIALS:
+ 	return 0;
+ }
+@@ -1841,6 +1842,7 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
+ 	skb->mark = cork->base.mark;
+ 
+ 	skb->tstamp = cork->base.transmit_time;
++	skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(cork->base.transmit_hw_time);
+ 
+ 	skb_dst_set(skb, dst_clone(&rt->dst));
+ 	IP6_UPD_PO_STATS(net, rt->rt6i_idev, IPSTATS_MIB_OUT, skb->len);
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 6e4ab80a3b94..417f21867782 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -648,6 +648,7 @@ static int rawv6_send_hdrinc(struct sock *sk, struct msghdr *msg, int length,
+ 	skb->priority = sk->sk_priority;
+ 	skb->mark = sockc->mark;
+ 	skb->tstamp = sockc->transmit_time;
++	skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(sockc->transmit_hw_time);
+ 
+ 	skb_put(skb, length);
+ 	skb_reset_network_header(skb);
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 7a18ffff8551..c762d5bcecc2 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1986,6 +1986,7 @@ static int packet_sendmsg_spkt(struct socket *sock, struct msghdr *msg,
+ 	skb->priority = sk->sk_priority;
+ 	skb->mark = sk->sk_mark;
+ 	skb->tstamp = sockc.transmit_time;
++	skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(sockc.transmit_hw_time);
+ 
+ 	skb_setup_tx_timestamp(skb, sockc.tsflags);
+ 
+@@ -2500,6 +2501,7 @@ static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+ 	skb->priority = po->sk.sk_priority;
+ 	skb->mark = po->sk.sk_mark;
+ 	skb->tstamp = sockc->transmit_time;
++	skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(sockc->transmit_hw_time);
+ 	skb_setup_tx_timestamp(skb, sockc->tsflags);
+ 	skb_zcopy_set_nouarg(skb, ph.raw);
+ 
+@@ -2975,6 +2977,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 	skb->priority = sk->sk_priority;
+ 	skb->mark = sockc.mark;
+ 	skb->tstamp = sockc.transmit_time;
++	skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(sockc.transmit_hw_time);
+ 
+ 	if (has_vnet_hdr) {
+ 		err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
 -- 
 2.20.1
 
