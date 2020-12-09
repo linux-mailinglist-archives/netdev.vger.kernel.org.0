@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 682272D4361
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 14:37:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D686A2D4368
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 14:40:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732498AbgLINhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 08:37:15 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:9568 "EHLO
+        id S1732507AbgLINhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 08:37:51 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:9569 "EHLO
         szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732125AbgLINhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 08:37:01 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CrdN56dVJzM1kk;
-        Wed,  9 Dec 2020 21:35:33 +0800 (CST)
+        with ESMTP id S1732043AbgLINhh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 08:37:37 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CrdNs6HL6zLyjK;
+        Wed,  9 Dec 2020 21:36:13 +0800 (CST)
 Received: from ubuntu.network (10.175.138.68) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 9 Dec 2020 21:36:06 +0800
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 9 Dec 2020 21:36:48 +0800
 From:   Zheng Yongjun <zhengyongjun3@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>,
         <linux-afs@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>
 CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] hisilicon/hns3: convert comma to semicolon
-Date:   Wed, 9 Dec 2020 21:36:30 +0800
-Message-ID: <20201209133630.1230-1-zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] net: ethernet: ti: convert comma to semicolon
+Date:   Wed, 9 Dec 2020 21:37:16 +0800
+Message-ID: <20201209133716.1290-1-zhengyongjun3@huawei.com>
 X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -39,22 +39,26 @@ Replace a comma between expression statements by a semicolon.
 
 Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/ti/davinci_mdio.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 1f026408ad38..ed2a3c88aab1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -4976,7 +4976,7 @@ static int hclge_init_fd_config(struct hclge_dev *hdev)
+diff --git a/drivers/net/ethernet/ti/davinci_mdio.c b/drivers/net/ethernet/ti/davinci_mdio.c
+index 702fdc393da0..cfff3d48807a 100644
+--- a/drivers/net/ethernet/ti/davinci_mdio.c
++++ b/drivers/net/ethernet/ti/davinci_mdio.c
+@@ -381,9 +381,9 @@ static int davinci_mdio_probe(struct platform_device *pdev)
  	}
  
- 	key_cfg = &hdev->fd_cfg.key_cfg[HCLGE_FD_STAGE_1];
--	key_cfg->key_sel = HCLGE_FD_KEY_BASE_ON_TUPLE,
-+	key_cfg->key_sel = HCLGE_FD_KEY_BASE_ON_TUPLE;
- 	key_cfg->inner_sipv6_word_en = LOW_2_WORDS;
- 	key_cfg->inner_dipv6_word_en = LOW_2_WORDS;
- 	key_cfg->outer_sipv6_word_en = 0;
+ 	data->bus->name		= dev_name(dev);
+-	data->bus->read		= davinci_mdio_read,
+-	data->bus->write	= davinci_mdio_write,
+-	data->bus->reset	= davinci_mdio_reset,
++	data->bus->read		= davinci_mdio_read;
++	data->bus->write	= davinci_mdio_write;
++	data->bus->reset	= davinci_mdio_reset;
+ 	data->bus->parent	= dev;
+ 	data->bus->priv		= data;
+ 
 -- 
 2.22.0
 
