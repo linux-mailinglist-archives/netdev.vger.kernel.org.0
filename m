@@ -2,150 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FFF2D42AA
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 14:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D38492D42B9
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 14:07:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732016AbgLINFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 08:05:25 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:58182 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732005AbgLINFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 08:05:14 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@nvidia.com)
-        with SMTP; 9 Dec 2020 15:04:21 +0200
-Received: from dev-l-vrt-206-005.mtl.labs.mlnx (dev-l-vrt-206-005.mtl.labs.mlnx [10.234.206.5])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0B9D4KeK022609;
-        Wed, 9 Dec 2020 15:04:21 +0200
-From:   Tariq Toukan <tariqt@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net 2/2] net/mlx4_en: Handle TX error CQE
-Date:   Wed,  9 Dec 2020 15:03:39 +0200
-Message-Id: <20201209130339.21795-3-tariqt@nvidia.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20201209130339.21795-1-tariqt@nvidia.com>
-References: <20201209130339.21795-1-tariqt@nvidia.com>
+        id S1732128AbgLINGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 08:06:14 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:57523 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732115AbgLINGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 08:06:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1607519160; x=1639055160;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=ZvYFBB8ivPG0I/9gZKADhoJJmyIbdT5JdB9YJlFilKY=;
+  b=Hx4I4gl3pfoyImpf3dIOtmR6rndM3lmVIUjPwUVrg98l7Uq2a0G6ZQmD
+   P/GptMkdusTrzifK6K5FhakAysHshhSYr2wE/GU4NbpEuetcOPcn8/q0c
+   6ypwGFFjQKxQWjBQWUkEn0mYYPwCCcvoADFEHme0JfCf3sQZaOFs+IcFe
+   PgzJK23+0DqOvm/G1jU8oWITag2/ar1B5UKYmwXGvQXcZf0TsIqXBzxN0
+   wbQI79+5bPOXTtl3cpu4FfwBP3b7AQAUwN4ovrZO2BkiwwdGiY1tymhsM
+   6IZSrf3mBWX7FULa5il0O1K1R/pvGjrkqJbST+uS2nROKeJKThbdn5QH0
+   Q==;
+IronPort-SDR: ehnk1o90Rn984rGliBSnqW0a98J3fMIDnclBEqmLXT2eQExp371dB3fidwu+IHzECHmLCJSe9m
+ L51hIVe7eK2adsFS+CfOkaDNOigA7mCRgylfJQU6zQZMqWJD4cAMztHC+VW6vR7/z1dwNh0ppQ
+ qLU6Hwd6RLl0GzkKx0gKkJstDLkZCDkKEfCmaRsW6JVMODaqgSDWLjMYU09aSHUcPVkAbSXkQI
+ /2Hk2VKhoIX2mj/PjHLhTRhzwPEVrWkdbTo8g1PCkwCESZM3TALpQrngIUM57nsj5zZsS9dN2w
+ 238=
+X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
+   d="scan'208";a="102102729"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2020 06:04:34 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 9 Dec 2020 06:04:34 -0700
+Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Wed, 9 Dec 2020 06:04:28 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <nicolas.ferre@microchip.com>, <linux@armlinux.org.uk>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <natechancellor@gmail.com>, <ndesaulniers@google.com>
+CC:     <yash.shah@sifive.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>,
+        <clang-built-linux@googlegroups.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v3 8/8] net: macb: add support for sama7g5 emac interface
+Date:   Wed, 9 Dec 2020 15:03:39 +0200
+Message-ID: <1607519019-19103-9-git-send-email-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1607519019-19103-1-git-send-email-claudiu.beznea@microchip.com>
+References: <1607519019-19103-1-git-send-email-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@mellanox.com>
+Add support for SAMA7G5 10/100Mbps interface.
 
-In case error CQE was found while polling TX CQ, the QP is in error
-state and all posted WQEs will generate error CQEs without any data
-transmitted. Fix it by reopening the channels, via same method used for
-TX timeout handling.
-
-In addition add some more info on error CQE and WQE for debug.
-
-Fixes: bd2f631d7c60 ("net/mlx4_en: Notify user when TX ring in error state")
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- .../net/ethernet/mellanox/mlx4/en_netdev.c    |  1 +
- drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 40 +++++++++++++++----
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |  5 +++
- 3 files changed, 39 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-index 1a2b0bd64aa9..6f290319b617 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
-@@ -1735,6 +1735,7 @@ int mlx4_en_start_port(struct net_device *dev)
- 				mlx4_en_deactivate_cq(priv, cq);
- 				goto tx_err;
- 			}
-+			clear_bit(MLX4_EN_TX_RING_STATE_RECOVERING, &tx_ring->state);
- 			if (t != TX_XDP) {
- 				tx_ring->tx_queue = netdev_get_tx_queue(dev, i);
- 				tx_ring->recycle_ring = NULL;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-index 3ddb7268e415..59b097cda327 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-@@ -392,6 +392,35 @@ int mlx4_en_free_tx_buf(struct net_device *dev, struct mlx4_en_tx_ring *ring)
- 	return cnt;
- }
- 
-+static void mlx4_en_handle_err_cqe(struct mlx4_en_priv *priv, struct mlx4_err_cqe *err_cqe,
-+				   u16 cqe_index, struct mlx4_en_tx_ring *ring)
-+{
-+	struct mlx4_en_dev *mdev = priv->mdev;
-+	struct mlx4_en_tx_info *tx_info;
-+	struct mlx4_en_tx_desc *tx_desc;
-+	u16 wqe_index;
-+	int desc_size;
-+
-+	en_err(priv, "CQE error - cqn 0x%x, ci 0x%x, vendor syndrome: 0x%x syndrome: 0x%x\n",
-+	       ring->sp_cqn, cqe_index, err_cqe->vendor_err_syndrome, err_cqe->syndrome);
-+	print_hex_dump(KERN_WARNING, "", DUMP_PREFIX_OFFSET, 16, 1, err_cqe, sizeof(*err_cqe),
-+		       false);
-+
-+	wqe_index = be16_to_cpu(err_cqe->wqe_index) & ring->size_mask;
-+	tx_info = &ring->tx_info[wqe_index];
-+	desc_size = tx_info->nr_txbb << LOG_TXBB_SIZE;
-+	en_err(priv, "Related WQE - qpn 0x%x, wqe index 0x%x, wqe size 0x%x\n", ring->qpn,
-+	       wqe_index, desc_size);
-+	tx_desc = ring->buf + (wqe_index << LOG_TXBB_SIZE);
-+	print_hex_dump(KERN_WARNING, "", DUMP_PREFIX_OFFSET, 16, 1, tx_desc, desc_size, false);
-+
-+	if (test_and_set_bit(MLX4_EN_STATE_FLAG_RESTARTING, &priv->state))
-+		return;
-+
-+	en_err(priv, "Scheduling port restart\n");
-+	queue_work(mdev->workqueue, &priv->restart_task);
-+}
-+
- int mlx4_en_process_tx_cq(struct net_device *dev,
- 			  struct mlx4_en_cq *cq, int napi_budget)
- {
-@@ -438,13 +467,10 @@ int mlx4_en_process_tx_cq(struct net_device *dev,
- 		dma_rmb();
- 
- 		if (unlikely((cqe->owner_sr_opcode & MLX4_CQE_OPCODE_MASK) ==
--			     MLX4_CQE_OPCODE_ERROR)) {
--			struct mlx4_err_cqe *cqe_err = (struct mlx4_err_cqe *)cqe;
--
--			en_err(priv, "CQE error - vendor syndrome: 0x%x syndrome: 0x%x\n",
--			       cqe_err->vendor_err_syndrome,
--			       cqe_err->syndrome);
--		}
-+			     MLX4_CQE_OPCODE_ERROR))
-+			if (!test_and_set_bit(MLX4_EN_TX_RING_STATE_RECOVERING, &ring->state))
-+				mlx4_en_handle_err_cqe(priv, (struct mlx4_err_cqe *)cqe, index,
-+						       ring);
- 
- 		/* Skip over last polled CQE */
- 		new_index = be16_to_cpu(cqe->wqe_index) & size_mask;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-index fd9535bde1b8..30378e4c90b5 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -271,6 +271,10 @@ struct mlx4_en_page_cache {
- 	} buf[MLX4_EN_CACHE_SIZE];
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 5bae44931282..995a13489276 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4581,6 +4581,14 @@ static const struct macb_config sama7g5_gem_config = {
+ 	.usrio = &sama7g5_usrio,
  };
  
-+enum {
-+	MLX4_EN_TX_RING_STATE_RECOVERING,
++static const struct macb_config sama7g5_emac_config = {
++	.caps = MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII | MACB_CAPS_USRIO_HAS_CLKEN,
++	.dma_burst_length = 16,
++	.clk_init = macb_clk_init,
++	.init = macb_init,
++	.usrio = &sama7g5_usrio,
 +};
 +
- struct mlx4_en_priv;
- 
- struct mlx4_en_tx_ring {
-@@ -317,6 +321,7 @@ struct mlx4_en_tx_ring {
- 	 * Only queue_stopped might be used if BQL is not properly working.
- 	 */
- 	unsigned long		queue_stopped;
-+	unsigned long		state;
- 	struct mlx4_hwq_resources sp_wqres;
- 	struct mlx4_qp		sp_qp;
- 	struct mlx4_qp_context	sp_context;
+ static const struct of_device_id macb_dt_ids[] = {
+ 	{ .compatible = "cdns,at32ap7000-macb" },
+ 	{ .compatible = "cdns,at91sam9260-macb", .data = &at91sam9260_config },
+@@ -4599,6 +4607,7 @@ static const struct of_device_id macb_dt_ids[] = {
+ 	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
+ 	{ .compatible = "sifive,fu540-c000-gem", .data = &fu540_c000_config },
+ 	{ .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
++	{ .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, macb_dt_ids);
 -- 
-2.21.0
+2.7.4
 
