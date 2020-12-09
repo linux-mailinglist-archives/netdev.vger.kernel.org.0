@@ -2,180 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 942DB2D3946
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 04:36:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70A912D3952
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 04:51:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726288AbgLIDei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 22:34:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48604 "EHLO
+        id S1726615AbgLIDuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 22:50:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725915AbgLIDei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 22:34:38 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3B2C0617A6;
-        Tue,  8 Dec 2020 19:33:49 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id lb18so135817pjb.5;
-        Tue, 08 Dec 2020 19:33:49 -0800 (PST)
+        with ESMTP id S1725283AbgLIDuJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 22:50:09 -0500
+Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6EDC0613CF;
+        Tue,  8 Dec 2020 19:49:29 -0800 (PST)
+Received: by mail-vs1-xe44.google.com with SMTP id h6so168729vsr.6;
+        Tue, 08 Dec 2020 19:49:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=a83b//FaNAazZrbKxCVDpq5sDqquOZMLq79muQFPdAk=;
-        b=YjwpSU8/1igV9WXVOWfx2ksH7iKlybNu4gKje6vY5aJRFrtZWHKtAOxFssptlAjnPy
-         tsj/5lH9nSndDdHtRVcf+Eznr2JSQCvmXpw9bhPJ8mxc287L956Y7PFhOknFEOgnIo1n
-         wxXa9GDqsTDX2nhkvIc4NQhwSjYEogqB2uIIwvbN+x58FWjTSQ7xTiGs2b/p/hqnrJcR
-         BIAjolYlo9CT88D9Np7bBjunXmut9HzRQPL7lj2fEyYs1HE+4JMHkJcll1eWVAYxQHiz
-         YldXcGgsARI02+CwQdljjK+utq9k24pDEOQ6h565q6SzKaP2xtD0SX/fYjrWwSbGk3F4
-         BJJw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bbQPAUhEn79unHC+6i9IygFJQzgAmAIFRZdGi63vF3A=;
+        b=UST7Fm5l3GLRX1xPHx0vSpfDp3SymUAQ9j1g/KC4Bp8khLjWIR3S+0kvYQw8cvV9cB
+         GEevGA4Rdgh+lWsJkN8VHrZQpv7YxU54rftOd+64MwOH2GjxY6HnN3BiAxdGvCxbSrH7
+         1TZSRrhDfYdfSS6nJZlotAvH8ipN2XrJVYieXqsO63ViKgIfoN+kYwnWcwFITHFchk9k
+         uvKF8qwwsmaH2vmL7nTjwCDDDT5lxbhlKgKJf60UXe5cugr0WcgmFsDVl/TP7AEOGsd/
+         hGiFJCFJYluX7FWQBy+f+jF6wwssKEjktGgzNGXIXDpZU8/N+hYbpPDnX45dZDN6ZOH7
+         tH6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=a83b//FaNAazZrbKxCVDpq5sDqquOZMLq79muQFPdAk=;
-        b=tOJP820/J4i3liCjamR97N02v+P7GUMEk3YEZX00Js7StRxC+fjGFTks922M9jWuBe
-         W6MmcqRh5aDP97efXGPWcmstJ7q/IrcAsQtJyn9Te5jfeSe+uEBLXfipeEpxd4A5oA5z
-         Cp7zOIx+YMpmoe469uxeSaxzeUWRD+NS1aQU6LKg9zAWhQC0VBZdGAVRrE1E0u2bJN8d
-         1MLI4bqSwW16Ab5eTZsLt0kW0Jd2kpCV+N9OtCRNrpd5XZvFVATkH9ATpBJ9vHkymelR
-         fc9nRvdXxTT+6ymLfX1bB19rQZiwK9lTELr8NLzYN5vzd1GlMaaxMlKZAzb1o5PlFRR+
-         lXNQ==
-X-Gm-Message-State: AOAM532JAiqcpFA9kJLlgehvt3uRPZGTn72xq/CF4IXoWeGFUgd2sjqz
-        dvcobM8ACx0BKdEAcoNoFwLQ6ELS28Q=
-X-Google-Smtp-Source: ABdhPJxIddU0mSWzil8yak7Mc5Hej7XVdSdgXzsWjlsVDgkVTeFLr9SFDiGxsExLV0uqP5hDulwaQQ==
-X-Received: by 2002:a17:90b:4a81:: with SMTP id lp1mr367767pjb.55.1607484829218;
-        Tue, 08 Dec 2020 19:33:49 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:ac46:48a7:8096:18f5])
-        by smtp.gmail.com with ESMTPSA id y5sm314371pfp.45.2020.12.08.19.33.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Dec 2020 19:33:48 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next] net: x25: Remove unimplemented X.25-over-LLC code stubs
-Date:   Tue,  8 Dec 2020 19:33:46 -0800
-Message-Id: <20201209033346.83742-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bbQPAUhEn79unHC+6i9IygFJQzgAmAIFRZdGi63vF3A=;
+        b=sz5BvDQkJR6JVNHWw+LovA2TE0/ZOFprTagIwRlyePg4VsLAEKbzIwqSbtu5h/pLyU
+         uVT3QoxiT5Zw6JwZF1LjhnVttMNkZ4tspleanZf3hmzEDXG99BkEibZhV31ZSTCS7HZc
+         ZmBCBcUwdvlZrQeL9k130orUlasXLtwfNcOWUVL5yrrzWYiKj5M18K7n/dUkPF26UJpz
+         w96j/BtT+vaU3OJwahjOTaMJbyV5a+YzFHpanyAuJwlAVa7jTqCyGRrDV3MqYie5d6Vj
+         3Bi6Vbf5Rp98pkHFSe3mLuE62ZdDo0QIU32eq2U2q9z9O8/+ypYwzcLF8y8bquS0IR2v
+         Nz6w==
+X-Gm-Message-State: AOAM530RjU+g3qjhwVhlkfwLZcG5Can4NuNO6nKRl3DuS3xPBkzwWvQ8
+        w1iVec+DILljgxlgNPxAUSuCCBiESLmM/L0rkE0=
+X-Google-Smtp-Source: ABdhPJyEhFI2RN4K8U6MCsutGojXGqc4NKJVLs1FZVCH9ZW4/lb99g16+yO6h3aGanjphhEqpUZRXC1WXVHcpqfFEwY=
+X-Received: by 2002:a67:e217:: with SMTP id g23mr276040vsa.15.1607485767975;
+ Tue, 08 Dec 2020 19:49:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201206034408.31492-1-TheSven73@gmail.com> <20201206034408.31492-2-TheSven73@gmail.com>
+ <20201208114314.743ee6ec@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <CAGngYiVSHRGC+eOCeF3Kyj_wOVqxJHvoc9fXRk-w+sVRjeSpcw@mail.gmail.com>
+ <20201208225125.GA2602479@lunn.ch> <CAGngYiVp2u-A07rrkbeJCbqPW9efjkJUNC+NBxrtCM2JtXGpVA@mail.gmail.com>
+ <3aed88da-8e82-3bd0-6822-d30f1bd5ec9e@gmail.com>
+In-Reply-To: <3aed88da-8e82-3bd0-6822-d30f1bd5ec9e@gmail.com>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Tue, 8 Dec 2020 22:49:16 -0500
+Message-ID: <CAGngYiUvJE+L4-tw91ozPaq7mGUbh0PS0q7MpLnHVwDqGrFwEw@mail.gmail.com>
+Subject: Re: [PATCH net v1 2/2] lan743x: boost performance: limit PCIe
+ bandwidth requirement
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to the X.25 documentation, there was a plan to implement
-X.25-over-802.2-LLC. It never finished but left various code stubs in the
-X.25 code. At this time it is unlikely that it would ever finish so it
-may be better to remove those code stubs.
+On Tue, Dec 8, 2020 at 6:36 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> dma_sync_single_for_{cpu,device} is what you would need in order to make
+> a partial cache line invalidation. You would still need to unmap the
+> same address+length pair that was used for the initial mapping otherwise
+> the DMA-API debugging will rightfully complain.
 
-Also change the documentation to make it clear that this is not a ongoing
-plan anymore. Change words like "will" to "could", "would", etc.
+I tried replacing
+    dma_unmap_single(9K, DMA_FROM_DEVICE);
+with
+    dma_sync_single_for_cpu(received_size=1500 bytes, DMA_FROM_DEVICE);
+    dma_unmap_single_attrs(9K, DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
 
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- Documentation/networking/x25.rst | 12 +++++-------
- net/x25/af_x25.c                 |  6 +-----
- net/x25/x25_dev.c                | 13 -------------
- net/x25/x25_route.c              |  7 +------
- 4 files changed, 7 insertions(+), 31 deletions(-)
+and that works! But the bandwidth is still pretty bad, because the cpu
+now spends most of its time doing
+    dma_map_single(9K, DMA_FROM_DEVICE);
+which spends a lot of time doing __dma_page_cpu_to_dev.
 
-diff --git a/Documentation/networking/x25.rst b/Documentation/networking/x25.rst
-index 00e45d384ba0..e11d9ebdf9a3 100644
---- a/Documentation/networking/x25.rst
-+++ b/Documentation/networking/x25.rst
-@@ -19,13 +19,11 @@ implementation of LAPB. Therefore the LAPB modules would be called by
- unintelligent X.25 card drivers and not by intelligent ones, this would
- provide a uniform device driver interface, and simplify configuration.
- 
--To confuse matters a little, an 802.2 LLC implementation for Linux is being
--written which will allow X.25 to be run over an Ethernet (or Token Ring) and
--conform with the JNT "Pink Book", this will have a different interface to
--the Packet Layer but there will be no confusion since the class of device
--being served by the LLC will be completely separate from LAPB. The LLC
--implementation is being done as part of another protocol project (SNA) and
--by a different author.
-+To confuse matters a little, an 802.2 LLC implementation is also possible
-+which could allow X.25 to be run over an Ethernet (or Token Ring) and
-+conform with the JNT "Pink Book", this would have a different interface to
-+the Packet Layer but there would be no confusion since the class of device
-+being served by the LLC would be completely separate from LAPB.
- 
- Just when you thought that it could not become more confusing, another
- option appeared, XOT. This allows X.25 Packet Layer frames to operate over
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index d41fffb2507b..ff687b97b2d9 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -211,11 +211,7 @@ static int x25_device_event(struct notifier_block *this, unsigned long event,
- 	if (!net_eq(dev_net(dev), &init_net))
- 		return NOTIFY_DONE;
- 
--	if (dev->type == ARPHRD_X25
--#if IS_ENABLED(CONFIG_LLC)
--	 || dev->type == ARPHRD_ETHER
--#endif
--	 ) {
-+	if (dev->type == ARPHRD_X25) {
- 		switch (event) {
- 		case NETDEV_REGISTER:
- 		case NETDEV_POST_TYPE_CHANGE:
-diff --git a/net/x25/x25_dev.c b/net/x25/x25_dev.c
-index 25bf72ee6cad..5259ef8f5242 100644
---- a/net/x25/x25_dev.c
-+++ b/net/x25/x25_dev.c
-@@ -160,10 +160,6 @@ void x25_establish_link(struct x25_neigh *nb)
- 		*ptr = X25_IFACE_CONNECT;
- 		break;
- 
--#if IS_ENABLED(CONFIG_LLC)
--	case ARPHRD_ETHER:
--		return;
--#endif
- 	default:
- 		return;
- 	}
-@@ -179,10 +175,6 @@ void x25_terminate_link(struct x25_neigh *nb)
- 	struct sk_buff *skb;
- 	unsigned char *ptr;
- 
--#if IS_ENABLED(CONFIG_LLC)
--	if (nb->dev->type == ARPHRD_ETHER)
--		return;
--#endif
- 	if (nb->dev->type != ARPHRD_X25)
- 		return;
- 
-@@ -212,11 +204,6 @@ void x25_send_frame(struct sk_buff *skb, struct x25_neigh *nb)
- 		*dptr = X25_IFACE_DATA;
- 		break;
- 
--#if IS_ENABLED(CONFIG_LLC)
--	case ARPHRD_ETHER:
--		kfree_skb(skb);
--		return;
--#endif
- 	default:
- 		kfree_skb(skb);
- 		return;
-diff --git a/net/x25/x25_route.c b/net/x25/x25_route.c
-index ec2a39e9b3e6..9fbe4bb38d94 100644
---- a/net/x25/x25_route.c
-+++ b/net/x25/x25_route.c
-@@ -124,12 +124,7 @@ struct net_device *x25_dev_get(char *devname)
- {
- 	struct net_device *dev = dev_get_by_name(&init_net, devname);
- 
--	if (dev &&
--	    (!(dev->flags & IFF_UP) || (dev->type != ARPHRD_X25
--#if IS_ENABLED(CONFIG_LLC)
--					&& dev->type != ARPHRD_ETHER
--#endif
--					))){
-+	if (dev && (!(dev->flags & IFF_UP) || dev->type != ARPHRD_X25)) {
- 		dev_put(dev);
- 		dev = NULL;
- 	}
--- 
-2.27.0
+When I try and replace that with
+    dma_map_single_attrs(9K, DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
+Then I get lots of dropped packets, which seems to indicate data corruption.
 
+Interestingly, when I do
+    dma_map_single_attrs(9K, DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
+    dma_sync_single_for_{cpu|device}(9K, DMA_FROM_DEVICE);
+then the dropped packets disappear, but things are still very slow.
+
+What am I missing?
