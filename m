@@ -2,130 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A862B2D4217
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 13:23:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6A92D4252
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 13:45:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731503AbgLIMVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 07:21:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731475AbgLIMVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 07:21:41 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6654DC061793
-        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 04:21:01 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kmySm-0001Qs-R2; Wed, 09 Dec 2020 13:20:56 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kmySi-0006qb-Q4; Wed, 09 Dec 2020 13:20:52 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        Fabio Estevam <festevam@gmail.com>,
-        David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: [PATCH v1] ARM: imx: mach-imx6ul: remove 14x14 EVK specific PHY fixup
-Date:   Wed,  9 Dec 2020 13:20:51 +0100
-Message-Id: <20201209122051.26151-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+        id S1731797AbgLIMmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 07:42:46 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:9048 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730929AbgLIMme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 07:42:34 -0500
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Crc9X12VGzhYl3;
+        Wed,  9 Dec 2020 20:41:20 +0800 (CST)
+Received: from localhost (10.174.243.127) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Wed, 9 Dec 2020
+ 20:41:43 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>
+CC:     <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <jerry.lilijun@huawei.com>,
+        <chenchanghu@huawei.com>, <xudingke@huawei.com>,
+        Yunjian Wang <wangyunjian@huawei.com>
+Subject: [PATCH net v2] tun: fix ubuf refcount incorrectly on error path
+Date:   Wed, 9 Dec 2020 20:41:43 +0800
+Message-ID: <1607517703-18472-1-git-send-email-wangyunjian@huawei.com>
+X-Mailer: git-send-email 1.9.5.msysgit.1
+In-Reply-To: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
+References: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.174.243.127]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove board specific PHY fixup introduced by commit:
+From: Yunjian Wang <wangyunjian@huawei.com>
 
-| 709bc0657fe6f9f5 ("ARM: imx6ul: add fec MAC refrence clock and phy fixup init")
+After setting callback for ubuf_info of skb, the callback
+(vhost_net_zerocopy_callback) will be called to decrease
+the refcount when freeing skb. But when an exception occurs
+afterwards, the error handling in vhost handle_tx() will
+try to decrease the same refcount again. This is wrong and
+fix this by delay copying ubuf_info until we're sure
+there's no errors.
 
-This fixup addresses boards with a specific configuration: a KSZ8081RNA
-PHY with attached clock source to XI (Pin 8) of the PHY equal to 50MHz.
+Fixes: 4477138fa0ae ("tun: properly test for IFF_UP")
+Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
 
-For the KSZ8081RND PHY, the meaning of the reg 0x1F bit 7 is different
-(compared to the KSZ8081RNA). A set bit means:
-
-- KSZ8081RNA: clock input to XI (Pin 8) is 50MHz for RMII
-- KSZ8081RND: clock input to XI (Pin 8) is 25MHz for RMII
-
-In other configurations, for example a KSZ8081RND PHY or a KSZ8081RNA
-with 25Mhz clock source, the PHY will glitch and stay in not recoverable
-state.
-
-It is not possible to detect the clock source frequency of the PHY. And
-it is not possible to automatically detect KSZ8081 PHY variant - both
-have same PHY ID. It is not possible to overwrite the fixup
-configuration by providing proper device tree description. The only way
-is to remove this fixup.
-
-If this patch breaks network functionality on your board, fix it by
-adding PHY node with following properties:
-
-	ethernet-phy@x {
-		...
-		micrel,led-mode = <1>;
-		clocks = <&clks IMX6UL_CLK_ENET_REF>;
-		clock-names = "rmii-ref";
-		...
-	};
-
-The board which was referred in the initial patch is already fixed.
-See: arch/arm/boot/dts/imx6ul-14x14-evk.dtsi
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
 ---
- arch/arm/mach-imx/mach-imx6ul.c | 21 ---------------------
- 1 file changed, 21 deletions(-)
+v2:
+   Updated code, fix by delay copying ubuf_info
+---
+ drivers/net/tun.c | 29 +++++++++++++++++++----------
+ 1 file changed, 19 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/mach-imx/mach-imx6ul.c b/arch/arm/mach-imx/mach-imx6ul.c
-index e018e716735f..eabcd35c01a5 100644
---- a/arch/arm/mach-imx/mach-imx6ul.c
-+++ b/arch/arm/mach-imx/mach-imx6ul.c
-@@ -27,30 +27,9 @@ static void __init imx6ul_enet_clk_init(void)
- 		pr_err("failed to find fsl,imx6ul-iomux-gpr regmap\n");
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 2dc1988a8973..2ea822328e73 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1637,6 +1637,20 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
+ 	return NULL;
  }
  
--static int ksz8081_phy_fixup(struct phy_device *dev)
--{
--	if (dev && dev->interface == PHY_INTERFACE_MODE_MII) {
--		phy_write(dev, 0x1f, 0x8110);
--		phy_write(dev, 0x16, 0x201);
--	} else if (dev && dev->interface == PHY_INTERFACE_MODE_RMII) {
--		phy_write(dev, 0x1f, 0x8190);
--		phy_write(dev, 0x16, 0x202);
++/* copy ubuf_info for callback when skb has no error */
++static inline void tun_copy_ubuf_info(struct sk_buff *skb, bool zerocopy, void *msg_control)
++{
++	if (zerocopy) {
++		skb_shinfo(skb)->destructor_arg = msg_control;
++		skb_shinfo(skb)->tx_flags |= SKBTX_DEV_ZEROCOPY;
++		skb_shinfo(skb)->tx_flags |= SKBTX_SHARED_FRAG;
++	} else if (msg_control) {
++		struct ubuf_info *uarg = msg_control;
++
++		uarg->callback(uarg, false);
++	}
++}
++
+ /* Get packet from user space buffer */
+ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 			    void *msg_control, struct iov_iter *from,
+@@ -1812,16 +1826,6 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 		break;
+ 	}
+ 
+-	/* copy skb_ubuf_info for callback when skb has no error */
+-	if (zerocopy) {
+-		skb_shinfo(skb)->destructor_arg = msg_control;
+-		skb_shinfo(skb)->tx_flags |= SKBTX_DEV_ZEROCOPY;
+-		skb_shinfo(skb)->tx_flags |= SKBTX_SHARED_FRAG;
+-	} else if (msg_control) {
+-		struct ubuf_info *uarg = msg_control;
+-		uarg->callback(uarg, false);
 -	}
 -
--	return 0;
--}
--
--static void __init imx6ul_enet_phy_init(void)
--{
--	if (IS_BUILTIN(CONFIG_PHYLIB))
--		phy_register_fixup_for_uid(PHY_ID_KSZ8081, MICREL_PHY_ID_MASK,
--					   ksz8081_phy_fixup);
--}
--
- static inline void imx6ul_enet_init(void)
- {
- 	imx6ul_enet_clk_init();
--	imx6ul_enet_phy_init();
- }
+ 	skb_reset_network_header(skb);
+ 	skb_probe_transport_header(skb);
+ 	skb_record_rx_queue(skb, tfile->queue_index);
+@@ -1830,6 +1834,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 		struct bpf_prog *xdp_prog;
+ 		int ret;
  
- static void __init imx6ul_init_machine(void)
++		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+ 		local_bh_disable();
+ 		rcu_read_lock();
+ 		xdp_prog = rcu_dereference(tun->xdp_prog);
+@@ -1881,6 +1886,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 			return -ENOMEM;
+ 		}
+ 
++		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+ 		local_bh_disable();
+ 		napi_gro_frags(&tfile->napi);
+ 		local_bh_enable();
+@@ -1889,6 +1895,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 		struct sk_buff_head *queue = &tfile->sk.sk_write_queue;
+ 		int queue_len;
+ 
++		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+ 		spin_lock_bh(&queue->lock);
+ 		__skb_queue_tail(queue, skb);
+ 		queue_len = skb_queue_len(queue);
+@@ -1899,8 +1906,10 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 
+ 		local_bh_enable();
+ 	} else if (!IS_ENABLED(CONFIG_4KSTACKS)) {
++		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+ 		tun_rx_batched(tun, tfile, skb, more);
+ 	} else {
++		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+ 		netif_rx_ni(skb);
+ 	}
+ 	rcu_read_unlock();
 -- 
-2.29.2
+2.23.0
 
