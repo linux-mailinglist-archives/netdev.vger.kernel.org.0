@@ -2,191 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 554282D496F
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 19:49:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DDBF2D497C
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 19:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387458AbgLISsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 13:48:51 -0500
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:48315 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733278AbgLISsv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 13:48:51 -0500
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 0B9IlnlW016513;
-        Wed, 9 Dec 2020 19:47:49 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Willy Tarreau <w@1wt.eu>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Daniel Palmer <daniel@0x0f.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH] Revert "macb: support the two tx descriptors on at91rm9200"
-Date:   Wed,  9 Dec 2020 19:47:40 +0100
-Message-Id: <20201209184740.16473-1-w@1wt.eu>
-X-Mailer: git-send-email 2.9.0
+        id S2387503AbgLISv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 13:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48642 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387490AbgLISvU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 13:51:20 -0500
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9AFC061793
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 10:50:40 -0800 (PST)
+Received: by mail-io1-xd42.google.com with SMTP id p187so2693710iod.4
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 10:50:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SPEOvDYUcPGB1mhkHOmjLnwBj98qiGs4ARJVt5iZbQM=;
+        b=A9oFAvMeMr+e21ZynjhdkQ4fxaLAQLvRNYrvxSflC7Ed+QnGZIAmwD6781fFTi0lGo
+         bA9s/MUlNf0EG/ud43Gckz5ATKuHbReqjdxLcxulZ1sQXTwN7a64lszWgiDw3IDvcjCN
+         0uSnRqxmeqYdmWeqq18ctB1WZZyqXSBzbjHY9hGHNgWbmIv/oLjw0A6BqzQZAeNuk5Qs
+         C/NzXtgiCMHzyo8tDGOsHTsZfeoexyI5sCXY7JBEC0yMYX1BAwBRhT3PzLoSN5cr+TeI
+         X+l/DaongG4lLH9F2+uvpu3gwsPN2F9dPRqwHsa/0L01dV9JyBSkYpGtjR8anrR0fQBR
+         eP/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SPEOvDYUcPGB1mhkHOmjLnwBj98qiGs4ARJVt5iZbQM=;
+        b=JkculAhCFUjeZeEoqB5SJusWq0jBRE4PLP9UjBzTfkQ21ZL+KhCIa4Fs+UB9iSop2n
+         mSAJmqoOIU+YTLYbIWRZW20MgEiti6+B3H/s/4xRl+MTt/lG3MiIn3zLh4VGjN17p65r
+         3d4nsboO24snyUgHzuPLctFcaWASzJe8Kof8Hg1TWG3fEI3eWe8bYCHbbTOC/mrFDKhf
+         5Qs+8hikyOSjlOvo8U4GrIB6ZaNM15IzqTeefjgxUGEj8GV7F5Zuy/oYZcYdFuXXyVeh
+         xT4mZkYwKhPo1P/++b6MITOP0lpapQAA6Bo0CRZsR2Tkk+nWKywN8T465IZbs0Z70uyR
+         VnnQ==
+X-Gm-Message-State: AOAM533EgvujDe8+RLaemWkbfRSo0LTUct568FINEjaIdMCPoYr5EGWz
+        7qT0UOqO0FMsJssV/jtGT66Wk2P/OhX6d6WucEEFKw==
+X-Google-Smtp-Source: ABdhPJx1JQy9bV4NsMqVbc9Trl2pVaFN12Ypx07bqN03THiaN13O9oYcv8Opt6nBhAKjLGpm99sTx1EtKesrgdsZsu8=
+X-Received: by 2002:a02:4007:: with SMTP id n7mr4866298jaa.99.1607539839324;
+ Wed, 09 Dec 2020 10:50:39 -0800 (PST)
+MIME-Version: 1.0
+References: <cki.4066A31294.UNMQ21P718@redhat.com> <CABE0yyi9gS8nao0n1Dts_Og80R71h8PUkizy4rM9E9E3QbJwvA@mail.gmail.com>
+ <CABE0yyj997uCwzHoob8q2Ckd2i5Pv1k+JDRbF3fnn11_R2XN1Q@mail.gmail.com>
+ <20201209092052.19a39676@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <CANn89iL8akG+u6sq4r7gxpWKMoDSKuCbgFvDPrrG+J85zC1KNg@mail.gmail.com>
+ <CANn89iKcKATT902n6C1-Hi0ey0Ep20dD88nTTLLH9NNF6Pex5w@mail.gmail.com> <838391ff7ffa5dbfb79f30c6d31292c80415af18.camel@kernel.org>
+In-Reply-To: <838391ff7ffa5dbfb79f30c6d31292c80415af18.camel@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 9 Dec 2020 19:50:27 +0100
+Message-ID: <CANn89iK+fU7LGH--JXx_FLxawr7rs1t-crLGtkbPAXsoiZMi8A@mail.gmail.com>
+Subject: =?UTF-8?B?UmU6IOKdjCBGQUlMOiBUZXN0IHJlcG9ydCBmb3Iga2VybmVsIDUuMTAuMC1yYzYgKG1haQ==?=
+        =?UTF-8?B?bmxpbmUua2VybmVsLm9yZyk=?=
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Vladyslav Buslov <vladbu@nvidia.com>,
+        Jianlin Shi <jishi@redhat.com>,
+        CKI Project <cki-project@redhat.com>,
+        netdev <netdev@vger.kernel.org>, skt-results-master@redhat.com,
+        Yi Zhang <yi.zhang@redhat.com>,
+        Memory Management <mm-qe@redhat.com>,
+        Jan Stancek <jstancek@redhat.com>,
+        Jianwen Ji <jiji@redhat.com>, Hangbin Liu <haliu@redhat.com>,
+        Ondrej Moris <omoris@redhat.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Changhui Zhong <czhong@redhat.com>,
+        Xiong Zhou <xzhou@redhat.com>,
+        Rachel Sibley <rasibley@redhat.com>,
+        David Arcari <darcari@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 0a4e9ce17ba77847e5a9f87eed3c0ba46e3f82eb.
+On Wed, Dec 9, 2020 at 7:34 PM Saeed Mahameed <saeed@kernel.org> wrote:
+>
+> On Wed, 2020-12-09 at 19:05 +0100, Eric Dumazet wrote:
+> > On Wed, Dec 9, 2020 at 6:35 PM Eric Dumazet <edumazet@google.com>
+> > wrote:
+> > > Hmm... maybe the ECN stuff has always been buggy then, and nobody
+> > > cared...
+> > >
+> >
+> > Wait a minute, maybe this part was not needed,
+> >
+> > diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+> > index
+> > 8ae9ce2014a4a3ba7b962a209e28d1f65d4a83bd..896a7eb61d70340f69b9d3be0f7
+> > 95fbaab1458dd
+> > 100644
+> > --- a/drivers/net/geneve.c
+> > +++ b/drivers/net/geneve.c
+> > @@ -270,7 +270,7 @@ static void geneve_rx(struct geneve_dev *geneve,
+> > struct geneve_sock *gs,
+> >                         goto rx_error;
+> >                 break;
+> >         default:
+> > -               goto rx_error;
+> > +               break;
+> >         }
+> >         oiph = skb_network_header(skb);
+> >         skb_reset_network_header(skb);
+> >
+> >
+> > > On Wed, Dec 9, 2020 at 6:20 PM Jakub Kicinski <kuba@kernel.org>
+> > > wrote:
+> > > > Eric, could this possibly be commit 4179b00c04d1 ("geneve: pull
+> > > > IP
+> > > > header before ECN decapsulation")?
+> > > >
+>
+> We've bisected an issue in our CI to this patch, something about geneve
+> TC offload traffic not passing, I don't have all the details, Maybe
+> Vlad can chime in.
+>
 
-The code was developed and tested on an MSC313E SoC, which seems to be
-half-way between the AT91RM9200 and the AT91SAM9260 in that it supports
-both the 2-descriptors mode and a Tx ring.
+Yes, I think the patch I sent should fix this, ETH_P_ARP should not be
+dropped ;)
 
-It turns out that after the code was merged I could notice that the
-controller would sometimes lock up, and only when dealing with sustained
-bidirectional transfers, in which case it would report a Tx overrun
-condition right after having reported being ready, and will stop sending
-even after the status is cleared (a down/up cycle fixes it though).
+I am testing this before offical patch submission.
 
-After adding lots of traces I couldn't spot a sequence pattern allowing
-to predict that this situation would happen. The chip comes with no
-documentation and other bits are often reported with no conclusive
-pattern either.
-
-It is possible that my change is wrong just like it is possible that
-the controller on the chip is bogus or at least unpredictable based on
-existing docs from other chips. I do not have an RM9200 at hand to test
-at the moment and a few tests run on a more recent 9G20 indicate that
-this code path cannot be used there to test the code on a 3rd platform.
-
-Since the MSC313E works fine in the single-descriptor mode, and that
-people using the old RM9200 very likely favor stability over performance,
-better revert this patch until we can test it on the original platform
-this part of the driver was written for. Note that the reverted patch
-was actually tested on MSC313E.
-
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: Daniel Palmer <daniel@0x0f.com>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/netdev/20201206092041.GA10646@1wt.eu/
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
- drivers/net/ethernet/cadence/macb.h      |  2 --
- drivers/net/ethernet/cadence/macb_main.c | 46 ++++++--------------------------
- 2 files changed, 8 insertions(+), 40 deletions(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-index 85be045..9fbdf53 100644
---- a/drivers/net/ethernet/cadence/macb.h
-+++ b/drivers/net/ethernet/cadence/macb.h
-@@ -1216,8 +1216,6 @@ struct macb {
- 
- 	/* AT91RM9200 transmit queue (1 on wire + 1 queued) */
- 	struct macb_tx_skb	rm9200_txq[2];
--	unsigned int		rm9200_tx_tail;
--	unsigned int		rm9200_tx_len;
- 	unsigned int		max_tx_length;
- 
- 	u64			ethtool_stats[GEM_STATS_LEN + QUEUE_STATS_LEN * MACB_MAX_QUEUES];
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 817c7b0..352ae7f 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -3936,7 +3936,6 @@ static int at91ether_start(struct macb *lp)
- 			     MACB_BIT(ISR_TUND)	|
- 			     MACB_BIT(ISR_RLE)	|
- 			     MACB_BIT(TCOMP)	|
--			     MACB_BIT(RM9200_TBRE)	|
- 			     MACB_BIT(ISR_ROVR)	|
- 			     MACB_BIT(HRESP));
- 
-@@ -3953,7 +3952,6 @@ static void at91ether_stop(struct macb *lp)
- 			     MACB_BIT(ISR_TUND)	|
- 			     MACB_BIT(ISR_RLE)	|
- 			     MACB_BIT(TCOMP)	|
--			     MACB_BIT(RM9200_TBRE)	|
- 			     MACB_BIT(ISR_ROVR) |
- 			     MACB_BIT(HRESP));
- 
-@@ -4023,10 +4021,11 @@ static netdev_tx_t at91ether_start_xmit(struct sk_buff *skb,
- 					struct net_device *dev)
- {
- 	struct macb *lp = netdev_priv(dev);
--	unsigned long flags;
- 
--	if (lp->rm9200_tx_len < 2) {
--		int desc = lp->rm9200_tx_tail;
-+	if (macb_readl(lp, TSR) & MACB_BIT(RM9200_BNQ)) {
-+		int desc = 0;
-+
-+		netif_stop_queue(dev);
- 
- 		/* Store packet information (to free when Tx completed) */
- 		lp->rm9200_txq[desc].skb = skb;
-@@ -4040,15 +4039,6 @@ static netdev_tx_t at91ether_start_xmit(struct sk_buff *skb,
- 			return NETDEV_TX_OK;
- 		}
- 
--		spin_lock_irqsave(&lp->lock, flags);
--
--		lp->rm9200_tx_tail = (desc + 1) & 1;
--		lp->rm9200_tx_len++;
--		if (lp->rm9200_tx_len > 1)
--			netif_stop_queue(dev);
--
--		spin_unlock_irqrestore(&lp->lock, flags);
--
- 		/* Set address of the data in the Transmit Address register */
- 		macb_writel(lp, TAR, lp->rm9200_txq[desc].mapping);
- 		/* Set length of the packet in the Transmit Control register */
-@@ -4114,8 +4104,6 @@ static irqreturn_t at91ether_interrupt(int irq, void *dev_id)
- 	struct macb *lp = netdev_priv(dev);
- 	u32 intstatus, ctl;
- 	unsigned int desc;
--	unsigned int qlen;
--	u32 tsr;
- 
- 	/* MAC Interrupt Status register indicates what interrupts are pending.
- 	 * It is automatically cleared once read.
-@@ -4127,39 +4115,21 @@ static irqreturn_t at91ether_interrupt(int irq, void *dev_id)
- 		at91ether_rx(dev);
- 
- 	/* Transmit complete */
--	if (intstatus & (MACB_BIT(TCOMP) | MACB_BIT(RM9200_TBRE))) {
-+	if (intstatus & MACB_BIT(TCOMP)) {
- 		/* The TCOM bit is set even if the transmission failed */
- 		if (intstatus & (MACB_BIT(ISR_TUND) | MACB_BIT(ISR_RLE)))
- 			dev->stats.tx_errors++;
- 
--		spin_lock(&lp->lock);
--
--		tsr = macb_readl(lp, TSR);
--
--		/* we have three possibilities here:
--		 *   - all pending packets transmitted (TGO, implies BNQ)
--		 *   - only first packet transmitted (!TGO && BNQ)
--		 *   - two frames pending (!TGO && !BNQ)
--		 * Note that TGO ("transmit go") is called "IDLE" on RM9200.
--		 */
--		qlen = (tsr & MACB_BIT(TGO)) ? 0 :
--			(tsr & MACB_BIT(RM9200_BNQ)) ? 1 : 2;
--
--		while (lp->rm9200_tx_len > qlen) {
--			desc = (lp->rm9200_tx_tail - lp->rm9200_tx_len) & 1;
-+		desc = 0;
-+		if (lp->rm9200_txq[desc].skb) {
- 			dev_consume_skb_irq(lp->rm9200_txq[desc].skb);
- 			lp->rm9200_txq[desc].skb = NULL;
- 			dma_unmap_single(&lp->pdev->dev, lp->rm9200_txq[desc].mapping,
- 					 lp->rm9200_txq[desc].size, DMA_TO_DEVICE);
- 			dev->stats.tx_packets++;
- 			dev->stats.tx_bytes += lp->rm9200_txq[desc].size;
--			lp->rm9200_tx_len--;
- 		}
--
--		if (lp->rm9200_tx_len < 2 && netif_queue_stopped(dev))
--			netif_wake_queue(dev);
--
--		spin_unlock(&lp->lock);
-+		netif_wake_queue(dev);
- 	}
- 
- 	/* Work-around for EMAC Errata section 41.3.1 */
--- 
-2.9.0
-
+Thanks !
