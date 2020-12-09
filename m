@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3C92D4CA1
+	by mail.lfdr.de (Postfix) with ESMTP id F124E2D4CA2
 	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 22:17:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388001AbgLIVPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2387972AbgLIVPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 9 Dec 2020 16:15:23 -0500
 Received: from mga11.intel.com ([192.55.52.93]:24062 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387956AbgLIVPL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 16:15:11 -0500
-IronPort-SDR: kLHZDpzo3GlEeCbDpVCb3VLtulPd2ZLXZsqrIzZsDRyma19jO3QsDTVByd1/a3ffQpTGT1j23F
- SI8CgVlzDTRQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="170641631"
+        id S2387885AbgLIVOv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 16:14:51 -0500
+IronPort-SDR: hE/NRDNLiDNWUKrJhFXbWfjqJ9zBgelqQSTuN/Dye9+sPlc19PCfe7lTK4FqpOPE4dOTZwtKDC
+ M/8X/6Sz+gPQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="170641632"
 X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
-   d="scan'208";a="170641631"
+   d="scan'208";a="170641632"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 13:13:54 -0800
-IronPort-SDR: 3bUWUKCBeJwrwv31+nBeMWBOeQSEihbjM45tI0HU1gbA+LCVVIkFBvHRYjYj02vTpoGB13xZjo
- NBzD/eg1jRmg==
+IronPort-SDR: uMr+7KrI4PmqRF5g0sSHYxJyhogQTXwLQ3NUmkSryFaR5C4nGY1RACqz5MvOd4B7o4DlARk/2s
+ /ofb5YxElzBg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
-   d="scan'208";a="408228648"
+   d="scan'208";a="408228651"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga001.jf.intel.com with ESMTP; 09 Dec 2020 13:13:53 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -30,9 +30,9 @@ To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jeb Cramer <jeb.j.cramer@intel.com>, netdev@vger.kernel.org,
         sassmann@redhat.com, anthony.l.nguyen@intel.com,
         Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net-next v4 3/9] ice: Enable Support for FW Override (E82X)
-Date:   Wed,  9 Dec 2020 13:13:06 -0800
-Message-Id: <20201209211312.3850588-4-anthony.l.nguyen@intel.com>
+Subject: [net-next v4 4/9] ice: Remove gate to OROM init
+Date:   Wed,  9 Dec 2020 13:13:07 -0800
+Message-Id: <20201209211312.3850588-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201209211312.3850588-1-anthony.l.nguyen@intel.com>
 References: <20201209211312.3850588-1-anthony.l.nguyen@intel.com>
@@ -44,32 +44,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jeb Cramer <jeb.j.cramer@intel.com>
 
-The driver is able to override the firmware when it comes to supporting
-a more lenient link mode.  This feature was limited to E810 devices.  It
-is now extended to E82X devices.
+Remove the gate that prevents the OROM and netlist info from being
+populated.  The NVM now has the appropriate section for software to
+reference the versioning info.
 
 Signed-off-by: Jeb Cramer <jeb.j.cramer@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_nvm.c | 26 ------------------------
+ 1 file changed, 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index ab9d7ae93706..18720c6fbfd9 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -4262,10 +4262,6 @@ ice_sched_query_elem(struct ice_hw *hw, u32 node_teid,
-  */
- bool ice_fw_supports_link_override(struct ice_hw *hw)
- {
--	/* Currently, only supported for E810 devices */
--	if (hw->mac_type != ICE_MAC_E810)
--		return false;
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index 5903a36763de..cd442a5415d1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -634,32 +634,6 @@ enum ice_status ice_init_nvm(struct ice_hw *hw)
+ 		return status;
+ 	}
+ 
+-	switch (hw->device_id) {
+-	/* the following devices do not have boot_cfg_tlv yet */
+-	case ICE_DEV_ID_E823C_BACKPLANE:
+-	case ICE_DEV_ID_E823C_QSFP:
+-	case ICE_DEV_ID_E823C_SFP:
+-	case ICE_DEV_ID_E823C_10G_BASE_T:
+-	case ICE_DEV_ID_E823C_SGMII:
+-	case ICE_DEV_ID_E822C_BACKPLANE:
+-	case ICE_DEV_ID_E822C_QSFP:
+-	case ICE_DEV_ID_E822C_10G_BASE_T:
+-	case ICE_DEV_ID_E822C_SGMII:
+-	case ICE_DEV_ID_E822C_SFP:
+-	case ICE_DEV_ID_E822L_BACKPLANE:
+-	case ICE_DEV_ID_E822L_SFP:
+-	case ICE_DEV_ID_E822L_10G_BASE_T:
+-	case ICE_DEV_ID_E822L_SGMII:
+-	case ICE_DEV_ID_E823L_BACKPLANE:
+-	case ICE_DEV_ID_E823L_SFP:
+-	case ICE_DEV_ID_E823L_10G_BASE_T:
+-	case ICE_DEV_ID_E823L_1GBE:
+-	case ICE_DEV_ID_E823L_QSFP:
+-		return status;
+-	default:
+-		break;
+-	}
 -
- 	if (hw->api_maj_ver == ICE_FW_API_LINK_OVERRIDE_MAJ) {
- 		if (hw->api_min_ver > ICE_FW_API_LINK_OVERRIDE_MIN)
- 			return true;
+ 	status = ice_get_orom_ver_info(hw);
+ 	if (status) {
+ 		ice_debug(hw, ICE_DBG_INIT, "Failed to read Option ROM info.\n");
 -- 
 2.26.2
 
