@@ -2,145 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1E22D37E4
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 01:40:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2668A2D3804
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 01:56:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730540AbgLIAjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 19:39:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
+        id S1726012AbgLIAzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 19:55:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725940AbgLIAjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 19:39:37 -0500
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC138C0613CF
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 16:38:56 -0800 (PST)
-Received: by mail-ot1-x341.google.com with SMTP id i6so615543otr.2
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 16:38:56 -0800 (PST)
+        with ESMTP id S1725768AbgLIAzd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 19:55:33 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2500EC061793
+        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 16:54:47 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id 1so422871plb.4
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 16:54:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Kmk2YI7GQKC1QQuseSoGeIYfygPzB7Y5vXtGgunzq1g=;
-        b=WkMlaLkCJH7vyvlOeixVsnfgK0mh6dOe3+HtKwabHPmXvrwgvap7IqTRDTz/gFC4Ij
-         NgV4Isn6rhdFVRtyQPq0S9S346lFxBdjw0gVTCIhioYYEKA8UaJDjN9hmJKnB0Vbt0jr
-         IVdArmNbvqivMA0Cum8tn+WJcjtPChpo3ij7ncRwJVEfaqWj2k84iREySGWM9ITgb76+
-         VttrNXfOZY0lxr2W2QFdCmB3k0jWQ3FUE78upJlSxJUR4I8GOSxOkf/9JxV4mD5ZumiB
-         uw6FTeUQEaGCbR+YnP37ynwywXfM3vxHGWXNSI2C98KQHbP+Qs1JlFME6qhrV6J7sKAh
-         AhPw==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=jHmBTu2a6YeXqg9JV8zjTjHapVHdVin6HOERmsJbxQc=;
+        b=JLLl2aJDDdDSDwcfJlZL+0COBsfwFluGNkA9FMrtg1JPFA914G3nNHzuzHmB8b3GQL
+         Ihj3+uXwS2XU+tfhG09ccHx+LuAUhH7rZZ2UiK8j/flz2C+QpoWckBtUWQHhyy3WPjJR
+         axwYGDU1j4xp19xXaF74FlXud2eRQ5vdBCCgr55zNSIldLlCexhRf7Re4GVlTDIgEUwp
+         SzkqUPCi5JBc7131On0JrMFSEZYIdU4ImF4MacWTWYh5wFoQyGO2BNQoQdrkRs4Xfd7z
+         TE0/Sea50r4Yax07K/gAs87Z6jGupHPHUHBrxzwBSrwMPfpmpAFXJ6Cj6dA1IRLkUIMr
+         t4jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Kmk2YI7GQKC1QQuseSoGeIYfygPzB7Y5vXtGgunzq1g=;
-        b=ugm0i+eXnGN3JOeb1glbDUFX6SZQxiGUjr1fACJIfKPGfvo8lim/Vh8Orti8e+Llf6
-         ye8tsROW97L62k9SUTldsHQGkroVeDL1wTsW5mpYV7yfz3uc7aXC9vx3NUvnlw8ZLs82
-         uf27E/sAH69EKQUnHj5pB5srvHVZWH6QO2W87F5d3UfbPAxnAlqESfhQyDLgezX++QGD
-         vld97nOMAhbUmJVjfLC4VFEg9g9e05ylwuEoNoCENt3qtSnxzSDgkBA1eZmSY7vp58s1
-         H6EmnhJjOn32096po5nXTlnmvFaB/r1z1fDXebggzxLYqA+2t2lcTcacanBhvc6eOWgA
-         Fm3w==
-X-Gm-Message-State: AOAM530b/TBE5MPZlgoR31HcfJhpPlkYy9vvqyHv8BgYueGxix2gTKQp
-        eYb2gSaQQ7EfZp5hDk1210I=
-X-Google-Smtp-Source: ABdhPJwm1JwMtli/qsn+3L8ZydaJFHj/WP3suRCiRxghdzjyRC5HquTekV8QNuIhMfmwHIz1c4dd5Q==
-X-Received: by 2002:a9d:6317:: with SMTP id q23mr613356otk.251.1607474336008;
-        Tue, 08 Dec 2020 16:38:56 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:64fc:adeb:84f9:fa62])
-        by smtp.googlemail.com with ESMTPSA id j62sm17564otc.49.2020.12.08.16.38.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Dec 2020 16:38:55 -0800 (PST)
-Subject: Re: [PATCH v1 net-next 02/15] net: Introduce direct data placement
- tcp offload
-To:     Boris Pismenny <borispismenny@gmail.com>,
-        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
-        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de,
-        sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
-        viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>,
-        Boris Pismenny <borisp@nvidia.com>
-References: <20201207210649.19194-1-borisp@mellanox.com>
- <20201207210649.19194-3-borisp@mellanox.com>
- <6f48fa5d-465c-5c38-ea45-704e86ba808b@gmail.com>
- <f52a99d2-03a4-6e9f-603e-feba4aad0512@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <65dc5bba-13e6-110a-ddae-3d0c260aa875@gmail.com>
-Date:   Tue, 8 Dec 2020 17:38:53 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
-MIME-Version: 1.0
-In-Reply-To: <f52a99d2-03a4-6e9f-603e-feba4aad0512@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=jHmBTu2a6YeXqg9JV8zjTjHapVHdVin6HOERmsJbxQc=;
+        b=t1z+gHC+XVV3ZA+kmEl2E//A64pNi0MH3yD/QvNNgGYFL0RjlavJ1hntGU4p8yyBlz
+         +zztT6Dk6zjm5xqiISe60PnV125Sih9kSuVecfMZJxHUkb5swRcvrg3ZXlHuyLuVZDWp
+         JnyLI9l7W+/Yn+3tL22SMF86Ou3djBYxWRIcXyJ4DeKKK59+Fx5AcRaM4Yu04nQs6f85
+         OwNSDgjvAeTBVyoLBeLT/QhwCNlNmP984s/VrdAm/lDia2Fr9IUsEfhRtF3CFqevwuhD
+         hybxZHgTgd3JvveuVcKv3KyIEy3GAwaO1xwtYh2OQ9JT8gYMfaQIY4fR7/MitGTUT1L8
+         cNyg==
+X-Gm-Message-State: AOAM531zV+N0jSStsO2YakarMhUihEmQRvrRCj4FbNp/gO/SQmVFgFnq
+        l8cKh9Uve+D9zGdxXhmVg44s70qYGow=
+X-Google-Smtp-Source: ABdhPJz1kr7EZB7SxrOADrnVFAiXhyjZnUq2A4aDDuTjaaLljljF+Ueca7HTNZpnvx8cU0CzkwyjhJ19u80=
+Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
+X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:1ea0:b8ff:fe75:cf08])
+ (user=weiwan job=sendgmr) by 2002:a17:90a:7d08:: with SMTP id
+ g8mr184831pjl.180.1607475286518; Tue, 08 Dec 2020 16:54:46 -0800 (PST)
+Date:   Tue,  8 Dec 2020 16:54:41 -0800
+Message-Id: <20201209005444.1949356-1-weiwan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.576.ga3fc446d84-goog
+Subject: [PATCH net-next v4 0/3] implement kthread based napi poll
+From:   Wei Wang <weiwan@google.com>
+To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Felix Fietkau <nbd@nbd.name>, Hillf Danton <hdanton@sina.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/20 7:36 AM, Boris Pismenny wrote:
-> On 08/12/2020 2:42, David Ahern wrote:
->> On 12/7/20 2:06 PM, Boris Pismenny wrote:
->>> This commit introduces direct data placement offload for TCP.
->>> This capability is accompanied by new net_device operations that
->>> configure
->>> hardware contexts. There is a context per socket, and a context per DDP
->>> opreation. Additionally, a resynchronization routine is used to assist
->>> hardware handle TCP OOO, and continue the offload.
->>> Furthermore, we let the offloading driver advertise what is the max hw
->>> sectors/segments.
->>>
->>> Using this interface, the NIC hardware will scatter TCP payload directly
->>> to the BIO pages according to the command_id.
->>> To maintain the correctness of the network stack, the driver is expected
->>> to construct SKBs that point to the BIO pages.
->>>
->>> This, the SKB represents the data on the wire, while it is pointing
->>> to data that is already placed in the destination buffer.
->>> As a result, data from page frags should not be copied out to
->>> the linear part.
->>>
->>> As SKBs that use DDP are already very memory efficient, we modify
->>> skb_condence to avoid copying data from fragments to the linear
->>> part of SKBs that belong to a socket that uses DDP offload.
->>>
->>> A follow-up patch will use this interface for DDP in NVMe-TCP.
->>>
->>
->> You call this Direct Data Placement - which sounds like a marketing name.
->>
-> 
-> [Re-sending as the previous one didn't hit the mailing list. Sorry for the spam]
-> 
-> Interesting idea. But, unlike SKBTX_DEV_ZEROCOPY this SKB can be inspected/modified by the stack without the need to copy things out. Additionally, the SKB may contain both data that is already placed in its final destination buffer (PDU data) and data that isn't (PDU header); it doesn't matter. Therefore, labeling the entire SKB as zerocopy doesn't convey the desired information. Moreover, skipping copies in the stack to receive zerocopy SKBs will require more invasive changes.
-> 
-> Our goal in this approach was to provide the smallest change that enables the desired functionality while preserving the performance of existing flows that do not care for it. An alternative approach, that doesn't affect existing flows at all, which we considered was to make a special version of memcpy_to_page to be used by DDP providers (nvme-tcp). This alternative will require creating corresponding special versions for users of this function such skb_copy_datagram_iter. Thit is more invasive, thus in this patchset we decided to avoid it.
-> 
->> Fundamentally, this starts with offloading TCP socket buffers for a
->> specific flow, so generically a TCP Rx zerocopy for kernel stack managed
->> sockets (as opposed to AF_XDP's zerocopy). Why is this not building in
->> that level of infrastructure first and adding ULPs like NVME on top?
->>
-> 
-> We aren't using AF_XDP or any of the Rx zerocopy infrastructure, because it is unsuitable for data placement for nvme-tcp, which reordes responses relatively to requests for efficiency and requires that data reside in specific destination buffers.
-> 
-> 
+The idea of moving the napi poll process out of softirq context to a
+kernel thread based context is not new.
+Paolo Abeni and Hannes Frederic Sowa have proposed patches to move napi
+poll to kthread back in 2016. And Felix Fietkau has also proposed
+patches of similar ideas to use workqueue to process napi poll just a
+few weeks ago.
 
-The AF_XDP reference was to differentiate one zerocopy use case (all
-packets go to userspace) from another (kernel managed TCP socket with
-zerocopy payload). You are focusing on a very narrow use case - kernel
-based NVMe over TCP - of a more general problem.
+The main reason we'd like to push forward with this idea is that the
+scheduler has poor visibility into cpu cycles spent in softirq context,
+and is not able to make optimal scheduling decisions of the user threads.
+For example, we see in one of the application benchmark where network
+load is high, the CPUs handling network softirqs has ~80% cpu util. And
+user threads are still scheduled on those CPUs, despite other more idle
+cpus available in the system. And we see very high tail latencies. In this
+case, we have to explicitly pin away user threads from the CPUs handling
+network softirqs to ensure good performance.
+With napi poll moved to kthread, scheduler is in charge of scheduling both
+the kthreads handling network load, and the user threads, and is able to
+make better decisions. In the previous benchmark, if we do this and we
+pin the kthreads processing napi poll to specific CPUs, scheduler is
+able to schedule user threads away from these CPUs automatically.
 
-You have a TCP socket and a design that only works for kernel owned
-sockets. You have specialized queues in the NIC, a flow rule directing
-packets to those queues. Presumably some ULP parser in the NIC
-associated with the queues to process NVMe packets. Rather than copying
-headers (ethernet/ip/tcp) to one buffer and payload to another (which is
-similar to what Jonathan Lemon is working on), this design has a ULP
-processor that just splits out the TCP payload even more making it
-highly selective about which part of the packet is put into which
-buffer. Take out the NVMe part, and it is header split with zerocopy for
-the payload - a generic feature that can have a wider impact with NVMe
-as a special case.
+And the reason we prefer 1 kthread per napi, instead of 1 workqueue
+entity per host, is that kthread is more configurable than workqueue,
+and we could leverage existing tuning tools for threads, like taskset,
+chrt, etc to tune scheduling class and cpu set, etc. Another reason is
+if we eventually want to provide busy poll feature using kernel threads
+for napi poll, kthread seems to be more suitable than workqueue.
+Furthermore, for large platforms with 2 NICs attached to 2 sockets,
+kthread is more flexible to be pinned to different sets of CPUs.  
+
+In this patch series, I revived Paolo and Hannes's patch in 2016 and
+made modifications. Then there are changes proposed by Felix, Jakub,
+Paolo and myself on top of those, with suggestions from Eric Dumazet.
+
+In terms of performance, I ran tcp_rr tests with 1000 flows with
+various request/response sizes, with RFS/RPS disabled, and compared
+performance between softirq vs kthread vs workqueue (patchset proposed
+by Felix Fietkau).
+Host has 56 hyper threads and 100Gbps nic, 8 rx queues and only 1 numa
+node. All threads are unpinned.
+
+        req/resp   QPS   50%tile    90%tile    99%tile    99.9%tile
+softirq   1B/1B   2.75M   337us       376us      1.04ms     3.69ms
+kthread   1B/1B   2.67M   371us       408us      455us      550us
+workq     1B/1B   2.56M   384us       435us      673us      822us
+
+softirq 5KB/5KB   1.46M   678us       750us      969us      2.78ms
+kthread 5KB/5KB   1.44M   695us       789us      891us      1.06ms
+workq   5KB/5KB   1.34M   720us       905us     1.06ms      1.57ms
+
+softirq 1MB/1MB   11.0K   79ms       166ms      306ms       630ms
+kthread 1MB/1MB   11.0K   75ms       177ms      303ms       596ms
+workq   1MB/1MB   11.0K   79ms       180ms      303ms       587ms
+
+When running workqueue implementation, I found the number of threads
+used is usually twice as much as kthread implementation. This probably
+introduces higher scheduling cost, which results in higher tail
+latencies in most cases.
+
+I also ran an application benchmark, which performs fixed qps remote SSD
+read/write operations, with various sizes. Again, both with RFS/RPS
+disabled.
+The result is as follows:
+         op_size  QPS   50%tile 95%tile 99%tile 99.9%tile  
+softirq   4K     572.6K   385us   1.5ms  3.16ms   6.41ms
+kthread   4K     572.6K   390us   803us  2.21ms   6.83ms
+workq     4k     572.6K   384us   763us  3.12ms   6.87ms
+
+softirq   64K    157.9K   736us   1.17ms 3.40ms   13.75ms
+kthread   64K    157.9K   745us   1.23ms 2.76ms    9.87ms 
+workq     64K    157.9K   746us   1.23ms 2.76ms    9.96ms
+
+softirq   1M     10.98K   2.03ms  3.10ms  3.7ms   11.56ms
+kthread   1M     10.98K   2.13ms  3.21ms  4.02ms  13.3ms
+workq     1M     10.98K   2.13ms  3.20ms  3.99ms  14.12ms
+
+In this set of tests, the latency is predominant by the SSD operation.
+Also, the user threads are much busier compared to tcp_rr tests. We have
+to pin the kthreads/workqueue threads to limit to a few CPUs, to not
+disturb user threads, and provide some isolation.
+
+Changes since v3:
+Merged and rearranged patches in a logical order for easier review. 
+Changed sysfs control to be per device.
+
+Changes since v2:
+Corrected typo in patch 1, and updated the cover letter with more
+detailed and updated test results.
+
+Changes since v1:
+Replaced kthread_create() with kthread_run() in patch 5 as suggested by
+Felix Fietkau.
+
+Changes since RFC:
+Renamed the kthreads to be napi/<dev>-<napi_id> in patch 5 as suggested
+by Hannes Frederic Sowa.
+
+Felix Fietkau (1):
+  net: extract napi poll functionality to __napi_poll()
+Wei Wang (2):
+  net: implement threaded-able napi poll loop support
+  net: add sysfs attribute to control napi threaded mode
+
+ include/linux/netdevice.h |   5 ++
+ net/core/dev.c            | 140 +++++++++++++++++++++++++++++++++++---
+ net/core/net-sysfs.c      |  70 +++++++++++++++++++
+ 3 files changed, 205 insertions(+), 10 deletions(-)
+
+-- 
+2.29.2.576.ga3fc446d84-goog
 
