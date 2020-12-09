@@ -2,101 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D38492D42B9
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 14:07:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58EF62D42D4
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 14:11:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732128AbgLINGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 08:06:14 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:57523 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732115AbgLINGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 08:06:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607519160; x=1639055160;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=ZvYFBB8ivPG0I/9gZKADhoJJmyIbdT5JdB9YJlFilKY=;
-  b=Hx4I4gl3pfoyImpf3dIOtmR6rndM3lmVIUjPwUVrg98l7Uq2a0G6ZQmD
-   P/GptMkdusTrzifK6K5FhakAysHshhSYr2wE/GU4NbpEuetcOPcn8/q0c
-   6ypwGFFjQKxQWjBQWUkEn0mYYPwCCcvoADFEHme0JfCf3sQZaOFs+IcFe
-   PgzJK23+0DqOvm/G1jU8oWITag2/ar1B5UKYmwXGvQXcZf0TsIqXBzxN0
-   wbQI79+5bPOXTtl3cpu4FfwBP3b7AQAUwN4ovrZO2BkiwwdGiY1tymhsM
-   6IZSrf3mBWX7FULa5il0O1K1R/pvGjrkqJbST+uS2nROKeJKThbdn5QH0
-   Q==;
-IronPort-SDR: ehnk1o90Rn984rGliBSnqW0a98J3fMIDnclBEqmLXT2eQExp371dB3fidwu+IHzECHmLCJSe9m
- L51hIVe7eK2adsFS+CfOkaDNOigA7mCRgylfJQU6zQZMqWJD4cAMztHC+VW6vR7/z1dwNh0ppQ
- qLU6Hwd6RLl0GzkKx0gKkJstDLkZCDkKEfCmaRsW6JVMODaqgSDWLjMYU09aSHUcPVkAbSXkQI
- /2Hk2VKhoIX2mj/PjHLhTRhzwPEVrWkdbTo8g1PCkwCESZM3TALpQrngIUM57nsj5zZsS9dN2w
- 238=
-X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
-   d="scan'208";a="102102729"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2020 06:04:34 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 9 Dec 2020 06:04:34 -0700
-Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Wed, 9 Dec 2020 06:04:28 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>, <linux@armlinux.org.uk>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <natechancellor@gmail.com>, <ndesaulniers@google.com>
-CC:     <yash.shah@sifive.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        <clang-built-linux@googlegroups.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v3 8/8] net: macb: add support for sama7g5 emac interface
-Date:   Wed, 9 Dec 2020 15:03:39 +0200
-Message-ID: <1607519019-19103-9-git-send-email-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1607519019-19103-1-git-send-email-claudiu.beznea@microchip.com>
-References: <1607519019-19103-1-git-send-email-claudiu.beznea@microchip.com>
+        id S1732138AbgLINKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 08:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732053AbgLINKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 08:10:15 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17C6C061794
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 05:09:34 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kmzDf-00063F-7e; Wed, 09 Dec 2020 14:09:23 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kmzDd-0001av-0w; Wed, 09 Dec 2020 14:09:21 +0100
+Date:   Wed, 9 Dec 2020 14:09:21 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v1] net: dsa: qca: ar9331: fix sleeping function
+ called from invalid context bug
+Message-ID: <20201209130920.hjjnfh2ioc33yd2y@pengutronix.de>
+References: <20201204145751.13166-1-o.rempel@pengutronix.de>
+ <8f44d5cb-fa99-b004-078e-078241f265a0@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <8f44d5cb-fa99-b004-078e-078241f265a0@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:08:43 up 7 days,  3:15, 25 users,  load average: 0.01, 0.05, 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for SAMA7G5 10/100Mbps interface.
+On Fri, Dec 04, 2020 at 04:00:35PM +0100, Marc Kleine-Budde wrote:
+> On 12/4/20 3:57 PM, Oleksij Rempel wrote:
+> [...]
+> 
+> 
+> > +static void ar9331_sw_irq_bus_sync_unlock(struct irq_data *d)
+> >  {
+> >  	struct ar9331_sw_priv *priv = irq_data_get_irq_chip_data(d);
+> >  	struct regmap *regmap = priv->regmap;
+> >  	int ret;
+> >  
+> >  	ret = regmap_update_bits(regmap, AR9331_SW_REG_GINT_MASK,
+> > -				 AR9331_SW_GINT_PHY_INT,
+> > -				 AR9331_SW_GINT_PHY_INT);
+> > +				 AR9331_SW_GINT_PHY_INT, priv->irq_mask);
+> >  	if (ret)
+> > -		dev_err(priv->dev, "could not unmask IRQ\n");
+> > +		dev_err(priv->dev, "could not mask IRQ\n");
+> 
+> Technically this could be a mask or unmask operation. What about changing the
+> error message to: "faild to change IRQ mask"?
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/ethernet/cadence/macb_main.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+OK, it make sense. I'll fix it.
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 5bae44931282..995a13489276 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4581,6 +4581,14 @@ static const struct macb_config sama7g5_gem_config = {
- 	.usrio = &sama7g5_usrio,
- };
- 
-+static const struct macb_config sama7g5_emac_config = {
-+	.caps = MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII | MACB_CAPS_USRIO_HAS_CLKEN,
-+	.dma_burst_length = 16,
-+	.clk_init = macb_clk_init,
-+	.init = macb_init,
-+	.usrio = &sama7g5_usrio,
-+};
-+
- static const struct of_device_id macb_dt_ids[] = {
- 	{ .compatible = "cdns,at32ap7000-macb" },
- 	{ .compatible = "cdns,at91sam9260-macb", .data = &at91sam9260_config },
-@@ -4599,6 +4607,7 @@ static const struct of_device_id macb_dt_ids[] = {
- 	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
- 	{ .compatible = "sifive,fu540-c000-gem", .data = &fu540_c000_config },
- 	{ .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
-+	{ .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, macb_dt_ids);
+Regards,
+Oleksij
 -- 
-2.7.4
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
