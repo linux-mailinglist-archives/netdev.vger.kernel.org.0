@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1988A2D6787
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:52:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 664472D678F
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:54:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404468AbgLJTwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 14:52:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
+        id S2393533AbgLJTwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 14:52:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404335AbgLJTnk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:40 -0500
+        with ESMTP id S2404336AbgLJTnm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:42 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F09C0611C5;
-        Thu, 10 Dec 2020 11:42:35 -0800 (PST)
-Message-Id: <20201210194044.065003856@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C406C0611CA;
+        Thu, 10 Dec 2020 11:42:36 -0800 (PST)
+Message-Id: <20201210194044.157283633@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1607629353;
+        s=2020; t=1607629354;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=fEH7SfFXgNBjB2KnJKxA/TzRUtcjVN/8Utn6le7GAgY=;
-        b=jLhcNWAI6/f0h7r8+rFxJO/huD0wZGw+D4hiyZeoGMMj1an/mYZLtmxjGnZ/aSu9ajxbNk
-        p75pL7pZYF9lDXL6k6cLxjzZOwC5q8ecIjJ39xF/dSPObsyqM+yudoL9yN0v7780Bn5yyF
-        /Ve3t66EmBeMbc9BsRyBF2dkjfBuqeDKx8lYvDouLXZuAf0vFtIPH5zU4jlfdixs/IVdOS
-        vmsr5U63fIVzglTEhwYSxzXESekgTuzdOHcprErKfUMwbSexx9oDdfFa+4Z1VcZaNX5rSu
-        6l8HXwdp3e4RNwPr1pyTZfpMenA4zfmUQEoZ4/oyxWsRJm8zIR/y6ojvGi9aNQ==
+        bh=4K6qItYlSe7EBUp3WfMEzcI2y69yZ4OdOhSokF1HvFw=;
+        b=dopfjz4hp6A4Xryu0tbdegM/v0YL6lWYdnP3XlIYCgQ9pjXx9ZT1p3TI0zk4elgm5gPd+q
+        FURWbMd/ftse0CXn8TWD7Lf/LMt29YyfqJkuoxwIq2zLBOhpU5N1uQ9NTcofTSPiRoKfTO
+        PEbzx4Og6n9n+3PdfyA3eCON82LOBsb5cz2c2++JdWXn2zeffzgZ5twz3L2T1NgK3Sr/6E
+        z4hGHNQPL1mjIDXhMbZMKcry3IqKzOm1XwkJ497HBo+O7rAGzJagP8Bz95WOHjr107cL1M
+        F3z7vCp/PgmQ7w0NfOrec8JvWkd2Glw3/TrHKxQy3AjIzKLFjQ11edATiOjGMg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1607629353;
+        s=2020e; t=1607629354;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=fEH7SfFXgNBjB2KnJKxA/TzRUtcjVN/8Utn6le7GAgY=;
-        b=vcq9ylrl3bvEPVRyLq7+7uNgnxo0i4JU/giqH4jOxFiIi2uv7Mz1SZNae4Tgp0yDwrMR2T
-        GgsHxKk5w8TyzfBQ==
-Date:   Thu, 10 Dec 2020 20:25:51 +0100
+        bh=4K6qItYlSe7EBUp3WfMEzcI2y69yZ4OdOhSokF1HvFw=;
+        b=K3Wur5e2Woy0OzRxLAAmfcCZIUuOyHlagbFXs1H4WET0hQYXgya6h4ah4Fheh+nueTyzzX
+        ONj+v+orSFGMaLBQ==
+Date:   Thu, 10 Dec 2020 20:25:52 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Marc Zyngier <maz@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         afzal mohammed <afzal.mohd.ma@gmail.com>,
@@ -60,7 +61,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Wambui Karuga <wambui.karugax@gmail.com>,
         intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>, Jon Mason <jdmason@kudzu.us>,
+        linux-gpio@vger.kernel.org, Jon Mason <jdmason@kudzu.us>,
         Dave Jiang <dave.jiang@intel.com>,
         Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
@@ -79,7 +80,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Juergen Gross <jgross@suse.com>,
         Stefano Stabellini <sstabellini@kernel.org>,
         xen-devel@lists.xenproject.org
-Subject: [patch 15/30] pinctrl: nomadik: Use irq_has_action()
+Subject: [patch 16/30] mfd: ab8500-debugfs: Remove the racy fiddling with irq_desc
 References: <20201210192536.118432146@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -88,33 +89,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let the core code do the fiddling with irq_desc.
+First of all drivers have absolutely no business to dig into the internals
+of an irq descriptor. That's core code and subject to change. All of this
+information is readily available to /proc/interrupts in a safe and race
+free way.
+
+Remove the inspection code which is a blatant violation of subsystem
+boundaries and racy against concurrent modifications of the interrupt
+descriptor.
+
+Print the irq line instead so the information can be looked up in a sane
+way in /proc/interrupts.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Lee Jones <lee.jones@linaro.org>
 Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-gpio@vger.kernel.org
 ---
- drivers/pinctrl/nomadik/pinctrl-nomadik.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/mfd/ab8500-debugfs.c |   16 +++-------------
+ 1 file changed, 3 insertions(+), 13 deletions(-)
 
---- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-+++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-@@ -948,7 +948,6 @@ static void nmk_gpio_dbg_show_one(struct
- 			   (mode < 0) ? "unknown" : modes[mode]);
- 	} else {
- 		int irq = chip->to_irq(chip, offset);
--		struct irq_desc	*desc = irq_to_desc(irq);
- 		const int pullidx = pull ? 1 : 0;
- 		int val;
- 		static const char * const pulls[] = {
-@@ -969,7 +968,7 @@ static void nmk_gpio_dbg_show_one(struct
- 		 * This races with request_irq(), set_irq_type(),
- 		 * and set_irq_wake() ... but those are "rare".
- 		 */
--		if (irq > 0 && desc && desc->action) {
-+		if (irq > 0 && irq_has_action(irq)) {
- 			char *trigger;
+--- a/drivers/mfd/ab8500-debugfs.c
++++ b/drivers/mfd/ab8500-debugfs.c
+@@ -1513,24 +1513,14 @@ static int ab8500_interrupts_show(struct
+ {
+ 	int line;
  
- 			if (nmk_chip->edge_rising & BIT(offset))
+-	seq_puts(s, "name: number:  number of: wake:\n");
++	seq_puts(s, "name: number: irq: number of: wake:\n");
+ 
+ 	for (line = 0; line < num_interrupt_lines; line++) {
+-		struct irq_desc *desc = irq_to_desc(line + irq_first);
+-
+-		seq_printf(s, "%3i:  %6i %4i",
++		seq_printf(s, "%3i:  %6i %4i %4i\n",
+ 			   line,
++			   line + irq_first,
+ 			   num_interrupts[line],
+ 			   num_wake_interrupts[line]);
+-
+-		if (desc && desc->name)
+-			seq_printf(s, "-%-8s", desc->name);
+-		if (desc && desc->action) {
+-			struct irqaction *action = desc->action;
+-
+-			seq_printf(s, "  %s", action->name);
+-			while ((action = action->next) != NULL)
+-				seq_printf(s, ", %s", action->name);
+ 		}
+ 		seq_putc(s, '\n');
+ 	}
 
