@@ -2,87 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5472D51CF
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 04:47:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BD162D51B5
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 04:44:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731020AbgLJDom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 22:44:42 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:9423 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729094AbgLJDoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 22:44:20 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Cs08x5ND2z7CB5;
-        Thu, 10 Dec 2020 11:42:09 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 10 Dec 2020 11:42:36 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kuba@kernel.org>, <huangdaode@huawei.com>,
-        Guojia Liao <liaoguojia@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 7/7] net: hns3: adjust rss tc mode configure command
-Date:   Thu, 10 Dec 2020 11:42:12 +0800
-Message-ID: <1607571732-24219-8-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1607571732-24219-1-git-send-email-tanhuazhong@huawei.com>
-References: <1607571732-24219-1-git-send-email-tanhuazhong@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+        id S1730769AbgLJDnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 22:43:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730729AbgLJDnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 22:43:13 -0500
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE10C0613D6
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 19:42:33 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477:9e51:a893:b0fe:602a])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 7FED64D259C21;
+        Wed,  9 Dec 2020 19:42:32 -0800 (PST)
+Date:   Wed, 09 Dec 2020 19:42:32 -0800 (PST)
+Message-Id: <20201209.194232.2256501629400589947.davem@davemloft.net>
+To:     kuba@kernel.org
+Cc:     simon.horman@netronome.com, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, lkp@intel.com
+Subject: Re: [PATCH net-next] nfp: silence set but not used warning with
+ IPV6=n
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20201209161821.1040796-1-kuba@kernel.org>
+References: <20201209161821.1040796-1-kuba@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 09 Dec 2020 19:42:32 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guojia Liao <liaoguojia@huawei.com>
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Wed,  9 Dec 2020 08:18:21 -0800
 
-For the max rss size of PF may be up to 512, the max queue
-number of single tc may be up to 512 too. For the total queue
-numbers may be up to 1280, so the queue offset of each tc may
-be more than 1024. So adjust the rss tc mode configuration
-command, including extend tc size field from 10 bits to 11
-bits, and extend tc size field from 3 bits to 4 bits.
-
-Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h  | 4 +++-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 ++
- 2 files changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index a6c306b..edfadb5 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -572,9 +572,11 @@ struct hclge_rss_indirection_table_cmd {
- };
- 
- #define HCLGE_RSS_TC_OFFSET_S		0
--#define HCLGE_RSS_TC_OFFSET_M		GENMASK(9, 0)
-+#define HCLGE_RSS_TC_OFFSET_M		GENMASK(10, 0)
-+#define HCLGE_RSS_TC_SIZE_MSB_B		11
- #define HCLGE_RSS_TC_SIZE_S		12
- #define HCLGE_RSS_TC_SIZE_M		GENMASK(14, 12)
-+#define HCLGE_RSS_TC_SIZE_MSB_OFFSET	3
- #define HCLGE_RSS_TC_VALID_B		15
- struct hclge_rss_tc_mode_cmd {
- 	__le16 rss_tc_mode[HCLGE_MAX_TC_NUM];
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 5de45a9..7a16411 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -4335,6 +4335,8 @@ static int hclge_set_rss_tc_mode(struct hclge_dev *hdev, u16 *tc_valid,
- 		hnae3_set_bit(mode, HCLGE_RSS_TC_VALID_B, (tc_valid[i] & 0x1));
- 		hnae3_set_field(mode, HCLGE_RSS_TC_SIZE_M,
- 				HCLGE_RSS_TC_SIZE_S, tc_size[i]);
-+		hnae3_set_bit(mode, HCLGE_RSS_TC_SIZE_MSB_B,
-+			      tc_size[i] >> HCLGE_RSS_TC_SIZE_MSB_OFFSET & 0x1);
- 		hnae3_set_field(mode, HCLGE_RSS_TC_OFFSET_M,
- 				HCLGE_RSS_TC_OFFSET_S, tc_offset[i]);
- 
--- 
-2.7.4
+> Test robot reports:
+> 
+> drivers/net/ethernet/netronome/nfp/crypto/tls.c: In function 'nfp_net_tls_rx_resync_req':
+> drivers/net/ethernet/netronome/nfp/crypto/tls.c:477:18: warning: variable 'ipv6h' set but not used [-Wunused-but-set-variable]
+>   477 |  struct ipv6hdr *ipv6h;
+>       |                  ^~~~~
+> In file included from include/linux/compiler_types.h:65,
+>                     from <command-line>:
+> drivers/net/ethernet/netronome/nfp/crypto/tls.c: In function 'nfp_net_tls_add':
+> include/linux/compiler_attributes.h:208:41: warning: statement will never be executed [-Wswitch-unreachable]
+>   208 | # define fallthrough                    __attribute__((__fallthrough__))
+>       |                                         ^~~~~~~~~~~~~
+> drivers/net/ethernet/netronome/nfp/crypto/tls.c:299:3: note: in expansion of macro 'fallthrough'
+>   299 |   fallthrough;
+>       |   ^~~~~~~~~~~
+> 
+> Use the IPv6 header in the switch, it doesn't matter which header
+> we use to read the version field.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Applied, thanks.
 
