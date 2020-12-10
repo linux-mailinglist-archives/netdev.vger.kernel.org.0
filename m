@@ -2,111 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8FE2D536C
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 06:44:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8EB72D537A
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 06:53:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732803AbgLJFlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 00:41:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60936 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730584AbgLJFlE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 00:41:04 -0500
-Message-ID: <5057047d659b337317d1ee8355a2659c78d3315f.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607578823;
-        bh=Q5F4J5wppiN0Rkj8e1cHlqpk4IOx2IP2r3JY2um8XKc=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=kQRAG7iDJtJv7KFLKySWen9sLBE13I21hWcc3LeLakxgmpUzbZsDKD8MWla0waigz
-         JVm1Q5tup6bzX2xw+eYsGGv2qJalgAo1bYv38mc3klodRaU7+Z8ZdzrjGCpcgQH99+
-         x7JqZZVRIrb8LDTfsGg5OTHpIjnlzorlz4kVV6mVKx0DnsY9Wh8/zUxQlytk1y1psW
-         l2tWkVEWitNhZt6RkQu8E9XVuXhthfqquJUFlr/LrZsci3b1hREYYmoXoVbQK7veN3
-         p/5Z9bZjtmcw77U6I5mGzi4Ti1DCjAmKI84NjKwc4FNVNdA8KaUlcOqNJ+joXhHSPG
-         wW2ytPWj07eAQ==
-Subject: Re: [PATCH net-next 3/7] net: hns3: add support for forwarding
- packet to queues of specified TC when flow director rule hit
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Huazhong Tan <tanhuazhong@huawei.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, huangdaode@huawei.com,
-        Jian Shen <shenjian15@huawei.com>
-Date:   Wed, 09 Dec 2020 21:40:22 -0800
-In-Reply-To: <1607571732-24219-4-git-send-email-tanhuazhong@huawei.com>
-References: <1607571732-24219-1-git-send-email-tanhuazhong@huawei.com>
-         <1607571732-24219-4-git-send-email-tanhuazhong@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1732782AbgLJFxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 00:53:41 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:64054 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727004AbgLJFxk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 00:53:40 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607579594; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=RX2ogzIEa4qWK40lF0tzLKbTuvmm8CS5Wm4w9kBCa00=; b=Mmbp7YwFGFTjEqVrqamptb7teG2j95Z9gmc7dPYASItgvXq+g+Tpj/ljgaiewOR0NIMGGJvI
+ w+DogtmmG59u11Ugzqr0QX35MtRpfmorZ2ih3iqmL4XQI/xziKnlLhUj2w8a0R/e6e07uzCZ
+ DdAUuZHqS0W0ZEezIJPo05JeF2U=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 5fd1b7a6a18369bfbb3d4fc0 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 10 Dec 2020 05:52:38
+ GMT
+Sender: subashab=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 57F35C433ED; Thu, 10 Dec 2020 05:52:38 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from subashab-lnx.qualcomm.com (unknown [129.46.15.92])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2E5C7C433CA;
+        Thu, 10 Dec 2020 05:52:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2E5C7C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=subashab@codeaurora.org
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     loic.poulain@linaro.org, kuba@kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Sean Tranchetti <stranche@codeaurora.org>
+Subject: [PATCH net-next] net: qualcomm: rmnet: Update rmnet device MTU based on real device
+Date:   Wed,  9 Dec 2020 22:51:46 -0700
+Message-Id: <1607579506-3153-1-git-send-email-subashab@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-12-10 at 11:42 +0800, Huazhong Tan wrote:
-> From: Jian Shen <shenjian15@huawei.com>
-> 
-> For some new device, it supports forwarding packet to queues
-> of specified TC when flow director rule hit. So extend the
-> command handle to support it.
-> 
+Packets sent by rmnet to the real device have variable MAP header
+lengths based on the data format configured. This patch adds checks
+to ensure that the real device MTU is sufficient to transmit the MAP
+packet comprising of the MAP header and the IP packet. This check
+is enforced when rmnet devices are created and updated and during
+MTU updates of both the rmnet and real device.
 
-...
+Additionally, rmnet devices now have a default MTU configured which
+accounts for the real device MTU and the headroom based on the data
+format.
 
->  static int hclge_config_action(struct hclge_dev *hdev, u8 stage,
->  			       struct hclge_fd_rule *rule)
->  {
-> +	struct hclge_vport *vport = hdev->vport;
-> +	struct hnae3_knic_private_info *kinfo = &vport->nic.kinfo;
->  	struct hclge_fd_ad_data ad_data;
->  
-> +	memset(&ad_data, 0, sizeof(struct hclge_fd_ad_data));
->  	ad_data.ad_id = rule->location;
->  
->  	if (rule->action == HCLGE_FD_ACTION_DROP_PACKET) {
->  		ad_data.drop_packet = true;
-> -		ad_data.forward_to_direct_queue = false;
-> -		ad_data.queue_id = 0;
-> +	} else if (rule->action == HCLGE_FD_ACTION_SELECT_TC) {
-> +		ad_data.override_tc = true;
-> +		ad_data.queue_id =
-> +			kinfo->tc_info.tqp_offset[rule->tc];
-> +		ad_data.tc_size =
-> +			ilog2(kinfo->tc_info.tqp_count[rule->tc]);
+Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
+Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+---
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c | 15 ++++-
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |  2 +
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c    | 73 +++++++++++++++++++++-
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h    |  3 +
+ 4 files changed, 90 insertions(+), 3 deletions(-)
 
-In the previous patch you copied this info from mqprio, which is an
-egress qdisc feature, this patch is clearly about rx flow director, I
-think the patch is missing some context otherwise it doesn't make any
-sense.
-
->  	} else {
-> -		ad_data.drop_packet = false;
->  		ad_data.forward_to_direct_queue = true;
->  		ad_data.queue_id = rule->queue_id;
->  	}
-> @@ -5937,7 +5950,7 @@ static int hclge_add_fd_entry(struct
-> hnae3_handle *handle,
->  			return -EINVAL;
->  		}
->  
-> -		action = HCLGE_FD_ACTION_ACCEPT_PACKET;
-> +		action = HCLGE_FD_ACTION_SELECT_QUEUE;
->  		q_index = ring;
->  	}
->  
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-> b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-> index b3c1301..a481064 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-> @@ -572,8 +572,9 @@ enum HCLGE_FD_PACKET_TYPE {
->  };
->  
->  enum HCLGE_FD_ACTION {
-> -	HCLGE_FD_ACTION_ACCEPT_PACKET,
-> +	HCLGE_FD_ACTION_SELECT_QUEUE,
->  	HCLGE_FD_ACTION_DROP_PACKET,
-> +	HCLGE_FD_ACTION_SELECT_TC,
-
-what is SELECT_TC ? you never actually write this value anywhere  in
-this patch.
-
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+index fcdecdd..8d51b0c 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+@@ -26,7 +26,7 @@ static int rmnet_is_real_dev_registered(const struct net_device *real_dev)
+ }
+ 
+ /* Needs rtnl lock */
+-static struct rmnet_port*
++struct rmnet_port*
+ rmnet_get_port_rtnl(const struct net_device *real_dev)
+ {
+ 	return rtnl_dereference(real_dev->rx_handler_data);
+@@ -253,7 +253,10 @@ static int rmnet_config_notify_cb(struct notifier_block *nb,
+ 		netdev_dbg(real_dev, "Kernel unregister\n");
+ 		rmnet_force_unassociate_device(real_dev);
+ 		break;
+-
++	case NETDEV_CHANGEMTU:
++		if (rmnet_vnd_validate_real_dev_mtu(real_dev))
++			return NOTIFY_BAD;
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -329,9 +332,17 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
+ 
+ 	if (data[IFLA_RMNET_FLAGS]) {
+ 		struct ifla_rmnet_flags *flags;
++		u32 old_data_format;
+ 
++		old_data_format = port->data_format;
+ 		flags = nla_data(data[IFLA_RMNET_FLAGS]);
+ 		port->data_format = flags->flags & flags->mask;
++
++		if (rmnet_vnd_update_dev_mtu(port, real_dev)) {
++			port->data_format = old_data_format;
++			NL_SET_ERR_MSG_MOD(extack, "Invalid MTU on real dev");
++			return -EINVAL;
++		}
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
+index be51598..8d8d469 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
+@@ -73,4 +73,6 @@ int rmnet_add_bridge(struct net_device *rmnet_dev,
+ 		     struct netlink_ext_ack *extack);
+ int rmnet_del_bridge(struct net_device *rmnet_dev,
+ 		     struct net_device *slave_dev);
++struct rmnet_port*
++rmnet_get_port_rtnl(const struct net_device *real_dev);
+ #endif /* _RMNET_CONFIG_H_ */
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
+index d58b51d..6cf46f8 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
+@@ -58,9 +58,30 @@ static netdev_tx_t rmnet_vnd_start_xmit(struct sk_buff *skb,
+ 	return NETDEV_TX_OK;
+ }
+ 
++static int rmnet_vnd_headroom(struct rmnet_port *port)
++{
++	u32 headroom;
++
++	headroom = sizeof(struct rmnet_map_header);
++
++	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
++		headroom += sizeof(struct rmnet_map_ul_csum_header);
++
++	return headroom;
++}
++
+ static int rmnet_vnd_change_mtu(struct net_device *rmnet_dev, int new_mtu)
+ {
+-	if (new_mtu < 0 || new_mtu > RMNET_MAX_PACKET_SIZE)
++	struct rmnet_priv *priv = netdev_priv(rmnet_dev);
++	struct rmnet_port *port;
++	u32 headroom;
++
++	port = rmnet_get_port_rtnl(priv->real_dev);
++
++	headroom = rmnet_vnd_headroom(port);
++
++	if (new_mtu < 0 || new_mtu > RMNET_MAX_PACKET_SIZE ||
++	    new_mtu > (priv->real_dev->mtu - headroom))
+ 		return -EINVAL;
+ 
+ 	rmnet_dev->mtu = new_mtu;
+@@ -229,6 +250,7 @@ int rmnet_vnd_newlink(u8 id, struct net_device *rmnet_dev,
+ 
+ {
+ 	struct rmnet_priv *priv = netdev_priv(rmnet_dev);
++	u32 headroom;
+ 	int rc;
+ 
+ 	if (rmnet_get_endpoint(port, id)) {
+@@ -242,6 +264,13 @@ int rmnet_vnd_newlink(u8 id, struct net_device *rmnet_dev,
+ 
+ 	priv->real_dev = real_dev;
+ 
++	headroom = rmnet_vnd_headroom(port);
++
++	if (rmnet_vnd_change_mtu(rmnet_dev, real_dev->mtu - headroom)) {
++		NL_SET_ERR_MSG_MOD(extack, "Invalid MTU on real dev");
++		return -EINVAL;
++	}
++
+ 	rc = register_netdevice(rmnet_dev);
+ 	if (!rc) {
+ 		ep->egress_dev = rmnet_dev;
+@@ -283,3 +312,45 @@ int rmnet_vnd_do_flow_control(struct net_device *rmnet_dev, int enable)
+ 
+ 	return 0;
+ }
++
++int rmnet_vnd_validate_real_dev_mtu(struct net_device *real_dev)
++{
++	struct hlist_node *tmp_ep;
++	struct rmnet_endpoint *ep;
++	struct rmnet_port *port;
++	unsigned long bkt_ep;
++	u32 headroom;
++
++	port = rmnet_get_port_rtnl(real_dev);
++
++	headroom = rmnet_vnd_headroom(port);
++
++	hash_for_each_safe(port->muxed_ep, bkt_ep, tmp_ep, ep, hlnode) {
++		if (ep->egress_dev->mtu > (real_dev->mtu - headroom))
++			return -1;
++	}
++
++	return 0;
++}
++
++int rmnet_vnd_update_dev_mtu(struct rmnet_port *port,
++			     struct net_device *real_dev)
++{
++	struct hlist_node *tmp_ep;
++	struct rmnet_endpoint *ep;
++	unsigned long bkt_ep;
++	u32 headroom;
++
++	headroom = rmnet_vnd_headroom(port);
++
++	hash_for_each_safe(port->muxed_ep, bkt_ep, tmp_ep, ep, hlnode) {
++		if (ep->egress_dev->mtu <= (real_dev->mtu - headroom))
++			continue;
++
++		if (rmnet_vnd_change_mtu(ep->egress_dev,
++					 real_dev->mtu - headroom))
++			return -1;
++	}
++
++	return 0;
++}
+\ No newline at end of file
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
+index 4967f34..dc3a444 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
+@@ -18,4 +18,7 @@ int rmnet_vnd_dellink(u8 id, struct rmnet_port *port,
+ void rmnet_vnd_rx_fixup(struct sk_buff *skb, struct net_device *dev);
+ void rmnet_vnd_tx_fixup(struct sk_buff *skb, struct net_device *dev);
+ void rmnet_vnd_setup(struct net_device *dev);
++int rmnet_vnd_validate_real_dev_mtu(struct net_device *real_dev);
++int rmnet_vnd_update_dev_mtu(struct rmnet_port *port,
++			     struct net_device *real_dev);
+ #endif /* _RMNET_VND_H_ */
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
