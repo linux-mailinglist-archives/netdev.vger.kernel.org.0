@@ -2,66 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F13C82D68C8
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42AC22D68D1
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:36:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404272AbgLJUeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 15:34:25 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:52866 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389519AbgLJUeV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 15:34:21 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0BAK4Fvx057985;
-        Thu, 10 Dec 2020 15:31:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=3Ov7MsWd2WvcFRWayPftrhptP83tCk6eaRZKMJ1S1Ic=;
- b=qJ2qXmRZHShK3+KCGTAQ+GLO7T5ClcHbRucTlMptHMZtELrH8qgXcIaAHVB6PID/nku1
- ByEtEVbJsiJYGI03QlfGkQ1cRWQd6oOEMn8yuCkftiInCUBb7cOBy+jxJoIaI5JGWhnb
- ReeNDn1ZxIP8QeHupKbq+wYT9Qp4BCHp8SfaSiQ9Ullxz+NVNlETe0UEchxkp3jV8B2g
- WzhBnCQf3xdIuJ0+HTPpMuRtk6+5Tkn4guG5jhcrwWTqI/FxJkyWrFviDJx1F+MGhTWO
- qZWE27Ax0tV7PUfy/8exNPVSXkxQALqNVg6/vWplCQaefgrg6FRXhrzr6Klx6j7s6nnk /w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 35bst29qva-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Dec 2020 15:31:40 -0500
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0BAK4GjK058200;
-        Thu, 10 Dec 2020 15:31:39 -0500
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 35bst29qu4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Dec 2020 15:31:39 -0500
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0BAKRkNd013529;
-        Thu, 10 Dec 2020 20:31:36 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3581u865vj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Dec 2020 20:31:36 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0BAKVYT024117666
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Dec 2020 20:31:34 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DFC83AE045;
-        Thu, 10 Dec 2020 20:31:33 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E2863AE051;
-        Thu, 10 Dec 2020 20:31:31 +0000 (GMT)
-Received: from osiris (unknown [9.171.22.54])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Thu, 10 Dec 2020 20:31:31 +0000 (GMT)
-Date:   Thu, 10 Dec 2020 21:31:30 +0100
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        linux-s390@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        id S2393817AbgLJUfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 15:35:48 -0500
+Received: from ale.deltatee.com ([204.191.154.188]:48742 "EHLO
+        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393790AbgLJUf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 15:35:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
+        Message-ID:From:References:Cc:To:content-disposition;
+        bh=noa+454Phd4GD+cflUApEkbCBzQWdQM9xVdZ/BdtqiE=; b=ommLdATmScZCO3Nr0B0IKtaBD0
+        EKrjnXBUtbfueazgUtm6VU6b3S0wYy6KVx4WAtwNJ/AqnjHK72Gy9Jsmxppzw/gnUhc4xUowZeQ7A
+        VcHLuqMKttCxw8ez7I7uwmRr5QxGnTAmGxi8uXmfqMPsZhh7JjrJm5C+6KJYTWYREg/IlUxXKnLyU
+        oiYCxI5xB8TP98NfY73pg38uPmgt4JkWMiii1mD9wV9ZT2fBKdzZ4FLSmo62RegEoh6XSnUbSd6AH
+        TQacvQpLTj7RMyXxinaZaJU5rRKy+bJdREoJnd68m2upWyg2kGwzuZR1wf8InfiqQYZmWP3SPWvYA
+        gjpGnwDw==;
+Received: from s01060023bee90a7d.cg.shawcable.net ([24.64.145.4] helo=[192.168.0.10])
+        by ale.deltatee.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <logang@deltatee.com>)
+        id 1knSdJ-0002Fm-25; Thu, 10 Dec 2020 13:33:50 -0700
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         afzal mohammed <afzal.mohd.ma@gmail.com>,
         linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
@@ -69,6 +39,8 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
@@ -81,9 +53,6 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Rob Herring <robh@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
@@ -100,36 +69,69 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Juergen Gross <jgross@suse.com>,
         Stefano Stabellini <sstabellini@kernel.org>,
         xen-devel@lists.xenproject.org
-Subject: Re: [patch 12/30] s390/irq: Use irq_desc_kstat_cpu() in
- show_msi_interrupt()
-Message-ID: <20201210203130.GB4250@osiris>
 References: <20201210192536.118432146@linutronix.de>
- <20201210194043.769108348@linutronix.de>
+ <20201210194044.255887860@linutronix.de>
+From:   Logan Gunthorpe <logang@deltatee.com>
+Message-ID: <3526d997-a629-9843-7060-78d9e0a487c5@deltatee.com>
+Date:   Thu, 10 Dec 2020 13:33:35 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201210194043.769108348@linutronix.de>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-10_08:2020-12-09,2020-12-10 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- lowpriorityscore=0 mlxlogscore=996 clxscore=1011 adultscore=0 mlxscore=0
- bulkscore=0 suspectscore=1 spamscore=0 impostorscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012100122
+In-Reply-To: <20201210194044.255887860@linutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 24.64.145.4
+X-SA-Exim-Rcpt-To: xen-devel@lists.xenproject.org, sstabellini@kernel.org, jgross@suse.com, boris.ostrovsky@oracle.com, leon@kernel.org, saeedm@nvidia.com, linux-rdma@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net, tariqt@nvidia.com, Zhiqiang.Hou@nxp.com, m.karthikeyan@mobiveil.co.in, linux-pci@vger.kernel.org, michal.simek@xilinx.com, bhelgaas@google.com, robh@kernel.org, lorenzo.pieralisi@arm.com, lee.jones@linaro.org, linux-gpio@vger.kernel.org, linus.walleij@linaro.org, tvrtko.ursulin@linux.intel.com, dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, wambui.karugax@gmail.com, chris@chris-wilson.co.uk, pankaj.laxminarayan.bharadiya@intel.com, daniel@ffwll.ch, airlied@linux.ie, rodrigo.vivi@intel.com, joonas.lahtinen@linux.intel.com, jani.nikula@linux.intel.com, linux-s390@vger.kernel.org, hca@linux.ibm.com, borntraeger@de.ibm.com, will@kernel.org, catalin.marinas@arm.com, mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk, linux-parisc@vger.kernel.org, afzal.mohd.ma@gmail.com, deller@gmx.de, James.Bottomley@HansenPartnership.com, linux-ntb@googlegroups.com, allenbh@gmail.com, dave.jiang@intel.com, jdmason@kudzu.us, maz@kernel.org, peterz@infradead.org, linux-kernel@vger.kernel.org, tglx@linutronix.de
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on ale.deltatee.com
+X-Spam-Level: 
+X-Spam-Status: No, score=-8.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        GREYLIST_ISWHITE,NICE_REPLY_A autolearn=ham autolearn_force=no
+        version=3.4.2
+Subject: Re: [patch 17/30] NTB/msi: Use irq_has_action()
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 08:25:48PM +0100, Thomas Gleixner wrote:
-> The irq descriptor is already there, no need to look it up again.
+
+
+On 2020-12-10 12:25 p.m., Thomas Gleixner wrote:
+> Use the proper core function.
 > 
 > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: linux-s390@vger.kernel.org
-> ---
->  arch/s390/kernel/irq.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Cc: Jon Mason <jdmason@kudzu.us>
+> Cc: Dave Jiang <dave.jiang@intel.com>
+> Cc: Allen Hubbe <allenbh@gmail.com>
+> Cc: linux-ntb@googlegroups.com
 
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Looks good to me.
+
+Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+
+> ---
+>  drivers/ntb/msi.c |    4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> --- a/drivers/ntb/msi.c
+> +++ b/drivers/ntb/msi.c
+> @@ -282,15 +282,13 @@ int ntbm_msi_request_threaded_irq(struct
+>  				  struct ntb_msi_desc *msi_desc)
+>  {
+>  	struct msi_desc *entry;
+> -	struct irq_desc *desc;
+>  	int ret;
+>  
+>  	if (!ntb->msi)
+>  		return -EINVAL;
+>  
+>  	for_each_pci_msi_entry(entry, ntb->pdev) {
+> -		desc = irq_to_desc(entry->irq);
+> -		if (desc->action)
+> +		if (irq_has_action(entry->irq))
+>  			continue;
+>  
+>  		ret = devm_request_threaded_irq(&ntb->dev, entry->irq, handler,
+> 
