@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A39DE2D67F3
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:03:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 848F72D67E6
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404518AbgLJUB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 15:01:27 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:57658 "EHLO
+        id S2404529AbgLJUB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 15:01:28 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:57710 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393543AbgLJTn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:29 -0500
-Message-Id: <20201210194045.065115500@linutronix.de>
+        with ESMTP id S2404302AbgLJTna (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:30 -0500
+Message-Id: <20201210194045.157601122@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1607629366;
+        s=2020; t=1607629367;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=tEVls3jI8V5LtEBTs0cm0Szr6SDBh3GYqdx/X7n2UZY=;
-        b=bwVQ7gaQwvbfHTgP7MZDc/YhDLMbL2OEi1WnGDxUtEPa/zAOSNbqLaLeQTtD11Dg5082Qp
-        Qz2zPtGhojJeSFokGiFaFmgg8DCDEwh1sTNplvk+ABtrVMp4PQqBe9MzYq5Rmcua4Vok7H
-        MC3M8vw+sJGbud8ji2De2+9/N0C9SKASfhkEKBqszbBCF+wOvRW/V0B92szqDuXVqeCKre
-        YRoIqIe820JAXb6fr66VrfJCEVfdlAwTC/JagtnRSgmfc3XazagnRYgk6a6iOnmsLRNX1p
-        MVTREOpKae1E6DDuEk9FawkuR3E7r4E4WNu7go88D2q5JTNminPamGP01SwVTQ==
+        bh=RU1bu/2cEIaQZD4XBTa1ORm36AT2+9xoAT9okJ4RH1c=;
+        b=AhYGZMH5Lll3k86M+Mw+u/CMXrFP+z5OweedDSPLrQC7zMl71ejfF6LXNXRZTGD8kmOuJe
+        qS19XHZYRwS6BqhVuvnoRC1T4ttKWNuaoSyT3BgYYN1BzFtZlPcOz+YQKy/43th5Y90u/R
+        X6B6cmkRFkndNRXwbx2PLjfkgaDXN0K9HLJvSEGYF2Mwu+bniCBmPPPJ7kblKM0absRSol
+        Xu6RJgcDTReN71V4H+Nn1MY4+vbA65bMSFOyl/jldJBTen7poJfNR1wRX6XEMJPR917pl1
+        k5XFjcYwY2tULG78ylPnHOTKCe4dKJGK7v6roca6SRSYcgOrtkVCsvBrRQWZhw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1607629366;
+        s=2020e; t=1607629367;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=tEVls3jI8V5LtEBTs0cm0Szr6SDBh3GYqdx/X7n2UZY=;
-        b=oavywJTHDWv3olwcxAvfm8NfynriH4GVMpKUR3SAwF8GgtSSOX9oqiCpUNJcYYnYuyj2zl
-        2KDiXd1knCZbiIAw==
-Date:   Thu, 10 Dec 2020 20:26:01 +0100
+        bh=RU1bu/2cEIaQZD4XBTa1ORm36AT2+9xoAT9okJ4RH1c=;
+        b=XdjqOHU/CtrxmjSRt3J35g254e3xJTlyAPxkG/hnQfineDJae9yPVorBnqLmfzdojIT+AV
+        RtH7kedwWF+OweDQ==
+Date:   Thu, 10 Dec 2020 20:26:02 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -77,7 +77,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leon@kernel.org>
-Subject: [patch 25/30] xen/events: Remove disfunct affinity spreading
+Subject: [patch 26/30] xen/events: Use immediate affinity setting
 References: <20201210192536.118432146@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -86,19 +86,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This function can only ever work when the event channels:
+There is absolutely no reason to mimic the x86 deferred affinity
+setting. This mechanism is required to handle the hardware induced issues
+of IO/APIC and MSI and is not in use when the interrupts are remapped.
 
-  - are already established
-  - interrupts assigned to them
-  - the affinity has been set by user space already
+XEN does not need this and can simply change the affinity from the calling
+context. The core code invokes this with the interrupt descriptor lock held
+so it is fully serialized against any other operation.
 
-because any newly set up event channel is forced to be bound to CPU0 and
-the affinity mask of the interrupt is forced to contain cpumask_of(0).
+Mark the interrupts with IRQ_MOVE_PCNTXT to disable the deferred affinity
+setting. The conditional mask/unmask operation is already handled in
+xen_rebind_evtchn_to_cpu().
 
-As the CPU0 enforcement was in place _before_ this was implemented it's
-entirely unclear how that can ever have worked at all.
-
-Remove it as preparation for doing it proper.
+This makes XEN on x86 use the same mechanics as on e.g. ARM64 where
+deferred affinity setting is not required and not implemented and the code
+path in the ack functions is compiled out.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
@@ -106,77 +108,80 @@ Cc: Juergen Gross <jgross@suse.com>
 Cc: Stefano Stabellini <sstabellini@kernel.org>
 Cc: xen-devel@lists.xenproject.org
 ---
- drivers/xen/events/events_base.c |    9 ---------
- drivers/xen/evtchn.c             |   34 +---------------------------------
- 2 files changed, 1 insertion(+), 42 deletions(-)
+ drivers/xen/events/events_base.c |   35 +++++++++--------------------------
+ 1 file changed, 9 insertions(+), 26 deletions(-)
 
 --- a/drivers/xen/events/events_base.c
 +++ b/drivers/xen/events/events_base.c
-@@ -1696,15 +1696,6 @@ static int set_affinity_irq(struct irq_d
- 	return ret;
+@@ -628,6 +628,11 @@ static void xen_irq_init(unsigned irq)
+ 	info->refcnt = -1;
+ 
+ 	set_info_for_irq(irq, info);
++	/*
++	 * Interrupt affinity setting can be immediate. No point
++	 * in delaying it until an interrupt is handled.
++	 */
++	irq_set_status_flags(irq, IRQ_MOVE_PCNTXT);
+ 
+ 	INIT_LIST_HEAD(&info->eoi_list);
+ 	list_add_tail(&info->list, &xen_irq_list_head);
+@@ -739,18 +744,7 @@ static void eoi_pirq(struct irq_data *da
+ 	if (!VALID_EVTCHN(evtchn))
+ 		return;
+ 
+-	if (unlikely(irqd_is_setaffinity_pending(data)) &&
+-	    likely(!irqd_irq_disabled(data))) {
+-		int masked = test_and_set_mask(evtchn);
+-
+-		clear_evtchn(evtchn);
+-
+-		irq_move_masked_irq(data);
+-
+-		if (!masked)
+-			unmask_evtchn(evtchn);
+-	} else
+-		clear_evtchn(evtchn);
++	clear_evtchn(evtchn);
+ 
+ 	if (pirq_needs_eoi(data->irq)) {
+ 		rc = HYPERVISOR_physdev_op(PHYSDEVOP_eoi, &eoi);
+@@ -1641,7 +1635,6 @@ void rebind_evtchn_irq(evtchn_port_t evt
+ 	mutex_unlock(&irq_mapping_update_lock);
+ 
+         bind_evtchn_to_cpu(evtchn, info->cpu);
+-	/* This will be deferred until interrupt is processed */
+ 	irq_set_affinity(irq, cpumask_of(info->cpu));
+ 
+ 	/* Unmask the event channel. */
+@@ -1688,8 +1681,9 @@ static int set_affinity_irq(struct irq_d
+ 			    bool force)
+ {
+ 	unsigned tcpu = cpumask_first_and(dest, cpu_online_mask);
+-	int ret = xen_rebind_evtchn_to_cpu(evtchn_from_irq(data->irq), tcpu);
++	int ret;
+ 
++	ret = xen_rebind_evtchn_to_cpu(evtchn_from_irq(data->irq), tcpu);
+ 	if (!ret)
+ 		irq_data_update_effective_affinity(data, cpumask_of(tcpu));
+ 
+@@ -1719,18 +1713,7 @@ static void ack_dynirq(struct irq_data *
+ 	if (!VALID_EVTCHN(evtchn))
+ 		return;
+ 
+-	if (unlikely(irqd_is_setaffinity_pending(data)) &&
+-	    likely(!irqd_irq_disabled(data))) {
+-		int masked = test_and_set_mask(evtchn);
+-
+-		clear_evtchn(evtchn);
+-
+-		irq_move_masked_irq(data);
+-
+-		if (!masked)
+-			unmask_evtchn(evtchn);
+-	} else
+-		clear_evtchn(evtchn);
++	clear_evtchn(evtchn);
  }
  
--/* To be called with desc->lock held. */
--int xen_set_affinity_evtchn(struct irq_desc *desc, unsigned int tcpu)
--{
--	struct irq_data *d = irq_desc_get_irq_data(desc);
--
--	return set_affinity_irq(d, cpumask_of(tcpu), false);
--}
--EXPORT_SYMBOL_GPL(xen_set_affinity_evtchn);
--
- static void enable_dynirq(struct irq_data *data)
- {
- 	evtchn_port_t evtchn = evtchn_from_irq(data->irq);
---- a/drivers/xen/evtchn.c
-+++ b/drivers/xen/evtchn.c
-@@ -421,36 +421,6 @@ static void evtchn_unbind_from_user(stru
- 	del_evtchn(u, evtchn);
- }
- 
--static DEFINE_PER_CPU(int, bind_last_selected_cpu);
--
--static void evtchn_bind_interdom_next_vcpu(evtchn_port_t evtchn)
--{
--	unsigned int selected_cpu, irq;
--	struct irq_desc *desc;
--	unsigned long flags;
--
--	irq = irq_from_evtchn(evtchn);
--	desc = irq_to_desc(irq);
--
--	if (!desc)
--		return;
--
--	raw_spin_lock_irqsave(&desc->lock, flags);
--	selected_cpu = this_cpu_read(bind_last_selected_cpu);
--	selected_cpu = cpumask_next_and(selected_cpu,
--			desc->irq_common_data.affinity, cpu_online_mask);
--
--	if (unlikely(selected_cpu >= nr_cpu_ids))
--		selected_cpu = cpumask_first_and(desc->irq_common_data.affinity,
--				cpu_online_mask);
--
--	this_cpu_write(bind_last_selected_cpu, selected_cpu);
--
--	/* unmask expects irqs to be disabled */
--	xen_set_affinity_evtchn(desc, selected_cpu);
--	raw_spin_unlock_irqrestore(&desc->lock, flags);
--}
--
- static long evtchn_ioctl(struct file *file,
- 			 unsigned int cmd, unsigned long arg)
- {
-@@ -508,10 +478,8 @@ static long evtchn_ioctl(struct file *fi
- 			break;
- 
- 		rc = evtchn_bind_to_user(u, bind_interdomain.local_port);
--		if (rc == 0) {
-+		if (rc == 0)
- 			rc = bind_interdomain.local_port;
--			evtchn_bind_interdom_next_vcpu(rc);
--		}
- 		break;
- 	}
- 
+ static void mask_ack_dynirq(struct irq_data *data)
 
