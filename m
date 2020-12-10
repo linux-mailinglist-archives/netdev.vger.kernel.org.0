@@ -2,162 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F12D62D6642
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:22:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A59AF2D6723
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:43:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390445AbgLJTV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 14:21:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44348 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393408AbgLJTVP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 14:21:15 -0500
-Message-ID: <e8d17e650f641be4aabf119753aa07cacfda2182.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607628034;
-        bh=YKLfDAdzsz7Ak59EB3e7WoxkKdBklgKDO7pZxFH5sx0=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Jhh5h8NrycRLRflXtcVnqCZ9dUCHoQQaAXPnYvMn7gk36FSBn7YjjF9IC2dFRUd0T
-         KOfqEwPAGZqmjwn1xOEtfq5AEGdoqGrVF3SoSK6Hcvv2kO1f8kP1fuCWCBX/Eb4v6L
-         jy+NSkF4Eic/eJtgRZhLBbqLPVJSOf2y/2JZsTGnBpybpBT8URnmzx51mxZ+rjSUuE
-         66JpEtizF3q8B1QJQMnvRFfD2G48Bxq6aAjn1cBtu6HxUf3x0tL7kHXmSI1KcC6Agb
-         EsC56ZhKNKr5lflqkW9hEMXvUbJlnuYucYKJjxnAPUdZzSOMm11U3Zyjeox83NPgOf
-         SREKwW2+6WNlA==
-Subject: Re: Explaining XDP redirect bulk size design (Was: [PATCH v2 bpf
- 1/5] net: ethtool: add xdp properties flag set)
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Frey Alfredsson <freysteinn@freysteinn.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        alardam@gmail.com, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
-        ast@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        hawk@kernel.org, jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
-        intel-wired-lan@lists.osuosl.org,
-        Marek Majtyka <marekx.majtyka@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Date:   Thu, 10 Dec 2020 11:20:31 -0800
-In-Reply-To: <20201210143211.2490f7f4@carbon>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
-         <20201204102901.109709-2-marekx.majtyka@intel.com> <878sad933c.fsf@toke.dk>
-         <20201204124618.GA23696@ranger.igk.intel.com>
-         <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
-         <20201207135433.41172202@carbon>
-         <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
-         <20201207230755.GB27205@ranger.igk.intel.com>
-         <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
-         <20201209095454.GA36812@ranger.igk.intel.com>
-         <20201209125223.49096d50@carbon>
-         <6913010d-2fd6-6713-94e9-8f5b8ad4b708@gmail.com>
-         <20201210143211.2490f7f4@carbon>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S2404296AbgLJTnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 14:43:12 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:56030 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390140AbgLJTnA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:00 -0500
+Message-Id: <20201210192536.118432146@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1607629334;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dqmaBUU1aX3t41xhFMZZXhwmlvXhIHW8LZkxAL3qIuw=;
+        b=h/TAwStAiTk4XvWiKPBPyDEOx218hZJC1vmF2rxVMRIvmco9q+UXf8EllPz4AjaFdOly7G
+        LH+a53gOb/6x23hHUexy7zt6RJrXCLvlfH0RT7UmulMioZYuYNOHYckgeF+NjT2uTUeh+Y
+        x4QOtIuHWxwLs6LKhedv+5hufAepZeedXGgORll6jDA+oynwB+JjiqXx/tgkxTCP8dbJ6L
+        eWUOoe8IS6Z7h2dgCBQQBehNHm1Tfe56GXWt3TBc5qz2bsl6Xo6wT+1/DTPysSy3XD7/6K
+        p0j9T2Hw/f1US+iZCI2FQmyJpu2ijKWYz9OMLgGwEfvXwTDnGAF9V1bHZmS/0A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1607629334;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dqmaBUU1aX3t41xhFMZZXhwmlvXhIHW8LZkxAL3qIuw=;
+        b=njYD6xBoyWobXQbQRXgtO58qqL+V8jLaqaWB6hUvHzVko4O9Y0w527+7oT5RC78ucYDSLL
+        sPAJGjvbV9zCgIAw==
+Date:   Thu, 10 Dec 2020 20:25:36 +0100
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        afzal mohammed <afzal.mohd.ma@gmail.com>,
+        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Wambui Karuga <wambui.karugax@gmail.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-pci@vger.kernel.org,
+        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org
+Subject: [patch 00/30] genirq: Treewide hunt for irq descriptor abuse and
+ assorted fixes
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-12-10 at 14:32 +0100, Jesper Dangaard Brouer wrote:
-> On Wed, 9 Dec 2020 08:44:33 -0700
-> David Ahern <dsahern@gmail.com> wrote:
-> 
-> > On 12/9/20 4:52 AM, Jesper Dangaard Brouer wrote:
-> > > But I have redesigned the ndo_xdp_xmit call to take a bulk of
-> > > packets
-> > > (up-to 16) so it should not be a problem to solve this by sharing
-> > > TX-queue and talking a lock per 16 packets.  I still recommend
-> > > that,
-> > > for fallback case,  you allocated a number a TX-queue and
-> > > distribute
-> > > this across CPUs to avoid hitting a congested lock (above
-> > > measurements
-> > > are the optimal non-congested atomic lock operation)  
-> > 
-> > I have been meaning to ask you why 16 for the XDP batching? If the
-> > netdev budget is 64, why not something higher like 32 or 64?
-> 
-> Thanks you for asking as there are multiple good reasons and
-> consideration for this 16 batch size.  Notice cpumap have batch size
-> 8,
-> which is also an explicit choice.  And AF_XDP went in the wrong
-> direction IMHO and I think have 256.  I designed this to be a choice
-> in
-> the map code, for the level of bulking it needs/wants.
-> 
-> The low level explanation is that these 8 and 16 batch sizes are
-> optimized towards cache sizes and Intel's Line-Fill-Buffer
-> (prefetcher
-> with 10 elements).  I'm betting on that memory backing these 8 or 16
-> packets have higher chance to remain/being in cache, and I can
-> prefetch
-> them without evicting them from cache again.  In some cases the
-> pointer
-> to these packets are queued into a ptr_ring, and it is more optimal
-> to
-> write cacheline sizes 1 (8 pointers) or 2 (16 pointers) into the
-> ptr_ring.
-> 
-
-I've warned people about this once or twice on the mailing list, for
-example re-populating the rx ring, a common mistake is to use the napi
-budget, which has the exact side effects as you are explaining here
-Jesper !
-
-these 8/16 numbers are used in more than one place in the stack, xdp,
-gro, hw buffer re-population, etc..
-how can we enforce such numbers and a uniform handling in all drivers?
-1. have a clear documentation ? well know defines, for people to copy?
-
-2. for XDP we must keep track on the memory backing of the xdp bulked
-data as Jesper pointed out, so we always make sure whatever bulk-size
-we define it always remains cache friendly, especially now where people
-stated working on  multi-buff and other features that will extend the
-xdp_buff and xdp_frame, do we need a selftest that maybe runs pahole to
-see the those data strcutre remain within reasonable format/sizes ?
-
-
-
-> The general explanation is my goal to do bulking without adding
-> latency.
-> This is explicitly stated in my presentation[1] as of Feb 2016, slide
-> 20.
-> Sure, you/we can likely make the micro-benchmarks look better by
-> using
-> 64 batch size, but that will introduce added latency and likely shoot
-> our-selves in the foot for real workloads.  With experience from
-> bufferbloat and real networks, we know that massive TX bulking have
-> bad
-> effects.  Still XDP-redirect does massive bulking (NIC flush is after
-> full 64 budget) and we don't have pushback or a queue mechanism (so I
-> know we are already shooting ourselves in the foot) ...  Fortunately
-> we
-> now have a PhD student working on queuing for XDP.
-> 
-> It is also important to understand that this is an adaptive bulking
-> scheme, which comes from NAPI.  We don't wait for packets arriving
-> shortly, we pickup what NIC have available, but by only taking 8 or
-> 16
-> packets (instead of emptying the entire RX-queue), and then spending
-> some time to send them along, I'm hoping that NIC could have gotten
-> some more frame.  For cpumap and veth (in-some-cases) they can start
-> to
-> consume packets from these batches, but NIC drivers gets
-> XDP_XMIT_FLUSH
-> signal at NAPI-end (xdp_do_flush). Still design allows NIC drivers to
-> update their internal queue state (and BQL), and if it gets close to
-> full they can choose to flush/doorbell the NIC earlier.  When doing
-> queuing for XDP we need to expose these NIC queue states, and having
-> 4
-> calls with 16 packets (64 budget) also gives us more chances to get
-> NIC
-> queue state info which the NIC already touch.
-> 
-> 
-> [1] 
-> https://people.netfilter.org/hawk/presentations/devconf2016/net_stack_challenges_100G_Feb2016.pdf
-
+QSByZWNlbnQgcmVxdWVzdCB0byBleHBvcnQga3N0YXRfaXJxcygpIHBvaW50ZWQgdG8gYSBjb3B5
+IG9mIHRoZSBzYW1lIGluCnRoZSBpOTE1IGNvZGUsIHdoaWNoIG1hZGUgbWUgbG9vayBmb3IgZnVy
+dGhlciB1c2FnZSBvZiBpcnEgZGVzY3JpcHRvcnMgaW4KZHJpdmVycy4KClRoZSB1c2FnZSBpbiBk
+cml2ZXJzIHJhbmdlcyBmcm9tIGNyZWF0aXZlIHRvIGJyb2tlbiBpbiBhbGwgY29sb3Vycy4KCmly
+cWRlc2MuaCBjbGVhcmx5IHNheXMgdGhhdCB0aGlzIGlzIGNvcmUgZnVuY3Rpb25hbGl0eSBhbmQg
+dGhlIGZhY3QgQyBkb2VzCm5vdCBhbGxvdyBmdWxsIGVuY2Fwc3VsYXRpb24gaXMgbm90IGEganVz
+dGlmaWNhdGlvbiB0byBmaWRkbGUgd2l0aCBpdCBqdXN0CmJlY2F1c2UuIEl0IHRvb2sgdXMgYSBs
+b3Qgb2YgZWZmb3J0IHRvIG1ha2UgdGhlIGNvcmUgZnVuY3Rpb25hbGl0eSBwcm92aWRlCndoYXQg
+ZHJpdmVycyBuZWVkLgoKSWYgdGhlcmUgaXMgYSBzaG9ydGNvbWluZywgaXQncyBub3QgYXNrZWQg
+dG9vIG11Y2ggdG8gdGFsayB0byB0aGUgcmVsZXZhbnQKbWFpbnRhaW5lcnMgaW5zdGVhZCBvZiBn
+b2luZyBvZmYgYW5kIGZpZGRsaW5nIHdpdGggdGhlIGd1dHMgb2YgaW50ZXJydXB0CmRlc2NyaXB0
+b3JzIGFuZCBvZnRlbiBlbm91Z2ggd2l0aG91dCB1bmRlcnN0YW5kaW5nIGxpZmV0aW1lIGFuZCBs
+b2NraW5nCnJ1bGVzLgoKQXMgcGVvcGxlIGluc2lzdCBvbiBub3QgcmVzcGVjdGluZyBib3VuZGFy
+aWVzLCB0aGlzIHNlcmllcyBjbGVhbnMgdXAgdGhlCihhYil1c2UgYW5kIGF0IHRoZSBlbmQgcmVt
+b3ZlcyB0aGUgZXhwb3J0IG9mIGlycV90b19kZXNjKCkgdG8gbWFrZSBpdCBhdApsZWFzdCBoYXJk
+ZXIuIEFsbCBsZWdpdGltYXRlIHVzZXJzIG9mIHRoaXMgYXJlIGJ1aWx0IGluLgoKV2hpbGUgYXQg
+aXQgSSBzdHVtYmxlZCBvdmVyIHNvbWUgb3RoZXIgb2RkaXRpZXMgcmVsYXRlZCB0byBpbnRlcnJ1
+cHQKY291bnRpbmcgYW5kIGNsZWFuZWQgdGhlbSB1cCBhcyB3ZWxsLgoKVGhlIHNlcmllcyBhcHBs
+aWVzIG9uIHRvcCBvZgoKICAgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJu
+ZWwvZ2l0L3RpcC90aXAuZ2l0IGlycS9jb3JlCgphbmQgaXMgYWxzbyBhdmFpbGFibGUgZnJvbSBn
+aXQ6CgogIGdpdDovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC90Z2x4
+L2RldmVsLmdpdCBnZW5pcnEKClRoYW5rcywKCgl0Z2x4Ci0tLQogYXJjaC9hbHBoYS9rZXJuZWwv
+c3lzX2plbnNlbi5jICAgICAgICAgICAgICAgICAgICAgICB8ICAgIDIgCiBhcmNoL2FybS9rZXJu
+ZWwvc21wLmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgMiAKIGFyY2gvcGFy
+aXNjL2tlcm5lbC9pcnEuYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICA3IAogYXJj
+aC9zMzkwL2tlcm5lbC9pcnEuYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgIDIg
+CiBhcmNoL3g4Ni9rZXJuZWwvdG9wb2xvZ3kuYyAgICAgICAgICAgICAgICAgICAgICAgICAgIHwg
+ICAgMSAKIGFyY2gvYXJtNjQva2VybmVsL3NtcC5jICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgfCAgICAyIAogZHJpdmVycy9ncHUvZHJtL2k5MTUvZGlzcGxheS9pbnRlbF9scGVfYXVkaW8u
+YyAgICAgICB8ICAgIDQgCiBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pOTE1X2lycS5jICAgICAgICAg
+ICAgICAgICAgICAgIHwgICAzNCArKysKIGRyaXZlcnMvZ3B1L2RybS9pOTE1L2k5MTVfcG11LmMg
+ICAgICAgICAgICAgICAgICAgICAgfCAgIDE4IC0KIGRyaXZlcnMvZ3B1L2RybS9pOTE1L2k5MTVf
+cG11LmggICAgICAgICAgICAgICAgICAgICAgfCAgICA4IAogZHJpdmVycy9tZmQvYWI4NTAwLWRl
+YnVnZnMuYyAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTYgLQogZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvbWVsbGFub3gvbWx4NC9lbl9jcS5jICAgICAgICAgICB8ICAgIDggCiBkcml2ZXJzL25l
+dC9ldGhlcm5ldC9tZWxsYW5veC9tbHg0L2VuX3J4LmMgICAgICAgICAgIHwgICAgNiAKIGRyaXZl
+cnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDQvbWx4NF9lbi5oICAgICAgICAgfCAgICAzIAog
+ZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuLmggICAgICAgICB8ICAg
+IDIgCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fbWFpbi5jICAg
+IHwgICAgMiAKIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl90eHJ4
+LmMgICAgfCAgICA2IAogZHJpdmVycy9udGIvbXNpLmMgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICB8ICAgIDQgCiBkcml2ZXJzL3BjaS9jb250cm9sbGVyL21vYml2ZWlsL3BjaWUt
+bW9iaXZlaWwtaG9zdC5jIHwgICAgOCAKIGRyaXZlcnMvcGNpL2NvbnRyb2xsZXIvcGNpZS14aWxp
+bngtbndsLmMgICAgICAgICAgICAgfCAgICA4IAogZHJpdmVycy9waW5jdHJsL25vbWFkaWsvcGlu
+Y3RybC1ub21hZGlrLmMgICAgICAgICAgICB8ICAgIDMgCiBkcml2ZXJzL3hlbi9ldmVudHMvZXZl
+bnRzX2Jhc2UuYyAgICAgICAgICAgICAgICAgICAgIHwgIDE3MiArKysrKysrKysrKy0tLS0tLS0t
+CiBkcml2ZXJzL3hlbi9ldnRjaG4uYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwg
+ICAzNCAtLS0KIGluY2x1ZGUvbGludXgvaW50ZXJydXB0LmggICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgICAxIAogaW5jbHVkZS9saW51eC9pcnEuaCAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICB8ICAgIDcgCiBpbmNsdWRlL2xpbnV4L2lycWRlc2MuaCAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIHwgICA0MCArLS0tCiBpbmNsdWRlL2xpbnV4L2tlcm5lbF9zdGF0Lmgg
+ICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgMSAKIGtlcm5lbC9pcnEvaXJxZGVzYy5jICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDQyICsrLS0KIGtlcm5lbC9pcnEvbWFu
+YWdlLmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDM3ICsrKysKIGtlcm5l
+bC9pcnEvcHJvYy5jICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICA1IAog
+MzAgZmlsZXMgY2hhbmdlZCwgMjYzIGluc2VydGlvbnMoKyksIDIyMiBkZWxldGlvbnMoLSkKCgo=
