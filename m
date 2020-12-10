@@ -2,88 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6664B2D5750
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 10:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 439742D5757
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 10:39:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732130AbgLJJgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 04:36:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727449AbgLJJgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 04:36:10 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CA0C0613CF;
-        Thu, 10 Dec 2020 01:35:30 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id s2so2476699plr.9;
-        Thu, 10 Dec 2020 01:35:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=84iy7jpyBbCHZV2z4RbwkHJnShbb27+5JYU+4nc4KLQ=;
-        b=LOIP8A8sJuuur5dPKx3m3jgDmuRDTYLoyP7Odl5rrpEnLE/n3lZ9TRir1yG5BNSQO6
-         Nkd1jSp/F8nootAXAKsDdEAigHdyTQtjAEjd2JCVmFhbSquYBCqRAztZWA9QMi9d0PzJ
-         LBDhWD9ytk1VhcZnyhAGLb4oiK0ynemXFXHjhjGhuRUPp5XAeHj4J1JL2eQHG4Nacser
-         yw2Io+bLoo62bG1u/JD8RiQoScW5NsjhDzRq7kcjSlIzK71dlq8/1DNMnFoWWMJcrzHz
-         lWGWxjNJU3Ye/0Exxr6NWww/ujs0XJ1rmUoaRq9tAmfFsRSQ2S1uYV5SuO3hvC1YytKN
-         Ln+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=84iy7jpyBbCHZV2z4RbwkHJnShbb27+5JYU+4nc4KLQ=;
-        b=mxXha7GrveyOZAvzjZQotodr+ipgZ194qeQE7JJ7AZY5C9acCCMo91KinHycDdOyIm
-         OjeZqdlqaq2NTLRlH1svTQeQ1n++YxLjC1IcJNBR3Ufj7+OaIKcbLuH0RTCW2U50O0rv
-         VZBC1ZFzXjg4ETm+eO+dXEKRc1/IP9ogi98RhKlZwJJnJfH8mwuXne/eg3iYiq+idPWk
-         1SULBhXHPDTpGw4SDfBeHT1IBgnd/lyVWUBkrB4I5tAuUoytvqRmfCZJAE6Ej7yLBlzD
-         xxSiWQcDSRUR9btzE4iTTPle6sszX5fInAr5pdL+n1QX/uTYMGJkuArCZoYyBS4Bqr1/
-         Skqw==
-X-Gm-Message-State: AOAM532RX0PQmQORJuq7nK03+sNEwr8jjOsBszroOmuWr9Fz62fRmNaX
-        ktKubdUMIn8Hz1UVSr2sma0=
-X-Google-Smtp-Source: ABdhPJzg1pv3b/b6IqlVmd5UI86wzSLJcOqLbdMw0d1TxEmOUqTJWn0cUiyxsSp2oYtqeDEtvA08Vg==
-X-Received: by 2002:a17:902:c383:b029:db:c725:e325 with SMTP id g3-20020a170902c383b02900dbc725e325mr5853465plg.21.1607592929990;
-        Thu, 10 Dec 2020 01:35:29 -0800 (PST)
-Received: from localhost.localdomain ([122.10.161.207])
-        by smtp.gmail.com with ESMTPSA id mj5sm5590001pjb.20.2020.12.10.01.35.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Dec 2020 01:35:29 -0800 (PST)
-From:   Yejune Deng <yejune.deng@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        andriin@fb.com, daniel@iogearbox.net, edumazet@google.com,
-        ap420073@gmail.com, bjorn.topel@intel.com,
-        xiyou.wangcong@gmail.com, jiri@mellanox.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yejune.deng@gmail.com
-Subject: [PATCH] net: core: fix msleep() is not accurate
-Date:   Thu, 10 Dec 2020 17:35:18 +0800
-Message-Id: <1607592918-14356-1-git-send-email-yejune.deng@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        id S1727382AbgLJJiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 04:38:13 -0500
+Received: from mail.zx2c4.com ([192.95.5.64]:36201 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726278AbgLJJiM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 04:38:12 -0500
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id b17ad22c;
+        Thu, 10 Dec 2020 09:30:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=wNxKzdrmCn9Tgs9JwbJfdXjq2Ho=; b=xzv75Z
+        ySrK/0Vd63ZNpGMFv+h6ZAT/zHevAiSrIbiNmf2G2+EcwEXhK6K/WDxET8pkU7ge
+        n95tmiNVBQnSIE0QkUZFPpeYSmM6AgiRQ7lPylK0pO6AnXKtGQ3k5y3WOlqDF0kk
+        Jo+G6Rb4IF/p0qmcPssiD14nA2ZI7+n8jDfJrOBDHBpsma+TNxVlTgv+xm+yTQP6
+        X7a1vLrWdjoC4jCzkH90Rvb6vrD86E1MvylkjVLTItSEPI+eBRfeN0vHAPqYodn8
+        OgXi4aHVj8saAH5Fj0yEnL2z0aNUtxWCAf492oC/LNo3eMNWVJvgeIqcBVX6wdvH
+        u1V3hSnJpnrME6EA==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8217adb1 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Thu, 10 Dec 2020 09:30:41 +0000 (UTC)
+Received: by mail-yb1-f179.google.com with SMTP id w135so4094330ybg.13;
+        Thu, 10 Dec 2020 01:37:30 -0800 (PST)
+X-Gm-Message-State: AOAM531uEudovtrPlS1CVICefUPenz8OrrvrpkGl7MJbbbOkxr+l55ip
+        48Mk+uBukNZMgzA3nyx/drCBKqMH8meUFBHAYjM=
+X-Google-Smtp-Source: ABdhPJwV4bxZCCxe3IwlIdqjIMwelMkb0qJWuwVeqTBtEJWsuHOYaUQbIeEcknjClta/jPpJwyPbz/jwiEKh1Jqj8fk=
+X-Received: by 2002:a25:df05:: with SMTP id w5mr10743072ybg.20.1607593049638;
+ Thu, 10 Dec 2020 01:37:29 -0800 (PST)
+MIME-Version: 1.0
+References: <20201210085505.21575-1-a@unstable.cc>
+In-Reply-To: <20201210085505.21575-1-a@unstable.cc>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 10 Dec 2020 10:37:18 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pOZRtzqBELQTG6tONiWxJJU8KQhSxWST2T_ReCX3ZNYQ@mail.gmail.com>
+Message-ID: <CAHmME9pOZRtzqBELQTG6tONiWxJJU8KQhSxWST2T_ReCX3ZNYQ@mail.gmail.com>
+Subject: Re: [PATCH] wireguard: avoid double unlikely() notation when using IS_ERR()
+To:     Antonio Quartulli <a@unstable.cc>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-See Documentation/timers/timers-howto.rst, msleep() is not
-for (1ms - 20ms), There is a more advanced API is used.
+On Thu, Dec 10, 2020 at 9:56 AM Antonio Quartulli <a@unstable.cc> wrote:
+>
+> The definition of IS_ERR() already applies the unlikely() notation
+> when checking the error status of the passed pointer. For this
+> reason there is no need to have the same notation outside of
+> IS_ERR() itself.
+>
+> Clean up code by removing redundant notation.
 
-Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
----
- net/core/dev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks for the patch. I can confirm this doesn't change the codgen at all.
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index d33099f..6e83ee03 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6726,9 +6726,9 @@ void napi_disable(struct napi_struct *n)
- 	set_bit(NAPI_STATE_DISABLE, &n->state);
- 
- 	while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
--		msleep(1);
-+		fsleep(1000);
- 	while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
--		msleep(1);
-+		fsleep(1000);
- 
- 	hrtimer_cancel(&n->timer);
- 
--- 
-1.9.1
+I've queued this up in wireguard's staging tree, and I'll push it back
+out as part of the next series.
 
+Jason
