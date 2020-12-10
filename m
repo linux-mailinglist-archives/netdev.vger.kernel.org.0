@@ -2,136 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14BEA2D6B0F
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D3712D6B00
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:37:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394169AbgLJWbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 17:31:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60677 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405145AbgLJW2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 17:28:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607639223;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0i8bXJYeqHWVQ3kqT+YAvemEqycrW60WPjZl2fOfz/o=;
-        b=XYoFVMwh3kGTBYP6ezt2pCyQKVBYxGLAYeUwnyDPWzWXVrEdpEuyt0/sJipuaqaSi94RJR
-        F0hPI1MSipO6vqQlov1bFbc9Jkp/BGpvOcbmXdIeJYHn6qWlCENRbzJ/jrRCp1mfxVvP6d
-        dvdup9l6SVlpsPEJpen7bbTZeUsgP10=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-565-QDoUKpJVM5uRUmKEAH0JPA-1; Thu, 10 Dec 2020 16:53:41 -0500
-X-MC-Unique: QDoUKpJVM5uRUmKEAH0JPA-1
-Received: by mail-wr1-f70.google.com with SMTP id o12so2422538wrq.13
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 13:53:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0i8bXJYeqHWVQ3kqT+YAvemEqycrW60WPjZl2fOfz/o=;
-        b=LwkuMhVX2pxIRASNWYG0JZ5kxyGM60P0oF0O9wuBYgNq5PS41FqzdsHEaVCuE7ttXK
-         jVZBPFMTx43stDYoUWgNjh8w2vNp/GIRzCgH5lYCb40u/Vu3EiYiH1DTQdN011KuEezB
-         rpDcxDtqCJDCqymcsoCVGAqKbNlIX/1RpKn+3ijlESIQM5XUyeMS5dlodb4LA4fT1CEz
-         5P/A8+x8CeUtA2hDszj7f1uZCV1pKDGa9oGTj/hFI3Y2Vx7d5z2U1CQLHsco4u+mNHpO
-         +xQYBwH6VxNVQ257+zZu2xHg9Yjm/ov0KhYwnQJJMeEN0qXfkozs75CtnzPUGuOKrS3W
-         yRkg==
-X-Gm-Message-State: AOAM531gjD1tWFAJceUDDhvfATo+YtQAXYxNZG22IWJ6DvNlGa+RjjPX
-        Dz08vqMOryisZirAO7WOUmmNjVCB9gZXc0+TAG+U9r0TWTw6BgPq6UnNyStoa67HeXC5AF4SAD+
-        CI/HETE9AQyjqmJ7Y
-X-Received: by 2002:a5d:40ce:: with SMTP id b14mr10292856wrq.350.1607637220061;
-        Thu, 10 Dec 2020 13:53:40 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz1f3NIbAKDDoulfDKrPujtjmk6g5/Bkjd068CwxcRzGW07As4/PzNGkqbQC2y53LJkuG4eMg==
-X-Received: by 2002:a5d:40ce:: with SMTP id b14mr10292842wrq.350.1607637219899;
-        Thu, 10 Dec 2020 13:53:39 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id s13sm10859535wrt.80.2020.12.10.13.53.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Dec 2020 13:53:39 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D1426180070; Thu, 10 Dec 2020 22:53:38 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jonathan Morton <chromatix99@gmail.com>,
-        Pete Heist <pete@heistp.net>
-Subject: [PATCH net-next v2] inet_ecn: Use csum16_add() helper for IP_ECN_set_* helpers
-Date:   Thu, 10 Dec 2020 22:53:31 +0100
-Message-Id: <20201210215331.141767-1-toke@redhat.com>
-X-Mailer: git-send-email 2.29.2
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S2393983AbgLJWbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 17:31:17 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:59536 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405106AbgLJWWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 17:22:55 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id BD0564D259C39;
+        Thu, 10 Dec 2020 14:21:39 -0800 (PST)
+Date:   Thu, 10 Dec 2020 14:21:34 -0800 (PST)
+Message-Id: <20201210.142134.777780809639324675.davem@davemloft.net>
+To:     tparkin@katalix.com
+Cc:     gnault@redhat.com, netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH v4 net-next 0/2] add ppp_generic ioctl(s) to bridge
+ channels
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20201210171645.GB4413@katalix.com>
+References: <20201210155058.14518-1-tparkin@katalix.com>
+        <20201210171309.GC15778@linux.home>
+        <20201210171645.GB4413@katalix.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 10 Dec 2020 14:21:39 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub pointed out that the IP_ECN_set* helpers basically open-code
-csum16_add(), so let's switch them over to using the helper instead.
+From: Tom Parkin <tparkin@katalix.com>
+Date: Thu, 10 Dec 2020 17:16:45 +0000
 
-v2:
-- Use __be16 for check_add stack variable in IP_ECN_set_ce() (kbot)
+> On  Thu, Dec 10, 2020 at 18:13:09 +0100, Guillaume Nault wrote:
+>> On Thu, Dec 10, 2020 at 03:50:56PM +0000, Tom Parkin wrote:
+>> > Following on from my previous RFC[1], this series adds two ioctl calls
+>> > to the ppp code to implement "channel bridging".
+>> > 
+>> > When two ppp channels are bridged, frames presented to ppp_input() on
+>> > one channel are passed to the other channel's ->start_xmit function for
+>> > transmission.
+>> > 
+>> > The primary use-case for this functionality is in an L2TP Access
+>> > Concentrator where PPP frames are typically presented in a PPPoE session
+>> > (e.g. from a home broadband user) and are forwarded to the ISP network in
+>> > a PPPoL2TP session.
+>> 
+>> Looks good to me now. Thanks Tom!
+>> 
+>> Reviewed-by: Guillaume Nault <gnault@redhat.com>
+>> 
+> 
+> Thanks again for your review and help with the series :-)
 
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Tested-by: Jonathan Morton <chromatix99@gmail.com>
-Tested-by: Pete Heist <pete@heistp.net>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- include/net/inet_ecn.h | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
-
-diff --git a/include/net/inet_ecn.h b/include/net/inet_ecn.h
-index 563457fec557..d916a458aceb 100644
---- a/include/net/inet_ecn.h
-+++ b/include/net/inet_ecn.h
-@@ -8,6 +8,7 @@
- 
- #include <net/inet_sock.h>
- #include <net/dsfield.h>
-+#include <net/checksum.h>
- 
- enum {
- 	INET_ECN_NOT_ECT = 0,
-@@ -75,8 +76,8 @@ static inline void INET_ECN_dontxmit(struct sock *sk)
- 
- static inline int IP_ECN_set_ce(struct iphdr *iph)
- {
--	u32 check = (__force u32)iph->check;
- 	u32 ecn = (iph->tos + 1) & INET_ECN_MASK;
-+	__be16 check_add;
- 
- 	/*
- 	 * After the last operation we have (in binary):
-@@ -93,23 +94,19 @@ static inline int IP_ECN_set_ce(struct iphdr *iph)
- 	 * INET_ECN_ECT_1 => check += htons(0xFFFD)
- 	 * INET_ECN_ECT_0 => check += htons(0xFFFE)
- 	 */
--	check += (__force u16)htons(0xFFFB) + (__force u16)htons(ecn);
-+	check_add = htons(0xFFFB) + htons(ecn);
- 
--	iph->check = (__force __sum16)(check + (check>=0xFFFF));
-+	iph->check = csum16_add(iph->check, check_add);
- 	iph->tos |= INET_ECN_CE;
- 	return 1;
- }
- 
- static inline int IP_ECN_set_ect1(struct iphdr *iph)
- {
--	u32 check = (__force u32)iph->check;
--
- 	if ((iph->tos & INET_ECN_MASK) != INET_ECN_ECT_0)
- 		return 0;
- 
--	check += (__force u16)htons(0x1);
--
--	iph->check = (__force __sum16)(check + (check>=0xFFFF));
-+	iph->check = csum16_add(iph->check, htons(0x1));
- 	iph->tos ^= INET_ECN_MASK;
- 	return 1;
- }
--- 
-2.29.2
-
+Series applied.
