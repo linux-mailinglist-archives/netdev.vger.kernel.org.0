@@ -2,212 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 132A62D522F
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 04:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 374022D52CE
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 05:28:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731452AbgLJD4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 22:56:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
+        id S1731042AbgLJE0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 23:26:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729955AbgLJD4Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 22:56:25 -0500
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05857C0613D6;
-        Wed,  9 Dec 2020 19:55:45 -0800 (PST)
-Received: by mail-qv1-xf41.google.com with SMTP id q7so1797560qvt.12;
-        Wed, 09 Dec 2020 19:55:44 -0800 (PST)
+        with ESMTP id S1730706AbgLJE0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 23:26:50 -0500
+Received: from mail-oo1-xc44.google.com (mail-oo1-xc44.google.com [IPv6:2607:f8b0:4864:20::c44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBDBC0613CF
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 20:26:09 -0800 (PST)
+Received: by mail-oo1-xc44.google.com with SMTP id k7so466436ooa.0
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 20:26:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DWuqm1IHzYvq5waqUReJGhdmosrFVLVkKFItkW/Zkl8=;
-        b=ZZBNfoEFVLTsnm1892ushz+X2QSbH/FDgGDRQ5JsXFE/yZMXZq5pvXn2ZARaMJX3gK
-         R7PS3F5nJi1xoF5EbDnyHOc1XuEw0Bu2xJ6jh6XDWEyFypq515lxhwlKjsBmkz2/WpYQ
-         24J5Ylv/R1mLMXZbDyfxY25qYuIDuUTvdI+qkNfrMuOQf688Pwb/ZrY1NUm/UE/RNMAf
-         KbdF+La5pjLmK4H+hnUlQEZcTwofxWInaRHgJHd6Mm6mWKC4DNbspI+0/Y9n1PqZ6Gvd
-         ImzR18s69Fwwj2cZL35KNMxjWCi/9R6zesPCMdn63h9phgYpOWnlhqnFJZwDJWs0o2uo
-         lcyQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dHcK35d9mj5DThvs0Ih9zY0MxqNwhSCpvM9LNATbOXg=;
+        b=qvNPZ0FycAkKjtr65bW4OdG6VE+UARJIrLlIjONHpKjGu9qhw7v8Cv4aXta5HmJpKt
+         Se+Tg76w9M3x39gg3/aWu1lCH3K/7QPbN32RFifbCXgU0wWNk7RuZ3Sf7ixdp1nGtlFA
+         qiDU+XA/ETwSrKEGEQuGZwEdF7axc2ysaCpAUDKyh1WasCmyJkMnR/LXiuaqBMTla8Ie
+         ccqIEob2lLAk+NzrGwY5yMG7mjgH7k8roxhmOznOAnbl4YacUSpksfPtPVrJ1yJcUUpF
+         76nKTyicfC6gFkDL+KO1vPR2VKxh9EGTbDM0K2/QH4ASevyAEtCkyYgKTah14KZa/FA4
+         Eu+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DWuqm1IHzYvq5waqUReJGhdmosrFVLVkKFItkW/Zkl8=;
-        b=DyjPnrNbDTKem3M1+YNWNsvJ1RmxoeUJUuZWTX41D7UgTqZI/qfQru3TGEAIUn+hGS
-         KhfMWaVdlB5AOHhZV8GG4pqVA0N3823V8J86Jmv62fwD0645GfmPIQeuoZgBDEAkVFWi
-         blYGtdOitp9Yy9V8S8yN3oZ5qSb3kP/Bd908TRmci/Aqikxi4ce1al58g9AZGjpP8pqr
-         S4QJhJjZc1Q7sw20LTxtxEBAdv94CMtyJtidrDX6FVSY8Sd9YL5UwBO60fpIXS6VlYj5
-         MxJD2cswlmlAe5HwYVoa3IhDEUV9/Vs/2v4nxK/0vGs5yNAqqBw7OCMww/U0uo6MDBKw
-         3MNQ==
-X-Gm-Message-State: AOAM530lQcLJVodQqDz+l0ICqo/nKn2HffPE3KGMsdS2dWNhH5s3ReQv
-        jVH+N9Q2zfW9X6wKfYYKwhZby4RKL13YMQ==
-X-Google-Smtp-Source: ABdhPJw0jlBU5STbcSqU6PMg8L0gZBGHbRIBBI3MzW3j2aqBtHQW2iKab/MKcmfyUgr1BWdxxnfz8Q==
-X-Received: by 2002:a0c:f791:: with SMTP id s17mr6565638qvn.7.1607572543875;
-        Wed, 09 Dec 2020 19:55:43 -0800 (PST)
-Received: from localhost.localdomain ([198.52.185.246])
-        by smtp.gmail.com with ESMTPSA id s21sm2671583qtn.13.2020.12.09.19.55.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 19:55:43 -0800 (PST)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] lan743x: fix rx_napi_poll/interrupt ping-pong
-Date:   Wed,  9 Dec 2020 22:55:40 -0500
-Message-Id: <20201210035540.32530-1-TheSven73@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dHcK35d9mj5DThvs0Ih9zY0MxqNwhSCpvM9LNATbOXg=;
+        b=Xkyc7+mqIs2xHTAFENty2AHKbxUTKYioXq7C6fBI0fm/DWCAWeZUcFXB7ZdfLmGaKY
+         gbe4SKQXiIk2HXCmcjl7dyZIsi4fZO+Zvd3xNksZ34awY48fH75zQQVUHpERNXu8J3/k
+         HIPVv0/ATswMNr4i88STKkCqzSNzbWc8KiqAKidUwketVDMhmbhm0+81/g7GhSsKLyQQ
+         GFAxXvi0bJY37I68CRJDOjxSyCR1JrGmQPJry3Fxgq4RQiyYjjg9wpfmjHU0cfs4gkbI
+         lp1vMnwfx3fKUdgCHjcZuuQwhH89p1NBW/KrC/N/0rod+6BkqpHl5Z087M/FY8DuLVMP
+         uPAA==
+X-Gm-Message-State: AOAM532AuOaSf9Hk3MG/bbL8+yLFWTm1D1v6owQ62BKmw8qPOHgq3j9J
+        AEel77tV7GvZtQqYZQeyE5g=
+X-Google-Smtp-Source: ABdhPJxqpImougwXhhmQouJuqmnBPX6a+KI8gazE6a2goejByjN8QRYe8JYwwRkxS5PDsUHLrk1E1A==
+X-Received: by 2002:a4a:bc8d:: with SMTP id m13mr4683626oop.63.1607574368940;
+        Wed, 09 Dec 2020 20:26:08 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.51])
+        by smtp.googlemail.com with ESMTPSA id x31sm857061otb.4.2020.12.09.20.26.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Dec 2020 20:26:07 -0800 (PST)
+Subject: Re: [PATCH v1 net-next 02/15] net: Introduce direct data placement
+ tcp offload
+To:     Boris Pismenny <borispismenny@gmail.com>,
+        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
+        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de,
+        sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
+        viro@zeniv.linux.org.uk, edumazet@google.com
+Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Yoray Zack <yorayz@mellanox.com>,
+        Boris Pismenny <borisp@nvidia.com>
+References: <20201207210649.19194-1-borisp@mellanox.com>
+ <20201207210649.19194-3-borisp@mellanox.com>
+ <6f48fa5d-465c-5c38-ea45-704e86ba808b@gmail.com>
+ <f52a99d2-03a4-6e9f-603e-feba4aad0512@gmail.com>
+ <65dc5bba-13e6-110a-ddae-3d0c260aa875@gmail.com>
+ <ab298844-c95e-43e6-b4bb-fe5ce78655d8@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <921a110f-60fa-a711-d386-39eeca52199f@gmail.com>
+Date:   Wed, 9 Dec 2020 21:26:05 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
+MIME-Version: 1.0
+In-Reply-To: <ab298844-c95e-43e6-b4bb-fe5ce78655d8@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Van Asbroeck <thesven73@gmail.com>
+On 12/9/20 1:15 AM, Boris Pismenny wrote:
+> On 09/12/2020 2:38, David Ahern wrote:
+>>
+>> The AF_XDP reference was to differentiate one zerocopy use case (all
+>> packets go to userspace) from another (kernel managed TCP socket with
+>> zerocopy payload). You are focusing on a very narrow use case - kernel
+>> based NVMe over TCP - of a more general problem.
+>>
+> 
+> Please note that although our framework implements support for nvme-tcp,
+> we designed it to fit iscsi as well, and hopefully future protocols too,
+> as general as we could. For why this could not be generalized further
+> see below.
+> 
+>> You have a TCP socket and a design that only works for kernel owned
+>> sockets. You have specialized queues in the NIC, a flow rule directing
+>> packets to those queues. Presumably some ULP parser in the NIC
+>> associated with the queues to process NVMe packets. Rather than copying
+>> headers (ethernet/ip/tcp) to one buffer and payload to another (which is
+>> similar to what Jonathan Lemon is working on), this design has a ULP
+>> processor that just splits out the TCP payload even more making it
+>> highly selective about which part of the packet is put into which
+>> buffer. Take out the NVMe part, and it is header split with zerocopy for
+>> the payload - a generic feature that can have a wider impact with NVMe
+>> as a special case.
+>>
+> 
+> There is more to this than TCP zerocopy that exists in userspace or
+> inside the kernel. First, please note that the patches include support for
+> CRC offload as well as data placement. Second, data-placement is not the same
 
-Even if there is more rx data waiting on the chip, the rx napi poll fn
-will never run more than once - it will always read a few buffers, then
-bail out and re-arm interrupts. Which results in ping-pong between napi
-and interrupt.
+Yes, the CRC offload is different, but I think it is orthogonal to the
+'where does h/w put the data' problem.
 
-This defeats the purpose of napi, and is bad for performance.
+> as zerocopy for the following reasons:
+> (1) The former places buffers *exactly* where the user requests
+> regardless of the order of response arrivals, while the latter places packets
+> in anonymous buffers according to packet arrival order. Therefore, zerocopy
+> can be implemented using data placement, but not vice versa.
 
-Fix by making the rx napi poll behave identically to other ethernet
-drivers:
-1. initialize rx napi polling with an arbitrary budget (64).
-2. in the polling fn, return full weight if rx queue is not depleted,
-   this tells the napi core to "keep polling".
-3. update the rx tail ("ring the doorbell") once for every 8 processed
-   rx ring buffers.
+Fundamentally, it is an SGL and a TCP sequence number. There is a
+starting point where seq N == sgl element 0, position 0. Presumably
+there is a hardware cursor to track where you are in filling the SGL as
+packets are processed. You abort on OOO, so it seems like a fairly
+straightfoward problem.
 
-Thanks to Jakub Kicinski, Eric Dumazet and Andrew Lunn for their expert
-opinions and suggestions.
+> (2) Data-placement supports sub-page zerocopy, unlike page-flipping
+> techniques (i.e., TCP_ZEROCOPY).
 
-Tested with 20 seconds of full bandwidth receive (iperf3):
-        rx irqs      softirqs(NET_RX)
-        -----------------------------
-before  23827        33620
-after   129          4081
+I am not pushing for or suggesting any page-flipping. I understand the
+limitations of that approach.
 
-Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
-Fixes: 23f0703c125be ("lan743x: Add main source files for new lan743x driver")
-Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
----
+> (3) Page-flipping can't work for any storage initiator because the
+> destination buffer is owned by some user pagecache or process using O_DIRECT.
+> (4) Storage over TCP PDUs are not necessarily aligned to TCP packets,
+> i.e., the PDU header can be in the middle of a packet, so header-data split
+> alone isn't enough.
 
-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # b7e4ba9a91df
+yes, TCP is a byte stream and you have to have a cursor marking last
+written spot in the SGL. More below.
 
-To: Bryan Whitehead <bryan.whitehead@microchip.com>
-To: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-To: "David S. Miller" <davem@davemloft.net>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+> 
+> I wish we could do the same using some simpler zerocopy mechanism,
+> it would indeed simplify things. But, unfortunately this would severely
+> restrict generality, no sub-page support and alignment between PDUs
+> and packets, and performance (ordering of PDUs).
+> 
 
- drivers/net/ethernet/microchip/lan743x_main.c | 44 ++++++++++---------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+My biggest concern is that you are adding checks in the fast path for a
+very specific use case. If / when Rx zerocopy happens (and I suspect it
+has to happen soon to handle the ever increasing speeds), nothing about
+this patch set is reusable and worse more checks are needed in the fast
+path. I think it is best if you make this more generic — at least
+anything touching core code.
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 87b6c59a1e03..30ec308b9a4c 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -1964,6 +1964,14 @@ static struct sk_buff *lan743x_rx_allocate_skb(struct lan743x_rx *rx)
- 				  length, GFP_ATOMIC | GFP_DMA);
- }
- 
-+static void lan743x_rx_update_tail(struct lan743x_rx *rx, int index)
-+{
-+	/* update the tail once per 8 descriptors */
-+	if ((index & 7) == 7)
-+		lan743x_csr_write(rx->adapter, RX_TAIL(rx->channel_number),
-+				  index);
-+}
-+
- static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
- 					struct sk_buff *skb)
- {
-@@ -1994,6 +2002,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
- 	descriptor->data0 = (RX_DESC_DATA0_OWN_ |
- 			    (length & RX_DESC_DATA0_BUF_LENGTH_MASK_));
- 	skb_reserve(buffer_info->skb, RX_HEAD_PADDING);
-+	lan743x_rx_update_tail(rx, index);
- 
- 	return 0;
- }
-@@ -2012,6 +2021,7 @@ static void lan743x_rx_reuse_ring_element(struct lan743x_rx *rx, int index)
- 	descriptor->data0 = (RX_DESC_DATA0_OWN_ |
- 			    ((buffer_info->buffer_length) &
- 			    RX_DESC_DATA0_BUF_LENGTH_MASK_));
-+	lan743x_rx_update_tail(rx, index);
- }
- 
- static void lan743x_rx_release_ring_element(struct lan743x_rx *rx, int index)
-@@ -2223,34 +2233,26 @@ static int lan743x_rx_napi_poll(struct napi_struct *napi, int weight)
- 	struct lan743x_rx *rx = container_of(napi, struct lan743x_rx, napi);
- 	struct lan743x_adapter *adapter = rx->adapter;
- 	u32 rx_tail_flags = 0;
--	int count;
-+	int count, result;
- 
- 	if (rx->vector_flags & LAN743X_VECTOR_FLAG_SOURCE_STATUS_W2C) {
- 		/* clear int status bit before reading packet */
- 		lan743x_csr_write(adapter, DMAC_INT_STS,
- 				  DMAC_INT_BIT_RXFRM_(rx->channel_number));
- 	}
--	count = 0;
--	while (count < weight) {
--		int rx_process_result = lan743x_rx_process_packet(rx);
--
--		if (rx_process_result == RX_PROCESS_RESULT_PACKET_RECEIVED) {
--			count++;
--		} else if (rx_process_result ==
--			RX_PROCESS_RESULT_NOTHING_TO_DO) {
-+	for (count = 0; count < weight; count++) {
-+		result = lan743x_rx_process_packet(rx);
-+		if (result == RX_PROCESS_RESULT_NOTHING_TO_DO)
- 			break;
--		} else if (rx_process_result ==
--			RX_PROCESS_RESULT_PACKET_DROPPED) {
--			continue;
--		}
- 	}
- 	rx->frame_count += count;
--	if (count == weight)
--		goto done;
-+	if (count == weight || result == RX_PROCESS_RESULT_PACKET_RECEIVED)
-+		return weight;
- 
- 	if (!napi_complete_done(napi, count))
--		goto done;
-+		return count;
- 
-+	/* re-arm interrupts, must write to rx tail on some chip variants */
- 	if (rx->vector_flags & LAN743X_VECTOR_FLAG_VECTOR_ENABLE_AUTO_SET)
- 		rx_tail_flags |= RX_TAIL_SET_TOP_INT_VEC_EN_;
- 	if (rx->vector_flags & LAN743X_VECTOR_FLAG_SOURCE_ENABLE_AUTO_SET) {
-@@ -2260,10 +2262,10 @@ static int lan743x_rx_napi_poll(struct napi_struct *napi, int weight)
- 				  INT_BIT_DMA_RX_(rx->channel_number));
- 	}
- 
--	/* update RX_TAIL */
--	lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
--			  rx_tail_flags | rx->last_tail);
--done:
-+	if (rx_tail_flags)
-+		lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
-+				  rx_tail_flags | rx->last_tail);
-+
- 	return count;
- }
- 
-@@ -2407,7 +2409,7 @@ static int lan743x_rx_open(struct lan743x_rx *rx)
- 
- 	netif_napi_add(adapter->netdev,
- 		       &rx->napi, lan743x_rx_napi_poll,
--		       rx->ring_size - 1);
-+		       64);
- 
- 	lan743x_csr_write(adapter, DMAC_CMD,
- 			  DMAC_CMD_RX_SWR_(rx->channel_number));
--- 
-2.17.1
+For example, you have an iov static key hook managed by a driver for
+generic code. There are a few ways around that. One is by adding skb
+details to the nvme code — ie., walking the skb fragments, seeing that a
+given frag is in your allocated memory and skipping the copy. This would
+offer best performance since it skips all unnecessary checks. Another
+option is to export __skb_datagram_iter, use it and define your own copy
+handler that does the address compare and skips the copy. Key point -
+only your code path is affected.
 
+Similarly for the NVMe SGLs and DDP offload - a more generic solution
+allows other use cases to build on this as opposed to the checks you
+want for a special case. For example, a split at the protocol headers /
+payload boundaries would be a generic solution where kernel managed
+protocols get data in one buffer and socket data is put into a given
+SGL. I am guessing that you have to be already doing this to put PDU
+payloads into an SGL and other headers into other memory to make a
+complete packet, so this is not too far off from what you are already doing.
+
+Let me walk through an example with assumptions about your hardware's
+capabilities, and you correct me where I am wrong. Assume you have a
+'full' command response of this form:
+
+ +------------- ... ----------------+---------+---------+--------+-----+
+ |          big data segment        | PDU hdr | TCP hdr | IP hdr | eth |
+ +------------- ... ----------------+---------+---------+--------+-----+
+
+but it shows up to the host in 3 packets like this (ideal case):
+
+ +-------------------------+---------+---------+--------+-----+
+ |       data - seg 1      | PDU hdr | TCP hdr | IP hdr | eth |
+ +-------------------------+---------+---------+--------+-----+
+ +-----------------------------------+---------+--------+-----+
+ |       data - seg 2                | TCP hdr | IP hdr | eth |
+ +-----------------------------------+---------+--------+-----+
+                   +-----------------+---------+--------+-----+
+                   | payload - seg 3 | TCP hdr | IP hdr | eth |
+                   +-----------------+---------+--------+-----+
+
+
+The hardware splits the eth/IP/tcp headers from payload like this
+(again, your hardware has to know these boundaries to accomplish what
+you want):
+
+ +-------------------------+---------+     +---------+--------+-----+
+ |       data - seg 1      | PDU hdr |     | TCP hdr | IP hdr | eth |
+ +-------------------------+---------+     +---------+--------+-----+
+
+ +-----------------------------------+     +---------+--------+-----+
+ |       data - seg 2                |     | TCP hdr | IP hdr | eth |
+ +-----------------------------------+     +---------+--------+-----+
+
+                   +-----------------+     +---------+--------+-----+
+                   | payload - seg 3 |     | TCP hdr | IP hdr | eth |
+                   +-----------------+     +---------+--------+-----+
+
+Left side goes into the SGLs posted for this socket / flow; the right
+side goes into some other memory resource made available for headers.
+This is very close to what you are doing now - with the exception of the
+PDU header being put to the right side. NVMe code then just needs to set
+the iov offset (or adjust the base_addr) to skip over the PDU header -
+standard options for an iov.
+
+Yes, TCP is a byte stream, so the packets could very well show up like this:
+
+ +--------------+---------+-----------+---------+--------+-----+
+ | data - seg 1 | PDU hdr | prev data | TCP hdr | IP hdr | eth |
+ +--------------+---------+-----------+---------+--------+-----+
+ +-----------------------------------+---------+--------+-----+
+ |     payload - seg 2               | TCP hdr | IP hdr | eth |
+ +-----------------------------------+---------+--------+-----+
+ +-------- +-------------------------+---------+--------+-----+
+ | PDU hdr |    payload - seg 3      | TCP hdr | IP hdr | eth |
+ +---------+-------------------------+---------+--------+-----+
+
+If your hardware can extract the NVMe payload into a targeted SGL like
+you want in this set, then it has some logic for parsing headers and
+"snapping" an SGL to a new element. ie., it already knows 'prev data'
+goes with the in-progress PDU, sees more data, recognizes a new PDU
+header and a new payload. That means it already has to handle a
+'snap-to-PDU' style argument where the end of the payload closes out an
+SGL element and the next PDU hdr starts in a new SGL element (ie., 'prev
+data' closes out sgl[i], and the next PDU hdr starts sgl[i+1]). So in
+this case, you want 'snap-to-PDU' but that could just as easily be 'no
+snap at all', just a byte stream and filling an SGL after the protocol
+headers.
+
+Key point here is that this is the start of a generic header / data
+split that could work for other applications - not just NVMe. eth/IP/TCP
+headers are consumed by the Linux networking stack; data is in
+application owned, socket based SGLs to avoid copies.
+
+###
+
+A dump of other comments about this patch set:
+- there are a LOT of unnecessary typecasts around tcp_ddp_ctx that can
+be avoided by using container_of.
+
+- you have an accessor tcp_ddp_get_ctx but no setter; all uses of
+tcp_ddp_get_ctx are within mlx5. why open code the set but use the
+accessor for the get? Worse, mlx5e_nvmeotcp_queue_teardown actually has
+both — uses the accessor and open codes setting icsk_ulp_ddp_data.
+
+- the driver is storing private data on the socket. Nothing about the
+socket layer cares and the mlx5 driver is already tracking that data in
+priv->nvmeotcp->queue_hash. As I mentioned in a previous response, I
+understand the socket ops are needed for the driver level to call into
+the socket layer, but the data part does not seem to be needed.
+
+- nvme_tcp_offload_socket and nvme_tcp_offload_limits both return int
+yet the value is ignored
+
+- the build robot found a number of problems (it pulls my github tree
+and I pushed this set to it to move across computers).
+
+I think the patch set would be easier to follow if you restructured the
+patches to 1 thing only per patch -- e.g., split patch 2 into netdev
+bits and socket bits. Add the netdev feature bit and operations in 1
+patch and add the socket ops in a second patch with better commit logs
+about why each is needed and what is done.
