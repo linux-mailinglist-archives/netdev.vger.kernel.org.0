@@ -2,100 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F5F62D579B
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 10:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11EBD2D57A6
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 10:58:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727763AbgLJJzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 04:55:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
+        id S1726831AbgLJJzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 04:55:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726574AbgLJJzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 04:55:19 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89ADAC0613CF
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 01:54:38 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id d9so4852278iob.6
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 01:54:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PGz4NarWuf6bnnC4F66j8rQJHANbbohx5EwHe/89Tso=;
-        b=T4YVKnfQFPHTkOXqdUv9hdwXdWIIiA9k48RJBOOSsfngFaXyG1DURiZx2+QOeI5nVM
-         NceHBgbRL4WFS5qo3+DZr76D9BpiFnDB1qpiTrVlnVC3+kLgHUfcWveMKvVcG4jIrri2
-         6JfGYgMLMN0+ix4bPRFGOAsRjP+OpfE7DJ33PBlxwrkDFfdLSNn+oICeA7lVku+TguGl
-         rXqWs88Gjww/rkVHZsBeUe0DHc8JCAtJ3ZguGADbRLfUfjCorWkwE/Vkau6lTcRdbJM8
-         tzQ3ODjYlEWJW3QvElfIyDoVANLDOIMlVXzEqxhoH8WKzvxj50nOKk7rlEQUsjeOqQ2V
-         wKqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PGz4NarWuf6bnnC4F66j8rQJHANbbohx5EwHe/89Tso=;
-        b=Q9itIzz361nJT17FqYLLkFIXzaQQmEVhEpgK3LBmQotSBZ5sdbcCe+afQTuia/QQ0F
-         I6SK3TDNRuUNx1ljrEiY9zqPiwu+uZA/tuH4EYUKc1WcGLBhHF/rSjAS8ff2ozfyv6LU
-         54Ouu+Bn5dd7p9ggonlJKKXtg/FCdG7Pr0q6eWF3G8VWDZlN+YmUwQVEWbgcwd0LaNlC
-         ZrfDwp5ZtB2XIYWNCGFuxVzcqDyrbIwR/SIPaCQZF2Dz/OpddBJT46HB8EQOsntT/wg7
-         t6b21b1VEYqAMS5rz2/P4yEgDJIhEJpgJmWqj2A5zQGb1QX+UcJuqni6Cl9jP3HKE+CE
-         6wSA==
-X-Gm-Message-State: AOAM531jVh6p0GDivDWqs3JNbqrg7R3S6xPv7wUqSS4X5QyfjBolCS2L
-        9wyfn+iwQ+myTr/xPCijd4ZixKjaVapJNEkU4C4K+w==
-X-Google-Smtp-Source: ABdhPJzmLDI2nRM0U+SUETlua81Oc6POKIrcdkCYRxLfgscmeh3YSEsL1uJJ29oDrdoNsSfbR5UjPKqzitKSS90TDcw=
-X-Received: by 2002:a02:e87:: with SMTP id 129mr5504755jae.34.1607594077564;
- Thu, 10 Dec 2020 01:54:37 -0800 (PST)
+        with ESMTP id S1725765AbgLJJzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 04:55:54 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4154C061793
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 01:55:13 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1knIfI-0000t2-HD
+        for netdev@vger.kernel.org; Thu, 10 Dec 2020 10:55:12 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 102045AA1A7
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 09:55:10 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id D34935AA194;
+        Thu, 10 Dec 2020 09:55:08 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 3b0c2f46;
+        Thu, 10 Dec 2020 09:55:08 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can-next 2020-12-10
+Date:   Thu, 10 Dec 2020 10:55:00 +0100
+Message-Id: <20201210095507.1551220-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-References: <cki.4066A31294.UNMQ21P718@redhat.com> <CABE0yyi9gS8nao0n1Dts_Og80R71h8PUkizy4rM9E9E3QbJwvA@mail.gmail.com>
- <CABE0yyj997uCwzHoob8q2Ckd2i5Pv1k+JDRbF3fnn11_R2XN1Q@mail.gmail.com>
- <20201209092052.19a39676@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <CANn89iL8akG+u6sq4r7gxpWKMoDSKuCbgFvDPrrG+J85zC1KNg@mail.gmail.com>
- <CANn89iKcKATT902n6C1-Hi0ey0Ep20dD88nTTLLH9NNF6Pex5w@mail.gmail.com>
- <838391ff7ffa5dbfb79f30c6d31292c80415af18.camel@kernel.org>
- <CANn89iK+fU7LGH--JXx_FLxawr7rs1t-crLGtkbPAXsoiZMi8A@mail.gmail.com>
- <ygnhsg8ek8dr.fsf@nvidia.com> <20201209142256.3e4a08fb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <ygnhpn3ijbyb.fsf@nvidia.com>
-In-Reply-To: <ygnhpn3ijbyb.fsf@nvidia.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 10 Dec 2020 10:54:25 +0100
-Message-ID: <CANn89iKuUrYGwg7=xuf0CypLKhfjMN9Jy0QO1s5G8HvRmkwuSg@mail.gmail.com>
-Subject: =?UTF-8?B?UmU6IOKdjCBGQUlMOiBUZXN0IHJlcG9ydCBmb3Iga2VybmVsIDUuMTAuMC1yYzYgKG1haQ==?=
-        =?UTF-8?B?bmxpbmUua2VybmVsLm9yZyk=?=
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jianlin Shi <jishi@redhat.com>,
-        CKI Project <cki-project@redhat.com>,
-        netdev <netdev@vger.kernel.org>, skt-results-master@redhat.com,
-        Yi Zhang <yi.zhang@redhat.com>,
-        Memory Management <mm-qe@redhat.com>,
-        Jan Stancek <jstancek@redhat.com>,
-        Jianwen Ji <jiji@redhat.com>, Hangbin Liu <haliu@redhat.com>,
-        Ondrej Moris <omoris@redhat.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Changhui Zhong <czhong@redhat.com>,
-        Xiong Zhou <xzhou@redhat.com>,
-        Rachel Sibley <rasibley@redhat.com>,
-        David Arcari <darcari@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 9:35 AM Vlad Buslov <vladbu@nvidia.com> wrote:
->
-> On Thu 10 Dec 2020 at 00:22, Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Wed, 9 Dec 2020 22:54:40 +0200 Vlad Buslov wrote:
-> >> > Yes, I think the patch I sent should fix this, ETH_P_ARP should not be
-> >> > dropped ;)
-> >> >
-> >> > I am testing this before offical patch submission.
-> >>
-> >> Your patch fixed TC geneve tests for me, but some of more complex OVS
-> >> tests are still failing. I'll try to provide details tomorrow.
-> >
-> > Does a revert of Eric's patch fix it? For OvS is could also well be:
-> > 9c2e14b48119 ("ip_tunnels: Set tunnel option flag when tunnel metadata is present")
->
-> The tests pass with Eric's commit reverted.
->
+Hello Jakub, hello David,
 
-Thanks a lot for testing, I am truly sorry for the inconvenience :/
+here's a pull request of 7 patches for net-next/master.
+
+The first patch is by Oliver Hartkopp for the CAN ISOTP, which adds support for
+functional addressing.
+
+A patch by Antonio Quartulli removes an unneeded unlikely() annotation from the
+rx-offload helper.
+
+The next three patches target the m_can driver. Sean Nyekjaers's patch removes
+a double clearing of clock stop request bit, Patrik Flykt's patch moves the
+runtime PM enable/disable to m_can_platform and Jarkko Nikula's patch adds a
+PCI glue code driver.
+
+Fabio Estevam's patch converts the flexcan driver to DT only.
+
+And Manivannan Sadhasivam's patchd for the mcp251xfd driver adds internal
+loopback mode support.
+
+regards,
+Marc
+
+---
+
+The following changes since commit a7105e3472bf6bb3099d1293ea7d70e7783aa582:
+
+  Merge branch 'hns3-next' (2020-12-09 20:33:20 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.11-20201210
+
+for you to fetch changes up to ee42bedc85a6e87791d5c20da6f2d150188cde54:
+
+  can: mcp251xfd: Add support for internal loopback mode (2020-12-10 10:40:10 +0100)
+
+----------------------------------------------------------------
+linux-can-next-for-5.11-20201210
+
+----------------------------------------------------------------
+Antonio Quartulli (1):
+      can: rx-offload: can_rx_offload_offload_one(): avoid double unlikely() notation when using IS_ERR()
+
+Fabio Estevam (1):
+      can: flexcan: convert the driver to DT-only
+
+Jarkko Nikula (1):
+      can: m_can: add PCI glue driver for Intel Elkhart Lake
+
+Manivannan Sadhasivam (1):
+      can: mcp251xfd: Add support for internal loopback mode
+
+Oliver Hartkopp (1):
+      can: isotp: add SF_BROADCAST support for functional addressing
+
+Patrik Flykt (1):
+      can: m_can: move runtime PM enable/disable to m_can_platform
+
+Sean Nyekjaer (1):
+      can: m_can: m_can_config_endisable(): remove double clearing of clock stop request bit
+
+ drivers/net/can/flexcan.c                      |  18 +--
+ drivers/net/can/m_can/Kconfig                  |   7 +
+ drivers/net/can/m_can/Makefile                 |   1 +
+ drivers/net/can/m_can/m_can.c                  |  12 +-
+ drivers/net/can/m_can/m_can_pci.c              | 186 +++++++++++++++++++++++++
+ drivers/net/can/m_can/m_can_platform.c         |   9 +-
+ drivers/net/can/rx-offload.c                   |   2 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c |  11 +-
+ include/uapi/linux/can/isotp.h                 |   2 +-
+ net/can/isotp.c                                |  42 ++++--
+ 10 files changed, 242 insertions(+), 48 deletions(-)
+ create mode 100644 drivers/net/can/m_can/m_can_pci.c
+
+
