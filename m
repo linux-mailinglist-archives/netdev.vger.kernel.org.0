@@ -2,101 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 585392D57C7
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 10:59:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 231562D57DD
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 11:07:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731332AbgLJJ6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 04:58:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
+        id S1729130AbgLJKGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 05:06:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728063AbgLJJ4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 04:56:20 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BBEC0611CC
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 01:55:21 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1knIfP-00015n-UR
-        for netdev@vger.kernel.org; Thu, 10 Dec 2020 10:55:19 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id D09B85AA1D8
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 09:55:18 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id D955E5AA1AD;
-        Thu, 10 Dec 2020 09:55:11 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id b24df1dd;
-        Thu, 10 Dec 2020 09:55:08 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net-next 7/7] can: mcp251xfd: Add support for internal loopback mode
-Date:   Thu, 10 Dec 2020 10:55:07 +0100
-Message-Id: <20201210095507.1551220-8-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201210095507.1551220-1-mkl@pengutronix.de>
-References: <20201210095507.1551220-1-mkl@pengutronix.de>
+        with ESMTP id S1728353AbgLJKGa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 05:06:30 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3ACAC06179C
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 02:05:49 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id cw27so4855763edb.5
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 02:05:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=essensium.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=dYyIFuo77eWpup6s+qRK/CtxPzV7SU+lryIdSY50mGQ=;
+        b=fMoW9WpJONRgpIZYXCjDHfmKvhovPVeZATproWZn8soyVYcHQZqUuUFJgQBW7BOaDk
+         EO9jBzeCo/ZnMhYbTHpGp1xCgx4aneOAQYBk9Y+91nwFg21FcagHbDDiQdZojfST2cB8
+         mOBTMStJ5m8cwiKByMJsQfwTUXOHh7fJd1vAgZ1rExdAl/RyID9j0fPQRpPx4Xcz0fPv
+         tpXXjx6H+hZjPCKQc9pEf4fwzMK8Oh2OooicNfr23ZwSKelG6MaGwV50cRDlzV5H8g+U
+         aeQxIid8MWyx6+ereqGZIF8rUDx9Iwon2+7rkL4c7dzht3Nwxf5gqQ+qz7erPowmyEhM
+         PiDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dYyIFuo77eWpup6s+qRK/CtxPzV7SU+lryIdSY50mGQ=;
+        b=WY7yskNYhD2kvlJfUN1QBWaGj/awJp/3l8O1UZoUK3HDntY8IBG4rbhoYkm2j+vRJR
+         4CbJCUdF9BaSGRe3P2PWRPJjSOHnbWO85Ne/XFOfiw1djQm/iTX1lFGYWFJuqQStsWue
+         C6wUP9edsbUW3Tmi4PyiansZVBjJNk15gCwBChn8o0eNeeiycz3mNMWALh/9oBx/r9LN
+         P/lxRmoAlBcQL59x5Txh9GMSHjVsyoVulpnkdTYtQNhERr7vEX6/xpK26PQy9R/gn7YD
+         LOl1M2g777eujQhe9CPf7p2ax1k/sBVAasVQVgJpv5wtjV7WlK1Gtgi/ejPN33Zw8jJx
+         rVRg==
+X-Gm-Message-State: AOAM530GkEiarOgcqeViPZgWQuLhE58+U9AmRMbeYY7PlErb7VSf/FcX
+        WJrfObQnBVfYiT6pC8g10ZUrOQ==
+X-Google-Smtp-Source: ABdhPJyPymra7MZRmC4i4cHn92ZFc67Km3dGUG5yHta/c/JjAat55la1+odkg57XtyuouY4VhN7igA==
+X-Received: by 2002:a05:6402:610:: with SMTP id n16mr5860805edv.172.1607594748563;
+        Thu, 10 Dec 2020 02:05:48 -0800 (PST)
+Received: from [192.168.1.16] (77.109.117.213.adsl.dyn.edpnet.net. [77.109.117.213])
+        by smtp.gmail.com with ESMTPSA id oq7sm4103032ejb.63.2020.12.10.02.05.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Dec 2020 02:05:47 -0800 (PST)
+Subject: Re: [PATCH net 1/4] net: freescale/fman: Split the main resource
+ region reservation
+To:     Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20201203135039.31474-1-patrick.havelange@essensium.com>
+ <20201203135039.31474-2-patrick.havelange@essensium.com>
+ <AM6PR04MB39764190C3CC885EAA84E8B3ECF20@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <e488ed95-3672-fdcb-d678-fdd4eb9a8b4b@essensium.com>
+ <AM6PR04MB3976F905489C0CB2ECD1A6FAECCC0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <8c28d03a-8831-650c-cf17-9a744d084479@essensium.com>
+ <AM6PR04MB3976721D38D6EAE91E6F3F37ECCC0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+ <9a118a8d-ce39-c71b-9efe-3a4fc86041ee@essensium.com>
+ <AM6PR04MB3976C893BE91E755D439EDFFECCB0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+From:   Patrick Havelange <patrick.havelange@essensium.com>
+Message-ID: <51b57945-c238-0c58-ef12-562911a56f8a@essensium.com>
+Date:   Thu, 10 Dec 2020 11:05:47 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <AM6PR04MB3976C893BE91E755D439EDFFECCB0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+On 2020-12-10 10:05, Madalin Bucur wrote:
+>> -----Original Message-----
+>> From: Patrick Havelange <patrick.havelange@essensium.com>
 
-MCP251xFD supports internal loopback mode which can be used to verify CAN
-functionality in the absence of a real CAN device.
+[snipped]
 
-Link: https://lore.kernel.org/r/20201201054019.11012-1-manivannan.sadhasivam@linaro.org
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-[mkl: mcp251xfd_get_normal_mode(): move CAN_CTRLMODE_LOOPBACK check to front]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+>>
+>> But then that change would not be compatible with the existing device
+>> trees in already existing hardware. I'm not sure how to handle that case
+>> properly.
+> 
+> One needs to be backwards compatible with the old device trees, so we do not
+> really have a simple answer, I know.
+> 
+>>> If we want to hack it,
+>>> instead of splitting ioremaps, we can reserve 4 kB in the FMan driver,
+>>> and keep the ioremap as it is now, with the benefit of less code churn.
+>>
+>> but then the ioremap and the memory reservation do not match. Why bother
+>> at all then with the mem reservation, just ioremap only and be done with
+>> it. What I'm saying is, I don't see the point of having a "fake"
+>> reservation call if it does not correspond that what is being used.
+> 
+> The reservation is not fake, it just covering the first portion of the ioremap.
+> Another hypothetical FMan driver would presumably reserve and ioremap starting
+> from the same point, thus the desired error would be met.
+> 
+> Regarding removing reservation altogether, yes, we can do that, in the child
+> device drivers. That will fix that use after free issue you've found and align
+> with the custom, hierarchical structure of the FMan devices/drivers. But would
+> leave them without the double use guard we have when using the reservation.
+> 
+>>> In the end, what the reservation is trying to achieve is to make sure
+>> there
+>>> is a single driver controlling a certain peripeheral, and this basic
+>>> requirement would be addressed by that change plus devm_of_iomap() for
+>> child
+>>> devices (ports, MACs).
+>>
+>> Again, correct me if I'm wrong, but with the fake mem reservation, it
+>> would *not* make sure that a single driver is controlling a certain
+>> peripheral.
+> 
+> Actually, it would. If the current FMan driver reserves the first part of the FMan
+> memory, then another FMan driver (I do not expect a random driver trying to map the
+> FMan register area)
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index 20cbd5c446f5..77129d5f410b 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -965,7 +965,10 @@ static u8 mcp251xfd_get_normal_mode(const struct mcp251xfd_priv *priv)
- {
- 	u8 mode;
- 
--	if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
-+
-+	if (priv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
-+		mode = MCP251XFD_REG_CON_MODE_INT_LOOPBACK;
-+	else if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
- 		mode = MCP251XFD_REG_CON_MODE_LISTENONLY;
- 	else if (priv->can.ctrlmode & CAN_CTRLMODE_FD)
- 		mode = MCP251XFD_REG_CON_MODE_MIXED;
-@@ -2881,9 +2884,9 @@ static int mcp251xfd_probe(struct spi_device *spi)
- 	priv->can.do_get_berr_counter = mcp251xfd_get_berr_counter;
- 	priv->can.bittiming_const = &mcp251xfd_bittiming_const;
- 	priv->can.data_bittiming_const = &mcp251xfd_data_bittiming_const;
--	priv->can.ctrlmode_supported = CAN_CTRLMODE_LISTENONLY |
--		CAN_CTRLMODE_BERR_REPORTING | CAN_CTRLMODE_FD |
--		CAN_CTRLMODE_FD_NON_ISO;
-+	priv->can.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK |
-+		CAN_CTRLMODE_LISTENONLY | CAN_CTRLMODE_BERR_REPORTING |
-+		CAN_CTRLMODE_FD | CAN_CTRLMODE_FD_NON_ISO;
- 	priv->ndev = ndev;
- 	priv->spi = spi;
- 	priv->rx_int = rx_int;
--- 
-2.29.2
+Ha!, now I understand your point. I still think it is not a clean 
+solution, as the reservation do not match the ioremap usage.
 
+> would likely try to use that same part (with the same or
+> a different size, it does not matter, there will be an error anyway) and the
+> reservation attempt will fail. If we fix the child device drivers, then they
+> will have normal mappings and reservations.
+> 
+>> My point is, either have a *correct* mem reservation, or don't have one
+>> at all. There is no point in trying to cheat the system.
+> 
+> Now we do not have correct reservations for the child devices because the
+> parent takes it all for himself. Reduce the parent reservation and make room
+> for correct reservations for the child. The two-sections change you've made may
+> try to be correct but it's overkill for the purpose of detecting double use.
 
+But it is not overkill if we want to detect potential subdrivers mapping 
+sections that would not start at the main fman region (but still part of 
+the main fman region).
+
+> And I also find the patch to obfuscate the already not so readable code so I'd
+> opt for a simpler fix.
+
+As said already, I'm not in favor of having a reservation that do not 
+match the real usage.
+
+And in my opinion, having a mismatch with the mem reservation and the 
+mem usage is also the kind of obfuscation that we want to avoid.
+
+Yes now the code is slightly more complex, but it is also slightly more 
+correct.
+
+I'm not seeing currently another way on how to make it simpler *and* 
+correct at the same time.
+
+Patrick H.
+
+> 
+> Madalin
+> 
