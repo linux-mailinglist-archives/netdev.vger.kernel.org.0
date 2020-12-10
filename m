@@ -2,125 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBF772D541C
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 07:44:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA3DA2D541E
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 07:45:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387485AbgLJGnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 01:43:22 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:37165 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729230AbgLJGnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 01:43:22 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1knFdr-0000oM-2R; Thu, 10 Dec 2020 07:41:31 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1knFdq-0000nx-0q; Thu, 10 Dec 2020 07:41:30 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 483F8240041;
-        Thu, 10 Dec 2020 07:41:29 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id C642C240040;
-        Thu, 10 Dec 2020 07:41:28 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 5611D202DE;
-        Thu, 10 Dec 2020 07:41:28 +0100 (CET)
+        id S1729230AbgLJGop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 01:44:45 -0500
+Received: from smtp-fw-9103.amazon.com ([207.171.188.200]:2998 "EHLO
+        smtp-fw-9103.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726158AbgLJGop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 01:44:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1607582684; x=1639118684;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   mime-version;
+  bh=RewH6PKPJrv9ycvCUuWlbLXAaaNCiru+bhipcf9bnKU=;
+  b=cOMQpekKqnYA13ODct35hxslwWmtItTBKl5EfoyuJfkoKlmT8qUXli8+
+   /cmO2vROxdBXHvSBGkxL45Jk+L8/zRQbHKtDZLoM2Kx8tT6uUFBLF1kWc
+   NPIXoPfczxddwbSpd05EctZZTDAFWIyl0vMB7O+OHt8Ib6XRXnegZoIu4
+   E=;
+X-IronPort-AV: E=Sophos;i="5.78,407,1599523200"; 
+   d="scan'208";a="901952508"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-67b371d8.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9103.sea19.amazon.com with ESMTP; 10 Dec 2020 06:43:57 +0000
+Received: from EX13D31EUA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1a-67b371d8.us-east-1.amazon.com (Postfix) with ESMTPS id 75B33A1EAB;
+        Thu, 10 Dec 2020 06:43:55 +0000 (UTC)
+Received: from u3f2cd687b01c55.ant.amazon.com (10.43.162.211) by
+ EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 10 Dec 2020 06:43:50 +0000
+From:   SeongJae Park <sjpark@amazon.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     SeongJae Park <sjpark@amazon.com>, <davem@davemloft.net>,
+        SeongJae Park <sjpark@amazon.de>, <kuznet@ms2.inr.ac.ru>,
+        <paulmck@kernel.org>, <netdev@vger.kernel.org>,
+        <rcu@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] net/ipv4/inet_fragment: Batch fqdir destroy works
+Date:   Thu, 10 Dec 2020 07:43:29 +0100
+Message-ID: <20201210064329.6884-1-sjpark@amazon.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201209151659.125b43da@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 10 Dec 2020 07:41:28 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: lapbether: Consider it successful if
- (dis)connecting when already (dis)connected
-Organization: TDT AG
-In-Reply-To: <20201208225044.5522-1-xie.he.0141@gmail.com>
-References: <20201208225044.5522-1-xie.he.0141@gmail.com>
-Message-ID: <15c1ad7b52562e2ca37d8084a90197d8@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.15
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-ID: 151534::1607582490-000013A4-C9E28885/0/0
-X-purgate: clean
-X-purgate-type: clean
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.211]
+X-ClientProxiedBy: EX13D46UWB002.ant.amazon.com (10.43.161.70) To
+ EX13D31EUA001.ant.amazon.com (10.43.165.15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-08 23:50, Xie He wrote:
-> When the upper layer instruct us to connect (or disconnect), but we 
-> have
-> already connected (or disconnected), consider this operation successful
-> rather than failed.
-> 
-> This can help the upper layer to correct its record about whether we 
-> are
-> connected or not here in layer 2.
-> 
-> The upper layer may not have the correct information about whether we 
-> are
-> connected or not. This can happen if this driver has already been 
-> running
-> for some time when the "x25" module gets loaded.
-> 
-> Another X.25 driver (hdlc_x25) is already doing this, so we make this
-> driver do this, too.
+On Wed, 9 Dec 2020 15:16:59 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
 
-Looks good to me.
+> On Tue, 8 Dec 2020 10:45:29 +0100 SeongJae Park wrote:
+> > From: SeongJae Park <sjpark@amazon.de>
+> > 
+> > In 'fqdir_exit()', a work for destruction of the 'fqdir' is enqueued.
+> > The work function, 'fqdir_work_fn()', calls 'rcu_barrier()'.  In case of
+> > intensive 'fqdir_exit()' (e.g., frequent 'unshare(CLONE_NEWNET)'
+> > systemcalls), this increased contention could result in unacceptably
+> > high latency of 'rcu_barrier()'.  This commit avoids such contention by
+> > doing the destruction in batched manner, as similar to that of
+> > 'cleanup_net()'.
+> > 
+> > Signed-off-by: SeongJae Park <sjpark@amazon.de>
+> 
+> Looks fine to me, but you haven't CCed Florian or Eric who where the
+> last two people to touch this function. Please repost CCing them and
+> fixing the nit below, thanks!
 
-Acked-by: Martin Schiller <ms@dev.tdt.de>
+Thank you for let me know that.  I will send the next version so.
 
 > 
-> Cc: Martin Schiller <ms@dev.tdt.de>
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
-> ---
->  drivers/net/wan/lapbether.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
+> >  static void fqdir_work_fn(struct work_struct *work)
+> >  {
+> > -	struct fqdir *fqdir = container_of(work, struct fqdir, destroy_work);
+> > -	struct inet_frags *f = fqdir->f;
+> > +	struct llist_node *kill_list;
+> > +	struct fqdir *fqdir;
+> > +	struct inet_frags *f;
 > 
-> diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-> index b6be2454b8bd..605fe555e157 100644
-> --- a/drivers/net/wan/lapbether.c
-> +++ b/drivers/net/wan/lapbether.c
-> @@ -55,6 +55,9 @@ struct lapbethdev {
-> 
->  static LIST_HEAD(lapbeth_devices);
-> 
-> +static void lapbeth_connected(struct net_device *dev, int reason);
-> +static void lapbeth_disconnected(struct net_device *dev, int reason);
-> +
->  /* 
-> ------------------------------------------------------------------------ 
-> */
-> 
->  /*
-> @@ -167,11 +170,17 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff 
-> *skb,
->  	case X25_IFACE_DATA:
->  		break;
->  	case X25_IFACE_CONNECT:
-> -		if ((err = lapb_connect_request(dev)) != LAPB_OK)
-> +		err = lapb_connect_request(dev);
-> +		if (err == LAPB_CONNECTED)
-> +			lapbeth_connected(dev, LAPB_OK);
-> +		else if (err != LAPB_OK)
->  			pr_err("lapb_connect_request error: %d\n", err);
->  		goto drop;
->  	case X25_IFACE_DISCONNECT:
-> -		if ((err = lapb_disconnect_request(dev)) != LAPB_OK)
-> +		err = lapb_disconnect_request(dev);
-> +		if (err == LAPB_NOTCONNECTED)
-> +			lapbeth_disconnected(dev, LAPB_OK);
-> +		else if (err != LAPB_OK)
->  			pr_err("lapb_disconnect_request err: %d\n", err);
->  		fallthrough;
->  	default:
+> nit: reorder fqdir and f to keep reverse xmas tree variable ordering.
+
+Hehe, ok, I will. :)
+
+
+Thanks,
+SeongJae Park
