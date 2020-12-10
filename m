@@ -2,193 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1288C2D6AD1
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 23:55:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2290A2D6B32
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404732AbgLJWzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 17:55:25 -0500
-Received: from mga04.intel.com ([192.55.52.120]:9222 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732863AbgLJWce (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 17:32:34 -0500
-IronPort-SDR: QZXKebPbuAfTCS6slCf0fYv5bsxW4XorQzcpHZE6owgeaq46I7gFvn3z6Wy0AMRq93o3zsWd6D
- soowmE7fIlrQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9831"; a="171776492"
-X-IronPort-AV: E=Sophos;i="5.78,409,1599548400"; 
-   d="scan'208";a="171776492"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 14:25:15 -0800
-IronPort-SDR: E517UUcrcIYreC9T8ISW6Y3LTnKgnqNo0YdV4g4N5PwHZRoMi5zcBrYOKL/2ADOAHvNbA/0VzS
- 6W70KZnJO0Gg==
-X-IronPort-AV: E=Sophos;i="5.78,409,1599548400"; 
-   d="scan'208";a="338703759"
-Received: from mjmartin-nuc02.amr.corp.intel.com ([10.254.112.51])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 14:25:14 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        kuba@kernel.org, mptcp@lists.01.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 7/9] mptcp: parse and act on incoming FASTCLOSE option
-Date:   Thu, 10 Dec 2020 14:25:04 -0800
-Message-Id: <20201210222506.222251-8-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201210222506.222251-1-mathew.j.martineau@linux.intel.com>
-References: <20201210222506.222251-1-mathew.j.martineau@linux.intel.com>
+        id S1732067AbgLJW4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 17:56:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392429AbgLJWzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 17:55:40 -0500
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642D2C0619DB;
+        Thu, 10 Dec 2020 14:53:49 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id i9so7151567wrc.4;
+        Thu, 10 Dec 2020 14:53:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FOnvm6Baf3m5bMLWZg3kDehjBG8A7+9YWYoLpgMMYBE=;
+        b=UR01bWqSSrZnOmF0qD11GNEz54al4WVSIasPXhrmHQf+k7UcyeWv4R6OkrPOv79SgE
+         k1rW8h56PkskL8REzVYqP1I5kNut/XyF8eINYH4j1yIgnd+t0J9YBMj2QsmyAXf2DTnL
+         /ZupnS0KyyqwcTj9kJF9DmzpdvXoP+ynTn6ODOJP7juL672IaqvChhBqQPYr4V+roMIt
+         vy43s40wFE1grh0IJzZqWM/wmLZl2DkbUc+2cVedFW98SoikXYh6PqHaW3fytmNq1TXx
+         TGyHHTJ6ZcDozpNFSQCJruR9rc8OxKEep1QyXskcw14M1assuJ1Xhljrx5alqdRzW0EO
+         9nDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FOnvm6Baf3m5bMLWZg3kDehjBG8A7+9YWYoLpgMMYBE=;
+        b=X/CPuZD/fVXkuN/orCrJ/emiKt0akoPzMklAojZuICU/zJHZ0WwUYgxYyvGNi76DRb
+         Ux5ExJ3UE7wKT8NeBXe7QlawAqSiQvU5yNp7XBa/rMKx0GknyCFooOEJjackn9ENn+pG
+         oXI8hPzYccJM1Boz8IqcDdpUWFYmWYz9W1gSMFKuK5l8rzK3X3kel0FoWarhXxGmQ1iZ
+         yVKa9HgYB4kSbTekO/FH8f1fKRYHoz+z5ZCMjHA+emYS12X5tuj4dzFBMSlsSeGe9K2B
+         4AhV/1xU/g48tANjNx5j1dkIK557tzH5WMLrp3GTf/zcmQGeI0ZM8L5O89VxdPNdmEW1
+         P4YQ==
+X-Gm-Message-State: AOAM533sABcm2lpU8lPrUaFGKVw2g8mSK86xjI1okKluojeOj2UXv2Y4
+        DCBZIHKnAydM/WIFxye6q59JbIpXExYhBSFqhWfTci22
+X-Google-Smtp-Source: ABdhPJyBTgsANO8Ewc4TwqyNo9GTDY6eu+IbCLiC49Dn/sqblGhomWDdVkJ5HIaRoleZLzVf6V8ycYIBIlW/mnVMFCY=
+X-Received: by 2002:a19:8b83:: with SMTP id n125mr3848216lfd.75.1607637184027;
+ Thu, 10 Dec 2020 13:53:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201210153618.21226-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20201210153618.21226-1-magnus.karlsson@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 10 Dec 2020 13:52:52 -0800
+Message-ID: <CAADnVQKOjetBFuCVRWPEzephJTeZ7AYaHv+pKfJKia0F8vk=ww@mail.gmail.com>
+Subject: Re: [PATCH bpf] xsk: fix race in SKB mode transmit with shared cq
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On Thu, Dec 10, 2020 at 7:36 AM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
+>
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+>
+> Fix a race when multiple sockets are simultaneously calling sendto()
+> when the completion ring is shared in the SKB case. This is the case
+> when you share the same netdev and queue id through the
+> XDP_SHARED_UMEM bind flag. The problem is that multiple processes can
+> be in xsk_generic_xmit() and call the backpressure mechanism in
+> xskq_prod_reserve(xs->pool->cq). As this is a shared resource in this
+> specific scenario, a race might occur since the rings are
+> single-producer single-consumer.
+>
+> Fix this by moving the tx_completion_lock from the socket to the pool
+> as the pool is shared between the sockets that share the completion
+> ring. (The pool is not shared when this is not the case.) And then
+> protect the accesses to xskq_prod_reserve() with this lock. The
+> tx_completion_lock is renamed cq_lock to better reflect that it
+> protects accesses to the potentially shared completion ring.
+>
+> Fixes: 35fcde7f8deb ("xsk: support for Tx")
+> Fixes: a9744f7ca200 ("xsk: fix potential race in SKB TX completion code")
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> Reported-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  include/net/xdp_sock.h      | 4 ----
+>  include/net/xsk_buff_pool.h | 5 +++++
+>  net/xdp/xsk.c               | 9 ++++++---
+>  net/xdp/xsk_buff_pool.c     | 1 +
+>  4 files changed, 12 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> index 4f4e93bf814c..cc17bc957548 100644
+> --- a/include/net/xdp_sock.h
+> +++ b/include/net/xdp_sock.h
+> @@ -58,10 +58,6 @@ struct xdp_sock {
+>
+>         struct xsk_queue *tx ____cacheline_aligned_in_smp;
+>         struct list_head tx_list;
+> -       /* Mutual exclusion of NAPI TX thread and sendmsg error paths
+> -        * in the SKB destructor callback.
+> -        */
+> -       spinlock_t tx_completion_lock;
+>         /* Protects generic receive. */
+>         spinlock_t rx_lock;
+>
+> diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+> index 01755b838c74..eaa8386dbc63 100644
+> --- a/include/net/xsk_buff_pool.h
+> +++ b/include/net/xsk_buff_pool.h
+> @@ -73,6 +73,11 @@ struct xsk_buff_pool {
+>         bool dma_need_sync;
+>         bool unaligned;
+>         void *addrs;
+> +       /* Mutual exclusion of the completion ring in the SKB mode. Two cases to protect:
+> +        * NAPI TX thread and sendmsg error paths in the SKB destructor callback and when
+> +        * sockets share a single cq when the same netdev and queue id is shared.
+> +        */
+> +       spinlock_t cq_lock;
+>         struct xdp_buff_xsk *free_heads[];
+>  };
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 62504471fd20..42cb5f94d49e 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -364,9 +364,9 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+>         struct xdp_sock *xs = xdp_sk(skb->sk);
+>         unsigned long flags;
+>
+> -       spin_lock_irqsave(&xs->tx_completion_lock, flags);
+> +       spin_lock_irqsave(&xs->pool->cq_lock, flags);
+>         xskq_prod_submit_addr(xs->pool->cq, addr);
+> -       spin_unlock_irqrestore(&xs->tx_completion_lock, flags);
+> +       spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>
+>         sock_wfree(skb);
+>  }
+> @@ -378,6 +378,7 @@ static int xsk_generic_xmit(struct sock *sk)
+>         bool sent_frame = false;
+>         struct xdp_desc desc;
+>         struct sk_buff *skb;
+> +       unsigned long flags;
+>         int err = 0;
+>
+>         mutex_lock(&xs->mutex);
+> @@ -409,10 +410,13 @@ static int xsk_generic_xmit(struct sock *sk)
+>                  * if there is space in it. This avoids having to implement
+>                  * any buffering in the Tx path.
+>                  */
+> +               spin_lock_irqsave(&xs->pool->cq_lock, flags);
+>                 if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> +                       spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>                         kfree_skb(skb);
+>                         goto out;
+>                 }
+> +               spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
 
-parse the MPTCP FASTCLOSE subtype.
-
-If provided key matches the local one, schedule the work queue to close
-(with tcp reset) all subflows.
-
-The MPTCP socket moves to closed state immediately.
-
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/options.c  | 17 +++++++++++++++++
- net/mptcp/protocol.c | 33 +++++++++++++++++++++++++++++++++
- net/mptcp/protocol.h |  4 ++++
- 3 files changed, 54 insertions(+)
-
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 1ca60d9da3ef..5e7d7755d1a6 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -282,6 +282,16 @@ static void mptcp_parse_option(const struct sk_buff *skb,
- 		pr_debug("RM_ADDR: id=%d", mp_opt->rm_id);
- 		break;
- 
-+	case MPTCPOPT_MP_FASTCLOSE:
-+		if (opsize != TCPOLEN_MPTCP_FASTCLOSE)
-+			break;
-+
-+		ptr += 2;
-+		mp_opt->rcvr_key = get_unaligned_be64(ptr);
-+		ptr += 8;
-+		mp_opt->fastclose = 1;
-+		break;
-+
- 	default:
- 		break;
- 	}
-@@ -299,6 +309,7 @@ void mptcp_get_options(const struct sk_buff *skb,
- 	mp_opt->mp_join = 0;
- 	mp_opt->add_addr = 0;
- 	mp_opt->ahmac = 0;
-+	mp_opt->fastclose = 0;
- 	mp_opt->port = 0;
- 	mp_opt->rm_addr = 0;
- 	mp_opt->dss = 0;
-@@ -942,6 +953,12 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb)
- 	if (!check_fully_established(msk, sk, subflow, skb, &mp_opt))
- 		return;
- 
-+	if (mp_opt.fastclose &&
-+	    msk->local_key == mp_opt.rcvr_key) {
-+		WRITE_ONCE(msk->rcv_fastclose, true);
-+		mptcp_schedule_work((struct sock *)msk);
-+	}
-+
- 	if (mp_opt.add_addr && add_addr_hmac_valid(msk, &mp_opt)) {
- 		struct mptcp_addr_info addr;
- 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 2540d82742ac..cb8b7adf218a 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2217,6 +2217,36 @@ static bool mptcp_check_close_timeout(const struct sock *sk)
- 	return true;
- }
- 
-+static void mptcp_check_fastclose(struct mptcp_sock *msk)
-+{
-+	struct mptcp_subflow_context *subflow, *tmp;
-+	struct sock *sk = &msk->sk.icsk_inet.sk;
-+
-+	if (likely(!READ_ONCE(msk->rcv_fastclose)))
-+		return;
-+
-+	mptcp_token_destroy(msk);
-+
-+	list_for_each_entry_safe(subflow, tmp, &msk->conn_list, node) {
-+		struct sock *tcp_sk = mptcp_subflow_tcp_sock(subflow);
-+
-+		lock_sock(tcp_sk);
-+		if (tcp_sk->sk_state != TCP_CLOSE) {
-+			tcp_send_active_reset(tcp_sk, GFP_ATOMIC);
-+			tcp_set_state(tcp_sk, TCP_CLOSE);
-+		}
-+		release_sock(tcp_sk);
-+	}
-+
-+	inet_sk_state_store(sk, TCP_CLOSE);
-+	sk->sk_shutdown = SHUTDOWN_MASK;
-+	smp_mb__before_atomic(); /* SHUTDOWN must be visible first */
-+	set_bit(MPTCP_DATA_READY, &msk->flags);
-+	set_bit(MPTCP_WORK_CLOSE_SUBFLOW, &msk->flags);
-+
-+	mptcp_close_wake_up(sk);
-+}
-+
- static void mptcp_worker(struct work_struct *work)
- {
- 	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
-@@ -2233,6 +2263,9 @@ static void mptcp_worker(struct work_struct *work)
- 
- 	mptcp_check_data_fin_ack(sk);
- 	__mptcp_flush_join_list(msk);
-+
-+	mptcp_check_fastclose(msk);
-+
- 	if (test_and_clear_bit(MPTCP_WORK_CLOSE_SUBFLOW, &msk->flags))
- 		__mptcp_close_subflow(msk);
- 
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index a5bc9599ae5c..7cf9d110b85f 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -23,6 +23,7 @@
- #define OPTION_MPTCP_ADD_ADDR	BIT(6)
- #define OPTION_MPTCP_ADD_ADDR6	BIT(7)
- #define OPTION_MPTCP_RM_ADDR	BIT(8)
-+#define OPTION_MPTCP_FASTCLOSE	BIT(9)
- 
- /* MPTCP option subtypes */
- #define MPTCPOPT_MP_CAPABLE	0
-@@ -58,6 +59,7 @@
- #define TCPOLEN_MPTCP_ADD_ADDR6_BASE_PORT	24
- #define TCPOLEN_MPTCP_PORT_LEN		4
- #define TCPOLEN_MPTCP_RM_ADDR_BASE	4
-+#define TCPOLEN_MPTCP_FASTCLOSE		12
- 
- /* MPTCP MP_JOIN flags */
- #define MPTCPOPT_BACKUP		BIT(0)
-@@ -110,6 +112,7 @@ struct mptcp_options_received {
- 	u16	data_len;
- 	u16	mp_capable : 1,
- 		mp_join : 1,
-+		fastclose : 1,
- 		dss : 1,
- 		add_addr : 1,
- 		rm_addr : 1,
-@@ -237,6 +240,7 @@ struct mptcp_sock {
- 	bool		fully_established;
- 	bool		rcv_data_fin;
- 	bool		snd_data_fin_enable;
-+	bool		rcv_fastclose;
- 	bool		use_64bit_ack; /* Set when we received a 64-bit DSN */
- 	spinlock_t	join_list_lock;
- 	struct sock	*ack_hint;
--- 
-2.29.2
-
+Lock/unlock for every packet?
+Do you have any performance concerns?
