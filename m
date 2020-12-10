@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 094A22D5429
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 07:51:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD0E2D5444
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 08:00:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387605AbgLJGsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 01:48:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730804AbgLJGsp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 01:48:45 -0500
-Message-ID: <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607582884;
-        bh=my0rlQcv51uQPgNCjUXFo6a0t5kmq4Kc9hlsxMHJ0wo=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=u38nN20XsesfxiDtl6jLwK0cNVvLax2qdf36gAOYDzVMhJlbAidnOSEjX9WkZ7h2C
-         nMcwNISCwxDMDubqk5mnQetYKw1rKl2ISpXa8pEfNCt7UlqJDGRbi9PBrnqlZWw0DD
-         9uLtSkvhARo9yU2iycxnp+FvOh4DKZpF+jaB8jl5Hvxfaa3l2aYDyd89RxEFhdDv44
-         8taBZZcO5u0P7WIjeukOFx2qk9k96oLw3x5sIguSGdXMH4NdXVOpckLBEWa+r1tac2
-         l0zFxTVqn+L46SCWUWk3mgD2wX8xz8IseSNjZWNOPCneKgvRd3BC1A/McDB96ac4Z4
-         vOTC2n7298Pjw==
-Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     David Ahern <dsahern@gmail.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        alardam@gmail.com, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
-        ast@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        hawk@kernel.org, jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
-        intel-wired-lan@lists.osuosl.org,
-        Marek Majtyka <marekx.majtyka@intel.com>
-Date:   Wed, 09 Dec 2020 22:48:01 -0800
-In-Reply-To: <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
-         <20201204102901.109709-2-marekx.majtyka@intel.com> <878sad933c.fsf@toke.dk>
-         <20201204124618.GA23696@ranger.igk.intel.com>
-         <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
-         <20201207135433.41172202@carbon>
-         <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
-         <20201207230755.GB27205@ranger.igk.intel.com>
-         <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
-         <20201209095454.GA36812@ranger.igk.intel.com>
-         <20201209125223.49096d50@carbon>
-         <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com>
-         <1e5e044c8382a68a8a547a1892b48fb21d53dbb9.camel@kernel.org>
-         <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S2387714AbgLJG6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 01:58:51 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:53510 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387693AbgLJG6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 01:58:51 -0500
+Received: by mail-il1-f199.google.com with SMTP id q2so3526711ilt.20
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 22:58:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=aaJCcC8Sm2rMoASehVPhtArVK1xTKmJbN46GqeFlACc=;
+        b=WaGn+e/0VNYyhxy0P+OJAZg0C2tn3kRqsm4NkuoKDP9bKOjGbE37GAZDEVb+ZLrElx
+         GbJLG9Ui3yQWGaCLg/g2aGQuqCkZ2bZRc3HmnG2w5tefDkFPDkXtwI4W9+a53gg9tFbU
+         qqH7XmCz4hd+VKUv0e8csBHulRCBPUxgJfJLdLhHMxocdfazthO5DDMVRDWsoXKDLtyp
+         LqAFPp/EfZy9yNCj5DpNc+KPNicxdzX5/9S26mUQGYxXzgBMrWzZXLQmXHPmnGfXRAwQ
+         D0/rLFA3e0z3YjT6bd8OumayTQHSDZ+sqn9TJ/jnuJ7B0KV1JiFZhzkVFw/H4nXaEMLs
+         20kw==
+X-Gm-Message-State: AOAM532S6CZKoOwBfQW/imdPK1WBEBSObp0/kT0fTxCl0ICVNHu6ay+u
+        UiU0J7xpunnTRamPusMFVBP+YE0ChuKSIydgY6v9R/O+hySN
+X-Google-Smtp-Source: ABdhPJyE32kAOjZX/8Ff5hJ1mHIx2zLec/RC3L+2S9Yo8qudw63GLqTcPzi8XX5qHvpZAu0ZDHsstR0eSihZyA5LziDZhlx75opp
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a6b:c3c5:: with SMTP id t188mr7341300iof.209.1607583490465;
+ Wed, 09 Dec 2020 22:58:10 -0800 (PST)
+Date:   Wed, 09 Dec 2020 22:58:10 -0800
+In-Reply-To: <000000000000911d3905b459824c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e56a2605b616b2d9@google.com>
+Subject: Re: memory leak in bpf
+From:   syzbot <syzbot+f3694595248708227d35@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-12-09 at 20:34 -0700, David Ahern wrote:
-> On 12/9/20 10:15 AM, Saeed Mahameed wrote:
-> > > My personal experience with this one is mlx5/ConnectX4-LX with a
-> > > limit
-> > 
-> > This limit was removed from mlx5
-> > https://patchwork.ozlabs.org/project/netdev/patch/20200107191335.12272-5-saeedm@mellanox.com/
-> > Note: you still need to use ehttool to increase from 64 to 128 or
-> > 96 in
-> > your case.
-> > 
-> 
-> I asked you about that commit back in May:
-> 
+syzbot has found a reproducer for the following issue on:
 
-:/, sorry i missed this email, must have been the mlnx nvidia email
-transition.
+HEAD commit:    a68a0262 mm/madvise: remove racy mm ownership check
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11facf17500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4305fa9ea70c7a9f
+dashboard link: https://syzkaller.appspot.com/bug?extid=f3694595248708227d35
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=159a9613500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11bf7123500000
 
-> https://lore.kernel.org/netdev/198081c2-cb0d-e1d5-901c-446b63c36706@gmail.com/
-> 
-> As noted in the thread, it did not work for me.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f3694595248708227d35@syzkaller.appspotmail.com
 
-Still relevant ? I might need to get you some tools to increase #msix
-in Firmware.
-
-
+Debian GNU/Linux 9 syzkaller ttyS0
+Warning: Permanently added '10.128.0.9' (ECDSA) to the list of known hosts.
+executing program
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff88810efccc80 (size 64):
+  comm "syz-executor334", pid 8460, jiffies 4294945724 (age 13.850s)
+  hex dump (first 32 bytes):
+    c0 cb 14 04 00 ea ff ff c0 c2 11 04 00 ea ff ff  ................
+    c0 56 3f 04 00 ea ff ff 40 18 38 04 00 ea ff ff  .V?.....@.8.....
+  backtrace:
+    [<0000000036ae98a7>] kmalloc_node include/linux/slab.h:575 [inline]
+    [<0000000036ae98a7>] bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:94 [inline]
+    [<0000000036ae98a7>] bpf_ringbuf_alloc kernel/bpf/ringbuf.c:135 [inline]
+    [<0000000036ae98a7>] ringbuf_map_alloc kernel/bpf/ringbuf.c:183 [inline]
+    [<0000000036ae98a7>] ringbuf_map_alloc+0x1be/0x410 kernel/bpf/ringbuf.c:150
+    [<00000000d2cb93ae>] find_and_alloc_map kernel/bpf/syscall.c:122 [inline]
+    [<00000000d2cb93ae>] map_create kernel/bpf/syscall.c:825 [inline]
+    [<00000000d2cb93ae>] __do_sys_bpf+0x7d0/0x30a0 kernel/bpf/syscall.c:4381
+    [<000000008feaf393>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<00000000e1f53cfd>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
 
