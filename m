@@ -2,229 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E8A2D6169
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 17:17:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF082D6185
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 17:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731294AbgLJQNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 11:13:32 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:27032 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2392349AbgLJQNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 11:13:09 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BAG4juN004934;
-        Thu, 10 Dec 2020 08:12:16 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0220;
- bh=x7CcT1SH5PgNGEW+P1B2v6HKUWn4pF1f5fCm8X9d3KI=;
- b=YZEkfz4+cN97BC9LfVu4XSjVoPlSY1+f1X9ZaHg+uEUTH0fYIOVLDQ2IXrcK3hHvIW6W
- qrr9L+EnDJRszPAmK+ko2u6MSal3053JsphuhN6+5N5U0d+tJgmapRDb8MyrBmylhZEl
- mwRB5WnMd8Ju3VWP7kdMnG/6mNE8ObGwO2w1QdcWjiSs3ENR1EoW3Pc5RgJnbJ4v6wiz
- bz469vM7aC5TD15nm0U94dnwDfSZcXFfvNtbu/oz0fr9QeSYiq6kFOV8kfJm/nYekLb5
- F4I3R0xDNqkShMGoLM68VHGTYv8F0M/iP/UjKGn5aSNf6ANs10PFGxCUrpmEiRiIaxTQ Xg== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 358akrfrkr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 10 Dec 2020 08:12:16 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Dec
- 2020 08:12:14 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Dec
- 2020 08:12:14 -0800
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.52) by
- SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Thu, 10 Dec 2020 08:12:14 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i8/GRWrFsrstUBwolOXbPnPGtfEwILpEj2Xjbujm4qV5ZAHf0m/ABQvRxyBXeTsARpuRsxRsfNLqUrur+E57BeKEVL/pebK/6HCoHSLvYtk8UOmu1UpGGnfMo46LKzVcPvPlChwBEQVhOayaS2qHokJx3wFE8nkcr+xFZjJhbKAoJ+PKFONb8Pyn33OwzV8BAXDP3MjyhvuzGuSth13a/8MMEyG+LFsQJs/5l+KKlygfuYEk67JLQLjmualJeb/eMKh6z9U7JbAFh0V9ZYLXfYI6jzROVQR6V7IqQCIhrVXFUeESkrNxJ9071AHxU1HRu2Wy/0oMT/t3qZ40O8ZfZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x7CcT1SH5PgNGEW+P1B2v6HKUWn4pF1f5fCm8X9d3KI=;
- b=jmkHgTGuJtA0ZW/x+uz0l8Ct6Sc7nNjO1jlTnaWdk6ANXxC5JHutE8h/1K98GstDEfrAKkksq60Kbfy8QPWHr++wr0NPSMfQh092wxNVTgRFY7Kg759NCMFRHbmfTvcFpKuSWF2nFnMRYev8wrDRIve7IY7KGV9AqTMzb/wv0CqK1DYln7tmZCJS9xWr7voCvie6fkgrvp+Z/SOSfvichTv5+bVvI1txsv/whvMljMw9mAKHkdXX22kkWiX2GhFzH3yQDOXu37KximkM11WbHNq3R5byCPEt6yIdPEQ/7avWGheEihumEZvSLeLlQmuZ51GQkJh8RhLYbl0jsoWEiw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x7CcT1SH5PgNGEW+P1B2v6HKUWn4pF1f5fCm8X9d3KI=;
- b=SkYF/SY5NXeLnBQz2xvGKm22P9BYS+VDWa/+bILghWnld1VE6m5sXam2SEa/ElG+GpCee4bzbt+zGsCdnYGjDtg2MAAwDfFvFQgyLdp7gUKPQD7A0MwHBxgmg004ChtVjlUvBEQxWEX4impevnN+hXostWK/s7Otyq7siD4n8zk=
-Received: from DM6PR18MB2602.namprd18.prod.outlook.com (2603:10b6:5:15d::25)
- by DM6PR18MB3585.namprd18.prod.outlook.com (2603:10b6:5:2af::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.13; Thu, 10 Dec
- 2020 16:12:12 +0000
-Received: from DM6PR18MB2602.namprd18.prod.outlook.com
- ([fe80::c4e7:19ce:d712:bd91]) by DM6PR18MB2602.namprd18.prod.outlook.com
- ([fe80::c4e7:19ce:d712:bd91%5]) with mapi id 15.20.3654.012; Thu, 10 Dec 2020
- 16:12:12 +0000
-From:   Geethasowjanya Akula <gakula@marvell.com>
-To:     Saeed Mahameed <saeed@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Subbaraya Sundeep Bhatta" <sbhatta@marvell.com>
-Subject: Re: [EXT] Re: [PATCHv3 net-next] octeontx2-pf: Add RSS multi group
- support
-Thread-Topic: [EXT] Re: [PATCHv3 net-next] octeontx2-pf: Add RSS multi group
- support
-Thread-Index: AQHWzk4d9K8Ye5uitUy6hna3D0lwvKnvILkAgAFgzQI=
-Date:   Thu, 10 Dec 2020 16:12:12 +0000
-Message-ID: <DM6PR18MB26028B727E26DAFBA2D711E5CDCB0@DM6PR18MB2602.namprd18.prod.outlook.com>
-References: <20201209170937.19548-1-gakula@marvell.com>,<f47444311bc7661c6482de11d570fb815f8e7941.camel@kernel.org>
-In-Reply-To: <f47444311bc7661c6482de11d570fb815f8e7941.camel@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [103.248.210.142]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 97ebdbce-3467-40cb-1a30-08d89d265a9d
-x-ms-traffictypediagnostic: DM6PR18MB3585:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR18MB358513A37510BADAA5AFFEC9CDCB0@DM6PR18MB3585.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: J8wDzQnMmxstjzj5lqtOP/6+Mdq+hWko5GlK4UECAEqo32hKxuc/TW/u9glQismZ9bDqw3DFkucUK1Q2ujFrzzQ4K+cod8quHh1qlw6CzaHAWpgNPJn2naNU4DCOxoPgHG8D5T+fZxkAKbDAa2o5yquztBPB++DBdpmpKnJjhgBLB1Hm6aQMDdVOPjVRBz8aBwqj8xw5xpd1B6fDS/1xvyqfEgkoSuQjvOiulbwr51A6KVA/Btm0PBF/Ao7UpBngh9eXNtVe/dZDwymSkzCCokiQ1JuJ+NGSlwLEvyMhs4s2tAvz9s/6jTTN05ysRuNDNIkwsHje2zH0xFIcJmHaXg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR18MB2602.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(376002)(136003)(52536014)(54906003)(86362001)(5660300002)(66946007)(110136005)(33656002)(4326008)(66446008)(66556008)(91956017)(71200400001)(6506007)(55016002)(26005)(9686003)(53546011)(7696005)(64756008)(508600001)(76116006)(66476007)(107886003)(8936002)(2906002)(83380400001)(186003)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?+asKIGNuemFhiYd7jfiiCwaC2pZY0YPfKR+m4WauzarE9kSlsZjuXUPudnFr?=
- =?us-ascii?Q?oO8CShso97f2GVreqs/sERVB/GAcJcG6UHPYXy9Ffgc/06d24VPVvFWvIW7w?=
- =?us-ascii?Q?AScYux2ryX9BlWJFyi3wI/6ZZ52SS6iY/tsx83zP/4DdRZ/NFNq12QjyLdpX?=
- =?us-ascii?Q?4P9hTAyZs22zK9IzFsG4WxiPPE9ovZheKUOT6GSRqenHarMUy7U+B1XcU7qV?=
- =?us-ascii?Q?QuQOZd9T+lHQNmSseAtPTK7kQ4fXDUSl4/H6bN0B1OQK8KJOJDAzOkLgtEY+?=
- =?us-ascii?Q?Kp6RIcQiPDx4iGEwr5W4M6i8GetOc328JvuKMBpWx4x9Yf0uVcb7QVj6eFYN?=
- =?us-ascii?Q?gcNQP4Xh3/BGXS7/ue8d0KOOexsTk3q5M4Ty73/bYEetdh78HFYBM62Il8ZV?=
- =?us-ascii?Q?FMWg4+DJFhepjV0qPqYv7fwFH65Te6sW+Qvzg1vNAvDZferlaOiZoYCfZLod?=
- =?us-ascii?Q?qpNteNCW7a6skKToHXbAcIL8gxtmWo4a17i6B4QjrQGOtc/lExyyDr8cnjk4?=
- =?us-ascii?Q?NOmAduUzrtZatbMMxRWpICYDWV94XsIbPhV46FStzN9yuOfEFH9PTgsk7Web?=
- =?us-ascii?Q?q8jZrBbhE41gUVZ2CMY6daBzl8SClDW/Tc0hC8QbOLmSyMvBqgCvfxaK5Uh8?=
- =?us-ascii?Q?AR+5rs6XY9x12ObS4H1UGjJIT/MaklfsO/RSmOiF9klhIjuGzAKkCqeCEatj?=
- =?us-ascii?Q?kSYl6nY77+t+WqnitDalb/ikF2zag6hv5KjxRyBR6G3QR4S2YjtarDlw0qTY?=
- =?us-ascii?Q?g6sCQePfr9mmgS7rg9KcZhhafEx+nwRbgc2vrLeR9LjlBxkEGBtUzoBqrYwp?=
- =?us-ascii?Q?+5HyOhUKbldXkaO96oKT20tcN7CQGvLYw/5Wl3qUYLazZGfbN9U6/7e+B/ZK?=
- =?us-ascii?Q?C4BxiMIqcbg3gN4MxjmnknxuYlFbi0Vzb7pC1M8r6F8IAFp5A5t5xgjLc96G?=
- =?us-ascii?Q?skSTp5rWoW3QDRXTMUOQ4xyhlu4LM7VnG1cySKUTegQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2387796AbgLJQSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 11:18:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33268 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731173AbgLJQRd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 11:17:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607616965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tR+QcJGndhq60ixX8jaoR1LgoVq1+PJO8TnsgtbJBGk=;
+        b=WNd/FLKDeQHHPkdLvWqmePxslPfiG718Btv+edJHqObUUd8fW5gpWEe9eC1IZoUaMUsZca
+        vc/Rw2teoTesJc9TxaXh+cYmb1+NaucBLWP/JypQ2z5b9MSHlpo5gIgPzVUSwRsJ3DAEbx
+        7QUCFxh2mQxBNqFPlpekHruYS36UCsw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-288-khxxPngNPR2AJ0HtOJstQA-1; Thu, 10 Dec 2020 11:16:01 -0500
+X-MC-Unique: khxxPngNPR2AJ0HtOJstQA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 397BC180A095;
+        Thu, 10 Dec 2020 16:15:59 +0000 (UTC)
+Received: from krava (unknown [10.40.192.193])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 1128F60862;
+        Thu, 10 Dec 2020 16:15:55 +0000 (UTC)
+Date:   Thu, 10 Dec 2020 17:15:54 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Jackman <jackmanb@google.com>,
+        KP Singh <kpsingh@google.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix selftest compilation on
+ clang 11
+Message-ID: <20201210161554.GF69683@krava>
+References: <20201209142912.99145-1-jolsa@kernel.org>
+ <CAEf4BzYBddPaEzRUs=jaWSo5kbf=LZdb7geAUVj85GxLQztuAQ@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR18MB2602.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97ebdbce-3467-40cb-1a30-08d89d265a9d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2020 16:12:12.6589
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TmxtcvkrV55QOvGewCZ6IEyshBWMPs8l3mxtxY216RF+ew26bWaP8RZk+1+L/bG8FKFzrwZKSLjGyep0Hbeh9g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB3585
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-10_06:2020-12-09,2020-12-10 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYBddPaEzRUs=jaWSo5kbf=LZdb7geAUVj85GxLQztuAQ@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks Saeed for the feedback. Will address your comments in next version.
+On Wed, Dec 09, 2020 at 12:24:23PM -0800, Andrii Nakryiko wrote:
+> On Wed, Dec 9, 2020 at 7:16 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > We can't compile test_core_reloc_module.c selftest with clang 11,
+> > compile fails with:
+> >
+> >   CLNG-LLC [test_maps] test_core_reloc_module.o
+> >   progs/test_core_reloc_module.c:57:21: error: use of unknown builtin \
+> >   '__builtin_preserve_type_info' [-Wimplicit-function-declaration]
+> >    out->read_ctx_sz = bpf_core_type_size(struct bpf_testmod_test_read_ctx);
+> >
+> > Skipping these tests if __builtin_preserve_type_info() is not
+> > supported by compiler.
+> >
+> > Fixes: 6bcd39d366b6 ("selftests/bpf: Add CO-RE relocs selftest relying on kernel module BTF")
+> > Fixes: bc9ed69c79ae ("selftests/bpf: Add tp_btf CO-RE reloc test for modules")
+> 
+> The test isn't really broken, so "Fixes: " tags seem wrong here.
+> 
+> Given core_relo tests have established `data.skip = true` mechanism,
+> I'm fine with this patch. But moving forward I think we should
+> minimize the amount of feature-detection and tests skipping in
+> selftests. The point of selftests is to test the functionality at the
+> intersection of 4 projects: kernel, libbpf, pahole and clang. We've
+> stated before and I think it remains true that the expectation for
+> anyone that wants to develop and run selftests is to track latests
+> versions of all 4 of those, sometimes meaning nightly builds or
+> building from sources. For clang, which is arguably the hardest of the
+> 4 to build from sources, LLVM project publishes nightly builds for
+> Ubuntu and Debian, which are very easy to use to get recent enough
+> versions for selftests. That's exactly what libbpf CI is doing, BTW.
+> 
+> It's hard and time-consuming enough to develop these features, I'd
+> rather keep selftests simpler, more manageable, and less brittle by
+> not having excessive amount of feature detection and skipped
+> selftests. I think that's the case for BPF atomics as well, btw (cc'ed
+> Yonghong and Brendan).
+> 
+> To alleviate some of the pain of setting up the environment, one way
+> would be to provide script and/or image to help bring up qemu VM for
+> easier testing. To that end, KP Singh (cc'ed) was able to re-use
+> libbpf CI's VM setup and make it easier for local development. I hope
+> he can share this soon.
 
+ok, that'd be great, thanks for taking this one
 
+jirka
 
-________________________________________
-From: Saeed Mahameed <saeed@kernel.org>
-Sent: Thursday, December 10, 2020 12:38 AM
-To: Geethasowjanya Akula; netdev@vger.kernel.org; linux-kernel@vger.kernel.=
-org
-Cc: Sunil Kovvuri Goutham; davem@davemloft.net; kuba@kernel.org; Subbaraya =
-Sundeep Bhatta
-Subject: [EXT] Re: [PATCHv3 net-next] octeontx2-pf: Add RSS multi group sup=
-port
-
-External Email
-
-----------------------------------------------------------------------
-On Wed, 2020-12-09 at 22:39 +0530, Geetha sowjanya wrote:
-> Hardware supports 8 RSS groups per interface. Currently we are using
-> only group '0'. This patch allows user to create new RSS
-> groups/contexts
-> and use the same as destination for flow steering rules.
->
-> usage:
-> To steer the traffic to RQ 2,3
->
-> ethtool -X eth0 weight 0 0 1 1 context new
-> (It will print the allocated context id number)
-> New RSS context is 1
->
-> ethtool -N eth0 flow-type tcp4 dst-port 80 context 1 loc 1
->
-> To delete the context
-> ethtool -X eth0 context 1 delete
->
-> When an RSS context is removed, the active classification
-> rules using this context are also removed.
->
-> Change-log:
-> v2
-> - Removed unrelated whitespace
-> - Coverted otx2_get_rxfh() to use new function.
->
-> v3
-> - Coverted otx2_set_rxfh() to use new function.
->
-> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-> ---
-
-...
-
-> -/* Configure RSS table and hash key */
-> -static int otx2_set_rxfh(struct net_device *dev, const u32 *indir,
-> -                      const u8 *hkey, const u8 hfunc)
-> +static int otx2_get_rxfh_context(struct net_device *dev, u32 *indir,
-> +                              u8 *hkey, u8 *hfunc, u32 rss_context)
->  {
->       struct otx2_nic *pfvf =3D netdev_priv(dev);
-> +     struct otx2_rss_ctx *rss_ctx;
->       struct otx2_rss_info *rss;
->       int idx;
->
-> -     if (hfunc !=3D ETH_RSS_HASH_NO_CHANGE && hfunc !=3D
-> ETH_RSS_HASH_TOP)
-> -             return -EOPNOTSUPP;
-> -
->       rss =3D &pfvf->hw.rss_info;
->
->       if (!rss->enable) {
-> -             netdev_err(dev, "RSS is disabled, cannot change
-> settings\n");
-> +             netdev_err(dev, "RSS is disabled\n");
->               return -EIO;
->       }
-
-I see that you init/enable rss on open, is this is your way to block
-getting rss info if device is not open ? why do you need to report an
-error anyway, why not just report whatever default config you will be
-setting up on next open ?
-
-to me reporting errors to ethtool queries when device is down is a bad
-user experience.
-
-> +     if (rss_context >=3D MAX_RSS_GROUPS)
-> +             return -EINVAL;
-> +
-
--ENOENT
-> +     rss_ctx =3D rss->rss_ctx[rss_context];
-> +     if (!rss_ctx)
-> +             return -EINVAL;
->
-
--ENOENT
-
+> 
+> So given minimal additions code-wise, but also considering all the above:
+> 
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> 
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  .../testing/selftests/bpf/progs/test_core_reloc_module.c  | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> >
+> > diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_module.c b/tools/testing/selftests/bpf/progs/test_core_reloc_module.c
+> > index 56363959f7b0..f59f175c7baf 100644
+> > --- a/tools/testing/selftests/bpf/progs/test_core_reloc_module.c
+> > +++ b/tools/testing/selftests/bpf/progs/test_core_reloc_module.c
+> > @@ -40,6 +40,7 @@ int BPF_PROG(test_core_module_probed,
+> >              struct task_struct *task,
+> >              struct bpf_testmod_test_read_ctx *read_ctx)
+> >  {
+> > +#if __has_builtin(__builtin_preserve_enum_value)
+> >         struct core_reloc_module_output *out = (void *)&data.out;
+> >         __u64 pid_tgid = bpf_get_current_pid_tgid();
+> >         __u32 real_tgid = (__u32)(pid_tgid >> 32);
+> > @@ -61,6 +62,9 @@ int BPF_PROG(test_core_module_probed,
+> >         out->len_exists = bpf_core_field_exists(read_ctx->len);
+> >
+> >         out->comm_len = BPF_CORE_READ_STR_INTO(&out->comm, task, comm);
+> > +#else
+> > +       data.skip = true;
+> > +#endif
+> >
+> >         return 0;
+> >  }
+> > @@ -70,6 +74,7 @@ int BPF_PROG(test_core_module_direct,
+> >              struct task_struct *task,
+> >              struct bpf_testmod_test_read_ctx *read_ctx)
+> >  {
+> > +#if __has_builtin(__builtin_preserve_enum_value)
+> >         struct core_reloc_module_output *out = (void *)&data.out;
+> >         __u64 pid_tgid = bpf_get_current_pid_tgid();
+> >         __u32 real_tgid = (__u32)(pid_tgid >> 32);
+> > @@ -91,6 +96,9 @@ int BPF_PROG(test_core_module_direct,
+> >         out->len_exists = bpf_core_field_exists(read_ctx->len);
+> >
+> >         out->comm_len = BPF_CORE_READ_STR_INTO(&out->comm, task, comm);
+> > +#else
+> > +       data.skip = true;
+> > +#endif
+> >
+> >         return 0;
+> >  }
+> > --
+> > 2.26.2
+> >
+> 
 
