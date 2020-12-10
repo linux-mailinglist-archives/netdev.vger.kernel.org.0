@@ -2,120 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B14B2D5FC1
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 16:32:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71EF72D5FE0
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 16:38:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391528AbgLJPbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 10:31:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        id S2391399AbgLJPh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 10:37:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390741AbgLJPbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 10:31:24 -0500
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21D8C0613CF;
-        Thu, 10 Dec 2020 07:30:43 -0800 (PST)
-Received: by mail-ot1-x343.google.com with SMTP id a109so5215314otc.1;
-        Thu, 10 Dec 2020 07:30:43 -0800 (PST)
+        with ESMTP id S2391648AbgLJPhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 10:37:17 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E0DC061793;
+        Thu, 10 Dec 2020 07:36:37 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id t18so2964519plo.0;
+        Thu, 10 Dec 2020 07:36:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1ZS8BvFesU0nu0mbqUrnRelgrjsauGCLLXcNS4r+2pw=;
-        b=gNyiVR5UMSakuT65wXidT0LrxLPuDeSjAyngwUD07lf0al/RBUTySgD+jeTKmI0Mmz
-         t+pg1fHc0lgPQCKOwxH3bWF2zxJajfJd0HY3iV2BPNh2c4BY6GXoJf7syH7aF3DrInjX
-         AXQ7m2bIoP3R5IAvgv9IExTBMMKf1S5bjUcs9xL1/IWldDDVb5dDfQccneiT4PCqohyp
-         NjLjIu2juvY172aOjefDtswLkxFF0ah+TgTAAW2vsgbrYWJrXysBudKCH0VZk6/o9S5W
-         stMdY1NUPOCNQfi9zSb3fEgONE9mznG9PeoN7hbBgroN7fBHWaeJyTm9w0gacHXTD9Zh
-         eJYg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qklYZ0hnytF3zPV5UWA7tMSlDUWdbmOGJ8CkVNl8yfM=;
+        b=XNR2dIOhO1XwrkAWrI56QyRDZvssjd7LdVEQkfecC/D8XZUMWV3F8MUTJU+kEleaza
+         WcEWzN1Oknq7qXKLN6PCbDtCHX9niHIKwgwE83nYim9aCJnImCjrj0jJjz9n4B0wAoXz
+         oyg34KvSqtAhsCaW3C6amhid4XKudhfRa5vtk5hwfyigTq4zB/jXLlnDRWJ9Zpu9ECXx
+         urU4CVSPgqpIOZrRtMSn2krbHhY/27hlyA4T6XX1186Vx0dlZ8Lsdck3YsU/IEjHRKy3
+         HzqvrgL4P4M1dXbd167/CUu8MC84E5hVhh/In9e/b/Z/tUeM1edP+2H7rYsH24IceCYh
+         AHxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=1ZS8BvFesU0nu0mbqUrnRelgrjsauGCLLXcNS4r+2pw=;
-        b=QsCdIlEwCRVjofNzzh7IETgymhjuY/Xj8Nd5Z84ykwOOYGDRy/EEytWWuj3Khn0/5q
-         Hm9m66T4G0bAgtnnTjm0fgrwcSHTaHzS73xgSHLIzmdAoUFrG3w/XJkGuK0hIYc3RBBg
-         QCGYKUsGKy/13usmqUAeo2p2QddGdc30fngt/tAiwlhARrVwMgScTGqibFxii/KncKQf
-         qLUy8IflaVXXqh4C6EJ9wUEU3fPLBbQqTrhaVorDtdAntVYsAPzvmtBRtHjnuAd2C9+c
-         dmakRB/Daiy6B1W8N4imqYI0f47yrxw+RDWScTzCoUGDwZZ9w8Cnr3hKz/ir2/bBReQc
-         DFWw==
-X-Gm-Message-State: AOAM530dztcMkyEKFr7zf+2wqmgCcyUAvm2cq0ORrwA6PBDyeLdZfDX0
-        SvWzvz4Q8CIFaFOse5UG8ks=
-X-Google-Smtp-Source: ABdhPJx2p0KZlAN9MAgb/XqZTVkmhi03Pyai0QbZFWPRdUmo5UA4Oco3GVkGXE6HnVjCFqYoLIwtMg==
-X-Received: by 2002:a9d:590c:: with SMTP id t12mr6121703oth.308.1607614243369;
-        Thu, 10 Dec 2020 07:30:43 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:6139:6f39:a803:1a61])
-        by smtp.googlemail.com with ESMTPSA id z12sm1204207oti.45.2020.12.10.07.30.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Dec 2020 07:30:41 -0800 (PST)
-Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
-To:     Saeed Mahameed <saeed@kernel.org>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        alardam@gmail.com, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
-        ast@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        hawk@kernel.org, jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
-        intel-wired-lan@lists.osuosl.org,
-        Marek Majtyka <marekx.majtyka@intel.com>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
- <20201204102901.109709-2-marekx.majtyka@intel.com> <878sad933c.fsf@toke.dk>
- <20201204124618.GA23696@ranger.igk.intel.com>
- <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
- <20201207135433.41172202@carbon>
- <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
- <20201207230755.GB27205@ranger.igk.intel.com>
- <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
- <20201209095454.GA36812@ranger.igk.intel.com>
- <20201209125223.49096d50@carbon>
- <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com>
- <1e5e044c8382a68a8a547a1892b48fb21d53dbb9.camel@kernel.org>
- <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com>
- <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d5be0627-6a11-9c1f-8507-cc1a1421dade@gmail.com>
-Date:   Thu, 10 Dec 2020 08:30:39 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
+        bh=qklYZ0hnytF3zPV5UWA7tMSlDUWdbmOGJ8CkVNl8yfM=;
+        b=scgnz6mqvZm3P6RlAQURSmuRnwHmeCLoGxBUqrA4wIsAsmZeNHd9YJE1ex6CSLGznh
+         pBJI2SdqnFwQBGQZX8Ew5mjvv2tqmaDy7pTTEIoJw2vAuHK0PHNJ/BwKNONxZGvaTE49
+         TBr5HatsikFIvxVlYbJ4U7o2RcrTfwTonml5RKiJJbTkQXh2rGT1mJ8sLEXDDo03VBjn
+         /JF4/NroRvu3S83vP9TxxK4iI4UBnmJjcK/sLdtjoHPEX4eiSO9X/i1yoNQP258mQGHd
+         XhjnhcJkxFvwE2MOgyqtRPTep2sosQX6plrjlZiDvjIdwT8risGviodwlshDWU9iguOa
+         Ne8w==
+X-Gm-Message-State: AOAM5329GoeFcEuP8C7LQObvn2ksuZCaQG562MHORAnQDIZUzb9b8HCT
+        Pq/4VsjUtPcTjUKHD9UtnJE=
+X-Google-Smtp-Source: ABdhPJySBujCH3wu9QzGm4/Lvf24k8KALOV3X7RzDA+jFZAtnWimjeecj0vb9+cPp3zZO4SrFchsLw==
+X-Received: by 2002:a17:902:e9c5:b029:db:d1ae:46ba with SMTP id 5-20020a170902e9c5b02900dbd1ae46bamr6367270plk.38.1607614597132;
+        Thu, 10 Dec 2020 07:36:37 -0800 (PST)
+Received: from VM.ger.corp.intel.com ([192.55.55.41])
+        by smtp.gmail.com with ESMTPSA id 123sm6588972pgh.21.2020.12.10.07.36.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 10 Dec 2020 07:36:36 -0800 (PST)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, jonathan.lemon@gmail.com,
+        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Subject: [PATCH bpf] xsk: fix race in SKB mode transmit with shared cq
+Date:   Thu, 10 Dec 2020 16:36:18 +0100
+Message-Id: <20201210153618.21226-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-In-Reply-To: <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/9/20 11:48 PM, Saeed Mahameed wrote:
-> On Wed, 2020-12-09 at 20:34 -0700, David Ahern wrote:
->> On 12/9/20 10:15 AM, Saeed Mahameed wrote:
->>>> My personal experience with this one is mlx5/ConnectX4-LX with a
->>>> limit
->>>
->>> This limit was removed from mlx5
->>> https://patchwork.ozlabs.org/project/netdev/patch/20200107191335.12272-5-saeedm@mellanox.com/
->>> Note: you still need to use ehttool to increase from 64 to 128 or
->>> 96 in
->>> your case.
->>>
->>
->> I asked you about that commit back in May:
->>
-> 
-> :/, sorry i missed this email, must have been the mlnx nvidia email
-> transition.
-> 
->> https://lore.kernel.org/netdev/198081c2-cb0d-e1d5-901c-446b63c36706@gmail.com/
->>
->> As noted in the thread, it did not work for me.
-> 
-> Still relevant ? I might need to get you some tools to increase #msix
-> in Firmware.
-> 
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-not for me at the moment, but it would be good to document what a user
-needs to do - especially if it involves vendor specific tools and steps.
+Fix a race when multiple sockets are simultaneously calling sendto()
+when the completion ring is shared in the SKB case. This is the case
+when you share the same netdev and queue id through the
+XDP_SHARED_UMEM bind flag. The problem is that multiple processes can
+be in xsk_generic_xmit() and call the backpressure mechanism in
+xskq_prod_reserve(xs->pool->cq). As this is a shared resource in this
+specific scenario, a race might occur since the rings are
+single-producer single-consumer.
+
+Fix this by moving the tx_completion_lock from the socket to the pool
+as the pool is shared between the sockets that share the completion
+ring. (The pool is not shared when this is not the case.) And then
+protect the accesses to xskq_prod_reserve() with this lock. The
+tx_completion_lock is renamed cq_lock to better reflect that it
+protects accesses to the potentially shared completion ring.
+
+Fixes: 35fcde7f8deb ("xsk: support for Tx")
+Fixes: a9744f7ca200 ("xsk: fix potential race in SKB TX completion code")
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Reported-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ include/net/xdp_sock.h      | 4 ----
+ include/net/xsk_buff_pool.h | 5 +++++
+ net/xdp/xsk.c               | 9 ++++++---
+ net/xdp/xsk_buff_pool.c     | 1 +
+ 4 files changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index 4f4e93bf814c..cc17bc957548 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -58,10 +58,6 @@ struct xdp_sock {
+ 
+ 	struct xsk_queue *tx ____cacheline_aligned_in_smp;
+ 	struct list_head tx_list;
+-	/* Mutual exclusion of NAPI TX thread and sendmsg error paths
+-	 * in the SKB destructor callback.
+-	 */
+-	spinlock_t tx_completion_lock;
+ 	/* Protects generic receive. */
+ 	spinlock_t rx_lock;
+ 
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index 01755b838c74..eaa8386dbc63 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -73,6 +73,11 @@ struct xsk_buff_pool {
+ 	bool dma_need_sync;
+ 	bool unaligned;
+ 	void *addrs;
++	/* Mutual exclusion of the completion ring in the SKB mode. Two cases to protect:
++	 * NAPI TX thread and sendmsg error paths in the SKB destructor callback and when
++	 * sockets share a single cq when the same netdev and queue id is shared.
++	 */
++	spinlock_t cq_lock;
+ 	struct xdp_buff_xsk *free_heads[];
+ };
+ 
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 62504471fd20..42cb5f94d49e 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -364,9 +364,9 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+ 	struct xdp_sock *xs = xdp_sk(skb->sk);
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&xs->tx_completion_lock, flags);
++	spin_lock_irqsave(&xs->pool->cq_lock, flags);
+ 	xskq_prod_submit_addr(xs->pool->cq, addr);
+-	spin_unlock_irqrestore(&xs->tx_completion_lock, flags);
++	spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+ 
+ 	sock_wfree(skb);
+ }
+@@ -378,6 +378,7 @@ static int xsk_generic_xmit(struct sock *sk)
+ 	bool sent_frame = false;
+ 	struct xdp_desc desc;
+ 	struct sk_buff *skb;
++	unsigned long flags;
+ 	int err = 0;
+ 
+ 	mutex_lock(&xs->mutex);
+@@ -409,10 +410,13 @@ static int xsk_generic_xmit(struct sock *sk)
+ 		 * if there is space in it. This avoids having to implement
+ 		 * any buffering in the Tx path.
+ 		 */
++		spin_lock_irqsave(&xs->pool->cq_lock, flags);
+ 		if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
++			spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+ 			kfree_skb(skb);
+ 			goto out;
+ 		}
++		spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+ 
+ 		skb->dev = xs->dev;
+ 		skb->priority = sk->sk_priority;
+@@ -1193,7 +1197,6 @@ static int xsk_create(struct net *net, struct socket *sock, int protocol,
+ 	xs->state = XSK_READY;
+ 	mutex_init(&xs->mutex);
+ 	spin_lock_init(&xs->rx_lock);
+-	spin_lock_init(&xs->tx_completion_lock);
+ 
+ 	INIT_LIST_HEAD(&xs->map_list);
+ 	spin_lock_init(&xs->map_list_lock);
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index d5adeee9d5d9..7da28566ac11 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -71,6 +71,7 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 	INIT_LIST_HEAD(&pool->free_list);
+ 	INIT_LIST_HEAD(&pool->xsk_tx_list);
+ 	spin_lock_init(&pool->xsk_tx_list_lock);
++	spin_lock_init(&pool->cq_lock);
+ 	refcount_set(&pool->users, 1);
+ 
+ 	pool->fq = xs->fq_tmp;
+
+base-commit: 4e083fdfa39db29bbc7725e229e701867d0da183
+-- 
+2.29.0
+
