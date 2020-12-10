@@ -2,109 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09F832D6B4D
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9881A2D6B82
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388518AbgLJW6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 17:58:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43430 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387782AbgLJW5t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 17:57:49 -0500
-X-Gm-Message-State: AOAM5300VO9rbiSmIm4FekveiHzSSL8IjCfyZjJ8pYgSRuW45jWqTCFH
-        bUsDMRhiVpglneUKcnyPHByEGU5qd8+lNiK8Cg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607641028;
-        bh=CumYBB9xVU4mI+ysFQ9GC3xvipGC4R7OnFI2Gfa5FNQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=IENA755C1/rgN0w8w2Z2W86pSCNpqQVdsIn6hGM3SHpMOEjpkwGZtsgL0hRxLES5J
-         GN69vLvpVngVt+noJivc35dT928cbXAlG4h3cswLCydXRYUgIxoqvWvZqpS8aiOmMt
-         05Ld+Z78+akIY5HGQHCAOlr0AaROFROMPYtjN+KD7+S/KXuaWg0xL6AO0iLiPlice4
-         iZANjFb7GSIlf67hQvw0Y9hSU5e2T/JFuteUXmOg3uHY1Ii/HhED2bYqVL2OdaPsEh
-         TPV4vxeX7oyFvjtBzj9WAWsfNEkX/EEF2pxlVmb7f9vuUC3ehG96CfByyDyOuWBqr1
-         447X7kFWCVCJA==
-X-Google-Smtp-Source: ABdhPJyKMB0fAO5ccR1ON7eKp3wop/g844H0Em6KIAw65vcwOioEZudsqFxyo2xMX2ascC0HxcRxz5ivmcQz5wtwB24=
-X-Received: by 2002:a17:906:c20f:: with SMTP id d15mr8477099ejz.341.1607641026526;
- Thu, 10 Dec 2020 14:57:06 -0800 (PST)
+        id S1730341AbgLJXEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 18:04:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729779AbgLJXD6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 18:03:58 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599D2C0613CF
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 15:03:18 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4CsTwC16MWzQlF7;
+        Fri, 11 Dec 2020 00:02:51 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+        s=MBO0001; t=1607641369;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=B9X412n6m09K+CYkIH9Dah+RQuChRUcOzoqK0yLpGfo=;
+        b=IEH95PlP4q3mSHUxR0/YQDKy5FR5Kn7kbZvNA4QWcvG5CM8NTMXEmsxFmOID61mdSQansw
+        njPFAA+wv4mzaaLw9l6qKhnsDgXkO7/MAielqjWufW7XtM9UZCmyv3KPAvmBg7FpvJOSR5
+        fHZWEYMxSZp0SS2RVrLeTDf38izAJ6hFXZyXlwTPLyUyw5RwPnNinKR6CEf7kaSNf6UKy4
+        QDyD1T1KdC6g6dVYtIg3tEtdv1D/tssZiQm56jQczcP8ZfmcoC6oo0pnBtsBdnKzV7Ogd9
+        Su0tQTXFQrZxZuMw3VkSgKPRjHVPOUvmQzyIIb/msAVuHdyHQ9hY6cieel3+yQ==
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by hefe.heinlein-support.de (hefe.heinlein-support.de [91.198.250.172]) (amavisd-new, port 10030)
+        with ESMTP id QmZBu8OaTj7r; Fri, 11 Dec 2020 00:02:48 +0100 (CET)
+From:   Petr Machata <me@pmachata.org>
+To:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org
+Cc:     Petr Machata <me@pmachata.org>
+Subject: [PATCH iproute2-next 00/10] dcb: Support PFC, buffer, maxrate objects
+Date:   Fri, 11 Dec 2020 00:02:14 +0100
+Message-Id: <cover.1607640819.git.me@pmachata.org>
 MIME-Version: 1.0
-References: <20201210192536.118432146@linutronix.de> <20201210194044.473308721@linutronix.de>
-In-Reply-To: <20201210194044.473308721@linutronix.de>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 10 Dec 2020 16:56:55 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqK4bVyqyT9ip9A5P7gQQwDt1HMksjkCe6bwHrBCGrZYug@mail.gmail.com>
-Message-ID: <CAL_JsqK4bVyqyT9ip9A5P7gQQwDt1HMksjkCe6bwHrBCGrZYug@mail.gmail.com>
-Subject: Re: [patch 19/30] PCI: mobiveil: Use irq_data_get_irq_chip_data()
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        PCI <linux-pci@vger.kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Michal Simek <michal.simek@xilinx.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-MBO-SPAM-Probability: **
+X-Rspamd-Score: 1.50 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 3026617B3
+X-Rspamd-UID: 107b69
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 1:42 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> Going through a full irq descriptor lookup instead of just using the proper
-> helper function which provides direct access is suboptimal.
->
-> In fact it _is_ wrong because the chip callback needs to get the chip data
-> which is relevant for the chip while using the irq descriptor variant
-> returns the irq chip data of the top level chip of a hierarchy. It does not
-> matter in this case because the chip is the top level chip, but that
-> doesn't make it more correct.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>
-> Cc: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: linux-pci@vger.kernel.org
-> ---
->  drivers/pci/controller/mobiveil/pcie-mobiveil-host.c |    8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
+Add support to the dcb tool for the following three DCB objects:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+- PFC, for "Priority-based Flow Control", allows configuration of priority
+  lossiness, and related toggles.
+
+- DCBNL buffer interfaces are an extension to the 802.1q DCB interfaces and
+  allow configuration of port headroom buffers.
+
+- DCBNL maxrate interfaces are an extension to the 802.1q DCB interfaces
+  and allow configuration of rate with which traffic in a given traffic
+  class is sent.
+
+Patches #1-#4 fix small issues in the current DCB code and man pages.
+
+Patch #5 adds new helpers to the DCB dispatcher.
+
+Patches #6 and #7 add support for command line arguments -s and -i. These
+enable, respectively, display of statistical counters, and ISO/IEC mode of
+rate units.
+
+Patches #8-#10 add the subtools themselves and their man pages.
+
+Petr Machata (10):
+  dcb: Remove unsupported command line arguments from getopt_long()
+  dcb: ets: Fix help display for "show" subcommand
+  dcb: ets: Change the way show parameters are given in synopsis
+  man: dcb-ets: Remove an unnecessary empty line
+  dcb: Add dcb_set_u32(), dcb_set_u64()
+  dcb: Add -s to enable statistics
+  dcb: Add -i to enable IEC mode
+  dcb: Add a subtool for the DCB PFC object
+  dcb: Add a subtool for the DCB buffer object
+  dcb: Add a subtool for the DCB maxrate object
+
+ dcb/Makefile           |   2 +-
+ dcb/dcb.c              |  66 +++++++++-
+ dcb/dcb.h              |  24 +++-
+ dcb/dcb_buffer.c       | 235 +++++++++++++++++++++++++++++++++
+ dcb/dcb_ets.c          |  10 +-
+ dcb/dcb_maxrate.c      | 182 ++++++++++++++++++++++++++
+ dcb/dcb_pfc.c          | 286 +++++++++++++++++++++++++++++++++++++++++
+ man/man8/dcb-buffer.8  | 126 ++++++++++++++++++
+ man/man8/dcb-ets.8     |  14 +-
+ man/man8/dcb-maxrate.8 |  94 ++++++++++++++
+ man/man8/dcb-pfc.8     | 127 ++++++++++++++++++
+ man/man8/dcb.8         |  29 ++++-
+ 12 files changed, 1173 insertions(+), 22 deletions(-)
+ create mode 100644 dcb/dcb_buffer.c
+ create mode 100644 dcb/dcb_maxrate.c
+ create mode 100644 dcb/dcb_pfc.c
+ create mode 100644 man/man8/dcb-buffer.8
+ create mode 100644 man/man8/dcb-maxrate.8
+ create mode 100644 man/man8/dcb-pfc.8
+
+-- 
+2.25.1
+
