@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7710D2D5EEE
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 16:04:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 342032D5F08
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 16:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389829AbgLJPEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 10:04:00 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:46683 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389646AbgLJPDq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 10:03:46 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607612603; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=fTCspt8fsRDJ1131Yu+GC08GW7hUsw3zqXe2mBHPhEw=; b=pnJNuhjYlxkFSoWk8GSSZL2RE6PIrkxOtbcS9UIgM3d3yCrOY2Dn3gNHFwlBZ7O0Lu09clkA
- cDbwGVjd9Q/uVaatj8WKpvE9hzGkHYSqc+tX0LG9p36l1eUz0N+7NKM+zrubQd9p7AnNLWtC
- DjqE4QdJXUtJgMCmhg6QeAuPSuQ=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 5fd238693a8ba2142a1c7cc2 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 10 Dec 2020 15:02:01
- GMT
-Sender: jhugo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 86C9AC433CA; Thu, 10 Dec 2020 15:02:01 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: jhugo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D4171C43465;
-        Thu, 10 Dec 2020 15:01:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D4171C43465
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
-Subject: Re: [PATCH v16 4/4] bus: mhi: Add userspace client interface driver
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Hemant Kumar <hemantk@codeaurora.org>
-Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bbhatt@codeaurora.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org
-References: <1607584885-23824-1-git-send-email-hemantk@codeaurora.org>
- <1607584885-23824-5-git-send-email-hemantk@codeaurora.org>
- <X9HifqAntBUBV0Ce@kroah.com>
-From:   Jeffrey Hugo <jhugo@codeaurora.org>
-Message-ID: <1ce7fc1a-7794-6815-ab4c-0721f0422564@codeaurora.org>
-Date:   Thu, 10 Dec 2020 08:01:59 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S2389987AbgLJPHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 10:07:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36526 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728583AbgLJPHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 10:07:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607612757;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=khxT6pUMdR2mxgS2Mi2C6ZZ45vuS7ItaY0pGKhuziXM=;
+        b=iqjhh9AaZJtxWLoWROGmHXuGmqVUMoF4K8w28MgReqJULN3LrQS4QNOZvCQGLBWctebEoD
+        yvPD5HildOQALrwzf2eeVQYTuayEm1NcbL3eqL00CgXAi2EI7K8I3/L6+KdPsgDx+C+9BD
+        pwflA1WIpU2z8h9HtHdURhmmVV3ffd4=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-218-xPOlaioRMhmHHEIqEPoAtQ-1; Thu, 10 Dec 2020 10:05:55 -0500
+X-MC-Unique: xPOlaioRMhmHHEIqEPoAtQ-1
+Received: by mail-wr1-f72.google.com with SMTP id r11so2025102wrs.23
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 07:05:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=khxT6pUMdR2mxgS2Mi2C6ZZ45vuS7ItaY0pGKhuziXM=;
+        b=gsWcalpypQdQgv74pwjr5ejxeYREcBcaFW1rgH11GohmWdIVw2ylH2Dr30RzPCW9Q7
+         AZgWO9L14OBEYF3hBbbxpq7M4oC5NKddPzLJUgBOgLT8WuS8Atv7Et/r6esHWd4rhNAX
+         N3vWdwSr3jaRqOIDG00hKaUtQWhMenUELs4q8T7ZV4Pmdbc8o8zgSelYGzxtkEh/yCnA
+         0m9tBY0beL/DSejmt/T7hTApZ+lDrClpVGUwIhleaKzFwy2yaC+2mA6yVgAweimZokBl
+         ooo9rVL82AGyx6fQ+Gu+oIUvEpF2y9S/UEoDgusSTdnjifDxnuAitn71BBhirADhgsFw
+         N12Q==
+X-Gm-Message-State: AOAM533cjQOQuRL2a/mkXodulHc/eaF43QuiGrFHrKLL/Lre9TDjtoIp
+        YCCkhbZWXduaJMhw/1nZg8k1XPpj20FaVKK4crMSrttYF5reC1q5XChVIyOUK2hkjSsf1CswA+U
+        CfqpFAxngNSlzTuuN
+X-Received: by 2002:a1c:2ecc:: with SMTP id u195mr8721302wmu.27.1607612754110;
+        Thu, 10 Dec 2020 07:05:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw7WiFSWbCg5G0joZN2ownFDmDy9om4yBZOlOZTjl+C6iRbxwARnV65pX4O2qI2SaD/pK5juA==
+X-Received: by 2002:a1c:2ecc:: with SMTP id u195mr8721285wmu.27.1607612753914;
+        Thu, 10 Dec 2020 07:05:53 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id z64sm9227720wme.10.2020.12.10.07.05.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Dec 2020 07:05:53 -0800 (PST)
+Date:   Thu, 10 Dec 2020 16:05:51 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Tom Parkin <tparkin@katalix.com>
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH v3 net-next 1/2] ppp: add PPPIOCBRIDGECHAN and
+ PPPIOCUNBRIDGECHAN ioctls
+Message-ID: <20201210150551.GB15778@linux.home>
+References: <20201204163656.1623-1-tparkin@katalix.com>
+ <20201204163656.1623-2-tparkin@katalix.com>
+ <20201207162228.GA28888@linux.home>
+ <20201210144623.GA4413@katalix.com>
 MIME-Version: 1.0
-In-Reply-To: <X9HifqAntBUBV0Ce@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201210144623.GA4413@katalix.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/10/2020 1:55 AM, Greg KH wrote:
-> On Wed, Dec 09, 2020 at 11:21:25PM -0800, Hemant Kumar wrote:
->> This MHI client driver allows userspace clients to transfer
->> raw data between MHI device and host using standard file operations.
->> Driver instantiates UCI device object which is associated to device
->> file node. UCI device object instantiates UCI channel object when device
->> file node is opened. UCI channel object is used to manage MHI channels
->> by calling MHI core APIs for read and write operations. MHI channels
->> are started as part of device open(). MHI channels remain in start
->> state until last release() is called on UCI device file node. Device
->> file node is created with format
->>
->> /dev/<mhi_device_name>
->>
->> Currently it supports QMI channel.
->>
->> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
->> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
->> Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
->> Tested-by: Loic Poulain <loic.poulain@linaro.org>
->> ---
+On Thu, Dec 10, 2020 at 02:46:23PM +0000, Tom Parkin wrote:
+> On  Mon, Dec 07, 2020 at 17:22:28 +0100, Guillaume Nault wrote:
+> > On Fri, Dec 04, 2020 at 04:36:55PM +0000, Tom Parkin wrote:
+> > > +		case PPPIOCBRIDGECHAN:
+> > > +			if (get_user(unit, p))
+> > > +				break;
+> > > +			err = -ENXIO;
+> > > +			pn = ppp_pernet(current->nsproxy->net_ns);
+> > > +			spin_lock_bh(&pn->all_channels_lock);
+> > > +			pchb = ppp_find_channel(pn, unit);
+> > > +			/* Hold a reference to prevent pchb being freed while
+> > > +			 * we establish the bridge.
+> > > +			 */
+> > > +			if (pchb)
+> > > +				refcount_inc(&pchb->file.refcnt);
+> > 
+> > The !pchb case isn't handled. With this code, if ppp_find_channel()
+> > returns NULL, ppp_bridge_channels() will crash when trying to lock
+> > pchb->upl.
 > 
-> Can you provide a pointer to the open-source userspace program that will
-> be talking to this new kernel driver please?  That should be part of the
-> changelog here.
+> Bleh :-(
+> 
+> Apologies for this.  I have stepped up my tests for "unhappy" code
+> paths, and I'll try to run syzkaller at a v4 prior to re-submitting.
 
-Its listed in the documentation file (patch 3 in the series).  I'm 
-guessing you still want it in the change log though, so Hemant should 
-probably take care of that.
+No problem, sorry for not having spotted the problem in your previous
+version. BTW, note that net-next is probably about to close.
 
--- 
-Jeffrey Hugo
-Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+> > > +			spin_unlock_bh(&pn->all_channels_lock);
+> > > +			err = ppp_bridge_channels(pch, pchb);
+> > > +			/* Drop earlier refcount now bridge establishment is complete */
+> > > +			if (refcount_dec_and_test(&pchb->file.refcnt))
+> > > +				ppp_destroy_channel(pchb);
+> > > +			break;
+> > > +
+> > 
+> > The rest looks good to me.
+> 
+> Thanks!
+
+
