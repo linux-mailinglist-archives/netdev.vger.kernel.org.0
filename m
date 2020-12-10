@@ -2,124 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 370FB2D6795
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:54:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485BA2D685D
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:14:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393441AbgLJTyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 14:54:08 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:51577 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390008AbgLJTxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:53:52 -0500
-Received: by mail-io1-f69.google.com with SMTP id h206so4758087iof.18
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 11:53:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=XMRAja/ZoZsO+seiyLvnZ/1aFb6VeuDhCam8FD/lCas=;
-        b=RMaQvMYeCUHWfBUvCqP1k/PCR6BaQtPZSeW1LqIjD3/pvNqEUoUNWrpi+PNdPZ/bmW
-         IJzaGKVT7U/t3aOP6X/8wlhD1cH9tjD3Jsdq6gtLw2wOhZ+h/WhWtU8r3Ex0I4cC1DIf
-         vK7fpEk0OqmrkF07hWpjykBHWYFm6DDGJzL4IARuNoTacewEQBeQercI3W7PXWYToFei
-         9bC1bvje70+nb/AX9G9Ff4dmcvSRIY/P8O7ij2pHkamTb39lvCJUFnu25iLrKfd9yBEz
-         4pdXKyiMGVRUmWhFySdr5q569hRWbNc30/BfBaaugMx425lG/U6h8ODJMTfEMU6rrgLX
-         Ejfw==
-X-Gm-Message-State: AOAM5317s90dlLwWciM+B6AODQR129Q+XMo7W32DE/GkOXfn0jgSxlQJ
-        MOIsomiD9a/UA65EThZ/RIUQFIBvKzJ1kTCL5VqZ6dfPAyu3
-X-Google-Smtp-Source: ABdhPJzHihha2NRM9J5ANRC2LOgfdhkiZCLnzaIdYA4Tc5r1XSugDIzZX54V4zVLxW1xDMmSuHg2OW1tW/g7HUDec13P+cjXYg+J
+        id S2404631AbgLJUNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 15:13:02 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:56122 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393381AbgLJTm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:42:59 -0500
+Message-Id: <20201210194042.548936472@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1607629336;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=wCqGjbHBcSlcHWGOV/dAhxvR97JcFGNX9psmcROoCq0=;
+        b=2Z0Q8lbqw2d3iK0lyMTfu6GGSIFMkE/mgVP/hAGnWOqxBRMxf5MtZTpRPSPBXz/boYfgYn
+        ST6oe0NetpTwhOSarLLIdAuYLS1gydE77MQVYVcY3FouLrWnl5si1eWOJ4F95yCk0G9X60
+        1VL1Pvt1tpdt2jzvXhHk1B3J4gqT2I16payytnnsVM1ae0GkKHVOkzm3mG/NvUjNMZDZ8b
+        Y9sC2WWQtJSCM32DjS16A3YMAUHnAI48PATHpxuESAMuGdCfbbEW6ICvvlfOLWvLQ9S/jh
+        Z+QD95xpqockzbshrRUV6G0e1FqEFRsR9IAhKZG5jK6CihEBgYA5K4ONks8gvw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1607629336;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=wCqGjbHBcSlcHWGOV/dAhxvR97JcFGNX9psmcROoCq0=;
+        b=7JxYxk/ThtDXDjNM4lO0Kv6ZI0VZ4wL2ccu9YMROMO3FB+Dn8roKKZsGAALM1EdgllUWzl
+        ydzvbEXlvqdXI/CQ==
+Date:   Thu, 10 Dec 2020 20:25:37 +0100
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        afzal mohammed <afzal.mohd.ma@gmail.com>,
+        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Wambui Karuga <wambui.karugax@gmail.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-pci@vger.kernel.org,
+        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org
+Subject: [patch 01/30] genirq: Move irq_has_action() into core code
+References: <20201210192536.118432146@linutronix.de>
 MIME-Version: 1.0
-X-Received: by 2002:a02:ce2f:: with SMTP id v15mr10735095jar.44.1607629991299;
- Thu, 10 Dec 2020 11:53:11 -0800 (PST)
-Date:   Thu, 10 Dec 2020 11:53:11 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008fd03305b62186a7@google.com>
-Subject: INFO: task can't die in inet_twsk_purge
-From:   syzbot <syzbot+4c1b0c5364346e7beafa@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8-bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This function uses irq_to_desc() and is going to be used by modules to
+replace the open coded irq_to_desc() (ab)usage. The final goal is to remove
+the export of irq_to_desc() so driver cannot fiddle with it anymore.
 
-syzbot found the following issue on:
+Move it into the core code and fixup the usage sites to include the proper
+header.
 
-HEAD commit:    a9e26cb5 Add linux-next specific files for 20201208
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=161a9613500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e259434a8eaf0206
-dashboard link: https://syzkaller.appspot.com/bug?extid=4c1b0c5364346e7beafa
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=109cf703500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1587c923500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4c1b0c5364346e7beafa@syzkaller.appspotmail.com
-
-INFO: task syz-executor343:8498 can't die for more than 143 seconds.
-task:syz-executor343 state:R  running task     stack:25920 pid: 8498 ppid:  8495 flags:0x00004006
-Call Trace:
- context_switch kernel/sched/core.c:4325 [inline]
- __schedule+0x8eb/0x21b0 kernel/sched/core.c:5076
- preempt_schedule_irq+0x4e/0x90 kernel/sched/core.c:5338
- rcu_read_unlock include/linux/rcupdate.h:694 [inline]
- inet_twsk_purge+0x57f/0x810 net/ipv4/inet_timewait_sock.c:299
-INFO: task syz-executor343:8743 can't die for more than 145 seconds.
-task:syz-executor343 state:R  running task     stack:25768 pid: 8743 ppid:  8494 flags:0x00004006
-Call Trace:
- context_switch kernel/sched/core.c:4325 [inline]
- __schedule+0x8eb/0x21b0 kernel/sched/core.c:5076
- preempt_schedule_notrace+0x5b/0xd0 kernel/sched/core.c:5309
-INFO: task syz-executor343:8744 can't die for more than 147 seconds.
-task:syz-executor343 state:R  running task     stack:25784 pid: 8744 ppid:  8490 flags:0x00004006
-Call Trace:
- context_switch kernel/sched/core.c:4325 [inline]
- __schedule+0x8eb/0x21b0 kernel/sched/core.c:5076
-INFO: task syz-executor343:8745 can't die for more than 148 seconds.
-task:syz-executor343 state:D stack:25864 pid: 8745 ppid:  8491 flags:0x00004006
-Call Trace:
- context_switch kernel/sched/core.c:4325 [inline]
- __schedule+0x8eb/0x21b0 kernel/sched/core.c:5076
- schedule+0xcf/0x270 kernel/sched/core.c:5155
- synchronize_rcu_expedited+0x458/0x620 kernel/rcu/tree_exp.h:852
- synchronize_rcu+0xee/0x190 kernel/rcu/tree.c:3729
- ops_exit_list+0x10d/0x160 net/core/net_namespace.c:190
- setup_net+0x508/0x850 net/core/net_namespace.c:365
- copy_net_ns+0x376/0x7b0 net/core/net_namespace.c:483
- create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0xbd/0x230 kernel/nsproxy.c:231
- ksys_unshare+0x445/0x8e0 kernel/fork.c:2958
- __do_sys_unshare kernel/fork.c:3026 [inline]
- __se_sys_unshare kernel/fork.c:3024 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3024
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4414a9
-RSP: 002b:00007ffd8be6e998 EFLAGS: 00000246 ORIG_RAX: 0000000000000110
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004414a9
-RDX: 00000000004414a9 RSI: ffffffffffffffff RDI: 0000000040000000
-RBP: 000000000007851d R08: 00000000000000c2 R09: 00000000000000c2
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004021a0
-R13: 0000000000402230 R14: 0000000000000000 R15: 0000000000000000
-INFO: task syz-executor343:8748 can't die for more than 151 seconds.
-task:syz-executor343 state:R  running task     stack:25784 pid: 8748 ppid:  8493 flags:0x00004006
-Call Trace:
- context_switch kernel/sched/core.c:4325 [inline]
- __schedule+0x8eb/0x21b0 kernel/sched/core.c:5076
- native_restore_fl arch/x86/include/asm/irqflags.h:41 [inline]
- arch_local_irq_restore arch/x86/include/asm/irqflags.h:84 [inline]
- lock_is_held_type+0xc2/0x100 kernel/locking/lockdep.c:5478
-
-
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ arch/alpha/kernel/sys_jensen.c |    2 +-
+ arch/x86/kernel/topology.c     |    1 +
+ include/linux/interrupt.h      |    1 +
+ include/linux/irqdesc.h        |    7 +------
+ kernel/irq/manage.c            |   17 +++++++++++++++++
+ 5 files changed, 21 insertions(+), 7 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+--- a/arch/alpha/kernel/sys_jensen.c
++++ b/arch/alpha/kernel/sys_jensen.c
+@@ -7,7 +7,7 @@
+  *
+  * Code supporting the Jensen.
+  */
+-
++#include <linux/interrupt.h>
+ #include <linux/kernel.h>
+ #include <linux/types.h>
+ #include <linux/mm.h>
+--- a/arch/x86/kernel/topology.c
++++ b/arch/x86/kernel/topology.c
+@@ -25,6 +25,7 @@
+  *
+  * Send feedback to <colpatch@us.ibm.com>
+  */
++#include <linux/interrupt.h>
+ #include <linux/nodemask.h>
+ #include <linux/export.h>
+ #include <linux/mmzone.h>
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -232,6 +232,7 @@ extern void devm_free_irq(struct device
+ # define local_irq_enable_in_hardirq()	local_irq_enable()
+ #endif
+ 
++bool irq_has_action(unsigned int irq);
+ extern void disable_irq_nosync(unsigned int irq);
+ extern bool disable_hardirq(unsigned int irq);
+ extern void disable_irq(unsigned int irq);
+--- a/include/linux/irqdesc.h
++++ b/include/linux/irqdesc.h
+@@ -179,12 +179,7 @@ int handle_domain_nmi(struct irq_domain
+ /* Test to see if a driver has successfully requested an irq */
+ static inline int irq_desc_has_action(struct irq_desc *desc)
+ {
+-	return desc->action != NULL;
+-}
+-
+-static inline int irq_has_action(unsigned int irq)
+-{
+-	return irq_desc_has_action(irq_to_desc(irq));
++	return desc && desc->action != NULL;
+ }
+ 
+ /**
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -2752,3 +2752,20 @@ int irq_set_irqchip_state(unsigned int i
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(irq_set_irqchip_state);
++
++/**
++ * irq_has_action - Check whether an interrupt is requested
++ * @irq:	The linux irq number
++ *
++ * Returns: A snapshot of the current state
++ */
++bool irq_has_action(unsigned int irq)
++{
++	bool res;
++
++	rcu_read_lock();
++	res = irq_desc_has_action(irq_to_desc(irq));
++	rcu_read_unlock();
++	return res;
++}
++EXPORT_SYMBOL_GPL(irq_has_action);
+
