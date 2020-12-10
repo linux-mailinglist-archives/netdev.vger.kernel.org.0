@@ -2,93 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 480DF2D591D
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 12:20:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A40C2D5945
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 12:34:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387589AbgLJLSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 06:18:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59408 "EHLO
+        id S2389527AbgLJLbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 06:31:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726953AbgLJLSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 06:18:46 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BA3C0613CF
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 03:18:06 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id 3so4894777wmg.4
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 03:18:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=l8OEyC+nvkowN7eN+kky7l/3Os6ECX947w3oC1HJ9pM=;
-        b=A+gpGPetwy/btolrME7v0mF94uG7Q2FTzgoL62rm1BNnD7K5RKiIfA5IGZMcP3oWsE
-         2MSjzDiu/t0LReCPyg1wx4iEOLem62GGQW70ki8xkyoNJIzGiMQoWofzQ5n/I0qmNz4Y
-         bPJ5gF9TK2eLmVwGZnWV2iL20KeYec1ObnR1bnp7fmIkmCrGr+6l8RcTy/x9pgIXOw55
-         gyGR2EpC25FgwskxWx5CH6RNRkvLVclNQnXlOR5ijN9J278/y8kTrdPMh4IXrMWx6F0U
-         MUtNpRZM8KQbLiF/Kyjf9ljylIubHG77ruoFeiswBEHBvsdX0IYmcxT/QvOaG2PxntT4
-         heVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=l8OEyC+nvkowN7eN+kky7l/3Os6ECX947w3oC1HJ9pM=;
-        b=X84fw0Ttkb2NbqWeqpRSgRKjUvrnbo8EItxX+PP4H8oy7k5q6XaEH69YGPMuPuyqza
-         iVsGihIAQtNqHRIE0n2LOhq0qX9NgrKa3OYDL3bfpSJ4fGvJ2kbE/yA6fIxgVE/cJh8L
-         HHUcR9fbHm62wzG367BrprfoWV76pp15WqD1XZCTq+JP7LKw+f+MyX9y3fVpaNTSxrJ3
-         +byIrbN/Gxr5VFtZ5PCCC2gSMAJYmlg12alUXdXVGjAndmKzhOC6pjXRfqE4js4dTQa2
-         ft0ZcXLwN8jWCRuq3lNLzetB5vqti6wpYtjWYMvdHHd/Np5qfQ5ozEf1xvYLPMnCpVNI
-         E4uw==
-X-Gm-Message-State: AOAM533tNy51bZzK1WXt23dV/zxCksW3c2okptsMo9CihGRu/tzT/y8N
-        K+9u3I8ApHG4tNtYNfBwSQEdsRt3UOrmmpFu
-X-Google-Smtp-Source: ABdhPJwM9fEkiVPgkhzgKMNaEm4nJ10E9+Xc6B/CjQcJVMq5FYtH/p4y7rQNDcTC1mkpGInBIZzdMA==
-X-Received: by 2002:a1c:9c53:: with SMTP id f80mr7446360wme.19.1607599085218;
-        Thu, 10 Dec 2020 03:18:05 -0800 (PST)
-Received: from localhost.localdomain ([2a01:e0a:490:8730:4468:1cc2:be0c:233f])
-        by smtp.gmail.com with ESMTPSA id c81sm9683148wmd.6.2020.12.10.03.18.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Dec 2020 03:18:04 -0800 (PST)
-From:   Loic Poulain <loic.poulain@linaro.org>
-To:     kuba@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH] net: mhi: Fix unexpected queue wake
-Date:   Thu, 10 Dec 2020 12:25:07 +0100
-Message-Id: <1607599507-5879-1-git-send-email-loic.poulain@linaro.org>
-X-Mailer: git-send-email 2.7.4
+        with ESMTP id S2389512AbgLJLaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 06:30:52 -0500
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 77BE5C0613CF;
+        Thu, 10 Dec 2020 03:30:37 -0800 (PST)
+Received: by ozlabs.org (Postfix, from userid 1034)
+        id 4CsBYJ2d3xz9shn; Thu, 10 Dec 2020 22:30:28 +1100 (AEDT)
+From:   Michael Ellerman <patch-notifications@ellerman.id.au>
+To:     Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Geoff Levand <geoff@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, Jim Paris <jim@jtan.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Uwe =?ISO-8859-1?Q?=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        dri-devel@lists.freedesktop.org, linuxppc-dev@lists.ozlabs.org,
+        linux-scsi@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
+        alsa-devel@alsa-project.org, linux-block@vger.kernel.org,
+        netdev@vger.kernel.org
+In-Reply-To: <20201126165950.2554997-1-u.kleine-koenig@pengutronix.de>
+References: <20201126165950.2554997-1-u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 1/2] ALSA: ppc: drop if block with always false condition
+Message-Id: <160756606231.1313423.17458520968397977116.b4-ty@ellerman.id.au>
+Date:   Thu, 10 Dec 2020 22:30:28 +1100 (AEDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch checks that MHI queue is not full before waking up the net
-queue. This fix sporadic MHI queueing issues in xmit. Indeed xmit and
-its symmetric complete callback (ul_callback) can run concurently, it
-is then not safe to unconditionnaly waking the queue in the callback
-without checking queue fullness.
+On Thu, 26 Nov 2020 17:59:49 +0100, Uwe Kleine-König wrote:
+> The remove callback is only called for devices that were probed
+> successfully before. As the matching probe function cannot complete
+> without error if dev->match_id != PS3_MATCH_ID_SOUND, we don't have to
+> check this here.
 
-Fixes: 3ffec6a14f24 ("net: Add mhi-net driver")
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
----
- drivers/net/mhi_net.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Applied to powerpc/next.
 
-diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
-index 8e72d94..b7f7f2e 100644
---- a/drivers/net/mhi_net.c
-+++ b/drivers/net/mhi_net.c
-@@ -173,6 +173,7 @@ static void mhi_net_ul_callback(struct mhi_device *mhi_dev,
- {
- 	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
- 	struct net_device *ndev = mhi_netdev->ndev;
-+	struct mhi_device *mdev = mhi_netdev->mdev;
- 	struct sk_buff *skb = mhi_res->buf_addr;
- 
- 	/* Hardware has consumed the buffer, so free the skb (which is not
-@@ -196,7 +197,7 @@ static void mhi_net_ul_callback(struct mhi_device *mhi_dev,
- 	}
- 	u64_stats_update_end(&mhi_netdev->stats.tx_syncp);
- 
--	if (netif_queue_stopped(ndev))
-+	if (netif_queue_stopped(ndev) && !mhi_queue_is_full(mdev, DMA_TO_DEVICE))
- 		netif_wake_queue(ndev);
- }
- 
--- 
-2.7.4
+[1/2] ALSA: ppc: drop if block with always false condition
+      https://git.kernel.org/powerpc/c/7ff94669e7d8e50756cd57947283381ae9665759
+[2/2] powerpc/ps3: make system bus's remove and shutdown callbacks return void
+      https://git.kernel.org/powerpc/c/6d247e4d264961aa3b871290f9b11a48d5a567f2
 
+cheers
