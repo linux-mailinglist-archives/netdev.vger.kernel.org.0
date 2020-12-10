@@ -2,54 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D8E02D4FED
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 01:56:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04DEE2D5002
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 02:04:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730336AbgLJAxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 19:53:35 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:53524 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728668AbgLJAxf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 19:53:35 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477:9e51:a893:b0fe:602a])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id C71F94D259C19;
-        Wed,  9 Dec 2020 16:52:53 -0800 (PST)
-Date:   Wed, 09 Dec 2020 16:52:53 -0800 (PST)
-Message-Id: <20201209.165253.120704618605367403.davem@davemloft.net>
-To:     bongsu.jeon2@gmail.com
-Cc:     krzk@kernel.org, linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bongsu.jeon@samsung.com
-Subject: Re: [PATCH v2 net-next 0/2] nfc: s3fwrn5: Change I2C interrupt
- trigger to EDGE_RISING
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201208141012.6033-1-bongsu.jeon@samsung.com>
-References: <20201208141012.6033-1-bongsu.jeon@samsung.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 09 Dec 2020 16:52:54 -0800 (PST)
+        id S1728643AbgLJBDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 20:03:40 -0500
+Received: from mga12.intel.com ([192.55.52.136]:15984 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726796AbgLJBDk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 20:03:40 -0500
+IronPort-SDR: VVgoWPEo4cnVl9cKmCS11H7q7xpUpwVLfXCnMFm6xRuHa0Q1KuqIf9de2nGUqePoCn77cTF39Y
+ J7Gg9JHDY/Og==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="153414663"
+X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
+   d="scan'208";a="153414663"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 17:02:59 -0800
+IronPort-SDR: UDWiUMMa4tWTM/YAdtcdPvT55i31t7lndYUvcAwk4ZW5M/9CpoT6nJlKlTFBEA1rKmEVbh3tnm
+ 3COGdBJUqVCQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
+   d="scan'208";a="338203370"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga006.jf.intel.com with ESMTP; 09 Dec 2020 17:02:59 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [net 0/9][pull request] Intel Wired LAN Driver Updates 2020-12-09
+Date:   Wed,  9 Dec 2020 17:02:43 -0800
+Message-Id: <20201210010252.4029245-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bongsu Jeon <bongsu.jeon2@gmail.com>
-Date: Tue,  8 Dec 2020 23:10:10 +0900
+This series contains updates to igb, ixgbe, i40e, and ice drivers.
 
-> From: Bongsu Jeon <bongsu.jeon@samsung.com>
-> 
-> For stable Samsung's I2C interrupt handling, I changed the interrupt 
-> trigger from IRQ_TYPE_LEVEL_HIGH to IRQ_TYPE_EDGE_RISING and removed 
-> the hard coded interrupt trigger type in the i2c module for the flexible 
-> control.
-> 
-> 1/2 is the changed dt binding for the edge rising trigger.
-> 2/2 is to remove the hard coded interrupt trigger type in the i2c module.
-> 
-> ChangeLog:
->  v2:
->   2/2
->    - remove the hard coded interrupt trigger type.
+Sven Auhagen fixes issues with igb XDP: return correct error value in XDP
+xmit back, increase header padding to include space for double VLAN, add
+an extack error when Rx buffer is too small for frame size, set metasize if
+it is set in xdp, change xdp_do_flush_map to xdp_do_flush, and update
+trans_start to avoid possible Tx timeout.
 
-Series applied, thanks.
+Björn fixes an issue where an Rx buffer can be reused prematurely with
+XDP redirect for ixgbe, i40e, and ice drivers.
+
+The following are changes since commit 323a391a220c4a234cb1e678689d7f4c3b73f863:
+  can: isotp: isotp_setsockopt(): block setsockopt on bound sockets
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 1GbE
+
+Björn Töpel (3):
+  i40e: avoid premature Rx buffer reuse
+  ixgbe: avoid premature Rx buffer reuse
+  ice: avoid premature Rx buffer reuse
+
+Sven Auhagen (6):
+  igb: XDP xmit back fix error code
+  igb: take VLAN double header into account
+  igb: XDP extack message on error
+  igb: skb add metasize for xdp
+  igb: use xdp_do_flush
+  igb: avoid transmit queue timeout in xdp path
+
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 27 ++++++++++----
+ drivers/net/ethernet/intel/ice/ice_txrx.c     | 31 +++++++++++-----
+ drivers/net/ethernet/intel/igb/igb.h          |  5 +++
+ drivers/net/ethernet/intel/igb/igb_main.c     | 37 +++++++++++++------
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 24 ++++++++----
+ 5 files changed, 90 insertions(+), 34 deletions(-)
+
+-- 
+2.26.2
+
