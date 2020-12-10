@@ -2,46 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0069A2D6982
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 22:17:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3FF2D6983
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 22:17:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393846AbgLJVPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 16:15:52 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:45452 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729382AbgLJVPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 16:15:52 -0500
+        id S2393975AbgLJVQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 16:16:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393914AbgLJVQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 16:16:05 -0500
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D463C0613CF
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 13:15:25 -0800 (PST)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 96F1B4D2ED6E6;
-        Thu, 10 Dec 2020 13:15:11 -0800 (PST)
-Date:   Thu, 10 Dec 2020 13:15:11 -0800 (PST)
-Message-Id: <20201210.131511.281381112212499584.davem@davemloft.net>
-To:     anthony.l.nguyen@intel.com
-Cc:     kuba@kernel.org, sasha.neftin@intel.com, netdev@vger.kernel.org,
-        sassmann@redhat.com, aaron.f.brown@intel.com
-Subject: Re: [PATCH net-next] igc: Add new device ID
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 223694D2ED6E7;
+        Thu, 10 Dec 2020 13:15:25 -0800 (PST)
+Date:   Thu, 10 Dec 2020 13:15:24 -0800 (PST)
+Message-Id: <20201210.131524.1199625128133217949.davem@davemloft.net>
+To:     arjunroy.kdev@gmail.com
+Cc:     netdev@vger.kernel.org, arjunroy@google.com, edumazet@google.com,
+        soheil@google.com
+Subject: Re: [net-next] tcp: correctly handle increased zerocopy args
+ struct size
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201210190812.413143-1-anthony.l.nguyen@intel.com>
-References: <20201210190812.413143-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20201210191603.963856-1-arjunroy.kdev@gmail.com>
+References: <20201210191603.963856-1-arjunroy.kdev@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 27.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 10 Dec 2020 13:15:11 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 10 Dec 2020 13:15:25 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-Date: Thu, 10 Dec 2020 11:08:12 -0800
+From: Arjun Roy <arjunroy.kdev@gmail.com>
+Date: Thu, 10 Dec 2020 11:16:03 -0800
 
-> From: Sasha Neftin <sasha.neftin@intel.com>
+> From: Arjun Roy <arjunroy@google.com>
 > 
-> Add new device ID for the next step of the silicon and
-> reflect the I226_K part.
+> A prior patch increased the size of struct tcp_zerocopy_receive
+> but did not update do_tcp_getsockopt() handling to properly account
+> for this.
 > 
-> Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
->
+> This patch simply reintroduces content erroneously cut from the
+> referenced prior patch that handles the new struct size.
+> 
+> Fixes: 18fb76ed5386 ("net-zerocopy: Copy straggler unaligned data for TCP Rx. zerocopy.")
+> Signed-off-by: Arjun Roy <arjunroy@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+
 Applied.
