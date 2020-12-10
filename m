@@ -2,301 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A21892D63CD
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 18:42:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 795112D6397
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 18:33:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392669AbgLJRO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 12:14:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392655AbgLJRO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 12:14:57 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B61C0613CF
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 09:14:17 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id z5so6273552iob.11
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 09:14:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2xnuyvnwtl69CovewvxJx+Borf5alfAstAFCWLgP0is=;
-        b=gYugMWpcDs1ICP2+5ut3yFEMN2MbDgxKqBw1YPJeIqWz2g4n7pzELepy0QrAguL+DJ
-         G2v7H2wnQ0RzOlSrGHKetr7NnoVA857JdeBF7j+XHVbwOqqKHC7cBTmdOmaE8VCCAjWY
-         FBzl/IA9np/eq0mMfhoFswSta4BlsKvd96ev8eWqrRT5JA4DemgYbuvComwKi4bkL2pj
-         SqZ8NWFFPgVPqKDKEH5b4KC1kc+kaKj4pJnfQkwfuAw1w1Zlg+yrnIPS0JszVgDnZEux
-         AWpreardBhSvkZXKktX8d3N4y2J1/927Kt7BY3CNb9TVkWvCCICmoFirqdctPB2qOPBp
-         Nrxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2xnuyvnwtl69CovewvxJx+Borf5alfAstAFCWLgP0is=;
-        b=VBip5AEWIGY79pOL6TZJ3DUUDQVLhzJvD9YW1DajTz9loPBS9CNVBTPcYwMAXjQmRc
-         9VnPhNp3bho0rBBndTROY5i5pQFaDe1DyGlLkoCfjeA6zylicfanF7iAoRuHFOTqYy82
-         wZGWBiYCvB+aqzDtMYpvlBLw1q+CAsN6EYktIcL+3dOa72vCkUOkg+CSAEklAQlGRM8S
-         kqxdAtna+PTBMPZKTQWsZojkT/SYrF3fYsUfELD6xgMe5rB6Hp4HWke11XhCXpKDcvKz
-         R2QZn8eO9nzLSvpm5OZ0AHHBXoPiVhW1pbHxEC8lXmBSbDo8DrJMbCNDqpZIOSiSuskC
-         ApQg==
-X-Gm-Message-State: AOAM532ca0n3lnQmRkC4VMHLMpEE4S+Pw+BhhzXumcCc1g13847oCPBz
-        cOfM88phT42XRONmBxjLlr8URZxF7K5czV+4IEHuAg==
-X-Google-Smtp-Source: ABdhPJxdPrbSSC0YZTAa6GZiws+vHo5sKuG7DaQSHNblgA6VGp54Hi5VJBe4N87W2XnAOWMgTvx36reUyyUtCWmcjXo=
-X-Received: by 2002:a5d:9f0b:: with SMTP id q11mr9557997iot.157.1607620456089;
- Thu, 10 Dec 2020 09:14:16 -0800 (PST)
+        id S2392022AbgLJRck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 12:32:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43567 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2392484AbgLJRc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 12:32:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607621455;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q5P/qDi7wA+rvW2gtSqVQu3jB6OGZe46xx+pWi2+9CM=;
+        b=HYjAMUtaeUkDYDccW0TEui2cPnmzUDlchTCdSM2nw48IAyvE6gJkBWUE5FSdH4Vo62tw3e
+        V8ZdQxTXYkjyGsxE76639AxDW+sC325qb7cPf6L3PXAn976hABdbhZfFiQcJ94rwI9TM+k
+        18XHJ/VIVUsrE6Ycj6yG4Bw0kb+SUEo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-369-fj061OEpOeyugu0E_N0B1g-1; Thu, 10 Dec 2020 12:30:43 -0500
+X-MC-Unique: fj061OEpOeyugu0E_N0B1g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9A5E1107ACE6;
+        Thu, 10 Dec 2020 17:30:40 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 10BC71F442;
+        Thu, 10 Dec 2020 17:30:24 +0000 (UTC)
+Date:   Thu, 10 Dec 2020 18:30:23 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Frey Alfredsson <freysteinn@freysteinn.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Marek Majtyka <marekx.majtyka@intel.com>,
+        Marek Majtyka <alardam@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>, brouer@redhat.com
+Subject: Re: [Intel-wired-lan] Explaining XDP redirect bulk size design
+ (Was: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set)
+Message-ID: <20201210183023.4b299334@carbon>
+In-Reply-To: <CAJ8uoz25rtO63-4nOSV-yr8bORNbNSquiBBWiEouLs-ZUv2o=A@mail.gmail.com>
+References: <20201204102901.109709-1-marekx.majtyka@intel.com>
+        <20201204102901.109709-2-marekx.majtyka@intel.com>
+        <878sad933c.fsf@toke.dk>
+        <20201204124618.GA23696@ranger.igk.intel.com>
+        <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
+        <20201207135433.41172202@carbon>
+        <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
+        <20201207230755.GB27205@ranger.igk.intel.com>
+        <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
+        <20201209095454.GA36812@ranger.igk.intel.com>
+        <20201209125223.49096d50@carbon>
+        <6913010d-2fd6-6713-94e9-8f5b8ad4b708@gmail.com>
+        <20201210143211.2490f7f4@carbon>
+        <CAJ8uoz25rtO63-4nOSV-yr8bORNbNSquiBBWiEouLs-ZUv2o=A@mail.gmail.com>
 MIME-Version: 1.0
-References: <000000000000b4862805b54ef573@google.com> <X8kLG5D+j4rT6L7A@elver.google.com>
- <CANn89iJWD5oXPLgtY47umTgo3gCGBaoy+XJfXnw1ecES_EXkCw@mail.gmail.com>
- <CANpmjNOaWbGJQ5Y=qC3cA31-R-Jy4Fbe+p=OBG5O2Amz8dLtLA@mail.gmail.com>
- <CANn89iKWf1EVZUuAHup+5ndhxvOqGopq53=vZ9yeok=DnRjggg@mail.gmail.com>
- <X8kjPIrLJUd8uQIX@elver.google.com> <af884a0e-5d4d-f71b-4821-b430ac196240@gmail.com>
- <CANpmjNNDKm_ObRnO_b3gH6wDYjb6_ex-KhZA5q5BRzEMgo+0xg@mail.gmail.com>
- <X9DHa2OG6lewtfPQ@elver.google.com> <X9JR/J6dMMOy1obu@elver.google.com>
-In-Reply-To: <X9JR/J6dMMOy1obu@elver.google.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 10 Dec 2020 18:14:04 +0100
-Message-ID: <CANn89i+2mAu_srdvefKLDY23HvrbOG1aMfj5uwvk6tYZ9uBtMA@mail.gmail.com>
-Subject: Re: WARNING in sk_stream_kill_queues (5)
-To:     Marco Elver <elver@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Jann Horn <jannh@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzbot+7b99aafdcc2eedea6178@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 5:51 PM Marco Elver <elver@google.com> wrote:
->
-> On Wed, Dec 09, 2020 at 01:47PM +0100, Marco Elver wrote:
-> > On Tue, Dec 08, 2020 at 08:06PM +0100, Marco Elver wrote:
-> > > On Thu, 3 Dec 2020 at 19:01, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > > > On 12/3/20 6:41 PM, Marco Elver wrote:
-> > > >
-> > > > > One more experiment -- simply adding
-> > > > >
-> > > > > --- a/net/core/skbuff.c
-> > > > > +++ b/net/core/skbuff.c
-> > > > > @@ -207,7 +207,21 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
-> > > > >        */
-> > > > >       size = SKB_DATA_ALIGN(size);
-> > > > >       size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > > > > +     size = 1 << kmalloc_index(size); /* HACK */
-> > > > >       data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
-> > > > >
-> > > > >
-> > > > > also got rid of the warnings. Something must be off with some value that
-> > > > > is computed in terms of ksize(). If not, I don't have any explanation
-> > > > > for why the above hides the problem.
-> > > >
-> > > > Maybe the implementations of various macros (SKB_DATA_ALIGN and friends)
-> > > > hae some kind of assumptions, I will double check this.
-> > >
-> > > If I force kfence to return 4K sized allocations for everything, the
-> > > warnings remain. That might suggest that it's not due to a missed
-> > > ALIGN.
-> > >
-> > > Is it possible that copies or moves are a problem? E.g. we copy
-> > > something from kfence -> non-kfence object (or vice-versa), and
-> > > ksize() no longer matches, then things go wrong?
+On Thu, 10 Dec 2020 15:14:18 +0100
+Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+
+> On Thu, Dec 10, 2020 at 2:32 PM Jesper Dangaard Brouer
+> <brouer@redhat.com> wrote:
 > >
-> > I was able to narrow it down to allocations of size 640. I also narrowed
-> > it down to 5 allocations that go through kfence that start triggering
-> > the issue. I have attached the list of those 5 allocations with
-> > allocation + free stacks. I'll try to go through them, maybe I get
-> > lucky eventually. :-)
->
-> [...]
->
-> > kfence-#3 [0xffff88843681ac00-0xffff88843681ae7f, size=640, cache=kmalloc-1k] allocated by task 17012:
-> >  __kmalloc_reserve net/core/skbuff.c:142 [inline]
-> >  __alloc_skb+0xb8/0x3f0 net/core/skbuff.c:210
-> >  alloc_skb_fclone include/linux/skbuff.h:1144 [inline]
-> >  sk_stream_alloc_skb+0xd3/0x650 net/ipv4/tcp.c:888
-> >  tso_fragment net/ipv4/tcp_output.c:2124 [inline]
-> >  tcp_write_xmit+0x1366/0x3510 net/ipv4/tcp_output.c:2674
-> >  __tcp_push_pending_frames+0x68/0x1f0 net/ipv4/tcp_output.c:2866
-> >  tcp_push_pending_frames include/net/tcp.h:1864 [inline]
-> >  tcp_data_snd_check net/ipv4/tcp_input.c:5374 [inline]
-> >  tcp_rcv_established+0x57c/0x10b0 net/ipv4/tcp_input.c:5869
-> >  tcp_v4_do_rcv+0x361/0x4c0 net/ipv4/tcp_ipv4.c:1668
-> >  sk_backlog_rcv include/net/sock.h:1010 [inline]
-> >  __release_sock+0xd7/0x260 net/core/sock.c:2523
-> >  release_sock+0x40/0x120 net/core/sock.c:3053
-> >  sk_wait_data+0x127/0x2b0 net/core/sock.c:2565
-> >  tcp_recvmsg+0x1106/0x1b60 net/ipv4/tcp.c:2181
-> >  inet_recvmsg+0xb1/0x270 net/ipv4/af_inet.c:848
-> >  sock_recvmsg_nosec net/socket.c:885 [inline]
-> >  sock_recvmsg net/socket.c:903 [inline]
-> >  sock_recvmsg net/socket.c:899 [inline]
-> >  ____sys_recvmsg+0x2fd/0x3a0 net/socket.c:2563
-> >  ___sys_recvmsg+0xd9/0x1b0 net/socket.c:2605
-> >  __sys_recvmsg+0x8b/0x130 net/socket.c:2641
-> >  __do_sys_recvmsg net/socket.c:2651 [inline]
-> >  __se_sys_recvmsg net/socket.c:2648 [inline]
-> >  __x64_sys_recvmsg+0x43/0x50 net/socket.c:2648
-> >  do_syscall_64+0x34/0x80 arch/x86/entry/common.c:46
-> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> So I started putting gdb to work, and whenever I see an allocation
-> exactly like the above that goes through tso_fragment() a warning
-> immediately follows.
->
-> Long story short, I somehow synthesized this patch that appears to fix
-> things, but I can't explain why exactly:
->
-> | --- a/net/core/skbuff.c
-> | +++ b/net/core/skbuff.c
-> | @@ -1679,13 +1679,6 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
-> |
-> |       skb_metadata_clear(skb);
-> |
-> | -     /* It is not generally safe to change skb->truesize.
-> | -      * For the moment, we really care of rx path, or
-> | -      * when skb is orphaned (not attached to a socket).
-> | -      */
-> | -     if (!skb->sk || skb->destructor == sock_edemux)
-> | -             skb->truesize += size - osize;
-> | -
-> |       return 0;
-> |
-> |  nofrags:
->
-> Now, here are the breadcrumbs I followed:
->
->
-> 1.      Breakpoint on kfence_ksize() -- first allocation that matches the above:
->
->         | #0  __kfence_ksize (s=18446612700164612096) at mm/kfence/core.c:726
->         | #1  0xffffffff816fbf30 in kfence_ksize (addr=0xffff888436856000) at mm/kfence/core.c:737
->         | #2  0xffffffff816217cf in ksize (objp=0xffff888436856000) at mm/slab_common.c:1178
->         | #3  0xffffffff84896911 in __alloc_skb (size=914710528, gfp_mask=2592, flags=0, node=-1) at net/core/skbuff.c:217
->         | #4  0xffffffff84d0ba73 in alloc_skb_fclone (priority=<optimized out>, size=<optimized out>) at ./include/linux/skbuff.h:1144
->         | #5  sk_stream_alloc_skb (sk=0xffff8881176cc000, size=0, gfp=2592, force_schedule=232) at net/ipv4/tcp.c:888
->         | #6  0xffffffff84d41c36 in tso_fragment (gfp=<optimized out>, mss_now=<optimized out>, len=<optimized out>,
->         |     skb=<optimized out>, sk=<optimized out>) at net/ipv4/tcp_output.c:2124
->         | #7  tcp_write_xmit (sk=0xffff8881176cc000, mss_now=21950, nonagle=3096, push_one=-1996874776, gfp=0)
->         |     at net/ipv4/tcp_output.c:2674
->         | #8  0xffffffff84d43e48 in __tcp_push_pending_frames (sk=0xffff8881176cc000, cur_mss=337, nonagle=0)
->         |     at ./include/net/sock.h:918
->         | #9  0xffffffff84d3259c in tcp_push_pending_frames (sk=<optimized out>) at ./include/net/tcp.h:1864
->         | #10 tcp_data_snd_check (sk=<optimized out>) at net/ipv4/tcp_input.c:5374
->         | #11 tcp_rcv_established (sk=0xffff8881176cc000, skb=0x0 <fixed_percpu_data>) at net/ipv4/tcp_input.c:5869
->         | #12 0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f52ea0) at net/ipv4/tcp_ipv4.c:1668
->         | [...]
->
->         Set watchpoint on skb->truesize:
->
->         | (gdb) frame 3
->         | #3  0xffffffff84896911 in __alloc_skb (size=914710528, gfp_mask=2592, flags=0, node=-1) at net/core/skbuff.c:217
->         | 217             size = SKB_WITH_OVERHEAD(ksize(data));
->         | (gdb) p &skb->truesize
->         | $5 = (unsigned int *) 0xffff888117f55f90
->         | (gdb) awatch *0xffff888117f55f90
->         | Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
->
-> 2.      Some time later, we see that the skb with kfence-allocated data
->         is cloned:
->
->         | Thread 7 hit Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
->         |
->         | Value = 1570
->         | 0xffffffff84886947 in __skb_clone (n=0xffff888117f55fa0, skb=0xffff888117f55ec0) at net/core/skbuff.c:1002
->         | 1002            C(truesize);
->         | (gdb) bt
->         | #0  0xffffffff84886947 in __skb_clone (n=0xffff888117f55fa0, skb=0xffff888117f55ec0) at net/core/skbuff.c:1002
->         | #1  0xffffffff8488bfb9 in skb_clone (skb=0xffff888117f55ec0, gfp_mask=2592) at net/core/skbuff.c:1454
->         | #2  0xffffffff84d3cd1c in __tcp_transmit_skb (sk=0xffff8881176cc000, skb=0xffff888117f55ec0, clone_it=0, gfp_mask=2592,
->         |     rcv_nxt=0) at net/ipv4/tcp_output.c:1267
->         | #3  0xffffffff84d4125b in tcp_transmit_skb (gfp_mask=<optimized out>, clone_it=<optimized out>, skb=<optimized out>,
->         |     sk=<optimized out>) at ./include/linux/tcp.h:439
->         | #4  tcp_write_xmit (sk=0xffff8881176cc000, mss_now=392485600, nonagle=1326, push_one=-1996875104, gfp=0)
->         |     at net/ipv4/tcp_output.c:2688
->         | #5  0xffffffff84d43e48 in __tcp_push_pending_frames (sk=0xffff8881176cc000, cur_mss=337, nonagle=0)
->         |     at ./include/net/sock.h:918
->         | #6  0xffffffff84d3259c in tcp_push_pending_frames (sk=<optimized out>) at ./include/net/tcp.h:1864
->         | #7  tcp_data_snd_check (sk=<optimized out>) at net/ipv4/tcp_input.c:5374
->         | #8  tcp_rcv_established (sk=0xffff8881176cc000, skb=0x0 <fixed_percpu_data>) at net/ipv4/tcp_input.c:5869
->         | #9  0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f57820) at net/ipv4/tcp_ipv4.c:1668
->         | #10 0xffffffff8487bf67 in sk_backlog_rcv (skb=<optimized out>, sk=<optimized out>) at ./include/net/sock.h:1010
->         [...]
->
->
-> 3.      The original skb (that was cloned) has its truesize adjusted
->         after a pskb_expand_head():
->
->         | Thread 2 hit Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
->         |
->         | Old value = 1570
->         | New value = 1954
->
->         ^^ the difference between the old and the new value is exactly
->         384, which is also the final underflow of the sk_wmem_queued
->         that triggers the warning. Presumably if the original allocation
->         had been through kmalloc-1k and not KFENCE, the difference here
->         would have been 0, since ksize() of the original allocation in
->         step (1) would have been 1024, and not 640 (difference of 384).
->
->         | 0xffffffff8488d84b in pskb_expand_head (skb=0xffff888117f55ec0, nhead=401956752, ntail=1954, gfp_mask=2298092192)
->         |     at net/core/skbuff.c:1687
->         | 1687                    skb->truesize += size - osize;
->         | (gdb) bt
->         | #0  0xffffffff8488d84b in pskb_expand_head (skb=0xffff888117f55ec0, nhead=401956752, ntail=1954, gfp_mask=2298092192)
->         |     at net/core/skbuff.c:1687
->         | #1  0xffffffff8488de01 in skb_prepare_for_shift (skb=<optimized out>) at ./arch/x86/include/asm/atomic.h:29
->         | #2  skb_prepare_for_shift (skb=0xffff888117f55ec0) at net/core/skbuff.c:3276
->         | #3  0xffffffff848936b1 in skb_shift (tgt=0xffff888117f549c0, skb=0xffff888117f55ec0, shiftlen=674) at net/core/skbuff.c:3351
->         | #4  0xffffffff84d264de in tcp_skb_shift (shiftlen=<optimized out>, pcount=<optimized out>, from=<optimized out>,
->         |     to=<optimized out>) at net/ipv4/tcp_input.c:1497
->         | #5  tcp_shift_skb_data (dup_sack=<optimized out>, end_seq=<optimized out>, start_seq=<optimized out>, state=<optimized out>,
->         |     skb=<optimized out>, sk=<optimized out>) at net/ipv4/tcp_input.c:1605
->         | #6  tcp_sacktag_walk (skb=0xffff888117f55ec0, sk=0xffff8881176cc000, next_dup=0x894,
->         |     state=0xffffffff88fa1aa0 <watchpoints+192>, start_seq=0, end_seq=401956752, dup_sack_in=false)
->         |     at net/ipv4/tcp_input.c:1670
->         | #7  0xffffffff84d276de in tcp_sacktag_write_queue (sk=0xffff888117f55f90, ack_skb=0x1888117f55f90, prior_snd_una=2196,
->         |     state=0xffffffff88fa1aa0 <watchpoints+192>) at net/ipv4/tcp_input.c:1931
->         | #8  0xffffffff84d2ca1d in tcp_ack (sk=0xffff8881176cc000, skb=0x1888117f55f90, flag=16643) at net/ipv4/tcp_input.c:3758
->         | #9  0xffffffff84d32387 in tcp_rcv_established (sk=0xffff8881176cc000, skb=0xffff888117f54020) at net/ipv4/tcp_input.c:5858
->         | #10 0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f54020) at net/ipv4/tcp_ipv4.c:1668
->         [...]
->
->
-> Any of this make sense?
+> > On Wed, 9 Dec 2020 08:44:33 -0700
+> > David Ahern <dsahern@gmail.com> wrote:
+> > =20
+> > > On 12/9/20 4:52 AM, Jesper Dangaard Brouer wrote: =20
+> > > > But I have redesigned the ndo_xdp_xmit call to take a bulk of packe=
+ts
+> > > > (up-to 16) so it should not be a problem to solve this by sharing
+> > > > TX-queue and talking a lock per 16 packets.  I still recommend that,
+> > > > for fallback case,  you allocated a number a TX-queue and distribute
+> > > > this across CPUs to avoid hitting a congested lock (above measureme=
+nts
+> > > > are the optimal non-congested atomic lock operation) =20
+> > >
+> > > I have been meaning to ask you why 16 for the XDP batching? If the
+> > > netdev budget is 64, why not something higher like 32 or 64? =20
+> >
+> > Thanks you for asking as there are multiple good reasons and
+> > consideration for this 16 batch size.  Notice cpumap have batch size 8,
+> > which is also an explicit choice.  And AF_XDP went in the wrong
+> > direction IMHO and I think have 256.  I designed this to be a choice in
+> > the map code, for the level of bulking it needs/wants. =20
+>=20
+> FYI, as far as I know, there is nothing in AF_XDP that says bulking
+> should be 256. There is a 256 number in the i40e driver that states
+> the maximum number of packets to be sent within one napi_poll loop.
+> But this is just a maximum number and only for that driver. (In case
+> you wonder, that number was inherited from the original skb Tx
+> implementation in the driver.)=20
+
+Ah, that explains the issue I have on the production system that runs
+the EDT-pacer[2].  I see that i40e function i40e_clean_tx_irq() ignores
+napi_budget but uses it own budget, that defaults to 256.  Looks like I
+can adjust this via ethtool -C tx-frames-irq.   I turned this down to
+64 (32 was giving worse results, and below 16 system acted strange).
+
+Now the issue is gone, which was that if TX-DMA completion was running
+(i40e_clean_tx_irq()) on the same CPU that send packets via FQ-pacer
+qdisc, then the pacing was not accurate, and was sending too bursty.
+
+System have already tuned "net/core/dev_weight" and RX/TX-bias to
+reduce bulking, as this can influence latency and the EDT-pacing
+accuracy. (It is a middlebox bridging VLANs and BPF-EDT tiemstamping and
+FQ-pacing packets to solve bursts overflowing switch ports).
+
+  sudo sysctl net/core/dev_weight
+  net.core.dev_weight =3D 1
+  net.core.dev_weight_rx_bias =3D 32
+  net.core.dev_weight_tx_bias =3D 1
+
+This net.core.dev_weight_tx_bias=3D1 (together with dev_weight=3D1) cause
+qdisc transmit budget to become one packet, cycling through
+NET_TX_SOFTIRQ which consumes time and gives a little more pacing space
+for the packets.
 
 
-Very nice debugging !
+> The actual batch size is controlled by
+> the application. If it puts 1 packet in the Tx ring and calls send(),
+> the batch size will be 1. If it puts 128 packets in the Tx ring and
+> calls send(), you get a batch size of 128, and so on. It is flexible,
+> so you can trade-off latency with throughput in the way the
+> application desires. Rx batch size has also become flexible now with
+> the introduction of Bj=C3=B6rn's prefer_busy_poll patch set [1].
+>=20
+> [1] https://lore.kernel.org/netdev/20201130185205.196029-1-bjorn.topel@gm=
+ail.com/
 
-I guess we could fix this in skb_prepare_for_shift(), eventually
-caring for the truesize manipulation
-(or reverting the change done in pskb_expand_head(), since only kfence
-is having this issue.
+This looks like a cool trick, to get even more accurate packet scheduling.
 
-(All TCP skbs in output path have the same allocation size for skb->head)
+I played with the tunings, and could see changed behavior with mpstat,
+but ended up tuning it off again, as I could not measure a direct
+correlation with the bpftrace tools[3].
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e578544b2cc7110ec2f6bcf4c29d93e4b4b1ad14..798b51eeeaa4fbed65d41d9eab207dbbf438dab3
-100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3270,7 +3270,14 @@ EXPORT_SYMBOL(skb_split);
-  */
- static int skb_prepare_for_shift(struct sk_buff *skb)
- {
--       return skb_cloned(skb) && pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-+       unsigned int ret = 0, save;
-+
-+       if (skb_cloned(skb)) {
-+               save = skb->truesize;
-+               ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-+               skb->truesize = save;
-+       }
-+       return ret;
- }
+
+> > The low level explanation is that these 8 and 16 batch sizes are
+> > optimized towards cache sizes and Intel's Line-Fill-Buffer (prefetcher
+> > with 10 elements).  I'm betting on that memory backing these 8 or 16
+> > packets have higher chance to remain/being in cache, and I can prefetch
+> > them without evicting them from cache again.  In some cases the pointer
+> > to these packets are queued into a ptr_ring, and it is more optimal to
+> > write cacheline sizes 1 (8 pointers) or 2 (16 pointers) into the ptr_ri=
+ng.
+> >
+> > The general explanation is my goal to do bulking without adding latency.
+> > This is explicitly stated in my presentation[1] as of Feb 2016, slide 2=
+0.
+> > Sure, you/we can likely make the micro-benchmarks look better by using
+> > 64 batch size, but that will introduce added latency and likely shoot
+> > our-selves in the foot for real workloads.  With experience from
+> > bufferbloat and real networks, we know that massive TX bulking have bad
+> > effects.  Still XDP-redirect does massive bulking (NIC flush is after
+> > full 64 budget) and we don't have pushback or a queue mechanism (so I
+> > know we are already shooting ourselves in the foot) ...  Fortunately we
+> > now have a PhD student working on queuing for XDP.
+> >
+> > It is also important to understand that this is an adaptive bulking
+> > scheme, which comes from NAPI.  We don't wait for packets arriving
+> > shortly, we pickup what NIC have available, but by only taking 8 or 16
+> > packets (instead of emptying the entire RX-queue), and then spending
+> > some time to send them along, I'm hoping that NIC could have gotten
+> > some more frame.  For cpumap and veth (in-some-cases) they can start to
+> > consume packets from these batches, but NIC drivers gets XDP_XMIT_FLUSH
+> > signal at NAPI-end (xdp_do_flush). Still design allows NIC drivers to
+> > update their internal queue state (and BQL), and if it gets close to
+> > full they can choose to flush/doorbell the NIC earlier.  When doing
+> > queuing for XDP we need to expose these NIC queue states, and having 4
+> > calls with 16 packets (64 budget) also gives us more chances to get NIC
+> > queue state info which the NIC already touch.
+> >
+> >
+> > [1] https://people.netfilter.org/hawk/presentations/devconf2016/net_sta=
+ck_challenges_100G_Feb2016.pdf
+
+[2] https://github.com/netoptimizer/bpf-examples/tree/master/traffic-pacing=
+-edt/
+
+[3] https://github.com/netoptimizer/bpf-examples/tree/master/traffic-pacing=
+-edt/bpftrace
+
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
