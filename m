@@ -2,99 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8EC2D6206
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 17:35:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BBEE2D621C
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 17:38:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391214AbgLJQf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 11:35:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391783AbgLJQfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 11:35:07 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1284C0613CF;
-        Thu, 10 Dec 2020 08:34:26 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id t18so3052519plo.0;
-        Thu, 10 Dec 2020 08:34:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=E3rJuk8usISu/Y/TfNrKaojt28xWpJIRVht3oZIPIOc=;
-        b=WHa9FIQ42zsQnabmToprjm4WWyRFiJDTiWwZ++h2YEZ1wC9uKLbjtZ0Wy2NtcDbDNS
-         cheRjMnl5QHLUY6AEoHCWm8TZHah0aAWLH8DYALXImu6QbwcRaZnIwxqWd23oW4mxIH/
-         3XjtuYwO9w0atIVQ+WBO4i+5IquAsj6pMiXJFusUl7rE6T78r/serM8mxh0sGfk9H8B7
-         E61cmk/av48vDlW8QM+PRSIEOT8PJKCcGXS6z+h3A88lobLMOM/HdJjj7ALvE1fbSSRB
-         1E7KQPsq0+DCTXdkFGLEmCNeCWn+jDuartVaKJp5se84OkiEdmx/iKaCkSKtKNTq2Tx5
-         80kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=E3rJuk8usISu/Y/TfNrKaojt28xWpJIRVht3oZIPIOc=;
-        b=TXeDa+2LLxfIK861pFjC2hQNP7+INaBcxDrSPaNN+dhVKCOXlONPLr9EgTNapzeC+b
-         vX3PwqfKn3484xYjjS0/AlcPDELUY/8rJVeYDk2HXo8eNFR4B4byyJNQ4EphCDo6Ib/6
-         Lhvd2bHPx+5E9Uw0fk4+6Mcnq39ry3JNBlXoTJuEnwVCU6ZXJBlRZm0P/QR0qK6vIId4
-         fLYbAa2LFHGEixTlUMGOz5mSr9n2Xn0ok8qpZ9KMdLQ2en6nVCuuVE6xDxeqmMvqma/I
-         1tz+dhqqmJ0hs+n8kWjmuW7IKaUwyMy4LM6twQIWf6XXlsXvpqWT1BHdAsFYu++Lcq1O
-         2aPw==
-X-Gm-Message-State: AOAM532phgrRmD8Ty6Fpnst3aZDNtFpJ0tFzY5mvM7gc7e0Uzr0FvBbP
-        wwkaeTMuHpkdInXCrhkXTMLT+u9YoVB/ylDP5Cw=
-X-Google-Smtp-Source: ABdhPJwEiA7Gcv3q1xsSLc/hCjWIwYxuTQYsM8JK4r/EKSReRYegxGJLqtEkvKhDNl9jg+Gq0N2jSg==
-X-Received: by 2002:a17:902:aa8b:b029:da:ef22:8675 with SMTP id d11-20020a170902aa8bb02900daef228675mr7191864plr.15.1607618066438;
-        Thu, 10 Dec 2020 08:34:26 -0800 (PST)
-Received: from VM.ger.corp.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id 14sm6775279pjm.21.2020.12.10.08.34.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Dec 2020 08:34:25 -0800 (PST)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, jonathan.lemon@gmail.com,
-        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com
-Subject: [PATCH bpf-next v2] samples/bpf: fix possible hang in xdpsock with multiple threads
-Date:   Thu, 10 Dec 2020 17:34:07 +0100
-Message-Id: <20201210163407.22066-1-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        id S2389899AbgLJQiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 11:38:23 -0500
+Received: from www62.your-server.de ([213.133.104.62]:53330 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730905AbgLJQhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 11:37:38 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1knOw1-00006j-09; Thu, 10 Dec 2020 17:36:53 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1knOw0-000Gmm-LC; Thu, 10 Dec 2020 17:36:52 +0100
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix selftest compilation on clang
+ 11
+To:     KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Brendan Jackman <jackmanb@google.com>,
+        KP Singh <kpsingh@google.com>
+References: <20201209142912.99145-1-jolsa@kernel.org>
+ <CAEf4BzYBddPaEzRUs=jaWSo5kbf=LZdb7geAUVj85GxLQztuAQ@mail.gmail.com>
+ <20201210161554.GF69683@krava>
+ <CANA3-0dvt3FH8=ZYO7CfW0YKeQemNcsP76j441wW31-WE1_o4A@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <d0dbe550-5d75-29bd-cded-7ecd86f41719@iogearbox.net>
+Date:   Thu, 10 Dec 2020 17:36:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANA3-0dvt3FH8=ZYO7CfW0YKeQemNcsP76j441wW31-WE1_o4A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26014/Thu Dec 10 15:21:42 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+On 12/10/20 5:28 PM, KP Singh wrote:
+> On Thu, Dec 10, 2020 at 5:18 PM Jiri Olsa <jolsa@redhat.com> wrote:
+[...]
+>>> It's hard and time-consuming enough to develop these features, I'd
+>>> rather keep selftests simpler, more manageable, and less brittle by
+>>> not having excessive amount of feature detection and skipped
+>>> selftests. I think that's the case for BPF atomics as well, btw (cc'ed
+>>> Yonghong and Brendan).
+>>>
+>>> To alleviate some of the pain of setting up the environment, one way
+>>> would be to provide script and/or image to help bring up qemu VM for
+>>> easier testing. To that end, KP Singh (cc'ed) was able to re-use
+>>> libbpf CI's VM setup and make it easier for local development. I hope
+>>> he can share this soon.
+> 
+> I will clean it up and share it asap and send it as an RFC which
+> adds it to tools/testing/selftests/bpf
 
-Fix a possible hang in xdpsock that can occur when using multiple
-threads. In this case, one or more of the threads might get stuck in
-the while-loop in tx_only after the user has signaled the main thread
-to stop execution. In this case, no more Tx packets will be sent, so a
-thread might get stuck in the aforementioned while-loop. Fix this by
-introducing a test inside the while-loop to check if the benchmark has
-been terminated. If so, return from the function.
+Thanks!
 
-Fixes: cd9e72b6f210 ("samples/bpf: xdpsock: Add option to specify batch size")
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
-v1->v2:
-* Changed break to return
+> We can discuss on the RFC as to where the script would finally end up
+> but I think it would save a lot of time/back-and-forth if developers could
+> simply check:
+> 
+>    "Does my change break the BPF CI?"
 
- samples/bpf/xdpsock_user.c | 2 ++
- 1 file changed, 2 insertions(+)
+I'd love to have a Dockerfile under tools/testing/selftests/bpf/ that
+replicates the CI env (e.g. busybox, nightly llvm, pahole git, etc) where
+we could have quay.io job auto-build this for bpf / bpf-next tree e.g. from a
+GH mirror. This would then allow to mount the local kernel tree as a volume
+into the container for easy compilation & test access for everyone where we
+then don't need all these workarounds like in this patch anymore.
 
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 568f9815bb1b..db0cb73513a5 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -1275,6 +1275,8 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
- 	while (xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx) <
- 				      batch_size) {
- 		complete_tx_only(xsk, batch_size);
-+		if (benchmark_done)
-+			return;
- 	}
-
- 	for (i = 0; i < batch_size; i++) {
-
-base-commit: 08c6a2f620e427e879d6ec9329143d6fcd810cd8
---
-2.29.0
+Thanks,
+Daniel
