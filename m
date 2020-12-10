@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07D692D675E
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:50:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A032D6745
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:50:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404371AbgLJTn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 14:43:56 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:57330 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393538AbgLJTnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:22 -0500
-Message-Id: <20201210194044.580936243@linutronix.de>
+        id S2393576AbgLJToi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 14:44:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404339AbgLJTnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:43 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF77BC0611CD;
+        Thu, 10 Dec 2020 11:42:43 -0800 (PST)
+Message-Id: <20201210194044.769458162@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1607629359;
+        s=2020; t=1607629362;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=KrhhIjbt5v6ZrRAi/JobWuMkwODXuYkNejeEJ8r5wYA=;
-        b=O2jdDNolMgwdeqbdehl1p9TNp5CMFEegQIULELNgmYRztgIcL4c3f02Qf6SlZ5l3g40OIQ
-        RgS4jJlX+w2xWwCBcvE8uOXoWkE+AICi/Nh5GaOHSq9qtJLjJ382ImsNRhJ2OXUKqHjpIF
-        I8MjuSPpVTKBCKMHB0jWJJqdHHehIe0RI7sKzCawI6DUxBj2zGutPRs1VZRztMy0HnwSsf
-        OI5cZWwaKtKyxElh00AwZXcb13cApJGdpe1cNRwNFz3Ty/Mas6lCOq0rRGjsr5nCkNgDIf
-        ZfeC1Cgjfe3pwIQtGOuNMnkwwWQv4/tiKJan+K2zSJCygXvLKALGPkNvkXEO8Q==
+        bh=VOaf/d7D7QtaaC+WU1sXZf5eTJVDFk9LK/s7Au7CufU=;
+        b=ebvAKnU9U5xxsuTyZRRyBD/pSxlAzqV321cu/1PSB+S30uzHIXKjKJyuLWtBWcYVZXlybn
+        NBr9KiI1e9paQHPvIfvkgD6mJDZPhiGb5TN5PvcTekgbiahpQ8LQMlSJSX4xpUxk9f2Ol5
+        F8oNCSe1H+ais24JO9t2IwvShGuXdvh8ES7plOqYyAwLRKf0TojyhsFUMV5kjVjEtAGPaz
+        UOL8zFfw66+Fs8FOPny2ek7maFNW7ZTVUGseqbCjWR7MjO0q/MLzWc7S4CWwTTyNrDt17N
+        pAxkdJedoxJwP4qnw1l3YgNebMwtGsjkmDdMWwXGJEDNlPXObkHeBB1kSiRQpQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1607629359;
+        s=2020e; t=1607629362;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=KrhhIjbt5v6ZrRAi/JobWuMkwODXuYkNejeEJ8r5wYA=;
-        b=AYssMWVwzMPlm7xFPvozIcusMMzaZeOC4IJgbRnnFFntYh+XGLTcZ4I1FH/Z2XIwzAjKaN
-        H21cttJmA1LtW+AQ==
-Date:   Thu, 10 Dec 2020 20:25:56 +0100
+        bh=VOaf/d7D7QtaaC+WU1sXZf5eTJVDFk9LK/s7Au7CufU=;
+        b=W/Zofh+C9ibp8KsiLJ6iyTc3jKq0LDlUAeV1W45RXNpyPicUPyvAT+QSfrk4IRw9rtLo2E
+        zAcfM77lXBTE8oDg==
+Date:   Thu, 10 Dec 2020 20:25:58 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Marc Zyngier <maz@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         afzal mohammed <afzal.mohd.ma@gmail.com>,
@@ -72,13 +71,16 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-pci@vger.kernel.org,
         Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
         Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leon@kernel.org>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
         Juergen Gross <jgross@suse.com>,
         Stefano Stabellini <sstabellini@kernel.org>,
         xen-devel@lists.xenproject.org
-Subject: [patch 20/30] net/mlx4: Replace irq_to_desc() abuse
+Subject: [patch 22/30] net/mlx5: Replace irq_to_desc() abuse
 References: <20201210192536.118432146@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -98,81 +100,48 @@ using an interface which is usually not for random drivers, but definitely
 less hideous than the previous hack.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Tariq Toukan <tariqt@nvidia.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-rdma@vger.kernel.org
 ---
- drivers/net/ethernet/mellanox/mlx4/en_cq.c   |    8 +++-----
- drivers/net/ethernet/mellanox/mlx4/en_rx.c   |    6 +-----
- drivers/net/ethernet/mellanox/mlx4/mlx4_en.h |    3 ++-
- 3 files changed, 6 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h      |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c |    6 +-----
+ 3 files changed, 3 insertions(+), 7 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx4/en_cq.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_cq.c
-@@ -90,7 +90,7 @@ int mlx4_en_activate_cq(struct mlx4_en_p
- 			int cq_idx)
- {
- 	struct mlx4_en_dev *mdev = priv->mdev;
--	int err = 0;
-+	int irq, err = 0;
- 	int timestamp_en = 0;
- 	bool assigned_eq = false;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -669,7 +669,7 @@ struct mlx5e_channel {
+ 	spinlock_t                 async_icosq_lock;
  
-@@ -116,10 +116,8 @@ int mlx4_en_activate_cq(struct mlx4_en_p
- 
- 			assigned_eq = true;
- 		}
--
--		cq->irq_desc =
--			irq_to_desc(mlx4_eq_get_irq(mdev->dev,
--						    cq->vector));
-+		irq = mlx4_eq_get_irq(mdev->dev, cq->vector);
-+		cq->aff_mask = irq_get_affinity_mask(irq);
- 	} else {
- 		/* For TX we use the same irq per
- 		ring we assigned for the RX    */
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -959,8 +959,6 @@ int mlx4_en_poll_rx_cq(struct napi_struc
- 
- 	/* If we used up all the quota - we're probably not done yet... */
- 	if (done == budget || !clean_complete) {
--		const struct cpumask *aff;
--		struct irq_data *idata;
- 		int cpu_curr;
- 
- 		/* in case we got here because of !clean_complete */
-@@ -969,10 +967,8 @@ int mlx4_en_poll_rx_cq(struct napi_struc
- 		INC_PERF_COUNTER(priv->pstats.napi_quota);
- 
- 		cpu_curr = smp_processor_id();
--		idata = irq_desc_get_irq_data(cq->irq_desc);
--		aff = irq_data_get_affinity_mask(idata);
- 
--		if (likely(cpumask_test_cpu(cpu_curr, aff)))
-+		if (likely(cpumask_test_cpu(cpu_curr, cq->aff_mask)))
- 			return budget;
- 
- 		/* Current cpu is not according to smp_irq_affinity -
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_en.h
-@@ -46,6 +46,7 @@
- #endif
- #include <linux/cpu_rmap.h>
- #include <linux/ptp_clock_kernel.h>
-+#include <linux/irq.h>
- #include <net/xdp.h>
- 
- #include <linux/mlx4/device.h>
-@@ -380,7 +381,7 @@ struct mlx4_en_cq {
- 	struct mlx4_cqe *buf;
- #define MLX4_EN_OPCODE_ERROR	0x1e
- 
+ 	/* data path - accessed per napi poll */
 -	struct irq_desc *irq_desc;
-+	const struct cpumask *aff_mask;
- };
++	const struct cpumask	  *aff_mask;
+ 	struct mlx5e_ch_stats     *stats;
  
- struct mlx4_en_port_profile {
+ 	/* control */
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -1998,7 +1998,7 @@ static int mlx5e_open_channel(struct mlx
+ 	c->num_tc   = params->num_tc;
+ 	c->xdp      = !!params->xdp_prog;
+ 	c->stats    = &priv->channel_stats[ix].ch;
+-	c->irq_desc = irq_to_desc(irq);
++	c->aff_mask = irq_get_affinity_mask(irq);
+ 	c->lag_port = mlx5e_enumerate_lag_port(priv->mdev, ix);
+ 
+ 	netif_napi_add(netdev, &c->napi, mlx5e_napi_poll, 64);
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+@@ -40,12 +40,8 @@
+ static inline bool mlx5e_channel_no_affinity_change(struct mlx5e_channel *c)
+ {
+ 	int current_cpu = smp_processor_id();
+-	const struct cpumask *aff;
+-	struct irq_data *idata;
+ 
+-	idata = irq_desc_get_irq_data(c->irq_desc);
+-	aff = irq_data_get_affinity_mask(idata);
+-	return cpumask_test_cpu(current_cpu, aff);
++	return cpumask_test_cpu(current_cpu, c->aff_mask);
+ }
+ 
+ static void mlx5e_handle_tx_dim(struct mlx5e_txqsq *sq)
 
