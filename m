@@ -2,143 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 068D82D5524
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 09:12:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C54212D5539
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 09:20:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387580AbgLJIKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 03:10:11 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:61287 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725896AbgLJIKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 03:10:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1607587805; x=1639123805;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=RaitfIFfdpp6jtfUPGRbEOUja/qNHha6jb1uqJ7pyaU=;
-  b=X/hhDI4R06IYr22SqJWXE9JvBlwWHN+poYZOOaHORuCF0b/h1LOHJ00w
-   +uEfP4kTkpfbN5JS+KRS6WfX1RCTSqVnBx5CC9Va+ENxHl0zKh+Zf5RAo
-   03Cl8ZidrhP151mtOOHeEohKDYq3dES9scny5nqgqIJXG21USwu+4lwtT
-   8=;
-X-IronPort-AV: E=Sophos;i="5.78,407,1599523200"; 
-   d="scan'208";a="103145938"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 10 Dec 2020 08:09:16 +0000
-Received: from EX13D31EUA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id 609FF240BFB;
-        Thu, 10 Dec 2020 08:09:14 +0000 (UTC)
-Received: from u3f2cd687b01c55.ant.amazon.com (10.43.161.102) by
- EX13D31EUA001.ant.amazon.com (10.43.165.15) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 10 Dec 2020 08:09:09 +0000
-From:   SeongJae Park <sjpark@amazon.com>
-To:     <davem@davemloft.net>
-CC:     SeongJae Park <sjpark@amazon.de>, <kuba@kernel.org>,
-        <kuznet@ms2.inr.ac.ru>, <edumazet@google.com>, <fw@strlen.de>,
-        <paulmck@kernel.org>, <netdev@vger.kernel.org>,
-        <rcu@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 1/1] net/ipv4/inet_fragment: Batch fqdir destroy works
-Date:   Thu, 10 Dec 2020 09:08:44 +0100
-Message-ID: <20201210080844.23741-2-sjpark@amazon.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201210080844.23741-1-sjpark@amazon.com>
-References: <20201210080844.23741-1-sjpark@amazon.com>
+        id S2387811AbgLJITY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 03:19:24 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34540 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387534AbgLJITI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 03:19:08 -0500
+Received: by mail-wm1-f67.google.com with SMTP id g25so2289638wmh.1;
+        Thu, 10 Dec 2020 00:18:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LQkGEYd3krV+Z3bgXSv+63USQGfgVXpXR+vwfP4BQCs=;
+        b=NOL4m84U6qKfNrympHFrOmU7mGM1w1gPHU5ErnevIOlDwhu9ha5TLTc5kqbB1GivHr
+         JCHoJae2fWgLDWON1XyEkky/QMb7ArPe+FwFZFF9Qnyzj4xH4yCXmETcl836tJSiVBC5
+         argeBV470cVJHURJXW/J6lJKXQYW8fdcHz2p1aDo+YGppq4n2mukLBDd8lYMcsvJnbZZ
+         IWvoucuimDDb82xggTSj07r3dogpEiLiYraYA+DpMuVQHCRyqDo7iWywi48+Vh1R9ehG
+         OJ0O3lN2tuDMZ/8zweR4BwLXg6oMMKRqN2LPV196wWvPCVzg+IakuIWrrktEw2Z/FI3U
+         UOoQ==
+X-Gm-Message-State: AOAM532aYCefsKTSi2OF0N3C4YEsWF+P1fzT9rETAx+oU3dBB7mG+82E
+        YZVU+28Bx+yw3KkOsmtDunI=
+X-Google-Smtp-Source: ABdhPJzobk+kyfH4IaVIUVdA4tztlyolb0iUT9kGkge6VnZKnOwInCXsjw6M7XGVjoTByVPdgV1xpQ==
+X-Received: by 2002:a7b:c5c6:: with SMTP id n6mr6552880wmk.131.1607588305727;
+        Thu, 10 Dec 2020 00:18:25 -0800 (PST)
+Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
+        by smtp.googlemail.com with ESMTPSA id h20sm8889440wrb.21.2020.12.10.00.18.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Dec 2020 00:18:24 -0800 (PST)
+Date:   Thu, 10 Dec 2020 09:18:22 +0100
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: Re: [PATCH v2 net-next 2/2] nfc: s3fwrn5: Remove hard coded
+ interrupt trigger type from the i2c module
+Message-ID: <20201210081822.GA3573@kozik-lap>
+References: <20201208141012.6033-1-bongsu.jeon@samsung.com>
+ <20201208141012.6033-3-bongsu.jeon@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.102]
-X-ClientProxiedBy: EX13D16UWB004.ant.amazon.com (10.43.161.170) To
- EX13D31EUA001.ant.amazon.com (10.43.165.15)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201208141012.6033-3-bongsu.jeon@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: SeongJae Park <sjpark@amazon.de>
+On Tue, Dec 08, 2020 at 11:10:12PM +0900, Bongsu Jeon wrote:
+> From: Bongsu Jeon <bongsu.jeon@samsung.com>
+> 
+> For the flexible control of interrupt trigger type, remove the hard coded
+> interrupt trigger type in the i2c module. The trigger type will be loaded
+>  from a dts.
+> 
+> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+> ---
+>  drivers/nfc/s3fwrn5/i2c.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
+> index e1bdde105f24..42f1f610ac2c 100644
+> --- a/drivers/nfc/s3fwrn5/i2c.c
+> +++ b/drivers/nfc/s3fwrn5/i2c.c
+> @@ -179,6 +179,8 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
+>  				  const struct i2c_device_id *id)
+>  {
+>  	struct s3fwrn5_i2c_phy *phy;
+> +	struct irq_data *irq_data;
+> +	unsigned long irqflags;
+>  	int ret;
+>  
+>  	phy = devm_kzalloc(&client->dev, sizeof(*phy), GFP_KERNEL);
+> @@ -212,8 +214,11 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	irq_data = irq_get_irq_data(client->irq);
+> +	irqflags = irqd_get_trigger_type(irq_data) | IRQF_ONESHOT;
 
-In 'fqdir_exit()', a work for destroy of the 'fqdir' is enqueued.  The
-work function, 'fqdir_work_fn()', calls 'rcu_barrier()'.  In case of
-intensive 'fqdir_exit()' (e.g., frequent 'unshare()' systemcalls), this
-increased contention could result in unacceptably high latency of
-'rcu_barrier()'.  This commit avoids such contention by doing the
-destroy work in batched manner, as similar to that of 'cleanup_net()'.
+This patch is wrong and should not be applied. David, please give few
+days to review the patches. :)
 
-Signed-off-by: SeongJae Park <sjpark@amazon.de>
----
- include/net/inet_frag.h  |  2 +-
- net/ipv4/inet_fragment.c | 28 ++++++++++++++++++++--------
- 2 files changed, 21 insertions(+), 9 deletions(-)
+The irqd_get_trigger_type is not necessary.
 
-diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
-index bac79e817776..558893d8810c 100644
---- a/include/net/inet_frag.h
-+++ b/include/net/inet_frag.h
-@@ -20,7 +20,7 @@ struct fqdir {
- 
- 	/* Keep atomic mem on separate cachelines in structs that include it */
- 	atomic_long_t		mem ____cacheline_aligned_in_smp;
--	struct work_struct	destroy_work;
-+	struct llist_node	destroy_list;
- };
- 
- /**
-diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
-index 10d31733297d..d5c40386a764 100644
---- a/net/ipv4/inet_fragment.c
-+++ b/net/ipv4/inet_fragment.c
-@@ -145,12 +145,19 @@ static void inet_frags_free_cb(void *ptr, void *arg)
- 		inet_frag_destroy(fq);
- }
- 
-+static LLIST_HEAD(destroy_list);
-+
- static void fqdir_work_fn(struct work_struct *work)
- {
--	struct fqdir *fqdir = container_of(work, struct fqdir, destroy_work);
--	struct inet_frags *f = fqdir->f;
-+	struct llist_node *kill_list;
-+	struct fqdir *fqdir, *tmp;
-+	struct inet_frags *f;
- 
--	rhashtable_free_and_destroy(&fqdir->rhashtable, inet_frags_free_cb, NULL);
-+	/* Atomically snapshot the list of fqdirs to destroy */
-+	kill_list = llist_del_all(&destroy_list);
-+
-+	llist_for_each_entry(fqdir, kill_list, destroy_list)
-+		rhashtable_free_and_destroy(&fqdir->rhashtable, inet_frags_free_cb, NULL);
- 
- 	/* We need to make sure all ongoing call_rcu(..., inet_frag_destroy_rcu)
- 	 * have completed, since they need to dereference fqdir.
-@@ -158,10 +165,13 @@ static void fqdir_work_fn(struct work_struct *work)
- 	 */
- 	rcu_barrier();
- 
--	if (refcount_dec_and_test(&f->refcnt))
--		complete(&f->completion);
-+	llist_for_each_entry_safe(fqdir, tmp, kill_list, destroy_list) {
-+		f = fqdir->f;
-+		if (refcount_dec_and_test(&f->refcnt))
-+			complete(&f->completion);
- 
--	kfree(fqdir);
-+		kfree(fqdir);
-+	}
- }
- 
- int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f, struct net *net)
-@@ -184,10 +194,12 @@ int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f, struct net *net)
- }
- EXPORT_SYMBOL(fqdir_init);
- 
-+static DECLARE_WORK(fqdir_destroy_work, fqdir_work_fn);
-+
- void fqdir_exit(struct fqdir *fqdir)
- {
--	INIT_WORK(&fqdir->destroy_work, fqdir_work_fn);
--	queue_work(system_wq, &fqdir->destroy_work);
-+	if (llist_add(&fqdir->destroy_list, &destroy_list))
-+		queue_work(system_wq, &fqdir_destroy_work);
- }
- EXPORT_SYMBOL(fqdir_exit);
- 
--- 
-2.17.1
+I'll send follow ups to correct this.
 
+Best regards,
+Krzysztof
+
+
+> +
+>  	ret = devm_request_threaded_irq(&client->dev, phy->i2c_dev->irq, NULL,
+> -		s3fwrn5_i2c_irq_thread_fn, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
+> +		s3fwrn5_i2c_irq_thread_fn, irqflags,
+>  		S3FWRN5_I2C_DRIVER_NAME, phy);
+>  	if (ret)
+>  		s3fwrn5_remove(phy->common.ndev);
+> -- 
+> 2.17.1
+> 
