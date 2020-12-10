@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 250882D6BDE
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:39:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6CED2D6BE6
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:39:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394310AbgLJXXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 18:23:05 -0500
-Received: from aserp2130.oracle.com ([141.146.126.79]:55024 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394234AbgLJXWj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 18:22:39 -0500
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BANJcXS003074;
-        Thu, 10 Dec 2020 23:19:38 GMT
+        id S2394353AbgLJXXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 18:23:06 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:33688 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394246AbgLJXWp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 18:22:45 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BANJcxD076282;
+        Thu, 10 Dec 2020 23:21:08 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
  references : from : message-id : date : mime-version : in-reply-to :
  content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=+7Mm8NoMJp9j52xNSSS3U0SBEUJij5+TbHj/sEGWvTc=;
- b=u+3l3VwFE77ZdGsGjRddFE+dCehz5qrVKsbBnhGV+nhEsQXQr4wsZggjHTDzlgab5HWW
- W5egKIrrmhPu4ceJfalySBs8+I9FL0posNnaW9CbqbQrGVA0xg9R6RUkmEkz2s2No81L
- nPNXJeIgpYDvFxFB/WQZYYVQRZ8i2VKbURSVU2FxkTzOHIYKNUfXXIo5pBMOc10Am1by
- BIehnBSdx++jQOQE0Sqhoje+VUsTyicTJHRPdgx7QaW/te4Rwue+wm7tniYwBY8WiOcJ
- un2QEN6snEEYNGv5arjms4I4Cg54F0bI7f25KRnMCWmobnf82SR6SJhov103IcOkf0u5 8g== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2130.oracle.com with ESMTP id 357yqc85cd-1
+ bh=g9HQMgG8/lH1Xl7UdSJNvDAMRQCo3FWW7Bk60ydYMFM=;
+ b=yiiSqUT1ul8LHgAfKjBlIB4yYYSpi+fGANCSKFFlOWkOUouS3Dv2O9HSPvMZHyva2HLa
+ t2URiRpBCtd04nx9Lq/bUlqBSfAvdgny9AZ7r99NqQl+3SLxNcNacBmNDpvbnkmq+RJf
+ tkHuWp0PFf1OqSZUrQZdo1op9pLE6PCegbVRzlACJRrfsJakcoaM7H+sCwUihUEMr2fQ
+ dVrKn7O2B0uCiKt4l0ihiQonSCwdjdrSogLQz8qpbD6/3t1pwKq6cTqj0HVlsjBYL0mf
+ j+yxZxQYgeFZOyVTmAVytFe3f0zAIJgGCpXDL4UlTLva10Xtrln9de8y9hZfow66cFAT Dg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 35825mg2bs-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 10 Dec 2020 23:19:38 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BAMxr2o074450;
-        Thu, 10 Dec 2020 23:19:32 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 358m52xf7m-1
+        Thu, 10 Dec 2020 23:21:08 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BANKtw7149340;
+        Thu, 10 Dec 2020 23:21:07 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 358m42f5be-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Dec 2020 23:19:32 +0000
-Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0BANJPdu022291;
-        Thu, 10 Dec 2020 23:19:25 GMT
+        Thu, 10 Dec 2020 23:21:07 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BANKp8g025210;
+        Thu, 10 Dec 2020 23:20:51 GMT
 Received: from [10.39.227.125] (/10.39.227.125)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 10 Dec 2020 15:19:24 -0800
-Subject: Re: [patch 24/30] xen/events: Remove unused
- bind_evtchn_to_irq_lateeoi()
+        with ESMTP ; Thu, 10 Dec 2020 15:20:51 -0800
+Subject: Re: [patch 27/30] xen/events: Only force affinity mask for percpu
+ interrupts
 To:     Thomas Gleixner <tglx@linutronix.de>,
         LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -86,60 +86,54 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leon@kernel.org>
 References: <20201210192536.118432146@linutronix.de>
- <20201210194044.972064156@linutronix.de>
+ <20201210194045.250321315@linutronix.de>
 From:   boris.ostrovsky@oracle.com
 Organization: Oracle Corporation
-Message-ID: <748d8d81-ac0f-aee2-1a56-ba9c40fee52f@oracle.com>
-Date:   Thu, 10 Dec 2020 18:19:19 -0500
+Message-ID: <7f7af60f-567f-cdef-f8db-8062a44758ce@oracle.com>
+Date:   Thu, 10 Dec 2020 18:20:46 -0500
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-In-Reply-To: <20201210194044.972064156@linutronix.de>
+In-Reply-To: <20201210194045.250321315@linutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9831 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 suspectscore=0
- bulkscore=0 malwarescore=0 phishscore=0 adultscore=0 mlxlogscore=999
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 adultscore=0
+ bulkscore=0 phishscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012100148
+ definitions=main-2012100149
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9831 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=999
- clxscore=1011 malwarescore=0 bulkscore=0 phishscore=0 adultscore=0
- spamscore=0 priorityscore=1501 mlxscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012100149
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0 bulkscore=0
+ phishscore=0 mlxlogscore=999 clxscore=1015 priorityscore=1501 mlxscore=0
+ spamscore=0 lowpriorityscore=0 malwarescore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012100149
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/10/20 2:26 PM, Thomas Gleixner wrote:
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-> Cc: Juergen Gross <jgross@suse.com>
-> Cc: Stefano Stabellini <sstabellini@kernel.org>
-> Cc: xen-devel@lists.xenproject.org
-> ---
->  drivers/xen/events/events_base.c |    6 ------
->  1 file changed, 6 deletions(-)
+> All event channel setups bind the interrupt on CPU0 or the target CPU for
+> percpu interrupts and overwrite the affinity mask with the corresponding
+> cpumask. That does not make sense.
 >
-> --- a/drivers/xen/events/events_base.c
-> +++ b/drivers/xen/events/events_base.c
-> @@ -1132,12 +1132,6 @@ int bind_evtchn_to_irq(evtchn_port_t evt
->  }
->  EXPORT_SYMBOL_GPL(bind_evtchn_to_irq);
->  
-> -int bind_evtchn_to_irq_lateeoi(evtchn_port_t evtchn)
-> -{
-> -	return bind_evtchn_to_irq_chip(evtchn, &xen_lateeoi_chip);
-> -}
-> -EXPORT_SYMBOL_GPL(bind_evtchn_to_irq_lateeoi);
+> The XEN implementation of irqchip::irq_set_affinity() already picks a
+> single target CPU out of the affinity mask and the actual target is stored
+> in the effective CPU mask, so destroying the user chosen affinity mask
+> which might contain more than one CPU is wrong.
+>
+> Change the implementation so that the channel is bound to CPU0 at the XEN
+> level and leave the affinity mask alone. At startup of the interrupt
+> affinity will be assigned out of the affinity mask and the XEN binding will
+> be updated. 
 
 
-
-include/xen/events.h also needs to be updated (and in the next patch for xen_set_affinity_evtchn() as well).
+If that's the case then I wonder whether we need this call at all and instead bind at startup time.
 
 
 -boris
 
+
+> Only keep the enforcement for real percpu interrupts.
