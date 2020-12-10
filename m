@@ -2,67 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65CD12D55C7
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 09:53:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 571A22D55D4
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 09:56:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388440AbgLJIwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 03:52:34 -0500
-Received: from mail.persuitflow.com ([89.46.74.132]:53838 "EHLO
-        server1.mail.persuitflow.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388364AbgLJIwT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 03:52:19 -0500
-Received: by server1.mail.persuitflow.com (Postfix, from userid 1001)
-        id 4997AA730E; Thu, 10 Dec 2020 08:51:24 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=persuitflow.com;
-        s=mail; t=1607590292;
-        bh=LIG/EV9hZypKEB8e9JkxJFCirHVIBsQt3YrIS4TkXUA=;
-        h=Date:From:To:Subject:From;
-        b=KicJtadkiYt0iIDuIj2ZfxDh8NWhPlfmB9H4CD0Xip5AaTam5fC8ngE2Y5hvL1oa2
-         uRbgEw7HeIO4j5XYOo2ubB0lZ6GC58I8lCeoHECqrX7YiywknIEmVYjqME3O18wrrh
-         e8kFDdahryY23qDb7tvgVvgymtCWbPLdYwIbCEnPQQYqOoE8JF/FjM7jgMa7F7pK2L
-         /SHBk+dnxEG3SlFs1NWpuD8/293megBCydEqf3OLXd2sU1bMw5rWZTsdLfuFMCvD9S
-         DmEJRhmoLU8Xne4oWi3HyDsiFKb0LhSXd8D4NfdxKncAoxJoc0cSsRZZEFwobwAVq9
-         7NOavbJkAb0rQ==
-Received: by mail.persuitflow.com for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 08:51:07 GMT
-Message-ID: <20201210074501-0.1.1x.8ukj.0.oiwkbmcitt@persuitflow.com>
-Date:   Thu, 10 Dec 2020 08:51:07 GMT
-From:   "Raquel Carvalho" <raquel.carvalho@persuitflow.com>
-To:     <netdev@vger.kernel.org>
-Subject: Desinfetante
-X-Mailer: mail.persuitflow.com
+        id S2388489AbgLJIz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 03:55:29 -0500
+Received: from s2.neomailbox.net ([5.148.176.60]:37461 "EHLO s2.neomailbox.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388284AbgLJIz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 03:55:28 -0500
+From:   Antonio Quartulli <a@unstable.cc>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Antonio Quartulli <a@unstable.cc>
+Subject: [PATCH] can: avoid double unlikely() notation when using IS_ERR()
+Date:   Thu, 10 Dec 2020 09:53:21 +0100
+Message-Id: <20201210085321.18693-1-a@unstable.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bom Dia,
+The definition of IS_ERR() already applies the unlikely() notation
+when checking the error status of the passed pointer. For this
+reason there is no need to have the same notation outside of
+IS_ERR() itself.
 
-A demanda por desinfetantes eficazes que permitam a elimina=C3=A7=C3=A3o =
-de microrganismos prejudiciais =C3=A9 continuamente alta em todo o mundo.
+Clean up code by removing redundant notation.
 
-Expandir a oferta com uma gama profissional de produtos com atividade vir=
-icida e bactericida permite aumentar a posi=C3=A7=C3=A3o competitiva da e=
-mpresa e construir novas redes de vendas.
+Signed-off-by: Antonio Quartulli <a@unstable.cc>
+---
+ drivers/net/can/rx-offload.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Diversificamos a linha de atacadistas e distribuidores com sabonetes, l=C3=
-=ADquidos e g=C3=A9is para desinfec=C3=A7=C3=A3o das m=C3=A3os e outros p=
-rodutos de limpeza, entre eles: g=C3=A9is de banho, shampoos e condiciona=
-dores de cabelo, al=C3=A9m de detergentes concentrados.
+diff --git a/drivers/net/can/rx-offload.c b/drivers/net/can/rx-offload.c
+index 450c5cfcb3fc..3c1912c0430b 100644
+--- a/drivers/net/can/rx-offload.c
++++ b/drivers/net/can/rx-offload.c
+@@ -157,7 +157,7 @@ can_rx_offload_offload_one(struct can_rx_offload *offload, unsigned int n)
+ 	/* There was a problem reading the mailbox, propagate
+ 	 * error value.
+ 	 */
+-	if (unlikely(IS_ERR(skb))) {
++	if (IS_ERR(skb)) {
+ 		offload->dev->stats.rx_dropped++;
+ 		offload->dev->stats.rx_fifo_errors++;
+ 
+-- 
+2.29.2
 
-Nossos parceiros de neg=C3=B3cios est=C3=A3o aumentando sua participa=C3=A7=
-=C3=A3o no mercado externo devido =C3=A0 crescente satisfa=C3=A7=C3=A3o d=
-o cliente e oferta diversificada.
-
-O potencial de crescimento de nossas solu=C3=A7=C3=B5es resulta de pre=C3=
-=A7os acess=C3=ADveis, alto desempenho e versatilidade para se adaptar a =
-todos os tipos de pele.
-
-A extens=C3=A3o da gama de produtos proposta =C3=A9 um campo interessante=
- para a coopera=C3=A7=C3=A3o?
-
-
-Cumprimentos,
-Raquel Carvalho
-Conselheiro do Cliente
