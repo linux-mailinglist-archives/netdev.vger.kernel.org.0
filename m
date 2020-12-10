@@ -2,221 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79CCD2D5B11
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 14:00:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE88F2D5B85
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 14:23:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387816AbgLJM6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 07:58:23 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:13488 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728462AbgLJM6X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 07:58:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607605103; x=1639141103;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7/x/yFQiiPNThWsHIOSSDLGsN15fJdWKDeooz0EvczQ=;
-  b=Sn3/8x345nd66AtOFpxo7eZnirrcMQ3PLVXo8esmrfiYpwozOhyMsctt
-   +aKYMEDSphDVUBj8glX61skD9wbM64AES/6vJ00DrVd+LK+cA4kGP1IwX
-   3NF+oj/mU9bEnyuPbq1hHI64Id++mvq+Zz/Zpcz7twwpVNas6YMpuYxtq
-   uhrHE8dXvDl4eWHPNMela9mcWJz3kd5ja68m4Dv8eiKg+XBptkr1E9VJw
-   uiPXvAaif1OhC9c6guxzRZrFCTIJmsA1Ih5KhRik0Qti3vHPviaBo9yq2
-   14rf5ml3twFgCZ9uUoxpECNMFbmnNmgGkzOwZzc6/Nnq9+P3H4zSr6HcA
-   w==;
-IronPort-SDR: 3xtPlJZZMuFLse+KfoBEnohNvjaXIfB9fw1LT61pjWZ+/uHNo3pZtmnl0ozuTp0p8K3QvBiIn+
- XjGCu6rH0yGGnZYRGm+YsvVVK7m/p4mtE0jwWHw/5zTqNv1YerNXeTrzLaNmUujdiZ3qh+IATy
- 5inGsB3PN4TJ7lFODrY3ilr7Jx+/XG3mczkvOt6n5LxI3R8b+VbOwMkDXojL3nnkziV06ley94
- vgk244SVdfAcCVziQ6Eal4/lnz8c4bYHrJHEsj2HmXwrqWdGGJvBMzdf8hh/tPoGwl5Z6cbdq0
- T78=
-X-IronPort-AV: E=Sophos;i="5.78,408,1599548400"; 
-   d="scan'208";a="102262184"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Dec 2020 05:57:07 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 10 Dec 2020 05:57:07 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Thu, 10 Dec 2020 05:57:06 -0700
-Date:   Thu, 10 Dec 2020 13:57:06 +0100
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v9 3/4] phy: Add Sparx5 ethernet serdes PHY driver
-Message-ID: <20201210125706.saub7c2rarifhbx4@mchp-dev-shegelun>
-References: <20201207121345.3818234-1-steen.hegelund@microchip.com>
- <20201207121345.3818234-4-steen.hegelund@microchip.com>
- <20201210021134.GD2638572@lunn.ch>
+        id S1733200AbgLJNWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 08:22:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728462AbgLJNWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 08:22:52 -0500
+X-Greylist: delayed 1321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Dec 2020 05:22:11 PST
+Received: from mail.rfc2324.org (mail.rfc2324.org [IPv6:2a01:a700:4621:867::10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF39C0613CF
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 05:22:11 -0800 (PST)
+Received: from rfc2324.org ([31.172.8.84] helo=principal.rfc2324.org)
+        by mail.rfc2324.org with esmtp rfc2324.org Mailserver
+        id 1knLYF-00009e-Db
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 14:00:09 +0100
+Received: by principal.rfc2324.org (Postfix, from userid 666)
+        id 4031B8F32F; Thu, 10 Dec 2020 14:00:07 +0100 (CET)
+Date:   Thu, 10 Dec 2020 14:00:07 +0100
+From:   Maximilian Wilhelm <max@rfc2324.org>
+To:     netdev@vger.kernel.org
+Message-ID: <20201210130007.GX22874@principal.rfc2324.org>
+Mail-Followup-To: netdev@vger.kernel.org
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20201210021134.GD2638572@lunn.ch>
+X-Warning: This message may contain ironic / sarcastic elements.
+X-GC-3.12: GCM/CS/IT/MU d+(--) s: a C++$ UL++++$ P++ L++++ E--- W+ N o+ K- w
+ O? M V? PS+ PE Y+(++) PGP++ t 5+ X- R* !tv b+(++) DI+(++) !D G+ e+++*
+ h>-(---) r++ y?
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 31.172.8.84
+X-SA-Exim-Mail-From: max@principal.rfc2324.org
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.rfc2324.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00 autolearn=ham
+        autolearn_force=no version=3.4.2
+Subject: Regression in igb / bonding / VLAN between 5.8.10 and 5.9.6?
+X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
+X-SA-Exim-Scanned: Yes (on mail.rfc2324.org)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.12.2020 03:11, Andrew Lunn wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->
->> diff --git a/drivers/phy/Kconfig b/drivers/phy/Kconfig
->> index 01b53f86004c..f6a094c81e86 100644
->> --- a/drivers/phy/Kconfig
->> +++ b/drivers/phy/Kconfig
->> @@ -66,9 +66,11 @@ source "drivers/phy/broadcom/Kconfig"
->>  source "drivers/phy/cadence/Kconfig"
->>  source "drivers/phy/freescale/Kconfig"
->>  source "drivers/phy/hisilicon/Kconfig"
->> +source "drivers/phy/intel/Kconfig"
->
->That looks odd.
->
->>  source "drivers/phy/lantiq/Kconfig"
->>  source "drivers/phy/marvell/Kconfig"
->>  source "drivers/phy/mediatek/Kconfig"
->> +source "drivers/phy/microchip/Kconfig"
->>  source "drivers/phy/motorola/Kconfig"
->>  source "drivers/phy/mscc/Kconfig"
->>  source "drivers/phy/qualcomm/Kconfig"
->> @@ -80,7 +82,6 @@ source "drivers/phy/socionext/Kconfig"
->>  source "drivers/phy/st/Kconfig"
->>  source "drivers/phy/tegra/Kconfig"
->>  source "drivers/phy/ti/Kconfig"
->> -source "drivers/phy/intel/Kconfig"
->>  source "drivers/phy/xilinx/Kconfig"
->
->Ah. Please make that a separate patch.
+Dear netdev people,
 
-Yes - it was really a separate change as a result of my sorting...
->
->> +     value = sdx5_rd(priv, SD25G_LANE_CMU_C0(sd_index));
->> +     value = SD25G_LANE_CMU_C0_PLL_LOL_UDL_GET(value);
->> +
->> +     if (value) {
->> +             dev_err(macro->priv->dev, "CMU_C0 pll_lol_udl: 0x%x\n", value);
->> +             ret = -EINVAL;
->> +     }
->> +
->> +     value = sdx5_rd(priv, SD_LANE_25G_SD_LANE_STAT(sd_index));
->> +     value = SD_LANE_25G_SD_LANE_STAT_PMA_RST_DONE_GET(value);
->> +
->> +     if (value != 0x1) {
->> +             dev_err(macro->priv->dev, "sd_lane_stat pma_rst_done: 0x%x\n", value);
->> +             ret = -EINVAL;
->> +     }
->
->These error messages are not very helpful. Could you be a bit more
->descriptive. Or do you think there is sufficient black magic in the
->hardware that nobody outside of Microchip will be able to debug it?
+I updated one of my APU2 boxes yesterday and was confronted with an
+interesting problem: With (Debian) Kernel 5.9.6 VLAN interfaces on top
+of a bond on top of two I210 NICs are working only one way (outbound)
+unless the VLAN interface is in promisc mode.
 
-I will dig up some better descriptions...
+The setup looks like this
 
->
->> +static int sparx5_serdes_get_serdesmode(phy_interface_t portmode,
->> +                                     struct phy_configure_opts_eth_serdes *conf)
->> +{
->> +     switch (portmode) {
->> +     case PHY_INTERFACE_MODE_1000BASEX:
->> +             if (conf->speed == SPEED_2500)
->> +                     return SPX5_SD_MODE_2G5;
->> +             if (conf->speed == SPEED_100)
->> +                     return SPX5_SD_MODE_100FX;
->> +             return SPX5_SD_MODE_1000BASEX;
->
->Please could you explain this. Why different speeds for 1000BaseX?
+        enp1s0       enp2s0
+           \           /
+            \         /
+	     \       /
+               bond0 (LACP L3+4)
+             /       \
+            /         \
+           /           \
+        vlan23       vlan42
 
-I will remove this.  It was taken from our bare-metal API (MESA) and
-only relevant in that context because it did not have an explicit 2500G
-mode.
+Traffic leaving the box (ARP, ND, OSPF Hellos, ...) works fine
+according to tcpdump on a connected device, but inbound traffic only
+seems to reach the system when vlanXX is in promisc mode.  If I do a
+tcpdump on vlanXX with --no-promiscuous-mode, I can confirm that there
+only are outbound packets and none of the ARP replies etc. sent by the
+remote box.  On bond0 as well as on the physical NICs I see the same
+behaviour (+ LACP frames on the NICs).
 
->
->> +     case PHY_INTERFACE_MODE_SGMII:
->> +             return SPX5_SD_MODE_1000BASEX;
->
->Here there could be some oddities, depending on how 10Mbps and 100Mbps
->is implemented. But 1000BASEX only supports 1Gbps.
->
-The same Serdes mode is used for SGMII and 1000BaseX.  Speeds 10M/100M
-is handled by repeating the byte sequence 100/10 times to get to 1G
-serdes speed.
+I did some tests to pinpoint the problem:
+ * VLAN interfaces on top of the physical NIC work fine
+ * LACP seems to work fine, slow/fast don't make a difference
+ * Disabling all offloading I could disable didn't make it work
+   (especially rxvlan)
+ * With (Debian) kernel 5.8.10 it works
+ * /proc/net/dev shows no rx errors or drops at all only one TX drop
+   on the VLAN interfaces
 
->> +static int sparx5_serdes_validate(struct phy *phy, enum phy_mode mode,
->> +                                     int submode,
->> +                                     union phy_configure_opts *opts)
->> +{
->> +     struct sparx5_serdes_macro *macro = phy_get_drvdata(phy);
->> +     struct sparx5_serdes_private *priv = macro->priv;
->> +     u32 value, analog_sd;
->> +
->> +     if (mode != PHY_MODE_ETHERNET)
->> +             return -EINVAL;
->> +
->> +     switch (submode) {
->> +     case PHY_INTERFACE_MODE_1000BASEX:
->> +     case PHY_INTERFACE_MODE_SGMII:
->> +     case PHY_INTERFACE_MODE_QSGMII:
->> +     case PHY_INTERFACE_MODE_10GBASER:
->> +             break;
->> +     default:
->> +             return -EINVAL;
->> +     }
->> +     if (macro->serdestype == SPX5_SDT_6G) {
->> +             value = sdx5_rd(priv, SD6G_LANE_LANE_DF(macro->stpidx));
->> +             analog_sd = SD6G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
->> +     } else if (macro->serdestype == SPX5_SDT_10G) {
->> +             value = sdx5_rd(priv, SD10G_LANE_LANE_DF(macro->stpidx));
->> +             analog_sd = SD10G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
->> +     } else {
->> +             value = sdx5_rd(priv, SD25G_LANE_LANE_DE(macro->stpidx));
->> +             analog_sd = SD25G_LANE_LANE_DE_LN_PMA_RXEI_GET(value);
->> +     }
->> +     /* Link up is when analog_sd == 0 */
->> +     return analog_sd;
->
->The documentation says:
->
->        /**
->         * @validate:
->         *
->         * Optional.
->         *
->         * Used to check that the current set of parameters can be
->         * handled by the phy. Implementations are free to tune the
->         * parameters passed as arguments if needed by some
->         * implementation detail or constraints. It must not change
->         * any actual configuration of the PHY, so calling it as many
->         * times as deemed fit by the consumer must have no side
->         * effect.
->         *
->         * Returns: 0 if the configuration can be applied, an negative
->         * error code otherwise
->         */
->
->So why are returning link up information?
+I couldn't find anything suspicous on the box neither in the logs nor
+in  ip -d link  etc. Is this a know bug? If not should I test anything
+specific or maybe do a git bisect between the kernel versions?
 
-Yes that was a bit of a hijacking of the function.  I will remove that.
-I also removed the dependency on this behaviour in the client driver in the
-meantime.
-
-I think a status function on the generic phy would be useful, but I will
-take that as separate issue.
-
->
->   Andrew
-
-Thanks for the comments.
-
-BR
-Steen
-
----------------------------------------
-Steen Hegelund
-steen.hegelund@microchip.com
+Kind regards
+Max
+-- 
+"Does it bother me, that people hurt others, because they are to weak to face the truth? Yeah. Sorry 'bout that."
+ -- Thirteen, House M.D.
