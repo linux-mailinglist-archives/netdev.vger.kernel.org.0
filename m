@@ -2,110 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFAC22D5EDF
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 16:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7710D2D5EEE
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 16:04:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389928AbgLJPBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 10:01:01 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:28279 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729979AbgLJPAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 10:00:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607612453; x=1639148453;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UqMkvKL7D8SiD3dwz7dJFaadhU8wN/9oUbsLA7y6BBs=;
-  b=h0ql8Y8Mr2FEnK6WNEwyVgedGxs3JutllsUqxQL4XHEz+RulKBJnwU79
-   ozE4anMARd5NGJ7p23KEL/phBZ4r0LmHhXbTmlNh7jUSL2+Gt8Xhswghk
-   N1+MvvSpzA4dXw7YrvDnrfDQa/ahgzvqY8gW6cD1vfdHtitZXxNa6GXOl
-   PGFgE5lGeQNnj+gDfLtmfkePlUjvhxT9lwOKiUS2+0y1DWDFcN2ACVtbq
-   Dn25wqvke324/6lr302F7r1Hosv/OV5vdO0PMC9lF8u2mlQPzmDCQh5Hf
-   tzXdZjdMTWXIVZSl5fBHJQJwCMq9rD5HcgAZhTNkgrDyEuoXvy1NGdgwN
-   A==;
-IronPort-SDR: R3MJaP3nvzHZiidlIW4RrQ7dWRWphe6WNKjns6lRGwVl67uDBH1GvIQ5YmIHTkqYmUfE0wRLDc
- kInbCicGpSSFFjeHQxGlInx6cNvrsz64ClS3jGpWs25RVDGkvIJVBNPWsxq7rGt4S5GQW+RyiU
- VdlKiwdO1k5LNzChrE6WPp2SPJcYlzMbGg2Qe2vc3GbnLUw2ZBEcwusVYF3KIF7I+UCn5dtLE8
- iu08kAFZUgviptzKSklFTEpjOo8b7wZhgJpaf6T8Zbi+gazz1XPtmj1TPxkLZQMbImhyZaPD2A
- T58=
-X-IronPort-AV: E=Sophos;i="5.78,408,1599548400"; 
-   d="scan'208";a="96633051"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Dec 2020 07:59:37 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 10 Dec 2020 07:59:37 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Thu, 10 Dec 2020 07:59:36 -0700
-Date:   Thu, 10 Dec 2020 15:59:35 +0100
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v9 3/4] phy: Add Sparx5 ethernet serdes PHY driver
-Message-ID: <20201210145935.see4n6csnomsl2rx@mchp-dev-shegelun>
-References: <20201207121345.3818234-1-steen.hegelund@microchip.com>
- <20201207121345.3818234-4-steen.hegelund@microchip.com>
- <20201210021134.GD2638572@lunn.ch>
- <20201210125706.saub7c2rarifhbx4@mchp-dev-shegelun>
- <20201210141610.GG2638572@lunn.ch>
+        id S2389829AbgLJPEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 10:04:00 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:46683 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389646AbgLJPDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 10:03:46 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607612603; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=fTCspt8fsRDJ1131Yu+GC08GW7hUsw3zqXe2mBHPhEw=; b=pnJNuhjYlxkFSoWk8GSSZL2RE6PIrkxOtbcS9UIgM3d3yCrOY2Dn3gNHFwlBZ7O0Lu09clkA
+ cDbwGVjd9Q/uVaatj8WKpvE9hzGkHYSqc+tX0LG9p36l1eUz0N+7NKM+zrubQd9p7AnNLWtC
+ DjqE4QdJXUtJgMCmhg6QeAuPSuQ=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 5fd238693a8ba2142a1c7cc2 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 10 Dec 2020 15:02:01
+ GMT
+Sender: jhugo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 86C9AC433CA; Thu, 10 Dec 2020 15:02:01 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: jhugo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D4171C43465;
+        Thu, 10 Dec 2020 15:01:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D4171C43465
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
+Subject: Re: [PATCH v16 4/4] bus: mhi: Add userspace client interface driver
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Hemant Kumar <hemantk@codeaurora.org>
+Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bbhatt@codeaurora.org,
+        loic.poulain@linaro.org, netdev@vger.kernel.org
+References: <1607584885-23824-1-git-send-email-hemantk@codeaurora.org>
+ <1607584885-23824-5-git-send-email-hemantk@codeaurora.org>
+ <X9HifqAntBUBV0Ce@kroah.com>
+From:   Jeffrey Hugo <jhugo@codeaurora.org>
+Message-ID: <1ce7fc1a-7794-6815-ab4c-0721f0422564@codeaurora.org>
+Date:   Thu, 10 Dec 2020 08:01:59 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20201210141610.GG2638572@lunn.ch>
+In-Reply-To: <X9HifqAntBUBV0Ce@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.12.2020 15:16, Andrew Lunn wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->
->> > So why are returning link up information?
+On 12/10/2020 1:55 AM, Greg KH wrote:
+> On Wed, Dec 09, 2020 at 11:21:25PM -0800, Hemant Kumar wrote:
+>> This MHI client driver allows userspace clients to transfer
+>> raw data between MHI device and host using standard file operations.
+>> Driver instantiates UCI device object which is associated to device
+>> file node. UCI device object instantiates UCI channel object when device
+>> file node is opened. UCI channel object is used to manage MHI channels
+>> by calling MHI core APIs for read and write operations. MHI channels
+>> are started as part of device open(). MHI channels remain in start
+>> state until last release() is called on UCI device file node. Device
+>> file node is created with format
 >>
->> Yes that was a bit of a hijacking of the function.  I will remove that.
->> I also removed the dependency on this behaviour in the client driver in the
->> meantime.
+>> /dev/<mhi_device_name>
 >>
->> I think a status function on the generic phy would be useful, but I will
->> take that as separate issue.
->
->In this context of an Ethernet SERDES, do you actually need it? You
->would normally look at the PCS link status to determine if the link is
->up.  But it is useful debug information. If the PCS is down, but the
->PHY indicates up, you can guess you have a protocol misconfiguration.
+>> Currently it supports QMI channel.
+>>
+>> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+>> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+>> Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
+>> Tested-by: Loic Poulain <loic.poulain@linaro.org>
+>> ---
+> 
+> Can you provide a pointer to the open-source userspace program that will
+> be talking to this new kernel driver please?  That should be part of the
+> changelog here.
 
-Yes - you are probably right about that.  I have been exposing this via
-a procfs interface during the development phase, and it was really
-useful to have, to track down the origin of the problem in certain situations.
+Its listed in the documentation file (patch 3 in the series).  I'm 
+guessing you still want it in the change log though, so Hemant should 
+probably take care of that.
 
-But on a system level, the PCS link would have the final say anyway.
->
->What exactly does link at this level mean? And thinking of the wider
->uses of the PHY subsystem, what would link mean at this level for
->SATA, PCIe, USB? Don't these all have some protocol level above
->similar to Ethernet PCS which is the real determiner of link?
-
-Yes - I think this is really only a debug feature.  No need to force
-this on the other PHY categories.
-
-
->
->     Andrew
-
-Thanks for your comments, Andrew.
-
-BR
-Steen
-
----------------------------------------
-Steen Hegelund
-steen.hegelund@microchip.com
+-- 
+Jeffrey Hugo
+Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
