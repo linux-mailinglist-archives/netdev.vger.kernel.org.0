@@ -2,186 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 848F72D67E6
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:01:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EED32D67DF
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:01:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404529AbgLJUB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 15:01:28 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:57710 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404302AbgLJTna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:30 -0500
-Message-Id: <20201210194045.157601122@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1607629367;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=RU1bu/2cEIaQZD4XBTa1ORm36AT2+9xoAT9okJ4RH1c=;
-        b=AhYGZMH5Lll3k86M+Mw+u/CMXrFP+z5OweedDSPLrQC7zMl71ejfF6LXNXRZTGD8kmOuJe
-        qS19XHZYRwS6BqhVuvnoRC1T4ttKWNuaoSyT3BgYYN1BzFtZlPcOz+YQKy/43th5Y90u/R
-        X6B6cmkRFkndNRXwbx2PLjfkgaDXN0K9HLJvSEGYF2Mwu+bniCBmPPPJ7kblKM0absRSol
-        Xu6RJgcDTReN71V4H+Nn1MY4+vbA65bMSFOyl/jldJBTen7poJfNR1wRX6XEMJPR917pl1
-        k5XFjcYwY2tULG78ylPnHOTKCe4dKJGK7v6roca6SRSYcgOrtkVCsvBrRQWZhw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1607629367;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=RU1bu/2cEIaQZD4XBTa1ORm36AT2+9xoAT9okJ4RH1c=;
-        b=XdjqOHU/CtrxmjSRt3J35g254e3xJTlyAPxkG/hnQfineDJae9yPVorBnqLmfzdojIT+AV
-        RtH7kedwWF+OweDQ==
-Date:   Thu, 10 Dec 2020 20:26:02 +0100
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci@vger.kernel.org,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+        id S2404480AbgLJT7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 14:59:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60756 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404416AbgLJT7n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 14:59:43 -0500
+Date:   Thu, 10 Dec 2020 20:58:55 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607630342;
+        bh=s2+iLf6qBKVf58ffYZN9l2zof1I9JLW9V6wDx6uBGB8=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eklBHcybGU7NaHOQQv++7WWXgTVIXfU4CnRYhDTvdmMh828hU1HhwGuy262A7mXl3
+         UVfMlgSR9hjmxiHEEmyAKdwE8N24GronEa9YX/3xByG12lhH5sLlYjOzWtARATmbU+
+         gbjs//eYTsEVpjwIHW5m8/FwAch5WCZ79eUruF3gO37OfRXISugUzkUxi/tczLL5H1
+         C81E6xkV7hUWEVha0XOmiWm7bl+CmN06kwTj6Wpcq+BBF8+02d6kP4fL05muxPEfXb
+         pZ3KGXhlBNtOeEDWP9EZLwn/4dPMZS2smZLYs42jw9BUNf2bClh/cggGRtfKBSWABt
+         n3IVdl/kI4rwg==
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     George Cherian <gcherian@marvell.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: [patch 26/30] xen/events: Use immediate affinity setting
-References: <20201210192536.118432146@linutronix.de>
+        Zaibo Xu <xuzaibo@huawei.com>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Arnaud Ebalard <arno@natisbad.org>,
+        Srujana Challa <schalla@marvell.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Elie Morisse <syniurge@gmail.com>,
+        Nehal Shah <nehal-bakulchandra.shah@amd.com>,
+        Shyam Sundar S K <shyam-sundar.s-k@amd.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Andreas Larsson <andreas@gaisler.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netanel Belgazal <netanel@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        Guy Tzalik <gtzalik@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        Zorik Machulsky <zorik@amazon.com>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        Michael Chan <michael.chan@broadcom.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Catherine Sullivan <csully@google.com>,
+        Sagi Shahar <sagis@google.com>,
+        Jon Olson <jonolson@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Jon Mason <jdmason@kudzu.us>,
+        Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Daniele Venzano <venza@brownhat.org>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Wingman Kwok <w-kwok2@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Kevin Brace <kevinbrace@bracecomputerlab.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, qat-linux@intel.com,
+        linux-i2c@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        ath11k@lists.infradead.org, wil6210@qti.qualcomm.com,
+        b43-dev@lists.infradead.org, iommu@lists.linux-foundation.org
+Subject: Re: [PATCH] dma-mapping: move hint unlikely for dma_mapping_error
+ from drivers to core
+Message-ID: <20201210195855.GA11120@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        George Cherian <gcherian@marvell.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Zaibo Xu <xuzaibo@huawei.com>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Arnaud Ebalard <arno@natisbad.org>,
+        Srujana Challa <schalla@marvell.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Elie Morisse <syniurge@gmail.com>,
+        Nehal Shah <nehal-bakulchandra.shah@amd.com>,
+        Shyam Sundar S K <shyam-sundar.s-k@amd.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Doug Ledford <dledford@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Andreas Larsson <andreas@gaisler.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netanel Belgazal <netanel@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        Guy Tzalik <gtzalik@amazon.com>, Saeed Bishara <saeedb@amazon.com>,
+        Zorik Machulsky <zorik@amazon.com>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        Michael Chan <michael.chan@broadcom.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Catherine Sullivan <csully@google.com>,
+        Sagi Shahar <sagis@google.com>, Jon Olson <jonolson@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>, Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>, Jon Mason <jdmason@kudzu.us>,
+        Rain River <rain.1986.08.12@gmail.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Jiri Pirko <jiri@resnulli.us>, Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Daniele Venzano <venza@brownhat.org>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Wingman Kwok <w-kwok2@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Kevin Brace <kevinbrace@bracecomputerlab.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, qat-linux@intel.com,
+        linux-i2c@vger.kernel.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        ath11k@lists.infradead.org, wil6210@qti.qualcomm.com,
+        b43-dev@lists.infradead.org, iommu@lists.linux-foundation.org
+References: <5d08af46-5897-b827-dcfb-181d869c8f71@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8-bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="k+w/mQv8wyuph6w0"
+Content-Disposition: inline
+In-Reply-To: <5d08af46-5897-b827-dcfb-181d869c8f71@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is absolutely no reason to mimic the x86 deferred affinity
-setting. This mechanism is required to handle the hardware induced issues
-of IO/APIC and MSI and is not in use when the interrupts are remapped.
 
-XEN does not need this and can simply change the affinity from the calling
-context. The core code invokes this with the interrupt descriptor lock held
-so it is fully serialized against any other operation.
+--k+w/mQv8wyuph6w0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Mark the interrupts with IRQ_MOVE_PCNTXT to disable the deferred affinity
-setting. The conditional mask/unmask operation is already handled in
-xen_rebind_evtchn_to_cpu().
+On Thu, Dec 10, 2020 at 03:47:50PM +0100, Heiner Kallweit wrote:
+> Zillions of drivers use the unlikely() hint when checking the result of
+> dma_mapping_error(). This is an inline function anyway, so we can move
+> the hint into the function and remove it from drivers.
+> From time to time discussions pop up how effective unlikely() is,
+> and that it should be used only if something is really very unlikely.
+> I think that's the case here.
+>=20
+> Patch was created with some help from coccinelle.
+>=20
+> @@
+> expression dev, dma_addr;
+> @@
+>=20
+> - unlikely(dma_mapping_error(dev, dma_addr))
+> + dma_mapping_error(dev, dma_addr)
+>=20
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-This makes XEN on x86 use the same mechanics as on e.g. ARM64 where
-deferred affinity setting is not required and not implemented and the code
-path in the ack functions is compiled out.
+Acked-by: Wolfram Sang <wsa@kernel.org> # for I2C
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Cc: Juergen Gross <jgross@suse.com>
-Cc: Stefano Stabellini <sstabellini@kernel.org>
-Cc: xen-devel@lists.xenproject.org
----
- drivers/xen/events/events_base.c |   35 +++++++++--------------------------
- 1 file changed, 9 insertions(+), 26 deletions(-)
 
---- a/drivers/xen/events/events_base.c
-+++ b/drivers/xen/events/events_base.c
-@@ -628,6 +628,11 @@ static void xen_irq_init(unsigned irq)
- 	info->refcnt = -1;
- 
- 	set_info_for_irq(irq, info);
-+	/*
-+	 * Interrupt affinity setting can be immediate. No point
-+	 * in delaying it until an interrupt is handled.
-+	 */
-+	irq_set_status_flags(irq, IRQ_MOVE_PCNTXT);
- 
- 	INIT_LIST_HEAD(&info->eoi_list);
- 	list_add_tail(&info->list, &xen_irq_list_head);
-@@ -739,18 +744,7 @@ static void eoi_pirq(struct irq_data *da
- 	if (!VALID_EVTCHN(evtchn))
- 		return;
- 
--	if (unlikely(irqd_is_setaffinity_pending(data)) &&
--	    likely(!irqd_irq_disabled(data))) {
--		int masked = test_and_set_mask(evtchn);
--
--		clear_evtchn(evtchn);
--
--		irq_move_masked_irq(data);
--
--		if (!masked)
--			unmask_evtchn(evtchn);
--	} else
--		clear_evtchn(evtchn);
-+	clear_evtchn(evtchn);
- 
- 	if (pirq_needs_eoi(data->irq)) {
- 		rc = HYPERVISOR_physdev_op(PHYSDEVOP_eoi, &eoi);
-@@ -1641,7 +1635,6 @@ void rebind_evtchn_irq(evtchn_port_t evt
- 	mutex_unlock(&irq_mapping_update_lock);
- 
-         bind_evtchn_to_cpu(evtchn, info->cpu);
--	/* This will be deferred until interrupt is processed */
- 	irq_set_affinity(irq, cpumask_of(info->cpu));
- 
- 	/* Unmask the event channel. */
-@@ -1688,8 +1681,9 @@ static int set_affinity_irq(struct irq_d
- 			    bool force)
- {
- 	unsigned tcpu = cpumask_first_and(dest, cpu_online_mask);
--	int ret = xen_rebind_evtchn_to_cpu(evtchn_from_irq(data->irq), tcpu);
-+	int ret;
- 
-+	ret = xen_rebind_evtchn_to_cpu(evtchn_from_irq(data->irq), tcpu);
- 	if (!ret)
- 		irq_data_update_effective_affinity(data, cpumask_of(tcpu));
- 
-@@ -1719,18 +1713,7 @@ static void ack_dynirq(struct irq_data *
- 	if (!VALID_EVTCHN(evtchn))
- 		return;
- 
--	if (unlikely(irqd_is_setaffinity_pending(data)) &&
--	    likely(!irqd_irq_disabled(data))) {
--		int masked = test_and_set_mask(evtchn);
--
--		clear_evtchn(evtchn);
--
--		irq_move_masked_irq(data);
--
--		if (!masked)
--			unmask_evtchn(evtchn);
--	} else
--		clear_evtchn(evtchn);
-+	clear_evtchn(evtchn);
- }
- 
- static void mask_ack_dynirq(struct irq_data *data)
+--k+w/mQv8wyuph6w0
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl/SffoACgkQFA3kzBSg
+KbYcjxAAgOE4gHcgEP8+Oex1fposdP2Z4KiWFjIYYWG4fo/Ry9PjDbSGh9Nptht2
+fnsCRcFXFj4oaSXaflBTq6ky4usgo2Gyp9puXbnpyj7P2uEjrqZs1zUFpAWdzMor
+UgiJkW/P2IZjCDfwxE8nn9L0fm8ZfcHWqVohAgDh/9SKsrQCdzlzwvd7vSQ94fXr
+qnYrmc6BF68dxVZx4TV18GddP5qFXYKytQ8pXL51XZEJTI05IGmc2l6hs/B4tKj6
+muxiEFw5Ac0eseMimi4J5YDJJZxWe28onn69mMJYQDzVPqSZRyhSAqCv0EhMg6Vp
+sABbG/eShtxir8A5ZrVRgqCaVyBjPu6pHAxdccHkj4d/6hfvD6F2FDXXaWirAf3i
+A4gsMJAmxtBYV0Lyx0D+fzCFnvUSDDSOEayRJdzotQXVCbLvuWHTp6EXVJFD5mMU
+/o3LApTC1uYQTXfGh1HHanpSEXLXfVgzjuDHRUsVIwemk5JwUAl6fw4oXbMrHYdZ
+v9Inx4U81LGxayz1vGmzbE39AeE7YH/5lH4metjot96RpKa+Gg++mMxUHBPW6Jam
+AOz6I3cKYsn7mPkzAZfDNvhvfgz2vxXcGGULSCdaWnVCJY7FMqe8i98w1z/Ymo7U
+JSXmDUhFS43r0JqUfbR0sRGgLL+kHTEa6I4ZT8UNd9DmTtS0Jmo=
+=4X1P
+-----END PGP SIGNATURE-----
+
+--k+w/mQv8wyuph6w0--
