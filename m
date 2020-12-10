@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F4A12D5006
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 02:05:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97AC82D500D
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 02:05:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731194AbgLJBEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 20:04:35 -0500
-Received: from mga12.intel.com ([192.55.52.136]:15984 "EHLO mga12.intel.com"
+        id S1731601AbgLJBFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 20:05:21 -0500
+Received: from mga12.intel.com ([192.55.52.136]:16049 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730495AbgLJBEM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 20:04:12 -0500
-IronPort-SDR: 93pXWcx15Rk/Smo4of5eEmXUxS2R1xGkoZ/IoN8BU/MlpToXjVyBa86kt1rl21clyuWSc9suUN
- hzziit6fuPTw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="153414666"
+        id S1730978AbgLJBEV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 20:04:21 -0500
+IronPort-SDR: irg5+3Mn18XJVEnX2d63X+Uf2eAp41DMuS601YuuGQ+9jMgQbaPSLcDKKV1J9cTvhqfBQ8mQmZ
+ QAlXWP1X6ZLA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="153414668"
 X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
-   d="scan'208";a="153414666"
+   d="scan'208";a="153414668"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 17:02:59 -0800
-IronPort-SDR: 7RDmZhzhTZt0i5mmxYXGPH/B+rtNRfyQNcjX2UnjQsSDFJ3FirV6z/1J5nUuw3xZGoViODDY0X
- +lmYx8Xzwq8w==
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 17:03:00 -0800
+IronPort-SDR: AbS2yP6PWcI8Izlgk9WZWPtfEvARjkeeAgn9XHk02a/w0X20XOK+ja+6HhMcSDNGr8Qa7Y4rDe
+ MV9TWeem8k6Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
-   d="scan'208";a="338203376"
+   d="scan'208";a="338203380"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 09 Dec 2020 17:02:59 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -31,9 +31,9 @@ Cc:     Sven Auhagen <sven.auhagen@voleatech.de>, netdev@vger.kernel.org,
         sassmann@redhat.com, anthony.l.nguyen@intel.com,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [net 2/9] igb: take VLAN double header into account
-Date:   Wed,  9 Dec 2020 17:02:45 -0800
-Message-Id: <20201210010252.4029245-3-anthony.l.nguyen@intel.com>
+Subject: [net 3/9] igb: XDP extack message on error
+Date:   Wed,  9 Dec 2020 17:02:46 -0800
+Message-Id: <20201210010252.4029245-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201210010252.4029245-1-anthony.l.nguyen@intel.com>
 References: <20201210010252.4029245-1-anthony.l.nguyen@intel.com>
@@ -45,8 +45,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sven Auhagen <sven.auhagen@voleatech.de>
 
-Increase the packet header padding to include double VLAN tagging.
-This patch uses a macro for this.
+Add an extack error message when the RX buffer size is too small
+for the frame size.
 
 Fixes: 9cbc948b5a20 ("igb: add XDP support")
 Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
@@ -56,65 +56,62 @@ Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
 Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igb/igb.h      | 5 +++++
- drivers/net/ethernet/intel/igb/igb_main.c | 7 +++----
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
-index 0286d2fceee4..aaa954aae574 100644
---- a/drivers/net/ethernet/intel/igb/igb.h
-+++ b/drivers/net/ethernet/intel/igb/igb.h
-@@ -138,6 +138,8 @@ struct vf_mac_filter {
- /* this is the size past which hardware will drop packets when setting LPE=0 */
- #define MAXIMUM_ETHERNET_VLAN_SIZE 1522
- 
-+#define IGB_ETH_PKT_HDR_PAD	(ETH_HLEN + ETH_FCS_LEN + (VLAN_HLEN * 2))
-+
- /* Supported Rx Buffer Sizes */
- #define IGB_RXBUFFER_256	256
- #define IGB_RXBUFFER_1536	1536
-@@ -247,6 +249,9 @@ enum igb_tx_flags {
- #define IGB_SFF_ADDRESSING_MODE		0x4
- #define IGB_SFF_8472_UNSUP		0x00
- 
-+/* TX resources are shared between XDP and netstack
-+ * and we need to tag the buffer type to distinguish them
-+ */
- enum igb_tx_buf_type {
- 	IGB_TYPE_SKB = 0,
- 	IGB_TYPE_XDP,
 diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 08cc6f59aa2e..0a9198037b98 100644
+index 0a9198037b98..a0a310a75cc5 100644
 --- a/drivers/net/ethernet/intel/igb/igb_main.c
 +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -2826,7 +2826,7 @@ static int igb_setup_tc(struct net_device *dev, enum tc_setup_type type,
+@@ -2824,20 +2824,25 @@ static int igb_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 	}
+ }
  
- static int igb_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+-static int igb_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
++static int igb_xdp_setup(struct net_device *dev, struct netdev_bpf *bpf)
  {
--	int i, frame_size = dev->mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
-+	int i, frame_size = dev->mtu + IGB_ETH_PKT_HDR_PAD;
+ 	int i, frame_size = dev->mtu + IGB_ETH_PKT_HDR_PAD;
  	struct igb_adapter *adapter = netdev_priv(dev);
++	struct bpf_prog *prog = bpf->prog, *old_prog;
  	bool running = netif_running(dev);
- 	struct bpf_prog *old_prog;
-@@ -3950,8 +3950,7 @@ static int igb_sw_init(struct igb_adapter *adapter)
- 	/* set default work limits */
- 	adapter->tx_work_limit = IGB_DEFAULT_TX_WORK;
+-	struct bpf_prog *old_prog;
+ 	bool need_reset;
  
--	adapter->max_frame_size = netdev->mtu + ETH_HLEN + ETH_FCS_LEN +
--				  VLAN_HLEN;
-+	adapter->max_frame_size = netdev->mtu + IGB_ETH_PKT_HDR_PAD;
- 	adapter->min_frame_size = ETH_ZLEN + ETH_FCS_LEN;
+ 	/* verify igb ring attributes are sufficient for XDP */
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+ 		struct igb_ring *ring = adapter->rx_ring[i];
  
- 	spin_lock_init(&adapter->nfc_lock);
-@@ -6491,7 +6490,7 @@ static void igb_get_stats64(struct net_device *netdev,
- static int igb_change_mtu(struct net_device *netdev, int new_mtu)
+-		if (frame_size > igb_rx_bufsz(ring))
++		if (frame_size > igb_rx_bufsz(ring)) {
++			NL_SET_ERR_MSG_MOD(bpf->extack,
++					   "The RX buffer size is too small for the frame size");
++			netdev_warn(dev, "XDP RX buffer size %d is too small for the frame size %d\n",
++				    igb_rx_bufsz(ring), frame_size);
+ 			return -EINVAL;
++		}
+ 	}
+ 
+ 	old_prog = xchg(&adapter->xdp_prog, prog);
+@@ -2869,7 +2874,7 @@ static int igb_xdp(struct net_device *dev, struct netdev_bpf *xdp)
  {
- 	struct igb_adapter *adapter = netdev_priv(netdev);
--	int max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
-+	int max_frame = new_mtu + IGB_ETH_PKT_HDR_PAD;
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+-		return igb_xdp_setup(dev, xdp->prog);
++		return igb_xdp_setup(dev, xdp);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -6499,7 +6504,9 @@ static int igb_change_mtu(struct net_device *netdev, int new_mtu)
+ 			struct igb_ring *ring = adapter->rx_ring[i];
  
- 	if (adapter->xdp_prog) {
- 		int i;
+ 			if (max_frame > igb_rx_bufsz(ring)) {
+-				netdev_warn(adapter->netdev, "Requested MTU size is not supported with XDP\n");
++				netdev_warn(adapter->netdev,
++					    "Requested MTU size is not supported with XDP. Max frame size is %d\n",
++					    max_frame);
+ 				return -EINVAL;
+ 			}
+ 		}
 -- 
 2.26.2
 
