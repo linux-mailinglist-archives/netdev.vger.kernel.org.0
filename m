@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E65492D5820
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 11:22:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86AC02D5857
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 11:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731841AbgLJKUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 05:20:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50410 "EHLO
+        id S1732663AbgLJKiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 05:38:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727190AbgLJKUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 05:20:36 -0500
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075A4C0613CF
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 02:19:50 -0800 (PST)
-Received: by mail-io1-xd42.google.com with SMTP id z5so4906684iob.11
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 02:19:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I7cheIkDEebliEnqleliGM65RmyLAKIHcPYFYba+v48=;
-        b=kqRXushoFGjCoC3WlNBHCOqHTNHk2ZJmXoEOI7gIaq6FMfFUuCMO31ttku/zyXBEaB
-         5FZjPBMtIBucOIJXNvUN5cS0pjtWdOjqMmOO4ddDlirOqlBAwPYrbXLporW8lbq4R/gE
-         NcZe9LG5LiahywfcmMqoJwbcmq7mypE8+/LZ4A4IibAD3rb0jbskEtVI1U7O2FpowfNl
-         K43VQH0lAl3M4Q4HyIJtXP8aK6LXtNs5FTMVPTmhSonN4IKBNKuBY4SFCfXVaFqH5PrD
-         kPf7MXvaaO37W20FXVx7izW68jq81PRwRc9R5QqDrzfDZv8ZFXW+RPgkg+FmdP6moR9D
-         YhhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I7cheIkDEebliEnqleliGM65RmyLAKIHcPYFYba+v48=;
-        b=WzeN9/Egu+ZN6uAJxcip8+WegNfjUJoJuvsn905oPntl9AJRF/k6HSX4Xb1/7SJDyp
-         wdJ9nlplRHgZ5xpFFxmyOw9stSVNT7AQ9MYUW+fiAnVliD9RZoa3ZG70XnP2ROyTo6Mg
-         n53NdtoeuwU5NLY1s5bn4hhuQhe4U6T6LJfh3JFfXAk4ddOQXP8U2r2e9m9c5cN/MD+A
-         JT2KIxFJc82zU7PnLz+w6M6DqIKR9nrZsdSx6Ungb0VD/aqvb2tiUSJzK+LDotCDpO2C
-         ip7dawNZlZWxYnEilyR7bFQG98ulfFa8YH6i5YhG6jZI4zFYAcX8Zwa7bat9z594qL1l
-         8KCA==
-X-Gm-Message-State: AOAM532wcvs0UJIi6hmTrkOV9ZeYxxa4GVVVlqASUIb+/i8kJydK2Egb
-        Wpl+UnXBdRm+SMIIg6RPoYtVUGP88LMUWAAwoj2fsg==
-X-Google-Smtp-Source: ABdhPJw1NBwZYJbQunI5QZ6uWeX/CNfx0OulhPPNAe5MkJHW44D7RHdm/OGjHMWUMBEDUDgVBOn1JsiUKC+IkVK4ZgM=
-X-Received: by 2002:a6b:d61a:: with SMTP id w26mr7839769ioa.117.1607595588821;
- Thu, 10 Dec 2020 02:19:48 -0800 (PST)
+        with ESMTP id S1726768AbgLJKh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 05:37:59 -0500
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA42BC061793;
+        Thu, 10 Dec 2020 02:37:18 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Cs9Mv6YYYz9sW8;
+        Thu, 10 Dec 2020 21:37:15 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1607596636;
+        bh=6pe7CPiYFHpmonWfOX3A+y01aY83tz2WgBLlJ6GkT3g=;
+        h=Date:From:To:Cc:Subject:From;
+        b=cftmQ7V43eVN1/SKOwvKB2rWu8xZzuC9lJgqGFbCHToRRfOxLxQSln5AE1uFU6oeI
+         tH8PhtzzIrnxTdB2T1w8H79deHaI18MAeHvVeS7M9OUAyqe3k9647cR0e9rXfSrm7+
+         He8DhXx9FvZqhSeUi6Dtcu6CbZQDWT2W6Qpu/9Q1wKN+/TGVoLRJYe2fgMaiYug5Mj
+         LDscuIde8YeB9Ol4XCDBUDhl31qGUkPh01588s2nBDcJ945BkEeUD9AVTenIQ5Eu8y
+         0GkXiOAP+tYcK3IBoaye3VyyibYT9WY7Zythu9xZSL0IojQWImhR+EZ3XT4rHg1r8H
+         hIlZkXYdZ7Dcg==
+Date:   Thu, 10 Dec 2020 21:37:13 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the net-next tree
+Message-ID: <20201210213713.05fec230@canb.auug.org.au>
 MIME-Version: 1.0
-References: <1607592918-14356-1-git-send-email-yejune.deng@gmail.com>
-In-Reply-To: <1607592918-14356-1-git-send-email-yejune.deng@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 10 Dec 2020 11:19:36 +0100
-Message-ID: <CANn89iKW4cLMssB2zi8kvikddVHMXfQLDr9Gkg768Ou3H5VwiA@mail.gmail.com>
-Subject: Re: [PATCH] net: core: fix msleep() is not accurate
-To:     Yejune Deng <yejune.deng@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/RlI903T+aEUY=NJxhi/H+0l";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 10:35 AM Yejune Deng <yejune.deng@gmail.com> wrote:
->
-> See Documentation/timers/timers-howto.rst, msleep() is not
-> for (1ms - 20ms), There is a more advanced API is used.
->
-> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
-> ---
->  net/core/dev.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index d33099f..6e83ee03 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6726,9 +6726,9 @@ void napi_disable(struct napi_struct *n)
->         set_bit(NAPI_STATE_DISABLE, &n->state);
->
->         while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
-> -               msleep(1);
-> +               fsleep(1000);
->         while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
-> -               msleep(1);
-> +               fsleep(1000);
->
+--Sig_/RlI903T+aEUY=NJxhi/H+0l
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I would prefer explicit usleep_range().
+Hi all,
 
-fsleep() is not common in the kernel, I had to go to its definition.
+Commit
 
-I would argue that we should  use usleep_range(10, 200)  to have an
-opportunity to spend less time in napi_disable() in some cases.
+  5137d303659d ("net: flow_offload: Fix memory leak for indirect flow block=
+")
+
+is missing a Signed-off-by from its committer.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/RlI903T+aEUY=NJxhi/H+0l
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/R+lkACgkQAVBC80lX
+0GyMlwf+O4mBQ3OsAnLP2zryB5jsJsChMbVaMzVpdb+gDVnxbblLknqsb4AjsqyE
+xMVxepfl6lRhxEGneeH1/7f3xndO+qlFF0o+yuGKCEQtCc4ZmHUaLrJgroNoAZVi
+Ft9YSXUkRqTpcn8jH/Jhx9WdYivpDJZe/FjHiBxJOqaNQrpqv5XfKiCwIuNqV5Tq
+o+uwC2FcrOvIhXr5QU0wuh4jIhrMRFkYZdE/tGudUOMHh3OvW3mA5UUgV06qi2ce
+AVSKFRbxqUtAPgLnZQPZ/qXw3xkd0DQroyCFFvEjp2ursJ/2P5AcYM4PXe4kiE3U
+cDjGGZXtspUumsDPw4CE0yKhrnOn4Q==
+=F6ta
+-----END PGP SIGNATURE-----
+
+--Sig_/RlI903T+aEUY=NJxhi/H+0l--
