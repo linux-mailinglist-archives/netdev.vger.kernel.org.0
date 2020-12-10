@@ -2,155 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C271A2D5BE6
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 14:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 109A72D5BFB
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 14:37:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389398AbgLJNfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 08:35:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389202AbgLJNfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 08:35:17 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18570C0613CF
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 05:34:37 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id i18so5538794ioa.1
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 05:34:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qPuTAGucGvzqgTNxrF9n0FwDltwm7MyZmFGY3E7gY0c=;
-        b=Fy2fTjlapPQntE22uOCG4RkJdS2M0O+HLQrPnV5OA+VTyjnZ1BKHr499fnc6izXei3
-         3lamsmClYUTCcAmHUJ6m5HJzoye5tuC6BbWKl9KDguLjQMJxrWzwO8HbJ/alrv54XhSJ
-         0nzxEq+L3cb78MEmgkpELf9LOXvtXyZBWcNXF/AyziecC1eQk02VTm66maoCBq86xSLC
-         kpHtLkTpdiRigmF/T47aMatmTUa8nfrpt0WhFMI9C6nr+XU2DXuPdQEKM10/1qwVeeyZ
-         gLdOeMcVY41n45DCL6ltzd9HXh+t2m9tH6G6G76va9G+9XbUk1OGrJYrwncaZJ1rwWT5
-         9X+g==
+        id S2389519AbgLJNhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 08:37:20 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:38039 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732914AbgLJNhS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 08:37:18 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <seth.forshee@canonical.com>)
+        id 1knM7X-0005R0-PU
+        for netdev@vger.kernel.org; Thu, 10 Dec 2020 13:36:35 +0000
+Received: by mail-il1-f200.google.com with SMTP id m14so4371297ila.16
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 05:36:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qPuTAGucGvzqgTNxrF9n0FwDltwm7MyZmFGY3E7gY0c=;
-        b=ILw49kKf9biSZ5C5t2k+7FS7q5cc0Bbbhjs6CqjOznBueRLmfklIESgyUsSxFLpF2n
-         ivBvY+2/yPNqeA5TeyPUJNO9wW38RgMwGcLPsrGOaopqdFZuil6VN3DQiTuUZArtSD9v
-         1bL9Ms7u9Pdu9xOz/TIeJjyDvqPWsBWWfgfgRLURarvoWhhQD02o1zOv7kVXJp5bm1Kc
-         gNp2JfXrNa1wMqWMyd+Ae/OsPtavgKdyWHCaSloKv0dwEvr92m9mWONhmHJOCYfmKg/P
-         VthoVNG8YS1XO57TfOCVyq9tIQ1V/RNPcDS90mYJsEkGM+y4Gh26w1e4gmqYT5ytPs/e
-         vz3A==
-X-Gm-Message-State: AOAM531RG2dxvcFTeCa+bbTozcKPebfWigb8u5AG+szHdqr5Ry6EApyb
-        QctMzU4AKVdGFoHfd1ZbBWyBg5zFXUDuHeQJCL26Ow==
-X-Google-Smtp-Source: ABdhPJxz6pdUHkkmaYdXhsoY3XmJLTCmoO0CuKMORf3YDkLG822+IhHiT9WlxlybIsF/ZmZzQtRGRP0HulpfcGsoT3o=
-X-Received: by 2002:a02:c981:: with SMTP id b1mr8885225jap.6.1607607276223;
- Thu, 10 Dec 2020 05:34:36 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mwzWNqwukiO9666dcy5UFimaTAhAAx9w5jcf7BvZNzs=;
+        b=tMGcIZ4eg+1ybIeoyJGAhaa84QqJOr4j2tQgsJt3tcl/6ENrC7WrzF0l7A4awOX+1X
+         d0lucYd67FbcKNJpgsbiDmUg3G+3RvaXUWev711/TWOgGKWAIGmncbjajlf2fM3NFXyt
+         e6t+FAZfgAdIvoi1wHGzQ5e1kWZjdOg6rqmbDdl5tS7Nkp+XGaujUmiDYfxviej/Ec7z
+         eCROEgUiOZJ4yAusP6Vn6KbZacg+Oi/iByH5ZNuEQisIx/cQFMfQV4w3dRem8JNtyXFU
+         Y1pm98CG0c0tcl5f3rI3RecvMzeIewq5UqNuWB+Q94vODork6uSjK6GPn7VrAqvzs/Qj
+         HGuQ==
+X-Gm-Message-State: AOAM533pa/D1SgHpUzNxJ1qW2CcBhvUyeQFkcpWXsOU4nz4MAIGeptm/
+        M6+YdeE7puqqIzJMlpN2+RsmzCDeLzI8xRcuhu91LABb6hSJGbTtRteQjBNlHFPvvSjiphr7VRg
+        j/nM0XrxyJQt4nP5tFqcbRe/7b3YqUp9DAA==
+X-Received: by 2002:a05:6638:2a5:: with SMTP id d5mr8717989jaq.92.1607607394872;
+        Thu, 10 Dec 2020 05:36:34 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzDAlRH9nDs2/sDKF2FW7RjAYQtS5kLIoWftt3jEkBIPJZ2Ls4/PB9s1dnWAzZ7dDe7Fi0g6A==
+X-Received: by 2002:a05:6638:2a5:: with SMTP id d5mr8717977jaq.92.1607607394700;
+        Thu, 10 Dec 2020 05:36:34 -0800 (PST)
+Received: from localhost ([2605:a601:ac0f:820:5f:df71:1517:60e9])
+        by smtp.gmail.com with ESMTPSA id y14sm3240284ilb.66.2020.12.10.05.36.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Dec 2020 05:36:34 -0800 (PST)
+Date:   Thu, 10 Dec 2020 07:36:33 -0600
+From:   Seth Forshee <seth.forshee@canonical.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: BPF selftests build failure in 5.10-rc
+Message-ID: <X9IkYa6D9QrjooOd@ubuntu-x1>
+References: <X9FOSImMbu0/SV5B@ubuntu-x1>
+ <CAEf4BzYAptUF+AxmkVk7BjJWRE6UaLkPowKM+pWbFuOV9Z4GGg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20201208162131.313635-1-eric.dumazet@gmail.com>
- <20201208.162852.2205708169665484487.davem@davemloft.net> <A65467F2-CC10-4FAF-A728-0969FD17E780@amazon.com>
-In-Reply-To: <A65467F2-CC10-4FAF-A728-0969FD17E780@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 10 Dec 2020 14:34:23 +0100
-Message-ID: <CANn89iL1pCZY3PdrQbjMHvyCFj3CpKPK=G0W0AauKWG4Y_FW1w@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: select sane initial rcvq_space.space for big MSS
-To:     "Mohamed Abuelfotoh, Hazem" <abuehaze@amazon.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "soheil@google.com" <soheil@google.com>,
-        "ncardwell@google.com" <ncardwell@google.com>,
-        "ycheng@google.com" <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYAptUF+AxmkVk7BjJWRE6UaLkPowKM+pWbFuOV9Z4GGg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 1:49 PM Mohamed Abuelfotoh, Hazem
-<abuehaze@amazon.com> wrote:
->
-> Hi Eric,
->
-> I don't see the patch in the stable queue. Can we add it  to stable so we=
- can cherry pick it  in Amazon Linux kernel?
->
+On Wed, Dec 09, 2020 at 04:15:35PM -0800, Andrii Nakryiko wrote:
+> On Wed, Dec 9, 2020 at 2:24 PM Seth Forshee <seth.forshee@canonical.com> wrote:
+> >
+> > Building the BPF selftests with clang 11, I'm getting the following
+> > error:
+> >
+> >    CLNG-LLC [test_maps] profiler1.o
+> >  In file included from progs/profiler1.c:6:
+> >  progs/profiler.inc.h:260:17: error: use of unknown builtin '__builtin_preserve_enum_value' [-Wimplicit-function-declaration]
+> >                  int cgrp_id = bpf_core_enum_value(enum cgroup_subsys_id___local,
+> >                                ^
+> >  /home/ubuntu/unstable/tools/testing/selftests/bpf/tools/include/bpf/bpf_core_read.h:179:2: note: expanded from macro 'bpf_core_enum_value'
+> >          __builtin_preserve_enum_value(*(typeof(enum_type) *)enum_value, BPF_ENUMVAL_VALUE)
+> >          ^
+> >  1 error generated.
+> >  llc: error: llc: <stdin>:1:1: error: expected top-level entity
+> >  BPF obj compilation failed
+> 
+> Addressed by fb3558127cb6 ("bpf: Fix selftest compilation on clang 11")
 
-No need for stable tags , as documented in
-https://elixir.bootlin.com/linux/v5.9/source/Documentation/networking/netde=
-v-FAQ.rst#L147
+Great, thanks!
 
-
-> Thank you.
->
-> Hazem
->
-> =EF=BB=BFOn 09/12/2020, 00:29, "David Miller" <davem@davemloft.net> wrote=
-:
->
->     CAUTION: This email originated from outside of the organization. Do n=
-ot click links or open attachments unless you can confirm the sender and kn=
-ow the content is safe.
->
->
->
->     From: Eric Dumazet <eric.dumazet@gmail.com>
->     Date: Tue,  8 Dec 2020 08:21:31 -0800
->
->     > From: Eric Dumazet <edumazet@google.com>
->     >
->     > Before commit a337531b942b ("tcp: up initial rmem to 128KB and SYN =
-rwin to around 64KB")
->     > small tcp_rmem[1] values were overridden by tcp_fixup_rcvbuf() to a=
-ccommodate various MSS.
->     >
->     > This is no longer the case, and Hazem Mohamed Abuelfotoh reported
->     > that DRS would not work for MTU 9000 endpoints receiving regular (1=
-500 bytes) frames.
->     >
->     > Root cause is that tcp_init_buffer_space() uses tp->rcv_wnd for upp=
-er limit
->     > of rcvq_space.space computation, while it can select later a smalle=
-r
->     > value for tp->rcv_ssthresh and tp->window_clamp.
->     >
->     > ss -temoi on receiver would show :
->     >
->     > skmem:(r0,rb131072,t0,tb46080,f0,w0,o0,bl0,d0) rcv_space:62496 rcv_=
-ssthresh:56596
->     >
->     > This means that TCP can not increase its window in tcp_grow_window(=
-),
->     > and that DRS can never kick.
->     >
->     > Fix this by making sure that rcvq_space.space is not bigger than nu=
-mber of bytes
->     > that can be held in TCP receive queue.
->     >
->     > People unable/unwilling to change their kernel can work around this=
- issue by
->     > selecting a bigger tcp_rmem[1] value as in :
->     >
->     > echo "4096 196608 6291456" >/proc/sys/net/ipv4/tcp_rmem
->     >
->     > Based on an initial report and patch from Hazem Mohamed Abuelfotoh
->     >  https://lore.kernel.org/netdev/20201204180622.14285-1-abuehaze@ama=
-zon.com/
->     >
->     > Fixes: a337531b942b ("tcp: up initial rmem to 128KB and SYN rwin to=
- around 64KB")
->     > Fixes: 041a14d26715 ("tcp: start receiver buffer autotuning sooner"=
-)
->     > Reported-by: Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
->     > Signed-off-by: Eric Dumazet <edumazet@google.com>
->
->     Applied, thanks Eric.
->
->
->
->
-> Amazon Web Services EMEA SARL, 38 avenue John F. Kennedy, L-1855 Luxembou=
-rg, R.C.S. Luxembourg B186284
->
-> Amazon Web Services EMEA SARL, Irish Branch, One Burlington Plaza, Burlin=
-gton Road, Dublin 4, Ireland, branch registration number 908705
->
->
+> 
+> >
+> > I see that test_core_reloc_enumval.c takes precautions around the use of
+> > __builtin_preserve_enum_value as it is currently only available in clang
+> > 12 nightlies. Is it possible to do something similar here? Though I see
+> > that the use of the builtin is not nearly so neatly localized as it is
+> > in test_core_reloc_enumval.c.
+> >
+> > Thanks,
+> > Seth
