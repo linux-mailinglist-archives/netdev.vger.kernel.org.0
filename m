@@ -2,66 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D247F2D55D3
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 09:56:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4DB12D55F0
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 09:59:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388510AbgLJIzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 03:55:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48826 "EHLO mail.kernel.org"
+        id S1728886AbgLJI6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 03:58:21 -0500
+Received: from s2.neomailbox.net ([5.148.176.60]:23995 "EHLO s2.neomailbox.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388502AbgLJIyx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 03:54:53 -0500
-Date:   Thu, 10 Dec 2020 09:55:26 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1607590452;
-        bh=xIgVJvAlVCJKs4E82O3GqG7+LHjFNMuiHbinDzdeBfE=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=12qGSl6F2u3dhjHpFyxAOrcmayyyL/HpeQol392+zZWqOLkpTNsbaxiH/TIagnEe5
-         c6ugbivK+7Afok7l+STVpiZmlJsQBMfTKPKKyuE+QvS2pitlakuFgWVMoGqxBzqN/v
-         VGHEWYrv+J/6rJvNx4uu7l9mI+Z1/1aVQkFfTFL8=
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Hemant Kumar <hemantk@codeaurora.org>
-Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jhugo@codeaurora.org,
-        bbhatt@codeaurora.org, loic.poulain@linaro.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v16 4/4] bus: mhi: Add userspace client interface driver
-Message-ID: <X9HifqAntBUBV0Ce@kroah.com>
-References: <1607584885-23824-1-git-send-email-hemantk@codeaurora.org>
- <1607584885-23824-5-git-send-email-hemantk@codeaurora.org>
+        id S1730417AbgLJI5x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 03:57:53 -0500
+From:   Antonio Quartulli <a@unstable.cc>
+To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Antonio Quartulli <a@unstable.cc>
+Subject: [PATCH] vxlan: avoid double unlikely() notation when using IS_ERR()
+Date:   Thu, 10 Dec 2020 09:55:49 +0100
+Message-Id: <20201210085549.22846-1-a@unstable.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1607584885-23824-5-git-send-email-hemantk@codeaurora.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 09, 2020 at 11:21:25PM -0800, Hemant Kumar wrote:
-> This MHI client driver allows userspace clients to transfer
-> raw data between MHI device and host using standard file operations.
-> Driver instantiates UCI device object which is associated to device
-> file node. UCI device object instantiates UCI channel object when device
-> file node is opened. UCI channel object is used to manage MHI channels
-> by calling MHI core APIs for read and write operations. MHI channels
-> are started as part of device open(). MHI channels remain in start
-> state until last release() is called on UCI device file node. Device
-> file node is created with format
-> 
-> /dev/<mhi_device_name>
-> 
-> Currently it supports QMI channel.
-> 
-> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
-> Tested-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
+The definition of IS_ERR() already applies the unlikely() notation
+when checking the error status of the passed pointer. For this
+reason there is no need to have the same notation outside of
+IS_ERR() itself.
 
-Can you provide a pointer to the open-source userspace program that will
-be talking to this new kernel driver please?  That should be part of the
-changelog here.
+Clean up code by removing redundant notation.
 
-thanks,
+Signed-off-by: Antonio Quartulli <a@unstable.cc>
+---
+ drivers/net/vxlan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index e1e44d68ac4b..a8ad710629e6 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -2477,7 +2477,7 @@ static struct dst_entry *vxlan6_get_route(struct vxlan_dev *vxlan,
+ 
+ 	ndst = ipv6_stub->ipv6_dst_lookup_flow(vxlan->net, sock6->sock->sk,
+ 					       &fl6, NULL);
+-	if (unlikely(IS_ERR(ndst))) {
++	if (IS_ERR(ndst)) {
+ 		netdev_dbg(dev, "no route to %pI6\n", daddr);
+ 		return ERR_PTR(-ENETUNREACH);
+ 	}
+-- 
+2.29.2
+
