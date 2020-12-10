@@ -2,45 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 068BE2D502A
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 02:16:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 497392D5056
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 02:26:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732286AbgLJBO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 20:14:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732256AbgLJBOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 20:14:20 -0500
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB5EC0613CF;
-        Wed,  9 Dec 2020 17:13:40 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477:9e51:a893:b0fe:602a])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 6E87D4D259C1E;
-        Wed,  9 Dec 2020 17:13:40 -0800 (PST)
-Date:   Wed, 09 Dec 2020 17:13:40 -0800 (PST)
-Message-Id: <20201209.171340.1672648094689350009.davem@davemloft.net>
-To:     zhengyongjun3@huawei.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: marvell: octeontx2: simplify the
- otx2_ptp_adjfine()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201209092726.20576-1-zhengyongjun3@huawei.com>
-References: <20201209092726.20576-1-zhengyongjun3@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 09 Dec 2020 17:13:40 -0800 (PST)
+        id S1732515AbgLJBZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 20:25:51 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47750 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732060AbgLJBZv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 20:25:51 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1knAha-00B95y-3W; Thu, 10 Dec 2020 02:25:02 +0100
+Date:   Thu, 10 Dec 2020 02:25:02 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Cc:     Li Yang <leoyang.li@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Zhao Qiang <qiang.zhao@nxp.com>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/20] ethernet: ucc_geth: set dev->max_mtu to 1518
+Message-ID: <20201210012502.GB2638572@lunn.ch>
+References: <20201205191744.7847-1-rasmus.villemoes@prevas.dk>
+ <20201205191744.7847-2-rasmus.villemoes@prevas.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201205191744.7847-2-rasmus.villemoes@prevas.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
-Date: Wed, 9 Dec 2020 17:27:26 +0800
-
-> Simplify the return expression.
+On Sat, Dec 05, 2020 at 08:17:24PM +0100, Rasmus Villemoes wrote:
+> All the buffers and registers are already set up appropriately for an
+> MTU slightly above 1500, so we just need to expose this to the
+> networking stack. AFAICT, there's no need to implement .ndo_change_mtu
+> when the receive buffers are always set up to support the max_mtu.
 > 
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> This fixes several warnings during boot on our mpc8309-board with an
+> embedded mv88e6250 switch:
+> 
+> mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU 1500 on port 0
+> ...
+> mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU 1500 on port 4
+> ucc_geth e0102000.ethernet eth1: error -22 setting MTU to 1504 to include DSA overhead
+> 
+> The last line explains what the DSA stack tries to do: achieving an MTU
+> of 1500 on-the-wire requires that the master netdevice connected to
+> the CPU port supports an MTU of 1500+the tagging overhead.
+> 
+> Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
+> Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 
-Applied.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
