@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FA632D55EA
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 09:59:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D247F2D55D3
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 09:56:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730087AbgLJI5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 03:57:25 -0500
-Received: from s2.neomailbox.net ([5.148.176.60]:18464 "EHLO s2.neomailbox.net"
+        id S2388510AbgLJIzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 03:55:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48826 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728600AbgLJI5Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 03:57:16 -0500
-From:   Antonio Quartulli <a@unstable.cc>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jakub Kicinski <kuba@kernel.org>, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Antonio Quartulli <a@unstable.cc>
-Subject: [PATCH] wireguard: avoid double unlikely() notation when using IS_ERR()
-Date:   Thu, 10 Dec 2020 09:55:05 +0100
-Message-Id: <20201210085505.21575-1-a@unstable.cc>
+        id S2388502AbgLJIyx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 03:54:53 -0500
+Date:   Thu, 10 Dec 2020 09:55:26 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1607590452;
+        bh=xIgVJvAlVCJKs4E82O3GqG7+LHjFNMuiHbinDzdeBfE=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=12qGSl6F2u3dhjHpFyxAOrcmayyyL/HpeQol392+zZWqOLkpTNsbaxiH/TIagnEe5
+         c6ugbivK+7Afok7l+STVpiZmlJsQBMfTKPKKyuE+QvS2pitlakuFgWVMoGqxBzqN/v
+         VGHEWYrv+J/6rJvNx4uu7l9mI+Z1/1aVQkFfTFL8=
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hemant Kumar <hemantk@codeaurora.org>
+Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jhugo@codeaurora.org,
+        bbhatt@codeaurora.org, loic.poulain@linaro.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v16 4/4] bus: mhi: Add userspace client interface driver
+Message-ID: <X9HifqAntBUBV0Ce@kroah.com>
+References: <1607584885-23824-1-git-send-email-hemantk@codeaurora.org>
+ <1607584885-23824-5-git-send-email-hemantk@codeaurora.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1607584885-23824-5-git-send-email-hemantk@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The definition of IS_ERR() already applies the unlikely() notation
-when checking the error status of the passed pointer. For this
-reason there is no need to have the same notation outside of
-IS_ERR() itself.
+On Wed, Dec 09, 2020 at 11:21:25PM -0800, Hemant Kumar wrote:
+> This MHI client driver allows userspace clients to transfer
+> raw data between MHI device and host using standard file operations.
+> Driver instantiates UCI device object which is associated to device
+> file node. UCI device object instantiates UCI channel object when device
+> file node is opened. UCI channel object is used to manage MHI channels
+> by calling MHI core APIs for read and write operations. MHI channels
+> are started as part of device open(). MHI channels remain in start
+> state until last release() is called on UCI device file node. Device
+> file node is created with format
+> 
+> /dev/<mhi_device_name>
+> 
+> Currently it supports QMI channel.
+> 
+> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
+> Tested-by: Loic Poulain <loic.poulain@linaro.org>
+> ---
 
-Clean up code by removing redundant notation.
+Can you provide a pointer to the open-source userspace program that will
+be talking to this new kernel driver please?  That should be part of the
+changelog here.
 
-Signed-off-by: Antonio Quartulli <a@unstable.cc>
----
- drivers/net/wireguard/device.c | 2 +-
- drivers/net/wireguard/socket.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+thanks,
 
-diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
-index a3ed49cd95c3..cd51a2afa28e 100644
---- a/drivers/net/wireguard/device.c
-+++ b/drivers/net/wireguard/device.c
-@@ -157,7 +157,7 @@ static netdev_tx_t wg_xmit(struct sk_buff *skb, struct net_device *dev)
- 	} else {
- 		struct sk_buff *segs = skb_gso_segment(skb, 0);
- 
--		if (unlikely(IS_ERR(segs))) {
-+		if (IS_ERR(segs)) {
- 			ret = PTR_ERR(segs);
- 			goto err_peer;
- 		}
-diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
-index c33e2c81635f..e9c35130846c 100644
---- a/drivers/net/wireguard/socket.c
-+++ b/drivers/net/wireguard/socket.c
-@@ -71,7 +71,7 @@ static int send4(struct wg_device *wg, struct sk_buff *skb,
- 				ip_rt_put(rt);
- 			rt = ip_route_output_flow(sock_net(sock), &fl, sock);
- 		}
--		if (unlikely(IS_ERR(rt))) {
-+		if (IS_ERR(rt)) {
- 			ret = PTR_ERR(rt);
- 			net_dbg_ratelimited("%s: No route to %pISpfsc, error %d\n",
- 					    wg->dev->name, &endpoint->addr, ret);
-@@ -138,7 +138,7 @@ static int send6(struct wg_device *wg, struct sk_buff *skb,
- 		}
- 		dst = ipv6_stub->ipv6_dst_lookup_flow(sock_net(sock), sock, &fl,
- 						      NULL);
--		if (unlikely(IS_ERR(dst))) {
-+		if (IS_ERR(dst)) {
- 			ret = PTR_ERR(dst);
- 			net_dbg_ratelimited("%s: No route to %pISpfsc, error %d\n",
- 					    wg->dev->name, &endpoint->addr, ret);
--- 
-2.29.2
-
+greg k-h
