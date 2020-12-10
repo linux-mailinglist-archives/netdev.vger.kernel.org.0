@@ -2,865 +2,657 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E51B2D644F
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 19:02:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E3A2D647B
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 19:07:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392967AbgLJSB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 13:01:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:41543 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388530AbgLJSBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 13:01:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607623195;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eF9fTYUtMiapZZq2pWe0s4I0eBAl1njblSx8YPZPVc0=;
-        b=NgWB3sGnt08q7V9ooCHifEyxa3Iid067P611anzCKaeS3VG+ejWT5D4TB7KWge+aomWHcP
-        mWjQ+g3VMM7VUcNXXpRYelUAQXSH6T/EXJYwZt2jlDttDcRMhVL1u4cDi5jWmx1EOh4myW
-        twLzyY4BbaWfvFL3KBy4nrr8aOCZdfo=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-12-SX358NyHNhapLwVasoPWhg-1; Thu, 10 Dec 2020 12:59:52 -0500
-X-MC-Unique: SX358NyHNhapLwVasoPWhg-1
-Received: by mail-wr1-f70.google.com with SMTP id g16so918539wrv.1
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 09:59:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eF9fTYUtMiapZZq2pWe0s4I0eBAl1njblSx8YPZPVc0=;
-        b=kAgGtWLlkK7nxSb29Dbtsfqm8oDJEIg0zncT8E7JS9Wvx9Gp4v7RKybrgEnKlycbYQ
-         NsYquGq16qAgEb9NfDsREOpwOqSoD+vi/9Ygl6DbbwXc9TKMKdBBA6ZfPLOvumbwCSvK
-         zQdGsqx6s/z5oAqqaMMN8Nx4We1vi6EpSz08db1/cxwKFG3/xJm/7Wp78dF1NSkFw4kC
-         dtjl2rMROcGIs/YQ+La/KDQQy6fFGE0hXVHYw04tcLcKWWZpo+xTzX/qf0RXJY9dWhTB
-         1TLREcQAcRWTcnHNHeby7KRmIa5t5IbzLlc8CgPRAY3uX3KHfKyospuBxQBzXZJnU8Er
-         FDbA==
-X-Gm-Message-State: AOAM531BVvxXNpf0Av2wRVuhhbRs5+QIQfD6VNCRmM4RMKTRMuEcXlwL
-        OzNvgSyUXneRd4x9KIVFGIAPALSPZ7ZvZHJMH9NlFn/f62FoZcED7IS01PvOiaIaxF25Kw+qNEv
-        jT2aC/Yziwano4/3/
-X-Received: by 2002:a1c:ba44:: with SMTP id k65mr9452411wmf.188.1607623190211;
-        Thu, 10 Dec 2020 09:59:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzMZoIjCfLn+W0ygwJrEM9K9x5uhElzFIeLXtS/SCbic3X097ADPF1xiDenFfMDyhLXrivDeA==
-X-Received: by 2002:a1c:ba44:: with SMTP id k65mr9452380wmf.188.1607623189815;
-        Thu, 10 Dec 2020 09:59:49 -0800 (PST)
-Received: from localhost ([151.66.8.153])
-        by smtp.gmail.com with ESMTPSA id l11sm10080116wmh.46.2020.12.10.09.59.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Dec 2020 09:59:49 -0800 (PST)
-Date:   Thu, 10 Dec 2020 18:59:45 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, brouer@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org
-Subject: Re: [PATCH bpf-next] net: xdp: introduce xdp_init_buff utility
- routine
-Message-ID: <20201210175945.GB462213@lore-desk>
-References: <e54fb61ff17c21f022392f1bb46ec951c9b909cc.1607615094.git.lorenzo@kernel.org>
- <20201210160507.GC45760@ranger.igk.intel.com>
- <20201210163241.GA462213@lore-desk>
- <20201210165556.GA46492@ranger.igk.intel.com>
+        id S2392561AbgLJSHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 13:07:31 -0500
+Received: from mail-eopbgr60060.outbound.protection.outlook.com ([40.107.6.60]:17807
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2392817AbgLJSHa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 13:07:30 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GBLjfYxmWyXRCD475pWfMJxpebanGG1OSgSIlyMRNFzyVhvo9z/7+3cmkoogwXKgfdv3aRzpNQTpFoujXlhrcC4YzRuOIi9Soc0iVTxAxhZTro/38P32OkWpfLdWpUTlTJcP22cnaaj8top+k+wVAt0G0otbSsQlk5o1OK+56iKpTjueGxg4f9aKbeE0aJl7HCFDib+JqRJrKhLzQ7CxeLfZKbxaSw0vzqPB24A42yN6f4OHR0h8q8jfoabCUKO9QXiH4aFcFNrRI274oMGzrteL9e0YIZ5eSBO2yEBE0XnJGffIjBVD3Av421wd99DeLDF7gRdq6KAvu+gynt4KXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7kPDyGumhAU5/mzADkxtq7JlASdd8D3d/MRvbjPBpiE=;
+ b=PX0Nh73UanrKjZ8Oy+OPuniEv4sdMayIvd+nDn86PrjxUw0khHPo+7JHTVoiGAklZm2iAq2YR+PlxH2f5fAwmMAAQsv1OCRe9BN38VmpEiktQHSAZxcWc4Z4XCtcBfVjlcLkPteGz3P/IutxDP0ftz9j3GfS6CkUao9CxdJ3ulhB1ccYyVozszxhxgLPRwT2QqoBuVDuKbbqKOV3hMgqr0VxtzcNesmAB46EP9Lxn60/qB0cLvn3gxGndlhgZXdPbJOYkdLL3LFDtiJ6DsQz/D3dbuXQz/7N8LjWV3kjNgdwS2ObvapA3xPnTj1E22SGKgImzK7GUwe594kWkYokTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7kPDyGumhAU5/mzADkxtq7JlASdd8D3d/MRvbjPBpiE=;
+ b=QnjriXWxg5e4+oon0mATS1uXdAz/3lbl81aMAp3WnteU0vH9RSalPC8pahh6npB3wppW5zcIztgVBEZmfRYzEH6v66eyTdlhWUdtJD8coeSXqkFC0Co0TDU/m1SWgCwDU4jRe+eS+UGsMk9hgMBdSimcdn5uOXZwCqAn7LhnNUU=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR0402MB3326.eurprd04.prod.outlook.com
+ (2603:10a6:803:8::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.15; Thu, 10 Dec
+ 2020 18:06:39 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::607d:cbc4:9191:b324]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::607d:cbc4:9191:b324%5]) with mapi id 15.20.3632.023; Thu, 10 Dec 2020
+ 18:06:39 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+CC:     "linux-netdev@vger.kernel.org" <linux-netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH RESEND net-next 1/2] dpaa2-eth: send a scatter-gather FD
+ instead of realloc-ing
+Thread-Topic: [PATCH RESEND net-next 1/2] dpaa2-eth: send a scatter-gather FD
+ instead of realloc-ing
+Thread-Index: AQHWzxpfkmhJ4/PRJUyjg6gvz97H0KnwoDEA
+Date:   Thu, 10 Dec 2020 18:06:39 +0000
+Message-ID: <20201210180636.nsfwvzs5xxzpqt7n@skbuf>
+References: <20200629184712.12449-2-ioana.ciornei () nxp ! com>
+ <20201210173156.mbizovo6rxvkda73@holly.lan>
+In-Reply-To: <20201210173156.mbizovo6rxvkda73@holly.lan>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.2.120]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 10b3ee73-f82f-4c07-d652-08d89d3657a6
+x-ms-traffictypediagnostic: VI1PR0402MB3326:
+x-microsoft-antispam-prvs: <VI1PR0402MB33264A85036EF2EFA90FD32CE0CB0@VI1PR0402MB3326.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4502;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: nIRuf6UJFUo3yuD1fb9gaPlBIZfoHRrBS9OcYFkvBUVFMIjCP8kB0dQQrwD7iwMqzJn1RNpMyeKFjbanSDwn22hTcktSmDPd95wjxUftyghKz6Mg4g7Qpfg7EtWkhnymZXfJr0H+0ouXqv4kz/o/arqhiTpKVGMbKykKR4DsyGwYx5zxwMcwQjN7HPOq/W2xfzEYguFGFadM2C0vTBu3OOY517wdO5kY0x+adh1rGw1O03fCCWgP1zmjPfzyCRMW6XISO/3ohTHOP6oGNNJhmUHNPlCPTSL/eowVqnsv7g2f0Zw9gA0AUN7htwuwQuvDycmcQ3m4kkEWjaQP5bh9tQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(396003)(366004)(39860400002)(346002)(136003)(376002)(316002)(6916009)(26005)(186003)(44832011)(54906003)(86362001)(83380400001)(71200400001)(66446008)(66556008)(66476007)(66946007)(1076003)(64756008)(30864003)(33716001)(5660300002)(76116006)(91956017)(8676002)(8936002)(45080400002)(6486002)(478600001)(9686003)(4326008)(6506007)(6512007)(2906002)(579004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?5sh9GGPuSSE2PS2gnoBX9zTMsWY9sBg0G7KDlF/2A3gr7dFMR79VKiVGuDGb?=
+ =?us-ascii?Q?5Vm3EBc1KLYMBXiX/tG1BnmvpqOuJ6HcCfNtood5TzeiaA2EvXbBhQ+zhneA?=
+ =?us-ascii?Q?NnY61qVqDxCy9f3vP2FRLivBuvy+iPZSv2vqTj+nWCPY1fSuri20ptTXdZR/?=
+ =?us-ascii?Q?aA6EWKKadl7YPWDxvFbi6NAdJYBp9v3AHt9ANVJw+3fHf9/qLNCIBKJm46VR?=
+ =?us-ascii?Q?fMav/mceIg6oChNrgpaHen6yX3VpjR0HySy++BGkcJZ6+5KSTJ9GI1XvEell?=
+ =?us-ascii?Q?MOlsPCExE+ixIvKacnbtMNW8kCkknG8jZAegS/Nzoneu9Q71j6/BLLMiZgeC?=
+ =?us-ascii?Q?SNPFJIEl5RrgQbpVk4GWWg87e/4Dwct8a5MVG9TUVUhPOk8GYE8udQRz97sl?=
+ =?us-ascii?Q?We8Qch8WNPdoQxppjRR3MF1+SjBFYS9foK08/SNqVT7evpsLMsKDYp7LvhyN?=
+ =?us-ascii?Q?CwjfM36P4V6qdm0MMF4x6drbrpZ4V7mwJ2YdSeaAdYVHlAjnXxHRKGE9vTSM?=
+ =?us-ascii?Q?8BioAgU5ew8PME/76M3+QeQCi3mB32LSkjIHy2ZrBvR63vZ4s+X11PShDfow?=
+ =?us-ascii?Q?wXjCdNOMtz63njfibV2UTqauYXtpEH9UOy0t4Y3BOLwxSHE3N0Da3NXdigpP?=
+ =?us-ascii?Q?ZZUSL47xs2/o00qfP2ehPZT5m3i99DrBmLODQKpm1L0WMlnbtRwfGKXdGPIa?=
+ =?us-ascii?Q?0F+QAnKpFp8x7JX/eB/TuXtTEnAysFGveOaSWhGNIKYlmEUpK+a5nXgznc32?=
+ =?us-ascii?Q?mgrYCj4a8Y8QkObvTRsW2Wb9RYQ0xgBpKMz2r/W5meJupb+PXLz2N1gXBUeo?=
+ =?us-ascii?Q?otiwMdIZiUwckdxqG4ybZKxbMZdF/BlIDE1bkZe2saBb61B7FnHMs+LKOESu?=
+ =?us-ascii?Q?mPJ5kDoIihb1K9QM7G/Vmkd7gjOh4hGUkHrGummlghdxhOqhqlVk9Be4nINY?=
+ =?us-ascii?Q?6e+GWFUeglR6tQ76zxgOMsKsmqhOdHn1qTo4nOiRs6W585qb5JeXCEkl4NIf?=
+ =?us-ascii?Q?EMqV?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4F5569A9B4553F4FA04EB0856917B0CF@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="RASg3xLB4tUQ4RcS"
-Content-Disposition: inline
-In-Reply-To: <20201210165556.GA46492@ranger.igk.intel.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10b3ee73-f82f-4c07-d652-08d89d3657a6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Dec 2020 18:06:39.6222
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BpSrOfP0fXJvPQd4M67W/QaROjeEIeTnl7VXh9/g0IuM03qz6ZjLCa8U7e/O8WL4e1IcFkC327OhwWrg9iggSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3326
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+[Added also the netdev mailing list, I haven't heard of linux-netdev
+before but kept it]
 
---RASg3xLB4tUQ4RcS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Thu, Dec 10, 2020 at 05:31:56PM +0000, Daniel Thompson wrote:
+> Hi Ioana
 
-On Dec 10, Maciej Fijalkowski wrote:
-> On Thu, Dec 10, 2020 at 05:32:41PM +0100, Lorenzo Bianconi wrote:
-> > > On Thu, Dec 10, 2020 at 04:50:42PM +0100, Lorenzo Bianconi wrote:
-> > > > Introduce xdp_init_buff utility routine to initialize xdp_buff data
-> > > > structure. Rely on xdp_init_buff in all XDP capable drivers.
-> > >=20
-> > > Hm, Jesper was suggesting two helpers, one that you implemented for t=
-hings
-> > > that are set once per NAPI and the other that is set per each buffer.
-> > >=20
-> > > Not sure about the naming for a second one - xdp_prepare_buff ?
-> > > xdp_init_buff that you have feels ok.
-> >=20
-> > ack, so we can have xdp_init_buff() for initialization done once per NA=
-PI run and=20
-> > xdp_prepare_buff() for per-NAPI iteration initialization, e.g.
-> >=20
-> > static inline void
-> > xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
-> > 		 int headroom, int data_len)
-> > {
-> > 	xdp->data_hard_start =3D hard_start;
-> > 	xdp->data =3D hard_start + headroom;
-> > 	xdp->data_end =3D xdp->data + data_len;
-> > 	xdp_set_data_meta_invalid(xdp);
-> > }
->=20
-> I think we should allow for setting the data_meta as well.
-> x64 calling convention states that first four args are placed onto
-> registers, so to keep it fast maybe have a third helper:
->=20
-> static inline void
-> xdp_prepare_buff_meta(struct xdp_buff *xdp, unsigned char *hard_start,
-> 		      int headroom, int data_len)
-> {
-> 	xdp->data_hard_start =3D hard_start;
-> 	xdp->data =3D hard_start + headroom;
-> 	xdp->data_end =3D xdp->data + data_len;
-> 	xdp->data_meta =3D xdp->data;
-> }
->=20
-> Thoughts?
-
-ack, I am fine with it. Let's wait for some feedback.
-
-Do you prefer to have xdp_prepare_buff/xdp_prepare_buff_meta in the same se=
-ries
-of xdp_buff_init() or is it ok to address it in a separate patch?
-
-Regards,
-Lorenzo
+Hi Daniel,
 
 >=20
+> On Mon, Jun 29, 2020 at 06:47:11PM +0000, Ioana Ciornei wrote:
+> > Instead of realloc-ing the skb on the Tx path when the provided headroo=
+m
+> > is smaller than the HW requirements, create a Scatter/Gather frame
+> > descriptor with only one entry.
 > >=20
-> > Regards,
-> > Lorenzo
+> > Remove the '[drv] tx realloc frames' counter exposed previously through
+> > ethtool since it is no longer used.
 > >=20
-> > >=20
-> > > >=20
-> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > ---
-> > > >  drivers/net/ethernet/amazon/ena/ena_netdev.c        | 3 +--
-> > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c       | 3 +--
-> > > >  drivers/net/ethernet/cavium/thunder/nicvf_main.c    | 4 ++--
-> > > >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c      | 4 ++--
-> > > >  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    | 8 ++++----
-> > > >  drivers/net/ethernet/intel/i40e/i40e_txrx.c         | 6 +++---
-> > > >  drivers/net/ethernet/intel/ice/ice_txrx.c           | 6 +++---
-> > > >  drivers/net/ethernet/intel/igb/igb_main.c           | 6 +++---
-> > > >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c       | 7 +++----
-> > > >  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c   | 7 +++----
-> > > >  drivers/net/ethernet/marvell/mvneta.c               | 3 +--
-> > > >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c     | 8 +++++---
-> > > >  drivers/net/ethernet/mellanox/mlx4/en_rx.c          | 3 +--
-> > > >  drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     | 3 +--
-> > > >  drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 4 ++--
-> > > >  drivers/net/ethernet/qlogic/qede/qede_fp.c          | 3 +--
-> > > >  drivers/net/ethernet/sfc/rx.c                       | 3 +--
-> > > >  drivers/net/ethernet/socionext/netsec.c             | 3 +--
-> > > >  drivers/net/ethernet/ti/cpsw.c                      | 4 ++--
-> > > >  drivers/net/ethernet/ti/cpsw_new.c                  | 4 ++--
-> > > >  drivers/net/hyperv/netvsc_bpf.c                     | 3 +--
-> > > >  drivers/net/tun.c                                   | 7 +++----
-> > > >  drivers/net/veth.c                                  | 8 ++++----
-> > > >  drivers/net/virtio_net.c                            | 6 ++----
-> > > >  drivers/net/xen-netfront.c                          | 4 ++--
-> > > >  include/net/xdp.h                                   | 7 +++++++
-> > > >  net/bpf/test_run.c                                  | 4 ++--
-> > > >  net/core/dev.c                                      | 8 ++++----
-> > > >  28 files changed, 67 insertions(+), 72 deletions(-)
-> > > >=20
-> > > > diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers=
-/net/ethernet/amazon/ena/ena_netdev.c
-> > > > index 0e98f45c2b22..338dce73927e 100644
-> > > > --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > > > +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> > > > @@ -1567,8 +1567,7 @@ static int ena_clean_rx_irq(struct ena_ring *=
-rx_ring, struct napi_struct *napi,
-> > > >  	netif_dbg(rx_ring->adapter, rx_status, rx_ring->netdev,
-> > > >  		  "%s qid %d\n", __func__, rx_ring->qid);
-> > > >  	res_budget =3D budget;
-> > > > -	xdp.rxq =3D &rx_ring->xdp_rxq;
-> > > > -	xdp.frame_sz =3D ENA_PAGE_SIZE;
-> > > > +	xdp_init_buff(&xdp, ENA_PAGE_SIZE, &rx_ring->xdp_rxq);
-> > > > =20
-> > > >  	do {
-> > > >  		xdp_verdict =3D XDP_PASS;
-> > > > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/driver=
-s/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> > > > index fcc262064766..b7942c3440c0 100644
-> > > > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> > > > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> > > > @@ -133,12 +133,11 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt=
-_rx_ring_info *rxr, u16 cons,
-> > > >  	dma_sync_single_for_cpu(&pdev->dev, mapping + offset, *len, bp->r=
-x_dir);
-> > > > =20
-> > > >  	txr =3D rxr->bnapi->tx_ring;
-> > > > +	xdp_init_buff(&xdp, PAGE_SIZE, &rxr->xdp_rxq);
-> > > >  	xdp.data_hard_start =3D *data_ptr - offset;
-> > > >  	xdp.data =3D *data_ptr;
-> > > >  	xdp_set_data_meta_invalid(&xdp);
-> > > >  	xdp.data_end =3D *data_ptr + *len;
-> > > > -	xdp.rxq =3D &rxr->xdp_rxq;
-> > > > -	xdp.frame_sz =3D PAGE_SIZE; /* BNXT_RX_PAGE_MODE(bp) when XDP ena=
-bled */
-> > > >  	orig_data =3D xdp.data;
-> > > > =20
-> > > >  	rcu_read_lock();
-> > > > diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/dri=
-vers/net/ethernet/cavium/thunder/nicvf_main.c
-> > > > index f3b7b443f964..9fc672f075f2 100644
-> > > > --- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-> > > > +++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-> > > > @@ -547,12 +547,12 @@ static inline bool nicvf_xdp_rx(struct nicvf =
-*nic, struct bpf_prog *prog,
-> > > >  	cpu_addr =3D (u64)phys_to_virt(cpu_addr);
-> > > >  	page =3D virt_to_page((void *)cpu_addr);
-> > > > =20
-> > > > +	xdp_init_buff(&xdp, RCV_FRAG_LEN + XDP_PACKET_HEADROOM,
-> > > > +		      &rq->xdp_rxq);
-> > > >  	xdp.data_hard_start =3D page_address(page);
-> > > >  	xdp.data =3D (void *)cpu_addr;
-> > > >  	xdp_set_data_meta_invalid(&xdp);
-> > > >  	xdp.data_end =3D xdp.data + len;
-> > > > -	xdp.rxq =3D &rq->xdp_rxq;
-> > > > -	xdp.frame_sz =3D RCV_FRAG_LEN + XDP_PACKET_HEADROOM;
-> > > >  	orig_data =3D xdp.data;
-> > > > =20
-> > > >  	rcu_read_lock();
-> > > > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drive=
-rs/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > > > index e28510c282e5..93030000e0aa 100644
-> > > > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > > > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > > > @@ -2536,12 +2536,12 @@ static u32 dpaa_run_xdp(struct dpaa_priv *p=
-riv, struct qm_fd *fd, void *vaddr,
-> > > >  		return XDP_PASS;
-> > > >  	}
-> > > > =20
-> > > > +	xdp_init_buff(&xdp, DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE,
-> > > > +		      &dpaa_fq->xdp_rxq);
-> > > >  	xdp.data =3D vaddr + fd_off;
-> > > >  	xdp.data_meta =3D xdp.data;
-> > > >  	xdp.data_hard_start =3D xdp.data - XDP_PACKET_HEADROOM;
-> > > >  	xdp.data_end =3D xdp.data + qm_fd_get_length(fd);
-> > > > -	xdp.frame_sz =3D DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
-> > > > -	xdp.rxq =3D &dpaa_fq->xdp_rxq;
-> > > > =20
-> > > >  	/* We reserve a fixed headroom of 256 bytes under the erratum and=
+> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > ---
+>=20
+> I've been chasing down a networking regression on my LX2160A board
+> (Honeycomb LX2K based on CEx7 LX2160A COM) that first appeared in v5.9.
+>=20
+> It makes the board unreliable opening outbound connections meaning
+> things like `apt update` or `git fetch` often can't open the connection.
+> It does not happen all the time but is sufficient to make the boards
+> built-in networking useless for workstation use.
+>=20
+> The problem is strongly linked to warnings in the logs so I used the
+> warnings to bisect down to locate the cause of the regression and it
+> pinpointed this patch. I have confirmed that in both v5.9 and v5.10-rc7
+> that reverting this patch (and fixing up the merge issues) fixes the
+> regression and the warnings stop appearing.
+>=20
+> A typical example of the warning is below (io-pgtable-arm.c:281 is an
+> error path that I guess would cause dma_map_page_attrs() to return
+> an error):
+>=20
+> [  714.464927] WARNING: CPU: 13 PID: 0 at
+> drivers/iommu/io-pgtable-arm.c:281 __arm_lpae_map+0x2d4/0x30c
+> [  714.464930] Modules linked in: snd_seq_dummy(E) snd_hrtimer(E)
+> snd_seq(E) snd_seq_device(E) snd_timer(E) snd(E) soundcore(E) bridge(E)
+> stp(E) llc(E) rfkill(E) caam_jr(E) crypto_engine(E) rng_core(E)
+> joydev(E) evdev(E) dpaa2_caam(E) caamhash_desc(E) caamalg_desc(E)
+> authenc(E) libdes(E) dpaa2_console(E) ofpart(E) caam(E) sg(E) error(E)
+> lm90(E) at24(E) spi_nor(E) mtd(E) sbsa_gwdt(E) qoriq_thermal(E)
+> layerscape_edac_mod(E) qoriq_cpufreq(E) drm(E) fuse(E) configfs(E)
+> ip_tables(E) x_tables(E) autofs4(E) ext4(E) crc32c_generic(E) crc16(E)
+> mbcache(E) jbd2(E) hid_generic(E) usbhid(E) hid(E) dm_crypt(E) dm_mod(E)
+> sd_mod(E) fsl_dpaa2_ptp(E) ptp_qoriq(E) fsl_dpaa2_eth(E)
+> xhci_plat_hcd(E) xhci_hcd(E) usbcore(E) aes_ce_blk(E) crypto_simd(E)
+> cryptd(E) aes_ce_cipher(E) ghash_ce(E) gf128mul(E) at803x(E) libaes(E)
+> fsl_mc_dpio(E) pcs_lynx(E) rtc_pcf2127(E) sha2_ce(E) phylink(E)
+> xgmac_mdio(E) regmap_spi(E) of_mdio(E) sha256_arm64(E)
+> i2c_mux_pca954x(E) fixed_phy(E) i2c_mux(E) sha1_ce(E) ptp(E) libphy(E)
+> [  714.465131]  pps_core(E) ahci_qoriq(E) libahci_platform(E) nvme(E)
+> libahci(E) nvme_core(E) t10_pi(E) libata(E) crc_t10dif(E)
+> crct10dif_generic(E) crct10dif_common(E) dwc3(E) scsi_mod(E) udc_core(E)
+> roles(E) ulpi(E) sdhci_of_esdhc(E) sdhci_pltfm(E) sdhci(E)
+> spi_nxp_fspi(E) i2c_imx(E) fixed(E)
+> [  714.465192] CPU: 13 PID: 0 Comm: swapper/13 Tainted: G        W   E
+> 5.10.0-rc7-00001-gba98d13279ca #52
+> [  714.465196] Hardware name: SolidRun LX2160A Honeycomb (DT)
+> [  714.465202] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=3D--)
+> [  714.465207] pc : __arm_lpae_map+0x2d4/0x30c
+> [  714.465211] lr : __arm_lpae_map+0x114/0x30c
+> [  714.465215] sp : ffff80001006b340
+> [  714.465219] x29: ffff80001006b340 x28: 0000002086538003=20
+> [  714.465227] x27: 0000000000000a20 x26: 0000000000001000=20
+> [  714.465236] x25: 0000000000000f44 x24: 00000020adf8d000=20
+> [  714.465245] x23: 0000000000000001 x22: 0000fffffaeca000=20
+> [  714.465253] x21: 0000000000000003 x20: ffff19b60d64d200=20
+> [  714.465261] x19: 00000000000000ca x18: 0000000000000000=20
+> [  714.465270] x17: 0000000000000000 x16: ffffcccb7cf3ca20=20
+> [  714.465278] x15: 0000000000000000 x14: 0000000000000000=20
+> [  714.465286] x13: 0000000000000003 x12: 0000000000000010=20
+> [  714.465294] x11: 0000000000000000 x10: 0000000000000002=20
+> [  714.465302] x9 : ffffcccb7d5b6e78 x8 : 00000000000001ff=20
+> [  714.465311] x7 : ffff19b606538650 x6 : ffff19b606538000=20
+> [  714.465319] x5 : 0000000000000009 x4 : 0000000000000f44=20
+> [  714.465327] x3 : 0000000000001000 x2 : 00000020adf8d000=20
+> [  714.465335] x1 : 0000000000000002 x0 : 0000000000000003=20
+> [  714.465343] Call trace:
+> [  714.465348]  __arm_lpae_map+0x2d4/0x30c
+> [  714.465353]  __arm_lpae_map+0x114/0x30c
+> [  714.465357]  __arm_lpae_map+0x114/0x30c
+> [  714.465362]  __arm_lpae_map+0x114/0x30c
+> [  714.465366]  arm_lpae_map+0xf4/0x180
+> [  714.465373]  arm_smmu_map+0x4c/0xc0
+> [  714.465379]  __iommu_map+0x100/0x2bc
+> [  714.465385]  iommu_map_atomic+0x20/0x30
+> [  714.465391]  __iommu_dma_map+0xb0/0x110
+> [  714.465397]  iommu_dma_map_page+0xb8/0x120
+> [  714.465404]  dma_map_page_attrs+0x1a8/0x210
+> [  714.465413]  __dpaa2_eth_tx+0x384/0xbd0 [fsl_dpaa2_eth]
+> [  714.465421]  dpaa2_eth_tx+0x84/0x134 [fsl_dpaa2_eth]
+> [  714.465427]  dev_hard_start_xmit+0x10c/0x2b0
+> [  714.465433]  sch_direct_xmit+0x1a0/0x550
+> [  714.465438]  __qdisc_run+0x140/0x670
+> [  714.465443]  __dev_queue_xmit+0x6c4/0xa74
+> [  714.465449]  dev_queue_xmit+0x20/0x2c
+> [  714.465463]  br_dev_queue_push_xmit+0xc4/0x1a0 [bridge]
+> [  714.465476]  br_forward_finish+0xdc/0xf0 [bridge]
+> [  714.465489]  __br_forward+0x160/0x1c0 [bridge]
+> [  714.465502]  br_forward+0x13c/0x160 [bridge]
+> [  714.465514]  br_dev_xmit+0x228/0x3b0 [bridge]
+> [  714.465520]  dev_hard_start_xmit+0x10c/0x2b0
+> [  714.465526]  __dev_queue_xmit+0x8f0/0xa74
+> [  714.465531]  dev_queue_xmit+0x20/0x2c
+> [  714.465538]  arp_xmit+0xc0/0xd0
+> [  714.465544]  arp_send_dst+0x78/0xa0
+> [  714.465550]  arp_solicit+0xf4/0x260
+> [  714.465554]  neigh_probe+0x64/0xb0
+> [  714.465560]  neigh_timer_handler+0x2f4/0x400
+> [  714.465566]  call_timer_fn+0x3c/0x184
+> [  714.465572]  __run_timers.part.0+0x2bc/0x370
+> [  714.465578]  run_timer_softirq+0x48/0x80
+> [  714.465583]  __do_softirq+0x120/0x36c
+> [  714.465589]  irq_exit+0xac/0x100
+> [  714.465596]  __handle_domain_irq+0x8c/0xf0
+> [  714.465600]  gic_handle_irq+0xcc/0x14c
+> [  714.465605]  el1_irq+0xc4/0x180
+> [  714.465610]  arch_cpu_idle+0x18/0x30
+> [  714.465617]  default_idle_call+0x4c/0x180
+> [  714.465623]  do_idle+0x238/0x2b0
+> [  714.465629]  cpu_startup_entry+0x30/0xa0
+> [  714.465636]  secondary_start_kernel+0x134/0x180
+> [  714.465640] ---[ end trace a84a7f61b559005f ]---
+>=20
+>=20
+> Given it is the iommu code that is provoking the warning I should
+> probably mention that the board I have requires
+> arm-smmu.disable_bypass=3D0 on the kernel command line in order to boot.
+> Also if it matters I am running the latest firmware from Solidrun
+> which is based on LSDK-20.04.
+>=20
+
+Hmmm, from what I remember I think I tested this with the smmu bypassed
+so that is why I didn't catch it.
+
+> Is there any reason for this code not to be working for LX2160A?
+
+I wouldn't expect this to be LX2160A specific but rather a bug in the
+implementation.. sorry.
+
+Let me reproduce it and see if I can get to the bottom of it and I will
+get back with some more info.
+
+Ioana
+
+>=20
+> Daniel.
+>=20
+>=20
+> PS A few months have gone by so I decided not to trim the patch out
+>    of this reply so you don't have to go digging!
+>=20
+>=20
+>=20
+> >  .../freescale/dpaa2/dpaa2-eth-debugfs.c       |   7 +-
+> >  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 177 +++++++++++++++---
+> >  .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |   9 +-
+> >  .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  |   1 -
+> >  4 files changed, 160 insertions(+), 34 deletions(-)
+> >=20
+> > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c b=
+/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+> > index 2880ca02d7e7..5cb357c74dec 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+> > @@ -19,14 +19,14 @@ static int dpaa2_dbg_cpu_show(struct seq_file *file=
+, void *offset)
+> >  	int i;
+> > =20
+> >  	seq_printf(file, "Per-CPU stats for %s\n", priv->net_dev->name);
+> > -	seq_printf(file, "%s%16s%16s%16s%16s%16s%16s%16s%16s%16s\n",
+> > +	seq_printf(file, "%s%16s%16s%16s%16s%16s%16s%16s%16s\n",
+> >  		   "CPU", "Rx", "Rx Err", "Rx SG", "Tx", "Tx Err", "Tx conf",
+> > -		   "Tx SG", "Tx realloc", "Enq busy");
+> > +		   "Tx SG", "Enq busy");
+> > =20
+> >  	for_each_online_cpu(i) {
+> >  		stats =3D per_cpu_ptr(priv->percpu_stats, i);
+> >  		extras =3D per_cpu_ptr(priv->percpu_extras, i);
+> > -		seq_printf(file, "%3d%16llu%16llu%16llu%16llu%16llu%16llu%16llu%16ll=
+u%16llu\n",
+> > +		seq_printf(file, "%3d%16llu%16llu%16llu%16llu%16llu%16llu%16llu%16ll=
+u\n",
+> >  			   i,
+> >  			   stats->rx_packets,
+> >  			   stats->rx_errors,
+> > @@ -35,7 +35,6 @@ static int dpaa2_dbg_cpu_show(struct seq_file *file, =
+void *offset)
+> >  			   stats->tx_errors,
+> >  			   extras->tx_conf_frames,
+> >  			   extras->tx_sg_frames,
+> > -			   extras->tx_reallocs,
+> >  			   extras->tx_portal_busy);
+> >  	}
+> > =20
+> > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers=
+/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> > index 712bbfdbe7d7..4a264b75c035 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> > @@ -685,6 +685,86 @@ static int build_sg_fd(struct dpaa2_eth_priv *priv=
+,
+> >  	return err;
+> >  }
+> > =20
+> > +/* Create a SG frame descriptor based on a linear skb.
+> > + *
+> > + * This function is used on the Tx path when the skb headroom is not l=
+arge
+> > + * enough for the HW requirements, thus instead of realloc-ing the skb=
  we
-> > > >  	 * offer it all to XDP programs to use. If no room is left for the
-> > > > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/dri=
-vers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > > > index 91cff93dbdae..a4ade0b5adb0 100644
-> > > > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > > > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > > > @@ -358,14 +358,14 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth=
-_priv *priv,
-> > > >  	if (!xdp_prog)
-> > > >  		goto out;
-> > > > =20
-> > > > +	xdp_init_buff(&xdp,
-> > > > +		      DPAA2_ETH_RX_BUF_RAW_SIZE -
-> > > > +		      (dpaa2_fd_get_offset(fd) - XDP_PACKET_HEADROOM),
-> > > > +		      &ch->xdp_rxq);
-> > > >  	xdp.data =3D vaddr + dpaa2_fd_get_offset(fd);
-> > > >  	xdp.data_end =3D xdp.data + dpaa2_fd_get_len(fd);
-> > > >  	xdp.data_hard_start =3D xdp.data - XDP_PACKET_HEADROOM;
-> > > >  	xdp_set_data_meta_invalid(&xdp);
-> > > > -	xdp.rxq =3D &ch->xdp_rxq;
-> > > > -
-> > > > -	xdp.frame_sz =3D DPAA2_ETH_RX_BUF_RAW_SIZE -
-> > > > -		(dpaa2_fd_get_offset(fd) - XDP_PACKET_HEADROOM);
-> > > > =20
-> > > >  	xdp_act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > > =20
-> > > > diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/=
-net/ethernet/intel/i40e/i40e_txrx.c
-> > > > index 9f73cd7aee09..4dbbbd49c389 100644
-> > > > --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> > > > +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> > > > @@ -2332,7 +2332,7 @@ static void i40e_inc_ntc(struct i40e_ring *rx=
-_ring)
-> > > >   **/
-> > > >  static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
-> > > >  {
-> > > > -	unsigned int total_rx_bytes =3D 0, total_rx_packets =3D 0;
-> > > > +	unsigned int total_rx_bytes =3D 0, total_rx_packets =3D 0, frame_=
-sz =3D 0;
-> > > >  	struct sk_buff *skb =3D rx_ring->skb;
-> > > >  	u16 cleaned_count =3D I40E_DESC_UNUSED(rx_ring);
-> > > >  	unsigned int xdp_xmit =3D 0;
-> > > > @@ -2340,9 +2340,9 @@ static int i40e_clean_rx_irq(struct i40e_ring=
- *rx_ring, int budget)
-> > > >  	struct xdp_buff xdp;
-> > > > =20
-> > > >  #if (PAGE_SIZE < 8192)
-> > > > -	xdp.frame_sz =3D i40e_rx_frame_truesize(rx_ring, 0);
-> > > > +	frame_sz =3D i40e_rx_frame_truesize(rx_ring, 0);
-> > > >  #endif
-> > > > -	xdp.rxq =3D &rx_ring->xdp_rxq;
-> > > > +	xdp_init_buff(&xdp, frame_sz, &rx_ring->xdp_rxq);
-> > > > =20
-> > > >  	while (likely(total_rx_packets < (unsigned int)budget)) {
-> > > >  		struct i40e_rx_buffer *rx_buffer;
-> > > > diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/ne=
-t/ethernet/intel/ice/ice_txrx.c
-> > > > index 77d5eae6b4c2..d52d98d56367 100644
-> > > > --- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-> > > > +++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-> > > > @@ -1077,18 +1077,18 @@ ice_is_non_eop(struct ice_ring *rx_ring, un=
-ion ice_32b_rx_flex_desc *rx_desc,
-> > > >   */
-> > > >  int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
-> > > >  {
-> > > > -	unsigned int total_rx_bytes =3D 0, total_rx_pkts =3D 0;
-> > > > +	unsigned int total_rx_bytes =3D 0, total_rx_pkts =3D 0, frame_sz =
-=3D 0;
-> > > >  	u16 cleaned_count =3D ICE_DESC_UNUSED(rx_ring);
-> > > >  	unsigned int xdp_res, xdp_xmit =3D 0;
-> > > >  	struct bpf_prog *xdp_prog =3D NULL;
-> > > >  	struct xdp_buff xdp;
-> > > >  	bool failure;
-> > > > =20
-> > > > -	xdp.rxq =3D &rx_ring->xdp_rxq;
-> > > >  	/* Frame size depend on rx_ring setup when PAGE_SIZE=3D4K */
-> > > >  #if (PAGE_SIZE < 8192)
-> > > > -	xdp.frame_sz =3D ice_rx_frame_truesize(rx_ring, 0);
-> > > > +	frame_sz =3D ice_rx_frame_truesize(rx_ring, 0);
-> > > >  #endif
-> > > > +	xdp_init_buff(&xdp, frame_sz, &rx_ring->xdp_rxq);
-> > > > =20
-> > > >  	/* start the loop to process Rx packets bounded by 'budget' */
-> > > >  	while (likely(total_rx_pkts < (unsigned int)budget)) {
-> > > > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/ne=
-t/ethernet/intel/igb/igb_main.c
-> > > > index 6a4ef4934fcf..365dfc0e3b65 100644
-> > > > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > > @@ -8666,13 +8666,13 @@ static int igb_clean_rx_irq(struct igb_q_ve=
-ctor *q_vector, const int budget)
-> > > >  	u16 cleaned_count =3D igb_desc_unused(rx_ring);
-> > > >  	unsigned int xdp_xmit =3D 0;
-> > > >  	struct xdp_buff xdp;
-> > > > -
-> > > > -	xdp.rxq =3D &rx_ring->xdp_rxq;
-> > > > +	u32 frame_sz =3D 0;
-> > > > =20
-> > > >  	/* Frame size depend on rx_ring setup when PAGE_SIZE=3D4K */
-> > > >  #if (PAGE_SIZE < 8192)
-> > > > -	xdp.frame_sz =3D igb_rx_frame_truesize(rx_ring, 0);
-> > > > +	frame_sz =3D igb_rx_frame_truesize(rx_ring, 0);
-> > > >  #endif
-> > > > +	xdp_init_buff(&xdp, frame_sz, &rx_ring->xdp_rxq);
-> > > > =20
-> > > >  	while (likely(total_packets < budget)) {
-> > > >  		union e1000_adv_rx_desc *rx_desc;
-> > > > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/driver=
-s/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > > > index 50e6b8b6ba7b..dcd49cfa36f7 100644
-> > > > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > > > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> > > > @@ -2282,7 +2282,7 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_=
-vector *q_vector,
-> > > >  			       struct ixgbe_ring *rx_ring,
-> > > >  			       const int budget)
-> > > >  {
-> > > > -	unsigned int total_rx_bytes =3D 0, total_rx_packets =3D 0;
-> > > > +	unsigned int total_rx_bytes =3D 0, total_rx_packets =3D 0, frame_=
-sz =3D 0;
-> > > >  	struct ixgbe_adapter *adapter =3D q_vector->adapter;
-> > > >  #ifdef IXGBE_FCOE
-> > > >  	int ddp_bytes;
-> > > > @@ -2292,12 +2292,11 @@ static int ixgbe_clean_rx_irq(struct ixgbe_=
-q_vector *q_vector,
-> > > >  	unsigned int xdp_xmit =3D 0;
-> > > >  	struct xdp_buff xdp;
-> > > > =20
-> > > > -	xdp.rxq =3D &rx_ring->xdp_rxq;
-> > > > -
-> > > >  	/* Frame size depend on rx_ring setup when PAGE_SIZE=3D4K */
-> > > >  #if (PAGE_SIZE < 8192)
-> > > > -	xdp.frame_sz =3D ixgbe_rx_frame_truesize(rx_ring, 0);
-> > > > +	frame_sz =3D ixgbe_rx_frame_truesize(rx_ring, 0);
-> > > >  #endif
-> > > > +	xdp_init_buff(&xdp, frame_sz, &rx_ring->xdp_rxq);
-> > > > =20
-> > > >  	while (likely(total_rx_packets < budget)) {
-> > > >  		union ixgbe_adv_rx_desc *rx_desc;
-> > > > diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/dr=
-ivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-> > > > index 4061cd7db5dd..624efcd71569 100644
-> > > > --- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-> > > > +++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-> > > > @@ -1121,19 +1121,18 @@ static int ixgbevf_clean_rx_irq(struct ixgb=
-evf_q_vector *q_vector,
-> > > >  				struct ixgbevf_ring *rx_ring,
-> > > >  				int budget)
-> > > >  {
-> > > > -	unsigned int total_rx_bytes =3D 0, total_rx_packets =3D 0;
-> > > > +	unsigned int total_rx_bytes =3D 0, total_rx_packets =3D 0, frame_=
-sz =3D 0;
-> > > >  	struct ixgbevf_adapter *adapter =3D q_vector->adapter;
-> > > >  	u16 cleaned_count =3D ixgbevf_desc_unused(rx_ring);
-> > > >  	struct sk_buff *skb =3D rx_ring->skb;
-> > > >  	bool xdp_xmit =3D false;
-> > > >  	struct xdp_buff xdp;
-> > > > =20
-> > > > -	xdp.rxq =3D &rx_ring->xdp_rxq;
-> > > > -
-> > > >  	/* Frame size depend on rx_ring setup when PAGE_SIZE=3D4K */
-> > > >  #if (PAGE_SIZE < 8192)
-> > > > -	xdp.frame_sz =3D ixgbevf_rx_frame_truesize(rx_ring, 0);
-> > > > +	frame_sz =3D ixgbevf_rx_frame_truesize(rx_ring, 0);
-> > > >  #endif
-> > > > +	xdp_init_buff(&xdp, frame_sz, &rx_ring->xdp_rxq);
-> > > > =20
-> > > >  	while (likely(total_rx_packets < budget)) {
-> > > >  		struct ixgbevf_rx_buffer *rx_buffer;
-> > > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/et=
-hernet/marvell/mvneta.c
-> > > > index 563ceac3060f..acbb9cb85ada 100644
-> > > > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > > > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > > > @@ -2363,9 +2363,8 @@ static int mvneta_rx_swbm(struct napi_struct =
-*napi,
-> > > >  	u32 desc_status, frame_sz;
-> > > >  	struct xdp_buff xdp_buf;
-> > > > =20
-> > > > +	xdp_init_buff(&xdp_buf, PAGE_SIZE, &rxq->xdp_rxq);
-> > > >  	xdp_buf.data_hard_start =3D NULL;
-> > > > -	xdp_buf.frame_sz =3D PAGE_SIZE;
-> > > > -	xdp_buf.rxq =3D &rxq->xdp_rxq;
-> > > > =20
-> > > >  	sinfo.nr_frags =3D 0;
-> > > > =20
-> > > > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/driv=
-ers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > > index afdd22827223..ca05dfc05058 100644
-> > > > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > > > @@ -3562,16 +3562,18 @@ static int mvpp2_rx(struct mvpp2_port *port=
-, struct napi_struct *napi,
-> > > >  			frag_size =3D bm_pool->frag_size;
-> > > > =20
-> > > >  		if (xdp_prog) {
-> > > > +			struct xdp_rxq_info *xdp_rxq;
-> > > > +
-> > > >  			xdp.data_hard_start =3D data;
-> > > >  			xdp.data =3D data + MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM;
-> > > >  			xdp.data_end =3D xdp.data + rx_bytes;
-> > > > -			xdp.frame_sz =3D PAGE_SIZE;
-> > > > =20
-> > > >  			if (bm_pool->pkt_size =3D=3D MVPP2_BM_SHORT_PKT_SIZE)
-> > > > -				xdp.rxq =3D &rxq->xdp_rxq_short;
-> > > > +				xdp_rxq =3D &rxq->xdp_rxq_short;
-> > > >  			else
-> > > > -				xdp.rxq =3D &rxq->xdp_rxq_long;
-> > > > +				xdp_rxq =3D &rxq->xdp_rxq_long;
-> > > > =20
-> > > > +			xdp_init_buff(&xdp, PAGE_SIZE, xdp_rxq);
-> > > >  			xdp_set_data_meta_invalid(&xdp);
-> > > > =20
-> > > >  			ret =3D mvpp2_run_xdp(port, rxq, xdp_prog, &xdp, pp, &ps);
-> > > > diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/n=
-et/ethernet/mellanox/mlx4/en_rx.c
-> > > > index 7954c1daf2b6..815381b484ca 100644
-> > > > --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> > > > +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-> > > > @@ -682,8 +682,7 @@ int mlx4_en_process_rx_cq(struct net_device *de=
-v, struct mlx4_en_cq *cq, int bud
-> > > >  	/* Protect accesses to: ring->xdp_prog, priv->mac_hash list */
-> > > >  	rcu_read_lock();
-> > > >  	xdp_prog =3D rcu_dereference(ring->xdp_prog);
-> > > > -	xdp.rxq =3D &ring->xdp_rxq;
-> > > > -	xdp.frame_sz =3D priv->frag_info[0].frag_stride;
-> > > > +	xdp_init_buff(&xdp, priv->frag_info[0].frag_stride, &ring->xdp_rx=
-q);
-> > > >  	doorbell_pending =3D false;
-> > > > =20
-> > > >  	/* We assume a 1:1 mapping between CQEs and Rx descriptors, so Rx
-> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/driv=
-ers/net/ethernet/mellanox/mlx5/core/en_rx.c
-> > > > index 6628a0197b4e..c68628b1f30b 100644
-> > > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-> > > > @@ -1127,12 +1127,11 @@ struct sk_buff *mlx5e_build_linear_skb(stru=
-ct mlx5e_rq *rq, void *va,
-> > > >  static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq, void *va, u16=
- headroom,
-> > > >  				u32 len, struct xdp_buff *xdp)
-> > > >  {
-> > > > +	xdp_init_buff(xdp, rq->buff.frame0_sz, &rq->xdp_rxq);
-> > > >  	xdp->data_hard_start =3D va;
-> > > >  	xdp->data =3D va + headroom;
-> > > >  	xdp_set_data_meta_invalid(xdp);
-> > > >  	xdp->data_end =3D xdp->data + len;
-> > > > -	xdp->rxq =3D &rq->xdp_rxq;
-> > > > -	xdp->frame_sz =3D rq->buff.frame0_sz;
-> > > >  }
-> > > > =20
-> > > >  static struct sk_buff *
-> > > > diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/=
-drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> > > > index b4acf2f41e84..68e03e8257f2 100644
-> > > > --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> > > > +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> > > > @@ -1822,8 +1822,8 @@ static int nfp_net_rx(struct nfp_net_rx_ring =
-*rx_ring, int budget)
-> > > >  	rcu_read_lock();
-> > > >  	xdp_prog =3D READ_ONCE(dp->xdp_prog);
-> > > >  	true_bufsz =3D xdp_prog ? PAGE_SIZE : dp->fl_bufsz;
-> > > > -	xdp.frame_sz =3D PAGE_SIZE - NFP_NET_RX_BUF_HEADROOM;
-> > > > -	xdp.rxq =3D &rx_ring->xdp_rxq;
-> > > > +	xdp_init_buff(&xdp, PAGE_SIZE - NFP_NET_RX_BUF_HEADROOM,
-> > > > +		      &rx_ring->xdp_rxq);
-> > > >  	tx_ring =3D r_vec->xdp_ring;
-> > > > =20
-> > > >  	while (pkts_polled < budget) {
-> > > > diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/n=
-et/ethernet/qlogic/qede/qede_fp.c
-> > > > index a2494bf85007..d40220043883 100644
-> > > > --- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-> > > > +++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-> > > > @@ -1090,12 +1090,11 @@ static bool qede_rx_xdp(struct qede_dev *ed=
-ev,
-> > > >  	struct xdp_buff xdp;
-> > > >  	enum xdp_action act;
-> > > > =20
-> > > > +	xdp_init_buff(&xdp, rxq->rx_buf_seg_size, &rxq->xdp_rxq);
-> > > >  	xdp.data_hard_start =3D page_address(bd->data);
-> > > >  	xdp.data =3D xdp.data_hard_start + *data_offset;
-> > > >  	xdp_set_data_meta_invalid(&xdp);
-> > > >  	xdp.data_end =3D xdp.data + *len;
-> > > > -	xdp.rxq =3D &rxq->xdp_rxq;
-> > > > -	xdp.frame_sz =3D rxq->rx_buf_seg_size; /* PAGE_SIZE when XDP enab=
-led */
-> > > > =20
-> > > >  	/* Queues always have a full reset currently, so for the time
-> > > >  	 * being until there's atomic program replace just mark read
-> > > > diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/s=
-fc/rx.c
-> > > > index aaa112877561..eaa6650955d1 100644
-> > > > --- a/drivers/net/ethernet/sfc/rx.c
-> > > > +++ b/drivers/net/ethernet/sfc/rx.c
-> > > > @@ -293,14 +293,13 @@ static bool efx_do_xdp(struct efx_nic *efx, s=
-truct efx_channel *channel,
-> > > >  	memcpy(rx_prefix, *ehp - efx->rx_prefix_size,
-> > > >  	       efx->rx_prefix_size);
-> > > > =20
-> > > > +	xdp_init_buff(&xdp, efx->rx_page_buf_step, &rx_queue->xdp_rxq_inf=
-o);
-> > > >  	xdp.data =3D *ehp;
-> > > >  	xdp.data_hard_start =3D xdp.data - EFX_XDP_HEADROOM;
-> > > > =20
-> > > >  	/* No support yet for XDP metadata */
-> > > >  	xdp_set_data_meta_invalid(&xdp);
-> > > >  	xdp.data_end =3D xdp.data + rx_buf->len;
-> > > > -	xdp.rxq =3D &rx_queue->xdp_rxq_info;
-> > > > -	xdp.frame_sz =3D efx->rx_page_buf_step;
-> > > > =20
-> > > >  	xdp_act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > >  	rcu_read_unlock();
-> > > > diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/=
-ethernet/socionext/netsec.c
-> > > > index 19d20a6d0d44..945ca9517bf9 100644
-> > > > --- a/drivers/net/ethernet/socionext/netsec.c
-> > > > +++ b/drivers/net/ethernet/socionext/netsec.c
-> > > > @@ -956,8 +956,7 @@ static int netsec_process_rx(struct netsec_priv=
- *priv, int budget)
-> > > >  	u32 xdp_act =3D 0;
-> > > >  	int done =3D 0;
-> > > > =20
-> > > > -	xdp.rxq =3D &dring->xdp_rxq;
-> > > > -	xdp.frame_sz =3D PAGE_SIZE;
-> > > > +	xdp_init_buff(&xdp, PAGE_SIZE, &dring->xdp_rxq);
-> > > > =20
-> > > >  	rcu_read_lock();
-> > > >  	xdp_prog =3D READ_ONCE(priv->xdp_prog);
-> > > > diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/=
-ti/cpsw.c
-> > > > index b0f00b4edd94..78a923391828 100644
-> > > > --- a/drivers/net/ethernet/ti/cpsw.c
-> > > > +++ b/drivers/net/ethernet/ti/cpsw.c
-> > > > @@ -392,6 +392,8 @@ static void cpsw_rx_handler(void *token, int le=
-n, int status)
-> > > >  	}
-> > > > =20
-> > > >  	if (priv->xdp_prog) {
-> > > > +		xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
-> > > > +
-> > > >  		if (status & CPDMA_RX_VLAN_ENCAP) {
-> > > >  			xdp.data =3D pa + CPSW_HEADROOM +
-> > > >  				   CPSW_RX_VLAN_ENCAP_HDR_SIZE;
-> > > > @@ -405,8 +407,6 @@ static void cpsw_rx_handler(void *token, int le=
-n, int status)
-> > > >  		xdp_set_data_meta_invalid(&xdp);
-> > > > =20
-> > > >  		xdp.data_hard_start =3D pa;
-> > > > -		xdp.rxq =3D &priv->xdp_rxq[ch];
-> > > > -		xdp.frame_sz =3D PAGE_SIZE;
-> > > > =20
-> > > >  		port =3D priv->emac_port + cpsw->data.dual_emac;
-> > > >  		ret =3D cpsw_run_xdp(priv, ch, &xdp, page, port);
-> > > > diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ether=
-net/ti/cpsw_new.c
-> > > > index 2f5e0ad23ad7..1b3385ec9645 100644
-> > > > --- a/drivers/net/ethernet/ti/cpsw_new.c
-> > > > +++ b/drivers/net/ethernet/ti/cpsw_new.c
-> > > > @@ -335,6 +335,8 @@ static void cpsw_rx_handler(void *token, int le=
-n, int status)
-> > > >  	}
-> > > > =20
-> > > >  	if (priv->xdp_prog) {
-> > > > +		xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
-> > > > +
-> > > >  		if (status & CPDMA_RX_VLAN_ENCAP) {
-> > > >  			xdp.data =3D pa + CPSW_HEADROOM +
-> > > >  				   CPSW_RX_VLAN_ENCAP_HDR_SIZE;
-> > > > @@ -348,8 +350,6 @@ static void cpsw_rx_handler(void *token, int le=
-n, int status)
-> > > >  		xdp_set_data_meta_invalid(&xdp);
-> > > > =20
-> > > >  		xdp.data_hard_start =3D pa;
-> > > > -		xdp.rxq =3D &priv->xdp_rxq[ch];
-> > > > -		xdp.frame_sz =3D PAGE_SIZE;
-> > > > =20
-> > > >  		ret =3D cpsw_run_xdp(priv, ch, &xdp, page, priv->emac_port);
-> > > >  		if (ret !=3D CPSW_XDP_PASS)
-> > > > diff --git a/drivers/net/hyperv/netvsc_bpf.c b/drivers/net/hyperv/n=
-etvsc_bpf.c
-> > > > index 440486d9c999..14a7ee4c6899 100644
-> > > > --- a/drivers/net/hyperv/netvsc_bpf.c
-> > > > +++ b/drivers/net/hyperv/netvsc_bpf.c
-> > > > @@ -44,12 +44,11 @@ u32 netvsc_run_xdp(struct net_device *ndev, str=
-uct netvsc_channel *nvchan,
-> > > >  		goto out;
-> > > >  	}
-> > > > =20
-> > > > +	xdp_init_buff(xdp, PAGE_SIZE, &nvchan->xdp_rxq);
-> > > >  	xdp->data_hard_start =3D page_address(page);
-> > > >  	xdp->data =3D xdp->data_hard_start + NETVSC_XDP_HDRM;
-> > > >  	xdp_set_data_meta_invalid(xdp);
-> > > >  	xdp->data_end =3D xdp->data + len;
-> > > > -	xdp->rxq =3D &nvchan->xdp_rxq;
-> > > > -	xdp->frame_sz =3D PAGE_SIZE;
-> > > > =20
-> > > >  	memcpy(xdp->data, data, len);
-> > > > =20
-> > > > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> > > > index fbed05ae7b0f..a82f7823d428 100644
-> > > > --- a/drivers/net/tun.c
-> > > > +++ b/drivers/net/tun.c
-> > > > @@ -1599,12 +1599,11 @@ static struct sk_buff *tun_build_skb(struct=
- tun_struct *tun,
-> > > >  		struct xdp_buff xdp;
-> > > >  		u32 act;
-> > > > =20
-> > > > +		xdp_init_buff(&xdp, buflen, &tfile->xdp_rxq);
-> > > >  		xdp.data_hard_start =3D buf;
-> > > >  		xdp.data =3D buf + pad;
-> > > >  		xdp_set_data_meta_invalid(&xdp);
-> > > >  		xdp.data_end =3D xdp.data + len;
-> > > > -		xdp.rxq =3D &tfile->xdp_rxq;
-> > > > -		xdp.frame_sz =3D buflen;
-> > > > =20
-> > > >  		act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > >  		if (act =3D=3D XDP_REDIRECT || act =3D=3D XDP_TX) {
-> > > > @@ -2344,9 +2343,9 @@ static int tun_xdp_one(struct tun_struct *tun,
-> > > >  			skb_xdp =3D true;
-> > > >  			goto build;
-> > > >  		}
-> > > > +
-> > > > +		xdp_init_buff(xdp, buflen, &tfile->xdp_rxq);
-> > > >  		xdp_set_data_meta_invalid(xdp);
-> > > > -		xdp->rxq =3D &tfile->xdp_rxq;
-> > > > -		xdp->frame_sz =3D buflen;
-> > > > =20
-> > > >  		act =3D bpf_prog_run_xdp(xdp_prog, xdp);
-> > > >  		err =3D tun_xdp_act(tun, xdp_prog, xdp, act);
-> > > > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > > > index 02bfcdf50a7a..25f3601fb6dd 100644
-> > > > --- a/drivers/net/veth.c
-> > > > +++ b/drivers/net/veth.c
-> > > > @@ -654,7 +654,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct =
-veth_rq *rq,
-> > > >  					struct veth_xdp_tx_bq *bq,
-> > > >  					struct veth_stats *stats)
-> > > >  {
-> > > > -	u32 pktlen, headroom, act, metalen;
-> > > > +	u32 pktlen, headroom, act, metalen, frame_sz;
-> > > >  	void *orig_data, *orig_data_end;
-> > > >  	struct bpf_prog *xdp_prog;
-> > > >  	int mac_len, delta, off;
-> > > > @@ -714,11 +714,11 @@ static struct sk_buff *veth_xdp_rcv_skb(struc=
-t veth_rq *rq,
-> > > >  	xdp.data =3D skb_mac_header(skb);
-> > > >  	xdp.data_end =3D xdp.data + pktlen;
-> > > >  	xdp.data_meta =3D xdp.data;
-> > > > -	xdp.rxq =3D &rq->xdp_rxq;
-> > > > =20
-> > > >  	/* SKB "head" area always have tailroom for skb_shared_info */
-> > > > -	xdp.frame_sz =3D (void *)skb_end_pointer(skb) - xdp.data_hard_sta=
-rt;
-> > > > -	xdp.frame_sz +=3D SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > > > +	frame_sz =3D (void *)skb_end_pointer(skb) - xdp.data_hard_start;
-> > > > +	frame_sz +=3D SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > > > +	xdp_init_buff(&xdp, frame_sz, &rq->xdp_rxq);
-> > > > =20
-> > > >  	orig_data =3D xdp.data;
-> > > >  	orig_data_end =3D xdp.data_end;
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index 052975ea0af4..a22ce87bcd9c 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -689,12 +689,11 @@ static struct sk_buff *receive_small(struct n=
-et_device *dev,
-> > > >  			page =3D xdp_page;
-> > > >  		}
-> > > > =20
-> > > > +		xdp_init_buff(&xdp, buflen, &rq->xdp_rxq);
-> > > >  		xdp.data_hard_start =3D buf + VIRTNET_RX_PAD + vi->hdr_len;
-> > > >  		xdp.data =3D xdp.data_hard_start + xdp_headroom;
-> > > >  		xdp.data_end =3D xdp.data + len;
-> > > >  		xdp.data_meta =3D xdp.data;
-> > > > -		xdp.rxq =3D &rq->xdp_rxq;
-> > > > -		xdp.frame_sz =3D buflen;
-> > > >  		orig_data =3D xdp.data;
-> > > >  		act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > >  		stats->xdp_packets++;
-> > > > @@ -859,12 +858,11 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >  		 * the descriptor on if we get an XDP_TX return code.
-> > > >  		 */
-> > > >  		data =3D page_address(xdp_page) + offset;
-> > > > +		xdp_init_buff(&xdp, frame_sz - vi->hdr_len, &rq->xdp_rxq);
-> > > >  		xdp.data_hard_start =3D data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
-> > > >  		xdp.data =3D data + vi->hdr_len;
-> > > >  		xdp.data_end =3D xdp.data + (len - vi->hdr_len);
-> > > >  		xdp.data_meta =3D xdp.data;
-> > > > -		xdp.rxq =3D &rq->xdp_rxq;
-> > > > -		xdp.frame_sz =3D frame_sz - vi->hdr_len;
-> > > > =20
-> > > >  		act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > >  		stats->xdp_packets++;
-> > > > diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-> > > > index b01848ef4649..329397c60d84 100644
-> > > > --- a/drivers/net/xen-netfront.c
-> > > > +++ b/drivers/net/xen-netfront.c
-> > > > @@ -864,12 +864,12 @@ static u32 xennet_run_xdp(struct netfront_que=
-ue *queue, struct page *pdata,
-> > > >  	u32 act;
-> > > >  	int err;
-> > > > =20
-> > > > +	xdp_init_buff(xdp, XEN_PAGE_SIZE - XDP_PACKET_HEADROOM,
-> > > > +		      &queue->xdp_rxq);
-> > > >  	xdp->data_hard_start =3D page_address(pdata);
-> > > >  	xdp->data =3D xdp->data_hard_start + XDP_PACKET_HEADROOM;
-> > > >  	xdp_set_data_meta_invalid(xdp);
-> > > >  	xdp->data_end =3D xdp->data + len;
-> > > > -	xdp->rxq =3D &queue->xdp_rxq;
-> > > > -	xdp->frame_sz =3D XEN_PAGE_SIZE - XDP_PACKET_HEADROOM;
-> > > > =20
-> > > >  	act =3D bpf_prog_run_xdp(prog, xdp);
-> > > >  	switch (act) {
-> > > > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > > > index 700ad5db7f5d..3fb3a9aa1b71 100644
-> > > > --- a/include/net/xdp.h
-> > > > +++ b/include/net/xdp.h
-> > > > @@ -76,6 +76,13 @@ struct xdp_buff {
-> > > >  	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tail=
-room*/
-> > > >  };
-> > > > =20
-> > > > +static inline void
-> > > > +xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_i=
-nfo *rxq)
-> > > > +{
-> > > > +	xdp->frame_sz =3D frame_sz;
-> > > > +	xdp->rxq =3D rxq;
-> > > > +}
-> > > > +
-> > > >  /* Reserve memory area at end-of data area.
-> > > >   *
-> > > >   * This macro reserves tailroom in the XDP buffer by limiting the
-> > > > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> > > > index c1c30a9f76f3..a8fa5a9e4137 100644
-> > > > --- a/net/bpf/test_run.c
-> > > > +++ b/net/bpf/test_run.c
-> > > > @@ -640,10 +640,10 @@ int bpf_prog_test_run_xdp(struct bpf_prog *pr=
-og, const union bpf_attr *kattr,
-> > > >  	xdp.data =3D data + headroom;
-> > > >  	xdp.data_meta =3D xdp.data;
-> > > >  	xdp.data_end =3D xdp.data + size;
-> > > > -	xdp.frame_sz =3D headroom + max_data_sz + tailroom;
-> > > > =20
-> > > >  	rxqueue =3D __netif_get_rx_queue(current->nsproxy->net_ns->loopba=
-ck_dev, 0);
-> > > > -	xdp.rxq =3D &rxqueue->xdp_rxq;
-> > > > +	xdp_init_buff(&xdp, headroom + max_data_sz + tailroom,
-> > > > +		      &rxqueue->xdp_rxq);
-> > > >  	bpf_prog_change_xdp(NULL, prog);
-> > > >  	ret =3D bpf_test_run(prog, &xdp, repeat, &retval, &duration, true=
-);
-> > > >  	if (ret)
-> > > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > > index ce8fea2e2788..bac56afcf6bc 100644
-> > > > --- a/net/core/dev.c
-> > > > +++ b/net/core/dev.c
-> > > > @@ -4588,11 +4588,11 @@ static u32 netif_receive_generic_xdp(struct=
- sk_buff *skb,
-> > > >  	struct netdev_rx_queue *rxqueue;
-> > > >  	void *orig_data, *orig_data_end;
-> > > >  	u32 metalen, act =3D XDP_DROP;
-> > > > +	u32 mac_len, frame_sz;
-> > > >  	__be16 orig_eth_type;
-> > > >  	struct ethhdr *eth;
-> > > >  	bool orig_bcast;
-> > > >  	int hlen, off;
-> > > > -	u32 mac_len;
-> > > > =20
-> > > >  	/* Reinjected packets coming from act_mirred or similar should
-> > > >  	 * not get XDP generic processing.
-> > > > @@ -4631,8 +4631,8 @@ static u32 netif_receive_generic_xdp(struct s=
-k_buff *skb,
-> > > >  	xdp->data_hard_start =3D skb->data - skb_headroom(skb);
-> > > > =20
-> > > >  	/* SKB "head" area always have tailroom for skb_shared_info */
-> > > > -	xdp->frame_sz  =3D (void *)skb_end_pointer(skb) - xdp->data_hard_=
-start;
-> > > > -	xdp->frame_sz +=3D SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > > > +	frame_sz =3D (void *)skb_end_pointer(skb) - xdp->data_hard_start;
-> > > > +	frame_sz +=3D SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > > > =20
-> > > >  	orig_data_end =3D xdp->data_end;
-> > > >  	orig_data =3D xdp->data;
-> > > > @@ -4641,7 +4641,7 @@ static u32 netif_receive_generic_xdp(struct s=
-k_buff *skb,
-> > > >  	orig_eth_type =3D eth->h_proto;
-> > > > =20
-> > > >  	rxqueue =3D netif_get_rxqueue(skb);
-> > > > -	xdp->rxq =3D &rxqueue->xdp_rxq;
-> > > > +	xdp_init_buff(xdp, frame_sz, &rxqueue->xdp_rxq);
-> > > > =20
-> > > >  	act =3D bpf_prog_run_xdp(xdp_prog, xdp);
-> > > > =20
-> > > > --=20
-> > > > 2.29.2
-> > > >=20
->=20
->=20
-
---RASg3xLB4tUQ4RcS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX9JiDwAKCRA6cBh0uS2t
-rArPAP9lnTHYSnre73DM/LCaE+XJmy/Yb2+G86k25VL7PM29ugD/X0+us6PjAiIS
-Yg9EPEJ3UrUG3UJ3hV/izR2tvYRIJAk=
-=173B
------END PGP SIGNATURE-----
-
---RASg3xLB4tUQ4RcS--
-
+> > + * create a SG frame descriptor with only one entry.
+> > + */
+> > +static int build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
+> > +				  struct sk_buff *skb,
+> > +				  struct dpaa2_fd *fd)
+> > +{
+> > +	struct device *dev =3D priv->net_dev->dev.parent;
+> > +	struct dpaa2_eth_sgt_cache *sgt_cache;
+> > +	struct dpaa2_sg_entry *sgt;
+> > +	struct dpaa2_eth_swa *swa;
+> > +	dma_addr_t addr, sgt_addr;
+> > +	void *sgt_buf =3D NULL;
+> > +	int sgt_buf_size;
+> > +	int err;
+> > +
+> > +	/* Prepare the HW SGT structure */
+> > +	sgt_cache =3D this_cpu_ptr(priv->sgt_cache);
+> > +	sgt_buf_size =3D priv->tx_data_offset + sizeof(struct dpaa2_sg_entry)=
+;
+> > +
+> > +	if (sgt_cache->count =3D=3D 0)
+> > +		sgt_buf =3D kzalloc(sgt_buf_size + DPAA2_ETH_TX_BUF_ALIGN,
+> > +				  GFP_ATOMIC);
+> > +	else
+> > +		sgt_buf =3D sgt_cache->buf[--sgt_cache->count];
+> > +	if (unlikely(!sgt_buf))
+> > +		return -ENOMEM;
+> > +
+> > +	sgt_buf =3D PTR_ALIGN(sgt_buf, DPAA2_ETH_TX_BUF_ALIGN);
+> > +	sgt =3D (struct dpaa2_sg_entry *)(sgt_buf + priv->tx_data_offset);
+> > +
+> > +	addr =3D dma_map_single(dev, skb->data, skb->len, DMA_BIDIRECTIONAL);
+> > +	if (unlikely(dma_mapping_error(dev, addr))) {
+> > +		err =3D -ENOMEM;
+> > +		goto data_map_failed;
+> > +	}
+> > +
+> > +	/* Fill in the HW SGT structure */
+> > +	dpaa2_sg_set_addr(sgt, addr);
+> > +	dpaa2_sg_set_len(sgt, skb->len);
+> > +	dpaa2_sg_set_final(sgt, true);
+> > +
+> > +	/* Store the skb backpointer in the SGT buffer */
+> > +	swa =3D (struct dpaa2_eth_swa *)sgt_buf;
+> > +	swa->type =3D DPAA2_ETH_SWA_SINGLE;
+> > +	swa->single.skb =3D skb;
+> > +	swa->sg.sgt_size =3D sgt_buf_size;
+> > +
+> > +	/* Separately map the SGT buffer */
+> > +	sgt_addr =3D dma_map_single(dev, sgt_buf, sgt_buf_size, DMA_BIDIRECTI=
+ONAL);
+> > +	if (unlikely(dma_mapping_error(dev, sgt_addr))) {
+> > +		err =3D -ENOMEM;
+> > +		goto sgt_map_failed;
+> > +	}
+> > +
+> > +	dpaa2_fd_set_offset(fd, priv->tx_data_offset);
+> > +	dpaa2_fd_set_format(fd, dpaa2_fd_sg);
+> > +	dpaa2_fd_set_addr(fd, sgt_addr);
+> > +	dpaa2_fd_set_len(fd, skb->len);
+> > +	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
+> > +
+> > +	if (priv->tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
+> > +		enable_tx_tstamp(fd, sgt_buf);
+> > +
+> > +	return 0;
+> > +
+> > +sgt_map_failed:
+> > +	dma_unmap_single(dev, addr, skb->len, DMA_BIDIRECTIONAL);
+> > +data_map_failed:
+> > +	if (sgt_cache->count >=3D DPAA2_ETH_SGT_CACHE_SIZE)
+> > +		kfree(sgt_buf);
+> > +	else
+> > +		sgt_cache->buf[sgt_cache->count++] =3D sgt_buf;
+> > +
+> > +	return err;
+> > +}
+> > +
+> >  /* Create a frame descriptor based on a linear skb */
+> >  static int build_single_fd(struct dpaa2_eth_priv *priv,
+> >  			   struct sk_buff *skb,
+> > @@ -743,13 +823,16 @@ static void free_tx_fd(const struct dpaa2_eth_pri=
+v *priv,
+> >  		       const struct dpaa2_fd *fd, bool in_napi)
+> >  {
+> >  	struct device *dev =3D priv->net_dev->dev.parent;
+> > -	dma_addr_t fd_addr;
+> > +	dma_addr_t fd_addr, sg_addr;
+> >  	struct sk_buff *skb =3D NULL;
+> >  	unsigned char *buffer_start;
+> >  	struct dpaa2_eth_swa *swa;
+> >  	u8 fd_format =3D dpaa2_fd_get_format(fd);
+> >  	u32 fd_len =3D dpaa2_fd_get_len(fd);
+> > =20
+> > +	struct dpaa2_eth_sgt_cache *sgt_cache;
+> > +	struct dpaa2_sg_entry *sgt;
+> > +
+> >  	fd_addr =3D dpaa2_fd_get_addr(fd);
+> >  	buffer_start =3D dpaa2_iova_to_virt(priv->iommu_domain, fd_addr);
+> >  	swa =3D (struct dpaa2_eth_swa *)buffer_start;
+> > @@ -769,16 +852,29 @@ static void free_tx_fd(const struct dpaa2_eth_pri=
+v *priv,
+> >  					 DMA_BIDIRECTIONAL);
+> >  		}
+> >  	} else if (fd_format =3D=3D dpaa2_fd_sg) {
+> > -		skb =3D swa->sg.skb;
+> > +		if (swa->type =3D=3D DPAA2_ETH_SWA_SG) {
+> > +			skb =3D swa->sg.skb;
+> > +
+> > +			/* Unmap the scatterlist */
+> > +			dma_unmap_sg(dev, swa->sg.scl, swa->sg.num_sg,
+> > +				     DMA_BIDIRECTIONAL);
+> > +			kfree(swa->sg.scl);
+> > =20
+> > -		/* Unmap the scatterlist */
+> > -		dma_unmap_sg(dev, swa->sg.scl, swa->sg.num_sg,
+> > -			     DMA_BIDIRECTIONAL);
+> > -		kfree(swa->sg.scl);
+> > +			/* Unmap the SGT buffer */
+> > +			dma_unmap_single(dev, fd_addr, swa->sg.sgt_size,
+> > +					 DMA_BIDIRECTIONAL);
+> > +		} else {
+> > +			skb =3D swa->single.skb;
+> > =20
+> > -		/* Unmap the SGT buffer */
+> > -		dma_unmap_single(dev, fd_addr, swa->sg.sgt_size,
+> > -				 DMA_BIDIRECTIONAL);
+> > +			/* Unmap the SGT Buffer */
+> > +			dma_unmap_single(dev, fd_addr, swa->single.sgt_size,
+> > +					 DMA_BIDIRECTIONAL);
+> > +
+> > +			sgt =3D (struct dpaa2_sg_entry *)(buffer_start +
+> > +							priv->tx_data_offset);
+> > +			sg_addr =3D dpaa2_sg_get_addr(sgt);
+> > +			dma_unmap_single(dev, sg_addr, skb->len, DMA_BIDIRECTIONAL);
+> > +		}
+> >  	} else {
+> >  		netdev_dbg(priv->net_dev, "Invalid FD format\n");
+> >  		return;
+> > @@ -808,8 +904,17 @@ static void free_tx_fd(const struct dpaa2_eth_priv=
+ *priv,
+> >  	}
+> > =20
+> >  	/* Free SGT buffer allocated on tx */
+> > -	if (fd_format !=3D dpaa2_fd_single)
+> > -		skb_free_frag(buffer_start);
+> > +	if (fd_format !=3D dpaa2_fd_single) {
+> > +		sgt_cache =3D this_cpu_ptr(priv->sgt_cache);
+> > +		if (swa->type =3D=3D DPAA2_ETH_SWA_SG) {
+> > +			skb_free_frag(buffer_start);
+> > +		} else {
+> > +			if (sgt_cache->count >=3D DPAA2_ETH_SGT_CACHE_SIZE)
+> > +				kfree(buffer_start);
+> > +			else
+> > +				sgt_cache->buf[sgt_cache->count++] =3D buffer_start;
+> > +		}
+> > +	}
+> > =20
+> >  	/* Move on with skb release */
+> >  	napi_consume_skb(skb, in_napi);
+> > @@ -833,22 +938,6 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *sk=
+b, struct net_device *net_dev)
+> >  	percpu_extras =3D this_cpu_ptr(priv->percpu_extras);
+> > =20
+> >  	needed_headroom =3D dpaa2_eth_needed_headroom(priv, skb);
+> > -	if (skb_headroom(skb) < needed_headroom) {
+> > -		struct sk_buff *ns;
+> > -
+> > -		ns =3D skb_realloc_headroom(skb, needed_headroom);
+> > -		if (unlikely(!ns)) {
+> > -			percpu_stats->tx_dropped++;
+> > -			goto err_alloc_headroom;
+> > -		}
+> > -		percpu_extras->tx_reallocs++;
+> > -
+> > -		if (skb->sk)
+> > -			skb_set_owner_w(ns, skb->sk);
+> > -
+> > -		dev_kfree_skb(skb);
+> > -		skb =3D ns;
+> > -	}
+> > =20
+> >  	/* We'll be holding a back-reference to the skb until Tx Confirmation=
+;
+> >  	 * we don't want that overwritten by a concurrent Tx with a cloned sk=
+b.
+> > @@ -867,6 +956,10 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *sk=
+b, struct net_device *net_dev)
+> >  		err =3D build_sg_fd(priv, skb, &fd);
+> >  		percpu_extras->tx_sg_frames++;
+> >  		percpu_extras->tx_sg_bytes +=3D skb->len;
+> > +	} else if (skb_headroom(skb) < needed_headroom) {
+> > +		err =3D build_sg_fd_single_buf(priv, skb, &fd);
+> > +		percpu_extras->tx_sg_frames++;
+> > +		percpu_extras->tx_sg_bytes +=3D skb->len;
+> >  	} else {
+> >  		err =3D build_single_fd(priv, skb, &fd);
+> >  	}
+> > @@ -924,7 +1017,6 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *sk=
+b, struct net_device *net_dev)
+> >  	return NETDEV_TX_OK;
+> > =20
+> >  err_build_fd:
+> > -err_alloc_headroom:
+> >  	dev_kfree_skb(skb);
+> > =20
+> >  	return NETDEV_TX_OK;
+> > @@ -1161,6 +1253,22 @@ static int refill_pool(struct dpaa2_eth_priv *pr=
+iv,
+> >  	return 0;
+> >  }
+> > =20
+> > +static void dpaa2_eth_sgt_cache_drain(struct dpaa2_eth_priv *priv)
+> > +{
+> > +	struct dpaa2_eth_sgt_cache *sgt_cache;
+> > +	u16 count;
+> > +	int k, i;
+> > +
+> > +	for_each_online_cpu(k) {
+> > +		sgt_cache =3D per_cpu_ptr(priv->sgt_cache, k);
+> > +		count =3D sgt_cache->count;
+> > +
+> > +		for (i =3D 0; i < count; i++)
+> > +			kfree(sgt_cache->buf[i]);
+> > +		sgt_cache->count =3D 0;
+> > +	}
+> > +}
+> > +
+> >  static int pull_channel(struct dpaa2_eth_channel *ch)
+> >  {
+> >  	int err;
+> > @@ -1562,6 +1670,9 @@ static int dpaa2_eth_stop(struct net_device *net_=
+dev)
+> >  	/* Empty the buffer pool */
+> >  	drain_pool(priv);
+> > =20
+> > +	/* Empty the Scatter-Gather Buffer cache */
+> > +	dpaa2_eth_sgt_cache_drain(priv);
+> > +
+> >  	return 0;
+> >  }
+> > =20
+> > @@ -3846,6 +3957,13 @@ static int dpaa2_eth_probe(struct fsl_mc_device =
+*dpni_dev)
+> >  		goto err_alloc_percpu_extras;
+> >  	}
+> > =20
+> > +	priv->sgt_cache =3D alloc_percpu(*priv->sgt_cache);
+> > +	if (!priv->sgt_cache) {
+> > +		dev_err(dev, "alloc_percpu(sgt_cache) failed\n");
+> > +		err =3D -ENOMEM;
+> > +		goto err_alloc_sgt_cache;
+> > +	}
+> > +
+> >  	err =3D netdev_init(net_dev);
+> >  	if (err)
+> >  		goto err_netdev_init;
+> > @@ -3914,6 +4032,8 @@ static int dpaa2_eth_probe(struct fsl_mc_device *=
+dpni_dev)
+> >  err_alloc_rings:
+> >  err_csum:
+> >  err_netdev_init:
+> > +	free_percpu(priv->sgt_cache);
+> > +err_alloc_sgt_cache:
+> >  	free_percpu(priv->percpu_extras);
+> >  err_alloc_percpu_extras:
+> >  	free_percpu(priv->percpu_stats);
+> > @@ -3959,6 +4079,7 @@ static int dpaa2_eth_remove(struct fsl_mc_device =
+*ls_dev)
+> >  		fsl_mc_free_irqs(ls_dev);
+> > =20
+> >  	free_rings(priv);
+> > +	free_percpu(priv->sgt_cache);
+> >  	free_percpu(priv->percpu_stats);
+> >  	free_percpu(priv->percpu_extras);
+> > =20
+> > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers=
+/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+> > index 2d7ada0f0dbd..9e4ceb92f240 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+> > @@ -125,6 +125,7 @@ struct dpaa2_eth_swa {
+> >  	union {
+> >  		struct {
+> >  			struct sk_buff *skb;
+> > +			int sgt_size;
+> >  		} single;
+> >  		struct {
+> >  			struct sk_buff *skb;
+> > @@ -282,7 +283,6 @@ struct dpaa2_eth_drv_stats {
+> >  	__u64	tx_conf_bytes;
+> >  	__u64	tx_sg_frames;
+> >  	__u64	tx_sg_bytes;
+> > -	__u64	tx_reallocs;
+> >  	__u64	rx_sg_frames;
+> >  	__u64	rx_sg_bytes;
+> >  	/* Enqueues retried due to portal busy */
+> > @@ -395,6 +395,12 @@ struct dpaa2_eth_cls_rule {
+> >  	u8 in_use;
+> >  };
+> > =20
+> > +#define DPAA2_ETH_SGT_CACHE_SIZE	256
+> > +struct dpaa2_eth_sgt_cache {
+> > +	void *buf[DPAA2_ETH_SGT_CACHE_SIZE];
+> > +	u16 count;
+> > +};
+> > +
+> >  /* Driver private data */
+> >  struct dpaa2_eth_priv {
+> >  	struct net_device *net_dev;
+> > @@ -409,6 +415,7 @@ struct dpaa2_eth_priv {
+> > =20
+> >  	u8 num_channels;
+> >  	struct dpaa2_eth_channel *channel[DPAA2_ETH_MAX_DPCONS];
+> > +	struct dpaa2_eth_sgt_cache __percpu *sgt_cache;
+> > =20
+> >  	struct dpni_attr dpni_attrs;
+> >  	u16 dpni_ver_major;
+> > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/dri=
+vers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+> > index e88269fe3de7..c4cbbcaa9a3f 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+> > @@ -43,7 +43,6 @@ static char dpaa2_ethtool_extras[][ETH_GSTRING_LEN] =
+=3D {
+> >  	"[drv] tx conf bytes",
+> >  	"[drv] tx sg frames",
+> >  	"[drv] tx sg bytes",
+> > -	"[drv] tx realloc frames",
+> >  	"[drv] rx sg frames",
+> >  	"[drv] rx sg bytes",
+> >  	"[drv] enqueue portal busy",
+> > --=20
+> > 2.25.1=
