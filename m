@@ -2,265 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EED32D67DF
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:01:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB8D2D689F
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:28:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404480AbgLJT7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 14:59:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60756 "EHLO mail.kernel.org"
+        id S2391312AbgLJUZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 15:25:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404416AbgLJT7n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 14:59:43 -0500
-Date:   Thu, 10 Dec 2020 20:58:55 +0100
+        id S2390070AbgLJUZ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 15:25:29 -0500
+Message-ID: <d2c14bd14daabcd7f589e17b14b2ffeebc0d8a15.camel@kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607630342;
-        bh=s2+iLf6qBKVf58ffYZN9l2zof1I9JLW9V6wDx6uBGB8=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eklBHcybGU7NaHOQQv++7WWXgTVIXfU4CnRYhDTvdmMh828hU1HhwGuy262A7mXl3
-         UVfMlgSR9hjmxiHEEmyAKdwE8N24GronEa9YX/3xByG12lhH5sLlYjOzWtARATmbU+
-         gbjs//eYTsEVpjwIHW5m8/FwAch5WCZ79eUruF3gO37OfRXISugUzkUxi/tczLL5H1
-         C81E6xkV7hUWEVha0XOmiWm7bl+CmN06kwTj6Wpcq+BBF8+02d6kP4fL05muxPEfXb
-         pZ3KGXhlBNtOeEDWP9EZLwn/4dPMZS2smZLYs42jw9BUNf2bClh/cggGRtfKBSWABt
-         n3IVdl/kI4rwg==
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     George Cherian <gcherian@marvell.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Zaibo Xu <xuzaibo@huawei.com>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Arnaud Ebalard <arno@natisbad.org>,
-        Srujana Challa <schalla@marvell.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Elie Morisse <syniurge@gmail.com>,
-        Nehal Shah <nehal-bakulchandra.shah@amd.com>,
-        Shyam Sundar S K <shyam-sundar.s-k@amd.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Andreas Larsson <andreas@gaisler.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netanel Belgazal <netanel@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Guy Tzalik <gtzalik@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        Zorik Machulsky <zorik@amazon.com>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-everest-linux-l2@marvell.com,
-        Michael Chan <michael.chan@broadcom.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Catherine Sullivan <csully@google.com>,
-        Sagi Shahar <sagis@google.com>,
-        Jon Olson <jonolson@google.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Jon Mason <jdmason@kudzu.us>,
-        Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Daniele Venzano <venza@brownhat.org>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Wingman Kwok <w-kwok2@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Kevin Brace <kevinbrace@bracecomputerlab.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, qat-linux@intel.com,
-        linux-i2c@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        ath11k@lists.infradead.org, wil6210@qti.qualcomm.com,
-        b43-dev@lists.infradead.org, iommu@lists.linux-foundation.org
-Subject: Re: [PATCH] dma-mapping: move hint unlikely for dma_mapping_error
- from drivers to core
-Message-ID: <20201210195855.GA11120@kunai>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        George Cherian <gcherian@marvell.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Zaibo Xu <xuzaibo@huawei.com>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Arnaud Ebalard <arno@natisbad.org>,
-        Srujana Challa <schalla@marvell.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Elie Morisse <syniurge@gmail.com>,
-        Nehal Shah <nehal-bakulchandra.shah@amd.com>,
-        Shyam Sundar S K <shyam-sundar.s-k@amd.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Doug Ledford <dledford@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Andreas Larsson <andreas@gaisler.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netanel Belgazal <netanel@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Guy Tzalik <gtzalik@amazon.com>, Saeed Bishara <saeedb@amazon.com>,
-        Zorik Machulsky <zorik@amazon.com>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-everest-linux-l2@marvell.com,
-        Michael Chan <michael.chan@broadcom.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Catherine Sullivan <csully@google.com>,
-        Sagi Shahar <sagis@google.com>, Jon Olson <jonolson@google.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>, Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>, Jon Mason <jdmason@kudzu.us>,
-        Rain River <rain.1986.08.12@gmail.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Jiri Pirko <jiri@resnulli.us>, Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Daniele Venzano <venza@brownhat.org>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Wingman Kwok <w-kwok2@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Kevin Brace <kevinbrace@bracecomputerlab.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, qat-linux@intel.com,
-        linux-i2c@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        ath11k@lists.infradead.org, wil6210@qti.qualcomm.com,
-        b43-dev@lists.infradead.org, iommu@lists.linux-foundation.org
-References: <5d08af46-5897-b827-dcfb-181d869c8f71@gmail.com>
+        s=k20201202; t=1607631888;
+        bh=qTQp+kYtNGLesjGoQz58y9Jan53hivDYnrWOoOb9muM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=kwk5MaCxi6jLgesKpFojsjEkZUOT+X/IwKNiWoSLMS1e7e0GhLQjaWr7m/IeaLg6O
+         j0MU0v6PfQWAFlygU1TlNV3uaP5sfnqPnKDjVfJTqVaIfjtql/zzlbHRvJcGu93eeN
+         rpyU7yEUnRuGyKq+A07XzS/vA7ZIYAf9YaoLiuBohtkLBHwEUaAi8Iv82uQfjcHUjH
+         2VvdNR9uKTacWhtEDgUcXwm02iaf6OVglhL4O9RFtlAqs0Ky4FqaTxB4vEvwQlKSZJ
+         HJSGeryrvbVgeL3z1YNbZBzNTdYQTaV008kGWv8wKOS77/WUZRtvFt703MmveWOgUj
+         ezjLG7IxKVwog==
+Subject: Re: [PATCH net-next 2/7] net: hns3: add support for tc mqprio
+ offload
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     tanhuazhong <tanhuazhong@huawei.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, huangdaode@huawei.com,
+        Jian Shen <shenjian15@huawei.com>
+Date:   Thu, 10 Dec 2020 12:24:46 -0800
+In-Reply-To: <42c9fd63-3e51-543e-bbbd-01e7face7c9c@huawei.com>
+References: <1607571732-24219-1-git-send-email-tanhuazhong@huawei.com>
+         <1607571732-24219-3-git-send-email-tanhuazhong@huawei.com>
+         <80b7502b700df43df7f66fa79fb9893399d0abd1.camel@kernel.org>
+         <42c9fd63-3e51-543e-bbbd-01e7face7c9c@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="k+w/mQv8wyuph6w0"
-Content-Disposition: inline
-In-Reply-To: <5d08af46-5897-b827-dcfb-181d869c8f71@gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 2020-12-10 at 20:27 +0800, tanhuazhong wrote:
+> 
+> On 2020/12/10 12:50, Saeed Mahameed wrote:
+> > On Thu, 2020-12-10 at 11:42 +0800, Huazhong Tan wrote:
+> > > From: Jian Shen <shenjian15@huawei.com>
+> > > 
+> > > Currently, the HNS3 driver only supports offload for tc number
+> > > and prio_tc. This patch adds support for other qopts, including
+> > > queues count and offset for each tc.
+> > > 
+> > > When enable tc mqprio offload, it's not allowed to change
+> > > queue numbers by ethtool. For hardware limitation, the queue
+> > > number of each tc should be power of 2.
+> > > 
+> > > For the queues is not assigned to each tc by average, so it's
+> > > should return vport->alloc_tqps for hclge_get_max_channels().
+> > > 
+> > 
+> > The commit message needs some improvements, it is not really clear
+> > what
+> > the last two sentences are about.
+> > 
+> 
+> The hclge_get_max_channels() returns the max queue number of each TC
+> for
+> user can set by command ethool -L. In previous implement, the queues
+> are
+> assigned to each TC by average, so we return it by vport-:
+> alloc_tqps / num_tc. And now we can assign differrent queue number
+> for
+> each TC, so it shouldn't be divided by num_tc.
 
---k+w/mQv8wyuph6w0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+What do you mean by "queues assigned to each tc by average" ?
 
-On Thu, Dec 10, 2020 at 03:47:50PM +0100, Heiner Kallweit wrote:
-> Zillions of drivers use the unlikely() hint when checking the result of
-> dma_mapping_error(). This is an inline function anyway, so we can move
-> the hint into the function and remove it from drivers.
-> From time to time discussions pop up how effective unlikely() is,
-> and that it should be used only if something is really very unlikely.
-> I think that's the case here.
->=20
-> Patch was created with some help from coccinelle.
->=20
-> @@
-> expression dev, dma_addr;
-> @@
->=20
-> - unlikely(dma_mapping_error(dev, dma_addr))
-> + dma_mapping_error(dev, dma_addr)
->=20
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+[...]
 
-Acked-by: Wolfram Sang <wsa@kernel.org> # for I2C
+>   
+> > > +	}
+> > > +	if (hdev->vport[0].alloc_tqps < queue_sum) {
+> > 
+> > can't you just allocate new tqps according to the new mqprio input
+> > like
+> > other drivers do ? how the user allocates those tqps ?
+> > 
+> 
+> maybe the name of 'alloc_tqps' is a little bit misleading, the
+> meaning
+> of this field is the total number of the available tqps in this
+> vport.
+> 
+
+from your driver code it seems alloc_tqps is number of rings allocated
+via ethool -L.
+
+My point is, it seems like in this patch you demand for the queues to
+be preallocated, but what other drivers do on setup tc, they just
+duplicate what ever number of queues was configured prior to setup tc,
+num_tc times.
+
+> > > +		dev_err(&hdev->pdev->dev,
+> > > +			"qopt queue count sum should be less than
+> > > %u\n",
+> > > +			hdev->vport[0].alloc_tqps);
+> > > +		return -EINVAL;
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static void hclge_sync_mqprio_qopt(struct hnae3_tc_info
+> > > *tc_info,
+> > > +				   struct tc_mqprio_qopt_offload
+> > > *mqprio_qopt)
+> > > +{
+> > > +	int i;
+> > > +
+> > > +	memset(tc_info, 0, sizeof(*tc_info));
+> > > +	tc_info->num_tc = mqprio_qopt->qopt.num_tc;
+> > > +	memcpy(tc_info->prio_tc, mqprio_qopt->qopt.prio_tc_map,
+> > > +	       sizeof_field(struct hnae3_tc_info, prio_tc));
+> > > +	memcpy(tc_info->tqp_count, mqprio_qopt->qopt.count,
+> > > +	       sizeof_field(struct hnae3_tc_info, tqp_count));
+> > > +	memcpy(tc_info->tqp_offset, mqprio_qopt->qopt.offset,
+> > > +	       sizeof_field(struct hnae3_tc_info, tqp_offset));
+> > > +
+> > 
+> > isn't it much easier to just store a copy of tc_mqprio_qopt in you
+> > tc_info and then just:
+> > tc_info->qopt = mqprio->qopt;
+> > 
+> > [...]
+> 
+> The tc_mqprio_qopt_offload still contains a lot of opt hns3 driver
+> does
+> not use yet, even if the hns3 use all the opt, I still think it is
+> better to create our own struct, if struct tc_mqprio_qopt_offload
+> changes in the future, we can limit the change to the
+> tc_mqprio_qopt_offload convertion.
+> 
+
+ok.
 
 
---k+w/mQv8wyuph6w0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl/SffoACgkQFA3kzBSg
-KbYcjxAAgOE4gHcgEP8+Oex1fposdP2Z4KiWFjIYYWG4fo/Ry9PjDbSGh9Nptht2
-fnsCRcFXFj4oaSXaflBTq6ky4usgo2Gyp9puXbnpyj7P2uEjrqZs1zUFpAWdzMor
-UgiJkW/P2IZjCDfwxE8nn9L0fm8ZfcHWqVohAgDh/9SKsrQCdzlzwvd7vSQ94fXr
-qnYrmc6BF68dxVZx4TV18GddP5qFXYKytQ8pXL51XZEJTI05IGmc2l6hs/B4tKj6
-muxiEFw5Ac0eseMimi4J5YDJJZxWe28onn69mMJYQDzVPqSZRyhSAqCv0EhMg6Vp
-sABbG/eShtxir8A5ZrVRgqCaVyBjPu6pHAxdccHkj4d/6hfvD6F2FDXXaWirAf3i
-A4gsMJAmxtBYV0Lyx0D+fzCFnvUSDDSOEayRJdzotQXVCbLvuWHTp6EXVJFD5mMU
-/o3LApTC1uYQTXfGh1HHanpSEXLXfVgzjuDHRUsVIwemk5JwUAl6fw4oXbMrHYdZ
-v9Inx4U81LGxayz1vGmzbE39AeE7YH/5lH4metjot96RpKa+Gg++mMxUHBPW6Jam
-AOz6I3cKYsn7mPkzAZfDNvhvfgz2vxXcGGULSCdaWnVCJY7FMqe8i98w1z/Ymo7U
-JSXmDUhFS43r0JqUfbR0sRGgLL+kHTEa6I4ZT8UNd9DmTtS0Jmo=
-=4X1P
------END PGP SIGNATURE-----
-
---k+w/mQv8wyuph6w0--
