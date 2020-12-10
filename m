@@ -2,147 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 448D32D6B7F
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C15D2D6B85
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388889AbgLJXEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 18:04:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
+        id S2389091AbgLJXEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 18:04:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387786AbgLJXDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 18:03:37 -0500
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEAF1C06179C
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 15:02:56 -0800 (PST)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        with ESMTP id S1729452AbgLJXED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 18:04:03 -0500
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C07C0611CD
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 15:03:23 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4CsTwH430XzQlRP;
-        Fri, 11 Dec 2020 00:02:55 +0100 (CET)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4CsTwJ1RXzzQlXM;
+        Fri, 11 Dec 2020 00:02:56 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1607641373;
+        s=MBO0001; t=1607641374;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5vnNqE6x6mV0enZrSKQvkl8730qMnp5s4HZb5qFlhnQ=;
-        b=qnfbyGV7fkL8VB/JMfQGx9aKpw/d9h5FCKZIe0ps/7sgegiDjEkOW0bHqT87RfHcWxmjzz
-        hKBD7Vtpt8iNYYrraO4OzL/zTVDaJXL1rYsMISfPEHxSJ90MwAKa2hRg8XoZNfSD5TOYHH
-        zukJBXETR1hf6p8YATRcZh0qXmGHdtQwal491TccooIyJeav9V0jpSvPnLBrvWVu5zS9J0
-        /B/DEOPe66WofWvTxx1hUHfMRv1tRrqLLsDLtxO1kloWy0yEu1sVdL6SfO5RjTg9QYOlgd
-        +SwV3pAX9Hppd6lZuIBtSvR0iaYYPek3GUt1lmeqxcHlQXIGMY6jWoj8adJjbg==
+        bh=8wot+aWIl0JNcS5G8bJr2c+d5hyHu62ImVpKafa4ygs=;
+        b=EiEGay+PxCEziX7YBShCakHf8cHfejanQ2vx6qa9fJNBUlBlCg4scKeQUjrDj/2J70PKEd
+        VrB4KMKc47Ughcj+nw3uj1TNCNt8i5RptugQpd0bYexrzMFH+Q6w9jqPkVHnFejHgFwgei
+        /GlzIURD2f4SQSpFy4l+7/b47mToxO+sUn1QjMf9u43rr47Cdg8dvR2BF0V8ccoFzgNs6F
+        r9+SnI2p2MH+XrrURiqHAC1eCXjjRCGSA65LwsRgJVaat9vm/VUQLnAcl7cp1LkMBmlMiw
+        F0N/DOo9WGU2Yzh+/o2NQkRZ6ItETiK5J+l43NzH+I5Gc7Bi1f29w2SQNAXaVg==
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter05.heinlein-hosting.de (spamfilter05.heinlein-hosting.de [80.241.56.123]) (amavisd-new, port 10030)
-        with ESMTP id MsD5UzgIGVoL; Fri, 11 Dec 2020 00:02:52 +0100 (CET)
+        by spamfilter02.heinlein-hosting.de (spamfilter02.heinlein-hosting.de [80.241.56.116]) (amavisd-new, port 10030)
+        with ESMTP id B5TJ6DPkPiXe; Fri, 11 Dec 2020 00:02:53 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 05/10] dcb: Add dcb_set_u32(), dcb_set_u64()
-Date:   Fri, 11 Dec 2020 00:02:19 +0100
-Message-Id: <3cc56cf0415b035561885ae3d48986e248ec3c7e.1607640819.git.me@pmachata.org>
+Subject: [PATCH iproute2-next 06/10] dcb: Add -s to enable statistics
+Date:   Fri, 11 Dec 2020 00:02:20 +0100
+Message-Id: <5e766bd1ebd9f622c1f59646c06490ab6c5f023d.1607640819.git.me@pmachata.org>
 In-Reply-To: <cover.1607640819.git.me@pmachata.org>
 References: <cover.1607640819.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-MBO-SPAM-Probability: *
-X-Rspamd-Score: 0.53 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 922091778
-X-Rspamd-UID: 206e14
+X-Rspamd-Score: 0.12 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 3C35017C2
+X-Rspamd-UID: 9a0b07
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DCB buffer object has a settable array of 32-bit quantities, and the
-maxrate object of 64-bit ones. Adjust dcb_parse_mapping() and related
-helpers to support 64-bit values in mappings, and add appropriate helpers.
+Allow selective display of statistical counters by passing -s.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- dcb/dcb.c | 22 ++++++++++++++++++----
- dcb/dcb.h |  8 +++++---
- 2 files changed, 23 insertions(+), 7 deletions(-)
+ dcb/dcb.c      | 9 +++++++--
+ dcb/dcb.h      | 1 +
+ man/man8/dcb.8 | 5 +++++
+ 3 files changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/dcb/dcb.c b/dcb/dcb.c
-index 217dd640d7e5..7c0beee43686 100644
+index 7c0beee43686..9332a8b2e3d4 100644
 --- a/dcb/dcb.c
 +++ b/dcb/dcb.c
-@@ -229,8 +229,8 @@ void dcb_print_named_array(const char *json_name, const char *fp_name,
+@@ -310,7 +310,8 @@ static void dcb_help(void)
+ 		"Usage: dcb [ OPTIONS ] OBJECT { COMMAND | help }\n"
+ 		"       dcb [ -f | --force ] { -b | --batch } filename [ -N | --Netns ] netnsname\n"
+ 		"where  OBJECT := ets\n"
+-		"       OPTIONS := [ -V | --Version | -j | --json | -p | --pretty | -v | --verbose ]\n");
++		"       OPTIONS := [ -V | --Version | -j | --json | -p | --pretty\n"
++		"                  | -s | --statistics | -v | --verbose ]\n");
  }
  
- int dcb_parse_mapping(const char *what_key, __u32 key, __u32 max_key,
--		      const char *what_value, __u32 value, __u32 max_value,
--		      void (*set_array)(__u32 index, __u32 value, void *data),
-+		      const char *what_value, __u64 value, __u64 max_value,
-+		      void (*set_array)(__u32 index, __u64 value, void *data),
- 		      void *set_array_data)
- {
- 	bool is_all = key == (__u32) -1;
-@@ -242,7 +242,7 @@ int dcb_parse_mapping(const char *what_key, __u32 key, __u32 max_key,
+ static int dcb_cmd(struct dcb *dcb, int argc, char **argv)
+@@ -346,6 +347,7 @@ int main(int argc, char **argv)
+ 		{ "batch",		required_argument,	NULL, 'b' },
+ 		{ "json",		no_argument,		NULL, 'j' },
+ 		{ "pretty",		no_argument,		NULL, 'p' },
++		{ "statistics",		no_argument,		NULL, 's' },
+ 		{ "Netns",		required_argument,	NULL, 'N' },
+ 		{ "help",		no_argument,		NULL, 'h' },
+ 		{ NULL, 0, NULL, 0 }
+@@ -363,7 +365,7 @@ int main(int argc, char **argv)
+ 		return EXIT_FAILURE;
  	}
  
- 	if (value > max_value) {
--		fprintf(stderr, "In %s:%s mapping, %s is expected to be 0..%d\n",
-+		fprintf(stderr, "In %s:%s mapping, %s is expected to be 0..%llu\n",
- 			what_key, what_value, what_value, max_value);
- 		return -EINVAL;
- 	}
-@@ -257,13 +257,27 @@ int dcb_parse_mapping(const char *what_key, __u32 key, __u32 max_key,
- 	return 0;
- }
+-	while ((opt = getopt_long(argc, argv, "b:fhjpvN:V",
++	while ((opt = getopt_long(argc, argv, "b:fhjpsvN:V",
+ 				  long_options, NULL)) >= 0) {
  
--void dcb_set_u8(__u32 key, __u32 value, void *data)
-+void dcb_set_u8(__u32 key, __u64 value, void *data)
- {
- 	__u8 *array = data;
- 
- 	array[key] = value;
- }
- 
-+void dcb_set_u32(__u32 key, __u64 value, void *data)
-+{
-+	__u32 *array = data;
-+
-+	array[key] = value;
-+}
-+
-+void dcb_set_u64(__u32 key, __u64 value, void *data)
-+{
-+	__u64 *array = data;
-+
-+	array[key] = value;
-+}
-+
- int dcb_cmd_parse_dev(struct dcb *dcb, int argc, char **argv,
- 		      int (*and_then)(struct dcb *dcb, const char *dev,
- 				      int argc, char **argv),
+ 		switch (opt) {
+@@ -383,6 +385,9 @@ int main(int argc, char **argv)
+ 		case 'p':
+ 			pretty = true;
+ 			break;
++		case 's':
++			dcb->stats = true;
++			break;
+ 		case 'N':
+ 			if (netns_switch(optarg)) {
+ 				ret = EXIT_FAILURE;
 diff --git a/dcb/dcb.h b/dcb/dcb.h
-index 6f135ed06b08..d22176888811 100644
+index d22176888811..b2a13b3065f2 100644
 --- a/dcb/dcb.h
 +++ b/dcb/dcb.h
-@@ -14,15 +14,17 @@ struct dcb {
+@@ -11,6 +11,7 @@ struct dcb {
+ 	char *buf;
+ 	struct mnl_socket *nl;
+ 	bool json_output;
++	bool stats;
  };
  
  int dcb_parse_mapping(const char *what_key, __u32 key, __u32 max_key,
--		      const char *what_value, __u32 value, __u32 max_value,
--		      void (*set_array)(__u32 index, __u32 value, void *data),
-+		      const char *what_value, __u64 value, __u64 max_value,
-+		      void (*set_array)(__u32 index, __u64 value, void *data),
- 		      void *set_array_data);
- int dcb_cmd_parse_dev(struct dcb *dcb, int argc, char **argv,
- 		      int (*and_then)(struct dcb *dcb, const char *dev,
- 				      int argc, char **argv),
- 		      void (*help)(void));
+diff --git a/man/man8/dcb.8 b/man/man8/dcb.8
+index f318435caa98..f853b7baaf33 100644
+--- a/man/man8/dcb.8
++++ b/man/man8/dcb.8
+@@ -51,6 +51,11 @@ Generate JSON output.
+ .BR "\-p" , " --pretty"
+ When combined with -j generate a pretty JSON output.
  
--void dcb_set_u8(__u32 key, __u32 value, void *data);
-+void dcb_set_u8(__u32 key, __u64 value, void *data);
-+void dcb_set_u32(__u32 key, __u64 value, void *data);
-+void dcb_set_u64(__u32 key, __u64 value, void *data);
++.TP
++.BR "\-s" , " --statistics"
++If the object in question contains any statistical counters, shown them as
++part of the "show" output.
++
+ .SH OBJECTS
  
- int dcb_get_attribute(struct dcb *dcb, const char *dev, int attr,
- 		      void *data, size_t data_len);
+ .TP
 -- 
 2.25.1
 
