@@ -2,92 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E0962D500B
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 02:05:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C572D5005
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 02:04:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731582AbgLJBFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 20:05:06 -0500
-Received: from mga12.intel.com ([192.55.52.136]:16049 "EHLO mga12.intel.com"
+        id S1731010AbgLJBEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 20:04:22 -0500
+Received: from mga18.intel.com ([134.134.136.126]:24733 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731357AbgLJBEh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 20:04:37 -0500
-IronPort-SDR: h7Z0sRPpbRgCbZivrq1ufZo7FhmVfHA475Zf6FCjhToanBkTJcasGVDS3u0n0smoc4XMCtMGxi
- WHsnoBVNsDtQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="153414672"
+        id S1729847AbgLJBEC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 20:04:02 -0500
+IronPort-SDR: 0tCthq8PPcn4PncRhcWbdhCbAA+EB2ocZiFQpicpYarPbqIFmAM/okGYK4fnSHMTXAqV/kDkvn
+ bdBrdaPlcHjw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="161937221"
 X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
-   d="scan'208";a="153414672"
+   d="scan'208";a="161937221"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 17:03:00 -0800
-IronPort-SDR: b07jDUvC6+Raf2S1NJ4Wv3SBtfGWOpQ0UnhYlJF5QSYbHd/UgboXm0ZglbEyFHaY4BeJ0rlcGx
- duodtND0eGkA==
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 17:03:00 -0800
+IronPort-SDR: p4E7qYwLWuotUBAZUVos0usQxDttZseQw7squJKcEpEGJ36UbzBX4FuYJSNx85Pf4nC8bFn5CH
+ mlqpQovrQIhA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.78,407,1599548400"; 
-   d="scan'208";a="338203392"
+   d="scan'208";a="338203397"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 09 Dec 2020 17:02:59 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Sven Auhagen <sven.auhagen@voleatech.de>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [net 6/9] igb: avoid transmit queue timeout in xdp path
-Date:   Wed,  9 Dec 2020 17:02:49 -0800
-Message-Id: <20201210010252.4029245-7-anthony.l.nguyen@intel.com>
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        anthony.l.nguyen@intel.com, Li RongQing <lirongqing@baidu.com>,
+        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+Subject: [net 7/9] i40e: avoid premature Rx buffer reuse
+Date:   Wed,  9 Dec 2020 17:02:50 -0800
+Message-Id: <20201210010252.4029245-8-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201210010252.4029245-1-anthony.l.nguyen@intel.com>
 References: <20201210010252.4029245-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Auhagen <sven.auhagen@voleatech.de>
+From: Björn Töpel <bjorn.topel@intel.com>
 
-Since we share the transmit queue with the network stack,
-it is possible that we run into a transmit queue timeout.
-This will reset the queue.
-This happens under high load when XDP is using the
-transmit queue pretty much exclusively.
+The page recycle code, incorrectly, relied on that a page fragment
+could not be freed inside xdp_do_redirect(). This assumption leads to
+that page fragments that are used by the stack/XDP redirect can be
+reused and overwritten.
 
-netdev_start_xmit() sets the trans_start variable of the
-transmit queue to jiffies which is later utilized by dev_watchdog(),
-so to avoid timeout, let stack know that XDP xmit happened by
-bumping the trans_start within XDP Tx routines to jiffies.
+To avoid this, store the page count prior invoking xdp_do_redirect().
 
-Fixes: 9cbc948b5a20 ("igb: add XDP support")
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Longer explanation:
+
+Intel NICs have a recycle mechanism. The main idea is that a page is
+split into two parts. One part is owned by the driver, one part might
+be owned by someone else, such as the stack.
+
+t0: Page is allocated, and put on the Rx ring
+              +---------------
+used by NIC ->| upper buffer
+(rx_buffer)   +---------------
+              | lower buffer
+              +---------------
+  page count  == USHRT_MAX
+  rx_buffer->pagecnt_bias == USHRT_MAX
+
+t1: Buffer is received, and passed to the stack (e.g.)
+              +---------------
+              | upper buff (skb)
+              +---------------
+used by NIC ->| lower buffer
+(rx_buffer)   +---------------
+  page count  == USHRT_MAX
+  rx_buffer->pagecnt_bias == USHRT_MAX - 1
+
+t2: Buffer is received, and redirected
+              +---------------
+              | upper buff (skb)
+              +---------------
+used by NIC ->| lower buffer
+(rx_buffer)   +---------------
+
+Now, prior calling xdp_do_redirect():
+  page count  == USHRT_MAX
+  rx_buffer->pagecnt_bias == USHRT_MAX - 2
+
+This means that buffer *cannot* be flipped/reused, because the skb is
+still using it.
+
+The problem arises when xdp_do_redirect() actually frees the
+segment. Then we get:
+  page count  == USHRT_MAX - 1
+  rx_buffer->pagecnt_bias == USHRT_MAX - 2
+
+From a recycle perspective, the buffer can be flipped and reused,
+which means that the skb data area is passed to the Rx HW ring!
+
+To work around this, the page count is stored prior calling
+xdp_do_redirect().
+
+Note that this is not optimal, since the NIC could actually reuse the
+"lower buffer" again. However, then we need to track whether
+XDP_REDIRECT consumed the buffer or not.
+
+Fixes: d9314c474d4f ("i40e: add support for XDP_REDIRECT")
+Reported-and-analyzed-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 27 +++++++++++++++------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index af6ace6c0f87..0d343d050973 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -2919,6 +2919,8 @@ static int igb_xdp_xmit_back(struct igb_adapter *adapter, struct xdp_buff *xdp)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index d43ce13a93c9..3f5825fa67c9 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -1850,6 +1850,7 @@ static inline bool i40e_page_is_reusable(struct page *page)
+  * the adapter for another receive
+  *
+  * @rx_buffer: buffer containing the page
++ * @rx_buffer_pgcnt: buffer page refcount pre xdp_do_redirect() call
+  *
+  * If page is reusable, rx_buffer->page_offset is adjusted to point to
+  * an unused region in the page.
+@@ -1872,7 +1873,8 @@ static inline bool i40e_page_is_reusable(struct page *page)
+  *
+  * In either case, if the page is reusable its refcount is increased.
+  **/
+-static bool i40e_can_reuse_rx_page(struct i40e_rx_buffer *rx_buffer)
++static bool i40e_can_reuse_rx_page(struct i40e_rx_buffer *rx_buffer,
++				   int rx_buffer_pgcnt)
+ {
+ 	unsigned int pagecnt_bias = rx_buffer->pagecnt_bias;
+ 	struct page *page = rx_buffer->page;
+@@ -1883,7 +1885,7 @@ static bool i40e_can_reuse_rx_page(struct i40e_rx_buffer *rx_buffer)
  
- 	nq = txring_txq(tx_ring);
- 	__netif_tx_lock(nq, cpu);
-+	/* Avoid transmit queue timeout since we share it with the slow path */
-+	nq->trans_start = jiffies;
- 	ret = igb_xmit_xdp_ring(adapter, tx_ring, xdpf);
- 	__netif_tx_unlock(nq);
+ #if (PAGE_SIZE < 8192)
+ 	/* if we are only owner of page we can reuse it */
+-	if (unlikely((page_count(page) - pagecnt_bias) > 1))
++	if (unlikely((rx_buffer_pgcnt - pagecnt_bias) > 1))
+ 		return false;
+ #else
+ #define I40E_LAST_OFFSET \
+@@ -1942,16 +1944,24 @@ static void i40e_add_rx_frag(struct i40e_ring *rx_ring,
+  * i40e_get_rx_buffer - Fetch Rx buffer and synchronize data for use
+  * @rx_ring: rx descriptor ring to transact packets on
+  * @size: size of buffer to add to skb
++ * @rx_buffer_pgcnt: buffer page refcount
+  *
+  * This function will pull an Rx buffer from the ring and synchronize it
+  * for use by the CPU.
+  */
+ static struct i40e_rx_buffer *i40e_get_rx_buffer(struct i40e_ring *rx_ring,
+-						 const unsigned int size)
++						 const unsigned int size,
++						 int *rx_buffer_pgcnt)
+ {
+ 	struct i40e_rx_buffer *rx_buffer;
  
-@@ -2951,6 +2953,9 @@ static int igb_xdp_xmit(struct net_device *dev, int n,
- 	nq = txring_txq(tx_ring);
- 	__netif_tx_lock(nq, cpu);
+ 	rx_buffer = i40e_rx_bi(rx_ring, rx_ring->next_to_clean);
++	*rx_buffer_pgcnt =
++#if (PAGE_SIZE < 8192)
++		page_count(rx_buffer->page);
++#else
++		0;
++#endif
+ 	prefetch_page_address(rx_buffer->page);
  
-+	/* Avoid transmit queue timeout since we share it with the slow path */
-+	nq->trans_start = jiffies;
-+
- 	for (i = 0; i < n; i++) {
- 		struct xdp_frame *xdpf = frames[i];
- 		int err;
+ 	/* we are reusing so sync this buffer for CPU use */
+@@ -2102,14 +2112,16 @@ static struct sk_buff *i40e_build_skb(struct i40e_ring *rx_ring,
+  * i40e_put_rx_buffer - Clean up used buffer and either recycle or free
+  * @rx_ring: rx descriptor ring to transact packets on
+  * @rx_buffer: rx buffer to pull data from
++ * @rx_buffer_pgcnt: rx buffer page refcount pre xdp_do_redirect() call
+  *
+  * This function will clean up the contents of the rx_buffer.  It will
+  * either recycle the buffer or unmap it and free the associated resources.
+  */
+ static void i40e_put_rx_buffer(struct i40e_ring *rx_ring,
+-			       struct i40e_rx_buffer *rx_buffer)
++			       struct i40e_rx_buffer *rx_buffer,
++			       int rx_buffer_pgcnt)
+ {
+-	if (i40e_can_reuse_rx_page(rx_buffer)) {
++	if (i40e_can_reuse_rx_page(rx_buffer, rx_buffer_pgcnt)) {
+ 		/* hand second half of page back to the ring */
+ 		i40e_reuse_rx_page(rx_ring, rx_buffer);
+ 	} else {
+@@ -2336,6 +2348,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ 	while (likely(total_rx_packets < (unsigned int)budget)) {
+ 		struct i40e_rx_buffer *rx_buffer;
+ 		union i40e_rx_desc *rx_desc;
++		int rx_buffer_pgcnt;
+ 		unsigned int size;
+ 		u64 qword;
+ 
+@@ -2378,7 +2391,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ 			break;
+ 
+ 		i40e_trace(clean_rx_irq, rx_ring, rx_desc, skb);
+-		rx_buffer = i40e_get_rx_buffer(rx_ring, size);
++		rx_buffer = i40e_get_rx_buffer(rx_ring, size, &rx_buffer_pgcnt);
+ 
+ 		/* retrieve a buffer from the ring */
+ 		if (!skb) {
+@@ -2421,7 +2434,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ 			break;
+ 		}
+ 
+-		i40e_put_rx_buffer(rx_ring, rx_buffer);
++		i40e_put_rx_buffer(rx_ring, rx_buffer, rx_buffer_pgcnt);
+ 		cleaned_count++;
+ 
+ 		if (i40e_is_non_eop(rx_ring, rx_desc, skb))
 -- 
 2.26.2
 
