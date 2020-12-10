@@ -2,161 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA1A42D5221
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 04:55:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 132A62D522F
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 04:59:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730458AbgLJDzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 22:55:20 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:42150 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729414AbgLJDzU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 22:55:20 -0500
-Received: by mail-ot1-f65.google.com with SMTP id 11so3648242oty.9;
-        Wed, 09 Dec 2020 19:55:04 -0800 (PST)
+        id S1731452AbgLJD4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 22:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729955AbgLJD4Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 22:56:25 -0500
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05857C0613D6;
+        Wed,  9 Dec 2020 19:55:45 -0800 (PST)
+Received: by mail-qv1-xf41.google.com with SMTP id q7so1797560qvt.12;
+        Wed, 09 Dec 2020 19:55:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=DWuqm1IHzYvq5waqUReJGhdmosrFVLVkKFItkW/Zkl8=;
+        b=ZZBNfoEFVLTsnm1892ushz+X2QSbH/FDgGDRQ5JsXFE/yZMXZq5pvXn2ZARaMJX3gK
+         R7PS3F5nJi1xoF5EbDnyHOc1XuEw0Bu2xJ6jh6XDWEyFypq515lxhwlKjsBmkz2/WpYQ
+         24J5Ylv/R1mLMXZbDyfxY25qYuIDuUTvdI+qkNfrMuOQf688Pwb/ZrY1NUm/UE/RNMAf
+         KbdF+La5pjLmK4H+hnUlQEZcTwofxWInaRHgJHd6Mm6mWKC4DNbspI+0/Y9n1PqZ6Gvd
+         ImzR18s69Fwwj2cZL35KNMxjWCi/9R6zesPCMdn63h9phgYpOWnlhqnFJZwDJWs0o2uo
+         lcyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wL0ajPlgdAT6O4z+bN0Qz8NaqhzcUBA3uihC+tT0e8o=;
-        b=PBVlo0Iyqo1EY7OsGhpk5Ovvv78GLmP6P9+hl+BKRTunHG1Frf2fowD9dPIwCbUseG
-         ngJbfSwZmQ49kSzvvgDGcSzyOPY0pzEMpNc7Dgyqqlk+DNTScHrlyIgVoo9CKcYgPD2L
-         Ucw45A84TnbsRAgRL933+kgD0Xy20gQZvKt1STrdGVNTkJD5PBPdHIq3bqw5aLAQHVkg
-         ZByIMOunBCUTvplwg0AuIdWGM4+wfZke8mGdIqF5JqZAjNZbhC5MpoAiUIrsl6Cx43Co
-         OTTXXHulyOU4IEc8v4IygYKlPXKD57ubrqHSZRaaDElHer71I3wKYS3PS6SQjJsm/WBE
-         RIDw==
-X-Gm-Message-State: AOAM531DCSgUDXX5OYgjwdM03f9mlyYA7LhCc6KaQAbsX3etV99Dorsf
-        7aHiEvcOpOsx/w/6XKQJLQ==
-X-Google-Smtp-Source: ABdhPJzxVeckBGv2tyO4i8ZF5YrQSsAyQSr5Y0SeVbQ6wo/ZMSKxasdfzKc4phKVtDcAUZGowJs8rQ==
-X-Received: by 2002:a9d:67da:: with SMTP id c26mr4513062otn.321.1607572479277;
-        Wed, 09 Dec 2020 19:54:39 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id i1sm753108ool.43.2020.12.09.19.54.38
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DWuqm1IHzYvq5waqUReJGhdmosrFVLVkKFItkW/Zkl8=;
+        b=DyjPnrNbDTKem3M1+YNWNsvJ1RmxoeUJUuZWTX41D7UgTqZI/qfQru3TGEAIUn+hGS
+         KhfMWaVdlB5AOHhZV8GG4pqVA0N3823V8J86Jmv62fwD0645GfmPIQeuoZgBDEAkVFWi
+         blYGtdOitp9Yy9V8S8yN3oZ5qSb3kP/Bd908TRmci/Aqikxi4ce1al58g9AZGjpP8pqr
+         S4QJhJjZc1Q7sw20LTxtxEBAdv94CMtyJtidrDX6FVSY8Sd9YL5UwBO60fpIXS6VlYj5
+         MxJD2cswlmlAe5HwYVoa3IhDEUV9/Vs/2v4nxK/0vGs5yNAqqBw7OCMww/U0uo6MDBKw
+         3MNQ==
+X-Gm-Message-State: AOAM530lQcLJVodQqDz+l0ICqo/nKn2HffPE3KGMsdS2dWNhH5s3ReQv
+        jVH+N9Q2zfW9X6wKfYYKwhZby4RKL13YMQ==
+X-Google-Smtp-Source: ABdhPJw0jlBU5STbcSqU6PMg8L0gZBGHbRIBBI3MzW3j2aqBtHQW2iKab/MKcmfyUgr1BWdxxnfz8Q==
+X-Received: by 2002:a0c:f791:: with SMTP id s17mr6565638qvn.7.1607572543875;
+        Wed, 09 Dec 2020 19:55:43 -0800 (PST)
+Received: from localhost.localdomain ([198.52.185.246])
+        by smtp.gmail.com with ESMTPSA id s21sm2671583qtn.13.2020.12.09.19.55.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 19:54:38 -0800 (PST)
-Received: (nullmailer pid 1631175 invoked by uid 1000);
-        Thu, 10 Dec 2020 03:54:37 -0000
-Date:   Wed, 9 Dec 2020 21:54:37 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v3 3/3] dt-bindings: net: dsa: add bindings for
- xrs700x switches
-Message-ID: <20201210035437.GA1627447@robh.at.kernel.org>
-References: <20201207220355.8707-1-george.mccollister@gmail.com>
- <20201207220355.8707-4-george.mccollister@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201207220355.8707-4-george.mccollister@gmail.com>
+        Wed, 09 Dec 2020 19:55:43 -0800 (PST)
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
+To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v2] lan743x: fix rx_napi_poll/interrupt ping-pong
+Date:   Wed,  9 Dec 2020 22:55:40 -0500
+Message-Id: <20201210035540.32530-1-TheSven73@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 04:03:55PM -0600, George McCollister wrote:
-> Add documentation and an example for Arrow SpeedChips XRS7000 Series
-> single chip Ethernet switches.
-> 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  .../devicetree/bindings/net/dsa/arrow,xrs700x.yaml | 74 ++++++++++++++++++++++
->  1 file changed, 74 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> new file mode 100644
-> index 000000000000..05ed36ce02ec
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-> @@ -0,0 +1,74 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/dsa/arrow,xrs700x.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Arrow SpeedChips XRS7000 Series Switch Device Tree Bindings
-> +
-> +allOf:
-> +  - $ref: dsa.yaml#
-> +
-> +maintainers:
-> +  - George McCollister <george.mccollister@gmail.com>
-> +
-> +description:
-> +  The Arrow SpeedChips XRS7000 Series of single chip gigabit Ethernet switches
-> +  are designed for critical networking applications. They have up to three
-> +  RGMII ports and one RMII port and are managed via i2c or mdio.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +          - arrow,xrs7003e
-> +          - arrow,xrs7003f
-> +          - arrow,xrs7004e
-> +          - arrow,xrs7004f
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        switch@8 {
-> +            compatible = "arrow,xrs7004e";
-> +            reg = <0x8>;
-> +
-> +            status = "okay";
+From: Sven Van Asbroeck <thesven73@gmail.com>
 
-Don't show status in examples.
+Even if there is more rx data waiting on the chip, the rx napi poll fn
+will never run more than once - it will always read a few buffers, then
+bail out and re-arm interrupts. Which results in ping-pong between napi
+and interrupt.
 
-> +            ports {
+This defeats the purpose of napi, and is bad for performance.
 
-ethernet-ports is preferred.
+Fix by making the rx napi poll behave identically to other ethernet
+drivers:
+1. initialize rx napi polling with an arbitrary budget (64).
+2. in the polling fn, return full weight if rx queue is not depleted,
+   this tells the napi core to "keep polling".
+3. update the rx tail ("ring the doorbell") once for every 8 processed
+   rx ring buffers.
 
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                port@1 {
+Thanks to Jakub Kicinski, Eric Dumazet and Andrew Lunn for their expert
+opinions and suggestions.
 
-And ethernet-port
+Tested with 20 seconds of full bandwidth receive (iperf3):
+        rx irqs      softirqs(NET_RX)
+        -----------------------------
+before  23827        33620
+after   129          4081
 
-> +                    reg = <1>;
-> +                    label = "lan0";
-> +                    phy-handle = <&swphy0>;
-> +                    phy-mode = "rgmii-id";
-> +                };
-> +                port@2 {
-> +                    reg = <2>;
-> +                    label = "lan1";
-> +                    phy-handle = <&swphy1>;
-> +                    phy-mode = "rgmii-id";
-> +                };
-> +                port@3 {
-> +                    reg = <3>;
-> +                    label = "cpu";
-> +                    ethernet = <&fec1>;
-> +                    fixed-link {
-> +                        speed = <1000>;
-> +                        full-duplex;
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
-> -- 
-> 2.11.0
-> 
+Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
+Fixes: 23f0703c125be ("lan743x: Add main source files for new lan743x driver")
+Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+---
+
+Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # b7e4ba9a91df
+
+To: Bryan Whitehead <bryan.whitehead@microchip.com>
+To: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+To: "David S. Miller" <davem@davemloft.net>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+ drivers/net/ethernet/microchip/lan743x_main.c | 44 ++++++++++---------
+ 1 file changed, 23 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 87b6c59a1e03..30ec308b9a4c 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -1964,6 +1964,14 @@ static struct sk_buff *lan743x_rx_allocate_skb(struct lan743x_rx *rx)
+ 				  length, GFP_ATOMIC | GFP_DMA);
+ }
+ 
++static void lan743x_rx_update_tail(struct lan743x_rx *rx, int index)
++{
++	/* update the tail once per 8 descriptors */
++	if ((index & 7) == 7)
++		lan743x_csr_write(rx->adapter, RX_TAIL(rx->channel_number),
++				  index);
++}
++
+ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
+ 					struct sk_buff *skb)
+ {
+@@ -1994,6 +2002,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
+ 	descriptor->data0 = (RX_DESC_DATA0_OWN_ |
+ 			    (length & RX_DESC_DATA0_BUF_LENGTH_MASK_));
+ 	skb_reserve(buffer_info->skb, RX_HEAD_PADDING);
++	lan743x_rx_update_tail(rx, index);
+ 
+ 	return 0;
+ }
+@@ -2012,6 +2021,7 @@ static void lan743x_rx_reuse_ring_element(struct lan743x_rx *rx, int index)
+ 	descriptor->data0 = (RX_DESC_DATA0_OWN_ |
+ 			    ((buffer_info->buffer_length) &
+ 			    RX_DESC_DATA0_BUF_LENGTH_MASK_));
++	lan743x_rx_update_tail(rx, index);
+ }
+ 
+ static void lan743x_rx_release_ring_element(struct lan743x_rx *rx, int index)
+@@ -2223,34 +2233,26 @@ static int lan743x_rx_napi_poll(struct napi_struct *napi, int weight)
+ 	struct lan743x_rx *rx = container_of(napi, struct lan743x_rx, napi);
+ 	struct lan743x_adapter *adapter = rx->adapter;
+ 	u32 rx_tail_flags = 0;
+-	int count;
++	int count, result;
+ 
+ 	if (rx->vector_flags & LAN743X_VECTOR_FLAG_SOURCE_STATUS_W2C) {
+ 		/* clear int status bit before reading packet */
+ 		lan743x_csr_write(adapter, DMAC_INT_STS,
+ 				  DMAC_INT_BIT_RXFRM_(rx->channel_number));
+ 	}
+-	count = 0;
+-	while (count < weight) {
+-		int rx_process_result = lan743x_rx_process_packet(rx);
+-
+-		if (rx_process_result == RX_PROCESS_RESULT_PACKET_RECEIVED) {
+-			count++;
+-		} else if (rx_process_result ==
+-			RX_PROCESS_RESULT_NOTHING_TO_DO) {
++	for (count = 0; count < weight; count++) {
++		result = lan743x_rx_process_packet(rx);
++		if (result == RX_PROCESS_RESULT_NOTHING_TO_DO)
+ 			break;
+-		} else if (rx_process_result ==
+-			RX_PROCESS_RESULT_PACKET_DROPPED) {
+-			continue;
+-		}
+ 	}
+ 	rx->frame_count += count;
+-	if (count == weight)
+-		goto done;
++	if (count == weight || result == RX_PROCESS_RESULT_PACKET_RECEIVED)
++		return weight;
+ 
+ 	if (!napi_complete_done(napi, count))
+-		goto done;
++		return count;
+ 
++	/* re-arm interrupts, must write to rx tail on some chip variants */
+ 	if (rx->vector_flags & LAN743X_VECTOR_FLAG_VECTOR_ENABLE_AUTO_SET)
+ 		rx_tail_flags |= RX_TAIL_SET_TOP_INT_VEC_EN_;
+ 	if (rx->vector_flags & LAN743X_VECTOR_FLAG_SOURCE_ENABLE_AUTO_SET) {
+@@ -2260,10 +2262,10 @@ static int lan743x_rx_napi_poll(struct napi_struct *napi, int weight)
+ 				  INT_BIT_DMA_RX_(rx->channel_number));
+ 	}
+ 
+-	/* update RX_TAIL */
+-	lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
+-			  rx_tail_flags | rx->last_tail);
+-done:
++	if (rx_tail_flags)
++		lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
++				  rx_tail_flags | rx->last_tail);
++
+ 	return count;
+ }
+ 
+@@ -2407,7 +2409,7 @@ static int lan743x_rx_open(struct lan743x_rx *rx)
+ 
+ 	netif_napi_add(adapter->netdev,
+ 		       &rx->napi, lan743x_rx_napi_poll,
+-		       rx->ring_size - 1);
++		       64);
+ 
+ 	lan743x_csr_write(adapter, DMAC_CMD,
+ 			  DMAC_CMD_RX_SWR_(rx->channel_number));
+-- 
+2.17.1
+
