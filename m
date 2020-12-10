@@ -2,212 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 795112D6397
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 18:33:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D8C2D63F1
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 18:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392022AbgLJRck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 12:32:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43567 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2392484AbgLJRc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 12:32:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607621455;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q5P/qDi7wA+rvW2gtSqVQu3jB6OGZe46xx+pWi2+9CM=;
-        b=HYjAMUtaeUkDYDccW0TEui2cPnmzUDlchTCdSM2nw48IAyvE6gJkBWUE5FSdH4Vo62tw3e
-        V8ZdQxTXYkjyGsxE76639AxDW+sC325qb7cPf6L3PXAn976hABdbhZfFiQcJ94rwI9TM+k
-        18XHJ/VIVUsrE6Ycj6yG4Bw0kb+SUEo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-369-fj061OEpOeyugu0E_N0B1g-1; Thu, 10 Dec 2020 12:30:43 -0500
-X-MC-Unique: fj061OEpOeyugu0E_N0B1g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9A5E1107ACE6;
-        Thu, 10 Dec 2020 17:30:40 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 10BC71F442;
-        Thu, 10 Dec 2020 17:30:24 +0000 (UTC)
-Date:   Thu, 10 Dec 2020 18:30:23 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Frey Alfredsson <freysteinn@freysteinn.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Marek Majtyka <marekx.majtyka@intel.com>,
-        Marek Majtyka <alardam@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>, brouer@redhat.com
-Subject: Re: [Intel-wired-lan] Explaining XDP redirect bulk size design
- (Was: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set)
-Message-ID: <20201210183023.4b299334@carbon>
-In-Reply-To: <CAJ8uoz25rtO63-4nOSV-yr8bORNbNSquiBBWiEouLs-ZUv2o=A@mail.gmail.com>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
-        <20201204102901.109709-2-marekx.majtyka@intel.com>
-        <878sad933c.fsf@toke.dk>
-        <20201204124618.GA23696@ranger.igk.intel.com>
-        <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
-        <20201207135433.41172202@carbon>
-        <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
-        <20201207230755.GB27205@ranger.igk.intel.com>
-        <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
-        <20201209095454.GA36812@ranger.igk.intel.com>
-        <20201209125223.49096d50@carbon>
-        <6913010d-2fd6-6713-94e9-8f5b8ad4b708@gmail.com>
-        <20201210143211.2490f7f4@carbon>
-        <CAJ8uoz25rtO63-4nOSV-yr8bORNbNSquiBBWiEouLs-ZUv2o=A@mail.gmail.com>
+        id S2392824AbgLJRop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 12:44:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392818AbgLJRoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 12:44:44 -0500
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31326C06179C
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 09:44:04 -0800 (PST)
+Received: by mail-qk1-x743.google.com with SMTP id c7so5607638qke.1
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 09:44:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HR2j1Lh1j1pFPcbSQMjzaQI2SE2XB/P5aUZLPCnOyyc=;
+        b=z4PtusWaLUFPJ4+Xti3rgU4dxFtgwWDGjV3EEyo6E/hABmxiV00Rq8ZiXG4deOVAxF
+         fLkxTlHqAiJ6HMyvcvb1JhZ2GmMK9+JFzNtPenF0Gj0inTrfWGUctvkqVeTeaCGIXICy
+         1Kl1SECXZQK2XFp7N16IUQm1OuwBV4dEKtjpvFIAD+LAehUBQ28iv8eFBlpOJbdAb4vl
+         +gSuzsjRJdoMwNyEgkTSTkm6E1X/5nF10m2WLvZ9RNXHu8zughZu5ckqkuOF9/qKO/sk
+         0ludiZC4BHD1MCAMtqVs6FrKm4keK20N5wT5opQ10C7igSmtS1nLNFjfu46/crCbN4mg
+         S2Yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HR2j1Lh1j1pFPcbSQMjzaQI2SE2XB/P5aUZLPCnOyyc=;
+        b=YTM8G1gfTBaTK9oay6gazx38m1RZbX4dqU+1N3gOgdzqIl12UOUx9aJW3usfh0w2wD
+         nQ3wXUdvsvWcXuTsx+klH6l4pC/B/j1uy5anFVUxXg4KjFzRx8ll/926Zt79W13EGxpJ
+         LPApm2+oNDWOPN/rjKaS6aKBWlVCHcnK+JlP/xecB5CUQcLRJa8Juqw1infbrtZFDrfX
+         9rrPszD+yzfWseHMsWi1/jkDjlAS+Zv0eruPiLhneYyh1T9XVcz/FxO4dlpQNIUK1WUm
+         P8ufF804bVeJMZwkViRptczjAfQYibgvO9hpHukpz5cHDw567YpHxIvGnNN1ze6OP5UE
+         pjJQ==
+X-Gm-Message-State: AOAM53279cwfNN8Qi9yt/uOSSJDA4C+CUkO0SzoedpIbTVXvX0anFGV/
+        +DQ06KZ7Trm5IAeUIASjDP0O+xGkr1SdqUaLQVxoWA==
+X-Google-Smtp-Source: ABdhPJzZZjNJAE5d/aKqVLf4/P9Yrns9GFZ3rPDsaz1Wpf7AvUfqUdfMqYZ+XkOHXy4M1cCpxbUwA/OIWFy2a4n+U5Q=
+X-Received: by 2002:a37:f509:: with SMTP id l9mr10163369qkk.155.1607622243292;
+ Thu, 10 Dec 2020 09:44:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20200620092047.GR1551@shell.armlinux.org.uk> <E1jmZgq-0001UG-1c@rmk-PC.armlinux.org.uk>
+ <CAPv3WKdJKAEwCoj5z6NzP2xRFfT1HG+2o0wigt=Czi4bG7EQcg@mail.gmail.com>
+ <CAPv3WKfEN22cKbM8=+qDANefQE67KQ1zwURrCqAsrbo1+gBCDA@mail.gmail.com>
+ <20201102180326.GA2416734@kroah.com> <CAPv3WKf0fNOOovq9UzoxoAXwGLMe_MHdfCZ6U9sjgKxarUKA+Q@mail.gmail.com>
+ <20201208133532.GH643756@sasha-vm> <CAPv3WKed9zhe0q2noGKiKdzd=jBNLtN6vRW0fnQddJhhiD=rkg@mail.gmail.com>
+ <X9CuTjdgD3tDKWwo@kroah.com> <CAPv3WKdKOnd+iBkfcVkoOZkHj16jOpBprY3A01ERJeq6ZQCkVQ@mail.gmail.com>
+ <20201210154651.GV1551@shell.armlinux.org.uk>
+In-Reply-To: <20201210154651.GV1551@shell.armlinux.org.uk>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Thu, 10 Dec 2020 18:43:50 +0100
+Message-ID: <CAPv3WKdWr0zfuTkK+x6u7C6FpFxkVtRFrEq1FvemVpLYw2+5ng@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/4] net: mvpp2: add mvpp2_phylink_to_port() helper
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        stable@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Gabor Samu <samu_gabor@yahoo.ca>,
+        Jon Nettleton <jon@solid-run.com>,
+        Andrew Elwell <andrew.elwell@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Dec 2020 15:14:18 +0100
-Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+Hi Russell,
 
-> On Thu, Dec 10, 2020 at 2:32 PM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
+czw., 10 gru 2020 o 16:46 Russell King - ARM Linux admin
+<linux@armlinux.org.uk> napisa=C5=82(a):
+>
+> On Thu, Dec 10, 2020 at 03:35:29PM +0100, Marcin Wojtas wrote:
+> > Hi Greg,
 > >
-> > On Wed, 9 Dec 2020 08:44:33 -0700
-> > David Ahern <dsahern@gmail.com> wrote:
-> > =20
-> > > On 12/9/20 4:52 AM, Jesper Dangaard Brouer wrote: =20
-> > > > But I have redesigned the ndo_xdp_xmit call to take a bulk of packe=
-ts
-> > > > (up-to 16) so it should not be a problem to solve this by sharing
-> > > > TX-queue and talking a lock per 16 packets.  I still recommend that,
-> > > > for fallback case,  you allocated a number a TX-queue and distribute
-> > > > this across CPUs to avoid hitting a congested lock (above measureme=
-nts
-> > > > are the optimal non-congested atomic lock operation) =20
-> > >
-> > > I have been meaning to ask you why 16 for the XDP batching? If the
-> > > netdev budget is 64, why not something higher like 32 or 64? =20
+> > =C5=9Br., 9 gru 2020 o 11:59 Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> napisa=C5=82(a):
+> > > What part fixes the issue?  I can't see it...
 > >
-> > Thanks you for asking as there are multiple good reasons and
-> > consideration for this 16 batch size.  Notice cpumap have batch size 8,
-> > which is also an explicit choice.  And AF_XDP went in the wrong
-> > direction IMHO and I think have 256.  I designed this to be a choice in
-> > the map code, for the level of bulking it needs/wants. =20
->=20
-> FYI, as far as I know, there is nothing in AF_XDP that says bulking
-> should be 256. There is a 256 number in the i40e driver that states
-> the maximum number of packets to be sent within one napi_poll loop.
-> But this is just a maximum number and only for that driver. (In case
-> you wonder, that number was inherited from the original skb Tx
-> implementation in the driver.)=20
-
-Ah, that explains the issue I have on the production system that runs
-the EDT-pacer[2].  I see that i40e function i40e_clean_tx_irq() ignores
-napi_budget but uses it own budget, that defaults to 256.  Looks like I
-can adjust this via ethtool -C tx-frames-irq.   I turned this down to
-64 (32 was giving worse results, and below 16 system acted strange).
-
-Now the issue is gone, which was that if TX-DMA completion was running
-(i40e_clean_tx_irq()) on the same CPU that send packets via FQ-pacer
-qdisc, then the pacing was not accurate, and was sending too bursty.
-
-System have already tuned "net/core/dev_weight" and RX/TX-bias to
-reduce bulking, as this can influence latency and the EDT-pacing
-accuracy. (It is a middlebox bridging VLANs and BPF-EDT tiemstamping and
-FQ-pacing packets to solve bursts overflowing switch ports).
-
-  sudo sysctl net/core/dev_weight
-  net.core.dev_weight =3D 1
-  net.core.dev_weight_rx_bias =3D 32
-  net.core.dev_weight_tx_bias =3D 1
-
-This net.core.dev_weight_tx_bias=3D1 (together with dev_weight=3D1) cause
-qdisc transmit budget to become one packet, cycling through
-NET_TX_SOFTIRQ which consumes time and gives a little more pacing space
-for the packets.
-
-
-> The actual batch size is controlled by
-> the application. If it puts 1 packet in the Tx ring and calls send(),
-> the batch size will be 1. If it puts 128 packets in the Tx ring and
-> calls send(), you get a batch size of 128, and so on. It is flexible,
-> so you can trade-off latency with throughput in the way the
-> application desires. Rx batch size has also become flexible now with
-> the introduction of Bj=C3=B6rn's prefer_busy_poll patch set [1].
->=20
-> [1] https://lore.kernel.org/netdev/20201130185205.196029-1-bjorn.topel@gm=
-ail.com/
-
-This looks like a cool trick, to get even more accurate packet scheduling.
-
-I played with the tunings, and could see changed behavior with mpstat,
-but ended up tuning it off again, as I could not measure a direct
-correlation with the bpftrace tools[3].
-
-
-> > The low level explanation is that these 8 and 16 batch sizes are
-> > optimized towards cache sizes and Intel's Line-Fill-Buffer (prefetcher
-> > with 10 elements).  I'm betting on that memory backing these 8 or 16
-> > packets have higher chance to remain/being in cache, and I can prefetch
-> > them without evicting them from cache again.  In some cases the pointer
-> > to these packets are queued into a ptr_ring, and it is more optimal to
-> > write cacheline sizes 1 (8 pointers) or 2 (16 pointers) into the ptr_ri=
-ng.
+> > I re-checked in my setup and here's the smallest part of the original
+> > patch, that fixes previously described issue:
+> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > index e98be8372780..9d71a4fe1750 100644
+> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > @@ -4767,6 +4767,11 @@ static void mvpp2_port_copy_mac_addr(struct
+> > net_device *dev, struct mvpp2 *priv,
+> >         eth_hw_addr_random(dev);
+> >  }
 > >
-> > The general explanation is my goal to do bulking without adding latency.
-> > This is explicitly stated in my presentation[1] as of Feb 2016, slide 2=
-0.
-> > Sure, you/we can likely make the micro-benchmarks look better by using
-> > 64 batch size, but that will introduce added latency and likely shoot
-> > our-selves in the foot for real workloads.  With experience from
-> > bufferbloat and real networks, we know that massive TX bulking have bad
-> > effects.  Still XDP-redirect does massive bulking (NIC flush is after
-> > full 64 budget) and we don't have pushback or a queue mechanism (so I
-> > know we are already shooting ourselves in the foot) ...  Fortunately we
-> > now have a PhD student working on queuing for XDP.
+> > +static struct mvpp2_port *mvpp2_phylink_to_port(struct phylink_config =
+*config)
+> > +{
+> > +       return container_of(config, struct mvpp2_port, phylink_config);
+> > +}
+> > +
+> >  static void mvpp2_phylink_validate(struct phylink_config *config,
+> >                                    unsigned long *supported,
+> >                                    struct phylink_link_state *state)
+> > @@ -5105,13 +5110,12 @@ static void mvpp2_gmac_config(struct
+> > mvpp2_port *port, unsigned int mode,
+> >  static void mvpp2_mac_config(struct phylink_config *config, unsigned i=
+nt mode,
+> >                              const struct phylink_link_state *state)
+> >  {
+> > -       struct net_device *dev =3D to_net_dev(config->dev);
+> > -       struct mvpp2_port *port =3D netdev_priv(dev);
+> > +       struct mvpp2_port *port =3D mvpp2_phylink_to_port(config);
+> >         bool change_interface =3D port->phy_interface !=3D state->inter=
+face;
 > >
-> > It is also important to understand that this is an adaptive bulking
-> > scheme, which comes from NAPI.  We don't wait for packets arriving
-> > shortly, we pickup what NIC have available, but by only taking 8 or 16
-> > packets (instead of emptying the entire RX-queue), and then spending
-> > some time to send them along, I'm hoping that NIC could have gotten
-> > some more frame.  For cpumap and veth (in-some-cases) they can start to
-> > consume packets from these batches, but NIC drivers gets XDP_XMIT_FLUSH
-> > signal at NAPI-end (xdp_do_flush). Still design allows NIC drivers to
-> > update their internal queue state (and BQL), and if it gets close to
-> > full they can choose to flush/doorbell the NIC earlier.  When doing
-> > queuing for XDP we need to expose these NIC queue states, and having 4
-> > calls with 16 packets (64 budget) also gives us more chances to get NIC
-> > queue state info which the NIC already touch.
+> >         /* Check for invalid configuration */
+> >         if (mvpp2_is_xlg(state->interface) && port->gop_id !=3D 0) {
+> > -               netdev_err(dev, "Invalid mode on %s\n", dev->name);
+> > +               netdev_err(port->dev, "Invalid mode on %s\n", port->dev=
+->name);
+> >                 return;
+> >         }
 > >
+> > @@ -5151,8 +5155,7 @@ static void mvpp2_mac_link_up(struct
+> > phylink_config *config,
+> >                               int speed, int duplex,
+> >                               bool tx_pause, bool rx_pause)
+> >  {
+> > -       struct net_device *dev =3D to_net_dev(config->dev);
+> > -       struct mvpp2_port *port =3D netdev_priv(dev);
+> > +       struct mvpp2_port *port =3D mvpp2_phylink_to_port(config);
+> >         u32 val;
 > >
-> > [1] https://people.netfilter.org/hawk/presentations/devconf2016/net_sta=
-ck_challenges_100G_Feb2016.pdf
+> >         if (mvpp2_is_xlg(interface)) {
+> > @@ -5199,7 +5202,7 @@ static void mvpp2_mac_link_up(struct
+> > phylink_config *config,
+> >
+> >         mvpp2_egress_enable(port);
+> >         mvpp2_ingress_enable(port);
+> > -       netif_tx_wake_all_queues(dev);
+> > +       netif_tx_wake_all_queues(port->dev);
+> >  }
+> >
+> >  static void mvpp2_mac_link_down(struct phylink_config *config,
+>
+> The problem is caused by this hack:
+>
+>                 /* Phylink isn't used as of now for ACPI, so the MAC has =
+to be
+>                  * configured manually when the interface is started. Thi=
+s will
+>                  * be removed as soon as the phylink ACPI support lands i=
+n.
+>                  */
+>                 struct phylink_link_state state =3D {
+>                         .interface =3D port->phy_interface,
+>                 };
+>                 mvpp2_mac_config(&port->phylink_config, MLO_AN_INBAND, &s=
+tate);
+>                 mvpp2_mac_link_up(&port->phylink_config, MLO_AN_INBAND,
+>                                   port->phy_interface, NULL);
+>
+> which passes an un-initialised (zeroed) port->phylink_config, as
+> phylink is not used in ACPI setups.
+>
+> The problem occurs because port->phylink_config.dev (which is a
+> NULL pointer in this instance) is passed to to_net_dev():
+>
+> #define to_net_dev(d) container_of(d, struct net_device, dev)
+>
+> Which then means netdev_priv(dev) attempts to dereference a not-quite
+> NULL pointer, leading to an oops.
 
-[2] https://github.com/netoptimizer/bpf-examples/tree/master/traffic-pacing=
--edt/
+Correct. Hopefully the MDIO+ACPI patchset will land and I'll be able
+to get rid of this hack and do not maintain dual handling paths any
+longer.
 
-[3] https://github.com/netoptimizer/bpf-examples/tree/master/traffic-pacing=
--edt/bpftrace
+>
+> The problem here is that the bug was not noticed; it seems hardly
+> anyone bothers to run mainline kernels with ACPI on Marvell platforms,
+> or if they do, they don't bother reporting to mainline communities
+> when they have problems. Likely, there's posts on some random web-based
+> bulletin board or mailing list that kernel developers don't read
+> somewhere complaining that there's an oops.
+>
 
+I must admit that due to other duties I did not follow the mainline
+mvpp2 for a couple revisions (and I am not maintainer of it). However
+recently I got reached-out directly by different developers - the
+trigger was different distros upgrading the kernel above v5.4+ and for
+some reasons the DT path is not chosen there (and the ACPI will be
+chosen more and more in the SystemReady world).
 
---=20
+> Like...
+>
+> https://lists.einval.com/pipermail/macchiato/2020-January/000309.html
+> https://gist.github.com/AdrianKoshka/ff9862da2183a2d8e26d47baf8dc04b9
+>
+> This kind of segmentation is very disappointing; it means potentially
+> lots of bugs go by unnoticed by kernel developers, and bugs only get
+> fixed by chance.  Had it been reported to somewhere known earlier
+> this year, it is likely that a proper fix patch would have been
+> created.
+
+Totally agree. As soon as I got noticed directly it took me no time to
+find the regression root cause.
+
+>
+> How this gets handled is ultimately up to the stable developers to
+> decide what they wish to accept. Do they wish to accept a back-ported
+> full version of my commit 6c2b49eb9671 ("net: mvpp2: add
+> mvpp2_phylink_to_port() helper") that unintentionally fixed this
+> unknown issue, or do they want a more minimal fix such as the cut-down
+> version of that commit that Marcin has supplied.
+>
+> Until something changes in the way bugs get reported, I suspect this
+> won't be the only instance of bug-fixing-by-accident happening.
+>
+
+Thank you Russell for your input.
+
 Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Marcin
