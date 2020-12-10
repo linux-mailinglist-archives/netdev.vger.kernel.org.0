@@ -2,76 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F0192D6138
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 17:09:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B562D6191
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 17:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403833AbgLJQIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 11:08:49 -0500
-Received: from spam.lhost.no ([5.158.192.85]:55591 "EHLO mx04.lhost.no"
+        id S1732975AbgLJQUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 11:20:24 -0500
+Received: from mga09.intel.com ([134.134.136.24]:57784 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390129AbgLJQIq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 11:08:46 -0500
-X-ASG-Debug-ID: 1607616473-0ffc06424c350c60001-BZBGGp
-Received: from s103.paneda.no ([5.158.193.76]) by mx04.lhost.no with ESMTP id VbuvdntWvopKgi3N (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Thu, 10 Dec 2020 17:07:54 +0100 (CET)
-X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
-X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
-X-Barracuda-Apparent-Source-IP: 5.158.193.76
-X-ASG-Whitelist: Client
-Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
- (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Thu, 10
- Dec 2020 17:07:52 +0100
-Subject: Re: [PATCH iproute2-next v1] iplink macvlan: Added bcqueuelen
- parameter
-To:     Jakub Kicinski <kuba@kernel.org>, <stephen@networkplumber.org>
-X-ASG-Orig-Subj: Re: [PATCH iproute2-next v1] iplink macvlan: Added bcqueuelen
- parameter
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        <jiri@resnulli.us>, <kaber@trash.net>, <edumazet@google.com>,
-        <vyasevic@redhat.com>, <alexander.duyck@gmail.com>
-References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
- <147b704ac1d5426fbaa8617289dad648@paneda.se>
- <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <80f814c3-0957-7f65-686c-f5fbb073f65c@paneda.se>
-From:   Thomas Karlsson <thomas.karlsson@paneda.se>
-Message-ID: <6f97161f-68a1-7224-18ac-ce221c7c2c5e@paneda.se>
-Date:   Thu, 10 Dec 2020 17:07:51 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S1725947AbgLJQUS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 11:20:18 -0500
+IronPort-SDR: ytY2EAHtzuN/eBVkuBSENW+NXCI7K+0W226YfYh+ULV9IZirRkprV82uGRlNRpBiUIN0mP5eyn
+ YH1/PjB7Wl2A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="174427006"
+X-IronPort-AV: E=Sophos;i="5.78,408,1599548400"; 
+   d="scan'208";a="174427006"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 08:20:02 -0800
+IronPort-SDR: bAETIilQj4d+IkpjWrQQNvyXNV0m0m5oQ1nWkE+ymPTQC06TDdzSFyq/9eI/tJT8b9IONTCXgb
+ ikFrq5cQ9SKw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,408,1599548400"; 
+   d="scan'208";a="484536231"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga004.jf.intel.com with ESMTP; 10 Dec 2020 08:20:00 -0800
+Date:   Thu, 10 Dec 2020 17:11:05 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     intel-wired-lan@lists.osuosl.org,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH net-next] ice, xsk: Move Rx alloction out of while-loop
+Message-ID: <20201210161105.GD45760@ranger.igk.intel.com>
+References: <20201210121915.14412-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <80f814c3-0957-7f65-686c-f5fbb073f65c@paneda.se>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: sv
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [83.140.179.234]
-X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
- (10.16.55.12)
-X-Barracuda-Connect: UNKNOWN[5.158.193.76]
-X-Barracuda-Start-Time: 1607616474
-X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
-X-Barracuda-URL: https://mx04.lhost.no:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at lhost.no
-X-Barracuda-Scan-Msg-Size: 722
-X-Barracuda-BRTS-Status: 1
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201210121915.14412-1-bjorn.topel@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-30 15:23, Thomas Karlsson wrote:
-> This is a follow up patch to iproute2 that allows the user
-> to set and retrieve the added IFLA_MACVLAN_BC_QUEUE_LEN parameter
-> via the bcqueuelen command line argument
+On Thu, Dec 10, 2020 at 01:19:15PM +0100, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
 > 
+> Instead of trying to allocate for each packet, move it outside the
+> while loop and try to allocate once every NAPI loop.
+
+To rectify above, it wasn't for each packet but per ICE_RX_BUF_WRITE
+cleaned frames (16).
+
+You also have a typo in subject (alloction).
+
+Is spinning a v2 worth it?
+
 > 
-> v1 Initial version
->    Note: This patch first requires that the corresponding
->    kernel patch in 0c88607c-1b63-e8b5-8a84-14b63e55e8e2@paneda.se
->    to macvlan is merged to be usable.
-
-Just to follow up so this one isn't forgotten. The macvlan patch was merged
-into net-next a week ago, commit d4bff72c8401e6f56194ecf455db70ebc22929e2
-
-So this patch should be ready for review/incusion I think.
-
-(Only sending this message since I noticed the patch was archived in patchworks).
+> This change boosts the xdpsock rxdrop scenario with 15% more
+> packets-per-second.
+> 
+> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_xsk.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> index 797886524054..39757b4cf8f4 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> @@ -570,12 +570,6 @@ int ice_clean_rx_irq_zc(struct ice_ring *rx_ring, int budget)
+>  		u16 vlan_tag = 0;
+>  		u8 rx_ptype;
+>  
+> -		if (cleaned_count >= ICE_RX_BUF_WRITE) {
+> -			failure |= ice_alloc_rx_bufs_zc(rx_ring,
+> -							cleaned_count);
+> -			cleaned_count = 0;
+> -		}
+> -
+>  		rx_desc = ICE_RX_DESC(rx_ring, rx_ring->next_to_clean);
+>  
+>  		stat_err_bits = BIT(ICE_RX_FLEX_DESC_STATUS0_DD_S);
+> @@ -642,6 +636,9 @@ int ice_clean_rx_irq_zc(struct ice_ring *rx_ring, int budget)
+>  		ice_receive_skb(rx_ring, skb, vlan_tag);
+>  	}
+>  
+> +	if (cleaned_count >= ICE_RX_BUF_WRITE)
+> +		failure = !ice_alloc_rx_bufs_zc(rx_ring, cleaned_count);
+> +
+>  	ice_finalize_xdp_rx(rx_ring, xdp_xmit);
+>  	ice_update_rx_ring_stats(rx_ring, total_rx_packets, total_rx_bytes);
+>  
+> 
+> base-commit: a7105e3472bf6bb3099d1293ea7d70e7783aa582
+> -- 
+> 2.27.0
+> 
