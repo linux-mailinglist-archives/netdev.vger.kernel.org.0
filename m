@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 664472D678F
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:54:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2356E2D6748
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 20:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393533AbgLJTwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 14:52:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
+        id S2393483AbgLJTop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 14:44:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404336AbgLJTnm (ORCPT
+        with ESMTP id S2404337AbgLJTnm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:42 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C406C0611CA;
-        Thu, 10 Dec 2020 11:42:36 -0800 (PST)
-Message-Id: <20201210194044.157283633@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE842C0611CB;
+        Thu, 10 Dec 2020 11:42:37 -0800 (PST)
+Message-Id: <20201210194044.255887860@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1607629354;
+        s=2020; t=1607629356;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=4K6qItYlSe7EBUp3WfMEzcI2y69yZ4OdOhSokF1HvFw=;
-        b=dopfjz4hp6A4Xryu0tbdegM/v0YL6lWYdnP3XlIYCgQ9pjXx9ZT1p3TI0zk4elgm5gPd+q
-        FURWbMd/ftse0CXn8TWD7Lf/LMt29YyfqJkuoxwIq2zLBOhpU5N1uQ9NTcofTSPiRoKfTO
-        PEbzx4Og6n9n+3PdfyA3eCON82LOBsb5cz2c2++JdWXn2zeffzgZ5twz3L2T1NgK3Sr/6E
-        z4hGHNQPL1mjIDXhMbZMKcry3IqKzOm1XwkJ497HBo+O7rAGzJagP8Bz95WOHjr107cL1M
-        F3z7vCp/PgmQ7w0NfOrec8JvWkd2Glw3/TrHKxQy3AjIzKLFjQ11edATiOjGMg==
+        bh=jUTg4Los1VXz05PCBCDed5HfB12tsGaOsCncsAJwQxU=;
+        b=FXhZkYaxbEPy5U+kiVcqwCILOgmOw0n9WJerjpKGSfIyXXxkGyaPiRB5bUJw5/1GbQgK84
+        3A3wne9ZskCGrHeBheov/UfaaJAXbhd6XuPaKkHQLZx3IXEKB8JWAfbiz9XVlErPWxhUds
+        +BYgAnfA922lpGMT6q/hi+YidzMFXq4opliKvrzDffBcg9VA3r5bNxQxfXyUW8GfN7ZxEw
+        tJHtK1YV9651CgrvRnAV+LL92Mn76NESJ20TqtKaDrLgHsHJdq2p3Erxm3ONWn5WeohH8D
+        ygiFGZbw1MfYSBaQqVR0RpRK1HywIevKDTa8/tVw8wl8XT4OGsw2hu9prW3gNg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1607629354;
+        s=2020e; t=1607629356;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=4K6qItYlSe7EBUp3WfMEzcI2y69yZ4OdOhSokF1HvFw=;
-        b=K3Wur5e2Woy0OzRxLAAmfcCZIUuOyHlagbFXs1H4WET0hQYXgya6h4ah4Fheh+nueTyzzX
-        ONj+v+orSFGMaLBQ==
-Date:   Thu, 10 Dec 2020 20:25:52 +0100
+        bh=jUTg4Los1VXz05PCBCDed5HfB12tsGaOsCncsAJwQxU=;
+        b=jZYO6UEfS1fO8jTBQSg6h2JwtIawA4Pop19pbpdb83G7Islx2MDh7VNX5bpTao8FSicjDK
+        BnzPlnU4fVkD+gBg==
+Date:   Thu, 10 Dec 2020 20:25:53 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
+        Marc Zyngier <maz@kernel.org>, Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         afzal mohammed <afzal.mohd.ma@gmail.com>,
         linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
         Mark Rutland <mark.rutland@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>,
@@ -61,9 +61,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Wambui Karuga <wambui.karugax@gmail.com>,
         intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        linux-gpio@vger.kernel.org, Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Rob Herring <robh@kernel.org>,
         Bjorn Helgaas <bhelgaas@google.com>,
@@ -80,7 +79,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Juergen Gross <jgross@suse.com>,
         Stefano Stabellini <sstabellini@kernel.org>,
         xen-devel@lists.xenproject.org
-Subject: [patch 16/30] mfd: ab8500-debugfs: Remove the racy fiddling with irq_desc
+Subject: [patch 17/30] NTB/msi: Use irq_has_action()
 References: <20201210192536.118432146@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -89,54 +88,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-First of all drivers have absolutely no business to dig into the internals
-of an irq descriptor. That's core code and subject to change. All of this
-information is readily available to /proc/interrupts in a safe and race
-free way.
-
-Remove the inspection code which is a blatant violation of subsystem
-boundaries and racy against concurrent modifications of the interrupt
-descriptor.
-
-Print the irq line instead so the information can be looked up in a sane
-way in /proc/interrupts.
+Use the proper core function.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org
+Cc: Jon Mason <jdmason@kudzu.us>
+Cc: Dave Jiang <dave.jiang@intel.com>
+Cc: Allen Hubbe <allenbh@gmail.com>
+Cc: linux-ntb@googlegroups.com
 ---
- drivers/mfd/ab8500-debugfs.c |   16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ drivers/ntb/msi.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/mfd/ab8500-debugfs.c
-+++ b/drivers/mfd/ab8500-debugfs.c
-@@ -1513,24 +1513,14 @@ static int ab8500_interrupts_show(struct
+--- a/drivers/ntb/msi.c
++++ b/drivers/ntb/msi.c
+@@ -282,15 +282,13 @@ int ntbm_msi_request_threaded_irq(struct
+ 				  struct ntb_msi_desc *msi_desc)
  {
- 	int line;
+ 	struct msi_desc *entry;
+-	struct irq_desc *desc;
+ 	int ret;
  
--	seq_puts(s, "name: number:  number of: wake:\n");
-+	seq_puts(s, "name: number: irq: number of: wake:\n");
+ 	if (!ntb->msi)
+ 		return -EINVAL;
  
- 	for (line = 0; line < num_interrupt_lines; line++) {
--		struct irq_desc *desc = irq_to_desc(line + irq_first);
--
--		seq_printf(s, "%3i:  %6i %4i",
-+		seq_printf(s, "%3i:  %6i %4i %4i\n",
- 			   line,
-+			   line + irq_first,
- 			   num_interrupts[line],
- 			   num_wake_interrupts[line]);
--
--		if (desc && desc->name)
--			seq_printf(s, "-%-8s", desc->name);
--		if (desc && desc->action) {
--			struct irqaction *action = desc->action;
--
--			seq_printf(s, "  %s", action->name);
--			while ((action = action->next) != NULL)
--				seq_printf(s, ", %s", action->name);
- 		}
- 		seq_putc(s, '\n');
- 	}
+ 	for_each_pci_msi_entry(entry, ntb->pdev) {
+-		desc = irq_to_desc(entry->irq);
+-		if (desc->action)
++		if (irq_has_action(entry->irq))
+ 			continue;
+ 
+ 		ret = devm_request_threaded_irq(&ntb->dev, entry->irq, handler,
 
