@@ -2,438 +2,343 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3994E2D6B7D
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EDB82D6B84
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732594AbgLJXDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 18:03:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
+        id S2389286AbgLJXEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 18:04:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730455AbgLJXDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 18:03:16 -0500
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 641CEC061794
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 15:03:01 -0800 (PST)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        with ESMTP id S2388892AbgLJXEH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 18:04:07 -0500
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BBEC0611D0
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 15:03:26 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4CsTwN0KBJzQlRP;
-        Fri, 11 Dec 2020 00:03:00 +0100 (CET)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CsTwM55MnzQlJF;
+        Fri, 11 Dec 2020 00:02:59 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1607641378;
+        s=MBO0001; t=1607641377;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=OsYMdm6KVrs7xygwHiYBXZsFqUGkNpanmtlbARXZoOs=;
-        b=1aFSJ3hyRG+qN2+6UtMSm9+g6ZTwOQ1b8A+oi1kj0Hu2D95eKq45re8ez5V5FMBHC+XM1k
-        mnu2mTPU2D5D/uRdR9fjtmyf6VgdAlg9sL0E0V6xppKE1cwyS5QxOB4NtdaPjARsMmzfzh
-        aecrAUMQBT7DZG9z9eoydQdTPG6yopCqmacR5s0SzoBzDG9+HArd3+e2i827zI8r45oB3I
-        N2CpYRbJ+Z/9DMkfVlIXjqxaAn6Swh9ZEKTNAKLkXoPa+K/w6T2kSwcwqgGrEfjvIFgB4n
-        SvqhAqkLi5P3OYg+wTH+LI0JEwOu6HwuN80n0UMY8cP9pAMtMvwzrl3bcQd3sg==
+        bh=0Srx/VUSameVuk/fCFFayGJTkiH3wo26j9OeHYbJZAI=;
+        b=OgRm5nJ/zAwO4/p7Q9hDQisO7svvxuyHNRu59O5O6213NpNf7TjxPw5rS4g3+JdWVA6VNB
+        O4ygTPQqoHqTz3+pKPrOVHcKzc0qpGpE8yoZ/VETgDc9clr6tsknkgGMuJnWEjknPsUNEE
+        y3l6by9En2b0tbuEv7Ul1U7l6BFGk3O+EU43p77GSQcxIi1gVDGsOfVjxas1qEDZ12vMmK
+        +u9IAjVA/n/b16Bk9DejmoDiDd2220QAPku74zYMZBg0FwD3kdG79Uc1EXDYVG6Iupvbq9
+        Cg+Uua/YiT9pI6ntDKnI7uq7xQb0j3+TdCEu4UeASDPBqY89j171F2AisEov6g==
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id nay2Pc9wc23V; Fri, 11 Dec 2020 00:02:55 +0100 (CET)
+        by spamfilter05.heinlein-hosting.de (spamfilter05.heinlein-hosting.de [80.241.56.123]) (amavisd-new, port 10030)
+        with ESMTP id RgsFMBm4Lyrv; Fri, 11 Dec 2020 00:02:56 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 08/10] dcb: Add a subtool for the DCB PFC object
-Date:   Fri, 11 Dec 2020 00:02:22 +0100
-Message-Id: <5336f4f90fbebf46b6ee2525e22054b0ed67ea66.1607640819.git.me@pmachata.org>
+Subject: [PATCH iproute2-next 09/10] dcb: Add a subtool for the DCB buffer object
+Date:   Fri, 11 Dec 2020 00:02:23 +0100
+Message-Id: <dc48908daa28ccf13c7e4281650f94f4fcaf987e.1607640819.git.me@pmachata.org>
 In-Reply-To: <cover.1607640819.git.me@pmachata.org>
 References: <cover.1607640819.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-MBO-SPAM-Probability: 
 X-Rspamd-Score: -1.33 / 15.00 / 15.00
-X-Rspamd-Queue-Id: E7EE2177D
-X-Rspamd-UID: 0cd315
+X-Rspamd-Queue-Id: AC4B3171A
+X-Rspamd-UID: bc8cad
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PFC, for "Priority-based Flow Control", allows configuration of priority
-lossiness, and related toggles.
+DCBNL buffer interfaces are an extension to the 802.1q DCB interfaces and
+allow configuration of port headroom buffers.
 
-Add a dcb subtool to allow showing and tweaking of individual PFC
-configuration options, and querying statistics. For example:
+Add a dcb subtool to allow showing and tweaking of buffer priority mapping
+and buffer sizes. For example:
 
-    # dcb pfc show dev eni1np1
-    pfc-cap 8 macsec-bypass on delay 0
-    pg-pfc 0:off 1:on 2:off 3:off 4:off 5:off 6:off 7:on
-    requests 0:0 1:217 2:0 3:0 4:0 5:0 6:0 7:28
-    indications 0:0 1:179 2:0 3:0 4:0 5:0 6:0 7:18
+    # dcb buf show dev eni1np1
+    prio-buffer 0:0 1:0 2:0 3:3 4:0 5:0 6:6 7:0
+    buffer-size 0:10000 1:0 2:0 3:70000 4:0 5:0 6:10000 7:0
+    total-size 221072
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- dcb/Makefile       |   2 +-
- dcb/dcb.c          |  27 ++++-
- dcb/dcb.h          |   6 +
- dcb/dcb_pfc.c      | 286 +++++++++++++++++++++++++++++++++++++++++++++
- man/man8/dcb-pfc.8 | 127 ++++++++++++++++++++
- man/man8/dcb.8     |   9 +-
- 6 files changed, 453 insertions(+), 4 deletions(-)
- create mode 100644 dcb/dcb_pfc.c
- create mode 100644 man/man8/dcb-pfc.8
+ dcb/Makefile          |   2 +-
+ dcb/dcb.c             |   4 +-
+ dcb/dcb.h             |   4 +
+ dcb/dcb_buffer.c      | 235 ++++++++++++++++++++++++++++++++++++++++++
+ man/man8/dcb-buffer.8 | 126 ++++++++++++++++++++++
+ man/man8/dcb.8        |   7 +-
+ 6 files changed, 375 insertions(+), 3 deletions(-)
+ create mode 100644 dcb/dcb_buffer.c
+ create mode 100644 man/man8/dcb-buffer.8
 
 diff --git a/dcb/Makefile b/dcb/Makefile
-index 895817163562..ea557a309e81 100644
+index ea557a309e81..dc84422f6096 100644
 --- a/dcb/Makefile
 +++ b/dcb/Makefile
 @@ -5,7 +5,7 @@ TARGETS :=
  
  ifeq ($(HAVE_MNL),y)
  
--DCBOBJ = dcb.o dcb_ets.o
-+DCBOBJ = dcb.o dcb_ets.o dcb_pfc.o
+-DCBOBJ = dcb.o dcb_ets.o dcb_pfc.o
++DCBOBJ = dcb.o dcb_buffer.o dcb_ets.o dcb_pfc.o
  TARGETS += dcb
  
  endif
 diff --git a/dcb/dcb.c b/dcb/dcb.c
-index 4b4a5b9354c6..cc07d3ddcee0 100644
+index cc07d3ddcee0..570405a7e628 100644
 --- a/dcb/dcb.c
 +++ b/dcb/dcb.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- 
-+#include <inttypes.h>
- #include <stdio.h>
- #include <linux/dcbnl.h>
- #include <libmnl/libmnl.h>
-@@ -201,6 +202,28 @@ void dcb_print_array_u8(const __u8 *array, size_t size)
- 	}
- }
- 
-+void dcb_print_array_u64(const __u64 *array, size_t size)
-+{
-+	SPRINT_BUF(b);
-+	size_t i;
-+
-+	for (i = 0; i < size; i++) {
-+		snprintf(b, sizeof(b), "%zd:%%" PRIu64 " ", i);
-+		print_u64(PRINT_ANY, NULL, b, array[i]);
-+	}
-+}
-+
-+void dcb_print_array_on_off(const __u8 *array, size_t size)
-+{
-+	SPRINT_BUF(b);
-+	size_t i;
-+
-+	for (i = 0; i < size; i++) {
-+		snprintf(b, sizeof(b), "%zd:%%s ", i);
-+		print_on_off(PRINT_ANY, NULL, b, array[i]);
-+	}
-+}
-+
- void dcb_print_array_kw(const __u8 *array, size_t array_size,
- 			const char *const kw[], size_t kw_size)
- {
-@@ -309,7 +332,7 @@ static void dcb_help(void)
+@@ -332,7 +332,7 @@ static void dcb_help(void)
  	fprintf(stderr,
  		"Usage: dcb [ OPTIONS ] OBJECT { COMMAND | help }\n"
  		"       dcb [ -f | --force ] { -b | --batch } filename [ -N | --Netns ] netnsname\n"
--		"where  OBJECT := ets\n"
-+		"where  OBJECT := { ets | pfc }\n"
+-		"where  OBJECT := { ets | pfc }\n"
++		"where  OBJECT := { buffer | ets | pfc }\n"
  		"       OPTIONS := [ -V | --Version | -i | --iec | -j | --json\n"
  		"                  | -p | --pretty | -s | --statistics | -v | --verbose]\n");
  }
-@@ -321,6 +344,8 @@ static int dcb_cmd(struct dcb *dcb, int argc, char **argv)
+@@ -342,6 +342,8 @@ static int dcb_cmd(struct dcb *dcb, int argc, char **argv)
+ 	if (!argc || matches(*argv, "help") == 0) {
+ 		dcb_help();
  		return 0;
++	} else if (matches(*argv, "buffer") == 0) {
++		return dcb_cmd_buffer(dcb, argc - 1, argv + 1);
  	} else if (matches(*argv, "ets") == 0) {
  		return dcb_cmd_ets(dcb, argc - 1, argv + 1);
-+	} else if (matches(*argv, "pfc") == 0) {
-+		return dcb_cmd_pfc(dcb, argc - 1, argv + 1);
- 	}
- 
- 	fprintf(stderr, "Object \"%s\" is unknown\n", *argv);
+ 	} else if (matches(*argv, "pfc") == 0) {
 diff --git a/dcb/dcb.h b/dcb/dcb.h
-index 8637efc159b9..4ecc6afd59a9 100644
+index 4ecc6afd59a9..0638d63938fc 100644
 --- a/dcb/dcb.h
 +++ b/dcb/dcb.h
-@@ -37,6 +37,8 @@ void dcb_print_named_array(const char *json_name, const char *fp_name,
- 			   const __u8 *array, size_t size,
- 			   void (*print_array)(const __u8 *, size_t));
- void dcb_print_array_u8(const __u8 *array, size_t size);
-+void dcb_print_array_u64(const __u64 *array, size_t size);
-+void dcb_print_array_on_off(const __u8 *array, size_t size);
+@@ -42,6 +42,10 @@ void dcb_print_array_on_off(const __u8 *array, size_t size);
  void dcb_print_array_kw(const __u8 *array, size_t array_size,
  			const char *const kw[], size_t kw_size);
  
-@@ -44,4 +46,8 @@ void dcb_print_array_kw(const __u8 *array, size_t array_size,
++/* dcb_buffer.c */
++
++int dcb_cmd_buffer(struct dcb *dcb, int argc, char **argv);
++
+ /* dcb_ets.c */
  
  int dcb_cmd_ets(struct dcb *dcb, int argc, char **argv);
- 
-+/* dcb_pfc.c */
-+
-+int dcb_cmd_pfc(struct dcb *dcb, int argc, char **argv);
-+
- #endif /* __DCB_H__ */
-diff --git a/dcb/dcb_pfc.c b/dcb/dcb_pfc.c
+diff --git a/dcb/dcb_buffer.c b/dcb/dcb_buffer.c
 new file mode 100644
-index 000000000000..aaa09022e247
+index 000000000000..e6a88a00f4a6
 --- /dev/null
-+++ b/dcb/dcb_pfc.c
-@@ -0,0 +1,286 @@
++++ b/dcb/dcb_buffer.c
+@@ -0,0 +1,235 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +
 +#include <errno.h>
++#include <inttypes.h>
 +#include <stdio.h>
 +#include <linux/dcbnl.h>
 +
 +#include "dcb.h"
 +#include "utils.h"
 +
-+static void dcb_pfc_help_set(void)
++static void dcb_buffer_help_set(void)
 +{
 +	fprintf(stderr,
-+		"Usage: dcb pfc set dev STRING\n"
-+		"           [ prio-pfc PFC-MAP ]\n"
-+		"           [ macsec-bypass { on | off } ]\n"
-+		"           [ delay INTEGER ]\n"
++		"Usage: dcb buffer set dev STRING\n"
++		"           [ prio-buffer PRIO-MAP ]\n"
++		"           [ buffer-size SIZE-MAP ]\n"
 +		"\n"
-+		" where PFC-MAP := [ PFC-MAP ] PFC-MAPPING\n"
-+		"       PFC-MAPPING := { all | TC }:PFC\n"
-+		"       TC := { 0 .. 7 }\n"
-+		"       PFC := { on | off }\n"
++		" where PRIO-MAP := [ PRIO-MAP ] PRIO-MAPPING\n"
++		"       PRIO-MAPPING := { all | PRIO }:BUFFER\n"
++		"       SIZE-MAP := [ SIZE-MAP ] SIZE-MAPPING\n"
++		"       SIZE-MAPPING := { all | BUFFER }:INTEGER\n"
++		"       PRIO := { 0 .. 7 }\n"
++		"       BUFFER := { 0 .. 7 }\n"
 +		"\n"
 +	);
 +}
 +
-+static void dcb_pfc_help_show(void)
++static void dcb_buffer_help_show(void)
 +{
 +	fprintf(stderr,
-+		"Usage: dcb [ -s ] pfc show dev STRING\n"
-+		"           [ pfc-cap ] [ prio-pfc ] [ macsec-bypass ]\n"
-+		"           [ delay ] [ requests ] [ indications ]\n"
++		"Usage: dcb buffer show dev STRING\n"
++		"           [ prio-buffer ] [ buffer-size ] [ total-size ]\n"
 +		"\n"
 +	);
 +}
 +
-+static void dcb_pfc_help(void)
++static void dcb_buffer_help(void)
 +{
 +	fprintf(stderr,
-+		"Usage: dcb pfc help\n"
++		"Usage: dcb buffer help\n"
 +		"\n"
 +	);
-+	dcb_pfc_help_show();
-+	dcb_pfc_help_set();
++	dcb_buffer_help_show();
++	dcb_buffer_help_set();
 +}
 +
-+static void dcb_pfc_to_array(__u8 array[IEEE_8021QAZ_MAX_TCS], __u8 pfc_en)
++static int dcb_buffer_parse_mapping_prio_buffer(__u32 key, char *value, void *data)
 +{
-+	int i;
++	struct dcbnl_buffer *buffer = data;
++	__u8 buf;
 +
-+	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++)
-+		array[i] = !!(pfc_en & (1 << i));
++	if (get_u8(&buf, value, 0))
++		return -EINVAL;
++
++	return dcb_parse_mapping("PRIO", key, IEEE_8021Q_MAX_PRIORITIES - 1,
++				 "BUFFER", buf, DCBX_MAX_BUFFERS - 1,
++				 dcb_set_u8, buffer->prio2buffer);
 +}
 +
-+static void dcb_pfc_from_array(__u8 array[IEEE_8021QAZ_MAX_TCS], __u8 *pfc_en_p)
++static int dcb_buffer_parse_mapping_buffer_size(__u32 key, char *value, void *data)
 +{
-+	__u8 pfc_en = 0;
-+	int i;
++	struct dcbnl_buffer *buffer = data;
++	unsigned int size;
 +
-+	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-+		if (array[i])
-+			pfc_en |= 1 << i;
++	if (get_size(&size, value)) {
++		fprintf(stderr, "%d:%s: Illegal value for buffer size\n", key, value);
++		return -EINVAL;
 +	}
 +
-+	*pfc_en_p = pfc_en;
++	return dcb_parse_mapping("BUFFER", key, DCBX_MAX_BUFFERS - 1,
++				 "INTEGER", size, -1,
++				 dcb_set_u32, buffer->buffer_size);
 +}
 +
-+static int dcb_pfc_parse_mapping_prio_pfc(__u32 key, char *value, void *data)
++static void dcb_buffer_print_total_size(const struct dcbnl_buffer *buffer)
 +{
-+	struct ieee_pfc *pfc = data;
-+	__u8 pfc_en[IEEE_8021QAZ_MAX_TCS];
-+	bool enabled;
-+	int ret;
-+
-+	dcb_pfc_to_array(pfc_en, pfc->pfc_en);
-+
-+	enabled = parse_on_off("PFC", value, &ret);
-+	if (ret)
-+		return ret;
-+
-+	ret = dcb_parse_mapping("PRIO", key, IEEE_8021QAZ_MAX_TCS - 1,
-+				"PFC", enabled, -1,
-+				dcb_set_u8, pfc_en);
-+	if (ret)
-+		return ret;
-+
-+	dcb_pfc_from_array(pfc_en, &pfc->pfc_en);
-+	return 0;
++	print_size(PRINT_ANY, "total_size", "total-size %s ", buffer->total_size);
 +}
 +
-+static void dcb_pfc_print_pfc_cap(const struct ieee_pfc *pfc)
++static void dcb_buffer_print_prio_buffer(const struct dcbnl_buffer *buffer)
 +{
-+	print_uint(PRINT_ANY, "pfc_cap", "pfc-cap %d ", pfc->pfc_cap);
++	dcb_print_named_array("prio_buffer", "prio-buffer",
++			      buffer->prio2buffer, ARRAY_SIZE(buffer->prio2buffer),
++			      dcb_print_array_u8);
 +}
 +
-+static void dcb_pfc_print_macsec_bypass(const struct ieee_pfc *pfc)
++static void dcb_buffer_print_buffer_size(const struct dcbnl_buffer *buffer)
 +{
-+	print_on_off(PRINT_ANY, "macsec_bypass", "macsec-bypass %s ", pfc->mbc);
-+}
++	size_t size = ARRAY_SIZE(buffer->buffer_size);
++	SPRINT_BUF(b);
++	size_t i;
 +
-+static void dcb_pfc_print_delay(const struct ieee_pfc *pfc)
-+{
-+	print_uint(PRINT_ANY, "delay", "delay %d ", pfc->delay);
-+}
++	open_json_array(PRINT_JSON, "buffer_size");
++	print_string(PRINT_FP, NULL, "buffer-size ", NULL);
 +
-+static void dcb_pfc_print_prio_pfc(const struct ieee_pfc *pfc)
-+{
-+	__u8 pfc_en[IEEE_8021QAZ_MAX_TCS];
-+
-+	dcb_pfc_to_array(pfc_en, pfc->pfc_en);
-+	dcb_print_named_array("prio_pfc", "prio-pfc",
-+			      pfc_en, ARRAY_SIZE(pfc_en), &dcb_print_array_on_off);
-+}
-+
-+static void dcb_pfc_print_requests(const struct ieee_pfc *pfc)
-+{
-+	open_json_array(PRINT_JSON, "requests");
-+	print_string(PRINT_FP, NULL, "requests ", NULL);
-+	dcb_print_array_u64(pfc->requests, ARRAY_SIZE(pfc->requests));
-+	close_json_array(PRINT_JSON, "requests");
-+}
-+
-+static void dcb_pfc_print_indications(const struct ieee_pfc *pfc)
-+{
-+	open_json_array(PRINT_JSON, "indications");
-+	print_string(PRINT_FP, NULL, "indications ", NULL);
-+	dcb_print_array_u64(pfc->indications, ARRAY_SIZE(pfc->indications));
-+	close_json_array(PRINT_JSON, "indications");
-+}
-+
-+static void dcb_pfc_print(const struct dcb *dcb, const struct ieee_pfc *pfc)
-+{
-+	dcb_pfc_print_pfc_cap(pfc);
-+	dcb_pfc_print_macsec_bypass(pfc);
-+	dcb_pfc_print_delay(pfc);
-+	print_nl();
-+
-+	dcb_pfc_print_prio_pfc(pfc);
-+	print_nl();
-+
-+	if (dcb->stats) {
-+		dcb_pfc_print_requests(pfc);
-+		print_nl();
-+
-+		dcb_pfc_print_indications(pfc);
-+		print_nl();
++	for (i = 0; i < size; i++) {
++		snprintf(b, sizeof(b), "%zd:%%s ", i);
++		print_size(PRINT_ANY, NULL, b, buffer->buffer_size[i]);
 +	}
++
++	close_json_array(PRINT_JSON, "buffer_size");
 +}
 +
-+static int dcb_pfc_get(struct dcb *dcb, const char *dev, struct ieee_pfc *pfc)
++static void dcb_buffer_print(const struct dcbnl_buffer *buffer)
 +{
-+	return dcb_get_attribute(dcb, dev, DCB_ATTR_IEEE_PFC, pfc, sizeof(*pfc));
++	dcb_buffer_print_prio_buffer(buffer);
++	print_nl();
++
++	dcb_buffer_print_buffer_size(buffer);
++	print_nl();
++
++	dcb_buffer_print_total_size(buffer);
++	print_nl();
 +}
 +
-+static int dcb_pfc_set(struct dcb *dcb, const char *dev, const struct ieee_pfc *pfc)
++static int dcb_buffer_get(struct dcb *dcb, const char *dev, struct dcbnl_buffer *buffer)
 +{
-+	return dcb_set_attribute(dcb, dev, DCB_ATTR_IEEE_PFC, pfc, sizeof(*pfc));
++	return dcb_get_attribute(dcb, dev, DCB_ATTR_DCB_BUFFER, buffer, sizeof(*buffer));
 +}
 +
-+static int dcb_cmd_pfc_set(struct dcb *dcb, const char *dev, int argc, char **argv)
++static int dcb_buffer_set(struct dcb *dcb, const char *dev, const struct dcbnl_buffer *buffer)
 +{
-+	struct ieee_pfc pfc;
++	return dcb_set_attribute(dcb, dev, DCB_ATTR_DCB_BUFFER, buffer, sizeof(*buffer));
++}
++
++static int dcb_cmd_buffer_set(struct dcb *dcb, const char *dev, int argc, char **argv)
++{
++	struct dcbnl_buffer buffer;
 +	int ret;
 +
 +	if (!argc) {
-+		dcb_pfc_help_set();
++		dcb_buffer_help_set();
 +		return 0;
 +	}
 +
-+	ret = dcb_pfc_get(dcb, dev, &pfc);
++	ret = dcb_buffer_get(dcb, dev, &buffer);
 +	if (ret)
 +		return ret;
 +
 +	do {
 +		if (matches(*argv, "help") == 0) {
-+			dcb_pfc_help_set();
++			dcb_buffer_help_set();
 +			return 0;
-+		} else if (matches(*argv, "prio-pfc") == 0) {
++		} else if (matches(*argv, "prio-buffer") == 0) {
 +			NEXT_ARG();
 +			ret = parse_mapping(&argc, &argv, true,
-+					    &dcb_pfc_parse_mapping_prio_pfc, &pfc);
++					    &dcb_buffer_parse_mapping_prio_buffer, &buffer);
 +			if (ret) {
-+				fprintf(stderr, "Invalid pfc mapping %s\n", *argv);
++				fprintf(stderr, "Invalid priority mapping %s\n", *argv);
 +				return ret;
 +			}
 +			continue;
-+		} else if (matches(*argv, "macsec-bypass") == 0) {
++		} else if (matches(*argv, "buffer-size") == 0) {
 +			NEXT_ARG();
-+			pfc.mbc = parse_on_off("macsec-bypass", *argv, &ret);
-+			if (ret)
++			ret = parse_mapping(&argc, &argv, true,
++					    &dcb_buffer_parse_mapping_buffer_size, &buffer);
++			if (ret) {
++				fprintf(stderr, "Invalid buffer size mapping %s\n", *argv);
 +				return ret;
-+		} else if (matches(*argv, "delay") == 0) {
-+			NEXT_ARG();
-+			/* Do not support the size notations for delay.
-+			 * Delay is specified in "bit times", not bits, so
-+			 * it is not applicable. At the same time it would
-+			 * be confusing that 10Kbit does not mean 10240,
-+			 * but 1280.
-+			 */
-+			if (get_u16(&pfc.delay, *argv, 0)) {
-+				fprintf(stderr, "Invalid delay `%s', expected an integer 0..65535\n",
-+					*argv);
-+				return -EINVAL;
 +			}
++			continue;
 +		} else {
 +			fprintf(stderr, "What is \"%s\"?\n", *argv);
-+			dcb_pfc_help_set();
++			dcb_buffer_help_set();
 +			return -EINVAL;
 +		}
 +
 +		NEXT_ARG_FWD();
 +	} while (argc > 0);
 +
-+	return dcb_pfc_set(dcb, dev, &pfc);
++	return dcb_buffer_set(dcb, dev, &buffer);
 +}
 +
-+static int dcb_cmd_pfc_show(struct dcb *dcb, const char *dev, int argc, char **argv)
++static int dcb_cmd_buffer_show(struct dcb *dcb, const char *dev, int argc, char **argv)
 +{
-+	struct ieee_pfc pfc;
++	struct dcbnl_buffer buffer;
 +	int ret;
 +
-+	ret = dcb_pfc_get(dcb, dev, &pfc);
++	ret = dcb_buffer_get(dcb, dev, &buffer);
 +	if (ret)
 +		return ret;
 +
 +	open_json_object(NULL);
 +
 +	if (!argc) {
-+		dcb_pfc_print(dcb, &pfc);
++		dcb_buffer_print(&buffer);
 +		goto out;
 +	}
 +
 +	do {
 +		if (matches(*argv, "help") == 0) {
-+			dcb_pfc_help_show();
++			dcb_buffer_help_show();
 +			return 0;
-+		} else if (matches(*argv, "prio-pfc") == 0) {
-+			dcb_pfc_print_prio_pfc(&pfc);
++		} else if (matches(*argv, "prio-buffer") == 0) {
++			dcb_buffer_print_prio_buffer(&buffer);
 +			print_nl();
-+		} else if (matches(*argv, "pfc-cap") == 0) {
-+			dcb_pfc_print_pfc_cap(&pfc);
++		} else if (matches(*argv, "buffer-size") == 0) {
++			dcb_buffer_print_buffer_size(&buffer);
 +			print_nl();
-+		} else if (matches(*argv, "macsec-bypass") == 0) {
-+			dcb_pfc_print_macsec_bypass(&pfc);
-+			print_nl();
-+		} else if (matches(*argv, "delay") == 0) {
-+			dcb_pfc_print_delay(&pfc);
-+			print_nl();
-+		} else if (matches(*argv, "requests") == 0) {
-+			dcb_pfc_print_requests(&pfc);
-+			print_nl();
-+		} else if (matches(*argv, "indications") == 0) {
-+			dcb_pfc_print_indications(&pfc);
++		} else if (matches(*argv, "total-size") == 0) {
++			dcb_buffer_print_total_size(&buffer);
 +			print_nl();
 +		} else {
 +			fprintf(stderr, "What is \"%s\"?\n", *argv);
-+			dcb_pfc_help_show();
++			dcb_buffer_help_show();
 +			return -EINVAL;
 +		}
 +
@@ -445,34 +350,34 @@ index 000000000000..aaa09022e247
 +	return 0;
 +}
 +
-+int dcb_cmd_pfc(struct dcb *dcb, int argc, char **argv)
++int dcb_cmd_buffer(struct dcb *dcb, int argc, char **argv)
 +{
 +	if (!argc || matches(*argv, "help") == 0) {
-+		dcb_pfc_help();
++		dcb_buffer_help();
 +		return 0;
 +	} else if (matches(*argv, "show") == 0) {
 +		NEXT_ARG_FWD();
 +		return dcb_cmd_parse_dev(dcb, argc, argv,
-+					 dcb_cmd_pfc_show, dcb_pfc_help_show);
++					 dcb_cmd_buffer_show, dcb_buffer_help_show);
 +	} else if (matches(*argv, "set") == 0) {
 +		NEXT_ARG_FWD();
 +		return dcb_cmd_parse_dev(dcb, argc, argv,
-+					 dcb_cmd_pfc_set, dcb_pfc_help_set);
++					 dcb_cmd_buffer_set, dcb_buffer_help_set);
 +	} else {
 +		fprintf(stderr, "What is \"%s\"?\n", *argv);
-+		dcb_pfc_help();
++		dcb_buffer_help();
 +		return -EINVAL;
 +	}
 +}
-diff --git a/man/man8/dcb-pfc.8 b/man/man8/dcb-pfc.8
+diff --git a/man/man8/dcb-buffer.8 b/man/man8/dcb-buffer.8
 new file mode 100644
-index 000000000000..735c16e066cb
+index 000000000000..c7ba6a993ee6
 --- /dev/null
-+++ b/man/man8/dcb-pfc.8
-@@ -0,0 +1,127 @@
-+.TH DCB-PFC 8 "31 October 2020" "iproute2" "Linux"
++++ b/man/man8/dcb-buffer.8
+@@ -0,0 +1,126 @@
++.TH DCB-BUFFER 8 "12 November 2020" "iproute2" "Linux"
 +.SH NAME
-+dcb-pfc \- show / manipulate PFC (Priority-based Flow Control) settings of
++dcb-buffer \- show / manipulate port buffer settings of
 +the DCB (Data Center Bridging) subsystem
 +.SH SYNOPSIS
 +.sp
@@ -482,44 +387,50 @@ index 000000000000..735c16e066cb
 +.ti -8
 +.B dcb
 +.RI "[ " OPTIONS " ] "
-+.B pfc
++.B buffer
 +.RI "{ " COMMAND " | " help " }"
 +.sp
 +
 +.ti -8
-+.B dcb pfc show dev
++.B dcb buffer show dev
 +.RI DEV
-+.RB "[ " pfc-cap " ]"
-+.RB "[ " prio-pfc " ]"
-+.RB "[ " macsec-bypass " ]"
-+.RB "[ " delay " ]"
-+.RB "[ " requests " ]"
-+.RB "[ " indications " ]"
++.RB "[ " prio-buffer " ]"
++.RB "[ " buffer-size " ]"
++.RB "[ " total-size " ]"
 +
 +.ti -8
-+.B dcb pfc set dev
++.B dcb buffer set dev
 +.RI DEV
-+.RB "[ " prio-pfc " " \fIPFC-MAP " ]"
-+.RB "[ " macsec-bypass " { " on " | " off " } ]"
-+.RB "[ " delay " " \fIINTEGER\fR " ]"
++.RB "[ " prio-buffer " " \fIPRIO-MAP " ]"
++.RB "[ " buffer-size " " \fISIZE-MAP " ]"
 +
 +.ti -8
-+.IR PFC-MAP " := [ " PFC-MAP " ] " PFC-MAPPING
++.IR PRIO-MAP " := [ " PRIO-MAP " ] " PRIO-MAPPING
 +
 +.ti -8
-+.IR PFC-MAPPING " := { " PRIO " | " \fBall " }" \fB:\fR "{ "
-+.IR \fBon\fR " | " \fBoff\fR " }"
++.IR PRIO-MAPPING " := { " PRIO " | " \fBall " }" \fB:\fIBUFFER\fR
++
++.ti -8
++.IR SIZE-MAP " := [ " SIZE-MAP " ] " SIZE-MAPPING
++
++.ti -8
++.IR SIZE-MAPPING " := { " BUFFER " | " \fBall " }" \fB:\fISIZE\fR
 +
 +.ti -8
 +.IR PRIO " := { " \fB0\fR " .. " \fB7\fR " }"
 +
++.ti -8
++.IR BUFFER " := { " \fB0\fR " .. " \fB7\fR " }"
++
++.ti -8
++.IR SIZE " := { " INTEGER " | " INTEGER\fBK\fR " | " INTEGER\fBM\fR " | " ... " }"
++
 +.SH DESCRIPTION
 +
-+.B dcb pfc
-+is used to configure Priority-based Flow Control attributes through Linux
-+DCB (Data Center Bridging) interface. PFC permits marking flows with a
-+certain priority as lossless, and holds related configuration, as well as
-+PFC counters.
++.B dcb buffer
++is used to configure assignment of traffic to port buffers based on traffic
++priority, and sizes of those buffers. It can be also used to inspect the current
++configuration, as well as total device memory that the port buffers take.
 +
 +.SH PARAMETERS
 +
@@ -527,61 +438,54 @@ index 000000000000..735c16e066cb
 +i.e. as used with the \fBset\fR command. For the \fBshow\fR command, the
 +parameter name is to be used as a simple keyword without further arguments. This
 +instructs the tool to show the value of a given parameter. When no parameters
-+are given, the tool shows the complete PFC configuration.
++are given, the tool shows the complete buffer configuration.
 +
 +.TP
-+.B pfc-cap
-+A read-only property that shows the number of traffic classes that may
-+simultaneously support PFC.
++.B total-size
++A read-only property that shows the total device memory taken up by port
++buffers. This might be more than a simple sum of individual buffer sizes if
++there are any hidden or internal buffers.
 +
 +.TP
-+.B requests
-+A read-only count of the sent PFC frames per traffic class. Only shown when
-+-s is given, or when requested explicitly.
-+
-+.TP
-+.B indications
-+A read-only count of the received PFC frames per traffic class. Only shown
-+when -s is given, or when requested explicitly.
-+
-+.TP
-+.B macsec-bypass \fR{ \fBon\fR | \fBoff\fR }
-+Whether the sending station is capable of bypassing MACsec processing when
-+MACsec is disabled.
-+
-+.TP
-+.B prio-pfc \fIPFC-MAP
-+\fIPFC-MAP\fR uses the array parameter syntax, see
++.B prio-buffer \fIPRIO-MAP
++\fIPRIO-MAP\fR uses the array parameter syntax, see
 +.BR dcb (8)
-+for details. Keys are priorities, values are on / off indicators of whether
-+PFC is enabled for a given priority.
++for details. Keys are priorities, values are buffer indices. For each priority
++sets a buffer where traffic with that priority is directed to.
 +
 +.TP
-+.B delay \fIINTEGER
-+The allowance made for round-trip propagation delay of the link in bits.
-+The value shall be 0..65535.
++.B buffer-size \fISIZE-MAP
++\fISIZE-MAP\fR uses the array parameter syntax, see
++.BR dcb (8)
++for details. Keys are buffer indices, values are sizes of that buffer in bytes.
++The sizes can use the notation documented in section PARAMETERS at
++.BR tc (8).
++Note that the size requested by the tool can be rounded or capped by the driver
++to satisfy the requirements of the device.
 +
 +.SH EXAMPLE & USAGE
 +
-+Enable PFC on priorities 6 and 7, leaving the rest intact:
++Configure the priomap in a one-to-one fashion:
 +
 +.P
-+# dcb pfc set dev eth0 prio-pfc 6:on 7:on
++# dcb buffer set dev eth0 prio-buffer 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7
 +
-+Disable PFC of all priorities except 6 and 7, and configure delay to 4096
-+bits:
++Set sizes of all buffers to 10KB, except for buffer 6, which will have the size
++1MB:
 +
 +.P
-+# dcb pfc set dev eth0 prio-pfc all:off 6:on 7:on delay 0x1000
++# dcb buffer set dev eth0 buffer-size all:10K 6:1M
 +
 +Show what was set:
 +
 +.P
-+# dcb pfc show dev eth0
++# dcb buffer show dev eth0
 +.br
-+pfc-cap 8 macsec-bypass off delay 4096
++prio-buffer 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7
 +.br
-+prio-pfc 0:off 1:off 2:off 3:off 4:off 5:off 6:on 7:on
++buffer-size 0:10Kb 1:10Kb 2:10Kb 3:10Kb 4:10Kb 5:10Kb 6:1Mb 7:10Kb
++.br
++total-size 1222Kb
 +
 +.SH EXIT STATUS
 +Exit status is 0 if command was successful or a positive integer upon failure.
@@ -598,39 +502,37 @@ index 000000000000..735c16e066cb
 +.SH AUTHOR
 +Petr Machata <me@pmachata.org>
 diff --git a/man/man8/dcb.8 b/man/man8/dcb.8
-index 15b43942585a..01febe166bdf 100644
+index 01febe166bdf..e14762365cef 100644
 --- a/man/man8/dcb.8
 +++ b/man/man8/dcb.8
 @@ -9,7 +9,7 @@ dcb \- show / manipulate DCB (Data Center Bridging) settings
  .ti -8
  .B dcb
  .RI "[ " OPTIONS " ] "
--.B ets
-+.RB "{ " ets " | " pfc " }"
+-.RB "{ " ets " | " pfc " }"
++.RB "{ " buffer " | " ets " | " pfc " }"
  .RI "{ " COMMAND " | " help " }"
  .sp
  
-@@ -67,6 +67,10 @@ part of the "show" output.
- .B ets
- - Configuration of ETS (Enhanced Transmission Selection)
+@@ -63,6 +63,10 @@ part of the "show" output.
+ 
+ .SH OBJECTS
  
 +.TP
-+.B pfc
-+- Configuration of PFC (Priority-based Flow Control)
++.B buffer
++- Configuration of port buffers
 +
- .SH COMMANDS
- 
- A \fICOMMAND\fR specifies the action to perform on the object. The set of
-@@ -111,7 +115,8 @@ other values:
+ .TP
+ .B ets
+ - Configuration of ETS (Enhanced Transmission Selection)
+@@ -115,6 +119,7 @@ other values:
  Exit status is 0 if command was successful or a positive integer upon failure.
  
  .SH SEE ALSO
--.BR dcb-ets (8)
-+.BR dcb-ets (8),
-+.BR dcb-pfc (8)
++.BR dcb-buffer (8),
+ .BR dcb-ets (8),
+ .BR dcb-pfc (8)
  .br
- 
- .SH REPORTING BUGS
 -- 
 2.25.1
 
