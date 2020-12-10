@@ -2,136 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B5AF2D5BDE
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 14:34:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C271A2D5BE6
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 14:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389381AbgLJNe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 08:34:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25683 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389373AbgLJNeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 08:34:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607607167;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7R+Qr15dnQkjiaPOVVgqK5mXQ5YRoH0BKswrwklypNY=;
-        b=hADCjV6NceLZkiSw+OofKFhgznUAiCy0w1oFhYk6cPgBO/ZELfTumgan7vbvSnCVcobTDc
-        guSdifVf/msvOZwp16TbZP/FEtyHRDwVptjtEGXKsyJfr7SxZS+562/4F9Vy9rs8VyH4hg
-        gpW6ZknyVzEEyaCSqGNbFIdHzkQpL94=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-97-XlvZ-sIZNDS17PtQY2FIlA-1; Thu, 10 Dec 2020 08:32:42 -0500
-X-MC-Unique: XlvZ-sIZNDS17PtQY2FIlA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 82F49DF8DD;
-        Thu, 10 Dec 2020 13:32:25 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 86C2E7770D;
-        Thu, 10 Dec 2020 13:32:13 +0000 (UTC)
-Date:   Thu, 10 Dec 2020 14:32:11 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Frey Alfredsson <freysteinn@freysteinn.com>
-Cc:     brouer@redhat.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        alardam@gmail.com, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
-        ast@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        hawk@kernel.org, jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
-        intel-wired-lan@lists.osuosl.org,
-        Marek Majtyka <marekx.majtyka@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Explaining XDP redirect bulk size design (Was: [PATCH v2 bpf 1/5]
- net: ethtool: add xdp properties flag set)
-Message-ID: <20201210143211.2490f7f4@carbon>
-In-Reply-To: <6913010d-2fd6-6713-94e9-8f5b8ad4b708@gmail.com>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
-        <20201204102901.109709-2-marekx.majtyka@intel.com>
-        <878sad933c.fsf@toke.dk>
-        <20201204124618.GA23696@ranger.igk.intel.com>
-        <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
-        <20201207135433.41172202@carbon>
-        <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
-        <20201207230755.GB27205@ranger.igk.intel.com>
-        <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
-        <20201209095454.GA36812@ranger.igk.intel.com>
-        <20201209125223.49096d50@carbon>
-        <6913010d-2fd6-6713-94e9-8f5b8ad4b708@gmail.com>
+        id S2389398AbgLJNfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 08:35:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389202AbgLJNfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 08:35:17 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18570C0613CF
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 05:34:37 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id i18so5538794ioa.1
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 05:34:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=qPuTAGucGvzqgTNxrF9n0FwDltwm7MyZmFGY3E7gY0c=;
+        b=Fy2fTjlapPQntE22uOCG4RkJdS2M0O+HLQrPnV5OA+VTyjnZ1BKHr499fnc6izXei3
+         3lamsmClYUTCcAmHUJ6m5HJzoye5tuC6BbWKl9KDguLjQMJxrWzwO8HbJ/alrv54XhSJ
+         0nzxEq+L3cb78MEmgkpELf9LOXvtXyZBWcNXF/AyziecC1eQk02VTm66maoCBq86xSLC
+         kpHtLkTpdiRigmF/T47aMatmTUa8nfrpt0WhFMI9C6nr+XU2DXuPdQEKM10/1qwVeeyZ
+         gLdOeMcVY41n45DCL6ltzd9HXh+t2m9tH6G6G76va9G+9XbUk1OGrJYrwncaZJ1rwWT5
+         9X+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qPuTAGucGvzqgTNxrF9n0FwDltwm7MyZmFGY3E7gY0c=;
+        b=ILw49kKf9biSZ5C5t2k+7FS7q5cc0Bbbhjs6CqjOznBueRLmfklIESgyUsSxFLpF2n
+         ivBvY+2/yPNqeA5TeyPUJNO9wW38RgMwGcLPsrGOaopqdFZuil6VN3DQiTuUZArtSD9v
+         1bL9Ms7u9Pdu9xOz/TIeJjyDvqPWsBWWfgfgRLURarvoWhhQD02o1zOv7kVXJp5bm1Kc
+         gNp2JfXrNa1wMqWMyd+Ae/OsPtavgKdyWHCaSloKv0dwEvr92m9mWONhmHJOCYfmKg/P
+         VthoVNG8YS1XO57TfOCVyq9tIQ1V/RNPcDS90mYJsEkGM+y4Gh26w1e4gmqYT5ytPs/e
+         vz3A==
+X-Gm-Message-State: AOAM531RG2dxvcFTeCa+bbTozcKPebfWigb8u5AG+szHdqr5Ry6EApyb
+        QctMzU4AKVdGFoHfd1ZbBWyBg5zFXUDuHeQJCL26Ow==
+X-Google-Smtp-Source: ABdhPJxz6pdUHkkmaYdXhsoY3XmJLTCmoO0CuKMORf3YDkLG822+IhHiT9WlxlybIsF/ZmZzQtRGRP0HulpfcGsoT3o=
+X-Received: by 2002:a02:c981:: with SMTP id b1mr8885225jap.6.1607607276223;
+ Thu, 10 Dec 2020 05:34:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20201208162131.313635-1-eric.dumazet@gmail.com>
+ <20201208.162852.2205708169665484487.davem@davemloft.net> <A65467F2-CC10-4FAF-A728-0969FD17E780@amazon.com>
+In-Reply-To: <A65467F2-CC10-4FAF-A728-0969FD17E780@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 10 Dec 2020 14:34:23 +0100
+Message-ID: <CANn89iL1pCZY3PdrQbjMHvyCFj3CpKPK=G0W0AauKWG4Y_FW1w@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: select sane initial rcvq_space.space for big MSS
+To:     "Mohamed Abuelfotoh, Hazem" <abuehaze@amazon.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "soheil@google.com" <soheil@google.com>,
+        "ncardwell@google.com" <ncardwell@google.com>,
+        "ycheng@google.com" <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Dec 2020 08:44:33 -0700
-David Ahern <dsahern@gmail.com> wrote:
+On Thu, Dec 10, 2020 at 1:49 PM Mohamed Abuelfotoh, Hazem
+<abuehaze@amazon.com> wrote:
+>
+> Hi Eric,
+>
+> I don't see the patch in the stable queue. Can we add it  to stable so we=
+ can cherry pick it  in Amazon Linux kernel?
+>
 
-> On 12/9/20 4:52 AM, Jesper Dangaard Brouer wrote:
-> > But I have redesigned the ndo_xdp_xmit call to take a bulk of packets
-> > (up-to 16) so it should not be a problem to solve this by sharing
-> > TX-queue and talking a lock per 16 packets.  I still recommend that,
-> > for fallback case,  you allocated a number a TX-queue and distribute
-> > this across CPUs to avoid hitting a congested lock (above measurements
-> > are the optimal non-congested atomic lock operation)  
-> 
-> I have been meaning to ask you why 16 for the XDP batching? If the
-> netdev budget is 64, why not something higher like 32 or 64?
-
-Thanks you for asking as there are multiple good reasons and
-consideration for this 16 batch size.  Notice cpumap have batch size 8,
-which is also an explicit choice.  And AF_XDP went in the wrong
-direction IMHO and I think have 256.  I designed this to be a choice in
-the map code, for the level of bulking it needs/wants.
-
-The low level explanation is that these 8 and 16 batch sizes are
-optimized towards cache sizes and Intel's Line-Fill-Buffer (prefetcher
-with 10 elements).  I'm betting on that memory backing these 8 or 16
-packets have higher chance to remain/being in cache, and I can prefetch
-them without evicting them from cache again.  In some cases the pointer
-to these packets are queued into a ptr_ring, and it is more optimal to
-write cacheline sizes 1 (8 pointers) or 2 (16 pointers) into the ptr_ring.
-
-The general explanation is my goal to do bulking without adding latency.
-This is explicitly stated in my presentation[1] as of Feb 2016, slide 20.
-Sure, you/we can likely make the micro-benchmarks look better by using
-64 batch size, but that will introduce added latency and likely shoot
-our-selves in the foot for real workloads.  With experience from
-bufferbloat and real networks, we know that massive TX bulking have bad
-effects.  Still XDP-redirect does massive bulking (NIC flush is after
-full 64 budget) and we don't have pushback or a queue mechanism (so I
-know we are already shooting ourselves in the foot) ...  Fortunately we
-now have a PhD student working on queuing for XDP.
-
-It is also important to understand that this is an adaptive bulking
-scheme, which comes from NAPI.  We don't wait for packets arriving
-shortly, we pickup what NIC have available, but by only taking 8 or 16
-packets (instead of emptying the entire RX-queue), and then spending
-some time to send them along, I'm hoping that NIC could have gotten
-some more frame.  For cpumap and veth (in-some-cases) they can start to
-consume packets from these batches, but NIC drivers gets XDP_XMIT_FLUSH
-signal at NAPI-end (xdp_do_flush). Still design allows NIC drivers to
-update their internal queue state (and BQL), and if it gets close to
-full they can choose to flush/doorbell the NIC earlier.  When doing
-queuing for XDP we need to expose these NIC queue states, and having 4
-calls with 16 packets (64 budget) also gives us more chances to get NIC
-queue state info which the NIC already touch.
+No need for stable tags , as documented in
+https://elixir.bootlin.com/linux/v5.9/source/Documentation/networking/netde=
+v-FAQ.rst#L147
 
 
-[1] https://people.netfilter.org/hawk/presentations/devconf2016/net_stack_challenges_100G_Feb2016.pdf
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+> Thank you.
+>
+> Hazem
+>
+> =EF=BB=BFOn 09/12/2020, 00:29, "David Miller" <davem@davemloft.net> wrote=
+:
+>
+>     CAUTION: This email originated from outside of the organization. Do n=
+ot click links or open attachments unless you can confirm the sender and kn=
+ow the content is safe.
+>
+>
+>
+>     From: Eric Dumazet <eric.dumazet@gmail.com>
+>     Date: Tue,  8 Dec 2020 08:21:31 -0800
+>
+>     > From: Eric Dumazet <edumazet@google.com>
+>     >
+>     > Before commit a337531b942b ("tcp: up initial rmem to 128KB and SYN =
+rwin to around 64KB")
+>     > small tcp_rmem[1] values were overridden by tcp_fixup_rcvbuf() to a=
+ccommodate various MSS.
+>     >
+>     > This is no longer the case, and Hazem Mohamed Abuelfotoh reported
+>     > that DRS would not work for MTU 9000 endpoints receiving regular (1=
+500 bytes) frames.
+>     >
+>     > Root cause is that tcp_init_buffer_space() uses tp->rcv_wnd for upp=
+er limit
+>     > of rcvq_space.space computation, while it can select later a smalle=
+r
+>     > value for tp->rcv_ssthresh and tp->window_clamp.
+>     >
+>     > ss -temoi on receiver would show :
+>     >
+>     > skmem:(r0,rb131072,t0,tb46080,f0,w0,o0,bl0,d0) rcv_space:62496 rcv_=
+ssthresh:56596
+>     >
+>     > This means that TCP can not increase its window in tcp_grow_window(=
+),
+>     > and that DRS can never kick.
+>     >
+>     > Fix this by making sure that rcvq_space.space is not bigger than nu=
+mber of bytes
+>     > that can be held in TCP receive queue.
+>     >
+>     > People unable/unwilling to change their kernel can work around this=
+ issue by
+>     > selecting a bigger tcp_rmem[1] value as in :
+>     >
+>     > echo "4096 196608 6291456" >/proc/sys/net/ipv4/tcp_rmem
+>     >
+>     > Based on an initial report and patch from Hazem Mohamed Abuelfotoh
+>     >  https://lore.kernel.org/netdev/20201204180622.14285-1-abuehaze@ama=
+zon.com/
+>     >
+>     > Fixes: a337531b942b ("tcp: up initial rmem to 128KB and SYN rwin to=
+ around 64KB")
+>     > Fixes: 041a14d26715 ("tcp: start receiver buffer autotuning sooner"=
+)
+>     > Reported-by: Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
+>     > Signed-off-by: Eric Dumazet <edumazet@google.com>
+>
+>     Applied, thanks Eric.
+>
+>
+>
+>
+> Amazon Web Services EMEA SARL, 38 avenue John F. Kennedy, L-1855 Luxembou=
+rg, R.C.S. Luxembourg B186284
+>
+> Amazon Web Services EMEA SARL, Irish Branch, One Burlington Plaza, Burlin=
+gton Road, Dublin 4, Ireland, branch registration number 908705
+>
+>
