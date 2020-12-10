@@ -2,115 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF1892D59D8
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 12:58:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CB4A2D59DD
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 12:58:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729145AbgLJL5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 06:57:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
+        id S1731252AbgLJL60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 06:58:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728740AbgLJL44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 06:56:56 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FC6C0613D6;
-        Thu, 10 Dec 2020 03:56:16 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id x2so4428682ybt.11;
-        Thu, 10 Dec 2020 03:56:16 -0800 (PST)
+        with ESMTP id S1727461AbgLJL60 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 06:58:26 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5CAC0613CF
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 03:57:46 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id q16so5165948edv.10
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 03:57:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EVOwB0q6/0FJtlA5FxzsP/l25lLPTS7Bl7vepfUdQJ8=;
-        b=CodRu1FpbaLNvL8+Ga8xXaoICmMw0ChPFDaczzN6U4WA+xnlYnizg05aOcYcI6HOcD
-         mVUkfT6ODz9A0na8P394nF0IaxqCAv99li/LfgdB/QPVN50dhgDALrqViBqAjoYdahur
-         WYx1WMyB5Ar0sXlh70aMhQ4flEeFWfwxbIYF/B6KJQBX9BZSq2FT+i2546yw465DeCs6
-         vPZwtchvX3L0Ke4Dl6dgxrg2o7wxdPDVz5nc66Ecg8i5FAaI7zH9qBMNC6wK61BvWDvd
-         Z34IxHx7GgluT3kj9umkkYxnzmN4390ZgtAokYF+a20aRSEzUAeRximsxd6S8dTB9bIB
-         AxIw==
+        bh=6NbnSuOLUoxdpTktL/1IwfktGPGoYvrME7jpvlwWEEk=;
+        b=HVd6+pbrxhjU5GtXpnZGfRok7L42PXotdLL9G7cINUakaGtCayY7olVa8X292GcYac
+         dU1kPzNR/Ftdl4fvoDIup4QdKWuMsLJMtYqZ5zmMoBoykdbsisAsCp72ms41FAhB0m9T
+         OZsJeqvkfnlSvw1AeaesrEo0gaWH0z20pJWRu0sPTZrmtKqzvLq9eLcOC+lzlN7Sp9zO
+         +KIBfVNLj/IA/G2mdnSVD+J5+8EOUQrG5kfPhk80L5rElN2d7BZ3gS0uUMiFCEsxzmNc
+         HGA8sxGu7Xd1GS9gBEIXQ9VHiaqDmXMXuVLunuLQdmhvdfMk98YFYPHLAvx1pO3Y0Uen
+         iHQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EVOwB0q6/0FJtlA5FxzsP/l25lLPTS7Bl7vepfUdQJ8=;
-        b=TS/JLEgH6YET5phSSDmYbWrjnPTQ2RAPvOpW6rZGLt1C0OxLGft3PLFOHnoPInU8Qu
-         aDfvA5gb8TLilRHhDcSvLHdufY1QUk6gU8ij543c7wtLsXOJIn6vNoNd1hUH3MF6U1SF
-         xTof0DMwMCVAEkBolITAqXQU0D3d4QEDV163cFao70pINkDnV9gbasyBqPI77PTHYuIs
-         lv8Wq2O94kijUEaB+okT2knWipEL9ncjCCF/WPodTX/JRqRjxCb49ua0mw8N88wqPfT8
-         eTXvP3vuCp10L4uTgYo4vdHvWRVu1xtl89uoQigAbnkk9OSpPL/d34dWU81Nh6mMsVK/
-         gykQ==
-X-Gm-Message-State: AOAM532MDnWmpgyXJ3LQ6/ZB6Fv1WKH1EwQr4JFSOh2oPMX2fD3QzbQA
-        dVAqjoeyiQ9q9mYqx2++t/1pslbn+QUIeYLj5Cw=
-X-Google-Smtp-Source: ABdhPJyQM5SkpwSD0pKYYsMVyG93G+4v4pSRI+d2d+NljvTD/SbpdWIbh2U4vv1HzTWjSh8LiI5ZLd+zk/M8tAl1+0s=
-X-Received: by 2002:a25:ab31:: with SMTP id u46mr10200287ybi.179.1607601375345;
- Thu, 10 Dec 2020 03:56:15 -0800 (PST)
+        bh=6NbnSuOLUoxdpTktL/1IwfktGPGoYvrME7jpvlwWEEk=;
+        b=OCr0uP0m2tlEVoRSNDRIq6/eYNUih27DGHSHqoVy2DDAneTuWuxef8sYjDtMwbYKA8
+         k+nEGhqXtCIWqbr4h3qLm57Z1zauY1sftYSNRj1y+WgruGh6Z+83h0avywIi6Adww0w0
+         PZ824bSBE/uoqBF46aUFG+fMn+Z7ZC3iAGHTcJhQw3A9Qipe4V9FEZAqW1SjCySeXiqI
+         S0zqOIYqNnff2Ve2k4WKRvC61nyDsN10koyE2jaS5QuyDWA/uQAwcsBCgGjjumf7qNia
+         4xyJJMeSzhQ0zXaHjtcAraNFcesNlNcy/v3k1YHRMXNhiwg4cOrBjwxhGl7qS4kGgi8O
+         vWjA==
+X-Gm-Message-State: AOAM5320lfe7/PbDzmj6iOaj/nrex5WgCRAvZQ6ktpAY8Ab5kGgGc5T+
+        Uc9KnZUNoE7ZfwGxXAlIHURyyiLSXN6V6oJVechUqF0kAAIr+g==
+X-Google-Smtp-Source: ABdhPJwYXTam41JcVgJQx6EXb65+tX0SJZwixmW4YOfp8VAKOvSae9syMO8ww1utQA27tfrHNYamsOuL/rt1FomQLso=
+X-Received: by 2002:aa7:c3d3:: with SMTP id l19mr6541669edr.366.1607601464866;
+ Thu, 10 Dec 2020 03:57:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20201207215333.11586-1-weqaar.a.janjua@intel.com>
- <20201207215333.11586-3-weqaar.a.janjua@intel.com> <760489c0-f935-437d-6213-6e8775693bbc@fb.com>
-In-Reply-To: <760489c0-f935-437d-6213-6e8775693bbc@fb.com>
-From:   Weqaar Janjua <weqaar.janjua@gmail.com>
-Date:   Thu, 10 Dec 2020 11:55:49 +0000
-Message-ID: <CAPLEeBbLhGATeSbA46SxEpgVXKXm__OcgjPhNKcvzoCnSk7sdA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 2/5] selftests/bpf: xsk selftests - SKB POLL, NOPOLL
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
-        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        jonathan.lemon@gmail.com
+References: <1607579506-3153-1-git-send-email-subashab@codeaurora.org>
+In-Reply-To: <1607579506-3153-1-git-send-email-subashab@codeaurora.org>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 10 Dec 2020 13:04:12 +0100
+Message-ID: <CAMZdPi882hVdO-N5GKiCXy07kPOBXFzi0JZ9auKb9oKu_amW=g@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: qualcomm: rmnet: Update rmnet device MTU
+ based on real device
+To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Sean Tranchetti <stranche@codeaurora.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Dec 2020 at 18:29, Yonghong Song <yhs@fb.com> wrote:
+On Thu, 10 Dec 2020 at 06:52, Subash Abhinov Kasiviswanathan
+<subashab@codeaurora.org> wrote:
 >
+> Packets sent by rmnet to the real device have variable MAP header
+> lengths based on the data format configured. This patch adds checks
+> to ensure that the real device MTU is sufficient to transmit the MAP
+> packet comprising of the MAP header and the IP packet. This check
+> is enforced when rmnet devices are created and updated and during
+> MTU updates of both the rmnet and real device.
 >
+> Additionally, rmnet devices now have a default MTU configured which
+> accounts for the real device MTU and the headroom based on the data
+> format.
 >
-> On 12/7/20 1:53 PM, Weqaar Janjua wrote:
-> > Adds following tests:
-> >
-> > 1. AF_XDP SKB mode
-> >     Generic mode XDP is driver independent, used when the driver does
-> >     not have support for XDP. Works on any netdevice using sockets and
-> >     generic XDP path. XDP hook from netif_receive_skb().
-> >     a. nopoll - soft-irq processing
-> >     b. poll - using poll() syscall
-> >
-> > Signed-off-by: Weqaar Janjua <weqaar.a.janjua@intel.com>
-> > ---
-> >   tools/testing/selftests/bpf/Makefile       |   3 +-
-> >   tools/testing/selftests/bpf/test_xsk.sh    |  39 +-
-> >   tools/testing/selftests/bpf/xdpxceiver.c   | 979 +++++++++++++++++++++
-> >   tools/testing/selftests/bpf/xdpxceiver.h   | 153 ++++
-> >   tools/testing/selftests/bpf/xsk_prereqs.sh |  16 +
-> >   5 files changed, 1187 insertions(+), 3 deletions(-)
-> >   create mode 100644 tools/testing/selftests/bpf/xdpxceiver.c
-> >   create mode 100644 tools/testing/selftests/bpf/xdpxceiver.h
-> >
-> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > index 6a1ddfe68f15..944ae17a39ed 100644
-> > --- a/tools/testing/selftests/bpf/Makefile
-> > +++ b/tools/testing/selftests/bpf/Makefile
-> > @@ -82,7 +82,8 @@ TEST_PROGS_EXTENDED := with_addr.sh \
-> >   # Compile but not part of 'make run_tests'
-> >   TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
-> >       flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
-> > -     test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko
-> > +     test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko \
-> > +     xdpxceiver
->
-> Could you have a patch to put xdpxceiver in .gitignore?
->
-> I see below:
-> Untracked files:
->    (use "git add <file>..." to include in what will be committed)
->          tools/testing/selftests/bpf/xdpxceiver
->
-ACK, patch on the list now
+> Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
+> Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 
-> >
-> >   TEST_CUSTOM_PROGS = urandom_read
-> >
+Tested-by: Loic Poulain <loic.poulain@linaro.org>
