@@ -2,197 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA312D52F2
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 05:51:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3172D5310
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 06:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732521AbgLJEvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 23:51:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45158 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732507AbgLJEvE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 23:51:04 -0500
-Message-ID: <80b7502b700df43df7f66fa79fb9893399d0abd1.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607575823;
-        bh=pGdoVy+sByhtAsnP5AuZkCVRiOAyvvTwEfX5rqr/cVE=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=FNKatO4k84Blhk4Q4ykLdFpnVus6s8O71+Pb6V9YxRlmlxj2yKvV2wXElOlHYSWAo
-         AGysgu1jBWBeYKrzqd3S4t9m7pOEwXF0CjR0OP78LBOmuofirSeIu5ZfKc9tzettIm
-         9aO74tpvKu3F6z/wCX4AwfH6fuzHBZYX55lSzNO7ztKC9SswzRTzRpqmtb1LNgDzs4
-         cv9we94bdOU5Cy7ywqRvRU24XFtZ+Ad2XGtDGXyvXdlCxpX/CpKBFuaS5UUHwKXBbK
-         rIHSpCLhGoeur2o0Cbyxjp09s6cmFU96wha5pL7Mt/VXhGDPMOl/voH6GLY0KbzLop
-         SAfUSvss2/zhg==
-Subject: Re: [PATCH net-next 2/7] net: hns3: add support for tc mqprio
- offload
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Huazhong Tan <tanhuazhong@huawei.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, huangdaode@huawei.com,
-        Jian Shen <shenjian15@huawei.com>
-Date:   Wed, 09 Dec 2020 20:50:21 -0800
-In-Reply-To: <1607571732-24219-3-git-send-email-tanhuazhong@huawei.com>
-References: <1607571732-24219-1-git-send-email-tanhuazhong@huawei.com>
-         <1607571732-24219-3-git-send-email-tanhuazhong@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1727036AbgLJFQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 00:16:35 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:21420 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726461AbgLJFQe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 00:16:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1607577392; x=1639113392;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=hSTAhXMYujFRUiLmquOUF//MlAXSEDqcrk2qXGA2lxo=;
+  b=mXXgncsNBvei3bqbjMXiCO2LV0Dn6FlWDASKZnUH9X7pYR7qApwKYR7M
+   YfIABCORBN4dq2TzNPCI62M78P4N9S/sBZZS+cZtwr0O5nz6DUKWi9lbJ
+   VETUMfxEgXhDw6+zgGEQ9T3XO5syY5vPB8mteoafvEgcp+zxP6IqQAahk
+   8=;
+X-IronPort-AV: E=Sophos;i="5.78,407,1599523200"; 
+   d="scan'208";a="71681466"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-76e0922c.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 10 Dec 2020 05:15:48 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2c-76e0922c.us-west-2.amazon.com (Postfix) with ESMTPS id F2245A366C;
+        Thu, 10 Dec 2020 05:15:47 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 10 Dec 2020 05:15:47 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.161.214) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 10 Dec 2020 05:15:42 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kafai@fb.com>
+CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 bpf-next 05/11] tcp: Migrate TCP_NEW_SYN_RECV requests.
+Date:   Thu, 10 Dec 2020 14:15:38 +0900
+Message-ID: <20201210051538.23059-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20201210000707.cxm2r57mbsq2p6uu@kafai-mbp.dhcp.thefacebook.com>
+References: <20201210000707.cxm2r57mbsq2p6uu@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.214]
+X-ClientProxiedBy: EX13D18UWC004.ant.amazon.com (10.43.162.77) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-12-10 at 11:42 +0800, Huazhong Tan wrote:
-> From: Jian Shen <shenjian15@huawei.com>
+From:   Martin KaFai Lau <kafai@fb.com>
+Date:   Wed, 9 Dec 2020 16:07:07 -0800
+> On Tue, Dec 01, 2020 at 11:44:12PM +0900, Kuniyuki Iwashima wrote:
+> > This patch renames reuseport_select_sock() to __reuseport_select_sock() and
+> > adds two wrapper function of it to pass the migration type defined in the
+> > previous commit.
+> > 
+> >   reuseport_select_sock          : BPF_SK_REUSEPORT_MIGRATE_NO
+> >   reuseport_select_migrated_sock : BPF_SK_REUSEPORT_MIGRATE_REQUEST
+> > 
+> > As mentioned before, we have to select a new listener for TCP_NEW_SYN_RECV
+> > requests at receiving the final ACK or sending a SYN+ACK. Therefore, this
+> > patch also changes the code to call reuseport_select_migrated_sock() even
+> > if the listening socket is TCP_CLOSE. If we can pick out a listening socket
+> > from the reuseport group, we rewrite request_sock.rsk_listener and resume
+> > processing the request.
+> > 
+> > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > ---
+> >  include/net/inet_connection_sock.h | 12 +++++++++++
+> >  include/net/request_sock.h         | 13 ++++++++++++
+> >  include/net/sock_reuseport.h       |  8 +++----
+> >  net/core/sock_reuseport.c          | 34 ++++++++++++++++++++++++------
+> >  net/ipv4/inet_connection_sock.c    | 13 ++++++++++--
+> >  net/ipv4/tcp_ipv4.c                |  9 ++++++--
+> >  net/ipv6/tcp_ipv6.c                |  9 ++++++--
+> >  7 files changed, 81 insertions(+), 17 deletions(-)
+> > 
+> > diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+> > index 2ea2d743f8fc..1e0958f5eb21 100644
+> > --- a/include/net/inet_connection_sock.h
+> > +++ b/include/net/inet_connection_sock.h
+> > @@ -272,6 +272,18 @@ static inline void inet_csk_reqsk_queue_added(struct sock *sk)
+> >  	reqsk_queue_added(&inet_csk(sk)->icsk_accept_queue);
+> >  }
+> >  
+> > +static inline void inet_csk_reqsk_queue_migrated(struct sock *sk,
+> > +						 struct sock *nsk,
+> > +						 struct request_sock *req)
+> > +{
+> > +	reqsk_queue_migrated(&inet_csk(sk)->icsk_accept_queue,
+> > +			     &inet_csk(nsk)->icsk_accept_queue,
+> > +			     req);
+> > +	sock_put(sk);
+> not sure if it is safe to do here.
+> IIUC, when the req->rsk_refcnt is held, it also holds a refcnt
+> to req->rsk_listener such that sock_hold(req->rsk_listener) is
+> safe because its sk_refcnt is not zero.
+
+I think it is safe to call sock_put() for the old listener here.
+
+Without this patchset, at receiving the final ACK or retransmitting
+SYN+ACK, if sk_state == TCP_CLOSE, sock_put(req->rsk_listener) is done
+by calling reqsk_put() twice in inet_csk_reqsk_queue_drop_and_put(). And
+then, we do `goto lookup;` and overwrite the sk.
+
+In the v2 patchset, refcount_inc_not_zero() is done for the new listener in
+reuseport_select_migrated_sock(), so we have to call sock_put() for the old
+listener instead to free it properly.
+
+---8<---
++struct sock *reuseport_select_migrated_sock(struct sock *sk, u32 hash,
++					    struct sk_buff *skb)
++{
++	struct sock *nsk;
++
++	nsk = __reuseport_select_sock(sk, hash, skb, 0, BPF_SK_REUSEPORT_MIGRATE_REQUEST);
++	if (nsk && likely(refcount_inc_not_zero(&nsk->sk_refcnt)))
++		return nsk;
++
++	return NULL;
++}
++EXPORT_SYMBOL(reuseport_select_migrated_sock);
+---8<---
+https://lore.kernel.org/netdev/20201207132456.65472-8-kuniyu@amazon.co.jp/
+
+
+> > +	sock_hold(nsk);
+> > +	req->rsk_listener = nsk;
+> > +}
+> > +
 > 
-> Currently, the HNS3 driver only supports offload for tc number
-> and prio_tc. This patch adds support for other qopts, including
-> queues count and offset for each tc.
+> [ ... ]
 > 
-> When enable tc mqprio offload, it's not allowed to change
-> queue numbers by ethtool. For hardware limitation, the queue
-> number of each tc should be power of 2.
-> 
-> For the queues is not assigned to each tc by average, so it's
-> should return vport->alloc_tqps for hclge_get_max_channels().
-> 
+> > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> > index 361efe55b1ad..e71653c6eae2 100644
+> > --- a/net/ipv4/inet_connection_sock.c
+> > +++ b/net/ipv4/inet_connection_sock.c
+> > @@ -743,8 +743,17 @@ static void reqsk_timer_handler(struct timer_list *t)
+> >  	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
+> >  	int max_syn_ack_retries, qlen, expire = 0, resend = 0;
+> >  
+> > -	if (inet_sk_state_load(sk_listener) != TCP_LISTEN)
+> > -		goto drop;
+> > +	if (inet_sk_state_load(sk_listener) != TCP_LISTEN) {
+> > +		sk_listener = reuseport_select_migrated_sock(sk_listener,
+> > +							     req_to_sk(req)->sk_hash, NULL);
+> > +		if (!sk_listener) {
+> > +			sk_listener = req->rsk_listener;
+> > +			goto drop;
+> > +		}
+> > +		inet_csk_reqsk_queue_migrated(req->rsk_listener, sk_listener, req);
+> > +		icsk = inet_csk(sk_listener);
+> > +		queue = &icsk->icsk_accept_queue;
+> > +	}
+> >  
+> >  	max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
+> >  	/* Normally all the openreqs are young and become mature
+> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > index e4b31e70bd30..9a9aa27c6069 100644
+> > --- a/net/ipv4/tcp_ipv4.c
+> > +++ b/net/ipv4/tcp_ipv4.c
+> > @@ -1973,8 +1973,13 @@ int tcp_v4_rcv(struct sk_buff *skb)
+> >  			goto csum_error;
+> >  		}
+> >  		if (unlikely(sk->sk_state != TCP_LISTEN)) {
+> > -			inet_csk_reqsk_queue_drop_and_put(sk, req);
+> > -			goto lookup;
+> > +			nsk = reuseport_select_migrated_sock(sk, req_to_sk(req)->sk_hash, skb);
+> > +			if (!nsk) {
+> > +				inet_csk_reqsk_queue_drop_and_put(sk, req);
+> > +				goto lookup;
+> > +			}
+> > +			inet_csk_reqsk_queue_migrated(sk, nsk, req);
+> > +			sk = nsk;
+> >  		}
+> >  		/* We own a reference on the listener, increase it again
+> >  		 * as we might lose it too soon.
+> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > index 992cbf3eb9e3..ff11f3c0cb96 100644
+> > --- a/net/ipv6/tcp_ipv6.c
+> > +++ b/net/ipv6/tcp_ipv6.c
+> > @@ -1635,8 +1635,13 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+> >  			goto csum_error;
+> >  		}
+> >  		if (unlikely(sk->sk_state != TCP_LISTEN)) {
+> > -			inet_csk_reqsk_queue_drop_and_put(sk, req);
+> > -			goto lookup;
+> > +			nsk = reuseport_select_migrated_sock(sk, req_to_sk(req)->sk_hash, skb);
+> > +			if (!nsk) {
+> > +				inet_csk_reqsk_queue_drop_and_put(sk, req);
+> > +				goto lookup;
+> > +			}
+> > +			inet_csk_reqsk_queue_migrated(sk, nsk, req);
+> > +			sk = nsk;
+> >  		}
+> >  		sock_hold(sk);
+> For example, this sock_hold(sk).  sk here is req->rsk_listener.
 
-The commit message needs some improvements, it is not really clear what
-the last two sentences are about.
+After migration, this is for the new listener and it is safe because
+refcount_inc_not_zero() for the new listener is called in
+reuseport_select_migerate_sock().
 
-> Signed-off-by: Jian Shen <shenjian15@huawei.com>
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-> ---
-> 
-... 
 
->  
-> +	if (kinfo->tc_info.mqprio_active) {
-> +		dev_err(&netdev->dev,
-
-why not use netdev_err() and friends ?
-anyway I see your driver is using dev_err(&netdev->dev, ...)
-intensively, 
-maybe submit a follow up patch to fix all your prints ? 
-
-...]
->  
-> +static int hclge_mqprio_qopt_check(struct hclge_dev *hdev,
-> +				   struct tc_mqprio_qopt_offload
-> *mqprio_qopt)
-> +{
-> +	u16 queue_sum = 0;
-> +	int ret;
-> +	int i;
-> +
-> +	if (!mqprio_qopt->qopt.num_tc) {
-> +		mqprio_qopt->qopt.num_tc = 1;
-> +		return 0;
-> +	}
-> +
-> +	ret = hclge_dcb_common_validate(hdev, mqprio_qopt->qopt.num_tc,
-> +					mqprio_qopt->qopt.prio_tc_map);
-> +	if (ret)
-> +		return ret;
-> +
-> +	for (i = 0; i < mqprio_qopt->qopt.num_tc; i++) {
-> +		if (!is_power_of_2(mqprio_qopt->qopt.count[i])) {
-> +			dev_err(&hdev->pdev->dev,
-> +				"qopt queue count must be power of
-> 2\n");
-> +			return -EINVAL;
-> +		}
-> +
-> +		if (mqprio_qopt->qopt.count[i] > hdev->rss_size_max) {
-> +			dev_err(&hdev->pdev->dev,
-> +				"qopt queue count should be no more
-> than %u\n",
-> +				hdev->rss_size_max);
-> +			return -EINVAL;
-> +		}
-> +
-> +		if (mqprio_qopt->qopt.offset[i] != queue_sum) {
-> +			dev_err(&hdev->pdev->dev,
-> +				"qopt queue offset must start from 0,
-> and being continuous\n");
-> +			return -EINVAL;
-> +		}
-> +
-> +		if (mqprio_qopt->min_rate[i] || mqprio_qopt-
-> >max_rate[i]) {
-> +			dev_err(&hdev->pdev->dev,
-> +				"qopt tx_rate is not supported\n");
-> +			return -EOPNOTSUPP;
-> +		}
-> +
-> +		queue_sum = mqprio_qopt->qopt.offset[i];
-> +		queue_sum += mqprio_qopt->qopt.count[i];
-
-it will make more sense if you moved this queue summing outside of the
-loop
-
-> +	}
-> +	if (hdev->vport[0].alloc_tqps < queue_sum) {
-
-can't you just allocate new tqps according to the new mqprio input like
-other drivers do ? how the user allocates those tqps ? 
-
-> +		dev_err(&hdev->pdev->dev,
-> +			"qopt queue count sum should be less than
-> %u\n",
-> +			hdev->vport[0].alloc_tqps);
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void hclge_sync_mqprio_qopt(struct hnae3_tc_info *tc_info,
-> +				   struct tc_mqprio_qopt_offload
-> *mqprio_qopt)
-> +{
-> +	int i;
-> +
-> +	memset(tc_info, 0, sizeof(*tc_info));
-> +	tc_info->num_tc = mqprio_qopt->qopt.num_tc;
-> +	memcpy(tc_info->prio_tc, mqprio_qopt->qopt.prio_tc_map,
-> +	       sizeof_field(struct hnae3_tc_info, prio_tc));
-> +	memcpy(tc_info->tqp_count, mqprio_qopt->qopt.count,
-> +	       sizeof_field(struct hnae3_tc_info, tqp_count));
-> +	memcpy(tc_info->tqp_offset, mqprio_qopt->qopt.offset,
-> +	       sizeof_field(struct hnae3_tc_info, tqp_offset));
-> +
-
-isn't it much easier to just store a copy of tc_mqprio_qopt in you
-tc_info and then just:
-tc_info->qopt = mqprio->qopt;
-
-[...] 
-> -	hclge_tm_schd_info_update(hdev, tc);
-> -	hclge_tm_prio_tc_info_update(hdev, prio_tc);
-> -
-> -	ret = hclge_tm_init_hw(hdev, false);
-> -	if (ret)
-> -		goto err_out;
-> +	kinfo = &vport->nic.kinfo;
-> +	memcpy(&old_tc_info, &kinfo->tc_info, sizeof(old_tc_info));
-
-if those are of the same kind, just normal assignment would be much
-cleaner. 
-> +	hclge_sync_mqprio_qopt(&kinfo->tc_info, mqprio_qopt);
-> +	kinfo->tc_info.mqprio_active = tc > 0;
->  
-> -	ret = hclge_client_setup_tc(hdev);
-> +	ret = hclge_config_tc(hdev, &kinfo->tc_info);
->  	if (ret)
->  		goto err_out;
->  
-> @@ -436,6 +534,12 @@ static int hclge_setup_tc(struct hnae3_handle
-> *h, u8 tc, u8 *prio_tc)
->  	return hclge_notify_init_up(hdev);
->  
->  err_out:
-> +	/* roll-back */
-> +	memcpy(&kinfo->tc_info, &old_tc_info, sizeof(old_tc_info));
-same.
-
+> >  		refcounted = true;
+> > -- 
+> > 2.17.2 (Apple Git-113)
 
