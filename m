@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5642D6B1A
+	by mail.lfdr.de (Postfix) with ESMTP id E9EE22D6B1C
 	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 00:38:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394188AbgLJWbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 17:31:24 -0500
-Received: from mga04.intel.com ([192.55.52.120]:9089 "EHLO mga04.intel.com"
+        id S2404201AbgLJWb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 17:31:27 -0500
+Received: from mga04.intel.com ([192.55.52.120]:9222 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405147AbgLJW3V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Dec 2020 17:29:21 -0500
-IronPort-SDR: r4sOynS4VDFNt3BBrRogx/uRXZRrzlZkWZ5j0HUM9QuFYoylR7u7j3OCGZ0WeB6mSuM4UM2HPx
- nT/kC/+j2RSg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9831"; a="171776478"
+        id S2405151AbgLJW3q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 17:29:46 -0500
+IronPort-SDR: bpxhDUNwVt8rZ+R/ABIvZek/qGWyzDTMIBZmjKDlMUECYKhFz38I+YdplK20mrohAlVRmLgxFH
+ n3gva2oD116w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9831"; a="171776480"
 X-IronPort-AV: E=Sophos;i="5.78,409,1599548400"; 
-   d="scan'208";a="171776478"
+   d="scan'208";a="171776480"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 14:25:13 -0800
-IronPort-SDR: 47dYGkuIZQDalUw8aAnjsl/bzPfeBn+6/oi58rw33Qq4q6l/2o30P9YMd43PJmic1hlzDvAppN
- 5MjJHZWDVFhg==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 14:25:14 -0800
+IronPort-SDR: hEvdBZlx0+hKSEwKrpMUrTRiVI/RpqC0Q+TZOwENpn/pMZyNqPyI/atMLxrMFeLjbShaIGFRA+
+ ro4pcZ1n4NYg==
 X-IronPort-AV: E=Sophos;i="5.78,409,1599548400"; 
-   d="scan'208";a="338703750"
+   d="scan'208";a="338703751"
 Received: from mjmartin-nuc02.amr.corp.intel.com ([10.254.112.51])
   by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 14:25:13 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Nicolas Rybowski <nicolas.rybowski@tessares.net>,
-        davem@davemloft.net, kuba@kernel.org, mptcp@lists.01.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
+Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, mptcp@lists.01.org,
         Paolo Abeni <pabeni@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 1/9] mptcp: attach subflow socket to parent cgroup
-Date:   Thu, 10 Dec 2020 14:24:58 -0800
-Message-Id: <20201210222506.222251-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 2/9] mptcp: remove address when netlink flushes addrs
+Date:   Thu, 10 Dec 2020 14:24:59 -0800
+Message-Id: <20201210222506.222251-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201210222506.222251-1-mathew.j.martineau@linux.intel.com>
 References: <20201210222506.222251-1-mathew.j.martineau@linux.intel.com>
@@ -43,77 +42,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Rybowski <nicolas.rybowski@tessares.net>
+From: Geliang Tang <geliangtang@gmail.com>
 
-It has been observed that the kernel sockets created for the subflows
-(except the first one) are not in the same cgroup as their parents.
-That's because the additional subflows are created by kernel workers.
+When the PM netlink flushes the addresses, invoke the remove address
+function mptcp_nl_remove_subflow_and_signal_addr to remove the addresses
+and the subflows. Since this function should not be invoked under lock,
+move __flush_addrs out of the pernet->lock.
 
-This is a problem with eBPF programs attached to the parent's
-cgroup won't be executed for the children. But also with any other features
-of CGroup linked to a sk.
-
-This patch fixes this behaviour.
-
-As the subflow sockets are created by the kernel, we can't use
-'mem_cgroup_sk_alloc' because of the current context being the one of the
-kworker. This is why we have to do low level memcg manipulation, if
-required.
-
-Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/subflow.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ net/mptcp/pm_netlink.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index fefcaf497938..bf808f1fabe5 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1167,6 +1167,30 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 	return err;
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 5151cfcd6962..9cc4eefaf080 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -867,13 +867,14 @@ static int mptcp_nl_cmd_del_addr(struct sk_buff *skb, struct genl_info *info)
+ 	return ret;
  }
  
-+static void mptcp_attach_cgroup(struct sock *parent, struct sock *child)
-+{
-+#ifdef CONFIG_SOCK_CGROUP_DATA
-+	struct sock_cgroup_data *parent_skcd = &parent->sk_cgrp_data,
-+				*child_skcd = &child->sk_cgrp_data;
-+
-+	/* only the additional subflows created by kworkers have to be modified */
-+	if (cgroup_id(sock_cgroup_ptr(parent_skcd)) !=
-+	    cgroup_id(sock_cgroup_ptr(child_skcd))) {
-+#ifdef CONFIG_MEMCG
-+		struct mem_cgroup *memcg = parent->sk_memcg;
-+
-+		mem_cgroup_sk_free(child);
-+		if (memcg && css_tryget(&memcg->css))
-+			child->sk_memcg = memcg;
-+#endif /* CONFIG_MEMCG */
-+
-+		cgroup_sk_free(child_skcd);
-+		*child_skcd = *parent_skcd;
-+		cgroup_sk_clone(child_skcd);
-+	}
-+#endif /* CONFIG_SOCK_CGROUP_DATA */
-+}
-+
- int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
+-static void __flush_addrs(struct pm_nl_pernet *pernet)
++static void __flush_addrs(struct net *net, struct list_head *list)
  {
- 	struct mptcp_subflow_context *subflow;
-@@ -1187,6 +1211,9 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
+-	while (!list_empty(&pernet->local_addr_list)) {
++	while (!list_empty(list)) {
+ 		struct mptcp_pm_addr_entry *cur;
  
- 	lock_sock(sf->sk);
+-		cur = list_entry(pernet->local_addr_list.next,
++		cur = list_entry(list->next,
+ 				 struct mptcp_pm_addr_entry, list);
++		mptcp_nl_remove_subflow_and_signal_addr(net, &cur->addr);
+ 		list_del_rcu(&cur->list);
+ 		kfree_rcu(cur, rcu);
+ 	}
+@@ -890,11 +891,13 @@ static void __reset_counters(struct pm_nl_pernet *pernet)
+ static int mptcp_nl_cmd_flush_addrs(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct pm_nl_pernet *pernet = genl_info_pm_nl(info);
++	LIST_HEAD(free_list);
  
-+	/* the newly created socket has to be in the same cgroup as its parent */
-+	mptcp_attach_cgroup(sk, sf->sk);
+ 	spin_lock_bh(&pernet->lock);
+-	__flush_addrs(pernet);
++	list_splice_init(&pernet->local_addr_list, &free_list);
+ 	__reset_counters(pernet);
+ 	spin_unlock_bh(&pernet->lock);
++	__flush_addrs(sock_net(skb->sk), &free_list);
+ 	return 0;
+ }
+ 
+@@ -1156,10 +1159,12 @@ static void __net_exit pm_nl_exit_net(struct list_head *net_list)
+ 	struct net *net;
+ 
+ 	list_for_each_entry(net, net_list, exit_list) {
++		struct pm_nl_pernet *pernet = net_generic(net, pm_nl_pernet_id);
 +
- 	/* kernel sockets do not by default acquire net ref, but TCP timer
- 	 * needs it.
- 	 */
+ 		/* net is removed from namespace list, can't race with
+ 		 * other modifiers
+ 		 */
+-		__flush_addrs(net_generic(net, pm_nl_pernet_id));
++		__flush_addrs(net, &pernet->local_addr_list);
+ 	}
+ }
+ 
 -- 
 2.29.2
 
