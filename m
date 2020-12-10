@@ -2,110 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 342032D5F08
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 16:08:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C1BA2D5F19
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 16:10:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389987AbgLJPHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 10:07:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36526 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728583AbgLJPHX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 10:07:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607612757;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=khxT6pUMdR2mxgS2Mi2C6ZZ45vuS7ItaY0pGKhuziXM=;
-        b=iqjhh9AaZJtxWLoWROGmHXuGmqVUMoF4K8w28MgReqJULN3LrQS4QNOZvCQGLBWctebEoD
-        yvPD5HildOQALrwzf2eeVQYTuayEm1NcbL3eqL00CgXAi2EI7K8I3/L6+KdPsgDx+C+9BD
-        pwflA1WIpU2z8h9HtHdURhmmVV3ffd4=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-218-xPOlaioRMhmHHEIqEPoAtQ-1; Thu, 10 Dec 2020 10:05:55 -0500
-X-MC-Unique: xPOlaioRMhmHHEIqEPoAtQ-1
-Received: by mail-wr1-f72.google.com with SMTP id r11so2025102wrs.23
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 07:05:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=khxT6pUMdR2mxgS2Mi2C6ZZ45vuS7ItaY0pGKhuziXM=;
-        b=gsWcalpypQdQgv74pwjr5ejxeYREcBcaFW1rgH11GohmWdIVw2ylH2Dr30RzPCW9Q7
-         AZgWO9L14OBEYF3hBbbxpq7M4oC5NKddPzLJUgBOgLT8WuS8Atv7Et/r6esHWd4rhNAX
-         N3vWdwSr3jaRqOIDG00hKaUtQWhMenUELs4q8T7ZV4Pmdbc8o8zgSelYGzxtkEh/yCnA
-         0m9tBY0beL/DSejmt/T7hTApZ+lDrClpVGUwIhleaKzFwy2yaC+2mA6yVgAweimZokBl
-         ooo9rVL82AGyx6fQ+Gu+oIUvEpF2y9S/UEoDgusSTdnjifDxnuAitn71BBhirADhgsFw
-         N12Q==
-X-Gm-Message-State: AOAM533cjQOQuRL2a/mkXodulHc/eaF43QuiGrFHrKLL/Lre9TDjtoIp
-        YCCkhbZWXduaJMhw/1nZg8k1XPpj20FaVKK4crMSrttYF5reC1q5XChVIyOUK2hkjSsf1CswA+U
-        CfqpFAxngNSlzTuuN
-X-Received: by 2002:a1c:2ecc:: with SMTP id u195mr8721302wmu.27.1607612754110;
-        Thu, 10 Dec 2020 07:05:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw7WiFSWbCg5G0joZN2ownFDmDy9om4yBZOlOZTjl+C6iRbxwARnV65pX4O2qI2SaD/pK5juA==
-X-Received: by 2002:a1c:2ecc:: with SMTP id u195mr8721285wmu.27.1607612753914;
-        Thu, 10 Dec 2020 07:05:53 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id z64sm9227720wme.10.2020.12.10.07.05.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Dec 2020 07:05:53 -0800 (PST)
-Date:   Thu, 10 Dec 2020 16:05:51 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     netdev@vger.kernel.org, jchapman@katalix.com
-Subject: Re: [PATCH v3 net-next 1/2] ppp: add PPPIOCBRIDGECHAN and
- PPPIOCUNBRIDGECHAN ioctls
-Message-ID: <20201210150551.GB15778@linux.home>
-References: <20201204163656.1623-1-tparkin@katalix.com>
- <20201204163656.1623-2-tparkin@katalix.com>
- <20201207162228.GA28888@linux.home>
- <20201210144623.GA4413@katalix.com>
+        id S2390218AbgLJPIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 10:08:35 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:18225 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390047AbgLJPI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 10:08:29 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fd239c30000>; Thu, 10 Dec 2020 07:07:47 -0800
+Received: from [172.27.0.216] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 10 Dec
+ 2020 15:07:32 +0000
+Subject: Re: [PATCH net-next 3/4] sch_htb: Stats for offloaded HTB
+To:     Dan Carpenter <dan.carpenter@oracle.com>, <kbuild@lists.01.org>,
+        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+CC:     <lkp@intel.com>, <kbuild-all@lists.01.org>,
+        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Tariq Toukan" <tariqt@mellanox.com>
+References: <20201210082851.GL2767@kadam>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+Message-ID: <7d1a6afe-d084-bdbd-168a-3bcb88910e2d@nvidia.com>
+Date:   Thu, 10 Dec 2020 17:07:28 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201210144623.GA4413@katalix.com>
+In-Reply-To: <20201210082851.GL2767@kadam>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1607612867; bh=boZM8yCDYMDFtCoxMEVLJEDCQrl+fy73k7eS6X4A+HY=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=BhwIheKyK05hnrpBs/2h9A3yc0cFaSOR+HIfnsJGxd1Ff87ddj3MyqhJtpcRlvGU4
+         rzV8GB172LPXzmSaT6stc/jaQ6XOyS6aYmschRNM/ekZc3bATjojgGBw9o9YYy82rm
+         HeU0jdALrRcryXxnfjVbHRCPH/nr6lTuNDxT+oOoaV6ObVS4IYv0/QEWOVtDO/7Z7g
+         m707MbK5mxS9OwrEdzaIiB5lhy9REg6dP624dLQ02nYxgEwR6Y8hPBPEvG3yWcNDvI
+         NlRdt0XBEQKWpBXtxMUhe2zvasyQ7oAWvJLJNWRULuFGpemWvdfX1fWU3pmrpAaViG
+         I85dvr42y8o6w==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 02:46:23PM +0000, Tom Parkin wrote:
-> On  Mon, Dec 07, 2020 at 17:22:28 +0100, Guillaume Nault wrote:
-> > On Fri, Dec 04, 2020 at 04:36:55PM +0000, Tom Parkin wrote:
-> > > +		case PPPIOCBRIDGECHAN:
-> > > +			if (get_user(unit, p))
-> > > +				break;
-> > > +			err = -ENXIO;
-> > > +			pn = ppp_pernet(current->nsproxy->net_ns);
-> > > +			spin_lock_bh(&pn->all_channels_lock);
-> > > +			pchb = ppp_find_channel(pn, unit);
-> > > +			/* Hold a reference to prevent pchb being freed while
-> > > +			 * we establish the bridge.
-> > > +			 */
-> > > +			if (pchb)
-> > > +				refcount_inc(&pchb->file.refcnt);
-> > 
-> > The !pchb case isn't handled. With this code, if ppp_find_channel()
-> > returns NULL, ppp_bridge_channels() will crash when trying to lock
-> > pchb->upl.
+On 2020-12-10 10:28, Dan Carpenter wrote:
+> Hi Maxim,
 > 
-> Bleh :-(
 > 
-> Apologies for this.  I have stepped up my tests for "unhappy" code
-> paths, and I'll try to run syzkaller at a v4 prior to re-submitting.
-
-No problem, sorry for not having spotted the problem in your previous
-version. BTW, note that net-next is probably about to close.
-
-> > > +			spin_unlock_bh(&pn->all_channels_lock);
-> > > +			err = ppp_bridge_channels(pch, pchb);
-> > > +			/* Drop earlier refcount now bridge establishment is complete */
-> > > +			if (refcount_dec_and_test(&pchb->file.refcnt))
-> > > +				ppp_destroy_channel(pchb);
-> > > +			break;
-> > > +
-> > 
-> > The rest looks good to me.
+> url:    https://github.com/0day-ci/linux/commits/Maxim-Mikityanskiy/HTB-offload/20201210-000703
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git afae3cc2da100ead3cd6ef4bb1fb8bc9d4b817c5
+> config: i386-randconfig-m021-20201209 (attached as .config)
+> compiler: gcc-9 (Debian 9.3.0-15) 9.3.0
 > 
-> Thanks!
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> smatch warnings:
+> net/sched/sch_htb.c:1310 htb_dump_class_stats() error: we previously assumed 'cl->leaf.q' could be null (see line 1300)
+> 
+> vim +1310 net/sched/sch_htb.c
+> 
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1289  static int
+> 87990467d387f92 Stephen Hemminger     2006-08-10  1290  htb_dump_class_stats(struct Qdisc *sch, unsigned long arg, struct gnet_dump *d)
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1291  {
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1292  	struct htb_class *cl = (struct htb_class *)arg;
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1293  	struct htb_sched *q = qdisc_priv(sch);
+> 338ed9b4de57c4b Eric Dumazet          2016-06-21  1294  	struct gnet_stats_queue qs = {
+> 338ed9b4de57c4b Eric Dumazet          2016-06-21  1295  		.drops = cl->drops,
+> 3c75f6ee139d464 Eric Dumazet          2017-09-18  1296  		.overlimits = cl->overlimits,
+> 338ed9b4de57c4b Eric Dumazet          2016-06-21  1297  	};
+> 6401585366326fc John Fastabend        2014-09-28  1298  	__u32 qlen = 0;
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1299
+> 5dd431b6b92c0db Paolo Abeni           2019-03-28 @1300  	if (!cl->level && cl->leaf.q)
+>                                                                                    ^^^^^^^^^^
+> Check for NULL
 
+Well, I don't think this is real... I don't see any possibility how 
+cl->leaf.q can be NULL for a leaf class. However, I'll add a similar 
+check below anyway.
+
+Also, I fixed the sparse warnings from the other email (sorry for them!)
+
+I will wait for some time to collect more comments (hopefully from 
+people, not only from static checkers) and respin with the fixes.
+
+> 5dd431b6b92c0db Paolo Abeni           2019-03-28  1301  		qdisc_qstats_qlen_backlog(cl->leaf.q, &qlen, &qs.backlog);
+> 5dd431b6b92c0db Paolo Abeni           2019-03-28  1302
+> 0564bf0afae443d Konstantin Khlebnikov 2016-07-16  1303  	cl->xstats.tokens = clamp_t(s64, PSCHED_NS2TICKS(cl->tokens),
+> 0564bf0afae443d Konstantin Khlebnikov 2016-07-16  1304  				    INT_MIN, INT_MAX);
+> 0564bf0afae443d Konstantin Khlebnikov 2016-07-16  1305  	cl->xstats.ctokens = clamp_t(s64, PSCHED_NS2TICKS(cl->ctokens),
+> 0564bf0afae443d Konstantin Khlebnikov 2016-07-16  1306  				     INT_MIN, INT_MAX);
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1307
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1308  	if (q->offload) {
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1309  		if (!cl->level) {
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09 @1310  			cl->bstats = cl->leaf.q->bstats;
+>                                                                                               ^^^^^^^^^^^^
+> Unchecked dereference
+> 
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1311  			cl->bstats.bytes += cl->bstats_bias.bytes;
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1312  			cl->bstats.packets += cl->bstats_bias.packets;
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1313  		} else {
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1314  			htb_offload_aggregate_stats(q, cl);
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1315  		}
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1316  	}
+> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1317
+> edb09eb17ed89ea Eric Dumazet          2016-06-06  1318  	if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
+> edb09eb17ed89ea Eric Dumazet          2016-06-06  1319  				  d, NULL, &cl->bstats) < 0 ||
+> 1c0d32fde5bdf11 Eric Dumazet          2016-12-04  1320  	    gnet_stats_copy_rate_est(d, &cl->rate_est) < 0 ||
+> 338ed9b4de57c4b Eric Dumazet          2016-06-21  1321  	    gnet_stats_copy_queue(d, NULL, &qs, qlen) < 0)
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1322  		return -1;
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1323
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1324  	return gnet_stats_copy_app(d, &cl->xstats, sizeof(cl->xstats));
+> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1325  }
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
 
