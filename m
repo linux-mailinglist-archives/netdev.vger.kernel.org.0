@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBF362D6831
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:10:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06AAE2D67FF
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 21:03:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404297AbgLJUJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 15:09:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53204 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404279AbgLJTnF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:05 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7F7C0617A7;
-        Thu, 10 Dec 2020 11:42:24 -0800 (PST)
-Message-Id: <20201210194043.268774449@linutronix.de>
+        id S2404428AbgLJUDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 15:03:13 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:57192 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404300AbgLJTnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 14:43:20 -0500
+Message-Id: <20201210194044.364211860@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1607629343;
+        s=2020; t=1607629357;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=KtzFp0nR+dJW1v891+1wc4D+KUTADWJVxpq6j1ykdfo=;
-        b=BwWrBYP0c3Z0lFh3V6qC90H7c5G9PHEfLbQKd0hztOiqwJ4kBCiNk+VDHIcCk1P/HxJJE+
-        zt6CbhOUy0zFcpFdRmOFsyfb9chR0Qx1RUaHNJMzGPe4/YSaExFvgbHq6rbAS7kLyxP5tj
-        50aob2dpVHhgmHdoE9LrAgft46kAteQH0u20dVmWOXNd76SQCmuGq0ygZQrP10YFFulxyu
-        /qBwgM/QVkALrmRL+BjjJvZRX8irP6Tqn07c/GO5qIfUgWd74BWRs6KIHsrquTbtL84IH6
-        +M3rrImgxsn11U5KirO7h0p+JsOWwXjhPDlffX4TftaAXSN1Xiplo1xF1UMXlQ==
+        bh=KHY7zLB5K6l5lfek87988opcUU+hIDNSDHLcEFMtdbE=;
+        b=n90PZIqvfSG+SCpScanG1Bc3HG4388BY/dyhI0EaH1D5VR7ALSrd8Di/XFloXi9hIrAe0N
+        2w3FtiOOS83MM1ENKBnmKIYjMGlFGK+8CqwAWA+3cn+4JTZrOFNQqz1w6/1pfc9dn229g5
+        RxyxMUVWrnZNU+m4ITHF184nuNhmqfYSIV87jZv/HzJ2V1oJQzYeMWo1OTElMpaTWpCUk8
+        uJoofHd7ipNCSNBQWtvCPnJySQsMZYd1ezWjVgB5vtUTP93BsKFGqlD/7O6EwVQkeOfVvC
+        5nN2twyUqXClogpFmRmB9lY9+05jwyoSoCoyIBMb5KsyzJun61fUTTAt7Pca7g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1607629343;
+        s=2020e; t=1607629357;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=KtzFp0nR+dJW1v891+1wc4D+KUTADWJVxpq6j1ykdfo=;
-        b=YlMcwWy3vQ5LbjypUKpYuIGaMi15XbC955aXBdrVoJspoFoOrPcJRpjqt+rHhF7aRCDnxi
-        VzPUfEGKZfuiRjBQ==
-Date:   Thu, 10 Dec 2020 20:25:43 +0100
+        bh=KHY7zLB5K6l5lfek87988opcUU+hIDNSDHLcEFMtdbE=;
+        b=z1bwpMRZ9X4kcUp+yA6PiwjKs/Xplaj9Bs6jEJYC/xJl+CtwyGu1dX/ChX9QURLpfQuyav
+        KbgY/emP2bdsj/AQ==
+Date:   Thu, 10 Dec 2020 20:25:54 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         afzal mohammed <afzal.mohd.ma@gmail.com>,
         linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
         Mark Rutland <mark.rutland@arm.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>,
@@ -64,11 +65,6 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jon Mason <jdmason@kudzu.us>,
         Dave Jiang <dave.jiang@intel.com>,
         Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci@vger.kernel.org,
         Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
         Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
         Tariq Toukan <tariqt@nvidia.com>,
@@ -80,7 +76,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Juergen Gross <jgross@suse.com>,
         Stefano Stabellini <sstabellini@kernel.org>,
         xen-devel@lists.xenproject.org
-Subject: [patch 07/30] genirq: Make kstat_irqs() static
+Subject: [patch 18/30] PCI: xilinx-nwl: Use irq_data_get_irq_chip_data()
 References: <20201210192536.118432146@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -89,60 +85,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No more users outside the core code.
+Going through a full irq descriptor lookup instead of just using the proper
+helper function which provides direct access is suboptimal.
+
+In fact it _is_ wrong because the chip callback needs to get the chip data
+which is relevant for the chip while using the irq descriptor variant
+returns the irq chip data of the top level chip of a hierarchy. It does not
+matter in this case because the chip is the top level chip, but that
+doesn't make it more correct.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: linux-pci@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
 ---
- include/linux/kernel_stat.h |    1 -
- kernel/irq/irqdesc.c        |   19 ++++++-------------
- 2 files changed, 6 insertions(+), 14 deletions(-)
+ drivers/pci/controller/pcie-xilinx-nwl.c |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
---- a/include/linux/kernel_stat.h
-+++ b/include/linux/kernel_stat.h
-@@ -67,7 +67,6 @@ static inline unsigned int kstat_softirq
- /*
-  * Number of interrupts per specific IRQ source, since bootup
-  */
--extern unsigned int kstat_irqs(unsigned int irq);
- extern unsigned int kstat_irqs_usr(unsigned int irq);
+--- a/drivers/pci/controller/pcie-xilinx-nwl.c
++++ b/drivers/pci/controller/pcie-xilinx-nwl.c
+@@ -379,13 +379,11 @@ static void nwl_pcie_msi_handler_low(str
  
- /*
---- a/kernel/irq/irqdesc.c
-+++ b/kernel/irq/irqdesc.c
-@@ -924,15 +924,7 @@ static bool irq_is_nmi(struct irq_desc *
- 	return desc->istate & IRQS_NMI;
- }
- 
--/**
-- * kstat_irqs - Get the statistics for an interrupt
-- * @irq:	The interrupt number
-- *
-- * Returns the sum of interrupt counts on all cpus since boot for
-- * @irq. The caller must ensure that the interrupt is not removed
-- * concurrently.
-- */
--unsigned int kstat_irqs(unsigned int irq)
-+static unsigned int kstat_irqs(unsigned int irq)
+ static void nwl_mask_leg_irq(struct irq_data *data)
  {
- 	struct irq_desc *desc = irq_to_desc(irq);
- 	unsigned int sum = 0;
-@@ -951,13 +943,14 @@ unsigned int kstat_irqs(unsigned int irq
- }
+-	struct irq_desc *desc = irq_to_desc(data->irq);
+-	struct nwl_pcie *pcie;
++	struct nwl_pcie *pcie = irq_data_get_irq_chip_data(data);
+ 	unsigned long flags;
+ 	u32 mask;
+ 	u32 val;
  
- /**
-- * kstat_irqs_usr - Get the statistics for an interrupt
-+ * kstat_irqs_usr - Get the statistics for an interrupt from thread context
-  * @irq:	The interrupt number
-  *
-  * Returns the sum of interrupt counts on all cpus since boot for @irq.
-- * Contrary to kstat_irqs() this can be called from any context.
-- * It uses rcu since a concurrent removal of an interrupt descriptor is
-- * observing an rcu grace period before delayed_free_desc()/irq_kobj_release().
-+ *
-+ * It uses rcu to protect the access since a concurrent removal of an
-+ * interrupt descriptor is observing an rcu grace period before
-+ * delayed_free_desc()/irq_kobj_release().
-  */
- unsigned int kstat_irqs_usr(unsigned int irq)
+-	pcie = irq_desc_get_chip_data(desc);
+ 	mask = 1 << (data->hwirq - 1);
+ 	raw_spin_lock_irqsave(&pcie->leg_mask_lock, flags);
+ 	val = nwl_bridge_readl(pcie, MSGF_LEG_MASK);
+@@ -395,13 +393,11 @@ static void nwl_mask_leg_irq(struct irq_
+ 
+ static void nwl_unmask_leg_irq(struct irq_data *data)
  {
+-	struct irq_desc *desc = irq_to_desc(data->irq);
+-	struct nwl_pcie *pcie;
++	struct nwl_pcie *pcie = irq_data_get_irq_chip_data(data);
+ 	unsigned long flags;
+ 	u32 mask;
+ 	u32 val;
+ 
+-	pcie = irq_desc_get_chip_data(desc);
+ 	mask = 1 << (data->hwirq - 1);
+ 	raw_spin_lock_irqsave(&pcie->leg_mask_lock, flags);
+ 	val = nwl_bridge_readl(pcie, MSGF_LEG_MASK);
 
