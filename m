@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EF892D7091
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 08:07:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC192D7088
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 08:07:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389126AbgLKHGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 02:06:01 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:17230 "EHLO
+        id S2436684AbgLKHFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 02:05:22 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:12488 "EHLO
         m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436675AbgLKHF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 02:05:26 -0500
+        with ESMTP id S2436664AbgLKHFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 02:05:11 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607670301; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=ju5OBo+runtqUk/l9MKW5YpXJEzAzqg6bjT8pbaB1jI=; b=bfE2kbAXqslV1ygTDylXkj+W3ieA5+uODXpsC4TEIcKw1+JWMeSIGNXu+tuMu0eowVhgMJTO
- WAfknRsPpfCmAnys+EANwzKrT5+2a5tclu7GVl43PHxp5kDLWTdePWT3iazfss9hhe8dLcZo
- 9vTD62Iwyprt+TJ7855ChrV22hU=
+ s=smtp; t=1607670285; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=vTSJJj/mqYlqSjy1P4jPSBlecvXpEXbz9kGAuxBK598=; b=E/bkESiLJaPr7d03yp2z8tWOJlFe6bsdLWpMEM/hXeOuEbvGAgb30ya5FtsE5VMew5F/ozbo
+ Vz585RuAaA06vf3bt3RWIJEKkmaD63QLHuP27L4rpLxaT1a6yv2UN7O5dVlJhLOF0HMO3moZ
+ sTK8Nu5WwBpzSByQCSKEJsmUQ1s=
 X-Mailgun-Sending-Ip: 69.72.43.15
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 5fd319f4f81e894c55ad02f0 (version=TLS1.2,
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 5fd319f4962b2f3cb71cc009 (version=TLS1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 11 Dec 2020 07:04:20
  GMT
 Sender: hemantk=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 164FFC43463; Fri, 11 Dec 2020 07:04:20 +0000 (UTC)
+        id 53C19C43462; Fri, 11 Dec 2020 07:04:20 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -36,9 +37,9 @@ Received: from codeaurora.org (i-global254.qualcomm.com [199.106.103.254])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: hemantk)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 638B8C433C6;
-        Fri, 11 Dec 2020 07:04:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 638B8C433C6
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1FFDCC433CA;
+        Fri, 11 Dec 2020 07:04:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1FFDCC433CA
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
 From:   Hemant Kumar <hemantk@codeaurora.org>
@@ -47,147 +48,55 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         jhugo@codeaurora.org, bbhatt@codeaurora.org,
         loic.poulain@linaro.org, netdev@vger.kernel.org,
         Hemant Kumar <hemantk@codeaurora.org>
-Subject: [PATCH v17 0/3] userspace MHI client interface driver
-Date:   Thu, 10 Dec 2020 23:04:08 -0800
-Message-Id: <1607670251-31733-1-git-send-email-hemantk@codeaurora.org>
+Subject: [PATCH v17 1/3] bus: mhi: core: Move MHI_MAX_MTU to external header file
+Date:   Thu, 10 Dec 2020 23:04:09 -0800
+Message-Id: <1607670251-31733-2-git-send-email-hemantk@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1607670251-31733-1-git-send-email-hemantk@codeaurora.org>
+References: <1607670251-31733-1-git-send-email-hemantk@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series adds support for UCI driver. UCI driver enables userspace
-clients to communicate to external MHI devices like modem. UCI driver probe
-creates standard character device file nodes for userspace clients to
-perform open, read, write, poll and release file operations. These file
-operations call MHI core layer APIs to perform data transfer using MHI bus
-to communicate with MHI device. Currently driver supports QMI channel. libqmi
-is userspace MHI client which communicates to a QMI service using QMI channel.
-libqmi is a glib-based library for talking to WWAN modems and devices which
-speaks QMI protocol. For more information about libqmi please refer
-https://www.freedesktop.org/wiki/Software/libqmi/. Patch is tested using arm64
-and x86 based platform.
+Currently this macro is defined in internal MHI header as
+a TRE length mask. Moving it to external header allows MHI
+client drivers to set this upper bound for the transmit
+buffer size.
 
-v17:
-- Updated commit text for UCI driver by mentioning about libqmi open-source
-  userspace program that will be talking to this UCI kernel driver.
-- UCI driver depends upon patch "bus: mhi: core: Add helper API to return number
-  of free TREs".
+Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/core/internal.h | 1 -
+ include/linux/mhi.h             | 3 +++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-v16:
-- Removed reference of WLAN as an external MHI device in documentation and
-  cover letter.
-
-v15:
-- Updated documentation related to poll and release operations.
-
-V14:
-- Fixed device file node format to /dev/<mhi_dev_name> instead of
-  /dev/mhi_<mhi_dev_name> because "mhi" is already part of mhi device name.
-  For example old format: /dev/mhi_mhi0_QMI new format: /dev/mhi0_QMI.
-- Updated MHI documentation to reflect index mhi controller name in
-  QMI usage example.
-
-V13:
-- Removed LOOPBACK channel from mhi_device_id table from this patch series.
-  Pushing a new patch series to add support for LOOPBACK channel and the user
-  space test application. Also removed the description from kernel documentation.
-- Added QMI channel to mhi_device_id table. QMI channel has existing libqmi
-  support from user space.
-- Updated kernel Documentation for QMI channel and provided external reference
-  for libqmi.
-- Updated device file node name by appending mhi device name only, which already
-  includes mhi controller device name.
-
-V12:
-- Added loopback test driver under selftest/drivers/mhi. Updated kernel
-  documentation for the usage of the loopback test application.
-- Addressed review comments for renaming variable names, updated inline
-  comments and removed two redundant dev_dbg.
-
-V11:
-- Fixed review comments for UCI documentation by expanding TLAs and rewording
-  some sentences.
-
-V10:
-- Replaced mutex_lock with mutex_lock_interruptible in read() and write() file
-  ops call back.
-
-V9:
-- Renamed dl_lock to dl_pending _lock and pending list to dl_pending for
-  clarity.
-- Used read lock to protect cur_buf.
-- Change transfer status check logic and only consider 0 and -EOVERFLOW as
-  only success.
-- Added __int to module init function.
-- Print channel name instead of minor number upon successful probe.
-
-V8:
-- Fixed kernel test robot compilation error by changing %lu to %zu for
-  size_t.
-- Replaced uci with UCI in Kconfig, commit text, and comments in driver
-  code.
-- Fixed minor style related comments.
-
-V7:
-- Decoupled uci device and uci channel objects. uci device is
-  associated with device file node. uci channel is associated
-  with MHI channels. uci device refers to uci channel to perform
-  MHI channel operations for device file operations like read()
-  and write(). uci device increments its reference count for
-  every open(). uci device calls mhi_uci_dev_start_chan() to start
-  the MHI channel. uci channel object is tracking number of times
-  MHI channel is referred. This allows to keep the MHI channel in
-  start state until last release() is called. After that uci channel
-  reference count goes to 0 and uci channel clean up is performed
-  which stops the MHI channel. After the last call to release() if
-  driver is removed uci reference count becomes 0 and uci object is
-  cleaned up.
-- Use separate uci channel read and write lock to fine grain locking
-  between reader and writer.
-- Use uci device lock to synchronize open, release and driver remove.
-- Optimize for downlink only or uplink only UCI device.
-
-V6:
-- Moved uci.c to mhi directory.
-- Updated Kconfig to add module information.
-- Updated Makefile to rename uci object file name as mhi_uci
-- Removed kref for open count
-
-V5:
-- Removed mhi_uci_drv structure.
-- Used idr instead of creating global list of uci devices.
-- Used kref instead of local ref counting for uci device and
-  open count.
-- Removed unlikely macro.
-
-V4:
-- Fix locking to protect proper struct members.
-- Updated documentation describing uci client driver use cases.
-- Fixed uci ref counting in mhi_uci_open for error case.
-- Addressed style related review comments.
-
-V3: Added documentation for MHI UCI driver.
-
-V2:
-- Added mutex lock to prevent multiple readers to access same
-- mhi buffer which can result into use after free.
-
-Hemant Kumar (3):
-  bus: mhi: core: Move MHI_MAX_MTU to external header file
-  docs: Add documentation for userspace client interface
-  bus: mhi: Add userspace client interface driver
-
- Documentation/mhi/index.rst     |   1 +
- Documentation/mhi/uci.rst       |  95 ++++++
- drivers/bus/mhi/Kconfig         |  13 +
- drivers/bus/mhi/Makefile        |   3 +
- drivers/bus/mhi/core/internal.h |   1 -
- drivers/bus/mhi/uci.c           | 664 ++++++++++++++++++++++++++++++++++++++++
- include/linux/mhi.h             |   3 +
- 7 files changed, 779 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/mhi/uci.rst
- create mode 100644 drivers/bus/mhi/uci.c
-
+diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
+index 6f80ec3..2b9c063 100644
+--- a/drivers/bus/mhi/core/internal.h
++++ b/drivers/bus/mhi/core/internal.h
+@@ -453,7 +453,6 @@ enum mhi_pm_state {
+ #define CMD_EL_PER_RING			128
+ #define PRIMARY_CMD_RING		0
+ #define MHI_DEV_WAKE_DB			127
+-#define MHI_MAX_MTU			0xffff
+ #define MHI_RANDOM_U32_NONZERO(bmsk)	(prandom_u32_max(bmsk) + 1)
+ 
+ enum mhi_er_type {
+diff --git a/include/linux/mhi.h b/include/linux/mhi.h
+index e36d575..f072605 100644
+--- a/include/linux/mhi.h
++++ b/include/linux/mhi.h
+@@ -15,6 +15,9 @@
+ #include <linux/wait.h>
+ #include <linux/workqueue.h>
+ 
++/* MHI client drivers to set this upper bound for tx buffer */
++#define MHI_MAX_MTU 0xffff
++
+ #define MHI_MAX_OEM_PK_HASH_SEGMENTS 16
+ 
+ struct mhi_chan;
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
