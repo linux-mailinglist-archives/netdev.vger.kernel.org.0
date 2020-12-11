@@ -2,115 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B12632D7F39
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 20:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2728C2D7F44
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 20:19:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732403AbgLKTMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 14:12:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60084 "EHLO
+        id S2392911AbgLKTRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 14:17:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728198AbgLKTMf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 14:12:35 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F70C0613CF
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 11:11:55 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id g20so13853525ejb.1
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 11:11:55 -0800 (PST)
+        with ESMTP id S2392760AbgLKTQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 14:16:54 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F14C0613CF
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 11:16:14 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id e2so7782540pgi.5
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 11:16:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DU0zog1ZqLuqAvCIYsUQGKS8GLoSJnDCg9BlZ3FS3Ss=;
-        b=KEgJkvJyy4wnn32ZMXtfCK81kmVZt1HFkJyX+dGr3GX093Ik0lyu77Q/HHHrR6ZG4r
-         tGcAPkSaMKP8VUIsn23f1iUAL40AdLmwcCjyeZrkgcP5dlfYjJorVrghP/86D52gJrFG
-         pla7AmvIvoQ4eeJp3B3XGaQ3bOmaq7KgUcGqJyqIf8f3RnpTmP9N4kc5qqW5f1HLakk6
-         BCZCuMIk1EVqODLlToUM7P56cCR+jldi7yjNZ0vHoN+HUb8N8PzPruRZjLhOwPjBINsu
-         XFsw6+/A0SFPhKkw5yQ0kuC20eLULAhNEjZ/KcZ4sOQKkbt0iIeb72EmprGUBP/Czqsi
-         BHTg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=61g/lABOk/rS9JU0PU8gGCkwAXD/M2pW7fIINB24oD8=;
+        b=borDRSlOR+HwlxE+esc4vbp6YrOtHKLoj8SWOYgKEgIj8bb5lTkszlqdTHqIhzoi+c
+         0roq/fL5yq4n5qAPA8spJkVNfqwOKqv2pkZe+3edpdWQ5FfXAAuh7kG/hFkYvjYyKVk8
+         KYjRUDRUmPf0OjzB/spfDGop9EBNK7AVMpxdGah2YLszaMmiz/EkEHgdF1CMInhAt2Vf
+         VevE7FlleCwW0siXhkFn/THayhZZrk2XJX7coOAyYS73cchzTSrWxFvvicLbl99Om7Yp
+         Fop6CVV0La9YMMT09vBKjwmrMZj5johJIuFOqz81eLAkAhmE9Px+ydP6J4cpo5gJRBPW
+         K5Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DU0zog1ZqLuqAvCIYsUQGKS8GLoSJnDCg9BlZ3FS3Ss=;
-        b=q9NPxDnpd1+WdGMhSJwE+l3E0LnJkgA8yXLHAwOXKOhKygqtFsz8WPoy+uOBmKFA4l
-         Id56Rdry99pLwzT+BKffiRHMVk+Qz7g15IcA9xqidDj88aWxOSBgEx1rptfxDqPeBqJk
-         FByyASU7k/henhsocr0mluHE48Vc1RVaLHiYt0p5D81U6djUcatRDA+ZHhEISSLQxTNv
-         vKNWiEWdR5wpgiZhg0AS/SONkRyjgwVej0tqNZUUoQL7hhE98hxexJm7cLiYTowjxJs9
-         xA5i40V7MXXYfXr8uz6SPGt0a0qhKBso4gdbxO4NY5Yo8yNomgefiqYpxL8PTDKdbH1X
-         FhaA==
-X-Gm-Message-State: AOAM530ickDDu6kdkbWiwiPXVIg3/46dDz2Or682TJX0kufeRdSkK2ti
-        4aHzUZQWaIBSPSxGMfoJilg=
-X-Google-Smtp-Source: ABdhPJzBP4ujgKsAae2aipyAbtGDcmsZMa1jvAQxgd/m4gQYE+brK2FaCm05CreuuD82LS8Vk1Hb3Q==
-X-Received: by 2002:a17:907:9705:: with SMTP id jg5mr12446174ejc.448.1607713913773;
-        Fri, 11 Dec 2020 11:11:53 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id p24sm5654624edr.65.2020.12.11.11.11.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 11:11:53 -0800 (PST)
-Date:   Fri, 11 Dec 2020 21:11:51 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next] net: dsa: mt7530: enable MTU normalization
-Message-ID: <20201211191151.3xrcv2voaws4xhjl@skbuf>
-References: <20201210170322.3433-1-dqfext@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=61g/lABOk/rS9JU0PU8gGCkwAXD/M2pW7fIINB24oD8=;
+        b=A0uCiec/+0QcJqgT4+lZkLllHw6THET5SUO9wOwDDIXkvvPHFFHhXwK5azpF6NTpzF
+         CnrOKHWNIkHHp3mUda30HqoP61d59aS7OAvMkjU/zjyoZDPdpwz3ut6nUydoFbC2WfOf
+         wTej57nFhyfPTU380UaxGjf3mlEsz+P2uaII96en2u7SoN3fOx4CzByuw19Q00g0dK+M
+         mQoy1gLOmkktkinNoc5syBTWluXMeuCHEE6zaGWgihqFLPbQbci6u97evNVrUZ2lJA/h
+         9tIiuQJ9r63xHmQyOjxNE19Ptgwzm9VTSj6UjRJzZtuqtSEOVNpMQGJmXRrYwvG/ehLD
+         WFDA==
+X-Gm-Message-State: AOAM530bgXEodzphGA3H5Vw8NFv2aTD7KXdc4qF+moz6WCOK3W9zbABe
+        U+6ybsMiCWrumONfnDgJTlQ7eeFyOaFa2Y9z6/c=
+X-Google-Smtp-Source: ABdhPJyMJaQ/BGNCyy7wbfzBRBmu2uLUhTAMSxCZIIymtA4aob6y7Byqjcj0J6XytjFsiKdqUaodJGBlYrphdUkxmkA=
+X-Received: by 2002:a63:5114:: with SMTP id f20mr10757438pgb.5.1607714174282;
+ Fri, 11 Dec 2020 11:16:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201210170322.3433-1-dqfext@gmail.com>
+References: <20201211152649.12123-1-maximmi@mellanox.com> <20201211152649.12123-3-maximmi@mellanox.com>
+In-Reply-To: <20201211152649.12123-3-maximmi@mellanox.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 11 Dec 2020 11:16:03 -0800
+Message-ID: <CAM_iQpUS_71R7wujqhUnF41dtVtNj=5kXcdAHea1euhESbeJrg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/4] sch_htb: Hierarchical QoS hardware offload
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11, 2020 at 01:03:22AM +0800, DENG Qingfang wrote:
-> MT7530 has a global RX length register, so we are actually changing its
-> MRU.
-> Enable MTU normalization for this reason.
+On Fri, Dec 11, 2020 at 7:26 AM Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
 >
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> ---
+> HTB doesn't scale well because of contention on a single lock, and it
+> also consumes CPU. This patch adds support for offloading HTB to
+> hardware that supports hierarchical rate limiting.
+>
+> This solution addresses two main problems of scaling HTB:
+>
+> 1. Contention by flow classification. Currently the filters are attached
+> to the HTB instance as follows:
 
-Makes sense. Since it's global and not per port, this also helps the
-stack to be aware of the fact that all bridged interfaces have the same
-MTU. We could probably do a little bit better by also informing the
-standalone interfaces about the updated MTU, but since the value that we
-program into the standalone ports is >= than what the stack knows about,
-there isn't an issue really.
+I do not think this is the reason, tcf_classify() has been called with RCU
+only on the ingress side for a rather long time. What contentions are you
+talking about here?
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+>
+>     # tc filter add dev eth0 parent 1:0 protocol ip flower dst_port 80
+>     classid 1:10
+>
+> It's possible to move classification to clsact egress hook, which is
+> thread-safe and lock-free:
+>
+>     # tc filter add dev eth0 egress protocol ip flower dst_port 80
+>     action skbedit priority 1:10
+>
+> This way classification still happens in software, but the lock
+> contention is eliminated, and it happens before selecting the TX queue,
+> allowing the driver to translate the class to the corresponding hardware
+> queue.
 
->  drivers/net/dsa/mt7530.c | 2 ++
->  1 file changed, 2 insertions(+)
+Sure, you can use clsact with HTB, or any combinations you like, but you
+can't assume your HTB only works with clsact, can you?
+
+
 >
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 99bf8fed6536..a67cac15a724 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -1657,6 +1657,7 @@ mt7530_setup(struct dsa_switch *ds)
->  	 */
->  	dn = dsa_to_port(ds, MT7530_CPU_PORT)->master->dev.of_node->parent;
->  	ds->configure_vlan_while_not_filtering = true;
-> +	ds->mtu_enforcement_ingress = true;
+> Note that this is already compatible with non-offloaded HTB and doesn't
+> require changes to the kernel nor iproute2.
 >
->  	if (priv->id == ID_MT7530) {
->  		regulator_set_voltage(priv->core_pwr, 1000000, 1000000);
-> @@ -1895,6 +1896,7 @@ mt7531_setup(struct dsa_switch *ds)
->  	}
->
->  	ds->configure_vlan_while_not_filtering = true;
-> +	ds->mtu_enforcement_ingress = true;
->
->  	/* Flush the FDB table */
->  	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
-> --
-> 2.25.1
->
+> 2. Contention by handling packets. HTB is not multi-queue, it attaches
+> to a whole net device, and handling of all packets takes the same lock.
+> When HTB is offloaded, its algorithm is done in hardware. HTB registers
+> itself as a multi-queue qdisc, similarly to mq: HTB is attached to the
+> netdev, and each queue has its own qdisc. The control flow is still done
+> by HTB: it calls the driver via ndo_setup_tc to replicate the hierarchy
+> of classes in the NIC. Leaf classes are presented by hardware queues.
+> The data path works as follows: a packet is classified by clsact, the
+> driver selects a hardware queue according to its class, and the packet
+> is enqueued into this queue's qdisc.
+
+I do _not_ read your code, from what you describe here, it sounds like
+you just want a per-queue rate limit, instead of a global one. So why
+bothering HTB whose goal is a global rate limit?
+
+And doesn't TBF already work with mq? I mean you can attach it as
+a leaf to each mq so that the tree lock will not be shared either, but you'd
+lose the benefits of a global rate limit too. EDT does basically the same,
+but it never claims to completely replace HTB. ;)
+
+Thanks.
