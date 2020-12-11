@@ -2,99 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78DD22D7916
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 16:21:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7FC2D791C
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 16:24:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437805AbgLKPVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 10:21:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390872AbgLKPUe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 10:20:34 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF115C0613CF
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 07:19:53 -0800 (PST)
-Received: from erdnuss.hi.pengutronix.de ([2001:67c:670:100:2e4d:54ff:fe9d:849c])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <mci@pengutronix.de>)
-        id 1knkD1-0003gD-1L; Fri, 11 Dec 2020 16:19:51 +0100
-Subject: Re: [PATCH] net: ethernet: fec: Clear stale flag in IEVENT register
- before MII transfers
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de
-References: <20201209102959.2131-1-u.kleine-koenig@pengutronix.de>
- <20201209144413.GJ2611606@lunn.ch>
- <20201209165148.6kbntgmjopymomx5@pengutronix.de>
-From:   Marian Cichy <mci@pengutronix.de>
-Message-ID: <dbf9184d-adb2-6377-414b-0593ecb89149@pengutronix.de>
-Date:   Fri, 11 Dec 2020 16:19:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S2437830AbgLKPX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 10:23:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59345 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2393039AbgLKPXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 10:23:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607700093;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=H2JL8gdYFvxAcjiuHF47Jvj6sREU3Hka+W7jAm2IWls=;
+        b=RFdCQ9KkDh1/qXy3U7JMdB6lN7uJblmKLx7+yk/4KAd8WKFY09mqLBlF+829KD4VoLt4s/
+        Tai5vDWbTd7VhJbzSh4rluZ51X0GGuApIYrkWE8p04wnOCaCvJ1pix6UeisxOA7AmsMshF
+        jgp6woPOMhufX4qWB44FyLhKU15K56E=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-468-fzZDOzk0PTa-WgTn1vcNtQ-1; Fri, 11 Dec 2020 10:21:32 -0500
+X-MC-Unique: fzZDOzk0PTa-WgTn1vcNtQ-1
+Received: by mail-wm1-f69.google.com with SMTP id f12so3406638wmf.6
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 07:21:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=H2JL8gdYFvxAcjiuHF47Jvj6sREU3Hka+W7jAm2IWls=;
+        b=fMrnq+VDd8UFRUDK0+5DiFIRpfC+R0BYqaYBJo6+2NX0rhn1duui/5UyiVvKIpQjea
+         2wJ2DOWSsPt9LZLg4/pAJ7Z6v5Iw29yb1L5kMX4r7/oAmOe1FhQcq3x4bKnnjWbjzaoc
+         Zy5cPB2h/nTggqTZwGnYsb3HIyAFgX8shYfS7EGTvTLRblj8DTtXVqEwA9zDkYcgBv1d
+         Z7PVd3a3KRprdEWn8InC/RcWs9ocovWxzDdkzsX6eqye9ZZvHOsfRIQJtGEzj3Imgq0n
+         xWs1Ckha+l4/3/Y5iu6IGjstIOH6hCw93ZIs+mBU0naDx95YmugrA/bGdQfym2Jz8/2u
+         COLg==
+X-Gm-Message-State: AOAM533/pvdRoRGJank0J9OP3UGf0/DUO7RjJrI+gBwIpZdSJNfKSmLZ
+        4RH5MoIknQ0Q2U1Ea4SVm3uIRUSI1v7YDzZCPdNkC7XRqgTzQgSHEXhO0HjIxfZ3Qak3Nf1FN7B
+        w3kNOFof1wgRAfG5a
+X-Received: by 2002:a7b:c7d3:: with SMTP id z19mr3221281wmk.31.1607700091088;
+        Fri, 11 Dec 2020 07:21:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxGOY59qMEPEBkq+rmwi3sMncPUysDnrHss6YgDgKzFjRisRhWcm7UCEKETYDhF70hrORnRkg==
+X-Received: by 2002:a7b:c7d3:: with SMTP id z19mr3221266wmk.31.1607700090901;
+        Fri, 11 Dec 2020 07:21:30 -0800 (PST)
+Received: from steredhat (host-79-24-227-66.retail.telecomitalia.it. [79.24.227.66])
+        by smtp.gmail.com with ESMTPSA id u85sm14350188wmu.43.2020.12.11.07.21.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Dec 2020 07:21:30 -0800 (PST)
+Date:   Fri, 11 Dec 2020 16:21:27 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Andra Paraschiv <andraprs@amazon.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: Re: [PATCH net-next v3 1/4] vm_sockets: Add flags field in the vsock
+ address data structure
+Message-ID: <20201211152127.jfst6qfwc663ft7c@steredhat>
+References: <20201211103241.17751-1-andraprs@amazon.com>
+ <20201211103241.17751-2-andraprs@amazon.com>
 MIME-Version: 1.0
-In-Reply-To: <20201209165148.6kbntgmjopymomx5@pengutronix.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-SA-Exim-Connect-IP: 2001:67c:670:100:2e4d:54ff:fe9d:849c
-X-SA-Exim-Mail-From: mci@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201211103241.17751-2-andraprs@amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Dec 11, 2020 at 12:32:38PM +0200, Andra Paraschiv wrote:
+>vsock enables communication between virtual machines and the host they
+>are running on. With the multi transport support (guest->host and
+>host->guest), nested VMs can also use vsock channels for communication.
+>
+>In addition to this, by default, all the vsock packets are forwarded to
+>the host, if no host->guest transport is loaded. This behavior can be
+>implicitly used for enabling vsock communication between sibling VMs.
+>
+>Add a flags field in the vsock address data structure that can be used
+>to explicitly mark the vsock connection as being targeted for a certain
+>type of communication. This way, can distinguish between different use
+>cases such as nested VMs and sibling VMs.
+>
+>This field can be set when initializing the vsock address variable used
+>for the connect() call.
+>
+>Changelog
+>
+>v2 -> v3
+>
+>* Add "svm_flags" as a new field, not reusing "svm_reserved1".
 
+Using the previous 'svn_zero[0]' for the new 'svn_flags' field make sure 
+that if an application sets a flag and runs on an older kernel, it will 
+receive an error and I think it's perfect, since that kernel is not able 
+to handle the flag.
 
-On 12/9/20 5:51 PM, Uwe Kleine-König wrote:
-> Hi Andrew,
->
-> On Wed, Dec 09, 2020 at 03:44:13PM +0100, Andrew Lunn wrote:
->> On Wed, Dec 09, 2020 at 11:29:59AM +0100, Uwe Kleine-König wrote:
->> Do you have
->>
->> ommit 1e6114f51f9d4090390fcec2f5d67d8cc8dc4bfc
->> Author: Greg Ungerer <gerg@linux-m68k.org>
->> Date:   Wed Oct 28 15:22:32 2020 +1000
->>
->>      net: fec: fix MDIO probing for some FEC hardware blocks
->>      
->>      Some (apparently older) versions of the FEC hardware block do not like
->>      the MMFR register being cleared to avoid generation of MII events at
->>      initialization time. The action of clearing this register results in no
->>      future MII events being generated at all on the problem block. This means
->>      the probing of the MDIO bus will find no PHYs.
->>      
->>      Create a quirk that can be checked at the FECs MII init time so that
->>      the right thing is done. The quirk is set as appropriate for the FEC
->>      hardware blocks that are known to need this.
->>
->> in your tree?
-> Unless I did something wrong I also saw the failure with v5.10-rc$latest
-> earlier today.
->
-> ... some time later ...
->
-> Argh, I checked my git reflog and the newest release I tested was
-> 5.9-rc8.
->
-> I wonder if my patch is a simpler and more straight forward fix for the
-> problem however, but that might also be because I don't understand the
-> comment touched by 1e6114f51f9d4090390fcec2f5d67d8cc8dc4bfc without
-> checking the reference manual (which I didn't).
->
-> @Marian: As it's you who has to work on this i.MX25 machine, can you
-> maybe test if using a kernel > 5.10-rc3 (or cherry-picking
-> 1e6114f51f9d4090390fcec2f5d67d8cc8dc4bfc) fixes the problem for you?
-
-Tested it on 5.10-rc7 and the problem is fixed without your previous patch.
-
-Best regards,
-Marian
+So I think is okay and I confirm my R-b tag ;-)
 
 >
-> Best regards
-> Uwe
+>v1 -> v2
+>
+>* Update the field name to "svm_flags".
+>* Split the current patch in 2 patches.
+>
+>Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
+>Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+>---
+> include/uapi/linux/vm_sockets.h | 5 ++++-
+> 1 file changed, 4 insertions(+), 1 deletion(-)
+>
+>diff --git a/include/uapi/linux/vm_sockets.h b/include/uapi/linux/vm_sockets.h
+>index fd0ed7221645d..619f8e9d55ca4 100644
+>--- a/include/uapi/linux/vm_sockets.h
+>+++ b/include/uapi/linux/vm_sockets.h
+>@@ -148,10 +148,13 @@ struct sockaddr_vm {
+> 	unsigned short svm_reserved1;
+> 	unsigned int svm_port;
+> 	unsigned int svm_cid;
+>+	unsigned short svm_flags;
+> 	unsigned char svm_zero[sizeof(struct sockaddr) -
+> 			       sizeof(sa_family_t) -
+> 			       sizeof(unsigned short) -
+>-			       sizeof(unsigned int) - sizeof(unsigned int)];
+>+			       sizeof(unsigned int) -
+>+			       sizeof(unsigned int) -
+>+			       sizeof(unsigned short)];
+> };
+>
+> #define IOCTL_VM_SOCKETS_GET_LOCAL_CID		_IO(7, 0xb9)
+>-- 
+>2.20.1 (Apple Git-117)
+>
+>
+>
+>
+>Amazon Development Center (Romania) S.R.L. registered office: 27A Sf. Lazar Street, UBC5, floor 2, Iasi, Iasi County, 700045, Romania. Registered in Romania. Registration number J22/2621/2005.
 >
 
