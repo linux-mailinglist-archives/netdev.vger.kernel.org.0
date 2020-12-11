@@ -2,96 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 669D42D811F
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 22:30:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7A3A2D8124
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 22:30:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395183AbgLKV2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 16:28:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391247AbgLKV2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 16:28:25 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC93C0613CF;
-        Fri, 11 Dec 2020 13:27:45 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id t37so7998424pga.7;
-        Fri, 11 Dec 2020 13:27:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AxBo7DuCrY0w5ou/wBwlnRTDbvkCAR5nr/KwMCjdb68=;
-        b=KvLRscuSEUJV1BFdXM0yFL+IE8NvUQW9mxdaFu9r9eCcvitCd38Q/7Kd5/7EaSBJUE
-         +Jj3nTQzmfrcBAV7eDCZaXPyLozwExHULFF33G5+5UKlxYu8Iq2/ug0uzRFQOzsqy84h
-         nwEZjVJBNyM0Zq4tUdu98uqPpMaurHzy2YJB9cKU1jcJG/VmJF6ujNmkJajnsts8IZ0z
-         UiWxK0pGaorJl0zZmAJkexlHoANSzd176vBoQ7pjn9keQqa9AInsoyk8Z9KqWj21fIbu
-         sSbWaVhAglBOzhUehaxF8WtbglAcXpcg6fjszeAj5Zy6svE6hSQ6pRYbW6tX/QodAaHh
-         XT1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AxBo7DuCrY0w5ou/wBwlnRTDbvkCAR5nr/KwMCjdb68=;
-        b=Qjw4JEl2XRMZu3DRNXfatIgUXvvfhn2bR0iB4ajen30CFTSE7srndw4A8DSXUWtcOE
-         jxh1u/cVgBhUGHCgR48QaKkqa2ymaZ6MM/D+tA3fbHm603M3TnSaMnn9ECPR4Fc/mwGl
-         to0chQXt35lIavwrxuR6iR34i9J1/lPuj0xCEpeb43QyK3cDh+Ai8qUabUZjadyB0say
-         NQQm4OvMOUXh6ERXjBDPxxujmmuNlDhUqm14gpfBP/o3pr/EkBPkZomvguIxjHEfv83f
-         E3W6P//2U1kszyvla748S9jBmuTe5RutukIhsyXlslDEtMMwV8qeM+a+lcDPDVcF6QW8
-         CMRg==
-X-Gm-Message-State: AOAM5314AgRKyGm2c1BmQHfPlvJ7vGTb+tTe1vDEP8usnUBjUfHPr51+
-        J3duhs3bdH6yDh0HkfIqRoo9Nh6qAMM=
-X-Google-Smtp-Source: ABdhPJx3t6YXv33M0E7++zQ+biP6+i2ejP610JaePUsbaeGNYoAe6RG9XY7q0PJRj46db3rFHzlyWw==
-X-Received: by 2002:a63:1450:: with SMTP id 16mr13822220pgu.279.1607722064831;
-        Fri, 11 Dec 2020 13:27:44 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:70e5])
-        by smtp.gmail.com with ESMTPSA id g16sm11124221pfh.187.2020.12.11.13.27.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 13:27:43 -0800 (PST)
-Date:   Fri, 11 Dec 2020 13:27:41 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
-Subject: Re: [PATCH RFC bpf-next  2/4] bpf: support BPF ksym variables in
- kernel modules
-Message-ID: <20201211212741.o2peyh3ybnkxsu5a@ast-mbp>
-References: <20201211042734.730147-1-andrii@kernel.org>
- <20201211042734.730147-3-andrii@kernel.org>
+        id S2405402AbgLKV2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 16:28:49 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:37802 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731564AbgLKV21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 16:28:27 -0500
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1607722064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RPMMCIZpTkbwn/vpPbbWIvtIfsdUJZbFWGvj4XBXX/8=;
+        b=Kc/FVw++R6e2tySXtGXcjxUCfxzjuTQFTglr5qIAHuhSnqpTp+Ikj+7Hq7mXQTlJIhQso1
+        GzueGJq666vDoGnyl7z+R0hqgzUE1QvEz7r/C1zoUW/uJEMWoH29CdDJSk0WUoP2avCyFO
+        CRX7sZOyAR4dgW8urx4t099te3vzsLBebYBFzSZHvt/ir/v+j+DUtH3KLF65BJZt70WJkw
+        AE4vdTRQhanAKvsPxu5Ss601VFRMIT6sTuiXwTfT17QUlJMwNoTmBl7avya6WCOOi1pn/V
+        ZDVRxzcxQEEpw+Wd6+ymYN074dQBF+mj2DWvKS0m9PZ0lY8tuhofO6ggRZ9GJg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1607722064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RPMMCIZpTkbwn/vpPbbWIvtIfsdUJZbFWGvj4XBXX/8=;
+        b=tFwThmGQdDL1Ql7epJregGVf1InSk/8mJJwiaGupYZNmlO1tti86n4xUB3jqi7xZFrdYET
+        SNdr5SpWVlT7QnDA==
+To:     boris.ostrovsky@oracle.com,
+        =?utf-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        afzal mohammed <afzal.mohd.ma@gmail.com>,
+        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Wambui Karuga <wambui.karugax@gmail.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-pci@vger.kernel.org,
+        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [patch 27/30] xen/events: Only force affinity mask for percpu interrupts
+In-Reply-To: <9806692f-24a3-4b6f-ae55-86bd66481271@oracle.com>
+References: <20201210192536.118432146@linutronix.de> <20201210194045.250321315@linutronix.de> <7f7af60f-567f-cdef-f8db-8062a44758ce@oracle.com> <2164a0ce-0e0d-c7dc-ac97-87c8f384ad82@suse.com> <871rfwiknd.fsf@nanos.tec.linutronix.de> <9806692f-24a3-4b6f-ae55-86bd66481271@oracle.com>
+Date:   Fri, 11 Dec 2020 22:27:43 +0100
+Message-ID: <877dpoghio.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201211042734.730147-3-andrii@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 08:27:32PM -0800, Andrii Nakryiko wrote:
-> During BPF program load time, verifier will resolve FD to BTF object and will
-> take reference on BTF object itself and, for module BTFs, corresponding module
-> as well, to make sure it won't be unloaded from under running BPF program. The
-> mechanism used is similar to how bpf_prog keeps track of used bpf_maps.
-...
-> +
-> +	/* if we reference variables from kernel module, bump its refcount */
-> +	if (btf_is_module(btf)) {
-> +		btf_mod->module = btf_try_get_module(btf);
+On Fri, Dec 11 2020 at 09:29, boris ostrovsky wrote:
 
-Is it necessary to refcnt the module? Correct me if I'm wrong, but
-for module's BTF we register a notifier. Then the module can be rmmod-ed
-at any time and we will do btf_put() for corresponding BTF, but that BTF may
-stay around because bpftool or something is looking at it.
-Similarly when prog is attached to raw_tp in a module we currently do try_module_get(),
-but is it really necessary ? When bpf is attached to a netdev the netdev can
-be removed and the link will be dangling. May be it makes sense to do the same
-with modules?  The raw_tp can become dangling after rmmod and the prog won't be
-executed anymore. So hard coded address of a per-cpu var in a ksym will
-be pointing to freed mod memory after rmmod, but that's ok, since that prog will
-never execute.
-On the other side if we envision a bpf prog attaching to a vmlinux function
-and accessing per-cpu or normal ksym in some module it would need to inc refcnt
-of that module, since we won't be able to guarantee that this prog will
-not execute any more. So we cannot allow dangling memory addresses.
-If latter is what we want to allow then we probably need a test case for it and
-document the reasons for keeping modules pinned while progs access their data.
-Since such pinning behavior is different from other bpf attaching cases where
-underlying objects (like netdev and cgroup) can go away.
+> On 12/11/20 7:37 AM, Thomas Gleixner wrote:
+>> On Fri, Dec 11 2020 at 13:10, J=C3=BCrgen Gro=C3=9F wrote:
+>>> On 11.12.20 00:20, boris.ostrovsky@oracle.com wrote:
+>>>> On 12/10/20 2:26 PM, Thomas Gleixner wrote:
+>>>>> Change the implementation so that the channel is bound to CPU0 at the=
+ XEN
+>>>>> level and leave the affinity mask alone. At startup of the interrupt
+>>>>> affinity will be assigned out of the affinity mask and the XEN bindin=
+g will
+>>>>> be updated.
+>>>>
+>>>> If that's the case then I wonder whether we need this call at all and =
+instead bind at startup time.
+>>> After some discussion with Thomas on IRC and xen-devel archaeology the
+>>> result is: this will be needed especially for systems running on a
+>>> single vcpu (e.g. small guests), as the .irq_set_affinity() callback
+>>> won't be called in this case when starting the irq.
+>
+> On UP are we not then going to end up with an empty affinity mask? Or
+> are we guaranteed to have it set to 1 by interrupt generic code?
+
+An UP kernel does not ever look on the affinity mask. The
+chip::irq_set_affinity() callback is not invoked so the mask is
+irrelevant.
+
+A SMP kernel on a UP machine sets CPU0 in the mask so all is good.
+
+> This is actually why I brought this up in the first place --- a
+> potential mismatch between the affinity mask and Xen-specific data
+> (e.g. info->cpu and then protocol-specific data in event channel
+> code). Even if they are re-synchronized later, at startup time (for
+> SMP).
+
+Which is not a problem either. The affinity mask is only relevant for
+setting the affinity, but it's not relevant for delivery and never can
+be.
+
+> I don't see anything that would cause a problem right now but I worry
+> that this inconsistency may come up at some point.
+
+As long as the affinity mask becomes not part of the event channel magic
+this should never matter.
+
+Look at it from hardware:
+
+interrupt is affine to CPU0
+
+     CPU0 runs:
+=20=20=20=20=20
+     set_affinity(CPU0 -> CPU1)
+        local_irq_disable()
+=20=20=20=20=20=20=20=20
+ --> interrupt is raised in hardware and pending on CPU0
+
+        irq hardware is reconfigured to be affine to CPU1
+
+        local_irq_enable()
+
+ --> interrupt is handled on CPU0
+
+the next interrupt will be raised on CPU1
+
+So info->cpu which is registered via the hypercall binds the 'hardware
+delivery' and whenever the new affinity is written it is rebound to some
+other CPU and the next interrupt is then raised on this other CPU.
+
+It's not any different from the hardware example at least not as far as
+I understood the code.
+
+Thanks,
+
+        tglx
