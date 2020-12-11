@@ -2,166 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A865B2D77CC
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 15:28:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 753662D77D0
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 15:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387983AbgLKO0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 09:26:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732873AbgLKO0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 09:26:41 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3958EC0613CF;
-        Fri, 11 Dec 2020 06:26:00 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1knjMr-006pW4-KB; Fri, 11 Dec 2020 15:25:57 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211-next 2020-12-11
-Date:   Fri, 11 Dec 2020 15:25:51 +0100
-Message-Id: <20201211142552.209018-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.26.2
+        id S2406071AbgLKO2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 09:28:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22636 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726962AbgLKO2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 09:28:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607696809;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6PUvQxUTo6XSalZrcrFnAw4kOJvTyVzYyCrrIhslngc=;
+        b=Pc+pOfee/uDepmRbrgy2+9wHewpFnPUuGV2uYJ6MsMf1UuyQQVfZAFScDf9V0fATtzFXd5
+        OWMZgXOe2mPnHc2P8MlxP7pztNVzZPcc0848KuPTtWK0oDOfBuseo1+fnoONTpzVE6Dsf4
+        ORup04ERiZx8IMMfoAqVMRyGFKUuKmc=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-66-9sVUxkOTPzyVh6POb7KD-Q-1; Fri, 11 Dec 2020 09:26:48 -0500
+X-MC-Unique: 9sVUxkOTPzyVh6POb7KD-Q-1
+Received: by mail-wm1-f72.google.com with SMTP id g198so1685236wme.7
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 06:26:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6PUvQxUTo6XSalZrcrFnAw4kOJvTyVzYyCrrIhslngc=;
+        b=SELzc4xxCQSbBhb6l6czFT05+RQzrUUW5ZbyaWmE+AChUx+rJgvQLJ3tZxXcMeaZNI
+         v+HvwgoTC4PAFyq23zhJ2dh/CHED/3bHtxduF8ChfKYHNPX1g4dkwr82+7EA6jnbP3Cy
+         456DzUPQeb3QS5rEJfjc4dJVpEDrkFFaRcoNJuBWfq7y658WSbKthFqE5HAUIpZ+7WXw
+         unuTJkJP5PahB1JsZRtXM8Xe9UOd6EJAPpcga1TccAZptmfazCPbGCHU9h3/2AHdmbUA
+         bMpoy10RhqUdxMmZygkRPVx6qUusQ5F+cp6oZZouu34owKDnje7ovnCm9dsZXjTwETJE
+         tE+A==
+X-Gm-Message-State: AOAM530XHHZDbf3TsG5sWJJ7wr4+/2Biy5ZKhNsy7iD8fMoNf7JXHe5x
+        /ygMelQXhL4MplfOMV+Oh+Utfcbp/lX9ELcKXCn83t0//u9wQkh/gGxc7nVhJBOD4vgDtKtbK0X
+        ZZQKIcqV89bCKVDR6
+X-Received: by 2002:a1c:3b44:: with SMTP id i65mr14045044wma.9.1607696806792;
+        Fri, 11 Dec 2020 06:26:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyPYGPB5MVKht7xgWM2CXMhmRzxisot4i6pymq+Eg9PYuQbT5q02aeIh0fbsUZ4bK4NK/a4nA==
+X-Received: by 2002:a1c:3b44:: with SMTP id i65mr14045034wma.9.1607696806652;
+        Fri, 11 Dec 2020 06:26:46 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id h83sm16285169wmf.9.2020.12.11.06.26.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Dec 2020 06:26:45 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 48286180092; Fri, 11 Dec 2020 15:26:44 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jonathan Morton <chromatix99@gmail.com>,
+        Pete Heist <pete@heistp.net>
+Subject: [PATCH net-next v3] inet_ecn: Use csum16_add() helper for IP_ECN_set_* helpers
+Date:   Fri, 11 Dec 2020 15:26:38 +0100
+Message-Id: <20201211142638.154780-1-toke@redhat.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+Jakub pointed out that the IP_ECN_set* helpers basically open-code
+csum16_add(), so let's switch them over to using the helper instead.
 
-Welcome back!
+v2:
+- Use __be16 for check_add stack variable in IP_ECN_set_ce() (kbot)
+v3:
+- Turns out we need __force casts to do arithmetic on __be16 types
 
-I'm a bit late with this, I guess, but I hope you can still
-pull it into net-next for 5.11. Nothing really stands out,
-we have some 6 GHz fixes, and various small things all over.
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Tested-by: Jonathan Morton <chromatix99@gmail.com>
+Tested-by: Pete Heist <pete@heistp.net>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ include/net/inet_ecn.h | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-Please pull and let me know if there's any problem.
-
-Thanks,
-johannes
-
-
-
-The following changes since commit 91163f82143630a9629a8bf0227d49173697c69c:
-
-  Merge branch 'add-ppp_generic-ioctls-to-bridge-channels' (2020-12-10 13:58:49 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2020-12-11
-
-for you to fetch changes up to c534e093d865d926d042e0a3f228d1152627ccab:
-
-  mac80211: add ieee80211_set_sar_specs (2020-12-11 13:39:59 +0100)
-
-----------------------------------------------------------------
-A new set of wireless changes:
- * validate key indices for key deletion
- * more preamble support in mac80211
- * various 6 GHz scan fixes/improvements
- * a common SAR power limitations API
- * various small fixes & code improvements
-
-----------------------------------------------------------------
-Anant Thazhemadam (1):
-      nl80211: validate key indexes for cfg80211_registered_device
-
-Avraham Stern (3):
-      nl80211: always accept scan request with the duration set
-      ieee80211: update reduced neighbor report TBTT info length
-      mac80211: support Rx timestamp calculation for all preamble types
-
-Ayala Beker (1):
-      cfg80211: scan PSC channels in case of scan with wildcard SSID
-
-Carl Huang (2):
-      nl80211: add common API to configure SAR power limitations
-      mac80211: add ieee80211_set_sar_specs
-
-Colin Ian King (1):
-      net: wireless: make a const array static, makes object smaller
-
-Emmanuel Grumbach (2):
-      rfkill: add a reason to the HW rfkill state
-      mac80211: don't filter out beacons once we start CSA
-
-Gustavo A. R. Silva (3):
-      cfg80211: Fix fall-through warnings for Clang
-      mac80211: Fix fall-through warnings for Clang
-      nl80211: Fix fall-through warnings for Clang
-
-Ilan Peer (6):
-      cfg80211: Parse SAE H2E only membership selector
-      mac80211: Skip entries with SAE H2E only membership selector
-      cfg80211: Update TSF and TSF BSSID for multi BSS
-      cfg80211: Save the regulatory domain when setting custom regulatory
-      mac80211: Fix calculation of minimal channel width
-      mac80211: Update rate control on channel change
-
-Johannes Berg (10):
-      mac80211: support MIC error/replay detected counters driver update
-      mac80211: disallow band-switch during CSA
-      cfg80211: include block-tx flag in channel switch started event
-      cfg80211: remove struct ieee80211_he_bss_color
-      mac80211: use struct assignment for he_obss_pd
-      cfg80211: support immediate reconnect request hint
-      mac80211: support driver-based disconnect with reconnect hint
-      mac80211: don't set set TDLS STA bandwidth wider than possible
-      mac80211: use bitfield helpers for BA session action frames
-      mac80211: ignore country element TX power on 6 GHz
-
-Lev Stipakov (1):
-      net: mac80211: use core API for updating TX/RX stats
-
-Sami Tolvanen (1):
-      cfg80211: fix callback type mismatches in wext-compat
-
-Shaul Triebitz (1):
-      mac80211: he: remove non-bss-conf fields from bss_conf
-
-Tom Rix (1):
-      mac80211: remove trailing semicolon in macro definitions
-
-Wen Gong (2):
-      mac80211: mlme: save ssid info to ieee80211_bss_conf while assoc
-      mac80211: fix a mistake check for rx_stats update
-
- include/linux/ieee80211.h     |   9 +-
- include/linux/rfkill.h        |  24 ++++-
- include/net/cfg80211.h        |  75 ++++++++++---
- include/net/mac80211.h        |  35 ++++++-
- include/uapi/linux/nl80211.h  | 114 +++++++++++++++++++-
- include/uapi/linux/rfkill.h   |  16 ++-
- net/mac80211/agg-rx.c         |   8 +-
- net/mac80211/agg-tx.c         |  12 +--
- net/mac80211/cfg.c            |  22 +++-
- net/mac80211/chan.c           |  71 ++++++++++++-
- net/mac80211/debugfs.c        |   2 +-
- net/mac80211/debugfs_key.c    |   2 +-
- net/mac80211/debugfs_netdev.c |   6 +-
- net/mac80211/debugfs_sta.c    |   2 +-
- net/mac80211/ieee80211_i.h    |  14 +--
- net/mac80211/key.c            |  49 +++++++++
- net/mac80211/mlme.c           | 123 +++++++++++++++-------
- net/mac80211/rx.c             |  20 +---
- net/mac80211/trace.h          |  23 +++-
- net/mac80211/tx.c             |  16 +--
- net/mac80211/util.c           |  66 +++++++++++-
- net/mac80211/vht.c            |  14 ++-
- net/rfkill/core.c             |  41 ++++++--
- net/wireless/core.h           |   2 +
- net/wireless/mlme.c           |  26 +++--
- net/wireless/nl80211.c        | 239 ++++++++++++++++++++++++++++++++++++++----
- net/wireless/nl80211.h        |   8 +-
- net/wireless/rdev-ops.h       |  12 +++
- net/wireless/reg.c            |  10 +-
- net/wireless/scan.c           |  21 ++--
- net/wireless/trace.h          |  31 +++++-
- net/wireless/util.c           |  52 +++++++--
- net/wireless/wext-compat.c    | 103 ++++++++++++------
- 33 files changed, 1041 insertions(+), 227 deletions(-)
+diff --git a/include/net/inet_ecn.h b/include/net/inet_ecn.h
+index 563457fec557..ba77f47ef61e 100644
+--- a/include/net/inet_ecn.h
++++ b/include/net/inet_ecn.h
+@@ -8,6 +8,7 @@
+ 
+ #include <net/inet_sock.h>
+ #include <net/dsfield.h>
++#include <net/checksum.h>
+ 
+ enum {
+ 	INET_ECN_NOT_ECT = 0,
+@@ -75,8 +76,8 @@ static inline void INET_ECN_dontxmit(struct sock *sk)
+ 
+ static inline int IP_ECN_set_ce(struct iphdr *iph)
+ {
+-	u32 check = (__force u32)iph->check;
+ 	u32 ecn = (iph->tos + 1) & INET_ECN_MASK;
++	__be16 check_add;
+ 
+ 	/*
+ 	 * After the last operation we have (in binary):
+@@ -93,23 +94,20 @@ static inline int IP_ECN_set_ce(struct iphdr *iph)
+ 	 * INET_ECN_ECT_1 => check += htons(0xFFFD)
+ 	 * INET_ECN_ECT_0 => check += htons(0xFFFE)
+ 	 */
+-	check += (__force u16)htons(0xFFFB) + (__force u16)htons(ecn);
++	check_add = (__force __be16)((__force u16)htons(0xFFFB) +
++				     (__force u16)htons(ecn));
+ 
+-	iph->check = (__force __sum16)(check + (check>=0xFFFF));
++	iph->check = csum16_add(iph->check, check_add);
+ 	iph->tos |= INET_ECN_CE;
+ 	return 1;
+ }
+ 
+ static inline int IP_ECN_set_ect1(struct iphdr *iph)
+ {
+-	u32 check = (__force u32)iph->check;
+-
+ 	if ((iph->tos & INET_ECN_MASK) != INET_ECN_ECT_0)
+ 		return 0;
+ 
+-	check += (__force u16)htons(0x1);
+-
+-	iph->check = (__force __sum16)(check + (check>=0xFFFF));
++	iph->check = csum16_add(iph->check, htons(0x1));
+ 	iph->tos ^= INET_ECN_MASK;
+ 	return 1;
+ }
+-- 
+2.29.2
 
