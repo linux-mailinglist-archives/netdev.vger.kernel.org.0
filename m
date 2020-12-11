@@ -2,152 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DACE82D7025
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 07:26:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ADA22D7026
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 07:28:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395483AbgLKGZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 01:25:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54814 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391223AbgLKGZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 01:25:19 -0500
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BBCC0613CF
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 22:24:39 -0800 (PST)
-Received: by mail-il1-x142.google.com with SMTP id q1so7763147ilt.6
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 22:24:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R2nu+evV2RiqlMwq+jAP2JmdldTYUhryc5/wfbY/nC4=;
-        b=OSuxAgWyRLfNHDFi4Mn2mD2SzQBYRjIA/jPZa+b+zQh0bBZxvj1NaXT1kBXv71Huju
-         +DZFt1vawTYZBoy7XTuJDfUrqDSOWiimjxGIOtBmDb0/SGE35+8CzVzYP9zdS2fsyfy1
-         pMg311bA9HuotVrE4hYkWw8hbEuF7Ls6YHzMCAEqz8Y7+gg+DAS8KapSieJBgivwYnQx
-         2bhFRgEJ91rfmlaQymGlTKaKkiPpMV5JO+HuvAwIrYXjzmlsPE5vbqpz9nyVFzGykH+8
-         2EeXoAyRGup17oUlzVR/uubntugUC7SCLOfi9kZFUM4swri7Wff0rtQrctncbCQbQF4S
-         JsOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R2nu+evV2RiqlMwq+jAP2JmdldTYUhryc5/wfbY/nC4=;
-        b=LY62QbriUZDds3N0/KNrLV96d5GFOO4fHUKY4PZUk/5rLxfMEFTOsB7C+L1nl+RTmu
-         ZW7jokgrubz2dHTl2X704JYuNzN4iy4xEqe1rOIT8qFws4daEI3JKG8c1ynYAS7RAUAE
-         78jkr42kyc+DJTdpLTp97ikzhiqRmnBLf7If6u98mcxPnnLuY4140tNdhYoUcNCWthLW
-         uzuNF+LjOYYABWakPdPAYZ2jo+xlJnnl0W3jDsz/OSFZj1ByUqVKJIbjz1zXEiXk0Y0d
-         xdgS7b/HeV0yuUAdu0AFh7SD2qVNN2Rl+qghYh9Mx8xPV2AJkSe0biftwu3Fng874KJv
-         yOTQ==
-X-Gm-Message-State: AOAM530RVMiGikRIF+Br9oVTkeWdXvKcB42zQVT2NhJsrWpEFHxVG88Q
-        SKEm3Ypl2ouCzlnGnCWrdCRJt6Kv7M6weFsewgAmKQ==
-X-Google-Smtp-Source: ABdhPJw750jTsaFhagrZFnuvTxKa/l62yhXEhpVEN2/d1mxUqNtSlZ3KCEKEJ6kVvn7MOpbF7YZQYIJHXwYvVajfNDA=
-X-Received: by 2002:a92:358e:: with SMTP id c14mr13382285ilf.69.1607667878507;
- Thu, 10 Dec 2020 22:24:38 -0800 (PST)
+        id S2391203AbgLKG06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 01:26:58 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:59408 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389168AbgLKG02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 01:26:28 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BB6PbZX005950;
+        Thu, 10 Dec 2020 22:25:37 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=/4HcnOXlrpMRHjusB7pCy+/peq/XG/WdaDpOkoqZKX4=;
+ b=k3vCipjMAYtg1kifyE4TnfvpSgm26ZqS+l7nhcU8rLMgpq+oid3s9oIjuJHpIS9lm6QS
+ qiXQsunfPf6I69CfRPR/lX97Voy8GyS07RR4zGg4IaNa7+BPG8uH7tB1sqBE5f3b8GKt
+ xUWpzylq2QDxmsTYJ9wJPrEyoLjwN8Dgxog7mbGFKnl59OYFZq3dKhCXZycT80pO0cNN
+ Sot9ugV6r7cq8JJGJq00Hi14LxWsnRDvedOUKvEh5xza7tvYkxUbtEg9GEssNMvgPrfi
+ BarOVX8IPT954y1BeEMw0YsQzw0MsADYuRSxh3kAFZ0YfybXrW4yWplprGyzNX0lHkCm hw== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 358akrhyvb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 10 Dec 2020 22:25:37 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Dec
+ 2020 22:25:35 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Dec
+ 2020 22:25:34 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 10 Dec 2020 22:25:34 -0800
+Received: from hyd1584.marvell.com (unknown [10.29.37.82])
+        by maili.marvell.com (Postfix) with ESMTP id 55B773F703F;
+        Thu, 10 Dec 2020 22:25:27 -0800 (PST)
+From:   George Cherian <george.cherian@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>,
+        <george.cherian@marvell.com>, <willemdebruijn.kernel@gmail.com>,
+        <saeed@kernel.org>, <jiri@resnulli.us>
+Subject: [PATCHv6 net-next 0/3] Add devlink and devlink health reporters to 
+Date:   Fri, 11 Dec 2020 11:55:23 +0530
+Message-ID: <20201211062526.2302643-1-george.cherian@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <160765171921.6905.7897898635812579754.stgit@localhost.localdomain>
-In-Reply-To: <160765171921.6905.7897898635812579754.stgit@localhost.localdomain>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 11 Dec 2020 07:24:27 +0100
-Message-ID: <CANn89iJ5HnJYv6eWb1jm6rK173DFkp2GRnfvi9vnYwXZPzE4LQ@mail.gmail.com>
-Subject: Re: [net PATCH] tcp: Mark fastopen SYN packet as lost when receiving ICMP_TOOBIG/ICMP_FRAG_NEEDED
-To:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Yuchung Cheng <ycheng@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-11_01:2020-12-09,2020-12-11 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11, 2020 at 2:55 AM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> From: Alexander Duyck <alexanderduyck@fb.com>
->
-> In the case of a fastopen SYN there are cases where it may trigger either a
-> ICMP_TOOBIG message in the case of IPv6 or a fragmentation request in the
-> case of IPv4. This results in the socket stalling for a second or more as
-> it does not respond to the message by retransmitting the SYN frame.
->
-> Normally a SYN frame should not be able to trigger a ICMP_TOOBIG or
-> ICMP_FRAG_NEEDED however in the case of fastopen we can have a frame that
-> makes use of the entire MTU. In the case of fastopen it does, and an
-> additional complication is that the retransmit queue doesn't contain the
-> original frames. As a result when tcp_simple_retransmit is called and
-> walks the list of frames in the queue it may not mark the frames as lost
-> because both the SYN and the data packet each individually are smaller than
-> the MSS size after the adjustment. This results in the socket being stalled
-> until the retransmit timer kicks in and forces the SYN frame out again
-> without the data attached.
->
-> In order to resolve this we need to mark the SYN frame as lost if it is the
-> first packet in the queue. Doing this allows the socket to recover much
-> more quickly without the retransmit timeout stall.
->
-> Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+Add basic devlink and devlink health reporters.
+Devlink health reporters are added for NPA block.
+
+Address Jakub's comment to add devlink support for error reporting.
+https://www.spinics.net/lists/netdev/msg670712.html
+
+For now, I have dropped the NIX block health reporters. 
+This series attempts to add health reporters only for the NPA block.
+As per Jakub's suggestion separate reporters per event is used and also
+got rid of the counters.
+
+Change-log:
+v6
+ - Address Jakub comments
+ - Add reporters per event for each block.
+ - Remove the Sw counter.
+ - Remove the mbox version from devlink info.
+
+v5 
+ - Address Jiri's comment
+ - use devlink_fmsg_arr_pair_nest_start() for NIX blocks 
+
+v4 
+ - Rebase to net-next (no logic changes).
+ 
+v3
+ - Address Saeed's comments on v2.
+ - Renamed the reporter name as hw_*.
+ - Call devlink_health_report() when an event is raised.
+ - Added recover op too.
+
+v2
+ - Address Willem's comments on v1.
+ - Fixed the sparse issues, reported by Jakub.
 
 
-I do not think it is net candidate, but net-next
+George Cherian (3):
+  octeontx2-af: Add devlink suppoort to af driver
+  octeontx2-af: Add devlink health reporters for NPA
+  docs: octeontx2: Add Documentation for NPA health reporters
 
-Yuchung might correct me, but I think TCP Fastopen standard was very
-conservative about payload len in the SYN packet
+ .../ethernet/marvell/octeontx2.rst            |  50 ++
+ .../net/ethernet/marvell/octeontx2/Kconfig    |   1 +
+ .../ethernet/marvell/octeontx2/af/Makefile    |   2 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   9 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   4 +
+ .../marvell/octeontx2/af/rvu_devlink.c        | 770 ++++++++++++++++++
+ .../marvell/octeontx2/af/rvu_devlink.h        |  55 ++
+ .../marvell/octeontx2/af/rvu_struct.h         |  23 +
+ 8 files changed, 912 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
 
-So receiving an ICMP was never considered.
+-- 
+2.25.1
 
-> ---
->  include/net/tcp.h    |    1 +
->  net/ipv4/tcp_input.c |    8 ++++++++
->  net/ipv4/tcp_ipv4.c  |    6 ++++++
->  net/ipv6/tcp_ipv6.c  |    4 ++++
->  4 files changed, 19 insertions(+)
->
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index d4ef5bf94168..6181ad98727a 100644
-> --- a/include/net/tcp.h
-
-
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -546,6 +546,12 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
->                         if (sk->sk_state == TCP_LISTEN)
->                                 goto out;
->
-> +                       /* fastopen SYN may have triggered the fragmentation
-> +                        * request. Mark the SYN or SYN/ACK as lost.
-> +                        */
-> +                       if (sk->sk_state == TCP_SYN_SENT)
-> +                               tcp_mark_syn_lost(sk);
-
-This is going to crash in some cases, you do not know if you own the socket.
-(Look a few lines below)
-
-> +
->                         tp->mtu_info = info;
->                         if (!sock_owned_by_user(sk)) {
->                                 tcp_v4_mtu_reduced(sk);
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 992cbf3eb9e3..d7b1346863e3 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -443,6 +443,10 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
->                 if (!ip6_sk_accept_pmtu(sk))
->                         goto out;
->
-> +               /* fastopen SYN may have triggered TOOBIG, mark it lost. */
-> +               if (sk->sk_state == TCP_SYN_SENT)
-> +                       tcp_mark_syn_lost(sk);
-
-
-Same issue here.
-
-> +
->                 tp->mtu_info = ntohl(info);
->                 if (!sock_owned_by_user(sk))
->                         tcp_v6_mtu_reduced(sk);
->
->
