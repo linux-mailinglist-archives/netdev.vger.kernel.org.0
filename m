@@ -2,139 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 753662D77D0
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 15:28:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EF4C2D77FB
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 15:35:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406071AbgLKO2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 09:28:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22636 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726962AbgLKO2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 09:28:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607696809;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6PUvQxUTo6XSalZrcrFnAw4kOJvTyVzYyCrrIhslngc=;
-        b=Pc+pOfee/uDepmRbrgy2+9wHewpFnPUuGV2uYJ6MsMf1UuyQQVfZAFScDf9V0fATtzFXd5
-        OWMZgXOe2mPnHc2P8MlxP7pztNVzZPcc0848KuPTtWK0oDOfBuseo1+fnoONTpzVE6Dsf4
-        ORup04ERiZx8IMMfoAqVMRyGFKUuKmc=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-66-9sVUxkOTPzyVh6POb7KD-Q-1; Fri, 11 Dec 2020 09:26:48 -0500
-X-MC-Unique: 9sVUxkOTPzyVh6POb7KD-Q-1
-Received: by mail-wm1-f72.google.com with SMTP id g198so1685236wme.7
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 06:26:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6PUvQxUTo6XSalZrcrFnAw4kOJvTyVzYyCrrIhslngc=;
-        b=SELzc4xxCQSbBhb6l6czFT05+RQzrUUW5ZbyaWmE+AChUx+rJgvQLJ3tZxXcMeaZNI
-         v+HvwgoTC4PAFyq23zhJ2dh/CHED/3bHtxduF8ChfKYHNPX1g4dkwr82+7EA6jnbP3Cy
-         456DzUPQeb3QS5rEJfjc4dJVpEDrkFFaRcoNJuBWfq7y658WSbKthFqE5HAUIpZ+7WXw
-         unuTJkJP5PahB1JsZRtXM8Xe9UOd6EJAPpcga1TccAZptmfazCPbGCHU9h3/2AHdmbUA
-         bMpoy10RhqUdxMmZygkRPVx6qUusQ5F+cp6oZZouu34owKDnje7ovnCm9dsZXjTwETJE
-         tE+A==
-X-Gm-Message-State: AOAM530XHHZDbf3TsG5sWJJ7wr4+/2Biy5ZKhNsy7iD8fMoNf7JXHe5x
-        /ygMelQXhL4MplfOMV+Oh+Utfcbp/lX9ELcKXCn83t0//u9wQkh/gGxc7nVhJBOD4vgDtKtbK0X
-        ZZQKIcqV89bCKVDR6
-X-Received: by 2002:a1c:3b44:: with SMTP id i65mr14045044wma.9.1607696806792;
-        Fri, 11 Dec 2020 06:26:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyPYGPB5MVKht7xgWM2CXMhmRzxisot4i6pymq+Eg9PYuQbT5q02aeIh0fbsUZ4bK4NK/a4nA==
-X-Received: by 2002:a1c:3b44:: with SMTP id i65mr14045034wma.9.1607696806652;
-        Fri, 11 Dec 2020 06:26:46 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id h83sm16285169wmf.9.2020.12.11.06.26.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 06:26:45 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 48286180092; Fri, 11 Dec 2020 15:26:44 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jonathan Morton <chromatix99@gmail.com>,
-        Pete Heist <pete@heistp.net>
-Subject: [PATCH net-next v3] inet_ecn: Use csum16_add() helper for IP_ECN_set_* helpers
-Date:   Fri, 11 Dec 2020 15:26:38 +0100
-Message-Id: <20201211142638.154780-1-toke@redhat.com>
-X-Mailer: git-send-email 2.29.2
+        id S2406289AbgLKOdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 09:33:16 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:44700 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406261AbgLKOcd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 09:32:33 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BBEK3q4153543;
+        Fri, 11 Dec 2020 14:29:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=XwmNJXsce0biO7XLe+zGaIsjtrmRfK/vTz0mYn6nQBU=;
+ b=bR7yH4+1kTFS/uaRb9qwsHTyFm2EoNVmWnQB/6uOrO708u+eqNtBobFpmn1ttrRdH1ys
+ eWZmcv+9rBDGS0S9dxVH7WJEjVIq3kan/8A2J+2JEfl4cmi6SdTHDxhFZ9FOjgghK0i/
+ gSlqjyBs3FtwP3+ZAOMx//Xrh2s4GGZVNmZZvw8Dg7A8ucgqyFuZ1jZz6HYR0R/QX3KB
+ jq1go8jZfLC3JdZILS9AqGFwicAYPALMmwsEwRd+5bZO9goG03a6o19lTH5pgGTEdXEs
+ I4ECgSmCCiTYqeMDSavCaEpGT9QkWsYwEp7lVPsTzWiLDfHkK38lg3Q5ATAnYCJ8Q3TZ zQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2130.oracle.com with ESMTP id 3581mratkd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 11 Dec 2020 14:29:21 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BBEPIII069767;
+        Fri, 11 Dec 2020 14:29:20 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 358kstfcjw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Dec 2020 14:29:20 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0BBETD7i006093;
+        Fri, 11 Dec 2020 14:29:13 GMT
+Received: from [10.39.222.144] (/10.39.222.144)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 11 Dec 2020 06:29:13 -0800
+Subject: Re: [patch 27/30] xen/events: Only force affinity mask for percpu
+ interrupts
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        afzal mohammed <afzal.mohd.ma@gmail.com>,
+        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Wambui Karuga <wambui.karugax@gmail.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-pci@vger.kernel.org,
+        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+References: <20201210192536.118432146@linutronix.de>
+ <20201210194045.250321315@linutronix.de>
+ <7f7af60f-567f-cdef-f8db-8062a44758ce@oracle.com>
+ <2164a0ce-0e0d-c7dc-ac97-87c8f384ad82@suse.com>
+ <871rfwiknd.fsf@nanos.tec.linutronix.de>
+From:   boris.ostrovsky@oracle.com
+Organization: Oracle Corporation
+Message-ID: <9806692f-24a3-4b6f-ae55-86bd66481271@oracle.com>
+Date:   Fri, 11 Dec 2020 09:29:09 -0500
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <871rfwiknd.fsf@nanos.tec.linutronix.de>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9831 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
+ bulkscore=0 malwarescore=0 phishscore=0 mlxscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012110094
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9831 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=999
+ clxscore=1015 malwarescore=0 priorityscore=1501 adultscore=0
+ lowpriorityscore=0 phishscore=0 spamscore=0 impostorscore=0 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012110093
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub pointed out that the IP_ECN_set* helpers basically open-code
-csum16_add(), so let's switch them over to using the helper instead.
 
-v2:
-- Use __be16 for check_add stack variable in IP_ECN_set_ce() (kbot)
-v3:
-- Turns out we need __force casts to do arithmetic on __be16 types
+On 12/11/20 7:37 AM, Thomas Gleixner wrote:
+> On Fri, Dec 11 2020 at 13:10, Jürgen Groß wrote:
+>> On 11.12.20 00:20, boris.ostrovsky@oracle.com wrote:
+>>> On 12/10/20 2:26 PM, Thomas Gleixner wrote:
+>>>> All event channel setups bind the interrupt on CPU0 or the target CPU for
+>>>> percpu interrupts and overwrite the affinity mask with the corresponding
+>>>> cpumask. That does not make sense.
+>>>>
+>>>> The XEN implementation of irqchip::irq_set_affinity() already picks a
+>>>> single target CPU out of the affinity mask and the actual target is stored
+>>>> in the effective CPU mask, so destroying the user chosen affinity mask
+>>>> which might contain more than one CPU is wrong.
+>>>>
+>>>> Change the implementation so that the channel is bound to CPU0 at the XEN
+>>>> level and leave the affinity mask alone. At startup of the interrupt
+>>>> affinity will be assigned out of the affinity mask and the XEN binding will
+>>>> be updated.
+>>>
+>>> If that's the case then I wonder whether we need this call at all and instead bind at startup time.
+>> After some discussion with Thomas on IRC and xen-devel archaeology the
+>> result is: this will be needed especially for systems running on a
+>> single vcpu (e.g. small guests), as the .irq_set_affinity() callback
+>> won't be called in this case when starting the irq.
 
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Tested-by: Jonathan Morton <chromatix99@gmail.com>
-Tested-by: Pete Heist <pete@heistp.net>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- include/net/inet_ecn.h | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/include/net/inet_ecn.h b/include/net/inet_ecn.h
-index 563457fec557..ba77f47ef61e 100644
---- a/include/net/inet_ecn.h
-+++ b/include/net/inet_ecn.h
-@@ -8,6 +8,7 @@
- 
- #include <net/inet_sock.h>
- #include <net/dsfield.h>
-+#include <net/checksum.h>
- 
- enum {
- 	INET_ECN_NOT_ECT = 0,
-@@ -75,8 +76,8 @@ static inline void INET_ECN_dontxmit(struct sock *sk)
- 
- static inline int IP_ECN_set_ce(struct iphdr *iph)
- {
--	u32 check = (__force u32)iph->check;
- 	u32 ecn = (iph->tos + 1) & INET_ECN_MASK;
-+	__be16 check_add;
- 
- 	/*
- 	 * After the last operation we have (in binary):
-@@ -93,23 +94,20 @@ static inline int IP_ECN_set_ce(struct iphdr *iph)
- 	 * INET_ECN_ECT_1 => check += htons(0xFFFD)
- 	 * INET_ECN_ECT_0 => check += htons(0xFFFE)
- 	 */
--	check += (__force u16)htons(0xFFFB) + (__force u16)htons(ecn);
-+	check_add = (__force __be16)((__force u16)htons(0xFFFB) +
-+				     (__force u16)htons(ecn));
- 
--	iph->check = (__force __sum16)(check + (check>=0xFFFF));
-+	iph->check = csum16_add(iph->check, check_add);
- 	iph->tos |= INET_ECN_CE;
- 	return 1;
- }
- 
- static inline int IP_ECN_set_ect1(struct iphdr *iph)
- {
--	u32 check = (__force u32)iph->check;
--
- 	if ((iph->tos & INET_ECN_MASK) != INET_ECN_ECT_0)
- 		return 0;
- 
--	check += (__force u16)htons(0x1);
--
--	iph->check = (__force __sum16)(check + (check>=0xFFFF));
-+	iph->check = csum16_add(iph->check, htons(0x1));
- 	iph->tos ^= INET_ECN_MASK;
- 	return 1;
- }
--- 
-2.29.2
+On UP are we not then going to end up with an empty affinity mask? Or are we guaranteed to have it set to 1 by interrupt generic code?
 
+
+This is actually why I brought this up in the first place --- a potential mismatch between the affinity mask and Xen-specific data (e.g. info->cpu and then protocol-specific data in event channel code). Even if they are re-synchronized later, at startup time (for SMP).
+
+
+I don't see anything that would cause a problem right now but I worry that this inconsistency may come up at some point.
+
+
+-boris
+
+
+> That's right, but not limited to ARM. The same problem exists on x86 UP.
+> So yes, the call makes sense, but the changelog is not really useful.
+> Let me add a comment to this.
+>
+> Thanks,
+>
+>         tglx
+>
