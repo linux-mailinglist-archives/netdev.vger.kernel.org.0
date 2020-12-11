@@ -2,146 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BE512D7FCE
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 21:13:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 040222D7FF6
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 21:26:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbgLKUL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 15:11:58 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:52116 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390751AbgLKULw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 15:11:52 -0500
-Received: by mail-il1-f200.google.com with SMTP id 1so4670961ilg.18
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 12:11:36 -0800 (PST)
+        id S2404264AbgLKUYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 15:24:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392621AbgLKUY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 15:24:26 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0315C0613D3;
+        Fri, 11 Dec 2020 12:23:45 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id r127so9166183yba.10;
+        Fri, 11 Dec 2020 12:23:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HU5bcb4vboKKo5ZnupzWKljoLbJyTqU2QOH7sAK8KEs=;
+        b=FwuyWyMB855nNdau7Gnd4oBNoX/XQ6dRrDgozztFSrPbdmeqmARyWiX6HBybTXiMNG
+         PINZNh5mCZzXQCwtqyG0A4j7SXG0UzcE71Mxx17SGknQqKc9ibt4foeivwg5G8n2G+Sb
+         Jy8V2dqrtQxInphspTqEGzHjGbKrZDF0UitoEZ52NTQbZkYt4gsj53PLUSZuzDE3C3/l
+         GS0dU0/gaYrqIY1D7RZFOW+Sp0B5T5dlLA4iV4s4Ku6U+aJod11JDyKtltyd4OqMTDzI
+         FoFJ2o01V/0x2orK6PSJn/D/z2R1PK7pxsCrd09GyPjDXzSQych6sXgrdAcXwPtaYAfN
+         H/Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=GVX9/CI9tqNteYCMCXCHoxN97w4Mon0uddpJWLCYX+I=;
-        b=gXxa+Lw5fTBBEyF6TOgdmTeNINJ1LewIo+Xo8a4VmcHJC26nRV9y7YcB2KkXdeJ98/
-         wJHznTR2sIBouxanl8u128bcJckY27ch1a+8yMes/wwtjCYQTyhh33+3Ik0PrHsSTTWb
-         ruYCnG+aq7nU2cLKG5i6X2IFzsGT9IAHqPzhppvOyGt4qYOpZiFTazFdx2cxNO24B+Ie
-         Yh/EAM0TmdGur9rgERqJn/Ah2e3xxVy8nsaczLTCU2FDecxknaflf8LpVeTMns3Uve2l
-         /oUHYuEv++xew+FqFl8kw7jnRO5h4qGccNXsYDR1KiE3VsscdLYwUjawxw89uA24l09E
-         nTmw==
-X-Gm-Message-State: AOAM5305tPyd7vjFTBri0Ek1KumfcYDeQs0DGXZZThcA/jDybfNpt55F
-        YfUv8sX3uPpYLkDmqzPu0DjeJ6G/9otmhhtDdXyuMetZBR5W
-X-Google-Smtp-Source: ABdhPJwXNSJv0Y70GjITxLk1OWWjifb3kjnuZjeSFNwQ923sGU+t9wnYNMf+SDVllS6HdZw0W/vkXQ4Ruz8LOaa4xr6x15QjyLuF
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HU5bcb4vboKKo5ZnupzWKljoLbJyTqU2QOH7sAK8KEs=;
+        b=YvmjRa9rSeD2x7XhX7YFsEn8Rzk+dTkdFqnCqWu3S7oFtJwo8loF5GY9g76WiaydPL
+         NfZDCZnoAO18cr28Zan1bMzxFXBG6yy94TTibMXWM6ps8x86FoBWJXW6XbtUDzppydxo
+         0+tsog6oODnkk+10K4NjibyUUnf67WAhnvH+OAROiz3/6vkiGx6nSdT/6aDU8fO+w+Oy
+         GJ/cFBHtWxXyl9BSdPNmqAFEB1AifgVxe+2gfjTB5X7S3RvLlM+Nb5TKjjlnonUT2Ah1
+         x8Km8ZQoDQJnpgJk2/tqVd+hChcqq/APCsF8tkdS6ZkXJXmqZaUeefodSdXLWTC5reN1
+         8tqw==
+X-Gm-Message-State: AOAM531STlv2BIcqB4CVNmEQl7DCl3NH0Mi05HF7m2Xv3Q03A+jR675x
+        b9wuXsV+is35Vu0/5hN1e+jvl8p6ZtKIyLDqq8Q=
+X-Google-Smtp-Source: ABdhPJwjhNTkcniZ46zkjO3Qw+3Nyz3dn9XCpP4BA3JU8h8EytRQjS4Q1uz4H8l0iPMyi/eKRnyDQsmYtIFTrk3q9pI=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr21229547ybe.403.1607718225131;
+ Fri, 11 Dec 2020 12:23:45 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:ce8a:: with SMTP id y10mr17286758jaq.102.1607717471175;
- Fri, 11 Dec 2020 12:11:11 -0800 (PST)
-Date:   Fri, 11 Dec 2020 12:11:11 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c4ccad05b635e468@google.com>
-Subject: KASAN: slab-out-of-bounds Read in rtl_fw_do_work
-From:   syzbot <syzbot+7b774a105bad5f282322@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, davem@davemloft.net, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pkshih@realtek.com,
-        syzkaller-bugs@googlegroups.com
+References: <20201211171138.63819-1-jonathan.lemon@gmail.com> <20201211171138.63819-2-jonathan.lemon@gmail.com>
+In-Reply-To: <20201211171138.63819-2-jonathan.lemon@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 11 Dec 2020 12:23:34 -0800
+Message-ID: <CAEf4BzYswHcuQNdqyOymB5MTFDKJy0xkG4+Yo_CpUGH4BVqjzg@mail.gmail.com>
+Subject: Re: [PATCH 1/1 v3 bpf-next] bpf: increment and use correct thread iterator
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Dec 11, 2020 at 10:56 AM Jonathan Lemon
+<jonathan.lemon@gmail.com> wrote:
+>
+> From: Jonathan Lemon <bsd@fb.com>
+>
+> On some systems, some variant of the following splat is
+> repeatedly seen.  The common factor in all traces seems
+> to be the entry point to task_file_seq_next().  With the
+> patch, all warnings go away.
+>
+>     rcu: INFO: rcu_sched self-detected stall on CPU
+>     rcu: \x0926-....: (20992 ticks this GP) idle=d7e/1/0x4000000000000002 softirq=81556231/81556231 fqs=4876
+>     \x09(t=21033 jiffies g=159148529 q=223125)
+>     NMI backtrace for cpu 26
+>     CPU: 26 PID: 2015853 Comm: bpftool Kdump: loaded Not tainted 5.6.13-0_fbk4_3876_gd8d1f9bf80bb #1
+>     Hardware name: Quanta Twin Lakes MP/Twin Lakes Passive MP, BIOS F09_3A12 10/08/2018
+>     Call Trace:
+>      <IRQ>
+>      dump_stack+0x50/0x70
+>      nmi_cpu_backtrace.cold.6+0x13/0x50
+>      ? lapic_can_unplug_cpu.cold.30+0x40/0x40
+>      nmi_trigger_cpumask_backtrace+0xba/0xca
+>      rcu_dump_cpu_stacks+0x99/0xc7
+>      rcu_sched_clock_irq.cold.90+0x1b4/0x3aa
+>      ? tick_sched_do_timer+0x60/0x60
+>      update_process_times+0x24/0x50
+>      tick_sched_timer+0x37/0x70
+>      __hrtimer_run_queues+0xfe/0x270
+>      hrtimer_interrupt+0xf4/0x210
+>      smp_apic_timer_interrupt+0x5e/0x120
+>      apic_timer_interrupt+0xf/0x20
+>      </IRQ>
+>     RIP: 0010:get_pid_task+0x38/0x80
+>     Code: 89 f6 48 8d 44 f7 08 48 8b 00 48 85 c0 74 2b 48 83 c6 55 48 c1 e6 04 48 29 f0 74 19 48 8d 78 20 ba 01 00 00 00 f0 0f c1 50 20 <85> d2 74 27 78 11 83 c2 01 78 0c 48 83 c4 08 c3 31 c0 48 83 c4 08
+>     RSP: 0018:ffffc9000d293dc8 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
+>     RAX: ffff888637c05600 RBX: ffffc9000d293e0c RCX: 0000000000000000
+>     RDX: 0000000000000001 RSI: 0000000000000550 RDI: ffff888637c05620
+>     RBP: ffffffff8284eb80 R08: ffff88831341d300 R09: ffff88822ffd8248
+>     R10: ffff88822ffd82d0 R11: 00000000003a93c0 R12: 0000000000000001
+>     R13: 00000000ffffffff R14: ffff88831341d300 R15: 0000000000000000
+>      ? find_ge_pid+0x1b/0x20
+>      task_seq_get_next+0x52/0xc0
+>      task_file_seq_get_next+0x159/0x220
+>      task_file_seq_next+0x4f/0xa0
+>      bpf_seq_read+0x159/0x390
+>      vfs_read+0x8a/0x140
+>      ksys_read+0x59/0xd0
+>      do_syscall_64+0x42/0x110
+>      entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>     RIP: 0033:0x7f95ae73e76e
+>     Code: Bad RIP value.
+>     RSP: 002b:00007ffc02c1dbf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+>     RAX: ffffffffffffffda RBX: 000000000170faa0 RCX: 00007f95ae73e76e
+>     RDX: 0000000000001000 RSI: 00007ffc02c1dc30 RDI: 0000000000000007
+>     RBP: 00007ffc02c1ec70 R08: 0000000000000005 R09: 0000000000000006
+>     R10: fffffffffffff20b R11: 0000000000000246 R12: 00000000019112a0
+>     R13: 0000000000000000 R14: 0000000000000007 R15: 00000000004283c0
+>
+> The attached patch does 3 things:
+>
+> 1) If unable to obtain the file structure for the current task,
+>    proceed to the next task number after the one returned from
+>    task_seq_get_next(), instead of the next task number from the
+>    original iterator.
+>
+> 2) Use thread_group_leader() instead of the open-coded comparision
+>    of tgid vs pid.
+>
+> 3) Only obtain the task reference count at the end of the RCU section
+>    instead of repeatedly obtaining/releasing it when iterathing though
+>    a thread group.
+>
+> Fixes: a650da2ee52a ("bpf: Add task and task/file iterator targets")
+> Fixes: 67b6b863e6ab ("bpf: Avoid iterating duplicated files for task_file iterator")
+>
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> ---
+>  kernel/bpf/task_iter.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
+> index 0458a40edf10..66a52fcf589a 100644
+> --- a/kernel/bpf/task_iter.c
+> +++ b/kernel/bpf/task_iter.c
+> @@ -33,17 +33,17 @@ static struct task_struct *task_seq_get_next(struct pid_namespace *ns,
+>         pid = find_ge_pid(*tid, ns);
+>         if (pid) {
+>                 *tid = pid_nr_ns(pid, ns);
+> -               task = get_pid_task(pid, PIDTYPE_PID);
+> +               task = pid_task(pid, PIDTYPE_PID);
+>                 if (!task) {
+>                         ++*tid;
+>                         goto retry;
+> -               } else if (skip_if_dup_files && task->tgid != task->pid &&
+> +               } else if (skip_if_dup_files && !thread_group_leader(task) &&
+>                            task->files == task->group_leader->files) {
+> -                       put_task_struct(task);
+>                         task = NULL;
+>                         ++*tid;
+>                         goto retry;
+>                 }
+> +               get_task_struct(task);
+>         }
 
-syzbot found the following issue on:
+This part looks good. I'd say it deserves a separate patch, but it's minor.
 
-HEAD commit:    3db4c21c usb: typec: tcpm: Update vbus_vsafe0v on init
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=179809f3500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d24ee9ecd7ce968e
-dashboard link: https://syzkaller.appspot.com/bug?extid=7b774a105bad5f282322
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+>         rcu_read_unlock();
+>
+> @@ -164,7 +164,7 @@ task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info)
+>                 curr_files = get_files_struct(curr_task);
+>                 if (!curr_files) {
+>                         put_task_struct(curr_task);
+> -                       curr_tid = ++(info->tid);
+> +                       curr_tid = curr_tid + 1;
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Yonghong might know definitively, but it seems like we need to update
+info->tid here as well:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7b774a105bad5f282322@syzkaller.appspotmail.com
+info->tid = curr_tid;
 
-usb 1-1: Direct firmware load for rtlwifi/rtl8192cufw.bin failed with error -2
-==================================================================
-BUG: KASAN: slab-out-of-bounds in rtl_fw_do_work+0x407/0x430 drivers/net/wireless/realtek/rtlwifi/core.c:87
-Read of size 8 at addr ffff888142b2ff58 by task kworker/0:6/7385
+If the search eventually yields no task, then info->tid will stay at
+some potentially much smaller value, and we'll keep re-searching tasks
+from the same TID on each subsequent read (if user keeps reading the
+file). So corner case, but good to have covered.
 
-CPU: 0 PID: 7385 Comm: kworker/0:6 Not tainted 5.10.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events request_firmware_work_func
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x4c8 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- rtl_fw_do_work+0x407/0x430 drivers/net/wireless/realtek/rtlwifi/core.c:87
- request_firmware_work_func+0x12c/0x230 drivers/base/firmware_loader/main.c:1079
- process_one_work+0x933/0x1520 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x38c/0x460 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Allocated by task 16159:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:461
- kmalloc include/linux/slab.h:557 [inline]
- tomoyo_realpath_from_path+0xc3/0x620 security/tomoyo/realpath.c:254
- tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
- tomoyo_path_number_perm+0x1d5/0x590 security/tomoyo/file.c:723
- security_file_ioctl+0x50/0xb0 security/security.c:1481
- __do_sys_ioctl fs/ioctl.c:747 [inline]
- __se_sys_ioctl fs/ioctl.c:739 [inline]
- __x64_sys_ioctl+0xb3/0x200 fs/ioctl.c:739
- do_syscall_64+0x2d/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 16159:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:56
- kasan_set_free_info+0x1b/0x30 mm/kasan/generic.c:355
- __kasan_slab_free+0x102/0x140 mm/kasan/common.c:422
- slab_free_hook mm/slub.c:1544 [inline]
- slab_free_freelist_hook+0x5d/0x150 mm/slub.c:1577
- slab_free mm/slub.c:3142 [inline]
- kfree+0xe5/0x5e0 mm/slub.c:4124
- tomoyo_realpath_from_path+0x191/0x620 security/tomoyo/realpath.c:291
- tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
- tomoyo_path_number_perm+0x1d5/0x590 security/tomoyo/file.c:723
- security_file_ioctl+0x50/0xb0 security/security.c:1481
- __do_sys_ioctl fs/ioctl.c:747 [inline]
- __se_sys_ioctl fs/ioctl.c:739 [inline]
- __x64_sys_ioctl+0xb3/0x200 fs/ioctl.c:739
- do_syscall_64+0x2d/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff888142b2e000
- which belongs to the cache kmalloc-4k of size 4096
-The buggy address is located 3928 bytes to the right of
- 4096-byte region [ffff888142b2e000, ffff888142b2f000)
-The buggy address belongs to the page:
-page:00000000104f6cd2 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x142b28
-head:00000000104f6cd2 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0x200000000010200(slab|head)
-raw: 0200000000010200 dead000000000100 dead000000000122 ffff888100042140
-raw: 0000000000000000 0000000000040004 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff888142b2fe00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888142b2fe80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff888142b2ff00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                                    ^
- ffff888142b2ff80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff888142b30000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>                         info->fd = 0;
+>                         goto again;
+>                 }
+> --
+> 2.24.1
+>
