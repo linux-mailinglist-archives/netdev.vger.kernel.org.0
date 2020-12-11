@@ -2,164 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF49F2D7A7D
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 17:06:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E10C32D7A94
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 17:12:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390795AbgLKQEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 11:04:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
+        id S2404555AbgLKQLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 11:11:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390417AbgLKQDm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 11:03:42 -0500
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BC2C0613CF;
-        Fri, 11 Dec 2020 08:03:02 -0800 (PST)
-Received: by mail-io1-xd42.google.com with SMTP id z136so9968611iof.3;
-        Fri, 11 Dec 2020 08:03:02 -0800 (PST)
+        with ESMTP id S2390382AbgLKQLL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 11:11:11 -0500
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96760C0613CF
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 08:10:29 -0800 (PST)
+Received: by mail-ot1-x32c.google.com with SMTP id x13so8662538oto.8
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 08:10:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+abQIG78HGppl25COcLx0h9sjwwHX6wS+R3XmzIB6w8=;
-        b=OZ0uHxJnwFIgUbyhA4A7dzfu7DXIuKUIAfd5jIDNbJKluZYhQcNfsSrd84xCQmQoSX
-         rxypop3lhxDwCWEWFNU2XQcZSJHLawvaa82qD8+7AduiK5d9k1ufWiERCllkZc6ftEpE
-         NIk/wJNo1M5sQ8UaXfwC+5mk8VviSsdNi72WQoZ/5NrUQ9NpS1K+ga33jvwsfwKY1jMj
-         ZWy+He0OaIjOPwiJbxHJ2D8/0g396ohPGmRWFONZHaXzQ8X77qLLMP1lAhtR5QehmUeQ
-         Am2zUH5ivLkgTA/P5gpbm7S5JEqr1etAN8v+/cD8lXI9dbsP6PqccTnerlgqQ6+/j36o
-         Fm0A==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=t1AamKEB8573/0gwWabz8y5LwEeV/syrC78MuWy5qpc=;
+        b=CnaS7F3jdu+PwA3Ac84kNeDMu7+QyYeJ26OqiHz9bkzLyZFs/VcrgphShLA3Kc++Sw
+         RjAg+Kpr1IVxgoX1UFzSMnqKvg/Vx0OqtOGV1o3TSybYwE5J3IoMOOk9kqP5Oa80H78l
+         UopcvFxPdWMUq0JXab+eZTwWzPAla7e0zIYGlylgC4r8nOPL/82vSiy2f3EBTDab4yU2
+         AWbCtrc8Naz79IxsjsLCViH9CZJYLM8tCiunEVicbpxQAzjPv9KBtauoue3V/I+XtRE2
+         3z8ZGdKusrd1Q1lpkWJGq5kb/boWnpWyzPVWDGTtjIo873zUmSSQtO44fPFM9HAwYAEa
+         0s8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+abQIG78HGppl25COcLx0h9sjwwHX6wS+R3XmzIB6w8=;
-        b=krq3pxhHdkIdgd1WIiOgGsW+657gWGKs+9Rws/59Fc2X8qsSPu+mfCDHQG+leWWBWa
-         h2W8oSFg0RauookjBh7yrnusGV1sqX//NSjFJzztFbVn40FmHrFw2ztMCtCk+ZPGX+tU
-         JUbC0vtzfM34JaGNpKjVQuKW/RqZsRy5OXnV9Gp7akcnAJqYm73CAYoPVi2VPJ3JlhEb
-         V4j3rURjFYGW/wkIZ1N7HSd4n5m3F31n/n8QzxfehMAkRZ4fXj5k56X8mifSI+EZ9KP9
-         pfaElzF2KzS2EXeKRAclKIv4bcTVhZILjg21vunxVBjQzX9xItTJGfdCwfipxynb9Ri9
-         9RWw==
-X-Gm-Message-State: AOAM533Fp2ku+ixfc7bKxivEo4RCEGlAko8KC4Zu23ni1dRfMOQSinGV
-        /qEATu3P5jTOxSZj/u+UoWz5nO6YyqIcqgzll6Y=
-X-Google-Smtp-Source: ABdhPJxmDHaSxaC5XBB+E5/8aq5JuvLyNHRbrWTDjsf8e0B5KYsO5CBvDEoSMuEcT3pA6aQ6gurIos769X3tHkUStbg=
-X-Received: by 2002:a02:4:: with SMTP id 4mr16546331jaa.121.1607702581646;
- Fri, 11 Dec 2020 08:03:01 -0800 (PST)
-MIME-Version: 1.0
-References: <160765171921.6905.7897898635812579754.stgit@localhost.localdomain>
- <CANn89iJ5HnJYv6eWb1jm6rK173DFkp2GRnfvi9vnYwXZPzE4LQ@mail.gmail.com>
-In-Reply-To: <CANn89iJ5HnJYv6eWb1jm6rK173DFkp2GRnfvi9vnYwXZPzE4LQ@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 11 Dec 2020 08:02:50 -0800
-Message-ID: <CAKgT0Uf_q=FgMHd9_wq5Bx8rCC-kS0Qz563rE9dL2hpQ6Evppg@mail.gmail.com>
-Subject: Re: [net PATCH] tcp: Mark fastopen SYN packet as lost when receiving ICMP_TOOBIG/ICMP_FRAG_NEEDED
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Yuchung Cheng <ycheng@google.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=t1AamKEB8573/0gwWabz8y5LwEeV/syrC78MuWy5qpc=;
+        b=mUqkUF5cshd7HJxgESfrjfSo2myPuPJNho2T6ZLZop7PNIkBkQQICpdH1uLgQQmI27
+         ltW0yGSOk87VMgl4VWM21ZN7u9HTGAhnGWHyQE3Effl446TLACsyLaIQYgykvgAZHNlh
+         aXSQmfzkpd1GhbuNK0xbSHZEbRW9gaFr6+G9OfuOiEDH+yGks9xnQEmF+gMHWYPZNusP
+         PjmWO2uIKNlG8aasRNELU0J+gqnm6gWHc840chL7itr1l4WS/ix+kxpkrNqZJdPhsiun
+         6RwGdBOkFCEaR6NlJGlS0wYMBzL90m/FVPfW0xfyZImGkT0SnxjMxiDWlNipwmH6yKa0
+         sBmg==
+X-Gm-Message-State: AOAM5301iRVg0S3sjcn/I/Q0CE6j+oh9BU8guhBsIj4SW5E5naOYxF6/
+        67tAydVzAn+ElJqR7m62zWQ=
+X-Google-Smtp-Source: ABdhPJwyTffKCOsXL3Ep9EpfYtUlt1TzVJYzZBmnXocIwhRJhOs52agbgw3k7x39eluRhPUx7oYmwA==
+X-Received: by 2002:a05:6830:1bef:: with SMTP id k15mr2071525otb.303.1607703029042;
+        Fri, 11 Dec 2020 08:10:29 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:6139:6f39:a803:1a61])
+        by smtp.googlemail.com with ESMTPSA id i1sm999013otr.81.2020.12.11.08.10.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Dec 2020 08:10:28 -0800 (PST)
+Subject: Re: Refcount mismatch when unregistering netdevice from kernel
+To:     stranche@codeaurora.org
+Cc:     Wei Wang <weiwan@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
-        kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mahesh Bandewar <maheshb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+References: <ca64de092db5a2ac80d22eaa9d662520@codeaurora.org>
+ <56e72b72-685f-925d-db2d-d245c1557987@gmail.com>
+ <CAEA6p_D+diS7jnpoGk6cncWL8qiAGod2EAp=Vcnc-zWNPg04Jg@mail.gmail.com>
+ <307c2de1a2ddbdcd0a346c57da88b394@codeaurora.org>
+ <CAEA6p_ArQdNp=hQCjrsnAo-Xy22d44b=2KdLp7zO7E7XDA4Fog@mail.gmail.com>
+ <f10c733a-09f8-2c72-c333-41f9d53e1498@gmail.com>
+ <6a314f7da0f41c899926d9e7ba996337@codeaurora.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <839f0ad6-83c1-1df6-c34d-b844c52ba771@gmail.com>
+Date:   Fri, 11 Dec 2020 09:10:26 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
+MIME-Version: 1.0
+In-Reply-To: <6a314f7da0f41c899926d9e7ba996337@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 10:24 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Dec 11, 2020 at 2:55 AM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > From: Alexander Duyck <alexanderduyck@fb.com>
-> >
-> > In the case of a fastopen SYN there are cases where it may trigger either a
-> > ICMP_TOOBIG message in the case of IPv6 or a fragmentation request in the
-> > case of IPv4. This results in the socket stalling for a second or more as
-> > it does not respond to the message by retransmitting the SYN frame.
-> >
-> > Normally a SYN frame should not be able to trigger a ICMP_TOOBIG or
-> > ICMP_FRAG_NEEDED however in the case of fastopen we can have a frame that
-> > makes use of the entire MTU. In the case of fastopen it does, and an
-> > additional complication is that the retransmit queue doesn't contain the
-> > original frames. As a result when tcp_simple_retransmit is called and
-> > walks the list of frames in the queue it may not mark the frames as lost
-> > because both the SYN and the data packet each individually are smaller than
-> > the MSS size after the adjustment. This results in the socket being stalled
-> > until the retransmit timer kicks in and forces the SYN frame out again
-> > without the data attached.
-> >
-> > In order to resolve this we need to mark the SYN frame as lost if it is the
-> > first packet in the queue. Doing this allows the socket to recover much
-> > more quickly without the retransmit timeout stall.
-> >
-> > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
->
->
-> I do not think it is net candidate, but net-next
->
-> Yuchung might correct me, but I think TCP Fastopen standard was very
-> conservative about payload len in the SYN packet
->
-> So receiving an ICMP was never considered.
+On 12/10/20 6:12 PM, stranche@codeaurora.org wrote:
+>>> BTW, have you tried your previous proposed patch and confirmed it
+>>> would fix the issue?
+>>>
+> 
+> Yes, we shared this with the customer and the refcount mismatch still
+> occurred, so this doesn't seem sufficient either.
+> 
+>>> Could we further distinguish between dst added to the uncached list by
+>>> icmp6_dst_alloc() and xfrm6_fill_dst(), and confirm which ones are the
+>>> ones leaking reference?
+>>> I suspect it would be the xfrm ones, but I think it is worth verifying.
+>>>
+> 
+> After digging into the DST allocation/destroy a bit more, it seems that
+> there are some cases where the DST's refcount does not hit zero, causing
+> them to never be freed and release their references.
+> One case comes from here on the IPv6 packet output path (these DST
+> structs would hold references to both the inet6_dev and the netdevice)
+> ip6_pol_route_output+0x20/0x2c -> ip6_pol_route+0x1dc/0x34c ->
+> rt6_make_pcpu_route+0x18/0xf4 -> ip6_rt_pcpu_alloc+0xb4/0x19c
 
-That's fine. I can target this for net-next. I had just selected net
-since I had considered it a fix, but I suppose it could be considered
-a behavioral change.
+This is the normal data path, and this refers to a per-cpu dst cache.
+Delete the route and the cached entries get removed.
 
-> > ---
-> >  include/net/tcp.h    |    1 +
-> >  net/ipv4/tcp_input.c |    8 ++++++++
-> >  net/ipv4/tcp_ipv4.c  |    6 ++++++
-> >  net/ipv6/tcp_ipv6.c  |    4 ++++
-> >  4 files changed, 19 insertions(+)
-> >
-> > diff --git a/include/net/tcp.h b/include/net/tcp.h
-> > index d4ef5bf94168..6181ad98727a 100644
-> > --- a/include/net/tcp.h
->
->
-> > +++ b/net/ipv4/tcp_ipv4.c
-> > @@ -546,6 +546,12 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
-> >                         if (sk->sk_state == TCP_LISTEN)
-> >                                 goto out;
-> >
-> > +                       /* fastopen SYN may have triggered the fragmentation
-> > +                        * request. Mark the SYN or SYN/ACK as lost.
-> > +                        */
-> > +                       if (sk->sk_state == TCP_SYN_SENT)
-> > +                               tcp_mark_syn_lost(sk);
->
-> This is going to crash in some cases, you do not know if you own the socket.
-> (Look a few lines below)
+> 
+> We also see two DSTs where they are stored as the xdst->rt entry on the
+> XFRM path that do not get released. One is allocated by the same path as
+> above, and the other like this
+> xfrm6_esp_err+0x7c/0xd4 -> esp6_err+0xc8/0x100 ->
+> ip6_update_pmtu+0xc8/0x100 -> __ip6_rt_update_pmtu+0x248/0x434 ->
+> ip6_rt_cache_alloc+0xa0/0x1dc
 
-Okay, I will look into moving this down into the block below since I
-assume if it is owned by user we cannot make these changes.
-
-> > +
-> >                         tp->mtu_info = info;
-> >                         if (!sock_owned_by_user(sk)) {
-> >                                 tcp_v4_mtu_reduced(sk);
-> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > index 992cbf3eb9e3..d7b1346863e3 100644
-> > --- a/net/ipv6/tcp_ipv6.c
-> > +++ b/net/ipv6/tcp_ipv6.c
-> > @@ -443,6 +443,10 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
-> >                 if (!ip6_sk_accept_pmtu(sk))
-> >                         goto out;
-> >
-> > +               /* fastopen SYN may have triggered TOOBIG, mark it lost. */
-> > +               if (sk->sk_state == TCP_SYN_SENT)
-> > +                       tcp_mark_syn_lost(sk);
->
->
-> Same issue here.
-
-I'll move this one too.
-
-> > +
-> >                 tp->mtu_info = ntohl(info);
-> >                 if (!sock_owned_by_user(sk))
-> >                         tcp_v6_mtu_reduced(sk);
-> >
-> >
+This entry goes into an exception cache. I have lost track of kernel
+versions and features. Try listing the route cache to see these:  ip -6
+ro ls cache
