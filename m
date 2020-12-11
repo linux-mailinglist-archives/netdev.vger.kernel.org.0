@@ -2,74 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D75A82D8295
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 00:07:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B34632D82C5
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 00:37:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437016AbgLKXGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 18:06:33 -0500
-Received: from smtp1.emailarray.com ([65.39.216.14]:56078 "EHLO
-        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436997AbgLKXGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 18:06:03 -0500
-Received: (qmail 2808 invoked by uid 89); 11 Dec 2020 23:05:21 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 11 Dec 2020 23:05:21 -0000
-Date:   Fri, 11 Dec 2020 15:05:15 -0800
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Boris Pismenny <borispismenny@gmail.com>,
-        Boris Pismenny <borisp@mellanox.com>, davem@davemloft.net,
-        saeedm@nvidia.com, hch@lst.de, sagi@grimberg.me, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com,
-        boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>,
-        Boris Pismenny <borisp@nvidia.com>
-Subject: Re: [PATCH v1 net-next 02/15] net: Introduce direct data placement
- tcp offload
-Message-ID: <20201211230515.n5i2i2w23zdwnl6q@bsd-mbp.dhcp.thefacebook.com>
-References: <20201207210649.19194-3-borisp@mellanox.com>
- <6f48fa5d-465c-5c38-ea45-704e86ba808b@gmail.com>
- <f52a99d2-03a4-6e9f-603e-feba4aad0512@gmail.com>
- <65dc5bba-13e6-110a-ddae-3d0c260aa875@gmail.com>
- <ab298844-c95e-43e6-b4bb-fe5ce78655d8@gmail.com>
- <921a110f-60fa-a711-d386-39eeca52199f@gmail.com>
- <20201210180108.3eb24f2b@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <5cadcfa0-b992-f124-f006-51872c86b804@gmail.com>
- <20201211104445.30684242@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <281b12de-7730-05a7-1187-e4f702c19cda@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <281b12de-7730-05a7-1187-e4f702c19cda@gmail.com>
+        id S2437258AbgLKXet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 18:34:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389512AbgLKXeY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 18:34:24 -0500
+Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A73BC0613D3
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 15:33:44 -0800 (PST)
+Received: by mail-qv1-xf4a.google.com with SMTP id u8so3564417qvm.5
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 15:33:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=mnk0yNaQYUtc+OGm2Ej0P6u5h1xpL6GiZ/YPBHS5LOU=;
+        b=c+eM5eQdQ+qiykEDoQ248iehOkFTnTi6bmZz/d+E0j8CJX7QCxjk8V3hpPsNuhBx7d
+         2R8hJlVesC97oveCy4PMWfKfVWBOc7fk0umYrduba7carksZmqhlcbKjR4r1d1iRS08W
+         /jvqX2Tr/4aHyAlhGUoDL5KEbqvaz3F363kf9i/w19D2vjmlN4KFowdkfgZj2VwMJXoh
+         +sR49VR0qb7yNqjKfXqgPBMH9zWTKLmG/ipOsIp5wlM8l8JMeR/GTHcW4scrW7qj8Syq
+         QEz5N0bmmL/3UifOOfG+XHMFi/gqGMmC6lR4LQPfXLiwZirO2XmO7raIUj2nv6eGWlEn
+         iZvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=mnk0yNaQYUtc+OGm2Ej0P6u5h1xpL6GiZ/YPBHS5LOU=;
+        b=Ct4rlblniOb7ihWPO7tes69v0LkWBDFTro/Y3WnOUyQiAMJxt+2g7zO1weo0aPt+pV
+         BNA40Yo07ZAbORMv3dHDhpXf7PAV09ouN77S+XSfls0dBQaFjToSs+OY7CLkESGiffhZ
+         bzc804Q3LAMSk9ciTuebCG5PwAPw9671E+3VmAZ1o/q6Vp/seq8CF6pIpnbN8nxPX/Gy
+         p0bQL5pTIRlWx5j8QIKoxbVKSWvjz6FbE6xsCdI49RNZJKG7Gm7LEqP4YQb7/IacS+fx
+         +IcMk9GmPt25ImFj90SuKrtXbniTZlGUgkne7ftXLGmUHMuJt+c7CK3W4ltgRs45cwDD
+         bjng==
+X-Gm-Message-State: AOAM532+mwCyvDjm4wpbZmGUlA+EglcknhQP9lM6u2JIItD1lPD3jXk1
+        X2HaB02GUxRfhjh9ieLnjOHc3IiSQJaP
+X-Google-Smtp-Source: ABdhPJw3rUExUwP8KkOPYO+NmCn8TOjKgcr1TfCSFfKJW1sOnzBlf40ElWIivAz7FlsIR8bHwBIXPS8NZ156
+Sender: "brianvv via sendgmr" <brianvv@brianvv.c.googlers.com>
+X-Received: from brianvv.c.googlers.com ([fda3:e722:ac3:10:7f:e700:c0a8:348])
+ (user=brianvv job=sendgmr) by 2002:a0c:f283:: with SMTP id
+ k3mr13068839qvl.48.1607729623384; Fri, 11 Dec 2020 15:33:43 -0800 (PST)
+Date:   Fri, 11 Dec 2020 23:33:36 +0000
+Message-Id: <20201211233340.1503242-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.576.ga3fc446d84-goog
+Subject: [PATCH net-next v2 0/4] net: avoid indirect calls in dst functions
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11, 2020 at 12:59:52PM -0700, David Ahern wrote:
-> On 12/11/20 11:45 AM, Jakub Kicinski wrote:
-> > Ack, these patches are not exciting (to me), so I'm wondering if there
-> > is a better way. The only reason NIC would have to understand a ULP for
-> > ZC is to parse out header/message lengths. There's gotta be a way to
-> > pass those in header options or such...
-> > 
-> > And, you know, if we figure something out - maybe we stand a chance
-> > against having 4 different zero copy implementations (this, TCP,
-> > AF_XDP, netgpu) :(
-> 
-> AF_XDP is for userspace IP/TCP/packet handling.
-> 
-> netgpu is fundamentally kernel stack socket with zerocopy direct to
-> userspace buffers. Yes, it has more complications like the process is
-> running on a GPU, but essential characteristics are header / payload
-> split, a kernel stack managed socket, and dedicated H/W queues for the
-> socket and those are all common to what the nvme patches are doing. So,
-> can we create a common framework for those characteristics which enables
-> other use cases (like a more generic Rx zerocopy)?
+From: brianvv <brianvv@google.com>
 
-AF_XDP could also be viewed as a special case of netgpu.
+Use of the indirect call wrappers in some dst related functions for the
+ipv6/ipv4 case. This is a small improvent for CONFIG_RETPOLINE=y
+
+Changed in v2:
+-fix build issues reported by kernel test robot
+
+brianvv (4):
+  net: use indirect call helpers for dst_input
+  net: use indirect call helpers for dst_output
+  net: use indirect call helpers for dst_mtu
+  net: indirect call helpers for ipv4/ipv6 dst_check functions
+
+ include/net/dst.h     | 25 +++++++++++++++++++++----
+ net/core/sock.c       | 12 ++++++++++--
+ net/ipv4/ip_input.c   |  1 +
+ net/ipv4/ip_output.c  |  1 +
+ net/ipv4/route.c      | 13 +++++++++----
+ net/ipv4/tcp_ipv4.c   |  5 ++++-
+ net/ipv6/ip6_output.c |  1 +
+ net/ipv6/route.c      | 13 +++++++++----
+ net/ipv6/tcp_ipv6.c   |  5 ++++-
+ 9 files changed, 60 insertions(+), 16 deletions(-)
+
 -- 
-Jonathan
+2.29.2.576.ga3fc446d84-goog
+
