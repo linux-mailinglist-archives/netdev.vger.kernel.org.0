@@ -2,135 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BE512D8039
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 21:52:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7DCC2D8050
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 22:00:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391336AbgLKUv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 15:51:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
+        id S2394679AbgLKU7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 15:59:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389467AbgLKUvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 15:51:09 -0500
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24F5C0613CF
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 12:50:28 -0800 (PST)
-Received: by mail-lj1-x242.google.com with SMTP id y22so12408942ljn.9
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 12:50:28 -0800 (PST)
+        with ESMTP id S1729581AbgLKU7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 15:59:09 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38085C0613CF;
+        Fri, 11 Dec 2020 12:58:29 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id o144so8771460ybc.0;
+        Fri, 11 Dec 2020 12:58:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=bWKBY6eCdqYVsy1mT+KxGITPCRlfrMFiYcmnvTBSqGk=;
-        b=f27HFGtLwAHrJEEESNqcbGzsbMMYfsrRysKGbxTFZaDxuoOIiF+VQmc8vKCPs4NMZ7
-         IPUR3xcSbbRvxUWWXVoADJVVYKiID4HBs90ADZc8zdL2j+x4dnZdKx/MM3fdUfHr9xk4
-         BqXI1Dcr/MqhZD2fCv2D0IfgZwAnK9Zf3iFlyDEarjTHxzWv9SRX4DelkTZGCuP+qWew
-         QBe3BLniWiZyz6QxQ/16YlPs4plCm8tMKFiI/07tJONXvJpdFOMxwBykXPxEXy6gmgZF
-         G46z3H3OM7pMVDB4nr2Gl7l93thpuVjsKvJd/mL4sUBFBjclcRkzZoEOsZsJt1rlN7sg
-         hEyg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5ETVQNfv8vpU5ilb0QsXJmIrNmTPhMu3Na7PG7qCZzc=;
+        b=vZPdaZFy9P0lizL53oT+CDlmO8bPi+kIMgpSyYj3Ecc77DRPSb0zmwI2gMJddZBlAC
+         +CzQXOmIWgqieWFtzzx6CE9zPJEFrIWkC2Uv5dJ+ILXqLx5rrrxzJqqEdzg5GL314gvu
+         MO/wkE7/RmOveenmrP098oDhWLolG53s9WBoKbWRYGDZn6E37netD/G8RVQtiUtQomZU
+         /0i+jO0fDXA+DvruLJHNs/pQwXpTtdp2q4QBZg+yoxqCutFYXfx2p2CHYnrUNGlNtUiT
+         8bvl/zuFzgtAB0Inm2J/razA9C8PUMh2o5IIFBO5J3tHkfm/MoqZ14ZyYDvy5ph00zk9
+         iC5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=bWKBY6eCdqYVsy1mT+KxGITPCRlfrMFiYcmnvTBSqGk=;
-        b=VwCFciJtnYSO7A5iMgGv56agC2VPr6kw7LIfIbfROq2J8pHuHcE4GTJ0KPaKvWCMBJ
-         YixRBUhYPLkl8DhS2tzbeIjeDof1MQ+FGpYkFcD0QOhDwYQgePdwJYs2KA27uiXXPNqm
-         USZkCJKUn+GiFo8sbaj+DaV5OIyP5ORJmYqqpjgPwhCGzWr9uz9FRA2ADfUvIiY96EcL
-         zrzyBE/mmMBi4fyOwL/2ECR0FqE60+HlWfsltL9NdGOUfwe3mVRGe2dYKSlz4e3x2b80
-         zmC/uGf1XFyB3PMIAixKUXfN0zOQLpoe/40vZwjw+8HpsqpPiH1nobDH/EHjbYcHgtCa
-         96aA==
-X-Gm-Message-State: AOAM530v/G//DMThOHzRaW8tQ/UtJfpJIcD22m2hBqAUaCGkuWfjOtqa
-        /ljoabLt7pIO0dVT1EKibxWjryVvGBx3GAy2
-X-Google-Smtp-Source: ABdhPJzgQ4UZ2G4tSDQra2klKlwrb1Ab9JyINfdwEMN0qar2sahkSbN9Y/Q5RjFt0wV1M31XqQ3X+Q==
-X-Received: by 2002:a2e:8346:: with SMTP id l6mr5840901ljh.132.1607719826809;
-        Fri, 11 Dec 2020 12:50:26 -0800 (PST)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id w204sm1003263lff.241.2020.12.11.12.50.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 12:50:25 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-In-Reply-To: <20201208112350.kuvlaxqto37igczk@skbuf>
-References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-3-tobias@waldekranz.com> <20201208112350.kuvlaxqto37igczk@skbuf>
-Date:   Fri, 11 Dec 2020 21:50:24 +0100
-Message-ID: <87a6uk5apb.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5ETVQNfv8vpU5ilb0QsXJmIrNmTPhMu3Na7PG7qCZzc=;
+        b=snO86A5hims0kmiqhACXn5+ZWm4/P2+uKynB286ivrOiSTR9DHejmIagPy4MA6Tbuo
+         JL6FZhl9/lwpbfrkFnlKCD6iWASNZVlfTpFf0XAiEqXHOFRD4xGEiCMHwXb/PzkqsZ8Q
+         1UCnJvscm81WBH5k7cAYd3fUNipq6VGH8pOK18uKdNlVo7FIVzLbRgatHGPb9IdhPDnz
+         abPOVmXfjD9+3BZ4ysjSbP6k3UKNZL3CrlrfTyOmoYMROxWgtNDx8wdZmhg5q7SROkQf
+         ynK5dvrbY8Ta7ixmMnyu5PO2QN12eMDq7BeZBe+wLBiH/13uxXX9Mlo0migsBqMXcyZe
+         s/Tg==
+X-Gm-Message-State: AOAM5324dvn6JXqPLojsy/DWRZMPZjXiZAsi+Ti7IUsF1XqZ7+8QR3uo
+        9tuV0VKRdsb9ZlTyoD2nfQCP0vbzmbCeik8xHf4=
+X-Google-Smtp-Source: ABdhPJxfv/9z9hppOMBXDFpapH5JLIkCQwljQvT6xFWAHTY4GLvQ7MulrTVCgUxTSGkU+cnO4Cgd4RCuAbJ0OqVJNAI=
+X-Received: by 2002:a25:f505:: with SMTP id a5mr20811344ybe.425.1607720308501;
+ Fri, 11 Dec 2020 12:58:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201211081903.17857-1-glin@suse.com>
+In-Reply-To: <20201211081903.17857-1-glin@suse.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 11 Dec 2020 12:58:17 -0800
+Message-ID: <CAEf4BzbJRf-+_GE4r2+mk0FjT96Qszx3ru9wEfieP_zr6p6dOw@mail.gmail.com>
+Subject: Re: [PATCH] bpf,x64: pad NOPs to make images converge more easily
+To:     Gary Lin <glin@suse.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        andreas.taschner@suse.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 08, 2020 at 13:23, Vladimir Oltean <olteanv@gmail.com> wrote:
-> Sorry it took so long. I wanted to understand:
-> (a) where are the challenged for drivers to uniformly support software
->     bridging when they already have code for bridge offloading. I found
->     the following issues:
->     - We have taggers that unconditionally set skb->offload_fwd_mark = 1,
->       which kind of prevents software bridging. I'm not sure what the
->       fix for these should be.
+On Fri, Dec 11, 2020 at 8:51 AM Gary Lin <glin@suse.com> wrote:
+>
+> The x64 bpf jit expects bpf images converge within the given passes, but
+> it could fail to do so with some corner cases. For example:
+>
+>       l0:     ldh [4]
+>       l1:     jeq #0x537d, l2, l40
+>       l2:     ld [0]
+>       l3:     jeq #0xfa163e0d, l4, l40
+>       l4:     ldh [12]
+>       l5:     ldx #0xe
+>       l6:     jeq #0x86dd, l41, l7
+>       l8:     ld [x+16]
+>       l9:     ja 41
+>
+>         [... repeated ja 41 ]
+>
+>       l40:    ja 41
+>       l41:    ret #0
+>       l42:    ld #len
+>       l43:    ret a
+>
+> This bpf program contains 32 "ja 41" instructions which are effectively
+> NOPs and designed to be replaced with valid code dynamically. Ideally,
+> bpf jit should optimize those "ja 41" instructions out when translating
+> the bpf instructions into x86_64 machine code. However, do_jit() can
+> only remove one "ja 41" for offset==0 on each pass, so it requires at
+> least 32 runs to eliminate those JMPs and exceeds the current limit of
+> passes (20). In the end, the program got rejected when BPF_JIT_ALWAYS_ON
+> is set even though it's legit as a classic socket filter.
+>
+> To make the image more likely converge within 20 passes, this commit
+> pads some instructions with NOPs in the last 5 passes:
+>
+> 1. conditional jumps
+>   A possible size variance comes from the adoption of imm8 JMP. If the
+>   offset is imm8, we calculate the size difference of this BPF instruction
+>   between the previous pass and the current pass and fill the gap with NOPs.
+>   To avoid the recalculation of jump offset, those NOPs are inserted before
+>   the JMP code, so we have to subtract the 2 bytes of imm8 JMP when
+>   calculating the NOP number.
+>
+> 2. BPF_JA
+>   There are two conditions for BPF_JA.
+>   a.) nop jumps
+>     If this instruction is not optimized out in the previous pass,
+>     instead of removing it, we insert the equivalent size of NOPs.
+>   b.) label jumps
+>     Similar to condition jumps, we prepend NOPs right before the JMP
+>     code.
+>
+> To make the code concise, emit_nops() is modified to use the signed len and
+> return the number of inserted NOPs.
+>
+> To support bpf-to-bpf, a new flag, padded, is introduced to 'struct bpf_prog'
+> so that bpf_int_jit_compile() could know if the program is padded or not.
+>
+> Signed-off-by: Gary Lin <glin@suse.com>
+> ---
+>  arch/x86/net/bpf_jit_comp.c | 68 ++++++++++++++++++++++++-------------
+>  include/linux/filter.h      |  1 +
+>  2 files changed, 45 insertions(+), 24 deletions(-)
+>
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index 796506dcfc42..30b81c8539b3 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -789,8 +789,31 @@ static void detect_reg_usage(struct bpf_insn *insn, int insn_cnt,
+>         }
+>  }
+>
+> +static int emit_nops(u8 **pprog, int len)
+> +{
+> +       u8 *prog = *pprog;
+> +       int i, noplen, cnt = 0;
+> +
+> +       while (len > 0) {
+> +               noplen = len;
+> +
+> +               if (noplen > ASM_NOP_MAX)
+> +                       noplen = ASM_NOP_MAX;
+> +
+> +               for (i = 0; i < noplen; i++)
+> +                       EMIT1(ideal_nops[noplen][i]);
+> +               len -= noplen;
+> +       }
+> +
+> +       *pprog = prog;
+> +
+> +       return cnt;
 
-I took a closer look at the software fallback mode for LAGs and I've
-found three issues that prevent this from working in a bridged setup,
-two of which are easy to fix. This is the setup (team0 is _not_
-offloaded):
+Isn't cnt always zero? I guess it was supposed to be `cnt = len` at
+the beginning?
 
-(A)  br0
-     /
-  team0
-   / \
-swp0 swp1
+But then it begs the question how this patch was actually tested given
+emit_nops() is returning wrong answers? Changes like this should
+definitely come with tests.
 
+> +}
+> +
+> +#define INSN_SZ_DIFF (((addrs[i] - addrs[i - 1]) - (prog - temp)))
+> +
+>  static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
+> -                 int oldproglen, struct jit_context *ctx)
+> +                 int oldproglen, struct jit_context *ctx, bool jmp_padding)
+>  {
+>         bool tail_call_reachable = bpf_prog->aux->tail_call_reachable;
+>         struct bpf_insn *insn = bpf_prog->insnsi;
+> @@ -1409,6 +1432,8 @@ xadd:                     if (is_imm8(insn->off))
+>                         }
+>                         jmp_offset = addrs[i + insn->off] - addrs[i];
+>                         if (is_imm8(jmp_offset)) {
+> +                               if (jmp_padding)
+> +                                       cnt += emit_nops(&prog, INSN_SZ_DIFF - 2);
+>                                 EMIT2(jmp_cond, jmp_offset);
+>                         } else if (is_simm32(jmp_offset)) {
+>                                 EMIT2_off32(0x0F, jmp_cond + 0x10, jmp_offset);
+> @@ -1431,11 +1456,19 @@ xadd:                   if (is_imm8(insn->off))
+>                         else
+>                                 jmp_offset = addrs[i + insn->off] - addrs[i];
+>
+> -                       if (!jmp_offset)
+> -                               /* Optimize out nop jumps */
+> +                       if (!jmp_offset) {
+> +                               /*
+> +                                * If jmp_padding is enabled, the extra nops will
+> +                                * be inserted. Otherwise, optimize out nop jumps.
+> +                                */
+> +                               if (jmp_padding)
+> +                                       cnt += emit_nops(&prog, INSN_SZ_DIFF);
+>                                 break;
+> +                       }
+>  emit_jmp:
+>                         if (is_imm8(jmp_offset)) {
+> +                               if (jmp_padding)
+> +                                       cnt += emit_nops(&prog, INSN_SZ_DIFF - 2);
+>                                 EMIT2(0xEB, jmp_offset);
+>                         } else if (is_simm32(jmp_offset)) {
+>                                 EMIT1_off32(0xE9, jmp_offset);
+> @@ -1578,26 +1611,6 @@ static int invoke_bpf_prog(const struct btf_func_model *m, u8 **pprog,
+>         return 0;
+>  }
+>
+> -static void emit_nops(u8 **pprog, unsigned int len)
+> -{
+> -       unsigned int i, noplen;
+> -       u8 *prog = *pprog;
+> -       int cnt = 0;
+> -
+> -       while (len > 0) {
+> -               noplen = len;
+> -
+> -               if (noplen > ASM_NOP_MAX)
+> -                       noplen = ASM_NOP_MAX;
+> -
+> -               for (i = 0; i < noplen; i++)
+> -                       EMIT1(ideal_nops[noplen][i]);
+> -               len -= noplen;
+> -       }
+> -
+> -       *pprog = prog;
+> -}
+> -
+>  static void emit_align(u8 **pprog, u32 align)
+>  {
+>         u8 *target, *prog = *pprog;
+> @@ -1972,6 +1985,9 @@ struct x64_jit_data {
+>         struct jit_context ctx;
+>  };
+>
+> +#define MAX_PASSES 20
+> +#define PADDING_PASSES (MAX_PASSES - 5)
+> +
+>  struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  {
+>         struct bpf_binary_header *header = NULL;
+> @@ -1981,6 +1997,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>         struct jit_context ctx = {};
+>         bool tmp_blinded = false;
+>         bool extra_pass = false;
+> +       bool padding = prog->padded;
 
-1. DSA tries to offload port attributes for standalone ports. So in this
-   setup, if vlan filtering is enabled on br0, we will enable it in
-   hardware which on mv88e6xxx causes swp0/1 to drop all packets on
-   ingress due to a VTU violation. This is a very easy fix, I will
-   include it in v4.
+can this ever be true on assignment? I.e., can the program be jitted twice?
 
-2. The issue Vladimir mentioned above. This is also a straight forward
-   fix, I have patch for tag_dsa, making sure that offload_fwd_mark is
-   never set for ports in standalone mode.
+>         u8 *image = NULL;
+>         int *addrs;
+>         int pass;
+> @@ -2043,7 +2060,9 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>          * pass to emit the final image.
+>          */
+>         for (pass = 0; pass < 20 || image; pass++) {
+> -               proglen = do_jit(prog, addrs, image, oldproglen, &ctx);
+> +               if (!padding && pass >= PADDING_PASSES)
+> +                       padding = true;
 
-   I am not sure if I should solve it like that or if we should just
-   clear the mark in dsa_switch_rcv if the dp does not have a
-   bridge_dev. I know both Vladimir and I were leaning towards each
-   tagger solving it internally. But looking at the code, I get the
-   feeling that all taggers will end up copying the same block of code
-   anyway. What do you think?
+Just, unconditionally:
 
-With these two patches in place, setup (A) works as expected. But if you
-extend it to (team0 still not offloaded):
+padding = pass >= PADDING_PASSES;
 
-(B)   br0
-     /   \
-  team0   \
-   / \     \
-swp0 swp1  swp2
-
-You instantly run into:
-
-3. Only traffic which does _not_ have offload_fwd_mark set is allowed to
-   pass from swp2 to team0. This is because the bridge uses
-   dev_get_port_parent_id to figure out which ports belong to the same
-   switch. This will recurse down through all lowers and find swp0/1
-   which will answer with the same ID as swp2.
-
-   In the case where team0 is offloaded, this is exactly what we want,
-   but in a setup like (B) they do not have the same "logical" parent in
-   the sense that br0 is led to believe. I.e. the hardware will never
-   forward packets between swp0/1 and swp2.
-
-   I do not see an obvious solution to this. Refusing to divulge the
-   parent just because you are a part of a software LAG seems fraught
-   with danger as there are other users of those APIs. Adding yet
-   another ndo would theoretically be possible, but not
-   desirable. Ideas?
-
-As for this series, my intention is to make sure that (A) works as
-intended, leaving (B) for another day. Does that seem reasonable?
-
-NOTE: In the offloaded case, (B) will of course also be supported.
+> +               proglen = do_jit(prog, addrs, image, oldproglen, &ctx, padding);
+>                 if (proglen <= 0) {
+>  out_image:
+>                         image = NULL;
+> @@ -2101,6 +2120,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>                 prog->bpf_func = (void *)image;
+>                 prog->jited = 1;
+>                 prog->jited_len = proglen;
+> +               prog->padded = padding;
+>         } else {
+>                 prog = orig_prog;
+>         }
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 1b62397bd124..cb7ce2b3737a 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -531,6 +531,7 @@ struct bpf_prog {
+>                                 dst_needed:1,   /* Do we need dst entry? */
+>                                 blinded:1,      /* Was blinded */
+>                                 is_func:1,      /* program is a bpf function */
+> +                               padded:1,       /* jitted image was padded */
+>                                 kprobe_override:1, /* Do we override a kprobe? */
+>                                 has_callchain_buf:1, /* callchain buffer allocated? */
+>                                 enforce_expected_attach_type:1, /* Enforce expected_attach_type checking at attach time */
+> --
+> 2.29.2
+>
