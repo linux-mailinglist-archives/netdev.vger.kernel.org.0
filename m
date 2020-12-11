@@ -2,57 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFCD92D7298
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 10:09:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78EDA2D729B
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 10:09:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437338AbgLKJHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 04:07:13 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:47684 "EHLO
+        id S2437290AbgLKJHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 04:07:46 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:4179 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392898AbgLKJHM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 04:07:12 -0500
+        with ESMTP id S2437335AbgLKJHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 04:07:14 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607677630; x=1639213630;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+xC67ytXWD8y1oWMrOzI4p3VelLSWDqBjgywFgOMymE=;
-  b=VfNX8a8NL3kmBlak+9jHL3epOm7D7dhPAQWWoN4yxyWiMrOZ/RT4buR0
-   DwMSxeohMCxtlBMjchqn9HqUvbtOjscAEUeyJCiVL2DhXssdWMHo0K3yk
-   Aj+ZLVc183hSJYcZX3WmXa7VYNGbrAywOiJw9ELl7A7LbXG7P4cy5nkfU
-   5GWvqy/DAfBeuxPC78ODm6k+9o4UilPRuIOjssSTUm8fsc8HzKU47jmqe
-   VuVBeMXoDGViQXN9iLttrJ9DinOsMW98YLao9YXIceMjvg5yo30rtwLH0
-   o7v5ehBrdlaPL6McvkKo0F+gobfS27mVnIu8LZ/wYUBIpF/hbvLTBfXGV
-   A==;
-IronPort-SDR: SseSqVHFXGzYLMAdeVxIr2GzDzvJ1q780tPGlw6pcddOkes/BrWoClVyp/h+qP9v1i+mYZ8xrE
- cSvIiUjWkfdDx4KVfB6gUNUay3z6y0/Z6pvHkNF8HVqaC44zDWcLMRYA9JjJP6Z1+9RWHLZPkg
- CLCmtE4chZIgvvLvVKKmq/y2txIw6hA5gkKOKR3FEEkKWVgKFimDbz1YDmArmYD3AaH4Cvg/9G
- xySkC+fr/zd5ACN3XgUAKwTh5Q/hIrDqHgOWMxJ+sDqw/DjMcy2Ki7tYRP8RDzk+msKjTAC7AH
- gT4=
+  t=1607677633; x=1639213633;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=DcLLcyitGH0v2VlQHPfKppsGNjLuBXI1WYl/OTeY9xE=;
+  b=Yk9O78I1b3MO/N0VTmDukNWN8MS2PFVKweu2RxgeX0+pHvEBPm78O5fV
+   xm11tn7xwA7ofrx5ppGQzLfWrqs8KuFouvqR5NSecbU0hG8IBuXynjy+a
+   4O56udbO2QJBH87ZAEGbz5yVBBGlOJnWr5agdvdFJYyWF19GtuY4WfrIM
+   gQagJ7IQir4Po4OotNaUTNAFFCH9u2pXWOmHF8YqPu7DP16aHRKB0gjaf
+   rDPJAni5fgYYB+uJI8BQfdv20G0/Vtmi0AGSGO9D944wEReG99kAzRYXc
+   QXDKcn6vU+0sibR0oJTeDQgUqXDqj+b4rsRVkJTwKUXQDjjxf8Oys84gn
+   w==;
+IronPort-SDR: NEVIeZEl1QGsC4X+Lz8jUrFLEWliEcOCLh1AeYE4PhvME6Bc1nnhR2V4XbCrj4uEPEqQWNl36d
+ jMCgJFdtdN3LBEQ9Z/UcG9Ax7BFT5IX12VGTBFemS8WeMbzsWXyIo3VQiRZWWhNzDJNpOiawtZ
+ zQPm94NTEFzo3FMCksE8VfMHp4tRN0nVt3vIWmOz/6cUg5chpR5rinHFlPMNYr7S/S/jjWu3U2
+ 1DM9XPME457xy8l5t7tJjRKB1mBWWtqfbH8EUp27NrjZdUDTZPapd2+E5pt/iTVXG64utnFn6E
+ 9Ss=
 X-IronPort-AV: E=Sophos;i="5.78,410,1599548400"; 
-   d="scan'208";a="96745513"
+   d="scan'208";a="37057311"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Dec 2020 02:05:55 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Dec 2020 02:05:57 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 11 Dec 2020 02:05:54 -0700
+ 15.1.1979.3; Fri, 11 Dec 2020 02:05:57 -0700
 Received: from mchp-dev-shegelun.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Fri, 11 Dec 2020 02:05:52 -0700
+ 15.1.1979.3 via Frontend Transport; Fri, 11 Dec 2020 02:05:54 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
+        Vinod Koul <vkoul@kernel.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Device Tree List <devicetree@vger.kernel.org>
 CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Bjarni Jonasson <bjarni.jonasson@microchip.com>,
         Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v10 0/4] Adding the Sparx5 Serdes driver
-Date:   Fri, 11 Dec 2020 10:05:37 +0100
-Message-ID: <20201211090541.157926-1-steen.hegelund@microchip.com>
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v10 1/4] dt-bindings: phy: Add sparx5-serdes bindings
+Date:   Fri, 11 Dec 2020 10:05:38 +0100
+Message-ID: <20201211090541.157926-2-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201211090541.157926-1-steen.hegelund@microchip.com>
+References: <20201211090541.157926-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -60,235 +65,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding the Sparx5 Serdes driver
+Document the Sparx5 ethernet serdes phy driver bindings.
 
-This series of patches provides the serdes driver for the Microchip Sparx5
-ethernet switch.
-
-The serdes driver supports the 10G and 25G serdes instances available in the
-Sparx5.
-
-The Sparx5 serdes support several interface modes with several speeds and also
-allows the client to change the mode and the speed according to changing in the
-environment such as changing cables from DAC to fiber.
-
-The serdes driver is to be used by the Sparx5 switchdev driver that
-will follow in subsequent series.
-
-Sparx5 Arhitecture:
-===================
-
-Below is a diagram of the Ethernet transport part of the Sparx5 chip.
-
-The diagram shows the switch core that sends/receives traffic via the Frame Bus
-and passes to the Port Modules.
-The Port Modules are able to talk to a SerDes via a Port Muxing configuration.
-The SerDes instances (33 in all) then passes the traffic on its lanes to the
-attached cuPHY or SFP module.
-
- +---------------------------------------------------------+
- |                                                         |
- |                         Switch Core                     |
- |                                                         |
- +----------------------------+----------------------------+
-                              |
- -------+--------------+------+-------+--------------+-----+   Frame Bus
-        |              |              |              |
- +------+-----+ +------+-----+ +------+-----+ +------+-----+
- |1G/2.G Port | |5G Port     | |10G Port    | |25GG Port   |
- |Modules     | |Modules     | |Modules     | |Modules     |
- |MAC, PCS    | |MAC, PCS    | |MAC, PCS    | |MAC, PCS    |
- +------+-----+ +------+-----+ +------+-----+ +------+-----+
-        |              |              |              |
- -------+-+------------+-------+------+----------+---+-----+  Port Muxing
-          |                    |                 |
-    +-----+----+         +-----+----+         +--+-------+
-    |SerDes 5G |         |SerDes 10G|         |SerDes 25G|    SerDes Driver
-    |Lane (13) |         |Lane (12) |         |Lane (8)  |    Controls these
-    +-----+----+         +-----+----+         +-----+----+
-          |                    |                    |
-       to cuPHY             to cuPHY             to cuPHY
-       or SFP               or SFP               or SFP
-
-The 33 SerDes instances are handled internally by 2 SerDes macros types:
-
-- A 10G SerDes macro that supports the following rates and modes:
-  - 100 Mbps:
-       - 100BASE-FX
-  - 1.25 Gbps:
-       - SGMII
-       - 1000BASE-X
-       - 1000BASE-KX
-  - 3.125 Gbps:
-       - 2.5GBASE-X
-       - 2.5GBASE-KX
-  - 5 Gbps:
-       - QSGMII
-       - USGMII
-  - 5.15625 Gbps:
-       - 5GBASE-KR
-       - 5G-USXGMII
-  - 10 Gbps:
-       - 10G-USGMII
-  - 10.3125 Gbps:
-       - 10GBASE-R
-       - 10GBASE-KR
-       - USXGMII
-
-- A 25G SerDes macro that supports the following rates and modes:
-  - 1.25 Gbps:
-       - SGMII
-       - 1000BASE-X
-       - 1000BASE-KX
-  - 3.125 Gbps:
-       - 2.5GBASE-X
-       - 2.5GBASE-KX
-  - 5 Gbps:
-       - QSGMII
-       - USGMII
-  - 5.15625 Gbps:
-       - 5GBASE-KR
-       - 5G-USXGMII
-  - 10 Gbps:
-       - 10G-USGMII
-  - 10.3125 Gbps:
-       - 10GBASE-R
-       - 10GBASE-KR
-       - USXGMII
-  - 10.3125 Gbps:
-       - 10GBASE-R
-       - 10GBASE-KR
-       - USXGMII
-  - 25.78125 Gbps:
-       - 25GBASE-KR
-       - 25GBASE-CR
-       - 25GBASE-SR
-       - 25GBASE-LR
-       - 25GBASE-ER
-
-The SerDes driver handles these SerDes instances and configures them based on
-the selected mode, speed and media type.
-
-In the current version of the SerDes driver only a subset of the above modes
-are supported: the modes that can be tested on our current evaluation boards
-(PCB134 and PCB35).
-
-The first 13 10G SerDes macros are limited to 6G, and this gives the SerDes
-instance architecture shown on the diagram above.
-
-The Port Muxing allows a Port Module to use a specific SerDes instance, but not
-all combinations are allowed.
-This is functionality as well as the configuration of the Port Modules is
-handled by the SwitchDev Driver.
-
-
-
-History:
---------
-v9 -> v10:
-    Only add the new folder to the phy Kconfig (no sort fix)
-    Corrected the serdes mode conversion for 2.5G mode.
-    Clarified the SGMII and 1000BASEX conversion.
-    Improved some of the more cryptic error messages.
-    Expanded the validate function a bit, and removed the link status
-    from the return value.
-
-v8 -> v9:
-    Replace pr_err with dev_err
-    Expanded the description here in the cover letter (should probably og into
-    the driver, at least part of it).
-
-v7 -> v8:
-    Provide the IO targets as offsets from the start of the IO range
-    Initialise resource index
-
-v6 -> v7:
-    This series changes the way the IO targets are provided to the driver.
-    Now only one IO range is available in the DT, and the driver has a table
-    to map its targets (as their order is still not sequential), thus reducing
-    the DT needed information and binding requirements.
-    The register access macros have been converted to functions.
-
-    - Bindings:
-      - reg prop: minItems set to 1
-      - reg-names prop: removed
-    - Driver
-      - Use one IO range and map targets via this.
-      - Change register access macros to use functions.
-      - Provided a new header files with reg access functions.
-    - Device tree
-      - Provide only one IO range
-
-v5 -> v6:
-     Series error: This had the same content as v5
-
-v4 -> v5:
-    - Bindings:
-      - Removed .yaml from compatible string
-      - reg prop: removed description and added minItems
-      - reg-names prop: removed description and added const name list and
-        minItems
-      - #phy-cells prop: removed description and added maxItems
-    - Configuration interface
-      - Removed include of linux/phy.h
-      - Added include of linux/types.h
-    - Driver
-       - Added include of linux/phy.h
-
-v3 -> v4:
-    - Add a reg-names item to the binding description
-    - Add a clocks item to the binding description
-    - Removed the clock parameter from the configuration interface
-    - Use the clock dt node to get the coreclock, and using that when 
-      doing the actual serdes configuration
-    - Added a clocks entry with a system clock reference to the serdes node in
-      the device tree
-
-v2 -> v3:
-    - Sorted the Kconfig sourced folders
-    - Sorted the Makefile included folders
-    - Changed the configuration interface documentation to use kernel style
-
-v1 -> v2: Fixed kernel test robot warnings
-    - Made these structures static:
-      - media_presets_25g
-      - mode_presets_25g
-      - media_presets_10g
-      - mode_presets_10g
-    - Removed these duplicate initializations:
-      - sparx5_sd25g28_params.cfg_rx_reserve_15_8
-      - sparx5_sd25g28_params.cfg_pi_en
-      - sparx5_sd25g28_params.cfg_cdrck_en
-      - sparx5_sd10g28_params.cfg_cdrck_en
-
-Lars Povlsen (2):
-  dt-bindings: phy: Add sparx5-serdes bindings
-  arm64: dts: sparx5: Add Sparx5 serdes driver node
-
-Steen Hegelund (2):
-  phy: Add ethernet serdes configuration option
-  phy: Add Sparx5 ethernet serdes PHY driver
-
- .../bindings/phy/microchip,sparx5-serdes.yaml |  100 +
- arch/arm64/boot/dts/microchip/sparx5.dtsi     |    8 +
- drivers/phy/Kconfig                           |    1 +
- drivers/phy/Makefile                          |    1 +
- drivers/phy/microchip/Kconfig                 |   12 +
- drivers/phy/microchip/Makefile                |    6 +
- drivers/phy/microchip/sparx5_serdes.c         | 2443 +++++++++++++++
- drivers/phy/microchip/sparx5_serdes.h         |  129 +
- drivers/phy/microchip/sparx5_serdes_regs.h    | 2695 +++++++++++++++++
- include/linux/phy/phy-ethernet-serdes.h       |   30 +
- include/linux/phy/phy.h                       |    4 +
- 11 files changed, 5429 insertions(+)
+Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/phy/microchip,sparx5-serdes.yaml | 100 ++++++++++++++++++
+ 1 file changed, 100 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml
- create mode 100644 drivers/phy/microchip/Kconfig
- create mode 100644 drivers/phy/microchip/Makefile
- create mode 100644 drivers/phy/microchip/sparx5_serdes.c
- create mode 100644 drivers/phy/microchip/sparx5_serdes.h
- create mode 100644 drivers/phy/microchip/sparx5_serdes_regs.h
- create mode 100644 include/linux/phy/phy-ethernet-serdes.h
 
+diff --git a/Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml b/Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml
+new file mode 100644
+index 000000000000..bdbdb3bbddbe
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml
+@@ -0,0 +1,100 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/phy/microchip,sparx5-serdes.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip Sparx5 Serdes controller
++
++maintainers:
++  - Steen Hegelund <steen.hegelund@microchip.com>
++
++description: |
++  The Sparx5 SERDES interfaces share the same basic functionality, but
++  support different operating modes and line rates.
++
++  The following list lists the SERDES features:
++
++  * RX Adaptive Decision Feedback Equalizer (DFE)
++  * Programmable continuous time linear equalizer (CTLE)
++  * Rx variable gain control
++  * Rx built-in fault detector (loss-of-lock/loss-of-signal)
++  * Adjustable tx de-emphasis (FFE)
++  * Tx output amplitude control
++  * Supports rx eye monitor
++  * Multiple loopback modes
++  * Prbs generator and checker
++  * Polarity inversion control
++
++  SERDES6G:
++
++  The SERDES6G is a high-speed SERDES interface, which can operate at
++  the following data rates:
++
++  * 100 Mbps (100BASE-FX)
++  * 1.25 Gbps (SGMII/1000BASE-X/1000BASE-KX)
++  * 3.125 Gbps (2.5GBASE-X/2.5GBASE-KX)
++  * 5.15625 Gbps (5GBASE-KR/5G-USXGMII)
++
++  SERDES10G
++
++  The SERDES10G is a high-speed SERDES interface, which can operate at
++  the following data rates:
++
++  * 100 Mbps (100BASE-FX)
++  * 1.25 Gbps (SGMII/1000BASE-X/1000BASE-KX)
++  * 3.125 Gbps (2.5GBASE-X/2.5GBASE-KX)
++  * 5 Gbps (QSGMII/USGMII)
++  * 5.15625 Gbps (5GBASE-KR/5G-USXGMII)
++  * 10 Gbps (10G-USGMII)
++  * 10.3125 Gbps (10GBASE-R/10GBASE-KR/USXGMII)
++
++  SERDES25G
++
++  The SERDES25G is a high-speed SERDES interface, which can operate at
++  the following data rates:
++
++  * 1.25 Gbps (SGMII/1000BASE-X/1000BASE-KX)
++  * 3.125 Gbps (2.5GBASE-X/2.5GBASE-KX)
++  * 5 Gbps (QSGMII/USGMII)
++  * 5.15625 Gbps (5GBASE-KR/5G-USXGMII)
++  * 10 Gbps (10G-USGMII)
++  * 10.3125 Gbps (10GBASE-R/10GBASE-KR/USXGMII)
++  * 25.78125 Gbps (25GBASE-KR/25GBASE-CR/25GBASE-SR/25GBASE-LR/25GBASE-ER)
++
++properties:
++  $nodename:
++    pattern: "^serdes@[0-9a-f]+$"
++
++  compatible:
++    const: microchip,sparx5-serdes
++
++  reg:
++    minItems: 1
++
++  '#phy-cells':
++    const: 1
++    description: |
++      - The main serdes input port
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - '#phy-cells'
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    serdes: serdes@10808000 {
++      compatible = "microchip,sparx5-serdes";
++      #phy-cells = <1>;
++      clocks = <&sys_clk>;
++      reg = <0x10808000 0x5d0000>;
++    };
++
++...
 -- 
 2.29.2
 
