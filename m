@@ -2,123 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B0162D720F
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 09:46:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC952D7220
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 09:48:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437019AbgLKInm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 03:43:42 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:41338 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436999AbgLKImt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 03:42:49 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BB8Zk9N131897;
-        Fri, 11 Dec 2020 08:41:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=jOZGvC2+sBPwkyav1Ks8v0XF2DBjWUZAKHKMuRwXt5Q=;
- b=flG1t/X8psmwXy0jbhlVLTenFLzXaP3KXFU8hi2poepGHNBdSHyBPe1fG9aBG2DuveXK
- rnk3W7bwV1cZKcy8NAxj4SCj4BaS0JDvRNQxLXSPyYPLTgYZVEogXFiiUrj9dqs3h9sh
- j8QpuZ/1+BjK37pAc97cxO5DGgWGalK5Z0BXrqE6MHq8hF9K953iUKByGIrJPDh9Yg/y
- 0P6W7JWbJ1pwmp0DlO8hKTv4uq0HJes+e7NFbf4HqSAOrWR1NpEvk7HNhMQU6HAryVFU
- 9twDrvGwv7ZQva1LccywZ0GRHJOR2L0ZB7uPYadJmhr3yupLoGAlLPmgGplYCJaW6IHK 9A== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 35825mhd84-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 11 Dec 2020 08:41:54 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BB8Tseq010489;
-        Fri, 11 Dec 2020 08:41:54 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 358m53jbwv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Dec 2020 08:41:54 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0BB8fpGR020184;
-        Fri, 11 Dec 2020 08:41:51 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 11 Dec 2020 00:41:50 -0800
-Date:   Fri, 11 Dec 2020 11:41:41 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     kbuild@lists.01.org, Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, lkp@intel.com,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: Re: [PATCH net-next 3/4] sch_htb: Stats for offloaded HTB
-Message-ID: <20201211084141.GQ2789@kadam>
-References: <20201210082851.GL2767@kadam>
- <7d1a6afe-d084-bdbd-168a-3bcb88910e2d@nvidia.com>
+        id S2437050AbgLKIou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 03:44:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437026AbgLKIoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 03:44:34 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FBEC0613CF
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 00:43:54 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id n4so8680818iow.12
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 00:43:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3nZGElLoKmf1C18zA8XwumBvcYHFPZLc61ouMw28/Mg=;
+        b=pe3DOJmozb4lcpQU9AzFs07tM5T8Emsj3n06q+r12W4Zf0W9F6xNSmVGGAR4EhuraT
+         zQvuxLDrU3qRpUYzOoNy3L1gDInj6kf7b053gNDKC/Z8TM5g0ivJHuS/RyaRhurbRlZ+
+         geflGF3jOye93tpNF/bVIl2ebeLTT3ovrsH4L8YtGftCCf+ARNpEDo78DmqEgAeCvQtC
+         Scqc+OZ3DVtX99kFYx9ERk7PDwTfZPYRrny8xA5VBvnSy4wqGUCwsjZQYUYiBQjIgirp
+         aSq7EGUx0PR2UXUDlG2Y0kzk3FFW9iQ8WxG0AENlzkcXaWYudNuxHhUNIWrROS7Ncqeo
+         Jrfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3nZGElLoKmf1C18zA8XwumBvcYHFPZLc61ouMw28/Mg=;
+        b=OuoF+SaaBx9nA2eidz8h60lITIFO5jY7nNQFd4pgZKgLSddRayy2a25KPq21y0S1qo
+         VdjAZNnM+n6zS4K/0Qpx3p/eL38PU8dt/kJF4qhrdKkhYAVetmn+kcHYn7CrFzKjBWpp
+         64QyVV5l59aUuGs3GFQSRPI//eQS0qsgGY1268nqPGbaXcC5fTZpRkvn2FpchhWu4DQ/
+         fBywo0zmEOP/utq+nDLhyzA+Pn8Q6MdRpfQXUOz7BbmO1MENePzJgmi3mieCWZMgAR7A
+         Rzs2ODRpVPENBXJHt5n/j4fWBk0Z3K9ArS2NzGNACd12ObnJ5ocZ15OUPAl8u+K8Ncv3
+         ouWg==
+X-Gm-Message-State: AOAM533DZXYT8A6rZg3R1Wc1bfXtp+8h7a7X7NcdNuNvuqBLvxrfoegm
+        8xAkCq7d0Tf+1munh4kJe4K+HxgdtLePHF/GqtXgQQ==
+X-Google-Smtp-Source: ABdhPJzCJsp4aekQmuTRerh7qbU1QXw1ZhFvw7w3DRXDW1N/0+vlGlwaI0m1pFfs1/8o7XmRCEan8ei0Bgb2Xd65unU=
+X-Received: by 2002:a02:c981:: with SMTP id b1mr14530626jap.6.1607676233403;
+ Fri, 11 Dec 2020 00:43:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7d1a6afe-d084-bdbd-168a-3bcb88910e2d@nvidia.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9831 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 suspectscore=0
- bulkscore=0 malwarescore=0 phishscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012110054
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9831 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0 bulkscore=0
- phishscore=0 mlxlogscore=999 clxscore=1015 priorityscore=1501 mlxscore=0
- spamscore=0 lowpriorityscore=0 malwarescore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012110054
+References: <20201211082032.26965-1-sjpark@amazon.com> <20201211082032.26965-2-sjpark@amazon.com>
+In-Reply-To: <20201211082032.26965-2-sjpark@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 11 Dec 2020 09:43:41 +0100
+Message-ID: <CANn89iJdPa-2FQS18p3d_YjZx_5OD=eZr_3+a6LPiAxpj=fowA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] net/ipv4/inet_fragment: Batch fqdir destroy works
+To:     SeongJae Park <sjpark@amazon.com>
+Cc:     David Miller <davem@davemloft.net>,
+        SeongJae Park <sjpark@amazon.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Florian Westphal <fw@strlen.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        netdev <netdev@vger.kernel.org>, rcu@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 05:07:28PM +0200, Maxim Mikityanskiy wrote:
-> On 2020-12-10 10:28, Dan Carpenter wrote:
-> > Hi Maxim,
-> > 
-> > 
-> > url:    https://github.com/0day-ci/linux/commits/Maxim-Mikityanskiy/HTB-offload/20201210-000703
-> > base:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-> > afae3cc2da100ead3cd6ef4bb1fb8bc9d4b817c5
-> > config: i386-randconfig-m021-20201209 (attached as .config)
-> > compiler: gcc-9 (Debian 9.3.0-15) 9.3.0
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > 
-> > smatch warnings:
-> > net/sched/sch_htb.c:1310 htb_dump_class_stats() error: we previously assumed 'cl->leaf.q' could be null (see line 1300)
-> > 
-> > vim +1310 net/sched/sch_htb.c
-> > 
-> > ^1da177e4c3f415 Linus Torvalds        2005-04-16  1289  static int
-> > 87990467d387f92 Stephen Hemminger     2006-08-10  1290  htb_dump_class_stats(struct Qdisc *sch, unsigned long arg, struct gnet_dump *d)
-> > ^1da177e4c3f415 Linus Torvalds        2005-04-16  1291  {
-> > ^1da177e4c3f415 Linus Torvalds        2005-04-16  1292  	struct htb_class *cl = (struct htb_class *)arg;
-> > 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1293  	struct htb_sched *q = qdisc_priv(sch);
-> > 338ed9b4de57c4b Eric Dumazet          2016-06-21  1294  	struct gnet_stats_queue qs = {
-> > 338ed9b4de57c4b Eric Dumazet          2016-06-21  1295  		.drops = cl->drops,
-> > 3c75f6ee139d464 Eric Dumazet          2017-09-18  1296  		.overlimits = cl->overlimits,
-> > 338ed9b4de57c4b Eric Dumazet          2016-06-21  1297  	};
-> > 6401585366326fc John Fastabend        2014-09-28  1298  	__u32 qlen = 0;
-> > ^1da177e4c3f415 Linus Torvalds        2005-04-16  1299
-> > 5dd431b6b92c0db Paolo Abeni           2019-03-28 @1300  	if (!cl->level && cl->leaf.q)
-> >                                                                                    ^^^^^^^^^^
-> > Check for NULL
-> 
-> Well, I don't think this is real... I don't see any possibility how
-> cl->leaf.q can be NULL for a leaf class. However, I'll add a similar check
-> below anyway.
-> 
+On Fri, Dec 11, 2020 at 9:21 AM SeongJae Park <sjpark@amazon.com> wrote:
+>
+> From: SeongJae Park <sjpark@amazon.de>
+>
+> For each 'fqdir_exit()' call, a work for destroy of the 'fqdir' is
+> enqueued.  The work function, 'fqdir_work_fn()', internally calls
+> 'rcu_barrier()'.  In case of intensive 'fqdir_exit()' (e.g., frequent
+> 'unshare()' systemcalls), this increased contention could result in
+> unacceptably high latency of 'rcu_barrier()'.  This commit avoids such
+> contention by doing the 'rcu_barrier()' and subsequent lightweight works
+> in a batched manner using a dedicated singlethread worker, as similar to
+> that of 'cleanup_net()'.
 
-Another option is to remove this check if it's really impossible.
 
-regards,
-dan carpenter
+Not sure why you submit a patch series with a single patch.
 
+Your cover letter contains interesting info that would better be
+captured in this changelog IMO
+
+>
+> Signed-off-by: SeongJae Park <sjpark@amazon.de>
+> ---
+>  include/net/inet_frag.h  |  1 +
+>  net/ipv4/inet_fragment.c | 45 +++++++++++++++++++++++++++++++++-------
+>  2 files changed, 39 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
+> index bac79e817776..48cc5795ceda 100644
+> --- a/include/net/inet_frag.h
+> +++ b/include/net/inet_frag.h
+> @@ -21,6 +21,7 @@ struct fqdir {
+>         /* Keep atomic mem on separate cachelines in structs that include it */
+>         atomic_long_t           mem ____cacheline_aligned_in_smp;
+>         struct work_struct      destroy_work;
+> +       struct llist_node       free_list;
+>  };
+>
+>  /**
+> diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
+> index 10d31733297d..a6fc4afcc323 100644
+> --- a/net/ipv4/inet_fragment.c
+> +++ b/net/ipv4/inet_fragment.c
+> @@ -145,12 +145,17 @@ static void inet_frags_free_cb(void *ptr, void *arg)
+>                 inet_frag_destroy(fq);
+>  }
+>
+> -static void fqdir_work_fn(struct work_struct *work)
+> +static struct workqueue_struct *fqdir_wq;
+> +static LLIST_HEAD(free_list);
+> +
+> +static void fqdir_free_fn(struct work_struct *work)
+>  {
+> -       struct fqdir *fqdir = container_of(work, struct fqdir, destroy_work);
+> -       struct inet_frags *f = fqdir->f;
+> +       struct llist_node *kill_list;
+> +       struct fqdir *fqdir, *tmp;
+> +       struct inet_frags *f;
+>
+> -       rhashtable_free_and_destroy(&fqdir->rhashtable, inet_frags_free_cb, NULL);
+> +       /* Atomically snapshot the list of fqdirs to free */
+> +       kill_list = llist_del_all(&free_list);
+>
+>         /* We need to make sure all ongoing call_rcu(..., inet_frag_destroy_rcu)
+>          * have completed, since they need to dereference fqdir.
+> @@ -158,12 +163,38 @@ static void fqdir_work_fn(struct work_struct *work)
+>          */
+>         rcu_barrier();
+>
+> -       if (refcount_dec_and_test(&f->refcnt))
+> -               complete(&f->completion);
+> +       llist_for_each_entry_safe(fqdir, tmp, kill_list, free_list) {
+> +               f = fqdir->f;
+> +               if (refcount_dec_and_test(&f->refcnt))
+> +                       complete(&f->completion);
+>
+> -       kfree(fqdir);
+> +               kfree(fqdir);
+> +       }
+>  }
+>
+> +static DECLARE_WORK(fqdir_free_work, fqdir_free_fn);
+> +
+> +static void fqdir_work_fn(struct work_struct *work)
+> +{
+> +       struct fqdir *fqdir = container_of(work, struct fqdir, destroy_work);
+> +
+> +       rhashtable_free_and_destroy(&fqdir->rhashtable, inet_frags_free_cb, NULL);
+> +
+> +       if (llist_add(&fqdir->free_list, &free_list))
+> +               queue_work(fqdir_wq, &fqdir_free_work);
+
+I think you misunderstood me.
+
+Since this fqdir_free_work will have at most one instance, you can use
+system_wq here, there is no risk of abuse.
+
+My suggestion was to not use system_wq for fqdir_exit(), to better
+control the number
+ of threads in rhashtable cleanups.
+
+void fqdir_exit(struct fqdir *fqdir)
+{
+        INIT_WORK(&fqdir->destroy_work, fqdir_work_fn);
+-       queue_work(system_wq, &fqdir->destroy_work);
++      queue_work(fqdir_wq, &fqdir->destroy_work);
+}
+
+
+
+> +}
+> +
+> +static int __init fqdir_wq_init(void)
+> +{
+> +       fqdir_wq = create_singlethread_workqueue("fqdir");
+
+
+And here, I suggest to use a non ordered work queue, allowing one
+thread per cpu, to allow concurrent rhashtable cleanups
+
+Also "fqdir" name is rather vague, this is an implementation detail ?
+
+fqdir_wq =create_workqueue("inet_frag_wq");
+
+> +       if (!fqdir_wq)
+> +               panic("Could not create fqdir workq");
+> +       return 0;
+> +}
+> +
+> +pure_initcall(fqdir_wq_init);
+> +
+> +
+>  int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f, struct net *net)
+>  {
+>         struct fqdir *fqdir = kzalloc(sizeof(*fqdir), GFP_KERNEL);
+> --
+> 2.17.1
+>
