@@ -2,286 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 935972D7016
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 07:19:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DACE82D7025
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 07:26:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390375AbgLKGS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 01:18:59 -0500
-Received: from mx2.suse.de ([195.135.220.15]:48760 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388934AbgLKGSi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Dec 2020 01:18:38 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1607667469; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Hqvh2FmQdxs+E1P/+UvffdZOKFlLtbSz3sTxGcARMo=;
-        b=LBVJx6W5F4URqC3X64ehrowu5YRikB8/j/vxRSbcQ3IL9ZnU1EhEzYDoZmjik7Ss9AAF9k
-        VbJCYa9d4uXocu0FLUSMKEjfe+DRohzwZKmTlPFzKcaaj/1KN/wjUDbns5LbsUhpaSTxU7
-        2cbe908PI5Up5se8cqa9SOITXkOZdgE=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 13F15AF2C;
-        Fri, 11 Dec 2020 06:17:49 +0000 (UTC)
-Subject: Re: [patch 27/30] xen/events: Only force affinity mask for percpu
- interrupts
-To:     boris.ostrovsky@oracle.com, Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci@vger.kernel.org,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-References: <20201210192536.118432146@linutronix.de>
- <20201210194045.250321315@linutronix.de>
- <7f7af60f-567f-cdef-f8db-8062a44758ce@oracle.com>
-From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <a4bce428-4420-6064-c7cc-7136a7544a52@suse.com>
-Date:   Fri, 11 Dec 2020 07:17:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S2395483AbgLKGZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 01:25:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391223AbgLKGZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 01:25:19 -0500
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BBCC0613CF
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 22:24:39 -0800 (PST)
+Received: by mail-il1-x142.google.com with SMTP id q1so7763147ilt.6
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 22:24:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R2nu+evV2RiqlMwq+jAP2JmdldTYUhryc5/wfbY/nC4=;
+        b=OSuxAgWyRLfNHDFi4Mn2mD2SzQBYRjIA/jPZa+b+zQh0bBZxvj1NaXT1kBXv71Huju
+         +DZFt1vawTYZBoy7XTuJDfUrqDSOWiimjxGIOtBmDb0/SGE35+8CzVzYP9zdS2fsyfy1
+         pMg311bA9HuotVrE4hYkWw8hbEuF7Ls6YHzMCAEqz8Y7+gg+DAS8KapSieJBgivwYnQx
+         2bhFRgEJ91rfmlaQymGlTKaKkiPpMV5JO+HuvAwIrYXjzmlsPE5vbqpz9nyVFzGykH+8
+         2EeXoAyRGup17oUlzVR/uubntugUC7SCLOfi9kZFUM4swri7Wff0rtQrctncbCQbQF4S
+         JsOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R2nu+evV2RiqlMwq+jAP2JmdldTYUhryc5/wfbY/nC4=;
+        b=LY62QbriUZDds3N0/KNrLV96d5GFOO4fHUKY4PZUk/5rLxfMEFTOsB7C+L1nl+RTmu
+         ZW7jokgrubz2dHTl2X704JYuNzN4iy4xEqe1rOIT8qFws4daEI3JKG8c1ynYAS7RAUAE
+         78jkr42kyc+DJTdpLTp97ikzhiqRmnBLf7If6u98mcxPnnLuY4140tNdhYoUcNCWthLW
+         uzuNF+LjOYYABWakPdPAYZ2jo+xlJnnl0W3jDsz/OSFZj1ByUqVKJIbjz1zXEiXk0Y0d
+         xdgS7b/HeV0yuUAdu0AFh7SD2qVNN2Rl+qghYh9Mx8xPV2AJkSe0biftwu3Fng874KJv
+         yOTQ==
+X-Gm-Message-State: AOAM530RVMiGikRIF+Br9oVTkeWdXvKcB42zQVT2NhJsrWpEFHxVG88Q
+        SKEm3Ypl2ouCzlnGnCWrdCRJt6Kv7M6weFsewgAmKQ==
+X-Google-Smtp-Source: ABdhPJw750jTsaFhagrZFnuvTxKa/l62yhXEhpVEN2/d1mxUqNtSlZ3KCEKEJ6kVvn7MOpbF7YZQYIJHXwYvVajfNDA=
+X-Received: by 2002:a92:358e:: with SMTP id c14mr13382285ilf.69.1607667878507;
+ Thu, 10 Dec 2020 22:24:38 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <7f7af60f-567f-cdef-f8db-8062a44758ce@oracle.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="bInmAjsEBwVQG9mgj6zMfi4a5q7thbvRq"
+References: <160765171921.6905.7897898635812579754.stgit@localhost.localdomain>
+In-Reply-To: <160765171921.6905.7897898635812579754.stgit@localhost.localdomain>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 11 Dec 2020 07:24:27 +0100
+Message-ID: <CANn89iJ5HnJYv6eWb1jm6rK173DFkp2GRnfvi9vnYwXZPzE4LQ@mail.gmail.com>
+Subject: Re: [net PATCH] tcp: Mark fastopen SYN packet as lost when receiving ICMP_TOOBIG/ICMP_FRAG_NEEDED
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Yuchung Cheng <ycheng@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        kernel-team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---bInmAjsEBwVQG9mgj6zMfi4a5q7thbvRq
-Content-Type: multipart/mixed; boundary="z0MmiO2yT7oWPERWG97Qa1OHWGxwVFKEb";
- protected-headers="v1"
-From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-To: boris.ostrovsky@oracle.com, Thomas Gleixner <tglx@linutronix.de>,
- LKML <linux-kernel@vger.kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>, Marc Zyngier <maz@kernel.org>,
- Stefano Stabellini <sstabellini@kernel.org>, xen-devel@lists.xenproject.org,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Helge Deller <deller@gmx.de>, afzal mohammed <afzal.mohd.ma@gmail.com>,
- linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
- linux-arm-kernel@lists.infradead.org, Mark Rutland <mark.rutland@arm.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
- Jani Nikula <jani.nikula@linux.intel.com>,
- Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
- Rodrigo Vivi <rodrigo.vivi@intel.com>, David Airlie <airlied@linux.ie>,
- Daniel Vetter <daniel@ffwll.ch>,
- Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
- Chris Wilson <chris@chris-wilson.co.uk>,
- Wambui Karuga <wambui.karugax@gmail.com>, intel-gfx@lists.freedesktop.org,
- dri-devel@lists.freedesktop.org,
- Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
- Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org,
- Lee Jones <lee.jones@linaro.org>, Jon Mason <jdmason@kudzu.us>,
- Dave Jiang <dave.jiang@intel.com>, Allen Hubbe <allenbh@gmail.com>,
- linux-ntb@googlegroups.com, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
- Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Michal Simek <michal.simek@xilinx.com>, linux-pci@vger.kernel.org,
- Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
- Hou Zhiqiang <Zhiqiang.Hou@nxp.com>, Tariq Toukan <tariqt@nvidia.com>,
- "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
- Saeed Mahameed <saeedm@nvidia.com>, Leon Romanovsky <leon@kernel.org>
-Message-ID: <a4bce428-4420-6064-c7cc-7136a7544a52@suse.com>
-Subject: Re: [patch 27/30] xen/events: Only force affinity mask for percpu
- interrupts
-References: <20201210192536.118432146@linutronix.de>
- <20201210194045.250321315@linutronix.de>
- <7f7af60f-567f-cdef-f8db-8062a44758ce@oracle.com>
-In-Reply-To: <7f7af60f-567f-cdef-f8db-8062a44758ce@oracle.com>
-
---z0MmiO2yT7oWPERWG97Qa1OHWGxwVFKEb
-Content-Type: multipart/mixed;
- boundary="------------4E00B26896755A3BF8CF5A38"
-Content-Language: en-US
-
-This is a multi-part message in MIME format.
---------------4E00B26896755A3BF8CF5A38
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-
-On 11.12.20 00:20, boris.ostrovsky@oracle.com wrote:
->=20
-> On 12/10/20 2:26 PM, Thomas Gleixner wrote:
->> All event channel setups bind the interrupt on CPU0 or the target CPU =
-for
->> percpu interrupts and overwrite the affinity mask with the correspondi=
-ng
->> cpumask. That does not make sense.
->>
->> The XEN implementation of irqchip::irq_set_affinity() already picks a
->> single target CPU out of the affinity mask and the actual target is st=
-ored
->> in the effective CPU mask, so destroying the user chosen affinity mask=
-
->> which might contain more than one CPU is wrong.
->>
->> Change the implementation so that the channel is bound to CPU0 at the =
-XEN
->> level and leave the affinity mask alone. At startup of the interrupt
->> affinity will be assigned out of the affinity mask and the XEN binding=
- will
->> be updated.
->=20
->=20
-> If that's the case then I wonder whether we need this call at all and i=
-nstead bind at startup time.
-
-This binding to cpu0 was introduced with commit 97253eeeb792d61ed2
-and I have no reason to believe the underlying problem has been
-eliminated.
+On Fri, Dec 11, 2020 at 2:55 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> From: Alexander Duyck <alexanderduyck@fb.com>
+>
+> In the case of a fastopen SYN there are cases where it may trigger either a
+> ICMP_TOOBIG message in the case of IPv6 or a fragmentation request in the
+> case of IPv4. This results in the socket stalling for a second or more as
+> it does not respond to the message by retransmitting the SYN frame.
+>
+> Normally a SYN frame should not be able to trigger a ICMP_TOOBIG or
+> ICMP_FRAG_NEEDED however in the case of fastopen we can have a frame that
+> makes use of the entire MTU. In the case of fastopen it does, and an
+> additional complication is that the retransmit queue doesn't contain the
+> original frames. As a result when tcp_simple_retransmit is called and
+> walks the list of frames in the queue it may not mark the frames as lost
+> because both the SYN and the data packet each individually are smaller than
+> the MSS size after the adjustment. This results in the socket being stalled
+> until the retransmit timer kicks in and forces the SYN frame out again
+> without the data attached.
+>
+> In order to resolve this we need to mark the SYN frame as lost if it is the
+> first packet in the queue. Doing this allows the socket to recover much
+> more quickly without the retransmit timeout stall.
+>
+> Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
 
 
-Juergen
+I do not think it is net candidate, but net-next
 
---------------4E00B26896755A3BF8CF5A38
-Content-Type: application/pgp-keys;
- name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Yuchung might correct me, but I think TCP Fastopen standard was very
+conservative about payload len in the SYN packet
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+So receiving an ICMP was never considered.
 
-xsBNBFOMcBYBCACgGjqjoGvbEouQZw/ToiBg9W98AlM2QHV+iNHsEs7kxWhKMjrioyspZKOBy=
-cWx
-w3ie3j9uvg9EOB3aN4xiTv4qbnGiTr3oJhkB1gsb6ToJQZ8uxGq2kaV2KL9650I1SJvedYm8O=
-f8Z
-d621lSmoKOwlNClALZNew72NjJLEzTalU1OdT7/i1TXkH09XSSI8mEQ/ouNcMvIJNwQpd369y=
-9bf
-IhWUiVXEK7MlRgUG6MvIj6Y3Am/BBLUVbDa4+gmzDC9ezlZkTZG2t14zWPvxXP3FAp2pkW0xq=
-G7/
-377qptDmrk42GlSKN4z76ELnLxussxc7I2hx18NUcbP8+uty4bMxABEBAAHNHEp1ZXJnZW4gR=
-3Jv
-c3MgPGpnQHBmdXBmLm5ldD7CwHkEEwECACMFAlOMcBYCGwMHCwkIBwMCAQYVCAIJCgsEFgIDA=
-QIe
-AQIXgAAKCRCw3p3WKL8TL0KdB/93FcIZ3GCNwFU0u3EjNbNjmXBKDY4FUGNQH2lvWAUy+dnyT=
-hpw
-dtF/jQ6j9RwE8VP0+NXcYpGJDWlNb9/JmYqLiX2Q3TyevpB0CA3dbBQp0OW0fgCetToGIQrg0=
-MbD
-1C/sEOv8Mr4NAfbauXjZlvTj30H2jO0u+6WGM6nHwbh2l5O8ZiHkH32iaSTfN7Eu5RnNVUJbv=
-oPH
-Z8SlM4KWm8rG+lIkGurqqu5gu8q8ZMKdsdGC4bBxdQKDKHEFExLJK/nRPFmAuGlId1E3fe10v=
-5QL
-+qHI3EIPtyfE7i9Hz6rVwi7lWKgh7pe0ZvatAudZ+JNIlBKptb64FaiIOAWDCx1SzR9KdWVyZ=
-2Vu
-IEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+wsB5BBMBAgAjBQJTjHCvAhsDBwsJCAcDAgEGFQgCC=
-QoL
-BBYCAwECHgECF4AACgkQsN6d1ii/Ey/HmQf/RtI7kv5A2PS4RF7HoZhPVPogNVbC4YA6lW7Dr=
-Wf0
-teC0RR3MzXfy6pJ+7KLgkqMlrAbN/8Dvjoz78X+5vhH/rDLa9BuZQlhFmvcGtCF8eR0T1v0nC=
-/nu
-AFVGy+67q2DH8As3KPu0344TBDpAvr2uYM4tSqxK4DURx5INz4ZZ0WNFHcqsfvlGJALDeE0Lh=
-ITT
-d9jLzdDad1pQSToCnLl6SBJZjDOX9QQcyUigZFtCXFst4dlsvddrxyqT1f17+2cFSdu7+ynLm=
-XBK
-7abQ3rwJY8SbRO2iRulogc5vr/RLMMlscDAiDkaFQWLoqHHOdfO9rURssHNN8WkMnQfvUewRz=
-80h
-SnVlcmdlbiBHcm9zcyA8amdyb3NzQG5vdmVsbC5jb20+wsB5BBMBAgAjBQJTjHDXAhsDBwsJC=
-AcD
-AgEGFQgCCQoLBBYCAwECHgECF4AACgkQsN6d1ii/Ey8PUQf/ehmgCI9jB9hlgexLvgOtf7PJn=
-FOX
-gMLdBQgBlVPO3/D9R8LtF9DBAFPNhlrsfIG/SqICoRCqUcJ96Pn3P7UUinFG/I0ECGF4EvTE1=
-jnD
-kfJZr6jrbjgyoZHiw/4BNwSTL9rWASyLgqlA8u1mf+c2yUwcGhgkRAd1gOwungxcwzwqgljf0=
-N51
-N5JfVRHRtyfwq/ge+YEkDGcTU6Y0sPOuj4Dyfm8fJzdfHNQsWq3PnczLVELStJNdapwPOoE+l=
-otu
-fe3AM2vAEYJ9rTz3Cki4JFUsgLkHFqGZarrPGi1eyQcXeluldO3m91NK/1xMI3/+8jbO0tsn1=
-tqS
-EUGIJi7ox80eSnVlcmdlbiBHcm9zcyA8amdyb3NzQHN1c2UuZGU+wsB5BBMBAgAjBQJTjHDrA=
-hsD
-BwsJCAcDAgEGFQgCCQoLBBYCAwECHgECF4AACgkQsN6d1ii/Ey+LhQf9GL45eU5vOowA2u5N3=
-g3O
-ZUEBmDHVVbqMtzwlmNC4k9Kx39r5s2vcFl4tXqW7g9/ViXYuiDXb0RfUpZiIUW89siKrkzmQ5=
-dM7
-wRqzgJpJwK8Bn2MIxAKArekWpiCKvBOB/Cc+3EXE78XdlxLyOi/NrmSGRIov0karw2RzMNOu5=
-D+j
-LRZQd1Sv27AR+IP3I8U4aqnhLpwhK7MEy9oCILlgZ1QZe49kpcumcZKORmzBTNh30FVKK1Evm=
-V2x
-AKDoaEOgQB4iFQLhJCdP1I5aSgM5IVFdn7v5YgEYuJYx37IoN1EblHI//x/e2AaIHpzK5h88N=
-Eaw
-QsaNRpNSrcfbFmAg987ATQRTjHAWAQgAyzH6AOODMBjgfWE9VeCgsrwH3exNAU32gLq2xvjpW=
-nHI
-s98ndPUDpnoxWQugJ6MpMncr0xSwFmHEgnSEjK/PAjppgmyc57BwKII3sV4on+gDVFJR6Y8ZR=
-wgn
-BC5mVM6JjQ5xDk8WRXljExRfUX9pNhdE5eBOZJrDRoLUmmjDtKzWaDhIg/+1Hzz93X4fCQkNV=
-bVF
-LELU9bMaLPBG/x5q4iYZ2k2ex6d47YE1ZFdMm6YBYMOljGkZKwYde5ldM9mo45mmwe0icXKLk=
-pEd
-IXKTZeKDO+Hdv1aqFuAcccTg9RXDQjmwhC3yEmrmcfl0+rPghO0Iv3OOImwTEe4co3c1mwARA=
-QAB
-wsBfBBgBAgAJBQJTjHAWAhsMAAoJELDendYovxMvQ/gH/1ha96vm4P/L+bQpJwrZ/dneZcmEw=
-Tbe
-8YFsw2V/Buv6Z4Mysln3nQK5ZadD534CF7TDVft7fC4tU4PONxF5D+/tvgkPfDAfF77zy2AH1=
-vJz
-Q1fOU8lYFpZXTXIHb+559UqvIB8AdgR3SAJGHHt4RKA0F7f5ipYBBrC6cyXJyyoprT10EMvU8=
-VGi
-wXvTyJz3fjoYsdFzpWPlJEBRMedCot60g5dmbdrZ5DWClAr0yau47zpWj3enf1tLWaqcsuylW=
-svi
-uGjKGw7KHQd3bxALOknAp4dN3QwBYCKuZ7AddY9yjynVaD5X7nF9nO5BjR/i1DG86lem3iBDX=
-zXs
-ZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
+> ---
+>  include/net/tcp.h    |    1 +
+>  net/ipv4/tcp_input.c |    8 ++++++++
+>  net/ipv4/tcp_ipv4.c  |    6 ++++++
+>  net/ipv6/tcp_ipv6.c  |    4 ++++
+>  4 files changed, 19 insertions(+)
+>
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index d4ef5bf94168..6181ad98727a 100644
+> --- a/include/net/tcp.h
 
---------------4E00B26896755A3BF8CF5A38--
 
---z0MmiO2yT7oWPERWG97Qa1OHWGxwVFKEb--
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -546,6 +546,12 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
+>                         if (sk->sk_state == TCP_LISTEN)
+>                                 goto out;
+>
+> +                       /* fastopen SYN may have triggered the fragmentation
+> +                        * request. Mark the SYN or SYN/ACK as lost.
+> +                        */
+> +                       if (sk->sk_state == TCP_SYN_SENT)
+> +                               tcp_mark_syn_lost(sk);
 
---bInmAjsEBwVQG9mgj6zMfi4a5q7thbvRq
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+This is going to crash in some cases, you do not know if you own the socket.
+(Look a few lines below)
 
------BEGIN PGP SIGNATURE-----
+> +
+>                         tp->mtu_info = info;
+>                         if (!sock_owned_by_user(sk)) {
+>                                 tcp_v4_mtu_reduced(sk);
+> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> index 992cbf3eb9e3..d7b1346863e3 100644
+> --- a/net/ipv6/tcp_ipv6.c
+> +++ b/net/ipv6/tcp_ipv6.c
+> @@ -443,6 +443,10 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+>                 if (!ip6_sk_accept_pmtu(sk))
+>                         goto out;
+>
+> +               /* fastopen SYN may have triggered TOOBIG, mark it lost. */
+> +               if (sk->sk_state == TCP_SYN_SENT)
+> +                       tcp_mark_syn_lost(sk);
 
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAl/TDwgFAwAAAAAACgkQsN6d1ii/Ey8h
-xggAkCsUD7isOuCqEaUo01HAUjpM8mZxAWSEsOLkScDlic57fpNsYS+rZOVeFHDluVxb/jn8HPuE
-LR2JRJJAoeDn0oVgoTexsNoc9s8tTVlR9AJDCBkQkfUCyo3m8fjaqh0uWYt8Fq5hiDLYdtopGANt
-SOatxh8szxVT1K7ewdOKYpq/E4LMlP/Ixqp7Vt3sLFUfbO23BK9BAQIN4HjEJ8UhwJmx97xEz4MQ
-3uq2q9YtvtamCfptwByf8jIwqQyfSTBFfng5U6S7cx5rxXjTnWWg2uK1+Yg6YeJ7rKitwBc87VUp
-3/xQ/cnnv/3SzOeVN5mv6RBsdEMDniBwFSlF8BwRpA==
-=wkA2
------END PGP SIGNATURE-----
 
---bInmAjsEBwVQG9mgj6zMfi4a5q7thbvRq--
+Same issue here.
+
+> +
+>                 tp->mtu_info = ntohl(info);
+>                 if (!sock_owned_by_user(sk))
+>                         tcp_v6_mtu_reduced(sk);
+>
+>
