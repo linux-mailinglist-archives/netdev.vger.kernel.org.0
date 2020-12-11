@@ -2,195 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF272D73A4
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 11:14:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 551752D73BF
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 11:17:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389664AbgLKKNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 05:13:20 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:39568 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388514AbgLKKLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 05:11:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607681508; x=1639217508;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DtP8ElIx+KP6/zzxe2zl/O+NBed8LROKaZLUZR3CceM=;
-  b=SGXdUnIZHq0IBYYdrEfiEt/Re9/0987EfS0YYrBqiiAr0mJIDhFk04K8
-   Kg/gXTV/WUfeCHVSz1o7E1vhrCPyQvqjx5YS130v358hLeMA46rdXlQMv
-   2017wZiRewhO49KggN5M2z+B3sXFOs171RUk1eEvyCc43vCL9nPuZrSEo
-   2k6sFxjgeNj6eOuplZV51N0OfYT6JTNEs37U8tMY/NHO3iBwd6qlfU3d+
-   GrvHLdvVSJ2pWUwmnV2jH4YtVs85cQvWQOw8X8FusLDDP7EvI3I4cH6Es
-   8XnNt5PLkfVHCgKtlWe9Rda/PYxTmkODhgFVYpa/0PzMvdXtq46SmPeyF
-   w==;
-IronPort-SDR: sklJyd1o6dTtRkWU4TMinODiEI/7i1kscTOrO8VW/dzN4ge5dxEOG12Qhw64hZ+pU72jarVWp8
- VBpL5HhnwEjFifvEm8Dh0u+J11T0bk5LqPqA8LP4qbN9f+gV3LI38DY/Y8csAHUoHS/iTaIowQ
- SjfVONx6eVK4Yf564FAJqB3LzudBswiPMn/QuEwd6nJJYQEYVMXSCItQepYm/TIq5uTRvVumz5
- OlCchEU7wL+GPTiapIZNcs8M7WwwVAtLIzv7vW8hrrSW5zDL713schhiuWbScSYlKAaAe8o7aj
- xnM=
+        id S2405165AbgLKKQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 05:16:01 -0500
+Received: from mga09.intel.com ([134.134.136.24]:39165 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728679AbgLKKP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Dec 2020 05:15:28 -0500
+IronPort-SDR: fpAU1niPIFuPTXmkaalAoedDWd6uMmiwK+GIuPm7zkHmUKiTH/WmaZ7cJIBYl1P482UaQWEBR/
+ 2I8f41Hr9z8g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9831"; a="174554594"
 X-IronPort-AV: E=Sophos;i="5.78,411,1599548400"; 
-   d="scan'208";a="102404931"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Dec 2020 03:10:30 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 11 Dec 2020 03:10:30 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Fri, 11 Dec 2020 03:10:29 -0700
-Date:   Fri, 11 Dec 2020 11:10:29 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-CC:     <roopa@nvidia.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <allan.nielsen@microchip.com>
-Subject: Re: [RFC net-next] net: bridge: igmp: Extend IGMP query with vlan
- support
-Message-ID: <20201211101029.ymk4eepicoxqzahm@soft-dev3.localdomain>
-References: <20201211092626.809206-1-horatiu.vultur@microchip.com>
- <4fe477ff-c58f-5100-d7c8-8dd87b0be302@nvidia.com>
+   d="scan'208";a="174554594"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2020 02:13:39 -0800
+IronPort-SDR: RsQ7lmI/Ay9vaPccFC88f8JfxCXrqcVSXV/MMPaui8twEB+RtpNdJLZX44RdUN4vBcYtBFso8b
+ xcHG9HzNR9pw==
+X-IronPort-AV: E=Sophos;i="5.78,411,1599548400"; 
+   d="scan'208";a="321689328"
+Received: from ynaki-mobl1.ger.corp.intel.com (HELO [10.214.252.46]) ([10.214.252.46])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2020 02:13:24 -0800
+Subject: Re: [patch 14/30] drm/i915/pmu: Replace open coded kstat_irqs() copy
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        afzal mohammed <afzal.mohd.ma@gmail.com>,
+        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Wambui Karuga <wambui.karugax@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-pci@vger.kernel.org,
+        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org
+References: <20201210192536.118432146@linutronix.de>
+ <20201210194043.957046529@linutronix.de>
+From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Organization: Intel Corporation UK Plc
+Message-ID: <ad05af1a-5463-2a80-0887-7629721d6863@linux.intel.com>
+Date:   Fri, 11 Dec 2020 10:13:21 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <4fe477ff-c58f-5100-d7c8-8dd87b0be302@nvidia.com>
+In-Reply-To: <20201210194043.957046529@linutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 12/11/2020 11:46, Nikolay Aleksandrov wrote:
+
+On 10/12/2020 19:25, Thomas Gleixner wrote:
+> Driver code has no business with the internals of the irq descriptor.
 > 
-> On 11/12/2020 11:26, Horatiu Vultur wrote:
-> > This patch tries to add vlan support to IGMP queries.
-> > It extends the function 'br_ip4_multicast_alloc_query' to add
-> > also a vlan tag if vlan is enabled. Therefore the bridge will send
-> > queries for each vlan the ports are in.
-> >
-> > There are few other places that needs to be updated to be fully
-> > functional. But I am curious if this is the way to go forward or is
-> > there a different way of implementing this?
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  net/bridge/br_multicast.c | 31 ++++++++++++++++++++++++++-----
-> >  1 file changed, 26 insertions(+), 5 deletions(-)
-> >
-
-Hi Nik,
-
+> Aside of that the count is per interrupt line and therefore takes
+> interrupts from other devices into account which share the interrupt line
+> and are not handled by the graphics driver.
 > 
-> Hi Horatiu,
-> We've discussed this with other people on netdev before, the way forward is to
-> implement it as a per-vlan option and then have a per-vlan querier. Which would also
-> make the change much bigger and more complex. In general some of the multicast options
-> need to be replicated for vlans to get proper per-vlan multicast control and operation, but
-> that would require to change a lot of logic around the whole bridge (fast-path included,
-> where it'd be most sensitive).
-
-Thanks for the suggestion and for the heads up. I will have a look and
-see how to do it like you mention.
-
-
-> The good news is that these days we have per-vlan options
-> support and so only the actual per-vlan multicast implementation is left to be done.
-> I have this on my TODO list, unfortunately that list gets longer and longer,
-> so I'd be happy to review patches if someone decides to do it sooner. :)
-
-That would be much appreciated :).
-
+> Replace it with a pmu private count which only counts interrupts which
+> originate from the graphics card.
 > 
-> Sorry, I couldn't find the previous discussion, it was a few years back.
+> To avoid atomics or heuristics of some sort make the counter field
+> 'unsigned long'. That limits the count to 4e9 on 32bit which is a lot and
+> postprocessing can easily deal with the occasional wraparound.
+
+After my failed hasty sketch from last night I had a different one which 
+was kind of heuristics based (re-reading the upper dword and retrying if 
+it changed on 32-bit). But you are right - it is okay to at least start 
+like this today and if later there is a need we can either do that or 
+deal with wrap at PMU read time.
+
+So thanks for dealing with it, some small comments below but overall it 
+is fine.
+
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: intel-gfx@lists.freedesktop.org
+> Cc: dri-devel@lists.freedesktop.org
+> ---
+>   drivers/gpu/drm/i915/i915_irq.c |   34 ++++++++++++++++++++++++++++++++++
+>   drivers/gpu/drm/i915/i915_pmu.c |   18 +-----------------
+>   drivers/gpu/drm/i915/i915_pmu.h |    8 ++++++++
+>   3 files changed, 43 insertions(+), 17 deletions(-)
 > 
-> Cheers,
->  Nik
-> 
-> > diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-> > index 484820c223a3..4c2db8a9efe0 100644
-> > --- a/net/bridge/br_multicast.c
-> > +++ b/net/bridge/br_multicast.c
-> > @@ -688,7 +688,8 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
-> >                                                   __be32 ip_dst, __be32 group,
-> >                                                   bool with_srcs, bool over_lmqt,
-> >                                                   u8 sflag, u8 *igmp_type,
-> > -                                                 bool *need_rexmit)
-> > +                                                 bool *need_rexmit,
-> > +                                                 __u16 vid)
-> >  {
-> >       struct net_bridge_port *p = pg ? pg->key.port : NULL;
-> >       struct net_bridge_group_src *ent;
-> > @@ -724,6 +725,9 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
-> >       }
-> >
-> >       pkt_size = sizeof(*eth) + sizeof(*iph) + 4 + igmp_hdr_size;
-> > +     if (br_vlan_enabled(br->dev) && vid != 0)
-> > +             pkt_size += 4;
-> > +
-> >       if ((p && pkt_size > p->dev->mtu) ||
-> >           pkt_size > br->dev->mtu)
-> >               return NULL;
-> > @@ -732,6 +736,9 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
-> >       if (!skb)
-> >               goto out;
-> >
-> > +     if (br_vlan_enabled(br->dev) && vid != 0)
-> > +             __vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vid);
-> > +
-> >       skb->protocol = htons(ETH_P_IP);
-> >
-> >       skb_reset_mac_header(skb);
-> > @@ -1008,7 +1015,8 @@ static struct sk_buff *br_multicast_alloc_query(struct net_bridge *br,
-> >                                                   ip4_dst, group->dst.ip4,
-> >                                                   with_srcs, over_lmqt,
-> >                                                   sflag, igmp_type,
-> > -                                                 need_rexmit);
-> > +                                                 need_rexmit,
-> > +                                                 group->vid);
-> >  #if IS_ENABLED(CONFIG_IPV6)
-> >       case htons(ETH_P_IPV6): {
-> >               struct in6_addr ip6_dst;
-> > @@ -1477,6 +1485,8 @@ static void br_multicast_send_query(struct net_bridge *br,
-> >                                   struct bridge_mcast_own_query *own_query)
-> >  {
-> >       struct bridge_mcast_other_query *other_query = NULL;
-> > +     struct net_bridge_vlan_group *vg;
-> > +     struct net_bridge_vlan *v;
-> >       struct br_ip br_group;
-> >       unsigned long time;
-> >
-> > @@ -1485,7 +1495,7 @@ static void br_multicast_send_query(struct net_bridge *br,
-> >           !br_opt_get(br, BROPT_MULTICAST_QUERIER))
-> >               return;
-> >
-> > -     memset(&br_group.dst, 0, sizeof(br_group.dst));
-> > +     memset(&br_group, 0, sizeof(br_group));
-> >
-> >       if (port ? (own_query == &port->ip4_own_query) :
-> >                  (own_query == &br->ip4_own_query)) {
-> > @@ -1501,8 +1511,19 @@ static void br_multicast_send_query(struct net_bridge *br,
-> >       if (!other_query || timer_pending(&other_query->timer))
-> >               return;
-> >
-> > -     __br_multicast_send_query(br, port, NULL, NULL, &br_group, false, 0,
-> > -                               NULL);
-> > +     if (br_vlan_enabled(br->dev) && port) {
-> > +             vg = nbp_vlan_group(port);
-> > +
-> > +             list_for_each_entry(v, &vg->vlan_list, vlist) {
-> > +                     br_group.vid = v->vid == vg->pvid ? 0 : v->vid;
-> > +
-> > +                     __br_multicast_send_query(br, port, NULL, NULL,
-> > +                                               &br_group, false, 0, NULL);
-> > +             }
-> > +     } else {
-> > +             __br_multicast_send_query(br, port, NULL, NULL, &br_group,
-> > +                                       false, 0, NULL);
-> > +     }
-> >
-> >       time = jiffies;
-> >       time += own_query->startup_sent < br->multicast_startup_query_count ?
-> >
+> --- a/drivers/gpu/drm/i915/i915_irq.c
+> +++ b/drivers/gpu/drm/i915/i915_irq.c
+> @@ -60,6 +60,24 @@
+>    * and related files, but that will be described in separate chapters.
+>    */
+>   
+> +/*
+> + * Interrupt statistic for PMU. Increments the counter only if the
+> + * interrupt originated from the the GPU so interrupts from a device which
+> + * shares the interrupt line are not accounted.
+> + */
+> +static inline void pmu_irq_stats(struct drm_i915_private *priv,
+
+We never use priv as a local name, it should be either i915 or dev_priv.
+
+> +				 irqreturn_t res)
+> +{
+> +	if (unlikely(res != IRQ_HANDLED))
+> +		return;
+> +
+> +	/*
+> +	 * A clever compiler translates that into INC. A not so clever one
+> +	 * should at least prevent store tearing.
+> +	 */
+> +	WRITE_ONCE(priv->pmu.irq_count, priv->pmu.irq_count + 1);
+
+Curious, probably more educational for me - given x86_32 and x86_64, and 
+the context of it getting called, what is the difference from just doing 
+irq_count++?
+
+> +}
+> +
+>   typedef bool (*long_pulse_detect_func)(enum hpd_pin pin, u32 val);
+>   
+>   static const u32 hpd_ilk[HPD_NUM_PINS] = {
+> @@ -1599,6 +1617,8 @@ static irqreturn_t valleyview_irq_handle
+>   		valleyview_pipestat_irq_handler(dev_priv, pipe_stats);
+>   	} while (0);
+>   
+> +	pmu_irq_stats(dev_priv, ret);
+> +
+>   	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
+>   
+>   	return ret;
+> @@ -1676,6 +1696,8 @@ static irqreturn_t cherryview_irq_handle
+>   		valleyview_pipestat_irq_handler(dev_priv, pipe_stats);
+>   	} while (0);
+>   
+> +	pmu_irq_stats(dev_priv, ret);
+> +
+>   	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
+>   
+>   	return ret;
+> @@ -2103,6 +2125,8 @@ static irqreturn_t ilk_irq_handler(int i
+>   	if (sde_ier)
+>   		raw_reg_write(regs, SDEIER, sde_ier);
+>   
+> +	pmu_irq_stats(i915, ret);
+> +
+>   	/* IRQs are synced during runtime_suspend, we don't require a wakeref */
+>   	enable_rpm_wakeref_asserts(&i915->runtime_pm);
+>   
+> @@ -2419,6 +2443,8 @@ static irqreturn_t gen8_irq_handler(int
+>   
+>   	gen8_master_intr_enable(regs);
+>   
+> +	pmu_irq_stats(dev_priv, IRQ_HANDLED);
+> +
+>   	return IRQ_HANDLED;
+>   }
+>   
+> @@ -2514,6 +2540,8 @@ static __always_inline irqreturn_t
+>   
+>   	gen11_gu_misc_irq_handler(gt, gu_misc_iir);
+>   
+> +	pmu_irq_stats(i915, IRQ_HANDLED);
+> +
+>   	return IRQ_HANDLED;
+>   }
+>   
+> @@ -3688,6 +3716,8 @@ static irqreturn_t i8xx_irq_handler(int
+>   		i8xx_pipestat_irq_handler(dev_priv, iir, pipe_stats);
+>   	} while (0);
+>   
+> +	pmu_irq_stats(dev_priv, ret);
+> +
+>   	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
+>   
+>   	return ret;
+> @@ -3796,6 +3826,8 @@ static irqreturn_t i915_irq_handler(int
+>   		i915_pipestat_irq_handler(dev_priv, iir, pipe_stats);
+>   	} while (0);
+>   
+> +	pmu_irq_stats(dev_priv, ret);
+> +
+>   	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
+>   
+>   	return ret;
+> @@ -3941,6 +3973,8 @@ static irqreturn_t i965_irq_handler(int
+>   		i965_pipestat_irq_handler(dev_priv, iir, pipe_stats);
+>   	} while (0);
+>   
+> +	pmu_irq_stats(dev_priv, IRQ_HANDLED);
+> +
+>   	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
+>   
+>   	return ret;
+> --- a/drivers/gpu/drm/i915/i915_pmu.c
+> +++ b/drivers/gpu/drm/i915/i915_pmu.c
+> @@ -423,22 +423,6 @@ static enum hrtimer_restart i915_sample(
+>   	return HRTIMER_RESTART;
+>   }
+
+In this file you can also drop the #include <linux/irq.h> line.
+
+>   
+> -static u64 count_interrupts(struct drm_i915_private *i915)
+> -{
+> -	/* open-coded kstat_irqs() */
+> -	struct irq_desc *desc = irq_to_desc(i915->drm.pdev->irq);
+> -	u64 sum = 0;
+> -	int cpu;
+> -
+> -	if (!desc || !desc->kstat_irqs)
+> -		return 0;
+> -
+> -	for_each_possible_cpu(cpu)
+> -		sum += *per_cpu_ptr(desc->kstat_irqs, cpu);
+> -
+> -	return sum;
+> -}
+> -
+>   static void i915_pmu_event_destroy(struct perf_event *event)
+>   {
+>   	struct drm_i915_private *i915 =
+> @@ -581,7 +565,7 @@ static u64 __i915_pmu_event_read(struct
+>   				   USEC_PER_SEC /* to MHz */);
+>   			break;
+>   		case I915_PMU_INTERRUPTS:
+> -			val = count_interrupts(i915);
+> +			val = READ_ONCE(pmu->irq_count);
+
+I guess same curiosity about READ_ONCE like in the increment site.
+
+>   			break;
+>   		case I915_PMU_RC6_RESIDENCY:
+>   			val = get_rc6(&i915->gt);
+> --- a/drivers/gpu/drm/i915/i915_pmu.h
+> +++ b/drivers/gpu/drm/i915/i915_pmu.h
+> @@ -108,6 +108,14 @@ struct i915_pmu {
+>   	 */
+>   	ktime_t sleep_last;
+>   	/**
+> +	 * @irq_count: Number of interrupts
+> +	 *
+> +	 * Intentionally unsigned long to avoid atomics or heuristics on 32bit.
+> +	 * 4e9 interrupts are a lot and postprocessing can really deal with an
+> +	 * occasional wraparound easily. It's 32bit after all.
+> +	 */
+> +	unsigned long irq_count;
+> +	/**
+>   	 * @events_attr_group: Device events attribute group.
+>   	 */
+>   	struct attribute_group events_attr_group;
 > 
 
--- 
-/Horatiu
+Regards,
+
+Tvrtko
