@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF94B2D7592
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 13:28:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55BBD2D758F
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 13:28:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405920AbgLKM1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 07:27:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53920 "EHLO
+        id S2405916AbgLKM1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 07:27:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405425AbgLKM07 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 07:26:59 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 110D7C061793
+        with ESMTP id S2405435AbgLKM1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 07:27:00 -0500
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8B6C061794
         for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 04:26:19 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id t22so10696427ljk.0
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 04:26:18 -0800 (PST)
+Received: by mail-lf1-x141.google.com with SMTP id m19so13092164lfb.1
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 04:26:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6BSRjOodBZ7tT7aU2nQdFJQPyYeEkXkMGDSFnjVOlb8=;
-        b=vnJEYc4SMlLAKJULERS3y3Gd7jy7nMscVNx4wDHKyBFk+WwL4aNXhOubStwmiri0si
-         2aWgGuJEJ2CpHfkGrgB9OSZCGSSjrN2svZZc5zKi04XIjo1mJketiyvlX5Dte+39bJwk
-         9MSiSP6Tjz4FfWG0oqViWR/5LstiaeX51nfgYrTAq+0moZf7URS0Esv7ffGxK2RxnAA0
-         +JTYTs713Kz2IR63RmHe6rX/bNwxH0nVgeCz5MjAZx0DRXRXmhYijZsxnXp0lCOwYALt
-         UWq9m2utpqIdrtvN/vJ4A4fv+PMHVcD3CNNNMZ0I4VgGZ34me0P76rXHQ8O71YHFiNdn
-         QT1Q==
+        bh=F4sC//ZgGUmA9NlrM63F0I/xBsCDk3tlcYvven7F4F8=;
+        b=OEkfuu5P9PMegHBi9dowF0tSk/QRCeWPgguLndEkg9qVrEV8AD8zBvkmW5NN/KvLof
+         78A9+Q/EykO+vlE85FvJrnI8jm/gZxTJt483AAYm2XctiCTlOtMTNit/r66k3DLNKAXc
+         WcqbK75aQCXH+SWv/C6/NXDynRAC5DOUXNZZtpQIpuXJf7H9Y8Soww3fOKCMD5+WS6I0
+         hVJvQMnDlw783n+nJBpRcPoaV6VEUKJz28m+rmy62RcIuQp4LRdqeBVtDmdnaEkUfWLB
+         j3yOSSsNe73O8HDwuewM8D8tcXuZND776e4AwyxacU24YlCKPXw6+3aItbhWs8Eyiv0s
+         wxQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6BSRjOodBZ7tT7aU2nQdFJQPyYeEkXkMGDSFnjVOlb8=;
-        b=Q4sUv6tmnsJoIh6nDwsAT81EwoUsg+3HQIfdJokWSesiSAox52Qsia/MHsnqHNdXv3
-         jTr7twA70lvoW0ql2EdJua4ZOxp4Y2m0FN8o0A/dvouzHIbZpmm7AxgSpNqR59EuRiUO
-         oWq0j23cv5zTjCQsgwSkJLAV1X4yTHdTEpO1Cq1O+4Kb+s5bbdT7G+oCSyLQV/Ejzlhd
-         mWBZgN1gjLz+owL04GuFQBzcPwzkoJsSIR6xrDIq6cwg8UbbHnMRLqIWB9WPLV5RZ9rc
-         ++MfIfOOi8e3zw0LxLMCKWaIb96v7noyOG112gJS+9017mo5ujX7hRXsCW0xkEGWPav9
-         AyRg==
-X-Gm-Message-State: AOAM531w3GgN360FDg03tu1iQpEmHArPpfL1uL6SfNdgbXPGHB2sEwwz
-        w/knEa2GmnpGbvu3CzmU69VZDyqkMdAXSw==
-X-Google-Smtp-Source: ABdhPJxHWMafldR2tHZEgaREunhdwqaOb4whyxhtS0Qm3RDlOJJW6JzjlzkkC2yR5pAsSpRnNcfUsQ==
-X-Received: by 2002:a2e:9c5:: with SMTP id 188mr4730198ljj.446.1607689577394;
-        Fri, 11 Dec 2020 04:26:17 -0800 (PST)
+        bh=F4sC//ZgGUmA9NlrM63F0I/xBsCDk3tlcYvven7F4F8=;
+        b=XGkqN8MaJ0iEtu7YjL2JbuEowdLvNjLlgNS7wU5VN6dJyYY6VlRaPqZs4IVLtAh18s
+         jpEXv4TvdZEvuT2SQ8t/7D/zOKVk/AddrAgSDzUCd/3Uyi2WkM3ZncsSmjeKEiBGLB5u
+         8kr3CW6JD/RTSm/wAzDhoqhBaDtF0b9l3v8GyhtkiUzw+aD1P3RQQXBy1MFMSENAggp+
+         n0ub/VmeAGOH/xQwevJ2vKjWWE+fmvwvEjyawrVBfulu6HyJ0L8RPYotymq3/5fKYWbO
+         wOs2oSQDMr4f39mWYUymn5ifs5zdSr0GhdzemItJ69No22Y2/4qRM6dBm6QYabc/RUux
+         WFWw==
+X-Gm-Message-State: AOAM532r/dOe1KKtvK3N2KUiGT+u40udVMDEJs7p8R2YWE3v1B7UjvaE
+        AUCE7Jr6wgmFuWka8QCweeE3bxI5/gC3xw==
+X-Google-Smtp-Source: ABdhPJwwWi29BRQac+hXWAO2FH9sRrN5ud10gIGjhjeP/8jI897A8U+HqzoTFtqwM+FP9+OIxSAB5g==
+X-Received: by 2002:a19:cc10:: with SMTP id c16mr4371322lfg.112.1607689578200;
+        Fri, 11 Dec 2020 04:26:18 -0800 (PST)
 Received: from mimer.emblasoft.lan (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id s8sm335818lfi.21.2020.12.11.04.26.16
+        by smtp.gmail.com with ESMTPSA id s8sm335818lfi.21.2020.12.11.04.26.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 04:26:16 -0800 (PST)
+        Fri, 11 Dec 2020 04:26:17 -0800 (PST)
 From:   Jonas Bonn <jonas@norrbonn.se>
 To:     netdev@vger.kernel.org
 Cc:     pablo@netfilter.org, laforge@gnumonks.org,
         Jonas Bonn <jonas@norrbonn.se>
-Subject: [PATCH net-next v2 03/12] gtp: really check namespaces before xmit
-Date:   Fri, 11 Dec 2020 13:26:03 +0100
-Message-Id: <20201211122612.869225-4-jonas@norrbonn.se>
+Subject: [PATCH net-next v2 04/12] gtp: drop unnecessary call to skb_dst_drop
+Date:   Fri, 11 Dec 2020 13:26:04 +0100
+Message-Id: <20201211122612.869225-5-jonas@norrbonn.se>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201211122612.869225-1-jonas@norrbonn.se>
 References: <20201211122612.869225-1-jonas@norrbonn.se>
@@ -63,29 +63,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Blindly assuming that packet transmission crosses namespaces results in
-skb marks being lost in the single namespace case.
+The call to skb_dst_drop() is already done as part of udp_tunnel_xmit().
 
 Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
 ---
- drivers/net/gtp.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/gtp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 5682d3ba7aa5..e4e57c0552ee 100644
+index e4e57c0552ee..04d9de385549 100644
 --- a/drivers/net/gtp.c
 +++ b/drivers/net/gtp.c
-@@ -592,7 +592,9 @@ static netdev_tx_t gtp_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 				    ip4_dst_hoplimit(&pktinfo.rt->dst),
- 				    0,
- 				    pktinfo.gtph_port, pktinfo.gtph_port,
--				    true, false);
-+				    !net_eq(sock_net(pktinfo.pctx->sk),
-+					    dev_net(dev)),
-+				    false);
- 		break;
+@@ -515,8 +515,6 @@ static int gtp_build_skb_ip4(struct sk_buff *skb, struct net_device *dev,
+ 		goto err_rt;
  	}
  
+-	skb_dst_drop(skb);
+-
+ 	/* This is similar to tnl_update_pmtu(). */
+ 	df = iph->frag_off;
+ 	if (df) {
 -- 
 2.27.0
 
