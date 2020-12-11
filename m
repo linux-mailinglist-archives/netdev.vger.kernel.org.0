@@ -2,101 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09BE22D72CE
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 10:29:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F092D72F6
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 10:38:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405627AbgLKJ3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 04:29:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404425AbgLKJ2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 04:28:35 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1752FC0613D3
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 01:27:55 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id h16so8611364edt.7
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 01:27:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3AQCc2YDUQGFyXvCYo88ngSH0tYmn2xNHP0sLvl7GHY=;
-        b=klrDEP8SZlgLNUXz3zJpAxCLGz4SX3eGMehKPiLNX3LTW6/iIdYv0tc/CaWickbBdl
-         nLBM003DAL4wPyFCozEoMOjKBXO1+VwN5/paBouGBkKwaKYfE1x6zar08idXhOBO80UU
-         WkqZQVU/aAXYbiS07EsI5tpHwB6qcf1c5QG9jXY3qfkggvg2+Jm09+YOj7MX+cSbIeES
-         ONIFbjAaINcCzPIY89dWq1STJVAmvbEwu8G5m1pmZ13kuleOoQZ74XJ0SdO24XnDfzG8
-         9nL5RD5Q5XAJlg1vYEz6m2qIClR4cTWZ2V7kq0cOGTOFtWup5ciMtphYtyP43Wkh/7B+
-         x2HQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3AQCc2YDUQGFyXvCYo88ngSH0tYmn2xNHP0sLvl7GHY=;
-        b=gM4fejMIJLRb0rIecQ3PSzDk2J+th331eZDV+X+LUKOhg1CzD1p1Uhd3ePXl5pooPf
-         GiLtKSxac52ZfzOVzJKOpsPnQkYcadB8vwsL6EPOV8VSptlrP8Yg0n/e7PcR00lr7WBN
-         d+ZuBWAYI0rKiIFynx1x1q1kSkMucAEudTnNjAAnDECtphv+bR5diduzddgxjyAUcbKg
-         PeaDbINeoIk0J6JNGZQeDQERSAstNqLCSBuRCQR6XCwSfh1DfpkhKqn/GRQ57XYs+hAL
-         dgipTn8onSkrkiTpHmLsvBXX2ZTUgKyrQ60jba1gPahDKQcImgJinsNzShBfFSWdHx7v
-         zqqA==
-X-Gm-Message-State: AOAM530wX455bzB5nrrq5CZsJPEtFSRWPbDyQjmCdUzUB3BQ7s7OVk6A
-        R5LWwq6APW7IMIFM9yNU9nz8mm/FA+Xf/w==
-X-Google-Smtp-Source: ABdhPJyxvwVqgZ8kKt4vvSnQVrY5/Gg1peOe2zJm5YIVF7diGRKtrPz2gWF0/bw3KLi3p1hhcDtgJg==
-X-Received: by 2002:a50:ac86:: with SMTP id x6mr10856558edc.197.1607678873814;
-        Fri, 11 Dec 2020 01:27:53 -0800 (PST)
-Received: from madeliefje.horms.nl ([2001:982:7ed1:404:a2a4:c5ff:fe4c:9ce9])
-        by smtp.gmail.com with ESMTPSA id a20sm7314730edr.70.2020.12.11.01.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 01:27:52 -0800 (PST)
-From:   Simon Horman <simon.horman@netronome.com>
+        id S2437496AbgLKJhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 04:37:03 -0500
+Received: from mail.katalix.com ([3.9.82.81]:56648 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405635AbgLKJgx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Dec 2020 04:36:53 -0500
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id DF87488904;
+        Fri, 11 Dec 2020 09:36:09 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1607679370; bh=EXUb0pfDfYMAwM5IH1CiciwOIy0uI8NLjI6kaBiVzvo=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Fri,=2011=20Dec=202020=2009:36:09=20+0000|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20David=20Miller=20<davem@daveml
+         oft.net>|Cc:=20gnault@redhat.com,=20netdev@vger.kernel.org,=20jcha
+         pman@katalix.com|Subject:=20Re:=20[PATCH=20v4=20net-next=200/2]=20
+         add=20ppp_generic=20ioctl(s)=20to=20bridge=0D=0A=20channels|Messag
+         e-ID:=20<20201211093609.GA5112@katalix.com>|References:=20<2020121
+         0155058.14518-1-tparkin@katalix.com>=0D=0A=20<20201210171309.GC157
+         78@linux.home>=0D=0A=20<20201210171645.GB4413@katalix.com>=0D=0A=2
+         0<20201210.142134.777780809639324675.davem@davemloft.net>|MIME-Ver
+         sion:=201.0|Content-Disposition:=20inline|In-Reply-To:=20<20201210
+         .142134.777780809639324675.davem@davemloft.net>;
+        b=Qe314yLrHScZrzfk1AveH7Sf5zfNLLBWrrbg82LYyouFdfrgHbkdcJv8uAqIsXMGI
+         OkqxoCQE0FV0YYhs9LiTX6OEK3zK0sSWhkBTrcoVWH+BRB/vib3jlAwzPzrQdSUiIP
+         ASbHNS4oxwKBXrtUXwCDuVnH/lWX3kzzCpZNguTheEifpe2uvnXJfmhT1lOQw9qJV+
+         4llzzbrPKqqKTewZ1qkYfhr6bQP3/wwo4uHlEegBuF6Os13pp7nJ/eAdLVaCC94N2F
+         dkUpfl2awN93lI8z0gK71luX8xQBzeMkyhTRfU0Wh0o5WmTPlMoAdvwqJtjsqRKqyC
+         ++Kfk4vgeaujg==
+Date:   Fri, 11 Dec 2020 09:36:09 +0000
+From:   Tom Parkin <tparkin@katalix.com>
 To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Louis Peens <louis.peens@netronome.com>,
-        netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Simon Horman <simon.horman@netronome.com>,
-        wenxu <wenxu@ucloud.cn>
-Subject: [PATCH net] nfp: do not send control messages during cleanup
-Date:   Fri, 11 Dec 2020 10:27:38 +0100
-Message-Id: <20201211092738.3358-1-simon.horman@netronome.com>
-X-Mailer: git-send-email 2.20.1
+Cc:     gnault@redhat.com, netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH v4 net-next 0/2] add ppp_generic ioctl(s) to bridge
+ channels
+Message-ID: <20201211093609.GA5112@katalix.com>
+References: <20201210155058.14518-1-tparkin@katalix.com>
+ <20201210171309.GC15778@linux.home>
+ <20201210171645.GB4413@katalix.com>
+ <20201210.142134.777780809639324675.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="cWoXeonUoKmBZSoM"
+Content-Disposition: inline
+In-Reply-To: <20201210.142134.777780809639324675.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On cleanup the txbufs are freed before app cleanup. But app clean-up may
-result in control messages due to use of common control paths. There is no
-need to clean-up the NIC in such cases so simply discard requests. Without
-such a check a NULL pointer dereference occurs.
 
-Fixes: a1db217861f3 ("net: flow_offload: fix flow_indr_dev_unregister path")
-Cc: wenxu <wenxu@ucloud.cn>
-Signed-off-by: Simon Horman <simon.horman@netronome.com>
-Signed-off-by: Louis Peens <louis.peens@netronome.com>
----
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+--cWoXeonUoKmBZSoM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index b4acf2f41e84..d86f68aa89bf 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -2084,6 +2084,15 @@ nfp_ctrl_tx_one(struct nfp_net *nn, struct nfp_net_r_vector *r_vec,
- 	dp = &r_vec->nfp_net->dp;
- 	tx_ring = r_vec->tx_ring;
- 
-+	if (!tx_ring->txbufs)
-+		/* On cleanup the txbufs are freed before app cleanup.
-+		 * But app clean-up may result in control messages due to
-+		 * use of common control paths. There is no need to
-+		 * clean-up the NIC in such cases so simply discard
-+		 * requests.
-+		 */
-+		goto err_free;
-+
- 	if (WARN_ON_ONCE(skb_shinfo(skb)->nr_frags)) {
- 		nn_dp_warn(dp, "Driver's CTRL TX does not implement gather\n");
- 		goto err_free;
--- 
-2.20.1
+On  Thu, Dec 10, 2020 at 14:21:34 -0800, David Miller wrote:
+> From: Tom Parkin <tparkin@katalix.com>
+> Date: Thu, 10 Dec 2020 17:16:45 +0000
+>=20
+> > On  Thu, Dec 10, 2020 at 18:13:09 +0100, Guillaume Nault wrote:
+> >> On Thu, Dec 10, 2020 at 03:50:56PM +0000, Tom Parkin wrote:
+> >> > Following on from my previous RFC[1], this series adds two ioctl cal=
+ls
+> >> > to the ppp code to implement "channel bridging".
+> >> >=20
+> >> > When two ppp channels are bridged, frames presented to ppp_input() on
+> >> > one channel are passed to the other channel's ->start_xmit function =
+for
+> >> > transmission.
+> >> >=20
+> >> > The primary use-case for this functionality is in an L2TP Access
+> >> > Concentrator where PPP frames are typically presented in a PPPoE ses=
+sion
+> >> > (e.g. from a home broadband user) and are forwarded to the ISP netwo=
+rk in
+> >> > a PPPoL2TP session.
+> >>=20
+> >> Looks good to me now. Thanks Tom!
+> >>=20
+> >> Reviewed-by: Guillaume Nault <gnault@redhat.com>
+> >>=20
+> >=20
+> > Thanks again for your review and help with the series :-)
+>=20
+> Series applied.
 
+Thanks Dave.  Nice to see you back :-)
+
+--cWoXeonUoKmBZSoM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl/TPYQACgkQlIwGZQq6
+i9Dh7AgAiq6rWXYmUr/CrEKOE2PyqL0C9uubgyZjiHJwJ5hbCtQCcKbLW1FS2Xco
+HDIhqiHXwAvxGlv1cHt2IuzxMrsUw5T9J3MofsteY04L8Yd8k3Nkf9Ier7E9SKHS
+ISBmCemRcatzrCT7h9eX9oeqxyA5h2hIYL14KZF5e32CkwyeRTBWZnxjoWakGLro
++Rh2iy6hygqUHK9lagzcJaym1Eh/mgMZUyglA0Z4aqRVUdTbGTbR5+EpMoQmLFTk
+aB+Ty33I8hsLQar1ytBnUVxjf676loLQi2jNQUhuQiquE9OrnvlfebRmH/aI/xCW
+ihDTyFI84rD0hbfc9t7/7fUqgj9/uA==
+=3B3t
+-----END PGP SIGNATURE-----
+
+--cWoXeonUoKmBZSoM--
