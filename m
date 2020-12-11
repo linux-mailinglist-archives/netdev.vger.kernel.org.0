@@ -2,2229 +2,2518 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8BC02D7941
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 16:30:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 621222D7972
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 16:33:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387573AbgLKP33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 10:29:29 -0500
-Received: from mail-am6eur05on2086.outbound.protection.outlook.com ([40.107.22.86]:50401
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730329AbgLKP2p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Dec 2020 10:28:45 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fUxtXy5UXSRBzBgZALm1g9v0xap8LcKN9Sqaq7vmEYWlvtKD2ALYDBppA8JLDzqXacQu8N0GrAbjrFZqddHzdd0HAblD9RPgB3+YvRSaPQrI5sdkzDRM9CXmXHCl2TKA1LliaevSu2PEvVVubrKUdmzD/6fae3W81B+wJWEQ2HNRRtzKLpjrFJkKRzuxpPIeeyhXk6laLXEHa/mEBO/ByrHR9rxB5brWorJizXZT4lKvoOPDlFKbL5H3FNc58SOEvjwbj84/XtsGrtveAUmtnEhkJLSsLVqtCtyGnZYnq9yeYjQZokI3y+sSObfFb86zXjFaIteHddFDD4Z8HDLvfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TEUbkSCjSP3hQtzMXwg1g7kB5sLjt7SKL75wS1aC3GU=;
- b=jYtBPK+1U/m/zenIELs8xMSsem2rnanjYas2viAqNbjXmPIw8OjDZ6Llh2csyIQbNF5KNRCnoow78yBiG8zm/cZb4ZTDieQLcjkgFo3NGQK5JlRQBzYQRWtCC1VJsZnt4hawoOqVtIyhysjhE4pC2622uvop1XhfFYfuXNJMR0LvvahRBtFgyeOlRBfrEhcgf7jZRGHlcsHR5vfIiBg5y66phx+ZaHbG/QfM80eDhssI+XMn+CwXvQYcnDUUXlwT8h55Z4NggRp1gvTJHpP3Xhuljf0dt6mnLpTg9UG9fD+iVeXsmKcc+TXWX9BmDc6Po9wHtCH13rh3/CsyDBt9pA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TEUbkSCjSP3hQtzMXwg1g7kB5sLjt7SKL75wS1aC3GU=;
- b=OdCSgv5nxW9333cfgJzOuxQSDQt25mkcH9sd40Me5KbuOakIxXEfrKP65xyIiU6kIB9jf20qr5ffH9+DdeGUvmI+ecYMy6Pr/xDmNOrL5G9IfaEs8g4dKqhZY9VMhFhSrtELvW3nQIKksy/z8XhNqyqf/xeEHFxjqXWIJHAzfo4=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
-Received: from AM6PR05MB5974.eurprd05.prod.outlook.com (2603:10a6:20b:a7::12)
- by AM7PR05MB6725.eurprd05.prod.outlook.com (2603:10a6:20b:136::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Fri, 11 Dec
- 2020 15:26:48 +0000
-Received: from AM6PR05MB5974.eurprd05.prod.outlook.com
- ([fe80::642a:6259:153:ab88]) by AM6PR05MB5974.eurprd05.prod.outlook.com
- ([fe80::642a:6259:153:ab88%3]) with mapi id 15.20.3632.024; Fri, 11 Dec 2020
- 15:26:48 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        netdev@vger.kernel.org, Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net-next v2 4/4] net/mlx5e: Support HTB offload
-Date:   Fri, 11 Dec 2020 17:26:49 +0200
-Message-Id: <20201211152649.12123-5-maximmi@mellanox.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201211152649.12123-1-maximmi@mellanox.com>
-References: <20201211152649.12123-1-maximmi@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [94.188.199.18]
-X-ClientProxiedBy: FRYP281CA0010.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::20)
- To AM6PR05MB5974.eurprd05.prod.outlook.com (2603:10a6:20b:a7::12)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-l-vrt-208.mtl.labs.mlnx (94.188.199.18) by FRYP281CA0010.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.9 via Frontend Transport; Fri, 11 Dec 2020 15:26:47 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f7ba6a40-980f-4819-69ac-08d89de92d85
-X-MS-TrafficTypeDiagnostic: AM7PR05MB6725:
-X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtFwd,ExtAddr
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM7PR05MB672584CF1C0F549B6D87EFCED1CA0@AM7PR05MB6725.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:60;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cnmC+m1yz3A5xHpjvdxzgwjwXMj04UaS1O9hqtU5AnnyZa31s1MDWPnBL2kDVzC9ZtU5Xh7ZQ8C1ji7wHF/AsDyh55igaU30NOad4ad3jQIZz4UIcQRqsdbwb+Viu10zRowk7pqUtisPE9YayxGwkF+tIFUhg2imhs8yRYgwTtG3D2mWtwGGnRzWFHZv8dalTDZHVDC4mpHI8ygqCZ27xYCkepx0E/FweUf6ZkHY56S0fZccy6ojBtb4rqNCqsel9ghXYUFlI/B4MPpWDC+jv+DHL/0bvYxzhIMhJsy2xqs89PQPyRfNX1+8rmJkzVXqmx/ditFK+JE0X4MRKIo2psMpLwfDgOK87aXZka74V+sLIEurwCJ4Pv1xMPLRMZ5KypnKhVvN+TLYJqvLN/hfMA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB5974.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(376002)(136003)(366004)(39860400002)(66946007)(7416002)(186003)(6512007)(5660300002)(16526019)(4326008)(52116002)(30864003)(2906002)(6506007)(8936002)(66476007)(478600001)(54906003)(316002)(26005)(2616005)(8676002)(83380400001)(36756003)(6486002)(956004)(110136005)(66556008)(86362001)(1076003)(966005)(559001)(579004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?V8qJxak18HeHDjoOsHea1tztLnMbamHSWVTvqQ+Dlsdc3VtTVxKyEOf+dJbE?=
- =?us-ascii?Q?zTrt0swfRipzYIRX7J3t3DPzS4APRFouyvB7wgYz7HqGSaimKUgAaGkYWXnY?=
- =?us-ascii?Q?LYP8hSrzOvzoOVcILTgmqI8VyDdzn3g6XDgefkn5DwymlUfZjzOM7TyzZzc7?=
- =?us-ascii?Q?VnGh+lMC096SCdFxF/lJiDH8lPdy/9L1h0OQoUKdoC0fvzNX2uC/D4FGwD3x?=
- =?us-ascii?Q?gAWnhWew7B3Gj0hGK2K3lWSyT8Ao0N+H/K1hcw+98kQw0RFEZEfL5z7n1L1h?=
- =?us-ascii?Q?DT4RyLFYg3B7FOElPxmM++qSvS067Gzp6FLwlx09OumDX8rchhO/KbTJeAmz?=
- =?us-ascii?Q?moo7kg2oKOzB2NtbBYU5lXmZypQvjctkN6J64b0lMo2g/W6qIUBi6rQd3IhP?=
- =?us-ascii?Q?yLtrPsosjFJKvIiLRmAJtlgSJeCPfyyp+qpRUKH0nohSjIW1lUFB5YhJ1ThC?=
- =?us-ascii?Q?Ti2ycSudgQY8YIUWQAx5cbX+Yh6EtUqFTQNM/KBvovemV8Irm6HfCXq8P0sB?=
- =?us-ascii?Q?/fSF4w8J6fzh4ISeTYcqfn4GjTt+IZC7lgo+9D3kGXw/DGaDQtxlLPJNFYOs?=
- =?us-ascii?Q?meUW8GAy2EPINvtMcee6JQ2nXVg7s9nS8Tq/89lqv0P9reG8UbLNWb/7Q7A2?=
- =?us-ascii?Q?g0/IizHNdSnvOBp4ez8B9G8FBYhun3sLh87PVf1Qqa6sz1jD1N6weTXxe9Sj?=
- =?us-ascii?Q?rIKH9cbpHX4YYK9mVTaHJM+5o9EgxO9UOeEgY4S2X8oRzIXdMDr6S2Nz+0fn?=
- =?us-ascii?Q?QEX47ayjHHTP2pAtQ9j3KKNEtlQK0sOHR/fSA+RDpcpqO0RRAS7Q6fT6GBPY?=
- =?us-ascii?Q?EaM+znBMPQVTYjMSgae3ZG2gE8CH8/XQXqr5C3A7oV1juLI6yhj+mlHv7MZY?=
- =?us-ascii?Q?3uKj27RSOk21H7RdJL63KGllUscBu47CCDYnH7iHaO9PK24A6pVoD9WzTdCA?=
- =?us-ascii?Q?9/JollBTOES5nuJykSJvZ3T2Y1b1qJ0c5KDU7n2Ak1I6LThDM8swdXssHDGw?=
- =?us-ascii?Q?F1JV?=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR05MB5974.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2020 15:26:48.8404
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7ba6a40-980f-4819-69ac-08d89de92d85
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OBSxzLQVuSjlF2yrpCWM+YdJpJOPuMmRjzvT/mDs1eDVvuzfm2DAUrF2tBb/oyB+CJqR/MiHAvxfl7/pAuCqWA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR05MB6725
+        id S2392710AbgLKPc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 10:32:28 -0500
+Received: from pegase1.c-s.fr ([93.17.236.30]:56803 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731337AbgLKPcD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Dec 2020 10:32:03 -0500
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 4CsvqW2CTMz9v0BR;
+        Fri, 11 Dec 2020 16:30:15 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id LhHlD9zosI41; Fri, 11 Dec 2020 16:30:15 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4CsvqW0VbSz9v0BQ;
+        Fri, 11 Dec 2020 16:30:15 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9728D8B86D;
+        Fri, 11 Dec 2020 16:30:16 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id M9jqs3NxUGs3; Fri, 11 Dec 2020 16:30:16 +0100 (CET)
+Received: from po17688vm.idsi0.si.c-s.fr (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 55D628B869;
+        Fri, 11 Dec 2020 16:30:14 +0100 (CET)
+Received: by po17688vm.idsi0.si.c-s.fr (Postfix, from userid 0)
+        id 91D5865514; Fri, 11 Dec 2020 15:30:13 +0000 (UTC)
+Message-Id: <ed5acd21af5e52595b1ad53ac4dc54127b1ce392.1607696754.git.christophe.leroy@csgroup.eu>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: [RFC PATCH v1] powerpc/net: Implement eBPF on PPC32
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Sandipan Das <sandipan@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Date:   Fri, 11 Dec 2020 15:30:13 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds support for HTB offload in the mlx5e driver.
+This first draft of eBPF for PPC32. This is still dirty WIP.
 
-Performance:
+Don't pay too much attention on comments, most of them are copied
+as is from PPC64 implementation.
 
-  NIC: Mellanox ConnectX-6 Dx
-  CPU: Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz (24 cores with HT)
+Test result:
 
-  100 Gbit/s line rate, 500 UDP streams @ ~200 Mbit/s each
-  48 traffic classes, flower used for steering
-  No shaping (rate limits set to 4 Gbit/s per TC) - checking for max
-  throughput.
+	test_bpf: Summary: 378 PASSED, 0 FAILED, [332/366 JIT'ed]
 
-  Baseline: 98.7 Gbps, 8.25 Mpps
-  HTB: 6.7 Gbps, 0.56 Mpps
-  HTB offload: 95.6 Gbps, 8.00 Mpps
+Registers mapping:
 
-Limitations:
+	[BPF_REG_0] = r21-r22
+	/* function arguments */
+	[BPF_REG_1] = r3-r4
+	[BPF_REG_2] = r5-r6
+	[BPF_REG_3] = r7-r8
+	[BPF_REG_4] = r9-r10
+	[BPF_REG_5] = r11-r12
+	/* non volatile registers */
+	[BPF_REG_6] = r23-r24
+	[BPF_REG_7] = r25-r26
+	[BPF_REG_8] = r27-r28
+	[BPF_REG_9] = r29-r30
+	/* frame pointer aka BPF_REG_10 */
+	[BPF_REG_FP] = r31
+	/* eBPF jit internal registers */
+	[BPF_REG_AX] = r19-r20
+	[TMP_REG] = r18
 
-1. 1024 leaf nodes, 3 levels of depth.
+r0 is also used as temporary register as much as possible. It is
+referenced directly in the code in order to avoid misuse of it, as
+some instructions interpret it as value 0 instead of register r0.
 
-2. Granularity for ceil is 1 Mbit/s. Rates are converted to weights, and
-the bandwidth is split among the siblings according to these weights.
-Other parameters for classes are not supported.
+The following operations are not (or only partially) supported
+for the time being:
 
-Ethtool statistics support for QoS SQs are also added. The counters are
-called qos_txN_*, where N is the QoS queue number (starting from 0, the
-numeration is separate from the normal SQs), and * is the counter name
-(the counters are the same as for the normal SQs).
+		case BPF_ALU64 | BPF_DIV | BPF_X: /* dst /= src */
+		case BPF_ALU64 | BPF_MOD | BPF_X: /* dst %= src */
+		case BPF_ALU64 | BPF_MOD | BPF_K: /* dst %= imm */
+		case BPF_ALU64 | BPF_DIV | BPF_K: /* dst /= imm */
+		case BPF_ALU64 | BPF_LSH | BPF_X: /* dst <<= src; */
+		case BPF_ALU64 | BPF_LSH | BPF_K: /* dst <<== imm */
+		case BPF_ALU64 | BPF_RSH | BPF_X: /* dst >>= src */
+		case BPF_ALU64 | BPF_RSH | BPF_K: /* dst >>= imm */
+		case BPF_ALU64 | BPF_ARSH | BPF_X: /* (s64) dst >>= src */
+		case BPF_ALU64 | BPF_ARSH | BPF_K: /* (s64) dst >>= imm */
+		case BPF_STX | BPF_XADD | BPF_DW: /* *(u64 *)(dst + off) += src */
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- .../net/ethernet/mellanox/mlx5/core/Makefile  |   6 +-
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  27 +-
- .../ethernet/mellanox/mlx5/core/en/params.h   |   2 +
- .../net/ethernet/mellanox/mlx5/core/en/ptp.c  |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en/qos.c  | 936 ++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en/qos.h  |  39 +
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  21 +
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 168 +++-
- .../ethernet/mellanox/mlx5/core/en_stats.c    | 100 ++
- .../ethernet/mellanox/mlx5/core/en_stats.h    |   2 +
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  47 +-
- .../net/ethernet/mellanox/mlx5/core/en_txrx.c |  26 +
- drivers/net/ethernet/mellanox/mlx5/core/qos.c |  85 ++
- drivers/net/ethernet/mellanox/mlx5/core/qos.h |  28 +
- include/linux/mlx5/mlx5_ifc.h                 |  13 +-
- 15 files changed, 1452 insertions(+), 50 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/qos.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/qos.h
+ arch/powerpc/Kconfig                  |    3 +-
+ arch/powerpc/include/asm/ppc-opcode.h |   11 +
+ arch/powerpc/net/Makefile             |    6 +-
+ arch/powerpc/net/bpf_jit32.h          |  173 ++--
+ arch/powerpc/net/bpf_jit_asm.S        |  226 -----
+ arch/powerpc/net/bpf_jit_comp.c       |  683 --------------
+ arch/powerpc/net/bpf_jit_comp32.c     | 1177 +++++++++++++++++++++++++
+ 7 files changed, 1249 insertions(+), 1030 deletions(-)
+ delete mode 100644 arch/powerpc/net/bpf_jit_asm.S
+ delete mode 100644 arch/powerpc/net/bpf_jit_comp.c
+ create mode 100644 arch/powerpc/net/bpf_jit_comp32.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 77961643d5a9..69797c684d0b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -16,7 +16,8 @@ mlx5_core-y :=	main.o cmd.o debugfs.o fw.o eq.o uar.o pagealloc.o \
- 		transobj.o vport.o sriov.o fs_cmd.o fs_core.o pci_irq.o \
- 		fs_counters.o rl.o lag.o dev.o events.o wq.o lib/gid.o \
- 		lib/devcom.o lib/pci_vsc.o lib/dm.o diag/fs_tracepoint.o \
--		diag/fw_tracer.o diag/crdump.o devlink.o diag/rsc_dump.o fw_reset.o
-+		diag/fw_tracer.o diag/crdump.o devlink.o diag/rsc_dump.o \
-+		fw_reset.o qos.o
- 
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 9e679ba0811c..dd6ccd550230 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -190,7 +190,6 @@ config PPC
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_ASM_MODVERSIONS
+ 	select HAVE_C_RECORDMCOUNT
+-	select HAVE_CBPF_JIT			if !PPC64
+ 	select HAVE_STACKPROTECTOR		if PPC64 && $(cc-option,-mstack-protector-guard=tls -mstack-protector-guard-reg=r13)
+ 	select HAVE_STACKPROTECTOR		if PPC32 && $(cc-option,-mstack-protector-guard=tls -mstack-protector-guard-reg=r2)
+ 	select HAVE_CONTEXT_TRACKING		if PPC64
+@@ -199,7 +198,7 @@ config PPC
+ 	select HAVE_DEBUG_STACKOVERFLOW
+ 	select HAVE_DYNAMIC_FTRACE
+ 	select HAVE_DYNAMIC_FTRACE_WITH_REGS	if MPROFILE_KERNEL
+-	select HAVE_EBPF_JIT			if PPC64
++	select HAVE_EBPF_JIT
+ 	select HAVE_EFFICIENT_UNALIGNED_ACCESS	if !(CPU_LITTLE_ENDIAN && POWER7_CPU)
+ 	select HAVE_FAST_GUP
+ 	select HAVE_FTRACE_MCOUNT_RECORD
+diff --git a/arch/powerpc/include/asm/ppc-opcode.h b/arch/powerpc/include/asm/ppc-opcode.h
+index a6e3700c4566..0cefa1da9a1f 100644
+--- a/arch/powerpc/include/asm/ppc-opcode.h
++++ b/arch/powerpc/include/asm/ppc-opcode.h
+@@ -417,6 +417,7 @@
+ #define PPC_RAW_LD(r, base, i)		(PPC_INST_LD | ___PPC_RT(r) | ___PPC_RA(base) | IMM_DS(i))
+ #define PPC_RAW_LWZ(r, base, i)		(0x80000000 | ___PPC_RT(r) | ___PPC_RA(base) | IMM_L(i))
+ #define PPC_RAW_LWZX(t, a, b)		(0x7c00002e | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
++#define PPC_RAW_LMW(r, base, i)		(0xb8000000 | ___PPC_RT(r) | ___PPC_RA(base) | IMM_L(i))
+ #define PPC_RAW_STD(r, base, i)		(PPC_INST_STD | ___PPC_RS(r) | ___PPC_RA(base) | IMM_DS(i))
+ #define PPC_RAW_STDCX(s, a, b)		(0x7c0001ad | ___PPC_RS(s) | ___PPC_RA(a) | ___PPC_RB(b))
+ #define PPC_RAW_LFSX(t, a, b)		(0x7c00042e | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
+@@ -425,6 +426,9 @@
+ #define PPC_RAW_STFDX(s, a, b)		(0x7c0005ae | ___PPC_RS(s) | ___PPC_RA(a) | ___PPC_RB(b))
+ #define PPC_RAW_LVX(t, a, b)		(0x7c0000ce | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
+ #define PPC_RAW_STVX(s, a, b)		(0x7c0001ce | ___PPC_RS(s) | ___PPC_RA(a) | ___PPC_RB(b))
++#define PPC_RAW_ADDE(t, a, b)		(0x7c000114 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
++#define PPC_RAW_ADDZE(t, a)		(0x7c000194 | ___PPC_RT(t) | ___PPC_RA(a))
++#define PPC_RAW_ADDME(t, a)		(0x7c0001d4 | ___PPC_RT(t) | ___PPC_RA(a))
+ #define PPC_RAW_ADD(t, a, b)		(PPC_INST_ADD | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
+ #define PPC_RAW_ADD_DOT(t, a, b)	(PPC_INST_ADD | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1)
+ #define PPC_RAW_ADDC(t, a, b)		(0x7c000014 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b))
+@@ -443,6 +447,7 @@
+ #define PPC_RAW_STDU(r, base, i)	(0xf8000001 | ___PPC_RS(r) | ___PPC_RA(base) | ((i) & 0xfffc))
+ #define PPC_RAW_STW(r, base, i)		(0x90000000 | ___PPC_RS(r) | ___PPC_RA(base) | IMM_L(i))
+ #define PPC_RAW_STWU(r, base, i)	(0x94000000 | ___PPC_RS(r) | ___PPC_RA(base) | IMM_L(i))
++#define PPC_RAW_STMW(r, base, i)	(0xbc000000 | ___PPC_RS(r) | ___PPC_RA(base) | IMM_L(i))
+ #define PPC_RAW_STH(r, base, i)		(0xb0000000 | ___PPC_RS(r) | ___PPC_RA(base) | IMM_L(i))
+ #define PPC_RAW_STB(r, base, i)		(0x98000000 | ___PPC_RS(r) | ___PPC_RA(base) | IMM_L(i))
+ #define PPC_RAW_LBZ(r, base, i)		(0x88000000 | ___PPC_RT(r) | ___PPC_RA(base) | IMM_L(i))
+@@ -460,6 +465,10 @@
+ #define PPC_RAW_CMPLW(a, b)		(0x7c000040 | ___PPC_RA(a) | ___PPC_RB(b))
+ #define PPC_RAW_CMPLD(a, b)		(0x7c200040 | ___PPC_RA(a) | ___PPC_RB(b))
+ #define PPC_RAW_SUB(d, a, b)		(0x7c000050 | ___PPC_RT(d) | ___PPC_RB(a) | ___PPC_RA(b))
++#define PPC_RAW_SUBFC(d, a, b)		(0x7c000010 | ___PPC_RT(d) | ___PPC_RA(a) | ___PPC_RB(b))
++#define PPC_RAW_SUBFE(d, a, b)		(0x7c000110 | ___PPC_RT(d) | ___PPC_RA(a) | ___PPC_RB(b))
++#define PPC_RAW_SUBFIC(d, a, i)		(0x20000000 | ___PPC_RT(d) | ___PPC_RA(a) | IMM_L(i))
++#define PPC_RAW_SUBFZE(d, a)		(0x7c000190 | ___PPC_RT(d) | ___PPC_RA(a))
+ #define PPC_RAW_MULD(d, a, b)		(0x7c0001d2 | ___PPC_RT(d) | ___PPC_RA(a) | ___PPC_RB(b))
+ #define PPC_RAW_MULW(d, a, b)		(0x7c0001d6 | ___PPC_RT(d) | ___PPC_RA(a) | ___PPC_RB(b))
+ #define PPC_RAW_MULHWU(d, a, b)		(0x7c000016 | ___PPC_RT(d) | ___PPC_RA(a) | ___PPC_RB(b))
+@@ -472,11 +481,13 @@
+ #define PPC_RAW_DIVDEU_DOT(t, a, b)	(0x7c000312 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | 0x1)
+ #define PPC_RAW_AND(d, a, b)		(0x7c000038 | ___PPC_RA(d) | ___PPC_RS(a) | ___PPC_RB(b))
+ #define PPC_RAW_ANDI(d, a, i)		(0x70000000 | ___PPC_RA(d) | ___PPC_RS(a) | IMM_L(i))
++#define PPC_RAW_ANDIS(d, a, i)		(0x74000000 | ___PPC_RA(d) | ___PPC_RS(a) | IMM_L(i))
+ #define PPC_RAW_AND_DOT(d, a, b)	(0x7c000039 | ___PPC_RA(d) | ___PPC_RS(a) | ___PPC_RB(b))
+ #define PPC_RAW_OR(d, a, b)		(0x7c000378 | ___PPC_RA(d) | ___PPC_RS(a) | ___PPC_RB(b))
+ #define PPC_RAW_MR(d, a)		PPC_RAW_OR(d, a, a)
+ #define PPC_RAW_ORI(d, a, i)		(PPC_INST_ORI | ___PPC_RA(d) | ___PPC_RS(a) | IMM_L(i))
+ #define PPC_RAW_ORIS(d, a, i)		(PPC_INST_ORIS | ___PPC_RA(d) | ___PPC_RS(a) | IMM_L(i))
++#define PPC_RAW_NOR(d, a, b)		(0x7c0000f8 | ___PPC_RA(d) | ___PPC_RS(a) | ___PPC_RB(b))
+ #define PPC_RAW_XOR(d, a, b)		(0x7c000278 | ___PPC_RA(d) | ___PPC_RS(a) | ___PPC_RB(b))
+ #define PPC_RAW_XORI(d, a, i)		(0x68000000 | ___PPC_RA(d) | ___PPC_RS(a) | IMM_L(i))
+ #define PPC_RAW_XORIS(d, a, i)		(0x6c000000 | ___PPC_RA(d) | ___PPC_RS(a) | IMM_L(i))
+diff --git a/arch/powerpc/net/Makefile b/arch/powerpc/net/Makefile
+index c2dec3a68d4c..bfc17c54e39a 100644
+--- a/arch/powerpc/net/Makefile
++++ b/arch/powerpc/net/Makefile
+@@ -2,8 +2,4 @@
  #
- # Netdev basic
-@@ -25,7 +26,8 @@ mlx5_core-$(CONFIG_MLX5_CORE_EN) += en_main.o en_common.o en_fs.o en_ethtool.o \
- 		en_tx.o en_rx.o en_dim.o en_txrx.o en/xdp.o en_stats.o \
- 		en_selftest.o en/port.o en/monitor_stats.o en/health.o \
- 		en/reporter_tx.o en/reporter_rx.o en/params.o en/xsk/pool.o \
--		en/xsk/setup.o en/xsk/rx.o en/xsk/tx.o en/devlink.o en/ptp.o
-+		en/xsk/setup.o en/xsk/rx.o en/xsk/tx.o en/devlink.o en/ptp.o \
-+		en/qos.o
- 
+ # Arch-specific network modules
  #
- # Netdev extra
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index a1a81cfeb607..6a469d4d657b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -55,6 +55,7 @@
- #include "en_stats.h"
- #include "en/dcbnl.h"
- #include "en/fs.h"
-+#include "en/qos.h"
- #include "lib/hv_vhca.h"
+-ifdef CONFIG_PPC64
+-obj-$(CONFIG_BPF_JIT) += bpf_jit_comp64.o
+-else
+-obj-$(CONFIG_BPF_JIT) += bpf_jit_asm.o bpf_jit_comp.o
+-endif
++obj-$(CONFIG_BPF_JIT) += bpf_jit_comp$(BITS).o
+diff --git a/arch/powerpc/net/bpf_jit32.h b/arch/powerpc/net/bpf_jit32.h
+index 448dfd4d98e1..f6f0aa87eedf 100644
+--- a/arch/powerpc/net/bpf_jit32.h
++++ b/arch/powerpc/net/bpf_jit32.h
+@@ -1,139 +1,84 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * bpf_jit32.h: BPF JIT compiler for PPC
++ * bpf_jit32.h: BPF JIT compiler for PPC32
+  *
+- * Copyright 2011 Matt Evans <matt@ozlabs.org>, IBM Corporation
+- *
+- * Split from bpf_jit.h
++ * Copyright 2016 Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
++ *		  IBM Corporation
+  */
+ #ifndef _BPF_JIT32_H
+ #define _BPF_JIT32_H
  
- extern const struct net_device_ops mlx5e_netdev_ops;
-@@ -161,6 +162,9 @@ do {                                                            \
- 			    ##__VA_ARGS__);                     \
- } while (0)
+-#include <asm/asm-compat.h>
+ #include "bpf_jit.h"
  
-+#define mlx5e_state_dereference(priv, p) \
-+	rcu_dereference_protected((p), lockdep_is_held(&(priv)->state_lock))
+-#ifdef CONFIG_PPC64
+-#define BPF_PPC_STACK_R3_OFF	48
+-#define BPF_PPC_STACK_LOCALS	32
+-#define BPF_PPC_STACK_BASIC	(48+64)
+-#define BPF_PPC_STACK_SAVE	(18*8)
+-#define BPF_PPC_STACKFRAME	(BPF_PPC_STACK_BASIC+BPF_PPC_STACK_LOCALS+ \
+-				 BPF_PPC_STACK_SAVE)
+-#define BPF_PPC_SLOWPATH_FRAME	(48+64)
+-#else
+-#define BPF_PPC_STACK_R3_OFF	24
+-#define BPF_PPC_STACK_LOCALS	16
+-#define BPF_PPC_STACK_BASIC	(24+32)
+-#define BPF_PPC_STACK_SAVE	(18*4)
+-#define BPF_PPC_STACKFRAME	(BPF_PPC_STACK_BASIC+BPF_PPC_STACK_LOCALS+ \
+-				 BPF_PPC_STACK_SAVE)
+-#define BPF_PPC_SLOWPATH_FRAME	(24+32)
+-#endif
+-
+-#define REG_SZ         (BITS_PER_LONG/8)
+-
+ /*
+- * Generated code register usage:
+- *
+- * As normal PPC C ABI (e.g. r1=sp, r2=TOC), with:
++ * Stack layout:
+  *
+- * skb		r3	(Entry parameter)
+- * A register	r4
+- * X register	r5
+- * addr param	r6
+- * r7-r10	scratch
+- * skb->data	r14
+- * skb headlen	r15	(skb->len - skb->data_len)
+- * m[0]		r16
+- * m[...]	...
+- * m[15]	r31
++ *		[	prev sp		] <-------------
++ *		[   nv gpr save area	] 6*8		|
++ *		[    tail_call_cnt	] 8		|
++ *		[    local_tmp_var	] 8		|
++ * fp (r31) -->	[   ebpf stack space	] upto 512	|
++ *		[     frame header	] 32/112	|
++ * sp (r1) --->	[    stack pointer	] --------------
+  */
+-#define r_skb		3
+-#define r_ret		3
+-#define r_A		4
+-#define r_X		5
+-#define r_addr		6
+-#define r_scratch1	7
+-#define r_scratch2	8
+-#define r_D		14
+-#define r_HL		15
+-#define r_M		16
+-
+-#ifndef __ASSEMBLY__
+-
+-/*
+- * Assembly helpers from arch/powerpc/net/bpf_jit.S:
+- */
+-#define DECLARE_LOAD_FUNC(func)	\
+-	extern u8 func[], func##_negative_offset[], func##_positive_offset[]
+-
+-DECLARE_LOAD_FUNC(sk_load_word);
+-DECLARE_LOAD_FUNC(sk_load_half);
+-DECLARE_LOAD_FUNC(sk_load_byte);
+-DECLARE_LOAD_FUNC(sk_load_byte_msh);
+ 
+-#define PPC_LBZ_OFFS(r, base, i) do { if ((i) < 32768) EMIT(PPC_RAW_LBZ(r, base, i));   \
+-		else {	EMIT(PPC_RAW_ADDIS(r, base, IMM_HA(i)));	      \
+-			EMIT(PPC_RAW_LBZ(r, r, IMM_L(i))); } } while(0)
+-
+-#define PPC_LD_OFFS(r, base, i) do { if ((i) < 32768) EMIT(PPC_RAW_LD(r, base, i));     \
+-		else {	EMIT(PPC_RAW_ADDIS(r, base, IMM_HA(i)));			\
+-			EMIT(PPC_RAW_LD(r, r, IMM_L(i))); } } while(0)
+-
+-#define PPC_LWZ_OFFS(r, base, i) do { if ((i) < 32768) EMIT(PPC_RAW_LWZ(r, base, i));   \
+-		else {	EMIT(PPC_RAW_ADDIS(r, base, IMM_HA(i)));			\
+-			EMIT(PPC_RAW_LWZ(r, r, IMM_L(i))); } } while(0)
+-
+-#define PPC_LHZ_OFFS(r, base, i) do { if ((i) < 32768) EMIT(PPC_RAW_LHZ(r, base, i));   \
+-		else {	EMIT(PPC_RAW_ADDIS(r, base, IMM_HA(i)));			\
+-			EMIT(PPC_RAW_LHZ(r, r, IMM_L(i))); } } while(0)
+-
+-#ifdef CONFIG_PPC64
+-#define PPC_LL_OFFS(r, base, i) do { PPC_LD_OFFS(r, base, i); } while(0)
+-#else
+-#define PPC_LL_OFFS(r, base, i) do { PPC_LWZ_OFFS(r, base, i); } while(0)
+-#endif
++/* for gpr non volatile registers BPG_REG_6 to 10 */
++#define BPF_PPC_STACK_SAVE	((17+3)*4)
++/* for bpf JIT code internal usage */
++#define BPF_PPC_STACK_LOCALS	16
++/* stack frame excluding BPF stack, ensure this is quadword aligned */
++#define BPF_PPC_STACKFRAME	(STACK_FRAME_MIN_SIZE + \
++				 BPF_PPC_STACK_LOCALS + BPF_PPC_STACK_SAVE)
+ 
+-#ifdef CONFIG_SMP
+-#ifdef CONFIG_PPC64
+-#define PPC_BPF_LOAD_CPU(r)		\
+-	do { BUILD_BUG_ON(sizeof_field(struct paca_struct, paca_index) != 2);	\
+-		PPC_LHZ_OFFS(r, 13, offsetof(struct paca_struct, paca_index));	\
+-	} while (0)
+-#else
+-#define PPC_BPF_LOAD_CPU(r)     \
+-	do { BUILD_BUG_ON(sizeof_field(struct task_struct, cpu) != 4);		\
+-		PPC_LHZ_OFFS(r, 2, offsetof(struct task_struct, cpu));		\
+-	} while(0)
+-#endif
+-#else
+-#define PPC_BPF_LOAD_CPU(r) do { EMIT(PPC_RAW_LI(r, 0)); } while(0)
+-#endif
++#ifndef __ASSEMBLY__
+ 
+-#define PPC_LHBRX_OFFS(r, base, i) \
+-		do { PPC_LI32(r, i); EMIT(PPC_RAW_LHBRX(r, r, base)); } while(0)
+-#ifdef __LITTLE_ENDIAN__
+-#define PPC_NTOHS_OFFS(r, base, i)	PPC_LHBRX_OFFS(r, base, i)
+-#else
+-#define PPC_NTOHS_OFFS(r, base, i)	PPC_LHZ_OFFS(r, base, i)
+-#endif
++/* BPF register usage */
++#define TMP_REG	(MAX_BPF_JIT_REG + 0)
 +
- enum mlx5e_rq_group {
- 	MLX5E_RQ_GROUP_REGULAR,
- 	MLX5E_RQ_GROUP_XSK,
-@@ -663,11 +667,13 @@ struct mlx5e_channel {
- 	struct mlx5e_xdpsq         rq_xdpsq;
- 	struct mlx5e_txqsq         sq[MLX5E_MAX_NUM_TC];
- 	struct mlx5e_icosq         icosq;   /* internal control operations */
-+	struct mlx5e_txqsq __rcu * __rcu *qos_sqs;
- 	bool                       xdp;
- 	struct napi_struct         napi;
- 	struct device             *pdev;
- 	struct net_device         *netdev;
- 	__be32                     mkey_be;
-+	u16                        qos_sqs_size;
- 	u8                         num_tc;
- 	u8                         lag_port;
- 
-@@ -756,6 +762,8 @@ struct mlx5e_modify_sq_param {
- 	int next_state;
- 	int rl_update;
- 	int rl_index;
-+	bool qos_update;
-+	u16 qos_queue_group_id;
- };
- 
- #if IS_ENABLED(CONFIG_PCI_HYPERV_INTERFACE)
-@@ -788,10 +796,20 @@ struct mlx5e_scratchpad {
- 	cpumask_var_t cpumask;
- };
- 
-+struct mlx5e_htb {
-+	DECLARE_HASHTABLE(qos_tc2node, order_base_2(MLX5E_QOS_MAX_LEAF_NODES));
-+	DECLARE_BITMAP(qos_used_qids, MLX5E_QOS_MAX_LEAF_NODES);
-+	struct mlx5e_sq_stats **qos_sq_stats;
-+	u16 max_qos_sqs;
-+	u16 maj_id;
-+	u16 defcls;
++/* BPF to ppc register mappings */
++static const int b2p[] = {
++	/* function return value */
++	[BPF_REG_0] = 22,
++	/* function arguments */
++	[BPF_REG_1] = 4,
++	[BPF_REG_2] = 6,
++	[BPF_REG_3] = 8,
++	[BPF_REG_4] = 10,
++	[BPF_REG_5] = 12,
++	/* non volatile registers */
++	[BPF_REG_6] = 24,
++	[BPF_REG_7] = 26,
++	[BPF_REG_8] = 28,
++	[BPF_REG_9] = 30,
++	/* frame pointer aka BPF_REG_10 */
++	[BPF_REG_FP] = 31,
++	/* eBPF jit internal registers */
++	[BPF_REG_AX] = 20,
++	[TMP_REG] = 18,
 +};
-+
- struct mlx5e_priv {
- 	/* priv data path fields - start */
- 	/* +1 for port ptp ts */
--	struct mlx5e_txqsq *txq2sq[(MLX5E_MAX_NUM_CHANNELS + 1) * MLX5E_MAX_NUM_TC];
-+	struct mlx5e_txqsq *txq2sq[(MLX5E_MAX_NUM_CHANNELS + 1) * MLX5E_MAX_NUM_TC +
-+				   MLX5E_QOS_MAX_LEAF_NODES];
- 	int channel_tc2realtxq[MLX5E_MAX_NUM_CHANNELS][MLX5E_MAX_NUM_TC];
- 	int port_ptp_tc2realtxq[MLX5E_MAX_NUM_TC];
- #ifdef CONFIG_MLX5_CORE_EN_DCB
-@@ -859,6 +877,7 @@ struct mlx5e_priv {
- 	struct mlx5e_hv_vhca_stats_agent stats_agent;
+ 
+-#define PPC_BPF_LL(r, base, i) do { EMIT(PPC_RAW_LWZ(r, base, i)); } while(0)
+-#define PPC_BPF_STL(r, base, i) do { EMIT(PPC_RAW_STW(r, base, i)); } while(0)
+-#define PPC_BPF_STLU(r, base, i) do { EMIT(PPC_RAW_STWU(r, base, i)); } while(0)
++/* PPC NVR range -- update this if we ever use NVRs below r27 */
++#define BPF_PPC_NVR_MIN		18
+ 
+-#define SEEN_DATAREF 0x10000 /* might call external helpers */
+-#define SEEN_XREG    0x20000 /* X reg is used */
+-#define SEEN_MEM     0x40000 /* SEEN_MEM+(1<<n) = use mem[n] for temporary
+-			      * storage */
+-#define SEEN_MEM_MSK 0x0ffff
++#define SEEN_FUNC	0x20000000 /* might call external helpers */
++#define SEEN_STACK	0x40000000 /* uses BPF stack */
++#define SEEN_TAILCALL	0x80000000 /* uses tail calls */
+ 
+ struct codegen_context {
++	/*
++	 * This is used to track register usage as well
++	 * as calls to external helpers.
++	 * - register usage is tracked with corresponding
++	 *   bits (r3-r10 and r27-r31)
++	 * - rest of the bits can be used to track other
++	 *   things -- for now, we use bits 16 to 23
++	 *   encoded in SEEN_* macros above
++	 */
+ 	unsigned int seen;
+ 	unsigned int idx;
+-	int pc_ret0; /* bpf index of first RET #0 instruction (if any) */
++	unsigned int stack_size;
+ };
+ 
+-#endif
++#endif /* !__ASSEMBLY__ */
+ 
  #endif
- 	struct mlx5e_scratchpad    scratchpad;
-+	struct mlx5e_htb           htb;
- };
- 
- struct mlx5e_rx_handlers {
-@@ -986,6 +1005,7 @@ int mlx5e_safe_switch_channels(struct mlx5e_priv *priv,
- 			       struct mlx5e_channels *new_chs,
- 			       mlx5e_fp_preactivate preactivate,
- 			       void *context);
-+int mlx5e_update_tx_netdev_queues(struct mlx5e_priv *priv);
- int mlx5e_num_channels_changed(struct mlx5e_priv *priv);
- int mlx5e_num_channels_changed_ctx(struct mlx5e_priv *priv, void *context);
- void mlx5e_activate_priv_channels(struct mlx5e_priv *priv);
-@@ -1010,6 +1030,9 @@ void mlx5e_deactivate_icosq(struct mlx5e_icosq *icosq);
- 
- int mlx5e_modify_sq(struct mlx5_core_dev *mdev, u32 sqn,
- 		    struct mlx5e_modify_sq_param *p);
-+int mlx5e_open_txqsq(struct mlx5e_channel *c, u32 tisn, int txq_ix,
-+		     struct mlx5e_params *params, struct mlx5e_sq_param *param,
-+		     struct mlx5e_txqsq *sq, int tc, u16 qos_queue_group_id, u16 qos_qid);
- void mlx5e_activate_txqsq(struct mlx5e_txqsq *sq);
- void mlx5e_deactivate_txqsq(struct mlx5e_txqsq *sq);
- void mlx5e_free_txqsq(struct mlx5e_txqsq *sq);
-@@ -1020,8 +1043,10 @@ struct mlx5e_create_sq_param;
- int mlx5e_create_sq_rdy(struct mlx5_core_dev *mdev,
- 			struct mlx5e_sq_param *param,
- 			struct mlx5e_create_sq_param *csp,
-+			u16 qos_queue_group_id,
- 			u32 *sqn);
- void mlx5e_tx_err_cqe_work(struct work_struct *recover_work);
-+void mlx5e_close_txqsq(struct mlx5e_txqsq *sq);
- 
- static inline bool mlx5_tx_swp_supported(struct mlx5_core_dev *mdev)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index 807147d97a0f..ea2cfb04b31a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -118,6 +118,8 @@ void mlx5e_build_rq_param(struct mlx5e_priv *priv,
- 			  struct mlx5e_rq_param *param);
- void mlx5e_build_sq_param_common(struct mlx5e_priv *priv,
- 				 struct mlx5e_sq_param *param);
-+void mlx5e_build_sq_param(struct mlx5e_priv *priv, struct mlx5e_params *params,
-+			  struct mlx5e_sq_param *param);
- void mlx5e_build_rx_cq_param(struct mlx5e_priv *priv,
- 			     struct mlx5e_params *params,
- 			     struct mlx5e_xsk_param *xsk,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-index 351118985a57..b5abef487e7e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-@@ -261,7 +261,7 @@ static int mlx5e_ptp_open_txqsq(struct mlx5e_port_ptp *c, u32 tisn,
- 	csp.min_inline_mode = txqsq->min_inline_mode;
- 	csp.ts_cqe_to_dest_cqn = ptpsq->ts_cq.mcq.cqn;
- 
--	err = mlx5e_create_sq_rdy(c->mdev, sqp, &csp, &txqsq->sqn);
-+	err = mlx5e_create_sq_rdy(c->mdev, sqp, &csp, 0, &txqsq->sqn);
- 	if (err)
- 		goto err_free_txqsq;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
-new file mode 100644
-index 000000000000..429eef658d41
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
-@@ -0,0 +1,936 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
-+
-+#include "en.h"
-+#include "params.h"
-+#include "../qos.h"
-+
-+#define BYTES_IN_MBIT 125000
-+
-+int mlx5e_qos_max_leaf_nodes(struct mlx5_core_dev *mdev)
-+{
-+	return min(MLX5E_QOS_MAX_LEAF_NODES, mlx5_qos_max_leaf_nodes(mdev));
-+}
-+
-+int mlx5e_qos_cur_leaf_nodes(struct mlx5e_priv *priv)
-+{
-+	int last = find_last_bit(priv->htb.qos_used_qids, mlx5e_qos_max_leaf_nodes(priv->mdev));
-+
-+	return last == mlx5e_qos_max_leaf_nodes(priv->mdev) ? 0 : last + 1;
-+}
-+
-+/* Software representation of the QoS tree (internal to this file) */
-+
-+static int mlx5e_find_unused_qos_qid(struct mlx5e_priv *priv)
-+{
-+	int size = mlx5e_qos_max_leaf_nodes(priv->mdev);
-+	int res;
-+
-+	WARN_ONCE(!mutex_is_locked(&priv->state_lock), "%s: state_lock is not held\n", __func__);
-+	res = find_first_zero_bit(priv->htb.qos_used_qids, size);
-+
-+	return res == size ? -ENOSPC : res;
-+}
-+
-+struct mlx5e_qos_node {
-+	struct hlist_node hnode;
-+	struct rcu_head rcu;
-+	struct mlx5e_qos_node *parent;
-+	u64 rate;
-+	u32 bw_share;
-+	u32 max_average_bw;
-+	u32 hw_id;
-+	u32 classid; // 16-bit, except root.
-+	u16 qid;
-+};
-+
-+#define MLX5E_QOS_QID_INNER 0xffff
-+#define MLX5E_HTB_CLASSID_ROOT 0xffffffff
-+
-+static struct mlx5e_qos_node *
-+mlx5e_sw_node_create_leaf(struct mlx5e_priv *priv, u16 classid, u16 qid,
-+			  struct mlx5e_qos_node *parent)
-+{
-+	struct mlx5e_qos_node *node;
-+
-+	node = kzalloc(sizeof(*node), GFP_KERNEL);
-+	if (!node)
-+		return ERR_PTR(-ENOMEM);
-+
-+	node->parent = parent;
-+
-+	node->qid = qid;
-+	__set_bit(qid, priv->htb.qos_used_qids);
-+
-+	node->classid = classid;
-+	hash_add_rcu(priv->htb.qos_tc2node, &node->hnode, classid);
-+
-+	mlx5e_update_tx_netdev_queues(priv);
-+
-+	return node;
-+}
-+
-+static struct mlx5e_qos_node *mlx5e_sw_node_create_root(struct mlx5e_priv *priv)
-+{
-+	struct mlx5e_qos_node *node;
-+
-+	node = kzalloc(sizeof(*node), GFP_KERNEL);
-+	if (!node)
-+		return ERR_PTR(-ENOMEM);
-+
-+	node->qid = MLX5E_QOS_QID_INNER;
-+	node->classid = MLX5E_HTB_CLASSID_ROOT;
-+	hash_add_rcu(priv->htb.qos_tc2node, &node->hnode, node->classid);
-+
-+	return node;
-+}
-+
-+static struct mlx5e_qos_node *mlx5e_sw_node_find(struct mlx5e_priv *priv, u32 classid)
-+{
-+	struct mlx5e_qos_node *node = NULL;
-+
-+	hash_for_each_possible(priv->htb.qos_tc2node, node, hnode, classid) {
-+		if (node->classid == classid)
-+			break;
-+	}
-+
-+	return node;
-+}
-+
-+static struct mlx5e_qos_node *mlx5e_sw_node_find_rcu(struct mlx5e_priv *priv, u32 classid)
-+{
-+	struct mlx5e_qos_node *node = NULL;
-+
-+	hash_for_each_possible_rcu(priv->htb.qos_tc2node, node, hnode, classid) {
-+		if (node->classid == classid)
-+			break;
-+	}
-+
-+	return node;
-+}
-+
-+static void mlx5e_sw_node_delete(struct mlx5e_priv *priv, struct mlx5e_qos_node *node)
-+{
-+	hash_del_rcu(&node->hnode);
-+	if (node->qid != MLX5E_QOS_QID_INNER) {
-+		__clear_bit(node->qid, priv->htb.qos_used_qids);
-+		mlx5e_update_tx_netdev_queues(priv);
-+	}
-+	kfree_rcu(node, rcu);
-+}
-+
-+/* TX datapath API */
-+
-+static u16 mlx5e_qid_from_qos(struct mlx5e_channels *chs, u16 qid)
-+{
-+	/* These channel params are safe to access from the datapath, because:
-+	 * 1. This function is called only after checking priv->htb.maj_id != 0,
-+	 *    and the number of queues can't change while HTB offload is active.
-+	 * 2. When priv->htb.maj_id becomes 0, synchronize_rcu waits for
-+	 *    mlx5e_select_queue to finish while holding priv->state_lock,
-+	 *    preventing other code from changing the number of queues.
-+	 */
-+	bool is_ptp = MLX5E_GET_PFLAG(&chs->params, MLX5E_PFLAG_TX_PORT_TS);
-+
-+	return (chs->params.num_channels + is_ptp) * chs->params.num_tc + qid;
-+}
-+
-+int mlx5e_get_txq_by_classid(struct mlx5e_priv *priv, u16 classid)
-+{
-+	struct mlx5e_qos_node *node;
-+	u16 qid;
-+	int res;
-+
-+	rcu_read_lock();
-+
-+	node = mlx5e_sw_node_find_rcu(priv, classid);
-+	if (!node) {
-+		res = -ENOENT;
-+		goto out;
-+	}
-+	qid = READ_ONCE(node->qid);
-+	if (qid == MLX5E_QOS_QID_INNER) {
-+		res = -EINVAL;
-+		goto out;
-+	}
-+	res = mlx5e_qid_from_qos(&priv->channels, qid);
-+
-+out:
-+	rcu_read_unlock();
-+	return res;
-+}
-+
-+static struct mlx5e_txqsq *mlx5e_get_qos_sq(struct mlx5e_priv *priv, int qid)
-+{
-+	struct mlx5e_params *params = &priv->channels.params;
-+	struct mlx5e_txqsq __rcu **qos_sqs;
-+	struct mlx5e_channel *c;
-+	int ix;
-+
-+	ix = qid % params->num_channels;
-+	qid /= params->num_channels;
-+	c = priv->channels.c[ix];
-+
-+	qos_sqs = mlx5e_state_dereference(priv, c->qos_sqs);
-+	return mlx5e_state_dereference(priv, qos_sqs[qid]);
-+}
-+
-+/* SQ lifecycle */
-+
-+static int mlx5e_open_qos_sq(struct mlx5e_priv *priv, struct mlx5e_channels *chs,
-+			     struct mlx5e_qos_node *node)
-+{
-+	struct mlx5e_create_cq_param ccp = {};
-+	struct mlx5e_sq_param param_sq;
-+	struct mlx5e_cq_param param_cq;
-+	struct mlx5e_txqsq __rcu **qos_sqs;
-+	int txq_ix, ix, qid, err = 0;
-+	struct mlx5e_params *params;
-+	struct mlx5e_channel *c;
-+	struct mlx5e_txqsq *sq;
-+
-+	params = &chs->params;
-+
-+	txq_ix = mlx5e_qid_from_qos(chs, node->qid);
-+
-+	WARN_ON(node->qid > priv->htb.max_qos_sqs);
-+	if (node->qid == priv->htb.max_qos_sqs) {
-+		struct mlx5e_sq_stats *stats, **stats_list = NULL;
-+
-+		if (priv->htb.max_qos_sqs == 0) {
-+			stats_list = kvcalloc(mlx5e_qos_max_leaf_nodes(priv->mdev),
-+					      sizeof(*stats_list),
-+					      GFP_KERNEL);
-+			if (!stats_list)
-+				return -ENOMEM;
-+		}
-+		stats = kzalloc(sizeof(*stats), GFP_KERNEL);
-+		if (!stats) {
-+			kvfree(stats_list);
-+			return -ENOMEM;
-+		}
-+		if (stats_list)
-+			WRITE_ONCE(priv->htb.qos_sq_stats, stats_list);
-+		WRITE_ONCE(priv->htb.qos_sq_stats[node->qid], stats);
-+		/* Order max_qos_sqs increment after writing the array pointer.
-+		 * Pairs with smp_load_acquire in en_stats.c.
-+		 */
-+		smp_store_release(&priv->htb.max_qos_sqs, priv->htb.max_qos_sqs + 1);
-+	}
-+
-+	ix = node->qid % params->num_channels;
-+	qid = node->qid / params->num_channels;
-+	c = chs->c[ix];
-+
-+	qos_sqs = mlx5e_state_dereference(priv, c->qos_sqs);
-+	sq = kzalloc(sizeof(*sq), GFP_KERNEL);
-+
-+	if (!sq)
-+		return -ENOMEM;
-+
-+	mlx5e_build_create_cq_param(&ccp, c);
-+
-+	memset(&param_sq, 0, sizeof(param_sq));
-+	memset(&param_cq, 0, sizeof(param_cq));
-+	mlx5e_build_sq_param(priv, params, &param_sq);
-+	mlx5e_build_tx_cq_param(priv, params, &param_cq);
-+	err = mlx5e_open_cq(priv, params->tx_cq_moderation, &param_cq, &ccp, &sq->cq);
-+	if (err)
-+		goto err_free_sq;
-+	err = mlx5e_open_txqsq(c, priv->tisn[c->lag_port][0], txq_ix, params,
-+			       &param_sq, sq, 0, node->hw_id, node->qid);
-+	if (err)
-+		goto err_close_cq;
-+
-+	rcu_assign_pointer(qos_sqs[qid], sq);
-+
-+	return 0;
-+
-+err_close_cq:
-+	mlx5e_close_cq(&sq->cq);
-+err_free_sq:
-+	kfree(sq);
-+	return err;
-+}
-+
-+static void mlx5e_activate_qos_sq(struct mlx5e_priv *priv, struct mlx5e_qos_node *node)
-+{
-+	struct mlx5e_txqsq *sq;
-+
-+	sq = mlx5e_get_qos_sq(priv, node->qid);
-+
-+	WRITE_ONCE(priv->txq2sq[mlx5e_qid_from_qos(&priv->channels, node->qid)], sq);
-+
-+	/* Make the change to txq2sq visible before the queue is started.
-+	 * As mlx5e_xmit runs under a spinlock, there is an implicit ACQUIRE,
-+	 * which pairs with this barrier.
-+	 */
-+	smp_wmb();
-+
-+	qos_dbg(priv->mdev, "Activate QoS SQ qid %hu\n", node->qid);
-+	mlx5e_activate_txqsq(sq);
-+}
-+
-+static void mlx5e_deactivate_qos_sq(struct mlx5e_priv *priv, u16 qid)
-+{
-+	struct mlx5e_txqsq *sq;
-+
-+	sq = mlx5e_get_qos_sq(priv, qid);
-+	if (!sq) /* Handle the case when the SQ failed to open. */
-+		return;
-+
-+	qos_dbg(priv->mdev, "Deactivate QoS SQ qid %hu\n", qid);
-+	mlx5e_deactivate_txqsq(sq);
-+
-+	/* The queue is disabled, no synchronization with datapath is needed. */
-+	priv->txq2sq[mlx5e_qid_from_qos(&priv->channels, qid)] = NULL;
-+}
-+
-+static void mlx5e_close_qos_sq(struct mlx5e_priv *priv, u16 qid)
-+{
-+	struct mlx5e_txqsq __rcu **qos_sqs;
-+	struct mlx5e_params *params;
-+	struct mlx5e_channel *c;
-+	struct mlx5e_txqsq *sq;
-+	int ix;
-+
-+	params = &priv->channels.params;
-+
-+	ix = qid % params->num_channels;
-+	qid /= params->num_channels;
-+	c = priv->channels.c[ix];
-+	qos_sqs = mlx5e_state_dereference(priv, c->qos_sqs);
-+	sq = rcu_replace_pointer(qos_sqs[qid], NULL, lockdep_is_held(&priv->state_lock));
-+	if (!sq) /* Handle the case when the SQ failed to open. */
-+		return;
-+
-+	synchronize_rcu(); /* Sync with NAPI. */
-+
-+	mlx5e_close_txqsq(sq);
-+	mlx5e_close_cq(&sq->cq);
-+	kfree(sq);
-+}
-+
-+void mlx5e_qos_close_queues(struct mlx5e_channel *c)
-+{
-+	struct mlx5e_txqsq __rcu **qos_sqs;
-+	int i;
-+
-+	qos_sqs = rcu_replace_pointer(c->qos_sqs, NULL, lockdep_is_held(&c->priv->state_lock));
-+	if (!qos_sqs)
-+		return;
-+	synchronize_rcu(); /* Sync with NAPI. */
-+
-+	for (i = 0; i < c->qos_sqs_size; i++) {
-+		struct mlx5e_txqsq *sq;
-+
-+		sq = mlx5e_state_dereference(c->priv, qos_sqs[i]);
-+		if (!sq) /* Handle the case when the SQ failed to open. */
-+			continue;
-+
-+		mlx5e_close_txqsq(sq);
-+		mlx5e_close_cq(&sq->cq);
-+		kfree(sq);
-+	}
-+
-+	kvfree(qos_sqs);
-+}
-+
-+static void mlx5e_qos_close_all_queues(struct mlx5e_channels *chs)
-+{
-+	int i;
-+
-+	for (i = 0; i < chs->num; i++)
-+		mlx5e_qos_close_queues(chs->c[i]);
-+}
-+
-+static int mlx5e_qos_alloc_queues(struct mlx5e_priv *priv, struct mlx5e_channels *chs)
-+{
-+	u16 qos_sqs_size;
-+	int i;
-+
-+	qos_sqs_size = DIV_ROUND_UP(mlx5e_qos_max_leaf_nodes(priv->mdev), chs->num);
-+
-+	for (i = 0; i < chs->num; i++) {
-+		struct mlx5e_txqsq **sqs;
-+
-+		sqs = kvcalloc(qos_sqs_size, sizeof(struct mlx5e_txqsq *), GFP_KERNEL);
-+		if (!sqs)
-+			goto err_free;
-+
-+		WRITE_ONCE(chs->c[i]->qos_sqs_size, qos_sqs_size);
-+		smp_wmb(); /* Pairs with mlx5e_napi_poll. */
-+		rcu_assign_pointer(chs->c[i]->qos_sqs, sqs);
-+	}
-+
-+	return 0;
-+
-+err_free:
-+	while (--i >= 0) {
-+		struct mlx5e_txqsq **sqs;
-+
-+		sqs = rcu_replace_pointer(chs->c[i]->qos_sqs, NULL,
-+					  lockdep_is_held(&priv->state_lock));
-+
-+		synchronize_rcu(); /* Sync with NAPI. */
-+		kvfree(sqs);
-+	}
-+	return -ENOMEM;
-+}
-+
-+int mlx5e_qos_open_queues(struct mlx5e_priv *priv, struct mlx5e_channels *chs)
-+{
-+	struct mlx5e_qos_node *node = NULL;
-+	int bkt, err;
-+
-+	if (!priv->htb.maj_id)
-+		return 0;
-+
-+	err = mlx5e_qos_alloc_queues(priv, chs);
-+	if (err)
-+		return err;
-+
-+	hash_for_each(priv->htb.qos_tc2node, bkt, node, hnode) {
-+		if (node->qid == MLX5E_QOS_QID_INNER)
-+			continue;
-+		err = mlx5e_open_qos_sq(priv, chs, node);
-+		if (err) {
-+			mlx5e_qos_close_all_queues(chs);
-+			return err;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+void mlx5e_qos_activate_queues(struct mlx5e_priv *priv)
-+{
-+	struct mlx5e_qos_node *node = NULL;
-+	int bkt;
-+
-+	hash_for_each(priv->htb.qos_tc2node, bkt, node, hnode) {
-+		if (node->qid == MLX5E_QOS_QID_INNER)
-+			continue;
-+		mlx5e_activate_qos_sq(priv, node);
-+	}
-+}
-+
-+void mlx5e_qos_deactivate_queues(struct mlx5e_channel *c)
-+{
-+	struct mlx5e_params *params = &c->priv->channels.params;
-+	struct mlx5e_txqsq __rcu **qos_sqs;
-+	int i;
-+
-+	qos_sqs = mlx5e_state_dereference(c->priv, c->qos_sqs);
-+	if (!qos_sqs)
-+		return;
-+
-+	for (i = 0; i < c->qos_sqs_size; i++) {
-+		u16 qid = params->num_channels * i + c->ix;
-+		struct mlx5e_txqsq *sq;
-+
-+		sq = mlx5e_state_dereference(c->priv, qos_sqs[i]);
-+		if (!sq) /* Handle the case when the SQ failed to open. */
-+			continue;
-+
-+		qos_dbg(c->mdev, "Deactivate QoS SQ qid %hu\n", qid);
-+		mlx5e_deactivate_txqsq(sq);
-+
-+		/* The queue is disabled, no synchronization with datapath is needed. */
-+		c->priv->txq2sq[mlx5e_qid_from_qos(&c->priv->channels, qid)] = NULL;
-+	}
-+}
-+
-+static void mlx5e_qos_deactivate_all_queues(struct mlx5e_channels *chs)
-+{
-+	int i;
-+
-+	for (i = 0; i < chs->num; i++)
-+		mlx5e_qos_deactivate_queues(chs->c[i]);
-+}
-+
-+/* HTB API */
-+
-+int mlx5e_htb_root_add(struct mlx5e_priv *priv, u16 htb_maj_id, u16 htb_defcls)
-+{
-+	struct mlx5e_qos_node *root;
-+	bool opened;
-+	int err;
-+
-+	qos_dbg(priv->mdev, "TC_HTB_CREATE handle %04x:, default :%04x\n", htb_maj_id, htb_defcls);
-+
-+	if (!mlx5_qos_is_supported(priv->mdev))
-+		return -EOPNOTSUPP;
-+
-+	opened = test_bit(MLX5E_STATE_OPENED, &priv->state);
-+	if (opened) {
-+		err = mlx5e_qos_alloc_queues(priv, &priv->channels);
-+		if (err)
-+			return err;
-+	}
-+
-+	root = mlx5e_sw_node_create_root(priv);
-+	if (IS_ERR(root)) {
-+		err = PTR_ERR(root);
-+		goto err_free_queues;
-+	}
-+
-+	err = mlx5_qos_create_root_node(priv->mdev, &root->hw_id);
-+	if (err)
-+		goto err_sw_node_delete;
-+
-+	WRITE_ONCE(priv->htb.defcls, htb_defcls);
-+	/* Order maj_id after defcls - pairs with
-+	 * mlx5e_select_queue/mlx5e_select_htb_queues.
-+	 */
-+	smp_store_release(&priv->htb.maj_id, htb_maj_id);
-+
-+	return 0;
-+
-+err_sw_node_delete:
-+	mlx5e_sw_node_delete(priv, root);
-+
-+err_free_queues:
-+	if (opened)
-+		mlx5e_qos_close_all_queues(&priv->channels);
-+	return err;
-+}
-+
-+int mlx5e_htb_root_del(struct mlx5e_priv *priv)
-+{
-+	struct mlx5e_qos_node *root;
-+	int err;
-+
-+	qos_dbg(priv->mdev, "TC_HTB_DESTROY\n");
-+
-+	WRITE_ONCE(priv->htb.maj_id, 0);
-+	synchronize_rcu(); /* Sync with mlx5e_select_htb_queue and TX data path. */
-+
-+	root = mlx5e_sw_node_find(priv, MLX5E_HTB_CLASSID_ROOT);
-+	if (!root) {
-+		qos_warn(priv->mdev, "Failed to find the root node in the QoS tree\n");
-+		return -ENOENT;
-+	}
-+	err = mlx5_qos_destroy_node(priv->mdev, root->hw_id);
-+	if (err)
-+		qos_warn(priv->mdev, "Failed to destroy root node %u, err = %d\n",
-+			 root->hw_id, err);
-+	mlx5e_sw_node_delete(priv, root);
-+
-+	mlx5e_qos_deactivate_all_queues(&priv->channels);
-+	mlx5e_qos_close_all_queues(&priv->channels);
-+
-+	return err;
-+}
-+
-+static int mlx5e_htb_convert_rate(struct mlx5e_priv *priv, u64 rate,
-+				  struct mlx5e_qos_node *parent, u32 *bw_share)
-+{
-+	u64 share = 0;
-+
-+	while (parent->classid != MLX5E_HTB_CLASSID_ROOT && !parent->max_average_bw)
-+		parent = parent->parent;
-+
-+	if (parent->max_average_bw)
-+		share = div64_u64(div_u64(rate * 100, BYTES_IN_MBIT),
-+				  parent->max_average_bw);
-+	else
-+		share = 101;
-+
-+	*bw_share = share == 0 ? 1 : share > 100 ? 0 : share;
-+
-+	qos_dbg(priv->mdev, "Convert: rate %llu, parent ceil %llu -> bw_share %u\n",
-+		rate, (u64)parent->max_average_bw * BYTES_IN_MBIT, *bw_share);
-+
-+	return 0;
-+}
-+
-+static void mlx5e_htb_convert_ceil(struct mlx5e_priv *priv, u64 ceil, u32 *max_average_bw)
-+{
-+	*max_average_bw = div_u64(ceil, BYTES_IN_MBIT);
-+
-+	qos_dbg(priv->mdev, "Convert: ceil %llu -> max_average_bw %u\n",
-+		ceil, *max_average_bw);
-+}
-+
-+int mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
-+			       u32 parent_classid, u64 rate, u64 ceil)
-+{
-+	struct mlx5e_qos_node *node, *parent;
-+	int qid;
-+	int err;
-+
-+	qos_dbg(priv->mdev, "TC_HTB_LEAF_ALLOC_QUEUE classid %04x, parent %04x, rate %llu, ceil %llu\n",
-+		classid, parent_classid, rate, ceil);
-+
-+	qid = mlx5e_find_unused_qos_qid(priv);
-+	if (qid < 0)
-+		return qid;
-+
-+	parent = mlx5e_sw_node_find(priv, parent_classid);
-+	if (!parent)
-+		return -EINVAL;
-+
-+	node = mlx5e_sw_node_create_leaf(priv, classid, qid, parent);
-+	if (IS_ERR(node))
-+		return PTR_ERR(node);
-+
-+	node->rate = rate;
-+	mlx5e_htb_convert_rate(priv, rate, node->parent, &node->bw_share);
-+	mlx5e_htb_convert_ceil(priv, ceil, &node->max_average_bw);
-+
-+	err = mlx5_qos_create_leaf_node(priv->mdev, node->parent->hw_id,
-+					node->bw_share, node->max_average_bw,
-+					&node->hw_id);
-+	if (err) {
-+		qos_warn(priv->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
-+			 classid, err);
-+		mlx5e_sw_node_delete(priv, node);
-+		return err;
-+	}
-+
-+	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
-+		err = mlx5e_open_qos_sq(priv, &priv->channels, node);
-+		if (err)
-+			qos_warn(priv->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
-+				 classid, err);
-+		else
-+			mlx5e_activate_qos_sq(priv, node);
-+	}
-+
-+	return mlx5e_qid_from_qos(&priv->channels, node->qid);
-+}
-+
-+int mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid, u16 child_classid,
-+			    u64 rate, u64 ceil)
-+{
-+	struct mlx5e_qos_node *node, *child;
-+	int err, tmp_err;
-+	u32 new_hw_id;
-+	u16 qid;
-+
-+	qos_dbg(priv->mdev, "TC_HTB_LEAF_TO_INNER classid %04x, upcoming child %04x, rate %llu, ceil %llu\n",
-+		classid, child_classid, rate, ceil);
-+
-+	node = mlx5e_sw_node_find(priv, classid);
-+	if (!node)
-+		return -ENOENT;
-+
-+	err = mlx5_qos_create_inner_node(priv->mdev, node->parent->hw_id,
-+					 node->bw_share, node->max_average_bw,
-+					 &new_hw_id);
-+	if (err) {
-+		qos_warn(priv->mdev, "Failed to create an inner node (class %04x), err = %d\n",
-+			 classid, err);
-+		return err;
-+	}
-+
-+	/* Intentionally reuse the qid for the upcoming first child. */
-+	child = mlx5e_sw_node_create_leaf(priv, child_classid, node->qid, node);
-+	if (IS_ERR(child)) {
-+		err = PTR_ERR(child);
-+		goto err_destroy_hw_node;
-+	}
-+
-+	child->rate = rate;
-+	mlx5e_htb_convert_rate(priv, rate, node, &child->bw_share);
-+	mlx5e_htb_convert_ceil(priv, ceil, &child->max_average_bw);
-+
-+	err = mlx5_qos_create_leaf_node(priv->mdev, new_hw_id, child->bw_share,
-+					child->max_average_bw, &child->hw_id);
-+	if (err) {
-+		qos_warn(priv->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
-+			 classid, err);
-+		goto err_delete_sw_node;
-+	}
-+
-+	/* No fail point. */
-+
-+	qid = xchg(&node->qid, MLX5E_QOS_QID_INNER);
-+
-+	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
-+		mlx5e_deactivate_qos_sq(priv, qid);
-+		mlx5e_close_qos_sq(priv, qid);
-+	}
-+
-+	err = mlx5_qos_destroy_node(priv->mdev, node->hw_id);
-+	if (err) /* Not fatal. */
-+		qos_warn(priv->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
-+			 node->hw_id, classid, err);
-+
-+	node->hw_id = new_hw_id;
-+
-+	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
-+		err = mlx5e_open_qos_sq(priv, &priv->channels, child);
-+		if (err)
-+			qos_warn(priv->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
-+				 classid, err);
-+		else
-+			mlx5e_activate_qos_sq(priv, child);
-+	}
-+
-+	return 0;
-+
-+err_delete_sw_node:
-+	child->qid = MLX5E_QOS_QID_INNER;
-+	mlx5e_sw_node_delete(priv, child);
-+
-+err_destroy_hw_node:
-+	tmp_err = mlx5_qos_destroy_node(priv->mdev, new_hw_id);
-+	if (tmp_err) /* Not fatal. */
-+		qos_warn(priv->mdev, "Failed to roll back creation of an inner node %u (class %04x), err = %d\n",
-+			 new_hw_id, classid, tmp_err);
-+	return err;
-+}
-+
-+static struct mlx5e_qos_node *mlx5e_sw_node_find_by_qid(struct mlx5e_priv *priv, u16 qid)
-+{
-+	struct mlx5e_qos_node *node = NULL;
-+	int bkt;
-+
-+	hash_for_each(priv->htb.qos_tc2node, bkt, node, hnode)
-+		if (node->qid == qid)
-+			break;
-+
-+	return node;
-+}
-+
-+static void mlx5e_reactivate_qos_sq(struct mlx5e_priv *priv, u16 qid, struct netdev_queue *txq)
-+{
-+	qos_dbg(priv->mdev, "Reactivate QoS SQ qid %hu\n", qid);
-+	netdev_tx_reset_queue(txq);
-+	netif_tx_start_queue(txq);
-+}
-+
-+static void mlx5e_reset_qdisc(struct net_device *dev, u16 qid)
-+{
-+	struct netdev_queue *dev_queue = netdev_get_tx_queue(dev, qid);
-+	struct Qdisc *qdisc = dev_queue->qdisc_sleeping;
-+
-+	if (!qdisc)
-+		return;
-+
-+	spin_lock_bh(qdisc_lock(qdisc));
-+	qdisc_reset(qdisc);
-+	spin_unlock_bh(qdisc_lock(qdisc));
-+}
-+
-+int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 classid, u16 *old_qid, u16 *new_qid)
-+{
-+	struct mlx5e_qos_node *node;
-+	struct netdev_queue *txq;
-+	u16 qid, moved_qid;
-+	bool opened;
-+	int err;
-+
-+	qos_dbg(priv->mdev, "TC_HTB_LEAF_DEL classid %04x\n", classid);
-+
-+	*old_qid = *new_qid = 0;
-+
-+	node = mlx5e_sw_node_find(priv, classid);
-+	if (!node)
-+		return -ENOENT;
-+
-+	/* Store qid for reuse. */
-+	qid = node->qid;
-+
-+	opened = test_bit(MLX5E_STATE_OPENED, &priv->state);
-+	if (opened) {
-+		txq = netdev_get_tx_queue(priv->netdev,
-+					  mlx5e_qid_from_qos(&priv->channels, qid));
-+		mlx5e_deactivate_qos_sq(priv, qid);
-+		mlx5e_close_qos_sq(priv, qid);
-+	}
-+
-+	err = mlx5_qos_destroy_node(priv->mdev, node->hw_id);
-+	if (err) /* Not fatal. */
-+		qos_warn(priv->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
-+			 node->hw_id, classid, err);
-+
-+	mlx5e_sw_node_delete(priv, node);
-+
-+	moved_qid = mlx5e_qos_cur_leaf_nodes(priv);
-+
-+	if (moved_qid == 0) {
-+		/* The last QoS SQ was just destroyed. */
-+		if (opened)
-+			mlx5e_reactivate_qos_sq(priv, qid, txq);
-+		return 0;
-+	}
-+	moved_qid--;
-+
-+	if (moved_qid < qid) {
-+		/* The highest QoS SQ was just destroyed. */
-+		WARN(moved_qid != qid - 1, "Gaps in queue numeration: destroyed queue %hu, the highest queue is %hu",
-+		     qid, moved_qid);
-+		if (opened)
-+			mlx5e_reactivate_qos_sq(priv, qid, txq);
-+		return 0;
-+	}
-+
-+	WARN(moved_qid == qid, "Can't move node with qid %hu to itself", qid);
-+	qos_dbg(priv->mdev, "Moving QoS SQ %hu to %hu\n", moved_qid, qid);
-+
-+	node = mlx5e_sw_node_find_by_qid(priv, moved_qid);
-+	WARN(!node, "Could not find a node with qid %hu to move to queue %hu",
-+	     moved_qid, qid);
-+
-+	/* Stop traffic to the old queue. */
-+	WRITE_ONCE(node->qid, MLX5E_QOS_QID_INNER);
-+	__clear_bit(moved_qid, priv->htb.qos_used_qids);
-+
-+	if (opened) {
-+		txq = netdev_get_tx_queue(priv->netdev,
-+					  mlx5e_qid_from_qos(&priv->channels, moved_qid));
-+		mlx5e_deactivate_qos_sq(priv, moved_qid);
-+		mlx5e_close_qos_sq(priv, moved_qid);
-+	}
-+
-+	/* Prevent packets from the old class from getting into the new one. */
-+	mlx5e_reset_qdisc(priv->netdev, moved_qid);
-+
-+	__set_bit(qid, priv->htb.qos_used_qids);
-+	WRITE_ONCE(node->qid, qid);
-+
-+	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
-+		err = mlx5e_open_qos_sq(priv, &priv->channels, node);
-+		if (err)
-+			qos_warn(priv->mdev, "Failed to create a QoS SQ (class %04x) while moving qid %hu to %hu, err = %d\n",
-+				 node->classid, moved_qid, qid, err);
-+		else
-+			mlx5e_activate_qos_sq(priv, node);
-+	}
-+
-+	mlx5e_update_tx_netdev_queues(priv);
-+	if (opened)
-+		mlx5e_reactivate_qos_sq(priv, moved_qid, txq);
-+
-+	*old_qid = mlx5e_qid_from_qos(&priv->channels, moved_qid);
-+	*new_qid = mlx5e_qid_from_qos(&priv->channels, qid);
-+	return 0;
-+}
-+
-+int mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid)
-+{
-+	struct mlx5e_qos_node *node, *parent;
-+	u32 old_hw_id, new_hw_id;
-+	u16 qid;
-+	int err;
-+
-+	qos_dbg(priv->mdev, "TC_HTB_LEAF_DEL_LAST classid %04x\n", classid);
-+
-+	node = mlx5e_sw_node_find(priv, classid);
-+	if (!node)
-+		return -ENOENT;
-+
-+	err = mlx5_qos_create_leaf_node(priv->mdev, node->parent->parent->hw_id,
-+					node->parent->bw_share,
-+					node->parent->max_average_bw,
-+					&new_hw_id);
-+	if (err) {
-+		qos_warn(priv->mdev, "Failed to create a leaf node (class %04x), err = %d\n",
-+			 classid, err);
-+		return err;
-+	}
-+
-+	/* Store qid for reuse and prevent clearing the bit. */
-+	qid = xchg(&node->qid, MLX5E_QOS_QID_INNER);
-+
-+	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
-+		mlx5e_deactivate_qos_sq(priv, qid);
-+		mlx5e_close_qos_sq(priv, qid);
-+	}
-+
-+	/* Prevent packets from the old class from getting into the new one. */
-+	mlx5e_reset_qdisc(priv->netdev, qid);
-+
-+	err = mlx5_qos_destroy_node(priv->mdev, node->hw_id);
-+	if (err) /* Not fatal. */
-+		qos_warn(priv->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
-+			 node->hw_id, classid, err);
-+
-+	parent = node->parent;
-+	mlx5e_sw_node_delete(priv, node);
-+
-+	node = parent;
-+	WRITE_ONCE(node->qid, qid);
-+	old_hw_id = node->hw_id;
-+	node->hw_id = new_hw_id;
-+
-+	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
-+		err = mlx5e_open_qos_sq(priv, &priv->channels, node);
-+		if (err)
-+			qos_warn(priv->mdev, "Failed to create a QoS SQ (class %04x), err = %d\n",
-+				 classid, err);
-+		else
-+			mlx5e_activate_qos_sq(priv, node);
-+	}
-+
-+	err = mlx5_qos_destroy_node(priv->mdev, old_hw_id);
-+	if (err) /* Not fatal. */
-+		qos_warn(priv->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
-+			 node->hw_id, classid, err);
-+
-+	return 0;
-+}
-+
-+static int mlx5e_qos_update_children(struct mlx5e_priv *priv, struct mlx5e_qos_node *node)
-+{
-+	struct mlx5e_qos_node *child;
-+	int err = 0;
-+	int bkt;
-+
-+	hash_for_each(priv->htb.qos_tc2node, bkt, child, hnode) {
-+		u32 old_bw_share = child->bw_share;
-+		int err_one;
-+
-+		if (child->parent != node)
-+			continue;
-+
-+		mlx5e_htb_convert_rate(priv, child->rate, node, &child->bw_share);
-+		if (child->bw_share == old_bw_share)
-+			continue;
-+
-+		err_one = mlx5_qos_update_node(priv->mdev, child->hw_id, child->bw_share,
-+					       child->max_average_bw, child->hw_id);
-+		if (!err)
-+			err = err_one;
-+	}
-+
-+	return err;
-+}
-+
-+int mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ceil)
-+{
-+	u32 bw_share, max_average_bw;
-+	struct mlx5e_qos_node *node;
-+	bool ceil_changed = false;
-+	int err;
-+
-+	qos_dbg(priv->mdev, "TC_HTB_LEAF_MODIFY classid %04x, rate %llu, ceil %llu\n",
-+		classid, rate, ceil);
-+
-+	node = mlx5e_sw_node_find(priv, classid);
-+	if (!node)
-+		return -ENOENT;
-+
-+	node->rate = rate;
-+	mlx5e_htb_convert_rate(priv, rate, node->parent, &bw_share);
-+	mlx5e_htb_convert_ceil(priv, ceil, &max_average_bw);
-+
-+	err = mlx5_qos_update_node(priv->mdev, node->parent->hw_id, bw_share,
-+				   max_average_bw, node->hw_id);
-+	if (err)
-+		return err;
-+
-+	if (max_average_bw != node->max_average_bw)
-+		ceil_changed = true;
-+
-+	node->bw_share = bw_share;
-+	node->max_average_bw = max_average_bw;
-+
-+	if (ceil_changed)
-+		err = mlx5e_qos_update_children(priv, node);
-+
-+	return err;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
-new file mode 100644
-index 000000000000..90d78780d74a
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
-@@ -0,0 +1,39 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
-+
-+#ifndef __MLX5E_EN_QOS_H
-+#define __MLX5E_EN_QOS_H
-+
-+#include <linux/mlx5/driver.h>
-+
-+#define MLX5E_QOS_MAX_LEAF_NODES 1024
-+
-+struct mlx5e_priv;
-+struct mlx5e_channels;
-+struct mlx5e_channel;
-+
-+int mlx5e_qos_max_leaf_nodes(struct mlx5_core_dev *mdev);
-+int mlx5e_qos_cur_leaf_nodes(struct mlx5e_priv *priv);
-+
-+/* TX datapath API */
-+int mlx5e_get_txq_by_classid(struct mlx5e_priv *priv, u16 classid);
-+struct mlx5e_txqsq *mlx5e_get_sq(struct mlx5e_priv *priv, int qid);
-+
-+/* SQ lifecycle */
-+int mlx5e_qos_open_queues(struct mlx5e_priv *priv, struct mlx5e_channels *chs);
-+void mlx5e_qos_activate_queues(struct mlx5e_priv *priv);
-+void mlx5e_qos_deactivate_queues(struct mlx5e_channel *c);
-+void mlx5e_qos_close_queues(struct mlx5e_channel *c);
-+
-+/* HTB API */
-+int mlx5e_htb_root_add(struct mlx5e_priv *priv, u16 htb_maj_id, u16 htb_defcls);
-+int mlx5e_htb_root_del(struct mlx5e_priv *priv);
-+int mlx5e_htb_leaf_alloc_queue(struct mlx5e_priv *priv, u16 classid,
-+			       u32 parent_classid, u64 rate, u64 ceil);
-+int mlx5e_htb_leaf_to_inner(struct mlx5e_priv *priv, u16 classid,
-+			    u16 child_classid, u64 rate, u64 ceil);
-+int mlx5e_htb_leaf_del(struct mlx5e_priv *priv, u16 classid, u16 *old_qid, u16 *new_qid);
-+int mlx5e_htb_leaf_del_last(struct mlx5e_priv *priv, u16 classid);
-+int mlx5e_htb_node_modify(struct mlx5e_priv *priv, u16 classid, u64 rate, u64 ceil);
-+
-+#endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index d9076d543104..2c1fdcca1d02 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -447,6 +447,17 @@ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
- 		goto out;
- 	}
- 
-+	/* Don't allow changing the number of channels if HTB offload is active,
-+	 * because the numeration of the QoS SQs will change, while per-queue
-+	 * qdiscs are attached.
-+	 */
-+	if (priv->htb.maj_id) {
-+		err = -EINVAL;
-+		netdev_err(priv->netdev, "%s: HTB offload is active, cannot change the number of channels\n",
-+			   __func__);
-+		goto out;
-+	}
-+
- 	new_channels.params = priv->channels.params;
- 	new_channels.params.num_channels = count;
- 
-@@ -1954,6 +1965,16 @@ static int set_pflag_tx_port_ts(struct net_device *netdev, bool enable)
- 	if (!MLX5_CAP_GEN(mdev, ts_cqe_to_dest_cqn))
- 		return -EOPNOTSUPP;
- 
-+	/* Don't allow changing the PTP state if HTB offload is active, because
-+	 * the numeration of the QoS SQs will change, while per-queue qdiscs are
-+	 * attached.
-+	 */
-+	if (priv->htb.maj_id) {
-+		netdev_err(priv->netdev, "%s: HTB offload is active, cannot change the PTP state\n",
-+			   __func__);
-+		return -EINVAL;
-+	}
-+
- 	new_channels.params = priv->channels.params;
- 	MLX5E_SET_PFLAG(&new_channels.params, MLX5E_PFLAG_TX_PORT_TS, enable);
- 	/* No need to verify SQ stop room as
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 03831650f655..d70421c13a95 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -65,6 +65,7 @@
- #include "en/devlink.h"
- #include "lib/mlx5.h"
- #include "en/ptp.h"
-+#include "qos.h"
- 
- bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev)
- {
-@@ -1143,7 +1144,6 @@ static int mlx5e_alloc_txqsq(struct mlx5e_channel *c,
- 	sq->uar_map   = mdev->mlx5e_res.bfreg.map;
- 	sq->min_inline_mode = params->tx_min_inline_mode;
- 	sq->hw_mtu    = MLX5E_SW2HW_MTU(params, params->sw_mtu);
--	sq->stats     = &c->priv->channel_stats[c->ix].sq[tc];
- 	INIT_WORK(&sq->recover_work, mlx5e_tx_err_cqe_work);
- 	if (!MLX5_CAP_ETH(mdev, wqe_vlan_insert))
- 		set_bit(MLX5E_SQ_STATE_VLAN_NEED_L2_INLINE, &sq->state);
-@@ -1233,6 +1233,7 @@ static int mlx5e_create_sq(struct mlx5_core_dev *mdev,
- int mlx5e_modify_sq(struct mlx5_core_dev *mdev, u32 sqn,
- 		    struct mlx5e_modify_sq_param *p)
- {
-+	u64 bitmask = 0;
- 	void *in;
- 	void *sqc;
- 	int inlen;
-@@ -1248,9 +1249,14 @@ int mlx5e_modify_sq(struct mlx5_core_dev *mdev, u32 sqn,
- 	MLX5_SET(modify_sq_in, in, sq_state, p->curr_state);
- 	MLX5_SET(sqc, sqc, state, p->next_state);
- 	if (p->rl_update && p->next_state == MLX5_SQC_STATE_RDY) {
--		MLX5_SET64(modify_sq_in, in, modify_bitmask, 1);
--		MLX5_SET(sqc,  sqc, packet_pacing_rate_limit_index, p->rl_index);
-+		bitmask |= 1;
-+		MLX5_SET(sqc, sqc, packet_pacing_rate_limit_index, p->rl_index);
- 	}
-+	if (p->qos_update && p->next_state == MLX5_SQC_STATE_RDY) {
-+		bitmask |= 1 << 2;
-+		MLX5_SET(sqc, sqc, qos_queue_group_id, p->qos_queue_group_id);
-+	}
-+	MLX5_SET64(modify_sq_in, in, modify_bitmask, bitmask);
- 
- 	err = mlx5_core_modify_sq(mdev, sqn, in);
- 
-@@ -1267,6 +1273,7 @@ static void mlx5e_destroy_sq(struct mlx5_core_dev *mdev, u32 sqn)
- int mlx5e_create_sq_rdy(struct mlx5_core_dev *mdev,
- 			struct mlx5e_sq_param *param,
- 			struct mlx5e_create_sq_param *csp,
-+			u16 qos_queue_group_id,
- 			u32 *sqn)
- {
- 	struct mlx5e_modify_sq_param msp = {0};
-@@ -1278,6 +1285,10 @@ int mlx5e_create_sq_rdy(struct mlx5_core_dev *mdev,
- 
- 	msp.curr_state = MLX5_SQC_STATE_RST;
- 	msp.next_state = MLX5_SQC_STATE_RDY;
-+	if (qos_queue_group_id) {
-+		msp.qos_update = true;
-+		msp.qos_queue_group_id = qos_queue_group_id;
-+	}
- 	err = mlx5e_modify_sq(mdev, *sqn, &msp);
- 	if (err)
- 		mlx5e_destroy_sq(mdev, *sqn);
-@@ -1288,18 +1299,18 @@ int mlx5e_create_sq_rdy(struct mlx5_core_dev *mdev,
- static int mlx5e_set_sq_maxrate(struct net_device *dev,
- 				struct mlx5e_txqsq *sq, u32 rate);
- 
--static int mlx5e_open_txqsq(struct mlx5e_channel *c,
--			    u32 tisn,
--			    int txq_ix,
--			    struct mlx5e_params *params,
--			    struct mlx5e_sq_param *param,
--			    struct mlx5e_txqsq *sq,
--			    int tc)
-+int mlx5e_open_txqsq(struct mlx5e_channel *c, u32 tisn, int txq_ix,
-+		     struct mlx5e_params *params, struct mlx5e_sq_param *param,
-+		     struct mlx5e_txqsq *sq, int tc, u16 qos_queue_group_id, u16 qos_qid)
- {
- 	struct mlx5e_create_sq_param csp = {};
- 	u32 tx_rate;
- 	int err;
- 
-+	if (qos_queue_group_id)
-+		sq->stats = c->priv->htb.qos_sq_stats[qos_qid];
-+	else
-+		sq->stats = &c->priv->channel_stats[c->ix].sq[tc];
- 	err = mlx5e_alloc_txqsq(c, txq_ix, params, param, sq, tc);
- 	if (err)
- 		return err;
-@@ -1309,7 +1320,7 @@ static int mlx5e_open_txqsq(struct mlx5e_channel *c,
- 	csp.cqn             = sq->cq.mcq.cqn;
- 	csp.wq_ctrl         = &sq->wq_ctrl;
- 	csp.min_inline_mode = sq->min_inline_mode;
--	err = mlx5e_create_sq_rdy(c->mdev, param, &csp, &sq->sqn);
-+	err = mlx5e_create_sq_rdy(c->mdev, param, &csp, qos_queue_group_id, &sq->sqn);
- 	if (err)
- 		goto err_free_txqsq;
- 
-@@ -1366,7 +1377,7 @@ void mlx5e_deactivate_txqsq(struct mlx5e_txqsq *sq)
- 	}
- }
- 
--static void mlx5e_close_txqsq(struct mlx5e_txqsq *sq)
-+void mlx5e_close_txqsq(struct mlx5e_txqsq *sq)
- {
- 	struct mlx5_core_dev *mdev = sq->mdev;
- 	struct mlx5_rate_limit rl = {0};
-@@ -1403,7 +1414,7 @@ int mlx5e_open_icosq(struct mlx5e_channel *c, struct mlx5e_params *params,
- 	csp.cqn             = sq->cq.mcq.cqn;
- 	csp.wq_ctrl         = &sq->wq_ctrl;
- 	csp.min_inline_mode = params->tx_min_inline_mode;
--	err = mlx5e_create_sq_rdy(c->mdev, param, &csp, &sq->sqn);
-+	err = mlx5e_create_sq_rdy(c->mdev, param, &csp, 0, &sq->sqn);
- 	if (err)
- 		goto err_free_icosq;
- 
-@@ -1452,7 +1463,7 @@ int mlx5e_open_xdpsq(struct mlx5e_channel *c, struct mlx5e_params *params,
- 	csp.wq_ctrl         = &sq->wq_ctrl;
- 	csp.min_inline_mode = sq->min_inline_mode;
- 	set_bit(MLX5E_SQ_STATE_ENABLED, &sq->state);
--	err = mlx5e_create_sq_rdy(c->mdev, param, &csp, &sq->sqn);
-+	err = mlx5e_create_sq_rdy(c->mdev, param, &csp, 0, &sq->sqn);
- 	if (err)
- 		goto err_free_xdpsq;
- 
-@@ -1703,7 +1714,7 @@ static int mlx5e_open_sqs(struct mlx5e_channel *c,
- 		int txq_ix = c->ix + tc * params->num_channels;
- 
- 		err = mlx5e_open_txqsq(c, c->priv->tisn[c->lag_port][tc], txq_ix,
--				       params, &cparam->txq_sq, &c->sq[tc], tc);
-+				       params, &cparam->txq_sq, &c->sq[tc], tc, 0, 0);
- 		if (err)
- 			goto err_close_sqs;
- 	}
-@@ -2044,6 +2055,7 @@ static void mlx5e_deactivate_channel(struct mlx5e_channel *c)
- 	mlx5e_deactivate_icosq(&c->icosq);
- 	for (tc = 0; tc < c->num_tc; tc++)
- 		mlx5e_deactivate_txqsq(&c->sq[tc]);
-+	mlx5e_qos_deactivate_queues(c);
- }
- 
- static void mlx5e_close_channel(struct mlx5e_channel *c)
-@@ -2051,6 +2063,7 @@ static void mlx5e_close_channel(struct mlx5e_channel *c)
- 	if (test_bit(MLX5E_CHANNEL_STATE_XSK, c->state))
- 		mlx5e_close_xsk(c);
- 	mlx5e_close_queues(c);
-+	mlx5e_qos_close_queues(c);
- 	netif_napi_del(&c->napi);
- 
- 	kvfree(c);
-@@ -2200,9 +2213,8 @@ void mlx5e_build_sq_param_common(struct mlx5e_priv *priv,
- 	param->wq.buf_numa_node = dev_to_node(mlx5_core_dma_dev(priv->mdev));
- }
- 
--static void mlx5e_build_sq_param(struct mlx5e_priv *priv,
--				 struct mlx5e_params *params,
--				 struct mlx5e_sq_param *param)
-+void mlx5e_build_sq_param(struct mlx5e_priv *priv, struct mlx5e_params *params,
-+			  struct mlx5e_sq_param *param)
- {
- 	void *sqc = param->sqc;
- 	void *wq = MLX5_ADDR_OF(sqc, sqc, wq);
-@@ -2381,10 +2393,18 @@ int mlx5e_open_channels(struct mlx5e_priv *priv,
- 			goto err_close_channels;
- 	}
- 
-+	err = mlx5e_qos_open_queues(priv, chs);
-+	if (err)
-+		goto err_close_ptp;
-+
- 	mlx5e_health_channels_update(priv);
- 	kvfree(cparam);
- 	return 0;
- 
-+err_close_ptp:
-+	if (chs->port_ptp)
-+		mlx5e_port_ptp_close(chs->port_ptp);
-+
- err_close_channels:
- 	for (i--; i >= 0; i--)
- 		mlx5e_close_channel(chs->c[i]);
-@@ -2917,11 +2937,31 @@ static void mlx5e_netdev_set_tcs(struct net_device *netdev, u16 nch, u8 ntc)
- 		netdev_set_tc_queue(netdev, tc, nch, 0);
- }
- 
-+int mlx5e_update_tx_netdev_queues(struct mlx5e_priv *priv)
-+{
-+	int qos_queues, nch, ntc, num_txqs, err;
-+
-+	qos_queues = mlx5e_qos_cur_leaf_nodes(priv);
-+
-+	nch = priv->channels.params.num_channels;
-+	ntc = priv->channels.params.num_tc;
-+	num_txqs = nch * ntc + qos_queues;
-+	if (MLX5E_GET_PFLAG(&priv->channels.params, MLX5E_PFLAG_TX_PORT_TS))
-+		num_txqs += ntc;
-+
-+	mlx5e_dbg(DRV, priv, "Setting num_txqs %d\n", num_txqs);
-+	err = netif_set_real_num_tx_queues(priv->netdev, num_txqs);
-+	if (err)
-+		netdev_warn(priv->netdev, "netif_set_real_num_tx_queues failed, %d\n", err);
-+
-+	return err;
-+}
-+
- static int mlx5e_update_netdev_queues(struct mlx5e_priv *priv)
- {
- 	struct net_device *netdev = priv->netdev;
--	int num_txqs, num_rxqs, nch, ntc;
- 	int old_num_txqs, old_ntc;
-+	int num_rxqs, nch, ntc;
- 	int err;
- 
- 	old_num_txqs = netdev->real_num_tx_queues;
-@@ -2929,18 +2969,13 @@ static int mlx5e_update_netdev_queues(struct mlx5e_priv *priv)
- 
- 	nch = priv->channels.params.num_channels;
- 	ntc = priv->channels.params.num_tc;
--	num_txqs = nch * ntc;
--	if (MLX5E_GET_PFLAG(&priv->channels.params, MLX5E_PFLAG_TX_PORT_TS))
--		num_txqs += ntc;
- 	num_rxqs = nch * priv->profile->rq_groups;
- 
- 	mlx5e_netdev_set_tcs(netdev, nch, ntc);
- 
--	err = netif_set_real_num_tx_queues(netdev, num_txqs);
--	if (err) {
--		netdev_warn(netdev, "netif_set_real_num_tx_queues failed, %d\n", err);
-+	err = mlx5e_update_tx_netdev_queues(priv);
-+	if (err)
- 		goto err_tcs;
+diff --git a/arch/powerpc/net/bpf_jit_asm.S b/arch/powerpc/net/bpf_jit_asm.S
+deleted file mode 100644
+index 2f5030d8383f..000000000000
+--- a/arch/powerpc/net/bpf_jit_asm.S
++++ /dev/null
+@@ -1,226 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/* bpf_jit.S: Packet/header access helper functions
+- * for PPC64 BPF compiler.
+- *
+- * Copyright 2011 Matt Evans <matt@ozlabs.org>, IBM Corporation
+- */
+-
+-#include <asm/ppc_asm.h>
+-#include <asm/asm-compat.h>
+-#include "bpf_jit32.h"
+-
+-/*
+- * All of these routines are called directly from generated code,
+- * whose register usage is:
+- *
+- * r3		skb
+- * r4,r5	A,X
+- * r6		*** address parameter to helper ***
+- * r7-r10	scratch
+- * r14		skb->data
+- * r15		skb headlen
+- * r16-31	M[]
+- */
+-
+-/*
+- * To consider: These helpers are so small it could be better to just
+- * generate them inline.  Inline code can do the simple headlen check
+- * then branch directly to slow_path_XXX if required.  (In fact, could
+- * load a spare GPR with the address of slow_path_generic and pass size
+- * as an argument, making the call site a mtlr, li and bllr.)
+- */
+-	.globl	sk_load_word
+-sk_load_word:
+-	PPC_LCMPI	r_addr, 0
+-	blt	bpf_slow_path_word_neg
+-	.globl	sk_load_word_positive_offset
+-sk_load_word_positive_offset:
+-	/* Are we accessing past headlen? */
+-	subi	r_scratch1, r_HL, 4
+-	PPC_LCMP	r_scratch1, r_addr
+-	blt	bpf_slow_path_word
+-	/* Nope, just hitting the header.  cr0 here is eq or gt! */
+-#ifdef __LITTLE_ENDIAN__
+-	lwbrx	r_A, r_D, r_addr
+-#else
+-	lwzx	r_A, r_D, r_addr
+-#endif
+-	blr	/* Return success, cr0 != LT */
+-
+-	.globl	sk_load_half
+-sk_load_half:
+-	PPC_LCMPI	r_addr, 0
+-	blt	bpf_slow_path_half_neg
+-	.globl	sk_load_half_positive_offset
+-sk_load_half_positive_offset:
+-	subi	r_scratch1, r_HL, 2
+-	PPC_LCMP	r_scratch1, r_addr
+-	blt	bpf_slow_path_half
+-#ifdef __LITTLE_ENDIAN__
+-	lhbrx	r_A, r_D, r_addr
+-#else
+-	lhzx	r_A, r_D, r_addr
+-#endif
+-	blr
+-
+-	.globl	sk_load_byte
+-sk_load_byte:
+-	PPC_LCMPI	r_addr, 0
+-	blt	bpf_slow_path_byte_neg
+-	.globl	sk_load_byte_positive_offset
+-sk_load_byte_positive_offset:
+-	PPC_LCMP	r_HL, r_addr
+-	ble	bpf_slow_path_byte
+-	lbzx	r_A, r_D, r_addr
+-	blr
+-
+-/*
+- * BPF_LDX | BPF_B | BPF_MSH: ldxb  4*([offset]&0xf)
+- * r_addr is the offset value
+- */
+-	.globl sk_load_byte_msh
+-sk_load_byte_msh:
+-	PPC_LCMPI	r_addr, 0
+-	blt	bpf_slow_path_byte_msh_neg
+-	.globl sk_load_byte_msh_positive_offset
+-sk_load_byte_msh_positive_offset:
+-	PPC_LCMP	r_HL, r_addr
+-	ble	bpf_slow_path_byte_msh
+-	lbzx	r_X, r_D, r_addr
+-	rlwinm	r_X, r_X, 2, 32-4-2, 31-2
+-	blr
+-
+-/* Call out to skb_copy_bits:
+- * We'll need to back up our volatile regs first; we have
+- * local variable space at r1+(BPF_PPC_STACK_BASIC).
+- * Allocate a new stack frame here to remain ABI-compliant in
+- * stashing LR.
+- */
+-#define bpf_slow_path_common(SIZE)				\
+-	mflr	r0;						\
+-	PPC_STL	r0, PPC_LR_STKOFF(r1);					\
+-	/* R3 goes in parameter space of caller's frame */	\
+-	PPC_STL	r_skb, (BPF_PPC_STACKFRAME+BPF_PPC_STACK_R3_OFF)(r1);		\
+-	PPC_STL	r_A, (BPF_PPC_STACK_BASIC+(0*REG_SZ))(r1);		\
+-	PPC_STL	r_X, (BPF_PPC_STACK_BASIC+(1*REG_SZ))(r1);		\
+-	addi	r5, r1, BPF_PPC_STACK_BASIC+(2*REG_SZ);		\
+-	PPC_STLU	r1, -BPF_PPC_SLOWPATH_FRAME(r1);		\
+-	/* R3 = r_skb, as passed */				\
+-	mr	r4, r_addr;					\
+-	li	r6, SIZE;					\
+-	bl	skb_copy_bits;					\
+-	nop;							\
+-	/* R3 = 0 on success */					\
+-	addi	r1, r1, BPF_PPC_SLOWPATH_FRAME;			\
+-	PPC_LL	r0, PPC_LR_STKOFF(r1);					\
+-	PPC_LL	r_A, (BPF_PPC_STACK_BASIC+(0*REG_SZ))(r1);		\
+-	PPC_LL	r_X, (BPF_PPC_STACK_BASIC+(1*REG_SZ))(r1);		\
+-	mtlr	r0;						\
+-	PPC_LCMPI	r3, 0;						\
+-	blt	bpf_error;	/* cr0 = LT */			\
+-	PPC_LL	r_skb, (BPF_PPC_STACKFRAME+BPF_PPC_STACK_R3_OFF)(r1);		\
+-	/* Great success! */
+-
+-bpf_slow_path_word:
+-	bpf_slow_path_common(4)
+-	/* Data value is on stack, and cr0 != LT */
+-	lwz	r_A, BPF_PPC_STACK_BASIC+(2*REG_SZ)(r1)
+-	blr
+-
+-bpf_slow_path_half:
+-	bpf_slow_path_common(2)
+-	lhz	r_A, BPF_PPC_STACK_BASIC+(2*8)(r1)
+-	blr
+-
+-bpf_slow_path_byte:
+-	bpf_slow_path_common(1)
+-	lbz	r_A, BPF_PPC_STACK_BASIC+(2*8)(r1)
+-	blr
+-
+-bpf_slow_path_byte_msh:
+-	bpf_slow_path_common(1)
+-	lbz	r_X, BPF_PPC_STACK_BASIC+(2*8)(r1)
+-	rlwinm	r_X, r_X, 2, 32-4-2, 31-2
+-	blr
+-
+-/* Call out to bpf_internal_load_pointer_neg_helper:
+- * We'll need to back up our volatile regs first; we have
+- * local variable space at r1+(BPF_PPC_STACK_BASIC).
+- * Allocate a new stack frame here to remain ABI-compliant in
+- * stashing LR.
+- */
+-#define sk_negative_common(SIZE)				\
+-	mflr	r0;						\
+-	PPC_STL	r0, PPC_LR_STKOFF(r1);					\
+-	/* R3 goes in parameter space of caller's frame */	\
+-	PPC_STL	r_skb, (BPF_PPC_STACKFRAME+BPF_PPC_STACK_R3_OFF)(r1);		\
+-	PPC_STL	r_A, (BPF_PPC_STACK_BASIC+(0*REG_SZ))(r1);		\
+-	PPC_STL	r_X, (BPF_PPC_STACK_BASIC+(1*REG_SZ))(r1);		\
+-	PPC_STLU	r1, -BPF_PPC_SLOWPATH_FRAME(r1);		\
+-	/* R3 = r_skb, as passed */				\
+-	mr	r4, r_addr;					\
+-	li	r5, SIZE;					\
+-	bl	bpf_internal_load_pointer_neg_helper;		\
+-	nop;							\
+-	/* R3 != 0 on success */				\
+-	addi	r1, r1, BPF_PPC_SLOWPATH_FRAME;			\
+-	PPC_LL	r0, PPC_LR_STKOFF(r1);					\
+-	PPC_LL	r_A, (BPF_PPC_STACK_BASIC+(0*REG_SZ))(r1);		\
+-	PPC_LL	r_X, (BPF_PPC_STACK_BASIC+(1*REG_SZ))(r1);		\
+-	mtlr	r0;						\
+-	PPC_LCMPLI	r3, 0;						\
+-	beq	bpf_error_slow;	/* cr0 = EQ */			\
+-	mr	r_addr, r3;					\
+-	PPC_LL	r_skb, (BPF_PPC_STACKFRAME+BPF_PPC_STACK_R3_OFF)(r1);		\
+-	/* Great success! */
+-
+-bpf_slow_path_word_neg:
+-	lis     r_scratch1,-32	/* SKF_LL_OFF */
+-	PPC_LCMP	r_addr, r_scratch1	/* addr < SKF_* */
+-	blt	bpf_error	/* cr0 = LT */
+-	.globl	sk_load_word_negative_offset
+-sk_load_word_negative_offset:
+-	sk_negative_common(4)
+-	lwz	r_A, 0(r_addr)
+-	blr
+-
+-bpf_slow_path_half_neg:
+-	lis     r_scratch1,-32	/* SKF_LL_OFF */
+-	PPC_LCMP	r_addr, r_scratch1	/* addr < SKF_* */
+-	blt	bpf_error	/* cr0 = LT */
+-	.globl	sk_load_half_negative_offset
+-sk_load_half_negative_offset:
+-	sk_negative_common(2)
+-	lhz	r_A, 0(r_addr)
+-	blr
+-
+-bpf_slow_path_byte_neg:
+-	lis     r_scratch1,-32	/* SKF_LL_OFF */
+-	PPC_LCMP	r_addr, r_scratch1	/* addr < SKF_* */
+-	blt	bpf_error	/* cr0 = LT */
+-	.globl	sk_load_byte_negative_offset
+-sk_load_byte_negative_offset:
+-	sk_negative_common(1)
+-	lbz	r_A, 0(r_addr)
+-	blr
+-
+-bpf_slow_path_byte_msh_neg:
+-	lis     r_scratch1,-32	/* SKF_LL_OFF */
+-	PPC_LCMP	r_addr, r_scratch1	/* addr < SKF_* */
+-	blt	bpf_error	/* cr0 = LT */
+-	.globl	sk_load_byte_msh_negative_offset
+-sk_load_byte_msh_negative_offset:
+-	sk_negative_common(1)
+-	lbz	r_X, 0(r_addr)
+-	rlwinm	r_X, r_X, 2, 32-4-2, 31-2
+-	blr
+-
+-bpf_error_slow:
+-	/* fabricate a cr0 = lt */
+-	li	r_scratch1, -1
+-	PPC_LCMPI	r_scratch1, 0
+-bpf_error:
+-	/* Entered with cr0 = lt */
+-	li	r3, 0
+-	/* Generated code will 'blt epilogue', returning 0. */
+-	blr
+diff --git a/arch/powerpc/net/bpf_jit_comp.c b/arch/powerpc/net/bpf_jit_comp.c
+deleted file mode 100644
+index e809cb5a1631..000000000000
+--- a/arch/powerpc/net/bpf_jit_comp.c
++++ /dev/null
+@@ -1,683 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/* bpf_jit_comp.c: BPF JIT compiler
+- *
+- * Copyright 2011 Matt Evans <matt@ozlabs.org>, IBM Corporation
+- *
+- * Based on the x86 BPF compiler, by Eric Dumazet (eric.dumazet@gmail.com)
+- * Ported to ppc32 by Denis Kirjanov <kda@linux-powerpc.org>
+- */
+-#include <linux/moduleloader.h>
+-#include <asm/cacheflush.h>
+-#include <asm/asm-compat.h>
+-#include <linux/netdevice.h>
+-#include <linux/filter.h>
+-#include <linux/if_vlan.h>
+-
+-#include "bpf_jit32.h"
+-
+-static inline void bpf_flush_icache(void *start, void *end)
+-{
+-	smp_wmb();
+-	flush_icache_range((unsigned long)start, (unsigned long)end);
+-}
+-
+-static void bpf_jit_build_prologue(struct bpf_prog *fp, u32 *image,
+-				   struct codegen_context *ctx)
+-{
+-	int i;
+-	const struct sock_filter *filter = fp->insns;
+-
+-	if (ctx->seen & (SEEN_MEM | SEEN_DATAREF)) {
+-		/* Make stackframe */
+-		if (ctx->seen & SEEN_DATAREF) {
+-			/* If we call any helpers (for loads), save LR */
+-			EMIT(PPC_INST_MFLR | __PPC_RT(R0));
+-			PPC_BPF_STL(0, 1, PPC_LR_STKOFF);
+-
+-			/* Back up non-volatile regs. */
+-			PPC_BPF_STL(r_D, 1, -(REG_SZ*(32-r_D)));
+-			PPC_BPF_STL(r_HL, 1, -(REG_SZ*(32-r_HL)));
+-		}
+-		if (ctx->seen & SEEN_MEM) {
+-			/*
+-			 * Conditionally save regs r15-r31 as some will be used
+-			 * for M[] data.
+-			 */
+-			for (i = r_M; i < (r_M+16); i++) {
+-				if (ctx->seen & (1 << (i-r_M)))
+-					PPC_BPF_STL(i, 1, -(REG_SZ*(32-i)));
+-			}
+-		}
+-		PPC_BPF_STLU(1, 1, -BPF_PPC_STACKFRAME);
 -	}
- 	err = netif_set_real_num_rx_queues(netdev, num_rxqs);
- 	if (err) {
- 		netdev_warn(netdev, "netif_set_real_num_rx_queues failed, %d\n", err);
-@@ -3044,6 +3079,7 @@ void mlx5e_activate_priv_channels(struct mlx5e_priv *priv)
- 	mlx5e_update_num_tc_x_num_ch(priv);
- 	mlx5e_build_txq_maps(priv);
- 	mlx5e_activate_channels(&priv->channels);
-+	mlx5e_qos_activate_queues(priv);
- 	mlx5e_xdp_tx_enable(priv);
- 	netif_tx_start_all_queues(priv->netdev);
- 
-@@ -3609,6 +3645,14 @@ static int mlx5e_setup_tc_mqprio(struct mlx5e_priv *priv,
- 
- 	mutex_lock(&priv->state_lock);
- 
-+	/* MQPRIO is another toplevel qdisc that can't be attached
-+	 * simultaneously with the offloaded HTB.
-+	 */
-+	if (WARN_ON(priv->htb.maj_id)) {
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
- 	new_channels.params = priv->channels.params;
- 	new_channels.params.num_tc = tc ? tc : 1;
- 
-@@ -3629,12 +3673,49 @@ static int mlx5e_setup_tc_mqprio(struct mlx5e_priv *priv,
- 	return err;
- }
- 
-+static int mlx5e_setup_tc_htb(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb)
-+{
-+	int res;
-+
-+	switch (htb->command) {
-+	case TC_HTB_CREATE:
-+		return mlx5e_htb_root_add(priv, htb->parent_classid, htb->classid);
-+	case TC_HTB_DESTROY:
-+		return mlx5e_htb_root_del(priv);
-+	case TC_HTB_LEAF_ALLOC_QUEUE:
-+		res = mlx5e_htb_leaf_alloc_queue(priv, htb->classid, htb->parent_classid,
-+						 htb->rate, htb->ceil);
-+		if (res < 0)
-+			return res;
-+		htb->qid = res;
-+		return 0;
-+	case TC_HTB_LEAF_TO_INNER:
-+		return mlx5e_htb_leaf_to_inner(priv, htb->parent_classid, htb->classid,
-+					       htb->rate, htb->ceil);
-+	case TC_HTB_LEAF_DEL:
-+		return mlx5e_htb_leaf_del(priv, htb->classid, &htb->moved_qid, &htb->qid);
-+	case TC_HTB_LEAF_DEL_LAST:
-+		return mlx5e_htb_leaf_del_last(priv, htb->classid);
-+	case TC_HTB_NODE_MODIFY:
-+		return mlx5e_htb_node_modify(priv, htb->classid, htb->rate, htb->ceil);
-+	case TC_HTB_LEAF_QUERY_QUEUE:
-+		res = mlx5e_get_txq_by_classid(priv, htb->classid);
-+		if (res < 0)
-+			return res;
-+		htb->qid = res;
-+		return 0;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static LIST_HEAD(mlx5e_block_cb_list);
- 
- static int mlx5e_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			  void *type_data)
- {
- 	struct mlx5e_priv *priv = netdev_priv(dev);
-+	int err;
- 
- 	switch (type) {
- 	case TC_SETUP_BLOCK: {
-@@ -3648,6 +3729,11 @@ static int mlx5e_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 	}
- 	case TC_SETUP_QDISC_MQPRIO:
- 		return mlx5e_setup_tc_mqprio(priv, type_data);
-+	case TC_SETUP_QDISC_HTB:
-+		mutex_lock(&priv->state_lock);
-+		err = mlx5e_setup_tc_htb(priv, type_data);
-+		mutex_unlock(&priv->state_lock);
-+		return err;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -3812,20 +3898,25 @@ static int set_feature_cvlan_filter(struct net_device *netdev, bool enable)
- 	return 0;
- }
- 
--#if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
--static int set_feature_tc_num_filters(struct net_device *netdev, bool enable)
-+static int set_feature_hw_tc(struct net_device *netdev, bool enable)
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 
-+#if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
- 	if (!enable && mlx5e_tc_num_filters(priv, MLX5_TC_FLAG(NIC_OFFLOAD))) {
- 		netdev_err(netdev,
- 			   "Active offloaded tc filters, can't turn hw_tc_offload off\n");
- 		return -EINVAL;
- 	}
-+#endif
-+
-+	if (!enable && priv->htb.maj_id) {
-+		netdev_err(netdev, "Active HTB offload, can't turn hw_tc_offload off\n");
-+		return -EINVAL;
-+	}
- 
- 	return 0;
- }
+-
+-	if (ctx->seen & SEEN_DATAREF) {
+-		/*
+-		 * If this filter needs to access skb data,
+-		 * prepare r_D and r_HL:
+-		 *  r_HL = skb->len - skb->data_len
+-		 *  r_D	 = skb->data
+-		 */
+-		PPC_LWZ_OFFS(r_scratch1, r_skb, offsetof(struct sk_buff,
+-							 data_len));
+-		PPC_LWZ_OFFS(r_HL, r_skb, offsetof(struct sk_buff, len));
+-		EMIT(PPC_RAW_SUB(r_HL, r_HL, r_scratch1));
+-		PPC_LL_OFFS(r_D, r_skb, offsetof(struct sk_buff, data));
+-	}
+-
+-	if (ctx->seen & SEEN_XREG) {
+-		/*
+-		 * TODO: Could also detect whether first instr. sets X and
+-		 * avoid this (as below, with A).
+-		 */
+-		EMIT(PPC_RAW_LI(r_X, 0));
+-	}
+-
+-	/* make sure we dont leak kernel information to user */
+-	if (bpf_needs_clear_a(&filter[0]))
+-		EMIT(PPC_RAW_LI(r_A, 0));
+-}
+-
+-static void bpf_jit_build_epilogue(u32 *image, struct codegen_context *ctx)
+-{
+-	int i;
+-
+-	if (ctx->seen & (SEEN_MEM | SEEN_DATAREF)) {
+-		EMIT(PPC_RAW_ADDI(1, 1, BPF_PPC_STACKFRAME));
+-		if (ctx->seen & SEEN_DATAREF) {
+-			PPC_BPF_LL(0, 1, PPC_LR_STKOFF);
+-			EMIT(PPC_RAW_MTLR(0));
+-			PPC_BPF_LL(r_D, 1, -(REG_SZ*(32-r_D)));
+-			PPC_BPF_LL(r_HL, 1, -(REG_SZ*(32-r_HL)));
+-		}
+-		if (ctx->seen & SEEN_MEM) {
+-			/* Restore any saved non-vol registers */
+-			for (i = r_M; i < (r_M+16); i++) {
+-				if (ctx->seen & (1 << (i-r_M)))
+-					PPC_BPF_LL(i, 1, -(REG_SZ*(32-i)));
+-			}
+-		}
+-	}
+-	/* The RETs have left a return value in R3. */
+-
+-	EMIT(PPC_RAW_BLR());
+-}
+-
+-#define CHOOSE_LOAD_FUNC(K, func) \
+-	((int)K < 0 ? ((int)K >= SKF_LL_OFF ? func##_negative_offset : func) : func##_positive_offset)
+-
+-/* Assemble the body code between the prologue & epilogue. */
+-static int bpf_jit_build_body(struct bpf_prog *fp, u32 *image,
+-			      struct codegen_context *ctx,
+-			      unsigned int *addrs)
+-{
+-	const struct sock_filter *filter = fp->insns;
+-	int flen = fp->len;
+-	u8 *func;
+-	unsigned int true_cond;
+-	int i;
+-
+-	/* Start of epilogue code */
+-	unsigned int exit_addr = addrs[flen];
+-
+-	for (i = 0; i < flen; i++) {
+-		unsigned int K = filter[i].k;
+-		u16 code = bpf_anc_helper(&filter[i]);
+-
+-		/*
+-		 * addrs[] maps a BPF bytecode address into a real offset from
+-		 * the start of the body code.
+-		 */
+-		addrs[i] = ctx->idx * 4;
+-
+-		switch (code) {
+-			/*** ALU ops ***/
+-		case BPF_ALU | BPF_ADD | BPF_X: /* A += X; */
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_ADD(r_A, r_A, r_X));
+-			break;
+-		case BPF_ALU | BPF_ADD | BPF_K: /* A += K; */
+-			if (!K)
+-				break;
+-			EMIT(PPC_RAW_ADDI(r_A, r_A, IMM_L(K)));
+-			if (K >= 32768)
+-				EMIT(PPC_RAW_ADDIS(r_A, r_A, IMM_HA(K)));
+-			break;
+-		case BPF_ALU | BPF_SUB | BPF_X: /* A -= X; */
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_SUB(r_A, r_A, r_X));
+-			break;
+-		case BPF_ALU | BPF_SUB | BPF_K: /* A -= K */
+-			if (!K)
+-				break;
+-			EMIT(PPC_RAW_ADDI(r_A, r_A, IMM_L(-K)));
+-			if (K >= 32768)
+-				EMIT(PPC_RAW_ADDIS(r_A, r_A, IMM_HA(-K)));
+-			break;
+-		case BPF_ALU | BPF_MUL | BPF_X: /* A *= X; */
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_MULW(r_A, r_A, r_X));
+-			break;
+-		case BPF_ALU | BPF_MUL | BPF_K: /* A *= K */
+-			if (K < 32768)
+-				EMIT(PPC_RAW_MULI(r_A, r_A, K));
+-			else {
+-				PPC_LI32(r_scratch1, K);
+-				EMIT(PPC_RAW_MULW(r_A, r_A, r_scratch1));
+-			}
+-			break;
+-		case BPF_ALU | BPF_MOD | BPF_X: /* A %= X; */
+-		case BPF_ALU | BPF_DIV | BPF_X: /* A /= X; */
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_CMPWI(r_X, 0));
+-			if (ctx->pc_ret0 != -1) {
+-				PPC_BCC(COND_EQ, addrs[ctx->pc_ret0]);
+-			} else {
+-				PPC_BCC_SHORT(COND_NE, (ctx->idx*4)+12);
+-				EMIT(PPC_RAW_LI(r_ret, 0));
+-				PPC_JMP(exit_addr);
+-			}
+-			if (code == (BPF_ALU | BPF_MOD | BPF_X)) {
+-				EMIT(PPC_RAW_DIVWU(r_scratch1, r_A, r_X));
+-				EMIT(PPC_RAW_MULW(r_scratch1, r_X, r_scratch1));
+-				EMIT(PPC_RAW_SUB(r_A, r_A, r_scratch1));
+-			} else {
+-				EMIT(PPC_RAW_DIVWU(r_A, r_A, r_X));
+-			}
+-			break;
+-		case BPF_ALU | BPF_MOD | BPF_K: /* A %= K; */
+-			PPC_LI32(r_scratch2, K);
+-			EMIT(PPC_RAW_DIVWU(r_scratch1, r_A, r_scratch2));
+-			EMIT(PPC_RAW_MULW(r_scratch1, r_scratch2, r_scratch1));
+-			EMIT(PPC_RAW_SUB(r_A, r_A, r_scratch1));
+-			break;
+-		case BPF_ALU | BPF_DIV | BPF_K: /* A /= K */
+-			if (K == 1)
+-				break;
+-			PPC_LI32(r_scratch1, K);
+-			EMIT(PPC_RAW_DIVWU(r_A, r_A, r_scratch1));
+-			break;
+-		case BPF_ALU | BPF_AND | BPF_X:
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_AND(r_A, r_A, r_X));
+-			break;
+-		case BPF_ALU | BPF_AND | BPF_K:
+-			if (!IMM_H(K))
+-				EMIT(PPC_RAW_ANDI(r_A, r_A, K));
+-			else {
+-				PPC_LI32(r_scratch1, K);
+-				EMIT(PPC_RAW_AND(r_A, r_A, r_scratch1));
+-			}
+-			break;
+-		case BPF_ALU | BPF_OR | BPF_X:
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_OR(r_A, r_A, r_X));
+-			break;
+-		case BPF_ALU | BPF_OR | BPF_K:
+-			if (IMM_L(K))
+-				EMIT(PPC_RAW_ORI(r_A, r_A, IMM_L(K)));
+-			if (K >= 65536)
+-				EMIT(PPC_RAW_ORIS(r_A, r_A, IMM_H(K)));
+-			break;
+-		case BPF_ANC | SKF_AD_ALU_XOR_X:
+-		case BPF_ALU | BPF_XOR | BPF_X: /* A ^= X */
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_XOR(r_A, r_A, r_X));
+-			break;
+-		case BPF_ALU | BPF_XOR | BPF_K: /* A ^= K */
+-			if (IMM_L(K))
+-				EMIT(PPC_RAW_XORI(r_A, r_A, IMM_L(K)));
+-			if (K >= 65536)
+-				EMIT(PPC_RAW_XORIS(r_A, r_A, IMM_H(K)));
+-			break;
+-		case BPF_ALU | BPF_LSH | BPF_X: /* A <<= X; */
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_SLW(r_A, r_A, r_X));
+-			break;
+-		case BPF_ALU | BPF_LSH | BPF_K:
+-			if (K == 0)
+-				break;
+-			else
+-				EMIT(PPC_RAW_SLWI(r_A, r_A, K));
+-			break;
+-		case BPF_ALU | BPF_RSH | BPF_X: /* A >>= X; */
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_SRW(r_A, r_A, r_X));
+-			break;
+-		case BPF_ALU | BPF_RSH | BPF_K: /* A >>= K; */
+-			if (K == 0)
+-				break;
+-			else
+-				EMIT(PPC_RAW_SRWI(r_A, r_A, K));
+-			break;
+-		case BPF_ALU | BPF_NEG:
+-			EMIT(PPC_RAW_NEG(r_A, r_A));
+-			break;
+-		case BPF_RET | BPF_K:
+-			PPC_LI32(r_ret, K);
+-			if (!K) {
+-				if (ctx->pc_ret0 == -1)
+-					ctx->pc_ret0 = i;
+-			}
+-			/*
+-			 * If this isn't the very last instruction, branch to
+-			 * the epilogue if we've stuff to clean up.  Otherwise,
+-			 * if there's nothing to tidy, just return.  If we /are/
+-			 * the last instruction, we're about to fall through to
+-			 * the epilogue to return.
+-			 */
+-			if (i != flen - 1) {
+-				/*
+-				 * Note: 'seen' is properly valid only on pass
+-				 * #2.	Both parts of this conditional are the
+-				 * same instruction size though, meaning the
+-				 * first pass will still correctly determine the
+-				 * code size/addresses.
+-				 */
+-				if (ctx->seen)
+-					PPC_JMP(exit_addr);
+-				else
+-					EMIT(PPC_RAW_BLR());
+-			}
+-			break;
+-		case BPF_RET | BPF_A:
+-			EMIT(PPC_RAW_MR(r_ret, r_A));
+-			if (i != flen - 1) {
+-				if (ctx->seen)
+-					PPC_JMP(exit_addr);
+-				else
+-					EMIT(PPC_RAW_BLR());
+-			}
+-			break;
+-		case BPF_MISC | BPF_TAX: /* X = A */
+-			EMIT(PPC_RAW_MR(r_X, r_A));
+-			break;
+-		case BPF_MISC | BPF_TXA: /* A = X */
+-			ctx->seen |= SEEN_XREG;
+-			EMIT(PPC_RAW_MR(r_A, r_X));
+-			break;
+-
+-			/*** Constant loads/M[] access ***/
+-		case BPF_LD | BPF_IMM: /* A = K */
+-			PPC_LI32(r_A, K);
+-			break;
+-		case BPF_LDX | BPF_IMM: /* X = K */
+-			PPC_LI32(r_X, K);
+-			break;
+-		case BPF_LD | BPF_MEM: /* A = mem[K] */
+-			EMIT(PPC_RAW_MR(r_A, r_M + (K & 0xf)));
+-			ctx->seen |= SEEN_MEM | (1<<(K & 0xf));
+-			break;
+-		case BPF_LDX | BPF_MEM: /* X = mem[K] */
+-			EMIT(PPC_RAW_MR(r_X, r_M + (K & 0xf)));
+-			ctx->seen |= SEEN_MEM | (1<<(K & 0xf));
+-			break;
+-		case BPF_ST: /* mem[K] = A */
+-			EMIT(PPC_RAW_MR(r_M + (K & 0xf), r_A));
+-			ctx->seen |= SEEN_MEM | (1<<(K & 0xf));
+-			break;
+-		case BPF_STX: /* mem[K] = X */
+-			EMIT(PPC_RAW_MR(r_M + (K & 0xf), r_X));
+-			ctx->seen |= SEEN_XREG | SEEN_MEM | (1<<(K & 0xf));
+-			break;
+-		case BPF_LD | BPF_W | BPF_LEN: /*	A = skb->len; */
+-			BUILD_BUG_ON(sizeof_field(struct sk_buff, len) != 4);
+-			PPC_LWZ_OFFS(r_A, r_skb, offsetof(struct sk_buff, len));
+-			break;
+-		case BPF_LDX | BPF_W | BPF_ABS: /* A = *((u32 *)(seccomp_data + K)); */
+-			PPC_LWZ_OFFS(r_A, r_skb, K);
+-			break;
+-		case BPF_LDX | BPF_W | BPF_LEN: /* X = skb->len; */
+-			PPC_LWZ_OFFS(r_X, r_skb, offsetof(struct sk_buff, len));
+-			break;
+-
+-			/*** Ancillary info loads ***/
+-		case BPF_ANC | SKF_AD_PROTOCOL: /* A = ntohs(skb->protocol); */
+-			BUILD_BUG_ON(sizeof_field(struct sk_buff,
+-						  protocol) != 2);
+-			PPC_NTOHS_OFFS(r_A, r_skb, offsetof(struct sk_buff,
+-							    protocol));
+-			break;
+-		case BPF_ANC | SKF_AD_IFINDEX:
+-		case BPF_ANC | SKF_AD_HATYPE:
+-			BUILD_BUG_ON(sizeof_field(struct net_device,
+-						ifindex) != 4);
+-			BUILD_BUG_ON(sizeof_field(struct net_device,
+-						type) != 2);
+-			PPC_LL_OFFS(r_scratch1, r_skb, offsetof(struct sk_buff,
+-								dev));
+-			EMIT(PPC_RAW_CMPDI(r_scratch1, 0));
+-			if (ctx->pc_ret0 != -1) {
+-				PPC_BCC(COND_EQ, addrs[ctx->pc_ret0]);
+-			} else {
+-				/* Exit, returning 0; first pass hits here. */
+-				PPC_BCC_SHORT(COND_NE, ctx->idx * 4 + 12);
+-				EMIT(PPC_RAW_LI(r_ret, 0));
+-				PPC_JMP(exit_addr);
+-			}
+-			if (code == (BPF_ANC | SKF_AD_IFINDEX)) {
+-				PPC_LWZ_OFFS(r_A, r_scratch1,
+-				     offsetof(struct net_device, ifindex));
+-			} else {
+-				PPC_LHZ_OFFS(r_A, r_scratch1,
+-				     offsetof(struct net_device, type));
+-			}
+-
+-			break;
+-		case BPF_ANC | SKF_AD_MARK:
+-			BUILD_BUG_ON(sizeof_field(struct sk_buff, mark) != 4);
+-			PPC_LWZ_OFFS(r_A, r_skb, offsetof(struct sk_buff,
+-							  mark));
+-			break;
+-		case BPF_ANC | SKF_AD_RXHASH:
+-			BUILD_BUG_ON(sizeof_field(struct sk_buff, hash) != 4);
+-			PPC_LWZ_OFFS(r_A, r_skb, offsetof(struct sk_buff,
+-							  hash));
+-			break;
+-		case BPF_ANC | SKF_AD_VLAN_TAG:
+-			BUILD_BUG_ON(sizeof_field(struct sk_buff, vlan_tci) != 2);
+-
+-			PPC_LHZ_OFFS(r_A, r_skb, offsetof(struct sk_buff,
+-							  vlan_tci));
+-			break;
+-		case BPF_ANC | SKF_AD_VLAN_TAG_PRESENT:
+-			PPC_LBZ_OFFS(r_A, r_skb, PKT_VLAN_PRESENT_OFFSET());
+-			if (PKT_VLAN_PRESENT_BIT)
+-				EMIT(PPC_RAW_SRWI(r_A, r_A, PKT_VLAN_PRESENT_BIT));
+-			if (PKT_VLAN_PRESENT_BIT < 7)
+-				EMIT(PPC_RAW_ANDI(r_A, r_A, 1));
+-			break;
+-		case BPF_ANC | SKF_AD_QUEUE:
+-			BUILD_BUG_ON(sizeof_field(struct sk_buff,
+-						  queue_mapping) != 2);
+-			PPC_LHZ_OFFS(r_A, r_skb, offsetof(struct sk_buff,
+-							  queue_mapping));
+-			break;
+-		case BPF_ANC | SKF_AD_PKTTYPE:
+-			PPC_LBZ_OFFS(r_A, r_skb, PKT_TYPE_OFFSET());
+-			EMIT(PPC_RAW_ANDI(r_A, r_A, PKT_TYPE_MAX));
+-			EMIT(PPC_RAW_SRWI(r_A, r_A, 5));
+-			break;
+-		case BPF_ANC | SKF_AD_CPU:
+-			PPC_BPF_LOAD_CPU(r_A);
+-			break;
+-			/*** Absolute loads from packet header/data ***/
+-		case BPF_LD | BPF_W | BPF_ABS:
+-			func = CHOOSE_LOAD_FUNC(K, sk_load_word);
+-			goto common_load;
+-		case BPF_LD | BPF_H | BPF_ABS:
+-			func = CHOOSE_LOAD_FUNC(K, sk_load_half);
+-			goto common_load;
+-		case BPF_LD | BPF_B | BPF_ABS:
+-			func = CHOOSE_LOAD_FUNC(K, sk_load_byte);
+-		common_load:
+-			/* Load from [K]. */
+-			ctx->seen |= SEEN_DATAREF;
+-			PPC_FUNC_ADDR(r_scratch1, func);
+-			EMIT(PPC_RAW_MTLR(r_scratch1));
+-			PPC_LI32(r_addr, K);
+-			EMIT(PPC_RAW_BLRL());
+-			/*
+-			 * Helper returns 'lt' condition on error, and an
+-			 * appropriate return value in r3
+-			 */
+-			PPC_BCC(COND_LT, exit_addr);
+-			break;
+-
+-			/*** Indirect loads from packet header/data ***/
+-		case BPF_LD | BPF_W | BPF_IND:
+-			func = sk_load_word;
+-			goto common_load_ind;
+-		case BPF_LD | BPF_H | BPF_IND:
+-			func = sk_load_half;
+-			goto common_load_ind;
+-		case BPF_LD | BPF_B | BPF_IND:
+-			func = sk_load_byte;
+-		common_load_ind:
+-			/*
+-			 * Load from [X + K].  Negative offsets are tested for
+-			 * in the helper functions.
+-			 */
+-			ctx->seen |= SEEN_DATAREF | SEEN_XREG;
+-			PPC_FUNC_ADDR(r_scratch1, func);
+-			EMIT(PPC_RAW_MTLR(r_scratch1));
+-			EMIT(PPC_RAW_ADDI(r_addr, r_X, IMM_L(K)));
+-			if (K >= 32768)
+-				EMIT(PPC_RAW_ADDIS(r_addr, r_addr, IMM_HA(K)));
+-			EMIT(PPC_RAW_BLRL());
+-			/* If error, cr0.LT set */
+-			PPC_BCC(COND_LT, exit_addr);
+-			break;
+-
+-		case BPF_LDX | BPF_B | BPF_MSH:
+-			func = CHOOSE_LOAD_FUNC(K, sk_load_byte_msh);
+-			goto common_load;
+-			break;
+-
+-			/*** Jump and branches ***/
+-		case BPF_JMP | BPF_JA:
+-			if (K != 0)
+-				PPC_JMP(addrs[i + 1 + K]);
+-			break;
+-
+-		case BPF_JMP | BPF_JGT | BPF_K:
+-		case BPF_JMP | BPF_JGT | BPF_X:
+-			true_cond = COND_GT;
+-			goto cond_branch;
+-		case BPF_JMP | BPF_JGE | BPF_K:
+-		case BPF_JMP | BPF_JGE | BPF_X:
+-			true_cond = COND_GE;
+-			goto cond_branch;
+-		case BPF_JMP | BPF_JEQ | BPF_K:
+-		case BPF_JMP | BPF_JEQ | BPF_X:
+-			true_cond = COND_EQ;
+-			goto cond_branch;
+-		case BPF_JMP | BPF_JSET | BPF_K:
+-		case BPF_JMP | BPF_JSET | BPF_X:
+-			true_cond = COND_NE;
+-		cond_branch:
+-			/* same targets, can avoid doing the test :) */
+-			if (filter[i].jt == filter[i].jf) {
+-				if (filter[i].jt > 0)
+-					PPC_JMP(addrs[i + 1 + filter[i].jt]);
+-				break;
+-			}
+-
+-			switch (code) {
+-			case BPF_JMP | BPF_JGT | BPF_X:
+-			case BPF_JMP | BPF_JGE | BPF_X:
+-			case BPF_JMP | BPF_JEQ | BPF_X:
+-				ctx->seen |= SEEN_XREG;
+-				EMIT(PPC_RAW_CMPLW(r_A, r_X));
+-				break;
+-			case BPF_JMP | BPF_JSET | BPF_X:
+-				ctx->seen |= SEEN_XREG;
+-				EMIT(PPC_RAW_AND_DOT(r_scratch1, r_A, r_X));
+-				break;
+-			case BPF_JMP | BPF_JEQ | BPF_K:
+-			case BPF_JMP | BPF_JGT | BPF_K:
+-			case BPF_JMP | BPF_JGE | BPF_K:
+-				if (K < 32768)
+-					EMIT(PPC_RAW_CMPLWI(r_A, K));
+-				else {
+-					PPC_LI32(r_scratch1, K);
+-					EMIT(PPC_RAW_CMPLW(r_A, r_scratch1));
+-				}
+-				break;
+-			case BPF_JMP | BPF_JSET | BPF_K:
+-				if (K < 32768)
+-					/* PPC_ANDI is /only/ dot-form */
+-					EMIT(PPC_RAW_ANDI(r_scratch1, r_A, K));
+-				else {
+-					PPC_LI32(r_scratch1, K);
+-					EMIT(PPC_RAW_AND_DOT(r_scratch1, r_A,
+-						    r_scratch1));
+-				}
+-				break;
+-			}
+-			/* Sometimes branches are constructed "backward", with
+-			 * the false path being the branch and true path being
+-			 * a fallthrough to the next instruction.
+-			 */
+-			if (filter[i].jt == 0)
+-				/* Swap the sense of the branch */
+-				PPC_BCC(true_cond ^ COND_CMP_TRUE,
+-					addrs[i + 1 + filter[i].jf]);
+-			else {
+-				PPC_BCC(true_cond, addrs[i + 1 + filter[i].jt]);
+-				if (filter[i].jf != 0)
+-					PPC_JMP(addrs[i + 1 + filter[i].jf]);
+-			}
+-			break;
+-		default:
+-			/* The filter contains something cruel & unusual.
+-			 * We don't handle it, but also there shouldn't be
+-			 * anything missing from our list.
+-			 */
+-			if (printk_ratelimit())
+-				pr_err("BPF filter opcode %04x (@%d) unsupported\n",
+-				       filter[i].code, i);
+-			return -ENOTSUPP;
+-		}
+-
+-	}
+-	/* Set end-of-body-code address for exit. */
+-	addrs[i] = ctx->idx * 4;
+-
+-	return 0;
+-}
+-
+-void bpf_jit_compile(struct bpf_prog *fp)
+-{
+-	unsigned int proglen;
+-	unsigned int alloclen;
+-	u32 *image = NULL;
+-	u32 *code_base;
+-	unsigned int *addrs;
+-	struct codegen_context cgctx;
+-	int pass;
+-	int flen = fp->len;
+-
+-	if (!bpf_jit_enable)
+-		return;
+-
+-	addrs = kcalloc(flen + 1, sizeof(*addrs), GFP_KERNEL);
+-	if (addrs == NULL)
+-		return;
+-
+-	/*
+-	 * There are multiple assembly passes as the generated code will change
+-	 * size as it settles down, figuring out the max branch offsets/exit
+-	 * paths required.
+-	 *
+-	 * The range of standard conditional branches is +/- 32Kbytes.	Since
+-	 * BPF_MAXINSNS = 4096, we can only jump from (worst case) start to
+-	 * finish with 8 bytes/instruction.  Not feasible, so long jumps are
+-	 * used, distinct from short branches.
+-	 *
+-	 * Current:
+-	 *
+-	 * For now, both branch types assemble to 2 words (short branches padded
+-	 * with a NOP); this is less efficient, but assembly will always complete
+-	 * after exactly 3 passes:
+-	 *
+-	 * First pass: No code buffer; Program is "faux-generated" -- no code
+-	 * emitted but maximum size of output determined (and addrs[] filled
+-	 * in).	 Also, we note whether we use M[], whether we use skb data, etc.
+-	 * All generation choices assumed to be 'worst-case', e.g. branches all
+-	 * far (2 instructions), return path code reduction not available, etc.
+-	 *
+-	 * Second pass: Code buffer allocated with size determined previously.
+-	 * Prologue generated to support features we have seen used.  Exit paths
+-	 * determined and addrs[] is filled in again, as code may be slightly
+-	 * smaller as a result.
+-	 *
+-	 * Third pass: Code generated 'for real', and branch destinations
+-	 * determined from now-accurate addrs[] map.
+-	 *
+-	 * Ideal:
+-	 *
+-	 * If we optimise this, near branches will be shorter.	On the
+-	 * first assembly pass, we should err on the side of caution and
+-	 * generate the biggest code.  On subsequent passes, branches will be
+-	 * generated short or long and code size will reduce.  With smaller
+-	 * code, more branches may fall into the short category, and code will
+-	 * reduce more.
+-	 *
+-	 * Finally, if we see one pass generate code the same size as the
+-	 * previous pass we have converged and should now generate code for
+-	 * real.  Allocating at the end will also save the memory that would
+-	 * otherwise be wasted by the (small) current code shrinkage.
+-	 * Preferably, we should do a small number of passes (e.g. 5) and if we
+-	 * haven't converged by then, get impatient and force code to generate
+-	 * as-is, even if the odd branch would be left long.  The chances of a
+-	 * long jump are tiny with all but the most enormous of BPF filter
+-	 * inputs, so we should usually converge on the third pass.
+-	 */
+-
+-	cgctx.idx = 0;
+-	cgctx.seen = 0;
+-	cgctx.pc_ret0 = -1;
+-	/* Scouting faux-generate pass 0 */
+-	if (bpf_jit_build_body(fp, 0, &cgctx, addrs))
+-		/* We hit something illegal or unsupported. */
+-		goto out;
+-
+-	/*
+-	 * Pretend to build prologue, given the features we've seen.  This will
+-	 * update ctgtx.idx as it pretends to output instructions, then we can
+-	 * calculate total size from idx.
+-	 */
+-	bpf_jit_build_prologue(fp, 0, &cgctx);
+-	bpf_jit_build_epilogue(0, &cgctx);
+-
+-	proglen = cgctx.idx * 4;
+-	alloclen = proglen + FUNCTION_DESCR_SIZE;
+-	image = module_alloc(alloclen);
+-	if (!image)
+-		goto out;
+-
+-	code_base = image + (FUNCTION_DESCR_SIZE/4);
+-
+-	/* Code generation passes 1-2 */
+-	for (pass = 1; pass < 3; pass++) {
+-		/* Now build the prologue, body code & epilogue for real. */
+-		cgctx.idx = 0;
+-		bpf_jit_build_prologue(fp, code_base, &cgctx);
+-		bpf_jit_build_body(fp, code_base, &cgctx, addrs);
+-		bpf_jit_build_epilogue(code_base, &cgctx);
+-
+-		if (bpf_jit_enable > 1)
+-			pr_info("Pass %d: shrink = %d, seen = 0x%x\n", pass,
+-				proglen - (cgctx.idx * 4), cgctx.seen);
+-	}
+-
+-	if (bpf_jit_enable > 1)
+-		/* Note that we output the base address of the code_base
+-		 * rather than image, since opcodes are in code_base.
+-		 */
+-		bpf_jit_dump(flen, proglen, pass, code_base);
+-
+-	bpf_flush_icache(code_base, code_base + (proglen/4));
+-
+-#ifdef CONFIG_PPC64
+-	/* Function descriptor nastiness: Address + TOC */
+-	((u64 *)image)[0] = (u64)code_base;
+-	((u64 *)image)[1] = local_paca->kernel_toc;
 -#endif
- 
- static int set_feature_rx_all(struct net_device *netdev, bool enable)
- {
-@@ -3923,9 +4014,7 @@ int mlx5e_set_features(struct net_device *netdev, netdev_features_t features)
- 	err |= MLX5E_HANDLE_FEATURE(NETIF_F_LRO, set_feature_lro);
- 	err |= MLX5E_HANDLE_FEATURE(NETIF_F_HW_VLAN_CTAG_FILTER,
- 				    set_feature_cvlan_filter);
--#if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
--	err |= MLX5E_HANDLE_FEATURE(NETIF_F_HW_TC, set_feature_tc_num_filters);
--#endif
-+	err |= MLX5E_HANDLE_FEATURE(NETIF_F_HW_TC, set_feature_hw_tc);
- 	err |= MLX5E_HANDLE_FEATURE(NETIF_F_RXALL, set_feature_rx_all);
- 	err |= MLX5E_HANDLE_FEATURE(NETIF_F_RXFCS, set_feature_rx_fcs);
- 	err |= MLX5E_HANDLE_FEATURE(NETIF_F_HW_VLAN_CTAG_RX, set_feature_rx_vlan);
-@@ -5033,6 +5122,8 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
- 		netdev->hw_features	 |= NETIF_F_NTUPLE;
- #endif
- 	}
-+	if (mlx5_qos_is_supported(mdev))
-+		netdev->features |= NETIF_F_HW_TC;
- 
- 	netdev->features         |= NETIF_F_HIGHDMA;
- 	netdev->features         |= NETIF_F_HW_VLAN_STAG_FILTER;
-@@ -5338,6 +5429,7 @@ int mlx5e_netdev_init(struct net_device *netdev,
- 		return -ENOMEM;
- 
- 	mutex_init(&priv->state_lock);
-+	hash_init(priv->htb.qos_tc2node);
- 	INIT_WORK(&priv->update_carrier_work, mlx5e_update_carrier_work);
- 	INIT_WORK(&priv->set_rx_mode_work, mlx5e_set_rx_mode_work);
- 	INIT_WORK(&priv->tx_timeout_work, mlx5e_tx_timeout_work);
-@@ -5360,8 +5452,14 @@ int mlx5e_netdev_init(struct net_device *netdev,
- 
- void mlx5e_netdev_cleanup(struct net_device *netdev, struct mlx5e_priv *priv)
- {
-+	int i;
-+
- 	destroy_workqueue(priv->wq);
- 	free_cpumask_var(priv->scratchpad.cpumask);
-+
-+	for (i = 0; i < priv->htb.max_qos_sqs; i++)
-+		kfree(priv->htb.qos_sq_stats[i]);
-+	kvfree(priv->htb.qos_sq_stats);
- }
- 
- struct net_device *mlx5e_create_netdev(struct mlx5_core_dev *mdev,
-@@ -5371,13 +5469,17 @@ struct net_device *mlx5e_create_netdev(struct mlx5_core_dev *mdev,
- {
- 	struct net_device *netdev;
- 	unsigned int ptp_txqs = 0;
-+	int qos_sqs = 0;
- 	int err;
- 
- 	if (MLX5_CAP_GEN(mdev, ts_cqe_to_dest_cqn))
- 		ptp_txqs = profile->max_tc;
- 
-+	if (mlx5_qos_is_supported(mdev))
-+		qos_sqs = mlx5e_qos_max_leaf_nodes(mdev);
-+
- 	netdev = alloc_etherdev_mqs(sizeof(struct mlx5e_priv),
--				    nch * profile->max_tc + ptp_txqs,
-+				    nch * profile->max_tc + ptp_txqs + qos_sqs,
- 				    nch * profile->rq_groups);
- 	if (!netdev) {
- 		mlx5_core_err(mdev, "alloc_etherdev_mqs() failed\n");
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index 2cf2042b37c7..92c5b81427b9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -420,6 +420,25 @@ static void mlx5e_stats_grp_sw_update_stats_ptp(struct mlx5e_priv *priv,
- 	}
- }
- 
-+static void mlx5e_stats_grp_sw_update_stats_qos(struct mlx5e_priv *priv,
-+						struct mlx5e_sw_stats *s)
-+{
-+	struct mlx5e_sq_stats **stats;
-+	u16 max_qos_sqs;
-+	int i;
-+
-+	/* Pairs with smp_store_release in mlx5e_open_qos_sq. */
-+	max_qos_sqs = smp_load_acquire(&priv->htb.max_qos_sqs);
-+	stats = READ_ONCE(priv->htb.qos_sq_stats);
-+
-+	for (i = 0; i < max_qos_sqs; i++) {
-+		mlx5e_stats_grp_sw_update_stats_sq(s, READ_ONCE(stats[i]));
-+
-+		/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
-+		barrier();
-+	}
-+}
-+
- static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(sw)
- {
- 	struct mlx5e_sw_stats *s = &priv->stats.sw;
-@@ -449,6 +468,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(sw)
- 		}
- 	}
- 	mlx5e_stats_grp_sw_update_stats_ptp(priv, s);
-+	mlx5e_stats_grp_sw_update_stats_qos(priv, s);
- }
- 
- static const struct counter_desc q_stats_desc[] = {
-@@ -1740,6 +1760,41 @@ static const struct counter_desc ptp_cq_stats_desc[] = {
- 	{ MLX5E_DECLARE_PTP_CQ_STAT(struct mlx5e_ptp_cq_stats, abort_abs_diff_ns) },
- };
- 
-+static const struct counter_desc qos_sq_stats_desc[] = {
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, packets) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, bytes) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tso_packets) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tso_bytes) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tso_inner_packets) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tso_inner_bytes) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, csum_partial) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, csum_partial_inner) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, added_vlan_packets) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, nop) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, mpwqe_blks) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, mpwqe_pkts) },
-+#ifdef CONFIG_MLX5_EN_TLS
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_encrypted_packets) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_encrypted_bytes) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_ctx) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_ooo) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_dump_packets) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_dump_bytes) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_resync_bytes) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_skip_no_sync_data) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_drop_no_sync_data) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, tls_drop_bypass_req) },
-+#endif
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, csum_none) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, stopped) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, dropped) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, xmit_more) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, recover) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, cqes) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, wake) },
-+	{ MLX5E_DECLARE_QOS_TX_STAT(struct mlx5e_sq_stats, cqe_err) },
-+};
-+
- #define NUM_RQ_STATS			ARRAY_SIZE(rq_stats_desc)
- #define NUM_SQ_STATS			ARRAY_SIZE(sq_stats_desc)
- #define NUM_XDPSQ_STATS			ARRAY_SIZE(xdpsq_stats_desc)
-@@ -1750,6 +1805,49 @@ static const struct counter_desc ptp_cq_stats_desc[] = {
- #define NUM_PTP_SQ_STATS		ARRAY_SIZE(ptp_sq_stats_desc)
- #define NUM_PTP_CH_STATS		ARRAY_SIZE(ptp_ch_stats_desc)
- #define NUM_PTP_CQ_STATS		ARRAY_SIZE(ptp_cq_stats_desc)
-+#define NUM_QOS_SQ_STATS		ARRAY_SIZE(qos_sq_stats_desc)
-+
-+static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(qos)
-+{
-+	/* Pairs with smp_store_release in mlx5e_open_qos_sq. */
-+	return NUM_QOS_SQ_STATS * smp_load_acquire(&priv->htb.max_qos_sqs);
-+}
-+
-+static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(qos)
-+{
-+	/* Pairs with smp_store_release in mlx5e_open_qos_sq. */
-+	u16 max_qos_sqs = smp_load_acquire(&priv->htb.max_qos_sqs);
-+	int i, qid;
-+
-+	for (qid = 0; qid < max_qos_sqs; qid++)
-+		for (i = 0; i < NUM_QOS_SQ_STATS; i++)
-+			sprintf(data + (idx++) * ETH_GSTRING_LEN,
-+				qos_sq_stats_desc[i].format, qid);
-+
-+	return idx;
-+}
-+
-+static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(qos)
-+{
-+	struct mlx5e_sq_stats **stats;
-+	u16 max_qos_sqs;
-+	int i, qid;
-+
-+	/* Pairs with smp_store_release in mlx5e_open_qos_sq. */
-+	max_qos_sqs = smp_load_acquire(&priv->htb.max_qos_sqs);
-+	stats = READ_ONCE(priv->htb.qos_sq_stats);
-+
-+	for (qid = 0; qid < max_qos_sqs; qid++) {
-+		struct mlx5e_sq_stats *s = READ_ONCE(stats[qid]);
-+
-+		for (i = 0; i < NUM_QOS_SQ_STATS; i++)
-+			data[idx++] = MLX5E_READ_CTR64_CPU(s, qos_sq_stats_desc, i);
-+	}
-+
-+	return idx;
-+}
-+
-+static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(qos) { return; }
- 
- static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(ptp)
- {
-@@ -1932,6 +2030,7 @@ MLX5E_DEFINE_STATS_GRP(per_port_buff_congest, 0);
- MLX5E_DEFINE_STATS_GRP(eth_ext, 0);
- static MLX5E_DEFINE_STATS_GRP(tls, 0);
- static MLX5E_DEFINE_STATS_GRP(ptp, 0);
-+static MLX5E_DEFINE_STATS_GRP(qos, 0);
- 
- /* The stats groups order is opposite to the update_stats() order calls */
- mlx5e_stats_grp_t mlx5e_nic_stats_grps[] = {
-@@ -1955,6 +2054,7 @@ mlx5e_stats_grp_t mlx5e_nic_stats_grps[] = {
- 	&MLX5E_STATS_GRP(channels),
- 	&MLX5E_STATS_GRP(per_port_buff_congest),
- 	&MLX5E_STATS_GRP(ptp),
-+	&MLX5E_STATS_GRP(qos),
- };
- 
- unsigned int mlx5e_nic_stats_grps_num(struct mlx5e_priv *priv)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-index e41fc11f2ce7..93c41312fb03 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-@@ -55,6 +55,8 @@
- #define MLX5E_DECLARE_PTP_CH_STAT(type, fld) "ptp_ch_"#fld, offsetof(type, fld)
- #define MLX5E_DECLARE_PTP_CQ_STAT(type, fld) "ptp_cq%d_"#fld, offsetof(type, fld)
- 
-+#define MLX5E_DECLARE_QOS_TX_STAT(type, fld) "qos_tx%d_"#fld, offsetof(type, fld)
-+
- struct counter_desc {
- 	char		format[ETH_GSTRING_LEN];
- 	size_t		offset; /* Byte offset */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-index e47e2a0059d0..a2ab5c36f4c5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -106,28 +106,53 @@ static u16 mlx5e_select_ptpsq(struct net_device *dev, struct sk_buff *skb)
- 	return priv->port_ptp_tc2realtxq[up];
- }
- 
-+static int mlx5e_select_htb_queue(struct mlx5e_priv *priv, struct sk_buff *skb,
-+				  u16 htb_maj_id)
-+{
-+	u16 classid;
-+
-+	if ((TC_H_MAJ(skb->priority) >> 16) == htb_maj_id)
-+		classid = TC_H_MIN(skb->priority);
-+	else
-+		classid = READ_ONCE(priv->htb.defcls);
-+
-+	if (!classid)
-+		return 0;
-+
-+	return mlx5e_get_txq_by_classid(priv, classid);
-+}
-+
- u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
- 		       struct net_device *sb_dev)
- {
- 	struct mlx5e_priv *priv = netdev_priv(dev);
-+	int num_tc_x_num_ch;
- 	int txq_ix;
- 	int up = 0;
- 	int ch_ix;
- 
--	if (unlikely(priv->channels.port_ptp)) {
--		int num_tc_x_num_ch;
-+	/* Sync with mlx5e_update_num_tc_x_num_ch - avoid refetching. */
-+	num_tc_x_num_ch = READ_ONCE(priv->num_tc_x_num_ch);
-+	if (unlikely(dev->real_num_tx_queues > num_tc_x_num_ch)) {
-+		/* Order maj_id before defcls - pairs with mlx5e_htb_root_add. */
-+		u16 htb_maj_id = smp_load_acquire(&priv->htb.maj_id);
- 
--		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
--		    mlx5e_use_ptpsq(skb))
--			return mlx5e_select_ptpsq(dev, skb);
-+		if (unlikely(htb_maj_id)) {
-+			txq_ix = mlx5e_select_htb_queue(priv, skb, htb_maj_id);
-+			if (txq_ix > 0)
-+				return txq_ix;
-+		}
- 
--		/* Sync with mlx5e_update_num_tc_x_num_ch - avoid refetching. */
--		num_tc_x_num_ch = READ_ONCE(priv->num_tc_x_num_ch);
-+		if (unlikely(priv->channels.port_ptp))
-+			if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+			    mlx5e_use_ptpsq(skb))
-+				return mlx5e_select_ptpsq(dev, skb);
- 
- 		txq_ix = netdev_pick_tx(dev, skb, NULL);
--		/* Fix netdev_pick_tx() not to choose ptp_channel txqs.
-+		/* Fix netdev_pick_tx() not to choose ptp_channel and HTB txqs.
- 		 * If they are selected, switch to regular queues.
--		 * Driver to select these queues only at mlx5e_select_ptpsq().
-+		 * Driver to select these queues only at mlx5e_select_ptpsq()
-+		 * and mlx5e_select_htb_queue().
- 		 */
- 		if (unlikely(txq_ix >= num_tc_x_num_ch))
- 			txq_ix %= num_tc_x_num_ch;
-@@ -703,6 +728,10 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev)
- 	u16 pi;
- 
- 	sq = priv->txq2sq[skb_get_queue_mapping(skb)];
-+	if (unlikely(!sq)) {
-+		dev_kfree_skb_any(skb);
-+		return NETDEV_TX_OK;
-+	}
- 
- 	/* May send SKBs and WQEs. */
- 	if (unlikely(!mlx5e_accel_tx_begin(dev, sq, skb, &accel)))
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index 1ec3d62f026d..60a22c6fa9f4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -118,6 +118,7 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 	struct mlx5e_channel *c = container_of(napi, struct mlx5e_channel,
- 					       napi);
- 	struct mlx5e_ch_stats *ch_stats = c->stats;
-+	struct mlx5e_txqsq __rcu **qos_sqs;
- 	struct mlx5e_xdpsq *xsksq = &c->xsksq;
- 	struct mlx5e_rq *xskrq = &c->xskrq;
- 	struct mlx5e_rq *rq = &c->rq;
-@@ -125,11 +126,14 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 	bool busy_xsk = false;
- 	bool busy = false;
- 	int work_done = 0;
-+	u16 qos_sqs_size;
- 	bool xsk_open;
- 	int i;
- 
- 	rcu_read_lock();
- 
-+	qos_sqs = rcu_dereference(c->qos_sqs);
-+
- 	xsk_open = test_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
- 
- 	ch_stats->poll++;
-@@ -137,6 +141,18 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 	for (i = 0; i < c->num_tc; i++)
- 		busy |= mlx5e_poll_tx_cq(&c->sq[i].cq, budget);
- 
-+	if (unlikely(qos_sqs)) {
-+		smp_rmb(); /* Pairs with mlx5e_qos_alloc_queues. */
-+		qos_sqs_size = READ_ONCE(c->qos_sqs_size);
-+
-+		for (i = 0; i < qos_sqs_size; i++) {
-+			struct mlx5e_txqsq *sq = rcu_dereference(qos_sqs[i]);
-+
-+			if (sq)
-+				busy |= mlx5e_poll_tx_cq(&sq->cq, budget);
-+		}
-+	}
-+
- 	busy |= mlx5e_poll_xdpsq_cq(&c->xdpsq.cq);
- 
- 	if (c->xdp)
-@@ -190,6 +206,16 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 		mlx5e_handle_tx_dim(&c->sq[i]);
- 		mlx5e_cq_arm(&c->sq[i].cq);
- 	}
-+	if (unlikely(qos_sqs)) {
-+		for (i = 0; i < qos_sqs_size; i++) {
-+			struct mlx5e_txqsq *sq = rcu_dereference(qos_sqs[i]);
-+
-+			if (sq) {
-+				mlx5e_handle_tx_dim(sq);
-+				mlx5e_cq_arm(&sq->cq);
-+			}
-+		}
-+	}
- 
- 	mlx5e_handle_rx_dim(rq);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/qos.c
+-
+-	fp->bpf_func = (void *)image;
+-	fp->jited = 1;
+-
+-out:
+-	kfree(addrs);
+-	return;
+-}
+-
+-void bpf_jit_free(struct bpf_prog *fp)
+-{
+-	if (fp->jited)
+-		module_memfree(fp->bpf_func);
+-
+-	bpf_prog_unlock_free(fp);
+-}
+diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
 new file mode 100644
-index 000000000000..0777be24a307
+index 000000000000..909c27da71f1
 --- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/qos.c
-@@ -0,0 +1,85 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
++++ b/arch/powerpc/net/bpf_jit_comp32.c
+@@ -0,0 +1,1177 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * bpf_jit_comp64.c: eBPF JIT compiler
++ *
++ * Copyright 2016 Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
++ *		  IBM Corporation
++ *
++ * Based on the powerpc classic BPF JIT compiler by Matt Evans
++ */
++#include <linux/moduleloader.h>
++#include <asm/cacheflush.h>
++#include <asm/asm-compat.h>
++#include <linux/netdevice.h>
++#include <linux/filter.h>
++#include <linux/if_vlan.h>
++#include <asm/kprobes.h>
++#include <linux/bpf.h>
 +
-+#include "qos.h"
++#include "bpf_jit32.h"
 +
-+#define MLX5_QOS_DEFAULT_DWRR_UID 0
-+
-+bool mlx5_qos_is_supported(struct mlx5_core_dev *mdev)
++static void bpf_jit_fill_ill_insns(void *area, unsigned int size)
 +{
-+	if (!MLX5_CAP_GEN(mdev, qos))
-+		return false;
-+	if (!MLX5_CAP_QOS(mdev, nic_sq_scheduling))
-+		return false;
-+	if (!MLX5_CAP_QOS(mdev, nic_bw_share))
-+		return false;
-+	if (!MLX5_CAP_QOS(mdev, nic_rate_limit))
-+		return false;
++	memset32(area, BREAKPOINT_INSTRUCTION, size/4);
++}
++
++static inline void bpf_flush_icache(void *start, void *end)
++{
++	smp_wmb();
++	flush_icache_range((unsigned long)start, (unsigned long)end);
++}
++
++static inline bool bpf_is_seen_register(struct codegen_context *ctx, int i)
++{
++	return (ctx->seen & (3 << (30 - b2p[i])));
++}
++
++static inline void bpf_set_seen_register(struct codegen_context *ctx, int i)
++{
++	ctx->seen |= (3 << (30 - b2p[i]));
++}
++
++static inline bool bpf_has_stack_frame(struct codegen_context *ctx)
++{
++	/*
++	 * We only need a stack frame if:
++	 * - we call other functions (kernel helpers), or
++	 * - the bpf program uses its stack area
++	 * The latter condition is deduced from the usage of BPF_REG_FP
++	 */
 +	return true;
 +}
 +
-+int mlx5_qos_max_leaf_nodes(struct mlx5_core_dev *mdev)
++/*
++ * When not setting up our own stackframe, the redzone usage is:
++ *
++ *		[	prev sp		] <-------------
++ *		[	  ...       	] 		|
++ * sp (r1) --->	[    stack pointer	] --------------
++ *		[   nv gpr save area	] 6*8
++ *		[    tail_call_cnt	] 8
++ *		[    local_tmp_var	] 8
++ *		[   unused red zone	] 208 bytes protected
++ */
++static int bpf_jit_stack_local(struct codegen_context *ctx)
 +{
-+	return 1 << MLX5_CAP_QOS(mdev, log_max_qos_nic_queue_group);
++	if (bpf_has_stack_frame(ctx))
++		return STACK_FRAME_MIN_SIZE + ctx->stack_size;
++	else
++		return -(BPF_PPC_STACK_SAVE + 16);
 +}
 +
-+int mlx5_qos_create_leaf_node(struct mlx5_core_dev *mdev, u32 parent_id,
-+			      u32 bw_share, u32 max_avg_bw, u32 *id)
++static int bpf_jit_stack_tailcallcnt(struct codegen_context *ctx)
 +{
-+	u32 sched_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {0};
-+
-+	MLX5_SET(scheduling_context, sched_ctx, parent_element_id, parent_id);
-+	MLX5_SET(scheduling_context, sched_ctx, element_type,
-+		 SCHEDULING_CONTEXT_ELEMENT_TYPE_QUEUE_GROUP);
-+	MLX5_SET(scheduling_context, sched_ctx, bw_share, bw_share);
-+	MLX5_SET(scheduling_context, sched_ctx, max_average_bw, max_avg_bw);
-+
-+	return mlx5_create_scheduling_element_cmd(mdev, SCHEDULING_HIERARCHY_NIC,
-+						  sched_ctx, id);
++	return bpf_jit_stack_local(ctx) + 8;
 +}
 +
-+int mlx5_qos_create_inner_node(struct mlx5_core_dev *mdev, u32 parent_id,
-+			       u32 bw_share, u32 max_avg_bw, u32 *id)
++static int bpf_jit_stack_offsetof(struct codegen_context *ctx, int reg)
 +{
-+	u32 sched_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {0};
-+	void *attr;
++	if (reg >= BPF_PPC_NVR_MIN && reg < 32)
++		return (bpf_has_stack_frame(ctx) ?
++			(BPF_PPC_STACKFRAME + ctx->stack_size) : 0)
++				- (4 * (32 - reg));
 +
-+	MLX5_SET(scheduling_context, sched_ctx, parent_element_id, parent_id);
-+	MLX5_SET(scheduling_context, sched_ctx, element_type,
-+		 SCHEDULING_CONTEXT_ELEMENT_TYPE_TSAR);
-+	MLX5_SET(scheduling_context, sched_ctx, bw_share, bw_share);
-+	MLX5_SET(scheduling_context, sched_ctx, max_average_bw, max_avg_bw);
-+
-+	attr = MLX5_ADDR_OF(scheduling_context, sched_ctx, element_attributes);
-+	MLX5_SET(tsar_element, attr, tsar_type, TSAR_ELEMENT_TSAR_TYPE_DWRR);
-+
-+	return mlx5_create_scheduling_element_cmd(mdev, SCHEDULING_HIERARCHY_NIC,
-+						  sched_ctx, id);
++	pr_err("BPF JIT is asking about unknown registers");
++	BUG();
 +}
 +
-+int mlx5_qos_create_root_node(struct mlx5_core_dev *mdev, u32 *id)
++static void bpf_jit_build_prologue(u32 *image, struct codegen_context *ctx)
 +{
-+	return mlx5_qos_create_inner_node(mdev, MLX5_QOS_DEFAULT_DWRR_UID, 0, 0, id);
++	/*
++	 * Initialize tail_call_cnt if we do tail calls.
++	 * Otherwise, put in NOPs so that it can be skipped when we are
++	 * invoked through a tail call.
++	 */
++	if (ctx->seen & SEEN_TAILCALL) {
++		EMIT(PPC_RAW_LI(0, 0));
++		/* this goes in the redzone */
++		EMIT(PPC_RAW_STW(0, 1, -(BPF_PPC_STACK_SAVE + 8)));
++	} else {
++		EMIT(PPC_RAW_NOP());
++		EMIT(PPC_RAW_NOP());
++	}
++	EMIT(PPC_RAW_MR(b2p[BPF_REG_1], 3));
++	EMIT(PPC_RAW_LI(b2p[BPF_REG_1]-1, 0));
++
++#define BPF_TAILCALL_PROLOGUE_SIZE	16
++
++	if (bpf_is_seen_register(ctx, BPF_REG_5)) {
++		EMIT(PPC_RAW_LWZ(b2p[BPF_REG_5]-1, 1, 8));
++		EMIT(PPC_RAW_LWZ(b2p[BPF_REG_5], 1, 12));
++	}
++	/*
++	 * We need a stack frame, but we don't necessarily need to
++	 * save/restore LR unless we call other functions
++	 */
++	if (ctx->seen & SEEN_FUNC) {
++		EMIT(PPC_INST_MFLR | __PPC_RT(R0));
++		EMIT(PPC_RAW_STW(0, 1, PPC_LR_STKOFF));
++	}
++
++	EMIT(PPC_RAW_STWU(1, 1, -(BPF_PPC_STACKFRAME + ctx->stack_size)));
++
++	/*
++	 * Back up non-volatile regs -- BPF registers 6-10
++	 * If we haven't created our own stack frame, we save these
++	 * in the protected zone below the previous stack frame
++	 */
++	EMIT(PPC_RAW_STMW(18, 1, bpf_jit_stack_offsetof(ctx, 18)));
++
++	/* Setup frame pointer to point to the bpf stack area */
++	if (bpf_is_seen_register(ctx, BPF_REG_FP))
++		EMIT(PPC_RAW_ADDI(b2p[BPF_REG_FP], 1, STACK_FRAME_MIN_SIZE + ctx->stack_size));
 +}
 +
-+int mlx5_qos_update_node(struct mlx5_core_dev *mdev, u32 parent_id,
-+			 u32 bw_share, u32 max_avg_bw, u32 id)
++static void bpf_jit_emit_common_epilogue(u32 *image, struct codegen_context *ctx)
 +{
-+	u32 sched_ctx[MLX5_ST_SZ_DW(scheduling_context)] = {0};
-+	u32 bitmask = 0;
++	/* Restore NVRs */
++	EMIT(PPC_RAW_LMW(18, 1, bpf_jit_stack_offsetof(ctx, 18)));
 +
-+	MLX5_SET(scheduling_context, sched_ctx, parent_element_id, parent_id);
-+	MLX5_SET(scheduling_context, sched_ctx, bw_share, bw_share);
-+	MLX5_SET(scheduling_context, sched_ctx, max_average_bw, max_avg_bw);
-+
-+	bitmask |= MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_BW_SHARE;
-+	bitmask |= MODIFY_SCHEDULING_ELEMENT_IN_MODIFY_BITMASK_MAX_AVERAGE_BW;
-+
-+	return mlx5_modify_scheduling_element_cmd(mdev, SCHEDULING_HIERARCHY_NIC,
-+						  sched_ctx, id, bitmask);
++	/* Tear down our stack frame */
++	EMIT(PPC_RAW_ADDI(1, 1, BPF_PPC_STACKFRAME + ctx->stack_size));
++	if (ctx->seen & SEEN_FUNC) {
++		EMIT(PPC_RAW_LWZ(0, 1, PPC_LR_STKOFF));
++		EMIT(PPC_RAW_MTLR(0));
++	}
 +}
 +
-+int mlx5_qos_destroy_node(struct mlx5_core_dev *mdev, u32 id)
++static void bpf_jit_build_epilogue(u32 *image, struct codegen_context *ctx)
 +{
-+	return mlx5_destroy_scheduling_element_cmd(mdev, SCHEDULING_HIERARCHY_NIC, id);
++	EMIT(PPC_RAW_MR(3, b2p[BPF_REG_0]));
++
++	bpf_jit_emit_common_epilogue(image, ctx);
++
++	EMIT(PPC_RAW_BLR());
 +}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/qos.h b/drivers/net/ethernet/mellanox/mlx5/core/qos.h
-new file mode 100644
-index 000000000000..7af6e5e1df5e
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/qos.h
-@@ -0,0 +1,28 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
 +
-+#ifndef __MLX5_QOS_H
-+#define __MLX5_QOS_H
++static void bpf_jit_emit_func_call(u32 *image, struct codegen_context *ctx, u64 func)
++{
++	/* Load function address into r0 */
++	PPC_LI32(0, func);
++	EMIT(PPC_RAW_MTLR(0));
++	EMIT(PPC_RAW_BLRL());
++}
 +
-+#include "mlx5_core.h"
++static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32 out)
++{
++	/*
++	 * By now, the eBPF program has already setup parameters in r3, r4 and r5
++	 * r3/BPF_REG_1 - pointer to ctx -- passed as is to the next bpf program
++	 * r4/BPF_REG_2 - pointer to bpf_array
++	 * r5/BPF_REG_3 - index in bpf_array
++	 */
++	int b2p_bpf_array = b2p[BPF_REG_2];
++	int b2p_index = b2p[BPF_REG_3];
 +
-+#define MLX5_DEBUG_QOS_MASK BIT(4)
++	/*
++	 * if (index >= array->map.max_entries)
++	 *   goto out;
++	 */
++	EMIT(PPC_RAW_LWZ(0, b2p_bpf_array, offsetof(struct bpf_array, map.max_entries)));
++	EMIT(PPC_RAW_CMPLW(b2p_index, 0));
++	PPC_BCC(COND_GE, out);
 +
-+#define qos_warn(mdev, fmt, ...) \
-+	mlx5_core_warn(mdev, "QoS: " fmt, ##__VA_ARGS__)
-+#define qos_dbg(mdev, fmt, ...) \
-+	mlx5_core_dbg_mask(mdev, MLX5_DEBUG_QOS_MASK, "QoS: " fmt, ##__VA_ARGS__)
++	/*
++	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
++	 *   goto out;
++	 */
++	EMIT(PPC_RAW_LWZ(0, 1, bpf_jit_stack_tailcallcnt(ctx)));
++	EMIT(PPC_RAW_CMPLWI(0, MAX_TAIL_CALL_CNT));
++	PPC_BCC(COND_GT, out);
 +
-+bool mlx5_qos_is_supported(struct mlx5_core_dev *mdev);
-+int mlx5_qos_max_leaf_nodes(struct mlx5_core_dev *mdev);
++	/*
++	 * tail_call_cnt++;
++	 */
++	EMIT(PPC_RAW_ADDI(0, 0, 1));
++	EMIT(PPC_RAW_STW(0, 1, bpf_jit_stack_tailcallcnt(ctx)));
 +
-+int mlx5_qos_create_leaf_node(struct mlx5_core_dev *mdev, u32 parent_id,
-+			      u32 bw_share, u32 max_avg_bw, u32 *id);
-+int mlx5_qos_create_inner_node(struct mlx5_core_dev *mdev, u32 parent_id,
-+			       u32 bw_share, u32 max_avg_bw, u32 *id);
-+int mlx5_qos_create_root_node(struct mlx5_core_dev *mdev, u32 *id);
-+int mlx5_qos_update_node(struct mlx5_core_dev *mdev, u32 parent_id, u32 bw_share,
-+			 u32 max_avg_bw, u32 id);
-+int mlx5_qos_destroy_node(struct mlx5_core_dev *mdev, u32 id);
++	/* prog = array->ptrs[index]; */
++	EMIT(PPC_RAW_MULI(0, b2p_index, 8));
++	EMIT(PPC_RAW_ADD(0, 0, b2p_bpf_array));
++	EMIT(PPC_RAW_LWZ(0, 0, offsetof(struct bpf_array, ptrs)));
 +
++	/*
++	 * if (prog == NULL)
++	 *   goto out;
++	 */
++	EMIT(PPC_RAW_CMPLWI(0, 0));
++	PPC_BCC(COND_EQ, out);
++
++	/* goto *(prog->bpf_func + prologue_size); */
++	EMIT(PPC_RAW_LWZ(0, 0, offsetof(struct bpf_prog, bpf_func)));
++	EMIT(PPC_RAW_ADDI(0, 0, BPF_TAILCALL_PROLOGUE_SIZE));
++	EMIT(PPC_RAW_MTCTR(0));
++
++	EMIT(PPC_RAW_MR(3, b2p[BPF_REG_1]));
++
++	/* tear down stack, restore NVRs, ... */
++	bpf_jit_emit_common_epilogue(image, ctx);
++
++	EMIT(PPC_RAW_BCTR());
++	/* out: */
++}
++
++/* Assemble the body code between the prologue & epilogue */
++static int bpf_jit_build_body(struct bpf_prog *fp, u32 *image,
++			      struct codegen_context *ctx,
++			      u32 *addrs, bool extra_pass)
++{
++	const struct bpf_insn *insn = fp->insnsi;
++	int flen = fp->len;
++	int i, ret;
++
++	/* Start of epilogue code - will only be valid 2nd pass onwards */
++	u32 exit_addr = addrs[flen];
++
++	for (i = 0; i < flen; i++) {
++		u32 code = insn[i].code;
++		u32 dst_reg = b2p[insn[i].dst_reg];
++		u32 dst_reg_h = dst_reg - 1;
++		u32 src_reg = b2p[insn[i].src_reg];
++		u32 src_reg_h = src_reg - 1;
++		u32 tmp_reg = b2p[TMP_REG];
++		s16 off = insn[i].off;
++		s32 imm = insn[i].imm;
++		bool func_addr_fixed;
++		u64 func_addr;
++		u32 true_cond;
++		u32 tmp_idx;
++
++		/*
++		 * addrs[] maps a BPF bytecode address into a real offset from
++		 * the start of the body code.
++		 */
++		addrs[i] = ctx->idx * 4;
++
++		/*
++		 * As an optimization, we note down which non-volatile registers
++		 * are used so that we can only save/restore those in our
++		 * prologue and epilogue. We do this here regardless of whether
++		 * the actual BPF instruction uses src/dst registers or not
++		 * (for instance, BPF_CALL does not use them). The expectation
++		 * is that those instructions will have src_reg/dst_reg set to
++		 * 0. Even otherwise, we just lose some prologue/epilogue
++		 * optimization but everything else should work without
++		 * any issues.
++		 */
++		if (dst_reg >= BPF_PPC_NVR_MIN && dst_reg < 32)
++			bpf_set_seen_register(ctx, insn[i].dst_reg);
++
++		if (src_reg >= BPF_PPC_NVR_MIN && src_reg < 32)
++			bpf_set_seen_register(ctx, insn[i].src_reg);
++
++		switch (code) {
++		/*
++		 * Arithmetic operations: ADD/SUB/MUL/DIV/MOD/NEG
++		 */
++		case BPF_ALU | BPF_ADD | BPF_X: /* (u32) dst += (u32) src */
++			EMIT(PPC_RAW_ADD(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_ADD | BPF_X: /* dst += src */
++			EMIT(PPC_RAW_ADDC(dst_reg, dst_reg, src_reg));
++			EMIT(PPC_RAW_ADDE(dst_reg_h, dst_reg_h, src_reg_h));
++			break;
++		case BPF_ALU | BPF_SUB | BPF_X: /* (u32) dst -= (u32) src */
++			EMIT(PPC_RAW_SUB(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_SUB | BPF_X: /* dst -= src */
++			EMIT(PPC_RAW_SUBFC(dst_reg, src_reg, dst_reg));
++			EMIT(PPC_RAW_SUBFE(dst_reg_h, src_reg_h, dst_reg_h));
++			break;
++		case BPF_ALU | BPF_SUB | BPF_K: /* (u32) dst -= (u32) imm */
++			imm = -imm;
++			fallthrough;
++		case BPF_ALU | BPF_ADD | BPF_K: /* (u32) dst += (u32) imm */
++			if (IMM_HA(imm) & 0xffff)
++				EMIT(PPC_RAW_ADDIS(dst_reg, dst_reg, IMM_HA(imm)));
++			if (IMM_L(imm))
++				EMIT(PPC_RAW_ADDI(dst_reg, dst_reg, IMM_L(imm)));
++			break;
++		case BPF_ALU64 | BPF_SUB | BPF_K: /* dst -= imm */
++			imm = -imm;
++			fallthrough;
++		case BPF_ALU64 | BPF_ADD | BPF_K: /* dst += imm */
++			if (imm) {
++				PPC_LI32(0, imm);
++				EMIT(PPC_RAW_ADDC(dst_reg, dst_reg, 0));
++				if (imm >= 0)
++					EMIT(PPC_RAW_ADDZE(dst_reg_h, dst_reg_h));
++				else
++					EMIT(PPC_RAW_ADDME(dst_reg_h, dst_reg_h));
++			}
++			break;
++		case BPF_ALU | BPF_MUL | BPF_X: /* (u32) dst *= (u32) src */
++			EMIT(PPC_RAW_MULW(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_MUL | BPF_X: /* dst *= src */
++			EMIT(PPC_RAW_MULW(0, dst_reg, src_reg_h));
++			EMIT(PPC_RAW_MULW(dst_reg_h, dst_reg_h, src_reg));
++			EMIT(PPC_RAW_MULHWU(tmp_reg, dst_reg, src_reg));
++			EMIT(PPC_RAW_MULW(dst_reg, dst_reg, src_reg));
++			EMIT(PPC_RAW_ADD(dst_reg_h, dst_reg_h, 0));
++			EMIT(PPC_RAW_ADD(dst_reg_h, dst_reg_h, tmp_reg));
++			break;
++		case BPF_ALU | BPF_MUL | BPF_K: /* (u32) dst *= (u32) imm */
++			if (imm >= -32768 && imm < 32768) {
++				EMIT(PPC_RAW_MULI(dst_reg, dst_reg, imm));
++			} else {
++				PPC_LI32(0, imm);
++				EMIT(PPC_RAW_MULW(dst_reg, dst_reg, 0));
++			}
++			break;
++		case BPF_ALU64 | BPF_MUL | BPF_K: /* dst *= imm */
++			PPC_LI32(0, imm);
++			if (imm >= 0) {
++				EMIT(PPC_RAW_MULW(dst_reg_h, dst_reg_h, 0));
++				EMIT(PPC_RAW_MULW(dst_reg, dst_reg, 0));
++				EMIT(PPC_RAW_MULHWU(0, dst_reg, 0));
++				EMIT(PPC_RAW_ADD(dst_reg_h, dst_reg_h, 0));
++			} else {
++				EMIT(PPC_RAW_MULW(dst_reg_h, dst_reg_h, 0));
++				EMIT(PPC_RAW_NEG(tmp_reg, dst_reg));
++				EMIT(PPC_RAW_ADD(dst_reg_h, dst_reg_h, tmp_reg));
++				EMIT(PPC_RAW_MULHWU(tmp_reg, dst_reg, 0));
++				EMIT(PPC_RAW_MULW(dst_reg, dst_reg, 0));
++				EMIT(PPC_RAW_ADD(dst_reg_h, dst_reg_h, tmp_reg));
++			}
++			break;
++		case BPF_ALU | BPF_DIV | BPF_X: /* (u32) dst /= (u32) src */
++			EMIT(PPC_RAW_DIVWU(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU | BPF_MOD | BPF_X: /* (u32) dst %= (u32) src */
++			EMIT(PPC_RAW_DIVWU(0, dst_reg, src_reg));
++			EMIT(PPC_RAW_MULW(0, src_reg, 0));
++			EMIT(PPC_RAW_SUB(dst_reg, dst_reg, 0));
++			break;
++		case BPF_ALU64 | BPF_DIV | BPF_X: /* dst /= src */
++		case BPF_ALU64 | BPF_MOD | BPF_X: /* dst %= src */
++			return -ENOTSUPP;
++		case BPF_ALU | BPF_DIV | BPF_K: /* (u32) dst /= (u32) imm */
++			if (imm == 0)
++				return -EINVAL;
++			else if (imm == 1)
++				break;
++
++			PPC_LI32(0, imm);
++			EMIT(PPC_RAW_DIVWU(dst_reg, dst_reg, 0));
++			if (!fp->aux->verifier_zext)
++				EMIT(PPC_RAW_LI(dst_reg_h, 0));
++			break;
++		case BPF_ALU | BPF_MOD | BPF_K: /* (u32) dst %= (u32) imm */
++			if (imm == 0)
++				return -EINVAL;
++
++			PPC_LI32(tmp_reg, imm);
++			EMIT(PPC_RAW_DIVWU(0, dst_reg, tmp_reg));
++			EMIT(PPC_RAW_MULW(0, tmp_reg, 0));
++			EMIT(PPC_RAW_SUB(dst_reg, dst_reg, 0));
++			break;
++		case BPF_ALU64 | BPF_MOD | BPF_K: /* dst %= imm */
++		case BPF_ALU64 | BPF_DIV | BPF_K: /* dst /= imm */
++			return -ENOTSUPP;
++		case BPF_ALU | BPF_NEG: /* (u32) dst = -dst */
++			EMIT(PPC_RAW_NEG(dst_reg, dst_reg));
++			break;
++		case BPF_ALU64 | BPF_NEG: /* dst = -dst */
++			EMIT(PPC_RAW_SUBFIC(dst_reg, dst_reg, 0));
++			EMIT(PPC_RAW_SUBFZE(dst_reg_h, dst_reg_h));
++			break;
++
++		/*
++		 * Logical operations: AND/OR/XOR/[A]LSH/[A]RSH
++		 */
++		case BPF_ALU64 | BPF_AND | BPF_X: /* dst = dst & src */
++			EMIT(PPC_RAW_AND(dst_reg_h, dst_reg_h, src_reg_h));
++			fallthrough;
++		case BPF_ALU | BPF_AND | BPF_X: /* (u32) dst = dst & src */
++			EMIT(PPC_RAW_AND(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_AND | BPF_K: /* dst = dst & imm */
++			if (imm >= 0)
++				EMIT(PPC_RAW_LI(dst_reg_h, 0));
++			fallthrough;
++		case BPF_ALU | BPF_AND | BPF_K: /* (u32) dst = dst & imm */
++			if (!IMM_H(imm)) {
++				EMIT(PPC_RAW_ANDI(dst_reg, dst_reg, IMM_L(imm)));
++			} else if (!IMM_L(imm)) {
++				EMIT(PPC_RAW_ANDIS(dst_reg, dst_reg, IMM_H(imm)));
++			} else {
++				PPC_LI32(0, imm);
++				EMIT(PPC_RAW_AND(dst_reg, dst_reg, 0));
++			}
++			break;
++		case BPF_ALU64 | BPF_OR | BPF_X: /* dst = dst | src */
++			EMIT(PPC_RAW_OR(dst_reg_h, dst_reg_h, src_reg_h));
++			fallthrough;
++		case BPF_ALU | BPF_OR | BPF_X: /* dst = (u32) dst | (u32) src */
++			EMIT(PPC_RAW_OR(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_OR | BPF_K:/* dst = dst | imm */
++			/* Sign-extended */
++			if (imm < 0)
++				EMIT(PPC_RAW_LI(dst_reg_h, -1));
++			fallthrough;
++		case BPF_ALU | BPF_OR | BPF_K:/* dst = (u32) dst | (u32) imm */
++			if (IMM_L(imm))
++				EMIT(PPC_RAW_ORI(dst_reg, dst_reg, IMM_L(imm)));
++			if (IMM_H(imm))
++				EMIT(PPC_RAW_ORIS(dst_reg, dst_reg, IMM_H(imm)));
++			break;
++		case BPF_ALU64 | BPF_XOR | BPF_X: /* dst ^= src */
++			EMIT(PPC_RAW_XOR(dst_reg_h, dst_reg_h, src_reg_h));
++			EMIT(PPC_RAW_XOR(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU | BPF_XOR | BPF_X: /* (u32) dst ^= src */
++			EMIT(PPC_RAW_XOR(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_XOR | BPF_K: /* dst ^= imm */
++			if (imm < 0)
++				EMIT(PPC_RAW_NOR(dst_reg_h, dst_reg_h, dst_reg_h));
++			fallthrough;
++		case BPF_ALU | BPF_XOR | BPF_K: /* (u32) dst ^= (u32) imm */
++			if (IMM_L(imm))
++				EMIT(PPC_RAW_XORI(dst_reg, dst_reg, IMM_L(imm)));
++			if (IMM_H(imm))
++				EMIT(PPC_RAW_XORIS(dst_reg, dst_reg, IMM_H(imm)));
++			break;
++		case BPF_ALU | BPF_LSH | BPF_X: /* (u32) dst <<= (u32) src */
++			EMIT(PPC_RAW_SLW(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_LSH | BPF_X: /* dst <<= src; */
++			return -ENOTSUPP;
++		case BPF_ALU | BPF_LSH | BPF_K: /* (u32) dst <<== (u32) imm */
++			/* with imm 0, we still need to clear top 32 bits */
++			EMIT(PPC_RAW_SLWI(dst_reg, dst_reg, imm));
++			break;
++		case BPF_ALU64 | BPF_LSH | BPF_K: /* dst <<== imm */
++			if (imm != 0)
++				return -ENOTSUPP;
++			break;
++		case BPF_ALU | BPF_RSH | BPF_X: /* (u32) dst >>= (u32) src */
++			EMIT(PPC_RAW_SRW(dst_reg, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_RSH | BPF_X: /* dst >>= src */
++			return -ENOTSUPP;
++		case BPF_ALU | BPF_RSH | BPF_K: /* (u32) dst >>= (u32) imm */
++			EMIT(PPC_RAW_SRWI(dst_reg, dst_reg, imm));
++			break;
++		case BPF_ALU64 | BPF_RSH | BPF_K: /* dst >>= imm */
++			if (imm != 0)
++				return -ENOTSUPP;
++			break;
++		case BPF_ALU | BPF_ARSH | BPF_X: /* (s32) dst >>= src */
++			EMIT(PPC_RAW_SRAW(dst_reg_h, dst_reg, src_reg));
++			break;
++		case BPF_ALU64 | BPF_ARSH | BPF_X: /* (s64) dst >>= src */
++			return -ENOTSUPP;
++		case BPF_ALU | BPF_ARSH | BPF_K: /* (s32) dst >>= imm */
++			EMIT(PPC_RAW_SRAWI(dst_reg, dst_reg, imm));
++			break;
++		case BPF_ALU64 | BPF_ARSH | BPF_K: /* (s64) dst >>= imm */
++			if (imm != 0)
++				return -ENOTSUPP;
++			break;
++
++		/*
++		 * MOV
++		 */
++		case BPF_ALU64 | BPF_MOV | BPF_X: /* dst = src */
++			if (dst_reg_h != src_reg_h)
++				EMIT(PPC_RAW_MR(dst_reg_h, src_reg_h));
++			fallthrough;
++		case BPF_ALU | BPF_MOV | BPF_X: /* (u32) dst = src */
++			if (dst_reg != src_reg)
++				EMIT(PPC_RAW_MR(dst_reg, src_reg));
++			if (imm == 1) {
++				/* special mov32 for zext */
++				EMIT(PPC_RAW_LI(dst_reg_h, 0));
++				break;
++			}
++			break;
++		case BPF_ALU64 | BPF_MOV | BPF_K: /* dst = (s64) imm */
++			PPC_LI32(dst_reg, imm);
++			EMIT(PPC_RAW_LI(dst_reg_h, imm < 0 ? -1 : 0));
++			break;
++		case BPF_ALU | BPF_MOV | BPF_K: /* (u32) dst = imm */
++			PPC_LI32(dst_reg, imm);
++			if (!fp->aux->verifier_zext)
++				EMIT(PPC_RAW_LI(dst_reg_h, 0));
++			break;
++
++		/*
++		 * BPF_FROM_BE/LE
++		 */
++		case BPF_ALU | BPF_END | BPF_FROM_LE:
++			switch (imm) {
++			case 16:
++				/* Rotate 8 bits left & mask with 0x0000ff00 */
++				EMIT(PPC_RAW_RLWINM(0, dst_reg, 8, 16, 23));
++				/* Rotate 8 bits right & insert LSB to reg */
++				EMIT(PPC_RAW_RLWIMI(0, dst_reg, 24, 24, 31));
++				/* Move result back to dst_reg_h */
++				EMIT(PPC_RAW_MR(dst_reg, 0));
++				break;
++			case 32:
++				/*
++				 * Rotate word left by 8 bits:
++				 * 2 bytes are already in their final position
++				 * -- byte 2 and 4 (of bytes 1, 2, 3 and 4)
++				 */
++				EMIT(PPC_RAW_RLWINM(0, dst_reg, 8, 0, 31));
++				/* Rotate 24 bits and insert byte 1 */
++				EMIT(PPC_RAW_RLWIMI(0, dst_reg, 24, 0, 7));
++				/* Rotate 24 bits and insert byte 3 */
++				EMIT(PPC_RAW_RLWIMI(0, dst_reg, 24, 16, 23));
++				EMIT(PPC_RAW_MR(dst_reg, 0));
++				break;
++			case 64:
++				EMIT(PPC_RAW_RLWINM(tmp_reg, dst_reg, 8, 0, 31));
++				EMIT(PPC_RAW_RLWINM(0, dst_reg_h, 8, 0, 31));
++				/* Rotate 24 bits and insert byte 1 */
++				EMIT(PPC_RAW_RLWIMI(tmp_reg, dst_reg, 24, 0, 7));
++				EMIT(PPC_RAW_RLWIMI(0, dst_reg_h, 24, 0, 7));
++				/* Rotate 24 bits and insert byte 3 */
++				EMIT(PPC_RAW_RLWIMI(tmp_reg, dst_reg, 24, 16, 23));
++				EMIT(PPC_RAW_RLWIMI(0, dst_reg_h, 24, 16, 23));
++				EMIT(PPC_RAW_MR(dst_reg, 0));
++				EMIT(PPC_RAW_MR(dst_reg_h, tmp_reg));
++				break;
++			}
++			break;
++		case BPF_ALU | BPF_END | BPF_FROM_BE:
++			switch (imm) {
++			case 16:
++				/* zero-extend 16 bits into 32 bits */
++				EMIT(PPC_RAW_RLWINM(dst_reg, dst_reg, 0, 16, 31));
++				break;
++			case 32:
++			case 64:
++				/* nop */
++				break;
++			}
++			break;
++
++		/*
++		 * BPF_ST(X)
++		 */
++		case BPF_STX | BPF_MEM | BPF_B: /* *(u8 *)(dst + off) = src */
++			EMIT(PPC_RAW_STB(src_reg, dst_reg, off));
++			break;
++		case BPF_ST | BPF_MEM | BPF_B: /* *(u8 *)(dst + off) = imm */
++			PPC_LI32(0, imm);
++			EMIT(PPC_RAW_STB(0, dst_reg, off));
++			break;
++		case BPF_STX | BPF_MEM | BPF_H: /* (u16 *)(dst + off) = src */
++			EMIT(PPC_RAW_STH(src_reg, dst_reg, off));
++			break;
++		case BPF_ST | BPF_MEM | BPF_H: /* (u16 *)(dst + off) = imm */
++			PPC_LI32(0, imm);
++			EMIT(PPC_RAW_STH(0, dst_reg, off));
++			break;
++		case BPF_STX | BPF_MEM | BPF_W: /* *(u32 *)(dst + off) = src */
++			EMIT(PPC_RAW_STW(src_reg, dst_reg, off));
++			break;
++		case BPF_ST | BPF_MEM | BPF_W: /* *(u32 *)(dst + off) = imm */
++			PPC_LI32(0, imm);
++			EMIT(PPC_RAW_STW(0, dst_reg, off));
++			break;
++		case BPF_STX | BPF_MEM | BPF_DW: /* (u64 *)(dst + off) = src */
++			EMIT(PPC_RAW_STW(src_reg_h, dst_reg, off));
++			EMIT(PPC_RAW_STW(src_reg, dst_reg, off+4));
++			break;
++		case BPF_ST | BPF_MEM | BPF_DW: /* *(u64 *)(dst + off) = imm */
++			PPC_LI32(0, imm);
++			EMIT(PPC_RAW_STW(0, dst_reg, off+4));
++			EMIT(PPC_RAW_LI(0, imm < 0 ? -1 : 0));
++			EMIT(PPC_RAW_STW(0, dst_reg, off));
++			break;
++
++		/*
++		 * BPF_STX XADD (atomic_add)
++		 */
++		/* *(u32 *)(dst + off) += src */
++		case BPF_STX | BPF_XADD | BPF_W:
++			/* Get offset into TMP_REG */
++			EMIT(PPC_RAW_LI(tmp_reg, off));
++			tmp_idx = ctx->idx * 4;
++			/* load value from memory into r0 */
++			EMIT(PPC_RAW_LWARX(0, tmp_reg, dst_reg, 0));
++			/* add value from src_reg into this */
++			EMIT(PPC_RAW_ADD(0, 0, src_reg));
++			/* store result back */
++			EMIT(PPC_RAW_STWCX(0, tmp_reg, dst_reg));
++			/* we're done if this succeeded */
++			PPC_BCC_SHORT(COND_NE, tmp_idx);
++			break;
++		/* *(u64 *)(dst + off) += src */
++		case BPF_STX | BPF_XADD | BPF_DW:
++			return -ENOTSUPP;
++
++		/*
++		 * BPF_LDX
++		 */
++		/* dst = *(u8 *)(ul) (src + off) */
++		case BPF_LDX | BPF_MEM | BPF_B:
++			EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
++			if (!fp->aux->verifier_zext)
++				EMIT(PPC_RAW_LI(dst_reg_h, 0));
++			break;
++		/* dst = *(u16 *)(ul) (src + off) */
++		case BPF_LDX | BPF_MEM | BPF_H:
++			EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
++			if (!fp->aux->verifier_zext)
++				EMIT(PPC_RAW_LI(dst_reg_h, 0));
++			break;
++		/* dst = *(u32 *)(ul) (src + off) */
++		case BPF_LDX | BPF_MEM | BPF_W:
++			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
++			if (!fp->aux->verifier_zext)
++				EMIT(PPC_RAW_LI(dst_reg_h, 0));
++			break;
++		/* dst = *(u64 *)(ul) (src + off) */
++		case BPF_LDX | BPF_MEM | BPF_DW:
++			EMIT(PPC_RAW_LWZ(dst_reg_h, src_reg, off));
++			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off+4));
++			break;
++
++		/*
++		 * Doubleword load
++		 * 16 byte instruction that uses two 'struct bpf_insn'
++		 */
++		case BPF_LD | BPF_IMM | BPF_DW: /* dst = (u64) imm */
++			PPC_LI32(dst_reg_h, (u32)insn[i + 1].imm);
++			PPC_LI32(dst_reg, (u32)insn[i].imm);
++			/* Adjust for two bpf instructions */
++			addrs[++i] = ctx->idx * 4;
++			break;
++
++		/*
++		 * Return/Exit
++		 */
++		case BPF_JMP | BPF_EXIT:
++			/*
++			 * If this isn't the very last instruction, branch to
++			 * the epilogue. If we _are_ the last instruction,
++			 * we'll just fall through to the epilogue.
++			 */
++			if (i != flen - 1)
++				PPC_JMP(exit_addr);
++			/* else fall through to the epilogue */
++			break;
++
++		/*
++		 * Call kernel helper or bpf function
++		 */
++		case BPF_JMP | BPF_CALL:
++			ctx->seen |= SEEN_FUNC;
++
++			ret = bpf_jit_get_func_addr(fp, &insn[i], extra_pass,
++						    &func_addr, &func_addr_fixed);
++			if (ret < 0)
++				return ret;
++
++			bpf_jit_emit_func_call(image, ctx, func_addr);
++
++			EMIT(PPC_RAW_MR(b2p[BPF_REG_0]-1, 3));
++			EMIT(PPC_RAW_MR(b2p[BPF_REG_0], 4));
++			break;
++
++		/*
++		 * Jumps and branches
++		 */
++		case BPF_JMP | BPF_JA:
++			PPC_JMP(addrs[i + 1 + off]);
++			break;
++
++		case BPF_JMP | BPF_JGT | BPF_K:
++		case BPF_JMP | BPF_JGT | BPF_X:
++		case BPF_JMP | BPF_JSGT | BPF_K:
++		case BPF_JMP | BPF_JSGT | BPF_X:
++		case BPF_JMP32 | BPF_JGT | BPF_K:
++		case BPF_JMP32 | BPF_JGT | BPF_X:
++		case BPF_JMP32 | BPF_JSGT | BPF_K:
++		case BPF_JMP32 | BPF_JSGT | BPF_X:
++			true_cond = COND_GT;
++			goto cond_branch;
++		case BPF_JMP | BPF_JLT | BPF_K:
++		case BPF_JMP | BPF_JLT | BPF_X:
++		case BPF_JMP | BPF_JSLT | BPF_K:
++		case BPF_JMP | BPF_JSLT | BPF_X:
++		case BPF_JMP32 | BPF_JLT | BPF_K:
++		case BPF_JMP32 | BPF_JLT | BPF_X:
++		case BPF_JMP32 | BPF_JSLT | BPF_K:
++		case BPF_JMP32 | BPF_JSLT | BPF_X:
++			true_cond = COND_LT;
++			goto cond_branch;
++		case BPF_JMP | BPF_JGE | BPF_K:
++		case BPF_JMP | BPF_JGE | BPF_X:
++		case BPF_JMP | BPF_JSGE | BPF_K:
++		case BPF_JMP | BPF_JSGE | BPF_X:
++		case BPF_JMP32 | BPF_JGE | BPF_K:
++		case BPF_JMP32 | BPF_JGE | BPF_X:
++		case BPF_JMP32 | BPF_JSGE | BPF_K:
++		case BPF_JMP32 | BPF_JSGE | BPF_X:
++			true_cond = COND_GE;
++			goto cond_branch;
++		case BPF_JMP | BPF_JLE | BPF_K:
++		case BPF_JMP | BPF_JLE | BPF_X:
++		case BPF_JMP | BPF_JSLE | BPF_K:
++		case BPF_JMP | BPF_JSLE | BPF_X:
++		case BPF_JMP32 | BPF_JLE | BPF_K:
++		case BPF_JMP32 | BPF_JLE | BPF_X:
++		case BPF_JMP32 | BPF_JSLE | BPF_K:
++		case BPF_JMP32 | BPF_JSLE | BPF_X:
++			true_cond = COND_LE;
++			goto cond_branch;
++		case BPF_JMP | BPF_JEQ | BPF_K:
++		case BPF_JMP | BPF_JEQ | BPF_X:
++		case BPF_JMP32 | BPF_JEQ | BPF_K:
++		case BPF_JMP32 | BPF_JEQ | BPF_X:
++			true_cond = COND_EQ;
++			goto cond_branch;
++		case BPF_JMP | BPF_JNE | BPF_K:
++		case BPF_JMP | BPF_JNE | BPF_X:
++		case BPF_JMP32 | BPF_JNE | BPF_K:
++		case BPF_JMP32 | BPF_JNE | BPF_X:
++			true_cond = COND_NE;
++			goto cond_branch;
++		case BPF_JMP | BPF_JSET | BPF_K:
++		case BPF_JMP | BPF_JSET | BPF_X:
++		case BPF_JMP32 | BPF_JSET | BPF_K:
++		case BPF_JMP32 | BPF_JSET | BPF_X:
++			true_cond = COND_NE;
++			/* Fall through */
++
++cond_branch:
++			switch (code) {
++			case BPF_JMP | BPF_JGT | BPF_X:
++			case BPF_JMP | BPF_JLT | BPF_X:
++			case BPF_JMP | BPF_JGE | BPF_X:
++			case BPF_JMP | BPF_JLE | BPF_X:
++			case BPF_JMP | BPF_JEQ | BPF_X:
++			case BPF_JMP | BPF_JNE | BPF_X:
++				/* unsigned comparison */
++				EMIT(PPC_RAW_CMPLW(dst_reg_h, src_reg_h));
++				PPC_BCC_SHORT(COND_NE, (ctx->idx + 2) * 4);
++				EMIT(PPC_RAW_CMPLW(dst_reg, src_reg));
++				break;
++			case BPF_JMP32 | BPF_JGT | BPF_X:
++			case BPF_JMP32 | BPF_JLT | BPF_X:
++			case BPF_JMP32 | BPF_JGE | BPF_X:
++			case BPF_JMP32 | BPF_JLE | BPF_X:
++			case BPF_JMP32 | BPF_JEQ | BPF_X:
++			case BPF_JMP32 | BPF_JNE | BPF_X:
++				/* unsigned comparison */
++				EMIT(PPC_RAW_CMPLW(dst_reg, src_reg));
++				break;
++			case BPF_JMP | BPF_JSGT | BPF_X:
++			case BPF_JMP | BPF_JSLT | BPF_X:
++			case BPF_JMP | BPF_JSGE | BPF_X:
++			case BPF_JMP | BPF_JSLE | BPF_X:
++				/* signed comparison */
++				EMIT(PPC_RAW_CMPW(dst_reg_h, src_reg_h));
++				PPC_BCC_SHORT(COND_NE, (ctx->idx + 2) * 4);
++				EMIT(PPC_RAW_CMPLW(dst_reg, src_reg));
++				break;
++			case BPF_JMP32 | BPF_JSGT | BPF_X:
++			case BPF_JMP32 | BPF_JSLT | BPF_X:
++			case BPF_JMP32 | BPF_JSGE | BPF_X:
++			case BPF_JMP32 | BPF_JSLE | BPF_X:
++				/* signed comparison */
++				EMIT(PPC_RAW_CMPW(dst_reg, src_reg));
++				break;
++			case BPF_JMP | BPF_JSET | BPF_X:
++				EMIT(PPC_RAW_AND_DOT(0, dst_reg_h, src_reg_h));
++				PPC_BCC_SHORT(COND_NE, (ctx->idx + 2) * 4);
++				EMIT(PPC_RAW_AND_DOT(0, dst_reg, src_reg));
++				break;
++			case BPF_JMP32 | BPF_JSET | BPF_X: {
++				EMIT(PPC_RAW_AND_DOT(0, dst_reg, src_reg));
++				break;
++			case BPF_JMP | BPF_JNE | BPF_K:
++			case BPF_JMP | BPF_JEQ | BPF_K:
++			case BPF_JMP | BPF_JGT | BPF_K:
++			case BPF_JMP | BPF_JLT | BPF_K:
++			case BPF_JMP | BPF_JGE | BPF_K:
++			case BPF_JMP | BPF_JLE | BPF_K:
++				/*
++				 * Need sign-extended load, so only positive
++				 * values can be used as imm in cmpldi
++				 */
++				if (imm >= 0 && imm < 32768) {
++					EMIT(PPC_RAW_CMPLWI(dst_reg_h, 0));
++					PPC_BCC_SHORT(COND_NE, (ctx->idx + 2) * 4);
++					EMIT(PPC_RAW_CMPLWI(dst_reg, imm));
++				} else {
++					/* sign-extending load ... but unsigned comparison */
++					EMIT(PPC_RAW_LI(0, imm < 0 ? -1 : 0));
++					EMIT(PPC_RAW_CMPLW(dst_reg_h, 0));
++					PPC_LI32(0, imm);
++					PPC_BCC_SHORT(COND_NE, (ctx->idx + 2) * 4);
++					EMIT(PPC_RAW_CMPLW(dst_reg, 0));
++				}
++				break;
++			case BPF_JMP32 | BPF_JNE | BPF_K:
++			case BPF_JMP32 | BPF_JEQ | BPF_K:
++			case BPF_JMP32 | BPF_JGT | BPF_K:
++			case BPF_JMP32 | BPF_JLT | BPF_K:
++			case BPF_JMP32 | BPF_JGE | BPF_K:
++			case BPF_JMP32 | BPF_JLE | BPF_K:
++				/*
++				 * Need sign-extended load, so only positive
++				 * values can be used as imm in cmpldi
++				 */
++				if (imm >= 0 && imm < 65536) {
++					EMIT(PPC_RAW_CMPLWI(dst_reg, imm));
++				} else {
++					/* sign-extending load */
++					PPC_LI32(0, imm);
++					/* ... but unsigned comparison */
++					EMIT(PPC_RAW_CMPLW(dst_reg, 0));
++				}
++				break;
++			}
++			case BPF_JMP | BPF_JSGT | BPF_K:
++			case BPF_JMP | BPF_JSLT | BPF_K:
++			case BPF_JMP | BPF_JSGE | BPF_K:
++			case BPF_JMP | BPF_JSLE | BPF_K:
++				/*
++				 * signed comparison, so any 16-bit value
++				 * can be used in cmpdi
++				 */
++				if (imm >= 0 && imm < 65536) {
++					EMIT(PPC_RAW_CMPWI(dst_reg_h, imm < 0 ? -1 : 0));
++					PPC_BCC_SHORT(COND_NE, (ctx->idx + 2) * 4);
++					EMIT(PPC_RAW_CMPLWI(dst_reg, imm));
++				} else {
++					/* sign-extending load */
++					EMIT(PPC_RAW_CMPWI(dst_reg_h, imm < 0 ? -1 : 0));
++					PPC_LI32(0, imm);
++					PPC_BCC_SHORT(COND_NE, (ctx->idx + 2) * 4);
++					EMIT(PPC_RAW_CMPLW(dst_reg, 0));
++				}
++				break;
++			case BPF_JMP32 | BPF_JSGT | BPF_K:
++			case BPF_JMP32 | BPF_JSLT | BPF_K:
++			case BPF_JMP32 | BPF_JSGE | BPF_K:
++			case BPF_JMP32 | BPF_JSLE | BPF_K:
++				/*
++				 * signed comparison, so any 16-bit value
++				 * can be used in cmpdi
++				 */
++				if (imm >= -32768 && imm < 32768) {
++					EMIT(PPC_RAW_CMPWI(dst_reg, imm));
++				} else {
++					/* sign-extending load */
++					PPC_LI32(0, imm);
++					EMIT(PPC_RAW_CMPW(dst_reg, 0));
++				}
++				break;
++			case BPF_JMP | BPF_JSET | BPF_K:
++				/* andi does not sign-extend the immediate */
++				if (imm >= 0 && imm < 32768) {
++					/* PPC_ANDI is _only/always_ dot-form */
++					EMIT(PPC_RAW_ANDI(0, dst_reg, imm));
++				} else {
++					PPC_LI32(0, imm);
++					if (imm < 0) {
++						EMIT(PPC_RAW_CMPWI(dst_reg_h, 0));
++						PPC_BCC_SHORT(COND_NE, (ctx->idx + 2) * 4);
++					}
++					EMIT(PPC_RAW_AND_DOT(0, dst_reg, 0));
++				}
++				break;
++			case BPF_JMP32 | BPF_JSET | BPF_K:
++				/* andi does not sign-extend the immediate */
++				if (imm >= -32768 && imm < 32768)
++					/* PPC_ANDI is _only/always_ dot-form */
++					EMIT(PPC_RAW_ANDI(0, dst_reg, imm));
++				else {
++					PPC_LI32(0, imm);
++					EMIT(PPC_RAW_AND_DOT(0, dst_reg, 0));
++				}
++				break;
++			}
++			PPC_BCC(true_cond, addrs[i + 1 + off]);
++			break;
++
++		/*
++		 * Tail call
++		 */
++		case BPF_JMP | BPF_TAIL_CALL:
++			ctx->seen |= SEEN_TAILCALL;
++			bpf_jit_emit_tail_call(image, ctx, addrs[i + 1]);
++			break;
++
++		default:
++			/*
++			 * The filter contains something cruel & unusual.
++			 * We don't handle it, but also there shouldn't be
++			 * anything missing from our list.
++			 */
++			pr_err_ratelimited("eBPF filter opcode %04x (@%d) unsupported\n", code, i);
++			return -ENOTSUPP;
++		}
++	}
++
++	/* Set end-of-body-code address for exit. */
++	addrs[i] = ctx->idx * 4;
++
++	return 0;
++}
++
++/* Fix the branch target addresses for subprog calls */
++static int bpf_jit_fixup_subprog_calls(struct bpf_prog *fp, u32 *image,
++				       struct codegen_context *ctx, u32 *addrs)
++{
++	const struct bpf_insn *insn = fp->insnsi;
++	bool func_addr_fixed;
++	u64 func_addr;
++	u32 tmp_idx;
++	int i, ret;
++
++	for (i = 0; i < fp->len; i++) {
++		/*
++		 * During the extra pass, only the branch target addresses for
++		 * the subprog calls need to be fixed. All other instructions
++		 * can left untouched.
++		 *
++		 * The JITed image length does not change because we already
++		 * ensure that the JITed instruction sequence for these calls
++		 * are of fixed length by padding them with NOPs.
++		 */
++		if (insn[i].code == (BPF_JMP | BPF_CALL) &&
++		    insn[i].src_reg == BPF_PSEUDO_CALL) {
++			ret = bpf_jit_get_func_addr(fp, &insn[i], true,
++						    &func_addr,
++						    &func_addr_fixed);
++			if (ret < 0)
++				return ret;
++
++			/*
++			 * Save ctx->idx as this would currently point to the
++			 * end of the JITed image and set it to the offset of
++			 * the instruction sequence corresponding to the
++			 * subprog call temporarily.
++			 */
++			tmp_idx = ctx->idx;
++			ctx->idx = addrs[i] / 4;
++			bpf_jit_emit_func_call(image, ctx, func_addr);
++
++			/*
++			 * Restore ctx->idx here. This is safe as the length
++			 * of the JITed sequence remains unchanged.
++			 */
++			ctx->idx = tmp_idx;
++		}
++	}
++
++	return 0;
++}
++
++struct powerpc64_jit_data {
++	struct bpf_binary_header *header;
++	u32 *addrs;
++	u8 *image;
++	u32 proglen;
++	struct codegen_context ctx;
++};
++
++bool bpf_jit_needs_zext(void)
++{
++	return true;
++}
++
++struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
++{
++	u32 proglen;
++	u32 alloclen;
++	u8 *image = NULL;
++	u32 *code_base;
++	u32 *addrs;
++	struct powerpc64_jit_data *jit_data;
++	struct codegen_context cgctx;
++	int pass;
++	int flen;
++	struct bpf_binary_header *bpf_hdr;
++	struct bpf_prog *org_fp = fp;
++	struct bpf_prog *tmp_fp;
++	bool bpf_blinded = false;
++	bool extra_pass = false;
++
++	if (!fp->jit_requested)
++		return org_fp;
++
++	tmp_fp = bpf_jit_blind_constants(org_fp);
++	if (IS_ERR(tmp_fp))
++		return org_fp;
++
++	if (tmp_fp != org_fp) {
++		bpf_blinded = true;
++		fp = tmp_fp;
++	}
++
++	jit_data = fp->aux->jit_data;
++	if (!jit_data) {
++		jit_data = kzalloc(sizeof(*jit_data), GFP_KERNEL);
++		if (!jit_data) {
++			fp = org_fp;
++			goto out;
++		}
++		fp->aux->jit_data = jit_data;
++	}
++
++	flen = fp->len;
++	addrs = jit_data->addrs;
++	if (addrs) {
++		cgctx = jit_data->ctx;
++		image = jit_data->image;
++		bpf_hdr = jit_data->header;
++		proglen = jit_data->proglen;
++		alloclen = proglen + FUNCTION_DESCR_SIZE;
++		extra_pass = true;
++		goto skip_init_ctx;
++	}
++
++	addrs = kcalloc(flen + 1, sizeof(*addrs), GFP_KERNEL);
++	if (addrs == NULL) {
++		fp = org_fp;
++		goto out_addrs;
++	}
++
++	memset(&cgctx, 0, sizeof(struct codegen_context));
++
++	/* Make sure that the stack is quadword aligned. */
++	cgctx.stack_size = round_up(fp->aux->stack_depth, 16);
++
++	/* Scouting faux-generate pass 0 */
++	if (bpf_jit_build_body(fp, 0, &cgctx, addrs, false)) {
++		/* We hit something illegal or unsupported. */
++		fp = org_fp;
++		goto out_addrs;
++	}
++
++	/*
++	 * If we have seen a tail call, we need a second pass.
++	 * This is because bpf_jit_emit_common_epilogue() is called
++	 * from bpf_jit_emit_tail_call() with a not yet stable ctx->seen.
++	 */
++	if (cgctx.seen & SEEN_TAILCALL) {
++		cgctx.idx = 0;
++		if (bpf_jit_build_body(fp, 0, &cgctx, addrs, false)) {
++			fp = org_fp;
++			goto out_addrs;
++		}
++	}
++
++	/*
++	 * Pretend to build prologue, given the features we've seen.  This will
++	 * update ctgtx.idx as it pretends to output instructions, then we can
++	 * calculate total size from idx.
++	 */
++	bpf_jit_build_prologue(0, &cgctx);
++	bpf_jit_build_epilogue(0, &cgctx);
++
++	proglen = cgctx.idx * 4;
++	alloclen = proglen + FUNCTION_DESCR_SIZE;
++
++	bpf_hdr = bpf_jit_binary_alloc(alloclen, &image, 4,
++			bpf_jit_fill_ill_insns);
++	if (!bpf_hdr) {
++		fp = org_fp;
++		goto out_addrs;
++	}
++
++skip_init_ctx:
++	code_base = (u32 *)(image + FUNCTION_DESCR_SIZE);
++
++	if (extra_pass) {
++		/*
++		 * Do not touch the prologue and epilogue as they will remain
++		 * unchanged. Only fix the branch target address for subprog
++		 * calls in the body.
++		 *
++		 * This does not change the offsets and lengths of the subprog
++		 * call instruction sequences and hence, the size of the JITed
++		 * image as well.
++		 */
++		bpf_jit_fixup_subprog_calls(fp, code_base, &cgctx, addrs);
++
++		/* There is no need to perform the usual passes. */
++		goto skip_codegen_passes;
++	}
++
++	/* Code generation passes 1-2 */
++	for (pass = 1; pass < 3; pass++) {
++		/* Now build the prologue, body code & epilogue for real. */
++		cgctx.idx = 0;
++		bpf_jit_build_prologue(code_base, &cgctx);
++		bpf_jit_build_body(fp, code_base, &cgctx, addrs, extra_pass);
++		bpf_jit_build_epilogue(code_base, &cgctx);
++
++		if (bpf_jit_enable > 1)
++			pr_info("Pass %d: shrink = %d, seen = 0x%x\n", pass,
++				proglen - (cgctx.idx * 4), cgctx.seen);
++	}
++
++skip_codegen_passes:
++	if (bpf_jit_enable > 1)
++		/*
++		 * Note that we output the base address of the code_base
++		 * rather than image, since opcodes are in code_base.
++		 */
++		bpf_jit_dump(flen, proglen, pass, code_base);
++
++#ifdef PPC64_ELF_ABI_v1
++	/* Function descriptor nastiness: Address + TOC */
++	((u64 *)image)[0] = (u64)code_base;
++	((u64 *)image)[1] = local_paca->kernel_toc;
 +#endif
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 0d6e287d614f..58928e3b4e20 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -842,10 +842,13 @@ struct mlx5_ifc_qos_cap_bits {
- 	u8         reserved_at_4[0x1];
- 	u8         packet_pacing_burst_bound[0x1];
- 	u8         packet_pacing_typical_size[0x1];
--	u8         reserved_at_7[0x4];
-+	u8         reserved_at_7[0x1];
-+	u8         nic_sq_scheduling[0x1];
-+	u8         nic_bw_share[0x1];
-+	u8         nic_rate_limit[0x1];
- 	u8         packet_pacing_uid[0x1];
--	u8         reserved_at_c[0x14];
--
-+	u8         reserved_at_c[0xf];
-+	u8         log_max_qos_nic_queue_group[0x5];
- 	u8         reserved_at_20[0x20];
- 
- 	u8         packet_pacing_max_rate[0x20];
-@@ -3344,7 +3347,7 @@ struct mlx5_ifc_sqc_bits {
- 	u8         reserved_at_e0[0x10];
- 	u8         packet_pacing_rate_limit_index[0x10];
- 	u8         tis_lst_sz[0x10];
--	u8         reserved_at_110[0x10];
-+	u8         qos_queue_group_id[0x10];
- 
- 	u8         reserved_at_120[0x40];
- 
-@@ -3359,6 +3362,7 @@ enum {
- 	SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT = 0x1,
- 	SCHEDULING_CONTEXT_ELEMENT_TYPE_VPORT_TC = 0x2,
- 	SCHEDULING_CONTEXT_ELEMENT_TYPE_PARA_VPORT_TC = 0x3,
-+	SCHEDULING_CONTEXT_ELEMENT_TYPE_QUEUE_GROUP = 0x4,
- };
- 
- enum {
-@@ -4802,6 +4806,7 @@ struct mlx5_ifc_query_scheduling_element_out_bits {
- 
- enum {
- 	SCHEDULING_HIERARCHY_E_SWITCH = 0x2,
-+	SCHEDULING_HIERARCHY_NIC = 0x3,
- };
- 
- struct mlx5_ifc_query_scheduling_element_in_bits {
++
++	fp->bpf_func = (void *)image;
++	fp->jited = 1;
++	fp->jited_len = alloclen;
++
++	bpf_flush_icache(bpf_hdr, (u8 *)bpf_hdr + (bpf_hdr->pages * PAGE_SIZE));
++	if (!fp->is_func || extra_pass) {
++		bpf_prog_fill_jited_linfo(fp, addrs);
++out_addrs:
++		kfree(addrs);
++		kfree(jit_data);
++		fp->aux->jit_data = NULL;
++	} else {
++		jit_data->addrs = addrs;
++		jit_data->ctx = cgctx;
++		jit_data->proglen = proglen;
++		jit_data->image = image;
++		jit_data->header = bpf_hdr;
++	}
++
++out:
++	if (bpf_blinded)
++		bpf_jit_prog_release_other(fp, fp == org_fp ? tmp_fp : org_fp);
++
++	return fp;
++}
++
++/* Overriding bpf_jit_free() as we don't set images read-only. */
++void bpf_jit_free(struct bpf_prog *fp)
++{
++	unsigned long addr = (unsigned long)fp->bpf_func & PAGE_MASK;
++	struct bpf_binary_header *bpf_hdr = (void *)addr;
++
++	if (fp->jited)
++		bpf_jit_binary_free(bpf_hdr);
++
++	bpf_prog_unlock_free(fp);
++}
 -- 
-2.20.1
+2.25.0
 
