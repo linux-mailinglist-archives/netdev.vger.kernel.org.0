@@ -2,107 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A00112D6C73
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 01:29:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 611C32D6C92
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 01:56:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393494AbgLKAUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 19:20:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55212 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394095AbgLKAT5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 19:19:57 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9DDC0613CF
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 16:19:06 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id s11so8859771ljp.4
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 16:19:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=yZTJBhlr2RCzGQyEaOBXmrIb1weFwQLAqATlxl6cgWg=;
-        b=SIVc2UvUdcGolvbUMTnODs8gXJw20s2jsA+JV6KRVtzMF4PTWh5jcp22jW46yo60Uu
-         /hJg5dA0XKqU27w/9/QaMRJ06c/UpHTUYB4EmQdfWIEOkw9MAs6ljXPXQsmWFbxIJWWW
-         OGwD6TJI1HinHCX3R0NrPWBzdZstKeGnjzz6s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=yZTJBhlr2RCzGQyEaOBXmrIb1weFwQLAqATlxl6cgWg=;
-        b=tgkhSVMy0z1IumntXTH8D5zCuILffW5uu3usUN0E/KnGbljBcIJPJigASdr5cV7WOv
-         zLWOLY6YsPLmE3HDLNeUCXg6lBgzzejmpvFFItkmQqfScUiNi0u9S0HmBY7b+Tj1ORvw
-         4hr5LAR7HnhzDvrDA+P/IsWc4IoAa3TPKVPovofc3vpwCyYp4Xg3POSQlMOty+T8UjhO
-         yjYDwwd+1rolpRAg7CeHRWe8+eh9XQrPtdZspYEV63WE602LeZURdA0OO0+jXlA3Q+y8
-         dP4mpj9EDkJ4rGXZzFg9pOWVl5fwoW0JpEwJ5kcpvguM/Vlna83blwq4762F+lTACnK/
-         KzYA==
-X-Gm-Message-State: AOAM531zZgzVPlUzFmD9gqP7BvqfdQWABwdsKrJNESRLm65OBf+f0auX
-        iXIshbF3V7vnY5SeAo4JT36KRd5HbRs9qymDZHvv7g0x5vF94g==
-X-Google-Smtp-Source: ABdhPJxtNzZXaaxyRSIz2N12wxgp3iQNoThJgrneB1JWhHcAhn1tu6/ijsA0SHenqGKCNN44YK3DT4SivvbXuPQ16C0=
-X-Received: by 2002:a2e:910f:: with SMTP id m15mr3857562ljg.467.1607645944466;
- Thu, 10 Dec 2020 16:19:04 -0800 (PST)
+        id S2403811AbgLKA2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Dec 2020 19:28:51 -0500
+Received: from mga03.intel.com ([134.134.136.65]:29947 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2393591AbgLKA2R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Dec 2020 19:28:17 -0500
+IronPort-SDR: ZWlqEcNOg0wJgZb1m15NBDjVqIZugm+igkximO+pCsJqKcR2fpdArDqW4potDWX054Onh/5P8l
+ H12EIyo4PzIA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9831"; a="174470813"
+X-IronPort-AV: E=Sophos;i="5.78,409,1599548400"; 
+   d="scan'208";a="174470813"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 16:27:35 -0800
+IronPort-SDR: tvVHqrN1TnFQbGq+Bq70v0VXsh9jqG5jjJ3AafOQdjDSgRCsLQWmkqsQi1qC/UyvLkWpTK35kl
+ YzdCSenY8LHQ==
+X-IronPort-AV: E=Sophos;i="5.78,409,1599548400"; 
+   d="scan'208";a="408854326"
+Received: from fchin-mobl.amr.corp.intel.com (HELO ellie) ([10.212.125.148])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2020 16:27:32 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "Geva, Erez" <erez.geva.ext@siemens.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Colin Ian King <colin.king@canonical.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Jon Rosen <jrosen@cisco.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Andrei Vagin <avagin@gmail.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Or Cohen <orcohen@paloaltonetworks.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Xie He <xie.he.0141@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vladis Dronov <vdronov@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Vedang Patel <vedang.patel@intel.com>,
+        "Sudler, Simon" <simon.sudler@siemens.com>,
+        "Meisinger, Andreas" <andreas.meisinger@siemens.com>,
+        "henning.schild@siemens.com" <henning.schild@siemens.com>,
+        "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>,
+        "Zirkler, Andreas" <andreas.zirkler@siemens.com>
+Subject: Re: [PATCH 1/3] Add TX sending hardware timestamp.
+In-Reply-To: <CAF=yD-Lf=JpkXvGs=AGtyhCEFcG_8_WgnNbg1cbGownohsHw8g@mail.gmail.com>
+References: <20201209143707.13503-1-erez.geva.ext@siemens.com>
+ <20201209143707.13503-2-erez.geva.ext@siemens.com>
+ <CA+FuTScWkYn0Ur+aSuz1cREbQJO0fB6powOm8PFxze4v8JwBaw@mail.gmail.com>
+ <VI1PR10MB244654C4B42E47DB5EBE0B05ABCC0@VI1PR10MB2446.EURPRD10.PROD.OUTLOOK.COM>
+ <CA+FuTSd7oB0qO707W6htvs=FOJn10cgSQ4_iGFz4Sk9URXtZiw@mail.gmail.com>
+ <VI1PR10MB2446ACEACAE1F3671682407FABCC0@VI1PR10MB2446.EURPRD10.PROD.OUTLOOK.COM>
+ <CAF=yD-LkknU3GwJgG_OiMPFONZtO3ECHEX0QfTaUTTX_N0i-KA@mail.gmail.com>
+ <VI1PR10MB24460D805E8091EB09F81199ABCB0@VI1PR10MB2446.EURPRD10.PROD.OUTLOOK.COM>
+ <CAF=yD-Lf=JpkXvGs=AGtyhCEFcG_8_WgnNbg1cbGownohsHw8g@mail.gmail.com>
+Date:   Thu, 10 Dec 2020 16:27:33 -0800
+Message-ID: <87r1nxxk3u.fsf@intel.com>
 MIME-Version: 1.0
-From:   Ivan Babrou <ivan@cloudflare.com>
-Date:   Thu, 10 Dec 2020 16:18:53 -0800
-Message-ID: <CABWYdi0+PRk8h-Az=b3GqNDO=m6RZgqDL27tgwo3yMK_05OLAw@mail.gmail.com>
-Subject: [PATCH net-next] sfc: backport XDP EV queue sharing from the
- out-of-tree driver
-To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Cc:     kernel-team <kernel-team@cloudflare.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Queue sharing behaviour already exists in the out-of-tree sfc driver,
-available under xdp_alloc_tx_resources module parameter.
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> writes:
 
-This avoids the following issue on machines with many cpus:
+>> > If I understand correctly, you are trying to achieve a single delivery time.
+>> > The need for two separate timestamps passed along is only because the
+>> > kernel is unable to do the time base conversion.
+>>
+>> Yes, a correct point.
+>>
+>> >
+>> > Else, ETF could program the qdisc watchdog in system time and later,
+>> > on dequeue, convert skb->tstamp to the h/w time base before
+>> > passing it to the device.
+>>
+>> Or the skb->tstamp is HW time-stamp and the ETF convert it to system clock based.
+>>
+>> >
+>> > It's still not entirely clear to me why the packet has to be held by
+>> > ETF initially first, if it is held until delivery time by hardware
+>> > later. But more on that below.
+>>
+>> Let plot a simple scenario.
+>> App A send a packet with time-stamp 100.
+>> After arrive a second packet from App B with time-stamp 90.
+>> Without ETF, the second packet will have to wait till the interface hardware send the first packet on 100.
+>> Making the second packet late by 10 + first packet send time.
+>> Obviously other "normal" packets are send to the non-ETF queue, though they do not block ETF packets
+>> The ETF delta is a barrier that the application have to send the packet before to ensure the packet do not tossed.
+>
+> Got it. The assumption here is that devices are FIFO. That is not
+> necessarily the case, but I do not know whether it is in practice,
+> e.g., on the i210.
 
-Insufficient resources for 12 XDP event queues (24 other channels, max 32)
+On the i210 and i225, that's indeed the case, i.e. only the launch time
+of the packet at the front of the queue is considered.
 
-Which in turn triggers EINVAL on XDP processing:
+[...]
 
-sfc 0000:86:00.0 ext0: XDP TX failed (-22)
+>> >>>>> It only requires that pacing qdiscs, both sch_etf and sch_fq,
+>> >>>>> optionally skip queuing in their .enqueue callback and instead allow
+>> >>>>> the skb to pass to the device driver as is, with skb->tstamp set. Only
+>> >>>>> to devices that advertise support for h/w pacing offload.
+>> >>>>>
+>> >>>> I did not use "Fair Queue traffic policing".
+>> >>>> As for ETF, it is all about ordering packets from different applications.
+>> >>>> How can we achive it with skiping queuing?
+>> >>>> Could you elaborate on this point?
+>> >>>
+>> >>> The qdisc can only defer pacing to hardware if hardware can ensure the
+>> >>> same invariants on ordering, of course.
+>> >>
+>> >> Yes, this is why we suggest ETF order packets using the hardware time-stamp.
+>> >> And pass the packet based on system time.
+>> >> So ETF query the system clock only and not the PHC.
+>> >
+>> > On which note: with this patch set all applications have to agree to
+>> > use h/w time base in etf_enqueue_timesortedlist. In practice that
+>> > makes this h/w mode a qdisc used by a single process?
+>>
+>> A single process theoretically does not need ETF, just set the skb-> tstamp and use a pass through queue.
+>> However the only way now to set TC_SETUP_QDISC_ETF in the driver is using ETF.
+>
+> Yes, and I'd like to eventually get rid of this constraint.
+>
 
-Signed-off-by: Ivan Babrou <ivan@cloudflare.com>
----
- drivers/net/ethernet/sfc/efx_channels.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+I'm interested in these kind of ideas :-)
 
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c
-b/drivers/net/ethernet/sfc/efx_channels.c
-index a4a626e9cd9a..1bfeee283ea9 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -17,6 +17,7 @@
- #include "rx_common.h"
- #include "nic.h"
- #include "sriov.h"
-+#include "workarounds.h"
+What would be your end goal? Something like:
+ - Any application is able to set SO_TXTIME;
+ - We would have a best effort support for scheduling packets based on
+ their transmission time enabled by default;
+ - If the hardware supports, there would be a "offload" flag that could
+ be enabled;
 
- /* This is the first interrupt mode to try out of:
-  * 0 => MSI-X
-@@ -137,6 +138,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- {
-  unsigned int n_channels = parallelism;
-  int vec_count;
-+ int tx_per_ev;
-  int n_xdp_tx;
-  int n_xdp_ev;
+More or less this?
 
-@@ -149,9 +151,9 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
-  * multiple tx queues, assuming tx and ev queues are both
-  * maximum size.
-  */
--
-+ tx_per_ev = EFX_MAX_EVQ_SIZE / EFX_TXQ_MAX_ENT(efx);
-  n_xdp_tx = num_possible_cpus();
-- n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, EFX_MAX_TXQ_PER_CHANNEL);
-+ n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, tx_per_ev);
 
-  vec_count = pci_msix_vec_count(efx->pci_dev);
-  if (vec_count < 0)
---
-2.29.2
+Cheers.
+-- 
+Vinicius
