@@ -2,120 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9DDF2D7B25
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 17:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E394C2D7B3D
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 17:46:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388328AbgLKQla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 11:41:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
+        id S2389489AbgLKQo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 11:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388382AbgLKQkl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 11:40:41 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE30C061793;
-        Fri, 11 Dec 2020 08:40:00 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id 3so9171581wmg.4;
-        Fri, 11 Dec 2020 08:40:00 -0800 (PST)
+        with ESMTP id S2389638AbgLKQoy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 11:44:54 -0500
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDB2C0613D3
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 08:44:13 -0800 (PST)
+Received: by mail-qt1-x842.google.com with SMTP id n12so1192648qti.7
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 08:44:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=11vbsMQ7mLuZm/TRWwxVBUaF2+2DPCNUSTFQEQ07Mfw=;
-        b=RgzvpQ6QzXLPW6snhe8VmyU2qa7KDQiUzaWB/NQ/wXl8/uA75QVUICRZVglL3aYCQX
-         ++4R/RA5n6n+F82k2IJ8K1SNAewF/deS/raR4RWYHufgPWqWJGSCJjQA/MRwPzE7dT1J
-         fVVBOTZE7J8PNyQ66+QQOjhkOtXcB4BaeJunIE/vPHmzMXOtGQfNiJtDHPuedvOwUtyt
-         6plXC98eR/BqaRVFSa7atYhKsm6nJlMT4NzJT8Dy2Sk+0TqFALAr9d3kc1VMHTCcxkDQ
-         oK/og+DxxAqCJdMEV9ZwcO4VCVhcLEKKsL1hJHFvmD2lwSeoId9uXLhUVPIjLPI4t1ZQ
-         Yyxg==
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JaCgIaxZt5qGiuVOU9D6xIGTlUYaqtMCwE3txKP7awU=;
+        b=td3eW1+SgAsfcCxGtw/z/Kl+GI4TOIvOqYxNWmPDwi4LYU54CMGPPIlvuzaLVPk1qH
+         f4xmHG0sYHBrTxYxl73m0R+mKExrRtdc5Ug0F+EP99MT2xk83Po6s4+mvr3rDEto6Cgd
+         HlKyDxrSD/fHGERgDvnQ7F4jZNN+upheF6qXME+/UlJS4bQbdm13e+3BBpd88uHzuTGX
+         qkgXoKBjsKJPdHVOpGVAR/CbVy3xFommSpShuroaWqbLy9lTMkC3sW6HXKFhQNNbT+ew
+         x5O7ZzQdgRIAtPbgxq6DJ3u8a2rPUL7ukvBfuZfEkAhQ/R+FJL1nbO8opBcn7dZvlYwn
+         7/rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=11vbsMQ7mLuZm/TRWwxVBUaF2+2DPCNUSTFQEQ07Mfw=;
-        b=EK9xjn4D8gMMglvW++x6ENB0bQs36i8Bj8IMwkbcoiFeQaPH2c22UbyV+99N90nAJR
-         tvhw8d4kin+t77HX/oYP8GDy7ePe12XmZ+d0gHbO0v6rNUuEqXaNYkEo8/aN7jW3T29K
-         IKd73aXKHFWax0FUlyH2vVspTwCKTL7hOrXQqkZ5lZOsRYiNqJHRrjQedW3iVZuD4Oq8
-         tspSCtGiz3/wj7n3Xt4fY/ihskmKK0RT4ZrT1JmulVS67muk08wc+iDO0jeHPYJIk6J4
-         QfEWTc7oj7V5da/RS93JTUz0o3jbTAvgtbW1VAOUJ0BKB5h/MFFJnjlti5P0wod8GohI
-         nfgA==
-X-Gm-Message-State: AOAM533Dt+4Eaw1HYJb4FOqkZgoT29cXbUVDdYdau9fee3/vTBPlHKXW
-        x6Xjoqaeg9rvZLSLDtjF6/4=
-X-Google-Smtp-Source: ABdhPJwQ8K+Tyzvi6gCN3r/dzr8esKC9hmz/SpNVFINOctiCuawyesI++ulYLGhRZHDmLDgCAsTOIg==
-X-Received: by 2002:a7b:c8da:: with SMTP id f26mr14835318wml.155.1607704799292;
-        Fri, 11 Dec 2020 08:39:59 -0800 (PST)
-Received: from localhost.localdomain ([77.137.145.246])
-        by smtp.gmail.com with ESMTPSA id r20sm16061016wrg.66.2020.12.11.08.39.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 08:39:58 -0800 (PST)
-From:   Yonatan Linik <yonatanlinik@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org, willemb@google.com,
-        john.ogness@linutronix.de, arnd@arndb.de, maowenan@huawei.com,
-        colin.king@canonical.com, orcohen@paloaltonetworks.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Yonatan Linik <yonatanlinik@gmail.com>
-Subject: [PATCH 1/1] net: Fix use of proc_fs
-Date:   Fri, 11 Dec 2020 18:37:49 +0200
-Message-Id: <20201211163749.31956-2-yonatanlinik@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201211163749.31956-1-yonatanlinik@gmail.com>
-References: <20201211163749.31956-1-yonatanlinik@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JaCgIaxZt5qGiuVOU9D6xIGTlUYaqtMCwE3txKP7awU=;
+        b=jGHg1eKO+awtuCN3Rfj8RZbIMgbeZFEWpYSPDhVTVt0v4exhf4+9v7rWdTbABlkMkz
+         FhIjZWUi3z8+luQ5HS1T2QfKZOFWfKQhggkCxjSwLPQ6K2npiAug4EWBTIpNay1FUQu4
+         nxfK2lsFKSdAMgWaHbeGwbjrKIFLHf8RLJS2SJKjPDDm3zm2v0/gVvlbM/z4M6z0Y8i1
+         7/V07HCC89sRYIB5dIkG32SKEr4BQsAh8l54HnBp2Hax/c2DKS8P/7uBMNcOxXMTEdsz
+         w9T6ApQqyB//G7ci1EuE+oUXgk3Dh9DqwGKhAdDk6nfmHi/hktZ8lAKsuereoJhiS+91
+         H+eg==
+X-Gm-Message-State: AOAM532wvxVa9Z2A75qP4QhC6yqWBBseqR1KpzLFCMzaseM7kWRmQpRE
+        hsX7k29xrN9xMqdXXA56YzzYtpSu13C3CdlxvI1aPw==
+X-Google-Smtp-Source: ABdhPJwdA+iwF8gspJxjbGsMDqg1oWn5W//aN4MqVnoabtKDGdbelz2puvx5OvnuprZKKrWiYvlZcbWqeFAIYf5e2eE=
+X-Received: by 2002:a05:622a:18d:: with SMTP id s13mr16777768qtw.306.1607705052628;
+ Fri, 11 Dec 2020 08:44:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201211144147.26023-1-mw@semihalf.com> <20201211154220.GX1551@shell.armlinux.org.uk>
+In-Reply-To: <20201211154220.GX1551@shell.armlinux.org.uk>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Fri, 11 Dec 2020 17:44:01 +0100
+Message-ID: <CAPv3WKePL4sR=RCgzcOmn8hy8mC7pqVnRWsVWCXL_SEm1mhEQQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: add mvpp2 driver entry
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mcroce@microsoft.com,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        Andrew Lunn <andrew@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-proc_fs was used, in af_packet, without a surrounding #ifdef,
-although there is no hard dependency on proc_fs.
-That caused the initialization of the af_packet module to fail
-when CONFIG_PROC_FS=n.
+pt., 11 gru 2020 o 16:42 Russell King - ARM Linux admin
+<linux@armlinux.org.uk> napisa=C5=82(a):
+>
+> On Fri, Dec 11, 2020 at 03:41:47PM +0100, Marcin Wojtas wrote:
+> > Since its creation Marvell NIC driver for Armada 375/7k8k and
+> > CN913x SoC families mvpp2 has been lacking an entry in MAINTAINERS,
+> > which sometimes lead to unhandled bugs that persisted
+> > across several kernel releases.
+>
+> Can you add me for this driver as well please?
+> Thanks.
 
-Specifically, proc_create_net() was used in af_packet.c,
-and when it fails, packet_net_init() returns -ENOMEM.
-It will always fail when the kernel is compiled without proc_fs,
-because, proc_create_net() for example always returns NULL.
+Sure, I'll repost with this addition.
 
-The calling order that starts in af_packet.c is as follows:
-packet_init()
-register_pernet_subsys()
-register_pernet_operations()
-__register_pernet_operations()
-ops_init()
-ops->init() (packet_net_ops.init=packet_net_init())
-proc_create_net()
+Marcin
 
-It worked in the past because register_pernet_subsys()'s return value
-wasn't checked before this Commit 36096f2f4fa0 ("packet: Fix error path in
-packet_init.").
-It always returned an error, but was not checked before, so everything
-was working even when CONFIG_PROC_FS=n.
-
-The fix here is simply to add the necessary #ifdef.
-
-Signed-off-by: Yonatan Linik <yonatanlinik@gmail.com>
----
- net/packet/af_packet.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 2b33e977a905..031f2b593720 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -4612,9 +4612,11 @@ static int __net_init packet_net_init(struct net *net)
- 	mutex_init(&net->packet.sklist_lock);
- 	INIT_HLIST_HEAD(&net->packet.sklist);
- 
-+#ifdef CONFIG_PROC_FS
- 	if (!proc_create_net("packet", 0, net->proc_net, &packet_seq_ops,
- 			sizeof(struct seq_net_private)))
- 		return -ENOMEM;
-+#endif /* CONFIG_PROC_FS */
- 
- 	return 0;
- }
--- 
-2.25.1
-
+>
+> >
+> > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> > ---
+> >  MAINTAINERS | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> >
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 6f474153dbec..db88abf11db2 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -10513,6 +10513,13 @@ L:   netdev@vger.kernel.org
+> >  S:   Maintained
+> >  F:   drivers/net/ethernet/marvell/mvneta.*
+> >
+> > +MARVELL MVPP2 ETHERNET DRIVER
+> > +M:   Marcin Wojtas <mw@semihalf.com>
+> > +L:   netdev@vger.kernel.org
+> > +S:   Maintained
+> > +F:   Documentation/devicetree/bindings/net/marvell-pp2.txt
+> > +F:   drivers/net/ethernet/marvell/mvpp2/
+> > +
+> >  MARVELL MWIFIEX WIRELESS DRIVER
+> >  M:   Amitkumar Karwar <amitkarwar@gmail.com>
+> >  M:   Ganapathi Bhat <ganapathi.bhat@nxp.com>
+> > --
+> > 2.29.0
+> >
+> >
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
