@@ -2,131 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 041A02D7CA0
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 18:18:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 786E62D7CA9
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 18:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395026AbgLKRRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 12:17:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42230 "EHLO
+        id S2394616AbgLKRSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 12:18:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390169AbgLKRQi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 12:16:38 -0500
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D652BC0613CF;
-        Fri, 11 Dec 2020 09:15:57 -0800 (PST)
-Received: by mail-il1-x144.google.com with SMTP id c18so9445715iln.10;
-        Fri, 11 Dec 2020 09:15:57 -0800 (PST)
+        with ESMTP id S2395092AbgLKRRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 12:17:24 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564BBC0613CF
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 09:16:43 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id i24so10100880edj.8
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 09:16:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w9pMnXNgeC3I2EqzptbTj1OeUgYzyw7z4b4B69c9CVQ=;
-        b=kxc5ZymAQ+fGYHWnQrd+SqA/pWtI+9O2o2QOXKZD1NWgRC4i3GCKr9Ap5Wf6fzhwg+
-         0foBPB5uSKtGefZ7FrkS86sjnPTPIG6Ewdf1R4VGTpgeEDI/M8T8rw1xdEEgFEvJd4Z3
-         7QOVnYrw1SNkWCQkzwHI/JQdO4Uq/eNX1qFDolXztfukj1enZVvg2h2g67JbWzw3Q0+s
-         ZEtbjjiTQzCJj6YhErGyh22873EPv1YXOyyRv0KQBtuIpyKg5jwPjjokytwNa8XILJgI
-         v3DnF3gcfToAWOnB9z2sjhvqJHPKsSXGLKOAlqs3NR3PqUh7RzR9AOr2Pgj8fPuv2gcT
-         vfsQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FtRlX1vNS2B2cE3wGDul6BGlypI/t7Tg4uZcVGOGRGE=;
+        b=pDQMMbn62siH04wILxKsrmrNYd6wF2M7ExHVhzWnaC4rDALX12pMHTDK/8NbPkweWB
+         ySccOClUHV9NFzN2cdELaScS17CUr/mdKpBEhK08NndTmQiVgL89icffdn/UuZzUwX0S
+         JOdlavhwQeuQLio6RP4SkMeBq1nKmsrk0UpM/MnOG31OvJyFbdjegIRKKeog1h6JALVJ
+         a/jz4sSMIqMQuJE5KO7iExpo5Jqj4cgpitwC9FGp5xlJGH0ngLNNtQgWb/wTRDr9O0Xf
+         m1PC74iqipYUZuLDjVqHREwQGSPZlIi8yoBx9Vk+0cqXDzv9f5ZXaOPigt7fqoNGmGhZ
+         nFKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w9pMnXNgeC3I2EqzptbTj1OeUgYzyw7z4b4B69c9CVQ=;
-        b=J4CIeUqOqPls9fZ1mDR1rPlVjHCGE8SzB0GZhbW1mhIfi7WV0Uu/IDWhVTECZoz4cB
-         rRBXxxsaoRG/B4QE1qaogtvadVpxUlybnTeFytEB79hnlIBWE5/FON33vFX5o37s4+h4
-         dGkPdMY3W2h+EjtyGR/et1COlnXhh9HO1PJ+rz+Y8J+gEWVtsvYjUtchv+8Zx2LbbOf7
-         AgKBNQHNxvblBmZg/yEXT0mxBspVI1ZMDwcGxekPwUUh2sEjBA4S5njTWiw5lKDVqHao
-         iEGGPBKG5lhtUdX/mqBf05vzv66oHDu30PjMqaO9GrOAnRPznJRyeKIE9CFRGO2tdn9N
-         X5uw==
-X-Gm-Message-State: AOAM532cynEKKXv1NqsUytL0eQCwhQx4VkkimxxYBqKqgWz2tLLn280s
-        0YHMarlJy5+j5uiyKVOr6rSSJvRiu4rLNvDG+uE=
-X-Google-Smtp-Source: ABdhPJy45/cvYQgQiF7NDEeSwDh+0GPWXIrCQ+XQAzQ9/qWDHOtCkE4WWwYwHSKJC1UGjhMES04b/oo+1unayHGhTjg=
-X-Received: by 2002:a05:6e02:929:: with SMTP id o9mr16725243ilt.42.1607706957044;
- Fri, 11 Dec 2020 09:15:57 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FtRlX1vNS2B2cE3wGDul6BGlypI/t7Tg4uZcVGOGRGE=;
+        b=YCAktfAnO3XZVX5QBD/9yJGSjTdzzGiesDu1K5Jlaem9qyEUnmsAkN7uyFhWO1+gE2
+         5hsAo8CbHLjur/hnu3ZSxLkJEj1WptJG3uMy2QUn82rsv889zyHBkB2XD4lOtBbbar39
+         aV46ssQVs/ksat/cjDXrZ29bB4w7G00+oS5JvONKZ27SchKH/pwsgzur8SJqe2/6kUpn
+         gPye0u9EpuVzKBmsabBoCZsEV/W3e3QntOubdwIddoKzC1EUGOrgU5T8E0MmV0ZjK+S3
+         mxwr2BXLND6iEcbhJppTsQMIu2BgiNWExWQCT7ev8KZBOMuecr6hMVLPJNLAGDHsY+Ft
+         6OaQ==
+X-Gm-Message-State: AOAM530Je4fbv+mHfkP9490EwYcZruCw9Q/IsfaWw38YPorqupaWxQFX
+        WvKus/0scb/L9XiwAQ4vhtynPcdX0Cg=
+X-Google-Smtp-Source: ABdhPJzxyBOFQFO/2NQqS5Op31zoz6ZpdR6VwLH5n8KsyZpSGioY5Yrmx/zBT75KxXA1OsCfQ3UPrA==
+X-Received: by 2002:a05:6402:21c7:: with SMTP id bi7mr13325171edb.54.1607707001961;
+        Fri, 11 Dec 2020 09:16:41 -0800 (PST)
+Received: from yoga-910.localhost ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id qp16sm7361414ejb.74.2020.12.11.09.16.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Dec 2020 09:16:41 -0800 (PST)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     jon@solid-run.com, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH net] dpaa2-eth: fix the size of the mapped SGT buffer
+Date:   Fri, 11 Dec 2020 19:16:07 +0200
+Message-Id: <20201211171607.108034-1-ciorneiioana@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-References: <160765171921.6905.7897898635812579754.stgit@localhost.localdomain>
- <CANn89iJ5HnJYv6eWb1jm6rK173DFkp2GRnfvi9vnYwXZPzE4LQ@mail.gmail.com>
- <CAKgT0Uf_q=FgMHd9_wq5Bx8rCC-kS0Qz563rE9dL2hpQ6Evppg@mail.gmail.com> <CANn89iJUT6aWm75ZpU_Ggmuqbb+cbLSGj0Bxysu9_wXRgNS8MQ@mail.gmail.com>
-In-Reply-To: <CANn89iJUT6aWm75ZpU_Ggmuqbb+cbLSGj0Bxysu9_wXRgNS8MQ@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 11 Dec 2020 09:15:45 -0800
-Message-ID: <CAKgT0Uecuh3mcGRpDAZzzbnQtOusc++H4SXAv2Scd297Ha5AYQ@mail.gmail.com>
-Subject: Re: [net PATCH] tcp: Mark fastopen SYN packet as lost when receiving ICMP_TOOBIG/ICMP_FRAG_NEEDED
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Yuchung Cheng <ycheng@google.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11, 2020 at 8:22 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Dec 11, 2020 at 5:03 PM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
->
-> > That's fine. I can target this for net-next. I had just selected net
-> > since I had considered it a fix, but I suppose it could be considered
-> > a behavioral change.
->
-> We are very late in the 5.10 cycle, and we never handled ICMP in this
-> state, so net-next is definitely better.
->
-> Note that RFC 7413 states in 4.1.3 :
->
->  The client MUST cache cookies from servers for later Fast Open
->    connections.  For a multihomed client, the cookies are dependent on
->    the client and server IP addresses.  Hence, the client should cache
->    at most one (most recently received) cookie per client and server IP
->    address pair.
->
->    When caching cookies, we recommend that the client also cache the
->    Maximum Segment Size (MSS) advertised by the server.  The client can
->    cache the MSS advertised by the server in order to determine the
->    maximum amount of data that the client can fit in the SYN packet in
->    subsequent TFO connections.  Caching the server MSS is useful
->    because, with Fast Open, a client sends data in the SYN packet before
->    the server announces its MSS in the SYN-ACK packet.  If the client
->    sends more data in the SYN packet than the server will accept, this
->    will likely require the client to retransmit some or all of the data.
->    Hence, caching the server MSS can enhance performance.
->
->    Without a cached server MSS, the amount of data in the SYN packet is
->    limited to the default MSS of 536 bytes for IPv4 [RFC1122] and 1220
->    bytes for IPv6 [RFC2460].  Even if the client complies with this
->    limit when sending the SYN, it is known that an IPv4 receiver
->    advertising an MSS less than 536 bytes can receive a segment larger
->    than it is expecting.
->
->    If the cached MSS is larger than the typical size (1460 bytes for
->    IPv4 or 1440 bytes for IPv6), then the excess data in the SYN packet
->    may cause problems that offset the performance benefit of Fast Open.
->    For example, the unusually large SYN may trigger IP fragmentation and
->    may confuse firewalls or middleboxes, causing SYN retransmission and
->    other side effects.  Therefore, the client MAY limit the cached MSS
->    to 1460 bytes for IPv4 or 1440 for IPv6.
->
->
-> Relying on ICMP is fragile, since they can be filtered in some way.
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-In this case I am not relying on the ICMP, but thought that since I
-have it I should make use of it. WIthout the ICMP we would still just
-be waiting on the retransmit timer.
+This patch fixes an error condition triggered when the code path which
+transmits a S/G frame descriptor when the skb's headroom is not enough
+for DPAA2's needs.
 
-The problem case has a v6-in-v6 tunnel between the client and the
-endpoint so both ends assume an MTU 1500 and advertise a 1440 MSS
-which works fine until they actually go to send a large packet between
-the two. At that point the tunnel is triggering an ICMP_TOOBIG and the
-endpoint is stalling since the MSS is dropped to 1400, but the SYN and
-data payload were already smaller than that so no retransmits are
-being triggered. This results in TFO being 1s slower than non-TFO
-because of the failure to trigger the retransmit for the frame that
-violated the PMTU. The patch is meant to get the two back into
-comparable times.
+We are greated with a splat like the one below when a SGT structure is
+recycled and that is because even though a dma_unmap is performed on the
+Tx confirmation path, the unmap is not done with the proper size.
+
+[  714.464927] WARNING: CPU: 13 PID: 0 at drivers/iommu/io-pgtable-arm.c:281 __arm_lpae_map+0x2d4/0x30c
+(...)
+[  714.465343] Call trace:
+[  714.465348]  __arm_lpae_map+0x2d4/0x30c
+[  714.465353]  __arm_lpae_map+0x114/0x30c
+[  714.465357]  __arm_lpae_map+0x114/0x30c
+[  714.465362]  __arm_lpae_map+0x114/0x30c
+[  714.465366]  arm_lpae_map+0xf4/0x180
+[  714.465373]  arm_smmu_map+0x4c/0xc0
+[  714.465379]  __iommu_map+0x100/0x2bc
+[  714.465385]  iommu_map_atomic+0x20/0x30
+[  714.465391]  __iommu_dma_map+0xb0/0x110
+[  714.465397]  iommu_dma_map_page+0xb8/0x120
+[  714.465404]  dma_map_page_attrs+0x1a8/0x210
+[  714.465413]  __dpaa2_eth_tx+0x384/0xbd0 [fsl_dpaa2_eth]
+[  714.465421]  dpaa2_eth_tx+0x84/0x134 [fsl_dpaa2_eth]
+[  714.465427]  dev_hard_start_xmit+0x10c/0x2b0
+[  714.465433]  sch_direct_xmit+0x1a0/0x550
+(...)
+
+The dpaa2-eth driver uses an area of software annotations to transmit
+necessary information from the Tx path to the Tx confirmation one. This
+SWA structure has a different layout for each kind of frame that we are
+dealing with: linear, S/G or XDP.
+
+The commit referenced was incorrectly setting up the 'sgt_size' field
+for the S/G type of SWA even though we are dealing with a linear skb
+here.
+
+Fixes: d70446ee1f40 ("dpaa2-eth: send a scatter-gather FD instead of realloc-ing")
+Reported-by: Daniel Thompson <daniel.thompson@linaro.org>
+Tested-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index cf9400a9886d..d880ab2a7d96 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -878,7 +878,7 @@ static int dpaa2_eth_build_sg_fd_single_buf(struct dpaa2_eth_priv *priv,
+ 	swa = (struct dpaa2_eth_swa *)sgt_buf;
+ 	swa->type = DPAA2_ETH_SWA_SINGLE;
+ 	swa->single.skb = skb;
+-	swa->sg.sgt_size = sgt_buf_size;
++	swa->single.sgt_size = sgt_buf_size;
+ 
+ 	/* Separately map the SGT buffer */
+ 	sgt_addr = dma_map_single(dev, sgt_buf, sgt_buf_size, DMA_BIDIRECTIONAL);
+-- 
+2.28.0
+
