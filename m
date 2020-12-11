@@ -2,273 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E752E2D7334
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 10:57:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4452D735C
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 11:07:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437509AbgLKJzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 04:55:45 -0500
-Received: from mga01.intel.com ([192.55.52.88]:29168 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404840AbgLKJzI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Dec 2020 04:55:08 -0500
-IronPort-SDR: wIo9AojRuqoUiRNs7KOzp09jCzx/ZsrAkiJVs1C/5xoIyNNGyySDPWhK2HyLN4qqaxXH7SICDS
- T4/vLsO2nLOg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9831"; a="192746911"
-X-IronPort-AV: E=Sophos;i="5.78,411,1599548400"; 
-   d="scan'208";a="192746911"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2020 01:54:23 -0800
-IronPort-SDR: /ufv3vGNGQifQf4WI2wmyr1gYEo9JLcct/eEa85fh974wAfL2ugGQDoLz9o6bLFhFYPLXeOH+B
- J5isAR9V2pBA==
-X-IronPort-AV: E=Sophos;i="5.78,411,1599548400"; 
-   d="scan'208";a="333982962"
-Received: from dkreft-mobl1.ger.corp.intel.com (HELO localhost) ([10.249.158.206])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2020 01:54:06 -0800
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci@vger.kernel.org,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org
-Subject: Re: [patch 14/30] drm/i915/pmu: Replace open coded kstat_irqs() copy
-In-Reply-To: <20201210194043.957046529@linutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20201210192536.118432146@linutronix.de> <20201210194043.957046529@linutronix.de>
-Date:   Fri, 11 Dec 2020 11:54:03 +0200
-Message-ID: <87wnxo7jno.fsf@intel.com>
+        id S2405744AbgLKKEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 05:04:22 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:40301 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732317AbgLKKDv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 05:03:51 -0500
+Received: by mail-il1-f197.google.com with SMTP id g1so1030463ilq.7
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 02:03:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=uOC2+82+GbEMhFKOFJV1ZRw6jqNsv44LU405Nk29/vk=;
+        b=HcWYmjCCsEhGMqLDv/ty/MZLSqVJiIYVzUq9bB+jPWBLrASTN2CFDUpEKbIwMYj+fc
+         UI4yDG5653y45EEL/5rk8XU1fAfQZMWAqUigjz1nRX05EgQJm7xHOsBpyX4re/PcyKf2
+         obeCkQEP6DrG97wOXigdDv2hL4V15IoHaC78lpujF51Ck5SlIWgS0qXVh8G24JLhSDj7
+         lKiWVaE3qIukzrHxaYdq33DPniN2tKmcPKtp1fWhQaaxQJxZ8+onMVJxT/ZaqjNRx8zd
+         SNDfEJ4M/6KM4AsipSNv8uxyMwGGKRoA3HT9sUDRklKKoobHBA/5TB63wxQldsCNjJbt
+         Q8LA==
+X-Gm-Message-State: AOAM531UvmRc72CMba6i2jG5cvGznZEeqEtoe7W7HFjYaCMoEsw8Z/95
+        1GHhWp8b7mXarnKlApujk1I6gUphSPuFGvJa5Mzu1a4vX5o1
+X-Google-Smtp-Source: ABdhPJyS9DPn9X/pqrU8UkmwJ2EG8zRVVPeG0gsGgP4jnW3RkTWJeILitrISDAiZc4KnI2auNRcRwBuwBGR7H1fBTu+lcx2uvthc
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Received: by 2002:a05:6e02:5ab:: with SMTP id k11mr8236476ils.189.1607680990586;
+ Fri, 11 Dec 2020 02:03:10 -0800 (PST)
+Date:   Fri, 11 Dec 2020 02:03:10 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005b303e05b62d6674@google.com>
+Subject: INFO: task can't die in corrupted (2)
+From:   syzbot <syzbot+61cb1d04bf13f0c631b1@syzkaller.appspotmail.com>
+To:     ast@kernel.org, christian.brauner@ubuntu.com, daniel@iogearbox.net,
+        davem@davemloft.net, gnault@redhat.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Dec 2020, Thomas Gleixner <tglx@linutronix.de> wrote:
-> Driver code has no business with the internals of the irq descriptor.
->
-> Aside of that the count is per interrupt line and therefore takes
-> interrupts from other devices into account which share the interrupt line
-> and are not handled by the graphics driver.
->
-> Replace it with a pmu private count which only counts interrupts which
-> originate from the graphics card.
->
-> To avoid atomics or heuristics of some sort make the counter field
-> 'unsigned long'. That limits the count to 4e9 on 32bit which is a lot and
-> postprocessing can easily deal with the occasional wraparound.
+Hello,
 
-I'll let Tvrtko and Chris review the substance here, but assuming they
-don't object,
+syzbot found the following issue on:
 
-Acked-by: Jani Nikula <jani.nikula@intel.com>
+HEAD commit:    0eedceaf Add linux-next specific files for 20201201
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12db3b4b500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=55aec7153b7827ea
+dashboard link: https://syzkaller.appspot.com/bug?extid=61cb1d04bf13f0c631b1
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17985545500000
 
-for merging via whichever tree makes most sense.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+61cb1d04bf13f0c631b1@syzkaller.appspotmail.com
 
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-> Cc: Jani Nikula <jani.nikula@linux.intel.com>
-> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: intel-gfx@lists.freedesktop.org
-> Cc: dri-devel@lists.freedesktop.org
-> ---
->  drivers/gpu/drm/i915/i915_irq.c |   34 ++++++++++++++++++++++++++++++++++
->  drivers/gpu/drm/i915/i915_pmu.c |   18 +-----------------
->  drivers/gpu/drm/i915/i915_pmu.h |    8 ++++++++
->  3 files changed, 43 insertions(+), 17 deletions(-)
->
-> --- a/drivers/gpu/drm/i915/i915_irq.c
-> +++ b/drivers/gpu/drm/i915/i915_irq.c
-> @@ -60,6 +60,24 @@
->   * and related files, but that will be described in separate chapters.
->   */
->  
-> +/*
-> + * Interrupt statistic for PMU. Increments the counter only if the
-> + * interrupt originated from the the GPU so interrupts from a device which
-> + * shares the interrupt line are not accounted.
-> + */
-> +static inline void pmu_irq_stats(struct drm_i915_private *priv,
-> +				 irqreturn_t res)
-> +{
-> +	if (unlikely(res != IRQ_HANDLED))
-> +		return;
-> +
-> +	/*
-> +	 * A clever compiler translates that into INC. A not so clever one
-> +	 * should at least prevent store tearing.
-> +	 */
-> +	WRITE_ONCE(priv->pmu.irq_count, priv->pmu.irq_count + 1);
-> +}
-> +
->  typedef bool (*long_pulse_detect_func)(enum hpd_pin pin, u32 val);
->  
->  static const u32 hpd_ilk[HPD_NUM_PINS] = {
-> @@ -1599,6 +1617,8 @@ static irqreturn_t valleyview_irq_handle
->  		valleyview_pipestat_irq_handler(dev_priv, pipe_stats);
->  	} while (0);
->  
-> +	pmu_irq_stats(dev_priv, ret);
-> +
->  	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
->  
->  	return ret;
-> @@ -1676,6 +1696,8 @@ static irqreturn_t cherryview_irq_handle
->  		valleyview_pipestat_irq_handler(dev_priv, pipe_stats);
->  	} while (0);
->  
-> +	pmu_irq_stats(dev_priv, ret);
-> +
->  	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
->  
->  	return ret;
-> @@ -2103,6 +2125,8 @@ static irqreturn_t ilk_irq_handler(int i
->  	if (sde_ier)
->  		raw_reg_write(regs, SDEIER, sde_ier);
->  
-> +	pmu_irq_stats(i915, ret);
-> +
->  	/* IRQs are synced during runtime_suspend, we don't require a wakeref */
->  	enable_rpm_wakeref_asserts(&i915->runtime_pm);
->  
-> @@ -2419,6 +2443,8 @@ static irqreturn_t gen8_irq_handler(int
->  
->  	gen8_master_intr_enable(regs);
->  
-> +	pmu_irq_stats(dev_priv, IRQ_HANDLED);
-> +
->  	return IRQ_HANDLED;
->  }
->  
-> @@ -2514,6 +2540,8 @@ static __always_inline irqreturn_t
->  
->  	gen11_gu_misc_irq_handler(gt, gu_misc_iir);
->  
-> +	pmu_irq_stats(i915, IRQ_HANDLED);
-> +
->  	return IRQ_HANDLED;
->  }
->  
-> @@ -3688,6 +3716,8 @@ static irqreturn_t i8xx_irq_handler(int
->  		i8xx_pipestat_irq_handler(dev_priv, iir, pipe_stats);
->  	} while (0);
->  
-> +	pmu_irq_stats(dev_priv, ret);
-> +
->  	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
->  
->  	return ret;
-> @@ -3796,6 +3826,8 @@ static irqreturn_t i915_irq_handler(int
->  		i915_pipestat_irq_handler(dev_priv, iir, pipe_stats);
->  	} while (0);
->  
-> +	pmu_irq_stats(dev_priv, ret);
-> +
->  	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
->  
->  	return ret;
-> @@ -3941,6 +3973,8 @@ static irqreturn_t i965_irq_handler(int
->  		i965_pipestat_irq_handler(dev_priv, iir, pipe_stats);
->  	} while (0);
->  
-> +	pmu_irq_stats(dev_priv, IRQ_HANDLED);
-> +
->  	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
->  
->  	return ret;
-> --- a/drivers/gpu/drm/i915/i915_pmu.c
-> +++ b/drivers/gpu/drm/i915/i915_pmu.c
-> @@ -423,22 +423,6 @@ static enum hrtimer_restart i915_sample(
->  	return HRTIMER_RESTART;
->  }
->  
-> -static u64 count_interrupts(struct drm_i915_private *i915)
-> -{
-> -	/* open-coded kstat_irqs() */
-> -	struct irq_desc *desc = irq_to_desc(i915->drm.pdev->irq);
-> -	u64 sum = 0;
-> -	int cpu;
-> -
-> -	if (!desc || !desc->kstat_irqs)
-> -		return 0;
-> -
-> -	for_each_possible_cpu(cpu)
-> -		sum += *per_cpu_ptr(desc->kstat_irqs, cpu);
-> -
-> -	return sum;
-> -}
-> -
->  static void i915_pmu_event_destroy(struct perf_event *event)
->  {
->  	struct drm_i915_private *i915 =
-> @@ -581,7 +565,7 @@ static u64 __i915_pmu_event_read(struct
->  				   USEC_PER_SEC /* to MHz */);
->  			break;
->  		case I915_PMU_INTERRUPTS:
-> -			val = count_interrupts(i915);
-> +			val = READ_ONCE(pmu->irq_count);
->  			break;
->  		case I915_PMU_RC6_RESIDENCY:
->  			val = get_rc6(&i915->gt);
-> --- a/drivers/gpu/drm/i915/i915_pmu.h
-> +++ b/drivers/gpu/drm/i915/i915_pmu.h
-> @@ -108,6 +108,14 @@ struct i915_pmu {
->  	 */
->  	ktime_t sleep_last;
->  	/**
-> +	 * @irq_count: Number of interrupts
-> +	 *
-> +	 * Intentionally unsigned long to avoid atomics or heuristics on 32bit.
-> +	 * 4e9 interrupts are a lot and postprocessing can really deal with an
-> +	 * occasional wraparound easily. It's 32bit after all.
-> +	 */
-> +	unsigned long irq_count;
-> +	/**
->  	 * @events_attr_group: Device events attribute group.
->  	 */
->  	struct attribute_group events_attr_group;
->
+INFO: task syz-executor.0:9776 can't die for more than 143 seconds.
+task:syz-executor.0  state:R  running task     stack:25800 pid: 9776 ppid:  8572 flags:0x00004006
+Call Trace:
+ context_switch kernel/sched/core.c:4325 [inline]
+ __schedule+0x8cd/0x2150 kernel/sched/core.c:5076
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+Showing all locks held in the system:
+4 locks held by kworker/u4:4/359:
+ #0: ffff8881407ab138 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8881407ab138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8881407ab138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8881407ab138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff8881407ab138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff8881407ab138 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x871/0x15f0 kernel/workqueue.c:2243
+ #1: ffffc900014efda8 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x8a5/0x15f0 kernel/workqueue.c:2247
+ #2: ffffffff8c92ed90 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xb10 net/core/net_namespace.c:566
+ #3: ffffffff8c940f88 (rtnl_mutex){+.+.}-{3:3}, at: netdev_run_todo+0x90a/0xdd0 net/core/dev.c:10316
+1 lock held by khungtaskd/1663:
+ #0: ffffffff8b33a7a0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6254
+1 lock held by in:imklog/8233:
+ #0: ffff88801f67e370 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:923
+3 locks held by kworker/0:2/8537:
+ #0: ffff888010062d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888010062d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff888010062d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff888010062d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff888010062d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff888010062d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x871/0x15f0 kernel/workqueue.c:2243
+ #1: ffffc9000c297da8 ((linkwatch_work).work){+.+.}-{0:0}, at: process_one_work+0x8a5/0x15f0 kernel/workqueue.c:2247
+ #2: ffffffff8c940f88 (rtnl_mutex){+.+.}-{3:3}, at: linkwatch_event+0xb/0x60 net/core/link_watch.c:250
+2 locks held by kworker/u4:3/9739:
+1 lock held by syz-executor.1/9765:
+1 lock held by syz-executor.0/9776:
+1 lock held by syz-executor.3/10296:
+1 lock held by syz-executor.5/10299:
+4 locks held by syz-executor.4/10323:
+4 locks held by syz-executor.2/10542:
+
+=============================================
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
