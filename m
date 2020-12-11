@@ -2,159 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB50B2D72CA
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 10:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09BE22D72CE
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 10:29:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405618AbgLKJ2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 04:28:31 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:18767 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404425AbgLKJ1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 04:27:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607678873; x=1639214873;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=GyMmX3D/jsJ9E6NpxK0JHdKPYb1uHzNbBgKwWLSpo6s=;
-  b=v9SKh+uNqrHXszmhpuJa60/l8blbksd8BSnj+r+3svX+rZTliH7pfgfh
-   ee3UrjQioIucqP7jqVkXMxsRR4qtydIet85JNyaK/oq2Xi7huqlsXlnHZ
-   dBfE959JHACUE578RFhWqThCwXavvo75EEyEkrMuOpvC7hQyu59C3BmeS
-   Bd+uADpTYRO3sNoZ4PbNRrqA1Wf21t5w40B07lPd6hLTcT92+gnNdl3Em
-   kTA0yA3dnHp3MD6skcvaMeMJ4MA44OnQljofGm9nYYkcnwOTlTrgv+UK8
-   xnz4d/f5EXV/Bl5kUP12pFO/gbtO4hVnIUHAifX2lf0bm8eBb/7+5SJRF
-   A==;
-IronPort-SDR: 6bbgw3ZaRcyLYoY+nUL+/4xfc6wypDm6fdcfk3/QHuR88R1VcfjCUeXLau1+AqPG2ba+bUZ0jS
- 7XS7Rfl5zsx+EQG2vDWYHARPv1YNYLvhtfptoEM1DzFv+iRe8Jg6DpJNJ1Sd16fFN7T9ejXLVv
- 0SthXPIqVqHrMSdpU6f5QpuiBev9q+E/eHTXCXjHytn0CDHB6obPg24enuJ+P5KuJfeFYByyQJ
- WgMzavb0Hd8tVlLmUUIRfsu4tUFUn/h+gR1FfVGHV8gbu0ABSOi/z7N8/FH6BQSfM0PBU3Jxa3
- NJM=
-X-IronPort-AV: E=Sophos;i="5.78,410,1599548400"; 
-   d="scan'208";a="96746864"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Dec 2020 02:26:33 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 11 Dec 2020 02:26:33 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Fri, 11 Dec 2020 02:26:31 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <nikolay@nvidia.com>, <roopa@nvidia.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <bridge@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <allan.nielsen@microchip.com>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [RFC net-next] net: bridge: igmp: Extend IGMP query with vlan support
-Date:   Fri, 11 Dec 2020 10:26:26 +0100
-Message-ID: <20201211092626.809206-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.27.0
+        id S2405627AbgLKJ3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 04:29:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404425AbgLKJ2f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 04:28:35 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1752FC0613D3
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 01:27:55 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id h16so8611364edt.7
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 01:27:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3AQCc2YDUQGFyXvCYo88ngSH0tYmn2xNHP0sLvl7GHY=;
+        b=klrDEP8SZlgLNUXz3zJpAxCLGz4SX3eGMehKPiLNX3LTW6/iIdYv0tc/CaWickbBdl
+         nLBM003DAL4wPyFCozEoMOjKBXO1+VwN5/paBouGBkKwaKYfE1x6zar08idXhOBO80UU
+         WkqZQVU/aAXYbiS07EsI5tpHwB6qcf1c5QG9jXY3qfkggvg2+Jm09+YOj7MX+cSbIeES
+         ONIFbjAaINcCzPIY89dWq1STJVAmvbEwu8G5m1pmZ13kuleOoQZ74XJ0SdO24XnDfzG8
+         9nL5RD5Q5XAJlg1vYEz6m2qIClR4cTWZ2V7kq0cOGTOFtWup5ciMtphYtyP43Wkh/7B+
+         x2HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3AQCc2YDUQGFyXvCYo88ngSH0tYmn2xNHP0sLvl7GHY=;
+        b=gM4fejMIJLRb0rIecQ3PSzDk2J+th331eZDV+X+LUKOhg1CzD1p1Uhd3ePXl5pooPf
+         GiLtKSxac52ZfzOVzJKOpsPnQkYcadB8vwsL6EPOV8VSptlrP8Yg0n/e7PcR00lr7WBN
+         d+ZuBWAYI0rKiIFynx1x1q1kSkMucAEudTnNjAAnDECtphv+bR5diduzddgxjyAUcbKg
+         PeaDbINeoIk0J6JNGZQeDQERSAstNqLCSBuRCQR6XCwSfh1DfpkhKqn/GRQ57XYs+hAL
+         dgipTn8onSkrkiTpHmLsvBXX2ZTUgKyrQ60jba1gPahDKQcImgJinsNzShBfFSWdHx7v
+         zqqA==
+X-Gm-Message-State: AOAM530wX455bzB5nrrq5CZsJPEtFSRWPbDyQjmCdUzUB3BQ7s7OVk6A
+        R5LWwq6APW7IMIFM9yNU9nz8mm/FA+Xf/w==
+X-Google-Smtp-Source: ABdhPJyxvwVqgZ8kKt4vvSnQVrY5/Gg1peOe2zJm5YIVF7diGRKtrPz2gWF0/bw3KLi3p1hhcDtgJg==
+X-Received: by 2002:a50:ac86:: with SMTP id x6mr10856558edc.197.1607678873814;
+        Fri, 11 Dec 2020 01:27:53 -0800 (PST)
+Received: from madeliefje.horms.nl ([2001:982:7ed1:404:a2a4:c5ff:fe4c:9ce9])
+        by smtp.gmail.com with ESMTPSA id a20sm7314730edr.70.2020.12.11.01.27.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Dec 2020 01:27:52 -0800 (PST)
+From:   Simon Horman <simon.horman@netronome.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Louis Peens <louis.peens@netronome.com>,
+        netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Simon Horman <simon.horman@netronome.com>,
+        wenxu <wenxu@ucloud.cn>
+Subject: [PATCH net] nfp: do not send control messages during cleanup
+Date:   Fri, 11 Dec 2020 10:27:38 +0100
+Message-Id: <20201211092738.3358-1-simon.horman@netronome.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch tries to add vlan support to IGMP queries.
-It extends the function 'br_ip4_multicast_alloc_query' to add
-also a vlan tag if vlan is enabled. Therefore the bridge will send
-queries for each vlan the ports are in.
+On cleanup the txbufs are freed before app cleanup. But app clean-up may
+result in control messages due to use of common control paths. There is no
+need to clean-up the NIC in such cases so simply discard requests. Without
+such a check a NULL pointer dereference occurs.
 
-There are few other places that needs to be updated to be fully
-functional. But I am curious if this is the way to go forward or is
-there a different way of implementing this?
-
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Fixes: a1db217861f3 ("net: flow_offload: fix flow_indr_dev_unregister path")
+Cc: wenxu <wenxu@ucloud.cn>
+Signed-off-by: Simon Horman <simon.horman@netronome.com>
+Signed-off-by: Louis Peens <louis.peens@netronome.com>
 ---
- net/bridge/br_multicast.c | 31 ++++++++++++++++++++++++++-----
- 1 file changed, 26 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 484820c223a3..4c2db8a9efe0 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -688,7 +688,8 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
- 						    __be32 ip_dst, __be32 group,
- 						    bool with_srcs, bool over_lmqt,
- 						    u8 sflag, u8 *igmp_type,
--						    bool *need_rexmit)
-+						    bool *need_rexmit,
-+						    __u16 vid)
- {
- 	struct net_bridge_port *p = pg ? pg->key.port : NULL;
- 	struct net_bridge_group_src *ent;
-@@ -724,6 +725,9 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
- 	}
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index b4acf2f41e84..d86f68aa89bf 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -2084,6 +2084,15 @@ nfp_ctrl_tx_one(struct nfp_net *nn, struct nfp_net_r_vector *r_vec,
+ 	dp = &r_vec->nfp_net->dp;
+ 	tx_ring = r_vec->tx_ring;
  
- 	pkt_size = sizeof(*eth) + sizeof(*iph) + 4 + igmp_hdr_size;
-+	if (br_vlan_enabled(br->dev) && vid != 0)
-+		pkt_size += 4;
++	if (!tx_ring->txbufs)
++		/* On cleanup the txbufs are freed before app cleanup.
++		 * But app clean-up may result in control messages due to
++		 * use of common control paths. There is no need to
++		 * clean-up the NIC in such cases so simply discard
++		 * requests.
++		 */
++		goto err_free;
 +
- 	if ((p && pkt_size > p->dev->mtu) ||
- 	    pkt_size > br->dev->mtu)
- 		return NULL;
-@@ -732,6 +736,9 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
- 	if (!skb)
- 		goto out;
- 
-+	if (br_vlan_enabled(br->dev) && vid != 0)
-+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vid);
-+
- 	skb->protocol = htons(ETH_P_IP);
- 
- 	skb_reset_mac_header(skb);
-@@ -1008,7 +1015,8 @@ static struct sk_buff *br_multicast_alloc_query(struct net_bridge *br,
- 						    ip4_dst, group->dst.ip4,
- 						    with_srcs, over_lmqt,
- 						    sflag, igmp_type,
--						    need_rexmit);
-+						    need_rexmit,
-+						    group->vid);
- #if IS_ENABLED(CONFIG_IPV6)
- 	case htons(ETH_P_IPV6): {
- 		struct in6_addr ip6_dst;
-@@ -1477,6 +1485,8 @@ static void br_multicast_send_query(struct net_bridge *br,
- 				    struct bridge_mcast_own_query *own_query)
- {
- 	struct bridge_mcast_other_query *other_query = NULL;
-+	struct net_bridge_vlan_group *vg;
-+	struct net_bridge_vlan *v;
- 	struct br_ip br_group;
- 	unsigned long time;
- 
-@@ -1485,7 +1495,7 @@ static void br_multicast_send_query(struct net_bridge *br,
- 	    !br_opt_get(br, BROPT_MULTICAST_QUERIER))
- 		return;
- 
--	memset(&br_group.dst, 0, sizeof(br_group.dst));
-+	memset(&br_group, 0, sizeof(br_group));
- 
- 	if (port ? (own_query == &port->ip4_own_query) :
- 		   (own_query == &br->ip4_own_query)) {
-@@ -1501,8 +1511,19 @@ static void br_multicast_send_query(struct net_bridge *br,
- 	if (!other_query || timer_pending(&other_query->timer))
- 		return;
- 
--	__br_multicast_send_query(br, port, NULL, NULL, &br_group, false, 0,
--				  NULL);
-+	if (br_vlan_enabled(br->dev) && port) {
-+		vg = nbp_vlan_group(port);
-+
-+		list_for_each_entry(v, &vg->vlan_list, vlist) {
-+			br_group.vid = v->vid == vg->pvid ? 0 : v->vid;
-+
-+			__br_multicast_send_query(br, port, NULL, NULL,
-+						  &br_group, false, 0, NULL);
-+		}
-+	} else {
-+		__br_multicast_send_query(br, port, NULL, NULL, &br_group,
-+					  false, 0, NULL);
-+	}
- 
- 	time = jiffies;
- 	time += own_query->startup_sent < br->multicast_startup_query_count ?
+ 	if (WARN_ON_ONCE(skb_shinfo(skb)->nr_frags)) {
+ 		nn_dp_warn(dp, "Driver's CTRL TX does not implement gather\n");
+ 		goto err_free;
 -- 
-2.27.0
+2.20.1
 
