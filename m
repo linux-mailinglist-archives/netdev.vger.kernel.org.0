@@ -2,192 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C714F2D7928
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 16:26:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DBBA2D7935
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 16:28:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437894AbgLKP0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 10:26:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54552 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2437885AbgLKPZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 10:25:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607700262;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2l0yo4Ve96F2WJkNXwsNtdTN0rO8FOX7fNOyad9ivX0=;
-        b=FRqVkaJ27k+WLyApn3qi7/se+lLWSNvEGB0O1AuqA0/uNLjrXn4kAZDbrAHk5hKVDXRICJ
-        R05sPZs30TCETtzK5MIw5rEHz7wdEhGVXuqWoX+cTwd2qemh1sryxLicxqZx18++c1ucMq
-        WUTfGJeX2kJ2H07Tp9YMnrnBYYRURA4=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-218-HnkQ5oolOBODnCadSLUPAg-1; Fri, 11 Dec 2020 10:24:19 -0500
-X-MC-Unique: HnkQ5oolOBODnCadSLUPAg-1
-Received: by mail-wr1-f71.google.com with SMTP id r11so3428856wrs.23
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 07:24:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2l0yo4Ve96F2WJkNXwsNtdTN0rO8FOX7fNOyad9ivX0=;
-        b=F4Zvb5Fn/AXYnKsxURRsWUUR0X3+g2/IGpSBP455welodcVcRDwDval8MCPkwk9PX8
-         2qglKNYtwIYbO4xBnMPJPAXtBpPr+00yWeOSPGfUwWdjhxgOdd8oatGVfJFxBFe3Hdo4
-         xvW2L1lN1UcXZSJ6h7LxDu52n0RrHmKbL3kcmKN1h1molsCm1ST2MDqGl+cuAqTLZmO0
-         qxyZj+hpGh2xs/tFeLfrYJPb3wcgZm6e5jKR6R9qrKZOA1WOZkxDuco8SSUkfZJ3UbYo
-         SwooKMDNg/pzSTDqDduaqesRE/KL/mrLfckBrlbTKKCzl/VislFlWFTvXOAezTWpQgEf
-         rnTw==
-X-Gm-Message-State: AOAM533rOfRWBEcNMHMZcJ3UU8wCoFNFq2FirOllqNRn9FFWUCIUEVV1
-        aXciKOZkilihemygeoGwFWLvhcEWulecCiXwnlukcLcrt87/ccVmKmWoy8pw7f+V9ZFQbLRNOR5
-        PcitMATL3Fbl+eoLR
-X-Received: by 2002:a1c:4e17:: with SMTP id g23mr12841930wmh.101.1607700258019;
-        Fri, 11 Dec 2020 07:24:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwlkr7lm/rjDqcXSluftB1dUd04oIqadtRuWETjuJ4LyoMBCXprY6aihhsdTh9Gb+amV61dbQ==
-X-Received: by 2002:a1c:4e17:: with SMTP id g23mr12841911wmh.101.1607700257769;
-        Fri, 11 Dec 2020 07:24:17 -0800 (PST)
-Received: from steredhat (host-79-24-227-66.retail.telecomitalia.it. [79.24.227.66])
-        by smtp.gmail.com with ESMTPSA id c10sm14946349wrb.92.2020.12.11.07.24.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 07:24:17 -0800 (PST)
-Date:   Fri, 11 Dec 2020 16:24:13 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Andra Paraschiv <andraprs@amazon.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Duncan <davdunc@amazon.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Alexander Graf <graf@amazon.de>,
-        Jorgen Hansen <jhansen@vmware.com>,
+        id S2437916AbgLKP1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 10:27:09 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:13216 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437886AbgLKP0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 10:26:36 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fd38f830003>; Fri, 11 Dec 2020 07:25:55 -0800
+Received: from [172.27.0.216] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 11 Dec
+ 2020 15:25:37 +0000
+Subject: Re: [PATCH net-next 3/4] sch_htb: Stats for offloaded HTB
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+CC:     <kbuild@lists.01.org>, Maxim Mikityanskiy <maximmi@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "Cong Wang" <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, <lkp@intel.com>,
+        <kbuild-all@lists.01.org>, <netdev@vger.kernel.org>,
+        "Saeed Mahameed" <saeedm@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>
-Subject: Re: [PATCH net-next v3 0/4] vsock: Add flags field in the vsock
- address
-Message-ID: <20201211152413.iezrw6qswzhpfa3j@steredhat>
-References: <20201211103241.17751-1-andraprs@amazon.com>
+        Tariq Toukan <tariqt@mellanox.com>
+References: <20201210082851.GL2767@kadam>
+ <7d1a6afe-d084-bdbd-168a-3bcb88910e2d@nvidia.com>
+ <20201211084141.GQ2789@kadam>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+Message-ID: <d202fb5e-69a8-c7e3-7fd3-cb973845fc63@nvidia.com>
+Date:   Fri, 11 Dec 2020 17:25:34 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20201211103241.17751-1-andraprs@amazon.com>
+In-Reply-To: <20201211084141.GQ2789@kadam>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1607700355; bh=6qMV+gioyT0eN5j3j8msr23Btm1kBW5mCqXujmjVDGs=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=sRa7Xq2vXe3D2HxjD3HVyFAgRPwUgu6IBNo7NhRIi9X3JIYANsaMLrfAHEaMhKdGT
+         JSTS1hnFRlXIcem5is+QaO4HAM/GOLj7+E7aVtwF8EeNt6WU/AWbk/VMHAYxY7B0Dm
+         DuQKnKjEpMqlhogbbnIS3WVtnv4O2jfuJ+9FwyqZujCH+y3ptN+3hXEGijOxanHthI
+         DtOtgFsMmPZNuGSixFaIPInSTGXhWOGltetrBm+rUvz85SuvitHx6Q1dcjwoVabylQ
+         +8Oj8N06T1R1nL6SO3FBR/njHiDgAOVqoaVK4lv9LZVIO9Qk96w36P3q7wwY6Qzta8
+         ymrzrdm+KlybQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andra,
+On 2020-12-11 10:41, Dan Carpenter wrote:
+> On Thu, Dec 10, 2020 at 05:07:28PM +0200, Maxim Mikityanskiy wrote:
+>> On 2020-12-10 10:28, Dan Carpenter wrote:
+>>> Hi Maxim,
+>>>
+>>>
+>>> url:    https://github.com/0day-ci/linux/commits/Maxim-Mikityanskiy/HTB-offload/20201210-000703
+>>> base:
+>>> https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
+>>> afae3cc2da100ead3cd6ef4bb1fb8bc9d4b817c5
+>>> config: i386-randconfig-m021-20201209 (attached as .config)
+>>> compiler: gcc-9 (Debian 9.3.0-15) 9.3.0
+>>>
+>>> If you fix the issue, kindly add following tag as appropriate
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>>
+>>> smatch warnings:
+>>> net/sched/sch_htb.c:1310 htb_dump_class_stats() error: we previously assumed 'cl->leaf.q' could be null (see line 1300)
+>>>
+>>> vim +1310 net/sched/sch_htb.c
+>>>
+>>> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1289  static int
+>>> 87990467d387f92 Stephen Hemminger     2006-08-10  1290  htb_dump_class_stats(struct Qdisc *sch, unsigned long arg, struct gnet_dump *d)
+>>> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1291  {
+>>> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1292  	struct htb_class *cl = (struct htb_class *)arg;
+>>> 1e0ac0107df684e Maxim Mikityanskiy    2020-12-09  1293  	struct htb_sched *q = qdisc_priv(sch);
+>>> 338ed9b4de57c4b Eric Dumazet          2016-06-21  1294  	struct gnet_stats_queue qs = {
+>>> 338ed9b4de57c4b Eric Dumazet          2016-06-21  1295  		.drops = cl->drops,
+>>> 3c75f6ee139d464 Eric Dumazet          2017-09-18  1296  		.overlimits = cl->overlimits,
+>>> 338ed9b4de57c4b Eric Dumazet          2016-06-21  1297  	};
+>>> 6401585366326fc John Fastabend        2014-09-28  1298  	__u32 qlen = 0;
+>>> ^1da177e4c3f415 Linus Torvalds        2005-04-16  1299
+>>> 5dd431b6b92c0db Paolo Abeni           2019-03-28 @1300  	if (!cl->level && cl->leaf.q)
+>>>                                                                                     ^^^^^^^^^^
+>>> Check for NULL
+>>
+>> Well, I don't think this is real... I don't see any possibility how
+>> cl->leaf.q can be NULL for a leaf class. However, I'll add a similar check
+>> below anyway.
+>>
+> 
+> Another option is to remove this check if it's really impossible.
 
-On Fri, Dec 11, 2020 at 12:32:37PM +0200, Andra Paraschiv wrote:
->vsock enables communication between virtual machines and the host they are
->running on. Nested VMs can be setup to use vsock channels, as the multi
->transport support has been available in the mainline since the v5.5 Linux kernel
->has been released.
->
->Implicitly, if no host->guest vsock transport is loaded, all the vsock packets
->are forwarded to the host. This behavior can be used to setup communication
->channels between sibling VMs that are running on the same host. One example can
->be the vsock channels that can be established within AWS Nitro Enclaves
->(see Documentation/virt/ne_overview.rst).
->
->To be able to explicitly mark a connection as being used for a certain use case,
->add a flags field in the vsock address data structure. The value of the flags
->field is taken into consideration when the vsock transport is assigned. This way
->can distinguish between different use cases, such as nested VMs / local
->communication and sibling VMs.
->
->The flags field can be set in the user space application connect logic. On the
->listen path, the field can be set in the kernel space logic.
->
+Yes, thanks, I see this option, but between these two options I'd pick 
+the one that for sure doesn't make any change to the non-offloaded HTB 
+logic. Even though to the best of my knowledge this check isn't needed, 
+I might miss something, because I tried tracking down the origin of this 
+code, and it was already there in the initial commit of 2005.
 
-I reviewed all the patches and they are in a good shape!
+Respinning now with the CI issues fixed.
 
-Maybe the last thing to add is a flags check in the 
-vsock_addr_validate(), to avoid that flags that we don't know how to 
-handle are specified.
-For example if in the future we add new flags that this version of the 
-kernel is not able to satisfy, we should return an error to the 
-application.
-
-I mean something like this:
-
-     diff --git a/net/vmw_vsock/vsock_addr.c b/net/vmw_vsock/vsock_addr.c
-     index 909de26cb0e7..73bb1d2fa526 100644
-     --- a/net/vmw_vsock/vsock_addr.c
-     +++ b/net/vmw_vsock/vsock_addr.c
-     @@ -22,6 +22,8 @@ EXPORT_SYMBOL_GPL(vsock_addr_init);
-      
-      int vsock_addr_validate(const struct sockaddr_vm *addr)
-      {
-     +       unsigned short svm_valid_flags = VMADDR_FLAG_TO_HOST;
-     +
-             if (!addr)
-                     return -EFAULT;
-      
-     @@ -31,6 +33,9 @@ int vsock_addr_validate(const struct sockaddr_vm *addr)
-             if (addr->svm_zero[0] != 0)
-                     return -EINVAL;
-      
-     +       if (addr->svm_flags & ~svm_valid_flags)
-     +               return -EINVAL;
-     +
-             return 0;
-      }
-      EXPORT_SYMBOL_GPL(vsock_addr_validate);
-
-
-Thanks,
-Stefano
-
->Thank you.
->
->Andra
->
->---
->
->Patch Series Changelog
->
->The patch series is built on top of v5.10-rc7.
->
->GitHub repo branch for the latest version of the patch series:
->
->* https://github.com/andraprs/linux/tree/vsock-flag-sibling-comm-v3
->
->v2 -> v3
->
->* Rebase on top of v5.10-rc7.
->* Add "svm_flags" as a new field, not reusing "svm_reserved1".
->* Update comments to mention when the "VMADDR_FLAG_TO_HOST" flag is set in the
->  connect and listen paths.
->* Update bitwise check logic to not compare result to the flag value.
->* v2: https://lore.kernel.org/lkml/20201204170235.84387-1-andraprs@amazon.com/
->
->v1 -> v2
->
->* Update the vsock flag naming to "VMADDR_FLAG_TO_HOST".
->* Use bitwise operators to setup and check the vsock flag.
->* Set the vsock flag on the receive path in the vsock transport assignment
->  logic.
->* Merge the checks for the g2h transport assignment in one "if" block.
->* v1: https://lore.kernel.org/lkml/20201201152505.19445-1-andraprs@amazon.com/
->
->---
->
->Andra Paraschiv (4):
->  vm_sockets: Add flags field in the vsock address data structure
->  vm_sockets: Add VMADDR_FLAG_TO_HOST vsock flag
->  af_vsock: Set VMADDR_FLAG_TO_HOST flag on the receive path
->  af_vsock: Assign the vsock transport considering the vsock address
->    flags
->
-> include/uapi/linux/vm_sockets.h | 25 ++++++++++++++++++++++++-
-> net/vmw_vsock/af_vsock.c        | 21 +++++++++++++++++++--
-> 2 files changed, 43 insertions(+), 3 deletions(-)
->
->-- 
->2.20.1 (Apple Git-117)
->
->
->
->
->Amazon Development Center (Romania) S.R.L. registered office: 27A Sf. Lazar Street, UBC5, floor 2, Iasi, Iasi County, 700045, Romania. Registered in Romania. Registration number J22/2621/2005.
->
+> regards,
+> dan carpenter
+> 
 
