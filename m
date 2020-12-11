@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE6242D7C6A
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 18:08:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E0402D7C81
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 18:11:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394527AbgLKRH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 12:07:56 -0500
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:45427 "EHLO
+        id S2394505AbgLKRJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 12:09:31 -0500
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:59263 "EHLO
         wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387786AbgLKRH3 (ORCPT
+        by vger.kernel.org with ESMTP id S2390220AbgLKRH3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 12:07:29 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id C2907B21;
-        Fri, 11 Dec 2020 12:05:27 -0500 (EST)
+        by mailout.west.internal (Postfix) with ESMTP id 0A2B6B18;
+        Fri, 11 Dec 2020 12:05:28 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 11 Dec 2020 12:05:28 -0500
+  by compute3.internal (MEProxy); Fri, 11 Dec 2020 12:05:29 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=4n1J1hRkMTi9UwcHj9eJ9FIO/5HrTdG99h4TAUWhxUE=; b=qdkKpp3C
-        BJuqgCRX2G2wqjf8Yiz5R8Tps9o7Fahkd++d5ZBXP81PXmv1kABhA25BCJe1uM/d
-        yxOWHezeTe2XQRvKy0oe5WL1YXXYztasK7RyNHLnHHi2c9GyY9K6r9ufE/wuLo0T
-        qlgd3ARznVIfwjqflnivZX5MgxA0V/HyqhImU+YNkmEVFs+Ra9SSEK4jvYq4yRBA
-        FAJ0w24caZZsJpW5/zkhF0hoo3dr59bhDfqEX/OZn/yWWCz3ZO0cIViOOHrMuy53
-        pBDQSsM2zOkDiebbzRoMNWf/Hz4MAiqviRF/mYa+7cHBtCE/WL3hIXAu1QIsL/nd
-        gBHSEdP61w2F4w==
-X-ME-Sender: <xms:16bTX62QVS4IJlGHaIjIVj2Gk7GnhAcSENdWBSAiEP7vef9UUpc5iA>
-    <xme:16bTX9Ej3EdC1zuSot74CmL0ahVSG26XAXFQHtxk4oS323WI1QPsPUOqsbLYliGNo
-    SRIQR5fj-Nls9c>
+        fm1; bh=oBfOuY6TjjPREbOicfWDJzljzcAIF7cduosIQN/ulCc=; b=Qk2/Wp1Q
+        9VlBPQ5Ptc/M3zGHRO6UzfVran2Kvhjqi/rd6Sww4cPIqXBrXATwbnPbgA/5XHpk
+        xmKv5DRzzkh68IH2FVwYGLXES9JNspFnxRspfkSvxBwzieBMib7KHjA0ct6ysUK1
+        kfx5Zkf2j5HDCDY8JqIOSZ5O08pjlNusbckqROhQRogU2i1t7ZZ6COazP76JvdrY
+        50RhZAdkDJ/SbodVHETJpIhknaJucAwkhXyOqLrj9c/XDSG5aU/4ChWHpLC57e4/
+        1i4DLZWwH4AhgHWWIXOs+9B2VB5VyGNI0G7yxgjBcGHDTQIOxl0VjiUjWYe5AmD0
+        eBmmI0MbZZgqOg==
+X-ME-Sender: <xms:2KbTX9A2WSKnj0Jj8NINLl6v9KoOpEyigNEj0Gxqy4g74vRBOYsyDQ>
+    <xme:2KbTXxjWjofXz3m4qV37SwPEbcuCSSCctIW8Vb9GsUx-zyPIqUExnmfGxby3NufuV
+    jaYocbFrkuvy9c>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekvddgleekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekvddgleekucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrjeek
     necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:16bTXy5e9Zp2krbNc-gIS2tBEFVvZNkbDwAadS8exL4LlvvzZhSMgQ>
-    <xmx:16bTX73ZYWibMJlxRd3bh0wXx8lDuoOnbZDjJ5PhWcFhCLPnCaIm5g>
-    <xmx:16bTX9FHyTc5cOzXUI2-YnmvmrwEw3L7PgCoSFn3SXJOc3HoNEjnTw>
-    <xmx:16bTXyQejSGpDAuwqgsQ1JykUxynGQ6h7YAZMLWdk886MD4nDKPZ8g>
+X-ME-Proxy: <xmx:2KbTX2Ouk26JsUd3ULk3RhKV2ok2iXATP8oZDN0GxgL4f4fekF0NZQ>
+    <xmx:2KbTXy57rIijBxw4eCa5uzxnrZpvDtW2O0icCQAhDkTGFznER8eNKg>
+    <xmx:2KbTX01ESoQUwTVnEIkUNdVI2UhxLJbTDet5llygsuHLCgX_Z9kC-g>
+    <xmx:2KbTX_Gs_eezDujIjuN4yXhvqvxOJ3cjtNrsaUy5pNAlS6rdSJQKew>
 Received: from shredder.lan (igld-84-229-153-78.inter.net.il [84.229.153.78])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2D3931080064;
-        Fri, 11 Dec 2020 12:05:26 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 76E951080057;
+        Fri, 11 Dec 2020 12:05:27 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 12/15] mlxsw: reg: Add Router LPM Cache Enable Register
-Date:   Fri, 11 Dec 2020 19:04:10 +0200
-Message-Id: <20201211170413.2269479-13-idosch@idosch.org>
+Subject: [PATCH net-next 13/15] mlxsw: spectrum_router_xm: Introduce basic XM cache flushing
+Date:   Fri, 11 Dec 2020 19:04:11 +0200
+Message-Id: <20201211170413.2269479-14-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201211170413.2269479-1-idosch@idosch.org>
 References: <20201211170413.2269479-1-idosch@idosch.org>
@@ -63,67 +63,403 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-The RLPMCE allows disabling the LPM cache. Can be changed on the fly.
+Upon route insertion and removal, it is needed to flush possibly cached
+entries from the XM cache. Extend XM op context to carry information
+needed for the flush. Implement the flush in delayed work since for HW
+design reasons there is a need to wait 50usec before the flush can be
+done. If during this time comes the same flush request, consolidate it
+to the first one. Implement this queued flushes by a hashtable.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 35 +++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ .../mellanox/mlxsw/spectrum_router_xm.c       | 291 ++++++++++++++++++
+ 1 file changed, 291 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index f1c5a532454e..16e2df6ef2f4 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -8653,6 +8653,40 @@ static inline void mlxsw_reg_rlcmld_pack6(char *payload,
- 	mlxsw_reg_rlcmld_dip_mask6_memcpy_to(payload, dip_mask);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+index c069092aa5ac..975962cd6765 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+@@ -24,6 +24,9 @@ struct mlxsw_sp_router_xm {
+ 	bool ipv6_supported;
+ 	unsigned int entries_size;
+ 	struct rhashtable ltable_ht;
++	struct rhashtable flush_ht; /* Stores items about to be flushed from cache */
++	unsigned int flush_count;
++	bool flush_all_mode;
+ };
+ 
+ struct mlxsw_sp_router_xm_ltable_node {
+@@ -41,11 +44,20 @@ static const struct rhashtable_params mlxsw_sp_router_xm_ltable_ht_params = {
+ 	.automatic_shrinking = true,
+ };
+ 
++struct mlxsw_sp_router_xm_flush_info {
++	bool all;
++	enum mlxsw_sp_l3proto proto;
++	u16 virtual_router;
++	u8 prefix_len;
++	unsigned char addr[sizeof(struct in6_addr)];
++};
++
+ struct mlxsw_sp_router_xm_fib_entry {
+ 	bool committed;
+ 	struct mlxsw_sp_router_xm_ltable_node *ltable_node; /* Parent node */
+ 	u16 mindex; /* Store for processing from commit op */
+ 	u8 lvalue;
++	struct mlxsw_sp_router_xm_flush_info flush_info;
+ };
+ 
+ #define MLXSW_SP_ROUTE_LL_XM_ENTRIES_MAX \
+@@ -125,6 +137,7 @@ static void mlxsw_sp_router_ll_xm_fib_entry_pack(struct mlxsw_sp_fib_entry_op_ct
+ {
+ 	struct mlxsw_sp_fib_entry_op_ctx_xm *op_ctx_xm = (void *) op_ctx->ll_priv;
+ 	struct mlxsw_sp_router_xm_fib_entry *fib_entry = (void *) priv->priv;
++	struct mlxsw_sp_router_xm_flush_info *flush_info;
+ 	enum mlxsw_reg_xmdr_c_ltr_op xmdr_c_ltr_op;
+ 	unsigned int len;
+ 
+@@ -171,6 +184,15 @@ static void mlxsw_sp_router_ll_xm_fib_entry_pack(struct mlxsw_sp_fib_entry_op_ct
+ 
+ 	fib_entry->lvalue = prefix_len > mlxsw_sp_router_xm_m_val[proto] ?
+ 			       prefix_len - mlxsw_sp_router_xm_m_val[proto] : 0;
++
++	flush_info = &fib_entry->flush_info;
++	flush_info->proto = proto;
++	flush_info->virtual_router = virtual_router;
++	flush_info->prefix_len = prefix_len;
++	if (addr)
++		memcpy(flush_info->addr, addr, sizeof(flush_info->addr));
++	else
++		memset(flush_info->addr, 0, sizeof(flush_info->addr));
  }
  
-+/* RLPMCE - Router LPM Cache Enable Register
-+ * -----------------------------------------
-+ * Allows disabling the LPM cache. Can be changed on the fly.
-+ */
+ static void
+@@ -262,6 +284,231 @@ static int mlxsw_sp_router_xm_ltable_lvalue_set(struct mlxsw_sp *mlxsw_sp,
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(xrmt), xrmt_pl);
+ }
+ 
++struct mlxsw_sp_router_xm_flush_node {
++	struct rhash_head ht_node; /* Member of router_xm->flush_ht */
++	struct list_head list;
++	struct mlxsw_sp_router_xm_flush_info flush_info;
++	struct delayed_work dw;
++	struct mlxsw_sp *mlxsw_sp;
++	unsigned long start_jiffies;
++	unsigned int reuses; /* By how many flush calls this was reused. */
++	refcount_t refcnt;
++};
 +
-+#define MLXSW_REG_RLPMCE_ID 0x8056
-+#define MLXSW_REG_RLPMCE_LEN 0x4
++static const struct rhashtable_params mlxsw_sp_router_xm_flush_ht_params = {
++	.key_offset = offsetof(struct mlxsw_sp_router_xm_flush_node, flush_info),
++	.head_offset = offsetof(struct mlxsw_sp_router_xm_flush_node, ht_node),
++	.key_len = sizeof(struct mlxsw_sp_router_xm_flush_info),
++	.automatic_shrinking = true,
++};
 +
-+MLXSW_REG_DEFINE(rlpmce, MLXSW_REG_RLPMCE_ID, MLXSW_REG_RLPMCE_LEN);
-+
-+/* reg_rlpmce_flush
-+ * Flush:
-+ * 0: do not flush the cache (default)
-+ * 1: flush (clear) the cache
-+ * Access: WO
-+ */
-+MLXSW_ITEM32(reg, rlpmce, flush, 0x00, 4, 1);
-+
-+/* reg_rlpmce_disable
-+ * LPM cache:
-+ * 0: enabled (default)
-+ * 1: disabled
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, rlpmce, disable, 0x00, 0, 1);
-+
-+static inline void mlxsw_reg_rlpmce_pack(char *payload, bool flush,
-+					 bool disable)
++static struct mlxsw_sp_router_xm_flush_node *
++mlxsw_sp_router_xm_cache_flush_node_create(struct mlxsw_sp *mlxsw_sp,
++					   struct mlxsw_sp_router_xm_flush_info *flush_info)
 +{
-+	MLXSW_REG_ZERO(rlpmce, payload);
-+	mlxsw_reg_rlpmce_flush_set(payload, flush);
-+	mlxsw_reg_rlpmce_disable_set(payload, disable);
++	struct mlxsw_sp_router_xm *router_xm = mlxsw_sp->router->xm;
++	struct mlxsw_sp_router_xm_flush_node *flush_node;
++	int err;
++
++	flush_node = kzalloc(sizeof(*flush_node), GFP_KERNEL);
++	if (!flush_node)
++		return ERR_PTR(-ENOMEM);
++
++	flush_node->flush_info = *flush_info;
++	err = rhashtable_insert_fast(&router_xm->flush_ht, &flush_node->ht_node,
++				     mlxsw_sp_router_xm_flush_ht_params);
++	if (err) {
++		kfree(flush_node);
++		return ERR_PTR(err);
++	}
++	router_xm->flush_count++;
++	flush_node->mlxsw_sp = mlxsw_sp;
++	flush_node->start_jiffies = jiffies;
++	refcount_set(&flush_node->refcnt, 1);
++	return flush_node;
 +}
 +
- /* Note that XLTQ, XMDR, XRMT and XRALXX register positions violate the rule
-  * of ordering register definitions by the ID. However, XRALXX pack helpers are
-  * using RALXX pack helpers, RALXX registers have higher IDs.
-@@ -12028,6 +12062,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(rxlte),
- 	MLXSW_REG(rxltm),
- 	MLXSW_REG(rlcmld),
-+	MLXSW_REG(rlpmce),
- 	MLXSW_REG(xltq),
- 	MLXSW_REG(xmdr),
- 	MLXSW_REG(xrmt),
++static void
++mlxsw_sp_router_xm_cache_flush_node_hold(struct mlxsw_sp_router_xm_flush_node *flush_node)
++{
++	if (!flush_node)
++		return;
++	refcount_inc(&flush_node->refcnt);
++}
++
++static void
++mlxsw_sp_router_xm_cache_flush_node_put(struct mlxsw_sp_router_xm_flush_node *flush_node)
++{
++	if (!flush_node || !refcount_dec_and_test(&flush_node->refcnt))
++		return;
++	kfree(flush_node);
++}
++
++static void
++mlxsw_sp_router_xm_cache_flush_node_destroy(struct mlxsw_sp *mlxsw_sp,
++					    struct mlxsw_sp_router_xm_flush_node *flush_node)
++{
++	struct mlxsw_sp_router_xm *router_xm = mlxsw_sp->router->xm;
++
++	router_xm->flush_count--;
++	rhashtable_remove_fast(&router_xm->flush_ht, &flush_node->ht_node,
++			       mlxsw_sp_router_xm_flush_ht_params);
++	mlxsw_sp_router_xm_cache_flush_node_put(flush_node);
++}
++
++static u32 mlxsw_sp_router_xm_flush_mask4(u8 prefix_len)
++{
++	return GENMASK(32, 32 - prefix_len);
++}
++
++static unsigned char *mlxsw_sp_router_xm_flush_mask6(u8 prefix_len)
++{
++	static unsigned char mask[sizeof(struct in6_addr)];
++
++	memset(mask, 0, sizeof(mask));
++	memset(mask, 0xff, prefix_len / 8);
++	mask[prefix_len / 8] = GENMASK(8, 8 - prefix_len % 8);
++	return mask;
++}
++
++#define MLXSW_SP_ROUTER_XM_CACHE_PARALLEL_FLUSHES_LIMIT 15
++#define MLXSW_SP_ROUTER_XM_CACHE_FLUSH_ALL_MIN_REUSES 15
++#define MLXSW_SP_ROUTER_XM_CACHE_DELAY 50 /* usecs */
++#define MLXSW_SP_ROUTER_XM_CACHE_MAX_WAIT (MLXSW_SP_ROUTER_XM_CACHE_DELAY * 10)
++
++static void mlxsw_sp_router_xm_cache_flush_work(struct work_struct *work)
++{
++	struct mlxsw_sp_router_xm_flush_info *flush_info;
++	struct mlxsw_sp_router_xm_flush_node *flush_node;
++	char rlcmld_pl[MLXSW_REG_RLCMLD_LEN];
++	enum mlxsw_reg_rlcmld_select select;
++	struct mlxsw_sp *mlxsw_sp;
++	u32 addr4;
++	int err;
++
++	flush_node = container_of(work, struct mlxsw_sp_router_xm_flush_node,
++				  dw.work);
++	mlxsw_sp = flush_node->mlxsw_sp;
++	flush_info = &flush_node->flush_info;
++
++	if (flush_info->all) {
++		char rlpmce_pl[MLXSW_REG_RLPMCE_LEN];
++
++		mlxsw_reg_rlpmce_pack(rlpmce_pl, true, false);
++		err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(rlpmce),
++				      rlpmce_pl);
++		if (err)
++			dev_err(mlxsw_sp->bus_info->dev, "Failed to flush XM cache\n");
++
++		if (flush_node->reuses <
++		    MLXSW_SP_ROUTER_XM_CACHE_FLUSH_ALL_MIN_REUSES)
++			/* Leaving flush-all mode. */
++			mlxsw_sp->router->xm->flush_all_mode = false;
++		goto out;
++	}
++
++	select = MLXSW_REG_RLCMLD_SELECT_M_AND_ML_ENTRIES;
++
++	switch (flush_info->proto) {
++	case MLXSW_SP_L3_PROTO_IPV4:
++		addr4 = *((u32 *) flush_info->addr);
++		addr4 &= mlxsw_sp_router_xm_flush_mask4(flush_info->prefix_len);
++
++		/* In case the flush prefix length is bigger than M-value,
++		 * it makes no sense to flush M entries. So just flush
++		 * the ML entries.
++		 */
++		if (flush_info->prefix_len > MLXSW_SP_ROUTER_XM_M_VAL)
++			select = MLXSW_REG_RLCMLD_SELECT_ML_ENTRIES;
++
++		mlxsw_reg_rlcmld_pack4(rlcmld_pl, select,
++				       flush_info->virtual_router, addr4,
++				       mlxsw_sp_router_xm_flush_mask4(flush_info->prefix_len));
++		break;
++	case MLXSW_SP_L3_PROTO_IPV6:
++		mlxsw_reg_rlcmld_pack6(rlcmld_pl, select,
++				       flush_info->virtual_router, flush_info->addr,
++				       mlxsw_sp_router_xm_flush_mask6(flush_info->prefix_len));
++		break;
++	default:
++		WARN_ON(true);
++		goto out;
++	}
++	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(rlcmld), rlcmld_pl);
++	if (err)
++		dev_err(mlxsw_sp->bus_info->dev, "Failed to flush XM cache\n");
++
++out:
++	mlxsw_sp_router_xm_cache_flush_node_destroy(mlxsw_sp, flush_node);
++}
++
++static bool
++mlxsw_sp_router_xm_cache_flush_may_cancel(struct mlxsw_sp_router_xm_flush_node *flush_node)
++{
++	unsigned long max_wait = usecs_to_jiffies(MLXSW_SP_ROUTER_XM_CACHE_MAX_WAIT);
++	unsigned long delay = usecs_to_jiffies(MLXSW_SP_ROUTER_XM_CACHE_DELAY);
++
++	/* In case there is the same flushing work pending, check
++	 * if we can consolidate with it. We can do it up to MAX_WAIT.
++	 * Cancel the delayed work. If the work was still pending.
++	 */
++	if (time_is_before_jiffies(flush_node->start_jiffies + max_wait - delay) &&
++	    cancel_delayed_work_sync(&flush_node->dw))
++		return true;
++	return false;
++}
++
++static int
++mlxsw_sp_router_xm_cache_flush_schedule(struct mlxsw_sp *mlxsw_sp,
++					struct mlxsw_sp_router_xm_flush_info *flush_info)
++{
++	unsigned long delay = usecs_to_jiffies(MLXSW_SP_ROUTER_XM_CACHE_DELAY);
++	struct mlxsw_sp_router_xm_flush_info flush_all_info = {.all = true};
++	struct mlxsw_sp_router_xm *router_xm = mlxsw_sp->router->xm;
++	struct mlxsw_sp_router_xm_flush_node *flush_node;
++
++	/* Check if the queued number of flushes reached critical amount after
++	 * which it is better to just flush the whole cache.
++	 */
++	if (router_xm->flush_count == MLXSW_SP_ROUTER_XM_CACHE_PARALLEL_FLUSHES_LIMIT)
++		/* Entering flush-all mode. */
++		router_xm->flush_all_mode = true;
++
++	if (router_xm->flush_all_mode)
++		flush_info = &flush_all_info;
++
++	rcu_read_lock();
++	flush_node = rhashtable_lookup_fast(&router_xm->flush_ht, flush_info,
++					    mlxsw_sp_router_xm_flush_ht_params);
++	/* Take a reference so the object is not freed before possible
++	 * delayed work cancel could be done.
++	 */
++	mlxsw_sp_router_xm_cache_flush_node_hold(flush_node);
++	rcu_read_unlock();
++
++	if (flush_node && mlxsw_sp_router_xm_cache_flush_may_cancel(flush_node)) {
++		flush_node->reuses++;
++		mlxsw_sp_router_xm_cache_flush_node_put(flush_node);
++		 /* Original work was within wait period and was canceled.
++		  * That means that the reference is still held and the
++		  * flush_node_put() call above did not free the flush_node.
++		  * Reschedule it with fresh delay.
++		  */
++		goto schedule_work;
++	} else {
++		mlxsw_sp_router_xm_cache_flush_node_put(flush_node);
++	}
++
++	flush_node = mlxsw_sp_router_xm_cache_flush_node_create(mlxsw_sp, flush_info);
++	if (IS_ERR(flush_node))
++		return PTR_ERR(flush_node);
++	INIT_DELAYED_WORK(&flush_node->dw, mlxsw_sp_router_xm_cache_flush_work);
++
++schedule_work:
++	mlxsw_core_schedule_dw(&flush_node->dw, delay);
++	return 0;
++}
++
+ static int
+ mlxsw_sp_router_xm_ml_entry_add(struct mlxsw_sp *mlxsw_sp,
+ 				struct mlxsw_sp_router_xm_fib_entry *fib_entry)
+@@ -282,10 +529,18 @@ mlxsw_sp_router_xm_ml_entry_add(struct mlxsw_sp *mlxsw_sp,
+ 							   ltable_node);
+ 		if (err)
+ 			goto err_lvalue_set;
++
++		/* The L value for prefix/M is increased.
++		 * Therefore, all entries in M and ML caches matching
++		 * {prefix/M, proto, VR} need to be flushed. Set the flush
++		 * prefix length to M to achieve that.
++		 */
++		fib_entry->flush_info.prefix_len = MLXSW_SP_ROUTER_XM_M_VAL;
+ 	}
+ 
+ 	ltable_node->lvalue_ref[lvalue]++;
+ 	fib_entry->ltable_node = ltable_node;
++
+ 	return 0;
+ 
+ err_lvalue_set:
+@@ -313,6 +568,13 @@ mlxsw_sp_router_xm_ml_entry_del(struct mlxsw_sp *mlxsw_sp,
+ 
+ 		ltable_node->current_lvalue = new_lvalue;
+ 		mlxsw_sp_router_xm_ltable_lvalue_set(mlxsw_sp, ltable_node);
++
++		/* The L value for prefix/M is decreased.
++		 * Therefore, all entries in M and ML caches matching
++		 * {prefix/M, proto, VR} need to be flushed. Set the flush
++		 * prefix length to M to achieve that.
++		 */
++		fib_entry->flush_info.prefix_len = MLXSW_SP_ROUTER_XM_M_VAL;
+ 	}
+ 	mlxsw_sp_router_xm_ltable_node_put(router_xm, ltable_node);
+ }
+@@ -354,6 +616,23 @@ mlxsw_sp_router_xm_ml_entries_del(struct mlxsw_sp *mlxsw_sp,
+ 	}
+ }
+ 
++static void
++mlxsw_sp_router_xm_ml_entries_cache_flush(struct mlxsw_sp *mlxsw_sp,
++					  struct mlxsw_sp_fib_entry_op_ctx_xm *op_ctx_xm)
++{
++	struct mlxsw_sp_router_xm_fib_entry *fib_entry;
++	int err;
++	int i;
++
++	for (i = 0; i < op_ctx_xm->entries_count; i++) {
++		fib_entry = op_ctx_xm->entries[i];
++		err = mlxsw_sp_router_xm_cache_flush_schedule(mlxsw_sp,
++							      &fib_entry->flush_info);
++		if (err)
++			dev_err(mlxsw_sp->bus_info->dev, "Failed to flush XM cache\n");
++	}
++}
++
+ static int mlxsw_sp_router_ll_xm_fib_entry_commit(struct mlxsw_sp *mlxsw_sp,
+ 						  struct mlxsw_sp_fib_entry_op_ctx *op_ctx,
+ 						  bool *postponed_for_bulk)
+@@ -414,6 +693,11 @@ static int mlxsw_sp_router_ll_xm_fib_entry_commit(struct mlxsw_sp *mlxsw_sp,
+ 		 */
+ 		mlxsw_sp_router_xm_ml_entries_del(mlxsw_sp, op_ctx_xm);
+ 
++	/* At the very end, do the XLT cache flushing to evict stale
++	 * M and ML cache entries after prefixes were inserted/removed.
++	 */
++	mlxsw_sp_router_xm_ml_entries_cache_flush(mlxsw_sp, op_ctx_xm);
++
+ out:
+ 	/* Next pack call is going to do reinitialization */
+ 	op_ctx->initialized = false;
+@@ -490,9 +774,15 @@ int mlxsw_sp_router_xm_init(struct mlxsw_sp *mlxsw_sp)
+ 	if (err)
+ 		goto err_ltable_ht_init;
+ 
++	err = rhashtable_init(&router_xm->flush_ht, &mlxsw_sp_router_xm_flush_ht_params);
++	if (err)
++		goto err_flush_ht_init;
++
+ 	mlxsw_sp->router->xm = router_xm;
+ 	return 0;
+ 
++err_flush_ht_init:
++	rhashtable_destroy(&router_xm->ltable_ht);
+ err_ltable_ht_init:
+ err_rxltm_write:
+ err_mindex_size_check:
+@@ -509,6 +799,7 @@ void mlxsw_sp_router_xm_fini(struct mlxsw_sp *mlxsw_sp)
+ 	if (!mlxsw_sp->bus_info->xm_exists)
+ 		return;
+ 
++	rhashtable_destroy(&router_xm->flush_ht);
+ 	rhashtable_destroy(&router_xm->ltable_ht);
+ 	kfree(router_xm);
+ }
 -- 
 2.29.2
 
