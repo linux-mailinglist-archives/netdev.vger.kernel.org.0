@@ -2,165 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A9D92D7C89
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 18:13:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041A02D7CA0
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 18:18:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394884AbgLKRMl convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Dec 2020 12:12:41 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13898 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2392511AbgLKRM3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 12:12:29 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BBH93qO030658
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 09:11:48 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 35cacsrwqh-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 09:11:48 -0800
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 11 Dec 2020 09:11:46 -0800
-Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
-        id B7F445283264; Fri, 11 Dec 2020 09:11:38 -0800 (PST)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     <netdev@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <yhs@fb.com>, <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>
-Subject: [PATCH 1/1 v3 bpf-next] bpf: increment and use correct thread iterator
-Date:   Fri, 11 Dec 2020 09:11:38 -0800
-Message-ID: <20201211171138.63819-2-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201211171138.63819-1-jonathan.lemon@gmail.com>
-References: <20201211171138.63819-1-jonathan.lemon@gmail.com>
+        id S2395026AbgLKRRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 12:17:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390169AbgLKRQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 12:16:38 -0500
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D652BC0613CF;
+        Fri, 11 Dec 2020 09:15:57 -0800 (PST)
+Received: by mail-il1-x144.google.com with SMTP id c18so9445715iln.10;
+        Fri, 11 Dec 2020 09:15:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w9pMnXNgeC3I2EqzptbTj1OeUgYzyw7z4b4B69c9CVQ=;
+        b=kxc5ZymAQ+fGYHWnQrd+SqA/pWtI+9O2o2QOXKZD1NWgRC4i3GCKr9Ap5Wf6fzhwg+
+         0foBPB5uSKtGefZ7FrkS86sjnPTPIG6Ewdf1R4VGTpgeEDI/M8T8rw1xdEEgFEvJd4Z3
+         7QOVnYrw1SNkWCQkzwHI/JQdO4Uq/eNX1qFDolXztfukj1enZVvg2h2g67JbWzw3Q0+s
+         ZEtbjjiTQzCJj6YhErGyh22873EPv1YXOyyRv0KQBtuIpyKg5jwPjjokytwNa8XILJgI
+         v3DnF3gcfToAWOnB9z2sjhvqJHPKsSXGLKOAlqs3NR3PqUh7RzR9AOr2Pgj8fPuv2gcT
+         vfsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w9pMnXNgeC3I2EqzptbTj1OeUgYzyw7z4b4B69c9CVQ=;
+        b=J4CIeUqOqPls9fZ1mDR1rPlVjHCGE8SzB0GZhbW1mhIfi7WV0Uu/IDWhVTECZoz4cB
+         rRBXxxsaoRG/B4QE1qaogtvadVpxUlybnTeFytEB79hnlIBWE5/FON33vFX5o37s4+h4
+         dGkPdMY3W2h+EjtyGR/et1COlnXhh9HO1PJ+rz+Y8J+gEWVtsvYjUtchv+8Zx2LbbOf7
+         AgKBNQHNxvblBmZg/yEXT0mxBspVI1ZMDwcGxekPwUUh2sEjBA4S5njTWiw5lKDVqHao
+         iEGGPBKG5lhtUdX/mqBf05vzv66oHDu30PjMqaO9GrOAnRPznJRyeKIE9CFRGO2tdn9N
+         X5uw==
+X-Gm-Message-State: AOAM532cynEKKXv1NqsUytL0eQCwhQx4VkkimxxYBqKqgWz2tLLn280s
+        0YHMarlJy5+j5uiyKVOr6rSSJvRiu4rLNvDG+uE=
+X-Google-Smtp-Source: ABdhPJy45/cvYQgQiF7NDEeSwDh+0GPWXIrCQ+XQAzQ9/qWDHOtCkE4WWwYwHSKJC1UGjhMES04b/oo+1unayHGhTjg=
+X-Received: by 2002:a05:6e02:929:: with SMTP id o9mr16725243ilt.42.1607706957044;
+ Fri, 11 Dec 2020 09:15:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-11_05:2020-12-11,2020-12-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
- spamscore=0 bulkscore=0 malwarescore=0 clxscore=1034 mlxlogscore=974
- priorityscore=1501 suspectscore=0 phishscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012110115
-X-FB-Internal: deliver
+References: <160765171921.6905.7897898635812579754.stgit@localhost.localdomain>
+ <CANn89iJ5HnJYv6eWb1jm6rK173DFkp2GRnfvi9vnYwXZPzE4LQ@mail.gmail.com>
+ <CAKgT0Uf_q=FgMHd9_wq5Bx8rCC-kS0Qz563rE9dL2hpQ6Evppg@mail.gmail.com> <CANn89iJUT6aWm75ZpU_Ggmuqbb+cbLSGj0Bxysu9_wXRgNS8MQ@mail.gmail.com>
+In-Reply-To: <CANn89iJUT6aWm75ZpU_Ggmuqbb+cbLSGj0Bxysu9_wXRgNS8MQ@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 11 Dec 2020 09:15:45 -0800
+Message-ID: <CAKgT0Uecuh3mcGRpDAZzzbnQtOusc++H4SXAv2Scd297Ha5AYQ@mail.gmail.com>
+Subject: Re: [net PATCH] tcp: Mark fastopen SYN packet as lost when receiving ICMP_TOOBIG/ICMP_FRAG_NEEDED
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Yuchung Cheng <ycheng@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        kernel-team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <bsd@fb.com>
+On Fri, Dec 11, 2020 at 8:22 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Fri, Dec 11, 2020 at 5:03 PM Alexander Duyck
+> <alexander.duyck@gmail.com> wrote:
+>
+> > That's fine. I can target this for net-next. I had just selected net
+> > since I had considered it a fix, but I suppose it could be considered
+> > a behavioral change.
+>
+> We are very late in the 5.10 cycle, and we never handled ICMP in this
+> state, so net-next is definitely better.
+>
+> Note that RFC 7413 states in 4.1.3 :
+>
+>  The client MUST cache cookies from servers for later Fast Open
+>    connections.  For a multihomed client, the cookies are dependent on
+>    the client and server IP addresses.  Hence, the client should cache
+>    at most one (most recently received) cookie per client and server IP
+>    address pair.
+>
+>    When caching cookies, we recommend that the client also cache the
+>    Maximum Segment Size (MSS) advertised by the server.  The client can
+>    cache the MSS advertised by the server in order to determine the
+>    maximum amount of data that the client can fit in the SYN packet in
+>    subsequent TFO connections.  Caching the server MSS is useful
+>    because, with Fast Open, a client sends data in the SYN packet before
+>    the server announces its MSS in the SYN-ACK packet.  If the client
+>    sends more data in the SYN packet than the server will accept, this
+>    will likely require the client to retransmit some or all of the data.
+>    Hence, caching the server MSS can enhance performance.
+>
+>    Without a cached server MSS, the amount of data in the SYN packet is
+>    limited to the default MSS of 536 bytes for IPv4 [RFC1122] and 1220
+>    bytes for IPv6 [RFC2460].  Even if the client complies with this
+>    limit when sending the SYN, it is known that an IPv4 receiver
+>    advertising an MSS less than 536 bytes can receive a segment larger
+>    than it is expecting.
+>
+>    If the cached MSS is larger than the typical size (1460 bytes for
+>    IPv4 or 1440 bytes for IPv6), then the excess data in the SYN packet
+>    may cause problems that offset the performance benefit of Fast Open.
+>    For example, the unusually large SYN may trigger IP fragmentation and
+>    may confuse firewalls or middleboxes, causing SYN retransmission and
+>    other side effects.  Therefore, the client MAY limit the cached MSS
+>    to 1460 bytes for IPv4 or 1440 for IPv6.
+>
+>
+> Relying on ICMP is fragile, since they can be filtered in some way.
 
-On some systems, some variant of the following splat is
-repeatedly seen.  The common factor in all traces seems
-to be the entry point to task_file_seq_next().  With the
-patch, all warnings go away.
+In this case I am not relying on the ICMP, but thought that since I
+have it I should make use of it. WIthout the ICMP we would still just
+be waiting on the retransmit timer.
 
-    rcu: INFO: rcu_sched self-detected stall on CPU
-    rcu: \x0926-....: (20992 ticks this GP) idle=d7e/1/0x4000000000000002 softirq=81556231/81556231 fqs=4876
-    \x09(t=21033 jiffies g=159148529 q=223125)
-    NMI backtrace for cpu 26
-    CPU: 26 PID: 2015853 Comm: bpftool Kdump: loaded Not tainted 5.6.13-0_fbk4_3876_gd8d1f9bf80bb #1
-    Hardware name: Quanta Twin Lakes MP/Twin Lakes Passive MP, BIOS F09_3A12 10/08/2018
-    Call Trace:
-     <IRQ>
-     dump_stack+0x50/0x70
-     nmi_cpu_backtrace.cold.6+0x13/0x50
-     ? lapic_can_unplug_cpu.cold.30+0x40/0x40
-     nmi_trigger_cpumask_backtrace+0xba/0xca
-     rcu_dump_cpu_stacks+0x99/0xc7
-     rcu_sched_clock_irq.cold.90+0x1b4/0x3aa
-     ? tick_sched_do_timer+0x60/0x60
-     update_process_times+0x24/0x50
-     tick_sched_timer+0x37/0x70
-     __hrtimer_run_queues+0xfe/0x270
-     hrtimer_interrupt+0xf4/0x210
-     smp_apic_timer_interrupt+0x5e/0x120
-     apic_timer_interrupt+0xf/0x20
-     </IRQ>
-    RIP: 0010:get_pid_task+0x38/0x80
-    Code: 89 f6 48 8d 44 f7 08 48 8b 00 48 85 c0 74 2b 48 83 c6 55 48 c1 e6 04 48 29 f0 74 19 48 8d 78 20 ba 01 00 00 00 f0 0f c1 50 20 <85> d2 74 27 78 11 83 c2 01 78 0c 48 83 c4 08 c3 31 c0 48 83 c4 08
-    RSP: 0018:ffffc9000d293dc8 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
-    RAX: ffff888637c05600 RBX: ffffc9000d293e0c RCX: 0000000000000000
-    RDX: 0000000000000001 RSI: 0000000000000550 RDI: ffff888637c05620
-    RBP: ffffffff8284eb80 R08: ffff88831341d300 R09: ffff88822ffd8248
-    R10: ffff88822ffd82d0 R11: 00000000003a93c0 R12: 0000000000000001
-    R13: 00000000ffffffff R14: ffff88831341d300 R15: 0000000000000000
-     ? find_ge_pid+0x1b/0x20
-     task_seq_get_next+0x52/0xc0
-     task_file_seq_get_next+0x159/0x220
-     task_file_seq_next+0x4f/0xa0
-     bpf_seq_read+0x159/0x390
-     vfs_read+0x8a/0x140
-     ksys_read+0x59/0xd0
-     do_syscall_64+0x42/0x110
-     entry_SYSCALL_64_after_hwframe+0x44/0xa9
-    RIP: 0033:0x7f95ae73e76e
-    Code: Bad RIP value.
-    RSP: 002b:00007ffc02c1dbf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-    RAX: ffffffffffffffda RBX: 000000000170faa0 RCX: 00007f95ae73e76e
-    RDX: 0000000000001000 RSI: 00007ffc02c1dc30 RDI: 0000000000000007
-    RBP: 00007ffc02c1ec70 R08: 0000000000000005 R09: 0000000000000006
-    R10: fffffffffffff20b R11: 0000000000000246 R12: 00000000019112a0
-    R13: 0000000000000000 R14: 0000000000000007 R15: 00000000004283c0
-
-The attached patch does 3 things:
-
-1) If unable to obtain the file structure for the current task,
-   proceed to the next task number after the one returned from
-   task_seq_get_next(), instead of the next task number from the
-   original iterator.
-
-2) Use thread_group_leader() instead of the open-coded comparision
-   of tgid vs pid.
-
-3) Only obtain the task reference count at the end of the RCU section
-   instead of repeatedly obtaining/releasing it when iterathing though
-   a thread group.
-
-Fixes: a650da2ee52a ("bpf: Add task and task/file iterator targets")
-Fixes: 67b6b863e6ab ("bpf: Avoid iterating duplicated files for task_file iterator")
-
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- kernel/bpf/task_iter.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-index 0458a40edf10..66a52fcf589a 100644
---- a/kernel/bpf/task_iter.c
-+++ b/kernel/bpf/task_iter.c
-@@ -33,17 +33,17 @@ static struct task_struct *task_seq_get_next(struct pid_namespace *ns,
- 	pid = find_ge_pid(*tid, ns);
- 	if (pid) {
- 		*tid = pid_nr_ns(pid, ns);
--		task = get_pid_task(pid, PIDTYPE_PID);
-+		task = pid_task(pid, PIDTYPE_PID);
- 		if (!task) {
- 			++*tid;
- 			goto retry;
--		} else if (skip_if_dup_files && task->tgid != task->pid &&
-+		} else if (skip_if_dup_files && !thread_group_leader(task) &&
- 			   task->files == task->group_leader->files) {
--			put_task_struct(task);
- 			task = NULL;
- 			++*tid;
- 			goto retry;
- 		}
-+		get_task_struct(task);
- 	}
- 	rcu_read_unlock();
- 
-@@ -164,7 +164,7 @@ task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info)
- 		curr_files = get_files_struct(curr_task);
- 		if (!curr_files) {
- 			put_task_struct(curr_task);
--			curr_tid = ++(info->tid);
-+			curr_tid = curr_tid + 1;
- 			info->fd = 0;
- 			goto again;
- 		}
--- 
-2.24.1
-
+The problem case has a v6-in-v6 tunnel between the client and the
+endpoint so both ends assume an MTU 1500 and advertise a 1440 MSS
+which works fine until they actually go to send a large packet between
+the two. At that point the tunnel is triggering an ICMP_TOOBIG and the
+endpoint is stalling since the MSS is dropped to 1400, but the SYN and
+data payload were already smaller than that so no retransmits are
+being triggered. This results in TFO being 1s slower than non-TFO
+because of the failure to trigger the retransmit for the frame that
+violated the PMTU. The patch is meant to get the two back into
+comparable times.
