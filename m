@@ -2,158 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE62F2D6F4C
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 05:30:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 146462D6F81
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 06:11:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390215AbgLKE3j convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Dec 2020 23:29:39 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:16918 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2395383AbgLKE3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 23:29:06 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BB4Fcqo029922
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 20:28:24 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 35byu7gg2e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 20:28:24 -0800
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 10 Dec 2020 20:28:23 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 550B82ECB1A1; Thu, 10 Dec 2020 20:28:12 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH RFC bpf-next  4/4] selftests/bpf: test kernel module ksym externs
-Date:   Thu, 10 Dec 2020 20:27:34 -0800
-Message-ID: <20201211042734.730147-5-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201211042734.730147-1-andrii@kernel.org>
-References: <20201211042734.730147-1-andrii@kernel.org>
+        id S1726846AbgLKFFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 00:05:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42612 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726464AbgLKFFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 00:05:15 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26EE8C0613D3
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 21:04:35 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id ga15so10630206ejb.4
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 21:04:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=19AnTq45CSZ2lUNFTFAhbgUOISoXYUKH+oHoFm5bIgI=;
+        b=k5YscS7vhEsmMUSSklcg+o6u/nbJHzc5M4YEK8l4cqZAHmw/x8i11872lVI7EfBz2B
+         YYMGeZNfQOLTzdFqldicmGNo+Uv69u7I1N7TxdUzoeCxBrbkkawnOKg07JiiQI1rUZBf
+         meWRbkftsAek9JIsFn6X3kAGNPf4xZdK+iG6R5tyLt9suwnHmUZKqf6jGFM4klHTAggM
+         LGpR2gvDYh/4/NpCqubu0XZj+4TgEAhsNJkgOtszEbVX42atd6ZpkWY+28YRh18ykIqw
+         9YsFApCR3GOyTpatAcTlunbWLEjzuzDckfa1GL9BGzC7D/gZ+rNiT7uovkPGy6pnW5wx
+         GZ1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=19AnTq45CSZ2lUNFTFAhbgUOISoXYUKH+oHoFm5bIgI=;
+        b=Na5EErvdwVqvfikJfhnbFwgoRWG4BIZMNFG4Zvlx3rkG8p3F7rmJ5GPHbV9cAp0usn
+         no85w7mHFoWus0jXxWwJX8JH6on2F5Rcn/7A00SM0qPR9VPmOQ9BttVJsEn28CHgJzyw
+         rk3vEIi7V1/zhSpQhE6aBd86na4AtslLsthxH5GErZ3X+H8Txwgxz9q1KQeZzGGO18cU
+         dfmFn3qY06PgL7Pykk1e0jzwgvQ/k0/XbfaiYbCwjjuGG5BHov2LYLBVGeL9Gf+sCypx
+         yb+fGnkCNdONBASfwlQ07JDJjVLX2JFtLTv25jSikE2X8j+WYCDZyRO3MuRPflmok++H
+         wJnw==
+X-Gm-Message-State: AOAM530X4SoRbiXq7M1090+DAJiFG7CfEZIhrDt1Ws8OBMX+HDk9VBN2
+        J1czCcdrh0TpiX2/RbHwkQCAYDkkv4Q6MSa1ePjyxQ==
+X-Google-Smtp-Source: ABdhPJwRrBhd2WxdtU4DWaOjuU1+PmSEKb2t71vPWLqO0S7exyuqZG9p5trAIiQqM4rXaEMpw7G38XfTdXx3aVdspdw=
+X-Received: by 2002:a17:906:17d0:: with SMTP id u16mr9277055eje.452.1607663073559;
+ Thu, 10 Dec 2020 21:04:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-11_01:2020-12-09,2020-12-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- mlxlogscore=999 malwarescore=0 clxscore=1015 priorityscore=1501
- lowpriorityscore=0 impostorscore=0 bulkscore=0 phishscore=0 mlxscore=0
- spamscore=0 suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012110023
-X-FB-Internal: deliver
+References: <20201102180326.GA2416734@kroah.com> <CAPv3WKf0fNOOovq9UzoxoAXwGLMe_MHdfCZ6U9sjgKxarUKA+Q@mail.gmail.com>
+ <20201208133532.GH643756@sasha-vm> <CAPv3WKed9zhe0q2noGKiKdzd=jBNLtN6vRW0fnQddJhhiD=rkg@mail.gmail.com>
+ <X9CuTjdgD3tDKWwo@kroah.com> <CAPv3WKdKOnd+iBkfcVkoOZkHj16jOpBprY3A01ERJeq6ZQCkVQ@mail.gmail.com>
+ <20201210154651.GV1551@shell.armlinux.org.uk> <CAPv3WKdWr0zfuTkK+x6u7C6FpFxkVtRFrEq1FvemVpLYw2+5ng@mail.gmail.com>
+ <20201210175619.GW1551@shell.armlinux.org.uk> <CAPv3WKe+2UKedYXgFh++-OLrJwQAyCE1i53oRUgp28z6AbaXLg@mail.gmail.com>
+ <20201210202650.GA2654274@lunn.ch>
+In-Reply-To: <20201210202650.GA2654274@lunn.ch>
+From:   Jon Nettleton <jon@solid-run.com>
+Date:   Fri, 11 Dec 2020 06:03:57 +0100
+Message-ID: <CABdtJHuuRY-Oimx6DbEW4pLYdbBKKwV+1r3OpfS62skCJYWLkQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/4] net: mvpp2: add mvpp2_phylink_to_port() helper
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marcin Wojtas <mw@semihalf.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Gabor Samu <samu_gabor@yahoo.ca>,
+        Andrew Elwell <andrew.elwell@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add per-CPU variable to bpf_testmod.ko and use those from new selftest to
-validate it works end-to-end.
+On Thu, Dec 10, 2020 at 9:27 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > +1. As soon as the MDIO+ACPI lands, I plan to do the rework.
+>
+> Don't hold you breath. It has gone very quiet about ACPI in net
+> devices.
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  3 ++
- .../selftests/bpf/prog_tests/ksyms_module.c   | 33 +++++++++++++++++++
- .../selftests/bpf/progs/test_ksyms_module.c   | 26 +++++++++++++++
- 3 files changed, 62 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module.c
+NXP resources were re-allocated for their next internal BSP release.
+I have been working with Calvin over the past week and a half and the new
+patchset will be submitted early next week most likely.
 
-diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-index 2df19d73ca49..0b991e115d1f 100644
---- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-+++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-@@ -3,6 +3,7 @@
- #include <linux/error-injection.h>
- #include <linux/init.h>
- #include <linux/module.h>
-+#include <linux/percpu-defs.h>
- #include <linux/sysfs.h>
- #include <linux/tracepoint.h>
- #include "bpf_testmod.h"
-@@ -10,6 +11,8 @@
- #define CREATE_TRACE_POINTS
- #include "bpf_testmod-events.h"
- 
-+DEFINE_PER_CPU(int, bpf_testmod_ksym_percpu) = 123;
-+
- noinline ssize_t
- bpf_testmod_test_read(struct file *file, struct kobject *kobj,
- 		      struct bin_attribute *bin_attr,
-diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
-new file mode 100644
-index 000000000000..af6234e46cf7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
-@@ -0,0 +1,33 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <test_progs.h>
-+#include <bpf/libbpf.h>
-+#include <bpf/btf.h>
-+#include "test_ksyms_module.skel.h"
-+
-+static int duration;
-+
-+void test_ksyms_module(void)
-+{
-+	struct test_ksyms_module* skel;
-+	struct test_ksyms_module__bss *bss;
-+	int err;
-+
-+	skel = test_ksyms_module__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+	bss = skel->bss;
-+
-+	err = test_ksyms_module__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	usleep(1);
-+
-+	ASSERT_EQ(bss->triggered, true, "triggered");
-+	ASSERT_EQ(bss->out_mod_ksym_global, 123, "global_ksym_val");
-+
-+cleanup:
-+	test_ksyms_module__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_module.c b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
-new file mode 100644
-index 000000000000..ede7602410e1
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
-@@ -0,0 +1,26 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+
-+#include <bpf/bpf_helpers.h>
-+
-+extern const int bpf_testmod_ksym_percpu __ksym;
-+
-+int out_mod_ksym_global = 0;
-+bool triggered = false;
-+
-+SEC("raw_tp/sys_enter")
-+int handler(const void *ctx)
-+{
-+	int *val;
-+	__u32 cpu;
-+
-+	val = (int *)bpf_this_cpu_ptr(&bpf_testmod_ksym_percpu);
-+	out_mod_ksym_global = *val;
-+	triggered = true;
-+
-+	return 0;
-+}
-+
-+char LICENSE[] SEC("license") = "GPL";
--- 
-2.24.1
+-Jon
 
+>
+>         Andrew
