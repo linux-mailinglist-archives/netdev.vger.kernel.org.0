@@ -2,109 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC432D7227
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 09:48:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C69022D7254
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 09:57:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437062AbgLKIr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 03:47:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392462AbgLKIrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 03:47:23 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50485C0613CF
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 00:46:43 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id qw4so11204057ejb.12
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 00:46:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sDdfQvMZJazL55A92kQ/VzvBdB6WU0HCnW0vsuFnegU=;
-        b=XcXLc6NJhH7B/QDM8WKeCcU5W8Hmi1uswSnml+BVR+dijzpEOb0RGCFuN2OvZLJ2o8
-         R3r/tcU6AevS0ttHcmsB+IIHTR291ZvTOReyU0u4HOwgLNKjgTAlPaEGWO5sqEXB62bP
-         FYOYp9S8WsPYbvBV0koO+4aAThvsrODyEuah+dhZx42IkefQwMJbLWtL/fjGz+97offe
-         p7PGZ8nh/msibYgl4fHYD2GGLf+AY5nCvHc86lZZcbddJ9+ysNrBgKns/BcFXkeR4hhv
-         X2Cy4NiBUKtlXn+HrEl4yrHWQg/F8L7/vV4sx6/dPSGdj4igAvV6OINgaLdncIxI9ozL
-         9fQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sDdfQvMZJazL55A92kQ/VzvBdB6WU0HCnW0vsuFnegU=;
-        b=sJs7heUesfaFVeYGl/xjvqZ3TSAwr22nNtaCiMICZJUTT9hLdyT26o8KvwYtksdWZ6
-         iAquBJRr+0qT0eB0c4SfgIYH+heI4vFppfd7Fu2fkFFD2WNFxV70ISCk3RQndqSM/2U7
-         4sZLyfmMen7Ad8G1V4/Ts/570GWzUcQxp7vnRmqXWtJmfv5r/jw3/Ho07R9n4myJIzX6
-         YPSULzEHM5s/DKRRAxRUUIfat890zpUeq7fBu4glNXyq2wrAaM79k8pNI+oNGR3weN8F
-         5WDYeZY3/jl+8RFQTrWqwbnACms63yk+G1ylp+4qJdWMRzaNAfQzHrrk/x9CFuvFc+wk
-         lb2g==
-X-Gm-Message-State: AOAM5322iqKxUuvnuN4KMB7w9QBKKgxSQLMLUmY6kUHV5eCZdC798rC7
-        MHvVhMi4/UVyQ7GuVBX8ALIkerLMyabUopO4DHbVUw==
-X-Google-Smtp-Source: ABdhPJwBcrWFMCBWLOQ2YDvVQUyai6oD/poEHkhd2GUPENNzm23TU68nI/28thF+plLvRXlQI1bvYsCNqQbPsS+b23U=
-X-Received: by 2002:a17:906:40c1:: with SMTP id a1mr9852038ejk.520.1607676402010;
- Fri, 11 Dec 2020 00:46:42 -0800 (PST)
+        id S2405574AbgLKIyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 03:54:21 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:9187 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403956AbgLKIx7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 03:53:59 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Csl0d2jmxzkmT9;
+        Fri, 11 Dec 2020 16:52:33 +0800 (CST)
+Received: from ubuntu.network (10.175.138.68) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 11 Dec 2020 16:53:10 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <nbd@nbd.name>, <lorenzo.bianconi83@gmail.com>,
+        <kvalo@codeaurora.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <matthias.bgg@gmail.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH wireless -next] wireless: mt76: mt7915: convert comma to semicolon
+Date:   Fri, 11 Dec 2020 16:53:38 +0800
+Message-ID: <20201211085338.2817-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-References: <1607670251-31733-1-git-send-email-hemantk@codeaurora.org>
- <1607670251-31733-4-git-send-email-hemantk@codeaurora.org> <X9MjXWABgdJIpyIw@kroah.com>
-In-Reply-To: <X9MjXWABgdJIpyIw@kroah.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Fri, 11 Dec 2020 09:53:14 +0100
-Message-ID: <CAMZdPi8-_G+k1RvGOOte2MFFPQQiB=41wx86OkW+KDu13gRGUg@mail.gmail.com>
-Subject: Re: [PATCH v17 3/3] bus: mhi: Add userspace client interface driver
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Hemant Kumar <hemantk@codeaurora.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.138.68]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Dec 2020 at 08:44, Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Dec 10, 2020 at 11:04:11PM -0800, Hemant Kumar wrote:
-> > This MHI client driver allows userspace clients to transfer
-> > raw data between MHI device and host using standard file operations.
-> > Driver instantiates UCI device object which is associated to device
-> > file node. UCI device object instantiates UCI channel object when device
-> > file node is opened. UCI channel object is used to manage MHI channels
-> > by calling MHI core APIs for read and write operations. MHI channels
-> > are started as part of device open(). MHI channels remain in start
-> > state until last release() is called on UCI device file node. Device
-> > file node is created with format
-> >
-> > /dev/<mhi_device_name>
-> >
-> > Currently it supports QMI channel. libqmi is userspace MHI client which
-> > communicates to a QMI service using QMI channel. libqmi is a glib-based
-> > library for talking to WWAN modems and devices which speaks QMI protocol.
-> > For more information about libqmi please refer
-> > https://www.freedesktop.org/wiki/Software/libqmi/
->
-> This says _what_ this is doing, but not _why_.
->
-> Why do you want to circumvent the normal user/kernel apis for this type
-> of device and move the normal network handling logic out to userspace?
-> What does that help with?  What does the current in-kernel api lack that
-> this userspace interface is going to solve, and why can't the in-kernel
-> api solve it instead?
->
-> You are pushing a common user/kernel api out of the kernel here, to
-> become very device-specific, with no apparent justification as to why
-> this is happening.
+Replace a comma between expression statements by a semicolon.
 
-That would probably deserve re-wording indeed. This interface offers
-access to the modem control channel(s), which can be QMI (added in
-this patch), MBIM, or the old known AT protocol. Because there is no
-WWAN subsystem, these control pipes are directly exposed to userspace
-and accessed by tools like libqmi, ModemManager, minicom (for AT)
-etc... However, the data path, transporting the network payload (IP)
-is well routed to the Linux network via the mhi-net driver.
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> Also, because you are going around the existing network api, I will need
-> the networking maintainers to ack this type of patch.
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 0fd3a16f736a..a2c655c4021f 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1676,7 +1676,7 @@ mt7915_mcu_wtbl_ht_tlv(struct sk_buff *skb, struct ieee80211_sta *sta,
+ 		tlv = mt7915_mcu_add_nested_tlv(skb, WTBL_VHT, sizeof(*vht),
+ 						wtbl_tlv, sta_wtbl);
+ 		vht = (struct wtbl_vht *)tlv;
+-		vht->ldpc = sta->vht_cap.cap & IEEE80211_VHT_CAP_RXLDPC,
++		vht->ldpc = sta->vht_cap.cap & IEEE80211_VHT_CAP_RXLDPC;
+ 		vht->vht = true;
+ 
+ 		af = FIELD_GET(IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK,
+-- 
+2.22.0
+
