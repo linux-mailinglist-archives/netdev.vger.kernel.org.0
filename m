@@ -2,151 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA3852D8192
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 23:09:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C95BE2D81D1
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 23:19:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405123AbgLKWIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 17:08:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58852 "EHLO
+        id S2406801AbgLKWRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 17:17:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405437AbgLKWIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 17:08:04 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02ABC0613D3
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 14:07:24 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1607724443;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uE5KR5qlfz+ztx9s8pbRCB1Be+kxvrwztlDzBEoJCeU=;
-        b=upIVkJhj5g1RmAalIreFExmj0QWc7xxC7dfgYyTKQ7/s1CPaLrvswCn2cis9a5ELIHv+rz
-        IPyhjuoIqfAMI+60hoe1U1U27IhweRJLvNYpN7cTAqQ0o0KlM2VdD+/ibGw4UCrbJtLWLY
-        inuTJUAvrZhdYHuTfLNeogwgdoyl5SGN/dy3kNNRxVqcfza2kw+U/H2LlJBjtaANpZFTIZ
-        ptr78MOU90DKS42tb76OuG8X418bmY7SaqmPbyqibyrcTnWO7/ljKjMmuQI0HfaTAZd7Ho
-        gSP1o6so90u917yflugfQ7VOzMuRufMAcgTvFJSwBRyBFBjjIC3oXcfJ628ySQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1607724443;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uE5KR5qlfz+ztx9s8pbRCB1Be+kxvrwztlDzBEoJCeU=;
-        b=6l4EGHeIGgEoz1BM8xIprj71LYQ/8TNyn+KsbwNoVJfPjiraGOnwYmma/niMdHbbcB5BbA
-        SooB9xEZT4EUdpBw==
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list\:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list\:HFI1 DRIVER" <linux-rdma@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org
-Subject: Re: [patch 03/30] genirq: Move irq_set_lockdep_class() to core
-In-Reply-To: <87h7osgifc.fsf@nanos.tec.linutronix.de>
-References: <20201210192536.118432146@linutronix.de> <20201210194042.860029489@linutronix.de> <CAHp75Vc-2OjE2uwvNRiyLMQ8GSN3P7SehKD-yf229_7ocaktiw@mail.gmail.com> <87h7osgifc.fsf@nanos.tec.linutronix.de>
-Date:   Fri, 11 Dec 2020 23:07:22 +0100
-Message-ID: <87360cgfol.fsf@nanos.tec.linutronix.de>
+        with ESMTP id S2406763AbgLKWQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 17:16:19 -0500
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77DFC0613D6;
+        Fri, 11 Dec 2020 14:15:39 -0800 (PST)
+Received: by mail-il1-x143.google.com with SMTP id u12so10172665ilv.3;
+        Fri, 11 Dec 2020 14:15:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nUk8Ck2w9TWl88cogCNNeTiJsQCttP4ejXz/+asJ8qU=;
+        b=BSYSvxGR9Ntaxosd0faMpMSmuyQ2CfboP2bMFENX8tdORmhTpc1VfEdED84Rn0mJ41
+         SpvVQiK9lAbbqsHaGPCEdn4NOC7jUF7G9jaJsJZR4bhy3EQvq8lo2K7B8UHH1SOMHktP
+         DeiYFpAOAJEoA98nHD/nBDtF/jncPHy99FUV4it5K9DWjbTq966BvKdITT66X7JcgbT1
+         6ElHlDg5C2YwkaufAYZGsV2OmKyOBjh/czornvIu33wMdWlD6NuXUJDKvhLzy+cqOKuy
+         id2vtogT0TfkS2h3ozXB7cwWx2sVLwXlN2PjxmVuA8xk2jUpRT7mu7BUu8lutx4nucc+
+         DPYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nUk8Ck2w9TWl88cogCNNeTiJsQCttP4ejXz/+asJ8qU=;
+        b=Nn7vAclk6i+9LDBiURqj0bNFGLpEt0K5Gna6z2GUQec7FYfwn07A1CJQbEzumG+ge3
+         KSTMMtvigbLZq8bSXYksugPNVmM5p7D8y8w9UH/Kc23/C6yGhutZ2S7WqgCndsk20+MO
+         Ol0OG7z9Smurg/bGXY8G89xTIKwBqh8QpoRukDMPHrG6wrC3HGiTsktdWbdUE0yxEq1N
+         XUiS4zHtbsmJL/2t/4FYJ2DPqpXIfCLN1SXQGc1MQHnADiZSK1y+wuXQ6blW7pgTsY/L
+         O0fq3/IhBtvgOKR1ZzcqrFixuCUetROOewjRxYAw5JdrJPq6VEpOH7q+2I+L9AQaPe1j
+         kZlQ==
+X-Gm-Message-State: AOAM5325CB/ryRaV6t/oSC72b2fjT5vhASerBvBuSpCf7rqeYCxfvFKK
+        66jrEqWLFY4mx8rA6ZWCFqq3uLcx58dUFv3V9Mw=
+X-Google-Smtp-Source: ABdhPJzI0PKfFkzHltF9ToLnMZ3E9+3S+Nx8jTtgQI4Oh/+MkPPGl+8k7GbTOXWOIY2doi2OSqLsdIyrVbmsK7Cxeqw=
+X-Received: by 2002:a05:6e02:c25:: with SMTP id q5mr18252638ilg.286.1607724938985;
+ Fri, 11 Dec 2020 14:15:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201211042734.730147-1-andrii@kernel.org> <20201211042734.730147-3-andrii@kernel.org>
+ <20201211212741.o2peyh3ybnkxsu5a@ast-mbp>
+In-Reply-To: <20201211212741.o2peyh3ybnkxsu5a@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 11 Dec 2020 14:15:28 -0800
+Message-ID: <CAEf4BzbZK8uZOprwHq_+mh=2Lb27POv5VMW4kB6eyPc_6bcSPg@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 2/4] bpf: support BPF ksym variables in
+ kernel modules
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11 2020 at 22:08, Thomas Gleixner wrote:
-
-> On Fri, Dec 11 2020 at 19:53, Andy Shevchenko wrote:
+On Fri, Dec 11, 2020 at 1:27 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
->> On Thu, Dec 10, 2020 at 10:14 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->>>
->>> irq_set_lockdep_class() is used from modules and requires irq_to_desc() to
->>> be exported. Move it into the core code which lifts another requirement for
->>> the export.
->>
->> ...
->>
->>> +       if (IS_ENABLED(CONFIG_LOCKDEP))
->>> +               __irq_set_lockdep_class(irq, lock_class, request_class);
+> On Thu, Dec 10, 2020 at 08:27:32PM -0800, Andrii Nakryiko wrote:
+> > During BPF program load time, verifier will resolve FD to BTF object and will
+> > take reference on BTF object itself and, for module BTFs, corresponding module
+> > as well, to make sure it won't be unloaded from under running BPF program. The
+> > mechanism used is similar to how bpf_prog keeps track of used bpf_maps.
+> ...
+> > +
+> > +     /* if we reference variables from kernel module, bump its refcount */
+> > +     if (btf_is_module(btf)) {
+> > +             btf_mod->module = btf_try_get_module(btf);
 >
-> You are right. Let me fix that.
+> Is it necessary to refcnt the module? Correct me if I'm wrong, but
+> for module's BTF we register a notifier. Then the module can be rmmod-ed
+> at any time and we will do btf_put() for corresponding BTF, but that BTF may
+> stay around because bpftool or something is looking at it.
 
-No. I have to correct myself. You're wrong.
+Correct, BTF object itself doesn't take a refcnt on module.
 
-The inline is evaluated in the compilation units which include that
-header and because the function declaration is unconditional it is
-happy.
+> Similarly when prog is attached to raw_tp in a module we currently do try_module_get(),
+> but is it really necessary ? When bpf is attached to a netdev the netdev can
+> be removed and the link will be dangling. May be it makes sense to do the same
+> with modules?  The raw_tp can become dangling after rmmod and the prog won't be
 
-Now the optimizer stage makes the whole thing a NOOP if CONFIG_LOCKDEP=n
-and thereby drops the reference to the function which makes it not
-required for linking.
+So for raw_tp it's not the case today. I tested, I attached raw_tp,
+kept triggering it in a loop, and tried to rmmod bpf_testmod. It
+failed, because raw tracepoint takes refcnt on module. rmmod -f
+bpf_testmod also didn't work, but it's because my kernel wasn't built
+with force-unload enabled for modules. But force-unload is an entirely
+different matter and it's inherently dangerous to do, it can crash and
+corrupt anything in the kernel.
 
-So in the file where the function is implemented:
+> executed anymore. So hard coded address of a per-cpu var in a ksym will
+> be pointing to freed mod memory after rmmod, but that's ok, since that prog will
+> never execute.
 
-#ifdef CONFIG_LOCKDEP
-void __irq_set_lockdep_class(....)
-{
-}
-#endif
+Not so fast :) Indeed, if somehow module gets unloaded while we keep
+BPF program loaded, we'll point to unallocated memory **OR** to a
+memory re-used for something else. That's bad. Nothing will crash even
+if it's unmapped memory (due to bpf_probe_read semantics), but we will
+potentially be reading some garbage (not zeroes), if some other module
+re-uses that per-CPU memory.
 
-The whole block is either discarded because CONFIG_LOCKDEP is not
-defined or compile if it is defined which makes it available for the
-linker.
+As for the BPF program won't be triggered. That's not true in general,
+as you mention yourself below.
 
-And in the latter case the optimizer keeps the call in the inline (it
-optimizes the condition away because it's always true).
+> On the other side if we envision a bpf prog attaching to a vmlinux function
+> and accessing per-cpu or normal ksym in some module it would need to inc refcnt
+> of that module, since we won't be able to guarantee that this prog will
+> not execute any more. So we cannot allow dangling memory addresses.
 
-So in both cases the compiler and the linker are happy and everything
-works as expected.
+That's what my new selftest is doing actually. It's a generic
+sys_enter raw_tp, which doesn't attach to the module, but it does read
+module's per-CPU variable. So I actually ran a test before posting. I
+successfully unloaded bpf_testmod, but kept running the prog. And it
+kept returning *correct* per-CPU value. Most probably due to per-CPU
+memory not unmapped and not yet reused for something else. But it's a
+really nasty and surprising situation.
 
-It would fail if the header file had the following:
+Keep in mind, also, that whenever BPF program declares per-cpu
+variable extern, it doesn't know or care whether it will get resolved
+to built-in vmlinux per-CPU variable or module per-CPU variable.
+Restricting attachment to only module-provided hooks is both tedious
+and might be quite surprising sometimes, seems not worth the pain.
 
-#ifdef CONFIG_LOCKDEP
-void __irq_set_lockdep_class(....);
-#endif
+> If latter is what we want to allow then we probably need a test case for it and
+> document the reasons for keeping modules pinned while progs access their data.
+> Since such pinning behavior is different from other bpf attaching cases where
+> underlying objects (like netdev and cgroup) can go away.
 
-Because then it would complain about the missing function prototype when
-it evaluates the inline.
+See above, that's already the case for module tracepoints.
 
-Thanks,
-
-        tglx
+So in summary, I think we should take a refcnt on module, as that's
+already the case for stuff like raw_tp. I can add more comments to
+make this clear, of course.
