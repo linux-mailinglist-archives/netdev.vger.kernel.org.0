@@ -2,136 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4CE12D7DD5
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 19:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36AF62D7DF6
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 19:23:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393145AbgLKSNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 13:13:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390729AbgLKSNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 13:13:04 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68517C0613CF;
-        Fri, 11 Dec 2020 10:12:24 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id s21so7450492pfu.13;
-        Fri, 11 Dec 2020 10:12:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q/1zdMH3DpxGtZ8QgtITmolgonObU/7AjOPUuWKrWNo=;
-        b=Pm8buLXst2LcV9x4pk4vIxyybuwSbvL97o6tQP/6i0ZC0zOJ6xhhPvOmmJHnVFkhgw
-         sQfgcxJImHA+DnVZbZxb64zhatDbthp68cZ4iRaEqM/K8XSe9UZnfE94uYtkDbOOpabu
-         L1rj/JPmJET4DAk/lcrawpEkrx9i3ul2i6qGlaQuFoK2UkPf+SMWdOeOPPS8QAdKSG2Q
-         g24KIZVw1nm3kfJCayecl50J7bltlRshvQcWiGMUSmazoa8KfAW/iwqyejRvRxGzsh3A
-         q/OBzRHzggVvK36H+lQNs9ICk+Z16dfzwLBUVGvlOwEUqmBMnCQtHV8wDQuwIxn+Jo8v
-         0Yfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q/1zdMH3DpxGtZ8QgtITmolgonObU/7AjOPUuWKrWNo=;
-        b=EUUxuVDwUWkj1VArEtjSBAzqeN4Wr6zM05G+Q3mhyiAFFwoot0Tjkm3KXPYozOD/xr
-         86NeIsAM8IDCmetb9oFwO7zyiphFE5DUt4+ORhznegIu4TRh0WU0TlpNEK+cgdNJNkmI
-         B1zK7w2FH1XQwMIOHWK4VsMbpXa803wM+hRRf0Y8QGQpHZOT8svJNXzrm+UDXHM/4gLw
-         UMMLOsnR1opUvQ27r5JYsBE09ElPEDJej9h2Rtb7vEP07p40Ol0yHrsfc/+JTjfU4Xpo
-         zSsGg2zHm4ifwozvvG1U+BS9+++ABI5xWdVi7CuzGpqAZyBB7erM/tgI3wpkUwrJiynZ
-         72Ng==
-X-Gm-Message-State: AOAM530wzfZyvYP8kvZQqBiDlVHVmCQaNvNQShgjEYbz+ZgL6ANmMuCa
-        6AQKarhTbx0Jga4itoXmo5MQmDtx31BldQk7wZeN5o4nx2lt2mU9
-X-Google-Smtp-Source: ABdhPJzPNFm8swDHOmLl35eT5h+YQB676NTtT2BWFgfALxfYZ8r2UnWa+iJwNQSLiKZOMQcPIak2nNSo7eC4Ue1vtXA=
-X-Received: by 2002:a63:4002:: with SMTP id n2mr13054398pga.4.1607710343875;
- Fri, 11 Dec 2020 10:12:23 -0800 (PST)
+        id S2403987AbgLKSWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 13:22:18 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:60560 "EHLO
+        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392900AbgLKSVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 13:21:35 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607710885; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=/Y5lQBmNF6UHKYzEdIN/uavwxBVks5omuuJ3qovYSgA=;
+ b=jwDRafT021rQmjs3Y/k4G+dPX0kqNJxUDA99/GW8o7pi07NtABrgKDBXSt3o2ERsyyAgd72W
+ oiAqiukflsycNtUM1qa+wteI8kjGp4B5Py8CnEWTqyYPr+q158rplq6Zsv/LijrQjhZaXIQr
+ g5c8zshb6sMtbG9ROzb+mtCAXnc=
+X-Mailgun-Sending-Ip: 198.61.254.31
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
+ 5fd3b87f35a25d1b16086daa (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 11 Dec 2020 18:20:47
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 76CC1C433CA; Fri, 11 Dec 2020 18:20:46 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 81EA8C433C6;
+        Fri, 11 Dec 2020 18:20:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 81EA8C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20201210192536.118432146@linutronix.de> <20201210194044.157283633@linutronix.de>
-In-Reply-To: <20201210194044.157283633@linutronix.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 11 Dec 2020 20:12:07 +0200
-Message-ID: <CAHp75Veo9aQLCp9ZuCcoexPLHM=R_PEu6uhP_P2bSpsVzyUaNQ@mail.gmail.com>
-Subject: Re: [patch 16/30] mfd: ab8500-debugfs: Remove the racy fiddling with irq_desc
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH][next] iwlwifi: mvm: Fix fall-through warnings for Clang
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201117135053.GA13248@embeddedor>
+References: <20201117135053.GA13248@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:HFI1 DRIVER" <linux-rdma@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org
-Content-Type: text/plain; charset="UTF-8"
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201211182046.76CC1C433CA@smtp.codeaurora.org>
+Date:   Fri, 11 Dec 2020 18:20:46 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 10, 2020 at 9:57 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> First of all drivers have absolutely no business to dig into the internals
-> of an irq descriptor. That's core code and subject to change. All of this
-> information is readily available to /proc/interrupts in a safe and race
-> free way.
->
-> Remove the inspection code which is a blatant violation of subsystem
-> boundaries and racy against concurrent modifications of the interrupt
-> descriptor.
->
-> Print the irq line instead so the information can be looked up in a sane
-> way in /proc/interrupts.
+"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
-...
+> In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
+> warnings by explicitly using the fallthrough pseudo-keyword as a
+> replacement for a number of "fall through" markings.
+> 
+> Notice that Clang doesn't recognize "fall through" comments as
+> implicit fall-through.
+> 
+> Link: https://github.com/KSPP/linux/issues/115
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-> -               seq_printf(s, "%3i:  %6i %4i",
-> +               seq_printf(s, "%3i:  %6i %4i %4i\n",
+Patch applied to wireless-drivers-next.git, thanks.
 
-Seems different specifiers, I think the intention was something like
-               seq_printf(s, "%3i:  %4i %6i %4i\n",
-
->                            line,
-> +                          line + irq_first,
->                            num_interrupts[line],
->                            num_wake_interrupts[line]);
-
+5a2abdcadc3b iwlwifi: mvm: Fix fall-through warnings for Clang
 
 -- 
-With Best Regards,
-Andy Shevchenko
+https://patchwork.kernel.org/project/linux-wireless/patch/20201117135053.GA13248@embeddedor/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
