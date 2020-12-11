@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C564C2D7C7A
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 18:11:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DE662D7C7B
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 18:11:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392744AbgLKRIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 12:08:36 -0500
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:48039 "EHLO
+        id S2393483AbgLKRIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 12:08:54 -0500
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:59003 "EHLO
         wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729097AbgLKRGt (ORCPT
+        by vger.kernel.org with ESMTP id S1733306AbgLKRGt (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 12:06:49 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.west.internal (Postfix) with ESMTP id 1D65AB04;
-        Fri, 11 Dec 2020 12:05:21 -0500 (EST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 68307B11;
+        Fri, 11 Dec 2020 12:05:22 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Fri, 11 Dec 2020 12:05:21 -0500
+  by compute3.internal (MEProxy); Fri, 11 Dec 2020 12:05:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=jrEQVyUv60r3ku3dlcjPUytnqp44O2OmizDXwoXctQ0=; b=WKnX6dEP
-        hZgjQWz6daw7wrirlsb0+nmbij8zdyoVIFJQQNKHS+H1Uo8tNtwjlHwNaNJyQTIX
-        vyOTMSN/DbOFu/l1D+YZA9/VoW44cvgN7sGHwGh7xlSFZGnP8ewL8H2tFAkGeQI1
-        FoIqCYa+wv/gIar1VmC3EOfo2d8P/OFoT6Q9fqVH+8GsLsefTuz1F03vl7FA/uVb
-        SxXVvFjjDUn++7RdxCqi1f2VUYHpkQYsaICbr2mwBH2ATJnYaw9NIbLGlNNjEOBt
-        JIhsAf75fda8iME7zW8PlI73eVyK3Ab8bTYUXGl//gVGoU0LG8Kp57LU7InuMkDI
-        MbbVlAU+SA5ZYA==
-X-ME-Sender: <xms:0KbTXxqkihZR-meXjpDlb_3evfUXf4ZMVD2ZvY2utDmBrQfAedYbKA>
-    <xme:0KbTXzzMKj9Eg1EnVoIe_nmYDJjq-dBS2s2nwvJVMh4q4XLpmPYBbABoa2p7u_MEs
-    59984rcBrGPSbI>
+        fm1; bh=/VT68u2PzB4G8IMNRkrtM9o9tTQV0d+egrVquk/jplE=; b=pi9I0y0G
+        LpYJMTNGsmZqDD/igIYwZKOpgR/4x0UYyt9zA8epcYIMdAenXKss1ao1v135A+tA
+        CY1cy0dBlQMmGjPYC+JQqVRyL0+ogBY96K+pPgW61uPL6+EVj/LoKAwpdGNXTgq6
+        lYGggA0E0tklLSKghIwxikTkUBlra96tV8UPWqRESiJvXCH48nqghP5+WBcpRWe/
+        zFurB6W2pQ4S/HAvN50plhkPvCUnzwk00lC8tpVBObNPSnI3zRseJ+J8JXmtmxdj
+        FMp6xeC2ZCbEwBlCBrSEzKwEEqxnhfDv/fkxkA3sNQyXRw3S3bcLfK23C+cXe5YI
+        t6qZ0u0Wqau8KA==
+X-ME-Sender: <xms:0qbTX63MT6cqv-fvCwFcJP4v3VqOpyrHokN8BfH_RhbmOKe8nanUTA>
+    <xme:0qbTX8KOwjIqaYTHl-cLFgkEJcKSpPNPvKrhPB3vbfGWEFaLiFDXaXzDtRyHuz4Gu
+    Y0X_P3GyodLkaI>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekvddgleekucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrjeek
-    necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:0KbTX1ryOy-iwd5Ff6K2HjTEDgPWOGBOYOWM7om--Pq4u_3fR7LhWQ>
-    <xmx:0KbTXzesARwA4kDO0ybB43KB6cAyT_0Q4dlEk_jZB9JqRjMwC1g2yw>
-    <xmx:0KbTX4rhiv2eAX2NlSCiTyk4etURSchPpjOChQC56xAAzqM7sPP3WA>
-    <xmx:0KbTX2dTNPwFxHdCcdBtMxMMKm4uUFYKBIDchtJLTd1bueP6foXm2A>
+X-ME-Proxy: <xmx:0qbTX5HSfdOsFfxkS5hqpj-kEJUH8uS4Q5reylRo6hdRF2KL7b9hXA>
+    <xmx:0qbTX4ULVmiK0z7r5Gjkv1vRmKEech5zxKlsYVd0UJSSAn70qlkHqw>
+    <xmx:0qbTXxz01tdSFskuCgNKUs1ipUBaUKfZp1BjBmXpvcoZBQP4EBkB4Q>
+    <xmx:0qbTX0TZ3Msj0WwQRVg8blaCAJgTxD0eC55Mv0AIzztTu01K4Q2Z4g>
 Received: from shredder.lan (igld-84-229-153-78.inter.net.il [84.229.153.78])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A3F6A1080057;
-        Fri, 11 Dec 2020 12:05:19 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id EDB071080067;
+        Fri, 11 Dec 2020 12:05:20 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 07/15] mlxsw: reg: Add XM Lookup Table Query Register
-Date:   Fri, 11 Dec 2020 19:04:05 +0200
-Message-Id: <20201211170413.2269479-8-idosch@idosch.org>
+Subject: [PATCH net-next 08/15] mlxsw: spectrum_router: Introduce per-ASIC XM initialization
+Date:   Fri, 11 Dec 2020 19:04:06 +0200
+Message-Id: <20201211170413.2269479-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201211170413.2269479-1-idosch@idosch.org>
 References: <20201211170413.2269479-1-idosch@idosch.org>
@@ -63,101 +63,166 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-The XLTQ is used to query HW for XM-related info.
+During the router init flow, call into XM code and initialize couple of
+items needed for XM functionality:
+
+1) Query the capabilities and sizes. Check the XM device id.
+2) Initialize the M-value. Note that currently the M-value is set fixed
+   to 16 for IPv4. In future this may change to better cover the actual
+   inserted routes.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 66 +++++++++++++++++++++--
- 1 file changed, 63 insertions(+), 3 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_router.c |  7 ++
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |  4 +
+ .../mellanox/mlxsw/spectrum_router_xm.c       | 77 +++++++++++++++++++
+ 3 files changed, 88 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 07445db6a018..6db3a5b22f5d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -8543,12 +8543,71 @@ static inline void mlxsw_reg_rxltm_pack(char *payload, u8 m0_val_v4, u8 m0_val_v
- 	mlxsw_reg_rxltm_m0_val_v4_set(payload, m0_val_v4);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index f132fa6cf7b7..3b32d9648578 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -9208,6 +9208,10 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ 	mlxsw_sp->router = router;
+ 	router->mlxsw_sp = mlxsw_sp;
+ 
++	err = mlxsw_sp_router_xm_init(mlxsw_sp);
++	if (err)
++		goto err_xm_init;
++
+ 	router->proto_ll_ops[MLXSW_SP_L3_PROTO_IPV4] = &mlxsw_sp_router_ll_basic_ops;
+ 	router->proto_ll_ops[MLXSW_SP_L3_PROTO_IPV6] = &mlxsw_sp_router_ll_basic_ops;
+ 
+@@ -9340,6 +9344,8 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ err_router_init:
+ 	mlxsw_sp_router_ll_op_ctx_fini(router);
+ err_ll_op_ctx_init:
++	mlxsw_sp_router_xm_fini(mlxsw_sp);
++err_xm_init:
+ 	mutex_destroy(&mlxsw_sp->router->lock);
+ 	kfree(mlxsw_sp->router);
+ 	return err;
+@@ -9367,6 +9373,7 @@ void mlxsw_sp_router_fini(struct mlxsw_sp *mlxsw_sp)
+ 	mlxsw_sp_rifs_fini(mlxsw_sp);
+ 	__mlxsw_sp_router_fini(mlxsw_sp);
+ 	mlxsw_sp_router_ll_op_ctx_fini(mlxsw_sp->router);
++	mlxsw_sp_router_xm_fini(mlxsw_sp);
+ 	mutex_destroy(&mlxsw_sp->router->lock);
+ 	kfree(mlxsw_sp->router);
  }
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+index fe1b92110844..d6f7aba6eb9c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+@@ -76,6 +76,7 @@ struct mlxsw_sp_router {
+ 	const struct mlxsw_sp_router_ll_ops *proto_ll_ops[MLXSW_SP_L3_PROTO_MAX];
+ 	struct mlxsw_sp_fib_entry_op_ctx *ll_op_ctx;
+ 	u16 lb_rif_index;
++	struct mlxsw_sp_router_xm *xm;
+ };
  
--/* Note that XMDR and XRALXX register positions violate the rule of ordering
-- * register definitions by the ID. However, XRALXX pack helpers are
-+/* Note that XLTQ, XMDR and XRALXX register positions violate the rule
-+ * of ordering register definitions by the ID. However, XRALXX pack helpers are
-  * using RALXX pack helpers, RALXX registers have higher IDs.
-- * Also XMDR is using RALUE enums.
-+ * Also XMDR is using RALUE enums. XLTQ is just put alongside with the
-+ * related registers.
-  */
+ struct mlxsw_sp_fib_entry_priv {
+@@ -223,4 +224,7 @@ int mlxsw_sp_ipip_ecn_decap_init(struct mlxsw_sp *mlxsw_sp);
  
-+/* XLTQ - XM Lookup Table Query Register
-+ * -------------------------------------
-+ */
-+#define MLXSW_REG_XLTQ_ID 0x7802
-+#define MLXSW_REG_XLTQ_LEN 0x2C
+ extern const struct mlxsw_sp_router_ll_ops mlxsw_sp_router_ll_xm_ops;
+ 
++int mlxsw_sp_router_xm_init(struct mlxsw_sp *mlxsw_sp);
++void mlxsw_sp_router_xm_fini(struct mlxsw_sp *mlxsw_sp);
 +
-+MLXSW_REG_DEFINE(xltq, MLXSW_REG_XLTQ_ID, MLXSW_REG_XLTQ_LEN);
+ #endif /* _MLXSW_ROUTER_H_*/
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+index f5b4c0edf99d..966a20f3bc0d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+@@ -9,6 +9,19 @@
+ #include "reg.h"
+ #include "spectrum_router.h"
+ 
++#define MLXSW_SP_ROUTER_XM_M_VAL 16
 +
-+enum mlxsw_reg_xltq_xm_device_id {
-+	MLXSW_REG_XLTQ_XM_DEVICE_ID_UNKNOWN,
-+	MLXSW_REG_XLTQ_XM_DEVICE_ID_XLT = 0xCF71,
++static const u8 mlxsw_sp_router_xm_m_val[] = {
++	[MLXSW_SP_L3_PROTO_IPV4] = MLXSW_SP_ROUTER_XM_M_VAL,
++	[MLXSW_SP_L3_PROTO_IPV6] = 0, /* Currently unused. */
 +};
 +
-+/* reg_xltq_xm_device_id
-+ * XM device ID.
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, xltq, xm_device_id, 0x04, 0, 16);
++struct mlxsw_sp_router_xm {
++	bool ipv4_supported;
++	bool ipv6_supported;
++	unsigned int entries_size;
++};
 +
-+/* reg_xltq_xlt_cap_ipv4_lpm
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, xltq, xlt_cap_ipv4_lpm, 0x10, 0, 1);
+ struct mlxsw_sp_router_xm_fib_entry {
+ 	bool committed;
+ };
+@@ -232,3 +245,67 @@ const struct mlxsw_sp_router_ll_ops mlxsw_sp_router_ll_xm_ops = {
+ 	.fib_entry_commit = mlxsw_sp_router_ll_xm_fib_entry_commit,
+ 	.fib_entry_is_committed = mlxsw_sp_router_ll_xm_fib_entry_is_committed,
+ };
 +
-+/* reg_xltq_xlt_cap_ipv6_lpm
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, xltq, xlt_cap_ipv6_lpm, 0x10, 1, 1);
++#define MLXSW_SP_ROUTER_XM_MINDEX_SIZE (64 * 1024)
 +
-+/* reg_xltq_cap_xlt_entries
-+ * Number of XLT entries
-+ * Note: SW must not fill more than 80% in order to avoid overflow
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, xltq, cap_xlt_entries, 0x20, 0, 32);
-+
-+/* reg_xltq_cap_xlt_mtable
-+ * XLT M-Table max size
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, xltq, cap_xlt_mtable, 0x24, 0, 32);
-+
-+static inline void mlxsw_reg_xltq_pack(char *payload)
++int mlxsw_sp_router_xm_init(struct mlxsw_sp *mlxsw_sp)
 +{
-+	MLXSW_REG_ZERO(xltq, payload);
++	struct mlxsw_sp_router_xm *router_xm;
++	char rxltm_pl[MLXSW_REG_RXLTM_LEN];
++	char xltq_pl[MLXSW_REG_XLTQ_LEN];
++	u32 mindex_size;
++	u16 device_id;
++	int err;
++
++	if (!mlxsw_sp->bus_info->xm_exists)
++		return 0;
++
++	router_xm = kzalloc(sizeof(*router_xm), GFP_KERNEL);
++	if (!router_xm)
++		return -ENOMEM;
++
++	mlxsw_reg_xltq_pack(xltq_pl);
++	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(xltq), xltq_pl);
++	if (err)
++		goto err_xltq_query;
++	mlxsw_reg_xltq_unpack(xltq_pl, &device_id, &router_xm->ipv4_supported,
++			      &router_xm->ipv6_supported, &router_xm->entries_size, &mindex_size);
++
++	if (device_id != MLXSW_REG_XLTQ_XM_DEVICE_ID_XLT) {
++		dev_err(mlxsw_sp->bus_info->dev, "Invalid XM device id\n");
++		err = -EINVAL;
++		goto err_device_id_check;
++	}
++
++	if (mindex_size != MLXSW_SP_ROUTER_XM_MINDEX_SIZE) {
++		dev_err(mlxsw_sp->bus_info->dev, "Unexpected M-index size\n");
++		err = -EINVAL;
++		goto err_mindex_size_check;
++	}
++
++	mlxsw_reg_rxltm_pack(rxltm_pl, mlxsw_sp_router_xm_m_val[MLXSW_SP_L3_PROTO_IPV4],
++			     mlxsw_sp_router_xm_m_val[MLXSW_SP_L3_PROTO_IPV6]);
++	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(rxltm), rxltm_pl);
++	if (err)
++		goto err_rxltm_write;
++
++	mlxsw_sp->router->xm = router_xm;
++	return 0;
++
++err_rxltm_write:
++err_mindex_size_check:
++err_device_id_check:
++err_xltq_query:
++	kfree(router_xm);
++	return err;
 +}
 +
-+static inline void mlxsw_reg_xltq_unpack(char *payload, u16 *xm_device_id, bool *xlt_cap_ipv4_lpm,
-+					 bool *xlt_cap_ipv6_lpm, u32 *cap_xlt_entries,
-+					 u32 *cap_xlt_mtable)
++void mlxsw_sp_router_xm_fini(struct mlxsw_sp *mlxsw_sp)
 +{
-+	*xm_device_id = mlxsw_reg_xltq_xm_device_id_get(payload);
-+	*xlt_cap_ipv4_lpm = mlxsw_reg_xltq_xlt_cap_ipv4_lpm_get(payload);
-+	*xlt_cap_ipv6_lpm = mlxsw_reg_xltq_xlt_cap_ipv6_lpm_get(payload);
-+	*cap_xlt_entries = mlxsw_reg_xltq_cap_xlt_entries_get(payload);
-+	*cap_xlt_mtable = mlxsw_reg_xltq_cap_xlt_mtable_get(payload);
-+}
++	struct mlxsw_sp_router_xm *router_xm = mlxsw_sp->router->xm;
 +
- /* XMDR - XM Direct Register
-  * -------------------------
-  * The XMDR allows direct access to the XM device via the switch.
-@@ -11830,6 +11889,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(rmft2),
- 	MLXSW_REG(rxlte),
- 	MLXSW_REG(rxltm),
-+	MLXSW_REG(xltq),
- 	MLXSW_REG(xmdr),
- 	MLXSW_REG(xralta),
- 	MLXSW_REG(xralst),
++	if (!mlxsw_sp->bus_info->xm_exists)
++		return;
++
++	kfree(router_xm);
++}
 -- 
 2.29.2
 
