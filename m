@@ -2,85 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C44C2D6F3A
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 05:28:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B56952D6F48
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 05:30:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405348AbgLKEZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Dec 2020 23:25:52 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:32810 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405321AbgLKEZK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 23:25:10 -0500
-Received: from mail-pj1-f69.google.com ([209.85.216.69])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1knZym-0001Qx-FY
-        for netdev@vger.kernel.org; Fri, 11 Dec 2020 04:24:28 +0000
-Received: by mail-pj1-f69.google.com with SMTP id m7so199056pjr.0
-        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 20:24:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=tPXZ+7QAQmRj9Gg0uL9q/qwGUoI81azIs/Hz+gXLnNo=;
-        b=eA1YME5SWR4pndqcWbyQSTqajc5FsudRxbZQAuosB6tRoYVyZtzbRuOxOvAkV/07cn
-         yapQqqEHBvooAEzvLLmJ3ZFlyoZZHcmPE/xKVx7ReOdTCVRtxR80ul68y8sjF4cBZyTH
-         G6eC/1IBOv4N5EQMxYi1CGs6MrDT0W+TcOZb29NZhnammdPRrKrydw00XnZyZAvDxFqX
-         T7kNemZPOnVPbo9fokddCAPcXu1y/rChbCQ2+fAqFPOXsnGiZDakOiHVAZmFuOvhsH2I
-         e8HOqrevoX1cQFasdf5TG7+iHeo03V9egSwhb8zE3zdonxvwu8pwHOXcvJZmrzrza6rT
-         iXEg==
-X-Gm-Message-State: AOAM5315svNnIPqFFxu5Nfxs4vspD0ZaTc4yjzAH5lskCI9CzDKbK0Aw
-        s2RWrBJdl8F5uzKNDeLcgzoSXx/nP5I+FkC/WJZOZqA8vzPO3+d2/IyWOuxcTIdL+nP+9h/9Wmm
-        fAVqswc5L33406it/6fVxr+ONRNjtysz8
-X-Received: by 2002:a63:eb4b:: with SMTP id b11mr9849639pgk.351.1607660666845;
-        Thu, 10 Dec 2020 20:24:26 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyITTeGHkWP6edOaQgLt1ofgM+1Ufy7TeSzXSBK85/VCt82D1wcKgDJYTgmykOnGtzogKj/Sg==
-X-Received: by 2002:a63:eb4b:: with SMTP id b11mr9849621pgk.351.1607660666556;
-        Thu, 10 Dec 2020 20:24:26 -0800 (PST)
-Received: from Leggiero.taipei.internal (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
-        by smtp.gmail.com with ESMTPSA id m26sm8241810pfo.123.2020.12.10.20.24.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Dec 2020 20:24:25 -0800 (PST)
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-To:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, po-hsu.lin@canonical.com, kuba@kernel.org,
-        shuah@kernel.org
-Subject: [PATCHv2] selftests: test_vxlan_under_vrf: mute unnecessary error message
-Date:   Fri, 11 Dec 2020 12:24:20 +0800
-Message-Id: <20201211042420.16411-1-po-hsu.lin@canonical.com>
-X-Mailer: git-send-email 2.17.1
+        id S2387443AbgLKE3B convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Dec 2020 23:29:01 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64216 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2395378AbgLKE2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Dec 2020 23:28:48 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BB4DJtR013722
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 20:28:08 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 35by3urpfs-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 10 Dec 2020 20:28:08 -0800
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 10 Dec 2020 20:28:06 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 90F322ECB1A1; Thu, 10 Dec 2020 20:28:03 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH RFC bpf-next  0/4] Support kernel module ksym variables
+Date:   Thu, 10 Dec 2020 20:27:30 -0800
+Message-ID: <20201211042734.730147-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
+X-FB-Internal: Safe
+Content-Type: text/plain
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-11_01:2020-12-09,2020-12-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
+ lowpriorityscore=0 spamscore=0 adultscore=0 clxscore=1034 impostorscore=0
+ malwarescore=0 priorityscore=1501 mlxlogscore=999 suspectscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012110023
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cleanup function in this script that tries to delete hv-1 / hv-2
-vm-1 / vm-2 netns will generate some uncessary error messages:
+This RFC is sent to show how ksym variable access in BPF program can be
+supported for kernel modules and gather some feedback while necessary fixes
+for pahole ([0]) are reviewed and hopefully will make it into 1.20 version.
 
-Cannot remove namespace file "/run/netns/hv-2": No such file or directory
-Cannot remove namespace file "/run/netns/vm-1": No such file or directory
-Cannot remove namespace file "/run/netns/vm-2": No such file or directory
+This work builds on all the previous kernel and libbpf changes to support
+kernel module BTFs. On top of that, BPF verifier will now support ldimm64 with
+src_reg=BPF_PSEUDO_BTF_ID and non-zero insn[1].imm field, which contains BTF
+FD for kernel module. In such case, used module BTF, similarly to used BPF
+map, will be recorded and refcnt will be increased for both BTF object itself
+and its kernel module. This makes sure kernel module won't be unloaded from
+under active attached BPF program.
 
-Redirect it to /dev/null like other commands in the cleanup function
-to reduce confusion.
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
----
- tools/testing/selftests/net/test_vxlan_under_vrf.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+New selftest validates all this is working as intended. bpf_testmod.ko is
+extended with per-CPU variable.
 
-diff --git a/tools/testing/selftests/net/test_vxlan_under_vrf.sh b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-index 09f9ed9..534c8b7 100755
---- a/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-+++ b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-@@ -50,7 +50,7 @@ cleanup() {
-     ip link del veth-tap 2>/dev/null || true
- 
-     for ns in hv-1 hv-2 vm-1 vm-2; do
--        ip netns del $ns || true
-+        ip netns del $ns 2>/dev/null || true
-     done
- }
- 
+  [0] https://patchwork.kernel.org/project/netdevbpf/list/?series=400229&state=*
+
+Andrii Nakryiko (4):
+  selftests/bpf: sync RCU before unloading bpf_testmod
+  bpf: support BPF ksym variables in kernel modules
+  libbpf: support kernel module ksym externs
+  selftests/bpf: test kernel module ksym externs
+
+ include/linux/bpf.h                           |   9 ++
+ include/linux/bpf_verifier.h                  |   3 +
+ include/linux/btf.h                           |   3 +
+ kernel/bpf/btf.c                              |  31 +++-
+ kernel/bpf/core.c                             |  23 +++
+ kernel/bpf/verifier.c                         | 149 ++++++++++++++----
+ tools/lib/bpf/libbpf.c                        |  47 ++++--
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |   3 +
+ .../selftests/bpf/prog_tests/btf_map_in_map.c |  33 ----
+ .../selftests/bpf/prog_tests/ksyms_module.c   |  33 ++++
+ .../selftests/bpf/progs/test_ksyms_module.c   |  26 +++
+ tools/testing/selftests/bpf/test_progs.c      |  40 +++++
+ tools/testing/selftests/bpf/test_progs.h      |   1 +
+ 13 files changed, 321 insertions(+), 80 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module.c
+
 -- 
-2.7.4
+2.24.1
 
