@@ -2,164 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A3A2D8124
-	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 22:30:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FD7B2D8150
+	for <lists+netdev@lfdr.de>; Fri, 11 Dec 2020 22:54:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405402AbgLKV2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 16:28:49 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:37802 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731564AbgLKV21 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 16:28:27 -0500
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1607722064;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RPMMCIZpTkbwn/vpPbbWIvtIfsdUJZbFWGvj4XBXX/8=;
-        b=Kc/FVw++R6e2tySXtGXcjxUCfxzjuTQFTglr5qIAHuhSnqpTp+Ikj+7Hq7mXQTlJIhQso1
-        GzueGJq666vDoGnyl7z+R0hqgzUE1QvEz7r/C1zoUW/uJEMWoH29CdDJSk0WUoP2avCyFO
-        CRX7sZOyAR4dgW8urx4t099te3vzsLBebYBFzSZHvt/ir/v+j+DUtH3KLF65BJZt70WJkw
-        AE4vdTRQhanAKvsPxu5Ss601VFRMIT6sTuiXwTfT17QUlJMwNoTmBl7avya6WCOOi1pn/V
-        ZDVRxzcxQEEpw+Wd6+ymYN074dQBF+mj2DWvKS0m9PZ0lY8tuhofO6ggRZ9GJg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1607722064;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RPMMCIZpTkbwn/vpPbbWIvtIfsdUJZbFWGvj4XBXX/8=;
-        b=tFwThmGQdDL1Ql7epJregGVf1InSk/8mJJwiaGupYZNmlO1tti86n4xUB3jqi7xZFrdYET
-        SNdr5SpWVlT7QnDA==
-To:     boris.ostrovsky@oracle.com,
-        =?utf-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci@vger.kernel.org,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: Re: [patch 27/30] xen/events: Only force affinity mask for percpu interrupts
-In-Reply-To: <9806692f-24a3-4b6f-ae55-86bd66481271@oracle.com>
-References: <20201210192536.118432146@linutronix.de> <20201210194045.250321315@linutronix.de> <7f7af60f-567f-cdef-f8db-8062a44758ce@oracle.com> <2164a0ce-0e0d-c7dc-ac97-87c8f384ad82@suse.com> <871rfwiknd.fsf@nanos.tec.linutronix.de> <9806692f-24a3-4b6f-ae55-86bd66481271@oracle.com>
-Date:   Fri, 11 Dec 2020 22:27:43 +0100
-Message-ID: <877dpoghio.fsf@nanos.tec.linutronix.de>
+        id S2406440AbgLKVws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 16:52:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56344 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391893AbgLKVwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 16:52:13 -0500
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01579C0613CF;
+        Fri, 11 Dec 2020 13:51:13 -0800 (PST)
+Received: by mail-il1-x143.google.com with SMTP id b8so10138895ila.13;
+        Fri, 11 Dec 2020 13:51:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2qTMCUhI0/YQewF/VCItkzyJf+kYlqXC/vL1LYH/k5U=;
+        b=dDjJSvtLvuPChscPzyykjt7oV+4SFcMZTb7XeGwm0A+zISNUv62r2+uxjZVEojFVGE
+         rDJxX8r7nyJQ+HOnMrOxvP96myLBn7KeTf8pKYsEjHJC+vwZkUdDlp33AezFLEIYpoey
+         FDZSwg/hM0tnK+hoJOSKe1/Da5zFQSq1zwSwokSa18Yp1NPr66RtUNXyMREgXg+pFmcB
+         WVmJwde5mYI/dJUDhSOuQLDY2bbcA4cd9fTmquVBMRgBQnai6KaogjDlbmrDi3YnEP++
+         BTcncwBTXBq2fepO1ENQBKavvAtQscUFaSiQXR2rVmfKWMQoegJI+ts616EQJjH1e14r
+         k43A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2qTMCUhI0/YQewF/VCItkzyJf+kYlqXC/vL1LYH/k5U=;
+        b=RRmrvDRP9dRxKaGYRUI+WUYQW5ahgBfmr3uXiju2xtJkYJmC44kswZ+7dYN9YdjhLj
+         JZwGeuGVZeGZlVhcicp6JCwQ/sbx0VSy6ZfCrz5SxdmTk+entk0BT+iO90fdto25y4yE
+         k3EzRyGFd2Dp+uwSIlzvM7TgG/u5pRVwYkxccigLl2bD+DL0s0jxVdn+Al3aJYQZ1s7A
+         o2qSUN6gR0llMAVzcFNzwL68XRqKVvluWnJUYbmzrzSTV4xMElIj6qF1H5LfSSkniJtK
+         2z8RjmsHBSOMq0a6wMmJ0apNACvU/mlp3Ll5ay6O7KP9tYD/m3FvbCM7iCW0lGAv+Ezz
+         SJ4g==
+X-Gm-Message-State: AOAM531Yo9dIjLBM6Apzmk5szCbVefr0e5ujn2v28/MlkDal7HoWli5K
+        B6bQ1xif82EjmsB+JR5aJJ0dxY2su0h1fXblfNw=
+X-Google-Smtp-Source: ABdhPJwCtGSKUc/EOu8Tu0NYIKLY7+P8Ti3Qxg2wE8EctsXLINDw0dlf+mmrwpLaz+UKRYBz3JV/o45IAKg7w1Oewqg=
+X-Received: by 2002:a92:730d:: with SMTP id o13mr17783084ilc.95.1607723472280;
+ Fri, 11 Dec 2020 13:51:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <160765171921.6905.7897898635812579754.stgit@localhost.localdomain>
+ <CANn89iJ5HnJYv6eWb1jm6rK173DFkp2GRnfvi9vnYwXZPzE4LQ@mail.gmail.com>
+ <CAKgT0Uf_q=FgMHd9_wq5Bx8rCC-kS0Qz563rE9dL2hpQ6Evppg@mail.gmail.com>
+ <CANn89iJUT6aWm75ZpU_Ggmuqbb+cbLSGj0Bxysu9_wXRgNS8MQ@mail.gmail.com>
+ <CAKgT0Uecuh3mcGRpDAZzzbnQtOusc++H4SXAv2Scd297Ha5AYQ@mail.gmail.com> <CANn89iKfqKpXgCv_Z4iSt5RpjxYUvkYSoZKF3FZs+Jgev3aDgw@mail.gmail.com>
+In-Reply-To: <CANn89iKfqKpXgCv_Z4iSt5RpjxYUvkYSoZKF3FZs+Jgev3aDgw@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 11 Dec 2020 13:51:01 -0800
+Message-ID: <CAKgT0Uc6gVOL5VWpsD54WiAvop9WQEudNsJNh9=Fr9PunJevWw@mail.gmail.com>
+Subject: Re: [net PATCH] tcp: Mark fastopen SYN packet as lost when receiving ICMP_TOOBIG/ICMP_FRAG_NEEDED
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Yuchung Cheng <ycheng@google.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        kernel-team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11 2020 at 09:29, boris ostrovsky wrote:
-
-> On 12/11/20 7:37 AM, Thomas Gleixner wrote:
->> On Fri, Dec 11 2020 at 13:10, J=C3=BCrgen Gro=C3=9F wrote:
->>> On 11.12.20 00:20, boris.ostrovsky@oracle.com wrote:
->>>> On 12/10/20 2:26 PM, Thomas Gleixner wrote:
->>>>> Change the implementation so that the channel is bound to CPU0 at the=
- XEN
->>>>> level and leave the affinity mask alone. At startup of the interrupt
->>>>> affinity will be assigned out of the affinity mask and the XEN bindin=
-g will
->>>>> be updated.
->>>>
->>>> If that's the case then I wonder whether we need this call at all and =
-instead bind at startup time.
->>> After some discussion with Thomas on IRC and xen-devel archaeology the
->>> result is: this will be needed especially for systems running on a
->>> single vcpu (e.g. small guests), as the .irq_set_affinity() callback
->>> won't be called in this case when starting the irq.
+On Fri, Dec 11, 2020 at 11:18 AM Eric Dumazet <edumazet@google.com> wrote:
 >
-> On UP are we not then going to end up with an empty affinity mask? Or
-> are we guaranteed to have it set to 1 by interrupt generic code?
+> On Fri, Dec 11, 2020 at 6:15 PM Alexander Duyck
+> <alexander.duyck@gmail.com> wrote:
+> >
+> > On Fri, Dec 11, 2020 at 8:22 AM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > On Fri, Dec 11, 2020 at 5:03 PM Alexander Duyck
+> > > <alexander.duyck@gmail.com> wrote:
+> > >
+> > > > That's fine. I can target this for net-next. I had just selected net
+> > > > since I had considered it a fix, but I suppose it could be considered
+> > > > a behavioral change.
+> > >
+> > > We are very late in the 5.10 cycle, and we never handled ICMP in this
+> > > state, so net-next is definitely better.
+> > >
+> > > Note that RFC 7413 states in 4.1.3 :
+> > >
+> > >  The client MUST cache cookies from servers for later Fast Open
+> > >    connections.  For a multihomed client, the cookies are dependent on
+> > >    the client and server IP addresses.  Hence, the client should cache
+> > >    at most one (most recently received) cookie per client and server IP
+> > >    address pair.
+> > >
+> > >    When caching cookies, we recommend that the client also cache the
+> > >    Maximum Segment Size (MSS) advertised by the server.  The client can
+> > >    cache the MSS advertised by the server in order to determine the
+> > >    maximum amount of data that the client can fit in the SYN packet in
+> > >    subsequent TFO connections.  Caching the server MSS is useful
+> > >    because, with Fast Open, a client sends data in the SYN packet before
+> > >    the server announces its MSS in the SYN-ACK packet.  If the client
+> > >    sends more data in the SYN packet than the server will accept, this
+> > >    will likely require the client to retransmit some or all of the data.
+> > >    Hence, caching the server MSS can enhance performance.
+> > >
+> > >    Without a cached server MSS, the amount of data in the SYN packet is
+> > >    limited to the default MSS of 536 bytes for IPv4 [RFC1122] and 1220
+> > >    bytes for IPv6 [RFC2460].  Even if the client complies with this
+> > >    limit when sending the SYN, it is known that an IPv4 receiver
+> > >    advertising an MSS less than 536 bytes can receive a segment larger
+> > >    than it is expecting.
+> > >
+> > >    If the cached MSS is larger than the typical size (1460 bytes for
+> > >    IPv4 or 1440 bytes for IPv6), then the excess data in the SYN packet
+> > >    may cause problems that offset the performance benefit of Fast Open.
+> > >    For example, the unusually large SYN may trigger IP fragmentation and
+> > >    may confuse firewalls or middleboxes, causing SYN retransmission and
+> > >    other side effects.  Therefore, the client MAY limit the cached MSS
+> > >    to 1460 bytes for IPv4 or 1440 for IPv6.
+> > >
+> > >
+> > > Relying on ICMP is fragile, since they can be filtered in some way.
+> >
+> > In this case I am not relying on the ICMP, but thought that since I
+> > have it I should make use of it. WIthout the ICMP we would still just
+> > be waiting on the retransmit timer.
+> >
+> > The problem case has a v6-in-v6 tunnel between the client and the
+> > endpoint so both ends assume an MTU 1500 and advertise a 1440 MSS
+> > which works fine until they actually go to send a large packet between
+> > the two. At that point the tunnel is triggering an ICMP_TOOBIG and the
+> > endpoint is stalling since the MSS is dropped to 1400, but the SYN and
+> > data payload were already smaller than that so no retransmits are
+> > being triggered. This results in TFO being 1s slower than non-TFO
+> > because of the failure to trigger the retransmit for the frame that
+> > violated the PMTU. The patch is meant to get the two back into
+> > comparable times.
+>
+> Okay... Have you studied why tcp_v4_mtu_reduced() (and IPv6 equivalent)
+> code does not yet handle the retransmit in TCP_SYN_SENT state ?
 
-An UP kernel does not ever look on the affinity mask. The
-chip::irq_set_affinity() callback is not invoked so the mask is
-irrelevant.
+The problem lies in tcp_simple_retransmit(). Specifically the loop at
+the start of the function goes to check the retransmit queue to see if
+there are any packets larger than MSS and finds none since we don't
+place the SYN w/ data in there and instead have a separate SYN and
+data packet.
 
-A SMP kernel on a UP machine sets CPU0 in the mask so all is good.
-
-> This is actually why I brought this up in the first place --- a
-> potential mismatch between the affinity mask and Xen-specific data
-> (e.g. info->cpu and then protocol-specific data in event channel
-> code). Even if they are re-synchronized later, at startup time (for
-> SMP).
-
-Which is not a problem either. The affinity mask is only relevant for
-setting the affinity, but it's not relevant for delivery and never can
-be.
-
-> I don't see anything that would cause a problem right now but I worry
-> that this inconsistency may come up at some point.
-
-As long as the affinity mask becomes not part of the event channel magic
-this should never matter.
-
-Look at it from hardware:
-
-interrupt is affine to CPU0
-
-     CPU0 runs:
-=20=20=20=20=20
-     set_affinity(CPU0 -> CPU1)
-        local_irq_disable()
-=20=20=20=20=20=20=20=20
- --> interrupt is raised in hardware and pending on CPU0
-
-        irq hardware is reconfigured to be affine to CPU1
-
-        local_irq_enable()
-
- --> interrupt is handled on CPU0
-
-the next interrupt will be raised on CPU1
-
-So info->cpu which is registered via the hypercall binds the 'hardware
-delivery' and whenever the new affinity is written it is rebound to some
-other CPU and the next interrupt is then raised on this other CPU.
-
-It's not any different from the hardware example at least not as far as
-I understood the code.
-
-Thanks,
-
-        tglx
+I'm debating if I should take an alternative approach and modify the
+loop at the start of tcp_simple_transmit to add a check for a SYN
+packet, tp->syn_data being set, and then comparing the next frame
+length + MAX_TCP_HEADER_OPTIONS versus mss.
