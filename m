@@ -2,102 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5AD2D85BC
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 11:11:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8E02D85C1
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 11:11:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406868AbgLLJyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 04:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41558 "EHLO
+        id S2438662AbgLLKK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 05:10:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388959AbgLLJxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 04:53:16 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A94C0617A7
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 01:00:26 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id c7so11911020edv.6
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 01:00:26 -0800 (PST)
+        with ESMTP id S2406561AbgLLJyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 04:54:00 -0500
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3C2C06138C;
+        Sat, 12 Dec 2020 01:02:54 -0800 (PST)
+Received: by mail-il1-x144.google.com with SMTP id p5so11115681iln.8;
+        Sat, 12 Dec 2020 01:02:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QSRI2dCufYoDv+I9jUiw7JSQWCFKwcIDuGQgXDasqNg=;
-        b=i6HnRjwM1uQ5u5TbbT5zY3i2Ba6KSp9ObSIrv4tmU9qhIQ+p3tXKMCgK1KAJsFxIpx
-         g5HP3pe18z4k2C2GgtAEbAz8hr4+uixN6r3ExgP7AEFWiZcry6MAE3JzkwUAXirc04yA
-         0QZ7EAODI6DPsU2UEa6tPdHTWBYI8RqkjGTHdn+zuvpcZLCM3FiTLCHfttu1szp29+0x
-         CfOOiEZPvoiN2KOKDUGFal4zugmBEUYT+0G5kZ7zASZ9T/KfESx8yB9IVoOqhnifht4X
-         QIBE8+wOKUxi9Kd04B39xq7YHxne+COQ56Vw2m+WXNcxmWhlMV6fgR2cQoYucDiW4qeT
-         YSpw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MF8Qpp6oAIyzdJjFXDLgg5mQAJADM65GySy+Sj/Tbz4=;
+        b=OiChpZ7eSxcW/vDX5u8qE3LbgdjkUKXWROaXZ6p/d3gCBkGoEzIrY2DF637Vbj7I1E
+         tve41JqQ8V6F0T71K4ysi1LG87MTjiHUlHcRYQvLqfFjh4PrwbQzKxiyyq44EQfXgkVN
+         mx0AgnKgIAcCH04vpEe05KqVFw9HXjW+GzU0jdrP8Xih5Vho3uD+aFQ6vIzq1yxPnxHo
+         LOia1sDztj5u5xh8fuw1egc8UGDG5/Q/HWA7gtw5Nn9JczDFvZ4mFSVVHlPaohz76qQI
+         jHeVPRTMPqEYXCeO2s9NyV7RBij1eXobpV2gj4BO66PPssZjEZUHqByL3vBx7aM5jcI2
+         V21Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QSRI2dCufYoDv+I9jUiw7JSQWCFKwcIDuGQgXDasqNg=;
-        b=f2nI9SaHfD/qKf+/lwhiH/UZAFCv/2ai7n4z0cqwxBFh1z9Ii0GFB0WPGmJNr7MqRc
-         gLX3l15mHmFGWaNb72dd/Lz9ZMw3eNqn0B9jR8HNliv6apYnT7bVGApnxN6bZRqG9pzn
-         G2zJk4dxfUtKT3RCXbyD0sOGfb3cimIgnvQuISJCDuOMiLy+PqMawHBJpGhfKWfSXGec
-         xsXVq0RS7o+tNL8IOzVJvGHQl7YOY5Y+p91v+m53enH22ksrakZ/0ObjVNt4/ncNb16t
-         VkPwb5e8E0AdjE8mVu9L1zwczEutOPVIHImml/wBKjmIkcRq9z+mPzUcIvv37DJXeRD8
-         PRKQ==
-X-Gm-Message-State: AOAM533x3nRFhN+9Dtrmf+Cc7USnAB4Luv4nLap4hMZT5H9Ptot+LOuV
-        vXIiqKMTTDtxqU5EQWf6DDz97gNjrMlO+A==
-X-Google-Smtp-Source: ABdhPJxMvhY9HmQXTG1t9smetCQyEyX1ylj1An9D+16Ck+39cSAVkj5oKx7Kiy7S640ixxXOOAkUaA==
-X-Received: by 2002:a05:6512:786:: with SMTP id x6mr5516405lfr.643.1607759447987;
-        Fri, 11 Dec 2020 23:50:47 -0800 (PST)
-Received: from [192.168.1.157] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id j20sm1315512ljc.47.2020.12.11.23.50.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Dec 2020 23:50:47 -0800 (PST)
-Subject: Re: [PATCH net-next v2 08/12] gtp: set dev features to enable GSO
-To:     Pravin Shelar <pravin.ovn@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>, laforge@gnumonks.org
-References: <20201211122612.869225-1-jonas@norrbonn.se>
- <20201211122612.869225-9-jonas@norrbonn.se>
- <CAOrHB_BC3847Oi--N84=tT5nrdpmL6a5Csvah19qJ0Czyng1JQ@mail.gmail.com>
-From:   Jonas Bonn <jonas@norrbonn.se>
-Message-ID: <a4fa00b1-5e9c-eaf2-2017-93416e7532f0@norrbonn.se>
-Date:   Sat, 12 Dec 2020 08:50:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MF8Qpp6oAIyzdJjFXDLgg5mQAJADM65GySy+Sj/Tbz4=;
+        b=Nw0/4cs2Wx6dlGH9SFDZqSLt6BG+T7IJOsbiHYGNy2ailouoBnMoiA/APOAH6zm9T1
+         tJ/T2MIw0IZlr54cmsenC+NXE85kVkOC3aWP/69tAdtVg0sxKiN7JHdCK8ILuKUUlPlm
+         RbzHwdIFo0wQ1yXH7Rm+E8QZmPt2Jgb6d931TBtlSJctsOXDZlGrvWTQKXoAKw8mT47L
+         /MVmBwCV0D4GKnOJ9iTHMyNILj/CGE3hYs61B2CtFJ8nizrKAKQWC4LPL9/IZ/rB0DTh
+         X7y+XStTvCvAp8zrszyZ4S3tADZtftQH2DMrt5Qd+PcWn/A1K7xmKe9LgZlFyDsirAhy
+         aH8Q==
+X-Gm-Message-State: AOAM532nwPLoO/A9trjeXO93A/6fxvK8N+VrchRDNrM1OP2zmf8eDWZw
+        vZxXhBTiElfCme2aVOXonUeRyUveCGbo8S4V2MhqvAfElFA=
+X-Google-Smtp-Source: ABdhPJwyY4XbP0XKbLoF2RsE+g4IgwSOrX668gIlEAAoxD1UJo9nk0PT14lsy9vsFpn1/RKwpuQzlvuJ/y9OlSNG3J0=
+X-Received: by 2002:a6b:93d5:: with SMTP id v204mr20199242iod.155.1607762383583;
+ Sat, 12 Dec 2020 00:39:43 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAOrHB_BC3847Oi--N84=tT5nrdpmL6a5Csvah19qJ0Czyng1JQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201211163749.31956-1-yonatanlinik@gmail.com>
+ <20201211163749.31956-2-yonatanlinik@gmail.com> <CAK8P3a0_AwRxTsYuK4p-vv61H34ERDp7od3C2c45u+0QyR+uhQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a0_AwRxTsYuK4p-vv61H34ERDp7od3C2c45u+0QyR+uhQ@mail.gmail.com>
+From:   Yonatan Linik <yonatanlinik@gmail.com>
+Date:   Sat, 12 Dec 2020 10:39:32 +0200
+Message-ID: <CA+s=kw28NJK670ZsMmE3zW-9gP6uzcQKV+dY7OcS6xSgVOye_Q@mail.gmail.com>
+Subject: Re: [PATCH 1/1] net: Fix use of proc_fs
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Willem de Bruijn <willemb@google.com>,
+        john.ogness@linutronix.de, Arnd Bergmann <arnd@arndb.de>,
+        Mao Wenan <maowenan@huawei.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        orcohen@paloaltonetworks.com, Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Dec 11, 2020 at 11:00 PM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> Another option would be to just ignore the return code here
+> and continue without a procfs file, regardless of whether procfs
+> is enabled or not.
+>
+>        Arnd
 
+Yes I thought about that, but I didn't want to make changes to the way
+it behaved when procfs was enabled.
+If you decide that's a better solution I will happily change it.
 
-On 12/12/2020 06:31, Pravin Shelar wrote:
-> On Fri, Dec 11, 2020 at 4:28 AM Jonas Bonn <jonas@norrbonn.se> wrote:
->>
->> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
->> ---
->>   drivers/net/gtp.c | 8 +++++++-
->>   1 file changed, 7 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
->> index 236ebbcb37bf..7bbeec173113 100644
->> --- a/drivers/net/gtp.c
->> +++ b/drivers/net/gtp.c
->> @@ -536,7 +536,11 @@ static int gtp_xmit_ip4(struct sk_buff *skb, struct net_device *dev)
->>          if (unlikely(r))
->>                  goto err_rt;
->>
->> -       skb_reset_inner_headers(skb);
->> +       r = udp_tunnel_handle_offloads(skb, true);
->> +       if (unlikely(r))
->> +               goto err_rt;
->> +
->> +       skb_set_inner_protocol(skb, skb->protocol);
->>
-> This should be skb_set_inner_ipproto(), since GTP is L3 protocol.
-
-I think you're right, but I barely see the point of this.  It all ends 
-up in the same place, as far as I can tell.  Is this supposed to be some 
-sort of safeguard against trying to offload tunnels-in-tunnels?
-
-/Jonas
+-- 
+Yonatan Linik
