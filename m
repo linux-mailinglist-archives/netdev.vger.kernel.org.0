@@ -2,117 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E792D88DB
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 19:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DD792D88E8
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 19:04:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439607AbgLLSBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 13:01:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39230 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727128AbgLLSBa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Dec 2020 13:01:30 -0500
-Date:   Sat, 12 Dec 2020 10:00:47 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607796049;
-        bh=S3eThU5DZW64V0rbc0rg8TngRTlVEbT08spoA0s5ET0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hgsIgdEbh9YkfeVZq8wq49gSCQivPsZl1i3UFuYKzMyWPMB1j2cwiuO2Kl+FNCGbK
-         wJqowWwZXRpqj5IfCEWvt06CkMZPlKUMXHD5IK1+hC0LNJmjxPMwBAOkhq7lnX34r1
-         5byDp9NnEa+Hk9oTkZReKOdUMAr4jv6vwa1PsnKxU7yOauTPSxOY5DPODE7iyUxobw
-         hADSzHiV0TTGP2yoRcFT2BUART9HA7RU8JJLfLoL8AmgTDQ/YzuZETX0SCxnPQKtx2
-         LyfFbALHKQs/VofC3DFg82Lv8AmAK0cK39+J5ZV2QfsrpTLzBbvcgY6SSBaJUIFZZT
-         WEwa6FQqCi2Ig==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] net: dsa: qca: ar9331: export stats64
-Message-ID: <20201212100047.1b6afb78@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201212134852.gwkugi372afazcd5@skbuf>
-References: <20201211105322.7818-1-o.rempel@pengutronix.de>
-        <20201211105322.7818-3-o.rempel@pengutronix.de>
-        <20201212134852.gwkugi372afazcd5@skbuf>
+        id S1732232AbgLLSDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 13:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727128AbgLLSDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 13:03:38 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E486C0613CF
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 10:02:58 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id b5so4215702pjl.0
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 10:02:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cGkuFd8SUVnMWuKr3+vpUbyePfeVaBNdRCV7PZLx6e8=;
+        b=VYqVontRJXbCiWW+cvzaMRp79vf1ClNy744AInfUi8dgHRopmFCfQ7asrYxHAJPUlJ
+         KAKBV8nh6gWqp+71oHPLIqGhTkAo9xsXrPJqUgS8vRX6131FEE/HD2ZVtD+0TOThADMp
+         2BhZGvQHOSjo/UJOuevNDih9VlvDm+9INRL0qUkPgDDD4i5J+DpICJ8g/hYwPmg1TZWJ
+         DDYySCQua5pjHhGzY9Vf5uYFG1jfe/H7myDObp9Oq/Tjp0jqPQP8sR/PXeZOhO6DrhRR
+         R8PZseExuvNKGL6zlo/mIA6ZmSiWsGprTtn+7Z7WCV6Y7qgH3uR935kJ7t0zLL8sa0l0
+         H3Fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cGkuFd8SUVnMWuKr3+vpUbyePfeVaBNdRCV7PZLx6e8=;
+        b=m4QC+oVcrOc4vYAQjkCfkBOYNRl3fSwXVhpDPs7UDeQHy8uOiaXvaZL27h9IWdHOlV
+         bvRZM2C6T2Bgsz9vCQFA3TerVn37l7fL+GVN6b78YtszYNn4634peuTatXAKB3iqj1zp
+         87nmHJ7M3ICSPouvoTIkJy+HL5shhGeYlnxl6bK3Ls9BmQ+0nrT4cB8XEffuORUTx/Lp
+         M3SUG1MoZGGmKheffTq2iN354WwOWf5xz0GPA00kgCmrTzEZE8GRpQ4Q2JwERL98ekQ7
+         nCKgQXnUD4Yw1cL4LGgMttNf7mY6NqEWsU7YAgGhq8W0EBSycZhA20mI2xuT1iuAkCma
+         Qg3Q==
+X-Gm-Message-State: AOAM532Bob1QAOpOicJa3mBeKo8FP1H9yrMNxgIjeZF8rmPTavzR20aa
+        rb18TY1ygFTBXv5CQi857T3lmQ==
+X-Google-Smtp-Source: ABdhPJyu0jeg7+pf/+yQLEpsD3UvOfBvg0wEwQCwAOhcATSF9EowSBl9Wozmhu2sR357q+U+cDovhw==
+X-Received: by 2002:a17:90a:a2e:: with SMTP id o43mr17791024pjo.59.1607796177782;
+        Sat, 12 Dec 2020 10:02:57 -0800 (PST)
+Received: from [192.168.1.134] ([66.219.217.173])
+        by smtp.gmail.com with ESMTPSA id h16sm15233304pgd.62.2020.12.12.10.02.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Dec 2020 10:02:57 -0800 (PST)
+Subject: Re: [PATCH 0/3] PROTO_CMSG_DATA_ONLY for Datagram (UDP)
+To:     Victor Stewart <v@nametag.social>
+Cc:     io-uring <io-uring@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Stefan Metzmacher <metze@samba.org>,
+        Jann Horn <jannh@google.com>
+References: <CAM1kxwgjCJwSvOtESxWwTC_qcXZEjbOSreXUQrG+bOOrPWdbqA@mail.gmail.com>
+ <750bc4e7-c2ce-e33d-dc98-483af96ff330@kernel.dk>
+ <CAM1kxwjm9YFJCvqt4Bm0DKQuKz2Qg975YWSnx6RO_Jam=gkQyg@mail.gmail.com>
+ <e618d93a-e3c6-8fb6-c559-32c0b854e321@kernel.dk>
+ <CAM1kxwgX5MsOoJfnCFMnkAqCJr8m34XC2Pw1bpGmrdnUFPhY9Q@mail.gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <bfc41aef-d09b-7e94-ed50-34ec3de6163d@kernel.dk>
+Date:   Sat, 12 Dec 2020 11:02:56 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CAM1kxwgX5MsOoJfnCFMnkAqCJr8m34XC2Pw1bpGmrdnUFPhY9Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Dec 2020 15:48:52 +0200 Vladimir Oltean wrote:
-> > +	stats->rx_packets = u64_stats_read(&s->rx64byte) +
-> > +		u64_stats_read(&s->rx128byte) + u64_stats_read(&s->rx256byte) +
-> > +		u64_stats_read(&s->rx512byte) + u64_stats_read(&s->rx1024byte) +
-> > +		u64_stats_read(&s->rx1518byte) + u64_stats_read(&s->rxmaxbyte);
-> > +	stats->tx_packets = u64_stats_read(&s->tx64byte) +
-> > +		u64_stats_read(&s->tx128byte) + u64_stats_read(&s->tx256byte) +
-> > +		u64_stats_read(&s->tx512byte) + u64_stats_read(&s->tx1024byte) +
-> > +		u64_stats_read(&s->tx1518byte) + u64_stats_read(&s->txmaxbyte);
-> > +	stats->rx_bytes = u64_stats_read(&s->rxgoodbyte);
-> > +	stats->tx_bytes = u64_stats_read(&s->txbyte);
-> > +	stats->rx_errors = u64_stats_read(&s->rxfcserr) +
-> > +		u64_stats_read(&s->rxalignerr) + u64_stats_read(&s->rxrunt) +
-> > +		u64_stats_read(&s->rxfragment) + u64_stats_read(&s->rxoverflow);
-> > +	stats->tx_errors = u64_stats_read(&s->txoversize);  
+On 12/12/20 10:58 AM, Victor Stewart wrote:
+> On Sat, Dec 12, 2020 at 5:40 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>
+>> On 12/12/20 10:25 AM, Victor Stewart wrote:
+>>> On Sat, Dec 12, 2020 at 5:07 PM Jens Axboe <axboe@kernel.dk> wrote:
+>>>>
+>>>> On 12/12/20 8:31 AM, Victor Stewart wrote:
+>>>>> RE our conversation on the "[RFC 0/1] whitelisting UDP GSO and GRO
+>>>>> cmsgs" thread...
+>>>>>
+>>>>> https://lore.kernel.org/io-uring/CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com/
+>>>>>
+>>>>> here are the patches we discussed.
+>>>>>
+>>>>> Victor Stewart (3):
+>>>>>    net/socket.c: add PROTO_CMSG_DATA_ONLY to __sys_sendmsg_sock
+>>>>>    net/ipv4/af_inet.c: add PROTO_CMSG_DATA_ONLY to inet_dgram_ops
+>>>>>    net/ipv6/af_inet6.c: add PROTO_CMSG_DATA_ONLY to inet6_dgram_ops
+>>>>>
+>>>>>    net/ipv4/af_inet.c
+>>>>>      |   1 +
+>>>>>    net/ipv6/af_inet6.c
+>>>>>     |   1 +
+>>>>>    net/socket.c
+>>>>>        |   8 +-
+>>>>>    3 files changed, 7 insertions(+), 3 deletions(-)
+>>>>
+>>>> Changes look fine to me, but a few comments:
+>>>>
+>>>> - I'd order 1/3 as 3/3, that ordering makes more sense as at that point it
+>>>>   could actually be used.
+>>>
+>>> right that makes sense.
+>>>
+>>>>
+>>>> - For adding it to af_inet/af_inet6, you should write a better commit message
+>>>>   on the reasoning for the change. Right now it just describes what the
+>>>>   patch does (which is obvious from the change), not WHY it's done. Really
+>>>>   goes for current 1/3 as well, commit messages need to be better in
+>>>>   general.
+>>>>
+>>>
+>>> okay thanks Jens. i would have reiterated the intention but assumed it
+>>> were implicit given I linked the initial conversation about enabling
+>>> UDP_SEGMENT (GSO) and UDP_GRO through io_uring.
+>>>
+>>>> I'd also CC Jann Horn on the series, he's the one that found an issue there
+>>>> in the past and also acked the previous change on doing PROTO_CMSG_DATA_ONLY.
+>>>
+>>> I CCed him on this reply. Soheil at the end of the first exchange
+>>> thread said he audited the UDP paths and believed this to be safe.
+>>>
+>>> how/should I resubmit the patch with a proper intention explanation in
+>>> the meta and reorder the patches? my first patch and all lol.
+>>
+>> Just post is as a v2 with the change noted in the cover letter. I'd also
+>> ensure that it threads properly, right now it's just coming through as 4
+>> separate emails at my end. If you're using git send-email, make sure you
+>> add --thread to the arguments.
 > 
-> Should tx_errors not also include tx_aborted_errors, tx_fifo_errors,
-> tx_window_errors?
+> oh i didn't know about git send-email. i was manually constructing /
+> sending them lol. thanks!
 
-Yes.
+I'd recommend it, makes sure your mailer doesn't mangle anything either. FWIW,
+this is what I do:
 
-> > +	stats->multicast = u64_stats_read(&s->rxmulti);
-> > +	stats->collisions = u64_stats_read(&s->txcollision);
-> > +	stats->rx_length_errors = u64_stats_read(&s->rxrunt) +
-> > +		u64_stats_read(&s->rxfragment) + u64_stats_read(&s->rxtoolong);
-> > +	stats->rx_crc_errors = u64_stats_read(&s->rxfcserr) +
-> > +		u64_stats_read(&s->rxalignerr) + u64_stats_read(&s->rxfragment);
+git format-patch sha1..sha2
+mv 00*.patch /tmp/x
 
-Why would CRC errors include alignment errors and rxfragments?
+git send-email --no-signed-off-by-cc --thread --compose  --to linux-fsdevel@vger.kernel.org --cc torvalds@linux-foundation.org --cc viro@zeniv.linux.org.uk /tmp/x
 
-Besides looks like rxfragment is already counted to length errors.
+(from a series I just sent out). And then I have the following section in
+~/.gitconfig:
 
-> > +	stats->rx_frame_errors = u64_stats_read(&s->rxalignerr);
-> > +	stats->rx_missed_errors = u64_stats_read(&s->rxoverflow);
-> > +	stats->tx_aborted_errors = u64_stats_read(&s->txabortcol);
-> > +	stats->tx_fifo_errors = u64_stats_read(&s->txunderrun);
-> > +	stats->tx_window_errors = u64_stats_read(&s->txlatecol);
-> > +	stats->rx_nohandler = u64_stats_read(&s->filtered);  
-> 
-> Should rx_nohandler not be also included in rx_errors?
+[sendemail]
+from = Jens Axboe <axboe@kernel.dk>
+smtpserver = smtp.gmail.com
+smtpuser = axboe@kernel.dk
+smtpencryption = tls
+smtppass = hunter2
+smtpserverport = 587
 
-I don't think drivers should ever touch rx_nohandler, it's a pretty
-specific SW stat. But you made me realize that we never specified where
-to count frames discarded due to L2 address filtering. It appears that
-high speed adapters I was looking at don't have such statistic?
+for using gmail to send them out.
 
-I would go with rx_dropped, if that's what ->filtered is.
+--compose will fire up your editor to construct the cover letter, and
+when you're happy with it, save+exit and git send-email will ask whether
+to proceed or abort.
 
-We should probably update the doc like this:
+That's about all there is to it, and provides a consistent way to send out
+patch series.
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 874cc12a34d9..82708c6db432 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -75,8 +75,9 @@ struct rtnl_link_stats {
-  *
-  * @rx_dropped: Number of packets received but not processed,
-  *   e.g. due to lack of resources or unsupported protocol.
-- *   For hardware interfaces this counter should not include packets
-- *   dropped by the device which are counted separately in
-+ *   For hardware interfaces this counter may include packets discarded
-+ *   due to L2 address filtering but should not include packets dropped
-+ *   by the device due to buffer exhaustion which are counted separately in
-  *   @rx_missed_errors (since procfs folds those two counters together).
-  *
-  * @tx_dropped: Number of packets dropped on their way to transmission,
+-- 
+Jens Axboe
 
-
-> You can probably avoid reading a few of these twice by assigning the
-> more specific ones first, then the rx_errors and tx_errors at the end.
