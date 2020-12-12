@@ -2,111 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 262FF2D88C9
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 18:57:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 350382D88D8
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 18:59:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439564AbgLLRzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 12:55:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59092 "EHLO
+        id S2439644AbgLLR7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 12:59:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727514AbgLLRzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 12:55:43 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662FDC0613CF;
-        Sat, 12 Dec 2020 09:55:03 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id a8so19731575lfb.3;
-        Sat, 12 Dec 2020 09:55:03 -0800 (PST)
+        with ESMTP id S2436681AbgLLR7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 12:59:19 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0366AC0613D3
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 09:58:39 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id dk8so12853437edb.1
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 09:58:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=t/n/SZO57zH+6NrngqhLDU18rnISd3B9T8WfYcT9OVY=;
-        b=Az53OnX215u3j5WV+PfOQiLX82i72LtCP7dvEQ96A8kK3qS8C3Yv4xUDOQWladxXs9
-         2SkA373eLzlsNOLBxk4M/73cAVEALP6c9NrqovDL5ZgLf93wbEVJwB+fOjdgbU3d8WLw
-         ibdYNObpMFPqCF7iRkEC9uVt5PV6NLsdHDKH5Mf37lkPsn+068an5K7wFCR4Quc221X0
-         5a76gyRf8R9oSvTwnuBYqMDBX92VLARbOd2fYRqP6ioFKCvghQhuZB1kTReh1DVcMsCJ
-         JYoeb8GDnrBHwj8sQDto795RDI+Kl+FZEBUgUSl1H7A+huK96BUAnoS1RULfbbfam+l1
-         B4rQ==
+        d=nametag.social; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w9wA8pvuLFNHnVRsXy7sHEJrsqyWrHLgJ6VAbhFUT3c=;
+        b=xU27+JEaunbHQlMEYNHOmDt+5f+SxEm9NggJzM7nrPSZq7jU7KgnfPa6hQ1bEIQJKV
+         fYX1vHFOw3VuoP3xCZbfhYB/eG2/ngjBu4+q6mFkPkbwq8+DBha7riNZW+/rH22oxeDc
+         ap2YW3hjDnwcu5aAwvryCE2D77CpW1cp1am7luFUm6GJkttz5fMV9hHQm8pi5FQxIaQl
+         VTu8qZYo33qPxNtVHA22/uh0WXFR5h6ciwbvIlz6W5mLfNWLRHHOYU7YyRXhjC9jh86c
+         vrCNq9F5NVXGiGCajbyk3FCgHY13aYpU2OefNP0FCtX4Nl4VwZL2hqykS8Kgm19TxyiO
+         QCBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=t/n/SZO57zH+6NrngqhLDU18rnISd3B9T8WfYcT9OVY=;
-        b=Y9fnv8rKCnjEaK+yLlO75LSh2rkg0hb3An3AZHrmNmiebX3BaazFGX9lnphUobNl36
-         lkPErQVt0CJs/+pwFVrl1M6fdCf7jayiKuXb/0qn/JPwRB0IcZUY7l8Yrbex1i6aJhgH
-         iWsbT0Jub98QXJOq/rl/ipyObj2fNQw12UJbfrLoLKkHIChkbg+lZnfFIOWxZRVQsuig
-         o8VF8X852b+SaQ1rHGPXAUeMGneJdovvJn4JELOX/5TYngib73KMmmXcqq+4Q0rQeLWq
-         h0hgjC3kQ3j+DNW9PIdvrOXwodj/qqDB/m5g8w0EIJPJmM4t67qQ9EFrCrbUGzrH6/5M
-         g48g==
-X-Gm-Message-State: AOAM532tLO9WY1GelwjKho/89WOcJvC5dcO2J05vrow4gWZ4I4c4xKhd
-        z3fRZVftGUaO6tZZaFtOaLSh0u3hkuU=
-X-Google-Smtp-Source: ABdhPJz63qGvDMQ6+R7rSAFJUdfoExgTKPuNQY/FDHF03Qjn2z2Y9LdCAD6ipINPbcjxSxfthnxnuw==
-X-Received: by 2002:ac2:5691:: with SMTP id 17mr7391498lfr.537.1607795701603;
-        Sat, 12 Dec 2020 09:55:01 -0800 (PST)
-Received: from [192.168.1.100] ([31.173.85.216])
-        by smtp.gmail.com with ESMTPSA id k11sm1353981lfj.170.2020.12.12.09.55.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Dec 2020 09:55:01 -0800 (PST)
-Subject: Re: [RFC] ravb: Add support for optional txc_refclk
-To:     Adam Ford <aford173@gmail.com>, linux-renesas-soc@vger.kernel.org
-Cc:     aford@beaconembedded.com, charles.stevens@logicpd.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201212165648.166220-1-aford173@gmail.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Organization: Brain-dead Software
-Message-ID: <7f5f8ef2-3e4f-5076-0558-26b48e75b674@gmail.com>
-Date:   Sat, 12 Dec 2020 20:54:58 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w9wA8pvuLFNHnVRsXy7sHEJrsqyWrHLgJ6VAbhFUT3c=;
+        b=kjN5GMoxQW5lfAlSegSsf20inuzK/RviLR5CJ0Xn/bTVvXPoAimwGYfXIYSfUiEQ8Q
+         PC6b2G+fOAPaMPlLlt9hlOa9ikYRFf5bdGX2r6qtS1dyGg+MRXT0EVpQfMrTr3HfVAnV
+         A0wpThUXrdzshRFoYIGf+ij0BiqDp9zaMXvclde4aSLqQF0kaj0WUg7Zzi9taVYBNe8N
+         ikNbbXzoFq8HhuVCLXVx0oqdEmYzkGo9eI7IsoM68ePIjoE+Rt+XyxZjClWHfzhO83k0
+         aQfLdt+ax8ALTrk9XwAyTykV/K5SDXjKbnBq9Q/a40l9f8lXaAp+NcBh4Ay0drICDIRz
+         ZShQ==
+X-Gm-Message-State: AOAM532Dx2Kftdm1LYtBAxzsSr64Se30DwhGQj2qplzmvCbFIGua8f2N
+        woSfvl0+CHvMV3K573cPlYm/8c0RUKsO3O71S7QvXA==
+X-Google-Smtp-Source: ABdhPJxPU+T6Xu63awD2j/omKu+aMd3x7xXtfH5sHPJILDRGWafpPV9Jmw9uIOGKySNOBsl+AaHHt0DiDhLAoO5klk8=
+X-Received: by 2002:a05:6402:1ad1:: with SMTP id ba17mr17204660edb.51.1607795917686;
+ Sat, 12 Dec 2020 09:58:37 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201212165648.166220-1-aford173@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CAM1kxwgjCJwSvOtESxWwTC_qcXZEjbOSreXUQrG+bOOrPWdbqA@mail.gmail.com>
+ <750bc4e7-c2ce-e33d-dc98-483af96ff330@kernel.dk> <CAM1kxwjm9YFJCvqt4Bm0DKQuKz2Qg975YWSnx6RO_Jam=gkQyg@mail.gmail.com>
+ <e618d93a-e3c6-8fb6-c559-32c0b854e321@kernel.dk>
+In-Reply-To: <e618d93a-e3c6-8fb6-c559-32c0b854e321@kernel.dk>
+From:   Victor Stewart <v@nametag.social>
+Date:   Sat, 12 Dec 2020 17:58:26 +0000
+Message-ID: <CAM1kxwgX5MsOoJfnCFMnkAqCJr8m34XC2Pw1bpGmrdnUFPhY9Q@mail.gmail.com>
+Subject: Re: [PATCH 0/3] PROTO_CMSG_DATA_ONLY for Datagram (UDP)
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     io-uring <io-uring@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Stefan Metzmacher <metze@samba.org>,
+        Jann Horn <jannh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Sat, Dec 12, 2020 at 5:40 PM Jens Axboe <axboe@kernel.dk> wrote:
+>
+> On 12/12/20 10:25 AM, Victor Stewart wrote:
+> > On Sat, Dec 12, 2020 at 5:07 PM Jens Axboe <axboe@kernel.dk> wrote:
+> >>
+> >> On 12/12/20 8:31 AM, Victor Stewart wrote:
+> >>> RE our conversation on the "[RFC 0/1] whitelisting UDP GSO and GRO
+> >>> cmsgs" thread...
+> >>>
+> >>> https://lore.kernel.org/io-uring/CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com/
+> >>>
+> >>> here are the patches we discussed.
+> >>>
+> >>> Victor Stewart (3):
+> >>>    net/socket.c: add PROTO_CMSG_DATA_ONLY to __sys_sendmsg_sock
+> >>>    net/ipv4/af_inet.c: add PROTO_CMSG_DATA_ONLY to inet_dgram_ops
+> >>>    net/ipv6/af_inet6.c: add PROTO_CMSG_DATA_ONLY to inet6_dgram_ops
+> >>>
+> >>>    net/ipv4/af_inet.c
+> >>>      |   1 +
+> >>>    net/ipv6/af_inet6.c
+> >>>     |   1 +
+> >>>    net/socket.c
+> >>>        |   8 +-
+> >>>    3 files changed, 7 insertions(+), 3 deletions(-)
+> >>
+> >> Changes look fine to me, but a few comments:
+> >>
+> >> - I'd order 1/3 as 3/3, that ordering makes more sense as at that point it
+> >>   could actually be used.
+> >
+> > right that makes sense.
+> >
+> >>
+> >> - For adding it to af_inet/af_inet6, you should write a better commit message
+> >>   on the reasoning for the change. Right now it just describes what the
+> >>   patch does (which is obvious from the change), not WHY it's done. Really
+> >>   goes for current 1/3 as well, commit messages need to be better in
+> >>   general.
+> >>
+> >
+> > okay thanks Jens. i would have reiterated the intention but assumed it
+> > were implicit given I linked the initial conversation about enabling
+> > UDP_SEGMENT (GSO) and UDP_GRO through io_uring.
+> >
+> >> I'd also CC Jann Horn on the series, he's the one that found an issue there
+> >> in the past and also acked the previous change on doing PROTO_CMSG_DATA_ONLY.
+> >
+> > I CCed him on this reply. Soheil at the end of the first exchange
+> > thread said he audited the UDP paths and believed this to be safe.
+> >
+> > how/should I resubmit the patch with a proper intention explanation in
+> > the meta and reorder the patches? my first patch and all lol.
+>
+> Just post is as a v2 with the change noted in the cover letter. I'd also
+> ensure that it threads properly, right now it's just coming through as 4
+> separate emails at my end. If you're using git send-email, make sure you
+> add --thread to the arguments.
 
-On 12.12.2020 19:56, Adam Ford wrote:
+oh i didn't know about git send-email. i was manually constructing /
+sending them lol. thanks!
 
-> The SoC expects the txv_refclk is provided, but if it is provided
-> by a programmable clock, there needs to be a way to get and enable
-> this clock to operate.  It needs to be optional since it's only
-> necessary for those with programmable clocks.
-> 
-> Signed-off-by: Adam Ford <aford173@gmail.com>
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index bd30505fbc57..4c3f95923ef2 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -2148,6 +2148,18 @@ static int ravb_probe(struct platform_device *pdev)
->   		goto out_release;
->   	}
->   
-> +	priv->ref_clk = devm_clk_get(&pdev->dev, "txc_refclk");
-
-    Why not devm_clk_get_optional()?
-
-> +	if (IS_ERR(priv->ref_clk)) {
-> +		if (PTR_ERR(priv->ref_clk) == -EPROBE_DEFER) {
-> +			/* for Probe defer return error */
-> +			error = PTR_ERR(priv->ref_clk);
-> +			goto out_release;
-> +		}
-> +		/* Ignore other errors since it's optional */
-> +	} else {
-> +		(void)clk_prepare_enable(priv->ref_clk);
-> +	}
-> +
->   	ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
->   	ndev->min_mtu = ETH_MIN_MTU;
->   
-
-MBR, Sergei
+>
+> --
+> Jens Axboe
+>
