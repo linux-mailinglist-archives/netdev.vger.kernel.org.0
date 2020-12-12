@@ -2,102 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2F002D871D
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 15:37:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F7C02D8748
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 16:32:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439188AbgLLOfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 09:35:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34248 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725550AbgLLOfM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Dec 2020 09:35:12 -0500
-Date:   Sat, 12 Dec 2020 15:34:27 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607783671;
-        bh=NgIteYLGgyTLF960AVsAocSq4SuZJoun1LIWgl6OYfg=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ahbZo+nFp3uG9qJuRdVjrvl85mWlc6qDQQolGFLwszBtayHV8DqsbO6+jGPFKsru4
-         oIFZZB88aN+29U9nsrx589hBrnZid+TWLx7CtH8eHcyqYoyzcRC9qn7rz4WoLJg4Ce
-         dGXgGf45a5lyIP7EBPKO+rV4W6o8Zwqq0vAK9jGX3ZYJpSPArbV1RuIyzlHqEbbRDr
-         h+B2RM8ZK6CGLRNmgMUAtkPh3yTag/sEkyWfLwOWFjPVs/8OiCJcHgJ7nwS/MZM9VS
-         LWOoAuIFthCxLRVDNquOQ/Ti0bkbUJ0ViJveJc3T5vnkBaun1KQeYX82jH/gWmeCKC
-         Lr2LXPch0OboQ==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        brouer@redhat.com, lorenzo.bianconi@redhat.com,
-        alexander.duyck@gmail.com, maciej.fijalkowski@intel.com
-Subject: Re: [PATCH v2 bpf-next 2/2] net: xdp: introduce xdp_prepare_buff
- utility routine
-Message-ID: <20201212143427.GA180288@lore-desk>
-References: <cover.1607714335.git.lorenzo@kernel.org>
- <afc242ec96097ae8318a1ba2819aa2daa5e56a51.1607714335.git.lorenzo@kernel.org>
- <59bc3e140cfb859bb8451a1e87da5125b956d778.camel@kernel.org>
+        id S2439218AbgLLPce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 10:32:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725550AbgLLPc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 10:32:29 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8AEC0613CF
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 07:31:43 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id d17so16492854ejy.9
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 07:31:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nametag.social; s=google;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=aMMyJF+8p9QPej8J5CWrzbYkiGpmhZ+n45YrKy6JUhM=;
+        b=wjPCMKyWrDavbnmdu55/krszJNVEFRFwfEcaR1hxaXhPiw/cE6nBYzNBZH+XwM57IH
+         R1dAqFYgS6K4LnXnVFZ3n6upg7PX6kY7JR4wWIcv8hnCFEUcbG8W64nn/FxJg/M6q0LJ
+         yufLz6vM3qucJtgXMa+kZICRmxHqjplzbY3cnoKSaK2/4Sw9O+NJDSLu8QJiZ07665UV
+         pvNQz8F2BjC4exKH2QF9dVyNVsL70FIQ/6/2PueoEOYwbmoJQ0VcSfbxsNPMvkudFreb
+         Q/8pn73zuqiainyagWeLEk5c1+7q+94Rn6ICl75Ki883/+gl1VHVAM+4Js7V/lYDb3RI
+         AgbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=aMMyJF+8p9QPej8J5CWrzbYkiGpmhZ+n45YrKy6JUhM=;
+        b=pCYnjiOtvrN4m1ots5/kikCzYC3LGieNi563Oq74yCVgCOfedgcB/V3gTimNDbXzfv
+         0kNeck4PVutB0eiwqTgGcdNBYAxHugrOgTgLz9OEsrR2iAXdqIqUCebO6aTyLpZ7/Fbn
+         C7s+qZR/Hox1spMp+YYZQq7TJ/oOLSOUFpmCZk2hFFvaVgYHM3GGv3U3Gfl5/Kn8p3ks
+         IaXhQbl1D0Y6nJyBQ+1g5lqFRGcYfcYsYBkHduGOzqW37VCG62XBR9mqJ0dP3Otvkc8E
+         YXDK20cCdK8uBhxr2pVgdJCLVZalOT2PYhaXZDGwcN6JbCOg1nyEv6mEqBGDBFfjmm9e
+         fq+w==
+X-Gm-Message-State: AOAM533TTGgmDNhZclG8P4JuCChvCj4US010YbTWFLaNgNYysjBUgIJj
+        Magtakr+eaCf4fM6k9dgTfpKppZV7U9J8tTJWanFrA==
+X-Google-Smtp-Source: ABdhPJyhggzsEk20gRi4OKpn78sVVGZIx/AMTRfn7B6QJpqXAL730Irnqzzjc69zTl1TKzkuTtd3ba9sFd1aNlxEJZA=
+X-Received: by 2002:a17:906:1e0c:: with SMTP id g12mr15850923ejj.214.1607787102060;
+ Sat, 12 Dec 2020 07:31:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="IJpNTDwzlM2Ie8A6"
-Content-Disposition: inline
-In-Reply-To: <59bc3e140cfb859bb8451a1e87da5125b956d778.camel@kernel.org>
+From:   Victor Stewart <v@nametag.social>
+Date:   Sat, 12 Dec 2020 15:31:30 +0000
+Message-ID: <CAM1kxwgjCJwSvOtESxWwTC_qcXZEjbOSreXUQrG+bOOrPWdbqA@mail.gmail.com>
+Subject: [PATCH 0/3] PROTO_CMSG_DATA_ONLY for Datagram (UDP)
+To:     io-uring <io-uring@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Stefan Metzmacher <metze@samba.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+RE our conversation on the "[RFC 0/1] whitelisting UDP GSO and GRO
+cmsgs" thread...
 
---IJpNTDwzlM2Ie8A6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+https://lore.kernel.org/io-uring/CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com/
 
-On Dec 11, Saeed Mahameed wrote:
-> On Fri, 2020-12-11 at 20:28 +0100, Lorenzo Bianconi wrote:
-> > Introduce xdp_prepare_buff utility routine to initialize per-
-> > descriptor
-> > xdp_buff fields (e.g. xdp_buff pointers). Rely on xdp_prepare_buff()
-> > in
-> > all XDP capable drivers.
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> >=20
-> ...
-> > +static inline void
-> > +xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
-> > +		 int headroom, int data_len)
-> > +{
-> > +	xdp->data_hard_start =3D hard_start;
-> > +	xdp->data =3D hard_start + headroom;
-> > +	xdp->data_end =3D xdp->data + data_len;
-> > +	xdp->data_meta =3D xdp->data;
->=20
-> You might want to compute data =3D hard_start + headroom; on a local var,
-> and hopefully gcc will put it into a register, then reuse it three
-> times instead of the 2 xdp->data de-references you got at the end of
-> the function.
->=20
-> unsigned char *data =3D hard_start + headroom;
->=20
-> xdp->data_hard_start =3D hard_start;
-> xdp->data =3D data;
-> xdp->data_end =3D data + data_len;
-> xdp->data_meta =3D data;
+here are the patches we discussed.
 
-ack, I will fix it in v3.
+Victor Stewart (3):
+   net/socket.c: add PROTO_CMSG_DATA_ONLY to __sys_sendmsg_sock
+   net/ipv4/af_inet.c: add PROTO_CMSG_DATA_ONLY to inet_dgram_ops
+   net/ipv6/af_inet6.c: add PROTO_CMSG_DATA_ONLY to inet6_dgram_ops
 
-Regards,
-Lorenzo
-
->=20
->=20
-
---IJpNTDwzlM2Ie8A6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX9TU8AAKCRA6cBh0uS2t
-rB+5AP9D6pa330dvwmERH1AmF6Gn9emKfeuo7/DCwJ7yZSOxfwD+J/c5FKU1z/pG
-u8D+1ALW3wnFawQSxKLxZv/7N+wz5Qk=
-=FXzd
------END PGP SIGNATURE-----
-
---IJpNTDwzlM2Ie8A6--
+   net/ipv4/af_inet.c
+     |   1 +
+   net/ipv6/af_inet6.c
+    |   1 +
+   net/socket.c
+       |   8 +-
+   3 files changed, 7 insertions(+), 3 deletions(-)
