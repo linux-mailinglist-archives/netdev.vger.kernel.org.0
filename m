@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F7C02D8748
+	by mail.lfdr.de (Postfix) with ESMTP id E38982D8749
 	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 16:32:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439218AbgLLPce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 10:32:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36788 "EHLO
+        id S2439271AbgLLPcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 10:32:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725550AbgLLPc3 (ORCPT
+        with ESMTP id S1728704AbgLLPc3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 10:32:29 -0500
 Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8AEC0613CF
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 07:31:43 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id d17so16492854ejy.9
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 07:31:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0535C0613D6
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 07:31:48 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id g20so16536831ejb.1
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 07:31:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=nametag.social; s=google;
         h=mime-version:from:date:message-id:subject:to;
-        bh=aMMyJF+8p9QPej8J5CWrzbYkiGpmhZ+n45YrKy6JUhM=;
-        b=wjPCMKyWrDavbnmdu55/krszJNVEFRFwfEcaR1hxaXhPiw/cE6nBYzNBZH+XwM57IH
-         R1dAqFYgS6K4LnXnVFZ3n6upg7PX6kY7JR4wWIcv8hnCFEUcbG8W64nn/FxJg/M6q0LJ
-         yufLz6vM3qucJtgXMa+kZICRmxHqjplzbY3cnoKSaK2/4Sw9O+NJDSLu8QJiZ07665UV
-         pvNQz8F2BjC4exKH2QF9dVyNVsL70FIQ/6/2PueoEOYwbmoJQ0VcSfbxsNPMvkudFreb
-         Q/8pn73zuqiainyagWeLEk5c1+7q+94Rn6ICl75Ki883/+gl1VHVAM+4Js7V/lYDb3RI
-         AgbA==
+        bh=AcrMK4/n37JI/DMV0HjZEiX27NSebyROaT8OWAvMNBw=;
+        b=vtSV1iHT0efi46wPfoJpuFg1nK2bdC/VzZA6MRjeXr1xW4qXgjpUGnl/2DfzffR/6/
+         2RhvKNb8QtR1MQiK1sL0gmZqgPriuym2CnvE/h1lFPPG8zMZBiTcOQnmNwaGq2+42B97
+         /sZmH6KbGt5e+O+Xe/2iNo4yC4+jTEEUR/+CHdTVe+UzwPGha3xnIieQKElNxosqMSg5
+         feiWxe713A0J2j5iiz6vS6hCjZ+yLdoi1SDMZV4jP2trxmdxtC9qqWdATGs7mAEZXtYx
+         aPqbSA8VtDjqFsdQj/hezVvJbpVenDkJjT2ZZM2ntHE1SPYMDsJaEm5/vg2vBge2y4RP
+         +Y3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=aMMyJF+8p9QPej8J5CWrzbYkiGpmhZ+n45YrKy6JUhM=;
-        b=pCYnjiOtvrN4m1ots5/kikCzYC3LGieNi563Oq74yCVgCOfedgcB/V3gTimNDbXzfv
-         0kNeck4PVutB0eiwqTgGcdNBYAxHugrOgTgLz9OEsrR2iAXdqIqUCebO6aTyLpZ7/Fbn
-         C7s+qZR/Hox1spMp+YYZQq7TJ/oOLSOUFpmCZk2hFFvaVgYHM3GGv3U3Gfl5/Kn8p3ks
-         IaXhQbl1D0Y6nJyBQ+1g5lqFRGcYfcYsYBkHduGOzqW37VCG62XBR9mqJ0dP3Otvkc8E
-         YXDK20cCdK8uBhxr2pVgdJCLVZalOT2PYhaXZDGwcN6JbCOg1nyEv6mEqBGDBFfjmm9e
-         fq+w==
-X-Gm-Message-State: AOAM533TTGgmDNhZclG8P4JuCChvCj4US010YbTWFLaNgNYysjBUgIJj
-        Magtakr+eaCf4fM6k9dgTfpKppZV7U9J8tTJWanFrA==
-X-Google-Smtp-Source: ABdhPJyhggzsEk20gRi4OKpn78sVVGZIx/AMTRfn7B6QJpqXAL730Irnqzzjc69zTl1TKzkuTtd3ba9sFd1aNlxEJZA=
-X-Received: by 2002:a17:906:1e0c:: with SMTP id g12mr15850923ejj.214.1607787102060;
- Sat, 12 Dec 2020 07:31:42 -0800 (PST)
+        bh=AcrMK4/n37JI/DMV0HjZEiX27NSebyROaT8OWAvMNBw=;
+        b=auPtDuLxlH+9rNE9owlpLeKHuHhsZlOXY4EXf3MDKwil6J1LZPbSIXTdqTu86QCAab
+         rPGmd27lnVHRQCzgLZcgvbwIVyJ3v7rw3epW0lsn/+ZEcfj9uGBKDva9b0/9FDxHZEfm
+         cDTy2bMS+FHUwM8Pes29GWjXYRpCQultZ7ivt85VaBRWS/xT/gU3gbDGLTabuCoudwVd
+         WNKf7F7Qw8m5B8X+l44las9Iya8hl4sqoRNehExSjoQz3eyaZU0ojYhIEmsUTpYOcbOh
+         pfDR6pnr4DJ/a4tovlMWzV6Vir4Cb27/LiFaZjwOz42LEky4mnGsJ2WHe7UvgOLOrLPZ
+         hljg==
+X-Gm-Message-State: AOAM53309NmSdP2/WRP5eFYxnsHSurAzTzHO8SIOcGhz+tqOtWhSUWZ+
+        Kq4mDDhRqAKZ8aPZV2Wpe3UlBFEoZ2C5ZqWA9PBXgA==
+X-Google-Smtp-Source: ABdhPJzdlRnKPfltvgEaKD8UIUmf7/DVijDULyHyNuR0R44sfbTuQ/Mi4ZzCT2fxkH8xmbbhZjQAC8DNvtrD5zyXVEg=
+X-Received: by 2002:a17:906:40d3:: with SMTP id a19mr15228361ejk.98.1607787107557;
+ Sat, 12 Dec 2020 07:31:47 -0800 (PST)
 MIME-Version: 1.0
 From:   Victor Stewart <v@nametag.social>
-Date:   Sat, 12 Dec 2020 15:31:30 +0000
-Message-ID: <CAM1kxwgjCJwSvOtESxWwTC_qcXZEjbOSreXUQrG+bOOrPWdbqA@mail.gmail.com>
-Subject: [PATCH 0/3] PROTO_CMSG_DATA_ONLY for Datagram (UDP)
+Date:   Sat, 12 Dec 2020 15:31:36 +0000
+Message-ID: <CAM1kxwgKVrpV-4UV5wKyEGbh61N1Bb1s0=pkK8kSp6Z-i3zTKg@mail.gmail.com>
+Subject: [PATCH 1/3] add PROTO_CMSG_DATA_ONLY to __sys_sendmsg_sock
 To:     io-uring <io-uring@vger.kernel.org>,
         Soheil Hassas Yeganeh <soheil@google.com>,
         netdev <netdev@vger.kernel.org>,
@@ -55,22 +55,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RE our conversation on the "[RFC 0/1] whitelisting UDP GSO and GRO
-cmsgs" thread...
+add PROTO_CMSG_DATA_ONLY whitelisting to __sys_sendmsg_sock
 
-https://lore.kernel.org/io-uring/CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com/
+Signed-off by: Victor Stewart <v@nametag.social>
+---
+ net/socket.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-here are the patches we discussed.
+diff --git a/net/socket.c b/net/socket.c
+index 6e6cccc2104f..6995835d6355 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2416,9 +2416,11 @@ static int ___sys_sendmsg(struct socket *sock,
+struct user_msghdr __user *msg,
+ long __sys_sendmsg_sock(struct socket *sock, struct msghdr *msg,
+                        unsigned int flags)
+ {
+-       /* disallow ancillary data requests from this path */
+-       if (msg->msg_control || msg->msg_controllen)
+-               return -EINVAL;
++       if (msg->msg_control || msg->msg_controllen) {
++               /* disallow ancillary data reqs unless cmsg is plain data */
++               if (!(sock->ops->flags & PROTO_CMSG_DATA_ONLY))
++                       return -EINVAL;
++       }
 
-Victor Stewart (3):
-   net/socket.c: add PROTO_CMSG_DATA_ONLY to __sys_sendmsg_sock
-   net/ipv4/af_inet.c: add PROTO_CMSG_DATA_ONLY to inet_dgram_ops
-   net/ipv6/af_inet6.c: add PROTO_CMSG_DATA_ONLY to inet6_dgram_ops
-
-   net/ipv4/af_inet.c
-     |   1 +
-   net/ipv6/af_inet6.c
-    |   1 +
-   net/socket.c
-       |   8 +-
-   3 files changed, 7 insertions(+), 3 deletions(-)
+        return ____sys_sendmsg(sock, msg, flags, NULL, 0);
+ }
