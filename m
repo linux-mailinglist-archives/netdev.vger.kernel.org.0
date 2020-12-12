@@ -2,180 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F362D8A34
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 22:46:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE7382D8A38
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 22:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408024AbgLLVor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 16:44:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbgLLVor (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 16:44:47 -0500
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98559C0613D3
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 13:44:06 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id f14so4137139pju.4
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 13:44:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KVcXZU7ZwVfc4FqSutE2u2K/Z0c65rWjg1GbHG1SB7M=;
-        b=CON5Nm11G8MC/3/OXa+4sSM+CX14Tzk3Yop/OuGX6Rt4Rx5GgYlvAQvRijWKP0Xw8e
-         OYvi7MJoQ2Ndh1d9jHLxBUH6pJP2nF9VpoQTrYvj7W+SyVtpoSrh5T6bFu9nfxAYVEcu
-         lrBdyoV3jmWV6elT1pma/7jGDOu7rpHqq8sBuhnqLWEVsU11u2UndeZqoGBP7c+C+BVy
-         fB2hA+66NwaA2O6v+a7N3zI0kfBdfLFMAXA8hz7tA+g6Uq4MdrZfQj1kRe4RcsSNIRcJ
-         OFde/LiNccySwceIVTN5rd/UiZu9xNkuurvryTaEtHuKX7hmwTdANa6YY0Z8V+SmqC4r
-         Uwgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KVcXZU7ZwVfc4FqSutE2u2K/Z0c65rWjg1GbHG1SB7M=;
-        b=kQH9UupEuwVbNRHnIw0W5904nueXRR9qW+pIKJz2u24b0uwiw6NC5aSufQQcbPqE3+
-         lWq1XPDqYyzsrvPhiJyh91X1E5Stm8jsS6YLiT4rVxNOUljK/+PcnOkodK57l52NzkKw
-         IEW8m/ji4vf6hcxWkOpIGEHJvB0vozlhtJ3XgExNRnJo5/y4lGDp4qMyxFhk8Nmer7+I
-         FUl/aEJRzqDStJYywP7HuyDFsMe2ETzsTVtykIT+iknBdjPAhwMpnZT5o/9gCieixQpA
-         M/LF+px+SWFWH31ugk3o+yi7L7vyaccRcZqtS/dCAZkW1+ncTSeK0l5QafIy6YifrOpu
-         QMVQ==
-X-Gm-Message-State: AOAM5338g90Xc6cemUSC/oMESOGC1/N+c0IUtaXVL+e8Fcww2W31+nQX
-        IZAPDCu47bg0CUPx0k5N25P9Aw==
-X-Google-Smtp-Source: ABdhPJwCG07PGrGRSAu5lE0IYuMFHq844P7X+pE6pqwJUf/KaH5FhCEHyCNsque+g+YeotW/AEBu8Q==
-X-Received: by 2002:a17:902:a9c7:b029:d6:da66:253c with SMTP id b7-20020a170902a9c7b02900d6da66253cmr16635521plr.19.1607809446053;
-        Sat, 12 Dec 2020 13:44:06 -0800 (PST)
-Received: from [192.168.1.134] ([66.219.217.173])
-        by smtp.gmail.com with ESMTPSA id na6sm13218454pjb.12.2020.12.12.13.44.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Dec 2020 13:44:05 -0800 (PST)
-Subject: Re: [PATCH 0/3] PROTO_CMSG_DATA_ONLY for Datagram (UDP)
-To:     Victor Stewart <v@nametag.social>
-Cc:     io-uring <io-uring@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        Stefan Metzmacher <metze@samba.org>,
-        Jann Horn <jannh@google.com>
-References: <CAM1kxwgjCJwSvOtESxWwTC_qcXZEjbOSreXUQrG+bOOrPWdbqA@mail.gmail.com>
- <750bc4e7-c2ce-e33d-dc98-483af96ff330@kernel.dk>
- <CAM1kxwjm9YFJCvqt4Bm0DKQuKz2Qg975YWSnx6RO_Jam=gkQyg@mail.gmail.com>
- <e618d93a-e3c6-8fb6-c559-32c0b854e321@kernel.dk>
- <CAM1kxwgX5MsOoJfnCFMnkAqCJr8m34XC2Pw1bpGmrdnUFPhY9Q@mail.gmail.com>
- <bfc41aef-d09b-7e94-ed50-34ec3de6163d@kernel.dk>
- <CAM1kxwi-P1aVrO9PKj87osvsS4a9PH=hSM+ZJ2mLKJckNeHOWQ@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <37ccec74-8a7c-b5c6-c11f-aaa9e7113461@kernel.dk>
-Date:   Sat, 12 Dec 2020 14:44:04 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2408038AbgLLVwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 16:52:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52196 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2408022AbgLLVwC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Dec 2020 16:52:02 -0500
+Date:   Sat, 12 Dec 2020 13:51:19 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607809881;
+        bh=MpmTZDYvsuyckChPfpiFw4PCoYaOJ5VfYZAIYusX6U8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qqieKxnMKzAZdMQcLSnTj55DKscZ1s9/VojDduAml6i8IGAc5UrFdHgbXwwhC+PqW
+         NO3DLXvfQBYLXiU4WqYC5Rx6crydVVwvfhPBwhj0dA+gXudztISBuujcB0xbxRtya4
+         Ho4s88RQ5J1DniSAhLk1/rUhEOMVVCDXczLAZSVUzXdTtdCRQNI2uojinl2HYhyBtT
+         hl+jVxA4bHMpKBPtNuJ8sIVaViCAzKtN6P2ZWWmHUDW57yMTKxgZTehbTVP9oWTfs0
+         ftdJHDOLUQi4Rb+IwYXMvmPYyuHqHI55K1G2fhtYU2b18+R4zn76X5maxLhpQC5B1J
+         o7YUf+tSJqsvA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yonatan Linik <yonatanlinik@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Willem de Bruijn <willemb@google.com>,
+        john.ogness@linutronix.de, Arnd Bergmann <arnd@arndb.de>,
+        Mao Wenan <maowenan@huawei.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        orcohen@paloaltonetworks.com, Networking <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH 1/1] net: Fix use of proc_fs
+Message-ID: <20201212135119.0db6723e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CA+s=kw3gmvk7CLu9NyiEwtBQ05eNFsTM2A679arPESVb55E2Xw@mail.gmail.com>
+References: <20201211163749.31956-1-yonatanlinik@gmail.com>
+        <20201211163749.31956-2-yonatanlinik@gmail.com>
+        <20201212114802.21a6b257@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CA+s=kw3gmvk7CLu9NyiEwtBQ05eNFsTM2A679arPESVb55E2Xw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAM1kxwi-P1aVrO9PKj87osvsS4a9PH=hSM+ZJ2mLKJckNeHOWQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/12/20 2:42 PM, Victor Stewart wrote:
-> On Sat, Dec 12, 2020 at 6:02 PM Jens Axboe <axboe@kernel.dk> wrote:
->>
->> On 12/12/20 10:58 AM, Victor Stewart wrote:
->>> On Sat, Dec 12, 2020 at 5:40 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>>
->>>> On 12/12/20 10:25 AM, Victor Stewart wrote:
->>>>> On Sat, Dec 12, 2020 at 5:07 PM Jens Axboe <axboe@kernel.dk> wrote:
->>>>>>
->>>>>> On 12/12/20 8:31 AM, Victor Stewart wrote:
->>>>>>> RE our conversation on the "[RFC 0/1] whitelisting UDP GSO and GRO
->>>>>>> cmsgs" thread...
->>>>>>>
->>>>>>> https://lore.kernel.org/io-uring/CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com/
->>>>>>>
->>>>>>> here are the patches we discussed.
->>>>>>>
->>>>>>> Victor Stewart (3):
->>>>>>>    net/socket.c: add PROTO_CMSG_DATA_ONLY to __sys_sendmsg_sock
->>>>>>>    net/ipv4/af_inet.c: add PROTO_CMSG_DATA_ONLY to inet_dgram_ops
->>>>>>>    net/ipv6/af_inet6.c: add PROTO_CMSG_DATA_ONLY to inet6_dgram_ops
->>>>>>>
->>>>>>>    net/ipv4/af_inet.c
->>>>>>>      |   1 +
->>>>>>>    net/ipv6/af_inet6.c
->>>>>>>     |   1 +
->>>>>>>    net/socket.c
->>>>>>>        |   8 +-
->>>>>>>    3 files changed, 7 insertions(+), 3 deletions(-)
->>>>>>
->>>>>> Changes look fine to me, but a few comments:
->>>>>>
->>>>>> - I'd order 1/3 as 3/3, that ordering makes more sense as at that point it
->>>>>>   could actually be used.
->>>>>
->>>>> right that makes sense.
->>>>>
->>>>>>
->>>>>> - For adding it to af_inet/af_inet6, you should write a better commit message
->>>>>>   on the reasoning for the change. Right now it just describes what the
->>>>>>   patch does (which is obvious from the change), not WHY it's done. Really
->>>>>>   goes for current 1/3 as well, commit messages need to be better in
->>>>>>   general.
->>>>>>
->>>>>
->>>>> okay thanks Jens. i would have reiterated the intention but assumed it
->>>>> were implicit given I linked the initial conversation about enabling
->>>>> UDP_SEGMENT (GSO) and UDP_GRO through io_uring.
->>>>>
->>>>>> I'd also CC Jann Horn on the series, he's the one that found an issue there
->>>>>> in the past and also acked the previous change on doing PROTO_CMSG_DATA_ONLY.
->>>>>
->>>>> I CCed him on this reply. Soheil at the end of the first exchange
->>>>> thread said he audited the UDP paths and believed this to be safe.
->>>>>
->>>>> how/should I resubmit the patch with a proper intention explanation in
->>>>> the meta and reorder the patches? my first patch and all lol.
->>>>
->>>> Just post is as a v2 with the change noted in the cover letter. I'd also
->>>> ensure that it threads properly, right now it's just coming through as 4
->>>> separate emails at my end. If you're using git send-email, make sure you
->>>> add --thread to the arguments.
->>>
->>> oh i didn't know about git send-email. i was manually constructing /
->>> sending them lol. thanks!
->>
->> I'd recommend it, makes sure your mailer doesn't mangle anything either. FWIW,
->> this is what I do:
->>
->> git format-patch sha1..sha2
->> mv 00*.patch /tmp/x
->>
->> git send-email --no-signed-off-by-cc --thread --compose  --to linux-fsdevel@vger.kernel.org --cc torvalds@linux-foundation.org --cc viro@zeniv.linux.org.uk /tmp/x
->>
->> (from a series I just sent out). And then I have the following section in
->> ~/.gitconfig:
->>
->> [sendemail]
->> from = Jens Axboe <axboe@kernel.dk>
->> smtpserver = smtp.gmail.com
->> smtpuser = axboe@kernel.dk
->> smtpencryption = tls
->> smtppass = hunter2
->> smtpserverport = 587
->>
->> for using gmail to send them out.
->>
->> --compose will fire up your editor to construct the cover letter, and
->> when you're happy with it, save+exit and git send-email will ask whether
->> to proceed or abort.
->>
->> That's about all there is to it, and provides a consistent way to send out
->> patch series.
+On Sat, 12 Dec 2020 23:39:20 +0200 Yonatan Linik wrote:
+> On Sat, Dec 12, 2020 at 9:48 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Fri, 11 Dec 2020 18:37:49 +0200 Yonatan Linik wrote:  
+> > > proc_fs was used, in af_packet, without a surrounding #ifdef,
+> > > although there is no hard dependency on proc_fs.
+> > > That caused the initialization of the af_packet module to fail
+> > > when CONFIG_PROC_FS=n.
+> > >
+> > > Specifically, proc_create_net() was used in af_packet.c,
+> > > and when it fails, packet_net_init() returns -ENOMEM.
+> > > It will always fail when the kernel is compiled without proc_fs,
+> > > because, proc_create_net() for example always returns NULL.
+> > >
+> > > The calling order that starts in af_packet.c is as follows:
+> > > packet_init()
+> > > register_pernet_subsys()
+> > > register_pernet_operations()
+> > > __register_pernet_operations()
+> > > ops_init()
+> > > ops->init() (packet_net_ops.init=packet_net_init())
+> > > proc_create_net()
+> > >
+> > > It worked in the past because register_pernet_subsys()'s return value
+> > > wasn't checked before this Commit 36096f2f4fa0 ("packet: Fix error path in
+> > > packet_init.").
+> > > It always returned an error, but was not checked before, so everything
+> > > was working even when CONFIG_PROC_FS=n.
+> > >
+> > > The fix here is simply to add the necessary #ifdef.
+> > >
+> > > Signed-off-by: Yonatan Linik <yonatanlinik@gmail.com>  
+> >
+> > Hm, I'm guessing you hit this on a kernel upgrade of a real system?  
 > 
-> awesome thanks! i'll be using this workflow from now on.
+> Yeah, suddenly using socket with AF_PACKET didn't work,
+> so I checked what happened.
 > 
-> P.S. hope thats not your real password LOL
+> > It seems like all callers to proc_create_net (and friends) interpret
+> > NULL as an error, but only handful is protected by an ifdef.  
+> 
+> I guess where there is no ifdef,
+> there should be a hard dependency on procfs,
+> using depends on in the Kconfig.
+> Maybe that's not the case everywhere it should be.
 
-Haha it's not, google hunter2 and password and you'll see :-)
+You're right, on a closer look most of the places have a larger #ifdef
+block (which my grep didn't catch) or are under Kconfig. Of those I
+checked only TLS looks wrong (good job me) - would you care to fix that
+one as well, or should I?
 
--- 
-Jens Axboe
+> > I checked a few and none of them cares about the proc_dir_entry pointer
+> > that gets returned. Should we perhaps rework the return values of the
+> > function so that we can return success if !CONFIG_PROC_FS without
+> > having to yield a pointer?  
+> 
+> Sometimes the pointer returned is used,
+> for example in drivers/acpi/button.c.
+> Are you suggesting returning a bool while
+> having the pointer as an out parameter?
+> Because that would still be problematic where the pointer is used.
 
+Ack, I was only thinking of changing proc_create_net* but as you
+rightly pointed out most callers already deal with the problem, 
+so maybe it's not worth refactoring.
+
+> > Obviously we can apply this fix so we can backport to 5.4 if you need
+> > it. I think the ifdef is fine, since it's what other callers have.
+> 
+> It would be great to apply this where the problem exists,
+> I believe this applies to other versions as well.
+
+Will do. Linus is likely to cut the final 5.11 release on Sunday, so
+it needs to wait until next week for process reasons but it won't get
+lost. For the record:
+
+Fixes: 36096f2f4fa0 ("packet: Fix error path in packet_init")
