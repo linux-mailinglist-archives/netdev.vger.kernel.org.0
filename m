@@ -2,108 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C38B2D888B
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 18:13:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C20B52D8891
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 18:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439614AbgLLRIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 12:08:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392701AbgLLRH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 12:07:59 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33BEC0613D3
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 09:07:19 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id b8so366190plx.0
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 09:07:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=oD6RgErCgYJ2h0cdTISprgrCuOrDVNN3f4stHhNzj3c=;
-        b=03oeuu8jK6rsZfslhOVi87b7yyH2Z6oxvU9OfD/gPLHHNQUwyUxrFqmIa1+kbvMDpo
-         iNtKj8UgIQCrQ5bYb/bzEhk5N0sEQfdLwXna1yae14QGSpFZShJ3Qj3ZGbHoE+U2VIjR
-         WBwNlp4wOYt/U8+lMtpkmpL0XpXW2ImY0TFLIPkTvTos4YaQBTTvqpJyaVhN4HHeW3dL
-         saty5lBT2GfxlQU2bZ5STTdMfndN9czjvWxBokKmCdkpUkHvvLvcFQ7x9ApYwBQe/AA1
-         boOs+LyTvwBGP0NtrCz2Khpzh1arVMHQbcp6dE2WdGecSazpby8hd4ffJd+ocT2dzULs
-         8MvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oD6RgErCgYJ2h0cdTISprgrCuOrDVNN3f4stHhNzj3c=;
-        b=ImMhiZ8NpTlNzHKlit+9u490unSNbVncsY3pgTOrTLPrxqfaDG77vOn8hyJDOw8lrT
-         kfvL8gzRS4y7wuZEqlXUsLvPymmXAXVD9W8xCeKOw1re2bR1OD1VeSNP9ymnODhhCvrc
-         4QrVbbAff1E0G4buVpwMsP8jqwwRwwm+hNkf6RN0egk+OLN4neqX00XqlgiN7/a9iNdd
-         lIE0YDLO+tC9F6cdcpMG+2dAqlV2XN2qSp9miqbLlJ92Fai4sG214+5vQuZSrfMxVRZ/
-         4eSTqL2MWYvyb2X5SZRJWdV92hsDHZWL2M387sKItdbAXqgnu650BcdGIJgDs/vNBZam
-         QRQQ==
-X-Gm-Message-State: AOAM530om3K+JCpCVdr96dmIee+BZ1Ng0v/CwkgOltyeZ+Fw9OkalvZn
-        wOhaL9eEhkSsU36m0if0UFYpSm3+DaXeeQ==
-X-Google-Smtp-Source: ABdhPJz9ZfgXRlU9CqdxAvuxfY1UxOhMJsB4hnJkspcTVN9/W9W70yvdvSD8QzKS7PYWt7hVsjqOGw==
-X-Received: by 2002:a17:902:ed44:b029:da:91e5:e09 with SMTP id y4-20020a170902ed44b02900da91e50e09mr15738598plb.24.1607792839159;
-        Sat, 12 Dec 2020 09:07:19 -0800 (PST)
-Received: from [192.168.1.134] ([66.219.217.173])
-        by smtp.gmail.com with ESMTPSA id e76sm2735879pfh.157.2020.12.12.09.07.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Dec 2020 09:07:18 -0800 (PST)
-Subject: Re: [PATCH 0/3] PROTO_CMSG_DATA_ONLY for Datagram (UDP)
-To:     Victor Stewart <v@nametag.social>,
-        io-uring <io-uring@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
+        id S2392633AbgLLRQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 12:16:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54778 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725973AbgLLRQu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Dec 2020 12:16:50 -0500
+Date:   Sat, 12 Dec 2020 09:16:08 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607793369;
+        bh=XrZ3SkdZkwNPnvdfbGpcsT1lUiu+dUH3jlsfn2RS6LM=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=THusHGsj1esasoCiQQ0uX2J7YLMa6Xwj3OCo9DektnVnAZgN+KuissSwcD+TSmrj7
+         GdB+PVHxn6M8RBKU1fJJK6xcBEn1S5aCE99+5OJfr/rHtNlNgGgqtzZMiCx8qOQlqR
+         vheEcRpgdIUuCroMzmdLZTPzxy2IYKWUAUQL7a7IRz8UC17s+yCsNi5LPawhMvkC5s
+         5JnCF/sYUMhKHHA0f17jEcCM3rPJPnjXNc2BTx0m7nRvj1TdrLqHlI7GycuZTmpRE0
+         jzSXKPZlfQO5be8LAF7JVEnNyMLqc4fFS5B46ZNjY5fgfNGfhaumb1iRwaIwzqGHDE
+         mahh7PVw6GqxA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Andra Paraschiv <andraprs@amazon.com>,
         netdev <netdev@vger.kernel.org>,
-        Stefan Metzmacher <metze@samba.org>
-References: <CAM1kxwgjCJwSvOtESxWwTC_qcXZEjbOSreXUQrG+bOOrPWdbqA@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <750bc4e7-c2ce-e33d-dc98-483af96ff330@kernel.dk>
-Date:   Sat, 12 Dec 2020 10:07:17 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: Re: [PATCH net-next v3 0/4] vsock: Add flags field in the vsock
+ address
+Message-ID: <20201212091608.4ffd1154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201211152413.iezrw6qswzhpfa3j@steredhat>
+References: <20201211103241.17751-1-andraprs@amazon.com>
+        <20201211152413.iezrw6qswzhpfa3j@steredhat>
 MIME-Version: 1.0
-In-Reply-To: <CAM1kxwgjCJwSvOtESxWwTC_qcXZEjbOSreXUQrG+bOOrPWdbqA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/12/20 8:31 AM, Victor Stewart wrote:
-> RE our conversation on the "[RFC 0/1] whitelisting UDP GSO and GRO
-> cmsgs" thread...
+On Fri, 11 Dec 2020 16:24:13 +0100 Stefano Garzarella wrote:
+> On Fri, Dec 11, 2020 at 12:32:37PM +0200, Andra Paraschiv wrote:
+> >vsock enables communication between virtual machines and the host they are
+> >running on. Nested VMs can be setup to use vsock channels, as the multi
+> >transport support has been available in the mainline since the v5.5 Linux kernel
+> >has been released.
+> >
+> >Implicitly, if no host->guest vsock transport is loaded, all the vsock packets
+> >are forwarded to the host. This behavior can be used to setup communication
+> >channels between sibling VMs that are running on the same host. One example can
+> >be the vsock channels that can be established within AWS Nitro Enclaves
+> >(see Documentation/virt/ne_overview.rst).
+> >
+> >To be able to explicitly mark a connection as being used for a certain use case,
+> >add a flags field in the vsock address data structure. The value of the flags
+> >field is taken into consideration when the vsock transport is assigned. This way
+> >can distinguish between different use cases, such as nested VMs / local
+> >communication and sibling VMs.
+> >
+> >The flags field can be set in the user space application connect logic. On the
+> >listen path, the field can be set in the kernel space logic.
+> >  
 > 
-> https://lore.kernel.org/io-uring/CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com/
+> I reviewed all the patches and they are in a good shape!
 > 
-> here are the patches we discussed.
+> Maybe the last thing to add is a flags check in the 
+> vsock_addr_validate(), to avoid that flags that we don't know how to 
+> handle are specified.
+> For example if in the future we add new flags that this version of the 
+> kernel is not able to satisfy, we should return an error to the 
+> application.
 > 
-> Victor Stewart (3):
->    net/socket.c: add PROTO_CMSG_DATA_ONLY to __sys_sendmsg_sock
->    net/ipv4/af_inet.c: add PROTO_CMSG_DATA_ONLY to inet_dgram_ops
->    net/ipv6/af_inet6.c: add PROTO_CMSG_DATA_ONLY to inet6_dgram_ops
+> I mean something like this:
 > 
->    net/ipv4/af_inet.c
->      |   1 +
->    net/ipv6/af_inet6.c
->     |   1 +
->    net/socket.c
->        |   8 +-
->    3 files changed, 7 insertions(+), 3 deletions(-)
+>      diff --git a/net/vmw_vsock/vsock_addr.c b/net/vmw_vsock/vsock_addr.c
+>      index 909de26cb0e7..73bb1d2fa526 100644
+>      --- a/net/vmw_vsock/vsock_addr.c
+>      +++ b/net/vmw_vsock/vsock_addr.c
+>      @@ -22,6 +22,8 @@ EXPORT_SYMBOL_GPL(vsock_addr_init);
+>       
+>       int vsock_addr_validate(const struct sockaddr_vm *addr)
+>       {
+>      +       unsigned short svm_valid_flags = VMADDR_FLAG_TO_HOST;
+>      +
+>              if (!addr)
+>                      return -EFAULT;
+>       
+>      @@ -31,6 +33,9 @@ int vsock_addr_validate(const struct sockaddr_vm *addr)
+>              if (addr->svm_zero[0] != 0)
+>                      return -EINVAL;
 
-Changes look fine to me, but a few comments:
+Strictly speaking this check should be superseded by the check below
+(AKA removed). We used to check svm_zero[0], with the new field added
+this now checks svm_zero[2]. Old applications may have not initialized
+svm_zero[2] (we're talking about binary compatibility here, apps built
+with old headers).
 
-- I'd order 1/3 as 3/3, that ordering makes more sense as at that point it
-  could actually be used.
+>      +       if (addr->svm_flags & ~svm_valid_flags)
+>      +               return -EINVAL;
 
-- For adding it to af_inet/af_inet6, you should write a better commit message
-  on the reasoning for the change. Right now it just describes what the
-  patch does (which is obvious from the change), not WHY it's done. Really
-  goes for current 1/3 as well, commit messages need to be better in
-  general.
+The flags should also probably be one byte (we can define a "more
+flags" flag to unlock further bytes) - otherwise on big endian the 
+new flag will fall into svm_zero[1] so the v3 improvements are moot 
+for big endian, right?
 
-I'd also CC Jann Horn on the series, he's the one that found an issue there
-in the past and also acked the previous change on doing PROTO_CMSG_DATA_ONLY.
-
--- 
-Jens Axboe
-
+>              return 0;
+>       }
+>       EXPORT_SYMBOL_GPL(vsock_addr_validate);
