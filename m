@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FDF52D8A83
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 00:07:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 737D22D8A88
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 00:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408184AbgLLXG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 18:06:27 -0500
-Received: from correo.us.es ([193.147.175.20]:46778 "EHLO mail.us.es"
+        id S2389638AbgLLXG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 18:06:26 -0500
+Received: from correo.us.es ([193.147.175.20]:46784 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2408161AbgLLXGI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Dec 2020 18:06:08 -0500
+        id S2408163AbgLLXGJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Dec 2020 18:06:09 -0500
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 391EC303D10
+        by mail.us.es (Postfix) with ESMTP id 961D1303D0C
         for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 00:05:13 +0100 (CET)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2972FDA78F
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 85F37DA78F
         for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 00:05:13 +0100 (CET)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 1EF6ADA78C; Sun, 13 Dec 2020 00:05:13 +0100 (CET)
+        id 7B845DA78B; Sun, 13 Dec 2020 00:05:13 +0100 (CET)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
         autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B0E5DDA722;
-        Sun, 13 Dec 2020 00:05:10 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2B5D8DA789;
+        Sun, 13 Dec 2020 00:05:11 +0100 (CET)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 13 Dec 2020 00:05:10 +0100 (CET)
+ Sun, 13 Dec 2020 00:05:11 +0100 (CET)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from localhost.localdomain (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 85A494265A5A;
+        by entrada.int (Postfix) with ESMTPSA id 0145A4265A5A;
         Sun, 13 Dec 2020 00:05:10 +0100 (CET)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 06/10] netfilter: ctnetlink: add timeout and protoinfo to destroy events
-Date:   Sun, 13 Dec 2020 00:05:09 +0100
-Message-Id: <20201212230513.3465-7-pablo@netfilter.org>
+Subject: [PATCH net-next 07/10] netfilter: nftables: generalize set expressions support
+Date:   Sun, 13 Dec 2020 00:05:10 +0100
+Message-Id: <20201212230513.3465-8-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201212230513.3465-1-pablo@netfilter.org>
 References: <20201212230513.3465-1-pablo@netfilter.org>
@@ -54,244 +54,256 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+Currently, the set infrastucture allows for one single expressions per
+element. This patch extends the existing infrastructure to allow for up
+to two expressions. This is not updating the netlink API yet, this is
+coming as an initial preparation patch.
 
-DESTROY events do not include the remaining timeout.
-
-Add the timeout if the entry was removed explicitly. This can happen
-when a conntrack gets deleted prematurely, e.g. due to a tcp reset,
-module removal, netdev notifier (nat/masquerade device went down),
-ctnetlink and so on.
-
-Add the protocol state too for the destroy message to check for abnormal
-state on connection termination.
-
-Joint work with Pablo.
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_conntrack_l4proto.h |  2 +-
- net/netfilter/nf_conntrack_netlink.c         | 31 +++++++++++++-------
- net/netfilter/nf_conntrack_proto_dccp.c      | 13 ++++++--
- net/netfilter/nf_conntrack_proto_sctp.c      | 13 +++++---
- net/netfilter/nf_conntrack_proto_tcp.c       | 13 +++++---
- 5 files changed, 49 insertions(+), 23 deletions(-)
+ include/net/netfilter/nf_tables.h |  5 +-
+ net/netfilter/nf_tables_api.c     | 90 ++++++++++++++++++++++---------
+ net/netfilter/nft_dynset.c        |  3 +-
+ 3 files changed, 70 insertions(+), 28 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack_l4proto.h b/include/net/netfilter/nf_conntrack_l4proto.h
-index 9be7320b994f..96f9cf81f46b 100644
---- a/include/net/netfilter/nf_conntrack_l4proto.h
-+++ b/include/net/netfilter/nf_conntrack_l4proto.h
-@@ -32,7 +32,7 @@ struct nf_conntrack_l4proto {
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index 55b4cadf290a..aad7e1381200 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -396,6 +396,8 @@ struct nft_set_type {
+ };
+ #define to_set_type(o) container_of(o, struct nft_set_type, ops)
  
- 	/* convert protoinfo to nfnetink attributes */
- 	int (*to_nlattr)(struct sk_buff *skb, struct nlattr *nla,
--			 struct nf_conn *ct);
-+			 struct nf_conn *ct, bool destroy);
++#define NFT_SET_EXPR_MAX	2
++
+ /**
+  * 	struct nft_set - nf_tables set instance
+  *
+@@ -448,13 +450,14 @@ struct nft_set {
+ 	u16				policy;
+ 	u16				udlen;
+ 	unsigned char			*udata;
+-	struct nft_expr			*expr;
+ 	/* runtime data below here */
+ 	const struct nft_set_ops	*ops ____cacheline_aligned;
+ 	u16				flags:14,
+ 					genmask:2;
+ 	u8				klen;
+ 	u8				dlen;
++	u8				num_exprs;
++	struct nft_expr			*exprs[NFT_SET_EXPR_MAX];
+ 	unsigned char			data[]
+ 		__attribute__((aligned(__alignof__(u64))));
+ };
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 65aa98fc5eb6..ade10cd23acc 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -3841,9 +3841,9 @@ static int nf_tables_fill_set(struct sk_buff *skb, const struct nft_ctx *ctx,
  
- 	/* convert nfnetlink attributes to protoinfo */
- 	int (*from_nlattr)(struct nlattr *tb[], struct nf_conn *ct);
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index 3d0fd33be018..84caf3316946 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -167,10 +167,14 @@ static int ctnetlink_dump_status(struct sk_buff *skb, const struct nf_conn *ct)
- 	return -1;
+ 	nla_nest_end(skb, nest);
+ 
+-	if (set->expr) {
++	if (set->num_exprs == 1) {
+ 		nest = nla_nest_start_noflag(skb, NFTA_SET_EXPR);
+-		if (nf_tables_fill_expr_info(skb, set->expr) < 0)
++		if (nf_tables_fill_expr_info(skb, set->exprs[0]) < 0)
+ 			goto nla_put_failure;
+ 
+ 		nla_nest_end(skb, nest);
+@@ -4279,6 +4279,8 @@ static int nf_tables_newset(struct net *net, struct sock *nlsk,
+ 			err = PTR_ERR(expr);
+ 			goto err_set_alloc_name;
+ 		}
++		set->exprs[0] = expr;
++		set->num_exprs++;
+ 	}
+ 
+ 	udata = NULL;
+@@ -4296,7 +4298,6 @@ static int nf_tables_newset(struct net *net, struct sock *nlsk,
+ 	set->dtype = dtype;
+ 	set->objtype = objtype;
+ 	set->dlen  = desc.dlen;
+-	set->expr = expr;
+ 	set->flags = flags;
+ 	set->size  = desc.size;
+ 	set->policy = policy;
+@@ -4325,8 +4326,8 @@ static int nf_tables_newset(struct net *net, struct sock *nlsk,
+ err_set_trans:
+ 	ops->destroy(set);
+ err_set_init:
+-	if (expr)
+-		nft_expr_destroy(&ctx, expr);
++	for (i = 0; i < set->num_exprs; i++)
++		nft_expr_destroy(&ctx, set->exprs[i]);
+ err_set_alloc_name:
+ 	kfree(set->name);
+ err_set_name:
+@@ -4336,11 +4337,13 @@ static int nf_tables_newset(struct net *net, struct sock *nlsk,
+ 
+ static void nft_set_destroy(const struct nft_ctx *ctx, struct nft_set *set)
+ {
++	int i;
++
+ 	if (WARN_ON(set->use > 0))
+ 		return;
+ 
+-	if (set->expr)
+-		nft_expr_destroy(ctx, set->expr);
++	for (i = 0; i < set->num_exprs; i++)
++		nft_expr_destroy(ctx, set->exprs[i]);
+ 
+ 	set->ops->destroy(set);
+ 	kfree(set->name);
+@@ -5139,9 +5142,39 @@ static void nf_tables_set_elem_destroy(const struct nft_ctx *ctx,
+ 	kfree(elem);
  }
  
--static int ctnetlink_dump_timeout(struct sk_buff *skb, const struct nf_conn *ct)
-+static int ctnetlink_dump_timeout(struct sk_buff *skb, const struct nf_conn *ct,
-+				  bool skip_zero)
- {
- 	long timeout = nf_ct_expires(ct) / HZ;
- 
-+	if (skip_zero && timeout == 0)
-+		return 0;
++static int nft_set_elem_expr_clone(const struct nft_ctx *ctx,
++				   struct nft_set *set,
++				   struct nft_expr *expr_array[])
++{
++	struct nft_expr *expr;
++	int err, i, k;
 +
- 	if (nla_put_be32(skb, CTA_TIMEOUT, htonl(timeout)))
- 		goto nla_put_failure;
- 	return 0;
-@@ -179,7 +183,8 @@ static int ctnetlink_dump_timeout(struct sk_buff *skb, const struct nf_conn *ct)
- 	return -1;
++	for (i = 0; i < set->num_exprs; i++) {
++		expr = kzalloc(set->exprs[i]->ops->size, GFP_KERNEL);
++		if (!expr)
++			goto err_expr;
++
++		err = nft_expr_clone(expr, set->exprs[i]);
++		if (err < 0) {
++			nft_expr_destroy(ctx, expr);
++			goto err_expr;
++		}
++		expr_array[i] = expr;
++	}
++
++	return 0;
++
++err_expr:
++	for (k = i - 1; k >= 0; k++)
++		nft_expr_destroy(ctx, expr_array[i]);
++
++	return -ENOMEM;
++}
++
+ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
+ 			    const struct nlattr *attr, u32 nlmsg_flags)
+ {
++	struct nft_expr *expr_array[NFT_SET_EXPR_MAX] = {};
+ 	struct nlattr *nla[NFTA_SET_ELEM_MAX + 1];
+ 	u8 genmask = nft_genmask_next(ctx->net);
+ 	struct nft_set_ext_tmpl tmpl;
+@@ -5149,7 +5182,6 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
+ 	struct nft_set_elem elem;
+ 	struct nft_set_binding *binding;
+ 	struct nft_object *obj = NULL;
+-	struct nft_expr *expr = NULL;
+ 	struct nft_userdata *udata;
+ 	struct nft_data_desc desc;
+ 	enum nft_registers dreg;
+@@ -5158,7 +5190,7 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
+ 	u64 timeout;
+ 	u64 expiration;
+ 	u8 ulen;
+-	int err;
++	int err, i;
+ 
+ 	err = nla_parse_nested_deprecated(nla, NFTA_SET_ELEM_MAX, attr,
+ 					  nft_set_elem_policy, NULL);
+@@ -5216,23 +5248,27 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
+ 			return err;
+ 	}
+ 
+-	if (nla[NFTA_SET_ELEM_EXPR] != NULL) {
++	if (nla[NFTA_SET_ELEM_EXPR]) {
++		struct nft_expr *expr;
++
++		if (set->num_exprs != 1)
++			return -EOPNOTSUPP;
++
+ 		expr = nft_set_elem_expr_alloc(ctx, set,
+ 					       nla[NFTA_SET_ELEM_EXPR]);
+ 		if (IS_ERR(expr))
+ 			return PTR_ERR(expr);
+ 
+-		err = -EOPNOTSUPP;
+-		if (set->expr && set->expr->ops != expr->ops)
+-			goto err_set_elem_expr;
+-	} else if (set->expr) {
+-		expr = kzalloc(set->expr->ops->size, GFP_KERNEL);
+-		if (!expr)
+-			return -ENOMEM;
++		expr_array[0] = expr;
+ 
+-		err = nft_expr_clone(expr, set->expr);
+-		if (err < 0)
++		if (set->exprs[0] && set->exprs[0]->ops != expr->ops) {
++			err = -EOPNOTSUPP;
+ 			goto err_set_elem_expr;
++		}
++	} else if (set->num_exprs > 0) {
++		err = nft_set_elem_expr_clone(ctx, set, expr_array);
++		if (err < 0)
++			goto err_set_elem_expr_clone;
+ 	}
+ 
+ 	err = nft_setelem_parse_key(ctx, set, &elem.key.val,
+@@ -5257,9 +5293,9 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
+ 			nft_set_ext_add(&tmpl, NFT_SET_EXT_TIMEOUT);
+ 	}
+ 
+-	if (expr)
++	if (set->num_exprs == 1)
+ 		nft_set_ext_add_length(&tmpl, NFT_SET_EXT_EXPR,
+-				       expr->ops->size);
++				       expr_array[0]->ops->size);
+ 
+ 	if (nla[NFTA_SET_ELEM_OBJREF] != NULL) {
+ 		if (!(set->flags & NFT_SET_OBJECT)) {
+@@ -5341,10 +5377,12 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
+ 		*nft_set_ext_obj(ext) = obj;
+ 		obj->use++;
+ 	}
+-	if (expr) {
++	if (set->num_exprs == 1) {
++		struct nft_expr *expr = expr_array[0];
++
+ 		memcpy(nft_set_ext_expr(ext), expr, expr->ops->size);
+ 		kfree(expr);
+-		expr = NULL;
++		expr_array[0] = NULL;
+ 	}
+ 
+ 	trans = nft_trans_elem_alloc(ctx, NFT_MSG_NEWSETELEM, set);
+@@ -5406,9 +5444,9 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
+ err_parse_key:
+ 	nft_data_release(&elem.key.val, NFT_DATA_VALUE);
+ err_set_elem_expr:
+-	if (expr != NULL)
+-		nft_expr_destroy(ctx, expr);
+-
++	for (i = 0; i < set->num_exprs && expr_array[i]; i++)
++		nft_expr_destroy(ctx, expr_array[i]);
++err_set_elem_expr_clone:
+ 	return err;
  }
  
--static int ctnetlink_dump_protoinfo(struct sk_buff *skb, struct nf_conn *ct)
-+static int ctnetlink_dump_protoinfo(struct sk_buff *skb, struct nf_conn *ct,
-+				    bool destroy)
- {
- 	const struct nf_conntrack_l4proto *l4proto;
- 	struct nlattr *nest_proto;
-@@ -193,7 +198,7 @@ static int ctnetlink_dump_protoinfo(struct sk_buff *skb, struct nf_conn *ct)
- 	if (!nest_proto)
- 		goto nla_put_failure;
+diff --git a/net/netfilter/nft_dynset.c b/net/netfilter/nft_dynset.c
+index 64ca13a1885b..4353e47c30fc 100644
+--- a/net/netfilter/nft_dynset.c
++++ b/net/netfilter/nft_dynset.c
+@@ -188,7 +188,8 @@ static int nft_dynset_init(const struct nft_ctx *ctx,
+ 		if (IS_ERR(priv->expr))
+ 			return PTR_ERR(priv->expr);
  
--	ret = l4proto->to_nlattr(skb, nest_proto, ct);
-+	ret = l4proto->to_nlattr(skb, nest_proto, ct, destroy);
- 
- 	nla_nest_end(skb, nest_proto);
- 
-@@ -537,8 +542,8 @@ static int ctnetlink_dump_info(struct sk_buff *skb, struct nf_conn *ct)
- 		return -1;
- 
- 	if (!test_bit(IPS_OFFLOAD_BIT, &ct->status) &&
--	    (ctnetlink_dump_timeout(skb, ct) < 0 ||
--	     ctnetlink_dump_protoinfo(skb, ct) < 0))
-+	    (ctnetlink_dump_timeout(skb, ct, false) < 0 ||
-+	     ctnetlink_dump_protoinfo(skb, ct, false) < 0))
- 		return -1;
- 
- 	return 0;
-@@ -780,15 +785,19 @@ ctnetlink_conntrack_event(unsigned int events, struct nf_ct_event *item)
- 		goto nla_put_failure;
- 
- 	if (events & (1 << IPCT_DESTROY)) {
-+		if (ctnetlink_dump_timeout(skb, ct, true) < 0)
-+			goto nla_put_failure;
-+
- 		if (ctnetlink_dump_acct(skb, ct, type) < 0 ||
--		    ctnetlink_dump_timestamp(skb, ct) < 0)
-+		    ctnetlink_dump_timestamp(skb, ct) < 0 ||
-+		    ctnetlink_dump_protoinfo(skb, ct, true) < 0)
- 			goto nla_put_failure;
- 	} else {
--		if (ctnetlink_dump_timeout(skb, ct) < 0)
-+		if (ctnetlink_dump_timeout(skb, ct, false) < 0)
- 			goto nla_put_failure;
- 
--		if (events & (1 << IPCT_PROTOINFO)
--		    && ctnetlink_dump_protoinfo(skb, ct) < 0)
-+		if (events & (1 << IPCT_PROTOINFO) &&
-+		    ctnetlink_dump_protoinfo(skb, ct, false) < 0)
- 			goto nla_put_failure;
- 
- 		if ((events & (1 << IPCT_HELPER) || nfct_help(ct))
-@@ -2720,10 +2729,10 @@ static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
- 	if (ctnetlink_dump_status(skb, ct) < 0)
- 		goto nla_put_failure;
- 
--	if (ctnetlink_dump_timeout(skb, ct) < 0)
-+	if (ctnetlink_dump_timeout(skb, ct, false) < 0)
- 		goto nla_put_failure;
- 
--	if (ctnetlink_dump_protoinfo(skb, ct) < 0)
-+	if (ctnetlink_dump_protoinfo(skb, ct, false) < 0)
- 		goto nla_put_failure;
- 
- 	if (ctnetlink_dump_helpinfo(skb, ct) < 0)
-diff --git a/net/netfilter/nf_conntrack_proto_dccp.c b/net/netfilter/nf_conntrack_proto_dccp.c
-index b3f4a334f9d7..db7479db8512 100644
---- a/net/netfilter/nf_conntrack_proto_dccp.c
-+++ b/net/netfilter/nf_conntrack_proto_dccp.c
-@@ -589,7 +589,7 @@ static void dccp_print_conntrack(struct seq_file *s, struct nf_conn *ct)
- 
- #if IS_ENABLED(CONFIG_NF_CT_NETLINK)
- static int dccp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
--			  struct nf_conn *ct)
-+			  struct nf_conn *ct, bool destroy)
- {
- 	struct nlattr *nest_parms;
- 
-@@ -597,15 +597,22 @@ static int dccp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
- 	nest_parms = nla_nest_start(skb, CTA_PROTOINFO_DCCP);
- 	if (!nest_parms)
- 		goto nla_put_failure;
--	if (nla_put_u8(skb, CTA_PROTOINFO_DCCP_STATE, ct->proto.dccp.state) ||
--	    nla_put_u8(skb, CTA_PROTOINFO_DCCP_ROLE,
-+	if (nla_put_u8(skb, CTA_PROTOINFO_DCCP_STATE, ct->proto.dccp.state))
-+		goto nla_put_failure;
-+
-+	if (destroy)
-+		goto skip_state;
-+
-+	if (nla_put_u8(skb, CTA_PROTOINFO_DCCP_ROLE,
- 		       ct->proto.dccp.role[IP_CT_DIR_ORIGINAL]) ||
- 	    nla_put_be64(skb, CTA_PROTOINFO_DCCP_HANDSHAKE_SEQ,
- 			 cpu_to_be64(ct->proto.dccp.handshake_seq),
- 			 CTA_PROTOINFO_DCCP_PAD))
- 		goto nla_put_failure;
-+skip_state:
- 	nla_nest_end(skb, nest_parms);
- 	spin_unlock_bh(&ct->lock);
-+
- 	return 0;
- 
- nla_put_failure:
-diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
-index 810cca24b399..fb8dc02e502f 100644
---- a/net/netfilter/nf_conntrack_proto_sctp.c
-+++ b/net/netfilter/nf_conntrack_proto_sctp.c
-@@ -543,7 +543,7 @@ static bool sctp_can_early_drop(const struct nf_conn *ct)
- #include <linux/netfilter/nfnetlink_conntrack.h>
- 
- static int sctp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
--			  struct nf_conn *ct)
-+			  struct nf_conn *ct, bool destroy)
- {
- 	struct nlattr *nest_parms;
- 
-@@ -552,15 +552,20 @@ static int sctp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
- 	if (!nest_parms)
- 		goto nla_put_failure;
- 
--	if (nla_put_u8(skb, CTA_PROTOINFO_SCTP_STATE, ct->proto.sctp.state) ||
--	    nla_put_be32(skb, CTA_PROTOINFO_SCTP_VTAG_ORIGINAL,
-+	if (nla_put_u8(skb, CTA_PROTOINFO_SCTP_STATE, ct->proto.sctp.state))
-+		goto nla_put_failure;
-+
-+	if (destroy)
-+		goto skip_state;
-+
-+	if (nla_put_be32(skb, CTA_PROTOINFO_SCTP_VTAG_ORIGINAL,
- 			 ct->proto.sctp.vtag[IP_CT_DIR_ORIGINAL]) ||
- 	    nla_put_be32(skb, CTA_PROTOINFO_SCTP_VTAG_REPLY,
- 			 ct->proto.sctp.vtag[IP_CT_DIR_REPLY]))
- 		goto nla_put_failure;
- 
-+skip_state:
- 	spin_unlock_bh(&ct->lock);
--
- 	nla_nest_end(skb, nest_parms);
- 
- 	return 0;
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index 811c6c9b59e1..1d7e1c595546 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -1186,7 +1186,7 @@ static bool tcp_can_early_drop(const struct nf_conn *ct)
- #include <linux/netfilter/nfnetlink_conntrack.h>
- 
- static int tcp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
--			 struct nf_conn *ct)
-+			 struct nf_conn *ct, bool destroy)
- {
- 	struct nlattr *nest_parms;
- 	struct nf_ct_tcp_flags tmp = {};
-@@ -1196,8 +1196,13 @@ static int tcp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
- 	if (!nest_parms)
- 		goto nla_put_failure;
- 
--	if (nla_put_u8(skb, CTA_PROTOINFO_TCP_STATE, ct->proto.tcp.state) ||
--	    nla_put_u8(skb, CTA_PROTOINFO_TCP_WSCALE_ORIGINAL,
-+	if (nla_put_u8(skb, CTA_PROTOINFO_TCP_STATE, ct->proto.tcp.state))
-+		goto nla_put_failure;
-+
-+	if (destroy)
-+		goto skip_state;
-+
-+	if (nla_put_u8(skb, CTA_PROTOINFO_TCP_WSCALE_ORIGINAL,
- 		       ct->proto.tcp.seen[0].td_scale) ||
- 	    nla_put_u8(skb, CTA_PROTOINFO_TCP_WSCALE_REPLY,
- 		       ct->proto.tcp.seen[1].td_scale))
-@@ -1212,8 +1217,8 @@ static int tcp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
- 	if (nla_put(skb, CTA_PROTOINFO_TCP_FLAGS_REPLY,
- 		    sizeof(struct nf_ct_tcp_flags), &tmp))
- 		goto nla_put_failure;
-+skip_state:
- 	spin_unlock_bh(&ct->lock);
--
- 	nla_nest_end(skb, nest_parms);
- 
- 	return 0;
+-		if (set->expr && set->expr->ops != priv->expr->ops) {
++		if (set->num_exprs == 1 &&
++		    set->exprs[0]->ops != priv->expr->ops) {
+ 			err = -EOPNOTSUPP;
+ 			goto err_expr_free;
+ 		}
 -- 
 2.20.1
 
