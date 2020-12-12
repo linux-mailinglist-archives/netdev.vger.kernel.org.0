@@ -2,123 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04B072D8572
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 10:56:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B5472D8584
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 11:00:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436773AbgLLJyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 04:54:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407336AbgLLJyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 04:54:33 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on20719.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e1a::719])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A52C061282
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 01:02:59 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ygb1rQQWaewCFL6h0694vzfdMqmW3tO8NCitVz5XTVPwk6sWgIU3T9+Txs9townYNxlxCrTLmVfKZ/5QOEXbayRd9/N7QXCHjf4FfsLnPXTaGc9FN4zK9h/shJMgn4U9CTcXYFiLdPqBwPVk/6zpHaZrdJq/MjYSPyPg3DSzKqVR6dtm2sKVJveNnd5u8wpWw94XYzHu1xmzduHjWEQE0Eql7RFBRzh9otf1YGk6fuPOuD8kez8f2h6l6wGlHDQr3dm2tBdZipm7XVy/w4+Pq+x0FJ5rE+nN9PzJGDkMAtuzD2XpqzJWBYTeaO1L609Q9aq9/yWnchcBvEC/dx7u3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QNnvd5SCktjfeY5vI9+05vaBqiWjq+OXkPnpQUA3dDo=;
- b=GXPFTif7xVfqeUpe995RFkm1x39QGOeNAmFy+i7x3F/FD7ZFwHWOBSJRJnqEJuNZGEq8jtD4RN5g5fGJJsx2KXbtpfN7zEXBdOJ0AUl/9496UTXwKIILgsXi01gV4redgHnwqQfkeRfj4DM1edjgf7Xjdmotox1MyKiRHhezM8n80FG20U+7FxHRwUyleCTy633WFXFO868NLpylvgJ/N8zsieqyv+tbR6OqUG12ItYZvQ/fpvvgH7Er86VUsZfTiy0GAxTatnku61iXJBd1TIEe1wucbFB3s1o2ZnsuE/GO7gRNu840o8JkW9Gg0WSKY+qnWu7TnhSwp1yvqlNi8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
- header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QNnvd5SCktjfeY5vI9+05vaBqiWjq+OXkPnpQUA3dDo=;
- b=G1Wq0mJBPynba4sPdlKKIDDYWbmQ5FsKGtpuxRNZcy9FdxrUoT+ijoFyLVeRA7PgisW6/nJQPmqE00VzAzrzwECJXQoYYna/+HebxEPlsi0act9395N6F6gKvVFikRLjabl5XKS1c+mqouQFXkWfvotGJAOvAfjfinf97aqYcVw=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=virtuozzo.com;
-Received: from VI1PR0801MB1678.eurprd08.prod.outlook.com
- (2603:10a6:800:51::23) by VE1PR08MB4655.eurprd08.prod.outlook.com
- (2603:10a6:802:b2::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17; Sat, 12 Dec
- 2020 08:29:51 +0000
-Received: from VI1PR0801MB1678.eurprd08.prod.outlook.com
- ([fe80::b18d:c047:56c0:e0d3]) by VI1PR0801MB1678.eurprd08.prod.outlook.com
- ([fe80::b18d:c047:56c0:e0d3%9]) with mapi id 15.20.3654.020; Sat, 12 Dec 2020
- 08:29:51 +0000
-Subject: Re: [PATCH] net: check skb partial checksum offset after trim
-From:   Vasily Averin <vvs@virtuozzo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-References: <7080e8a3-6eaa-e9e1-afd8-b1eef38d1e89@virtuozzo.com>
- <1f8e9b9f-b319-9c03-d139-db57e30ce14f@virtuozzo.com>
-Message-ID: <3749313e-a0dc-5d8a-ad0f-b86c389c0ba4@virtuozzo.com>
-Date:   Sat, 12 Dec 2020 11:29:48 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <1f8e9b9f-b319-9c03-d139-db57e30ce14f@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [185.231.240.5]
-X-ClientProxiedBy: AM0PR02CA0124.eurprd02.prod.outlook.com
- (2603:10a6:20b:28c::21) To VI1PR0801MB1678.eurprd08.prod.outlook.com
- (2603:10a6:800:51::23)
+        id S2437246AbgLLJ7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 04:59:54 -0500
+Received: from mga02.intel.com ([134.134.136.20]:61275 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2438508AbgLLJ7g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Dec 2020 04:59:36 -0500
+IronPort-SDR: ifZ8E8h53bGYsOeUzY+Qy2LwopJQHsMDkbQPfPp7f0zQwa6SzJZtTItV3d9R1VCmgq9VVUPb0W
+ J7FG4CvqQo4A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9832"; a="161586165"
+X-IronPort-AV: E=Sophos;i="5.78,413,1599548400"; 
+   d="scan'208";a="161586165"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2020 00:51:09 -0800
+IronPort-SDR: aSBz5MFlyrxBJJzgSWgWgFPnNZy+yYkUI01f1gEKuZmrrl5Qfun45FyAmLvVl/IFwKO0p7Bh7U
+ 88DPh5b1fv1A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,413,1599548400"; 
+   d="scan'208";a="324863738"
+Received: from pl-dbox.sh.intel.com (HELO intel.com) ([10.239.159.39])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Dec 2020 00:51:04 -0800
+Date:   Sat, 12 Dec 2020 16:47:08 +0800
+From:   Philip Li <philip.li@intel.com>
+To:     "Geva, Erez" <erez.geva.ext@siemens.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+        "clang-built-linux@googlegroups.com" 
+        <clang-built-linux@googlegroups.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cong Wang <xiyou.wangcong@gmail.com>, Sudler@ml01.01.org,
+        Andreas <andreas.meisinger@siemens.com>,
+        "jan.kiszka@siemens.com" <jan.kiszka@siemens.com>,
+        "henning.schild@siemens.com" <henning.schild@siemens.com>
+Subject: Re: [kbuild-all] Re: [PATCH 1/3] Add TX sending hardware timestamp.
+Message-ID: <20201212084708.GA31899@intel.com>
+References: <20201209143707.13503-2-erez.geva.ext@siemens.com>
+ <202012101050.lTUKkbvy-lkp@intel.com>
+ <VI1PR10MB244664932EF569D492539DB8ABCB0@VI1PR10MB2446.EURPRD10.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [172.16.24.21] (185.231.240.5) by AM0PR02CA0124.eurprd02.prod.outlook.com (2603:10a6:20b:28c::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Sat, 12 Dec 2020 08:29:49 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 065e7dbe-ae87-48a3-3314-08d89e781822
-X-MS-TrafficTypeDiagnostic: VE1PR08MB4655:
-X-Microsoft-Antispam-PRVS: <VE1PR08MB465540EF0B76E26183E898ABAAC90@VE1PR08MB4655.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +2J7ua+b1n1wCFRWEueuF3qV96zliugGwic7jHPQfMyBTjgKFdMDk/7ssyOws0NEZyhgwpa2+iw/kUOLAx2noJX4bmU59nkivsJ/djf4Mox1B51KmX9VO/EOAnm1+TGfa0adbwqPwyy1YMy21Vrlsj2rFz48n1/qGl4Z5bj+Cy+hVx9itf8Zp+zwpFwmy5KaRS2iirphFiQC0wlhDXfK6D3KNizRTuCKCwUta969hfTXdwHHG+inIqgWxRycsEWgqHBH97TiGiGWMvTWJZpscMnCZHocEFBu/QL8sadG6tewIYvBz/JeVN2kZVicjPg/YLdAIOQKj35Dhmtio8hJX5Layo8XV7H/p6W0vuXcvlGa9qC6kMY9MOYHTyWgXoeApu5GUclacqrNIO4FX7NykCcAFM27CsPI7jQuhCCb1lM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0801MB1678.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39840400004)(346002)(136003)(366004)(396003)(376002)(83380400001)(53546011)(2906002)(36756003)(956004)(31686004)(2616005)(52116002)(66556008)(26005)(16576012)(66476007)(110136005)(16526019)(186003)(4326008)(66946007)(478600001)(8676002)(6486002)(5660300002)(316002)(86362001)(31696002)(8936002)(4744005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?YmlnRHZ2Wm1ncUg3NkdoRTdPd2NJK2RVRUhNTm1jWEpyeHNicXRVWFlQKzJ3?=
- =?utf-8?B?WUpxRWJBRmlCTDNwQkg4TkpBdHFuTWxtYnZodU51ZXQzdm8ySmJJWk4ydnZu?=
- =?utf-8?B?dlA1blIvYmUyQUNoSU9nSGlGMDRNRHJRY0dPRTUydEE3blZNdWtKcmtEWUlM?=
- =?utf-8?B?NnRxalFxa2NaQzF1bW5NcG42Sk9PQ0tMcmZFc3RYbHp1RWl0SzRQa3psdlM4?=
- =?utf-8?B?K2JqNkNYU2hTZ3FnZ0JJNmI4dW5iYnJTNzEzL1FCYmJYcnV3a2xacWxuSmMy?=
- =?utf-8?B?RjJiQU9GVlVvU1p1MmZpUjNmYVYxWjFsWHJmSHFWenNuYmhtSmxQSmIrdVBN?=
- =?utf-8?B?QWdVdFE3d3NwdlJOSHpTSEFsbGNqWkIvUXpSaVBrRndNY3cvb2dKWHJvTlJo?=
- =?utf-8?B?L2E1UWQvVWRKU1NKNFdQUG02SWk5Y29CbXUzalh1RTBlYkVFSW1RcEIrNkZK?=
- =?utf-8?B?OHlhdzNXZ1B6bnVkalNBZUxFbmRJcWFiYlJHa2JsMys5ZklXNG5XREhPeDNh?=
- =?utf-8?B?a1Rkd0hWOG9XcWVJZmF1ekhESm5CQjRYdkNpUnJqTENkOVB5bEltZStPM0M3?=
- =?utf-8?B?RGtHczhMYmQ0Zm1kMTM1MEUxUXFXM0cwbUVIYmxHMEN4VmdPUXFUMzJ6OWV5?=
- =?utf-8?B?czRHdVN1TnhKQVpuemJOblIrYUhtaDZKWnlVTXFZYUpmM0cvUmNkNDBFZWZn?=
- =?utf-8?B?WXIyc3M3M0xjaElqYXZweXVNL2x4Q2pwZ2g2dmhxTVEzMGFUdVg5eEM4SVly?=
- =?utf-8?B?c3RtUGVLY0dUK2krYXJyUG5lQ1F6Q2M2M2RnNmRDU3JyTDdibEY5SjZqUFpw?=
- =?utf-8?B?OTZhbDNham15Tk1YV1VPamQ4QnRwYW5CYkNaY0tkZW1LbDhOdER6TmNVV2dp?=
- =?utf-8?B?RW56cnQwaERTMEJxc0FETk1JS1pYK3V6U2VFUEdrTE5QWmVLbHVxaXB2dnVD?=
- =?utf-8?B?SzZMSy8wd2lvZWtYejlpaGhaRDY2ZmtFZk1Od3FLNU1pM284UmlFaFZUelc0?=
- =?utf-8?B?R2Jqd0M4T2tac3hjM2VLQVhEUEhWV2E1UCtkTmNVOFkzR3BBb2xoaktPWkNm?=
- =?utf-8?B?ZjE3VHpzSTFHOUltY2lndzkveFVuU0ljMnZlSHFVcVZ0NFlhbmQvK1Z5U3A1?=
- =?utf-8?B?aURxa0ZDR3JjMHdCb0dFeFpqMHhOZnhZcXJCa3Ztb3R0VjJGUjRlOUxjSnZm?=
- =?utf-8?B?dExkd2hoMUIxR1RyeE5Fd1FMeUtjdWNWNUZ6bnhzMURPT3NhcG15TGRLWWRp?=
- =?utf-8?B?T3JUTmlGdGRibXhpNjRNU3ZPVndmYkIvR3pveFBjU2ZUaWN5YnZPOEU3M0dq?=
- =?utf-8?Q?lGgtUzSwzg3++y8cUxpWwCxqIzgYfX3/Hx?=
-X-OriginatorOrg: virtuozzo.com
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0801MB1678.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2020 08:29:50.8744
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
-X-MS-Exchange-CrossTenant-Network-Message-Id: 065e7dbe-ae87-48a3-3314-08d89e781822
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dE4ldtQ/j7mcHuzaIHg1jLIILlwvzYAqKTiyVrAjIJ/J24R5V0AQK7VJeQtSnLTllyRs7kzMTUDRnzq/48J8Ag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR08MB4655
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR10MB244664932EF569D492539DB8ABCB0@VI1PR10MB2446.EURPRD10.PROD.OUTLOOK.COM>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/11/20 6:37 PM, Vasily Averin wrote:
-> It seems for me the similar problem can happen in __skb_trim_rcsum().
-> Also I doubt that that skb_checksum_start_offset(skb) checks in 
-> __skb_postpull_rcsum() and skb_csum_unnecessary() are correct,
-> becasue they do not guarantee that skb have correct CHECKSUM_PARTIAL.
-> Could somebody confirm it?
+On Thu, Dec 10, 2020 at 12:41:32PM +0000, Geva, Erez wrote:
+> 
+> On 10/12/2020 04:11, kernel test robot wrote:
+> > Hi Erez,
+> > 
+> > Thank you for the patch! Yet something to improve:
+> > 
+> Thanks for the robot,
+> as we rarely use clang for kernel. It is very helpful.
+> 
+> > [auto build test ERROR on b65054597872ce3aefbc6a666385eabdf9e288da]
+> > 
+> > url:    https://github.com/0day-ci/linux/commits/Erez-Geva/Add-sending-TX-hardware-timestamp-for-TC-ETF-Qdisc/20201210-000521
+> I can not find this commit
+> 
+> > base:    b65054597872ce3aefbc6a666385eabdf9e288da
+> > config: mips-randconfig-r026-20201209 (attached as .config)
+> > compiler: clang version 12.0.0 (https://github.com/llvm/llvm-project 1968804ac726e7674d5de22bc2204b45857da344)
+> However the clang in 
+> https://download.01.org/0day-ci/cross-package/clang-latest/clang.tar.xz  is version 11
+Sorry that these are issues at our side, including the branch/commit missing.
+The push to download.01.org failed and did not really work, we will look for
+recovering them.
 
-I've rechecked the code and I think now that other places are not affected,
-i.e. skb_push_rcsum() only should be patched.
+> 
+> > reproduce (this is a W=1 build):
+> >          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> Your make cross script tries to download the clang every time.
+> Please separate the download (which is ~400 MB and 2 GB after open) from the compilation.
+Hi Erez, thanks for your feedback, we will improve the reproduction
+side per these suggestions.
 
-Thank you,
-	Vasily Averin
+> 
+> Please use "wget" follow your own instructions in this email.
+> 
+> >          chmod +x ~/bin/make.cross
+> >          # install mips cross compiling tool for clang build
+> >          # apt-get install binutils-mips-linux-gnu
+> >          # https://github.com/0day-ci/linux/commit/8a8f634bc74db16dc551cfcf3b63c1183f98eaac
+> >          git remote add linux-review https://github.com/0day-ci/linux
+> >          git fetch --no-tags linux-review Erez-Geva/Add-sending-TX-hardware-timestamp-for-TC-ETF-Qdisc/20201210-000521
+> This branch is absent
+> 
+> >          git checkout 8a8f634bc74db16dc551cfcf3b63c1183f98eaac
+> This commit as well
+> 
+> >          # save the attached .config to linux build tree
+> >          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=mips
+> > 
+> I use Debian 10.7.
+> I usually compile with GCC. I have not see any errors.
+> 
+> When I use clang 11 from download.01.org I get a crash right away.
+> Please add a proper instructions how to use clang on Debian or provide 
+> a Docker container with updated clang for testing.
+> 
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > 
+> > All errors (new ones prefixed by >>):
+> > 
+> >>> net/core/sock.c:2383:7: error: use of undeclared identifier 'SCM_HW_TXTIME'; did you mean 'SOCK_HW_TXTIME'?
+> >             case SCM_HW_TXTIME:
+> >                  ^~~~~~~~~~~~~
+> >                  SOCK_HW_TXTIME
+> >     include/net/sock.h:862:2: note: 'SOCK_HW_TXTIME' declared here
+> >             SOCK_HW_TXTIME,
+> >             ^
+> >     1 error generated.
+> > 
+> > vim +2383 net/core/sock.c
+> > 
+> >    2351	
+> >    2352	int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
+> >    2353			     struct sockcm_cookie *sockc)
+> >    2354	{
+> >    2355		u32 tsflags;
+> >    2356	
+> >    2357		switch (cmsg->cmsg_type) {
+> >    2358		case SO_MARK:
+> >    2359			if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+> >    2360				return -EPERM;
+> >    2361			if (cmsg->cmsg_len != CMSG_LEN(sizeof(u32)))
+> >    2362				return -EINVAL;
+> >    2363			sockc->mark = *(u32 *)CMSG_DATA(cmsg);
+> >    2364			break;
+> >    2365		case SO_TIMESTAMPING_OLD:
+> >    2366			if (cmsg->cmsg_len != CMSG_LEN(sizeof(u32)))
+> >    2367				return -EINVAL;
+> >    2368	
+> >    2369			tsflags = *(u32 *)CMSG_DATA(cmsg);
+> >    2370			if (tsflags & ~SOF_TIMESTAMPING_TX_RECORD_MASK)
+> >    2371				return -EINVAL;
+> >    2372	
+> >    2373			sockc->tsflags &= ~SOF_TIMESTAMPING_TX_RECORD_MASK;
+> >    2374			sockc->tsflags |= tsflags;
+> >    2375			break;
+> >    2376		case SCM_TXTIME:
+> >    2377			if (!sock_flag(sk, SOCK_TXTIME))
+> >    2378				return -EINVAL;
+> >    2379			if (cmsg->cmsg_len != CMSG_LEN(sizeof(u64)))
+> >    2380				return -EINVAL;
+> >    2381			sockc->transmit_time = get_unaligned((u64 *)CMSG_DATA(cmsg));
+> >    2382			break;
+> >> 2383		case SCM_HW_TXTIME:
+> >    2384			if (!sock_flag(sk, SOCK_HW_TXTIME))
+> >    2385				return -EINVAL;
+> >    2386			if (cmsg->cmsg_len != CMSG_LEN(sizeof(u64)))
+> >    2387				return -EINVAL;
+> >    2388			sockc->transmit_hw_time = get_unaligned((u64 *)CMSG_DATA(cmsg));
+> >    2389			break;
+> >    2390		/* SCM_RIGHTS and SCM_CREDENTIALS are semantically in SOL_UNIX. */
+> >    2391		case SCM_RIGHTS:
+> >    2392		case SCM_CREDENTIALS:
+> >    2393			break;
+> >    2394		default:
+> >    2395			return -EINVAL;
+> >    2396		}
+> >    2397		return 0;
+> >    2398	}
+> >    2399	EXPORT_SYMBOL(__sock_cmsg_send);
+> >    2400	
+> > 
+> > ---
+> > 0-DAY CI Kernel Test Service, Intel Corporation
+> > https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> > 
+> 
+> Please improve the robot, so we can comply and properly support clang compilation.
+Got it, we will keep improving the bot.
+
+> 
+> Thanks
+>    Erez
+> _______________________________________________
+> kbuild-all mailing list -- kbuild-all@lists.01.org
+> To unsubscribe send an email to kbuild-all-leave@lists.01.org
