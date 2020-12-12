@@ -2,113 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AD442D84E5
+	by mail.lfdr.de (Postfix) with ESMTP id C8C852D84E6
 	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 06:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438350AbgLLFgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 00:36:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
+        id S1729946AbgLLFi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 00:38:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436603AbgLLFgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 00:36:47 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0E6C0613CF
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 21:36:07 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id t13so10024439ybq.7
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 21:36:07 -0800 (PST)
+        with ESMTP id S1725813AbgLLFhp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 00:37:45 -0500
+Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1F2C0613CF
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 21:37:05 -0800 (PST)
+Received: by mail-ua1-x941.google.com with SMTP id n18so3610185ual.9
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 21:37:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MJLJtxzOI6HFbFfca8y6i5ZlIt+NBylvopbSMbbFYTM=;
-        b=BXytWfgxuevSZCxtU68g4ESmu7e0gpHPtBvQeU08cyNlYW1SKXvKMbz7d5hkT/mlEQ
-         1pUPWjqOMtckgVDRiI7/L8vba5zZBGG1OYEBJwr38Hh1+Y2f8JDt7IcBPVn7MhDTyTUG
-         Qb61RKN7BYmnSmmNTYUdIea/VQB56NSXDrUr/Ms2NJnnfJ1ZG0EZYx8MjlnrVSGVhOaF
-         FrfTc5oPZ6athCvRoSXO35rZoQjoQmGfB6kOF5fkscoy6siZItiW3obTK/eN3Ffo6bvL
-         pnKABUbdZzmZ5mEHSMwC9qIrzi4HPFdHXY+EKcGwQa56ESNzdEmhqYIPrzSoSreQvhmW
-         nFdw==
+         :cc:content-transfer-encoding;
+        bh=vf1LpceJ3/eT76im7d0MJGd4tAxKu5YcAEonLzrJyco=;
+        b=NjhDSnOi456i0iHZqsvYHKd+DjUvwCU2Yrl34UwuSuYLjnEU8Q+6lXrt53fam4JdYS
+         H7xHmQwaTLGguPqCO2zDsoMmMNXQSpMel1/GR61LLfCwxt6u1Xx6S0K4oSMZOOk8oPvz
+         LdwhYJHCHOy4nqU7niaf2H3bs8EO6k+ya1ctq5ME+EZcleStY9K6B+wyPa3XtwwqsDj9
+         OXyMLd2tAwCtNIksCWnvL1XZ2hIAX4NS0sD4daUwUWGG4LAotcIEwnaFWd9Do2bnyND9
+         F2IOf82c94AGIh9S3z7Qn0OknuRuq5TATCLhDU5cS+EwGhBJtPNPHbk0JQM55uFxLAN4
+         /Dsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MJLJtxzOI6HFbFfca8y6i5ZlIt+NBylvopbSMbbFYTM=;
-        b=n5ZXnOGc1YkJD8hcIlcM8vtuPKUuQqajY4OQud/6FrXR7ooKii1mFqnnj0LoPK5kcn
-         +Yaqwz4vcD5KCDYgfvuLnCaOgS7eX9/Mgf61MRWpjoLZd3ShGd7wireDE9H3+TcMreQd
-         1Noyn3NtpMruFsT76SNIeMvq+fhFHlpuBDmF4pzGCX+bOpzTAmeZSId2Y3hl56c9Gbam
-         UZEoQLHqOEHWHU4APYGXda0RLmqkz3vS6OqZttYFWxGlduSuJo0qyvtydSnhXy2SAyel
-         oQy7JGO83Wym0kXvtPcgBQruiB0YgHZ8/00foAyFbADfjkG2/H/Jds1eDG6DjzSGifP6
-         ER1g==
-X-Gm-Message-State: AOAM532Vidz2luYOzAjY0d7xLRnyJjOXW1RAF5RGncn8xOLlcOF3xqSA
-        7QkQvhqFrjP1oatSvx0wAK3yftJ3gqEOoBrxC9o=
-X-Google-Smtp-Source: ABdhPJwWygwpSjBLwDq268/9vv+mZHcYLwmEewEigYO3dd7B/FUbrrWzQMSpZPrDpyv07vZLIsK+5MDlT7EqeSSE90s=
-X-Received: by 2002:a25:2046:: with SMTP id g67mr23088189ybg.199.1607751367082;
- Fri, 11 Dec 2020 21:36:07 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vf1LpceJ3/eT76im7d0MJGd4tAxKu5YcAEonLzrJyco=;
+        b=orlhsJHsB3fi83fhFzjHQfDOlrKn2Hpl/+taop0O8+KaTm8ys0MnrYf3h7QPYrc4Ew
+         Ro5WMtgqQgvTFKexcyYUYoLh6Ui/YhLeijcL3yp9jQgRb7StnTMuQloTF/MYDjndnvT5
+         1+sY1KoVXXv6Rba/6GC089iV/1KRLSgr+egP8ZPoZrEH2ZqxBIFhgBAoLNwNLTB3OE7J
+         wlhfDHjfuW5v4Z1eqqctTCv3CJyuYS+/S8XGN8rC7pxW041eJEccDb0XvbvsAPTbL9MD
+         HpIkgWbA+X4ky1zpSflvcMsVu0PN4WL7fV4AaWzja7NDZxahxgcykErNmlsemJ44jDQ/
+         0M7Q==
+X-Gm-Message-State: AOAM531z7faFQYsOLxXiZynk5rvjGYIiCo/fa78lab08thNOaiX08QJx
+        V2f82Js3slS/4uz+QI10OZxIE8zM0jTp5xcBo6P4j3G10CfoISWy
+X-Google-Smtp-Source: ABdhPJy9darlr9FtznUuVqLUVvOl81LZhnxLJMYLHUMw9alOppj48ixyaInO9Ii60CigOyhm9vbpKZsoYZoptVwvy3Y=
+X-Received: by 2002:ab0:704e:: with SMTP id v14mr15727504ual.134.1607751422731;
+ Fri, 11 Dec 2020 21:37:02 -0800 (PST)
 MIME-Version: 1.0
-References: <20201211122612.869225-1-jonas@norrbonn.se> <20201211122612.869225-8-jonas@norrbonn.se>
-In-Reply-To: <20201211122612.869225-8-jonas@norrbonn.se>
-From:   Pravin Shelar <pravin.ovn@gmail.com>
-Date:   Fri, 11 Dec 2020 21:35:56 -0800
-Message-ID: <CAOrHB_CzXgf9mOr+LhSOKcJ1uzTQBqMmWiDCMkutCF7VRJ9Djg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 07/12] gtp: use ephemeral source port
-To:     Jonas Bonn <jonas@norrbonn.se>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>, laforge@gnumonks.org
+References: <20201211042610.71081-1-yanjun.zhu@intel.com> <b3cd5ccb-e1cc-f091-8330-dba6c58b2fc3@iogearbox.net>
+In-Reply-To: <b3cd5ccb-e1cc-f091-8330-dba6c58b2fc3@iogearbox.net>
+From:   Rain River <rain.1986.08.12@gmail.com>
+Date:   Sat, 12 Dec 2020 13:36:51 +0800
+Message-ID: <CAJr_XRCKC++xBJY-1cxj6M7sSsf2ZBHzV-EeM65y=7VzAY=M_w@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] xdp: avoid calling kfree twice
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Zhu Yanjun <yanjun.zhu@intel.com>, zyjzyj2000@gmail.com,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        netdev@vger.kernel.org, jonathan.lemon@gmail.com,
+        Ye Dong <dong.ye@intel.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11, 2020 at 4:29 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+On Fri, Dec 11, 2020 at 11:53 PM Daniel Borkmann <daniel@iogearbox.net> wro=
+te:
 >
-> All GTP traffic is currently sent from the same source port.  This makes
-> everything look like one big flow which is difficult to balance across
-> network resources.
+> On 12/11/20 5:26 AM, Zhu Yanjun wrote:
+> > In the function xdp_umem_pin_pages, if npgs !=3D umem->npgs and
+> > npgs >=3D 0, the function xdp_umem_unpin_pages is called. In this
+> > function, kfree is called to handle umem->pgs, and then in the
+> > function xdp_umem_pin_pages, kfree is called again to handle
+> > umem->pgs. Eventually, to umem->pgs, kfree is called twice.
+> >
+> > Since umem->pgs is set to NULL after the first kfree, the second
+> > kfree would not trigger call trace.
 >
-> From 3GPP TS 29.281:
-> "...the UDP Source Port or the Flow Label field... should be set dynamically
-> by the sending GTP-U entity to help balancing the load in the transport
-> network."
+> This can still be misinterpreted imho; maybe lets simplify, for example:
 >
-> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
-> ---
->  drivers/net/gtp.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+>    [bpf-next] xdp: avoid unnecessary second call to kfree
 >
-> diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-> index 4a3a52970856..236ebbcb37bf 100644
-> --- a/drivers/net/gtp.c
-> +++ b/drivers/net/gtp.c
-> @@ -477,7 +477,7 @@ static int gtp_xmit_ip4(struct sk_buff *skb, struct net_device *dev)
->         __be32 saddr;
->         struct iphdr *iph;
->         int headroom;
-> -       __be16 port;
-> +       __be16 sport, port;
->         int r;
+>    For the case when in xdp_umem_pin_pages() the call to pin_user_pages()
+>    wasn't able to pin all the requested number of pages in memory (but so=
+me)
+>    then we error out by cleaning up the ones that got pinned through a ca=
+ll
+>    to xdp_umem_unpin_pages() and later on we free kfree(umem->pgs) itself=
+.
 >
->         /* Read the IP destination address and resolve the PDP context.
-> @@ -527,6 +527,10 @@ static int gtp_xmit_ip4(struct sk_buff *skb, struct net_device *dev)
->                 return -EMSGSIZE;
->         }
+>    This is unneeded since xdp_umem_unpin_pages() itself already does the
+>    kfree(umem->pgs) internally with subsequent setting umem->pgs to NULL,=
+ so
+>    that in xdp_umem_pin_pages() the second kfree(umem->pgs) becomes entir=
+ely
+>    unnecessary for this case. Therefore, clean the error handling up.
 >
-> +       sport = udp_flow_src_port(sock_net(pctx->sk), skb,
-> +                       0, USHRT_MAX,
-> +                       true);
-> +
-why use_eth is true for this is L3 GTP devices, Am missing something?
+> > Fixes: c0c77d8fb787 ("xsk: add user memory registration support sockopt=
+")
+>
+> Why do we need a Fixes tag here? It's a _cleanup_, not a bug/fix technica=
+lly.
+>
+> > CC: Ye Dong <dong.ye@intel.com>
+> > Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > Signed-off-by: Zhu Yanjun <yanjun.zhu@intel.com>
+> > ---
+> >   net/xdp/xdp_umem.c | 17 +++++------------
+> >   1 file changed, 5 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+> > index 56a28a686988..01b31c56cead 100644
+> > --- a/net/xdp/xdp_umem.c
+> > +++ b/net/xdp/xdp_umem.c
+> > @@ -97,7 +97,6 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, =
+unsigned long address)
+> >   {
+> >       unsigned int gup_flags =3D FOLL_WRITE;
+> >       long npgs;
+> > -     int err;
+> >
+> >       umem->pgs =3D kcalloc(umem->npgs, sizeof(*umem->pgs),
+> >                           GFP_KERNEL | __GFP_NOWARN);
+> > @@ -112,20 +111,14 @@ static int xdp_umem_pin_pages(struct xdp_umem *um=
+em, unsigned long address)
+> >       if (npgs !=3D umem->npgs) {
+> >               if (npgs >=3D 0) {
+> >                       umem->npgs =3D npgs;
+> > -                     err =3D -ENOMEM;
+> > -                     goto out_pin;
+> > +                     xdp_umem_unpin_pages(umem);
+> > +                     return -ENOMEM;
+> >               }
+> > -             err =3D npgs;
+> > -             goto out_pgs;
+> > +             kfree(umem->pgs);
+> > +             umem->pgs =3D NULL;
+> > +             return (int)npgs;
+> >       }
+> >       return 0;
+> > -
+> > -out_pin:
+> > -     xdp_umem_unpin_pages(umem);
+> > -out_pgs:
+> > -     kfree(umem->pgs);
+> > -     umem->pgs =3D NULL;
+> > -     return err;
+> >   }
+> >
+> >   static int xdp_umem_account_pages(struct xdp_umem *umem)
+> >
+>
+> While at it, maybe we could also simplify the if (npgs !=3D umem->npgs) a=
+ bit to
+> get rid of the indent, something like:
 
->         /* Ensure there is sufficient headroom. */
->         r = skb_cow_head(skb, headroom);
->         if (unlikely(r))
-> @@ -545,7 +549,7 @@ static int gtp_xmit_ip4(struct sk_buff *skb, struct net_device *dev)
->                             iph->tos,
->                             ip4_dst_hoplimit(&rt->dst),
->                             0,
-> -                           port, port,
-> +                           sport, port,
->                             !net_eq(sock_net(pctx->sk),
->                                     dev_net(pctx->dev)),
->                             false);
-> --
-> 2.27.0
+The original patch is just to make some cleanups. Please do not make
+it so complicated.
+If you like it, please file an official patch for code review.
+
 >
+> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+> index 56a28a686988..fa4dd16cced5 100644
+> --- a/net/xdp/xdp_umem.c
+> +++ b/net/xdp/xdp_umem.c
+> @@ -97,7 +97,6 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, un=
+signed long address)
+>   {
+>         unsigned int gup_flags =3D FOLL_WRITE;
+>         long npgs;
+> -       int err;
+>
+>         umem->pgs =3D kcalloc(umem->npgs, sizeof(*umem->pgs),
+>                             GFP_KERNEL | __GFP_NOWARN);
+> @@ -108,24 +107,17 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem=
+, unsigned long address)
+>         npgs =3D pin_user_pages(address, umem->npgs,
+>                               gup_flags | FOLL_LONGTERM, &umem->pgs[0], N=
+ULL);
+>         mmap_read_unlock(current->mm);
+> -
+> -       if (npgs !=3D umem->npgs) {
+> -               if (npgs >=3D 0) {
+> -                       umem->npgs =3D npgs;
+> -                       err =3D -ENOMEM;
+> -                       goto out_pin;
+> -               }
+> -               err =3D npgs;
+> -               goto out_pgs;
+> +       if (npgs =3D=3D umem->npgs)
+> +               return 0;
+> +       if (npgs >=3D 0) {
+> +               umem->npgs =3D npgs;
+> +               xdp_umem_unpin_pages(umem);
+> +               return -ENOMEM;
+>         }
+> -       return 0;
+>
+> -out_pin:
+> -       xdp_umem_unpin_pages(umem);
+> -out_pgs:
+>         kfree(umem->pgs);
+>         umem->pgs =3D NULL;
+> -       return err;
+> +       return npgs;
+>   }
+>
+>   static int xdp_umem_account_pages(struct xdp_umem *umem)
