@@ -2,248 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BC552D82CD
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 00:38:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EC222D836B
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 01:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437390AbgLKXfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 18:35:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44068 "EHLO
+        id S2407318AbgLLA3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 19:29:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437383AbgLKXfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 18:35:06 -0500
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0EFC06138C
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 15:33:50 -0800 (PST)
-Received: by mail-pj1-x104a.google.com with SMTP id kk4so3242139pjb.7
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 15:33:50 -0800 (PST)
+        with ESMTP id S1728491AbgLLA3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 19:29:01 -0500
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A75C0613CF;
+        Fri, 11 Dec 2020 16:28:21 -0800 (PST)
+Received: by mail-yb1-xb43.google.com with SMTP id o144so9192108ybc.0;
+        Fri, 11 Dec 2020 16:28:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=C5GRxECZMSAf9dCnY0cH/nYiIjSrdOWOHdN7BXATNyw=;
-        b=Sx+p6f2+gq+Kdb4ohqFEnhQL+OWLM+Y3KCDTByYTlOqjisNR8gdz9Re64WWVyRflP/
-         QI9esAqrkUZz5a2XFGeX9HZf0mBeI3rsC0NdINzu/gmL3Kf3Xa7LIX2duwGZJGY0hGe2
-         LTj2aWm9XswFcXWR9pDLUVXzNnJbI2HKGrwrOQ5dmX8ztYwT3t4sNC/ZU1cJBFyjgBZ4
-         oNqYbSCjAkRc3naqdyX6wP6fDhKdYdEANMNgRwnUCHokS6dj8ZWzFhIWckfyLqGjWEDN
-         r1s2ZjN0FFCwmlxOHAq5q7fdh4VHCGa07wYME5cBikzFxhsUm200E/qpvCEGmH4Zvx6S
-         k6Lg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BDG+xZHQqMZdcSUls3ikA30hvFyPsfKiOeU+X969T1A=;
+        b=WlecsQ9vMeLyIgCBs0jV0m2N0Mm0z+F5OMcLTYPse4U3NQ7x9nZGxQw2bycmpiQ2By
+         42qSznD5A8VDX6aEve6EA28tGdA/P24mBcS+WTQ2M10Egx4PUej1NQbMBI96CQosbIsG
+         aD31kST+2fYomHtrg6KHb4x4h3OkM6Mo4iWBza7H3PfmR8afeB7j7zVylOtM3dVjF3Dt
+         dhWYzD+nZ2vTqdMeZkJP5i/h7DX6vV/3iINN7ugpdLI3zCGUAY8+AtHTjmvezNy/WEbU
+         RnPW/vYsbrfYud8uLP7y3G0x24qaJ4Xf5fTy0FDE9QdqQrpgg+aSrpjYbfcbVtp3FOXe
+         5CBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=C5GRxECZMSAf9dCnY0cH/nYiIjSrdOWOHdN7BXATNyw=;
-        b=ZmYY2IO90X2T3KPN/WvX1+bnqm4cHVT2M+KbSBIzo+N1F8TwPgdFH51FCVVCm2InBz
-         OuIDhEO8vwFY/Q0BJqy7Fo18cNjdH20ERn6qbXc/w0WFvbWKilRcvl3bY0rpPa9/STba
-         3xXWC9ctB6mPlMu6rNOhCDEVIWY0MQaDjLyIFv3m0Fzl9p0pkbIilJBZFdp4NZgq4oHT
-         h3P/oz3xKOU/xoCih24ZYO5Vgon+7qPBEo5LpmGgJDxXdYiCjuDZC4tIlC2sD1BYfOCg
-         J+WBEaEkt16ZjjNpSXJ8fTT1lAB/NkFgT/IFGV8e8/B3VwaLUBvbGEqeuXz+iL3X4TTY
-         E0lA==
-X-Gm-Message-State: AOAM533xrofyZt0+mrqag8EwoOPEkPEn7RlRYx+8ciwFbmHbpvYvPUnK
-        8F0DI6QWZ6tZC90vbzPoIFJxFYDqkpgr
-X-Google-Smtp-Source: ABdhPJxV3EV2QyfOizvoCaAO1ytJsY4LnegfD8I67yilNq9ECFb2TPZSL+tyC13s11HWJ58Qf+C0vGuC+Z7r
-Sender: "brianvv via sendgmr" <brianvv@brianvv.c.googlers.com>
-X-Received: from brianvv.c.googlers.com ([fda3:e722:ac3:10:7f:e700:c0a8:348])
- (user=brianvv job=sendgmr) by 2002:a17:90a:8a82:: with SMTP id
- x2mr15080767pjn.107.1607729630321; Fri, 11 Dec 2020 15:33:50 -0800 (PST)
-Date:   Fri, 11 Dec 2020 23:33:40 +0000
-In-Reply-To: <20201211233340.1503242-1-brianvv@google.com>
-Message-Id: <20201211233340.1503242-5-brianvv@google.com>
-Mime-Version: 1.0
-References: <20201211233340.1503242-1-brianvv@google.com>
-X-Mailer: git-send-email 2.29.2.576.ga3fc446d84-goog
-Subject: [PATCH net-next v2 4/4] net: indirect call helpers for ipv4/ipv6
- dst_check functions
-From:   Brian Vazquez <brianvv@google.com>
-To:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BDG+xZHQqMZdcSUls3ikA30hvFyPsfKiOeU+X969T1A=;
+        b=tYVqUcz1pcFpXkND+W2cYALRAoyTiEPwmLTHj10VjkDgWAFu1uaIVusL4uNfZV7u/Z
+         eSYv/zQV39J+PV1T2GSZyvpllvMBqJt2Vhxt8Ts9KEj8Dnj9ff7J/KXtT7DCNqZsyHEP
+         kR/4kP0MWvtEQXiOU0ngMbfvUFK+KJdhoGEdJ2cLvKsWM4LLt2chwRpeD6iGOkiecNkX
+         icKHqIUT0oJmNbjGYgBg+cuKPFUGxq4SEjs8M4A4S/hlS2zUWdZKUbmnOEmBWq16KAVb
+         3AshBTtA3kma7x/vheXYozkow/2gsJYUhHSNCSaUPP2Y5nmGhU6FsfcK9Qy1Mw2/0AE1
+         p0ng==
+X-Gm-Message-State: AOAM531Hnt0DGfKz7LCG/ANEsDiGtQWFAQNtaMRxkU4W7VIoa+S4fd7V
+        7PGVbOQPFb6JzW9thxtDYeUle8v5FCM6O368T90=
+X-Google-Smtp-Source: ABdhPJw38//QZu1nI6EvdaYgjpqgf23gW3F0kOuRUNvbkke9MRzwS6VW5Muqnr8LSzTHcH2UDFQF6R6YkSspq5bfRfI=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr22397897ybe.403.1607732900133;
+ Fri, 11 Dec 2020 16:28:20 -0800 (PST)
+MIME-Version: 1.0
+References: <20201211171138.63819-1-jonathan.lemon@gmail.com>
+ <20201211171138.63819-2-jonathan.lemon@gmail.com> <CAEf4BzYswHcuQNdqyOymB5MTFDKJy0xkG4+Yo_CpUGH4BVqjzg@mail.gmail.com>
+ <20201211230134.qswet7pfrda23ooa@bsd-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201211230134.qswet7pfrda23ooa@bsd-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 11 Dec 2020 16:28:09 -0800
+Message-ID: <CAEf4BzaA48yB5mnX5VAfLdUMa54Fq_pxpT__s0DbB7nYPzenMg@mail.gmail.com>
+Subject: Re: [PATCH 1/1 v3 bpf-next] bpf: increment and use correct thread iterator
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: brianvv <brianvv@google.com>
+On Fri, Dec 11, 2020 at 3:01 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+>
+> On Fri, Dec 11, 2020 at 12:23:34PM -0800, Andrii Nakryiko wrote:
+> > > @@ -164,7 +164,7 @@ task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info)
+> > >                 curr_files = get_files_struct(curr_task);
+> > >                 if (!curr_files) {
+> > >                         put_task_struct(curr_task);
+> > > -                       curr_tid = ++(info->tid);
+> > > +                       curr_tid = curr_tid + 1;
+> >
+> > Yonghong might know definitively, but it seems like we need to update
+> > info->tid here as well:
+> >
+> > info->tid = curr_tid;
+> >
+> > If the search eventually yields no task, then info->tid will stay at
+> > some potentially much smaller value, and we'll keep re-searching tasks
+> > from the same TID on each subsequent read (if user keeps reading the
+> > file). So corner case, but good to have covered.
+>
+> That applies earlier as well:
+>
+>                 curr_task = task_seq_get_next(ns, &curr_tid, true);
+>                 if (!curr_task) {
+>                         info->task = NULL;
+>                         info->files = NULL;
+>                         return NULL;
+>                 }
+>
 
-This patch avoids the indirect call for the common case:
-ip6_dst_check and ipv4_dst_check
+True, info->tid = curr_tid + 1; seems to be needed here?
 
-Signed-off-by: brianvv <brianvv@google.com>
----
- include/net/dst.h   |  7 ++++++-
- net/core/sock.c     | 12 ++++++++++--
- net/ipv4/route.c    |  7 +++++--
- net/ipv4/tcp_ipv4.c |  5 ++++-
- net/ipv6/route.c    |  7 +++++--
- net/ipv6/tcp_ipv6.c |  5 ++++-
- 6 files changed, 34 insertions(+), 9 deletions(-)
+> The logic seems to be "if task == NULL, then return NULL and stop".
+> Is the seq_iterator allowed to continue/restart if seq_next returns NULL?
 
-diff --git a/include/net/dst.h b/include/net/dst.h
-index 9f474a79ed7d..26f134ad3a25 100644
---- a/include/net/dst.h
-+++ b/include/net/dst.h
-@@ -459,10 +459,15 @@ static inline int dst_input(struct sk_buff *skb)
- 				  ip6_input, ip_local_deliver, skb);
- }
- 
-+INDIRECT_CALLABLE_DECLARE(struct dst_entry *ip6_dst_check(struct dst_entry *,
-+							  u32));
-+INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
-+							   u32));
- static inline struct dst_entry *dst_check(struct dst_entry *dst, u32 cookie)
- {
- 	if (dst->obsolete)
--		dst = dst->ops->check(dst, cookie);
-+		dst = INDIRECT_CALL_INET(dst->ops->check, ip6_dst_check,
-+					 ipv4_dst_check, dst, cookie);
- 	return dst;
- }
- 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 4fd7e785f177..753b831a9d70 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -526,11 +526,17 @@ int __sk_receive_skb(struct sock *sk, struct sk_buff *skb,
- }
- EXPORT_SYMBOL(__sk_receive_skb);
- 
-+INDIRECT_CALLABLE_DECLARE(struct dst_entry *ip6_dst_check(struct dst_entry *,
-+							  u32));
-+INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
-+							   u32));
- struct dst_entry *__sk_dst_check(struct sock *sk, u32 cookie)
- {
- 	struct dst_entry *dst = __sk_dst_get(sk);
- 
--	if (dst && dst->obsolete && dst->ops->check(dst, cookie) == NULL) {
-+	if (dst && dst->obsolete &&
-+	    INDIRECT_CALL_INET(dst->ops->check, ip6_dst_check, ipv4_dst_check,
-+			       dst, cookie) == NULL) {
- 		sk_tx_queue_clear(sk);
- 		sk->sk_dst_pending_confirm = 0;
- 		RCU_INIT_POINTER(sk->sk_dst_cache, NULL);
-@@ -546,7 +552,9 @@ struct dst_entry *sk_dst_check(struct sock *sk, u32 cookie)
- {
- 	struct dst_entry *dst = sk_dst_get(sk);
- 
--	if (dst && dst->obsolete && dst->ops->check(dst, cookie) == NULL) {
-+	if (dst && dst->obsolete &&
-+	    INDIRECT_CALL_INET(dst->ops->check, ip6_dst_check, ipv4_dst_check,
-+			       dst, cookie) == NULL) {
- 		sk_dst_reset(sk);
- 		dst_release(dst);
- 		return NULL;
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 4fac91f8bd6c..9e6537709794 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -133,7 +133,8 @@ static int ip_rt_gc_timeout __read_mostly	= RT_GC_TIMEOUT;
-  *	Interface to generic destination cache.
-  */
- 
--static struct dst_entry *ipv4_dst_check(struct dst_entry *dst, u32 cookie);
-+INDIRECT_CALLABLE_SCOPE
-+struct dst_entry	*ipv4_dst_check(struct dst_entry *dst, u32 cookie);
- static unsigned int	 ipv4_default_advmss(const struct dst_entry *dst);
- INDIRECT_CALLABLE_SCOPE
- unsigned int		ipv4_mtu(const struct dst_entry *dst);
-@@ -1188,7 +1189,8 @@ void ipv4_sk_redirect(struct sk_buff *skb, struct sock *sk)
- }
- EXPORT_SYMBOL_GPL(ipv4_sk_redirect);
- 
--static struct dst_entry *ipv4_dst_check(struct dst_entry *dst, u32 cookie)
-+INDIRECT_CALLABLE_SCOPE struct dst_entry *ipv4_dst_check(struct dst_entry *dst,
-+							 u32 cookie)
- {
- 	struct rtable *rt = (struct rtable *) dst;
- 
-@@ -1204,6 +1206,7 @@ static struct dst_entry *ipv4_dst_check(struct dst_entry *dst, u32 cookie)
- 		return NULL;
- 	return dst;
- }
-+EXPORT_SYMBOL(ipv4_dst_check);
- 
- static void ipv4_send_dest_unreach(struct sk_buff *skb)
- {
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index af2338294598..aba5061024c7 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1646,6 +1646,8 @@ u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
- 	return mss;
- }
- 
-+INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
-+							   u32));
- /* The socket must have it's spinlock held when we get
-  * here, unless it is a TCP_LISTEN socket.
-  *
-@@ -1665,7 +1667,8 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- 		sk_mark_napi_id(sk, skb);
- 		if (dst) {
- 			if (inet_sk(sk)->rx_dst_ifindex != skb->skb_iif ||
--			    !dst->ops->check(dst, 0)) {
-+			    !INDIRECT_CALL_1(dst->ops->check, ipv4_dst_check,
-+					     dst, 0)) {
- 				dst_release(dst);
- 				sk->sk_rx_dst = NULL;
- 			}
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 22caee290b6c..e074fb5964e2 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -81,7 +81,8 @@ enum rt6_nud_state {
- 	RT6_NUD_SUCCEED = 1
- };
- 
--static struct dst_entry	*ip6_dst_check(struct dst_entry *dst, u32 cookie);
-+INDIRECT_CALLABLE_SCOPE
-+struct dst_entry	*ip6_dst_check(struct dst_entry *dst, u32 cookie);
- static unsigned int	 ip6_default_advmss(const struct dst_entry *dst);
- INDIRECT_CALLABLE_SCOPE
- unsigned int		ip6_mtu(const struct dst_entry *dst);
-@@ -2612,7 +2613,8 @@ static struct dst_entry *rt6_dst_from_check(struct rt6_info *rt,
- 		return NULL;
- }
- 
--static struct dst_entry *ip6_dst_check(struct dst_entry *dst, u32 cookie)
-+INDIRECT_CALLABLE_SCOPE struct dst_entry *ip6_dst_check(struct dst_entry *dst,
-+							u32 cookie)
- {
- 	struct dst_entry *dst_ret;
- 	struct fib6_info *from;
-@@ -2642,6 +2644,7 @@ static struct dst_entry *ip6_dst_check(struct dst_entry *dst, u32 cookie)
- 
- 	return dst_ret;
- }
-+EXPORT_SYMBOL(ip6_dst_check);
- 
- static struct dst_entry *ip6_negative_advice(struct dst_entry *dst)
- {
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 1a1510513739..9e61e4fda03e 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1417,6 +1417,8 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 	return NULL;
- }
- 
-+INDIRECT_CALLABLE_DECLARE(struct dst_entry *ipv4_dst_check(struct dst_entry *,
-+							   u32));
- /* The socket must have it's spinlock held when we get
-  * here, unless it is a TCP_LISTEN socket.
-  *
-@@ -1470,7 +1472,8 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- 		sk_mark_napi_id(sk, skb);
- 		if (dst) {
- 			if (inet_sk(sk)->rx_dst_ifindex != skb->skb_iif ||
--			    dst->ops->check(dst, np->rx_dst_cookie) == NULL) {
-+			    INDIRECT_CALL_1(dst->ops->check, ip6_dst_check,
-+					    dst, np->rx_dst_cookie) == NULL) {
- 				dst_release(dst);
- 				sk->sk_rx_dst = NULL;
- 			}
--- 
-2.29.2.576.ga3fc446d84-goog
+I don't think we allow seeking, so no restarts. But nothing will
+prevent the user to keep calling read() after it returns 0 byte, so
+yes, continuation is possible.
 
+> --
+> Jonathan
