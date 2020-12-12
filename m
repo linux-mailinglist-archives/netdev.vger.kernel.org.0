@@ -2,273 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EAF72D8520
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 07:17:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C78D22D8535
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 07:46:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438427AbgLLGPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 01:15:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55306 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2438390AbgLLGOS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Dec 2020 01:14:18 -0500
-From:   Saeed Mahameed <saeed@kernel.org>
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        david.m.ertman@intel.com, dan.j.williams@intel.com,
-        kiran.patil@intel.com, gregkh@linuxfoundation.org,
-        Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v3 14/14] net/mlx5: Add devlink subfunction port documentation
-Date:   Fri, 11 Dec 2020 22:12:25 -0800
-Message-Id: <20201212061225.617337-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201212061225.617337-1-saeed@kernel.org>
-References: <20201212061225.617337-1-saeed@kernel.org>
+        id S2438466AbgLLGpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 01:45:15 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:4114 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438405AbgLLGoj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 01:44:39 -0500
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4CtJ4y3bDczXm7s;
+        Sat, 12 Dec 2020 14:43:14 +0800 (CST)
+Received: from DGGEMM513-MBX.china.huawei.com ([169.254.1.120]) by
+ DGGEMM401-HUB.china.huawei.com ([10.3.20.209]) with mapi id 14.03.0487.000;
+ Sat, 12 Dec 2020 14:43:35 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        chenchanghu <chenchanghu@huawei.com>,
+        xudingke <xudingke@huawei.com>,
+        "huangbin (J)" <brian.huangbin@huawei.com>
+Subject: RE: [PATCH net v2] tun: fix ubuf refcount incorrectly on error path
+Thread-Topic: [PATCH net v2] tun: fix ubuf refcount incorrectly on error path
+Thread-Index: AQHWziird30mYoLkpUK6A8EHcMEb7qnuUNCAgASAshA=
+Date:   Sat, 12 Dec 2020 06:43:34 +0000
+Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB6E3B3@dggemm513-mbx.china.huawei.com>
+References: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
+ <1607517703-18472-1-git-send-email-wangyunjian@huawei.com>
+ <CA+FuTSfQoDr0jd76xBXSvchhyihQaL2UQXeCR6frJ7hyXxbmVA@mail.gmail.com>
+In-Reply-To: <CA+FuTSfQoDr0jd76xBXSvchhyihQaL2UQXeCR6frJ7hyXxbmVA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.243.127]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
-
-Add documentation for subfunction management using devlink
-port.
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst | 204 ++++++++++++++++++
- 1 file changed, 204 insertions(+)
-
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index a5eb22793bb9..07e38c044355 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -12,6 +12,8 @@ Contents
- - `Enabling the driver and kconfig options`_
- - `Devlink info`_
- - `Devlink parameters`_
-+- `mlx5 subfunction`_
-+- `mlx5 port function`_
- - `Devlink health reporters`_
- - `mlx5 tracepoints`_
- 
-@@ -181,6 +183,208 @@ User command examples:
-       values:
-          cmode driverinit value true
- 
-+mlx5 subfunction
-+================
-+mlx5 supports subfunctions management using devlink port (see :ref:`Documentation/networking/devlink/devlink-port.rst <devlink_port>`) interface.
-+
-+A Subfunction has its own function capabilities and its own resources. This
-+means a subfunction has its own dedicated queues(txq, rxq, cq, eq). These queues
-+are neither shared nor stealed from the parent PCI function.
-+
-+When subfunction is RDMA capable, it has its own QP1, GID table and rdma
-+resources neither shared nor stealed from the parent PCI function.
-+
-+A subfunction has dedicated window in PCI BAR space that is not shared
-+with ther other subfunctions or parent PCI function. This ensures that all
-+class devices of the subfunction accesses only assigned PCI BAR space.
-+
-+A Subfunction supports eswitch representation through which it supports tc
-+offloads. User must configure eswitch to send/receive packets from/to
-+subfunction port.
-+
-+Subfunctions share PCI level resources such as PCI MSI-X IRQs with
-+ther other subfunctions and/or with its parent PCI function.
-+
-+Example mlx5 software, system and device view::
-+
-+       _______
-+      | admin |
-+      | user  |----------
-+      |_______|         |
-+          |             |
-+      ____|____       __|______            _________________
-+     |         |     |         |          |                 |
-+     | devlink |     | tc tool |          |    user         |
-+     | tool    |     |_________|          | applications    |
-+     |_________|         |                |_________________|
-+           |             |                   |          |
-+           |             |                   |          |         Userspace
-+ +---------|-------------|-------------------|----------|--------------------+
-+           |             |           +----------+   +----------+   Kernel
-+           |             |           |  netdev  |   | rdma dev |
-+           |             |           +----------+   +----------+
-+   (devlink port add/del |              ^               ^
-+    port function set)   |              |               |
-+           |             |              +---------------|
-+      _____|___          |              |        _______|_______
-+     |         |         |              |       | mlx5 class    |
-+     | devlink |   +------------+       |       |   drivers     |
-+     | kernel  |   | rep netdev |       |       |(mlx5_core,ib) |
-+     |_________|   +------------+       |       |_______________|
-+           |             |              |               ^
-+   (devlink ops)         |              |          (probe/remove)
-+  _________|________     |              |           ____|________
-+ | subfunction      |    |     +---------------+   | subfunction |
-+ | management driver|-----     | subfunction   |---|  driver     |
-+ | (mlx5_core)      |          | auxiliary dev |   | (mlx5_core) |
-+ |__________________|          +---------------+   |_____________|
-+           |                                            ^
-+  (sf add/del, vhca events)                             |
-+           |                                      (device add/del)
-+      _____|____                                    ____|________
-+     |          |                                  | subfunction |
-+     |  PCI NIC |---- activate/deactive events---->| host driver |
-+     |__________|                                  | (mlx5_core) |
-+                                                   |_____________|
-+
-+Subfunction is created using devlink port interface.
-+
-+- Change device to switchdev mode::
-+
-+    $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
-+
-+- Add a devlink port of subfunction flaovur::
-+
-+    $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-+
-+- Show a devlink port of the subfunction::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Delete a devlink port of subfunction after use::
-+
-+    $ devlink port del pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-+
-+mlx5 port function
-+==================
-+mlx5 driver provides mechanism to setup PCI VF/SF port function
-+attributes in unified way for smartnic and non-smartnic NICs.
-+
-+This is supported only when eswitch mode is set to switchdev. Port function
-+configuration of the PCI VF/SF is supported through devlink eswitch port.
-+
-+Port function attributes should be set before PCI VF/SF is enumerated by the
-+driver.
-+
-+MAC address setup
-+-----------------
-+mlx5 driver provides mechanism to setup the MAC address of the PCI VF/SF.
-+
-+Configured MAC address of the PCI VF/SF will be used by netdevice and rdma
-+device created for the PCI VF/SF.
-+
-+- Get MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/2 hw_addr 00:11:22:33:44:55
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:11:22:33:44:55
-+
-+- Get MAC address of the SF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcivf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:88:88
-+
-+SF state setup
-+--------------
-+To use the SF, user must active the SF using SF port function state attribute.
-+
-+- Get state of the SF identified by its unique devlink port index::
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state inactive opstate detached
-+
-+- Activate the function and verify its state is active::
-+
-+   $ devlink port function set ens2f0npf0sf88 state active
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state active opstate detached
-+
-+Upon function activation, PF driver instance gets the event from the device that
-+particular SF was activated. It's the cue to put the device on bus, probe it and
-+instantiate devlink instance and class specific auxiliary devices for it.
-+
-+- Show the auxiliary device and port of the subfunction::
-+
-+    $ devlink dev show
-+    devlink dev show auxiliary/mlx5_core.sf.4
-+
-+    $ devlink port show auxiliary/mlx5_core.sf.4/1
-+    auxiliary/mlx5_core.sf.4/1: type eth netdev p0sf88 flavour virtual port 0 splittable false
-+
-+    $ rdma link show mlx5_0/1
-+    link mlx5_0/1 state ACTIVE physical_state LINK_UP netdev p0sf88
-+
-+    $ rdma dev show
-+    8: rocep6s0f1: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d113 sys_image_guid 248a:0703:00b3:d112
-+    13: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
-+
-+- Subfunction auxilary device and class device hierarchy::
-+
-+                 mlx5_core.sf.4
-+          (subfunction auxilary device)
-+                       /\
-+                      /  \
-+                     /    \
-+                    /      \
-+                   /        \
-+      mlx5_core.eth.4     mlx5_core.rdma.4
-+     (sf eth aux dev)     (sf rdma aux dev)
-+         |                      |
-+         |                      |
-+      p0sf88                  mlx5_0
-+     (sf netdev)          (sf rdma device)
-+
-+Additionally SF port also gets the event when the driver attaches to the
-+auxiliary device of the subfunction. This results in changing the operational
-+state of the function. This provides visiblity to user to decide when it is
-+safe to delete the SF port for graceful termination of the subfunction.
-+
-+- Show the SF port operational state::
-+
-+    $ devlink port show ens2f0npf0sf88
-+    pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+      function:
-+        hw_addr 00:00:00:00:88:88 state active opstate attached
-+
- Devlink health reporters
- ========================
- 
--- 
-2.26.2
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBXaWxsZW0gZGUgQnJ1aWpuIFtt
+YWlsdG86d2lsbGVtZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbV0NCj4gU2VudDogV2VkbmVzZGF5
+LCBEZWNlbWJlciA5LCAyMDIwIDEwOjQzIFBNDQo+IFRvOiB3YW5neXVuamlhbiA8d2FuZ3l1bmpp
+YW5AaHVhd2VpLmNvbT4NCj4gQ2M6IE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+
+OyBKYXNvbiBXYW5nDQo+IDxqYXNvd2FuZ0ByZWRoYXQuY29tPjsgdmlydHVhbGl6YXRpb25AbGlz
+dHMubGludXgtZm91bmRhdGlvbi5vcmc7IE5ldHdvcmsNCj4gRGV2ZWxvcG1lbnQgPG5ldGRldkB2
+Z2VyLmtlcm5lbC5vcmc+OyBMaWxpanVuIChKZXJyeSkNCj4gPGplcnJ5LmxpbGlqdW5AaHVhd2Vp
+LmNvbT47IGNoZW5jaGFuZ2h1IDxjaGVuY2hhbmdodUBodWF3ZWkuY29tPjsNCj4geHVkaW5na2Ug
+PHh1ZGluZ2tlQGh1YXdlaS5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0IHYyXSB0dW46
+IGZpeCB1YnVmIHJlZmNvdW50IGluY29ycmVjdGx5IG9uIGVycm9yIHBhdGgNCj4gDQo+IE9uIFdl
+ZCwgRGVjIDksIDIwMjAgYXQgODowMyBBTSB3YW5neXVuamlhbiA8d2FuZ3l1bmppYW5AaHVhd2Vp
+LmNvbT4NCj4gd3JvdGU6DQo+ID4NCj4gPiBGcm9tOiBZdW5qaWFuIFdhbmcgPHdhbmd5dW5qaWFu
+QGh1YXdlaS5jb20+DQo+ID4NCj4gPiBBZnRlciBzZXR0aW5nIGNhbGxiYWNrIGZvciB1YnVmX2lu
+Zm8gb2Ygc2tiLCB0aGUgY2FsbGJhY2sNCj4gPiAodmhvc3RfbmV0X3plcm9jb3B5X2NhbGxiYWNr
+KSB3aWxsIGJlIGNhbGxlZCB0byBkZWNyZWFzZSB0aGUgcmVmY291bnQNCj4gPiB3aGVuIGZyZWVp
+bmcgc2tiLiBCdXQgd2hlbiBhbiBleGNlcHRpb24gb2NjdXJzDQo+IA0KPiBXaXRoIGV4Y2VwdGlv
+biwgeW91IG1lYW4gaWYgdHVuX2dldF91c2VyIHJldHVybnMgYW4gZXJyb3IgdGhhdCBwcm9wYWdh
+dGVzIHRvDQo+IHRoZSBzZW5kbXNnIGNhbGwgaW4gdmhvc3QgaGFuZGxlX3R4LCBjb3JyZWN0Pw0K
+DQpZZXMNCg0KPiANCj4gPiBhZnRlcndhcmRzLCB0aGUgZXJyb3IgaGFuZGxpbmcgaW4gdmhvc3Qg
+aGFuZGxlX3R4KCkgd2lsbCB0cnkgdG8NCj4gPiBkZWNyZWFzZSB0aGUgc2FtZSByZWZjb3VudCBh
+Z2Fpbi4gVGhpcyBpcyB3cm9uZyBhbmQgZml4IHRoaXMgYnkgZGVsYXkNCj4gPiBjb3B5aW5nIHVi
+dWZfaW5mbyB1bnRpbCB3ZSdyZSBzdXJlIHRoZXJlJ3Mgbm8gZXJyb3JzLg0KPiANCj4gSSB0aGlu
+ayB0aGUgcmlnaHQgYXBwcm9hY2ggaXMgdG8gYWRkcmVzcyB0aGlzIGluIHRoZSBlcnJvciBwYXRo
+cywgcmF0aGVyIHRoYW4NCj4gY29tcGxpY2F0ZSB0aGUgbm9ybWFsIGRhdGFwYXRoLg0KPiANCj4g
+SXMgaXQgc3VmZmljaWVudCB0byBzdXBwcmVzcyB0aGUgY2FsbCB0byB2aG9zdF9uZXRfdWJ1Zl9w
+dXQgaW4gdGhlIGhhbmRsZV90eA0KPiBzZW5kbXNnIGVycm9yIHBhdGgsIGdpdmVuIHRoYXQgdmhv
+c3RfemVyb2NvcHlfY2FsbGJhY2sgd2lsbCBiZSBjYWxsZWQgb24NCj4ga2ZyZWVfc2tiPw0KDQpX
+ZSBjYW4gbm90IGNhbGwga2ZyZWVfc2tiKCkgdW50aWwgdGhlIHNrYiB3YXMgY3JlYXRlZC4NCg0K
+PiANCj4gT3IgYWx0ZXJuYXRpdmVseSBjbGVhciB0aGUgZGVzdHJ1Y3RvciBpbiBkcm9wOg0KDQpU
+aGUgdWFyZy0+Y2FsbGJhY2soKSBpcyBjYWxsZWQgaW1tZWRpYXRlbHkgYWZ0ZXIgd2UgZGVjaWRl
+IGRvIGRhdGFjb3B5DQpldmVuIGlmIGNhbGxlciB3YW50IHRvIGRvIHplcm9jb3B5LiBJZiBhbm90
+aGVyIGVycm9yIG9jY3VycyBsYXRlciwgdGhlIHZob3N0DQpoYW5kbGVfdHgoKSB3aWxsIHRyeSB0
+byBkZWNyZWFzZSBpdCBhZ2Fpbi4NCg0KVGhhbmtzDQo+IA0KPiA+DQo+ID4gRml4ZXM6IDQ0Nzcx
+MzhmYTBhZSAoInR1bjogcHJvcGVybHkgdGVzdCBmb3IgSUZGX1VQIikNCj4gPiBGaXhlczogOTBl
+MzNkNDU5NDA3ICgidHVuOiBlbmFibGUgbmFwaV9ncm9fZnJhZ3MoKSBmb3IgVFVOL1RBUA0KPiA+
+IGRyaXZlciIpDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBZdW5qaWFuIFdhbmcgPHdhbmd5dW5q
+aWFuQGh1YXdlaS5jb20+DQo+ID4gLS0tDQo+ID4gdjI6DQo+ID4gICAgVXBkYXRlZCBjb2RlLCBm
+aXggYnkgZGVsYXkgY29weWluZyB1YnVmX2luZm8NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9uZXQv
+dHVuLmMgfCAyOSArKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hh
+bmdlZCwgMTkgaW5zZXJ0aW9ucygrKSwgMTAgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9uZXQvdHVuLmMgYi9kcml2ZXJzL25ldC90dW4uYyBpbmRleA0KPiA+IDJk
+YzE5ODhhODk3My4uMmVhODIyMzI4ZTczIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L3R1
+bi5jDQo+ID4gKysrIGIvZHJpdmVycy9uZXQvdHVuLmMNCj4gPiBAQCAtMTYzNyw2ICsxNjM3LDIw
+IEBAIHN0YXRpYyBzdHJ1Y3Qgc2tfYnVmZiAqdHVuX2J1aWxkX3NrYihzdHJ1Y3QNCj4gdHVuX3N0
+cnVjdCAqdHVuLA0KPiA+ICAgICAgICAgcmV0dXJuIE5VTEw7DQo+ID4gIH0NCj4gPg0KPiA+ICsv
+KiBjb3B5IHVidWZfaW5mbyBmb3IgY2FsbGJhY2sgd2hlbiBza2IgaGFzIG5vIGVycm9yICovIHN0
+YXRpYyBpbmxpbmUNCj4gPiArdm9pZCB0dW5fY29weV91YnVmX2luZm8oc3RydWN0IHNrX2J1ZmYg
+KnNrYiwgYm9vbCB6ZXJvY29weSwgdm9pZA0KPiA+ICsqbXNnX2NvbnRyb2wpIHsNCj4gPiArICAg
+ICAgIGlmICh6ZXJvY29weSkgew0KPiA+ICsgICAgICAgICAgICAgICBza2Jfc2hpbmZvKHNrYikt
+PmRlc3RydWN0b3JfYXJnID0gbXNnX2NvbnRyb2w7DQo+ID4gKyAgICAgICAgICAgICAgIHNrYl9z
+aGluZm8oc2tiKS0+dHhfZmxhZ3MgfD0gU0tCVFhfREVWX1pFUk9DT1BZOw0KPiA+ICsgICAgICAg
+ICAgICAgICBza2Jfc2hpbmZvKHNrYiktPnR4X2ZsYWdzIHw9IFNLQlRYX1NIQVJFRF9GUkFHOw0K
+PiA+ICsgICAgICAgfSBlbHNlIGlmIChtc2dfY29udHJvbCkgew0KPiA+ICsgICAgICAgICAgICAg
+ICBzdHJ1Y3QgdWJ1Zl9pbmZvICp1YXJnID0gbXNnX2NvbnRyb2w7DQo+ID4gKw0KPiA+ICsgICAg
+ICAgICAgICAgICB1YXJnLT5jYWxsYmFjayh1YXJnLCBmYWxzZSk7DQo+ID4gKyAgICAgICB9DQo+
+ID4gK30NCj4gPiArDQo+ID4gIC8qIEdldCBwYWNrZXQgZnJvbSB1c2VyIHNwYWNlIGJ1ZmZlciAq
+LyAgc3RhdGljIHNzaXplX3QNCj4gPiB0dW5fZ2V0X3VzZXIoc3RydWN0IHR1bl9zdHJ1Y3QgKnR1
+biwgc3RydWN0IHR1bl9maWxlICp0ZmlsZSwNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgdm9pZCAqbXNnX2NvbnRyb2wsIHN0cnVjdCBpb3ZfaXRlciAqZnJvbSwNCj4gPiBAQCAtMTgx
+MiwxNiArMTgyNiw2IEBAIHN0YXRpYyBzc2l6ZV90IHR1bl9nZXRfdXNlcihzdHJ1Y3QgdHVuX3N0
+cnVjdA0KPiAqdHVuLCBzdHJ1Y3QgdHVuX2ZpbGUgKnRmaWxlLA0KPiA+ICAgICAgICAgICAgICAg
+ICBicmVhazsNCj4gPiAgICAgICAgIH0NCj4gPg0KPiA+IC0gICAgICAgLyogY29weSBza2JfdWJ1
+Zl9pbmZvIGZvciBjYWxsYmFjayB3aGVuIHNrYiBoYXMgbm8gZXJyb3IgKi8NCj4gPiAtICAgICAg
+IGlmICh6ZXJvY29weSkgew0KPiA+IC0gICAgICAgICAgICAgICBza2Jfc2hpbmZvKHNrYiktPmRl
+c3RydWN0b3JfYXJnID0gbXNnX2NvbnRyb2w7DQo+ID4gLSAgICAgICAgICAgICAgIHNrYl9zaGlu
+Zm8oc2tiKS0+dHhfZmxhZ3MgfD0gU0tCVFhfREVWX1pFUk9DT1BZOw0KPiA+IC0gICAgICAgICAg
+ICAgICBza2Jfc2hpbmZvKHNrYiktPnR4X2ZsYWdzIHw9IFNLQlRYX1NIQVJFRF9GUkFHOw0KPiA+
+IC0gICAgICAgfSBlbHNlIGlmIChtc2dfY29udHJvbCkgew0KPiA+IC0gICAgICAgICAgICAgICBz
+dHJ1Y3QgdWJ1Zl9pbmZvICp1YXJnID0gbXNnX2NvbnRyb2w7DQo+ID4gLSAgICAgICAgICAgICAg
+IHVhcmctPmNhbGxiYWNrKHVhcmcsIGZhbHNlKTsNCj4gPiAtICAgICAgIH0NCj4gPiAtDQo+ID4g
+ICAgICAgICBza2JfcmVzZXRfbmV0d29ya19oZWFkZXIoc2tiKTsNCj4gPiAgICAgICAgIHNrYl9w
+cm9iZV90cmFuc3BvcnRfaGVhZGVyKHNrYik7DQo+ID4gICAgICAgICBza2JfcmVjb3JkX3J4X3F1
+ZXVlKHNrYiwgdGZpbGUtPnF1ZXVlX2luZGV4KTsgQEAgLTE4MzAsNg0KPiA+ICsxODM0LDcgQEAg
+c3RhdGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3RydWN0ICp0dW4sIHN0cnVj
+dA0KPiB0dW5fZmlsZSAqdGZpbGUsDQo+ID4gICAgICAgICAgICAgICAgIHN0cnVjdCBicGZfcHJv
+ZyAqeGRwX3Byb2c7DQo+ID4gICAgICAgICAgICAgICAgIGludCByZXQ7DQo+ID4NCj4gPiArICAg
+ICAgICAgICAgICAgdHVuX2NvcHlfdWJ1Zl9pbmZvKHNrYiwgemVyb2NvcHksIG1zZ19jb250cm9s
+KTsNCj4gPiAgICAgICAgICAgICAgICAgbG9jYWxfYmhfZGlzYWJsZSgpOw0KPiA+ICAgICAgICAg
+ICAgICAgICByY3VfcmVhZF9sb2NrKCk7DQo+ID4gICAgICAgICAgICAgICAgIHhkcF9wcm9nID0g
+cmN1X2RlcmVmZXJlbmNlKHR1bi0+eGRwX3Byb2cpOyBAQA0KPiAtMTg4MSw2DQo+ID4gKzE4ODYs
+NyBAQCBzdGF0aWMgc3NpemVfdCB0dW5fZ2V0X3VzZXIoc3RydWN0IHR1bl9zdHJ1Y3QgKnR1biwg
+c3RydWN0DQo+IHR1bl9maWxlICp0ZmlsZSwNCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICBy
+ZXR1cm4gLUVOT01FTTsNCj4gPiAgICAgICAgICAgICAgICAgfQ0KPiA+DQo+ID4gKyAgICAgICAg
+ICAgICAgIHR1bl9jb3B5X3VidWZfaW5mbyhza2IsIHplcm9jb3B5LCBtc2dfY29udHJvbCk7DQo+
+ID4gICAgICAgICAgICAgICAgIGxvY2FsX2JoX2Rpc2FibGUoKTsNCj4gPiAgICAgICAgICAgICAg
+ICAgbmFwaV9ncm9fZnJhZ3MoJnRmaWxlLT5uYXBpKTsNCj4gPiAgICAgICAgICAgICAgICAgbG9j
+YWxfYmhfZW5hYmxlKCk7DQo+ID4gQEAgLTE4ODksNiArMTg5NSw3IEBAIHN0YXRpYyBzc2l6ZV90
+IHR1bl9nZXRfdXNlcihzdHJ1Y3QgdHVuX3N0cnVjdCAqdHVuLA0KPiBzdHJ1Y3QgdHVuX2ZpbGUg
+KnRmaWxlLA0KPiA+ICAgICAgICAgICAgICAgICBzdHJ1Y3Qgc2tfYnVmZl9oZWFkICpxdWV1ZSA9
+DQo+ICZ0ZmlsZS0+c2suc2tfd3JpdGVfcXVldWU7DQo+ID4gICAgICAgICAgICAgICAgIGludCBx
+dWV1ZV9sZW47DQo+ID4NCj4gPiArICAgICAgICAgICAgICAgdHVuX2NvcHlfdWJ1Zl9pbmZvKHNr
+YiwgemVyb2NvcHksIG1zZ19jb250cm9sKTsNCj4gPiAgICAgICAgICAgICAgICAgc3Bpbl9sb2Nr
+X2JoKCZxdWV1ZS0+bG9jayk7DQo+ID4gICAgICAgICAgICAgICAgIF9fc2tiX3F1ZXVlX3RhaWwo
+cXVldWUsIHNrYik7DQo+ID4gICAgICAgICAgICAgICAgIHF1ZXVlX2xlbiA9IHNrYl9xdWV1ZV9s
+ZW4ocXVldWUpOyBAQCAtMTg5OSw4DQo+ICsxOTA2LDEwDQo+ID4gQEAgc3RhdGljIHNzaXplX3Qg
+dHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3RydWN0ICp0dW4sIHN0cnVjdCB0dW5fZmlsZQ0KPiA+
+ICp0ZmlsZSwNCj4gPg0KPiA+ICAgICAgICAgICAgICAgICBsb2NhbF9iaF9lbmFibGUoKTsNCj4g
+PiAgICAgICAgIH0gZWxzZSBpZiAoIUlTX0VOQUJMRUQoQ09ORklHXzRLU1RBQ0tTKSkgew0KPiA+
+ICsgICAgICAgICAgICAgICB0dW5fY29weV91YnVmX2luZm8oc2tiLCB6ZXJvY29weSwgbXNnX2Nv
+bnRyb2wpOw0KPiA+ICAgICAgICAgICAgICAgICB0dW5fcnhfYmF0Y2hlZCh0dW4sIHRmaWxlLCBz
+a2IsIG1vcmUpOw0KPiA+ICAgICAgICAgfSBlbHNlIHsNCj4gPiArICAgICAgICAgICAgICAgdHVu
+X2NvcHlfdWJ1Zl9pbmZvKHNrYiwgemVyb2NvcHksIG1zZ19jb250cm9sKTsNCj4gPiAgICAgICAg
+ICAgICAgICAgbmV0aWZfcnhfbmkoc2tiKTsNCj4gPiAgICAgICAgIH0NCj4gPiAgICAgICAgIHJj
+dV9yZWFkX3VubG9jaygpOw0KPiA+IC0tDQo+ID4gMi4yMy4wDQo+ID4NCg==
