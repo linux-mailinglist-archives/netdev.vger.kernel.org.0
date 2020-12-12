@@ -2,99 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B6202D83F8
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 03:26:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34FAD2D8407
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 03:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437183AbgLLCZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 21:25:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728618AbgLLCZl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 21:25:41 -0500
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A9FC0613CF;
-        Fri, 11 Dec 2020 18:25:00 -0800 (PST)
-Received: by mail-lf1-x142.google.com with SMTP id a8so16274755lfb.3;
-        Fri, 11 Dec 2020 18:25:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HWf4Aun5/5+fUgeacGwpoakgROwaQ/uueT5h+8RHttQ=;
-        b=X0Zpx4VrodtIOkCzMd2DOHZnnYOKKIZkGBQCml6C9e+7Y2HxVCtPBGMp2ULohXpQ8H
-         74AIRrGMkvCMYFfqhIO9RLbwcCZPcukhmfZOSJs79xkI+EoEMsqZXJ7GdtZiiMqFmKHd
-         2iqK2zwlwIeC4uJYaKg655yS/MIB1AiTzj/UkNeVsy9DO4S3/J/OADPd7i3W58ePW2aQ
-         vQqZe3cW0KqUA9rFSZsZBWUXvtqo2rm6DVEvmJTiim3bIWNGiNrLMwfOVXqLiOeRI0nf
-         pZ5z382bOvOna83BKte8ZOZW0S/in9ZeLE5WVbuA561GPKoLJbJ1RgsxLaENRFK8yrd6
-         qhlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HWf4Aun5/5+fUgeacGwpoakgROwaQ/uueT5h+8RHttQ=;
-        b=YKDDYTSj7yO04xVPZFAnBXb7vfcihlXPYqlGEj06xU5GggCluD6cntR81cEeffQc6Q
-         cyM8L6MiA0UKX2BLcM1q18vWbq7/gLfRQ6wPEj2cmqP3sU0QaHZYw4Hh6I08xIEXxEqG
-         s7cBhFWXa91hB5XU0qdlaAUB7CtT80/wWVZxH4Fxqw4DCzOPhO2H9ZkX2h5VzGOVKkft
-         u2MM8IFx1WMa1I4WnTMdKi4jmJwHypb/7CI21hQ+CE6FO4kQlfq2I1Kt69cLakNd1Tq2
-         jNKFJMzU2ajbhTyg8Vk6OT6VLocNI+lmpEfm7k4ACgsNud1ulJF4u1mqwqFXxG0hd4OJ
-         xmBQ==
-X-Gm-Message-State: AOAM531TT+xTYMVBfFgpOka2w+tyBmX2DynPBIt8nnwOHZXyxEBeUAwe
-        XMpFseNdXzbSHV/6g4iPYyQtH6oCI5BKf7XHwfnPnaLtVmU=
-X-Google-Smtp-Source: ABdhPJw6KoP2KQaGBDHCtn50YATsUCUkXzH8ugQiXdfcMlnnX+uWdJBXjb7nvdFfZ0j2r1taw1OdWprhxRUr2nNZH2E=
-X-Received: by 2002:ac2:5b1e:: with SMTP id v30mr6300853lfn.540.1607739899032;
- Fri, 11 Dec 2020 18:24:59 -0800 (PST)
+        id S2437635AbgLLCtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 21:49:35 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4496 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2437624AbgLLCtH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 21:49:07 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 0BC2lBsA028264
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 18:48:24 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=nlY7wfws6yRYwVzKfxHUW3g9ZHtYcHyphmCk2figMJI=;
+ b=pWcxuwpSvdlYYqrGpRgOjU8YoGst2WWUdyIiB2wlC5i1NClK/ZZ5YsfJ1BKrglC7way6
+ NNsd0SxafBZ5nlZsP/Tm/tJ04+54NpEW9cYGCMgNczEC7Uq352dsoZRHXsjE8FyMuJcc
+ 03jpkvtkikmrk+zhrYc47jLezLuLp18jfPw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 35c8ssm5n4-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 18:48:24 -0800
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 11 Dec 2020 18:48:22 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 71C9762E50ED; Fri, 11 Dec 2020 18:48:20 -0800 (PST)
+From:   Song Liu <songliubraving@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        <kernel-team@fb.com>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH bpf-next 0/4] introduce bpf_iter for task_vma
+Date:   Fri, 11 Dec 2020 18:48:06 -0800
+Message-ID: <20201212024810.807616-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20201211081903.17857-1-glin@suse.com> <CAEf4BzbJRf-+_GE4r2+mk0FjT96Qszx3ru9wEfieP_zr6p6dOw@mail.gmail.com>
- <a9a00c89-3716-2296-d0d9-bba944e2cd82@iogearbox.net>
-In-Reply-To: <a9a00c89-3716-2296-d0d9-bba944e2cd82@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 11 Dec 2020 18:24:47 -0800
-Message-ID: <CAADnVQKr9XYS3ijsiFiEH3sUAx-HjqkzybSZ379SLkyiXBkNhQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf,x64: pad NOPs to make images converge more easily
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Gary Lin <glin@suse.com>, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        andreas.taschner@suse.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-11_10:2020-12-11,2020-12-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ lowpriorityscore=0 malwarescore=0 impostorscore=0 mlxscore=0
+ suspectscore=0 spamscore=0 adultscore=0 clxscore=1015 bulkscore=0
+ priorityscore=1501 mlxlogscore=538 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2012120020
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11, 2020 at 1:13 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >> +                       }
-> >>   emit_jmp:
-> >>                          if (is_imm8(jmp_offset)) {
-> >> +                               if (jmp_padding)
-> >> +                                       cnt += emit_nops(&prog, INSN_SZ_DIFF - 2);
+This set introduces bpf_iter for task_vma, which can be used to generate
+information similar to /proc/pid/maps or /proc/pid/smaps. Patch 4/4 adds
+an example that mimics /proc/pid/maps.
 
-Could you describe all possible numbers of bytes in padding?
-Is it 0, 2, 4 ?
-Would be good to add warn_on_once to make sure the number
-of nops is expected.
+Song Liu (4):
+  bpf: introduce task_vma bpf_iter
+  bpf: allow bpf_d_path in sleepable bpf_iter program
+  libbpf: introduce section "iter.s/" for sleepable bpf_iter program
+  selftests/bpf: add test for bpf_iter_task_vma
 
-> >>   struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
-> >>   {
-> >>          struct bpf_binary_header *header = NULL;
-> >> @@ -1981,6 +1997,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
-> >>          struct jit_context ctx = {};
-> >>          bool tmp_blinded = false;
-> >>          bool extra_pass = false;
-> >> +       bool padding = prog->padded;
-> >
-> > can this ever be true on assignment? I.e., can the program be jitted twice?
->
-> Yes, progs can be passed into the JIT twice, see also jit_subprogs(). In one of
-> the earlier patches it would still potentially change the image size a second
-> time which would break subprogs aka bpf2bpf calls.
+ include/linux/bpf.h                           |   2 +-
+ include/uapi/linux/bpf.h                      |   7 +
+ kernel/bpf/task_iter.c                        | 193 +++++++++++++++++-
+ kernel/trace/bpf_trace.c                      |   5 +
+ tools/lib/bpf/libbpf.c                        |   5 +
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 106 +++++++++-
+ tools/testing/selftests/bpf/progs/bpf_iter.h  |   9 +
+ .../selftests/bpf/progs/bpf_iter_task_vma.c   |  55 +++++
+ 8 files changed, 370 insertions(+), 12 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_vma.c
 
-Right. I think memorized padded flag shouldn't be in sticky bits
-of the prog structure.
-It's only needed between the last pass and extra pass for bpf2bpf calls.
-I think it would be cleaner to keep it in struct x64_jit_data *jit_data.
-
-As others have said the selftests are must have.
-Especially for bpf2bpf calls where one subprog is padded.
-
-Thanks!
+--
+2.24.1
