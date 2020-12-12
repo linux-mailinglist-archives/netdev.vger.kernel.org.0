@@ -2,136 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 183942D86FB
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 14:52:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3EFE2D8704
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 15:00:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439111AbgLLNwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 08:52:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
+        id S2439129AbgLLN75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 08:59:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726100AbgLLNwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 08:52:36 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9141CC0613CF;
-        Sat, 12 Dec 2020 05:51:55 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id q16so12348827edv.10;
-        Sat, 12 Dec 2020 05:51:55 -0800 (PST)
+        with ESMTP id S2437600AbgLLN75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 08:59:57 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB4EC0613CF
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 05:59:17 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id h19so18618931lfc.12
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 05:59:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GdCAdrNEE8PWhes1DSGHTYC+4KCgFsskUOtBzLjjGEw=;
-        b=aqPk2uakYos17HgvWgFbQT37aeEHTMi36KN8z/kjJg1LSL6Ktms6npBzQ/ZPgbZGhf
-         A5lyEENwI6BNJjVMP3z08+PZxS9H2EH37g9CdjZScDBF9i/WeW48JOLgrfMeLgsTMkAo
-         pzSp/E/dQVq8Z5vio+0RxBJN3jHGPOdXEJJsdRMxLCNa6cSaeuPF4SWnfqAVJGQnJQgv
-         zZ16tdiMZmYMSfeaEFCr0hwlRJTUnFdx46jsmTUwY3wN4KX8OuI0rqbY55Sa5hvGNFEa
-         vZOCcujE43Cisg6QbFbt3xIea9Ex8JWqpO4xKrp4EoEK0AcrUFkB4sS8uOuVd6v1tc2T
-         J48w==
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+HqaFo8/63MKBwKdhiM+FD4FMHjaEyHHlZNZq4zUHOY=;
+        b=DbkyZnG9DWqyLXAn0FwqTnZufMaig7zSAnUocaQ5ZYF+ObdwBGEeuGU8WBBTc1YdBd
+         /lK2eGOaF0Ra8FOcxtX92zOrH2KYbCn/qOUyI0dzFokeJ2EOol7/mu0HuQiGDWoPsZOT
+         jCt1OZ9fNfJUsq7B5CEnPwl3EGr52rQrjug1PIXWH1arBXjAgJGlnwYvVcvY9hbo6GOI
+         cC2eS3hx9ckuYUcIWiH5xe/K7ObCyFijNCNw6CmzETkIoIHhWvAnFbpIGeGx4+y5mEEO
+         J4RyOPaSOzYM/YVxy5D9OdKJow/S2i4phqTG8TOuvYNB3zB3yUcfsJ0FP5haAK/15CPA
+         e+tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GdCAdrNEE8PWhes1DSGHTYC+4KCgFsskUOtBzLjjGEw=;
-        b=eHujxa5RF55YXc7P2YlNEP3l/n+t2nEPwi8juGGRhhJP85jj00iiQA0hLefcVDGD6n
-         CeJrEyGGw0JEp5fZ4YQ5Y4Dqux5nQgcba+eRqZ5MLLgiv6hm3ho8uIqp7iqEHoGbnbny
-         g9XZfKYNeMIh8/SDc9eFspOlFCdxcrRTUp+ebnrvlPNnXMWKnnORJOH52zBxJJ0k06b0
-         HPBc2nBqGP8o66Ba+3leix6+qYez6AN76Mk9misK3huIvPxpq2Qm5mpGQE16qZhMQXsd
-         euvBiCrmezSXxx60MjrMrSToW1q9f5CZhA/Jrx5Z8ANa1p5P+EHYUCRYibokxcK/TEWb
-         RGLw==
-X-Gm-Message-State: AOAM533iMMJnh5Gi6u1KLJ9ceGNwkcFa/24KWRjOd+f8JXCgJ8K78k1X
-        A8wtPX1rvI2sOngqw+GSAMw=
-X-Google-Smtp-Source: ABdhPJzlFfP5oZgeSsfe2ReUCHAYT12b8ONDKtsJF719yGy7eHpKhdXpigDkrvJMy8xVbQ0hKZXN1Q==
-X-Received: by 2002:a50:9b58:: with SMTP id a24mr16304057edj.22.1607781114311;
-        Sat, 12 Dec 2020 05:51:54 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id l5sm10932345edl.48.2020.12.12.05.51.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Dec 2020 05:51:53 -0800 (PST)
-Date:   Sat, 12 Dec 2020 15:51:52 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] net: dsa: add optional stats64 support
-Message-ID: <20201212135152.fj5mfovcwzux6rek@skbuf>
-References: <20201211105322.7818-1-o.rempel@pengutronix.de>
- <20201211105322.7818-2-o.rempel@pengutronix.de>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+HqaFo8/63MKBwKdhiM+FD4FMHjaEyHHlZNZq4zUHOY=;
+        b=O0H8FKBn+1nNCjXl3Zh2Ok355W6kkID8d0JVDe1bpLwrGuS1qaRtTkvoWDRB276cIF
+         BQc9U9V/Ty9S0QzdRZE37odO0KQpGW+iU5X+9/gkMUFRZe009X853i3nqQB4z6olvEsh
+         LLJukgUb5WpxlO5VQt+NiXlTJM+kIhAn9r0ETh6YuxBvfFtOE7+NkPM1IPv89Ffx2w0u
+         eyxyiV+EpMmHiJAb9ChPRj2w+Qqmdq4xag1yeSx6nwt82rio7i2TvODIOjIBUb+ErCD2
+         LahhiBTYXgmfl7QpdyGLWKq10PwvO9Yk+cyFhlAtB6xuKSiNx12RiT1K9LNO7zh90g56
+         4NXg==
+X-Gm-Message-State: AOAM530J826o+45ojzlLUssz8PwnhINQfae0inFE1mmWpdH8c8bYLsE7
+        NCxV1hH4atcEze0oXq71EvUFr7MD2DmGBg==
+X-Google-Smtp-Source: ABdhPJyAzVbi2JV3MIxrg4YVp3Lmw9vH8NeD3uHd4gZaUh35BfwSC94cNQNkJbwroY4XWc7QOGdNuA==
+X-Received: by 2002:a05:651c:3db:: with SMTP id f27mr7180297ljp.494.1607781555592;
+        Sat, 12 Dec 2020 05:59:15 -0800 (PST)
+Received: from [192.168.1.157] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
+        by smtp.gmail.com with ESMTPSA id a15sm1352944lji.105.2020.12.12.05.59.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Dec 2020 05:59:15 -0800 (PST)
+Subject: Re: [PATCH net-next v2 10/12] gtp: add IPv6 support
+To:     Harald Welte <laforge@netfilter.org>
+Cc:     netdev@vger.kernel.org, pablo@netfilter.org
+References: <20201211122612.869225-1-jonas@norrbonn.se>
+ <20201211122612.869225-11-jonas@norrbonn.se> <X9SoDToVmUdhgP0D@nataraja>
+From:   Jonas Bonn <jonas@norrbonn.se>
+Message-ID: <e5c51154-3ec8-7d84-c1d9-c7ceac0f3c36@norrbonn.se>
+Date:   Sat, 12 Dec 2020 14:59:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201211105322.7818-2-o.rempel@pengutronix.de>
+In-Reply-To: <X9SoDToVmUdhgP0D@nataraja>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 11, 2020 at 11:53:21AM +0100, Oleksij Rempel wrote:
-> Allow DSA drivers to export stats64
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
->  include/net/dsa.h |  3 +++
->  net/dsa/slave.c   | 14 +++++++++++++-
->  2 files changed, 16 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index 4e60d2610f20..457b89143875 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -655,6 +655,9 @@ struct dsa_switch_ops {
->  	int	(*port_change_mtu)(struct dsa_switch *ds, int port,
->  				   int new_mtu);
->  	int	(*port_max_mtu)(struct dsa_switch *ds, int port);
-> +
-> +	void	(*get_stats64)(struct dsa_switch *ds, int port,
-> +				   struct rtnl_link_stats64 *s);
+Hi Harald,
 
-Nitpick: I would have probably put it under the "ethtool hardware
-statistics." category, at the same time renaming it into "Port
-statistics counters."
+On 12/12/2020 12:22, Harald Welte wrote:
+> Hi Jonas,
+> 
+> thanks again for your patches, they are very much appreciated.
+> 
+> However, I don't think that it is "that easy".
+> 
+> PDP contexts (at least) in GPRS/EDGE and UMTS come in three flavors:
+> * IPv4 only
+> * IPv6 only
+> * IPv4v6 (i.e. both an IPv4 and an IPv6 address within the same tunnel)
+> 
+> See for example osmo-ggsn at https://git.osmocom.org/osmo-ggsn
+> for an userspace implementation that covers all three cases,
+> as well as a related automatic test suite containing cases
+> for all three flavors at
+> https://git.osmocom.org/osmo-ttcn3-hacks/tree/ggsn_tests
+> 
+> If I read your patch correctly
+> 
+> On Fri, Dec 11, 2020 at 01:26:10PM +0100, Jonas Bonn wrote:
+>> -	struct in_addr		ms_addr_ip4;
+>> -	struct in_addr		peer_addr_ip4;
+>> +	struct in6_addr		ms_addr;
+>> +	struct in6_addr		peer_addr;
+> 
+> this simply replaces the (inner) IPv4 "MS addr" with an IPv6 "MS addr".
 
->  };
->  
->  #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index ff2266d2b998..6e1a4dc18a97 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -1602,6 +1602,18 @@ static struct devlink_port *dsa_slave_get_devlink_port(struct net_device *dev)
->  	return dp->ds->devlink ? &dp->devlink_port : NULL;
->  }
->  
-> +static void dsa_slave_get_stats64(struct net_device *dev,
-> +				  struct rtnl_link_stats64 *s)
-> +{
-> +	struct dsa_port *dp = dsa_slave_to_port(dev);
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!ds->ops->get_stats64)
-> +		return dev_get_tstats64(dev, s);
-> +
-> +	return ds->ops->get_stats64(ds, dp->index, s);
-> +}
-> +
->  static const struct net_device_ops dsa_slave_netdev_ops = {
->  	.ndo_open	 	= dsa_slave_open,
->  	.ndo_stop		= dsa_slave_close,
-> @@ -1621,7 +1633,7 @@ static const struct net_device_ops dsa_slave_netdev_ops = {
->  #endif
->  	.ndo_get_phys_port_name	= dsa_slave_get_phys_port_name,
->  	.ndo_setup_tc		= dsa_slave_setup_tc,
-> -	.ndo_get_stats64	= dev_get_tstats64,
-> +	.ndo_get_stats64	= dsa_slave_get_stats64,
->  	.ndo_get_port_parent_id	= dsa_slave_get_port_parent_id,
->  	.ndo_vlan_rx_add_vid	= dsa_slave_vlan_rx_add_vid,
->  	.ndo_vlan_rx_kill_vid	= dsa_slave_vlan_rx_kill_vid,
-> -- 
-> 2.29.2
+Yes, that's correct.  It's currently an either-or proposition for the UE 
+address.
+
+I actually wanted to proceed a bit carefully here because this patch 
+series is already quite large.  I do plan on adding support for multiple 
+MS addresses, but already just juggling mixed inner and outer tunnels 
+seemed challenging enough to review.
+
+> 
+> Sure, it is an improvement over v4-only.  But IMHO any follow-up
+> change to introduce v4v6 PDP contexts would require significant changes,
+> basically re-introducing the ms_add_ip4 member which you are removing here.
+
+I think we ultimately need to take the MS (UE address) member out of the 
+PDP context struct altogether.  A single PDP context can apply to even 
+more than two addresses as the UE can/should be provisioned with 
+multiple IPv6 addresses (as I understand it, superficially).
+
+> 
+> Therefore, I argue very much in favor of intrducing proper IPv6 support
+> (including v4v6) in one go.
+
+For provisioning contexts via Netlink, I agree that we should try to 
+avoid pathological intermediate steps.  For the actual packet handling 
+of outer and inner IPv6 tunnels, I think it's moot whether or not the 
+PDP contexts support multiple addresses or not: the subsequent step to 
+extend to multiple IP's is a bit of churn, but doesn't immediately seem 
+overly intrusive.
+
+Anyway, I'll look into making this change...
+
+Thanks for the review!
+
+/Jonas
+
+
+
+> 
+> Regards,
+> 	Harald
 > 
