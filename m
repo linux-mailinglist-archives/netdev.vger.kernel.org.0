@@ -2,118 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E19F2D89E7
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 21:09:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8EFF2D89F6
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 21:26:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407870AbgLLUIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 15:08:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52178 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726472AbgLLUIe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 15:08:34 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D415C0613CF
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 12:07:54 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id b73so13007688edf.13
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 12:07:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=q+g6bIm5jdpq73NjnwqxT8rRKYvF1XDSqPfH32g/g6w=;
-        b=siGf8NK3YK7DfdxwGXgsX80AQ6uOcTQyYwbdRBSLnlR+TnvRBKY0gqPKX/bkUViAYU
-         K5nIJAIV91wO8mckT7hWoN5gi0CvlyyfH8Favh4GU1z4wrbvV02KGEFTb6u7OucZ0f+c
-         nhX6Jh4+k0g/vfIv8KSX5hdvViG9WfdjvjhTds6dlUShfj3P4rE0qzCxK6rUn1ouUNty
-         QSxhoRxnzn94KZRQIAq3CH9Ra9m2Qq8CLAS4kvD+cl7tGKMag2UjQg+KeAef1fpiR/lr
-         aXbvIdadXkA4cK3G75C7TUa3jjfBRUtvtcMASxqTHrlgQvW40Onhmz1uD4sSfYCzEn6e
-         KjIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=q+g6bIm5jdpq73NjnwqxT8rRKYvF1XDSqPfH32g/g6w=;
-        b=PQp3OdjIh2Yva1jf5L1K7kXXe1d05Gh35fJVD0S7WyBAgBvg7QBr4XDgUIFWfzonLj
-         gJ0G9k4u/EHvVj6O1+udJUY+ees6CXlwfu7x6WB9WmBu3xRboW83O+q09wzpYkvXQ+Bm
-         m/1vX2nvpIdRovCzm91cEYxT2iJ/KSzP9DGmJR9RWLhKIYG42CLcj730x5BImM9mv4aO
-         ZHeRw5d8bhud0wtv2LtDho5Qji0CWMrhoX6psidaRrFy4hJOKD+lcnWYBIpRm/51th53
-         wdb9hlbBc2CzlAOGV96fCEZlwFhGZPLSCSGh/FdogGHdfB6W9BxhLlp2gZZAxbjG5j5/
-         N+qw==
-X-Gm-Message-State: AOAM532EAdupxvJ012u8dF782+1FTYzEWQH4D3dDm7HGUNYiOJLyKOBg
-        x5HmUfXjreVv7hIyL/KCQodk4ULo3eqymvqj4bJQ+WTOZRmSZw==
-X-Google-Smtp-Source: ABdhPJxljnRrvHfPVTaUkhn4g7VSK++BWqWKG/FUfBT9gMuvu4iOcgka9ppsUYIA0lOe5OwoIxAUdemcsbEoO07F6nk=
-X-Received: by 2002:a50:d8c8:: with SMTP id y8mr17561753edj.82.1607803671837;
- Sat, 12 Dec 2020 12:07:51 -0800 (PST)
+        id S2391830AbgLLU0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 15:26:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53550 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725822AbgLLU0A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Dec 2020 15:26:00 -0500
+Date:   Sat, 12 Dec 2020 12:25:18 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607804720;
+        bh=3TWsNwx2GEMWi7xdXCw9vFSkyKSH9/nDeEWheML+rDk=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U4vpsmG5vRLikMTyfFhseSaeogcp5jADDx0iPz7taOWYFvZQaIY7alQrPabopoVE9
+         xvRJSJjd4SyXwtvYaIz2Lz1T9FLbohM/HylezxN3q/HGIuOUstiFSxcI3icko406zp
+         XEWN8DcukgKOxHA3AKTRP2loZwNSeMaehzVZUeeNOdXXcuH1i8uJ60sdIY1AtQruOS
+         Jx198YQ3ffYg1ErJTX2OkW/rVBbyRqpzXWv48M6jzu7+xo7hE2teFjMb/gZZJhkk6e
+         qZhnEV8RNfJchVRxVpqK22mQRUtIznWWLw/TH53VJCzqIqhQ3r0wPS9DTbPB4XgWcW
+         PFr3knwLYm7zw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        david.m.ertman@intel.com, dan.j.williams@intel.com,
+        kiran.patil@intel.com, gregkh@linuxfoundation.org
+Subject: Re: [net-next v3 00/14] Add mlx5 subfunction support
+Message-ID: <20201212122518.1c09eefe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201212061225.617337-1-saeed@kernel.org>
+References: <20201212061225.617337-1-saeed@kernel.org>
 MIME-Version: 1.0
-From:   Witold Baryluk <witold.baryluk@gmail.com>
-Date:   Sat, 12 Dec 2020 20:07:16 +0000
-Message-ID: <CAEGMnwozvs0Fn0R-aQBpbN2HY9v7PNmUN=FGL=H8TgDYLAU1ow@mail.gmail.com>
-Subject: Incorrect --help / manpage for -color for ip, tc, bridge
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-iproute 5.9.0
+On Fri, 11 Dec 2020 22:12:11 -0800 Saeed Mahameed wrote:
+> Hi Dave, Jakub, Jason,
+> 
+> This series form Parav was the theme of this mlx5 release cycle,
+> we've been waiting anxiously for the auxbus infrastructure to make it into
+> the kernel, and now as the auxbus is in and all the stars are aligned, I
+> can finally submit this V2 of the devlink and mlx5 subfunction support.
+> 
+> Subfunctions came to solve the scaling issue of virtualization
+> and switchdev environments, where SRIOV failed to deliver and users ran
+> out of VFs very quickly as SRIOV demands huge amount of physical resources
+> in both of the servers and the NIC.
+> 
+> Subfunction provide the same functionality as SRIOV but in a very
+> lightweight manner, please see the thorough and detailed
+> documentation from Parav below, in the commit messages and the
+> Networking documentation patches at the end of this series.
+> 
+> Sending V2/V3 as a continuation to V1 that was sent Last month [0],
+> [0] https://lore.kernel.org/linux-rdma/20201112192424.2742-1-parav@nvidia.com/
 
-Apparently ip -c is a shortcut to ip -color
+This adds more and more instances of the 32 bit build warning.
 
-but in tc, tc -c doesn't work, one needs to say tc -col or tc -color
+The warning was also reported separately on netdev after the recent
+mlx5-next pull.
 
-I understand there is tc -conf, which has tc -c.
-
-But:
-
-Help says:
-
-root@debian:~# tc
-Usage:    tc [ OPTIONS ] OBJECT { COMMAND | help }
-    tc [-force] -batch filename
-where  OBJECT :=3D { qdisc | class | filter | chain |
-            action | monitor | exec }
-       OPTIONS :=3D { -V[ersion] | -s[tatistics] | -d[etails] | -r[aw] |
-            -o[neline] | -j[son] | -p[retty] | -c[olor]
-            -b[atch] [filename] | -n[etns] name | -N[umeric] |
-             -nm | -nam[es] | { -cf | -conf } path }
-
-this should be:
-
-root@debian:~# tc
-Usage:    tc [ OPTIONS ] OBJECT { COMMAND | help }
-    tc [-force] -batch filename
-where  OBJECT :=3D { qdisc | class | filter | chain |
-            action | monitor | exec }
-       OPTIONS :=3D { -V[ersion] | -s[tatistics] | -d[etails] | -r[aw] |
-            -o[neline] | -j[son] | -p[retty] | -col[or]
-            -b[atch] [filename] | -n[etns] name | -N[umeric] |
-             -nm | -nam[es] | { -cf | -c[onf] } path }
-
-
-( -c[olor] -> -col[or] )  # also in --help for ip and bridge
-
-If only -c meaning -conf could be removed, it would be even nicer. -cf
-is already short.
-
-Additionally in manpage for tc, ip and bridge:
-       -c[color][=3D{always|auto|never}
-              Configure color output. If parameter is omitted or
-always, color output is enabled regardless of stdout state. If
-parameter is auto, stdout is checked to be a terminal be=E2=80=90
-              fore  enabling  color output. If parameter is never,
-color output is disabled. If specified multiple times, the last one
-takes precedence. This flag is ignored if -json is
-              also given.
-
-
-
-I don't think this is correct either.
-
-Should be -col[or], not -c[color] (sic!).
-
-Similar mistakes are in man pages and --help messages also for ip,
-bridge, not just tc.
-
-
-Regards,
-Witold
+Please address that first (or did you already do and I missed it
+somehow?)
