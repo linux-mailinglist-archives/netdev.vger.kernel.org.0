@@ -2,84 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBAA02D85F6
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 11:43:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F3A2D862A
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 12:11:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407378AbgLLKmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 05:42:15 -0500
-Received: from master.hostvps.net ([85.234.128.110]:38994 "EHLO
-        host.sysriacomms.com" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
-        with ESMTP id S2407374AbgLLKmP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 05:42:15 -0500
-X-Greylist: delayed 37274 seconds by postgrey-1.27 at vger.kernel.org; Sat, 12 Dec 2020 05:42:15 EST
-Received: from sysriacomms.com (ec2-3-129-59-77.us-east-2.compute.amazonaws.com [3.129.59.77])
-        by host.sysriacomms.com (Postfix) with ESMTPA id 60EBC3546C87
-        for <netdev@vger.kernel.org>; Fri, 11 Dec 2020 22:19:01 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 host.sysriacomms.com 60EBC3546C87
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sysriacomms.com;
-        s=default; t=1607725141;
-        bh=TyDrvEeEFdXlR/MshqaTYzQ7nnR7m/zs1uM19XkvmD0=;
-        h=Reply-To:From:To:Subject:Date:From;
-        b=JU1xutYzghTl3Z9TnKkR/O159nUGn5xMIqkV8aDMWLAFsRwfA1tY22vnFsW2jpFgq
-         oC1iqDEHwkq0Jbh+lbTfoNBse9ayLyDKgEqCSMOQdYsvvjmYkmot7hInqAvNJMEAqY
-         pTVwvQAyhFo8FJdNzRO6YzCXefu+I48qZGKRpEa0=
-DKIM-Filter: OpenDKIM Filter v2.11.0 host.sysriacomms.com 60EBC3546C87
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sysriacomms.com;
-        s=default; t=1607725141;
-        bh=TyDrvEeEFdXlR/MshqaTYzQ7nnR7m/zs1uM19XkvmD0=;
-        h=Reply-To:From:To:Subject:Date:From;
-        b=JU1xutYzghTl3Z9TnKkR/O159nUGn5xMIqkV8aDMWLAFsRwfA1tY22vnFsW2jpFgq
-         oC1iqDEHwkq0Jbh+lbTfoNBse9ayLyDKgEqCSMOQdYsvvjmYkmot7hInqAvNJMEAqY
-         pTVwvQAyhFo8FJdNzRO6YzCXefu+I48qZGKRpEa0=
-Reply-To: moutraore02@syriservas.com
-From:   Moussa <moutraore02@sysriacomms.com>
-To:     netdev@vger.kernel.org
-Subject: Get Back To Me
-Date:   11 Dec 2020 22:19:13 +0000
-Message-ID: <20201211221913.9F7083E653C344E5@sysriacomms.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        id S2405665AbgLLLKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 06:10:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726038AbgLLLKp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 06:10:45 -0500
+Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C9DC0613CF
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 03:10:05 -0800 (PST)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1ko2mp-0006xt-Uv; Sat, 12 Dec 2020 12:10:04 +0100
+Received: from laforge by localhost.localdomain with local (Exim 4.94)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1ko2iV-003rBG-OC; Sat, 12 Dec 2020 12:05:35 +0100
+Date:   Sat, 12 Dec 2020 12:05:35 +0100
+From:   Harald Welte <laforge@gnumonks.org>
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     Pravin Shelar <pravin.ovn@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [PATCH net-next v2 10/12] gtp: add IPv6 support
+Message-ID: <X9Sj/15ebQ9GrKoH@nataraja>
+References: <20201211122612.869225-1-jonas@norrbonn.se>
+ <20201211122612.869225-11-jonas@norrbonn.se>
+ <CAOrHB_B3oDcQz97409ZG8zmu+yX4yTWdhHRN8g+Kp6GD+Ov4cg@mail.gmail.com>
+ <a52c6960-cf72-9c7a-6c44-cf03711d65f6@norrbonn.se>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a52c6960-cf72-9c7a-6c44-cf03711d65f6@norrbonn.se>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greeetings from Mali. I am sorry for contacting you like this but=20
-I do have a very urgent matter that I want to discuss with you.=20
-Before I proceed, I want you to keep an open mind while reading=20
-this proposal. My name is Moussa Traore, I am the Personal=20
-Assistant to Mr. Issa Saley Maiga who was the head of the civil=20
-aviation agency in Mali during the tenure of Ibrahim Boubacar=20
-Ke=C3=AFta, the former president of Mali. His tenure was overtaken by=20
-the military during a coup d'etat. I am sure you would have read=20
-about this in your country because it was covered by the=20
-international news agencies worldwide. 
+Hi Jonas,
 
-Anyway, my boss was also affected by the coup d'etat and he was=20
-arrested along with other high profile politicians. Also, all of=20
-his local assets (bother property and financial assets) were=20
-seized by the Government. Due to this situation, my boss belives=20
-that he is at risk and he is now very scared for the safety of=20
-his family especially his wife and kids. In order to ensure that=20
-his family is taken care of and protected incase anything happens=20
-to him, he has asked me to help him find a foreign investor who=20
-can help him accommodate and manage the finanical assets that he=20
-has in Europe. These assets was secured with the help of a proxy=20
-and it is currently held with an offshore financial bank so it is=20
-safe so secure. Also, the Government of his country do not know=20
-of this asset hence why they are unable to seize it as they have=20
-done his other assets.
+On Sat, Dec 12, 2020 at 08:05:40AM +0100, Jonas Bonn wrote:
+> Yes, you're probably right.  Given that IPv6 isn't really optional in
+> contexts where this driver is relevant, [...]
 
-My proposal to you is for you to help us manage these funds, and=20
-invest it in lucrative projects in your country that will yeild=20
-good profits. You also do not have to worry about if this is safe=20
-or not because everything will be handled in a legal and=20
-transparent manner. You will also be handosmely rewarded for your=20
-help if you decide to work with us. If this proposal interests=20
-you, please kindly respond so that I can give you more details. I=20
-hope to hear from you soon.
+I strongly contest this statement. GTP is used in a lot of legacy contexts
+without any IPv6 requirements whatsoever.  _particularly_ so on the outer/
+transport level, where even GSMA IR.34 in still states:
 
-Regards,
+> The IPX Provider's and Service Provider's networks must support IPv4
+> addressing and routing.  IPv6 addressing and routing is recommended.
 
-Moussa.
+So there is (still) no requirement for IPv6 on the transport level
+between cellular operators.
+ 
+The fact that this gtp module has existed until today with pure IPv4
+support has something to say about that.
+
+I'm of course all in support of finally getting IPv6 support merged (via
+your patches!) - but I see absolutely no reason why a GTP kernel module
+would have a mandatory dependency on IPv6.
+
+-- 
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
