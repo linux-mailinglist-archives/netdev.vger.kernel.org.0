@@ -2,59 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 840B22D8893
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 18:24:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B7E82D8896
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 18:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406294AbgLLRXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 12:23:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57248 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725973AbgLLRXt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Dec 2020 12:23:49 -0500
-Date:   Sat, 12 Dec 2020 09:23:08 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607793789;
-        bh=KLzfLogU8smjui1QkSTd7mCDMIb6vE33sJHs60dMwaI=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sD97ELHDoax78A3q2vJF2Vw8FxKFF3PLQhSbQTAm2o0MrpfeyVcqfE08fv1IYMlgR
-         3R31QxG7TTGE/bhDAJnjC4AeXE2W4xHQ8L214eoM08hpdPJlVoTSpWbfJTR0Yk1SKb
-         oZLmOlb8BV4uUcK0U8RQ3L/x2QRhjIAZAoYbk8KwlK5brYKMFoYnKch8W8tDNRZjkt
-         iASIrLS0WJ5B0bxk9NUVf1tNN1SvcM/toNio7uTOie8SP0w/AtuUs3iR7INMaak7wp
-         dTnMlQSUxhe0vrYiAMebqTpcDFlHn2DuiqxZWIi/A6vY/rdCCC4+Ch7Ty7cY7ZRQ8i
-         GRnQkfkMC0/eQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] net: dsa: add optional stats64 support
-Message-ID: <20201212092308.71023109@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201211105322.7818-2-o.rempel@pengutronix.de>
-References: <20201211105322.7818-1-o.rempel@pengutronix.de>
-        <20201211105322.7818-2-o.rempel@pengutronix.de>
+        id S2405898AbgLLRZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 12:25:52 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:39475 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725973AbgLLRZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 12:25:52 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id B38C95C0143;
+        Sat, 12 Dec 2020 12:25:05 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sat, 12 Dec 2020 12:25:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=bOPa7BM4H8hfQz+efzxXUEI3lX5JYC+qy5LBxGlDR
+        v0=; b=pQe13pyST5vjrAXRc2+o0as7oaKNLGNTJuRxUM99YWVhzdyPJ36J3ONJA
+        VXn5Qu3+LEMOoQBzq2tT83km5Xzs4wWiuA7AUdIeQDqijb4/FUm0e0YaiTDtxI+1
+        No8tBM1tdzIiLb+l/1MvrSY8ZL87KKW0CFJ4v6FtY899eAERCEZjZyvw1LyM5c2g
+        t6N49r28C9uNUIwe8gARP2xQbaBU7gCaw3ewmtRqbmv9qfY45a8QAq7nBf5ly8uP
+        d/pzN+D7nCMBhwABrxOI/YtKesMq8ChFvHkkwCMaLxmXCFcHkjF5pd1QL1GPWMOZ
+        y4inFLnmpWGJPZ5/ulyO8LYjkz1bQ==
+X-ME-Sender: <xms:8fzUX9k5LwlLJudMdRaTr5HUUt1Ta5HQP_CSgyrGjWBV9i-TjlgJ3Q>
+    <xme:8fzUX42zFiGHLHmVPDeZfv7kKm83VhpuFzF6txWSKvP6kuNV6pKAu0r5t0gVpIcJk
+    mBcNktFwtHd1U4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekgedguddtvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtugfgjgesth
+    ekredttddtjeenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehi
+    ughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnhepuefgjeefveeivdektdfggefhge
+    evudegvefgtedugfetveevuedtgffhkefggefgnecukfhppeekgedrvddvledrudehfedr
+    jeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:8fzUXzp5Vz82mE97qHQXyzD72jGGHgJDa_MqFNcVcSh3iGEl_-ov4w>
+    <xmx:8fzUX9klhOHeNcMGeAwOAR7He8m1c9Zo2wnEdK2MCAaoczUHRnvriA>
+    <xmx:8fzUX73XlA1SA8Pb3nfb6bck9i4aGgFRS2ndlqsbCWZnLvqWFK6CyQ>
+    <xmx:8fzUX5A_SoBJ92J_UZJhFSEXg0KwIFJvAj_HWUR771vt1GQJVI5pIw>
+Received: from localhost (igld-84-229-153-78.inter.net.il [84.229.153.78])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 11EA7108005B;
+        Sat, 12 Dec 2020 12:25:04 -0500 (EST)
+Date:   Sat, 12 Dec 2020 19:25:02 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>, jiri@nvidia.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 13/15] mlxsw: spectrum_router_xm: Introduce
+ basic XM cache flushing
+Message-ID: <20201212172502.GA2431723@shredder.lan>
+References: <20201211170413.2269479-1-idosch@idosch.org>
+ <20201211170413.2269479-14-idosch@idosch.org>
+ <20201211202427.5871de8a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201211202427.5871de8a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Dec 2020 11:53:21 +0100 Oleksij Rempel wrote:
-> +static void dsa_slave_get_stats64(struct net_device *dev,
-> +				  struct rtnl_link_stats64 *s)
-> +{
-> +	struct dsa_port *dp = dsa_slave_to_port(dev);
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!ds->ops->get_stats64)
-> +		return dev_get_tstats64(dev, s);
-> +
-> +	return ds->ops->get_stats64(ds, dp->index, s);
+On Fri, Dec 11, 2020 at 08:24:27PM -0800, Jakub Kicinski wrote:
+> On Fri, 11 Dec 2020 19:04:11 +0200 Ido Schimmel wrote:
+> > From: Jiri Pirko <jiri@nvidia.com>
+> > 
+> > Upon route insertion and removal, it is needed to flush possibly cached
+> > entries from the XM cache. Extend XM op context to carry information
+> > needed for the flush. Implement the flush in delayed work since for HW
+> > design reasons there is a need to wait 50usec before the flush can be
+> > done. If during this time comes the same flush request, consolidate it
+> > to the first one. Implement this queued flushes by a hashtable.
+> > 
+> > Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> 
+> 32 bit does not like this patch:
 
-nit: please don't return void, "else" will do just fine here
+Thanks
+
+Jiri, looks like this fix is needed:
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+index b680c22eff7d..d213af723a2a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+@@ -358,7 +358,7 @@ mlxsw_sp_router_xm_cache_flush_node_destroy(struct mlxsw_sp *mlxsw_sp,
+ 
+ static u32 mlxsw_sp_router_xm_flush_mask4(u8 prefix_len)
+ {
+-       return GENMASK(32, 32 - prefix_len);
++       return GENMASK(31, 32 - prefix_len);
+ }
+ 
+ static unsigned char *mlxsw_sp_router_xm_flush_mask6(u8 prefix_len)
+
+> 
+> In file included from ../include/linux/bitops.h:5,
+>                  from ../include/linux/kernel.h:12,
+>                  from ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:4:
+> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c: In function ‘mlxsw_sp_router_xm_flush_mask4’:
+> ../include/linux/bits.h:36:11: warning: right shift count is negative [-Wshift-count-negative]
+>    36 |   (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+>       |           ^~
+> ../include/linux/bits.h:38:31: note: in expansion of macro ‘__GENMASK’
+>    38 |  (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+>       |                               ^~~~~~~~~
+> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:361:9: note: in expansion of macro ‘GENMASK’
+>   361 |  return GENMASK(32, 32 - prefix_len);
+>       |         ^~~~~~~
+> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:361:16: warning: shift count is negative (-1)
+> In file included from ../include/linux/bitops.h:5,
+>                  from ../include/linux/kernel.h:12,
+>                  from ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:4:
+> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c: In function ‘mlxsw_sp_router_xm_flush_mask4’:
+> ../include/linux/bits.h:36:11: warning: right shift count is negative [-Wshift-count-negative]
+>    36 |   (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+>       |           ^~
+> ../include/linux/bits.h:38:31: note: in expansion of macro ‘__GENMASK’
+>    38 |  (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+>       |                               ^~~~~~~~~
+> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:361:9: note: in expansion of macro ‘GENMASK’
+>   361 |  return GENMASK(32, 32 - prefix_len);
+>       |         ^~~~~~~
