@@ -2,140 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9932D83D8
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 02:29:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5B7D2D83E2
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 02:54:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406561AbgLLB3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Dec 2020 20:29:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33506 "EHLO
+        id S1728938AbgLLBx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Dec 2020 20:53:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437076AbgLLB3D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 20:29:03 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32718C0613CF;
-        Fri, 11 Dec 2020 17:28:23 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id b5so1785715pjk.2;
-        Fri, 11 Dec 2020 17:28:23 -0800 (PST)
+        with ESMTP id S1728615AbgLLBxA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Dec 2020 20:53:00 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115C8C0613CF;
+        Fri, 11 Dec 2020 17:52:20 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id t18so5551791plo.0;
+        Fri, 11 Dec 2020 17:52:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=XE0rlFPg1mJA2Km2y94Yg0vZGLDfpfOBughewlzeYmE=;
-        b=CPWCmAYDsODAr5NF3xVJP/lJ5CUeMNvmGI89cSrGrwutCtKLNL9oqUeKrfvD2q5PIR
-         J1KBIPOcQ+EVTmBBTkKWRMeRPmj0mxpxzUnAHoYHn+7/qTCL0pfkiKnIld/m5f0fFI3U
-         1dGxxHpephKLoKixY5j3sSknaBybig1M7EdIeIgwaqo88BmJmbprRd+N7aLpfeQcp8JG
-         FhLM/UO7szwaonqIGXwj0oDcGjwPSBpDQScQCcTu83UD2gbc0ajHmkxUbifE9oyVIXWi
-         jHCvMiSNRQ3sjCAswH7INvKz7Li7HR/cWLEGrS4gzBDUuLDAOjz9OQi/L0ce0N4BFMoB
-         DJuQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qv3DidBYtPDwQNr5XUslmszgwOaWsKjFqi+1HuzsbAA=;
+        b=hJsgl3jePWT/MSbzk7nnQK3GSgoOtQGRs9t/Y1bzEpekrtSnN2dXgeLO+N0ayb/sVN
+         zRxOXisXIatkMST0B1QOBKfFfaGAbWXz/cwwD9azjDnhYWOkbV0C47jRbPQRXR4y72zO
+         Qk0SzS5ZdZs10JQFXt+mR0uOqJkayeSXY+93nacKYQPWo3Ox6UZwJFetg58Bl9+B6UKa
+         AF1HFuEfl8yB3wiVsaGMEmZjBj3rZDof+LoCs5CTX5U/rPDKXVStQNh3jdACW5yu/Uuf
+         of6bgaIrEKxTYxfwIyDZL1+7qmW82D3ObWQ7EfAhqufHzsv8n3aL2q5ZjFku/Ajr0U2r
+         Koxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=XE0rlFPg1mJA2Km2y94Yg0vZGLDfpfOBughewlzeYmE=;
-        b=LeT1TXU/klcujaQSoknuTggdyWjbiiKlhPXjKS3FwX5xILTeU1Hgemn+imd+RmBMcr
-         dev7kcmoKLbG6+kDDY8r0CZuyNGkaskOoxbimeihnUyToaE4g33qG/KNVfmQd3l1P0Tl
-         2T1B6yiAIzBAofIzsD/JprhCj15aQSn9krMfK7fKWl1U6ZHXec0FMs/UI82QtQUeW8NI
-         xFbNzfOZQ9ZWbvOEt1nndsA34YsrhOKtDTNVjABFifcIDgtD+xR82lNsBDwIY8OosX1J
-         fYvY/5i01Qu9Z1lD9s5yYcrY4ZcCHIcGD0ZhaTyUKRkOUiEPwhP7mztLop8o4bo93ijZ
-         5BuQ==
-X-Gm-Message-State: AOAM532y5xQNKz2lI1PYqUejm3GPgQgDA5qq99f31ddjwhtLqno5eJGU
-        5/vX7DDY59Adz9m5mOx9cz0=
-X-Google-Smtp-Source: ABdhPJya+ZautjadHl5y0UxotaFPIPROXEqF+OXYbVDEBrqR+KWp4LlzeUi9q9mNTNbm1sqpic/+4Q==
-X-Received: by 2002:a17:90a:301:: with SMTP id 1mr5715894pje.86.1607736502490;
-        Fri, 11 Dec 2020 17:28:22 -0800 (PST)
-Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
-        by smtp.gmail.com with ESMTPSA id l23sm11764759pgm.22.2020.12.11.17.28.19
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qv3DidBYtPDwQNr5XUslmszgwOaWsKjFqi+1HuzsbAA=;
+        b=QCCEDUbbfd3LyXjHgEX3rFzsgdoVspNpOUze1+Jnl75fW/4BVf/rk4H8iYCKHiefPw
+         or4CpIHVTnNbF0SNouV5uP5W5BwUQSu1S4GaLy/shPS89lYXyoUnUVYzGUFDDMDmBmsZ
+         kntHltnwp+jUShk6NHJK14ZaRzwJpDfEem+xpr+jT0xcGT4MFIJQFTTbiGe1hZQwqT08
+         QAHwXCCiutrbFoMrXbJYyG9tHqbStcnG22PvXmqk5uVVhExb1ni5WHAV9sOEH8ZsXVAn
+         4RbZAcs7AOeQymbuS/R/UUjhzKEDGxUcEkkzklefWNdG2LmPRU03a7x3WT6VF8LbVpDY
+         C4Lg==
+X-Gm-Message-State: AOAM532dMnEVXrfLH3WnOgiic4reBvsFyoVSFj3ctBOJB3v1wcF+28dG
+        hcw2jOOsS/MaXXedcYaOonM=
+X-Google-Smtp-Source: ABdhPJy9ZBQeTkfO8a3SazZkLNf5teIWbrtU15/RCLVzC0XZdffUe/p8mtFcmObrlinX6adGy4mwlg==
+X-Received: by 2002:a17:90a:cc06:: with SMTP id b6mr15508282pju.94.1607737939395;
+        Fri, 11 Dec 2020 17:52:19 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:70e5])
+        by smtp.gmail.com with ESMTPSA id x22sm12273909pfc.19.2020.12.11.17.52.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Dec 2020 17:28:21 -0800 (PST)
-Subject: [net-next PATCH] tcp: Add logic to check for SYN w/ data in
- tcp_simple_retransmit
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        ycheng@google.com
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kafai@fb.com,
-        kernel-team@fb.com
-Date:   Fri, 11 Dec 2020 17:28:19 -0800
-Message-ID: <160773649920.2387.14668844101686155199.stgit@localhost.localdomain>
-User-Agent: StGit/0.23
+        Fri, 11 Dec 2020 17:52:18 -0800 (PST)
+Date:   Fri, 11 Dec 2020 17:52:15 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH RFC bpf-next 2/4] bpf: support BPF ksym variables in
+ kernel modules
+Message-ID: <20201212015215.zmychededhpv55th@ast-mbp>
+References: <20201211042734.730147-1-andrii@kernel.org>
+ <20201211042734.730147-3-andrii@kernel.org>
+ <20201211212741.o2peyh3ybnkxsu5a@ast-mbp>
+ <CAEf4BzbZK8uZOprwHq_+mh=2Lb27POv5VMW4kB6eyPc_6bcSPg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbZK8uZOprwHq_+mh=2Lb27POv5VMW4kB6eyPc_6bcSPg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexanderduyck@fb.com>
+On Fri, Dec 11, 2020 at 02:15:28PM -0800, Andrii Nakryiko wrote:
+> On Fri, Dec 11, 2020 at 1:27 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Thu, Dec 10, 2020 at 08:27:32PM -0800, Andrii Nakryiko wrote:
+> > > During BPF program load time, verifier will resolve FD to BTF object and will
+> > > take reference on BTF object itself and, for module BTFs, corresponding module
+> > > as well, to make sure it won't be unloaded from under running BPF program. The
+> > > mechanism used is similar to how bpf_prog keeps track of used bpf_maps.
+> > ...
+> > > +
+> > > +     /* if we reference variables from kernel module, bump its refcount */
+> > > +     if (btf_is_module(btf)) {
+> > > +             btf_mod->module = btf_try_get_module(btf);
+> >
+> > Is it necessary to refcnt the module? Correct me if I'm wrong, but
+> > for module's BTF we register a notifier. Then the module can be rmmod-ed
+> > at any time and we will do btf_put() for corresponding BTF, but that BTF may
+> > stay around because bpftool or something is looking at it.
+> 
+> Correct, BTF object itself doesn't take a refcnt on module.
+> 
+> > Similarly when prog is attached to raw_tp in a module we currently do try_module_get(),
+> > but is it really necessary ? When bpf is attached to a netdev the netdev can
+> > be removed and the link will be dangling. May be it makes sense to do the same
+> > with modules?  The raw_tp can become dangling after rmmod and the prog won't be
+> 
+> So for raw_tp it's not the case today. I tested, I attached raw_tp,
+> kept triggering it in a loop, and tried to rmmod bpf_testmod. It
+> failed, because raw tracepoint takes refcnt on module. rmmod -f
 
-There are cases where a fastopen SYN may trigger either a ICMP_TOOBIG
-message in the case of IPv6 or a fragmentation request in the case of
-IPv4. This results in the socket stalling for a second or more as it does
-not respond to the message by retransmitting the SYN frame.
+Right. I meant that we can change that behavior if it would make sense to do so.
 
-Normally a SYN frame should not be able to trigger a ICMP_TOOBIG or
-ICMP_FRAG_NEEDED however in the case of fastopen we can have a frame that
-makes use of the entire MSS. In the case of fastopen it does, and an
-additional complication is that the retransmit queue doesn't contain the
-original frames. As a result when tcp_simple_retransmit is called and
-walks the list of frames in the queue it may not mark the frames as lost
-because both the SYN and the data packet each individually are smaller than
-the MSS size after the adjustment. This results in the socket being stalled
-until the retransmit timer kicks in and forces the SYN frame out again
-without the data attached.
+> bpf_testmod also didn't work, but it's because my kernel wasn't built
+> with force-unload enabled for modules. But force-unload is an entirely
+> different matter and it's inherently dangerous to do, it can crash and
+> corrupt anything in the kernel.
+> 
+> > executed anymore. So hard coded address of a per-cpu var in a ksym will
+> > be pointing to freed mod memory after rmmod, but that's ok, since that prog will
+> > never execute.
+> 
+> Not so fast :) Indeed, if somehow module gets unloaded while we keep
+> BPF program loaded, we'll point to unallocated memory **OR** to a
+> memory re-used for something else. That's bad. Nothing will crash even
+> if it's unmapped memory (due to bpf_probe_read semantics), but we will
+> potentially be reading some garbage (not zeroes), if some other module
+> re-uses that per-CPU memory.
+> 
+> As for the BPF program won't be triggered. That's not true in general,
+> as you mention yourself below.
+> 
+> > On the other side if we envision a bpf prog attaching to a vmlinux function
+> > and accessing per-cpu or normal ksym in some module it would need to inc refcnt
+> > of that module, since we won't be able to guarantee that this prog will
+> > not execute any more. So we cannot allow dangling memory addresses.
+> 
+> That's what my new selftest is doing actually. It's a generic
+> sys_enter raw_tp, which doesn't attach to the module, but it does read
+> module's per-CPU variable. 
 
-In order to resolve this we can generate our best estimate for the original
-packet size by detecting the fastopen SYN frame and then adding the
-overhead for MAX_TCP_OPTION_SPACE and verifying if the SYN w/ data would
-have exceeded the MSS. If so we can mark the frame as lost and retransmit
-it.
+Got it. I see that now.
 
-Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
----
- net/ipv4/tcp_input.c |   30 +++++++++++++++++++++++++++---
- 1 file changed, 27 insertions(+), 3 deletions(-)
+> So I actually ran a test before posting. I
+> successfully unloaded bpf_testmod, but kept running the prog. And it
+> kept returning *correct* per-CPU value. Most probably due to per-CPU
+> memory not unmapped and not yet reused for something else. But it's a
+> really nasty and surprising situation.
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 9e8a6c1aa019..79375b58de84 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -2686,11 +2686,35 @@ static void tcp_mtup_probe_success(struct sock *sk)
- void tcp_simple_retransmit(struct sock *sk)
- {
- 	const struct inet_connection_sock *icsk = inet_csk(sk);
-+	struct sk_buff *skb = tcp_rtx_queue_head(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
--	struct sk_buff *skb;
--	unsigned int mss = tcp_current_mss(sk);
-+	unsigned int mss;
-+
-+	/* A fastopen SYN request is stored as two separate packets within
-+	 * the retransmit queue, this is done by tcp_send_syn_data().
-+	 * As a result simply checking the MSS of the frames in the queue
-+	 * will not work for the SYN packet. So instead we must make a best
-+	 * effort attempt by validating the data frame with the mss size
-+	 * that would be computed now by tcp_send_syn_data and comparing
-+	 * that against the data frame that would have been included with
-+	 * the SYN.
-+	 */
-+	if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_SYN && tp->syn_data) {
-+		struct sk_buff *syn_data = skb_rb_next(skb);
-+
-+		mss = tcp_mtu_to_mss(sk, icsk->icsk_pmtu_cookie) +
-+		      tp->tcp_header_len - sizeof(struct tcphdr) -
-+		      MAX_TCP_OPTION_SPACE;
- 
--	skb_rbtree_walk(skb, &sk->tcp_rtx_queue) {
-+		if (syn_data && syn_data->len > mss)
-+			tcp_mark_skb_lost(sk, skb);
-+
-+		skb = syn_data;
-+	} else {
-+		mss = tcp_current_mss(sk);
-+	}
-+
-+	skb_rbtree_walk_from(skb) {
- 		if (tcp_skb_seglen(skb) > mss)
- 			tcp_mark_skb_lost(sk, skb);
- 	}
+you mean you managed to unload early during development before
+you've introduced refcnting of modules?
 
+> Keep in mind, also, that whenever BPF program declares per-cpu
+> variable extern, it doesn't know or care whether it will get resolved
+> to built-in vmlinux per-CPU variable or module per-CPU variable.
+> Restricting attachment to only module-provided hooks is both tedious
+> and might be quite surprising sometimes, seems not worth the pain.
+> 
+> > If latter is what we want to allow then we probably need a test case for it and
+> > document the reasons for keeping modules pinned while progs access their data.
+> > Since such pinning behavior is different from other bpf attaching cases where
+> > underlying objects (like netdev and cgroup) can go away.
+> 
+> See above, that's already the case for module tracepoints.
+> 
+> So in summary, I think we should take a refcnt on module, as that's
+> already the case for stuff like raw_tp. I can add more comments to
+> make this clear, of course.
 
+ok. agreed.
+
+Regarding fd+id in upper/lower 32-bit of ld_imm64...
+That works for ksyms because at that end the pair is converted to single
+address that fits into ld_imm64. That won't work for Alan's case
+where btf_obj pointer and btf_id are two values (64-bit and 32-bit).
+So api-wise it's fine here, but cannot adopt the same idea everywhere.
+
+re: patch 4
+Please add non-percpu var to the test. Just for completeness.
+The pair fd+id should be enough to disambiguate, right?
+
+re: patch 1.
+Instead of copy paste that hack please convert it to sys_membarrier(MEMBARRIER_CMD_GLOBAL).
+
+The rest looks good to me.
