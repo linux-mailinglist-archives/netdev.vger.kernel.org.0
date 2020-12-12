@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3051C2D8A61
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 23:36:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96CE52D8A75
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 23:51:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408098AbgLLWdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 17:33:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34358 "EHLO mail.kernel.org"
+        id S2408120AbgLLWvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 17:51:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38178 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725822AbgLLWdl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Dec 2020 17:33:41 -0500
-Date:   Sat, 12 Dec 2020 14:32:59 -0800
+        id S1725822AbgLLWvE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Dec 2020 17:51:04 -0500
+Date:   Sat, 12 Dec 2020 14:50:22 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607812380;
-        bh=lOSlFuxaPOHfM3x9O3vbLyFiOgPHjIhoo7tHSTHocM4=;
+        s=k20201202; t=1607813423;
+        bh=u+hGxbaXkNMWfXeyoSRrs6XQjgrEFniY7s844WPHHws=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OwUPoFSwsQvpayAblE1/7mXfC64Uo7PmS9nF1cTJ6sCiFOhDDUtQeSMXoTO+mRKsz
-         rWc9njRVZY5Oznxg39uZWsdTPyUDAuJEQsMUUJW5NLTiYDdBfPhvbpoWm0vNn7zS3S
-         MCAtYsCNtGguA/ZEQ9TeUzMbfeRFYLqwweoIvnwvAx0ASsCpqg6Q9i0v/7O3L5LSIM
-         rqZXWvR6UipgIpfpP++p8rG/WnlChU/6ZsYuTMwRTp8xqY+lVKnDvBKitNtIsPnvZ2
-         Wr4ESbdGgiVoRf/9q7snkvRa3709/BIpHTf6gIB6tmSUvRAajzrIKEXPqsH3JLc+op
-         uI/DAzcxuM32A==
+        b=gr4TJbz0l0t5dZpP8hVTM5Lt79hyy7+0D/8jL3NA4jy673PuPBiZ5yJqste+FfHNv
+         UpVTVnCPQc3Cbm7yCdBYiVZO80b660NZ8DSv6q6PTk7gxj/w6ff6u+bvtgB4+Avl6H
+         ryOd6eMFHLgaY7330DLln8yLY+SqdZlJrzKceq/uyCMa0njhaKIPQjaPV4sz13E7yS
+         jTibWVrEZjqZp9jrG9QZCI5998z8p0rBwxj8c4LzWuso1Qusehww9efp/cgwH/3iSj
+         kKkhGiitHRQLZ882GbyplqDgH+WpG71HTL8XdJibgXdNG6KAHtrenFTLZlRcxAf8CT
+         F4hhut8aD4csg==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cambda Zhu <cambda@linux.alibaba.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Subject: Re: [PATCH net-next] net: Limit logical shift left of TCP probe0
- timeout
-Message-ID: <20201212143259.581aadae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201208091910.37618-1-cambda@linux.alibaba.com>
-References: <20201208091910.37618-1-cambda@linux.alibaba.com>
+To:     Wei Wang <weiwan@google.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Felix Fietkau <nbd@nbd.name>, Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH net-next v4 2/3] net: implement threaded-able napi poll
+ loop support
+Message-ID: <20201212145022.6f2698d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201209005444.1949356-3-weiwan@google.com>
+References: <20201209005444.1949356-1-weiwan@google.com>
+        <20201209005444.1949356-3-weiwan@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,38 +42,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Dec 2020 17:19:10 +0800 Cambda Zhu wrote:
-> For each TCP zero window probe, the icsk_backoff is increased by one and
-> its max value is tcp_retries2. If tcp_retries2 is greater than 63, the
-> probe0 timeout shift may exceed its max bits. On x86_64/ARMv8/MIPS, the
-> shift count would be masked to range 0 to 63. And on ARMv7 the result is
-> zero. If the shift count is masked, only several probes will be sent
-> with timeout shorter than TCP_RTO_MAX. But if the timeout is zero, it
-> needs tcp_retries2 times probes to end this false timeout. Besides,
-> bitwise shift greater than or equal to the width is an undefined
-> behavior.
+On Tue,  8 Dec 2020 16:54:43 -0800 Wei Wang wrote:
+> This patch allows running each napi poll loop inside its own
+> kernel thread.
+> The threaded mode could be enabled through napi_set_threaded()
+> api, and does not require a device up/down. The kthread gets
+> created on demand when napi_set_threaded() is called, and gets
+> shut down eventually in napi_disable().
+> 
+> Once that threaded mode is enabled and the kthread is
+> started, napi_schedule() will wake-up such thread instead
+> of scheduling the softirq.
+> 
+> The threaded poll loop behaves quite likely the net_rx_action,
+> but it does not have to manipulate local irqs and uses
+> an explicit scheduling point based on netdev_budget.
+> 
+> Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> Co-developed-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> Co-developed-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Wei Wang <weiwan@google.com>
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-If icsk_backoff can reach 64, can it not also reach 256 and wrap?
-
-Adding Eric's address from MAINTAINERS to CC.
-
-> This patch adds a limit to the backoff. The max value of max_when is
-> TCP_RTO_MAX and the min value of timeout base is TCP_RTO_MIN. The limit
-> is the backoff from TCP_RTO_MIN to TCP_RTO_MAX.
-
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index d4ef5bf94168..82044179c345 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -1321,7 +1321,9 @@ static inline unsigned long tcp_probe0_base(const struct sock *sk)
->  static inline unsigned long tcp_probe0_when(const struct sock *sk,
->  					    unsigned long max_when)
+> @@ -4234,6 +4265,11 @@ int gro_normal_batch __read_mostly = 8;
+>  static inline void ____napi_schedule(struct softnet_data *sd,
+>  				     struct napi_struct *napi)
 >  {
-> -	u64 when = (u64)tcp_probe0_base(sk) << inet_csk(sk)->icsk_backoff;
-> +	u8 backoff = min_t(u8, ilog2(TCP_RTO_MAX / TCP_RTO_MIN) + 1,
-> +			   inet_csk(sk)->icsk_backoff);
-> +	u64 when = (u64)tcp_probe0_base(sk) << backoff;
->  
->  	return (unsigned long)min_t(u64, when, max_when);
+> +	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
+> +		wake_up_process(napi->thread);
+
+FTR your implementation depends on the fact that this is the only
+place that can wake the worker and not set kthread_should_stop().
+Which I trust you is the case :) maybe I already mentioned this..
+
+> +		return;
+> +	}
+> +
+>  	list_add_tail(&napi->poll_list, &sd->poll_list);
+>  	__raise_softirq_irqoff(NET_RX_SOFTIRQ);
 >  }
+
+>  void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+>  		    int (*poll)(struct napi_struct *, int), int weight)
+>  {
+> @@ -6731,6 +6790,7 @@ void napi_disable(struct napi_struct *n)
+>  		msleep(1);
+>  
+>  	hrtimer_cancel(&n->timer);
+> +	napi_kthread_stop(n);
+
+I'm surprised that we stop the thread on napi_disable() but there is no
+start/create in napi_enable(). NAPIs can (and do get) disabled and
+enabled again. But that'd make your code crash with many popular
+drivers if you tried to change rings with threaded napi enabled so I
+feel like I must be missing something..
+
+>  	clear_bit(NAPI_STATE_PREFER_BUSY_POLL, &n->state);
+>  	clear_bit(NAPI_STATE_DISABLE, &n->state);
 
