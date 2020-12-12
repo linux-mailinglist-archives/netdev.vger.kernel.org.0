@@ -2,125 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8EA82D89E5
-	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 21:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E19F2D89E7
+	for <lists+netdev@lfdr.de>; Sat, 12 Dec 2020 21:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439867AbgLLUGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 15:06:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51780 "EHLO
+        id S2407870AbgLLUIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 15:08:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407863AbgLLUGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 15:06:38 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1668C0613CF;
-        Sat, 12 Dec 2020 12:05:57 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id j26so9017178qtq.8;
-        Sat, 12 Dec 2020 12:05:57 -0800 (PST)
+        with ESMTP id S1726472AbgLLUIe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 15:08:34 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D415C0613CF
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 12:07:54 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id b73so13007688edf.13
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 12:07:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+        h=mime-version:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=NikLZAMXA6dsXesyJ9crXqoFZuWybuJXmotB1Aiulu8=;
-        b=SJlFV34vohHjtVZZX0yXxVp+ULkRvZ1tMlwE+y+DOOI2Mp3oEU4YgizRoomIB6Df6S
-         LvCwoEHOENNDP4kAs90QUSGnlQy3VCBcm5jKKAjD4cXjo+i9xdb5QGf6HoAFfmRmBqPl
-         JnCCNvO0361TcQKN8xJHYn2QUOb3/N7MxvNb0MZc19Ykc74lFjxzN/2UF5P48dgNEezY
-         7CznEJxzNHKzc+yQroEtrf3uKQ+/wEJGZW6KSwhA+FVdsA/P6REzbNfoDrKzd3fW3QUl
-         wLAHmJPWjmBJ0Z1Ei6NuxaL3+9WPH+Wbbin9E6+yHmkh447IMGYS93i97WHxymAZf1aI
-         sclA==
+        bh=q+g6bIm5jdpq73NjnwqxT8rRKYvF1XDSqPfH32g/g6w=;
+        b=siGf8NK3YK7DfdxwGXgsX80AQ6uOcTQyYwbdRBSLnlR+TnvRBKY0gqPKX/bkUViAYU
+         K5nIJAIV91wO8mckT7hWoN5gi0CvlyyfH8Favh4GU1z4wrbvV02KGEFTb6u7OucZ0f+c
+         nhX6Jh4+k0g/vfIv8KSX5hdvViG9WfdjvjhTds6dlUShfj3P4rE0qzCxK6rUn1ouUNty
+         QSxhoRxnzn94KZRQIAq3CH9Ra9m2Qq8CLAS4kvD+cl7tGKMag2UjQg+KeAef1fpiR/lr
+         aXbvIdadXkA4cK3G75C7TUa3jjfBRUtvtcMASxqTHrlgQvW40Onhmz1uD4sSfYCzEn6e
+         KjIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=NikLZAMXA6dsXesyJ9crXqoFZuWybuJXmotB1Aiulu8=;
-        b=ILVe5itxgbha6wbdHkTk2sJFp4KET0Y2+aFXP94XKgb2CKFQhD2OfGbZ75DC8uKS6A
-         Kby3cG6Ohd9q8fTVMn7ZB9lktgGU8ipLQtWvy1y7SSGPOxeM0qLRY/MXjn5rbrCKuayo
-         dSbEpU/1OwwOfUK2ZSmbMCpq1z8ns/ZCuEmUjxz74oWPXsqtEiUj1puoQvx01sPu2JPC
-         6iS8X0UWZnlHwgKXW4oKn96rKYSJydIqHJFgNunJeCXPxxdnlEUMZAVu3no0Vs75b5cH
-         7ivMl10ibCHUqpLh23SP/zDVMq2zmTIwl+br1W+WACszfT9Q4iKV5OwsSekj27qu4oM1
-         25lg==
-X-Gm-Message-State: AOAM531pOvwFDqbmAdxeJlRISfHjrjm5gZz3ZhAH0Ru9yfXmH7bmxV6t
-        sDzlU5xMOwmy+KsMMI4xGgE=
-X-Google-Smtp-Source: ABdhPJztoO6Y/Ywtr0NBjXHVW0ojw4+crhO9+t8TqyVsi8KPEpCGbk6RKVULY/sSmkqNt1Zo7rVRmg==
-X-Received: by 2002:ac8:7b9d:: with SMTP id p29mr15077917qtu.75.1607803556856;
-        Sat, 12 Dec 2020 12:05:56 -0800 (PST)
-Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
-        by smtp.gmail.com with ESMTPSA id h1sm10419236qtr.1.2020.12.12.12.05.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Dec 2020 12:05:56 -0800 (PST)
-Subject: [net-next PATCH v2] tcp: Add logic to check for SYN w/ data in
- tcp_simple_retransmit
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        ycheng@google.com
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kafai@fb.com,
-        kernel-team@fb.com
-Date:   Sat, 12 Dec 2020 12:05:53 -0800
-Message-ID: <160780355379.2904.733062980589887769.stgit@localhost.localdomain>
-User-Agent: StGit/0.23
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=q+g6bIm5jdpq73NjnwqxT8rRKYvF1XDSqPfH32g/g6w=;
+        b=PQp3OdjIh2Yva1jf5L1K7kXXe1d05Gh35fJVD0S7WyBAgBvg7QBr4XDgUIFWfzonLj
+         gJ0G9k4u/EHvVj6O1+udJUY+ees6CXlwfu7x6WB9WmBu3xRboW83O+q09wzpYkvXQ+Bm
+         m/1vX2nvpIdRovCzm91cEYxT2iJ/KSzP9DGmJR9RWLhKIYG42CLcj730x5BImM9mv4aO
+         ZHeRw5d8bhud0wtv2LtDho5Qji0CWMrhoX6psidaRrFy4hJOKD+lcnWYBIpRm/51th53
+         wdb9hlbBc2CzlAOGV96fCEZlwFhGZPLSCSGh/FdogGHdfB6W9BxhLlp2gZZAxbjG5j5/
+         N+qw==
+X-Gm-Message-State: AOAM532EAdupxvJ012u8dF782+1FTYzEWQH4D3dDm7HGUNYiOJLyKOBg
+        x5HmUfXjreVv7hIyL/KCQodk4ULo3eqymvqj4bJQ+WTOZRmSZw==
+X-Google-Smtp-Source: ABdhPJxljnRrvHfPVTaUkhn4g7VSK++BWqWKG/FUfBT9gMuvu4iOcgka9ppsUYIA0lOe5OwoIxAUdemcsbEoO07F6nk=
+X-Received: by 2002:a50:d8c8:: with SMTP id y8mr17561753edj.82.1607803671837;
+ Sat, 12 Dec 2020 12:07:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From:   Witold Baryluk <witold.baryluk@gmail.com>
+Date:   Sat, 12 Dec 2020 20:07:16 +0000
+Message-ID: <CAEGMnwozvs0Fn0R-aQBpbN2HY9v7PNmUN=FGL=H8TgDYLAU1ow@mail.gmail.com>
+Subject: Incorrect --help / manpage for -color for ip, tc, bridge
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexanderduyck@fb.com>
+iproute 5.9.0
 
-There are cases where a fastopen SYN may trigger either a ICMP_TOOBIG
-message in the case of IPv6 or a fragmentation request in the case of
-IPv4. This results in the socket stalling for a second or more as it does
-not respond to the message by retransmitting the SYN frame.
+Apparently ip -c is a shortcut to ip -color
 
-Normally a SYN frame should not be able to trigger a ICMP_TOOBIG or
-ICMP_FRAG_NEEDED however in the case of fastopen we can have a frame that
-makes use of the entire MSS. In the case of fastopen it does, and an
-additional complication is that the retransmit queue doesn't contain the
-original frames. As a result when tcp_simple_retransmit is called and
-walks the list of frames in the queue it may not mark the frames as lost
-because both the SYN and the data packet each individually are smaller than
-the MSS size after the adjustment. This results in the socket being stalled
-until the retransmit timer kicks in and forces the SYN frame out again
-without the data attached.
+but in tc, tc -c doesn't work, one needs to say tc -col or tc -color
 
-In order to resolve this we can generate our best estimate for the original
-packet size by detecting the fastopen SYN frame and then adding the
-overhead for MAX_TCP_OPTION_SPACE and verifying if the SYN w/ data would
-have exceeded the MSS. If so we can mark the frame as lost and retransmit
-it.
+I understand there is tc -conf, which has tc -c.
 
-Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
----
- net/ipv4/tcp_input.c |   17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+But:
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 9e8a6c1aa019..e44327a39a1f 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -2688,7 +2688,22 @@ void tcp_simple_retransmit(struct sock *sk)
- 	const struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct sk_buff *skb;
--	unsigned int mss = tcp_current_mss(sk);
-+	int mss;
-+
-+	/* A fastopen SYN request is stored as two separate packets within
-+	 * the retransmit queue, this is done by tcp_send_syn_data().
-+	 * As a result simply checking the MSS of the frames in the queue
-+	 * will not work for the SYN packet.
-+	 *
-+	 * Us being here is an indication of a path MTU issue so we can
-+	 * assume that the fastopen SYN was lost and just mark all the
-+	 * frames in the retransmit queue as lost. We will use an MSS of
-+	 * -1 to mark all frames as lost, otherwise compute the current MSS.
-+	 */
-+	if (tp->syn_data && sk->sk_state == TCP_SYN_SENT)
-+		mss = -1;
-+	else
-+		mss = tcp_current_mss(sk);
- 
- 	skb_rbtree_walk(skb, &sk->tcp_rtx_queue) {
- 		if (tcp_skb_seglen(skb) > mss)
+Help says:
+
+root@debian:~# tc
+Usage:    tc [ OPTIONS ] OBJECT { COMMAND | help }
+    tc [-force] -batch filename
+where  OBJECT :=3D { qdisc | class | filter | chain |
+            action | monitor | exec }
+       OPTIONS :=3D { -V[ersion] | -s[tatistics] | -d[etails] | -r[aw] |
+            -o[neline] | -j[son] | -p[retty] | -c[olor]
+            -b[atch] [filename] | -n[etns] name | -N[umeric] |
+             -nm | -nam[es] | { -cf | -conf } path }
+
+this should be:
+
+root@debian:~# tc
+Usage:    tc [ OPTIONS ] OBJECT { COMMAND | help }
+    tc [-force] -batch filename
+where  OBJECT :=3D { qdisc | class | filter | chain |
+            action | monitor | exec }
+       OPTIONS :=3D { -V[ersion] | -s[tatistics] | -d[etails] | -r[aw] |
+            -o[neline] | -j[son] | -p[retty] | -col[or]
+            -b[atch] [filename] | -n[etns] name | -N[umeric] |
+             -nm | -nam[es] | { -cf | -c[onf] } path }
 
 
+( -c[olor] -> -col[or] )  # also in --help for ip and bridge
+
+If only -c meaning -conf could be removed, it would be even nicer. -cf
+is already short.
+
+Additionally in manpage for tc, ip and bridge:
+       -c[color][=3D{always|auto|never}
+              Configure color output. If parameter is omitted or
+always, color output is enabled regardless of stdout state. If
+parameter is auto, stdout is checked to be a terminal be=E2=80=90
+              fore  enabling  color output. If parameter is never,
+color output is disabled. If specified multiple times, the last one
+takes precedence. This flag is ignored if -json is
+              also given.
+
+
+
+I don't think this is correct either.
+
+Should be -col[or], not -c[color] (sic!).
+
+Similar mistakes are in man pages and --help messages also for ip,
+bridge, not just tc.
+
+
+Regards,
+Witold
