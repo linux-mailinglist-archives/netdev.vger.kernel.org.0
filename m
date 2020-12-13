@@ -2,61 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA6D42D8CC7
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 12:32:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F9492D8CD1
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 12:36:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394847AbgLMLc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 06:32:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51492 "EHLO
+        id S2405872AbgLMLev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 06:34:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394777AbgLMLcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 06:32:14 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FABC0613CF;
-        Sun, 13 Dec 2020 03:31:33 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id ce23so18607055ejb.8;
-        Sun, 13 Dec 2020 03:31:33 -0800 (PST)
+        with ESMTP id S1725864AbgLMLeu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 06:34:50 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099D4C0613CF;
+        Sun, 13 Dec 2020 03:34:10 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id g20so18657713ejb.1;
+        Sun, 13 Dec 2020 03:34:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TjWjwM1ceLhbF1IYJl3oWPHfyZ88hbVMXIeiKOfmwOM=;
-        b=vPvvh2iQ0r9ZbJoXMCDIftnNA4fETiNQFFFHNFtTvfww3hKWzjIscr3aHAUNvJNsBo
-         Ivf0d9Mvb99JMJV9ehcDPkg7swsKEMl7+Y/hUHya1SLUv75EVwMKcVXA4wQhFYugquwI
-         v+qVZoFUku+Z4S07otlNJUYYZFwuVftQM+5pKMuoRFtJsCSR2/FO/OAFm9dwXHUCnb0g
-         nyevY+rBPRTACXhZ931IzFg7Awoce5sQ06vu7Ya86N9A/av13YTjQRgaXCWsCWUM/pP3
-         fYNitfafK87nYGzSZSaCif4DP/TVC+LUGSPprBAe6V1QO0w7yMUKiZ5MZM5KRMECQCql
-         1tPg==
+        bh=32JDNSeqhHqyIaOh/qzFvhnj5b/m+w8QZFr6dtEN8Bw=;
+        b=dTA8b5OUH5yKZKYvrwD8FPaAH1qo6ziTqTgli2eWV/QQwwjrj5RItxhiVtWCYn5J4r
+         iU5u2+H3CEqrvgOG4ifSiMinjtA03OpWth2tg99EZKrbp/XHweTnJDEVAsFXw8BEi/2k
+         62/n48qL7LWG8Lg/TWLV8Ekvi2YV2XdqZDT6dMQ7h03xg9aGRIuNRGCnlY5Zc5d3YnN9
+         nNHTJNN2xuMH7nQvu9FSiVhtrlE/Mw87dMJ3GteW8ox/7IYneqfAWtuLpskhNM3GN80O
+         a83qBHYHs8rA5sz+ldeezNiCzs60YSlz4P6KTdIerqBLo/hvBarQx+UVsAPAPvEcyL2G
+         H9Ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=TjWjwM1ceLhbF1IYJl3oWPHfyZ88hbVMXIeiKOfmwOM=;
-        b=EPZo4+7oQFfLJk0ZS3qUAK86+YMOtgsKgGeVfNfutAZw0oJzQ8vv/4gBlFbVK+kvGT
-         rOkxMkDN7A2yYRFYeUz0WnWmOqj0tN2dq4nSya5lnCqvcWczzHhFcMpiBn2WyCRD8BPe
-         sCFm5MyVqb8xJBJ4YtXgWAC8GA7qq3uQw47UVVbVDduD+7mVgxuSOVQLpu5oN8eYGUOo
-         MlLEzvc5en3d5iL5s2jDHMoo1v7c8wrZwhtUmZGqFtmT3tJcluTJZ3AVrsgJFlogpllq
-         o+iUB1w3AFdYxVntzXe764yTyIiYOHwWrflfOkSdfEZ7RpXq5zJCFEDkzMGrbI2EDMgV
-         AkPQ==
-X-Gm-Message-State: AOAM5336vObGJtUfVxATbeeFPQIsqQbKSpSS/FjrWKDDuCQBPagXJL5v
-        zaZJhwhgQ1lPaNnZ1CaFO+M=
-X-Google-Smtp-Source: ABdhPJyEr8C9Ogdb1mA5xMC+43Vgspphph1JMIeMGN8re3oj2ZBqnM3siDmfQyHHB65lUudEMrQXmA==
-X-Received: by 2002:a17:906:4bc5:: with SMTP id x5mr1966810ejv.55.1607859092305;
-        Sun, 13 Dec 2020 03:31:32 -0800 (PST)
+        bh=32JDNSeqhHqyIaOh/qzFvhnj5b/m+w8QZFr6dtEN8Bw=;
+        b=fGmOZF/3aIX19kouAoWpc4j9eiUCVf1Pki8Gr5NJoxshd8smoK8ftKzRwxG80RcZTC
+         vLVd2LuvsuLyxPwi6vD6rCyq5iCjWv5BGoBSPRHIXQ9mpoVzsICebu4gWW67ZobBRUmr
+         Q1bjOcjw1lR0MkelsSweCHRMiiD4rw9xuLtTkPAg7m1FnnvRbSJp6h4o7qoqx2WfDWfm
+         173Q7AnxGb2cnyezoSKVYGnqLJApT/C69VU8/Gn+KV54XvCPNHzzqa65qsiITfVotYjk
+         XxvLz0zOLpUn78vIweCQ/M7DKoPt1sjToNF04fKCdGCHto9g4x8AuVbNlZRPZNIdvRV+
+         x3+w==
+X-Gm-Message-State: AOAM5338JOs4DDgRB5O0DvNyEvZluE5oZ/jUmMOI9aLaITvYAPm8YarQ
+        jH+5r5Kv9eENGwXMH/yDjwE=
+X-Google-Smtp-Source: ABdhPJy0f+aRaj1FvtAzME5ZsGleR5z0tMVYyWtlz18MxubIwHyo0udN2mZLmYeJ/0XwIck0k7j0dQ==
+X-Received: by 2002:a17:906:85cf:: with SMTP id i15mr10621618ejy.373.1607859248729;
+        Sun, 13 Dec 2020 03:34:08 -0800 (PST)
 Received: from [192.168.0.107] ([77.127.34.194])
-        by smtp.gmail.com with ESMTPSA id d6sm11014971ejy.114.2020.12.13.03.31.25
+        by smtp.gmail.com with ESMTPSA id r21sm1242331eds.91.2020.12.13.03.34.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Dec 2020 03:31:31 -0800 (PST)
-Subject: Re: [patch 21/30] net/mlx4: Use effective interrupt affinity
+        Sun, 13 Dec 2020 03:34:08 -0800 (PST)
+Subject: Re: [patch 22/30] net/mlx5: Replace irq_to_desc() abuse
 To:     Thomas Gleixner <tglx@linutronix.de>,
         LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Marc Zyngier <maz@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org,
         "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
         Helge Deller <deller@gmx.de>,
         afzal mohammed <afzal.mohd.ma@gmail.com>,
@@ -89,21 +85,24 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-pci@vger.kernel.org,
         Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
         Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leon@kernel.org>,
         Boris Ostrovsky <boris.ostrovsky@oracle.com>,
         Juergen Gross <jgross@suse.com>,
         Stefano Stabellini <sstabellini@kernel.org>,
         xen-devel@lists.xenproject.org
 References: <20201210192536.118432146@linutronix.de>
- <20201210194044.672935978@linutronix.de>
+ <20201210194044.769458162@linutronix.de>
 From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <57c3f9d3-7262-9916-626b-c2234de763f0@gmail.com>
-Date:   Sun, 13 Dec 2020 13:31:24 +0200
+Message-ID: <02be0e10-f2b5-7cbb-3271-4d872616ffd4@gmail.com>
+Date:   Sun, 13 Dec 2020 13:34:01 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.5.1
 MIME-Version: 1.0
-In-Reply-To: <20201210194044.672935978@linutronix.de>
+In-Reply-To: <20201210194044.769458162@linutronix.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -114,35 +113,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/10/2020 9:25 PM, Thomas Gleixner wrote:
-> Using the interrupt affinity mask for checking locality is not really
-> working well on architectures which support effective affinity masks.
+> No driver has any business with the internals of an interrupt
+> descriptor. Storing a pointer to it just to use yet another helper at the
+> actual usage site to retrieve the affinity mask is creative at best. Just
+> because C does not allow encapsulation does not mean that the kernel has no
+> limits.
 > 
-> The affinity mask is either the system wide default or set by user space,
-> but the architecture can or even must reduce the mask to the effective set,
-> which means that checking the affinity mask itself does not really tell
-> about the actual target CPUs.
+> Retrieve a pointer to the affinity mask itself and use that. It's still
+> using an interface which is usually not for random drivers, but definitely
+> less hideous than the previous hack.
 > 
 > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Tariq Toukan <tariqt@nvidia.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-rdma@vger.kernel.org
 > ---
->   drivers/net/ethernet/mellanox/mlx4/en_cq.c |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> --- a/drivers/net/ethernet/mellanox/mlx4/en_cq.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/en_cq.c
-> @@ -117,7 +117,7 @@ int mlx4_en_activate_cq(struct mlx4_en_p
->   			assigned_eq = true;
->   		}
->   		irq = mlx4_eq_get_irq(mdev->dev, cq->vector);
-> -		cq->aff_mask = irq_get_affinity_mask(irq);
-> +		cq->aff_mask = irq_get_effective_affinity_mask(irq);
->   	} else {
->   		/* For TX we use the same irq per
->   		ring we assigned for the RX    */
+>   drivers/net/ethernet/mellanox/mlx5/core/en.h      |    2 +-
+>   drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    2 +-
+>   drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c |    6 +-----
+>   3 files changed, 3 insertions(+), 7 deletions(-)
 > 
 
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
