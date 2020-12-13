@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C3EF2D8B2D
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 04:32:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C63832D8B30
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 04:47:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392486AbgLMDbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 22:31:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35046 "EHLO
+        id S2392163AbgLMDnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 22:43:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725976AbgLMDbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 22:31:45 -0500
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2EFC0613CF;
-        Sat, 12 Dec 2020 19:31:05 -0800 (PST)
-Received: by mail-ot1-x341.google.com with SMTP id q25so12318611otn.10;
-        Sat, 12 Dec 2020 19:31:05 -0800 (PST)
+        with ESMTP id S1725976AbgLMDnz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 22:43:55 -0500
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D83C0613CF;
+        Sat, 12 Dec 2020 19:43:14 -0800 (PST)
+Received: by mail-oi1-x244.google.com with SMTP id q25so15090073oij.10;
+        Sat, 12 Dec 2020 19:43:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+BjOxXb7d/HLHo33woNIMHOuryX58MLy5NrBZNm8XrM=;
-        b=i04BhdscTr016PH0OMI+WWHAM/R2dj9iJUnwPbU3rPrn6HdYipyJQbR5wMokIuUwLA
-         pxlOmDLFP71D8YWI6bPenb79Tz/UYM1UlMgdLO+sKXB8mhi7GV9vTz2V7npiAM8OqVXd
-         b3QX/U4zo9bHWvD+04ErPAWgPbzIQZt+uhZATWEraY1T2QzgGmULeUaC1Z+nzg3O6VZ1
-         Um7d52uQLL1f0UkJdle4QXc7R9IJ5GTnF8rUKZ8mXSs/TPCdAjT8UIsEvSanZBAWN2TX
-         VZkG4JYBZZN4mlJKZZf+I9yvf6xDlCsEFnjwO9iYvCN/AL8MosEKX0jANf+oPjEngq2Q
-         XIQQ==
+        bh=aLMv7bv//grEdHcZE3Ga0rjuWlHjH5Gf0eUa19zRJrQ=;
+        b=sA271PWlMNitfIcgRi1Rvcy+v+0cABEo3Du/WflzKU/dTtae3WDiwSk0qaSwmCPEvb
+         qbLHCzQtRY4zP+A34qnL+yyxD6dwK0mT/7EHOOvyCrsvGu2GzMageMe68FA+r7qfkGG3
+         FZqX24Gh5FRbda9BOPJpSUExXPURHVEY2PZwy+RUn7na7BgKA+RcKf10S6+FtqnI2inX
+         +079tFPY5xaemXlaY89MVgkBaJ1A5ma2afSgCOwH61a2E6CKe1FbYc96GeGWWeIvdofM
+         4T8dpVJqXwd6snwzb9L2ScFaljBRicUt6yQRFAPWUIzAlLZ/5gjvr1tH09TyALZAn2yp
+         Zrcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=+BjOxXb7d/HLHo33woNIMHOuryX58MLy5NrBZNm8XrM=;
-        b=Q5uzdYJJpVurthypecHRH9EosiOh1OuNaMZdt2aX7WiFAu+rtmzhQ0mRUq59qb6FYR
-         HbwAEIFV9Zk9Ibf7FKxgnHxaKPEIyPZ8kmecmDYW1xtwK4lTCzy8VtxEkD/0RVuO4Ptu
-         6IRLX56vMTzbZNL/q1t70029suMUL53fM7BQvDcxvxJfk9jMhg/of6nK/i3i+5l8LB6g
-         Ej0AqOCqDJAyYmOjnJAwxI/QILZXYbev5WdQuis6VqaoDD7CgaMvAI3XjJhdxRmfBSWG
-         pK+F0GlT7s8ywGlvNd4a8u4HPdnq3uZKLwKS+5ZuZpz7WWTRORqjKATiGZjkIhxVT3dU
-         xxlA==
-X-Gm-Message-State: AOAM533h/l0r3ZMBSzyqAbqv+oUtaQBnfkp5LBzkDNvpwAn6+2yMniaq
-        P9ah9NM7jih9jyGaxXm9B/U=
-X-Google-Smtp-Source: ABdhPJxVF/+hDNcFK1VNuN477dC2vbBJ+kIVFa7ffqsU3bxSQXVdXCUJUIXPszH41PXwKyTFyvqWtA==
-X-Received: by 2002:a05:6830:1be9:: with SMTP id k9mr15275563otb.226.1607830264945;
-        Sat, 12 Dec 2020 19:31:04 -0800 (PST)
+        bh=aLMv7bv//grEdHcZE3Ga0rjuWlHjH5Gf0eUa19zRJrQ=;
+        b=KAPtw/xBUDm36yO67Yu5Bwri3a/VeRMu3JuC0TWEUVRTDKFJxqiDSQcYJWteflbNOy
+         l1FIz8U5MCefUrf7fGk6UO1w6yHMdvHk3xkzFNiNSPmcOGg/5ztWfLKAsEL6aeDw/LTN
+         K6m2oRgx+Ba5m7KXdEH5vwxraHTZohJk5XMuv1r0jnQsrGKnKjG262mpQrlfHFWr8Gng
+         QB46CdI8kZvZPIoxU+mkPPANOeI5zNam6q4xET21X2VX1bcJrQQ00cGZlWdPXyx427PH
+         0RmQ683ngfy16xgWca/4oX5/COOxNMpY3FMG03BRw/SL8qK7+9Inw/rYJlTSujVMz/0k
+         oaJw==
+X-Gm-Message-State: AOAM5339N4OtsiULRPT3imyff4hdsiIq5NINmGGScW42RpPm8TB+bXjh
+        x1SrEvFwQwNRVfuMkruoeyw=
+X-Google-Smtp-Source: ABdhPJzRk7A3ZZeJR9uQqVQYmJbfWlQv2jn+usTzLnZEDAMsEvcuvH4F5/5UWeqTrxm6J8HqOOndHA==
+X-Received: by 2002:aca:2418:: with SMTP id n24mr13792346oic.62.1607830994270;
+        Sat, 12 Dec 2020 19:43:14 -0800 (PST)
 Received: from ?IPv6:2600:1700:dfe0:49f0:5c21:b591:3efd:575e? ([2600:1700:dfe0:49f0:5c21:b591:3efd:575e])
-        by smtp.gmail.com with ESMTPSA id d20sm2339764otl.64.2020.12.12.19.31.02
+        by smtp.gmail.com with ESMTPSA id s26sm3160664otd.8.2020.12.12.19.43.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Dec 2020 19:31:04 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 3/6] net: dsa: move switchdev event
- implementation under the same switch/case statement
+        Sat, 12 Dec 2020 19:43:13 -0800 (PST)
+Subject: Re: [PATCH v2 net-next 2/6] net: dsa: don't use
+ switchdev_notifier_fdb_info in dsa_switchdev_event_work
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -67,14 +67,14 @@ Cc:     DENG Qingfang <dqfext@gmail.com>,
         Ido Schimmel <idosch@idosch.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>
 References: <20201213024018.772586-1-vladimir.oltean@nxp.com>
- <20201213024018.772586-4-vladimir.oltean@nxp.com>
+ <20201213024018.772586-3-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <27e7d73b-1200-a9f1-94e3-5e494f54e49e@gmail.com>
-Date:   Sat, 12 Dec 2020 19:31:01 -0800
+Message-ID: <6ee91a90-9c27-9001-66af-9bf16081f3b5@gmail.com>
+Date:   Sat, 12 Dec 2020 19:43:10 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.5.1
 MIME-Version: 1.0
-In-Reply-To: <20201213024018.772586-4-vladimir.oltean@nxp.com>
+In-Reply-To: <20201213024018.772586-3-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -85,12 +85,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/12/2020 6:40 PM, Vladimir Oltean wrote:
-> We'll need to start listening to SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE
-> events even for interfaces where dsa_slave_dev_check returns false, so
-> we need that check inside the switch-case statement for SWITCHDEV_FDB_*.
+> Currently DSA doesn't add FDB entries on the CPU port, because it only
+> does so through switchdev, which is associated with a net_device, and
+> there are none of those for the CPU port.
 > 
-> This movement also avoids a useless allocation / free of switchdev_work
-> on the untreated "default event" case.
+> But actually FDB addresses on the CPU port have some use cases of their
+> own, if the switchdev operations are initiated from within the DSA
+> layer. There is just one problem with the existing code: it passes a
+> structure in dsa_switchdev_event_work which was retrieved directly from
+> switchdev, so it contains a net_device. We need to generalize the
+> contents to something that covers the CPU port as well: the "ds, port"
+> tuple is fine for that.
+> 
+> Note that the new procedure for notifying the successful FDB offload is
+> inspired from the rocker model.
+> 
+> Also, nothing was being done if added_by_user was false. Let's check for
+> that a lot earlier, and don't actually bother to schedule the worker
+> for nothing.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
