@@ -2,109 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C455B2D8B39
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 04:51:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A62CC2D8B56
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 06:06:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393878AbgLMDu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 22:50:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37860 "EHLO
+        id S1725835AbgLMFFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 00:05:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393241AbgLMDuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 22:50:19 -0500
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54AF9C0613CF;
-        Sat, 12 Dec 2020 19:49:39 -0800 (PST)
-Received: by mail-oi1-x243.google.com with SMTP id q205so2382037oig.13;
-        Sat, 12 Dec 2020 19:49:39 -0800 (PST)
+        with ESMTP id S1725306AbgLMFFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 00:05:07 -0500
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CB3C0613CF;
+        Sat, 12 Dec 2020 21:04:26 -0800 (PST)
+Received: by mail-yb1-xb43.google.com with SMTP id o144so11738778ybc.0;
+        Sat, 12 Dec 2020 21:04:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QE8kvUfJGF+/tFxP2a7cjpaKSjXf6+aoJtP3goq60E8=;
-        b=FxDybe6qZY0cVdUS6zEjz2Kig7c/aw/0vQ9uFAhhVTX5qCeQ4PldrHo6OcbKoMO6/c
-         wgmGI0A+ypYSkoiG2bZp9LM0wXCzGbldKot7nZ0Ohx7xLenhLUAmoEXG0Zp0hthrKOye
-         6ehYmXkOpC6r7CdexxjIPU9/PCFn59uKuMo+ps1vLzMf7MczFknbxs0pgoh4MlLg/Crt
-         4MEr764TbawspH662uTEU/w2p+9165jNTSRCmNgLdHVsFQBsI42uTktL3edf/bzm90Ho
-         xBxXniDsxjOqy1X9M1JWaYroo2tsf2o5ou8HJJzPd2cB/xm3yHmtvVWHJ67BImvJeiDC
-         BYxw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z/uJz/Jw3MmfDGc84gX9EJKwTVBpnb7jcNLsPy/WYTg=;
+        b=qbb6zoMeusOCfpjDEE+KXrzxNik5+GwTEST8oZQxqGb0IPh7Acicglg6QgggwsSODl
+         nhmi5IZs8NFMHOJS9Yo8im9+F6eMyboUcziJjh0xGEuvW0hFEMamyfTAMmkMzuwuwX7N
+         F7un+qdeVf7AfMvJFsM2N74xMrk1N+n+CNi+PoK2LZ/g5SRKe2ZSOaXInTCmSuGM2UqK
+         WDSAPOgdLlaVIC/WZKgWOfLzQGw9yV3yCE+Yjctj5TDfdBKiGsBr/0IZ/eCnmiev/IRO
+         dO9L/dpm29dI+w++0vDQl4NexJ7Effk7Df2uak5r9BhepGYXo6RWONeUuJxNmOU48l+r
+         D/yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QE8kvUfJGF+/tFxP2a7cjpaKSjXf6+aoJtP3goq60E8=;
-        b=gX3fP4ZYTJmoi0CyzWQ+1KBwSblprh+4YS+WMcw1GtsWvsmYsgi99b6jDYY41SJ/MJ
-         Z6yFihFVNadbh4uruGPW5dR8d0gnqlD21qD+JYkCzhyiA7Sze1geXAyLH6WyRhnSG2gD
-         fSuB/2HbsxrVHFR0sElGhUogO8R2zxTKBsPibsT/p6fnrGd67XIAAEEDiWGCYOZR4wxo
-         Aa0iv1iqVREqhAVClPCe6LYn2cToCc/CdD9PMoycqRx9mB78f3lLaGuDermD0IUtwdyL
-         9YxbqFsepndMgWlJacjNZTSpTF63MUA4rovt6kXM8u3x7IeKs9VEC/g8t+tMRce782LZ
-         w36w==
-X-Gm-Message-State: AOAM530HqS0nWxgQkg2WaXRZkcHwWfpE+Uvur26GMXGuJZYkbld9gcJJ
-        awXIf/eAjZihHN13+U2DG78=
-X-Google-Smtp-Source: ABdhPJxE7W1vVg6+OwzP+sCKUSQQ2AzZkPGpfAJs2/BtLTtAfvg4hE+4uWm0lq9fTvrdVaFfMpouJA==
-X-Received: by 2002:aca:dc85:: with SMTP id t127mr14560421oig.19.1607831378772;
-        Sat, 12 Dec 2020 19:49:38 -0800 (PST)
-Received: from ?IPv6:2600:1700:dfe0:49f0:5c21:b591:3efd:575e? ([2600:1700:dfe0:49f0:5c21:b591:3efd:575e])
-        by smtp.gmail.com with ESMTPSA id i25sm3158888oto.56.2020.12.12.19.49.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Dec 2020 19:49:38 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 6/6] net: dsa: ocelot: request DSA to fix up
- lack of address learning on CPU port
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marek Behun <marek.behun@nic.cz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-References: <20201213024018.772586-1-vladimir.oltean@nxp.com>
- <20201213024018.772586-7-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <77d952ad-0aed-8e79-df03-ee6a7f42ef55@gmail.com>
-Date:   Sat, 12 Dec 2020 19:49:34 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.5.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z/uJz/Jw3MmfDGc84gX9EJKwTVBpnb7jcNLsPy/WYTg=;
+        b=XKSqZ6bfBciGaU7LzdB3WKul/iFwhhxI0Gv04mJjHedTiHmqdGEHQcMG3g2p57cPAU
+         m/SYb+Hvj6Oyou8jUgTEqUAwYEyjrYyR+MWxLOD3wDwQd1vg4RQ0FJLwVrgsFeT09nGU
+         c3UO6YyTZpKDrsrMG54+KCNE3YvJpqs3eqzWD+LaehX75++x0bDFy2a++DjfADG8nxWh
+         2KKi4QUkLu/09LEvq2zShT1KehL772kfuvUb58+JWAS3iRqmgoiTykeYbpQlLVhXxjrj
+         LprRssx2Ci+LVl1+/LwWecOJ2ZTprYJQC6CG8Oy4vaBpmlFOB7+OdI190upm/IsrCQ+w
+         oTpQ==
+X-Gm-Message-State: AOAM531pY59J2DVnZ6wFKh2A1Bg7hxt8NB+3guFBCYpna4MX96nhm+nY
+        32bHdyYEQSmDLGgXUqMa5xRwOBW3yLuapGueO8nBGZTdHAc=
+X-Google-Smtp-Source: ABdhPJwwjj1eu9V+fuA1Gf6y0i37Y+U+rhZRbNZrW53zzJW2PAYnMbAfMlzfkf0c0LLKIpapY5qqc4+MNZRlFQ4aivA=
+X-Received: by 2002:a25:ef0c:: with SMTP id g12mr8240256ybd.26.1607835865316;
+ Sat, 12 Dec 2020 21:04:25 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201213024018.772586-7-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201128193335.219395-1-masahiroy@kernel.org> <20201212161831.GA28098@roeck-us.net>
+In-Reply-To: <20201212161831.GA28098@roeck-us.net>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Sun, 13 Dec 2020 06:04:14 +0100
+Message-ID: <CANiq72=e9Csgpcu3MdLGB77dL_QBn6PpqoG215YUHZLNCUGP0w@mail.gmail.com>
+Subject: Re: [PATCH v3] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        wireguard@lists.zx2c4.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Dec 12, 2020 at 5:18 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> This patch results in:
+>
+> arch/sh/kernel/cpu/sh4a/smp-shx3.c: In function 'shx3_prepare_cpus':
+> arch/sh/kernel/cpu/sh4a/smp-shx3.c:76:3: error: ignoring return value of 'request_irq' declared with attribute 'warn_unused_result'
+>
+> when building sh:defconfig. Checking for calls to request_irq()
+> suggests that there will be other similar errors in various builds.
+> Reverting the patch fixes the problem.
 
+Which ones? From a quick grep and some filtering I could only find one
+file with wrong usage apart from this one:
 
-On 12/12/2020 6:40 PM, Vladimir Oltean wrote:
-> Given the following setup:
-> 
-> ip link add br0 type bridge
-> ip link set eno0 master br0
-> ip link set swp0 master br0
-> ip link set swp1 master br0
-> ip link set swp2 master br0
-> ip link set swp3 master br0
-> 
-> Currently, packets received on a DSA slave interface (such as swp0)
-> which should be routed by the software bridge towards a non-switch port
-> (such as eno0) are also flooded towards the other switch ports (swp1,
-> swp2, swp3) because the destination is unknown to the hardware switch.
-> 
-> This patch addresses the issue by monitoring the addresses learnt by the
-> software bridge on eno0, and adding/deleting them as static FDB entries
-> on the CPU port accordingly.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+    drivers/net/ethernet/lantiq_etop.c:
+request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
+    drivers/net/ethernet/lantiq_etop.c:
+request_irq(irq, ltq_etop_dma_irq, 0, "etop_rx", priv);
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Of course, this does not cover other functions, but it means there
+aren't many issues and/or people building the code if nobody complains
+within a few weeks. So I think we can fix them as they come.
+
+Cheers,
+Miguel
