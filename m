@@ -2,158 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC41C2D8F88
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 19:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6C962D900B
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 20:25:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405072AbgLMSqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 13:46:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404978AbgLMSqF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 13:46:05 -0500
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712B5C0613CF
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 10:45:09 -0800 (PST)
-Received: by mail-lf1-x141.google.com with SMTP id y19so24587375lfa.13
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 10:45:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=BcLd2eTMUQnWTe1iSx4OMGuFlGDBW9OQlhSlZiNkXtY=;
-        b=S0UFrA2SiiXTUKQvFPhNSeMERL22Ktxp5KkJbZuLAyZnLHHVbYuhIeOFdkUvQjqhM+
-         SgBcaWJVxYfm6oijCl5QeAZKYY3uqf4tOpJOeKtiyXCQsYPbb5zuXQ5qf2QSQgx/OFvF
-         O0oR9utGEJwmj48uPpQPRv8rNyJ291j0a34+Y=
+        id S2394837AbgLMTXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 14:23:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31676 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2395200AbgLMTW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 14:22:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607887291;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UbL8Odta7ic6S0aPEogCx7D7h/B71ZIzRWsPMeenY94=;
+        b=WKT3OqoGe8TUQzbUYAX3jHV1D93hbq9/hmlcgymcMf3lgW2viABWrK1OTvYmChOkNwlI4F
+        c9Fv/DQD45vZ+OZwSCHBpDd7KucxRYI26BPgXS9Yy8VwnAPUsv9JcMY+T5mUJEkig9TWKu
+        2jM5BvGhP9b2EhiUb4GPQCp7JBEQ4qM=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-345-IXfX5DBpOJuI-KpSfad4VQ-1; Sun, 13 Dec 2020 14:21:27 -0500
+X-MC-Unique: IXfX5DBpOJuI-KpSfad4VQ-1
+Received: by mail-oo1-f70.google.com with SMTP id t7so6851582oog.7
+        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 11:21:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=BcLd2eTMUQnWTe1iSx4OMGuFlGDBW9OQlhSlZiNkXtY=;
-        b=gJ0F4YwiCxPMq8hhNoCaV7McYBVQVyy+0EyRgoaRw2XSkFTGXMDDIAIsYQzgOIlavG
-         1wBHdujc3BBG60cf02mgeTKwfGdVqFjqu6Gg94vWoTLWe1wToXX//H6FwNmhwKAWtIEF
-         9/lkvhG80MSBypaBHp32Bq2BkDsxI8ygtoqxoYHA0rxXQ/Q2QA+gwjLvHUHaBRsnH1N1
-         YBMM6EdGl5e4NMZTzwuCbArxuHoAT/ZPdy7Ts2rb714vQ6MfNp8H3kFJJ2AfB0nQ4g8n
-         dYJdlI+j27lNguLAsaxBDZU+SdMmNnANCdL+w65kfCY4GXADb7D4Y3VJ2m6N4mUQcg9o
-         eOWw==
-X-Gm-Message-State: AOAM5334KTe1m6Bi5O+g9Z7WCqmHBrRYqlBxbiQ106RtqKcC0SUmZx4u
-        CiHgyCiklndSqsWHv46LSM4TWGECQkol5YPpiJ8kiPIKleTxNg==
-X-Google-Smtp-Source: ABdhPJy1YJ/dKTescrTDhY4aBPVAhK2GOQm4jFEhlrXsYLooMmor6KkFIwYVbViDfSJU6oWAq0jxw4U/AU0uorvboa4=
-X-Received: by 2002:a05:651c:2105:: with SMTP id a5mr9054508ljq.170.1607885107811;
- Sun, 13 Dec 2020 10:45:07 -0800 (PST)
-MIME-Version: 1.0
-References: <CABWYdi0+PRk8h-Az=b3GqNDO=m6RZgqDL27tgwo3yMK_05OLAw@mail.gmail.com>
- <20201213122305.kpg5tb6dppq3ow42@gmail.com>
-In-Reply-To: <20201213122305.kpg5tb6dppq3ow42@gmail.com>
-From:   Ivan Babrou <ivan@cloudflare.com>
-Date:   Sun, 13 Dec 2020 10:44:56 -0800
-Message-ID: <CABWYdi1VWaOOhOx6wOAd0DjSXMGaPvL_x6d=M0jtX15naecBWA@mail.gmail.com>
-Subject: Re: [PATCH net-next] sfc: backport XDP EV queue sharing from the
- out-of-tree driver
-To:     Ivan Babrou <ivan@cloudflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=UbL8Odta7ic6S0aPEogCx7D7h/B71ZIzRWsPMeenY94=;
+        b=mWi/kq997yBnS8KcXx5+B1dk74RTSfupp+BztLH4QUO+aSJ86Phnw4wY7JfryPBQU9
+         ZHFkfMLIb4J3s18uV6mRffEt1Cwcnd4HdvjwZgBc1caGPbvH5yolvOKekfvbNrKIzwc7
+         aUR8HnXPy0k4ceZ1tawwrfi27SKSsEmIzI1gCg9B2xzg2SVW/7pHEEnD6vmA3Jggg0t4
+         jsuuQaUlitiXGGayhVAHjv/FdwI5IDhH8JaQblTvZoSj3wjZzT/OVOwxLk1hDN1vsFSQ
+         NVn1nPkKLgkbUnwsKsJKlKRoc3sSdzTZiZoA1PZ93Vuznq3gQ1UbiDswAls04+9hF3Gs
+         WSow==
+X-Gm-Message-State: AOAM5323NFaYYBOOPZ546xV1UF0JpK1oG1NNUxVkPwyWYLeC27MaIlGi
+        zZGvMa1tU+dHPvbkvbeeqRXp3neB4BrntNvY4bUIJUGqrlpD4N3aNtd0KVBIxT35A8bIwFAQB4o
+        TEREDlOMxKLl8f4x+
+X-Received: by 2002:a9d:269:: with SMTP id 96mr16744061otb.174.1607887286713;
+        Sun, 13 Dec 2020 11:21:26 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwQkCv+SsykJEiclAhkJJmaIpJ8GofmaJCmKC2P9NkPzPSY2w5X75hXxW7iT/wQfqs4MJlolQ==
+X-Received: by 2002:a9d:269:: with SMTP id 96mr16744053otb.174.1607887286519;
+        Sun, 13 Dec 2020 11:21:26 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id c5sm1967722otl.53.2020.12.13.11.21.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Dec 2020 11:21:25 -0800 (PST)
+Subject: Re: [PATCH] netfilter: conntrack: fix -Wformat
+To:     Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Perches <joe@perches.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+References: <20201107075550.2244055-1-ndesaulniers@google.com>
+ <4910042649a4f3ab22fac93191b8c1fa0a2e17c3.camel@perches.com>
+ <CAKwvOdn50VP4h7tidMnnFeMA1M-FevykP+Y0ozieisS7Nn4yoQ@mail.gmail.com>
+ <26052c5a0a098aa7d9c0c8a1d39cc4a8f7915dd2.camel@perches.com>
+ <CAKwvOdkv6W_dTLVowEBu0uV6oSxwW8F+U__qAsmk7vop6U8tpw@mail.gmail.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <527928d8-4621-f2f3-a38f-80c60529dde8@redhat.com>
+Date:   Sun, 13 Dec 2020 11:21:23 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+MIME-Version: 1.0
+In-Reply-To: <CAKwvOdkv6W_dTLVowEBu0uV6oSxwW8F+U__qAsmk7vop6U8tpw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 13, 2020 at 4:23 AM Martin Habets <habetsm.xilinx@gmail.com> wrote:
+
+On 12/2/20 2:34 PM, Nick Desaulniers wrote:
+> On Tue, Nov 10, 2020 at 2:04 PM Joe Perches <joe@perches.com> wrote:
+>> On Tue, 2020-11-10 at 14:00 -0800, Nick Desaulniers wrote:
+>>
+>>> Yeah, we could go through and remove %h and %hh to solve this, too, right?
+>> Yup.
+>>
+>> I think one of the checkpatch improvement mentees is adding
+>> some suggestion and I hope an automated fix mechanism for that.
+>>
+>> https://lore.kernel.org/lkml/5e3265c241602bb54286fbaae9222070daa4768e.camel@perches.com/
+> + Tom, who's been looking at leveraging clang-tidy to automate such
+> treewide mechanical changes.
+> ex. https://reviews.llvm.org/D91789
 >
-> On Thu, Dec 10, 2020 at 04:18:53PM -0800, Ivan Babrou wrote:
-> > Queue sharing behaviour already exists in the out-of-tree sfc driver,
-> > available under xdp_alloc_tx_resources module parameter.
->
-> This comment is not relevant for in-tree patches. I'd also like to
-> make clear that we never intend to upstream any module parameters.
+> See also commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging
+> use of unnecessary %h[xudi] and %hh[xudi]") for a concise summary of
+> related context.
 
-Would the following commit message be acceptable?
+I have posted the fixer here
 
-sfc: reduce the number of requested xdp ev queues
+https://reviews.llvm.org/D93182
 
-Without this change the driver tries to allocate too many queues,
-breaching the number of available msi-x interrupts on machines
-with many logical cpus and default adapter settings:
+It catches about 200 problems in 100 files, I'll be posting these soon.
 
-Insufficient resources for 12 XDP event queues (24 other channels, max 32)
+clang-tidy-fix's big difference over checkpatch is using the __printf(x,y) attribute to find the log functions.
 
-Which in turn triggers EINVAL on XDP processing:
+I will be doing a follow-on to add the missing __printf or __scanf's and rerunning the fixer.
 
-sfc 0000:86:00.0 ext0: XDP TX failed (-22)
+Tom
 
-> > This avoids the following issue on machines with many cpus:
-> >
-> > Insufficient resources for 12 XDP event queues (24 other channels, max 32)
-> >
-> > Which in turn triggers EINVAL on XDP processing:
-> >
-> > sfc 0000:86:00.0 ext0: XDP TX failed (-22)
->
-> The code changes themselves are good.
-> The real limit that is hit here is with the number of MSI-X interrupts.
-> Reducing the number of event queues needed also reduces the number of
-> interrupts required, so this is a good thing.
-> Another way to get around this issue is to increase the number of
-> MSI-X interrupts allowed bu the NIC using the sfboot tool.
-
-I've tried that, but on 5.10-rc7 with the in-tree driver both ethtool -l
-and sfboot are unable to work for some reason with sfc adapter.
-
-The docs about the setting itself says you need to contact support
-to figure out the right values to use to make sure it works properly.
-
-What is your overall verdict on the patch? Should it be in the kernel
-or should users change msix-limit configuration? The configuration
-change requires breaking pcie lockdown measures as well, which is
-why I'd prefer for things to work out of the box.
-
-Thanks!
-
->
-> Best regards,
-> Martin
->
-> > Signed-off-by: Ivan Babrou <ivan@cloudflare.com>
-> > ---
-> >  drivers/net/ethernet/sfc/efx_channels.c | 6 ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/sfc/efx_channels.c
-> > b/drivers/net/ethernet/sfc/efx_channels.c
-> > index a4a626e9cd9a..1bfeee283ea9 100644
-> > --- a/drivers/net/ethernet/sfc/efx_channels.c
-> > +++ b/drivers/net/ethernet/sfc/efx_channels.c
-> > @@ -17,6 +17,7 @@
-> >  #include "rx_common.h"
-> >  #include "nic.h"
-> >  #include "sriov.h"
-> > +#include "workarounds.h"
-> >
-> >  /* This is the first interrupt mode to try out of:
-> >   * 0 => MSI-X
-> > @@ -137,6 +138,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
-> >  {
-> >   unsigned int n_channels = parallelism;
-> >   int vec_count;
-> > + int tx_per_ev;
-> >   int n_xdp_tx;
-> >   int n_xdp_ev;
-> >
-> > @@ -149,9 +151,9 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
-> >   * multiple tx queues, assuming tx and ev queues are both
-> >   * maximum size.
-> >   */
-> > -
-> > + tx_per_ev = EFX_MAX_EVQ_SIZE / EFX_TXQ_MAX_ENT(efx);
-> >   n_xdp_tx = num_possible_cpus();
-> > - n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, EFX_MAX_TXQ_PER_CHANNEL);
-> > + n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, tx_per_ev);
-> >
-> >   vec_count = pci_msix_vec_count(efx->pci_dev);
-> >   if (vec_count < 0)
-> > --
-> > 2.29.2
->
-> --
-> Martin Habets <habetsm.xilinx@gmail.com>
