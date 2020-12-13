@@ -2,133 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 641A42D90B9
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 22:21:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEA8D2D90C9
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 22:34:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729266AbgLMVTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 16:19:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726069AbgLMVTN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 16:19:13 -0500
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09AFC0613CF
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 13:18:32 -0800 (PST)
-Received: by mail-lf1-x142.google.com with SMTP id r24so25197833lfm.8
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 13:18:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=U1hCiI5zagafo+HpTaqD+3MoDgz+uH8RSzQzQ0KvjFU=;
-        b=sEO+GpZbc7/fGIrpPAD+XIJEiHjDJV7dHD+adWQE9vCGqnZhQuTbFc8W09f9gmXyWj
-         o3Ad/pYm1Vr4t9D6ucCg7P/LhUR+Mm89H7WsG21dGe/X2Xs3weRtF8Z/94QBeXWd9APA
-         dpXnbfsnEZckoTf59e8DeqloZvSuMSNvev3TzZfXrB9DVkriZKTg1+SbmZ6hX/u/iQfW
-         JRqBuNeV/6L1bSkFU7kw/W0hetsjN6cKZtTVKA8gGnm0YjZQjsZP954Vmhj1E3o22RM6
-         L1OB17ZfmO9KWI4j80aKPfvKhigEPHIPEWoIbPXgBg7VY1/AQOV4sfsJ6Dk2E4MX9w0s
-         sBkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=U1hCiI5zagafo+HpTaqD+3MoDgz+uH8RSzQzQ0KvjFU=;
-        b=Qp92tgBFmvTPJGTwW3PwsdAvhZqWTHEMSoMImo0/Z6fGJ8SQ5UPiF/3RUi4lXKf2oN
-         lbKJ2Az8Nc91Q26u8t4eB+x8j3i6tVL6DZXP2TPY1E+WE/dChZCMqy+Ufz/9TAhCkETh
-         cHBBNFO3QZSFSGdgkermo1cZSi3sePVfctLWx32SUirc0AGyCAQquHS6Ax8wz1p9O22a
-         9YUYaIuQepzthJv8+QAnB2nqR75BUcl1+pIBNrrwGaxA5d1v2pJ8C2TPU2u9iwUrMHpy
-         FmDn/Xv3U5Kk1SxXpFVX6b0r7Tn8654H42Rt6P+5P71XQEvNuceQOnZWSNM+Y6elsRFc
-         Ulvg==
-X-Gm-Message-State: AOAM532zy/YJMTbtM+sKnXSW0jlB1OJ87WZ5p67dh4se+3vZZUehej3I
-        bHWorCoG3fNc9N7fRFD9sQ/s+mpHJH9cIxL0
-X-Google-Smtp-Source: ABdhPJwIMuCWz8gG0bTLMF3H94F245rNE7oxYpcUrP87IP5ixE53v2kKxPM5YZCAtNIsWkkqx4helw==
-X-Received: by 2002:a2e:b1c9:: with SMTP id e9mr9831586lja.283.1607894309566;
-        Sun, 13 Dec 2020 13:18:29 -0800 (PST)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id n8sm1495292lfi.48.2020.12.13.13.18.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Dec 2020 13:18:28 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-In-Reply-To: <20201212142622.diijil65gjkxde4n@skbuf>
-References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-3-tobias@waldekranz.com> <20201208112350.kuvlaxqto37igczk@skbuf> <87a6uk5apb.fsf@waldekranz.com> <20201212142622.diijil65gjkxde4n@skbuf>
-Date:   Sun, 13 Dec 2020 22:18:27 +0100
-Message-ID: <878sa1h0bg.fsf@waldekranz.com>
+        id S2406647AbgLMVcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 16:32:16 -0500
+Received: from mail-bn8nam12on2135.outbound.protection.outlook.com ([40.107.237.135]:64430
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2406618AbgLMVcB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Dec 2020 16:32:01 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PTxqjLWHMR0E4stPuMssI4jK/pUXd4WX0l/65CRYBFC+/eeXJYiSvbWHB6pNGymz1Nu/sILqFxem4b3dH8skbsmf/T5/jYlvfvj+zk8SvkeZSbI2Kcus4uVZ6MTwq91nsGT0xfTRdnrNchgkI4/gB85KS/8WAymegR3vVU6MX3E8hkZjUMHknhzkiq0hIoDpQkuKlLnERBVwUmG8D32IrFoDuJ3L0PSdrGX/gPR3aUbM3efRHNfgQsDvSHIxZqarVgepg9xJM3MALqAsmc2u/8NqKq0rZdM/gLDt7URnbGjcxlo5pySk96LtnLtOetQSls/jF+WDbirP6q5ISMm8nA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HmfvUAi+gy2400B/UumrBdjAP/FYH//ZPsvHNpYiAMs=;
+ b=V7pf+6XNAaGW05HAxnlZMdoolnp7wRgDEpuW3SzP7a57wIvVxJ6Llbi0BGnpG9vr7XciaN2OXkSkaNUa62z1oNU1a/9KXu9o00FSPiduzFC6Co1LctD8h2wWoRKtg93cui+BycFuSNdyj6ugdGZ5hUfIUUmXQR58n5UltHyh+VljCmrPG6qkjTDjbfFMawNHCYX+j6nw+CKU9Iji8XHW0nxRjmB2WRPXDATEI1QrCS/BY+QUbDn+hSSh7hhG3l2fVeSkyaMUq+oH/zXTicqzu04vkv9BavbQJzuiHG4RS+5jsDQfwiEMamElv7jLi6jZz4WsKNkg6z9rKYJoQ12g/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HmfvUAi+gy2400B/UumrBdjAP/FYH//ZPsvHNpYiAMs=;
+ b=NoN95MdgdZmyCgvVeZSb7fIcL+6ay6u83jl2eIttnMV/s5yBIGkviQWFY0pv7axdCpzI84pSYcBi//CBtLh8h5hgIcU7dYCgZSi4sL2Hxy7EKvwi6rmbKU8fBWHQGxOUlY3GseIHT328W2RheGrOFbZQvGWimtidbFu641D/D/A=
+Received: from (2603:10b6:302:a::16) by
+ MW4PR21MB1908.namprd21.prod.outlook.com (2603:10b6:303:7b::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3676.5; Sun, 13 Dec 2020 21:31:13 +0000
+Received: from MW2PR2101MB1052.namprd21.prod.outlook.com
+ ([fe80::b8f6:e748:cdf2:1922]) by MW2PR2101MB1052.namprd21.prod.outlook.com
+ ([fe80::b8f6:e748:cdf2:1922%8]) with mapi id 15.20.3700.004; Sun, 13 Dec 2020
+ 21:31:13 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] hv_netvsc: Validate number of allocated sub-channels
+Thread-Topic: [PATCH] hv_netvsc: Validate number of allocated sub-channels
+Thread-Index: AQHWvcArHKNiz0JRYEOFtu/aejjXH6n1sp+w
+Date:   Sun, 13 Dec 2020 21:31:13 +0000
+Message-ID: <MW2PR2101MB10528F523D391FC902C284EAD7C89@MW2PR2101MB1052.namprd21.prod.outlook.com>
+References: <20201118153310.112404-1-parri.andrea@gmail.com>
+In-Reply-To: <20201118153310.112404-1-parri.andrea@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-12-13T21:31:11Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=129927ae-4213-4d40-acd0-761d39ad6b6d;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [24.22.167.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: bea10611-901b-40f9-d42a-08d89fae6a98
+x-ms-traffictypediagnostic: MW4PR21MB1908:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW4PR21MB19084CD7351BE93E516C3B02D7C81@MW4PR21MB1908.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:862;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ISbpP8PUPvwieThZyW+d0fblvufqDXv0z368OdXW5Z3B32xuO36Gazk6m0VRbTrSo+c+vHO//FXvkRuiFVnWd5qtU9HfEdFFZNzpbYQnoO8wQja8+konYSQ+c0pk/cQ1z+CpLKKPknUXVKBy37ZH7bqcIh/IaO3KMitH6LB05qXNttuYKtmt6FAwWX6Crc4sM7Y9aAtVq2qPv22ctNwGMvBB85gEAI3N+jychLgF6bPxrEXWV1uKLpKZ/kvuM0T+C9yfrxhNl+cByxG1gWHDjQi5HB4dkKlk81+gma3ge8XFvrofU24HzfBy7fzVUkCAOnkCdybnYuJIM+y0ObB33cEtN+qOFBcLuRbVmq9HKcntEnAqiT9QCzDG/a9ZEY9ykEdzr1lOqCTZK2OuKcbV4A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB1052.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(376002)(346002)(66446008)(82960400001)(82950400001)(508600001)(76116006)(10290500003)(8990500004)(52536014)(71200400001)(26005)(186003)(4326008)(86362001)(33656002)(5660300002)(7696005)(6506007)(54906003)(8676002)(55016002)(8936002)(2906002)(9686003)(66556008)(66946007)(64756008)(66476007)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?HhfDV7SDSUs7s4FkE/ph4CJudd4X7MKL+mIrgLILAML2fbR1ZfxVnQlJPTJs?=
+ =?us-ascii?Q?7otv47dciD1L5E4eYi9z93YS1Fk2OW6wDSSnuX9CT0dRF6MZpvQS3LFN3xGB?=
+ =?us-ascii?Q?jhgk0ZhP39bvZc3g6oR7QKFwUAIFGglQa7o+SstkR1jYj1tEbPZFZ3rmzDK3?=
+ =?us-ascii?Q?dA1oDSYOAjkvBvZASlLN9g60D+5m225xR81DVlgMVYP9u4J2mumQ8fzG1PnW?=
+ =?us-ascii?Q?rc56VxOLilrkB5rhR7aGqPKI+fp22Q84Zs7s0Lsf5iYv0a+dRfegcSB2BUGo?=
+ =?us-ascii?Q?21PgHzJA+xhf44i6fI5z6u5/2Cf0GHc+aVu4PluGz+iqGNfB1+grYB0kIPky?=
+ =?us-ascii?Q?jFW4OYiWpdQniycixN34s3ukQbD019hm8oZJWv+ilJaxs95f/i4BcwWxV3Uq?=
+ =?us-ascii?Q?/aS2cpfIhPGtZEXPC1efx5aLq3sKgr78tsJg3qbCIp5fWaVmRv4+cfVWZQs7?=
+ =?us-ascii?Q?r7J/DNce9bjLWppz4VsIV7iSIo8J+l39M77CBcUnPqozh4pYkazcOK1KrSwG?=
+ =?us-ascii?Q?XBoWFH9FGbgP+P4sHGOH9o74D3wzM+gu1tCyr8UflkyzPjmG/lDy7YKHPo6y?=
+ =?us-ascii?Q?SEARRy7tJdhOQM6OtKv2BdyFBkxI2I+r+/iSPAaI55V6lM7JuLCAwuta66Fy?=
+ =?us-ascii?Q?cZR9H5yiY/hBhLtVuPRq3M05Aps1K2fOwMEQ0AQsUv/3t/wpUeWcV73s4SYn?=
+ =?us-ascii?Q?BlESezL3sg8jhHbCZdVGb1XABQrTBC+CAREMqXmjBryQYghTENBtGUkVro9g?=
+ =?us-ascii?Q?aGJo0w6wUNSCC+z3Y/z0Sc6DM6EW8WfdIiger41jL4OVE2hGfwt7cJSmddWr?=
+ =?us-ascii?Q?R+J6RUGD7+02e2QBa3qH+rexvY9Q7nLU2jHpto6g7q2YZZi60TBWy66enKwC?=
+ =?us-ascii?Q?4qFGew0Pv7pjmbuTVzVhz9DFz6dQq1wc09kGJpbyLJqcN9xJLVnwut7aqKSQ?=
+ =?us-ascii?Q?M1wC/7BTG7Nngmw5MiwtZrXiaft/vXbdP/JF6SIbn+o=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB1052.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bea10611-901b-40f9-d42a-08d89fae6a98
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Dec 2020 21:31:13.3262
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Xt06KoSjFrDdR8ETPROYkpfigKifpChAKqwDUXdNgDEuTQmCdvCubg+f9YHwD5KiSc3JDfv9TdhGTMPoK/xvXaGBHeZN6XxqRkFSvDrl7SM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1908
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 12, 2020 at 16:26, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Fri, Dec 11, 2020 at 09:50:24PM +0100, Tobias Waldekranz wrote:
->> 2. The issue Vladimir mentioned above. This is also a straight forward
->>    fix, I have patch for tag_dsa, making sure that offload_fwd_mark is
->>    never set for ports in standalone mode.
->>
->>    I am not sure if I should solve it like that or if we should just
->>    clear the mark in dsa_switch_rcv if the dp does not have a
->>    bridge_dev. I know both Vladimir and I were leaning towards each
->>    tagger solving it internally. But looking at the code, I get the
->>    feeling that all taggers will end up copying the same block of code
->>    anyway. What do you think?
->
-> I am not sure what constitutes a good separation between DSA and taggers
-> here. We have many taggers that just set skb->offload_fwd_mark = 1. We
-> could have this as an opportunity to even let DSA take the decision
-> altogether. What do you say if we stop setting skb->offload_fwd_mark
-> from taggers, just add this:
->
-> +#define DSA_SKB_TRAPPED	BIT(0)
-> +
->  struct dsa_skb_cb {
->  	struct sk_buff *clone;
-> +	unsigned long flags;
->  };
->
-> and basically just reverse the logic. Make taggers just assign this flag
-> for packets which are known to have reached software via data or control
-> traps. Don't make the taggers set skb->offload_fwd_mark = 1 if they
-> don't need to. Let DSA take that decision upon a more complex thought
-> process, which looks at DSA_SKB_CB(skb)->flags & DSA_SKB_TRAPPED too,
-> among other things.
+From: Andrea Parri (Microsoft) <parri.andrea@gmail.com> Sent: Wednesday, No=
+vember 18, 2020 7:33 AM
+>=20
+> Lack of validation could lead to out-of-bound reads and information
+> leaks (cf. usage of nvdev->chan_table[]).  Check that the number of
+> allocated sub-channels fits into the expected range.
+>=20
+> Suggested-by: Saruhan Karademir <skarade@microsoft.com>
+> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> ---
+> Based on hyperv-next.
+>=20
+>  drivers/net/hyperv/rndis_filter.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>=20
+> diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis=
+_filter.c
+> index 3835d9bea1005..c5a709f67870f 100644
+> --- a/drivers/net/hyperv/rndis_filter.c
+> +++ b/drivers/net/hyperv/rndis_filter.c
+> @@ -1226,6 +1226,11 @@ int rndis_set_subchannel(struct net_device *ndev,
+>  		return -EIO;
+>  	}
+>=20
+> +	/* Check that number of allocated sub channel is within the expected ra=
+nge */
+> +	if (init_packet->msg.v5_msg.subchn_comp.num_subchannels > nvdev->num_ch=
+n - 1) {
+> +		netdev_err(ndev, "invalid number of allocated sub channel\n");
+> +		return -EINVAL;
+> +	}
+>  	nvdev->num_chn =3D 1 +
+>  		init_packet->msg.v5_msg.subchn_comp.num_subchannels;
+>=20
+> --
+> 2.25.1
 
-What would the benefit of this over using the OFM directly? Would the
-flag not carry the exact same bit of information, albeit inverted? Is it
-about not giving the taggers any illusions about having the final say on
-the OFM value?
-
->> As for this series, my intention is to make sure that (A) works as
->> intended, leaving (B) for another day. Does that seem reasonable?
->>
->> NOTE: In the offloaded case, (B) will of course also be supported.
->
-> Yeah, ok, one can already tell that the way I've tested this setup was
-> by commenting out skb->offload_fwd_mark = 1 altogether. It seems ok to
-> postpone this a bit.
->
-> For what it's worth, in the giant "RX filtering for DSA switches" fiasco
-> https://patchwork.ozlabs.org/project/netdev/patch/20200521211036.668624-11-olteanv@gmail.com/
-> we seemed to reach the conclusion that it would be ok to add a new NDO
-> answering the question "can this interface do forwarding in hardware
-> towards this other interface". We can probably start with the question
-> being asked for L2 forwarding only.
-
-Very interesting, though I did not completely understand the VXLAN
-scenario laid out in that thread. I understand that OFM can not be 0,
-because you might have successfully forwarded to some destinations. But
-setting it to 1 does not smell right either. OFM=1 means "this has
-already been forwarded according to your current configuration" which is
-not completely true in this case. This is something in the middle, more
-like skb->offload_fwd_mark = its_complicated;
-
-Anyway, so we are essentially talking about replacing the question "do
-you share a parent with this netdev?" with "do you share the same
-hardware bridging domain as this netdev?" when choosing the port's OFM
-in a bridge, correct? If so, great, that would also solve the software
-LAG case. This would also get us one step closer to selectively
-disabling bridge offloading on a switchdev port.
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
