@@ -2,108 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0642D90E1
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 23:15:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8411F2D9128
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 00:26:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406692AbgLMWNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 17:13:51 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:36194 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731431AbgLMWNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 17:13:50 -0500
-Received: by mail-io1-f71.google.com with SMTP id y197so9739346iof.3
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 14:13:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=w1iVowg0N/qJHYngp+HBkLQGVichd+3RsxM7hOiF15A=;
-        b=Ok1k8Lwog9WXx+2I+JkRpcv7mio1mmV2QKIYgpEXYIfYGoqOKLIZ49itPHr5eErHTG
-         /7IIN+zLfFNkSJNzUzM3BvRJO3q/d2mHHd+lbB/IH0frkc0RDz5tn7jxyvh4w+nP/e5e
-         pRiFohsv4/qfONcc3Na7tj5Jmc/nn3L6my44BzZxJqveQr/pn7RuYOLcKB8lnyPgzK0v
-         vstJpFCDMieV1oo7HNhYnPWol9xCLsIqyEMGvG/4xigEHH36r3EXgdE1+QRLohEV05Dx
-         QPdSyc6B/YRwwbAeRTHB4UxL2q5I4NO03dXgXLJ/pF12H2jBcqZ+S3ttbWazq8EppNy8
-         i2ZA==
-X-Gm-Message-State: AOAM532cdsjp/23ZUzYSP2L7mJgAnDG2k5QiKCIQ4aoe2j50opunXr6z
-        A9A4OfIOpf6fgAo+3i1tGmtUQM6ft0e2Mx/ARest7XWEwlG9
-X-Google-Smtp-Source: ABdhPJy3JTr8hqGI3zGv/Wkdcx+RazBV8t/O0wjfDZjAg7HdB7z/TLVmseVqVktqODfQ2IusqJ7AbuAItL4bAzdFjI44jn30Phbu
+        id S2395476AbgLMX0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 18:26:21 -0500
+Received: from smtprelay0032.hostedemail.com ([216.40.44.32]:39834 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730631AbgLMX0V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 18:26:21 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id ABDC1180A7FD3;
+        Sun, 13 Dec 2020 23:25:39 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2525:2553:2565:2682:2685:2693:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4362:5007:6742:9025:10004:10400:10848:11232:11658:11914:12043:12294:12295:12297:12438:12555:12740:12760:12895:13069:13141:13230:13311:13357:13439:14181:14659:14721:21080:21324:21366:21433:21451:21627:21811:21939:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: fear65_5806dcd27416
+X-Filterd-Recvd-Size: 2900
+Received: from XPS-9350.home (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Sun, 13 Dec 2020 23:25:37 +0000 (UTC)
+Message-ID: <cf2a184e2264a2b9fd2c8d7f10d524924d417d57.camel@perches.com>
+Subject: Re: [PATCH] netfilter: conntrack: fix -Wformat
+From:   Joe Perches <joe@perches.com>
+To:     Tom Rix <trix@redhat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Date:   Sun, 13 Dec 2020 15:25:36 -0800
+In-Reply-To: <527928d8-4621-f2f3-a38f-80c60529dde8@redhat.com>
+References: <20201107075550.2244055-1-ndesaulniers@google.com>
+         <4910042649a4f3ab22fac93191b8c1fa0a2e17c3.camel@perches.com>
+         <CAKwvOdn50VP4h7tidMnnFeMA1M-FevykP+Y0ozieisS7Nn4yoQ@mail.gmail.com>
+         <26052c5a0a098aa7d9c0c8a1d39cc4a8f7915dd2.camel@perches.com>
+         <CAKwvOdkv6W_dTLVowEBu0uV6oSxwW8F+U__qAsmk7vop6U8tpw@mail.gmail.com>
+         <527928d8-4621-f2f3-a38f-80c60529dde8@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-X-Received: by 2002:a92:d8c4:: with SMTP id l4mr29201837ilo.38.1607897589768;
- Sun, 13 Dec 2020 14:13:09 -0800 (PST)
-Date:   Sun, 13 Dec 2020 14:13:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ac68ed05b65fd4d2@google.com>
-Subject: UBSAN: shift-out-of-bounds in hash_mac_create
-From:   syzbot <syzbot+d66bfadebca46cf61a2b@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, vvs@virtuozzo.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, 2020-12-13 at 11:21 -0800, Tom Rix wrote:
+> On 12/2/20 2:34 PM, Nick Desaulniers wrote:
+> > On Tue, Nov 10, 2020 at 2:04 PM Joe Perches <joe@perches.com> wrote:
+> > > On Tue, 2020-11-10 at 14:00 -0800, Nick Desaulniers wrote:
+> > > 
+> > > > Yeah, we could go through and remove %h and %hh to solve this, too, right?
+> > > Yup.
+> > > 
+> > > I think one of the checkpatch improvement mentees is adding
+> > > some suggestion and I hope an automated fix mechanism for that.
+> > > 
+> > > https://lore.kernel.org/lkml/5e3265c241602bb54286fbaae9222070daa4768e.camel@perches.com/
+> > + Tom, who's been looking at leveraging clang-tidy to automate such
+> > treewide mechanical changes.
+> > ex. https://reviews.llvm.org/D91789
+> > 
+> > See also commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging
+> > use of unnecessary %h[xudi] and %hh[xudi]") for a concise summary of
+> > related context.
+> 
+> I have posted the fixer here
+> 
+> https://reviews.llvm.org/D93182
+> 
+> It catches about 200 problems in 100 files, I'll be posting these soon.
 
-syzbot found the following issue on:
+Thanks, but see below:
+ 
+> clang-tidy-fix's big difference over checkpatch is using the __printf(x,y) attribute to find the log functions.
+> 
+> I will be doing a follow-on to add the missing __printf or __scanf's and rerunning the fixer.
 
-HEAD commit:    a9e26cb5 Add linux-next specific files for 20201208
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16f05123500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e259434a8eaf0206
-dashboard link: https://syzkaller.appspot.com/bug?extid=d66bfadebca46cf61a2b
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13afdcbd500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12b14b37500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d66bfadebca46cf61a2b@syzkaller.appspotmail.com
-
-================================================================================
-UBSAN: shift-out-of-bounds in net/netfilter/ipset/ip_set_hash_gen.h:151:6
-shift exponent 32 is too large for 32-bit type 'unsigned int'
-CPU: 0 PID: 8498 Comm: syz-executor519 Not tainted 5.10.0-rc7-next-20201208-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
- __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
- htable_bits net/netfilter/ipset/ip_set_hash_gen.h:151 [inline]
- hash_mac_create.cold+0x58/0x9b net/netfilter/ipset/ip_set_hash_gen.h:1524
- ip_set_create+0x610/0x1380 net/netfilter/ipset/ip_set_core.c:1115
- nfnetlink_rcv_msg+0xecc/0x1180 net/netfilter/nfnetlink.c:252
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:600
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x440419
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffd29571ba8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440419
-RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000009 R09: 00000000004002c8
-R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000401c20
-R13: 0000000000401cb0 R14: 0000000000000000 R15: 0000000000000000
-================================================================================
+scanf should not be tested because the %h use is required there.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
