@@ -2,93 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A62CC2D8B56
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 06:06:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C09D2D8C0C
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 08:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725835AbgLMFFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 00:05:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
+        id S2389013AbgLMH5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 02:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbgLMFFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 00:05:07 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CB3C0613CF;
-        Sat, 12 Dec 2020 21:04:26 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id o144so11738778ybc.0;
-        Sat, 12 Dec 2020 21:04:26 -0800 (PST)
+        with ESMTP id S2388643AbgLMH5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 02:57:11 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F55C0613CF
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 23:56:31 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id a8so22306981lfb.3
+        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 23:56:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z/uJz/Jw3MmfDGc84gX9EJKwTVBpnb7jcNLsPy/WYTg=;
-        b=qbb6zoMeusOCfpjDEE+KXrzxNik5+GwTEST8oZQxqGb0IPh7Acicglg6QgggwsSODl
-         nhmi5IZs8NFMHOJS9Yo8im9+F6eMyboUcziJjh0xGEuvW0hFEMamyfTAMmkMzuwuwX7N
-         F7un+qdeVf7AfMvJFsM2N74xMrk1N+n+CNi+PoK2LZ/g5SRKe2ZSOaXInTCmSuGM2UqK
-         WDSAPOgdLlaVIC/WZKgWOfLzQGw9yV3yCE+Yjctj5TDfdBKiGsBr/0IZ/eCnmiev/IRO
-         dO9L/dpm29dI+w++0vDQl4NexJ7Effk7Df2uak5r9BhepGYXo6RWONeUuJxNmOU48l+r
-         D/yQ==
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=udn4Qxro2r+4MlbZeU8OVezkiX5vJ/BKaBmT88MEn78=;
+        b=iE5fyDKCLT1aWi3Okjbk9w11HJ3CSx9Ska/XQY5NYW+B0RxxjKVnGEO5R9v4r8Vav9
+         mRlF5/pqldXvL/cILNtb0GTywj6+3LbbltXzyi/WtbEDF1XVzdMHKmO/o6xXMcrmfOWX
+         vRfetMl/K8qBlswLkZE/d1giN42poAQxflR3prM379be1WD7E28MxQ4Nr+Z2YrqzgVMZ
+         QKiBahLaEspRYRdvKjjEShiAjlZE2vzFNvhTUyV0PA95La6bZlmsrQz6ZivwPXonTV4B
+         vIWkItZgYBsf4L9pkQd/D7pY530wsJF5MDW3HL3O9auo6ZA43QSRXS5xQ/TwNv79+h8G
+         TlKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z/uJz/Jw3MmfDGc84gX9EJKwTVBpnb7jcNLsPy/WYTg=;
-        b=XKSqZ6bfBciGaU7LzdB3WKul/iFwhhxI0Gv04mJjHedTiHmqdGEHQcMG3g2p57cPAU
-         m/SYb+Hvj6Oyou8jUgTEqUAwYEyjrYyR+MWxLOD3wDwQd1vg4RQ0FJLwVrgsFeT09nGU
-         c3UO6YyTZpKDrsrMG54+KCNE3YvJpqs3eqzWD+LaehX75++x0bDFy2a++DjfADG8nxWh
-         2KKi4QUkLu/09LEvq2zShT1KehL772kfuvUb58+JWAS3iRqmgoiTykeYbpQlLVhXxjrj
-         LprRssx2Ci+LVl1+/LwWecOJ2ZTprYJQC6CG8Oy4vaBpmlFOB7+OdI190upm/IsrCQ+w
-         oTpQ==
-X-Gm-Message-State: AOAM531pY59J2DVnZ6wFKh2A1Bg7hxt8NB+3guFBCYpna4MX96nhm+nY
-        32bHdyYEQSmDLGgXUqMa5xRwOBW3yLuapGueO8nBGZTdHAc=
-X-Google-Smtp-Source: ABdhPJwwjj1eu9V+fuA1Gf6y0i37Y+U+rhZRbNZrW53zzJW2PAYnMbAfMlzfkf0c0LLKIpapY5qqc4+MNZRlFQ4aivA=
-X-Received: by 2002:a25:ef0c:: with SMTP id g12mr8240256ybd.26.1607835865316;
- Sat, 12 Dec 2020 21:04:25 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=udn4Qxro2r+4MlbZeU8OVezkiX5vJ/BKaBmT88MEn78=;
+        b=oXmO3xz2g0QFeaa8H9wv4SczKAiob6Ac3IIagj3wWPsLHlDkegrz1h8kwd4EKjG7np
+         8sroe4+cEOFa7R1t/3EBbe3IFT+DeZXIGanLG6n/BeXzNBLdKnRlaIjsAwI7MQ9ntQAW
+         9iqyXOYv560UAK0Ce+/nbO2pzAqkQ85clJZCE6vUodCLV3OQPak5JrK5caZ1Sir8W8js
+         ULUozUYfwJyEPOZeJcZ1yF/eBS/7AvvE6ZtESd5PihGzGIczj116fAj1furUu+uNxTG5
+         R1nG0oVhonvp6qxUB/BD9BbULrCA7ahWtn5gozzJo9ZJXGdNXkd/GBAG5+AgXX+ZDQY3
+         jXpg==
+X-Gm-Message-State: AOAM530t6PYJHJAHbCjr2llV5Lza7YUfGX1Y7/U1aHJFl0u4by5qN0dQ
+        Ulx7wwHJC8nvF3nv/axizreg9w==
+X-Google-Smtp-Source: ABdhPJz4SrY/eatmjTI7tWktdF8g1mTaOsQUxMaepZ9xtoamt2aZ0EaqIA8we/SMnV/qVPgkhUFwwA==
+X-Received: by 2002:a2e:5047:: with SMTP id v7mr8256748ljd.242.1607846189423;
+        Sat, 12 Dec 2020 23:56:29 -0800 (PST)
+Received: from [192.168.1.157] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
+        by smtp.gmail.com with ESMTPSA id b22sm1628018lfp.233.2020.12.12.23.56.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Dec 2020 23:56:29 -0800 (PST)
+Subject: Re: [PATCH net-next v2] GTP: add support for flow based tunneling API
+To:     Pravin B Shelar <pbshelar@fb.com>, netdev@vger.kernel.org,
+        pablo@netfilter.org, laforge@gnumonks.org
+Cc:     pravin.ovn@gmail.com
+References: <20201212044017.55865-1-pbshelar@fb.com>
+From:   Jonas Bonn <jonas@norrbonn.se>
+Message-ID: <67f7c207-a537-dd22-acd8-dcce42755d1a@norrbonn.se>
+Date:   Sun, 13 Dec 2020 08:56:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-References: <20201128193335.219395-1-masahiroy@kernel.org> <20201212161831.GA28098@roeck-us.net>
-In-Reply-To: <20201212161831.GA28098@roeck-us.net>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Sun, 13 Dec 2020 06:04:14 +0100
-Message-ID: <CANiq72=e9Csgpcu3MdLGB77dL_QBn6PpqoG215YUHZLNCUGP0w@mail.gmail.com>
-Subject: Re: [PATCH v3] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        wireguard@lists.zx2c4.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201212044017.55865-1-pbshelar@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 12, 2020 at 5:18 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> This patch results in:
->
-> arch/sh/kernel/cpu/sh4a/smp-shx3.c: In function 'shx3_prepare_cpus':
-> arch/sh/kernel/cpu/sh4a/smp-shx3.c:76:3: error: ignoring return value of 'request_irq' declared with attribute 'warn_unused_result'
->
-> when building sh:defconfig. Checking for calls to request_irq()
-> suggests that there will be other similar errors in various builds.
-> Reverting the patch fixes the problem.
+Hi Pravin,
 
-Which ones? From a quick grep and some filtering I could only find one
-file with wrong usage apart from this one:
+I've been thinking a bit about this and find it more and more 
+interesting.  Could you post a bit of information about the ip-route 
+changes you'll make in order to support GTP LWT encapsulation?  Could 
+you provide an example command line?
 
-    drivers/net/ethernet/lantiq_etop.c:
-request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
-    drivers/net/ethernet/lantiq_etop.c:
-request_irq(irq, ltq_etop_dma_irq, 0, "etop_rx", priv);
+I understand the advantages here of coupling to BPF and OVS.  How does 
+storing the encapsulation parameters via ip-route compare to storing 
+them as PDP contexts from the point of view of resource consumption? 
+Are there are other advantages/disadvantages?
 
-Of course, this does not cover other functions, but it means there
-aren't many issues and/or people building the code if nobody complains
-within a few weeks. So I think we can fix them as they come.
+On 12/12/2020 05:40, Pravin B Shelar wrote:
+> Following patch add support for flow based tunneling API
+> to send and recv GTP tunnel packet over tunnel metadata API.
+> This would allow this device integration with OVS or eBPF using
+> flow based tunneling APIs.
+> 
+> Signed-off-by: Pravin B Shelar <pbshelar@fb.com>
+> ---
+> Fixed according to comments from Jonas Bonn
+> ---
+>   drivers/net/gtp.c                  | 514 ++++++++++++++++++++---------
+>   include/uapi/linux/gtp.h           |  12 +
+>   include/uapi/linux/if_link.h       |   1 +
+>   include/uapi/linux/if_tunnel.h     |   1 +
+>   tools/include/uapi/linux/if_link.h |   1 +
+>   5 files changed, 382 insertions(+), 147 deletions(-)
+> 
+> diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+> index 4c04e271f184..0e212a70fe4b 100644
+> --- a/drivers/net/gtp.c
+> +++ b/drivers/net/gtp.c
+> @@ -21,6 +21,7 @@
+>   #include <linux/file.h>
+>   #include <linux/gtp.h>
+>   
+> +#include <net/dst_metadata.h>
+>   #include <net/net_namespace.h>
+>   #include <net/protocol.h>
+>   #include <net/ip.h>
+> @@ -73,6 +74,9 @@ struct gtp_dev {
+>   	unsigned int		hash_size;
+>   	struct hlist_head	*tid_hash;
+>   	struct hlist_head	*addr_hash;
+> +	/* Used by flow based tunnel. */
+> +	bool			collect_md;
+> +	struct socket		*collect_md_sock;
 
-Cheers,
-Miguel
+I'm not convinced that you need to special-case LWT in this way.  It 
+should be possible to just use the regular sk1u socket.  I know that the 
+sk1u socket is created in userspace and might be set up to listen on the 
+wrong address, but that's a user error if they try to use that device 
+with LWT.  You could easily make the sk1u socket an optional parameter 
+and create it (as you do in your patch) if it's not provided.  Then 
+ip_tunnel_collect_metadata() would tell you whether to get the 
+encapsulaton details from the tunnel itself or whether to look up a PDP 
+context.  That should suffice, right?
+
+/Jonas
