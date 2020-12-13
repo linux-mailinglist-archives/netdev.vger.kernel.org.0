@@ -2,112 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C88A02D8E0C
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 15:55:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 781462D8E12
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 15:57:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403870AbgLMOxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 09:53:52 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:34978 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729513AbgLMOxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 09:53:51 -0500
-Received: by mail-il1-f198.google.com with SMTP id l11so11480472ilq.2
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 06:53:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=fWF53rcHi8QspkjztKtg7fthAltlqOrg0gZKXd1Tx+4=;
-        b=jKlX0Hz+CdAALE6M9CwHLBnVj/IVDr7HKLEJDiNtV0fwOPGgibazc52FmiKmQaVnEg
-         8Pm3vBvSI8vNoEeoD/cnp13GFW9wep1jkKPMS+oWxNswyF0KDtfn2yuYoSiwwtsyaOQE
-         4nvNgyqOK40MywMF3uSXzFAx4RQlzDqzlpjunJonJ3/M3fmoidqLQ6Z75aZr9TK0I64e
-         Q+JPN5anAuIq7KZwQ05LgN9jkdNbchmpZR7eBd455CiKx32klAISHawI6uC3/pjqVJra
-         H3gj+5TacEBoTBuVOvVQ7uG7rayK6eDsWK4pEFEGZf89S9KxKBJH6eJW9mipviOpRw3v
-         /5iA==
-X-Gm-Message-State: AOAM531h56UYpWmYZxjcETfQ5TL8BG3UEBWNuN1nmu4XBiCDk+cYqt32
-        1o1jo44mlLyw6lOCImQzmUmezCDQJ74+KR4REa8/zk0vZ/9s
-X-Google-Smtp-Source: ABdhPJzrJnVwLKuT4IGifrvkCv9PDEMjNNrq6FMGbcr0krUHEsKI3sBFDe0MTfP+Ug664/YEqs0v9dxinAyACJKe5RpnNxro4nSk
+        id S2406185AbgLMO5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 09:57:06 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42007 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2405496AbgLMO4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 09:56:55 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id D158758032E;
+        Sun, 13 Dec 2020 09:55:48 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sun, 13 Dec 2020 09:55:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=dpcwTT
+        z/sesD3B1rZoBYSQwgGPQNjssdt5XLEtahVEc=; b=HosWXGNIaVwtkVUadRZphf
+        vpGtRomJMH/cvw37j0NuQLej2sw8tqNCj9GFX9+Mg03v+Bk34NG37Po68y14S1s9
+        gtje7ny4yNPNulCrcApDMja4srFBDpTzz9q5+/A8KKThMczApn5Y8qoWp/XdF+ay
+        oE4safZdDFaCtLrv7kgXZLTEWtyP2IZ6KcSfgsx5T9L6dumu83jXTNVrb4gJWpIe
+        wlk7BCyyM5Mdz2+6E6vWvmA6GEK2G0b7G6tQbgSxB9KaEglCrNl2eFOnORiMpO1g
+        nqAEskOoS8nvrY63A8yj78ZefU02Qq4fg/4Xx4rnJmAGdIiBwQzwBdVJohAApAiQ
+        ==
+X-ME-Sender: <xms:civWX_INofMYSLDeo9a-pXLqhRdVTvASyltTSSbW9J3GPnMGSKfPWw>
+    <xme:civWXzJ4KG2NadP5GQmFgRYJZBfYLsxKGEMBlUkQES679EPsmPx37CE8ZuVdWelPD
+    -wzGpj1dQ85uDw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekiedgjedvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduhedvrddvjeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:civWX3txsPdj8soGqTHXvWqAqnOtW1-6ZLkNzkxD81m99myoBtHBkw>
+    <xmx:civWX4Y_XIivAyt3NKavMS9BSUxTEz6ORzo3mWUtyEBoR_IJFZ6rQA>
+    <xmx:civWX2Y0JfCkNjq3893pdIBdRW9EF2UtuyL6CW8UbbsIi6wGans3RQ>
+    <xmx:dCvWX7Ku_M9SovOxHfJ4-zuE8WpDH3q4eEaNQbRl97Icxq1xS9AsAA>
+Received: from localhost (igld-84-229-152-27.inter.net.il [84.229.152.27])
+        by mail.messagingengine.com (Postfix) with ESMTPA id BC8C2108005C;
+        Sun, 13 Dec 2020 09:55:45 -0500 (EST)
+Date:   Sun, 13 Dec 2020 16:55:43 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek Behun <marek.behun@nic.cz>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v3 net-next 1/7] net: bridge: notify switchdev of
+ disappearance of old FDB entry upon migration
+Message-ID: <20201213145543.GA2539586@shredder.lan>
+References: <20201213140710.1198050-1-vladimir.oltean@nxp.com>
+ <20201213140710.1198050-2-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:5802:: with SMTP id m2mr4547791ilb.271.1607871190712;
- Sun, 13 Dec 2020 06:53:10 -0800 (PST)
-Date:   Sun, 13 Dec 2020 06:53:10 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002aca2e05b659af04@google.com>
-Subject: memory leak in xskq_create
-From:   syzbot <syzbot+cfa88ddd0655afa88763@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bjorn.topel@intel.com, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, jonathan.lemon@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201213140710.1198050-2-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Dec 13, 2020 at 04:07:04PM +0200, Vladimir Oltean wrote:
+> Currently the bridge emits atomic switchdev notifications for
+> dynamically learnt FDB entries. Monitoring these notifications works
+> wonders for switchdev drivers that want to keep their hardware FDB in
+> sync with the bridge's FDB.
+> 
+> For example station A wants to talk to station B in the diagram below,
+> and we are concerned with the behavior of the bridge on the DUT device:
+> 
+>                    DUT
+>  +-------------------------------------+
+>  |                 br0                 |
+>  | +------+ +------+ +------+ +------+ |
+>  | |      | |      | |      | |      | |
+>  | | swp0 | | swp1 | | swp2 | | eth0 | |
+>  +-------------------------------------+
+>       |        |                  |
+>   Station A    |                  |
+>                |                  |
+>          +--+------+--+    +--+------+--+
+>          |  |      |  |    |  |      |  |
+>          |  | swp0 |  |    |  | swp0 |  |
+>  Another |  +------+  |    |  +------+  | Another
+>   switch |     br0    |    |     br0    | switch
+>          |  +------+  |    |  +------+  |
+>          |  |      |  |    |  |      |  |
+>          |  | swp1 |  |    |  | swp1 |  |
+>          +--+------+--+    +--+------+--+
+>                                   |
+>                               Station B
+> 
+> Interfaces swp0, swp1, swp2 are handled by a switchdev driver that has
+> the following property: frames injected from its control interface bypass
+> the internal address analyzer logic, and therefore, this hardware does
+> not learn from the source address of packets transmitted by the network
+> stack through it. So, since bridging between eth0 (where Station B is
+> attached) and swp0 (where Station A is attached) is done in software,
+> the switchdev hardware will never learn the source address of Station B.
+> So the traffic towards that destination will be treated as unknown, i.e.
+> flooded.
+> 
+> This is where the bridge notifications come in handy. When br0 on the
+> DUT sees frames with Station B's MAC address on eth0, the switchdev
+> driver gets these notifications and can install a rule to send frames
+> towards Station B's address that are incoming from swp0, swp1, swp2,
+> only towards the control interface. This is all switchdev driver private
+> business, which the notification makes possible.
+> 
+> All is fine until someone unplugs Station B's cable and moves it to the
+> other switch:
+> 
+>                    DUT
+>  +-------------------------------------+
+>  |                 br0                 |
+>  | +------+ +------+ +------+ +------+ |
+>  | |      | |      | |      | |      | |
+>  | | swp0 | | swp1 | | swp2 | | eth0 | |
+>  +-------------------------------------+
+>       |        |                  |
+>   Station A    |                  |
+>                |                  |
+>          +--+------+--+    +--+------+--+
+>          |  |      |  |    |  |      |  |
+>          |  | swp0 |  |    |  | swp0 |  |
+>  Another |  +------+  |    |  +------+  | Another
+>   switch |     br0    |    |     br0    | switch
+>          |  +------+  |    |  +------+  |
+>          |  |      |  |    |  |      |  |
+>          |  | swp1 |  |    |  | swp1 |  |
+>          +--+------+--+    +--+------+--+
+>                |
+>            Station B
+> 
+> Luckily for the use cases we care about, Station B is noisy enough that
+> the DUT hears it (on swp1 this time). swp1 receives the frames and
+> delivers them to the bridge, who enters the unlikely path in br_fdb_update
+> of updating an existing entry. It moves the entry in the software bridge
+> to swp1 and emits an addition notification towards that.
+> 
+> As far as the switchdev driver is concerned, all that it needs to ensure
+> is that traffic between Station A and Station B is not forever broken.
+> If it does nothing, then the stale rule to send frames for Station B
+> towards the control interface remains in place. But Station B is no
+> longer reachable via the control interface, but via a port that can
+> offload the bridge port learning attribute. It's just that the port is
+> prevented from learning this address, since the rule overrides FDB
+> updates. So the rule needs to go. The question is via what mechanism.
 
-syzbot found the following issue on:
+Can you please clarify why the FDB replacement notification is not
+enough? Is it because the hardware you are working with manages MACs to
+CPU in a separate table from its FDB table? I assume that's why you
+refer to it as a "rule" instead of FDB entry? How common is this with
+DSA switches?
 
-HEAD commit:    a68a0262 mm/madvise: remove racy mm ownership check
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=165b9413500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4305fa9ea70c7a9f
-dashboard link: https://syzkaller.appspot.com/bug?extid=cfa88ddd0655afa88763
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1180a237500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=114067cf500000
+Asking because it is not clear to me from the commit message. The patch
+looks fine.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cfa88ddd0655afa88763@syzkaller.appspotmail.com
+> 
+> It sure would be possible for this switchdev driver to keep track of all
+> addresses which are sent to the control interface, and then also listen
+> for bridge notifier events on its own ports, searching for the ones that
+> have a MAC address which was previously sent to the control interface.
+> But this is cumbersome and inefficient. Instead, with one small change,
+> the bridge could notify of the address deletion from the old port, in a
+> symmetrical manner with how it did for the insertion. Then the switchdev
+> driver would not be required to monitor learn/forget events for its own
+> ports. It could just delete the rule towards the control interface upon
+> bridge entry migration. This would make hardware address learning be
+> possible again. Then it would take a few more packets until the hardware
+> and software FDB would be in sync again.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Debian GNU/Linux 9 syzkaller ttyS0
-Warning: Permanently added '10.128.0.50' (ECDSA) to the list of known hosts.
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff88810f897940 (size 64):
-  comm "syz-executor991", pid 8502, jiffies 4294942194 (age 14.080s)
-  hex dump (first 32 bytes):
-    7f 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 a0 37 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ..7.............
-  backtrace:
-    [<00000000639d0dd1>] xskq_create+0x23/0xd0 include/linux/slab.h:552
-    [<00000000b680b035>] xsk_init_queue net/xdp/xsk.c:508 [inline]
-    [<00000000b680b035>] xsk_setsockopt+0x1c4/0x590 net/xdp/xsk.c:875
-    [<000000002b302260>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2132
-    [<00000000ae03723e>] __do_sys_setsockopt net/socket.c:2143 [inline]
-    [<00000000ae03723e>] __se_sys_setsockopt net/socket.c:2140 [inline]
-    [<00000000ae03723e>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2140
-    [<0000000005c2b4a0>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<0000000003db140f>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810f8979c0 (size 64):
-  comm "syz-executor991", pid 8503, jiffies 4294942194 (age 14.080s)
-  hex dump (first 32 bytes):
-    ff 03 00 00 00 04 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 13 12 81 88 ff ff 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000639d0dd1>] xskq_create+0x23/0xd0 include/linux/slab.h:552
-    [<00000000b680b035>] xsk_init_queue net/xdp/xsk.c:508 [inline]
-    [<00000000b680b035>] xsk_setsockopt+0x1c4/0x590 net/xdp/xsk.c:875
-    [<000000002b302260>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2132
-    [<00000000ae03723e>] __do_sys_setsockopt net/socket.c:2143 [inline]
-    [<00000000ae03723e>] __se_sys_setsockopt net/socket.c:2140 [inline]
-    [<00000000ae03723e>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2140
-    [<0000000005c2b4a0>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<0000000003db140f>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
