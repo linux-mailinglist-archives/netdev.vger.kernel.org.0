@@ -2,193 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 781462D8E12
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 15:57:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A66E02D8E1C
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 15:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406185AbgLMO5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 09:57:06 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42007 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405496AbgLMO4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 09:56:55 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id D158758032E;
-        Sun, 13 Dec 2020 09:55:48 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 13 Dec 2020 09:55:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=dpcwTT
-        z/sesD3B1rZoBYSQwgGPQNjssdt5XLEtahVEc=; b=HosWXGNIaVwtkVUadRZphf
-        vpGtRomJMH/cvw37j0NuQLej2sw8tqNCj9GFX9+Mg03v+Bk34NG37Po68y14S1s9
-        gtje7ny4yNPNulCrcApDMja4srFBDpTzz9q5+/A8KKThMczApn5Y8qoWp/XdF+ay
-        oE4safZdDFaCtLrv7kgXZLTEWtyP2IZ6KcSfgsx5T9L6dumu83jXTNVrb4gJWpIe
-        wlk7BCyyM5Mdz2+6E6vWvmA6GEK2G0b7G6tQbgSxB9KaEglCrNl2eFOnORiMpO1g
-        nqAEskOoS8nvrY63A8yj78ZefU02Qq4fg/4Xx4rnJmAGdIiBwQzwBdVJohAApAiQ
-        ==
-X-ME-Sender: <xms:civWX_INofMYSLDeo9a-pXLqhRdVTvASyltTSSbW9J3GPnMGSKfPWw>
-    <xme:civWXzJ4KG2NadP5GQmFgRYJZBfYLsxKGEMBlUkQES679EPsmPx37CE8ZuVdWelPD
-    -wzGpj1dQ85uDw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekiedgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduhedvrddvjeenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:civWX3txsPdj8soGqTHXvWqAqnOtW1-6ZLkNzkxD81m99myoBtHBkw>
-    <xmx:civWX4Y_XIivAyt3NKavMS9BSUxTEz6ORzo3mWUtyEBoR_IJFZ6rQA>
-    <xmx:civWX2Y0JfCkNjq3893pdIBdRW9EF2UtuyL6CW8UbbsIi6wGans3RQ>
-    <xmx:dCvWX7Ku_M9SovOxHfJ4-zuE8WpDH3q4eEaNQbRl97Icxq1xS9AsAA>
-Received: from localhost (igld-84-229-152-27.inter.net.il [84.229.152.27])
-        by mail.messagingengine.com (Postfix) with ESMTPA id BC8C2108005C;
-        Sun, 13 Dec 2020 09:55:45 -0500 (EST)
-Date:   Sun, 13 Dec 2020 16:55:43 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marek Behun <marek.behun@nic.cz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v3 net-next 1/7] net: bridge: notify switchdev of
- disappearance of old FDB entry upon migration
-Message-ID: <20201213145543.GA2539586@shredder.lan>
-References: <20201213140710.1198050-1-vladimir.oltean@nxp.com>
- <20201213140710.1198050-2-vladimir.oltean@nxp.com>
+        id S2405606AbgLMO7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 09:59:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729513AbgLMO7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 09:59:12 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005F5C0613CF;
+        Sun, 13 Dec 2020 06:58:31 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id w127so13028137ybw.8;
+        Sun, 13 Dec 2020 06:58:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=plNVcmrce8g2J8M3GvZaxtbh0wYjjwJH9EhP4nToGcg=;
+        b=LpFXWaQL6fLau/RHuV7zuorCsHamAKs9/0ITBJlTv5NR82LANrttpzO2ebQMsHpZfG
+         18b+X5d4gAG21gQxCKibZHkhKwIbA39zfcomdlccbTuhTTpTYE8s66MoSH14+4HiQUnr
+         g4mbJj/cbabq1rM/S6PMysI3haCDy9iyIGpBgd0he39coQdvcCX3FGp28qe7ki5efaDV
+         DBw+xjWRj9e3WpJE8JAacbCQFHl5SMH3FRHCj/uBZ6C2eT+VmDlUybrGEq1alP6Zll1R
+         oPZbKzlxxQp7fxvY3PmQ59y30aadQOZGheSPiTTOv/SGokObhWdsdMTtSemZUbpWin2k
+         P+DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=plNVcmrce8g2J8M3GvZaxtbh0wYjjwJH9EhP4nToGcg=;
+        b=ssEYGbdNTuw6FZhE7RTTWkkkoDB0yhjJT5a7NuZ23B18ZBrew1jVVc3Kzgu311V6oP
+         wNtygylQbDusexVTgz/1FdXlZnFnXcr904e1Wi4r9YdcmXCIx2uSRFu7KtoGLk+Bz+6b
+         Nh6N7cNLc7YsgQDZQ8wJbex7qAhzEsBNoyht8kqdfhzOrLAy+DL/QkERiJMTG4vP+i+W
+         LPRNrJJOHtGrlhHqq7ebl0I2xUDEQ/o1wxnyqT0/Mj9L71Zrfq2DEddZ2f1j67Q/ysHC
+         AOfKl13FKmWD+4RpFuc3TX98Xr76Uq5BNJTGzE+gDx66/j2jN6ltH0Z0SYBY0SrDf8Zd
+         ukQA==
+X-Gm-Message-State: AOAM532LHjlDIclXAGky5patU+xQLOCkIa5TfRkVv8iIISoEaayA6sKf
+        goHRMCT7MUURs1paHdYTVSl+WwHicA5PvRhCZz8=
+X-Google-Smtp-Source: ABdhPJyleUHOQ1Dzwsvco4D8Kb6ED8lXDzo42gqSNXB0njsWpLnkEVMEMAkYlMTU9I4fZNhLo+xUhDEMmRjvFVpRMyU=
+X-Received: by 2002:a25:538a:: with SMTP id h132mr11841975ybb.247.1607871511230;
+ Sun, 13 Dec 2020 06:58:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201213140710.1198050-2-vladimir.oltean@nxp.com>
+References: <20201128193335.219395-1-masahiroy@kernel.org> <20201212161831.GA28098@roeck-us.net>
+ <CANiq72=e9Csgpcu3MdLGB77dL_QBn6PpqoG215YUHZLNCUGP0w@mail.gmail.com> <8f645b94-80e5-529c-7b6a-d9b8d8c9685e@roeck-us.net>
+In-Reply-To: <8f645b94-80e5-529c-7b6a-d9b8d8c9685e@roeck-us.net>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Sun, 13 Dec 2020 15:58:20 +0100
+Message-ID: <CANiq72kML=UmMLyKcorYwOhp2oqjfz7_+JN=EmPp05AapHbFSg@mail.gmail.com>
+Subject: Re: [PATCH v3] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        wireguard@lists.zx2c4.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 13, 2020 at 04:07:04PM +0200, Vladimir Oltean wrote:
-> Currently the bridge emits atomic switchdev notifications for
-> dynamically learnt FDB entries. Monitoring these notifications works
-> wonders for switchdev drivers that want to keep their hardware FDB in
-> sync with the bridge's FDB.
-> 
-> For example station A wants to talk to station B in the diagram below,
-> and we are concerned with the behavior of the bridge on the DUT device:
-> 
->                    DUT
->  +-------------------------------------+
->  |                 br0                 |
->  | +------+ +------+ +------+ +------+ |
->  | |      | |      | |      | |      | |
->  | | swp0 | | swp1 | | swp2 | | eth0 | |
->  +-------------------------------------+
->       |        |                  |
->   Station A    |                  |
->                |                  |
->          +--+------+--+    +--+------+--+
->          |  |      |  |    |  |      |  |
->          |  | swp0 |  |    |  | swp0 |  |
->  Another |  +------+  |    |  +------+  | Another
->   switch |     br0    |    |     br0    | switch
->          |  +------+  |    |  +------+  |
->          |  |      |  |    |  |      |  |
->          |  | swp1 |  |    |  | swp1 |  |
->          +--+------+--+    +--+------+--+
->                                   |
->                               Station B
-> 
-> Interfaces swp0, swp1, swp2 are handled by a switchdev driver that has
-> the following property: frames injected from its control interface bypass
-> the internal address analyzer logic, and therefore, this hardware does
-> not learn from the source address of packets transmitted by the network
-> stack through it. So, since bridging between eth0 (where Station B is
-> attached) and swp0 (where Station A is attached) is done in software,
-> the switchdev hardware will never learn the source address of Station B.
-> So the traffic towards that destination will be treated as unknown, i.e.
-> flooded.
-> 
-> This is where the bridge notifications come in handy. When br0 on the
-> DUT sees frames with Station B's MAC address on eth0, the switchdev
-> driver gets these notifications and can install a rule to send frames
-> towards Station B's address that are incoming from swp0, swp1, swp2,
-> only towards the control interface. This is all switchdev driver private
-> business, which the notification makes possible.
-> 
-> All is fine until someone unplugs Station B's cable and moves it to the
-> other switch:
-> 
->                    DUT
->  +-------------------------------------+
->  |                 br0                 |
->  | +------+ +------+ +------+ +------+ |
->  | |      | |      | |      | |      | |
->  | | swp0 | | swp1 | | swp2 | | eth0 | |
->  +-------------------------------------+
->       |        |                  |
->   Station A    |                  |
->                |                  |
->          +--+------+--+    +--+------+--+
->          |  |      |  |    |  |      |  |
->          |  | swp0 |  |    |  | swp0 |  |
->  Another |  +------+  |    |  +------+  | Another
->   switch |     br0    |    |     br0    | switch
->          |  +------+  |    |  +------+  |
->          |  |      |  |    |  |      |  |
->          |  | swp1 |  |    |  | swp1 |  |
->          +--+------+--+    +--+------+--+
->                |
->            Station B
-> 
-> Luckily for the use cases we care about, Station B is noisy enough that
-> the DUT hears it (on swp1 this time). swp1 receives the frames and
-> delivers them to the bridge, who enters the unlikely path in br_fdb_update
-> of updating an existing entry. It moves the entry in the software bridge
-> to swp1 and emits an addition notification towards that.
-> 
-> As far as the switchdev driver is concerned, all that it needs to ensure
-> is that traffic between Station A and Station B is not forever broken.
-> If it does nothing, then the stale rule to send frames for Station B
-> towards the control interface remains in place. But Station B is no
-> longer reachable via the control interface, but via a port that can
-> offload the bridge port learning attribute. It's just that the port is
-> prevented from learning this address, since the rule overrides FDB
-> updates. So the rule needs to go. The question is via what mechanism.
+On Sun, Dec 13, 2020 at 1:55 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> Witz komm raus, Du bist umzingelt.
 
-Can you please clarify why the FDB replacement notification is not
-enough? Is it because the hardware you are working with manages MACs to
-CPU in a separate table from its FDB table? I assume that's why you
-refer to it as a "rule" instead of FDB entry? How common is this with
-DSA switches?
+Please, explain this reference. :-)
 
-Asking because it is not clear to me from the commit message. The patch
-looks fine.
+> The key here is "if nobody complains". I would argue that it is _your_
+> responsibility to do those builds, and not the reponsibility of others
+> to do it for you.
 
-> 
-> It sure would be possible for this switchdev driver to keep track of all
-> addresses which are sent to the control interface, and then also listen
-> for bridge notifier events on its own ports, searching for the ones that
-> have a MAC address which was previously sent to the control interface.
-> But this is cumbersome and inefficient. Instead, with one small change,
-> the bridge could notify of the address deletion from the old port, in a
-> symmetrical manner with how it did for the insertion. Then the switchdev
-> driver would not be required to monitor learn/forget events for its own
-> ports. It could just delete the rule towards the control interface upon
-> bridge entry migration. This would make hardware address learning be
-> possible again. Then it would take a few more packets until the hardware
-> and software FDB would be in sync again.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+Testing allmodconfig for a popular architecture, agreed, it is due
+diligence to avoid messing -next that day.
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Testing a matrix of configs * arches * gcc/clang * compiler versions?
+No, sorry, that is what CI/-next/-rcs are for and that is where the
+"if nobody complains" comes from.
+
+If you think building a set of code for a given arch/config/etc. is
+particularly important, then it is _your_ responsibility to build it
+once in a while in -next (as you have done). If it is not that
+important, somebody will speak up in one -rc. If not, is anyone
+actually building that code at all?
+
+Otherwise, changing core/shared code would be impossible. Please don't
+blame the author for making a sensible change that will improve code
+quality for everyone.
+
+> But, sure, your call. Please feel free to ignore my report.
+
+I'm not ignoring the report, quite the opposite. I am trying to
+understand why you think reverting is needed for something that has
+been more than a week in -next without any major breakage and still
+has a long road to v5.11.
+
+Cheers,
+Miguel
