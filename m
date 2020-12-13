@@ -2,205 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 850512D8ADF
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 02:44:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BF382D8AF3
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 03:42:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388973AbgLMBnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 20:43:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726789AbgLMBnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Dec 2020 20:43:06 -0500
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EB7C0613CF
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 17:42:25 -0800 (PST)
-Received: by mail-ot1-x341.google.com with SMTP id b18so12204699ots.0
-        for <netdev@vger.kernel.org>; Sat, 12 Dec 2020 17:42:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=80pmt/cXcoOFoAdT/xC/ICK5qXn4ry7F1vcudUkuP+c=;
-        b=Kppv1xreTkzn19WyPSjr2xp2NotyPxMPutkGiNRTfnMzx8viioSCyrOdvMXYaLTO2u
-         oV8Mwth5FkTp9G5KEztux01tfEr4b0AzQmzGnc9C+uc2xbo5ImWjdiycL4TFnSQ4w1GC
-         9wuTSgnx4ka8QcILClWtt1nqVwN/Ga7s+MdlLMXPBnmYts+qfSAaXGtc+jYenT0sG5gJ
-         +GIO/bgd+59GQ2yBo3xqH+7SLhiaTDBhhMX77hzPVw1slFI7DHXcAU8BAfY2XXal+PMQ
-         SGkYtrU/zGmFsq/BxpjA7uYwC9zuaJSnWtFZAAJuq8ktfbRh4qDFatqRkn7NQPvSl56i
-         OE1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=80pmt/cXcoOFoAdT/xC/ICK5qXn4ry7F1vcudUkuP+c=;
-        b=Asc1UbnroabXXbxUbZTeruf1F6jRgwTny4yQRqQGiuAablwyWJ/XqlwJTUsj60uKjE
-         j9OkF+y1rxlW+n2mvQfOIC7jGX6JbHKY/vJSos5esueZ0Sk/drRmEimsq+Q1HC2EipKn
-         CAp/0tSIzjOxovO95KxLz7dVkrQab3GZF49tO/99tizTgRXpgPyiG8IKonvD1ByyNskk
-         KPrDyKRcoTBgORKIHDrMy6Vek387bCvgKL9YSN8asksKqSagAZYP3BbOK+dPb5IEJ/xf
-         XrJ8OrAMzdqXt8MWKRYXxpZdMtWGxHTEMf4+7gTeMNbKCcShJB3elQ5zeeXSXa/0gNPz
-         jZkw==
-X-Gm-Message-State: AOAM530H4ku47KQrRKU4Gt/oygkzBQBtEHZg2uS56iuMQ8lsg0huWXA7
-        ggOqX358PKWhGUkUbN62sAE=
-X-Google-Smtp-Source: ABdhPJyDWko5EvotQ86iHzZ5Iacio1F0Nptr/Fw1wqFOz4QgMoCb8DGpegBQUeusHwMoxeV9gtdpnA==
-X-Received: by 2002:a9d:620f:: with SMTP id g15mr14403885otj.361.1607823745181;
-        Sat, 12 Dec 2020 17:42:25 -0800 (PST)
-Received: from ?IPv6:2600:1700:dfe0:49f0:5c21:b591:3efd:575e? ([2600:1700:dfe0:49f0:5c21:b591:3efd:575e])
-        by smtp.gmail.com with ESMTPSA id x12sm3085540oic.51.2020.12.12.17.42.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Dec 2020 17:42:24 -0800 (PST)
-Subject: Re: [PATCH v3 net-next] net: dsa: reference count the host mdb
- addresses
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1727777AbgLMClz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 21:41:55 -0500
+Received: from mail-eopbgr140078.outbound.protection.outlook.com ([40.107.14.78]:44269
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727663AbgLMClu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Dec 2020 21:41:50 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j1pJGT9s8zIvJBmuJiV8gSmwCql0WIf07G/S6qMjnICOoTLbHyDEZJyfpZFLZ2rvrnYALLcHAY1yXt5loVfuvgC488xrq+zkyDkk7Ayfps5bRqxTBt+YbJpQwnlreLEHy4MrnAFVOawwLwx0Hbh4oL4xZOcqFGABjwAJb2rLWwd9bibeauhKKe9Hv2Lr/t1AzSX7XyDTaIpijpntkousYTEB5/RJpRigIEiSz4ge+MiWekDKsurv7f6PdZflJKBHCFd0JdQ5evKKjR68Q9QTYGHs/lU4Q2UtAjCXme2LEHfysqZ6gRfNBwq9R/LSzns8uHxmyq1Y6WztuH18f/7gYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l+5rd7hxSU1RvLcEtYHVa4mtvgaZoy4+z3dy9/uQ/gE=;
+ b=oFWK8Ol/UPKURkHfSXtgffQRPkqMc48mA1hWTL/6/rhbMhzAG4Qm10fkInERyfopnFhYFz69JmleeKJjx06vH8izs4Pb8V6sbToIPS3S3MIMrqo/FcmMy4Evgl+xJ6LxUAPzMfeQvnnMmBfhBEvtxMgGD1+d0zE67Vi3EkVl3KI5gEdtFZEfMcovXxLsQucU6RwMJKRAT4QjkgYhzDir0X9B3/QRDg+hCO9O7LYdDn934nAMQ1WQZkTqKtt8us/mIgdIGmuIggHK1E5F/TeWyl80brRTPLllCiTm4gvqqZW0TTxpogl0A94Z4qEF62Zv77OsvrUJTafgkDFwBYt5lQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l+5rd7hxSU1RvLcEtYHVa4mtvgaZoy4+z3dy9/uQ/gE=;
+ b=JVkmiz6J4ikj7q5sP7zhiUM14KjbmVwAHga4YCpfYUc/3TF7KWE05ERl5vvvrvb+kpve58YKM4eU+ubcBk3xGpBtxUhXDjTaEjejs5sAIXzK8pkuwj54rO6/encrN0+gIBXiePiVZhtNJjvRg5vFUUBl7PGUQD4jxj3+6TB0mk4=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR0402MB3407.eurprd04.prod.outlook.com (2603:10a6:803:5::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Sun, 13 Dec
+ 2020 02:41:01 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3654.020; Sun, 13 Dec 2020
+ 02:41:01 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-References: <20201212203901.351331-1-vladimir.oltean@nxp.com>
- <20201212220641.GA2781095@lunn.ch> <20201212221858.audzhrku3i3p2nqf@skbuf>
- <20201213000855.GA2786309@lunn.ch> <20201213001418.ygofxyfmm7d273fe@skbuf>
- <20201213003410.GB2786309@lunn.ch> <20201213004933.pbjwfltwudvokrej@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e3e7311e-f205-9b91-7eaa-5f8e371d12c3@gmail.com>
-Date:   Sat, 12 Dec 2020 17:42:22 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.5.1
-MIME-Version: 1.0
-In-Reply-To: <20201213004933.pbjwfltwudvokrej@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek Behun <marek.behun@nic.cz>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: [PATCH v2 net-next 0/6] Offload software learnt bridge addresses to DSA
+Date:   Sun, 13 Dec 2020 04:40:12 +0200
+Message-Id: <20201213024018.772586-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [188.25.2.120]
+X-ClientProxiedBy: VI1PR08CA0141.eurprd08.prod.outlook.com
+ (2603:10a6:800:d5::19) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0141.eurprd08.prod.outlook.com (2603:10a6:800:d5::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Sun, 13 Dec 2020 02:41:00 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: b8eb9fff-9f1c-42e7-012b-08d89f10879e
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3407:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3407B1B9C6B75FDB5F66A163E0C80@VI1PR0402MB3407.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: k6BUUb9Zl1fmBjMYw/ey+44BXUyNmPDVDLBSjnTTPK4WZ3HBRjCPuyd/N45N83PNS5Zv4eqq5pfrV5SU9fEI7vu4jNHO8A0dndWikKLLJcqcAvwtl3NRiJ09swSR9QgSQONnItMMUX+Wv4XWQFKACsL+IHlv0kSRucTWW0KNzciSp/3xLWvxVyEMAQRYJJ1Z39jiO0km/feLgtUMZWM1CrF/kt5FPvbdD2QRLrEwDO1zEv/VkG/XGDbGIRy+nD8dUcKyp51IcW1hayvM1Md/HC5NXT9+DrA/HplFZYa8opBkXMo84y5KCMP3/PFhgps1jBM9ZB76Sq6DopQOoEQx0tbVL3zz1Lmyim+6DFemi8qDFeNvdlfnKSu5wa6G1Uwvht+PqnZKzRsTTnELzihugYW/TRtPVVzVe8xmUwOiKzWiONhTGGSMQj1jD6a+MwXqO/4wmjJ8lw/x0iSPfsB9KuPRHWzyuiMImraP1yz+vgs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(39850400004)(396003)(376002)(52116002)(6512007)(66556008)(8676002)(316002)(478600001)(16526019)(966005)(44832011)(5660300002)(6506007)(6486002)(1076003)(7416002)(110136005)(26005)(921005)(2616005)(86362001)(54906003)(66946007)(2906002)(36756003)(8936002)(186003)(66476007)(4326008)(83380400001)(956004)(69590400008)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?lsUwSNiTIVYWg9d3hDDvp8wI+KFelUJFPn34Q8XW3Ro3428CZMvtcMraLklU?=
+ =?us-ascii?Q?TyUW6SBN4hWsQ2Y3rvgoUZ0UqBGYv9zlkbXcoXOAK06ZjNSki70IbOsNsbkJ?=
+ =?us-ascii?Q?qvhPmcC66/9SJ70L2E+b/VtLfslFUUFp9wJhHiW5FmEe0OJjMxWKmG7b1PdW?=
+ =?us-ascii?Q?c8WX31w2YYR3w0PQFjbcA7VHGsQEAQo4sjgc9C/MR3ndgbXPOBXUOldvgxq4?=
+ =?us-ascii?Q?wie50X63RdJP49iJ46zhAS3Dz3Wd2GYcP/AvPU72dyWsFewoDSlhIqr/ruxB?=
+ =?us-ascii?Q?8Ndm6AYt3F9VMxDx1LaRMH1mCJdP/vhKER/UfKIxG4bqb+CowPdG2wwfkfGI?=
+ =?us-ascii?Q?5HYw1FnQJ0wBU7QAg1AbO+uLSx8/5t2wXwI6A+qGfXRdYeEDrids29NKGWqX?=
+ =?us-ascii?Q?tPEdN7JuF0YVRzYwPK8OUKbbVebtU1TX1pdxLQoYI+zG8QMwG6CH8BLHSaOV?=
+ =?us-ascii?Q?5w57WYTId3IlXpeERdsYY1WJYU+QonXfMz41fzkfXFeXPUXwHnAY0B2Hx78J?=
+ =?us-ascii?Q?8/I7VSQlWmLEZvykWlD48FuT+ZFJmph9pfiGrc9rMwPiOvEWJS/tSettJIn5?=
+ =?us-ascii?Q?H0HqOFhF72qWkP10PI90B3f7lSkVpCnIozLlR+ah1B5UVh/1ELTGfnNKc1zX?=
+ =?us-ascii?Q?mgW5SUbMr6IPF4qp10cyUUimpNo0fcEU4ELfOwYN70Ogd6Jk0B6t0mAUU2eb?=
+ =?us-ascii?Q?g11V5zIkQW7ObxJAuBUejMUZG/ZZvHfsJa4mwu4bZ2huSzyhDeLde3P8tAeG?=
+ =?us-ascii?Q?QKHLH58itcJiMEckJ+MA24fAl/HAWUpPNVMz1XOYiinK8eY62RludobQ+Xtm?=
+ =?us-ascii?Q?yZSOrMfQC4JwlpmOJlRDdpjxjtW4WtGgL0Wco3IfLHVCG1eTpuKetHV8ft9Z?=
+ =?us-ascii?Q?Lr3gN19cDLzDGms/0qj9+XjlyXARmmEaamdSap9eBFgx+/U6OMudDUPr5vPV?=
+ =?us-ascii?Q?3O+CrYUkprWdGtxb0Xd3P7G596LFpD6nvo3NNdjr45CXpIxvqdeMizT78zml?=
+ =?us-ascii?Q?YMtm?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2020 02:41:01.5897
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8eb9fff-9f1c-42e7-012b-08d89f10879e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JaTdJMUKvzjTMG9mbhTv928RYelR/phGYaP7EC3xTkvw5RyEEC6nuxTjrvG+L4UqVlFLNjmgcamLccDgxqca4A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3407
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This small series tries to make DSA behave a bit more sanely when
+bridged with "foreign" (non-DSA) interfaces. When a station A connected
+to a DSA switch port needs to talk to another station B connected to a
+non-DSA port through the Linux bridge, DSA must explicitly add a route
+for station B towards its CPU port. It cannot rely on hardware address
+learning for that.
 
+Initial RFC was posted here:
+https://www.spinics.net/lists/netdev/msg698169.html
 
-On 12/12/2020 4:49 PM, Vladimir Oltean wrote:
-> On Sun, Dec 13, 2020 at 01:34:10AM +0100, Andrew Lunn wrote:
->> On Sun, Dec 13, 2020 at 12:14:19AM +0000, Vladimir Oltean wrote:
->>> On Sun, Dec 13, 2020 at 01:08:55AM +0100, Andrew Lunn wrote:
->>>>>> And you need some way to cleanup the allocated memory when the commit
->>>>>> never happens because some other layer has said No!
->>>>>
->>>>> So this would be a fatal problem with the switchdev transactional model
->>>>> if I am not misunderstanding it. On one hand there's this nice, bubbly
->>>>> idea that you should preallocate memory in the prepare phase, so that
->>>>> there's one reason less to fail at commit time. But on the other hand,
->>>>> if "the commit phase might never happen" is even a remove possibility,
->>>>> all of that goes to trash - how are you even supposed to free the
->>>>> preallocated memory.
->>>>
->>>> It can definitely happen, that commit is never called:
->>>>
->>>> static int switchdev_port_obj_add_now(struct net_device *dev,
->>>>                                       const struct switchdev_obj *obj,
->>>>                                       struct netlink_ext_ack *extack)
->>>> {
->>>>
->>>>        /* Phase I: prepare for obj add. Driver/device should fail
->>>>          * here if there are going to be issues in the commit phase,
->>>>          * such as lack of resources or support.  The driver/device
->>>>          * should reserve resources needed for the commit phase here,
->>>>          * but should not commit the obj.
->>>>          */
->>>>
->>>>         trans.ph_prepare = true;
->>>>         err = switchdev_port_obj_notify(SWITCHDEV_PORT_OBJ_ADD,
->>>>                                         dev, obj, &trans, extack);
->>>>         if (err)
->>>>                 return err;
->>>>
->>>>         /* Phase II: commit obj add.  This cannot fail as a fault
->>>>          * of driver/device.  If it does, it's a bug in the driver/device
->>>>          * because the driver said everythings was OK in phase I.
->>>>          */
->>>>
->>>>         trans.ph_prepare = false;
->>>>         err = switchdev_port_obj_notify(SWITCHDEV_PORT_OBJ_ADD,
->>>>                                         dev, obj, &trans, extack);
->>>>         WARN(err, "%s: Commit of object (id=%d) failed.\n", dev->name, obj->id);
->>>>
->>>>         return err;
->>>>
->>>> So if any notifier returns an error during prepare, the commit is
->>>> never called.
->>>>
->>>> So the memory you allocated and added to the list may never get
->>>> used. Its refcount stays zero.  Which is why i suggested making the
->>>> MDB remove call do a general garbage collect. It is not perfect, the
->>>> cleanup could be deferred a long time, but is should get removed
->>>> eventually.
->>>
->>> What would the garbage collection look like?
->>
->>         struct dsa_host_addr *a;
->>
->>         list_for_each_entry_safe(a, addr_list, list)
->> 		if (refcount_read(&a->refcount) == 0) {
->> 			list_del(&a->list);
->> 			free(a);
->> 		}
->> 	}
-> 
-> Sorry, this seems a bit absurd. The code is already absurdly complicated
-> as is. I don't want to go against the current and add more unjustified
-> nonsense instead of taking a step back, which I should have done earlier.
-> I thought this transactional API was supposed to help. Though I scanned
-> the kernel tree a bit and I fail to understand whom it helps exactly.
-> What I see is that the whole 'transaction' spans only the length of the
-> switchdev_port_attr_set_now function.
-> 
-> Am I right to say that there is no in-kernel code that depends upon the
-> switchdev transaction model right now, as it's completely hidden away
-> from callers? As in, we could just squash the two switchdev_port_attr_notify
-> calls into one and nothing would functionally change for the callers of
-> switchdev_port_attr_set?
-> Why don't we do just that? I might be completely blind, but I am getting
-> the feeling that this idea has not aged very well.
+Vladimir Oltean (6):
+  net: bridge: notify switchdev of disappearance of old FDB entry upon
+    migration
+  net: dsa: don't use switchdev_notifier_fdb_info in
+    dsa_switchdev_event_work
+  net: dsa: move switchdev event implementation under the same
+    switch/case statement
+  net: dsa: exit early in dsa_slave_switchdev_event if we can't program
+    the FDB
+  net: dsa: listen for SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign
+    bridge neighbors
+  net: dsa: ocelot: request DSA to fix up lack of address learning on
+    CPU port
 
-IIRC that was the conclusion that Ido and I had reached as well way back
-when doing the commit you cited below.
+ drivers/net/dsa/ocelot/felix.c |   1 +
+ include/net/dsa.h              |   5 +
+ net/bridge/br_fdb.c            |   1 +
+ net/dsa/dsa_priv.h             |  12 +++
+ net/dsa/slave.c                | 167 +++++++++++++++++++++------------
+ 5 files changed, 124 insertions(+), 62 deletions(-)
 
-> 
-> Florian, has anything happened in the meantime since this commit of yours?
-
-This is where I stopped, mainly because the series that had motivated
-this work was the one bringing management mode to bcm_sf2 and CPU RX
-filtering had me wire up yet another switched attribute that drivers
-like b53 wanted to veto (namely the disabling of IGMP snooping). We did
-not agree on the approach to use switchdev for notifying drivers about
-UC, MC lists down to drivers and so the series stalled.
-
-IIRC Jiri and Ido were also keen on merging the switchdev with the
-bridge code but I did not do that part, nor did I completely remove the
-transaction model, but those were the next steps had I not been side
-tracked with work on other topics.
-
-> 
-> commit 91cf8eceffc131d41f098351e1b290bdaab45ea7
-> Author: Florian Fainelli <f.fainelli@gmail.com>
-> Date:   Wed Feb 27 16:29:16 2019 -0800
-> 
->     switchdev: Remove unused transaction item queue
-> 
->     There are no more in tree users of the
->     switchdev_trans_item_{dequeue,enqueue} or switchdev_trans_item structure
->     in the kernel since commit 00fc0c51e35b ("rocker: Change world_ops API
->     and implementation to be switchdev independant").
-> 
->     Remove this unused code and update the documentation accordingly since.
-> 
->     Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->     Acked-by: Jiri Pirko <jiri@mellanox.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> There isn't an API to hold this stuff any longer. So let's go back to
-> the implementation from v2, with memory allocation in the commit phase.
-> The way forward anyway is probably not to add a garbage collector in
-> DSA, but to fold the prepare and commit phases into one.
-
-Agreed.
 -- 
-Florian
+2.25.1
+
