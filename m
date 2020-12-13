@@ -2,124 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 697932D8CAF
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 12:16:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 501AA2D8CB4
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 12:25:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394470AbgLMLNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 06:13:55 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:41123 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727708AbgLMLNz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 06:13:55 -0500
-Received: by mail-il1-f199.google.com with SMTP id f19so11217193ilk.8
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 03:13:39 -0800 (PST)
+        id S1731900AbgLMLYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 06:24:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725864AbgLMLYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 06:24:51 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27F6C0613CF;
+        Sun, 13 Dec 2020 03:24:10 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id 6so3980368ejz.5;
+        Sun, 13 Dec 2020 03:24:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IW66fMc7VTs1PtxS+22ry7ms1/9mizOXCdVTfKV5hpo=;
+        b=bQn+oB1JoyeFOF0nG/mlAluMS+9oNaqRxA17ZBM9Oe3AOE8/JG6goH/EB1c4QkEda4
+         T1lTzWqlfslNfkdjp202c07yMWPNGbIBbpqQZ+AzfJmqs+Kgj+dLxGZ+wWZGA5mc0NdB
+         BijFlgEZnvzEJb3MGQPxQa2/dgeJuYhDvxuwz6QAxAIoRHfwl22d5quEoZXOhJp6a+qE
+         ETivnglunAiRLTbK3ng7taHfwUqrNTJL3Mef8dDWPaAGgN2enm8bDppfomcBBDdM6fOw
+         jt/C5/9LwS2YQBDgMwgsJ0z4C3ZaAE2+qiQJ4375nfTotPFrKA5zulfu7Q8I9D/Awk7+
+         1yaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=M6uDlvuP8ZesOshmh3GfQ1w4FjzRQGgg4+C8JVDnCPM=;
-        b=M2k3CK7SHA8b4LnpvBnUbWAw4CpOIGTDuZNg+5XJnSenxTtuzEvqA1qLEt/BpFEHpI
-         4EeNnChIVj8pVFDy2YXjdPZnstcbCEPjSiBfmL382Yf2C7Amg5a9Lic3ICgGZ0/INCib
-         AmW00udLRnPiW3/RUMsxTE6LH9iDoUC1kV+w7x4ES8Yk5UinQ0iFNHrP3PD2KyrAe+2B
-         sJZ3gk7ZYiNqiR2tHz2bhJCZV/FZnvBEg8jT9VBUpHCNWOwhCgrrST9z33qx514eF/qy
-         Gxc+2AnbMPdwYhwiN6nN9Wkan8yGgKP5HCWsbjSSorXnNIgq6HMDoKnvFNypYXozY8l4
-         ZpHw==
-X-Gm-Message-State: AOAM533SwJW0txcwMpetZr54nCqVD1NpBqlJ806p5bSxBZPN1c40zDek
-        GHn1T8newwgniapTWB4xB4p/4vNghhAY0UKQIrHrGZd6Hp+T
-X-Google-Smtp-Source: ABdhPJyRCebjxQppXW1ARDdAZ8ZwbxApTHSZGlPIuCEcuyQKvsdeXwgfLKuQZxK9Zg922GB8tkktMDnAUZhnyPkPEunQ+0GQLsZk
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IW66fMc7VTs1PtxS+22ry7ms1/9mizOXCdVTfKV5hpo=;
+        b=BVBMTCn3Bvu5bU8u22YwrSx8UYIrLr1dn/Gtu7QCctWasiftRQClF1RfJ4Jide5z2/
+         oEbevEBznY4HqoeALxnXi/snXKW4lE+iHGRP/WO6+Sf4tO8t8uUs+qLpaH1MwAHNpjST
+         7cICSEyp2srchAP8d7jtWgTMNvk6g/WDXK0iLlUM6eQ1yOK5eqfCPXl6wejZhIxn8spN
+         OtxPSqA6Zsp1kiSzRKxsKsc7prwux91PXGcVki2CZ9dR5KijWb8tZJ8Nhx4OgeqeJJ2n
+         5rYbYMBo9KQMgbYy4+1+7tclWUFLaU25ryFUH+kBxqSkZXQQAooPRicLP8pJtpMyntbE
+         VKCg==
+X-Gm-Message-State: AOAM531B7l7ilylRnx7vVwCRaWZ3ILOCQdDgyAMfMKyzuFnW395gUQT8
+        1sE6TCaMzKMc6W+DxYtzQ4c=
+X-Google-Smtp-Source: ABdhPJynlxi2QKNBVsllMFmw4nuD/o/QttB0CiO5OzyzZ7oeGscU5QYtBXumKqp3eM2r1PK4665luQ==
+X-Received: by 2002:a17:906:a2d0:: with SMTP id by16mr18015254ejb.207.1607858649230;
+        Sun, 13 Dec 2020 03:24:09 -0800 (PST)
+Received: from [192.168.0.107] ([77.127.34.194])
+        by smtp.gmail.com with ESMTPSA id de12sm12533753edb.82.2020.12.13.03.24.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Dec 2020 03:24:08 -0800 (PST)
+Subject: Re: [patch 20/30] net/mlx4: Replace irq_to_desc() abuse
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        afzal mohammed <afzal.mohd.ma@gmail.com>,
+        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Wambui Karuga <wambui.karugax@gmail.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-pci@vger.kernel.org,
+        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org
+References: <20201210192536.118432146@linutronix.de>
+ <20201210194044.580936243@linutronix.de>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <01e427f9-7238-d6a8-25ec-8585914d32df@gmail.com>
+Date:   Sun, 13 Dec 2020 13:24:00 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-X-Received: by 2002:a02:6c50:: with SMTP id w77mr26857725jab.68.1607857993945;
- Sun, 13 Dec 2020 03:13:13 -0800 (PST)
-Date:   Sun, 13 Dec 2020 03:13:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000094184905b6569cdd@google.com>
-Subject: UBSAN: shift-out-of-bounds in strset_parse_request
-From:   syzbot <syzbot+96523fb438937cd01220@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, mkubecek@suse.cz,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201210194044.580936243@linutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    a9e26cb5 Add linux-next specific files for 20201208
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1752cf17500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e259434a8eaf0206
-dashboard link: https://syzkaller.appspot.com/bug?extid=96523fb438937cd01220
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16edd00f500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10b72237500000
-
-The issue was bisected to:
-
-commit 71921690f9745fef60a2bad425f30adf8cdc9da0
-Author: Michal Kubecek <mkubecek@suse.cz>
-Date:   Fri Dec 27 14:55:43 2019 +0000
-
-    ethtool: provide string sets with STRSET_GET request
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=108cd433500000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=128cd433500000
-console output: https://syzkaller.appspot.com/x/log.txt?x=148cd433500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+96523fb438937cd01220@syzkaller.appspotmail.com
-Fixes: 71921690f974 ("ethtool: provide string sets with STRSET_GET request")
-
-================================================================================
-UBSAN: shift-out-of-bounds in net/ethtool/strset.c:191:28
-shift exponent 3476603555 is too large for 32-bit type 'unsigned int'
-CPU: 1 PID: 8488 Comm: syz-executor226 Not tainted 5.10.0-rc7-next-20201208-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
- __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
- strset_parse_request.cold+0x3b/0x40 net/ethtool/strset.c:191
- ethnl_default_parse+0xda/0x130 net/ethtool/netlink.c:282
- ethnl_default_start+0x21c/0x570 net/ethtool/netlink.c:501
- genl_start+0x3cc/0x670 net/netlink/genetlink.c:604
- __netlink_dump_start+0x5a7/0x920 net/netlink/af_netlink.c:2363
- genl_family_rcv_msg_dumpit+0x1c9/0x310 net/netlink/genetlink.c:697
- genl_family_rcv_msg net/netlink/genetlink.c:780 [inline]
- genl_rcv_msg+0x43c/0x590 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4409d9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 5b 11 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffc89faeb48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004409d9
-RDX: 0000000000000000 RSI: 0000000020000fc0 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 000000000000000c R09: 00000000004002c8
-R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000401fc0
-R13: 0000000000402050 R14: 0000000000000000 R15: 0000000000000000
-================================================================================
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 12/10/2020 9:25 PM, Thomas Gleixner wrote:
+> No driver has any business with the internals of an interrupt
+> descriptor. Storing a pointer to it just to use yet another helper at the
+> actual usage site to retrieve the affinity mask is creative at best. Just
+> because C does not allow encapsulation does not mean that the kernel has no
+> limits.
+> 
+> Retrieve a pointer to the affinity mask itself and use that. It's still
+> using an interface which is usually not for random drivers, but definitely
+> less hideous than the previous hack.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Tariq Toukan <tariqt@nvidia.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-rdma@vger.kernel.org
+> ---
+>   drivers/net/ethernet/mellanox/mlx4/en_cq.c   |    8 +++-----
+>   drivers/net/ethernet/mellanox/mlx4/en_rx.c   |    6 +-----
+>   drivers/net/ethernet/mellanox/mlx4/mlx4_en.h |    3 ++-
+>   3 files changed, 6 insertions(+), 11 deletions(-)
+> 
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+
+Thanks for your patch.
