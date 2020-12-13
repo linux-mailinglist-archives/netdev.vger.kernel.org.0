@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF382D8AF3
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 03:42:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6616A2D8AFB
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 03:46:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727777AbgLMClz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Dec 2020 21:41:55 -0500
-Received: from mail-eopbgr140078.outbound.protection.outlook.com ([40.107.14.78]:44269
+        id S1728350AbgLMCmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Dec 2020 21:42:16 -0500
+Received: from mail-eopbgr140047.outbound.protection.outlook.com ([40.107.14.47]:19174
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727663AbgLMClu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 12 Dec 2020 21:41:50 -0500
+        id S1727663AbgLMCmJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Dec 2020 21:42:09 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j1pJGT9s8zIvJBmuJiV8gSmwCql0WIf07G/S6qMjnICOoTLbHyDEZJyfpZFLZ2rvrnYALLcHAY1yXt5loVfuvgC488xrq+zkyDkk7Ayfps5bRqxTBt+YbJpQwnlreLEHy4MrnAFVOawwLwx0Hbh4oL4xZOcqFGABjwAJb2rLWwd9bibeauhKKe9Hv2Lr/t1AzSX7XyDTaIpijpntkousYTEB5/RJpRigIEiSz4ge+MiWekDKsurv7f6PdZflJKBHCFd0JdQ5evKKjR68Q9QTYGHs/lU4Q2UtAjCXme2LEHfysqZ6gRfNBwq9R/LSzns8uHxmyq1Y6WztuH18f/7gYg==
+ b=mJUGHQToY6gL6OW1x8Bpy1xC0WGFCTAuzo3wTlPxcnJNiy9/7HNSXMVrU5EoNSZz6eSsMzttjIMBBbHMR88UcoZljQw6C0MApfq7TSc2qfn0Dar7wUF4/oh2V72Fxvy2s/SPU2ZFn0YfPbQtBDR6IRAnzEwqUpcAbqG+an34A+MbMm081nm8zCR+xnOdmRr9uLnNEfPq24TzCS3+t4iZxFxw0jCBejT93X95KTPlAVCOeuwonAjr0lLTMhxPp+B6r9aaoyB9yIGIZQLGa1w+X73dA4pfGiEiMO+wj6iGPJVDQu9Eo9qeV3vsn2xOeMneYN3ec8ru/gtV5qZuk/XAZg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l+5rd7hxSU1RvLcEtYHVa4mtvgaZoy4+z3dy9/uQ/gE=;
- b=oFWK8Ol/UPKURkHfSXtgffQRPkqMc48mA1hWTL/6/rhbMhzAG4Qm10fkInERyfopnFhYFz69JmleeKJjx06vH8izs4Pb8V6sbToIPS3S3MIMrqo/FcmMy4Evgl+xJ6LxUAPzMfeQvnnMmBfhBEvtxMgGD1+d0zE67Vi3EkVl3KI5gEdtFZEfMcovXxLsQucU6RwMJKRAT4QjkgYhzDir0X9B3/QRDg+hCO9O7LYdDn934nAMQ1WQZkTqKtt8us/mIgdIGmuIggHK1E5F/TeWyl80brRTPLllCiTm4gvqqZW0TTxpogl0A94Z4qEF62Zv77OsvrUJTafgkDFwBYt5lQ==
+ bh=X8muWUzRgqnVz4j2BlJwsieABk8Lj+UqAR0w2oRjYCM=;
+ b=IlaQDL+489BK92k/u4dQ8zGbffQ00H7Fx+KNK0i/1YmVhvi8r2fiT1O6KfYRIRW1xtegIz5/xIExTPGgtq2c3Q3H6crReLyThFYnO3aQVMLhPPkc/wxyt5yiunD3bPCrqZqiaqYvw27rHmuCoGw93jfeM8ihNoIS2h4BvsikNPA1KyY00CQCG2DErjNmGWe+n/9SvO3JPUBf/6onVUw2zHMin9FRVR0nqVGrzHiRYoQDD4SLJyasRcdzcQkEX1MMSQySJ4aumombNi1jkk3EhchfIkYf1yWaTcPrnSIMD8/OInuOp/U2RSpUO0QhrO4CUZxyNRiCW1teVYKRT85e2g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l+5rd7hxSU1RvLcEtYHVa4mtvgaZoy4+z3dy9/uQ/gE=;
- b=JVkmiz6J4ikj7q5sP7zhiUM14KjbmVwAHga4YCpfYUc/3TF7KWE05ERl5vvvrvb+kpve58YKM4eU+ubcBk3xGpBtxUhXDjTaEjejs5sAIXzK8pkuwj54rO6/encrN0+gIBXiePiVZhtNJjvRg5vFUUBl7PGUQD4jxj3+6TB0mk4=
+ bh=X8muWUzRgqnVz4j2BlJwsieABk8Lj+UqAR0w2oRjYCM=;
+ b=aWWNw4DLyCoLwYd86I6YuRTwJGCOwEX7j9gT557BGGrxnWayqdzcYek7chPhLN0HeUO47YDCCcFCEesszq8EjJWbp7OKrv2HkSloMjjX6CfSJEiKv62tOkBr8xrl2l/SVlwSZ3K4mIBsqar74htvQ65BODF95T7grrgVq14h0S0=
 Authentication-Results: lunn.ch; dkim=none (message not signed)
  header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR0402MB3407.eurprd04.prod.outlook.com (2603:10a6:803:5::25) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Sun, 13 Dec
- 2020 02:41:01 +0000
+ 2020 02:41:06 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3654.020; Sun, 13 Dec 2020
- 02:41:01 +0000
+ 02:41:04 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -54,10 +54,12 @@ Cc:     DENG Qingfang <dqfext@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Ido Schimmel <idosch@idosch.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: [PATCH v2 net-next 0/6] Offload software learnt bridge addresses to DSA
-Date:   Sun, 13 Dec 2020 04:40:12 +0200
-Message-Id: <20201213024018.772586-1-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 1/6] net: bridge: notify switchdev of disappearance of old FDB entry upon migration
+Date:   Sun, 13 Dec 2020 04:40:13 +0200
+Message-Id: <20201213024018.772586-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201213024018.772586-1-vladimir.oltean@nxp.com>
+References: <20201213024018.772586-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [188.25.2.120]
@@ -66,82 +68,171 @@ X-ClientProxiedBy: VI1PR08CA0141.eurprd08.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0141.eurprd08.prod.outlook.com (2603:10a6:800:d5::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Sun, 13 Dec 2020 02:41:00 +0000
+Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0141.eurprd08.prod.outlook.com (2603:10a6:800:d5::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Sun, 13 Dec 2020 02:41:02 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: b8eb9fff-9f1c-42e7-012b-08d89f10879e
+X-MS-Office365-Filtering-Correlation-Id: 5bacbf7c-7fb3-471e-9147-08d89f10893d
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3407:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3407B1B9C6B75FDB5F66A163E0C80@VI1PR0402MB3407.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3407AEAEFA4B975045F55C7AE0C80@VI1PR0402MB3407.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: k6BUUb9Zl1fmBjMYw/ey+44BXUyNmPDVDLBSjnTTPK4WZ3HBRjCPuyd/N45N83PNS5Zv4eqq5pfrV5SU9fEI7vu4jNHO8A0dndWikKLLJcqcAvwtl3NRiJ09swSR9QgSQONnItMMUX+Wv4XWQFKACsL+IHlv0kSRucTWW0KNzciSp/3xLWvxVyEMAQRYJJ1Z39jiO0km/feLgtUMZWM1CrF/kt5FPvbdD2QRLrEwDO1zEv/VkG/XGDbGIRy+nD8dUcKyp51IcW1hayvM1Md/HC5NXT9+DrA/HplFZYa8opBkXMo84y5KCMP3/PFhgps1jBM9ZB76Sq6DopQOoEQx0tbVL3zz1Lmyim+6DFemi8qDFeNvdlfnKSu5wa6G1Uwvht+PqnZKzRsTTnELzihugYW/TRtPVVzVe8xmUwOiKzWiONhTGGSMQj1jD6a+MwXqO/4wmjJ8lw/x0iSPfsB9KuPRHWzyuiMImraP1yz+vgs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(39850400004)(396003)(376002)(52116002)(6512007)(66556008)(8676002)(316002)(478600001)(16526019)(966005)(44832011)(5660300002)(6506007)(6486002)(1076003)(7416002)(110136005)(26005)(921005)(2616005)(86362001)(54906003)(66946007)(2906002)(36756003)(8936002)(186003)(66476007)(4326008)(83380400001)(956004)(69590400008)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?lsUwSNiTIVYWg9d3hDDvp8wI+KFelUJFPn34Q8XW3Ro3428CZMvtcMraLklU?=
- =?us-ascii?Q?TyUW6SBN4hWsQ2Y3rvgoUZ0UqBGYv9zlkbXcoXOAK06ZjNSki70IbOsNsbkJ?=
- =?us-ascii?Q?qvhPmcC66/9SJ70L2E+b/VtLfslFUUFp9wJhHiW5FmEe0OJjMxWKmG7b1PdW?=
- =?us-ascii?Q?c8WX31w2YYR3w0PQFjbcA7VHGsQEAQo4sjgc9C/MR3ndgbXPOBXUOldvgxq4?=
- =?us-ascii?Q?wie50X63RdJP49iJ46zhAS3Dz3Wd2GYcP/AvPU72dyWsFewoDSlhIqr/ruxB?=
- =?us-ascii?Q?8Ndm6AYt3F9VMxDx1LaRMH1mCJdP/vhKER/UfKIxG4bqb+CowPdG2wwfkfGI?=
- =?us-ascii?Q?5HYw1FnQJ0wBU7QAg1AbO+uLSx8/5t2wXwI6A+qGfXRdYeEDrids29NKGWqX?=
- =?us-ascii?Q?tPEdN7JuF0YVRzYwPK8OUKbbVebtU1TX1pdxLQoYI+zG8QMwG6CH8BLHSaOV?=
- =?us-ascii?Q?5w57WYTId3IlXpeERdsYY1WJYU+QonXfMz41fzkfXFeXPUXwHnAY0B2Hx78J?=
- =?us-ascii?Q?8/I7VSQlWmLEZvykWlD48FuT+ZFJmph9pfiGrc9rMwPiOvEWJS/tSettJIn5?=
- =?us-ascii?Q?H0HqOFhF72qWkP10PI90B3f7lSkVpCnIozLlR+ah1B5UVh/1ELTGfnNKc1zX?=
- =?us-ascii?Q?mgW5SUbMr6IPF4qp10cyUUimpNo0fcEU4ELfOwYN70Ogd6Jk0B6t0mAUU2eb?=
- =?us-ascii?Q?g11V5zIkQW7ObxJAuBUejMUZG/ZZvHfsJa4mwu4bZ2huSzyhDeLde3P8tAeG?=
- =?us-ascii?Q?QKHLH58itcJiMEckJ+MA24fAl/HAWUpPNVMz1XOYiinK8eY62RludobQ+Xtm?=
- =?us-ascii?Q?yZSOrMfQC4JwlpmOJlRDdpjxjtW4WtGgL0Wco3IfLHVCG1eTpuKetHV8ft9Z?=
- =?us-ascii?Q?Lr3gN19cDLzDGms/0qj9+XjlyXARmmEaamdSap9eBFgx+/U6OMudDUPr5vPV?=
- =?us-ascii?Q?3O+CrYUkprWdGtxb0Xd3P7G596LFpD6nvo3NNdjr45CXpIxvqdeMizT78zml?=
- =?us-ascii?Q?YMtm?=
+X-Microsoft-Antispam-Message-Info: H+208McN7ZAIEvj2Z31Zj5Qx+lz+E+jICfd5FlEtfD+zHcELj8UcjhOmzPVt1hrW2TtRyW+rXuiVmfok1v2PRQwDI64sQD5yarvjAVyBBDqXHNnq3zkPo5cfB6nEYgDIKnLTttfaqhKAMCP/9fPPJRh5cPI7YLvXmglhwOYyNitetoeR8jXnEUemJW/NguHa3hPvSUyIF4evBYU+H0sihHDSF1EIOT5yrB40W7ZHQcKK/fL96C3iR3mN3/q/ra2CxLqfHhqZ+623myNrcqXoJZd411E07kww0Hng5UlAAmHtnku3GLXWDbiPRaWceRisTs1zYpM3UVSAXifWawqaGHGOX1//BOURYHd02gl3S4bbW2tEwYzvV7HBKJtcLHMJCdtTKWaHQC/wdOZ7dHbVrA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(39850400004)(396003)(376002)(52116002)(6512007)(66556008)(8676002)(316002)(478600001)(16526019)(44832011)(5660300002)(6506007)(6486002)(1076003)(7416002)(110136005)(26005)(921005)(2616005)(86362001)(54906003)(66946007)(2906002)(36756003)(8936002)(186003)(66476007)(4326008)(83380400001)(956004)(69590400008)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?uNl6eHh/AcvfstfIJ7mnpCE7EnvlkmJsf+N+IgIKCvJPqLeMqduvPCmHyXhJ?=
+ =?us-ascii?Q?lFvwrzwGt1TeMHtqU6HLOO39I0nnuAOxsy2WK7UXwOnmQ0s8ov9LAzxYLrQo?=
+ =?us-ascii?Q?UZCgufx2NVTLu8PlHCz8F1nuTvqpuEjyRJ+6YtTUgFS1tcBN2jrtQDA2jo/O?=
+ =?us-ascii?Q?vor5sLitDX5oniNn4cCXf0G+hhtMIumoLIVzwD7AgozcVL0Eejp+0J64rYLC?=
+ =?us-ascii?Q?RlWja2ImtwR7fu3/HTkq9htNIdmcrJRcosOiYa9g/zdnAVBlqjcVI6IpEJoH?=
+ =?us-ascii?Q?zI46zexKT6cnGQuTYj6bZ0z+9WrdOEduBW+lSA16QVYbxB+ozHrYcigHa9mJ?=
+ =?us-ascii?Q?eQEthhyOGtMJ0Gty9S1VLEmCi3q5TTNMWbCrGfv/wjHqy0yiA3DQlv4Kz243?=
+ =?us-ascii?Q?YeDLKna780OdN7JeeP+7QOHycRewmFqrSIPY2kvvlalkE6W1bh+iCo4Tb1c5?=
+ =?us-ascii?Q?Fz+JYLT2Vxa/D4ZSPPuxYRWbIO74+PZ742lWYP9ho/XV2mvD88LdhDH0MEiB?=
+ =?us-ascii?Q?i2GPHWRmVaVBIZ/bW9+Y1GjhpamFuZ31gatqkUj1h/GBMyChLyBw0AudG5mv?=
+ =?us-ascii?Q?IjAyHO7Shcj/LCJr9u8AhujZe2lTBblB6qEhBxQACjDWS1gZABVA5lbhyZAs?=
+ =?us-ascii?Q?SQy06idE7szuz+TFCTXt0Re1HZErnTEzl0F8pSbn3+6tAl4PgW15y9lOTbG7?=
+ =?us-ascii?Q?Ctia5oD+Z/gfxBxvpW2KalV0c3IKH5hlCMyo/fu1iK40Oct1D3QElTp23itH?=
+ =?us-ascii?Q?C0L1sSQZJOiXAhhglLlO+G+xF9tMYNXPhtg4YbQkQJujaW7fu/3Zc/LxgCvN?=
+ =?us-ascii?Q?Hqhy8Fr6oE2+PTZXTZbMzrHq36E/+E+XgNZQXQyRpPKpSmr+QryN6vMFaFfj?=
+ =?us-ascii?Q?qVn97lDjrhHYC8MLwbGHkA1f2giv1gLOnq6Yl1Dw4S88uDjVa1hnwKrRGV5K?=
+ =?us-ascii?Q?CEulQKVovcaLHTp2BgszUw4NlW3NcJ0LLaJCB8Cmn50l4YYAbktoBkkrvj6e?=
+ =?us-ascii?Q?wqkf?=
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2020 02:41:01.5897
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2020 02:41:03.6785
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8eb9fff-9f1c-42e7-012b-08d89f10879e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5bacbf7c-7fb3-471e-9147-08d89f10893d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JaTdJMUKvzjTMG9mbhTv928RYelR/phGYaP7EC3xTkvw5RyEEC6nuxTjrvG+L4UqVlFLNjmgcamLccDgxqca4A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0jQXrv09dHR51aBlDLSUREgwK5hIAN1GMKxHrojmLeCyQBCuhdo3nLVN4C/6iosJMnQTLQRb23VGjSTJtbbzOA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3407
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This small series tries to make DSA behave a bit more sanely when
-bridged with "foreign" (non-DSA) interfaces. When a station A connected
-to a DSA switch port needs to talk to another station B connected to a
-non-DSA port through the Linux bridge, DSA must explicitly add a route
-for station B towards its CPU port. It cannot rely on hardware address
-learning for that.
+Currently the bridge emits atomic switchdev notifications for
+dynamically learnt FDB entries. Monitoring these notifications works
+wonders for switchdev drivers that want to keep their hardware FDB in
+sync with the bridge's FDB.
 
-Initial RFC was posted here:
-https://www.spinics.net/lists/netdev/msg698169.html
+For example station A wants to talk to station B in the diagram below,
+and we are concerned with the behavior of the bridge on the DUT device:
 
-Vladimir Oltean (6):
-  net: bridge: notify switchdev of disappearance of old FDB entry upon
-    migration
-  net: dsa: don't use switchdev_notifier_fdb_info in
-    dsa_switchdev_event_work
-  net: dsa: move switchdev event implementation under the same
-    switch/case statement
-  net: dsa: exit early in dsa_slave_switchdev_event if we can't program
-    the FDB
-  net: dsa: listen for SWITCHDEV_{FDB,DEL}_ADD_TO_DEVICE on foreign
-    bridge neighbors
-  net: dsa: ocelot: request DSA to fix up lack of address learning on
-    CPU port
+                   DUT
+ +-------------------------------------+
+ |                 br0                 |
+ | +------+ +------+ +------+ +------+ |
+ | |      | |      | |      | |      | |
+ | | swp0 | | swp1 | | swp2 | | eth0 | |
+ +-------------------------------------+
+      |        |                  |
+  Station A    |                  |
+               |                  |
+         +--+------+--+    +--+------+--+
+         |  |      |  |    |  |      |  |
+         |  | swp0 |  |    |  | swp0 |  |
+ Another |  +------+  |    |  +------+  | Another
+  switch |     br0    |    |     br0    | switch
+         |  +------+  |    |  +------+  |
+         |  |      |  |    |  |      |  |
+         |  | swp1 |  |    |  | swp1 |  |
+         +--+------+--+    +--+------+--+
+                                  |
+                              Station B
 
- drivers/net/dsa/ocelot/felix.c |   1 +
- include/net/dsa.h              |   5 +
- net/bridge/br_fdb.c            |   1 +
- net/dsa/dsa_priv.h             |  12 +++
- net/dsa/slave.c                | 167 +++++++++++++++++++++------------
- 5 files changed, 124 insertions(+), 62 deletions(-)
+Interfaces swp0, swp1, swp2 are handled by a switchdev driver that has
+the following property: frames injected from its control interface bypass
+the internal address analyzer logic, and therefore, this hardware does
+not learn from the source address of packets transmitted by the network
+stack through it. So, since bridging between eth0 (where Station B is
+attached) and swp0 (where Station A is attached) is done in software,
+the switchdev hardware will never learn the source address of Station B.
+So the traffic towards that destination will be treated as unknown, i.e.
+flooded.
 
+This is where the bridge notifications come in handy. When br0 on the
+DUT sees frames with Station B's MAC address on eth0, the switchdev
+driver gets these notifications and can install a rule to send frames
+towards Station B's address that are incoming from swp0, swp1, swp2,
+only towards the control interface. This is all switchdev driver private
+business, which the notification makes possible.
+
+All is fine until someone unplugs Station B's cable and moves it to the
+other switch:
+
+                   DUT
+ +-------------------------------------+
+ |                 br0                 |
+ | +------+ +------+ +------+ +------+ |
+ | |      | |      | |      | |      | |
+ | | swp0 | | swp1 | | swp2 | | eth0 | |
+ +-------------------------------------+
+      |        |                  |
+  Station A    |                  |
+               |                  |
+         +--+------+--+    +--+------+--+
+         |  |      |  |    |  |      |  |
+         |  | swp0 |  |    |  | swp0 |  |
+ Another |  +------+  |    |  +------+  | Another
+  switch |     br0    |    |     br0    | switch
+         |  +------+  |    |  +------+  |
+         |  |      |  |    |  |      |  |
+         |  | swp1 |  |    |  | swp1 |  |
+         +--+------+--+    +--+------+--+
+               |
+           Station B
+
+Luckily for the use cases we care about, Station B is noisy enough that
+the DUT hears it (on swp1 this time). swp1 receives the frames and
+delivers them to the bridge, who enters the unlikely path in br_fdb_update
+of updating an existing entry. It moves the entry in the software bridge
+to swp1 and emits an addition notification towards that.
+
+As far as the switchdev driver is concerned, all that it needs to ensure
+is that traffic between Station A and Station B is not forever broken.
+If it does nothing, then the stale rule to send frames for Station B
+towards the control interface remains in place. But Station B is no
+longer reachable via the control interface, but via a port that can
+offload the bridge port learning attribute. It's just that the port is
+prevented from learning this address, since the rule overrides FDB
+updates. So the rule needs to go. The question is via what mechanism.
+
+It sure would be possible for this switchdev driver to keep track of all
+addresses which are sent to the control interface, and then also listen
+for bridge notifier events on its own ports, searching for the ones that
+have a MAC address which was previously sent to the control interface.
+But this is cumbersome and inefficient. Instead, with one small change,
+the bridge could notify of the address deletion from the old port, in a
+symmetrical manner with how it did for the insertion. Then the switchdev
+driver would not be required to monitor learn/forget events for its own
+ports. It could just delete the rule towards the control interface upon
+bridge entry migration. This would make hardware address learning be
+possible again. Then it would take a few more packets until the hardware
+and software FDB would be in sync again.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+Changes in v2:
+Patch is new.
+
+ net/bridge/br_fdb.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 32ac8343b0ba..b7490237f3fc 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -602,6 +602,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+ 			/* fastpath: update of existing entry */
+ 			if (unlikely(source != fdb->dst &&
+ 				     !test_bit(BR_FDB_STICKY, &fdb->flags))) {
++				br_switchdev_fdb_notify(fdb, RTM_DELNEIGH);
+ 				fdb->dst = source;
+ 				fdb_modified = true;
+ 				/* Take over HW learned entry */
 -- 
 2.25.1
 
