@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61B672D8D00
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 13:09:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 532E12D8D02
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 13:09:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406575AbgLMMHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 07:07:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58770 "EHLO mail.kernel.org"
+        id S2406604AbgLMMJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 07:09:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406526AbgLMMHh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Dec 2020 07:07:37 -0500
-From:   Leon Romanovsky <leon@kernel.org>
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     Jakub Kicinski <kuba@kernel.org>,
+        id S2406579AbgLMMJc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Dec 2020 07:09:32 -0500
+Date:   Sun, 13 Dec 2020 14:08:48 +0200
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeed@kernel.org>
-Cc:     Parav Pandit <parav@nvidia.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>, netdev@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5: Fix compilation warning for 32-bit platform
-Date:   Sun, 13 Dec 2020 14:06:41 +0200
-Message-Id: <20201213120641.216032-1-leon@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Jason Gunthorpe <jgg@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        david.m.ertman@intel.com, dan.j.williams@intel.com,
+        kiran.patil@intel.com, gregkh@linuxfoundation.org
+Subject: Re: [net-next v3 00/14] Add mlx5 subfunction support
+Message-ID: <20201213120848.GB5005@unreal>
+References: <20201212061225.617337-1-saeed@kernel.org>
+ <20201212122518.1c09eefe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201212122518.1c09eefe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+On Sat, Dec 12, 2020 at 12:25:18PM -0800, Jakub Kicinski wrote:
+> On Fri, 11 Dec 2020 22:12:11 -0800 Saeed Mahameed wrote:
+> > Hi Dave, Jakub, Jason,
+> >
+> > This series form Parav was the theme of this mlx5 release cycle,
+> > we've been waiting anxiously for the auxbus infrastructure to make it into
+> > the kernel, and now as the auxbus is in and all the stars are aligned, I
+> > can finally submit this V2 of the devlink and mlx5 subfunction support.
+> >
+> > Subfunctions came to solve the scaling issue of virtualization
+> > and switchdev environments, where SRIOV failed to deliver and users ran
+> > out of VFs very quickly as SRIOV demands huge amount of physical resources
+> > in both of the servers and the NIC.
+> >
+> > Subfunction provide the same functionality as SRIOV but in a very
+> > lightweight manner, please see the thorough and detailed
+> > documentation from Parav below, in the commit messages and the
+> > Networking documentation patches at the end of this series.
+> >
+> > Sending V2/V3 as a continuation to V1 that was sent Last month [0],
+> > [0] https://lore.kernel.org/linux-rdma/20201112192424.2742-1-parav@nvidia.com/
+>
+> This adds more and more instances of the 32 bit build warning.
+>
+> The warning was also reported separately on netdev after the recent
+> mlx5-next pull.
+>
+> Please address that first (or did you already do and I missed it
+> somehow?)
 
-MLX5_GENERAL_OBJECT_TYPES types bitfield is 64-bit field.
+Hi Jakub,
 
-Defining an enum for such bit fields on 32-bit platform results in below
-warning.
+I posted a fix from Parav,
+https://lore.kernel.org/netdev/20201213120641.216032-1-leon@kernel.org/T/#u
 
-./include/vdso/bits.h:7:26: warning: left shift count >= width of type [-Wshift-count-overflow]
-                         ^
-./include/linux/mlx5/mlx5_ifc.h:10716:46: note: in expansion of macro ‘BIT’
- MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER = BIT(0x20),
-                                             ^~~
-
-Use 32-bit friendly BIT_ULL macro.
-
-Fixes: 2a2970891647 ("net/mlx5: Add sample offload hardware bits and structures")
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- include/linux/mlx5/mlx5_ifc.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 2006795fd522..8a359b8bee52 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -10709,9 +10709,9 @@ struct mlx5_ifc_affiliated_event_header_bits {
- };
-
- enum {
--	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY = BIT(0xc),
--	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC = BIT(0x13),
--	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER = BIT(0x20),
-+	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY = BIT_ULL(0xc),
-+	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC = BIT_ULL(0x13),
-+	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER = BIT_ULL(0x20),
- };
-
- enum {
---
-2.29.2
-
+Thanks
