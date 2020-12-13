@@ -2,77 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC9482D8CE0
-	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 12:51:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E592D8CF1
+	for <lists+netdev@lfdr.de>; Sun, 13 Dec 2020 13:02:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406185AbgLMLup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 06:50:45 -0500
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:38340 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406111AbgLMLu1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 06:50:27 -0500
-Received: from localhost.localdomain ([93.22.148.240])
-        by mwinf5d68 with ME
-        id 3nod2400K5BSGut03noeyE; Sun, 13 Dec 2020 12:48:42 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 13 Dec 2020 12:48:42 +0100
-X-ME-IP: 93.22.148.240
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     UNGLinuxDriver@microchip.com, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net: mscc: ocelot: Fix a resource leak in the error handling path of the probe function
-Date:   Sun, 13 Dec 2020 12:48:38 +0100
-Message-Id: <20201213114838.126922-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S2406290AbgLML7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 06:59:37 -0500
+Received: from saphodev.broadcom.com ([192.19.232.172]:48166 "EHLO
+        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2406194AbgLML7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 06:59:37 -0500
+Received: from localhost.swdvt.lab.broadcom.net (dhcp-10-13-253-90.swdvt.lab.broadcom.net [10.13.253.90])
+        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 067DEEB;
+        Sun, 13 Dec 2020 03:51:46 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 067DEEB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1607860307;
+        bh=2lZOPlTnG+RuKQ4AO453vNDehxIUETvFvOwyAy92LXQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dfdWpKtgOgTa2EeYO31VLC0/9Z6r0iDMB8nOh/unEJ1KoNIdM4AQbPjZxb/+OeMRW
+         xA6bs5D67v7LCpjIOdvFL+8C5vDu+4tAtkPNebTPeQMzDmUedDoIwIr5P/QNE9D1pi
+         TM0kqqJ+BP7Drp0vSZlMYLfGKK2VOr/85rA+c3Qk=
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net-next 0/5] bnxt_en: Improve firmware flashing.
+Date:   Sun, 13 Dec 2020 06:51:41 -0500
+Message-Id: <1607860306-17244-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of error after calling 'ocelot_init()', it must be undone by a
-corresponding 'ocelot_deinit()' call, as already done in the remove
-function.
+This patchset improves firmware flashing in 2 ways:
 
-Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+- If firmware returns NO_SPACE error during flashing, the driver will
+create the UPDATE directory with more staging area and retry.
+- Instead of allocating a big DMA buffer for the entire contents of
+the firmware package size, fallback to a smaller buffer to DMA the
+contents in multiple DMA operations.
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 1e7729421a82..9cf2bc5f4289 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -1267,7 +1267,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 
- 	err = mscc_ocelot_init_ports(pdev, ports);
- 	if (err)
--		goto out_put_ports;
-+		goto out_ocelot_deinit;
- 
- 	if (ocelot->ptp) {
- 		err = ocelot_init_timestamp(ocelot, &ocelot_ptp_clock_info);
-@@ -1282,8 +1282,14 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 	register_switchdev_notifier(&ocelot_switchdev_nb);
- 	register_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
- 
-+	of_node_put(ports);
-+
- 	dev_info(&pdev->dev, "Ocelot switch probed\n");
- 
-+	return 0;
-+
-+out_ocelot_deinit:
-+	ocelot_deinit(ocelot);
- out_put_ports:
- 	of_node_put(ports);
- 	return err;
+Michael Chan (2):
+  bnxt_en: Rearrange the logic in bnxt_flash_package_from_fw_obj().
+  bnxt_en: Enable batch mode when using HWRM_NVM_MODIFY to flash
+    packages.
+
+Pavan Chebbi (3):
+  bnxt_en: Refactor bnxt_flash_nvram.
+  bnxt_en: Restructure bnxt_flash_package_from_fw_obj() to execute in a
+    loop.
+  bnxt_en: Retry installing FW package under NO_SPACE error condition.
+
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 214 ++++++++++++------
+ 1 file changed, 139 insertions(+), 75 deletions(-)
+
 -- 
-2.27.0
+2.18.1
 
