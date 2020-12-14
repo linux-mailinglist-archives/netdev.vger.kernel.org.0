@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3900F2D977B
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:38:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C122D9771
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:35:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438344AbgLNLgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:36:54 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:41647 "EHLO
+        id S2438204AbgLNLfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 06:35:41 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:45031 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2437909AbgLNLcg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:32:36 -0500
+        by vger.kernel.org with ESMTP id S2437886AbgLNLc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:32:57 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9F6345C016A;
-        Mon, 14 Dec 2020 06:31:12 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id EA0F25C018A;
+        Mon, 14 Dec 2020 06:31:13 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:12 -0500
+  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=bNTagCLn4h36ut/17O/vNWVonbqEXAVXqx2glJgQCzI=; b=NnSGqndb
-        M1aTYNsO8QfujByLwTLRIkzM/YWb0a3wtjyv+WWD2saxiFCLsYVQDjBs2npkp5M3
-        7rpRMwHwLcux2W9s5/8AnzNxTii3mlhDB6yfmfaVXcqnF1eMvcuUjDS5hokissby
-        kievJQ90FJCfCnPfL/McldiQOTAnOui0ktuU1anORbT7zo015lbITurSo/GZcUP6
-        FbjFXw0XT0WqU3zEEAqA3tCBSaJAWqXnDUhvyIkDctHRO1Vop3P83qCqBema6c84
-        g2wjyCQesPFO5AzUaDp1KPT6SEqOtmj8J7juzba/5Dpxh4+OlgRJbVNTQAoeyvyn
-        8wcuREUva+tGAA==
-X-ME-Sender: <xms:AE3XX9ILsO5OonnR6ZlvPTltLuhuDI7iF8wuT0WHqd9cg8S7asVLIA>
-    <xme:AE3XX5LQIRUTDZYGAymHWVXAakquS4AZQ3A1qF87hnL3bpbtr0CIw75nVI6cGpWcl
-    lcN0ZqKEtSH2UQ>
+        fm1; bh=bnrwwkrss26l2M+IhJk5HBV5Z3nV+ObLc564KmeQpGg=; b=kHQPb/vw
+        zGOJ4imerNFpcF/DJWBkDJtADCANpYLAUFiJ6o/lwnUxv0UTpfhZ+4MC6TGPumBH
+        aqXFUGiUv95tgOv0eI5QXCiEmIdY/YVTRYzvWI+YMc4/KIxjFSxAnpDS6ItjDT9V
+        iqi4u/OapxRmEvll+8NwQeN0s8oauSSKHpTgsVCLKXz5Hrj/4/7KNKp4XoFE+jGw
+        DnSyIijPnAbBkpOUAqY6nY29JKNXdYn3YO9Yz2Q56WFoZo+/4SZs3NQSCSgaubhX
+        +GWxHqTctfE422dzkPnXTB2vMycGJNtmv77jBzbkpJPkeOLqeYBdgVJl3SoIYtZ/
+        dnce2qFZgV9Sug==
+X-ME-Sender: <xms:AU3XX8zTea_YJwu_R42oU_Y8Mi8VjPYEhJ3qaAaSqvPfHRSUfBIbmg>
+    <xme:AU3XXwSSLpv2LW6iSDPudhfCApxN93O9r7zCAv3KsopkSueBovoot-VKEa7ZNkV3a
+    SgrdctTv5x-kh0>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgvdelucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehvddrfedu
     necuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:AE3XX1tSwTqz3Zy0OETlCIS4UVjJFGqdz5Pq34wL4Z5dZpPJPhO_9g>
-    <xmx:AE3XX-Y-Fc_PbQ-qjRXa-uaIObsu2rFjHJ9ZqwjWF43ytLVEBsqRYw>
-    <xmx:AE3XX0Yw2u5vViqmxGjr0cqSZfWyTvcSkkQbmNLa05VE4vvAi9DMGw>
-    <xmx:AE3XXznABH-6EIdHs73O7Nda9BG-qu2KsdTj9wuDb7mw41qqtnPnXg>
+X-ME-Proxy: <xmx:AU3XX-UbFPX3o7pGpfG7tPOHteWU1ieOGpXhba2VejpY0FzNCqUVYQ>
+    <xmx:AU3XX6gKn_yPo-4a6XiX5kd-TucsQkD8fQm6hcsyT3gwFNbPkn7TsQ>
+    <xmx:AU3XX-A9bjLC-ynrZ1x6yGLwGT867aZDM6aktQfdrSssOJVi5EBOlA>
+    <xmx:AU3XXxMnz8ZG3lnpNBSyQCtpcNPlslwmlWVnMVqkT0DoHSikV9jjmQ>
 Received: from shredder.mtl.com (igld-84-229-152-31.inter.net.il [84.229.152.31])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 70E121080059;
-        Mon, 14 Dec 2020 06:31:11 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id BB20B1080059;
+        Mon, 14 Dec 2020 06:31:12 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 09/15] mlxsw: reg: Add XM Router M Table Register
-Date:   Mon, 14 Dec 2020 13:30:35 +0200
-Message-Id: <20201214113041.2789043-10-idosch@idosch.org>
+Subject: [PATCH net-next v2 10/15] mlxsw: spectrum_router_xm: Implement L-value tracking for M-index
+Date:   Mon, 14 Dec 2020 13:30:36 +0200
+Message-Id: <20201214113041.2789043-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201214113041.2789043-1-idosch@idosch.org>
 References: <20201214113041.2789043-1-idosch@idosch.org>
@@ -63,74 +63,335 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-The XRMT configures the M-Table for the XLT-LPM.
+There is a table that assigns L-value per M-index. The L is always the
+biggest from the currently inserted prefixes. Setup a hashtable to track
+the M-index information and the prefixes that are related to it. Ensure
+the L-value is always correctly set.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 33 +++++++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_router.c |   1 +
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |   1 +
+ .../mellanox/mlxsw/spectrum_router_xm.c       | 203 ++++++++++++++++++
+ 3 files changed, 205 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 6db3a5b22f5d..0e3abb315e06 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -8543,10 +8543,10 @@ static inline void mlxsw_reg_rxltm_pack(char *payload, u8 m0_val_v4, u8 m0_val_v
- 	mlxsw_reg_rxltm_m0_val_v4_set(payload, m0_val_v4);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 3b32d9648578..62d51b281b58 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -7098,6 +7098,7 @@ static void mlxsw_sp_router_fib_event_work(struct work_struct *work)
+ 		op_ctx->bulk_ok = !list_is_last(&fib_event->list, &fib_event_queue) &&
+ 				  fib_event->family == next_fib_event->family &&
+ 				  fib_event->event == next_fib_event->event;
++		op_ctx->event = fib_event->event;
+ 
+ 		/* In case family of this and the previous entry are different, context
+ 		 * reinitialization is going to be needed now, indicate that.
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+index d6f7aba6eb9c..31612891ad48 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+@@ -24,6 +24,7 @@ struct mlxsw_sp_fib_entry_op_ctx {
+ 			   * the context priv is initialized.
+ 			   */
+ 	struct list_head fib_entry_priv_list;
++	unsigned long event;
+ 	unsigned long ll_priv[];
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+index 966a20f3bc0d..c069092aa5ac 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+@@ -3,6 +3,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/types.h>
++#include <linux/rhashtable.h>
+ 
+ #include "spectrum.h"
+ #include "core.h"
+@@ -16,14 +17,35 @@ static const u8 mlxsw_sp_router_xm_m_val[] = {
+ 	[MLXSW_SP_L3_PROTO_IPV6] = 0, /* Currently unused. */
+ };
+ 
++#define MLXSW_SP_ROUTER_XM_L_VAL_MAX 16
++
+ struct mlxsw_sp_router_xm {
+ 	bool ipv4_supported;
+ 	bool ipv6_supported;
+ 	unsigned int entries_size;
++	struct rhashtable ltable_ht;
++};
++
++struct mlxsw_sp_router_xm_ltable_node {
++	struct rhash_head ht_node; /* Member of router_xm->ltable_ht */
++	u16 mindex;
++	u8 current_lvalue;
++	refcount_t refcnt;
++	unsigned int lvalue_ref[MLXSW_SP_ROUTER_XM_L_VAL_MAX + 1];
++};
++
++static const struct rhashtable_params mlxsw_sp_router_xm_ltable_ht_params = {
++	.key_offset = offsetof(struct mlxsw_sp_router_xm_ltable_node, mindex),
++	.head_offset = offsetof(struct mlxsw_sp_router_xm_ltable_node, ht_node),
++	.key_len = sizeof(u16),
++	.automatic_shrinking = true,
+ };
+ 
+ struct mlxsw_sp_router_xm_fib_entry {
+ 	bool committed;
++	struct mlxsw_sp_router_xm_ltable_node *ltable_node; /* Parent node */
++	u16 mindex; /* Store for processing from commit op */
++	u8 lvalue;
+ };
+ 
+ #define MLXSW_SP_ROUTE_LL_XM_ENTRIES_MAX \
+@@ -68,6 +90,20 @@ static int mlxsw_sp_router_ll_xm_raltb_write(struct mlxsw_sp *mlxsw_sp, char *xr
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(xraltb), xraltb_pl);
  }
  
--/* Note that XLTQ, XMDR and XRALXX register positions violate the rule
-+/* Note that XLTQ, XMDR, XRMT and XRALXX register positions violate the rule
-  * of ordering register definitions by the ID. However, XRALXX pack helpers are
-  * using RALXX pack helpers, RALXX registers have higher IDs.
-- * Also XMDR is using RALUE enums. XLTQ is just put alongside with the
-+ * Also XMDR is using RALUE enums. XLRQ and XRMT are just put alongside with the
-  * related registers.
-  */
- 
-@@ -8874,6 +8874,34 @@ static inline void mlxsw_reg_xmdr_c_ltr_act_ip2me_tun_pack(char *xmdr_payload,
- 	mlxsw_reg_xmdr_c_ltr_pointer_to_tunnel_set(payload, pointer_to_tunnel);
- }
- 
-+/* XRMT - XM Router M Table Register
-+ * ---------------------------------
-+ * The XRMT configures the M-Table for the XLT-LPM.
-+ */
-+#define MLXSW_REG_XRMT_ID 0x7810
-+#define MLXSW_REG_XRMT_LEN 0x14
-+
-+MLXSW_REG_DEFINE(xrmt, MLXSW_REG_XRMT_ID, MLXSW_REG_XRMT_LEN);
-+
-+/* reg_xrmt_index
-+ * Index in M-Table.
-+ * Range 0..cap_xlt_mtable-1
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, xrmt, index, 0x04, 0, 20);
-+
-+/* reg_xrmt_l0_val
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, xrmt, l0_val, 0x10, 24, 8);
-+
-+static inline void mlxsw_reg_xrmt_pack(char *payload, u32 index, u8 l0_val)
++static u16 mlxsw_sp_router_ll_xm_mindex_get4(const u32 addr)
 +{
-+	MLXSW_REG_ZERO(xrmt, payload);
-+	mlxsw_reg_xrmt_index_set(payload, index);
-+	mlxsw_reg_xrmt_l0_val_set(payload, l0_val);
++	/* Currently the M-index is set to linear mode. That means it is defined
++	 * as 16 MSB of IP address.
++	 */
++	return addr >> MLXSW_SP_ROUTER_XM_L_VAL_MAX;
 +}
 +
- /* XRALTA - XM Router Algorithmic LPM Tree Allocation Register
-  * -----------------------------------------------------------
-  * The XRALTA is used to allocate the XLT LPM trees.
-@@ -11891,6 +11919,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(rxltm),
- 	MLXSW_REG(xltq),
- 	MLXSW_REG(xmdr),
-+	MLXSW_REG(xrmt),
- 	MLXSW_REG(xralta),
- 	MLXSW_REG(xralst),
- 	MLXSW_REG(xraltb),
++static u16 mlxsw_sp_router_ll_xm_mindex_get6(const unsigned char *addr)
++{
++	WARN_ON_ONCE(1);
++	return 0; /* currently unused */
++}
++
+ static void mlxsw_sp_router_ll_xm_op_ctx_check_init(struct mlxsw_sp_fib_entry_op_ctx *op_ctx,
+ 						    struct mlxsw_sp_fib_entry_op_ctx_xm *op_ctx_xm)
+ {
+@@ -114,11 +150,13 @@ static void mlxsw_sp_router_ll_xm_fib_entry_pack(struct mlxsw_sp_fib_entry_op_ct
+ 		len = mlxsw_reg_xmdr_c_ltr_pack4(op_ctx_xm->xmdr_pl, op_ctx_xm->trans_offset,
+ 						 op_ctx_xm->entries_count, xmdr_c_ltr_op,
+ 						 virtual_router, prefix_len, (u32 *) addr);
++		fib_entry->mindex = mlxsw_sp_router_ll_xm_mindex_get4(*((u32 *) addr));
+ 		break;
+ 	case MLXSW_SP_L3_PROTO_IPV6:
+ 		len = mlxsw_reg_xmdr_c_ltr_pack6(op_ctx_xm->xmdr_pl, op_ctx_xm->trans_offset,
+ 						 op_ctx_xm->entries_count, xmdr_c_ltr_op,
+ 						 virtual_router, prefix_len, addr);
++		fib_entry->mindex = mlxsw_sp_router_ll_xm_mindex_get6(addr);
+ 		break;
+ 	default:
+ 		WARN_ON_ONCE(1);
+@@ -130,6 +168,9 @@ static void mlxsw_sp_router_ll_xm_fib_entry_pack(struct mlxsw_sp_fib_entry_op_ct
+ 		WARN_ON_ONCE(op_ctx_xm->trans_item_len != len);
+ 
+ 	op_ctx_xm->entries[op_ctx_xm->entries_count] = fib_entry;
++
++	fib_entry->lvalue = prefix_len > mlxsw_sp_router_xm_m_val[proto] ?
++			       prefix_len - mlxsw_sp_router_xm_m_val[proto] : 0;
+ }
+ 
+ static void
+@@ -172,6 +213,147 @@ mlxsw_sp_router_ll_xm_fib_entry_act_ip2me_tun_pack(struct mlxsw_sp_fib_entry_op_
+ 						tunnel_ptr);
+ }
+ 
++static struct mlxsw_sp_router_xm_ltable_node *
++mlxsw_sp_router_xm_ltable_node_get(struct mlxsw_sp_router_xm *router_xm, u16 mindex)
++{
++	struct mlxsw_sp_router_xm_ltable_node *ltable_node;
++	int err;
++
++	ltable_node = rhashtable_lookup_fast(&router_xm->ltable_ht, &mindex,
++					     mlxsw_sp_router_xm_ltable_ht_params);
++	if (ltable_node) {
++		refcount_inc(&ltable_node->refcnt);
++		return ltable_node;
++	}
++	ltable_node = kzalloc(sizeof(*ltable_node), GFP_KERNEL);
++	if (!ltable_node)
++		return ERR_PTR(-ENOMEM);
++	ltable_node->mindex = mindex;
++	refcount_set(&ltable_node->refcnt, 1);
++
++	err = rhashtable_insert_fast(&router_xm->ltable_ht, &ltable_node->ht_node,
++				     mlxsw_sp_router_xm_ltable_ht_params);
++	if (err)
++		goto err_insert;
++
++	return ltable_node;
++
++err_insert:
++	kfree(ltable_node);
++	return ERR_PTR(err);
++}
++
++static void mlxsw_sp_router_xm_ltable_node_put(struct mlxsw_sp_router_xm *router_xm,
++					       struct mlxsw_sp_router_xm_ltable_node *ltable_node)
++{
++	if (!refcount_dec_and_test(&ltable_node->refcnt))
++		return;
++	rhashtable_remove_fast(&router_xm->ltable_ht, &ltable_node->ht_node,
++			       mlxsw_sp_router_xm_ltable_ht_params);
++	kfree(ltable_node);
++}
++
++static int mlxsw_sp_router_xm_ltable_lvalue_set(struct mlxsw_sp *mlxsw_sp,
++						struct mlxsw_sp_router_xm_ltable_node *ltable_node)
++{
++	char xrmt_pl[MLXSW_REG_XRMT_LEN];
++
++	mlxsw_reg_xrmt_pack(xrmt_pl, ltable_node->mindex, ltable_node->current_lvalue);
++	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(xrmt), xrmt_pl);
++}
++
++static int
++mlxsw_sp_router_xm_ml_entry_add(struct mlxsw_sp *mlxsw_sp,
++				struct mlxsw_sp_router_xm_fib_entry *fib_entry)
++{
++	struct mlxsw_sp_router_xm *router_xm = mlxsw_sp->router->xm;
++	struct mlxsw_sp_router_xm_ltable_node *ltable_node;
++	u8 lvalue = fib_entry->lvalue;
++	int err;
++
++	ltable_node = mlxsw_sp_router_xm_ltable_node_get(router_xm,
++							 fib_entry->mindex);
++	if (IS_ERR(ltable_node))
++		return PTR_ERR(ltable_node);
++	if (lvalue > ltable_node->current_lvalue) {
++		/* The L-value is bigger then the one currently set, update. */
++		ltable_node->current_lvalue = lvalue;
++		err = mlxsw_sp_router_xm_ltable_lvalue_set(mlxsw_sp,
++							   ltable_node);
++		if (err)
++			goto err_lvalue_set;
++	}
++
++	ltable_node->lvalue_ref[lvalue]++;
++	fib_entry->ltable_node = ltable_node;
++	return 0;
++
++err_lvalue_set:
++	mlxsw_sp_router_xm_ltable_node_put(router_xm, ltable_node);
++	return err;
++}
++
++static void
++mlxsw_sp_router_xm_ml_entry_del(struct mlxsw_sp *mlxsw_sp,
++				struct mlxsw_sp_router_xm_fib_entry *fib_entry)
++{
++	struct mlxsw_sp_router_xm_ltable_node *ltable_node =
++							fib_entry->ltable_node;
++	struct mlxsw_sp_router_xm *router_xm = mlxsw_sp->router->xm;
++	u8 lvalue = fib_entry->lvalue;
++
++	ltable_node->lvalue_ref[lvalue]--;
++	if (lvalue == ltable_node->current_lvalue && lvalue &&
++	    !ltable_node->lvalue_ref[lvalue]) {
++		u8 new_lvalue = lvalue - 1;
++
++		/* Find the biggest L-value left out there. */
++		while (new_lvalue > 0 && !ltable_node->lvalue_ref[lvalue])
++			new_lvalue--;
++
++		ltable_node->current_lvalue = new_lvalue;
++		mlxsw_sp_router_xm_ltable_lvalue_set(mlxsw_sp, ltable_node);
++	}
++	mlxsw_sp_router_xm_ltable_node_put(router_xm, ltable_node);
++}
++
++static int
++mlxsw_sp_router_xm_ml_entries_add(struct mlxsw_sp *mlxsw_sp,
++				  struct mlxsw_sp_fib_entry_op_ctx_xm *op_ctx_xm)
++{
++	struct mlxsw_sp_router_xm_fib_entry *fib_entry;
++	int err;
++	int i;
++
++	for (i = 0; i < op_ctx_xm->entries_count; i++) {
++		fib_entry = op_ctx_xm->entries[i];
++		err = mlxsw_sp_router_xm_ml_entry_add(mlxsw_sp, fib_entry);
++		if (err)
++			goto rollback;
++	}
++	return 0;
++
++rollback:
++	for (i--; i >= 0; i--) {
++		fib_entry = op_ctx_xm->entries[i];
++		mlxsw_sp_router_xm_ml_entry_del(mlxsw_sp, fib_entry);
++	}
++	return err;
++}
++
++static void
++mlxsw_sp_router_xm_ml_entries_del(struct mlxsw_sp *mlxsw_sp,
++				  struct mlxsw_sp_fib_entry_op_ctx_xm *op_ctx_xm)
++{
++	struct mlxsw_sp_router_xm_fib_entry *fib_entry;
++	int i;
++
++	for (i = 0; i < op_ctx_xm->entries_count; i++) {
++		fib_entry = op_ctx_xm->entries[i];
++		mlxsw_sp_router_xm_ml_entry_del(mlxsw_sp, fib_entry);
++	}
++}
++
+ static int mlxsw_sp_router_ll_xm_fib_entry_commit(struct mlxsw_sp *mlxsw_sp,
+ 						  struct mlxsw_sp_fib_entry_op_ctx *op_ctx,
+ 						  bool *postponed_for_bulk)
+@@ -197,6 +379,15 @@ static int mlxsw_sp_router_ll_xm_fib_entry_commit(struct mlxsw_sp *mlxsw_sp,
+ 		return 0;
+ 	}
+ 
++	if (op_ctx->event == FIB_EVENT_ENTRY_REPLACE) {
++		/* The L-table is updated inside. It has to be done before
++		 * the prefix is inserted.
++		 */
++		err = mlxsw_sp_router_xm_ml_entries_add(mlxsw_sp, op_ctx_xm);
++		if (err)
++			goto out;
++	}
++
+ 	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(xmdr), op_ctx_xm->xmdr_pl);
+ 	if (err)
+ 		goto out;
+@@ -217,6 +408,12 @@ static int mlxsw_sp_router_ll_xm_fib_entry_commit(struct mlxsw_sp *mlxsw_sp,
+ 		}
+ 	}
+ 
++	if (op_ctx->event == FIB_EVENT_ENTRY_DEL)
++		/* The L-table is updated inside. It has to be done after
++		 * the prefix was removed.
++		 */
++		mlxsw_sp_router_xm_ml_entries_del(mlxsw_sp, op_ctx_xm);
++
+ out:
+ 	/* Next pack call is going to do reinitialization */
+ 	op_ctx->initialized = false;
+@@ -289,9 +486,14 @@ int mlxsw_sp_router_xm_init(struct mlxsw_sp *mlxsw_sp)
+ 	if (err)
+ 		goto err_rxltm_write;
+ 
++	err = rhashtable_init(&router_xm->ltable_ht, &mlxsw_sp_router_xm_ltable_ht_params);
++	if (err)
++		goto err_ltable_ht_init;
++
+ 	mlxsw_sp->router->xm = router_xm;
+ 	return 0;
+ 
++err_ltable_ht_init:
+ err_rxltm_write:
+ err_mindex_size_check:
+ err_device_id_check:
+@@ -307,5 +509,6 @@ void mlxsw_sp_router_xm_fini(struct mlxsw_sp *mlxsw_sp)
+ 	if (!mlxsw_sp->bus_info->xm_exists)
+ 		return;
+ 
++	rhashtable_destroy(&router_xm->ltable_ht);
+ 	kfree(router_xm);
+ }
 -- 
 2.29.2
 
