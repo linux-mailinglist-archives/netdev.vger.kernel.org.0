@@ -2,133 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62C8D2D97AC
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:51:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C067A2D97B9
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:55:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438568AbgLNLts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:49:48 -0500
-Received: from aserp2130.oracle.com ([141.146.126.79]:59248 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405918AbgLNLts (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:49:48 -0500
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BEBi1vg154508;
-        Mon, 14 Dec 2020 11:48:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=V+Mtmc/dxJNvv1aQpXV+lTe9PulaOd5ociZlKtA1G1U=;
- b=iHHCbfk4PMzDIECX+bmLAPTbnabOQJRub8QG3TZj6zYJj6DrMozK0nRYdkZZpiyWMEBv
- fbyRIOCCikB1upcbIBpUvTE6n4LlQC9aHWbT3DBfI1VisYY8DadydoTqAXZYXnPbCUtE
- +Lnq6Vu8k6QvEleDX6gitNkl73oR+05FtEOeTDmPnPOdhuMz+BadKChez7FBgx9TAnPn
- DJ9U0G04BmF05PrRqc2mSRH/Lv+zDPqVbo23VpLEsyC3BAtJzIvprkT5z2lzzJUvurWZ
- IPr0e4r8dFIqHsSFQmUEiOjIXtXe2pSjB2IE6x6F4tBnn2C2nPNJrU7icWDG/DnPi1MI iQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2130.oracle.com with ESMTP id 35ckcb4w40-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Dec 2020 11:48:51 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BEBe2BK171801;
-        Mon, 14 Dec 2020 11:48:51 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 35d7sucy82-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Dec 2020 11:48:50 +0000
-Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BEBml0F009414;
-        Mon, 14 Dec 2020 11:48:47 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 14 Dec 2020 03:48:46 -0800
-Date:   Mon, 14 Dec 2020 14:48:31 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     UNGLinuxDriver@microchip.com, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] net: mscc: ocelot: Fix a resource leak in the error
- handling path of the probe function
-Message-ID: <20201214114831.GE2809@kadam>
-References: <20201213114838.126922-1-christophe.jaillet@wanadoo.fr>
+        id S2407760AbgLNLyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 06:54:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28247 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2404511AbgLNLyY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:54:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607946777;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I46AtJGRfllTnbXs3tPtsbfpAVA6Q24/jlgqmeCMhmc=;
+        b=Nyvyqc0cmk5e2CobWamB4mZe8OMCWqszSkVY+DYvOZWlmas19B9q9XnPnlP9YdiuHkx+en
+        yx9WfQL40ym/Tp2BVPKWYx8BbdwIcs1m65zek+AWxCGYgpv7DoSXIn3h10T2yFtgsPOkim
+        W5XbbR1pedD1zCUxTJYp1emNOfcCHJs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-449-RKfSy3OmPcqm6Ek4MemKiA-1; Mon, 14 Dec 2020 06:52:54 -0500
+X-MC-Unique: RKfSy3OmPcqm6Ek4MemKiA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9165EEC1A0;
+        Mon, 14 Dec 2020 11:52:51 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E5B71750D;
+        Mon, 14 Dec 2020 11:52:44 +0000 (UTC)
+Date:   Mon, 14 Dec 2020 12:52:42 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     sdf@google.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V7 4/8] bpf: add BPF-helper for MTU checking
+Message-ID: <20201214125242.7cea3ecb@carbon>
+In-Reply-To: <X8ktpX/BYfiL0l2l@google.com>
+References: <160588903254.2817268.4861837335793475314.stgit@firesoul>
+        <160588910708.2817268.17750536562819017509.stgit@firesoul>
+        <X8ktpX/BYfiL0l2l@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201213114838.126922-1-christophe.jaillet@wanadoo.fr>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9834 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0
- mlxlogscore=999 spamscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012140083
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9834 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
- priorityscore=1501 mlxscore=0 suspectscore=0 adultscore=0 phishscore=0
- malwarescore=0 impostorscore=0 lowpriorityscore=0 clxscore=1011
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012140083
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 13, 2020 at 12:48:38PM +0100, Christophe JAILLET wrote:
-> In case of error after calling 'ocelot_init()', it must be undone by a
-> corresponding 'ocelot_deinit()' call, as already done in the remove
-> function.
+On Thu, 3 Dec 2020 10:25:41 -0800
+sdf@google.com wrote:
+
+> > +BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
+> > +	   u32, ifindex, u32 *, mtu_len, s32, len_diff, u64, flags)
+> > +{
+> > +	int ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
+> > +	struct net_device *dev = skb->dev;
+> > +	int len;
+> > +	int mtu;
+> > +
+> > +	if (flags & ~(BPF_MTU_CHK_SEGS))
+> > +		return -EINVAL;
+> > +
+> > +	dev = __dev_via_ifindex(dev, ifindex);
+> > +	if (!dev)
+> > +		return -ENODEV;
+> > +
+> > +	mtu = READ_ONCE(dev->mtu);
+> > +
+> > +	/* TC len is L2, remove L2-header as dev MTU is L3 size */  
 > 
+> [..]
+> > +	len = skb->len - ETH_HLEN;  
+> Any reason not to do s/ETH_HLEN/dev->hard_header_len/ (or min_header_len?)
+> thought this patch?
 
-This changes the behavior slightly in another way as well, but it's
-probably a bug fix.
+Will fix in V9.
 
-drivers/net/ethernet/mscc/ocelot_vsc7514.c
-  1250          ports = of_get_child_by_name(np, "ethernet-ports");
-  1251          if (!ports) {
-  1252                  dev_err(ocelot->dev, "no ethernet-ports child node found\n");
-  1253                  return -ENODEV;
-  1254          }
-  1255  
-  1256          ocelot->num_phys_ports = of_get_child_count(ports);
-  1257          ocelot->num_flooding_pgids = 1;
-  1258  
-  1259          ocelot->vcap = vsc7514_vcap_props;
-  1260          ocelot->inj_prefix = OCELOT_TAG_PREFIX_NONE;
-  1261          ocelot->xtr_prefix = OCELOT_TAG_PREFIX_NONE;
-  1262          ocelot->npi = -1;
-  1263  
-  1264          err = ocelot_init(ocelot);
-  1265          if (err)
-  1266                  goto out_put_ports;
-  1267  
-  1268          err = mscc_ocelot_init_ports(pdev, ports);
-  1269          if (err)
-  1270                  goto out_put_ports;
-  1271  
-  1272          if (ocelot->ptp) {
-  1273                  err = ocelot_init_timestamp(ocelot, &ocelot_ptp_clock_info);
-  1274                  if (err) {
-  1275                          dev_err(ocelot->dev,
-  1276                                  "Timestamp initialization failed\n");
-  1277                          ocelot->ptp = 0;
-  1278                  }
+There is a very small (performance) overhead, but mostly because
+net_device struct layout have placed mtu and hard_header_len on
+different cache-lines. (This is something that should be fixed
+separately).
 
-In the original code, if ocelot_init_timestamp() failed we returned
-a negative error code but now we return success.  This probably is what
-the original authors intended, though.
-
-  1279          }
-  1280  
-  1281          register_netdevice_notifier(&ocelot_netdevice_nb);
-  1282          register_switchdev_notifier(&ocelot_switchdev_nb);
-  1283          register_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
-  1284  
-  1285          dev_info(&pdev->dev, "Ocelot switch probed\n");
-  1286  
-  1287  out_put_ports:
-  1288          of_node_put(ports);
-  1289          return err;
-  1290  }
-
-regards,
-dan carpenter
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
