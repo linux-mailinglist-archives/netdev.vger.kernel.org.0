@@ -2,179 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ED7B2D9798
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5102D97A8
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438444AbgLNLnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:43:49 -0500
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:46077 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2438197AbgLNLns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:43:48 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 2B702580247;
-        Mon, 14 Dec 2020 06:42:42 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:42:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=5+b+Nf
-        e0WLxY2s58dsbdm4Tp7BdQW+cUlGF+fjtRjw8=; b=MpAT9Cm7nrvs0ahW/PP5Qs
-        3LOT8RFs8fU6Ays8FuNGRHEfBuHCcIrapwvNHADqQ1T9n69svhMVtMpYou9bs5K4
-        KiVeKVHyrU0xVOwUqSIPM+dKhttHAA25iTbL0cfqse4lPCIzfB3viUSo3goSK5lf
-        ayy0us1XOi8hl1jTUUcIvD7LchLTVXtjnftKbrzfKRknExkzsPEHkwCc/VjhcmY1
-        Ukb3m/WBcoTWQ8SkHm445utW9OBLmM343z7OXTd81uX1jtMlmGh9g4rlrgPxpvqo
-        YiOyWLVxEoxFN8sg0mf9CJK9dShfHONwAaAK8W0QuAUf7Ss6zhHBzW3b8Y+10RLw
-        ==
-X-ME-Sender: <xms:r0_XX5nsnKbG8DrMxJDzcjMwVccFPrsWGjL3eyhS6qF67o7zVr30yA>
-    <xme:r0_XX01PZACT9eLa2A0EcI5q_t3-fCvSw9baH_xQbSe8IMTgoE_yeNxF_YMVeIWdt
-    nW9Sab4X2-zptw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgfeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeekueevfeejvdegjeeiveffgfevkedvhfegveeigeekieevteeugfehvedtgeej
-    gfenucffohhmrghinhepohiilhgrsghsrdhorhhgpdgsohhothhlihhnrdgtohhmpdhgih
-    hthhhusgdrtghomhdpkhgvrhhnvghlrdhorhhgnecukfhppeekgedrvddvledrudehvddr
-    fedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:r0_XX_pJUSLt0vpr8e8qA07VQ-djQnotAhx-1cnO_5QCcudT0JeRMQ>
-    <xmx:r0_XX5mHbuir-pO59uMm6BPrleD8BtCzFeHMw9z4I7OIFFzdn3OkFQ>
-    <xmx:r0_XX332MjAodHB3fCB9nBKG3s-aTODSuoSmgr5wu2lYlQAbptBotg>
-    <xmx:sk_XX8lGZKNOt4V4WMFZ2Ydt-LRuoOnQ9syecLpUKNZ7tAAR5pDxtQ>
-Received: from localhost (igld-84-229-152-31.inter.net.il [84.229.152.31])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 54C22108005C;
-        Mon, 14 Dec 2020 06:42:39 -0500 (EST)
-Date:   Mon, 14 Dec 2020 13:42:37 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-Message-ID: <20201214114237.GA2789489@shredder.lan>
-References: <20201202091356.24075-1-tobias@waldekranz.com>
- <20201202091356.24075-3-tobias@waldekranz.com>
- <20201208112350.kuvlaxqto37igczk@skbuf>
- <87a6uk5apb.fsf@waldekranz.com>
- <20201212142622.diijil65gjkxde4n@skbuf>
- <878sa1h0bg.fsf@waldekranz.com>
- <20201214001231.nswz23hqjkf227rf@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201214001231.nswz23hqjkf227rf@skbuf>
+        id S2438560AbgLNLrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 06:47:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438530AbgLNLrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:47:35 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBB0C0613CF;
+        Mon, 14 Dec 2020 03:47:10 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id e2so12316689pgi.5;
+        Mon, 14 Dec 2020 03:47:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=/sj5dLXt24sh61lvcsgpABuLIqlJqFU1rHY/mqcSIRs=;
+        b=frhHmzOc78dpdY1fADjgVo/mxFIHVbEU45s7IyfZGPQVvWXx0j5l0SCs5C/M+soRMd
+         ZIt76MoWwLaVYJep7A86+QgVB5W6hMn23rzTDfu76lh3LB8irMhbVN7xStLIG4ORGt7M
+         95u5QbAH9gH6CRbylNLDQaeOhQKsuev0YNY5KepbOMeZksdYHps+o9dYoqFY0iuwP8zO
+         JCunHZqKYOmg62jH68SknpbPyqDVpD7JdOJ5L+hO1R160imwBZHTOYzeTKZXrjoH5xVQ
+         mwZwmvpOr/XRUbaqheAOeklqKSAe2VlVDQGcm6Mc6msUn+6oJP93O0+KjEsg6ofO2pRq
+         /W2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=/sj5dLXt24sh61lvcsgpABuLIqlJqFU1rHY/mqcSIRs=;
+        b=U5tbwA//zZOlyycYWwCVagE+LM3tjcHt6OOXRW8OmugZrYYpUcDsEtisuerUH2/sGf
+         n3Jbc5kygj+OFgfCR/miq5nMr+nQN7uJEmHKceeTbQHROPJWFndFwsfuGqj+Fv51R3GR
+         RT/dFO42Lo48mq9tfbQ5QDPc36wEN31p1c64JBDhycqOAxwVqMjs8hydapfNt5n37OBe
+         NwEzVbX5JhjtgpmK61uzyinZOqcQspEUvDX/2MALMz3JPy59j4Ka525PjXvcPk22hL4i
+         fzsbbXTXrX2uLDibeWSUsEmVi/AEXmu9sHcaUAzuw1N9WaZkUKc4F+sLY3qevfHNQNgS
+         LywQ==
+X-Gm-Message-State: AOAM531+oUJsxGVX59rOoqQXmXB9YXteDmgMYOBNolfW6MVVbQeNhcXA
+        HNaXhqmAJ/dWCup17WnKEyU=
+X-Google-Smtp-Source: ABdhPJxUEEax5L2fx/qRE2NzO+kFIVY2bl1ZbTZrfXfq6QuwFn9jjM+qgx9cYb5Jr30J+L3o03Kv9Q==
+X-Received: by 2002:a63:eb4b:: with SMTP id b11mr23926208pgk.351.1607946429816;
+        Mon, 14 Dec 2020 03:47:09 -0800 (PST)
+Received: from localhost.localdomain ([182.226.226.37])
+        by smtp.googlemail.com with ESMTPSA id h18sm2294116pfo.172.2020.12.14.03.47.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Dec 2020 03:47:08 -0800 (PST)
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+X-Google-Original-From: Bongsu Jeon
+To:     krzk@kernel.org
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: [PATCH net-next] nfc: s3fwrn5: Remove unused nci prop commands
+Date:   Mon, 14 Dec 2020 20:46:58 +0900
+Message-Id: <20201214114658.27771-1-bongsu.jeon@samsung.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 02:12:31AM +0200, Vladimir Oltean wrote:
-> On Sun, Dec 13, 2020 at 10:18:27PM +0100, Tobias Waldekranz wrote:
-> > On Sat, Dec 12, 2020 at 16:26, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > On Fri, Dec 11, 2020 at 09:50:24PM +0100, Tobias Waldekranz wrote:
-> > >> 2. The issue Vladimir mentioned above. This is also a straight forward
-> > >>    fix, I have patch for tag_dsa, making sure that offload_fwd_mark is
-> > >>    never set for ports in standalone mode.
-> > >>
-> > >>    I am not sure if I should solve it like that or if we should just
-> > >>    clear the mark in dsa_switch_rcv if the dp does not have a
-> > >>    bridge_dev. I know both Vladimir and I were leaning towards each
-> > >>    tagger solving it internally. But looking at the code, I get the
-> > >>    feeling that all taggers will end up copying the same block of code
-> > >>    anyway. What do you think?
-> > >> As for this series, my intention is to make sure that (A) works as
-> > >> intended, leaving (B) for another day. Does that seem reasonable?
-> > >>
-> > >> NOTE: In the offloaded case, (B) will of course also be supported.
-> > >
-> > > Yeah, ok, one can already tell that the way I've tested this setup was
-> > > by commenting out skb->offload_fwd_mark = 1 altogether. It seems ok to
-> > > postpone this a bit.
-> > >
-> > > For what it's worth, in the giant "RX filtering for DSA switches" fiasco
-> > > https://patchwork.ozlabs.org/project/netdev/patch/20200521211036.668624-11-olteanv@gmail.com/
-> > > we seemed to reach the conclusion that it would be ok to add a new NDO
-> > > answering the question "can this interface do forwarding in hardware
-> > > towards this other interface". We can probably start with the question
-> > > being asked for L2 forwarding only.
-> >
-> > Very interesting, though I did not completely understand the VXLAN
-> > scenario laid out in that thread. I understand that OFM can not be 0,
-> > because you might have successfully forwarded to some destinations. But
-> > setting it to 1 does not smell right either. OFM=1 means "this has
-> > already been forwarded according to your current configuration" which is
-> > not completely true in this case. This is something in the middle, more
-> > like skb->offload_fwd_mark = its_complicated;
-> 
-> Very pertinent question. Given your observation that nbp_switchdev_mark_set()
-> calls dev_get_port_parent_id() with recurse=true, this means that a vxlan
-> upper should have the same parent ID as the real interface. At least the
-> theory coincides with the little practice I applied to my setup where
-> felix does not support vxlan offload:
-> 
-> I printed the p->offload_fwd_mark assigned by nbp_switchdev_mark_set:
-> ip link add br0 type bridge
-> ip link set swp1 master br0
-> [   15.887217] mscc_felix 0000:00:00.5 swp1: offload_fwd_mark 1
-> ip link add vxlan10 type vxlan id 10 group 224.10.10.10 dstport 4789 ttl 10 dev swp0
-> ip link set vxlan10 master br0
-> [  102.734390] vxlan10: offload_fwd_mark 1
-> 
-> So a clearer explanation needs to be found for how Ido's exception
-> traffic due to missing neighbor in the vxlan underlay gets re-forwarded
-> by the software bridge to the software vxlan interface. It cannot be due
-> to a mismatch of bridge port offload_fwd_mark values unless there is
-> some different logic applied for Mellanox hardware that I am not seeing.
-> So after all, it must be due to skb->offload_fwd_mark being unset?
-> 
-> To be honest, I almost expect that the Mellanox switches are "all or
-> nothing" in terms of forwarding. So if the vxlan interface (which is
-> only one of the bridge ports) could not deliver the packet, it would
-> seem cleaner to me that none of the other interfaces deliver the packet
-> either. Then the driver picks up this exception packet on the original
-> ingress interface, and the software bridge + software vxlan do the job.
-> And this means that skb->offload_fwd_mark = it_isnt_complicated.
-> 
-> But this is clearly at odds with what Ido said, that "swp0 and vxlan0 do
-> not have the same parent ID", and which was the center of his entire
-> argument. It's my fault really, I should have checked. Let's hope that
-> Ido can explain again.
+From: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-Problem is here:
+remove the unused nci prop commands that samsung driver doesn't use.
 
-ip link add vxlan10 type vxlan id 10 group 224.10.10.10 dstport 4789 ttl 10 dev swp0
+Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+---
+ drivers/nfc/s3fwrn5/nci.c | 25 -------------------------
+ drivers/nfc/s3fwrn5/nci.h | 22 ----------------------
+ 2 files changed, 47 deletions(-)
 
-We don't configure VXLAN with a bound device. In fact, we forbid it:
-https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve_vxlan.c#L46
-https://elixir.bootlin.com/linux/latest/source/tools/testing/selftests/drivers/net/mlxsw/vxlan.sh#L182
+diff --git a/drivers/nfc/s3fwrn5/nci.c b/drivers/nfc/s3fwrn5/nci.c
+index 103bf5c92bdc..f042d3eaf8f6 100644
+--- a/drivers/nfc/s3fwrn5/nci.c
++++ b/drivers/nfc/s3fwrn5/nci.c
+@@ -21,31 +21,11 @@ static int s3fwrn5_nci_prop_rsp(struct nci_dev *ndev, struct sk_buff *skb)
+ }
+ 
+ static struct nci_driver_ops s3fwrn5_nci_prop_ops[] = {
+-	{
+-		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
+-				NCI_PROP_AGAIN),
+-		.rsp = s3fwrn5_nci_prop_rsp,
+-	},
+-	{
+-		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
+-				NCI_PROP_GET_RFREG),
+-		.rsp = s3fwrn5_nci_prop_rsp,
+-	},
+ 	{
+ 		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
+ 				NCI_PROP_SET_RFREG),
+ 		.rsp = s3fwrn5_nci_prop_rsp,
+ 	},
+-	{
+-		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
+-				NCI_PROP_GET_RFREG_VER),
+-		.rsp = s3fwrn5_nci_prop_rsp,
+-	},
+-	{
+-		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
+-				NCI_PROP_SET_RFREG_VER),
+-		.rsp = s3fwrn5_nci_prop_rsp,
+-	},
+ 	{
+ 		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
+ 				NCI_PROP_START_RFREG),
+@@ -61,11 +41,6 @@ static struct nci_driver_ops s3fwrn5_nci_prop_ops[] = {
+ 				NCI_PROP_FW_CFG),
+ 		.rsp = s3fwrn5_nci_prop_rsp,
+ 	},
+-	{
+-		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
+-				NCI_PROP_WR_RESET),
+-		.rsp = s3fwrn5_nci_prop_rsp,
+-	},
+ };
+ 
+ void s3fwrn5_nci_get_prop_ops(struct nci_driver_ops **ops, size_t *n)
+diff --git a/drivers/nfc/s3fwrn5/nci.h b/drivers/nfc/s3fwrn5/nci.h
+index 23c0b28f247a..a80f0fb082a8 100644
+--- a/drivers/nfc/s3fwrn5/nci.h
++++ b/drivers/nfc/s3fwrn5/nci.h
+@@ -11,9 +11,6 @@
+ 
+ #include "s3fwrn5.h"
+ 
+-#define NCI_PROP_AGAIN		0x01
+-
+-#define NCI_PROP_GET_RFREG	0x21
+ #define NCI_PROP_SET_RFREG	0x22
+ 
+ struct nci_prop_set_rfreg_cmd {
+@@ -25,23 +22,6 @@ struct nci_prop_set_rfreg_rsp {
+ 	__u8 status;
+ };
+ 
+-#define NCI_PROP_GET_RFREG_VER	0x24
+-
+-struct nci_prop_get_rfreg_ver_rsp {
+-	__u8 status;
+-	__u8 data[8];
+-};
+-
+-#define NCI_PROP_SET_RFREG_VER	0x25
+-
+-struct nci_prop_set_rfreg_ver_cmd {
+-	__u8 data[8];
+-};
+-
+-struct nci_prop_set_rfreg_ver_rsp {
+-	__u8 status;
+-};
+-
+ #define NCI_PROP_START_RFREG	0x26
+ 
+ struct nci_prop_start_rfreg_rsp {
+@@ -70,8 +50,6 @@ struct nci_prop_fw_cfg_rsp {
+ 	__u8 status;
+ };
+ 
+-#define NCI_PROP_WR_RESET	0x2f
+-
+ void s3fwrn5_nci_get_prop_ops(struct nci_driver_ops **ops, size_t *n);
+ int s3fwrn5_nci_rf_configure(struct s3fwrn5_info *info, const char *fw_name);
+ 
+-- 
+2.17.1
 
-Even if we were to support a bound device, it is unlikely to be a switch
-port, but some dummy interface that we would enslave to a VRF in which
-we would like the underlay lookup to be performed. We use this with GRE
-tunnels:
-https://github.com/Mellanox/mlxsw/wiki/L3-Tunneling#general-gre-configuration
-
-Currently, underlay lookup always happens in the default VRF.
-
-VXLAN recently got support for this as well. See this series:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=79dfab43a976b76713c40222987c48e32510ebc1
-
-> 
-> > Anyway, so we are essentially talking about replacing the question "do
-> > you share a parent with this netdev?" with "do you share the same
-> > hardware bridging domain as this netdev?" when choosing the port's OFM
-> > in a bridge, correct? If so, great, that would also solve the software
-> > LAG case. This would also get us one step closer to selectively
-> > disabling bridge offloading on a switchdev port.
-> 
-> Well, I cannot answer this until I fully understand the other issue
-> above - basically how is it that Mellanox switches do software
-> forwarding for exception traffic today.
-> 
-> Ido, for background, here's the relevant portion of the thread. We're
-> talking about software fallback for a bridge-over-bonding-over-DSA
-> scenario:
-> https://lore.kernel.org/netdev/87a6uk5apb.fsf@waldekranz.com/
