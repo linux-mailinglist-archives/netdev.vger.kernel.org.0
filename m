@@ -2,99 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C067A2D97B9
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90B592D97FC
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 13:30:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407760AbgLNLyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:54:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28247 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2404511AbgLNLyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:54:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607946777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I46AtJGRfllTnbXs3tPtsbfpAVA6Q24/jlgqmeCMhmc=;
-        b=Nyvyqc0cmk5e2CobWamB4mZe8OMCWqszSkVY+DYvOZWlmas19B9q9XnPnlP9YdiuHkx+en
-        yx9WfQL40ym/Tp2BVPKWYx8BbdwIcs1m65zek+AWxCGYgpv7DoSXIn3h10T2yFtgsPOkim
-        W5XbbR1pedD1zCUxTJYp1emNOfcCHJs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-449-RKfSy3OmPcqm6Ek4MemKiA-1; Mon, 14 Dec 2020 06:52:54 -0500
-X-MC-Unique: RKfSy3OmPcqm6Ek4MemKiA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9165EEC1A0;
-        Mon, 14 Dec 2020 11:52:51 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E5B71750D;
-        Mon, 14 Dec 2020 11:52:44 +0000 (UTC)
-Date:   Mon, 14 Dec 2020 12:52:42 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     sdf@google.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH bpf-next V7 4/8] bpf: add BPF-helper for MTU checking
-Message-ID: <20201214125242.7cea3ecb@carbon>
-In-Reply-To: <X8ktpX/BYfiL0l2l@google.com>
-References: <160588903254.2817268.4861837335793475314.stgit@firesoul>
-        <160588910708.2817268.17750536562819017509.stgit@firesoul>
-        <X8ktpX/BYfiL0l2l@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        id S2407646AbgLNM3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 07:29:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731433AbgLNM3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 07:29:00 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3841C0613CF;
+        Mon, 14 Dec 2020 04:28:34 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id y8so8518677plp.8;
+        Mon, 14 Dec 2020 04:28:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=07u9K7qAejnZ1AxQEPtLr06bSZi6WWdia77VeMAOMaQ=;
+        b=JcEyTWu2UOHibV9usPkBnZgqxc6g0lA6QrFTY24VeoqEAidkt/WdGG+XbslL0jPO/H
+         l5g0bt/7Me4Jt/SMbugHdEjgVMOju/eDaTGDs5ESL7Wy5c5PVPsIgoGgpv0zyOTgMvYD
+         pN/ZttlxrNTaQNStVjOvNDyf5m0+vjv/wTgMBtItvnh5jwYI773m0YxikZfaFuRun98K
+         yl/T74D/N1kemj6hLvl2usJAMZKu0CEZevKGQDEYaVwexhH6AHbhXlRi1YeoqwLoaPAv
+         G5aFhrGzXZy/6LM39akORWCqnpJ86b18LMsTTdTf2TXJXjXv8eHePKBKpruh2hwLu8Ro
+         xYPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=07u9K7qAejnZ1AxQEPtLr06bSZi6WWdia77VeMAOMaQ=;
+        b=USZsaVovCK4bI+Hfc+PG0fjV/4rav5HPsvT+lwn1mbeuDul8t3gSD0JGd28cUcNVva
+         TiZ+YzBFQ8Fo5Km6dedDskqQRVqqnynftAltpO1nFgaRALSMFxEf7yFOVBXURp1g2r0f
+         Pj0NAOaQThy3M+zy4Qq7qOwvu/oblaORCGgVZdiiirYVQfgGACkuE8gpfJ9hVLKZyEap
+         gpkGBQp7aI7QTFiNdNjnMQjF6jc0aafSE4fVBwyoOREqP7PhbZYSfNGwF6dcRtesy/Iz
+         g+vuHoIsmc7nlFPzrdq9CtCstypedYu8NRtlRPPMzMSfv1hlh1jk40XS7muoiFY9EcpB
+         Qghw==
+X-Gm-Message-State: AOAM530cJ6YfuTBmhGyp5VTr5kjZ7r1qZIcYdH6bEpuaRBft5ESH/tPR
+        Wnh15RjOZ+z0jpYIQ2e7tVFp8fEg1yg=
+X-Google-Smtp-Source: ABdhPJxvFyea72ZXOadXN6hiQN2xi1NxMm3ERgg4Kc38UImajV8HVri2OqtZkR8lGNCqQsmQ7AphMQ==
+X-Received: by 2002:a17:90a:a58f:: with SMTP id b15mr17964901pjq.17.1607948914220;
+        Mon, 14 Dec 2020 04:28:34 -0800 (PST)
+Received: from localhost.localdomain ([182.226.226.37])
+        by smtp.googlemail.com with ESMTPSA id i2sm18938458pjd.21.2020.12.14.04.28.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Dec 2020 04:28:33 -0800 (PST)
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+X-Google-Original-From: Bongsu Jeon
+To:     krzk@kernel.org
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: [PATCH net-next] MAINTAINERS: Update maintainer for SAMSUNG S3FWRN5 NFC
+Date:   Mon, 14 Dec 2020 21:28:23 +0900
+Message-Id: <20201214122823.2061-1-bongsu.jeon@samsung.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Dec 2020 10:25:41 -0800
-sdf@google.com wrote:
+From: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-> > +BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
-> > +	   u32, ifindex, u32 *, mtu_len, s32, len_diff, u64, flags)
-> > +{
-> > +	int ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
-> > +	struct net_device *dev = skb->dev;
-> > +	int len;
-> > +	int mtu;
-> > +
-> > +	if (flags & ~(BPF_MTU_CHK_SEGS))
-> > +		return -EINVAL;
-> > +
-> > +	dev = __dev_via_ifindex(dev, ifindex);
-> > +	if (!dev)
-> > +		return -ENODEV;
-> > +
-> > +	mtu = READ_ONCE(dev->mtu);
-> > +
-> > +	/* TC len is L2, remove L2-header as dev MTU is L3 size */  
-> 
-> [..]
-> > +	len = skb->len - ETH_HLEN;  
-> Any reason not to do s/ETH_HLEN/dev->hard_header_len/ (or min_header_len?)
-> thought this patch?
+add an email to look after the SAMSUNG NFC driver.
 
-Will fix in V9.
+Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-There is a very small (performance) overhead, but mostly because
-net_device struct layout have placed mtu and hard_header_len on
-different cache-lines. (This is something that should be fixed
-separately).
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5c1a6ba5ef26..cb1634eb010d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15425,6 +15425,7 @@ F:	include/media/drv-intf/s3c_camif.h
+ SAMSUNG S3FWRN5 NFC DRIVER
+ M:	Krzysztof Kozlowski <krzk@kernel.org>
+ M:	Krzysztof Opasiak <k.opasiak@samsung.com>
++M:	Bongsu Jeon <bongsu.jeon@samsung.com>
+ L:	linux-nfc@lists.01.org (moderated for non-subscribers)
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.17.1
 
