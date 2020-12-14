@@ -2,108 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DD402D91A4
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 03:02:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F4892D91AE
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 03:17:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437830AbgLNCBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 21:01:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730596AbgLNCBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 21:01:12 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E2AC0613CF
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 18:00:32 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id x16so20375748ejj.7
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 18:00:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9ezj8MckI+MTr2T2ucmiHxHADoYtgYcT3sRnRFkxh2o=;
-        b=tvJzYlWMMF6ekrxMjL5EAmqZ3j5zNdiMVi403ldoBWAIhAdXa+q+QxAju7sODvMXam
-         zVjD2Av+LQbBDVyg1XEWNUAePdZTccCF1yFcO5jeXUIWNNloLB7JEeoTLxA5HIJUDYUf
-         aIZVHhRGCuWlWNZPQoG5z2XgGbKBV8yD2Sfz+rnnflfUqRJKM16glkpfc0/i3JrragqS
-         FB6rvwa+Uku3tbH3SzGLir0D7VGoanXQ1aCd34jrFuM/Ud5f52NGiz/GCV0I7zobmgAP
-         kZMin13686IPWXs7UVTHE7bCaZdiTNCohoXu1tnBO/hYhgQHaedd39XQ5FukRtWWCv5A
-         R5WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9ezj8MckI+MTr2T2ucmiHxHADoYtgYcT3sRnRFkxh2o=;
-        b=hFapX0Uq3C+YVtiPUc3HtxhqCxs8vUALaUMNT0GS2JZetE/LlZf/8cE055Az1C/6XJ
-         rNrKyEc84Cd/pg90VYhEDki4w8MxOdobE+8nTtfELODBFwBsfvEB8hMVu3CmqhaGT0iB
-         HNTzM1bUmXasUdaqTglvWNL6Hn952t3otg8BlMZm1NrK0PHo4+VNgIirfIj8jL/7A0D6
-         weOG0H3+sxNbh4MwRBjFfkQHGyiHum+QtZJsrzvWjORe2dpleYXV9KMNuAJHOzx7IIgu
-         jV9nP9kGETsI4hA23Q2cLwsw4j1gxDs+uLwD87BXbGZ5F55wEtG3O7NuXsJWIDsKy9CK
-         hckQ==
-X-Gm-Message-State: AOAM533JW4FbntNQSKf3S+xQpwkEKv7UAIQMbzQkD8xz+X+Bsok3K86P
-        uNCJa/W5qsCLgdOMgZtDzbYqdf7mFCONfGrXdAsPPzN/Rmc=
-X-Google-Smtp-Source: ABdhPJxmKYD5zZGtePiGjCc/V95cBcrUWy2viuR4HVLRrz1hIkbroQn986Mgtng1nkOAxcbyF0Z9zNapIjW4Go2NJck=
-X-Received: by 2002:a17:906:4bd2:: with SMTP id x18mr20308130ejv.464.1607911230737;
- Sun, 13 Dec 2020 18:00:30 -0800 (PST)
-MIME-Version: 1.0
-References: <7080e8a3-6eaa-e9e1-afd8-b1eef38d1e89@virtuozzo.com>
- <1f8e9b9f-b319-9c03-d139-db57e30ce14f@virtuozzo.com> <3749313e-a0dc-5d8a-ad0f-b86c389c0ba4@virtuozzo.com>
- <CA+FuTScG1iW6nBLxNSLrTXfxxg66-PTu3_5GpKdM+h2HjjY6KA@mail.gmail.com> <98675d3c-62fb-e175-60d6-c1c9964af295@virtuozzo.com>
-In-Reply-To: <98675d3c-62fb-e175-60d6-c1c9964af295@virtuozzo.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 13 Dec 2020 20:59:54 -0500
-Message-ID: <CAF=yD-JqVEQTKzTdO1BaR_2w6u2eyc6FvtghFb9bp3xYODHnqg@mail.gmail.com>
-Subject: Re: [PATCH] net: check skb partial checksum offset after trim
-To:     Vasily Averin <vvs@virtuozzo.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1731299AbgLNCPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 21:15:52 -0500
+Received: from ozlabs.org ([203.11.71.1]:43523 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726328AbgLNCPc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Dec 2020 21:15:32 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CvQ2C1vMzz9sTg;
+        Mon, 14 Dec 2020 13:14:42 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1607912088;
+        bh=F7ozDfBvF5sC6cB5ykdOGoUMbeZLYwoJfidyTcOnZTg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=sVsePjZ5FtheNLkzNUo93gPuuPtnyjxL3a7pQ+QiFdqYbuxtpm5uVeYMLpwmSblYH
+         1WR3TU2BGJW+KhaWe2fFG1rufL+fqTRim1/yNWZEDCGgYwSKworJKzJIhzmyQ91czz
+         3cudbQ0j1SgXH7gmPCR3PiBS62HUkDovAax6a37M1RWc15hCjDRdCM3Wwiq6JPXIxz
+         e6puEibtlIiU58gMuQOBzNcNEMwEU92WcwCG0fEM9JUV4X1LspO3M36+dQMwVjU4Gz
+         /zSLak3vgSJbvbK2ovgUYMXRKFx1DXNq46FzQw0/Z9AZFjMFhSYyyu5FlRsQZEe01a
+         n7ZrSR8K/y6IQ==
+Date:   Mon, 14 Dec 2020 13:14:38 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Steve French <stfrench@microsoft.com>
+Cc:     Samuel Cabrero <scabrero@suse.de>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20201214131438.7c9b2f30@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/tX+H/0dhwPC_iLEBlEhCfZi";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 13, 2020 at 2:37 PM Vasily Averin <vvs@virtuozzo.com> wrote:
->
-> On 12/13/20 2:49 AM, Willem de Bruijn wrote:
-> > On Sat, Dec 12, 2020 at 5:01 AM Vasily Averin <vvs@virtuozzo.com> wrote:
-> >>
-> >> On 12/11/20 6:37 PM, Vasily Averin wrote:
-> >>> It seems for me the similar problem can happen in __skb_trim_rcsum().
-> >>> Also I doubt that that skb_checksum_start_offset(skb) checks in
-> >>> __skb_postpull_rcsum() and skb_csum_unnecessary() are correct,
-> >>> becasue they do not guarantee that skb have correct CHECKSUM_PARTIAL.
-> >>> Could somebody confirm it?
-> >>
-> >> I've rechecked the code and I think now that other places are not affected,
-> >> i.e. skb_push_rcsum() only should be patched.
-> >
-> > Thanks for investigating this. So tun was able to insert a packet with
-> > csum_start + csum_off + 2 beyond the packet after trimming, using
-> > virtio_net_hdr.csum_...
-> >
-> > Any packet with an offset beyond the end of the packet is bogus
-> > really. No need to try to accept it by downgrading to CHECKSUM_NONE.
->
-> Do you mean it's better to force pskb_trim_rcsum() to return -EINVAL instead?
+--Sig_/tX+H/0dhwPC_iLEBlEhCfZi
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I would prefer to have more strict input validation in
-tun/virtio/packet (virtio_net_hdr_to_skb), rather than new checks in
-the hot path. But that is a larger change and not feasible
-unconditionally due to performance impact and likely some false
-positive drops. So out of scope here.
+Hi all,
 
-Instead of adding a workaround in the not path, I thought about
-converting the two checks in skb_checksum_help
+After merging the net-next tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-  BUG_ON(offset >= skb_headlen(skb));
-  BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
+fs/cifs/cifs_swn.c: In function 'cifs_swn_notify':
+fs/cifs/cifs_swn.c:450:4: error: implicit declaration of function 'nla_strl=
+cpy'; did you mean 'nla_strscpy'? [-Werror=3Dimplicit-function-declaration]
+  450 |    nla_strlcpy(name, info->attrs[CIFS_GENL_ATTR_SWN_RESOURCE_NAME],
+      |    ^~~~~~~~~~~
+      |    nla_strscpy
 
-to normal error paths and return EINVAL. But most callers, including
-this one (checksum_tg), don't check the return value to drop the
-packet.
+Caused by commit
 
-Given that, your approach sounds the most reasonable. I would still
-drop these packets, as they are clearly bad and the only source of
-badness we know is untrusted user input.
+  872f69034194 ("treewide: rename nla_strlcpy to nla_strscpy.")
 
-In that case, perhaps the test can move into pskb_trim_rcsum_slow,
-below the CHECKSUM_COMPLETE branch.
+interacting with commit
+
+  27228d73f4d2 ("cifs: Set witness notification handler for messages from u=
+serspace daemon")
+
+from the cifs tree.
+
+I have applied the following merge fix patch.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Mon, 14 Dec 2020 13:09:27 +1100
+Subject: [PATCH] fixup for "treewide: rename nla_strlcpy to nla_strscpy."
+
+conflicting with
+
+"cifs: Set witness notification handler for messages from userspace daemon"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ fs/cifs/cifs_swn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/cifs/cifs_swn.c b/fs/cifs/cifs_swn.c
+index 642c9eedc8ab..d762d442dfa5 100644
+--- a/fs/cifs/cifs_swn.c
++++ b/fs/cifs/cifs_swn.c
+@@ -447,7 +447,7 @@ int cifs_swn_notify(struct sk_buff *skb, struct genl_in=
+fo *info)
+ 		int state;
+=20
+ 		if (info->attrs[CIFS_GENL_ATTR_SWN_RESOURCE_NAME]) {
+-			nla_strlcpy(name, info->attrs[CIFS_GENL_ATTR_SWN_RESOURCE_NAME],
++			nla_strscpy(name, info->attrs[CIFS_GENL_ATTR_SWN_RESOURCE_NAME],
+ 					sizeof(name));
+ 		} else {
+ 			cifs_dbg(FYI, "%s: missing resource name attribute\n", __func__);
+--=20
+2.29.2
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/tX+H/0dhwPC_iLEBlEhCfZi
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/Wyo4ACgkQAVBC80lX
+0GzBywf8D8XRKEEUmkHnvrq/xW6WBfsU2Pdk3b0zDC4onI/gJHyfCkO6XyHV9I4o
+KXG+CRBjG/IIZYOeA9aGx8Q4EhiZnZwM/5IccjOOvzFZAagdejMHRYXEHX3Ozray
+znW1RTQ7ysO/UBVistZZ+cWyvUGHoJzgUjmpm7axh75zAUEC4jtN35TNjVKMuiN3
+2pobSeGN8DCJMVnXApaLGf+XJJnXpDUOiYlKzjsafR7QHdeR40Wij5MfU73/KF5q
+VYqctZLfpuQMoYm+pcN6j4jwE/+Tx+jVEdgKRiB3LhoQRMHeANY11nV6/k5PiZHU
+nwBG2oFvPwWf1gU904LeBwMro0cSJQ==
+=UsjC
+-----END PGP SIGNATURE-----
+
+--Sig_/tX+H/0dhwPC_iLEBlEhCfZi--
