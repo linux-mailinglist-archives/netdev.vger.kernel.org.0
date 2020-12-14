@@ -2,234 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5508D2DA0A1
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:37:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D7FB2DA0A7
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:37:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441080AbgLNTfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 14:35:06 -0500
-Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:8120 "EHLO
-        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2441064AbgLNTev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 14:34:51 -0500
-Received: from pps.filterd (m0170390.ppops.net [127.0.0.1])
-        by mx0a-00154904.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEJWRpo023871;
-        Mon, 14 Dec 2020 14:34:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=smtpout1;
- bh=xvmG8Q5rsxwPyDc6mnDal+BuO2euFZKiNZCYA/NPjwE=;
- b=LXb8x6RN+5pmCWe5NFYVKVib9qgQCOT2SIlfOBss0BEmEM/bxoIDJ3ypNFPHDiuHwx48
- L2q1zW68834lEvMSBtrYuWqWkUekV/+JWrrKAybQj+iMt+r6EfZmu96ZpUkeJUG1RJJd
- RuOxTbLNP1xLbM3W2I70jzQFTUmEiwlIvPNVQdPOHIttmMmc2E8iBWtA10XYpSth2tTA
- ucp4Al1d/T4A9YZlCSFw2b6ZddteBVwvVevVGxvvHAZZ4/UC/AzfCVygh6WnrTNlxqyt
- phhtAwXnSI9fq1eo9ETm2ZI0mwqJ5/3IgGuYDxPfS6W1v0HAHHKxBr1oNVPNU5243QsT yQ== 
-Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
-        by mx0a-00154904.pphosted.com with ESMTP id 35d4uj5tcw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Dec 2020 14:34:10 -0500
-Received: from pps.filterd (m0134746.ppops.net [127.0.0.1])
-        by mx0a-00154901.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEJY6Q5182661;
-        Mon, 14 Dec 2020 14:34:10 -0500
-Received: from ausxippc110.us.dell.com (AUSXIPPC110.us.dell.com [143.166.85.200])
-        by mx0a-00154901.pphosted.com with ESMTP id 35e5emsm0j-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Dec 2020 14:34:10 -0500
-X-LoopCount0: from 10.173.37.130
-X-PREM-Routing: D-Outbound
-X-IronPort-AV: E=Sophos;i="5.78,420,1599541200"; 
-   d="scan'208";a="1020795055"
-From:   Mario Limonciello <mario.limonciello@dell.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Cc:     linux-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>,
-        David Miller <davem@davemloft.net>, darcari@redhat.com,
-        Yijun.Shen@dell.com, Perry.Yuan@dell.com,
-        anthony.wong@canonical.com, Hans de Goede <hdegoede@redhat.com>,
-        Mario Limonciello <mario.limonciello@dell.com>
-Subject: [PATCH v5 4/4] e1000e: Export S0ix flags to ethtool
-Date:   Mon, 14 Dec 2020 13:29:35 -0600
-Message-Id: <20201214192935.895174-5-mario.limonciello@dell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201214192935.895174-1-mario.limonciello@dell.com>
-References: <20201214192935.895174-1-mario.limonciello@dell.com>
+        id S2441124AbgLNTgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 14:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2440954AbgLNTgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 14:36:04 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16841C0613D3
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 11:35:24 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id z12so6895213pjn.1
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 11:35:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IM5QHKKutzyCiIvXAeWPvqu8wN37b1v7Fs+9VXlsMrs=;
+        b=jb6wE/w0F1qqt3oQIL7OeRbhgf1/pVO8WEHX5bPAgqEce8BbY6+N2XrHlhxX1Ou+9L
+         LkH5BKfQIDUsEddQGG2HVyqpPR/8qhx4Rj0bZWvgKTD6bBRuSZYbGZ9e5NPrPe9F5rdh
+         idUn+R0BuOG+kclpI6C4IGLPNLeYwUJc/wlaSZUDWdwwtdPBRWWheAp0E3+aidUdzmZ0
+         DSw54TwoYACZ1P5p/+AQMfnnzPIfNCWtyIVktdgddsmGhr5a4ryIwE/W8g7jxJW4Y0Xu
+         VtKXjSOlaftAucmivcLDIxmuQGRfrpWQwUQrHx5uGo0r2YvWj4iqMNE4XIipRfGygaA9
+         PfNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IM5QHKKutzyCiIvXAeWPvqu8wN37b1v7Fs+9VXlsMrs=;
+        b=tKA/mu85nokihhu4fDlbSZwOXoklDHVk51dp+wfmDFL//P+tbdKwtu8neIHniHhc09
+         9m37iDCwUV82hSE3Rze3wTTSF/jGSqFrP0bx8wpibE/w5bazFFtyNMNMwvMDiEISoN5a
+         BbRRsesJERv0nL+/1slHMhNws8eg/h2ISs9bSHwLooi6B84Z2MJC44z1SsI3ermB4vQ+
+         osB9atJy+rDH8qjRSBb433OVOwvpM0IZbUYzHdLa96YADYLQC0T97QPZc9FFAQNvumAY
+         mMlVyQYkI+Rg1QXwqcYenjSuFnTx1GuM2UyrLuKnfMksa2a8ySfxhOg5Wa/jmzsKG9/5
+         rJWg==
+X-Gm-Message-State: AOAM5337Sdhyss2wZPHaeSFSPB9Kx5uKCbgT3rACpg/VhsNlaKUekXcP
+        OfP+zjbGBaz7SUixl9uB3Osa24+yUAa+ho9fh0N/Pg8QbBCQ1Q==
+X-Google-Smtp-Source: ABdhPJycTW4UGyWTCWn0cJUXmgnIelSuxreDPwMqzwQJh4aqqbP722LoP0RB7occT9gBW/puRW3TNgsedAGOELF7OwE=
+X-Received: by 2002:a17:902:9302:b029:da:f6b0:643a with SMTP id
+ bc2-20020a1709029302b02900daf6b0643amr24211875plb.33.1607974523566; Mon, 14
+ Dec 2020 11:35:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-14_10:2020-12-11,2020-12-14 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- lowpriorityscore=0 mlxlogscore=777 malwarescore=0 suspectscore=0
- bulkscore=0 adultscore=0 priorityscore=1501 spamscore=0 clxscore=1015
- impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012140129
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 adultscore=0
- phishscore=0 spamscore=0 suspectscore=0 mlxscore=0 mlxlogscore=933
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012140129
+References: <20201211152649.12123-1-maximmi@mellanox.com> <20201211152649.12123-3-maximmi@mellanox.com>
+ <CAM_iQpUS_71R7wujqhUnF41dtVtNj=5kXcdAHea1euhESbeJrg@mail.gmail.com> <7f4b1039-b1be-b8a4-2659-a2b848120f67@nvidia.com>
+In-Reply-To: <7f4b1039-b1be-b8a4-2659-a2b848120f67@nvidia.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 14 Dec 2020 11:35:12 -0800
+Message-ID: <CAM_iQpVrQAT2frpiVYj4eevSO4jFPY8v2moJdorCe3apF7p6mA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/4] sch_htb: Hierarchical QoS hardware offload
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     Maxim Mikityanskiy <maximmi@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yossi Kuperman <yossiku@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This flag can be used by an end user to disable S0ix flows on a
-buggy system or by an OEM for development purposes.
+On Mon, Dec 14, 2020 at 7:13 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>
+> On 2020-12-11 21:16, Cong Wang wrote:
+> > On Fri, Dec 11, 2020 at 7:26 AM Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
+> >>
+> >> HTB doesn't scale well because of contention on a single lock, and it
+> >> also consumes CPU. This patch adds support for offloading HTB to
+> >> hardware that supports hierarchical rate limiting.
+> >>
+> >> This solution addresses two main problems of scaling HTB:
+> >>
+> >> 1. Contention by flow classification. Currently the filters are attached
+> >> to the HTB instance as follows:
+> >
+> > I do not think this is the reason, tcf_classify() has been called with RCU
+> > only on the ingress side for a rather long time. What contentions are you
+> > talking about here?
+>
+> When one attaches filters to HTB, tcf_classify is called from
+> htb_classify, which is called from htb_enqueue, which is called with the
+> root spinlock of the qdisc taken.
 
-If you need this flag to be persisted across reboots, it's suggested
-to use a udev rule to call adjust it until the kernel could have your
-configuration in a disallow list.
+So it has nothing to do with tcf_classify() itself... :-/
 
-Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
----
- drivers/net/ethernet/intel/e1000e/e1000.h   |  1 +
- drivers/net/ethernet/intel/e1000e/ethtool.c | 46 +++++++++++++++++++++
- drivers/net/ethernet/intel/e1000e/netdev.c  |  9 ++--
- 3 files changed, 52 insertions(+), 4 deletions(-)
+[...]
 
-diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
-index ba7a0f8f6937..5b2143f4b1f8 100644
---- a/drivers/net/ethernet/intel/e1000e/e1000.h
-+++ b/drivers/net/ethernet/intel/e1000e/e1000.h
-@@ -436,6 +436,7 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
- #define FLAG2_DFLT_CRC_STRIPPING          BIT(12)
- #define FLAG2_CHECK_RX_HWTSTAMP           BIT(13)
- #define FLAG2_CHECK_SYSTIM_OVERFLOW       BIT(14)
-+#define FLAG2_ENABLE_S0IX_FLOWS           BIT(15)
- 
- #define E1000_RX_DESC_PS(R, i)	    \
- 	(&(((union e1000_rx_desc_packet_split *)((R).desc))[i]))
-diff --git a/drivers/net/ethernet/intel/e1000e/ethtool.c b/drivers/net/ethernet/intel/e1000e/ethtool.c
-index 03215b0aee4b..06442e6bef73 100644
---- a/drivers/net/ethernet/intel/e1000e/ethtool.c
-+++ b/drivers/net/ethernet/intel/e1000e/ethtool.c
-@@ -23,6 +23,13 @@ struct e1000_stats {
- 	int stat_offset;
- };
- 
-+static const char e1000e_priv_flags_strings[][ETH_GSTRING_LEN] = {
-+#define E1000E_PRIV_FLAGS_S0IX_ENABLED	BIT(0)
-+	"s0ix-enabled",
-+};
-+
-+#define E1000E_PRIV_FLAGS_STR_LEN ARRAY_SIZE(e1000e_priv_flags_strings)
-+
- #define E1000_STAT(str, m) { \
- 		.stat_string = str, \
- 		.type = E1000_STATS, \
-@@ -1776,6 +1783,8 @@ static int e1000e_get_sset_count(struct net_device __always_unused *netdev,
- 		return E1000_TEST_LEN;
- 	case ETH_SS_STATS:
- 		return E1000_STATS_LEN;
-+	case ETH_SS_PRIV_FLAGS:
-+		return E1000E_PRIV_FLAGS_STR_LEN;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -2097,6 +2106,10 @@ static void e1000_get_strings(struct net_device __always_unused *netdev,
- 			p += ETH_GSTRING_LEN;
- 		}
- 		break;
-+	case ETH_SS_PRIV_FLAGS:
-+		memcpy(data, e1000e_priv_flags_strings,
-+		       E1000E_PRIV_FLAGS_STR_LEN * ETH_GSTRING_LEN);
-+		break;
- 	}
- }
- 
-@@ -2305,6 +2318,37 @@ static int e1000e_get_ts_info(struct net_device *netdev,
- 	return 0;
- }
- 
-+static u32 e1000e_get_priv_flags(struct net_device *netdev)
-+{
-+	struct e1000_adapter *adapter = netdev_priv(netdev);
-+	u32 priv_flags = 0;
-+
-+	if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
-+		priv_flags |= E1000E_PRIV_FLAGS_S0IX_ENABLED;
-+
-+	return priv_flags;
-+}
-+
-+static int e1000e_set_priv_flags(struct net_device *netdev, u32 priv_flags)
-+{
-+	struct e1000_adapter *adapter = netdev_priv(netdev);
-+	unsigned int flags2 = adapter->flags2;
-+
-+	flags2 &= ~FLAG2_ENABLE_S0IX_FLOWS;
-+	if (priv_flags & E1000E_PRIV_FLAGS_S0IX_ENABLED) {
-+		struct e1000_hw *hw = &adapter->hw;
-+
-+		if (hw->mac.type < e1000_pch_cnp)
-+			return -EINVAL;
-+		flags2 |= FLAG2_ENABLE_S0IX_FLOWS;
-+	}
-+
-+	if (flags2 != adapter->flags2)
-+		adapter->flags2 = flags2;
-+
-+	return 0;
-+}
-+
- static const struct ethtool_ops e1000_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
- 	.get_drvinfo		= e1000_get_drvinfo,
-@@ -2336,6 +2380,8 @@ static const struct ethtool_ops e1000_ethtool_ops = {
- 	.set_eee		= e1000e_set_eee,
- 	.get_link_ksettings	= e1000_get_link_ksettings,
- 	.set_link_ksettings	= e1000_set_link_ksettings,
-+	.get_priv_flags		= e1000e_get_priv_flags,
-+	.set_priv_flags		= e1000e_set_priv_flags,
- };
- 
- void e1000e_set_ethtool_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index b9800ba2006c..e9b82c209c2d 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6923,7 +6923,6 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct e1000_hw *hw = &adapter->hw;
- 	int rc;
- 
- 	e1000e_flush_lpic(pdev);
-@@ -6935,7 +6934,7 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
- 		e1000e_pm_thaw(dev);
- 	} else {
- 		/* Introduce S0ix implementation */
--		if (hw->mac.type >= e1000_pch_cnp)
-+		if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
- 			e1000e_s0ix_entry_flow(adapter);
- 	}
- 
-@@ -6947,11 +6946,10 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct e1000_hw *hw = &adapter->hw;
- 	int rc;
- 
- 	/* Introduce S0ix implementation */
--	if (hw->mac.type >= e1000_pch_cnp)
-+	if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
- 		e1000e_s0ix_exit_flow(adapter);
- 
- 	rc = __e1000_resume(pdev);
-@@ -7615,6 +7613,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (!(adapter->flags & FLAG_HAS_AMT))
- 		e1000e_get_hw_control(adapter);
- 
-+	if (hw->mac.type >= e1000_pch_cnp)
-+		adapter->flags2 |= FLAG2_ENABLE_S0IX_FLOWS;
-+
- 	strlcpy(netdev->name, "eth%d", sizeof(netdev->name));
- 	err = register_netdev(netdev);
- 	if (err)
--- 
-2.25.1
+> > And doesn't TBF already work with mq? I mean you can attach it as
+> > a leaf to each mq so that the tree lock will not be shared either, but you'd
+> > lose the benefits of a global rate limit too.
+>
+> Yes, I'd lose not only the global rate limit, but also multi-level
+> hierarchical limits, which are all provided by this HTB offload - that's
+> why TBF is not really a replacement for this feature.
 
+Interesting, please explain how your HTB offload still has a global rate
+limit and borrowing across queues? I simply can't see it, all I can see
+is you offload HTB into each queue in ->attach(), where I assume the
+hardware will do rate limit on each queue, if the hardware also has a
+global control, why it is not reflected on the root qdisc?
+
+Thanks!
