@@ -2,138 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 191B22D936F
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 08:01:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E75A62D9378
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 08:04:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394492AbgLNHBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 02:01:21 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51086 "EHLO
+        id S2438834AbgLNHC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 02:02:59 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35888 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733073AbgLNHBT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 02:01:19 -0500
+        by vger.kernel.org with ESMTP id S2438679AbgLNHCs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 02:02:48 -0500
 Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BE6uvLt000571;
-        Sun, 13 Dec 2020 23:00:15 -0800
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BE70lSf007884;
+        Sun, 13 Dec 2020 23:01:54 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
  references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=facebook;
- bh=vS/NUF1H04v4R9GUU3eC5OItWgKT4kjE/qlAcPZLPG4=;
- b=KqW7zrxIau20a1wdkyMF7CYgTdAdpNR7yPLu+5XkDZ6HIsOWdpr0tSv9Y2Z4O2D08hwR
- ZhR/tJV3XXNba6ZomkJG6DS1rFnMSMBMN+398FutcgBlaj+dPZ4XTw4RGkVNA8XO7r37
- LJA8jof9/JKpYJJY34fG6QVAE0yY2KeOndE= 
+ bh=/yVqd+WaqW9hghXq5ragWGEAJ3AhWkF17b5SNozUHbk=;
+ b=rUYRFKQW6iqvGAvtdHAcEXVvGdsxBPNVhcQE65WXpl/V3sGk/U1RzqCgW3nPnUi4juvn
+ A5e59m7LFYRyeqs0YENsfYqDj1cgjmap4d8FJk99T+4aBx7KzZEJlRSS3WmA6PQ0buVE
+ pfjupUqNXzxM4wTLL4Fg22vU4sbeqz2V/vQ= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 35df0e36hg-2
+        by mx0a-00082601.pphosted.com with ESMTP id 35df0e36qq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sun, 13 Dec 2020 23:00:15 -0800
+        Sun, 13 Dec 2020 23:01:54 -0800
 Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+ o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Sun, 13 Dec 2020 23:00:12 -0800
+ 15.1.1979.3; Sun, 13 Dec 2020 23:01:53 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ki6O3LW/k/UdG5ptsXMYRL0pfLGJwsd1kWWy93+Fv4ouFLoeM6SO2kFsQ3vZ4J5tt/hdpMOI/PAwHO2L74Qy8t+c+SgRZy89GzwnBUIQTOIvZljZAHkccoYmmssNknGmDkmXUjPsvK1dGIKSUKb2JqKRhuuHeff+j/SkWvDOxR/j0wrkjPEnEITZtwdNGAB458UzMknbMa5z8H1aL93jKqu2+12gZPuKGVdYA3uZuHi26QXu+EDeXfWqSfrD7NpbqNA8giDAeuvO92YjW/OAPZGZaVPbL76dTxSQO4/v1b61/xDtSq8YPww2dGWrRQOZB344xSZfAM3xtxs80t0B9g==
+ b=nSxeSdZJhuke66Xjz1KWPH7Onb3iAoaoG21x6KE2cE7DX5b1EwIc7fcOZgvaJfz8Is4zTLfQmy8aXPUzv9v/ZSxb93Imho7+19Qr5EZxYQcbFZF8HdOMpTKYek8OEq4g+TPWz7IyoDUjvEeHWNRA82hioZqVtL2QhBp3r3LDI0jrtQ4nKPC58hLhYniTIuNk9YDaWdHziTyZtk1TNyr/vYUd0Y0GdSWvq2j73az0dBgP8FY3PGC8kQLpysSRbRMQ3InPmT2LaBXaB52zhuk27vNS+PndfQ3ia8E3AKEyp0Ryeu5ybzHDOiEAMEErf8+RIdPbA+Aj7ExxNZKPITQ08Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vS/NUF1H04v4R9GUU3eC5OItWgKT4kjE/qlAcPZLPG4=;
- b=fKlDO9NyPKNNIba0cABS+/6stghk+7Maj5N+QC6runcYdvJKuUYBGLKlj/5MWUs0XiPBGmSU0lGf2nOdydPLVAoPjEG8C1CFctxX+BZuzczpzERypgg2/YuUoVhM0qeN1v1CKXl98DiXXYPqKBMTYdYdJFVLVbjb20Uc22Q2Dg11K+xUmlWs8JbrACWZaA1K7sY9ahwGigtUDj5VkJgiDA2PAGNUxd6RGJBXpyCwg1yZ+UsbCTr5XBZRhhJaskpJJhTcGUaIeeSTYq4WyVEuYyle2ZSERUK38Obkdd+1k80EUVZ6Ok9zFZ7dUvbZrsMCnKxtLrZX8ZzkWY/T8/ghcg==
+ bh=/yVqd+WaqW9hghXq5ragWGEAJ3AhWkF17b5SNozUHbk=;
+ b=OFHiAR0N7j/ls3fOvCfpn30V1m1EklhEmN3CcXJlJujpRkpw497IRrg6aWCpSaE+uaFVlG+jfiyg/lEuwimwQp7rwcM7vmfNTMrAmiBfnz4guTBpUia4fS+dheFYhwBvHg40Y4m2SzTbQTgIoRMeVzjoBocb3wsZMomHCla09E/o2eFq/srfdr2qNmvbbZ2+HcJFPKFjJXdMZad+im0tPKHV0cA2dh/JOuAgN41WELnOrAilx7TqGhJa95O1tUjaA35Ht+XdPfZH8CtprrrRwFxjFvuPjSAGBwOo+UsRaOYQHyEuW3ZJLgwzrOFhm1ahkYgwjf5DCPlrdGGgQXA4Jw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vS/NUF1H04v4R9GUU3eC5OItWgKT4kjE/qlAcPZLPG4=;
- b=NttwWmaDjZ29ld4fKnMLZLq0b4dpAkpzOxPEd8eQvIbYVwMVE6AcyVYKfgU4ZYtSTQbDHwVrMtz0Jb3Z8WCcVVRfHu7V1FdNmIJqtPcuK+tTAZmZe4bliU1d+Zz5j3AsWy3sgoB3UQKWOpLV/Jp/Vvu5WL6FlGb8VtcWptpQrEA=
+ bh=/yVqd+WaqW9hghXq5ragWGEAJ3AhWkF17b5SNozUHbk=;
+ b=YpAhzWTRprwuEaMVz/BSYXXE251J2D4HwdPQ8B/EgMWR0+Y6HQ5ljjlJbNyv9MFzgeALb5Bt6y4XWeyeJu2C4OOkucBvxS7GUA+jqKV6Tc2Yhbx5ULiMIdmtMSFoFlxWKjkI2SDH/IUlVfIGWeqVTYdwTPTAG7ZUwQp8tF/HH0I=
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
  by BYAPR15MB2696.namprd15.prod.outlook.com (2603:10b6:a03:156::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Mon, 14 Dec
- 2020 07:00:11 +0000
+ 2020 07:01:52 +0000
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3654.025; Mon, 14 Dec 2020
- 07:00:11 +0000
-Subject: Re: [PATCH 1/1 v3 bpf-next] bpf: increment and use correct thread
+ 07:01:52 +0000
+Subject: Re: [PATCH v2 bpf-next] bpf: increment and use correct thread
  iterator
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-References: <20201211171138.63819-1-jonathan.lemon@gmail.com>
- <20201211171138.63819-2-jonathan.lemon@gmail.com>
- <CAEf4BzYswHcuQNdqyOymB5MTFDKJy0xkG4+Yo_CpUGH4BVqjzg@mail.gmail.com>
- <20201211230134.qswet7pfrda23ooa@bsd-mbp.dhcp.thefacebook.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+CC:     <netdev@vger.kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <kernel-team@fb.com>
+References: <20201204034302.2123841-1-jonathan.lemon@gmail.com>
+ <2b90f131-5cb0-3c67-ea2e-f2c66ad918a7@fb.com>
+ <20201204171452.bl4foim6x7nf3vvn@bsd-mbp.dhcp.thefacebook.com>
+ <e6e8dd8c-f537-bea8-93ac-4badd3234c85@fb.com>
+ <20201211163017.3fjxnuickl2m523m@bsd-mbp.dhcp.thefacebook.com>
 From:   Yonghong Song <yhs@fb.com>
-Message-ID: <7774ab85-ef6d-8928-0374-ae037f495cab@fb.com>
-Date:   Sun, 13 Dec 2020 23:00:09 -0800
+Message-ID: <c1d02027-80d4-2d2c-a254-ccd4c7fa2239@fb.com>
+Date:   Sun, 13 Dec 2020 23:01:49 -0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.5.1
-In-Reply-To: <20201211230134.qswet7pfrda23ooa@bsd-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201211163017.3fjxnuickl2m523m@bsd-mbp.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [2620:10d:c090:400::5:c9f6]
-X-ClientProxiedBy: SJ0PR05CA0081.namprd05.prod.outlook.com
- (2603:10b6:a03:332::26) To BYAPR15MB4088.namprd15.prod.outlook.com
+X-ClientProxiedBy: SJ0PR05CA0069.namprd05.prod.outlook.com
+ (2603:10b6:a03:332::14) To BYAPR15MB4088.namprd15.prod.outlook.com
  (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e8::112b] (2620:10d:c090:400::5:c9f6) by SJ0PR05CA0081.namprd05.prod.outlook.com (2603:10b6:a03:332::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.13 via Frontend Transport; Mon, 14 Dec 2020 07:00:10 +0000
+Received: from [IPv6:2620:10d:c085:21e8::112b] (2620:10d:c090:400::5:c9f6) by SJ0PR05CA0069.namprd05.prod.outlook.com (2603:10b6:a03:332::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.15 via Frontend Transport; Mon, 14 Dec 2020 07:01:51 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 937e8c14-d7ab-49d5-cd08-08d89ffde643
+X-MS-Office365-Filtering-Correlation-Id: c912dcc8-3a58-4d09-7548-08d89ffe2277
 X-MS-TrafficTypeDiagnostic: BYAPR15MB2696:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB26961DF5CC0583DD65FE9CEBD3C70@BYAPR15MB2696.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2696E130791A1F9441391A9AD3C70@BYAPR15MB2696.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1ON9LACoFkbcGnOJptvuSKQoLSeSUgyAwsHhBz12BuY3l0TdbipOZyfeTK3sskrJe4IKzfoPw8Xv1Rp5M0HkLH/Aaqb6wF16fBy1XCA7RGpsXBzDjjR5Z5fNFEq7RCEmKuhM0LKj+XgRGs0ESfAizimW3sRLcT3DfRU/KmSTk+T48prMlTEkkv/dScfz+IPmmjtqMdtNeiyFmlNwCRy3kUL5XQb/dFp0LQVbIgGVLZPG2U7Yggg6/f54CXRjWs+veDe32WlWXpxqC0ceXrmXhjY//VgRI5XMG0J9KjGhMvD93G6GViDY0rOgk2vbwQc6rnNZoSO9QwSpw47jJcIqxvIPBRFL38vhQRa5dZ6nznlUzYvYJQtfHxp494Sj/BHjKTMwKWAxBUkZ1rxvgZ7uw6Y7qrY0YuP9+sbrj2WUcGk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(136003)(346002)(5660300002)(66476007)(4326008)(8676002)(36756003)(66946007)(8936002)(2616005)(508600001)(31696002)(66556008)(186003)(86362001)(2906002)(52116002)(31686004)(110136005)(53546011)(6486002)(54906003)(83380400001)(16526019)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cURXRzBhcG80dmhEWnREblFJamRoWmhJaUVXMEVndWRmZUEwb3M1TnN2cjRh?=
- =?utf-8?B?L3JkbWpaRm1SeS9vRkk5bmdQSytOcnl6clJsUjk5bzVJQWY4TmI5akNXOVJp?=
- =?utf-8?B?ci9jVEx5cnRJUm5GbUFMWWxzTmJLQkNYN1Y5bWpQRUZTdHljcHFpVm40bHhX?=
- =?utf-8?B?THZjK0R0a2FPU0dsQWM4eDhlZmlmMVd2RU5hSVFhUWY2MytmSHh1UWU0Ykhp?=
- =?utf-8?B?TDRTZldxOWx2R1VvVW41amVXN2I0aG1MYlU0L0JxY1B4U0gvMEtoOFRXamxX?=
- =?utf-8?B?SkRHVVFOeXhVWis5M2hCR2hDVFI0cmNFVlBzOGg3aHdmbEdmTHFFTGowRFg3?=
- =?utf-8?B?K0dGK1BPTitKdENkei9wV2YwcmdsNWFkY2N5ZVk4VEJuVnhYZGdQTFBPV1Fw?=
- =?utf-8?B?VkI0NFgzQ01wZW5YVEdaQzZHc2FpVlpTVk1NMkd2c0FqV24xSFpBVTNaYUJH?=
- =?utf-8?B?TmRIRmh4MkhOV1BxVzI2aTc1MzlQNWFFSnJ3NjErZFJwLy9NUG01VVVxc0Rv?=
- =?utf-8?B?MElKVFlrVGhOSmtKMnA1RGRlQkxvZGM0akdCNzgvVUhYTWpGSTMzQ0Y0Y29I?=
- =?utf-8?B?Tnd3eS9TT2t1OEs0UHE5bDVua012R2l4RTJlVmdJWFRPeFBqUXU0endmcDhN?=
- =?utf-8?B?aXhrYWtEL1NQa2VmNlQ5R0x6a3hFQXJIcnBNbHZuZkZodHdOS3U4ekYza21V?=
- =?utf-8?B?S1EzRERscVovdGVWWTJBdEF3a0YzbEw4cEtJS2FSN0JjNkNydzljc3JzN2lT?=
- =?utf-8?B?ZVgxeDBTVFpDL1BKNkRqNGNGd2gxeWRIV2lmaXhPRjlBMzU0QTUzN295dmU1?=
- =?utf-8?B?NjV0YXN1R0duU1ZTWjA0elFLV0tPOTROZDRid2lCYTRRR2RnYWJYbm04eWtI?=
- =?utf-8?B?UjVCT0hkVXVrNkRoS2xnZExwUFp6Qk5PcFQvZm4rb2ZSbzJCNnVUNi9oLzNv?=
- =?utf-8?B?Q2tLQjRIMVR0bndDUjZzTXJJSjY3Ni9pcXZVMVRDbjFRalRoa0E0L0pqbloy?=
- =?utf-8?B?a1dlbUJCVFBZcFphUk1KL1F1RExVQXlEU25xc3FkT0dvRG4vMmtzT2NHTGJI?=
- =?utf-8?B?YUVld0tUUkRINmFEL2F0N0F5M1RCeHlkZXRDSVBYVW9oSitpSkwzTXNJQ3hE?=
- =?utf-8?B?MHhoaWM2c0E4NDZlVitRYXlNNnUrbmUvTS9xZGM5Q3Aza2lFM0x5aVpTV3ZP?=
- =?utf-8?B?bDcyYUtaMW5JWENFOFNvNVFVcy9yY3RoYzhiWHEwbElxL2xBRnpkUFBHb1Yv?=
- =?utf-8?B?TTVGdHAzVUU1ek5LVGMyMllEbWJJd0VjZzVmOC93bnU0ekpnTFRZYnYyN3A4?=
- =?utf-8?B?MjNleEV1ZVNMcWErRlpTSFFvOUp1dW5HdW53amhrT1Fjd3d3UnlRR3d6TCtp?=
- =?utf-8?B?TlNYVkxxT1Y5dVE9PQ==?=
+X-Microsoft-Antispam-Message-Info: SkqWIjfjUKFN6nJ1FTTkctQtFLTqrO/u+jJPDa2cykXse+zLhq7vuU0FpeuDL7pU0wwqdqCC3Ow1mqdUv8/8ReiuPqobGJVXav00gymI8uoT2pNKWPegje8Jwwa1ilXFN3JADZxmMl9MdQsZd7HkkGQDjjZCA3wrn1FbSYACRlgOiBIB89nkKE3euFttwVQfuQ/5xhn9qQJORcJOUow9nuxVx87T7AYGNcSanYHU0I3l3Jw6fzEvPP+dIGMAbhrQ9LoBFfJtvpKXBqvVdQzPt0GCt3J3cOIYnbvvuh7axG4N6XAqk3ytMXbfwvCLUTKjhFqUA4gl4bKnkgguAE2lGe1e51CJuDD6iXhIASq8CNYLk60mVA/7TG1T4ZI67nlj+GcqcttgwSEuG13qCy0uRDIChrFk/7pmlL1RQ0NYYao=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(136003)(346002)(5660300002)(66476007)(4326008)(8676002)(36756003)(66946007)(8936002)(2616005)(508600001)(31696002)(66556008)(186003)(86362001)(2906002)(52116002)(31686004)(53546011)(6486002)(6916009)(83380400001)(16526019)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?MVdnb2dFVmt4dTBLeklyN0c3MEpNaWF3ZTRyNzZteXRNdmE3bCtkbmF0cTBj?=
+ =?utf-8?B?RDhCemcyUS9wTWI1Zk9sZXMxWkZxdFIrV2NiQUFuV0ZrUVZmTnB4UW9ucGZv?=
+ =?utf-8?B?ZkxXZ0p2NG05R0F4UERrK0NtTEdLbXlibHhBRjdOMElRSzFHUVFIZGRwNE1t?=
+ =?utf-8?B?OTB3QVdCSnFkNmhocU9xUWwrS3RxbnphT2hRQTNQYlNsVi9sYmd0UTZLTHB6?=
+ =?utf-8?B?T0hHTFpTU3BSZXBROUhSWXoxZlhkY1RIKzdCUVowQVExNVBRb2lkSk5YRHRB?=
+ =?utf-8?B?K1FROFdMRmJzSm1nK3JjNllYRFZ2UGpVeDFjTXRjVEtOb2VPT0lzUmtvUHNB?=
+ =?utf-8?B?dkVuK2RXUUl1U1NTRGhwRitOK0ZRUkpIVm9Ja0xDUHgyUFhKQzgyNTJGeHdw?=
+ =?utf-8?B?YjRndjc5Qy9XY3IzaTIzdUNtbnRjeGIrYndGVEI1Z09xNXgzdWNEN3paejVu?=
+ =?utf-8?B?R0NpWHl2akhGSWdIMm1lN2hoMFRZZ1ZkNWRhNXljcUF4WXJ0TE9JaFQ4ckth?=
+ =?utf-8?B?R2h0d0hXakJUNG51djRNQnBUTUQ2RUxianlobVBvOC84Y1k5MnNqTkh2SDZS?=
+ =?utf-8?B?VUp1MTErRmw4eGJYTXN6Zm9CaVVNRXdvaXU2c3JJTGhvVXZ4VWVDSS9leDVQ?=
+ =?utf-8?B?QW0rQmxoVmUxV1lmWklhZHVBdlI5bGFTbHcydVJKeDdqQlNQeDg0bEZjYW5Z?=
+ =?utf-8?B?U0V4VFE1MDhvcDYveXFSYit6UnVhTWpJSjlxV2tnMjNMMmp2OGNJbWFMOTdH?=
+ =?utf-8?B?V2dobmZVN0laK3F3YjdvVDhkOEtTaGdZR3FCUXdMTDR0TjZ1cEVCK1VUcFZD?=
+ =?utf-8?B?bnRFTFVLajlka3I5V2xkQ2dCT1M5Y2JqYlg4U2ZUWTRlQ3V6RHVwWGt5UlBr?=
+ =?utf-8?B?S2lFTTZSajYwQnpsNFFtcnE5UzZrWlg1VU5lZjlTV3NRbEtFN0JJRGlOUjRH?=
+ =?utf-8?B?ZUxmMEJYdUszTCsvQ0tSbWVHWmszeVhzRFpLMCtack1ROVh4UC9WcytubVNv?=
+ =?utf-8?B?NTBSM2VKTmNRTFRSMzU2Y2x6UFc2aFZsYWtwSk15L1R5MGluVDFFZXUrNDc1?=
+ =?utf-8?B?Y0k5Q3lqWVBDbytzTFRJdWFFMzJYa1NPaS9FeFZWQmlGaitmbTZoSnV3RmZT?=
+ =?utf-8?B?RUszc3g5eHVqMU1lZkpab3pVQ2VmUC9aN09MRWdzRVpld0RhZSt3Z0xDZWhG?=
+ =?utf-8?B?bXJCUVArbEp4OW1ZTjRyZTlsM2d1TW1HQkQvU0dydEw5RytSakRISTlMMzRJ?=
+ =?utf-8?B?eFYyWW9JYzM3RnE2TE52R3I3ZHpvY1B6Sk1PQm5QcjF1Ync3bloyQUlIWWJW?=
+ =?utf-8?B?Q2FxYVJVSVg4d2NveW1lVVcrWFlWNGozWit1UG9HNWxBMkpPdzJRc2hyY0Y3?=
+ =?utf-8?B?cGxlM0oxQUdsWXc9PQ==?=
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2020 07:00:11.0431
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2020 07:01:52.0339
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: 937e8c14-d7ab-49d5-cd08-08d89ffde643
+X-MS-Exchange-CrossTenant-Network-Message-Id: c912dcc8-3a58-4d09-7548-08d89ffe2277
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h8qu+MvQbSR7lLKyyUfzFflIPcPwfRwzm48Vuo7sL7tj159hj5D6rW0Ux3eX0HM1
+X-MS-Exchange-CrossTenant-UserPrincipalName: flSzB07Q3L2GMQLZK3NxkDqg5jGBxjBQRNpLHd2px2PxlydLjU6mRWcj89fWTt8h
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2696
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
  definitions=2020-12-14_03:2020-12-11,2020-12-14 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- impostorscore=0 mlxlogscore=684 suspectscore=0 adultscore=0 mlxscore=0
+ impostorscore=0 mlxlogscore=999 suspectscore=0 adultscore=0 mlxscore=0
  lowpriorityscore=0 malwarescore=0 clxscore=1015 spamscore=0 bulkscore=0
  priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012140052
+ engine=8.12.0-2009150000 definitions=main-2012140053
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -141,49 +139,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 12/11/20 3:01 PM, Jonathan Lemon wrote:
-> On Fri, Dec 11, 2020 at 12:23:34PM -0800, Andrii Nakryiko wrote:
->>> @@ -164,7 +164,7 @@ task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info)
->>>                  curr_files = get_files_struct(curr_task);
->>>                  if (!curr_files) {
->>>                          put_task_struct(curr_task);
->>> -                       curr_tid = ++(info->tid);
->>> +                       curr_tid = curr_tid + 1;
+On 12/11/20 8:30 AM, Jonathan Lemon wrote:
+> On Wed, Dec 09, 2020 at 11:02:54AM -0800, Yonghong Song wrote:
 >>
->> Yonghong might know definitively, but it seems like we need to update
->> info->tid here as well:
 >>
->> info->tid = curr_tid;
+>> Maybe you can post v3 of the patch with the above information in the
+>> commit description so people can better understand what the problem
+>> you are trying to solve here?
 >>
->> If the search eventually yields no task, then info->tid will stay at
->> some potentially much smaller value, and we'll keep re-searching tasks
->> from the same TID on each subsequent read (if user keeps reading the
->> file). So corner case, but good to have covered.
+>> Also, could you also send to bpf@vger.kernel.org?
 > 
-> That applies earlier as well:
+> Sure, I can do that.
 > 
->                  curr_task = task_seq_get_next(ns, &curr_tid, true);
->                  if (!curr_task) {
->                          info->task = NULL;
->                          info->files = NULL;
->                          return NULL;
->                  }
+>>>>> If unable to obtain the file structure for the current task,
+>>>>> proceed to the next task number after the one returned from
+>>>>> task_seq_get_next(), instead of the next task number from the
+>>>>> original iterator.
+>>>> This seems a correct change. The current code should still work
+>>>> but it may do some redundant/unnecessary work in kernel.
+>>>> This only happens when a task does not have any file,
+>>>> no sure whether this is the culprit for the problem this
+>>>> patch tries to address.
+>>>>
+>>>>>
+>>>>> Use thread_group_leader() instead of comparing tgid vs pid, which
+>>>>> might may be racy.
+>>>>
+>>>> I see
+>>>>
+>>>> static inline bool thread_group_leader(struct task_struct *p)
+>>>> {
+>>>>           return p->exit_signal >= 0;
+>>>> }
+>>>>
+>>>> I am not sure whether thread_group_leader(task) is equivalent
+>>>> to task->tgid == task->pid or not. Any documentation or explanation?
+>>>>
+>>>> Could you explain why task->tgid != task->pid in the original
+>>>> code could be racy?
+>>>
+>>> My understanding is that anything which uses pid_t for comparision
+>>> in the kernel is incorrect.  Looking at de_thread(), there is a
+>>> section which swaps the pid and tids around, but doesn't seem to
+>>> change tgid directly.
+>>>
+>>> There's also this comment in linux/pid.h:
+>>>           /*
+>>>            * Both old and new leaders may be attached to
+>>>            * the same pid in the middle of de_thread().
+>>>            */
+>>>
+>>> So the safest thing to do is use the explicit thread_group_leader()
+>>> macro rather than trying to open code things.
+>>
+>> I did some limited experiments and did not trigger a case where
+>> task->tgid != task->pid not agreeing with !thread_group_leader().
+>> Will need more tests in the environment to reproduce the warning
+>> to confirm whether this is the culprit or not.
 > 
-> The logic seems to be "if task == NULL, then return NULL and stop".
-> Is the seq_iterator allowed to continue/restart if seq_next returns NULL?
+> Perhaps, but on the other hand, the splats disappear with this
+> patch, so it's doing something right.  If your debug code hasn't
+> detected any cases where thread_group_leader() isn't making a
+> difference, then there shouldn't be any objections in making the
+> replacement, right?  It does make the code easier to understand
+> and matches the rest of the kernel.
 
-If seq_next() returns NULL, bpf_seq_read() will end and the control
-will return to user space. There are two cases here:
-    - there are something in the buffer and user will get non-zero-length
-      return data and after this typically user will call read() syscall
-      again. In such cases case, the search will be from last info->tid.
-    - the buffer is empty and user will get a "0" return value for read()
-      system. Typically, user will not call read() syscall any more.
-      But if it does, the search will start from last info->tid.
+Agree. Let me do a little more experiments to double check we
+did not miss anything with this particular change and will
+report back later.
 
-Agree with Andrii, in general, this should not be a big problem.
-But it is good to get this fixed too.
-
-> --
-> Jonathan
-> 
