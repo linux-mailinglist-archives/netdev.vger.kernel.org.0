@@ -2,507 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9A442D9E37
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 18:53:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D98582D9E39
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 18:53:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408014AbgLNRvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 12:51:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439430AbgLNRun (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 12:50:43 -0500
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D32AC0613D3;
-        Mon, 14 Dec 2020 09:50:03 -0800 (PST)
-Received: by mail-qv1-xf2b.google.com with SMTP id s6so8193278qvn.6;
-        Mon, 14 Dec 2020 09:50:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=KUJvtcU7praBwmxje82Hm8Pu13gE7+rFgKOCOe5N1hA=;
-        b=EMy6uSwMi7uUWOylsxnnfW5BA4Q79ryQzO9d7VPfwMQ7lzHdXPLV9ll0AePnWVIaz6
-         wGPBoPyfUTsaD9gDiKaqwZ17axieJQQD6EBDkFPwLWBL6Bdg+/QM7EWbBk4YVm4Lvu2Q
-         Mq7kfq5fWdAktui+kTFSBCWvJ6dFatYzIgftRWprv39mUrp7EkNTxwEP+t05HTI0pY3P
-         cLQEJ1maRYzT8EcI6UR4hNWxrsnlszZk9jc27fjQduCoCJCvw2prja5gDUMEHj4zDMNa
-         a+mXEVIzaEZdqe+kCWecW6yBmnFXPbCwsB7dGZOsvrDheiAZJl5fdN0/M/8L6m9R4kMh
-         nHMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=KUJvtcU7praBwmxje82Hm8Pu13gE7+rFgKOCOe5N1hA=;
-        b=f2Gp8Tfo9Vnb6ZBIcFSuX9v1xskta4ywGa+P6LAwl/IUAweT9FwrhvxxzftmFkQDQB
-         tksa+qNvh7DyD2y+YjFzRIAqj3cMRH5qdqrXt2p2yAjClleMqFZKO0eCB8+HjSZsYed/
-         cD/ihmUinZZtmYfqHLgHVJ3bH0C+ALntO8pJQ0nL0c+bgJiwtRuZ9Tq7B5kg7OMHo8uR
-         REuRvUQ9s/x5AjNekUgZDSh6oyB3QwEVtH7KEJA5Oj4OPoEEZBW4G7VmL31/4VkFdY8S
-         SShWh/WPFWFOYgr4j0q2e5qL6w9ItzBNQbVsKWYdTf2yuNW8meerVTsI2CipLmPxb/kl
-         nGjw==
-X-Gm-Message-State: AOAM531JwWnLeKdkEWshgMYEP3ndwrjKsYbB/xMMNd3omaK5tJVlziIo
-        S1n4IzE9Hy8F/Na61Bwu74edVm65l5SMgg==
-X-Google-Smtp-Source: ABdhPJyI3nUsP+uoPidCaCroOU3JiU2iI9lN5HLIGT8kxiwry4Oo7b/PwoW/RzhGBBRF+as5nVJZ6Q==
-X-Received: by 2002:ad4:5188:: with SMTP id b8mr33346607qvp.55.1607968202024;
-        Mon, 14 Dec 2020 09:50:02 -0800 (PST)
-Received: from localhost (pc-145-79-45-190.cm.vtr.net. [190.45.79.145])
-        by smtp.gmail.com with ESMTPSA id u26sm11831377qkm.69.2020.12.14.09.49.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Dec 2020 09:50:01 -0800 (PST)
-Date:   Mon, 14 Dec 2020 14:49:56 -0300
-From:   Carlos Neira <cneirabustos@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     andriin@fb.com, yhs@fb.com, ebiederm@xmission.com,
-        brouer@redhat.com, bpf@vger.kernel.org, cneirabustos@gmail.com
-Subject: [PATCH v8 bpf-next] bpf/selftests: fold test_current_pid_tgid_new_ns
- into test_progs.
-Message-ID: <20201214174953.GA14038@localhost>
+        id S1728138AbgLNRvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 12:51:52 -0500
+Received: from mx04.lhost.no ([5.158.192.85]:48184 "EHLO mx04.lhost.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2440514AbgLNRvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 12:51:16 -0500
+X-ASG-Debug-ID: 1607968228-0ffc0612ed60a550001-BZBGGp
+Received: from s103.paneda.no ([5.158.193.76]) by mx04.lhost.no with ESMTP id 1XOmUIwG5l6ltLNJ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Mon, 14 Dec 2020 18:50:29 +0100 (CET)
+X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
+X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
+X-Barracuda-Apparent-Source-IP: 5.158.193.76
+X-ASG-Whitelist: Client
+Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
+ (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Mon, 14
+ Dec 2020 18:50:25 +0100
+Subject: Re: [PATCH iproute2-next v2] iplink:macvlan: Added bcqueuelen
+ parameter
+To:     David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+X-ASG-Orig-Subj: Re: [PATCH iproute2-next v2] iplink:macvlan: Added bcqueuelen
+ parameter
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <stephen@networkplumber.org>,
+        <kuznet@ms2.inr.ac.ru>
+References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
+ <147b704ac1d5426fbaa8617289dad648@paneda.se>
+ <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <892be191-c948-4538-e46d-437c3f3a118c@paneda.se>
+ <25e06e96-3c8d-06c0-4148-3409d7cecc6a@gmail.com>
+From:   Thomas Karlsson <thomas.karlsson@paneda.se>
+Message-ID: <ffe5b799-b9d9-369d-54fb-b8e87d8a462c@paneda.se>
+Date:   Mon, 14 Dec 2020 18:50:27 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <25e06e96-3c8d-06c0-4148-3409d7cecc6a@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: sv
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [83.140.179.234]
+X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
+ (10.16.55.12)
+X-Barracuda-Connect: UNKNOWN[5.158.193.76]
+X-Barracuda-Start-Time: 1607968229
+X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
+X-Barracuda-URL: https://mx04.lhost.no:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at lhost.no
+X-Barracuda-Scan-Msg-Size: 3319
+X-Barracuda-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently tests for bpf_get_ns_current_pid_tgid() are outside test_progs.
-This change folds test cases into test_progs.
+On 2020-12-14 18:03, David Ahern wrote:
+> On 12/14/20 3:42 AM, Thomas Karlsson wrote:
+>> This patch allows the user to set and retrieve the
+>> IFLA_MACVLAN_BC_QUEUE_LEN parameter via the bcqueuelen
+>> command line argument
+>>
+>> This parameter controls the requested size of the queue for
+>> broadcast and multicast packages in the macvlan driver.
+>>
+>> If not specified, the driver default (1000) will be used.
+>>
+>> Note: The request is per macvlan but the actually used queue
+>> length per port is the maximum of any request to any macvlan
+>> connected to the same port.
+>>
+>> For this reason, the used queue length IFLA_MACVLAN_BC_QUEUE_LEN_USED
+>> is also retrieved and displayed in order to aid in the understanding
+>> of the setting. However, it can of course not be directly set.
+>>
+>> Signed-off-by: Thomas Karlsson <thomas.karlsson@paneda.se>
+>> ---
+>>
+>> Note: This patch controls the parameter added in net-next
+>> with commit d4bff72c8401e6f56194ecf455db70ebc22929e2
+>>
+>> v2 Rebased on origin/main
+>> v1 Initial version
+>>
+>>  ip/iplink_macvlan.c   | 33 +++++++++++++++++++++++++++++++--
+>>  man/man8/ip-link.8.in | 33 +++++++++++++++++++++++++++++++++
+>>  2 files changed, 64 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/ip/iplink_macvlan.c b/ip/iplink_macvlan.c
+>> index b966a615..302a3748 100644
+>> --- a/ip/iplink_macvlan.c
+>> +++ b/ip/iplink_macvlan.c
+>> @@ -30,12 +30,13 @@
+>>  static void print_explain(struct link_util *lu, FILE *f)
+>>  {
+>>  	fprintf(f,
+>> -		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS\n"
+>> +		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS [bcqueuelen BC_QUEUE_LEN]\n"
+>>  		"\n"
+>>  		"MODE: private | vepa | bridge | passthru | source\n"
+>>  		"MODE_FLAG: null | nopromisc\n"
+>>  		"MODE_OPTS: for mode \"source\":\n"
+>> -		"\tmacaddr { { add | del } <macaddr> | set [ <macaddr> [ <macaddr>  ... ] ] | flush }\n",
+>> +		"\tmacaddr { { add | del } <macaddr> | set [ <macaddr> [ <macaddr>  ... ] ] | flush }\n"
+>> +		"BC_QUEUE_LEN: Length of the rx queue for broadcast/multicast: [0-4294967295]\n",
+> 
+> Are we really allowing a BC queue up to 4G? seems a bit much. is a u16
+> and 64k not more than sufficient?
+> 
+> 
 
-Changes from V7:
- - Rebased changes.
- - Changed function scope.
+No, 64k is not sufficient when you have very high packet rate and very small packages.
+I can easily see myself retrieving more than 300 kpps and 65k is then only just around
+200 ms of buffer head-room, which I don't consider much saftey margin at all, especially if
+the incoming data is not perfectly spaced out but rather comes in bursts.
+If you start adding 10Gbps cards in the mix you could get 10 times that and the buffer
+would be down to only 20ms. And we would get back to the situation where unicast works
+fine but multicast does not.
 
-Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/.gitignore        |   1 -
- tools/testing/selftests/bpf/Makefile          |   3 +-
- .../bpf/prog_tests/ns_current_pid_tgid.c      | 148 ++++++++++------
- .../bpf/progs/test_ns_current_pid_tgid.c      |  26 +--
- .../bpf/test_current_pid_tgid_new_ns.c        | 160 ------------------
- 5 files changed, 105 insertions(+), 233 deletions(-)
- delete mode 100644 tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+So for sure a larger max than 64k is needed.
 
-diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index f5b7ef93618c..9abca0616ec0 100644
---- a/tools/testing/selftests/bpf/.gitignore
-+++ b/tools/testing/selftests/bpf/.gitignore
-@@ -26,7 +26,6 @@ test_tcpnotify_user
- test_libbpf
- test_tcp_check_syncookie_user
- test_sysctl
--test_current_pid_tgid_new_ns
- xdping
- test_cpp
- *.skel.h
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 8c33e999319a..886577bc2bb6 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -35,8 +35,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
- 	test_sock test_sockmap get_cgroup_id_user test_socket_cookie \
- 	test_cgroup_storage \
- 	test_netcnt test_tcpnotify_user test_sysctl \
--	test_progs-no_alu32 \
--	test_current_pid_tgid_new_ns
-+	test_progs-no_alu32
- 
- # Also test bpf-gcc, if present
- ifneq ($(BPF_GCC),)
-diff --git a/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c b/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
-index e74dc501b27f..c838c77ced26 100644
---- a/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
-+++ b/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
-@@ -1,85 +1,131 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
-+
-+#define _GNU_SOURCE
- #include <test_progs.h>
-+#include "test_ns_current_pid_tgid.skel.h"
- #include <sys/stat.h>
- #include <sys/types.h>
- #include <unistd.h>
- #include <sys/syscall.h>
-+#include <sched.h>
-+#include <sys/wait.h>
-+#include <sys/mount.h>
-+#include <sys/fcntl.h>
- 
--struct bss {
--	__u64 dev;
--	__u64 ino;
--	__u64 pid_tgid;
--	__u64 user_pid_tgid;
--};
-+#define STACK_SIZE (1024 * 1024)
-+static char child_stack[STACK_SIZE];
- 
--void test_ns_current_pid_tgid(void)
-+static void test_ns_current_pid_tgid_global_ns(void)
- {
--	const char *probe_name = "raw_tracepoint/sys_enter";
--	const char *file = "test_ns_current_pid_tgid.o";
--	int err, key = 0, duration = 0;
--	struct bpf_link *link = NULL;
--	struct bpf_program *prog;
--	struct bpf_map *bss_map;
--	struct bpf_object *obj;
--	struct bss bss;
-+	struct test_ns_current_pid_tgid__bss  *bss;
-+	struct test_ns_current_pid_tgid *skel;
-+	int err, duration = 0;
- 	struct stat st;
-+	pid_t tid, pid;
- 	__u64 id;
- 
--	obj = bpf_object__open_file(file, NULL);
--	if (CHECK(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
--		return;
-+	skel = test_ns_current_pid_tgid__open_and_load();
-+	CHECK(!skel, "skel_open_load", "failed to load skeleton\n");
-+	goto cleanup;
- 
--	err = bpf_object__load(obj);
--	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
--		goto cleanup;
-+	tid = syscall(SYS_gettid);
-+	pid = getpid();
-+
-+	id = ((__u64)tid << 32) | pid;
- 
--	bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
--	if (CHECK(!bss_map, "find_bss_map", "failed\n"))
-+	err = stat("/proc/self/ns/pid", &st);
-+	if (CHECK(err, "stat", "failed /proc/self/ns/pid: %d", err))
- 		goto cleanup;
- 
--	prog = bpf_object__find_program_by_title(obj, probe_name);
--	if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
--		  probe_name))
-+	bss = skel->bss;
-+	bss->dev = st.st_dev;
-+	bss->ino = st.st_ino;
-+	bss->user_pid_tgid = 0;
-+
-+	err = test_ns_current_pid_tgid__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
- 		goto cleanup;
- 
--	memset(&bss, 0, sizeof(bss));
--	pid_t tid = syscall(SYS_gettid);
--	pid_t pid = getpid();
-+	/* trigger tracepoint */
-+	usleep(1);
- 
--	id = (__u64) tid << 32 | pid;
--	bss.user_pid_tgid = id;
-+	CHECK(bss->user_pid_tgid != id, "pid/tgid", "got %llu != exp %llu\n",
-+	 bss->user_pid_tgid, id);
-+cleanup:
-+	 test_ns_current_pid_tgid__destroy(skel);
-+}
- 
--	if (CHECK_FAIL(stat("/proc/self/ns/pid", &st))) {
--		perror("Failed to stat /proc/self/ns/pid");
-+static int newns_pidtgid(void *arg)
-+{
-+	struct test_ns_current_pid_tgid__bss  *bss;
-+	int pidns_fd = 0, err = 0, duration = 0;
-+	struct test_ns_current_pid_tgid *skel;
-+	pid_t pid, tid;
-+	struct stat st;
-+	__u64 id;
-+
-+	skel = test_ns_current_pid_tgid__open_and_load();
-+	if (!skel) {
-+		perror("Failed to load skeleton");
- 		goto cleanup;
- 	}
- 
--	bss.dev = st.st_dev;
--	bss.ino = st.st_ino;
-+	tid = syscall(SYS_gettid);
-+	pid = getpid();
-+	id = ((__u64) tid << 32) | pid;
- 
--	err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
--	if (CHECK(err, "setting_bss", "failed to set bss : %d\n", err))
-+	err = stat("/proc/self/ns/pid", &st);
-+	if (CHECK(err, "stat", "failed /proc/self/ns/pid: %d", err))
- 		goto cleanup;
- 
--	link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
--	if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n",
--		  PTR_ERR(link))) {
--		link = NULL;
-+	bss = skel->bss;
-+	bss->dev = st.st_dev;
-+	bss->ino = st.st_ino;
-+	bss->user_pid_tgid = 0;
-+
-+	err = test_ns_current_pid_tgid__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
- 		goto cleanup;
--	}
- 
--	/* trigger some syscalls */
-+	/* trigger tracepoint */
- 	usleep(1);
- 
--	err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
--	if (CHECK(err, "set_bss", "failed to get bss : %d\n", err))
--		goto cleanup;
-+	CHECK(bss->user_pid_tgid != id, "pid/tgid", "got %llu != exp %llu\n",
-+	 bss->user_pid_tgid, id);
- 
--	if (CHECK(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
--		  "User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
--		goto cleanup;
- cleanup:
--	bpf_link__destroy(link);
--	bpf_object__close(obj);
-+	 setns(pidns_fd, CLONE_NEWPID);
-+	 test_ns_current_pid_tgid__destroy(skel);
-+
-+	return err;
-+}
-+
-+static void test_ns_current_pid_tgid_new_ns(void)
-+{
-+	int wstatus, duration = 0;
-+	pid_t cpid;
-+
-+	cpid = clone(newns_pidtgid,
-+	  child_stack + STACK_SIZE,
-+	  CLONE_NEWPID | SIGCHLD, NULL);
-+
-+	if (CHECK(cpid == -1, "clone", strerror(errno)))
-+		exit(EXIT_FAILURE);
-+
-+	if (CHECK(waitpid(cpid, &wstatus, 0) == -1, "waitpid",
-+	 strerror(errno))) {
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	CHECK(WEXITSTATUS(wstatus) != 0, "newns_pidtgid",
-+	 "failed");
-+}
-+
-+void test_ns_current_pid_tgid(void)
-+{
-+	if (test__start_subtest("ns_current_pid_tgid_global_ns"))
-+		test_ns_current_pid_tgid_global_ns();
-+	if (test__start_subtest("ns_current_pid_tgid_new_ns"))
-+		test_ns_current_pid_tgid_new_ns();
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c b/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
-index 1dca70a6de2f..0daa12db0d83 100644
---- a/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
-+++ b/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
-@@ -5,31 +5,19 @@
- #include <stdint.h>
- #include <bpf/bpf_helpers.h>
- 
--static volatile struct {
--	__u64 dev;
--	__u64 ino;
--	__u64 pid_tgid;
--	__u64 user_pid_tgid;
--} res;
-+__u64 user_pid_tgid = 0;
-+__u64 dev = 0;
-+__u64 ino = 0;
- 
- SEC("raw_tracepoint/sys_enter")
--int trace(void *ctx)
-+int handler(const void *ctx)
- {
--	__u64  ns_pid_tgid, expected_pid;
- 	struct bpf_pidns_info nsdata;
--	__u32 key = 0;
- 
--	if (bpf_get_ns_current_pid_tgid(res.dev, res.ino, &nsdata,
--		   sizeof(struct bpf_pidns_info)))
-+	if (bpf_get_ns_current_pid_tgid(dev, ino, &nsdata,
-+		sizeof(struct bpf_pidns_info)))
- 		return 0;
--
--	ns_pid_tgid = (__u64)nsdata.tgid << 32 | nsdata.pid;
--	expected_pid = res.user_pid_tgid;
--
--	if (expected_pid != ns_pid_tgid)
--		return 0;
--
--	res.pid_tgid = ns_pid_tgid;
-+	user_pid_tgid = ((__u64)nsdata.tgid << 32) | nsdata.pid;
- 
- 	return 0;
- }
-diff --git a/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c b/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
-deleted file mode 100644
-index ec53b1ef90d2..000000000000
---- a/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
-+++ /dev/null
-@@ -1,160 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
--#define _GNU_SOURCE
--#include <sys/stat.h>
--#include <sys/types.h>
--#include <unistd.h>
--#include <sys/syscall.h>
--#include <sched.h>
--#include <sys/wait.h>
--#include <sys/mount.h>
--#include "test_progs.h"
--
--#define CHECK_NEWNS(condition, tag, format...) ({		\
--	int __ret = !!(condition);			\
--	if (__ret) {					\
--		printf("%s:FAIL:%s ", __func__, tag);	\
--		printf(format);				\
--	} else {					\
--		printf("%s:PASS:%s\n", __func__, tag);	\
--	}						\
--	__ret;						\
--})
--
--struct bss {
--	__u64 dev;
--	__u64 ino;
--	__u64 pid_tgid;
--	__u64 user_pid_tgid;
--};
--
--int main(int argc, char **argv)
--{
--	pid_t pid;
--	int exit_code = 1;
--	struct stat st;
--
--	printf("Testing bpf_get_ns_current_pid_tgid helper in new ns\n");
--
--	if (stat("/proc/self/ns/pid", &st)) {
--		perror("stat failed on /proc/self/ns/pid ns\n");
--		printf("%s:FAILED\n", argv[0]);
--		return exit_code;
--	}
--
--	if (CHECK_NEWNS(unshare(CLONE_NEWPID | CLONE_NEWNS),
--			"unshare CLONE_NEWPID | CLONE_NEWNS", "error errno=%d\n", errno))
--		return exit_code;
--
--	pid = fork();
--	if (pid == -1) {
--		perror("Fork() failed\n");
--		printf("%s:FAILED\n", argv[0]);
--		return exit_code;
--	}
--
--	if (pid > 0) {
--		int status;
--
--		usleep(5);
--		waitpid(pid, &status, 0);
--		return 0;
--	} else {
--
--		pid = fork();
--		if (pid == -1) {
--			perror("Fork() failed\n");
--			printf("%s:FAILED\n", argv[0]);
--			return exit_code;
--		}
--
--		if (pid > 0) {
--			int status;
--			waitpid(pid, &status, 0);
--			return 0;
--		} else {
--			if (CHECK_NEWNS(mount("none", "/proc", NULL, MS_PRIVATE|MS_REC, NULL),
--				"Unmounting proc", "Cannot umount proc! errno=%d\n", errno))
--				return exit_code;
--
--			if (CHECK_NEWNS(mount("proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, NULL),
--				"Mounting proc", "Cannot mount proc! errno=%d\n", errno))
--				return exit_code;
--
--			const char *probe_name = "raw_tracepoint/sys_enter";
--			const char *file = "test_ns_current_pid_tgid.o";
--			struct bpf_link *link = NULL;
--			struct bpf_program *prog;
--			struct bpf_map *bss_map;
--			struct bpf_object *obj;
--			int exit_code = 1;
--			int err, key = 0;
--			struct bss bss;
--			struct stat st;
--			__u64 id;
--
--			obj = bpf_object__open_file(file, NULL);
--			if (CHECK_NEWNS(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
--				return exit_code;
--
--			err = bpf_object__load(obj);
--			if (CHECK_NEWNS(err, "obj_load", "err %d errno %d\n", err, errno))
--				goto cleanup;
--
--			bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
--			if (CHECK_NEWNS(!bss_map, "find_bss_map", "failed\n"))
--				goto cleanup;
--
--			prog = bpf_object__find_program_by_title(obj, probe_name);
--			if (CHECK_NEWNS(!prog, "find_prog", "prog '%s' not found\n",
--						probe_name))
--				goto cleanup;
--
--			memset(&bss, 0, sizeof(bss));
--			pid_t tid = syscall(SYS_gettid);
--			pid_t pid = getpid();
--
--			id = (__u64) tid << 32 | pid;
--			bss.user_pid_tgid = id;
--
--			if (CHECK_NEWNS(stat("/proc/self/ns/pid", &st),
--				"stat new ns", "Failed to stat /proc/self/ns/pid errno=%d\n", errno))
--				goto cleanup;
--
--			bss.dev = st.st_dev;
--			bss.ino = st.st_ino;
--
--			err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
--			if (CHECK_NEWNS(err, "setting_bss", "failed to set bss : %d\n", err))
--				goto cleanup;
--
--			link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
--			if (CHECK_NEWNS(IS_ERR(link), "attach_raw_tp", "err %ld\n",
--						PTR_ERR(link))) {
--				link = NULL;
--				goto cleanup;
--			}
--
--			/* trigger some syscalls */
--			usleep(1);
--
--			err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
--			if (CHECK_NEWNS(err, "set_bss", "failed to get bss : %d\n", err))
--				goto cleanup;
--
--			if (CHECK_NEWNS(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
--						"User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
--				goto cleanup;
--
--			exit_code = 0;
--			printf("%s:PASS\n", argv[0]);
--cleanup:
--			if (!link) {
--				bpf_link__destroy(link);
--				link = NULL;
--			}
--			bpf_object__close(obj);
--		}
--	}
--	return 0;
--}
--- 
-2.20.1
+The reason I didn't add an upper limit beside the u32 was that I didn't want to pick an
+arbitrary limit that works for me now but maybe not support someone elses use case later.
 
+I'm now looking at net.core.netdev_max_backlog for inspiration. Which, at least on my system,
+seems to have a limit of 2147483647 (signed 32 bit int). So perhaps this setting could be
+aligned with that number since the settings are sort of related instead of using the full range
+if you prefer that?
