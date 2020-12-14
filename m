@@ -2,63 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 319D02D9B6C
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 16:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C9352D9B7F
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 16:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729628AbgLNPsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 10:48:45 -0500
-Received: from mail-ej1-f65.google.com ([209.85.218.65]:37433 "EHLO
-        mail-ej1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438996AbgLNPsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 10:48:30 -0500
-Received: by mail-ej1-f65.google.com with SMTP id ga15so23127601ejb.4;
-        Mon, 14 Dec 2020 07:48:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SgRen1ZhC/pAe8vYBTZ3kKObm5NlQwhtZvoSZbvu9sE=;
-        b=agWM0J0IAxWWmxKFQnMJnDnANxRVtIPiu15hh+wW6aATLhPAUn2Qcdtix7ZQNPiHsm
-         zYh+1v7/XSjAiCqxg8e08T1Q8GHA0VEjlGjajrawUH2qrMqOyTAM2tGqJZ2w4P2GyKwc
-         D1H3nyQcoNjHxsJaxtKOMRLa2yoNvcerQH829G3j1bAFAo2OlR/oL9jy9yRpQml38XWA
-         R9DOHcxlquRyTPdFQYsLdnB98kAs2zQOeHgPOr6MlM/iEpPmXKyJEhxEIG9Hwchr8Xov
-         O5lGj/f57t5GUEqEsCQuky+O3zaKk6ZICTbU2KwWppnCybCUkHvTDpDnc2lUmnrehbQY
-         uFBQ==
-X-Gm-Message-State: AOAM531P3UukqtN44JfGXhiWMU9xDXFqXE0gHn1o1HrZn0qfRG2EIa1i
-        zug7qMvw2qEHfPBghn37/YVk+In5qyI=
-X-Google-Smtp-Source: ABdhPJzQpZw36joO+GpvD5q8984HG7N+a5LaSC3eo13U2hHRfzNJ6pYFTSIHPku1b+VISvHX8g6fhw==
-X-Received: by 2002:a17:906:ce21:: with SMTP id sd1mr22545331ejb.396.1607960868963;
-        Mon, 14 Dec 2020 07:47:48 -0800 (PST)
-Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.googlemail.com with ESMTPSA id z24sm15898561edr.9.2020.12.14.07.47.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Dec 2020 07:47:47 -0800 (PST)
-Date:   Mon, 14 Dec 2020 16:47:45 +0100
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
-Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: Re: [PATCH net-next] nfc: s3fwrn5: Release the nfc firmware
-Message-ID: <20201214154745.GB2493@kozik-lap>
-References: <20201213095850.28169-1-bongsu.jeon@samsung.com>
+        id S2439350AbgLNPvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 10:51:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35306 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2439078AbgLNPur (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 10:50:47 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607961006;
+        bh=qfSkywVxi8bHRHis4d/vB01QNrT6uvZqHOdQA352IPU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MFDQZTNU7crZbVi4/KmZ58VR849DpUZetJ3dDc+DObFgn8WE75nK6kC61OTjbAX6k
+         IOELxsWPKnGfaqf3v2D1GlbjhXVX5qso73z7RtEJpqTJTf0h1FJaoFYR9SwJWg6d6d
+         28YI1LlzTBMFUW/hurzhEQ/Tr3ZnZGATVBlUoL+pc9zMNk4mO2QJSqjstXqvPXHhZr
+         HdJ5ZR1Op7BHad4BzW5O9gmDYDhlRO/msewgnNhsuye+jP+OnFsxuGLu2aVeP5acAs
+         pQqyArDy2HOnEEuujQ4AETb0vTZstqc3SkehTdjG2EZzMz2Q3UuyLGEKBCzlsYLxZS
+         h610xDFiCM5ug==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201213095850.28169-1-bongsu.jeon@samsung.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next 0/2] libbpf: support modules in set_attach_target()
+ API
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160796100647.7023.1440666593259323373.git-patchwork-notify@kernel.org>
+Date:   Mon, 14 Dec 2020 15:50:06 +0000
+References: <20201211215825.3646154-1-andrii@kernel.org>
+In-Reply-To: <20201211215825.3646154-1-andrii@kernel.org>
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 13, 2020 at 06:58:50PM +0900, Bongsu Jeon wrote:
-> From: Bongsu Jeon <bongsu.jeon@samsung.com>
+Hello:
+
+This series was applied to bpf/bpf-next.git (refs/heads/master):
+
+On Fri, 11 Dec 2020 13:58:23 -0800 you wrote:
+> Add support for finding BTF-based kernel attach targets (fentry/fexit
+> functions, tp_btf tracepoints, etc) with programmatic
+> bpf_program__set_attach_target() API. It is now as capable as libbpf's
+> SEC()-based logic.
 > 
-> add the code to release the nfc firmware when the firmware image size is
-> wrong.
+> Andrii Nakryiko (2):
+>   libbpf: support modules in bpf_program__set_attach_target() API
+>   selftests/bpf: add set_attach_target() API selftest for module target
+> 
+> [...]
 
-s/add/Add/
-s/nfc/NFC/
+Here is the summary with links:
+  - [bpf-next,1/2] libbpf: support modules in bpf_program__set_attach_target() API
+    https://git.kernel.org/bpf/bpf-next/c/fe62de310e2b
+  - [bpf-next,2/2] selftests/bpf: add set_attach_target() API selftest for module target
+    https://git.kernel.org/bpf/bpf-next/c/2e33f831fccd
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Best regards,
-Krzysztof
+
