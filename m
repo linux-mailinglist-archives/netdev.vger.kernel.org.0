@@ -2,118 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 415B02DA268
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:13:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E35F2DA26E
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:15:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503538AbgLNVNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 16:13:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728716AbgLNVNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 16:13:32 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94E1C0613D6
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 13:12:52 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id w135so16822628ybg.13
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 13:12:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4GuvCb9wffjGG+izHKz4P5jrM9DvLexpcqH55zvMG+s=;
-        b=Zq3rXgvB1mvv5F/R4fqK9MADbv/dfp3qRBPEXwMi+XUf8b5XecEEz4Gx9PSyyZo1Fp
-         J6OFDjfuzEtUgb/GvjxUImf04K9M04jMKEUbSZDPU2kZR9HWMZfSzLLVAwei3mZYM1v/
-         atVQ85NbCSeIC6BBGBUQaugkxrqfaOrgDbs0TLbRx8CHMIVzKyV7x12pnwecxCR7swrH
-         u21h6NwQwXYbXzIs3y8SECB6dtdB2B9dnSDMgnk7PSluT4PrPDdslxBsNsOgWAogRR6f
-         eqYkRi+79rotz664V2FQnyU1SRTZQGvYbPqaJnVy+VEt6B+FvFWZgREdJQiAufUcP206
-         APVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4GuvCb9wffjGG+izHKz4P5jrM9DvLexpcqH55zvMG+s=;
-        b=V6TVlv9vBze7MEWxLgpgQFmVQUgO6iqPzcqHEC/XEFuZeN21s+iIxljA8EJE49J0Zd
-         kFyCzGKywsUEnTV5F6UvlrrrdAicn2ROOA++ejHn0k4rc0xqdKaXROzKlm9wELmvbOKt
-         P+YHJKkluqGSPHz3/VmtSllcQmzcLswCH/vHi2XF8PUeURZVT9v39hW24LI7Zwt/mAjU
-         BkKCxAXWEN2T12CukI06gRulHT8s9vxQvgUBTRfyLE7t90QPDJWYEXQ7M9NZvdsEO+Ih
-         6ZCJdh5ULTgrZgL0aLeD8Sa//6UrkkKpyrz4XO/bq2eSeTBnrtOZqXD9kUhNnVisaIjc
-         vgnw==
-X-Gm-Message-State: AOAM5310wzBD2/4XWcWnN+uLkt285zsnLlu1lF1/NjUc/39e6c3UYLy/
-        kKjfH4STXzUsMX1vG+s4KIxQO0UlC6vt8Jb1mLiKlA==
-X-Google-Smtp-Source: ABdhPJwQZlJxjCT8Iu0eQy3qMSXnhmToAokZUSTI4Oxqj9BrEPxf0BLY9nNlE6r7ELtXiErlMgiNUkR2Wno/Sw9sG3Y=
-X-Received: by 2002:a25:99c6:: with SMTP id q6mr39523972ybo.408.1607980371714;
- Mon, 14 Dec 2020 13:12:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20201209005444.1949356-1-weiwan@google.com> <20201209005444.1949356-3-weiwan@google.com>
- <20201212145022.6f2698d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201212145503.285a8bfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_BM_H=2bhYBtJ3LtBT0DBPBeVLyuC=BRQv=H3Ww2eecWA@mail.gmail.com>
- <20201214110203.7a1e8729@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_CqD5kfPxXkMrNNh9TozfCCTdovMgjiS2Abf_KXxAJONA@mail.gmail.com> <20201214123305.288f49bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201214123305.288f49bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Mon, 14 Dec 2020 13:12:41 -0800
-Message-ID: <CAEA6p_CD2E1owsgS9qEtrgYRWxNP8bczMNWAOKPj_JvqYc1ZOw@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/3] net: implement threaded-able napi poll
- loop support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Felix Fietkau <nbd@nbd.name>, Hillf Danton <hdanton@sina.com>
+        id S2503624AbgLNVOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 16:14:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42014 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728461AbgLNVNv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 16:13:51 -0500
+Message-ID: <0f8eda3bbed1100c1c1f7015dd5c172f8d735c94.camel@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607980391;
+        bh=Pzvi/5ISTUEc02BC83hB6nniQmkTHPAhNCBBNcfKAUY=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Ks3P3xnvXkJSp+uh7CcZoik6MJkEKtx2PvE0VYPE/pepC3FjT65YOm45Ebhka542Q
+         KDRZnMtG6PVk8azMh03nN0D62HLqcKsXaM3NGfl0cnBfDn4M/eCG3Bapi5UEiWJojE
+         Wz5xGjdq/ndTqDY7tNprPuvOQMJrfpTrREHq07hUDedim+JiPcYSm9y/a+CVpdgIGp
+         tK5qViUVIaC1nIaet1VMQYFfwNA6Uv7knO5wHsw+J306Af6r5YPeiXS/tptiFYTABJ
+         2yXmYvRm101qHL41Iu7+0L42D5JI7GLbb235mT9lCcvuGwm/DUlfBNloCq8GKc5F9/
+         KjhGS5BzrCEJg==
+Subject: Re: [patch 22/30] net/mlx5: Replace irq_to_desc() abuse
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        afzal mohammed <afzal.mohd.ma@gmail.com>,
+        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Wambui Karuga <wambui.karugax@gmail.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-pci@vger.kernel.org,
+        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        xen-devel@lists.xenproject.org
+Date:   Mon, 14 Dec 2020 13:13:07 -0800
+In-Reply-To: <20201210194044.769458162@linutronix.de>
+References: <20201210192536.118432146@linutronix.de>
+         <20201210194044.769458162@linutronix.de>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 12:33 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 14 Dec 2020 11:45:43 -0800 Wei Wang wrote:
-> > > It is quite an annoying problem to address, given all relevant NAPI
-> > > helpers seem to return void :/ But we're pushing the problem onto the
-> > > user just because of internal API structure.
-> > >
-> > > This reminds me of PTP / timestamping issues some NICs had once upon
-> > > a time. The timing application enables HW time stamping, then later some
-> > > other application / orchestration changes a seemingly unrelated config,
-> > > and since NIC has to reset itself it looses the timestamping config.
-> > > Now the time app stops getting HW time stamps, but those are best
-> > > effort anyway, so it just assumes the NIC couldn't stamp given frame
-> > > (for every frame), not that config got completely broken. The system
-> > > keeps running with suboptimal time for months.
-> > >
-> > > What does the deployment you're expecting to see looks like? What
-> > > entity controls enabling the threaded mode on a system? Application?
-> > > Orchestration? What's the flow?
-> > >
-> > I see your point. In our deployment, we have a system daemon which is
-> > responsible for setting up all the system tunings after the host boots
-> > up (before application starts to run). If certain operation fails, it
-> > prints out error msg, and will exit with error. For applications that
-> > require threaded mode, I think a check to the sysfs entry to make sure
-> > it is enabled is necessary at the startup phase.
->
-> That assumes no workload stacking, and dynamic changes after the
-> workload has started? Or does the daemon have enough clever logic
-> to resolve config changes?
->
+On Thu, 2020-12-10 at 20:25 +0100, Thomas Gleixner wrote:
+> No driver has any business with the internals of an interrupt
+> descriptor. Storing a pointer to it just to use yet another helper at
+> the
+> actual usage site to retrieve the affinity mask is creative at best.
+> Just
+> because C does not allow encapsulation does not mean that the kernel
+> has no
+> limits.
+> 
 
-The former. There should not be any dynamic changes after the workload
-has started. At least for now.
+you can't blame the developers for using stuff from include/linux/
+Not all developers are the same, and sometime we don't read in between
+the lines, you can't assume all driver developers to be expert on irq
+APIs disciplines.
 
-> > > "Forgetting" config based on driver-dependent events feels very fragile.
-> > I think we could add a recorded value in dev to represent the user
-> > setting, and try to enable threaded mode after napi_disable/enable.
-> > But I think user/application still has to check the sysfs entry value
-> > to make sure if it is enabled successfully.
->
-> In case of an error you're thinking of resetting, still, and returning
-> disabled from sysfs? I guess that's fine, we can leave failing the bad
-> reconfig operation (rather than resetting config) as a future extension.
-> Let's add a WARN_ON, tho, so the failures don't get missed.
+your rules must be programmatically expressed, for instance,
+you can just hide struct irq_desc and irq_to_desc() in kernel/irq/ and
+remove them from include/linux/ header files, if you want privacy in
+your subsystem, don't put all your header files on display under
+include/linux.
 
-Yes. In terms of error, all napi will be reset to using non-threaded
-mode, and sysfs returns disabled.
-OK. Will add a WARN_ON.
+
+> Retrieve a pointer to the affinity mask itself and use that. It's
+> still
+> using an interface which is usually not for random drivers, but
+> definitely
+> less hideous than the previous hack.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en.h      |    2 +-
+>  drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    2 +-
+>  drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c |    6 +-----
+>  3 files changed, 3 insertions(+), 7 deletions(-)
+> 
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+> @@ -669,7 +669,7 @@ struct mlx5e_channel {
+>  	spinlock_t                 async_icosq_lock;
+>  
+>  	/* data path - accessed per napi poll */
+> -	struct irq_desc *irq_desc;
+> +	const struct cpumask	  *aff_mask;
+>  	struct mlx5e_ch_stats     *stats;
+>  
+>  	/* control */
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -1998,7 +1998,7 @@ static int mlx5e_open_channel(struct mlx
+>  	c->num_tc   = params->num_tc;
+>  	c->xdp      = !!params->xdp_prog;
+>  	c->stats    = &priv->channel_stats[ix].ch;
+> -	c->irq_desc = irq_to_desc(irq);
+> +	c->aff_mask = irq_get_affinity_mask(irq);
+
+as long as the affinity mask pointer stays the same for the lifetime of
+the irq vector.
+
+Assuming that:
+Acked-by: Saeed Mahameed <saeedm@nvidia.com>
+
+
