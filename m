@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A3212D9FE1
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:07:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 818872D9FF7
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:10:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502314AbgLNTEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 14:04:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53124 "EHLO mail.kernel.org"
+        id S2408874AbgLNTIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 14:08:12 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54136 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407785AbgLNTEd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 14:04:33 -0500
-Date:   Mon, 14 Dec 2020 11:03:51 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607972633;
-        bh=tUbgPIb0kdLyYxebsOXCvImkUd1kKwQiIDvtChZEX+8=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mmVFQJ3sq3E0oBF2/dK3TgcpGT4M3MDoRsYsuOOt3nikDIwXKkwOkd6BNED/FkKMd
-         ghZm+ryLLtIN47yHqYcqhN9wrl05vlDgQKn9ToEG4kksIcT1NNax7Amfrlrg5PQBD6
-         JuF5dc4JRCtJQ5/m/lD50jBtlaWtvum7YqOoPaRqm4jDmo6k84EC8BqdYW3uXbW34A
-         31LAMGpq87x4PhjAlUbA+rthQPr7mElmgD3tn0TSDbHgijt+vkEBj/DzkinVUt83nG
-         NQNey5XPSRKqzpRFa5R/6Hzrf8MqnS1Z9ywg/vE5MmtoHNdpq9VRDbytnwEcv63Usx
-         2UZxpyKFConOQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Vasyl Gomonovych <gomonovych@gmail.com>, tariqt@nvidia.com,
-        joe@perches.com, "David S. Miller" <davem@davemloft.net>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net/mlx4: Use true,false for bool variable
-Message-ID: <20201214110351.29ae7abb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201214111608.GE5005@unreal>
-References: <20201212090234.0362d64f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201214103008.14783-1-gomonovych@gmail.com>
-        <20201214111608.GE5005@unreal>
+        id S2408589AbgLNTH4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 14:07:56 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kotBR-00BxLM-Gj; Mon, 14 Dec 2020 20:06:57 +0100
+Date:   Mon, 14 Dec 2020 20:06:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Divya Koppera <Divya.Koppera@microchip.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, marex@denx.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v2 net-next] net: phy: mchp: Add 1588 support for LAN8814
+ Quad PHY
+Message-ID: <20201214190657.GB2846647@lunn.ch>
+References: <20201214175658.11138-1-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201214175658.11138-1-Divya.Koppera@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Dec 2020 13:16:08 +0200 Leon Romanovsky wrote:
-> On Mon, Dec 14, 2020 at 11:30:08AM +0100, Vasyl Gomonovych wrote:
-> > It is fix for semantic patch warning available in
-> > scripts/coccinelle/misc/boolinit.cocci
-> > Fix en_rx.c:687:1-17: WARNING: Assignment of 0/1 to bool variable
-> > Fix main.c:4465:5-13: WARNING: Comparison of 0/1 to bool variable
-> >
-> > Signed-off-by: Vasyl Gomonovych <gomonovych@gmail.com>
-> > ---
-> >  - Add coccicheck script name
-> >  - Simplify if condition
-> > ---
-> >  drivers/net/ethernet/mellanox/mlx4/en_rx.c | 2 +-
-> >  drivers/net/ethernet/mellanox/mlx4/main.c  | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)  
-> 
-> Please refrain from sending new version of patches as reply-to to
-> previous variants. It makes to appear previous patches out-of-order
-> while viewing in threaded mode.
+> +static int lan8814_read_page_reg(struct phy_device *phydev,
+> +				 int page, u32 addr)
+> +{
+> +	u32 data;
+> +
+> +	phy_write(phydev, KSZ_EXT_PAGE_ACCESS_CONTROL, page);
+> +	phy_write(phydev, KSZ_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
+> +	phy_write(phydev, KSZ_EXT_PAGE_ACCESS_CONTROL, (page | 0x4000));
+> +	data = phy_read(phydev, KSZ_EXT_PAGE_ACCESS_ADDRESS_DATA);
+> +
+> +	return data;
+> +}
+> +
+> +static int lan8814_write_page_reg(struct phy_device *phydev,
+> +				  int page, u16 addr, u16 val)
+> +{
+> +	phy_write(phydev, KSZ_EXT_PAGE_ACCESS_CONTROL, page);
+> +	phy_write(phydev, KSZ_EXT_PAGE_ACCESS_ADDRESS_DATA, addr);
+> +	phy_write(phydev, KSZ_EXT_PAGE_ACCESS_CONTROL, (page | 0x4000));
+> +	val = phy_write(phydev, KSZ_EXT_PAGE_ACCESS_ADDRESS_DATA, val);
+> +	if (val != 0) {
+> +		phydev_err(phydev, "Error: phy_write_mmd has returned error %d\n",
+> +			   val);
+> +		return val;
+> +	}
+> +	return 0;
+> +}
 
-Yes, please! I'm glad I'm not the only one who feels this way! :)
+I think you can just use phy_read_mmd() and phy_write_mmd().
+
+  Andrew
