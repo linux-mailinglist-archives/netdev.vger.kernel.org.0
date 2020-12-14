@@ -2,92 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03BDF2DA418
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 00:24:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F3922DA41D
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 00:26:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728240AbgLNXWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 18:22:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48554 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388082AbgLNXWs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 18:22:48 -0500
-Date:   Mon, 14 Dec 2020 15:22:06 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607988127;
-        bh=IBjvHwlMhYOmFlIx61ksuuKjPB1fz/lCfhsZ1JLJfWE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KfpKeKWJofviHUV7K9cobCQm0QlBbIBVF35a22Eu+Y0Q5VU604PAFR+TdaAGzb//O
-         6ImUehuRR+kf/YxZXAAf4HqSRnfXi9nD+xcECS/Dtq1ASpd6XjP8XO/DPiz4SiTIHa
-         B+OdcajAWLRPXBcf73fX4l50rb94DTnLrWX+51nS+lclrmvvJwFmaB3IydCphV7BUY
-         z/SNlp9HJCQUtIXxp1GFgb5QEdHaII3Rk+9TO08IYYrJGCT9B19Ve/HWK8IKgDyuoL
-         duClU4kLHBkFtwj38eAXRqGDSjAwMSNBlikiliQpmvMW2yqErzgVNyaAtwMVJGJgti
-         jp2gtSOUcC9eg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>
-Cc:     Lijun Pan <ljp@linux.ibm.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/3] use __netdev_notify_peers in hyperv
-Message-ID: <20201214152206.6398dae1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201214211930.80778-4-ljp@linux.ibm.com>
-References: <20201214211930.80778-1-ljp@linux.ibm.com>
-        <20201214211930.80778-4-ljp@linux.ibm.com>
+        id S1731805AbgLNXZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 18:25:09 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:40559 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730610AbgLNXZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 18:25:07 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1koxCT-0002DV-Rd; Mon, 14 Dec 2020 23:24:17 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Carl Huang <cjhuang@codeaurora.org>,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] ath11k: add missing null check on allocated skb
+Date:   Mon, 14 Dec 2020 23:24:17 +0000
+Message-Id: <20201214232417.84556-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Dec 2020 15:19:30 -0600 Lijun Pan wrote:
-> Start to use the lockless version of netdev_notify_peers.
-> Call the helper where notify variable used to be set true.
-> Remove the notify bool variable and sort the variables
-> in reverse Christmas tree order.
-> 
-> Cc: Haiyang Zhang <haiyangz@microsoft.com>
-> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
-> ---
-> v2: call the helper where notify variable used to be set true
->     according to Jakub's review suggestion.
+From: Colin Ian King <colin.king@canonical.com>
 
-Can we get an ack for merging via net-next?
+Currently the null check on a newly allocated skb is missing and
+this can lead to a null pointer dereference is the allocation fails.
+Fix this by adding a null check and returning -ENOMEM.
 
-> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-> index d17bbc75f5e7..f32f28311d57 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -2050,11 +2050,11 @@ static void netvsc_link_change(struct work_struct *w)
->  		container_of(w, struct net_device_context, dwork.work);
->  	struct hv_device *device_obj = ndev_ctx->device_ctx;
->  	struct net_device *net = hv_get_drvdata(device_obj);
-> +	unsigned long flags, next_reconfig, delay;
-> +	struct netvsc_reconfig *event = NULL;
->  	struct netvsc_device *net_device;
->  	struct rndis_device *rdev;
-> -	struct netvsc_reconfig *event = NULL;
-> -	bool notify = false, reschedule = false;
-> -	unsigned long flags, next_reconfig, delay;
-> +	bool reschedule = false;
->  
->  	/* if changes are happening, comeback later */
->  	if (!rtnl_trylock()) {
-> @@ -2103,7 +2103,7 @@ static void netvsc_link_change(struct work_struct *w)
->  			netif_carrier_on(net);
->  			netvsc_tx_enable(net_device, net);
->  		} else {
-> -			notify = true;
-> +			__netdev_notify_peers(net);
->  		}
->  		kfree(event);
->  		break;
-> @@ -2132,9 +2132,6 @@ static void netvsc_link_change(struct work_struct *w)
->  
->  	rtnl_unlock();
->  
-> -	if (notify)
-> -		netdev_notify_peers(net);
-> -
->  	/* link_watch only sends one notification with current state per
->  	 * second, handle next reconfig event in 2 seconds.
->  	 */
+Addresses-Coverity: ("Dereference null return")
+Fixes: 43ed15e1ee01 ("ath11k: put hw to DBS using WMI_PDEV_SET_HW_MODE_CMDID")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/ath/ath11k/wmi.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index da4b546b62cb..c869ff479212 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -3460,6 +3460,8 @@ int ath11k_wmi_set_hw_mode(struct ath11k_base *ab,
+ 	len = sizeof(*cmd);
+ 
+ 	skb = ath11k_wmi_alloc_skb(wmi_ab, len);
++	if (!skb)
++		return -ENOMEM;
+ 	cmd = (struct wmi_pdev_set_hw_mode_cmd_param *)skb->data;
+ 
+ 	cmd->tlv_header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_PDEV_SET_HW_MODE_CMD) |
+-- 
+2.29.2
 
