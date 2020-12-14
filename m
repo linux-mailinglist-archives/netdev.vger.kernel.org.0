@@ -2,104 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D455B2DA123
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 21:11:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87E9E2DA13D
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 21:16:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502964AbgLNUJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 15:09:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52668 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2502780AbgLNUJ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 15:09:28 -0500
-Message-ID: <565c26195b79ca998280d83aca0a193bd1a8c23e.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607976527;
-        bh=NicHyuIicCHrf37JwKMXGmM1HPL8Af3WYSv61ARzkBg=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=cTWQHttVuj2p1Dn9DrkNhItLHVtxl3RUgMvYdcEl7cgLmrqwZA8Qri0vaphVpx7w4
-         UJj0cYPdeZRgIBSpPVooI04S4+r3H1ADXK0Nb9+RXBqwsE+efVDFl2pcyTqA1tb8x9
-         R3kKdb1apBEXtodUmQCQvwJig4QC/COVrWfTB0xeXxAbRNipfmxQQSn0MZMSSicZY/
-         j06+lzL/VZO515uq2sO0dT3AdRvUYmSE6d77G8/XrBqcexrpok8BmTtx5N90rX8NGG
-         s9WEnSGyD6r9sXc3zJ6wchiKQ7mEOztiQWTjEYLeJJQIEngyf243EH/52O9vOgzMwK
-         BsaB/dhjq3lgA==
-Subject: Re: [PATCH net-next] net/mlx5: Fix compilation warning for 32-bit
- platform
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Parav Pandit <parav@nvidia.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>, netdev@vger.kernel.org
-Date:   Mon, 14 Dec 2020 12:08:46 -0800
-In-Reply-To: <20201213123620.GC5005@unreal>
-References: <20201213120641.216032-1-leon@kernel.org>
-         <20201213123620.GC5005@unreal>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S2503082AbgLNUMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 15:12:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503038AbgLNUMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 15:12:10 -0500
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06901C0613D6;
+        Mon, 14 Dec 2020 12:11:30 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id j12so17027363ota.7;
+        Mon, 14 Dec 2020 12:11:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZyDzn2+LRGnv+MKKkwj6dT7+oXF09NwrSJVoJaJ6uqw=;
+        b=pUGi1FMMZYqAGrElyyecwiPhuV2Fx/WIY5NaySJsGHDD7E1fYwX6RRrmqZyRphNPdO
+         2McjbAZ/cS6MWq0/G3oYu9h5mGo1MvAlLJvdbzUQyi4HJ4V0Jfkx7zqi9Wsk3BS/EB8I
+         /9lokOGfcZHu1TFZvgIFu3+71SzswlGwuv+bILcrhb5gewMXDfZFujSSGgZyv4IwP8FD
+         OiUuMqyJ25Ek1IlhNMVRNONG4LuK8LxS+osWVb77GQe+tAFGHZbf+qqKEU9ASRw9LxaC
+         roDqgUxe7y6eDpDy3BdkhJ39V8Vt0sbS6RIJxgrmY+ONGS452+vZc1Pnw7C755Dv+FQa
+         2k/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZyDzn2+LRGnv+MKKkwj6dT7+oXF09NwrSJVoJaJ6uqw=;
+        b=USfpgTGOnE5o69MvTzXsbJN8ysslggGzPAfyEWgFDmcUn04CzVwX7GpWHCagT6MjvJ
+         F2PsJVxcJ+wxQDaNUJvx4b1bSjwk9GchxCr+AzatPA6I/X+4Ia/3iDwhFUn7wrYHWPF1
+         gNjQoDOKhB8AOWiFIozv4DNT4QX/4Qmfg4kKx8Z/g0gyQ+qH2ZEJLtkPnasiEAWODBTy
+         R/5Mc10CtNTtLCQXI+enkOecDP6VI3OcuZhuP6wmNoGGeqh1HAFc1HsyAzTFElPdAi0l
+         W5ZvctL+x+HARS9YTGiybqWMk0YjuU+5Q+MKdm1XCmX+Dztxqk3c7YTjzu14rnaE28IA
+         983A==
+X-Gm-Message-State: AOAM5327KbM9kKq8gndIUhyI+LcuXGZfEU2P9grxZbpGgLTdNK/y8e4v
+        x4St3fZz8J5b7iq0OPbaz6MGr/X8gQsvgg==
+X-Google-Smtp-Source: ABdhPJwxB8k78VVWShs9FLYm8eP3wjTJzml7wt5UJsrbcuOMNLcqOrru/64iFxPmNyssYX5IlFDBGA==
+X-Received: by 2002:a05:6830:1d71:: with SMTP id l17mr21261793oti.269.1607976689065;
+        Mon, 14 Dec 2020 12:11:29 -0800 (PST)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:3825:1c64:a3d3:108])
+        by smtp.gmail.com with ESMTPSA id h26sm3905850ots.9.2020.12.14.12.11.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Dec 2020 12:11:28 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf-next v2 0/5] bpf: introduce timeout map
+Date:   Mon, 14 Dec 2020 12:11:13 -0800
+Message-Id: <20201214201118.148126-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2020-12-13 at 14:36 +0200, Leon Romanovsky wrote:
-> On Sun, Dec 13, 2020 at 02:06:41PM +0200, Leon Romanovsky wrote:
-> > From: Parav Pandit <parav@nvidia.com>
-> > 
-> > MLX5_GENERAL_OBJECT_TYPES types bitfield is 64-bit field.
-> > 
-> > Defining an enum for such bit fields on 32-bit platform results in
-> > below
-> > warning.
-> > 
-> > ./include/vdso/bits.h:7:26: warning: left shift count >= width of
-> > type [-Wshift-count-overflow]
-> >                          ^
-> > ./include/linux/mlx5/mlx5_ifc.h:10716:46: note: in expansion of
-> > macro ‘BIT’
-> >  MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER = BIT(0x20),
-> >                                              ^~~
-> > 
-> > Use 32-bit friendly BIT_ULL macro.
-> > 
-> > Fixes: 2a2970891647 ("net/mlx5: Add sample offload hardware bits
-> > and structures")
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  include/linux/mlx5/mlx5_ifc.h | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/include/linux/mlx5/mlx5_ifc.h
-> > b/include/linux/mlx5/mlx5_ifc.h
-> > index 2006795fd522..8a359b8bee52 100644
-> > --- a/include/linux/mlx5/mlx5_ifc.h
-> > +++ b/include/linux/mlx5/mlx5_ifc.h
-> > @@ -10709,9 +10709,9 @@ struct
-> > mlx5_ifc_affiliated_event_header_bits {
-> >  };
-> > 
-> >  enum {
-> > -	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY = BIT(0xc),
-> > -	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC = BIT(0x13),
-> > -	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER = BIT(0x20),
-> > +	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY =
-> > BIT_ULL(0xc),
-> > +	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC = BIT_ULL(0x13),
-> > +	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER = BIT_ULL(0x20),
-> 
-> Or even better is to use "1ULL << 0x20" directly because we are not
-> including bits.h in this mlx5_ifc.h file.
-> 
-> Should I resend?
-> 
-> Thanks
+From: Cong Wang <cong.wang@bytedance.com>
 
-I will change this and attach this patch to my PR of the SF support.
+This patchset introduces a new bpf hash map which has timeout.
+Patch 1 is a preparation, patch 2 is the implementation of timeout
+map, patch 3 updates an existing hash map ptr test, patch 4 and
+patch 5 contain two test cases for timeout map.
 
-Thanks,
-Saeed.
+Please check each patch description for more details.
 
+---
+v2: fix hashmap ptr test
+    add a test case in map ptr test
+    factor out htab_timeout_map_alloc()
 
+Cong Wang (5):
+  bpf: use index instead of hash for map_locked[]
+  bpf: introduce timeout map
+  selftests/bpf: update elem_size check in map ptr test
+  selftests/bpf: add a test case for bpf timeout map
+  selftests/bpf: add timeout map check in map_ptr tests
+
+ include/linux/bpf_types.h                     |   1 +
+ include/uapi/linux/bpf.h                      |   3 +-
+ kernel/bpf/hashtab.c                          | 301 ++++++++++++++++--
+ kernel/bpf/syscall.c                          |   3 +-
+ tools/include/uapi/linux/bpf.h                |   1 +
+ .../selftests/bpf/progs/map_ptr_kern.c        |  22 +-
+ tools/testing/selftests/bpf/test_maps.c       |  41 +++
+ 7 files changed, 340 insertions(+), 32 deletions(-)
+
+-- 
+2.25.1
 
