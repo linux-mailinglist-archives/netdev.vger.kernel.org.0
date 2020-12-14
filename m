@@ -2,69 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC802DA3D7
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 00:01:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4F12DA401
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 00:14:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441364AbgLNW5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 17:57:46 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:45153 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2441345AbgLNW52 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 17:57:28 -0500
-Received: by mail-ot1-f68.google.com with SMTP id h18so17491755otq.12;
-        Mon, 14 Dec 2020 14:57:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+8RRmx/saxrEOsk/+4v4Hf95Rm9K3o27fRskhKZP0vA=;
-        b=fvzvBkrFc6Algvr9+SRV45KaK3eI3vq7hGWi/yZNUP6JDxdswQzstAXTPF5YeRv1AO
-         3LgAvQ+4CtXSv78aQ8q6XRQNjDJY8wA2ajzqgsS+KbU+90NocMEM9TXhmPhCmX6IKVMy
-         HRe5oww0XMq6I8VO96l0Bawpg/bTvcbTZ/hOPSFWMzzrRfJrKmbD1MtVPKkD7wSKN2By
-         62JWRQ9z6aqv8EVptsL2fsRNbfmL54es0ubBpiINxQLG8dT2QtcDnXPuH3ANQIyw2GNr
-         LbEtS1Wc+sXQI65funXdSA/tDnM29Vp6Ep1JWcbXDwf4gjnyxHXUEm3pQp9b4Yk4Mk0z
-         7zBA==
-X-Gm-Message-State: AOAM532AM05AgfBz16EzLCop5FayWkXGXI8BGi+hdbm/ggP+Rgg0R11t
-        8IffvjiUadO49vy+l0lkhw==
-X-Google-Smtp-Source: ABdhPJy2OORXX0ADGZfZfe5m8G4mo9LJFRteLkzOii3px8+JdHgVV5JvodnedcIn1T1ffYOLI7Q6xA==
-X-Received: by 2002:a9d:170d:: with SMTP id i13mr21474885ota.106.1607986607540;
-        Mon, 14 Dec 2020 14:56:47 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id z189sm704369oia.28.2020.12.14.14.56.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Dec 2020 14:56:46 -0800 (PST)
-Received: (nullmailer pid 2537300 invoked by uid 1000);
-        Mon, 14 Dec 2020 22:56:45 -0000
-Date:   Mon, 14 Dec 2020 16:56:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Pavana Sharma <pavana.sharma@digi.com>
-Cc:     devicetree@vger.kernel.org, marek.behun@nic.cz,
-        f.fainelli@gmail.com, davem@davemloft.net,
-        gregkh@linuxfoundation.org, kbuild-all@lists.01.org, lkp@intel.com,
-        vivien.didelot@gmail.com, kuba@kernel.org, ashkan.boldaji@digi.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        robh+dt@kernel.org, andrew@lunn.ch,
-        clang-built-linux@googlegroups.com
-Subject: Re: [net-next PATCH v12 1/4] dt-bindings: net: Add 5GBASER phy
- interface mode
-Message-ID: <20201214225645.GA2537239@robh.at.kernel.org>
-References: <cover.1607685096.git.pavana.sharma@digi.com>
- <dbad3456b9c80a7f53d64b608ab69e4d4e0b2151.1607685097.git.pavana.sharma@digi.com>
+        id S2441167AbgLNXN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 18:13:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47424 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2408952AbgLNXNV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 18:13:21 -0500
+Date:   Mon, 14 Dec 2020 15:12:39 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607987560;
+        bh=TY+cKO1oKjT9ODEoq4IxpqVCBd03on5wRLLEyrOgYPM=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WQVjm1PxdcXHJfBgiwociK3nlr/UZtEil5u7yyGKAriyBqmBAL4WGlKwag0qf6Ihj
+         LP1lo4oLv6W4ZKRHUknRiwWMHZ45H+jAZPgJql+hxZPwBC6zFqOjsieC9SKFFQ5ZTZ
+         Ebj4psY1uVya2OUOLKh0qmSb9h4THS9JkXWmyEGxTtIV1l/cjUWUE0E08SsBuE4caw
+         KAlO7+mk+n65818IZqY0kVGeoG7Hpcsueum/ZQ8jccT4VWvUNHVspE7zIgoNyrwkNc
+         Cnohss7hgN0/66sIGlsx4jhhUUmbb23b8qZDL0CofKBu08pT057Fo1+prz8q6TQwgJ
+         Me9ZJ3PsY387A==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Divya Koppera <Divya.Koppera@microchip.com>
+Cc:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <marex@denx.de>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH v2 net-next] net: phy: mchp: Add 1588 support for
+ LAN8814 Quad PHY
+Message-ID: <20201214151239.1e4d9653@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201214175658.11138-1-Divya.Koppera@microchip.com>
+References: <20201214175658.11138-1-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dbad3456b9c80a7f53d64b608ab69e4d4e0b2151.1607685097.git.pavana.sharma@digi.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Dec 2020 22:46:04 +1000, Pavana Sharma wrote:
-> Add 5gbase-r PHY interface mode.
-> 
-> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+On Mon, 14 Dec 2020 23:26:58 +0530 Divya Koppera wrote:
+> This patch add supports for 1588 Hardware Timestamping support
+> to LAN8814 Quad Phy. It supports L2 and Ipv4 encapsulations.
+>=20
+> Signed-off-by: Divya Koppera<divya.koppera@microchip.com>
 > ---
->  Documentation/devicetree/bindings/net/ethernet-controller.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+> v1 -> v2
+> * Fixed warnings
+>   Reported-by: kernel test robot <lkp@intel.com>
 
-Acked-by: Rob Herring <robh@kernel.org>
+Still doesn't build here:
+
+In file included from ../arch/x86/include/asm/page_32.h:35,
+                 from ../arch/x86/include/asm/page.h:14,
+                 from ../arch/x86/include/asm/processor.h:19,
+                 from ../arch/x86/include/asm/timex.h:5,
+                 from ../include/linux/timex.h:65,
+                 from ../include/linux/time32.h:13,
+                 from ../include/linux/time.h:73,
+                 from ../include/linux/stat.h:19,
+                 from ../include/linux/module.h:13,
+                 from ../drivers/net/phy/micrel.c:24:
+In function =E2=80=98memcmp=E2=80=99,
+    inlined from =E2=80=98lan8814_dequeue_skb=E2=80=99 at ../drivers/net/ph=
+y/micrel.c:460:7:
+../include/linux/string.h:436:4: error: call to =E2=80=98__read_overflow2=
+=E2=80=99 declared with attribute error: detected read beyond size of objec=
+t passed as 2nd parameter
+  436 |    __read_overflow2();
+      |    ^~~~~~~~~~~~~~~~~~
+make[4]: *** [drivers/net/phy/micrel.o] Error 1
+make[3]: *** [drivers/net/phy] Error 2
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [drivers/net] Error 2
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [drivers] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make: *** [__sub-make] Error 2
+In file included from ../arch/x86/include/asm/page_32.h:35,
+                 from ../arch/x86/include/asm/page.h:14,
+                 from ../arch/x86/include/asm/processor.h:19,
+                 from ../arch/x86/include/asm/timex.h:5,
+                 from ../include/linux/timex.h:65,
+                 from ../include/linux/time32.h:13,
+                 from ../include/linux/time.h:73,
+                 from ../include/linux/stat.h:19,
+                 from ../include/linux/module.h:13,
+                 from ../drivers/net/phy/micrel.c:24:
+In function =E2=80=98memcmp=E2=80=99,
+    inlined from =E2=80=98lan8814_dequeue_skb=E2=80=99 at ../drivers/net/ph=
+y/micrel.c:460:7:
+../include/linux/string.h:436:4: error: call to =E2=80=98__read_overflow2=
+=E2=80=99 declared with attribute error: detected read beyond size of objec=
+t passed as 2nd parameter
+  436 |    __read_overflow2();
+      |    ^~~~~~~~~~~~~~~~~~
+make[4]: *** [drivers/net/phy/micrel.o] Error 1
+make[3]: *** [drivers/net/phy] Error 2
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [drivers/net] Error 2
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [drivers] Error 2
+make: *** [__sub-make] Error 2
