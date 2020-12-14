@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EF542D9206
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 04:17:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B6BF2D9207
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 04:17:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438280AbgLNDPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 22:15:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29212 "EHLO
+        id S2438287AbgLNDP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 22:15:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60587 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726226AbgLNDPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 22:15:05 -0500
+        by vger.kernel.org with ESMTP id S1726226AbgLNDPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 22:15:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607915618;
+        s=mimecast20190719; t=1607915630;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ybh/R/4GdDHQLyi7K+E2pe9l0OU63WmaJrxO4w9fLUU=;
-        b=PMIiVeuBpRgV4Y+96pKgclnLZ/smq3Zo5m4Pr2KJqDXykD4waKKWImR7AzoP1d0WI/Qga6
-        A7R2AIiZ27EbFTrDQ+REnVLbLKKzvfG8PJmBib1aw9T8P91Od04c2OJi8lja2UG27HZEmQ
-        0bLoFlgbpzBfDhV1YmS8YPr80FAYigs=
+        bh=+9sQ3ROLDoUM3Q2YuCeuJzaGmgvYQ+sS+5UKJ5fqarw=;
+        b=CbzPk/9c1cg3VVsXYygRvOwIlZByD3cqoHjp11p5JIZGlqRq6Jv9EsfOBRHMfgoZs7Vxlc
+        udJ19Vk3dtRWIVEWpSkWtyWTQcVZefE8acgv6QXIetMLptBFf6ykE22CT5G4WzDuI3IT+V
+        hLP4Vt8y/7KWMcLbS8HE+B/MLaR0Q5I=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-528-bsGc3wo6PHivHNPtnxOzUA-1; Sun, 13 Dec 2020 22:13:34 -0500
-X-MC-Unique: bsGc3wo6PHivHNPtnxOzUA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-185-5YrP6FsXNuuS7gxrQe646A-1; Sun, 13 Dec 2020 22:13:46 -0500
+X-MC-Unique: 5YrP6FsXNuuS7gxrQe646A-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1C7D01005D44;
-        Mon, 14 Dec 2020 03:13:33 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 50DBB10054FF;
+        Mon, 14 Dec 2020 03:13:45 +0000 (UTC)
 Received: from [10.72.13.213] (ovpn-13-213.pek2.redhat.com [10.72.13.213])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CC0AB709AA;
-        Mon, 14 Dec 2020 03:13:26 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 13F641002382;
+        Mon, 14 Dec 2020 03:13:38 +0000 (UTC)
 Subject: Re: [PATCH net] vhost_net: fix high cpu load when sendmsg fails
 To:     wangyunjian <wangyunjian@huawei.com>,
         "Michael S. Tsirkin" <mst@redhat.com>
@@ -49,8 +49,8 @@ References: <1607514504-20956-1-git-send-email-wangyunjian@huawei.com>
  <f95f061c-dcac-9d56-94a0-50ef683946cd@redhat.com>
  <34EFBCA9F01B0748BEB6B629CE643AE60DB65468@DGGEMM533-MBX.china.huawei.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <d3b6b081-97c6-d8e9-55cc-8b24bdd99483@redhat.com>
-Date:   Mon, 14 Dec 2020 11:13:25 +0800
+Message-ID: <c8fedd8b-8a09-8994-2ad4-133c9e6dc334@redhat.com>
+Date:   Mon, 14 Dec 2020 11:13:37 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
@@ -58,7 +58,7 @@ In-Reply-To: <34EFBCA9F01B0748BEB6B629CE643AE60DB65468@DGGEMM533-MBX.china.huawe
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -146,7 +146,7 @@ Ok.
 
 It should work.
 
-Btw, the patch doesn't add the head to the used ring. This may confuses 
+Btw, the patch doesn't add the head to the used ring. This may confuse 
 the driver.
 
 Thanks
