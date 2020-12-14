@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F278C2DA239
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:04:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0EE2DA234
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503705AbgLNVBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 16:01:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38108 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2503680AbgLNVBV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 16:01:21 -0500
-Message-ID: <8035075adf8738792f4fa39032eeeb997bc1e653.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607979519;
-        bh=cldqRzZxWGs3Mp0GWam6BN3UIEF7254f3nfHMyN7cv4=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Gtxqgx/zUgAV/HC4HUDaTWWErUYbIXoTgkKUYMD/ELlewv6ngbmFefFbLOnnQE37B
-         fwW9w8lNXB0jkS0zaOY6KiQuNNvzR6i/TAi+fgG1AW/EykMErJidLU/39fKuq2JQ6H
-         cYZqxR/cWcdcz2hfp8VGfziH+pOYPr8oSmVaMVsoIT/cKvofZxClMOcYe7qD5WQeeL
-         NIffLKExOZStE6EtkCW8G8ODK2nn1z9f76JCt7Kq0Z4tPHOOMdZSDtSFcABv2Uu75T
-         yhfntlEnCdaAYrYdYHk5OeIYZ35zyWy0f9d7SzNO3zktL7NiFTX5VRmoH1k+TTpoKc
-         hhNH7an3hKyYw==
-Subject: Re: [patch 23/30] net/mlx5: Use effective interrupt affinity
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci@vger.kernel.org,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org
-Date:   Mon, 14 Dec 2020 12:58:36 -0800
-In-Reply-To: <20201210194044.876342330@linutronix.de>
-References: <20201210192536.118432146@linutronix.de>
-         <20201210194044.876342330@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S2503714AbgLNVBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 16:01:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503630AbgLNVAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 16:00:44 -0500
+Received: from mail-vk1-xa41.google.com (mail-vk1-xa41.google.com [IPv6:2607:f8b0:4864:20::a41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65C5C061793
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 13:00:04 -0800 (PST)
+Received: by mail-vk1-xa41.google.com with SMTP id m67so1833040vkg.7
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 13:00:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S6Azrne2gwBOsw/2DZExuRk7zhJphTc9nE0FgDt5TBs=;
+        b=IBvLw+3ABHVlnQ+baHXr0SkKfBBlelE5oAlwhwYa24ecW8FfhyfzG80awPcF7SMoZj
+         buGYkn9w1nHwDs2TLbShmHXeX1MGoAWbWT7iapfEmhvYb6KEUDM25W7hK34GHfEJ5UTo
+         9X6tTex0PVjgz4YWupbk8RjntAyQXCZf8ISlYaOQmxcdGetjJFCXML4JKAeQR08yRWDw
+         XNvh03l8R/2QQGlgPyRp3AzGbvW1U2LB6DdcfzcUfg3q43vSL1FbTFr+8rVJlHeS/wbb
+         FMntiePTC+Tsz+qz0j/FwicQNtMdcMxwQ6wVolJsb9Oz0Hi8Pb0d9PqugxnloBl0WHVF
+         CLPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S6Azrne2gwBOsw/2DZExuRk7zhJphTc9nE0FgDt5TBs=;
+        b=dJjlE732olxGPpIBR/PFXoRiBNZShMdqXGd6YRETlJMXVAJh7+UJij5ZSuBpl9oHH6
+         QrDLxuh8qvScitmxB/9DITzZIRvqXd+X81DJq71WgoB/AZAvUjB1JgGeqYMT/+8Byoyu
+         gxC25XRppkNxFcU+/1PrcNpzXhALr3gOzAC2Bs4ETzSgBMtjAR6xqG/9BGawgrz1M9G6
+         clkLTGh9SPu9KYwiYFITsVnJP8NvSZmCH5DyxqufQfyH7EIrQs+gCdVyVD4fWIG0200Z
+         tn1xwGb5TAVspShsWRb0onYF8Ug0i9Zrf5sL6zEAGBJ4DfSQI5aeURxnxy36dK3CKIVO
+         PlrA==
+X-Gm-Message-State: AOAM532RJzLbOAO++9m/oVHLE4pXX9i1zDyjnsU+0hpTGUASNzHT166J
+        /jBI3x/wBuYdHKimdLKCLYLWYSOYk+M=
+X-Google-Smtp-Source: ABdhPJzHtNfTK3FAZlvBIC2lOe4Xr0iNNvjracAgd5o6GQcp39KqE5CnFnvLFuXZ6rZDvJIJtxkfWQ==
+X-Received: by 2002:ac5:ce9b:: with SMTP id 27mr27131558vke.9.1607979603335;
+        Mon, 14 Dec 2020 13:00:03 -0800 (PST)
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
+        by smtp.gmail.com with ESMTPSA id 84sm1676305vkz.34.2020.12.14.13.00.02
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Dec 2020 13:00:02 -0800 (PST)
+Received: by mail-ua1-f50.google.com with SMTP id s23so5930865uaq.10
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 13:00:02 -0800 (PST)
+X-Received: by 2002:ab0:7386:: with SMTP id l6mr8297845uap.141.1607979601681;
+ Mon, 14 Dec 2020 13:00:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <CAF=yD-JqVEQTKzTdO1BaR_2w6u2eyc6FvtghFb9bp3xYODHnqg@mail.gmail.com>
+ <1b2494af-2c56-8ee2-7bc0-923fcad1cdf8@virtuozzo.com>
+In-Reply-To: <1b2494af-2c56-8ee2-7bc0-923fcad1cdf8@virtuozzo.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 14 Dec 2020 15:59:24 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSeicMroDHZGFuWQxhpwVBOztwWLMnzVTZKXPQ2EY9VmRA@mail.gmail.com>
+Message-ID: <CA+FuTSeicMroDHZGFuWQxhpwVBOztwWLMnzVTZKXPQ2EY9VmRA@mail.gmail.com>
+Subject: Re: [PATCH v2] net: drop bogus skb with CHECKSUM_PARTIAL and offset
+ beyond end of trimmed packet
+To:     Vasily Averin <vvs@virtuozzo.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-12-10 at 20:25 +0100, Thomas Gleixner wrote:
-> Using the interrupt affinity mask for checking locality is not really
-> working well on architectures which support effective affinity masks.
-> 
-> The affinity mask is either the system wide default or set by user
-> space,
-> but the architecture can or even must reduce the mask to the
-> effective set,
-> which means that checking the affinity mask itself does not really
-> tell
-> about the actual target CPUs.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Saeed Mahameed <saeedm@nvidia.com>
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-rdma@vger.kernel.org
-> 
+On Mon, Dec 14, 2020 at 2:21 PM Vasily Averin <vvs@virtuozzo.com> wrote:
+>
+> syzbot reproduces BUG_ON in skb_checksum_help():
+> tun creates (bogus) skb with huge partial-checksummed area and
+> small ip packet inside. Then ip_rcv trims the skb based on size
+> of internal ip packet, after that csum offset points beyond of
+> trimmed skb. Then checksum_tg() called via netfilter hook
+> triggers BUG_ON:
+>
+>         offset = skb_checksum_start_offset(skb);
+>         BUG_ON(offset >= skb_headlen(skb));
+>
+> To work around the problem this patch forces pskb_trim_rcsum_slow()
+> to return -EINVAL in described scenario. It allows its callers to
+> drop such kind of packets.
+>
+> Link: https://syzkaller.appspot.com/bug?id=b419a5ca95062664fe1a60b764621eb4526e2cd0
+> Reported-by: syzbot+7010af67ced6105e5ab6@syzkaller.appspotmail.com
+> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+> ---
+> v2: drop bogus packets instead change its CHECKSUM_PARTIAL to CHECKSUM_NONE
 
-Acked-by: Saeed Mahameed <saeedm@nvidia.com>
+Thanks for revising.
 
+As far as I can tell, this goes back to the original introduction of
+that user interface to set checksum offload, so
+
+Fixes: 296f96fcfc16 ("Net driver using virtio")
+
+For next time, please also mark network fixes as [PATCH net]. With that
+
+Acked-by: Willem de Bruijn <willemb@google.com>
