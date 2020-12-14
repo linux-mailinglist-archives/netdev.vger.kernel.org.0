@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D0562D9ADA
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 16:24:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB512D9ADC
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 16:24:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407249AbgLNPX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 10:23:57 -0500
-Received: from mga17.intel.com ([192.55.52.151]:28677 "EHLO mga17.intel.com"
+        id S2408318AbgLNPYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 10:24:00 -0500
+Received: from mga17.intel.com ([192.55.52.151]:28670 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390837AbgLNPXi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 10:23:38 -0500
-IronPort-SDR: 2atMeT78DGBj2h7LUb4IomMvM98FilaCPWmpq1YTRE4U/LaTO355wLAbOTbguQq+uG89U8t9dQ
- rlNIH8Txwkkw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9834"; a="154531337"
+        id S2407465AbgLNPXt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 10:23:49 -0500
+IronPort-SDR: yYe3N4wXEK/buAwnB9IZkOCFnf6w/WYfNP6AzlmKaPI3btYVoU+VYyCDrXXeox3RJ3vISd2Y8B
+ Tk6zOMpJ8r3g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9834"; a="154531340"
 X-IronPort-AV: E=Sophos;i="5.78,420,1599548400"; 
-   d="scan'208";a="154531337"
+   d="scan'208";a="154531340"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2020 07:22:58 -0800
-IronPort-SDR: pW+MnQWCeQ+EM1++nqjUSh8dM5MoWij+HXfxqUrMqIGEa/Di/wNmk+IwQjwuxuJ46XSyw1bWJT
- 5MUKlWsNESzw==
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2020 07:23:00 -0800
+IronPort-SDR: wzGkGTRJse31QTl3lRLx1+d7iDIkO+AtEU/gPcn8Eb01rKf1TDlv0PbrpyxEC1etyn76MlNkmF
+ mFpiZlXInWrw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.78,420,1599548400"; 
-   d="scan'208";a="411285667"
+   d="scan'208";a="411285687"
 Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga001.jf.intel.com with ESMTP; 14 Dec 2020 07:22:56 -0800
+  by orsmga001.jf.intel.com with ESMTP; 14 Dec 2020 07:22:58 -0800
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         anthony.l.nguyen@intel.com, kuba@kernel.org, bjorn.topel@intel.com,
         magnus.karlsson@intel.com,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v2 net-next 2/8] i40e: drop misleading function comments
-Date:   Mon, 14 Dec 2020 16:13:02 +0100
-Message-Id: <20201214151308.15275-3-maciej.fijalkowski@intel.com>
+Subject: [PATCH v2 net-next 3/8] i40e: adjust i40e_is_non_eop
+Date:   Mon, 14 Dec 2020 16:13:03 +0100
+Message-Id: <20201214151308.15275-4-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201214151308.15275-1-maciej.fijalkowski@intel.com>
 References: <20201214151308.15275-1-maciej.fijalkowski@intel.com>
@@ -43,70 +43,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-i40e_cleanup_headers has a statement about check against skb being
-linear or not which is not relevant anymore, so let's remove it.
+i40e_is_non_eop had a leftover comment and unused skb argument which was
+used for placing the skb onto rx_buf in case when current buffer was
+non-eop one. This is not relevant anymore as commit e72e56597ba1
+("i40e/i40evf: Moves skb from i40e_rx_buffer to i40e_ring") pulled the
+non-complete skb handling out of rx_bufs up to rx_ring.  Therefore,
+let's adjust the function arguments that i40e_is_non_eop takes.
 
-Same case for i40e_can_reuse_rx_page, it references things that are not
-present there anymore.
+Furthermore, since there is already a function responsible for bumping
+the ntc, make use of that and drop that logic from i40e_is_non_eop so
+that the scope of this function is limited to what the name actually
+states.
 
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_txrx.c | 33 ++++-----------------
- 1 file changed, 6 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 23 ++++++---------------
+ 1 file changed, 6 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index 9f73cd7aee09..1dbb8efa50ad 100644
+index 1dbb8efa50ad..205dc2124e96 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -1809,9 +1809,6 @@ void i40e_process_skb_fields(struct i40e_ring *rx_ring,
-  * @skb: pointer to current skb being fixed
-  * @rx_desc: pointer to the EOP Rx descriptor
+@@ -2118,25 +2118,13 @@ static void i40e_put_rx_buffer(struct i40e_ring *rx_ring,
+  * i40e_is_non_eop - process handling of non-EOP buffers
+  * @rx_ring: Rx ring being processed
+  * @rx_desc: Rx descriptor for current buffer
+- * @skb: Current socket buffer containing buffer in progress
   *
-- * Also address the case where we are pulling data in on pages only
-- * and as such no data is present in the skb header.
-- *
-  * In addition if skb is not at least 60 bytes we need to pad it so that
-  * it is large enough to qualify as a valid Ethernet frame.
-  *
-@@ -1857,32 +1854,14 @@ static inline bool i40e_page_is_reusable(struct page *page)
- }
- 
- /**
-- * i40e_can_reuse_rx_page - Determine if this page can be reused by
-- * the adapter for another receive
-- *
-+ * i40e_can_reuse_rx_page - Determine if page can be reused for another Rx
-  * @rx_buffer: buffer containing the page
-  *
-- * If page is reusable, rx_buffer->page_offset is adjusted to point to
-- * an unused region in the page.
-- *
-- * For small pages, @truesize will be a constant value, half the size
-- * of the memory at page.  We'll attempt to alternate between high and
-- * low halves of the page, with one half ready for use by the hardware
-- * and the other half being consumed by the stack.  We use the page
-- * ref count to determine whether the stack has finished consuming the
-- * portion of this page that was passed up with a previous packet.  If
-- * the page ref count is >1, we'll assume the "other" half page is
-- * still busy, and this page cannot be reused.
-- *
-- * For larger pages, @truesize will be the actual space used by the
-- * received packet (adjusted upward to an even multiple of the cache
-- * line size).  This will advance through the page by the amount
-- * actually consumed by the received packets while there is still
-- * space for a buffer.  Each region of larger pages will be used at
-- * most once, after which the page will not be reused.
-- *
-- * In either case, if the page is reusable its refcount is increased.
+- * This function updates next to clean.  If the buffer is an EOP buffer
+- * this function exits returning false, otherwise it will place the
+- * sk_buff in the next buffer to be chained and return true indicating
+- * that this is in fact a non-EOP buffer.
 - **/
-+ * If page is reusable, we have a green light for calling i40e_reuse_rx_page,
-+ * which will assign the current buffer to the buffer that next_to_alloc is
-+ * pointing to; otherwise, the DMA mapping needs to be destroyed and
-+ * page freed
++ * If the buffer is an EOP buffer, this function exits returning false,
++ * otherwise return true indicating that this is in fact a non-EOP buffer.
 + */
- static bool i40e_can_reuse_rx_page(struct i40e_rx_buffer *rx_buffer)
+ static bool i40e_is_non_eop(struct i40e_ring *rx_ring,
+-			    union i40e_rx_desc *rx_desc,
+-			    struct sk_buff *skb)
++			    union i40e_rx_desc *rx_desc)
  {
- 	unsigned int pagecnt_bias = rx_buffer->pagecnt_bias;
+-	u32 ntc = rx_ring->next_to_clean + 1;
+-
+-	/* fetch, update, and store next to clean */
+-	ntc = (ntc < rx_ring->count) ? ntc : 0;
+-	rx_ring->next_to_clean = ntc;
+-
+-	prefetch(I40E_RX_DESC(rx_ring, ntc));
+-
+ 	/* if we are the last buffer then there is nothing else to do */
+ #define I40E_RXD_EOF BIT(I40E_RX_DESC_STATUS_EOF_SHIFT)
+ 	if (likely(i40e_test_staterr(rx_desc, I40E_RXD_EOF)))
+@@ -2414,7 +2402,8 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ 		i40e_put_rx_buffer(rx_ring, rx_buffer);
+ 		cleaned_count++;
+ 
+-		if (i40e_is_non_eop(rx_ring, rx_desc, skb))
++		i40e_inc_ntc(rx_ring);
++		if (i40e_is_non_eop(rx_ring, rx_desc))
+ 			continue;
+ 
+ 		if (i40e_cleanup_headers(rx_ring, skb, rx_desc)) {
 -- 
 2.20.1
 
