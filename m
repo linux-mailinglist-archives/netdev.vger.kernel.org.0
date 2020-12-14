@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA1F32D98DC
+	by mail.lfdr.de (Postfix) with ESMTP id 5C4622D98DB
 	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 14:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439503AbgLNNcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2439629AbgLNNcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 14 Dec 2020 08:32:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439495AbgLNNcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 08:32:33 -0500
+        with ESMTP id S2439514AbgLNNce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 08:32:34 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1970CC0613D3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB68C0613D6
         for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 05:31:53 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1konx9-0003Kb-LJ
-        for netdev@vger.kernel.org; Mon, 14 Dec 2020 14:31:51 +0100
+        id 1konxA-0003Mu-GU
+        for netdev@vger.kernel.org; Mon, 14 Dec 2020 14:31:52 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 5D23F5AD29E
+        by bjornoya.blackshift.org (Postfix) with SMTP id CF8385AD2A5
         for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 13:31:48 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id E5C7B5AD28B;
-        Mon, 14 Dec 2020 13:31:46 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 33D725AD28C;
+        Mon, 14 Dec 2020 13:31:47 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 934e8ee3;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 5da25f90;
         Mon, 14 Dec 2020 13:31:46 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: pull-request: can-next 2020-12-14
-Date:   Mon, 14 Dec 2020 14:31:38 +0100
-Message-Id: <20201214133145.442472-1-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sean Nyekjaer <sean@geanix.com>, Dan Murphy <dmurphy@ti.com>
+Subject: [net-next 1/7] can: m_can: update link to M_CAN user manual
+Date:   Mon, 14 Dec 2020 14:31:39 +0100
+Message-Id: <20201214133145.442472-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201214133145.442472-1-mkl@pengutronix.de>
+References: <20201214133145.442472-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
@@ -50,53 +53,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+Old versions of the user manual are regularly depublished, so change link to
+the linux-can github page, which has a mirror off all published datasheets.
 
-this is a series of 7 patches for net-next/master.
-
-All 7 patches are by me and target the m_can driver. First there are 4 cleanup
-patches (fix link to doc, fix coding style, uniform variable name usage, mark
-function as static). Then the driver is converted to
-pm_runtime_resume_and_get(). The next patch lets the m_can class driver
-allocate the driver's private data, to get rid of one level of indirection. And
-the last patch consistently uses struct m_can_classdev as drvdata over all
-binding drivers.
-
-regards,
-Marc
-
+Link: https://lore.kernel.org/r/20201212175518.139651-2-mkl@pengutronix.de
+Reviewed-by: Sean Nyekjaer <sean@geanix.com>
+Reviewed-by: Dan Murphy <dmurphy@ti.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
+ drivers/net/can/m_can/m_can.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-The following changes since commit 13458ffe0a953e17587f172a8e5059c243e6850a:
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 06c136961c7c..ec209326c3d8 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -5,8 +5,7 @@
+ // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
+ 
+ /* Bosch M_CAN user manual can be obtained from:
+- * http://www.bosch-semiconductors.de/media/pdf_1/ipmodules_1/m_can/
+- * mcan_users_manual_v302.pdf
++ * https://github.com/linux-can/can-doc/tree/master/m_can
+  */
+ 
+ #include <linux/interrupt.h>
 
-  net: x25: Remove unimplemented X.25-over-LLC code stubs (2020-12-12 17:15:33 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.11-20201214
-
-for you to fetch changes up to c6b734892420f00fdc3c49b8c1029aa5bf0790b9:
-
-  can: m_can: use struct m_can_classdev as drvdata (2020-12-14 14:24:17 +0100)
-
-----------------------------------------------------------------
-linux-can-next-for-5.11-20201214
-
-----------------------------------------------------------------
-Marc Kleine-Budde (7):
-      can: m_can: update link to M_CAN user manual
-      can: m_can: convert indention to kernel coding style
-      can: m_can: use cdev as name for struct m_can_classdev uniformly
-      can: m_can: m_can_config_endisable(): mark as static
-      can: m_can: m_can_clk_start(): make use of pm_runtime_resume_and_get()
-      can: m_can: let m_can_class_allocate_dev() allocate driver specific private data
-      can: m_can: use struct m_can_classdev as drvdata
-
- drivers/net/can/m_can/m_can.c          | 206 ++++++++++++++++-----------------
- drivers/net/can/m_can/m_can.h          |   5 +-
- drivers/net/can/m_can/m_can_pci.c      |  32 ++---
- drivers/net/can/m_can/m_can_platform.c |  40 ++++---
- drivers/net/can/m_can/tcan4x5x.c       |  44 +++----
- 5 files changed, 160 insertions(+), 167 deletions(-)
+base-commit: 13458ffe0a953e17587f172a8e5059c243e6850a
+-- 
+2.29.2
 
 
