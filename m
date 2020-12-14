@@ -2,110 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5A22D9FA3
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 19:54:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5889D2D9FD6
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:03:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439971AbgLNSyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 13:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729598AbgLNSxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 13:53:44 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7560BC0613D6
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 10:53:04 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id a11so9744633wrr.13
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 10:53:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dDdObFQGHP44wB5uzTs8CFNojQR78cri+zip8zY60tY=;
-        b=qtseBLRRIiwub6DQNE6y6+zZnF+JWErsu8k99AdAIvuuayLrf/JVtUx+i2syw5V4Et
-         fBAiG55BonHRp6eybFbp70rUSOhqyI92D3DFf1K5IXp7+P6csHI0BJm8mJD3aYXXoVQD
-         R7qAw4vhwvylhCM8wMrds9Fw3Ypx+YuJGaSYI3gtl5+mz9xfjFnZeFng6nS+BmSb5xwf
-         BMKIDVQZPmtjzgv+/DF06K6LLIyEeIygqx3mzwI9XHByDW1kusU4bDMY7AO8S4XTLepY
-         Uk7zUN7/LcB3AGtk3Nk8KhUiyqIV51EvFBJpuFm9AgVheEAgFZQuBoezANi/FsA0Dnqi
-         KiIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dDdObFQGHP44wB5uzTs8CFNojQR78cri+zip8zY60tY=;
-        b=Iad6pZTZ4NJ44pFkZOZjc7zii53N74xGeNSO5QKgnQgYEE/9fADZDoTdy+NZkecx4O
-         r6muXN3uXzA1I0utWxtOhQtp/pZ3efXF5JD36gbTI8g8TYwIpre+48ZPSVZ6zliIWBji
-         n12ZW4yi5hg04oOyV2D50sr8FUrjEbffWqR9+ysmoZzqt1WXi5eJ2r0DmqnAGQot45U5
-         D8fDfWf0IMARgI37O+/2mtT3Z5+NpYgEryKEtGzVWA4LGA9pz9yqb0jgdOH6Vz918l3L
-         f7iOg/BhL4hz056VhqYDTpPH/Tqg+onDhujcolsLi+AKCfxVKWSkvhmgXVosphnzqs8+
-         g61g==
-X-Gm-Message-State: AOAM53220iPoKyYM5fcvGBU7SUckY6HwdfDBupEHXeimxGA3lF27tbff
-        d4Bmkc+3xD/eeTrm//e6pMnuI2zAj7DVvpIg5iiaaQ==
-X-Google-Smtp-Source: ABdhPJwEMTtYeETuXF3/XCpMDfqlJZwPT9M5sPnMxHan/mH+fTUl/SwsWhAn4rnqs7N+v2n/cTjVFqXQvHBIvXNHCAY=
-X-Received: by 2002:a5d:4cd1:: with SMTP id c17mr30383506wrt.49.1607971982996;
- Mon, 14 Dec 2020 10:53:02 -0800 (PST)
+        id S2441037AbgLNTDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 14:03:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52742 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2441011AbgLNTCq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 14:02:46 -0500
+Date:   Mon, 14 Dec 2020 11:02:03 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607972525;
+        bh=zIT+RfkMaTLVfc0tAIyPbugltMRzxeNIAeprhgXt9Rg=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sGotVaSd6bvGd7GebHK1/aYCOykYkLhZZNDTV2IOZGVphZQczVhupdeVflEXZFuLy
+         UD7NhFIj0wSmcqHpZzXlAFo/uFfAL/+4OZ18YpCaprE6QQpEMBzsze5sptkYk169qV
+         sw4XhS7Df7fIulClMYRrz1Hl78hfGzCuGMcwArN3VRcwtz/Z0ZFWuKCjUc13W5Fyyw
+         +qDRd5xqhSo1TxWsVl6z+L9pDOgK+VJgOo7AOtrMXR5e1kzkoAigp+UaND0aVXt7hx
+         tjsRVKZQHt7lbsioAdMc8PePTH8IKVRWPobPH7f6ssrG4L2+50iv3XqucDlqGcfaFK
+         mybMqpt9K8ztg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Wei Wang <weiwan@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Felix Fietkau <nbd@nbd.name>, Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH net-next v4 2/3] net: implement threaded-able napi poll
+ loop support
+Message-ID: <20201214110203.7a1e8729@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAEA6p_BM_H=2bhYBtJ3LtBT0DBPBeVLyuC=BRQv=H3Ww2eecWA@mail.gmail.com>
+References: <20201209005444.1949356-1-weiwan@google.com>
+        <20201209005444.1949356-3-weiwan@google.com>
+        <20201212145022.6f2698d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201212145503.285a8bfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAEA6p_BM_H=2bhYBtJ3LtBT0DBPBeVLyuC=BRQv=H3Ww2eecWA@mail.gmail.com>
 MIME-Version: 1.0
-References: <160780498125.3272.15437756269539236825.stgit@localhost.localdomain>
- <CANn89i+uQ0p81O3-aWO-WPifc35KtpDFRsO9WJKrXxEhpArDWw@mail.gmail.com>
-In-Reply-To: <CANn89i+uQ0p81O3-aWO-WPifc35KtpDFRsO9WJKrXxEhpArDWw@mail.gmail.com>
-From:   Yuchung Cheng <ycheng@google.com>
-Date:   Mon, 14 Dec 2020 10:52:26 -0800
-Message-ID: <CAK6E8=ftSyOhBnB8ZXb_NaBW0wKLSQRjGCm5xE=RMCg=BMnb1g@mail.gmail.com>
-Subject: Re: [net-next PATCH v3] tcp: Add logic to check for SYN w/ data in tcp_simple_retransmit
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 9:42 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Sat, Dec 12, 2020 at 9:31 PM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
+On Mon, 14 Dec 2020 09:59:21 -0800 Wei Wang wrote:
+> On Sat, Dec 12, 2020 at 2:55 PM Jakub Kicinski <kuba@kernel.org> wrote:
 > >
-> > From: Alexander Duyck <alexanderduyck@fb.com>
+> > On Sat, 12 Dec 2020 14:50:22 -0800 Jakub Kicinski wrote:  
+> > > > @@ -6731,6 +6790,7 @@ void napi_disable(struct napi_struct *n)
+> > > >             msleep(1);
+> > > >
+> > > >     hrtimer_cancel(&n->timer);
+> > > > +   napi_kthread_stop(n);  
+> > >
+> > > I'm surprised that we stop the thread on napi_disable() but there is no
+> > > start/create in napi_enable(). NAPIs can (and do get) disabled and
+> > > enabled again. But that'd make your code crash with many popular
+> > > drivers if you tried to change rings with threaded napi enabled so I
+> > > feel like I must be missing something..  
 > >
-> > There are cases where a fastopen SYN may trigger either a ICMP_TOOBIG
-> > message in the case of IPv6 or a fragmentation request in the case of
-> > IPv4. This results in the socket stalling for a second or more as it does
-> > not respond to the message by retransmitting the SYN frame.
-> >
-> > Normally a SYN frame should not be able to trigger a ICMP_TOOBIG or
-> > ICMP_FRAG_NEEDED however in the case of fastopen we can have a frame that
-> > makes use of the entire MSS. In the case of fastopen it does, and an
-> > additional complication is that the retransmit queue doesn't contain the
-> > original frames. As a result when tcp_simple_retransmit is called and
-> > walks the list of frames in the queue it may not mark the frames as lost
-> > because both the SYN and the data packet each individually are smaller than
-> > the MSS size after the adjustment. This results in the socket being stalled
-> > until the retransmit timer kicks in and forces the SYN frame out again
-> > without the data attached.
-> >
-> > In order to resolve this we can reduce the MSS the packets are compared
-> > to in tcp_simple_retransmit to -1 for cases where we are still in the
-> > TCP_SYN_SENT state for a fastopen socket. Doing this we will mark all of
-> > the packets related to the fastopen SYN as lost.
-> >
-> > Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
-> > ---
-> >
->
-> SGTM, thanks !
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-Nice work. I tested and verified it works with our packetdrill
+> > Ah, not crash, 'cause the flag gets cleared. Is it intentional that any
+> > changes that disable NAPIs cause us to go back to non-threaded NAPI?
+> > I think I had the "threaded" setting stored in struct netdevice in my
+> > patches, is there a reason not to do that?
+> 
+> Thanks for the comments!
+> 
+> The reason that I did not record it in dev is: there is a slight
+> chance that during creation of the kthreads, failures occur and we
+> flip back all NAPIs to use non-threaded mode. I am not sure the
+> recorded value in dev should be what user desires, or what the actual
+> situation is. Same as after the driver does a
+> napi_disabe()/napi_enable(). It might occur that the dev->threaded =
+> true, but the operation to re-create the kthreads fail and we flip
+> back to non-thread mode. This seems to get things more complicated.
+> What I expect is the user only enables the threaded mode after the
+> device is up and alive, with all NAPIs attached to dev, and enabled.
+> And user has to check the sysfs to make sure that the operation
+> succeeds.
+> And any operation that brings down the device, will flip this back to
+> default, which is non-threaded mode.
 
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
+It is quite an annoying problem to address, given all relevant NAPI
+helpers seem to return void :/ But we're pushing the problem onto the
+user just because of internal API structure.
 
->
-> > v2: Changed logic to invalidate all retransmit queue frames if fastopen SYN
-> > v3: Updated commit message to reflect actual solution in 3rd paragraph
-> >
+This reminds me of PTP / timestamping issues some NICs had once upon 
+a time. The timing application enables HW time stamping, then later some
+other application / orchestration changes a seemingly unrelated config,
+and since NIC has to reset itself it looses the timestamping config.
+Now the time app stops getting HW time stamps, but those are best
+effort anyway, so it just assumes the NIC couldn't stamp given frame
+(for every frame), not that config got completely broken. The system
+keeps running with suboptimal time for months.
+
+What does the deployment you're expecting to see looks like? What
+entity controls enabling the threaded mode on a system? Application?
+Orchestration? What's the flow?
+
+"Forgetting" config based on driver-dependent events feels very fragile.
