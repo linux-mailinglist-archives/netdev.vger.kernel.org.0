@@ -2,122 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B13792D934A
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 07:40:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CECE02D9365
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 07:57:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbgLNGi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 01:38:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725995AbgLNGi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 01:38:59 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD34FC0613CF
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 22:38:18 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id n26so20956155eju.6
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 22:38:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aOHfkm0teAcnfRNG4mO8qFxgF/Cu1iIFNonJtBdSO2U=;
-        b=BqARR727KmD+lU7B5EuZO7ICDgpOZbXaKDosuAm8eRYvCyDRbSWpuJnMprO0gzjkyj
-         xyGSQdoZBajDOQPTH8l4wvvLw1FYea9X4G5W/mmZHjvEM1GJ/doTerdozwunzA62Bvo+
-         rimOM7lZC+18I5YjWKt+NICD2brqQd7LlUR0G9ufKkx1WVxfMRiWR0aOpTv5cUh3Bxcu
-         sa2dJmyoIay302Sh+jGjXrOAZJSbtpyUyCcoS7TyfhKHMetmPeWNlkkLwWWFtXtMMvH1
-         PW4S69sLu4cakpz4F/GY/Nl8/8dtHmISThFRHh8LMkXCljCTLxf9QXZJq0GNrcJzIfIQ
-         nXXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aOHfkm0teAcnfRNG4mO8qFxgF/Cu1iIFNonJtBdSO2U=;
-        b=WXxuhwctCeZdsiFOpFxRdJ1x58y17VwfOUs5y0bf4W2GdyafFV7O/Rv9FycvfddyB4
-         mjHcxbtp/0im+p95WANFmg0M6Z15QO7FNTgOVj2pmhljEAnkWdF17ebt+d8uqEGbvIJ8
-         EojNyqzdYr6XfGqALUf3E4WInPCL3h4dGm1LThDeZ0fgCIRDQg12F627NOZqHqpRBT0U
-         qeWlLUx1iFMcxXrqcmmxsYZwx2eug8z/Voh6k0+tRnDo8ritLO5c/XYcfcjxz4rv8iet
-         vdO9zJ8wDthaIbaWPDRdO7JJPdcotajpshewndyvimZSvVe7oGKmORnrr14byrkW/LEb
-         6+hQ==
-X-Gm-Message-State: AOAM531e1WY341OmuEyp7WAktOemtM90OZNsVf3EUZyq5aqRUsav5qu1
-        eh63JdJGAHvmilnQDZX/zcw=
-X-Google-Smtp-Source: ABdhPJyxpmDnVB7y0lo7iNWp+ekNybe8pS6suLmdxh4aWjTkORzRnfvp67TYc+FBlMfLwCSAgX1FSg==
-X-Received: by 2002:a17:906:234d:: with SMTP id m13mr21439016eja.270.1607927897498;
-        Sun, 13 Dec 2020 22:38:17 -0800 (PST)
-Received: from [132.68.43.153] ([132.68.43.153])
-        by smtp.gmail.com with ESMTPSA id d3sm11042141edt.32.2020.12.13.22.38.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Dec 2020 22:38:15 -0800 (PST)
-Subject: Re: [PATCH v1 net-next 05/15] nvme-tcp: Add DDP offload control path
-To:     Shai Malin <smalin@marvell.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>, "hch@lst.de" <hch@lst.de>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        "axboe@fb.com" <axboe@fb.com>,
-        "kbusch@kernel.org" <kbusch@kernel.org>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "edumazet@google.com" <edumazet@google.com>
-Cc:     Yoray Zack <yorayz@mellanox.com>,
-        "yorayz@nvidia.com" <yorayz@nvidia.com>,
-        "boris.pismenny@gmail.com" <boris.pismenny@gmail.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        "benishay@nvidia.com" <benishay@nvidia.com>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        "ogerlitz@nvidia.com" <ogerlitz@nvidia.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "malin1024@gmail.com" <malin1024@gmail.com>
-References: <20201207210649.19194-1-borisp@mellanox.com>
- <20201207210649.19194-6-borisp@mellanox.com>
- <PH0PR18MB3845486FF240614CA08E7B4CCCCB0@PH0PR18MB3845.namprd18.prod.outlook.com>
-From:   Boris Pismenny <borispismenny@gmail.com>
-Message-ID: <0a272589-940c-6488-9cb9-1833400f38b3@gmail.com>
-Date:   Mon, 14 Dec 2020 08:38:12 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S2438811AbgLNG5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 01:57:24 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:2398 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438805AbgLNG5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 01:57:24 -0500
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4CvXGf5GBvz54nC;
+        Mon, 14 Dec 2020 14:55:54 +0800 (CST)
+Received: from DGGEMM421-HUB.china.huawei.com (10.1.198.38) by
+ DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Mon, 14 Dec 2020 14:56:40 +0800
+Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.214]) by
+ dggemm421-hub.china.huawei.com ([10.1.198.38]) with mapi id 14.03.0509.000;
+ Mon, 14 Dec 2020 14:56:30 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        chenchanghu <chenchanghu@huawei.com>,
+        xudingke <xudingke@huawei.com>,
+        "huangbin (J)" <brian.huangbin@huawei.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: RE: [PATCH net v2] tun: fix ubuf refcount incorrectly on error path
+Thread-Topic: [PATCH net v2] tun: fix ubuf refcount incorrectly on error path
+Thread-Index: AQHWziird30mYoLkpUK6A8EHcMEb7qnuUNCAgASAshCAANbLgIABp06AgAAg7ICAAAbUgIAAAIYAgAACxwCAALE6MA==
+Date:   Mon, 14 Dec 2020 06:56:30 +0000
+Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB7EB3E@DGGEMM533-MBX.china.huawei.com>
+References: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
+ <1607517703-18472-1-git-send-email-wangyunjian@huawei.com>
+ <CA+FuTSfQoDr0jd76xBXSvchhyihQaL2UQXeCR6frJ7hyXxbmVA@mail.gmail.com>
+ <34EFBCA9F01B0748BEB6B629CE643AE60DB6E3B3@dggemm513-mbx.china.huawei.com>
+ <CA+FuTSdVJa4JQzzybZ17WDcfokA2RZ043kh5++Zgy5aNNebj0A@mail.gmail.com>
+ <CAF=yD-LF+j1vpzKDtBVUi22ZkTCEnMAXgfLfoQTBO+95D6RGRA@mail.gmail.com>
+ <75c625df-3ac8-79ba-d1c5-3b6d1f9b108b@redhat.com>
+ <CAF=yD-+Hcg8cNo2qMfpGOWRORJskZR3cPPEE61neg7xFWkVh8w@mail.gmail.com>
+ <CAF=yD-JHO3SaxaHAZJ8nZ1jy8Zp4hMt1EhP3abutA5zczgTv5g@mail.gmail.com>
+ <3cfbcd25-f9ae-ea9b-fc10-80a44a614276@redhat.com>
+In-Reply-To: <3cfbcd25-f9ae-ea9b-fc10-80a44a614276@redhat.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.243.127]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <PH0PR18MB3845486FF240614CA08E7B4CCCCB0@PH0PR18MB3845.namprd18.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 10/12/2020 19:15, Shai Malin wrote:
-> diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c index c0c33320fe65..ef96e4a02bbd 100644
-> --- a/drivers/nvme/host/tcp.c
-> +++ b/drivers/nvme/host/tcp.c
-> @@ -14,6 +14,7 @@
->  #include <linux/blk-mq.h>
->  #include <crypto/hash.h>
->  #include <net/busy_poll.h>
-> +#include <net/tcp_ddp.h>
->  
->  #include "nvme.h"
->  #include "fabrics.h"
-> @@ -62,6 +63,7 @@ enum nvme_tcp_queue_flags {
->  	NVME_TCP_Q_ALLOCATED	= 0,
->  	NVME_TCP_Q_LIVE		= 1,
->  	NVME_TCP_Q_POLLING	= 2,
-> +	NVME_TCP_Q_OFFLOADS     = 3,
->  };
-> 
-> The same comment from the previous version - we are concerned that perhaps 
-> the generic term "offload" for both the transport type (for the Marvell work) 
-> and for the DDP and CRC offload queue (for the Mellanox work) may be 
-> misleading and confusing to developers and to users.
-> 
-> As suggested by Sagi, we can call this NVME_TCP_Q_DDP. 
-> 
-
-While I don't mind changing the naming here. I wonder  why not call the
-toe you use TOE and not TCP_OFFLOAD, and then offload is free for this?
-
-Moreover, the most common use of offload in the kernel is for partial offloads
-like this one, and not for full offloads (such as toe).
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFzb24gV2FuZyBbbWFp
+bHRvOmphc293YW5nQHJlZGhhdC5jb21dDQo+IFNlbnQ6IE1vbmRheSwgRGVjZW1iZXIgMTQsIDIw
+MjAgMTI6MDcgUE0NCj4gVG86IFdpbGxlbSBkZSBCcnVpam4gPHdpbGxlbWRlYnJ1aWpuLmtlcm5l
+bEBnbWFpbC5jb20+DQo+IENjOiB3YW5neXVuamlhbiA8d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT47
+IE1pY2hhZWwgUy4gVHNpcmtpbg0KPiA8bXN0QHJlZGhhdC5jb20+OyB2aXJ0dWFsaXphdGlvbkBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgTmV0d29yaw0KPiBEZXZlbG9wbWVudCA8bmV0ZGV2
+QHZnZXIua2VybmVsLm9yZz47IExpbGlqdW4gKEplcnJ5KQ0KPiA8amVycnkubGlsaWp1bkBodWF3
+ZWkuY29tPjsgY2hlbmNoYW5naHUgPGNoZW5jaGFuZ2h1QGh1YXdlaS5jb20+Ow0KPiB4dWRpbmdr
+ZSA8eHVkaW5na2VAaHVhd2VpLmNvbT47IGh1YW5nYmluIChKKQ0KPiA8YnJpYW4uaHVhbmdiaW5A
+aHVhd2VpLmNvbT47IFdpbGxlbSBkZSBCcnVpam4gPHdpbGxlbWJAZ29vZ2xlLmNvbT4NCj4gU3Vi
+amVjdDogUmU6IFtQQVRDSCBuZXQgdjJdIHR1bjogZml4IHVidWYgcmVmY291bnQgaW5jb3JyZWN0
+bHkgb24gZXJyb3IgcGF0aA0KPiANCj4gDQo+IE9uIDIwMjAvMTIvMTQg5LiK5Y2IMTE6NTYsIFdp
+bGxlbSBkZSBCcnVpam4gd3JvdGU6DQo+ID4gT24gU3VuLCBEZWMgMTMsIDIwMjAgYXQgMTA6NTQg
+UE0gV2lsbGVtIGRlIEJydWlqbg0KPiA+IDx3aWxsZW1kZWJydWlqbi5rZXJuZWxAZ21haWwuY29t
+PiB3cm90ZToNCj4gPj4gT24gU3VuLCBEZWMgMTMsIDIwMjAgYXQgMTA6MzAgUE0gSmFzb24gV2Fu
+ZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4NCj4gd3JvdGU6DQo+ID4+Pg0KPiA+Pj4gT24gMjAyMC8x
+Mi8xNCDkuIrljYg5OjMyLCBXaWxsZW0gZGUgQnJ1aWpuIHdyb3RlOg0KPiA+Pj4+IE9uIFNhdCwg
+RGVjIDEyLCAyMDIwIGF0IDc6MTggUE0gV2lsbGVtIGRlIEJydWlqbg0KPiA+Pj4+IDx3aWxsZW1k
+ZWJydWlqbi5rZXJuZWxAZ21haWwuY29tPiB3cm90ZToNCj4gPj4+Pj4+Pj4gYWZ0ZXJ3YXJkcywg
+dGhlIGVycm9yIGhhbmRsaW5nIGluIHZob3N0IGhhbmRsZV90eCgpIHdpbGwgdHJ5IHRvDQo+ID4+
+Pj4+Pj4+IGRlY3JlYXNlIHRoZSBzYW1lIHJlZmNvdW50IGFnYWluLiBUaGlzIGlzIHdyb25nIGFu
+ZCBmaXggdGhpcyBieQ0KPiA+Pj4+Pj4+PiBkZWxheSBjb3B5aW5nIHVidWZfaW5mbyB1bnRpbCB3
+ZSdyZSBzdXJlIHRoZXJlJ3Mgbm8gZXJyb3JzLg0KPiA+Pj4+Pj4+IEkgdGhpbmsgdGhlIHJpZ2h0
+IGFwcHJvYWNoIGlzIHRvIGFkZHJlc3MgdGhpcyBpbiB0aGUgZXJyb3INCj4gPj4+Pj4+PiBwYXRo
+cywgcmF0aGVyIHRoYW4gY29tcGxpY2F0ZSB0aGUgbm9ybWFsIGRhdGFwYXRoLg0KPiA+Pj4+Pj4+
+DQo+ID4+Pj4+Pj4gSXMgaXQgc3VmZmljaWVudCB0byBzdXBwcmVzcyB0aGUgY2FsbCB0byB2aG9z
+dF9uZXRfdWJ1Zl9wdXQgaW4NCj4gPj4+Pj4+PiB0aGUgaGFuZGxlX3R4IHNlbmRtc2cgZXJyb3Ig
+cGF0aCwgZ2l2ZW4gdGhhdA0KPiA+Pj4+Pj4+IHZob3N0X3plcm9jb3B5X2NhbGxiYWNrIHdpbGwg
+YmUgY2FsbGVkIG9uIGtmcmVlX3NrYj8NCj4gPj4+Pj4+IFdlIGNhbiBub3QgY2FsbCBrZnJlZV9z
+a2IoKSB1bnRpbCB0aGUgc2tiIHdhcyBjcmVhdGVkLg0KPiA+Pj4+Pj4NCj4gPj4+Pj4+PiBPciBh
+bHRlcm5hdGl2ZWx5IGNsZWFyIHRoZSBkZXN0cnVjdG9yIGluIGRyb3A6DQo+ID4+Pj4+PiBUaGUg
+dWFyZy0+Y2FsbGJhY2soKSBpcyBjYWxsZWQgaW1tZWRpYXRlbHkgYWZ0ZXIgd2UgZGVjaWRlIGRv
+DQo+ID4+Pj4+PiBkYXRhY29weSBldmVuIGlmIGNhbGxlciB3YW50IHRvIGRvIHplcm9jb3B5LiBJ
+ZiBhbm90aGVyIGVycm9yDQo+ID4+Pj4+PiBvY2N1cnMgbGF0ZXIsIHRoZSB2aG9zdA0KPiA+Pj4+
+Pj4gaGFuZGxlX3R4KCkgd2lsbCB0cnkgdG8gZGVjcmVhc2UgaXQgYWdhaW4uDQo+ID4+Pj4+IE9o
+IHJpZ2h0LCBJIG1pc3NlZCB0aGUgZWxzZSBicmFuY2ggaW4gdGhpcyBwYXRoOg0KPiA+Pj4+Pg0K
+PiA+Pj4+PiAgICAgICAgICAgLyogY29weSBza2JfdWJ1Zl9pbmZvIGZvciBjYWxsYmFjayB3aGVu
+IHNrYiBoYXMgbm8gZXJyb3IgKi8NCj4gPj4+Pj4gICAgICAgICAgIGlmICh6ZXJvY29weSkgew0K
+PiA+Pj4+PiAgICAgICAgICAgICAgICAgICBza2Jfc2hpbmZvKHNrYiktPmRlc3RydWN0b3JfYXJn
+ID0gbXNnX2NvbnRyb2w7DQo+ID4+Pj4+ICAgICAgICAgICAgICAgICAgIHNrYl9zaGluZm8oc2ti
+KS0+dHhfZmxhZ3MgfD0NCj4gU0tCVFhfREVWX1pFUk9DT1BZOw0KPiA+Pj4+PiAgICAgICAgICAg
+ICAgICAgICBza2Jfc2hpbmZvKHNrYiktPnR4X2ZsYWdzIHw9DQo+IFNLQlRYX1NIQVJFRF9GUkFH
+Ow0KPiA+Pj4+PiAgICAgICAgICAgfSBlbHNlIGlmIChtc2dfY29udHJvbCkgew0KPiA+Pj4+PiAg
+ICAgICAgICAgICAgICAgICBzdHJ1Y3QgdWJ1Zl9pbmZvICp1YXJnID0gbXNnX2NvbnRyb2w7DQo+
+ID4+Pj4+ICAgICAgICAgICAgICAgICAgIHVhcmctPmNhbGxiYWNrKHVhcmcsIGZhbHNlKTsNCj4g
+Pj4+Pj4gICAgICAgICAgIH0NCj4gPj4+Pj4NCj4gPj4+Pj4gU28gaWYgaGFuZGxlX3R4X3plcm9j
+b3B5IGNhbGxzIHR1bl9zZW5kbXNnIHdpdGggdWJ1Zl9pbmZvIChhbmQNCj4gPj4+Pj4gdGh1cyBh
+IHJlZmVyZW5jZSB0byByZWxlYXNlKSwgdGhlcmUgYXJlIHRoZXNlIGZpdmUgb3B0aW9uczoNCj4g
+Pj4+Pj4NCj4gPj4+Pj4gMS4gdHVuX3NlbmRtc2cgc3VjY2VlZHMsIHVidWZfaW5mbyBpcyBhc3Nv
+Y2lhdGVkIHdpdGggc2tiLg0KPiA+Pj4+PiAgICAgICAgcmVmZXJlbmNlIHJlbGVhc2VkIGZyb20g
+a2ZyZWVfc2tiIGNhbGxpbmcNCj4gPj4+Pj4gdmhvc3RfemVyb2NvcHlfY2FsbGJhY2sgbGF0ZXIN
+Cj4gPj4+Pj4NCj4gPj4+Pj4gMi4gdHVuX3NlbmRtc2cgc3VjY2VlZHMsIHVidWZfaW5mbyBpcyBy
+ZWxlYXNlZCBpbW1lZGlhdGVseSwgYXMgc2tiDQo+ID4+Pj4+IGlzIG5vdCB6ZXJvY29weS4NCj4g
+Pj4+Pj4NCj4gPj4+Pj4gMy4gdHVuX3NlbmRtc2cgZmFpbHMgYmVmb3JlIGNyZWF0aW5nIHNrYiwg
+aGFuZGxlX3R4X3plcm9jb3B5DQo+ID4+Pj4+IGNvcnJlY3RseSBjbGVhbnMgdXAgb24gcmVjZWl2
+aW5nIGVycm9yIGZyb20gdHVuX3NlbmRtc2cuDQo+ID4+Pj4+DQo+ID4+Pj4+IDQuIHR1bl9zZW5k
+bXNnIGZhaWxzIGFmdGVyIGNyZWF0aW5nIHNrYiwgYnV0IHdpdGggY29weWluZzoNCj4gPj4+Pj4g
+ZGVjcmVtZW50ZWQgYXQgYnJhbmNoIHNob3duIGFib3ZlICsgYWdhaW4gaW4gaGFuZGxlX3R4X3pl
+cm9jb3B5DQo+ID4+Pj4+DQo+ID4+Pj4+IDUuIHR1bl9zZW5kbXNnIGZhaWxzIGFmdGVyIGNyZWF0
+aW5nIHNrYiwgd2l0aCB6ZXJvY29weToNCj4gPj4+Pj4gZGVjcmVtZW50ZWQgYXQga2ZyZWVfc2ti
+IGluIGRyb3A6ICsgYWdhaW4gaW4gaGFuZGxlX3R4X3plcm9jb3B5DQo+ID4+Pj4+DQo+ID4+Pj4+
+IFNpbmNlIGhhbmRsZV90eF96ZXJvY29weSBoYXMgbm8gaWRlYSB3aGV0aGVyIG9uIGVycm9yIDMs
+IDQgb3IgNQ0KPiA+Pj4+PiBvY2N1cnJlZCwNCj4gPj4+PiBBY3R1YWxseSwgaXQgZG9lcy4gSWYg
+c2VuZG1zZyByZXR1cm5zIGFuIGVycm9yLCBpdCBjYW4gdGVzdCB3aGV0aGVyDQo+ID4+Pj4gdnEt
+PmhlYWRzW252cS0+dXBlbmRfaWR4XS5sZW4gIT0gVkhPU1RfRE1BX0lOX1BST0dSRVNTLg0KPiA+
+Pj4NCj4gPj4+IEp1c3QgdG8gbWFrZSBzdXJlIEkgdW5kZXJzdGFuZCB0aGlzLiBBbnkgcmVhc29u
+IGZvciBpdCBjYW4ndCBiZQ0KPiA+Pj4gVkhPU1RfRE1BX0lOX1BST0dSRVNTIGhlcmU/DQo+ID4+
+IEl0IGNhbiBiZSwgYW5kIGl0IHdpbGwgYmUgaWYgdHVuX3NlbmRtc2cgcmV0dXJucyBFSU5WQUwg
+YmVmb3JlDQo+ID4+IGFzc2lnbmluZyB0aGUgc2tiIGRlc3RydWN0b3IuDQo+ID4gSSBtZWFudCBy
+ZXR1cm5zIGFuIGVycm9yLCBub3QgbmVjZXNzYXJpbHkgb25seSBFSU5WQUwuDQo+ID4NCj4gPj4g
+T25seSBpZiB0dW5fc2VuZG1zZyByZWxlYXNlZCB0aGUgemVyb2NvcHkgc3RhdGUgdGhyb3VnaA0K
+PiA+PiBrZnJlZV9za2ItPnZob3N0X3plcm9jb3B5X2NhbGxiYWNrIHdpbGwgaXQgaGF2ZSBiZWVu
+IHVwZGF0ZWQgdG8NCj4gPj4gVkhPU1RfRE1BX0RPTkVfTEVOLiBBbmQgb25seSB0aGVuIG11c3Qg
+dGhlIGNhbGxlciBub3QgdHJ5IHRvIHJlbGVhc2UNCj4gPj4gdGhlIHN0YXRlIGFnYWluLg0KPiA+
+DQo+IA0KPiANCj4gSSBzZWUuIFNvIEkgdGVuZCB0byBmaXggdGhpcyBpbiB2aG9zdCBpbnN0ZWFk
+IG9mIHR1biB0byBiZSBjb25zaXN0ZW50IHdpdGggdGhlDQo+IGN1cnJlbnQgZXJyb3IgaGFuZGxp
+bmcgaW4gaGFuZGxlX3R4X3plcm9jb3B5KCkuDQoNCkFncmVlLCB0aGFua3MgZm9yIHRoZSBzdWdn
+ZXN0aW9uLiANCkknbGwgc2VuZCB2MyBwYXRjaCBhY2NvcmRpbmcgdG8geW91ciBjb21tZW50cy4N
+Cg0KPiANCj4gVGhhbmtzDQoNCg==
