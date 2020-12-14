@@ -2,138 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C622D93C0
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 09:02:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F6A92D93E2
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 09:15:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438991AbgLNIAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 03:00:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728424AbgLNIAi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 03:00:38 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CDBC0613CF
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 23:59:53 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id r14so15445351wrn.0
-        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 23:59:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=kd2t0wHqIQ2cj+dKNHtEGVRul+Ifi0yJni6DE5YuQHA=;
-        b=wegBNaYi2LEXQTZqN+s9suhDO3YTw8I2ZPtsCck5/XgByP1fijIOmu0AfQoP8rf+t1
-         YhO0WeDLvGQjqnglnIgNYXUgF0/7MJwaokukVmFe77bCjmbjCNprf1IXNldiDbwwHeo+
-         SnglmV2EiHnSFvHo8FpEen6lFmnv8XRacAc0+Bn0RCeC7jWvloA2XwcSa896Wpb3QRt6
-         XG1N13XLiK5Fq9MPdwJ7MXShoLGljxPxntzFSMOJE2RD6GurGY4e3TkwnSqYN0r4QHZS
-         p3Cr9sQWg7VPYpWJQKHoN9TlX7fAj8pOH+/wFD3uK7g4aASsiZwxZrWaNQbLDp0kGVHV
-         c0iw==
+        id S2439153AbgLNIOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 03:14:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42992 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2439138AbgLNIOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 03:14:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607933599;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xhkpw+Eaniad1r8faQn7ubpHzEGzLN8EOpHrM/P9QFI=;
+        b=BjWNBftEKy/ywyc0x2YaHDtGRZrgp9M+NWYYczXrbqusE2gB64amD6sNRO7dJcwbJJ2qpq
+        7PrV7atvycjFkOfkQ8avu9qiTdz2Vm6lvE2HCOnpjdZiBNfB9vf2/wVvBrY/GY/2DXy/Aj
+        dZhYfYBXMF7dKtL5RrcLFSFrJa1RFTU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-173-CizYjKwhMPu2-AbsYY197Q-1; Mon, 14 Dec 2020 03:13:17 -0500
+X-MC-Unique: CizYjKwhMPu2-AbsYY197Q-1
+Received: by mail-wm1-f69.google.com with SMTP id g198so3110678wme.7
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 00:13:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=kd2t0wHqIQ2cj+dKNHtEGVRul+Ifi0yJni6DE5YuQHA=;
-        b=k9VtRXCj922yHZujLxx+gELHHGCT+2WUQnSTatyQcXTo9Fp5cZEGXxSqOXcb5qY/Yj
-         R9mxipYKXAhHZRPszljZRa0c5g3AWYTS05DQshG+0HksRJzBZmaefX8+1MMQ0/0j7JPR
-         F66sv6LAaMBwg3EaAD/cyM9MbdCUmxUFOvhjXabcLOH/Wu9OJqdr85UhophqXQRQ0rjo
-         B2nEI/EGCeLqGE656WzUv2Ub4Rsi1hDIFKwJKaw0TftjOW4+tPz/52W0FqjIddItscbi
-         qUg6+8TQrfZdgF970PsEpz17rV/InDxCwVqIrkwoDz/uh4nAed/WS9dwKDi/Cw7nqXZf
-         pWLQ==
-X-Gm-Message-State: AOAM5306ixOIcDstZ9dU7N6g9e3EeSBohygpnigVBliqsbw3urKyLK+P
-        3PUNV7UbibGg1zI+OMaN7kdedA==
-X-Google-Smtp-Source: ABdhPJyUla4wDf8IEmiN8xdqzOem+EOqdjvkE6hO29s06UgDBEcoG6bRKExngLb1bGDR97cqiHMw2g==
-X-Received: by 2002:adf:ebd2:: with SMTP id v18mr27309701wrn.322.1607932792601;
-        Sun, 13 Dec 2020 23:59:52 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id b13sm23428554wrt.31.2020.12.13.23.59.51
+         :mime-version:content-disposition:in-reply-to;
+        bh=Xhkpw+Eaniad1r8faQn7ubpHzEGzLN8EOpHrM/P9QFI=;
+        b=E6j33RpS0mIs9WqAvh+epaD8Anh5YXa21BWWWWXaO1QHKcSKLUQH7mv7uIBlECSdp4
+         pf9r/hdBsY/E7bQ1OLrzd8Wd7YQzMpy76wrMGm0U4uGf/kv5eqn2OfCz1cEEjBkx6SNk
+         kAZXnqDJNq0bMNWyQnIbEbhXpaqU/PZOsW+j5l6MVSo9a/0ithdRJ3w44XTX0+JYT1qG
+         llKzXPVZ4SatCAv/Da1uLDlhjB0TJKtQNUH1LkuAuaRfItjsr61azLzlozA0AmC2vYZO
+         WBXG3vLIFywMRZV9xgFIrHVeuwXTJmAWNUjpFhPXCBxJX5POK4y3G8ZKiH7SCMvHCXrZ
+         QHJw==
+X-Gm-Message-State: AOAM532P7ezVlgPKuSPi0GN8dd/kMdv85yjrMKtIu3vuG3a+6fcek2KA
+        S+L0qSIdR3ZvrNpHAs39LlFRrCtzHqNZMmnWls8iiXYXP4wNtpxfFNj+6m9p9TckHAcVqvHspDU
+        Y9rjEbuWWfXeDfcD0
+X-Received: by 2002:a7b:c091:: with SMTP id r17mr23111176wmh.129.1607933596454;
+        Mon, 14 Dec 2020 00:13:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxB2jYVNqzpZdpbofXQRKv5j71XyWbXV5qyzWR2yGIVV9bf10Gc1xTnk7F1zX5VHmsI4FIFXw==
+X-Received: by 2002:a7b:c091:: with SMTP id r17mr23111157wmh.129.1607933596269;
+        Mon, 14 Dec 2020 00:13:16 -0800 (PST)
+Received: from steredhat (host-79-13-204-15.retail.telecomitalia.it. [79.13.204.15])
+        by smtp.gmail.com with ESMTPSA id y6sm29843276wmg.39.2020.12.14.00.13.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Dec 2020 23:59:52 -0800 (PST)
-Date:   Mon, 14 Dec 2020 08:59:51 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, jiri@nvidia.com,
-        netdev@vger.kernel.org, davem@davemloft.net, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 13/15] mlxsw: spectrum_router_xm: Introduce
- basic XM cache flushing
-Message-ID: <20201214075951.GQ3055@nanopsycho.orion>
-References: <20201211170413.2269479-1-idosch@idosch.org>
- <20201211170413.2269479-14-idosch@idosch.org>
- <20201211202427.5871de8a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201212172502.GA2431723@shredder.lan>
+        Mon, 14 Dec 2020 00:13:15 -0800 (PST)
+Date:   Mon, 14 Dec 2020 09:13:12 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andra Paraschiv <andraprs@amazon.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: Re: [PATCH net-next v3 0/4] vsock: Add flags field in the vsock
+ address
+Message-ID: <20201214081312.g6nrzf2ibawhnryr@steredhat>
+References: <20201211103241.17751-1-andraprs@amazon.com>
+ <20201211152413.iezrw6qswzhpfa3j@steredhat>
+ <20201212091608.4ffd1154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201212172502.GA2431723@shredder.lan>
+In-Reply-To: <20201212091608.4ffd1154@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Dec 12, 2020 at 06:25:02PM CET, idosch@idosch.org wrote:
->On Fri, Dec 11, 2020 at 08:24:27PM -0800, Jakub Kicinski wrote:
->> On Fri, 11 Dec 2020 19:04:11 +0200 Ido Schimmel wrote:
->> > From: Jiri Pirko <jiri@nvidia.com>
->> > 
->> > Upon route insertion and removal, it is needed to flush possibly cached
->> > entries from the XM cache. Extend XM op context to carry information
->> > needed for the flush. Implement the flush in delayed work since for HW
->> > design reasons there is a need to wait 50usec before the flush can be
->> > done. If during this time comes the same flush request, consolidate it
->> > to the first one. Implement this queued flushes by a hashtable.
->> > 
->> > Signed-off-by: Jiri Pirko <jiri@nvidia.com>
->> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
->> 
->> 32 bit does not like this patch:
+On Sat, Dec 12, 2020 at 09:16:08AM -0800, Jakub Kicinski wrote:
+>On Fri, 11 Dec 2020 16:24:13 +0100 Stefano Garzarella wrote:
+>> On Fri, Dec 11, 2020 at 12:32:37PM +0200, Andra Paraschiv wrote:
+>> >vsock enables communication between virtual machines and the host they are
+>> >running on. Nested VMs can be setup to use vsock channels, as the multi
+>> >transport support has been available in the mainline since the v5.5 Linux kernel
+>> >has been released.
+>> >
+>> >Implicitly, if no host->guest vsock transport is loaded, all the vsock packets
+>> >are forwarded to the host. This behavior can be used to setup communication
+>> >channels between sibling VMs that are running on the same host. One example can
+>> >be the vsock channels that can be established within AWS Nitro Enclaves
+>> >(see Documentation/virt/ne_overview.rst).
+>> >
+>> >To be able to explicitly mark a connection as being used for a certain use case,
+>> >add a flags field in the vsock address data structure. The value of the flags
+>> >field is taken into consideration when the vsock transport is assigned. This way
+>> >can distinguish between different use cases, such as nested VMs / local
+>> >communication and sibling VMs.
+>> >
+>> >The flags field can be set in the user space application connect logic. On the
+>> >listen path, the field can be set in the kernel space logic.
+>> >
+>>
+>> I reviewed all the patches and they are in a good shape!
+>>
+>> Maybe the last thing to add is a flags check in the
+>> vsock_addr_validate(), to avoid that flags that we don't know how to
+>> handle are specified.
+>> For example if in the future we add new flags that this version of the
+>> kernel is not able to satisfy, we should return an error to the
+>> application.
+>>
+>> I mean something like this:
+>>
+>>      diff --git a/net/vmw_vsock/vsock_addr.c b/net/vmw_vsock/vsock_addr.c
+>>      index 909de26cb0e7..73bb1d2fa526 100644
+>>      --- a/net/vmw_vsock/vsock_addr.c
+>>      +++ b/net/vmw_vsock/vsock_addr.c
+>>      @@ -22,6 +22,8 @@ EXPORT_SYMBOL_GPL(vsock_addr_init);
+>>
+>>       int vsock_addr_validate(const struct sockaddr_vm *addr)
+>>       {
+>>      +       unsigned short svm_valid_flags = VMADDR_FLAG_TO_HOST;
+>>      +
+>>              if (!addr)
+>>                      return -EFAULT;
+>>
+>>      @@ -31,6 +33,9 @@ int vsock_addr_validate(const struct sockaddr_vm *addr)
+>>              if (addr->svm_zero[0] != 0)
+>>                      return -EINVAL;
 >
->Thanks
+>Strictly speaking this check should be superseded by the check below
+>(AKA removed). We used to check svm_zero[0], with the new field added
+>this now checks svm_zero[2]. Old applications may have not initialized
+>svm_zero[2] (we're talking about binary compatibility here, apps built
+>with old headers).
 >
->Jiri, looks like this fix is needed:
+>>      +       if (addr->svm_flags & ~svm_valid_flags)
+>>      +               return -EINVAL;
+>
+>The flags should also probably be one byte (we can define a "more
+>flags" flag to unlock further bytes) - otherwise on big endian the
+>new flag will fall into svm_zero[1] so the v3 improvements are moot
+>for big endian, right?
 
-Okay, will send you fixed version. Thx.
+Right, I assumed the entire svm_zero[] was zeroed out, but we can't be 
+sure.
 
+So, I agree to change the svm_flags to 1 byte (__u8), and remove the 
+superseded check that you pointed out.
+With these changes we should be fully binary compatibility.
+
+Thanks,
+Stefano
 
 >
->diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
->index b680c22eff7d..d213af723a2a 100644
->--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
->+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
->@@ -358,7 +358,7 @@ mlxsw_sp_router_xm_cache_flush_node_destroy(struct mlxsw_sp *mlxsw_sp,
-> 
-> static u32 mlxsw_sp_router_xm_flush_mask4(u8 prefix_len)
-> {
->-       return GENMASK(32, 32 - prefix_len);
->+       return GENMASK(31, 32 - prefix_len);
-> }
-> 
-> static unsigned char *mlxsw_sp_router_xm_flush_mask6(u8 prefix_len)
+>>              return 0;
+>>       }
+>>       EXPORT_SYMBOL_GPL(vsock_addr_validate);
 >
->> 
->> In file included from ../include/linux/bitops.h:5,
->>                  from ../include/linux/kernel.h:12,
->>                  from ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:4:
->> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c: In function ‘mlxsw_sp_router_xm_flush_mask4’:
->> ../include/linux/bits.h:36:11: warning: right shift count is negative [-Wshift-count-negative]
->>    36 |   (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
->>       |           ^~
->> ../include/linux/bits.h:38:31: note: in expansion of macro ‘__GENMASK’
->>    38 |  (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
->>       |                               ^~~~~~~~~
->> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:361:9: note: in expansion of macro ‘GENMASK’
->>   361 |  return GENMASK(32, 32 - prefix_len);
->>       |         ^~~~~~~
->> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:361:16: warning: shift count is negative (-1)
->> In file included from ../include/linux/bitops.h:5,
->>                  from ../include/linux/kernel.h:12,
->>                  from ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:4:
->> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c: In function ‘mlxsw_sp_router_xm_flush_mask4’:
->> ../include/linux/bits.h:36:11: warning: right shift count is negative [-Wshift-count-negative]
->>    36 |   (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
->>       |           ^~
->> ../include/linux/bits.h:38:31: note: in expansion of macro ‘__GENMASK’
->>    38 |  (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
->>       |                               ^~~~~~~~~
->> ../drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c:361:9: note: in expansion of macro ‘GENMASK’
->>   361 |  return GENMASK(32, 32 - prefix_len);
->>       |         ^~~~~~~
+
