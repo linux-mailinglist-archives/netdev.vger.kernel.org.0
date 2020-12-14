@@ -2,131 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F4D62D9B1C
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 16:36:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D682D9B45
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 16:40:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391302AbgLNPde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 10:33:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729851AbgLNPdZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 10:33:25 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC53C0613D3;
-        Mon, 14 Dec 2020 07:32:44 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id q18so9327061wrn.1;
-        Mon, 14 Dec 2020 07:32:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=t9tfHZ7qzv0OG/aI1UXzHdYUmhcbXBLi/GRcSGPa9Wc=;
-        b=iYOxyLJVyDzZX0c1YMNrCpBp30Iorl5Ol3ys7Ksn8B93k2VnoNOlWDOabq/KgVH+Gf
-         Ao7qs3tuCMdgydjqrBsH7QKC5UCfzaP2Z6HSuz1YyiAosPXhU4MmlZK8mRUS68yUefPv
-         k4mi4146FHAU1LHAbUW3rGleJOQg/enqCxLYVikgwhAeWcZr1//dyw9+Xj8o3783VBIC
-         3viYxEFLMSfcgsWKWP3fvRYCELONM4RV/2VYKI7lBwXChAqNSDUIMeoqdKUz5gpQ3mpD
-         Lopj/t2UaJZNgYnaiVO02WDLTzlF5O1BcRAXOkFIPv+VUXL09RY/bTb7IyQ8mnklUVfK
-         qJWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=t9tfHZ7qzv0OG/aI1UXzHdYUmhcbXBLi/GRcSGPa9Wc=;
-        b=p1oXsBUwFidG3rKh93M3UELpSmT6yO3bR7AxIz4HQ1VBASb1arClN1SWrEz4ie9UhM
-         klHTRRBtrayEdqyEg0VIu7os9Hp+dFdZvPvRXWx/kM6eIu6uBLKBACeEbYG1Ye1J1RIj
-         CJY3h0FFg5oTD7tzJf1i4wM/cS+odFBjPesS3QBqeameI2411RAxYsqGd05Hi+3+4PEU
-         3z/RFagFiqmaF3t2gNLjLBjELlsqPp+PwzkZuCQGI7bBoUw1oG5L0Z7hq1O31auRgcMH
-         4w+NdF5+W9xAszuUEbp007naBuBPlx6jhxDC6XDM/iipXgRBKwOipe1hjqvKMz6ZKXnD
-         RByw==
-X-Gm-Message-State: AOAM531CEPyEpVbtVkpGsd0vxplgwyg6hJ4lnK3mOYE5dE5Aqlr/nqJe
-        gc5jABnbhs+g+koKa58j1iw=
-X-Google-Smtp-Source: ABdhPJxMPxWHSILIf1tihFx1amtA3y1le8Lipj7tRwaYG4UGBHtDYnlx6dlIbh9DpGEkgoLVcEUATQ==
-X-Received: by 2002:a5d:4682:: with SMTP id u2mr29265881wrq.265.1607959963458;
-        Mon, 14 Dec 2020 07:32:43 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id s13sm31789724wrt.80.2020.12.14.07.32.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 14 Dec 2020 07:32:42 -0800 (PST)
-Date:   Mon, 14 Dec 2020 15:32:35 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        brouer@redhat.com, lorenzo.bianconi@redhat.com,
-        alexander.duyck@gmail.com, maciej.fijalkowski@intel.com,
-        saeed@kernel.org
-Subject: Re: [PATCH v3 bpf-next 0/2] introduce xdp_init_buff/xdp_prepare_buff
-Message-ID: <20201214153235.s3dpayxpo7xnfqdk@gmail.com>
-Mail-Followup-To: Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        brouer@redhat.com, lorenzo.bianconi@redhat.com,
-        alexander.duyck@gmail.com, maciej.fijalkowski@intel.com,
-        saeed@kernel.org
-References: <cover.1607794551.git.lorenzo@kernel.org>
+        id S2438237AbgLNPi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 10:38:29 -0500
+Received: from mx0b-00154904.pphosted.com ([148.163.137.20]:20016 "EHLO
+        mx0b-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2408180AbgLNPfj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 10:35:39 -0500
+Received: from pps.filterd (m0170397.ppops.net [127.0.0.1])
+        by mx0b-00154904.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEFRpSG009941;
+        Mon, 14 Dec 2020 10:34:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=smtpout1; bh=nJAt87U5eTXFQQE3UHBi62gUIfBAd36fr4lIH1K3QfM=;
+ b=YGb2EPSmD8CXF8bO9cehKWj8iqL5SHgrdktuzGFDU+5mdSOoPt4H1wZ6zNd/lB+RQzBD
+ S5y1x4dogE6VgXgwf3E/HmO25Kh7UYJfSpUfSiM3a0bFOF/8ywD6DYtYmB232OBL4cWz
+ qDOYekshVOBx1CrQJ/hA0dnlheQXYR1BfUYAUcSqRN06/eLRagPcS1Bz4D+0RYadv1jb
+ 0UWbVaEPQ/qFa1oK8PIkvMRYSR6+zgdlyR7jm9Gc9mty924HoE275k1GETBoG6Pe6Lel
+ l9lJt2/Db0YTz5dMLiX2N9vk8BhalVW4nuQMyS4CrjqZ1J+3EvSMFZsqAEjbHWEHJ+cQ gg== 
+Received: from mx0a-00154901.pphosted.com (mx0b-00154901.pphosted.com [67.231.157.37])
+        by mx0b-00154904.pphosted.com with ESMTP id 35cqtynsg1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Dec 2020 10:34:55 -0500
+Received: from pps.filterd (m0089484.ppops.net [127.0.0.1])
+        by mx0b-00154901.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEFXLYN003223;
+        Mon, 14 Dec 2020 10:34:55 -0500
+Received: from ausc60pc101.us.dell.com (ausc60pc101.us.dell.com [143.166.85.206])
+        by mx0b-00154901.pphosted.com with ESMTP id 35e7q23aw7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Dec 2020 10:34:55 -0500
+X-LoopCount0: from 10.173.37.130
+X-PREM-Routing: D-Outbound
+X-IronPort-AV: E=Sophos;i="5.78,420,1599541200"; 
+   d="scan'208";a="1641438808"
+From:   Mario Limonciello <mario.limonciello@dell.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan@lists.osuosl.org,
+        David Miller <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Netfin <sasha.neftin@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Stefan Assmann <sassmann@redhat.com>, darcari@redhat.com,
+        Yijun.Shen@dell.com, Perry.Yuan@dell.com,
+        anthony.wong@canonical.com, Hans de Goede <hdegoede@redhat.com>,
+        Mario Limonciello <mario.limonciello@dell.com>
+Subject: [PATCH v4 0/4] Improve s0ix flows for systems i219LM
+Date:   Mon, 14 Dec 2020 09:34:46 -0600
+Message-Id: <20201214153450.874339-1-mario.limonciello@dell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1607794551.git.lorenzo@kernel.org>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-14_06:2020-12-11,2020-12-14 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ spamscore=0 lowpriorityscore=0 malwarescore=0 suspectscore=0 clxscore=1015
+ bulkscore=0 phishscore=0 adultscore=0 mlxlogscore=971 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012140108
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 malwarescore=0
+ suspectscore=0 mlxlogscore=999 adultscore=0 phishscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012140108
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 12, 2020 at 06:41:47PM +0100, Lorenzo Bianconi wrote:
-> Introduce xdp_init_buff and xdp_prepare_buff utility routines to initialize
-> xdp_buff data structure and remove duplicated code in all XDP capable
-> drivers.
-> 
-> Changes since v2:
-> - precompute xdp->data as hard_start + headroom and save it in a local
->   variable to reuse it for xdp->data_end and xdp->data_meta in
->   xdp_prepare_buff()
-> 
-> Changes since v1:
-> - introduce xdp_prepare_buff utility routine
-> 
-> Lorenzo Bianconi (2):
->   net: xdp: introduce xdp_init_buff utility routine
->   net: xdp: introduce xdp_prepare_buff utility routine
+commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
+disabled s0ix flows for systems that have various incarnations of the
+i219-LM ethernet controller.  This was done because of some regressions
+caused by an earlier
+commit 632fbd5eb5b0e ("e1000e: fix S0ix flows for cable connected case")
+with i219-LM controller.
 
-For changes in drivers/net/ethernet/sfc:
+Per discussion with Intel architecture team this direction should be changed and
+allow S0ix flows to be used by default.  This patch series includes directional
+changes for their conclusions in https://lkml.org/lkml/2020/12/13/15.
 
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Changes from v3 to v4:
+ - Drop patch 1 for proper s0i3.2 entry, it was separated and is now merged in kernel
+ - Add patch to only run S0ix flows if shutdown succeeded which was suggested in
+   thread
+ - Adjust series for guidance from https://lkml.org/lkml/2020/12/13/15
+   * Revert i219-LM disallow-list.
+   * Drop all patches for systems tested by Dell in an allow list
+   * Increase ULP timeout to 1000ms
+Changes from v2 to v3:
+ - Correct some grammar and spelling issues caught by Bjorn H.
+   * s/s0ix/S0ix/ in all commit messages
+   * Fix a typo in commit message
+   * Fix capitalization of proper nouns
+ - Add more pre-release systems that pass
+ - Re-order the series to add systems only at the end of the series
+ - Add Fixes tag to a patch in series.
 
->  drivers/net/ethernet/amazon/ena/ena_netdev.c  |  8 +++-----
->  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |  7 ++-----
->  .../net/ethernet/cavium/thunder/nicvf_main.c  | 11 ++++++-----
->  .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 10 ++++------
->  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 13 +++++--------
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 18 +++++++++---------
->  drivers/net/ethernet/intel/ice/ice_txrx.c     | 17 +++++++++--------
->  drivers/net/ethernet/intel/igb/igb_main.c     | 18 +++++++++---------
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 19 +++++++++----------
->  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c | 19 +++++++++----------
->  drivers/net/ethernet/marvell/mvneta.c         |  9 +++------
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 13 +++++++------
->  drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  8 +++-----
->  .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  7 ++-----
->  .../ethernet/netronome/nfp/nfp_net_common.c   | 12 ++++++------
->  drivers/net/ethernet/qlogic/qede/qede_fp.c    |  7 ++-----
->  drivers/net/ethernet/sfc/rx.c                 |  9 +++------
->  drivers/net/ethernet/socionext/netsec.c       |  8 +++-----
->  drivers/net/ethernet/ti/cpsw.c                | 17 ++++++-----------
->  drivers/net/ethernet/ti/cpsw_new.c            | 17 ++++++-----------
->  drivers/net/hyperv/netvsc_bpf.c               |  7 ++-----
->  drivers/net/tun.c                             | 11 ++++-------
->  drivers/net/veth.c                            | 14 +++++---------
->  drivers/net/virtio_net.c                      | 18 ++++++------------
->  drivers/net/xen-netfront.c                    |  8 +++-----
->  include/net/xdp.h                             | 19 +++++++++++++++++++
->  net/bpf/test_run.c                            |  9 +++------
->  net/core/dev.c                                | 18 ++++++++----------
->  28 files changed, 156 insertions(+), 195 deletions(-)
-> 
-> -- 
-> 2.29.2
+Changes from v1 to v2:
+ - Directly incorporate Vitaly's dependency patch in the series
+ - Split out s0ix code into it's own file
+ - Adjust from DMI matching to PCI subsystem vendor ID/device matching
+ - Remove module parameter and sysfs, use ethtool flag instead.
+ - Export s0ix flag to ethtool private flags
+ - Include more people and lists directly in this submission chain.
 
--- 
-Martin Habets <habetsm.xilinx@gmail.com>
+Mario Limonciello (4):
+  e1000e: Only run S0ix flows if shutdown succeeded
+  e1000e: bump up timeout to wait when ME un-configure ULP mode
+  Revert "e1000e: disable s0ix entry and exit flows for ME systems"
+  e1000e: Export S0ix flags to ethtool
+
+ drivers/net/ethernet/intel/e1000e/e1000.h   |  1 +
+ drivers/net/ethernet/intel/e1000e/ethtool.c | 40 ++++++++++++++
+ drivers/net/ethernet/intel/e1000e/ich8lan.c |  4 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c  | 59 ++++-----------------
+ 4 files changed, 53 insertions(+), 51 deletions(-)
+
+--
+2.25.1
+
