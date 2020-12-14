@@ -2,247 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A060E2D961D
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 11:11:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7A32D9653
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 11:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406050AbgLNKJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 05:09:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
+        id S2407166AbgLNKbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 05:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388801AbgLNKJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 05:09:56 -0500
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A317C0613D3
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 02:09:16 -0800 (PST)
-Received: by mail-oi1-x242.google.com with SMTP id s75so18641563oih.1
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 02:09:16 -0800 (PST)
+        with ESMTP id S2407098AbgLNKbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 05:31:39 -0500
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4E8C0613CF;
+        Mon, 14 Dec 2020 02:30:59 -0800 (PST)
+Received: by mail-lf1-x142.google.com with SMTP id o13so5697675lfr.3;
+        Mon, 14 Dec 2020 02:30:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fHMGOG9XGGX2S8lH0eaqu8mmPkkQUQ+KKQLPpJ+q8rA=;
-        b=qE4Ym0mXRsgQqJnvYQ8APWlGHgzzBKCSHnVWnONJJFA/vq0F9Lvoqwb3gbAUo/5yeo
-         EpCQNbxOY5N9TVcDQ1+sVeaZaPVRU0ozKGk67y7H5gKdnOVuu2Xq6nm9yzxDkEsI1SoI
-         Tk0u8DzGulAhv3sj7/O9i3aeSF2YGVCv3qcqqICLVVVBuPnOdsDL57iu7ayKu+GpHaKi
-         8GblBHdaoqVDrWV7lmkCLrhZZtNdnKHc/nws2rqqf1VVyjlQFlJz1FMuziN5Gi64OdFP
-         DTMeu+fV0BIsae0B2CcN9N2yWIceo7rGKeVnS7ykLE2/nkl6etJmFEJwRfWdZHGlkeb2
-         NoOA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=MI62PWiHocssZD5BOU83V19NEAQHNHTNpNxSRVXX950=;
+        b=KN+oDWEueXCIIw9fKU/tzVzw2tDpcZ0vyfFhKk6DCsLaCEuHpzoaIehE2xu2jOTiSz
+         AANvBxFdPKUydxlUwWxxEKU5cP42K1p3HoPvPPNdjrMNPRhXgdr6KkwAwiY+wDQRFAGG
+         J5LKorHuvMUFsGEXrfN8SkZbZzLC9DCN8RI++49VS+/PA2r3bL5dqF8jbGPrLN/JD2W1
+         oxr9lXi+kjRoimjzJ1/HEtz5HYIdSavrL79Sp4I2D287UhY5AFuQlAOXvjJvcBR+05rl
+         1Lkshxjatu5vOMMuZWbM718st5SSHS0/+w6MVH57HBtEZu0H5AohcMdw0uyYJ9DLdVKY
+         FmNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fHMGOG9XGGX2S8lH0eaqu8mmPkkQUQ+KKQLPpJ+q8rA=;
-        b=A/gl2BgGf5V1e2gbmeTYFSLznXfKzLRtin7CPJaYxw5a6dNhxhB3M0nKvkuN9gqtrS
-         2jOIBFaKEPWFvvUd9osIbU1ZiObLasY6i0kCfkqh0uCRn930c3z3RrRKQ9YTQqWkKJEj
-         srSnxYVBO0ljv0cG3ZdSRxHwrmhePrwWBPXfdVv0dAJkKiDBnw5YfM4a0om9HAvnwQTG
-         CX8S73pxg3ykYdGt7TEmivv5kmpsgzbKA7zaow7UuNlofpLE+RnDGSLceFEkwEU9Pvr7
-         fJ++Pg6sFMsjNzRdHcZ8HKK4oUMigTQ+dvV1g1jAEu2ahFYvmH2Yin3JWgvh/n0CcC7q
-         CODw==
-X-Gm-Message-State: AOAM5316xHtB1Ga6E9vZxccWCOwEK5susSdGRY3jjJxQBcce0YTNOorc
-        xyPAZiNC5/1ahwVEXqTM/LZqWy1SVj0Tu18w0h8RBg==
-X-Google-Smtp-Source: ABdhPJytT4EKFDi56n441z+unF2IVIxwFucYbcDEAvWJTOOF38hLAYqX6bU/YZwOdXGzW0sFKPXvbc2n838og/GYRcg=
-X-Received: by 2002:aca:ddd6:: with SMTP id u205mr13383698oig.121.1607940554182;
- Mon, 14 Dec 2020 02:09:14 -0800 (PST)
-MIME-Version: 1.0
-References: <000000000000b4862805b54ef573@google.com> <X8kLG5D+j4rT6L7A@elver.google.com>
- <CANn89iJWD5oXPLgtY47umTgo3gCGBaoy+XJfXnw1ecES_EXkCw@mail.gmail.com>
- <CANpmjNOaWbGJQ5Y=qC3cA31-R-Jy4Fbe+p=OBG5O2Amz8dLtLA@mail.gmail.com>
- <CANn89iKWf1EVZUuAHup+5ndhxvOqGopq53=vZ9yeok=DnRjggg@mail.gmail.com>
- <X8kjPIrLJUd8uQIX@elver.google.com> <af884a0e-5d4d-f71b-4821-b430ac196240@gmail.com>
- <CANpmjNNDKm_ObRnO_b3gH6wDYjb6_ex-KhZA5q5BRzEMgo+0xg@mail.gmail.com>
- <X9DHa2OG6lewtfPQ@elver.google.com> <X9JR/J6dMMOy1obu@elver.google.com>
- <CANn89i+2mAu_srdvefKLDY23HvrbOG1aMfj5uwvk6tYZ9uBtMA@mail.gmail.com> <CANpmjNMdgX1H=ztDH5cpmmZJ3duL4M8Vn9Ty-XzNpsrhx0h4sA@mail.gmail.com>
-In-Reply-To: <CANpmjNMdgX1H=ztDH5cpmmZJ3duL4M8Vn9Ty-XzNpsrhx0h4sA@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Mon, 14 Dec 2020 11:09:02 +0100
-Message-ID: <CANpmjNPdK3rRF5eJM5uZ-8wJDp_8TF1P3jOvAo8kqu4YDDJtGQ@mail.gmail.com>
-Subject: Re: WARNING in sk_stream_kill_queues (5)
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Jann Horn <jannh@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzbot+7b99aafdcc2eedea6178@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=MI62PWiHocssZD5BOU83V19NEAQHNHTNpNxSRVXX950=;
+        b=hi96ywtZWE+TmxZ00bTQU9hzMQbS1oIo5+4JiEA1M7VubF5crzJx6mfUiaKThEwLKg
+         rN9d58+gZRjhNfFOiNzGKmARMaPWOK24tJ+3xWbyq2zYnwAyEHpsIu5ONIZiOvc5XCMa
+         O671kLzEEwoFBBfuQE0rC0TvZ8WpgO0qBIYLXGRO1J/a0hzPZp6MSycehCYYkSj4cO1O
+         pPR1uB/C64aBruCP3sxLhJvAcHeWFZ3Hrz7fae2M3XG77hPJbfDVCB94AVo/zpdbsyD+
+         H4DvpvW60K5/GPmsSAqKlQ3CTESoy+aDleGNbxtYZQtp5xn6FOzxK6BV6wMWAtmrqmXk
+         wDeA==
+X-Gm-Message-State: AOAM530W3MW8J7aB+KQvO8FjYD21XPuHJUWtOVWZphPNbbFDS2xWz8DG
+        S2s7iu7Q08VjvpPJ+vmbaAw=
+X-Google-Smtp-Source: ABdhPJyltMX/8ogUUfsgUpl8NqA7BNTGX8eDd2C5+4Ujp33w1VpZwefeR/4+zU97uY2gpl0v2nhxYA==
+X-Received: by 2002:a19:2254:: with SMTP id i81mr9991848lfi.422.1607941857651;
+        Mon, 14 Dec 2020 02:30:57 -0800 (PST)
+Received: from localhost.localdomain ([91.90.166.178])
+        by smtp.googlemail.com with ESMTPSA id x8sm54361ljd.67.2020.12.14.02.30.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Dec 2020 02:30:56 -0800 (PST)
+From:   Vasyl Gomonovych <gomonovych@gmail.com>
+To:     tariqt@nvidia.com, kuba@kernel.org, joe@perches.com
+Cc:     Vasyl Gomonovych <gomonovych@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net/mlx4: Use true,false for bool variable
+Date:   Mon, 14 Dec 2020 11:30:08 +0100
+Message-Id: <20201214103008.14783-1-gomonovych@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201212090234.0362d64f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201212090234.0362d64f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Dec 2020 at 20:01, Marco Elver <elver@google.com> wrote:
-> On Thu, 10 Dec 2020 at 18:14, Eric Dumazet <edumazet@google.com> wrote:
-> > On Thu, Dec 10, 2020 at 5:51 PM Marco Elver <elver@google.com> wrote:
-> [...]
-> > > So I started putting gdb to work, and whenever I see an allocation
-> > > exactly like the above that goes through tso_fragment() a warning
-> > > immediately follows.
-> > >
-> > > Long story short, I somehow synthesized this patch that appears to fix
-> > > things, but I can't explain why exactly:
-> > >
-> > > | --- a/net/core/skbuff.c
-> > > | +++ b/net/core/skbuff.c
-> > > | @@ -1679,13 +1679,6 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
-> > > |
-> > > |       skb_metadata_clear(skb);
-> > > |
-> > > | -     /* It is not generally safe to change skb->truesize.
-> > > | -      * For the moment, we really care of rx path, or
-> > > | -      * when skb is orphaned (not attached to a socket).
-> > > | -      */
-> > > | -     if (!skb->sk || skb->destructor == sock_edemux)
-> > > | -             skb->truesize += size - osize;
-> > > | -
-> > > |       return 0;
-> > > |
-> > > |  nofrags:
-> > >
-> > > Now, here are the breadcrumbs I followed:
-> > >
-> > >
-> > > 1.      Breakpoint on kfence_ksize() -- first allocation that matches the above:
-> > >
-> > >         | #0  __kfence_ksize (s=18446612700164612096) at mm/kfence/core.c:726
-> > >         | #1  0xffffffff816fbf30 in kfence_ksize (addr=0xffff888436856000) at mm/kfence/core.c:737
-> > >         | #2  0xffffffff816217cf in ksize (objp=0xffff888436856000) at mm/slab_common.c:1178
-> > >         | #3  0xffffffff84896911 in __alloc_skb (size=914710528, gfp_mask=2592, flags=0, node=-1) at net/core/skbuff.c:217
-> > >         | #4  0xffffffff84d0ba73 in alloc_skb_fclone (priority=<optimized out>, size=<optimized out>) at ./include/linux/skbuff.h:1144
-> > >         | #5  sk_stream_alloc_skb (sk=0xffff8881176cc000, size=0, gfp=2592, force_schedule=232) at net/ipv4/tcp.c:888
-> > >         | #6  0xffffffff84d41c36 in tso_fragment (gfp=<optimized out>, mss_now=<optimized out>, len=<optimized out>,
-> > >         |     skb=<optimized out>, sk=<optimized out>) at net/ipv4/tcp_output.c:2124
-> > >         | #7  tcp_write_xmit (sk=0xffff8881176cc000, mss_now=21950, nonagle=3096, push_one=-1996874776, gfp=0)
-> > >         |     at net/ipv4/tcp_output.c:2674
-> > >         | #8  0xffffffff84d43e48 in __tcp_push_pending_frames (sk=0xffff8881176cc000, cur_mss=337, nonagle=0)
-> > >         |     at ./include/net/sock.h:918
-> > >         | #9  0xffffffff84d3259c in tcp_push_pending_frames (sk=<optimized out>) at ./include/net/tcp.h:1864
-> > >         | #10 tcp_data_snd_check (sk=<optimized out>) at net/ipv4/tcp_input.c:5374
-> > >         | #11 tcp_rcv_established (sk=0xffff8881176cc000, skb=0x0 <fixed_percpu_data>) at net/ipv4/tcp_input.c:5869
-> > >         | #12 0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f52ea0) at net/ipv4/tcp_ipv4.c:1668
-> > >         | [...]
-> > >
-> > >         Set watchpoint on skb->truesize:
-> > >
-> > >         | (gdb) frame 3
-> > >         | #3  0xffffffff84896911 in __alloc_skb (size=914710528, gfp_mask=2592, flags=0, node=-1) at net/core/skbuff.c:217
-> > >         | 217             size = SKB_WITH_OVERHEAD(ksize(data));
-> > >         | (gdb) p &skb->truesize
-> > >         | $5 = (unsigned int *) 0xffff888117f55f90
-> > >         | (gdb) awatch *0xffff888117f55f90
-> > >         | Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
-> > >
-> > > 2.      Some time later, we see that the skb with kfence-allocated data
-> > >         is cloned:
-> > >
-> > >         | Thread 7 hit Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
-> > >         |
-> > >         | Value = 1570
-> > >         | 0xffffffff84886947 in __skb_clone (n=0xffff888117f55fa0, skb=0xffff888117f55ec0) at net/core/skbuff.c:1002
-> > >         | 1002            C(truesize);
-> > >         | (gdb) bt
-> > >         | #0  0xffffffff84886947 in __skb_clone (n=0xffff888117f55fa0, skb=0xffff888117f55ec0) at net/core/skbuff.c:1002
-> > >         | #1  0xffffffff8488bfb9 in skb_clone (skb=0xffff888117f55ec0, gfp_mask=2592) at net/core/skbuff.c:1454
-> > >         | #2  0xffffffff84d3cd1c in __tcp_transmit_skb (sk=0xffff8881176cc000, skb=0xffff888117f55ec0, clone_it=0, gfp_mask=2592,
-> > >         |     rcv_nxt=0) at net/ipv4/tcp_output.c:1267
-> > >         | #3  0xffffffff84d4125b in tcp_transmit_skb (gfp_mask=<optimized out>, clone_it=<optimized out>, skb=<optimized out>,
-> > >         |     sk=<optimized out>) at ./include/linux/tcp.h:439
-> > >         | #4  tcp_write_xmit (sk=0xffff8881176cc000, mss_now=392485600, nonagle=1326, push_one=-1996875104, gfp=0)
-> > >         |     at net/ipv4/tcp_output.c:2688
-> > >         | #5  0xffffffff84d43e48 in __tcp_push_pending_frames (sk=0xffff8881176cc000, cur_mss=337, nonagle=0)
-> > >         |     at ./include/net/sock.h:918
-> > >         | #6  0xffffffff84d3259c in tcp_push_pending_frames (sk=<optimized out>) at ./include/net/tcp.h:1864
-> > >         | #7  tcp_data_snd_check (sk=<optimized out>) at net/ipv4/tcp_input.c:5374
-> > >         | #8  tcp_rcv_established (sk=0xffff8881176cc000, skb=0x0 <fixed_percpu_data>) at net/ipv4/tcp_input.c:5869
-> > >         | #9  0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f57820) at net/ipv4/tcp_ipv4.c:1668
-> > >         | #10 0xffffffff8487bf67 in sk_backlog_rcv (skb=<optimized out>, sk=<optimized out>) at ./include/net/sock.h:1010
-> > >         [...]
-> > >
-> > >
-> > > 3.      The original skb (that was cloned) has its truesize adjusted
-> > >         after a pskb_expand_head():
-> > >
-> > >         | Thread 2 hit Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
-> > >         |
-> > >         | Old value = 1570
-> > >         | New value = 1954
-> > >
-> > >         ^^ the difference between the old and the new value is exactly
-> > >         384, which is also the final underflow of the sk_wmem_queued
-> > >         that triggers the warning. Presumably if the original allocation
-> > >         had been through kmalloc-1k and not KFENCE, the difference here
-> > >         would have been 0, since ksize() of the original allocation in
-> > >         step (1) would have been 1024, and not 640 (difference of 384).
-> > >
-> > >         | 0xffffffff8488d84b in pskb_expand_head (skb=0xffff888117f55ec0, nhead=401956752, ntail=1954, gfp_mask=2298092192)
-> > >         |     at net/core/skbuff.c:1687
-> > >         | 1687                    skb->truesize += size - osize;
-> > >         | (gdb) bt
-> > >         | #0  0xffffffff8488d84b in pskb_expand_head (skb=0xffff888117f55ec0, nhead=401956752, ntail=1954, gfp_mask=2298092192)
-> > >         |     at net/core/skbuff.c:1687
-> > >         | #1  0xffffffff8488de01 in skb_prepare_for_shift (skb=<optimized out>) at ./arch/x86/include/asm/atomic.h:29
-> > >         | #2  skb_prepare_for_shift (skb=0xffff888117f55ec0) at net/core/skbuff.c:3276
-> > >         | #3  0xffffffff848936b1 in skb_shift (tgt=0xffff888117f549c0, skb=0xffff888117f55ec0, shiftlen=674) at net/core/skbuff.c:3351
-> > >         | #4  0xffffffff84d264de in tcp_skb_shift (shiftlen=<optimized out>, pcount=<optimized out>, from=<optimized out>,
-> > >         |     to=<optimized out>) at net/ipv4/tcp_input.c:1497
-> > >         | #5  tcp_shift_skb_data (dup_sack=<optimized out>, end_seq=<optimized out>, start_seq=<optimized out>, state=<optimized out>,
-> > >         |     skb=<optimized out>, sk=<optimized out>) at net/ipv4/tcp_input.c:1605
-> > >         | #6  tcp_sacktag_walk (skb=0xffff888117f55ec0, sk=0xffff8881176cc000, next_dup=0x894,
-> > >         |     state=0xffffffff88fa1aa0 <watchpoints+192>, start_seq=0, end_seq=401956752, dup_sack_in=false)
-> > >         |     at net/ipv4/tcp_input.c:1670
-> > >         | #7  0xffffffff84d276de in tcp_sacktag_write_queue (sk=0xffff888117f55f90, ack_skb=0x1888117f55f90, prior_snd_una=2196,
-> > >         |     state=0xffffffff88fa1aa0 <watchpoints+192>) at net/ipv4/tcp_input.c:1931
-> > >         | #8  0xffffffff84d2ca1d in tcp_ack (sk=0xffff8881176cc000, skb=0x1888117f55f90, flag=16643) at net/ipv4/tcp_input.c:3758
-> > >         | #9  0xffffffff84d32387 in tcp_rcv_established (sk=0xffff8881176cc000, skb=0xffff888117f54020) at net/ipv4/tcp_input.c:5858
-> > >         | #10 0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f54020) at net/ipv4/tcp_ipv4.c:1668
-> > >         [...]
-> > >
-> > >
-> > > Any of this make sense?
-> >
-> > Very nice debugging !
-> >
-> > I guess we could fix this in skb_prepare_for_shift(), eventually
-> > caring for the truesize manipulation
-> > (or reverting the change done in pskb_expand_head(), since only kfence
-> > is having this issue.
->
-> Phew, good to hear I finally got lucky. :-)
->
-> Either option is fine, as long as it avoids this problem in future.
-> Hopefully it can be fixed for 5.11.
->
-> > (All TCP skbs in output path have the same allocation size for skb->head)
-> >
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index e578544b2cc7110ec2f6bcf4c29d93e4b4b1ad14..798b51eeeaa4fbed65d41d9eab207dbbf438dab3
-> > 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -3270,7 +3270,14 @@ EXPORT_SYMBOL(skb_split);
-> >   */
-> >  static int skb_prepare_for_shift(struct sk_buff *skb)
-> >  {
-> > -       return skb_cloned(skb) && pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-> > +       unsigned int ret = 0, save;
-> > +
-> > +       if (skb_cloned(skb)) {
-> > +               save = skb->truesize;
-> > +               ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-> > +               skb->truesize = save;
-> > +       }
-> > +       return ret;
-> >  }
->
-> FWIW,
->
->     Tested-by: Marco Elver <elver@google.com>
+It is fix for semantic patch warning available in
+scripts/coccinelle/misc/boolinit.cocci
+Fix en_rx.c:687:1-17: WARNING: Assignment of 0/1 to bool variable
+Fix main.c:4465:5-13: WARNING: Comparison of 0/1 to bool variable
 
-Has this patch, or similar, already been sent?
+Signed-off-by: Vasyl Gomonovych <gomonovych@gmail.com>
+---
+ - Add coccicheck script name
+ - Simplify if condition
+---
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx4/main.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
--- Marco
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+index 502d1b97855c..b0f79a5151cf 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+@@ -684,7 +684,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+ 	xdp_prog = rcu_dereference(ring->xdp_prog);
+ 	xdp.rxq = &ring->xdp_rxq;
+ 	xdp.frame_sz = priv->frag_info[0].frag_stride;
+-	doorbell_pending = 0;
++	doorbell_pending = false;
+ 
+ 	/* We assume a 1:1 mapping between CQEs and Rx descriptors, so Rx
+ 	 * descriptor offset can be deduced from the CQE index instead of
+diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+index c326b434734e..3492a4f3691e 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/main.c
++++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+@@ -4462,7 +4462,7 @@ static int __init mlx4_verify_params(void)
+ 		pr_warn("mlx4_core: log_num_vlan - obsolete module param, using %d\n",
+ 			MLX4_LOG_NUM_VLANS);
+ 
+-	if (use_prio != 0)
++	if (use_prio)
+ 		pr_warn("mlx4_core: use_prio - obsolete module param, ignored\n");
+ 
+ 	if ((log_mtts_per_seg < 0) || (log_mtts_per_seg > 7)) {
+-- 
+2.17.1
+
