@@ -2,202 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CE5F2DA113
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 21:08:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3A312DA11D
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 21:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502880AbgLNUF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 15:05:59 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:42849 "EHLO ozlabs.org"
+        id S2502878AbgLNUHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 15:07:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2502885AbgLNUFd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 15:05:33 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Cvsmw4KZ8z9sSC;
-        Tue, 15 Dec 2020 07:04:48 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1607976289;
-        bh=oL63cv0DHfgA/xVGOOVPl/zQ1j5ovfcaXlp1rfCYqOk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m5tnWk4oJzcI9ElSUjTDGZMbsFL57PwSL0HNbykqW08wkujRBJvQ9hcRXLJlmXWbE
-         nq0BrmJzkcLNWcZFydWHX2r9p3uIJajEGWnJa+f4lSC2bIqUMGmWz21uk68wQiyTwO
-         QrGDYiAEVGRcOaeujf+kispoFPeOmGHChI4o56q6JeBWkXHenMKQx17SUM17LDNjxA
-         aQhPsu5M+qz20kQv1kr2ntiBeMKtg0XDRdXwmM2O9E67smfNF3woKir3qsDQgpLADE
-         K7Tlc0x4x8LJLwhCn04KObaPyP1Pu3i8yVH9LICO5xFd+YOXYit/tlI8G2wcUZgQ0r
-         8NlV6I0selKFA==
-Date:   Tue, 15 Dec 2020 07:04:47 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        David Miller <davem@davemloft.net>,
+        id S2502729AbgLNUHm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 15:07:42 -0500
+Message-ID: <b53248b50737f49f78e6919b53d720b8caa7f548.camel@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607976421;
+        bh=3/wEl1L3wGhIAcG0RBSdE+TJGFwkivmfCtdBCW6bKwM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ZAKGlHMumiwoiULwiY4EcDzVd3aqyXqmtwPEv4voLSLIkBCilLvnaTPW1g3PIsWVf
+         vj37n2sF+RX8+A6gb24tP57i0sJo1J3StBXGEZ5vPyqfJTiqw2FW9yglDNv5IVFdsz
+         vW0ZcOWXh6mIpq/ZSqKuA6YGekHuc8W93r7I3PDcPknr91zl2uC8Uggiwp9Q/iOJ4r
+         JfFgo853rwtR1FnLJXtMniIgJGz+Ux40b7si5xTWWup6ezQKuJU4phskcv15iGCWQt
+         Z2gR4VCuSTOmCNxtnYqPRT2ysMUnVRRYvkSZbhh3ZtGvRIWYWnCV7Bnq9skOAnFSTZ
+         VhtbmiDPHh9Cg==
+Subject: Re: [net-next v3 00/14] Add mlx5 subfunction support
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Parav Pandit <parav@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: Re: linux-next: manual merge of the userns tree with the bpf-next
- tree
-Message-ID: <20201215070447.6b1f8bd9@canb.auug.org.au>
-In-Reply-To: <20201126162248.7e7963fe@canb.auug.org.au>
-References: <20201126162248.7e7963fe@canb.auug.org.au>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "david.m.ertman@intel.com" <david.m.ertman@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "kiran.patil@intel.com" <kiran.patil@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Date:   Mon, 14 Dec 2020 12:06:59 -0800
+In-Reply-To: <BY5PR12MB43221E39769969BFD554BAADDCC70@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20201212061225.617337-1-saeed@kernel.org>
+         <20201212122518.1c09eefe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <20201213120848.GB5005@unreal>
+         <BY5PR12MB43221E39769969BFD554BAADDCC70@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/gJkgLvE2aGolAWX_AKyXp3F";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/gJkgLvE2aGolAWX_AKyXp3F
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2020-12-14 at 03:25 +0000, Parav Pandit wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > Sent: Sunday, December 13, 2020 5:39 PM
+> > 
+> > On Sat, Dec 12, 2020 at 12:25:18PM -0800, Jakub Kicinski wrote:
+> > > On Fri, 11 Dec 2020 22:12:11 -0800 Saeed Mahameed wrote:
+> > > > Hi Dave, Jakub, Jason,
+> > > > 
+> > > > This series form Parav was the theme of this mlx5 release
+> > > > cycle,
+> > > > we've been waiting anxiously for the auxbus infrastructure to
+> > > > make
+> > > > it into the kernel, and now as the auxbus is in and all the
+> > > > stars
+> > > > are aligned, I can finally submit this V2 of the devlink and
+> > > > mlx5
+> > subfunction support.
+> > > > Subfunctions came to solve the scaling issue of virtualization
+> > > > and
+> > > > switchdev environments, where SRIOV failed to deliver and users
+> > > > ran
+> > > > out of VFs very quickly as SRIOV demands huge amount of
+> > > > physical
+> > > > resources in both of the servers and the NIC.
+> > > > 
+> > > > Subfunction provide the same functionality as SRIOV but in a
+> > > > very
+> > > > lightweight manner, please see the thorough and detailed
+> > > > documentation from Parav below, in the commit messages and the
+> > > > Networking documentation patches at the end of this series.
+> > > > 
+> > > > Sending V2/V3 as a continuation to V1 that was sent Last month
+> > > > [0],
+> > > > [0]
+> > > > https://lore.kernel.org/linux-rdma/20201112192424.2742-1-parav@nvidi
+> > > > a.com/
+> > > 
+> > > This adds more and more instances of the 32 bit build warning.
+> > > 
+> > > The warning was also reported separately on netdev after the
+> > > recent
+> > > mlx5-next pull.
+> > > 
+> > > Please address that first (or did you already do and I missed it
+> > > somehow?)
+> > 
+> > Hi Jakub,
+> > 
+> > I posted a fix from Parav,
+> > https://lore.kernel.org/netdev/20201213120641.216032-1-
+> > leon@kernel.org/T/#u
+> > 
+> > Thanks
+> 
+> Hi Jakub,
+> This patchset is not added the original warning. Warning got added
+> due to a commit [1].
+> Its not related to subfunction.
+> It will be fixed regardless of this patchset as posted in [2].
+> 
+> [1] 2a2970891647 ("net/mlx5: Add sample offload hardware bits and
+> structures")
+> [2] https://lore.kernel.org/netdev/20201213123620.GC5005@unreal/
 
-Hi all,
+I will resend this pr with the fix patch.
 
-On Thu, 26 Nov 2020 16:22:48 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Today's linux-next merge of the userns tree got a conflict in:
->=20
->   kernel/bpf/task_iter.c
->=20
-> between commit:
->=20
->   91b2db27d3ff ("bpf: Simplify task_file_seq_get_next()")
->=20
-> from the bpf-next tree and commit:
->=20
->   edc52f17257a ("bpf/task_iter: In task_file_seq_get_next use task_lookup=
-_next_fd_rcu")
->=20
-> from the userns tree.
->=20
-> I fixed it up (I think, see below) and can carry the fix as
-> necessary. This is now fixed as far as linux-next is concerned, but any
-> non trivial conflicts should be mentioned to your upstream maintainer
-> when your tree is submitted for merging.  You may also want to consider
-> cooperating with the maintainer of the conflicting tree to minimise any
-> particularly complex conflicts.
->=20
-> --=20
-> Cheers,
-> Stephen Rothwell
->=20
-> diff --cc kernel/bpf/task_iter.c
-> index 0458a40edf10,4ec63170c741..000000000000
-> --- a/kernel/bpf/task_iter.c
-> +++ b/kernel/bpf/task_iter.c
-> @@@ -136,41 -135,29 +135,30 @@@ struct bpf_iter_seq_task_file_info=20
->   };
->  =20
->   static struct file *
->  -task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info,
->  -		       struct task_struct **task)
->  +task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info)
->   {
->   	struct pid_namespace *ns =3D info->common.ns;
-> - 	u32 curr_tid =3D info->tid, max_fds;
-> - 	struct files_struct *curr_files;
-> + 	u32 curr_tid =3D info->tid;
->   	struct task_struct *curr_task;
-> - 	int curr_fd =3D info->fd;
-> + 	unsigned int curr_fd =3D info->fd;
->  =20
->   	/* If this function returns a non-NULL file object,
-> - 	 * it held a reference to the task/files_struct/file.
-> + 	 * it held a reference to the task/file.
->   	 * Otherwise, it does not hold any reference.
->   	 */
->   again:
->  -	if (*task) {
->  -		curr_task =3D *task;
->  +	if (info->task) {
->  +		curr_task =3D info->task;
-> - 		curr_files =3D info->files;
->   		curr_fd =3D info->fd;
->   	} else {
->   		curr_task =3D task_seq_get_next(ns, &curr_tid, true);
->  -		if (!curr_task)
->  +		if (!curr_task) {
->  +			info->task =3D NULL;
-> - 			info->files =3D NULL;
->   			return NULL;
->  +		}
->  =20
-> - 		curr_files =3D get_files_struct(curr_task);
-> - 		if (!curr_files) {
-> - 			put_task_struct(curr_task);
-> - 			curr_tid =3D ++(info->tid);
-> - 			info->fd =3D 0;
-> - 			goto again;
-> - 		}
-> -=20
-> - 		info->files =3D curr_files;
-> + 		/* set *task and info->tid */
->  -		*task =3D curr_task;
->  +		info->task =3D curr_task;
->   		if (curr_tid =3D=3D info->tid) {
->   			curr_fd =3D info->fd;
->   		} else {
-> @@@ -198,10 -183,8 +184,8 @@@
->  =20
->   	/* the current task is done, go to the next task */
->   	rcu_read_unlock();
-> - 	put_files_struct(curr_files);
->   	put_task_struct(curr_task);
->  -	*task =3D NULL;
->  +	info->task =3D NULL;
-> - 	info->files =3D NULL;
->   	info->fd =3D 0;
->   	curr_tid =3D ++(info->tid);
->   	goto again;
-> @@@ -210,13 -193,18 +194,12 @@@
->   static void *task_file_seq_start(struct seq_file *seq, loff_t *pos)
->   {
->   	struct bpf_iter_seq_task_file_info *info =3D seq->private;
->  -	struct task_struct *task =3D NULL;
->   	struct file *file;
->  =20
->  -	file =3D task_file_seq_get_next(info, &task);
->  -	if (!file) {
->  -		info->task =3D NULL;
->  -		return NULL;
->  -	}
->  -
->  -	if (*pos =3D=3D 0)
->  +	info->task =3D NULL;
-> - 	info->files =3D NULL;
->  +	file =3D task_file_seq_get_next(info);
->  +	if (file && *pos =3D=3D 0)
->   		++*pos;
->  -	info->task =3D task;
->  =20
->   	return file;
->   }
+Thanks,
+Saeed.
 
-Just a reminder that this conflict still exists.  Commit 91b2db27d3ff
-is now in the net-next tree.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/gJkgLvE2aGolAWX_AKyXp3F
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/XxV8ACgkQAVBC80lX
-0GxgRwf/aZijf0vP/9l9ZObx8C3NOh1EJQG2Nw0WU+YVp3JaCf/JntvagICq7F4A
-pGap0QaPA5ze1YNPldJCX7n5S3mJ+CGj7NTVYM6QE123r0ppcMB1p004HJPZinBK
-DSIfdu7qrN6ENHChnDL6ahUM/xgwMEeflzpwBiwzajg0HeFQC8sMu4jYoyGb73VR
-jO32N2nC8YYMZLuskivHiF00cqXl5SnOuVEQSsLXoAomtfW4lzifTmTHpSsu+1G8
-Bvrwg6OQQM2C20R3vn5bY/ovHpBtdhBqKH6BAeT1MyoCtRue4ppcO5LVV0MwDVMt
-Tx20JUe1ZvUEABwiiIKUYASaPJfEiQ==
-=aohr
------END PGP SIGNATURE-----
-
---Sig_/gJkgLvE2aGolAWX_AKyXp3F--
