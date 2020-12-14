@@ -2,253 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EB8D2D9F12
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 19:32:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B78212D9F6A
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 19:44:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440442AbgLNScK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 13:32:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34280 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2440848AbgLNSbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 13:31:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607970617;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EIf2JCGI48rPFPz2gsh8ftUao4WBFY/XukAB4tvlgxs=;
-        b=DtxlUzT+9GGf6SBOkH+CB/V/yd74+bQVEnC3joFBTHAHDBJuKe/NwTCdUKZ1O7Z9CQuXiJ
-        e/D9rMjTr1jXMaBJXPDbn+M6kzCfRVReztImy0uyzSDTeXs+87naM5AIpMREUiKgDjXuzx
-        0Ce6H3ocg/l3ScJotUoT8rqSlx1gV2Y=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-43-lYp7PCvTO7GYPvFJJY5oNw-1; Mon, 14 Dec 2020 13:30:13 -0500
-X-MC-Unique: lYp7PCvTO7GYPvFJJY5oNw-1
-Received: by mail-ed1-f71.google.com with SMTP id z20so8638097edl.21
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 10:30:13 -0800 (PST)
+        id S2440871AbgLNSlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 13:41:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407595AbgLNSlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 13:41:42 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0177C061285;
+        Mon, 14 Dec 2020 10:40:45 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id x18so3050878pln.6;
+        Mon, 14 Dec 2020 10:40:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E59vUJRHARpM5qnRhm8uSqnDlr5PHTJoFFNSvBA9cyg=;
+        b=UjV3j1+SFiFJ3ALH+KJOYggs2VB6x5/bSjvG5rflSSAN2K/gRoyf05+1QgapQIfzyB
+         Co058Ka8ZDJ+Cy5Lv/Eeec6a8XJrBgoLDq04qYiejxW5BsRntM/RUodXXJCiRKsQVnQ9
+         MZeekft55vyywoOxesYV8Ty20nszpA1Yhn2/0E4KVrNAo7T3G88+bkqg0Qp7qXjTRk44
+         ps23ke8OSekoetLd9zZ8UpftTAx3n0BCS0DHOhQ43RAwOGATpGsYk70AB3+A9Kv3PU8U
+         FPIHaRzEtnjkQQxAV4tC+4z8fmnyQB/EAhB+/vycLJkg56mvNW1jsNfjfzRGxoOkOynb
+         Ru3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EIf2JCGI48rPFPz2gsh8ftUao4WBFY/XukAB4tvlgxs=;
-        b=bHAZ1fYkXoUXLtXmDfNTvj4xlhjLKPTmKigQkqQ+d0QHIPXm28tEfUX2mayV5NDKhQ
-         HPQlxBeq1EEomaDYtyUp+LKji7URvLYugAeVQZoWRngkGvepiJbEZZs49I5JBPf0H545
-         S7YYkTsjowbKa6uhMF0xUtX6WPzUWiXuHbnjR0wm3SYf3GplhJrcKdBi+YzCJrtqw9Le
-         iHQHXRnM8ivBiHeNSawVPUJc2fZbgE6cA2s0Iw1ikthJWKL6tZEK3E4rynFmJNeEY/3K
-         6ocyhO/Lofu4XIcUiv6HM7AtONkH+dTHUNRXs5ku5EMjxFEqYBNG0Bz+M6eUQznzLh68
-         NmGg==
-X-Gm-Message-State: AOAM531ePUrF6X+IdGwtDttGdbhVQwaNVhbgZKjvKk/vQ2+tU/JT9/s/
-        cEBK1uDJm2QJSP4UHyYOFUt/tGm0F15IF65qNUrEoOyLBF6wxHkbttxNDdYd6T0BeunIBqsGYzT
-        FZvyVELQ5eUEpdJa9
-X-Received: by 2002:a17:906:30d2:: with SMTP id b18mr23540991ejb.109.1607970612139;
-        Mon, 14 Dec 2020 10:30:12 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzrhhybisEbWGtsbchj7dNQJwp8o+r2Tv+BWCOW7oS8uIStKg3KikoBxJYSRM7V9w9VPWCN4w==
-X-Received: by 2002:a17:906:30d2:: with SMTP id b18mr23540936ejb.109.1607970611727;
-        Mon, 14 Dec 2020 10:30:11 -0800 (PST)
-Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
-        by smtp.gmail.com with ESMTPSA id ho34sm2716312ejc.13.2020.12.14.10.30.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Dec 2020 10:30:11 -0800 (PST)
-From:   Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH 4/4] e1000e: Export S0ix flags to ethtool
-To:     Mario Limonciello <mario.limonciello@dell.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        David Miller <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>, darcari@redhat.com,
-        Yijun.Shen@dell.com, Perry.Yuan@dell.com,
-        anthony.wong@canonical.com
-References: <20201214153450.874339-1-mario.limonciello@dell.com>
- <20201214153450.874339-5-mario.limonciello@dell.com>
-Message-ID: <015f0d3c-57fa-06bc-4139-e4512201eb92@redhat.com>
-Date:   Mon, 14 Dec 2020 19:30:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E59vUJRHARpM5qnRhm8uSqnDlr5PHTJoFFNSvBA9cyg=;
+        b=smsCzOiER3Wb7vw4h9SFtXqms7abQ33Fv7KXvdWwlLNMDlYP0/+AKD4igRUUR6kgve
+         0c5c0rdM0cnxqTbbutDoVNgWhair1Ldqxb0vqVK0g2v3wIQzpcKX0nEVyI/O/a4ch05t
+         DkCr8d8zL9TtjUgLB1+gWS6KXLUk/VTXYG4CHjuX/9aEWpCkB6tRARY+lFY/DhwOrxGi
+         bfBumK7TOmYXsZfzWsNwf/qAhodeuHgl80Di7CrNWT4Df5VOZPuagVbc6GFWdi0bPvjT
+         cfIa3xmtZ3mbeFkni7O5QNz5fb/3J3NVxIuXF4CQQvu1PUS210myM3Xc4VRUqnPqts2C
+         e9Qg==
+X-Gm-Message-State: AOAM532NYvFyz5++3cIh+Z0WhAhLpgLaoQuEEbzElULBdW6Xs7aJeHvR
+        sOe0O+kEv9E3ZQ4SdvoupCYytBfr9swkLjiL/BY=
+X-Google-Smtp-Source: ABdhPJw9sQAMenPwTBh8/hfvHi/IOlLZHMM9q4BcaQB1mpIGvPcnASXbNRLMzkrzkfq98UagJZHkxdLaeEM1CymI/oU=
+X-Received: by 2002:a17:902:7242:b029:db:d1ae:46bb with SMTP id
+ c2-20020a1709027242b02900dbd1ae46bbmr23334124pll.77.1607971245335; Mon, 14
+ Dec 2020 10:40:45 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201214153450.874339-5-mario.limonciello@dell.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201211000649.236635-1-xiyou.wangcong@gmail.com>
+ <CAEf4BzY_497=xXkfok4WFsMRRrC94Q6WwdUWZA_HezXaTtb5GQ@mail.gmail.com>
+ <CAM_iQpV2ZoODE+Thr77oYCOYrsuDji28=3g8LrP29VKun3+B-A@mail.gmail.com>
+ <CAM_iQpWA_F5XkaYvp6wekr691Vd-3MUkV-aWx4KWP4Y1qo4W_Q@mail.gmail.com> <X9bA/pSYxW079eYm@rdna-mbp.dhcp.thefacebook.com>
+In-Reply-To: <X9bA/pSYxW079eYm@rdna-mbp.dhcp.thefacebook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 14 Dec 2020 10:40:34 -0800
+Message-ID: <CAM_iQpX9TDN0RQuhSHsk72fy5akAh-iiB3e2A6PE6KqAfiV=pw@mail.gmail.com>
+Subject: Re: [Patch bpf-next 0/3] bpf: introduce timeout map
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, Dec 13, 2020 at 5:33 PM Andrey Ignatov <rdna@fb.com> wrote:
+>
+> Cong Wang <xiyou.wangcong@gmail.com> [Sat, 2020-12-12 15:18 -0800]:
+> > On Sat, Dec 12, 2020 at 2:25 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > On Fri, Dec 11, 2020 at 11:55 AM Andrii Nakryiko
+> > > <andrii.nakryiko@gmail.com> wrote:
+> > > >
+> > > > On Fri, Dec 11, 2020 at 2:28 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > > >
+> > > > > From: Cong Wang <cong.wang@bytedance.com>
+> > > > >
+> > > > > This patchset introduces a new bpf hash map which has timeout.
+> > > > > Patch 1 is a preparation, patch 2 is the implementation of timeout
+> > > > > map, patch 3 contains a test case for timeout map. Please check each
+> > > > > patch description for more details.
+> > > > >
+> > > > > ---
+> > > >
+> > > > This patch set seems to be breaking existing selftests. Please take a
+> > > > look ([0]).
+> > >
+> > > Interesting, looks unrelated to my patches but let me double check.
+> >
+> > Cc'ing Andrey...
+> >
+> > Looks like the failure is due to the addition of a new member to struct
+> > htab_elem. Any reason why it is hard-coded as 64 in check_hash()?
+> > And what's the point of verifying its size? htab_elem should be only
+> > visible to the kernel itself.
+> >
+> > I can certainly change 64 to whatever its new size is, but I do wonder
+> > why the test is there.
+>
+> Cong, the test is there to make sure that access to map pointers from
+> BPF program works.
+>
+> Please see (41c48f3a9823 "bpf: Support access to bpf map fields") for
+> more details on what "access to map pointer" means, but it's basically a
+> way to access any field (e.g. max_entries) of common `struct bpf_map` or
+> any type-specific struct like `struct bpf_htab` from BPF program, i.e.
+> these structs are visible to not only kernel but also to BPF programs.
 
-On 12/14/20 4:34 PM, Mario Limonciello wrote:
-> This flag can be used by an end user to disable S0ix flows on a
-> buggy system or by an OEM for development purposes.
-> 
-> If you need this flag to be persisted across reboots, it's suggested
-> to use a udev rule to call adjust it until the kernel could have your
-> configuration in a disallow list.
-> 
-> Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
-> ---
->  drivers/net/ethernet/intel/e1000e/e1000.h   |  1 +
->  drivers/net/ethernet/intel/e1000e/ethtool.c | 40 +++++++++++++++++++++
->  drivers/net/ethernet/intel/e1000e/netdev.c  |  9 ++---
->  3 files changed, 46 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
-> index ba7a0f8f6937..5b2143f4b1f8 100644
-> --- a/drivers/net/ethernet/intel/e1000e/e1000.h
-> +++ b/drivers/net/ethernet/intel/e1000e/e1000.h
-> @@ -436,6 +436,7 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
->  #define FLAG2_DFLT_CRC_STRIPPING          BIT(12)
->  #define FLAG2_CHECK_RX_HWTSTAMP           BIT(13)
->  #define FLAG2_CHECK_SYSTIM_OVERFLOW       BIT(14)
-> +#define FLAG2_ENABLE_S0IX_FLOWS           BIT(15)
->  
->  #define E1000_RX_DESC_PS(R, i)	    \
->  	(&(((union e1000_rx_desc_packet_split *)((R).desc))[i]))
-> diff --git a/drivers/net/ethernet/intel/e1000e/ethtool.c b/drivers/net/ethernet/intel/e1000e/ethtool.c
-> index 03215b0aee4b..eb683949ebfe 100644
-> --- a/drivers/net/ethernet/intel/e1000e/ethtool.c
-> +++ b/drivers/net/ethernet/intel/e1000e/ethtool.c
-> @@ -23,6 +23,13 @@ struct e1000_stats {
->  	int stat_offset;
->  };
->  
-> +static const char e1000e_priv_flags_strings[][ETH_GSTRING_LEN] = {
-> +#define E1000E_PRIV_FLAGS_S0IX_ENABLED	BIT(0)
-> +	"s0ix-enabled",
-> +};
-> +
-> +#define E1000E_PRIV_FLAGS_STR_LEN ARRAY_SIZE(e1000e_priv_flags_strings)
-> +
->  #define E1000_STAT(str, m) { \
->  		.stat_string = str, \
->  		.type = E1000_STATS, \
-> @@ -1776,6 +1783,8 @@ static int e1000e_get_sset_count(struct net_device __always_unused *netdev,
->  		return E1000_TEST_LEN;
->  	case ETH_SS_STATS:
->  		return E1000_STATS_LEN;
-> +	case ETH_SS_PRIV_FLAGS:
-> +		return E1000E_PRIV_FLAGS_STR_LEN;
->  	default:
->  		return -EOPNOTSUPP;
->  	}
-> @@ -2097,6 +2106,10 @@ static void e1000_get_strings(struct net_device __always_unused *netdev,
->  			p += ETH_GSTRING_LEN;
->  		}
->  		break;
-> +	case ETH_SS_PRIV_FLAGS:
-> +		memcpy(data, e1000e_priv_flags_strings,
-> +		       E1000E_PRIV_FLAGS_STR_LEN * ETH_GSTRING_LEN);
-> +		break;
->  	}
->  }
->  
-> @@ -2305,6 +2318,31 @@ static int e1000e_get_ts_info(struct net_device *netdev,
->  	return 0;
->  }
->  
-> +static u32 e1000e_get_priv_flags(struct net_device *netdev)
-> +{
-> +	struct e1000_adapter *adapter = netdev_priv(netdev);
-> +	u32 priv_flags = 0;
-> +
-> +	if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
-> +		priv_flags |= E1000E_PRIV_FLAGS_S0IX_ENABLED;
-> +
-> +	return priv_flags;
-> +}
-> +
-> +static int e1000e_set_priv_flags(struct net_device *netdev, u32 priv_flags)
-> +{
-> +	struct e1000_adapter *adapter = netdev_priv(netdev);
-> +	unsigned int flags2 = adapter->flags2;
-> +
-> +	flags2 &= ~FLAG2_ENABLE_S0IX_FLOWS;
-> +	if (priv_flags & E1000E_PRIV_FLAGS_S0IX_ENABLED)
-> +		flags2 |= FLAG2_ENABLE_S0IX_FLOWS;
-> +	if (flags2 != adapter->flags2)
-> +		adapter->flags2 = flags2;
+I see, I was not aware of this.
 
+>
+> The point of the test is to access a few fields from every map struct
+> and make sure it works. Changing `struct htab_elem` indeed breaks the
+> `VERIFY(hash->elem_size == 64);` check. But it can be easily updated
+> (from 64 to whatever new size is) or replaced by some other field check.
+> `htab->elem_size` was chosen semi-randomly since any bpf_htab-specific
+> field would work for the test's purposes.
 
-This will allow ethtool to enable the s0ix code on hw which does not
-support this. I believe that this needs a
+Good to know it is useful, I will have to change 64 to 72, as I tried to use
+sizeof but struct htab_elem is not visible to that test.
 
-	if (hw->mac.type >= e1000_pch_cnp)
+>
+> Hope it clarifies.
+>
+> Also since you add a new map type it would be great to cover it in
+> tools/testing/selftests/bpf/progs/map_ptr_kern.c as well.
 
-Check to avoid this scenario. And probably return -EINVAL when
-a user tries to enable this on hw where it is not supported.
+Yeah, will do.
 
-Regards,
-
-Hans
-
-
-
-
-> +
-> +	return 0;
-> +}
-> +
->  static const struct ethtool_ops e1000_ethtool_ops = {
->  	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
->  	.get_drvinfo		= e1000_get_drvinfo,
-> @@ -2336,6 +2374,8 @@ static const struct ethtool_ops e1000_ethtool_ops = {
->  	.set_eee		= e1000e_set_eee,
->  	.get_link_ksettings	= e1000_get_link_ksettings,
->  	.set_link_ksettings	= e1000_set_link_ksettings,
-> +	.get_priv_flags		= e1000e_get_priv_flags,
-> +	.set_priv_flags		= e1000e_set_priv_flags,
->  };
->  
->  void e1000e_set_ethtool_ops(struct net_device *netdev)
-> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> index b9800ba2006c..e9b82c209c2d 100644
-> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> @@ -6923,7 +6923,6 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
->  	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
->  	struct e1000_adapter *adapter = netdev_priv(netdev);
->  	struct pci_dev *pdev = to_pci_dev(dev);
-> -	struct e1000_hw *hw = &adapter->hw;
->  	int rc;
->  
->  	e1000e_flush_lpic(pdev);
-> @@ -6935,7 +6934,7 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
->  		e1000e_pm_thaw(dev);
->  	} else {
->  		/* Introduce S0ix implementation */
-> -		if (hw->mac.type >= e1000_pch_cnp)
-> +		if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
->  			e1000e_s0ix_entry_flow(adapter);
->  	}
->  
-> @@ -6947,11 +6946,10 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
->  	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
->  	struct e1000_adapter *adapter = netdev_priv(netdev);
->  	struct pci_dev *pdev = to_pci_dev(dev);
-> -	struct e1000_hw *hw = &adapter->hw;
->  	int rc;
->  
->  	/* Introduce S0ix implementation */
-> -	if (hw->mac.type >= e1000_pch_cnp)
-> +	if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
->  		e1000e_s0ix_exit_flow(adapter);
->  
->  	rc = __e1000_resume(pdev);
-> @@ -7615,6 +7613,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	if (!(adapter->flags & FLAG_HAS_AMT))
->  		e1000e_get_hw_control(adapter);
->  
-> +	if (hw->mac.type >= e1000_pch_cnp)
-> +		adapter->flags2 |= FLAG2_ENABLE_S0IX_FLOWS;
-> +
->  	strlcpy(netdev->name, "eth%d", sizeof(netdev->name));
->  	err = register_netdev(netdev);
->  	if (err)
-> 
-
+Thanks.
