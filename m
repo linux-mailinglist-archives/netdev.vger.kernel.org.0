@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 432622D9763
+	by mail.lfdr.de (Postfix) with ESMTP id C80B12D9764
 	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:34:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437954AbgLNLcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:32:52 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:37857 "EHLO
+        id S2438023AbgLNLdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 06:33:06 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:53939 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2437761AbgLNLcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:32:14 -0500
+        by vger.kernel.org with ESMTP id S2437747AbgLNLce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:32:34 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 18B595C0159;
-        Mon, 14 Dec 2020 06:31:06 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 4FC155C0143;
+        Mon, 14 Dec 2020 06:31:07 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:06 -0500
+  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=McqYh91XgmZZ0BWv24Mn9JdxcnSB/T1DDO63oNgjnz0=; b=jBmRe3Tl
-        HisawnKS0l6Ai90xwGrBE5sa0CgeK0nGtpX9L2QdvBioFOusujLHWfDox7nS3F7v
-        xPpMWv2XVnZ7BA4i4w7TvIZDpVoKwSI3isJjrpvzwzjFb7j8OcuwkIRI89KAxLDU
-        HsycgS79Kg0YOOXyfbO9ZIyJkmoG3LFYBtNiY7FCcmwbN64Htm35RSHVulhL2ck6
-        z92bH7zADEvRD/TRgJTUqQ9zjMDh3FJ/KE3p9MDoJ2ej4awxTpUQ78I/ZhRzIZ0m
-        7f/kdn6Cf1dc3MbqyOEJ+79Cen6Uz4ZLFaaunX/6Td2FkRNUaxKoOiV5YewA9UYx
-        8Cbbrs6Lli31uQ==
-X-ME-Sender: <xms:-UzXXxS3iUI_vh63DXiYa3EYZe4Jtv432bKfyvy37EduryHRBMeHww>
-    <xme:-UzXX6wHhXV8atN7lqEm4OAIMbpseyMykJ-v7w2U9KSbaT0xK_RkpOsFXa6u21xlO
-    2eVKWTwia2UMqk>
+        fm1; bh=9WNoADTgn1nqJd/n49xMeBwUsm9R9L+YyEqzWf11NCU=; b=jmGaRFe4
+        bSqSWrVY+wZ/vsgHLPofbq9lFVYhXvchET7paU978sJcQMNE3bKWg1pEekXL8tl9
+        z1Un6RCaHyQataM2UAOlGGbdQ5iVJI0+yvTfYSMKBC6eTNNeO8InSdK0Tq2r14Ri
+        7g0x11JPtnN27vXjpbSug/KKtS7sX+gnWXQeXGZjtRXvW1ZjMqxdr84Mp6B3PDdh
+        0VS0Piul6h/XTMam2uy1ETX6JSaDub3jB6hLAAVRfLaKuBt16ude0etatD2yuavt
+        8aqRJ63tmLRhGnwZ2dTJLMMW85khTdhbZCYwLncm2VuB+iEyQHdtwN88YBE+9KPW
+        v195V1c5n6s36w==
+X-ME-Sender: <xms:-0zXXysxuhSBEqbiuKGiUwRqRQa_73-1_N9vSgCKKwIHWfcxWyA_KQ>
+    <xme:-0zXX3etDQH69Kj3W03Mh7vavSL77CvPYE97C94PDUWwXwNQHmO06MRUP49xPRVu9
+    GsG2v3oTXTAB2A>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgvdelucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehvddrfedu
     necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:-UzXX20kecDQ6uz9NbqHXrNlKPAA8vKzsZs94LH45SiqFHLQcyG7LA>
-    <xmx:-UzXX5DcrSlPmiAYpL3YCJl95J7ly6wVlXKmQwtEqcMETcRlhNqqhw>
-    <xmx:-UzXX6gNNGTepGWI3KM2zmzG6jGlm-MfVILzAkMQngRy72v9Ax_J9g>
-    <xmx:-kzXX9snRE0QKxsnybwUFnoC2RJkgMSiv1QJK5wX9VSrhIH1_2R1WA>
+X-ME-Proxy: <xmx:-0zXX9wdwM8T5Bzc3c-xvLmA2hovOV_rbK5SD7QALOzXcVmbyU_7Fg>
+    <xmx:-0zXX9PKU6OOqHK_FP7Al7UkyC76ZwqndnRhwcr-yTZri_X5KwJCFA>
+    <xmx:-0zXXy-yrgN3Q7pLvO4G7anDReWX7TiMadem_a6Qx-tFI7i53Rvr1A>
+    <xmx:-0zXX0I2xqiivA1_mWH_ZCbP1QrZOrzllxFyXZfkLJ0fsBPvtBsfDw>
 Received: from shredder.mtl.com (igld-84-229-152-31.inter.net.il [84.229.152.31])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DEA81108006B;
-        Mon, 14 Dec 2020 06:31:04 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 350581080067;
+        Mon, 14 Dec 2020 06:31:06 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 04/15] mlxsw: pci: Obtain info about ports used by eXtended mezanine
-Date:   Mon, 14 Dec 2020 13:30:30 +0200
-Message-Id: <20201214113041.2789043-5-idosch@idosch.org>
+Subject: [PATCH net-next v2 05/15] mlxsw: Ignore ports that are connected to eXtended mezanine
+Date:   Mon, 14 Dec 2020 13:30:31 +0200
+Message-Id: <20201214113041.2789043-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201214113041.2789043-1-idosch@idosch.org>
 References: <20201214113041.2789043-1-idosch@idosch.org>
@@ -63,117 +63,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-The output of boardinfo command was extended to contain information
-about XM. Indicates if is present and in case it is, tells which
-localports are used for the connection. So parse this info and store it
-in bus_info passed up to the driver.
+Use the info stored in the bus_info struct about the eXtended mezanine
+connected ports and don't expose them.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/cmd.h  | 17 ++++++++++++++
- drivers/net/ethernet/mellanox/mlxsw/core.h |  7 +++++-
- drivers/net/ethernet/mellanox/mlxsw/pci.c  | 27 +++++++++++++++++++++-
- 3 files changed, 49 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c     | 12 ++++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h     |  1 +
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c  |  3 ++-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c |  3 +++
+ 4 files changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-index 5ffdfb532cb7..4de15c56542f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-@@ -343,6 +343,23 @@ static inline int mlxsw_cmd_boardinfo(struct mlxsw_core *mlxsw_core,
- 				  0, 0, false, out_mbox, MLXSW_CMD_MBOX_SIZE);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index c67825a68a26..685037e052af 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -2856,6 +2856,18 @@ mlxsw_core_port_devlink_port_get(struct mlxsw_core *mlxsw_core,
  }
+ EXPORT_SYMBOL(mlxsw_core_port_devlink_port_get);
  
-+/* cmd_mbox_xm_num_local_ports
-+ * Number of local_ports connected to the xm.
-+ * Each local port is a 4x
-+ * Spectrum-2/3: 25G
-+ * Spectrum-4: 50G
-+ */
-+MLXSW_ITEM32(cmd_mbox, boardinfo, xm_num_local_ports, 0x00, 4, 3);
-+
-+/* cmd_mbox_xm_exists
-+ * An XM (eXtanded Mezanine, e.g. used for the XLT) is connected on the board.
-+ */
-+MLXSW_ITEM32(cmd_mbox, boardinfo, xm_exists, 0x00, 0, 1);
-+
-+/* cmd_mbox_xm_local_port_entry
-+ */
-+MLXSW_ITEM_BIT_ARRAY(cmd_mbox, boardinfo, xm_local_port_entry, 0x04, 4, 8);
-+
- /* cmd_mbox_boardinfo_intapin
-  * When PCIe interrupt messages are being used, this value is used for clearing
-  * an interrupt. When using MSI-X, this register is not used.
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 92f7398287be..ec424d388ecc 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -435,6 +435,8 @@ struct mlxsw_fw_rev {
- 	u16 can_reset_minor;
- };
- 
-+#define MLXSW_BUS_INFO_XM_LOCAL_PORTS_MAX 4
-+
- struct mlxsw_bus_info {
- 	const char *device_kind;
- 	const char *device_name;
-@@ -443,7 +445,10 @@ struct mlxsw_bus_info {
- 	u8 vsd[MLXSW_CMD_BOARDINFO_VSD_LEN];
- 	u8 psid[MLXSW_CMD_BOARDINFO_PSID_LEN];
- 	u8 low_frequency:1,
--	   read_frc_capable:1;
-+	   read_frc_capable:1,
-+	   xm_exists:1;
-+	u8 xm_local_ports_count;
-+	u8 xm_local_ports[MLXSW_BUS_INFO_XM_LOCAL_PORTS_MAX];
- };
- 
- struct mlxsw_hwmon;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index 641cdd81882b..aae472f0e62f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1209,6 +1209,30 @@ static int mlxsw_pci_config_profile(struct mlxsw_pci *mlxsw_pci, char *mbox,
- 	return mlxsw_cmd_config_profile_set(mlxsw_pci->core, mbox);
- }
- 
-+static int mlxsw_pci_boardinfo_xm_process(struct mlxsw_pci *mlxsw_pci,
-+					  struct mlxsw_bus_info *bus_info,
-+					  char *mbox)
++bool mlxsw_core_port_is_xm(const struct mlxsw_core *mlxsw_core, u8 local_port)
 +{
-+	int count = mlxsw_cmd_mbox_boardinfo_xm_num_local_ports_get(mbox);
++	const struct mlxsw_bus_info *bus_info = mlxsw_core->bus_info;
 +	int i;
 +
-+	if (!mlxsw_cmd_mbox_boardinfo_xm_exists_get(mbox))
-+		return 0;
-+
-+	bus_info->xm_exists = true;
-+
-+	if (count > MLXSW_BUS_INFO_XM_LOCAL_PORTS_MAX) {
-+		dev_err(&mlxsw_pci->pdev->dev, "Invalid number of XM local ports\n");
-+		return -EINVAL;
-+	}
-+	bus_info->xm_local_ports_count = count;
-+	for (i = 0; i < count; i++)
-+		bus_info->xm_local_ports[i] =
-+			mlxsw_cmd_mbox_boardinfo_xm_local_port_entry_get(mbox,
-+									 i);
-+	return 0;
++	for (i = 0; i < bus_info->xm_local_ports_count; i++)
++		if (bus_info->xm_local_ports[i] == local_port)
++			return true;
++	return false;
 +}
++EXPORT_SYMBOL(mlxsw_core_port_is_xm);
 +
- static int mlxsw_pci_boardinfo(struct mlxsw_pci *mlxsw_pci, char *mbox)
+ struct mlxsw_env *mlxsw_core_env(const struct mlxsw_core *mlxsw_core)
  {
- 	struct mlxsw_bus_info *bus_info = &mlxsw_pci->bus_info;
-@@ -1220,7 +1244,8 @@ static int mlxsw_pci_boardinfo(struct mlxsw_pci *mlxsw_pci, char *mbox)
- 		return err;
- 	mlxsw_cmd_mbox_boardinfo_vsd_memcpy_from(mbox, bus_info->vsd);
- 	mlxsw_cmd_mbox_boardinfo_psid_memcpy_from(mbox, bus_info->psid);
--	return 0;
-+
-+	return mlxsw_pci_boardinfo_xm_process(mlxsw_pci, bus_info, mbox);
- }
+ 	return mlxsw_core->env;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index ec424d388ecc..6558f9cde3d6 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -223,6 +223,7 @@ enum devlink_port_type mlxsw_core_port_type_get(struct mlxsw_core *mlxsw_core,
+ struct devlink_port *
+ mlxsw_core_port_devlink_port_get(struct mlxsw_core *mlxsw_core,
+ 				 u8 local_port);
++bool mlxsw_core_port_is_xm(const struct mlxsw_core *mlxsw_core, u8 local_port);
+ struct mlxsw_env *mlxsw_core_env(const struct mlxsw_core *mlxsw_core);
+ bool mlxsw_core_is_initialized(const struct mlxsw_core *mlxsw_core);
+ int mlxsw_core_module_max_width(struct mlxsw_core *mlxsw_core, u8 module);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+index c010db2c9dba..b34c44723f8b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+@@ -291,7 +291,8 @@ static int mlxsw_m_ports_create(struct mlxsw_m *mlxsw_m)
  
- static int mlxsw_pci_fw_area_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 	/* Create port objects for each valid entry */
+ 	for (i = 0; i < mlxsw_m->max_ports; i++) {
+-		if (mlxsw_m->module_to_port[i] > 0) {
++		if (mlxsw_m->module_to_port[i] > 0 &&
++		    !mlxsw_core_port_is_xm(mlxsw_m->core, i)) {
+ 			err = mlxsw_m_port_create(mlxsw_m,
+ 						  mlxsw_m->module_to_port[i],
+ 						  i);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index df8175cd44ab..516d6cb45c9f 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -1840,6 +1840,9 @@ static int mlxsw_sp_port_module_info_init(struct mlxsw_sp *mlxsw_sp)
+ 		return -ENOMEM;
+ 
+ 	for (i = 1; i < max_ports; i++) {
++		if (mlxsw_core_port_is_xm(mlxsw_sp->core, i))
++			continue;
++
+ 		err = mlxsw_sp_port_module_info_get(mlxsw_sp, i, &port_mapping);
+ 		if (err)
+ 			goto err_port_module_info_get;
 -- 
 2.29.2
 
