@@ -2,173 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 073742D98F3
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 14:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC9D32D990D
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 14:41:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439580AbgLNNf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 08:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
+        id S2407981AbgLNNjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 08:39:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407982AbgLNNdg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 08:33:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9053C0611C5
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 05:31:58 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1konxF-0003VZ-DT
-        for netdev@vger.kernel.org; Mon, 14 Dec 2020 14:31:57 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 923EC5AD2D1
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 13:31:54 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 015525AD298;
-        Mon, 14 Dec 2020 13:31:47 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 0a1d330d;
-        Mon, 14 Dec 2020 13:31:46 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sean Nyekjaer <sean@geanix.com>, Dan Murphy <dmurphy@ti.com>
-Subject: [net-next 7/7] can: m_can: use struct m_can_classdev as drvdata
-Date:   Mon, 14 Dec 2020 14:31:45 +0100
-Message-Id: <20201214133145.442472-8-mkl@pengutronix.de>
+        with ESMTP id S1726696AbgLNNjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 08:39:40 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECB5C0613CF
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 05:38:59 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id w1so17834831ejf.11
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 05:38:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=metanetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gp48xF2P6dw5q+ML1bhhwMXBZzVrfszuo5e2tABYGD4=;
+        b=VT6Ve4IjFbK8FesIaXeupomg3NDuSR+ERSjVJa63nGwGWH7crhubW1lYl42LLhbosE
+         NHogJCTLkQBsR2v9zkC8SHUzU8R0I88Ughg8+K32RBtScdfBK0nX0foY1wCtU8aAe8qA
+         RC3CEB2YIYeCuki9tikxdb32eaXjQvwAFW++M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gp48xF2P6dw5q+ML1bhhwMXBZzVrfszuo5e2tABYGD4=;
+        b=DCXjc7MunZdlyYvcspta/D1b1KPMCm0PzMIKjmAmqByhZyw36eL+hcmRoqfTKlI8o6
+         SJvoRUwehViSqEDTB4oANZoG91tYTZ9phWMDaq3YO3gGd5j6WX8ODTgBoqstC+uwlz5O
+         xasLxCrU0p/nBIhEPgz+PODMjac827+8xWkrVmfKeeDp+l1fbM7+fXlLgZrsDD+JfcPy
+         g3lDw8H0a130T5sCp231tvBWn2OyDASY35+HLyxY8DzUFyzHFV7YHeLzI6j+hyPk2l7d
+         37pxXtR1JlljC+69OLbI0VbEU+XsOsdIa1s5/901HJ/Ua91ahP518hVLSvdkz+BLqHP0
+         ivaA==
+X-Gm-Message-State: AOAM533A3O0E0VQ7sOcbHCnOiGxR3SEUruG61ApdohYOIVIicVzsKBFv
+        lP/5yUJolICWPSW3HGQXi5Y1eA==
+X-Google-Smtp-Source: ABdhPJyU7x/FkFIsdTcq2uGqkfD9k56+0UEl4tHI2XEBF/hSNhbhPjQhd6T0FzCZSPZIPJvRkz56zQ==
+X-Received: by 2002:a17:906:40d3:: with SMTP id a19mr22012558ejk.98.1607953138684;
+        Mon, 14 Dec 2020 05:38:58 -0800 (PST)
+Received: from localhost.localdomain ([141.226.10.152])
+        by smtp.gmail.com with ESMTPSA id da9sm15548239edb.84.2020.12.14.05.38.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Dec 2020 05:38:58 -0800 (PST)
+From:   Shmulik Ladkani <shmulik@metanetworks.com>
+X-Google-Original-From: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Subject: [PATCH] xfrm: Fix oops in xfrm_replay_advance_bmp
+Date:   Mon, 14 Dec 2020 15:38:32 +0200
+Message-Id: <20201214133832.438945-1-shmulik.ladkani@gmail.com>
 X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201214133145.442472-1-mkl@pengutronix.de>
-References: <20201214133145.442472-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The m_can driver's suspend and resume functions (m_can_class_suspend() and
-m_can_class_resume()) make use of dev_get_drvdata() and assume that the drvdata
-is a pointer to the struct net_device.
+When setting xfrm replay_window to values higher than 32, a rare
+page-fault occurs in xfrm_replay_advance_bmp:
 
-With upcoming conversion of the tcan4x5x driver to pm_runtime this assumption
-is no longer valid. As the suspend and resume functions actually need a struct
-m_can_classdev pointer, change the m_can_platform and the m_can_pci driver to
-hold a pointer to struct m_can_classdev instead, as the tcan4x5x driver already
-does.
+  BUG: unable to handle page fault for address: ffff8af350ad7920
+  #PF: supervisor write access in kernel mode
+  #PF: error_code(0x0002) - not-present page
+  PGD ad001067 P4D ad001067 PUD 0
+  Oops: 0002 [#1] SMP PTI
+  CPU: 3 PID: 30 Comm: ksoftirqd/3 Kdump: loaded Not tainted 5.4.52-050452-generic #202007160732
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2.el7 04/01/2014
+  RIP: 0010:xfrm_replay_advance_bmp+0xbb/0x130
+  RSP: 0018:ffffa1304013ba40 EFLAGS: 00010206
+  RAX: 000000000000010d RBX: 0000000000000002 RCX: 00000000ffffff4b
+  RDX: 0000000000000018 RSI: 00000000004c234c RDI: 00000000ffb3dbff
+  RBP: ffffa1304013ba50 R08: ffff8af330ad7920 R09: 0000000007fffffa
+  R10: 0000000000000800 R11: 0000000000000010 R12: ffff8af29d6258c0
+  R13: ffff8af28b95c700 R14: 0000000000000000 R15: ffff8af29d6258fc
+  FS:  0000000000000000(0000) GS:ffff8af339ac0000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: ffff8af350ad7920 CR3: 0000000015ee4000 CR4: 00000000001406e0
+  Call Trace:
+   xfrm_input+0x4e5/0xa10
+   xfrm4_rcv_encap+0xb5/0xe0
+   xfrm4_udp_encap_rcv+0x140/0x1c0
 
-Link: https://lore.kernel.org/r/20201212175518.139651-8-mkl@pengutronix.de
-Reviewed-by: Sean Nyekjaer <sean@geanix.com>
-Reviewed-by: Dan Murphy <dmurphy@ti.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Analysis revealed offending code is when accessing:
+
+	replay_esn->bmp[nr] |= (1U << bitnr);
+
+with 'nr' being 0x07fffffa.
+
+This happened in an SMP system when reordering of packets was present;
+A packet arrived with a "too old" sequence number (outside the window,
+i.e 'diff > replay_window'), and therefore the following calculation:
+
+			bitnr = replay_esn->replay_window - (diff - pos);
+
+yields a negative result, but since bitnr is u32 we get a large unsigned
+quantity (in crash dump above: 0xffffff4b seen in ecx).
+
+This was supposed to be protected by xfrm_input()'s former call to:
+
+		if (x->repl->check(x, skb, seq)) {
+
+However, the state's spinlock x->lock is *released* after '->check()'
+is performed, and gets re-acquired before '->advance()' - which gives a
+chance for a different core to update the xfrm state, e.g. by advancing
+'replay_esn->seq' when it encounters more packets - leading to a
+'diff > replay_window' situation when original core continues to
+xfrm_replay_advance_bmp().
+
+An attempt to fix this issue was suggested in commit bcf66bf54aab
+("xfrm: Perform a replay check after return from async codepaths"),
+by calling 'x->repl->recheck()' after lock is re-acquired, but fix
+applied only to asyncronous crypto algorithms.
+
+Augment the fix, by *always* calling 'recheck()' - irrespective if we're
+using async crypto.
+
+Fixes: 0ebea8ef3559 ("[IPSEC]: Move state lock into x->type->input")
+Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
 ---
- drivers/net/can/m_can/m_can.c          |  8 ++++----
- drivers/net/can/m_can/m_can_pci.c      |  5 ++---
- drivers/net/can/m_can/m_can_platform.c | 14 +++++++-------
- 3 files changed, 13 insertions(+), 14 deletions(-)
+ net/xfrm/xfrm_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index cc7972a103dc..2c9f12401276 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -1859,8 +1859,8 @@ EXPORT_SYMBOL_GPL(m_can_class_unregister);
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 37456d022cfa..61e6220ddd5a 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -660,7 +660,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+ 		/* only the first xfrm gets the encap type */
+ 		encap_type = 0;
  
- int m_can_class_suspend(struct device *dev)
- {
--	struct net_device *ndev = dev_get_drvdata(dev);
--	struct m_can_classdev *cdev = netdev_priv(ndev);
-+	struct m_can_classdev *cdev = dev_get_drvdata(dev);
-+	struct net_device *ndev = cdev->net;
- 
- 	if (netif_running(ndev)) {
- 		netif_stop_queue(ndev);
-@@ -1879,8 +1879,8 @@ EXPORT_SYMBOL_GPL(m_can_class_suspend);
- 
- int m_can_class_resume(struct device *dev)
- {
--	struct net_device *ndev = dev_get_drvdata(dev);
--	struct m_can_classdev *cdev = netdev_priv(ndev);
-+	struct m_can_classdev *cdev = dev_get_drvdata(dev);
-+	struct net_device *ndev = cdev->net;
- 
- 	pinctrl_pm_select_default_state(dev);
- 
-diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
-index ebfbef25e3f9..128808605c3f 100644
---- a/drivers/net/can/m_can/m_can_pci.c
-+++ b/drivers/net/can/m_can/m_can_pci.c
-@@ -115,7 +115,7 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	mcan_class->can.clock.freq = id->driver_data;
- 	mcan_class->ops = &m_can_pci_ops;
- 
--	pci_set_drvdata(pci, mcan_class->net);
-+	pci_set_drvdata(pci, mcan_class);
- 
- 	ret = m_can_class_register(mcan_class);
- 	if (ret)
-@@ -138,8 +138,7 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 
- static void m_can_pci_remove(struct pci_dev *pci)
- {
--	struct net_device *dev = pci_get_drvdata(pci);
--	struct m_can_classdev *mcan_class = netdev_priv(dev);
-+	struct m_can_classdev *mcan_class = pci_get_drvdata(pci);
- 	struct m_can_pci_priv *priv = cdev_to_priv(mcan_class);
- 
- 	pm_runtime_forbid(&pci->dev);
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 5758d25e42c8..599de0e08cd7 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -113,7 +113,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
- 
- 	mcan_class->is_peripheral = false;
- 
--	platform_set_drvdata(pdev, mcan_class->net);
-+	platform_set_drvdata(pdev, mcan_class);
- 
- 	m_can_init_ram(mcan_class);
- 
-@@ -143,8 +143,8 @@ static __maybe_unused int m_can_resume(struct device *dev)
- 
- static int m_can_plat_remove(struct platform_device *pdev)
- {
--	struct net_device *dev = platform_get_drvdata(pdev);
--	struct m_can_classdev *mcan_class = netdev_priv(dev);
-+	struct m_can_plat_priv *priv = platform_get_drvdata(pdev);
-+	struct m_can_classdev *mcan_class = &priv->cdev;
- 
- 	m_can_class_unregister(mcan_class);
- 
-@@ -155,8 +155,8 @@ static int m_can_plat_remove(struct platform_device *pdev)
- 
- static int __maybe_unused m_can_runtime_suspend(struct device *dev)
- {
--	struct net_device *ndev = dev_get_drvdata(dev);
--	struct m_can_classdev *mcan_class = netdev_priv(ndev);
-+	struct m_can_plat_priv *priv = dev_get_drvdata(dev);
-+	struct m_can_classdev *mcan_class = &priv->cdev;
- 
- 	clk_disable_unprepare(mcan_class->cclk);
- 	clk_disable_unprepare(mcan_class->hclk);
-@@ -166,8 +166,8 @@ static int __maybe_unused m_can_runtime_suspend(struct device *dev)
- 
- static int __maybe_unused m_can_runtime_resume(struct device *dev)
- {
--	struct net_device *ndev = dev_get_drvdata(dev);
--	struct m_can_classdev *mcan_class = netdev_priv(ndev);
-+	struct m_can_plat_priv *priv = dev_get_drvdata(dev);
-+	struct m_can_classdev *mcan_class = &priv->cdev;
- 	int err;
- 
- 	err = clk_prepare_enable(mcan_class->hclk);
+-		if (async && x->repl->recheck(x, skb, seq)) {
++		if (x->repl->recheck(x, skb, seq)) {
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
+ 			goto drop_unlock;
+ 		}
 -- 
 2.29.2
-
 
