@@ -2,119 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B42E02D9766
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:34:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7282D9769
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:34:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438049AbgLNLdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:33:06 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:53939 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2437982AbgLNLc5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:32:57 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 7AA9A5C016D;
-        Mon, 14 Dec 2020 06:31:20 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=hi7bDuDMLwnabe6ysR8bvwsA52igsCru82Wo/dMRHR0=; b=jYRHykMF
-        GzY3Kd6KPcdXn/bG7pXhTlkVMwfKgsVE5AHYl/Tbb1qh3akm+9mzazirGKgRHq+A
-        O3LL/abJCQ7FxFHZ3hy2bhxBDnzzU9dMHqFZlGqJVJZ5TvGEX1s2WeWOnHAB4AoN
-        9QKYQvNS+yhP+YFJg/uej5MjAsTdFBguOed9HognCTU2XZ+D+gcL8Vkq2pbC11K5
-        6x9oiREcUYymirfLjHGitC35XTOQS/KeOkaXMU9/vZn02UNDH7UIfZo+l44REEnr
-        6PvPpjoCaKbBxSo8IRC394loBNy7U4ZwORFjbfbM7oqBWgIcdryoEh/ORQgZ+Khy
-        wswvOzMV8TD0BA==
-X-ME-Sender: <xms:CE3XX-uGVhIbOhHjPXTi3wqdj7Ce_kiBwrXs3cT38mFMIml6zTClhw>
-    <xme:CE3XXzewqP5P2OHBzeMFIF21AcnqReAxhWrf8plCBBWf-32G29n7cyy-ifDdWk3SJ
-    u-wKu0SRQE3xoo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgvdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehvddrfedu
-    necuvehluhhsthgvrhfuihiivgepudegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:CE3XX5zJOBj1zZuBvLnKYyg2Z5RvoarUXEIEjK58wRA0B_P8dE-eJg>
-    <xmx:CE3XX5NrA75W5ppwz6ekN-vWuurxih67ShxEH0EC3CqE00jruFbJfA>
-    <xmx:CE3XX--j4tvDts1hHyXEHcYZW8257NRt7lPowekiSjQc4XcN1d3mhg>
-    <xmx:CE3XXwKgXvsY-109sVbyn7Zxstdf8LADjXz99viDbM4UPOKhAZK9gg>
-Received: from shredder.mtl.com (igld-84-229-152-31.inter.net.il [84.229.152.31])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4C1941080059;
-        Mon, 14 Dec 2020 06:31:19 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 15/15] mlxsw: spectrum_router: Use eXtended mezzanine to offload IPv4 router
-Date:   Mon, 14 Dec 2020 13:30:41 +0200
-Message-Id: <20201214113041.2789043-16-idosch@idosch.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201214113041.2789043-1-idosch@idosch.org>
-References: <20201214113041.2789043-1-idosch@idosch.org>
+        id S2437879AbgLNLdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 06:33:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438097AbgLNLd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:33:27 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9706EC0613CF;
+        Mon, 14 Dec 2020 03:33:12 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id bj5so8495227plb.4;
+        Mon, 14 Dec 2020 03:33:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cBVb1jFsASJsSe1NamAzmoDRIpXSvh9pGjIhBirNzcs=;
+        b=rUi3Hif5kqB6uaX65vcQbFiwebqVisYGNBSM3aOrP0M4916+XGWoYTKTHAR1NdLzEP
+         FhGLlcGuh7PW3EVUEz5Wz0Dr9fdkD/eFrPc1IU8usY8/27oLkf3iBnXGsqVUAZL1uhMg
+         icn+6NaVLQIqKrLXEi0ALtwpJseWozdiP2+naNY2XZDKXkp4QNwsdJ4aZXhf+7/LZJhA
+         CAXcz+1iVvKixpV8BDolDvnBbf+gxG2LEvhgslv448vwj334k8PdTw64Nvo0+Yj+8emr
+         OIDDIRWnWfrCBMb2crD5TgEhwDOU/EBFzFJRf8QFs6UG1Q9WXUvCvfjue46UnyLYnCA1
+         WELw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cBVb1jFsASJsSe1NamAzmoDRIpXSvh9pGjIhBirNzcs=;
+        b=tGY2fOIBIrXUUaGTSi8czdV8lqnf3jTpQl0kzIjSjPJz85oETxawqUe3AZFgyVC7cl
+         bv6Zv+tYyNxoO7gmp/ICv8zQxaa57s0ZG7NsB0elPTGodugo8ulBIZVurfvjC4pFDh56
+         V0HHKpw9L9mkXCW0vAkwvSXTKv6+uIqHB6JEB5cCRa6seeN0/ENtSpBavmi6ZkGtFNFI
+         nDROkZVEEDbKNxMs6CJ7WJ1fM4FphIBmGolEwEiiu0vVky4W0pVrxUuBbZZ66WFy0fIt
+         TI1gavS/j0H3qkzDfGLjwa21j2V1IDTdUmnUTmtvLoTn8Jr1bd8KYj/gOTtx6qeJkmFE
+         bz2A==
+X-Gm-Message-State: AOAM530BWsJ2rhQ3RbkZ+cYwN6QdZknXLdioCkQ2nBJOvMGdtvr3L1sH
+        a0TQnebH4pb6cv72ufkuZwmdyFChsD1L8KhW3wo=
+X-Google-Smtp-Source: ABdhPJwg0wBuACxKcbYs8D8YRpfl1IIQE8IcYWD3KgotbchtPjvyYooSvnNFYKq+0ga/3DF2KD0AEOJDXlwBBXy5/8w=
+X-Received: by 2002:a17:902:d38b:b029:db:e003:3ff0 with SMTP id
+ e11-20020a170902d38bb02900dbe0033ff0mr18317583pld.7.1607945591970; Mon, 14
+ Dec 2020 03:33:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201214085127.3960-1-magnus.karlsson@gmail.com> <20201214110957.GA11487@ranger.igk.intel.com>
+In-Reply-To: <20201214110957.GA11487@ranger.igk.intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 14 Dec 2020 12:33:01 +0100
+Message-ID: <CAJ8uoz1khf8mQCRxCmAFu7q+HasAsaP0tG_5x38=NQq+BAUbAg@mail.gmail.com>
+Subject: Re: [PATCH bpf] xsk: fix memory leak for failed bind
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        syzbot+cfa88ddd0655afa88763@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+On Mon, Dec 14, 2020 at 12:19 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> On Mon, Dec 14, 2020 at 09:51:27AM +0100, Magnus Karlsson wrote:
+> > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> >
+> > Fix a possible memory leak when a bind of an AF_XDP socket fails. When
+> > the fill and completion rings are created, they are tied to the
+> > socket. But when the buffer pool is later created at bind time, the
+> > ownership of these two rings are transferred to the buffer pool as
+> > they might be shared between sockets (and the buffer pool cannot be
+> > created until we know what we are binding to). So, before the buffer
+> > pool is created, these two rings are cleaned up with the socket, and
+> > after they have been transferred they are cleaned up together with
+> > the buffer pool.
+> >
+> > The problem is that ownership was transferred before it was absolutely
+> > certain that the buffer pool could be created and initialized
+> > correctly and when one of these errors occurred, the fill and
+> > completion rings did neither belong to the socket nor the pool and
+> > where therefore leaked. Solve this by moving the ownership transfer
+> > to the point where the buffer pool has been completely set up and
+> > there is no way it can fail.
+> >
+> > Fixes: 7361f9c3d719 ("xsk: Move fill and completion rings to buffer pool")
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > Reported-by: syzbot+cfa88ddd0655afa88763@syzkaller.appspotmail.com
+> > ---
+> >  net/xdp/xsk.c           | 4 ++++
+> >  net/xdp/xsk_buff_pool.c | 2 --
+> >  2 files changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index 62504471fd20..189cfbbcccc0 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -772,6 +772,10 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+> >               }
+> >       }
+> >
+> > +     /* FQ and CQ are now owned by the buffer pool and cleaned up with it. */
+> > +     xs->fq_tmp = NULL;
+> > +     xs->cq_tmp = NULL;
+> > +
+> >       xs->dev = dev;
+> >       xs->zc = xs->umem->zc;
+> >       xs->queue_id = qid;
+> > diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+> > index d5adeee9d5d9..46c2ae7d91d1 100644
+> > --- a/net/xdp/xsk_buff_pool.c
+> > +++ b/net/xdp/xsk_buff_pool.c
+> > @@ -75,8 +75,6 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+> >
+> >       pool->fq = xs->fq_tmp;
+> >       pool->cq = xs->cq_tmp;
+> > -     xs->fq_tmp = NULL;
+> > -     xs->cq_tmp = NULL;
+>
+> Given this change, are there any circumstances that we could hit
+> xsk_release with xs->{f,c}q_tmp != NULL ?
 
-In case the eXtended mezzanine is present on the system, use it for IPv4
-router offload.
+Yes, if the user has not registered any fill or completion ring and
+the socket is torn down.
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c    | 4 +++-
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h    | 1 +
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c | 7 +++++++
- 3 files changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 62d51b281b58..41424ee909a0 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -9213,7 +9213,9 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
- 	if (err)
- 		goto err_xm_init;
- 
--	router->proto_ll_ops[MLXSW_SP_L3_PROTO_IPV4] = &mlxsw_sp_router_ll_basic_ops;
-+	router->proto_ll_ops[MLXSW_SP_L3_PROTO_IPV4] = mlxsw_sp_router_xm_ipv4_is_supported(mlxsw_sp) ?
-+						       &mlxsw_sp_router_ll_xm_ops :
-+						       &mlxsw_sp_router_ll_basic_ops;
- 	router->proto_ll_ops[MLXSW_SP_L3_PROTO_IPV6] = &mlxsw_sp_router_ll_basic_ops;
- 
- 	err = mlxsw_sp_router_ll_op_ctx_init(router);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
-index 31612891ad48..2875ee8ec537 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
-@@ -227,5 +227,6 @@ extern const struct mlxsw_sp_router_ll_ops mlxsw_sp_router_ll_xm_ops;
- 
- int mlxsw_sp_router_xm_init(struct mlxsw_sp *mlxsw_sp);
- void mlxsw_sp_router_xm_fini(struct mlxsw_sp *mlxsw_sp);
-+bool mlxsw_sp_router_xm_ipv4_is_supported(const struct mlxsw_sp *mlxsw_sp);
- 
- #endif /* _MLXSW_ROUTER_H_*/
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
-index 2f1e70e5a262..d213af723a2a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
-@@ -803,3 +803,10 @@ void mlxsw_sp_router_xm_fini(struct mlxsw_sp *mlxsw_sp)
- 	rhashtable_destroy(&router_xm->ltable_ht);
- 	kfree(router_xm);
- }
-+
-+bool mlxsw_sp_router_xm_ipv4_is_supported(const struct mlxsw_sp *mlxsw_sp)
-+{
-+	struct mlxsw_sp_router_xm *router_xm = mlxsw_sp->router->xm;
-+
-+	return router_xm && router_xm->ipv4_supported;
-+}
--- 
-2.29.2
-
+> >
+> >       for (i = 0; i < pool->free_heads_cnt; i++) {
+> >               xskb = &pool->heads[i];
+> >
+> > base-commit: d9838b1d39283c1200c13f9076474c7624b8ec34
+> > --
+> > 2.29.0
+> >
