@@ -2,173 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 519BB2D9D67
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 18:16:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B4ED2D9D72
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 18:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408394AbgLNRPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 12:15:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44743 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729635AbgLNRPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 12:15:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607966068;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=UfKpb3E8TSvVCtWoozXzHs3/tRbU9bLtB0STQYelAHc=;
-        b=dT9rJBbcw110ClGdxILzNLiQGdr2GJvY5M86kJJJFmMmDp/jmaIaO/apG1mlvuvQI47BnR
-        MJz+mx9h6w0T25GHmRMCXjK7wSD9ZcEGxmwleqbjzO4OTrvPq6OsvHkOYxZFmKLpAJzNdY
-        5dpU0L6cGLBNyrQVyU8t470+nSAJcj4=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-407-K0kx_p99NC-6u2orY-V1Pw-1; Mon, 14 Dec 2020 12:14:26 -0500
-X-MC-Unique: K0kx_p99NC-6u2orY-V1Pw-1
-Received: by mail-wr1-f70.google.com with SMTP id q18so6894197wrc.20
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 09:14:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=UfKpb3E8TSvVCtWoozXzHs3/tRbU9bLtB0STQYelAHc=;
-        b=V12Mqy80/iXvH/SrhMcI1WPYOlHbFCyPj+53tWpzJYszlx6xdv730AqXQdyuxSKlbP
-         eIwos8HHLTYFjXsGJbpogm+lpAhFQIs8DUgBUEOW5dxmOnW9sE1hHobQEcnN1t2q6AMM
-         T/2St/4ru3XtFWGKr+EOM8zfEgw71sS05o4wQhY7QCwfhBZ4+gtLzGI4EnJILfWIVz7Q
-         a7cCHa++1Exk42xHmcwVC20mKJzd4xfXxB6P1MSaaect4blanbx7b2bdCnBNBmEYQMV2
-         KMYyi8r05IbXw21jz7CgzVLm1WATCx1cz6pN/WnSQKNlacpJ0YHtTP3tnO5nIqGHEwLd
-         j4LQ==
-X-Gm-Message-State: AOAM532P7rnV0mfYbdUKOm8y912qaa8pPXFXqEonGIeiZw/u9gUsBb6D
-        fdlJCN3Xr1dJs2m2sbTyQlJsfXS9XluRANRvlndAgItT9kgblkzBryraOVwRutzU9bE56MSPHyN
-        aJS7LrI4CJLAEE2oz
-X-Received: by 2002:adf:aad3:: with SMTP id i19mr29462855wrc.119.1607966065226;
-        Mon, 14 Dec 2020 09:14:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyVHT7DgC+uh6NDm0E3fm8QzitEZh1CchKoUGf8KHt5oUjCcUohvyBFbinFouIDLB8k07XdTQ==
-X-Received: by 2002:adf:aad3:: with SMTP id i19mr29462849wrc.119.1607966065064;
-        Mon, 14 Dec 2020 09:14:25 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id z22sm29948862wml.1.2020.12.14.09.14.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Dec 2020 09:14:24 -0800 (PST)
-Date:   Mon, 14 Dec 2020 18:14:22 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH iproute2] testsuite: Add mpls packet matching tests for tc
- flower
-Message-ID: <28af9e38bf7be76d72fcea8ecf277369781b2bab.1607966001.git.gnault@redhat.com>
+        id S2408449AbgLNRRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 12:17:25 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:44445 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2408437AbgLNRRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 12:17:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1607966243; x=1639502243;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=CQGamH5EYsnyVqy9qJ/OP61I+HLUicTHXTVqOFab65M=;
+  b=NlHDFh7sfZed7QMgOrOeI9gW503fgeL3R6HBmt0gz/msPZ2GBwmkN6fl
+   Vkg9/xuu9A7gT7dmVSLm6Fuocb2S+m2EChOkrWx8k45KZiwEU1JITSbni
+   eEjLznBchHVki1JjLnlL0afCGmNsWzBZ1WPMCkoTX99WylGsm/NuoIuEE
+   4=;
+X-IronPort-AV: E=Sophos;i="5.78,420,1599523200"; 
+   d="scan'208";a="72514614"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-af6a10df.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 14 Dec 2020 17:16:42 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1a-af6a10df.us-east-1.amazon.com (Postfix) with ESMTPS id 7F641A198E;
+        Mon, 14 Dec 2020 17:16:39 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 14 Dec 2020 17:16:38 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.161.223) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 14 Dec 2020 17:16:34 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kafai@fb.com>
+CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <eric.dumazet@gmail.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 bpf-next 03/11] tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
+Date:   Tue, 15 Dec 2020 02:16:30 +0900
+Message-ID: <20201214171630.62542-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20201210193340.x6qdykdalhdebxv3@kafai-mbp.dhcp.thefacebook.com>
+References: <20201210193340.x6qdykdalhdebxv3@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.223]
+X-ClientProxiedBy: EX13D45UWA003.ant.amazon.com (10.43.160.92) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Match all MPLS fields using smallest and highest possible values.
-Test the two ways of specifying MPLS header matching:
+From:   Martin KaFai Lau <kafai@fb.com>
+Date:   Thu, 10 Dec 2020 11:33:40 -0800
+> On Thu, Dec 10, 2020 at 02:58:10PM +0900, Kuniyuki Iwashima wrote:
+> 
+> [ ... ]
+> 
+> > > > I've implemented one-by-one migration only for the accept queue for now.
+> > > > In addition to the concern about TFO queue,
+> > > You meant this queue:  queue->fastopenq.rskq_rst_head?
+> > 
+> > Yes.
+> > 
+> > 
+> > > Can "req" be passed?
+> > > I did not look up the lock/race in details for that though.
+> > 
+> > I think if we rewrite freeing TFO requests part like one of accept queue
+> > using reqsk_queue_remove(), we can also migrate them.
+> > 
+> > In this patchset, selecting a listener for accept queue, the TFO queue of
+> > the same listener is also migrated to another listener in order to prevent
+> > TFO spoofing attack.
+> > 
+> > If the request in the accept queue is migrated one by one, I am wondering
+> > which should the request in TFO queue be migrated to prevent attack or
+> > freed.
+> > 
+> > I think user need not know about keeping such requests in kernel to prevent
+> > attacks, so passing them to eBPF prog is confusing. But, redistributing
+> > them randomly without user's intention can make some irrelevant listeners
+> > unnecessarily drop new TFO requests, so this is also bad. Moreover, freeing
+> > such requests seems not so good in the point of security.
+> The current behavior (during process restart) is also not carrying this
+> security queue.  Not carrying them in this patch will make it
+> less secure than the current behavior during process restart?
 
-  * with the basic mpls_{label,tc,bos,ttl} keywords (match only on the
-    first LSE),
+No, I thought I could make it more secure.
 
-  * with the more generic "lse" keyword (allows matching at different
-    depth of the MPLS label stack).
 
-This test file allows to find problems like the one fixed by
-Linux commit 7fdd375e3830 ("net: sched: Fix dump of MPLS_OPT_LSE_LABEL
-attribute in cls_flower").
+> Do you need it now or it is something that can be considered for later
+> without changing uapi bpf.h?
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- testsuite/tests/tc/flower_mpls.t | 82 ++++++++++++++++++++++++++++++++
- 1 file changed, 82 insertions(+)
- create mode 100755 testsuite/tests/tc/flower_mpls.t
+No, I do not need it for any other reason, so I will simply free the
+requests in TFO queue.
+Thank you.
 
-diff --git a/testsuite/tests/tc/flower_mpls.t b/testsuite/tests/tc/flower_mpls.t
-new file mode 100755
-index 00000000..430ed13e
---- /dev/null
-+++ b/testsuite/tests/tc/flower_mpls.t
-@@ -0,0 +1,82 @@
-+#!/bin/sh
-+
-+. lib/generic.sh
-+
-+DEV="$(rand_dev)"
-+ts_ip "$0" "Add $DEV dummy interface" link add dev $DEV up type dummy
-+ts_tc "$0" "Add ingress qdisc" qdisc add dev $DEV ingress
-+
-+reset_qdisc()
-+{
-+	ts_tc "$0" "Remove ingress qdisc" qdisc del dev $DEV ingress
-+	ts_tc "$0" "Add ingress qdisc" qdisc add dev $DEV ingress
-+}
-+
-+ts_tc "$0" "Add MPLS filter matching first LSE with minimal values" \
-+	filter add dev $DEV ingress protocol mpls_uc flower         \
-+	mpls_label 0 mpls_tc 0 mpls_bos 0 mpls_ttl 0                \
-+	action drop
-+ts_tc "$0" "Show ingress filters" filter show dev $DEV ingress
-+test_on "mpls_label 0"
-+test_on "mpls_tc 0"
-+test_on "mpls_bos 0"
-+test_on "mpls_ttl 0"
-+
-+reset_qdisc
-+ts_tc "$0" "Add MPLS filter matching first LSE with maximal values" \
-+	filter add dev $DEV ingress protocol mpls_uc flower         \
-+	mpls_label 1048575 mpls_tc 7 mpls_bos 1 mpls_ttl 255        \
-+	action drop
-+ts_tc "$0" "Show ingress filters" filter show dev $DEV ingress
-+test_on "mpls_label 1048575"
-+test_on "mpls_tc 7"
-+test_on "mpls_bos 1"
-+test_on "mpls_ttl 255"
-+
-+reset_qdisc
-+ts_tc "$0" "Add MPLS filter matching second LSE with minimal values" \
-+	filter add dev $DEV ingress protocol mpls_uc flower          \
-+	mpls lse depth 2 label 0 tc 0 bos 0 ttl 0                    \
-+	action drop
-+ts_tc "$0" "Show ingress filters" filter show dev $DEV ingress
-+test_on "mpls"
-+test_on "lse"
-+test_on "depth 2"
-+test_on "label 0"
-+test_on "tc 0"
-+test_on "bos 0"
-+test_on "ttl 0"
-+
-+reset_qdisc
-+ts_tc "$0" "Add MPLS filter matching second LSE with maximal values" \
-+	filter add dev $DEV ingress protocol mpls_uc flower          \
-+	mpls lse depth 2 label 1048575 tc 7 bos 1 ttl 255            \
-+	action drop
-+ts_tc "$0" "Show ingress filters" filter show dev $DEV ingress
-+test_on "mpls"
-+test_on "lse"
-+test_on "depth 2"
-+test_on "label 1048575"
-+test_on "tc 7"
-+test_on "bos 1"
-+test_on "ttl 255"
-+
-+reset_qdisc
-+ts_tc "$0" "Add MPLS filter matching two LSEs"                   \
-+	filter add dev $DEV ingress protocol mpls_uc flower mpls \
-+	lse depth 1 label 0 tc 0 bos 0 ttl 0                     \
-+	lse depth 2 label 1048575 tc 7 bos 1 ttl 255             \
-+	action drop
-+ts_tc "$0" "Show ingress filters" filter show dev $DEV ingress
-+test_on "mpls"
-+test_on "lse"
-+test_on "depth 1"
-+test_on "label 0"
-+test_on "tc 0"
-+test_on "bos 0"
-+test_on "ttl 0"
-+test_on "depth 2"
-+test_on "label 1048575"
-+test_on "tc 7"
-+test_on "bos 1"
-+test_on "ttl 255"
--- 
-2.21.3
 
+> > > > ---8<---
+> > > > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> > > > index a82fd4c912be..d0ddd3cb988b 100644
+> > > > --- a/net/ipv4/inet_connection_sock.c
+> > > > +++ b/net/ipv4/inet_connection_sock.c
+> > > > @@ -1001,6 +1001,29 @@ struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
+> > > >  }
+> > > >  EXPORT_SYMBOL(inet_csk_reqsk_queue_add);
+> > > >  
+> > > > +static bool inet_csk_reqsk_queue_migrate(struct sock *sk, struct sock *nsk, struct request_sock *req)
+> > > > +{
+> > > > +       struct request_sock_queue *queue = &inet_csk(nsk)->icsk_accept_queue;
+> > > > +       bool migrated = false;
+> > > > +
+> > > > +       spin_lock(&queue->rskq_lock);
+> > > > +       if (likely(nsk->sk_state == TCP_LISTEN)) {
+> > > > +               migrated = true;
+> > > > +
+> > > > +               req->dl_next = NULL;
+> > > > +               if (queue->rskq_accept_head == NULL)
+> > > > +                       WRITE_ONCE(queue->rskq_accept_head, req);
+> > > > +               else
+> > > > +                       queue->rskq_accept_tail->dl_next = req;
+> > > > +               queue->rskq_accept_tail = req;
+> > > > +               sk_acceptq_added(nsk);
+> > > > +               inet_csk_reqsk_queue_migrated(sk, nsk, req);
+> > > need to first resolve the question raised in patch 5 regarding
+> > > to the update on req->rsk_listener though.
+> > 
+> > In the unhash path, it is also safe to call sock_put() for the old listner.
+> > 
+> > In inet_csk_listen_stop(), the sk_refcnt of the listener >= 1. If the
+> > listener does not have immature requests, sk_refcnt is 1 and freed in
+> > __tcp_close().
+> > 
+> >   sock_hold(sk) in __tcp_close()
+> >   sock_put(sk) in inet_csk_destroy_sock()
+> >   sock_put(sk) in __tcp_clsoe()
+> I don't see how it is different here than in patch 5.
+> I could be missing something.
+> 
+> Lets contd the discussion on the other thread (patch 5) first.
+
+The listening socket has two kinds of refcounts for itself(1) and
+requests(n). I think the listener has its own refcount at least in
+inet_csk_listen_stop(), so sock_put() here never free the listener.
