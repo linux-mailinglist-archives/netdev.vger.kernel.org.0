@@ -2,127 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E25F32D9CD5
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 17:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 730232D9CEB
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 17:48:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732019AbgLNQkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 11:40:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727024AbgLNQjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 11:39:54 -0500
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B91C0613D3;
-        Mon, 14 Dec 2020 08:39:14 -0800 (PST)
-Received: by mail-il1-x142.google.com with SMTP id r17so16342101ilo.11;
-        Mon, 14 Dec 2020 08:39:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZzQAX3OTtnVfAh68IFiHEJAtHPixTEJsh0l+VUazkzs=;
-        b=FpqI/C2Lw1zaZwIU9Q2geAe2b+Dx9dq327jdZq9trPuxavemNvW3M4lIsBFEnANTu8
-         vLWLyura2QO2zrGeKFOFPJFBxfqgA2Dr49YNC1vA4DwYVbZJnSy6e+xwyDfwivI9yBjF
-         w9MVlq7KQtQEfHSwwMugDHJowAsPfHWrimx9OuRPrHTTnInUaoMe/1aqu1W/FmO98M63
-         /16jlrmXc2x+Qkfd7F5J/U6dgxZIy1jAh/gdnuqxI0KoCa3TkG8Tc7eBLZcc3ll82LrJ
-         5v/YAOvFpB23RJU6L1YYOofUXQvTGuicrNoD96VXfO5cIKUdHCnXm7wFV/q663dd1IUp
-         nyUg==
+        id S2501971AbgLNQpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 11:45:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25455 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2406416AbgLNQpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 11:45:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607964257;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sTQlUJBJ+1xKcR7W+ayhV1sJLYL+miqfe6UVqpTkY4A=;
+        b=Wj7sqjMn5tdnZacbI/yX5hl+SDmqtMOrsdUod1FG9ukEmmTgy5ZRdWnfFTEUy3JfGkKEC2
+        DHblvULQLLA5xS23fRQLhzGH0hR2htJAZe6vxOUnILbQf+CtEWe3qfguwxNKRN05SCe+Iy
+        0/m/48g4G1ZgHyWoFTwSv0z93FVJ0Vg=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-383-Wo--0PubMTaIpPnFoYPzIA-1; Mon, 14 Dec 2020 11:44:15 -0500
+X-MC-Unique: Wo--0PubMTaIpPnFoYPzIA-1
+Received: by mail-wm1-f72.google.com with SMTP id f187so7009579wme.3
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 08:44:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZzQAX3OTtnVfAh68IFiHEJAtHPixTEJsh0l+VUazkzs=;
-        b=R8s0yvJ2YFkahvQ1SMtr6WB0aNcWuj5z9A4YIH65GwzubEtMk6Z/J6aNeZVbXPXe3T
-         sPEljbpiVMbN+3JdSFibv+YMZ7YiogoiWrJNqo2sKCV3jla/bVP3dUc39uzO2aARgRdN
-         24lPxKdl61VPxEjVrVOj0j3oLio3qDYs9tfEvaF5VmPB565B16Q9mXuQpSQG9oTPlokx
-         GzZNSqNzMrKGsyoszRr1r8zVMUV4QYN5fPvkVuO1fgJmxI5zzbgkQdP2MtxZNWQ2Ai71
-         mKPy0d/pPWoGmsdhIO2VYmMOQg/qphtHTOvUmgQOj39sps1dB5aIsUP64KuGtWelQpnh
-         H6DA==
-X-Gm-Message-State: AOAM530TS7+rX1uYSjQaXagZIwcbbXqgIes02vE1xheHyxq075xXyAW/
-        kKpcKYnXx5jjNdWG1HUQYdzePqM4Cc7a4+GGsgU=
-X-Google-Smtp-Source: ABdhPJzVChOyL4APOxK4QH4vXoPjci6MSc+GIbk2oYNY6T0rrNrmq/h5h3qtkCbdg6I51KTqqUNanK5NTgl+DS4y8LA=
-X-Received: by 2002:a92:d8cc:: with SMTP id l12mr35335239ilo.64.1607963953418;
- Mon, 14 Dec 2020 08:39:13 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=sTQlUJBJ+1xKcR7W+ayhV1sJLYL+miqfe6UVqpTkY4A=;
+        b=DejsgWACU8BBJdxKgufBoF1/D9on3qyPrjbfvmIXLtY/tkxfXSYGpzFu/94yGEu/PF
+         M2zDTge30LcQuG/7F8zh0Gj3jIkTx6UN7c8BmLyC8Y5fASMmpPdYghvDdl90bG8+9Lxg
+         Vo1mHWannckWvTMYy+158/yrq7KmqHDagWxTKtksSZMRf1dejVDLH6BKC76CPG3rRx/n
+         G6qNxR1cRYgNvyS8MPxOOUfunpI2+d8GpYUMb6zfAqqrrniytZHRXLysfYYAFhmbSx/q
+         vCFfGHuQWXdTcRm7F93CBZo3JYue7Yjqcsr0R4q5FFo3woM8ug4Baozb98H0ULFkcqgn
+         kJUA==
+X-Gm-Message-State: AOAM531ONgUTLsAXcYoeYYsCcDeTfcWyiOtvb3S3cRqHWgdjjdEiIt5i
+        9i01OUrB9nVxFddBaAjBmxxA1VTkNkGWc+MpLP5Qius/9odfAmr6uRSQwpIDbHrit3mxa89CWTu
+        utEY0HRT9uMN7R+rh
+X-Received: by 2002:a5d:610d:: with SMTP id v13mr30260413wrt.425.1607964253820;
+        Mon, 14 Dec 2020 08:44:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwKk43dStphquLYXnLDD/h4UkHfeQYfoqiZnRsZuI3MS0MCxLP8cVSaCwG2k2RP/zntvwZwXw==
+X-Received: by 2002:a5d:610d:: with SMTP id v13mr30260400wrt.425.1607964253550;
+        Mon, 14 Dec 2020 08:44:13 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id a62sm34998124wmh.40.2020.12.14.08.44.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Dec 2020 08:44:12 -0800 (PST)
+Date:   Mon, 14 Dec 2020 17:44:11 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Martin Zaharinov <micron10@gmail.com>
+Cc:     "linux-kernel@vger kernel. org" <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
+Subject: Re: Urgent: BUG: PPP ioctl Transport endpoint is not connected
+Message-ID: <20201214164411.GA8350@linux.home>
+References: <83C781EB-5D66-426E-A216-E1B846A3EC8A@gmail.com>
+ <20201209164013.GA21199@linux.home>
+ <1E49F9F8-0325-439E-B200-17C8CB6A3CBE@gmail.com>
+ <20201209181033.GB21199@linux.home>
+ <FDF5FB97-DB82-4DFD-AC05-28F60C6D166F@gmail.com>
 MIME-Version: 1.0
-References: <20201214153450.874339-1-mario.limonciello@dell.com>
-In-Reply-To: <20201214153450.874339-1-mario.limonciello@dell.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 14 Dec 2020 08:39:01 -0800
-Message-ID: <CAKgT0UfSeW_mod5kqNFL71Nepbk+Kg65Vw_HeLVLjykX98u=xg@mail.gmail.com>
-Subject: Re: [PATCH v4 0/4] Improve s0ix flows for systems i219LM
-To:     Mario Limonciello <mario.limonciello@dell.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>,
-        David Arcari <darcari@redhat.com>,
-        Yijun Shen <Yijun.Shen@dell.com>,
-        "Yuan, Perry" <Perry.Yuan@dell.com>,
-        Anthony Wong <anthony.wong@canonical.com>,
-        Hans de Goede <hdegoede@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <FDF5FB97-DB82-4DFD-AC05-28F60C6D166F@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 7:35 AM Mario Limonciello
-<mario.limonciello@dell.com> wrote:
->
-> commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
-> disabled s0ix flows for systems that have various incarnations of the
-> i219-LM ethernet controller.  This was done because of some regressions
-> caused by an earlier
-> commit 632fbd5eb5b0e ("e1000e: fix S0ix flows for cable connected case")
-> with i219-LM controller.
->
-> Per discussion with Intel architecture team this direction should be changed and
-> allow S0ix flows to be used by default.  This patch series includes directional
-> changes for their conclusions in https://lkml.org/lkml/2020/12/13/15.
->
-> Changes from v3 to v4:
->  - Drop patch 1 for proper s0i3.2 entry, it was separated and is now merged in kernel
->  - Add patch to only run S0ix flows if shutdown succeeded which was suggested in
->    thread
->  - Adjust series for guidance from https://lkml.org/lkml/2020/12/13/15
->    * Revert i219-LM disallow-list.
->    * Drop all patches for systems tested by Dell in an allow list
->    * Increase ULP timeout to 1000ms
-> Changes from v2 to v3:
->  - Correct some grammar and spelling issues caught by Bjorn H.
->    * s/s0ix/S0ix/ in all commit messages
->    * Fix a typo in commit message
->    * Fix capitalization of proper nouns
->  - Add more pre-release systems that pass
->  - Re-order the series to add systems only at the end of the series
->  - Add Fixes tag to a patch in series.
->
-> Changes from v1 to v2:
->  - Directly incorporate Vitaly's dependency patch in the series
->  - Split out s0ix code into it's own file
->  - Adjust from DMI matching to PCI subsystem vendor ID/device matching
->  - Remove module parameter and sysfs, use ethtool flag instead.
->  - Export s0ix flag to ethtool private flags
->  - Include more people and lists directly in this submission chain.
->
-> Mario Limonciello (4):
->   e1000e: Only run S0ix flows if shutdown succeeded
->   e1000e: bump up timeout to wait when ME un-configure ULP mode
->   Revert "e1000e: disable s0ix entry and exit flows for ME systems"
->   e1000e: Export S0ix flags to ethtool
->
->  drivers/net/ethernet/intel/e1000e/e1000.h   |  1 +
->  drivers/net/ethernet/intel/e1000e/ethtool.c | 40 ++++++++++++++
->  drivers/net/ethernet/intel/e1000e/ich8lan.c |  4 +-
->  drivers/net/ethernet/intel/e1000e/netdev.c  | 59 ++++-----------------
->  4 files changed, 53 insertions(+), 51 deletions(-)
->
+On Thu, Dec 10, 2020 at 09:16:24AM +0200, Martin Zaharinov wrote:
+> And one other 
+> From other mailing I see you send patch to Denys Fedoryshchenko this patch is : 
+> 
+> diff --git a/drivers/net/ppp/ppp_generic.c 
+> b/drivers/net/ppp/ppp_generic.c
+> 
+> index 255a5def56e9..2acf4b0eabd1 100644
+> --- a/drivers/net/ppp/ppp_generic.c
+> +++ b/drivers/net/ppp/ppp_generic.c
+> @@ -3161,6 +3161,15 @@ ppp_connect_channel(struct channel *pch, int 
+> unit)
+> 
+> goto outl;
+> 
+> ppp_lock(ppp);
+> +   spin_lock_bh(>downl);
+> +   if (!pch->chan) {
+> +   /* Don't connect unregistered channels */
+> +   ppp_unlock(ppp);
+> +   spin_unlock_bh(>downl);
+> +   ret = -ENOTCONN;
+> +   goto outl;
+> +   }
+> +   spin_unlock_bh(>downl);
+> if (pch->file.hdrlen > ppp->file.hdrlen)
+> ppp->file.hdrlen = pch->file.hdrlen;
+> hdrlen = pch->file.hdrlen + 2;   /* for protocol bytes */
 
-The changes look good to me.
+This was a quick untested patch that I sent to help debugging Denys'
+problem. It has a lock inversion problem that I fixed before I formally
+submitted it upstream. I even warned about it in the original thread:
+https://lore.kernel.org/netdev/20180302174328.GD1413@alphalink.fr/
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+> But in official stable kernel three In ppp_generic.c is this : 
+> 
+> spin_lock_bh(&pch->downl); 
+> 	if (!pch->chan) { 
+> 	/* Don't connect unregistered channels */ 
+> 	spin_unlock_bh(&pch->downl); 
+> 	ppp_unlock(ppp); 
+> 	ret = -ENOTCONN; 
+> 	goto outl; }
+> 	spin_unlock_bh(&pch->downl);	
+
+This one is correct.
+
+> It is  normal to unlock ppp after spin_unlock ?
+> shouldn't it be as you wrote it?
+> In your patch first :
+> 
+> +   ppp_unlock(ppp);
+> +   spin_unlock_bh(>downl);
+
+No, nested locks have to be released in the reverse order they were
+acquired.
+
+> But in stable kernel is : 
+> 
+> spin_unlock_bh(&pch->downl); 
+> 	ppp_unlock(ppp); 
+
+This is correct, and has been correctly backported to 4.14-stable.
+
+
+> > On 9 Dec 2020, at 20:10, Guillaume Nault <gnault@redhat.com> wrote:
+> > 
+> > On Wed, Dec 09, 2020 at 06:57:44PM +0200, Martin Zaharinov wrote:
+> >>> On 9 Dec 2020, at 18:40, Guillaume Nault <gnault@redhat.com> wrote:
+> >>> On Wed, Dec 09, 2020 at 04:47:52PM +0200, Martin Zaharinov wrote:
+> >>>> Hi All
+> >>>> 
+> >>>> I have problem with latest kernel release 
+> >>>> And the problem is base on this late problem :
+> >>>> 
+> >>>> 
+> >>>> https://www.mail-archive.com/search?l=netdev@vger.kernel.org&q=subject:%22Re%5C%3A+ppp%5C%2Fpppoe%2C+still+panic+4.15.3+in+ppp_push%22&o=newest&f=1
+> >>>> 
+> >>>> I have same problem in kernel 5.6 > now I use kernel 5.9.13 and have same problem.
+> >>>> 
+> >>>> 
+> >>>> In kernel 5.9.13 now don’t have any crashes in dimes but in one moment accel service stop with defunct and in log have many of this line :
+> >>>> 
+> >>>> 
+> >>>> error: vlan608: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> error: vlan617: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> error: vlan679: ioctl(PPPIOCCONNECT): Transport endpoint is not connected
+> >>>> 
+> >>>> In one moment connected user bump double or triple and after that service defunct and need wait to drop all session to start .
+> >>>> 
+> >>>> I talk with accel-ppp team and they said this is kernel related problem and to back to kernel 4.14 there is not this problem.
+> >>>> 
+> >>>> Problem is come after kernel 4.15 > and not have solution to this moment.
+> >>> 
+> >>> I'm sorry, I don't understand.
+> >>> Do you mean that v4.14 worked fine (no crash, no ioctl() error)?
+> >>> Did the problem start appearing in v4.15? Or did v4.15 work and the
+> >>> problem appeared in v4.16?
+> >> 
+> >> In Telegram group I talk with Sergey and Dimka and told my the problem is come after changes from 4.14 to 4.15 
+> >> Sergey write this : "as I know, there was a similar issue in kernel 4.15 so maybe it is still not fixed"
+> > 
+> > Ok, but what is your experience? Do you have a kernel version where
+> > accel-ppp reports no ioctl() error and doesn't crash the kernel?
+> > 
+> > There wasn't a lot of changes between 4.14 and 4.15 for PPP.
+> > The only PPP patch I can see that might have been risky is commit
+> > 0171c4183559 ("ppp: unlock all_ppp_mutex before registering device").
+> > 
+> >> I don’t have options to test with this old kernel 4.14.xxx i don’t have support for them.
+> >> 
+> >> 
+> >>> 
+> >>>> Please help to find the problem.
+> >>>> 
+> >>>> Last time in link I see is make changes in ppp_generic.c 
+> >>>> 
+> >>>> ppp_lock(ppp);
+> >>>>       spin_lock_bh(&pch->downl);
+> >>>>       if (!pch->chan) {
+> >>>>               /* Don't connect unregistered channels */
+> >>>>               spin_unlock_bh(&pch->downl);
+> >>>>               ppp_unlock(ppp);
+> >>>>               ret = -ENOTCONN;
+> >>>>               goto outl;
+> >>>>       }
+> >>>>       spin_unlock_bh(&pch->downl);
+> >>>> 
+> >>>> 
+> >>>> But this fix only to don’t display error and freeze system 
+> >>>> The problem is stay and is to big.
+> >>> 
+> >>> Do you use accel-ppp's unit-cache option? Does the problem go away if
+> >>> you stop using it?
+> >>> 
+> >> 
+> >> No I don’t use unit-cache , if I set unit-cache accel-ppp defunct same but user Is connect and disconnet more fast.
+> >> 
+> >> The problem is same with unit and without . 
+> >> Only after this patch I don’t see error in dimes but this is not solution.
+> > 
+> > Soryy, what's "in dimes"?
+> > Do you mean that reverting commit 77f840e3e5f0 ("ppp: prevent
+> > unregistered channels from connecting to PPP units") fixes your problem?
+> > 
+> >> In network have customer what have power cut problem, when drop 600 user and back Is normal but in this moment kernel is locking and start to make this : 
+> >> sessions:
+> >>  starting: 4235
+> >>  active: 3882
+> >>  finishing: 378
+> >> The problem is starting session is not real user normal user in this server is ~4k customers .
+> > 
+> > What type of session is it? L2TP, PPPoE, PPTP?
+> > 
+> >> I use pppd_compat .
+> >> 
+> >> Any idea ?
+> >> 
+> >>>> 
+> >>>> Please help to fix.
+> >> Martin
+> 
+
