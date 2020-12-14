@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F96E2D9B4A
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 16:43:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F370A2D9B35
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 16:40:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406958AbgLNPi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 10:38:28 -0500
-Received: from mx0b-00154904.pphosted.com ([148.163.137.20]:21434 "EHLO
+        id S2438949AbgLNPf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 10:35:59 -0500
+Received: from mx0b-00154904.pphosted.com ([148.163.137.20]:22006 "EHLO
         mx0b-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2408226AbgLNPfj (ORCPT
+        by vger.kernel.org with ESMTP id S2408230AbgLNPfj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 10:35:39 -0500
-Received: from pps.filterd (m0170394.ppops.net [127.0.0.1])
-        by mx0b-00154904.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEFRHe3022310;
-        Mon, 14 Dec 2020 10:34:56 -0500
+Received: from pps.filterd (m0170396.ppops.net [127.0.0.1])
+        by mx0b-00154904.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEFSQxo023698;
+        Mon, 14 Dec 2020 10:34:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=smtpout1;
- bh=PH4VrMex6VelAado/JuRPdp52ERlBzmgA38FwjRkxvk=;
- b=XlEBPzrInNkJxqlbKwqZAdrcM7IEBtfAHBCdTOEKHOkJfO4WbA19IlYAIQdsmBDzP+iM
- Bsjv2xDmz4XRfK6ltU/YhtMtl/QOz2VfLa7vrYZLe7/EE56ZGy5pHYJWCkAyKW1zIFbh
- MiEytatEfdwnrUkpSRvBbYvOjCK+rfVX7dmPBOapBavOs8Jhw2jnU5odLWdIoORwB6eu
- T9DGmHqOdAuNNK+QL+AxzAks35YyDvzC6k2WJ6f7En8iVx+JtoBa82YCWdgZyKlFGz1G
- SOnYUfmRr6FbpTyX96Gm8X//UyWlEOhARXCiwTELZlAvyN0oEw1CRsQ6eC2z7nWHNXgt 7g== 
+ bh=Bnig+4sdKu7AtmfRjU+L/V5MkaVTCBStSCcgAUTzBKo=;
+ b=Y0q94/JIXHg0WOFdX8gI6cppaD/kCywjcDLDTee8kMrmBeVIcnvHUtyW+zXSqVFDGpTM
+ ePpkyLi+jByitioLho08RdWKNYegLMajY8eV3HDgpt9aBPaZE83F+5WlDd7biOFyK8e8
+ BGs09ZeUuUWsfLDqCn+CJ3VJiZ4/mgPUfMbF348h+2tp6D4/0fzvgi8cpe+7tF42D1Ht
+ yjk3U0aOBm4FyDrjbjQUYwAL1Tfg5hjddu+pP1DxHS8pYsYVBAsvJuCCo/UmpuWUwIO+
+ ePJcrsk0E5Hldh6nePVXHCr8rAVXkrXLe1aEspRPJDQ92u7d/2HaBE+UoxCW+IBlLx+q Ew== 
 Received: from mx0a-00154901.pphosted.com (mx0b-00154901.pphosted.com [67.231.157.37])
-        by mx0b-00154904.pphosted.com with ESMTP id 35csaanny3-1
+        by mx0b-00154904.pphosted.com with ESMTP id 35ctk4dj3r-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Dec 2020 10:34:56 -0500
+        Mon, 14 Dec 2020 10:34:57 -0500
 Received: from pps.filterd (m0089484.ppops.net [127.0.0.1])
-        by mx0b-00154901.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEFXLYQ003223;
+        by mx0b-00154901.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEFXLYR003223;
         Mon, 14 Dec 2020 10:34:56 -0500
 Received: from ausc60pc101.us.dell.com (ausc60pc101.us.dell.com [143.166.85.206])
-        by mx0b-00154901.pphosted.com with ESMTP id 35e7q23aw7-4
+        by mx0b-00154901.pphosted.com with ESMTP id 35e7q23aw7-5
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Mon, 14 Dec 2020 10:34:56 -0500
 X-LoopCount0: from 10.173.37.130
 X-PREM-Routing: D-Outbound
 X-IronPort-AV: E=Sophos;i="5.78,420,1599541200"; 
-   d="scan'208";a="1641438814"
+   d="scan'208";a="1641438815"
 From:   Mario Limonciello <mario.limonciello@dell.com>
 To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
@@ -52,9 +52,9 @@ Cc:     linux-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
         Yijun.Shen@dell.com, Perry.Yuan@dell.com,
         anthony.wong@canonical.com, Hans de Goede <hdegoede@redhat.com>,
         Mario Limonciello <mario.limonciello@dell.com>
-Subject: [PATCH 3/4] Revert "e1000e: disable s0ix entry and exit flows for ME systems"
-Date:   Mon, 14 Dec 2020 09:34:49 -0600
-Message-Id: <20201214153450.874339-4-mario.limonciello@dell.com>
+Subject: [PATCH 4/4] e1000e: Export S0ix flags to ethtool
+Date:   Mon, 14 Dec 2020 09:34:50 -0600
+Message-Id: <20201214153450.874339-5-mario.limonciello@dell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201214153450.874339-1-mario.limonciello@dell.com>
 References: <20201214153450.874339-1-mario.limonciello@dell.com>
@@ -64,116 +64,166 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
  definitions=2020-12-14_06:2020-12-11,2020-12-14 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
  spamscore=0 lowpriorityscore=0 malwarescore=0 suspectscore=0 clxscore=1015
- bulkscore=0 phishscore=0 adultscore=0 mlxlogscore=724 impostorscore=0
+ bulkscore=0 phishscore=0 adultscore=0 mlxlogscore=777 impostorscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
  definitions=main-2012140108
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=857
- suspectscore=0 adultscore=0 phishscore=0 mlxscore=0 malwarescore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=933 bulkscore=0
+ malwarescore=0 adultscore=0 spamscore=0 phishscore=0 suspectscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2012140108
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
-disabled s0ix flows for systems that have various incarnations of the
-i219-LM ethernet controller.  This changed caused power consumption regressions
-on the following shipping Dell Comet Lake based laptops:
-* Latitude 5310
-* Latitude 5410
-* Latitude 5410
-* Latitude 5510
-* Precision 3550
-* Latitude 5411
-* Latitude 5511
-* Precision 3551
-* Precision 7550
-* Precision 7750
+This flag can be used by an end user to disable S0ix flows on a
+buggy system or by an OEM for development purposes.
 
-This commit was introduced because of some regressions on certain Thinkpad
-laptops.  This comment was potentially caused by an earlier
-commit 632fbd5eb5b0e ("e1000e: fix S0ix flows for cable connected case").
-or it was possibly caused by a system not meeting platform architectural
-requirements for low power consumption.  Other changes made in the driver
-with extended timeouts are expected to make the driver more impervious to
-platform firmware behavior.
+If you need this flag to be persisted across reboots, it's suggested
+to use a udev rule to call adjust it until the kernel could have your
+configuration in a disallow list.
 
-Fixes: e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
 Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
 ---
- drivers/net/ethernet/intel/e1000e/netdev.c | 45 +---------------------
- 1 file changed, 2 insertions(+), 43 deletions(-)
+ drivers/net/ethernet/intel/e1000e/e1000.h   |  1 +
+ drivers/net/ethernet/intel/e1000e/ethtool.c | 40 +++++++++++++++++++++
+ drivers/net/ethernet/intel/e1000e/netdev.c  |  9 ++---
+ 3 files changed, 46 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 6588f5d4a2be..b9800ba2006c 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -103,45 +103,6 @@ static const struct e1000_reg_info e1000_reg_info_tbl[] = {
- 	{0, NULL}
+diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
+index ba7a0f8f6937..5b2143f4b1f8 100644
+--- a/drivers/net/ethernet/intel/e1000e/e1000.h
++++ b/drivers/net/ethernet/intel/e1000e/e1000.h
+@@ -436,6 +436,7 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
+ #define FLAG2_DFLT_CRC_STRIPPING          BIT(12)
+ #define FLAG2_CHECK_RX_HWTSTAMP           BIT(13)
+ #define FLAG2_CHECK_SYSTIM_OVERFLOW       BIT(14)
++#define FLAG2_ENABLE_S0IX_FLOWS           BIT(15)
+ 
+ #define E1000_RX_DESC_PS(R, i)	    \
+ 	(&(((union e1000_rx_desc_packet_split *)((R).desc))[i]))
+diff --git a/drivers/net/ethernet/intel/e1000e/ethtool.c b/drivers/net/ethernet/intel/e1000e/ethtool.c
+index 03215b0aee4b..eb683949ebfe 100644
+--- a/drivers/net/ethernet/intel/e1000e/ethtool.c
++++ b/drivers/net/ethernet/intel/e1000e/ethtool.c
+@@ -23,6 +23,13 @@ struct e1000_stats {
+ 	int stat_offset;
  };
  
--struct e1000e_me_supported {
--	u16 device_id;		/* supported device ID */
--};
--
--static const struct e1000e_me_supported me_supported[] = {
--	{E1000_DEV_ID_PCH_LPT_I217_LM},
--	{E1000_DEV_ID_PCH_LPTLP_I218_LM},
--	{E1000_DEV_ID_PCH_I218_LM2},
--	{E1000_DEV_ID_PCH_I218_LM3},
--	{E1000_DEV_ID_PCH_SPT_I219_LM},
--	{E1000_DEV_ID_PCH_SPT_I219_LM2},
--	{E1000_DEV_ID_PCH_LBG_I219_LM3},
--	{E1000_DEV_ID_PCH_SPT_I219_LM4},
--	{E1000_DEV_ID_PCH_SPT_I219_LM5},
--	{E1000_DEV_ID_PCH_CNP_I219_LM6},
--	{E1000_DEV_ID_PCH_CNP_I219_LM7},
--	{E1000_DEV_ID_PCH_ICP_I219_LM8},
--	{E1000_DEV_ID_PCH_ICP_I219_LM9},
--	{E1000_DEV_ID_PCH_CMP_I219_LM10},
--	{E1000_DEV_ID_PCH_CMP_I219_LM11},
--	{E1000_DEV_ID_PCH_CMP_I219_LM12},
--	{E1000_DEV_ID_PCH_TGP_I219_LM13},
--	{E1000_DEV_ID_PCH_TGP_I219_LM14},
--	{E1000_DEV_ID_PCH_TGP_I219_LM15},
--	{0}
--};
--
--static bool e1000e_check_me(u16 device_id)
--{
--	struct e1000e_me_supported *id;
--
--	for (id = (struct e1000e_me_supported *)me_supported;
--	     id->device_id; id++)
--		if (device_id == id->device_id)
--			return true;
--
--	return false;
--}
--
- /**
-  * __ew32_prepare - prepare to write to MAC CSR register on certain parts
-  * @hw: pointer to the HW structure
-@@ -6974,8 +6935,7 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
++static const char e1000e_priv_flags_strings[][ETH_GSTRING_LEN] = {
++#define E1000E_PRIV_FLAGS_S0IX_ENABLED	BIT(0)
++	"s0ix-enabled",
++};
++
++#define E1000E_PRIV_FLAGS_STR_LEN ARRAY_SIZE(e1000e_priv_flags_strings)
++
+ #define E1000_STAT(str, m) { \
+ 		.stat_string = str, \
+ 		.type = E1000_STATS, \
+@@ -1776,6 +1783,8 @@ static int e1000e_get_sset_count(struct net_device __always_unused *netdev,
+ 		return E1000_TEST_LEN;
+ 	case ETH_SS_STATS:
+ 		return E1000_STATS_LEN;
++	case ETH_SS_PRIV_FLAGS:
++		return E1000E_PRIV_FLAGS_STR_LEN;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -2097,6 +2106,10 @@ static void e1000_get_strings(struct net_device __always_unused *netdev,
+ 			p += ETH_GSTRING_LEN;
+ 		}
+ 		break;
++	case ETH_SS_PRIV_FLAGS:
++		memcpy(data, e1000e_priv_flags_strings,
++		       E1000E_PRIV_FLAGS_STR_LEN * ETH_GSTRING_LEN);
++		break;
+ 	}
+ }
+ 
+@@ -2305,6 +2318,31 @@ static int e1000e_get_ts_info(struct net_device *netdev,
+ 	return 0;
+ }
+ 
++static u32 e1000e_get_priv_flags(struct net_device *netdev)
++{
++	struct e1000_adapter *adapter = netdev_priv(netdev);
++	u32 priv_flags = 0;
++
++	if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
++		priv_flags |= E1000E_PRIV_FLAGS_S0IX_ENABLED;
++
++	return priv_flags;
++}
++
++static int e1000e_set_priv_flags(struct net_device *netdev, u32 priv_flags)
++{
++	struct e1000_adapter *adapter = netdev_priv(netdev);
++	unsigned int flags2 = adapter->flags2;
++
++	flags2 &= ~FLAG2_ENABLE_S0IX_FLOWS;
++	if (priv_flags & E1000E_PRIV_FLAGS_S0IX_ENABLED)
++		flags2 |= FLAG2_ENABLE_S0IX_FLOWS;
++	if (flags2 != adapter->flags2)
++		adapter->flags2 = flags2;
++
++	return 0;
++}
++
+ static const struct ethtool_ops e1000_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
+ 	.get_drvinfo		= e1000_get_drvinfo,
+@@ -2336,6 +2374,8 @@ static const struct ethtool_ops e1000_ethtool_ops = {
+ 	.set_eee		= e1000e_set_eee,
+ 	.get_link_ksettings	= e1000_get_link_ksettings,
+ 	.set_link_ksettings	= e1000_set_link_ksettings,
++	.get_priv_flags		= e1000e_get_priv_flags,
++	.set_priv_flags		= e1000e_set_priv_flags,
+ };
+ 
+ void e1000e_set_ethtool_ops(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index b9800ba2006c..e9b82c209c2d 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6923,7 +6923,6 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
+ 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct e1000_hw *hw = &adapter->hw;
+ 	int rc;
+ 
+ 	e1000e_flush_lpic(pdev);
+@@ -6935,7 +6934,7 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
  		e1000e_pm_thaw(dev);
  	} else {
  		/* Introduce S0ix implementation */
--		if (hw->mac.type >= e1000_pch_cnp &&
--		    !e1000e_check_me(hw->adapter->pdev->device))
-+		if (hw->mac.type >= e1000_pch_cnp)
+-		if (hw->mac.type >= e1000_pch_cnp)
++		if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
  			e1000e_s0ix_entry_flow(adapter);
  	}
  
-@@ -6991,8 +6951,7 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+@@ -6947,11 +6946,10 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+ 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct e1000_hw *hw = &adapter->hw;
  	int rc;
  
  	/* Introduce S0ix implementation */
--	if (hw->mac.type >= e1000_pch_cnp &&
--	    !e1000e_check_me(hw->adapter->pdev->device))
-+	if (hw->mac.type >= e1000_pch_cnp)
+-	if (hw->mac.type >= e1000_pch_cnp)
++	if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
  		e1000e_s0ix_exit_flow(adapter);
  
  	rc = __e1000_resume(pdev);
+@@ -7615,6 +7613,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (!(adapter->flags & FLAG_HAS_AMT))
+ 		e1000e_get_hw_control(adapter);
+ 
++	if (hw->mac.type >= e1000_pch_cnp)
++		adapter->flags2 |= FLAG2_ENABLE_S0IX_FLOWS;
++
+ 	strlcpy(netdev->name, "eth%d", sizeof(netdev->name));
+ 	err = register_netdev(netdev);
+ 	if (err)
 -- 
 2.25.1
 
