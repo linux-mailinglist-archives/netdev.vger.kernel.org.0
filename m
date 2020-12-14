@@ -2,127 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F4892D91AE
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 03:17:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33BB72D91B0
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 03:24:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731299AbgLNCPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Dec 2020 21:15:52 -0500
-Received: from ozlabs.org ([203.11.71.1]:43523 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726328AbgLNCPc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Dec 2020 21:15:32 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CvQ2C1vMzz9sTg;
-        Mon, 14 Dec 2020 13:14:42 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1607912088;
-        bh=F7ozDfBvF5sC6cB5ykdOGoUMbeZLYwoJfidyTcOnZTg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=sVsePjZ5FtheNLkzNUo93gPuuPtnyjxL3a7pQ+QiFdqYbuxtpm5uVeYMLpwmSblYH
-         1WR3TU2BGJW+KhaWe2fFG1rufL+fqTRim1/yNWZEDCGgYwSKworJKzJIhzmyQ91czz
-         3cudbQ0j1SgXH7gmPCR3PiBS62HUkDovAax6a37M1RWc15hCjDRdCM3Wwiq6JPXIxz
-         e6puEibtlIiU58gMuQOBzNcNEMwEU92WcwCG0fEM9JUV4X1LspO3M36+dQMwVjU4Gz
-         /zSLak3vgSJbvbK2ovgUYMXRKFx1DXNq46FzQw0/Z9AZFjMFhSYyyu5FlRsQZEe01a
-         n7ZrSR8K/y6IQ==
-Date:   Mon, 14 Dec 2020 13:14:38 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steve French <stfrench@microsoft.com>
-Cc:     Samuel Cabrero <scabrero@suse.de>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20201214131438.7c9b2f30@canb.auug.org.au>
+        id S2437909AbgLNCXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Dec 2020 21:23:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726316AbgLNCXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Dec 2020 21:23:40 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDE7C0613CF
+        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 18:22:59 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id y17so14854068wrr.10
+        for <netdev@vger.kernel.org>; Sun, 13 Dec 2020 18:22:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0gn4DRs529B6UR7+MZ66byWZpbUszeIoxbeaYCQ3L0g=;
+        b=b81MflqmPGXpRA2kCkmHBYeKs65Q6AsGNluMFWLu1c1B5C3/J16hfZZyohpuPcxLRU
+         mNFenIaVAX+BRfK4s3zIhUX/okySVVrza7s/k8kXrIPYHfaT5oQKTuL5P9t7M+mq+GJJ
+         1UMVWHHsVVT97DwuXt1M9L3gfsjuFvcU5tqL8uBZbhrEm7uE30L1gMx+2R5gEzueqDFs
+         Ncak9CSbeap6Z14SgVq035Q6oszXoezQAfitHYNuJZC6BuGSY/J5hXwtgHaF5WV7ZGz5
+         Rv2KpYfOGPKd2PoU8W41OFs+wvWYSCH4tDPbWeD3G48c6Nz+3p58BlDESbqeYvHYCmoD
+         e5FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0gn4DRs529B6UR7+MZ66byWZpbUszeIoxbeaYCQ3L0g=;
+        b=q9riok6c5bjSKHP9+M2DubCuWDzsgCt8YKqxz4s97W4BzvfhChUX8iqNiZDVhDnf/Q
+         bIKUc83xKlbgXs/7zBnqfz76qaWNgRNsUm9UchhbrF8hFz8zJEb3ae7aQ7Bm0CjrJ5XO
+         y/uib6SyUyl/sCCiKMR2pMKTaYx+z95w+/dYyQ39PGM0+Q4wmElyI4e0NmBH0PX2ny5u
+         hPZAADh171q+nSsk4n50Www/YU3yz0025fJEpPuJ+OrGpZTR/7Q4LZ58Nluw8htdOtWP
+         2pjPUCOtQ0vE0gYipmaT5h/lLZDZqOnlMQWB04xWCLDUB8BVpLO4Md3xeRcmIq+jD4YJ
+         7xvw==
+X-Gm-Message-State: AOAM532sddjmULOFXrPtIaDYAPygNlr7StccOyoXq4CT4jh4F2Cs2124
+        gNoxMWZYk9nOI1LUweMTseMy+AQvRVU9P74UWSQILED9MaZjVg==
+X-Google-Smtp-Source: ABdhPJyee7sn6paMCSM8cK5QwDANznn6hLybXpWpZf77RxDLPaSAQwRluHo/6or3rkFOgJ/WETK9VGn6WXXwQo+Jc+s=
+X-Received: by 2002:adf:9506:: with SMTP id 6mr26263942wrs.172.1607912578290;
+ Sun, 13 Dec 2020 18:22:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/tX+H/0dhwPC_iLEBlEhCfZi";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20201213204339.24445-1-v@nametag.social>
+In-Reply-To: <20201213204339.24445-1-v@nametag.social>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Sun, 13 Dec 2020 21:22:22 -0500
+Message-ID: <CACSApvbAXTN9VLcB0BphbJffZ8YXpxm=JF8FteKBVkBArwcd3A@mail.gmail.com>
+Subject: Re: [PATCH v3] Allow UDP cmsghdrs through io_uring
+To:     Victor Stewart <v@nametag.social>
+Cc:     io-uring <io-uring@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Jann Horn <jannh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/tX+H/0dhwPC_iLEBlEhCfZi
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sun, Dec 13, 2020 at 3:43 PM Victor Stewart <v@nametag.social> wrote:
+>
+> here we go, figured it out. sorry about that.
+>
+> This patch adds PROTO_CMSG_DATA_ONLY to inet_dgram_ops and inet6_dgram_ops so that UDP_SEGMENT (GSO) and UDP_GRO can be used through io_uring.
 
-Hi all,
+The v3 patch doesn't have "Signed-off-by". You can see all the checks
+on patchwork:
+https://patchwork.kernel.org/project/netdevbpf/patch/20201213204339.24445-2-v@nametag.social/
 
-After merging the net-next tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
+For patches to netdev, please include the target. Here it should be net-next:
+https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+git format-patch --subject-prefix='PATCH net-next v4' ...
 
-fs/cifs/cifs_swn.c: In function 'cifs_swn_notify':
-fs/cifs/cifs_swn.c:450:4: error: implicit declaration of function 'nla_strl=
-cpy'; did you mean 'nla_strscpy'? [-Werror=3Dimplicit-function-declaration]
-  450 |    nla_strlcpy(name, info->attrs[CIFS_GENL_ATTR_SWN_RESOURCE_NAME],
-      |    ^~~~~~~~~~~
-      |    nla_strscpy
+Also, since this patch affects udp, it's preferred to include "udp: "
+in your commit's subject line.  In other words, the v4 of this patch
+should look like the following:
 
-Caused by commit
+[PATCH net-next v2] udp: allow UDP cmsghdrs through io_uring
 
-  872f69034194 ("treewide: rename nla_strlcpy to nla_strscpy.")
+Thank you
 
-interacting with commit
 
-  27228d73f4d2 ("cifs: Set witness notification handler for messages from u=
-serspace daemon")
-
-from the cifs tree.
-
-I have applied the following merge fix patch.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Mon, 14 Dec 2020 13:09:27 +1100
-Subject: [PATCH] fixup for "treewide: rename nla_strlcpy to nla_strscpy."
-
-conflicting with
-
-"cifs: Set witness notification handler for messages from userspace daemon"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- fs/cifs/cifs_swn.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/cifs/cifs_swn.c b/fs/cifs/cifs_swn.c
-index 642c9eedc8ab..d762d442dfa5 100644
---- a/fs/cifs/cifs_swn.c
-+++ b/fs/cifs/cifs_swn.c
-@@ -447,7 +447,7 @@ int cifs_swn_notify(struct sk_buff *skb, struct genl_in=
-fo *info)
- 		int state;
-=20
- 		if (info->attrs[CIFS_GENL_ATTR_SWN_RESOURCE_NAME]) {
--			nla_strlcpy(name, info->attrs[CIFS_GENL_ATTR_SWN_RESOURCE_NAME],
-+			nla_strscpy(name, info->attrs[CIFS_GENL_ATTR_SWN_RESOURCE_NAME],
- 					sizeof(name));
- 		} else {
- 			cifs_dbg(FYI, "%s: missing resource name attribute\n", __func__);
---=20
-2.29.2
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/tX+H/0dhwPC_iLEBlEhCfZi
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/Wyo4ACgkQAVBC80lX
-0GzBywf8D8XRKEEUmkHnvrq/xW6WBfsU2Pdk3b0zDC4onI/gJHyfCkO6XyHV9I4o
-KXG+CRBjG/IIZYOeA9aGx8Q4EhiZnZwM/5IccjOOvzFZAagdejMHRYXEHX3Ozray
-znW1RTQ7ysO/UBVistZZ+cWyvUGHoJzgUjmpm7axh75zAUEC4jtN35TNjVKMuiN3
-2pobSeGN8DCJMVnXApaLGf+XJJnXpDUOiYlKzjsafR7QHdeR40Wij5MfU73/KF5q
-VYqctZLfpuQMoYm+pcN6j4jwE/+Tx+jVEdgKRiB3LhoQRMHeANY11nV6/k5PiZHU
-nwBG2oFvPwWf1gU904LeBwMro0cSJQ==
-=UsjC
------END PGP SIGNATURE-----
-
---Sig_/tX+H/0dhwPC_iLEBlEhCfZi--
+> GSO and GRO are vital to bring QUIC servers on par with TCP throughputs, and together offer a higher
+> throughput gain than io_uring alone (rate of data transit
+> considering), thus io_uring is presently the lesser performance choice.
+>
+> RE http://vger.kernel.org/lpc_net2018_talks/willemdebruijn-lpc2018-udpgso-paper-DRAFT-1.pdf,
+> GSO is about +~63% and GRO +~82%.
+>
+> this patch closes that loophole.
+>
+> net/ipv4/af_inet.c  | 1 +
+> net/ipv6/af_inet6.c | 1 +
+> net/socket.c        | 8 +++++---
+> 3 files changed, 7 insertions(+), 3 deletions(-)
+>
+>
