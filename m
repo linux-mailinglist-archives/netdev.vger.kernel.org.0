@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA3C12DA0A8
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:37:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B4FD2DA0A3
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:37:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502187AbgLNTgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 14:36:39 -0500
-Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:10460 "EHLO
-        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2441071AbgLNTex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 14:34:53 -0500
-Received: from pps.filterd (m0170393.ppops.net [127.0.0.1])
-        by mx0a-00154904.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEJWFf8026029;
-        Mon, 14 Dec 2020 14:34:12 -0500
+        id S2441097AbgLNTfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 14:35:22 -0500
+Received: from mx0b-00154904.pphosted.com ([148.163.137.20]:5438 "EHLO
+        mx0b-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2441069AbgLNTew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 14:34:52 -0500
+Received: from pps.filterd (m0170398.ppops.net [127.0.0.1])
+        by mx0b-00154904.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEJVNSX010332;
+        Mon, 14 Dec 2020 14:34:10 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=smtpout1;
- bh=NR4be8499nTiqofcJ/u7O//eKb7BcXFXWk/GLtS08VM=;
- b=ptDAtV2JL7w8/tILNAvsL1cTN43N8JHaNE1+G6oI3Wzc8ot4+N/QalinGsYf7WzGlRcR
- jGizKKZ7m+lkd9gwV2yucRGk637D+zlC9ArJfc4Awbszr0ADxfHun1wULU1UsNj7eChc
- KupobuCC4ki4oEGeRF168mhto3UY5cLQ3XTtDOFn1OvAoqivDt7RZWIfoCySJD2s109N
- /UvwF8RKfrgri8ti6n4sC1rJMGyQTQArnEgDdo/lT+g0fvCn+5ofblCMEgKVHUhFQp5w
- rYwhlCOS69iFDxKYR6tlrePedJ2TkCOH6vHOIXyv+x6f+4ouLrq+SmY2reb3QZjYEuBr Yw== 
+ bh=8afjPOHWIh3Kk/CaJ6E3dMsZaOm0VHVAq7VOUtIhrYQ=;
+ b=QUEFbDb4vekvJVGcKq6hzSIYIT1rQ0ReEee6L9ILFELl7kxyhGNfAwEocI8UKOMdkvyx
+ qkyob22h/3Sec1WDXiXv44PoeT3Wuj0q6FXKO+F5xEQydY0gkRTCF99QKml5c+kPB4oP
+ A6+wsEAM+g0KnPFunQLA/BcErKi6OOW8i9+v45S+yYd4MHgX0lA9H/VBM9+aKNQDlvMc
+ GMY53Q/O1g8x1TEw4bbDp280XMu61ei7dH3ULEXgG4lpzapAXYMJG2+Rf6n39yUzqJdp
+ Rgs54rGVLqmyX7F/ZH1h4oJtgVE1qMFqMkBjaI9RdPuQA9Ow8uyH5CCVPJEQScJb/y4D CQ== 
 Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
-        by mx0a-00154904.pphosted.com with ESMTP id 35ct2ppk0n-1
+        by mx0b-00154904.pphosted.com with ESMTP id 35csydxkw8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Dec 2020 14:34:12 -0500
-Received: from pps.filterd (m0133268.ppops.net [127.0.0.1])
-        by mx0a-00154901.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEJU0AX003633;
-        Mon, 14 Dec 2020 14:34:12 -0500
+        Mon, 14 Dec 2020 14:34:10 -0500
+Received: from pps.filterd (m0134746.ppops.net [127.0.0.1])
+        by mx0a-00154901.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEJY6Q4182661;
+        Mon, 14 Dec 2020 14:34:09 -0500
 Received: from ausxippc110.us.dell.com (AUSXIPPC110.us.dell.com [143.166.85.200])
-        by mx0a-00154901.pphosted.com with ESMTP id 35e6kd8p9a-1
+        by mx0a-00154901.pphosted.com with ESMTP id 35e5emsm0j-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Dec 2020 14:34:11 -0500
+        Mon, 14 Dec 2020 14:34:09 -0500
 X-LoopCount0: from 10.173.37.130
 X-PREM-Routing: D-Outbound
 X-IronPort-AV: E=Sophos;i="5.78,420,1599541200"; 
-   d="scan'208";a="1020795053"
+   d="scan'208";a="1020795054"
 From:   Mario Limonciello <mario.limonciello@dell.com>
 To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
@@ -51,12 +51,10 @@ Cc:     linux-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
         David Miller <davem@davemloft.net>, darcari@redhat.com,
         Yijun.Shen@dell.com, Perry.Yuan@dell.com,
         anthony.wong@canonical.com, Hans de Goede <hdegoede@redhat.com>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Aaron Ma <aaron.ma@canonical.com>,
-        Mark Pearson <markpearson@lenovo.com>
-Subject: [PATCH v5 2/4] e1000e: bump up timeout to wait when ME un-configures ULP mode
-Date:   Mon, 14 Dec 2020 13:29:33 -0600
-Message-Id: <20201214192935.895174-3-mario.limonciello@dell.com>
+        Mario Limonciello <mario.limonciello@dell.com>
+Subject: [PATCH v5 3/4] Revert "e1000e: disable s0ix entry and exit flows for ME systems"
+Date:   Mon, 14 Dec 2020 13:29:34 -0600
+Message-Id: <20201214192935.895174-4-mario.limonciello@dell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201214192935.895174-1-mario.limonciello@dell.com>
 References: <20201214192935.895174-1-mario.limonciello@dell.com>
@@ -64,82 +62,119 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
  definitions=2020-12-14_10:2020-12-11,2020-12-14 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
- priorityscore=1501 clxscore=1015 impostorscore=0 adultscore=0 bulkscore=0
- suspectscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012140129
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 adultscore=0 mlxscore=0
- suspectscore=0 spamscore=0 mlxlogscore=999 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012140129
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ lowpriorityscore=0 mlxlogscore=750 malwarescore=0 suspectscore=0
+ bulkscore=0 adultscore=0 priorityscore=1501 spamscore=0 clxscore=1015
+ impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012140129
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=924 suspectscore=0
+ bulkscore=0 phishscore=0 adultscore=0 malwarescore=0 spamscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012140129
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Per guidance from Intel ethernet architecture team, it may take
-up to 1 second for unconfiguring ULP mode.
+commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
+disabled s0ix flows for systems that have various incarnations of the
+i219-LM ethernet controller.  This changed caused power consumption regressions
+on the following shipping Dell Comet Lake based laptops:
+* Latitude 5310
+* Latitude 5410
+* Latitude 5410
+* Latitude 5510
+* Precision 3550
+* Latitude 5411
+* Latitude 5511
+* Precision 3551
+* Precision 7550
+* Precision 7750
 
-However in practice this seems to be taking up to 2 seconds on
-some Lenovo machines.  Detect scenarios that take more than 1 second
-but less than 2.5 seconds and emit a warning on resume for those
-scenarios.
+This commit was introduced because of some regressions on certain Thinkpad
+laptops.  This comment was potentially caused by an earlier
+commit 632fbd5eb5b0e ("e1000e: fix S0ix flows for cable connected case").
+or it was possibly caused by a system not meeting platform architectural
+requirements for low power consumption.  Other changes made in the driver
+with extended timeouts are expected to make the driver more impervious to
+platform firmware behavior.
 
-Suggested-by: Aaron Ma <aaron.ma@canonical.com>
-Suggested-by: Sasha Netfin <sasha.neftin@intel.com>
-Suggested-by: Hans de Goede <hdegoede@redhat.com>
-CC: Mark Pearson <markpearson@lenovo.com>
-Fixes: f15bb6dde738cc8fa0 ("e1000e: Add support for S0ix")
-BugLink: https://bugs.launchpad.net/bugs/1865570
-Link: https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20200323191639.48826-1-aaron.ma@canonical.com/
-Link: https://lkml.org/lkml/2020/12/13/15
-Link: https://lkml.org/lkml/2020/12/14/708
+Fixes: e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
+Reviewed-by: Alexander Duyck <alexander.duyck@gmail.com>
 Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
 ---
- drivers/net/ethernet/intel/e1000e/ich8lan.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/e1000e/netdev.c | 45 +---------------------
+ 1 file changed, 2 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index 9aa6fad8ed47..fdf23d20c954 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1240,6 +1240,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
- 		return 0;
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 6588f5d4a2be..b9800ba2006c 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -103,45 +103,6 @@ static const struct e1000_reg_info e1000_reg_info_tbl[] = {
+ 	{0, NULL}
+ };
  
- 	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID) {
-+		struct e1000_adapter *adapter = hw->adapter;
-+		bool firmware_bug = false;
-+
- 		if (force) {
- 			/* Request ME un-configure ULP mode in the PHY */
- 			mac_reg = er32(H2ME);
-@@ -1248,16 +1251,23 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
- 			ew32(H2ME, mac_reg);
- 		}
+-struct e1000e_me_supported {
+-	u16 device_id;		/* supported device ID */
+-};
+-
+-static const struct e1000e_me_supported me_supported[] = {
+-	{E1000_DEV_ID_PCH_LPT_I217_LM},
+-	{E1000_DEV_ID_PCH_LPTLP_I218_LM},
+-	{E1000_DEV_ID_PCH_I218_LM2},
+-	{E1000_DEV_ID_PCH_I218_LM3},
+-	{E1000_DEV_ID_PCH_SPT_I219_LM},
+-	{E1000_DEV_ID_PCH_SPT_I219_LM2},
+-	{E1000_DEV_ID_PCH_LBG_I219_LM3},
+-	{E1000_DEV_ID_PCH_SPT_I219_LM4},
+-	{E1000_DEV_ID_PCH_SPT_I219_LM5},
+-	{E1000_DEV_ID_PCH_CNP_I219_LM6},
+-	{E1000_DEV_ID_PCH_CNP_I219_LM7},
+-	{E1000_DEV_ID_PCH_ICP_I219_LM8},
+-	{E1000_DEV_ID_PCH_ICP_I219_LM9},
+-	{E1000_DEV_ID_PCH_CMP_I219_LM10},
+-	{E1000_DEV_ID_PCH_CMP_I219_LM11},
+-	{E1000_DEV_ID_PCH_CMP_I219_LM12},
+-	{E1000_DEV_ID_PCH_TGP_I219_LM13},
+-	{E1000_DEV_ID_PCH_TGP_I219_LM14},
+-	{E1000_DEV_ID_PCH_TGP_I219_LM15},
+-	{0}
+-};
+-
+-static bool e1000e_check_me(u16 device_id)
+-{
+-	struct e1000e_me_supported *id;
+-
+-	for (id = (struct e1000e_me_supported *)me_supported;
+-	     id->device_id; id++)
+-		if (device_id == id->device_id)
+-			return true;
+-
+-	return false;
+-}
+-
+ /**
+  * __ew32_prepare - prepare to write to MAC CSR register on certain parts
+  * @hw: pointer to the HW structure
+@@ -6974,8 +6935,7 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
+ 		e1000e_pm_thaw(dev);
+ 	} else {
+ 		/* Introduce S0ix implementation */
+-		if (hw->mac.type >= e1000_pch_cnp &&
+-		    !e1000e_check_me(hw->adapter->pdev->device))
++		if (hw->mac.type >= e1000_pch_cnp)
+ 			e1000e_s0ix_entry_flow(adapter);
+ 	}
  
--		/* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
-+		/* Poll up to 2.5 seconds for ME to clear ULP_CFG_DONE.
-+		 * If this takes more than 1 second, show a warning indicating a firmware
-+		 * bug */
- 		while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
--			if (i++ == 30) {
-+			if (i++ == 250) {
- 				ret_val = -E1000_ERR_PHY;
- 				goto out;
- 			}
-+			if (i > 100 && !firmware_bug)
-+				firmware_bug = true;
+@@ -6991,8 +6951,7 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+ 	int rc;
  
- 			usleep_range(10000, 11000);
- 		}
--		e_dbg("ULP_CONFIG_DONE cleared after %dmsec\n", i * 10);
-+		if (firmware_bug)
-+			e_warn("ULP_CONFIG_DONE took %dmsec.  This is a firmware bug\n", i * 10);
-+		else
-+			e_dbg("ULP_CONFIG_DONE cleared after %dmsec\n", i * 10);
+ 	/* Introduce S0ix implementation */
+-	if (hw->mac.type >= e1000_pch_cnp &&
+-	    !e1000e_check_me(hw->adapter->pdev->device))
++	if (hw->mac.type >= e1000_pch_cnp)
+ 		e1000e_s0ix_exit_flow(adapter);
  
- 		if (force) {
- 			mac_reg = er32(H2ME);
+ 	rc = __e1000_resume(pdev);
 -- 
 2.25.1
 
