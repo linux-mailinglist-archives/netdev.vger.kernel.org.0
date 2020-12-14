@@ -2,86 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3DCC2D9432
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 09:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A0F92D945A
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 09:53:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439302AbgLNIg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 03:36:26 -0500
-Received: from mx2.suse.de ([195.135.220.15]:60310 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2439298AbgLNIg0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 03:36:26 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 5570DAC10;
-        Mon, 14 Dec 2020 08:35:45 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 31006603AD; Mon, 14 Dec 2020 09:35:42 +0100 (CET)
-Date:   Mon, 14 Dec 2020 09:35:42 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     "John W. Linville" <linville@tuxdriver.com>,
-        netdev@vger.kernel.org, Roy Novich <royno@nvidia.com>
-Subject: Re: [PATCH ethtool] ethtool: do_sset return correct value on fail
-Message-ID: <20201214083542.qfzq4k3bi5qvp2rh@lion.mk-sys.cz>
-References: <20201213142503.25509-1-tariqt@nvidia.com>
+        id S2407285AbgLNIwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 03:52:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49444 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407277AbgLNIwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 03:52:23 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F581C0613D3;
+        Mon, 14 Dec 2020 00:51:43 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id f17so12021279pge.6;
+        Mon, 14 Dec 2020 00:51:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=coxpgFuIFoxnBuCGxXF5CM5p8NoKWp1Vl8M+nx+DzgE=;
+        b=PvPRuFGXJEAyivYwHyvwzp/IvfmrOLfw0HnqZdC1XTAFDKg4nCaPO5jr+d+tCJhYyt
+         +TtzBUdFnIKUA48oooDBf2vQh2rb1FouNzSJtygni1mjgkaAOhSdKCFcBB+PEx4HAAuW
+         mAvUMSdDGICMfYlfU/nTAX7WPHox3vXQP0/WuXDxf1QncOcJzYDyIAwYR7ZXiM5IviwE
+         AlaA2T6/drUhUVoZMeNjlqzGAWDp47TGxDmGasUrhtYYp2wOrzxXoEtYgbupN/XZP72S
+         JdvNgc1Q/jRd3zdjt2p09o1XQ4TJoFrcfpC61NR6RDnprfm3PEWRWaH7eb/oOfHnAvJN
+         3ulQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=coxpgFuIFoxnBuCGxXF5CM5p8NoKWp1Vl8M+nx+DzgE=;
+        b=YnUjCZzu3MZjtKM+B7NF4cqiu2feruikG+vYmkGHGUO2rL7BMgMmbe5iy8hbGNZnSV
+         +KrzfxXj13ERr9l+198fIv7w2V+sNRWH39/DMvzV05JcM2ICyaurm+JsvvKpAQnkE/G2
+         7VbuJGXYq30brKjHAnAmfgUo8bxy8RVvc9diKCkQ7qPTaRBKL7f2dUDVggUh2BYUAipN
+         RmnDQO8SyJDMYObV7HKBY46xqewSUaiA0aGI1tsYw4cM2YUGRi12Jt/eiA4wRhjF5Kgs
+         HK80M/+jJLw6tTyzrWkDnk3ngr7v1pu0OfmMCU9xttDacVS63O9jK5idNkmD6f6chdIU
+         sC+A==
+X-Gm-Message-State: AOAM532H8PAExP1RHEmUubfxpxiozcVv1sF0hQM8USDzDzBROphodJ1g
+        do3A5k4WxDaUnhSzZVhiXCagnYhhq4F0mAaI
+X-Google-Smtp-Source: ABdhPJym1906IeDJ5IxUsVd+Rp1BkGsFUTcztHen3EbKiBlm5UEHC6saKPJA2qaIi973Zw2/uta/LA==
+X-Received: by 2002:a62:1a47:0:b029:19b:c093:2766 with SMTP id a68-20020a621a470000b029019bc0932766mr23196683pfa.10.1607935903230;
+        Mon, 14 Dec 2020 00:51:43 -0800 (PST)
+Received: from VM.ger.corp.intel.com ([192.55.55.43])
+        by smtp.gmail.com with ESMTPSA id e65sm18917090pfh.175.2020.12.14.00.51.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 14 Dec 2020 00:51:42 -0800 (PST)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     bpf@vger.kernel.org,
+        syzbot+cfa88ddd0655afa88763@syzkaller.appspotmail.com
+Subject: [PATCH bpf] xsk: fix memory leak for failed bind
+Date:   Mon, 14 Dec 2020 09:51:27 +0100
+Message-Id: <20201214085127.3960-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201213142503.25509-1-tariqt@nvidia.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 13, 2020 at 04:25:03PM +0200, Tariq Toukan wrote:
-> From: Roy Novich <royno@nvidia.com>
-> 
-> The return value for do_sset was constant and returned 0.
-> This value is misleading when returned on operation failure.
-> Changed return value to the correct function err status.
-> 
-> Fixes: 32c8037055f5 ("Initial import of ethtool version 3 + a few patches.")
-> Signed-off-by: Roy Novich <royno@nvidia.com>
-> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-> ---
->  ethtool.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/ethtool.c b/ethtool.c
-> index 1d9067e774af..5cc875c64591 100644
-> --- a/ethtool.c
-> +++ b/ethtool.c
-> @@ -3287,7 +3287,7 @@ static int do_sset(struct cmd_context *ctx)
->  		}
->  	}
->  
-> -	return 0;
-> +	return err;
->  }
->  
->  static int do_gregs(struct cmd_context *ctx)
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-I'm afraid it's not as easy as this. The problem with -s/--set
-subcommand is that its parameters are in fact implemented by three
-separate requests (for ioctl, four requests for netlink). Each of them
-may fail or succeed independently of others. Currently do_sset() always
-returns 0 which is indeed unfortunate but it's not clear what should we
-return if some requests fail and some succeed.
+Fix a possible memory leak when a bind of an AF_XDP socket fails. When
+the fill and completion rings are created, they are tied to the
+socket. But when the buffer pool is later created at bind time, the
+ownership of these two rings are transferred to the buffer pool as
+they might be shared between sockets (and the buffer pool cannot be
+created until we know what we are binding to). So, before the buffer
+pool is created, these two rings are cleaned up with the socket, and
+after they have been transferred they are cleaned up together with
+the buffer pool.
 
-With your patch, do_sset() would always return the result of last
-request it sent to kernel which is inconsistent; consider e.g.
+The problem is that ownership was transferred before it was absolutely
+certain that the buffer pool could be created and initialized
+correctly and when one of these errors occurred, the fill and
+completion rings did neither belong to the socket nor the pool and
+where therefore leaked. Solve this by moving the ownership transfer
+to the point where the buffer pool has been completely set up and
+there is no way it can fail.
 
-  ethtool -s eth0 mdix on wol g
+Fixes: 7361f9c3d719 ("xsk: Move fill and completion rings to buffer pool")
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Reported-by: syzbot+cfa88ddd0655afa88763@syzkaller.appspotmail.com
+---
+ net/xdp/xsk.c           | 4 ++++
+ net/xdp/xsk_buff_pool.c | 2 --
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-If the ETHTOOL_SLINKSETTINGS request setting MDI-X succeeds and
-ETHTOOL_SWOL setting WoL fails, the result would be a failure. But if
-setting MDI-X fails and setting WoL succeeds, do_sset() would report
-success.
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 62504471fd20..189cfbbcccc0 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -772,6 +772,10 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+ 		}
+ 	}
+ 
++	/* FQ and CQ are now owned by the buffer pool and cleaned up with it. */
++	xs->fq_tmp = NULL;
++	xs->cq_tmp = NULL;
++
+ 	xs->dev = dev;
+ 	xs->zc = xs->umem->zc;
+ 	xs->queue_id = qid;
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index d5adeee9d5d9..46c2ae7d91d1 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -75,8 +75,6 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 
+ 	pool->fq = xs->fq_tmp;
+ 	pool->cq = xs->cq_tmp;
+-	xs->fq_tmp = NULL;
+-	xs->cq_tmp = NULL;
+ 
+ 	for (i = 0; i < pool->free_heads_cnt; i++) {
+ 		xskb = &pool->heads[i];
 
-So if we really want to change the behaviour after so many years, it
-should be consistent: either return non-zero exit code if any request
-fails or if all fail. (Personally, I would prefer the latter.) And we
-should probably modify nl_sset() to behave the same way as it currently
-bails out on first failed request.
+base-commit: d9838b1d39283c1200c13f9076474c7624b8ec34
+-- 
+2.29.0
 
-Michal
