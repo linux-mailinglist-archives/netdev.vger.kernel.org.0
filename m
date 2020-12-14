@@ -2,136 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0DF72DA18F
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 21:31:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A8D62DA19C
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 21:34:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503328AbgLNUaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 15:30:35 -0500
-Received: from ozlabs.org ([203.11.71.1]:60493 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388483AbgLNUa2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 15:30:28 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CvtKc0wX8z9sS8;
-        Tue, 15 Dec 2020 07:29:40 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1607977781;
-        bh=oCRoJqFc/+FmU+nNV9clfFzmex118Yv1qsU3bjLcBnE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i6tne6tcJtRXZHFQLpAsZA1tPQ67yQhTER+d7zEcSRu4Ik2ZD+QIAxp0KrpPTbOd8
-         GRhrL8rD2aU3rzmEUxuzHjQBpOqT0rvfgTJZQ1BYmr1z/2ibmzt0AL+2Oa6Wvas64f
-         ww6QnzzqpZqwpuquovArQqST/2uSVTJcvLlSFfayirl2UYD3/EJDEU9YbhXNL+kIJd
-         Q9TXTKDIBkVgpLc7CrzTkaqEH9g6MTTqXqs4ZHU25Wu4JKdiF72xvL/TbNIinF1PJe
-         EuMcRCpQ4lln0p65Td8AI3bH8YezsBRORyMjIsrLY8A75kZHzEdyAZru6H3QYFO8SX
-         0gRAYte5g/FZA==
-Date:   Tue, 15 Dec 2020 07:29:39 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
+        id S2503382AbgLNUcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 15:32:02 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:17293 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503258AbgLNUbU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 15:31:20 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fd7cb6c0002>; Mon, 14 Dec 2020 12:30:36 -0800
+Received: from [172.27.0.199] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 14 Dec
+ 2020 20:30:21 +0000
+Subject: Re: [PATCH net-next v2 2/4] sch_htb: Hierarchical QoS hardware
+ offload
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Maxim Mikityanskiy <maximmi@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Florent Revest <revest@chromium.org>,
-        Florent Revest <revest@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the block tree
-Message-ID: <20201215072939.6a665cf3@canb.auug.org.au>
-In-Reply-To: <20201207140951.4c04f26f@canb.auug.org.au>
-References: <20201207140951.4c04f26f@canb.auug.org.au>
+        Tariq Toukan <tariqt@mellanox.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yossi Kuperman <yossiku@nvidia.com>
+References: <20201211152649.12123-1-maximmi@mellanox.com>
+ <20201211152649.12123-3-maximmi@mellanox.com>
+ <CAM_iQpUS_71R7wujqhUnF41dtVtNj=5kXcdAHea1euhESbeJrg@mail.gmail.com>
+ <7f4b1039-b1be-b8a4-2659-a2b848120f67@nvidia.com>
+ <CAM_iQpVrQAT2frpiVYj4eevSO4jFPY8v2moJdorCe3apF7p6mA@mail.gmail.com>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+Message-ID: <bee0d31e-bd3e-b96a-dd98-7b7bf5b087dc@nvidia.com>
+Date:   Mon, 14 Dec 2020 22:30:17 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/T3rfAfpL0zH0ZZAbOzmD5q/";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <CAM_iQpVrQAT2frpiVYj4eevSO4jFPY8v2moJdorCe3apF7p6mA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1607977836; bh=8oXfE+HJXR1EAw0lU2wwSV04u9Ufj61pJ3pf9hrpc+Q=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=MPJbEez3VHuxui3FqwN0EqhjM+SLrd6PqZjb0TmZDL4Dj/D3EDDhtC8dxC+n6+tu3
+         fGTDB+osG+PgWL4QCimVSfFccTHHsLikNf0B8/+b9cLyWkCMHUoF6lbQ/nx4eV1HVZ
+         lUEEfUQ+++fGekOULc3IIpqvDU+8dfHqe7rr1EqklVfKuUp+EV+JsheTGl46RzV4qM
+         gxsZb9TYH2vRjb4nkO6hr/6xnwhUVEm2xlF8Q9UcO4OFmgFxfHAiedZIni861Tq5vR
+         wsvtTyIhgCOS3ELvuX4ABykGBJpFOA5new2PIyJUVyajGU91g+w5Xg6RDNBvy1DFJQ
+         5pUi5sYHI/NUA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/T3rfAfpL0zH0ZZAbOzmD5q/
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 2020-12-14 21:35, Cong Wang wrote:
+> On Mon, Dec 14, 2020 at 7:13 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>>
+>> On 2020-12-11 21:16, Cong Wang wrote:
+>>> On Fri, Dec 11, 2020 at 7:26 AM Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
+>>>>
+>>>> HTB doesn't scale well because of contention on a single lock, and it
+>>>> also consumes CPU. This patch adds support for offloading HTB to
+>>>> hardware that supports hierarchical rate limiting.
+>>>>
+>>>> This solution addresses two main problems of scaling HTB:
+>>>>
+>>>> 1. Contention by flow classification. Currently the filters are attached
+>>>> to the HTB instance as follows:
+>>>
+>>> I do not think this is the reason, tcf_classify() has been called with RCU
+>>> only on the ingress side for a rather long time. What contentions are you
+>>> talking about here?
+>>
+>> When one attaches filters to HTB, tcf_classify is called from
+>> htb_classify, which is called from htb_enqueue, which is called with the
+>> root spinlock of the qdisc taken.
+> 
+> So it has nothing to do with tcf_classify() itself... :-/
+> 
+> [...]
+> 
+>>> And doesn't TBF already work with mq? I mean you can attach it as
+>>> a leaf to each mq so that the tree lock will not be shared either, but you'd
+>>> lose the benefits of a global rate limit too.
+>>
+>> Yes, I'd lose not only the global rate limit, but also multi-level
+>> hierarchical limits, which are all provided by this HTB offload - that's
+>> why TBF is not really a replacement for this feature.
+> 
+> Interesting, please explain how your HTB offload still has a global rate
+> limit and borrowing across queues?
 
-Hi all,
+Sure, I will explain that.
 
-On Mon, 7 Dec 2020 14:09:51 +1100 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->
-> After merging the block tree, today's linux-next build (powerpc
-> ppc64_defconfig) failed like this:
->=20
-> fs/io_uring.c: In function 'io_shutdown':
-> fs/io_uring.c:3782:9: error: too many arguments to function 'sock_from_fi=
-le'
->  3782 |  sock =3D sock_from_file(req->file, &ret);
->       |         ^~~~~~~~~~~~~~
-> In file included from fs/io_uring.c:63:
-> include/linux/net.h:243:16: note: declared here
->   243 | struct socket *sock_from_file(struct file *file);
->       |                ^~~~~~~~~~~~~~
->=20
-> Caused by commit
->=20
->   36f4fa6886a8 ("io_uring: add support for shutdown(2)")
->=20
-> interacting with commit
->=20
->   dba4a9256bb4 ("net: Remove the err argument from sock_from_file")
->=20
-> from the bpf-next tree.
->=20
-> I have applied the following merge fix patch.
->=20
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Mon, 7 Dec 2020 14:04:10 +1100
-> Subject: [PATCH] fixup for "net: Remove the err argument from sock_from_f=
-ile"
->=20
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  fs/io_uring.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index cd997264dbab..91d08408f1fe 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -3779,9 +3779,9 @@ static int io_shutdown(struct io_kiocb *req, bool f=
-orce_nonblock)
->  	if (force_nonblock)
->  		return -EAGAIN;
-> =20
-> -	sock =3D sock_from_file(req->file, &ret);
-> +	sock =3D sock_from_file(req->file);
->  	if (unlikely(!sock))
-> -		return ret;
-> +		return -ENOTSOCK;
-> =20
->  	ret =3D __sys_shutdown_sock(sock, req->shutdown.how);
->  	io_req_complete(req, ret);
+> I simply can't see it, all I can see
+> is you offload HTB into each queue in ->attach(),
 
-Just a reminder that I am still applying this merge fix.
+In the non-offload mode, the same HTB instance would be attached to all 
+queues. In the offload mode, HTB behaves like MQ: there is a root 
+instance of HTB, but each queue gets a separate simple qdisc (pfifo). 
+Only the root qdisc (HTB) gets offloaded, and when that happens, the NIC 
+creates an object for the QoS root.
 
---=20
-Cheers,
-Stephen Rothwell
+Then all configuration changes are sent to the driver, and it issues the 
+corresponding firmware commands to replicate the whole hierarchy in the 
+NIC. Leaf classes correspond to queue groups (in this implementation 
+queue groups contain only one queue, but it can be extended), and inner 
+classes correspond to entities called TSARs.
 
---Sig_/T3rfAfpL0zH0ZZAbOzmD5q/
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+The information about rate limits is stored inside TSARs and queue 
+groups. Queues know what groups they belong to, and groups and TSARs 
+know what TSAR is their parent. A queue is picked in ndo_select_queue by 
+looking at the classification result of clsact. So, when a packet is put 
+onto a queue, the NIC can track the whole hierarchy and do the HTB 
+algorithm.
 
------BEGIN PGP SIGNATURE-----
+> where I assume the
+> hardware will do rate limit on each queue, 
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/XyzMACgkQAVBC80lX
-0GwWUggAn7ql1hC2UGt+piu1oNbFBTkKpQNJI+21jK5WrWX/d+g5vSUIY8irk49Z
-8amRkh7n+b8Bk1IIpIjsYswk431MWYaXJ4s2iQ+/GW8PFZz2aTpVlMWmvyhh8uV3
-F6IwGPSB3q7Kcq3AH0/eRQQf8J3HB11r+l0CJzZ6TMMiFZMSIIHvKaUertWbHK0w
-2Z8tXXwJjr4uVQjl90T0HLWlRsorAf6BMfDQ8/mfgcJrVS+1O55/MzTOZ7VobJGu
-NbBtxK1WVCC5zWY04CjWDVVhlYTsE9sb5jfW43mu7sH3GQ8TLZUiaONaIuqqqfQc
-6Gg1Q6c4ZYL55G2rL9zr/e/u4fmNhg==
-=RpZP
------END PGP SIGNATURE-----
+So, it's not flat in the NIC, and rate limiting is done in a 
+hierarchical way.
 
---Sig_/T3rfAfpL0zH0ZZAbOzmD5q/--
+> if the hardware also has a
+> global control, why it is not reflected on the root qdisc?
+
+I'm not sure if I got this last question correctly. The root qdisc is 
+HTB, and all the configuration of the HTB tree gets reflected in the 
+NIC, as I just explained. I hope now it's clearer, but if you still have 
+questions, I'm glad to explain more details (also, I'm ready to respin 
+with the minor fixes for the CI build issue on parisc).
+
+Thanks,
+Max
+
+> Thanks!
+> 
+
