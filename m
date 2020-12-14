@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 176E02D9E62
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 19:01:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A272D9E73
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 19:03:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502252AbgLNSAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 13:00:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49416 "EHLO
+        id S2408754AbgLNSD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 13:03:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2408739AbgLNSAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 13:00:18 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B16C0613D6
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 09:59:34 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id w127so16306916ybw.8
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 09:59:34 -0800 (PST)
+        with ESMTP id S2408264AbgLNSCx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 13:02:53 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D87C0613D3
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 10:02:13 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id t13so16223962ybq.7
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 10:02:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=cuJzCqw0yGcbmg+mGFFGUw4gt0nbbXNBdOYye9PxvVU=;
-        b=f3P3xb8XZVFEGeKbrCMLRvmnfpRTJ5NPkAXK5avGo8jV/CosGvtBkd+JZpJGPvCi8f
-         WLDg2Z+0HuLmEWsYCJdBy3HMbKZdeO8dAsTVSGF4f89oR0F+hySPRA2l9HHakECEqLKB
-         d88EdNcyu40unSQMhbcRBlMtJJAy1qrbrHvue3iW3HAA0iwiIazIMGxzvdNf2AbRgrot
-         MGX6XfrRXxGMdIxH88yblvoEq5cJuLTQoXL9AQt4rXvDjJhq2UJzjdidaFWPDSXDLyc0
-         Qx3IWnE64kNbuqh8KkGDvakk0wUzgk+EUHza/ZaWHf4hZ/yDOzD+V36ZP3Mc/L5/OIjz
-         Nypg==
+        bh=p4tiVtNUkOWB1X6MSLZHWD0N2bDe1nYJx4GncjugFhE=;
+        b=r2YDl1Eqtv/5RcVBtGOb1IywULN7TLWcM2jAElFhiLeEEZR/iqPJ/hqMxkFsCINdY9
+         m59hIMXxbzjc68vJtynZsqqLNIOxwhA4OrJLwCp+k5UpzZW1hQDRBnA/KbsQkr1UZIyq
+         T8QfHdhN8UgAg6ykJy+gDOY4HWUcPfoi6ZzG+5YGCZIxUoYC2xKXb/Odt1Vj4LywSKBo
+         CyC4+h8Guy6CQOwbOot/VV//ZTrdS4yy04Yo8bKTe5KQlVGz+pfV85SjYq8p2kML1W7B
+         y0YDAgGlpr9BR9cj6L0X/aLakULbCP6KfTf4GX1890iQJCn796ASkOqYQQjWSQqPxkmN
+         Of1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=cuJzCqw0yGcbmg+mGFFGUw4gt0nbbXNBdOYye9PxvVU=;
-        b=HyJSQwZDvibpkaW4OgXIqQUz0HBcPjNJJTSgajjhXTe39nxaVIP+W/ISg7jky5URmB
-         Jc4+UrNbjsXuUjrDYttl8Rxk/usUTwU4RqJ3Fc5WoruXdiwJLRNSoTbQbZhqU7YQJXzD
-         EI8/Y96EMB3HIwCwbZxw4yMSgWUsqN23wze+3jw7zTeaACyWxDrLoKi4QoMaxLx1Re8r
-         YqrvPlnFfJn+IZrIhGwvGvM6v/XhlzilcdEVonS+EsrOAk8F+WBeIL1gqLhiKRKvLboe
-         T9RWF6roRHUdsEySkL3OMDdFpDO3tFMVc8asfke3oa6ewYckp1f4VCQwlppk7h1v1BGR
-         tqkQ==
-X-Gm-Message-State: AOAM533kGq3cGyrKUBKQlwW9AoQUU2i0yX4qHfV+G82Eyfjkuy3sxp6P
-        QyXg5KnhcRNU03l6Uh5W8lG+MfxxYa6jNCbfnqJcmQ==
-X-Google-Smtp-Source: ABdhPJwwf2PvLDsu9SWZKcLa3hxzFq/txQgJ7TWDMe9dGgExGmKI1IwP2GZizLjr4ATkwPOIj19GR2RNwxuNTp/C364=
-X-Received: by 2002:a25:8201:: with SMTP id q1mr7668402ybk.351.1607968772499;
- Mon, 14 Dec 2020 09:59:32 -0800 (PST)
+        bh=p4tiVtNUkOWB1X6MSLZHWD0N2bDe1nYJx4GncjugFhE=;
+        b=qC194hYfr5sXs/kPKpDn7epex74ALIijOwLwei8DYy9UrKtzx97VsxIsQN7Z4JEZVG
+         9AMFfYzvH80AIVl21SJhA5gtYbzf9FInHV92EYbj2shPtXeKZa4wJvn79XH4aYSMcmGr
+         tr+u4R0n1QCnRS38YL5/TxUGL2tFZqHWRlMUMLo7N6sJZRbMqdGaEohhNR4ePJZkiVFW
+         ZVjlN2q01VSuaD+EI4FYJ7QrjfjkmptatHAuYqFO2TFNX+E76R2vwSE9B0f/+VoQAjRJ
+         z1sHaj02t6UxwcCBWdQZEpmCsQ3btEfKVpQd5GZeznXh5t+/RD7dHnjOZN9pFpH6Ptar
+         fC5Q==
+X-Gm-Message-State: AOAM530YdBHFYikkPRuJ4ZCiVMwss+dontnL1tj6G4lzO0DSOMqzvYy0
+        FdZK8WIMsy0abppDa2qWc5pCYOuhP1dEyHcsEl5PmA==
+X-Google-Smtp-Source: ABdhPJz7k6RlsD7s+O+cmnTmG2WYqMlEgYqxGqcUowfSS79ZHsZPC88I70TnqtMhbP/vvaqOFaL8w0Uwh9D8Tj7rMC0=
+X-Received: by 2002:a25:8201:: with SMTP id q1mr7685131ybk.351.1607968931934;
+ Mon, 14 Dec 2020 10:02:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20201209005444.1949356-1-weiwan@google.com> <20201209005444.1949356-3-weiwan@google.com>
- <20201212145022.6f2698d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <20201212145503.285a8bfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201212145503.285a8bfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201209005444.1949356-1-weiwan@google.com> <20201209005444.1949356-4-weiwan@google.com>
+ <20201212145902.1285a8ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201212145902.1285a8ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Wei Wang <weiwan@google.com>
-Date:   Mon, 14 Dec 2020 09:59:21 -0800
-Message-ID: <CAEA6p_BM_H=2bhYBtJ3LtBT0DBPBeVLyuC=BRQv=H3Ww2eecWA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/3] net: implement threaded-able napi poll
- loop support
+Date:   Mon, 14 Dec 2020 10:02:01 -0800
+Message-ID: <CAEA6p_Bwd=Zodzp3H6vjrmGjtPvQWCmj9efsb1QX2mHEtj50JQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 3/3] net: add sysfs attribute to control napi
+ threaded mode
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     David Miller <davem@davemloft.net>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
@@ -64,43 +64,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 12, 2020 at 2:55 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Sat, Dec 12, 2020 at 2:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Sat, 12 Dec 2020 14:50:22 -0800 Jakub Kicinski wrote:
-> > > @@ -6731,6 +6790,7 @@ void napi_disable(struct napi_struct *n)
-> > >             msleep(1);
-> > >
-> > >     hrtimer_cancel(&n->timer);
-> > > +   napi_kthread_stop(n);
-> >
-> > I'm surprised that we stop the thread on napi_disable() but there is no
-> > start/create in napi_enable(). NAPIs can (and do get) disabled and
-> > enabled again. But that'd make your code crash with many popular
-> > drivers if you tried to change rings with threaded napi enabled so I
-> > feel like I must be missing something..
+> On Tue,  8 Dec 2020 16:54:44 -0800 Wei Wang wrote:
+> > +static void dev_disable_threaded_all(struct net_device *dev)
+> > +{
+> > +     struct napi_struct *napi;
+> > +
+> > +     list_for_each_entry(napi, &dev->napi_list, dev_list)
+> > +             napi_set_threaded(napi, false);
+> > +}
 >
-> Ah, not crash, 'cause the flag gets cleared. Is it intentional that any
-> changes that disable NAPIs cause us to go back to non-threaded NAPI?
-> I think I had the "threaded" setting stored in struct netdevice in my
-> patches, is there a reason not to do that?
+> This is an implementation detail which should be hidden in dev.c IMHO.
+> Since the sysfs knob is just a device global on/off the iteration over
+> napis and all is best hidden away.
+
+OK. Will move it.
+
 >
-
-Thanks for the comments!
-
-The reason that I did not record it in dev is: there is a slight
-chance that during creation of the kthreads, failures occur and we
-flip back all NAPIs to use non-threaded mode. I am not sure the
-recorded value in dev should be what user desires, or what the actual
-situation is. Same as after the driver does a
-napi_disabe()/napi_enable(). It might occur that the dev->threaded =
-true, but the operation to re-create the kthreads fail and we flip
-back to non-thread mode. This seems to get things more complicated.
-What I expect is the user only enables the threaded mode after the
-device is up and alive, with all NAPIs attached to dev, and enabled.
-And user has to check the sysfs to make sure that the operation
-succeeds.
-And any operation that brings down the device, will flip this back to
-default, which is non-threaded mode.
-
-> In fact your patches may _require_ the device to be up to enable
-> threaded NAPI if NAPIs are allocated in open.
+> (sorry about the delayed review BTW, hope we can do a minor revision
+> and still hit 5.12)
+>
+> > +static int modify_napi_threaded(struct net_device *dev, unsigned long val)
+> > +{
+> > +     struct napi_struct *napi;
+> > +     int ret;
+> > +
+> > +     if (list_empty(&dev->napi_list))
+> > +             return -EOPNOTSUPP;
+> > +
+> > +     list_for_each_entry(napi, &dev->napi_list, dev_list) {
+> > +             ret = napi_set_threaded(napi, !!val);
+> > +             if (ret) {
+> > +                     /* Error occurred on one of the napi,
+> > +                      * reset threaded mode on all napi.
+> > +                      */
+> > +                     dev_disable_threaded_all(dev);
+> > +                     break;
+> > +             }
+> > +     }
+> > +
+> > +     return ret;
+> > +}
