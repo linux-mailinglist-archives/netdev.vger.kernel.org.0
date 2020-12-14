@@ -2,250 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 824ED2D9696
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 11:48:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65CAC2D96AC
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 11:56:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731396AbgLNKsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 05:48:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729389AbgLNKsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 05:48:13 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E243C0613D3
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 02:47:30 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id n9so4414774ili.0
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 02:47:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lJf+Nuf+vnBQvlctVA1K2dzXXhoYpId3vCRXQhhXb6k=;
-        b=F6QEEXJ9y1/ZV7n3R2dUidFRCH3PeI1cjbJkLzBA5nSFilw+IX7YCrJiDKSWDM4Szu
-         47sXjUOSHYJBizPjuLH2KfyaFAXaPW1TtCzfl+nGyaujMPkqad2UdEvkVDnO5hMjzZ3H
-         HWxLGGF5RytF85YsIYsIhlduAuFeJI7BgvPGZ5IMDdJ4Bm85iZ9GD9ocfql/ORvOwNMA
-         84h4uA/Y0na6Qc+gYFRYUqfOYMQ51UtqgIbG/A0wRN8fO2dVScnraMKdsX03Hv1pkCeo
-         ObVAXjpbvKGiRZh1MMudDN6kgsnYjC+rr1YVI1CIvTEox83hRw4QJ9fvKWFPZRlrdt21
-         8cLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lJf+Nuf+vnBQvlctVA1K2dzXXhoYpId3vCRXQhhXb6k=;
-        b=enMx9AjY2oySCKiTU9yRB+Xzj3jb2Cjmsf6xQrbMwyiP8WmybkGi2zHMxwZAnKIHHp
-         MIIp+EJUbC3FOi+ITElBRYABjL1e1CCNLceJxILkcoIe3dBwTUlq4buuCajmJOQyfir0
-         m7Ln89e+NgQ9HV4tmU0A/bY2kHIRZ5JWPd7Z1gNSgrNwoUhIOe9f5T4vV932OstIfDC3
-         MuAXAfIAt/MkaSPp5DpJL+04IoL/L8qtgsrvft51HINNMsJE+hwnCOY2gsqvlCT447ul
-         ohJZBWOsuoJozjCoZ3TTH80AmEMryNAmPAFwr/v30Ukit2YVosRVX1q+AjUcI9Rv831V
-         0HbA==
-X-Gm-Message-State: AOAM533qCi/I2s2ppg441YTlb0asA3H1HdUKqsOFft3+DIdfxT10TnHh
-        jTW8j7Mxp/D5FrKgWcbqHoMAARqOdyxtsccmENrmE422LP1Q0w==
-X-Google-Smtp-Source: ABdhPJz/OGnB4BQ0Sx3eDPVIeXsIzoDeoT9XSlSx+Q4Aaa2M4IThyTU9N+cW8fb6d5tNUToqttb8mhvjrmX9XPMKaz4=
-X-Received: by 2002:a05:6e02:1a6d:: with SMTP id w13mr9273294ilv.69.1607942849290;
- Mon, 14 Dec 2020 02:47:29 -0800 (PST)
+        id S1729475AbgLNKyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 05:54:53 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:55846 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725944AbgLNKyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 05:54:53 -0500
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BEArEQ8024102;
+        Mon, 14 Dec 2020 11:53:53 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=STMicroelectronics;
+ bh=swqwm3JkRg58N/8FNiszAxWvcaShbbL+jaO0DhWTrwQ=;
+ b=qu8AThVi1YT9cKAJL7iwXdkN/01zWOdfyb86Ovnbt0ncrxHEGRAr7/OAAHXUaelr9bfA
+ rT7XWI+oprt57DUEkLBD/hm88AoVbfCw++FCtr72LdI3WtIRQvNhEGE0Cp0I8YVW9wag
+ YMKIlZ7VoIEEiQt99BaDMGd5vzqbt2wYvH+dI1yfBHklQ78tmLf6J3lX5YPwqbRUrFRr
+ e8Gq7ce3ZXtohEWLLFHgPm2xzSMtERMVHionoKoiDJLJQWoz0iIjf2fWE0STyCaMS+Jv
+ xt9cC6UI83vSqQ2G3IVSXAIy2KgWOXVP2lKrHf+DJ1IiBG71FuDtG0h1gjLwes5p0WyM 7w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 35cpwdtm62-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Dec 2020 11:53:53 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DA2AC100039;
+        Mon, 14 Dec 2020 11:53:50 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9F10324C9E2;
+        Mon, 14 Dec 2020 11:53:50 +0100 (CET)
+Received: from lmecxl0912.lme.st.com (10.75.127.47) by SFHDAG3NODE2.st.com
+ (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 14 Dec
+ 2020 11:53:50 +0100
+Subject: Re: [RFC] net: stmmac: Problem with adding the native GPIOs support
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20201214092516.lmbezb6hrbda6hzo@mobilestation>
+From:   Alexandre Torgue <alexandre.torgue@st.com>
+Message-ID: <8477f6be-eb8d-6b6f-33f2-835819542045@st.com>
+Date:   Mon, 14 Dec 2020 11:52:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <000000000000b4862805b54ef573@google.com> <X8kLG5D+j4rT6L7A@elver.google.com>
- <CANn89iJWD5oXPLgtY47umTgo3gCGBaoy+XJfXnw1ecES_EXkCw@mail.gmail.com>
- <CANpmjNOaWbGJQ5Y=qC3cA31-R-Jy4Fbe+p=OBG5O2Amz8dLtLA@mail.gmail.com>
- <CANn89iKWf1EVZUuAHup+5ndhxvOqGopq53=vZ9yeok=DnRjggg@mail.gmail.com>
- <X8kjPIrLJUd8uQIX@elver.google.com> <af884a0e-5d4d-f71b-4821-b430ac196240@gmail.com>
- <CANpmjNNDKm_ObRnO_b3gH6wDYjb6_ex-KhZA5q5BRzEMgo+0xg@mail.gmail.com>
- <X9DHa2OG6lewtfPQ@elver.google.com> <X9JR/J6dMMOy1obu@elver.google.com>
- <CANn89i+2mAu_srdvefKLDY23HvrbOG1aMfj5uwvk6tYZ9uBtMA@mail.gmail.com>
- <CANpmjNMdgX1H=ztDH5cpmmZJ3duL4M8Vn9Ty-XzNpsrhx0h4sA@mail.gmail.com> <CANpmjNPdK3rRF5eJM5uZ-8wJDp_8TF1P3jOvAo8kqu4YDDJtGQ@mail.gmail.com>
-In-Reply-To: <CANpmjNPdK3rRF5eJM5uZ-8wJDp_8TF1P3jOvAo8kqu4YDDJtGQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 14 Dec 2020 11:47:17 +0100
-Message-ID: <CANn89iJeS+WBB7=OvrRE1pbdYtxx4Oe7MYN3vCefZj3gO8AoYg@mail.gmail.com>
-Subject: Re: WARNING in sk_stream_kill_queues (5)
-To:     Marco Elver <elver@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Jann Horn <jannh@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzbot+7b99aafdcc2eedea6178@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201214092516.lmbezb6hrbda6hzo@mobilestation>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG3NODE3.st.com (10.75.127.9) To SFHDAG3NODE2.st.com
+ (10.75.127.8)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-14_04:2020-12-11,2020-12-14 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 11:09 AM Marco Elver <elver@google.com> wrote:
->
-> On Thu, 10 Dec 2020 at 20:01, Marco Elver <elver@google.com> wrote:
-> > On Thu, 10 Dec 2020 at 18:14, Eric Dumazet <edumazet@google.com> wrote:
-> > > On Thu, Dec 10, 2020 at 5:51 PM Marco Elver <elver@google.com> wrote:
-> > [...]
-> > > > So I started putting gdb to work, and whenever I see an allocation
-> > > > exactly like the above that goes through tso_fragment() a warning
-> > > > immediately follows.
-> > > >
-> > > > Long story short, I somehow synthesized this patch that appears to fix
-> > > > things, but I can't explain why exactly:
-> > > >
-> > > > | --- a/net/core/skbuff.c
-> > > > | +++ b/net/core/skbuff.c
-> > > > | @@ -1679,13 +1679,6 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
-> > > > |
-> > > > |       skb_metadata_clear(skb);
-> > > > |
-> > > > | -     /* It is not generally safe to change skb->truesize.
-> > > > | -      * For the moment, we really care of rx path, or
-> > > > | -      * when skb is orphaned (not attached to a socket).
-> > > > | -      */
-> > > > | -     if (!skb->sk || skb->destructor == sock_edemux)
-> > > > | -             skb->truesize += size - osize;
-> > > > | -
-> > > > |       return 0;
-> > > > |
-> > > > |  nofrags:
-> > > >
-> > > > Now, here are the breadcrumbs I followed:
-> > > >
-> > > >
-> > > > 1.      Breakpoint on kfence_ksize() -- first allocation that matches the above:
-> > > >
-> > > >         | #0  __kfence_ksize (s=18446612700164612096) at mm/kfence/core.c:726
-> > > >         | #1  0xffffffff816fbf30 in kfence_ksize (addr=0xffff888436856000) at mm/kfence/core.c:737
-> > > >         | #2  0xffffffff816217cf in ksize (objp=0xffff888436856000) at mm/slab_common.c:1178
-> > > >         | #3  0xffffffff84896911 in __alloc_skb (size=914710528, gfp_mask=2592, flags=0, node=-1) at net/core/skbuff.c:217
-> > > >         | #4  0xffffffff84d0ba73 in alloc_skb_fclone (priority=<optimized out>, size=<optimized out>) at ./include/linux/skbuff.h:1144
-> > > >         | #5  sk_stream_alloc_skb (sk=0xffff8881176cc000, size=0, gfp=2592, force_schedule=232) at net/ipv4/tcp.c:888
-> > > >         | #6  0xffffffff84d41c36 in tso_fragment (gfp=<optimized out>, mss_now=<optimized out>, len=<optimized out>,
-> > > >         |     skb=<optimized out>, sk=<optimized out>) at net/ipv4/tcp_output.c:2124
-> > > >         | #7  tcp_write_xmit (sk=0xffff8881176cc000, mss_now=21950, nonagle=3096, push_one=-1996874776, gfp=0)
-> > > >         |     at net/ipv4/tcp_output.c:2674
-> > > >         | #8  0xffffffff84d43e48 in __tcp_push_pending_frames (sk=0xffff8881176cc000, cur_mss=337, nonagle=0)
-> > > >         |     at ./include/net/sock.h:918
-> > > >         | #9  0xffffffff84d3259c in tcp_push_pending_frames (sk=<optimized out>) at ./include/net/tcp.h:1864
-> > > >         | #10 tcp_data_snd_check (sk=<optimized out>) at net/ipv4/tcp_input.c:5374
-> > > >         | #11 tcp_rcv_established (sk=0xffff8881176cc000, skb=0x0 <fixed_percpu_data>) at net/ipv4/tcp_input.c:5869
-> > > >         | #12 0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f52ea0) at net/ipv4/tcp_ipv4.c:1668
-> > > >         | [...]
-> > > >
-> > > >         Set watchpoint on skb->truesize:
-> > > >
-> > > >         | (gdb) frame 3
-> > > >         | #3  0xffffffff84896911 in __alloc_skb (size=914710528, gfp_mask=2592, flags=0, node=-1) at net/core/skbuff.c:217
-> > > >         | 217             size = SKB_WITH_OVERHEAD(ksize(data));
-> > > >         | (gdb) p &skb->truesize
-> > > >         | $5 = (unsigned int *) 0xffff888117f55f90
-> > > >         | (gdb) awatch *0xffff888117f55f90
-> > > >         | Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
-> > > >
-> > > > 2.      Some time later, we see that the skb with kfence-allocated data
-> > > >         is cloned:
-> > > >
-> > > >         | Thread 7 hit Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
-> > > >         |
-> > > >         | Value = 1570
-> > > >         | 0xffffffff84886947 in __skb_clone (n=0xffff888117f55fa0, skb=0xffff888117f55ec0) at net/core/skbuff.c:1002
-> > > >         | 1002            C(truesize);
-> > > >         | (gdb) bt
-> > > >         | #0  0xffffffff84886947 in __skb_clone (n=0xffff888117f55fa0, skb=0xffff888117f55ec0) at net/core/skbuff.c:1002
-> > > >         | #1  0xffffffff8488bfb9 in skb_clone (skb=0xffff888117f55ec0, gfp_mask=2592) at net/core/skbuff.c:1454
-> > > >         | #2  0xffffffff84d3cd1c in __tcp_transmit_skb (sk=0xffff8881176cc000, skb=0xffff888117f55ec0, clone_it=0, gfp_mask=2592,
-> > > >         |     rcv_nxt=0) at net/ipv4/tcp_output.c:1267
-> > > >         | #3  0xffffffff84d4125b in tcp_transmit_skb (gfp_mask=<optimized out>, clone_it=<optimized out>, skb=<optimized out>,
-> > > >         |     sk=<optimized out>) at ./include/linux/tcp.h:439
-> > > >         | #4  tcp_write_xmit (sk=0xffff8881176cc000, mss_now=392485600, nonagle=1326, push_one=-1996875104, gfp=0)
-> > > >         |     at net/ipv4/tcp_output.c:2688
-> > > >         | #5  0xffffffff84d43e48 in __tcp_push_pending_frames (sk=0xffff8881176cc000, cur_mss=337, nonagle=0)
-> > > >         |     at ./include/net/sock.h:918
-> > > >         | #6  0xffffffff84d3259c in tcp_push_pending_frames (sk=<optimized out>) at ./include/net/tcp.h:1864
-> > > >         | #7  tcp_data_snd_check (sk=<optimized out>) at net/ipv4/tcp_input.c:5374
-> > > >         | #8  tcp_rcv_established (sk=0xffff8881176cc000, skb=0x0 <fixed_percpu_data>) at net/ipv4/tcp_input.c:5869
-> > > >         | #9  0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f57820) at net/ipv4/tcp_ipv4.c:1668
-> > > >         | #10 0xffffffff8487bf67 in sk_backlog_rcv (skb=<optimized out>, sk=<optimized out>) at ./include/net/sock.h:1010
-> > > >         [...]
-> > > >
-> > > >
-> > > > 3.      The original skb (that was cloned) has its truesize adjusted
-> > > >         after a pskb_expand_head():
-> > > >
-> > > >         | Thread 2 hit Hardware access (read/write) watchpoint 6: *0xffff888117f55f90
-> > > >         |
-> > > >         | Old value = 1570
-> > > >         | New value = 1954
-> > > >
-> > > >         ^^ the difference between the old and the new value is exactly
-> > > >         384, which is also the final underflow of the sk_wmem_queued
-> > > >         that triggers the warning. Presumably if the original allocation
-> > > >         had been through kmalloc-1k and not KFENCE, the difference here
-> > > >         would have been 0, since ksize() of the original allocation in
-> > > >         step (1) would have been 1024, and not 640 (difference of 384).
-> > > >
-> > > >         | 0xffffffff8488d84b in pskb_expand_head (skb=0xffff888117f55ec0, nhead=401956752, ntail=1954, gfp_mask=2298092192)
-> > > >         |     at net/core/skbuff.c:1687
-> > > >         | 1687                    skb->truesize += size - osize;
-> > > >         | (gdb) bt
-> > > >         | #0  0xffffffff8488d84b in pskb_expand_head (skb=0xffff888117f55ec0, nhead=401956752, ntail=1954, gfp_mask=2298092192)
-> > > >         |     at net/core/skbuff.c:1687
-> > > >         | #1  0xffffffff8488de01 in skb_prepare_for_shift (skb=<optimized out>) at ./arch/x86/include/asm/atomic.h:29
-> > > >         | #2  skb_prepare_for_shift (skb=0xffff888117f55ec0) at net/core/skbuff.c:3276
-> > > >         | #3  0xffffffff848936b1 in skb_shift (tgt=0xffff888117f549c0, skb=0xffff888117f55ec0, shiftlen=674) at net/core/skbuff.c:3351
-> > > >         | #4  0xffffffff84d264de in tcp_skb_shift (shiftlen=<optimized out>, pcount=<optimized out>, from=<optimized out>,
-> > > >         |     to=<optimized out>) at net/ipv4/tcp_input.c:1497
-> > > >         | #5  tcp_shift_skb_data (dup_sack=<optimized out>, end_seq=<optimized out>, start_seq=<optimized out>, state=<optimized out>,
-> > > >         |     skb=<optimized out>, sk=<optimized out>) at net/ipv4/tcp_input.c:1605
-> > > >         | #6  tcp_sacktag_walk (skb=0xffff888117f55ec0, sk=0xffff8881176cc000, next_dup=0x894,
-> > > >         |     state=0xffffffff88fa1aa0 <watchpoints+192>, start_seq=0, end_seq=401956752, dup_sack_in=false)
-> > > >         |     at net/ipv4/tcp_input.c:1670
-> > > >         | #7  0xffffffff84d276de in tcp_sacktag_write_queue (sk=0xffff888117f55f90, ack_skb=0x1888117f55f90, prior_snd_una=2196,
-> > > >         |     state=0xffffffff88fa1aa0 <watchpoints+192>) at net/ipv4/tcp_input.c:1931
-> > > >         | #8  0xffffffff84d2ca1d in tcp_ack (sk=0xffff8881176cc000, skb=0x1888117f55f90, flag=16643) at net/ipv4/tcp_input.c:3758
-> > > >         | #9  0xffffffff84d32387 in tcp_rcv_established (sk=0xffff8881176cc000, skb=0xffff888117f54020) at net/ipv4/tcp_input.c:5858
-> > > >         | #10 0xffffffff84d56731 in tcp_v4_do_rcv (sk=0xffff8881176cc000, skb=0xffff888117f54020) at net/ipv4/tcp_ipv4.c:1668
-> > > >         [...]
-> > > >
-> > > >
-> > > > Any of this make sense?
-> > >
-> > > Very nice debugging !
-> > >
-> > > I guess we could fix this in skb_prepare_for_shift(), eventually
-> > > caring for the truesize manipulation
-> > > (or reverting the change done in pskb_expand_head(), since only kfence
-> > > is having this issue.
-> >
-> > Phew, good to hear I finally got lucky. :-)
-> >
-> > Either option is fine, as long as it avoids this problem in future.
-> > Hopefully it can be fixed for 5.11.
-> >
-> > > (All TCP skbs in output path have the same allocation size for skb->head)
-> > >
-> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > > index e578544b2cc7110ec2f6bcf4c29d93e4b4b1ad14..798b51eeeaa4fbed65d41d9eab207dbbf438dab3
-> > > 100644
-> > > --- a/net/core/skbuff.c
-> > > +++ b/net/core/skbuff.c
-> > > @@ -3270,7 +3270,14 @@ EXPORT_SYMBOL(skb_split);
-> > >   */
-> > >  static int skb_prepare_for_shift(struct sk_buff *skb)
-> > >  {
-> > > -       return skb_cloned(skb) && pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-> > > +       unsigned int ret = 0, save;
-> > > +
-> > > +       if (skb_cloned(skb)) {
-> > > +               save = skb->truesize;
-> > > +               ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-> > > +               skb->truesize = save;
-> > > +       }
-> > > +       return ret;
-> > >  }
-> >
-> > FWIW,
-> >
-> >     Tested-by: Marco Elver <elver@google.com>
->
-> Has this patch, or similar, already been sent?
+Hi Serge,
 
+Sorry I never used GPIO provided by DWMAC IP. Obviously, I think is to 
+late for you to use GPIOs provided by your SoC directly. Unfortunately, 
+it seems to be a "perfect" chicken and eggs problem :(.
 
-Not yet, we have few weeks left before 5.11 is released ;)
+Do you have possibilty to "play" with gpio setting. I mean change 
+configuration of them (at least for reset one) before perform a DMA 
+reset: If you have a pull-up on RST line and you could "disconnect" GPO 
+inside GMAC then your PHY should remain on during DMA reset phase.
+
+regards
+Alex
+
+On 12/14/20 10:25 AM, Serge Semin wrote:
+> Hello folks,
+> 
+> I've got a problem, which has been blowing by head up for more than three
+> weeks now, and I'm desperately need your help in that matter. See our
+> Baikal-T1 SoC is created with two DW GMAC v3.73a IP-cores. Each core
+> has been synthesized with two GPIOs: one as GPI and another as GPO. There
+> are multiple Baikal-T1-based devices have been created so far with active
+> GMAC interface usage and each of them has been designed like this:
+> 
+>   +------------------------+
+>   | Baikal-T1 +------------+       +------------+
+>   |   SoC     | DW GMAC    |       |   Some PHY |
+>   |           |      Rx-clk+<------+Rx-clk      |
+>   |           |            |       |            |
+>   |           |         GPI+<------+#IRQ        |
+>   |           |            |       |            |
+>   |           |       RGMII+<----->+RGMII       |
+>   |           |        MDIO+<----->+MDIO        |
+>   |           |            |       |            |
+>   |           |         GPO+------>+#RST        |
+>   |           |            |       |            |
+>   |           |      Tx-clk+------>+Tx-clk      |
+>   |           |            |       |            |
+>   |           +------------+       +------------+
+>   +------------------------+
+> 
+> Each of such devices has got en external RGMII-PHY attached configured via the
+> MDIO bus with Rx-clock supplied by the PHY and Tx-clock consumed by it. The
+> main peculiarity of such configuration is that the DW GMAC GPIOs have been used
+> to catch the PHY IRQs and to reset the PHY. Seeing the GPIOs support hasn't
+> been added to the STMMAC driver it's the very first setup for now, which has
+> been using them. Anyway the hardware setup depicted above doesn't seem
+> problematic at the first glance, but in fact it is. See, the DW *MAC driver
+> (STMMAC ethernet driver) is doing the MAC reset each time it performs the
+> device open or resume by means of the call-chain:
+> 
+>    stmmac_open()---+
+>                    +->stmmac_hw_setup()->stmmac_init_dma_engine()->stmmac_reset().
+>    stmmac_resume()-+
+> 
+> Such reset causes the whole interface reset: MAC, DMA and, what is more
+> important, GPIOs as being exposed as part of the MAC registers. That
+> in our case automatically causes the external PHY reset, what neither
+> the STTMAC driver nor the PHY subsystem expect at all.
+> 
+> Moreover the stmmac_reset() method polls the DMA_BUS_MODE.SFT_RESET flag
+> state to be sure the MAC is successfully completed. But since the external
+> PHY has got in reset state it doesn't generate the Rx-clk signal. Due to
+> that the MAC-DMA won't get out of the reset state so the stmmac_reset()
+> method will return timeout error. Of course I could manually restore the
+> GPIOs state in the stmmac_reset() before start to poll the SFT_RESET flag,
+> which may release the PHY reset. But that seems more like a workaround,
+> because the PHY still has been in reset and need to be reinitialized
+> anyway. Moreover some PHY may need to have more complicated reset cycle
+> with certain delays between RST assertion/de-assertion, so the workaround
+> won't work well for them.
+> 
+> To sum it up my question is what is the right way to resolve the problem
+> described above? My first idea was to just move the MAC reset from the
+> net-device open()/close() callbacks to the
+> stmmac_dvr_probe()/stmmac_dvr_remove() functions and don't reset the whole
+> interface on each device open. The problems we may have in that case is
+> due to the suspend/resume procedures, which for some reason require the
+> MAC reset too. That's why I need your help in this matter. Do you have any
+> idea how to gently add the GPIOs support and don't break the STMMAC
+> driver?
+> 
+> One more tiny question regarding the DW *MAC drivers available in kernel.
+> Aside of the DW GMAC Baikal-T1 SoC has also got DW xGMAC v2.11a embedded
+> with XPCS PHY attached. My question is what driver should we better use to
+> handle our xGMAC interface? AFAICS there are three DW *MAC-related drivers
+> the kernel currently provides:
+> 1) drivers/net/ethernet/stmicro/stmmac
+> 2) drivers/net/ethernet/amd/
+> 3) drivers/net/ethernet/synopsys/
+> xGBE interface is supported by the drivers 1) and 2). In accordance with
+> https://www.spinics.net/lists/netdev/msg414148.html all xGMAC related
+> parts should have been added to 2), but recently the XGMAC support has
+> been added to 1). So I am confused what driver is now supposed to be used
+> for new xGMACs?
+> 
+> Regards,
+> -Sergey
+> 
