@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 676572D9C77
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 17:23:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 885E92D9C46
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 17:15:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440194AbgLNQPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 11:15:22 -0500
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:42202 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733040AbgLNQMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 11:12:38 -0500
+        id S2440195AbgLNQP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 11:15:29 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:35013 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2440167AbgLNQMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 11:12:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1607962358; x=1639498358;
+  t=1607962352; x=1639498352;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+bD4XI/eWkVL39fO8zY/pSMhntXw5GOQyCDbl21vd6E=;
-  b=RUX/cpDYJZKqTxEYGWgP2lVEnC9qjZ0pdS4/f7ROnB8or9I0e4ZDkvKg
-   1o2sEMM06qAE9EbtCwK8YhKNyO60GWHtME7tPM2bCRRXtxV2GfBd1yAg8
-   ARgA/xk88gdNWajA+OxCtBwsSHNhXcNDh3L4N1HsiG5vvpRsyF+Gt+uef
-   g=;
+  bh=/HJXDyhDQPI8rjCBAGpOdjJBK7W2eXwWXiezPz2E/Y4=;
+  b=sylFxu28ForbKG9tCHwSPWgt2f1yFwCXt609jWjxck5CATBV14Lf8gyO
+   7qvBvHz33+f97fgVQ05RVurrp515MAENzCCg1L04ApDjvY3Egj/VnLarg
+   cCrdAVbEtna1Ioi7pP7ZHMVQnpywFbEAyZ4hS45xvxaRPMxzfRv23+2wL
+   o=;
 X-IronPort-AV: E=Sophos;i="5.78,420,1599523200"; 
-   d="scan'208";a="95839141"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-57e1d233.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 14 Dec 2020 16:11:50 +0000
+   d="scan'208";a="104127436"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 14 Dec 2020 16:11:51 +0000
 Received: from EX13D16EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1e-57e1d233.us-east-1.amazon.com (Postfix) with ESMTPS id 7971E14000B;
-        Mon, 14 Dec 2020 16:11:45 +0000 (UTC)
+        by email-inbound-relay-1d-2c665b5d.us-east-1.amazon.com (Postfix) with ESMTPS id 7E4E3A04C9;
+        Mon, 14 Dec 2020 16:11:50 +0000 (UTC)
 Received: from 38f9d34ed3b1.ant.amazon.com.com (10.43.160.21) by
  EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 14 Dec 2020 16:11:38 +0000
+ id 15.0.1497.2; Mon, 14 Dec 2020 16:11:44 +0000
 From:   Andra Paraschiv <andraprs@amazon.com>
 To:     netdev <netdev@vger.kernel.org>
 CC:     linux-kernel <linux-kernel@vger.kernel.org>,
@@ -44,9 +44,9 @@ CC:     linux-kernel <linux-kernel@vger.kernel.org>,
         Stefan Hajnoczi <stefanha@redhat.com>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
         Andra Paraschiv <andraprs@amazon.com>
-Subject: [PATCH net-next v4 2/5] vm_sockets: Add VMADDR_FLAG_TO_HOST vsock flag
-Date:   Mon, 14 Dec 2020 18:11:19 +0200
-Message-ID: <20201214161122.37717-3-andraprs@amazon.com>
+Subject: [PATCH net-next v4 3/5] vsock_addr: Check for supported flag values
+Date:   Mon, 14 Dec 2020 18:11:20 +0200
+Message-ID: <20201214161122.37717-4-andraprs@amazon.com>
 X-Mailer: git-send-email 2.20.1 (Apple Git-117)
 In-Reply-To: <20201214161122.37717-1-andraprs@amazon.com>
 References: <20201214161122.37717-1-andraprs@amazon.com>
@@ -60,67 +60,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add VMADDR_FLAG_TO_HOST vsock flag that is used to setup a vsock
-connection where all the packets are forwarded to the host.
+Check if the provided flags value from the vsock address data structure
+includes the supported flags in the corresponding kernel version.
 
-Then, using this type of vsock channel, vsock communication between
-sibling VMs can be built on top of it.
+The first byte of the "svm_zero" field is used as "svm_flags", so add
+the flags check instead.
 
 Changelog
 
 v3 -> v4
 
-* Update the "VMADDR_FLAG_TO_HOST" value, as the size of the field has
-  been updated to 1 byte.
-
-v2 -> v3
-
-* Update comments to mention when the flag is set in the connect and
-  listen paths.
-
-v1 -> v2
-
-* New patch in v2, it was split from the first patch in the series.
-* Remove the default value for the vsock flags field.
-* Update the naming for the vsock flag to "VMADDR_FLAG_TO_HOST".
+* New patch in v4.
 
 Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- include/uapi/linux/vm_sockets.h | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ net/vmw_vsock/vsock_addr.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/vm_sockets.h b/include/uapi/linux/vm_sockets.h
-index c2eac3d0a9f00..46918a1852d7b 100644
---- a/include/uapi/linux/vm_sockets.h
-+++ b/include/uapi/linux/vm_sockets.h
-@@ -115,6 +115,26 @@
+diff --git a/net/vmw_vsock/vsock_addr.c b/net/vmw_vsock/vsock_addr.c
+index 909de26cb0e70..223b9660a759f 100644
+--- a/net/vmw_vsock/vsock_addr.c
++++ b/net/vmw_vsock/vsock_addr.c
+@@ -22,13 +22,15 @@ EXPORT_SYMBOL_GPL(vsock_addr_init);
  
- #define VMADDR_CID_HOST 2
- 
-+/* The current default use case for the vsock channel is the following:
-+ * local vsock communication between guest and host and nested VMs setup.
-+ * In addition to this, implicitly, the vsock packets are forwarded to the host
-+ * if no host->guest vsock transport is set.
-+ *
-+ * Set this flag value in the sockaddr_vm corresponding field if the vsock
-+ * packets need to be always forwarded to the host. Using this behavior,
-+ * vsock communication between sibling VMs can be setup.
-+ *
-+ * This way can explicitly distinguish between vsock channels created for
-+ * different use cases, such as nested VMs (or local communication between
-+ * guest and host) and sibling VMs.
-+ *
-+ * The flag can be set in the connect logic in the user space application flow.
-+ * In the listen logic (from kernel space) the flag is set on the remote peer
-+ * address. This happens for an incoming connection when it is routed from the
-+ * host and comes from the guest (local CID and remote CID > VMADDR_CID_HOST).
-+ */
-+#define VMADDR_FLAG_TO_HOST 0x01
+ int vsock_addr_validate(const struct sockaddr_vm *addr)
+ {
++	__u8 svm_valid_flags = VMADDR_FLAG_TO_HOST;
 +
- /* Invalid vSockets version. */
+ 	if (!addr)
+ 		return -EFAULT;
  
- #define VM_SOCKETS_INVALID_VERSION -1U
+ 	if (addr->svm_family != AF_VSOCK)
+ 		return -EAFNOSUPPORT;
+ 
+-	if (addr->svm_zero[0] != 0)
++	if (addr->svm_flags & ~svm_valid_flags)
+ 		return -EINVAL;
+ 
+ 	return 0;
 -- 
 2.20.1 (Apple Git-117)
 
