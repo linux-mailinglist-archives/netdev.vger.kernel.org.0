@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 692742D9770
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:35:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B42E02D9766
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:34:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438134AbgLNLf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:35:27 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:38235 "EHLO
+        id S2438049AbgLNLdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 06:33:06 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:53939 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2437994AbgLNLdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:33:01 -0500
+        by vger.kernel.org with ESMTP id S2437982AbgLNLc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:32:57 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 30F4D5C0195;
-        Mon, 14 Dec 2020 06:31:19 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 7AA9A5C016D;
+        Mon, 14 Dec 2020 06:31:20 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:19 -0500
+  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:20 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=/9UxObfiQuB8Zgv02Y+7mja7OyK4TLDPv6s4xo3hd38=; b=muR8cRP8
-        xqEh8vlNJtfW1kvZ0WIC+twv5xaK1ksc0P1r/cE+ZP2T3xhzS8nxPNcr7bAyzgVk
-        XwUis5dyORLhu9+rvCAZRXz0OQ01NGaAc/yoQhzI2y3ClvJqE8VXZ31DN0RPHT66
-        nYoksQryEQj9fC6R5kXs6hFmHwRzEKm/ok5lSLcQYW71UyJ9O5Q5OjtLnJ1VeCGX
-        XBB/RqQilvveCjGcuQYAwJLPNI6iyC5CE3J9iqnonneXktketPXO771zU2qRAODc
-        Q3Uio5E+HA9mEv4H+tQ0zE6vs5i32Ehyj0hgg19fl7Iq1hTEzJSA4knkcrUBGuhw
-        O3eCK9syL6zhGg==
-X-ME-Sender: <xms:B03XX5I6jMKZdE85HPEzb4YXaiP2yA3DgKA9Wd5Vr1xLmUhHfgQibQ>
-    <xme:B03XX1I44rR5J9r4pSpj5o49TaFn2MmikMizNfkp8pSFQa1pGOUr1fIJtLuBR81Eg
-    AJgnnMXPHEQGLo>
+        fm1; bh=hi7bDuDMLwnabe6ysR8bvwsA52igsCru82Wo/dMRHR0=; b=jYRHykMF
+        GzY3Kd6KPcdXn/bG7pXhTlkVMwfKgsVE5AHYl/Tbb1qh3akm+9mzazirGKgRHq+A
+        O3LL/abJCQ7FxFHZ3hy2bhxBDnzzU9dMHqFZlGqJVJZ5TvGEX1s2WeWOnHAB4AoN
+        9QKYQvNS+yhP+YFJg/uej5MjAsTdFBguOed9HognCTU2XZ+D+gcL8Vkq2pbC11K5
+        6x9oiREcUYymirfLjHGitC35XTOQS/KeOkaXMU9/vZn02UNDH7UIfZo+l44REEnr
+        6PvPpjoCaKbBxSo8IRC394loBNy7U4ZwORFjbfbM7oqBWgIcdryoEh/ORQgZ+Khy
+        wswvOzMV8TD0BA==
+X-ME-Sender: <xms:CE3XX-uGVhIbOhHjPXTi3wqdj7Ce_kiBwrXs3cT38mFMIml6zTClhw>
+    <xme:CE3XXzewqP5P2OHBzeMFIF21AcnqReAxhWrf8plCBBWf-32G29n7cyy-ifDdWk3SJ
+    u-wKu0SRQE3xoo>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehvddrfedu
-    necuvehluhhsthgvrhfuihiivgepuddtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    necuvehluhhsthgvrhfuihiivgepudegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:B03XXxv_40HiFsSYQBrTbCJtF4991D3h-5qq2LAfbpsWlcx6T1KXkw>
-    <xmx:B03XX6ZMDcHW4SMa4_inDHmMuGCW-q67ZMnprMrtDfrc6OxmLguVsw>
-    <xmx:B03XXwaL0v53MFB03YUlwrwVqEXCwhV9k43btEMKlsqszKc1dYE0aw>
-    <xmx:B03XX_myJSxKaSnm4jkvzocN_Xq3UZIbaUTDdKtjhc1C34c5FzpT-w>
+X-ME-Proxy: <xmx:CE3XX5zJOBj1zZuBvLnKYyg2Z5RvoarUXEIEjK58wRA0B_P8dE-eJg>
+    <xmx:CE3XX5NrA75W5ppwz6ekN-vWuurxih67ShxEH0EC3CqE00jruFbJfA>
+    <xmx:CE3XX--j4tvDts1hHyXEHcYZW8257NRt7lPowekiSjQc4XcN1d3mhg>
+    <xmx:CE3XXwKgXvsY-109sVbyn7Zxstdf8LADjXz99viDbM4UPOKhAZK9gg>
 Received: from shredder.mtl.com (igld-84-229-152-31.inter.net.il [84.229.152.31])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 00A031080059;
-        Mon, 14 Dec 2020 06:31:17 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4C1941080059;
+        Mon, 14 Dec 2020 06:31:19 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 14/15] mlxsw: spectrum: Set KVH XLT cache mode for Spectrum2/3
-Date:   Mon, 14 Dec 2020 13:30:40 +0200
-Message-Id: <20201214113041.2789043-15-idosch@idosch.org>
+Subject: [PATCH net-next v2 15/15] mlxsw: spectrum_router: Use eXtended mezzanine to offload IPv4 router
+Date:   Mon, 14 Dec 2020 13:30:41 +0200
+Message-Id: <20201214113041.2789043-16-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201214113041.2789043-1-idosch@idosch.org>
 References: <20201214113041.2789043-1-idosch@idosch.org>
@@ -63,101 +63,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Set a profile option to instruct FW to use 1/2 of KVH for XLT cache, not
-the whole one.
+In case the eXtended mezzanine is present on the system, use it for IPv4
+router offload.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/cmd.h      | 13 +++++++++++++
- drivers/net/ethernet/mellanox/mlxsw/core.h     |  4 +++-
- drivers/net/ethernet/mellanox/mlxsw/pci.c      |  6 ++++++
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c |  2 ++
- 4 files changed, 24 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c    | 4 +++-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h    | 1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c | 7 +++++++
+ 3 files changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-index 4de15c56542f..392ce3cb27f7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-@@ -674,6 +674,12 @@ MLXSW_ITEM32(cmd_mbox, config_profile, set_kvd_hash_double_size, 0x0C, 26, 1);
-  */
- MLXSW_ITEM32(cmd_mbox, config_profile, set_cqe_version, 0x08, 0, 1);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 62d51b281b58..41424ee909a0 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -9213,7 +9213,9 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ 	if (err)
+ 		goto err_xm_init;
  
-+/* cmd_mbox_config_set_kvh_xlt_cache_mode
-+ * Capability bit. Setting a bit to 1 configures the profile
-+ * according to the mailbox contents.
-+ */
-+MLXSW_ITEM32(cmd_mbox, config_profile, set_kvh_xlt_cache_mode, 0x08, 3, 1);
+-	router->proto_ll_ops[MLXSW_SP_L3_PROTO_IPV4] = &mlxsw_sp_router_ll_basic_ops;
++	router->proto_ll_ops[MLXSW_SP_L3_PROTO_IPV4] = mlxsw_sp_router_xm_ipv4_is_supported(mlxsw_sp) ?
++						       &mlxsw_sp_router_ll_xm_ops :
++						       &mlxsw_sp_router_ll_basic_ops;
+ 	router->proto_ll_ops[MLXSW_SP_L3_PROTO_IPV6] = &mlxsw_sp_router_ll_basic_ops;
+ 
+ 	err = mlxsw_sp_router_ll_op_ctx_init(router);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+index 31612891ad48..2875ee8ec537 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+@@ -227,5 +227,6 @@ extern const struct mlxsw_sp_router_ll_ops mlxsw_sp_router_ll_xm_ops;
+ 
+ int mlxsw_sp_router_xm_init(struct mlxsw_sp *mlxsw_sp);
+ void mlxsw_sp_router_xm_fini(struct mlxsw_sp *mlxsw_sp);
++bool mlxsw_sp_router_xm_ipv4_is_supported(const struct mlxsw_sp *mlxsw_sp);
+ 
+ #endif /* _MLXSW_ROUTER_H_*/
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+index 2f1e70e5a262..d213af723a2a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+@@ -803,3 +803,10 @@ void mlxsw_sp_router_xm_fini(struct mlxsw_sp *mlxsw_sp)
+ 	rhashtable_destroy(&router_xm->ltable_ht);
+ 	kfree(router_xm);
+ }
 +
- /* cmd_mbox_config_profile_max_vepa_channels
-  * Maximum number of VEPA channels per port (0 through 16)
-  * 0 - multi-channel VEPA is disabled
-@@ -800,6 +806,13 @@ MLXSW_ITEM32(cmd_mbox, config_profile, adaptive_routing_group_cap, 0x4C, 0, 16);
-  */
- MLXSW_ITEM32(cmd_mbox, config_profile, arn, 0x50, 31, 1);
- 
-+/* cmd_mbox_config_profile_kvh_xlt_cache_mode
-+ * KVH XLT cache mode:
-+ * 0 - XLT can use all KVH as best-effort
-+ * 1 - XLT cache uses 1/2 KVH
-+ */
-+MLXSW_ITEM32(cmd_mbox, config_profile, kvh_xlt_cache_mode, 0x50, 8, 4);
++bool mlxsw_sp_router_xm_ipv4_is_supported(const struct mlxsw_sp *mlxsw_sp)
++{
++	struct mlxsw_sp_router_xm *router_xm = mlxsw_sp->router->xm;
 +
- /* cmd_mbox_config_kvd_linear_size
-  * KVD Linear Size
-  * Valid for Spectrum only
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index 6558f9cde3d6..6b3ccbf6b238 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -256,7 +256,8 @@ struct mlxsw_config_profile {
- 		used_max_pkey:1,
- 		used_ar_sec:1,
- 		used_adaptive_routing_group_cap:1,
--		used_kvd_sizes:1;
-+		used_kvd_sizes:1,
-+		used_kvh_xlt_cache_mode:1;
- 	u8	max_vepa_channels;
- 	u16	max_mid;
- 	u16	max_pgt;
-@@ -278,6 +279,7 @@ struct mlxsw_config_profile {
- 	u32	kvd_linear_size;
- 	u8	kvd_hash_single_parts;
- 	u8	kvd_hash_double_parts;
-+	u8	kvh_xlt_cache_mode;
- 	struct mlxsw_swid_config swid_config[MLXSW_CONFIG_PROFILE_SWID_COUNT];
- };
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index aae472f0e62f..4eeae8d78006 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1196,6 +1196,12 @@ static int mlxsw_pci_config_profile(struct mlxsw_pci *mlxsw_pci, char *mbox,
- 		mlxsw_cmd_mbox_config_profile_kvd_hash_double_size_set(mbox,
- 					MLXSW_RES_GET(res, KVD_DOUBLE_SIZE));
- 	}
-+	if (profile->used_kvh_xlt_cache_mode) {
-+		mlxsw_cmd_mbox_config_profile_set_kvh_xlt_cache_mode_set(
-+			mbox, 1);
-+		mlxsw_cmd_mbox_config_profile_kvh_xlt_cache_mode_set(
-+			mbox, profile->kvh_xlt_cache_mode);
-+	}
- 
- 	for (i = 0; i < MLXSW_CONFIG_PROFILE_SWID_COUNT; i++)
- 		mlxsw_pci_config_profile_swid_config(mlxsw_pci, mbox, i,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 516d6cb45c9f..1650d9852b5b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -2936,6 +2936,8 @@ static const struct mlxsw_config_profile mlxsw_sp2_config_profile = {
- 	.max_ib_mc			= 0,
- 	.used_max_pkey			= 1,
- 	.max_pkey			= 0,
-+	.used_kvh_xlt_cache_mode	= 1,
-+	.kvh_xlt_cache_mode		= 1,
- 	.swid_config			= {
- 		{
- 			.used_type	= 1,
++	return router_xm && router_xm->ipv4_supported;
++}
 -- 
 2.29.2
 
