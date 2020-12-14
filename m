@@ -2,137 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75AF32DA0C5
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:47:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A342DA0CE
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 20:51:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502553AbgLNTqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 14:46:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729523AbgLNTqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 14:46:35 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F0FC0613D3
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 11:45:55 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id w127so16611683ybw.8
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 11:45:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ohZ5uZJUXYBrNuNkF0ucCV7B6UG0W6HKxpHvPN6AWuY=;
-        b=DDr4BZNKxb7w2+7bBLcdwL2CFvUIivzoE9clMPw+Mi095CyXH6X3c2w6k3+CALxanb
-         dEQrrwaNcJLQRUu8ATEEHzzbEQtkxDoCGzQ2moDyyuuWIzgmOorB7dlAX2yLT5vU5P4P
-         1fF4tJuSMUcmhYSb4Iey3UmcxyhT8HohHxuQU4laaMYwqXnKk+vaSuh/+UulroVgZMKi
-         8CX98vrYRRxJM2z327sFKdBEO8IPPhx30F5S2rydj4/lArdbG9oHvyvLyRoIifRtLWSD
-         GqNNe1AJD23FG5KnxDvg2zVdd3Cp7QON20WQc9AxBs/EfwMZb4GoA6FJVsYmQBo66dQ5
-         7kgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ohZ5uZJUXYBrNuNkF0ucCV7B6UG0W6HKxpHvPN6AWuY=;
-        b=WEfPITlgBxmkPSKsq+U2w22g1byh+ubmuBpKUeoC2ntVnhG9meOPmBbcgXXR/bSVf4
-         7O0Krdpq2awPipHOboKFpQxhDTMfV7s5tXUkSLaH08Mk5BUVqbc0grvwUXRO9qI64d3q
-         WfTIiW5mzCO+9SGbwQXHJycJ7EhA7DUS88USrtk2l+arlxRy/1DcIN3UNusFqNziufUF
-         7Qut3xvAYyHF01Ds0rwBq1o/pHkJI0L5ZNaN3+zbXJKrdoYfFRKPPg2kNZwFECLzM9tT
-         RDxiBLhXnZX+UZfH7EAYuBu5+iF+QavduIL0VE3prK8IomrWywJYkIr2DxsPnfbQU8pn
-         3dpQ==
-X-Gm-Message-State: AOAM530OfVJybkHlcZY8trWp7X4fQGqu07fbKtCTs2mutIU0XPDPSM1V
-        99vmUK0CUIOr+RyAaqRw1jWKQzqEI2pQobfkCbpT4w==
-X-Google-Smtp-Source: ABdhPJyH9bWcGnotoLF2c3+6PSAF6izqXFPSHKB3nrk45vQ9DOxW+8fFT9LWqoud8YqKqBLKnZEo3juTz/Jp1K66pxQ=
-X-Received: by 2002:a25:ce47:: with SMTP id x68mr37773361ybe.139.1607975154185;
- Mon, 14 Dec 2020 11:45:54 -0800 (PST)
-MIME-Version: 1.0
-References: <20201209005444.1949356-1-weiwan@google.com> <20201209005444.1949356-3-weiwan@google.com>
- <20201212145022.6f2698d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201212145503.285a8bfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAEA6p_BM_H=2bhYBtJ3LtBT0DBPBeVLyuC=BRQv=H3Ww2eecWA@mail.gmail.com> <20201214110203.7a1e8729@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201214110203.7a1e8729@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Mon, 14 Dec 2020 11:45:43 -0800
-Message-ID: <CAEA6p_CqD5kfPxXkMrNNh9TozfCCTdovMgjiS2Abf_KXxAJONA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/3] net: implement threaded-able napi poll
- loop support
-To:     Jakub Kicinski <kuba@kernel.org>
+        id S2502763AbgLNTrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 14:47:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41568 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2502754AbgLNTrw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 14:47:52 -0500
+Date:   Mon, 14 Dec 2020 11:47:10 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607975231;
+        bh=S459hkWleAJvt7zyXH3/BGXamsw5bJJlY20Jm8OwliM=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Yn8kRC9AmBtfcv70kwu6SwyeciVG/vxAaK5dfTnZCd+t5LtofWGhr3NcU2RoQ7NSa
+         7cQFn44/OBIZyB+bvmeAt7GypQWFQi/ocrOQ+h/2gqa5LD/23ARl5IqDYIwh72h2F5
+         4WuGZ0onzHGufJGpz37bPwgQKA243wJXpLOVXMbxJAkusDUe+KrPJuM5hjA+I59uca
+         bf/GA2anMPC2JaybpavI5OSrWVpxXPaKjBRKldgl7UEMcE13gcaxQVq22ZcOyoreXQ
+         q7gbg+KhYZc7CyfR+BIbJqI7tOzr78UWJ+wGvAnglSFgn9regX8dzpgRgeI9Qbijqk
+         kPCl0qVm31+OQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
 Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Felix Fietkau <nbd@nbd.name>, Hillf Danton <hdanton@sina.com>
-Content-Type: text/plain; charset="UTF-8"
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Jeffrey Hugo <jhugo@codeaurora.org>
+Subject: Re: [PATCH v2 3/3] net: mhi: Add dedicated alloc thread
+Message-ID: <20201214114710.08346744@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMZdPi8JGnEn1BbsX2jP_bNAGPrSz=eL2ZJ5n_2ReqGP2jpdOg@mail.gmail.com>
+References: <1607598951-2340-1-git-send-email-loic.poulain@linaro.org>
+        <1607598951-2340-3-git-send-email-loic.poulain@linaro.org>
+        <20201212125544.4857b1cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAMZdPi8JGnEn1BbsX2jP_bNAGPrSz=eL2ZJ5n_2ReqGP2jpdOg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 11:02 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 14 Dec 2020 09:59:21 -0800 Wei Wang wrote:
-> > On Sat, Dec 12, 2020 at 2:55 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Mon, 14 Dec 2020 10:19:07 +0100 Loic Poulain wrote:
+> On Sat, 12 Dec 2020 at 21:55, Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Thu, 10 Dec 2020 12:15:51 +0100 Loic Poulain wrote:  
+> > > The buffer allocation for RX path is currently done by a work executed
+> > > in the system workqueue. The work to do is quite simple and consists
+> > > mostly in allocating and queueing as much as possible buffers to the MHI
+> > > RX channel.
 > > >
-> > > On Sat, 12 Dec 2020 14:50:22 -0800 Jakub Kicinski wrote:
-> > > > > @@ -6731,6 +6790,7 @@ void napi_disable(struct napi_struct *n)
-> > > > >             msleep(1);
-> > > > >
-> > > > >     hrtimer_cancel(&n->timer);
-> > > > > +   napi_kthread_stop(n);
-> > > >
-> > > > I'm surprised that we stop the thread on napi_disable() but there is no
-> > > > start/create in napi_enable(). NAPIs can (and do get) disabled and
-> > > > enabled again. But that'd make your code crash with many popular
-> > > > drivers if you tried to change rings with threaded napi enabled so I
-> > > > feel like I must be missing something..
+> > > It appears that using a dedicated kthread would be more appropriate to
+> > > prevent
+> > > 1. RX allocation latency introduced by the system queue  
+> >
+> > System work queue should not add much latency, you can also create your
+> > own workqueue. Did you intend to modify the priority of the thread you
+> > create?  
+> 
+> No, and I don't, since I assume there is no reason to prioritize
+> network over other loads. I've considered the dedicated workqueue, but
+> since there is only one task to run as a while loop, I thought using a
+> kthread was more appropriate (and slightly lighter), but I can move to
+> that solution if you recommend it.
+
+Not sure what to recommend TBH, if thread works better for you that's
+fine. I don't understand why the thread would work better, tho. I was
+just checking if there is any extra tuning that happens.
+
+> > > 2. Unbounded work execution, the work only returning when queue is
+> > > full, it can possibly monopolise the workqueue thread on slower systems.  
+> >
+> > Is this something you observed in practice?  
+> 
+> No, I've just observed that work duration is inconstant , queuing from
+> few buffers to several hundreeds. This unbounded behavior makes me
+> feel that doing that in the shared sytem workqueue is probably not the
+> right place. I've not tested on a slower machine though.
+
+I think long running work should not be an issue for the cmwq
+implementation we have in the kernel.
+
+Several hundred buffers means it's running concurrently with RX, right?
+Since the NIC queue is 128 buffers.
+
+> > > This patch replaces the system work with a simple kthread that loops on
+> > > buffer allocation and sleeps when queue is full. Moreover it gets rid
+> > > of the local rx_queued variable (to track buffer count), and instead,
+> > > relies on the new mhi_get_free_desc_count helper.  
+> >
+> > Seems unrelated, should probably be a separate patch.  
+> 
+> I can do that.
+> 
+> >  
+> > > After pratical testing on a x86_64 machine, this change improves
+> > > - Peek throughput (slightly, by few mbps)
+> > > - Throughput stability when concurrent loads are running (stress)
+> > > - CPU usage, less CPU cycles dedicated to the task  
+> >
+> > Do you have an explanation why the CPU cycles are lower?  
+> 
+> For CPU cycles, TBH, not really, this is just observational.
+
+Is the IRQ pinned? I wonder how often work runs on the same CPU as IRQ
+processing and how often does the thread do.
+
+> Regarding throughput stability, it's certainly because the work can
+> consume all its dedicated kthread time.
+
+Meaning workqueue implementation doesn't get enough CPU? Strange.
+
+> > > Below is the powertop output for RX allocation task before and
+> > > after this change, when performing UDP download at 6Gbps. Mostly
+> > > to highlight the improvement in term of CPU usage.
 > > >
-> > > Ah, not crash, 'cause the flag gets cleared. Is it intentional that any
-> > > changes that disable NAPIs cause us to go back to non-threaded NAPI?
-> > > I think I had the "threaded" setting stored in struct netdevice in my
-> > > patches, is there a reason not to do that?
-> >
-> > Thanks for the comments!
-> >
-> > The reason that I did not record it in dev is: there is a slight
-> > chance that during creation of the kthreads, failures occur and we
-> > flip back all NAPIs to use non-threaded mode. I am not sure the
-> > recorded value in dev should be what user desires, or what the actual
-> > situation is. Same as after the driver does a
-> > napi_disabe()/napi_enable(). It might occur that the dev->threaded =
-> > true, but the operation to re-create the kthreads fail and we flip
-> > back to non-thread mode. This seems to get things more complicated.
-> > What I expect is the user only enables the threaded mode after the
-> > device is up and alive, with all NAPIs attached to dev, and enabled.
-> > And user has to check the sysfs to make sure that the operation
-> > succeeds.
-> > And any operation that brings down the device, will flip this back to
-> > default, which is non-threaded mode.
->
-> It is quite an annoying problem to address, given all relevant NAPI
-> helpers seem to return void :/ But we're pushing the problem onto the
-> user just because of internal API structure.
->
-> This reminds me of PTP / timestamping issues some NICs had once upon
-> a time. The timing application enables HW time stamping, then later some
-> other application / orchestration changes a seemingly unrelated config,
-> and since NIC has to reset itself it looses the timestamping config.
-> Now the time app stops getting HW time stamps, but those are best
-> effort anyway, so it just assumes the NIC couldn't stamp given frame
-> (for every frame), not that config got completely broken. The system
-> keeps running with suboptimal time for months.
->
-> What does the deployment you're expecting to see looks like? What
-> entity controls enabling the threaded mode on a system? Application?
-> Orchestration? What's the flow?
->
-I see your point. In our deployment, we have a system daemon which is
-responsible for setting up all the system tunings after the host boots
-up (before application starts to run). If certain operation fails, it
-prints out error msg, and will exit with error. For applications that
-require threaded mode, I think a check to the sysfs entry to make sure
-it is enabled is necessary at the startup phase.
+> > > older (system workqueue):
+> > > Usage       Events/s    Category       Description
+> > > 63,2 ms/s     134,0        kWork          mhi_net_rx_refill_work
+> > > 62,8 ms/s     134,3        kWork          mhi_net_rx_refill_work
+> > > 60,8 ms/s     141,4        kWork          mhi_net_rx_refill_work
+> > >
+> > > newer (dedicated kthread):
+> > > Usage       Events/s    Category       Description
+> > > 20,7 ms/s     155,6        Process        [PID 3360] [mhi-net-rx]
+> > > 22,2 ms/s     169,6        Process        [PID 3360] [mhi-net-rx]
+> > > 22,3 ms/s     150,2        Process        [PID 3360] [mhi-net-rx]
+> > >
+> > > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 
+> > > +             skb = netdev_alloc_skb(ndev, size);
+> > > +             if (unlikely(!skb)) {
+> > > +                     /* No memory, retry later */
+> > > +
+> > > schedule_timeout_interruptible(msecs_to_jiffies(250));  
+> >
+> > You should have a counter for this, at least for your testing. If
+> > this condition is hit it'll probably have a large impact on the
+> > performance.  
+> 
+> Indeed, going to do that, what about a ratelimited error? I assume if
+> it's happen, system is really in bad shape.
 
-> "Forgetting" config based on driver-dependent events feels very fragile.
-I think we could add a recorded value in dev to represent the user
-setting, and try to enable threaded mode after napi_disable/enable.
-But I think user/application still has to check the sysfs entry value
-to make sure if it is enabled successfully.
+It's not that uncommon to run out of memory for a 2k allocation in an
+atomic context (note that netdev_alloc_skb() uses GFP_ATOMIC).
+You can add a rate-limited print if you want, tho.
+
+> > > +                     continue;
+> > > +             }
+> > > +
+> > > +             err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb,
+> > > size, MHI_EOT);
+> > > +             if (unlikely(err)) {
+> > > +                     net_err_ratelimited("%s: Failed to queue RX
+> > > buf (%d)\n",
+> > > +                                         ndev->name, err);
+> > > +                     kfree_skb(skb);
+> > > +                     break;
+> > > +             }
+> > > +
+> > > +             /* Do not hog the CPU */
+> > > +             cond_resched();
+> > > +     }
+> > > +
+> > > +     return 0;
+> > > +}
+> > > +
+> > >  static int mhi_ndo_open(struct net_device *ndev)
+> > >  {
+> > >       struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> > > +     unsigned int qsz = mhi_netdev->rx_queue_sz;
+> > >
+> > > -     /* Feed the rx buffer pool */
+> > > -     schedule_delayed_work(&mhi_netdev->rx_refill, 0);
+> > > +     if (rx_refill_level >= 100)
+> > > +             mhi_netdev->rx_refill_level = 1;
+> > > +     else
+> > > +             mhi_netdev->rx_refill_level = qsz - qsz *
+> > > rx_refill_level / 100;  
+> >
+> > So you're switching from 50% fill level to 70%. Are you sure that's
+> > not the reason the performance gets better? Did you experiments
+> > with higher fill levels?  
+> 
+> No, I've tested both levels with the two solutions, It's just that
+> after experiment, high throughput is a bit more stable with 70%. So I
+> can revert back to 50% to avoid confusion and keep that for a
+> subsequent change.
+
+I'm not fussed about that - it would be good tho to have the numbers in
+comparisons for the same fill levels. Otherwise comparing workq at 50%
+vs thread at 70% is changing two variables at the same time.
