@@ -2,107 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59A272D9E73
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 19:03:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F193B2D9ED8
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 19:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408754AbgLNSD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 13:03:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2408264AbgLNSCx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 13:02:53 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D87C0613D3
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 10:02:13 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id t13so16223962ybq.7
-        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 10:02:13 -0800 (PST)
+        id S2440745AbgLNSV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 13:21:28 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:37305 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2440740AbgLNSUi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 13:20:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p4tiVtNUkOWB1X6MSLZHWD0N2bDe1nYJx4GncjugFhE=;
-        b=r2YDl1Eqtv/5RcVBtGOb1IywULN7TLWcM2jAElFhiLeEEZR/iqPJ/hqMxkFsCINdY9
-         m59hIMXxbzjc68vJtynZsqqLNIOxwhA4OrJLwCp+k5UpzZW1hQDRBnA/KbsQkr1UZIyq
-         T8QfHdhN8UgAg6ykJy+gDOY4HWUcPfoi6ZzG+5YGCZIxUoYC2xKXb/Odt1Vj4LywSKBo
-         CyC4+h8Guy6CQOwbOot/VV//ZTrdS4yy04Yo8bKTe5KQlVGz+pfV85SjYq8p2kML1W7B
-         y0YDAgGlpr9BR9cj6L0X/aLakULbCP6KfTf4GX1890iQJCn796ASkOqYQQjWSQqPxkmN
-         Of1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p4tiVtNUkOWB1X6MSLZHWD0N2bDe1nYJx4GncjugFhE=;
-        b=qC194hYfr5sXs/kPKpDn7epex74ALIijOwLwei8DYy9UrKtzx97VsxIsQN7Z4JEZVG
-         9AMFfYzvH80AIVl21SJhA5gtYbzf9FInHV92EYbj2shPtXeKZa4wJvn79XH4aYSMcmGr
-         tr+u4R0n1QCnRS38YL5/TxUGL2tFZqHWRlMUMLo7N6sJZRbMqdGaEohhNR4ePJZkiVFW
-         ZVjlN2q01VSuaD+EI4FYJ7QrjfjkmptatHAuYqFO2TFNX+E76R2vwSE9B0f/+VoQAjRJ
-         z1sHaj02t6UxwcCBWdQZEpmCsQ3btEfKVpQd5GZeznXh5t+/RD7dHnjOZN9pFpH6Ptar
-         fC5Q==
-X-Gm-Message-State: AOAM530YdBHFYikkPRuJ4ZCiVMwss+dontnL1tj6G4lzO0DSOMqzvYy0
-        FdZK8WIMsy0abppDa2qWc5pCYOuhP1dEyHcsEl5PmA==
-X-Google-Smtp-Source: ABdhPJz7k6RlsD7s+O+cmnTmG2WYqMlEgYqxGqcUowfSS79ZHsZPC88I70TnqtMhbP/vvaqOFaL8w0Uwh9D8Tj7rMC0=
-X-Received: by 2002:a25:8201:: with SMTP id q1mr7685131ybk.351.1607968931934;
- Mon, 14 Dec 2020 10:02:11 -0800 (PST)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1607970038; x=1639506038;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=0gXIC5TLvr8nDFVWjndt9zeLxv6JrK73XGxQi4uxaro=;
+  b=TbgVafjN4pwCi2EFj/Lq6+L+hTtS59aPzD2SHKNICQS697NOWy1MNlFe
+   ZDSKcSuDGdUUCTyTkxWTaGvX3CeG9Zc5BReDYoUhLSygDT0AOzGQ/nfPF
+   7AZBIdU8y1fTRjDAbeCdCzykvQvQd3aV8BEr8EzwAuga0mt37awCZ2Sg4
+   0=;
+X-IronPort-AV: E=Sophos;i="5.78,420,1599523200"; 
+   d="scan'208";a="95885892"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 14 Dec 2020 18:19:51 +0000
+Received: from EX13D16EUB003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com (Postfix) with ESMTPS id CC84DA17E2;
+        Mon, 14 Dec 2020 18:19:49 +0000 (UTC)
+Received: from 38f9d34ed3b1.ant.amazon.com (10.43.160.48) by
+ EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 14 Dec 2020 18:19:44 +0000
+Subject: Re: [PATCH net-next v4 0/5] vsock: Add flags field in the vsock
+ address
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+References: <20201214161122.37717-1-andraprs@amazon.com>
+ <20201214170904.wwirjp7ujxrast43@steredhat>
+From:   "Paraschiv, Andra-Irina" <andraprs@amazon.com>
+Message-ID: <b97f86d5-db06-7c6d-5c15-e7c65ea46371@amazon.com>
+Date:   Mon, 14 Dec 2020 20:19:36 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-References: <20201209005444.1949356-1-weiwan@google.com> <20201209005444.1949356-4-weiwan@google.com>
- <20201212145902.1285a8ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201212145902.1285a8ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Mon, 14 Dec 2020 10:02:01 -0800
-Message-ID: <CAEA6p_Bwd=Zodzp3H6vjrmGjtPvQWCmj9efsb1QX2mHEtj50JQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 3/3] net: add sysfs attribute to control napi
- threaded mode
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Felix Fietkau <nbd@nbd.name>, Hillf Danton <hdanton@sina.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201214170904.wwirjp7ujxrast43@steredhat>
+Content-Language: en-US
+X-Originating-IP: [10.43.160.48]
+X-ClientProxiedBy: EX13D36UWB003.ant.amazon.com (10.43.161.118) To
+ EX13D16EUB003.ant.amazon.com (10.43.166.99)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 12, 2020 at 2:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue,  8 Dec 2020 16:54:44 -0800 Wei Wang wrote:
-> > +static void dev_disable_threaded_all(struct net_device *dev)
-> > +{
-> > +     struct napi_struct *napi;
-> > +
-> > +     list_for_each_entry(napi, &dev->napi_list, dev_list)
-> > +             napi_set_threaded(napi, false);
-> > +}
->
-> This is an implementation detail which should be hidden in dev.c IMHO.
-> Since the sysfs knob is just a device global on/off the iteration over
-> napis and all is best hidden away.
+CgpPbiAxNC8xMi8yMDIwIDE5OjA5LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6Cj4KPiBPbiBN
+b24sIERlYyAxNCwgMjAyMCBhdCAwNjoxMToxN1BNICswMjAwLCBBbmRyYSBQYXJhc2NoaXYgd3Jv
+dGU6Cj4+IHZzb2NrIGVuYWJsZXMgY29tbXVuaWNhdGlvbiBiZXR3ZWVuIHZpcnR1YWwgbWFjaGlu
+ZXMgYW5kIHRoZSBob3N0IAo+PiB0aGV5IGFyZQo+PiBydW5uaW5nIG9uLiBOZXN0ZWQgVk1zIGNh
+biBiZSBzZXR1cCB0byB1c2UgdnNvY2sgY2hhbm5lbHMsIGFzIHRoZSBtdWx0aQo+PiB0cmFuc3Bv
+cnQgc3VwcG9ydCBoYXMgYmVlbiBhdmFpbGFibGUgaW4gdGhlIG1haW5saW5lIHNpbmNlIHRoZSB2
+NS41IAo+PiBMaW51eCBrZXJuZWwKPj4gaGFzIGJlZW4gcmVsZWFzZWQuCj4+Cj4+IEltcGxpY2l0
+bHksIGlmIG5vIGhvc3QtPmd1ZXN0IHZzb2NrIHRyYW5zcG9ydCBpcyBsb2FkZWQsIGFsbCB0aGUg
+Cj4+IHZzb2NrIHBhY2tldHMKPj4gYXJlIGZvcndhcmRlZCB0byB0aGUgaG9zdC4gVGhpcyBiZWhh
+dmlvciBjYW4gYmUgdXNlZCB0byBzZXR1cCAKPj4gY29tbXVuaWNhdGlvbgo+PiBjaGFubmVscyBi
+ZXR3ZWVuIHNpYmxpbmcgVk1zIHRoYXQgYXJlIHJ1bm5pbmcgb24gdGhlIHNhbWUgaG9zdC4gT25l
+IAo+PiBleGFtcGxlIGNhbgo+PiBiZSB0aGUgdnNvY2sgY2hhbm5lbHMgdGhhdCBjYW4gYmUgZXN0
+YWJsaXNoZWQgd2l0aGluIEFXUyBOaXRybyBFbmNsYXZlcwo+PiAoc2VlIERvY3VtZW50YXRpb24v
+dmlydC9uZV9vdmVydmlldy5yc3QpLgo+Pgo+PiBUbyBiZSBhYmxlIHRvIGV4cGxpY2l0bHkgbWFy
+ayBhIGNvbm5lY3Rpb24gYXMgYmVpbmcgdXNlZCBmb3IgYSAKPj4gY2VydGFpbiB1c2UgY2FzZSwK
+Pj4gYWRkIGEgZmxhZ3MgZmllbGQgaW4gdGhlIHZzb2NrIGFkZHJlc3MgZGF0YSBzdHJ1Y3R1cmUu
+IFRoZSB2YWx1ZSBvZiAKPj4gdGhlIGZsYWdzCj4+IGZpZWxkIGlzIHRha2VuIGludG8gY29uc2lk
+ZXJhdGlvbiB3aGVuIHRoZSB2c29jayB0cmFuc3BvcnQgaXMgCj4+IGFzc2lnbmVkLiBUaGlzIHdh
+eQo+PiBjYW4gZGlzdGluZ3Vpc2ggYmV0d2VlbiBkaWZmZXJlbnQgdXNlIGNhc2VzLCBzdWNoIGFz
+IG5lc3RlZCBWTXMgLyBsb2NhbAo+PiBjb21tdW5pY2F0aW9uIGFuZCBzaWJsaW5nIFZNcy4KPj4K
+Pj4gVGhlIGZsYWdzIGZpZWxkIGNhbiBiZSBzZXQgaW4gdGhlIHVzZXIgc3BhY2UgYXBwbGljYXRp
+b24gY29ubmVjdCAKPj4gbG9naWMuIE9uIHRoZQo+PiBsaXN0ZW4gcGF0aCwgdGhlIGZpZWxkIGNh
+biBiZSBzZXQgaW4gdGhlIGtlcm5lbCBzcGFjZSBsb2dpYy4KPgo+IEkgcmV2aWV3ZWQgYW5kIHRl
+c3RlZCBhbGwgdGhlIHBhdGNoZXMsIGdyZWF0IGpvYiEKPgoKVGhhbmtzIGZvciBjaGVja2luZyBp
+dCBvdXQuCgpBbmRyYQoKPgo+Pgo+PiBUaGFuayB5b3UuCj4+Cj4+IEFuZHJhCj4+Cj4+IC0tLQo+
+Pgo+PiBQYXRjaCBTZXJpZXMgQ2hhbmdlbG9nCj4+Cj4+IFRoZSBwYXRjaCBzZXJpZXMgaXMgYnVp
+bHQgb24gdG9wIG9mIHY1LjEwLgo+Pgo+PiBHaXRIdWIgcmVwbyBicmFuY2ggZm9yIHRoZSBsYXRl
+c3QgdmVyc2lvbiBvZiB0aGUgcGF0Y2ggc2VyaWVzOgo+Pgo+PiAqIGh0dHBzOi8vZ2l0aHViLmNv
+bS9hbmRyYXBycy9saW51eC90cmVlL3Zzb2NrLWZsYWctc2libGluZy1jb21tLXY0Cj4+Cj4+IHYz
+IC0+IHY0Cj4+Cj4+ICogUmViYXNlIG9uIHRvcCBvZiB2NS4xMC4KPj4gKiBBZGQgY2hlY2sgZm9y
+IHN1cHBvcnRlZCBmbGFnIHZhbHVlcy4KPj4gKiBVcGRhdGUgdGhlICJzdm1fZmxhZ3MiIGZpZWxk
+IHRvIGJlIDEgYnl0ZSBpbnN0ZWFkIG9mIDIgYnl0ZXMuCj4+ICogdjM6IAo+PiBodHRwczovL2xv
+cmUua2VybmVsLm9yZy9sa21sLzIwMjAxMjExMTAzMjQxLjE3NzUxLTEtYW5kcmFwcnNAYW1hem9u
+LmNvbS8KPj4KPj4gdjIgLT4gdjMKPj4KPj4gKiBSZWJhc2Ugb24gdG9wIG9mIHY1LjEwLXJjNy4K
+Pj4gKiBBZGQgInN2bV9mbGFncyIgYXMgYSBuZXcgZmllbGQsIG5vdCByZXVzaW5nICJzdm1fcmVz
+ZXJ2ZWQxIi4KPj4gKiBVcGRhdGUgY29tbWVudHMgdG8gbWVudGlvbiB3aGVuIHRoZSAiVk1BRERS
+X0ZMQUdfVE9fSE9TVCIgZmxhZyBpcyAKPj4gc2V0IGluIHRoZQo+PiDCoGNvbm5lY3QgYW5kIGxp
+c3RlbiBwYXRocy4KPj4gKiBVcGRhdGUgYml0d2lzZSBjaGVjayBsb2dpYyB0byBub3QgY29tcGFy
+ZSByZXN1bHQgdG8gdGhlIGZsYWcgdmFsdWUuCj4+ICogdjI6IAo+PiBodHRwczovL2xvcmUua2Vy
+bmVsLm9yZy9sa21sLzIwMjAxMjA0MTcwMjM1Ljg0Mzg3LTEtYW5kcmFwcnNAYW1hem9uLmNvbS8K
+Pj4KPj4gdjEgLT4gdjIKPj4KPj4gKiBVcGRhdGUgdGhlIHZzb2NrIGZsYWcgbmFtaW5nIHRvICJW
+TUFERFJfRkxBR19UT19IT1NUIi4KPj4gKiBVc2UgYml0d2lzZSBvcGVyYXRvcnMgdG8gc2V0dXAg
+YW5kIGNoZWNrIHRoZSB2c29jayBmbGFnLgo+PiAqIFNldCB0aGUgdnNvY2sgZmxhZyBvbiB0aGUg
+cmVjZWl2ZSBwYXRoIGluIHRoZSB2c29jayB0cmFuc3BvcnQgCj4+IGFzc2lnbm1lbnQKPj4gwqBs
+b2dpYy4KPj4gKiBNZXJnZSB0aGUgY2hlY2tzIGZvciB0aGUgZzJoIHRyYW5zcG9ydCBhc3NpZ25t
+ZW50IGluIG9uZSAiaWYiIGJsb2NrLgo+PiAqIHYxOiAKPj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5v
+cmcvbGttbC8yMDIwMTIwMTE1MjUwNS4xOTQ0NS0xLWFuZHJhcHJzQGFtYXpvbi5jb20vCj4+Cj4+
+IC0tLQo+Pgo+PiBBbmRyYSBQYXJhc2NoaXYgKDUpOgo+PiDCoHZtX3NvY2tldHM6IEFkZCBmbGFn
+cyBmaWVsZCBpbiB0aGUgdnNvY2sgYWRkcmVzcyBkYXRhIHN0cnVjdHVyZQo+PiDCoHZtX3NvY2tl
+dHM6IEFkZCBWTUFERFJfRkxBR19UT19IT1NUIHZzb2NrIGZsYWcKPj4gwqB2c29ja19hZGRyOiBD
+aGVjayBmb3Igc3VwcG9ydGVkIGZsYWcgdmFsdWVzCj4+IMKgYWZfdnNvY2s6IFNldCBWTUFERFJf
+RkxBR19UT19IT1NUIGZsYWcgb24gdGhlIHJlY2VpdmUgcGF0aAo+PiDCoGFmX3Zzb2NrOiBBc3Np
+Z24gdGhlIHZzb2NrIHRyYW5zcG9ydCBjb25zaWRlcmluZyB0aGUgdnNvY2sgYWRkcmVzcwo+PiDC
+oMKgIGZsYWdzCj4+Cj4+IGluY2x1ZGUvdWFwaS9saW51eC92bV9zb2NrZXRzLmggfCAyNiArKysr
+KysrKysrKysrKysrKysrKysrKysrLQo+PiBuZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmPCoMKgwqDC
+oMKgwqDCoCB8IDIxICsrKysrKysrKysrKysrKysrKystLQo+PiBuZXQvdm13X3Zzb2NrL3Zzb2Nr
+X2FkZHIuY8KgwqDCoMKgwqAgfMKgIDQgKysrLQo+PiAzIGZpbGVzIGNoYW5nZWQsIDQ3IGluc2Vy
+dGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCj4+Cj4+IC0tIAo+PiAyLjIwLjEgKEFwcGxlIEdpdC0x
+MTcpCj4+Cj4+Cj4+Cj4+Cj4+IEFtYXpvbiBEZXZlbG9wbWVudCBDZW50ZXIgKFJvbWFuaWEpIFMu
+Ui5MLiByZWdpc3RlcmVkIG9mZmljZTogMjdBIFNmLiAKPj4gTGF6YXIgU3RyZWV0LCBVQkM1LCBm
+bG9vciAyLCBJYXNpLCBJYXNpIENvdW50eSwgNzAwMDQ1LCBSb21hbmlhLiAKPj4gUmVnaXN0ZXJl
+ZCBpbiBSb21hbmlhLiBSZWdpc3RyYXRpb24gbnVtYmVyIEoyMi8yNjIxLzIwMDUuCj4+Cj4KCgoK
+CkFtYXpvbiBEZXZlbG9wbWVudCBDZW50ZXIgKFJvbWFuaWEpIFMuUi5MLiByZWdpc3RlcmVkIG9m
+ZmljZTogMjdBIFNmLiBMYXphciBTdHJlZXQsIFVCQzUsIGZsb29yIDIsIElhc2ksIElhc2kgQ291
+bnR5LCA3MDAwNDUsIFJvbWFuaWEuIFJlZ2lzdGVyZWQgaW4gUm9tYW5pYS4gUmVnaXN0cmF0aW9u
+IG51bWJlciBKMjIvMjYyMS8yMDA1Lgo=
 
-OK. Will move it.
-
->
-> (sorry about the delayed review BTW, hope we can do a minor revision
-> and still hit 5.12)
->
-> > +static int modify_napi_threaded(struct net_device *dev, unsigned long val)
-> > +{
-> > +     struct napi_struct *napi;
-> > +     int ret;
-> > +
-> > +     if (list_empty(&dev->napi_list))
-> > +             return -EOPNOTSUPP;
-> > +
-> > +     list_for_each_entry(napi, &dev->napi_list, dev_list) {
-> > +             ret = napi_set_threaded(napi, !!val);
-> > +             if (ret) {
-> > +                     /* Error occurred on one of the napi,
-> > +                      * reset threaded mode on all napi.
-> > +                      */
-> > +                     dev_disable_threaded_all(dev);
-> > +                     break;
-> > +             }
-> > +     }
-> > +
-> > +     return ret;
-> > +}
