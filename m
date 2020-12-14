@@ -2,147 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A8D62DA19C
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 21:34:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABB352DA1BA
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 21:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503382AbgLNUcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 15:32:02 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:17293 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2503258AbgLNUbU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 15:31:20 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fd7cb6c0002>; Mon, 14 Dec 2020 12:30:36 -0800
-Received: from [172.27.0.199] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 14 Dec
- 2020 20:30:21 +0000
-Subject: Re: [PATCH net-next v2 2/4] sch_htb: Hierarchical QoS hardware
- offload
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        id S2387730AbgLNUeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 15:34:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58816 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2503081AbgLNUdr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 15:33:47 -0500
+Date:   Mon, 14 Dec 2020 12:33:05 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607977986;
+        bh=VkUl1gBcn4y6Z22aJ5Fk2NTIFgyqnb/HNnKJV9s3SGs=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BaGMS0Qblu/sYWuTV20clVZMDxz7wXcmhRbinkVQUtsWvMcgQjxQ3AQJOZlQIU38/
+         jlBKR7MCrDUvQ68L4Iye5LjVv5bwll0yWyZcfbIYZP75Vy1Ccq1RMxKA2QbKXN3fyl
+         xlZXIOKn3X10XCaHdZk5TJdtNuIBtAyrQlfQRVomXVceMJTBjCGw5ptbjxdVI0pufn
+         i0Hu5QxnUmX4gDJ4zH1jxVB6UOVAcW8omNiV3eDuknle8AZZ6Hf4KDwrxHVgAU/d4w
+         93rlcKQrftrweMleuloMqz/SxAX3iEw/sA2Qpt8RDLUZ0lPmCqjL1MH39x2AeNS2FT
+         Abw4Q9XlCY+IA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Wei Wang <weiwan@google.com>
+Cc:     David Miller <davem@davemloft.net>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yossi Kuperman <yossiku@nvidia.com>
-References: <20201211152649.12123-1-maximmi@mellanox.com>
- <20201211152649.12123-3-maximmi@mellanox.com>
- <CAM_iQpUS_71R7wujqhUnF41dtVtNj=5kXcdAHea1euhESbeJrg@mail.gmail.com>
- <7f4b1039-b1be-b8a4-2659-a2b848120f67@nvidia.com>
- <CAM_iQpVrQAT2frpiVYj4eevSO4jFPY8v2moJdorCe3apF7p6mA@mail.gmail.com>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <bee0d31e-bd3e-b96a-dd98-7b7bf5b087dc@nvidia.com>
-Date:   Mon, 14 Dec 2020 22:30:17 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Felix Fietkau <nbd@nbd.name>, Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH net-next v4 2/3] net: implement threaded-able napi poll
+ loop support
+Message-ID: <20201214123305.288f49bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAEA6p_CqD5kfPxXkMrNNh9TozfCCTdovMgjiS2Abf_KXxAJONA@mail.gmail.com>
+References: <20201209005444.1949356-1-weiwan@google.com>
+        <20201209005444.1949356-3-weiwan@google.com>
+        <20201212145022.6f2698d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201212145503.285a8bfb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAEA6p_BM_H=2bhYBtJ3LtBT0DBPBeVLyuC=BRQv=H3Ww2eecWA@mail.gmail.com>
+        <20201214110203.7a1e8729@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAEA6p_CqD5kfPxXkMrNNh9TozfCCTdovMgjiS2Abf_KXxAJONA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpVrQAT2frpiVYj4eevSO4jFPY8v2moJdorCe3apF7p6mA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1607977836; bh=8oXfE+HJXR1EAw0lU2wwSV04u9Ufj61pJ3pf9hrpc+Q=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=MPJbEez3VHuxui3FqwN0EqhjM+SLrd6PqZjb0TmZDL4Dj/D3EDDhtC8dxC+n6+tu3
-         fGTDB+osG+PgWL4QCimVSfFccTHHsLikNf0B8/+b9cLyWkCMHUoF6lbQ/nx4eV1HVZ
-         lUEEfUQ+++fGekOULc3IIpqvDU+8dfHqe7rr1EqklVfKuUp+EV+JsheTGl46RzV4qM
-         gxsZb9TYH2vRjb4nkO6hr/6xnwhUVEm2xlF8Q9UcO4OFmgFxfHAiedZIni861Tq5vR
-         wsvtTyIhgCOS3ELvuX4ABykGBJpFOA5new2PIyJUVyajGU91g+w5Xg6RDNBvy1DFJQ
-         5pUi5sYHI/NUA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-14 21:35, Cong Wang wrote:
-> On Mon, Dec 14, 2020 at 7:13 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->>
->> On 2020-12-11 21:16, Cong Wang wrote:
->>> On Fri, Dec 11, 2020 at 7:26 AM Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
->>>>
->>>> HTB doesn't scale well because of contention on a single lock, and it
->>>> also consumes CPU. This patch adds support for offloading HTB to
->>>> hardware that supports hierarchical rate limiting.
->>>>
->>>> This solution addresses two main problems of scaling HTB:
->>>>
->>>> 1. Contention by flow classification. Currently the filters are attached
->>>> to the HTB instance as follows:
->>>
->>> I do not think this is the reason, tcf_classify() has been called with RCU
->>> only on the ingress side for a rather long time. What contentions are you
->>> talking about here?
->>
->> When one attaches filters to HTB, tcf_classify is called from
->> htb_classify, which is called from htb_enqueue, which is called with the
->> root spinlock of the qdisc taken.
-> 
-> So it has nothing to do with tcf_classify() itself... :-/
-> 
-> [...]
-> 
->>> And doesn't TBF already work with mq? I mean you can attach it as
->>> a leaf to each mq so that the tree lock will not be shared either, but you'd
->>> lose the benefits of a global rate limit too.
->>
->> Yes, I'd lose not only the global rate limit, but also multi-level
->> hierarchical limits, which are all provided by this HTB offload - that's
->> why TBF is not really a replacement for this feature.
-> 
-> Interesting, please explain how your HTB offload still has a global rate
-> limit and borrowing across queues?
+On Mon, 14 Dec 2020 11:45:43 -0800 Wei Wang wrote:
+> > It is quite an annoying problem to address, given all relevant NAPI
+> > helpers seem to return void :/ But we're pushing the problem onto the
+> > user just because of internal API structure.
+> >
+> > This reminds me of PTP / timestamping issues some NICs had once upon
+> > a time. The timing application enables HW time stamping, then later some
+> > other application / orchestration changes a seemingly unrelated config,
+> > and since NIC has to reset itself it looses the timestamping config.
+> > Now the time app stops getting HW time stamps, but those are best
+> > effort anyway, so it just assumes the NIC couldn't stamp given frame
+> > (for every frame), not that config got completely broken. The system
+> > keeps running with suboptimal time for months.
+> >
+> > What does the deployment you're expecting to see looks like? What
+> > entity controls enabling the threaded mode on a system? Application?
+> > Orchestration? What's the flow?
+> >  
+> I see your point. In our deployment, we have a system daemon which is
+> responsible for setting up all the system tunings after the host boots
+> up (before application starts to run). If certain operation fails, it
+> prints out error msg, and will exit with error. For applications that
+> require threaded mode, I think a check to the sysfs entry to make sure
+> it is enabled is necessary at the startup phase.
 
-Sure, I will explain that.
+That assumes no workload stacking, and dynamic changes after the
+workload has started? Or does the daemon have enough clever logic
+to resolve config changes?
 
-> I simply can't see it, all I can see
-> is you offload HTB into each queue in ->attach(),
+> > "Forgetting" config based on driver-dependent events feels very fragile.  
+> I think we could add a recorded value in dev to represent the user
+> setting, and try to enable threaded mode after napi_disable/enable.
+> But I think user/application still has to check the sysfs entry value
+> to make sure if it is enabled successfully.
 
-In the non-offload mode, the same HTB instance would be attached to all 
-queues. In the offload mode, HTB behaves like MQ: there is a root 
-instance of HTB, but each queue gets a separate simple qdisc (pfifo). 
-Only the root qdisc (HTB) gets offloaded, and when that happens, the NIC 
-creates an object for the QoS root.
-
-Then all configuration changes are sent to the driver, and it issues the 
-corresponding firmware commands to replicate the whole hierarchy in the 
-NIC. Leaf classes correspond to queue groups (in this implementation 
-queue groups contain only one queue, but it can be extended), and inner 
-classes correspond to entities called TSARs.
-
-The information about rate limits is stored inside TSARs and queue 
-groups. Queues know what groups they belong to, and groups and TSARs 
-know what TSAR is their parent. A queue is picked in ndo_select_queue by 
-looking at the classification result of clsact. So, when a packet is put 
-onto a queue, the NIC can track the whole hierarchy and do the HTB 
-algorithm.
-
-> where I assume the
-> hardware will do rate limit on each queue, 
-
-So, it's not flat in the NIC, and rate limiting is done in a 
-hierarchical way.
-
-> if the hardware also has a
-> global control, why it is not reflected on the root qdisc?
-
-I'm not sure if I got this last question correctly. The root qdisc is 
-HTB, and all the configuration of the HTB tree gets reflected in the 
-NIC, as I just explained. I hope now it's clearer, but if you still have 
-questions, I'm glad to explain more details (also, I'm ready to respin 
-with the minor fixes for the CI build issue on parisc).
-
-Thanks,
-Max
-
-> Thanks!
-> 
-
+In case of an error you're thinking of resetting, still, and returning
+disabled from sysfs? I guess that's fine, we can leave failing the bad
+reconfig operation (rather than resetting config) as a future extension.
+Let's add a WARN_ON, tho, so the failures don't get missed.
