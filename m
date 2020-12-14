@@ -2,201 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7FF2DA2B0
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:44:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 492F72DA2B4
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:47:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438808AbgLNVoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 16:44:09 -0500
-Received: from www62.your-server.de ([213.133.104.62]:48274 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727013AbgLNVoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 16:44:01 -0500
-Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kovcj-000ECb-60; Mon, 14 Dec 2020 22:43:17 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf-next 2020-12-14
-Date:   Mon, 14 Dec 2020 22:43:16 +0100
-Message-Id: <20201214214316.20642-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S2502926AbgLNVpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 16:45:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45824 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387514AbgLNVop (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 16:44:45 -0500
+From:   Saeed Mahameed <saeed@kernel.org>
+Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        david.m.ertman@intel.com, dan.j.williams@intel.com,
+        kiran.patil@intel.com, gregkh@linuxfoundation.org,
+        Saeed Mahameed <saeed@kernel.org>
+Subject: [net-next v4 00/15] Add mlx5 subfunction support
+Date:   Mon, 14 Dec 2020 13:43:37 -0800
+Message-Id: <20201214214352.198172-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26017/Mon Dec 14 15:33:39 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+Hi Dave, Jakub, Jason,
 
-The following pull-request contains BPF updates for your *net-next* tree.
+This series form Parav was the theme of this mlx5 release cycle,
+we've been waiting anxiously for the auxbus infrastructure to make it into
+the kernel, and now as the auxbus is in and all the stars are aligned, I
+can finally submit this V2 of the devlink and mlx5 subfunction support.
 
-We've added 31 non-merge commits during the last 11 day(s) which contain
-a total of 40 files changed, 2063 insertions(+), 114 deletions(-).
+Subfunctions came to solve the scaling issue of virtualization
+and switchdev environments, where SRIOV failed to deliver and users ran
+out of VFs very quickly as SRIOV demands huge amount of physical resources
+in both of the servers and the NIC.
 
-The main changes are:
+Subfunction provide the same functionality as SRIOV but in a very
+lightweight manner, please see the thorough and detailed
+documentation from Parav below, in the commit messages and the
+Networking documentation patches at the end of this series.
 
-1) Expose bpf_sk_storage_*() helpers to iterator programs, from Florent Revest.
+Sending V4 as a continuation to V1 that was sent Last month [0],
+[0] https://lore.kernel.org/linux-rdma/20201112192424.2742-1-parav@nvidia.com/
 
-2) Add AF_XDP selftests based on veth devs to BPF selftests, from Weqaar Janjua.
+---
+Changelog:
+v3->v4:
+ - Fix 32bit compilation issue
 
-3) Support for finding BTF based kernel attach targets through libbpf's
-   bpf_program__set_attach_target() API, from Andrii Nakryiko.
+v2->v3:
+ - added header file sf/priv.h to cmd.c to avoid missing prototype warning
+ - made mlx5_sf_table_disable as static function as its used only in one file
 
-4) Permit pointers on stack for helper calls in the verifier, from Yonghong Song.
+v1->v2:
+ - added documentation for subfunction and its mlx5 implementation
+ - add MLX5_SF config option documentation
+ - rebased
+ - dropped devlink global lock improvement patch as mlx5 doesn't support
+   reload while SFs are allocated
+ - dropped devlink reload lock patch as mlx5 doesn't support reload
+   when SFs are allocated
+ - using updated vhca event from device to add remove auxiliary device
+ - split sf devlink port allocation and sf hardware context allocation
 
-5) Fix overflows in hash map elem size after rlimit removal, from Eric Dumazet.
+Parav Pandit Says:
+=================
 
-6) Get rid of direct invocation of llc in BPF selftests, from Andrew Delgadillo.
+This patchset introduces support for mlx5 subfunction (SF).
 
-7) Fix xsk_recvmsg() to reorder socket state check before access, from Björn Töpel.
+A subfunction is a lightweight function that has a parent PCI function on
+which it is deployed. mlx5 subfunction has its own function capabilities
+and its own resources. This means a subfunction has its own dedicated
+queues(txq, rxq, cq, eq). These queues are neither shared nor stealed from
+the parent PCI function.
 
-8) Add new libbpf API helper to retrieve ring buffer epoll fd, from Brendan Jackman.
+When subfunction is RDMA capable, it has its own QP1, GID table and rdma
+resources neither shared nor stealed from the parent PCI function.
 
-9) Batch of minor BPF selftest improvements all over the place, from Florian Lehner,
-   KP Singh, Jiri Olsa and various others.
+A subfunction has dedicated window in PCI BAR space that is not shared
+with ther other subfunctions or parent PCI function. This ensures that all
+class devices of the subfunction accesses only assigned PCI BAR space.
 
-Please consider pulling these changes from:
+A Subfunction supports eswitch representation through which it supports tc
+offloads. User must configure eswitch to send/receive packets from/to
+subfunction port.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+Subfunctions share PCI level resources such as PCI MSI-X IRQs with
+their other subfunctions and/or with its parent PCI function.
 
-Thanks a lot!
+Patch summary:
+--------------
+Patch 1 to 4 prepares devlink
+patch 5 to 7 mlx5 adds SF device support
+Patch 8 to 11 mlx5 adds SF devlink port support
+Patch 12 and 14 adds documentation
 
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
+Patch-1 prepares code to handle multiple port function attributes
+Patch-2 introduces devlink pcisf port flavour similar to pcipf and pcivf
+Patch-3 adds port add and delete driver callbacks
+Patch-4 adds port function state get and set callbacks
+Patch-5 mlx5 vhca event notifier support to distribute subfunction
+        state change notification
+Patch-6 adds SF auxiliary device
+Patch-7 adds SF auxiliary driver
+Patch-8 prepares eswitch to handler SF vport
+Patch-9 adds eswitch helpers to add/remove SF vport
+Patch-10 implements devlink port add/del callbacks
+Patch-11 implements devlink port function get/set callbacks
+Patch-12 to 14 adds documentation
+Patch-12 added mlx5 port function documentation
+Patch-13 adds subfunction documentation
+Patch-14 adds mlx5 subfunction documentation
 
-Alexei Starovoitov, Andrii Nakryiko, Björn Töpel, kernel test robot, KP 
-Singh, Magnus Karlsson, Martin KaFai Lau, Randy Dunlap, Roman Gushchin, 
-Song Liu, syzbot, Yonghong Song
+Subfunction support is discussed in detail in RFC [1] and [2].
+RFC [1] and extension [2] describes requirements, design and proposed
+plumbing using devlink, auxiliary bus and sysfs for systemd/udev
+support. Functionality of this patchset is best explained using real
+examples further below.
 
-----------------------------------------------------------------
+overview:
+--------
+A subfunction can be created and deleted by a user using devlink port
+add/delete interface.
 
-The following changes since commit 846c3c9cfe8a74021b246bc77a848507be225719:
+A subfunction can be configured using devlink port function attribute
+before its activated.
 
-  Merge tag 'wireless-drivers-next-2020-12-03' of git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next (2020-12-04 10:56:37 -0800)
+When a subfunction is activated, it results in an auxiliary device on
+the host PCI device where it is deployed. A driver binds to the
+auxiliary device that further creates supported class devices.
 
-are available in the Git repository at:
+example subfunction usage sequence:
+-----------------------------------
+Change device to switchdev mode:
+$ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+Add a devlink port of subfunction flaovur:
+$ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
 
-for you to fetch changes up to b4b638c36b7e7acd847b9c4b9c80f268e45ea30c:
+Configure mac address of the port function:
+$ devlink port function set ens2f0npf0sf88 hw_addr 00:00:00:00:88:88
 
-  selftests/bpf: Add a test for ptr_to_map_value on stack for helper access (2020-12-14 21:50:10 +0100)
+Now activate the function:
+$ devlink port function set ens2f0npf0sf88 state active
 
-----------------------------------------------------------------
-Andrew Delgadillo (1):
-      selftests/bpf: Drop the need for LLVM's llc
+Now use the auxiliary device and class devices:
+$ devlink dev show
+pci/0000:06:00.0
+auxiliary/mlx5_core.sf.4
 
-Andrii Nakryiko (5):
-      Merge branch 'Improve error handling of verifier tests'
-      bpf: Return -ENOTSUPP when attaching to non-kernel BTF
-      selftests/bpf: fix bpf_testmod.ko recompilation logic
-      libbpf: Support modules in bpf_program__set_attach_target() API
-      selftests/bpf: Add set_attach_target() API selftest for module target
+$ ip link show
+127: ens2f0np0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 24:8a:07:b3:d1:12 brd ff:ff:ff:ff:ff:ff
+    altname enp6s0f0np0
+129: p0sf88: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:00:00:00:88:88 brd ff:ff:ff:ff:ff:ff
 
-Björn Töpel (1):
-      xsk: Validate socket state in xsk_recvmsg, prior touching socket members
+$ rdma dev show
+43: rdmap6s0f0: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d112 sys_image_guid 248a:0703:00b3:d112
+44: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
 
-Brendan Jackman (1):
-      libbpf: Expose libbpf ring_buffer epoll_fd
+After use inactivate the function:
+$ devlink port function set ens2f0npf0sf88 state inactive
 
-Daniel Borkmann (1):
-      Merge branch 'bpf-xsk-selftests'
+Now delete the subfunction port:
+$ devlink port del ens2f0npf0sf88
 
-Eric Dumazet (1):
-      bpf: Avoid overflows involving hash elem_size
+[1] https://lore.kernel.org/netdev/20200519092258.GF4655@nanopsycho/
+[2] https://marc.info/?l=linux-netdev&m=158555928517777&w=2
 
-Florent Revest (7):
-      net: Remove the err argument from sock_from_file
-      bpf: Add a bpf_sock_from_file helper
-      bpf: Expose bpf_sk_storage_* to iterator programs
-      selftests/bpf: Add an iterator selftest for bpf_sk_storage_delete
-      selftests/bpf: Add an iterator selftest for bpf_sk_storage_get
-      selftests/bpf: Test bpf_sk_storage_get in tcp iterators
-      bpf: Only provide bpf_sock_from_file with CONFIG_NET
+=================
 
-Florian Lehner (2):
-      selftests/bpf: Print reason when a tester could not run a program
-      selftests/bpf: Avoid errno clobbering
+Parav Pandit (14):
+  net/mlx5: Fix compilation warning for 32-bit platform
+  devlink: Prepare code to fill multiple port function attributes
+  devlink: Introduce PCI SF port flavour and port attribute
+  devlink: Support add and delete devlink port
+  devlink: Support get and set state of port function
+  net/mlx5: Introduce vhca state event notifier
+  net/mlx5: SF, Add auxiliary device support
+  net/mlx5: SF, Add auxiliary device driver
+  net/mlx5: E-switch, Add eswitch helpers for SF vport
+  net/mlx5: SF, Add port add delete functionality
+  net/mlx5: SF, Port function state change support
+  devlink: Add devlink port documentation
+  devlink: Extend devlink port documentation for subfunctions
+  net/mlx5: Add devlink subfunction port documentation
 
-Jiri Olsa (1):
-      selftests/bpf: Make selftest compilation work on clang 11
+Vu Pham (1):
+  net/mlx5: E-switch, Prepare eswitch to handle SF vport
 
-KP Singh (1):
-      selftests/bpf: Silence ima_setup.sh when not running in verbose mode.
+ Documentation/driver-api/auxiliary_bus.rst    |   2 +
+ .../device_drivers/ethernet/mellanox/mlx5.rst | 209 +++++++
+ .../networking/devlink/devlink-port.rst       | 199 +++++++
+ Documentation/networking/devlink/index.rst    |   1 +
+ .../net/ethernet/mellanox/mlx5/core/Kconfig   |  19 +
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   9 +
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c |   8 +
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  19 +
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |   5 +-
+ .../mellanox/mlx5/core/esw/acl/egress_ofld.c  |   2 +-
+ .../mellanox/mlx5/core/esw/devlink_port.c     |  41 ++
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  48 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  78 +++
+ .../mellanox/mlx5/core/eswitch_offloads.c     |  47 +-
+ .../net/ethernet/mellanox/mlx5/core/events.c  |   7 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  60 +-
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  12 +
+ .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  20 +
+ .../net/ethernet/mellanox/mlx5/core/sf/cmd.c  |  49 ++
+ .../ethernet/mellanox/mlx5/core/sf/dev/dev.c  | 271 +++++++++
+ .../ethernet/mellanox/mlx5/core/sf/dev/dev.h  |  55 ++
+ .../mellanox/mlx5/core/sf/dev/driver.c        | 101 ++++
+ .../ethernet/mellanox/mlx5/core/sf/devlink.c  | 552 ++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/sf/hw_table.c | 233 ++++++++
+ .../mlx5/core/sf/mlx5_ifc_vhca_event.h        |  82 +++
+ .../net/ethernet/mellanox/mlx5/core/sf/priv.h |  21 +
+ .../net/ethernet/mellanox/mlx5/core/sf/sf.h   |  92 +++
+ .../mellanox/mlx5/core/sf/vhca_event.c        | 189 ++++++
+ .../mellanox/mlx5/core/sf/vhca_event.h        |  57 ++
+ .../net/ethernet/mellanox/mlx5/core/vport.c   |   3 +-
+ include/linux/mlx5/driver.h                   |  16 +-
+ include/linux/mlx5/mlx5_ifc.h                 |   6 +-
+ include/net/devlink.h                         |  79 +++
+ include/uapi/linux/devlink.h                  |  26 +
+ net/core/devlink.c                            | 266 ++++++++-
+ 35 files changed, 2834 insertions(+), 50 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-port.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/mlx5_ifc_vhca_event.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.h
 
-Lukas Bulwahn (1):
-      bpf: Propagate __user annotations properly
+-- 
+2.26.2
 
-Magnus Karlsson (1):
-      samples/bpf: Fix possible hang in xdpsock with multiple threads
-
-Tom Rix (1):
-      bpf: Remove trailing semicolon in macro definition
-
-Veronika Kabatova (1):
-      selftests/bpf: Drop tcp-{client,server}.py from Makefile
-
-Weqaar Janjua (6):
-      selftests/bpf: Xsk selftests framework
-      selftests/bpf: Xsk selftests - SKB POLL, NOPOLL
-      selftests/bpf: Xsk selftests - DRV POLL, NOPOLL
-      selftests/bpf: Xsk selftests - Socket Teardown - SKB, DRV
-      selftests/bpf: Xsk selftests - Bi-directional Sockets - SKB, DRV
-      selftests/bpf: Xsk selftests - adding xdpxceiver to .gitignore
-
-Yonghong Song (2):
-      bpf: Permits pointers on stack for helper calls
-      selftests/bpf: Add a test for ptr_to_map_value on stack for helper access
-
- fs/eventpoll.c                                     |    3 +-
- fs/io_uring.c                                      |   16 +-
- include/linux/bpf.h                                |    1 +
- include/linux/net.h                                |    2 +-
- include/trace/events/xdp.h                         |   12 +-
- include/uapi/linux/bpf.h                           |    9 +
- kernel/bpf/hashtab.c                               |    6 +-
- kernel/bpf/syscall.c                               |    5 +-
- kernel/bpf/verifier.c                              |    3 +-
- kernel/trace/bpf_trace.c                           |    2 +
- net/core/bpf_sk_storage.c                          |    1 +
- net/core/filter.c                                  |   18 +
- net/core/netclassid_cgroup.c                       |    3 +-
- net/core/netprio_cgroup.c                          |    3 +-
- net/core/sock.c                                    |    8 +-
- net/socket.c                                       |   27 +-
- net/xdp/xsk.c                                      |    4 +-
- samples/bpf/xdpsock_user.c                         |    2 +
- scripts/bpf_helpers_doc.py                         |    4 +
- tools/include/uapi/linux/bpf.h                     |    9 +
- tools/lib/bpf/libbpf.c                             |   64 +-
- tools/lib/bpf/libbpf.h                             |    1 +
- tools/lib/bpf/libbpf.map                           |    1 +
- tools/lib/bpf/ringbuf.c                            |    6 +
- tools/testing/selftests/bpf/.gitignore             |    1 +
- tools/testing/selftests/bpf/Makefile               |   52 +-
- tools/testing/selftests/bpf/ima_setup.sh           |   24 +
- tools/testing/selftests/bpf/prog_tests/bpf_iter.c  |  118 +++
- .../selftests/bpf/prog_tests/module_attach.c       |   11 +-
- .../bpf/progs/bpf_iter_bpf_sk_storage_helpers.c    |   65 ++
- tools/testing/selftests/bpf/progs/bpf_iter_task.c  |    3 +-
- .../selftests/bpf/progs/test_core_reloc_module.c   |    8 +
- .../selftests/bpf/progs/test_module_attach.c       |   11 +
- tools/testing/selftests/bpf/test_progs.c           |   10 +
- tools/testing/selftests/bpf/test_verifier.c        |   31 +-
- tools/testing/selftests/bpf/test_xsk.sh            |  259 +++++
- tools/testing/selftests/bpf/verifier/unpriv.c      |    5 +-
- tools/testing/selftests/bpf/xdpxceiver.c           | 1074 ++++++++++++++++++++
- tools/testing/selftests/bpf/xdpxceiver.h           |  160 +++
- tools/testing/selftests/bpf/xsk_prereqs.sh         |  135 +++
- 40 files changed, 2063 insertions(+), 114 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c
- create mode 100755 tools/testing/selftests/bpf/test_xsk.sh
- create mode 100644 tools/testing/selftests/bpf/xdpxceiver.c
- create mode 100644 tools/testing/selftests/bpf/xdpxceiver.h
- create mode 100755 tools/testing/selftests/bpf/xsk_prereqs.sh
