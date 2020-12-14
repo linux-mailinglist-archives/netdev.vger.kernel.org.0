@@ -2,167 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB5102D97A8
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:49:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62C8D2D97AC
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:51:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438560AbgLNLrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:47:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438530AbgLNLrf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:47:35 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBB0C0613CF;
-        Mon, 14 Dec 2020 03:47:10 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id e2so12316689pgi.5;
-        Mon, 14 Dec 2020 03:47:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=/sj5dLXt24sh61lvcsgpABuLIqlJqFU1rHY/mqcSIRs=;
-        b=frhHmzOc78dpdY1fADjgVo/mxFIHVbEU45s7IyfZGPQVvWXx0j5l0SCs5C/M+soRMd
-         ZIt76MoWwLaVYJep7A86+QgVB5W6hMn23rzTDfu76lh3LB8irMhbVN7xStLIG4ORGt7M
-         95u5QbAH9gH6CRbylNLDQaeOhQKsuev0YNY5KepbOMeZksdYHps+o9dYoqFY0iuwP8zO
-         JCunHZqKYOmg62jH68SknpbPyqDVpD7JdOJ5L+hO1R160imwBZHTOYzeTKZXrjoH5xVQ
-         mwZwmvpOr/XRUbaqheAOeklqKSAe2VlVDQGcm6Mc6msUn+6oJP93O0+KjEsg6ofO2pRq
-         /W2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=/sj5dLXt24sh61lvcsgpABuLIqlJqFU1rHY/mqcSIRs=;
-        b=U5tbwA//zZOlyycYWwCVagE+LM3tjcHt6OOXRW8OmugZrYYpUcDsEtisuerUH2/sGf
-         n3Jbc5kygj+OFgfCR/miq5nMr+nQN7uJEmHKceeTbQHROPJWFndFwsfuGqj+Fv51R3GR
-         RT/dFO42Lo48mq9tfbQ5QDPc36wEN31p1c64JBDhycqOAxwVqMjs8hydapfNt5n37OBe
-         NwEzVbX5JhjtgpmK61uzyinZOqcQspEUvDX/2MALMz3JPy59j4Ka525PjXvcPk22hL4i
-         fzsbbXTXrX2uLDibeWSUsEmVi/AEXmu9sHcaUAzuw1N9WaZkUKc4F+sLY3qevfHNQNgS
-         LywQ==
-X-Gm-Message-State: AOAM531+oUJsxGVX59rOoqQXmXB9YXteDmgMYOBNolfW6MVVbQeNhcXA
-        HNaXhqmAJ/dWCup17WnKEyU=
-X-Google-Smtp-Source: ABdhPJxUEEax5L2fx/qRE2NzO+kFIVY2bl1ZbTZrfXfq6QuwFn9jjM+qgx9cYb5Jr30J+L3o03Kv9Q==
-X-Received: by 2002:a63:eb4b:: with SMTP id b11mr23926208pgk.351.1607946429816;
-        Mon, 14 Dec 2020 03:47:09 -0800 (PST)
-Received: from localhost.localdomain ([182.226.226.37])
-        by smtp.googlemail.com with ESMTPSA id h18sm2294116pfo.172.2020.12.14.03.47.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Dec 2020 03:47:08 -0800 (PST)
-From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
-X-Google-Original-From: Bongsu Jeon
-To:     krzk@kernel.org
-Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: [PATCH net-next] nfc: s3fwrn5: Remove unused nci prop commands
-Date:   Mon, 14 Dec 2020 20:46:58 +0900
-Message-Id: <20201214114658.27771-1-bongsu.jeon@samsung.com>
-X-Mailer: git-send-email 2.17.1
+        id S2438568AbgLNLts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 06:49:48 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:59248 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405918AbgLNLts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:49:48 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BEBi1vg154508;
+        Mon, 14 Dec 2020 11:48:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=V+Mtmc/dxJNvv1aQpXV+lTe9PulaOd5ociZlKtA1G1U=;
+ b=iHHCbfk4PMzDIECX+bmLAPTbnabOQJRub8QG3TZj6zYJj6DrMozK0nRYdkZZpiyWMEBv
+ fbyRIOCCikB1upcbIBpUvTE6n4LlQC9aHWbT3DBfI1VisYY8DadydoTqAXZYXnPbCUtE
+ +Lnq6Vu8k6QvEleDX6gitNkl73oR+05FtEOeTDmPnPOdhuMz+BadKChez7FBgx9TAnPn
+ DJ9U0G04BmF05PrRqc2mSRH/Lv+zDPqVbo23VpLEsyC3BAtJzIvprkT5z2lzzJUvurWZ
+ IPr0e4r8dFIqHsSFQmUEiOjIXtXe2pSjB2IE6x6F4tBnn2C2nPNJrU7icWDG/DnPi1MI iQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2130.oracle.com with ESMTP id 35ckcb4w40-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 14 Dec 2020 11:48:51 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BEBe2BK171801;
+        Mon, 14 Dec 2020 11:48:51 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 35d7sucy82-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Dec 2020 11:48:50 +0000
+Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BEBml0F009414;
+        Mon, 14 Dec 2020 11:48:47 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 14 Dec 2020 03:48:46 -0800
+Date:   Mon, 14 Dec 2020 14:48:31 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     UNGLinuxDriver@microchip.com, vladimir.oltean@nxp.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] net: mscc: ocelot: Fix a resource leak in the error
+ handling path of the probe function
+Message-ID: <20201214114831.GE2809@kadam>
+References: <20201213114838.126922-1-christophe.jaillet@wanadoo.fr>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201213114838.126922-1-christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9834 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0
+ mlxlogscore=999 spamscore=0 mlxscore=0 suspectscore=0 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012140083
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9834 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ priorityscore=1501 mlxscore=0 suspectscore=0 adultscore=0 phishscore=0
+ malwarescore=0 impostorscore=0 lowpriorityscore=0 clxscore=1011
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012140083
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bongsu Jeon <bongsu.jeon@samsung.com>
+On Sun, Dec 13, 2020 at 12:48:38PM +0100, Christophe JAILLET wrote:
+> In case of error after calling 'ocelot_init()', it must be undone by a
+> corresponding 'ocelot_deinit()' call, as already done in the remove
+> function.
+> 
 
-remove the unused nci prop commands that samsung driver doesn't use.
+This changes the behavior slightly in another way as well, but it's
+probably a bug fix.
 
-Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
----
- drivers/nfc/s3fwrn5/nci.c | 25 -------------------------
- drivers/nfc/s3fwrn5/nci.h | 22 ----------------------
- 2 files changed, 47 deletions(-)
+drivers/net/ethernet/mscc/ocelot_vsc7514.c
+  1250          ports = of_get_child_by_name(np, "ethernet-ports");
+  1251          if (!ports) {
+  1252                  dev_err(ocelot->dev, "no ethernet-ports child node found\n");
+  1253                  return -ENODEV;
+  1254          }
+  1255  
+  1256          ocelot->num_phys_ports = of_get_child_count(ports);
+  1257          ocelot->num_flooding_pgids = 1;
+  1258  
+  1259          ocelot->vcap = vsc7514_vcap_props;
+  1260          ocelot->inj_prefix = OCELOT_TAG_PREFIX_NONE;
+  1261          ocelot->xtr_prefix = OCELOT_TAG_PREFIX_NONE;
+  1262          ocelot->npi = -1;
+  1263  
+  1264          err = ocelot_init(ocelot);
+  1265          if (err)
+  1266                  goto out_put_ports;
+  1267  
+  1268          err = mscc_ocelot_init_ports(pdev, ports);
+  1269          if (err)
+  1270                  goto out_put_ports;
+  1271  
+  1272          if (ocelot->ptp) {
+  1273                  err = ocelot_init_timestamp(ocelot, &ocelot_ptp_clock_info);
+  1274                  if (err) {
+  1275                          dev_err(ocelot->dev,
+  1276                                  "Timestamp initialization failed\n");
+  1277                          ocelot->ptp = 0;
+  1278                  }
 
-diff --git a/drivers/nfc/s3fwrn5/nci.c b/drivers/nfc/s3fwrn5/nci.c
-index 103bf5c92bdc..f042d3eaf8f6 100644
---- a/drivers/nfc/s3fwrn5/nci.c
-+++ b/drivers/nfc/s3fwrn5/nci.c
-@@ -21,31 +21,11 @@ static int s3fwrn5_nci_prop_rsp(struct nci_dev *ndev, struct sk_buff *skb)
- }
- 
- static struct nci_driver_ops s3fwrn5_nci_prop_ops[] = {
--	{
--		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
--				NCI_PROP_AGAIN),
--		.rsp = s3fwrn5_nci_prop_rsp,
--	},
--	{
--		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
--				NCI_PROP_GET_RFREG),
--		.rsp = s3fwrn5_nci_prop_rsp,
--	},
- 	{
- 		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
- 				NCI_PROP_SET_RFREG),
- 		.rsp = s3fwrn5_nci_prop_rsp,
- 	},
--	{
--		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
--				NCI_PROP_GET_RFREG_VER),
--		.rsp = s3fwrn5_nci_prop_rsp,
--	},
--	{
--		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
--				NCI_PROP_SET_RFREG_VER),
--		.rsp = s3fwrn5_nci_prop_rsp,
--	},
- 	{
- 		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
- 				NCI_PROP_START_RFREG),
-@@ -61,11 +41,6 @@ static struct nci_driver_ops s3fwrn5_nci_prop_ops[] = {
- 				NCI_PROP_FW_CFG),
- 		.rsp = s3fwrn5_nci_prop_rsp,
- 	},
--	{
--		.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY,
--				NCI_PROP_WR_RESET),
--		.rsp = s3fwrn5_nci_prop_rsp,
--	},
- };
- 
- void s3fwrn5_nci_get_prop_ops(struct nci_driver_ops **ops, size_t *n)
-diff --git a/drivers/nfc/s3fwrn5/nci.h b/drivers/nfc/s3fwrn5/nci.h
-index 23c0b28f247a..a80f0fb082a8 100644
---- a/drivers/nfc/s3fwrn5/nci.h
-+++ b/drivers/nfc/s3fwrn5/nci.h
-@@ -11,9 +11,6 @@
- 
- #include "s3fwrn5.h"
- 
--#define NCI_PROP_AGAIN		0x01
--
--#define NCI_PROP_GET_RFREG	0x21
- #define NCI_PROP_SET_RFREG	0x22
- 
- struct nci_prop_set_rfreg_cmd {
-@@ -25,23 +22,6 @@ struct nci_prop_set_rfreg_rsp {
- 	__u8 status;
- };
- 
--#define NCI_PROP_GET_RFREG_VER	0x24
--
--struct nci_prop_get_rfreg_ver_rsp {
--	__u8 status;
--	__u8 data[8];
--};
--
--#define NCI_PROP_SET_RFREG_VER	0x25
--
--struct nci_prop_set_rfreg_ver_cmd {
--	__u8 data[8];
--};
--
--struct nci_prop_set_rfreg_ver_rsp {
--	__u8 status;
--};
--
- #define NCI_PROP_START_RFREG	0x26
- 
- struct nci_prop_start_rfreg_rsp {
-@@ -70,8 +50,6 @@ struct nci_prop_fw_cfg_rsp {
- 	__u8 status;
- };
- 
--#define NCI_PROP_WR_RESET	0x2f
--
- void s3fwrn5_nci_get_prop_ops(struct nci_driver_ops **ops, size_t *n);
- int s3fwrn5_nci_rf_configure(struct s3fwrn5_info *info, const char *fw_name);
- 
--- 
-2.17.1
+In the original code, if ocelot_init_timestamp() failed we returned
+a negative error code but now we return success.  This probably is what
+the original authors intended, though.
+
+  1279          }
+  1280  
+  1281          register_netdevice_notifier(&ocelot_netdevice_nb);
+  1282          register_switchdev_notifier(&ocelot_switchdev_nb);
+  1283          register_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
+  1284  
+  1285          dev_info(&pdev->dev, "Ocelot switch probed\n");
+  1286  
+  1287  out_put_ports:
+  1288          of_node_put(ports);
+  1289          return err;
+  1290  }
+
+regards,
+dan carpenter
 
