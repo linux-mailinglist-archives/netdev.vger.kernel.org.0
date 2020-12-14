@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C80B12D9764
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:34:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCAD22D976D
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 12:35:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438023AbgLNLdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 06:33:06 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:53939 "EHLO
+        id S2438016AbgLNLdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 06:33:05 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:58341 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2437747AbgLNLce (ORCPT
+        by vger.kernel.org with ESMTP id S2437876AbgLNLce (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 06:32:34 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4FC155C0143;
-        Mon, 14 Dec 2020 06:31:07 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id B07B65C00A9;
+        Mon, 14 Dec 2020 06:31:08 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:07 -0500
+  by compute3.internal (MEProxy); Mon, 14 Dec 2020 06:31:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=9WNoADTgn1nqJd/n49xMeBwUsm9R9L+YyEqzWf11NCU=; b=jmGaRFe4
-        bSqSWrVY+wZ/vsgHLPofbq9lFVYhXvchET7paU978sJcQMNE3bKWg1pEekXL8tl9
-        z1Un6RCaHyQataM2UAOlGGbdQ5iVJI0+yvTfYSMKBC6eTNNeO8InSdK0Tq2r14Ri
-        7g0x11JPtnN27vXjpbSug/KKtS7sX+gnWXQeXGZjtRXvW1ZjMqxdr84Mp6B3PDdh
-        0VS0Piul6h/XTMam2uy1ETX6JSaDub3jB6hLAAVRfLaKuBt16ude0etatD2yuavt
-        8aqRJ63tmLRhGnwZ2dTJLMMW85khTdhbZCYwLncm2VuB+iEyQHdtwN88YBE+9KPW
-        v195V1c5n6s36w==
-X-ME-Sender: <xms:-0zXXysxuhSBEqbiuKGiUwRqRQa_73-1_N9vSgCKKwIHWfcxWyA_KQ>
-    <xme:-0zXX3etDQH69Kj3W03Mh7vavSL77CvPYE97C94PDUWwXwNQHmO06MRUP49xPRVu9
-    GsG2v3oTXTAB2A>
+        fm1; bh=7lI11MtjNSMgM14iF5Kd9tOuUEofnvUAdFw5IN/V48I=; b=DuB7zdk4
+        OfwxVuVxbG5DcFc4qKy0cDJDDkq7NsRzcPx4ncbY8Hy660/tC/oFYNSvJ2Eg5yuU
+        dtLPiF29el0prfDvfqHK494yZgAzUju0XxtESPfDlodLOmuePB8oTpjRwUKoIjp4
+        eLjnPGUJyU0XfrdCzlpcPkll8J0Qtg34CU2tMTHX8OPno4nwmrhYG+p84Rt85Gsi
+        s5yhD2IUGkVwZrhYxiz5PJsiHgdgvH+6CaGKRO5lc4MzyiO1dtw2ad0HlUoe52yz
+        nVSLOJcnPsrYFHNI6HYw9i2Vt2w/DoPk0ZF82uIOpiaUol0F06ObKgcISLutveUg
+        SlH146PUzaj/JQ==
+X-ME-Sender: <xms:_EzXXzDC2tFgtTrgJ4nsBvwJlBH7tGlm4cAl3lCdM_aEDXUp720bbA>
+    <xme:_EzXX5jq0dAPy9DqFxq0Y5EuxqRaYlrePA6xv6WVI7mLEo5A3aSonvz23It0ZnhNC
+    04EbINYoKMrmIc>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehvddrfedu
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:-0zXX9wdwM8T5Bzc3c-xvLmA2hovOV_rbK5SD7QALOzXcVmbyU_7Fg>
-    <xmx:-0zXX9PKU6OOqHK_FP7Al7UkyC76ZwqndnRhwcr-yTZri_X5KwJCFA>
-    <xmx:-0zXXy-yrgN3Q7pLvO4G7anDReWX7TiMadem_a6Qx-tFI7i53Rvr1A>
-    <xmx:-0zXX0I2xqiivA1_mWH_ZCbP1QrZOrzllxFyXZfkLJ0fsBPvtBsfDw>
+X-ME-Proxy: <xmx:_EzXX-nKpY0zK23nQWnVTBLapYzchEw5hnYJXmIgH94FHTnMTlsm-g>
+    <xmx:_EzXX1wnlKXoJRc3N0fQa9mMmYKZGQi2xaECELcF_wDDGgysRdV-ZA>
+    <xmx:_EzXX4QuhegALh_6OFfaNhdLEvUsYNv-BN3sSnOzPyX9RhNuCLApKg>
+    <xmx:_EzXXzcI7iKPYnwz2MFlhtK4uvyE9eDsoMkpNBp9USU8FO5ZlRpBOw>
 Received: from shredder.mtl.com (igld-84-229-152-31.inter.net.il [84.229.152.31])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 350581080067;
-        Mon, 14 Dec 2020 06:31:06 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7E641108005F;
+        Mon, 14 Dec 2020 06:31:07 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 05/15] mlxsw: Ignore ports that are connected to eXtended mezanine
-Date:   Mon, 14 Dec 2020 13:30:31 +0200
-Message-Id: <20201214113041.2789043-6-idosch@idosch.org>
+Subject: [PATCH net-next v2 06/15] mlxsw: reg: Add Router XLT M select Register
+Date:   Mon, 14 Dec 2020 13:30:32 +0200
+Message-Id: <20201214113041.2789043-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201214113041.2789043-1-idosch@idosch.org>
 References: <20201214113041.2789043-1-idosch@idosch.org>
@@ -63,81 +63,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Use the info stored in the bus_info struct about the eXtended mezanine
-connected ports and don't expose them.
+The RXLTM configures and selects the M for the XM lookups.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c     | 12 ++++++++++++
- drivers/net/ethernet/mellanox/mlxsw/core.h     |  1 +
- drivers/net/ethernet/mellanox/mlxsw/minimal.c  |  3 ++-
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c |  3 +++
- 4 files changed, 18 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 32 +++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index c67825a68a26..685037e052af 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -2856,6 +2856,18 @@ mlxsw_core_port_devlink_port_get(struct mlxsw_core *mlxsw_core,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index ebde4fc860e2..07445db6a018 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -8512,6 +8512,37 @@ static inline void mlxsw_reg_rxlte_pack(char *payload, u16 virtual_router,
+ 	mlxsw_reg_rxlte_lpm_xlt_en_set(payload, lpm_xlt_en);
  }
- EXPORT_SYMBOL(mlxsw_core_port_devlink_port_get);
  
-+bool mlxsw_core_port_is_xm(const struct mlxsw_core *mlxsw_core, u8 local_port)
++/* RXLTM - Router XLT M select Register
++ * ------------------------------------
++ * The RXLTM configures and selects the M for the XM lookups.
++ */
++
++#define MLXSW_REG_RXLTM_ID 0x8051
++#define MLXSW_REG_RXLTM_LEN 0x14
++
++MLXSW_REG_DEFINE(rxltm, MLXSW_REG_RXLTM_ID, MLXSW_REG_RXLTM_LEN);
++
++/* reg_rxltm_m0_val_v6
++ * Global M0 value For IPv6.
++ * Range 0..128
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, rxltm, m0_val_v6, 0x10, 16, 8);
++
++/* reg_rxltm_m0_val_v4
++ * Global M0 value For IPv4.
++ * Range 0..32
++ * Access: RW
++ */
++MLXSW_ITEM32(reg, rxltm, m0_val_v4, 0x10, 0, 6);
++
++static inline void mlxsw_reg_rxltm_pack(char *payload, u8 m0_val_v4, u8 m0_val_v6)
 +{
-+	const struct mlxsw_bus_info *bus_info = mlxsw_core->bus_info;
-+	int i;
-+
-+	for (i = 0; i < bus_info->xm_local_ports_count; i++)
-+		if (bus_info->xm_local_ports[i] == local_port)
-+			return true;
-+	return false;
++	MLXSW_REG_ZERO(rxltm, payload);
++	mlxsw_reg_rxltm_m0_val_v6_set(payload, m0_val_v6);
++	mlxsw_reg_rxltm_m0_val_v4_set(payload, m0_val_v4);
 +}
-+EXPORT_SYMBOL(mlxsw_core_port_is_xm);
 +
- struct mlxsw_env *mlxsw_core_env(const struct mlxsw_core *mlxsw_core)
- {
- 	return mlxsw_core->env;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
-index ec424d388ecc..6558f9cde3d6 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
-@@ -223,6 +223,7 @@ enum devlink_port_type mlxsw_core_port_type_get(struct mlxsw_core *mlxsw_core,
- struct devlink_port *
- mlxsw_core_port_devlink_port_get(struct mlxsw_core *mlxsw_core,
- 				 u8 local_port);
-+bool mlxsw_core_port_is_xm(const struct mlxsw_core *mlxsw_core, u8 local_port);
- struct mlxsw_env *mlxsw_core_env(const struct mlxsw_core *mlxsw_core);
- bool mlxsw_core_is_initialized(const struct mlxsw_core *mlxsw_core);
- int mlxsw_core_module_max_width(struct mlxsw_core *mlxsw_core, u8 module);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-index c010db2c9dba..b34c44723f8b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
-@@ -291,7 +291,8 @@ static int mlxsw_m_ports_create(struct mlxsw_m *mlxsw_m)
- 
- 	/* Create port objects for each valid entry */
- 	for (i = 0; i < mlxsw_m->max_ports; i++) {
--		if (mlxsw_m->module_to_port[i] > 0) {
-+		if (mlxsw_m->module_to_port[i] > 0 &&
-+		    !mlxsw_core_port_is_xm(mlxsw_m->core, i)) {
- 			err = mlxsw_m_port_create(mlxsw_m,
- 						  mlxsw_m->module_to_port[i],
- 						  i);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index df8175cd44ab..516d6cb45c9f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -1840,6 +1840,9 @@ static int mlxsw_sp_port_module_info_init(struct mlxsw_sp *mlxsw_sp)
- 		return -ENOMEM;
- 
- 	for (i = 1; i < max_ports; i++) {
-+		if (mlxsw_core_port_is_xm(mlxsw_sp->core, i))
-+			continue;
-+
- 		err = mlxsw_sp_port_module_info_get(mlxsw_sp, i, &port_mapping);
- 		if (err)
- 			goto err_port_module_info_get;
+ /* Note that XMDR and XRALXX register positions violate the rule of ordering
+  * register definitions by the ID. However, XRALXX pack helpers are
+  * using RALXX pack helpers, RALXX registers have higher IDs.
+@@ -11798,6 +11829,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
+ 	MLXSW_REG(recr2),
+ 	MLXSW_REG(rmft2),
+ 	MLXSW_REG(rxlte),
++	MLXSW_REG(rxltm),
+ 	MLXSW_REG(xmdr),
+ 	MLXSW_REG(xralta),
+ 	MLXSW_REG(xralst),
 -- 
 2.29.2
 
