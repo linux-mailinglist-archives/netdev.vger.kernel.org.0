@@ -2,86 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBEA92DA296
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:34:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC7FF2DA2B0
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:44:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503529AbgLNVdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 16:33:03 -0500
-Received: from smtp-outgoing.laposte.net ([160.92.124.96]:54219 "EHLO
-        smtp-outgoing.laposte.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387804AbgLNVdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 16:33:03 -0500
-X-mail-filterd: {"version":"1.2.0","queueID":"4Cvvbv27ZDz10MQQ","contextId":"e4100a5d-ddc4-4ab8-ae96-0fcdda228721"}
-Received: from outgoing-mail.laposte.net (localhost.localdomain [127.0.0.1])
-        by mlpnf0120.laposte.net (SMTP Server) with ESMTP id 4Cvvbv27ZDz10MQQ;
-        Mon, 14 Dec 2020 22:27:07 +0100 (CET)
-X-mail-filterd: {"version":"1.2.0","queueID":"4Cvvbv1641z10MQN","contextId":"220a356f-d0ad-4082-9009-5fa2bef692ab"}
-X-lpn-mailing: LEGIT
-X-lpn-spamrating: 36
-X-lpn-spamlevel: not-spam
-X-lpn-spamcause: OK, (-100)(0000)gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgudehtdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfntefrqffuvffgpdfqfgfvpdggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvuffkfhggtggujgesthdttddttddtvdenucfhrhhomhepgghinhgtvghnthcuufhtvghhlhoruceovhhinhgtvghnthdrshhtvghhlhgvsehlrghpohhsthgvrdhnvghtqeenucggtffrrghtthgvrhhnpeelvdegveegieejudelieehteffjeffieeffeeileehhfetffdvveeljeevveejieenucfkphepkeekrdduvddurddugeelrdegleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopehrohhmuhgrlhgurdgsvghrghgvrhhivgdpihhnvghtpeekkedruddvuddrudegledrgeelpdhmrghilhhfrhhomhepvhhinhgtvghnthdrshhtvghhlhgvsehlrghpohhsthgvrdhnvghtpdhrtghpthhtohepuggrvhgvmhesuggrvhgvmhhlohhfthdrnhgvthdprhgtphhtthhopehkuhgsrgeskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepjhifiheslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehflhhorhhirghnrdhfrghinhgvlhhlihesthgvlhgvtghomhhinhhtrdgvuhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkv
- ghrnhgvlhdrohhrghdprhgtphhtthhopehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
-Received: from romuald.bergerie (unknown [88.121.149.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mlpnf0120.laposte.net (SMTP Server) with ESMTPSA id 4Cvvbv1641z10MQN;
-        Mon, 14 Dec 2020 22:27:07 +0100 (CET)
-Received: by romuald.bergerie (Postfix, from userid 1000)
-        id C55893DFAA08; Mon, 14 Dec 2020 22:27:06 +0100 (CET)
-Date:   Mon, 14 Dec 2020 22:27:06 +0100
-From:   Vincent =?iso-8859-1?Q?Stehl=E9?= <vincent.stehle@laposte.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Julian Wiedmann <jwi@linux.ibm.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <florian.fainelli@telecomint.eu>
-Subject: Re: [PATCH] net: korina: remove busy skb free
-Message-ID: <X9fYqvy2DjB/Cp/V@romuald.bergerie>
-Mail-Followup-To: Jakub Kicinski <kuba@kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <florian.fainelli@telecomint.eu>
-References: <20201213172052.12433-1-vincent.stehle@laposte.net>
- <ecd7900f-8b54-23e2-2537-033237e08597@linux.ibm.com>
- <20201214130832.7bedb230@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S2438808AbgLNVoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 16:44:09 -0500
+Received: from www62.your-server.de ([213.133.104.62]:48274 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727013AbgLNVoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 16:44:01 -0500
+Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kovcj-000ECb-60; Mon, 14 Dec 2020 22:43:17 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf-next 2020-12-14
+Date:   Mon, 14 Dec 2020 22:43:16 +0100
+Message-Id: <20201214214316.20642-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201214130832.7bedb230@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=laposte.net; s=lpn-wlmd; t=1607981230; bh=EhCVq64/QG0QI4s/bViYBnWqEScfemWkVU+ds5VcEIw=; h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To; b=YE77RI7dsk0YN9+oHaDpWa7OxVmDqJ8EV7c3XKPtO9iL1TPBM907q2p4RRTugGqPDcltKPsPGKRRS8CnZVBaIxKHxwma7wesFS6AgKewrwvjHNltRTRL3DD/wMmQVs7G633yeAO+uwhwNYPGrpzZ9+WPNN6GsuZBD799SvL2+RYxdC7LuMJ3vYLtICXXS2zACevBU6cGkHAWIuY0ZusHhbB+G7pbuunMjl2ggoOTiaLDcP581OnkRCweU15+bFD8L/XboPEUmJ/ZPE2GjAoTIdG5BOxgwEF5nQA0BSB3W1L0u2rqlyfoLESfJ80aEqS2zYeHCM0zqV7M8qKdSZEsjw==;
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26017/Mon Dec 14 15:33:39 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 01:08:32PM -0800, Jakub Kicinski wrote:
-> On Mon, 14 Dec 2020 11:03:12 +0100 Julian Wiedmann wrote:
-> > > diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
-> > > index bf48f0ded9c7d..9d84191de6824 100644
-> > > --- a/drivers/net/ethernet/korina.c
-> > > +++ b/drivers/net/ethernet/korina.c
-> > > @@ -216,7 +216,6 @@ static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
-> > >  			netif_stop_queue(dev);
-> > >  		else {
-> > >  			dev->stats.tx_dropped++;
-> > > -			dev_kfree_skb_any(skb);
-> > >  			spin_unlock_irqrestore(&lp->lock, flags);
-> > >  
-> > >  			return NETDEV_TX_BUSY;
-> > >   
-> > 
-> > As this skb is returned to the stack (and not dropped), the tx_dropped
-> > statistics increment looks bogus too.
-> 
-> Since this is clearly an ugly use after free, and nobody complained we
-> can assume that the driver correctly stops its TX queue ahead of time.
-> So perhaps we can change the return value to NETDEV_TX_OK instead.
+Hi David, hi Jakub,
 
-Hi Jakub,
+The following pull-request contains BPF updates for your *net-next* tree.
 
-Thanks for the review.
+We've added 31 non-merge commits during the last 11 day(s) which contain
+a total of 40 files changed, 2063 insertions(+), 114 deletions(-).
 
-Ok, if this is the preferred fix I will respin the patch this way.
+The main changes are:
 
-Best regards,
-Vincent.
+1) Expose bpf_sk_storage_*() helpers to iterator programs, from Florent Revest.
+
+2) Add AF_XDP selftests based on veth devs to BPF selftests, from Weqaar Janjua.
+
+3) Support for finding BTF based kernel attach targets through libbpf's
+   bpf_program__set_attach_target() API, from Andrii Nakryiko.
+
+4) Permit pointers on stack for helper calls in the verifier, from Yonghong Song.
+
+5) Fix overflows in hash map elem size after rlimit removal, from Eric Dumazet.
+
+6) Get rid of direct invocation of llc in BPF selftests, from Andrew Delgadillo.
+
+7) Fix xsk_recvmsg() to reorder socket state check before access, from Björn Töpel.
+
+8) Add new libbpf API helper to retrieve ring buffer epoll fd, from Brendan Jackman.
+
+9) Batch of minor BPF selftest improvements all over the place, from Florian Lehner,
+   KP Singh, Jiri Olsa and various others.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrii Nakryiko, Björn Töpel, kernel test robot, KP 
+Singh, Magnus Karlsson, Martin KaFai Lau, Randy Dunlap, Roman Gushchin, 
+Song Liu, syzbot, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit 846c3c9cfe8a74021b246bc77a848507be225719:
+
+  Merge tag 'wireless-drivers-next-2020-12-03' of git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next (2020-12-04 10:56:37 -0800)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to b4b638c36b7e7acd847b9c4b9c80f268e45ea30c:
+
+  selftests/bpf: Add a test for ptr_to_map_value on stack for helper access (2020-12-14 21:50:10 +0100)
+
+----------------------------------------------------------------
+Andrew Delgadillo (1):
+      selftests/bpf: Drop the need for LLVM's llc
+
+Andrii Nakryiko (5):
+      Merge branch 'Improve error handling of verifier tests'
+      bpf: Return -ENOTSUPP when attaching to non-kernel BTF
+      selftests/bpf: fix bpf_testmod.ko recompilation logic
+      libbpf: Support modules in bpf_program__set_attach_target() API
+      selftests/bpf: Add set_attach_target() API selftest for module target
+
+Björn Töpel (1):
+      xsk: Validate socket state in xsk_recvmsg, prior touching socket members
+
+Brendan Jackman (1):
+      libbpf: Expose libbpf ring_buffer epoll_fd
+
+Daniel Borkmann (1):
+      Merge branch 'bpf-xsk-selftests'
+
+Eric Dumazet (1):
+      bpf: Avoid overflows involving hash elem_size
+
+Florent Revest (7):
+      net: Remove the err argument from sock_from_file
+      bpf: Add a bpf_sock_from_file helper
+      bpf: Expose bpf_sk_storage_* to iterator programs
+      selftests/bpf: Add an iterator selftest for bpf_sk_storage_delete
+      selftests/bpf: Add an iterator selftest for bpf_sk_storage_get
+      selftests/bpf: Test bpf_sk_storage_get in tcp iterators
+      bpf: Only provide bpf_sock_from_file with CONFIG_NET
+
+Florian Lehner (2):
+      selftests/bpf: Print reason when a tester could not run a program
+      selftests/bpf: Avoid errno clobbering
+
+Jiri Olsa (1):
+      selftests/bpf: Make selftest compilation work on clang 11
+
+KP Singh (1):
+      selftests/bpf: Silence ima_setup.sh when not running in verbose mode.
+
+Lukas Bulwahn (1):
+      bpf: Propagate __user annotations properly
+
+Magnus Karlsson (1):
+      samples/bpf: Fix possible hang in xdpsock with multiple threads
+
+Tom Rix (1):
+      bpf: Remove trailing semicolon in macro definition
+
+Veronika Kabatova (1):
+      selftests/bpf: Drop tcp-{client,server}.py from Makefile
+
+Weqaar Janjua (6):
+      selftests/bpf: Xsk selftests framework
+      selftests/bpf: Xsk selftests - SKB POLL, NOPOLL
+      selftests/bpf: Xsk selftests - DRV POLL, NOPOLL
+      selftests/bpf: Xsk selftests - Socket Teardown - SKB, DRV
+      selftests/bpf: Xsk selftests - Bi-directional Sockets - SKB, DRV
+      selftests/bpf: Xsk selftests - adding xdpxceiver to .gitignore
+
+Yonghong Song (2):
+      bpf: Permits pointers on stack for helper calls
+      selftests/bpf: Add a test for ptr_to_map_value on stack for helper access
+
+ fs/eventpoll.c                                     |    3 +-
+ fs/io_uring.c                                      |   16 +-
+ include/linux/bpf.h                                |    1 +
+ include/linux/net.h                                |    2 +-
+ include/trace/events/xdp.h                         |   12 +-
+ include/uapi/linux/bpf.h                           |    9 +
+ kernel/bpf/hashtab.c                               |    6 +-
+ kernel/bpf/syscall.c                               |    5 +-
+ kernel/bpf/verifier.c                              |    3 +-
+ kernel/trace/bpf_trace.c                           |    2 +
+ net/core/bpf_sk_storage.c                          |    1 +
+ net/core/filter.c                                  |   18 +
+ net/core/netclassid_cgroup.c                       |    3 +-
+ net/core/netprio_cgroup.c                          |    3 +-
+ net/core/sock.c                                    |    8 +-
+ net/socket.c                                       |   27 +-
+ net/xdp/xsk.c                                      |    4 +-
+ samples/bpf/xdpsock_user.c                         |    2 +
+ scripts/bpf_helpers_doc.py                         |    4 +
+ tools/include/uapi/linux/bpf.h                     |    9 +
+ tools/lib/bpf/libbpf.c                             |   64 +-
+ tools/lib/bpf/libbpf.h                             |    1 +
+ tools/lib/bpf/libbpf.map                           |    1 +
+ tools/lib/bpf/ringbuf.c                            |    6 +
+ tools/testing/selftests/bpf/.gitignore             |    1 +
+ tools/testing/selftests/bpf/Makefile               |   52 +-
+ tools/testing/selftests/bpf/ima_setup.sh           |   24 +
+ tools/testing/selftests/bpf/prog_tests/bpf_iter.c  |  118 +++
+ .../selftests/bpf/prog_tests/module_attach.c       |   11 +-
+ .../bpf/progs/bpf_iter_bpf_sk_storage_helpers.c    |   65 ++
+ tools/testing/selftests/bpf/progs/bpf_iter_task.c  |    3 +-
+ .../selftests/bpf/progs/test_core_reloc_module.c   |    8 +
+ .../selftests/bpf/progs/test_module_attach.c       |   11 +
+ tools/testing/selftests/bpf/test_progs.c           |   10 +
+ tools/testing/selftests/bpf/test_verifier.c        |   31 +-
+ tools/testing/selftests/bpf/test_xsk.sh            |  259 +++++
+ tools/testing/selftests/bpf/verifier/unpriv.c      |    5 +-
+ tools/testing/selftests/bpf/xdpxceiver.c           | 1074 ++++++++++++++++++++
+ tools/testing/selftests/bpf/xdpxceiver.h           |  160 +++
+ tools/testing/selftests/bpf/xsk_prereqs.sh         |  135 +++
+ 40 files changed, 2063 insertions(+), 114 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c
+ create mode 100755 tools/testing/selftests/bpf/test_xsk.sh
+ create mode 100644 tools/testing/selftests/bpf/xdpxceiver.c
+ create mode 100644 tools/testing/selftests/bpf/xdpxceiver.h
+ create mode 100755 tools/testing/selftests/bpf/xsk_prereqs.sh
