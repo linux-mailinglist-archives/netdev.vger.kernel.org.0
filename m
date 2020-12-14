@@ -2,144 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E35F2DA26E
-	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:15:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7A1D2DA27C
+	for <lists+netdev@lfdr.de>; Mon, 14 Dec 2020 22:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503624AbgLNVOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 16:14:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42014 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728461AbgLNVNv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 16:13:51 -0500
-Message-ID: <0f8eda3bbed1100c1c1f7015dd5c172f8d735c94.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607980391;
-        bh=Pzvi/5ISTUEc02BC83hB6nniQmkTHPAhNCBBNcfKAUY=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Ks3P3xnvXkJSp+uh7CcZoik6MJkEKtx2PvE0VYPE/pepC3FjT65YOm45Ebhka542Q
-         KDRZnMtG6PVk8azMh03nN0D62HLqcKsXaM3NGfl0cnBfDn4M/eCG3Bapi5UEiWJojE
-         Wz5xGjdq/ndTqDY7tNprPuvOQMJrfpTrREHq07hUDedim+JiPcYSm9y/a+CVpdgIGp
-         tK5qViUVIaC1nIaet1VMQYFfwNA6Uv7knO5wHsw+J306Af6r5YPeiXS/tptiFYTABJ
-         2yXmYvRm101qHL41Iu7+0L42D5JI7GLbb235mT9lCcvuGwm/DUlfBNloCq8GKc5F9/
-         KjhGS5BzrCEJg==
-Subject: Re: [patch 22/30] net/mlx5: Replace irq_to_desc() abuse
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Marc Zyngier <maz@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        afzal mohammed <afzal.mohd.ma@gmail.com>,
-        linux-parisc@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Wambui Karuga <wambui.karugax@gmail.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-pci@vger.kernel.org,
-        Karthikeyan Mitran <m.karthikeyan@mobiveil.co.in>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+        id S2503595AbgLNVUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 16:20:50 -0500
+Received: from smtp-outgoing.laposte.net ([160.92.124.100]:54904 "EHLO
+        smtp-outgoing.laposte.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503568AbgLNVUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 16:20:40 -0500
+X-mail-filterd: {"version":"1.2.0","queueID":"4CvvKR2gWjz10MQR","contextId":"fc9c9fcb-86e0-4e10-9782-1a89285274a9"}
+Received: from outgoing-mail.laposte.net (localhost.localdomain [127.0.0.1])
+        by mlpnf0120.laposte.net (SMTP Server) with ESMTP id 4CvvKR2gWjz10MQR;
+        Mon, 14 Dec 2020 22:14:35 +0100 (CET)
+X-mail-filterd: {"version":"1.2.0","queueID":"4CvvKR19xlz10MQQ","contextId":"08deaf0b-0861-4074-9b43-d33f7839d2a2"}
+X-lpn-mailing: LEGIT
+X-lpn-spamrating: 36
+X-lpn-spamlevel: not-spam
+X-lpn-spamcause: OK, (-100)(0000)gggruggvucftvghtrhhoucdtuddrgedujedrudekkedgudegjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfntefrqffuvffgpdfqfgfvpdggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvuffkfhggtggugfgjsehtkedttddttddunecuhfhrohhmpeggihhntggvnhhtucfuthgvhhhlrocuoehvihhntggvnhhtrdhsthgvhhhlvgeslhgrphhoshhtvgdrnhgvtheqnecuggftrfgrthhtvghrnhepffdtteetvedujeettdetleehhfehjefhueefhfeijeffleehuedugeegiefgffdtnecukfhppeekkedruddvuddrudegledrgeelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehhvghloheprhhomhhurghlugdrsggvrhhgvghrihgvpdhinhgvthepkeekrdduvddurddugeelrdegledpmhgrihhlfhhrohhmpehvihhntggvnhhtrdhsthgvhhhlvgeslhgrphhoshhtvgdrnhgvthdprhgtphhtthhopegurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhrtghpthhtohepkhhusggrsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehjfihisehlihhnuhigrdhisghmrdgtohhmpdhrtghpthhtohepfhhlohhrihgrnhdrfhgrihhnvghllhhisehtvghlvggtohhmihhnthdrvghupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrk
+ hgvrhhnvghlrdhorhhgpdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Received: from romuald.bergerie (unknown [88.121.149.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mlpnf0120.laposte.net (SMTP Server) with ESMTPSA id 4CvvKR19xlz10MQQ;
+        Mon, 14 Dec 2020 22:14:34 +0100 (CET)
+Received: by romuald.bergerie (Postfix, from userid 1000)
+        id 959EC3DFA8F4; Mon, 14 Dec 2020 22:14:34 +0100 (CET)
+Date:   Mon, 14 Dec 2020 22:14:34 +0100
+From:   Vincent =?iso-8859-1?Q?Stehl=E9?= <vincent.stehle@laposte.net>
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        xen-devel@lists.xenproject.org
-Date:   Mon, 14 Dec 2020 13:13:07 -0800
-In-Reply-To: <20201210194044.769458162@linutronix.de>
-References: <20201210192536.118432146@linutronix.de>
-         <20201210194044.769458162@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <florian.fainelli@telecomint.eu>
+Subject: Re: [PATCH] net: korina: remove busy skb free
+Message-ID: <X9fVuvAwIf57YZUJ@romuald.bergerie>
+Mail-Followup-To: Julian Wiedmann <jwi@linux.ibm.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <florian.fainelli@telecomint.eu>
+References: <20201213172052.12433-1-vincent.stehle@laposte.net>
+ <ecd7900f-8b54-23e2-2537-033237e08597@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+In-Reply-To: <ecd7900f-8b54-23e2-2537-033237e08597@linux.ibm.com>
+Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=laposte.net; s=lpn-wlmd; t=1607980476; bh=FhA1NzlZW79MJc0KRvXihr5YWiW7pvjBdcRnaFAgDJY=; h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:Content-Transfer-Encoding; b=isJoemRoXZAwcDrK2OKoGo/LJNfzFuJiv1cqxE6nqRcO/fzkHocdpeTJxdB/RBHPifoudRHBx/kOK+1xk/uYWRSkdPnJSt9Di4D+UYVM4ME+iQWPwi70tVI+JmDUBLzDUi+4JyedtGTR0Sa+bQEkEUXqjf9ahYeXhLgK2XQACQpEz2adUzITu8ExjlNBIAPfAtnSjtTQMhOBjBvG34sMr1sTQf8OlJO5cxNDXheXMw6DFawaX4cQMawaB0O6vL/WPMvR4JpJjDxYby59ea8R6vfnrrAdaKleM5vufAAkP1yLol+ECmybxlLRMtyt0lqxJ0UjC2yhuF6yu69G8UYMGw==;
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-12-10 at 20:25 +0100, Thomas Gleixner wrote:
-> No driver has any business with the internals of an interrupt
-> descriptor. Storing a pointer to it just to use yet another helper at
-> the
-> actual usage site to retrieve the affinity mask is creative at best.
-> Just
-> because C does not allow encapsulation does not mean that the kernel
-> has no
-> limits.
-> 
+On Mon, Dec 14, 2020 at 11:03:12AM +0100, Julian Wiedmann wrote:
+> On 13.12.20 18:20, Vincent Stehl=E9 wrote:
+...
+> > @@ -216,7 +216,6 @@ static int korina_send_packet(struct sk_buff *skb=
+, struct net_device *dev)
+> >  			netif_stop_queue(dev);
+> >  		else {
+> >  			dev->stats.tx_dropped++;
+> > -			dev_kfree_skb_any(skb);
+> >  			spin_unlock_irqrestore(&lp->lock, flags);
+> > =20
+> >  			return NETDEV_TX_BUSY;
+> >=20
+>=20
+> As this skb is returned to the stack (and not dropped), the tx_dropped
+> statistics increment looks bogus too.
 
-you can't blame the developers for using stuff from include/linux/
-Not all developers are the same, and sometime we don't read in between
-the lines, you can't assume all driver developers to be expert on irq
-APIs disciplines.
+Hi Julian,
 
-your rules must be programmatically expressed, for instance,
-you can just hide struct irq_desc and irq_to_desc() in kernel/irq/ and
-remove them from include/linux/ header files, if you want privacy in
-your subsystem, don't put all your header files on display under
-include/linux.
+Thanks for the review.
+I will respin the patch to remove the statistics increment as well.
 
-
-> Retrieve a pointer to the affinity mask itself and use that. It's
-> still
-> using an interface which is usually not for random drivers, but
-> definitely
-> less hideous than the previous hack.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en.h      |    2 +-
->  drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    2 +-
->  drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c |    6 +-----
->  3 files changed, 3 insertions(+), 7 deletions(-)
-> 
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> @@ -669,7 +669,7 @@ struct mlx5e_channel {
->  	spinlock_t                 async_icosq_lock;
->  
->  	/* data path - accessed per napi poll */
-> -	struct irq_desc *irq_desc;
-> +	const struct cpumask	  *aff_mask;
->  	struct mlx5e_ch_stats     *stats;
->  
->  	/* control */
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -1998,7 +1998,7 @@ static int mlx5e_open_channel(struct mlx
->  	c->num_tc   = params->num_tc;
->  	c->xdp      = !!params->xdp_prog;
->  	c->stats    = &priv->channel_stats[ix].ch;
-> -	c->irq_desc = irq_to_desc(irq);
-> +	c->aff_mask = irq_get_affinity_mask(irq);
-
-as long as the affinity mask pointer stays the same for the lifetime of
-the irq vector.
-
-Assuming that:
-Acked-by: Saeed Mahameed <saeedm@nvidia.com>
-
-
+Best regards,
+Vincent.
