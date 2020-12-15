@@ -2,228 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F8FD2DACAC
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 13:06:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BBC42DAD31
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 13:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729119AbgLOMDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 07:03:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728826AbgLOMDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 07:03:33 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67185C06179C
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 04:02:53 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id cw27so20725679edb.5
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 04:02:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=It9ncx+4nnOvVpoms6IuHWD2LnlegCojyCguiVXj5es=;
-        b=K4GU/PPYRD7f5L+tQk1bh5QSRBHfDAvq195bwhP4qCT9PWKJCNQZL7jImmRTl6o/GM
-         e46WCSeVa06b9BhGAHat4uFY967EuhfC2BBlI6dlsFOCm9iVL27ErgfMaRAqe4KNQRBl
-         7nPhmey1InK412ySK5JoaFi3l+oNnp25hvllb/POEWkTzCZ6rq4PgE80RDW2pA5jjobd
-         /dj0z0O2jYYTlgLh5rOqeWIwa4KRdgusTSVAIvKJMXshfwUyL4KscuCGMJC/xfSfVkqH
-         L68nBnFV791Q8EEhIlT2VXqe9g4aE1ShwtiDvbys28GcPod+Na7OJbW18PTDK1rQQHoW
-         fXfg==
+        id S1729499AbgLOM2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 07:28:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26771 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729426AbgLOM2D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 07:28:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608035194;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p2PFWOUp6BsVeZRIR5zjR2a20420Yo7fOz47E9bHmR0=;
+        b=aphvdI4FBnvqL1y8VjiR4/27OBm3ZC5mjwI9+yeLt9sqWCBaEkP/XxtFcYg0dVRqXjFDVw
+        T4Kn2nRNngJ9UfO417SCPcB7QWpzMn/E1wXPtj4DMtwA/FS9n6mp1KaCucbX6ClgEa11vV
+        8LDcE+1EkBTi/qZ2FN0Ejgkg34APZOo=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-426-OGZZ5TdSPmmz12blCUwJ0w-1; Tue, 15 Dec 2020 07:26:30 -0500
+X-MC-Unique: OGZZ5TdSPmmz12blCUwJ0w-1
+Received: by mail-ed1-f69.google.com with SMTP id bf13so9867537edb.10
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 04:26:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=It9ncx+4nnOvVpoms6IuHWD2LnlegCojyCguiVXj5es=;
-        b=is9GZ5fz+ro97uBoWcS7wx+qYFkU6EiC1do0ATRbVL5tNbN/c7nb5UtA3csZ/h6eks
-         7DfW/5sXquIzRdnkD9A6arKgExTYejpBAw2BYrZXHINihU8gokyefPm8ECu99iqtfEz+
-         TRi+/amn8YmEa+qw+N5TuJ/mlCm0ISYh1RNA6v4OIdn0EEE/ssyiBONphHi3T9J725fQ
-         ae5bHgr28An3+cXxhBkZ1K03b3P/x4qHeQnG0DFx49sxR9YDWlpAnrK4YeYgR5/ttAXQ
-         SVlPZMHZgcsqE87feDobz/6R/VfS95P57HUmM/1mrjSogQfEzrGU/HdvoZHPMI4jsBf/
-         RfXQ==
-X-Gm-Message-State: AOAM532i0Iufdyi/yg+/dVuEzNnMGULPBt6IffEAZZZvdqPdevDAySQK
-        kgsGH9berB1KE/4QP3Lo43ZwQAOeb+HCZf23nlY2Hg==
-X-Google-Smtp-Source: ABdhPJzklsx5vOdjaOEntSe0/ugc4ud/RGowrQuAgPzeD2SQPrC/m4RkxzfbvaRqeG7ygXvUBcNCan/HsSRqXdEBNNM=
-X-Received: by 2002:a50:e78b:: with SMTP id b11mr28922626edn.165.1608033772033;
- Tue, 15 Dec 2020 04:02:52 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=p2PFWOUp6BsVeZRIR5zjR2a20420Yo7fOz47E9bHmR0=;
+        b=oPnj78QstohgAD4Qk8RhsL70tldOG387JHJ6/33syaswBaA6htd13WTZMpzvBFoIR7
+         C0SvNqW23uVT9Pj85SfDgy3RyMVUnkMf/jNhSwCJFn23nEbRVPdnWV7nFDSFquEnA4rf
+         w+gkXqJm6u0k/XtjMgoTuKzIrSaYX4Zd/Dac3VGTyZ85n3d/xG8xzE5otPUPFBrMJV8s
+         5yjOdNS5Sn77R14mrHA/h+lpw5n2GQulP06kAV7baCe/pJkDfwrSZl1Jv+uSk+nkovqk
+         biLuYhnfs2IENqGJcw91kKwlTmzjuJCOzJ4DYze5PgAtJygW1Z/NzTDeXBRjCNPm28Vh
+         Js5w==
+X-Gm-Message-State: AOAM530kaBckMEzKrpAFhUP0592v9ZvvFyePxUDmrUuuq2cK9Zg2nkH6
+        SxYEv789brjcs3gudVSRkBTR8NKB9MHyhrEECbPv+Rv1Q4OBSgH9PpbpzpGlQj1jWXF2sfax8yo
+        uVelFqnr6p56uvenx
+X-Received: by 2002:a05:6402:2292:: with SMTP id cw18mr29573390edb.336.1608035189392;
+        Tue, 15 Dec 2020 04:26:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzBYKFs3TYtfdNXbnJTsoorusE8rhPx4MUeNvFWOrHdRsAheOVW0szXft9iKrTV55Mu97NNwA==
+X-Received: by 2002:a05:6402:2292:: with SMTP id cw18mr29573371edb.336.1608035189103;
+        Tue, 15 Dec 2020 04:26:29 -0800 (PST)
+Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
+        by smtp.gmail.com with ESMTPSA id s26sm17870347edc.33.2020.12.15.04.26.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Dec 2020 04:26:28 -0800 (PST)
+Subject: Re: [PATCH v4 0/4] Improve s0ix flows for systems i219LM
+To:     "Limonciello, Mario" <Mario.Limonciello@dell.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        David Miller <davem@davemloft.net>,
+        Aaron Ma <aaron.ma@canonical.com>,
+        Mark Pearson <mpearson@lenovo.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Netfin <sasha.neftin@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Stefan Assmann <sassmann@redhat.com>,
+        "darcari@redhat.com" <darcari@redhat.com>,
+        "Shen, Yijun" <Yijun.Shen@dell.com>,
+        "Yuan, Perry" <Perry.Yuan@dell.com>,
+        "anthony.wong@canonical.com" <anthony.wong@canonical.com>
+References: <20201214153450.874339-1-mario.limonciello@dell.com>
+ <80862f70-18a4-4f96-1b96-e2fad7cc2b35@redhat.com>
+ <MN2PR19MB26376EA92CE14DC3ADD328BEFAC70@MN2PR19MB2637.namprd19.prod.outlook.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <1f68c6a4-3dcf-47fa-d3c2-679d1f7c4823@redhat.com>
+Date:   Tue, 15 Dec 2020 13:26:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-References: <1607598951-2340-1-git-send-email-loic.poulain@linaro.org>
- <1607598951-2340-3-git-send-email-loic.poulain@linaro.org>
- <20201212125544.4857b1cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAMZdPi8JGnEn1BbsX2jP_bNAGPrSz=eL2ZJ5n_2ReqGP2jpdOg@mail.gmail.com> <20201214114710.08346744@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201214114710.08346744@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 15 Dec 2020 13:09:27 +0100
-Message-ID: <CAMZdPi861aeMyWJnEXy0X2E-KPfCvn1Gy47HavqoO_XkrFwc-A@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] net: mhi: Add dedicated alloc thread
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <MN2PR19MB26376EA92CE14DC3ADD328BEFAC70@MN2PR19MB2637.namprd19.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Hi,
 
-On Mon, 14 Dec 2020 at 20:47, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 14 Dec 2020 10:19:07 +0100 Loic Poulain wrote:
-> > On Sat, 12 Dec 2020 at 21:55, Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Thu, 10 Dec 2020 12:15:51 +0100 Loic Poulain wrote:
-> > > > The buffer allocation for RX path is currently done by a work executed
-> > > > in the system workqueue. The work to do is quite simple and consists
-> > > > mostly in allocating and queueing as much as possible buffers to the MHI
-> > > > RX channel.
-> > > >
-> > > > It appears that using a dedicated kthread would be more appropriate to
-> > > > prevent
-> > > > 1. RX allocation latency introduced by the system queue
-> > >
-> > > System work queue should not add much latency, you can also create your
-> > > own workqueue. Did you intend to modify the priority of the thread you
-> > > create?
-> >
-> > No, and I don't, since I assume there is no reason to prioritize
-> > network over other loads. I've considered the dedicated workqueue, but
-> > since there is only one task to run as a while loop, I thought using a
-> > kthread was more appropriate (and slightly lighter), but I can move to
-> > that solution if you recommend it.
->
-> Not sure what to recommend TBH, if thread works better for you that's
-> fine. I don't understand why the thread would work better, tho. I was
-> just checking if there is any extra tuning that happens.
->
-> > > > 2. Unbounded work execution, the work only returning when queue is
-> > > > full, it can possibly monopolise the workqueue thread on slower systems.
-> > >
-> > > Is this something you observed in practice?
-> >
-> > No, I've just observed that work duration is inconstant , queuing from
-> > few buffers to several hundreeds. This unbounded behavior makes me
-> > feel that doing that in the shared sytem workqueue is probably not the
-> > right place. I've not tested on a slower machine though.
->
-> I think long running work should not be an issue for the cmwq
-> implementation we have in the kernel.
->
-> Several hundred buffers means it's running concurrently with RX, right?
-> Since the NIC queue is 128 buffers.
+On 12/14/20 8:36 PM, Limonciello, Mario wrote:
+>> Hi All,
+>>
+>> Sasha (and the other intel-wired-lan folks), thank you for investigating this
+>> further and for coming up with a better solution.
+>>
+>> Mario, thank you for implementing the new scheme.
+>>
+> 
+> Sure.
+> 
+>> I've tested this patch set on a Lenovo X1C8 with vPRO and AMT enabled in the
+>> BIOS
+>> (the previous issues were soon on a X1C7).
+>>
+>> I have good and bad news:
+>>
+>> The good news is that after reverting the
+>> "e1000e: disable s0ix entry and exit flows for ME systems"
+>> I can reproduce the original issue on the X1C8 (I no longer have
+>> a X1C7 to test on).
+>>
+>> The bad news is that increasing the timeout to 1 second does
+>> not fix the issue. Suspend/resume is still broken after one
+>> suspend/resume cycle, as described in the original bug-report:
+>> https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1865570
+>>
+>> More good news though, bumping the timeout to 250 poll iterations
+>> (approx 2.5 seconds) as done in Aaron Ma's original patch for
+>> this fixes this on the X1C8 just as it did on the X1C7
+>> (it takes 2 seconds for ULP_CONFIG_DONE to clear).
+>>
+>> I've ran some extra tests and the poll loop succeeds on its
+>> first iteration when an ethernet-cable is connected. It seems
+>> that Lenovo's variant of the ME firmware waits up to 2 seconds
+>> for a link, causing the long wait for ULP_CONFIG_DONE to clear.
+>>
+>> I think that for now the best fix would be to increase the timeout
+>> to 2.5 seconds as done in  Aaron Ma's original patch. Combined
+>> with a broken-firmware warning when we waited longer then 1 second,
+>> to make it clear that there is a firmware issue here and that
+>> the long wait / slow resume is not the fault of the driver.
+>>
+> 
+> OK.  I've submitted v5 with this suggestion.
+> 
+>> ###
+>>
+>> I've added Mark Pearson from Lenovo to the Cc so that Lenovo
+>> can investigate this issue further.
+>>
+>> Mark, this thread is about an issue with enabling S0ix support for
+>> e1000e (i219lm) controllers. This was enabled in the kernel a
+>> while ago, but then got disabled again on vPro / AMT enabled
+>> systems because on some systems (Lenovo X1C7 and now also X1C8)
+>> this lead to suspend/resume issues.
+>>
+>> When AMT is active then there is a handover handshake for the
+>> OS to get access to the ethernet controller from the ME. The
+>> Intel folks have checked and the Windows driver is using a timeout
+>> of 1 second for this handshake, yet on Lenovo systems this is
+>> taking 2 seconds. This likely has something to do with the
+>> ME firmware on these Lenovo models, can you get the firmware
+>> team at Lenovo to investigate this further ?
+>>
+> 
+> Please be very careful with nomenclature.  AMT active, or AMT capable?
+> The goal for this series is to support AMT capable systems with an i219LM
+> where AMT has not been provisioned by the end user or organization.
+> OEMs do not ship systems with AMD provisioned.
 
-Exactly, buffers can be completed by the hardware before we even
-finished to completely fill the MHI ring buffer, that why the loop can
-queue more than 128 buffers.
+Ah, sorry about that. What I meant with "active" is set to "Enabled"
+in the BIOS.
 
-> > > > This patch replaces the system work with a simple kthread that loops on
-> > > > buffer allocation and sleeps when queue is full. Moreover it gets rid
-> > > > of the local rx_queued variable (to track buffer count), and instead,
-> > > > relies on the new mhi_get_free_desc_count helper.
-> > >
-> > > Seems unrelated, should probably be a separate patch.
-> >
-> > I can do that.
-> >
-> > >
-> > > > After pratical testing on a x86_64 machine, this change improves
-> > > > - Peek throughput (slightly, by few mbps)
-> > > > - Throughput stability when concurrent loads are running (stress)
-> > > > - CPU usage, less CPU cycles dedicated to the task
-> > >
-> > > Do you have an explanation why the CPU cycles are lower?
-> >
-> > For CPU cycles, TBH, not really, this is just observational.
->
-> Is the IRQ pinned? I wonder how often work runs on the same CPU as IRQ
-> processing and how often does the thread do.
->
-> > Regarding throughput stability, it's certainly because the work can
-> > consume all its dedicated kthread time.
->
-> Meaning workqueue implementation doesn't get enough CPU? Strange.
->
-> > > > Below is the powertop output for RX allocation task before and
-> > > > after this change, when performing UDP download at 6Gbps. Mostly
-> > > > to highlight the improvement in term of CPU usage.
-> > > >
-> > > > older (system workqueue):
-> > > > Usage       Events/s    Category       Description
-> > > > 63,2 ms/s     134,0        kWork          mhi_net_rx_refill_work
-> > > > 62,8 ms/s     134,3        kWork          mhi_net_rx_refill_work
-> > > > 60,8 ms/s     141,4        kWork          mhi_net_rx_refill_work
-> > > >
-> > > > newer (dedicated kthread):
-> > > > Usage       Events/s    Category       Description
-> > > > 20,7 ms/s     155,6        Process        [PID 3360] [mhi-net-rx]
-> > > > 22,2 ms/s     169,6        Process        [PID 3360] [mhi-net-rx]
-> > > > 22,3 ms/s     150,2        Process        [PID 3360] [mhi-net-rx]
-> > > >
-> > > > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
->
-> > > > +             skb = netdev_alloc_skb(ndev, size);
-> > > > +             if (unlikely(!skb)) {
-> > > > +                     /* No memory, retry later */
-> > > > +
-> > > > schedule_timeout_interruptible(msecs_to_jiffies(250));
-> > >
-> > > You should have a counter for this, at least for your testing. If
-> > > this condition is hit it'll probably have a large impact on the
-> > > performance.
-> >
-> > Indeed, going to do that, what about a ratelimited error? I assume if
-> > it's happen, system is really in bad shape.
->
-> It's not that uncommon to run out of memory for a 2k allocation in an
-> atomic context (note that netdev_alloc_skb() uses GFP_ATOMIC).
-> You can add a rate-limited print if you want, tho.
->
-> > > > +                     continue;
-> > > > +             }
-> > > > +
-> > > > +             err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb,
-> > > > size, MHI_EOT);
-> > > > +             if (unlikely(err)) {
-> > > > +                     net_err_ratelimited("%s: Failed to queue RX
-> > > > buf (%d)\n",
-> > > > +                                         ndev->name, err);
-> > > > +                     kfree_skb(skb);
-> > > > +                     break;
-> > > > +             }
-> > > > +
-> > > > +             /* Do not hog the CPU */
-> > > > +             cond_resched();
-> > > > +     }
-> > > > +
-> > > > +     return 0;
-> > > > +}
-> > > > +
-> > > >  static int mhi_ndo_open(struct net_device *ndev)
-> > > >  {
-> > > >       struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
-> > > > +     unsigned int qsz = mhi_netdev->rx_queue_sz;
-> > > >
-> > > > -     /* Feed the rx buffer pool */
-> > > > -     schedule_delayed_work(&mhi_netdev->rx_refill, 0);
-> > > > +     if (rx_refill_level >= 100)
-> > > > +             mhi_netdev->rx_refill_level = 1;
-> > > > +     else
-> > > > +             mhi_netdev->rx_refill_level = qsz - qsz *
-> > > > rx_refill_level / 100;
-> > >
-> > > So you're switching from 50% fill level to 70%. Are you sure that's
-> > > not the reason the performance gets better? Did you experiments
-> > > with higher fill levels?
-> >
-> > No, I've tested both levels with the two solutions, It's just that
-> > after experiment, high throughput is a bit more stable with 70%. So I
-> > can revert back to 50% to avoid confusion and keep that for a
-> > subsequent change.
->
-> I'm not fussed about that - it would be good tho to have the numbers in
-> comparisons for the same fill levels. Otherwise comparing workq at 50%
-> vs thread at 70% is changing two variables at the same time.
+Also FWIW I just tried disabling AMT in the BIOS (using the "Disabled"
+option, not the "Permanently Disabled" option) on the Lenovo X1 Carbon
+8th gen, but that does not make a difference.
 
-Yes, anyway, I'm going to skip the new kthread from the series, and
-I'll resubmit once I get consolidated numbers with proper comparison.
+It still takes 2 seconds for ULP_CONFIG_DONE to clear even with AMT
+set to "Disabled" in the BIOS :|
 
-Thanks,
-Loic
+Regards,
+
+Hans
+
+
