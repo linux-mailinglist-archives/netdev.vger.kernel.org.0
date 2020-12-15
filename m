@@ -2,48 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C347E2DA608
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 03:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AE602DA612
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 03:17:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726141AbgLOCOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 21:14:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40526 "EHLO mail.kernel.org"
+        id S1726555AbgLOCQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 21:16:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41082 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726412AbgLOCOV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 21:14:21 -0500
-Date:   Mon, 14 Dec 2020 18:13:39 -0800
+        id S1726266AbgLOCQJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 21:16:09 -0500
+Date:   Mon, 14 Dec 2020 18:15:22 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607998421;
-        bh=j+mo+RL8S/hnsnS3PJ9sF0CcyLg7yIw0RyPIdNZ6Ttg=;
+        s=k20201202; t=1607998528;
+        bh=QvkHCVMW0SB+pTQQ3/pBe4qj9v9HB0Wf38vezPISho8=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PX51nWb470XdHiAuALDAHwzGHnJX6Nm4ykO4U0DkESK/AapXTTeODMVBzdQphv41W
-         QcYRRAzaM9ohGjxjW/Xegc+XiUVGVMjCswiiFaDUVJhdfiiBKmSoFvPH/uwKZZ0FKa
-         B3eAheBUcYhtrsdiWcAcYfvERWHuo53emenIsIZPcKEVEj/TwuMJdYk1tSs/6gKhn+
-         ErTG7DWosWJ2PW/B6zZN3+r3VUEB1+QF5aedyXjJ4utxu9qZXvAGz5lWAa10zTryRN
-         roJ+0/NHIsTRZfd0gQQN1UwSUDoLxLQpaNV7w41KuYQfFvCUKCx6/XIwqPM2GWNX8B
-         ZMgFOyZQsRNFA==
+        b=uhGQDip1gaMl6Y0ZemqB6XZXFPlCwzPC/jm05va1CItezUfRrgnHySAPWDJtvnGzm
+         nqpdemoGNqtsVZfTSjaQjMRuq0Pg6Y9FXTnAjXYXKecgqZqKSLEWpDCqbRGV5jeQJb
+         k/LFhtTSUcQagfWvDm8U8g6gri1T4wsxgoAIiMQo9UKPL0fneVaElXi+zQctAFS4ZU
+         iY6W+rQhddbSZMyusSuWiwOFt3y+BaXnW+Kizbgmi3QOU0plBLmD1epxpvWxPFZMYa
+         1WgAUayfMOfWlIulir2pHeO6vGCPnutI+bSQaOuzZQw6+uAAy28VXD+Wh103uYuNS/
+         HPdT/hGcehVyA==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Roman Gushchin <guro@fb.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Shakeel Butt <shakeelb@google.com>
-Subject: Re: linux-next: manual merge of the akpm-current tree with the
- bpf-next tree
-Message-ID: <20201214181339.621c4dcd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201214181121.afe9628c62c4b5de1f5fee94@linux-foundation.org>
-References: <20201204202005.3fb1304f@canb.auug.org.au>
-        <20201215072156.1988fabe@canb.auug.org.au>
-        <20201215012943.GA3079589@carbon.DHCP.thefacebook.com>
-        <20201214174021.2dfc2fbd99ca3e72b3e4eb02@linux-foundation.org>
-        <20201214180629.4fee48ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201214181121.afe9628c62c4b5de1f5fee94@linux-foundation.org>
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dev@openvswitch.org,
+        pshelar@ovn.org, bindiyakurle@gmail.com, mcroce@linux.microsoft.com
+Subject: Re: [PATCH net v2] net: openvswitch: fix TTL decrement exception
+ action execution
+Message-ID: <20201214181522.6279fbaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <160733569860.3007.12938188180387116741.stgit@wsfd-netdev64.ntdv.lab.eng.bos.redhat.com>
+References: <160733569860.3007.12938188180387116741.stgit@wsfd-netdev64.ntdv.lab.eng.bos.redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -51,22 +38,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Dec 2020 18:11:21 -0800 Andrew Morton wrote:
-> On Mon, 14 Dec 2020 18:06:29 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
-> > Hm. The code is in net-next by now. I was thinking of sending the
-> > Networking PR later today (tonight?) as well. I'm happy to hold off 
-> > or do whatever you require, but I'd appreciate more explicit / noob
-> > friendly instructions.  
+On Mon,  7 Dec 2020 05:08:39 -0500 Eelco Chaudron wrote:
+> Currently, the exception actions are not processed correctly as the wrong
+> dataset is passed. This change fixes this, including the misleading
+> comment.
 > 
-> Linus tends not to like it when tree maintainers do last-minute
-> conflict fixes.
-
-Good to know.
-
-> > AFAIU all we can do is tell Linus about the merge issue, and point 
-> > at Stephen's resolution.  
+> In addition, a check was added to make sure we work on an IPv4 packet,
+> and not just assume if it's not IPv6 it's IPv4.
 > 
-> That's the way to do it - including a (tested?) copy in the email would
-> be nice.
+> This was all tested using OVS with patch,
+> https://patchwork.ozlabs.org/project/openvswitch/list/?series=21639,
+> applied and sending packets with a TTL of 1 (and 0), both with IPv4
+> and IPv6.
+> 
+> Fixes: 69929d4c49e1 ("net: openvswitch: fix TTL decrement action netlink message format")
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> ---
+> v2: - Undid unnessesary paramerter removal from dec_ttl_exception_handler()
+>     - Updated commit message to include testing information.
 
-Okay, great. Will try this, thanks!
+Applied now, and will send to stable soon-ish.
+
+Thanks!
