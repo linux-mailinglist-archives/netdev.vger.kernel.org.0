@@ -2,144 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 268E62DAA5F
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:47:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0332A2DAA7D
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:59:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727874AbgLOJo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 04:44:58 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:49509 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727749AbgLOJov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:44:51 -0500
-Received: by mail-il1-f197.google.com with SMTP id m14so15887106ila.16
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 01:44:35 -0800 (PST)
+        id S1727881AbgLOJ5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 04:57:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727153AbgLOJ5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:57:43 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FF6C06179C;
+        Tue, 15 Dec 2020 01:56:57 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id g20so9913646plo.2;
+        Tue, 15 Dec 2020 01:56:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qO6qH0jxKGlgtK8vIGY+Uz0tcczpvxnOC5auolMZWaA=;
+        b=uHMar/zUVFPoRM67M67SYB26TnZ9us9YM+jzpMFJeD89iML3MI3i3idR8lpkmeouqG
+         yAPCRV1PElbmvXaH/oNI7WNyHlWqc7qBI1tSjD5HSkedPfkzZy9jDgmTC1Dknb7bm/1e
+         yBZ2PBo8CVGS1x79ukwlHBBsr8/VAyMlQrb43u6RNjZnKEuDU4VpjYthyqGwm/jV8c27
+         nvQNli7qklHEn27x9glP7Ih3yeSWnXydd9SCsSTLGTQq4jnuZQ1l9I3/+CkFnZNejwjn
+         07tGRU9G8c6WwuyvkCOXEGkQ+otBSvokT/++3fftNIUOMzxg4vfTna/NGBpHSL3xb4Zl
+         S68A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=OQK++Tolx6TBZmy8c6ibMnL5eB/G8+29opDbgLzqXXk=;
-        b=G0es04/gGv8rlBdDSREsEbWJPtwmHNeenMvmrnlcyLPIZ2TgniM0T/0IF6jJDmNf64
-         2ZzWC8Ife6xvcCjhrifkZyh04Qnubxl9gqPo9G+XcPDyRy+pjQOL/AQzJKStcP8KP5KB
-         Lj/K0eb1GPvXh+MG+4m3DfGPHtm6XPHMx99g9BX9yOVl5egAXLmlLCfve/t28Wi0qz+u
-         3hytGSPpb/QwQnqQxgVyBBdN5tU7YpksTyAQUEFAwLnQje4yncGsXDWL1Dzn0u5miNRV
-         ZuKSfmUJJjP3RHKwn9yJxl05wOJbkp7cmdXnThKmdZvsj4IKt0Xp7HgnUpKFIXUHXtL4
-         yrRg==
-X-Gm-Message-State: AOAM533qOvV0hnEL8g+qSnRjCsijX29+gE0Qzb2A6yiMAi8Wm1DidK3L
-        +xDHlvgj+XoNT+rw6dMkQnSSIc00L9LyszqtmnJ5Bi/f+Qtb
-X-Google-Smtp-Source: ABdhPJy3hFJR5jn9QRu+3NNDKdHoiG+AUO0ZKRY0n6OocmjHktO9FINOsib8e6NHXNiSeBRNjuxmLSQzCb7d+PObdxW7kuuSW1Fn
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qO6qH0jxKGlgtK8vIGY+Uz0tcczpvxnOC5auolMZWaA=;
+        b=k06XpWTZpDRkEtOKbQHb7XWgSPGMU7i+BH7c8YO0FeJ0SeZN2V4UEF5+IaYcVcGeCr
+         W8xEAiijIJrclUT75iuMIWL3R3niNISPEEEXa+9T2Gewzo25MZR9Lm+u8qcYeOky3zep
+         XKCNZ+EV2P8yNq5hhqmjIBTPZSpRnk2W4a2BoPmKRYetj8d0qTC/cdz8DOFuzNjAbiis
+         Uh9s0aFuUFJQ8ocADErjJw62hdxLCf1Dv8SSKCtCkIJK2fd8RlZmylWLzrqx6G009vbE
+         8C7zw/Hfy0ugeCFC4PVY0oi28X3MhrZo4fy58Su+brHv43B+YoWFuF3gyysFhq4n13xl
+         MVkw==
+X-Gm-Message-State: AOAM531vh3s8Fu4ZibDIV28hCPb0R5bqbYRPpTq0ROs/3jMlqWzJv+1A
+        kD45wp/IwvMB1F2BiPh9UHs=
+X-Google-Smtp-Source: ABdhPJxx+e6eu5tZPbGDPyC6Prq5JByh4lNBTy3EnvO917uHVan/NxyFwgi/7WlYTr76NFJ0tG8+lA==
+X-Received: by 2002:a17:90a:df0d:: with SMTP id gp13mr29039048pjb.151.1608026216546;
+        Tue, 15 Dec 2020 01:56:56 -0800 (PST)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id f10sm23555478pgp.27.2020.12.15.01.56.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Dec 2020 01:56:55 -0800 (PST)
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org,
+        Christoph Paasch <cpaasch@apple.com>
+Subject: [MPTCP][PATCH net-next] mptcp: clear use_ack and use_map when dropping other suboptions
+Date:   Tue, 15 Dec 2020 17:56:51 +0800
+Message-Id: <ccca4e8f01457a1b495c5d612ed16c5f7a585706.1608010058.git.geliangtang@gmail.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-X-Received: by 2002:a6b:3f54:: with SMTP id m81mr36814843ioa.113.1608025450027;
- Tue, 15 Dec 2020 01:44:10 -0800 (PST)
-Date:   Tue, 15 Dec 2020 01:44:10 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bd226505b67d9989@google.com>
-Subject: general protection fault in taprio_dequeue_soft
-From:   syzbot <syzbot+8971da381fb5a31f542d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patch cleared use_ack and use_map when dropping other suboptions to
+fix the following syzkaller BUG:
 
-syzbot found the following issue on:
+[   15.223006] BUG: unable to handle page fault for address: 0000000000223b10
+[   15.223700] #PF: supervisor read access in kernel mode
+[   15.224209] #PF: error_code(0x0000) - not-present page
+[   15.224724] PGD b8d5067 P4D b8d5067 PUD c0a5067 PMD 0
+[   15.225237] Oops: 0000 [#1] SMP
+[   15.225556] CPU: 0 PID: 7747 Comm: syz-executor Not tainted 5.10.0-rc6+ #24
+[   15.226281] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+[   15.227292] RIP: 0010:skb_release_data+0x89/0x1e0
+[   15.227816] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
+[   15.229669] RSP: 0018:ffffc900019c7c08 EFLAGS: 00010293
+[   15.230188] RAX: ffff88800daad900 RBX: 0000000000223b08 RCX: 0000000000000006
+[   15.230895] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6dc700
+[   15.231593] RBP: ffff88807f71a4c0 R08: 0000000000000001 R09: 0000000000000001
+[   15.232299] R10: ffffc900019c7c18 R11: 0000000000000000 R12: ffff88807f71a4f0
+[   15.233007] R13: 0000000000000000 R14: ffff88807f6dc700 R15: 0000000000000002
+[   15.233714] FS:  00007f65d9b5f700(0000) GS:ffff88807c400000(0000) knlGS:0000000000000000
+[   15.234509] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   15.235081] CR2: 0000000000223b10 CR3: 000000000b883000 CR4: 00000000000006f0
+[   15.235788] Call Trace:
+[   15.236042]  skb_release_all+0x28/0x30
+[   15.236419]  __kfree_skb+0x11/0x20
+[   15.236768]  tcp_data_queue+0x270/0x1240
+[   15.237161]  ? tcp_urg+0x50/0x2a0
+[   15.237496]  tcp_rcv_established+0x39a/0x890
+[   15.237997]  ? mark_held_locks+0x49/0x70
+[   15.238467]  tcp_v4_do_rcv+0xb9/0x270
+[   15.238915]  __release_sock+0x8a/0x160
+[   15.239365]  release_sock+0x32/0xd0
+[   15.239793]  __inet_stream_connect+0x1d2/0x400
+[   15.240313]  ? do_wait_intr_irq+0x80/0x80
+[   15.240791]  inet_stream_connect+0x36/0x50
+[   15.241275]  mptcp_stream_connect+0x69/0x1b0
+[   15.241787]  __sys_connect+0x122/0x140
+[   15.242236]  ? syscall_enter_from_user_mode+0x17/0x50
+[   15.242836]  ? lockdep_hardirqs_on_prepare+0xd4/0x170
+[   15.243436]  __x64_sys_connect+0x1a/0x20
+[   15.243924]  do_syscall_64+0x33/0x40
+[   15.244313]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[   15.244821] RIP: 0033:0x7f65d946e469
+[   15.245183] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
+[   15.247019] RSP: 002b:00007f65d9b5eda8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+[   15.247770] RAX: ffffffffffffffda RBX: 000000000049bf00 RCX: 00007f65d946e469
+[   15.248471] RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 0000000000000005
+[   15.249205] RBP: 000000000049bf00 R08: 0000000000000000 R09: 0000000000000000
+[   15.249908] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000049bf0c
+[   15.250603] R13: 00007fffe8a25cef R14: 00007f65d9b3f000 R15: 0000000000000003
+[   15.251312] Modules linked in:
+[   15.251626] CR2: 0000000000223b10
+[   15.251965] BUG: kernel NULL pointer dereference, address: 0000000000000048
+[   15.252005] ---[ end trace f5c51fe19123c773 ]---
+[   15.252822] #PF: supervisor read access in kernel mode
+[   15.252823] #PF: error_code(0x0000) - not-present page
+[   15.252825] PGD c6c6067 P4D c6c6067 PUD c0d8067
+[   15.253294] RIP: 0010:skb_release_data+0x89/0x1e0
+[   15.253910] PMD 0
+[   15.253914] Oops: 0000 [#2] SMP
+[   15.253917] CPU: 1 PID: 7746 Comm: syz-executor Tainted: G      D           5.10.0-rc6+ #24
+[   15.253920] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+[   15.254435] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
+[   15.254899] RIP: 0010:skb_release_data+0x89/0x1e0
+[   15.254902] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
+[   15.254905] RSP: 0018:ffffc900019bfc08 EFLAGS: 00010293
+[   15.255376] RSP: 0018:ffffc900019c7c08 EFLAGS: 00010293
+[   15.255580]
+[   15.255583] RAX: ffff888004a7ac80 RBX: 0000000000000040 RCX: 0000000000000000
+[   15.255912]
+[   15.256724] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6ddd00
+[   15.257620] RAX: ffff88800daad900 RBX: 0000000000223b08 RCX: 0000000000000006
+[   15.259817] RBP: ffff88800e9006c0 R08: 0000000000000000 R09: 0000000000000000
+[   15.259818] R10: 0000000000000000 R11: 0000000000000000 R12: ffff88800e9006f0
+[   15.259820] R13: 0000000000000000 R14: ffff88807f6ddd00 R15: 0000000000000002
+[   15.259822] FS:  00007fae4a60a700(0000) GS:ffff88807c500000(0000) knlGS:0000000000000000
+[   15.259826] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   15.260296] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6dc700
+[   15.262514] CR2: 0000000000000048 CR3: 000000000b89c000 CR4: 00000000000006e0
+[   15.262515] Call Trace:
+[   15.262519]  skb_release_all+0x28/0x30
+[   15.262523]  __kfree_skb+0x11/0x20
+[   15.263054] RBP: ffff88807f71a4c0 R08: 0000000000000001 R09: 0000000000000001
+[   15.263680]  tcp_data_queue+0x270/0x1240
+[   15.263843] R10: ffffc900019c7c18 R11: 0000000000000000 R12: ffff88807f71a4f0
+[   15.264693]  ? tcp_urg+0x50/0x2a0
+[   15.264856] R13: 0000000000000000 R14: ffff88807f6dc700 R15: 0000000000000002
+[   15.265720]  tcp_rcv_established+0x39a/0x890
+[   15.266438] FS:  00007f65d9b5f700(0000) GS:ffff88807c400000(0000) knlGS:0000000000000000
+[   15.267283]  ? __schedule+0x3fa/0x880
+[   15.267287]  tcp_v4_do_rcv+0xb9/0x270
+[   15.267290]  __release_sock+0x8a/0x160
+[   15.268049] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   15.268788]  release_sock+0x32/0xd0
+[   15.268791]  __inet_stream_connect+0x1d2/0x400
+[   15.268795]  ? do_wait_intr_irq+0x80/0x80
+[   15.269593] CR2: 0000000000223b10 CR3: 000000000b883000 CR4: 00000000000006f0
+[   15.270246]  inet_stream_connect+0x36/0x50
+[   15.270250]  mptcp_stream_connect+0x69/0x1b0
+[   15.270253]  __sys_connect+0x122/0x140
+[   15.271097] Kernel panic - not syncing: Fatal exception
+[   15.271820]  ? syscall_enter_from_user_mode+0x17/0x50
+[   15.283542]  ? lockdep_hardirqs_on_prepare+0xd4/0x170
+[   15.284275]  __x64_sys_connect+0x1a/0x20
+[   15.284853]  do_syscall_64+0x33/0x40
+[   15.285369]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[   15.286105] RIP: 0033:0x7fae49f19469
+[   15.286638] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
+[   15.289295] RSP: 002b:00007fae4a609da8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+[   15.290375] RAX: ffffffffffffffda RBX: 000000000049bf00 RCX: 00007fae49f19469
+[   15.291403] RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 0000000000000005
+[   15.292437] RBP: 000000000049bf00 R08: 0000000000000000 R09: 0000000000000000
+[   15.293456] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000049bf0c
+[   15.294473] R13: 00007fff0004b6bf R14: 00007fae4a5ea000 R15: 0000000000000003
+[   15.295492] Modules linked in:
+[   15.295944] CR2: 0000000000000048
+[   15.296567] Kernel Offset: disabled
+[   15.296941] ---[ end Kernel panic - not syncing: Fatal exception ]---
 
-HEAD commit:    7f376f19 Merge tag 'mtd/fixes-for-5.10-rc8' of git://git.k..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=13842287500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3416bb960d5c705d
-dashboard link: https://syzkaller.appspot.com/bug?extid=8971da381fb5a31f542d
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=128c5745500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17a1f123500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8971da381fb5a31f542d@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.10.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:taprio_dequeue_soft+0x22e/0xa40 net/sched/sch_taprio.c:544
-Code: 24 18 e8 d5 3e 4c fa 48 8b 44 24 10 80 38 00 0f 85 4c 07 00 00 48 8b 93 c0 02 00 00 49 63 c5 4c 8d 24 c2 4c 89 e0 48 c1 e8 03 <80> 3c 28 00 0f 85 3c 07 00 00 4d 8b 24 24 4d 85 e4 0f 84 87 03 00
-RSP: 0018:ffffc90000d90e08 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffff8880282e3800 RCX: ffffffff8723c557
-RDX: 0000000000000000 RSI: ffffffff8723c59b RDI: 0000000000000005
-RBP: dffffc0000000000 R08: 0000000000000001 R09: ffffffff8ebaf667
-R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000401 R15: ffff88801917e000
-FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000600 CR3: 0000000013cdc000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- dequeue_skb net/sched/sch_generic.c:263 [inline]
- qdisc_restart net/sched/sch_generic.c:366 [inline]
- __qdisc_run+0x1ae/0x15e0 net/sched/sch_generic.c:384
- qdisc_run include/net/pkt_sched.h:131 [inline]
- qdisc_run include/net/pkt_sched.h:123 [inline]
- net_tx_action+0x4b9/0xbf0 net/core/dev.c:4915
- __do_softirq+0x2a0/0x9f6 kernel/softirq.c:298
- asm_call_irq_on_stack+0xf/0x20
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
- do_softirq_own_stack+0xaa/0xd0 arch/x86/kernel/irq_64.c:77
- invoke_softirq kernel/softirq.c:393 [inline]
- __irq_exit_rcu kernel/softirq.c:423 [inline]
- irq_exit_rcu+0x132/0x200 kernel/softirq.c:435
- sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1091
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:631
-RIP: 0010:native_save_fl arch/x86/include/asm/irqflags.h:29 [inline]
-RIP: 0010:arch_local_save_flags arch/x86/include/asm/irqflags.h:79 [inline]
-RIP: 0010:arch_irqs_disabled arch/x86/include/asm/irqflags.h:169 [inline]
-RIP: 0010:acpi_safe_halt drivers/acpi/processor_idle.c:112 [inline]
-RIP: 0010:acpi_idle_do_entry+0x1c9/0x250 drivers/acpi/processor_idle.c:517
-Code: 5d 07 88 f8 84 db 75 ac e8 44 0f 88 f8 e8 bf cd 8d f8 e9 0c 00 00 00 e8 35 0f 88 f8 0f 00 2d 9e 86 c0 00 e8 29 0f 88 f8 fb f4 <9c> 5b 81 e3 00 02 00 00 fa 31 ff 48 89 de e8 84 07 88 f8 48 85 db
-RSP: 0018:ffffc90000d27d18 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 1ffffffff19d8e91
-RDX: ffff888010d98000 RSI: ffffffff88e7f547 RDI: 0000000000000000
-RBP: ffff888014e50064 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000001
-R13: ffff888014e50000 R14: ffff888014e50064 R15: ffff88801747a804
- acpi_idle_enter+0x361/0x500 drivers/acpi/processor_idle.c:648
- cpuidle_enter_state+0x1b1/0xc80 drivers/cpuidle/cpuidle.c:237
- cpuidle_enter+0x4a/0xa0 drivers/cpuidle/cpuidle.c:351
- call_cpuidle kernel/sched/idle.c:158 [inline]
- cpuidle_idle_call kernel/sched/idle.c:239 [inline]
- do_idle+0x3e1/0x590 kernel/sched/idle.c:299
- cpu_startup_entry+0x14/0x20 kernel/sched/idle.c:395
- start_secondary+0x266/0x340 arch/x86/kernel/smpboot.c:266
- secondary_startup_64_no_verify+0xb0/0xbb
-Modules linked in:
----[ end trace 86b7dd17b9a0a261 ]---
-RIP: 0010:taprio_dequeue_soft+0x22e/0xa40 net/sched/sch_taprio.c:544
-Code: 24 18 e8 d5 3e 4c fa 48 8b 44 24 10 80 38 00 0f 85 4c 07 00 00 48 8b 93 c0 02 00 00 49 63 c5 4c 8d 24 c2 4c 89 e0 48 c1 e8 03 <80> 3c 28 00 0f 85 3c 07 00 00 4d 8b 24 24 4d 85 e4 0f 84 87 03 00
-RSP: 0018:ffffc90000d90e08 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffff8880282e3800 RCX: ffffffff8723c557
-RDX: 0000000000000000 RSI: ffffffff8723c59b RDI: 0000000000000005
-RBP: dffffc0000000000 R08: 0000000000000001 R09: ffffffff8ebaf667
-R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000401 R15: ffff88801917e000
-FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000600 CR3: 0000000013cdc000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
+Reported-by: Christoph Paasch <cpaasch@apple.com>
+Fixes: 84dfe3677a6f (mptcp: send out dedicated ADD_ADDR packet)
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ net/mptcp/options.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index 5e7d7755d1a6..f4047ace032d 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -606,6 +606,8 @@ static bool mptcp_established_options_add_addr(struct sock *sk, struct sk_buff *
+ 	    skb && skb_is_tcp_pure_ack(skb)) {
+ 		pr_debug("drop other suboptions");
+ 		opts->suboptions = 0;
++		opts->ext_copy.use_ack = 0;
++		opts->ext_copy.use_map = 0;
+ 		remaining += opt_size;
+ 		drop_other_suboptions = true;
+ 	}
+-- 
+2.29.2
+
