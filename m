@@ -2,217 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58B9F2DAA5B
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:45:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 268E62DAA5F
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:47:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728318AbgLOJpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 04:45:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23930 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727750AbgLOJpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:45:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608025421;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5DEf40TZBhJmDgffeKprAt1Jld/xfe5jp8dtrGkv+oI=;
-        b=ZI9RGzWXF2CBufG9sdfFKBWkaAfpYsWhjPfr9hhhknjGhVTVh89eMcGUuPdTBpvprcL3oJ
-        LU9e/rdNkRKJ4de9ONDoJhaiCSJm+AdoSVgQqY26XCapxDlRVfmIzaQcEPe2xDjkpIgqZw
-        velzRTxy73K0EBs0UaSzHKh6on3SXN8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-302-2Wv7YS5cP-WmJ5I5cb1fug-1; Tue, 15 Dec 2020 04:43:36 -0500
-X-MC-Unique: 2Wv7YS5cP-WmJ5I5cb1fug-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C15ED800D53;
-        Tue, 15 Dec 2020 09:43:34 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 10E8B1E5;
-        Tue, 15 Dec 2020 09:43:30 +0000 (UTC)
-Date:   Tue, 15 Dec 2020 10:43:27 +0100
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     Ivan Babrou <ivan@cloudflare.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@cloudflare.com,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH net-next] sfc: reduce the number of requested xdp ev
- queues
-Message-ID: <20201215104327.2be76156@carbon>
-In-Reply-To: <20201215012907.3062-1-ivan@cloudflare.com>
-References: <20201215012907.3062-1-ivan@cloudflare.com>
-Organization: Red Hat Inc.
+        id S1727874AbgLOJo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 04:44:58 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:49509 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727749AbgLOJov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:44:51 -0500
+Received: by mail-il1-f197.google.com with SMTP id m14so15887106ila.16
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 01:44:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=OQK++Tolx6TBZmy8c6ibMnL5eB/G8+29opDbgLzqXXk=;
+        b=G0es04/gGv8rlBdDSREsEbWJPtwmHNeenMvmrnlcyLPIZ2TgniM0T/0IF6jJDmNf64
+         2ZzWC8Ife6xvcCjhrifkZyh04Qnubxl9gqPo9G+XcPDyRy+pjQOL/AQzJKStcP8KP5KB
+         Lj/K0eb1GPvXh+MG+4m3DfGPHtm6XPHMx99g9BX9yOVl5egAXLmlLCfve/t28Wi0qz+u
+         3hytGSPpb/QwQnqQxgVyBBdN5tU7YpksTyAQUEFAwLnQje4yncGsXDWL1Dzn0u5miNRV
+         ZuKSfmUJJjP3RHKwn9yJxl05wOJbkp7cmdXnThKmdZvsj4IKt0Xp7HgnUpKFIXUHXtL4
+         yrRg==
+X-Gm-Message-State: AOAM533qOvV0hnEL8g+qSnRjCsijX29+gE0Qzb2A6yiMAi8Wm1DidK3L
+        +xDHlvgj+XoNT+rw6dMkQnSSIc00L9LyszqtmnJ5Bi/f+Qtb
+X-Google-Smtp-Source: ABdhPJy3hFJR5jn9QRu+3NNDKdHoiG+AUO0ZKRY0n6OocmjHktO9FINOsib8e6NHXNiSeBRNjuxmLSQzCb7d+PObdxW7kuuSW1Fn
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Received: by 2002:a6b:3f54:: with SMTP id m81mr36814843ioa.113.1608025450027;
+ Tue, 15 Dec 2020 01:44:10 -0800 (PST)
+Date:   Tue, 15 Dec 2020 01:44:10 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bd226505b67d9989@google.com>
+Subject: general protection fault in taprio_dequeue_soft
+From:   syzbot <syzbot+8971da381fb5a31f542d@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Dec 2020 17:29:06 -0800
-Ivan Babrou <ivan@cloudflare.com> wrote:
+Hello,
 
-> Without this change the driver tries to allocate too many queues,
-> breaching the number of available msi-x interrupts on machines
-> with many logical cpus and default adapter settings:
-> 
-> Insufficient resources for 12 XDP event queues (24 other channels, max 32)
-> 
-> Which in turn triggers EINVAL on XDP processing:
-> 
-> sfc 0000:86:00.0 ext0: XDP TX failed (-22)
+syzbot found the following issue on:
 
-I have a similar QA report with XDP_REDIRECT:
-  sfc 0000:05:00.0 ens1f0np0: XDP redirect failed (-22)
+HEAD commit:    7f376f19 Merge tag 'mtd/fixes-for-5.10-rc8' of git://git.k..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=13842287500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3416bb960d5c705d
+dashboard link: https://syzkaller.appspot.com/bug?extid=8971da381fb5a31f542d
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=128c5745500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17a1f123500000
 
-Here we are back to the issue we discussed with ixgbe, that NIC / msi-x
-interrupts hardware resources are not enough on machines with many
-logical cpus.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8971da381fb5a31f542d@syzkaller.appspotmail.com
 
-After this fix, what will happen if (cpu >= efx->xdp_tx_queue_count) ?
-(Copied efx_xdp_tx_buffers code below signature)
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.10.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:taprio_dequeue_soft+0x22e/0xa40 net/sched/sch_taprio.c:544
+Code: 24 18 e8 d5 3e 4c fa 48 8b 44 24 10 80 38 00 0f 85 4c 07 00 00 48 8b 93 c0 02 00 00 49 63 c5 4c 8d 24 c2 4c 89 e0 48 c1 e8 03 <80> 3c 28 00 0f 85 3c 07 00 00 4d 8b 24 24 4d 85 e4 0f 84 87 03 00
+RSP: 0018:ffffc90000d90e08 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff8880282e3800 RCX: ffffffff8723c557
+RDX: 0000000000000000 RSI: ffffffff8723c59b RDI: 0000000000000005
+RBP: dffffc0000000000 R08: 0000000000000001 R09: ffffffff8ebaf667
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000401 R15: ffff88801917e000
+FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000600 CR3: 0000000013cdc000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ dequeue_skb net/sched/sch_generic.c:263 [inline]
+ qdisc_restart net/sched/sch_generic.c:366 [inline]
+ __qdisc_run+0x1ae/0x15e0 net/sched/sch_generic.c:384
+ qdisc_run include/net/pkt_sched.h:131 [inline]
+ qdisc_run include/net/pkt_sched.h:123 [inline]
+ net_tx_action+0x4b9/0xbf0 net/core/dev.c:4915
+ __do_softirq+0x2a0/0x9f6 kernel/softirq.c:298
+ asm_call_irq_on_stack+0xf/0x20
+ </IRQ>
+ __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
+ run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
+ do_softirq_own_stack+0xaa/0xd0 arch/x86/kernel/irq_64.c:77
+ invoke_softirq kernel/softirq.c:393 [inline]
+ __irq_exit_rcu kernel/softirq.c:423 [inline]
+ irq_exit_rcu+0x132/0x200 kernel/softirq.c:435
+ sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1091
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:631
+RIP: 0010:native_save_fl arch/x86/include/asm/irqflags.h:29 [inline]
+RIP: 0010:arch_local_save_flags arch/x86/include/asm/irqflags.h:79 [inline]
+RIP: 0010:arch_irqs_disabled arch/x86/include/asm/irqflags.h:169 [inline]
+RIP: 0010:acpi_safe_halt drivers/acpi/processor_idle.c:112 [inline]
+RIP: 0010:acpi_idle_do_entry+0x1c9/0x250 drivers/acpi/processor_idle.c:517
+Code: 5d 07 88 f8 84 db 75 ac e8 44 0f 88 f8 e8 bf cd 8d f8 e9 0c 00 00 00 e8 35 0f 88 f8 0f 00 2d 9e 86 c0 00 e8 29 0f 88 f8 fb f4 <9c> 5b 81 e3 00 02 00 00 fa 31 ff 48 89 de e8 84 07 88 f8 48 85 db
+RSP: 0018:ffffc90000d27d18 EFLAGS: 00000293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 1ffffffff19d8e91
+RDX: ffff888010d98000 RSI: ffffffff88e7f547 RDI: 0000000000000000
+RBP: ffff888014e50064 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000001
+R13: ffff888014e50000 R14: ffff888014e50064 R15: ffff88801747a804
+ acpi_idle_enter+0x361/0x500 drivers/acpi/processor_idle.c:648
+ cpuidle_enter_state+0x1b1/0xc80 drivers/cpuidle/cpuidle.c:237
+ cpuidle_enter+0x4a/0xa0 drivers/cpuidle/cpuidle.c:351
+ call_cpuidle kernel/sched/idle.c:158 [inline]
+ cpuidle_idle_call kernel/sched/idle.c:239 [inline]
+ do_idle+0x3e1/0x590 kernel/sched/idle.c:299
+ cpu_startup_entry+0x14/0x20 kernel/sched/idle.c:395
+ start_secondary+0x266/0x340 arch/x86/kernel/smpboot.c:266
+ secondary_startup_64_no_verify+0xb0/0xbb
+Modules linked in:
+---[ end trace 86b7dd17b9a0a261 ]---
+RIP: 0010:taprio_dequeue_soft+0x22e/0xa40 net/sched/sch_taprio.c:544
+Code: 24 18 e8 d5 3e 4c fa 48 8b 44 24 10 80 38 00 0f 85 4c 07 00 00 48 8b 93 c0 02 00 00 49 63 c5 4c 8d 24 c2 4c 89 e0 48 c1 e8 03 <80> 3c 28 00 0f 85 3c 07 00 00 4d 8b 24 24 4d 85 e4 0f 84 87 03 00
+RSP: 0018:ffffc90000d90e08 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff8880282e3800 RCX: ffffffff8723c557
+RDX: 0000000000000000 RSI: ffffffff8723c59b RDI: 0000000000000005
+RBP: dffffc0000000000 R08: 0000000000000001 R09: ffffffff8ebaf667
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000401 R15: ffff88801917e000
+FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000600 CR3: 0000000013cdc000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-The question leads to, does this driver need a fallback mechanism when
-HW resource or systems logical cpus exceed the one TX-queue per CPU
-assumption?
 
- 
-> Signed-off-by: Ivan Babrou <ivan@cloudflare.com>
-> ---
->  drivers/net/ethernet/sfc/efx_channels.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/efx_channels.c
-> b/drivers/net/ethernet/sfc/efx_channels.c index
-> a4a626e9cd9a..1bfeee283ea9 100644 ---
-> a/drivers/net/ethernet/sfc/efx_channels.c +++
-> b/drivers/net/ethernet/sfc/efx_channels.c @@ -17,6 +17,7 @@
->  #include "rx_common.h"
->  #include "nic.h"
->  #include "sriov.h"
-> +#include "workarounds.h"
->  
->  /* This is the first interrupt mode to try out of:
->   * 0 => MSI-X
-> @@ -137,6 +138,7 @@ static int efx_allocate_msix_channels(struct
-> efx_nic *efx, {
->  	unsigned int n_channels = parallelism;
->  	int vec_count;
-> +	int tx_per_ev;
->  	int n_xdp_tx;
->  	int n_xdp_ev;
->  
-> @@ -149,9 +151,9 @@ static int efx_allocate_msix_channels(struct
-> efx_nic *efx,
->  	 * multiple tx queues, assuming tx and ev queues are both
->  	 * maximum size.
->  	 */
-> -
-> +	tx_per_ev = EFX_MAX_EVQ_SIZE / EFX_TXQ_MAX_ENT(efx);
->  	n_xdp_tx = num_possible_cpus();
-> -	n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, EFX_MAX_TXQ_PER_CHANNEL);
-> +	n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, tx_per_ev);
->  
->  	vec_count = pci_msix_vec_count(efx->pci_dev);
->  	if (vec_count < 0)
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
-
-/* Transmit a packet from an XDP buffer
- *
- * Returns number of packets sent on success, error code otherwise.
- * Runs in NAPI context, either in our poll (for XDP TX) or a different NIC
- * (for XDP redirect).
- */
-int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
-		       bool flush)
-{
-	struct efx_tx_buffer *tx_buffer;
-	struct efx_tx_queue *tx_queue;
-	struct xdp_frame *xdpf;
-	dma_addr_t dma_addr;
-	unsigned int len;
-	int space;
-	int cpu;
-	int i;
-
-	cpu = raw_smp_processor_id();
-
-	if (!efx->xdp_tx_queue_count ||
-	    unlikely(cpu >= efx->xdp_tx_queue_count))
-		return -EINVAL;
-
-	tx_queue = efx->xdp_tx_queues[cpu];
-	if (unlikely(!tx_queue))
-		return -EINVAL;
-
-	if (unlikely(n && !xdpfs))
-		return -EINVAL;
-
-	if (!n)
-		return 0;
-
-	/* Check for available space. We should never need multiple
-	 * descriptors per frame.
-	 */
-	space = efx->txq_entries +
-		tx_queue->read_count - tx_queue->insert_count;
-
-	for (i = 0; i < n; i++) {
-		xdpf = xdpfs[i];
-
-		if (i >= space)
-			break;
-
-		/* We'll want a descriptor for this tx. */
-		prefetchw(__efx_tx_queue_get_insert_buffer(tx_queue));
-
-		len = xdpf->len;
-
-		/* Map for DMA. */
-		dma_addr = dma_map_single(&efx->pci_dev->dev,
-					  xdpf->data, len,
-					  DMA_TO_DEVICE);
-		if (dma_mapping_error(&efx->pci_dev->dev, dma_addr))
-			break;
-
-		/*  Create descriptor and set up for unmapping DMA. */
-		tx_buffer = efx_tx_map_chunk(tx_queue, dma_addr, len);
-		tx_buffer->xdpf = xdpf;
-		tx_buffer->flags = EFX_TX_BUF_XDP |
-				   EFX_TX_BUF_MAP_SINGLE;
-		tx_buffer->dma_offset = 0;
-		tx_buffer->unmap_len = len;
-		tx_queue->tx_packets++;
-	}
-
-	/* Pass mapped frames to hardware. */
-	if (flush && i > 0)
-		efx_nic_push_buffers(tx_queue);
-
-	if (i == 0)
-		return -EIO;
-
-	efx_xdp_return_frames(n - i, xdpfs + i);
-
-	return i;
-}
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
