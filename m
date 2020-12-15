@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2048E2DA69B
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 04:03:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD392DA6E2
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 04:35:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgLODCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 22:02:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
+        id S1727163AbgLODEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 22:04:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbgLODC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 22:02:27 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2D3C061793;
-        Mon, 14 Dec 2020 19:01:47 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id s26so895748lfc.8;
-        Mon, 14 Dec 2020 19:01:47 -0800 (PST)
+        with ESMTP id S1727108AbgLODEg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 22:04:36 -0500
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DCBC061793;
+        Mon, 14 Dec 2020 19:03:55 -0800 (PST)
+Received: by mail-lf1-x142.google.com with SMTP id w13so35557268lfd.5;
+        Mon, 14 Dec 2020 19:03:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=2v5zQ4ASqwUEaImz7xFZXnky0JeRmzUKfNWkHn9qJfM=;
-        b=GFwc/SmQThkfuiijlhBZC/sL7/Mh9X0gSRoxzCiFmWN7uXQlyORRlUa8F7MVTsRLZw
-         MjvFn/0ePlj1h79IHnldGV0sRP89Z7tc8ECMEVBv3B8zKqD5dD5GyuoDkqL8onj8GKHX
-         9SoUFrxHFWczz56aY67YAu5OK4hK/FlcV0cOA70tnjbu5uYzXZmLz/Eq8imDs6iG4jvh
-         rw0PA24KGL2yjKHXkdJiTYfjwp8qwuQvFqtLLErxpApES3wLwrdNyjRgPFn8nV+VCRwp
-         v+XZvTQdfADTHOrUd7f+A913L32vYpDFsP7PpzizvOApaQbT2yHGn/fSNZIK6UkanxTw
-         NYYg==
+        bh=eG4n9xlHK+SC1LnsZtRhg9CmgC53883GCBz3X7IjH2k=;
+        b=NfCR/RzNIhL9/8rUWxOMM1RKNx6qavE3Bpc1JyLwBn5wkEgkl4Y+FnLJiDqSs3f9j/
+         tXexs/0wiINS7DTDeiTxy/CXROmShi8Jto6O5yVfAciOvEgvSLbseFxyq7RkVNEMgYyt
+         FBJheKRgljUESdaGYCkiNGjYx1Rqwpcc8wSh1H/5ALTA6YqiLsmWkv3jvYagpXFBs6UG
+         /zBIyp17ssnsAqKhnOJFTwNlWVWpoOrJFf83FoygJN8La9qe+JAEGRkxVrqeoAFALFoo
+         TqgiRPSMpPjYkprH7DgFt2r7knsKyvj5g9oN0LYOEiOsOnteS0TG7And7C3BJQP8KlqR
+         +sbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=2v5zQ4ASqwUEaImz7xFZXnky0JeRmzUKfNWkHn9qJfM=;
-        b=LyPUccTQJkRZT9CgOiU1Y0H699q/j9+LXZnQUxyxrWgu3VRO/dKJj9DCoCsivaKHCN
-         c8F4p56J9u2I65DU4bDvty4f20spgY7yU+AXYPm0MM6+1fsyy9cpkB8XTsMHJ1OXNkgc
-         H1VzMz8QrWRNj5/vB0tzHCFC5TcL7486uuXjixyx689YC5A3c846Hiz6velplYTGiDyT
-         azNcr8MaoDOAtoIu+wPNTZU9LefTQ9hwbYjqX9fNENC701+lqvSkOANwUJS4saDhGzQn
-         tPyZCS+VKK8J6rYOI8/yU57B/DQEfGzyon2hmHKXTtIln+Qhhp4Sv8Ui4lI3DWvYDBJ0
-         Ckiw==
-X-Gm-Message-State: AOAM531v7XfueNafOFOzFQh4D/QiqvztDk1Y4IY+W98mYxnkt01B5ZDc
-        Z5rsSEHH6qBpf+JPUzUqtr68hukCqENu3YKio4J8rV85
-X-Google-Smtp-Source: ABdhPJzb2LVI/Hael6CXe7Dd9N0jB+vHDofiXD9LcZUelPja+WQVgBFG0Fb0ZKnSnTDR/IdvA1iYa1tHnAMmK+oBzSQ=
-X-Received: by 2002:a05:651c:1255:: with SMTP id h21mr12465905ljh.8.1608001306008;
- Mon, 14 Dec 2020 19:01:46 -0800 (PST)
+        bh=eG4n9xlHK+SC1LnsZtRhg9CmgC53883GCBz3X7IjH2k=;
+        b=Zw5Dfb9wbMlfToG4IIGzIOjcT7wg0XfXhDMi8HxCiBtlOiQaAyxTncved2IsGv61kE
+         NsczPGzdS0SB7npKPVMmBI3s+n5BOhiAxFiGaHU6gHbRLDnq1x29eG9YpUaDCH3BOPw2
+         61BALBN0Lu/vBYs7N91Crq8jwT/vwvbHjE4kaqNaWFPFr1VSWv9qKepzgE/YtRQkxj84
+         2k8OaLhgHOibjPLRNQzLMjXkJVRKjq569BzUkvwnoAXM6HSWo2pCLPBVzDuqGI34Vb1u
+         DE/vdznJ0Qr6uZn/b+sjKHw+Oj9axB9BnWE67A6yYIGOrjkVa9yC7nlt/5Q/WGl7qTnh
+         vR4w==
+X-Gm-Message-State: AOAM532dYkveFwALnRVYoO0V3871xSyBKajGEdPVoHzM2lVoiBeuUJiT
+        oIEMgfku3Kouv/th2kzqpL7DU87EKn0z0hjjS/0=
+X-Google-Smtp-Source: ABdhPJwZ8B6BkRbU5hZNjNnCS2mYUbc9BKbp2oGlfkxy7IPbHqsJlcKUmNFOjAT2zleyHz+y0Dm9FS5ZdzSBwCY03k0=
+X-Received: by 2002:a2e:90d6:: with SMTP id o22mr11848460ljg.56.1608001434542;
+ Mon, 14 Dec 2020 19:03:54 -0800 (PST)
 MIME-Version: 1.0
-References: <20201214122823.2061-1-bongsu.jeon@samsung.com> <20201214154444.GA2493@kozik-lap>
-In-Reply-To: <20201214154444.GA2493@kozik-lap>
+References: <20201214114658.27771-1-bongsu.jeon@samsung.com> <20201214160202.GD2493@kozik-lap>
+In-Reply-To: <20201214160202.GD2493@kozik-lap>
 From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
-Date:   Tue, 15 Dec 2020 12:01:34 +0900
-Message-ID: <CACwDmQA5xVvyyO21t5meyJr7fbTa4sFwMR-dECJ01Cb6qrh5OA@mail.gmail.com>
-Subject: Re: [linux-nfc] [PATCH net-next] MAINTAINERS: Update maintainer for
- SAMSUNG S3FWRN5 NFC
+Date:   Tue, 15 Dec 2020 12:03:43 +0900
+Message-ID: <CACwDmQCi83rNDEOMaGsDRx553DPUeCOmKiLZtzx5HHj2QdbL+w@mail.gmail.com>
+Subject: Re: [PATCH net-next] nfc: s3fwrn5: Remove unused nci prop commands
 To:     Krzysztof Kozlowski <krzk@kernel.org>
 Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
@@ -59,28 +58,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 12:44 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On Tue, Dec 15, 2020 at 1:02 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
 >
-> On Mon, Dec 14, 2020 at 09:28:23PM +0900, Bongsu Jeon wrote:
+> On Mon, Dec 14, 2020 at 08:46:58PM +0900, Bongsu Jeon wrote:
 > > From: Bongsu Jeon <bongsu.jeon@samsung.com>
 > >
-> > add an email to look after the SAMSUNG NFC driver.
+> > remove the unused nci prop commands that samsung driver doesn't use.
 >
-> Hi Bongsu,
+> Don't send patches one-by-one, but group them in a patchset.
 >
-> Review and testing is always appreciated. However before adding an entry
-> to Maintainers, I would prefer to see some activity in maintainer-like
-> tasks. So far there are none:
-> https://lore.kernel.org/lkml/?q=f%3A%22Bongsu+Jeon%22
->
-> Contributing patches is not the same as maintenance. Please subscribe to
-> relevant mailing lists and devote effort for improving other people
-> code.
->
-> We had too many maintainers from many companies which did not perform
-> actual maintainership for long time and clearly that's not the point.
+> Previous comments apply here as well - NCI is acronym, start with
+> capital letter.
 >
 > Best regards,
 > Krzysztof
-
-Ok, I  understand it.
+>
+I will update the comments and send the patches in a series.
