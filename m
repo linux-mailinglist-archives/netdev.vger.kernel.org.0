@@ -2,35 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D537D2DA4E9
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 01:30:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0514E2DA4FA
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 01:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729093AbgLOAa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 19:30:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58870 "EHLO mail.kernel.org"
+        id S1725964AbgLOAh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 19:37:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60552 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726615AbgLOAaS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 19:30:18 -0500
-Date:   Mon, 14 Dec 2020 16:29:37 -0800
+        id S1725936AbgLOAhO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 19:37:14 -0500
+Date:   Mon, 14 Dec 2020 16:36:33 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607992178;
-        bh=5rs2vLQHAVbGiDjp1Kwfo5SBAOeqHd8dGmV+3y/sPOs=;
+        s=k20201202; t=1607992594;
+        bh=CxLawj9dsOGAed/kPedVVsaoAaw0SNvHP3d6248ghy4=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dOHHXRfaA8CTgDWvtEQ2amw/A23i/myIWO14mUn301E9pvypZ/KDuPUYWssuXeUOR
-         MySn1FDl4r6gF3YTufwqUVbuY8G2NPE7uOtjbYl7a5n8WJpUoRjBmLv1FMqE412bjX
-         Bji9jOIxN6HiL3iWch3zpzuSvsCIPmRmx99qByFb7dfoQTGU5NYSnGeFHndMBSradk
-         tvd6M98q4fTijSCsJ18HoUUAjpIaD35Is4ZEycH+RdsXQl/UrsTeqV2Bb2I8Ma9Uj0
-         LRVRa2QjwgJw6c+hroJNMJiRdBc996MXOkxLq6wE4kQv20+y12xHsUuf8zAQxnAAJY
-         Tn6UQ8lmvtANA==
+        b=GkEwhUxH4JR1wIJ30RuL/MWyOn8I0Ya+bFetXKJo8I42b2QwiJ2Csbh00gduwUwrl
+         KFco/IYAXquyDBXPrgyQtIBRqFrXSNQRhLmGf2gXU8AEadUnVqockSUgCVWZZghVO8
+         95xykvQRyfFNw9UxUtZFsae80AOoqnQeOBF9xpfSZ9iThIrrGAnLm5CBtLh+P3AFCY
+         VX2wvxRgN9Lp5BY3PdipMbUKVLJU/9LwFUCY7EGXd8bmXd7s7/MQeJwgsVe1qPBqvE
+         4gSF/2ZyHWt3ZFfO0GSY/fJZL8HxOzW/YBaksOZCqUTfdkGjdehLojprxrq25EcPvg
+         ldMFk43BWgdPA==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tobias Klauser <tklauser@distanz.ch>
-Cc:     Jiri Pirko <jiri@nvidia.com>, Moshe Shemesh <moshe@mellanox.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] devlink: use _BITUL() macro instead of BIT() in the
- UAPI header
-Message-ID: <20201214162937.0106e2ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201214112157.4841-1-tklauser@distanz.ch>
-References: <20201214112157.4841-1-tklauser@distanz.ch>
+To:     sylvain.bertrand@legeek.net
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH][c89] wrong usage of compiler constants
+Message-ID: <20201214163633.3ece1ff3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <xxx666hutenoshurhpmr4kmer7notkhoec@freedom>
+References: <xxx666hutenoshurhpmr4kmer7notkhoec@freedom>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -38,18 +36,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Dec 2020 12:21:57 +0100 Tobias Klauser wrote:
-> The BIT() macro is not available for the UAPI headers. Moreover, it can
-> be defined differently in user space headers. Thus, replace its usage
-> with the _BITUL() macro which is already used in other macro definitions
-> in <linux/devlink.h>.
+On Mon, 14 Dec 2020 16:30:01 +0000 sylvain.bertrand@legeek.net wrote:
+> From: Sylvain BERTRAND <sylvain.bertrand@legeek.net>
 > 
-> Fixes: dc64cc7c6310 ("devlink: Add devlink reload limit option")
-> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+> Using a c89 compiler fails due some wrong usage of compiler constants.
 
-Thanks for the patch. It doesn't apply any longer, please respin on top
-of:
+Are you saying it fails on some known compilers in the code you're
+fixing? We have a strong preference to ask contributors to fix
+compilers.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
+> Trivial and harmless fixes.
 
-Thanks!
+Code churn, longer lines, and another thing for developers to remember
+are not harmless.
