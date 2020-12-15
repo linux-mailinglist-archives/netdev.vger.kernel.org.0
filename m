@@ -2,514 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 913292DA70B
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 05:14:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46C392DA732
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 05:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725890AbgLOENF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 23:13:05 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:24102 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725385AbgLOEMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 23:12:51 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BF4BKNF030103;
-        Mon, 14 Dec 2020 20:12:06 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=J8JYuxRGbHlCktKeJ3Xo6p5nu7hipl1IZzbhLzAPIwE=;
- b=j8DSwYHOVhmTclCyK+C0t/bGAZpyn7lMaK88z351MxssN6x+3aK3OFzMiCEEw0+iYS+N
- N6CNdopjnDCV5W7+Ovu1lQ/i2VPnD+A0Ltuw9ISt68TM9d/eQNzhszFkJwtEpmBUCxWt
- EwKt+xn2OasSF3m5FXyZOX3Qbgf/zfUAa9ux7ya1f4NGLRT+oJDmdlCaSqMWHrceamJP
- MZhBiW1kO6oSHohw89S5vVmY4uqdTD0pry+uvn131PIAfPK3w4j/VZldWMQxLt4fNU7H
- dUg+UZ98Xsk8qUrivr52sD3czU0vQdwunHM8ZY2B1maX6lMjxtkRUFJivu6MtxW5vT6a lg== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 35cv3sxn2k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 14 Dec 2020 20:12:05 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 14 Dec
- 2020 20:12:04 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Dec 2020 20:12:04 -0800
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id A044F3F7045;
-        Mon, 14 Dec 2020 20:12:02 -0800 (PST)
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <sgoutham@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        "Geetha sowjanya" <gakula@marvell.com>
-Subject: [PATCHv4 net-next] octeontx2-pf: Add RSS multi group support
-Date:   Tue, 15 Dec 2020 09:41:56 +0530
-Message-ID: <20201215041156.4504-1-gakula@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726009AbgLOEnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 23:43:08 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:41136 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbgLOEmv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 23:42:51 -0500
+Received: by mail-il1-f199.google.com with SMTP id f19so15485253ilk.8
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 20:42:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=LqWaNQjCimm2ca6xInyGr6oMtdoqCwNA95xg3NR0eBs=;
+        b=RW3Q52Itg1YZP/6L6GeHqFBFyr/MTFxwHAyvJ5bSQuPYDWEvlQn/nWSGiSdphgSQ7S
+         ErbtiM1PKmw9DfqG/8yNfdeRNy/Qrcrtya4ANqMhxGappg0Ll5nD/kS7tO6DyxTdfMrk
+         5MwdX2dwtLvJAIK0YdmGxP50nzzGiH9yQzDzJuaijL/oXGX5hEo2TS+ZqzHAcumy9BvC
+         tHUKGgSQrVVZ+BB25s3xrAMzpvbtQB1uuSwsJcF2mOs10Mcrp5/cixaAN+QW7Aoum/ET
+         QnG66J3LT0wIIAfauYQFXmtRUtTMGOXPyzqXia5dnmhXlCqNX2JEdzdL2XgJcq/VWn4Z
+         yGXg==
+X-Gm-Message-State: AOAM532xbR9M/XWuC0NN1G9qLDHja/c+MPang1S/GAwbqTLWMi5FSRxy
+        zPkhwFl7kxtBreyMsdPtRH/ecIfMPqF4aWtAbgTV3MEQWL5S
+X-Google-Smtp-Source: ABdhPJyZaXjecLYYIfdizclwvPhLlMvic1ogV9rB8egV0WLu+dS+5IBDd8HMqFEYG5EComEOdlQBCvQG+YMg1T+r9Zc60hGQDfta
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-15_03:2020-12-11,2020-12-15 signatures=0
+X-Received: by 2002:a05:6e02:5ab:: with SMTP id k11mr32494608ils.189.1608007330245;
+ Mon, 14 Dec 2020 20:42:10 -0800 (PST)
+Date:   Mon, 14 Dec 2020 20:42:10 -0800
+In-Reply-To: <00000000000056307e05b08a4693@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b7334f05b67961a3@google.com>
+Subject: Re: BUG: soft lockup in mac80211_hwsim_beacon
+From:   syzbot <syzbot+d6219cf21f26bdfcc22e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net,
+        keescook@chromium.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        mingo@kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hardware supports 8 RSS groups per interface. Currently we are using
-only group '0'. This patch allows user to create new RSS groups/contexts
-and use the same as destination for flow steering rules.
+syzbot has found a reproducer for the following issue on:
 
-usage:
-To steer the traffic to RQ 2,3
+HEAD commit:    2c85ebc5 Linux 5.10
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=148fcc13500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8aff533d6c635e6
+dashboard link: https://syzkaller.appspot.com/bug?extid=d6219cf21f26bdfcc22e
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1102527b500000
 
-ethtool -X eth0 weight 0 0 1 1 context new
-(It will print the allocated context id number)
-New RSS context is 1
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d6219cf21f26bdfcc22e@syzkaller.appspotmail.com
 
-ethtool -N eth0 flow-type tcp4 dst-port 80 context 1 loc 1
-
-To delete the context
-ethtool -X eth0 context 1 delete
-
-When an RSS context is removed, the active classification
-rules using this context are also removed.
-
-Change-log:
-
-v4
-- Fixed compiletime warning.
-- Address Saeed's comments on v3.
-
-v3
-- Coverted otx2_set_rxfh() to use new function.
-
-v2
-- Removed unrelated whitespace
-- Coverted otx2_get_rxfh() to use new function.
-
-
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  26 ++--
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  11 +-
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 133 ++++++++++++++++-----
- .../ethernet/marvell/octeontx2/nic/otx2_flows.c    |  37 +++++-
- 4 files changed, 163 insertions(+), 44 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 73fb94d..bdfa2e2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -270,14 +270,17 @@ int otx2_set_flowkey_cfg(struct otx2_nic *pfvf)
- 	return err;
- }
- 
--int otx2_set_rss_table(struct otx2_nic *pfvf)
-+int otx2_set_rss_table(struct otx2_nic *pfvf, int ctx_id)
- {
- 	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
-+	const int index = rss->rss_size * ctx_id;
- 	struct mbox *mbox = &pfvf->mbox;
-+	struct otx2_rss_ctx *rss_ctx;
- 	struct nix_aq_enq_req *aq;
- 	int idx, err;
- 
- 	mutex_lock(&mbox->lock);
-+	rss_ctx = rss->rss_ctx[ctx_id];
- 	/* Get memory to put this msg */
- 	for (idx = 0; idx < rss->rss_size; idx++) {
- 		aq = otx2_mbox_alloc_msg_nix_aq_enq(mbox);
-@@ -297,10 +300,10 @@ int otx2_set_rss_table(struct otx2_nic *pfvf)
- 			}
- 		}
- 
--		aq->rss.rq = rss->ind_tbl[idx];
-+		aq->rss.rq = rss_ctx->ind_tbl[idx];
- 
- 		/* Fill AQ info */
--		aq->qidx = idx;
-+		aq->qidx = index + idx;
- 		aq->ctype = NIX_AQ_CTYPE_RSS;
- 		aq->op = NIX_AQ_INSTOP_INIT;
- 	}
-@@ -335,9 +338,10 @@ void otx2_set_rss_key(struct otx2_nic *pfvf)
- int otx2_rss_init(struct otx2_nic *pfvf)
- {
- 	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
-+	struct otx2_rss_ctx *rss_ctx;
- 	int idx, ret = 0;
- 
--	rss->rss_size = sizeof(rss->ind_tbl);
-+	rss->rss_size = sizeof(*rss->rss_ctx[DEFAULT_RSS_CONTEXT_GROUP]);
- 
- 	/* Init RSS key if it is not setup already */
- 	if (!rss->enable)
-@@ -345,13 +349,19 @@ int otx2_rss_init(struct otx2_nic *pfvf)
- 	otx2_set_rss_key(pfvf);
- 
- 	if (!netif_is_rxfh_configured(pfvf->netdev)) {
--		/* Default indirection table */
-+		/* Set RSS group 0 as default indirection table */
-+		rss->rss_ctx[DEFAULT_RSS_CONTEXT_GROUP] = kzalloc(rss->rss_size,
-+								  GFP_KERNEL);
-+		if (!rss->rss_ctx[DEFAULT_RSS_CONTEXT_GROUP])
-+			return -ENOMEM;
-+
-+		rss_ctx = rss->rss_ctx[DEFAULT_RSS_CONTEXT_GROUP];
- 		for (idx = 0; idx < rss->rss_size; idx++)
--			rss->ind_tbl[idx] =
-+			rss_ctx->ind_tbl[idx] =
- 				ethtool_rxfh_indir_default(idx,
- 							   pfvf->hw.rx_queues);
- 	}
--	ret = otx2_set_rss_table(pfvf);
-+	ret = otx2_set_rss_table(pfvf, DEFAULT_RSS_CONTEXT_GROUP);
- 	if (ret)
- 		return ret;
- 
-@@ -986,7 +996,7 @@ int otx2_config_nix(struct otx2_nic *pfvf)
- 	nixlf->sq_cnt = pfvf->hw.tx_queues;
- 	nixlf->cq_cnt = pfvf->qset.cq_cnt;
- 	nixlf->rss_sz = MAX_RSS_INDIR_TBL_SIZE;
--	nixlf->rss_grps = 1; /* Single RSS indir table supported, for now */
-+	nixlf->rss_grps = MAX_RSS_GROUPS;
- 	nixlf->xqe_sz = NIX_XQESZ_W16;
- 	/* We don't know absolute NPA LF idx attached.
- 	 * AF will replace 'RVU_DEFAULT_PF_FUNC' with
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 1034304..143ae04 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -51,13 +51,17 @@ enum arua_mapped_qtypes {
- #define NIX_LF_POISON_VEC			0x82
- 
- /* RSS configuration */
-+struct otx2_rss_ctx {
-+	u8  ind_tbl[MAX_RSS_INDIR_TBL_SIZE];
-+};
-+
- struct otx2_rss_info {
- 	u8 enable;
- 	u32 flowkey_cfg;
- 	u16 rss_size;
--	u8  ind_tbl[MAX_RSS_INDIR_TBL_SIZE];
- #define RSS_HASH_KEY_SIZE	44   /* 352 bit key */
- 	u8  key[RSS_HASH_KEY_SIZE];
-+	struct otx2_rss_ctx	*rss_ctx[MAX_RSS_GROUPS];
- };
- 
- /* NIX (or NPC) RX errors */
-@@ -643,7 +647,7 @@ void otx2_cleanup_tx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
- int otx2_rss_init(struct otx2_nic *pfvf);
- int otx2_set_flowkey_cfg(struct otx2_nic *pfvf);
- void otx2_set_rss_key(struct otx2_nic *pfvf);
--int otx2_set_rss_table(struct otx2_nic *pfvf);
-+int otx2_set_rss_table(struct otx2_nic *pfvf, int ctx_id);
- 
- /* Mbox handlers */
- void mbox_handler_msix_offset(struct otx2_nic *pfvf,
-@@ -684,10 +688,11 @@ int otx2_get_flow(struct otx2_nic *pfvf,
- int otx2_get_all_flows(struct otx2_nic *pfvf,
- 		       struct ethtool_rxnfc *nfc, u32 *rule_locs);
- int otx2_add_flow(struct otx2_nic *pfvf,
--		  struct ethtool_rx_flow_spec *fsp);
-+		  struct ethtool_rxnfc *nfc);
- int otx2_remove_flow(struct otx2_nic *pfvf, u32 location);
- int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
- 			      struct npc_install_flow_req *req);
-+void otx2_rss_ctx_flow_del(struct otx2_nic *pfvf, int ctx_id);
- int otx2_del_macfilter(struct net_device *netdev, const u8 *mac);
- int otx2_add_macfilter(struct net_device *netdev, const u8 *mac);
- int otx2_enable_rxvlan(struct otx2_nic *pf, bool enable);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 67171b66a..aaba045 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -581,7 +581,7 @@ static int otx2_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *nfc)
- 		break;
- 	case ETHTOOL_SRXCLSRLINS:
- 		if (netif_running(dev) && ntuple)
--			ret = otx2_add_flow(pfvf, &nfc->fs);
-+			ret = otx2_add_flow(pfvf, nfc);
- 		break;
- 	case ETHTOOL_SRXCLSRLDEL:
- 		if (netif_running(dev) && ntuple)
-@@ -641,42 +641,50 @@ static u32 otx2_get_rxfh_key_size(struct net_device *netdev)
- 
- static u32 otx2_get_rxfh_indir_size(struct net_device *dev)
- {
--	struct otx2_nic *pfvf = netdev_priv(dev);
--
--	return pfvf->hw.rss_info.rss_size;
-+	return  MAX_RSS_INDIR_TBL_SIZE;
- }
- 
--/* Get RSS configuration */
--static int otx2_get_rxfh(struct net_device *dev, u32 *indir,
--			 u8 *hkey, u8 *hfunc)
-+static int otx2_rss_ctx_delete(struct otx2_nic *pfvf, int ctx_id)
- {
--	struct otx2_nic *pfvf = netdev_priv(dev);
--	struct otx2_rss_info *rss;
--	int idx;
-+	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
- 
--	rss = &pfvf->hw.rss_info;
-+	otx2_rss_ctx_flow_del(pfvf, ctx_id);
-+	kfree(rss->rss_ctx[ctx_id]);
-+	rss->rss_ctx[ctx_id] = NULL;
- 
--	if (indir) {
--		for (idx = 0; idx < rss->rss_size; idx++)
--			indir[idx] = rss->ind_tbl[idx];
--	}
-+	return 0;
-+}
- 
--	if (hkey)
--		memcpy(hkey, rss->key, sizeof(rss->key));
-+static int otx2_rss_ctx_create(struct otx2_nic *pfvf,
-+			       u32 *rss_context)
-+{
-+	struct otx2_rss_info *rss = &pfvf->hw.rss_info;
-+	u8 ctx;
- 
--	if (hfunc)
--		*hfunc = ETH_RSS_HASH_TOP;
-+	for (ctx = 0; ctx < MAX_RSS_GROUPS; ctx++) {
-+		if (!rss->rss_ctx[ctx])
-+			break;
-+	}
-+	if (ctx == MAX_RSS_GROUPS)
-+		return -EINVAL;
-+
-+	rss->rss_ctx[ctx] = kzalloc(sizeof(*rss->rss_ctx[ctx]), GFP_KERNEL);
-+	if (!rss->rss_ctx[ctx])
-+		return -ENOMEM;
-+	*rss_context = ctx;
- 
- 	return 0;
- }
- 
--/* Configure RSS table and hash key */
--static int otx2_set_rxfh(struct net_device *dev, const u32 *indir,
--			 const u8 *hkey, const u8 hfunc)
-+/* RSS context configuration */
-+static int otx2_set_rxfh_context(struct net_device *dev, const u32 *indir,
-+				 const u8 *hkey, const u8 hfunc,
-+				 u32 *rss_context, bool delete)
- {
- 	struct otx2_nic *pfvf = netdev_priv(dev);
-+	struct otx2_rss_ctx *rss_ctx;
- 	struct otx2_rss_info *rss;
--	int idx;
-+	int ret, idx;
- 
- 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
- 		return -EOPNOTSUPP;
-@@ -688,20 +696,85 @@ static int otx2_set_rxfh(struct net_device *dev, const u32 *indir,
- 		return -EIO;
- 	}
- 
-+	if (hkey) {
-+		memcpy(rss->key, hkey, sizeof(rss->key));
-+		otx2_set_rss_key(pfvf);
-+	}
-+	if (delete)
-+		return otx2_rss_ctx_delete(pfvf, *rss_context);
-+
-+	if (*rss_context == ETH_RXFH_CONTEXT_ALLOC) {
-+		ret = otx2_rss_ctx_create(pfvf, rss_context);
-+		if (ret)
-+			return ret;
-+	}
- 	if (indir) {
-+		rss_ctx = rss->rss_ctx[*rss_context];
- 		for (idx = 0; idx < rss->rss_size; idx++)
--			rss->ind_tbl[idx] = indir[idx];
-+			rss_ctx->ind_tbl[idx] = indir[idx];
- 	}
-+	otx2_set_rss_table(pfvf, *rss_context);
- 
--	if (hkey) {
--		memcpy(rss->key, hkey, sizeof(rss->key));
--		otx2_set_rss_key(pfvf);
-+	return 0;
-+}
-+
-+static int otx2_get_rxfh_context(struct net_device *dev, u32 *indir,
-+				 u8 *hkey, u8 *hfunc, u32 rss_context)
-+{
-+	struct otx2_nic *pfvf = netdev_priv(dev);
-+	struct otx2_rss_ctx *rss_ctx;
-+	struct otx2_rss_info *rss;
-+	int idx, rx_queues;
-+
-+	rss = &pfvf->hw.rss_info;
-+
-+	if (hfunc)
-+		*hfunc = ETH_RSS_HASH_TOP;
-+
-+	if (!indir)
-+		return 0;
-+
-+	if (!rss->enable && rss_context == DEFAULT_RSS_CONTEXT_GROUP) {
-+		rx_queues = pfvf->hw.rx_queues;
-+		for (idx = 0; idx < MAX_RSS_INDIR_TBL_SIZE; idx++)
-+			indir[idx] = ethtool_rxfh_indir_default(idx, rx_queues);
-+		return 0;
-+	}
-+	if (rss_context >= MAX_RSS_GROUPS)
-+		return -ENOENT;
-+
-+	rss_ctx = rss->rss_ctx[rss_context];
-+	if (!rss_ctx)
-+		return -ENOENT;
-+
-+	if (indir) {
-+		for (idx = 0; idx < rss->rss_size; idx++)
-+			indir[idx] = rss_ctx->ind_tbl[idx];
- 	}
-+	if (hkey)
-+		memcpy(hkey, rss->key, sizeof(rss->key));
- 
--	otx2_set_rss_table(pfvf);
- 	return 0;
- }
- 
-+/* Get RSS configuration */
-+static int otx2_get_rxfh(struct net_device *dev, u32 *indir,
-+			 u8 *hkey, u8 *hfunc)
-+{
-+	return otx2_get_rxfh_context(dev, indir, hkey, hfunc,
-+				     DEFAULT_RSS_CONTEXT_GROUP);
-+}
-+
-+/* Configure RSS table and hash key */
-+static int otx2_set_rxfh(struct net_device *dev, const u32 *indir,
-+			 const u8 *hkey, const u8 hfunc)
-+{
-+
-+	u32 rss_context = DEFAULT_RSS_CONTEXT_GROUP;
-+
-+	return otx2_set_rxfh_context(dev, indir, hkey, hfunc, &rss_context, 0);
-+}
-+
- static u32 otx2_get_msglevel(struct net_device *netdev)
- {
- 	struct otx2_nic *pfvf = netdev_priv(netdev);
-@@ -771,6 +844,8 @@ static const struct ethtool_ops otx2_ethtool_ops = {
- 	.get_rxfh_indir_size	= otx2_get_rxfh_indir_size,
- 	.get_rxfh		= otx2_get_rxfh,
- 	.set_rxfh		= otx2_set_rxfh,
-+	.get_rxfh_context	= otx2_get_rxfh_context,
-+	.set_rxfh_context	= otx2_set_rxfh_context,
- 	.get_msglevel		= otx2_get_msglevel,
- 	.set_msglevel		= otx2_set_msglevel,
- 	.get_pauseparam		= otx2_get_pauseparam,
-@@ -866,6 +941,8 @@ static const struct ethtool_ops otx2vf_ethtool_ops = {
- 	.get_rxfh_indir_size	= otx2_get_rxfh_indir_size,
- 	.get_rxfh		= otx2_get_rxfh,
- 	.set_rxfh		= otx2_set_rxfh,
-+	.get_rxfh_context	= otx2_get_rxfh_context,
-+	.set_rxfh_context	= otx2_set_rxfh_context,
- 	.get_ringparam		= otx2_get_ringparam,
- 	.set_ringparam		= otx2_set_ringparam,
- 	.get_coalesce		= otx2_get_coalesce,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index be8ccfc..6dd442d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -16,6 +16,7 @@ struct otx2_flow {
- 	u32 location;
- 	u16 entry;
- 	bool is_vf;
-+	u8 rss_ctx_id;
- 	int vf;
- };
- 
-@@ -245,6 +246,7 @@ int otx2_get_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc,
- 	list_for_each_entry(iter, &pfvf->flow_cfg->flow_list, list) {
- 		if (iter->location == location) {
- 			nfc->fs = iter->flow_spec;
-+			nfc->rss_context = iter->rss_ctx_id;
- 			return 0;
- 		}
- 	}
-@@ -429,7 +431,7 @@ int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
- 	struct flow_msg *pkt = &req->packet;
- 	u32 flow_type;
- 
--	flow_type = fsp->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT);
-+	flow_type = fsp->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS);
- 	switch (flow_type) {
- 	/* bits not set in mask are don't care */
- 	case ETHER_FLOW:
-@@ -532,9 +534,13 @@ static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
- 		/* change to unicast only if action of default entry is not
- 		 * requested by user
- 		 */
--		if (req->op != NIX_RX_ACTION_DEFAULT)
-+		if (flow->flow_spec.flow_type & FLOW_RSS) {
-+			req->op = NIX_RX_ACTIONOP_RSS;
-+			req->index = flow->rss_ctx_id;
-+		} else {
- 			req->op = NIX_RX_ACTIONOP_UCAST;
--		req->index = ethtool_get_flow_spec_ring(ring_cookie);
-+			req->index = ethtool_get_flow_spec_ring(ring_cookie);
-+		}
- 		vf = ethtool_get_flow_spec_ring_vf(ring_cookie);
- 		if (vf > pci_num_vf(pfvf->pdev)) {
- 			mutex_unlock(&pfvf->mbox.lock);
-@@ -555,14 +561,16 @@ static int otx2_add_flow_msg(struct otx2_nic *pfvf, struct otx2_flow *flow)
- 	return err;
- }
- 
--int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rx_flow_spec *fsp)
-+int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- {
- 	struct otx2_flow_config *flow_cfg = pfvf->flow_cfg;
--	u32 ring = ethtool_get_flow_spec_ring(fsp->ring_cookie);
-+	struct ethtool_rx_flow_spec *fsp = &nfc->fs;
- 	struct otx2_flow *flow;
- 	bool new = false;
-+	u32 ring;
- 	int err;
- 
-+	ring = ethtool_get_flow_spec_ring(fsp->ring_cookie);
- 	if (!(pfvf->flags & OTX2_FLAG_NTUPLE_SUPPORT))
- 		return -ENOMEM;
- 
-@@ -585,6 +593,9 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rx_flow_spec *fsp)
- 	/* struct copy */
- 	flow->flow_spec = *fsp;
- 
-+	if (fsp->flow_type & FLOW_RSS)
-+		flow->rss_ctx_id = nfc->rss_context;
-+
- 	err = otx2_add_flow_msg(pfvf, flow);
- 	if (err) {
- 		if (new)
-@@ -647,6 +658,22 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
- 	return 0;
- }
- 
-+void otx2_rss_ctx_flow_del(struct otx2_nic *pfvf, int ctx_id)
-+{
-+	struct otx2_flow *flow, *tmp;
-+	int err;
-+
-+	list_for_each_entry_safe(flow, tmp, &pfvf->flow_cfg->flow_list, list) {
-+		if (flow->rss_ctx_id != ctx_id)
-+			continue;
-+		err = otx2_remove_flow(pfvf, flow->location);
-+		if (err)
-+			netdev_warn(pfvf->netdev,
-+				    "Can't delete the rule %d associated with this rss group err:%d",
-+				    flow->location, err);
-+	}
-+}
-+
- int otx2_destroy_ntuple_flows(struct otx2_nic *pfvf)
- {
- 	struct otx2_flow_config *flow_cfg = pfvf->flow_cfg;
--- 
-2.7.4
+watchdog: BUG: soft lockup - CPU#1 stuck for 134s! [syz-executor.4:10844]
+Modules linked in:
+irq event stamp: 16682675
+hardirqs last  enabled at (16682674): [<ffffffff89000d42>] asm_sysvec_irq_work+0x12/0x20 arch/x86/include/asm/idtentry.h:657
+hardirqs last disabled at (16682675): [<ffffffff88e55e2c>] sysvec_apic_timer_interrupt+0xc/0x100 arch/x86/kernel/apic/apic.c:1091
+softirqs last  enabled at (11305198): [<ffffffff89000eaf>] asm_call_irq_on_stack+0xf/0x20
+softirqs last disabled at (11305201): [<ffffffff89000eaf>] asm_call_irq_on_stack+0xf/0x20
+CPU: 1 PID: 10844 Comm: syz-executor.4 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__iterate_interfaces+0x14b/0x520 net/mac80211/util.c:786
+Code: 31 ff 44 89 fe e8 05 a8 1d f9 45 85 ff 0f 84 9a 01 00 00 e8 a7 af 1d f9 48 8d bb 50 06 00 00 48 89 f8 48 c1 e8 03 0f b6 04 28 <84> c0 74 08 3c 03 0f 8e a8 03 00 00 8b 83 50 06 00 00 31 ff 83 e0
+RSP: 0018:ffffc90000d90a68 EFLAGS: 00000212
+RAX: 0000000000000000 RBX: ffff8880276ccc00 RCX: ffffffff885254eb
+RDX: ffff8880213c3480 RSI: ffffffff885254f9 RDI: ffff8880276cd250
+RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffffff8ebb0667
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff8880276cde18
+R13: 0000000000000000 R14: ffff88803d37a5b8 R15: 0000000000000002
+FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000016b9e60 CR3: 000000003ca03000 CR4: 0000000000350ee0
+Call Trace:
+ <IRQ>
+ ieee80211_iterate_active_interfaces_atomic+0x8d/0x170 net/mac80211/util.c:828
+ mac80211_hwsim_addr_match+0x128/0x180 drivers/net/wireless/mac80211_hwsim.c:1060
+ mac80211_hwsim_tx_frame_no_nl.isra.0+0xb3d/0x1330 drivers/net/wireless/mac80211_hwsim.c:1498
+ mac80211_hwsim_tx_frame+0x14f/0x1e0 drivers/net/wireless/mac80211_hwsim.c:1705
+ mac80211_hwsim_beacon_tx+0x4ba/0x910 drivers/net/wireless/mac80211_hwsim.c:1759
+ __iterate_interfaces+0x1e5/0x520 net/mac80211/util.c:792
+ ieee80211_iterate_active_interfaces_atomic+0x8d/0x170 net/mac80211/util.c:828
+ mac80211_hwsim_beacon+0xd5/0x1a0 drivers/net/wireless/mac80211_hwsim.c:1782
+ __run_hrtimer kernel/time/hrtimer.c:1519 [inline]
+ __hrtimer_run_queues+0x693/0xea0 kernel/time/hrtimer.c:1583
+ hrtimer_run_softirq+0x17b/0x360 kernel/time/hrtimer.c:1600
+ __do_softirq+0x2a0/0x9f6 kernel/softirq.c:298
+ asm_call_irq_on_stack+0xf/0x20
+ </IRQ>
+ __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
+ run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
+ do_softirq_own_stack+0xaa/0xd0 arch/x86/kernel/irq_64.c:77
+ invoke_softirq kernel/softirq.c:393 [inline]
+ __irq_exit_rcu kernel/softirq.c:423 [inline]
+ irq_exit_rcu+0x132/0x200 kernel/softirq.c:435
+ sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1091
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:631
+RIP: 0010:mm_update_next_owner+0x432/0x7a0 kernel/exit.c:387
+Code: 8d ad 00 fc ff ff 48 81 fd 80 b3 09 8b 0f 84 65 01 00 00 e8 00 01 2e 00 48 8d bd 24 fc ff ff 48 89 f8 48 c1 e8 03 0f b6 14 18 <48> 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 b5 02 00 00 44
+RSP: 0018:ffffc90001bafb28 EFLAGS: 00000213
+RAX: 1ffff110035d4004 RBX: dffffc0000000000 RCX: ffffffff814203df
+RDX: 0000000000000000 RSI: ffffffff814203a0 RDI: ffff88801aea0024
+RBP: ffff88801aea0400 R08: 0000000000000001 R09: ffffffff8b00a083
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff88802f0c6c00
+R13: ffff88801aea0000 R14: 0000000000200000 R15: ffff888140758010
+ exit_mm kernel/exit.c:485 [inline]
+ do_exit+0xa6a/0x29b0 kernel/exit.c:796
+ do_group_exit+0x125/0x310 kernel/exit.c:906
+ get_signal+0x42a/0x1f10 kernel/signal.c:2758
+ arch_do_signal+0x82/0x2390 arch/x86/kernel/signal.c:811
+ exit_to_user_mode_loop kernel/entry/common.c:161 [inline]
+ exit_to_user_mode_prepare+0x100/0x1a0 kernel/entry/common.c:191
+ irqentry_exit_to_user_mode+0x5/0x30 kernel/entry/common.c:279
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:631
+RIP: 0033:0x45e159
+Code: Unable to access opcode bytes at RIP 0x45e12f.
+RSP: 002b:00007fabdf0dac68 EFLAGS: 00000246
+RAX: 0000000020ffc000 RBX: 0000000000000006 RCX: 000000000045e159
+RDX: 0000000000000000 RSI: 0000000000003000 RDI: 0000000020ffc000
+RBP: 000000000119c080 R08: 0000000000000004 R09: 0000000000000000
+R10: 0000000000000011 R11: 0000000000000246 R12: 000000000119c034
+R13: 00007ffd91092c1f R14: 00007fabdf0db9c0 R15: 000000000119c034
+Sending NMI from CPU 1 to CPUs 0:
+NMI backtrace for cpu 0
+CPU: 0 PID: 10837 Comm: syz-executor.0 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:queued_write_lock_slowpath+0x131/0x270 kernel/locking/qrwlock.c:77
+Code: 00 00 00 00 fc ff df 49 01 c7 41 83 c6 03 41 0f b6 07 41 38 c6 7c 08 84 c0 0f 85 fe 00 00 00 8b 03 3d 00 01 00 00 74 19 f3 90 <41> 0f b6 07 41 38 c6 7c ec 84 c0 74 e8 48 89 df e8 9a 9a 5a 00 eb
+RSP: 0018:ffffc90001b7fa48 EFLAGS: 00000006
+RAX: 0000000000000300 RBX: ffffffff8b00a080 RCX: ffffffff8156e6ba
+RDX: fffffbfff1601411 RSI: 0000000000000004 RDI: ffffffff8b00a080
+RBP: 00000000000000ff R08: 0000000000000001 R09: ffffffff8b00a083
+R10: fffffbfff1601410 R11: 0000000000000000 R12: 1ffff9200036ff4a
+R13: ffffffff8b00a084 R14: 0000000000000003 R15: fffffbfff1601410
+FS:  0000000002f56940(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f29a5e6adb8 CR3: 0000000011697000 CR4: 0000000000350ef0
+Call Trace:
+ queued_write_lock include/asm-generic/qrwlock.h:95 [inline]
+ do_raw_write_lock+0x1ce/0x280 kernel/locking/spinlock_debug.c:207
+ copy_process+0x3377/0x6e80 kernel/fork.c:2210
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2456
+ __do_sys_clone+0xc8/0x110 kernel/fork.c:2573
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x460b29
+Code: ff 48 85 f6 0f 84 37 8a fb ff 48 83 ee 10 48 89 4e 08 48 89 3e 48 89 d7 4c 89 c2 4d 89 c8 4c 8b 54 24 08 b8 38 00 00 00 0f 05 <48> 85 c0 0f 8c 0e 8a fb ff 74 01 c3 31 ed 48 f7 c7 00 00 01 00 75
+RSP: 002b:00007ffdb57f41d8 EFLAGS: 00000202 ORIG_RAX: 0000000000000038
+RAX: ffffffffffffffda RBX: 00007f29a5e6b700 RCX: 0000000000460b29
+RDX: 00007f29a5e6b9d0 RSI: 00007f29a5e6adb0 RDI: 00000000003d0f00
+RBP: 00007ffdb57f43f0 R08: 00007f29a5e6b700 R09: 00007f29a5e6b700
+R10: 00007f29a5e6b9d0 R11: 0000000000000202 R12: 0000000000000000
+R13: 00007ffdb57f428f R14: 00007f29a5e6b9c0 R15: 000000000119c37c
 
