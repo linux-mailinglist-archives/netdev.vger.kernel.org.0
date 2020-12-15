@@ -2,126 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9CF32DA4FE
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 01:41:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC712DA591
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 02:30:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbgLOAkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 19:40:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33430 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725806AbgLOAkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 19:40:47 -0500
-Date:   Mon, 14 Dec 2020 18:40:04 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607992806;
-        bh=vYzB5Bh2gjJmR+HAPUYeomnVTXQmhB/jJBx2y7DbXeo=;
-        h=From:To:Cc:Subject:In-Reply-To:From;
-        b=jQUvwXxYDu5SKP/A+dyoyRW29wX3IPVvnREKIErgNy6/qIXo0xiuPh8rgU+m8KLG4
-         UWVqN6qXpxRzznGDBbh+3JBeGmE94kSgBPP0Dv6a1TZZb8pPu9y3Ifx7ZzXLnd2USd
-         LkEyvCWm5TWIdi/Hj5kKweAB8GrnrZneVo7sbCuaiUo86LmlKfrHiZDdlPHzHcTA4j
-         VNx2qMtwvXp8sH5MgK6u1ZjUGU11lLZW8rOkefVgwi+4maFkHTurVkGlrpeo4ZSAkk
-         G1Cl9CEy01MXqdQpYMdo2jGWDb1lCZsV7e2Zkbe+LYBDt+SRflUv3rgBfEs60JbIe3
-         +VfBXq4Zo0dhQ==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Ian Kumlien <ian.kumlien@gmail.com>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S1729753AbgLOBaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 20:30:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728050AbgLOBaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 20:30:09 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071AFC0617B0
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 17:29:16 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id i7so2448774pgc.8
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 17:29:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GxBZCxQsCUdkzL0jmb2W+BSX0fHFGApzy9UYWSaFsfA=;
+        b=wjrGi6EXmsLALW5JV6tz8QuKrCuTGVWBMU/hzrdlhG63jR18/Vd8fRj8J7KZKAjyuv
+         mnRv+LieMrPvP4LCHvTZpHJY4VLWuw2XrgN8Q2N/02Dxdw8tM3aLb+5Qk7dFtNMt62Vo
+         TAkCngSA/CKFArV1JIisQLFUReL0gdWL9DXlc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GxBZCxQsCUdkzL0jmb2W+BSX0fHFGApzy9UYWSaFsfA=;
+        b=CqnenkkXYbcdMMfMf5inw2GukJhirg8qbCGUhUP/YMdgOgiF7VjNHnrpjuYxTW8dOe
+         GO0SSrsJnrAV7huXuBk6TZR6af9IlX1AejzNEd9+UCIQ6eE7PBY3gT8ttsNciCxbpPH4
+         vyv1H2zxulcehoenWWOV3IiH1D7j8KZJt0L2tO9/BO+rmcbnWSi2DdzJEqp0WUrPeg/5
+         ucapdT13QZEyJuQYcDcGUsoWI/XzmqM82iQUe8w7Duun4DUYncJPfQaseAE9UZVqkCdx
+         Ny6ym3gQe5Wnm/dhbo5YkiFEQTu/qsVgsSgHrf0zLbjbgiTxMvgMLUOPlxihJUFjPskK
+         UUog==
+X-Gm-Message-State: AOAM532Ux3fGizmqbqbreT+1jhXsDGpdg5rPt1YWDhh8hkte7iqm7eCm
+        u0oV7qbtcvS6nGKlTA8rKaglhYlR8Qiv2afuXJk=
+X-Google-Smtp-Source: ABdhPJx5mCCcBAJLDU2y8yQ8N0q0MRiR8OrRtxCB1D6VDzQCvUrT7XHyDru0fzg43laSJ3o4t8s9hA==
+X-Received: by 2002:aa7:8b15:0:b029:196:59ad:ab93 with SMTP id f21-20020aa78b150000b029019659adab93mr25916535pfd.16.1607995755061;
+        Mon, 14 Dec 2020 17:29:15 -0800 (PST)
+Received: from localhost ([2604:5500:c29c:d401:f5da:c0a7:bcba:f83c])
+        by smtp.gmail.com with ESMTPSA id a29sm21100906pfr.73.2020.12.14.17.29.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Dec 2020 17:29:13 -0800 (PST)
+From:   Ivan Babrou <ivan@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@cloudflare.com, Ivan Babrou <ivan@cloudflare.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] PCI/ASPM: Use the path max in L1 ASPM latency check
-Message-ID: <20201215004004.GA280628@bjorn-Precision-5520>
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH net-next] sfc: reduce the number of requested xdp ev queues
+Date:   Mon, 14 Dec 2020 17:29:06 -0800
+Message-Id: <20201215012907.3062-1-ivan@cloudflare.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAA85sZs8Li7+8BQWj0e+Qrxes1VF6K_Ukqrqgs1E3hHmaXqsbQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 11:56:31PM +0100, Ian Kumlien wrote:
-> On Mon, Dec 14, 2020 at 8:19 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+Without this change the driver tries to allocate too many queues,
+breaching the number of available msi-x interrupts on machines
+with many logical cpus and default adapter settings:
 
-> > If you're interested, you could probably unload the Realtek drivers,
-> > remove the devices, and set the PCI_EXP_LNKCTL_LD (Link Disable) bit
-> > in 02:04.0, e.g.,
-> >
-> >   # RT=/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:04.0
-> >   # echo 1 > $RT/0000:04:00.0/remove
-> >   # echo 1 > $RT/0000:04:00.1/remove
-> >   # echo 1 > $RT/0000:04:00.2/remove
-> >   # echo 1 > $RT/0000:04:00.4/remove
-> >   # echo 1 > $RT/0000:04:00.7/remove
-> >   # setpci -s02:04.0 CAP_EXP+0x10.w=0x0010
-> >
-> > That should take 04:00.x out of the picture.
-> 
-> Didn't actually change the behaviour, I'm suspecting an errata for AMD pcie...
-> 
-> So did this, with unpatched kernel:
-> [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> [  5]   0.00-1.00   sec  4.56 MBytes  38.2 Mbits/sec    0   67.9 KBytes
-> [  5]   1.00-2.00   sec  4.47 MBytes  37.5 Mbits/sec    0   96.2 KBytes
-> [  5]   2.00-3.00   sec  4.85 MBytes  40.7 Mbits/sec    0   50.9 KBytes
-> [  5]   3.00-4.00   sec  4.23 MBytes  35.4 Mbits/sec    0   70.7 KBytes
-> [  5]   4.00-5.00   sec  4.23 MBytes  35.4 Mbits/sec    0   48.1 KBytes
-> [  5]   5.00-6.00   sec  4.23 MBytes  35.4 Mbits/sec    0   45.2 KBytes
-> [  5]   6.00-7.00   sec  4.23 MBytes  35.4 Mbits/sec    0   36.8 KBytes
-> [  5]   7.00-8.00   sec  3.98 MBytes  33.4 Mbits/sec    0   36.8 KBytes
-> [  5]   8.00-9.00   sec  4.23 MBytes  35.4 Mbits/sec    0   36.8 KBytes
-> [  5]   9.00-10.00  sec  4.23 MBytes  35.4 Mbits/sec    0   48.1 KBytes
-> - - - - - - - - - - - - - - - - - - - - - - - - -
-> [ ID] Interval           Transfer     Bitrate         Retr
-> [  5]   0.00-10.00  sec  43.2 MBytes  36.2 Mbits/sec    0             sender
-> [  5]   0.00-10.00  sec  42.7 MBytes  35.8 Mbits/sec                  receiver
-> 
-> and:
-> echo 0 > /sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/link/l1_aspm
+Insufficient resources for 12 XDP event queues (24 other channels, max 32)
 
-BTW, thanks a lot for testing out the "l1_aspm" sysfs file.  I'm very
-pleased that it seems to be working as intended.
+Which in turn triggers EINVAL on XDP processing:
 
-> and:
-> [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> [  5]   0.00-1.00   sec   113 MBytes   951 Mbits/sec  153    772 KBytes
-> [  5]   1.00-2.00   sec   109 MBytes   912 Mbits/sec  276    550 KBytes
-> [  5]   2.00-3.00   sec   111 MBytes   933 Mbits/sec  123    625 KBytes
-> [  5]   3.00-4.00   sec   111 MBytes   933 Mbits/sec   31    687 KBytes
-> [  5]   4.00-5.00   sec   110 MBytes   923 Mbits/sec    0    679 KBytes
-> [  5]   5.00-6.00   sec   110 MBytes   923 Mbits/sec  136    577 KBytes
-> [  5]   6.00-7.00   sec   110 MBytes   923 Mbits/sec  214    645 KBytes
-> [  5]   7.00-8.00   sec   110 MBytes   923 Mbits/sec   32    628 KBytes
-> [  5]   8.00-9.00   sec   110 MBytes   923 Mbits/sec   81    537 KBytes
-> [  5]   9.00-10.00  sec   110 MBytes   923 Mbits/sec   10    577 KBytes
-> - - - - - - - - - - - - - - - - - - - - - - - - -
-> [ ID] Interval           Transfer     Bitrate         Retr
-> [  5]   0.00-10.00  sec  1.08 GBytes   927 Mbits/sec  1056             sender
-> [  5]   0.00-10.00  sec  1.07 GBytes   923 Mbits/sec                  receiver
-> 
-> But this only confirms that the fix i experience is a side effect.
-> 
-> The original code is still wrong :)
+sfc 0000:86:00.0 ext0: XDP TX failed (-22)
 
-What exactly is this machine?  Brand, model, config?  Maybe you could
-add this and a dmesg log to the buzilla?  It seems like other people
-should be seeing the same problem, so I'm hoping to grub around on the
-web to see if there are similar reports involving these devices.
+Signed-off-by: Ivan Babrou <ivan@cloudflare.com>
+---
+ drivers/net/ethernet/sfc/efx_channels.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-https://bugzilla.kernel.org/show_bug.cgi?id=209725
+diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+index a4a626e9cd9a..1bfeee283ea9 100644
+--- a/drivers/net/ethernet/sfc/efx_channels.c
++++ b/drivers/net/ethernet/sfc/efx_channels.c
+@@ -17,6 +17,7 @@
+ #include "rx_common.h"
+ #include "nic.h"
+ #include "sriov.h"
++#include "workarounds.h"
+ 
+ /* This is the first interrupt mode to try out of:
+  * 0 => MSI-X
+@@ -137,6 +138,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
+ {
+ 	unsigned int n_channels = parallelism;
+ 	int vec_count;
++	int tx_per_ev;
+ 	int n_xdp_tx;
+ 	int n_xdp_ev;
+ 
+@@ -149,9 +151,9 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
+ 	 * multiple tx queues, assuming tx and ev queues are both
+ 	 * maximum size.
+ 	 */
+-
++	tx_per_ev = EFX_MAX_EVQ_SIZE / EFX_TXQ_MAX_ENT(efx);
+ 	n_xdp_tx = num_possible_cpus();
+-	n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, EFX_MAX_TXQ_PER_CHANNEL);
++	n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, tx_per_ev);
+ 
+ 	vec_count = pci_msix_vec_count(efx->pci_dev);
+ 	if (vec_count < 0)
+-- 
+2.29.2
 
-Here's one that is superficially similar:
-https://linux-hardware.org/index.php?probe=e5f24075e5&log=lspci_all
-in that it has a RP -- switch -- I211 path.  Interestingly, the switch
-here advertises <64us L1 exit latency instead of the <32us latency
-your switch advertises.  Of course, I can't tell if it's exactly the
-same switch.
-
-Bjorn
