@@ -2,574 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9BC2DA985
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 09:55:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 914902DA990
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgLOIzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 03:55:10 -0500
-Received: from mx.baikalelectronics.ru ([94.125.187.42]:50168 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726176AbgLOIzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 03:55:10 -0500
-Date:   Tue, 15 Dec 2020 11:54:21 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Joao Pinto <jpinto@synopsys.com>,
-        Lars Persson <larper@axis.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 04/25] dt-bindings: net: dwmac: Refactor snps,*-config
- properties
-Message-ID: <20201215085421.v5aepprkk2iyimaw@mobilestation>
-References: <20201214091616.13545-1-Sergey.Semin@baikalelectronics.ru>
- <20201214091616.13545-5-Sergey.Semin@baikalelectronics.ru>
- <20201214143006.GA1864564@robh.at.kernel.org>
+        id S1727216AbgLOI6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 03:58:22 -0500
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:49203 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727106AbgLOI6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 03:58:05 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 286FA580301;
+        Tue, 15 Dec 2020 03:56:59 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Tue, 15 Dec 2020 03:56:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=4IEW1Wm+UUJ4RUAHXZ0yABLHMwu
+        w1h/1bT4PPJUy10Q=; b=J5byJ/N8ttMdHuZIzWOG6M3lRBMBsp4N0DmBw06Ogsu
+        ua27VBNqoRWXszW2hx3mVNL2fVlaq18p7f51JsxnqdtLFtvjMXnVUYB9oWpH7Hhl
+        pP+6DZEOHddMkFW2tTdwI/obvn2+bqmRcAh23zR4sP4jvZZ4c8LEaWbJr55qdaNb
+        anmHWFLLQmC1T+QaRuMUniwOKIKvS2owtEsQgbLt0xE9KR5uqdxai2xVIXYwAN3G
+        2fmA02rrNZEpEpVDnKtO3Z+L/93yli24G3di9RHRKx1aoHwtSzgN+YCTP9UmQpXK
+        dA06qan/rzSfEUkysJCZVIatd9xa8Ki4ML2m8FSO55w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=4IEW1W
+        m+UUJ4RUAHXZ0yABLHMwuw1h/1bT4PPJUy10Q=; b=kEmCNgqRJeQfQRu7qHLgam
+        LnSXxa40avoemlhtCxqiyRMQ3BJcESuc33igVakzk73FyYh1OyUzkg8goYxkoQ4m
+        hpUE7tq0rP/elIk0eB3GObLzfDezBa4dmnvqEij4W2LrD5kbwntP/lzAoCHeJ/A8
+        K099Vtj/gvlaxamZKZFeZ4K23GPSYtkw8a2O4td2zrJoKwclGlpqPX2QrFkfvaaw
+        /oMN2ZUxHKJGAH2+BruCWZBt/5KCbXUTztbtpDJPZqLAjTN7oM5AmMjCRYhYykp6
+        S0oK1kkXOXZkBebV7pj1mUITUenJSYjPvPUUx5xnsFqNF3kriOXWXIsma7TvBssw
+        ==
+X-ME-Sender: <xms:WXrYX8fd21Vzrk6dN1zg4K3gVTSDIJKTkeeq8fQDdD9ymNg-jGQxgg>
+    <xme:WXrYX-NTSGXzH_gubB3bfANxZ6qDP74kj66zMRfsFUKcAAGqgil1R8yRaphlIFC35
+    veqv9qLrVDCnXqWPd4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudekledguddvkecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheei
+    heegudenucfkphepledtrdekledrieekrdejieenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:WXrYX9gBzkGd1bGA8cnscy0dg8qAKQmock80FRvLY8t3eCXaL3s1MQ>
+    <xmx:WXrYXx9FYmJ1XRLgYDgLYRQdrqOPEsHPGCsn_-NSV7FpVaXeVxqUDQ>
+    <xmx:WXrYX4sMyQR2vWcBMnZEncWCJ1Ep4KuSNPKxNFUn5XJaDL44rF5mUQ>
+    <xmx:W3rYX1N5rF7I4eLriJsA9qNz1DjViX4zxDBUpkPA4yN7h6a7AzAFCw>
+Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
+        by mail.messagingengine.com (Postfix) with ESMTPA id D976824005A;
+        Tue, 15 Dec 2020 03:56:56 -0500 (EST)
+Date:   Tue, 15 Dec 2020 09:56:55 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     davem@davemloft.net, kuba@kernel.org, wens@csie.org,
+        jernej.skrabec@siol.net, timur@kernel.org,
+        song.bao.hua@hisilicon.com, f.fainelli@gmail.com, leon@kernel.org,
+        hkallweit1@gmail.com, wangyunjian@huawei.com, sr@denx.de,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] net: allwinner: Fix some resources leak in the error
+ handling path of the probe and in the remove function
+Message-ID: <20201215085655.ddacjfvogc3e33vz@gilmour>
+References: <20201214202117.146293-1-christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="tgnffsnu3i7wc524"
 Content-Disposition: inline
-In-Reply-To: <20201214143006.GA1864564@robh.at.kernel.org>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+In-Reply-To: <20201214202117.146293-1-christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Rob,
 
-On Mon, Dec 14, 2020 at 08:30:06AM -0600, Rob Herring wrote:
-> On Mon, Dec 14, 2020 at 12:15:54PM +0300, Serge Semin wrote:
-> > Currently the "snps,axi-config", "snps,mtl-rx-config" and
-> > "snps,mtl-tx-config" properties are declared as a single phandle reference
-> > to a node with corresponding parameters defined. That's not good for
-> > several reasons. First of all scattering around a device tree some
-> > particular device-specific configs with no visual relation to that device
-> > isn't suitable from maintainability point of view. That leads to a
-> > disturbed representation of the actual device tree mixing actual device
-> > nodes and some vendor-specific configs. Secondly using the same configs
-> > set for several device nodes doesn't represent well the devices structure,
-> > since the interfaces these configs describe in hardware belong to
-> > different devices and may actually differ. In the later case having the
-> > configs node separated from the corresponding device nodes gets to be
-> > even unjustified.
-> > 
-> > So instead of having a separate DW *MAC configs nodes we suggest to
-> > define them as sub-nodes of the device nodes, which interfaces they
-> > actually describe. By doing so we'll make the DW *MAC nodes visually
-> > correct describing all the aspects of the IP-core configuration. Thus
-> > we'll be able to describe the configs sub-nodes bindings right in the
-> > snps,dwmac.yaml file.
-> > 
-> > Note the former "snps,axi-config", "snps,mtl-rx-config" and
-> > "snps,mtl-tx-config" bindings have been marked as deprecated.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > 
-> > ---
-> > 
-> > Note the current DT schema tool requires the vendor-specific properties to be
-> > defined in accordance with the schema: dtschema/meta-schemas/vendor-props.yaml
-> > It means the property can be;
-> > - boolean,
-> > - string,
-> > - defined with $ref and additional constraints,
-> > - defined with allOf: [ $ref ] and additional constraints.
-> > 
-> > The modification provided by this commit needs to extend that definition to
-> > make the DT schema tool correctly parse this schema. That is we need to let
-> > the vendors-specific properties to also accept the oneOf-based combined
-> > sub-schema. Like this:
-> > 
-> > --- a/dtschema/meta-schemas/vendor-props.yaml
-> > +++ b/dtschema/meta-schemas/vendor-props.yaml
-> > @@ -48,15 +48,24 @@
-> >        - properties:   # A property with a type and additional constraints
-> >            $ref:
-> >              pattern: "types.yaml#[\/]{0,1}definitions\/.*"
-> > -          allOf:
-> > -            items:
-> > -              - properties:
-> > +
-> > +        if:
-> > +          not:
-> > +            required:
-> > +              - $ref
-> > +        then:
-> > +          patternProperties:
-> > +            "^(all|one)Of$":
-> > +              contains:
-> > +                properties:
-> >                    $ref:
-> >                      pattern: "types.yaml#[\/]{0,1}definitions\/.*"
-> >                  required:
-> >                    - $ref
-> > -        oneOf:
-> > +
-> > +        anyOf:
-> >            - required: [ $ref ]
-> >            - required: [ allOf ]
-> > +          - required: [ oneOf ]
-> > 
-> >  ...
-> > ---
-> >  .../devicetree/bindings/net/snps,dwmac.yaml   | 380 +++++++++++++-----
-> >  1 file changed, 288 insertions(+), 92 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > index 0dd543c6c08e..44aa88151cba 100644
-> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > @@ -150,69 +150,251 @@ properties:
-> >        in a different mode than the PHY in order to function.
-> >  
-> >    snps,axi-config:
-> > -    $ref: /schemas/types.yaml#definitions/phandle
-> > -    description:
-> > -      AXI BUS Mode parameters. Phandle to a node that can contain the
-> > -      following properties
-> > -        * snps,lpi_en, enable Low Power Interface
-> > -        * snps,xit_frm, unlock on WoL
-> > -        * snps,wr_osr_lmt, max write outstanding req. limit
-> > -        * snps,rd_osr_lmt, max read outstanding req. limit
-> > -        * snps,kbbe, do not cross 1KiB boundary.
-> > -        * snps,blen, this is a vector of supported burst length.
-> > -        * snps,fb, fixed-burst
-> > -        * snps,mb, mixed-burst
-> > -        * snps,rb, rebuild INCRx Burst
-> > +    description: AXI BUS Mode parameters
-> > +    oneOf:
-> > +      - deprecated: true
-> > +        $ref: /schemas/types.yaml#definitions/phandle
-> > +      - type: object
-> > +        properties:
-> 
+--tgnffsnu3i7wc524
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Anywhere have have the same node/property string meaning 2 different 
-> things is a pain, let's not create another one. 
+Hi,
 
-IIUC you meant that having a node and property with the same name
-isn't ok. Right? If so could you explain why not? especially seeing
-the property is expected to be set with phandle reference to that
-node. That seemed like a perfect solution to me. We wouldn't need to
-introduce a new property/node name, but just deprecate the
-corresponding name to be a property.
+On Mon, Dec 14, 2020 at 09:21:17PM +0100, Christophe JAILLET wrote:
+> 'irq_of_parse_and_map()' should be balanced by a corresponding
+> 'irq_dispose_mapping()' call. Otherwise, there is some resources leaks.
 
-> Just define a new node 
-> 'axi-config'. Or just put all the properties into the node directly. 
-> Grouping them has little purpose.
+Do you have a source to back that? It's not clear at all from the
+documentation for those functions, and couldn't find any user calling it
+=66rom the ten-or-so random picks I took.
 
-Hm, you suggest to remove the vendor prefix, right? If so what about
-the rest of the changes introduced here in this patch? They concern
-"snps,mtl-tx-config" and "snps,mtl-rx-config" properties (please note
-these changes are a bit more complicated than once connected with
-"snps,axi-config"). Should I remove the vendor-prefix from them too?
-Anyway that seems a bit questionable, because all the "snps,*-config"
-properties/nodes seems more vendor-specific than generic. Am I wrong
-in that matter?
+Maxime
 
-If you think they are generic, then the "{axi,mtl-rx,mtl-tx}-config"
-nodes most likely should be described in the dedicated DT schema...
+--tgnffsnu3i7wc524
+Content-Type: application/pgp-signature; name="signature.asc"
 
--Sergey
+-----BEGIN PGP SIGNATURE-----
 
-> 
-> > +          snps,lpi_en:
-> > +            $ref: /schemas/types.yaml#definitions/flag
-> > +            description: Enable Low Power Interface
-> > +
-> > +          snps,xit_frm:
-> > +            $ref: /schemas/types.yaml#definitions/flag
-> > +            description: Unlock on WoL
-> > +
-> > +          snps,wr_osr_lmt:
-> > +            $ref: /schemas/types.yaml#definitions/uint32
-> > +            description: Max write outstanding req. limit
-> > +            default: 1
-> > +            minimum: 0
-> > +            maximum: 15
-> > +
-> > +          snps,rd_osr_lmt:
-> > +            $ref: /schemas/types.yaml#definitions/uint32
-> > +            description: Max read outstanding req. limit
-> > +            default: 1
-> > +            minimum: 0
-> > +            maximum: 15
-> > +
-> > +          snps,kbbe:
-> > +            $ref: /schemas/types.yaml#definitions/flag
-> > +            description: Do not cross 1KiB boundary
-> > +
-> > +          snps,blen:
-> > +            $ref: /schemas/types.yaml#definitions/uint32-array
-> > +            description: A vector of supported burst lengths
-> > +            minItems: 7
-> > +            maxItems: 7
-> > +            items:
-> > +              enum: [256, 128, 64, 32, 16, 8, 4, 0]
-> > +
-> > +          snps,fb:
-> > +            $ref: /schemas/types.yaml#definitions/flag
-> > +            description: Fixed-burst
-> > +
-> > +          snps,mb:
-> > +            $ref: /schemas/types.yaml#definitions/flag
-> > +            description: Mixed-burst
-> > +
-> > +          snps,rb:
-> > +            $ref: /schemas/types.yaml#definitions/flag
-> > +            description: Rebuild INCRx Burst
-> > +
-> > +        additionalProperties: false
-> >  
-> >    snps,mtl-rx-config:
-> > -    $ref: /schemas/types.yaml#definitions/phandle
-> >      description:
-> > -      Multiple RX Queues parameters. Phandle to a node that can
-> > -      contain the following properties
-> > -        * snps,rx-queues-to-use, number of RX queues to be used in the
-> > -          driver
-> > -        * Choose one of these RX scheduling algorithms
-> > -          * snps,rx-sched-sp, Strict priority
-> > -          * snps,rx-sched-wsp, Weighted Strict priority
-> > -        * For each RX queue
-> > -          * Choose one of these modes
-> > -            * snps,dcb-algorithm, Queue to be enabled as DCB
-> > -            * snps,avb-algorithm, Queue to be enabled as AVB
-> > -          * snps,map-to-dma-channel, Channel to map
-> > -          * Specifiy specific packet routing
-> > -            * snps,route-avcp, AV Untagged Control packets
-> > -            * snps,route-ptp, PTP Packets
-> > -            * snps,route-dcbcp, DCB Control Packets
-> > -            * snps,route-up, Untagged Packets
-> > -            * snps,route-multi-broad, Multicast & Broadcast Packets
-> > -          * snps,priority, RX queue priority (Range 0x0 to 0xF)
-> > +      Multiple RX Queues parameters
-> > +    oneOf:
-> > +      - deprecated: true
-> > +        $ref: /schemas/types.yaml#definitions/phandle
-> > +      - type: object
-> > +        properties:
-> > +          snps,rx-queues-to-use:
-> > +            $ref: /schemas/types.yaml#definitions/uint32
-> > +            description: Number of RX queues to be used in the driver
-> > +            default: 1
-> > +            minimum: 1
-> > +
-> > +        patternProperties:
-> > +          "^snps,rx-sched-(sp|wsp)$":
-> > +            $ref: /schemas/types.yaml#definitions/flag
-> > +            description: Strict/Weighted Strict RX scheduling priority
-> > +
-> > +          "^queue[0-9]$":
-> > +            type: object
-> > +            description: Each RX Queue parameters
-> > +
-> > +            properties:
-> > +              snps,map-to-dma-channel:
-> > +                $ref: /schemas/types.yaml#definitions/uint32
-> > +                description: DMA channel to map
-> > +
-> > +              snps,priority:
-> > +                $ref: /schemas/types.yaml#definitions/uint32
-> > +                description: RX queue priority
-> > +                minimum: 0
-> > +                maximum: 15
-> > +
-> > +            patternProperties:
-> > +              "^snps,(dcb|avb)-algorithm$":
-> > +                $ref: /schemas/types.yaml#definitions/flag
-> > +                description: Enable Queue as DCB/AVB
-> > +
-> > +              "^snps,route-(avcp|ptp|dcbcp|up|multi-broad)$":
-> > +                $ref: /schemas/types.yaml#definitions/flag
-> > +                description:
-> > +                  AV Untagged/PTP/DCB Control/Untagged/Multicast & Broadcast
-> > +                  packets routing respectively.
-> > +
-> > +            additionalProperties: false
-> > +
-> > +            # Choose only one of the Queue modes and the packets routing
-> > +            allOf:
-> > +              - not:
-> > +                  required:
-> > +                    - snps,dcb-algorithm
-> > +                    - snps,avb-algorithm
-> > +              - oneOf:
-> > +                  - required:
-> > +                      - snps,route-avcp
-> > +                  - required:
-> > +                      - snps,route-ptp
-> > +                  - required:
-> > +                      - snps,route-dcbcp
-> > +                  - required:
-> > +                      - snps,route-up
-> > +                  - required:
-> > +                      - snps,route-multi-broad
-> > +                  - not:
-> > +                      anyOf:
-> > +                        - required:
-> > +                            - snps,route-avcp
-> > +                        - required:
-> > +                            - snps,route-ptp
-> > +                        - required:
-> > +                            - snps,route-dcbcp
-> > +                        - required:
-> > +                            - snps,route-up
-> > +                        - required:
-> > +                            - snps,route-multi-broad
-> > +
-> > +        additionalProperties: false
-> > +
-> > +        # Choose one of the RX scheduling algorithms
-> > +        not:
-> > +          required:
-> > +            - snps,rx-sched-sp
-> > +            - snps,rx-sched-wsp
-> >  
-> >    snps,mtl-tx-config:
-> > -    $ref: /schemas/types.yaml#definitions/phandle
-> >      description:
-> > -      Multiple TX Queues parameters. Phandle to a node that can
-> > -      contain the following properties
-> > -        * snps,tx-queues-to-use, number of TX queues to be used in the
-> > -          driver
-> > -        * Choose one of these TX scheduling algorithms
-> > -          * snps,tx-sched-wrr, Weighted Round Robin
-> > -          * snps,tx-sched-wfq, Weighted Fair Queuing
-> > -          * snps,tx-sched-dwrr, Deficit Weighted Round Robin
-> > -          * snps,tx-sched-sp, Strict priority
-> > -        * For each TX queue
-> > -          * snps,weight, TX queue weight (if using a DCB weight
-> > -            algorithm)
-> > -          * Choose one of these modes
-> > -            * snps,dcb-algorithm, TX queue will be working in DCB
-> > -            * snps,avb-algorithm, TX queue will be working in AVB
-> > -              [Attention] Queue 0 is reserved for legacy traffic
-> > -                          and so no AVB is available in this queue.
-> > -          * Configure Credit Base Shaper (if AVB Mode selected)
-> > -            * snps,send_slope, enable Low Power Interface
-> > -            * snps,idle_slope, unlock on WoL
-> > -            * snps,high_credit, max write outstanding req. limit
-> > -            * snps,low_credit, max read outstanding req. limit
-> > -          * snps,priority, TX queue priority (Range 0x0 to 0xF)
-> > +      Multiple TX Queues parameters
-> > +    oneOf:
-> > +      - deprecated: true
-> > +        $ref: /schemas/types.yaml#definitions/phandle
-> > +      - type: object
-> > +        properties:
-> > +          snps,tx-queues-to-use:
-> > +            $ref: /schemas/types.yaml#definitions/uint32
-> > +            description: Number of TX queues to be used in the driver
-> > +            default: 1
-> > +            minimum: 1
-> > +
-> > +        patternProperties:
-> > +          "^snps,tx-sched-(wrr|wfq|dwrr|sp)$":
-> > +            $ref: /schemas/types.yaml#definitions/flag
-> > +            description:
-> > +              Weighted Round Robin, Weighted Fair Queuing,
-> > +              Deficit Weighted Round Robin or Strict TX scheduling priority.
-> > +
-> > +          "^queue[0-9]$":
-> > +            type: object
-> > +            description: Each TX Queue parameters
-> > +
-> > +            properties:
-> > +              snps,priority:
-> > +                $ref: /schemas/types.yaml#definitions/uint32
-> > +                description: TX queue priority
-> > +                minimum: 0
-> > +                maximum: 15
-> > +
-> > +              snps,weight:
-> > +                $ref: /schemas/types.yaml#definitions/uint32
-> > +                description: TX queue weight (if using a DCB weight algorithm)
-> > +                minimum: 0
-> > +                maximum: 0x1FFFFF
-> > +
-> > +              snps,send_slope:
-> > +                $ref: /schemas/types.yaml#definitions/uint32
-> > +                description: Enable Low Power Interface
-> > +                minimum: 0
-> > +                maximum: 0x3FFF
-> > +
-> > +              snps,idle_slope:
-> > +                $ref: /schemas/types.yaml#definitions/uint32
-> > +                description: Unlock on WoL
-> > +                minimum: 0
-> > +                maximum: 0x1FFFFF
-> > +
-> > +              snps,high_credit:
-> > +                $ref: /schemas/types.yaml#definitions/uint32
-> > +                description: Max write outstanding req. limit
-> > +                minimum: 0
-> > +                maximum: 0x1FFFFFFF
-> > +
-> > +              snps,low_credit:
-> > +                $ref: /schemas/types.yaml#definitions/uint32
-> > +                description: Max read outstanding req. limit
-> > +                minimum: 0
-> > +                maximum: 0x1FFFFFFF
-> > +
-> > +            patternProperties:
-> > +              "^snps,(dcb|avb)-algorithm$":
-> > +                $ref: /schemas/types.yaml#definitions/flag
-> > +                description:
-> > +                  Enable Queue as DCB/AVB. Note Queue 0 is reserved for legacy
-> > +                  traffic and so no AVB is available in this queue.
-> > +
-> > +            additionalProperties: false
-> > +
-> > +            # Choose only one of the Queue modes
-> > +            not:
-> > +              required:
-> > +                - snps,dcb-algorithm
-> > +                - snps,avb-algorithm
-> > +
-> > +            # Credit Base Shaper is configurable for AVB Mode only
-> > +            dependencies:
-> > +              snps,send_slope: ["snps,avb-algorithm"]
-> > +              snps,idle_slope: ["snps,avb-algorithm"]
-> > +              snps,high_credit: ["snps,avb-algorithm"]
-> > +              snps,low_credit: ["snps,avb-algorithm"]
-> > +
-> > +        additionalProperties: false
-> > +
-> > +        # Choose one of the TX scheduling algorithms
-> > +        oneOf:
-> > +          - required:
-> > +              - snps,tx-sched-wrr
-> > +          - required:
-> > +              - snps,tx-sched-wfq
-> > +          - required:
-> > +              - snps,tx-sched-dwrr
-> > +          - required:
-> > +              - snps,tx-sched-sp
-> > +          - not:
-> > +              anyOf:
-> > +                - required:
-> > +                    - snps,tx-sched-wrr
-> > +                - required:
-> > +                    - snps,tx-sched-wfq
-> > +                - required:
-> > +                    - snps,tx-sched-dwrr
-> > +                - required:
-> > +                    - snps,tx-sched-sp
-> >  
-> >    snps,reset-gpio:
-> >      deprecated: true
-> > @@ -342,41 +524,6 @@ additionalProperties: true
-> >  
-> >  examples:
-> >    - |
-> > -    stmmac_axi_setup: stmmac-axi-config {
-> > -        snps,wr_osr_lmt = <0xf>;
-> > -        snps,rd_osr_lmt = <0xf>;
-> > -        snps,blen = <256 128 64 32 0 0 0>;
-> > -    };
-> > -
-> > -    mtl_rx_setup: rx-queues-config {
-> > -        snps,rx-queues-to-use = <1>;
-> > -        snps,rx-sched-sp;
-> > -        queue0 {
-> > -            snps,dcb-algorithm;
-> > -            snps,map-to-dma-channel = <0x0>;
-> > -            snps,priority = <0x0>;
-> > -        };
-> > -    };
-> > -
-> > -    mtl_tx_setup: tx-queues-config {
-> > -        snps,tx-queues-to-use = <2>;
-> > -        snps,tx-sched-wrr;
-> > -        queue0 {
-> > -            snps,weight = <0x10>;
-> > -            snps,dcb-algorithm;
-> > -            snps,priority = <0x0>;
-> > -        };
-> > -
-> > -        queue1 {
-> > -            snps,avb-algorithm;
-> > -            snps,send_slope = <0x1000>;
-> > -            snps,idle_slope = <0x1000>;
-> > -            snps,high_credit = <0x3E800>;
-> > -            snps,low_credit = <0xFFC18000>;
-> > -            snps,priority = <0x1>;
-> > -        };
-> > -    };
-> > -
-> >      gmac0: ethernet@e0800000 {
-> >          compatible = "snps,dwxgmac-2.10", "snps,dwxgmac";
-> >          reg = <0xe0800000 0x8000>;
-> > @@ -404,6 +551,55 @@ examples:
-> >              };
-> >          };
-> >      };
-> > +  - |
-> > +    gmac1: ethernet@f8010000 {
-> > +        compatible = "snps,dwmac-4.10a", "snps,dwmac";
-> > +        reg = <0xf8010000 0x4000>;
-> > +        interrupts = <0 98 4>;
-> > +        interrupt-names = "macirq";
-> > +        clock-names = "stmmaceth", "ptp_ref";
-> > +        clocks = <&clock 4>, <&clock 5>;
-> > +        phy-mode = "rgmii";
-> > +        snps,txpbl = <8>;
-> > +        snps,rxpbl = <2>;
-> > +        snps,aal;
-> > +        snps,tso;
-> > +
-> > +        snps,axi-config {
-> > +            snps,wr_osr_lmt = <0xf>;
-> > +            snps,rd_osr_lmt = <0xf>;
-> > +            snps,blen = <256 128 64 32 0 0 0>;
-> > +        };
-> > +
-> > +        snps,mtl-rx-config {
-> > +            snps,rx-queues-to-use = <1>;
-> > +            snps,rx-sched-sp;
-> > +            queue0 {
-> > +               snps,dcb-algorithm;
-> > +               snps,map-to-dma-channel = <0x0>;
-> > +               snps,priority = <0x0>;
-> > +            };
-> > +        };
-> > +
-> > +        snps,mtl-tx-config {
-> > +            snps,tx-queues-to-use = <2>;
-> > +            snps,tx-sched-wrr;
-> > +            queue0 {
-> > +                snps,weight = <0x10>;
-> > +                snps,dcb-algorithm;
-> > +                snps,priority = <0x0>;
-> > +            };
-> > +
-> > +            queue1 {
-> > +                snps,avb-algorithm;
-> > +                snps,send_slope = <0x1000>;
-> > +                snps,idle_slope = <0x1000>;
-> > +                snps,high_credit = <0x3E800>;
-> > +                snps,low_credit = <0xFFC18000>;
-> > +                snps,priority = <0x1>;
-> > +            };
-> > +        };
-> > +    };
-> >  
-> >  # FIXME: We should set it, but it would report all the generic
-> >  # properties as additional properties.
-> > -- 
-> > 2.29.2
-> > 
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCX9h6VwAKCRDj7w1vZxhR
+xQ9UAQC+Z7aCLxnq7/YwPgDoj5mZh+XwHfGuD6zuXikKqa8zEQEAyScyReA2IHvf
+/sJz8uc1BMRoj6wBip9nfzA/vv1QFA4=
+=+jO3
+-----END PGP SIGNATURE-----
+
+--tgnffsnu3i7wc524--
