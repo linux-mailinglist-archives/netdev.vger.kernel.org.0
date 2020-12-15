@@ -2,89 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B4D02DB549
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 21:40:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D9E12DB4EF
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 21:20:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728187AbgLOUcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 15:32:13 -0500
-Received: from smtprelay0050.hostedemail.com ([216.40.44.50]:40640 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727900AbgLOUby (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 15:31:54 -0500
-X-Greylist: delayed 598 seconds by postgrey-1.27 at vger.kernel.org; Tue, 15 Dec 2020 15:31:49 EST
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave08.hostedemail.com (Postfix) with ESMTP id 6054618027F88;
-        Tue, 15 Dec 2020 20:13:54 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 357FE1802958B;
-        Tue, 15 Dec 2020 20:13:54 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,coupons@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1434:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2538:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3871:3872:4250:4321:4605:5007:7576:7902:7903:7904:10004:10400:10848:11026:11232:11658:11783:11914:12043:12296:12297:12679:12740:12895:13069:13311:13357:13439:13894:14181:14347:14659:14721:21080:21627:21740:30054:30067:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: cave84_270289327426
-X-Filterd-Recvd-Size: 2059
-Received: from XPS-9350.home (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf08.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 15 Dec 2020 20:13:53 +0000 (UTC)
-Message-ID: <baa43defd49bb297cfb7772b999dbd9abf7f4c0d.camel@perches.com>
-Subject: Re: [PATCH] atm: horizon: remove h from printk format specifier
-From:   Joe Perches <coupons@perches.com>
-To:     trix@redhat.com, Chas Williams <3chas3@gmail.com>
-Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 15 Dec 2020 12:13:51 -0800
-In-Reply-To: <20201215142413.1850207-1-trix@redhat.com>
-References: <20201215142413.1850207-1-trix@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1727123AbgLOURp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 15:17:45 -0500
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:20836 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726129AbgLOURk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 15:17:40 -0500
+Received: from [192.168.42.210] ([93.22.37.143])
+        by mwinf5d65 with ME
+        id 4kFl2400135JPTR03kFlJF; Tue, 15 Dec 2020 21:15:55 +0100
+X-ME-Helo: [192.168.42.210]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 15 Dec 2020 21:15:55 +0100
+X-ME-IP: 93.22.37.143
+Subject: Re: [PATCH] net: allwinner: Fix some resources leak in the error
+ handling path of the probe and in the remove function
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Maxime Ripard <maxime@cerno.tech>
+Cc:     song.bao.hua@hisilicon.com, jernej.skrabec@siol.net,
+        f.fainelli@gmail.com, leon@kernel.org, timur@kernel.org,
+        netdev@vger.kernel.org, wangyunjian@huawei.com,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wens@csie.org, kuba@kernel.org, sr@denx.de, davem@davemloft.net,
+        linux-arm-kernel@lists.infradead.org, hkallweit1@gmail.com
+References: <20201214202117.146293-1-christophe.jaillet@wanadoo.fr>
+ <20201215085655.ddacjfvogc3e33vz@gilmour> <20201215091153.GH2809@kadam>
+ <20201215113710.wh4ezrvmqbpxd5yi@gilmour>
+ <54194e3e-5eb1-d10c-4294-bac8f3933f47@wanadoo.fr>
+ <20201215190815.6efzcqko55womf6b@gilmour> <20201215193545.GJ2809@kadam>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-ID: <cad6143c-a5bb-37a8-cff1-86b0fb7c8708@wanadoo.fr>
+Date:   Tue, 15 Dec 2020 21:15:46 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
+In-Reply-To: <20201215193545.GJ2809@kadam>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-12-15 at 06:24 -0800, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
+Le 15/12/2020 Ã  20:35, Dan Carpenter a Ã©critÂ :
+> On Tue, Dec 15, 2020 at 08:08:15PM +0100, Maxime Ripard wrote:
+>> On Tue, Dec 15, 2020 at 07:18:48PM +0100, Christophe JAILLET wrote:
+>>> Le 15/12/2020 Ã  12:37, Maxime Ripard a Ã©critÂ :
+>>>> On Tue, Dec 15, 2020 at 12:11:53PM +0300, Dan Carpenter wrote:
+>>>>> On Tue, Dec 15, 2020 at 09:56:55AM +0100, Maxime Ripard wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> On Mon, Dec 14, 2020 at 09:21:17PM +0100, Christophe JAILLET wrote:
+>>>>>>> 'irq_of_parse_and_map()' should be balanced by a corresponding
+>>>>>>> 'irq_dispose_mapping()' call. Otherwise, there is some resources leaks.
+>>>>>>
+>>>>>> Do you have a source to back that? It's not clear at all from the
+>>>>>> documentation for those functions, and couldn't find any user calling it
+>>>>>> from the ten-or-so random picks I took.
+>>>>>
+>>>>> It looks like irq_create_of_mapping() needs to be freed with
+>>>>> irq_dispose_mapping() so this is correct.
+>>>>
+>>>> The doc should be updated first to make that clear then, otherwise we're
+>>>> going to fix one user while multiples will have poped up
+>>>>
+>>>> Maxime
+>>>>
+>>>
+>>> Hi,
+>>>
+>>> as Dan explained, I think that 'irq_dispose_mapping()' is needed because of
+>>> the 'irq_create_of_mapping()" within 'irq_of_parse_and_map()'.
+>>>
+>>> As you suggest, I'll propose a doc update to make it clear and more future
+>>> proof.
+>>
+>> Thanks :)
+>>
+>> And if you feel like it, a coccinelle script would be awesome too so
+>> that other users get fixed over time
+>>
+>> Maxime
 > 
-> See Documentation/core-api/printk-formats.rst.
-> h should no longer be used in the format specifier for printk.
+> Smatch has a new check for resource leaks which hopefully people will
+> find useful.
 > 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/atm/horizon.c | 6 +++---
+> https://github.com/error27/smatch/blob/master/check_unwind.c
 
-Chas?
+Nice :)
+I wasn't aware of it.
 
-Madge has been out of business for a couple decades now.
+> 
+> To check for these I would need to add the following lines to the table:
+> 
+>          { "irq_of_parse_and_map", ALLOC, -1, "$", &int_one, &int_max},
+>          { "irq_create_of_mapping", ALLOC, -1, "$", &int_one, &int_max},
+>          { "irq_dispose_mapping", RELEASE, 0, "$"},
+> 
+> The '-1, "$"' means the returned value.  irq_of_parse_and_map() and
+> irq_create_of_mapping() return positive int on success.
+> 
+> The irq_dispose_mapping() frees its zeroth parameter so it's listed as
+> '0, "$"'.  We don't care about the returns from irq_dispose_mapping().
+> 
+> It doesn't apply in this case but if a function frees a struct member
+> then that's listed as '0, "$->member_name"'.
+> 
+> regards,
+> dan carpenter
+> 
 
-I doubt anyone does but does anyone actually use this driver or
-even have working hardware?
+The script I use to try to spot missing release function is:
+///
+@@
+expression  x, y;
+identifier f, l;
+@@
 
-If not, how about just deleting this driver altogether instead?
+*       x = irq_of_parse_and_map(...);
+         ... when any
+*       y = f(...);
+         ... when any
+*       if (<+... y ...+>)
+         {
+                 ...
+(
+*               goto l;
+|
+*               return ...;
+)
+                 ...
+         }
+         ... when any
+*l:
+         ... when != irq_dispose_mapping(...);
+*       return ...;
+///
 
-from horizon.h:
+It is likely that some improvement can be made, but it works pretty well 
+for what I want.
 
-/*
-  Madge Horizon ATM Adapter driver.
-  Copyright (C) 1995-1999  Madge Networks Ltd.
+And I have a collection of alloc/free functions that I manually put in 
+place of irq_of_parse_and_map and irq_dispose_mapping.
 
-*/
+Up to know, this list is:
 
-/*
-  IMPORTANT NOTE: Madge Networks no longer makes the adapters
-  supported by this driver and makes no commitment to maintain it.
-*/
+// alloc_etherdev/alloc_etherdev_mq/alloc_etherdev_mqs - free_netdev
+// alloc_workqueue - destroy_workqueue
+// class_register - class_unregister
+// clk_get - clk_put
+// clk_prepare - clk_unprepare
+// create_workqueue - destroy_workqueue
+// create_singlethread_workqueue - destroy_workqueue
+// 
+dev_pm_domain_attach/dev_pm_domain_attach_by_id/dev_pm_domain_attach_by_name 
+- dev_pm_domain_detach
+// devres_alloc - devres_free
+// dma_alloc_coherent - dma_free_coherent
+// dma_map_resource - dma_unmap_resource
+// dma_map_single - dma_unmap_single
+// dma_request_slave_channel - dma_release_channel
+// dma_request_chan - dma_release_channel
+// framebuffer_alloc - framebuffer_release
+// get_device - put_device
+// iio_channel_get - iio_channel_release
+// ioremap - iounmap
+// input_allocate_device - input_free_device
+// input_register_handle - input_unregister_handle
+// irq_of_parse_and_map / irq_create_of_mapping - irq_dispose_mapping
+// kmalloc - kfree
+// mempool_alloc - mempool_free
+// of_node_get - of_node_put
+// of_reserved_mem_device_init - of_reserved_mem_device_release
+// pinctrl_register - pinctrl_unregister
+// request_irq - free_irq
+// request_region - release_region
+// request_mem_region - release_mem_region
+// reset_control_assert - reset_control_deassert
+// scsi_host_alloc - scsi_host_put
 
+// pci_alloc_irq_vectors - pci_free_irq_vectors
+// pci_dev_get - pci_dev_put
+// pci_enable_device - pci_disable_device
+// pci_iomap - pci_iounmap
+// pci_request_region - pci_release_region
+// pci_request_regions - pci_release_regions
 
-> diff --git a/drivers/atm/horizon.c b/drivers/atm/horizon.c
-[]
-> @@ -1609,7 +1609,7 @@ static int hrz_send (struct atm_vcc * atm_vcc, struct sk_buff * skb) {
->      if (*s++ == 'D') {
->  	for (i = 0; i < 4; ++i)
->  		d = (d << 4) | hex_to_bin(*s++);
-> -      PRINTK (KERN_INFO, "debug bitmap is now %hx", debug = d);
-> +      PRINTK (KERN_INFO, "debug bitmap is now %x", debug = d);
+// alloc_skb/__alloc_skb - kfree_skb/__kfree_skb
+// dev_alloc_skb - dev_kfree_skb
 
-An IMO ugly assignment in a printk too.
-
-
+// spi_dev_get - spi_dev_put
+// spi_message_alloc - spi_message_free
+// spi_register_master - spi_unregister_master
