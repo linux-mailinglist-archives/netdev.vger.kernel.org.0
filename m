@@ -2,235 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E1842DB588
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 22:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 902142DB592
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 22:04:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728701AbgLOVAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 16:00:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728233AbgLOVAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 16:00:06 -0500
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB71C0617A6;
-        Tue, 15 Dec 2020 12:59:25 -0800 (PST)
-Received: by mail-ot1-x344.google.com with SMTP id j20so16322861otq.5;
-        Tue, 15 Dec 2020 12:59:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lkgDYxxfqcaS+YFb4xnkeKiz6WYG3v1IyWit0W1gBCU=;
-        b=n70CO2yW/IHy1bf4UFZEPxtkYSETUCrBE3DO8CLaXiUuErCWchP+UqLetVG+lBq8qq
-         GJtO5IW0oZ/j07qq8WRLLoI/MoCnZUoto/NmpbVKCoMdyJ/OO3nlhxKMbu7Z/z+tjFPr
-         JyHedAd0HpwbX5YTyptLOI/oeUpal91eg93VfGydpl1oNuzT3Mwwxnr3MtARAI5uYt/j
-         +YIZzt+FR4Hxr1H/N1JqhPVo4hqd2Phzx0OLA5BNsMB9slw34QGZKJNqrNstaogqvQR1
-         MCMvDviB3IA+Rueaaw0ydQpJU1FgYgGozvEULVKF1Kuj22Qsn45Ynw4nITacB28jFw+r
-         TYIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lkgDYxxfqcaS+YFb4xnkeKiz6WYG3v1IyWit0W1gBCU=;
-        b=dootYvuDpKRG+uYeRVAx31d0UzzAaaoK2x0OT1XreZcJM99kU+1Y5UFUIxVh/neMXX
-         11N5WBxxnkkoEWWmFvsYaPXBDG4DS+Es04bv4jcaTHUlwT6vnYve0+g5TcN5yHmcnLxl
-         Ir1v3i2q+8gXQGK17mcRhl5bu35zUxjC1HiCu4vaQodwL5MI3r4qjZeGrDWwgE+wN29D
-         2II9uFXUc3vQtredfUj7YdECvfL0NPy/mmRjHLgpMkV7iuNZlU6qmV+rLUzLq79CszZQ
-         3QQ2WN6e8lMWaGW1kjNjeBRuDKN7TPRmoHukORj6CBVtpll9YEzMoZUBl0hLNIusGOUr
-         FHrg==
-X-Gm-Message-State: AOAM532Omcl1pSz3Dt4aw327tOA7PMO+1bg/chshESrjQKW8mnSQVi7Z
-        cjija0Bo4TNRPh+nV9LgxIA=
-X-Google-Smtp-Source: ABdhPJxxC/9tyzZDIgqc1J+egE8rP76Z48EMicZE+EuVKXTHdJGV+J1oX+xZgvxfvtLn45sVKjv4Pg==
-X-Received: by 2002:a05:6830:15c1:: with SMTP id j1mr24697010otr.211.1608065965223;
-        Tue, 15 Dec 2020 12:59:25 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:1f6:1ed:9027:4e75])
-        by smtp.googlemail.com with ESMTPSA id i82sm5361267oia.2.2020.12.15.12.59.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Dec 2020 12:59:24 -0800 (PST)
-Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
-To:     Parav Pandit <parav@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1728190AbgLOVEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 16:04:14 -0500
+Received: from nat-hk.nvidia.com ([203.18.50.4]:58019 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727653AbgLOVEL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 16:04:11 -0500
+Received: from HKMAIL102.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fd924a10001>; Wed, 16 Dec 2020 05:03:29 +0800
+Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 15 Dec
+ 2020 21:03:24 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.176)
+ by HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Tue, 15 Dec 2020 21:03:24 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MpfutC6KhyWEPUcLhVO8+YPAL9d57nj+5j3MO2vAtGAwGK/6JoQtv7ci15AQA9iiuwl+P/UzzFyt35bluBOuuTaC/Y9SMQkU+00d1dCvtq468114w3gDOrMGn5hvtaEQdCLwgeTeqfmooCwZq9wYgz+r1CJmTHRhMT/nr4loIobjQeRBr7E9EjK8umw0IkHObADNDRIjNH6sEbkGYiCTBqoUPaEb+SXDgwv6MxwR3e1zJywXw3mNO4KrIrK8V80NcQ26q/1VdsBGgf5Gpxif25EvfMuVAJ1QN8MNFOWOMR5bupzFEvTom7CWYmbQnv7o24y/fk7c5AliboAm5jkGCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mGJWn809gflYUCxzwooFe+goR/fp2to841dcy0zvSPA=;
+ b=d3Sj89bRJZULTVU9IkC7//XAwGA8/Rxgc/ttRW85MQEpf4twUaYZ3/TcZNI2wo0zRO9TfPanJTry07whlEqP8TK1zxf5kBdKUEURBnWO/4ZAVEpy5xjdBN/2NkQNiHaQIemKkW/fdMw89ykeW87fKhFL40Oom8Gay8ADiZXSXmgM/xkye3QY8wgxegZA1/ZsibFS5Ij/PaIUB0NUi2C+ITMpigj+/04d7AkgeNIECtUIQR2UckFMTNWycV35sUYsGpMQ9kCin7L4RTa8AY2EckJHJNcCsgNQiqvEuxS89EcQxGyHTHAcoRVaTffX09spB7lKIpKv+RFZ/nf4PHt0OA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4268.namprd12.prod.outlook.com (2603:10b6:5:223::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.24; Tue, 15 Dec
+ 2020 21:03:21 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1ce9:3434:90fe:3433]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1ce9:3434:90fe:3433%3]) with mapi id 15.20.3654.025; Tue, 15 Dec 2020
+ 21:03:21 +0000
+Date:   Tue, 15 Dec 2020 17:03:19 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     Parav Pandit <parav@nvidia.com>, Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
+        "Leon Romanovsky" <leonro@nvidia.com>,
         Netdev <netdev@vger.kernel.org>,
         "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
         David Ahern <dsahern@kernel.org>,
         Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Sridhar Samudrala" <sridhar.samudrala@intel.com>,
         "Ertman, David M" <david.m.ertman@intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
+        "Kiran Patil" <kiran.patil@intel.com>,
         Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+Message-ID: <20201215210319.GC552508@nvidia.com>
 References: <20201214214352.198172-1-saeed@kernel.org>
  <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
  <BY5PR12MB43221CE397D6310F2B04D9B4DCC60@BY5PR12MB4322.namprd12.prod.outlook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f2c1d4c6-2bca-8c9d-a347-e18f44181f7f@gmail.com>
-Date:   Tue, 15 Dec 2020 13:59:22 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
+ <CAKgT0Uf9C5gwVZ1DnkrGYHMUvxe-bqwwcbTo7A0q-trrULJSUg@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Uf9C5gwVZ1DnkrGYHMUvxe-bqwwcbTo7A0q-trrULJSUg@mail.gmail.com>
+X-ClientProxiedBy: MN2PR06CA0016.namprd06.prod.outlook.com
+ (2603:10b6:208:23d::21) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-In-Reply-To: <BY5PR12MB43221CE397D6310F2B04D9B4DCC60@BY5PR12MB4322.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR06CA0016.namprd06.prod.outlook.com (2603:10b6:208:23d::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Tue, 15 Dec 2020 21:03:21 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kpHTb-00B2uF-9c; Tue, 15 Dec 2020 17:03:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1608066209; bh=mGJWn809gflYUCxzwooFe+goR/fp2to841dcy0zvSPA=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=ds5dAr5l25lOK4fjLdS5KBTRnqE+zMLgoVpA3d/KSHNoD0FUOMceAUsf9djEDSOoa
+         V8XIBwWecl8TAXSO0Uq4oWaLi6CVgyQBvSffrOhRsfcN41eb5pCWQwSr7h9zHaQpxG
+         elp4QVoyWuEBTbLCgaeggR6kET851tVkOThQwvzfMKegq7WOPoW0KargNvp9QjVmwi
+         ZHLXIpaPGu1clgiLb6VwBDSN/PN5q778CbP9FJF4zM87CTBbUmJwSNCH6/R/hklaEo
+         obS6QG3KgBk1cRiof84Zs76WMOCWruBaW1FUepvrUCUd2xbr0Zf2T13RdjqJK6rDEH
+         T/kLCwdMsgL9g==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/14/20 10:48 PM, Parav Pandit wrote:
-> 
->> From: Alexander Duyck <alexander.duyck@gmail.com>
->> Sent: Tuesday, December 15, 2020 7:24 AM
->>
->> On Mon, Dec 14, 2020 at 1:49 PM Saeed Mahameed <saeed@kernel.org>
->> wrote:
->>>
->>> Hi Dave, Jakub, Jason,
->>>
->>
->> Just to clarify a few things for myself. You mention virtualization and SR-IOV
->> in your patch description but you cannot support direct assignment with this
->> correct? 
-> Correct. it cannot be directly assigned.
-> 
->> The idea here is simply logical partitioning of an existing network
->> interface, correct? 
-> No. Idea is to spawn multiple functions from a single PCI device.
-> These functions are not born in PCI device and in OS until they are created by user.
-> Jason and Saeed explained this in great detail few weeks back in v0 version of the patchset at [1], [2] and [3].
-> I better not repeat all of it here again. Please go through it.
-> If you may want to read precursor to it, RFC from Jiri at [4] is also explains this in great detail.
-> 
->> So this isn't so much a solution for virtualization, but may
->> work better for containers. I view this as an important distinction to make as
->> the first thing that came to mind when I read this was mediated devices
->> which is similar, but focused only on the virtualization case:
->> https://www.kernel.org/doc/html/v5.9/driver-api/vfio-mediated-
->> device.html
->>
-> Managing subfunction using medicated device is already ruled out last year at [5] as it is the abuse of the mdev bus for this purpose + has severe limitations of managing the subfunction device.
-> We are not going back to it anymore.
-> It will be duplicating lot of the plumbing which exists in devlink, netlink, auxiliary bus and more.
->  
->> Rather than calling this a subfunction, would it make more sense to call it
->> something such as a queue set? 
-> No, queue is just one way to send and receive data/packets.
-> Jason and Saeed explained and discussed  this piece to you and others during v0 few weeks back at [1], [2], [3].
-> Please take a look.
-> 
->> So in terms of ways to go I would argue this is likely better. However one
->> downside is that we are going to end up seeing each subfunction being
->> different from driver to driver and vendor to vendor which I would argue
->> was also one of the problems with SR-IOV as you end up with a bit of vendor
->> lock-in as a result of this feature since each vendor will be providing a
->> different interface.
->>
-> Each and several vendors provided unified interface for managing VFs. i.e.
-> (a) enable/disable was via vendor neutral sysfs
-> (b) sriov capability exposed via standard pci capability and sysfs
-> (c) sriov vf config (mac, vlan, rss, tx rate, spoof check trust) are using vendor agnostic netlink
-> Even though the driver's internal implementation largely differs on how trust, spoof, mac, vlan rate etc are enforced.
-> 
-> So subfunction feature/attribute/functionality will be implemented differently internally in the driver matching vendor's device, for reasonably abstract concept of 'subfunction'.
-> 
->>> A Subfunction supports eswitch representation through which it
->>> supports tc offloads. User must configure eswitch to send/receive
->>> packets from/to subfunction port.
->>>
->>> Subfunctions share PCI level resources such as PCI MSI-X IRQs with
->>> their other subfunctions and/or with its parent PCI function.
->>
->> This piece to the architecture for this has me somewhat concerned. If all your
->> resources are shared and 
-> All resources are not shared.
-> 
->> you are allowing devices to be created
->> incrementally you either have to pre-partition the entire function which
->> usually results in limited resources for your base setup, or free resources
->> from existing interfaces and redistribute them as things change. I would be
->> curious which approach you are taking here? So for example if you hit a
->> certain threshold will you need to reset the port and rebalance the IRQs
->> between the various functions?
-> No. Its works bit differently for mlx5 device.
-> When base function is started, it started as if it doesn't have any subfunctions.
-> When subfunction is instantiated, it spawns new resources in device (hw, fw, memory) depending on how much a function wants.
-> 
-> For example, PCI PF uses BAR 0, while subfunctions uses BAR 2.
-> For IRQs, subfunction instance shares the IRQ with its parent/hosting PCI PF.
-> In future, yes, a dedicated IRQs per SF is likely desired.
-> Sridhar also talked about limiting number of queues to a subfunction.
-> I believe there will be resources/attributes of the function to be controlled.
-> devlink already provides rich interface to achieve that using devlink resources [8].
-> 
-> [..]
-> 
->>> $ ip link show
->>> 127: ens2f0np0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state
->> DOWN mode DEFAULT group default qlen 1000
->>>     link/ether 24:8a:07:b3:d1:12 brd ff:ff:ff:ff:ff:ff
->>>     altname enp6s0f0np0
->>> 129: p0sf88: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN
->> mode DEFAULT group default qlen 1000
->>>     link/ether 00:00:00:00:88:88 brd ff:ff:ff:ff:ff:ff>
->>
->> I assume that p0sf88 is supposed to be the newly created subfunction.
->> However I thought the naming was supposed to be the same as what you are
->> referring to in the devlink, or did I miss something?
->>
-> I believe you are confused with the representor netdevice of subfuction with devices of subfunction. (netdev, rdma, vdpa etc).
-> I suggest that please refer to the diagram in patch_15 in [7] to see the stack, modules, objects.
-> Hope below description clarifies a bit.
-> There are two netdevices.
-> (a) representor netdevice, attached to the devlink port of the eswitch
-> (b) netdevice of the SF used by the end application (in your example, this is assigned to container).
->  
-> Both netdevice follow obviously a different naming scheme.
-> Representor netdevice follows naming scheme well defined in kernel + systemd/udev v245 and higher.
-> It is based on phys_port_name sysfs attribute.
-> This is same for existing PF and SF representors exist for year+ now. Further used by subfunction.
-> 
-> For subfunction netdevice (p0s88), system/udev will be extended. I put example based on my few lines of udev rule that reads
-> phys_port_name and user supplied sfnum, so that user exactly knows which interface to assign to container.
-> 
->>> After use inactivate the function:
->>> $ devlink port function set ens2f0npf0sf88 state inactive
->>>
->>> Now delete the subfunction port:
->>> $ devlink port del ens2f0npf0sf88
->>
->> This seems wrong to me as it breaks the symmetry with the port add
->> command and
-> Example of the representor device is only to make life easier for the user.
-> Devlink port del command works based on the devlink port index, just like existing devlink port commands (get,set,split,unsplit).
-> I explained this in a thread with Sridhar at [6].
-> In short devlink port del <bus/device_name/port_index command is just fine.
-> Port index is unique handle for the devlink instance that user refers to delete, get, set port and port function attributes post its creation.
-> I choose the representor netdev example because it is more intuitive to related to, but port index is equally fine and supported.
-> 
->> assumes you have ownership of the interface in the host. I
->> would much prefer to to see the same arguments that were passed to the
->> add command being used to do the teardown as that would allow for the
->> parent function to create the object, assign it to a container namespace, and
->> not need to pull it back in order to destroy it.
-> Parent function will not have same netdevice name as that of representor netdevice, because both devices exist in single system for large part of the use cases.
-> So port delete command works on the port index.
-> Host doesn't need to pull it back to destroy it. It is destroyed via port del command.
-> 
-> [1] https://lore.kernel.org/netdev/20201112192424.2742-1-parav@nvidia.com/
-> [2] https://lore.kernel.org/netdev/421951d99a33d28b91f2b2997409d0c97fa5a98a.camel@kernel.org/
-> [3] https://lore.kernel.org/netdev/20201120161659.GE917484@nvidia.com/
-> [4] https://lore.kernel.org/netdev/20200501091449.GA25211@nanopsycho.orion/
-> [5] https://lore.kernel.org/netdev/20191107160448.20962-1-parav@mellanox.com/
-> [6] https://lore.kernel.org/netdev/BY5PR12MB43227784BB34D929CA64E315DCCA0@BY5PR12MB4322.namprd12.prod.outlook.com/
-> [7] https://lore.kernel.org/netdev/20201214214352.198172-16-saeed@kernel.org/T/#u
-> [8] https://man7.org/linux/man-pages/man8/devlink-resource.8.html
-> 
+On Tue, Dec 15, 2020 at 10:47:36AM -0800, Alexander Duyck wrote:
 
-Seems to be a repeated line of questions. You might want to add these
-FAQs, responses and references to the subfunction document once this set
-gets merged.
+> > Jason and Saeed explained this in great detail few weeks back in v0 version of the patchset at [1], [2] and [3].
+> > I better not repeat all of it here again. Please go through it.
+> > If you may want to read precursor to it, RFC from Jiri at [4] is also explains this in great detail.
+> 
+> I think I have a pretty good idea of how the feature works. My concern
+> is more the use of marketing speak versus actual functionality. The
+> way this is being setup it sounds like it is useful for virtualization
+> and it is not, at least in its current state. It may be at some point
+> in the future but I worry that it is really going to muddy the waters
+> as we end up with yet another way to partition devices.
+
+If we do a virtualization version then it will take a SF and instead
+of loading a mlx5_core on the SF aux device, we will load some
+vfio_mdev_mlx5 driver which will convert the SF aux device into a
+/dev/vfio/*
+
+This is essentially the same as how you'd take a PCI VF and replace
+mlx5_core with vfio-pci to get /dev/vfio/*. It has to be a special
+mdev driver because it sits on the SF aux device, not on the VF PCI
+device.
+
+The vfio_mdev_mlx5 driver will create what Intel calls an SIOV ADI
+from the SF, in other words the SF is already a superset of what a
+SIOV ADI should be.
+
+This matches very nicely the driver model in Linux, and I don't think
+it becomes more muddied as we go along. If anything it is becoming
+more clear and sane as things progress.
+
+> I agree with you on that. My thought was more the fact that the two
+> can be easily confused. If we are going to do this we need to define
+> that for networking devices perhaps that using the mdev interface
+> would be deprecated and we would need to go through devlink. However
+> before we do that we need to make sure we have this completely
+> standardized.
+
+mdev is for creating /dev/vfio/* interfaces in userspace. Using it for
+anything else is a bad abuse of the driver model.
+
+We had this debate endlessly already.
+
+AFAIK, there is nothing to deprecate, there are no mdev_drivers in
+drivers/net, and none should ever be added. The only mdev_driver that
+should ever exists is in vfio_mdev.c
+
+If someone is using a mdev_driver in drivers/net out of tree then they
+will need to convert to an aux driver for in-tree.
+
+> Yeah, I recall that. However I feel like it is being oversold. It
+> isn't "SR-IOV done right" it seems more like "VMDq done better". The
+> fact that interrupts are shared between the subfunctions is telling.
+
+The interrupt sharing is a consequence of having an ADI-like model
+without relying on IMS. When IMS works then shared interrupts won't be
+very necessary. Otherwise there is no choice but to share the MSI
+table of the function.
+
+> That is exactly how things work for Intel parts when they do VMDq as
+> well. The queues are split up into pools and a block of queues belongs
+> to a specific queue. From what I can can tell the only difference is
+> that there is isolation of the pool into specific pages in the BAR.
+> Which is essentially a requirement for mediated devices so that they
+> can be direct assigned.
+
+No, I said this to Jakub, mlx5 SFs have very little to do with
+queues. There is no some 'queue' HW element that needs partitioning.
+
+The SF is a hardware security boundary that wraps every operation a
+mlx5 device can do. This is why it is an ADI. It is not a crappy ADI
+that relies on hypervisor emulation, it is the real thing, just like a
+SRIOV VF. You stick it in the VM and the guest can directly talk to
+the HW. The HW provides the security.
+
+I can't put focus on this enough: A mlx5 SF can run a *full RDMA
+stack*. This means the driver can create all the RDMA HW objects and
+resources under the SF. This is *not* just steering some ethernet
+traffic to a few different ethernet queues like VMDq is.
+
+The Intel analog to a SF is a *full virtual function* on one of the
+Intel iWarp capable NICs, not VMDq.
+
+> Assuming at some point one of the flavours is a virtio-net style
+> interface you could eventually get to the point of something similar
+> to what seems to have been the goal of mdev which was meant to address
+> these two points.
+
+mlx5 already supports VDPA virtio-net on PF/VF and with this series SF
+too.
+
+ie you can take a SF, bind the vdpa_mlx5 driver, and get a fully HW
+accelerated "ADI" that does virtio-net. This can be assigned to a
+guest and shows up as a PCI virtio-net netdev. With VT-d guest packet
+tx/rx on this netdev never uses the hypervisor CPU.
+
+> The point is that we should probably define some sort of standard
+> and/or expectations on what should happen when you spawn a new
+> interface. Would it be acceptable for the PF and existing subfunctions
+> to have to reset if you need to rebalance the IRQ distribution, or
+> should they not be disrupted when you spawn a new interface?
+
+It is best to think of the SF as an ADI, so if you change something in
+the PF and that causes the driver attached to the ADI in a VM to
+reset, is that OK? I'd say no.
+
+Jason
