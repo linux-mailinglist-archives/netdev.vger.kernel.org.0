@@ -2,208 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0332A2DAA7D
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:59:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D19D22DAA9F
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 11:10:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727881AbgLOJ5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 04:57:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727153AbgLOJ5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:57:43 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FF6C06179C;
-        Tue, 15 Dec 2020 01:56:57 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id g20so9913646plo.2;
-        Tue, 15 Dec 2020 01:56:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qO6qH0jxKGlgtK8vIGY+Uz0tcczpvxnOC5auolMZWaA=;
-        b=uHMar/zUVFPoRM67M67SYB26TnZ9us9YM+jzpMFJeD89iML3MI3i3idR8lpkmeouqG
-         yAPCRV1PElbmvXaH/oNI7WNyHlWqc7qBI1tSjD5HSkedPfkzZy9jDgmTC1Dknb7bm/1e
-         yBZ2PBo8CVGS1x79ukwlHBBsr8/VAyMlQrb43u6RNjZnKEuDU4VpjYthyqGwm/jV8c27
-         nvQNli7qklHEn27x9glP7Ih3yeSWnXydd9SCsSTLGTQq4jnuZQ1l9I3/+CkFnZNejwjn
-         07tGRU9G8c6WwuyvkCOXEGkQ+otBSvokT/++3fftNIUOMzxg4vfTna/NGBpHSL3xb4Zl
-         S68A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qO6qH0jxKGlgtK8vIGY+Uz0tcczpvxnOC5auolMZWaA=;
-        b=k06XpWTZpDRkEtOKbQHb7XWgSPGMU7i+BH7c8YO0FeJ0SeZN2V4UEF5+IaYcVcGeCr
-         W8xEAiijIJrclUT75iuMIWL3R3niNISPEEEXa+9T2Gewzo25MZR9Lm+u8qcYeOky3zep
-         XKCNZ+EV2P8yNq5hhqmjIBTPZSpRnk2W4a2BoPmKRYetj8d0qTC/cdz8DOFuzNjAbiis
-         Uh9s0aFuUFJQ8ocADErjJw62hdxLCf1Dv8SSKCtCkIJK2fd8RlZmylWLzrqx6G009vbE
-         8C7zw/Hfy0ugeCFC4PVY0oi28X3MhrZo4fy58Su+brHv43B+YoWFuF3gyysFhq4n13xl
-         MVkw==
-X-Gm-Message-State: AOAM531vh3s8Fu4ZibDIV28hCPb0R5bqbYRPpTq0ROs/3jMlqWzJv+1A
-        kD45wp/IwvMB1F2BiPh9UHs=
-X-Google-Smtp-Source: ABdhPJxx+e6eu5tZPbGDPyC6Prq5JByh4lNBTy3EnvO917uHVan/NxyFwgi/7WlYTr76NFJ0tG8+lA==
-X-Received: by 2002:a17:90a:df0d:: with SMTP id gp13mr29039048pjb.151.1608026216546;
-        Tue, 15 Dec 2020 01:56:56 -0800 (PST)
-Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id f10sm23555478pgp.27.2020.12.15.01.56.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Dec 2020 01:56:55 -0800 (PST)
-From:   Geliang Tang <geliangtang@gmail.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org,
-        Christoph Paasch <cpaasch@apple.com>
-Subject: [MPTCP][PATCH net-next] mptcp: clear use_ack and use_map when dropping other suboptions
-Date:   Tue, 15 Dec 2020 17:56:51 +0800
-Message-Id: <ccca4e8f01457a1b495c5d612ed16c5f7a585706.1608010058.git.geliangtang@gmail.com>
-X-Mailer: git-send-email 2.29.2
+        id S1726512AbgLOKKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 05:10:04 -0500
+Received: from mx2.suse.de ([195.135.220.15]:59016 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725890AbgLOKKD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 05:10:03 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 287B3AC7F;
+        Tue, 15 Dec 2020 10:09:22 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id E37C46030D; Tue, 15 Dec 2020 11:09:21 +0100 (CET)
+Date:   Tue, 15 Dec 2020 11:09:21 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Ivan Vecera <ivecera@redhat.com>
+Cc:     netdev@vger.kernel.org, LiLiang <liali@redhat.com>
+Subject: Re: [PATCH net] ethtool: fix error paths in ethnl_set_channels()
+Message-ID: <20201215100921.3qnmqdbhxpniejnw@lion.mk-sys.cz>
+References: <20201215090810.801777-1-ivecera@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="fodxcffs36niqcl3"
+Content-Disposition: inline
+In-Reply-To: <20201215090810.801777-1-ivecera@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch cleared use_ack and use_map when dropping other suboptions to
-fix the following syzkaller BUG:
 
-[   15.223006] BUG: unable to handle page fault for address: 0000000000223b10
-[   15.223700] #PF: supervisor read access in kernel mode
-[   15.224209] #PF: error_code(0x0000) - not-present page
-[   15.224724] PGD b8d5067 P4D b8d5067 PUD c0a5067 PMD 0
-[   15.225237] Oops: 0000 [#1] SMP
-[   15.225556] CPU: 0 PID: 7747 Comm: syz-executor Not tainted 5.10.0-rc6+ #24
-[   15.226281] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-[   15.227292] RIP: 0010:skb_release_data+0x89/0x1e0
-[   15.227816] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
-[   15.229669] RSP: 0018:ffffc900019c7c08 EFLAGS: 00010293
-[   15.230188] RAX: ffff88800daad900 RBX: 0000000000223b08 RCX: 0000000000000006
-[   15.230895] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6dc700
-[   15.231593] RBP: ffff88807f71a4c0 R08: 0000000000000001 R09: 0000000000000001
-[   15.232299] R10: ffffc900019c7c18 R11: 0000000000000000 R12: ffff88807f71a4f0
-[   15.233007] R13: 0000000000000000 R14: ffff88807f6dc700 R15: 0000000000000002
-[   15.233714] FS:  00007f65d9b5f700(0000) GS:ffff88807c400000(0000) knlGS:0000000000000000
-[   15.234509] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   15.235081] CR2: 0000000000223b10 CR3: 000000000b883000 CR4: 00000000000006f0
-[   15.235788] Call Trace:
-[   15.236042]  skb_release_all+0x28/0x30
-[   15.236419]  __kfree_skb+0x11/0x20
-[   15.236768]  tcp_data_queue+0x270/0x1240
-[   15.237161]  ? tcp_urg+0x50/0x2a0
-[   15.237496]  tcp_rcv_established+0x39a/0x890
-[   15.237997]  ? mark_held_locks+0x49/0x70
-[   15.238467]  tcp_v4_do_rcv+0xb9/0x270
-[   15.238915]  __release_sock+0x8a/0x160
-[   15.239365]  release_sock+0x32/0xd0
-[   15.239793]  __inet_stream_connect+0x1d2/0x400
-[   15.240313]  ? do_wait_intr_irq+0x80/0x80
-[   15.240791]  inet_stream_connect+0x36/0x50
-[   15.241275]  mptcp_stream_connect+0x69/0x1b0
-[   15.241787]  __sys_connect+0x122/0x140
-[   15.242236]  ? syscall_enter_from_user_mode+0x17/0x50
-[   15.242836]  ? lockdep_hardirqs_on_prepare+0xd4/0x170
-[   15.243436]  __x64_sys_connect+0x1a/0x20
-[   15.243924]  do_syscall_64+0x33/0x40
-[   15.244313]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   15.244821] RIP: 0033:0x7f65d946e469
-[   15.245183] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
-[   15.247019] RSP: 002b:00007f65d9b5eda8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-[   15.247770] RAX: ffffffffffffffda RBX: 000000000049bf00 RCX: 00007f65d946e469
-[   15.248471] RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 0000000000000005
-[   15.249205] RBP: 000000000049bf00 R08: 0000000000000000 R09: 0000000000000000
-[   15.249908] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000049bf0c
-[   15.250603] R13: 00007fffe8a25cef R14: 00007f65d9b3f000 R15: 0000000000000003
-[   15.251312] Modules linked in:
-[   15.251626] CR2: 0000000000223b10
-[   15.251965] BUG: kernel NULL pointer dereference, address: 0000000000000048
-[   15.252005] ---[ end trace f5c51fe19123c773 ]---
-[   15.252822] #PF: supervisor read access in kernel mode
-[   15.252823] #PF: error_code(0x0000) - not-present page
-[   15.252825] PGD c6c6067 P4D c6c6067 PUD c0d8067
-[   15.253294] RIP: 0010:skb_release_data+0x89/0x1e0
-[   15.253910] PMD 0
-[   15.253914] Oops: 0000 [#2] SMP
-[   15.253917] CPU: 1 PID: 7746 Comm: syz-executor Tainted: G      D           5.10.0-rc6+ #24
-[   15.253920] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-[   15.254435] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
-[   15.254899] RIP: 0010:skb_release_data+0x89/0x1e0
-[   15.254902] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
-[   15.254905] RSP: 0018:ffffc900019bfc08 EFLAGS: 00010293
-[   15.255376] RSP: 0018:ffffc900019c7c08 EFLAGS: 00010293
-[   15.255580]
-[   15.255583] RAX: ffff888004a7ac80 RBX: 0000000000000040 RCX: 0000000000000000
-[   15.255912]
-[   15.256724] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6ddd00
-[   15.257620] RAX: ffff88800daad900 RBX: 0000000000223b08 RCX: 0000000000000006
-[   15.259817] RBP: ffff88800e9006c0 R08: 0000000000000000 R09: 0000000000000000
-[   15.259818] R10: 0000000000000000 R11: 0000000000000000 R12: ffff88800e9006f0
-[   15.259820] R13: 0000000000000000 R14: ffff88807f6ddd00 R15: 0000000000000002
-[   15.259822] FS:  00007fae4a60a700(0000) GS:ffff88807c500000(0000) knlGS:0000000000000000
-[   15.259826] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   15.260296] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6dc700
-[   15.262514] CR2: 0000000000000048 CR3: 000000000b89c000 CR4: 00000000000006e0
-[   15.262515] Call Trace:
-[   15.262519]  skb_release_all+0x28/0x30
-[   15.262523]  __kfree_skb+0x11/0x20
-[   15.263054] RBP: ffff88807f71a4c0 R08: 0000000000000001 R09: 0000000000000001
-[   15.263680]  tcp_data_queue+0x270/0x1240
-[   15.263843] R10: ffffc900019c7c18 R11: 0000000000000000 R12: ffff88807f71a4f0
-[   15.264693]  ? tcp_urg+0x50/0x2a0
-[   15.264856] R13: 0000000000000000 R14: ffff88807f6dc700 R15: 0000000000000002
-[   15.265720]  tcp_rcv_established+0x39a/0x890
-[   15.266438] FS:  00007f65d9b5f700(0000) GS:ffff88807c400000(0000) knlGS:0000000000000000
-[   15.267283]  ? __schedule+0x3fa/0x880
-[   15.267287]  tcp_v4_do_rcv+0xb9/0x270
-[   15.267290]  __release_sock+0x8a/0x160
-[   15.268049] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   15.268788]  release_sock+0x32/0xd0
-[   15.268791]  __inet_stream_connect+0x1d2/0x400
-[   15.268795]  ? do_wait_intr_irq+0x80/0x80
-[   15.269593] CR2: 0000000000223b10 CR3: 000000000b883000 CR4: 00000000000006f0
-[   15.270246]  inet_stream_connect+0x36/0x50
-[   15.270250]  mptcp_stream_connect+0x69/0x1b0
-[   15.270253]  __sys_connect+0x122/0x140
-[   15.271097] Kernel panic - not syncing: Fatal exception
-[   15.271820]  ? syscall_enter_from_user_mode+0x17/0x50
-[   15.283542]  ? lockdep_hardirqs_on_prepare+0xd4/0x170
-[   15.284275]  __x64_sys_connect+0x1a/0x20
-[   15.284853]  do_syscall_64+0x33/0x40
-[   15.285369]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   15.286105] RIP: 0033:0x7fae49f19469
-[   15.286638] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
-[   15.289295] RSP: 002b:00007fae4a609da8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-[   15.290375] RAX: ffffffffffffffda RBX: 000000000049bf00 RCX: 00007fae49f19469
-[   15.291403] RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 0000000000000005
-[   15.292437] RBP: 000000000049bf00 R08: 0000000000000000 R09: 0000000000000000
-[   15.293456] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000049bf0c
-[   15.294473] R13: 00007fff0004b6bf R14: 00007fae4a5ea000 R15: 0000000000000003
-[   15.295492] Modules linked in:
-[   15.295944] CR2: 0000000000000048
-[   15.296567] Kernel Offset: disabled
-[   15.296941] ---[ end Kernel panic - not syncing: Fatal exception ]---
+--fodxcffs36niqcl3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reported-by: Christoph Paasch <cpaasch@apple.com>
-Fixes: 84dfe3677a6f (mptcp: send out dedicated ADD_ADDR packet)
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
----
- net/mptcp/options.c | 2 ++
- 1 file changed, 2 insertions(+)
+On Tue, Dec 15, 2020 at 10:08:10AM +0100, Ivan Vecera wrote:
+> Fix two error paths in ethnl_set_channels() to avoid lock-up caused
+> but unreleased RTNL.
+>=20
+> Fixes: e19c591eafad ("ethtool: set device channel counts with CHANNELS_SE=
+T request")
+> Cc: Michal Kubecek <mkubecek@suse.cz>
+> Reported-by: LiLiang <liali@redhat.com>
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> ---
+>  net/ethtool/channels.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/net/ethtool/channels.c b/net/ethtool/channels.c
+> index 5635604cb9ba..25a9e566ef5c 100644
+> --- a/net/ethtool/channels.c
+> +++ b/net/ethtool/channels.c
+> @@ -194,8 +194,9 @@ int ethnl_set_channels(struct sk_buff *skb, struct ge=
+nl_info *info)
+>  	if (netif_is_rxfh_configured(dev) &&
+>  	    !ethtool_get_max_rxfh_channel(dev, &max_rx_in_use) &&
+>  	    (channels.combined_count + channels.rx_count) <=3D max_rx_in_use) {
+> +		ret =3D -EINVAL;
+>  		GENL_SET_ERR_MSG(info, "requested channel counts are too low for exist=
+ing indirection table settings");
+> -		return -EINVAL;
+> +		goto out_ops;
+>  	}
+> =20
+>  	/* Disabling channels, query zero-copy AF_XDP sockets */
+> @@ -203,8 +204,9 @@ int ethnl_set_channels(struct sk_buff *skb, struct ge=
+nl_info *info)
+>  		       min(channels.rx_count, channels.tx_count);
+>  	for (i =3D from_channel; i < old_total; i++)
+>  		if (xsk_get_pool_from_qid(dev, i)) {
+> +			ret =3D -EINVAL;
+>  			GENL_SET_ERR_MSG(info, "requested channel counts are too low for exis=
+ting zerocopy AF_XDP sockets");
+> -			return -EINVAL;
+> +			goto out_ops;
+>  		}
+> =20
+>  	ret =3D dev->ethtool_ops->set_channels(dev, &channels);
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 5e7d7755d1a6..f4047ace032d 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -606,6 +606,8 @@ static bool mptcp_established_options_add_addr(struct sock *sk, struct sk_buff *
- 	    skb && skb_is_tcp_pure_ack(skb)) {
- 		pr_debug("drop other suboptions");
- 		opts->suboptions = 0;
-+		opts->ext_copy.use_ack = 0;
-+		opts->ext_copy.use_map = 0;
- 		remaining += opt_size;
- 		drop_other_suboptions = true;
- 	}
--- 
-2.29.2
+Oh, the joys of mindless copy and paste... :-(
 
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+
+--fodxcffs36niqcl3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl/Yi0wACgkQ538sG/LR
+dpXjzgf+N5rEb4zXwJkH5j9V/SLMzYuVSGurLW/pgXOIZlXp36DZNoF89ObHv7Nh
+34VD1v8bLdJ4fidvy0zY/bgYesVxGRQ9dh1CNq0BIbZajZpEZLPus6c0ABCmPFym
+pEDPBuKAwwgiHlcA+RRsU/w76imXLzuCC8CE7ETNZodXWlLQ6XBHp0q35NCpCOzv
+m/TZgeNqB0p33c4/Zn6ml7v13hCZdnuoQ3kFw7WDZZsLDxlCZ9tJyCv1XdAbROAS
+a0UWiBzHC+SEnbH0x7XCU8U2cP199UFdK7rCoRxtD9g9RXGdptVB966kp63y9L3i
+bM4cVihXqZyC6T+ne32unFplgKW/xg==
+=WCro
+-----END PGP SIGNATURE-----
+
+--fodxcffs36niqcl3--
