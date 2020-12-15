@@ -2,227 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC0442DB58B
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 22:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E1842DB588
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 22:00:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729369AbgLOVAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 16:00:42 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:57862 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728694AbgLOVA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 16:00:27 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 0BFKxAQ1010698;
-        Tue, 15 Dec 2020 12:59:27 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=3NkJTanTt6koS2C5bCA6iNUJFCUas1MO5djIHHcZyF0=;
- b=JdzHyzgcNIhWUZbFFwtkqodMEIC1jH2seLigcpNRpv1tbQkzRPhFqedXhGIyJCSQN9K+
- 1Z2b48v3S3ULK2tlpmWDn/SyvtPwIFx+ASfD4eCJr5dJ8P13dbZPTQRLsMYr935AmwiA
- fsm7zgDrbfjvqLXAHtXvNBoDIU62O17Yghk= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 35ct85grxq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 15 Dec 2020 12:59:27 -0800
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 15 Dec 2020 12:59:26 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AR7SH6ClFXcROp5PH5Zf/osTIlk0AB9FyL0BVfxtZwSERBApWNd38DqK6wyn2y2LK03PuZPFNZTgu2BTyKNlcUQZFIMctByw01mKEryIRhf72CNUXaZCKcwwrFlLmO3QqzzKFnvRdxARfUyShUYESxr7SDFseoncspE8g3APE/+Pe9y7GR1ey2V7gxppJEjeLXAvVlYyxAx+CjTQdqatKqj92gTlVygb2Qb4jSpeHibGgZBXfXGsNWDn/lMC7NNHj1Fukp2mE1UITDcg/NOfQ0KNFC9Q5OTN/82jOj3xtXnqxIXBJ1zUJdwSua+ujxaYtfht/jJiz/Bkdgrf7NLGxQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3NkJTanTt6koS2C5bCA6iNUJFCUas1MO5djIHHcZyF0=;
- b=NJYED0Pu0DKO9giKssId+as8At38pzCVgWdFcR9E7GwcQc8GTJuh+cqSsJ4SE3vfoRzNPse/+kVo0/4/F4prwAy8POtSkfhEoZvH0LKz44/UcnAkUtd7TlIMEfw0J/caJ1Xak/yQQFLB7YNekYsOldVumv63IBRPvgh/SkBmwX/438aLUNiwmCthXgoTLBTzk6FxuS3FNWPG+nwyQELI2Xr0Yphw+R9ZE7rBlirWTJj5MhNbI7lgkYf3qL5/cjpjW/K6bKTC72FVxhkfKwfnW8wzdXFlCJXN9hP04bIWd9OeQjJ7gl/SsCXuuxBM9FhTfaUdNZa7yAWh2yVJbfIpFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3NkJTanTt6koS2C5bCA6iNUJFCUas1MO5djIHHcZyF0=;
- b=UhUJNSceccUafvz+dS77UYqrHUmN9pCYSImQwc6zHEISpRnTaN4GLwt0UwAZTlsQ5jFCHumkAL4U58zkuyW+OVK/CtTtUuBhIMfVyBxz5wBIfr2DeYw0o7OG1iiAaCEv3+hK3UWZplhaXJMfHKzvveoPQsDZ1gMvkJw1CcIP1m4=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB3413.namprd15.prod.outlook.com (2603:10b6:a03:10b::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.15; Tue, 15 Dec
- 2020 20:59:21 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::f49e:bdbb:8cd7:bf6b]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::f49e:bdbb:8cd7:bf6b%7]) with mapi id 15.20.3654.025; Tue, 15 Dec 2020
- 20:59:21 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Yonghong Song <yhs@fb.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@chromium.org" <kpsingh@chromium.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 4/4] selftests/bpf: add test for
- bpf_iter_task_vma
-Thread-Topic: [PATCH bpf-next 4/4] selftests/bpf: add test for
- bpf_iter_task_vma
-Thread-Index: AQHW0DFWfuxjYlZ+4EaFlvRXkeR1xKn4n0sAgAAKpIA=
-Date:   Tue, 15 Dec 2020 20:59:21 +0000
-Message-ID: <69017626-7B81-4DDE-8D0F-B2FC9AA32F53@fb.com>
-References: <20201212024810.807616-1-songliubraving@fb.com>
- <20201212024810.807616-5-songliubraving@fb.com>
- <e3f13f87-6ee8-1ed3-c575-3f23c907bf3e@fb.com>
-In-Reply-To: <e3f13f87-6ee8-1ed3-c575-3f23c907bf3e@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.4)
-x-originating-ip: [2620:10d:c091:480::1:e346]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1d248130-b612-4925-a929-08d8a13c4c1b
-x-ms-traffictypediagnostic: BYAPR15MB3413:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB34139335867FD4FFA3B4D44FB3C60@BYAPR15MB3413.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EO4iFE/dygYkQB2kXDngWjYeBy8tQTqY9ThapopRDqkvHW8Z7bbz5YnA7aVn2Al1a/a4xHpbXqwBBD1/ntHJG7cAi4cGdN6PD12t9IqJ23xgMHX/f1RJEd1ORzcOOhIZtEQXmp95aU5sJ/rubUBErdb/3n54sG/3NZAPtDqI5PuaP/JBqQC6Ro8e6rlLj1ErK7+1A69cWhtWqpItul0IbkEPppQyTBgbBe6W1MihV0HSdpisnmPgxucmkJbULJXDfp8OstuG0fU2pyJQPwEobhIUkX9zOjuVdPBOzCxGk469grxBZRkgOgCcGOc58VDZmeXBQyF9HQYOs17S5uptopcy3yeDLfdS5VZdA2YK0qsTr2rbAYWnRPFUdW5iH4pm
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(136003)(366004)(376002)(346002)(316002)(53546011)(8936002)(6506007)(478600001)(64756008)(6862004)(66476007)(66556008)(6512007)(71200400001)(33656002)(2616005)(37006003)(6636002)(36756003)(2906002)(186003)(54906003)(66446008)(66946007)(5660300002)(86362001)(83380400001)(76116006)(8676002)(4326008)(91956017)(6486002)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?+FuMOBiwSyr5PT9jirxnTrvGF3izxTfQwv35xaTQSL1407fQsRqzZPq6b2Wc?=
- =?us-ascii?Q?/PGAwJrgqKseRFT/J/R0HRDAgEg1tcZwN6SVz7D9dUafmVSbH43yIjxh114g?=
- =?us-ascii?Q?eSbfnbhrOBIMwQlDwlqxrcZTyjkGNh/ycDAqIgsfqRjRipJ/QwZJsquhRggI?=
- =?us-ascii?Q?03RKpbmf3+6LcKjIUkJbWapjACyAMcI0aDqGa4+o+k3MxAHKxI0l9vUvvl5R?=
- =?us-ascii?Q?bqk60wep5VG3wQikP4D7QqQ5wXSXmpFNiyPnbXvsNnbEAtKibSpO7zLp9KZb?=
- =?us-ascii?Q?a7XELReAwh4WiP9662FiWos1CwvKVDQMiLNOcS5x/uELXG5wpFS0PUCO3nVO?=
- =?us-ascii?Q?Q2mJipKlJC6gT4Tu6UyMa4XDw7/ho5yU03cCKAC/WTH5PR8ZvYThOCiwm6xr?=
- =?us-ascii?Q?2x0kCopMYc8u8bsI6MbHkXDzWgEEa/Tk6F/tjRyD6zKTv4GfxNch0t0dIUyW?=
- =?us-ascii?Q?7JJTFwLpyoYy92COh+pC8umA1aN2C7ng9EWp3gO2NXaieGxH4RX3yoYXBfvw?=
- =?us-ascii?Q?XCBRx1MICLC4/ozA7STXivj2qd8yY9RBXa2j4JiadcEjdBz3xFN0TGMtpMJy?=
- =?us-ascii?Q?KoinCUWq8h7eVhpAkaGg31dqIkZWs7vDJmlfxUXM/jJuV2hI2EiCdSTcuGP4?=
- =?us-ascii?Q?rOKSwHFCcsrmg7gD4ozW3KuimhKgI0HUmwdL0HMttchFzl7Y+8vA4EAe0GXU?=
- =?us-ascii?Q?21sEizlVttqBnHYqY03+oXEbYAsc6eQ1LD6CwKM5TrXYr+JdJioa4LWAw/Ky?=
- =?us-ascii?Q?dQeX9CjK+tYEoZGOYOUxcf0SPc+o2PzFAd68GIxWeJhTjwBGsE5g6Hg/bA/e?=
- =?us-ascii?Q?3E7opJnK19lQ3q4V4guQ7MGWq304e/EisaToXtT6zgsQNw6eN6m40Am1HVgM?=
- =?us-ascii?Q?Xf0S3DdS8uUJJ6oUgiUC9LhOEQUBiRlbGFJrhqa9bCcbJu1omJZcu4Oz6fSx?=
- =?us-ascii?Q?LsoXAHT589vRqnt0nCGskFLQqMtHEzyQzktkfj741I4cQSYW0umNhE3bczA1?=
- =?us-ascii?Q?nSnmAZvWkR+sxyi/6vNRHhHS6xIeEHLNYWnaf8Eucb5WIek=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <86B1770DBC1FD14396F769F147DCEB34@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728701AbgLOVAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 16:00:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728233AbgLOVAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 16:00:06 -0500
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB71C0617A6;
+        Tue, 15 Dec 2020 12:59:25 -0800 (PST)
+Received: by mail-ot1-x344.google.com with SMTP id j20so16322861otq.5;
+        Tue, 15 Dec 2020 12:59:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lkgDYxxfqcaS+YFb4xnkeKiz6WYG3v1IyWit0W1gBCU=;
+        b=n70CO2yW/IHy1bf4UFZEPxtkYSETUCrBE3DO8CLaXiUuErCWchP+UqLetVG+lBq8qq
+         GJtO5IW0oZ/j07qq8WRLLoI/MoCnZUoto/NmpbVKCoMdyJ/OO3nlhxKMbu7Z/z+tjFPr
+         JyHedAd0HpwbX5YTyptLOI/oeUpal91eg93VfGydpl1oNuzT3Mwwxnr3MtARAI5uYt/j
+         +YIZzt+FR4Hxr1H/N1JqhPVo4hqd2Phzx0OLA5BNsMB9slw34QGZKJNqrNstaogqvQR1
+         MCMvDviB3IA+Rueaaw0ydQpJU1FgYgGozvEULVKF1Kuj22Qsn45Ynw4nITacB28jFw+r
+         TYIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lkgDYxxfqcaS+YFb4xnkeKiz6WYG3v1IyWit0W1gBCU=;
+        b=dootYvuDpKRG+uYeRVAx31d0UzzAaaoK2x0OT1XreZcJM99kU+1Y5UFUIxVh/neMXX
+         11N5WBxxnkkoEWWmFvsYaPXBDG4DS+Es04bv4jcaTHUlwT6vnYve0+g5TcN5yHmcnLxl
+         Ir1v3i2q+8gXQGK17mcRhl5bu35zUxjC1HiCu4vaQodwL5MI3r4qjZeGrDWwgE+wN29D
+         2II9uFXUc3vQtredfUj7YdECvfL0NPy/mmRjHLgpMkV7iuNZlU6qmV+rLUzLq79CszZQ
+         3QQ2WN6e8lMWaGW1kjNjeBRuDKN7TPRmoHukORj6CBVtpll9YEzMoZUBl0hLNIusGOUr
+         FHrg==
+X-Gm-Message-State: AOAM532Omcl1pSz3Dt4aw327tOA7PMO+1bg/chshESrjQKW8mnSQVi7Z
+        cjija0Bo4TNRPh+nV9LgxIA=
+X-Google-Smtp-Source: ABdhPJxxC/9tyzZDIgqc1J+egE8rP76Z48EMicZE+EuVKXTHdJGV+J1oX+xZgvxfvtLn45sVKjv4Pg==
+X-Received: by 2002:a05:6830:15c1:: with SMTP id j1mr24697010otr.211.1608065965223;
+        Tue, 15 Dec 2020 12:59:25 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:1f6:1ed:9027:4e75])
+        by smtp.googlemail.com with ESMTPSA id i82sm5361267oia.2.2020.12.15.12.59.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Dec 2020 12:59:24 -0800 (PST)
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+To:     Parav Pandit <parav@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+References: <20201214214352.198172-1-saeed@kernel.org>
+ <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
+ <BY5PR12MB43221CE397D6310F2B04D9B4DCC60@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f2c1d4c6-2bca-8c9d-a347-e18f44181f7f@gmail.com>
+Date:   Tue, 15 Dec 2020 13:59:22 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d248130-b612-4925-a929-08d8a13c4c1b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Dec 2020 20:59:21.8346
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: n8wofN7oUROEHd12fkXLYBcAB0WliM0ugfLA7pCdkN5WBv+L2QK8BMNyIfke3IVuzIPW7jVfRKQygMcXFxyN1g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3413
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-15_12:2020-12-15,2020-12-15 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- lowpriorityscore=0 suspectscore=0 adultscore=0 impostorscore=0
- clxscore=1015 spamscore=0 phishscore=0 malwarescore=0 mlxscore=0
- mlxlogscore=999 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2012150141
-X-FB-Internal: deliver
+In-Reply-To: <BY5PR12MB43221CE397D6310F2B04D9B4DCC60@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 12/14/20 10:48 PM, Parav Pandit wrote:
+> 
+>> From: Alexander Duyck <alexander.duyck@gmail.com>
+>> Sent: Tuesday, December 15, 2020 7:24 AM
+>>
+>> On Mon, Dec 14, 2020 at 1:49 PM Saeed Mahameed <saeed@kernel.org>
+>> wrote:
+>>>
+>>> Hi Dave, Jakub, Jason,
+>>>
+>>
+>> Just to clarify a few things for myself. You mention virtualization and SR-IOV
+>> in your patch description but you cannot support direct assignment with this
+>> correct? 
+> Correct. it cannot be directly assigned.
+> 
+>> The idea here is simply logical partitioning of an existing network
+>> interface, correct? 
+> No. Idea is to spawn multiple functions from a single PCI device.
+> These functions are not born in PCI device and in OS until they are created by user.
+> Jason and Saeed explained this in great detail few weeks back in v0 version of the patchset at [1], [2] and [3].
+> I better not repeat all of it here again. Please go through it.
+> If you may want to read precursor to it, RFC from Jiri at [4] is also explains this in great detail.
+> 
+>> So this isn't so much a solution for virtualization, but may
+>> work better for containers. I view this as an important distinction to make as
+>> the first thing that came to mind when I read this was mediated devices
+>> which is similar, but focused only on the virtualization case:
+>> https://www.kernel.org/doc/html/v5.9/driver-api/vfio-mediated-
+>> device.html
+>>
+> Managing subfunction using medicated device is already ruled out last year at [5] as it is the abuse of the mdev bus for this purpose + has severe limitations of managing the subfunction device.
+> We are not going back to it anymore.
+> It will be duplicating lot of the plumbing which exists in devlink, netlink, auxiliary bus and more.
+>  
+>> Rather than calling this a subfunction, would it make more sense to call it
+>> something such as a queue set? 
+> No, queue is just one way to send and receive data/packets.
+> Jason and Saeed explained and discussed  this piece to you and others during v0 few weeks back at [1], [2], [3].
+> Please take a look.
+> 
+>> So in terms of ways to go I would argue this is likely better. However one
+>> downside is that we are going to end up seeing each subfunction being
+>> different from driver to driver and vendor to vendor which I would argue
+>> was also one of the problems with SR-IOV as you end up with a bit of vendor
+>> lock-in as a result of this feature since each vendor will be providing a
+>> different interface.
+>>
+> Each and several vendors provided unified interface for managing VFs. i.e.
+> (a) enable/disable was via vendor neutral sysfs
+> (b) sriov capability exposed via standard pci capability and sysfs
+> (c) sriov vf config (mac, vlan, rss, tx rate, spoof check trust) are using vendor agnostic netlink
+> Even though the driver's internal implementation largely differs on how trust, spoof, mac, vlan rate etc are enforced.
+> 
+> So subfunction feature/attribute/functionality will be implemented differently internally in the driver matching vendor's device, for reasonably abstract concept of 'subfunction'.
+> 
+>>> A Subfunction supports eswitch representation through which it
+>>> supports tc offloads. User must configure eswitch to send/receive
+>>> packets from/to subfunction port.
+>>>
+>>> Subfunctions share PCI level resources such as PCI MSI-X IRQs with
+>>> their other subfunctions and/or with its parent PCI function.
+>>
+>> This piece to the architecture for this has me somewhat concerned. If all your
+>> resources are shared and 
+> All resources are not shared.
+> 
+>> you are allowing devices to be created
+>> incrementally you either have to pre-partition the entire function which
+>> usually results in limited resources for your base setup, or free resources
+>> from existing interfaces and redistribute them as things change. I would be
+>> curious which approach you are taking here? So for example if you hit a
+>> certain threshold will you need to reset the port and rebalance the IRQs
+>> between the various functions?
+> No. Its works bit differently for mlx5 device.
+> When base function is started, it started as if it doesn't have any subfunctions.
+> When subfunction is instantiated, it spawns new resources in device (hw, fw, memory) depending on how much a function wants.
+> 
+> For example, PCI PF uses BAR 0, while subfunctions uses BAR 2.
+> For IRQs, subfunction instance shares the IRQ with its parent/hosting PCI PF.
+> In future, yes, a dedicated IRQs per SF is likely desired.
+> Sridhar also talked about limiting number of queues to a subfunction.
+> I believe there will be resources/attributes of the function to be controlled.
+> devlink already provides rich interface to achieve that using devlink resources [8].
+> 
+> [..]
+> 
+>>> $ ip link show
+>>> 127: ens2f0np0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state
+>> DOWN mode DEFAULT group default qlen 1000
+>>>     link/ether 24:8a:07:b3:d1:12 brd ff:ff:ff:ff:ff:ff
+>>>     altname enp6s0f0np0
+>>> 129: p0sf88: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN
+>> mode DEFAULT group default qlen 1000
+>>>     link/ether 00:00:00:00:88:88 brd ff:ff:ff:ff:ff:ff>
+>>
+>> I assume that p0sf88 is supposed to be the newly created subfunction.
+>> However I thought the naming was supposed to be the same as what you are
+>> referring to in the devlink, or did I miss something?
+>>
+> I believe you are confused with the representor netdevice of subfuction with devices of subfunction. (netdev, rdma, vdpa etc).
+> I suggest that please refer to the diagram in patch_15 in [7] to see the stack, modules, objects.
+> Hope below description clarifies a bit.
+> There are two netdevices.
+> (a) representor netdevice, attached to the devlink port of the eswitch
+> (b) netdevice of the SF used by the end application (in your example, this is assigned to container).
+>  
+> Both netdevice follow obviously a different naming scheme.
+> Representor netdevice follows naming scheme well defined in kernel + systemd/udev v245 and higher.
+> It is based on phys_port_name sysfs attribute.
+> This is same for existing PF and SF representors exist for year+ now. Further used by subfunction.
+> 
+> For subfunction netdevice (p0s88), system/udev will be extended. I put example based on my few lines of udev rule that reads
+> phys_port_name and user supplied sfnum, so that user exactly knows which interface to assign to container.
+> 
+>>> After use inactivate the function:
+>>> $ devlink port function set ens2f0npf0sf88 state inactive
+>>>
+>>> Now delete the subfunction port:
+>>> $ devlink port del ens2f0npf0sf88
+>>
+>> This seems wrong to me as it breaks the symmetry with the port add
+>> command and
+> Example of the representor device is only to make life easier for the user.
+> Devlink port del command works based on the devlink port index, just like existing devlink port commands (get,set,split,unsplit).
+> I explained this in a thread with Sridhar at [6].
+> In short devlink port del <bus/device_name/port_index command is just fine.
+> Port index is unique handle for the devlink instance that user refers to delete, get, set port and port function attributes post its creation.
+> I choose the representor netdev example because it is more intuitive to related to, but port index is equally fine and supported.
+> 
+>> assumes you have ownership of the interface in the host. I
+>> would much prefer to to see the same arguments that were passed to the
+>> add command being used to do the teardown as that would allow for the
+>> parent function to create the object, assign it to a container namespace, and
+>> not need to pull it back in order to destroy it.
+> Parent function will not have same netdevice name as that of representor netdevice, because both devices exist in single system for large part of the use cases.
+> So port delete command works on the port index.
+> Host doesn't need to pull it back to destroy it. It is destroyed via port del command.
+> 
+> [1] https://lore.kernel.org/netdev/20201112192424.2742-1-parav@nvidia.com/
+> [2] https://lore.kernel.org/netdev/421951d99a33d28b91f2b2997409d0c97fa5a98a.camel@kernel.org/
+> [3] https://lore.kernel.org/netdev/20201120161659.GE917484@nvidia.com/
+> [4] https://lore.kernel.org/netdev/20200501091449.GA25211@nanopsycho.orion/
+> [5] https://lore.kernel.org/netdev/20191107160448.20962-1-parav@mellanox.com/
+> [6] https://lore.kernel.org/netdev/BY5PR12MB43227784BB34D929CA64E315DCCA0@BY5PR12MB4322.namprd12.prod.outlook.com/
+> [7] https://lore.kernel.org/netdev/20201214214352.198172-16-saeed@kernel.org/T/#u
+> [8] https://man7.org/linux/man-pages/man8/devlink-resource.8.html
+> 
 
-
-> On Dec 15, 2020, at 12:21 PM, Yonghong Song <yhs@fb.com> wrote:
->=20
->=20
->=20
-> On 12/11/20 6:48 PM, Song Liu wrote:
->> The test dumps information similar to /proc/pid/maps. The first line of
->> the output is compared against the /proc file to make sure they match.
->> Signed-off-by: Song Liu <songliubraving@fb.com>
->> ---
->>  .../selftests/bpf/prog_tests/bpf_iter.c       | 106 ++++++++++++++++--
->>  tools/testing/selftests/bpf/progs/bpf_iter.h  |   9 ++
->>  .../selftests/bpf/progs/bpf_iter_task_vma.c   |  55 +++++++++
->>  3 files changed, 160 insertions(+), 10 deletions(-)
->>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_vma.=
-c
->> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/t=
-esting/selftests/bpf/prog_tests/bpf_iter.c
->> index 0e586368948dd..7afd3abae1899 100644
->> --- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
->> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
->> @@ -7,6 +7,7 @@
->>  #include "bpf_iter_task.skel.h"
->>  #include "bpf_iter_task_stack.skel.h"
->>  #include "bpf_iter_task_file.skel.h"
->> +#include "bpf_iter_task_vma.skel.h"
->>  #include "bpf_iter_task_btf.skel.h"
->>  #include "bpf_iter_tcp4.skel.h"
->>  #include "bpf_iter_tcp6.skel.h"
->> @@ -64,6 +65,22 @@ static void do_dummy_read(struct bpf_program *prog)
->>  	bpf_link__destroy(link);
->>  }
->> =20
-> [...]
->> diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_task_vma.c b/too=
-ls/testing/selftests/bpf/progs/bpf_iter_task_vma.c
->> new file mode 100644
->> index 0000000000000..d60b5b38cb396
->> --- /dev/null
->> +++ b/tools/testing/selftests/bpf/progs/bpf_iter_task_vma.c
->> @@ -0,0 +1,55 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright (c) 2020 Facebook */
->> +#include "bpf_iter.h"
->> +#include <bpf/bpf_helpers.h>
->> +#include <bpf/bpf_tracing.h>
->> +
->> +char _license[] SEC("license") =3D "GPL";
->> +
->> +/* Copied from mm.h */
->> +#define VM_READ		0x00000001
->> +#define VM_WRITE	0x00000002
->> +#define VM_EXEC		0x00000004
->> +#define VM_MAYSHARE	0x00000080
->> +
->> +/* Copied from kdev_t.h */
->> +#define MINORBITS	20
->> +#define MINORMASK	((1U << MINORBITS) - 1)
->> +#define MAJOR(dev)	((unsigned int) ((dev) >> MINORBITS))
->> +#define MINOR(dev)	((unsigned int) ((dev) & MINORMASK))
->> +
->> +#define D_PATH_BUF_SIZE 1024
->> +char d_path_buf[D_PATH_BUF_SIZE];
->> +__u32 pid;
->> +
->> +SEC("iter.s/task_vma") int proc_maps(struct bpf_iter__task_vma *ctx)
->> +{
->> +	struct __vm_area_struct *vma =3D ctx->vma;
->> +	struct seq_file *seq =3D ctx->meta->seq;
->> +	struct task_struct *task =3D ctx->task;
->> +	struct file *file =3D ctx->file;
->> +	char perm_str[] =3D "----";
->> +
->> +	if (task =3D=3D (void *)0 || vma =3D=3D (void *)0 || task->pid !=3D pi=
-d)
->> +		return 0;
->> +
->> +	perm_str[0] =3D (vma->flags & VM_READ) ? 'r' : '-';
->> +	perm_str[1] =3D (vma->flags & VM_WRITE) ? 'w' : '-';
->> +	perm_str[1] =3D (vma->flags & VM_EXEC) ? 'x' : '-';
->=20
-> typo here? The above should be perm_str[2].
-
-Good catch! Fixing it in the next version.
-
-Song
-
-[...]
-
+Seems to be a repeated line of questions. You might want to add these
+FAQs, responses and references to the subfunction document once this set
+gets merged.
