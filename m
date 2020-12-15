@@ -2,176 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BBC42DAD31
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 13:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BFE52DAD34
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 13:29:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729499AbgLOM2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 07:28:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26771 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729426AbgLOM2D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 07:28:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608035194;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=p2PFWOUp6BsVeZRIR5zjR2a20420Yo7fOz47E9bHmR0=;
-        b=aphvdI4FBnvqL1y8VjiR4/27OBm3ZC5mjwI9+yeLt9sqWCBaEkP/XxtFcYg0dVRqXjFDVw
-        T4Kn2nRNngJ9UfO417SCPcB7QWpzMn/E1wXPtj4DMtwA/FS9n6mp1KaCucbX6ClgEa11vV
-        8LDcE+1EkBTi/qZ2FN0Ejgkg34APZOo=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-426-OGZZ5TdSPmmz12blCUwJ0w-1; Tue, 15 Dec 2020 07:26:30 -0500
-X-MC-Unique: OGZZ5TdSPmmz12blCUwJ0w-1
-Received: by mail-ed1-f69.google.com with SMTP id bf13so9867537edb.10
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 04:26:30 -0800 (PST)
+        id S1728841AbgLOM2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 07:28:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729500AbgLOM2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 07:28:20 -0500
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF43C06179C;
+        Tue, 15 Dec 2020 04:27:40 -0800 (PST)
+Received: by mail-io1-xd42.google.com with SMTP id w18so6412195iot.0;
+        Tue, 15 Dec 2020 04:27:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bgzicqHGurBoYsOg6Ds+t2DBVqpKT7glXw7tbw5LPNI=;
+        b=lnWZIpSBb4qC9GXdfGstcGgcx7Kgu6yKphmlx+1QASnzSdYQ9yxaLe7sM/5M9CoUUx
+         kZx3oeQJ5ldF8hPHJzjH0zpHyIipRSMMttrZaO9ppxkDOb8SEhrkwMCqXl6QEMeE9cNG
+         r+lA40IVspcDfyKsRpjVU8NEHHLiDDn4UJuYhptsJQPQPP1xGVwb/7JlAdiEFcbtv/qs
+         mJJsoRCp9lXsZLaeKzHqGXYfk4KD/+iBhi8UkTjmd5Y59SN9tElAbTLl0qeOM1dIyxIQ
+         Cjlk89JdfYQFecPraY1AUE5lrcLvdZjJfllVKF8YMCOT+QrM/JezGLG5JFGqGHNPGRLR
+         FcNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=p2PFWOUp6BsVeZRIR5zjR2a20420Yo7fOz47E9bHmR0=;
-        b=oPnj78QstohgAD4Qk8RhsL70tldOG387JHJ6/33syaswBaA6htd13WTZMpzvBFoIR7
-         C0SvNqW23uVT9Pj85SfDgy3RyMVUnkMf/jNhSwCJFn23nEbRVPdnWV7nFDSFquEnA4rf
-         w+gkXqJm6u0k/XtjMgoTuKzIrSaYX4Zd/Dac3VGTyZ85n3d/xG8xzE5otPUPFBrMJV8s
-         5yjOdNS5Sn77R14mrHA/h+lpw5n2GQulP06kAV7baCe/pJkDfwrSZl1Jv+uSk+nkovqk
-         biLuYhnfs2IENqGJcw91kKwlTmzjuJCOzJ4DYze5PgAtJygW1Z/NzTDeXBRjCNPm28Vh
-         Js5w==
-X-Gm-Message-State: AOAM530kaBckMEzKrpAFhUP0592v9ZvvFyePxUDmrUuuq2cK9Zg2nkH6
-        SxYEv789brjcs3gudVSRkBTR8NKB9MHyhrEECbPv+Rv1Q4OBSgH9PpbpzpGlQj1jWXF2sfax8yo
-        uVelFqnr6p56uvenx
-X-Received: by 2002:a05:6402:2292:: with SMTP id cw18mr29573390edb.336.1608035189392;
-        Tue, 15 Dec 2020 04:26:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzBYKFs3TYtfdNXbnJTsoorusE8rhPx4MUeNvFWOrHdRsAheOVW0szXft9iKrTV55Mu97NNwA==
-X-Received: by 2002:a05:6402:2292:: with SMTP id cw18mr29573371edb.336.1608035189103;
-        Tue, 15 Dec 2020 04:26:29 -0800 (PST)
-Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
-        by smtp.gmail.com with ESMTPSA id s26sm17870347edc.33.2020.12.15.04.26.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Dec 2020 04:26:28 -0800 (PST)
-Subject: Re: [PATCH v4 0/4] Improve s0ix flows for systems i219LM
-To:     "Limonciello, Mario" <Mario.Limonciello@dell.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        David Miller <davem@davemloft.net>,
-        Aaron Ma <aaron.ma@canonical.com>,
-        Mark Pearson <mpearson@lenovo.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>,
-        "darcari@redhat.com" <darcari@redhat.com>,
-        "Shen, Yijun" <Yijun.Shen@dell.com>,
-        "Yuan, Perry" <Perry.Yuan@dell.com>,
-        "anthony.wong@canonical.com" <anthony.wong@canonical.com>
-References: <20201214153450.874339-1-mario.limonciello@dell.com>
- <80862f70-18a4-4f96-1b96-e2fad7cc2b35@redhat.com>
- <MN2PR19MB26376EA92CE14DC3ADD328BEFAC70@MN2PR19MB2637.namprd19.prod.outlook.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <1f68c6a4-3dcf-47fa-d3c2-679d1f7c4823@redhat.com>
-Date:   Tue, 15 Dec 2020 13:26:27 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bgzicqHGurBoYsOg6Ds+t2DBVqpKT7glXw7tbw5LPNI=;
+        b=U5dRyEWTyoOKONtQhO+JeqhAZ4pCrMkEpffnn4Jes375cw2R6ob9xKH5JumG1hG3Gw
+         NdxW5zI8wZY9WKQpIMLU3Gf8VOgzWWqdGFF965xMLqRwXIcrbI2NT2CzkmKU8GCodQq6
+         msMbjOC4fLSipqIZIyFJLzYbPCU+OzV2VAunvQJr2K2NB8eybkqsx7pGJnk8IEORB7Zz
+         9f4n5WAE9OFpiTfL4bpJjvbybvR4tHHsaNyqA23tLxBVR3IMKtmyvyFixMVpHe/vuZPj
+         dJZpE2vN5RVkO4sd0gSqkuZ3WHtQu0AXD+Qbq8acfGOkIsXXauSy7lXT3LlaNniYNQer
+         PDyA==
+X-Gm-Message-State: AOAM5304uU9WxzRHXC4IIerdtnee+Chxdk6OpODWs/lsGicOJK9YCHTm
+        V+6CcQEHByl79Q+0Fch6FpcywTV+QT1fyB5fFDY=
+X-Google-Smtp-Source: ABdhPJxSz/+zoLLj7JVt9L136lIOdTmaPso2a5vLMkNJtcMA7k63WEeQlv+9ImJs5IFW2UgjTbT3okSQ7+l4behmusY=
+X-Received: by 2002:a5e:9512:: with SMTP id r18mr38525653ioj.86.1608035259607;
+ Tue, 15 Dec 2020 04:27:39 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <MN2PR19MB26376EA92CE14DC3ADD328BEFAC70@MN2PR19MB2637.namprd19.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201212090234.0362d64f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201214103008.14783-1-gomonovych@gmail.com> <20201214111608.GE5005@unreal>
+ <20201214110351.29ae7abb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1113d2d634d46adb9384e09c3f70cb8376a815c4.camel@perches.com>
+ <20201215051838.GH5005@unreal> <19198242da4d01804dc20cb41e870b05041bede2.camel@perches.com>
+ <20201215061847.GL5005@unreal>
+In-Reply-To: <20201215061847.GL5005@unreal>
+From:   Vasyl <gomonovych@gmail.com>
+Date:   Tue, 15 Dec 2020 13:27:28 +0100
+Message-ID: <CAHYXAnJZrxOPTttd4Z1v4f1ixwarxsJpz8YYZNDL_5r4_SkyeQ@mail.gmail.com>
+Subject: Re: [PATCH v2] net/mlx4: Use true,false for bool variable
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Joe Perches <joe@perches.com>, Jakub Kicinski <kuba@kernel.org>,
+        tariqt@nvidia.com, "David S. Miller" <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On 12/14/20 8:36 PM, Limonciello, Mario wrote:
->> Hi All,
->>
->> Sasha (and the other intel-wired-lan folks), thank you for investigating this
->> further and for coming up with a better solution.
->>
->> Mario, thank you for implementing the new scheme.
->>
-> 
-> Sure.
-> 
->> I've tested this patch set on a Lenovo X1C8 with vPRO and AMT enabled in the
->> BIOS
->> (the previous issues were soon on a X1C7).
->>
->> I have good and bad news:
->>
->> The good news is that after reverting the
->> "e1000e: disable s0ix entry and exit flows for ME systems"
->> I can reproduce the original issue on the X1C8 (I no longer have
->> a X1C7 to test on).
->>
->> The bad news is that increasing the timeout to 1 second does
->> not fix the issue. Suspend/resume is still broken after one
->> suspend/resume cycle, as described in the original bug-report:
->> https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1865570
->>
->> More good news though, bumping the timeout to 250 poll iterations
->> (approx 2.5 seconds) as done in Aaron Ma's original patch for
->> this fixes this on the X1C8 just as it did on the X1C7
->> (it takes 2 seconds for ULP_CONFIG_DONE to clear).
->>
->> I've ran some extra tests and the poll loop succeeds on its
->> first iteration when an ethernet-cable is connected. It seems
->> that Lenovo's variant of the ME firmware waits up to 2 seconds
->> for a link, causing the long wait for ULP_CONFIG_DONE to clear.
->>
->> I think that for now the best fix would be to increase the timeout
->> to 2.5 seconds as done in  Aaron Ma's original patch. Combined
->> with a broken-firmware warning when we waited longer then 1 second,
->> to make it clear that there is a firmware issue here and that
->> the long wait / slow resume is not the fault of the driver.
->>
-> 
-> OK.  I've submitted v5 with this suggestion.
-> 
->> ###
->>
->> I've added Mark Pearson from Lenovo to the Cc so that Lenovo
->> can investigate this issue further.
->>
->> Mark, this thread is about an issue with enabling S0ix support for
->> e1000e (i219lm) controllers. This was enabled in the kernel a
->> while ago, but then got disabled again on vPro / AMT enabled
->> systems because on some systems (Lenovo X1C7 and now also X1C8)
->> this lead to suspend/resume issues.
->>
->> When AMT is active then there is a handover handshake for the
->> OS to get access to the ethernet controller from the ME. The
->> Intel folks have checked and the Windows driver is using a timeout
->> of 1 second for this handshake, yet on Lenovo systems this is
->> taking 2 seconds. This likely has something to do with the
->> ME firmware on these Lenovo models, can you get the firmware
->> team at Lenovo to investigate this further ?
->>
-> 
-> Please be very careful with nomenclature.  AMT active, or AMT capable?
-> The goal for this series is to support AMT capable systems with an i219LM
-> where AMT has not been provisioned by the end user or organization.
-> OEMs do not ship systems with AMD provisioned.
+Ouuu it was fixed recently in net-next.
+Sorry, I missed that.
+Thanks for submitting policy clarification I am going to adapt to it.
 
-Ah, sorry about that. What I meant with "active" is set to "Enabled"
-in the BIOS.
+Thanks
 
-Also FWIW I just tried disabling AMT in the BIOS (using the "Disabled"
-option, not the "Permanently Disabled" option) on the Lenovo X1 Carbon
-8th gen, but that does not make a difference.
-
-It still takes 2 seconds for ULP_CONFIG_DONE to clear even with AMT
-set to "Disabled" in the BIOS :|
-
-Regards,
-
-Hans
+On Tue, Dec 15, 2020 at 7:18 AM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Mon, Dec 14, 2020 at 09:37:34PM -0800, Joe Perches wrote:
+> > On Tue, 2020-12-15 at 07:18 +0200, Leon Romanovsky wrote:
+> > > On Mon, Dec 14, 2020 at 11:15:01AM -0800, Joe Perches wrote:
+> > > > I prefer revisions to single patches (as opposed to large patch ser=
+ies)
+> > > > in the same thread.
+> > >
+> > > It depends which side you are in that game. From the reviewer point o=
+f
+> > > view, such submission breaks flow very badly. It unfolds the already
+> > > reviewed thread, messes with the order and many more little annoying
+> > > things.
+> >
+> > This is where I disagree with you.  I am a reviewer here.
+>
+> It is ok, different people have different views.
+>
+> >
+> > Not having context to be able to inspect vN -> vN+1 is made
+> > more difficult not having the original patch available and
+> > having to search history for it.
+>
+> I'm following after specific subsystems and see all patches there,
+> so for me and Jakub context already exists.
+>
+> Bottom line, it depends on the workflow.
+>
+> >
+> > Almost no one adds URL links to older submissions below the ---.
+>
+> Too bad, maybe it is time to enforce it.
+>
+> >
+> > Were that a standard mechanism below the --- line, then it would
+> > be OK.
+>
+> So let's me summarize, we (RDMA and netdev subsystems) would like to ask
+> do not submit new patch revisions as reply-to.
+>
+> Thanks
 
 
+
+--=20
+=D0=94=D0=BE=D0=B1=D1=80=D0=BE=D1=97 =D0=B2=D0=B0=D0=BC =D0=BF=D0=BE=D1=80=
+=D0=B8 =D0=B4=D0=BD=D1=8F.
