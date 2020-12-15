@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB81F2DA8B6
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 08:44:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ABBB2DA8B7
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 08:44:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725960AbgLOHnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 02:43:06 -0500
-Received: from mail-eopbgr40069.outbound.protection.outlook.com ([40.107.4.69]:40665
+        id S1726581AbgLOHnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 02:43:25 -0500
+Received: from mail-eopbgr40089.outbound.protection.outlook.com ([40.107.4.89]:14901
         "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726581AbgLOHmw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 02:42:52 -0500
+        id S1726627AbgLOHnI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 02:43:08 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LOu4QnGTTLgPyxMXdtSl85a6u7pvUFNvJ2BVjcuy5gyhZGV0uXj9yQmkeJnSm7cvBotXMTA1wuGwWb/gA/BnWfiwLbMU12Cc0P00Zmy4Pi506o4h5oACuGfMvaBzCsXJq3P+OAYCgzc7p7Pei9R2e40+jizj0LXH/tVnnHN9g4MCcCHSLZuPz994vFKHDFjv3DpXAIhsOvu+VM5T+2f66Sgc6QtudcPAphLQhWtZ53vSh5YhRN81Sdv3y6gkC5nbAF3bFzuTygq25bHb9NMRjdryHM3k/WsBMPdVP4UYPzmlnC9eW+zXl/Cer+w11H1i1zBtc9yOnzv3jpA1xuyxPw==
+ b=UiTS8uSuHlb9Mry1VoowP9VLffBgeSc1O3jrnQWrllQCND45F2tfwmed9/FPp5KxQtIyEws08iqR+XxhzS7tVBmFibswLUbaJuG7WgRS1FVmlFlQk4l9jHuqfVt+3aX0baGksroK6/SC9ICPy2etKomI1Ng+5lP0qD1w5iVzP1lvP4sudZFs/t6+QiFGY2MVO3jTz2qZX9rgbGgoZ76WiwBvEH9Dm38yPMVb7/qCP5Btg817kf9vw3UFV6mkinD66OxfnmC96tBeOu4Fn0Dr1YCgVYFDPklQjTaadORcpEkpkKbiBRkadVPJgseR2RqGagZynWXRPboM97CLC1xPKA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=173gKLr3zf454Yz2EC1UvG/PxFJEQCtCIMO9EO6Murs=;
- b=HPGwHIGA5PU6NHbmYa7vnzLTfHuV3fmQnxORodCi56xdOk+WLwNLwLzJ9byQih7JXfOxoDFTHgh5VqQixwBlE2rmFBwjMng8QJg4VI4DzfBv1qHo+4bLOksSYsmVzuIEtQ5telIx8mQJsB0U8+M6Iyuzc+5IpphFnWeh/HHpg/Px4loX/2UafZQFrB5pW48C3qntgGHGa1dzFETTYkSfiODT7IqmMrvn9SXPGi2Cm2zUb/OZH2NcToPclFW4eAw4eDJ3Y/7DqbQGySDdoqUoSnx2Pfk4YpFasDS8gYJN/ulIRKXHssct+Xvh+Tmv3rlIsaDLRVgB9Fnu6KuNCpDkxw==
+ bh=IWFGfAhAY14gROCaRBG/gzsOpBNj6qw8oYv87oF0iVo=;
+ b=cRGjwVLBcsK2ODV7kFyLZBGYE9abvtscvVu6iEbrENU2wGDMpENecfWTVhd746Sm6MSfwuztElSY5fc54ZrCIjnIBNHzuC+YKUIQNvd3lG3WQB3eiz/bBAewtCbpeKIld1Sfn7xm/+HI7HcqUKZOnSyy3i2h0owGBMQ2h7fLAoJOOl2lzAnGj3VhRLsAd+73iWEIu4vGxRWXa6M0OS24FifdYV+KpEtUG2iqKYmQl9yFW6h8ZQu38EnCCfvezn23fV/WzJogEzPdxDgfn4qn7t6JXL5Pv3qXoNnZRsbYFDpE9iaW6+ANDzMDUzqQz00QnVB0AaknteODX72oxsz6qA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=173gKLr3zf454Yz2EC1UvG/PxFJEQCtCIMO9EO6Murs=;
- b=irqgzxvWoFNQW/IyNts742K66t/70t0y6kBvm3RldeP+KYAbjTKIxjZ5bjSgwBrsV3FB4QCI3CRgaCWQlnuO1W09pfM2MPEOE2OpXqalPYwC+a6Jm8KC+VX4/qoNpm0zpWIfLjjd7+zJ/9J6wmNxhIjQ3WG3fUkW/4LhmnLMPIc=
+ bh=IWFGfAhAY14gROCaRBG/gzsOpBNj6qw8oYv87oF0iVo=;
+ b=jKkMQgbyu2LsgkZ0lfEjO3dz84nlaxEsJ/ptm6JcxKVY3IcnQ9Rby46q/c1O0OgdBTzNHoWPjC7+leomK3gpIFaojBdyNVppbKGZ3+6W2F2/CTDNL6LigIEmuGFQDOc8SqidzIRus2fMTYIzUX3Lbc0hUFxBmE49dN0NfJtjSyo=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5982.eurprd05.prod.outlook.com (2603:10a6:803:e4::28)
  by VI1PR0501MB2335.eurprd05.prod.outlook.com (2603:10a6:800:2e::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.17; Tue, 15 Dec
- 2020 07:42:01 +0000
+ 2020 07:42:03 +0000
 Received: from VI1PR05MB5982.eurprd05.prod.outlook.com
  ([fe80::ddc9:9ef:5ece:9fd2]) by VI1PR05MB5982.eurprd05.prod.outlook.com
  ([fe80::ddc9:9ef:5ece:9fd2%5]) with mapi id 15.20.3654.015; Tue, 15 Dec 2020
- 07:42:01 +0000
+ 07:42:03 +0000
 From:   Maxim Mikityanskiy <maximmi@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
@@ -50,10 +50,12 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         netdev@vger.kernel.org, Maxim Mikityanskiy <maximmi@mellanox.com>
-Subject: [PATCH iproute2-next] tc/htb: Hierarchical QoS hardware offload
-Date:   Tue, 15 Dec 2020 09:42:08 +0200
-Message-Id: <20201215074213.32652-1-maximmi@mellanox.com>
+Subject: [PATCH net-next v3 0/4] HTB offload
+Date:   Tue, 15 Dec 2020 09:42:09 +0200
+Message-Id: <20201215074213.32652-2-maximmi@mellanox.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201215074213.32652-1-maximmi@mellanox.com>
+References: <20201215074213.32652-1-maximmi@mellanox.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [94.188.199.18]
@@ -61,136 +63,115 @@ X-ClientProxiedBy: AM4PR05CA0025.eurprd05.prod.outlook.com (2603:10a6:205::38)
  To VI1PR05MB5982.eurprd05.prod.outlook.com (2603:10a6:803:e4::28)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-l-vrt-208.mtl.labs.mlnx (94.188.199.18) by AM4PR05CA0025.eurprd05.prod.outlook.com (2603:10a6:205::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Tue, 15 Dec 2020 07:41:59 +0000
+Received: from dev-l-vrt-208.mtl.labs.mlnx (94.188.199.18) by AM4PR05CA0025.eurprd05.prod.outlook.com (2603:10a6:205::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Tue, 15 Dec 2020 07:42:01 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: bb57a224-3193-45a2-67a4-08d8a0cce8e0
+X-MS-Office365-Filtering-Correlation-Id: 0decd834-4d6d-4c6b-1567-08d8a0ccea35
 X-MS-TrafficTypeDiagnostic: VI1PR0501MB2335:
 X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtFwd,ExtAddr
-X-Microsoft-Antispam-PRVS: <VI1PR0501MB233593471FA8A76659D84597D1C60@VI1PR0501MB2335.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:826;
+X-Microsoft-Antispam-PRVS: <VI1PR0501MB233551A19A8DFE12B3CD65BDD1C60@VI1PR0501MB2335.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MD55oXGLSEf+FaAt1ZoTu7kyYZXqBvCO/zfA8aZRnN7TP4lCe9+SsArLyVD7Jkog3U3tTFyEnLj3+HjYL4l8g52FOdp7FNIDjNd4xdNfto4A6zdLgWnzzysrLDk3Xdsf+Gd7AVexUJBGVSljFC7DAh9ZJhjQuAMzR19bvXLIU/XZDE+7znlq8wCtpGvGsP3jpsw4np3apm4hxJDaXNJySU6sMzz0u7fCCffs2BEoiCAM5JCm+Jwv6EFEe6bba8+eAxupFIMYVSqmQCXSGO7WpiI7q0kfQoY3FhANaOJzMJE8wKD5g4sMlSREGqnQRizrpM9fOhU27pTfmD06DsruiY7huyNcr19zHP7T/FTN6GbbEzWey80T5ycN8exDHVT/
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5982.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(39860400002)(346002)(366004)(136003)(8676002)(52116002)(186003)(6486002)(16526019)(2906002)(66476007)(7416002)(66946007)(110136005)(6506007)(316002)(36756003)(5660300002)(66556008)(8936002)(6666004)(54906003)(83380400001)(26005)(107886003)(1076003)(2616005)(86362001)(478600001)(6512007)(4326008)(956004)(309714004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?pCo6nubTWwfmV7SJbPqb4l4yvnJ8chdNPtyi95KNuIQsVUZZ448/764WZH4M?=
- =?us-ascii?Q?lSvbc9rMLSEu44xabdKnayxOngjdhqjjLHKiKPUnqzirqxMo2lAjmmzn2BVP?=
- =?us-ascii?Q?NPzNk7bUy5fvvMx3VH4nW0yQq7BqHTV1NGLU6kE5+g3f7s3jz1WdWS5BuVgk?=
- =?us-ascii?Q?8YqdFh5uEQ5IRVvCvQPDcj3ln8iKcsK5QO52ajmtwmh+mzBEN0Z0T/YByymZ?=
- =?us-ascii?Q?P2yzVo4ciQsaxXv+xVwDZY6csjL+dYVFx91/p3T4HqLJzzsV1BStS/mESp2s?=
- =?us-ascii?Q?xP7OIidlqvIvoq/CjBGlKRYoPHyFaZLlZaThekgGKVnT8ULI+XQ2uyVCSEid?=
- =?us-ascii?Q?1NLSG4rOatXceXOUNP0XDx2cke3Srurl0O4x5IfFQJBa5uHLHacEHY7EzXiy?=
- =?us-ascii?Q?g6QzYmJBAZeqjQNkt9ISXYN7b8HrjJ4KUCZcOCOyYrm7x3bHjz6Eb6n1dexp?=
- =?us-ascii?Q?nXuH9J4oIBjiWjtVVX/MfN5BwfKHzsi/x8QBV/f93+7bkmU0oLYD4nszDYsK?=
- =?us-ascii?Q?rjHHH5t2bdKM8b8hqldA9Lqk9BHgeZY1SkvEaK7jANs6LPLRc/lu3eDnig2I?=
- =?us-ascii?Q?L3BG7Xx70TJusySbYhab8wyuf/7ze3WyZL/bghyDKqjHdydhcBuEvQ7cKhfP?=
- =?us-ascii?Q?q6tk2qfxZMn3H4/1cYLKhSVtS4lvtwkIq8US1xja9BiZG2XRaDyAOcnv49pp?=
- =?us-ascii?Q?sd4rne8105NgNl15Usxfoq71Z0IH1S0Qnp2M7ZJl8W1WptnYjF6zSraaWNgf?=
- =?us-ascii?Q?LFr1XYBczmj0hjBaxLg62xLLOQYAAbRN8tKkDR0rsxPu2ljgslAfre8/GIZP?=
- =?us-ascii?Q?gbJBgpQXzt7YOhdHAtAoZjLxe28T7c4f+wG3DaAQVeckic6s0cUYdbaLrFqD?=
- =?us-ascii?Q?s16GX6n11Fstf9mhqi6cCtI0UR6/GpO9PoRnMffZYljZWWxXMif4B5h1KdNO?=
- =?us-ascii?Q?JfUgmq7vQZIwJrB14DL9QiEjAoJJ8PkApPlp+QY8cchr67GUCFjVHF7Yks9y?=
- =?us-ascii?Q?wbRL?=
+X-Microsoft-Antispam-Message-Info: U0IkRzD5dt83u4RXbc9Pu/HCsuub0ACEoNUwQPCQQ3TMl+I3MlaoPnoGXcgVbtC6u1UsT6KWgw1acM107e/HQsCuPKFs7avoYtJN6yjiDmJxT+1H9+ZN7aSk0arheHdQEMwvTCiHm3b9guN8fTMN18Vv+zBXVjGsEFZ7k5Bar8Md/dlaRj9ZqZacHIX+ziYok38SSkKoF3sO2yOgw3yhCsfI0MsDbzpZfwBdBxnNNKdj6X82L64NUvZaOQpwGBQK0qqCoJ1gvmx7LS4c5AW2ER3G9zBj+oZQzTBSlR9cLI45oRFJI6a2S/VkLFwOkEZs/1uZlDuE992vvaoGn7mFnKUGvDbL+tYerBI2amH5xC5Qj716cBRn9pBKo+KCVeAYpv7T1hpHJaj8WlGYy9McZw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5982.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(39860400002)(346002)(366004)(136003)(8676002)(52116002)(186003)(6486002)(16526019)(2906002)(66476007)(7416002)(66946007)(110136005)(6506007)(316002)(36756003)(5660300002)(66556008)(8936002)(54906003)(83380400001)(26005)(107886003)(1076003)(2616005)(86362001)(966005)(478600001)(6512007)(4326008)(956004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?kuJQxPbg2lkWDNtqKp0XSMCl5xRhc9ub0wJyp1y8wJNBR2OPZR+dNLMuwLHR?=
+ =?us-ascii?Q?+ndNTpSnsvBHY0IEH7g1DunP0x+KFQBayiKFpimX5nV6CWAIxJP8fuW0gAGU?=
+ =?us-ascii?Q?A6mxRMJWuzWrXLRuGJxw6ORwMtkP7alnc9ksHYvSZYbwtj7rQMtVIjusJzt6?=
+ =?us-ascii?Q?uwOnXt40ZSFsORKoPwQMatT5TMv29u1U1ijK7MrJJmZ5UI5m7P5WM9X5O/Vc?=
+ =?us-ascii?Q?U0SyivsIkwfqWxMO8y1k35VjKhCRFAP7oTt7ydWLC1KZXb22XsBgTTtWoFEr?=
+ =?us-ascii?Q?IGRXBTui/xv+gR8kx2eMRMqQ6/FfwcAfU09EVWAEO95Gw/jKDHyD2QtIo/Ov?=
+ =?us-ascii?Q?6wT/CT5zGDfoWXwzu3q6s8UM8DioxR/xsI1XaM2ac1T9Gd2tM6Lah7muQfx+?=
+ =?us-ascii?Q?mlEx9xEFZEQcwjMwf3a4NPKFNNlm5IdFglzojd11GQoNBUGqV/ggxtBsVvEd?=
+ =?us-ascii?Q?qOEoBBhHk/s/ocWMdrWzsne1kch7y/SO5NDQj3nOweJw6/lf2V+JLjZURYqU?=
+ =?us-ascii?Q?6P8Bko68pVWEc5xN6jz3sZzJrGEdcSCEmH3eq5rRW5Q4U+VQ6P+2eDYDgnyM?=
+ =?us-ascii?Q?LGdjDK78XaGU8LdSzqDtJZjudNw7Yp4+anUiYpdSBVJ938ttBk4qjy71z33e?=
+ =?us-ascii?Q?/7eCRhUZ/3GJZUQ3pUQs3nSBlkDQCDuZV4UtJ16xLPWfEfPVJNnX4vCvCtDr?=
+ =?us-ascii?Q?l64oStyx3QZGV+G4E4353Xjxvk4dRpjpAPc10NofCTPd/MLn4rdNJORnLb2U?=
+ =?us-ascii?Q?T2+MiJ5ZiBPClw+wTSHXpnqmnWmRLZInUldMHwB/VjsF8IrgEZBqC8wovlKN?=
+ =?us-ascii?Q?RNdJuP3vx8yOSfUGfmv5+0B2ClzA4QFQKZ+MZkOL9FYcDa3uYXpzWC+l3wBs?=
+ =?us-ascii?Q?DZmSMEbPfly+JwI3dYTaLuzH42WZL3iOLdqQEyeli3vKcBM+8CClrW1z1Yj1?=
+ =?us-ascii?Q?2VLigYBuvrg2dI3c0LSAsiY7E882vdgNyXhCc+3v+/Qv2HoMeCd8rt49PKSc?=
+ =?us-ascii?Q?k0EQ?=
 X-MS-Exchange-Transport-Forked: True
 X-OriginatorOrg: Mellanox.com
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB5982.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2020 07:42:01.2928
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2020 07:42:03.5455
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb57a224-3193-45a2-67a4-08d8a0cce8e0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0decd834-4d6d-4c6b-1567-08d8a0ccea35
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: v5tn9Mgh3zhMMpOymh9HOwhFQeHY9XboeQmHBm1hhnL+WFLkKZrtCE4JmemX/JqFTgSKKRzdXGmWtdcBT1arYw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: P7LydSiZmm3ZjDp4NLsvW45KqTRVP1c7YTNcW2pI0UxeRAOVHIG9aiI61kkakNrnTfm3KWczXqSAfRww717WsA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2335
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds support for configuring HTB in offload mode. HTB
-offload eliminates the single qdisc lock in the datapath and offloads
-the algorithm to the NIC. The new 'offload' parameter is added to
-enable this mode:
+This series adds support for HTB offload to the HTB qdisc, and adds
+usage to mlx5 driver.
 
-    # tc qdisc replace dev eth0 root handle 1: htb offload
+The previous RFCs are available at [1], [2].
 
-Classes are created as usual, but filters should be moved to clsact for
-lock-free classification (filters attached to HTB itself are not
-supported in the offload mode):
+The feature is intended to solve the performance bottleneck caused by
+the single lock of the HTB qdisc, which prevents it from scaling well.
+The HTB algorithm itself is offloaded to the device, eliminating the
+need to take the root lock of HTB on every packet. Classification part
+is done in clsact (still in software) to avoid acquiring the lock, which
+imposes a limitation that filters can target only leaf classes.
 
-    # tc filter add dev eth0 egress protocol ip flower dst_port 80
-    action skbedit priority 1:10
+The speedup on Mellanox ConnectX-6 Dx was 14.2 times in the UDP
+multi-stream test, compared to software HTB implementation (more details
+in the mlx5 patch).
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
----
- include/uapi/linux/pkt_sched.h | 1 +
- tc/q_htb.c                     | 9 ++++++++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+[1]: https://www.spinics.net/lists/netdev/msg628422.html
+[2]: https://www.spinics.net/lists/netdev/msg663548.html
 
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index 9e7c2c60..79a699f1 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -434,6 +434,7 @@ enum {
- 	TCA_HTB_RATE64,
- 	TCA_HTB_CEIL64,
- 	TCA_HTB_PAD,
-+	TCA_HTB_OFFLOAD,
- 	__TCA_HTB_MAX,
- };
- 
-diff --git a/tc/q_htb.c b/tc/q_htb.c
-index c609e974..fd11dad6 100644
---- a/tc/q_htb.c
-+++ b/tc/q_htb.c
-@@ -30,11 +30,12 @@
- static void explain(void)
- {
- 	fprintf(stderr, "Usage: ... qdisc add ... htb [default N] [r2q N]\n"
--		"                      [direct_qlen P]\n"
-+		"                      [direct_qlen P] [offload]\n"
- 		" default  minor id of class to which unclassified packets are sent {0}\n"
- 		" r2q      DRR quantums are computed as rate in Bps/r2q {10}\n"
- 		" debug    string of 16 numbers each 0-3 {0}\n\n"
- 		" direct_qlen  Limit of the direct queue {in packets}\n"
-+		" offload  hardware offload\n"
- 		"... class add ... htb rate R1 [burst B1] [mpu B] [overhead O]\n"
- 		"                      [prio P] [slot S] [pslot PS]\n"
- 		"                      [ceil R2] [cburst B2] [mtu MTU] [quantum Q]\n"
-@@ -68,6 +69,7 @@ static int htb_parse_opt(struct qdisc_util *qu, int argc,
- 	};
- 	struct rtattr *tail;
- 	unsigned int i; char *p;
-+	bool offload = false;
- 
- 	while (argc > 0) {
- 		if (matches(*argv, "r2q") == 0) {
-@@ -91,6 +93,8 @@ static int htb_parse_opt(struct qdisc_util *qu, int argc,
- 			if (get_u32(&direct_qlen, *argv, 10)) {
- 				explain1("direct_qlen"); return -1;
- 			}
-+		} else if (matches(*argv, "offload") == 0) {
-+			offload = true;
- 		} else {
- 			fprintf(stderr, "What is \"%s\"?\n", *argv);
- 			explain();
-@@ -103,6 +107,8 @@ static int htb_parse_opt(struct qdisc_util *qu, int argc,
- 	if (direct_qlen != ~0U)
- 		addattr_l(n, 2024, TCA_HTB_DIRECT_QLEN,
- 			  &direct_qlen, sizeof(direct_qlen));
-+	if (offload)
-+		addattr(n, 2024, TCA_HTB_OFFLOAD);
- 	addattr_nest_end(n, tail);
- 	return 0;
- }
-@@ -344,6 +350,7 @@ static int htb_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 		print_uint(PRINT_ANY, "direct_qlen", " direct_qlen %u",
- 			   direct_qlen);
- 	}
-+	print_uint(PRINT_ANY, "offload", " offload %d", !!tb[TCA_HTB_OFFLOAD]);
- 	return 0;
- }
- 
+v2 changes:
+
+Fixed sparse and smatch warnings. Formatted HTB patches to 80 chars per
+line.
+
+v3 changes:
+
+Fixed the CI failure on parisc with 16-bit xchg by replacing it with
+WRITE_ONCE. Fixed the capability bits in mlx5_ifc.h and the value of
+MLX5E_QOS_MAX_LEAF_NODES.
+
+Maxim Mikityanskiy (4):
+  net: sched: Add multi-queue support to sch_tree_lock
+  sch_htb: Hierarchical QoS hardware offload
+  sch_htb: Stats for offloaded HTB
+  net/mlx5e: Support HTB offload
+
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  27 +-
+ .../ethernet/mellanox/mlx5/core/en/params.h   |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/qos.c  | 940 ++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/en/qos.h  |  39 +
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  21 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 168 +++-
+ .../ethernet/mellanox/mlx5/core/en_stats.c    | 100 ++
+ .../ethernet/mellanox/mlx5/core/en_stats.h    |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  47 +-
+ .../net/ethernet/mellanox/mlx5/core/en_txrx.c |  26 +
+ drivers/net/ethernet/mellanox/mlx5/core/qos.c |  85 ++
+ drivers/net/ethernet/mellanox/mlx5/core/qos.h |  28 +
+ include/linux/mlx5/mlx5_ifc.h                 |  13 +-
+ include/linux/netdevice.h                     |   1 +
+ include/net/pkt_cls.h                         |  33 +
+ include/net/sch_generic.h                     |  14 +-
+ include/uapi/linux/pkt_sched.h                |   1 +
+ net/sched/sch_htb.c                           | 532 +++++++++-
+ tools/include/uapi/linux/pkt_sched.h          |   1 +
+ 21 files changed, 2007 insertions(+), 81 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/qos.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/qos.h
+
 -- 
 2.20.1
 
