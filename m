@@ -2,322 +2,413 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D15892DB4A4
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 20:48:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B12352DB4DC
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 21:07:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727953AbgLOTr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 14:47:29 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:9404 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726266AbgLOTr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 14:47:29 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BFJixOB015964;
-        Tue, 15 Dec 2020 11:46:34 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=diHpSS9oTYuwutnnVW6tIdNr5lDuw7B+CKs4X5hfZUE=;
- b=p1SDBi44kTMnd5R4geLrlAVeqZeRBJGUjtORJivGbacJMroX7o+RpWcZjO2j5hZdzjSk
- PKsH3PRuDpTCBnxk1i71+LSn8dc5LfQAOa0MWN8h2vSFfen+tJLaFajRk2y2puFdVA7+
- befhoj09e5JSQD40tkxrKn4Igr5Xce/2yaA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 35eypshpuc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 15 Dec 2020 11:46:33 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 15 Dec 2020 11:46:32 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TIm1vHuKLR8OtMTLdkYMM/FAglXBzXVo/Jx1q91OIczJjDfBLSffGn+daeANSToe9JTfFHxpHWUsQODLGeNfUtwsdvqNsx7cuXskD5SS2jSFisZoxNo9rk0V5OkTxqTxE7IC7DL+4zbe4kZIK2PhSgc36Mm+eg1a7FpUOkjT3bRk8spVHIjXRU06T1355PNgauYfJ94w+dN+7fhaVCzDMY+qGSr7YKDajWjYZTvc0RJC84Ws/c+6bncoWjjhY0N3qRtddqTL4GE1w+S2fwxt7J7zgHrj/OSXXAaVZzj+rGaFZLiZRUI/5mzHk8HKjxkWgD9+Kn8Xbj7B863nY7DgfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=diHpSS9oTYuwutnnVW6tIdNr5lDuw7B+CKs4X5hfZUE=;
- b=TZMUv96uhsjWKvNF5uvjaMHvZpoJOYrCh8kQV2WOVfxCNsPKj72eZwnOgBIslNH7ISal81E+HRhISK9cH0WqHHnxXAcGrfLzIjtRuMG7dR8lyMlzVtFaslteLWxDqfNczIxuyjJvdA0hEons9pOqCAPjP9OBnfZggcBg63+5gaodl/78qj6x9cxVkk0eoIh42Krp3AdEKBRESYfcd195lOvUAsdLV8tqPeroeuckC9to0Hw+SXCi4uOQBvzJB+lrAjfTSQcqvnEXh2gBqlU/Ail0MYrFBktIh5gGAR9OMIzLJYducc12PH18M56sg/Wd8XxoI9C9Af/oqOumf/8Z+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=diHpSS9oTYuwutnnVW6tIdNr5lDuw7B+CKs4X5hfZUE=;
- b=Vxq30ngUvNGNz5MiQ9rtmiPConcpYsxsqRhbMDGn2hycPPJ9kmIkO8X6tyJFfuv+eR/1ggQpmlV4wXkrwkV0JKyMwYjwE6dD01tPDX0RxNtm3vlowDb1rIQYi8XGxNZNvAWXzawfauQWnHytKCx4O9r8y9xRvrN6PNmjNaZN5fk=
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2824.namprd15.prod.outlook.com (2603:10b6:a03:158::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Tue, 15 Dec
- 2020 19:46:28 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3654.025; Tue, 15 Dec 2020
- 19:46:28 +0000
-Subject: Re: [PATCH bpf-next 1/4] bpf: introduce task_vma bpf_iter
-To:     Song Liu <songliubraving@fb.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
-        <kernel-team@fb.com>
-References: <20201212024810.807616-1-songliubraving@fb.com>
- <20201212024810.807616-2-songliubraving@fb.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <4e3d3931-1877-ea75-acde-313ab1537531@fb.com>
-Date:   Tue, 15 Dec 2020 11:46:25 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
-In-Reply-To: <20201212024810.807616-2-songliubraving@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:e381]
-X-ClientProxiedBy: CO2PR05CA0094.namprd05.prod.outlook.com
- (2603:10b6:104:1::20) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1729643AbgLOUGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 15:06:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50830 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729634AbgLOUGi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 15:06:38 -0500
+Message-ID: <21904b4d4cc8eb572ea9a5c0452ecd78a40b2e67.camel@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608062756;
+        bh=YFkk1gQcRh+VP+3uuN7s7qJy4d88SR1k0vSBcqLiR9M=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=JCLO9tHKEmKH7ClwP6sNXR1CEsScIfnW/ffOsFHld/zRYS2LP1HZ5VP8Cf72oDHIa
+         Q9+ssKGjVwG/F9udK9HhA8ND1P7zuNGJ25eTvUP7eYeIrvYoZX2K3XxOCCW2lVc9xW
+         T17qk4CRk+AihwuYdJV+PbbHXTyrRt303ycx5txKLbZbZRspYbFbYCdXk5YAf/ZmFQ
+         IZEp2vlS36MYzomqjIusKprpCLgtfsqRTsi25gsFXoLCRWVDcctqad4rakzCazxiFP
+         9eD4NSyTwQMLrxTk0ljsWVlM91FOhCGq1f0nQkwcX9KVLJ7p+2q+r/7d4PAKGaE+w6
+         ztmI56mXHUFAA==
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Parav Pandit <parav@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Date:   Tue, 15 Dec 2020 12:05:55 -0800
+In-Reply-To: <CAKgT0Uf9C5gwVZ1DnkrGYHMUvxe-bqwwcbTo7A0q-trrULJSUg@mail.gmail.com>
+References: <20201214214352.198172-1-saeed@kernel.org>
+         <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
+         <BY5PR12MB43221CE397D6310F2B04D9B4DCC60@BY5PR12MB4322.namprd12.prod.outlook.com>
+         <CAKgT0Uf9C5gwVZ1DnkrGYHMUvxe-bqwwcbTo7A0q-trrULJSUg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e8::112b] (2620:10d:c090:400::5:e381) by CO2PR05CA0094.namprd05.prod.outlook.com (2603:10b6:104:1::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.13 via Frontend Transport; Tue, 15 Dec 2020 19:46:27 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 36e0a3d3-03a3-48b5-b6b3-08d8a1321d1b
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2824:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB28249165800D101D42C5442DD3C60@BYAPR15MB2824.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tmpZgMWbPcQUYptiM/JPyOpw6N8/wKS8eFu4R2yFBe68Zyb3Tiqv8ZapnJzZkayTw3xss+kungQsXO4AInRww+pW8Pq3TuTovo0Ao0zOnEgmRLK/+zvsrLt0thLKiKWaLCMbUm06RXr3DtA9p81TKTfom9EENAxpf5aiOK549EmZrli14WypDPaAGeCkX66BOfd9e4WfqnY1XCdmGrC3lKOp6bSQAc/Jtue1XstB6cCOO0Uf4/JKiQDaSsB1HdlMU9wm9RyfbSAawgWZUk8NJ2iF47ZGF+h35fMyHyvKEMSv4LA1KSn5LTEa/Ajmqtqd0YLscXSl/qvWHfgm+mG2wVHHyIGkT7LzxqoeWxMG81sVlaT6dGlBg7YLikbLZHUu/qe2DK6T/0DOCvuAvHcH1Wa6iKMNntA1uQ+GMmzCf2c=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(39860400002)(346002)(376002)(366004)(8936002)(53546011)(186003)(478600001)(4326008)(6486002)(316002)(2906002)(5660300002)(16526019)(2616005)(31696002)(86362001)(66556008)(8676002)(36756003)(31686004)(83380400001)(52116002)(66476007)(66946007)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?eUJKby93ZlMxdm5aUjN3b0g4aU1MV0hCK0xETGRDYmdlTTBWRzMzNGVnVzkz?=
- =?utf-8?B?TERrUVZETjZaMUJGc1NYR0xVYmNYcU5uRTRmeU1LWXFhOTdHUkh2RGFtRWxi?=
- =?utf-8?B?QXZsbTJkNW1VWnJ3eTVyb3BBcW9iRzRTRHorZmNEMWh3cXF4dWdYK1dWNFha?=
- =?utf-8?B?cjFJbUd2bk9pMW0vdkN0cHB4ZjFGOW1CTU9yOGhMMmZNcTFPUUZFMms4RVpp?=
- =?utf-8?B?ZnZMMHE2cmN2MW1mMk1OTEdTSVRCVElmUWVjWnkzc01ueXJuZnVCRHd3NStU?=
- =?utf-8?B?eFdESzEwUWovY09scUR6WFU2OWw5R2RrbjZJdDV3N3VKNEQxeC83cklQczBC?=
- =?utf-8?B?TUFaSGkwaFN5ZTRXYzFZOVpmVjBnTG0rR3V3aG9vcjVZY0VQTHdMZUVmMGcw?=
- =?utf-8?B?Z0VIbUo3R0hxaTVwQ2tyYUpuMmRVNVNXeWFWZ0EvRHlBS2tIZHU5eW53dlY3?=
- =?utf-8?B?M2RqVjRVLzI5ZVp4OTFIcVhGMWxrYTMxckJqd09RR1RZMkQ3NUJyWTJuN3Ay?=
- =?utf-8?B?ZlhsTUpYVlZBK0xzMWZUc3czRUk4aFI5OXIwdDc1YzNSNnBhb0RjQXRjS0h0?=
- =?utf-8?B?OGN3bGF5eDI2cVV6cWFiRXBCeHJ2UGI3bGQwU1AzclRNWm9oZ0x3UXJPaVg2?=
- =?utf-8?B?a1poNE94STRxVWU3REFEdlg3MTlYL0w1YnVVM1UrRTc0aGxwd25QN0gwMDhr?=
- =?utf-8?B?aWc0ZXhua0JMSWR4S05Nb2Nhem9SZk1vUGFrTy9LM0EydENrMG9QdFBtV0pS?=
- =?utf-8?B?KzdDS0xROVMrTFdSZnpLYXF4Q1pWRTcwL3hQWEVqR1JvWVlhQmo0NHFyNkUz?=
- =?utf-8?B?Ukl1NkR2QlB3RUdwdjRtZ2k1SlFwZ1g2SytYaTIrSmdHMGZha2w4Tm5acTY3?=
- =?utf-8?B?cFRZZ3NTN2tEOTVmK25FSDBhT1VGUzdYQkQ2ZTNUTk5PbTBXcjFiRmVKT0lu?=
- =?utf-8?B?QTFaZkVXRGk4b1VYa29mT1ZadVJEWFFKUnFmbUtIOTd0NHdCRVgzK2d6citS?=
- =?utf-8?B?Q1ZyendSWEFxNzczMXp3NmJPMk5iYWpwMVl3NmJML1d4c2x6djE5VzFBSnlk?=
- =?utf-8?B?Ym5qdExNRVRQdTVTZ2hleDRJdU01dURqMWp3R2x0dXJoU1JiTUdZSWcyN2dC?=
- =?utf-8?B?QUxjQ2k4V29LSE5sUDlROTJTRGlVTm91eHRPSGg0ZTNTbE8xRTNZNUMyTlN2?=
- =?utf-8?B?VWh0MWwwM0g3dFNjTHFsNlMyTzhVZDZIbFVnQTlBYXQ1UWhxaFVSdTBKZGI1?=
- =?utf-8?B?YkorL25PRnlqcmx4MHZoTll0U1dWcktGbUNRaEhPTXNYUFdrVExpczZBY2I4?=
- =?utf-8?B?QUNtS2Zhd1htTnFkcG9xS0hFVlM4VU4yd25yamM4T3ByMkNRVkJOcXVYYXRL?=
- =?utf-8?B?T1lXNEdqQnVLQVE9PQ==?=
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2020 19:46:28.0468
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36e0a3d3-03a3-48b5-b6b3-08d8a1321d1b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Cm6BWnntiH53voDWw3xPyef4B63XG2KYGU6sgPTYZM8wsfRmYTPRxnIxd5HNzNzs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2824
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-15_12:2020-12-15,2020-12-15 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- phishscore=0 spamscore=0 clxscore=1015 suspectscore=0 adultscore=0
- impostorscore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0 mlxlogscore=999
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012150132
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/11/20 6:48 PM, Song Liu wrote:
-> Introduce task_vma bpf_iter to print memory information of a process. It
-> can be used to print customized information similar to /proc/<pid>/maps.
+On Tue, 2020-12-15 at 10:47 -0800, Alexander Duyck wrote:
+> On Mon, Dec 14, 2020 at 9:48 PM Parav Pandit <parav@nvidia.com>
+> wrote:
+> > 
+> > > From: Alexander Duyck <alexander.duyck@gmail.com>
+> > > Sent: Tuesday, December 15, 2020 7:24 AM
+> > > 
+> > > On Mon, Dec 14, 2020 at 1:49 PM Saeed Mahameed <saeed@kernel.org>
+> > > wrote:
+> > > > Hi Dave, Jakub, Jason,
+> > > > 
+> > > 
+> > > Just to clarify a few things for myself. You mention
+> > > virtualization and SR-IOV
+> > > in your patch description but you cannot support direct
+> > > assignment with this
+> > > correct?
+> > Correct. it cannot be directly assigned.
+> > 
+> > > The idea here is simply logical partitioning of an existing
+> > > network
+> > > interface, correct?
+> > No. Idea is to spawn multiple functions from a single PCI device.
+> > These functions are not born in PCI device and in OS until they are
+> > created by user.
 > 
-> task_vma iterator releases mmap_lock before calling the BPF program.
-> Therefore, we cannot pass vm_area_struct directly to the BPF program. A
-> new __vm_area_struct is introduced to keep key information of a vma. On
-> each iteration, task_vma gathers information in __vm_area_struct and
-> passes it to the BPF program.
+> That is the definition of logical partitioning. You are essentially
+> taking one physical PCIe function and splitting up the resources over
+> multiple logical devices. With something like an MFD driver you would
+> partition the device as soon as the driver loads, but with this you
+> are peeling our resources and defining the devices on demand.
 > 
-> If the vma maps to a file, task_vma also holds a reference to the file
-> while calling the BPF program.
+
+Sure, same for SRIOV and same for VMDQ. they are all logical
+partitioning and they are all sharing the same resources of the system.
+our point here is that the SF mechanisms are more similar to SRIOV than
+VMDQ, other than sharing the MSIX vectors and slicing up the BARs,
+everything else works exactly like SRIOV.
+
+> > Jason and Saeed explained this in great detail few weeks back in v0
+> > version of the patchset at [1], [2] and [3].
+> > I better not repeat all of it here again. Please go through it.
+> > If you may want to read precursor to it, RFC from Jiri at [4] is
+> > also explains this in great detail.
 > 
-> Signed-off-by: Song Liu <songliubraving@fb.com>
-> ---
->   include/linux/bpf.h      |   2 +-
->   include/uapi/linux/bpf.h |   7 ++
->   kernel/bpf/task_iter.c   | 193 ++++++++++++++++++++++++++++++++++++++-
->   3 files changed, 200 insertions(+), 2 deletions(-)
+> I think I have a pretty good idea of how the feature works. My
+> concern
+> is more the use of marketing speak versus actual functionality. The
+> way this is being setup it sounds like it is useful for
+> virtualization
+> and it is not, at least in its current state. It may be at some point
+> in the future but I worry that it is really going to muddy the waters
+> as we end up with yet another way to partition devices.
 > 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 07cb5d15e7439..49dd1e29c8118 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1325,7 +1325,7 @@ enum bpf_iter_feature {
->   	BPF_ITER_RESCHED	= BIT(0),
->   };
->   
-> -#define BPF_ITER_CTX_ARG_MAX 2
-> +#define BPF_ITER_CTX_ARG_MAX 3
->   struct bpf_iter_reg {
->   	const char *target;
->   	bpf_iter_attach_target_t attach_target;
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 30b477a264827..c2db8a1d0cbd2 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -5151,4 +5151,11 @@ enum {
->   	BTF_F_ZERO	=	(1ULL << 3),
->   };
->   
-> +struct __vm_area_struct {
-> +	__u64 start;
-> +	__u64 end;
-> +	__u64 flags;
-> +	__u64 pgoff;
-> +};
-> +
->   #endif /* _UAPI__LINUX_BPF_H__ */
-> diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-> index 0458a40edf10a..30e5475d0831e 100644
-> --- a/kernel/bpf/task_iter.c
-> +++ b/kernel/bpf/task_iter.c
-> @@ -304,9 +304,171 @@ static const struct seq_operations task_file_seq_ops = {
->   	.show	= task_file_seq_show,
->   };
->   
-> +struct bpf_iter_seq_task_vma_info {
-> +	/* The first field must be struct bpf_iter_seq_task_common.
-> +	 * this is assumed by {init, fini}_seq_pidns() callback functions.
-> +	 */
-> +	struct bpf_iter_seq_task_common common;
-> +	struct task_struct *task;
-> +	struct __vm_area_struct vma;
-> +	struct file *file;
-> +	u32 tid;
-> +};
-> +
-> +static struct __vm_area_struct *
-> +task_vma_seq_get_next(struct bpf_iter_seq_task_vma_info *info)
-> +{
-> +	struct pid_namespace *ns = info->common.ns;
-> +	struct task_struct *curr_task;
-> +	struct vm_area_struct *vma;
-> +	u32 curr_tid = info->tid;
-> +	bool new_task = false;
-> +
-> +	/* If this function returns a non-NULL vma, it held a reference to
 
-the function does not return vma, it returns an internal data
-structure __vm_area_struct which captures some fields from vma.
+Ok, maybe we have different views on the feature and use cases, this is
+useful for visualization for various reasons, take vdpa for an
+instance, but anyway, we can improve documentation to address your
+concerns and at some point in the future when we add the direct
+assignment we can add the necessary documentation.
 
-> +	 * the task_struct. If info->file is non-NULL, it also holds a
-> +	 * reference to the file. Otherwise, it does not hold any
-> +	 * reference.
-> +	 */
-> +again:
-> +	if (info->task) {
-> +		curr_task = info->task;
-> +	} else {
-> +		curr_task = task_seq_get_next(ns, &curr_tid, true);
-> +		if (!curr_task) {
-> +			info->task = NULL;
 
-adding "info->tid = curr_tid  + 1" so next read, e.g. after read()
-syscall return 0 read length, will start after last checked curr_tid.
+> > > So this isn't so much a solution for virtualization, but may
+> > > work better for containers. I view this as an important
+> > > distinction to make as
+> > > the first thing that came to mind when I read this was mediated
+> > > devices
+> > > which is similar, but focused only on the virtualization case:
+> > > https://www.kernel.org/doc/html/v5.9/driver-api/vfio-mediated-
+> > > device.html
+> > > 
+> > Managing subfunction using medicated device is already ruled out
+> > last year at [5] as it is the abuse of the mdev bus for this
+> > purpose + has severe limitations of managing the subfunction
+> > device.
+> 
+> I agree with you on that. My thought was more the fact that the two
+> can be easily confused. If we are going to do this we need to define
+> that for networking devices perhaps that using the mdev interface
+> would be deprecated and we would need to go through devlink. However
+> before we do that we need to make sure we have this completely
+> standardized.
+> 
 
-> +			return NULL;
-> +		}
-> +
-> +		if (curr_tid != info->tid) {
-> +			info->tid = curr_tid;
-> +			new_task = true;
-> +		}
-> +
-> +		if (!curr_task->mm)
-> +			goto next_task;
-> +		info->task = curr_task;
-> +	}
-> +
-> +	mmap_read_lock(curr_task->mm);
-> +	if (new_task) {
-> +		vma = curr_task->mm->mmap;
-> +	} else {
-> +		/* We drop the lock between each iteration, so it is
-> +		 * necessary to use find_vma() to find the next vma. This
-> +		 * is similar to the mechanism in show_smaps_rollup().
-> +		 */
-> +		vma = find_vma(curr_task->mm, info->vma.end - 1);
-> +		/* same vma as previous iteration, use vma->next */
-> +		if (vma && (vma->vm_start == info->vma.start))
-> +			vma = vma->vm_next;
-> +	}
-> +	if (!vma) {
-> +		mmap_read_unlock(curr_task->mm);
-> +		goto next_task;
-> +	}
-> +	info->task = curr_task;
-> +	info->vma.start = vma->vm_start;
-> +	info->vma.end = vma->vm_end;
-> +	info->vma.pgoff = vma->vm_pgoff;
-> +	info->vma.flags = vma->vm_flags;
-> +	if (vma->vm_file)
-> +		info->file = get_file(vma->vm_file);
-> +	mmap_read_unlock(curr_task->mm);
-> +	return &info->vma;
-> +
-> +next_task:
-> +	put_task_struct(curr_task);
-> +	info->task = NULL;
-> +	curr_tid = ++(info->tid);
-> +	goto again;
-> +}
-> +
-> +static void *task_vma_seq_start(struct seq_file *seq, loff_t *pos)
-> +{
-> +	struct bpf_iter_seq_task_vma_info *info = seq->private;
-> +	struct __vm_area_struct *vma;
-> +
-> +	info->task = NULL;
+Then lets keep this discussion for later, when we add the direct
+assignment support :)
 
-Maybe put info->task = NULL in task_vma_seq_stop()?
+> > We are not going back to it anymore.
+> > It will be duplicating lot of the plumbing which exists in devlink,
+> > netlink, auxiliary bus and more.
+> 
+> That is kind of my point. It is already in the kernel. What you are
+> adding is the stuff that is duplicating it. I'm assuming that in
+> order
+> to be able to virtualize your interfaces in the future you are going
+> to have to make use of the same vfio plumbing that the mediated
+> devices do.
+> 
+> > > Rather than calling this a subfunction, would it make more sense
+> > > to call it
+> > > something such as a queue set?
+> > No, queue is just one way to send and receive data/packets.
+> > Jason and Saeed explained and discussed  this piece to you and
+> > others during v0 few weeks back at [1], [2], [3].
+> > Please take a look.
+> 
+> Yeah, I recall that. However I feel like it is being oversold. It
+> isn't "SR-IOV done right" it seems more like "VMDq done better". The
 
-> +	vma = task_vma_seq_get_next(info);
-> +	if (vma && *pos == 0)
-> +		++*pos;
-> +
-> +	return vma;
-> +}
-> +
-> +static void *task_vma_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-> +{
-> +	struct bpf_iter_seq_task_vma_info *info = seq->private;
-> +
-> +	++*pos;
-> +	if (info->file) {
-> +		fput(info->file);
-> +		info->file = NULL;
-> +	}
-> +	return task_vma_seq_get_next(info);
-> +}
-> +
-> +struct bpf_iter__task_vma {
-> +	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-> +	__bpf_md_ptr(struct task_struct *, task);
-> +	__bpf_md_ptr(struct __vm_area_struct *, vma);
-> +	__bpf_md_ptr(struct file *, file);
-> +};
-> +
-> +DEFINE_BPF_ITER_FUNC(task_vma, struct bpf_iter_meta *meta,
-> +		     struct task_struct *task, struct __vm_area_struct *vma,
-> +		     struct file *file)
-> +
-[...]
+Ok then will improve documentation to not oversell this as "SRIOV done
+right".
+
+> fact that interrupts are shared between the subfunctions is telling.
+> That is exactly how things work for Intel parts when they do VMDq as
+> well. The queues are split up into pools and a block of queues
+> belongs
+> to a specific queue. From what I can can tell the only difference is
+> that there is isolation of the pool into specific pages in the BAR.
+> Which is essentially a requirement for mediated devices so that they
+> can be direct assigned.
+> 
+
+I disagree, this is very dissimilar to VDMQ.
+SF is a VF without a unique PCI function and bar, the BAR is split up
+to give the "SF" access to its own partition in the HW, and then it
+will access the HW exactly like a VF would do, there are no "pools"
+involved here or any PF resource/queue management, from our HW
+architecture perspective there is no difference between SF and VF..
+really.
+
+> > > So in terms of ways to go I would argue this is likely better.
+> > > However one
+> > > downside is that we are going to end up seeing each subfunction
+> > > being
+> > > different from driver to driver and vendor to vendor which I
+> > > would argue
+> > > was also one of the problems with SR-IOV as you end up with a bit
+> > > of vendor
+> > > lock-in as a result of this feature since each vendor will be
+> > > providing a
+> > > different interface.
+> > > 
+> > Each and several vendors provided unified interface for managing
+> > VFs. i.e.
+> > (a) enable/disable was via vendor neutral sysfs
+> > (b) sriov capability exposed via standard pci capability and sysfs
+> > (c) sriov vf config (mac, vlan, rss, tx rate, spoof check trust)
+> > are using vendor agnostic netlink
+> > Even though the driver's internal implementation largely differs on
+> > how trust, spoof, mac, vlan rate etc are enforced.
+> > 
+> > So subfunction feature/attribute/functionality will be implemented
+> > differently internally in the driver matching vendor's device, for
+> > reasonably abstract concept of 'subfunction'.
+> 
+> I think you are missing the point. The biggest issue with SR-IOV
+> adoption was the fact that the drivers all created different VF
+> interfaces and those interfaces didn't support migration. That was
+> the
+> two biggest drawbacks for SR-IOV. I don't really see this approach
+> resolving either of those and so that is one of the reasons why I say
+> this is closer to "VMDq done better"  rather than "SR-IOV done
+> right".
+> Assuming at some point one of the flavours is a virtio-net style
+> interface you could eventually get to the point of something similar
+> to what seems to have been the goal of mdev which was meant to
+> address
+> these two points.
+> 
+
+Improving documentation will address these concerns ? 
+but to be clear it is much easier to solve sriov live migration when
+SFs are involved.
+
+> > > > A Subfunction supports eswitch representation through which it
+> > > > supports tc offloads. User must configure eswitch to
+> > > > send/receive
+> > > > packets from/to subfunction port.
+> > > > 
+> > > > Subfunctions share PCI level resources such as PCI MSI-X IRQs
+> > > > with
+> > > > their other subfunctions and/or with its parent PCI function.
+> > > 
+> > > This piece to the architecture for this has me somewhat
+> > > concerned. If all your
+> > > resources are shared and
+> > All resources are not shared.
+> 
+> Just to clarify, when I say "shared" I mean that they are all coming
+> from the same function. So if for example I were to direct-assign the
+> PF then all the resources for the subfunctions would go with it.
+> 
+> > > you are allowing devices to be created
+> > > incrementally you either have to pre-partition the entire
+> > > function which
+> > > usually results in limited resources for your base setup, or free
+> > > resources
+> > > from existing interfaces and redistribute them as things change.
+> > > I would be
+> > > curious which approach you are taking here? So for example if you
+> > > hit a
+> > > certain threshold will you need to reset the port and rebalance
+> > > the IRQs
+> > > between the various functions?
+> > No. Its works bit differently for mlx5 device.
+> > When base function is started, it started as if it doesn't have any
+> > subfunctions.
+> > When subfunction is instantiated, it spawns new resources in device
+> > (hw, fw, memory) depending on how much a function wants.
+> > 
+> > For example, PCI PF uses BAR 0, while subfunctions uses BAR 2.
+> 
+> In the grand scheme BAR doesn't really matter much. The assumption
+> here is that resources are page aligned so that you can map the pages
+> into a guest eventually.
+> 
+> > For IRQs, subfunction instance shares the IRQ with its
+> > parent/hosting PCI PF.
+> > In future, yes, a dedicated IRQs per SF is likely desired.
+> > Sridhar also talked about limiting number of queues to a
+> > subfunction.
+> > I believe there will be resources/attributes of the function to be
+> > controlled.
+> > devlink already provides rich interface to achieve that using
+> > devlink resources [8].
+> > 
+> > [..]
+> 
+> So it sounds like the device firmware is pre-partitioining the
+> resources and splitting them up between the PCI PF and your
+> subfunctions. Although in your case it sounds like there are
+> significantly more resources than you might find in an ixgbe
+> interface
+> for instance. :)
+> 
+> The point is that we should probably define some sort of standard
+> and/or expectations on what should happen when you spawn a new
+> interface. Would it be acceptable for the PF and existing
+> subfunctions
+> to have to reset if you need to rebalance the IRQ distribution, or
+> should they not be disrupted when you spawn a new interface?
+> 
+> One of the things I prefer about the mediated device setup is the
+> fact
+> that it has essentially pre-partitioned things beforehand and you
+> know
+> how many of each type of interface you can spawn. Is there any
+> information like that provided by this interface?
+> 
+> > > > $ ip link show
+> > > > 127: ens2f0np0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state
+> > > DOWN mode DEFAULT group default qlen 1000
+> > > >     link/ether 24:8a:07:b3:d1:12 brd ff:ff:ff:ff:ff:ff
+> > > >     altname enp6s0f0np0
+> > > > 129: p0sf88: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state
+> > > > DOWN
+> > > mode DEFAULT group default qlen 1000
+> > > >     link/ether 00:00:00:00:88:88 brd ff:ff:ff:ff:ff:ff>
+> > > 
+> > > I assume that p0sf88 is supposed to be the newly created
+> > > subfunction.
+> > > However I thought the naming was supposed to be the same as what
+> > > you are
+> > > referring to in the devlink, or did I miss something?
+> > > 
+> > I believe you are confused with the representor netdevice of
+> > subfuction with devices of subfunction. (netdev, rdma, vdpa etc).
+> > I suggest that please refer to the diagram in patch_15 in [7] to
+> > see the stack, modules, objects.
+> > Hope below description clarifies a bit.
+> > There are two netdevices.
+> > (a) representor netdevice, attached to the devlink port of the
+> > eswitch
+> > (b) netdevice of the SF used by the end application (in your
+> > example, this is assigned to container).
+> 
+> Sorry, that wasn't clear from your example. So in this case you
+> started in a namespace and the new device you created via devlink was
+> spawned in the root namespace?
+> 
+> > Both netdevice follow obviously a different naming scheme.
+> > Representor netdevice follows naming scheme well defined in kernel
+> > + systemd/udev v245 and higher.
+> > It is based on phys_port_name sysfs attribute.
+> > This is same for existing PF and SF representors exist for year+
+> > now. Further used by subfunction.
+> > 
+> > For subfunction netdevice (p0s88), system/udev will be extended. I
+> > put example based on my few lines of udev rule that reads
+> > phys_port_name and user supplied sfnum, so that user exactly knows
+> > which interface to assign to container.
+> 
+> Admittedly I have been out of the loop for the last couple years
+> since
+> I had switched over to memory management work for a while. It would
+> be
+> useful to include something that shows your created network interface
+> in the example in addition to your switchdev port.
+> 
+> > > > After use inactivate the function:
+> > > > $ devlink port function set ens2f0npf0sf88 state inactive
+> > > > 
+> > > > Now delete the subfunction port:
+> > > > $ devlink port del ens2f0npf0sf88
+> > > 
+> > > This seems wrong to me as it breaks the symmetry with the port
+> > > add
+> > > command and
+> > Example of the representor device is only to make life easier for
+> > the user.
+> > Devlink port del command works based on the devlink port index,
+> > just like existing devlink port commands (get,set,split,unsplit).
+> > I explained this in a thread with Sridhar at [6].
+> > In short devlink port del <bus/device_name/port_index command is
+> > just fine.
+> > Port index is unique handle for the devlink instance that user
+> > refers to delete, get, set port and port function attributes post
+> > its creation.
+> > I choose the representor netdev example because it is more
+> > intuitive to related to, but port index is equally fine and
+> > supported.
+> 
+> Okay then, that addresses my concern. I just wanted to make sure we
+> weren't in some situation where you had to have the interface in
+> order
+> to remove it.
+> 
+> > > assumes you have ownership of the interface in the host. I
+> > > would much prefer to to see the same arguments that were passed
+> > > to the
+> > > add command being used to do the teardown as that would allow for
+> > > the
+> > > parent function to create the object, assign it to a container
+> > > namespace, and
+> > > not need to pull it back in order to destroy it.
+> > Parent function will not have same netdevice name as that of
+> > representor netdevice, because both devices exist in single system
+> > for large part of the use cases.
+> > So port delete command works on the port index.
+> > Host doesn't need to pull it back to destroy it. It is destroyed
+> > via port del command.
+> > 
+> > [1] 
+> > https://lore.kernel.org/netdev/20201112192424.2742-1-parav@nvidia.com/
+> > [2] 
+> > https://lore.kernel.org/netdev/421951d99a33d28b91f2b2997409d0c97fa5a98a.camel@kernel.org/
+> > [3] 
+> > https://lore.kernel.org/netdev/20201120161659.GE917484@nvidia.com/
+> > [4] 
+> > https://lore.kernel.org/netdev/20200501091449.GA25211@nanopsycho.orion/
+> > [5] 
+> > https://lore.kernel.org/netdev/20191107160448.20962-1-parav@mellanox.com/
+> > [6] 
+> > https://lore.kernel.org/netdev/BY5PR12MB43227784BB34D929CA64E315DCCA0@BY5PR12MB4322.namprd12.prod.outlook.com/
+> > [7] 
+> > https://lore.kernel.org/netdev/20201214214352.198172-16-saeed@kernel.org/T/#u
+> > [8] https://man7.org/linux/man-pages/man8/devlink-resource.8.html
+> > 
+
