@@ -2,123 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEDE32DA8DB
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 09:05:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4172A2DA908
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 09:12:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbgLOIEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 03:04:40 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:2335 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726249AbgLOIEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 03:04:40 -0500
-Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Cw9jV6b1yz13Ts1;
-        Tue, 15 Dec 2020 16:02:54 +0800 (CST)
-Received: from DGGEMM424-HUB.china.huawei.com (10.1.198.41) by
- DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Tue, 15 Dec 2020 16:03:56 +0800
-Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.214]) by
- dggemm424-hub.china.huawei.com ([10.1.198.41]) with mapi id 14.03.0509.000;
- Tue, 15 Dec 2020 16:03:46 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
-        chenchanghu <chenchanghu@huawei.com>,
-        xudingke <xudingke@huawei.com>,
-        "huangbin (J)" <brian.huangbin@huawei.com>
-Subject: RE: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
-Thread-Topic: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
-Thread-Index: AQHW0oRuvV7yNtzm006vlEv0Vf1dkan3BR2AgADGt5A=
-Date:   Tue, 15 Dec 2020 08:03:45 +0000
-Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB82A73@DGGEMM533-MBX.china.huawei.com>
-References: <cover.1608024547.git.wangyunjian@huawei.com>
- <4be47d3a325983f1bfc39f11f0e015767dd2aa3c.1608024547.git.wangyunjian@huawei.com>
- <e853a47e-b581-18d9-f13c-b449b176a308@redhat.com>
-In-Reply-To: <e853a47e-b581-18d9-f13c-b449b176a308@redhat.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.243.127]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726586AbgLOILi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 03:11:38 -0500
+Received: from mx.baikalelectronics.com ([94.125.187.42]:50018 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725907AbgLOILh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 03:11:37 -0500
+Date:   Tue, 15 Dec 2020 11:10:50 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Alexandre Torgue <alexandre.torgue@st.com>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC] net: stmmac: Problem with adding the native GPIOs support
+Message-ID: <20201215081050.bewvzcykueem76w7@mobilestation>
+References: <20201214092516.lmbezb6hrbda6hzo@mobilestation>
+ <8477f6be-eb8d-6b6f-33f2-835819542045@st.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <8477f6be-eb8d-6b6f-33f2-835819542045@st.com>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFzb24gV2FuZyBbbWFp
-bHRvOmphc293YW5nQHJlZGhhdC5jb21dDQo+IFNlbnQ6IFR1ZXNkYXksIERlY2VtYmVyIDE1LCAy
-MDIwIDEyOjEwIFBNDQo+IFRvOiB3YW5neXVuamlhbiA8d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT47
-IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7DQo+IG1zdEByZWRoYXQuY29tOyB3aWxsZW1kZWJydWlq
-bi5rZXJuZWxAZ21haWwuY29tDQo+IENjOiB2aXJ0dWFsaXphdGlvbkBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZzsgTGlsaWp1biAoSmVycnkpDQo+IDxqZXJyeS5saWxpanVuQGh1YXdlaS5jb20+
-OyBjaGVuY2hhbmdodSA8Y2hlbmNoYW5naHVAaHVhd2VpLmNvbT47DQo+IHh1ZGluZ2tlIDx4dWRp
-bmdrZUBodWF3ZWkuY29tPjsgaHVhbmdiaW4gKEopDQo+IDxicmlhbi5odWFuZ2JpbkBodWF3ZWku
-Y29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG5ldCAyLzJdIHZob3N0X25ldDogZml4IGhpZ2gg
-Y3B1IGxvYWQgd2hlbiBzZW5kbXNnIGZhaWxzDQo+IA0KPiANCj4gT24gMjAyMC8xMi8xNSDkuIrl
-jYg5OjQ4LCB3YW5neXVuamlhbiB3cm90ZToNCj4gPiBGcm9tOiBZdW5qaWFuIFdhbmcgPHdhbmd5
-dW5qaWFuQGh1YXdlaS5jb20+DQo+ID4NCj4gPiBDdXJyZW50bHkgd2UgYnJlYWsgdGhlIGxvb3Ag
-YW5kIHdha2UgdXAgdGhlIHZob3N0X3dvcmtlciB3aGVuIHNlbmRtc2cNCj4gPiBmYWlscy4gV2hl
-biB0aGUgd29ya2VyIHdha2VzIHVwIGFnYWluLCB3ZSdsbCBtZWV0IHRoZSBzYW1lIGVycm9yLiBU
-aGlzDQo+ID4gd2lsbCBjYXVzZSBoaWdoIENQVSBsb2FkLiBUbyBmaXggdGhpcyBpc3N1ZSwgd2Ug
-Y2FuIHNraXAgdGhpcw0KPiA+IGRlc2NyaXB0aW9uIGJ5IGlnbm9yaW5nIHRoZSBlcnJvci4gV2hl
-biB3ZSBleGNlZWRzIHNuZGJ1ZiwgdGhlIHJldHVybg0KPiA+IHZhbHVlIG9mIHNlbmRtc2cgaXMg
-LUVBR0FJTi4gSW4gdGhlIGNhc2Ugd2UgZG9uJ3Qgc2tpcCB0aGUgZGVzY3JpcHRpb24NCj4gPiBh
-bmQgZG9uJ3QgZHJvcCBwYWNrZXQuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBZdW5qaWFuIFdh
-bmcgPHdhbmd5dW5qaWFuQGh1YXdlaS5jb20+DQo+ID4gLS0tDQo+ID4gICBkcml2ZXJzL3Zob3N0
-L25ldC5jIHwgMjEgKysrKysrKysrLS0tLS0tLS0tLS0tDQo+ID4gICAxIGZpbGUgY2hhbmdlZCwg
-OSBpbnNlcnRpb25zKCspLCAxMiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9k
-cml2ZXJzL3Zob3N0L25ldC5jIGIvZHJpdmVycy92aG9zdC9uZXQuYyBpbmRleA0KPiA+IGM4Nzg0
-ZGZhZmRkNy4uZjk2NjU5MmQ4OTAwIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvdmhvc3QvbmV0
-LmMNCj4gPiArKysgYi9kcml2ZXJzL3Zob3N0L25ldC5jDQo+ID4gQEAgLTgyNywxNiArODI3LDEz
-IEBAIHN0YXRpYyB2b2lkIGhhbmRsZV90eF9jb3B5KHN0cnVjdCB2aG9zdF9uZXQgKm5ldCwNCj4g
-c3RydWN0IHNvY2tldCAqc29jaykNCj4gPiAgIAkJCQltc2cubXNnX2ZsYWdzICY9IH5NU0dfTU9S
-RTsNCj4gPiAgIAkJfQ0KPiA+DQo+ID4gLQkJLyogVE9ETzogQ2hlY2sgc3BlY2lmaWMgZXJyb3Ig
-YW5kIGJvbWIgb3V0IHVubGVzcyBFTk9CVUZTPyAqLw0KPiA+ICAgCQllcnIgPSBzb2NrLT5vcHMt
-PnNlbmRtc2coc29jaywgJm1zZywgbGVuKTsNCj4gPiAtCQlpZiAodW5saWtlbHkoZXJyIDwgMCkp
-IHsNCj4gPiArCQlpZiAodW5saWtlbHkoZXJyID09IC1FQUdBSU4pKSB7DQo+ID4gICAJCQl2aG9z
-dF9kaXNjYXJkX3ZxX2Rlc2ModnEsIDEpOw0KPiA+ICAgCQkJdmhvc3RfbmV0X2VuYWJsZV92cShu
-ZXQsIHZxKTsNCj4gPiAgIAkJCWJyZWFrOw0KPiA+IC0JCX0NCj4gDQo+IA0KPiBBcyBJJ3ZlIHBv
-aW50ZWQgb3V0IGluIGxhc3QgdmVyc2lvbi4gSWYgeW91IGRvbid0IGRpc2NhcmQgZGVzY3JpcHRv
-ciwgeW91IHByb2JhYmx5DQo+IG5lZWQgdG8gYWRkIHRoZSBoZWFkIHRvIHVzZWQgcmluZy4gT3Ro
-ZXJ3aXNlIHRoaXMgZGVzY3JpcHRvciB3aWxsIGJlIGFsd2F5cw0KPiBpbmZsaWdodCB0aGF0IG1h
-eSBjb25mdXNlIGRyaXZlcnMuDQoNClNvcnJ5IGZvciBtaXNzaW5nIHRoZSBjb21tZW50Lg0KDQpB
-ZnRlciBkZWxldGluZyBkaXNjYXJkIGRlc2NyaXB0b3IgYW5kIGJyZWFrLCB0aGUgbmV4dCBwcm9j
-ZXNzaW5nIHdpbGwgYmUgdGhlIHNhbWUNCmFzIHRoZSBub3JtYWwgc3VjY2VzcyBvZiBzZW5kbXNn
-KCksIGFuZCB2aG9zdF96ZXJvY29weV9zaWduYWxfdXNlZCgpIG9yDQp2aG9zdF9hZGRfdXNlZF9h
-bmRfc2lnbmFsKCkgbWV0aG9kIHdpbGwgYmUgY2FsbGVkIHRvIGFkZCB0aGUgaGVhZCB0byB1c2Vk
-IHJpbmcuDQoNClRoYW5rcw0KPiANCj4gDQo+ID4gLQkJaWYgKGVyciAhPSBsZW4pDQo+ID4gLQkJ
-CXByX2RlYnVnKCJUcnVuY2F0ZWQgVFggcGFja2V0OiBsZW4gJWQgIT0gJXpkXG4iLA0KPiA+IC0J
-CQkJIGVyciwgbGVuKTsNCj4gPiArCQl9IGVsc2UgaWYgKHVubGlrZWx5KGVyciA8IDAgfHwgZXJy
-ICE9IGxlbikpDQo+IA0KPiANCj4gSXQgbG9va3MgdG8gbWUgZXJyICE9IGxlbiBjb3ZlcnMgZXJy
-IDwgMC4NCg0KT0sNCg0KPiANCj4gVGhhbmtzDQo+IA0KPiANCj4gPiArCQkJdnFfZXJyKHZxLCAi
-RmFpbCB0byBzZW5kaW5nIHBhY2tldHMgZXJyIDogJWQsIGxlbiA6ICV6ZFxuIiwgZXJyLA0KPiA+
-ICtsZW4pOw0KPiA+ICAgZG9uZToNCj4gPiAgIAkJdnEtPmhlYWRzW252cS0+ZG9uZV9pZHhdLmlk
-ID0gY3B1X3RvX3Zob3N0MzIodnEsIGhlYWQpOw0KPiA+ICAgCQl2cS0+aGVhZHNbbnZxLT5kb25l
-X2lkeF0ubGVuID0gMDsNCj4gPiBAQCAtOTIyLDcgKzkxOSw2IEBAIHN0YXRpYyB2b2lkIGhhbmRs
-ZV90eF96ZXJvY29weShzdHJ1Y3Qgdmhvc3RfbmV0DQo+ICpuZXQsIHN0cnVjdCBzb2NrZXQgKnNv
-Y2spDQo+ID4gICAJCQltc2cubXNnX2ZsYWdzICY9IH5NU0dfTU9SRTsNCj4gPiAgIAkJfQ0KPiA+
-DQo+ID4gLQkJLyogVE9ETzogQ2hlY2sgc3BlY2lmaWMgZXJyb3IgYW5kIGJvbWIgb3V0IHVubGVz
-cyBFTk9CVUZTPyAqLw0KPiA+ICAgCQllcnIgPSBzb2NrLT5vcHMtPnNlbmRtc2coc29jaywgJm1z
-ZywgbGVuKTsNCj4gPiAgIAkJaWYgKHVubGlrZWx5KGVyciA8IDApKSB7DQo+ID4gICAJCQlpZiAo
-emNvcHlfdXNlZCkgew0KPiA+IEBAIC05MzEsMTMgKzkyNywxNCBAQCBzdGF0aWMgdm9pZCBoYW5k
-bGVfdHhfemVyb2NvcHkoc3RydWN0IHZob3N0X25ldA0KPiAqbmV0LCBzdHJ1Y3Qgc29ja2V0ICpz
-b2NrKQ0KPiA+ICAgCQkJCW52cS0+dXBlbmRfaWR4ID0gKCh1bnNpZ25lZCludnEtPnVwZW5kX2lk
-eCAtIDEpDQo+ID4gICAJCQkJCSUgVUlPX01BWElPVjsNCj4gPiAgIAkJCX0NCj4gPiAtCQkJdmhv
-c3RfZGlzY2FyZF92cV9kZXNjKHZxLCAxKTsNCj4gPiAtCQkJdmhvc3RfbmV0X2VuYWJsZV92cShu
-ZXQsIHZxKTsNCj4gPiAtCQkJYnJlYWs7DQo+ID4gKwkJCWlmIChlcnIgPT0gLUVBR0FJTikgew0K
-PiA+ICsJCQkJdmhvc3RfZGlzY2FyZF92cV9kZXNjKHZxLCAxKTsNCj4gPiArCQkJCXZob3N0X25l
-dF9lbmFibGVfdnEobmV0LCB2cSk7DQo+ID4gKwkJCQlicmVhazsNCj4gPiArCQkJfQ0KPiA+ICAg
-CQl9DQo+ID4gICAJCWlmIChlcnIgIT0gbGVuKQ0KPiA+IC0JCQlwcl9kZWJ1ZygiVHJ1bmNhdGVk
-IFRYIHBhY2tldDogIg0KPiA+IC0JCQkJICIgbGVuICVkICE9ICV6ZFxuIiwgZXJyLCBsZW4pOw0K
-PiA+ICsJCQl2cV9lcnIodnEsICJGYWlsIHRvIHNlbmRpbmcgcGFja2V0cyBlcnIgOiAlZCwgbGVu
-IDogJXpkXG4iLCBlcnIsDQo+ID4gK2xlbik7DQo+ID4gICAJCWlmICghemNvcHlfdXNlZCkNCj4g
-PiAgIAkJCXZob3N0X2FkZF91c2VkX2FuZF9zaWduYWwoJm5ldC0+ZGV2LCB2cSwgaGVhZCwgMCk7
-DQo+ID4gICAJCWVsc2UNCg0K
+Hello Alexandre,
+
+Thanks for the response. My comments are below.
+
+On Mon, Dec 14, 2020 at 11:52:14AM +0100, Alexandre Torgue wrote:
+> Hi Serge,
+> 
+
+> Sorry I never used GPIO provided by DWMAC IP. Obviously, I think is to late
+> for you to use GPIOs provided by your SoC directly. Unfortunately, it seems
+> to be a "perfect" chicken and eggs problem :(.
+
+If you meant the problem that the PHY is getting reset together with
+the MAC reset, then at some extent it's indeed the chicken-eggs
+problem, but it affects the STMMAC driver only due to the
+stmmac_reset() procedure implementation (it waits for the SWR flag
+being cleared right in the same method, but the flag won't be cleared
+until all the clocks are ready, which isn't possible until PHY reset
+isn't cleared, so it causes the DMA-reset timeout). The solution of
+that is simple. If we first performed the reset procedure, then
+initialized/attached the PHY and after that would have made sure the
+DMA_BUS_MODE.SFT_RESET flag was cleared, then the problem wouldn't be
+even noticeable. But still that would have solved just a part of the
+problem. The driver would still perform the MAC reset in the PM
+resume() callback, which in my case will automatically reset the PHY,
+while the PHY subsystem doesn't expect that.
+
+So in order to make the driver properly working for any situation we
+either need to take the possible PHY reset into account in both open()
+and PM-resume() callbacks, or get rid of the reset completely there.
+
+The perfect solution would be not to reset the MAC all the time on the
+network device open and resume procedures. In that case we could have
+reset the controller in the stmmac_dvr_probe() just once, then
+register the GPIO interface and use it for the MDIO-bus, whatever with
+no problems. What do you think of that? Is that even possible seeing,
+for example, AMD xGBE driver doesn't reset the MAC on network dev
+open?  Yeah, the GMAC manual states, that the DMA initialization needs
+to start with the GMAC reset, but in fact do we really need to do that
+all the time on the device open/resume? Wouldn't that be enough to
+reset the device just on probe?
+
+> 
+> Do you have possibilty to "play" with gpio setting. I mean change
+> configuration of them (at least for reset one) before perform a DMA reset:
+> If you have a pull-up on RST line and you could "disconnect" GPO inside GMAC
+> then your PHY should remain on during DMA reset phase.
+
+Alas no. It is impossible to do anything with hardware now. We need to
+deal with what we currently have. The GPO lane is externally
+pulled-down to GND on all the Baikal-T1 SoC-based hardware and these
+are not a single type of device, but multiple of them, which have been
+produced for more than three years now. We also can't somehow
+detach/disconnect GPO inside the GMAC or somehow else, because the SoC
+has already been synthesized with no such feature. So when the GPIO
+register is reset or the GPIO.GPO field is cleared PHY gets to be in
+reset state, and it concerns all the devices.(
+
+-Sergey
+
+> 
+> regards
+> Alex
+> 
+> On 12/14/20 10:25 AM, Serge Semin wrote:
+> > Hello folks,
+> > 
+> > I've got a problem, which has been blowing by head up for more than three
+> > weeks now, and I'm desperately need your help in that matter. See our
+> > Baikal-T1 SoC is created with two DW GMAC v3.73a IP-cores. Each core
+> > has been synthesized with two GPIOs: one as GPI and another as GPO. There
+> > are multiple Baikal-T1-based devices have been created so far with active
+> > GMAC interface usage and each of them has been designed like this:
+> > 
+> >   +------------------------+
+> >   | Baikal-T1 +------------+       +------------+
+> >   |   SoC     | DW GMAC    |       |   Some PHY |
+> >   |           |      Rx-clk+<------+Rx-clk      |
+> >   |           |            |       |            |
+> >   |           |         GPI+<------+#IRQ        |
+> >   |           |            |       |            |
+> >   |           |       RGMII+<----->+RGMII       |
+> >   |           |        MDIO+<----->+MDIO        |
+> >   |           |            |       |            |
+> >   |           |         GPO+------>+#RST        |
+> >   |           |            |       |            |
+> >   |           |      Tx-clk+------>+Tx-clk      |
+> >   |           |            |       |            |
+> >   |           +------------+       +------------+
+> >   +------------------------+
+> > 
+> > Each of such devices has got en external RGMII-PHY attached configured via the
+> > MDIO bus with Rx-clock supplied by the PHY and Tx-clock consumed by it. The
+> > main peculiarity of such configuration is that the DW GMAC GPIOs have been used
+> > to catch the PHY IRQs and to reset the PHY. Seeing the GPIOs support hasn't
+> > been added to the STMMAC driver it's the very first setup for now, which has
+> > been using them. Anyway the hardware setup depicted above doesn't seem
+> > problematic at the first glance, but in fact it is. See, the DW *MAC driver
+> > (STMMAC ethernet driver) is doing the MAC reset each time it performs the
+> > device open or resume by means of the call-chain:
+> > 
+> >    stmmac_open()---+
+> >                    +->stmmac_hw_setup()->stmmac_init_dma_engine()->stmmac_reset().
+> >    stmmac_resume()-+
+> > 
+> > Such reset causes the whole interface reset: MAC, DMA and, what is more
+> > important, GPIOs as being exposed as part of the MAC registers. That
+> > in our case automatically causes the external PHY reset, what neither
+> > the STTMAC driver nor the PHY subsystem expect at all.
+> > 
+> > Moreover the stmmac_reset() method polls the DMA_BUS_MODE.SFT_RESET flag
+> > state to be sure the MAC is successfully completed. But since the external
+> > PHY has got in reset state it doesn't generate the Rx-clk signal. Due to
+> > that the MAC-DMA won't get out of the reset state so the stmmac_reset()
+> > method will return timeout error. Of course I could manually restore the
+> > GPIOs state in the stmmac_reset() before start to poll the SFT_RESET flag,
+> > which may release the PHY reset. But that seems more like a workaround,
+> > because the PHY still has been in reset and need to be reinitialized
+> > anyway. Moreover some PHY may need to have more complicated reset cycle
+> > with certain delays between RST assertion/de-assertion, so the workaround
+> > won't work well for them.
+> > 
+> > To sum it up my question is what is the right way to resolve the problem
+> > described above? My first idea was to just move the MAC reset from the
+> > net-device open()/close() callbacks to the
+> > stmmac_dvr_probe()/stmmac_dvr_remove() functions and don't reset the whole
+> > interface on each device open. The problems we may have in that case is
+> > due to the suspend/resume procedures, which for some reason require the
+> > MAC reset too. That's why I need your help in this matter. Do you have any
+> > idea how to gently add the GPIOs support and don't break the STMMAC
+> > driver?
+> > 
+> > One more tiny question regarding the DW *MAC drivers available in kernel.
+> > Aside of the DW GMAC Baikal-T1 SoC has also got DW xGMAC v2.11a embedded
+> > with XPCS PHY attached. My question is what driver should we better use to
+> > handle our xGMAC interface? AFAICS there are three DW *MAC-related drivers
+> > the kernel currently provides:
+> > 1) drivers/net/ethernet/stmicro/stmmac
+> > 2) drivers/net/ethernet/amd/
+> > 3) drivers/net/ethernet/synopsys/
+> > xGBE interface is supported by the drivers 1) and 2). In accordance with
+> > https://www.spinics.net/lists/netdev/msg414148.html all xGMAC related
+> > parts should have been added to 2), but recently the XGMAC support has
+> > been added to 1). So I am confused what driver is now supposed to be used
+> > for new xGMACs?
+> > 
+> > Regards,
+> > -Sergey
+> > 
