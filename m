@@ -2,108 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA1702DAFE1
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 16:16:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B3412DAFE9
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 16:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730031AbgLOPPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 10:15:52 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:57116 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729840AbgLOPOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 10:14:52 -0500
-Received: by mail-il1-f198.google.com with SMTP id r20so16694454ilh.23
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 07:14:36 -0800 (PST)
+        id S1729708AbgLOPTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 10:19:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729535AbgLOPTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 10:19:07 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20634C06179C
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 07:18:22 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id jx16so28184093ejb.10
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 07:18:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mccsd.net; s=google;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=kuMuD6xCyI8JJbPCHEa0qMg6IeSzYUjw0C5u83DZV88=;
+        b=CpiQbL34bKKGWVo/rFBt66LNs1JsZ98WohVNp8iIaR3obJhsvB6IdPuWrszQvwImaN
+         y6t50blf43cuN0NC8w0znt6IpzPIb000M8hbGP3vTJHVpw8CWSx/6ucdr+C8KzJzeRZ9
+         0tn340APmQD23Nrm35miHkLXcOA9OZzAPnbOd/akNZRSoIy88Zz+sj/xxbg1tzca0ElS
+         gVkQPD/tl53jek4m7rI47or+Ox60ahMd2LqIM0Ch1OmcX2ZjDEtKKVpqZ4fC1J+sc65o
+         n1pKvLLZJAeDlw80F0tf9RGJRle82eVfXWREDmsclWvneYP4/h1rtJpEfVdhx1qKprqC
+         TOZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=AnGmRmfihjvN7Tg8VK6Jl1pVPSZu1VQEIxNiW/n3Hr8=;
-        b=oV/FQkLDj4vJSxLEPly2E3EfUQoElsf9qtkHGFXMLRbL0PYdnA0mZP6n7e0P7bRFqa
-         gl/nBzpE4igtxNrkF3f+/rTt+gddOIboDC7rWil60l/AZGqzx7U2ZNbE/xWqcU0sp4Vi
-         Av1Wq3s28CQRckFTDtwAflXzPPVGvh/n6sL5Zg8oq5iBzxR7e8u9csKJzn1+71p4yXVN
-         Ca0zzOvIQDTCouPx+fIR8f1bzsjWfF3Ev2zQ8wuuxWLmoiPYAGnJwKqTq3L2nrEbJ84o
-         lCVJhcBZGAjl5jRuvx68VXkbEwIiDSw2/d9PZiE0HfiRU5jzeAFkwHEE4C9Lp9iRB+rb
-         dFbA==
-X-Gm-Message-State: AOAM5332JaCs2+EOUDvEebep/EHc7cxVEKOQcpZ6sZjGBI92KdSy3/ke
-        M7umun0eI9Fib+5zQtdpcPd/1mxOfqNHAFhYjU0h3h+25jhk
-X-Google-Smtp-Source: ABdhPJzOlmobw/zDV5uvUSvjrXtXYrEsNL1/D1pYRSxsKz8AI6A8VTtAHNPJav364KU3p2XRADWNrsC7XrR2jbvsOMpfkHFuv3I1
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=kuMuD6xCyI8JJbPCHEa0qMg6IeSzYUjw0C5u83DZV88=;
+        b=rIv7PYOJZk9KATwp8lny0n5UaWb78lHHSY8RPlZWLF49opjrU009f/cWhWVw6xd/rc
+         DWtj/cS8QHwLx5s2oQ19mN8/P74SyAwiruHBVvmQtSQqpQejW3kgxnZqQgVJoDpq+EKE
+         +PQW0svNsh5bc09y1htdLAqAb5F680tEsOZ+8A9wsJX11UujFKaDgDQ9seGf5gvvqmmF
+         r3qndkcHSw5Oon8A5W2N2/BW+TQGsISMFGJJzQW6hQered7TguRVx/fV9AYZt2zebqht
+         Bp3Dp//5RqGUIziYNs8k5JH/GotkbW97eq2HnbrD26uKUA+EtSalAvnaqhW+htzlTLtR
+         HP/Q==
+X-Gm-Message-State: AOAM532Qscs1+3zY3K6JfG0w2NDTu1001u2Vhouuv9fkNznyzzeTk/de
+        Sbchfk+SgoHh26LfSBxZpFnMv0nhuWwmedI9AUBtFA==
+X-Google-Smtp-Source: ABdhPJwnN9VTD9ikon8mxciSiVLmtmkQBt9yhzNHTfZ8aPUIPjoOV/See/D5IvBPazhXHVU2xhDKYQKK77vfhJcLNWo=
+X-Received: by 2002:a17:906:2707:: with SMTP id z7mr27637256ejc.418.1608045500234;
+ Tue, 15 Dec 2020 07:18:20 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:7650:: with SMTP id z77mr39145481jab.134.1608045250882;
- Tue, 15 Dec 2020 07:14:10 -0800 (PST)
-Date:   Tue, 15 Dec 2020 07:14:10 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f63a4705b6823516@google.com>
-Subject: UBSAN: shift-out-of-bounds in hash_ipmark_create
-From:   syzbot <syzbot+d81819ac03d8c36e3974@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, vvs@virtuozzo.com
+Received: by 2002:a54:3451:0:0:0:0:0 with HTTP; Tue, 15 Dec 2020 07:18:19
+ -0800 (PST)
+Reply-To: abderazackzebdani11@yandex.com
+From:   ABDERAZACK ZEBDANI <emendel018@mccsd.net>
+Date:   Tue, 15 Dec 2020 07:18:19 -0800
+Message-ID: <CAAgWTc+D+X8UPWa_f2xKKd2OM5isi3cAXtQM-xkFOCz+bshhMw@mail.gmail.com>
+Subject: Greetings My Dear Friend,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Greetings My Dear Friend,
 
-syzbot found the following issue on:
+Before I introduce myself, I wish to inform you that this letter is
+not a hoax mail and I urge you to treat it serious.This letter must
+come to you as a big surprise, but I believe it is only a day that
+people meet and become great friends and business partners. Please I
+want you to read this letter very carefully and I must apologize for
+barging this message into your mail box without any formal
+introduction due to the urgency and confidentiality of this business
+and I know that this message will come to you as a surprise. Please
+this is not a joke and I will not like you to joke with it ok,With due
+respect to your person and much sincerity of purpose, I make this
+contact with you as I believe that you can be of great assistance to
+me. My name is Mr.Abderazack zebdani, from Burkina Faso, West Africa.
+I work in Bank Of Africa (BOA) as telex manager, please see this as a
+confidential message and do not reveal it to another person and let me
+know whether you can be of assistance regarding my proposal below
+because it is top secret.
 
-HEAD commit:    15ac8fdb Add linux-next specific files for 20201207
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=156c845b500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3696b8138207d24d
-dashboard link: https://syzkaller.appspot.com/bug?extid=d81819ac03d8c36e3974
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14960f9b500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12be080f500000
+I am about to retire from active Banking service to start a new life
+but I am skeptical to reveal this particular secret to a stranger. You
+must assure me that everything will be handled confidentially because
+we are not going to suffer again in life. It has been 10 years now
+that most of the greedy African Politicians used our bank to launder
+money overseas through the help of their Political advisers. Most of
+the funds which they transferred out of the shores of Africa were gold
+and oil money that was supposed to have been used to develop the
+continent. Their Political advisers always inflated the amounts before
+transferring to foreign accounts, so I also used the opportunity to
+divert part of the funds hence I am aware that there is no official
+trace of how much was transferred as all the accounts used for such
+transfers were being closed after transfer. I acted as the Bank
+Officer to most of the politicians and when I discovered that they
+were using me to succeed in their greedy act; I also cleaned some of
+their banking records from the Bank files and no one cared to ask me
+because the money was too much for them to control. They laundered
+over $5billion Dollars during the process.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d81819ac03d8c36e3974@syzkaller.appspotmail.com
+Before I send this message to you, I have already diverted
+($10.5million Dollars) to an escrow account belonging to no one in the
+bank. The bank is anxious now to know who the beneficiary to the funds
+is because they have made a lot of profits with the funds. It is more
+than Eight years now and most of the politicians are no longer using
+our bank to transfer funds overseas. The ($10.5million Dollars) has
+been laying waste in our bank and I don=E2=80=99t want to retire from the b=
+ank
+without transferring the funds to a foreign account to enable me share
+the proceeds with the receiver (a foreigner). The money will be shared
+60% for me and 40% for you. There is no one coming to ask you about
+the funds because I secured everything. I only want you to assist me
+by providing a reliable bank account where the funds can be
+transferred.
 
-================================================================================
-UBSAN: shift-out-of-bounds in net/netfilter/ipset/ip_set_hash_gen.h:151:6
-shift exponent 32 is too large for 32-bit type 'unsigned int'
-CPU: 0 PID: 8473 Comm: syz-executor542 Not tainted 5.10.0-rc6-next-20201207-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
- __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
- htable_bits net/netfilter/ipset/ip_set_hash_gen.h:151 [inline]
- hash_ipmark_create.cold+0x96/0x9b net/netfilter/ipset/ip_set_hash_gen.h:1524
- ip_set_create+0x610/0x1380 net/netfilter/ipset/ip_set_core.c:1115
- nfnetlink_rcv_msg+0xecc/0x1180 net/netfilter/nfnetlink.c:252
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:600
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x440419
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffdadcbeb88 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440419
-RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000005 R09: 00000000004002c8
-R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000401c20
-R13: 0000000000401cb0 R14: 0000000000000000 R15: 0000000000000000
-================================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+You are not to face any difficulties or legal implications as I am
+going to handle the transfer personally. If you are capable of
+receiving the funds, do let me know immediately to enable me give you
+a detailed information on what to do. For me, I have not stolen the
+money from anyone because the other people that took the whole money
+did not face any problems. This is my chance to grab my own life
+opportunity but you must keep the details of the funds secret to avoid
+any leakages as no one in the bank knows about my plans.Please get
+back to me if you are interested and capable to handle this project, I
+shall intimate you on what to do when I hear from your confirmation
+and acceptance.If you are capable of being my trusted associate, do
+declare your consent to me I am looking forward to hear from you
+immediately for further information. Kindly reply this email (
+abderazackzebdani11@yandex.com)
+Thanks with my best regards.
+Mr.Abderazack zebdani.
+Telex Manager
+Bank Of Africa (BOA)
+Burkina Faso.
