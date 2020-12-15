@@ -2,98 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 155072DAF79
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 15:55:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91FDD2DB174
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 17:31:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729668AbgLOOxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 09:53:50 -0500
-Received: from ns2.baikalelectronics.com ([94.125.187.42]:50896 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729776AbgLOOxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 09:53:42 -0500
-Date:   Tue, 15 Dec 2020 17:52:53 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [RFC] net: stmmac: Problem with adding the native GPIOs support
-Message-ID: <20201215145253.sc6cmqetjktxn4xb@mobilestation>
-References: <20201214092516.lmbezb6hrbda6hzo@mobilestation>
- <20201214153143.GB2841266@lunn.ch>
- <20201215082527.lqipjzastdlhzkqv@mobilestation>
- <20201215135837.GB2822543@lunn.ch>
+        id S1730594AbgLOQao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 11:30:44 -0500
+Received: from smtp.h3c.com ([60.191.123.56]:23020 "EHLO h3cspam01-ex.h3c.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730015AbgLOQao (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 11:30:44 -0500
+X-Greylist: delayed 4628 seconds by postgrey-1.27 at vger.kernel.org; Tue, 15 Dec 2020 11:30:42 EST
+Received: from h3cspam01-ex.h3c.com (localhost [127.0.0.2] (may be forged))
+        by h3cspam01-ex.h3c.com with ESMTP id 0BFFDeEv059183
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 23:13:40 +0800 (GMT-8)
+        (envelope-from gao.yanB@h3c.com)
+Received: from DAG2EX08-IDC.srv.huawei-3com.com ([10.8.0.71])
+        by h3cspam01-ex.h3c.com with ESMTP id 0BFFBUSo058450;
+        Tue, 15 Dec 2020 23:11:30 +0800 (GMT-8)
+        (envelope-from gao.yanB@h3c.com)
+Received: from localhost.localdomain (10.99.212.201) by
+ DAG2EX08-IDC.srv.huawei-3com.com (10.8.0.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 15 Dec 2020 23:11:34 +0800
+From:   Gao Yan <gao.yanB@h3c.com>
+To:     <paulus@samba.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Gao Yan <gao.yanB@h3c.com>
+Subject: [PATCH] net: remove disc_data_lock in ppp line discipline
+Date:   Tue, 15 Dec 2020 23:00:54 +0800
+Message-ID: <20201215150054.570-1-gao.yanB@h3c.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20201215135837.GB2822543@lunn.ch>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Type: text/plain
+X-Originating-IP: [10.99.212.201]
+X-ClientProxiedBy: BJSMTP02-EX.srv.huawei-3com.com (10.63.20.133) To
+ DAG2EX08-IDC.srv.huawei-3com.com (10.8.0.71)
+X-DNSRBL: 
+X-MAIL: h3cspam01-ex.h3c.com 0BFFBUSo058450
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 02:58:37PM +0100, Andrew Lunn wrote:
-> > > > Anyway the hardware setup depicted above doesn't seem
-> > > > problematic at the first glance, but in fact it is. See, the DW *MAC driver
-> > > > (STMMAC ethernet driver) is doing the MAC reset each time it performs the
-> > > > device open or resume by means of the call-chain:
-> > > > 
-> > > >   stmmac_open()---+
-> > > >                   +->stmmac_hw_setup()->stmmac_init_dma_engine()->stmmac_reset().
-> > > >   stmmac_resume()-+
-> > > > 
-> > > > Such reset causes the whole interface reset: MAC, DMA and, what is more
-> > > > important, GPIOs as being exposed as part of the MAC registers. That
-> > > > in our case automatically causes the external PHY reset, what neither
-> > > > the STTMAC driver nor the PHY subsystem expect at all.
-> > > 
-> > 
-> > > Is the reset of the GPIO sub block under software control? When you
-> > > have a GPIO controller implemented, you would want to disable this.
-> > 
-> > Not sure I've fully understood your question. The GPIO sub-block of
-> > the MAC is getting reset together with the MAC.
-> 
+tty layer provide tty->ldisc_sem lock to protect tty->disc_data;
+For examlpe, when cpu A is running ppp_synctty_ioctl that
+hold the tty->ldisc_sem, so if cpu B calls ppp_synctty_close,
+it will wait until cpu A release tty->ldisc_sem. So I think it is
+unnecessary to have the disc_data_lock;
 
-> And my question is, is that under software control, or is the hardware
-> synthesised so that the GPIO controller is reset as part of the MAC
-> reset?
+cpu A                           cpu B
+tty_ioctl                       tty_reopen
+ ->hold tty->ldisc_sem            ->hold tty->ldisc_sem(write), failed
+ ->ld->ops->ioctl                 ->wait...
+ ->release tty->ldisc_sem         ->wait...OK,hold tty->ldisc_sem
+                                    ->tty_ldisc_reinit
+                                      ->tty_ldisc_close
+                                        ->ld->ops->close
 
-Alas the SoC has already been synthesized and multiple devices have
-already been produced as I described in the initial message. So we can't
-change the way the MAC reset works.
+Signed-off-by: Gao Yan <gao.yanB@h3c.com>
+---
+ drivers/net/ppp/ppp_async.c   | 5 -----
+ drivers/net/ppp/ppp_synctty.c | 5 -----
+ 2 files changed, 10 deletions(-)
 
-> 
-> From what you are saying, it sounds like from software you cannot
-> independently control the GPIO controller reset?
+diff --git a/drivers/net/ppp/ppp_async.c b/drivers/net/ppp/ppp_async.c
+index 29a0917a8..f8cb591d6 100644
+--- a/drivers/net/ppp/ppp_async.c
++++ b/drivers/net/ppp/ppp_async.c
+@@ -127,17 +127,14 @@ static const struct ppp_channel_ops async_ops = {
+  * FIXME: this is no longer true. The _close path for the ldisc is
+  * now guaranteed to be sane.
+  */
+-static DEFINE_RWLOCK(disc_data_lock);
+ 
+ static struct asyncppp *ap_get(struct tty_struct *tty)
+ {
+ 	struct asyncppp *ap;
+ 
+-	read_lock(&disc_data_lock);
+ 	ap = tty->disc_data;
+ 	if (ap != NULL)
+ 		refcount_inc(&ap->refcnt);
+-	read_unlock(&disc_data_lock);
+ 	return ap;
+ }
+ 
+@@ -216,10 +213,8 @@ ppp_asynctty_close(struct tty_struct *tty)
+ {
+ 	struct asyncppp *ap;
+ 
+-	write_lock_irq(&disc_data_lock);
+ 	ap = tty->disc_data;
+ 	tty->disc_data = NULL;
+-	write_unlock_irq(&disc_data_lock);
+ 	if (!ap)
+ 		return;
+ 
+diff --git a/drivers/net/ppp/ppp_synctty.c b/drivers/net/ppp/ppp_synctty.c
+index 0f338752c..8cdf7268c 100644
+--- a/drivers/net/ppp/ppp_synctty.c
++++ b/drivers/net/ppp/ppp_synctty.c
+@@ -129,17 +129,14 @@ ppp_print_buffer (const char *name, const __u8 *buf, int count)
+  *
+  * FIXME: Fixed in tty_io nowadays.
+  */
+-static DEFINE_RWLOCK(disc_data_lock);
+ 
+ static struct syncppp *sp_get(struct tty_struct *tty)
+ {
+ 	struct syncppp *ap;
+ 
+-	read_lock(&disc_data_lock);
+ 	ap = tty->disc_data;
+ 	if (ap != NULL)
+ 		refcount_inc(&ap->refcnt);
+-	read_unlock(&disc_data_lock);
+ 	return ap;
+ }
+ 
+@@ -215,10 +212,8 @@ ppp_sync_close(struct tty_struct *tty)
+ {
+ 	struct syncppp *ap;
+ 
+-	write_lock_irq(&disc_data_lock);
+ 	ap = tty->disc_data;
+ 	tty->disc_data = NULL;
+-	write_unlock_irq(&disc_data_lock);
+ 	if (!ap)
+ 		return;
+ 
+-- 
+2.17.1
 
-No. The hardware implements the default MAC reset behavior. So the
-GPIO controller gets reset synchronously with the MAC reset and that
-can't be changed.
-
-> 
-> This is something i would be asking the hardware people. Look at the
-> VHDL, etc.
-
-Alas it's too late. I have to fix it in software somehow. As I see it
-the only possible ways to bypass the problem are either to re-init the
-PHY each time the reset happens or somehow to get rid of the MAC
-reset. That's why I have sent this RFC to ask the driver maintainers
-whether my suggestions are correct or of a better idea to work around
-the problem.
-
--Sergey
-
-> 
->       Andrew
