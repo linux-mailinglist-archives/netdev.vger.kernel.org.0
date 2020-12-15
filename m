@@ -2,172 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98ACE2DAF1D
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 15:41:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81BA12DAF22
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 15:41:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729486AbgLOOiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 09:38:23 -0500
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:42273 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729317AbgLOOiC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 09:38:02 -0500
-X-Originating-IP: 86.202.109.140
-Received: from localhost (lfbn-lyo-1-13-140.w86-202.abo.wanadoo.fr [86.202.109.140])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 97B7A1BF203;
-        Tue, 15 Dec 2020 14:37:11 +0000 (UTC)
-Date:   Tue, 15 Dec 2020 15:37:11 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        id S1729555AbgLOOjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 09:39:37 -0500
+Received: from correo.us.es ([193.147.175.20]:46490 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729423AbgLOOjR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 09:39:17 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id C3C851E2C7D
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 15:38:17 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B55DADA72F
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 15:38:17 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id AAFDFDA78E; Tue, 15 Dec 2020 15:38:17 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5232ADA78A;
+        Tue, 15 Dec 2020 15:38:15 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 15 Dec 2020 15:38:15 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 2A5954265A5A;
+        Tue, 15 Dec 2020 15:38:15 +0100 (CET)
+Date:   Tue, 15 Dec 2020 15:38:30 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [RFC PATCH net-next 01/16] net: mscc: ocelot: offload bridge
- port flags to device
-Message-ID: <20201215143711.GC1781038@piout.net>
-References: <20201208120802.1268708-1-vladimir.oltean@nxp.com>
- <20201208120802.1268708-2-vladimir.oltean@nxp.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] netfilter: nftables: fix incorrect increment of
+ loop counter
+Message-ID: <20201215143830.GA10086@salvia>
+References: <20201214234015.85072-1-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20201208120802.1268708-2-vladimir.oltean@nxp.com>
+In-Reply-To: <20201214234015.85072-1-colin.king@canonical.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/12/2020 14:07:47+0200, Vladimir Oltean wrote:
-> We should not be unconditionally enabling address learning, since doing
-> that is actively detrimential when a port is standalone and not offloading
-> a bridge. Namely, if a port in the switch is standalone and others are
-> offloading the bridge, then we could enter a situation where we learn an
-> address towards the standalone port, but the bridged ports could not
-> forward the packet there, because the CPU is the only path between the
-> standalone and the bridged ports. The solution of course is to not
-> enable address learning unless the bridge asks for it. Currently this is
-> the only bridge port flag we are looking at. The others (flooding etc)
-> are TBD.
+Hi,
+
+On Mon, Dec 14, 2020 at 11:40:15PM +0000, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> The intention of the err_expr cleanup path is to iterate over the
+> allocated expr_array objects and free them, starting from i - 1 and
+> working down to the start of the array. Currently the loop counter
+> is being incremented instead of decremented and also the index i is
+> being used instead of k, repeatedly destroying the same expr_array
+> element.  Fix this by decrementing k and using k as the index into
+> expr_array.
+> 
+> Addresses-Coverity: ("Infinite loop")
+> Fixes: 8cfd9b0f8515 ("netfilter: nftables: generalize set expressions support")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+
+Reviewed-by: Pablo Neira Ayuso <pablo@netfilter.org>
+
+@Jakub: Would you please take this one into net-next? Thanks!
 
 > ---
->  drivers/net/ethernet/mscc/ocelot.c     | 21 ++++++++++++++++++++-
->  drivers/net/ethernet/mscc/ocelot.h     |  3 +++
->  drivers/net/ethernet/mscc/ocelot_net.c |  4 ++++
->  include/soc/mscc/ocelot.h              |  2 ++
->  4 files changed, 29 insertions(+), 1 deletion(-)
+>  net/netfilter/nf_tables_api.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> index b9626eec8db6..7a5c534099d3 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.c
-> +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -883,6 +883,7 @@ EXPORT_SYMBOL(ocelot_get_ts_info);
->  
->  void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
->  {
-> +	struct ocelot_port *ocelot_port = ocelot->ports[port];
->  	u32 port_cfg;
->  	int p, i;
->  
-> @@ -896,7 +897,8 @@ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
->  		ocelot->bridge_fwd_mask |= BIT(port);
->  		fallthrough;
->  	case BR_STATE_LEARNING:
-> -		port_cfg |= ANA_PORT_PORT_CFG_LEARN_ENA;
-> +		if (ocelot_port->brport_flags & BR_LEARNING)
-> +			port_cfg |= ANA_PORT_PORT_CFG_LEARN_ENA;
->  		break;
->  
->  	default:
-> @@ -1178,6 +1180,7 @@ EXPORT_SYMBOL(ocelot_port_bridge_join);
->  int ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
->  			     struct net_device *bridge)
->  {
-> +	struct ocelot_port *ocelot_port = ocelot->ports[port];
->  	struct ocelot_vlan pvid = {0}, native_vlan = {0};
->  	struct switchdev_trans trans;
->  	int ret;
-> @@ -1200,6 +1203,10 @@ int ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
->  	ocelot_port_set_pvid(ocelot, port, pvid);
->  	ocelot_port_set_native_vlan(ocelot, port, native_vlan);
->  
-> +	ocelot_port->brport_flags = 0;
-> +	ocelot_rmw_gix(ocelot, 0, ANA_PORT_PORT_CFG_LEARN_ENA,
-> +		       ANA_PORT_PORT_CFG, port);
-> +
+> diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+> index 8d5aa0ac45f4..4186b1e52d58 100644
+> --- a/net/netfilter/nf_tables_api.c
+> +++ b/net/netfilter/nf_tables_api.c
+> @@ -5254,8 +5254,8 @@ static int nft_set_elem_expr_clone(const struct nft_ctx *ctx,
 >  	return 0;
+>  
+>  err_expr:
+> -	for (k = i - 1; k >= 0; k++)
+> -		nft_expr_destroy(ctx, expr_array[i]);
+> +	for (k = i - 1; k >= 0; k--)
+> +		nft_expr_destroy(ctx, expr_array[k]);
+>  
+>  	return -ENOMEM;
 >  }
->  EXPORT_SYMBOL(ocelot_port_bridge_leave);
-> @@ -1391,6 +1398,18 @@ int ocelot_get_max_mtu(struct ocelot *ocelot, int port)
->  }
->  EXPORT_SYMBOL(ocelot_get_max_mtu);
->  
-> +void ocelot_port_bridge_flags(struct ocelot *ocelot, int port,
-> +			      unsigned long flags,
-> +			      struct switchdev_trans *trans)
-> +{
-> +	struct ocelot_port *ocelot_port = ocelot->ports[port];
-> +
-> +	if (switchdev_trans_ph_prepare(trans))
-> +		return;
-> +
-> +	ocelot_port->brport_flags = flags;
-> +}
-> +
->  void ocelot_init_port(struct ocelot *ocelot, int port)
->  {
->  	struct ocelot_port *ocelot_port = ocelot->ports[port];
-> diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-> index 291d39d49c4e..739bd201d951 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.h
-> +++ b/drivers/net/ethernet/mscc/ocelot.h
-> @@ -102,6 +102,9 @@ struct ocelot_multicast {
->  	struct ocelot_pgid *pgid;
->  };
->  
-> +void ocelot_port_bridge_flags(struct ocelot *ocelot, int port,
-> +			      unsigned long flags,
-> +			      struct switchdev_trans *trans);
->  int ocelot_port_fdb_do_dump(const unsigned char *addr, u16 vid,
->  			    bool is_static, void *data);
->  int ocelot_mact_learn(struct ocelot *ocelot, int port,
-> diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> index 9ba7e2b166e9..93ecd5274156 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> @@ -882,6 +882,10 @@ static int ocelot_port_attr_set(struct net_device *dev,
->  	case SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED:
->  		ocelot_port_attr_mc_set(ocelot, port, !attr->u.mc_disabled);
->  		break;
-> +	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
-> +		ocelot_port_bridge_flags(ocelot, port, attr->u.brport_flags,
-> +					 trans);
-> +		break;
->  	default:
->  		err = -EOPNOTSUPP;
->  		break;
-> diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> index 2f4cd3288bcc..50514c087231 100644
-> --- a/include/soc/mscc/ocelot.h
-> +++ b/include/soc/mscc/ocelot.h
-> @@ -581,6 +581,8 @@ struct ocelot_port {
->  
->  	struct regmap			*target;
->  
-> +	unsigned long			brport_flags;
-> +
->  	bool				vlan_aware;
->  	/* VLAN that untagged frames are classified to, on ingress */
->  	struct ocelot_vlan		pvid_vlan;
 > -- 
-> 2.25.1
+> 2.29.2
 > 
-
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
