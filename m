@@ -2,110 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D4E12DA8BE
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 08:45:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 405E82DA8C8
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 08:53:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbgLOHop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 02:44:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726882AbgLOHoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 02:44:25 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05DCC06179C;
-        Mon, 14 Dec 2020 23:43:44 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id q16so19899550edv.10;
-        Mon, 14 Dec 2020 23:43:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=g3JmsH/2qcpjo+dzXWng/ltGOYbO/xhpCV/mKd1Yxf0=;
-        b=a2quU6gT64yfFa9CqXZdksQXMRT3X/QnPpR69onuCAqxBwpGCtd4GRzigoi875ZUd3
-         4qanV6sEqQAXIjwkS4vwNj2tSnu5oHWmvqxRBvF42QRTDTd/PC1yhTcxveOSh+52LCg9
-         jV2EKeoCq43AO0xHoa47G0nHzEIqITvj9LzeQm40a3Fys4JV6NRSvBkDbK0+n2liYo7G
-         Uq9VHw+VhUNqVmNG62cKCQa5ogOe3DqADC6PmfsrizKkmvgSaqs8xFOVc4Uqa1cpsw8V
-         XFAo+9Gwt3uaErk51uVNOnPbO0Ilfptxv491fuNRS5dgEv3/IsjW+gDgDCzzSavVYITw
-         GnmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g3JmsH/2qcpjo+dzXWng/ltGOYbO/xhpCV/mKd1Yxf0=;
-        b=Dktb2iMWqcVKCTbO8GEdb4zMN/Lgh36QpwzXoVr4Oa83nSxGrTeSAx6awPoxP0J28Q
-         WyZNVQG8QDSnRqvQSDHSubQyhCLNxeKjAunjCJYZTnabXfP0paHsP4vrgrPNlanoM4/Z
-         Wb8+KH2jgz6utwDqx2WHc5S9rJco+jQbKyy9DOhBPykOk7m3Ixj86uxKnjin9xRomX07
-         42oodC0Ww/Iw1fmQeFXbJD6p/0EBk6D9LyE+FWoR/yyPqXAdL7nF4erxBJQXaS6AjmvC
-         1fOKKlMzFyXAOJ7gG1yoRI3kmbGVJE4Mw6SfQS12qsjdo2ZAMDSxcPNP1pIv59d93l2L
-         AcpA==
-X-Gm-Message-State: AOAM533JkBmfAi+37qtKx+SXz3GhchAo5g2bp6cH7mV6b/BYH6syhH+C
-        MITgL0apE9LnCGU0mORLuCA=
-X-Google-Smtp-Source: ABdhPJy/tA+9R9VDicIsZcx83X7KG9maJCZUYQN6UlUqUVVFixqf1ckLPCvNIyjweWM7lsuhXYy7tg==
-X-Received: by 2002:a50:d604:: with SMTP id x4mr1216081edi.64.1608018223475;
-        Mon, 14 Dec 2020 23:43:43 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id de12sm17587998edb.82.2020.12.14.23.43.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Dec 2020 23:43:42 -0800 (PST)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Tue, 15 Dec 2020 09:43:41 +0200
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the net-next tree
-Message-ID: <20201215074341.czqxowvs4ztjo4k6@skbuf>
-References: <20201126174057.0ac8d95b@canb.auug.org.au>
- <20201215070125.5f982171@canb.auug.org.au>
+        id S1726627AbgLOHwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 02:52:46 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:4116 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726468AbgLOHwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 02:52:36 -0500
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Cw9S15PXRzXnZn;
+        Tue, 15 Dec 2020 15:51:13 +0800 (CST)
+Received: from DGGEMM422-HUB.china.huawei.com (10.1.198.39) by
+ DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Tue, 15 Dec 2020 15:51:45 +0800
+Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.214]) by
+ dggemm422-hub.china.huawei.com ([169.254.138.104]) with mapi id
+ 14.03.0509.000; Tue, 15 Dec 2020 15:51:38 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     Network Development <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        chenchanghu <chenchanghu@huawei.com>,
+        xudingke <xudingke@huawei.com>,
+        "huangbin (J)" <brian.huangbin@huawei.com>
+Subject: RE: [PATCH net 1/2] vhost_net: fix ubuf refcount incorrectly when
+ sendmsg fails
+Thread-Topic: [PATCH net 1/2] vhost_net: fix ubuf refcount incorrectly when
+ sendmsg fails
+Thread-Index: AQHW0oRrOeilOZk5R0qV3D/I0yKaZan27aCAgADbGHA=
+Date:   Tue, 15 Dec 2020 07:51:37 +0000
+Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB82A21@DGGEMM533-MBX.china.huawei.com>
+References: <cover.1608024547.git.wangyunjian@huawei.com>
+ <5e2ecf3d0f07b864d307b9f0425b7b7fe8bf4d2c.1608024547.git.wangyunjian@huawei.com>
+ <CA+FuTSeH-+p_7i9UdEy0UL2y2EoprO4sE-BYNe2Vt8ThxaCLcA@mail.gmail.com>
+In-Reply-To: <CA+FuTSeH-+p_7i9UdEy0UL2y2EoprO4sE-BYNe2Vt8ThxaCLcA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.243.127]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201215070125.5f982171@canb.auug.org.au>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 07:01:25AM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> On Thu, 26 Nov 2020 17:40:57 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > After merging the net-next tree, today's linux-next build (htmldocs)
-> > produced this warning:
-> > 
-> > include/linux/phy.h:869: warning: Function parameter or member 'config_intr' not described in 'phy_driver'
-> > 
-> > Introduced by commit
-> > 
-> >   6527b938426f ("net: phy: remove the .did_interrupt() and .ack_interrupt() callback")
-> 
-> I am still getting this warning.
-
-Hi,
-
-Sorry for not responding in time, I know I verified this the first time
-but somehow did not answer the email.
-
-The .config_intr() is documented but it seems that it's not parsed
-properly since the comment starts on the same line as the /**. A diff
-like below seems to do the trick. I will send it out.
-
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -743,7 +743,8 @@ struct phy_driver {
- 	/** @read_status: Determines the negotiated speed and duplex */
- 	int (*read_status)(struct phy_device *phydev);
- 
--	/** @config_intr: Enables or disables interrupts.
-+	/**
-+	 * @config_intr: Enables or disables interrupts.
- 	 * It should also clear any pending interrupts prior to enabling the
- 	 * IRQs and after disabling them.
- 	 */
-
-Ioana
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBXaWxsZW0gZGUgQnJ1aWpuIFtt
+YWlsdG86d2lsbGVtZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbV0NCj4gU2VudDogVHVlc2RheSwg
+RGVjZW1iZXIgMTUsIDIwMjAgMTA6NDYgQU0NCj4gVG86IHdhbmd5dW5qaWFuIDx3YW5neXVuamlh
+bkBodWF3ZWkuY29tPg0KPiBDYzogTmV0d29yayBEZXZlbG9wbWVudCA8bmV0ZGV2QHZnZXIua2Vy
+bmVsLm9yZz47IE1pY2hhZWwgUy4gVHNpcmtpbg0KPiA8bXN0QHJlZGhhdC5jb20+OyBKYXNvbiBX
+YW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPjsgV2lsbGVtIGRlIEJydWlqbg0KPiA8d2lsbGVtZGVi
+cnVpam4ua2VybmVsQGdtYWlsLmNvbT47IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZvdW5k
+YXRpb24ub3JnOw0KPiBMaWxpanVuIChKZXJyeSkgPGplcnJ5LmxpbGlqdW5AaHVhd2VpLmNvbT47
+IGNoZW5jaGFuZ2h1DQo+IDxjaGVuY2hhbmdodUBodWF3ZWkuY29tPjsgeHVkaW5na2UgPHh1ZGlu
+Z2tlQGh1YXdlaS5jb20+OyBodWFuZ2JpbiAoSikNCj4gPGJyaWFuLmh1YW5nYmluQGh1YXdlaS5j
+b20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0IDEvMl0gdmhvc3RfbmV0OiBmaXggdWJ1ZiBy
+ZWZjb3VudCBpbmNvcnJlY3RseSB3aGVuDQo+IHNlbmRtc2cgZmFpbHMNCj4gDQo+IE9uIE1vbiwg
+RGVjIDE0LCAyMDIwIGF0IDg6NTkgUE0gd2FuZ3l1bmppYW4gPHdhbmd5dW5qaWFuQGh1YXdlaS5j
+b20+DQo+IHdyb3RlOg0KPiA+DQo+ID4gRnJvbTogWXVuamlhbiBXYW5nIDx3YW5neXVuamlhbkBo
+dWF3ZWkuY29tPg0KPiA+DQo+ID4gQ3VycmVudGx5IHRoZSB2aG9zdF96ZXJvY29weV9jYWxsYmFj
+aygpIG1heWJlIGJlIGNhbGxlZCB0byBkZWNyZWFzZQ0KPiA+IHRoZSByZWZjb3VudCB3aGVuIHNl
+bmRtc2cgZmFpbHMgaW4gdHVuLiBUaGUgZXJyb3IgaGFuZGxpbmcgaW4gdmhvc3QNCj4gPiBoYW5k
+bGVfdHhfemVyb2NvcHkoKSB3aWxsIHRyeSB0byBkZWNyZWFzZSB0aGUgc2FtZSByZWZjb3VudCBh
+Z2Fpbi4NCj4gPiBUaGlzIGlzIHdyb25nLiBUbyBmaXggdGhpcyBpc3N1ZSwgd2Ugb25seSBjYWxs
+IHZob3N0X25ldF91YnVmX3B1dCgpDQo+ID4gd2hlbiB2cS0+aGVhZHNbbnZxLT5kZXNjXS5sZW4g
+PT0gVkhPU1RfRE1BX0lOX1BST0dSRVNTLg0KPiA+DQo+ID4gRml4ZXM6IDQ0NzcxMzhmYTBhZSAo
+InR1bjogcHJvcGVybHkgdGVzdCBmb3IgSUZGX1VQIikNCj4gPiBGaXhlczogOTBlMzNkNDU5NDA3
+ICgidHVuOiBlbmFibGUgbmFwaV9ncm9fZnJhZ3MoKSBmb3IgVFVOL1RBUA0KPiA+IGRyaXZlciIp
+DQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBZdW5qaWFuIFdhbmcgPHdhbmd5dW5qaWFuQGh1YXdl
+aS5jb20+DQo+IA0KPiBQYXRjaCBsb29rcyBnb29kIHRvIG1lLiBUaGFua3MuDQo+IA0KPiBCdXQg
+SSB0aGluayB0aGUgcmlnaHQgRml4ZXMgdGFnIHdvdWxkIGJlDQo+IA0KPiBGaXhlczogMDY5MDg5
+OWI0ZDQ1ICgidHVuOiBleHBlcmltZW50YWwgemVybyBjb3B5IHR4IHN1cHBvcnQiKQ0KDQpPSywg
+dGhhbmtzIGZvciB0aGUgc3VnZ2VzdGlvbi4gSSB3aWxsIGZpeCBpdCBpbiBuZXh0IHZlcnNpb24u
+DQo=
