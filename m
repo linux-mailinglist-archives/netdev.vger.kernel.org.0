@@ -2,78 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 486912DA6EB
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 04:42:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 281172DA702
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 05:02:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726789AbgLODlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 22:41:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47128 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726302AbgLODln (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 22:41:43 -0500
-Date:   Mon, 14 Dec 2020 19:41:01 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608003662;
-        bh=BZ6+L14BALEBlEZN5aclup/NhEsGHeAS59yIV8zfbe8=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hC7chYTiroyWToVwiWV7C4BQjbJztHO5cQY94LcrJoWL0TaN3KVLvd9TjC2qWgAbi
-         6jX7Vq52uQlhiFIxI+NEOrEoATNzN5iVweALtJQrttTxtTN6ez1QA4QuMIYWKD0BIk
-         RR8UJteZrX8IG5k4tMAhp1PSmDFS4reT4zBOTASqwFy23g90rudHIRYiJ5iBpcOz+0
-         L8IGomzskBKf+gxgBs92Kqf+UpavZFhPPqe3uvLTO2yrD46AUDpITCKCOazvI/n63x
-         lEKN/qmXc3Cjh+TKd4VW3LAyIWX8Midmwxb9nypKv9KHMp39Z32B4xYMIgl2rDJRtp
-         r09mJ2TSHcEuQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yonatan Linik <yonatanlinik@gmail.com>
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org, willemb@google.com,
-        john.ogness@linutronix.de, arnd@arndb.de, maowenan@huawei.com,
-        colin.king@canonical.com, orcohen@paloaltonetworks.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] net: Fix use of proc_fs
-Message-ID: <20201214194101.789109bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201214202550.3693-2-yonatanlinik@gmail.com>
-References: <20201214202550.3693-1-yonatanlinik@gmail.com>
-        <20201214202550.3693-2-yonatanlinik@gmail.com>
+        id S1726518AbgLOEBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 23:01:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58484 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725945AbgLOEAz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 23:00:55 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47284C061793
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 20:00:15 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id v67so17668431ybi.1
+        for <netdev@vger.kernel.org>; Mon, 14 Dec 2020 20:00:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vlZdIao1w4rKceJj4NEQKHadqijsMwQQDzIFeMc2pfQ=;
+        b=BLWTtHpePfNjnNHv36Y4fZ2+rhB48u1XIKJumioNhstioK1HBc8asCw7q9KAnYoixY
+         JUiiHmfJKB0JYMdguQpz3r+/LhZjMMHuD6Jp4o2lP82m9A6x51qTj+HiI1BFW+xaFE0x
+         bAKeYsw8kQJQMvxoYcri3j8VOte/tdd4rw1H31YebXPGBidxQE71VeIYvesjT4umNBbA
+         HzCViD6bvPVvCrTrF9cM5UJ2lHbVzxG/3/HzOt7Sx7NLa7/W5U7Lof2iI+qeL26FUoif
+         NzxJCe391BJd1LofRh2ydW9sRcqEnMmijm3u4BrFK0JXtGO4TJ83Qkfp2tTUcBfDwLw1
+         beeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vlZdIao1w4rKceJj4NEQKHadqijsMwQQDzIFeMc2pfQ=;
+        b=WXMWJZVT+JgznwLvZCd+Vt5GcQQkWSuzPTA2b3xLNqbxXfxQMT9Tmvg/2Iif47azTV
+         8ZQe4fYYgZTlHpftHkqWusd/coE98+6sL3Yvio7ZsEgZsFacwagJ5Wq0McR2wRimdSXW
+         0d2mt7IWAeSUNZb386EgzGTrxBSeObAX/xRhtDcI9fQ73bgg/+vlP1QD1vmqA3XoRY3R
+         B46gywcWFIZJczNCmWPJUEgH4GT3w2IG/Aus+aRXXi63aFYUVB+V2S+xdWo2+WcgW6q/
+         q/wNly2vyo5gtptkIR1/6kuQglFOdTxBEXhJZNIrThRnws+IoH0piLENZzabs1NkMmlE
+         Syvg==
+X-Gm-Message-State: AOAM530CFdNXy89dCq33ni2Phf3f2oP/I21kd/kDMyFDold2gFQixeN7
+        AUl0fwqjN8CbgUIlYYCY6VZywTXJltr3/rPoPFk=
+X-Google-Smtp-Source: ABdhPJwatoSMrvRYDKIt49jytUg8d6p11CiYfabz9MXtBKwyeMJaYjNSyo9spoWX9FxGIbJ9P6fOr2BaxWhVEUmNUwY=
+X-Received: by 2002:a25:428d:: with SMTP id p135mr40370545yba.316.1608004814405;
+ Mon, 14 Dec 2020 20:00:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201212044017.55865-1-pbshelar@fb.com> <67f7c207-a537-dd22-acd8-dcce42755d1a@norrbonn.se>
+ <CAOrHB_Dpq+ZnUxQ3PWSxPv_a7N+WPqdczuD=iG_YDpC-r8Q82Q@mail.gmail.com> <d739b613-0d8f-9339-4bc4-3c4270e58c67@norrbonn.se>
+In-Reply-To: <d739b613-0d8f-9339-4bc4-3c4270e58c67@norrbonn.se>
+From:   Pravin Shelar <pravin.ovn@gmail.com>
+Date:   Mon, 14 Dec 2020 20:00:03 -0800
+Message-ID: <CAOrHB_Drah9B5vqO9DvSRQUNs7X98AFy8uKxiK_vx5THXH0hPQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] GTP: add support for flow based tunneling API
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     Pravin B Shelar <pbshelar@fb.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>, laforge@gnumonks.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Dec 2020 22:25:50 +0200 Yonatan Linik wrote:
-> proc_fs was used, in af_packet, without a surrounding #ifdef,
-> although there is no hard dependency on proc_fs.
-> That caused the initialization of the af_packet module to fail
-> when CONFIG_PROC_FS=n.
-> 
-> Specifically, proc_create_net() was used in af_packet.c,
-> and when it fails, packet_net_init() returns -ENOMEM.
-> It will always fail when the kernel is compiled without proc_fs,
-> because, proc_create_net() for example always returns NULL.
-> 
-> The calling order that starts in af_packet.c is as follows:
-> packet_init()
-> register_pernet_subsys()
-> register_pernet_operations()
-> __register_pernet_operations()
-> ops_init()
-> ops->init() (packet_net_ops.init=packet_net_init())
-> proc_create_net()
-> 
-> It worked in the past because register_pernet_subsys()'s return value
-> wasn't checked before this Commit 36096f2f4fa0 ("packet: Fix error path in
-> packet_init.").
-> It always returned an error, but was not checked before, so everything
-> was working even when CONFIG_PROC_FS=n.
-> 
-> The fix here is simply to add the necessary #ifdef.
-> 
-> This also fixes a similar error in tls_proc.c, that was found by Jakub
-> Kicinski.
-> 
-> Signed-off-by: Yonatan Linik <yonatanlinik@gmail.com>
+On Mon, Dec 14, 2020 at 12:29 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+>
+> Hi Pravin,
+>
+> On 13/12/2020 20:32, Pravin Shelar wrote:
+> > On Sat, Dec 12, 2020 at 11:56 PM Jonas Bonn <jonas@norrbonn.se> wrote:
+> >>
+> >> Hi Pravin,
+> >>
+> >> I've been thinking a bit about this and find it more and more
+> >> interesting.  Could you post a bit of information about the ip-route
+> >> changes you'll make in order to support GTP LWT encapsulation?  Could
+> >> you provide an example command line?
+> >>
+> > This is done as part of the magma core project
+> > (https://www.magmacore.org/) that needs OVS GTP support.
+> > I have started with OVS integration first, there are unit tests that
+> > validate the GTP support. This is datapath related test, that has the
+> > setup commands:
+> > https://github.com/pshelar/ovs/blob/6ec6a2a86adc56c7c9dcab7b3a7b70bb6dad35c9/tests/system-layer3-tunnels.at#L158
+>
+> That link just shows the classic setup using gtp-link and gtp-tunnel
+> from libgtpnl.  It doesn't exercise LWT at all.
+>
+OVS add-port (ref ADD_OVS_TUNNEL) creates LWT tunnel.
 
-Applied, and queued for stable, thanks!
+> > Once OVS patches are upstream I can post patches for ip-route command.
+>
+> No, you should do it the other way around, please.  Post the ip-route
+> changes along with this so we can see where this is going.
+>
+Currently we are using OVS for GTP tunnel. So I added support for OVS
+first. You can see how it is used from OVS code. In the past when
+adding support for other LWT tunnel protocols we have never followed
+any ordering wrt OVS vs ip-route.
+ip-route does not even support regular GTP tunnel devices. so this
+should not be a blocker for this patch.
+
+Anyways, I have a patch for iproute:
+https://github.com/pshelar/iproute2/commit/d6e99f8342672e6e9ce0b71e153296f8e2b41cfc
+
+> >>> +#include <net/dst_metadata.h>
+> >>>    #include <net/net_namespace.h>
+> >>>    #include <net/protocol.h>
+> >>>    #include <net/ip.h>
+> >>> @@ -73,6 +74,9 @@ struct gtp_dev {
+> >>>        unsigned int            hash_size;
+> >>>        struct hlist_head       *tid_hash;
+> >>>        struct hlist_head       *addr_hash;
+> >>> +     /* Used by flow based tunnel. */
+> >>> +     bool                    collect_md;
+> >>> +     struct socket           *collect_md_sock;
+> >>
+> >> I'm not convinced that you need to special-case LWT in this way.  It
+> >> should be possible to just use the regular sk1u socket.  I know that the
+> >> sk1u socket is created in userspace and might be set up to listen on the
+> >> wrong address, but that's a user error if they try to use that device
+> >> with LWT.  You could easily make the sk1u socket an optional parameter
+> >> and create it (as you do in your patch) if it's not provided.  Then
+> >> ip_tunnel_collect_metadata() would tell you whether to get the
+> >> encapsulaton details from the tunnel itself or whether to look up a PDP
+> >> context.  That should suffice, right?
+> >>
+> > Sounds good. I have added it as part of v3.
+> > Just to be clear, I still need collect_md_sock to keep reference to
+> > the socket that is created as part of the newlink in kernel space.
+>
+> Why?  I don't see that there's anything special enough about that socket
+> that you can't just use it as sk1u.  You might need to massage the types
+> a bit, but that doesn't seem like a big problem.  What am I missing?
+>
+
+If you look at the code you can see I do use sk1u for all datapath
+processing, collect_md_sock reference to socket object is only kept
+for destroying the socket object.
