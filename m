@@ -2,123 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCF822DAE10
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 14:37:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FD402DAE2D
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 14:43:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728010AbgLONev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 08:34:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726861AbgLONeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 08:34:44 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580B0C0617A6
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 05:34:04 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id cm17so21044158edb.4
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 05:34:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8fHZY8jQhIBpusF6yf8e92qQDUahX34y07cjU+x+4Lc=;
-        b=cO/R8zqzXQWaqT/sxc9QrhmMQ2504daZiE8+OwYV4SXqyBvDGUtrz9RfITI24qs9Wo
-         j/eq9yOerSXt+zy1In85b1+nscjDqMKMC+0peh5PgLjQ+9be35aZyQJEi//jyAtT4Oe3
-         fE1VKs79YGUHzNdq9eOcX2SXWF831SNcnGl5bngL3X6j+HOl0oX+ZKNmKySDU3LYYine
-         JQwFUUCETA/CngNdVEkHP4jTArbiUAs/TaPaKrV5BqM0BUxv+I4/GP9NGkhwQoanUMt6
-         bA9cuoCvN/zEet9oHUn/36WFPydl4hsLpq7HTFoSaLVEuckDOL/fmUYojEhtdTyiLE/l
-         Wp4w==
+        id S1728772AbgLONl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 08:41:28 -0500
+Received: from mail-oo1-f67.google.com ([209.85.161.67]:44359 "EHLO
+        mail-oo1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727925AbgLONlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 08:41:21 -0500
+Received: by mail-oo1-f67.google.com with SMTP id j21so2230782oou.11;
+        Tue, 15 Dec 2020 05:41:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8fHZY8jQhIBpusF6yf8e92qQDUahX34y07cjU+x+4Lc=;
-        b=MuUVHrk7spTN1dXmqytdYJ3cSbhpBektluTz81NPS3TyS13UODCcTOdG34TAUh/cCG
-         T8llR9zb18t85vuBK2WOiK22st1CF+qAfkqP+MBFnfKgCa11JXwEDzSfHm0gczwo2Igd
-         wLOUCVXJy06eUOEbDgz92W4ENHze0ixvUhF9mb9TCq3AX0v+f+4aJKz75oXPye0nR1pW
-         5TXpQNdg7z2vHL7B/BA82g7r+TbXf2bEf26tCo36n5wUcnuAtQGIPd4Vu/IG4Ui4H6P5
-         OXc1tNDBfciVjT3hzOTJvX/X30K5KFdmC5lykP871e+QSlbJbxDwcCumsVcpVopkO6ck
-         Gm3A==
-X-Gm-Message-State: AOAM530SWmeWqkoOyM024yjbGweOFyKhM2qtzN+jaEHEvcHNpf3IIdq1
-        /Mk5ynIhQQM4CKAC+bU+oViPwGIM+pJkG3Tsmko=
-X-Google-Smtp-Source: ABdhPJyOR8l+ibYSEWSbxbgeDrfjSe24miZDy1PKnHAvU2OPvW5AecKexf8MaJ2VVOKAVGTZVgbXdYNr6BRVh7dc5yo=
-X-Received: by 2002:a50:8744:: with SMTP id 4mr29241136edv.362.1608039242936;
- Tue, 15 Dec 2020 05:34:02 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c+L7KsCOY6qFeiR1Hwd17et+mSRPWVYNWJEy3hpVFbM=;
+        b=MRy0QzsuGZMx4Qs03x/xu+QuWpT5888jY0woR9KkWdU0BNSy7CRa9w5nyte2gn4d3W
+         KUoJwuKeZWpDVWITWOP937C2uSdJon/jDzOaFOe7PwO+kKxK9+wm9oRzkpsDm7lr2htk
+         o/ASqpPoJZTOZzDrO3mbMH2SI26oIwJEQukNa+dyvGNAxLis/0lNP1Hq2y2wVDTwtzXQ
+         7WYTbnotvguBYjalI28KV6WHTUAt7TjnZkslwrnxSwIY1J+e6zGMLvSscQCy+oLzzUZ0
+         VzI/4VTIHeQZMcysT3IEiA6cEje+A5QCZZArzeCjg2Yz7L1Ghn6yEzGEj6GRuSWDI+eE
+         7UhA==
+X-Gm-Message-State: AOAM530qMlAbrOlCAAjCRgH8mkP/jnYr392t3SQmTTbQMPNS9YOCvxkS
+        WRhDV2zC+WdCMvIP/CahtQ==
+X-Google-Smtp-Source: ABdhPJzYp2gtH1L2laiW+oCQr2gnK/ycYaSVTaTB2Tc9PcJnULV+N/4EBmlZVacWMQE9WtNA3QwS6A==
+X-Received: by 2002:a4a:98a3:: with SMTP id a32mr19107834ooj.51.1608039640709;
+        Tue, 15 Dec 2020 05:40:40 -0800 (PST)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id p4sm5084387oib.24.2020.12.15.05.40.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Dec 2020 05:40:39 -0800 (PST)
+Received: (nullmailer pid 3705961 invoked by uid 1000);
+        Tue, 15 Dec 2020 13:40:38 -0000
+Date:   Tue, 15 Dec 2020 07:40:38 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, jianxin.pan@amlogic.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        khilman@baylibre.com, Neil Armstrong <narmstrong@baylibre.com>,
+        jbrunet@baylibre.com, andrew@lunn.ch, f.fainelli@gmail.com
+Subject: Re: [PATCH RFC v2 1/5] dt-bindings: net: dwmac-meson: use
+ picoseconds for the RGMII RX delay
+Message-ID: <20201215134038.GA3702703@robh.at.kernel.org>
+References: <20201115185210.573739-1-martin.blumenstingl@googlemail.com>
+ <20201115185210.573739-2-martin.blumenstingl@googlemail.com>
+ <20201207191716.GA647149@robh.at.kernel.org>
+ <CAFBinCDXqnPQtu4ZQW2ngxKVSbRQNFbnhy6M04gE+Mc8HOTM8g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20201207210649.19194-1-borisp@mellanox.com> <20201207210649.19194-6-borisp@mellanox.com>
- <PH0PR18MB3845486FF240614CA08E7B4CCCCB0@PH0PR18MB3845.namprd18.prod.outlook.com>
- <0a272589-940c-6488-9cb9-1833400f38b3@gmail.com>
-In-Reply-To: <0a272589-940c-6488-9cb9-1833400f38b3@gmail.com>
-From:   Shai Malin <malin1024@gmail.com>
-Date:   Tue, 15 Dec 2020 15:33:50 +0200
-Message-ID: <CAKKgK4xvS9SeM3NmNKDNe5oFxxfi0m_=iHCXeXX0DGcgzG_BBA@mail.gmail.com>
-Subject: Re: [PATCH v1 net-next 05/15] nvme-tcp: Add DDP offload control path
-To:     Boris Pismenny <borispismenny@gmail.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>, "hch@lst.de" <hch@lst.de>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        "axboe@fb.com" <axboe@fb.com>,
-        "kbusch@kernel.org" <kbusch@kernel.org>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "edumazet@google.com" <edumazet@google.com>
-Cc:     Yoray Zack <yorayz@mellanox.com>,
-        "yorayz@nvidia.com" <yorayz@nvidia.com>,
-        "boris.pismenny@gmail.com" <boris.pismenny@gmail.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        "benishay@nvidia.com" <benishay@nvidia.com>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        "ogerlitz@nvidia.com" <ogerlitz@nvidia.com>,
-        Shai Malin <smalin@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Shai Malin <malin1024@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCDXqnPQtu4ZQW2ngxKVSbRQNFbnhy6M04gE+Mc8HOTM8g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/14/2020 08:38, Boris Pismenny wrote:
-> On 10/12/2020 19:15, Shai Malin wrote:
-> > diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c index c0c33320fe65..ef96e4a02bbd 100644
-> > --- a/drivers/nvme/host/tcp.c
-> > +++ b/drivers/nvme/host/tcp.c
-> > @@ -14,6 +14,7 @@
-> >  #include <linux/blk-mq.h>
-> >  #include <crypto/hash.h>
-> >  #include <net/busy_poll.h>
-> > +#include <net/tcp_ddp.h>
+On Sun, Dec 13, 2020 at 05:59:05PM +0100, Martin Blumenstingl wrote:
+> Hi Rob,
+> 
+> On Mon, Dec 7, 2020 at 8:17 PM Rob Herring <robh@kernel.org> wrote:
 > >
-> >  #include "nvme.h"
-> >  #include "fabrics.h"
-> > @@ -62,6 +63,7 @@ enum nvme_tcp_queue_flags {
-> >       NVME_TCP_Q_ALLOCATED    = 0,
-> >       NVME_TCP_Q_LIVE         = 1,
-> >       NVME_TCP_Q_POLLING      = 2,
-> > +     NVME_TCP_Q_OFFLOADS     = 3,
-> >  };
+> > On Sun, Nov 15, 2020 at 07:52:06PM +0100, Martin Blumenstingl wrote:
+> > > Amlogic Meson G12A, G12B and SM1 SoCs have a more advanced RGMII RX
+> > > delay register which allows picoseconds precision. Deprecate the old
+> > > "amlogic,rx-delay-ns" in favour of a new "amlogic,rgmii-rx-delay-ps"
+> > > property.
+> > >
+> > > For older SoCs the only known supported values were 0ns and 2ns. The new
+> > > SoCs have 200ps precision and support RGMII RX delays between 0ps and
+> > > 3000ps.
+> > >
+> > > While here, also update the description of the RX delay to indicate
+> > > that:
+> > > - with "rgmii" or "rgmii-id" the RX delay should be specified
+> > > - with "rgmii-id" or "rgmii-rxid" the RX delay is added by the PHY so
+> > >   any configuration on the MAC side is ignored
+> > > - with "rmii" the RX delay is not applicable and any configuration is
+> > >   ignored
+> > >
+> > > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > > ---
+> > >  .../bindings/net/amlogic,meson-dwmac.yaml     | 61 +++++++++++++++++--
+> > >  1 file changed, 56 insertions(+), 5 deletions(-)
 > >
-> > The same comment from the previous version - we are concerned that perhaps
-> > the generic term "offload" for both the transport type (for the Marvell work)
-> > and for the DDP and CRC offload queue (for the Mellanox work) may be
-> > misleading and confusing to developers and to users.
-> >
-> > As suggested by Sagi, we can call this NVME_TCP_Q_DDP.
-> >
->
-> While I don't mind changing the naming here. I wonder  why not call the
-> toe you use TOE and not TCP_OFFLOAD, and then offload is free for this?
+> > Don't we have common properties for this now?
+> I did a quick:
+> $ grep -R rx-delay Documentation/devicetree/bindings/net/
+> 
+> I could find "rx-delay" without vendor prefix, but that's not using
+> any unit in the name (ns, ps, ...)
+> Please let me know if you aware of any "generic" property for the RX
+> delay in picosecond precision
 
-Thanks - please do change the name to NVME_TCP_Q_DDP.
-The Marvell nvme-tcp-offload patch series introducing the offloading of both the
-TCP as well as the NVMe/TCP layer, therefore it's not TOE.
-
->
-> Moreover, the most common use of offload in the kernel is for partial offloads
-> like this one, and not for full offloads (such as toe).
-
-Because each vendor might implement a different partial offload I
-suggest naming it
-with the specific technique which is used, as was suggested - NVME_TCP_Q_DDP.
+{rx,tx}-internal-delay-ps in ethernet-controller.yaml and 
+ethernet-phy.yaml.
