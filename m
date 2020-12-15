@@ -2,82 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F422DB029
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 16:35:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 654152DB097
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 16:56:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbgLOPei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 10:34:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729798AbgLOPeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 10:34:23 -0500
-Received: from mail-ua1-x942.google.com (mail-ua1-x942.google.com [IPv6:2607:f8b0:4864:20::942])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C287DC0617A6;
-        Tue, 15 Dec 2020 07:33:42 -0800 (PST)
-Received: by mail-ua1-x942.google.com with SMTP id y26so6827291uan.5;
-        Tue, 15 Dec 2020 07:33:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CbSdNNYxeT6yqsudAjr7+iL0pQVPFdjuCIlK0EsWHU4=;
-        b=Fwff4bYbl6xo3/Z+UeecGMQsCX5k205QvfZ+A0vxJGPj2+7mJmwk0XqRV89Z31WJD5
-         JbGJYjQrBHiApB9GrFFeloPOFPq9bmHAacQ2UVL2+J0QvWsCrjHSwhQ8vOg6nbNjiEW5
-         Rd3dbSrPDRUzGO/DnSZzG/VsLB2gn1nuL2jX38FcT+iq181W1BZvn0JVrWff4rDPxHy7
-         Uz/bKP3++9iF8Bga9cYTM+xXvaBEzkdBHkdCS0RjTQWRKgp6Sh0QAJvbaZm6ZrpgIvBB
-         e1YwdhNttt8cTH8yahuQuxUMRBjT4xEhiWZ14EGD29paUjsX3uw3Z95vx7bIE7uTLOa6
-         vhCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CbSdNNYxeT6yqsudAjr7+iL0pQVPFdjuCIlK0EsWHU4=;
-        b=HngiBTazB2S8W/hRjTy6HwAwK05jVqqwPqg4jWkDr/JW//8uDzDefAyczOU+VfM1Pw
-         lBddO/tU8QauyNi3s/+WbxV6KI4EeB+NnIN4CVdFKNFlm53zuusx51pmQTx1M+t/f/nB
-         vLZJqFATlEs3aYqgie3WBE1+Mf8VYX6BXKdoiOvut3ai1FUh2CeZuJpkwY9KRpMmEhTR
-         Fx4NEdhpNsSuVDo2ZyHtrO9ReFu+L4FX0ADldbQd28iPhzaWkMqZuZmEdiT5Znqw8Vqz
-         vWoeGLrqMlgHRYCuoa5EG+6Lk2CawlRIqZy6VXFqnoPO9P3FC01xq6rlkTfVgsu4ljWh
-         f95A==
-X-Gm-Message-State: AOAM533xFkOKu6AzsRlLerH4AYOX1bRvsFQoFD/RtLTO8h4PBbDUpgD6
-        bU9zE26IaSs0KJMfO+KejLnSqpHsvyyqdo5cgM0=
-X-Google-Smtp-Source: ABdhPJzOaAX6k5+L9+tvWa1R7tcpUWi4JNDyuQT/a2MeCpLJOxyiJNoR1JIYZFTwogHElX0eucap8vxSZbmuCztYP9Q=
-X-Received: by 2002:ab0:2a1a:: with SMTP id o26mr28642075uar.101.1608046421829;
- Tue, 15 Dec 2020 07:33:41 -0800 (PST)
+        id S1730457AbgLOPx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 10:53:28 -0500
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:37467 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730308AbgLOPxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 10:53:08 -0500
+X-Originating-IP: 86.202.109.140
+Received: from localhost (lfbn-lyo-1-13-140.w86-202.abo.wanadoo.fr [86.202.109.140])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id F35E41C0007;
+        Tue, 15 Dec 2020 15:52:25 +0000 (UTC)
+Date:   Tue, 15 Dec 2020 16:52:25 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [RFC PATCH net-next 04/16] net: mscc: ocelot: use a switch-case
+ statement in ocelot_netdevice_event
+Message-ID: <20201215155225.GG1781038@piout.net>
+References: <20201208120802.1268708-1-vladimir.oltean@nxp.com>
+ <20201208120802.1268708-5-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-References: <20201211143758.28528-1-TheSven73@gmail.com>
-In-Reply-To: <20201211143758.28528-1-TheSven73@gmail.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Tue, 15 Dec 2020 10:33:30 -0500
-Message-ID: <CAGngYiVmTU2U1b7qv+oFXi927z6pEw5H6tsBjGDT4HJeHK5DGQ@mail.gmail.com>
-Subject: Re: [PATCH net v3] lan743x: fix rx_napi_poll/interrupt ping-pong
-To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Eric Dumazet <edumazet@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201208120802.1268708-5-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On 08/12/2020 14:07:50+0200, Vladimir Oltean wrote:
+> Make ocelot's net device event handler more streamlined by structuring
+> it in a similar way with others. The inspiration here was
+> dsa_slave_netdevice_event.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/net/ethernet/mscc/ocelot_net.c | 68 +++++++++++++++++---------
+>  1 file changed, 45 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+> index 50765a3b1c44..47b620967156 100644
+> --- a/drivers/net/ethernet/mscc/ocelot_net.c
+> +++ b/drivers/net/ethernet/mscc/ocelot_net.c
+> @@ -1030,49 +1030,71 @@ static int ocelot_netdevice_changeupper(struct net_device *dev,
+>  					      info->upper_dev);
+>  	}
+>  
+> -	return err;
+> +	return notifier_from_errno(err);
+> +}
+> +
+> +static int
+> +ocelot_netdevice_lag_changeupper(struct net_device *dev,
+> +				 struct netdev_notifier_changeupper_info *info)
+> +{
+> +	struct net_device *lower;
+> +	struct list_head *iter;
+> +	int err = NOTIFY_DONE;
+> +
+> +	netdev_for_each_lower_dev(dev, lower, iter) {
+> +		err = ocelot_netdevice_changeupper(lower, info);
+> +		if (err)
+> +			return notifier_from_errno(err);
+> +	}
+> +
+> +	return NOTIFY_DONE;
+>  }
+>  
+>  static int ocelot_netdevice_event(struct notifier_block *unused,
+>  				  unsigned long event, void *ptr)
+>  {
+> -	struct netdev_notifier_changeupper_info *info = ptr;
+>  	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+> -	int ret = 0;
+>  
+> -	if (event == NETDEV_PRECHANGEUPPER &&
+> -	    ocelot_netdevice_dev_check(dev) &&
+> -	    netif_is_lag_master(info->upper_dev)) {
+> -		struct netdev_lag_upper_info *lag_upper_info = info->upper_info;
+> +	switch (event) {
+> +	case NETDEV_PRECHANGEUPPER: {
+> +		struct netdev_notifier_changeupper_info *info = ptr;
+> +		struct netdev_lag_upper_info *lag_upper_info;
+>  		struct netlink_ext_ack *extack;
+>  
+> +		if (!ocelot_netdevice_dev_check(dev))
+> +			break;
+> +
+> +		if (!netif_is_lag_master(info->upper_dev))
+> +			break;
+> +
+> +		lag_upper_info = info->upper_info;
+> +
+>  		if (lag_upper_info &&
+>  		    lag_upper_info->tx_type != NETDEV_LAG_TX_TYPE_HASH) {
+>  			extack = netdev_notifier_info_to_extack(&info->info);
+>  			NL_SET_ERR_MSG_MOD(extack, "LAG device using unsupported Tx type");
+>  
+> -			ret = -EINVAL;
+> -			goto notify;
+> +			return NOTIFY_BAD;
 
-On Fri, Dec 11, 2020 at 9:38 AM Sven Van Asbroeck <thesven73@gmail.com> wrote:
->
-> From: Sven Van Asbroeck <thesven73@gmail.com>
->
-> Even if there is more rx data waiting on the chip, the rx napi poll fn
-> will never run more than once - it will always read a few buffers, then
-> bail out and re-arm interrupts. Which results in ping-pong between napi
-> and interrupt.
->
-> This defeats the purpose of napi, and is bad for performance.
->
-> Fix by making the rx napi poll behave identically to other ethernet
-> drivers:
+This changes the return value in case of error, I'm not sure how
+important this is.
 
-I was wondering if maybe you had any lingering doubts about this patch?
-Is there anything I can do to address these?
+>  		}
+> +
+> +		break;
+>  	}
+> +	case NETDEV_CHANGEUPPER: {
+> +		struct netdev_notifier_changeupper_info *info = ptr;
+>  
+> -	if (event == NETDEV_CHANGEUPPER) {
+> -		if (netif_is_lag_master(dev)) {
+> -			struct net_device *slave;
+> -			struct list_head *iter;
+> +		if (ocelot_netdevice_dev_check(dev))
+> +			return ocelot_netdevice_changeupper(dev, info);
+>  
+> -			netdev_for_each_lower_dev(dev, slave, iter) {
+> -				ret = ocelot_netdevice_changeupper(slave, event, info);
+> -				if (ret)
+> -					goto notify;
+> -			}
+> -		} else {
+> -			ret = ocelot_netdevice_changeupper(dev, event, info);
+> -		}
+> +		if (netif_is_lag_master(dev))
+> +			return ocelot_netdevice_lag_changeupper(dev, info);
+> +
+> +		break;
+> +	}
+> +	default:
+> +		break;
+>  	}
+>  
+> -notify:
+> -	return notifier_from_errno(ret);
+> +	return NOTIFY_DONE;
+
+This changes the return value from NOTIFY_OK to NOTIFY_DONE but this is
+probably what we want.
+
+>  }
+>  
+>  struct notifier_block ocelot_netdevice_nb __read_mostly = {
+> -- 
+> 2.25.1
+> 
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
