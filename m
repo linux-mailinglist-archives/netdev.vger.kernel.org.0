@@ -2,139 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79B232DA9D5
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:12:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E18D2DA9E5
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:16:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728146AbgLOJMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 04:12:07 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:29070 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727985AbgLOJMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:12:01 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0BF90lIL053046;
-        Tue, 15 Dec 2020 04:11:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=jiZO/kA77AjrYZKg2UlzH+l8bNrELwdy7Zcqs3bEXzU=;
- b=UV8iQg9PELemCHfLGbdCQp6Pdm16uWO2HdJJP6bLXFLsu+gFSlpNPF3N0eyzZ8rKQQnx
- aG5VXuE5faBf2/5g5vL9sFFMFo6ZHt3FBEmHxNxcnVK87WyZJ4jr17bAuk4LTs9dSwtP
- GkOxUb7HzYLd5nNbtYH9rNTVIcCmg/YDHL5hd+SUreBk8DpCpfTLCvh1f8h1a7ZHuXrE
- ax4LGw759LkZCqK6/PZF2SkGErEZV0tW7W/wgOT3/5UIIc0j5tAj8pulJB6iugaN+2S4
- qSyZIMXCQdtaOPOILqqRylfOifAL3MvVoAucGzfYhc7VauawevHUvDQju3+R7+dl3+qX ZA== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 35ernwk1ym-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Dec 2020 04:11:14 -0500
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0BF987A9029760;
-        Tue, 15 Dec 2020 09:11:12 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 35cn4hb34j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Dec 2020 09:11:12 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0BF9B9ls28442988
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Dec 2020 09:11:09 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 97EF65204E;
-        Tue, 15 Dec 2020 09:11:09 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 5848652059;
-        Tue, 15 Dec 2020 09:11:09 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Subject: [PATCH net-next 1/1] net/smc: fix access to parent of an ib device
-Date:   Tue, 15 Dec 2020 10:10:58 +0100
-Message-Id: <20201215091058.49354-2-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201215091058.49354-1-kgraul@linux.ibm.com>
-References: <20201215091058.49354-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-15_04:2020-12-11,2020-12-15 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- mlxscore=0 spamscore=0 phishscore=0 suspectscore=0 priorityscore=1501
- adultscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012150059
+        id S1728255AbgLOJPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 04:15:37 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:51932 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726901AbgLOJPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:15:36 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BF9E5Hc149147;
+        Tue, 15 Dec 2020 09:14:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=QTr9uNr7ii2CFktvUpD4C/m814MZe6sSbFaDTHiN46s=;
+ b=Fkyi3/n9DUBQFJo65Z7mZWx3xDrAOIPfYAsbGHyltczTEU1cBlFx1+Zpmbbih3webVhr
+ DYAhx++YpuFWYFzuiqrI2ISY2mOQazsntUegr2Q2iXbIk4I+eKERsDjcmjNISbSs5P7g
+ //AXwGiVpC+HsBiASWI4swzFuzBLsfHZRzyGFaCsFRUczlb68QRgfWeg2Cu+l3vu77iS
+ IfLdZUijOr6ejWOaieB7/sWFc1ZWZRI+Wru0uEDE/ypx/ylvvAvfuD3YpJtuaH2FRAwU
+ VQtQsF3WilLy8Ysb5XiWkWOJAmgIhZoxB7RyeUnH9Fhu9lc6E7Qi9eg1AIdcqSm7XXyr MA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2130.oracle.com with ESMTP id 35ckcb9jyv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 15 Dec 2020 09:14:11 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BF94wZH034720;
+        Tue, 15 Dec 2020 09:12:10 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 35e6eq5chg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Dec 2020 09:12:10 +0000
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BF9C50e031675;
+        Tue, 15 Dec 2020 09:12:07 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 15 Dec 2020 01:12:04 -0800
+Date:   Tue, 15 Dec 2020 12:11:53 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        davem@davemloft.net, kuba@kernel.org, wens@csie.org,
+        jernej.skrabec@siol.net, timur@kernel.org,
+        song.bao.hua@hisilicon.com, f.fainelli@gmail.com, leon@kernel.org,
+        hkallweit1@gmail.com, wangyunjian@huawei.com, sr@denx.de,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] net: allwinner: Fix some resources leak in the error
+ handling path of the probe and in the remove function
+Message-ID: <20201215091153.GH2809@kadam>
+References: <20201214202117.146293-1-christophe.jaillet@wanadoo.fr>
+ <20201215085655.ddacjfvogc3e33vz@gilmour>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201215085655.ddacjfvogc3e33vz@gilmour>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9835 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 phishscore=0
+ bulkscore=0 suspectscore=0 malwarescore=0 mlxlogscore=999 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012150063
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9835 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ priorityscore=1501 mlxscore=0 suspectscore=0 adultscore=0 phishscore=0
+ malwarescore=0 impostorscore=0 lowpriorityscore=0 clxscore=1011
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012150064
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The parent of an ib device is used to retrieve the PCI device
-attributes. It turns out that there are possible cases when an ib device
-has no parent set in the device structure, which may lead to page
-faults when trying to access this memory.
-Fix that by checking the parent pointer and consolidate the pci device
-specific processing in a new function.
+On Tue, Dec 15, 2020 at 09:56:55AM +0100, Maxime Ripard wrote:
+> Hi,
+> 
+> On Mon, Dec 14, 2020 at 09:21:17PM +0100, Christophe JAILLET wrote:
+> > 'irq_of_parse_and_map()' should be balanced by a corresponding
+> > 'irq_dispose_mapping()' call. Otherwise, there is some resources leaks.
+> 
+> Do you have a source to back that? It's not clear at all from the
+> documentation for those functions, and couldn't find any user calling it
+> from the ten-or-so random picks I took.
 
-Fixes: a3db10efcc4c ("net/smc: Add support for obtaining SMCR device list")
-Reported-by: syzbot+600fef7c414ee7e2d71b@syzkaller.appspotmail.com
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/smc_ib.c | 36 +++++++++++++++++++++++-------------
- 1 file changed, 23 insertions(+), 13 deletions(-)
+It looks like irq_create_of_mapping() needs to be freed with
+irq_dispose_mapping() so this is correct.
 
-diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-index 89ea10675a7d..ddd7fac98b1d 100644
---- a/net/smc/smc_ib.c
-+++ b/net/smc/smc_ib.c
-@@ -394,6 +394,22 @@ static int smc_nl_handle_dev_port(struct sk_buff *skb,
- 	return -EMSGSIZE;
- }
- 
-+static bool smc_nl_handle_pci_values(const struct smc_pci_dev *smc_pci_dev,
-+				     struct sk_buff *skb)
-+{
-+	if (nla_put_u32(skb, SMC_NLA_DEV_PCI_FID, smc_pci_dev->pci_fid))
-+		return false;
-+	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_CHID, smc_pci_dev->pci_pchid))
-+		return false;
-+	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_VENDOR, smc_pci_dev->pci_vendor))
-+		return false;
-+	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_DEVICE, smc_pci_dev->pci_device))
-+		return false;
-+	if (nla_put_string(skb, SMC_NLA_DEV_PCI_ID, smc_pci_dev->pci_id))
-+		return false;
-+	return true;
-+}
-+
- static int smc_nl_handle_smcr_dev(struct smc_ib_device *smcibdev,
- 				  struct sk_buff *skb,
- 				  struct netlink_callback *cb)
-@@ -417,19 +433,13 @@ static int smc_nl_handle_smcr_dev(struct smc_ib_device *smcibdev,
- 	is_crit = smcr_diag_is_dev_critical(&smc_lgr_list, smcibdev);
- 	if (nla_put_u8(skb, SMC_NLA_DEV_IS_CRIT, is_crit))
- 		goto errattr;
--	memset(&smc_pci_dev, 0, sizeof(smc_pci_dev));
--	pci_dev = to_pci_dev(smcibdev->ibdev->dev.parent);
--	smc_set_pci_values(pci_dev, &smc_pci_dev);
--	if (nla_put_u32(skb, SMC_NLA_DEV_PCI_FID, smc_pci_dev.pci_fid))
--		goto errattr;
--	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_CHID, smc_pci_dev.pci_pchid))
--		goto errattr;
--	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_VENDOR, smc_pci_dev.pci_vendor))
--		goto errattr;
--	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_DEVICE, smc_pci_dev.pci_device))
--		goto errattr;
--	if (nla_put_string(skb, SMC_NLA_DEV_PCI_ID, smc_pci_dev.pci_id))
--		goto errattr;
-+	if (smcibdev->ibdev->dev.parent) {
-+		memset(&smc_pci_dev, 0, sizeof(smc_pci_dev));
-+		pci_dev = to_pci_dev(smcibdev->ibdev->dev.parent);
-+		smc_set_pci_values(pci_dev, &smc_pci_dev);
-+		if (!smc_nl_handle_pci_values(&smc_pci_dev, skb))
-+			goto errattr;
-+	}
- 	snprintf(smc_ibname, sizeof(smc_ibname), "%s", smcibdev->ibdev->name);
- 	if (nla_put_string(skb, SMC_NLA_DEV_IB_NAME, smc_ibname))
- 		goto errattr;
--- 
-2.17.1
+regards,
+dan carpenter
 
