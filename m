@@ -2,72 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BA8D2DA5EC
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 03:01:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 881122DA5F5
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 03:08:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725964AbgLOCBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 21:01:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58854 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725812AbgLOCAs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 21:00:48 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607997608;
-        bh=whyvOZa/FvuTZBvs1uWXg/cw/gD48NQTuy46h6DTxXw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NCDMxWeXChalOpVpEPMaZjId6SAtoWEab33fp+o4nMbv1DRk2eAorcnQDFS6IQ6LQ
-         q7Wk43qaDk0rgsuvq9hp6wRTnvqkuNXmZ1AUTgAEM/G6ucwoed1cVFcS8GC7JtN6Ze
-         LovOoWySPgwhQCD9A2+XZdrZUBfeyt8nsmDcNleM7E9JGxVKSCU2Bkb93L2GFiGuGE
-         X+njbuyO9bqaQynzSzOjBGvnjiJyrCLtOKWOU9Z2Tpxfp+LqSyej4gt6D8uoNobAys
-         tyL1Kt3QIk+sCfpb9om8c1xEXPeWwtcUEAXuIozBvKS2sh7p3PMhkCiLXgPCrBjlbM
-         hK6qFFtzm8LYg==
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv6 net-next 0/3] Add devlink and devlink health reporters to 
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160799760815.15807.11950025011847625319.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Dec 2020 02:00:08 +0000
-References: <20201211062526.2302643-1-george.cherian@marvell.com>
-In-Reply-To: <20201211062526.2302643-1-george.cherian@marvell.com>
-To:     George Cherian <george.cherian@marvell.com>
+        id S1726155AbgLOCFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 21:05:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40694 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726075AbgLOCFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 21:05:16 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CC5C061793;
+        Mon, 14 Dec 2020 18:04:35 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id e2so2946595plt.12;
+        Mon, 14 Dec 2020 18:04:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Eh2C6JhMn6ot8VqihWEIpVJROCk+GI8Jpaj5L4a5XnI=;
+        b=YRz/4Q/Dqe0PTPPyib99YyLo46g5hr1sxInIM40YKTgguntMCIiIlyotvxInQR3tdq
+         TgLbwcWF8t3o/JBL4fOE5w70S5CPhLwgbNBFLMnE+89AeYKy/jUc2rPkDvXV6uksKEwJ
+         N9TsMljCaEDLbhlhGI1ugsaOoOz6IvijKSMFpOLkR1ldv8XoJAiPUhnvkEeWv7zMX8kQ
+         nk6oZKtdBGpqDXalWaLT/AfQH0FDk/vK3CR/JkRVDR+O7k5l+sFxExOSzd9pejNmjED6
+         2CGtQsbfPBfY8nKI4IiE3gQo+0MEOdryDEQVJsw+huNJZ02AYgaDfp9BNacX7AY832od
+         MO8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Eh2C6JhMn6ot8VqihWEIpVJROCk+GI8Jpaj5L4a5XnI=;
+        b=SDmzieF56TNZLZcIqWya5NsJdk9DTp30MQrk6haM+CkDOAbFIcOowWA4eFjlKFpXYn
+         513LwmzIv/f7L9KTZ7GdmoZzD3BVnQDWX8oiiH1fJodsH0s8Py6pOAXTZ6SDyG+SqRpz
+         E7Ddy6ZYI9NTnNOZ9Xhw09N3s/4Ph2qzhHVckRb30vj3k8rYxajAq8AGkrmAXp5RIpqn
+         O8/OymCyibD6bIB7XeAGrDAHWqIAUUiaXTES0oijnMtoFQEqNukgzo6dO1+C3p7/FbrP
+         qEql4TRDhhTbGtmilHnL7lYFKaqCkVVvnM+hUp6hBKQoXFA+LgnoP70mfwVKhGpS+wQt
+         ePTQ==
+X-Gm-Message-State: AOAM531J3hTyALj47/hWiY4msmqso+i9J9CJksl9DEWo1iVyNfaCmFII
+        eEhhfWy8pptIz9j+F7LBOPY=
+X-Google-Smtp-Source: ABdhPJyf+V+BLO/6fgkbqziDEhx9el4b2aFE5jP2q6F/nbIljpi7O4xo/UF+nwUUHViOw+ul5s2xzw==
+X-Received: by 2002:a17:902:c244:b029:da:e63c:cede with SMTP id 4-20020a170902c244b02900dae63ccedemr479597plg.0.1607997875535;
+        Mon, 14 Dec 2020 18:04:35 -0800 (PST)
+Received: from localhost.localdomain ([122.10.161.207])
+        by smtp.gmail.com with ESMTPSA id y15sm19347840pju.13.2020.12.14.18.04.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 14 Dec 2020 18:04:34 -0800 (PST)
+From:   Yejune Deng <yejune.deng@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        andriin@fb.com, jiri@mellanox.com, edumazet@google.com,
+        ap420073@gmail.com, bjorn.topel@intel.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, sgoutham@marvell.com,
-        lcherian@marvell.com, gakula@marvell.com,
-        willemdebruijn.kernel@gmail.com, saeed@kernel.org, jiri@resnulli.us
+        yejune.deng@gmail.com
+Subject: [PATCH] net: core: fix msleep() is not accurate
+Date:   Tue, 15 Dec 2020 10:04:25 +0800
+Message-Id: <1607997865-3437-1-git-send-email-yejune.deng@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+See Documentation/timers/timers-howto.rst, msleep() is not
+for (1ms - 20ms), use usleep_range() instead.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
+---
+ net/core/dev.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Fri, 11 Dec 2020 11:55:23 +0530 you wrote:
-> Add basic devlink and devlink health reporters.
-> Devlink health reporters are added for NPA block.
-> 
-> Address Jakub's comment to add devlink support for error reporting.
-> https://www.spinics.net/lists/netdev/msg670712.html
-> 
-> For now, I have dropped the NIX block health reporters.
-> This series attempts to add health reporters only for the NPA block.
-> As per Jakub's suggestion separate reporters per event is used and also
-> got rid of the counters.
-> 
-> [...]
-
-Here is the summary with links:
-  - [PATCHv6,net-next,1/3] octeontx2-af: Add devlink suppoort to af driver
-    https://git.kernel.org/netdev/net-next/c/fae06da4f261
-  - [2/3] octeontx2-af: Add devlink health reporters for NPA
-    https://git.kernel.org/netdev/net-next/c/f1168d1e207c
-  - [3/3] docs: octeontx2: Add Documentation for NPA health reporters
-    https://git.kernel.org/netdev/net-next/c/80b9414832a1
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d33099f..c0aa52f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6726,9 +6726,9 @@ void napi_disable(struct napi_struct *n)
+ 	set_bit(NAPI_STATE_DISABLE, &n->state);
+ 
+ 	while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
+-		msleep(1);
++		usleep_range(10, 200);
+ 	while (test_and_set_bit(NAPI_STATE_NPSVC, &n->state))
+-		msleep(1);
++		usleep_range(10, 200);
+ 
+ 	hrtimer_cancel(&n->timer);
+ 
+-- 
+1.9.1
 
