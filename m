@@ -2,84 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DED912DA647
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 03:35:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD5A2DA662
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 03:45:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727943AbgLOCdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 21:33:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47894 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727903AbgLOCd2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 21:33:28 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607999565;
-        bh=WYSwvgrlDpQVIIDoaLii3hzyMGUXaw29yrS/HV62spw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UZnv4UZ2yINMawrYcI650sixxc7fh+r4xlhZ7p5Xuuz7u8ZXTlKowaes8XCCHAeSp
-         0wdof3vABQeaoW42Cb3oaWAUUpmERYYcXzChOfHymbYDL/ho4IdX1wCdgR/SUFP2+5
-         YXMfDl+O4q6dhzGzJ0JmHBgAIJG5o1zY41ASWvG2CGolJ65ikDWMf5sIK2bvh6hG97
-         I6GTV1ECISIKctHWpnRBtEtCQZjcQJSkUi+zpOqfKa0rF0B4n7ygGSqzFMFY0tLMyh
-         xV/J5i5T+X5YVMPIc9rUCCqPSrBdvfLvjON7rjtnlc9dkUIVMQohdHs96BgisGhiGD
-         RUpbrSCBtceXQ==
+        id S1725987AbgLOCpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 21:45:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46872 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726163AbgLOCpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Dec 2020 21:45:18 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC73C061793;
+        Mon, 14 Dec 2020 18:44:37 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id j20so13482338otq.5;
+        Mon, 14 Dec 2020 18:44:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=x72vug8cN99PaOJ8x7vMuDWxLkm4VsBuMNR8n9DiKS4=;
+        b=Yb5rLt5rgh4o9RMWpdRF/Zup/mpecAr8rtLHcQI22UMrJnizmrU5wfwbbkxC/kNeTm
+         hW15p5wcJDakSjXx+vWBMSHjdgKzBmu7vMRFnevbiu8V0fAN7MOJkjVorwAAYWKp3WKk
+         bQfI8LOkmEM2q2dxdS7f2GzQWukHkrhTL3WdHG1xlE8Dd0LemcN/lQh82C3MAGev5Ngy
+         +m6LJYU6Wltd6s/oWw5shiOv5FfC6jiaJGoEb+LA5LsG0w5OwC0PwPlT2zubAxg8QNDB
+         bZuEoscn06v4l6q0AvoxdST+f54SA/YS+Yxol2fPYIu7C2OveNZ5LXEw7Ucnnh7uhbXJ
+         yhPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=x72vug8cN99PaOJ8x7vMuDWxLkm4VsBuMNR8n9DiKS4=;
+        b=AZyKVTFAxvWW/GwdN0isRcrzPp/tuUdQhjxNAVoWxhVQU4VLRLfRARq1+U81VPa5A2
+         bxzhypfyfQlhhFOmjnQn+CTgmJRWRZqSN/NLHXXpYw+tLudEEmDDVsbaptrBbIZ1IS1G
+         rQ1nlCOZ3CXjAnJhctiApn5VR6Dw3l3Ep8M+Wc1oiTx+qKeG9ubqkYltB53xcxM3fe6s
+         7cX1cY9Fj39PZolZ4qEDcuYFsPyRt2PvoCEQk6xS0u+E6kL7WRf698xCB3F2Vmsv1lCw
+         2UnchzPkaOvWPS2S4M+AGu6ouH92x+04Sv0LKRW0P52a1e/6JEjufa4VA5KpacCSyUIL
+         gGxg==
+X-Gm-Message-State: AOAM532FbIToZZQaGCvikF5so9+2+C6dTM0naTRGhMkJNt824Nijht83
+        Sde0JBff1hdlB/t8xAAHapkP6DUFwJ0=
+X-Google-Smtp-Source: ABdhPJy47kkIs/k+sZGmUNcCZSAXYal0PodIX/cfQQf1sUSINN4qqSdvbIWoeQte/9gVaNvF9ctkow==
+X-Received: by 2002:a9d:d52:: with SMTP id 76mr13048273oti.67.1608000277341;
+        Mon, 14 Dec 2020 18:44:37 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.51])
+        by smtp.googlemail.com with ESMTPSA id t203sm4795225oib.34.2020.12.14.18.44.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Dec 2020 18:44:36 -0800 (PST)
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+References: <20201214214352.198172-1-saeed@kernel.org>
+ <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <0af4731d-0ccb-d986-d1f7-64e269c4d3ec@gmail.com>
+Date:   Mon, 14 Dec 2020 19:44:31 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: bridge: Fix a warning when del bridge sysfs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160799956512.31445.17200550488514446402.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Dec 2020 02:32:45 +0000
-References: <20201211122921.40386-1-wanghai38@huawei.com>
-In-Reply-To: <20201211122921.40386-1-wanghai38@huawei.com>
-To:     Wang Hai <wanghai38@huawei.com>
-Cc:     kuba@kernel.org, nikolay@nvidia.com, davem@davemloft.net,
-        roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Fri, 11 Dec 2020 20:29:21 +0800 you wrote:
-> I got a warining report:
+On 12/14/20 6:53 PM, Alexander Duyck wrote:
+>> example subfunction usage sequence:
+>> -----------------------------------
+>> Change device to switchdev mode:
+>> $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
+>>
+>> Add a devlink port of subfunction flaovur:
+>> $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
 > 
-> br_sysfs_addbr: can't create group bridge4/bridge
-> ------------[ cut here ]------------
-> sysfs group 'bridge' not found for kobject 'bridge4'
-> WARNING: CPU: 2 PID: 9004 at fs/sysfs/group.c:279 sysfs_remove_group fs/sysfs/group.c:279 [inline]
-> WARNING: CPU: 2 PID: 9004 at fs/sysfs/group.c:279 sysfs_remove_group+0x153/0x1b0 fs/sysfs/group.c:270
-> Modules linked in: iptable_nat
-> ...
-> Call Trace:
->   br_dev_delete+0x112/0x190 net/bridge/br_if.c:384
->   br_dev_newlink net/bridge/br_netlink.c:1381 [inline]
->   br_dev_newlink+0xdb/0x100 net/bridge/br_netlink.c:1362
->   __rtnl_newlink+0xe11/0x13f0 net/core/rtnetlink.c:3441
->   rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3500
->   rtnetlink_rcv_msg+0x385/0x980 net/core/rtnetlink.c:5562
->   netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2494
->   netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->   netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1330
->   netlink_sendmsg+0x793/0xc80 net/netlink/af_netlink.c:1919
->   sock_sendmsg_nosec net/socket.c:651 [inline]
->   sock_sendmsg+0x139/0x170 net/socket.c:671
->   ____sys_sendmsg+0x658/0x7d0 net/socket.c:2353
->   ___sys_sendmsg+0xf8/0x170 net/socket.c:2407
->   __sys_sendmsg+0xd3/0x190 net/socket.c:2440
->   do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
->   entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> [...]
+> Typo in your description. Also I don't know if you want to stick with
+> "flavour" or just shorten it to the U.S. spelling which is "flavor".
 
-Here is the summary with links:
-  - [v2] net: bridge: Fix a warning when del bridge sysfs
-    https://git.kernel.org/netdev/net-next/c/989a1db06eb1
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+The term exists in devlink today (since 2018). When support was added to
+iproute2 I decided there was no reason to require the US spelling over
+the British spelling, so I accepted the patch.
