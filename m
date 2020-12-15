@@ -2,230 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F5372DB27E
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:26:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65BD42DB290
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:29:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730599AbgLORZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 12:25:16 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:7628 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730884AbgLORY7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:24:59 -0500
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 15 Dec 2020 09:24:43 -0800
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 15 Dec 2020 09:24:41 -0800
-X-QCInternal: smtphost
-Received: from youghand-linux.qualcomm.com ([10.206.66.115])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 15 Dec 2020 22:54:38 +0530
-Received: by youghand-linux.qualcomm.com (Postfix, from userid 2370257)
-        id 9161820F1A; Tue, 15 Dec 2020 22:54:37 +0530 (IST)
-From:   Youghandhar Chintala <youghand@codeaurora.org>
-To:     ath10k@lists.infradead.org
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuabhs@chromium.org,
-        dianders@chromium.org, briannorris@chromium.org,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        Youghandhar Chintala <youghand@codeaurora.org>
-Subject: [PATCH 3/3] ath10k: Set wiphy flag to trigger sta disconnect on hardware restart
-Date:   Tue, 15 Dec 2020 22:54:35 +0530
-Message-Id: <20201215172435.5388-1-youghand@codeaurora.org>
-X-Mailer: git-send-email 2.29.0
+        id S1729872AbgLOR2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 12:28:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726431AbgLOR2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:28:02 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736BEC06179C;
+        Tue, 15 Dec 2020 09:27:22 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id lj6so1613629pjb.0;
+        Tue, 15 Dec 2020 09:27:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YLQe1sM4Ge2CHlLzOz2p/trhD+G58BxTmNBt25LRZ8A=;
+        b=mtRXacPgffa47mMHg0mb+jE2Uic1s/vh3S7sCBxhHYjvzthmVLzIhwhGpfUGV8suE/
+         ZaaYyacg7kpzmnlJoPPBkhXEOr4rxWuWZi9VhRYODw5JLp6LKb4rzi9AH6D23jG7wB7y
+         iJHSSQ/bc+Ub7HIbwibushpozgI25EwzwGOYpEXNi0+Uux/Cz7F2ownzUE6Yqygbg/3r
+         N2Ei0jsQOvWH8mwF3Sj/1OGcFltg2PkPFsPZqNBUKrJy2zM/kc1giBz4cnnHrLEYL5Dn
+         qpo2qAZqzNZxWJK6JavzI4QkjrnyhwK3AHbgjuVs5VX1/g4sDRRPcIOhF30E7IPup6IY
+         W8lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YLQe1sM4Ge2CHlLzOz2p/trhD+G58BxTmNBt25LRZ8A=;
+        b=IUaJ/yiRiZU8dlBmmBHB3LY52Xq+73SPQoBMXnSwfo6+QQVnCHIYB46v3nUTAlHVDV
+         2PpUIw+vD34tPNYbM67TE/NmgpgpvJxucw3jDtHAF6G34IiWKisC5Ue47PDPZilk03vb
+         EGTOLYAQoYJTL0f3WUd8AiO+wKDY1ZARy6MxjnkqaEUa5wal+IzLRgQsXzxITaeFCf4P
+         uJaoYrr8VecO8D3uyrj1CHl9uHkILUZ7YtL+GW3Z6pwhzm96Dhn12rh0BoacXm/Ir5Kc
+         epWkp/h99M+0pU9t2iabij994aQAHSFrtMOhyYwcXHdl5LWw5JcVrI+dmYTyYBqrgPJD
+         thNQ==
+X-Gm-Message-State: AOAM5333pbtRq99mXuuK3U2Ki1pQfhoqO+0ta9CmIg2tXKsErVIkzMu9
+        KOhOWaOX2d5jDDRlBGZDZ/xP0ISRz6dl6fBBTvI=
+X-Google-Smtp-Source: ABdhPJyD+yx+eQaFiZVDFvolPHHBDMQn/csck7cKFaQIPdyK4pVw193xnlm+vbAxPWLqoWx3okwRpAgzBq0zXmYooFg=
+X-Received: by 2002:a17:90a:c592:: with SMTP id l18mr31159805pjt.228.1608053241871;
+ Tue, 15 Dec 2020 09:27:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201215164315.3666-1-calvin.johnson@oss.nxp.com> <20201215164315.3666-5-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20201215164315.3666-5-calvin.johnson@oss.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 15 Dec 2020 19:28:10 +0200
+Message-ID: <CAHp75VcHrBtAY3KDugBYEo9=YuDwbh+QLdOU8yiKb2VyaU2x9A@mail.gmail.com>
+Subject: Re: [net-next PATCH v2 04/14] net: phy: Introduce fwnode_get_phy_id()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, "linux.cj" <linux.cj@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rakesh Pillai <pillair@codeaurora.org>
+On Tue, Dec 15, 2020 at 6:44 PM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> Extract phy_id from compatible string. This will be used by
+> fwnode_mdiobus_register_phy() to create phy device using the
+> phy_id.
 
-Currently after the hardware restart triggered from the driver,
-the station interface connection remains intact, since a disconnect
-trigger is not sent to userspace. This can lead to a problem in
-hardwares where the wifi mac sequence is added by the firmware.
+...
 
-After the firmware restart, during subsytem recovery, the firmware
-restarts its wifi mac sequence number. Hence AP to which our device
-is connected will receive frames with a  wifi mac sequence number jump
-to the past, thereby resulting in the AP dropping all these frames,
-until the frame arrives with a wifi mac sequence number which AP was
-expecting.
+> +       if (sscanf(cp, "ethernet-phy-id%4x.%4x", &upper, &lower) == 2) {
+> +               *phy_id = ((upper & 0xFFFF) << 16) | (lower & 0xFFFF);
+> +               return 0;
+> +       }
+> +       return -EINVAL;
 
-To avoid such frame drops, its better to trigger a station disconnect
-upon the  hardware restart. Indicate this support via a WIPHY flag
-to mac80211, if the hardware params flag mentions the support to
-add wifi mac sequence numbers for TX frames in the firmware.
+Perhaps traditional pattern, i.e.
+       if (sscanf(cp, "ethernet-phy-id%4x.%4x", &upper, &lower) != 2)
+               return -EINVAL;
 
-All the other hardwares, except WCN3990, are not affected by this
-change, since the hardware params flag is not set for any hardware
-except for WCN3990
+       *phy_id = ((upper & 0xFFFF) << 16) | (lower & 0xFFFF);
+       return 0;
 
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.1-01040-QCAHLSWMTPLZ-1
-Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00110-QCARMSWP-1
-Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00048
+And perhaps GENMASK() ?
 
-Signed-off-by: Rakesh Pillai <pillair@codeaurora.org>
-Signed-off-by: Youghandhar Chintala <youghand@codeaurora.org>
----
- drivers/net/wireless/ath/ath10k/core.c | 15 +++++++++++++++
- drivers/net/wireless/ath/ath10k/hw.h   |  3 +++
- drivers/net/wireless/ath/ath10k/mac.c  |  3 +++
- 3 files changed, 21 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index 796107b..4155f94 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -90,6 +90,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = true,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA988X_HW_2_0_VERSION,
-@@ -124,6 +125,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = true,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA9887_HW_1_0_VERSION,
-@@ -159,6 +161,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA6174_HW_3_2_VERSION,
-@@ -187,6 +190,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.num_wds_entries = 0x20,
- 		.uart_pin_workaround = true,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 		.bmi_large_size_download = true,
- 		.supports_peer_stats_info = true,
- 	},
-@@ -223,6 +227,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA6174_HW_2_1_VERSION,
-@@ -257,6 +262,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA6174_HW_3_0_VERSION,
-@@ -291,6 +297,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA6174_HW_3_2_VERSION,
-@@ -328,6 +335,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = true,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 		.supports_peer_stats_info = true,
- 	},
- 	{
-@@ -369,6 +377,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA9984_HW_1_0_DEV_VERSION,
-@@ -416,6 +425,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA9888_HW_2_0_DEV_VERSION,
-@@ -460,6 +470,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA9377_HW_1_0_DEV_VERSION,
-@@ -494,6 +505,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA9377_HW_1_1_DEV_VERSION,
-@@ -530,6 +542,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = true,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = QCA9377_HW_1_1_DEV_VERSION,
-@@ -598,6 +611,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = true,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = false,
- 	},
- 	{
- 		.id = WCN3990_HW_1_0_DEV_VERSION,
-@@ -625,6 +639,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
- 		.hw_filter_reset_required = false,
- 		.fw_diag_ce_download = false,
- 		.tx_stats_over_pktlog = false,
-+		.tx_mac_seq_by_fw = true,
- 	},
- };
- 
-diff --git a/drivers/net/wireless/ath/ath10k/hw.h b/drivers/net/wireless/ath/ath10k/hw.h
-index c6ded21..c146d02 100644
---- a/drivers/net/wireless/ath/ath10k/hw.h
-+++ b/drivers/net/wireless/ath/ath10k/hw.h
-@@ -623,6 +623,9 @@ struct ath10k_hw_params {
- 
- 	/* provides bitrates for sta_statistics using WMI_TLV_PEER_STATS_INFO_EVENTID */
- 	bool supports_peer_stats_info;
-+
-+	/* tx mac seq num is added by FW */
-+	bool tx_mac_seq_by_fw;
- };
- 
- struct htt_rx_desc;
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index dc32c78..6fe9cd6 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -9890,6 +9890,9 @@ int ath10k_mac_register(struct ath10k *ar)
- 	if (test_bit(WMI_SERVICE_TDLS_UAPSD_BUFFER_STA, ar->wmi.svc_map))
- 		ieee80211_hw_set(ar->hw, SUPPORTS_TDLS_BUFFER_STA);
- 
-+	if (ar->hw_params.tx_mac_seq_by_fw)
-+		ar->hw->wiphy->flags |= WIPHY_FLAG_STA_DISCONNECT_ON_HW_RESTART;
-+
- 	ar->hw->wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL;
- 	ar->hw->wiphy->flags |= WIPHY_FLAG_HAS_CHANNEL_SWITCH;
- 	ar->hw->wiphy->max_remain_on_channel_duration = 5000;
 -- 
-2.7.4
-
+With Best Regards,
+Andy Shevchenko
