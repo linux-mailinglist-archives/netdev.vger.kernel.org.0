@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65BD42DB290
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:29:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 419572DB29E
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:32:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729872AbgLOR2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 12:28:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726431AbgLOR2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:28:02 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736BEC06179C;
-        Tue, 15 Dec 2020 09:27:22 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id lj6so1613629pjb.0;
-        Tue, 15 Dec 2020 09:27:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YLQe1sM4Ge2CHlLzOz2p/trhD+G58BxTmNBt25LRZ8A=;
-        b=mtRXacPgffa47mMHg0mb+jE2Uic1s/vh3S7sCBxhHYjvzthmVLzIhwhGpfUGV8suE/
-         ZaaYyacg7kpzmnlJoPPBkhXEOr4rxWuWZi9VhRYODw5JLp6LKb4rzi9AH6D23jG7wB7y
-         iJHSSQ/bc+Ub7HIbwibushpozgI25EwzwGOYpEXNi0+Uux/Cz7F2ownzUE6Yqygbg/3r
-         N2Ei0jsQOvWH8mwF3Sj/1OGcFltg2PkPFsPZqNBUKrJy2zM/kc1giBz4cnnHrLEYL5Dn
-         qpo2qAZqzNZxWJK6JavzI4QkjrnyhwK3AHbgjuVs5VX1/g4sDRRPcIOhF30E7IPup6IY
-         W8lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YLQe1sM4Ge2CHlLzOz2p/trhD+G58BxTmNBt25LRZ8A=;
-        b=IUaJ/yiRiZU8dlBmmBHB3LY52Xq+73SPQoBMXnSwfo6+QQVnCHIYB46v3nUTAlHVDV
-         2PpUIw+vD34tPNYbM67TE/NmgpgpvJxucw3jDtHAF6G34IiWKisC5Ue47PDPZilk03vb
-         EGTOLYAQoYJTL0f3WUd8AiO+wKDY1ZARy6MxjnkqaEUa5wal+IzLRgQsXzxITaeFCf4P
-         uJaoYrr8VecO8D3uyrj1CHl9uHkILUZ7YtL+GW3Z6pwhzm96Dhn12rh0BoacXm/Ir5Kc
-         epWkp/h99M+0pU9t2iabij994aQAHSFrtMOhyYwcXHdl5LWw5JcVrI+dmYTyYBqrgPJD
-         thNQ==
-X-Gm-Message-State: AOAM5333pbtRq99mXuuK3U2Ki1pQfhoqO+0ta9CmIg2tXKsErVIkzMu9
-        KOhOWaOX2d5jDDRlBGZDZ/xP0ISRz6dl6fBBTvI=
-X-Google-Smtp-Source: ABdhPJyD+yx+eQaFiZVDFvolPHHBDMQn/csck7cKFaQIPdyK4pVw193xnlm+vbAxPWLqoWx3okwRpAgzBq0zXmYooFg=
-X-Received: by 2002:a17:90a:c592:: with SMTP id l18mr31159805pjt.228.1608053241871;
- Tue, 15 Dec 2020 09:27:21 -0800 (PST)
+        id S1730138AbgLORbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 12:31:09 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:12901 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726356AbgLORbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:31:09 -0500
+Received: from ironmsg07-lv.qualcomm.com (HELO ironmsg07-lv.qulacomm.com) ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 15 Dec 2020 09:30:29 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qulacomm.com with ESMTP/TLS/AES256-SHA; 15 Dec 2020 09:30:27 -0800
+X-QCInternal: smtphost
+Received: from youghand-linux.qualcomm.com ([10.206.66.115])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 15 Dec 2020 23:00:24 +0530
+Received: by youghand-linux.qualcomm.com (Postfix, from userid 2370257)
+        id C911E20F17; Tue, 15 Dec 2020 23:00:23 +0530 (IST)
+From:   Youghandhar Chintala <youghand@codeaurora.org>
+To:     johannes@sipsolutions.net
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuabhs@chromium.org,
+        dianders@chromium.org, briannorris@chromium.org,
+        pillair@codeaurora.org,
+        Youghandhar Chintala <youghand@codeaurora.org>
+Subject: [PATCH 1/3] cfg80211: Add wiphy flag to trigger STA disconnect after hardware restart
+Date:   Tue, 15 Dec 2020 23:00:21 +0530
+Message-Id: <20201215173021.5884-1-youghand@codeaurora.org>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-References: <20201215164315.3666-1-calvin.johnson@oss.nxp.com> <20201215164315.3666-5-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20201215164315.3666-5-calvin.johnson@oss.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 15 Dec 2020 19:28:10 +0200
-Message-ID: <CAHp75VcHrBtAY3KDugBYEo9=YuDwbh+QLdOU8yiKb2VyaU2x9A@mail.gmail.com>
-Subject: Re: [net-next PATCH v2 04/14] net: phy: Introduce fwnode_get_phy_id()
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, "linux.cj" <linux.cj@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 6:44 PM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
->
-> Extract phy_id from compatible string. This will be used by
-> fwnode_mdiobus_register_phy() to create phy device using the
-> phy_id.
+Many wifi drivers (e.g. ath10k using qualcomm wifi chipsets)
+support silent target hardware restart/recovery. Out of these
+drivers which support target hw restart, certain chipsets
+have the wifi mac sequence number addition for transmitted
+frames done by the firmware. For such chipsets, a silent
+target hardware restart breaks the continuity of the wifi
+mac sequence number, since the wifi mac sequence number
+restarts from 0 after the restart, which in-turn leads
+to the peer access point dropping all the frames from device
+until it receives the frame with the mac sequence which was
+expected by the AP.
 
-...
+Add a wiphy flag for the driver to indicate that it needs a
+trigger for STA disconnect after hardware restart.
 
-> +       if (sscanf(cp, "ethernet-phy-id%4x.%4x", &upper, &lower) == 2) {
-> +               *phy_id = ((upper & 0xFFFF) << 16) | (lower & 0xFFFF);
-> +               return 0;
-> +       }
-> +       return -EINVAL;
+Tested on ath10k using WCN3990, QCA6174.
 
-Perhaps traditional pattern, i.e.
-       if (sscanf(cp, "ethernet-phy-id%4x.%4x", &upper, &lower) != 2)
-               return -EINVAL;
+Signed-off-by: Youghandhar Chintala <youghand@codeaurora.org>
+---
+ include/net/cfg80211.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-       *phy_id = ((upper & 0xFFFF) << 16) | (lower & 0xFFFF);
-       return 0;
-
-And perhaps GENMASK() ?
-
+diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+index ab249ca..7fba6f6 100644
+--- a/include/net/cfg80211.h
++++ b/include/net/cfg80211.h
+@@ -4311,6 +4311,9 @@ struct cfg80211_ops {
+  * @WIPHY_FLAG_HAS_STATIC_WEP: The device supports static WEP key installation
+  *	before connection.
+  * @WIPHY_FLAG_SUPPORTS_EXT_KEK_KCK: The device supports bigger kek and kck keys
++ * @WIPHY_FLAG_STA_DISCONNECT_ON_HW_RESTART: The device needs a trigger to
++ *	disconnect STA after target hardware restart. This flag should be
++ *	exposed by drivers which support target recovery.
+  */
+ enum wiphy_flags {
+ 	WIPHY_FLAG_SUPPORTS_EXT_KEK_KCK		= BIT(0),
+@@ -4337,6 +4340,7 @@ enum wiphy_flags {
+ 	WIPHY_FLAG_SUPPORTS_5_10_MHZ		= BIT(22),
+ 	WIPHY_FLAG_HAS_CHANNEL_SWITCH		= BIT(23),
+ 	WIPHY_FLAG_HAS_STATIC_WEP		= BIT(24),
++	WIPHY_FLAG_STA_DISCONNECT_ON_HW_RESTART	= BIT(25),
+ };
+ 
+ /**
 -- 
-With Best Regards,
-Andy Shevchenko
+2.7.4
+
