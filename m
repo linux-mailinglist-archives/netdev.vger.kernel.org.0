@@ -2,92 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 907452DAAC8
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 11:24:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 032952DAACF
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 11:27:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726868AbgLOKXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 05:23:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbgLOKXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 05:23:35 -0500
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF555C0617A6
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 02:22:54 -0800 (PST)
-Received: by mail-wm1-x341.google.com with SMTP id 3so17956064wmg.4
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 02:22:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=K36QeBex9taYW3hhw2b229GNHMSNLUfgz5JSQHgq0RQ=;
-        b=ut5I/5B0dpDpp4V58fscKQyWli4sF8D9SxW+eWBLVTYcHIHHmVVmAwvN3q7TgK9PyH
-         1A40QJOO/UUMerQ2TeIIylYKqIYihKQEX8v0KdDXTZxNjAxfT3up4/E8ja3mO3W823an
-         i10I9JfWG9y6aNBBv2ypFHwMfv7B8gzdpjKSOmTtqIY2ZJJ4qBgQgBAo4wt+wC9xrT2W
-         FGjNYbfBaIk8a1QZ9mtfkOKTVVBFpg3HgRueFp2gUw0QDcNvRxbcOHChgrsRcviRZnNx
-         93RINqoYn5gNrcmrSDuzwokPlr/XAmfVd9YktJffuf9LAZmx/eVJNmDQQOBKirnxCpfG
-         vUJg==
+        id S1727618AbgLOKZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 05:25:08 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:36306 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727378AbgLOKYw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 05:24:52 -0500
+Received: by mail-io1-f72.google.com with SMTP id y197so13301954iof.3
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 02:24:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=K36QeBex9taYW3hhw2b229GNHMSNLUfgz5JSQHgq0RQ=;
-        b=DVupNNwGmReEMcK8P4GqOPUVR8sfut/gjc/vS5WsGeRtkNzgIgnf370r9Bk76UhgpY
-         RCWEyOdMXqeYVHop98MV5N4/hdd3012B/bCC/Vpuu4TFM1PNUjB6EGe/hNaJfuKlw9jW
-         Fa5I+ztfCAuEA8WuQ+fWM+o87wOg5G349aBdGYIX89g6oaffQl8Lnx2PLilhXvvOvjN5
-         hjJHWjg0g8wY5qr2BPeijGzsiLb3oJyMwv2Xa5u5odxf7e9TNb2FLzPjgQZ8ndjwEVdw
-         mkqpH0QzvTUWYZ6OVcx98JEiBl4ZiUuIqjlTtVACK5yGxWYHM6yJJ0bXWLp8cIYMq7nl
-         w3zA==
-X-Gm-Message-State: AOAM530BZWWpKZfi1fl05H/QLWO2ia3ZjfQMP4SS0jWLxcjoe++1uqv4
-        AjNcm0+AOMpo/F8DaqN7gwA2TA==
-X-Google-Smtp-Source: ABdhPJzGkVViYuc40sHFA8Tgz9RcSAMNpv4Inc9u/e34YjtiZC50W/IcOBsYVUMIKcHcJ8awNMX1eA==
-X-Received: by 2002:a1c:4904:: with SMTP id w4mr31493771wma.140.1608027773431;
-        Tue, 15 Dec 2020 02:22:53 -0800 (PST)
-Received: from netronome.com ([2001:982:7ed1:404:a2a4:c5ff:fe4c:9ce9])
-        by smtp.gmail.com with ESMTPSA id m18sm22274535wrw.43.2020.12.15.02.22.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Dec 2020 02:22:52 -0800 (PST)
-Date:   Tue, 15 Dec 2020 11:22:51 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Louis Peens <louis.peens@netronome.com>,
-        netdev@vger.kernel.org, oss-drivers@netronome.com,
-        wenxu <wenxu@ucloud.cn>
-Subject: Re: [PATCH net] nfp: do not send control messages during cleanup
-Message-ID: <20201215102249.GA5855@netronome.com>
-References: <20201211092738.3358-1-simon.horman@netronome.com>
- <20201214182650.4d03cc7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=0qYa0dsPMP7tmde6ntcVuGWaHNVgAG/+qCsZ5UYMglA=;
+        b=mYPDPcH4yDFhtMoMNs1ZBcrgYJcHKUzR0ySjlpHqC83nEndF1g8eMR1gt1VThFiGf2
+         h7VIaH8Y8HtOfNN1QzzrEO/2jdRaWYU9yOvtKB5cwGIkjpDgxfF+1/WVV8i2/DW7mgkG
+         su0WDAWyBkwUqd3940JqmG02WCcBu/hp5JT6CBB0n8r+brr1GJf/SL82+vDIPRE5rbVy
+         KMme3/Ot85M54bIy2TcLDz6ljOJpYnT/K7vKfJcCuhgMRPlhfU+e7IAAmzA5mZ3Ou3w4
+         mGJTni0Q6HkRTTJXjCjTYDJ1pgQk8drWmMMTy4Cse+fwp4FxizbH4Aw75OHiiKih1rlO
+         Vhvw==
+X-Gm-Message-State: AOAM533JV0mYlrhNBwSZdewBjI/ix4VPnijrw7IGnqMZstsmg1iNtWo8
+        qUZulWQqEmcUeafBEdgZtA4yrR8lNPwH49ms/wSI7+4e06Rg
+X-Google-Smtp-Source: ABdhPJxxohlQ3B+YU2w+xW9BNn1uL9NYPvq1Vh698TyAU4Sv8vBCGpnnXaCjJAI7K/WQcAX8b0ZLOdRbBe52sFwV2S+MqzzRSKT1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201214182650.4d03cc7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a02:1007:: with SMTP id 7mr39330981jay.73.1608027851046;
+ Tue, 15 Dec 2020 02:24:11 -0800 (PST)
+Date:   Tue, 15 Dec 2020 02:24:11 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d9c89b05b67e2803@google.com>
+Subject: WARNING: suspicious RCU usage in nf_ct_iterate_cleanup
+From:   syzbot <syzbot+dced7c2d89dde957f7dd@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 06:26:50PM -0800, Jakub Kicinski wrote:
-> On Fri, 11 Dec 2020 10:27:38 +0100 Simon Horman wrote:
-> > On cleanup the txbufs are freed before app cleanup. But app clean-up may
-> > result in control messages due to use of common control paths. There is no
-> > need to clean-up the NIC in such cases so simply discard requests. Without
-> > such a check a NULL pointer dereference occurs.
-> > 
-> > Fixes: a1db217861f3 ("net: flow_offload: fix flow_indr_dev_unregister path")
-> > Cc: wenxu <wenxu@ucloud.cn>
-> > Signed-off-by: Simon Horman <simon.horman@netronome.com>
-> > Signed-off-by: Louis Peens <louis.peens@netronome.com>
-> 
-> Hm. We can apply this as a quick fix, but I'd think that app->stop
-> (IIRC that's the callback) is responsible for making sure that
-> everything gets shut down and no more cmsgs can be generated after
-> ctrl vNIC goes down. Perhaps some code needs to be reshuffled between
-> init/clean and start/stop for flower? WDYT?
+Hello,
 
-Thanks Jakub,
+syzbot found the following issue on:
 
-I was a bit concerned with fragility in the clean-up path, which is why I
-had opted for this simple solution. However, looking at your suggestion
-above it seems simple to move the cleanup to app->stop. I'll work on
-posting a patch to implement your suggestion.
+HEAD commit:    33dc9614 Merge tag 'ktest-v5.10-rc6' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1200a46b500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5ed9af1b47477866
+dashboard link: https://syzkaller.appspot.com/bug?extid=dced7c2d89dde957f7dd
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dced7c2d89dde957f7dd@syzkaller.appspotmail.com
+
+=============================
+WARNING: suspicious RCU usage
+5.10.0-rc7-syzkaller #0 Not tainted
+-----------------------------
+kernel/sched/core.c:7270 Illegal context switch in RCU-bh read-side critical section!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 0
+2 locks held by kworker/1:8/18355:
+ #0: ffff888010063d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888010063d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff888010063d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff888010063d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff888010063d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff888010063d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x821/0x15a0 kernel/workqueue.c:2243
+ #1: ffffc90002a6fda8 ((work_completion)(&w->work)#2){+.+.}-{0:0}, at: process_one_work+0x854/0x15a0 kernel/workqueue.c:2247
+
+stack backtrace:
+CPU: 1 PID: 18355 Comm: kworker/1:8 Not tainted 5.10.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events iterate_cleanup_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:118
+ ___might_sleep+0x220/0x2b0 kernel/sched/core.c:7270
+ get_next_corpse net/netfilter/nf_conntrack_core.c:2222 [inline]
+ nf_ct_iterate_cleanup+0x132/0x400 net/netfilter/nf_conntrack_core.c:2244
+ nf_ct_iterate_cleanup_net net/netfilter/nf_conntrack_core.c:2329 [inline]
+ nf_ct_iterate_cleanup_net+0x113/0x170 net/netfilter/nf_conntrack_core.c:2314
+ iterate_cleanup_work+0x45/0x130 net/netfilter/nf_nat_masquerade.c:216
+ process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
