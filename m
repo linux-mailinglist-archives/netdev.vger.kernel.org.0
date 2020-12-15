@@ -2,131 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 865062DA9C9
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:10:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E09D02DA9E0
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 10:14:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727867AbgLOJKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 04:10:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727441AbgLOJKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:10:05 -0500
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A4AC06179C
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 01:09:25 -0800 (PST)
-Received: by mail-vs1-xe42.google.com with SMTP id e20so3872356vsr.12
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 01:09:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=luMq81MiEGmCMgx54RC3ze837GBAAVGMy04eT0X8dS8=;
-        b=lHaL17ncW3LPegqE6xpy/hFHjDpE+0ds0dJUUIPJXUk7h7LmL+GCvaHQzevNSsP/tN
-         eg6Pc6wZxxe+L1NYSULSO5i8HmQNKrBLyVWTQvU4DOIii+ZjzOcvWKuNbUE9Gd8zWrxo
-         KS6gktAV7O7Aha1f82qKQp1QYeXDeSwGdYiK1tmFHlAZvFNa/kxUDHw2rJllzhR8jOo6
-         ST1+ymvEqbzgYNQwTmSdH6iaVWSTLiNb4a3TJLWNjO3UL6Js8jITIYkZakas4E3n9QoO
-         PdRTKAM8gc/V07cRimmBswXx0LoHAjP41wuQXYUPe5y+PB+ppzlr1727ggbW2CXjRmny
-         ixvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=luMq81MiEGmCMgx54RC3ze837GBAAVGMy04eT0X8dS8=;
-        b=pcwNoNfAxDdzBih3jJVF5HYjGD+DAxCVwghQr3BxZHLOWBPfZWJkMoI868bd5FQqOh
-         MF3+akiAVx1JlGY04UP7KvMi4cClWD15atenkRi7XeicMbP24C8mTVXrg35NJqXT7W8d
-         lSkWoZPY2TFz5NjmMR2jFRSTk8lilFal1pHlUW3fjbh3es0XgdlbkgHG/UvWqMKxk6OG
-         CfXu19GIMpobMkTDIdc431Gm+/pUtIGgy4kzftDIerfvi+E4UFGEm/YVp83KWFzGnJWf
-         j0tZG6elTlctUHJWHCmug2UTQe8SUck17G4AMBtcQxZXXQ3aC/DCQh2BmczEMOsjyvLA
-         wkXg==
-X-Gm-Message-State: AOAM530RdjpzUWwS3rjH2vIvEknHAEkdbrZtqB0og908V1et6zNE6vkZ
-        qCqqn4DdiJq/oyHLnm2jJBqOp3xDLl/xniMosYk=
-X-Google-Smtp-Source: ABdhPJxb77wnwRDv3GcVuR8gNw6CTKKseol5oiTXQnSZ2UuQDmn9FvE5iUQWKvSHNLCozcDjInpJNWqtWdc1y4vlhtU=
-X-Received: by 2002:a67:d20e:: with SMTP id y14mr15228493vsi.11.1608023364037;
- Tue, 15 Dec 2020 01:09:24 -0800 (PST)
-MIME-Version: 1.0
-Reply-To: kipkalyamissharrita@gmail.com
-Sender: mrs.latifakoumbousi4@gmail.com
-Received: by 2002:ab0:650a:0:0:0:0:0 with HTTP; Tue, 15 Dec 2020 01:09:23
- -0800 (PST)
-From:   "Miss.Harrita Kipkalya" <kipkalyamissharrita@gmail.com>
-Date:   Tue, 15 Dec 2020 01:09:23 -0800
-X-Google-Sender-Auth: 1j178MDrkViP5BwkeNV5rRx6KHw
-Message-ID: <CANg70n+AAm7Tj4F2CNV2WYJyOMxL8r2rh1Ohg0nW89Ow9W5gsQ@mail.gmail.com>
-Subject: My Dearest,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1728226AbgLOJOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 04:14:44 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:40862 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727536AbgLOJOX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 04:14:23 -0500
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0BF948iN184556;
+        Tue, 15 Dec 2020 04:13:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=TfUhrMamW9R81qMcKj99e69AFR+nMhxQPxemF7uclbo=;
+ b=sPWqU73Y3+QZJQ2vTu4UOxFiTSCXrS2dIuRQeofay3wYTYdR0Kj/MRZnlSH9LqbJG3nE
+ j6VG9BcLodFVV+XHbQtRpidZyDqjzF0cHj3fawevAxIVRZI4jSwxQCXYsgmAjqR2s2nJ
+ Aq+YQO8rv2eec830O1/PnryX+L4IVEizj0AVVMIuH9wAYGKfRXFRYUoo/v8ynfPnp0qu
+ juVH291LxYFkrPofX45DJz/S5r8XDewxryivDFtHJ6CHJwTUjQpeKpgKS5hgkwmMTxps
+ LvvcjllLLQSQv8giDxTIo+5GhaDw/FS9cyRuvO+7jGU/aSyrsAJuVEkJz1BE14H0fJio rA== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 35eseg1tt8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Dec 2020 04:13:40 -0500
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0BF9D0KA026408;
+        Tue, 15 Dec 2020 09:13:38 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03fra.de.ibm.com with ESMTP id 35cng8chu7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Dec 2020 09:13:38 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0BF9B5Ch29950410
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Dec 2020 09:11:05 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7317452057;
+        Tue, 15 Dec 2020 09:11:05 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 283515204F;
+        Tue, 15 Dec 2020 09:11:05 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH net-next 0/1] net/smc: fix access to parent of an ib device
+Date:   Tue, 15 Dec 2020 10:10:57 +0100
+Message-Id: <20201215091058.49354-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-15_04:2020-12-11,2020-12-15 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ impostorscore=0 adultscore=0 mlxscore=0 suspectscore=0 clxscore=1015
+ phishscore=0 spamscore=0 priorityscore=1501 bulkscore=0 mlxlogscore=861
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012150059
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Dearest,
+Please apply the following patch for smc to netdev's net-next tree.
 
-I am writing this mail to you with tears and sorrow from my heart.
-With due respect, trust and humanity, i appeal to you to exercise a
-little patience and read through my letter i feel quite safe dealing
-with you in this important business having gone through your
-remarkable profile, honestly i am writing this email to you with
-pains, tears and sorrow from my heart, i will really like to have a
-good relationship with you and i have a special reason why I decided
-to contact you. I decided to contact you due to the urgency of my
-situation.
+The patch fixes an access to the parent of an ib device which might be NULL.
 
-My name is Miss.Harrita Kipkalya, 23yrs old female and i am from Kenya
-in East Africa. Light in complexion, single (never married) but
-presently i am residing here in Ouagadougou, Burkina Faso refugee
-camp. My father Late Dr Kipkalya Kones was the former Kenyan road
-Minister. He and Assistant Minister of Home Affairs Lorna Laboso had
-been on board the Cessna 210, which was headed to Kericho and crashed
-in a remote area called Kajong'a, in western Kenya. The plane crashed
-on the Tuesday 10th, June, 2008. You can read more about the crash
-through the below site:
-http://edition.cnn.com/2008/WORLD/africa/06/10/kenya.crash/index.html?iref=
-=3Dnextin
+I am sending this fix to net-next because the fixed code is still in this
+tree only.
 
-After the burial of my father, my Fathers brother conspired and sold
-my father' s property to an Italian Expert rate which they shared the
-money among themselves and live nothing for me. One faithful morning,
-I opened my father's briefcase and found out the documents which he
-have deposited huge amount of money in one bank in Burkina Faso with
-my name as the next of kin because when he was alive he deposited some
-amount of money in a Bank in Burkina Faso which he used my name as the
-next of kin. The amount in question is $4.7Million.
+Karsten Graul (1):
+  net/smc: fix access to parent of an ib device
 
-I have informed the bank about claiming this money and the only thing
-they told me is to look for a foreign partner who will assist me in
-the transfer due to my refugee status here in Burkina Faso. God told
-me that you are the honest and reliable person who will help me and
-stand as my trustee so that I will present you to the Bank for
-transferring of my father=E2=80=99s money to your bank account in overseas.=
-I
-have chosen to contact you after my prayers and I believe that you
-will not betray my trust. But rather take me as your own biological
-sister or daughter which I will be coming to your country as soon as
-this money is transferred to your account.
+ net/smc/smc_ib.c | 36 +++++++++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 13 deletions(-)
 
-My dearest, things are very bad for me here in the refugee camp where
-i am living today. People are dying here day after day because of lack
-of food and poor medical treatment. Even one of us died last night and
-was buried this morning. I am afraid of what i am seeing here. I don't
-know who it will be her turn tomorrow, I was planning to read law in
-my life before the ugly incident that killed my parents that put me in
-this horrible place i found myself toady. This place is like a prison
-as we are only allowed to go out on Monday and Friday of the week as
-given by the united nation rules and regulation here in Burkina Faso.
-It=E2=80=99s in this refugee we are only allowed to go out two times in a w=
-eek
-it=E2=80=99s just like one staying in the prison and i hope by Gods grace i
-will come out here soon. I don' t have any relatives now whom i can go
-to and the only person i have now is Rev Isaac Ambrose who is the
-pastor of the (Christ for all Churches) here in the refugee he has
-been very nice to me since i came here but i am not living with him
-rather i am leaving in the women's hostel because the refugee have two
-hostels one for men the other for women, so you can always contact me
-through this my both email address here
-(kipkalyamissharrita@gmail.com) thanks and am waiting for your reply.
-Please if you want to help me out of this situation respond back so
-that i will tell you more about me.
+-- 
+2.17.1
 
-Yours faithful
-Miss.Harrita Kipkalya
