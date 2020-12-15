@@ -2,56 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEE832DB35B
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 19:12:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0540E2DB398
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 19:23:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730781AbgLOSKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 13:10:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41724 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730696AbgLOSKf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 13:10:35 -0500
-Date:   Tue, 15 Dec 2020 10:09:54 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608055795;
-        bh=3HXUEkyLoQ9kUBeUPSh2juHmtsLehfa7AtKAN7InKi0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k1jheIKOiHPNcmzmI01DCA87lNjsc1q5zLExqrBDJUUOd4p5tqjRUy2NBxCFceYuV
-         7J/GrJo8L/wP+3Y2uliLDNZtCYyWsfS6CdR1/xWUDQl2j8GFj4DS3xCTplb/fncxRl
-         2QbetHdqy2MkZreQJ1EN7uqYMYhMtz3JHN4Upwl8hEBSStAS0PkoSOYzcV7nKznhPK
-         IY+tNfLV4xH62+Yat8ZnPb84xiSdWj9RWR84OFesRkltcgez8J9RPQb7EIBcmdEP02
-         n8D9uvhErwqypCTlw3fT7tU2za1V8ara/D6a5lq4e1+hnui1D0NpNboxCpT21T7x4k
-         uLbSUkJHC9Ccw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, sfr@canb.auug.org.au,
-        linux-next@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH] net: phy: fix kernel-doc for .config_intr()
-Message-ID: <20201215100954.1022e87f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201215084240.lgg7tcq5tgbufqfr@skbuf>
-References: <20201215083751.628794-1-ciorneiioana@gmail.com>
-        <20201215084240.lgg7tcq5tgbufqfr@skbuf>
+        id S1731021AbgLOSUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 13:20:54 -0500
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:54095 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729543AbgLOSUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 13:20:44 -0500
+Received: from [192.168.42.210] ([93.22.37.143])
+        by mwinf5d64 with ME
+        id 4iJo2400435JPTR03iJo1g; Tue, 15 Dec 2020 19:18:56 +0100
+X-ME-Helo: [192.168.42.210]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 15 Dec 2020 19:18:56 +0100
+X-ME-IP: 93.22.37.143
+Subject: Re: [PATCH] net: allwinner: Fix some resources leak in the error
+ handling path of the probe and in the remove function
+To:     Maxime Ripard <maxime@cerno.tech>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, wens@csie.org,
+        jernej.skrabec@siol.net, timur@kernel.org,
+        song.bao.hua@hisilicon.com, f.fainelli@gmail.com, leon@kernel.org,
+        hkallweit1@gmail.com, wangyunjian@huawei.com, sr@denx.de,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20201214202117.146293-1-christophe.jaillet@wanadoo.fr>
+ <20201215085655.ddacjfvogc3e33vz@gilmour> <20201215091153.GH2809@kadam>
+ <20201215113710.wh4ezrvmqbpxd5yi@gilmour>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-ID: <54194e3e-5eb1-d10c-4294-bac8f3933f47@wanadoo.fr>
+Date:   Tue, 15 Dec 2020 19:18:48 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20201215113710.wh4ezrvmqbpxd5yi@gilmour>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 10:42:40 +0200 Ioana Ciornei wrote:
-> On Tue, Dec 15, 2020 at 10:37:51AM +0200, Ioana Ciornei wrote:
-> > From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > 
-> > Fix the kernel-doc for .config_intr() so that we do not trigger a
-> > warning like below.
-> > 
-> > include/linux/phy.h:869: warning: Function parameter or member 'config_intr' not described in 'phy_driver'
-> > 
-> > Fixes: 6527b938426f ("net: phy: remove the .did_interrupt() and .ack_interrupt() callback")
-> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>  
+Le 15/12/2020 à 12:37, Maxime Ripard a écrit :
+> On Tue, Dec 15, 2020 at 12:11:53PM +0300, Dan Carpenter wrote:
+>> On Tue, Dec 15, 2020 at 09:56:55AM +0100, Maxime Ripard wrote:
+>>> Hi,
+>>>
+>>> On Mon, Dec 14, 2020 at 09:21:17PM +0100, Christophe JAILLET wrote:
+>>>> 'irq_of_parse_and_map()' should be balanced by a corresponding
+>>>> 'irq_dispose_mapping()' call. Otherwise, there is some resources leaks.
+>>>
+>>> Do you have a source to back that? It's not clear at all from the
+>>> documentation for those functions, and couldn't find any user calling it
+>>> from the ten-or-so random picks I took.
+>>
+>> It looks like irq_create_of_mapping() needs to be freed with
+>> irq_dispose_mapping() so this is correct.
 > 
-> Sorry, I just realized that Jakub already sent a fix for this:
+> The doc should be updated first to make that clear then, otherwise we're
+> going to fix one user while multiples will have poped up
 > 
-> https://lore.kernel.org/netdev/20201215063750.3120976-1-kuba@kernel.org/
+> Maxime
+> 
 
-Bad timing :) Sorry for not CCing you
+Hi,
+
+as Dan explained, I think that 'irq_dispose_mapping()' is needed because 
+of the 'irq_create_of_mapping()" within 'irq_of_parse_and_map()'.
+
+As you suggest, I'll propose a doc update to make it clear and more 
+future proof.
+
+CJ
