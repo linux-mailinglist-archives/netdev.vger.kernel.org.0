@@ -2,92 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 326E72DB25B
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:17:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 003EE2DB266
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:20:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728853AbgLORP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 12:15:58 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:34641 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725850AbgLORPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:15:38 -0500
-Received: by mail-oi1-f196.google.com with SMTP id s75so24137849oih.1;
-        Tue, 15 Dec 2020 09:15:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WDL2cS7hdWKtIpZ/KjKtPA2ntVpYBO+MI/yCzfxd848=;
-        b=mh3ZS0ZvoCCRBTPs3ZCtMIga2E2QSO1JTWOqy/BTz5nG9q2TaJvTpV+5fWtt8JYlSO
-         cNjLagBTXIxX4Ou0s7zOS8kpy1U3kP389TyfU7yId9cuf90zwGOK9BOfEmNQJBh+jHur
-         7jjrJoZCQpL/E+0fCrBUBrlvgzM5htj66x/BC7Hb/M3UfB8O6zSQj5WJ0vZiwQ5UbBcW
-         1OG4g0ulE1WW8Ovm0136PJlwi7470nJYIe/rCz/QWjdRiyzkqC8KBch9Oe+ZVttjpySD
-         Kti0XE5gXfjv4EyA49KoHH66lPS4NC1Owmg898El6qp+jI3kZ39zGd48/AOB9UEubKv6
-         DiYA==
-X-Gm-Message-State: AOAM531QDvV00/Gqey5AUf8JAxSUjCSTTSjWw3FsovSV9QR0nFShuIDf
-        Du3yxEXr5t0+VwaEvZrzxA==
-X-Google-Smtp-Source: ABdhPJy5ALCdnBZecNdmijYEkMRQkwEv45r5BSaNA3d1OUSxcKJf8YTYoZjuJnrGo+aUm6BW1kfecQ==
-X-Received: by 2002:aca:48c4:: with SMTP id v187mr13808805oia.37.1608052497495;
-        Tue, 15 Dec 2020 09:14:57 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id c204sm4755034oob.44.2020.12.15.09.14.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Dec 2020 09:14:56 -0800 (PST)
-Received: (nullmailer pid 4047644 invoked by uid 1000);
-        Tue, 15 Dec 2020 17:14:55 -0000
-Date:   Tue, 15 Dec 2020 11:14:55 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Jose Abreu <joabreu@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        devicetree@vger.kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        id S1729535AbgLORT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 12:19:26 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:39062 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725850AbgLORT0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 12:19:26 -0500
+Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id C66614409D4;
+        Tue, 15 Dec 2020 19:18:43 +0200 (IST)
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Joao Pinto <jpinto@synopsys.com>,
-        Lars Persson <larper@axis.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Johan Hovold <johan@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>
-Subject: Re: [PATCH 02/25] dt-bindings: net: dwmac: Extend number of PBL
- values
-Message-ID: <20201215171455.GA4047592@robh.at.kernel.org>
-References: <20201214091616.13545-1-Sergey.Semin@baikalelectronics.ru>
- <20201214091616.13545-3-Sergey.Semin@baikalelectronics.ru>
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH net] docs: netdev-FAQ: add missing underlines to questions
+Date:   Tue, 15 Dec 2020 19:18:19 +0200
+Message-Id: <ccd6e8b9f1d87b683a0759e8954d03310cb0c09f.1608052699.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201214091616.13545-3-Sergey.Semin@baikalelectronics.ru>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Dec 2020 12:15:52 +0300, Serge Semin wrote:
-> In accordance with [1] the permitted PBL values can be set as one of
-> [1, 2, 4, 8, 16, 32]. The rest of the values results in undefined
-> behavior. At the same time some of the permitted values can be also
-> invalid depending on the controller FIFOs size and the data bus width.
-> Seeing due to having too many variables all the possible PBL property
-> constraints can't be implemented in the bindings schema, let's extend
-> the set of permitted PBL values to be as much as the configuration
-> register supports leaving the undefined behaviour cases for developers
-> to handle.
-> 
-> [1] DesignWare Cores Ethernet MAC Universal Databook, Revision 3.73a,
->     October 2013, p. 380.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> ---
->  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ Documentation/networking/netdev-FAQ.rst | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
+index 4b9ed5874d5a..4ef90fe26640 100644
+--- a/Documentation/networking/netdev-FAQ.rst
++++ b/Documentation/networking/netdev-FAQ.rst
+@@ -82,6 +82,7 @@ focus for ``net`` is on stabilization and bug fixes.
+ Finally, the vX.Y gets released, and the whole cycle starts over.
+ 
+ Q: So where are we now in this cycle?
++-------------------------------------
+ 
+ Load the mainline (Linus) page here:
+ 
+@@ -108,6 +109,7 @@ with.
+ Q: I sent a patch and I'm wondering what happened to it?
+ --------------------------------------------------------
+ Q: How can I tell whether it got merged?
++----------------------------------------
+ A: Start by looking at the main patchworks queue for netdev:
+ 
+   https://patchwork.kernel.org/project/netdevbpf/list/
+@@ -124,8 +126,8 @@ bottom of the priority list.
+ 
+ Q: I submitted multiple versions of the patch series
+ ----------------------------------------------------
+-Q: should I directly update patchwork for the previous versions of these
+-patch series?
++Q: should I directly update patchwork for the previous versions of these patch series?
++--------------------------------------------------------------------------------------
+ A: No, please don't interfere with the patch status on patchwork, leave
+ it to the maintainer to figure out what is the most recent and current
+ version that should be applied. If there is any doubt, the maintainer
+@@ -171,8 +173,8 @@ simply clone the repo, and then git grep the mainline commit ID, e.g.
+ 
+ Q: I see a network patch and I think it should be backported to stable.
+ -----------------------------------------------------------------------
+-Q: Should I request it via stable@vger.kernel.org like the references in
+-the kernel's Documentation/process/stable-kernel-rules.rst file say?
++Q: Should I request it via stable@vger.kernel.org like the references in the kernel's Documentation/process/stable-kernel-rules.rst file say?
++---------------------------------------------------------------------------------------------------------------------------------------------
+ A: No, not for networking.  Check the stable queues as per above first
+ to see if it is already queued.  If not, then send a mail to netdev,
+ listing the upstream commit ID and why you think it should be a stable
+@@ -192,8 +194,8 @@ be avoided.
+ 
+ Q: I have created a network patch and I think it should be backported to stable.
+ --------------------------------------------------------------------------------
+-Q: Should I add a Cc: stable@vger.kernel.org like the references in the
+-kernel's Documentation/ directory say?
++Q: Should I add a Cc: stable@vger.kernel.org like the references in the kernel's Documentation/ directory say?
++--------------------------------------------------------------------------------------------------------------
+ A: No.  See above answer.  In short, if you think it really belongs in
+ stable, then ensure you write a decent commit log that describes who
+ gets impacted by the bug fix and how it manifests itself, and when the
+@@ -234,12 +236,14 @@ it is requested that you make it look like this::
+ Q: I am working in existing code that has the former comment style and not the latter.
+ --------------------------------------------------------------------------------------
+ Q: Should I submit new code in the former style or the latter?
++--------------------------------------------------------------
+ A: Make it the latter style, so that eventually all code in the domain
+ of netdev is of this format.
+ 
+ Q: I found a bug that might have possible security implications or similar.
+ ---------------------------------------------------------------------------
+-Q: Should I mail the main netdev maintainer off-list?**
++Q: Should I mail the main netdev maintainer off-list?
++-----------------------------------------------------
+ A: No. The current netdev maintainer has consistently requested that
+ people use the mailing lists and not reach out directly.  If you aren't
+ OK with that, then perhaps consider mailing security@kernel.org or
+-- 
+2.29.2
+
