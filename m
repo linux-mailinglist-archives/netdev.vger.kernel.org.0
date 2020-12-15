@@ -2,132 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90DC62DADFC
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 14:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 966152DAE1A
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 14:39:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726882AbgLON37 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Dec 2020 08:29:59 -0500
-Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:32996 "EHLO
-        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726580AbgLON37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 08:29:59 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0UIjac2I_1608038951;
-Received: from 30.225.132.127(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0UIjac2I_1608038951)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 15 Dec 2020 21:29:12 +0800
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.40.0.2.32\))
-Subject: Re: [PATCH net-next] net: Limit logical shift left of TCP probe0
- timeout
-From:   Cambda Zhu <cambda@linux.alibaba.com>
-In-Reply-To: <CANn89i+=QRibXsm6tw-eVwhB3wjOtgF-MtVu0G--K5=oWP97+A@mail.gmail.com>
-Date:   Tue, 15 Dec 2020 21:29:10 +0800
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <43C8F4BF-CF95-4F21-B9C7-E344D2666C70@linux.alibaba.com>
-References: <20201208091910.37618-1-cambda@linux.alibaba.com>
- <20201212143259.581aadae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <25F89086-3260-48BD-BD69-CCE04821CAE4@linux.alibaba.com>
- <20201214180840.601055a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANn89i+=QRibXsm6tw-eVwhB3wjOtgF-MtVu0G--K5=oWP97+A@mail.gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-X-Mailer: Apple Mail (2.3654.40.0.2.32)
+        id S1728198AbgLONf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 08:35:56 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:34446 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726861AbgLONff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 08:35:35 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BFDPRp3015367;
+        Tue, 15 Dec 2020 05:32:37 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=UGrK9KJhiM7lla/xKzbKBhqnuACtBgaBJNe+tMSZKn8=;
+ b=Q9upaBSGrec7sZZzKQznsJhmpUFKz64N9x+KRP7Fj7FraRvYqjVxU9veO1d4+MUyKh9p
+ QsdH2skrtyCw4eineWHXlpPiZUxRCJUeLhZcNCMpQA7NjGauGk7/FIixFlWJumMRK/sc
+ CdS+zhCCSZpQKy8byGzHo2Jn9hCcH77imDzn16vz/mjmJYlM/3JHRiEXILynd+ZLkJ8I
+ BLIJVtVy4fMyTfh8ZWREHNStQqZeuOtuBRnlP7fZQazLHiWni7ojYLXz2qQqjzYP8g5+
+ nZmTW1nBZ6Np3KkBZi2FnYfFDGKP9/YcDoa5JnR6CJfmtz4FoW7zl+19Ypw44+Q/uQEI oA== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 35cv3syyxu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 15 Dec 2020 05:32:37 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 15 Dec
+ 2020 05:32:36 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 15 Dec
+ 2020 05:32:35 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 15 Dec 2020 05:32:35 -0800
+Received: from stefan-pc.marvell.com (unknown [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 484A63F703F;
+        Tue, 15 Dec 2020 05:32:32 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH net 1/2] net: mvpp2: Fix GoP port 3 Networking Complex Control configurations
+Date:   Tue, 15 Dec 2020 15:32:12 +0200
+Message-ID: <1608039133-16345-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-15_10:2020-12-15,2020-12-15 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Stefan Chulski <stefanc@marvell.com>
 
-> On Dec 15, 2020, at 19:06, Eric Dumazet <edumazet@google.com> wrote:
-> 
-> On Tue, Dec 15, 2020 at 3:08 AM Jakub Kicinski <kuba@kernel.org> wrote:
->> 
->> On Sun, 13 Dec 2020 21:59:45 +0800 Cambda Zhu wrote:
->>>> On Dec 13, 2020, at 06:32, Jakub Kicinski <kuba@kernel.org> wrote:
->>>> On Tue,  8 Dec 2020 17:19:10 +0800 Cambda Zhu wrote:
->>>>> For each TCP zero window probe, the icsk_backoff is increased by one and
->>>>> its max value is tcp_retries2. If tcp_retries2 is greater than 63, the
->>>>> probe0 timeout shift may exceed its max bits. On x86_64/ARMv8/MIPS, the
->>>>> shift count would be masked to range 0 to 63. And on ARMv7 the result is
->>>>> zero. If the shift count is masked, only several probes will be sent
->>>>> with timeout shorter than TCP_RTO_MAX. But if the timeout is zero, it
->>>>> needs tcp_retries2 times probes to end this false timeout. Besides,
->>>>> bitwise shift greater than or equal to the width is an undefined
->>>>> behavior.
->>>> 
->>>> If icsk_backoff can reach 64, can it not also reach 256 and wrap?
->>> 
->>> If tcp_retries2 is set greater than 255, it can be wrapped. But for TCP probe0,
->>> it seems to be not a serious problem. The timeout will be icsk_rto and backoff
->>> again. And considering icsk_backoff is 8 bits, not only it may always be lesser
->>> than tcp_retries2, but also may always be lesser than tcp_orphan_retries. And
->>> the icsk_probes_out is 8 bits too. So if the max_probes is greater than 255,
->>> the connection won’t abort even if it’s an orphan sock in some cases.
->>> 
->>> We can change the type of icsk_backoff/icsk_probes_out to fix these problems.
->>> But I think maybe the retries greater than 255 have no sense indeed and the RFC
->>> only requires the timeout(R2) greater than 100s at least. Could it be better to
->>> limit the min/max ranges of their sysctls?
->> 
->> All right, I think the patch is good as is, applied for 5.11, thank you!
-> 
-> It looks like we can remove the (u64) casts then.
-> 
-> Also if we _really_ care about icsk_backoff approaching 63, we also
-> need to change inet_csk_rto_backoff() ?
+During GoP port 2 Networking Complex Control mode of operation configurations,
+also GoP port 3 mode of operation was wrongly set mode.
+Patch removes these configurations.
+GENCONF_CTRL0_PORTX naming also fixed.
 
-Yes, we need. But the socket can close after tcp_orphan_retries times probes even if alive is
-always true. And there’re something I’m not very clear yet:
-1) inet_csk_rto_backoff() may be not only for TCP, and the RFC 6298 requires the max value
-   of RTO is 60 seconds at least. So what’s the proper shift limit?
-2) If max_probes is greater than 255, the icsk_probes_out cannot be greater than max_probes
-   and the connection may not close forever. This looks more serious.
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 6 +++---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-> 
-> Was your patch based on a real world use, or some fuzzer UBSAN report ?
-> 
-
-I found this issue not on TCP. I’m developing a private protocol, and in this protocol I made
-something like probe0 with max RTO lesser than 120 seconds. I found similar issues on testing
-and found Linux TCP have same issues. So it’s not a real world use for TCP and it may be ok to
-ignore the issues.
-
-> diff --git a/include/net/inet_connection_sock.h
-> b/include/net/inet_connection_sock.h
-> index 7338b3865a2a3d278dc27c0167bba1b966bbda9f..a2a145e3b062c0230935c293fc1900df095937d4
-> 100644
-> --- a/include/net/inet_connection_sock.h
-> +++ b/include/net/inet_connection_sock.h
-> @@ -242,9 +242,10 @@ static inline unsigned long
-> inet_csk_rto_backoff(const struct inet_connection_sock *icsk,
->                     unsigned long max_when)
-> {
-> -        u64 when = (u64)icsk->icsk_rto << icsk->icsk_backoff;
-> +       u8 backoff = min_t(u8, 32U, icsk->icsk_backoff);
-> +       u64 when = (u64)icsk->icsk_rto << backoff;
-> 
-> -        return (unsigned long)min_t(u64, when, max_when);
-> +       return (unsigned long)min_t(u64, when, max_when);
-> }
-> 
-> struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern);
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 78d13c88720fda50e3f1880ac741cea1985ef3e9..fc6e4d40fd94a717d24ebd8aef7f7930a4551fe9
-> 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -1328,9 +1328,8 @@ static inline unsigned long
-> tcp_probe0_when(const struct sock *sk,
-> {
->        u8 backoff = min_t(u8, ilog2(TCP_RTO_MAX / TCP_RTO_MIN) + 1,
->                           inet_csk(sk)->icsk_backoff);
-> -       u64 when = (u64)tcp_probe0_base(sk) << backoff;
-> 
-> -       return (unsigned long)min_t(u64, when, max_when);
-> +       return min(tcp_probe0_base(sk) << backoff, max_when);
-> }
-> 
-> static inline void tcp_check_probe_timer(struct sock *sk)
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 6bd7e40..39c4e5c 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -651,9 +651,9 @@
+ #define     GENCONF_PORT_CTRL1_EN(p)			BIT(p)
+ #define     GENCONF_PORT_CTRL1_RESET(p)			(BIT(p) << 28)
+ #define GENCONF_CTRL0					0x1120
+-#define     GENCONF_CTRL0_PORT0_RGMII			BIT(0)
+-#define     GENCONF_CTRL0_PORT1_RGMII_MII		BIT(1)
+-#define     GENCONF_CTRL0_PORT1_RGMII			BIT(2)
++#define     GENCONF_CTRL0_PORT2_RGMII			BIT(0)
++#define     GENCONF_CTRL0_PORT3_RGMII_MII		BIT(1)
++#define     GENCONF_CTRL0_PORT3_RGMII			BIT(2)
+ 
+ /* Various constants */
+ 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index d64dc12..d2b0506 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -1231,9 +1231,9 @@ static void mvpp22_gop_init_rgmii(struct mvpp2_port *port)
+ 
+ 	regmap_read(priv->sysctrl_base, GENCONF_CTRL0, &val);
+ 	if (port->gop_id == 2)
+-		val |= GENCONF_CTRL0_PORT0_RGMII | GENCONF_CTRL0_PORT1_RGMII;
++		val |= GENCONF_CTRL0_PORT2_RGMII;
+ 	else if (port->gop_id == 3)
+-		val |= GENCONF_CTRL0_PORT1_RGMII_MII;
++		val |= GENCONF_CTRL0_PORT3_RGMII_MII;
+ 	regmap_write(priv->sysctrl_base, GENCONF_CTRL0, val);
+ }
+ 
+@@ -1250,9 +1250,9 @@ static void mvpp22_gop_init_sgmii(struct mvpp2_port *port)
+ 	if (port->gop_id > 1) {
+ 		regmap_read(priv->sysctrl_base, GENCONF_CTRL0, &val);
+ 		if (port->gop_id == 2)
+-			val &= ~GENCONF_CTRL0_PORT0_RGMII;
++			val &= ~GENCONF_CTRL0_PORT2_RGMII;
+ 		else if (port->gop_id == 3)
+-			val &= ~GENCONF_CTRL0_PORT1_RGMII_MII;
++			val &= ~GENCONF_CTRL0_PORT3_RGMII_MII;
+ 		regmap_write(priv->sysctrl_base, GENCONF_CTRL0, val);
+ 	}
+ }
+-- 
+1.9.1
 
