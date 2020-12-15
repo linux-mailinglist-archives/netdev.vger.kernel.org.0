@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13D932DA6E6
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 04:41:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11FF72DA6EF
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 04:44:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726481AbgLODlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 22:41:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47044 "EHLO mail.kernel.org"
+        id S1726820AbgLODnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 22:43:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47032 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726299AbgLODkw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 22:40:52 -0500
+        id S1726283AbgLODk4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 22:40:56 -0500
 Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1608003608;
-        bh=IBlpYvkH1g99lnVOuz503pa5fqEvfXf0AwlW7Jg/Xz4=;
+        bh=Rq63vfGZKoinRw+btLa60qWLU6anZcR4B/wpKsmY9WA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Mjlf9ZLOPveQP06HlfYyuzEI/VNdXxp0ws8FSP9Djd7wZswxna3g7erxML7wzqUfP
-         E8pOgcmygReRhkadpcErQDgBQEExPzvAXTbeY57IFv1/6JvFsNNb5pIm3E/aC/2aA8
-         /tlcVguPBDR+mgpEKL+zGAnvMe+7umS4kGpDaajGxPp99YLN/y+Gr4f70t7MPg4s2f
-         dIYG+7rj1l6Y9XMb/Xis1mCqIVEKvyjo5Doho7VgRnY0RvRQX0Ny2Rgs7P7TOMYQnt
-         jbXkK5qHIrRQa4hROGYIvdJDn4HgtkQ3xz6r7h6iyQ7kkcvCVgUUoL/Hmd51ZK4n9c
-         HeMG6EFC2XG5w==
+        b=l+/aMBLOb7eilKN0L0sQ0UztENgJrNa/LYesCc7v4z6P15p7hFV7AWkfa7dzNWj7v
+         Wg3hOMiLNHCYJCBv344Eo5SbrZRbz4VAt9cjJA/vfedaVOqoLLIa/+HB7xaP0Eeke1
+         2TbJstIQz0eadPn3L+BPf3u5N0kOvkyCEO+t/7VA+2I/pDrFncRf9pHYFkfVEHQeOa
+         o23STjdyiSXfmDAZa3eqo9iyvpv9s/KbAh6vE5rMXESSyREIhsvqAKScf69il3D0nT
+         BvmYIIThd7X03VQfPGd7LuRQo0/mEnDvtFJokVozi5XN0USZLfb6XCA1psjTzVmAk8
+         dwvoTNReNLY5A==
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 net-next] net: mscc: ocelot: install MAC addresses in
- .ndo_set_rx_mode from process context
+Subject: Re: [net-next PATCH v3] tcp: Add logic to check for SYN w/ data in
+ tcp_simple_retransmit
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160800360869.3580.13498349433335602151.git-patchwork-notify@kernel.org>
+Message-Id: <160800360859.3580.14122715935384328144.git-patchwork-notify@kernel.org>
 Date:   Tue, 15 Dec 2020 03:40:08 +0000
-References: <20201212191612.222019-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20201212191612.222019-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        horatiu.vultur@microchip.com, allan.nielsen@microchip.com,
-        claudiu.manoil@nxp.com, steen.hegelund@microchip.com
+References: <160780498125.3272.15437756269539236825.stgit@localhost.localdomain>
+In-Reply-To: <160780498125.3272.15437756269539236825.stgit@localhost.localdomain>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        ycheng@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, kafai@fb.com,
+        kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -45,19 +44,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat, 12 Dec 2020 21:16:12 +0200 you wrote:
-> Currently ocelot_set_rx_mode calls ocelot_mact_learn directly, which has
-> a very nice ocelot_mact_wait_for_completion at the end. Introduced in
-> commit 639c1b2625af ("net: mscc: ocelot: Register poll timeout should be
-> wall time not attempts"), this function uses readx_poll_timeout which
-> triggers a lot of lockdep warnings and is also dangerous to use from
-> atomic context, potentially leading to lockups and panics.
+On Sat, 12 Dec 2020 12:31:24 -0800 you wrote:
+> From: Alexander Duyck <alexanderduyck@fb.com>
+> 
+> There are cases where a fastopen SYN may trigger either a ICMP_TOOBIG
+> message in the case of IPv6 or a fragmentation request in the case of
+> IPv4. This results in the socket stalling for a second or more as it does
+> not respond to the message by retransmitting the SYN frame.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v4,net-next] net: mscc: ocelot: install MAC addresses in .ndo_set_rx_mode from process context
-    https://git.kernel.org/netdev/net-next/c/ca0b272b48f3
+  - [net-next,v3] tcp: Add logic to check for SYN w/ data in tcp_simple_retransmit
+    https://git.kernel.org/netdev/net-next/c/c31b70c9968f
 
 You are awesome, thank you!
 --
