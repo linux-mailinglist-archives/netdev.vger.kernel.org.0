@@ -2,245 +2,359 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E4292DB45B
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 20:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E262DB477
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 20:28:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731846AbgLOTOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 14:14:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
+        id S1727933AbgLOT2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 14:28:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731764AbgLOTNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 14:13:45 -0500
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45210C06179C;
-        Tue, 15 Dec 2020 11:13:01 -0800 (PST)
-Received: by mail-il1-x144.google.com with SMTP id t9so20269797ilf.2;
-        Tue, 15 Dec 2020 11:13:01 -0800 (PST)
+        with ESMTP id S1725821AbgLOT2i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 14:28:38 -0500
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E16AC06179C;
+        Tue, 15 Dec 2020 11:27:58 -0800 (PST)
+Received: by mail-yb1-xb43.google.com with SMTP id 82so13134752yby.6;
+        Tue, 15 Dec 2020 11:27:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=MjBxeR6iqFs0La2Ze00m0vh6EKN6PVYTPDwtGigmCuA=;
-        b=eElqqEvjfX5kIMcaicWDPOUitkwXijFS/KH8JZ29OBJWXbOWwExoD23KerVe4xUpez
-         Y9ou5ozGwDOM4MEXewgzC0HVg4xezra7I4k89A7c3VqQuf7xRGf0ZbMdHQ2tmDAmOB9k
-         +/4sEmKR/SiVjQq3zbYNhjwGvSubqc9mV8Ga8fFi3GGXQLX2XsSxXiSgS7nUMipVqWxk
-         ya6LHGGUfykAxO7PkTBHUzbmTXI5UOZ3jweD9NJvEfGPbs/hTTzTM7dYHt3gPd46vKjm
-         5CyI6pj6BFBZxtxVgVUdIG1zXWNuh39+YXte//ROAnBPpbGjQQY1RZWXmgTNxGB7J++N
-         A9Jg==
+        bh=d7UTRqaOGuqs6grwv55KC/1chRSjK6gBsgqZxWUrrJs=;
+        b=LMpooklZ5JaDZKOlWe7IcWvczKTufdM+s5N4aC+FVHHpRqcZMnUgdcwe0H3DL225qE
+         BAAkL2D0ro0DqBeFB3wFRjOlaTxokvBt1Vp5UtFhTsouZhfDn9gPopDFmczIpzhxFoee
+         906kjDKOb7ykqhZAF1F3Q2JqOYiOaaiDV9CUSpgV1/nkKdw1+u0uQI8pZLaXd4NEJ7y5
+         VdES1HZ4CM8PC/Fsyl9MINpXL7A00qjuWu8J3fb0QBpCzzYWSREExsomTmciXfbGcimu
+         eyRLvOUeunucqWURpJMk0Nv6vQoWpmGQ0/pckBCVugyobmpNzQ7Wfyt2VvSqc2ZvMggi
+         4fBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MjBxeR6iqFs0La2Ze00m0vh6EKN6PVYTPDwtGigmCuA=;
-        b=jt36BmdZIyH7HTHek9D2gVcPD2TWVUCJVuUMmTAyWwAwcl2mTsDGwzGQyuZsohOaMI
-         EoNb1/lzgHMMF+cfThQFswdoDd/xSE5H86e+s3Ha6QqjNS0WO3fCxeH6jzovHUTt17ov
-         m0RdmMeXGUVwacnP0c8L/rAWBrJUyeakV7H0fhXVk3NMB0L+xMaEkXKqf/FCCBHc1+pL
-         oWUxUtxyj1Hm2Tlbx2Yw8TPMoEffAsO5lsq4B89gj2bRDOTgyaidzRXe/hW1Mrru/LTc
-         mA6aSAZvL+hwiiCAhQP+DfjT3MMa3OBZ5SZoodLMPMB4SOuUZXh1J+in9JJYqrgqB2TR
-         M1Ag==
-X-Gm-Message-State: AOAM531TBN47av3SizGM+q2wF6n3i1AwGlID142QunENgc8mb3awAHd7
-        mBwFmI1YYKdJxWUSditCH32y+tNjUkqeyMDzbag=
-X-Google-Smtp-Source: ABdhPJwIqjkzI+mADwafbGVWLyJYZkxyGEAg55i7g0Tu1ZaiTn4o2fPy0aqmL5UCUWQMRJZm3Vpz8R6Gr+RVXHsUqSw=
-X-Received: by 2002:a92:730d:: with SMTP id o13mr41230055ilc.95.1608059580455;
- Tue, 15 Dec 2020 11:13:00 -0800 (PST)
+        bh=d7UTRqaOGuqs6grwv55KC/1chRSjK6gBsgqZxWUrrJs=;
+        b=gLwkm8MIhIIh8LWdKKuLRLueXKAYBag8Fg0EoxYVvbGbzQrHxu5bSyYg7+tfWjYqoc
+         A+nv3Vy5biQfST/npGuRXsxkAcqzCLI8G+Ka+WtN4aUam1/IRwshB+KnAkiG8I3+QoNT
+         FhBeUzA0ii566LdctZ0Uj+J4ZYPVudYEuR1FOzsnod5YV7H1aiGPCQP0dSPRxzxnw3Uq
+         xrnkthcWe7XetmBaa50AlFbTSLb4h42+BqaEIfEMtwrCer9WcFze4811jLRbQ6KmvVH9
+         5iRUSBpE+KI43aFKh3rFv0agNKsyrFU3pUWppux6U3L3D4WCFrL4dN+YtiCI7qSejQxO
+         Epwg==
+X-Gm-Message-State: AOAM530UE2jWIgSkoRB3rbK8CV5LXMt7SNrKsdZXbLGDJrK8ovpQ4vtF
+        TG2MO6i3QnHDk54yuMY4QZgEmAX2THKxsY9vyJ8=
+X-Google-Smtp-Source: ABdhPJwXxkeYuokZEexxW1tUy45lkJAcw07OAiG9Jx5bdgAKYGYcMGlXxIz65TnvKYMRELP9YyJlRbSHRsZDStP71D8=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr45641883ybe.403.1608060477357;
+ Tue, 15 Dec 2020 11:27:57 -0800 (PST)
 MIME-Version: 1.0
-References: <20201214214352.198172-1-saeed@kernel.org> <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
- <608505778d76b1b01cb3e8d19ecda5b8578f0f79.camel@kernel.org>
-In-Reply-To: <608505778d76b1b01cb3e8d19ecda5b8578f0f79.camel@kernel.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 15 Dec 2020 11:12:49 -0800
-Message-ID: <CAKgT0UfEsd0hS=iJTcVc20gohG0WQwjsGYOw1y0_=DRVbhb1Ng@mail.gmail.com>
-Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
+References: <20201214201118.148126-1-xiyou.wangcong@gmail.com> <20201214201118.148126-3-xiyou.wangcong@gmail.com>
+In-Reply-To: <20201214201118.148126-3-xiyou.wangcong@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 15 Dec 2020 11:27:46 -0800
+Message-ID: <CAEf4BzZa15kMT+xEO9ZBmS-1=E85+k02zeddx+a_N_9+MOLhkQ@mail.gmail.com>
+Subject: Re: [Patch bpf-next v2 2/5] bpf: introduce timeout map
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 10:15 PM Saeed Mahameed <saeed@kernel.org> wrote:
+On Mon, Dec 14, 2020 at 12:17 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> On Mon, 2020-12-14 at 17:53 -0800, Alexander Duyck wrote:
-> > On Mon, Dec 14, 2020 at 1:49 PM Saeed Mahameed <saeed@kernel.org>
-> > wrote:
-> > > Hi Dave, Jakub, Jason,
-> > >
-> > > This series form Parav was the theme of this mlx5 release cycle,
-> > > we've been waiting anxiously for the auxbus infrastructure to make
-> > > it into
-> > > the kernel, and now as the auxbus is in and all the stars are
-> > > aligned, I
-> > > can finally submit this V2 of the devlink and mlx5 subfunction
-> > > support.
-> > >
-> > > Subfunctions came to solve the scaling issue of virtualization
-> > > and switchdev environments, where SRIOV failed to deliver and users
-> > > ran
-> > > out of VFs very quickly as SRIOV demands huge amount of physical
-> > > resources
-> > > in both of the servers and the NIC.
-> > >
-> > > Subfunction provide the same functionality as SRIOV but in a very
-> > > lightweight manner, please see the thorough and detailed
-> > > documentation from Parav below, in the commit messages and the
-> > > Networking documentation patches at the end of this series.
-> > >
-> >
-> > Just to clarify a few things for myself. You mention virtualization
-> > and SR-IOV in your patch description but you cannot support direct
-> > assignment with this correct? The idea here is simply logical
-> > partitioning of an existing network interface, correct? So this isn't
-> > so much a solution for virtualization, but may work better for
-> > containers. I view this as an important distinction to make as the
+> From: Cong Wang <cong.wang@bytedance.com>
 >
-> at the current state yes, but the SF solution can be extended to
-> support direct assignment, so this is why i think SF solution can do
-> better and eventually replace SRIOV.
-
-My only real concern is that this and mediated devices are essentially
-the same thing. When you start making this work for direct-assignment
-the only real difference becomes the switchdev and devlink interfaces.
-Basically this is netdev specific mdev versus the PCIe specific mdev.
-
-> also many customers are currently using SRIOV with containers to get
-> the performance and isolation features since there was no other
-> options.
-
-There were, but you hadn't implemented them. The fact is the approach
-Intel had taken for that was offloaded macvlan.
-
-I think the big thing we really should do if we are going to go this
-route is to look at standardizing what the flavours are that get
-created by the parent netdevice. Otherwise we are just creating the
-same mess we had with SRIOV all over again and muddying the waters of
-mediated devices.
-
-> > first thing that came to mind when I read this was mediated devices
-> > which is similar, but focused only on the virtualization case:
-> > https://www.kernel.org/doc/html/v5.9/driver-api/vfio-mediated-device.html
-> >
-> > > Parav Pandit Says:
-> > > =================
-> > >
-> > > This patchset introduces support for mlx5 subfunction (SF).
-> > >
-> > > A subfunction is a lightweight function that has a parent PCI
-> > > function on
-> > > which it is deployed. mlx5 subfunction has its own function
-> > > capabilities
-> > > and its own resources. This means a subfunction has its own
-> > > dedicated
-> > > queues(txq, rxq, cq, eq). These queues are neither shared nor
-> > > stealed from
-> > > the parent PCI function.
-> >
-> > Rather than calling this a subfunction, would it make more sense to
-> > call it something such as a queue set? It seems like this is exposing
-> > some of the same functionality we did in the Intel drivers such as
-> > ixgbe and i40e via the macvlan offload interface. However the
-> > ixgbe/i40e hardware was somewhat limited in that we were only able to
-> > expose Ethernet interfaces via this sort of VMQ/VMDQ feature, and
-> > even
-> > with that we have seen some limitations to the interface. It sounds
-> > like you are able to break out RDMA capable devices this way as well.
-> > So in terms of ways to go I would argue this is likely better.
+> This borrows the idea from conntrack and will be used for conntrack in
+> bpf too. Each element in a timeout map has a user-specified timeout
+> in secs, after it expires it will be automatically removed from the map.
 >
-> We've discussed this thoroughly on V0, the SF solutions is closer to a
-> VF than a VMDQ, this is not just a set of queues.
+> There are two cases here:
 >
-> https://lore.kernel.org/linux-rdma/421951d99a33d28b91f2b2997409d0c97fa5a98a.camel@kernel.org/
+> 1. When the timeout map is idle, that is, no one updates or accesses it,
+>    we rely on the idle work to scan the whole hash table and remove
+>    these expired. The idle work is scheduled every 1 sec.
 
-VMDq is more than just a set of queues. The fact is it is a pool of
-resources that get created to handle the requests for a specific VM.
-The extra bits that are added here are essentially stuff that was
-required to support mediated devices.
+Would 1 second be a good period for a lot of cases? Probably would be
+good to expand on what went into this decision.
 
-> > However
-> > one downside is that we are going to end up seeing each subfunction
-> > being different from driver to driver and vendor to vendor which I
-> > would argue was also one of the problems with SR-IOV as you end up
-> > with a bit of vendor lock-in as a result of this feature since each
-> > vendor will be providing a different interface.
-> >
 >
-> I disagree, SFs are tightly coupled with switchdev model and devlink
-> functions port, they are backed with the a well defined model, i can
-> say the same about sriov with switchdev mode, this sort of vendor lock-
-> in issues is eliminated when you migrate to switchdev mode.
-
-What you are talking about is the backend. I am talking about what is
-exposed to the user. The user is going to see a Mellanox device having
-to be placed into their container in order to support this. One of the
-advantages of the Intel approach was that the macvlan interface was
-generic so you could have an offloaded interface or not and the user
-wouldn't necessarily know. The offload could be disabled and the user
-would be none the wiser as it is moved from one interface to another.
-I see that as a big thing that is missing in this solution.
-
-> > > When subfunction is RDMA capable, it has its own QP1, GID table and
-> > > rdma
-> > > resources neither shared nor stealed from the parent PCI function.
-> > >
-> > > A subfunction has dedicated window in PCI BAR space that is not
-> > > shared
-> > > with ther other subfunctions or parent PCI function. This ensures
-> > > that all
-> > > class devices of the subfunction accesses only assigned PCI BAR
-> > > space.
-> > >
-> > > A Subfunction supports eswitch representation through which it
-> > > supports tc
-> > > offloads. User must configure eswitch to send/receive packets
-> > > from/to
-> > > subfunction port.
-> > >
-> > > Subfunctions share PCI level resources such as PCI MSI-X IRQs with
-> > > their other subfunctions and/or with its parent PCI function.
-> >
-> > This piece to the architecture for this has me somewhat concerned. If
-> > all your resources are shared and you are allowing devices to be
+> 2. When the timeout map is actively accessed, we could reach expired
+>    elements before the idle work kicks in, we can simply skip them and
+>    schedule another work to do the actual removal work. We avoid taking
+>    locks on fast path.
 >
-> not all, only PCI MSIX, for now..
-
-They aren't shared after you partition them but they are coming from
-the same device. Basically you are subdividing the BAR2 in order to
-generate the subfunctions. BAR2 is a shared resource in my point of
-view.
-
-> > created incrementally you either have to pre-partition the entire
-> > function which usually results in limited resources for your base
-> > setup, or free resources from existing interfaces and redistribute
-> > them as things change. I would be curious which approach you are
-> > taking here? So for example if you hit a certain threshold will you
-> > need to reset the port and rebalance the IRQs between the various
-> > functions?
-> >
+> The timeout of each element can be set or updated via bpf_map_update_elem()
+> and we reuse the upper 32-bit of the 64-bit flag for the timeout value.
 >
-> Currently SFs will use whatever IRQs the PF has pre-allocated for
-> itself, so there is no IRQ limit issue at the moment, we are
-> considering a dynamic IRQ pool with dynamic balancing, or even better
-> us the IMS approach, which perfectly fits the SF architecture.
-> https://patchwork.kernel.org/project/linux-pci/cover/1568338328-22458-1-git-send-email-megha.dey@linux.intel.com/
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Dongdong Wang <wangdongdong.6@bytedance.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  include/linux/bpf_types.h      |   1 +
+>  include/uapi/linux/bpf.h       |   3 +-
+>  kernel/bpf/hashtab.c           | 244 ++++++++++++++++++++++++++++++++-
+>  kernel/bpf/syscall.c           |   3 +-
+>  tools/include/uapi/linux/bpf.h |   1 +
+>  5 files changed, 248 insertions(+), 4 deletions(-)
+>
+> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+> index 99f7fd657d87..00a3b17b6af2 100644
+> --- a/include/linux/bpf_types.h
+> +++ b/include/linux/bpf_types.h
+> @@ -125,6 +125,7 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_STACK, stack_map_ops)
+>  BPF_MAP_TYPE(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops)
+>  #endif
+>  BPF_MAP_TYPE(BPF_MAP_TYPE_RINGBUF, ringbuf_map_ops)
+> +BPF_MAP_TYPE(BPF_MAP_TYPE_TIMEOUT_HASH, htab_timeout_map_ops)
+>
+>  BPF_LINK_TYPE(BPF_LINK_TYPE_RAW_TRACEPOINT, raw_tracepoint)
+>  BPF_LINK_TYPE(BPF_LINK_TYPE_TRACING, tracing)
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 30b477a26482..dedb47bc3f52 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -158,6 +158,7 @@ enum bpf_map_type {
+>         BPF_MAP_TYPE_RINGBUF,
+>         BPF_MAP_TYPE_INODE_STORAGE,
+>         BPF_MAP_TYPE_TASK_STORAGE,
+> +       BPF_MAP_TYPE_TIMEOUT_HASH,
+>  };
+>
+>  /* Note that tracing related programs such as
+> @@ -393,7 +394,7 @@ enum bpf_link_type {
+>   */
+>  #define BPF_PSEUDO_CALL                1
+>
+> -/* flags for BPF_MAP_UPDATE_ELEM command */
+> +/* flags for BPF_MAP_UPDATE_ELEM command, upper 32 bits are timeout */
 
-When you say you are using the PF's interrupts are you just using that
-as a pool of resources or having the interrupt process interrupts for
-both the PF and SFs? Without IMS you are limited to 2048 interrupts.
-Moving over to that would make sense since SF is similar to mdev in
-the way it partitions up the device and resources.
+timeout in what units of time?
 
-> for internal resources the are fully isolated (not shared) and
-> they are internally managed by FW exactly like a VF internal resources.
+>  enum {
+>         BPF_ANY         = 0, /* create new element or update existing */
+>         BPF_NOEXIST     = 1, /* create new element if it didn't exist */
+> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+> index f0b7b54fa3a8..178cb376c397 100644
+> --- a/kernel/bpf/hashtab.c
+> +++ b/kernel/bpf/hashtab.c
+> @@ -8,6 +8,8 @@
+>  #include <linux/filter.h>
+>  #include <linux/rculist_nulls.h>
+>  #include <linux/random.h>
+> +#include <linux/llist.h>
+> +#include <linux/workqueue.h>
+>  #include <uapi/linux/btf.h>
+>  #include <linux/rcupdate_trace.h>
+>  #include "percpu_freelist.h"
+> @@ -84,6 +86,8 @@ struct bucket {
+>                 raw_spinlock_t raw_lock;
+>                 spinlock_t     lock;
+>         };
+> +       struct llist_node gc_node;
+> +       atomic_t pending;
 
-I assume by isolated you mean they are contained within page aligned
-blocks like what was required for mdev?
+HASH is an extremely frequently used type of map, and oftentimes with
+a lot of entries/buckets. I don't think users of normal
+BPF_MAP_TYPE_HASH should pay the price of way more niche hashmap with
+timeouts. So I think it's not appropriate to increase the size of the
+struct bucket here.
+
+>  };
+>
+>  #define HASHTAB_MAP_LOCK_COUNT 8
+> @@ -104,6 +108,9 @@ struct bpf_htab {
+>         u32 hashrnd;
+>         struct lock_class_key lockdep_key;
+>         int __percpu *map_locked[HASHTAB_MAP_LOCK_COUNT];
+> +       struct llist_head gc_list;
+> +       struct work_struct gc_work;
+> +       struct delayed_work gc_idle_work;
+>  };
+>
+>  /* each htab element is struct htab_elem + key + value */
+> @@ -124,6 +131,7 @@ struct htab_elem {
+>                 struct bpf_lru_node lru_node;
+>         };
+>         u32 hash;
+> +       u64 expires;
+
+time units? and similar concerns about wasting a lot of added memory
+for not benefit to HASH users.
+
+>         char key[] __aligned(8);
+>  };
+>
+> @@ -143,6 +151,7 @@ static void htab_init_buckets(struct bpf_htab *htab)
+>
+>         for (i = 0; i < htab->n_buckets; i++) {
+>                 INIT_HLIST_NULLS_HEAD(&htab->buckets[i].head, i);
+> +               atomic_set(&htab->buckets[i].pending, 0);
+>                 if (htab_use_raw_lock(htab)) {
+>                         raw_spin_lock_init(&htab->buckets[i].raw_lock);
+>                         lockdep_set_class(&htab->buckets[i].raw_lock,
+> @@ -431,6 +440,14 @@ static int htab_map_alloc_check(union bpf_attr *attr)
+>         return 0;
+>  }
+>
+> +static void htab_sched_gc(struct bpf_htab *htab, struct bucket *b)
+> +{
+> +       if (atomic_fetch_or(1, &b->pending))
+> +               return;
+> +       llist_add(&b->gc_node, &htab->gc_list);
+> +       queue_work(system_unbound_wq, &htab->gc_work);
+> +}
+
+I'm concerned about each bucket being scheduled individually... And
+similarly concerned that each instance of TIMEOUT_HASH will do its own
+scheduling independently. Can you think about the way to have a
+"global" gc/purging logic, and just make sure that buckets that need
+processing would be just internally chained together. So the purging
+routing would iterate all the scheduled hashmaps, and within each it
+will have a linked list of buckets that need processing? And all that
+is done just once each GC period. Not N times for N maps or N*M times
+for N maps with M buckets in each.
+
+> +
+>  static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
+>  {
+>         bool percpu = (attr->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
+> @@ -732,10 +749,13 @@ static bool htab_lru_map_delete_node(void *arg, struct bpf_lru_node *node)
+>  static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+>  {
+>         struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
+> +       bool is_timeout = map->map_type == BPF_MAP_TYPE_TIMEOUT_HASH;
+>         struct hlist_nulls_head *head;
+>         struct htab_elem *l, *next_l;
+>         u32 hash, key_size;
+> +       struct bucket *b;
+>         int i = 0;
+> +       u64 now;
+>
+>         WARN_ON_ONCE(!rcu_read_lock_held());
+>
+> @@ -746,7 +766,8 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+>
+>         hash = htab_map_hash(key, key_size, htab->hashrnd);
+>
+> -       head = select_bucket(htab, hash);
+> +       b = __select_bucket(htab, hash);
+> +       head = &b->head;
+>
+>         /* lookup the key */
+>         l = lookup_nulls_elem_raw(head, hash, key, key_size, htab->n_buckets);
+> @@ -759,6 +780,13 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+>                                   struct htab_elem, hash_node);
+>
+>         if (next_l) {
+> +               if (is_timeout) {
+> +                       now = get_jiffies_64();
+> +                       if (time_after_eq64(now, next_l->expires)) {
+> +                               htab_sched_gc(htab, b);
+> +                               goto find_first_elem;
+> +                       }
+> +               }
+
+this piece of logic is repeated verbatim many times, seems like a
+helper function would make sense here
+
+>                 /* if next elem in this hash list is non-zero, just return it */
+>                 memcpy(next_key, next_l->key, key_size);
+>                 return 0;
+> @@ -771,12 +799,20 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+>  find_first_elem:
+>         /* iterate over buckets */
+>         for (; i < htab->n_buckets; i++) {
+> -               head = select_bucket(htab, i);
+> +               b = __select_bucket(htab, i);
+> +               head = &b->head;
+>
+>                 /* pick first element in the bucket */
+>                 next_l = hlist_nulls_entry_safe(rcu_dereference_raw(hlist_nulls_first_rcu(head)),
+>                                           struct htab_elem, hash_node);
+>                 if (next_l) {
+> +                       if (is_timeout) {
+> +                               now = get_jiffies_64();
+> +                               if (time_after_eq64(now, next_l->expires)) {
+> +                                       htab_sched_gc(htab, b);
+> +                                       continue;
+> +                               }
+> +                       }
+>                         /* if it's not empty, just return it */
+>                         memcpy(next_key, next_l->key, key_size);
+>                         return 0;
+> @@ -975,18 +1011,31 @@ static int check_flags(struct bpf_htab *htab, struct htab_elem *l_old,
+>         return 0;
+>  }
+>
+> +static u32 fetch_timeout(u64 *map_flags)
+> +{
+> +       u32 timeout = (*map_flags) >> 32;
+> +
+> +       *map_flags = (*map_flags) & 0xffffffff;
+> +       return timeout;
+> +}
+> +
+>  /* Called from syscall or from eBPF program */
+>  static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
+>                                 u64 map_flags)
+>  {
+>         struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
+> +       bool timeout_map = map->map_type == BPF_MAP_TYPE_TIMEOUT_HASH;
+>         struct htab_elem *l_new = NULL, *l_old;
+>         struct hlist_nulls_head *head;
+>         unsigned long flags;
+>         struct bucket *b;
+>         u32 key_size, hash;
+> +       u32 timeout;
+> +       u64 now;
+>         int ret;
+>
+> +       timeout = fetch_timeout(&map_flags);
+> +
+>         if (unlikely((map_flags & ~BPF_F_LOCK) > BPF_EXIST))
+>                 /* unknown flags */
+>                 return -EINVAL;
+> @@ -1042,6 +1091,10 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
+>                 copy_map_value_locked(map,
+>                                       l_old->key + round_up(key_size, 8),
+>                                       value, false);
+> +               if (timeout_map) {
+> +                       now = get_jiffies_64();
+> +                       l_old->expires = now + HZ * timeout;
+> +               }
+
+Ok, so it seems timeout is at a second granularity. Would it make
+sense to make it at millisecond granularity instead? I think
+millisecond would be more powerful and allow more use cases, in the
+long run. Micro- and nano-second granularity seems like an overkill,
+though. And would reduce the max timeout to pretty small numbers. With
+milliseconds, you still will get more than 23 days of timeout, which
+seems to be plenty.
+
+
+>                 ret = 0;
+>                 goto err;
+>         }
+> @@ -1054,6 +1107,13 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
+>                 goto err;
+>         }
+>
+> +       if (timeout_map) {
+> +               now = get_jiffies_64();
+> +               if (l_old && time_after_eq64(now, l_old->expires))
+> +                       htab_sched_gc(htab, b);
+> +               l_new->expires = now + HZ * timeout;
+> +       }
+> +
+>         /* add new element to the head of the list, so that
+>          * concurrent search will find it before old elem
+>          */
+> @@ -2180,3 +2240,183 @@ const struct bpf_map_ops htab_of_maps_map_ops = {
+>         .map_btf_name = "bpf_htab",
+>         .map_btf_id = &htab_of_maps_map_btf_id,
+>  };
+> +
+
+[...]
