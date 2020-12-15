@@ -2,112 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6CE2DB406
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 19:53:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B27382DB448
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 20:08:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730423AbgLOSuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 13:50:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        id S1731704AbgLOTG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 14:06:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731552AbgLOSui (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 13:50:38 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F3BC0617A7;
-        Tue, 15 Dec 2020 10:49:58 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id 91so20888353wrj.7;
-        Tue, 15 Dec 2020 10:49:58 -0800 (PST)
+        with ESMTP id S1731801AbgLOTGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 14:06:41 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99724C0617A6;
+        Tue, 15 Dec 2020 11:06:01 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id w135so19957311ybg.13;
+        Tue, 15 Dec 2020 11:06:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GA6LCfSHuIJlH1V+JXdquXEk9vLc0JUPo0y9OtUKPpw=;
-        b=dSNwF/UL69pOmDJwGyqGBHerkfct5Lgh5L4A+3j92H6LeTMaW2eyKChSPCMOeO07Rt
-         LtX7Omk/7aF+CdkddzZZzalNK7wEZLXSX/IlIPZ4sOGe1gJzj71cVhmS7vJ0PIwbJhv1
-         aq/ROTcmXyBkm96Iv2jP+BwfOBDOskixnQaTvUqsjrGmo9wzQbiqvcK7+jwJoKj0NfCg
-         BY1jkOFHMkm9ZMVi9iEwcIosdSQlATjfFddmdb5m2XP7r6CLS9A2W1Cu8fn9OE2ITzbo
-         scOImJasUDjSalykgZr5/TOIQXU0XoN5ispPcACl1ocquCQYx4oyy2IhMjLgC4npcru0
-         VPcw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/ASTrJGIMYwmcRxIIIF4DKie53hTWJRQQCiENmQ9lZs=;
+        b=Q29UD0igXIqLpTqABdeh5mmTdVktuaSzPGrlsQ3XB8Ilbo1wWQ4Uimb9XNR+Zdpot9
+         rUVXWPH58+A5Pi0Eu0K45FqfY5HCJuG+DOvlLt+rCrAzF+2K+Anhi168Ia1FL0cj7mGT
+         YEJo7pbsvJwqCdzRWuwE7yIcLciFiPrJh/3Oo9z2jG3EWpUA0SiGP5sEI71jHEv40LKG
+         MaPEuBH0i9n2oVsUu7DwpiPzF5wP5dhfXFB1yTSiPbxUxvE1zEcbqChSbXDkc+Bjl7j/
+         2YwwWTWmX4emebKUitlpnIPyxt3r3nv5Ho85Rtua0TBO3ESrQHRx38wCEyUQy0Wz5QZ/
+         cAqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GA6LCfSHuIJlH1V+JXdquXEk9vLc0JUPo0y9OtUKPpw=;
-        b=oloUyfHUQs5I15R0fDVS3rQVeQbVy3cKsqmaZT0ym6DgvlTkca8x1giRXX7flp4UAX
-         GkzytHE8kEJzsue63MTWfAOwA/zX/DOZDT6qKf0WryNqGJcEEoehZK+EGqtirBZw8ZdQ
-         mVP31Ln/zaN4h+K+FRmxYaEhEJhOEVAaGTm+uXd5FQp8toZ7shLjqUxagEUymveqZrkN
-         UFIlHkEIPTEptDJls47bI+8Ra42+mMLGt41Nfe7vFb6QticBxcYcpGiF0nAaKDyufHQ+
-         JaA9031kuru9Yv/VCh1gZLdD7vNMyIigacd/AFy5w2WAeC9RqY69fDMnB8YeXV24wfw9
-         mrwg==
-X-Gm-Message-State: AOAM532AjTfAjl5WJyrCCUuJ4QtAkQrmaCqiHmZCZfPOVF9kC+IbH90Q
-        MGFrSnnJOC4lSvcYrwG0kY8=
-X-Google-Smtp-Source: ABdhPJyWcIDAFNBmNcVwRC3GQCgUlZrJHcVZFIZz0D4LnRFyQ4diXSicYHCRgjAom/EP1tQeEwVpxA==
-X-Received: by 2002:adf:b74d:: with SMTP id n13mr35720174wre.101.1608058197188;
-        Tue, 15 Dec 2020 10:49:57 -0800 (PST)
-Received: from [80.5.128.40] (cpc108961-cmbg20-2-0-cust39.5-4.cable.virginm.net. [80.5.128.40])
-        by smtp.gmail.com with ESMTPSA id j7sm37985447wmb.40.2020.12.15.10.49.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Dec 2020 10:49:56 -0800 (PST)
-Subject: Re: [PATCH net-next] sfc: reduce the number of requested xdp ev
- queues
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Ivan Babrou <ivan@cloudflare.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@cloudflare.com,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <20201215012907.3062-1-ivan@cloudflare.com>
- <20201215104327.2be76156@carbon>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <205ba636-f180-3003-a41c-828e1fe1a13b@gmail.com>
-Date:   Tue, 15 Dec 2020 18:49:55 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/ASTrJGIMYwmcRxIIIF4DKie53hTWJRQQCiENmQ9lZs=;
+        b=JO4mVT0iHSXuvl30aBuVX1UWCr45jjSoUm8wuxHzGyn9C6s8zeVL2CCy/Woo/XN9/H
+         ReB9md4FE73zJbqk6/PAK90J4vTidkYwsh1NFikOMjhLkGciTBmfV0HJveep2gCfVWer
+         s+bsQawkLC5uoXEOMsLUYdCDikJ70L6nLBPSmwpqV5CfijIEfJt3XjjmHGWCWX4QwzEJ
+         L6lRF3P93IsObrSM9vkMCjy9RR8mvjbdGuIfISQGWmyi53BYWXc62162pfrwY9JDMwxV
+         vu4Cwh7ryO1w+8cHuseRSEjVDqMFXa2NgsTyTbszd7dGVNT7h0F7Ig1kaHCeramQ4x/3
+         CVBA==
+X-Gm-Message-State: AOAM5328LDMacF6chrdwuhbU7NJroqQtUFXaARi7iktV4nHDKWAABWQn
+        x7KFsxerUhXyPtRDOO7GJnObnNNP+7ipuYSBz+U=
+X-Google-Smtp-Source: ABdhPJw9LV0klVKP+Rw1+wdZRGmMXTzVZKabFVT8oIc1Wa2i/094yejBX9RkOwG97EtHFtP4LbbYCsSnVoocHR0Sjdk=
+X-Received: by 2002:a25:d6d0:: with SMTP id n199mr43502577ybg.27.1608059160803;
+ Tue, 15 Dec 2020 11:06:00 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201215104327.2be76156@carbon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20201214174953.GA14038@localhost>
+In-Reply-To: <20201214174953.GA14038@localhost>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 15 Dec 2020 11:05:50 -0800
+Message-ID: <CAEf4BzapLB+ORVJz2zOzO7MsOUcHBRcO6b-NFCiboasMx9Vq0g@mail.gmail.com>
+Subject: Re: [PATCH v8 bpf-next] bpf/selftests: fold test_current_pid_tgid_new_ns
+ into test_progs.
+To:     Carlos Neira <cneirabustos@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/12/2020 09:43, Jesper Dangaard Brouer wrote:
-> On Mon, 14 Dec 2020 17:29:06 -0800
-> Ivan Babrou <ivan@cloudflare.com> wrote:
-> 
->> Without this change the driver tries to allocate too many queues,
->> breaching the number of available msi-x interrupts on machines
->> with many logical cpus and default adapter settings:
->>
->> Insufficient resources for 12 XDP event queues (24 other channels, max 32)
->>
->> Which in turn triggers EINVAL on XDP processing:
->>
->> sfc 0000:86:00.0 ext0: XDP TX failed (-22)
-> 
-> I have a similar QA report with XDP_REDIRECT:
->   sfc 0000:05:00.0 ens1f0np0: XDP redirect failed (-22)
-> 
-> Here we are back to the issue we discussed with ixgbe, that NIC / msi-x
-> interrupts hardware resources are not enough on machines with many
-> logical cpus.
-> 
-> After this fix, what will happen if (cpu >= efx->xdp_tx_queue_count) ?
-Same as happened before: the "failed -22".  But this fix will make that
- less likely to happen, because it ties more TXQs to each EVQ, and it's
- the EVQs that are in short supply.
-(Strictly speaking, I believe the limitation is a software one, that
- comes from the driver's channel structures having been designed a
- decade ago when 32 cpus ought to be enough for anybody... AFAIR the
- hardware is capable of giving us something like 1024 evqs if we ask
- for them, it just might not have that many msi-x vectors for us.)
-Anyway, the patch looks correct, so
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+On Mon, Dec 14, 2020 at 10:39 AM Carlos Neira <cneirabustos@gmail.com> wrote:
+>
+> Currently tests for bpf_get_ns_current_pid_tgid() are outside test_progs.
+> This change folds test cases into test_progs.
+>
+> Changes from V7:
+>  - Rebased changes.
+>  - Changed function scope.
+>
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 
--ed
+please drop my ack for the next version given the changes requested, thanks!
+
+> ---
+>  tools/testing/selftests/bpf/.gitignore        |   1 -
+>  tools/testing/selftests/bpf/Makefile          |   3 +-
+>  .../bpf/prog_tests/ns_current_pid_tgid.c      | 148 ++++++++++------
+>  .../bpf/progs/test_ns_current_pid_tgid.c      |  26 +--
+>  .../bpf/test_current_pid_tgid_new_ns.c        | 160 ------------------
+>  5 files changed, 105 insertions(+), 233 deletions(-)
+>  delete mode 100644 tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+>
+
+[...]
+
+>
+> -       obj = bpf_object__open_file(file, NULL);
+> -       if (CHECK(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
+> -               return;
+> +       skel = test_ns_current_pid_tgid__open_and_load();
+> +       CHECK(!skel, "skel_open_load", "failed to load skeleton\n");
+> +       goto cleanup;
+
+Are you sure your test is doing what you think it's doing? Try running
+`sudo ./test_progs -t ns_current_pid_tgid -v` and see if you get all
+the CHECK()s you expect.
+
+It's a long way of saying that you are missing `if ()` and just
+unconditionally clean up after opening and loading the skeleton.
+
+And if the skeleton is not open_and_load()'ed successfully, there is
+nothing to clean up, btw.
+
+>
+> -       err = bpf_object__load(obj);
+> -       if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
+> -               goto cleanup;
+> +       tid = syscall(SYS_gettid);
+> +       pid = getpid();
+> +
+> +       id = ((__u64)tid << 32) | pid;
+>
+> -       bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
+> -       if (CHECK(!bss_map, "find_bss_map", "failed\n"))
+> +       err = stat("/proc/self/ns/pid", &st);
+> +       if (CHECK(err, "stat", "failed /proc/self/ns/pid: %d", err))
+>                 goto cleanup;
+>
+> -       prog = bpf_object__find_program_by_title(obj, probe_name);
+> -       if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
+> -                 probe_name))
+> +       bss = skel->bss;
+> +       bss->dev = st.st_dev;
+> +       bss->ino = st.st_ino;
+> +       bss->user_pid_tgid = 0;
+> +
+> +       err = test_ns_current_pid_tgid__attach(skel);
+> +       if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
+>                 goto cleanup;
+>
+> -       memset(&bss, 0, sizeof(bss));
+> -       pid_t tid = syscall(SYS_gettid);
+> -       pid_t pid = getpid();
+> +       /* trigger tracepoint */
+> +       usleep(1);
+>
+> -       id = (__u64) tid << 32 | pid;
+> -       bss.user_pid_tgid = id;
+> +       CHECK(bss->user_pid_tgid != id, "pid/tgid", "got %llu != exp %llu\n",
+> +        bss->user_pid_tgid, id);
+> +cleanup:
+> +        test_ns_current_pid_tgid__destroy(skel);
+> +}
+>
+> -       if (CHECK_FAIL(stat("/proc/self/ns/pid", &st))) {
+> -               perror("Failed to stat /proc/self/ns/pid");
+> +static int newns_pidtgid(void *arg)
+
+nit: pid_tgid?
+
+> +{
+> +       struct test_ns_current_pid_tgid__bss  *bss;
+> +       int pidns_fd = 0, err = 0, duration = 0;
+> +       struct test_ns_current_pid_tgid *skel;
+> +       pid_t pid, tid;
+> +       struct stat st;
+> +       __u64 id;
+> +
+> +       skel = test_ns_current_pid_tgid__open_and_load();
+> +       if (!skel) {
+> +               perror("Failed to load skeleton");
+
+please use CHECK() or ASSERT_OK_PTR() instead of perror()
+
+>                 goto cleanup;
+>         }
+>
+> -       bss.dev = st.st_dev;
+> -       bss.ino = st.st_ino;
+> +       tid = syscall(SYS_gettid);
+> +       pid = getpid();
+> +       id = ((__u64) tid << 32) | pid;
+>
+
+[...]
+
+> +
+> +static void test_ns_current_pid_tgid_new_ns(void)
+> +{
+> +       int wstatus, duration = 0;
+> +       pid_t cpid;
+> +
+> +       cpid = clone(newns_pidtgid,
+> +         child_stack + STACK_SIZE,
+> +         CLONE_NEWPID | SIGCHLD, NULL);
+
+formatting here and below for wrapped arguments looks wrong. Please
+double-check whitespaces and align arguments. There is also
+`scripts/checkpatch.pl -f <path-to-file>` which will help.
+
+> +
+> +       if (CHECK(cpid == -1, "clone", strerror(errno)))
+> +               exit(EXIT_FAILURE);
+> +
+> +       if (CHECK(waitpid(cpid, &wstatus, 0) == -1, "waitpid",
+> +        strerror(errno))) {
+> +               exit(EXIT_FAILURE);
+> +       }
+> +
+> +       CHECK(WEXITSTATUS(wstatus) != 0, "newns_pidtgid",
+> +        "failed");
+> +}
+> +
+> +void test_ns_current_pid_tgid(void)
+> +{
+> +       if (test__start_subtest("ns_current_pid_tgid_global_ns"))
+> +               test_ns_current_pid_tgid_global_ns();
+> +       if (test__start_subtest("ns_current_pid_tgid_new_ns"))
+> +               test_ns_current_pid_tgid_new_ns();
+>  }
+> diff --git a/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c b/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
+> index 1dca70a6de2f..0daa12db0d83 100644
+> --- a/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
+> +++ b/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
+> @@ -5,31 +5,19 @@
+>  #include <stdint.h>
+>  #include <bpf/bpf_helpers.h>
+>
+> -static volatile struct {
+> -       __u64 dev;
+> -       __u64 ino;
+> -       __u64 pid_tgid;
+> -       __u64 user_pid_tgid;
+> -} res;
+> +__u64 user_pid_tgid = 0;
+
+imo, no need to combine pid and tgid into a single u64, why not using
+two separate global variables and keep it simple?
+
+> +__u64 dev = 0;
+> +__u64 ino = 0;
+>
+>  SEC("raw_tracepoint/sys_enter")
+> -int trace(void *ctx)
+> +int handler(const void *ctx)
+>  {
+> -       __u64  ns_pid_tgid, expected_pid;
+>         struct bpf_pidns_info nsdata;
+> -       __u32 key = 0;
+>
+> -       if (bpf_get_ns_current_pid_tgid(res.dev, res.ino, &nsdata,
+> -                  sizeof(struct bpf_pidns_info)))
+> +       if (bpf_get_ns_current_pid_tgid(dev, ino, &nsdata,
+> +               sizeof(struct bpf_pidns_info)))
+
+here as well, wrapped argument looks misaligned (unless it's my email client)
+
+>                 return 0;
+> -
+> -       ns_pid_tgid = (__u64)nsdata.tgid << 32 | nsdata.pid;
+> -       expected_pid = res.user_pid_tgid;
+> -
+
+[...]
