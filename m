@@ -2,66 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 798302DB5F0
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 22:35:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4496D2DB60E
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 22:50:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728194AbgLOVel (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 16:34:41 -0500
-Received: from mail-03.mail-europe.com ([91.134.188.129]:50940 "EHLO
-        mail-03.mail-europe.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726181AbgLOVee (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 16:34:34 -0500
-Date:   Tue, 15 Dec 2020 21:32:50 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail; t=1608067980;
-        bh=+ErT7m0bXPd7Crgokd60v7Q830jr1gZutzvXrXse6qo=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=RNh2bIvtXlOL6gQN/R751USoqvMFozgHQiHZxi/U2NP/l0P4kdbqqZTuJSF+EKgXe
-         93aWKnT+zsrNE/jcSav/J+kbErQDphUJKxvJFSQtDZ05Nguyc2jgbfKJPw/wGES89h
-         OknbVP6n3NWY0CRceSWtSEMr+KI90SWgjYuT8I8s=
+        id S1730245AbgLOVfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 16:35:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53146 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728110AbgLOVfA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 16:35:00 -0500
+Subject: Re: [GIT PULL] Networking updates for 5.11
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608068038;
+        bh=IxUCHXJUoQYOCUo0zxeOPK+c67O0er8jrceei/ZWrFU=;
+        h=From:In-Reply-To:References:Date:To:Cc:From;
+        b=rJrey77D/AFwmSvTg1q4vGgqIwx/XHeRfYJ8FE5K+vGK9uxHWDjJyArr2hfy467rl
+         Uart9vv2PI4o3xLfu+objtLKUbAOL0/d9AsnUA/WMdtQzQOlSXkW0pMsoiwQVPCQPP
+         mx0Qc5Gg2RigR//grAEEpZ2oNzL/RlY/VCFzJpPx7A0ej+i7h767+Q9N5NVbidCwYC
+         yGXYqE0TaP2y3PrAiKJAlar5/MJQ3OAt3yraaYB4rs2mp/fQX+LN7AVM2shsgfVGSw
+         nUD+4RJCfNoTesi2jodzCQLGkOjBlpp+DbHjVbWsFcjwTu9nZrgAjfqBGr7+7/6tMo
+         Kq/+jImHAPmMA==
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20201215072850.3171650-1-kuba@kernel.org>
+References: <20201215072850.3171650-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20201215072850.3171650-1-kuba@kernel.org>
+X-PR-Tracked-Remote: https://lore.kernel.org/linux-next/20201126162248.7e7963fe@canb.auug.org.au/ mm
+X-PR-Tracked-Commit-Id: efd5a1584537698220578227e6467638307c2a0b
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: d635a69dd4981cc51f90293f5f64268620ed1565
+Message-Id: <160806803833.7181.2292709187456512920.pr-tracker-bot@kernel.org>
+Date:   Tue, 15 Dec 2020 21:33:58 +0000
 To:     Jakub Kicinski <kuba@kernel.org>
-From:   Lars Everbrand <lars.everbrand@protonmail.com>
-Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Reply-To: Lars Everbrand <lars.everbrand@protonmail.com>
-Subject: Re: [PATCH net-next] bonding: correct rr balancing during link failure
-Message-ID: <X9krelP/8MwGP0V5@black-debian>
-In-Reply-To: <20201205114513.4886d15e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <X8f/WKR6/j9k+vMz@black-debian> <20201205114513.4886d15e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, axboe@kernel.dk, sfrench@samba.org,
+        ebiederm@xmission.com, akpm@linux-foundation.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 05, 2020 at 11:45:13AM -0800, Jakub Kicinski wrote:
-> Thanks for the patch!
-Kind words for my first attempt at this. Sorry for answering a bit late,
-proton-bridge is not my best friend lately.
->=20
-> Looking at the code in question it feels a little like we're breaking
-> abstractions if we bump the counter directly in get_slave_by_id.
-My intention was to avoid a big change, and this was the easiest way. I
-trust your opinion here.
->=20
-> For one thing when the function is called for IGMP packets the counter
-> should not be incremented at all. But also if packets_per_slave is not
-> 1 we'd still be hitting the same leg multiple times (packets_per_slave
-> / 2). So it seems like we should round the counter up somehow?
-I did not consider this case, I only test =3D1 and random. Yeah, it breaks
-if the counter is updated per packet in any >1 case.=20
->=20
-> For IGMP maybe we don't have to call bond_get_slave_by_id() at all,
-> IMHO, just find first leg that can TX. Then we can restructure
-> bond_get_slave_by_id() appropriately for the non-IGMP case.
-I can have another look but my I am not confident that I am skilled
-enough in this area to produce a larger overhaul...=20
+The pull request you sent on Mon, 14 Dec 2020 23:28:50 -0800:
 
+> https://lore.kernel.org/linux-next/20201126162248.7e7963fe@canb.auug.org.au/ mm
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d635a69dd4981cc51f90293f5f64268620ed1565
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
