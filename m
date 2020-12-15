@@ -2,149 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF95C2DB27A
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:26:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F632DB280
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:26:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730696AbgLORYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 12:24:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730108AbgLORXX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:23:23 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C2DC06179C;
-        Tue, 15 Dec 2020 09:22:38 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id x126so6085557pfc.7;
-        Tue, 15 Dec 2020 09:22:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XeL1JU3AOBCtCTm27JOBPqHW8xm0HoyApoO+BoICFoU=;
-        b=hCYCkhMNCb5c3Qi3sKAbtkY2DbxHCykfyTbKzsCqY5VYCDSmlW+kTMmwb878sI9X97
-         rMZ9VPVySFSYLuA6YFIcpva7mc2MFXvfhugMjJ6u3dQ5S20eSaKHz+APO6Z3RNT4yNP1
-         I1iidbRLw+YB6yz3uBa2VBYmJXraUtSsXrYpl18x2XZooy+qoKHjw4tAbm8RmfOyRXzQ
-         mqOjjH//0w393EOzIrpysg0fKc42k2znubj7LmaTaAuAaILFoC1vjtpZXYfCR57AlGbr
-         CkxP9+jYvDwYK1dP2VYrZob51LKwF/jWxD5+muO4AhKWmFnfgL2d3y9yjyt2WReMRCLY
-         lCcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XeL1JU3AOBCtCTm27JOBPqHW8xm0HoyApoO+BoICFoU=;
-        b=ENZVn2wMRZ8xNaWzzU0k4vLBz0Y+mJsjbbscV0ixmoqkwoAGLKMLJdA8fEJiATsy7u
-         TZYLacJ4oWcbCJiaP+pKQzjbQK4LbkYqBhtfa0mphNCOU7/OH9iuk3YF6oZauApohbZC
-         vslcYQVPvhsZooUIfdCnv/Lqh6ndHi3M3nXo8BdRiNyqC7l5Law/NrORhrIRTY9ByaRQ
-         /07AMTDmnnhcx+l1aT708cTAXYCePZMdoDbwsvQlVj4q7ucy4fyHTtApTWNuzfU3VzSE
-         ij4yRTef8hTFMRpg1lNETmyIIiTCgnhUEzUp9/fGZficCDEaCk9Y60bHdtXq+GUA5hD1
-         QFOg==
-X-Gm-Message-State: AOAM532mpWm8a0Ds85haQ4l/cXQWPdzTqrqOozkTQwJ0m3vY94t/O3j6
-        Whqv+5HR0G35UYCdltPOHYZ/EPIeMNI3c0kJHfM=
-X-Google-Smtp-Source: ABdhPJzAWxA90vOEnW9Jvu3V713OGXuisuahkkplOJRTeWCZgFKbHKGm9p5UyRsIqwDva3Ofpyg//nIwK1PiM+hdpuo=
-X-Received: by 2002:a63:74b:: with SMTP id 72mr2438639pgh.4.1608052957796;
- Tue, 15 Dec 2020 09:22:37 -0800 (PST)
+        id S1730841AbgLORYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 12:24:52 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:7628 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729872AbgLORYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:24:40 -0500
+Received: from ironmsg07-lv.qualcomm.com (HELO ironmsg07-lv.qulacomm.com) ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 15 Dec 2020 09:24:00 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qulacomm.com with ESMTP/TLS/AES256-SHA; 15 Dec 2020 09:23:58 -0800
+X-QCInternal: smtphost
+Received: from youghand-linux.qualcomm.com ([10.206.66.115])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 15 Dec 2020 22:53:55 +0530
+Received: by youghand-linux.qualcomm.com (Postfix, from userid 2370257)
+        id A45F820F17; Tue, 15 Dec 2020 22:53:54 +0530 (IST)
+From:   Youghandhar Chintala <youghand@codeaurora.org>
+To:     johannes@sipsolutions.net
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuabhs@chromium.org,
+        dianders@chromium.org, briannorris@chromium.org,
+        pillair@codeaurora.org,
+        Youghandhar Chintala <youghand@codeaurora.org>
+Subject: [PATCH 2/3] mac80211: Add support to trigger sta disconnect on hardware restart
+Date:   Tue, 15 Dec 2020 22:53:52 +0530
+Message-Id: <20201215172352.5311-1-youghand@codeaurora.org>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-References: <20201215164315.3666-1-calvin.johnson@oss.nxp.com> <20201215164315.3666-3-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20201215164315.3666-3-calvin.johnson@oss.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 15 Dec 2020 19:23:26 +0200
-Message-ID: <CAHp75VeJc6jXAi9LV84+-paH+8Xx7+-6vtfSe+G5eoFn2VRErg@mail.gmail.com>
-Subject: Re: [net-next PATCH v2 02/14] net: phy: Introduce phy related fwnode functions
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, "linux.cj" <linux.cj@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 6:44 PM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
->
-> Define fwnode_phy_find_device() to iterate an mdiobus and find the
-> phy device of the provided phy fwnode. Additionally define
-> device_phy_find_device() to find phy device of provided device.
->
-> Define fwnode_get_phy_node() to get phy_node using named reference.
+Currently in case of target hardware restart, we just reconfig and
+re-enable the security keys and enable the network queues to start
+data traffic back from where it was interrupted.
 
-...
+Many ath10k wifi chipsets have sequence numbers for the data
+packets assigned by firmware and the mac sequence number will
+restart from zero after target hardware restart leading to mismatch
+in the sequence number expected by the remote peer vs the sequence
+number of the frame sent by the target firmware.
 
-> +#include <linux/acpi.h>
+This mismatch in sequence number will cause out-of-order packets
+on the remote peer and all the frames sent by the device are dropped
+until we reach the sequence number which was sent before we restarted
+the target hardware
 
-Not sure we need this. See below.
+In order to fix this, we trigger a sta disconnect, for the targets
+which expose this corresponding wiphy flag, in case of target hw
+restart. After this there will be a fresh connection and thereby
+avoiding the dropping of frames by remote peer.
 
-...
+The right fix would be to pull the entire data path into the host
+which is not feasible or would need lots of complex changes and
+will still be inefficient.
 
-> +/**
-> + * fwnode_phy_find_device - Find phy_device on the mdiobus for the provided
-> + * phy_fwnode.
+Tested on ath10k using WCN3990, QCA6174
 
-Can we keep a summary on one line?
+Signed-off-by: Youghandhar Chintala <youghand@codeaurora.org>
+---
+ net/mac80211/ieee80211_i.h |  3 +++
+ net/mac80211/mlme.c        |  9 +++++++++
+ net/mac80211/util.c        | 22 +++++++++++++++++++---
+ 3 files changed, 31 insertions(+), 3 deletions(-)
 
-> + * @phy_fwnode: Pointer to the phy's fwnode.
-> + *
-> + * If successful, returns a pointer to the phy_device with the embedded
-> + * struct device refcount incremented by one, or NULL on failure.
-> + */
-> +struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode)
-> +{
-> +       struct mdio_device *mdiodev;
-> +       struct device *d;
-
-> +       if (!phy_fwnode)
-> +               return NULL;
-
-Why is this needed?
-Perhaps a comment to the function description explains a case when
-@phy_fwnode == NULL.
-
-> +       d = bus_find_device_by_fwnode(&mdio_bus_type, phy_fwnode);
-> +       if (d) {
-> +               mdiodev = to_mdio_device(d);
-> +               if (mdiodev->flags & MDIO_DEVICE_FLAG_PHY)
-> +                       return to_phy_device(d);
-> +               put_device(d);
-> +       }
-> +
-> +       return NULL;
-> +}
-
-...
-
-> + * For ACPI, only "phy-handle" is supported. DT supports all the three
-> + * named references to the phy node.
-
-...
-
-> +       /* Only phy-handle is used for ACPI */
-> +       phy_node = fwnode_find_reference(fwnode, "phy-handle", 0);
-> +       if (is_acpi_node(fwnode) || !IS_ERR(phy_node))
-> +               return phy_node;
-
-So, what is the problem with going through the rest on ACPI?
-Usually we describe the restrictions in the documentation.
-
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index cde2e3f..8cbeb5f 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -748,6 +748,8 @@ struct ieee80211_if_mesh {
+  *	back to wireless media and to the local net stack.
+  * @IEEE80211_SDATA_DISCONNECT_RESUME: Disconnect after resume.
+  * @IEEE80211_SDATA_IN_DRIVER: indicates interface was added to driver
++ * @IEEE80211_SDATA_DISCONNECT_HW_RESTART: Disconnect after hardware restart
++ *	recovery
+  */
+ enum ieee80211_sub_if_data_flags {
+ 	IEEE80211_SDATA_ALLMULTI		= BIT(0),
+@@ -755,6 +757,7 @@ enum ieee80211_sub_if_data_flags {
+ 	IEEE80211_SDATA_DONT_BRIDGE_PACKETS	= BIT(3),
+ 	IEEE80211_SDATA_DISCONNECT_RESUME	= BIT(4),
+ 	IEEE80211_SDATA_IN_DRIVER		= BIT(5),
++	IEEE80211_SDATA_DISCONNECT_HW_RESTART	= BIT(6),
+ };
+ 
+ /**
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index 6adfcb9..e4d0d16 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -4769,6 +4769,15 @@ void ieee80211_sta_restart(struct ieee80211_sub_if_data *sdata)
+ 					      true);
+ 		sdata_unlock(sdata);
+ 		return;
++	} else if (sdata->flags & IEEE80211_SDATA_DISCONNECT_HW_RESTART) {
++		sdata->flags &= ~IEEE80211_SDATA_DISCONNECT_HW_RESTART;
++		mlme_dbg(sdata, "driver requested disconnect after hardware restart\n");
++		ieee80211_sta_connection_lost(sdata,
++					      ifmgd->associated->bssid,
++					      WLAN_REASON_UNSPECIFIED,
++					      true);
++		sdata_unlock(sdata);
++		return;
+ 	}
+ 	sdata_unlock(sdata);
+ }
+diff --git a/net/mac80211/util.c b/net/mac80211/util.c
+index 8c3c01a..98567a3 100644
+--- a/net/mac80211/util.c
++++ b/net/mac80211/util.c
+@@ -2567,9 +2567,12 @@ int ieee80211_reconfig(struct ieee80211_local *local)
+ 	}
+ 	mutex_unlock(&local->sta_mtx);
+ 
+-	/* add back keys */
+-	list_for_each_entry(sdata, &local->interfaces, list)
+-		ieee80211_reenable_keys(sdata);
++
++	if (!(hw->wiphy->flags & WIPHY_FLAG_STA_DISCONNECT_ON_HW_RESTART)) {
++		/* add back keys */
++		list_for_each_entry(sdata, &local->interfaces, list)
++			ieee80211_reenable_keys(sdata);
++	}
+ 
+ 	/* Reconfigure sched scan if it was interrupted by FW restart */
+ 	mutex_lock(&local->mtx);
+@@ -2643,6 +2646,19 @@ int ieee80211_reconfig(struct ieee80211_local *local)
+ 					IEEE80211_QUEUE_STOP_REASON_SUSPEND,
+ 					false);
+ 
++	if ((hw->wiphy->flags & WIPHY_FLAG_STA_DISCONNECT_ON_HW_RESTART) &&
++	    !reconfig_due_to_wowlan) {
++		list_for_each_entry(sdata, &local->interfaces, list) {
++			if (!ieee80211_sdata_running(sdata))
++				continue;
++			if (sdata->vif.type == NL80211_IFTYPE_STATION) {
++				sdata->flags |=
++					IEEE80211_SDATA_DISCONNECT_HW_RESTART;
++				ieee80211_sta_restart(sdata);
++			}
++		}
++	}
++
+ 	/*
+ 	 * If this is for hw restart things are still running.
+ 	 * We may want to change that later, however.
 -- 
-With Best Regards,
-Andy Shevchenko
+2.7.4
+
