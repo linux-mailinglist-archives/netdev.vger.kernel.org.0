@@ -2,137 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7BE2DB65A
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 23:11:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40EF92DB681
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 23:28:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730071AbgLOWJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 17:09:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57616 "EHLO
+        id S1731507AbgLOW1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 17:27:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729643AbgLOWJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 17:09:27 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE739C061793;
-        Tue, 15 Dec 2020 14:08:46 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id x2so20428297ybt.11;
-        Tue, 15 Dec 2020 14:08:46 -0800 (PST)
+        with ESMTP id S1731458AbgLOW1h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 17:27:37 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE6EC0613D6
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 14:26:57 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id t37so16192306pga.7
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 14:26:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K+meQSK5y9qFjU0IVa/sjRpmfQw/UHOCMf8neqJsCwc=;
-        b=ScAFix3LX8mpD7II5FEshYNaPedEgvPMfvZF9bjyNcg5mK6daWykDKpDEtPw8rVqqE
-         rJVWpQDiHJ7vlBxnwgxJZrybCl/DkD9TZ955mXRrvv6T1JF+GGxRFbUvqeTaRJjd32aT
-         Ei3zNzCsoRM50GyWHuMiHuIvHsiPdBGbOMSgJmVFePPp1KHh6taBl/2e/nSrxHR33XmF
-         qrEwFAgEtjRQxY09BnsDE48nsWB/ZBtW8fcHokGvXeRsx8xFHmb3AYeP7QcGK4gkg5mc
-         mOoRdLvs3WG3Px3wcbazcULZ2hnvhh2b49dqOo3LrLl9Rbs18xdbH98DBpksRi4IfXpX
-         pF9w==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ifcco6PX76YQ45tKe2inJrTYkvhCiuEFvk/GLF6t8GA=;
+        b=audUKUjpjL1xOWFsdnHuf+NEn7nNffaFm0l75KCHXdEJkz8gosVrIKngDgDjPhh7wR
+         DD3lhn6RuqN34t5U71QxX/NOpZd093GP3P9Ocz9IT/obrn5RgiE69wRNInleDE0bbqDa
+         db7EN6M6qIFoajU1tMsJoO9z6bnYxyVCJceNft1bC3u8iIzkgEc6RHggz2yeZAbpmZVI
+         tXBBxunYl9TbUWsQfXRettZMuKKkTVCS13XQsN9QwBZPuBGUGcti1yq6op4U5KIkbdIW
+         k79m3JxwPqlGboqm7R+mJmtGi10yIugVI5lTPb5qtx4KtFnEkWBB+iwarLGplMbQUb2D
+         T3bA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K+meQSK5y9qFjU0IVa/sjRpmfQw/UHOCMf8neqJsCwc=;
-        b=JoWZF87kMymO4vQ20zf74GBGARE7VPsNAZFbXu2HpQL5ptNFC7486Gdseq2+wxRviK
-         DYrG4nYScoN9JrZNG3y8LTZRLP1w48V4lvBJRYiAb+Yzvuhki+SP55nQjYG9k9qDwsFA
-         cjnRyl+YDCEQrLKyO0D0NIK0DlAeqpuMyCzUDk58LzIwIVxdamZFSAcHbY4Q/Bo9Qfpt
-         1GudLC2xep66uSxI5tGiVVREro6cqR2zFmmQo54zoppkJOi/xC++m8GNZA0lLx4c+Rcp
-         CNk1XHKmygamFdBN7Cz+AjXLaXN23VXa4FOhO/QcGWMgAXm7s5rvQo4zP9GLTPxzZCmZ
-         XIrQ==
-X-Gm-Message-State: AOAM531OzCXlwUjyB6ToMVzDq9rQD55uJFmQXea4m0lJBI+0oUC3nRb0
-        ZveoB1//Vzvn0iOJxaSpUaD3gov8seVAHslOjSg=
-X-Google-Smtp-Source: ABdhPJx/+vzbubEMXooBZvcExdybR+/KKe6C/v9lElIpugl0LMt4IfZCnq+zbJdoB2w671rn/0PsvvhEGZOGAIrsvJg=
-X-Received: by 2002:a25:d44:: with SMTP id 65mr46756516ybn.260.1608070126094;
- Tue, 15 Dec 2020 14:08:46 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ifcco6PX76YQ45tKe2inJrTYkvhCiuEFvk/GLF6t8GA=;
+        b=fGpYL1OhlDOpd8V6oor2np7bgliJ24z8vXKPT+WVYG9CLTJ5YesDaL506Wy+fJ7Tl/
+         9PosITwWHL3FrEIP+XFeasMXpZFYPOtzMTNorhnGio/tVGLKTz4CK2VlA8/et79mZpdk
+         VHUDbnat9v7t3ApeSw5c7GR+91EqJwrgmz5N65waxmQhkEZDYs37Kl4J2jYQs6WPc/Rp
+         0KEhHxjCEsDPyu3c+CcsHVhpccmDcemVzvHlg3fSvrHcGg45/SBc6lk2cZWAVzQh1uBp
+         J5ig0pxiNHINf4q2kH3E2/WkCa7JV+9fegOyVekMCpfHLuidLNL3SPotqgM0AJf+/mei
+         964g==
+X-Gm-Message-State: AOAM5309a6s201ZUUpoIJDwFyued6UguNgH6K6la45meSLJ8DM4JBlz/
+        0o4rZ5IcdBX+WRZhrWYrmR7PYA==
+X-Google-Smtp-Source: ABdhPJzIzxRVOR9BpmwQ0FHqr2Aua3g74/CMP05BJ3Iroxe2pxYIkgsVVZJI8Dg9nthEOzOG2C0ENw==
+X-Received: by 2002:a62:19cc:0:b029:19e:321b:a22e with SMTP id 195-20020a6219cc0000b029019e321ba22emr22973030pfz.73.1608071217090;
+        Tue, 15 Dec 2020 14:26:57 -0800 (PST)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id a17sm131174pgw.80.2020.12.15.14.26.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Dec 2020 14:26:56 -0800 (PST)
+Date:   Tue, 15 Dec 2020 14:26:53 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, David Ahern <dsahern@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yossi Kuperman <yossiku@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2-next] tc/htb: Hierarchical QoS hardware offload
+Message-ID: <20201215142653.2a16e888@hermes.local>
+In-Reply-To: <20201215074213.32652-1-maximmi@mellanox.com>
+References: <20201215074213.32652-1-maximmi@mellanox.com>
 MIME-Version: 1.0
-References: <20201214105654.5048-1-teawater@gmail.com>
-In-Reply-To: <20201214105654.5048-1-teawater@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 15 Dec 2020 14:08:34 -0800
-Message-ID: <CAEf4BzaQ9PsMrxwP2WW2eTDZ6LLYZRFUwJUa2xpFAPhBJu01PQ@mail.gmail.com>
-Subject: Re: [PATCH] samples/bpf/Makefile: Create tools/testing/selftests/bpf dir
-To:     Hui Zhu <teawater@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Hui Zhu <teawaterz@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 14, 2020 at 2:57 AM Hui Zhu <teawater@gmail.com> wrote:
->
-> From: Hui Zhu <teawaterz@linux.alibaba.com>
->
-> Got an error when I built samples/bpf in a separate directory:
-> make O=../bk/ defconfig
-> make -j64 bzImage
-> make headers_install
-> make V=1 M=samples/bpf
-> ...
-> ...
-> make -C /home/teawater/kernel/linux/samples/bpf/../..//tools/build
-> CFLAGS= LDFLAGS= fixdep
-> make -f
-> /home/teawater/kernel/linux/samples/bpf/../..//tools/build/Makefile.build
-> dir=. obj=fixdep
-> make all_cmd
-> Warning: Kernel ABI header at 'tools/include/uapi/linux/netlink.h'
-> differs from latest version at 'include/uapi/linux/netlink.h'
-> Warning: Kernel ABI header at 'tools/include/uapi/linux/if_link.h'
-> differs from latest version at 'include/uapi/linux/if_link.h'
->   gcc
-> -Wp,-MD,samples/bpf/../../tools/testing/selftests/bpf/.cgroup_helpers.o.d
-> -Wall -O2 -Wmissing-prototypes -Wstrict-prototypes -I./usr/include
-> -I/home/teawater/kernel/linux/tools/testing/selftests/bpf/
-> -I/home/teawater/kernel/linux/tools/lib/
-> -I/home/teawater/kernel/linux/tools/include
-> -I/home/teawater/kernel/linux/tools/perf -DHAVE_ATTR_TEST=0  -c -o
-> samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.o
-> /home/teawater/kernel/linux/samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.c
-> /home/teawater/kernel/linux/samples/bpf/../../tools/testing/selftests/bpf/cgroup_helpers.c:315:1:
-> fatal error: opening dependency file
-> samples/bpf/../../tools/testing/selftests/bpf/.cgroup_helpers.o.d: No
-> such file or directory
->
-> ls -al samples/bpf/../../tools/testing/selftests/bpf/
-> ls: cannot access 'samples/bpf/../../tools/testing/selftests/bpf/': No
-> such file or directory
->
-> There is no samples/bpf/../../tools/testing/selftests/bpf/ causing a
-> compilation error.
->
-> This commit add a "make -p" before build files in
-> samples/bpf/../../tools/testing/selftests/bpf/ to handle the issue.
->
-> Signed-off-by: Hui Zhu <teawaterz@linux.alibaba.com>
-> ---
->  samples/bpf/Makefile | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index aeebf5d12f32..5b940eedf2e8 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -262,6 +262,7 @@ clean:
->
->  $(LIBBPF): FORCE
->  # Fix up variables inherited from Kbuild that tools/ build system won't like
-> +       mkdir -p $(obj)/../../tools/testing/selftests/bpf/
+On Tue, 15 Dec 2020 09:42:08 +0200
+Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
 
-This is not a real fix, rather ad-hoc work-around. Let's try to
-understand why this path is necessary and do adjustments to either
-samples' or libbpf's Makefile to work in such cases.
+> +	print_uint(PRINT_ANY, "offload", " offload %d", !!tb[TCA_HTB_OFFLOAD]);
+
+This is not the best way to represent a boolean flag in JSON.
+Also it breaks the "output should be the same as command line" mantra.
 
 
->         $(MAKE) -C $(dir $@) RM='rm -rf' EXTRA_CFLAGS="$(TPROGS_CFLAGS)" \
->                 LDFLAGS=$(TPROGS_LDFLAGS) srctree=$(BPF_SAMPLES_PATH)/../../ O=
->
-> --
-> 2.17.1
->
+My preference is json_null to indicate presence of a flag.
+Something like:
+
+        if (tb[TCA_HTB_OFFLOAD])
+		print_null(PRINT_ANY, "offload", "offload", NULL);
+
