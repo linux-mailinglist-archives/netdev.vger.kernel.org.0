@@ -2,56 +2,423 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4496D2DB60E
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 22:50:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 215872DB5F7
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 22:42:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730245AbgLOVfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 16:35:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53146 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728110AbgLOVfA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 16:35:00 -0500
-Subject: Re: [GIT PULL] Networking updates for 5.11
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608068038;
-        bh=IxUCHXJUoQYOCUo0zxeOPK+c67O0er8jrceei/ZWrFU=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=rJrey77D/AFwmSvTg1q4vGgqIwx/XHeRfYJ8FE5K+vGK9uxHWDjJyArr2hfy467rl
-         Uart9vv2PI4o3xLfu+objtLKUbAOL0/d9AsnUA/WMdtQzQOlSXkW0pMsoiwQVPCQPP
-         mx0Qc5Gg2RigR//grAEEpZ2oNzL/RlY/VCFzJpPx7A0ej+i7h767+Q9N5NVbidCwYC
-         yGXYqE0TaP2y3PrAiKJAlar5/MJQ3OAt3yraaYB4rs2mp/fQX+LN7AVM2shsgfVGSw
-         nUD+4RJCfNoTesi2jodzCQLGkOjBlpp+DbHjVbWsFcjwTu9nZrgAjfqBGr7+7/6tMo
-         Kq/+jImHAPmMA==
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20201215072850.3171650-1-kuba@kernel.org>
-References: <20201215072850.3171650-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20201215072850.3171650-1-kuba@kernel.org>
-X-PR-Tracked-Remote: https://lore.kernel.org/linux-next/20201126162248.7e7963fe@canb.auug.org.au/ mm
-X-PR-Tracked-Commit-Id: efd5a1584537698220578227e6467638307c2a0b
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: d635a69dd4981cc51f90293f5f64268620ed1565
-Message-Id: <160806803833.7181.2292709187456512920.pr-tracker-bot@kernel.org>
-Date:   Tue, 15 Dec 2020 21:33:58 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, axboe@kernel.dk, sfrench@samba.org,
-        ebiederm@xmission.com, akpm@linux-foundation.org
+        id S1729555AbgLOVmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 16:42:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727704AbgLOVl4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 16:41:56 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00144C061793;
+        Tue, 15 Dec 2020 13:41:15 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id v3so20683599ilo.5;
+        Tue, 15 Dec 2020 13:41:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BfYn8DGU5Ik+Q43fVNmVww3bvYgsCwYRmFLcnRPRj8k=;
+        b=FKGx8rFEWCW+9/UKRona4eLvvD++Tq9eNRiBWLPRpubiU1m2VIUFhjW9MWHfM4tAMk
+         DGpee1/dI1k/wZk1GzN5Xkvg4+Bl5iATG0Vije5Ie/oCJ8h3y+SiB0j+qN1Mt69d9hVn
+         AI+VHW2GT5ggscs4i3cIgTGBLNlZQoQ/goIsE971SW/KLFljuoD7CGNZUuPbupi8BX7O
+         vHXK1VTbX11QO1LcigOTPwNez6Mld1mP+kT8xK++N3aVnkMAwwlmy2LoJybP0UAJxTrA
+         9TaN/eVml0auGW7/ztxaUs4eJC4KMg2sWqBPr2evamqCebhpBDO76KiwZKiOQqtoOL0K
+         /tAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BfYn8DGU5Ik+Q43fVNmVww3bvYgsCwYRmFLcnRPRj8k=;
+        b=Z3f2YxiSQxRfpX5HTwob+CgsTvb2WFHGUZFgmMVyQMUBF/YwGLFUAAxdj6+YYSia99
+         TS4tguFmcl+WPP5SOc8L3KTqPOjs4UtgR7Ns/w4BvZB/nbrwpSmRHHk0yNYwTCPdPLTP
+         EQZnHZbVcoOOo8soeqfyvrx1UGLVwrTs3p3890KszlKC3D93ccgkOu5kxk3PDx+FFeHU
+         5fJ1tIUTmW22cdelap4HL/qYMCnIw8ykKCO+QSDD0Y81Om70rFVUkosmwRBprDODqS0j
+         8lg1w6UCOvvnaHdz5TRQy3C51yExUYXcpi3GQV6B0uWQa7SEEz2JMjsOV+tB47bRqtB7
+         LSyQ==
+X-Gm-Message-State: AOAM531+MpzhryHstNYSC5AdTjqRAs8DHWbxfEBSyu2P/s4H/xfovjgZ
+        AFVvgxEuFfetj7qI1se63OCza9/0PpoxZa4rjfc=
+X-Google-Smtp-Source: ABdhPJzNEl/wP81uX2FwXzXEtwkLXQMES101c8oIQD3SdttW6b9LdHDGKSMBE5funAeTxtu8DnBynnhg7mIGTDwOaGY=
+X-Received: by 2002:a92:730d:: with SMTP id o13mr41655353ilc.95.1608068475138;
+ Tue, 15 Dec 2020 13:41:15 -0800 (PST)
+MIME-Version: 1.0
+References: <20201214214352.198172-1-saeed@kernel.org> <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
+ <608505778d76b1b01cb3e8d19ecda5b8578f0f79.camel@kernel.org>
+ <CAKgT0UfEsd0hS=iJTcVc20gohG0WQwjsGYOw1y0_=DRVbhb1Ng@mail.gmail.com> <ecad34f5c813591713bb59d9c5854148c3d7f291.camel@kernel.org>
+In-Reply-To: <ecad34f5c813591713bb59d9c5854148c3d7f291.camel@kernel.org>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 15 Dec 2020 13:41:04 -0800
+Message-ID: <CAKgT0UfTOqS9PBeQFexyxm7ytQzdj0j8VMG71qv4+Vn6koJ5xQ@mail.gmail.com>
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Mon, 14 Dec 2020 23:28:50 -0800:
+On Tue, Dec 15, 2020 at 12:35 PM Saeed Mahameed <saeed@kernel.org> wrote:
+>
+> On Tue, 2020-12-15 at 11:12 -0800, Alexander Duyck wrote:
+> > On Mon, Dec 14, 2020 at 10:15 PM Saeed Mahameed <saeed@kernel.org>
+> > wrote:
+> > > On Mon, 2020-12-14 at 17:53 -0800, Alexander Duyck wrote:
+> > > > On Mon, Dec 14, 2020 at 1:49 PM Saeed Mahameed <saeed@kernel.org>
+> > > > wrote:
+> > > > > Hi Dave, Jakub, Jason,
+> > > > >
+> > > > > This series form Parav was the theme of this mlx5 release
+> > > > > cycle,
+> > > > > we've been waiting anxiously for the auxbus infrastructure to
+> > > > > make
+> > > > > it into
+> > > > > the kernel, and now as the auxbus is in and all the stars are
+> > > > > aligned, I
+> > > > > can finally submit this V2 of the devlink and mlx5 subfunction
+> > > > > support.
+> > > > >
+> > > > > Subfunctions came to solve the scaling issue of virtualization
+> > > > > and switchdev environments, where SRIOV failed to deliver and
+> > > > > users
+> > > > > ran
+> > > > > out of VFs very quickly as SRIOV demands huge amount of
+> > > > > physical
+> > > > > resources
+> > > > > in both of the servers and the NIC.
+> > > > >
+> > > > > Subfunction provide the same functionality as SRIOV but in a
+> > > > > very
+> > > > > lightweight manner, please see the thorough and detailed
+> > > > > documentation from Parav below, in the commit messages and the
+> > > > > Networking documentation patches at the end of this series.
+> > > > >
+> > > >
+> > > > Just to clarify a few things for myself. You mention
+> > > > virtualization
+> > > > and SR-IOV in your patch description but you cannot support
+> > > > direct
+> > > > assignment with this correct? The idea here is simply logical
+> > > > partitioning of an existing network interface, correct? So this
+> > > > isn't
+> > > > so much a solution for virtualization, but may work better for
+> > > > containers. I view this as an important distinction to make as
+> > > > the
+> > >
+> > > at the current state yes, but the SF solution can be extended to
+> > > support direct assignment, so this is why i think SF solution can
+> > > do
+> > > better and eventually replace SRIOV.
+> >
+> > My only real concern is that this and mediated devices are
+> > essentially
+> > the same thing. When you start making this work for direct-assignment
+> > the only real difference becomes the switchdev and devlink
+> > interfaces.
+>
+> not just devlink and switchdev, auxbus was also introduced to
+> standardize some of the interfaces.
 
-> https://lore.kernel.org/linux-next/20201126162248.7e7963fe@canb.auug.org.au/ mm
+The auxbus is just there to make up for the fact that there isn't
+another bus type for this though. I would imagine otherwise this would
+be on some sort of platform bus.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d635a69dd4981cc51f90293f5f64268620ed1565
+> > Basically this is netdev specific mdev versus the PCIe specific mdev.
+> >
+>
+> SF is not netdev specific mdev .. :/
 
-Thank you!
+I agree it is not. However there are just a few extensions to it. What
+I would really like to see is a solid standardization of what this is.
+Otherwise the comparison is going to be made. Especially since a year
+ago Mellanox was pushing this as an mdev type interface. There is more
+here than just mdev, however my concern is that we may be also losing
+some of the advantages of mdev.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+It would be much easier for me to go along with this if we had more
+than one vendor pushing it. My concern is that this is becoming
+something that may end up being vendor specific.
+
+> > > also many customers are currently using SRIOV with containers to
+> > > get
+> > > the performance and isolation features since there was no other
+> > > options.
+> >
+> > There were, but you hadn't implemented them. The fact is the approach
+> > Intel had taken for that was offloaded macvlan.
+> >
+>
+> offloaded macvlan is just a macvlan with checksum/tso and gro.
+>
+> macvlan can't provide RDMA, TC offloads, ethtool steering, PTP, vdpa
+
+Agreed. I have already acknowledged that macvlan couldn't meet the
+needs for all use cases. However at the same time it provides a
+consistent interface regardless of vendors.
+
+If we decide to go with the vendor specific drivers for subfunctions
+that is fine, however I see that going down the same path as SR-IOV
+and ultimately ending in obscurity since I don't see many being
+willing to adopt it.
+
+> ...
+> our SF provides the same set of features a VF can provide
+
+That is all well and good. However if we agree that SR-IOV wasn't done
+right saying that you are spinning up something that works just like
+SR-IOV isn't all that appealing, is it?
+
+> > I think the big thing we really should do if we are going to go this
+> > route is to look at standardizing what the flavours are that get
+> > created by the parent netdevice. Otherwise we are just creating the
+> > same mess we had with SRIOV all over again and muddying the waters of
+> > mediated devices.
+> >
+>
+> yes in the near future we will be working on auxbus interfaces for
+> auto-probing and user flavor selection, this is a must have feature for
+> us.
+
+I would take this one step further. If we are going to have flavours
+maybe we should have interfaces pre-defined that are vendor agnostic
+that can represent the possible flavors. Basically an Ethernet
+interface for that case, and RDMA interface for that case and so on.
+It limits what functionality can be exposed, however it frees up the
+containers and/or guests to work on whatever NIC you want as long as
+it supports that interface.
+
+> > > > first thing that came to mind when I read this was mediated
+> > > > devices
+> > > > which is similar, but focused only on the virtualization case:
+> > > > https://www.kernel.org/doc/html/v5.9/driver-api/vfio-mediated-device.html
+> > > >
+> > > > > Parav Pandit Says:
+> > > > > =================
+> > > > >
+> > > > > This patchset introduces support for mlx5 subfunction (SF).
+> > > > >
+> > > > > A subfunction is a lightweight function that has a parent PCI
+> > > > > function on
+> > > > > which it is deployed. mlx5 subfunction has its own function
+> > > > > capabilities
+> > > > > and its own resources. This means a subfunction has its own
+> > > > > dedicated
+> > > > > queues(txq, rxq, cq, eq). These queues are neither shared nor
+> > > > > stealed from
+> > > > > the parent PCI function.
+> > > >
+> > > > Rather than calling this a subfunction, would it make more sense
+> > > > to
+> > > > call it something such as a queue set? It seems like this is
+> > > > exposing
+> > > > some of the same functionality we did in the Intel drivers such
+> > > > as
+> > > > ixgbe and i40e via the macvlan offload interface. However the
+> > > > ixgbe/i40e hardware was somewhat limited in that we were only
+> > > > able to
+> > > > expose Ethernet interfaces via this sort of VMQ/VMDQ feature, and
+> > > > even
+> > > > with that we have seen some limitations to the interface. It
+> > > > sounds
+> > > > like you are able to break out RDMA capable devices this way as
+> > > > well.
+> > > > So in terms of ways to go I would argue this is likely better.
+> > >
+> > > We've discussed this thoroughly on V0, the SF solutions is closer
+> > > to a
+> > > VF than a VMDQ, this is not just a set of queues.
+> > >
+> > > https://lore.kernel.org/linux-rdma/421951d99a33d28b91f2b2997409d0c97fa5a98a.camel@kernel.org/
+> >
+> > VMDq is more than just a set of queues. The fact is it is a pool of
+> > resources that get created to handle the requests for a specific VM.
+> > The extra bits that are added here are essentially stuff that was
+> > required to support mediated devices.
+> >
+>
+> VMDq pools are managed by the driver and only logically isolated in the
+> kernel, SFs has no shared pool for transport resources (queues), SFs
+> have their own isolated steering domains, processing engines, and HW
+> objects, exactly like a VF.
+
+You are describing your specific implementation. That may not apply to
+others. What you are defining as the differences of VMDq and SR-IOV
+are not the same as other vendors.
+
+You are essentially arguing implementation semantics, if it is
+configured by the driver or firmware it doesn't really make any
+difference. Being fully isolated versus only logically isolated only
+really matters in terms of direct assignment. In the grand scheme of
+things the only real difference between SR-IOV and VMDq is the
+spawning of the PCIe device with its own BAR to access the resources.
+Isolating the queues to their own 4K bounded subset of a BAR is pretty
+straightforward and I assume that and the firmware is what is giving
+you most of your isolation in this case.
+
+> > > > However
+> > > > one downside is that we are going to end up seeing each
+> > > > subfunction
+> > > > being different from driver to driver and vendor to vendor which
+> > > > I
+> > > > would argue was also one of the problems with SR-IOV as you end
+> > > > up
+> > > > with a bit of vendor lock-in as a result of this feature since
+> > > > each
+> > > > vendor will be providing a different interface.
+> > > >
+> > >
+> > > I disagree, SFs are tightly coupled with switchdev model and
+> > > devlink
+> > > functions port, they are backed with the a well defined model, i
+> > > can
+> > > say the same about sriov with switchdev mode, this sort of vendor
+> > > lock-
+> > > in issues is eliminated when you migrate to switchdev mode.
+> >
+> > What you are talking about is the backend. I am talking about what is
+> > exposed to the user. The user is going to see a Mellanox device
+> > having
+> > to be placed into their container in order to support this. One of
+> > the
+> > advantages of the Intel approach was that the macvlan interface was
+> > generic so you could have an offloaded interface or not and the user
+> > wouldn't necessarily know. The offload could be disabled and the user
+> > would be none the wiser as it is moved from one interface to another.
+> > I see that as a big thing that is missing in this solution.
+> >
+>
+> You are talking about the basic netdev users, Sure there are users who
+> would want a more generic netdev, so yes. but most of my customers are
+> not like that, they want vdpa/rdma and heavy netdev offload such as
+> encap/decap/crypto and driver xdp in their containers, the SF approach
+> will make more sense to them than sriov and VMDq.
+
+I am talking about my perspective. From what I have seen, one-off
+features that are only available from specific vendors are a pain to
+deal with and difficult to enable when you have to support multiple
+vendors within your ecosystem. What you end up going for is usually
+the lowest common denominator because you ideally want to be able to
+configure all your devices the same and have one recipe for setup.
+
+I'm not saying you cannot enable those features. However at the same
+time I am saying it would be nice to have a vendor neutral way of
+dealing with those if we are going to support SF, ideally with some
+sort of software fallback that may not perform as well but will at
+least get us the same functionality.
+
+I'm trying to remember which netdev conference it was. I referred to
+this as a veth switchdev offload when something like this was first
+brought up. The more I think about it now it would almost make more
+sense to have something like that as a flavor. The way I view it we
+have a few different use cases floating around which will have
+different needs. My thought is having a standardized interface that
+could address those needs would be a good way to go for this as it
+would force everyone to come together and define a standardized
+feature set that all of the vendors would want to expose.
+
+> > > > > When subfunction is RDMA capable, it has its own QP1, GID table
+> > > > > and
+> > > > > rdma
+> > > > > resources neither shared nor stealed from the parent PCI
+> > > > > function.
+> > > > >
+> > > > > A subfunction has dedicated window in PCI BAR space that is not
+> > > > > shared
+> > > > > with ther other subfunctions or parent PCI function. This
+> > > > > ensures
+> > > > > that all
+> > > > > class devices of the subfunction accesses only assigned PCI BAR
+> > > > > space.
+> > > > >
+> > > > > A Subfunction supports eswitch representation through which it
+> > > > > supports tc
+> > > > > offloads. User must configure eswitch to send/receive packets
+> > > > > from/to
+> > > > > subfunction port.
+> > > > >
+> > > > > Subfunctions share PCI level resources such as PCI MSI-X IRQs
+> > > > > with
+> > > > > their other subfunctions and/or with its parent PCI function.
+> > > >
+> > > > This piece to the architecture for this has me somewhat
+> > > > concerned. If
+> > > > all your resources are shared and you are allowing devices to be
+> > >
+> > > not all, only PCI MSIX, for now..
+> >
+> > They aren't shared after you partition them but they are coming from
+> > the same device. Basically you are subdividing the BAR2 in order to
+> > generate the subfunctions. BAR2 is a shared resource in my point of
+> > view.
+> >
+>
+> Sure, but it doesn't host any actual resources, only the communication
+> channel with the HW partition, so other than the BAR and the msix the
+> actual HW resources, steering pipelines, offloads and queues are totlay
+> isolated and separated.
+
+I understand what you are trying to say, however this is semantics
+specific to the implementation. Ultimately you are having to share the
+function.
+
+> > > > created incrementally you either have to pre-partition the entire
+> > > > function which usually results in limited resources for your base
+> > > > setup, or free resources from existing interfaces and
+> > > > redistribute
+> > > > them as things change. I would be curious which approach you are
+> > > > taking here? So for example if you hit a certain threshold will
+> > > > you
+> > > > need to reset the port and rebalance the IRQs between the various
+> > > > functions?
+> > > >
+> > >
+> > > Currently SFs will use whatever IRQs the PF has pre-allocated for
+> > > itself, so there is no IRQ limit issue at the moment, we are
+> > > considering a dynamic IRQ pool with dynamic balancing, or even
+> > > better
+> > > us the IMS approach, which perfectly fits the SF architecture.
+> > > https://patchwork.kernel.org/project/linux-pci/cover/1568338328-22458-1-git-send-email-megha.dey@linux.intel.com/
+> >
+> > When you say you are using the PF's interrupts are you just using
+> > that
+> > as a pool of resources or having the interrupt process interrupts for
+> > both the PF and SFs? Without IMS you are limited to 2048 interrupts.
+> > Moving over to that would make sense since SF is similar to mdev in
+> > the way it partitions up the device and resources.
+> >
+>
+> Yes moving to IMS is on the top of our priorities.
+>
+> > > for internal resources the are fully isolated (not shared) and
+> > > they are internally managed by FW exactly like a VF internal
+> > > resources.
+> >
+> > I assume by isolated you mean they are contained within page aligned
+> > blocks like what was required for mdev?
+>
+> I mean they are isolated and abstracted in the FW, we don't really
+> expose any resource directly to the BAR. the BAR is only used for
+> communicating with the device, so VF and SF will work exactly the same
+> the only difference is where they get their BAR  and offsets from,
+> everything else is just similar.
+
+I think where you and I differ is our use of the term "resource". I
+would consider the address space a "resource", while you argue that
+the resources are hidden behind the BAR.
+
+I agree with you that the firmware should be managing most of the
+resources in the device. So it isn't surprising that it would be
+splitting them up and then dolling out pieces as needed to put
+together a subfunction.
