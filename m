@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C8DC2DA6BD
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 04:24:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E102DA6C8
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 04:28:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727102AbgLODX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 22:23:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44882 "EHLO mail.kernel.org"
+        id S1727309AbgLOD2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 22:28:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45494 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726883AbgLODXo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 22:23:44 -0500
-Date:   Mon, 14 Dec 2020 19:23:03 -0800
+        id S1727051AbgLOD1x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 22:27:53 -0500
+Date:   Mon, 14 Dec 2020 19:27:12 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608002584;
-        bh=+EZRYS4aFLmrPikE8qjt9KpGXsnXxr6gnk0oUwx+/bg=;
+        s=k20201202; t=1608002833;
+        bh=kHwLA/GnKkP/SrR83tgTK3OtDgIcQxKEhaqD5lZPNEo=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ec5a8SWXJnnAC5kMecD8fHM8+bfqpQEd8Nxu7kNEIX8l+fvxOhSlQ2c4rmKXAGxm5
-         f1IacPtOdQlAjGA3A5toPhgPtoddeTyH5u5uXfwyMN83UU6FeLcawiMmm95Uz/priq
-         WDuIKVduz1WIXuLPaog+hKM4qkzxBTCnd2yKfov3YYoHX8l6R78knEM6bFF3d4ITxi
-         JUdgBjpwZ7irvJM5Gx5KRKMbCyDqU0d5V6frfc6iQrDgaiYMVIEt+QIaBICQZzNMeB
-         +LuBk/8IEZCfp86pEp0hz6a3ttxMCASiLNdF4yKNjUBB6rGwIY+7e1BjfC7PoAYg/e
-         pgag/xiMMrmVA==
+        b=O5slQrYJgRaPxgALLKp+uWYkllptsfQFAgNYpnYuxg7yD2gvjfQn/ee0o3NOarHp5
+         m5mJih65qoG12do5eTE3popRnFcePaoJ/BINtFUI9NBaMWjFaH51q99tLut9bGNzHi
+         ipQffgv7sWuBq5B7dPpX1tTs9VbMn4lKNUPE74uw+U2Ji1qkNO0dLjGn4y01AJMueF
+         +22Jt9HtaBuGaUpFPk7YWZN9I6/6HfLKlsiFs755FpCAdp31R0wlLoyt6DKKg2mAde
+         3Zt42LEERd9jqxRipiqbolBHmRcdT4RAR3nPbCkfcMeyOieZ0X8Er7KBmTcQmyxXqe
+         PeBKPgNqjUP2Q==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Geoff Levand <geoff@infradead.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Evgeniy Polyakov <zbr@ioremap.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net/connector: Add const qualifier to cb_id
-Message-ID: <20201214192303.32a38c7a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <71249d9e-ab8e-ee81-0ea2-6533e6126c5b@infradead.org>
-References: <71249d9e-ab8e-ee81-0ea2-6533e6126c5b@infradead.org>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/4] net: avoid indirect calls in dst
+ functions
+Message-ID: <20201214192712.586f4ddd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201211233340.1503242-1-brianvv@google.com>
+References: <20201211233340.1503242-1-brianvv@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Dec 2020 18:47:01 -0800 Geoff Levand wrote:
-> The connector driver never modifies any cb_id passed to it, so add a const
-> qualifier to those arguments so callers can declare their struct cb_id as=
- a
-> constant object.
->=20
-> Fixes build warnings like these when passing a constant struct cb_id:
->=20
->   warning: passing argument 1 of =E2=80=98cn_add_callback=E2=80=99 discar=
-ds =E2=80=98const=E2=80=99 qualifier from pointer target
->=20
-> Signed-off-by: Geoff Levand <geoff@infradead.org>
+On Fri, 11 Dec 2020 23:33:36 +0000 Brian Vazquez wrote:
+> From: brianvv <brianvv@google.com>
 
-This does not apply to net-next. Please rebase against:
+We'd prefer you to use your normal name rather than just "brianvv".
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
+> Use of the indirect call wrappers in some dst related functions for the
+> ipv6/ipv4 case. This is a small improvent for CONFIG_RETPOLINE=y
+
+Any numbers you can provide?
+
