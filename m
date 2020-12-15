@@ -2,91 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E85E02DA65F
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 03:42:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDB312DA64C
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 03:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727282AbgLOCYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Dec 2020 21:24:13 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:59811 "EHLO ozlabs.org"
+        id S1727384AbgLOCgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Dec 2020 21:36:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49728 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727175AbgLOCXt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Dec 2020 21:23:49 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Cw29Q0XTWz9s1l;
-        Tue, 15 Dec 2020 13:23:06 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1607998987;
-        bh=eId5oZC52tK4KiejMx9Sb2FQbEe9Ct3l7rQSdlOZqZI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=B+GwPaLP+AS428yj6TRvCsk23N31ZI061I9CDIiRXm2p9xXO//VB5W6EL5EYWEzKl
-         WlA71rSp7RINIqr5rMSf5VbjcOgwTvhmxGzUtSD/6Pb/gTVLwgTcuQzR5shjuXwHJS
-         dsMJNBoGdu29sGGeEAFQenMykY3cHb1tDSGoSniDOE5PMhVjnWkxTwOjQYTyfAGsfm
-         kwx13YQkyuQmJTIkS5DZ5bp2GOyLOri4fkNuHIEHsnEXwQ1SQmEtB84yJh5bb0DzFR
-         GaeCnqCO/IyyNcsvW9uL/RL/nmuNwH4zii0DWypiK9KEqcN8PHxJby60wcqwO4xH+U
-         BkQePURGuMMjQ==
-Date:   Tue, 15 Dec 2020 13:23:05 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Shakeel Butt <shakeelb@google.com>
-Subject: Re: linux-next: manual merge of the akpm-current tree with the
- bpf-next tree
-Message-ID: <20201215132305.5f5a1c2b@canb.auug.org.au>
-In-Reply-To: <20201214180629.4fee48ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201204202005.3fb1304f@canb.auug.org.au>
-        <20201215072156.1988fabe@canb.auug.org.au>
-        <20201215012943.GA3079589@carbon.DHCP.thefacebook.com>
-        <20201214174021.2dfc2fbd99ca3e72b3e4eb02@linux-foundation.org>
-        <20201214180629.4fee48ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1728206AbgLOCfs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Dec 2020 21:35:48 -0500
+Date:   Mon, 14 Dec 2020 18:26:50 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607999211;
+        bh=67v8avezuO6PXt9ia096cwPmSQJVbdmQgsBlIUX3wXM=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FvLjZxCvC0ixzlpWgWcHZwcnUqMZbaLIcftfBh+vcUoXrHExiTUtsKxURDk3u0L6/
+         lJPY9Ov6tJmi5owigwMxEPeREhbdTnvoaY5EtnpHpZN+34MGwXaDbOA94PB1nwQMmQ
+         eFV5G2ooMbiHlseZoEIWx8fc9qbtKSTYw0ADwbxztr7NwvA0yV91oO97gVGYvmauVI
+         wrXOULAwRvCUmVFr8i8o1ByiszhbrDokz/x4LYIt6jPqwppxRlQeEZRBAi0/rXW7LF
+         764b8gWPX+4sxnv1ro22iEFVB1qzwa8byD+LDbnLGG9zVMdjk8d827E47hiZ1yG3y5
+         x4n1S6ddyf8sw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Louis Peens <louis.peens@netronome.com>,
+        netdev@vger.kernel.org, oss-drivers@netronome.com,
+        wenxu <wenxu@ucloud.cn>
+Subject: Re: [PATCH net] nfp: do not send control messages during cleanup
+Message-ID: <20201214182650.4d03cc7c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201211092738.3358-1-simon.horman@netronome.com>
+References: <20201211092738.3358-1-simon.horman@netronome.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Y._2ICox=dBWFXc9VQNNpAE";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Y._2ICox=dBWFXc9VQNNpAE
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, 11 Dec 2020 10:27:38 +0100 Simon Horman wrote:
+> On cleanup the txbufs are freed before app cleanup. But app clean-up may
+> result in control messages due to use of common control paths. There is no
+> need to clean-up the NIC in such cases so simply discard requests. Without
+> such a check a NULL pointer dereference occurs.
+> 
+> Fixes: a1db217861f3 ("net: flow_offload: fix flow_indr_dev_unregister path")
+> Cc: wenxu <wenxu@ucloud.cn>
+> Signed-off-by: Simon Horman <simon.horman@netronome.com>
+> Signed-off-by: Louis Peens <louis.peens@netronome.com>
 
-Hi Jakub,
-
-On Mon, 14 Dec 2020 18:06:29 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
->
-> AFAIU all we can do is tell Linus about the merge issue, and point=20
-> at Stephen's resolution.
-
-This is the correct response.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Y._2ICox=dBWFXc9VQNNpAE
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/YHgkACgkQAVBC80lX
-0Gw4pAgAi4awFlvffFlzIO8jDZlNVtxte5b/dM4GOGRk0QS/qSUswgO4sWKgY53a
-6gWS8iQ2QmS9kiwUTU2jcojiq23YzWPQuaiw1C/DiZTg5ALZFFTrgy3ne3svvTh6
-MGkwPOo5HxL5eDeCDA+IU2jVMaqOCfKEVQdMnOY1i5m5OVcVYVzd2Bp/HxCHr07H
-q9+S052sbcdgBQcm/yUJqwZFn4pxCk8Xs61YqX5oq/9hGJbzB5I4SMdSwuUbo6GO
-f6UIobubXpEHbRhAc2omI7gD+3Vf8XxdVitRllZKIXaYXSO4sEAvxXcCMCcKZtZQ
-TNipvxwef437z5RCnfAxyBkRGBmy/A==
-=AN7C
------END PGP SIGNATURE-----
-
---Sig_/Y._2ICox=dBWFXc9VQNNpAE--
+Hm. We can apply this as a quick fix, but I'd think that app->stop
+(IIRC that's the callback) is responsible for making sure that
+everything gets shut down and no more cmsgs can be generated after
+ctrl vNIC goes down. Perhaps some code needs to be reshuffled between
+init/clean and start/stop for flower? WDYT?
