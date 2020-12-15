@@ -2,67 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 664882DB3C3
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 19:31:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2CCC2DB3DC
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 19:38:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731592AbgLOSac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 13:30:32 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:49342 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731330AbgLOSaY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 13:30:24 -0500
-X-Greylist: delayed 360 seconds by postgrey-1.27 at vger.kernel.org; Tue, 15 Dec 2020 13:30:24 EST
-Received: from [192.168.254.6] (unknown [50.46.158.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id E2A4A13C2B0;
-        Tue, 15 Dec 2020 10:23:33 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com E2A4A13C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1608056615;
-        bh=Rz9XVqzoDiWY4qxrJfScJDMVgdjjFU7rO5iNL7mHVFE=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=OxBC8b8E2ZapsnoHI686TBDWUQyyippu8dpvVVT38aCwUDQctQerrE9M8k8SvwOk/
-         0BOz0fkSABRn9x3dYL+Udq8pzMdeJPOQrJTlJN4Xxn7EagWl3KGXMDhjENo36zxXeY
-         D8pI+00hF8hwAbJ5Vv1QjNLIHxLfst5LDyocMOXY=
-Subject: Re: [PATCH 0/3] mac80211: Trigger disconnect for STA during recovery
-To:     Youghandhar Chintala <youghand@codeaurora.org>,
-        johannes@sipsolutions.net, ath10k@lists.infradead.org
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuabhs@chromium.org,
-        dianders@chromium.org, briannorris@chromium.org,
-        pillair@codeaurora.org
-References: <20201215172113.5038-1-youghand@codeaurora.org>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <18dfa52b-5edd-f737-49c9-f532c1c10ba2@candelatech.com>
-Date:   Tue, 15 Dec 2020 10:23:33 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1731350AbgLOSha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 13:37:30 -0500
+Received: from mga18.intel.com ([134.134.136.126]:40679 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731688AbgLOShH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 13:37:07 -0500
+IronPort-SDR: +NrQmDAeJ02N1/Yhj/jqksnSO5syFREkOccieS/yfPFgvyWsT5Vm15uSf5ZaQ2LalHxDj250QO
+ SnmDtU6CKAKg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9836"; a="162678271"
+X-IronPort-AV: E=Sophos;i="5.78,422,1599548400"; 
+   d="scan'208";a="162678271"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2020 10:36:26 -0800
+IronPort-SDR: hH4q2KvN5MqJXccttH8AX4REOn8lBVyFfnCOmAodejaA9cMt9BSg3bziX7FpUGSf7tPnXmJc5X
+ 27orHkJMgcFg==
+X-IronPort-AV: E=Sophos;i="5.78,422,1599548400"; 
+   d="scan'208";a="412085807"
+Received: from sneftin-mobl.ger.corp.intel.com (HELO [10.214.238.87]) ([10.214.238.87])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2020 10:36:20 -0800
+Subject: Re: Fw: [External] Re: [PATCH v4 0/4] Improve s0ix flows for systems
+ i219LM
+To:     "Limonciello, Mario" <Mario.Limonciello@dell.com>,
+        Mark Pearson <markpearson@lenovo.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        David Miller <davem@davemloft.net>,
+        Aaron Ma <aaron.ma@canonical.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Stefan Assmann <sassmann@redhat.com>,
+        "darcari@redhat.com" <darcari@redhat.com>,
+        "Shen, Yijun" <Yijun.Shen@dell.com>,
+        "Yuan, Perry" <Perry.Yuan@dell.com>,
+        "anthony.wong@canonical.com" <anthony.wong@canonical.com>,
+        "Ruinskiy, Dima" <dima.ruinskiy@intel.com>,
+        "Efrati, Nir" <nir.efrati@intel.com>,
+        "Lifshits, Vitaly" <vitaly.lifshits@intel.com>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>
+References: <20201214153450.874339-1-mario.limonciello@dell.com>
+ <80862f70-18a4-4f96-1b96-e2fad7cc2b35@redhat.com>
+ <PS2PR03MB37505A15D3C9B7505D679D7BBDC70@PS2PR03MB3750.apcprd03.prod.outlook.com>
+ <ae436f90-45b8-ba70-be57-d17641c4f79d@lenovo.com>
+ <18c1c152-9298-a4c5-c4ed-92c9fd91ea8a@intel.com>
+ <DM6PR19MB2636FA6E479914432036987BFAC60@DM6PR19MB2636.namprd19.prod.outlook.com>
+From:   "Neftin, Sasha" <sasha.neftin@intel.com>
+Message-ID: <9bac261e-0efb-fe07-7c3e-6c4ff156bb67@intel.com>
+Date:   Tue, 15 Dec 2020 20:36:18 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-In-Reply-To: <20201215172113.5038-1-youghand@codeaurora.org>
+In-Reply-To: <DM6PR19MB2636FA6E479914432036987BFAC60@DM6PR19MB2636.namprd19.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-MW
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15/20 9:21 AM, Youghandhar Chintala wrote:
-> From: Rakesh Pillai <pillair@codeaurora.org>
+On 12/15/2020 19:20, Limonciello, Mario wrote:
 > 
-> Currently in case of target hardware restart ,we just reconfig and
-> re-enable the security keys and enable the network queues to start
-> data traffic back from where it was interrupted.
+>>> Absolutely - I'll ask them to look into this again.
+>>>
+>> we need to explain why on Windows systems required 1s and on Linux
+>> systems up to 2.5s - otherwise it is not reliable approach - you will
+>> encounter others buggy system.
+>> (ME not POR on the Linux systems - is only one possible answer)
+> 
+> Sasha: In your opinion does this information need to block the series?
+> or can we follow up with more changes later on as more information becomes
+> available?
+> 
+I do not think this should block the patches series.
+> For now v5 of the series extends the timeout but at least makes a mention
+> that there appears to be a firmware bug when more than 1 second is taken.
+> 
 
-Are there any known mac80211 radios/drivers that *can* support seamless restarts?
-
-If not, then just could always enable this feature in mac80211?
-
-Thanks,
-Ben
-
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
