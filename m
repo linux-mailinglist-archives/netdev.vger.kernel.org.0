@@ -2,126 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6110F2DADEF
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 14:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5A92DAE01
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 14:31:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727844AbgLONYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 08:24:07 -0500
-Received: from mga11.intel.com ([192.55.52.93]:26023 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727053AbgLONX6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 08:23:58 -0500
-IronPort-SDR: D1TB2IlYX2ukQomyo9Fp+4yToc+A++0HKSVI3mTguG234eCaSgXyr8OfGdT35qpJVIwcZ9NOdX
- G3qe+hMHpy3g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9835"; a="171364553"
-X-IronPort-AV: E=Sophos;i="5.78,421,1599548400"; 
-   d="scan'208";a="171364553"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2020 05:23:10 -0800
-IronPort-SDR: jYmIOmy2/eGcHbaXjy4lRHBnOB0tckkaipLHd0Uhi2AxjwWMckjQHd0e2mkTAObhyfwBpOvCJb
- mIkGOifN5KUg==
-X-IronPort-AV: E=Sophos;i="5.78,421,1599548400"; 
-   d="scan'208";a="411927717"
-Received: from sneftin-mobl.ger.corp.intel.com (HELO [10.214.238.87]) ([10.214.238.87])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2020 05:23:04 -0800
-Subject: Re: Fw: [External] Re: [PATCH v4 0/4] Improve s0ix flows for systems
- i219LM
-To:     Mark Pearson <markpearson@lenovo.com>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        David Miller <davem@davemloft.net>,
-        Aaron Ma <aaron.ma@canonical.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>,
-        "darcari@redhat.com" <darcari@redhat.com>,
-        "Yijun.Shen@dell.com" <Yijun.Shen@dell.com>,
-        "Perry.Yuan@dell.com" <Perry.Yuan@dell.com>,
-        "anthony.wong@canonical.com" <anthony.wong@canonical.com>,
-        "Ruinskiy, Dima" <dima.ruinskiy@intel.com>,
-        "Efrati, Nir" <nir.efrati@intel.com>,
-        "Lifshits, Vitaly" <vitaly.lifshits@intel.com>,
-        "Neftin, Sasha" <sasha.neftin@intel.com>
-References: <20201214153450.874339-1-mario.limonciello@dell.com>
- <80862f70-18a4-4f96-1b96-e2fad7cc2b35@redhat.com>
- <PS2PR03MB37505A15D3C9B7505D679D7BBDC70@PS2PR03MB3750.apcprd03.prod.outlook.com>
- <ae436f90-45b8-ba70-be57-d17641c4f79d@lenovo.com>
-From:   "Neftin, Sasha" <sasha.neftin@intel.com>
-Message-ID: <18c1c152-9298-a4c5-c4ed-92c9fd91ea8a@intel.com>
-Date:   Tue, 15 Dec 2020 15:23:01 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S1727114AbgLONap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 08:30:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50735 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727038AbgLONaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 08:30:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608038934;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6eeo8Ye6UfGjKYpt3nL8YdwOzf2ER5qXBUTuYett2vM=;
+        b=T9xeyJYWcAfCKebQ3fBak3vXU6EhIAztMVo4+kr2sJ+XmAMRhLo28C8/pYSPE7bEyFusT8
+        ip7vqB377rxWL4iNc4EnqyKcieVfKR6qA3UO8Kv0xiChfGsdxCfWEa7YxSrufnigzL6KbP
+        BnxvREIp6KHaRKg5dv1870D8IwZxhZo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-264-755MRjIwN4uJoYE0aCEFpA-1; Tue, 15 Dec 2020 08:28:50 -0500
+X-MC-Unique: 755MRjIwN4uJoYE0aCEFpA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9742D801817;
+        Tue, 15 Dec 2020 13:28:49 +0000 (UTC)
+Received: from [10.36.113.44] (ovpn-113-44.ams2.redhat.com [10.36.113.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id AACF560861;
+        Tue, 15 Dec 2020 13:28:48 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Maciej Fijalkowski" <maciej.fijalkowski@intel.com>
+Cc:     "Lorenzo Bianconi" <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v5 bpf-next 13/14] bpf: add new frame_length field to the
+ XDP ctx
+Date:   Tue, 15 Dec 2020 14:28:39 +0100
+Message-ID: <38C60760-4F8C-43AC-A5DE-7FAECB65C310@redhat.com>
+In-Reply-To: <170BF39B-894D-495F-93E0-820EC7880328@redhat.com>
+References: <cover.1607349924.git.lorenzo@kernel.org>
+ <0547d6f752e325f56a8e5f6466b50e81ff29d65f.1607349924.git.lorenzo@kernel.org>
+ <20201208221746.GA33399@ranger.igk.intel.com>
+ <96C89134-A747-4E05-AA11-CB6EA1420900@redhat.com>
+ <20201209111047.GB36812@ranger.igk.intel.com>
+ <170BF39B-894D-495F-93E0-820EC7880328@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <ae436f90-45b8-ba70-be57-d17641c4f79d@lenovo.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/14/2020 20:40, Mark Pearson wrote:
-> Thanks Hans
-> 
-> On 14/12/2020 13:31, Mark Pearson wrote:
+
+
+On 9 Dec 2020, at 13:07, Eelco Chaudron wrote:
+
+> On 9 Dec 2020, at 12:10, Maciej Fijalkowski wrote:
+
+<SNIP>
+
+>>>>> +
+>>>>> +		ctx_reg = (si->src_reg == si->dst_reg) ? scratch_reg - 1 :
+>>>>> si->src_reg;
+>>>>> +		while (dst_reg == ctx_reg || scratch_reg == ctx_reg)
+>>>>> +			ctx_reg--;
+>>>>> +
+>>>>> +		/* Save scratch registers */
+>>>>> +		if (ctx_reg != si->src_reg) {
+>>>>> +			*insn++ = BPF_STX_MEM(BPF_DW, si->src_reg, ctx_reg,
+>>>>> +					      offsetof(struct xdp_buff,
+>>>>> +						       tmp_reg[1]));
+>>>>> +
+>>>>> +			*insn++ = BPF_MOV64_REG(ctx_reg, si->src_reg);
+>>>>> +		}
+>>>>> +
+>>>>> +		*insn++ = BPF_STX_MEM(BPF_DW, ctx_reg, scratch_reg,
+>>>>> +				      offsetof(struct xdp_buff, tmp_reg[0]));
+>>>>
+>>>> Why don't you push regs to stack, use it and then pop it back? That 
+>>>> way
+>>>> I
+>>>> suppose you could avoid polluting xdp_buff with tmp_reg[2].
+>>>
+>>> There is no “real” stack in eBPF, only a read-only frame 
+>>> pointer, and as we
+>>> are replacing a single instruction, we have no info on what we can 
+>>> use as
+>>> scratch space.
 >>
+>> Uhm, what? You use R10 for stack operations. Verifier tracks the 
+>> stack
+>> depth used by programs and then it is passed down to JIT so that 
+>> native
+>> asm will create a properly sized stack frame.
 >>
->> ------------------------------------------------------------------------
->> *From:* Hans de Goede <hdegoede@redhat.com>
->> *Sent:* December 14, 2020 13:24
->> *To:* Mario Limonciello <mario.limonciello@dell.com>; Jeff Kirsher
->> <jeffrey.t.kirsher@intel.com>; Tony Nguyen <anthony.l.nguyen@intel.com>;
->> intel-wired-lan@lists.osuosl.org <intel-wired-lan@lists.osuosl.org>;
->> David Miller <davem@davemloft.net>; Aaron Ma <aaron.ma@canonical.com>;
->> Mark Pearson <mpearson@lenovo.com>
->> *Cc:* linux-kernel@vger.kernel.org <linux-kernel@vger.kernel.org>;
->> Netdev <netdev@vger.kernel.org>; Alexander Duyck
->> <alexander.duyck@gmail.com>; Jakub Kicinski <kuba@kernel.org>; Sasha
->> Netfin <sasha.neftin@intel.com>; Aaron Brown <aaron.f.brown@intel.com>;
->> Stefan Assmann <sassmann@redhat.com>; darcari@redhat.com
->> <darcari@redhat.com>; Yijun.Shen@dell.com <Yijun.Shen@dell.com>;
->> Perry.Yuan@dell.com <Perry.Yuan@dell.com>; anthony.wong@canonical.com
->> <anthony.wong@canonical.com>
->> *Subject:* [External] Re: [PATCH v4 0/4] Improve s0ix flows for systems
->> i219LM
->>   
->> Hi All,
->>
-> <snip>
->>
->> ###
->>
->> I've added Mark Pearson from Lenovo to the Cc so that Lenovo
->> can investigate this issue further.
->>
->> Mark, this thread is about an issue with enabling S0ix support for
->> e1000e (i219lm) controllers. This was enabled in the kernel a
->> while ago, but then got disabled again on vPro / AMT enabled
->> systems because on some systems (Lenovo X1C7 and now also X1C8)
->> this lead to suspend/resume issues.
->>
->> When AMT is active then there is a handover handshake for the
->> OS to get access to the ethernet controller from the ME. The
->> Intel folks have checked and the Windows driver is using a timeout
->> of 1 second for this handshake, yet on Lenovo systems this is
->> taking 2 seconds. This likely has something to do with the
->> ME firmware on these Lenovo models, can you get the firmware
->> team at Lenovo to investigate this further ?
-> Absolutely - I'll ask them to look into this again.
-> 
-we need to explain why on Windows systems required 1s and on Linux 
-systems up to 2.5s - otherwise it is not reliable approach - you will 
-encounter others buggy system.
-(ME not POR on the Linux systems - is only one possible answer)
-> We did try to make progress with this previously - but it got a bit
-> stuck and hence the need for these patches....but I believe things may
-> have changed a bit so it's worth trying again
-> 
-> Mark
-> 
-Sasha
+>> From the top of my head I would let know xdp_convert_ctx_access of a
+>> current stack depth and use it for R10 stores, so your scratch space 
+>> would
+>> be R10 + (stack depth + 8), R10 + (stack_depth + 16).
+>
+> Other instances do exactly the same, i.e. put some scratch registers 
+> in the underlying data structure, so I reused this approach. From the 
+> current information in the callback, I was not able to determine the 
+> current stack_depth. With "real" stack above, I meant having a 
+> pop/push like instruction.
+>
+> I do not know the verifier code well enough, but are you suggesting I 
+> can get the current stack_depth from the verifier in the 
+> xdp_convert_ctx_access() callback? If so any pointers?
+
+Maciej any feedback on the above, i.e. getting the stack_depth in 
+xdp_convert_ctx_access()?
+
+>> Problem with that would be the fact that convert_ctx_accesses() 
+>> happens to
+>> be called after the check_max_stack_depth(), so probably stack_depth 
+>> of a
+>> prog that has frame_length accesses would have to be adjusted 
+>> earlier.
+>
+> Ack, need to learn more on the verifier part…
+
+<SNIP>
+
