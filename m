@@ -2,83 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60C0B2DB2AE
-	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7752E2DB2BE
+	for <lists+netdev@lfdr.de>; Tue, 15 Dec 2020 18:37:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731366AbgLORdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 12:33:10 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:46659 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731346AbgLORc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:32:58 -0500
-Received: by mail-ot1-f68.google.com with SMTP id w3so20139147otp.13;
-        Tue, 15 Dec 2020 09:32:42 -0800 (PST)
+        id S1731286AbgLORdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 12:33:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731168AbgLORdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 12:33:33 -0500
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC316C06179C;
+        Tue, 15 Dec 2020 09:32:52 -0800 (PST)
+Received: by mail-pj1-x1041.google.com with SMTP id lb18so1606829pjb.5;
+        Tue, 15 Dec 2020 09:32:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JmNn0//oaLoQtXbQqzmlMo9udtSlRUFo6HHy4TKL3+8=;
+        b=JntupVMH82oBE+fE8rEsYTLlRkEpnlGdWeHpkbiiZvaHVfsvnxXxqOqNrSrFg6sxGe
+         /s67n7ViJY3ypKM+yVvjf2hllczGAtQjvGtJKDCsUXcXzUt9Y+q0YZ8JdDERwQOvHEiT
+         326LhPVkJ866TMII+M1YjRVlL4fWAbI41T4+bg+lQhQKQjCFOEUilQo7c4iOBdt8ZfTW
+         LvhFfLAIILSO/bJ2u6qcfGCLNj4CbDn6N+FMTKZJp7gqGZARoocft5TR6QhXwcv9n2gq
+         ypT0CdZMvwtkkUDeFj+L/QK7klkTWjdyLm9ktlagOQ0XtQJTn7jR+YwxF37Cq/rai8LS
+         4Vrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vRpREWWrDSibjIKmFfLj7IBAo/4P0w9FVJMb1Oijnck=;
-        b=FJIwF6zygKL97uoX4vSZigZThVQaf1dzPpdpUO8koJIrqqahZVfApaYqw2Rl9wNO5F
-         qg088Pd4+fCfwATr0ccUnffT4N0G6CajPzXAQhWAml+0Wn707WJLjR23f/i0papq9iX/
-         jONmC5IiZ52KlWcN7fH5YRFdnoKdciJifFLuWX8M1OEaYLtIsyj//S1SGQzbFfHUU98q
-         lVXm1W5vcE4/QpKroACxDKijY8Dd7V+lQbZ1dtEtie1m+kvKguUh+U/mCwyBYu+hTc5A
-         2JU8tzvlVjl0fWa+qe6HBm+Jp7SMq2go/ovThtE8OGB4bcExjKmkMx13icF2oKYKgqaa
-         Iw0g==
-X-Gm-Message-State: AOAM532AMB43XdiCVvvLzXCr+vxv9zSZbSA+nzJu3qYpDI8abUAuOiDa
-        Eb8PqXw+TecdjHyvSjkPrA==
-X-Google-Smtp-Source: ABdhPJz9svCsyXrZEFs5n8HwMpo8KxwFw8IcHeoxaSibrjcLEv2+XL7MNmEGZ3jylX9nYH8tDpgofw==
-X-Received: by 2002:a9d:3e2:: with SMTP id f89mr18966048otf.278.1608053537462;
-        Tue, 15 Dec 2020 09:32:17 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id d13sm559416oti.74.2020.12.15.09.32.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Dec 2020 09:32:15 -0800 (PST)
-Received: (nullmailer pid 4074677 invoked by uid 1000);
-        Tue, 15 Dec 2020 17:32:14 -0000
-Date:   Tue, 15 Dec 2020 11:32:14 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Joao Pinto <jpinto@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        devicetree@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Johan Hovold <johan@kernel.org>, netdev@vger.kernel.org,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Lars Persson <larper@axis.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>
-Subject: Re: [PATCH 06/25] dt-bindings: net: dwmac: Add Tx/Rx clock sources
-Message-ID: <20201215173214.GA4074624@robh.at.kernel.org>
-References: <20201214091616.13545-1-Sergey.Semin@baikalelectronics.ru>
- <20201214091616.13545-7-Sergey.Semin@baikalelectronics.ru>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JmNn0//oaLoQtXbQqzmlMo9udtSlRUFo6HHy4TKL3+8=;
+        b=HgOB/D+4JDtey+NEySHpqtRgxc/VLvY7k1eQDzx7jRM5zHKq/RH9ua2H3qmjwF0dLm
+         9+zKnDD94k1EksvFVVh765ysGrh8n0sBaFsKl6x4rungUF5bqRjmi4ClK5Om8WZvFa8A
+         wteCvq/p5QYS2gfEs/xoZhq/bKdQmoJ5RfwA/Z8LqHW64AClpayrbj0XsE9+gveHHjYZ
+         Vbzc2GrIMGcJaYOPPL8BYV2q9602ylECj3VTpt4mXEsFrwi8Ndo6SFLr43H2IhJxW68A
+         aLSxu0Tg0j/LjEmXJgsE/kNbJXWUh1JJPKne92JkrrT0Mk+QB+jPg21v5lgl8NwWzpNn
+         A+8w==
+X-Gm-Message-State: AOAM532EAgRz2FZDLiIy7rXwq8Hjrf9rIrQXWp2WJ4alwdsZa4LjA8Yb
+        F+ugo6RJK+2aJG4THZ9segF4Ve6kIC2KHaW6KSE=
+X-Google-Smtp-Source: ABdhPJw/U+RUVN+i+bo86WULer/5hlu3yA0lLBg6tsySkVSqhulPLUiQFtJayzVeGmCr0YIAAX1Hl5/+qbjWZ7j++oQ=
+X-Received: by 2002:a17:90a:c592:: with SMTP id l18mr31179251pjt.228.1608053572361;
+ Tue, 15 Dec 2020 09:32:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201214091616.13545-7-Sergey.Semin@baikalelectronics.ru>
+References: <20201215164315.3666-1-calvin.johnson@oss.nxp.com> <20201215164315.3666-7-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20201215164315.3666-7-calvin.johnson@oss.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 15 Dec 2020 19:33:40 +0200
+Message-ID: <CAHp75VcY2uOirAXGv5kFvHbNfHcZ6-gPsUMTB-_5AuBkHdu-0A@mail.gmail.com>
+Subject: Re: [net-next PATCH v2 06/14] net: mdiobus: Introduce fwnode_mdiobus_register_phy()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, "linux.cj" <linux.cj@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Dec 2020 12:15:56 +0300, Serge Semin wrote:
-> Generic DW *MAC can be connected to an external Tramit and Receive clock
-> generators. Add the corresponding clocks description and clock-names to
-> the generic bindings schema so new DW *MAC-based bindings wouldn't declare
-> its own names of the same clocks.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> ---
->  .../devicetree/bindings/net/snps,dwmac.yaml        | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
+On Tue, Dec 15, 2020 at 6:44 PM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> Introduce fwnode_mdiobus_register_phy() to register PHYs on the
+> mdiobus. From the compatible string, identify whether the PHY is
+> c45 and based on this create a PHY device instance which is
+> registered on the mdiobus.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+...
+
+> +int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+> +                               struct fwnode_handle *child, u32 addr)
+> +{
+> +       struct mii_timestamper *mii_ts;
+> +       struct phy_device *phy;
+> +       const char *cp;
+> +       bool is_c45;
+> +       u32 phy_id;
+> +       int rc;
+
+> +       if (is_of_node(child)) {
+> +               mii_ts = of_find_mii_timestamper(to_of_node(child));
+> +               if (IS_ERR(mii_ts))
+> +                       return PTR_ERR(mii_ts);
+> +       }
+
+Perhaps
+
+               mii_ts = of_find_mii_timestamper(to_of_node(child));
+
+> +
+> +       rc = fwnode_property_read_string(child, "compatible", &cp);
+> +       is_c45 = !(rc || strcmp(cp, "ethernet-phy-ieee802.3-c45"));
+> +
+> +       if (is_c45 || fwnode_get_phy_id(child, &phy_id))
+> +               phy = get_phy_device(bus, addr, is_c45);
+> +       else
+> +               phy = phy_device_create(bus, addr, phy_id, 0, NULL);
+> +       if (IS_ERR(phy)) {
+
+> +               if (mii_ts && is_of_node(child))
+> +                       unregister_mii_timestamper(mii_ts);
+
+if (!IS_ERR_OR_NULL(mii_ts))
+ ...
+
+However it points to the question why unregister() doesn't handle the
+above cases.
+I would expect unconditional call to unregister() here.
+
+> +               return PTR_ERR(phy);
+> +       }
+> +
+> +       if (is_acpi_node(child)) {
+> +               phy->irq = bus->irq[addr];
+> +
+> +               /* Associate the fwnode with the device structure so it
+> +                * can be looked up later.
+> +                */
+> +               phy->mdio.dev.fwnode = child;
+> +
+> +               /* All data is now stored in the phy struct, so register it */
+> +               rc = phy_device_register(phy);
+> +               if (rc) {
+> +                       phy_device_free(phy);
+> +                       fwnode_handle_put(phy->mdio.dev.fwnode);
+> +                       return rc;
+> +               }
+> +
+> +               dev_dbg(&bus->dev, "registered phy at address %i\n", addr);
+> +       } else if (is_of_node(child)) {
+> +               rc = of_mdiobus_phy_device_register(bus, phy, to_of_node(child), addr);
+> +               if (rc) {
+
+> +                       if (mii_ts)
+> +                               unregister_mii_timestamper(mii_ts);
+
+Ditto.
+
+> +                       phy_device_free(phy);
+> +                       return rc;
+> +               }
+> +
+> +               /* phy->mii_ts may already be defined by the PHY driver. A
+> +                * mii_timestamper probed via the device tree will still have
+> +                * precedence.
+> +                */
+
+> +               if (mii_ts)
+> +                       phy->mii_ts = mii_ts;
+
+How is that defined? Do you need to do something with an old pointer?
+
+> +       }
+> +       return 0;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
