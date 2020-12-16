@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED7E2DC3AA
+	by mail.lfdr.de (Postfix) with ESMTP id 7C9A52DC3AB
 	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 17:03:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725838AbgLPQC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 11:02:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54568 "EHLO
+        id S1725868AbgLPQCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 11:02:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725287AbgLPQC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 11:02:28 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E653C0617A7
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 08:01:48 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id o13so26432656lfr.3
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 08:01:47 -0800 (PST)
+        with ESMTP id S1725287AbgLPQCb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 11:02:31 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96845C0617B0
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 08:01:50 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id h205so6106297lfd.5
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 08:01:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :organization;
-        bh=4Nnto5h6ViHFh1w5xiIju4CgEt90/FHtiBfoJMG8QM8=;
-        b=qL3014+aJsw7Zkcald145/2Em6jbAKNL7/LhSmS05YQjGuxn1DYTk7VpLXGsoYoJ9D
-         CmhuMlr/sJgeaPdPpFiWMdmx7KCqcKjs6mmyfWaXTG4wJmscPlYYR1+j7AqhG5yf9wVi
-         KJqqd2MFu8yT1XcGBWkc/F5ck/2OwqKh9VyD8t0Eoq+jcU1bHOqGNrTYNOC2jjesbLRh
-         kcEIhUHFOmZEzZpKAQk7IvYX6LG9lbbk+cymML1ZO3VsozlSrqEW5AC5NmLwxvpzgRIH
-         1atAwa2ywZ7g6NFlugNLUeMuT8NPOt0Ys7wRksSMAOXETu70QKQ3VeMgOXk3zRdvWWJ7
-         Xpow==
+        bh=CDSPPbDzl+GjmvdNHS6ezrzR6soInLlysuZSc+VCHWA=;
+        b=dv2wCrGhzpDFm31ON1omu/hUW0xvkWNSOSxh2b0h/DxOyemILQkLh4wX4COUUdf0aB
+         Ljzp6iYkHl/ir1oczTZAjmyTteYRaKW39oYzCzZLH9qYDK6F+IB1z/y30ZrF5WRapqUJ
+         NpW4Cm2eS+2Y7jmBSZuvNZGAsOm3fBFGUlmQahZVm5oDubQl5igwb9Ler1tKhKFlvpop
+         a1He3Iqqe7pbzIhKhWR0bIslbdKi8ghGgz4t2u5vHFh4F19p42r5CyZoxpOgH8arj0mN
+         CGkyjSzjlFVbvghsNfsyb0GSgpt+2pK5j7U1bYHwKivpBtTwBgncgqBSIJCyLOW3Hi99
+         gJBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:organization;
-        bh=4Nnto5h6ViHFh1w5xiIju4CgEt90/FHtiBfoJMG8QM8=;
-        b=uSmSfUKqNh5wbGQmwSoCpaGybVVXPuSTtOrZkJc+T97U2yiK8ZI93iN0Rx9SMDqmVn
-         6SqbWTkf9rNBx7XGs7OcBMoY/Cm//JWDgUYs1QUL/fZOWQpULwb44sQtEjerJc1cDqdh
-         7SCFt1GVCS08BG7lOvtjN0HnDf8Vm2w5hWn9jRAgM+2pAWDA3k2R38wt0peUrYmBOn1D
-         CjixB68yWwZpXWWGzxg7afQA190MJfJ63tF2z3J/InuP0f+Fta9ukdip+Lt53J77Mcjk
-         mTy3megsS7eq5wuIZaCRneG6L7CKuEhmUyk0zyu29QILlp2FtQTlfZCnlEW2WnPEObOg
-         N5/g==
-X-Gm-Message-State: AOAM53151aQxiDl0ewa8lgvgMPoUWxmEIH8ClVC8W9JM2PSyNNmal7UF
-        ZfgXBf47NuMxD6Y0SFFYhMcenQ==
-X-Google-Smtp-Source: ABdhPJxbPA+HNAWz48kojDTXV0zDVwJLTIfPFzYRjdv096Rnx7G1DplZ1tDb5UVrMLVVF0/X80V4gQ==
-X-Received: by 2002:a19:4008:: with SMTP id n8mr13258166lfa.660.1608134505462;
-        Wed, 16 Dec 2020 08:01:45 -0800 (PST)
+        bh=CDSPPbDzl+GjmvdNHS6ezrzR6soInLlysuZSc+VCHWA=;
+        b=RWbSpiProokXTJfEbQko4DU/lYo39eYehYt6sg9ajv2tA2d4oJw9bPLMIxsvitr10t
+         xGaY5cYXdgZP7c/5qXlDOAmszk1crjMyt4UayVKfb0x7MqIi/OQvK/P2AQdLwEB6o94Q
+         g8sntNfwims/12WXip1jE1K2Eqe0zw58H1CvZQnRJomtQNaZGLr78L2SfZs8ek/E2Tms
+         /KCRr1RClCwr4s+k0kQvxCJ3spnFpKgPzEFBvhR1zY2TjKT0oxVZg3vSdRTkVnDCOAuv
+         qAWMxrkaOV5VwE5H6NwciHPAPWUxm9cfDA34MpxrY4RjOuqdAGc8dRHhcM8iiE40BqY7
+         Oxmw==
+X-Gm-Message-State: AOAM532AWS4Pokpohnu8RgIJvC8kuGk2KByHemK2Nmuz19mGE6y4pc1v
+        GxJay0ZmGhZxdO++Qz1fYT4/p9lxpv1psArl
+X-Google-Smtp-Source: ABdhPJwXJ2oXtakSQdlrgbHrJXe6+iWR5w19ISbvlZc/iX4H54d7cZFvk/ddAAxHfif0je3aDZ8aXg==
+X-Received: by 2002:ac2:4a6f:: with SMTP id q15mr9245882lfp.301.1608134507750;
+        Wed, 16 Dec 2020 08:01:47 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id e25sm275877lfc.40.2020.12.16.08.01.44
+        by smtp.gmail.com with ESMTPSA id e25sm275877lfc.40.2020.12.16.08.01.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Dec 2020 08:01:44 -0800 (PST)
+        Wed, 16 Dec 2020 08:01:47 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         olteanv@gmail.com, j.vosburgh@gmail.com, vfalico@gmail.com,
         andy@greyhouse.net, netdev@vger.kernel.org
-Subject: [PATCH v4 net-next 1/5] net: bonding: Notify ports about their initial state
-Date:   Wed, 16 Dec 2020 17:00:52 +0100
-Message-Id: <20201216160056.27526-2-tobias@waldekranz.com>
+Subject: [PATCH v4 net-next 2/5] net: dsa: Don't offload port attributes on standalone ports
+Date:   Wed, 16 Dec 2020 17:00:53 +0100
+Message-Id: <20201216160056.27526-3-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201216160056.27526-1-tobias@waldekranz.com>
 References: <20201216160056.27526-1-tobias@waldekranz.com>
@@ -63,38 +63,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When creating a static bond (e.g. balance-xor), all ports will always
-be enabled. This is set, and the corresponding notification is sent
-out, before the port is linked to the bond upper.
+In a situation where a standalone port is indirectly attached to a
+bridge (e.g. via a LAG) which is not offloaded, do not offload any
+port attributes either. The port should behave as a standard NIC.
 
-In the offloaded case, this ordering is hard to deal with.
+Previously, on mv88e6xxx, this meant that in the following setup:
 
-The lower will first see a notification that it can not associate with
-any bond. Then the bond is joined. After that point no more
-notifications are sent, so all ports remain disabled.
+     br0
+     /
+  team0
+   / \
+swp0 swp1
 
-This change simply sends an extra notification once the port has been
-linked to the upper to synchronize the initial state.
+If vlan filtering was enabled on br0, swp0's and swp1's QMode was set
+to "secure". This caused all untagged packets to be dropped, as their
+default VID (0) was not loaded into the VTU.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 ---
- drivers/net/bonding/bond_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/dsa/slave.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 5fe5232cc3f3..ad5192ee1845 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1922,6 +1922,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 		goto err_unregister;
- 	}
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 4a0498bf6c65..faae8dcc0849 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -274,6 +274,9 @@ static int dsa_slave_port_attr_set(struct net_device *dev,
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	int ret;
  
-+	bond_lower_state_changed(new_slave);
++	if (attr->orig_dev != dev)
++		return -EOPNOTSUPP;
 +
- 	res = bond_sysfs_slave_add(new_slave);
- 	if (res) {
- 		slave_dbg(bond_dev, slave_dev, "Error %d calling bond_sysfs_slave_add\n", res);
+ 	switch (attr->id) {
+ 	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
+ 		ret = dsa_port_set_state(dp, attr->u.stp_state, trans);
 -- 
 2.17.1
 
