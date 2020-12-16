@@ -2,135 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BBC42DBE98
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 11:27:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 423DA2DBEDB
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 11:40:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726194AbgLPK0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 05:26:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725942AbgLPK0N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 05:26:13 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA36CC061282
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 02:25:27 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id w1so27271879ejf.11
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 02:25:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ym85wg7PtkG2USwglGkEQbjEp6lBmKatepEQs0Sb5n8=;
-        b=h0B84yppIC6IiGOJapPayTD3ruNvsicUE+jHmSp6Jt7woATokjaUd9UoTFKL2KKM8h
-         ej4ySorPDcwIVVR51oP7VaTjFyTlxbM/yScABuw9M0AlgBcFykVFmIL3y5pASA9cCFOu
-         stXqIYxLmN4cdsIJKvw5yJ69S+PTzGtD2u3BkuvNaQrnwTKybrsn/os2ndz48VYMkvws
-         e5qeoHpzBHpfRkTsUTgCetkSRpsm63P422+safCYVnJvZ0i1K9bctSh+Z2BZS6oZHj/B
-         0k0FfNTxyfik78IEHOScK3YN941dQBtqGHmD3d/CBOpj+vQ3MJBxoOikwbUMYJhwkxFp
-         u9ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ym85wg7PtkG2USwglGkEQbjEp6lBmKatepEQs0Sb5n8=;
-        b=MDHw33qcCQSVvbraBB1KSd9vLIQNNdkTEDwEeN3MGLAQgM9T3P+u6+1S1K2BTQLV6M
-         WFG+9AvzcAs7dnZXd86c6pBQnV3b7d4UVnx5jL96hPTFGwmpPlvXUqG66Z/y4li2doX7
-         k7BETeM1stwco+gf/JCSsKuUC1bORVkAh5AMEQoRa+KMvT0871JYmuEq6130y8zLZP3z
-         KPfUjBO8uxxspkMJjr8fBUWhU+7mGdzGJBjKdI6VuIZUD4jTe9ZqKRl97GY2nTjRV4h0
-         T66EEXc476YHI+dp/HJj2FX5OC47K2VpGlhMczzWmBVBM6tUg7DGeM+l6Jj6bFhPm1wM
-         APIQ==
-X-Gm-Message-State: AOAM533Kqq/SZL5YGryY35cS2sPc1GjHRAeX8Q/M3hYO0evb+azGIJ7e
-        RbiXURtQ5+dgPlFXCw9LXTM54UK8yZNJVc1gat3wwV4Ob0mcVxjn
-X-Google-Smtp-Source: ABdhPJzUzlL4dfw10lcm1m6wudRtiT3RMtghr3y3coNwH1YNtq227Ru0urZLsWzsMQTu8udtNGBBYdcJanwHlIz7hnQ=
-X-Received: by 2002:a17:906:3499:: with SMTP id g25mr6371983ejb.18.1608114326375;
- Wed, 16 Dec 2020 02:25:26 -0800 (PST)
+        id S1726221AbgLPKkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 05:40:36 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:22130 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726047AbgLPKkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 05:40:35 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-212-Ub8oJyahMCWCrAmRpZs81Q-1; Wed, 16 Dec 2020 10:38:56 +0000
+X-MC-Unique: Ub8oJyahMCWCrAmRpZs81Q-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 16 Dec 2020 10:38:56 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 16 Dec 2020 10:38:56 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Alexei Starovoitov' <alexei.starovoitov@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>
+Subject: RE: [Patch bpf-next v2 2/5] bpf: introduce timeout map
+Thread-Topic: [Patch bpf-next v2 2/5] bpf: introduce timeout map
+Thread-Index: AQHW01R6Sggx3wYPikaoTV76dzuU7Kn5h55w
+Date:   Wed, 16 Dec 2020 10:38:56 +0000
+Message-ID: <a73e4e66b8a541d7bf74fe8a66ebbc6a@AcuMS.aculab.com>
+References: <20201214201118.148126-1-xiyou.wangcong@gmail.com>
+ <20201214201118.148126-3-xiyou.wangcong@gmail.com>
+ <CAEf4BzZa15kMT+xEO9ZBmS-1=E85+k02zeddx+a_N_9+MOLhkQ@mail.gmail.com>
+ <CAM_iQpVR_owLgZp1tYJyfWco-s4ov_ytL6iisg3NmtyPBdbO2Q@mail.gmail.com>
+ <CAEf4BzbyHHDrECCEjrSC3A5X39qb_WZaU_3_qNONP+vHAcUzuQ@mail.gmail.com>
+ <1de72112-d2b8-24c5-de29-0d3dfd361f16@iogearbox.net>
+ <CAM_iQpVedtfLLbMroGCJuuRVrBPoVFgsLkQenTrwKD8uRft2wQ@mail.gmail.com>
+ <20201216011422.phgv4o3jgsrg33ob@ast-mbp>
+ <CAM_iQpVJLg5yCF=2w3ZpBBiR3pR4FWSNjz7FvJGqx0R+BomWDw@mail.gmail.com>
+ <CAADnVQL70bVdms6_D_ep1L2v-OcgXu-9KTtLULQdfCMftLhENQ@mail.gmail.com>
+In-Reply-To: <CAADnVQL70bVdms6_D_ep1L2v-OcgXu-9KTtLULQdfCMftLhENQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <CA+G9fYtu1zOz8ErUzftNG4Dc9=cv1grsagBojJraGhm4arqXyw@mail.gmail.com>
- <20201215144531.GZ2657@paulmck-ThinkPad-P72> <20201215102246.4bdca3d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201215102246.4bdca3d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 16 Dec 2020 15:55:14 +0530
-Message-ID: <CA+G9fYt_zxDSN5Qkx=rBE_ZkjirOBQ3QpFRy-gkqbjbJ=n1Z4Q@mail.gmail.com>
-Subject: Re: [stabe-rc 5.9 ] sched: core.c:7270 Illegal context switch in
- RCU-bh read-side critical section!
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-stable <stable@vger.kernel.org>, rcu@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        lkft-triage@lists.linaro.org, Netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 at 23:52, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 15 Dec 2020 06:45:31 -0800 Paul E. McKenney wrote:
-> > > Crash log:
-> > > --------------
-> > > # selftests: bpf: test_tc_edt.sh
-> > > [  503.796362]
-> > > [  503.797960] =============================
-> > > [  503.802131] WARNING: suspicious RCU usage
-> > > [  503.806232] 5.9.15-rc1 #1 Tainted: G        W
-> > > [  503.811358] -----------------------------
-> > > [  503.815444] /usr/src/kernel/kernel/sched/core.c:7270 Illegal
-> > > context switch in RCU-bh read-side critical section!
-> > > [  503.825858]
-> > > [  503.825858] other info that might help us debug this:
-> > > [  503.825858]
-> > > [  503.833998]
-> > > [  503.833998] rcu_scheduler_active = 2, debug_locks = 1
-> > > [  503.840981] 3 locks held by kworker/u12:1/157:
-> > > [  503.845514]  #0: ffff0009754ed538
-> > > ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x208/0x768
-> > > [  503.855048]  #1: ffff800013e63df0 (net_cleanup_work){+.+.}-{0:0},
-> > > at: process_one_work+0x208/0x768
-> > > [  503.864201]  #2: ffff8000129fe3f0 (pernet_ops_rwsem){++++}-{3:3},
-> > > at: cleanup_net+0x64/0x3b8
-> > > [  503.872786]
-> > > [  503.872786] stack backtrace:
-> > > [  503.877229] CPU: 1 PID: 157 Comm: kworker/u12:1 Tainted: G        W
-> > >         5.9.15-rc1 #1
-> > > [  503.885433] Hardware name: ARM Juno development board (r2) (DT)
-> > > [  503.891382] Workqueue: netns cleanup_net
-> > > [  503.895324] Call trace:
-> > > [  503.897786]  dump_backtrace+0x0/0x1f8
-> > > [  503.901464]  show_stack+0x2c/0x38
-> > > [  503.904796]  dump_stack+0xec/0x158
-> > > [  503.908215]  lockdep_rcu_suspicious+0xd4/0xf8
-> > > [  503.912591]  ___might_sleep+0x1e4/0x208
-> >
-> > You really are forbidden to invoke ___might_sleep() while in a BH-disable
-> > region of code, whether due to rcu_read_lock_bh(), local_bh_disable(),
-> > or whatever else.
-> >
-> > I do see the cond_resched() in inet_twsk_purge(), but I don't immediately
-> > see a BH-disable region of code.  Maybe someone more familiar with this
-> > code would have some ideas.
-> >
-> > Or you could place checks for being in a BH-disable further up in
-> > the code.  Or build with CONFIG_DEBUG_INFO=y to allow more precise
-> > interpretation of this stack trace.
+RnJvbTogQWxleGVpIFN0YXJvdm9pdG92DQo+IFNlbnQ6IDE2IERlY2VtYmVyIDIwMjAgMDI6MzYN
+Ci4uLg0KPiA+IFRoZSBwcm9ibGVtIGlzIG5ldmVyIGFib3V0IGdyYW51bGFyaXR5LCBpdCBpcyBh
+Ym91dCBob3cgZWZmaWNpZW50IHdlIGNhbg0KPiA+IEdDLiBVc2VyLXNwYWNlIGhhcyB0byBzY2Fu
+IHRoZSB3aG9sZSB0YWJsZSBvbmUgYnkgb25lLCB3aGlsZSB0aGUga2VybmVsDQo+ID4gY2FuIGp1
+c3QgZG8gdGhpcyBiZWhpbmQgdGhlIHNjZW5lIHdpdGggYSBtdWNoIGxvd2VyIG92ZXJoZWFkLg0K
+PiA+DQo+ID4gTGV0J3Mgc2F5IHdlIGFybSBhIHRpbWVyIGZvciBlYWNoIGVudHJ5IGluIHVzZXIt
+c3BhY2UsIGl0IHJlcXVpcmVzIGEgc3lzY2FsbA0KPiA+IGFuZCBsb2NraW5nIGJ1Y2tldHMgZWFj
+aCB0aW1lIGZvciBlYWNoIGVudHJ5LiBLZXJuZWwgY291bGQgZG8gaXQgd2l0aG91dA0KPiA+IGFu
+eSBhZGRpdGlvbmFsIHN5c2NhbGwgYW5kIGJhdGNoaW5nLiBMaWtlIEkgc2FpZCBhYm92ZSwgd2Ug
+Y291bGQgaGF2ZQ0KPiA+IG1pbGxpb25zIG9mIGVudHJpZXMsIHNvIHRoZSBvdmVyaGVhZCB3b3Vs
+ZCBiZSBiaWcgaW4gdGhpcyBzY2VuYXJpby4NCj4gDQo+IGFuZCB0aGUgdXNlciBzcGFjZSBjYW4g
+cGljayBhbnkgb3RoZXIgaW1wbGVtZW50YXRpb24gaW5zdGVhZA0KPiBvZiB0cml2aWFsIGVudHJ5
+IGJ5IGVudHJ5IGdjIHdpdGggdGltZXIuDQoNClRoZSBrZXJuZWwgY2FuIGFsc28gZ2MgZW50cmll
+cyB3aGVuIHNjYW5uaW5nIGhhc2ggbGlzdHMgZHVyaW5nIGluc2VydA0KKG9yIGV2ZW4gZHVyaW5n
+IGxvb2t1cCBpZiBub3QgdXNpbmcgcncgbG9ja3MpLg0KDQpBcGFydCBmcm9tIHRoZSBtZW1vcnkg
+dXNlIHRoZXJlIGlzbid0IHJlYWxseSBhIHByb2JsZW0gaGF2aW5nIHRpbWVkLW91dA0KZW50cmll
+cyBpbiB0aGUgaGFzaCB0YWJsZSBpZiBub3RoaW5nIGlzIGxvb2tpbmcgYXQgdGhlbS4NCg0KCURh
+dmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
+dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
+Mzg2IChXYWxlcykNCg==
 
-I will try to reproduce this warning with DEBUG_INFO=y enabled kernel and
-get back to you with a better crash log.
-
->
-> My money would be on the option that whatever run on this workqueue
-> before forgot to re-enable BH, but we already have a check for that...
-> Naresh, do you have the full log? Is there nothing like "BUG: workqueue
-> leaked lock" above the splat?
-
-Yes [1] is the full test log link.
-But i do not see "BUG: workqueue leaked lock" in the log.
-
-full log link,
-[1] https://lkft.validation.linaro.org/scheduler/job/2049484#L5979
-
-- Naresh
