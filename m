@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4721F2DBD8B
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 10:33:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C5C2DBDCE
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 10:42:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725960AbgLPJbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 04:31:22 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:44177 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725919AbgLPJbV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 04:31:21 -0500
-X-UUID: 9d20fbdda0e0409c8fae990470fd05f2-20201216
-X-UUID: 9d20fbdda0e0409c8fae990470fd05f2-20201216
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 493327425; Wed, 16 Dec 2020 17:30:38 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs06n1.mediatek.inc (172.21.101.129) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 16 Dec 2020 17:30:37 +0800
-Received: from mtkslt301.mediatek.inc (10.21.14.114) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Dec 2020 17:30:35 +0800
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Rob Herring <robh+dt@kernel.org>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1725940AbgLPJl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 04:41:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725889AbgLPJl5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 04:41:57 -0500
+Date:   Wed, 16 Dec 2020 10:42:17 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1608111676;
+        bh=wwOdbgunRq2eKqn6jEC3Bs80LYViiIT+qaz21Cqol+s=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U8xz+2kdTBlKXeI7J5SDrWW1/jaWVXq5kmxd/L7Hil33cr+Dn6ZWIs9+dXhF63c9j
+         jXxlCaGd+cMoN5x6Gi6iY49Bsopmneyw7GqLTpn9Or28wGhUx1PVzIWzrs4d1icDR1
+         +Y9MD0ribWJJi2xNTn8xF88+79NAblfBZ8MLeHs0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Min Guo <min.guo@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-usb@vger.kernel.org>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Subject: [PATCH v4 11/11] MAINTAINERS: update MediaTek PHY/USB entry
-Date:   Wed, 16 Dec 2020 17:30:12 +0800
-Message-ID: <20201216093012.24406-11-chunfeng.yun@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20201216093012.24406-1-chunfeng.yun@mediatek.com>
-References: <20201216093012.24406-1-chunfeng.yun@mediatek.com>
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Hemant Kumar <hemantk@codeaurora.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jeffrey Hugo <jhugo@codeaurora.org>,
+        Bhaumik Bhatt <bbhatt@codeaurora.org>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH v18 0/3] userspace MHI client interface driver
+Message-ID: <X9nWeXZz7lh4JdCb@kroah.com>
+References: <1607715903-16442-1-git-send-email-hemantk@codeaurora.org>
+ <CAMZdPi8=9OsoCH_eV_JZohmFbuXcLv2kWNPLFzQUAKUCUHYs5A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMZdPi8=9OsoCH_eV_JZohmFbuXcLv2kWNPLFzQUAKUCUHYs5A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Due to the phy/usb bindings are converted into YAML schema and
-also renamed, update entries.
-Meanwhile add drivers/usb/host/mtk-xhci* files.
+On Wed, Dec 16, 2020 at 10:17:30AM +0100, Loic Poulain wrote:
+> Hi Folks,
+> 
+> On Fri, 11 Dec 2020 at 20:45, Hemant Kumar <hemantk@codeaurora.org> wrote:
+> >
+> > This patch series adds support for UCI driver. UCI driver enables userspace
+> > clients to communicate to external MHI devices like modem. UCI driver probe
+> > creates standard character device file nodes for userspace clients to
+> > perform open, read, write, poll and release file operations. These file
+> > operations call MHI core layer APIs to perform data transfer using MHI bus
+> > to communicate with MHI device.
+> >
+> > This interface allows exposing modem control channel(s) such as QMI, MBIM,
+> > or AT commands to userspace which can be used to configure the modem using
+> > tools such as libqmi, ModemManager, minicom (for AT), etc over MHI. This is
+> > required as there are no kernel APIs to access modem control path for device
+> > configuration. Data path transporting the network payload (IP), however, is
+> > routed to the Linux network via the mhi-net driver. Currently driver supports
+> > QMI channel. libqmi is userspace MHI client which communicates to a QMI
+> > service using QMI channel. Please refer to
+> > https://www.freedesktop.org/wiki/Software/libqmi/ for additional information
+> > on libqmi.
+> >
+> > Patch is tested using arm64 and x86 based platform.
+> 
+> Are there any blockers or unadressed comments remaining on this
+> series? As far as I understand, the original blocker was the net/WiFi
+> mention in the commit message, that caused a legitimate concern from
+> network maintainer. It has been clarified now that this driver is not
+> for exposing any channel that could be otherwise handled properly by
+> an existing Linux subsystem/interface. It will be especially used as a
+> pipe for modem QMI channel (or AT commands) in the same way as the USB
+> CDC-WDM driver is doing (keeping userspace compatibility). Other MHI
+> channels, such as network data, QRTR, etc are not exposed and
+> correctly bound to the corresponding Linux subsystems.
+> 
+> The correlated worry was that it could be a userspace channel facility
+> for 'everything qualcomm', but we could say the same for other
+> existing busses with userspace shunt (/dev/bus/usb, /dev/i2c,
+> /dev/spidev, PCI UIO, UART...). Moreover, it is mitigated by the fact
+> that not all MHI channels are exposed by default, but only the allowed
+> ones (QMI in the initial version). For sure, special care must be
+> given to any further channel addition.
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
----
-v3~v4: no changes
+It's the middle of the merge window, we can't do anything with new
+patches at all until 5.11-rc1 is out, so please be patient.
 
-v2: new patch
----
- MAINTAINERS | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+thanks,
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e73636b75f29..360c6131b866 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2084,7 +2084,7 @@ M:	Chunfeng Yun <chunfeng.yun@mediatek.com>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- L:	linux-mediatek@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
--F:	Documentation/devicetree/bindings/phy/phy-mtk-*
-+F:	Documentation/devicetree/bindings/phy/mediatek,*
- F:	drivers/phy/mediatek/
- 
- ARM/Microchip (AT91) SoC support
-@@ -11139,6 +11139,8 @@ L:	linux-usb@vger.kernel.org
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- L:	linux-mediatek@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
-+F:	Documentation/devicetree/bindings/usb/mediatek,*
-+F:	drivers/usb/host/xhci-mtk*
- F:	drivers/usb/mtu3/
- 
- MEGACHIPS STDPXXXX-GE-B850V3-FW LVDS/DP++ BRIDGES
--- 
-2.18.0
-
+greg k-h
