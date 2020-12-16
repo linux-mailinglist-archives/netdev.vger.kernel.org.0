@@ -2,207 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D01B2DC990
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 00:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E88E72DC994
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 00:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730784AbgLPXY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 18:24:26 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:64230 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726865AbgLPXY0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 18:24:26 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 0BGNFZoB029125;
-        Wed, 16 Dec 2020 15:23:31 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=fQ891/zI985wiUAkR/Ar3LgH+NK6TfapU13DaHSskkU=;
- b=G1nZB05O1a184IDsUsYy5V+c58u/+HIq6OjDsB1Zweiz7egMj/LlZtllCMErzagkhupo
- oPhldEqgsl7ZkScCPxmt2et2M5le2rxh3nveMOV/2GPDRapxll8SgoE0WdTowEz59SJS
- U//ArhYy7ztCK4ROhslX1RpRggpclCegJzA= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 35f7h65upr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 16 Dec 2020 15:23:31 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 16 Dec 2020 15:23:29 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZFAUJwBDV11MoScwxgkIcAe1iRP8EPl18bCRWxqZJCrJFknIIB4p4VMJQv8qd5zAYcc7TQkdROGrG9VWzOchsm4x1/f0PWsTCw5QG1Igp0nmjdks1bKqPEK7HuDvXYVro+8zDciG8pbSIWsHIayNMSYHO+obsJDHCr1+maPISICfhodCS3UonFT7dBhel3u8RMbrHAhq1G9Rr4D+AjN4GNJE+qSLgQbguKGQRxvjOylyhdn2nZ/vglhSLJoi5hQ99b/DxNhK051+badqdQEj/Yc2Q0g+FoJdwywviT4AQfpcXJJLGnw0/Vo3Ti7qpssEQIvjkmbd7sWrhVzX+OWUtA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fQ891/zI985wiUAkR/Ar3LgH+NK6TfapU13DaHSskkU=;
- b=UMq2AGV89Lux0Q7IVLre+5FPMOeTOLzkqbr93pkXJVpL09X1kLBPPq10/bGmWCUSjfN8jMKssw1Fs33NwsApbomWzJ89wvJw+Ftbo3L9M1VQSPnE8BkzIII623JWR4VPsb2A332GGOsgVwj1LM596DjGdsgJ3yAjhaslcVkkHsXfniCc1Jct2ws+Ao74JugYh47t3cd7V2wXMVJ4n1ISuIEA2OeHlLHB6zJKj5Ns1AIN25RF2sU7SdKxrhkaVqmJX3QulpjaZD9j5umr5HpaXhQfhAg7EPklRzOaUJuSbUlE158Rltt6PTE104YR0cyfj0VWbvo5I1BUSD9s9rPwCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fQ891/zI985wiUAkR/Ar3LgH+NK6TfapU13DaHSskkU=;
- b=fWBFIn4pDC9jgftWCGEdL8rJr6d52lv46I8ybu93jTCzIFCQdcvTXdTvEfHz3zxQt93SMu38xZ94EUKhQDXFtKulnqweBduFuRnXluX2SZOX30oWUUWSMnHZBZiOTpxdE8zNKBI6bClwLKCI+6r5SQOFpW6PhIgXptdelSlwSCM=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB2725.namprd15.prod.outlook.com (2603:10b6:a03:158::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.15; Wed, 16 Dec
- 2020 23:23:24 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::f49e:bdbb:8cd7:bf6b]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::f49e:bdbb:8cd7:bf6b%7]) with mapi id 15.20.3654.025; Wed, 16 Dec 2020
- 23:23:24 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Yonghong Song <yhs@fb.com>
-CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "kpsingh@chromium.org" <kpsingh@chromium.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 4/4] selftests/bpf: add test for
- bpf_iter_task_vma
-Thread-Topic: [PATCH v2 bpf-next 4/4] selftests/bpf: add test for
- bpf_iter_task_vma
-Thread-Index: AQHW0zs6KjDuN0nfMkKjCJzT2YpTXan6CS4AgABVPwA=
-Date:   Wed, 16 Dec 2020 23:23:24 +0000
-Message-ID: <EE276BC6-9513-414D-91D1-6257909AB952@fb.com>
-References: <20201215233702.3301881-1-songliubraving@fb.com>
- <20201215233702.3301881-5-songliubraving@fb.com>
- <29e8f249-a23b-3c17-4000-a4075398b669@fb.com>
-In-Reply-To: <29e8f249-a23b-3c17-4000-a4075398b669@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.4)
-x-originating-ip: [2620:10d:c091:480::1:e346]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6bd5fbe2-e7dc-4193-04bf-08d8a21995b1
-x-ms-traffictypediagnostic: BYAPR15MB2725:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB2725AA9E83FF2D9B3390FCF8B3C50@BYAPR15MB2725.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1ELCRliBy0tJCPjWEC6frPuzUhlDZHrzdsCjJ66+UQVvLVie4IZtLCFCJYgo0q/FIvPzeLwcOxQqsF6cVkgQzuL5ki8RTwWsXmXuQVH9jjAeNf3kjqLaz/m5p7YZblEGz9RP+3aU5YLDbXRxV3l/ETBTwALI4Bgc2rhU2EXKiXAv6WBCH4z+X6RW3IbuMkATBGvQQKGdxz7jRXM6EBLyM+9y1ql4/SDhcyrwPA3Q0CPtdNFrqlkgyPop/EjpEUf9y/QxNAZzWet+PL4jpRVghHgSoGWdp0IvRYAmi+hrgoM/JF6oez6Qi0oRMGus60FtzATWZBW2R6UhUIf+Zv02may+b6vcwoZ05oT87vtXC7ZRpleR8n5VratPiQMuoxTm
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(64756008)(66556008)(6862004)(5660300002)(76116006)(91956017)(71200400001)(66946007)(36756003)(66476007)(8936002)(33656002)(2616005)(66446008)(54906003)(8676002)(86362001)(186003)(53546011)(6636002)(37006003)(6506007)(2906002)(498600001)(4326008)(83380400001)(6486002)(6512007)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?a40VVA/CWabO/N+HXls2GvVH/GKon315k3O5HFWCp0G9A6E6N/IvfNGgFeh2?=
- =?us-ascii?Q?Ouv19FDEXtmw//I7nycMD5U0L844pcd0vD7wMhAYQgeHIPdli23f35vKO+rp?=
- =?us-ascii?Q?cMZnliQDqX005e9sz5aIZWcvd9bz+ugtobnT2HW7TjC+2GAChXmHhpoqskNJ?=
- =?us-ascii?Q?pxZ1VskwhemlnPsQvDvnE0oyT27UEBrVxFj5K1PWRKeis90nH9xV1m/1odEW?=
- =?us-ascii?Q?56mV45BczjYMEosTJAsPNzyRDfa+mTFG+vaFxYJhNdNFPSEs57hHv30P0WQF?=
- =?us-ascii?Q?3T2mTohe6iguTepVuSUVRjEuJUvmE4LuGFWiaLw9g5pBN6JynoeNuius9+fd?=
- =?us-ascii?Q?8YGCIqDMTErnn8/qIoDmDQDXzYjgB/Z9jVXjTBvuSh/JBPSUAhQcbT7fkZQj?=
- =?us-ascii?Q?OY669I0N2BEXscT766kYBWD3l2sgjHBFKbR5xDqpRLSM29zLvJQ/+6aqqKP6?=
- =?us-ascii?Q?KAe89GEMslWCU4mO27n/yK2p2+iqZKp2FaQQ8IFpOAMC0bkiTBFoB+MCp5pX?=
- =?us-ascii?Q?9dxPI0N/r4UXfgTXGCs9k17VQmoyPZx0SiluoaFY1ajYWeg5ms55kuh0tWF3?=
- =?us-ascii?Q?fr1ZwwvVo/ZE/AGgeF8Wia1rrfYgup4DS3zUAWN1sGxHZIlIDhXoPDUWtJrd?=
- =?us-ascii?Q?m19Fz96GFnHlKYiN037k6QCtqPCJdKtLuCRqOgh48tEWAQ3/ttIXL7D6naKM?=
- =?us-ascii?Q?mJxTGyZMo0pfdn1xwg+/WGtq7OttILGCP3V2hyO/2skdayTgckIBjyR66RFS?=
- =?us-ascii?Q?mriyVGxYAX2FNc+WPLfkiXcpUisk+Lm6DnZfj6IgaFQQl5Z+yr0p7z/da8QW?=
- =?us-ascii?Q?02ySso5imXa9U8SuL6UN5su5dGtyhpzeVdLDe2j+h6dzmT6dBJdfxdVq4Rkk?=
- =?us-ascii?Q?FnN8dzTofTXSFjmADOcrjlRZ1LKP0gMeG+rJFyeh/dxekgZMwjP0TOJVoHuT?=
- =?us-ascii?Q?zA9GS6UhVoPGjp5BHS6VB2j1Bec9SuFZcip3x4iZNJDrJAN8iBMUCgpvNmYj?=
- =?us-ascii?Q?GXqqdzjaZhdHmV9nZsPckg/ooHRVzF0agblmhTWMGRBF0tU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <31E07C11E3B716419B1D981E66216842@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1730791AbgLPXaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 18:30:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726110AbgLPXaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 18:30:13 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FDFC061794
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 15:29:33 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id i24so26670396edj.8
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 15:29:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nametag.social; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=oHW20Y04wvGVk9UmyRRlDNomzN5I2m9VJ+tYDy3fSD0=;
+        b=uahCANzXwA5aCIUV6du8D8u6wNGaEy7y9ykhpmdKEcXYF11CilccpIgDGEdpo3gDev
+         1N/k435DAd3SBeFjdznGM3iO3j4rMGhaRkTTRuWHb7Kw82JlJDOFzQ87kn4OrrUb3el4
+         LgqZ7KhFPoAvKDRZf6L72NIua03MMQeIut7Vtb2MRck0p+eKvMLUFoG5aTudi825ssJm
+         OvVulup8uximjKksGN9xl2bXbmdmiP6gwV7G3s/sOzcAGU3jSGcEbw375s+gnFle4UOO
+         zE+rJthMK9IW0RuFoelWkbyzBORcgLQXB3JxbEcZR6j42R/CpKp/qYx7/yHPRU2WKfHn
+         X7ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=oHW20Y04wvGVk9UmyRRlDNomzN5I2m9VJ+tYDy3fSD0=;
+        b=sE/I2lRaxTbs6JmCe/3E7AyMdWUwC0wBxvBv7NbPd2SiwEpvklTxq6de3ZpFG/6dlc
+         dhHiRQZ6n9R+fc7ViZf9SHZqzd1MdD0YGJBqTT/uOoSFfiwMdmmQerQBptnk1HrKXEPJ
+         rosnvw55w2cRJl302lnTdooBw8w/B2gDh7XQ3OzzsE6dyn8Ogorp5yYC9lbuyoRqHJAc
+         U9VDrJCKecZf1GW2k+IdW3P23+vBjAiigwtFGkI/hY1j3k8CZ1Md0umlndU7aY5p6VOi
+         HuduXR5KkL/H65Y+TLaeNZd7Q5+5IJssA2l9A13OYueCItkC2+TcVUXvQw0YM/p5oZJp
+         aMUg==
+X-Gm-Message-State: AOAM530h3hibyYw3Tq4Mu7rvNAkb18m4I0qPXvO8uNKv5lZBa7JRrxR0
+        2DZO8Z3zcgxXkMlRDm74Lhp0RcgSubeFgKYb/lfS4w==
+X-Google-Smtp-Source: ABdhPJx0xf/MWmTSvAGM/6rUZqnEOQ282USilJvvQmN0mTdbfyXnWaE8k+maUbAKIG/VOIzjhVa1YVkAW7Xxsw41rc8=
+X-Received: by 2002:a05:6402:1592:: with SMTP id c18mr35556563edv.181.1608161371798;
+ Wed, 16 Dec 2020 15:29:31 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6bd5fbe2-e7dc-4193-04bf-08d8a21995b1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2020 23:23:24.0944
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0HEdoJEXaoLPQDMbnXezb0cPUXmfOz4kU3f42kzueGR9uIHd23HKe4G+fWDXep0O7q8bAbaBVZMZ2C0U+0uD5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2725
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-16_10:2020-12-15,2020-12-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- suspectscore=0 bulkscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0
- malwarescore=0 mlxlogscore=999 mlxscore=0 clxscore=1015 priorityscore=1501
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012160145
-X-FB-Internal: deliver
+References: <20201216180313.46610-2-v@nametag.social> <202012170740.EgQPKuIj-lkp@intel.com>
+In-Reply-To: <202012170740.EgQPKuIj-lkp@intel.com>
+From:   Victor Stewart <v@nametag.social>
+Date:   Wed, 16 Dec 2020 23:29:20 +0000
+Message-ID: <CAM1kxwiL4dD=X18_Crd813nyt_UWpPP8XmwUf10JZhzV7221Yw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] udp:allow UDP cmsghdrs through io_uring
+To:     io-uring <io-uring@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        netdev <netdev@vger.kernel.org>, Jann Horn <jannh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+what's to be done about this kernel test robot output, if anything?
 
-
-> On Dec 16, 2020, at 10:18 AM, Yonghong Song <yhs@fb.com> wrote:
->=20
-
-[...]
-
->> +
->> +	err =3D bpf_iter_task_vma__load(skel);
->> +	if (CHECK(err, "bpf_iter_task_vma__load", "skeleton load failed\n"))
->> +		goto out;
->> +
->> +	do_dummy_read(skel->progs.proc_maps);
->=20
-> This do_dummy_read() is not needed, right?
-
-do_dummy_read() helped me got bug in earlier version. I am planning to=20
-change the following to do smaller reads, then do_dummy_read() is no longer
-needed.=20
-
-[...]
-
->=20
->> +
->> +SEC("iter.s/task_vma") int proc_maps(struct bpf_iter__task_vma *ctx)
->> +{
->> +	struct __vm_area_struct *vma =3D ctx->vma;
->> +	struct seq_file *seq =3D ctx->meta->seq;
->> +	struct task_struct *task =3D ctx->task;
->> +	struct file *file =3D ctx->file;
->> +	char perm_str[] =3D "----";
->> +
->> +	if (task =3D=3D (void *)0 || vma =3D=3D (void *)0 || task->pid !=3D pi=
-d)
->=20
-> I suppose kernel already filtered all non-group-leader tasks, so here
-> we can have task->tgid !=3D pid?
-
-Yeah, that works.=20
-
->=20
->> +		return 0;
->=20
-> Using /proc system, user typically do cat /proc/pid/maps. How can we
-> have a similar user experience with vma_iter here? One way to do this
-> is:
->   - We still have this bpf program, filtering based on user pid,
->   - normal bpftool iter pin command pid the program to say /sys/fs/bpf/ta=
-sk_vma
->   - since "pid" is in a map, user can use bpftool to update "pid"
->     with the target pid.
->   - "cat /sys/fs/bpf/task_vma" will work.
->=20
-> One thing here is pid and d_path_buf are global (map) variables, so
-> if two users are trying to do "cat /sys/fs/bpf/task_vma" at the same
-> time, there will be interferences and it will not work.
->=20
-> One possible way is during BPF_ITER_CREATE, we duplicate all program
-> maps. But this is unnecessary as in most cases, the bpf_iter is not
-> pinned and private to applications.
->=20
-> Any other ideas?
-
-Maybe we can use task local storage for pid and d_path_buf?=20
-
-To make it more practical, we probably want in kernel filtering based=20
-on pid. IOW, let user specify which task to iterate.=20
-
-Thanks,
-Song
-
+On Wed, Dec 16, 2020 at 11:12 PM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi Victor,
+>
+> Thank you for the patch! Yet something to improve:
+>
+> [auto build test ERROR on net-next/master]
+>
+> url:    https://github.com/0day-ci/linux/commits/Victor-Stewart/udp-allow-UDP-cmsghdrs-through-io_uring/20201217-020451
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 3db1a3fa98808aa90f95ec3e0fa2fc7abf28f5c9
+> config: riscv-randconfig-r031-20201216 (attached as .config)
+> compiler: clang version 12.0.0 (https://github.com/llvm/llvm-project 71601d2ac9954cb59c443cb3ae442cb106df35d4)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install riscv cross compiling tool for clang build
+>         # apt-get install binutils-riscv64-linux-gnu
+>         # https://github.com/0day-ci/linux/commit/6cce2a0155c3ee2a1550cb3d5e434cc85f055a60
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Victor-Stewart/udp-allow-UDP-cmsghdrs-through-io_uring/20201217-020451
+>         git checkout 6cce2a0155c3ee2a1550cb3d5e434cc85f055a60
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=riscv
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    /tmp/leds-blinkm-655475.s: Assembler messages:
+> >> /tmp/leds-blinkm-655475.s:590: Error: unrecognized opcode `zext.b s7,a0'
+> >> /tmp/leds-blinkm-655475.s:614: Error: unrecognized opcode `zext.b a0,a0'
+> >> /tmp/leds-blinkm-655475.s:667: Error: unrecognized opcode `zext.b a2,s2'
+>    /tmp/leds-blinkm-655475.s:750: Error: unrecognized opcode `zext.b a2,s2'
+>    /tmp/leds-blinkm-655475.s:833: Error: unrecognized opcode `zext.b a2,s2'
+>    clang-12: error: assembler command failed with exit code 1 (use -v to see invocation)
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
