@@ -2,155 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65E552DC1DD
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 15:11:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C912DC1DF
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 15:11:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbgLPOKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 09:10:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59190 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726447AbgLPOKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 09:10:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608127718;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wRoSZi6fR3FWf7EobiBv24WyjO+E0Lq6vHMOy7Mxc8E=;
-        b=cpvPFtnSjhGVdofhQFyLhBo4pWAYItS5GADEASr4WdOWrw+d56NmHqhEWfBniy9IAS0TDI
-        ICo69AfbrDL8PnZ9GOahk75a2QkeXafZN/8lKMabV8pRUgBUDtthsiNg/MbKGL0ltrXWvI
-        WJsDJ0/XFEozIsjXdlTpyIJ4OxxnV3Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-577-MjI08-UiO6Sl03FRPOyjdw-1; Wed, 16 Dec 2020 09:08:33 -0500
-X-MC-Unique: MjI08-UiO6Sl03FRPOyjdw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1B82259;
-        Wed, 16 Dec 2020 14:08:32 +0000 (UTC)
-Received: from [10.36.113.62] (ovpn-113-62.ams2.redhat.com [10.36.113.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2218B10023B9;
-        Wed, 16 Dec 2020 14:08:30 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Maciej Fijalkowski" <maciej.fijalkowski@intel.com>
-Cc:     "Lorenzo Bianconi" <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v5 bpf-next 13/14] bpf: add new frame_length field to the
- XDP ctx
-Date:   Wed, 16 Dec 2020 15:08:28 +0100
-Message-ID: <54E66B9D-4677-436F-92A1-E70977E869FA@redhat.com>
-In-Reply-To: <20201215180638.GB23785@ranger.igk.intel.com>
-References: <cover.1607349924.git.lorenzo@kernel.org>
- <0547d6f752e325f56a8e5f6466b50e81ff29d65f.1607349924.git.lorenzo@kernel.org>
- <20201208221746.GA33399@ranger.igk.intel.com>
- <96C89134-A747-4E05-AA11-CB6EA1420900@redhat.com>
- <20201209111047.GB36812@ranger.igk.intel.com>
- <170BF39B-894D-495F-93E0-820EC7880328@redhat.com>
- <38C60760-4F8C-43AC-A5DE-7FAECB65C310@redhat.com>
- <20201215180638.GB23785@ranger.igk.intel.com>
+        id S1726458AbgLPOKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 09:10:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726447AbgLPOKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 09:10:08 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CFDC0617A7;
+        Wed, 16 Dec 2020 06:09:16 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id g25so2015502wmh.1;
+        Wed, 16 Dec 2020 06:09:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=1R0+GWIQamROnhGmICz1nGLtViitEFgG5Tyt6JqoEKM=;
+        b=l10a3xbsk6yzBRp+lnIING2p6E7W1Gs3KgjUShE628+8nRftt0h2t/0wHdFex3bEts
+         yvDyuFg42khTUArPPo3yBaeig+91dsB5hdEmU7L1s1+EVBrCatSBfWw5Y+HxkygYDABN
+         xHKh+5/A0GDZx8fSpT+ZQ9Mdb4ti/um0mlPhp6tBj+fI6WCy0E8mjBeOjPDqa9mRSP1y
+         NgsAi6KwwjFEzUJYrER30Mm1MC/0zuCKxYR+Tr1/Pazxz7uHznbI1H/ZLKlG12aurOoX
+         6aI+3d+t9/DpNJ1aMKGZ39Dw8Ukcm3+EQ2+Si6AOnaMR+cz1YBjwDQ+q2nECmlKTQWTF
+         yD6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1R0+GWIQamROnhGmICz1nGLtViitEFgG5Tyt6JqoEKM=;
+        b=eJ+4LMCu6kxa3/aBozLYQvqcnZL4QyAhG0vwakrSGXgMklc5Ctz5EqorqHCoEtrJ0i
+         dSCNFQ1IGepn5H8YLXRhIEjx/o1FbyrhYyR1yGptMnwFWKq/9jWyciaxPPbgtnuuSnMU
+         cZFaTGc8+1PE+ruhwFn6qgyj4NsrczrHMEKFnoJCFn3+rLc3jzOhrX37F3uo6M2jZowy
+         nR3sjTlILj853aa+Eut8HKJaC6aU8VHEVaUTS6EVJB4m7qPg+v6J4Ib7FeHKxjSO0VZT
+         CICWcnG9SY9VTdBv69UhocQ58AP5CeDuKPitJK+53Uw11pm0bWrEUQtd3V37ascSn0IR
+         5U4Q==
+X-Gm-Message-State: AOAM531rrRZrGZJLfNhurZXZj4tAe51zS39maR9OWTCZKhaYJhYeSC4D
+        5x06O2N5UeTiQe1nzK3hxIXubs5doMYxZhZRPHDNjA0PnNSCvw==
+X-Google-Smtp-Source: ABdhPJxo9eJjynTTN1ADqAIF2WiPBXHVolB1LmCORe9wX40qVt1mRtrp9AMo3EVvSklQ6CZX6z8PA9EMC+IeP9OgmSQ=
+X-Received: by 2002:a1c:64c4:: with SMTP id y187mr3593197wmb.165.1608127754865;
+ Wed, 16 Dec 2020 06:09:14 -0800 (PST)
 MIME-Version: 1.0
+References: <20201214152757.7632-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20201214152757.7632-1-magnus.karlsson@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 16 Dec 2020 15:09:03 +0100
+Message-ID: <CAJ+HfNgS4SymdqRogGRZqqTwugNpfop9Tda1t4q8BGZqF_ACqw@mail.gmail.com>
+Subject: Re: [PATCH bpf 0/2] xsk: fix two bugs in the SKB Tx path
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, A.Zema@falconvsystems.com,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 15 Dec 2020, at 19:06, Maciej Fijalkowski wrote:
-
-> On Tue, Dec 15, 2020 at 02:28:39PM +0100, Eelco Chaudron wrote:
->>
->>
->> On 9 Dec 2020, at 13:07, Eelco Chaudron wrote:
->>
->>> On 9 Dec 2020, at 12:10, Maciej Fijalkowski wrote:
->>
->> <SNIP>
->>
->>>>>>> +
->>>>>>> +		ctx_reg = (si->src_reg == si->dst_reg) ? scratch_reg - 1 :
->>>>>>> si->src_reg;
->>>>>>> +		while (dst_reg == ctx_reg || scratch_reg == ctx_reg)
->>>>>>> +			ctx_reg--;
->>>>>>> +
->>>>>>> +		/* Save scratch registers */
->>>>>>> +		if (ctx_reg != si->src_reg) {
->>>>>>> +			*insn++ = BPF_STX_MEM(BPF_DW, si->src_reg, ctx_reg,
->>>>>>> +					      offsetof(struct xdp_buff,
->>>>>>> +						       tmp_reg[1]));
->>>>>>> +
->>>>>>> +			*insn++ = BPF_MOV64_REG(ctx_reg, si->src_reg);
->>>>>>> +		}
->>>>>>> +
->>>>>>> +		*insn++ = BPF_STX_MEM(BPF_DW, ctx_reg, scratch_reg,
->>>>>>> +				      offsetof(struct xdp_buff, tmp_reg[0]));
->>>>>>
->>>>>> Why don't you push regs to stack, use it and then pop it
->>>>>> back? That way
->>>>>> I
->>>>>> suppose you could avoid polluting xdp_buff with tmp_reg[2].
->>>>>
->>>>> There is no “real” stack in eBPF, only a read-only frame
->>>>> pointer, and as we
->>>>> are replacing a single instruction, we have no info on what we
->>>>> can use as
->>>>> scratch space.
->>>>
->>>> Uhm, what? You use R10 for stack operations. Verifier tracks the
->>>> stack
->>>> depth used by programs and then it is passed down to JIT so that
->>>> native
->>>> asm will create a properly sized stack frame.
->>>>
->>>> From the top of my head I would let know xdp_convert_ctx_access of a
->>>> current stack depth and use it for R10 stores, so your scratch space
->>>> would
->>>> be R10 + (stack depth + 8), R10 + (stack_depth + 16).
->>>
->>> Other instances do exactly the same, i.e. put some scratch registers in
->>> the underlying data structure, so I reused this approach. From the
->>> current information in the callback, I was not able to determine the
->>> current stack_depth. With "real" stack above, I meant having a pop/push
->>> like instruction.
->>>
->>> I do not know the verifier code well enough, but are you suggesting I
->>> can get the current stack_depth from the verifier in the
->>> xdp_convert_ctx_access() callback? If so any pointers?
->>
->> Maciej any feedback on the above, i.e. getting the stack_depth in
->> xdp_convert_ctx_access()?
+On Mon, 14 Dec 2020 at 16:35, Magnus Karlsson <magnus.karlsson@gmail.com> w=
+rote:
 >
-> Sorry. I'll try to get my head around it. If i recall correctly stack
-> depth is tracked per subprogram whereas convert_ctx_accesses is iterating
-> through *all* insns (so a prog that is not chunked onto subprogs), but
-> maybe we could dig up the subprog based on insn idx.
+> This patch set contains two bug fixes to the Tx SKB path. Details can
+> be found in the individual commit messages. Special thanks to Xuan
+> Zhuo for spotting both of them.
 >
-> But at first, you mentioned that you took the approach from other
-> instances, can you point me to them?
+> Thanks: Magnus
+>
+> Magnus Karlsson (2):
+>   xsk: fix race in SKB mode transmit with shared cq
+>   xsk: rollback reservation at NETDEV_TX_BUSY
+>
 
-Quick search found the following two (sure there is one more with two regs):
+For the series:
 
-https://elixir.bootlin.com/linux/v5.10.1/source/kernel/bpf/cgroup.c#L1718
-https://elixir.bootlin.com/linux/v5.10.1/source/net/core/filter.c#L8977
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 
-> I'd also like to hear from Daniel/Alexei/John and others their thoughts.
-
-Please keep me in the loop…
-
->>
->>>> Problem with that would be the fact that convert_ctx_accesses()
->>>> happens to
->>>> be called after the check_max_stack_depth(), so probably stack_depth
->>>> of a
->>>> prog that has frame_length accesses would have to be adjusted
->>>> earlier.
->>>
->>> Ack, need to learn more on the verifier part…
->>
->> <SNIP>
->>
-
+>  include/net/xdp_sock.h      |  4 ----
+>  include/net/xsk_buff_pool.h |  5 +++++
+>  net/xdp/xsk.c               | 12 +++++++++---
+>  net/xdp/xsk_buff_pool.c     |  1 +
+>  net/xdp/xsk_queue.h         |  5 +++++
+>  5 files changed, 20 insertions(+), 7 deletions(-)
+>
+>
+> base-commit: d9838b1d39283c1200c13f9076474c7624b8ec34
+> --
+> 2.29.0
