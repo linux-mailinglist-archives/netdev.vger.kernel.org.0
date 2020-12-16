@@ -2,97 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F512DBD03
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 09:54:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BEDD2DBD36
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 10:00:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725943AbgLPIyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 03:54:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:53341 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725819AbgLPIyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 03:54:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608108774;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WiRmIPuJvtrPY5M/BFG60cBFFkmQJmzXXzb70DKLQE4=;
-        b=TXqusYZtg+UOvR+megA3MkhrfPlCoxkWWqZSwY+ZNbFw+tGPYlwdYB9QEnDmwCbb0IMCMJ
-        0AhwDE70uK4nQp7vWkp13V65XpUXD/YlsRFIKjA8P88qs48Yv50oupsY+nxP25xHMHRuvZ
-        V9e/aSAj11ide6h91e9P3Bb589BXGmk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-536-xA1-GzGyPKiYFNmhK65XeQ-1; Wed, 16 Dec 2020 03:52:53 -0500
-X-MC-Unique: xA1-GzGyPKiYFNmhK65XeQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 77BFC107ACE3;
-        Wed, 16 Dec 2020 08:52:51 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1AFF6E70E;
-        Wed, 16 Dec 2020 08:52:41 +0000 (UTC)
-Date:   Wed, 16 Dec 2020 09:52:40 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexander.duyck@gmail.com,
-        saeed@kernel.org, brouer@redhat.com
-Subject: Re: [PATCH v3 bpf-next 2/2] net: xdp: introduce xdp_prepare_buff
- utility routine
-Message-ID: <20201216095240.43867406@carbon>
-In-Reply-To: <20201215134710.GB5477@lore-desk>
-References: <cover.1607794551.git.lorenzo@kernel.org>
-        <71d5ae9f810c2c80f1cb09e304330be0b5ce5345.1607794552.git.lorenzo@kernel.org>
-        <20201215123643.GA23785@ranger.igk.intel.com>
-        <20201215134710.GB5477@lore-desk>
+        id S1726158AbgLPJAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 04:00:20 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:38120 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725858AbgLPJAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 04:00:20 -0500
+Date:   Wed, 16 Dec 2020 11:59:34 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Rob Herring <robh@kernel.org>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Joao Pinto <jpinto@synopsys.com>,
+        Lars Persson <larper@axis.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 03/25] dt-bindings: net: dwmac: Fix the TSO property
+ declaration
+Message-ID: <20201216085934.tlp5axhauyshb2st@mobilestation>
+References: <20201214091616.13545-1-Sergey.Semin@baikalelectronics.ru>
+ <20201214091616.13545-4-Sergey.Semin@baikalelectronics.ru>
+ <20201215172240.GA4047815@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20201215172240.GA4047815@robh.at.kernel.org>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 14:47:10 +0100
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
-
-> [...]
-> > >  	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> > > index 4dbbbd49c389..fcd1ca3343fb 100644
-> > > --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> > > +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> > > @@ -2393,12 +2393,12 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
-> > >  
-> > >  		/* retrieve a buffer from the ring */
-> > >  		if (!skb) {
-> > > -			xdp.data = page_address(rx_buffer->page) +
-> > > -				   rx_buffer->page_offset;
-> > > -			xdp.data_meta = xdp.data;
-> > > -			xdp.data_hard_start = xdp.data -
-> > > -					      i40e_rx_offset(rx_ring);
-> > > -			xdp.data_end = xdp.data + size;
-> > > +			unsigned int offset = i40e_rx_offset(rx_ring);  
+On Tue, Dec 15, 2020 at 11:22:40AM -0600, Rob Herring wrote:
+> On Mon, Dec 14, 2020 at 12:15:53PM +0300, Serge Semin wrote:
+> > Indeed the STMMAC driver doesn't take the vendor-specific compatible
+> > string into account to parse the "snps,tso" boolean property. It just
+> > makes sure the node is compatible with DW MAC 4.x, 5.x and DW xGMAC
+> > IP-cores. Fix the conditional statement so the TSO-property would be
+> > evaluated for the compatibles having the corresponding IP-core version.
 > > 
-> > I now see that we could call the i40e_rx_offset() once per napi, so can
-> > you pull this variable out and have it initialized a single time? Applies
-> > to other intel drivers as well.  
->
-> ack, fine. I will fix in v4.
+> > While at it move the whole allOf-block from the tail of the binding file
+> > to the head of it, as it's normally done in the most of the DT schemas.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > 
+> > ---
+> > 
+> > Note this won't break the bindings description, since the "snps,tso"
+> > property isn't parsed by the Allwinner SunX GMAC glue driver, but only
+> > by the generic platform DT-parser.
+> 
 
-Be careful with the Intel drivers.  They have two modes (at compile
-time) depending on PAGE_SIZE in system.  In one of the modes (default
-one) you can place init of xdp.frame_sz outside the NAPI loop and init a
-single time.  In the other mode you cannot, and it becomes dynamic per
-packet.  Intel review this carefully, please!
+> But still should be valid for Allwinner?
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+I don't know. It seems to me that even the original driver developer
+didn't know what DW MAC IP has been used to create the Allwinner
+EMAC, since in the cover letter to the original patch he said:
+"During the development, it appeared that in fact the hardware was
+a modified version of some dwmac." (See https://lwn.net/Articles/721459/)
+Most likely Maxime Ripard also didn't know that when he was converting
+the legacy bindings to the DT schema.
 
+What I do know the TSO is supported by the driver only for IP-cores with
+version higher than 4.00. (See the stmmac_probe_config_dt() method
+implementation). Version is determined by checking whether the DT
+device node compatible property having the "snps,dwmac-*" or
+"snps,dwxgmac" strings. Allwinner EMAC nodes aren't defined with
+those strings, so they won't have the TSO property parsed and set.
+
+> 
+> > ---
+> >  .../devicetree/bindings/net/snps,dwmac.yaml   | 52 +++++++++----------
+> >  1 file changed, 24 insertions(+), 28 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > index e084fbbf976e..0dd543c6c08e 100644
+> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > @@ -37,6 +37,30 @@ select:
+> >    required:
+> >      - compatible
+> >  
+> > +allOf:
+> > +  - $ref: "ethernet-controller.yaml#"
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            enum:
+> > +              - snps,dwmac-4.00
+> > +              - snps,dwmac-4.10a
+> > +              - snps,dwmac-4.20a
+> > +              - snps,dwmac-5.10a
+> > +              - snps,dwxgmac
+> > +              - snps,dwxgmac-2.10
+> > +
+> > +      required:
+> > +        - compatible
+> > +    then:
+> > +      properties:
+> > +        snps,tso:
+> > +          $ref: /schemas/types.yaml#definitions/flag
+> > +          description:
+> > +            Enables the TSO feature otherwise it will be managed by
+> > +            MAC HW capability register.
+> 
+
+> BTW, I prefer that properties are defined unconditionally, and then 
+> restricted in conditional schemas (or ones that include this schema).
+
+Are you saying that it's ok to have all the properties unconditionally
+defined in some generic schema and then being un-defined (like redefined
+to a false-schema) in a schema including (allOf-ing) it?
+
+> 
+> > +
+> >  properties:
+> >  
+> >    # We need to include all the compatibles from schemas that will
+> > @@ -314,34 +338,6 @@ dependencies:
+> >    snps,reset-active-low: ["snps,reset-gpio"]
+> >    snps,reset-delay-us: ["snps,reset-gpio"]
+> >  
+> > -allOf:
+> > -  - $ref: "ethernet-controller.yaml#"
+> > -  - if:
+> > -      properties:
+> > -        compatible:
+> > -          contains:
+> > -            enum:
+> > -              - allwinner,sun7i-a20-gmac
+> 
+
+> This does not have a fallback, so snps,tso is no longer validated. I 
+> didn't check the rest.
+
+Until the DT node is having a compatible string with the DW MAC
+IP-core version the property won't be checked by the driver anyway.
+AFAICS noone really knows what IP was that. So most likely the
+allwinner emacs have been added to this conditional schema by
+mistake...
+
+-Sergey
+
+> 
+> > -              - allwinner,sun8i-a83t-emac
+> > -              - allwinner,sun8i-h3-emac
+> > -              - allwinner,sun8i-r40-emac
+> > -              - allwinner,sun8i-v3s-emac
+> > -              - allwinner,sun50i-a64-emac
+> > -              - snps,dwmac-4.00
+> > -              - snps,dwmac-4.10a
+> > -              - snps,dwmac-4.20a
+> > -              - snps,dwxgmac
+> > -              - snps,dwxgmac-2.10
+> > -              - st,spear600-gmac
+> > -
+> > -    then:
+> > -      properties:
+> > -        snps,tso:
+> > -          $ref: /schemas/types.yaml#definitions/flag
+> > -          description:
+> > -            Enables the TSO feature otherwise it will be managed by
+> > -            MAC HW capability register.
+> > -
+> >  additionalProperties: true
+> >  
+> >  examples:
+> > -- 
+> > 2.29.2
+> > 
