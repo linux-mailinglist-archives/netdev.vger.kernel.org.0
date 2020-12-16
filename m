@@ -2,96 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7BF62DB877
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 02:36:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EB802DB89C
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 02:47:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725768AbgLPBgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 20:36:03 -0500
-Received: from 95-31-39-132.broadband.corbina.ru ([95.31.39.132]:39080 "EHLO
-        blackbox.su" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725208AbgLPBgC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 20:36:02 -0500
-Received: from metabook.localnet (metabook.metanet [192.168.2.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by blackbox.su (Postfix) with ESMTPSA id 8C4CC8195C;
-        Wed, 16 Dec 2020 04:35:20 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=blackbox.su; s=mail;
-        t=1608082520; bh=ox/5CkOm2k8D24Kavof+L3UZuPtQ5hNrYwo5IIXSXXE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nuV7RuZyM5/b4/d7VqnwgSBaMowFY2GalAmJWX8/zUEWByzLjorfFuuMH+fox/J83
-         nCG93CQyeHIIVEVEbpmem48avXNkP75OQC6b4nkwKDB4C81NYFY9cTJoGgLzAnKVP2
-         R0oAGmm3o8WhYYRro7f3ZP0UQq/k1Tj2Ep0py1N9D1wyg09/e9TgCd95j8LGpLa2c+
-         ZUnG6qByAxEbmgwIsaqjIvOjY94GALWjpbi6r/0mf+JAnRp2FaxeslRYhgpEbqSNOU
-         dOO3RDiiBChB7hbe79AofDsp2UnlfNjQkDvAAOScRUxD7d1bUowyDTzEeSDmKcGIoV
-         BvynJgb1zg54A==
-From:   Sergej Bauer <sbauer@blackbox.su>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     patchwork-bot+netdevbpf@kernel.org, andrew@lunn.ch,
-        Markus.Elfring@web.de, thesven73@gmail.com,
-        bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] lan743x: fix for potential NULL pointer dereference with bare card
-Date:   Wed, 16 Dec 2020 04:35:04 +0300
-Message-ID: <1721393.xWxZJfhTyO@metabook>
-In-Reply-To: <20201215171242.622435e8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201215161252.8448-1-sbauer@blackbox.su> <160807555409.8012.8873780215201516945.git-patchwork-notify@kernel.org> <20201215171242.622435e8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1725789AbgLPBq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 20:46:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33858 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725562AbgLPBq5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 20:46:57 -0500
+Date:   Tue, 15 Dec 2020 17:46:15 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608083176;
+        bh=6oGqf8YNdR6n8cCHeDIbFqB5b7wcwBQilmXNT/TPfm0=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LIhhtalnxo4ouESvIS/XcznbvR0DgTNfyX0UZ4g63vzcW412BFx9sWnrK18A2Yk1l
+         oAQifUQgax3zdXNIZi6A9e4y1YFd1clgRvPyP4T7l/4PmpusQDR11PiefxqFPTrD1X
+         G1MSwmZiSfAXzbanFw+O1EIHkB/OKDqD1mdtSvxTkgsVUu8KtBY3ErJuYSpybwX5B5
+         s8pMlQR6ls/kSnkTE1gD4ABvY5DjlFRivEgNV0fO9xihk6RpuK07pEBUWd7DytuI0o
+         MKVDIWmoVf89V6Hq+IHDLAqDPWNBizZASzA1+SC4/V1Ya0ona5BHe+NsPrCfKdWkYE
+         B7neAY/wL+XBA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lukasz Stelmach <l.stelmach@samsung.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        =?UTF-8?B?QmFydMWCb21pZWogxbtvbG5pZXJr?= =?UTF-8?B?aWV3aWN6?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v8 3/3] net: ax88796c: ASIX AX88796C SPI Ethernet
+ Adapter Driver
+Message-ID: <20201215174615.17c08e88@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <dleftjr1nq8tus.fsf%l.stelmach@samsung.com>
+References: <20201204193702.1e4b0427@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        <CGME20201216004251eucas1p17b212b74d7382f4dbc0eb9a1955404e7@eucas1p1.samsung.com>
+        <dleftjr1nq8tus.fsf%l.stelmach@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, December 16, 2020 4:12:42 AM MSK Jakub Kicinski wrote:
-> On Tue, 15 Dec 2020 23:39:14 +0000 patchwork-bot+netdevbpf@kernel.org
+On Wed, 16 Dec 2020 01:42:03 +0100 Lukasz Stelmach wrote:
+> >> +	ax_local->stats.rx_packets++;
+> >> +	ax_local->stats.rx_bytes += skb->len;
+> >> +	skb->dev = ndev;
+> >> +
+> >> +	skb->truesize = skb->len + sizeof(struct sk_buff);  
+> >
+> > Why do you modify truesize?
+> >  
 > 
-> wrote:
-> > Hello:
-> > 
-> > This patch was applied to bpf/bpf.git (refs/heads/master):
-> > 
-> > On Tue, 15 Dec 2020 19:12:45 +0300 you wrote:
-> > > This is the 4th revision of the patch fix for potential null pointer
-> > > dereference with lan743x card.
-> > > 
-> > > The simpliest way to reproduce: boot with bare lan743x and issue
-> > > "ethtool ethN" command where ethN is the interface with lan743x card.
-> > > Example:
-> > > 
-> > > $ sudo ethtool eth7
-> > > dmesg:
-...
-> > > [...]
-> > 
-> > Here is the summary with links:
-> >   - [v4] lan743x: fix for potential NULL pointer dereference with bare
-> >   card
-> >   
-> >     https://git.kernel.org/bpf/bpf/c/e9e13b6adc33
-> > 
-> > You are awesome, thank you!
-> > --
-> > Deet-doot-dot, I am a bot.
-> > https://korg.docs.kernel.org/patchwork/pwbot.html
+> I don't know. Although uncommon, this appears in a few usb drivers, so I
+> didn't think much about it when I ported this code.
+
+I'd guess they do aggregation. I wouldn't touch it in your driver.
+
+>> Since you always punt to a workqueue did you consider just using
+>> threaded interrupts instead?   
 > 
-> Heh the bot got confused, I think.
+> Yes, and I have decided to stay with the workqueue. Interrupt
+> processing is not the only task performed in the workqueue. There is
+> also trasmission to the hardware, which may be quite slow (remember, it
+> is SPI), so it's better decoupled from syscalls
+
+I see, and since the device can't do RX and TX simultaneously (IIRC),
+that makes sense.
+
+> >> +	u8			plat_endian;
+> >> +		#define PLAT_LITTLE_ENDIAN	0
+> >> +		#define PLAT_BIG_ENDIAN		1  
+> >
+> > Why do you store this little nugget of information?
+> >  
 > 
-> What I meant when I said "let's wait for the merge window" was that
-> the patch will not hit upstream until the merge window. It's now in
-> Linus's tree. I'll make a submission of stable patches to Greg at the
-> end of the week and I'll include this patch.
+> I don't know*. The hardware enables endianness detection by providing a
+> constant value (0x1234) in one of its registers. Unfortunately I don't
+> have a big-endian board with this chip to check if it is necessary to
+> alter AX_READ/AX_WRITE in any way.
+
+Yeah, may be hard to tell what magic the device is doing.
+I was mostly saying that you don't seem to use this information,
+so the member of the struct can be removed IIRC.
+
+> > These all look like multiple of 2 bytes. Why do they need to be packed?
+> >  
 > 
-> Thanks!
+> These are structures sent to and returned from the hardware. They are
+> prepended and appended to the network packets. I think it is good to
+> keep them packed, so compilers won't try any tricks.
 
-I think, firstly the bot was confused by me :-\
-I should have asked you what exactly did you mean with "let's wait for the 
-merge window"...
-That's completely my fault, sorry for that.
+Compilers can't play tricks on memory layout of structures, the
+standard is pretty strict about that. Otherwise ABIs would never work.
+We prefer not to unnecessarily pack structures in the neworking code,
+because it generates byte by byte loads on architectures which can't 
+do unaligned accesses.
 
-                                Regards,
-                                        Sergej.
+> > No need to return some specific pattern on failure? Like 0xffff?
+> >  
+> 
+> All registers are 16 bit wide. I am afraid it isn't safe to assume that
+> there is a 16 bit value we could use. Chances that SPI goes south are
+> pretty slim. And if it does, there isn't much more than reporting an
+> error we can do about it anyway.
+> 
+> One thing I can think of is to change axspi_* to (s32), return -1,
+> somehow (how?) shutdown the device in AX_*.
 
-
-
+I'm mostly concerned about potentially random data left over in the
+buffer. Seems like it could lead to hard to repro bugs. Hence the
+suggestion to return a constant of your choosing on error, doesn't
+really matter what as long as it's a known constant.
