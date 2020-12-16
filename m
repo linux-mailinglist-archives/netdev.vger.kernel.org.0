@@ -2,64 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D08542DBA1C
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 05:34:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 296122DBA24
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 05:36:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725824AbgLPEet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 23:34:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33256 "EHLO
+        id S1725856AbgLPEfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 23:35:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725275AbgLPEet (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 23:34:49 -0500
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD680C061285
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 20:33:48 -0800 (PST)
-Received: by mail-qt1-x84a.google.com with SMTP id c14so15942787qtn.5
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 20:33:48 -0800 (PST)
+        with ESMTP id S1725852AbgLPEfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 23:35:02 -0500
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98006C0611CA
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 20:33:52 -0800 (PST)
+Received: by mail-pj1-x104a.google.com with SMTP id kk4so900048pjb.7
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 20:33:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=r/HDLBxi1Zj/pPnHlA+0ygRRKzZyeNfh5MpJKvhKNMc=;
-        b=IN01tn8o4xaoVq0k0uMZZl1PiCaLSz2vaMoIxXYlagpBsiMSuXiOniBg50HL4SxWip
-         ebld9AWqnEXhd33i1Y9xv2UlihsOV/8VFxovAb+FY9Hq9X5rcUc2A3M7kI+n1+EAtv/h
-         egAa7O1LZKgqvjgRj/EeNVzXSiSotTpgPaTb4+j7G7LTWw/uU6Z8WjusLcdZx2Qq5SzI
-         B+X/HttCETnMF5IZB7GcPAjimbSw1SkYgAgd3Sw0EjS1t1JnOOIhMO76pttR/IMJhwUt
-         5j9Q3UNGzobp+Azfp5uL6wpPXwpaspHUyWYtfsDsRPT1lJk7t++KnCW1fIMlLwA4Kcly
-         GoSA==
+        bh=G+M2cLiyp1bgNP7uKCibGcfqBe8EhDI/ZCodgwsq3GA=;
+        b=GpjBuTF5xu8NqWmc4GqAiGoe5qMXMK12QqUJfEacdq/vJIF1VGZnvrW+rpm13TLueC
+         ZCZ6Y2ghUfD+ZU+qV5Z5MCxiesh4POHo3GEzxI3kVU5cpLGlXHv4EDcCmimuhB2o53Rf
+         KjMjKuqGc3go/1zV7ZHL/wJZw4kYOgTCY6RnCM24MG+pF8fZ/76m5EGUpc2xP8947Kar
+         /PwR/bHWEEENOthjvDOIh4ntM9kSAEnLH6ablo4QN0Je+hDBpqWcoSrVmVohp6CI6hHO
+         4nXO4+1PO8zfuBE6bLr4Veh5DAkElVCIVI4SeSeX9ya55yHkNGRjQvGxadKIZq45Lw5g
+         VUQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=r/HDLBxi1Zj/pPnHlA+0ygRRKzZyeNfh5MpJKvhKNMc=;
-        b=Gjs0p4Csw+ivwJN6jPBsxVLFNqnq/MyoUOi4yDA02Czp9IbkZxEko2fWbgQ5J9hLFt
-         B60cDhqGaubUNwpOV0hsRKJARNR+hQoRdf7Xymynk2m0Z71Vr7DM2dhsdY2U5teZO4uu
-         IitaLDH5RGgJNiPfi4yDwSRgZsJbL0gufFMEMAEpnnpsRsasEhmepjAdX/qprEP1wij0
-         llOe9wOYtmQ8fqcIURLZJn6jgGIiQGI7u4ZyZ3nwT9wZ4bHl33rW81rphVNJgXmLp786
-         BJjtNnks7V6W3A4NP/fu5ceaVl8M57+EhJKWlBhi0uMQtUtQWaSMFDmg815PlRJ2J0rk
-         /fFw==
-X-Gm-Message-State: AOAM531pmqZWWs9vT6QX3SywDwGmzHm5eJun0rB6S1xNyGj0Fw12Bw0C
-        tiJZMus0NItE2qeKtiTtWr2fNTicRXLf
-X-Google-Smtp-Source: ABdhPJzq2KyURG00w2v/SccyVD98t9+ghw3w19ZBfoH470GVOZQAt3fHqI3W3Of0fs5nW08xPLBcnB7hlUsI
+        bh=G+M2cLiyp1bgNP7uKCibGcfqBe8EhDI/ZCodgwsq3GA=;
+        b=DniDSFbHqhUGkqv14lTm3cL0kSy5js3i7bk/NdnHV/ZCcGcPDuKX0k9Ho633X+mk4c
+         UOW2BkHDNSSqa6eR6js3j75JLYzR5QDbXX1vBfRLD7ZXcdbzCgUnDoJmyA9YhkRlhpvf
+         P7MAXzvJ+GSJDCN+X8852sO0Q0K4nI8k9HfOUKvkiw65VEwKXdlHVSE+VxpFrpoPJT4Y
+         apEX/QPIvUsMSEt1J+LEt3UDpEuO6RpBL3jzSPFD6ue/03PBslD1iqLYHRyb74ASkNAI
+         xf3qiEgO/mITjff8kIoN1Ekxd5vFn/OImbNEpRM5d8EQcFPVu8ONJJXYXQ6+nX6KWTgJ
+         zUmw==
+X-Gm-Message-State: AOAM533eA2tgkKW1ddZXPB8EZjFLw6gGiP0KI+0Oy6lNyX6fUiVhAQzK
+        k7KmVVxOKe6oiWlQPgQwEViKXUTziFke
+X-Google-Smtp-Source: ABdhPJwnMLSfQxcACT4y/YlenV3nCXg0SNcTJiS5BfA3mh3TPaMgxZAVay/AvOwSVvDLVrYemE0ow+UjBCh1
 Sender: "apusaka via sendgmr" <apusaka@apusaka-p920.tpe.corp.google.com>
 X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:b:f693:9fff:fef4:2347])
- (user=apusaka job=sendgmr) by 2002:a0c:da87:: with SMTP id
- z7mr21154225qvj.41.1608093227916; Tue, 15 Dec 2020 20:33:47 -0800 (PST)
-Date:   Wed, 16 Dec 2020 12:33:32 +0800
+ (user=apusaka job=sendgmr) by 2002:a17:902:be02:b029:da:c6c9:c9db with SMTP
+ id r2-20020a170902be02b02900dac6c9c9dbmr3163491pls.69.1608093232088; Tue, 15
+ Dec 2020 20:33:52 -0800 (PST)
+Date:   Wed, 16 Dec 2020 12:33:33 +0800
 In-Reply-To: <20201216043335.2185278-1-apusaka@google.com>
-Message-Id: <20201216123317.v3.2.I4969a334028027df34dab9740cd16bbce278633c@changeid>
+Message-Id: <20201216123317.v3.3.I2bdb3d9953a91dc7865da6e57166260b3a75c146@changeid>
 Mime-Version: 1.0
 References: <20201216043335.2185278-1-apusaka@google.com>
 X-Mailer: git-send-email 2.29.2.684.gfbc64c5ab5-goog
-Subject: [PATCH v3 2/5] Bluetooth: advmon offload MSFT add monitor
+Subject: [PATCH v3 3/5] Bluetooth: advmon offload MSFT remove monitor
 From:   Archie Pusaka <apusaka@google.com>
 To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
         Marcel Holtmann <marcel@holtmann.org>
 Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
         Archie Pusaka <apusaka@chromium.org>,
-        Manish Mandlik <mmandlik@chromium.org>,
         Miao-chen Chou <mcchou@chromium.org>,
         Yun-Hao Chung <howardchung@google.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -72,240 +74,293 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Archie Pusaka <apusaka@chromium.org>
 
-Enables advertising monitor offloading to the controller, if MSFT
-extension is supported. The kernel won't adjust the monitor parameters
-to match what the controller supports - that is the user space's
-responsibility.
-
-This patch only manages the addition of monitors. Monitor removal is
-going to be handled by another patch.
+Implements the monitor removal functionality for advertising monitor
+offloading to MSFT controllers. Supply handle = 0 to remove all
+monitors.
 
 Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Manish Mandlik <mmandlik@chromium.org>
 Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
 Reviewed-by: Yun-Hao Chung <howardchung@google.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
 ---
 
-(no changes since v2)
+Changes in v3:
+* Fix return type of msft_remove_monitor
 
-Changes in v2:
-* Also implement the new MGMT opcode and merge the functionality with
-  the old one.
-
- include/net/bluetooth/hci_core.h |  17 ++-
- net/bluetooth/hci_core.c         |  54 +++++++--
- net/bluetooth/mgmt.c             | 144 ++++++++++++++--------
- net/bluetooth/msft.c             | 201 ++++++++++++++++++++++++++++++-
- net/bluetooth/msft.h             |  12 ++
- 5 files changed, 367 insertions(+), 61 deletions(-)
+ include/net/bluetooth/hci_core.h |   8 +-
+ net/bluetooth/hci_core.c         | 119 +++++++++++++++++++++++------
+ net/bluetooth/mgmt.c             | 110 +++++++++++++++++++++-----
+ net/bluetooth/msft.c             | 127 ++++++++++++++++++++++++++++++-
+ net/bluetooth/msft.h             |   9 +++
+ 5 files changed, 323 insertions(+), 50 deletions(-)
 
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 8b7cf3620938..879d1e38ce96 100644
+index 879d1e38ce96..29cfc6a2d689 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -261,13 +261,20 @@ struct adv_rssi_thresholds {
- struct adv_monitor {
- 	struct list_head patterns;
- 	struct adv_rssi_thresholds rssi;
--	bool		active;
- 	__u16		handle;
-+
-+	enum {
-+		ADV_MONITOR_STATE_NOT_REGISTERED,
-+		ADV_MONITOR_STATE_REGISTERED,
-+		ADV_MONITOR_STATE_OFFLOADED
-+	} state;
- };
- 
- #define HCI_MIN_ADV_MONITOR_HANDLE		1
--#define HCI_MAX_ADV_MONITOR_NUM_HANDLES	32
-+#define HCI_MAX_ADV_MONITOR_NUM_HANDLES		32
- #define HCI_MAX_ADV_MONITOR_NUM_PATTERNS	16
-+#define HCI_ADV_MONITOR_EXT_NONE		1
-+#define HCI_ADV_MONITOR_EXT_MSFT		2
- 
- #define HCI_MAX_SHORT_NAME_LENGTH	10
- 
-@@ -1326,9 +1333,12 @@ void hci_adv_instances_set_rpa_expired(struct hci_dev *hdev, bool rpa_expired);
+@@ -1332,11 +1332,13 @@ int hci_remove_adv_instance(struct hci_dev *hdev, u8 instance);
+ void hci_adv_instances_set_rpa_expired(struct hci_dev *hdev, bool rpa_expired);
  
  void hci_adv_monitors_clear(struct hci_dev *hdev);
- void hci_free_adv_monitor(struct adv_monitor *monitor);
--int hci_add_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor);
-+int hci_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
-+bool hci_add_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
-+			int *err);
- int hci_remove_adv_monitor(struct hci_dev *hdev, u16 handle);
+-void hci_free_adv_monitor(struct adv_monitor *monitor);
++void hci_free_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor);
+ int hci_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
++int hci_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status);
+ bool hci_add_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
+ 			int *err);
+-int hci_remove_adv_monitor(struct hci_dev *hdev, u16 handle);
++bool hci_remove_single_adv_monitor(struct hci_dev *hdev, u16 handle, int *err);
++bool hci_remove_all_adv_monitor(struct hci_dev *hdev, int *err);
  bool hci_is_adv_monitoring(struct hci_dev *hdev);
-+int hci_get_adv_monitor_offload_ext(struct hci_dev *hdev);
+ int hci_get_adv_monitor_offload_ext(struct hci_dev *hdev);
  
- void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb);
- 
-@@ -1804,6 +1814,7 @@ void mgmt_advertising_added(struct sock *sk, struct hci_dev *hdev,
+@@ -1813,8 +1815,10 @@ void mgmt_advertising_added(struct sock *sk, struct hci_dev *hdev,
+ 			    u8 instance);
  void mgmt_advertising_removed(struct sock *sk, struct hci_dev *hdev,
  			      u8 instance);
++void mgmt_adv_monitor_removed(struct hci_dev *hdev, u16 handle);
  int mgmt_phy_configuration_changed(struct hci_dev *hdev, struct sock *skip);
-+int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
+ int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
++int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status);
  
  u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u16 latency,
  		      u16 to_multiplier);
 diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 9d2c9a1c552f..fa13e35f775d 100644
+index fa13e35f775d..782b05ca0d0c 100644
 --- a/net/bluetooth/hci_core.c
 +++ b/net/bluetooth/hci_core.c
-@@ -3070,27 +3070,55 @@ void hci_free_adv_monitor(struct adv_monitor *monitor)
- 	kfree(monitor);
+@@ -3051,12 +3051,15 @@ void hci_adv_monitors_clear(struct hci_dev *hdev)
+ 	int handle;
+ 
+ 	idr_for_each_entry(&hdev->adv_monitors_idr, monitor, handle)
+-		hci_free_adv_monitor(monitor);
++		hci_free_adv_monitor(hdev, monitor);
+ 
+ 	idr_destroy(&hdev->adv_monitors_idr);
  }
  
--/* This function requires the caller holds hdev->lock */
--int hci_add_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor)
-+int hci_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status)
+-void hci_free_adv_monitor(struct adv_monitor *monitor)
++/* Frees the monitor structure and do some bookkeepings.
++ * This function requires the caller holds hdev->lock.
++ */
++void hci_free_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor)
+ {
+ 	struct adv_pattern *pattern;
+ 	struct adv_pattern *tmp;
+@@ -3064,8 +3067,18 @@ void hci_free_adv_monitor(struct adv_monitor *monitor)
+ 	if (!monitor)
+ 		return;
+ 
+-	list_for_each_entry_safe(pattern, tmp, &monitor->patterns, list)
++	list_for_each_entry_safe(pattern, tmp, &monitor->patterns, list) {
++		list_del(&pattern->list);
+ 		kfree(pattern);
++	}
++
++	if (monitor->handle)
++		idr_remove(&hdev->adv_monitors_idr, monitor->handle);
++
++	if (monitor->state != ADV_MONITOR_STATE_NOT_REGISTERED) {
++		hdev->adv_monitors_cnt--;
++		mgmt_adv_monitor_removed(hdev, monitor->handle);
++	}
+ 
+ 	kfree(monitor);
+ }
+@@ -3075,6 +3088,11 @@ int hci_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status)
+ 	return mgmt_add_adv_patterns_monitor_complete(hdev, status);
+ }
+ 
++int hci_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status)
 +{
-+	return mgmt_add_adv_patterns_monitor_complete(hdev, status);
++	return mgmt_remove_adv_monitor_complete(hdev, status);
 +}
 +
-+/* Assigns handle to a monitor, and if offloading is supported and power is on,
-+ * also attempts to forward the request to the controller.
+ /* Assigns handle to a monitor, and if offloading is supported and power is on,
+  * also attempts to forward the request to the controller.
+  * Returns true if request is forwarded (result is pending), false otherwise.
+@@ -3121,39 +3139,94 @@ bool hci_add_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
+ 	return (*err == 0);
+ }
+ 
+-static int free_adv_monitor(int id, void *ptr, void *data)
++/* Attempts to tell the controller and free the monitor. If somehow the
++ * controller doesn't have a corresponding handle, remove anyway.
 + * Returns true if request is forwarded (result is pending), false otherwise.
 + * This function requires the caller holds hdev->lock.
 + */
-+bool hci_add_adv_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
-+			 int *err)
++static bool hci_remove_adv_monitor(struct hci_dev *hdev,
++				   struct adv_monitor *monitor,
++				   u16 handle, int *err)
  {
- 	int min, max, handle;
- 
--	if (!monitor)
--		return -EINVAL;
+-	struct hci_dev *hdev = data;
+-	struct adv_monitor *monitor = ptr;
 +	*err = 0;
+ 
+-	idr_remove(&hdev->adv_monitors_idr, monitor->handle);
+-	hci_free_adv_monitor(monitor);
+-	hdev->adv_monitors_cnt--;
++	switch (hci_get_adv_monitor_offload_ext(hdev)) {
++	case HCI_ADV_MONITOR_EXT_NONE: /* also goes here when powered off */
++		goto free_monitor;
++	case HCI_ADV_MONITOR_EXT_MSFT:
++		*err = msft_remove_monitor(hdev, monitor, handle);
++		break;
++	}
+ 
+-	return 0;
++	/* In case no matching handle registered, just free the monitor */
++	if (*err == -ENOENT)
++		goto free_monitor;
++
++	return (*err == 0);
++
++free_monitor:
++	if (*err == -ENOENT)
++		bt_dev_warn(hdev, "Removing monitor with no matching handle %d",
++			    monitor->handle);
++	hci_free_adv_monitor(hdev, monitor);
++
++	*err = 0;
++	return false;
+ }
+ 
+-/* This function requires the caller holds hdev->lock */
+-int hci_remove_adv_monitor(struct hci_dev *hdev, u16 handle)
++/* Returns true if request is forwarded (result is pending), false otherwise.
++ * This function requires the caller holds hdev->lock.
++ */
++bool hci_remove_single_adv_monitor(struct hci_dev *hdev, u16 handle, int *err)
++{
++	struct adv_monitor *monitor = idr_find(&hdev->adv_monitors_idr, handle);
++	bool pending;
 +
 +	if (!monitor) {
 +		*err = -EINVAL;
 +		return false;
 +	}
- 
- 	min = HCI_MIN_ADV_MONITOR_HANDLE;
- 	max = HCI_MIN_ADV_MONITOR_HANDLE + HCI_MAX_ADV_MONITOR_NUM_HANDLES;
- 	handle = idr_alloc(&hdev->adv_monitors_idr, monitor, min, max,
- 			   GFP_KERNEL);
--	if (handle < 0)
--		return handle;
-+	if (handle < 0) {
-+		*err = handle;
-+		return false;
-+	}
- 
--	hdev->adv_monitors_cnt++;
- 	monitor->handle = handle;
- 
--	hci_update_background_scan(hdev);
-+	if (!hdev_is_powered(hdev))
-+		return false;
- 
--	return 0;
-+	switch (hci_get_adv_monitor_offload_ext(hdev)) {
-+	case HCI_ADV_MONITOR_EXT_NONE:
++
++	pending = hci_remove_adv_monitor(hdev, monitor, handle, err);
++	if (!*err && !pending)
 +		hci_update_background_scan(hdev);
-+		BT_DBG("%s add monitor status %d", hdev->name, *err);
-+		/* Message was not forwarded to controller - not an error */
-+		return false;
-+	case HCI_ADV_MONITOR_EXT_MSFT:
-+		*err = msft_add_monitor_pattern(hdev, monitor);
-+		BT_DBG("%s add monitor msft status %d", hdev->name, *err);
-+		break;
-+	}
 +
-+	return (*err == 0);
- }
- 
- static int free_adv_monitor(int id, void *ptr, void *data)
-@@ -3134,6 +3162,14 @@ bool hci_is_adv_monitoring(struct hci_dev *hdev)
- 	return !idr_is_empty(&hdev->adv_monitors_idr);
- }
- 
-+int hci_get_adv_monitor_offload_ext(struct hci_dev *hdev)
-+{
-+	if (msft_monitor_supported(hdev))
-+		return HCI_ADV_MONITOR_EXT_MSFT;
++	BT_DBG("%s remove monitor handle %d, status %d, %spending",
++	       hdev->name, handle, *err, pending ? "" : "not ");
 +
-+	return HCI_ADV_MONITOR_EXT_NONE;
++	return pending;
 +}
 +
- struct bdaddr_list *hci_bdaddr_list_lookup(struct list_head *bdaddr_list,
- 					 bdaddr_t *bdaddr, u8 type)
++/* Returns true if request is forwarded (result is pending), false otherwise.
++ * This function requires the caller holds hdev->lock.
++ */
++bool hci_remove_all_adv_monitor(struct hci_dev *hdev, int *err)
  {
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index cd574054aa39..9bd9f6540664 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -4185,6 +4185,7 @@ static int read_adv_mon_features(struct sock *sk, struct hci_dev *hdev,
- 	int handle, err;
- 	size_t rp_size = 0;
- 	__u32 supported = 0;
-+	__u32 enabled = 0;
- 	__u16 num_handles = 0;
- 	__u16 handles[HCI_MAX_ADV_MONITOR_NUM_HANDLES];
- 
-@@ -4192,12 +4193,11 @@ static int read_adv_mon_features(struct sock *sk, struct hci_dev *hdev,
- 
- 	hci_dev_lock(hdev);
- 
--	if (msft_get_features(hdev) & MSFT_FEATURE_MASK_LE_ADV_MONITOR)
-+	if (msft_monitor_supported(hdev))
- 		supported |= MGMT_ADV_MONITOR_FEATURE_MASK_OR_PATTERNS;
- 
--	idr_for_each_entry(&hdev->adv_monitors_idr, monitor, handle) {
-+	idr_for_each_entry(&hdev->adv_monitors_idr, monitor, handle)
- 		handles[num_handles++] = monitor->handle;
--	}
- 
- 	hci_dev_unlock(hdev);
- 
-@@ -4206,11 +4206,11 @@ static int read_adv_mon_features(struct sock *sk, struct hci_dev *hdev,
- 	if (!rp)
- 		return -ENOMEM;
- 
--	/* Once controller-based monitoring is in place, the enabled_features
--	 * should reflect the use.
--	 */
-+	/* All supported features are currently enabled */
-+	enabled = supported;
+ 	struct adv_monitor *monitor;
++	int idr_next_id = 0;
++	bool pending = false;
++	bool update = false;
 +
- 	rp->supported_features = cpu_to_le32(supported);
--	rp->enabled_features = 0;
-+	rp->enabled_features = cpu_to_le32(enabled);
- 	rp->max_num_handles = cpu_to_le16(HCI_MAX_ADV_MONITOR_NUM_HANDLES);
- 	rp->max_num_patterns = HCI_MAX_ADV_MONITOR_NUM_PATTERNS;
- 	rp->num_handles = cpu_to_le16(num_handles);
-@@ -4226,6 +4226,45 @@ static int read_adv_mon_features(struct sock *sk, struct hci_dev *hdev,
- 	return err;
++	*err = 0;
+ 
+-	if (handle) {
+-		monitor = idr_find(&hdev->adv_monitors_idr, handle);
++	while (!*err && !pending) {
++		monitor = idr_get_next(&hdev->adv_monitors_idr, &idr_next_id);
+ 		if (!monitor)
+-			return -ENOENT;
++			break;
+ 
+-		idr_remove(&hdev->adv_monitors_idr, monitor->handle);
+-		hci_free_adv_monitor(monitor);
+-		hdev->adv_monitors_cnt--;
+-	} else {
+-		/* Remove all monitors if handle is 0. */
+-		idr_for_each(&hdev->adv_monitors_idr, &free_adv_monitor, hdev);
++		pending = hci_remove_adv_monitor(hdev, monitor, 0, err);
++
++		if (!*err && !pending)
++			update = true;
+ 	}
+ 
+-	hci_update_background_scan(hdev);
++	if (update)
++		hci_update_background_scan(hdev);
+ 
+-	return 0;
++	BT_DBG("%s remove all monitors status %d, %spending",
++	       hdev->name, *err, pending ? "" : "not ");
++
++	return pending;
  }
  
-+int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status)
-+{
-+	struct mgmt_rp_add_adv_patterns_monitor rp;
+ /* This function requires the caller holds hdev->lock */
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 9bd9f6540664..35834517d338 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -4167,14 +4167,24 @@ static void mgmt_adv_monitor_added(struct sock *sk, struct hci_dev *hdev,
+ 	mgmt_event(MGMT_EV_ADV_MONITOR_ADDED, hdev, &ev, sizeof(ev), sk);
+ }
+ 
+-static void mgmt_adv_monitor_removed(struct sock *sk, struct hci_dev *hdev,
+-				     u16 handle)
++void mgmt_adv_monitor_removed(struct hci_dev *hdev, u16 handle)
+ {
+-	struct mgmt_ev_adv_monitor_added ev;
++	struct mgmt_ev_adv_monitor_removed ev;
 +	struct mgmt_pending_cmd *cmd;
-+	struct adv_monitor *monitor;
++	struct sock *sk_skip = NULL;
++	struct mgmt_cp_remove_adv_monitor *cp;
++
++	cmd = pending_find(MGMT_OP_REMOVE_ADV_MONITOR, hdev);
++	if (cmd) {
++		cp = cmd->param;
++
++		if (cp->monitor_handle)
++			sk_skip = cmd->sk;
++	}
+ 
+ 	ev.monitor_handle = cpu_to_le16(handle);
+ 
+-	mgmt_event(MGMT_EV_ADV_MONITOR_REMOVED, hdev, &ev, sizeof(ev), sk);
++	mgmt_event(MGMT_EV_ADV_MONITOR_REMOVED, hdev, &ev, sizeof(ev), sk_skip);
+ }
+ 
+ static int read_adv_mon_features(struct sock *sk, struct hci_dev *hdev,
+@@ -4406,8 +4416,8 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
+ 	return 0;
+ 
+ unlock:
++	hci_free_adv_monitor(hdev, m);
+ 	hci_dev_unlock(hdev);
+-	hci_free_adv_monitor(m);
+ 	return mgmt_cmd_status(sk, hdev->id, op, status);
+ }
+ 
+@@ -4425,42 +4435,100 @@ static int add_adv_patterns_monitor_rssi(struct sock *sk, struct hci_dev *hdev,
+ 					 MGMT_OP_ADD_ADV_PATTERNS_MONITOR_RSSI);
+ }
+ 
++int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status)
++{
++	struct mgmt_rp_remove_adv_monitor rp;
++	struct mgmt_cp_remove_adv_monitor *cp;
++	struct mgmt_pending_cmd *cmd;
 +	int err = 0;
 +
 +	hci_dev_lock(hdev);
 +
-+	cmd = pending_find(MGMT_OP_ADD_ADV_PATTERNS_MONITOR_RSSI, hdev);
-+	if (!cmd) {
-+		cmd = pending_find(MGMT_OP_ADD_ADV_PATTERNS_MONITOR, hdev);
-+		if (!cmd)
-+			goto done;
-+	}
++	cmd = pending_find(MGMT_OP_REMOVE_ADV_MONITOR, hdev);
++	if (!cmd)
++		goto done;
 +
-+	monitor = cmd->user_data;
-+	rp.monitor_handle = cpu_to_le16(monitor->handle);
++	cp = cmd->param;
++	rp.monitor_handle = cp->monitor_handle;
 +
-+	if (!status) {
-+		mgmt_adv_monitor_added(cmd->sk, hdev, monitor->handle);
-+		hdev->adv_monitors_cnt++;
-+		if (monitor->state == ADV_MONITOR_STATE_NOT_REGISTERED)
-+			monitor->state = ADV_MONITOR_STATE_REGISTERED;
++	if (!status)
 +		hci_update_background_scan(hdev);
-+	}
 +
 +	err = mgmt_cmd_complete(cmd->sk, cmd->index, cmd->opcode,
 +				mgmt_status(status), &rp, sizeof(rp));
@@ -313,455 +368,287 @@ index cd574054aa39..9bd9f6540664 100644
 +
 +done:
 +	hci_dev_unlock(hdev);
-+	bt_dev_dbg(hdev, "add monitor %d complete, status %d",
++	bt_dev_dbg(hdev, "remove monitor %d complete, status %d",
 +		   rp.monitor_handle, status);
 +
 +	return err;
 +}
 +
- static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
- 				      void *data, u16 len, u16 op)
+ static int remove_adv_monitor(struct sock *sk, struct hci_dev *hdev,
+ 			      void *data, u16 len)
  {
-@@ -4236,14 +4275,25 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
- 	struct mgmt_adv_pattern *patterns = NULL;
- 	struct adv_monitor *m = NULL;
- 	struct adv_pattern *p = NULL;
--	unsigned int mp_cnt = 0, prev_adv_monitors_cnt;
+ 	struct mgmt_cp_remove_adv_monitor *cp = data;
+ 	struct mgmt_rp_remove_adv_monitor rp;
+-	unsigned int prev_adv_monitors_cnt;
+-	u16 handle;
+-	int err;
 +	struct mgmt_pending_cmd *cmd;
- 	__u8 cp_ofst = 0, cp_len = 0;
--	int err, i;
-+	int err, status, i;
++	u16 handle = __le16_to_cpu(cp->monitor_handle);
++	int err, status;
 +	bool pending;
- 	u8 pattern_count;
- 	u16 expected_len;
  
  	BT_DBG("request for %s", hdev->name);
++	rp.monitor_handle = cp->monitor_handle;
  
-+	hci_dev_lock(hdev);
-+
+ 	hci_dev_lock(hdev);
+ 
+-	handle = __le16_to_cpu(cp->monitor_handle);
+-	prev_adv_monitors_cnt = hdev->adv_monitors_cnt;
 +	if (pending_find(MGMT_OP_SET_LE, hdev) ||
++	    pending_find(MGMT_OP_REMOVE_ADV_MONITOR, hdev) ||
 +	    pending_find(MGMT_OP_ADD_ADV_PATTERNS_MONITOR, hdev) ||
-+	    pending_find(MGMT_OP_ADD_ADV_PATTERNS_MONITOR_RSSI, hdev) ||
-+	    pending_find(MGMT_OP_REMOVE_ADV_MONITOR, hdev)) {
++	    pending_find(MGMT_OP_ADD_ADV_PATTERNS_MONITOR_RSSI, hdev)) {
 +		status = MGMT_STATUS_BUSY;
 +		goto unlock;
 +	}
-+
- 	if (op == MGMT_OP_ADD_ADV_PATTERNS_MONITOR_RSSI) {
- 		cp_rssi = data;
- 		pattern_count = cp_rssi->pattern_count;
-@@ -4258,20 +4308,20 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
- 		expected_len = sizeof(*cp) + pattern_count * sizeof(*patterns);
- 	}
  
--	if (len != expected_len || pattern_count == 0) {
--		err = mgmt_cmd_status(sk, hdev->id, op,
--				      MGMT_STATUS_INVALID_PARAMS);
--		goto failed;
-+	if (len != expected_len || pattern_count == 0 ||
-+	    pattern_count > HCI_MAX_ADV_MONITOR_NUM_PATTERNS) {
-+		status = MGMT_STATUS_INVALID_PARAMS;
-+		goto unlock;
- 	}
- 
- 	m = kmalloc(sizeof(*m), GFP_KERNEL);
- 	if (!m) {
--		err = -ENOMEM;
--		goto failed;
-+		status = MGMT_STATUS_NO_RESOURCES;
-+		goto unlock;
- 	}
- 
- 	INIT_LIST_HEAD(&m->patterns);
--	m->active = false;
-+	m->state = ADV_MONITOR_STATE_NOT_REGISTERED;
- 
- 	if (rssi) {
- 		m->rssi.low_threshold = rssi->low_threshold;
-@@ -4295,26 +4345,19 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
- 	}
- 
- 	for (i = 0; i < pattern_count; i++) {
--		if (++mp_cnt > HCI_MAX_ADV_MONITOR_NUM_PATTERNS) {
--			err = mgmt_cmd_status(sk, hdev->id, op,
--					      MGMT_STATUS_INVALID_PARAMS);
--			goto failed;
--		}
--
- 		cp_ofst = patterns[i].offset;
- 		cp_len = patterns[i].length;
- 		if (cp_ofst >= HCI_MAX_AD_LENGTH ||
- 		    cp_len > HCI_MAX_AD_LENGTH ||
- 		    (cp_ofst + cp_len) > HCI_MAX_AD_LENGTH) {
--			err = mgmt_cmd_status(sk, hdev->id, op,
--					      MGMT_STATUS_INVALID_PARAMS);
--			goto failed;
-+			status = MGMT_STATUS_INVALID_PARAMS;
-+			goto unlock;
- 		}
- 
- 		p = kmalloc(sizeof(*p), GFP_KERNEL);
- 		if (!p) {
--			err = -ENOMEM;
--			goto failed;
-+			status = MGMT_STATUS_NO_RESOURCES;
-+			goto unlock;
- 		}
- 
- 		p->ad_type = patterns[i].ad_type;
-@@ -4326,41 +4369,46 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
- 		list_add(&p->list, &m->patterns);
- 	}
- 
--	if (mp_cnt != pattern_count) {
--		err = mgmt_cmd_status(sk, hdev->id, op,
--				      MGMT_STATUS_INVALID_PARAMS);
--		goto failed;
-+	cmd = mgmt_pending_add(sk, op, hdev, data, len);
+-	err = hci_remove_adv_monitor(hdev, handle);
+-	if (err == -ENOENT) {
+-		err = mgmt_cmd_status(sk, hdev->id, MGMT_OP_REMOVE_ADV_MONITOR,
+-				      MGMT_STATUS_INVALID_INDEX);
++	cmd = mgmt_pending_add(sk, MGMT_OP_REMOVE_ADV_MONITOR, hdev, data, len);
 +	if (!cmd) {
 +		status = MGMT_STATUS_NO_RESOURCES;
-+		goto unlock;
- 	}
- 
--	hci_dev_lock(hdev);
--
--	prev_adv_monitors_cnt = hdev->adv_monitors_cnt;
--
--	err = hci_add_adv_monitor(hdev, m);
-+	pending = hci_add_adv_monitor(hdev, m, &err);
- 	if (err) {
--		if (err == -ENOSPC) {
--			mgmt_cmd_status(sk, hdev->id, op,
--					MGMT_STATUS_NO_RESOURCES);
--		}
-+		if (err == -ENOSPC || err == -ENOMEM)
-+			status = MGMT_STATUS_NO_RESOURCES;
-+		else if (err == -EINVAL)
-+			status = MGMT_STATUS_INVALID_PARAMS;
-+		else
-+			status = MGMT_STATUS_FAILED;
-+
-+		mgmt_pending_remove(cmd);
  		goto unlock;
  	}
  
--	if (hdev->adv_monitors_cnt > prev_adv_monitors_cnt)
-+	if (!pending) {
-+		mgmt_pending_remove(cmd);
-+		rp.monitor_handle = cpu_to_le16(m->handle);
- 		mgmt_adv_monitor_added(sk, hdev, m->handle);
-+		m->state = ADV_MONITOR_STATE_REGISTERED;
-+		hdev->adv_monitors_cnt++;
+-	if (hdev->adv_monitors_cnt < prev_adv_monitors_cnt)
+-		mgmt_adv_monitor_removed(sk, hdev, handle);
++	if (handle)
++		pending = hci_remove_single_adv_monitor(hdev, handle, &err);
++	else
++		pending = hci_remove_all_adv_monitor(hdev, &err);
  
 -	hci_dev_unlock(hdev);
++	if (err) {
++		mgmt_pending_remove(cmd);
+ 
+-	rp.monitor_handle = cp->monitor_handle;
++		if (err == -ENOENT)
++			status = MGMT_STATUS_INVALID_INDEX;
++		else
++			status = MGMT_STATUS_FAILED;
++
++		goto unlock;
++	}
++
++	/* monitor can be removed without forwarding request to controller */
++	if (!pending) {
++		mgmt_pending_remove(cmd);
 +		hci_dev_unlock(hdev);
-+		return mgmt_cmd_complete(sk, hdev->id, op, MGMT_STATUS_SUCCESS,
++
++		return mgmt_cmd_complete(sk, hdev->id,
++					 MGMT_OP_REMOVE_ADV_MONITOR,
++					 MGMT_STATUS_SUCCESS,
 +					 &rp, sizeof(rp));
 +	}
  
--	rp.monitor_handle = cpu_to_le16(m->handle);
-+	hci_dev_unlock(hdev);
- 
--	return mgmt_cmd_complete(sk, hdev->id, op,
+-	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_REMOVE_ADV_MONITOR,
 -				 MGMT_STATUS_SUCCESS, &rp, sizeof(rp));
-+	cmd->user_data = m;
++	hci_dev_unlock(hdev);
 +	return 0;
  
  unlock:
  	hci_dev_unlock(hdev);
--
--failed:
- 	hci_free_adv_monitor(m);
 -	return err;
-+	return mgmt_cmd_status(sk, hdev->id, op, status);
++	return mgmt_cmd_status(sk, hdev->id, MGMT_OP_REMOVE_ADV_MONITOR,
++			       status);
  }
  
- static int add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
+ static void read_local_oob_data_complete(struct hci_dev *hdev, u8 status,
 diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index 4b39534a14a1..e4b8fe71b9c3 100644
+index e4b8fe71b9c3..f5aa0e3b1b9b 100644
 --- a/net/bluetooth/msft.c
 +++ b/net/bluetooth/msft.c
-@@ -5,9 +5,16 @@
- 
- #include <net/bluetooth/bluetooth.h>
- #include <net/bluetooth/hci_core.h>
-+#include <net/bluetooth/mgmt.h>
- 
-+#include "hci_request.h"
-+#include "mgmt_util.h"
- #include "msft.h"
- 
-+#define MSFT_RSSI_THRESHOLD_VALUE_MIN		-127
-+#define MSFT_RSSI_THRESHOLD_VALUE_MAX		20
-+#define MSFT_RSSI_LOW_TIMEOUT_MAX		0x3C
-+
- #define MSFT_OP_READ_SUPPORTED_FEATURES		0x00
- struct msft_cp_read_supported_features {
- 	__u8   sub_opcode;
-@@ -21,12 +28,55 @@ struct msft_rp_read_supported_features {
- 	__u8   evt_prefix[];
+@@ -58,6 +58,17 @@ struct msft_rp_le_monitor_advertisement {
+ 	__u8 handle;
  } __packed;
  
-+#define MSFT_OP_LE_MONITOR_ADVERTISEMENT	0x03
-+#define MSFT_MONITOR_ADVERTISEMENT_TYPE_PATTERN	0x01
-+struct msft_le_monitor_advertisement_pattern {
-+	__u8 length;
-+	__u8 data_type;
-+	__u8 start_byte;
-+	__u8 pattern[0];
-+};
-+
-+struct msft_le_monitor_advertisement_pattern_data {
-+	__u8 count;
-+	__u8 data[0];
-+};
-+
-+struct msft_cp_le_monitor_advertisement {
-+	__u8 sub_opcode;
-+	__s8 rssi_high;
-+	__s8 rssi_low;
-+	__u8 rssi_low_interval;
-+	__u8 rssi_sampling_period;
-+	__u8 cond_type;
-+	__u8 data[0];
-+} __packed;
-+
-+struct msft_rp_le_monitor_advertisement {
-+	__u8 status;
++#define MSFT_OP_LE_CANCEL_MONITOR_ADVERTISEMENT	0x04
++struct msft_cp_le_cancel_monitor_advertisement {
 +	__u8 sub_opcode;
 +	__u8 handle;
 +} __packed;
 +
-+struct msft_monitor_advertisement_handle_data {
-+	__u8  msft_handle;
-+	__u16 mgmt_handle;
-+	struct list_head list;
-+};
++struct msft_rp_le_cancel_monitor_advertisement {
++	__u8 status;
++	__u8 sub_opcode;
++} __packed;
 +
- struct msft_data {
- 	__u64 features;
- 	__u8  evt_prefix_len;
+ struct msft_monitor_advertisement_handle_data {
+ 	__u8  msft_handle;
+ 	__u16 mgmt_handle;
+@@ -70,6 +81,7 @@ struct msft_data {
  	__u8  *evt_prefix;
-+	struct list_head handle_map;
-+	__u16 pending_add_handle;
+ 	struct list_head handle_map;
+ 	__u16 pending_add_handle;
++	__u16 pending_remove_handle;
  };
  
-+bool msft_monitor_supported(struct hci_dev *hdev)
-+{
-+	return !!(msft_get_features(hdev) & MSFT_FEATURE_MASK_LE_ADV_MONITOR);
-+}
-+
- static bool read_supported_features(struct hci_dev *hdev,
- 				    struct msft_data *msft)
- {
-@@ -90,12 +140,14 @@ void msft_do_open(struct hci_dev *hdev)
- 		return;
- 	}
- 
-+	INIT_LIST_HEAD(&msft->handle_map);
- 	hdev->msft_data = msft;
+ bool msft_monitor_supported(struct hci_dev *hdev)
+@@ -205,6 +217,26 @@ __u64 msft_get_features(struct hci_dev *hdev)
+ 	return msft ? msft->features : 0;
  }
  
- void msft_do_close(struct hci_dev *hdev)
- {
- 	struct msft_data *msft = hdev->msft_data;
-+	struct msft_monitor_advertisement_handle_data *handle_data, *tmp;
++/* is_mgmt = true matches the handle exposed to userspace via mgmt.
++ * is_mgmt = false matches the handle used by the msft controller.
++ * This function requires the caller holds hdev->lock
++ */
++static struct msft_monitor_advertisement_handle_data *msft_find_handle_data
++				(struct hci_dev *hdev, u16 handle, bool is_mgmt)
++{
++	struct msft_monitor_advertisement_handle_data *entry;
++	struct msft_data *msft = hdev->msft_data;
++
++	list_for_each_entry(entry, &msft->handle_map, list) {
++		if (is_mgmt && entry->mgmt_handle == handle)
++			return entry;
++		if (!is_mgmt && entry->msft_handle == handle)
++			return entry;
++	}
++
++	return NULL;
++}
++
+ static void msft_le_monitor_advertisement_cb(struct hci_dev *hdev,
+ 					     u8 status, u16 opcode,
+ 					     struct sk_buff *skb)
+@@ -247,16 +279,71 @@ static void msft_le_monitor_advertisement_cb(struct hci_dev *hdev,
+ 	monitor->state = ADV_MONITOR_STATE_OFFLOADED;
  
- 	if (!msft)
- 		return;
-@@ -104,6 +156,11 @@ void msft_do_close(struct hci_dev *hdev)
+ unlock:
+-	if (status && monitor) {
+-		idr_remove(&hdev->adv_monitors_idr, monitor->handle);
+-		hci_free_adv_monitor(monitor);
+-	}
++	if (status && monitor)
++		hci_free_adv_monitor(hdev, monitor);
  
- 	hdev->msft_data = NULL;
+ 	hci_dev_unlock(hdev);
  
-+	list_for_each_entry_safe(handle_data, tmp, &msft->handle_map, list) {
+ 	hci_add_adv_patterns_monitor_complete(hdev, status);
+ }
+ 
++static void msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
++						    u8 status, u16 opcode,
++						    struct sk_buff *skb)
++{
++	struct msft_cp_le_cancel_monitor_advertisement *cp;
++	struct msft_rp_le_cancel_monitor_advertisement *rp;
++	struct adv_monitor *monitor;
++	struct msft_monitor_advertisement_handle_data *handle_data;
++	struct msft_data *msft = hdev->msft_data;
++	int err;
++	bool pending;
++
++	if (status)
++		goto done;
++
++	rp = (struct msft_rp_le_cancel_monitor_advertisement *)skb->data;
++	if (skb->len < sizeof(*rp)) {
++		status = HCI_ERROR_UNSPECIFIED;
++		goto done;
++	}
++
++	hci_dev_lock(hdev);
++
++	cp = hci_sent_cmd_data(hdev, hdev->msft_opcode);
++	handle_data = msft_find_handle_data(hdev, cp->handle, false);
++
++	if (handle_data) {
++		monitor = idr_find(&hdev->adv_monitors_idr,
++				   handle_data->mgmt_handle);
++		if (monitor)
++			hci_free_adv_monitor(hdev, monitor);
++
 +		list_del(&handle_data->list);
 +		kfree(handle_data);
 +	}
 +
- 	kfree(msft->evt_prefix);
- 	kfree(msft);
- }
-@@ -145,5 +202,147 @@ __u64 msft_get_features(struct hci_dev *hdev)
- {
- 	struct msft_data *msft = hdev->msft_data;
- 
--	return  msft ? msft->features : 0;
-+	return msft ? msft->features : 0;
-+}
++	/* If remove all monitors is required, we need to continue the process
++	 * here because the earlier it was paused when waiting for the
++	 * response from controller.
++	 */
++	if (msft->pending_remove_handle == 0) {
++		pending = hci_remove_all_adv_monitor(hdev, &err);
++		if (pending) {
++			hci_dev_unlock(hdev);
++			return;
++		}
 +
-+static void msft_le_monitor_advertisement_cb(struct hci_dev *hdev,
-+					     u8 status, u16 opcode,
-+					     struct sk_buff *skb)
-+{
-+	struct msft_rp_le_monitor_advertisement *rp;
-+	struct adv_monitor *monitor;
-+	struct msft_monitor_advertisement_handle_data *handle_data;
-+	struct msft_data *msft = hdev->msft_data;
-+
-+	hci_dev_lock(hdev);
-+
-+	monitor = idr_find(&hdev->adv_monitors_idr, msft->pending_add_handle);
-+	if (!monitor) {
-+		bt_dev_err(hdev, "msft add advmon: monitor %d is not found!",
-+			   msft->pending_add_handle);
-+		status = HCI_ERROR_UNSPECIFIED;
-+		goto unlock;
-+	}
-+
-+	if (status)
-+		goto unlock;
-+
-+	rp = (struct msft_rp_le_monitor_advertisement *)skb->data;
-+	if (skb->len < sizeof(*rp)) {
-+		status = HCI_ERROR_UNSPECIFIED;
-+		goto unlock;
-+	}
-+
-+	handle_data = kmalloc(sizeof(*handle_data), GFP_KERNEL);
-+	if (!handle_data) {
-+		status = HCI_ERROR_UNSPECIFIED;
-+		goto unlock;
-+	}
-+
-+	handle_data->mgmt_handle = monitor->handle;
-+	handle_data->msft_handle = rp->handle;
-+	INIT_LIST_HEAD(&handle_data->list);
-+	list_add(&handle_data->list, &msft->handle_map);
-+
-+	monitor->state = ADV_MONITOR_STATE_OFFLOADED;
-+
-+unlock:
-+	if (status && monitor) {
-+		idr_remove(&hdev->adv_monitors_idr, monitor->handle);
-+		hci_free_adv_monitor(monitor);
++		if (err)
++			status = HCI_ERROR_UNSPECIFIED;
 +	}
 +
 +	hci_dev_unlock(hdev);
 +
-+	hci_add_adv_patterns_monitor_complete(hdev, status);
++done:
++	hci_remove_adv_monitor_complete(hdev, status);
 +}
 +
-+static bool msft_monitor_rssi_valid(struct adv_monitor *monitor)
-+{
-+	struct adv_rssi_thresholds *r = &monitor->rssi;
-+
-+	if (r->high_threshold < MSFT_RSSI_THRESHOLD_VALUE_MIN ||
-+	    r->high_threshold > MSFT_RSSI_THRESHOLD_VALUE_MAX ||
-+	    r->low_threshold < MSFT_RSSI_THRESHOLD_VALUE_MIN ||
-+	    r->low_threshold > MSFT_RSSI_THRESHOLD_VALUE_MAX)
-+		return false;
-+
-+	/* High_threshold_timeout is not supported,
-+	 * once high_threshold is reached, events are immediately reported.
-+	 */
-+	if (r->high_threshold_timeout != 0)
-+		return false;
-+
-+	if (r->low_threshold_timeout > MSFT_RSSI_LOW_TIMEOUT_MAX)
-+		return false;
-+
-+	/* Sampling period from 0x00 to 0xFF are all allowed */
-+	return true;
-+}
-+
-+static bool msft_monitor_pattern_valid(struct adv_monitor *monitor)
-+{
-+	return msft_monitor_rssi_valid(monitor);
-+	/* No additional check needed for pattern-based monitor */
-+}
+ static bool msft_monitor_rssi_valid(struct adv_monitor *monitor)
+ {
+ 	struct adv_rssi_thresholds *r = &monitor->rssi;
+@@ -346,3 +433,35 @@ int msft_add_monitor_pattern(struct hci_dev *hdev, struct adv_monitor *monitor)
+ 
+ 	return err;
+ }
 +
 +/* This function requires the caller holds hdev->lock */
-+int msft_add_monitor_pattern(struct hci_dev *hdev, struct adv_monitor *monitor)
++int msft_remove_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
++			u16 handle)
 +{
-+	struct msft_cp_le_monitor_advertisement *cp;
-+	struct msft_le_monitor_advertisement_pattern_data *pattern_data;
-+	struct msft_le_monitor_advertisement_pattern *pattern;
-+	struct adv_pattern *entry;
++	struct msft_cp_le_cancel_monitor_advertisement cp;
++	struct msft_monitor_advertisement_handle_data *handle_data;
 +	struct hci_request req;
 +	struct msft_data *msft = hdev->msft_data;
-+	size_t total_size = sizeof(*cp) + sizeof(*pattern_data);
-+	ptrdiff_t offset = 0;
-+	u8 pattern_count = 0;
 +	int err = 0;
 +
 +	if (!msft)
 +		return -EOPNOTSUPP;
 +
-+	if (!msft_monitor_pattern_valid(monitor))
-+		return -EINVAL;
++	handle_data = msft_find_handle_data(hdev, monitor->handle, true);
 +
-+	list_for_each_entry(entry, &monitor->patterns, list) {
-+		pattern_count++;
-+		total_size += sizeof(*pattern) + entry->length;
-+	}
++	/* If no matched handle, just remove without telling controller */
++	if (!handle_data)
++		return -ENOENT;
 +
-+	cp = kmalloc(total_size, GFP_KERNEL);
-+	if (!cp)
-+		return -ENOMEM;
-+
-+	cp->sub_opcode = MSFT_OP_LE_MONITOR_ADVERTISEMENT;
-+	cp->rssi_high = monitor->rssi.high_threshold;
-+	cp->rssi_low = monitor->rssi.low_threshold;
-+	cp->rssi_low_interval = (u8)monitor->rssi.low_threshold_timeout;
-+	cp->rssi_sampling_period = monitor->rssi.sampling_period;
-+
-+	cp->cond_type = MSFT_MONITOR_ADVERTISEMENT_TYPE_PATTERN;
-+
-+	pattern_data = (void *)cp->data;
-+	pattern_data->count = pattern_count;
-+
-+	list_for_each_entry(entry, &monitor->patterns, list) {
-+		pattern = (void *)(pattern_data->data + offset);
-+		/* the length also includes data_type and offset */
-+		pattern->length = entry->length + 2;
-+		pattern->data_type = entry->ad_type;
-+		pattern->start_byte = entry->offset;
-+		memcpy(pattern->pattern, entry->value, entry->length);
-+		offset += sizeof(*pattern) + entry->length;
-+	}
++	cp.sub_opcode = MSFT_OP_LE_CANCEL_MONITOR_ADVERTISEMENT;
++	cp.handle = handle_data->msft_handle;
 +
 +	hci_req_init(&req, hdev);
-+	hci_req_add(&req, hdev->msft_opcode, total_size, cp);
-+	err = hci_req_run_skb(&req, msft_le_monitor_advertisement_cb);
-+	kfree(cp);
++	hci_req_add(&req, hdev->msft_opcode, sizeof(cp), &cp);
++	err = hci_req_run_skb(&req, msft_le_cancel_monitor_advertisement_cb);
 +
 +	if (!err)
-+		msft->pending_add_handle = monitor->handle;
++		msft->pending_remove_handle = handle;
 +
 +	return err;
- }
++}
 diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
-index e9c478e890b8..0ac9b15322b1 100644
+index 0ac9b15322b1..6f126a1f1688 100644
 --- a/net/bluetooth/msft.h
 +++ b/net/bluetooth/msft.h
-@@ -12,16 +12,28 @@
- 
- #if IS_ENABLED(CONFIG_BT_MSFTEXT)
- 
-+bool msft_monitor_supported(struct hci_dev *hdev);
- void msft_do_open(struct hci_dev *hdev);
- void msft_do_close(struct hci_dev *hdev);
+@@ -18,6 +18,8 @@ void msft_do_close(struct hci_dev *hdev);
  void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
  __u64 msft_get_features(struct hci_dev *hdev);
-+int msft_add_monitor_pattern(struct hci_dev *hdev, struct adv_monitor *monitor);
+ int msft_add_monitor_pattern(struct hci_dev *hdev, struct adv_monitor *monitor);
++int msft_remove_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
++			u16 handle);
  
  #else
  
-+static inline bool msft_monitor_supported(struct hci_dev *hdev)
-+{
-+	return false;
-+}
-+
- static inline void msft_do_open(struct hci_dev *hdev) {}
- static inline void msft_do_close(struct hci_dev *hdev) {}
- static inline void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb) {}
- static inline __u64 msft_get_features(struct hci_dev *hdev) { return 0; }
-+static inline int msft_add_monitor_pattern(struct hci_dev *hdev,
-+					   struct adv_monitor *monitor)
+@@ -36,4 +38,11 @@ static inline int msft_add_monitor_pattern(struct hci_dev *hdev,
+ 	return -EOPNOTSUPP;
+ }
+ 
++static inline int msft_remove_monitor(struct hci_dev *hdev,
++				      struct adv_monitor *monitor,
++				      u16 handle)
 +{
 +	return -EOPNOTSUPP;
 +}
- 
++
  #endif
 -- 
 2.29.2.684.gfbc64c5ab5-goog
