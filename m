@@ -2,145 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6887E2DBC2D
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 08:45:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 627952DBC46
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 08:49:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726353AbgLPHoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 02:44:23 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:2092 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726351AbgLPHoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 02:44:23 -0500
-Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4CwnCZ0rwSzVppc;
-        Wed, 16 Dec 2020 15:42:34 +0800 (CST)
-Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.214]) by
- DGGEMM405-HUB.china.huawei.com ([10.3.20.213]) with mapi id 14.03.0509.000;
- Wed, 16 Dec 2020 15:43:31 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mst@redhat.com" <mst@redhat.com>,
+        id S1725829AbgLPHso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 02:48:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:21866 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725789AbgLPHsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 02:48:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608104836;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fWj00IsPnfUCQ5MHH6U5pwD4ctNfhQxn42vbY4Hi9r0=;
+        b=apdW5vjvsVO8p0DrgXgjx3Yn9TlzYsVfyDw/LunlIsjysluI5Hxy26jOteOyLSt6/dnuUf
+        psvAwPdvYFV1IFfnT4lr6MbUFaj/MVZuctE1jpnjt+5IGNSjQHg//P8Al+ZvjPZrmx8ID/
+        US4Fg49mPcEq0r3ayJsOG97N78hlwWE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-554-cbgtW64SMM2x_IsnA489kg-1; Wed, 16 Dec 2020 02:47:12 -0500
+X-MC-Unique: cbgtW64SMM2x_IsnA489kg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E92B1005513;
+        Wed, 16 Dec 2020 07:47:10 +0000 (UTC)
+Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 93FD47095E;
+        Wed, 16 Dec 2020 07:47:10 +0000 (UTC)
+Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
+        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 782804BB40;
+        Wed, 16 Dec 2020 07:47:10 +0000 (UTC)
+Date:   Wed, 16 Dec 2020 02:47:10 -0500 (EST)
+From:   Jason Wang <jasowang@redhat.com>
+To:     wangyunjian <wangyunjian@huawei.com>
+Cc:     netdev@vger.kernel.org, mst@redhat.com,
         willemdebruijn kernel <willemdebruijn.kernel@gmail.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
+        virtualization@lists.linux-foundation.org,
         "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
         chenchanghu <chenchanghu@huawei.com>,
         xudingke <xudingke@huawei.com>,
         "huangbin (J)" <brian.huangbin@huawei.com>
-Subject: RE: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
-Thread-Topic: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
-Thread-Index: AQHW0oRuvV7yNtzm006vlEv0Vf1dkan3BR2AgADGt5Bmnr+pAPzMlzYw
-Date:   Wed, 16 Dec 2020 07:43:32 +0000
-Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB8408A@DGGEMM533-MBX.china.huawei.com>
-References: <cover.1608024547.git.wangyunjian@huawei.com>
- <4be47d3a325983f1bfc39f11f0e015767dd2aa3c.1608024547.git.wangyunjian@huawei.com>
- <e853a47e-b581-18d9-f13c-b449b176a308@redhat.com>
- <34EFBCA9F01B0748BEB6B629CE643AE60DB82A73@DGGEMM533-MBX.china.huawei.com>
- <205304638.36191504.1608098190622.JavaMail.zimbra@redhat.com>
-In-Reply-To: <205304638.36191504.1608098190622.JavaMail.zimbra@redhat.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.243.127]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <94321592.37021268.1608104830197.JavaMail.zimbra@redhat.com>
+In-Reply-To: <34EFBCA9F01B0748BEB6B629CE643AE60DB8408A@DGGEMM533-MBX.china.huawei.com>
+References: <cover.1608024547.git.wangyunjian@huawei.com> <4be47d3a325983f1bfc39f11f0e015767dd2aa3c.1608024547.git.wangyunjian@huawei.com> <e853a47e-b581-18d9-f13c-b449b176a308@redhat.com> <34EFBCA9F01B0748BEB6B629CE643AE60DB82A73@DGGEMM533-MBX.china.huawei.com> <205304638.36191504.1608098190622.JavaMail.zimbra@redhat.com> <34EFBCA9F01B0748BEB6B629CE643AE60DB8408A@DGGEMM533-MBX.china.huawei.com>
+Subject: Re: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [10.68.5.20, 10.4.195.17]
+Thread-Topic: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
+Thread-Index: AQHW0oRuvV7yNtzm006vlEv0Vf1dkan3BR2AgADGt5Bmnr+pAPzMlzYwSrBP9Hs=
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYXNvbiBXYW5nIFttYWlsdG86
-amFzb3dhbmdAcmVkaGF0LmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBEZWNlbWJlciAxNiwgMjAy
-MCAxOjU3IFBNDQo+IFRvOiB3YW5neXVuamlhbiA8d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT4NCj4g
-Q2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IG1zdEByZWRoYXQuY29tOyB3aWxsZW1kZWJydWlq
-biBrZXJuZWwNCj4gPHdpbGxlbWRlYnJ1aWpuLmtlcm5lbEBnbWFpbC5jb20+OyB2aXJ0dWFsaXph
-dGlvbkBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsNCj4gTGlsaWp1biAoSmVycnkpIDxqZXJy
-eS5saWxpanVuQGh1YXdlaS5jb20+OyBjaGVuY2hhbmdodQ0KPiA8Y2hlbmNoYW5naHVAaHVhd2Vp
-LmNvbT47IHh1ZGluZ2tlIDx4dWRpbmdrZUBodWF3ZWkuY29tPjsgaHVhbmdiaW4gKEopDQo+IDxi
-cmlhbi5odWFuZ2JpbkBodWF3ZWkuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG5ldCAyLzJd
-IHZob3N0X25ldDogZml4IGhpZ2ggY3B1IGxvYWQgd2hlbiBzZW5kbXNnIGZhaWxzDQo+IA0KPiAN
-Cj4gDQo+IC0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0NCj4gPg0KPiA+DQo+ID4gPiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+ID4gRnJvbTogSmFzb24gV2FuZyBbbWFpbHRvOmph
-c293YW5nQHJlZGhhdC5jb21dDQo+ID4gPiBTZW50OiBUdWVzZGF5LCBEZWNlbWJlciAxNSwgMjAy
-MCAxMjoxMCBQTQ0KPiA+ID4gVG86IHdhbmd5dW5qaWFuIDx3YW5neXVuamlhbkBodWF3ZWkuY29t
-PjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4gPiA+IG1zdEByZWRoYXQuY29tOyB3aWxsZW1k
-ZWJydWlqbi5rZXJuZWxAZ21haWwuY29tDQo+ID4gPiBDYzogdmlydHVhbGl6YXRpb25AbGlzdHMu
-bGludXgtZm91bmRhdGlvbi5vcmc7IExpbGlqdW4gKEplcnJ5KQ0KPiA+ID4gPGplcnJ5LmxpbGlq
-dW5AaHVhd2VpLmNvbT47IGNoZW5jaGFuZ2h1IDxjaGVuY2hhbmdodUBodWF3ZWkuY29tPjsNCj4g
-PiA+IHh1ZGluZ2tlIDx4dWRpbmdrZUBodWF3ZWkuY29tPjsgaHVhbmdiaW4gKEopDQo+ID4gPiA8
-YnJpYW4uaHVhbmdiaW5AaHVhd2VpLmNvbT4NCj4gPiA+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0
-IDIvMl0gdmhvc3RfbmV0OiBmaXggaGlnaCBjcHUgbG9hZCB3aGVuIHNlbmRtc2cNCj4gPiA+IGZh
-aWxzDQo+ID4gPg0KPiA+ID4NCj4gPiA+IE9uIDIwMjAvMTIvMTUg5LiK5Y2IOTo0OCwgd2FuZ3l1
-bmppYW4gd3JvdGU6DQo+ID4gPiA+IEZyb206IFl1bmppYW4gV2FuZyA8d2FuZ3l1bmppYW5AaHVh
-d2VpLmNvbT4NCj4gPiA+ID4NCj4gPiA+ID4gQ3VycmVudGx5IHdlIGJyZWFrIHRoZSBsb29wIGFu
-ZCB3YWtlIHVwIHRoZSB2aG9zdF93b3JrZXIgd2hlbg0KPiBzZW5kbXNnDQo+ID4gPiA+IGZhaWxz
-LiBXaGVuIHRoZSB3b3JrZXIgd2FrZXMgdXAgYWdhaW4sIHdlJ2xsIG1lZXQgdGhlIHNhbWUgZXJy
-b3IuIFRoaXMNCj4gPiA+ID4gd2lsbCBjYXVzZSBoaWdoIENQVSBsb2FkLiBUbyBmaXggdGhpcyBp
-c3N1ZSwgd2UgY2FuIHNraXAgdGhpcw0KPiA+ID4gPiBkZXNjcmlwdGlvbiBieSBpZ25vcmluZyB0
-aGUgZXJyb3IuIFdoZW4gd2UgZXhjZWVkcyBzbmRidWYsIHRoZSByZXR1cm4NCj4gPiA+ID4gdmFs
-dWUgb2Ygc2VuZG1zZyBpcyAtRUFHQUlOLiBJbiB0aGUgY2FzZSB3ZSBkb24ndCBza2lwIHRoZSBk
-ZXNjcmlwdGlvbg0KPiA+ID4gPiBhbmQgZG9uJ3QgZHJvcCBwYWNrZXQuDQo+ID4gPiA+DQo+ID4g
-PiA+IFNpZ25lZC1vZmYtYnk6IFl1bmppYW4gV2FuZyA8d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT4N
-Cj4gPiA+ID4gLS0tDQo+ID4gPiA+ICAgZHJpdmVycy92aG9zdC9uZXQuYyB8IDIxICsrKysrKysr
-Ky0tLS0tLS0tLS0tLQ0KPiA+ID4gPiAgIDEgZmlsZSBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyks
-IDEyIGRlbGV0aW9ucygtKQ0KPiA+ID4gPg0KPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy92
-aG9zdC9uZXQuYyBiL2RyaXZlcnMvdmhvc3QvbmV0LmMgaW5kZXgNCj4gPiA+ID4gYzg3ODRkZmFm
-ZGQ3Li5mOTY2NTkyZDg5MDAgMTAwNjQ0DQo+ID4gPiA+IC0tLSBhL2RyaXZlcnMvdmhvc3QvbmV0
-LmMNCj4gPiA+ID4gKysrIGIvZHJpdmVycy92aG9zdC9uZXQuYw0KPiA+ID4gPiBAQCAtODI3LDE2
-ICs4MjcsMTMgQEAgc3RhdGljIHZvaWQgaGFuZGxlX3R4X2NvcHkoc3RydWN0IHZob3N0X25ldA0K
-PiAqbmV0LA0KPiA+ID4gc3RydWN0IHNvY2tldCAqc29jaykNCj4gPiA+ID4gICAJCQkJbXNnLm1z
-Z19mbGFncyAmPSB+TVNHX01PUkU7DQo+ID4gPiA+ICAgCQl9DQo+ID4gPiA+DQo+ID4gPiA+IC0J
-CS8qIFRPRE86IENoZWNrIHNwZWNpZmljIGVycm9yIGFuZCBib21iIG91dCB1bmxlc3MgRU5PQlVG
-Uz8NCj4gKi8NCj4gPiA+ID4gICAJCWVyciA9IHNvY2stPm9wcy0+c2VuZG1zZyhzb2NrLCAmbXNn
-LCBsZW4pOw0KPiA+ID4gPiAtCQlpZiAodW5saWtlbHkoZXJyIDwgMCkpIHsNCj4gPiA+ID4gKwkJ
-aWYgKHVubGlrZWx5KGVyciA9PSAtRUFHQUlOKSkgew0KPiA+ID4gPiAgIAkJCXZob3N0X2Rpc2Nh
-cmRfdnFfZGVzYyh2cSwgMSk7DQo+ID4gPiA+ICAgCQkJdmhvc3RfbmV0X2VuYWJsZV92cShuZXQs
-IHZxKTsNCj4gPiA+ID4gICAJCQlicmVhazsNCj4gPiA+ID4gLQkJfQ0KPiA+ID4NCj4gPiA+DQo+
-ID4gPiBBcyBJJ3ZlIHBvaW50ZWQgb3V0IGluIGxhc3QgdmVyc2lvbi4gSWYgeW91IGRvbid0IGRp
-c2NhcmQgZGVzY3JpcHRvciwgeW91DQo+ID4gPiBwcm9iYWJseQ0KPiA+ID4gbmVlZCB0byBhZGQg
-dGhlIGhlYWQgdG8gdXNlZCByaW5nLiBPdGhlcndpc2UgdGhpcyBkZXNjcmlwdG9yIHdpbGwgYmUg
-YWx3YXlzDQo+ID4gPiBpbmZsaWdodCB0aGF0IG1heSBjb25mdXNlIGRyaXZlcnMuDQo+ID4NCj4g
-PiBTb3JyeSBmb3IgbWlzc2luZyB0aGUgY29tbWVudC4NCj4gPg0KPiA+IEFmdGVyIGRlbGV0aW5n
-IGRpc2NhcmQgZGVzY3JpcHRvciBhbmQgYnJlYWssIHRoZSBuZXh0IHByb2Nlc3Npbmcgd2lsbCBi
-ZSB0aGUNCj4gPiBzYW1lDQo+ID4gYXMgdGhlIG5vcm1hbCBzdWNjZXNzIG9mIHNlbmRtc2coKSwg
-YW5kIHZob3N0X3plcm9jb3B5X3NpZ25hbF91c2VkKCkgb3INCj4gPiB2aG9zdF9hZGRfdXNlZF9h
-bmRfc2lnbmFsKCkgbWV0aG9kIHdpbGwgYmUgY2FsbGVkIHRvIGFkZCB0aGUgaGVhZCB0byB1c2Vk
-DQo+ID4gcmluZy4NCj4gDQo+IEl0J3MgdGhlIG5leHQgaGVhZCBub3QgdGhlIG9uZSB0aGF0IGNv
-bnRhaW5zIHRoZSBidWdneSBwYWNrZXQ/DQoNCkluIHRoZSBtb2RpZmllZCBjb2RlIGxvZ2ljLCB0
-aGUgaGVhZCBhZGRlZCB0byB1c2VkIHJpbmcgaXMgZXhlY3RseSB0aGUNCm9uZSB0aGF0IGNvbnRh
-aW5zIHRoZSBidWdneSBwYWNrZXQuDQoNClRoYW5rcw0KDQo+IA0KPiBUaGFua3MNCj4gDQo+ID4N
-Cj4gPiBUaGFua3MNCj4gPiA+DQo+ID4gPg0KPiA+ID4gPiAtCQlpZiAoZXJyICE9IGxlbikNCj4g
-PiA+ID4gLQkJCXByX2RlYnVnKCJUcnVuY2F0ZWQgVFggcGFja2V0OiBsZW4gJWQgIT0gJXpkXG4i
-LA0KPiA+ID4gPiAtCQkJCSBlcnIsIGxlbik7DQo+ID4gPiA+ICsJCX0gZWxzZSBpZiAodW5saWtl
-bHkoZXJyIDwgMCB8fCBlcnIgIT0gbGVuKSkNCj4gPiA+DQo+ID4gPg0KPiA+ID4gSXQgbG9va3Mg
-dG8gbWUgZXJyICE9IGxlbiBjb3ZlcnMgZXJyIDwgMC4NCj4gPg0KPiA+IE9LDQo+ID4NCj4gPiA+
-DQo+ID4gPiBUaGFua3MNCj4gPiA+DQo+ID4gPg0KPiA+ID4gPiArCQkJdnFfZXJyKHZxLCAiRmFp
-bCB0byBzZW5kaW5nIHBhY2tldHMgZXJyIDogJWQsIGxlbiA6ICV6ZFxuIiwNCj4gZXJyLA0KPiA+
-ID4gPiArbGVuKTsNCj4gPiA+ID4gICBkb25lOg0KPiA+ID4gPiAgIAkJdnEtPmhlYWRzW252cS0+
-ZG9uZV9pZHhdLmlkID0gY3B1X3RvX3Zob3N0MzIodnEsIGhlYWQpOw0KPiA+ID4gPiAgIAkJdnEt
-PmhlYWRzW252cS0+ZG9uZV9pZHhdLmxlbiA9IDA7DQo+ID4gPiA+IEBAIC05MjIsNyArOTE5LDYg
-QEAgc3RhdGljIHZvaWQgaGFuZGxlX3R4X3plcm9jb3B5KHN0cnVjdCB2aG9zdF9uZXQNCj4gPiA+
-ICpuZXQsIHN0cnVjdCBzb2NrZXQgKnNvY2spDQo+ID4gPiA+ICAgCQkJbXNnLm1zZ19mbGFncyAm
-PSB+TVNHX01PUkU7DQo+ID4gPiA+ICAgCQl9DQo+ID4gPiA+DQo+ID4gPiA+IC0JCS8qIFRPRE86
-IENoZWNrIHNwZWNpZmljIGVycm9yIGFuZCBib21iIG91dCB1bmxlc3MgRU5PQlVGUz8NCj4gKi8N
-Cj4gPiA+ID4gICAJCWVyciA9IHNvY2stPm9wcy0+c2VuZG1zZyhzb2NrLCAmbXNnLCBsZW4pOw0K
-PiA+ID4gPiAgIAkJaWYgKHVubGlrZWx5KGVyciA8IDApKSB7DQo+ID4gPiA+ICAgCQkJaWYgKHpj
-b3B5X3VzZWQpIHsNCj4gPiA+ID4gQEAgLTkzMSwxMyArOTI3LDE0IEBAIHN0YXRpYyB2b2lkIGhh
-bmRsZV90eF96ZXJvY29weShzdHJ1Y3QNCj4gdmhvc3RfbmV0DQo+ID4gPiAqbmV0LCBzdHJ1Y3Qg
-c29ja2V0ICpzb2NrKQ0KPiA+ID4gPiAgIAkJCQludnEtPnVwZW5kX2lkeCA9ICgodW5zaWduZWQp
-bnZxLT51cGVuZF9pZHggLSAxKQ0KPiA+ID4gPiAgIAkJCQkJJSBVSU9fTUFYSU9WOw0KPiA+ID4g
-PiAgIAkJCX0NCj4gPiA+ID4gLQkJCXZob3N0X2Rpc2NhcmRfdnFfZGVzYyh2cSwgMSk7DQo+ID4g
-PiA+IC0JCQl2aG9zdF9uZXRfZW5hYmxlX3ZxKG5ldCwgdnEpOw0KPiA+ID4gPiAtCQkJYnJlYWs7
-DQo+ID4gPiA+ICsJCQlpZiAoZXJyID09IC1FQUdBSU4pIHsNCj4gPiA+ID4gKwkJCQl2aG9zdF9k
-aXNjYXJkX3ZxX2Rlc2ModnEsIDEpOw0KPiA+ID4gPiArCQkJCXZob3N0X25ldF9lbmFibGVfdnEo
-bmV0LCB2cSk7DQo+ID4gPiA+ICsJCQkJYnJlYWs7DQo+ID4gPiA+ICsJCQl9DQo+ID4gPiA+ICAg
-CQl9DQo+ID4gPiA+ICAgCQlpZiAoZXJyICE9IGxlbikNCj4gPiA+ID4gLQkJCXByX2RlYnVnKCJU
-cnVuY2F0ZWQgVFggcGFja2V0OiAiDQo+ID4gPiA+IC0JCQkJICIgbGVuICVkICE9ICV6ZFxuIiwg
-ZXJyLCBsZW4pOw0KPiA+ID4gPiArCQkJdnFfZXJyKHZxLCAiRmFpbCB0byBzZW5kaW5nIHBhY2tl
-dHMgZXJyIDogJWQsIGxlbiA6ICV6ZFxuIiwNCj4gZXJyLA0KPiA+ID4gPiArbGVuKTsNCj4gPiA+
-ID4gICAJCWlmICghemNvcHlfdXNlZCkNCj4gPiA+ID4gICAJCQl2aG9zdF9hZGRfdXNlZF9hbmRf
-c2lnbmFsKCZuZXQtPmRldiwgdnEsIGhlYWQsIDApOw0KPiA+ID4gPiAgIAkJZWxzZQ0KPiA+DQo+
-ID4NCg0K
+
+
+----- Original Message -----
+> > -----Original Message-----
+> > From: Jason Wang [mailto:jasowang@redhat.com]
+> > Sent: Wednesday, December 16, 2020 1:57 PM
+> > To: wangyunjian <wangyunjian@huawei.com>
+> > Cc: netdev@vger.kernel.org; mst@redhat.com; willemdebruijn kernel
+> > <willemdebruijn.kernel@gmail.com>;
+> > virtualization@lists.linux-foundation.org;
+> > Lilijun (Jerry) <jerry.lilijun@huawei.com>; chenchanghu
+> > <chenchanghu@huawei.com>; xudingke <xudingke@huawei.com>; huangbin (J)
+> > <brian.huangbin@huawei.com>
+> > Subject: Re: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg
+> > fails
+> >=20
+> >=20
+> >=20
+> > ----- Original Message -----
+> > >
+> > >
+> > > > -----Original Message-----
+> > > > From: Jason Wang [mailto:jasowang@redhat.com]
+> > > > Sent: Tuesday, December 15, 2020 12:10 PM
+> > > > To: wangyunjian <wangyunjian@huawei.com>; netdev@vger.kernel.org;
+> > > > mst@redhat.com; willemdebruijn.kernel@gmail.com
+> > > > Cc: virtualization@lists.linux-foundation.org; Lilijun (Jerry)
+> > > > <jerry.lilijun@huawei.com>; chenchanghu <chenchanghu@huawei.com>;
+> > > > xudingke <xudingke@huawei.com>; huangbin (J)
+> > > > <brian.huangbin@huawei.com>
+> > > > Subject: Re: [PATCH net 2/2] vhost_net: fix high cpu load when send=
+msg
+> > > > fails
+> > > >
+> > > >
+> > > > On 2020/12/15 =E4=B8=8A=E5=8D=889:48, wangyunjian wrote:
+> > > > > From: Yunjian Wang <wangyunjian@huawei.com>
+> > > > >
+> > > > > Currently we break the loop and wake up the vhost_worker when
+> > sendmsg
+> > > > > fails. When the worker wakes up again, we'll meet the same error.
+> > > > > This
+> > > > > will cause high CPU load. To fix this issue, we can skip this
+> > > > > description by ignoring the error. When we exceeds sndbuf, the re=
+turn
+> > > > > value of sendmsg is -EAGAIN. In the case we don't skip the
+> > > > > description
+> > > > > and don't drop packet.
+> > > > >
+> > > > > Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+> > > > > ---
+> > > > >   drivers/vhost/net.c | 21 +++++++++------------
+> > > > >   1 file changed, 9 insertions(+), 12 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c index
+> > > > > c8784dfafdd7..f966592d8900 100644
+> > > > > --- a/drivers/vhost/net.c
+> > > > > +++ b/drivers/vhost/net.c
+> > > > > @@ -827,16 +827,13 @@ static void handle_tx_copy(struct vhost_net
+> > *net,
+> > > > struct socket *sock)
+> > > > >   =09=09=09=09msg.msg_flags &=3D ~MSG_MORE;
+> > > > >   =09=09}
+> > > > >
+> > > > > -=09=09/* TODO: Check specific error and bomb out unless ENOBUFS?
+> > */
+> > > > >   =09=09err =3D sock->ops->sendmsg(sock, &msg, len);
+> > > > > -=09=09if (unlikely(err < 0)) {
+> > > > > +=09=09if (unlikely(err =3D=3D -EAGAIN)) {
+> > > > >   =09=09=09vhost_discard_vq_desc(vq, 1);
+> > > > >   =09=09=09vhost_net_enable_vq(net, vq);
+> > > > >   =09=09=09break;
+> > > > > -=09=09}
+> > > >
+> > > >
+> > > > As I've pointed out in last version. If you don't discard descripto=
+r,
+> > > > you
+> > > > probably
+> > > > need to add the head to used ring. Otherwise this descriptor will b=
+e
+> > > > always
+> > > > inflight that may confuse drivers.
+> > >
+> > > Sorry for missing the comment.
+> > >
+> > > After deleting discard descriptor and break, the next processing will=
+ be
+> > > the
+> > > same
+> > > as the normal success of sendmsg(), and vhost_zerocopy_signal_used() =
+or
+> > > vhost_add_used_and_signal() method will be called to add the head to =
+used
+> > > ring.
+> >=20
+> > It's the next head not the one that contains the buggy packet?
+>=20
+> In the modified code logic, the head added to used ring is exectly the
+> one that contains the buggy packet.
+
+-ENOTEA :( You're right, I misread the code.
+
+Thanks
+
+>=20
+> Thanks
+>=20
+> >=20
+> > Thanks
+> >=20
+> > >
+> > > Thanks
+> > > >
+> > > >
+> > > > > -=09=09if (err !=3D len)
+> > > > > -=09=09=09pr_debug("Truncated TX packet: len %d !=3D %zd\n",
+> > > > > -=09=09=09=09 err, len);
+> > > > > +=09=09} else if (unlikely(err < 0 || err !=3D len))
+> > > >
+> > > >
+> > > > It looks to me err !=3D len covers err < 0.
+> > >
+> > > OK
+> > >
+> > > >
+> > > > Thanks
+> > > >
+> > > >
+> > > > > +=09=09=09vq_err(vq, "Fail to sending packets err : %d, len : %zd=
+\n",
+> > err,
+> > > > > +len);
+> > > > >   done:
+> > > > >   =09=09vq->heads[nvq->done_idx].id =3D cpu_to_vhost32(vq, head);
+> > > > >   =09=09vq->heads[nvq->done_idx].len =3D 0;
+> > > > > @@ -922,7 +919,6 @@ static void handle_tx_zerocopy(struct vhost_n=
+et
+> > > > *net, struct socket *sock)
+> > > > >   =09=09=09msg.msg_flags &=3D ~MSG_MORE;
+> > > > >   =09=09}
+> > > > >
+> > > > > -=09=09/* TODO: Check specific error and bomb out unless ENOBUFS?
+> > */
+> > > > >   =09=09err =3D sock->ops->sendmsg(sock, &msg, len);
+> > > > >   =09=09if (unlikely(err < 0)) {
+> > > > >   =09=09=09if (zcopy_used) {
+> > > > > @@ -931,13 +927,14 @@ static void handle_tx_zerocopy(struct
+> > vhost_net
+> > > > *net, struct socket *sock)
+> > > > >   =09=09=09=09nvq->upend_idx =3D ((unsigned)nvq->upend_idx - 1)
+> > > > >   =09=09=09=09=09% UIO_MAXIOV;
+> > > > >   =09=09=09}
+> > > > > -=09=09=09vhost_discard_vq_desc(vq, 1);
+> > > > > -=09=09=09vhost_net_enable_vq(net, vq);
+> > > > > -=09=09=09break;
+> > > > > +=09=09=09if (err =3D=3D -EAGAIN) {
+> > > > > +=09=09=09=09vhost_discard_vq_desc(vq, 1);
+> > > > > +=09=09=09=09vhost_net_enable_vq(net, vq);
+> > > > > +=09=09=09=09break;
+> > > > > +=09=09=09}
+> > > > >   =09=09}
+> > > > >   =09=09if (err !=3D len)
+> > > > > -=09=09=09pr_debug("Truncated TX packet: "
+> > > > > -=09=09=09=09 " len %d !=3D %zd\n", err, len);
+> > > > > +=09=09=09vq_err(vq, "Fail to sending packets err : %d, len : %zd=
+\n",
+> > err,
+> > > > > +len);
+> > > > >   =09=09if (!zcopy_used)
+> > > > >   =09=09=09vhost_add_used_and_signal(&net->dev, vq, head, 0);
+> > > > >   =09=09else
+> > >
+> > >
+>=20
+>=20
+
