@@ -2,473 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEC672DC205
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 15:19:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C02CE2DC231
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 15:31:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726447AbgLPOSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 09:18:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38492 "EHLO
+        id S1726525AbgLPObg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 09:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726398AbgLPOSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 09:18:54 -0500
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D3CC0617A6;
-        Wed, 16 Dec 2020 06:18:14 -0800 (PST)
-Received: by mail-qk1-x72c.google.com with SMTP id h4so17700846qkk.4;
-        Wed, 16 Dec 2020 06:18:14 -0800 (PST)
+        with ESMTP id S1726398AbgLPObg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 09:31:36 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E5DC061794;
+        Wed, 16 Dec 2020 06:30:54 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id i7so6074961pgc.8;
+        Wed, 16 Dec 2020 06:30:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=1Bbtu8WjVNUZf2rMt0PlMmA4Dx0rAmlXEef7QZqXV9E=;
-        b=ruzAmabXOYtYcU9BnQgPFSNMfFqgvcWycbj6ZQ3qmAlrLWanCIKDGeIaJ1Axrcb0wP
-         0liBG02WHhGEyeJFxTThmJ68uaQbiYyvMi9N0CF0uIdmQCzKZp08U//a83sY64OqtuLx
-         +odB19bjcL4DmPhKp3CrJniahem1bHiFIUHgTs18DRHpR6RTYXnM+fYhDMdFzWiWWoA/
-         AvanrWo5+o8VNvr/DPMt5oB+Q4RKHIZE4vwYaxa8BwfmlRYEiEjNfdSUwhfc5h8RwExX
-         BpmFvxKtRrKIyuu6jlHEVTxXSAwpMHaPtKDf0w14n6vdo2drI8hs908vx+dyUHAGqQi8
-         vbXw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8QBZ4eZcpOyh6+f0C4z3rzUrkmUMm3BeLxpPcY7rcsA=;
+        b=drB5Q63BBUSMCtvi67CKE9SVaHu2hJHdhrP0PxZ+2qjYnWyPSgIagdJeM7vzLvezCi
+         83t1ShnRXixs16SHlkq/Pmja31mfLkcRwHC9dNhcuPyX8K8OFPwjdM5r7D9rs3lXE4MF
+         DgogUIsIrJ6oaYl3//jlNrqkO2jiQwGfkRkD6Ns9ae7SKNu0Hfc+52aFG8X9d3qp9UBo
+         +qdro/1Vu/o1JTWqjIOg6eW/mEILtGbIY9qeMW5rVQMJv5ZlXQeIrZ4CO3gsJMJmlegB
+         3DbendBLz0CgrIlhWpeCRK6uD2eLR375ZvVpuxmJjV/kNF03RJeBNH8QfhwViAUDCwYw
+         101A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=1Bbtu8WjVNUZf2rMt0PlMmA4Dx0rAmlXEef7QZqXV9E=;
-        b=efYn3i31Dh1JMrbuBo08tYs09AWonTH/nSFwA1ed9nFzArVK38O9VnJ1scPVfK6r45
-         nRCRhb5BhaShZxHw+FYSFLuYF51A4N1EhcSnss9Gxj67J8AmzPwuFUdlFs13W2VZAlZL
-         R+0rUw5dZ+Vxh+6Ot1oXCFswqsyUVmYCt+Mfr+FCE2LAUR1aqnMSb05RrbUdpW6zo8/3
-         li4ERxhVbK91ne8/unBO/7nfaQLxmAuBgaVTSK1u3Uw2zSsJ+waqS+zmqlP94gHiip2T
-         kxjdNcz43GdmXEwrejBAksUbOrrbnNO+fVP3PoPPl6UqPBzkmNQEsdP0QMmmduE8V/6x
-         Xtbw==
-X-Gm-Message-State: AOAM5330hlyzNu2DAuG4WimAEywdLF8Y7lc2+5rS3eFU3vYDIKC8KirW
-        NEN/z2N4pVNuUnFe2RQvqrr8Ohp4vuIgk4Wo+4o=
-X-Google-Smtp-Source: ABdhPJyoCvyKIrBas9bcsXa8dcS8PuofO7Eva5iFpC+3L64VEkfOnRdrRUe6Y7LCVsN89ZjJ5MUezA==
-X-Received: by 2002:a05:620a:21d3:: with SMTP id h19mr43237549qka.341.1608128292975;
-        Wed, 16 Dec 2020 06:18:12 -0800 (PST)
-Received: from localhost (pc-145-79-45-190.cm.vtr.net. [190.45.79.145])
-        by smtp.gmail.com with ESMTPSA id l20sm1105030qtu.25.2020.12.16.06.18.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8QBZ4eZcpOyh6+f0C4z3rzUrkmUMm3BeLxpPcY7rcsA=;
+        b=VK9BZPe0EiTnhtrdEGTPoXFd1ZWlx68AJ36gaFTuDssGYXypOGEWN5HKC18k8JrTky
+         SaIZOwkrli2ThETDM4AjuJ6btXE+D/y/d/j6tS+km/F9Akx+p+w9AKMb1/s5JkLRMs23
+         oSu7fonlJcXAEKuCEkN035DwIRVB3FgmhpoL+G8VZp/MBWO6IdATUq0Ql+CuDZx7jlK8
+         Srx4fmBpywOJySYItKanrlFPW6jy2AlxtHNptwuWugvmYHiHMkpNPtPE21tov53GEQsU
+         3zFqIrbbhzocAsmIAZYU4t4EI85fDp4uOoiJn94qk4W4GOAr2eTFiDyQ8BzzC/ZNMO4m
+         N0+A==
+X-Gm-Message-State: AOAM533fatPuJDajZbo8fBK/RZdjGYakGXy2UogobyPyXbCrqiJejC5P
+        fI2KgblUiecs2oXVtIo+nA7gw1YbDdC4kpHE
+X-Google-Smtp-Source: ABdhPJxkOaosRh+TSARTw9g+O9E+aCtmgoU6ulNdzz/zFWFiYTT3qs2275yhL4JNfzZ+8s35mm3MkQ==
+X-Received: by 2002:a62:7858:0:b029:19d:c011:1cfe with SMTP id t85-20020a6278580000b029019dc0111cfemr4442987pfc.47.1608129053489;
+        Wed, 16 Dec 2020 06:30:53 -0800 (PST)
+Received: from localhost.localdomain.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a141sm2858802pfa.189.2020.12.16.06.30.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Dec 2020 06:18:12 -0800 (PST)
-Date:   Wed, 16 Dec 2020 11:18:08 -0300
-From:   Carlos Neira <cneirabustos@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     andriin@fb.com, yhs@fb.com, ebiederm@xmission.com,
-        brouer@redhat.com, bpf@vger.kernel.org, andrii.nakryiko@gmail.com,
-        cneirabustos@gmail.com
-Subject: [PATCH v9 bpf-next] bpf/selftests: fold test_current_pid_tgid_new_ns
- into test_progs.
-Message-ID: <20201216141806.GA21694@localhost>
+        Wed, 16 Dec 2020 06:30:52 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv12 bpf-next 0/6] xdp: add a new helper for dev map multicast support
+Date:   Wed, 16 Dec 2020 22:30:30 +0800
+Message-Id: <20201216143036.2296568-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200907082724.1721685-1-liuhangbin@gmail.com>
+References: <20200907082724.1721685-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently tests for bpf_get_ns_current_pid_tgid() are outside test_progs.
-This change folds test cases into test_progs.
+This patch is for xdp multicast support. which has been discussed before[0],
+The goal is to be able to implement an OVS-like data plane in XDP, i.e.,
+a software switch that can forward XDP frames to multiple ports.
 
-Changes from v8:
+To achieve this, an application needs to specify a group of interfaces
+to forward a packet to. It is also common to want to exclude one or more
+physical interfaces from the forwarding operation - e.g., to forward a
+packet to all interfaces in the multicast group except the interface it
+arrived on. While this could be done simply by adding more groups, this
+quickly leads to a combinatorial explosion in the number of groups an
+application has to maintain.
 
- - Fixed code style
- - Fixed CHECK macro usage
- - Removed root namespace sub-test
- - Split pid_tgid variable
+To avoid the combinatorial explosion, we propose to include the ability
+to specify an "exclude group" as part of the forwarding operation. This
+needs to be a group (instead of just a single port index), because there
+may have multi interfaces you want to exclude.
 
-Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
----
- tools/testing/selftests/bpf/.gitignore        |   1 -
+Thus, the logical forwarding operation becomes a "set difference"
+operation, i.e. "forward to all ports in group A that are not also in
+group B". This series implements such an operation using device maps to
+represent the groups. This means that the XDP program specifies two
+device maps, one containing the list of netdevs to redirect to, and the
+other containing the exclude list.
+
+To achieve this, I re-implement a new helper bpf_redirect_map_multi()
+to accept two maps, the forwarding map and exclude map. If user
+don't want to use exclude map and just want simply stop redirecting back
+to ingress device, they can use flag BPF_F_EXCLUDE_INGRESS.
+
+The 1st patch is Jesper's run devmap xdp_prog later in bulking step.
+The 2st patch add a new bpf arg to allow NULL map pointer.
+The 3rd patch add the new bpf_redirect_map_multi() helper.
+The 4-6 patches are for usage sample and testing purpose.
+
+I did same perf tests with the following topo:
+
+---------------------             ---------------------
+| Host A (i40e 10G) |  ---------- | eno1(i40e 10G)    |
+---------------------             |                   |
+                                  |   Host B          |
+---------------------             |                   |
+| Host C (i40e 10G) |  ---------- | eno2(i40e 10G)    |
+---------------------    vlan2    |          -------- |
+                                  | veth1 -- | veth0| |
+                                  |          -------- |
+                                  --------------------|
+On Host A:
+# pktgen/pktgen_sample03_burst_single_flow.sh -i eno1 -d $dst_ip -m $dst_mac -s 64
+
+On Host B(Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz, 128G Memory):
+Use xdp_redirect_map and xdp_redirect_map_multi in samples/bpf for testing.
+The veth0 in netns load dummy drop program. The forward_map max_entries in
+xdp_redirect_map_multi is modify to 4.
+
+Here is the perf result with 5.10 rc6:
+
+The are about +/- 0.1M deviation for native testing
+Version             | Test                                    | Generic | Native | Native + 2nd
+5.10 rc6            | xdp_redirect_map        i40e->i40e      |    2.0M |   9.1M |  8.0M
+5.10 rc6            | xdp_redirect_map        i40e->veth      |    1.7M |  11.0M |  9.7M
+5.10 rc6 + patch1   | xdp_redirect_map        i40e->i40e      |    2.0M |   9.5M |  7.5M
+5.10 rc6 + patch1   | xdp_redirect_map        i40e->veth      |    1.7M |  11.6M |  9.1M
+5.10 rc6 + patch1-6 | xdp_redirect_map        i40e->i40e      |    2.0M |   9.5M |  7.5M
+5.10 rc6 + patch1-6 | xdp_redirect_map        i40e->veth      |    1.7M |  11.6M |  9.1M
+5.10 rc6 + patch1-6 | xdp_redirect_map_multi  i40e->i40e      |    1.7M |   7.8M |  6.4M
+5.10 rc6 + patch1-6 | xdp_redirect_map_multi  i40e->veth      |    1.4M |   9.3M |  7.5M
+5.10 rc6 + patch1-6 | xdp_redirect_map_multi  i40e->i40e+veth |    1.0M |   3.2M |  2.7M
+
+Last but not least, thanks a lot to Toke, Jesper, Jiri and Eelco for
+suggestions and help on implementation.
+
+[0] https://xdp-project.net/#Handling-multicast
+
+v12:
+Add Jesper's xdp_prog patch, rebase my works on this and latest bpf-next
+Add 2nd xdp_prog test on the sample and selftests.
+
+v11:
+Fix bpf_redirect_map_multi() helper description typo.
+Add loop limit for devmap_get_next_obj() and dev_map_redirect_multi().
+
+v10:
+Rebase the code to latest bpf-next.
+Update helper bpf_xdp_redirect_map_multi()
+- No need to check map pointer as we will do the check in verifier.
+
+v9:
+Update helper bpf_xdp_redirect_map_multi()
+- Use ARG_CONST_MAP_PTR_OR_NULL for helper arg2
+
+v8:
+a) Update function dev_in_exclude_map():
+   - remove duplicate ex_map map_type check in
+   - lookup the element in dev map by obj dev index directly instead
+     of looping all the map
+
+v7:
+a) Fix helper flag check
+b) Limit the *ex_map* to use DEVMAP_HASH only and update function
+   dev_in_exclude_map() to get better performance.
+
+v6: converted helper return types from int to long
+
+v5:
+a) Check devmap_get_next_key() return value.
+b) Pass through flags to __bpf_tx_xdp_map() instead of bool value.
+c) In function dev_map_enqueue_multi(), consume xdpf for the last
+   obj instead of the first on.
+d) Update helper description and code comments to explain that we
+   use NULL target value to distinguish multicast and unicast
+   forwarding.
+e) Update memory model, memory id and frame_sz in xdpf_clone().
+f) Split the tests from sample and add a bpf kernel selftest patch.
+
+v4: Fix bpf_xdp_redirect_map_multi_proto arg2_type typo
+
+v3: Based on Toke's suggestion, do the following update
+a) Update bpf_redirect_map_multi() description in bpf.h.
+b) Fix exclude_ifindex checking order in dev_in_exclude_map().
+c) Fix one more xdpf clone in dev_map_enqueue_multi().
+d) Go find next one in dev_map_enqueue_multi() if the interface is not
+   able to forward instead of abort the whole loop.
+e) Remove READ_ONCE/WRITE_ONCE for ex_map.
+
+v2: Add new syscall bpf_xdp_redirect_map_multi() which could accept
+include/exclude maps directly.
+
+
+Hangbin Liu (5):
+  bpf: add a new bpf argument type ARG_CONST_MAP_PTR_OR_NULL
+  xdp: add a new helper for dev map multicast support
+  sample/bpf: add xdp_redirect_map_multicast test
+  selftests/bpf: Add verifier tests for bpf arg
+    ARG_CONST_MAP_PTR_OR_NULL
+  selftests/bpf: add xdp_redirect_multi test
+
+Jesper Dangaard Brouer (1):
+  bpf: run devmap xdp_prog on flush instead of bulk enqueue
+
+ include/linux/bpf.h                           |  21 ++
+ include/linux/filter.h                        |   1 +
+ include/net/xdp.h                             |   1 +
+ include/uapi/linux/bpf.h                      |  27 ++
+ kernel/bpf/devmap.c                           | 236 +++++++++++---
+ kernel/bpf/verifier.c                         |  16 +-
+ net/core/filter.c                             | 118 ++++++-
+ net/core/xdp.c                                |  29 ++
+ samples/bpf/Makefile                          |   3 +
+ samples/bpf/xdp_redirect_map_multi_kern.c     |  96 ++++++
+ samples/bpf/xdp_redirect_map_multi_user.c     | 301 ++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  27 ++
  tools/testing/selftests/bpf/Makefile          |   3 +-
- .../bpf/prog_tests/ns_current_pid_tgid.c      | 115 ++++++-------
- .../bpf/progs/test_ns_current_pid_tgid.c      |  27 +--
- .../bpf/test_current_pid_tgid_new_ns.c        | 160 ------------------
- 5 files changed, 68 insertions(+), 238 deletions(-)
- delete mode 100644 tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+ .../bpf/progs/xdp_redirect_multi_kern.c       | 120 +++++++
+ tools/testing/selftests/bpf/test_verifier.c   |  22 +-
+ .../selftests/bpf/test_xdp_redirect_multi.sh  | 208 ++++++++++++
+ .../testing/selftests/bpf/verifier/map_ptr.c  |  70 ++++
+ .../selftests/bpf/xdp_redirect_multi.c        | 258 +++++++++++++++
+ 18 files changed, 1509 insertions(+), 48 deletions(-)
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
 
-diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index f5b7ef93618c..9abca0616ec0 100644
---- a/tools/testing/selftests/bpf/.gitignore
-+++ b/tools/testing/selftests/bpf/.gitignore
-@@ -26,7 +26,6 @@ test_tcpnotify_user
- test_libbpf
- test_tcp_check_syncookie_user
- test_sysctl
--test_current_pid_tgid_new_ns
- xdping
- test_cpp
- *.skel.h
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 8c33e999319a..886577bc2bb6 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -35,8 +35,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
- 	test_sock test_sockmap get_cgroup_id_user test_socket_cookie \
- 	test_cgroup_storage \
- 	test_netcnt test_tcpnotify_user test_sysctl \
--	test_progs-no_alu32 \
--	test_current_pid_tgid_new_ns
-+	test_progs-no_alu32
- 
- # Also test bpf-gcc, if present
- ifneq ($(BPF_GCC),)
-diff --git a/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c b/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
-index e74dc501b27f..038195704f2d 100644
---- a/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
-+++ b/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
-@@ -1,85 +1,86 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
-+
-+#define _GNU_SOURCE
- #include <test_progs.h>
-+#include "test_ns_current_pid_tgid.skel.h"
- #include <sys/stat.h>
- #include <sys/types.h>
- #include <unistd.h>
- #include <sys/syscall.h>
-+#include <sched.h>
-+#include <sys/wait.h>
-+#include <sys/mount.h>
-+#include <sys/fcntl.h>
- 
--struct bss {
--	__u64 dev;
--	__u64 ino;
--	__u64 pid_tgid;
--	__u64 user_pid_tgid;
--};
-+#define STACK_SIZE (1024 * 1024)
-+static char child_stack[STACK_SIZE];
- 
--void test_ns_current_pid_tgid(void)
-+static int newns_pid_tgid(void *arg)
- {
--	const char *probe_name = "raw_tracepoint/sys_enter";
--	const char *file = "test_ns_current_pid_tgid.o";
--	int err, key = 0, duration = 0;
--	struct bpf_link *link = NULL;
--	struct bpf_program *prog;
--	struct bpf_map *bss_map;
--	struct bpf_object *obj;
--	struct bss bss;
-+	struct test_ns_current_pid_tgid__bss  *bss;
-+	int err = -1, duration = 0;
-+	struct test_ns_current_pid_tgid *skel;
-+	pid_t pid, tid;
- 	struct stat st;
--	__u64 id;
--
--	obj = bpf_object__open_file(file, NULL);
--	if (CHECK(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
--		return;
- 
--	err = bpf_object__load(obj);
--	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
-+	skel = test_ns_current_pid_tgid__open_and_load();
-+	if (CHECK(!skel, "skel_open_load", "failed to load skeleton\n"))
- 		goto cleanup;
- 
--	bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
--	if (CHECK(!bss_map, "find_bss_map", "failed\n"))
--		goto cleanup;
-+	tid = syscall(SYS_gettid);
-+	pid = getpid();
- 
--	prog = bpf_object__find_program_by_title(obj, probe_name);
--	if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
--		  probe_name))
-+	err = stat("/proc/self/ns/pid", &st);
-+	if (CHECK(err, "stat", "failed /proc/self/ns/pid: %d", err))
- 		goto cleanup;
- 
--	memset(&bss, 0, sizeof(bss));
--	pid_t tid = syscall(SYS_gettid);
--	pid_t pid = getpid();
--
--	id = (__u64) tid << 32 | pid;
--	bss.user_pid_tgid = id;
-+	bss = skel->bss;
-+	bss->dev = st.st_dev;
-+	bss->ino = st.st_ino;
-+	bss->user_pid = 0;
-+	bss->user_tgid = 0;
- 
--	if (CHECK_FAIL(stat("/proc/self/ns/pid", &st))) {
--		perror("Failed to stat /proc/self/ns/pid");
-+	err = test_ns_current_pid_tgid__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
- 		goto cleanup;
--	}
- 
--	bss.dev = st.st_dev;
--	bss.ino = st.st_ino;
-+	/* trigger tracepoint */
-+	usleep(1);
- 
--	err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
--	if (CHECK(err, "setting_bss", "failed to set bss : %d\n", err))
-+	if (CHECK((pid_t)bss->user_pid != pid, "pid", "got %d != exp %d\n",
-+	 (pid_t)bss->user_pid, pid))
- 		goto cleanup;
- 
--	link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
--	if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n",
--		  PTR_ERR(link))) {
--		link = NULL;
-+	if (CHECK((pid_t)bss->user_tgid != tid, "tgid", "got %d != exp %d\n",
-+	 (pid_t)bss->user_tgid, tid))
- 		goto cleanup;
--	}
- 
--	/* trigger some syscalls */
--	usleep(1);
-+cleanup:
-+	if (skel)
-+		test_ns_current_pid_tgid__destroy(skel);
- 
--	err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
--	if (CHECK(err, "set_bss", "failed to get bss : %d\n", err))
--		goto cleanup;
-+	return err;
-+}
- 
--	if (CHECK(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
--		  "User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
--		goto cleanup;
--cleanup:
--	bpf_link__destroy(link);
--	bpf_object__close(obj);
-+void test_ns_current_pid_tgid(void)
-+{
-+	int wstatus, duration = 0;
-+	pid_t cpid;
-+
-+	cpid = clone(newns_pid_tgid,
-+	  child_stack + STACK_SIZE,
-+	  CLONE_NEWPID | SIGCHLD, NULL);
-+
-+	if (CHECK(cpid == -1, "clone", strerror(errno)))
-+		exit(EXIT_FAILURE);
-+
-+	if (CHECK(waitpid(cpid, &wstatus, 0) == -1, "waitpid",
-+	 strerror(errno)))
-+		exit(EXIT_FAILURE);
-+
-+
-+	if (CHECK(WEXITSTATUS(wstatus) != 0, "newns_pidtgid",
-+	 "failed"))
-+		exit(EXIT_FAILURE);
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c b/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
-index 1dca70a6de2f..805ceef9103a 100644
---- a/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
-+++ b/tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
-@@ -5,31 +5,22 @@
- #include <stdint.h>
- #include <bpf/bpf_helpers.h>
- 
--static volatile struct {
--	__u64 dev;
--	__u64 ino;
--	__u64 pid_tgid;
--	__u64 user_pid_tgid;
--} res;
-+__u32 user_pid = 0;
-+__u32 user_tgid = 0;
-+__u64 dev = 0;
-+__u64 ino = 0;
- 
- SEC("raw_tracepoint/sys_enter")
--int trace(void *ctx)
-+int handler(const void *ctx)
- {
--	__u64  ns_pid_tgid, expected_pid;
- 	struct bpf_pidns_info nsdata;
--	__u32 key = 0;
- 
--	if (bpf_get_ns_current_pid_tgid(res.dev, res.ino, &nsdata,
--		   sizeof(struct bpf_pidns_info)))
-+	if (bpf_get_ns_current_pid_tgid(dev, ino, &nsdata,
-+		sizeof(struct bpf_pidns_info)))
- 		return 0;
- 
--	ns_pid_tgid = (__u64)nsdata.tgid << 32 | nsdata.pid;
--	expected_pid = res.user_pid_tgid;
--
--	if (expected_pid != ns_pid_tgid)
--		return 0;
--
--	res.pid_tgid = ns_pid_tgid;
-+	user_pid =  nsdata.pid;
-+	user_tgid = nsdata.tgid;
- 
- 	return 0;
- }
-diff --git a/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c b/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
-deleted file mode 100644
-index ec53b1ef90d2..000000000000
---- a/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
-+++ /dev/null
-@@ -1,160 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
--#define _GNU_SOURCE
--#include <sys/stat.h>
--#include <sys/types.h>
--#include <unistd.h>
--#include <sys/syscall.h>
--#include <sched.h>
--#include <sys/wait.h>
--#include <sys/mount.h>
--#include "test_progs.h"
--
--#define CHECK_NEWNS(condition, tag, format...) ({		\
--	int __ret = !!(condition);			\
--	if (__ret) {					\
--		printf("%s:FAIL:%s ", __func__, tag);	\
--		printf(format);				\
--	} else {					\
--		printf("%s:PASS:%s\n", __func__, tag);	\
--	}						\
--	__ret;						\
--})
--
--struct bss {
--	__u64 dev;
--	__u64 ino;
--	__u64 pid_tgid;
--	__u64 user_pid_tgid;
--};
--
--int main(int argc, char **argv)
--{
--	pid_t pid;
--	int exit_code = 1;
--	struct stat st;
--
--	printf("Testing bpf_get_ns_current_pid_tgid helper in new ns\n");
--
--	if (stat("/proc/self/ns/pid", &st)) {
--		perror("stat failed on /proc/self/ns/pid ns\n");
--		printf("%s:FAILED\n", argv[0]);
--		return exit_code;
--	}
--
--	if (CHECK_NEWNS(unshare(CLONE_NEWPID | CLONE_NEWNS),
--			"unshare CLONE_NEWPID | CLONE_NEWNS", "error errno=%d\n", errno))
--		return exit_code;
--
--	pid = fork();
--	if (pid == -1) {
--		perror("Fork() failed\n");
--		printf("%s:FAILED\n", argv[0]);
--		return exit_code;
--	}
--
--	if (pid > 0) {
--		int status;
--
--		usleep(5);
--		waitpid(pid, &status, 0);
--		return 0;
--	} else {
--
--		pid = fork();
--		if (pid == -1) {
--			perror("Fork() failed\n");
--			printf("%s:FAILED\n", argv[0]);
--			return exit_code;
--		}
--
--		if (pid > 0) {
--			int status;
--			waitpid(pid, &status, 0);
--			return 0;
--		} else {
--			if (CHECK_NEWNS(mount("none", "/proc", NULL, MS_PRIVATE|MS_REC, NULL),
--				"Unmounting proc", "Cannot umount proc! errno=%d\n", errno))
--				return exit_code;
--
--			if (CHECK_NEWNS(mount("proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, NULL),
--				"Mounting proc", "Cannot mount proc! errno=%d\n", errno))
--				return exit_code;
--
--			const char *probe_name = "raw_tracepoint/sys_enter";
--			const char *file = "test_ns_current_pid_tgid.o";
--			struct bpf_link *link = NULL;
--			struct bpf_program *prog;
--			struct bpf_map *bss_map;
--			struct bpf_object *obj;
--			int exit_code = 1;
--			int err, key = 0;
--			struct bss bss;
--			struct stat st;
--			__u64 id;
--
--			obj = bpf_object__open_file(file, NULL);
--			if (CHECK_NEWNS(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
--				return exit_code;
--
--			err = bpf_object__load(obj);
--			if (CHECK_NEWNS(err, "obj_load", "err %d errno %d\n", err, errno))
--				goto cleanup;
--
--			bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
--			if (CHECK_NEWNS(!bss_map, "find_bss_map", "failed\n"))
--				goto cleanup;
--
--			prog = bpf_object__find_program_by_title(obj, probe_name);
--			if (CHECK_NEWNS(!prog, "find_prog", "prog '%s' not found\n",
--						probe_name))
--				goto cleanup;
--
--			memset(&bss, 0, sizeof(bss));
--			pid_t tid = syscall(SYS_gettid);
--			pid_t pid = getpid();
--
--			id = (__u64) tid << 32 | pid;
--			bss.user_pid_tgid = id;
--
--			if (CHECK_NEWNS(stat("/proc/self/ns/pid", &st),
--				"stat new ns", "Failed to stat /proc/self/ns/pid errno=%d\n", errno))
--				goto cleanup;
--
--			bss.dev = st.st_dev;
--			bss.ino = st.st_ino;
--
--			err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
--			if (CHECK_NEWNS(err, "setting_bss", "failed to set bss : %d\n", err))
--				goto cleanup;
--
--			link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
--			if (CHECK_NEWNS(IS_ERR(link), "attach_raw_tp", "err %ld\n",
--						PTR_ERR(link))) {
--				link = NULL;
--				goto cleanup;
--			}
--
--			/* trigger some syscalls */
--			usleep(1);
--
--			err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
--			if (CHECK_NEWNS(err, "set_bss", "failed to get bss : %d\n", err))
--				goto cleanup;
--
--			if (CHECK_NEWNS(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
--						"User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
--				goto cleanup;
--
--			exit_code = 0;
--			printf("%s:PASS\n", argv[0]);
--cleanup:
--			if (!link) {
--				bpf_link__destroy(link);
--				link = NULL;
--			}
--			bpf_object__close(obj);
--		}
--	}
--	return 0;
--}
 -- 
-2.20.1
+2.26.2
 
