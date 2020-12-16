@@ -2,71 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8522C2DBBF2
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 08:29:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6887E2DBC2D
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 08:45:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725910AbgLPH33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 02:29:29 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:39354 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725274AbgLPH32 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 02:29:28 -0500
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 0D39C44025F;
-        Wed, 16 Dec 2020 09:28:39 +0200 (IST)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH net] net: af_packet: fix procfs header for 64-bit pointers
-Date:   Wed, 16 Dec 2020 09:28:04 +0200
-Message-Id: <54917251d8433735d9a24e935a6cb8eb88b4058a.1608103684.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.29.2
+        id S1726353AbgLPHoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 02:44:23 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2092 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726351AbgLPHoX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 02:44:23 -0500
+Received: from DGGEMM405-HUB.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4CwnCZ0rwSzVppc;
+        Wed, 16 Dec 2020 15:42:34 +0800 (CST)
+Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.214]) by
+ DGGEMM405-HUB.china.huawei.com ([10.3.20.213]) with mapi id 14.03.0509.000;
+ Wed, 16 Dec 2020 15:43:31 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mst@redhat.com" <mst@redhat.com>,
+        willemdebruijn kernel <willemdebruijn.kernel@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        chenchanghu <chenchanghu@huawei.com>,
+        xudingke <xudingke@huawei.com>,
+        "huangbin (J)" <brian.huangbin@huawei.com>
+Subject: RE: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
+Thread-Topic: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
+Thread-Index: AQHW0oRuvV7yNtzm006vlEv0Vf1dkan3BR2AgADGt5Bmnr+pAPzMlzYw
+Date:   Wed, 16 Dec 2020 07:43:32 +0000
+Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB8408A@DGGEMM533-MBX.china.huawei.com>
+References: <cover.1608024547.git.wangyunjian@huawei.com>
+ <4be47d3a325983f1bfc39f11f0e015767dd2aa3c.1608024547.git.wangyunjian@huawei.com>
+ <e853a47e-b581-18d9-f13c-b449b176a308@redhat.com>
+ <34EFBCA9F01B0748BEB6B629CE643AE60DB82A73@DGGEMM533-MBX.china.huawei.com>
+ <205304638.36191504.1608098190622.JavaMail.zimbra@redhat.com>
+In-Reply-To: <205304638.36191504.1608098190622.JavaMail.zimbra@redhat.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.243.127]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 64-bit systems the packet procfs header field names following 'sk'
-are not aligned correctly:
-
-sk       RefCnt Type Proto  Iface R Rmem   User   Inode
-00000000605d2c64 3      3    0003   7     1 450880 0      16643
-00000000080e9b80 2      2    0000   0     0 0      0      17404
-00000000b23b8a00 2      2    0000   0     0 0      0      17421
-...
-
-With this change field names are correctly aligned:
-
-sk               RefCnt Type Proto  Iface R Rmem   User   Inode
-000000005c3b1d97 3      3    0003   7     1 21568  0      16178
-000000007be55bb7 3      3    fbce   8     1 0      0      16250
-00000000be62127d 3      3    fbcd   8     1 0      0      16254
-...
-
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
- net/packet/af_packet.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 7a18ffff8551..99de3bbe437f 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -4581,7 +4581,9 @@ static void packet_seq_stop(struct seq_file *seq, void *v)
- static int packet_seq_show(struct seq_file *seq, void *v)
- {
- 	if (v == SEQ_START_TOKEN)
--		seq_puts(seq, "sk       RefCnt Type Proto  Iface R Rmem   User   Inode\n");
-+		seq_printf(seq,
-+			   "%*sRefCnt Type Proto  Iface R Rmem   User   Inode\n",
-+			   IS_ENABLED(CONFIG_64BIT) ? -17 : -9, "sk");
- 	else {
- 		struct sock *s = sk_entry(v);
- 		const struct packet_sock *po = pkt_sk(s);
--- 
-2.29.2
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYXNvbiBXYW5nIFttYWlsdG86
+amFzb3dhbmdAcmVkaGF0LmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBEZWNlbWJlciAxNiwgMjAy
+MCAxOjU3IFBNDQo+IFRvOiB3YW5neXVuamlhbiA8d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT4NCj4g
+Q2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IG1zdEByZWRoYXQuY29tOyB3aWxsZW1kZWJydWlq
+biBrZXJuZWwNCj4gPHdpbGxlbWRlYnJ1aWpuLmtlcm5lbEBnbWFpbC5jb20+OyB2aXJ0dWFsaXph
+dGlvbkBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsNCj4gTGlsaWp1biAoSmVycnkpIDxqZXJy
+eS5saWxpanVuQGh1YXdlaS5jb20+OyBjaGVuY2hhbmdodQ0KPiA8Y2hlbmNoYW5naHVAaHVhd2Vp
+LmNvbT47IHh1ZGluZ2tlIDx4dWRpbmdrZUBodWF3ZWkuY29tPjsgaHVhbmdiaW4gKEopDQo+IDxi
+cmlhbi5odWFuZ2JpbkBodWF3ZWkuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG5ldCAyLzJd
+IHZob3N0X25ldDogZml4IGhpZ2ggY3B1IGxvYWQgd2hlbiBzZW5kbXNnIGZhaWxzDQo+IA0KPiAN
+Cj4gDQo+IC0tLS0tIE9yaWdpbmFsIE1lc3NhZ2UgLS0tLS0NCj4gPg0KPiA+DQo+ID4gPiAtLS0t
+LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+ID4gRnJvbTogSmFzb24gV2FuZyBbbWFpbHRvOmph
+c293YW5nQHJlZGhhdC5jb21dDQo+ID4gPiBTZW50OiBUdWVzZGF5LCBEZWNlbWJlciAxNSwgMjAy
+MCAxMjoxMCBQTQ0KPiA+ID4gVG86IHdhbmd5dW5qaWFuIDx3YW5neXVuamlhbkBodWF3ZWkuY29t
+PjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4gPiA+IG1zdEByZWRoYXQuY29tOyB3aWxsZW1k
+ZWJydWlqbi5rZXJuZWxAZ21haWwuY29tDQo+ID4gPiBDYzogdmlydHVhbGl6YXRpb25AbGlzdHMu
+bGludXgtZm91bmRhdGlvbi5vcmc7IExpbGlqdW4gKEplcnJ5KQ0KPiA+ID4gPGplcnJ5LmxpbGlq
+dW5AaHVhd2VpLmNvbT47IGNoZW5jaGFuZ2h1IDxjaGVuY2hhbmdodUBodWF3ZWkuY29tPjsNCj4g
+PiA+IHh1ZGluZ2tlIDx4dWRpbmdrZUBodWF3ZWkuY29tPjsgaHVhbmdiaW4gKEopDQo+ID4gPiA8
+YnJpYW4uaHVhbmdiaW5AaHVhd2VpLmNvbT4NCj4gPiA+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0
+IDIvMl0gdmhvc3RfbmV0OiBmaXggaGlnaCBjcHUgbG9hZCB3aGVuIHNlbmRtc2cNCj4gPiA+IGZh
+aWxzDQo+ID4gPg0KPiA+ID4NCj4gPiA+IE9uIDIwMjAvMTIvMTUg5LiK5Y2IOTo0OCwgd2FuZ3l1
+bmppYW4gd3JvdGU6DQo+ID4gPiA+IEZyb206IFl1bmppYW4gV2FuZyA8d2FuZ3l1bmppYW5AaHVh
+d2VpLmNvbT4NCj4gPiA+ID4NCj4gPiA+ID4gQ3VycmVudGx5IHdlIGJyZWFrIHRoZSBsb29wIGFu
+ZCB3YWtlIHVwIHRoZSB2aG9zdF93b3JrZXIgd2hlbg0KPiBzZW5kbXNnDQo+ID4gPiA+IGZhaWxz
+LiBXaGVuIHRoZSB3b3JrZXIgd2FrZXMgdXAgYWdhaW4sIHdlJ2xsIG1lZXQgdGhlIHNhbWUgZXJy
+b3IuIFRoaXMNCj4gPiA+ID4gd2lsbCBjYXVzZSBoaWdoIENQVSBsb2FkLiBUbyBmaXggdGhpcyBp
+c3N1ZSwgd2UgY2FuIHNraXAgdGhpcw0KPiA+ID4gPiBkZXNjcmlwdGlvbiBieSBpZ25vcmluZyB0
+aGUgZXJyb3IuIFdoZW4gd2UgZXhjZWVkcyBzbmRidWYsIHRoZSByZXR1cm4NCj4gPiA+ID4gdmFs
+dWUgb2Ygc2VuZG1zZyBpcyAtRUFHQUlOLiBJbiB0aGUgY2FzZSB3ZSBkb24ndCBza2lwIHRoZSBk
+ZXNjcmlwdGlvbg0KPiA+ID4gPiBhbmQgZG9uJ3QgZHJvcCBwYWNrZXQuDQo+ID4gPiA+DQo+ID4g
+PiA+IFNpZ25lZC1vZmYtYnk6IFl1bmppYW4gV2FuZyA8d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT4N
+Cj4gPiA+ID4gLS0tDQo+ID4gPiA+ICAgZHJpdmVycy92aG9zdC9uZXQuYyB8IDIxICsrKysrKysr
+Ky0tLS0tLS0tLS0tLQ0KPiA+ID4gPiAgIDEgZmlsZSBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyks
+IDEyIGRlbGV0aW9ucygtKQ0KPiA+ID4gPg0KPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy92
+aG9zdC9uZXQuYyBiL2RyaXZlcnMvdmhvc3QvbmV0LmMgaW5kZXgNCj4gPiA+ID4gYzg3ODRkZmFm
+ZGQ3Li5mOTY2NTkyZDg5MDAgMTAwNjQ0DQo+ID4gPiA+IC0tLSBhL2RyaXZlcnMvdmhvc3QvbmV0
+LmMNCj4gPiA+ID4gKysrIGIvZHJpdmVycy92aG9zdC9uZXQuYw0KPiA+ID4gPiBAQCAtODI3LDE2
+ICs4MjcsMTMgQEAgc3RhdGljIHZvaWQgaGFuZGxlX3R4X2NvcHkoc3RydWN0IHZob3N0X25ldA0K
+PiAqbmV0LA0KPiA+ID4gc3RydWN0IHNvY2tldCAqc29jaykNCj4gPiA+ID4gICAJCQkJbXNnLm1z
+Z19mbGFncyAmPSB+TVNHX01PUkU7DQo+ID4gPiA+ICAgCQl9DQo+ID4gPiA+DQo+ID4gPiA+IC0J
+CS8qIFRPRE86IENoZWNrIHNwZWNpZmljIGVycm9yIGFuZCBib21iIG91dCB1bmxlc3MgRU5PQlVG
+Uz8NCj4gKi8NCj4gPiA+ID4gICAJCWVyciA9IHNvY2stPm9wcy0+c2VuZG1zZyhzb2NrLCAmbXNn
+LCBsZW4pOw0KPiA+ID4gPiAtCQlpZiAodW5saWtlbHkoZXJyIDwgMCkpIHsNCj4gPiA+ID4gKwkJ
+aWYgKHVubGlrZWx5KGVyciA9PSAtRUFHQUlOKSkgew0KPiA+ID4gPiAgIAkJCXZob3N0X2Rpc2Nh
+cmRfdnFfZGVzYyh2cSwgMSk7DQo+ID4gPiA+ICAgCQkJdmhvc3RfbmV0X2VuYWJsZV92cShuZXQs
+IHZxKTsNCj4gPiA+ID4gICAJCQlicmVhazsNCj4gPiA+ID4gLQkJfQ0KPiA+ID4NCj4gPiA+DQo+
+ID4gPiBBcyBJJ3ZlIHBvaW50ZWQgb3V0IGluIGxhc3QgdmVyc2lvbi4gSWYgeW91IGRvbid0IGRp
+c2NhcmQgZGVzY3JpcHRvciwgeW91DQo+ID4gPiBwcm9iYWJseQ0KPiA+ID4gbmVlZCB0byBhZGQg
+dGhlIGhlYWQgdG8gdXNlZCByaW5nLiBPdGhlcndpc2UgdGhpcyBkZXNjcmlwdG9yIHdpbGwgYmUg
+YWx3YXlzDQo+ID4gPiBpbmZsaWdodCB0aGF0IG1heSBjb25mdXNlIGRyaXZlcnMuDQo+ID4NCj4g
+PiBTb3JyeSBmb3IgbWlzc2luZyB0aGUgY29tbWVudC4NCj4gPg0KPiA+IEFmdGVyIGRlbGV0aW5n
+IGRpc2NhcmQgZGVzY3JpcHRvciBhbmQgYnJlYWssIHRoZSBuZXh0IHByb2Nlc3Npbmcgd2lsbCBi
+ZSB0aGUNCj4gPiBzYW1lDQo+ID4gYXMgdGhlIG5vcm1hbCBzdWNjZXNzIG9mIHNlbmRtc2coKSwg
+YW5kIHZob3N0X3plcm9jb3B5X3NpZ25hbF91c2VkKCkgb3INCj4gPiB2aG9zdF9hZGRfdXNlZF9h
+bmRfc2lnbmFsKCkgbWV0aG9kIHdpbGwgYmUgY2FsbGVkIHRvIGFkZCB0aGUgaGVhZCB0byB1c2Vk
+DQo+ID4gcmluZy4NCj4gDQo+IEl0J3MgdGhlIG5leHQgaGVhZCBub3QgdGhlIG9uZSB0aGF0IGNv
+bnRhaW5zIHRoZSBidWdneSBwYWNrZXQ/DQoNCkluIHRoZSBtb2RpZmllZCBjb2RlIGxvZ2ljLCB0
+aGUgaGVhZCBhZGRlZCB0byB1c2VkIHJpbmcgaXMgZXhlY3RseSB0aGUNCm9uZSB0aGF0IGNvbnRh
+aW5zIHRoZSBidWdneSBwYWNrZXQuDQoNClRoYW5rcw0KDQo+IA0KPiBUaGFua3MNCj4gDQo+ID4N
+Cj4gPiBUaGFua3MNCj4gPiA+DQo+ID4gPg0KPiA+ID4gPiAtCQlpZiAoZXJyICE9IGxlbikNCj4g
+PiA+ID4gLQkJCXByX2RlYnVnKCJUcnVuY2F0ZWQgVFggcGFja2V0OiBsZW4gJWQgIT0gJXpkXG4i
+LA0KPiA+ID4gPiAtCQkJCSBlcnIsIGxlbik7DQo+ID4gPiA+ICsJCX0gZWxzZSBpZiAodW5saWtl
+bHkoZXJyIDwgMCB8fCBlcnIgIT0gbGVuKSkNCj4gPiA+DQo+ID4gPg0KPiA+ID4gSXQgbG9va3Mg
+dG8gbWUgZXJyICE9IGxlbiBjb3ZlcnMgZXJyIDwgMC4NCj4gPg0KPiA+IE9LDQo+ID4NCj4gPiA+
+DQo+ID4gPiBUaGFua3MNCj4gPiA+DQo+ID4gPg0KPiA+ID4gPiArCQkJdnFfZXJyKHZxLCAiRmFp
+bCB0byBzZW5kaW5nIHBhY2tldHMgZXJyIDogJWQsIGxlbiA6ICV6ZFxuIiwNCj4gZXJyLA0KPiA+
+ID4gPiArbGVuKTsNCj4gPiA+ID4gICBkb25lOg0KPiA+ID4gPiAgIAkJdnEtPmhlYWRzW252cS0+
+ZG9uZV9pZHhdLmlkID0gY3B1X3RvX3Zob3N0MzIodnEsIGhlYWQpOw0KPiA+ID4gPiAgIAkJdnEt
+PmhlYWRzW252cS0+ZG9uZV9pZHhdLmxlbiA9IDA7DQo+ID4gPiA+IEBAIC05MjIsNyArOTE5LDYg
+QEAgc3RhdGljIHZvaWQgaGFuZGxlX3R4X3plcm9jb3B5KHN0cnVjdCB2aG9zdF9uZXQNCj4gPiA+
+ICpuZXQsIHN0cnVjdCBzb2NrZXQgKnNvY2spDQo+ID4gPiA+ICAgCQkJbXNnLm1zZ19mbGFncyAm
+PSB+TVNHX01PUkU7DQo+ID4gPiA+ICAgCQl9DQo+ID4gPiA+DQo+ID4gPiA+IC0JCS8qIFRPRE86
+IENoZWNrIHNwZWNpZmljIGVycm9yIGFuZCBib21iIG91dCB1bmxlc3MgRU5PQlVGUz8NCj4gKi8N
+Cj4gPiA+ID4gICAJCWVyciA9IHNvY2stPm9wcy0+c2VuZG1zZyhzb2NrLCAmbXNnLCBsZW4pOw0K
+PiA+ID4gPiAgIAkJaWYgKHVubGlrZWx5KGVyciA8IDApKSB7DQo+ID4gPiA+ICAgCQkJaWYgKHpj
+b3B5X3VzZWQpIHsNCj4gPiA+ID4gQEAgLTkzMSwxMyArOTI3LDE0IEBAIHN0YXRpYyB2b2lkIGhh
+bmRsZV90eF96ZXJvY29weShzdHJ1Y3QNCj4gdmhvc3RfbmV0DQo+ID4gPiAqbmV0LCBzdHJ1Y3Qg
+c29ja2V0ICpzb2NrKQ0KPiA+ID4gPiAgIAkJCQludnEtPnVwZW5kX2lkeCA9ICgodW5zaWduZWQp
+bnZxLT51cGVuZF9pZHggLSAxKQ0KPiA+ID4gPiAgIAkJCQkJJSBVSU9fTUFYSU9WOw0KPiA+ID4g
+PiAgIAkJCX0NCj4gPiA+ID4gLQkJCXZob3N0X2Rpc2NhcmRfdnFfZGVzYyh2cSwgMSk7DQo+ID4g
+PiA+IC0JCQl2aG9zdF9uZXRfZW5hYmxlX3ZxKG5ldCwgdnEpOw0KPiA+ID4gPiAtCQkJYnJlYWs7
+DQo+ID4gPiA+ICsJCQlpZiAoZXJyID09IC1FQUdBSU4pIHsNCj4gPiA+ID4gKwkJCQl2aG9zdF9k
+aXNjYXJkX3ZxX2Rlc2ModnEsIDEpOw0KPiA+ID4gPiArCQkJCXZob3N0X25ldF9lbmFibGVfdnEo
+bmV0LCB2cSk7DQo+ID4gPiA+ICsJCQkJYnJlYWs7DQo+ID4gPiA+ICsJCQl9DQo+ID4gPiA+ICAg
+CQl9DQo+ID4gPiA+ICAgCQlpZiAoZXJyICE9IGxlbikNCj4gPiA+ID4gLQkJCXByX2RlYnVnKCJU
+cnVuY2F0ZWQgVFggcGFja2V0OiAiDQo+ID4gPiA+IC0JCQkJICIgbGVuICVkICE9ICV6ZFxuIiwg
+ZXJyLCBsZW4pOw0KPiA+ID4gPiArCQkJdnFfZXJyKHZxLCAiRmFpbCB0byBzZW5kaW5nIHBhY2tl
+dHMgZXJyIDogJWQsIGxlbiA6ICV6ZFxuIiwNCj4gZXJyLA0KPiA+ID4gPiArbGVuKTsNCj4gPiA+
+ID4gICAJCWlmICghemNvcHlfdXNlZCkNCj4gPiA+ID4gICAJCQl2aG9zdF9hZGRfdXNlZF9hbmRf
+c2lnbmFsKCZuZXQtPmRldiwgdnEsIGhlYWQsIDApOw0KPiA+ID4gPiAgIAkJZWxzZQ0KPiA+DQo+
+ID4NCg0K
