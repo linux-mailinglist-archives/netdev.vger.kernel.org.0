@@ -2,100 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CA272DC772
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 20:59:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A4FE2DC786
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 21:12:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727949AbgLPT7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 14:59:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56900 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727903AbgLPT7K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 14:59:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608148664;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dZZQKs4bp+ifj63PZO0dxaf27I/XYf/Zcar+TijNLXw=;
-        b=Dydmq+s4w6D/Cl4EgmRseyijASK+xSL7Ggu8el2n6Az88H0Gp+GXZLSGOP3ItqblSz4eE2
-        SpXSAbBuV/hFCHggDnpjSZZCB8tKvtj/eICKM5rwv/eycnM9/lU8oB9HZizsfIN3FSuah1
-        s/l02gJaU5S7ezpMvxuz8Mun2fYfvmc=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-267-gRgg6BzGNdmy22qOT3SCvA-1; Wed, 16 Dec 2020 14:57:42 -0500
-X-MC-Unique: gRgg6BzGNdmy22qOT3SCvA-1
-Received: by mail-wm1-f71.google.com with SMTP id k128so2068199wme.7
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 11:57:42 -0800 (PST)
+        id S1727025AbgLPUKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 15:10:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726902AbgLPUKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 15:10:42 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51B8C061794
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 12:10:01 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id u18so51554905lfd.9
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 12:10:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=h2101cMf55YqZGiixeHdueKN1bwn9y4505cvJB5CG4Y=;
+        b=OhdSb/8bMRbx8Mdl7k5ypptqvEHfI/iA1xA7Tutq3de85DJ8p1Jvu7XnsP2TFhFMhU
+         zCQqjOw3X9zgEUaHHt77cfbQ6Yskyezmh5ZQIfXnayoTj0v8s9vCb2rRG/68yzVUd3y7
+         tejhdenvHPJeUz0GSwANVL2+1vWp0w54ufe1IyHSUZn9dFW2W0Ysqy6MthQaHKaaZ4+8
+         y9Qix1RPVLnB4sxlv22gUMlvPhRwC5Tgp1Wt1SQtWTkM8q/MzHdCq5cEpGtgjupe7sCk
+         iTe4i+qtRIMlA+xCG0FiiDOtM+ZitcrDi3e85dtr/E8yfMit3TC5VivQI8yP8UhrPnfW
+         mONA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dZZQKs4bp+ifj63PZO0dxaf27I/XYf/Zcar+TijNLXw=;
-        b=SFAmzAZ0ZRbB/3WSyE49o6/1wA3hMQn7h36eo2tH1XeTlFHiuvkw4+2wyipt6+FWqo
-         PVSvj2tWpfS656tlJDPLumqAbpeHMvwbLWtfOH2uugd0RkOIY/MByKV8yfvSsSvdkfKZ
-         jrgnSVtGIucrLHSFOlwreWSX8ke2/JaFI4h7S6vaCAtJ70bxbAnKSTziRGOoxiBvynpD
-         WWozr/jDD80+paZ+nPeiDcqERH0gvRmUkQYt+iGmck31tKiixFOdaWAZnHh73w9C+p6r
-         nIYE0N17GKDm485RnfLX1Oou1ySwuECgoaSYH3jivJ8r3SwAL4ykiQIMtppZ04WlpdZv
-         ec5A==
-X-Gm-Message-State: AOAM533gTJA9qcGomU5N6icmHV0DSz/iR6AtcKkNuWQEE3GAGGajQ+SI
-        qXF8sB3uRi2eiK9V4TTJtUruJ2iVoZjWT07whdvnBzUbyYFbAg81cpiF7r5hvG9nysVsv7iWKgb
-        RA4i3K+M2sF9Blv0N
-X-Received: by 2002:adf:e84f:: with SMTP id d15mr40434602wrn.245.1608148661110;
-        Wed, 16 Dec 2020 11:57:41 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJykOSySwK5/71U8nP5csaea+VdY5+sa9sCXKklxURZoKJ75YDToIwEQqq/BVfRShwNTFoTyJw==
-X-Received: by 2002:adf:e84f:: with SMTP id d15mr40434596wrn.245.1608148660918;
-        Wed, 16 Dec 2020 11:57:40 -0800 (PST)
-Received: from redhat.com (bzq-109-67-15-113.red.bezeqint.net. [109.67.15.113])
-        by smtp.gmail.com with ESMTPSA id p9sm4049976wmm.17.2020.12.16.11.57.39
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=h2101cMf55YqZGiixeHdueKN1bwn9y4505cvJB5CG4Y=;
+        b=X6NiO9rf70CdmqZqxNV7zl0RbfFxdxBVPXenRVNVsaybg/qCeH/Q9I0bAXNzDLBjHz
+         jvQrlmRg7Ba8Ai3UPiB0x+fbi927c0B9YrIqLZiVeykKtP0m0Kz5SkdtjAyLT4FaJJyB
+         PdTcGI2fOEKWPGGinyfC5z1aWAZrtZ49dPOgzCuB6uHbTbXX07t+eb64ozlI2XhQriBS
+         cUN6y73bCyU4SDhENtiRlYzoNyFB2MbJYEqB8UPLq2u72G/jmvblxBiURiXAN7auF+tP
+         Vr//z7RPDlCDADRpB8BoECOPlICq3G6eCHQ+8uiJXti8OrF4hhZiGM8LIMSiUXVL6kAJ
+         o/nA==
+X-Gm-Message-State: AOAM532+YwzahSdXylqQLvhaYoEjhnss9q4OfrCU6emJip5H/8uxgbry
+        0MulIrU9Exwsu9sDt6M4+8R3kA9jWwQEnbGZ
+X-Google-Smtp-Source: ABdhPJwpVfDeolshBmjqtaIYGVaKkc5emUPe6UNLaFn/p1Zt3RKV9J0ik3St4W2a0N7SgqzXHQOc5Q==
+X-Received: by 2002:a05:651c:130b:: with SMTP id u11mr7758374lja.118.1608149399644;
+        Wed, 16 Dec 2020 12:09:59 -0800 (PST)
+Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
+        by smtp.gmail.com with ESMTPSA id o12sm387371ljp.123.2020.12.16.12.09.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Dec 2020 11:57:40 -0800 (PST)
-Date:   Wed, 16 Dec 2020 14:57:37 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Eli Cohen <elic@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 0/7] Introduce vdpa management tool
-Message-ID: <20201216145724-mutt-send-email-mst@kernel.org>
-References: <20201112064005.349268-1-parav@nvidia.com>
- <20201116142312.661786bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <BY5PR12MB432205C97D1AAEC1E8731FD4DCE20@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20201216041303-mutt-send-email-mst@kernel.org>
- <20201216080610.08541f44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <BY5PR12MB43227CBBF9A5CED02D74CA79DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
+        Wed, 16 Dec 2020 12:09:59 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/5] net: dsa: Link aggregation support
+In-Reply-To: <20201216184427.amplixitum6x2zui@skbuf>
+References: <20201216160056.27526-1-tobias@waldekranz.com> <20201216160056.27526-4-tobias@waldekranz.com> <20201216184427.amplixitum6x2zui@skbuf>
+Date:   Wed, 16 Dec 2020 21:09:58 +0100
+Message-ID: <87k0thbjhl.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BY5PR12MB43227CBBF9A5CED02D74CA79DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 04:54:37PM +0000, Parav Pandit wrote:
-> > From: Jakub Kicinski <kuba@kernel.org>
-> > Sent: Wednesday, December 16, 2020 9:36 PM
-> > 
-> > On Wed, 16 Dec 2020 04:13:51 -0500 Michael S. Tsirkin wrote:
-> > > > > > 3. Why not use ioctl() interface?
-> > > > >
-> > > > > Obviously I'm gonna ask you - why can't you use devlink?
-> > > > >
-> > > > This was considered.
-> > > > However it seems that extending devlink for vdpa specific stats, devices,
-> > config sounds overloading devlink beyond its defined scope.
-> > >
-> > > kuba what's your thinking here? Should I merge this as is?
-> > 
-> > No objections from me if people familiar with VDPA like it.
-> 
-> I was too occupied with the recent work on subfunction series.
-> I wanted to change the "parentdev" to "mgmtdev" to make it little more clear for vdpa management tool to see vdpa mgmt device and operate on it.
-> What do you think? Should I revise v2 or its late?
+On Wed, Dec 16, 2020 at 20:44, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Wed, Dec 16, 2020 at 05:00:54PM +0100, Tobias Waldekranz wrote:
+>> diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+>> index 183003e45762..deee4c0ecb31 100644
+>> --- a/net/dsa/dsa2.c
+>> +++ b/net/dsa/dsa2.c
+>> @@ -21,6 +21,46 @@
+>>  static DEFINE_MUTEX(dsa2_mutex);
+>>  LIST_HEAD(dsa_tree_list);
+>>
+>> +void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag)
+>
+> Maybe a small comment here and in dsa_lag_unmap, describing what they're
+> for? They look a bit bland. Just a few words about the linear array will
+> suffice.
 
-I need a rebase anyway, so sure.
+Not sure I understand why these two are "bland" whereas dsa_switch_find
+just below it is not. But sure, I will add a comment. You want a block
+comment before each function?
 
--- 
-MST
+>> +{
+>> +	unsigned int id;
+>> +
+>> +	if (dsa_lag_id(dst, lag) >= 0)
+>> +		/* Already mapped */
+>> +		return;
+>> +
+>> +	for (id = 0; id < dst->lags_len; id++) {
+>> +		if (!dsa_lag_dev(dst, id)) {
+>> +			dst->lags[id] = lag;
+>> +			return;
+>> +		}
+>> +	}
+>> +
+>> +	/* No IDs left, which is OK. Some drivers do not need it. The
+>> +	 * ones that do, e.g. mv88e6xxx, will discover that
+>> +	 * dsa_tree_lag_id returns an error for this device when
+>> +	 * joining the LAG. The driver can then return -EOPNOTSUPP
+>> +	 * back to DSA, which will fall back to a software LAG.
+>> +	 */
+>> +}
+>> +
+>> +void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag)
+>> +{
+>> +	struct dsa_port *dp;
+>> +	unsigned int id;
+>> +
+>> +	dsa_lag_foreach_port(dp, dst, lag)
+>> +		/* There are remaining users of this mapping */
+>> +		return;
+>> +
+>> +	dsa_lags_foreach_id(id, dst) {
+>> +		if (dsa_lag_dev(dst, id) == lag) {
+>> +			dst->lags[id] = NULL;
+>> +			break;
+>> +		}
+>> +	}
+>> +}
+>> diff --git a/net/dsa/port.c b/net/dsa/port.c
+>> index 73569c9af3cc..121e5044dbe7 100644
+>> --- a/net/dsa/port.c
+>> +++ b/net/dsa/port.c
+>> @@ -193,6 +193,85 @@ void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
+>>  	dsa_port_set_state_now(dp, BR_STATE_FORWARDING);
+>>  }
+>>
+>> +int dsa_port_lag_change(struct dsa_port *dp,
+>> +			struct netdev_lag_lower_state_info *linfo)
+>> +{
+>> +	struct dsa_notifier_lag_info info = {
+>> +		.sw_index = dp->ds->index,
+>> +		.port = dp->index,
+>> +	};
+>> +	bool tx_enabled;
+>> +
+>> +	if (!dp->lag_dev)
+>> +		return 0;
+>> +
+>> +	/* On statically configured aggregates (e.g. loadbalance
+>> +	 * without LACP) ports will always be tx_enabled, even if the
+>> +	 * link is down. Thus we require both link_up and tx_enabled
+>> +	 * in order to include it in the tx set.
+>> +	 */
+>> +	tx_enabled = linfo->link_up && linfo->tx_enabled;
+>> +
+>> +	if (tx_enabled == dp->lag_tx_enabled)
+>> +		return 0;
+>
+> Why would we get a NETDEV_CHANGELOWERSTATE notification if tx_enabled ==
+> dp->lag_tx_enabled? What is it that changed?
 
+A typical scenario would be:
+
+1. Link goes down: linfo->link_up=false linfo->tx_enabled=false
+   => tx_enabled=false
+
+2. Link comes up: linfo->link_up=true linfo->tx_enabled=false
+   => tx_enabled=false
+
+3. LACP peers: linfo->link_up=true linfo->tx_enabled=true
+   => tx_enabled=true
+
+We get three events, but we only go to the hardware for (1) and (3).
+
+>> +
+>> +	dp->lag_tx_enabled = tx_enabled;
+>> +
+>> +	return dsa_port_notify(dp, DSA_NOTIFIER_LAG_CHANGE, &info);
+>> +}
+>
+> I am very happy with how simple this turned out. Thanks for the patience.
+> You can add these tags when you resend once net-next opens.
+>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> Tested-by: Vladimir Oltean <olteanv@gmail.com>
+
+Thank you. Yeah I also like the way it ended up.
