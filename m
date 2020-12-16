@@ -2,501 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 526682DB7BA
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:16:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39E1F2DB7C3
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726660AbgLPAQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 19:16:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725790AbgLPAQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 19:16:09 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6783AC0613D3;
-        Tue, 15 Dec 2020 16:15:29 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id iq13so500449pjb.3;
-        Tue, 15 Dec 2020 16:15:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h0rdN4lXdMY3uB9u1p5NCLyIVQ8uVkWTbhnMtR2YlME=;
-        b=MazMPLljVr6HdrzeiDDjkHKL2YkTkopwI+dfkmM+QmLiuUr0/QDL7aSo7Ge0djz/Oy
-         gp5snIwcnQ6boTMNhpC3bT5y1G69c8+4IIY/QT849Du3hz7ydcxvIPpeq9swzEUlRI/E
-         cnIow3PanQQ0oTlVB30v816pYaZ76fS7c04kylJHBv6llF0KjBuPVxT44q7tPHBCFyVy
-         bStGDLEDz97trXzu+wixV7yCVt/8wYhF5tH+4gmd86Wto5xoRbg66VhwZtrYMV1zNPR8
-         9CjnJNmOy3HpfjyzFvOO6J0lqb/YXc17P05Z/kX4AkrRu7Ppvi2KYipAcJLErsGeRI3C
-         xHtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h0rdN4lXdMY3uB9u1p5NCLyIVQ8uVkWTbhnMtR2YlME=;
-        b=No980uk9+tAiyz/xIsGBdDlVXJxyTmdwyGvXR7w3cKqqi+Jcvw4stu0Lc3IATfvKvR
-         jxdcx5V4wb3QW2OOLBZbPCGMyFG3bYUPQvHiLDBzRf+GPcc/waDRNW7Ggv7MU9Ouya8L
-         cuuFzjL6qJNcyESbV3W4dDnenoH3hI++72d3pBHxAQuNQN3zttZRt+F3D4HDZ/rP9KOD
-         XIRnT3nU9i9mWvPjyjZn9puLWFe0H/uCIntlW0nFC2x2cCIvrMZAdnq0P1zzMqku/Jai
-         Ih+xRrxk7n0YxMC+LVqtVDQ1oSgJAA3jXnQNJaUcvQMgQqmV/+xIxdIWmVLhIWe2fNcM
-         ZcsQ==
-X-Gm-Message-State: AOAM530TU7HXz+T3RjIjNpKUui8Qi5fuev8YzWoRTHLJ2hFYDKyB1FJZ
-        Dhb2WI9zgehZV8xuqWSuVI6B7rRToaajlz2Nhlbwo45qiD+lNQ==
-X-Google-Smtp-Source: ABdhPJyKHF8b+3mY2Xl/8b/RKOTk7WEwrD68z1I1Wx0kWhb9/s3WdRuVDkUyaO91sjtKvLAz8bYZo1lE+2H9iXhI/I8=
-X-Received: by 2002:a17:90a:a24:: with SMTP id o33mr852132pjo.191.1608077728706;
- Tue, 15 Dec 2020 16:15:28 -0800 (PST)
+        id S1726326AbgLPAUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 19:20:45 -0500
+Received: from nat-hk.nvidia.com ([203.18.50.4]:29553 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725777AbgLPAUk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 19:20:40 -0500
+Received: from HKMAIL102.nvidia.com (Not Verified[10.18.92.9]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fd952ad0000>; Wed, 16 Dec 2020 08:19:57 +0800
+Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 16 Dec
+ 2020 00:19:53 +0000
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.45) by
+ HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 16 Dec 2020 00:19:53 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d+SU8GHRnn5YwzhE+L++RyigEr11CNvR2WPlzv7vqX049RbnvvV2Juot6FhyGsyPMGzzp4dZSIOARi/RLnVa+G106WlSaZG32GbrCzwbrILyUev0KdZqFPJEVpQTeh5F6/pLEHenx1dBamtwDOqFJOW5E5A3HmE5QKJb8cTeWap2t2SgOFVx/XnETrL85lwC7nTBk/4qAmGnDG0h4v1e12Bru3o8t5Vt/2jDfWL85vWbuRBjSuTOJQXINIkPaj3yJRajqZ3/6stR3FJ5SZr+8XHk0ykm7lHJm0vnxM/tXkcTa9WGTeeUkyuoV5fP+pL45wDQm/0hoFklQ0rMzQZlAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TeSFjQpX2b+k755ADGAi/aP2UHQbRfpQGQi/uWg0ljM=;
+ b=NcOMyDBS6FozNVzU2AiXFlowb64qb8v3Ehmzvrt230nAUBlRTGvOsD71TGpJUF2Eoi/iCSWfeIbbKH3pLgzb4jc2sfTSC1EVvqLD6TtpQ9R93qbO8C3OZZslwfoVAq2zG8cZNmtYh9VatCXOxv32kElPoupYHmp1tVn8rGJcUH0lEaRCWSPNYcsiPBYO3xdvhK2xU5vGKNlbpTWY7LxntGeIUUXjHRDRu8YR2pzAzIFZvvt0u/Yvs6iUUXzG6jPK2GjZNyzKtmvrny2ap2LV3VloAjjwgsUJdrENSRO/Yq00W+5UvjJaLfSlHDeZTjG+ISBENDz4XORQ7d2SUKxyKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB1433.namprd12.prod.outlook.com (2603:10b6:3:73::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Wed, 16 Dec
+ 2020 00:19:51 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1ce9:3434:90fe:3433]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1ce9:3434:90fe:3433%3]) with mapi id 15.20.3654.025; Wed, 16 Dec 2020
+ 00:19:51 +0000
+Date:   Tue, 15 Dec 2020 20:19:46 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+Message-ID: <20201216001946.GF552508@nvidia.com>
+References: <20201214214352.198172-1-saeed@kernel.org>
+ <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
+ <608505778d76b1b01cb3e8d19ecda5b8578f0f79.camel@kernel.org>
+ <CAKgT0UfEsd0hS=iJTcVc20gohG0WQwjsGYOw1y0_=DRVbhb1Ng@mail.gmail.com>
+ <ecad34f5c813591713bb59d9c5854148c3d7f291.camel@kernel.org>
+ <CAKgT0UfTOqS9PBeQFexyxm7ytQzdj0j8VMG71qv4+Vn6koJ5xQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UfTOqS9PBeQFexyxm7ytQzdj0j8VMG71qv4+Vn6koJ5xQ@mail.gmail.com>
+X-ClientProxiedBy: BL1PR13CA0025.namprd13.prod.outlook.com
+ (2603:10b6:208:256::30) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-References: <20201214201118.148126-1-xiyou.wangcong@gmail.com>
- <20201214201118.148126-3-xiyou.wangcong@gmail.com> <CAEf4BzZa15kMT+xEO9ZBmS-1=E85+k02zeddx+a_N_9+MOLhkQ@mail.gmail.com>
- <CAM_iQpVR_owLgZp1tYJyfWco-s4ov_ytL6iisg3NmtyPBdbO2Q@mail.gmail.com> <CAEf4BzbyHHDrECCEjrSC3A5X39qb_WZaU_3_qNONP+vHAcUzuQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzbyHHDrECCEjrSC3A5X39qb_WZaU_3_qNONP+vHAcUzuQ@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 15 Dec 2020 16:15:17 -0800
-Message-ID: <CAM_iQpVBPRJ+t3HPryh-1eKxV-=2CmxW9T3OyO6-_sQVLskQVQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v2 2/5] bpf: introduce timeout map
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0025.namprd13.prod.outlook.com (2603:10b6:208:256::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.9 via Frontend Transport; Wed, 16 Dec 2020 00:19:48 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kpKXi-00B5aB-Vv; Tue, 15 Dec 2020 20:19:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1608077997; bh=TeSFjQpX2b+k755ADGAi/aP2UHQbRfpQGQi/uWg0ljM=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=BEYKo1M1KynNQaxQNpJDKS3TsU9UEZVS7LKKF4fj5YypY3zb9Ysy5fWlFruh/6kMb
+         wdG3Tr4/J7fV2P+LFsc+yywvMht9llKb7BZeYNEuASdGv/6EH/9eirMDnZLrTk5n9B
+         343iGdvJFgATxeA9aCj7l1KLk14Y/JxEuAthlS6/J5hFoMLKikqtVek27l+AyK0DPq
+         fP1ZF3Eax5vxbIrRj46tvy/vJeX9tX3Mlg6WpXhKVTxX7zqa6O2KuYBQeSocKa39Qu
+         X+/RcppfT5ZXrYRcVAgjxNan9ov2EX/dwfiMGtMvQIfG7P9gf2grnAVIfDwE9ZtLYX
+         3mICWw4PrMA3Q==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 2:08 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Dec 15, 2020 at 12:06 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Tue, Dec 15, 2020 at 11:27 AM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Mon, Dec 14, 2020 at 12:17 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > >
-> > > > From: Cong Wang <cong.wang@bytedance.com>
-> > > >
-> > > > This borrows the idea from conntrack and will be used for conntrack in
-> > > > bpf too. Each element in a timeout map has a user-specified timeout
-> > > > in secs, after it expires it will be automatically removed from the map.
-> > > >
-> > > > There are two cases here:
-> > > >
-> > > > 1. When the timeout map is idle, that is, no one updates or accesses it,
-> > > >    we rely on the idle work to scan the whole hash table and remove
-> > > >    these expired. The idle work is scheduled every 1 sec.
-> > >
-> > > Would 1 second be a good period for a lot of cases? Probably would be
-> > > good to expand on what went into this decision.
-> >
-> > Sure, because our granularity is 1 sec, I will add it into changelog.
-> >
->
-> Granularity of a timeout is not that coupled with the period of
-> garbage collection. In this case, with 1 second period, you can have
-> some items not garbage collected for up to 2 seconds due to timing and
-> races. Just keep that in mind.
+On Tue, Dec 15, 2020 at 01:41:04PM -0800, Alexander Duyck wrote:
 
-Well, it is. Let's say we add entries every ms and kick gc every sec, we
-could end up with thousands of expired entries in hash map, which could
-be a problem under memory pressure.
+> > not just devlink and switchdev, auxbus was also introduced to
+> > standardize some of the interfaces.
+> 
+> The auxbus is just there to make up for the fact that there isn't
+> another bus type for this though. I would imagine otherwise this would
+> be on some sort of platform bus.
 
->
-> > >
-> > > >
-> > > > 2. When the timeout map is actively accessed, we could reach expired
-> > > >    elements before the idle work kicks in, we can simply skip them and
-> > > >    schedule another work to do the actual removal work. We avoid taking
-> > > >    locks on fast path.
-> > > >
-> > > > The timeout of each element can be set or updated via bpf_map_update_elem()
-> > > > and we reuse the upper 32-bit of the 64-bit flag for the timeout value.
-> > > >
-> > > > Cc: Alexei Starovoitov <ast@kernel.org>
-> > > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > > Cc: Dongdong Wang <wangdongdong.6@bytedance.com>
-> > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > > ---
-> > > >  include/linux/bpf_types.h      |   1 +
-> > > >  include/uapi/linux/bpf.h       |   3 +-
-> > > >  kernel/bpf/hashtab.c           | 244 ++++++++++++++++++++++++++++++++-
-> > > >  kernel/bpf/syscall.c           |   3 +-
-> > > >  tools/include/uapi/linux/bpf.h |   1 +
-> > > >  5 files changed, 248 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-> > > > index 99f7fd657d87..00a3b17b6af2 100644
-> > > > --- a/include/linux/bpf_types.h
-> > > > +++ b/include/linux/bpf_types.h
-> > > > @@ -125,6 +125,7 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_STACK, stack_map_ops)
-> > > >  BPF_MAP_TYPE(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops)
-> > > >  #endif
-> > > >  BPF_MAP_TYPE(BPF_MAP_TYPE_RINGBUF, ringbuf_map_ops)
-> > > > +BPF_MAP_TYPE(BPF_MAP_TYPE_TIMEOUT_HASH, htab_timeout_map_ops)
-> > > >
-> > > >  BPF_LINK_TYPE(BPF_LINK_TYPE_RAW_TRACEPOINT, raw_tracepoint)
-> > > >  BPF_LINK_TYPE(BPF_LINK_TYPE_TRACING, tracing)
-> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > > index 30b477a26482..dedb47bc3f52 100644
-> > > > --- a/include/uapi/linux/bpf.h
-> > > > +++ b/include/uapi/linux/bpf.h
-> > > > @@ -158,6 +158,7 @@ enum bpf_map_type {
-> > > >         BPF_MAP_TYPE_RINGBUF,
-> > > >         BPF_MAP_TYPE_INODE_STORAGE,
-> > > >         BPF_MAP_TYPE_TASK_STORAGE,
-> > > > +       BPF_MAP_TYPE_TIMEOUT_HASH,
-> > > >  };
-> > > >
-> > > >  /* Note that tracing related programs such as
-> > > > @@ -393,7 +394,7 @@ enum bpf_link_type {
-> > > >   */
-> > > >  #define BPF_PSEUDO_CALL                1
-> > > >
-> > > > -/* flags for BPF_MAP_UPDATE_ELEM command */
-> > > > +/* flags for BPF_MAP_UPDATE_ELEM command, upper 32 bits are timeout */
-> > >
-> > > timeout in what units of time?
-> >
-> > 1 sec, should I also add it in this comment (and everywhere else)?
->
-> yes, please
+Please lets not start this again. This was gone over with Greg for
+literally a year and a half and he explicitly NAK'd platform bus for
+this purpose.
 
-Sure.
+Aux bus exists to connect different kernel subsystems that touch the
+same HW block together. Here we have the mlx5_core subsystem, vdpa,
+rdma, and netdev all being linked together using auxbus.
 
->
-> >
-> > >
-> > > >  enum {
-> > > >         BPF_ANY         = 0, /* create new element or update existing */
-> > > >         BPF_NOEXIST     = 1, /* create new element if it didn't exist */
-> > > > diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> > > > index f0b7b54fa3a8..178cb376c397 100644
-> > > > --- a/kernel/bpf/hashtab.c
-> > > > +++ b/kernel/bpf/hashtab.c
-> > > > @@ -8,6 +8,8 @@
-> > > >  #include <linux/filter.h>
-> > > >  #include <linux/rculist_nulls.h>
-> > > >  #include <linux/random.h>
-> > > > +#include <linux/llist.h>
-> > > > +#include <linux/workqueue.h>
-> > > >  #include <uapi/linux/btf.h>
-> > > >  #include <linux/rcupdate_trace.h>
-> > > >  #include "percpu_freelist.h"
-> > > > @@ -84,6 +86,8 @@ struct bucket {
-> > > >                 raw_spinlock_t raw_lock;
-> > > >                 spinlock_t     lock;
-> > > >         };
-> > > > +       struct llist_node gc_node;
-> > > > +       atomic_t pending;
-> > >
-> > > HASH is an extremely frequently used type of map, and oftentimes with
-> > > a lot of entries/buckets. I don't think users of normal
-> > > BPF_MAP_TYPE_HASH should pay the price of way more niche hashmap with
-> > > timeouts. So I think it's not appropriate to increase the size of the
-> > > struct bucket here.
-> >
-> > I understand that, but what's a better way to do this? I can wrap it up
-> > on top of struct bucket for sure, but it would need to change a lot of code.
-> > So, basically code reuse vs. struct bucket size increase. ;)
->
-> I think not paying potentially lots of memory for unused features
-> wins. Some struct embedding might work. Or just better code reuse.
-> Please think this through, don't wait for me to write the code for
-> you.
+It is kind of like what MFD does, but again, using MFD for this was
+also NAK'd by Greg.
 
-I perfectly understand this point, but other reviewers could easily argue
-why not just reuse the existing hashmap code given they are pretty much
-similar.
+At the very worst we might sometime find out there is some common
+stuff between ADIs that we might get an ADI bus, but I'm not
+optimistic. So far it looks like there is no commonality.
 
-I personally have no problem duplicating the code, but I need to justify it,
-right? :-/
+Aux bus has at least 4 users already in various stages of submission,
+and many other target areas that should be replaced by it.
 
+> I would really like to see is a solid standardization of what this is.
+> Otherwise the comparison is going to be made. Especially since a year
+> ago Mellanox was pushing this as an mdev type interface. 
 
->
-> >
-> > >
-> > > >  };
-> > > >
-> > > >  #define HASHTAB_MAP_LOCK_COUNT 8
-> > > > @@ -104,6 +108,9 @@ struct bpf_htab {
-> > > >         u32 hashrnd;
-> > > >         struct lock_class_key lockdep_key;
-> > > >         int __percpu *map_locked[HASHTAB_MAP_LOCK_COUNT];
-> > > > +       struct llist_head gc_list;
-> > > > +       struct work_struct gc_work;
-> > > > +       struct delayed_work gc_idle_work;
-> > > >  };
-> > > >
-> > > >  /* each htab element is struct htab_elem + key + value */
-> > > > @@ -124,6 +131,7 @@ struct htab_elem {
-> > > >                 struct bpf_lru_node lru_node;
-> > > >         };
-> > > >         u32 hash;
-> > > > +       u64 expires;
-> > >
-> > > time units? and similar concerns about wasting a lot of added memory
-> > > for not benefit to HASH users.
-> >
-> > 'expires' is in jiffies, I can add a comment here if necessary.
->
-> I think it's really helpful, because everyone reading this would be
-> wondering and then jumping around the code to figure it out
+mdev was NAK'd too.
 
-Sure.
+mdev is only for creating /dev/vfio/*.
 
->
-> >
-> > Similarly, please suggest how to expand struct htab_elem without changing
-> > a lot of code. I also tried to find some hole in the struct, but I
-> > couldn't, so I
-> > ran out of ideas here.
->
-> I mentioned above, you can have your own struct and embed htab_elem
-> inside. It might need some refactoring, of course.
+> That is all well and good. However if we agree that SR-IOV wasn't done
+> right saying that you are spinning up something that works just like
+> SR-IOV isn't all that appealing, is it?
 
-So increasing 8 bytes of struct htab_elem is a solid reason to change
-_potentially_ all of the hash map code? It does not sound solid to me,
-at least it is arguable.
+Fitting into some universal least-common-denominator was never a goal
+for SR-IOV, so I wouldn't agree it was done wrong. 
 
-I also doubt I could really wrap up on top of htab_elem, as it assumes
-key and value are stored at the end. And these structs are internal,
-it is really hard to factor out.
+> I am talking about my perspective. From what I have seen, one-off
+> features that are only available from specific vendors are a pain to
+> deal with and difficult to enable when you have to support multiple
+> vendors within your ecosystem. What you end up going for is usually
+> the lowest common denominator because you ideally want to be able to
+> configure all your devices the same and have one recipe for setup.
 
->
-> >
-> > >
-> > > >         char key[] __aligned(8);
-> > > >  };
-> > > >
-> > > > @@ -143,6 +151,7 @@ static void htab_init_buckets(struct bpf_htab *htab)
-> > > >
-> > > >         for (i = 0; i < htab->n_buckets; i++) {
-> > > >                 INIT_HLIST_NULLS_HEAD(&htab->buckets[i].head, i);
-> > > > +               atomic_set(&htab->buckets[i].pending, 0);
-> > > >                 if (htab_use_raw_lock(htab)) {
-> > > >                         raw_spin_lock_init(&htab->buckets[i].raw_lock);
-> > > >                         lockdep_set_class(&htab->buckets[i].raw_lock,
-> > > > @@ -431,6 +440,14 @@ static int htab_map_alloc_check(union bpf_attr *attr)
-> > > >         return 0;
-> > > >  }
-> > > >
-> > > > +static void htab_sched_gc(struct bpf_htab *htab, struct bucket *b)
-> > > > +{
-> > > > +       if (atomic_fetch_or(1, &b->pending))
-> > > > +               return;
-> > > > +       llist_add(&b->gc_node, &htab->gc_list);
-> > > > +       queue_work(system_unbound_wq, &htab->gc_work);
-> > > > +}
-> > >
-> > > I'm concerned about each bucket being scheduled individually... And
-> > > similarly concerned that each instance of TIMEOUT_HASH will do its own
-> > > scheduling independently. Can you think about the way to have a
-> > > "global" gc/purging logic, and just make sure that buckets that need
-> > > processing would be just internally chained together. So the purging
-> > > routing would iterate all the scheduled hashmaps, and within each it
-> > > will have a linked list of buckets that need processing? And all that
-> > > is done just once each GC period. Not N times for N maps or N*M times
-> > > for N maps with M buckets in each.
-> >
-> > Our internal discussion went to the opposite actually, people here argued
-> > one work is not sufficient for a hashtable because there would be millions
-> > of entries (max_entries, which is also number of buckets). ;)
->
-> I was hoping that it's possible to expire elements without iterating
-> the entire hash table every single time, only items that need to be
-> processed. Hashed timing wheel is one way to do something like this,
+So encourage other vendors to support the switchdev model for managing
+VFs and ADIs!
 
-How could we know which ones are expired without scanning the
-whole table? They are clearly not sorted even within a bucket. Sorting
-them with expiration? Slightly better, as we can just stop at the first
-non-expired but with an expense of slowing down the update path.
+> I'm not saying you cannot enable those features. However at the same
+> time I am saying it would be nice to have a vendor neutral way of
+> dealing with those if we are going to support SF, ideally with some
+> sort of software fallback that may not perform as well but will at
+> least get us the same functionality.
 
-> kernel has to solve similar problems with timeouts as well, why not
-> taking inspiration there?
+Is it really true there is no way to create a software device on a
+switchdev today? I looked for a while and couldn't find
+anything. openvswitch can do this, so it does seem like a gap, but
+this has nothing to do with this series.
 
-Mind to point out which similar problems in the kernel?
+A software switchdev path should still end up with the representor and
+user facing netdev, and the behavior of the two netdevs should be
+identical to the VF switchdev flow we already have today.
 
-If you mean inspiration from conntrack, it is even worse, it uses multiple
-locking and locks on fast path too. I also looked at xt_hashlimit, it is not
-any better either.
+SF doesn't change any of this, it just shines a light that, yes,
+people actually have been using VFs with netdevs in containers and
+switchdev, as part of their operations.
 
->
-> >
-> > I chose one work per hash table because we could use map-in-map to divide
-> > the millions of entries.
-> >
-> > So, this really depends on how many maps and how many buckets in each
-> > map. I tend to leave this as it is, because there is no way to satisfy
-> > all of the
-> > cases.
->
-> But I think some ways are better than others. Please consider all the
-> options, not just the simplest one.
+FWIW, I view this as a positive because it shows the switchdev model
+is working very well and seeing adoption beyond the original idea of
+controlling VMs with SRIOV.
 
-I _did_ consider multiple works per hash map carefully, like I said, it
-could be workarounded with map-in-map and the locking would be more
-complicated. Hence I pick this current implementation.
+> I'm trying to remember which netdev conference it was. I referred to
+> this as a veth switchdev offload when something like this was first
+> brought up. 
 
-Simplicity also means less bugs, in case you do not like it. ;)
+Sure, though I think the way you'd create such a thing might be
+different. These APIs are really about creating an ADI that might be
+assigned to a VM and never have a netdev.
 
->
-> >
-> > >
-> > > > +
-> > > >  static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
-> > > >  {
-> > > >         bool percpu = (attr->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
-> > > > @@ -732,10 +749,13 @@ static bool htab_lru_map_delete_node(void *arg, struct bpf_lru_node *node)
-> > > >  static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
-> > > >  {
-> > > >         struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
-> > > > +       bool is_timeout = map->map_type == BPF_MAP_TYPE_TIMEOUT_HASH;
-> > > >         struct hlist_nulls_head *head;
-> > > >         struct htab_elem *l, *next_l;
-> > > >         u32 hash, key_size;
-> > > > +       struct bucket *b;
-> > > >         int i = 0;
-> > > > +       u64 now;
-> > > >
-> > > >         WARN_ON_ONCE(!rcu_read_lock_held());
-> > > >
-> > > > @@ -746,7 +766,8 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
-> > > >
-> > > >         hash = htab_map_hash(key, key_size, htab->hashrnd);
-> > > >
-> > > > -       head = select_bucket(htab, hash);
-> > > > +       b = __select_bucket(htab, hash);
-> > > > +       head = &b->head;
-> > > >
-> > > >         /* lookup the key */
-> > > >         l = lookup_nulls_elem_raw(head, hash, key, key_size, htab->n_buckets);
-> > > > @@ -759,6 +780,13 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
-> > > >                                   struct htab_elem, hash_node);
-> > > >
-> > > >         if (next_l) {
-> > > > +               if (is_timeout) {
-> > > > +                       now = get_jiffies_64();
-> > > > +                       if (time_after_eq64(now, next_l->expires)) {
-> > > > +                               htab_sched_gc(htab, b);
-> > > > +                               goto find_first_elem;
-> > > > +                       }
-> > > > +               }
-> > >
-> > > this piece of logic is repeated verbatim many times, seems like a
-> > > helper function would make sense here
-> >
-> > Except goto or continue, isn't it? ;) Please do share your ideas on
-> > how to make it a helper for both goto and continue.
->
-> So there is no way to make it work like this:
->
-> if (htab_elem_expired(htab, next_l))
->     goto find_first_elem;
->
-> ?
+It would be nonsense to create a veth-switchdev thing with out a
+netdev, and there have been various past attempts already NAK'd to
+transform a netdev into an ADI.
 
-Good idea, it also needs to pass in struct bucket.
+Anyhow, if such a thing exists someday it could make sense to
+automatically substitute the HW version using a SF, if available.
 
->
-> >
-> >
-> > >
-> > > >                 /* if next elem in this hash list is non-zero, just return it */
-> > > >                 memcpy(next_key, next_l->key, key_size);
-> > > >                 return 0;
-> > > > @@ -771,12 +799,20 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
-> > > >  find_first_elem:
-> > > >         /* iterate over buckets */
-> > > >         for (; i < htab->n_buckets; i++) {
-> > > > -               head = select_bucket(htab, i);
-> > > > +               b = __select_bucket(htab, i);
-> > > > +               head = &b->head;
-> > > >
-> > > >                 /* pick first element in the bucket */
-> > > >                 next_l = hlist_nulls_entry_safe(rcu_dereference_raw(hlist_nulls_first_rcu(head)),
-> > > >                                           struct htab_elem, hash_node);
-> > > >                 if (next_l) {
-> > > > +                       if (is_timeout) {
-> > > > +                               now = get_jiffies_64();
-> > > > +                               if (time_after_eq64(now, next_l->expires)) {
-> > > > +                                       htab_sched_gc(htab, b);
-> > > > +                                       continue;
-> > > > +                               }
-> > > > +                       }
-> > > >                         /* if it's not empty, just return it */
-> > > >                         memcpy(next_key, next_l->key, key_size);
-> > > >                         return 0;
-> > > > @@ -975,18 +1011,31 @@ static int check_flags(struct bpf_htab *htab, struct htab_elem *l_old,
-> > > >         return 0;
-> > > >  }
-> > > >
-> > > > +static u32 fetch_timeout(u64 *map_flags)
-> > > > +{
-> > > > +       u32 timeout = (*map_flags) >> 32;
-> > > > +
-> > > > +       *map_flags = (*map_flags) & 0xffffffff;
-> > > > +       return timeout;
-> > > > +}
-> > > > +
-> > > >  /* Called from syscall or from eBPF program */
-> > > >  static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
-> > > >                                 u64 map_flags)
-> > > >  {
-> > > >         struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
-> > > > +       bool timeout_map = map->map_type == BPF_MAP_TYPE_TIMEOUT_HASH;
-> > > >         struct htab_elem *l_new = NULL, *l_old;
-> > > >         struct hlist_nulls_head *head;
-> > > >         unsigned long flags;
-> > > >         struct bucket *b;
-> > > >         u32 key_size, hash;
-> > > > +       u32 timeout;
-> > > > +       u64 now;
-> > > >         int ret;
-> > > >
-> > > > +       timeout = fetch_timeout(&map_flags);
-> > > > +
-> > > >         if (unlikely((map_flags & ~BPF_F_LOCK) > BPF_EXIST))
-> > > >                 /* unknown flags */
-> > > >                 return -EINVAL;
-> > > > @@ -1042,6 +1091,10 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
-> > > >                 copy_map_value_locked(map,
-> > > >                                       l_old->key + round_up(key_size, 8),
-> > > >                                       value, false);
-> > > > +               if (timeout_map) {
-> > > > +                       now = get_jiffies_64();
-> > > > +                       l_old->expires = now + HZ * timeout;
-> > > > +               }
-> > >
-> > > Ok, so it seems timeout is at a second granularity. Would it make
-> > > sense to make it at millisecond granularity instead? I think
-> > > millisecond would be more powerful and allow more use cases, in the
-> > > long run. Micro- and nano-second granularity seems like an overkill,
-> > > though. And would reduce the max timeout to pretty small numbers. With
-> > > milliseconds, you still will get more than 23 days of timeout, which
-> > > seems to be plenty.
-> >
-> > Sure if you want to pay the price of scheduling the work more often...
->
-> See above about timer granularity and GC period. You can have
-> nanosecond precision timeout and still GC only once every seconds, as
-> an example. You are checking expiration on lookup, so it can be
-> handled very precisely. You don't have to GC 1000 times per second to
-> support millisecond granularity.
+> could address those needs would be a good way to go for this as it
+> would force everyone to come together and define a standardized
+> feature set that all of the vendors would want to expose.
 
-Like I said, if memory were not a problem, we could schedule it once per
-hour too. But I believe memory matters here. ;)
-
-
-> > For our own use case, second is sufficient. What use case do you have
-> > for paying this price? I am happy to hear.
->
-> I don't have a specific use case. But I also don't see the extra price
-> we need to pay. You are adding a new *generic* data structure to the
-> wide BPF infrastructure, so please consider implications beyond your
-> immediate use case.
-
-I have considered it, just not able to find any better way to make everyone
-happy. If I choose not to increase struct bucket/htab_elem, I may have to
-duplicate or change a lot more hash map code. If I choose to increase it,
-regular map users could get an overhead. See the trouble? :)
-
-Thanks.
+I would say switchdev is already the standard feature set.
+ 
+Jason
