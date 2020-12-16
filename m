@@ -2,128 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BD372DB98E
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 04:14:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ED472DB99C
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 04:24:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725789AbgLPDNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 22:13:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725440AbgLPDNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 22:13:42 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E090C0613D6;
-        Tue, 15 Dec 2020 19:13:02 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id w18so8742870iot.0;
-        Tue, 15 Dec 2020 19:13:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zciCfroef8BEDYm6Z8Bx+E+7ujr0YogOSSSjOTq2zwY=;
-        b=M8kbnm+h1SZN8rrINPdNdUAp4S3HtGAzOZoN5OJflf4URO17tZfBgAIDGGXc4yfU2e
-         rUt2t0TuDKum+jxw6JfYVFuhEl50hz/TIajbAJzgLWqrpqJip8BbDSviVex0RuQR0PyB
-         DwFY+8jSI0mHBi//MQro4j795Y1hi1AO56xGt2rvYdAV1HeXdSzuRghIP+6nQYu33URX
-         dnc6/+TiCyArR5gYiCbup1+QjlTTjJ52W+xZqlTMPbPDxzDOieetLIUABYdYinBOL9qz
-         1bDriQTBTCdjhNLd3TzpCjlp3ARBNTHJIIxwTtxOlG/7IqYmPK2poHT6SjLg5G//orLJ
-         rV1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zciCfroef8BEDYm6Z8Bx+E+7ujr0YogOSSSjOTq2zwY=;
-        b=pB6fX5ZgxXZKkqH439Omu44RewypJCiOuxqnm6b9pVhFDXTcWYAFygazumqZmiMPid
-         G6mcmVBnKvAMZjpM2FW9zSIYjWWM7mdmNpuGO3PD+bAJR2TUJs019F9BqyhyhF3YbUXI
-         0u23tKcFGEXAuonfhADAm2D+M7zUlq+3Ls8WSXSjvnSfaw9Vfb6B40VNCjBcok/TQsHI
-         Bar5CB9pFod++ARTaAoQ0XSndelx3Dp4WsJ35FprBvRdp/PqPY11owHNEWOxateRTSFz
-         Iy4u3g7pFA/SvH48DSgfkxue0ixnEgysRV8AyJyq0uhSai2h+2vGhVRvGQWlfgEYUi7P
-         zdxQ==
-X-Gm-Message-State: AOAM533WNex5kaEb1/jUPwln40yjJe1buUG1uOK+NJ0Mg181m8VlHhZn
-        lmQsWLDPn9XgVumGyAJQH5fYosfmroHmh0HBT5E7F2rBEO/Gfw==
-X-Google-Smtp-Source: ABdhPJwwYvJvMgPT0JqbhiGHU7nc799eUND5Xfys3fDlokbHxynSavv7tdmvK/9QTROinEXCoIldQcSNCvY1mtTdETU=
-X-Received: by 2002:a02:4:: with SMTP id 4mr41347021jaa.121.1608088381652;
- Tue, 15 Dec 2020 19:13:01 -0800 (PST)
+        id S1725710AbgLPDYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 22:24:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59910 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725274AbgLPDYQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 22:24:16 -0500
+X-Gm-Message-State: AOAM530XxuuE0XCSainU6FfkjuErk/WrIZyHHMtPdyqp6IR3uFyLlu/D
+        iaC1G7qoB9wZFxrZmElP8EhWEmdWWWLsszVRQkA=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608089015;
+        bh=+VWdHZsN3ZF2tTZjB86p57jM2MoFOWc5DUiqA0cxwq4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Vgk/PNpzMjrQ8Y+HS6uWwGUUfuOm8XeWlxAAPutntFQG7kpGCKg8N/NsFAjm4kCOy
+         anEi001ODbWsOsqTIEk0zqUha0Fypt5yCF0hTA3s14QDSfIoX0Pd/33/+6O50USeo4
+         XVU0veMzd6JBndl8Wz5b0eLLGwV8ZpGuDPfIig6ft+na3gpPo5BAiEbua13DcrYChD
+         yBkdLXh83Z2lzshANEdT+hQG/JdlyV5p3jliKOXtDZeWr/yOuKwED2a65L5HKNQc19
+         t4lrIAoUcmGCrcAWjowblvKARqLxw3nzzuV0DWGVrFhQqcoYOX1Bpmf+klYLLUSS2x
+         9XzibOjW7KgdQ==
+X-Google-Smtp-Source: ABdhPJw5aRonCf+dNirajOZSqxn3F3lKvuxpQ3fTcSxdD0iNmU/B4remp5Kol2SBNgdW1MiJb6ZotGV3P8/C5Bam3ZE=
+X-Received: by 2002:ac2:5979:: with SMTP id h25mr8173699lfp.57.1608089012744;
+ Tue, 15 Dec 2020 19:23:32 -0800 (PST)
 MIME-Version: 1.0
-References: <20201214214352.198172-1-saeed@kernel.org> <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
- <BY5PR12MB43221CE397D6310F2B04D9B4DCC60@BY5PR12MB4322.namprd12.prod.outlook.com>
- <CAKgT0Uf9C5gwVZ1DnkrGYHMUvxe-bqwwcbTo7A0q-trrULJSUg@mail.gmail.com> <CAKOOJTybz71h6V5228vk1erusfb-QJQEQPOaRKzmspfotRHYhA@mail.gmail.com>
-In-Reply-To: <CAKOOJTybz71h6V5228vk1erusfb-QJQEQPOaRKzmspfotRHYhA@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 15 Dec 2020 19:12:50 -0800
-Message-ID: <CAKgT0UdXxLB-TAOB3BbP2NuDeeoza5XwPh-TO+b-KzJe4dEcLw@mail.gmail.com>
-Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
-To:     Edwin Peer <edwin.peer@broadcom.com>
-Cc:     Parav Pandit <parav@nvidia.com>, Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Netdev <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
+References: <20201214202117.146293-1-christophe.jaillet@wanadoo.fr>
+ <20201215085655.ddacjfvogc3e33vz@gilmour> <20201215091153.GH2809@kadam>
+ <20201215113710.wh4ezrvmqbpxd5yi@gilmour> <54194e3e-5eb1-d10c-4294-bac8f3933f47@wanadoo.fr>
+ <20201215190815.6efzcqko55womf6b@gilmour> <20201215193545.GJ2809@kadam> <902018a7-19eb-cd15-5fde-6e0564fcd95c@wanadoo.fr>
+In-Reply-To: <902018a7-19eb-cd15-5fde-6e0564fcd95c@wanadoo.fr>
+From:   Chen-Yu Tsai <wens@kernel.org>
+Date:   Wed, 16 Dec 2020 11:23:21 +0800
+X-Gmail-Original-Message-ID: <CAGb2v65A_Z7=0jN8J08GrufjWTKVvp_LdPPdGVzwqU3HLkHkig@mail.gmail.com>
+Message-ID: <CAGb2v65A_Z7=0jN8J08GrufjWTKVvp_LdPPdGVzwqU3HLkHkig@mail.gmail.com>
+Subject: Re: [PATCH] net: allwinner: Fix some resources leak in the error
+ handling path of the probe and in the remove function
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 5:13 PM Edwin Peer <edwin.peer@broadcom.com> wrote:
+On Wed, Dec 16, 2020 at 4:16 AM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
 >
-> On Tue, Dec 15, 2020 at 10:49 AM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
+> Le 15/12/2020 =C3=A0 20:35, Dan Carpenter a =C3=A9crit :
+> > On Tue, Dec 15, 2020 at 08:08:15PM +0100, Maxime Ripard wrote:
+> >> On Tue, Dec 15, 2020 at 07:18:48PM +0100, Christophe JAILLET wrote:
+> >>> Le 15/12/2020 =C3=A0 12:37, Maxime Ripard a =C3=A9crit :
+> >>>> On Tue, Dec 15, 2020 at 12:11:53PM +0300, Dan Carpenter wrote:
+> >>>>> On Tue, Dec 15, 2020 at 09:56:55AM +0100, Maxime Ripard wrote:
+> >>>>>> Hi,
+> >>>>>>
+> >>>>>> On Mon, Dec 14, 2020 at 09:21:17PM +0100, Christophe JAILLET wrote=
+:
+> >>>>>>> 'irq_of_parse_and_map()' should be balanced by a corresponding
+> >>>>>>> 'irq_dispose_mapping()' call. Otherwise, there is some resources =
+leaks.
+> >>>>>>
+> >>>>>> Do you have a source to back that? It's not clear at all from the
+> >>>>>> documentation for those functions, and couldn't find any user call=
+ing it
+> >>>>>> from the ten-or-so random picks I took.
+> >>>>>
+> >>>>> It looks like irq_create_of_mapping() needs to be freed with
+> >>>>> irq_dispose_mapping() so this is correct.
+> >>>>
+> >>>> The doc should be updated first to make that clear then, otherwise w=
+e're
+> >>>> going to fix one user while multiples will have poped up
+> >>>>
+> >>>> Maxime
+> >>>>
+> >>>
+> >>> Hi,
+> >>>
+> >>> as Dan explained, I think that 'irq_dispose_mapping()' is needed beca=
+use of
+> >>> the 'irq_create_of_mapping()" within 'irq_of_parse_and_map()'.
+> >>>
+> >>> As you suggest, I'll propose a doc update to make it clear and more f=
+uture
+> >>> proof.
+> >>
+> >> Thanks :)
+> >>
+> >> And if you feel like it, a coccinelle script would be awesome too so
+> >> that other users get fixed over time
+> >>
+> >> Maxime
+> >
+> > Smatch has a new check for resource leaks which hopefully people will
+> > find useful.
+> >
+> > https://github.com/error27/smatch/blob/master/check_unwind.c
 >
-> > It isn't "SR-IOV done right" it seems more like "VMDq done better".
+> Nice :)
+> I wasn't aware of it.
 >
-> I don't think I agree with that assertion. The fact that VMDq can talk
-> to a common driver still makes VMDq preferable in some respects. Thus,
-> subfunctions do appear to be more of a better SR-IOV than a better
-> VMDq, but I'm similarly not sold on whether a better SR-IOV is
-> sufficient benefit to warrant the additional complexity this
-> introduces. If I understand correctly, subfunctions buy two things:
+> >
+> > To check for these I would need to add the following lines to the table=
+:
+> >
+> >          { "irq_of_parse_and_map", ALLOC, -1, "$", &int_one, &int_max},
+> >          { "irq_create_of_mapping", ALLOC, -1, "$", &int_one, &int_max}=
+,
+> >          { "irq_dispose_mapping", RELEASE, 0, "$"},
+> >
+> > The '-1, "$"' means the returned value.  irq_of_parse_and_map() and
+> > irq_create_of_mapping() return positive int on success.
+> >
+> > The irq_dispose_mapping() frees its zeroth parameter so it's listed as
+> > '0, "$"'.  We don't care about the returns from irq_dispose_mapping().
+> >
+> > It doesn't apply in this case but if a function frees a struct member
+> > then that's listed as '0, "$->member_name"'.
+> >
+> > regards,
+> > dan carpenter
+> >
 >
-> 1) More than 256 SFs are possible: Maybe it's about time PCI-SIG
-> addresses this limit for VFs? If that were the only problem with VFs,
-> then fixing it once there would be cleaner. The devlink interface for
-> configuring a SF is certainly more sexy than legacy SR-IOV, but it
-> shouldn't be fundamentally impossible to zhuzh up VFs either. One can
-> also imagine possibilities around remapping multiple PFs (and their
-> VFs) in a clever way to get around the limited number of PCI resources
-> exposed to the host.
-
-The fact is SR-IOV just wasn't designed to scale well. I think we are
-probably going to see most vendors move away from it.
-
-The fact is what we are talking about now is the future of all this
-and how to implement Scalable I/O Virtualization
-(https://software.intel.com/content/www/us/en/develop/download/intel-scalable-io-virtualization-technical-specification.html).
-The document is a good primer to many of the features we are
-discussing as it describes how to compose a device.
-
-The problem is as it was with SR-IOV that the S-IOV specification is
-very PCIe centric and doesn't do a good job explaining how to deal
-with the network as it relates to all this. Then to complicate things
-the S-IOV expected this to be used with direct assigned devices for
-guests/applications and instead we are talking about using the devices
-in the host which makes things a bit messier.
-
-> 2) More flexible division of resources: It's not clear that device
-> firmwarre can't perform smarter allocation than N/<num VFs>, but
-> subfunctions also appear to allow sharing of certain resources by the
-> PF driver, if desirable. To the extent that resources are shared, how
-> are workloads isolated from each other?
+> The script I use to try to spot missing release function is:
+> ///
+> @@
+> expression  x, y;
+> identifier f, l;
+> @@
 >
-> I'm not sure I like the idea of having to support another resource
-> allocation model in our driver just to support this, at least not
-> without a clearer understanding of what is being gained.
+> *       x =3D irq_of_parse_and_map(...);
+>          ... when any
+> *       y =3D f(...);
+>          ... when any
+> *       if (<+... y ...+>)
+>          {
+>                  ...
+> (
+> *               goto l;
+> |
+> *               return ...;
+> )
+>                  ...
+>          }
+>          ... when any
+> *l:
+>          ... when !=3D irq_dispose_mapping(...);
+> *       return ...;
+> ///
+>
+> It is likely that some improvement can be made, but it works pretty well
+> for what I want.
+>
+> And I have a collection of alloc/free functions that I manually put in
+> place of irq_of_parse_and_map and irq_dispose_mapping.
 
-I view this as the future alternative to SR-IOV. It is just a matter
-of how we define it. Eventually we probably would be dropping the
-SR-IOV implementation and instead moving over to S-IOV as an
-alternative instead. As such if this is done right I don't see this as
-a thing where we need to support both. Really we should be able to
-drop support for one if we have the other.
+AFAICT the resource leak is likely larger in scope, as many drivers use
+platform_get_irq(), which eventually ends up calling irq_create_of_mapping(=
+)
+through of_irq_get() in the OF path. Same goes for platform_get_irq_byname(=
+).
+
+ChenYu
+
+
+> Up to know, this list is:
+>
+> // alloc_etherdev/alloc_etherdev_mq/alloc_etherdev_mqs - free_netdev
+> // alloc_workqueue - destroy_workqueue
+> // class_register - class_unregister
+> // clk_get - clk_put
+> // clk_prepare - clk_unprepare
+> // create_workqueue - destroy_workqueue
+> // create_singlethread_workqueue - destroy_workqueue
+> //
+> dev_pm_domain_attach/dev_pm_domain_attach_by_id/dev_pm_domain_attach_by_n=
+ame
+> - dev_pm_domain_detach
+> // devres_alloc - devres_free
+> // dma_alloc_coherent - dma_free_coherent
+> // dma_map_resource - dma_unmap_resource
+> // dma_map_single - dma_unmap_single
+> // dma_request_slave_channel - dma_release_channel
+> // dma_request_chan - dma_release_channel
+> // framebuffer_alloc - framebuffer_release
+> // get_device - put_device
+> // iio_channel_get - iio_channel_release
+> // ioremap - iounmap
+> // input_allocate_device - input_free_device
+> // input_register_handle - input_unregister_handle
+> // irq_of_parse_and_map / irq_create_of_mapping - irq_dispose_mapping
+> // kmalloc - kfree
+> // mempool_alloc - mempool_free
+> // of_node_get - of_node_put
+> // of_reserved_mem_device_init - of_reserved_mem_device_release
+> // pinctrl_register - pinctrl_unregister
+> // request_irq - free_irq
+> // request_region - release_region
+> // request_mem_region - release_mem_region
+> // reset_control_assert - reset_control_deassert
+> // scsi_host_alloc - scsi_host_put
+>
+> // pci_alloc_irq_vectors - pci_free_irq_vectors
+> // pci_dev_get - pci_dev_put
+> // pci_enable_device - pci_disable_device
+> // pci_iomap - pci_iounmap
+> // pci_request_region - pci_release_region
+> // pci_request_regions - pci_release_regions
+>
+> // alloc_skb/__alloc_skb - kfree_skb/__kfree_skb
+> // dev_alloc_skb - dev_kfree_skb
+>
+> // spi_dev_get - spi_dev_put
+> // spi_message_alloc - spi_message_free
+> // spi_register_master - spi_unregister_master
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
