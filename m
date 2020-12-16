@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC9E12DB7E1
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:44:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 759D42DB7E6
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:48:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726143AbgLPAoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 19:44:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44742 "EHLO mail.kernel.org"
+        id S1726044AbgLPAsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 19:48:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46138 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725275AbgLPAoX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 19:44:23 -0500
-Date:   Tue, 15 Dec 2020 16:43:41 -0800
+        id S1725829AbgLPAsf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 19:48:35 -0500
+Date:   Tue, 15 Dec 2020 16:47:53 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608079422;
-        bh=+f96kJpwYEZGtb9XTCDgesUkyxycpdlRgL+ZWgMLbmA=;
+        s=k20201202; t=1608079675;
+        bh=u71LDZWR3y9gBgZhKpkQuboGI4XDbkgTQuveYnRzu9w=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GbUkJScMQa+f7Zf31OXGmc7jpgBwQvDSUItzm+UoFA+2sq1QdNVs9j7pexjTyekT5
-         eNlFTcwDNp05WoK7l5xCNqwYKd3J1MvorYknY4FhZ06aKcWsrDOlevyQgzUV7O4YG1
-         Yx9LuhktlX2yWBFBruwO+p2n5g09d9sLrCEmtqy2VIL/24dQCk+kMXke8VvkZDOsve
-         rlTc2yD5JbPHk2yKTQGNXHFo77ho9sDywFP4fyePynJ0x3wb3hKU/CrlItropaMc0B
-         J05+dHHcihF/ZP5HK0j+pW44bDFonJ0gB/hM/3HVZDk7h9VNZqr4oANwEuTKo3q0Rj
-         0ztEWS9VhU2zQ==
+        b=Zu8iVmKXJUagjUt24sD1roLIm2k6YosYr0di3dWnuo29H/uJon16YNDBXHTDnLJS6
+         IBV1UB/jNgtlYiZRzNfuuimzo0U5AGt50WHhPMVq5xuP3YGG3rPJNunlDgSJqzsbg1
+         VyLJfDhW1JdNUaRxxBnvzFSqs1iXZGRL4x5nCuKI+TCrq0qFDTZFz32Jw15EDNGsbJ
+         BH93L5SkiRDpsho4G4W8TotL5AQFXjbJQ6/iQdORZsGK+EB1i5DPhky3yzO/voV4LV
+         JyugcU6oulCEYAzU1V4NYffPa9OnvyLnZgnqJijPu8opWMlttMTl6u4ejSM7+HcrJW
+         VtmmIh3eOc3Qg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Saeed Mahameed <saeed@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -32,13 +32,14 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>,
         david.m.ertman@intel.com, dan.j.williams@intel.com,
         kiran.patil@intel.com, gregkh@linuxfoundation.org,
-        Parav Pandit <parav@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next v5 07/15] net/mlx5: SF, Add auxiliary device support
-Message-ID: <20201215164341.51fa3a0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201215090358.240365-8-saeed@kernel.org>
+        Vu Pham <vuhuong@nvidia.com>, Parav Pandit <parav@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net-next v5 09/15] net/mlx5: E-switch, Prepare eswitch to
+ handle SF vport
+Message-ID: <20201215164753.4f6c4c9c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201215090358.240365-10-saeed@kernel.org>
 References: <20201215090358.240365-1-saeed@kernel.org>
-        <20201215090358.240365-8-saeed@kernel.org>
+        <20201215090358.240365-10-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,29 +47,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 01:03:50 -0800 Saeed Mahameed wrote:
-> +static ssize_t sfnum_show(struct device *dev, struct device_attribute *attr, char *buf)
-> +{
-> +	struct auxiliary_device *adev = container_of(dev, struct auxiliary_device, dev);
-> +	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
-> +
-> +	return scnprintf(buf, PAGE_SIZE, "%u\n", sf_dev->sfnum);
-> +}
-> +static DEVICE_ATTR_RO(sfnum);
-> +
-> +static struct attribute *sf_device_attrs[] = {
-> +	&dev_attr_sfnum.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group sf_attr_group = {
-> +	.attrs = sf_device_attrs,
-> +};
-> +
-> +static const struct attribute_group *sf_attr_groups[2] = {
-> +	&sf_attr_group,
-> +	NULL
-> +};
+On Tue, 15 Dec 2020 01:03:52 -0800 Saeed Mahameed wrote:
+> From: Vu Pham <vuhuong@nvidia.com>
+> 
+> Prepare eswitch to handle SF vport during
+> (a) querying eswitch functions
+> (b) egress ACL creation
+> (c) account for SF vports in total vports calculation
+> 
+> Assign a dedicated placeholder for SFs vports and their representors.
+> They are placed after VFs vports and before ECPF vports as below:
+> [PF,VF0,...,VFn,SF0,...SFm,ECPF,UPLINK].
+> 
+> Change functions to map SF's vport numbers to indices when
+> accessing the vports or representors arrays, and vice versa.
+> 
+> Signed-off-by: Vu Pham <vuhuong@nvidia.com>
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> Reviewed-by: Roi Dayan <roid@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 
-Why the sysfs attribute? Devlink should be able to report device name
-so there's no need for a tie in from the other end.
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+> index d6c48582e7a8..ad45d20f9d44 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+> @@ -212,3 +212,13 @@ config MLX5_SF
+>  	Build support for subfuction device in the NIC. A Mellanox subfunction
+>  	device can support RDMA, netdevice and vdpa device.
+>  	It is similar to a SRIOV VF but it doesn't require SRIOV support.
+> +
+> +config MLX5_SF_MANAGER
+> +	bool
+> +	depends on MLX5_SF && MLX5_ESWITCH
+> +	default y
+> +	help
+> +	Build support for subfuction port in the NIC. A Mellanox subfunction
+> +	port is managed through devlink.  A subfunction supports RDMA, netdevice
+> +	and vdpa device. It is similar to a SRIOV VF but it doesn't require
+> +	SRIOV support.
+
+Why is this a separate knob?
+
+And it's not used anywhere AFAICS.
