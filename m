@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 588C52DBFC6
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 12:50:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4612DBFBF
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 12:50:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725789AbgLPLuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 06:50:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:40909 "EHLO
+        id S1725837AbgLPLu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 06:50:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49426 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725806AbgLPLuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 06:50:23 -0500
+        by vger.kernel.org with ESMTP id S1725871AbgLPLu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 06:50:26 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608119337;
+        s=mimecast20190719; t=1608119340;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MJotpa5UrA2ZqCRh7mc8/o/xpESWufExRhTpzsjWsRE=;
-        b=aEiKcYJUgkrsoA24oeOA5eohShJ2nrnH/F0VuKWyUO3OQpb2sluwEpnxw187VRpHYE68g2
-        A6x1OelY6VlXOFi1Y/v+9EIQow0zs+hgrCXypuiKr7tdQDuR3GQB/MGQoYonhfifTFhq2F
-        RDyLxUxJjnJEG9KxMjkC3LhyEepCieU=
+        bh=ANHThWdmFFxL8/YxR3ZIed/xwyinScbXYPrqp44Ii0c=;
+        b=ZhS0xHM7AJd1dVmGmSxo9IUna5FbRzoMTb/GNTvZvEjxL6GuVviaJ6+0GDRov8RUFRSs5z
+        YfdhCVg/+Ry9rnHpVDs5x2CRKOIohMKIz1xidm8szeeDn4ivWROhvlvNOOSlKaACiWeJc0
+        duHHzYUkKJ3vj68z/+XRUlbmvIGSmmE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-586-RQqi7QP1PSeX4dlz87-RIw-1; Wed, 16 Dec 2020 06:48:55 -0500
-X-MC-Unique: RQqi7QP1PSeX4dlz87-RIw-1
+ us-mta-480-1WnE-JDvO-Kl0-pA87_C2Q-1; Wed, 16 Dec 2020 06:48:58 -0500
+X-MC-Unique: 1WnE-JDvO-Kl0-pA87_C2Q-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BFBAF9CDBA;
-        Wed, 16 Dec 2020 11:48:50 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D2CEF800479;
+        Wed, 16 Dec 2020 11:48:51 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-112-143.ams2.redhat.com [10.36.112.143])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 051A077F3F;
-        Wed, 16 Dec 2020 11:48:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A619B77F12;
+        Wed, 16 Dec 2020 11:48:50 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
-Subject: [PATCH net 1/4] mptcp: fix security context on server socket
-Date:   Wed, 16 Dec 2020 12:48:32 +0100
-Message-Id: <1bf3ee9b0c79a1e619fe4749d926aab71f0a7bcc.1608114076.git.pabeni@redhat.com>
+Subject: [PATCH net 2/4] mptcp: properly annotate nested lock
+Date:   Wed, 16 Dec 2020 12:48:33 +0100
+Message-Id: <0cbf6359084bee1187ba382a015d8809e2ce2416.1608114076.git.pabeni@redhat.com>
 In-Reply-To: <cover.1608114076.git.pabeni@redhat.com>
 References: <cover.1608114076.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -49,31 +49,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently MPTCP is not propagating the security context
-from the ingress request socket to newly created msk
-at clone time.
+MPTCP closes the subflows while holding the msk-level lock.
+While acquiring the subflow socket lock we need to use the
+correct nested annotation, or we can hit a lockdep splat
+at runtime.
 
-Address the issue invoking the missing security helper.
-
-Fixes: cf7da0d66cc1 ("mptcp: Create SUBFLOW socket for incoming connections")
+Reported-and-tested-by: Geliang Tang <geliangtang@gmail.com>
+Fixes: e16163b6e2b7 ("mptcp: refactor shutdown and close")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/protocol.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/mptcp/protocol.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index b812aaae8044..d24243a28fce 100644
+index d24243a28fce..64c0c54c80e8 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -2699,6 +2699,8 @@ struct sock *mptcp_sk_clone(const struct sock *sk,
- 	sock_reset_flag(nsk, SOCK_RCU_FREE);
- 	/* will be fully established after successful MPC subflow creation */
- 	inet_sk_state_store(nsk, TCP_SYN_RECV);
-+
-+	security_inet_csk_clone(nsk, req);
- 	bh_unlock_sock(nsk);
+@@ -2119,7 +2119,7 @@ void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
  
- 	/* keep a single reference */
+ 	list_del(&subflow->node);
+ 
+-	lock_sock(ssk);
++	lock_sock_nested(ssk, SINGLE_DEPTH_NESTING);
+ 
+ 	/* if we are invoked by the msk cleanup code, the subflow is
+ 	 * already orphaned
 -- 
 2.26.2
 
