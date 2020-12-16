@@ -2,283 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC81C2DB9F4
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 05:14:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8E42DBA14
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 05:34:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725817AbgLPEOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 23:14:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S1725771AbgLPEeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 23:34:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbgLPEOO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 23:14:14 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09214C0613D6;
-        Tue, 15 Dec 2020 20:13:34 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id p5so21348352iln.8;
-        Tue, 15 Dec 2020 20:13:33 -0800 (PST)
+        with ESMTP id S1725275AbgLPEeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 23:34:21 -0500
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831BCC06179C
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 20:33:41 -0800 (PST)
+Received: by mail-qv1-xf49.google.com with SMTP id u8so11868117qvm.5
+        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 20:33:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1ykBorVfusx0cuuPAmlYNHEakddLnEOiwDswKZ+CpIk=;
-        b=j1bx6dYm0/Cm7QxHBn//s1fPcylVYxw9MdaPFIQpcsZkbj0L6NifePX8PlIFwpWfGb
-         JAjneM/zvkcPzkhQdTRSADSmJq8RXyOaeuTcXlWDA7+gqMi6zz7eLgB2cTzgF/16frkM
-         O9x20THcMrWa14ZCvbKSJLEbs38fz/5w/LtRGnJ81CqMhuxRQEfwqx2HpP0lHKroIFhH
-         uP+tUIvGuL0qHcEo9tXlXFu5GVwmWWJM/FU2IPxlR0fBKPjtB5kuYIMIeNVoVxenjUFS
-         9hsj2NkMoA/aFuumvEmNCLDMpmpMGwPeDR5zrWr4KpibnurHKQMlb+EDdfUua+vfjIFK
-         Q3Jg==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=6HUv5xBPfwv697/YWNrZvCYxuhXudwcF4fT9FoZkAj4=;
+        b=GmyxLUYdRz9+qga62iB6VIcK1jnoR5/TAbHFy9VUjQtjHaJx/uUyS5DMypsnLs/cBX
+         dzdEt4JLhaZ8fccclYkvDInRiBrG+OIQqEA8LRQPu+1b5MKPfeEMOICrIGRT9rS0qIEG
+         tPBb3rdkfEbpdHA/ptKfMD/M8jBz1UD6/40/P3Kbd5Iv5mRkSY3ao9nRwxfYr0B1p241
+         J365D4IKT2W5gaqmXpDQudeLgd0BJSgy9+RtAseAR/GHdYhjXmCj4f9KElkUO5fKbmTq
+         uTXkgzsHBkQ1vhiWYdEHzMRNWyk/HdhmUwG3NxdLzzQtgEPhGQuefCV1HRkHwdoqeAhE
+         oO7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1ykBorVfusx0cuuPAmlYNHEakddLnEOiwDswKZ+CpIk=;
-        b=LUE+jTX8tNfHvV4aUKRfumv3Crc4xlCaslpYVccBy0kiiAlVqKQAelLpb2RXayoC+t
-         nqV0NtlFq0rGjJa74Pbz3W1RFCRfZQ8NPZi+nCAJAaZS5+btT0ihk9cBN3ns98QeOa4P
-         /4coGkgZow1+sIe2y9NwR5pCPPeZjjwDxB8xiSwZy+pLz40UxY/eQPqp8yFBCcXpgq4F
-         ACXf5glXn0IG54+FTHpEiUD1twhXvsxesFjAcfSbZYg6nmiHM308YUQBvBCZPxc7T+Ok
-         vwVznpOjTD2rEHhwh0wouYTiKsbEq+xNoWhHJ5ZdKUhPOtjt6m9TqOGFkeUECn+cd4NZ
-         SMSg==
-X-Gm-Message-State: AOAM5302h9EbyFA8CyWT0lASOWZv6g5hnt/nCYqB6hApcEm/BHUHtQiV
-        rPAnFE8ZqpUsTC6O9pJH70/jB4Nb2ss0uEpqoY4=
-X-Google-Smtp-Source: ABdhPJxwPo9OZiHOugyF4Uj2sATDncprxMwNDyjeOD7xseRulFdGTRLkpol2Lybta2+FPDFOS+bvNACnJdCv+r2KsiA=
-X-Received: by 2002:a92:d8cc:: with SMTP id l12mr43251047ilo.64.1608092013230;
- Tue, 15 Dec 2020 20:13:33 -0800 (PST)
-MIME-Version: 1.0
-References: <20201214214352.198172-1-saeed@kernel.org> <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
- <608505778d76b1b01cb3e8d19ecda5b8578f0f79.camel@kernel.org>
- <CAKgT0UfEsd0hS=iJTcVc20gohG0WQwjsGYOw1y0_=DRVbhb1Ng@mail.gmail.com>
- <ecad34f5c813591713bb59d9c5854148c3d7f291.camel@kernel.org>
- <CAKgT0UfTOqS9PBeQFexyxm7ytQzdj0j8VMG71qv4+Vn6koJ5xQ@mail.gmail.com>
- <20201216001946.GF552508@nvidia.com> <CAKgT0UeLBzqh=7gTLtqpOaw7HTSjG+AjXB7EkYBtwA6EJBccbg@mail.gmail.com>
- <20201216030351.GH552508@nvidia.com>
-In-Reply-To: <20201216030351.GH552508@nvidia.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 15 Dec 2020 20:13:21 -0800
-Message-ID: <CAKgT0UcwP67ihaTWLY1XsVKEgysa3HnjDn_q=Sgvqnt=Uc7YQg@mail.gmail.com>
-Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=6HUv5xBPfwv697/YWNrZvCYxuhXudwcF4fT9FoZkAj4=;
+        b=KNJgzp9Nii1d2trgTzM+UeWGM3E3SU+eFp8Pb77t0j0iysGdI6zSPXAOKe1n65UQJA
+         p3Ivj+/ppl4zNyLAX4/W5hsslRV524FwBm1YLNEeWIq2oQR1F0dpa6pOxMztZq73mqt9
+         YL2Hze4/1YTk8WO6KiLihEFfQkT57cJ5q2TeWeq2h9U5yCsMKeD4zyZZaRaYb7TNnIZX
+         Rp9ppE5L46SwbN1fHtEOZIPCSNQZyQQcrZotvPAQsDQJlU9G0wbr4VAQDzNloRAjhhZg
+         qdE8yy5uWNl4cXOl1qJapI53J1ewxFjz983JF4Vug038yXlG7FDo6vS1nXG9pJKEQsac
+         D9qw==
+X-Gm-Message-State: AOAM530hmpGquqB5RTKICfE+7JOdUkd+yvHPYv5lWRH68eyeb+4bmSMi
+        +DijE16sf4MP6GxS6p9om93ArODgzFty
+X-Google-Smtp-Source: ABdhPJzrIlUctDldqUAWGAIaZEe64YkVK+9nRfWWqMetOJ/7CR7627hcwImixzIAnRQZrAjKfSSoAVt26J0K
+Sender: "apusaka via sendgmr" <apusaka@apusaka-p920.tpe.corp.google.com>
+X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:b:f693:9fff:fef4:2347])
+ (user=apusaka job=sendgmr) by 2002:a0c:f38a:: with SMTP id
+ i10mr41879713qvk.32.1608093220706; Tue, 15 Dec 2020 20:33:40 -0800 (PST)
+Date:   Wed, 16 Dec 2020 12:33:30 +0800
+Message-Id: <20201216043335.2185278-1-apusaka@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.684.gfbc64c5ab5-goog
+Subject: [PATCH v3 0/5] MSFT offloading support for advertisement monitor
+From:   Archie Pusaka <apusaka@google.com>
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 7:04 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> On Tue, Dec 15, 2020 at 06:19:18PM -0800, Alexander Duyck wrote:
->
-> > > > I would really like to see is a solid standardization of what this is.
-> > > > Otherwise the comparison is going to be made. Especially since a year
-> > > > ago Mellanox was pushing this as an mdev type interface.
-> > >
-> > > mdev was NAK'd too.
-> > >
-> > > mdev is only for creating /dev/vfio/*.
-> >
-> > Agreed. However my worry is that as we start looking to make this
-> > support virtualization it will still end up swinging more toward
-> > mdev.
->
-> Of course. mdev is also the only way to create a /dev/vfio/* :)
->
-> So all paths that want to use vfio must end up creating a mdev.
->
-> Here we would choose to create the mdev on top of the SF aux device.
-> There isn't really anything mlx5 specific about that decision.
->
-> The SF models the vendor specific ADI in the driver model.
->
-> > It isn't so much about right or wrong but he use cases. My experience
-> > has been that SR-IOV ends up being used for very niche use cases where
-> > you are direct assigning it into either DPDK or some NFV VM and you
-> > are essentially building the application around the NIC. It is all
-> > well and good, but for general virtualization it never really caught
-> > on.
->
-> Sure
->
-> > > So encourage other vendors to support the switchdev model for managing
-> > > VFs and ADIs!
-> >
-> > Ugh, don't get me started on switchdev. The biggest issue as I see it
-> > with switchev is that you have to have a true switch in order to
-> > really be able to use it.
->
-> That cuts both ways, suggesting HW with a true switch model itself
-> with VMDq is equally problematic.
+From: Archie Pusaka <apusaka@chromium.org>
 
-Yes and no. For example the macvlan offload I had setup could be
-configured both ways and it made use of VMDq. I'm not necessarily
-arguing that we need to do VMDq here, however at the same time saying
-that this is only meant to replace SR-IOV becomes problematic since we
-already have SR-IOV so why replace it with something that has many of
-the same limitations?
 
-> > As such dumbed down hardware like the ixgbe for instance cannot use
-> > it since it defaults to outputting anything that doesn't have an
-> > existing rule to the external port. If we could tweak the design to
-> > allow for more dumbed down hardware it would probably be much easier
-> > to get wider adoption.
->
-> I'd agree with this
->
-> > interface, but keep the SF interface simple. Then you can back it with
-> > whatever you want, but without having to have a vendor specific
-> > version of the interface being plugged into the guest or container.
->
-> The entire point *is* to create the vendor version because that serves
-> the niche cases where SRIOV assignment is already being used.
->
-> Having a general solution that can't do vendor SRIOV is useful for
-> other application, but doesn't eliminate the need for the SRIOV case.
+Hi linux-bluetooth,
 
-So part of the problem here is we already have SR-IOV. So we don't
-need to repeat the mistakes. Rather, we need to have a solution to the
-existing problems and then we can look at eliminating it.
+This series of patches manages the hardware offloading part of MSFT
+extension API. The full documentation can be accessed by this link:
+https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/microsoft-defined-bluetooth-hci-commands-and-events
 
-That said I understand your argument, however I view the elimination
-of SR-IOV to be something we do after we get this interface right and
-can justify doing so. I don't have a problem necessarily with vendor
-specific instances, unless we are only able to get vendor specific
-instances. Thus I would prefer that we have a solution in place before
-we allow the switch over.
+Only four of the HCI commands are planned to be implemented:
+HCI_VS_MSFT_Read_Supported_Features (implemented in previous patch),
+HCI_VS_MSFT_LE_Monitor_Advertisement,
+HCI_VS_MSFT_LE_Cancel_Monitor_Advertisement, and
+HCI_VS_MSFT_LE_Set_Advertisement_Filter_Enable.
+These are the commands which would be used for advertisement monitor
+feature. Only if the controller supports the MSFT extension would
+these commands be sent. Otherwise, software-based monitoring would be
+performed in the user space instead.
 
-> > One of the reasons why virtio-net is being pushed as a common
-> > interface for vendors is for this reason. It is an interface that can
-> > be emulated by software or hardware and it allows the guest to run on
-> > any arbitrary hardware.
->
-> Yes, and there is mlx5_vdpa to support this usecase, and it binds to
-> the SF. Of course all of that is vendor specific too, the driver to
-> convert HW specifc register programming into a virio-net ADI has to
-> live *somewhere*
+Thanks in advance for your feedback!
 
-Right, but this is more the model I am in favor of. The backend is
-hidden from the guest and lives somewhere on the host.
+Archie
 
-Also it might be useful to call out the flavours and planned flavours
-in the cover page. Admittedly the description is somewhat lacking in
-that regard.
+Changes in v3:
+* Flips the order of rssi and pattern_count on mgmt struct
+* Fix return type of msft_remove_monitor
 
-> > It has plenty to do with this series. This topic has been under
-> > discussion since something like 2017 when Mellanox first brought it up
-> > at Netdev 2.1. At the time I told them they should implement this as a
-> > veth offload.
->
-> veth doesn't give an ADI, it is useless for these niche cases.
->
-> veth offload might be interesting for some container case, but feels
-> like writing an enormous amount of code to accomplish nothing new...
+Changes in v2:
+* Add a new opcode instead of modifying an existing one
+* Also implement the new MGMT opcode and merge the functionality with
+  the old one.
 
-My concern is if we are going to start partitioning up a PF on the
-host we might as well make the best use of it. I would argue that it
-would make more sense to have some standardized mechanism in place for
-the PF to communicate and interact with the SFs. I would argue that is
-one of the reasons why this keeps being compared to either VMDq or VMQ
-as it is something that SR-IOV has yet to fully replace and has many
-features that would be useful in an interface that is a subpartition
-of an existing interface.
+Archie Pusaka (5):
+  Bluetooth: advmon offload MSFT add rssi support
+  Bluetooth: advmon offload MSFT add monitor
+  Bluetooth: advmon offload MSFT remove monitor
+  Bluetooth: advmon offload MSFT handle controller reset
+  Bluetooth: advmon offload MSFT handle filter enablement
 
-> > Then it becomes obvious what the fallback becomes as you can place
-> > packets into one end of a veth and it comes out the other, just like
-> > a switchdev representor and the SF in this case. It would make much
-> > more sense to do it this way rather than setting up yet another
-> > vendor proprietary interface pair.
->
-> I agree it makes sense to have an all SW veth-like option, but I
-> wouldn't try to make that as the entry point for all the HW
-> acceleration or to serve the niche SRIOV use cases, or to represent an
-> ADI.
->
-> It just can't do that and it would make a huge mess if you tried to
-> force it. Didn't Intel already try this once with trying to use the
-> macvlan netdev and its queue offload to build an ADI?
+ include/net/bluetooth/hci_core.h |  34 ++-
+ include/net/bluetooth/mgmt.h     |  16 ++
+ net/bluetooth/hci_core.c         | 173 +++++++++---
+ net/bluetooth/mgmt.c             | 333 ++++++++++++++++------
+ net/bluetooth/msft.c             | 456 ++++++++++++++++++++++++++++++-
+ net/bluetooth/msft.h             |  27 ++
+ 6 files changed, 919 insertions(+), 120 deletions(-)
 
-The Intel drivers still have the macvlan as the assignable ADI and
-make use of VMDq to enable it. Actually I would consider it an example
-of the kind of thing I am talking about. It is capable of doing
-software switching between interfaces, broadcast/multicast replication
-in software, and makes use of the hardware interfaces to allow for
-receiving directly from the driver into the macvlan interface.
+-- 
+2.29.2.684.gfbc64c5ab5-goog
 
-The limitation as I see it is that the macvlan interface doesn't allow
-for much in the way of custom offloads and the Intel hardware doesn't
-support switchdev. As such it is good for a basic interface, but
-doesn't really do well in terms of supporting advanced vendor-specific
-features.
-
-> > > Anyhow, if such a thing exists someday it could make sense to
-> > > automatically substitute the HW version using a SF, if available.
-> >
-> > The main problem as I see it is the fact that the SF interface is
-> > bound too tightly to the hardware.
->
-> That is goal here. This is not about creating just a netdev, this is
-> about the whole kit: rdma, netdev, vdpa virtio-net, virtio-mdev.
-
-One issue is right now we are only seeing the rdma and netdev. It is
-kind of backwards as it is using the ADIs on the host when this was
-really meant to be used for things like mdev.
-
-> The SF has to support all of that completely. Focusing only on the
-> one use case of netdevs in containers misses the bigger picture.
->
-> Yes, lots of this stuff is niche, but niche stuff needs to be
-> supported too.
-
-I have no problem with niche stuff, however we need to address the
-basics before we move on to the niche stuff.
-
-> > Yes, it is a standard feature set for the control plane. However for
-> > the data-path it is somewhat limited as I feel it only describes what
-> > goes through the switch.
->
-> Sure, I think that is its main point.
->
-> > Not the interfaces that are exposed as the endpoints.
->
-> It came from modeling physical HW so the endports are 'physical'
-> things like actual HW switch ports, or SRIOV VFs, ADI, etc.
-
-The problem is the "physical things" such as the SRIOV VFs and ADI
-aren't really defined in the specification and are left up to the
-implementers interpretation. These specs have always been fuzzy since
-they are essentially PCI specifications and don't explain anything
-about how the network on such a device should be configured or
-expected to work. The swtichdev API puts some restrictions in place
-but there still ends up being parts without any definition.
-
-> > It is the problem of that last bit and how it is handled that can
-> > make things ugly. For example the multicast/broadcast replication
-> > problem that just occurred to me while writing this up.  The fact is
-> > for east-west traffic there has always been a problem with the
-> > switchdev model as it limits everything to PCIe/DMA so there are
-> > cases where software switches can outperform the hardware ones.
->
-> Yes, but, mixing CPU and DMA in the same packet delivery scheme is
-> very complicated :)
-
-I'm not necessarily saying we need to mix the two. However there are
-cases such as multicast/broadcast where it would make much more sense
-to avoid the duplication of packets and instead simply send one copy
-and have it replicated by the software.
-
-What would probably make sense for now would be to look at splitting
-the netdev into two pieces. The frontend which would provide the
-netdev and be a common driver for subfunction netdevs in this case,
-and a backend which would be a common point for all the subfunctions
-that are being used directly on the host. This is essentially what we
-have with the macvlan model. The idea is that if we wanted to do
-software switching or duplication of traffic we could, but if not then
-we wouldn't.
