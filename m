@@ -2,87 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 976872DB766
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:05:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF96E2DB764
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:05:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727920AbgLPAB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 19:01:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36796 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726004AbgLOXjy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 18:39:54 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608075554;
-        bh=UctxaTse4ctySKNhnVjJyQq9QpoH8biXP4cixE1GM8c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eXDPhKAGWy4yoJmKRlwOctidkjHEPXG10oGFbdaOGddA86u7u1ME6F7zSyWLFwoc7
-         7+bnkJeVGGhc5KEkNy3R4eACZIJzVryzn1vAp4nzz9o3m6lDrKLkKkBZNmT/UqDplJ
-         buNMvormHyDA6VS3rJF824+1NJZWsdpey8XPHKFKR0nE/Mg8kMfTdkLyJKzoJkDIpm
-         JnwfWWRbrMvNoi+DXIDPWkUrJjCADjYfS6PPHTCeed9ueMBQz/usvb/kXfhvUsDTpL
-         rS0MdGxRLXAvBkm0SS7/R7OtbwTAH3TD+2DsG7Dkhl53QXFrePeaN7dlLiu82liuAn
-         IPen6EWW+/FyQ==
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4] lan743x: fix for potential NULL pointer dereference with
- bare card
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160807555409.8012.8873780215201516945.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Dec 2020 23:39:14 +0000
-References: <20201215161252.8448-1-sbauer@blackbox.su>
-In-Reply-To: <20201215161252.8448-1-sbauer@blackbox.su>
-To:     Sergej Bauer <sbauer@blackbox.su>
-Cc:     andrew@lunn.ch, Markus.Elfring@web.de, thesven73@gmail.com,
-        kuba@kernel.org, bryan.whitehead@microchip.com,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S1726343AbgLPADO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 19:03:14 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:41080 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728014AbgLPABe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 19:01:34 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 025BB4CE938AB;
+        Tue, 15 Dec 2020 16:00:52 -0800 (PST)
+Date:   Tue, 15 Dec 2020 16:00:49 -0800 (PST)
+Message-Id: <20201215.160049.2258791262841288557.davem@davemloft.net>
+To:     dmytro@shytyi.net
+Cc:     kuba@kernel.org, yoshfuji@linux-ipv6.org, kuznet@ms2.inr.ac.ru,
+        liuhangbin@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next V8] net: Variable SLAAC: SLAAC with prefixes
+ of arbitrary length in PIO
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <176458a838e.100a4c464143350.2864106687411861504@shytyi.net>
+References: <175e1fdb250.1207dca53446410.2492811916841931466@shytyi.net>
+        <175e4f98e19.bcccf9b7450965.5991300381666674110@shytyi.net>
+        <176458a838e.100a4c464143350.2864106687411861504@shytyi.net>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 15 Dec 2020 16:00:53 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Dmytro Shytyi <dmytro@shytyi.net>
+Date: Wed, 09 Dec 2020 04:27:54 +0100
 
-This patch was applied to bpf/bpf.git (refs/heads/master):
-
-On Tue, 15 Dec 2020 19:12:45 +0300 you wrote:
-> This is the 4th revision of the patch fix for potential null pointer dereference
-> with lan743x card.
+> Variable SLAAC [Can be activated via sysctl]: 
+> SLAAC with prefixes of arbitrary length in PIO (randomly
+> generated hostID or stable privacy + privacy extensions).
+> The main problem is that SLAAC RA or PD allocates a /64 by the Wireless
+> carrier 4G, 5G to a mobile hotspot, however segmentation of the /64 via
+> SLAAC is required so that downstream interfaces can be further subnetted.
+> Example: uCPE device (4G + WI-FI enabled) receives /64 via Wireless, and
+> assigns /72 to VNF-Firewall, /72 to WIFI, /72 to VNF-Router, /72 to
+> Load-Balancer and /72 to wired connected devices.
+> IETF document that defines problem statement:
+> draft-mishra-v6ops-variable-slaac-problem-stmt
+> IETF document that specifies variable slaac:
+> draft-mishra-6man-variable-slaac
 > 
-> The simpliest way to reproduce: boot with bare lan743x and issue "ethtool ethN"
-> command where ethN is the interface with lan743x card. Example:
-> 
-> $ sudo ethtool eth7
-> dmesg:
-> [  103.510336] BUG: kernel NULL pointer dereference, address: 0000000000000340
-> ...
-> [  103.510836] RIP: 0010:phy_ethtool_get_wol+0x5/0x30 [libphy]
-> ...
-> [  103.511629] Call Trace:
-> [  103.511666]  lan743x_ethtool_get_wol+0x21/0x40 [lan743x]
-> [  103.511724]  dev_ethtool+0x1507/0x29d0
-> [  103.511769]  ? avc_has_extended_perms+0x17f/0x440
-> [  103.511820]  ? tomoyo_init_request_info+0x84/0x90
-> [  103.511870]  ? tomoyo_path_number_perm+0x68/0x1e0
-> [  103.511919]  ? tty_insert_flip_string_fixed_flag+0x82/0xe0
-> [  103.511973]  ? inet_ioctl+0x187/0x1d0
-> [  103.512016]  dev_ioctl+0xb5/0x560
-> [  103.512055]  sock_do_ioctl+0xa0/0x140
-> [  103.512098]  sock_ioctl+0x2cb/0x3c0
-> [  103.512139]  __x64_sys_ioctl+0x84/0xc0
-> [  103.512183]  do_syscall_64+0x33/0x80
-> [  103.512224]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> [  103.512274] RIP: 0033:0x7f54a9cba427
-> ...
-> 
-> [...]
+> Signed-off-by: Dmytro Shytyi <dmytro@shytyi.net>
+> ---
+> diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+> index dda61d150a13..67ca3925463c 100644
+> --- a/include/linux/ipv6.h
+> +++ b/include/linux/ipv6.h
+> @@ -75,6 +75,7 @@ struct ipv6_devconf {
+>  	__s32		disable_policy;
+>  	__s32           ndisc_tclass;
+>  	__s32		rpl_seg_enabled;
+> +	__s32		variable_slaac;
+>  
+>  	struct ctl_table_header *sysctl_header;
+>  };
+> diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
+> index 13e8751bf24a..f2af4f9fba2d 100644
+> --- a/include/uapi/linux/ipv6.h
+> +++ b/include/uapi/linux/ipv6.h
+> @@ -189,7 +189,8 @@ enum {
+>  	DEVCONF_ACCEPT_RA_RT_INFO_MIN_PLEN,
+>  	DEVCONF_NDISC_TCLASS,
+>  	DEVCONF_RPL_SEG_ENABLED,
+> -	DEVCONF_MAX
+> +	DEVCONF_MAX,
+> +	DEVCONF_VARIABLE_SLAAC
+>  };
+>  
+>  
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index eff2cacd5209..07afe4ce984e 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -236,6 +236,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
+>  	.addr_gen_mode		= IN6_ADDR_GEN_MODE_EUI64,
+>  	.disable_policy		= 0,
+>  	.rpl_seg_enabled	= 0,
+> +	.variable_slaac		= 0,
+>  };
+>  
+>  static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
+> @@ -291,6 +292,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
+>  	.addr_gen_mode		= IN6_ADDR_GEN_MODE_EUI64,
+>  	.disable_policy		= 0,
+>  	.rpl_seg_enabled	= 0,
+> +	.variable_slaac		= 0,
+>  };
+>  
+>  /* Check if link is ready: is it up and is a valid qdisc available */
+> @@ -1340,9 +1342,15 @@ static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp, bool block)
+>  		goto out;
+>  	}
+>  	in6_ifa_hold(ifp);
+> -	memcpy(addr.s6_addr, ifp->addr.s6_addr, 8);
+> -	ipv6_gen_rnd_iid(&addr);
+>  
+> +	if (ifp->prefix_len == 64) {
+> +		memcpy(addr.s6_addr, ifp->addr.s6_addr, 8);
+> +		ipv6_gen_rnd_iid(&addr);
+> +	} else if (ifp->prefix_len > 0 && ifp->prefix_len <= 128 &&
+> +		   idev->cnf.variable_slaac) {
+> +		get_random_bytes(addr.s6_addr, 16);
+> +		ipv6_addr_prefix_copy(&addr, &ifp->addr, ifp->prefix_len);
+> +	}
+>  	age = (now - ifp->tstamp) / HZ;
+>  
+>  	regen_advance = idev->cnf.regen_max_retry *
+> @@ -2569,6 +2577,37 @@ static bool is_addr_mode_generate_stable(struct inet6_dev *idev)
+>  	       idev->cnf.addr_gen_mode == IN6_ADDR_GEN_MODE_RANDOM;
+>  }
+>  
+> +static struct inet6_ifaddr *ipv6_cmp_rcvd_prsnt_prfxs(struct inet6_ifaddr *ifp,
+> +						      struct inet6_dev *in6_dev,
+> +						      struct net *net,
+> +						      const struct prefix_info *pinfo)
+> +{
+> +	struct inet6_ifaddr *result_base = NULL;
+> +	struct inet6_ifaddr *result = NULL;
+> +	bool prfxs_equal;
+> +
+> +	result_base = result;
 
-Here is the summary with links:
-  - [v4] lan743x: fix for potential NULL pointer dereference with bare card
-    https://git.kernel.org/bpf/bpf/c/e9e13b6adc33
+This is NULL, are you sure you didn't mewan to init this to 'ifp'
+ or similar instead?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks.
