@@ -2,95 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CB052DBE4A
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 11:10:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CD482DBE51
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 11:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726224AbgLPKIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 05:08:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726155AbgLPKIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 05:08:22 -0500
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FACC061794;
-        Wed, 16 Dec 2020 02:07:41 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CwrQw3zDXz9sRR;
-        Wed, 16 Dec 2020 21:07:36 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1608113260;
-        bh=eys2iDvQWXhlskfSyu0BqgYMhF4CxnhdAShc/4Mwwjg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fxOqCzC72U5xcvOdVO58UtHgJYvf0kdbaMlI47QcxTGScuSbntwqE1GqtjIjUhSDR
-         y2L0aragUYyrwy3MWj4kiYkSIPGuNqdRn+R11kEIXkGGmr7Zbiad1E4ay6f34uc6aR
-         kkOQYpSNvGzDe2XKcO7JHfSLsg+LK2MpSr0OhSkn+gL3FzyNYYyBI4TA2W1aycfFuo
-         NWT8iFuDmHsDrJo+Urbl8HJnYuo4HvYEAvTuJFIV5bOJXGxkNGKFSg2mD9WeiXxB1f
-         ukJli8LrBZPMXWF5rMHdIaApFx3qRGDMix7CzY175aeR5r7UTewQuXpPPwCqRyAdzM
-         QsFTRwetER4ag==
-Date:   Wed, 16 Dec 2020 21:07:35 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Steven French <Steven.French@microsoft.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Samuel Cabrero <scabrero@suse.de>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>
-Subject: Re: [EXTERNAL] Re: linux-next: build failure after merge of the
- net-next tree
-Message-ID: <20201216210735.2893dd92@canb.auug.org.au>
-In-Reply-To: <SN6PR2101MB1069AC2DC98C74F7C2A71EA3E4C59@SN6PR2101MB1069.namprd21.prod.outlook.com>
-References: <SN6PR2101MB1069AC2DC98C74F7C2A71EA3E4C59@SN6PR2101MB1069.namprd21.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/k=SOkQNbulSYBAiBWT9Iq=s";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S1726279AbgLPKJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 05:09:03 -0500
+Received: from pegase1.c-s.fr ([93.17.236.30]:30638 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726259AbgLPKJD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 05:09:03 -0500
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 4CwrQv0qTNz9v1ZG;
+        Wed, 16 Dec 2020 11:07:35 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id hvM-Cqhlr7xG; Wed, 16 Dec 2020 11:07:35 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4CwrQv00BYz9v1Z7;
+        Wed, 16 Dec 2020 11:07:35 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id B52848B7CC;
+        Wed, 16 Dec 2020 11:07:35 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id WSKtveR0_kV4; Wed, 16 Dec 2020 11:07:35 +0100 (CET)
+Received: from localhost.localdomain (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 57B3E8B7C7;
+        Wed, 16 Dec 2020 11:07:35 +0100 (CET)
+Received: by localhost.localdomain (Postfix, from userid 0)
+        id 2D71A6681D; Wed, 16 Dec 2020 10:07:35 +0000 (UTC)
+Message-Id: <ceea0970692b967990cd8ac6bf01c222541b83e2.1608112797.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <cover.1608112796.git.christophe.leroy@csgroup.eu>
+References: <cover.1608112796.git.christophe.leroy@csgroup.eu>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: [RFC PATCH v1 5/7] powerpc/bpf: Change values of SEEN_ flags
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, naveen.n.rao@linux.ibm.com,
+        sandipan@linux.ibm.com
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Date:   Wed, 16 Dec 2020 10:07:35 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/k=SOkQNbulSYBAiBWT9Iq=s
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Because PPC32 will use more non volatile registers,
+move SEEN_ flags to positions 0-2 which corresponds to special
+registers.
 
-Hi Steven,
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/net/bpf_jit.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-On Wed, 16 Dec 2020 02:21:26 +0000 Steven French <Steven.French@microsoft.c=
-om> wrote:
->
-> I applied your patch to the tip of my tree (cifs-2.6.git for-next) -
-> hopefully that makes it easier when I sent the PR in a day or two for
-> cifs/smb3 changes.
+diff --git a/arch/powerpc/net/bpf_jit.h b/arch/powerpc/net/bpf_jit.h
+index b34abfce15a6..fb4656986fb9 100644
+--- a/arch/powerpc/net/bpf_jit.h
++++ b/arch/powerpc/net/bpf_jit.h
+@@ -108,18 +108,18 @@ static inline bool is_nearbranch(int offset)
+ #define COND_LT		(CR0_LT | COND_CMP_TRUE)
+ #define COND_LE		(CR0_GT | COND_CMP_FALSE)
+ 
+-#define SEEN_FUNC	0x1000 /* might call external helpers */
+-#define SEEN_STACK	0x2000 /* uses BPF stack */
+-#define SEEN_TAILCALL	0x4000 /* uses tail calls */
++#define SEEN_FUNC	0x20000000 /* might call external helpers */
++#define SEEN_STACK	0x40000000 /* uses BPF stack */
++#define SEEN_TAILCALL	0x80000000 /* uses tail calls */
+ 
+ struct codegen_context {
+ 	/*
+ 	 * This is used to track register usage as well
+ 	 * as calls to external helpers.
+ 	 * - register usage is tracked with corresponding
+-	 *   bits (r3-r10 and r27-r31)
++	 *   bits (r3-r31)
+ 	 * - rest of the bits can be used to track other
+-	 *   things -- for now, we use bits 16 to 23
++	 *   things -- for now, we use bits 0 to 2
+ 	 *   encoded in SEEN_* macros above
+ 	 */
+ 	unsigned int seen;
+-- 
+2.25.0
 
-I think you have just made your tree fail to build as nla_strscpy does
-not exist in your tree ... Just remove that commit and tell Linus about
-the necessary change and he can add it to the merge.
-
-And, no, rebasing your tree in Linus', or even doing a merge with
-Linus' tree is not really a reasonable option at this point.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/k=SOkQNbulSYBAiBWT9Iq=s
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/Z3GcACgkQAVBC80lX
-0GyD8AgAoca4Oa1T0GMS3kD+CbviFxAKIdMWbBq3KuREiX0WVk3NM0QoKjN55VNG
-rXRqbyfamtKTJyfbXlY/mIY/kpH1TeM/+2uWxcTSgRN7GLJKdQ8B6u4apwaH7UEz
-/gubxqAtc5nXglLKe29m5xzEMtv3YIpqbM/ghaq7av5nio8ldtxTPCvIzlQhu3v+
-NSsgh1ckrARls/Iik2qqlF2mM+Z+/GPEGsFnVbtz7P4K2NhoH4f1qi7DIdtLH2j8
-/oPFNzLeKenICyKFxKLS7R/va5AcSFK4f89ON4jpkd4xCv83th+fDoqdLsBSxMnt
-pyKH//cAGzTT2W0SYvFRWQ7DDmay6Q==
-=s4Tf
------END PGP SIGNATURE-----
-
---Sig_/k=SOkQNbulSYBAiBWT9Iq=s--
