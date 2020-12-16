@@ -2,192 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2252DB93C
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 03:36:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC43B2DB946
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 03:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgLPCg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 21:36:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43322 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbgLPCg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 21:36:28 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3FFC0613D6;
-        Tue, 15 Dec 2020 18:35:47 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id a12so44601662lfl.6;
-        Tue, 15 Dec 2020 18:35:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dsIGMo9XLfpCs6TxlyYG5i52PSAYNg7J38wQLjOrhI0=;
-        b=a/16ka6viPzbfzTHZqGixbaxqTYlA/f6sLjPgYmTqhF4LzcYiGdR0/p48zrYDlLVrM
-         5BE0QSteFMSPQ/6EyTveFsAWuzHiKxMZQCeHwIXEWAzlv7TDMJU9jtrIk2vI71Aqmg55
-         RdYkrL04tqFMJ9vrKoeo4xSi8PVXn3fgZF1pZTpkDGV3scPojE3fTUvAn3TXNAVrzOHS
-         Kmek2+8htrsszYXDM98MNXqEKk1JElvzP+7xqSiW3/T5UQPrn3mtrQhumPyU+6dq8/zr
-         e5v58qk2oqw3op9S918K+6ubINkqSChGlGAU6smmg5KSPywbOED8XEgQvg+N70Lt/U0a
-         5wjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dsIGMo9XLfpCs6TxlyYG5i52PSAYNg7J38wQLjOrhI0=;
-        b=CpRcwX7EM4RN6t4NJI3EBVt/yRZi6Lmo1TIuFTw/4eigcryU8fb7qqTUcCaCRtyyaP
-         Wh8cfn0XiDCtzRpEVL6Ay8ssVP7ktEkNWd8gfyLmhAnZm8L10R7Nm5nU8uKL8A7lp66C
-         1gjAe+FXmU5OUCajE7G9LpyvmswOifnqPPKE6VOTiEGjTszdI+Fv/ohyHAjroH/3ipiB
-         ESX8MJpMCAioi8jFuru2th14DbukOXZoVd0JlANBgj2FV+mHAo6H/SR28PRWJeThFXDC
-         hMzOnrOmqRKG32De8mrn28k8cUioNGMjqQM0g+790mbPLzb8jgEoe87cnkJcbCiRJU/I
-         jY2Q==
-X-Gm-Message-State: AOAM531U6zZQwRXPkTdLF1Bu+7uhIvDSkIxaiyINrV3wOPz7fs1/aSPJ
-        yimqXyu9VU1aJ6CnxWQUZb/Ab6Z/xTjz0VJfgtM=
-X-Google-Smtp-Source: ABdhPJyP8jFXIfNYZVkPOmQjxsZaOkVQ/66bLy09MfZL8kPTNv0H7B8jKswCnCo9abFq8NgM3ae11WxEVXmtvZmxBok=
-X-Received: by 2002:a2e:3c01:: with SMTP id j1mr8175562lja.258.1608086146258;
- Tue, 15 Dec 2020 18:35:46 -0800 (PST)
+        id S1725850AbgLPCkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 21:40:21 -0500
+Received: from nat-hk.nvidia.com ([203.18.50.4]:33664 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725816AbgLPCkU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 21:40:20 -0500
+Received: from HKMAIL102.nvidia.com (Not Verified[10.18.92.77]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fd9736a0000>; Wed, 16 Dec 2020 10:39:38 +0800
+Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 16 Dec
+ 2020 02:39:32 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
+ by HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 16 Dec 2020 02:39:32 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Sg0/SBUor1XWosAI1ydec0VsEh0sk9mk8PNBXa+lbKr7tILYvdY3iFlcKvM2jjQd1dwiqEX01fIyE2TUpzfIiGdbrW8Ua/JZbeJWMmASxJBOWHFKw+BxaQkZep7ggolKi5apVa3zJVno1wFbyfeXdHV/9uvmngNe0Z1QP0ORTMe8cTKCFBM6pGE65/yziZoNK+mgSSohpgzZEwSvDYOAjexQNroKB2/eVmBXoE5sB0rU8/TedBKgVODwfAcvpQGH8vzOc8zWJ9joqYEvZSF/1mIdwJZloeEOCO42p0T7xnrxQ/08h/4v0HtMGrAbA+UdFHxZCgVQEhmau3rMh271XA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XARvCpEMpE5ciO8Ya/hhcMPqYkOPvrUqQJbmfp4wdJo=;
+ b=bYMEoDq8ZrXfFjkAq/TqeNSX7EAX++dgHuQ0K+QhqoV1ZwrVIVGPY3b6zZm1ljjLj9DvaQL5LW4qlOrVrWS9NlzX/ENYWcdS2yC09gtT/Ky5AwC4pMguhOB47AIqFQ0qR6bBd/vh4A24L+SllaBxd/5hFSOXBlxRHeZc9BC52rQAq4gpz9liJIOzsyiLD384V75tH2SXFZtVf4ZDifnqDabCk22E+wrgce2+B6XFAImFudMIRAm2KgYT1RwwqDzH6k3oEeyxhbUrmn11tdNeC/st7JjwNmR4FHVq48p/Sx6/AQmNfo5RmqZZUTiZ8V5jaDFTjChbIYgEoy1Dqec46w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4842.namprd12.prod.outlook.com (2603:10b6:5:1fe::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Wed, 16 Dec
+ 2020 02:39:30 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1ce9:3434:90fe:3433]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1ce9:3434:90fe:3433%3]) with mapi id 15.20.3654.025; Wed, 16 Dec 2020
+ 02:39:30 +0000
+Date:   Tue, 15 Dec 2020 22:39:28 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+CC:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        "Sridhar Samudrala" <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Kiran Patil" <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+Message-ID: <20201216023928.GG552508@nvidia.com>
+References: <20201214214352.198172-1-saeed@kernel.org>
+ <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
+ <BY5PR12MB43221CE397D6310F2B04D9B4DCC60@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <CAKgT0Uf9C5gwVZ1DnkrGYHMUvxe-bqwwcbTo7A0q-trrULJSUg@mail.gmail.com>
+ <CAKOOJTybz71h6V5228vk1erusfb-QJQEQPOaRKzmspfotRHYhA@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKOOJTybz71h6V5228vk1erusfb-QJQEQPOaRKzmspfotRHYhA@mail.gmail.com>
+X-ClientProxiedBy: MN2PR19CA0023.namprd19.prod.outlook.com
+ (2603:10b6:208:178::36) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-References: <20201214201118.148126-1-xiyou.wangcong@gmail.com>
- <20201214201118.148126-3-xiyou.wangcong@gmail.com> <CAEf4BzZa15kMT+xEO9ZBmS-1=E85+k02zeddx+a_N_9+MOLhkQ@mail.gmail.com>
- <CAM_iQpVR_owLgZp1tYJyfWco-s4ov_ytL6iisg3NmtyPBdbO2Q@mail.gmail.com>
- <CAEf4BzbyHHDrECCEjrSC3A5X39qb_WZaU_3_qNONP+vHAcUzuQ@mail.gmail.com>
- <1de72112-d2b8-24c5-de29-0d3dfd361f16@iogearbox.net> <CAM_iQpVedtfLLbMroGCJuuRVrBPoVFgsLkQenTrwKD8uRft2wQ@mail.gmail.com>
- <20201216011422.phgv4o3jgsrg33ob@ast-mbp> <CAM_iQpVJLg5yCF=2w3ZpBBiR3pR4FWSNjz7FvJGqx0R+BomWDw@mail.gmail.com>
-In-Reply-To: <CAM_iQpVJLg5yCF=2w3ZpBBiR3pR4FWSNjz7FvJGqx0R+BomWDw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 15 Dec 2020 18:35:35 -0800
-Message-ID: <CAADnVQL70bVdms6_D_ep1L2v-OcgXu-9KTtLULQdfCMftLhENQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v2 2/5] bpf: introduce timeout map
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR19CA0023.namprd19.prod.outlook.com (2603:10b6:208:178::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Wed, 16 Dec 2020 02:39:29 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kpMiu-00B7NP-Pm; Tue, 15 Dec 2020 22:39:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1608086378; bh=XARvCpEMpE5ciO8Ya/hhcMPqYkOPvrUqQJbmfp4wdJo=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=qG0FpKDU2ANgkZpx0sqVpL025e2Ny98OmmKmnl3uUCNeawofHDdF5QivtdENOoR/u
+         nGFzER0oV9nDZ9C3NLOLKnxoGNPNDjivv+9IZpaxaKPbYrY+jH4/r4pZEYVnGHh4DW
+         wm5Tyc2KwXFADG7loTGg9xfEnrhyk2V39HP9+uMCJScJkKspcViu1x6dBFS/7FlIRz
+         4W6Dwo4KJqhbLIAR8Gl1s4uYY5Lqy5mupLbTkT+qaImmlXpRxiyb7aVdzEoQ8WXf85
+         W7q9uRVMKesYbeHQyrDWcDqhMjwq6+2bLZJGJNGvXzQZrmHAZb9JzCBhXuH6ubW/5w
+         f/0zJLE1C95bg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 6:10 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Tue, Dec 15, 2020 at 5:14 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Dec 15, 2020 at 04:22:21PM -0800, Cong Wang wrote:
-> > > On Tue, Dec 15, 2020 at 3:23 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > >
-> > > > On 12/15/20 11:03 PM, Andrii Nakryiko wrote:
-> > > > > On Tue, Dec 15, 2020 at 12:06 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > >>
-> > > > >> On Tue, Dec 15, 2020 at 11:27 AM Andrii Nakryiko
-> > > > >> <andrii.nakryiko@gmail.com> wrote:
-> > > > >>>
-> > > > >>> On Mon, Dec 14, 2020 at 12:17 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > >>>>
-> > > > >>>> From: Cong Wang <cong.wang@bytedance.com>
-> > > > >>>>
-> > > > >>>> This borrows the idea from conntrack and will be used for conntrack in
-> > > > >>>> bpf too. Each element in a timeout map has a user-specified timeout
-> > > > >>>> in secs, after it expires it will be automatically removed from the map.
-> > > > [...]
-> > > > >>>>          char key[] __aligned(8);
-> > > > >>>>   };
-> > > > >>>>
-> > > > >>>> @@ -143,6 +151,7 @@ static void htab_init_buckets(struct bpf_htab *htab)
-> > > > >>>>
-> > > > >>>>          for (i = 0; i < htab->n_buckets; i++) {
-> > > > >>>>                  INIT_HLIST_NULLS_HEAD(&htab->buckets[i].head, i);
-> > > > >>>> +               atomic_set(&htab->buckets[i].pending, 0);
-> > > > >>>>                  if (htab_use_raw_lock(htab)) {
-> > > > >>>>                          raw_spin_lock_init(&htab->buckets[i].raw_lock);
-> > > > >>>>                          lockdep_set_class(&htab->buckets[i].raw_lock,
-> > > > >>>> @@ -431,6 +440,14 @@ static int htab_map_alloc_check(union bpf_attr *attr)
-> > > > >>>>          return 0;
-> > > > >>>>   }
-> > > > >>>>
-> > > > >>>> +static void htab_sched_gc(struct bpf_htab *htab, struct bucket *b)
-> > > > >>>> +{
-> > > > >>>> +       if (atomic_fetch_or(1, &b->pending))
-> > > > >>>> +               return;
-> > > > >>>> +       llist_add(&b->gc_node, &htab->gc_list);
-> > > > >>>> +       queue_work(system_unbound_wq, &htab->gc_work);
-> > > > >>>> +}
-> > > > >>>
-> > > > >>> I'm concerned about each bucket being scheduled individually... And
-> > > > >>> similarly concerned that each instance of TIMEOUT_HASH will do its own
-> > > > >>> scheduling independently. Can you think about the way to have a
-> > > > >>> "global" gc/purging logic, and just make sure that buckets that need
-> > > > >>> processing would be just internally chained together. So the purging
-> > > > >>> routing would iterate all the scheduled hashmaps, and within each it
-> > > > >>> will have a linked list of buckets that need processing? And all that
-> > > > >>> is done just once each GC period. Not N times for N maps or N*M times
-> > > > >>> for N maps with M buckets in each.
-> > > > >>
-> > > > >> Our internal discussion went to the opposite actually, people here argued
-> > > > >> one work is not sufficient for a hashtable because there would be millions
-> > > > >> of entries (max_entries, which is also number of buckets). ;)
-> > > > >
-> > > > > I was hoping that it's possible to expire elements without iterating
-> > > > > the entire hash table every single time, only items that need to be
-> > > > > processed. Hashed timing wheel is one way to do something like this,
-> > > > > kernel has to solve similar problems with timeouts as well, why not
-> > > > > taking inspiration there?
-> > > >
-> > > > Couldn't this map be coupled with LRU map for example through flag on map
-> > > > creation so that the different LRU map flavors can be used with it? For BPF
-> > > > CT use case we do rely on LRU map to purge 'inactive' entries once full. I
-> > > > wonder if for that case you then still need to schedule a GC at all.. e.g.
-> > > > if you hit the condition time_after_eq64(now, entry->expires) you'd just
-> > > > re-link the expired element from the public htab to e.g. the LRU's local
-> > > > CPU's free/pending-list instead.
-> > >
-> > > I doubt we can use size as a limit to kick off GC or LRU, it must be
-> > > time-based. And in case of idle, there has to be an async GC, right?
-> >
-> > Why does it have to be time based?
->
-> Because it is how a session timeouts? For instance, CT uses
-> nf_conntrack_udp_timeout to timeout UDP sessions. Or are we going
-> to redefine conntrack?
+On Tue, Dec 15, 2020 at 05:12:33PM -0800, Edwin Peer wrote:
 
-hmm. I see no reason to re-implement conntrack as-is in bpf.
+> 1) More than 256 SFs are possible: Maybe it's about time PCI-SIG
+> addresses this limit for VFs? 
 
-> > Why LRU alone is not enough?
-> > People implemented conntracker in bpf using LRU map.
->
-> Sure, people also implement CT on native hash map too and timeout
-> with user-space timers. ;)
+They can't, the Bus/Device/Function is limited by protocol and
+changing that would upend the entire PCI world.
 
-exactly. what's wrong with that?
-Perfectly fine way to do CT.
+Instead PCI-SIG said PASID is the way forward.
 
-> > Anything extra can be added on top from user space
-> > which can easily copy with 1 sec granularity.
->
-> The problem is never about granularity, it is about how efficient we can
-> GC. User-space has to scan the whole table one by one, while the kernel
-> can just do this behind the scene with a much lower overhead.
->
-> Let's say we arm a timer for each entry in user-space, it requires a syscall
-> and locking buckets each time for each entry. Kernel could do it without
-> any additional syscall and batching. Like I said above, we could have
-> millions of entries, so the overhead would be big in this scenario.
+> If that were the only problem with VFs, then fixing it once there
+> would be cleaner. 
 
-and the user space can pick any other implementation instead
-of trivial entry by entry gc with timer.
+Maybe, but half the problem with VFs is how HW expensive they are. The
+mlx5 SF version is not such a good example, but Intel has shown in
+other recent patches, like for their idxd, that the HW side of an ADI
+can be very simple and hypervisor emulation can build a simple HW
+capability into a full ADI for assignment to a guest.
 
-> > Say the kernel does GC and deletes htab entries.
-> > How user space will know that it's gone? There would need to be
->
-> By a lookup.
->
-> > an event sent to user space when entry is being deleted by the kernel.
-> > But then such event will be racy. Instead when timers and expirations
-> > are done by user space everything is in sync.
->
-> Why there has to be an event?
+A lot of the trappings that PCI-SIG requires to be implemented in HW
+for a VF, like PCI config space, MSI tables, BAR space, etc. is all
+just dead weight when scaling up to 1000's of VFs.
 
-because when any production worthy implementation moves
-past the prototype stage there is something that user space needs to keep
-as well. Sometimes the bpf map in the kernel is alone.
-But a lot of times there is a user space mirror of the map in c++ or golang
-with the same key where user space keeps extra data.
+The ADI scheme is not that bad, the very simplest HW is just a queue
+that can have all DMA contained by a PASID and can trigger an
+addr/data interrupt message. Much less HW costly than a SRIOV VF.
+
+Regardless, Intel kicked this path off years ago when they published
+their SIOV cookbook and everyone started integrating PASID support
+into their IOMMUs and working on ADIs. The mlx5 SFs are kind of early
+because the HW is flexible enough to avoid the parts of SIOV that are
+not ready or widely deployed yet, like IMS and PASID.
+
+> Like you, I would also prefer a more common infrastructure for
+> exposing something based on VirtIO/VMDq as the container/VM facing
+> netdevs. 
+
+A major point is to get switchdev.
+
+> I also don't see how this tackles container/VF portability,
+> migration of workloads, kernel network stack bypass, or any of the
+> other legacy limitations regarding SR-IOV VFs
+
+It isn't ment too. SF/ADI are just a way to have more VF's than PCI SIG
+can support..
+
+Jason
