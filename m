@@ -2,116 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D80F2DC5D9
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 19:04:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 860412DC5F0
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 19:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729024AbgLPSED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 13:04:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
+        id S1729288AbgLPSH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 13:07:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729019AbgLPSED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 13:04:03 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBAAC06138C
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 10:03:20 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id e25so3329643wme.0
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 10:03:20 -0800 (PST)
+        with ESMTP id S1727485AbgLPSH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 13:07:27 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94525C06179C;
+        Wed, 16 Dec 2020 10:06:46 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id y128so3610272ybf.10;
+        Wed, 16 Dec 2020 10:06:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nametag.social; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eCSvCN7b1yDwYZq88Y7ccUTykwBJvil9q+CKf7WjEIY=;
-        b=3psfpBDzfDjJRlWbknDPBfp2rgEly50U1OTWV084JlvLH8gCNr7kCO6Tq4R9NEnDf+
-         CE3j6/sznPoS5Ey/sWQuvVJsfBoTlcFQYHaf3UbmfB0dVj3B9SHxyEzKEma4hGIO+/MK
-         qB6NIK4/sbCnId6G5MUgLkMDQfDIDuapuDVLHb41DNY5Xzgmeu/lABmdFwpHC2pqIH2j
-         krokPxOnLZpB/HlURzFJhxwO3gbEC4nxa63aG7grNOLAS+F5NyvB5T8qE0h7490t753v
-         UpenX4+crKBYLPIcCk3utg+yMtiioewcJL2NUI9FYaH/LBUfPCr/bvQlAokXQBXKkHx7
-         jyfg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VodWZpWl/+uWOhTMN//0IR82qShPVli3GP+B85kzebI=;
+        b=HgkKI4G/HgYCipvAAw6VhORa1cxXlRphEmiOOjtS8+2DFX+gWbUH4AgXZu1fKdwTSn
+         pSEwp3kHpSA4r7/4NxgDyoYMq0tKm/y85UCWN67D5z6XUY7lDLG22Qdtq6qYxvnvjbww
+         vpE5oMNJc7B6/xs9K2YdOq33yJV9YQTkCdIkFNfCYtqUjqu2RcgHZjRislkx1bLKOdB2
+         vKCiFImSSimyu3dWk69QIb5gQzSytCf8ye7F1iUMJgLBIAaX58tad+2YxLXOWsY63wv+
+         euV/PCLRJ3Ri7H7MY6D5AmdYQsejL4SNlH/xxbqY4xjMgJhgB1qJalD8gL2wA6C0a8Cg
+         N7rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eCSvCN7b1yDwYZq88Y7ccUTykwBJvil9q+CKf7WjEIY=;
-        b=rYVj5MR3DhP3QYIacYZSOvs7h8gMoc1CKUqYbe+xQtTNQD4fW6r7m9g3TL/SCCaUgW
-         pFxVtk46lsPG+3tC4cQlCxRpJpuDRlVS1KRitl1jdyQ1ysxZP9D7oxVV2JUKHCp295Sv
-         f5AN/j1Kz5tL/usS5GZYPHPpG/2QRQhlYAGiuGwAK/wA6OvZr+M7lZJ1tq5Ti48CUG3X
-         jFAEahRE391lf7CCiFtRFeHCgdfKDlSqmldS9Y6+Xpb6g45uj8rghd4f1Zggcq/LlCue
-         G4DfSnvgTrrQPlD0gwe1krCO4kkAAB9b2tw9wH/Dhuw2x/37e5i049/LuW2RbFNb1gYk
-         FK3w==
-X-Gm-Message-State: AOAM533kNKz95QFVj69AUYCpUcQP3oonJilW+idFyEekpJ/xnY84bd3a
-        pYbE4zat3ZMqFSdHLt1T2LoINg==
-X-Google-Smtp-Source: ABdhPJyDeMhepAElK9BoM+AIoWZXywyd6pt1XZcV3B5t3k1YQTXYGmnaorRDuxOU6f5SsZHvntsh8Q==
-X-Received: by 2002:a1c:1bc6:: with SMTP id b189mr4495026wmb.71.1608141799158;
-        Wed, 16 Dec 2020 10:03:19 -0800 (PST)
-Received: from localhost.localdomain ([8.20.101.195])
-        by smtp.gmail.com with ESMTPSA id b13sm4311281wrt.31.2020.12.16.10.03.16
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 16 Dec 2020 10:03:18 -0800 (PST)
-From:   Victor Stewart <v@nametag.social>
-To:     io-uring@vger.kernel.org, soheil@google.com, netdev@vger.kernel.org
-Cc:     Victor Stewart <v@nametag.social>
-Subject: [PATCH net-next v4] udp:allow UDP cmsghdrs through io_uring
-Date:   Wed, 16 Dec 2020 18:03:13 +0000
-Message-Id: <20201216180313.46610-2-v@nametag.social>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201216180313.46610-1-v@nametag.social>
-References: <20201216180313.46610-1-v@nametag.social>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VodWZpWl/+uWOhTMN//0IR82qShPVli3GP+B85kzebI=;
+        b=WBpr3s+nT07obq2vNyYuYfh8SSiFdX5lUAYG9YpKX7Nt/pYZBJ8r8/9BL1MTk09Nwh
+         +Y5D0m8utIxUdYEj6HfhVlsKdDG+vBUnsOVHoVsT73oU5fPIy0LZffOHNzMYJ4k+c1Vy
+         4AX/JX7BaVchwO59f6hBUkXkmAkS1ieYsi2DOmSZ3WWWbE2DJqXUokbkg3gs19lyDjjG
+         FqKdBF57qucwKoFw5yc6t008eDZCwkIurWI+6e+NVGCs/bKLxiNjQ8B0qTvOxUQybfQY
+         gZvjBuFZ843okEnVIATNXlpnOxLEG2/LcFQQtN1pQR+9/noYj8i+5TQ2Azid8LgB4drT
+         bFxA==
+X-Gm-Message-State: AOAM531ajL0MXaNg7ZM43zUEltXWJ0T0oNKrikzNEFKh4Z8x/+r3UBvJ
+        u1vgvhd72kIJ3BYbbn2fHQa/L28AcyYFcmhNJJg=
+X-Google-Smtp-Source: ABdhPJy3g5GfYo5WT+IeLrwHD6qpe8ngg3vhanZs6hYwZjszn/hqZ+Z9uHSwjKHHvo6ZnPgPboPTG5wVZW+geoDjMwc=
+X-Received: by 2002:a25:aea8:: with SMTP id b40mr52596024ybj.347.1608142005891;
+ Wed, 16 Dec 2020 10:06:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAEf4BzYBvz4TDayTE=Bc_bjqvOGaavmmw1sJhOCKhq9DwUpd4A@mail.gmail.com>
+ <20201215182011.15755-1-kamal@canonical.com>
+In-Reply-To: <20201215182011.15755-1-kamal@canonical.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Dec 2020 10:06:35 -0800
+Message-ID: <CAEf4BzYgnDWRswYJPnMdtACs7K5mckbfHX2i68YXhha4q=ywFw@mail.gmail.com>
+Subject: Re: [PATCH v2] selftests/bpf: clarify build error if no vmlinux
+To:     Kamal Mostafa <kamal@canonical.com>
+Cc:     linux- stable <stable@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Victor Stewart <v@nametag.social>
----
- net/ipv4/af_inet.c  | 1 +
- net/ipv6/af_inet6.c | 1 +
- net/socket.c        | 8 +++++---
- 3 files changed, 7 insertions(+), 3 deletions(-)
+On Tue, Dec 15, 2020 at 10:20 AM Kamal Mostafa <kamal@canonical.com> wrote:
+>
+> If Makefile cannot find any of the vmlinux's in its VMLINUX_BTF_PATHS list,
+> it tries to run btftool incorrectly, with VMLINUX_BTF unset:
+>
+>     bpftool btf dump file $(VMLINUX_BTF) format c
+>
+> Such that the keyword 'format' is misinterpreted as the path to vmlinux.
+> The resulting build error message is fairly cryptic:
+>
+>       GEN      vmlinux.h
+>     Error: failed to load BTF from format: No such file or directory
+>
+> This patch makes the failure reason clearer by yielding this instead:
+>
+>     Makefile:...: *** cannot find a vmlinux for VMLINUX_BTF at any of
+>     "{paths}".  Stop.
+>
+> Fixes: acbd06206bbb ("selftests/bpf: Add vmlinux.h selftest exercising tracing of syscalls")
+> Cc: stable@vger.kernel.org # 5.7+
+> Signed-off-by: Kamal Mostafa <kamal@canonical.com>
+> ---
 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index b7260c8cef2e..c9fd5e7cfd6e 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1052,6 +1052,7 @@ EXPORT_SYMBOL(inet_stream_ops);
- 
- const struct proto_ops inet_dgram_ops = {
- 	.family		   = PF_INET,
-+	.flags		   = PROTO_CMSG_DATA_ONLY,
- 	.owner		   = THIS_MODULE,
- 	.release	   = inet_release,
- 	.bind		   = inet_bind,
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index e648fbebb167..560f45009d06 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -695,6 +695,7 @@ const struct proto_ops inet6_stream_ops = {
- 
- const struct proto_ops inet6_dgram_ops = {
- 	.family		   = PF_INET6,
-+	.flags		   = PROTO_CMSG_DATA_ONLY,
- 	.owner		   = THIS_MODULE,
- 	.release	   = inet6_release,
- 	.bind		   = inet6_bind,
-diff --git a/net/socket.c b/net/socket.c
-index 6e6cccc2104f..6995835d6355 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2416,9 +2416,11 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
- long __sys_sendmsg_sock(struct socket *sock, struct msghdr *msg,
- 			unsigned int flags)
- {
--	/* disallow ancillary data requests from this path */
--	if (msg->msg_control || msg->msg_controllen)
--		return -EINVAL;
-+	if (msg->msg_control || msg->msg_controllen) {
-+		/* disallow ancillary data reqs unless cmsg is plain data */
-+		if (!(sock->ops->flags & PROTO_CMSG_DATA_ONLY))
-+			return -EINVAL;
-+	}
- 
- 	return ____sys_sendmsg(sock, msg, flags, NULL, 0);
- }
--- 
-2.26.2
+Applied to bpf tree, thanks. This conflicted with a67079b03165
+("selftests/bpf: fix bpf_testmod.ko recompilation logic"), I resolved
+the conflict and capitalized "Cannot" in the error message.
 
+>
+> [v2] moves the check to right after the VMLINUX_BTF definition.
+>
+>  tools/testing/selftests/bpf/Makefile | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 542768f5195b..7ba631f495f7 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -146,6 +146,9 @@ VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)                                \
+>                      /sys/kernel/btf/vmlinux                            \
+>                      /boot/vmlinux-$(shell uname -r)
+>  VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
+> +ifeq ($(VMLINUX_BTF),)
+> +$(error cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)")
+> +endif
+>
+>  DEFAULT_BPFTOOL := $(SCRATCH_DIR)/sbin/bpftool
+>
+> --
+> 2.17.1
+>
