@@ -2,156 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CABC2DC286
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 15:54:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B45EE2DC293
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 15:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726216AbgLPOyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 09:54:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726162AbgLPOyB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 09:54:01 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC80C0617A6
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 06:53:21 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id c133so2617759wme.4
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 06:53:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Q1ar70vGkkLzayQby8Ky4/ZiYUgs+a+/N1nwlY1uaSA=;
-        b=XQYgBJDPkyW9GfmZxNHramdqTXdW2ybIxQq/IXhUO2kbsPXsYecgJXy1X6tAZlSXrB
-         Vj2o36LpCOYXRvK29egEJKxdQSntZWe2betPjLuC7/GaUrH0BWrCbOvJICKbThTzm2EC
-         a2cjsaGeo9JHIjxPj64xfai3TSc43qJvAmNHVel+icSN1kpeCmvIPOYJznd/CebA/q8G
-         MjIY7E4WCZkgCiZx2f8pbq2kaEheFUETLQkLvcfxVRMgUMEgRrLwKoz9AkRYD/EAOgkl
-         pkuYDJTtZwqbnGepZCXa1QS4v6NTwhM+dLf27aDqLa2M15a9A09VzPkLtuWovspAcCPJ
-         14wg==
+        id S1725550AbgLPO6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 09:58:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55883 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725966AbgLPO6Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 09:58:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608130618;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=o5k/sKzd3D17kAP46KXWKeDWWsM6hWmeSNLDHl/YUOI=;
+        b=Zef7jRJw8Ts4KbJyu1PEH93ecCnFW2Codj5iwxI/QY1fKI/gRcdvdY+z8nzeYbDrDQ8jZ2
+        WlgLcBy43VeX5oLKMnbOLLJHx/4czKK0Dfr4JTO+owFqLWiY2hfxYmaXexVRqVENKZ1j4Z
+        P0U8u8mjvBEkAiA8WP0Dp9LKiwBw1hY=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-539-YOLqOI-cM2yJZmZmlDY6JA-1; Wed, 16 Dec 2020 09:56:55 -0500
+X-MC-Unique: YOLqOI-cM2yJZmZmlDY6JA-1
+Received: by mail-ed1-f71.google.com with SMTP id h5so11892041edq.3
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 06:56:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Q1ar70vGkkLzayQby8Ky4/ZiYUgs+a+/N1nwlY1uaSA=;
-        b=P/QE/9iLrW7otVHLi2yztIiazHD+7FUVG66YHmgfPRnJckSvgJJ8L2ZHekFeJi2u4P
-         I+VRfyxcmlawDBry7Sxq6Gwf+QWHX4dwo3BG4hUn8h1Jnv5C3ysVzs/y25Q4I7hSH90x
-         VzdPYuksC7fFqZzxqzLLMgt88RTeyn7sMEmx79uIFRDZbbliosnOtwzB9UGI6P7rkYOE
-         zVlyqjygT9R075abtwAD8JBY8j51mmM0lymxxaiiFD8fuSrX0vkK425Ar8nSiZLCrlDg
-         3waqsXVbhjv+E8ADcMG9cbqPImK1QER1szxvysr0zmQ+mtPm0oUPKufWdsxA4mENENpF
-         JiOg==
-X-Gm-Message-State: AOAM53058VJF56DJpDhnTyDmA0uRR7FOJ+VFsu94I1Ogn67CUIYgOeol
-        hj2Tz1eFPQ83esq8rHrxzvmtsg==
-X-Google-Smtp-Source: ABdhPJx5RpfA+2qeVCZsU03uX+aDaGDWwP1Tw7kA9r+84654NcKA1goqoJsLoxUkT7Wu/PpEypdnPg==
-X-Received: by 2002:a05:600c:258:: with SMTP id 24mr3864547wmj.16.1608130399833;
-        Wed, 16 Dec 2020 06:53:19 -0800 (PST)
-Received: from [192.168.1.13] ([194.35.118.46])
-        by smtp.gmail.com with ESMTPSA id l1sm2904401wmi.15.2020.12.16.06.53.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Dec 2020 06:53:19 -0800 (PST)
-Subject: Re: [RFC PATCH] bpf: preload: Fix build error when O= is set
-To:     David Gow <davidgow@google.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-um <linux-um@lists.infradead.org>
-References: <20201119085022.3606135-1-davidgow@google.com>
- <CAEf4BzY4i0fH34eO=-4WOzVpifgPmJ0ER5ipBJWB0_4Zdv0AQg@mail.gmail.com>
- <CABVgOSn10kCaD7EQCMJTgD8udNx6fOExqUL1gXHzEViemiq3LA@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <3678c6eb-3815-a360-f495-fc246513f0f5@isovalent.com>
-Date:   Wed, 16 Dec 2020 14:53:13 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=o5k/sKzd3D17kAP46KXWKeDWWsM6hWmeSNLDHl/YUOI=;
+        b=PWeFrtuC74UsnyN3tltH9jbNeGqwJeUqm+Ef2pIp2eHAO1tO2lMno9mHC+LgRoLdZ/
+         A9tuyEXggwPapTB/75P7UyLwoIW0l5MYA6JVDMby1KVsOpBT19F5CVOjn1xPSqaeoKaC
+         HUv8JNx8UcE4K3ky5QGqJd5617gvE6z2gAiTQNzbSmWxvUuP2ggkXXvbeT79R8YKjpJW
+         5qVRqxS55D6y4iNeGB9/WfJqTfFRxW4VmWYbDEpwU/gph/11KnVdr3Pcc6gIXnQyBqUn
+         12hZJa0hIRjgy4y6PgdX7GRIbswqKgSKfysQlD2APNMBux4c00YFpRlXFqCF4NyBCk58
+         meBA==
+X-Gm-Message-State: AOAM533X18ZKnySD03LiGnhj48t8rwHsJwuN28VqArdoUHjA7vA+ZnK4
+        7RboSaA/smdZ7Mx/0FJIsY8aLJcwCZMC8zMlfS7LKEtmM7KFQQKMlq3ooGVZCYfMFjkzBBA121r
+        sitzvlSTn7chd1LY0
+X-Received: by 2002:a50:ac86:: with SMTP id x6mr33931425edc.197.1608130614020;
+        Wed, 16 Dec 2020 06:56:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwO13r9W/W3cUQw9bukEEjm2mRue39Hb5aemp59V48HVDADmBV4zfp6XAoR0UEZokrCaaDxBA==
+X-Received: by 2002:a50:ac86:: with SMTP id x6mr33931409edc.197.1608130613805;
+        Wed, 16 Dec 2020 06:56:53 -0800 (PST)
+Received: from localhost ([151.66.8.153])
+        by smtp.gmail.com with ESMTPSA id l14sm21242976edq.35.2020.12.16.06.56.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Dec 2020 06:56:53 -0800 (PST)
+Date:   Wed, 16 Dec 2020 15:56:50 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexander.duyck@gmail.com,
+        maciej.fijalkowski@intel.com, saeed@kernel.org
+Subject: Re: [PATCH v3 bpf-next 1/2] net: xdp: introduce xdp_init_buff
+ utility routine
+Message-ID: <20201216145650.GC2036@lore-desk>
+References: <cover.1607794551.git.lorenzo@kernel.org>
+ <1125364c807a24e03cfdc1901913181fe1457d42.1607794552.git.lorenzo@kernel.org>
+ <20201216093543.73836860@carbon>
 MIME-Version: 1.0
-In-Reply-To: <CABVgOSn10kCaD7EQCMJTgD8udNx6fOExqUL1gXHzEViemiq3LA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="vEao7xgI/oilGqZ+"
+Content-Disposition: inline
+In-Reply-To: <20201216093543.73836860@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-11-21 17:48 UTC+0800 ~ David Gow <davidgow@google.com>
-> On Sat, Nov 21, 2020 at 3:38 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
->>
->> On Thu, Nov 19, 2020 at 12:51 AM David Gow <davidgow@google.com> wrote:
->>>
->>> If BPF_PRELOAD is enabled, and an out-of-tree build is requested with
->>> make O=<path>, compilation seems to fail with:
->>>
->>> tools/scripts/Makefile.include:4: *** O=.kunit does not exist.  Stop.
->>> make[4]: *** [../kernel/bpf/preload/Makefile:8: kernel/bpf/preload/libbpf.a] Error 2
->>> make[3]: *** [../scripts/Makefile.build:500: kernel/bpf/preload] Error 2
->>> make[2]: *** [../scripts/Makefile.build:500: kernel/bpf] Error 2
->>> make[2]: *** Waiting for unfinished jobs....
->>> make[1]: *** [.../Makefile:1799: kernel] Error 2
->>> make[1]: *** Waiting for unfinished jobs....
->>> make: *** [Makefile:185: __sub-make] Error 2
->>>
->>> By the looks of things, this is because the (relative path) O= passed on
->>> the command line is being passed to the libbpf Makefile, which then
->>> can't find the directory. Given OUTPUT= is being passed anyway, we can
->>> work around this by explicitly setting an empty O=, which will be
->>> ignored in favour of OUTPUT= in tools/scripts/Makefile.include.
->>
->> Strange, but I can't repro it. I use make O=<absolute path> all the
->> time with no issues. I just tried specifically with a make O=.build,
->> where .build is inside Linux repo, and it still worked fine. See also
->> be40920fbf10 ("tools: Let O= makes handle a relative path with -C
->> option") which was supposed to address such an issue. So I'm wondering
->> what exactly is causing this problem.
->>
-> [+ linux-um list]
-> 
-> Hmm... From a quick check, I can't reproduce this on x86, so it's
-> possibly a UML-specific issue.
-> 
-> The problem here seems to be that $PWD is, for whatever reason, equal
-> to the srcdir on x86, but not on UML. In general, $PWD behaves pretty
-> weirdly -- I don't fully understand it -- but if I add a tactical "PWD
-> := $(shell pwd)" or use $(CURDIR) instead, the issue shows up on x86
-> as well. I guess this is because PWD only gets updated when set by a
-> shell or something, and UML does this somewhere?
-> 
-> Thoughts?
-> 
-> Cheers,
-> -- David
 
-Hi David, Andrii,
+--vEao7xgI/oilGqZ+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-David, did you use a different command for building for UML and x86? I'm
-asking because I reproduce on x86, but only for some targets, in
-particular when I tried bindeb-pkg.
+> On Sat, 12 Dec 2020 18:41:48 +0100
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
+> > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/ne=
+t/ethernet/broadcom/bnxt/bnxt_xdp.c
+> > index fcc262064766..b7942c3440c0 100644
+> > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> > @@ -133,12 +133,11 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_=
+ring_info *rxr, u16 cons,
+> >  	dma_sync_single_for_cpu(&pdev->dev, mapping + offset, *len, bp->rx_di=
+r);
+> > =20
+> >  	txr =3D rxr->bnapi->tx_ring;
+> > +	xdp_init_buff(&xdp, PAGE_SIZE, &rxr->xdp_rxq);
+> >  	xdp.data_hard_start =3D *data_ptr - offset;
+> >  	xdp.data =3D *data_ptr;
+> >  	xdp_set_data_meta_invalid(&xdp);
+> >  	xdp.data_end =3D *data_ptr + *len;
+> > -	xdp.rxq =3D &rxr->xdp_rxq;
+> > -	xdp.frame_sz =3D PAGE_SIZE; /* BNXT_RX_PAGE_MODE(bp) when XDP enabled=
+ */
+> >  	orig_data =3D xdp.data;
+>=20
+> I don't like loosing the comment here.  Other developers reading this
+> code might assume that size is always PAGE_SIZE, which is only the case
+> when XDP is enabled.  Lets save them from making this mistake.
 
-With "make O=.build vmlinux", I have:
-- $(O) for "dummy" check in tools/scripts/Makefile.include set to
-/linux/.build
-- $(PWD) for same check set to /linux/tools
-- Since $(O) is an absolute path, the "dummy" check passes
+ack, I will add it back in v4.
 
-With "make O=.build bindeb-pkg", I have instead:
-- $(O) set to .build (relative path)
-- $(PWD) set to /linux/.build
-- "dummy" check changes to /linux/.build and searches for .build in it,
-which fails and aborts the build
+Regards,
+Lorenzo
 
-(tools/scripts/Makefile.include is included from libbpf's Makefile,
-called from kernel/bpf/preload/Makefile.)
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
 
-I'm not sure how exactly the bindeb-pkg target ends up passing these values.
+--vEao7xgI/oilGqZ+
+Content-Type: application/pgp-signature; name="signature.asc"
 
-For what it's worth, I have been solving this (before finding this
-thread) with a fix close to yours, I pass "O=$(abspath .)" on the
-command line for building libbpf in kernel/bpf/preload/Makefile. It
-looked consistent to me with the "tools/:" target from the main
-Makefile, where "O=$(abspath $(objtree))" is passed (and $(objtree) is ".").
+-----BEGIN PGP SIGNATURE-----
 
-I hope this helps,
-Quentin
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX9ogLgAKCRA6cBh0uS2t
+rIa1AP9+d9A92U1CR2bGh+AjPjTWCRccTiynTiPqw2A89MiidgD/dVDPX6nPivbS
+E4wNHIijgcygrh3g+vyOZQVATikVzQQ=
+=Ogy7
+-----END PGP SIGNATURE-----
+
+--vEao7xgI/oilGqZ+--
+
