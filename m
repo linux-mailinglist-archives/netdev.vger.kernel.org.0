@@ -2,276 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1A462DC453
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 17:33:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB0BD2DC47D
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 17:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgLPQch (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 11:32:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbgLPQch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 11:32:37 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB86C061794;
-        Wed, 16 Dec 2020 08:31:56 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id r9so24530109ioo.7;
-        Wed, 16 Dec 2020 08:31:56 -0800 (PST)
+        id S1726725AbgLPQmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 11:42:53 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:47003 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725939AbgLPQmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 11:42:53 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZQp5ijXK6KyYcBGlAOyLi4/Gh/VnhNPH4dDbbxSDTDo=;
-        b=SBq+9NaFUaP5iugVwaXPwFSTB6sEJpoCvWoVRYJ3eK1vZCJVVBFNFPuy9ZYyMbSKQ3
-         IxLUDq1z4y2ZV9YDyik4YjbbdQ+Bhj58wPQwp0J4AS+ig1ljjnW0pcky9ZmIGf1PPb7v
-         Ql0gg6kBmhshnKicdAg6hfjzL8GDr0yciF38qYJNhCTzOKlajefpalqWZpUr7MkbAmqF
-         rf8hDPgduM82fNXANDDCVwxNXi4Dql/aLjAAse7tQjve7tNrHE3p4SchRGdh0Y/n6+Bm
-         i9Rcoqc9har+5z26Yq6uqFogZsDG5eSR08ZIRhhCREc7+nROggaBiTxEZO8Q1hc3FZv3
-         l25A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZQp5ijXK6KyYcBGlAOyLi4/Gh/VnhNPH4dDbbxSDTDo=;
-        b=Wf4apZf/DuLdUr3zO88mgUeLuKYUwJKGoO5QPXKUImOFM5DeAF3kkYNowT3cooArsr
-         4dYbCcWbiGmYDEVdp76H49rmdPxURLAU4TcB7jVWGjO9m+3Bcz9j9SCsHGWr3ROzfewX
-         TcIn954ZQ+q24HnzrEZpVA5stylgK1sZE1uhsfpby5mkXx98KvyfTiF2xiviXmxAF1/6
-         vGz0O+gY+R7midfSonvFLHO7NAycRBhdJ3QV/cS/Wk9dTDziYP0JITTjpMhAkNE6JEv0
-         +Z4hvi2Yau7yAiakDM3uxZBdwLpo47oydeWXaZaf/y/LNjrv5Sjb/bsREu+/VBQloaKw
-         Td2g==
-X-Gm-Message-State: AOAM532M7NwJTBY8rJ62yaBxwBY4miMu/yJm+T0YmUzjiOeTUnH+VPy0
-        60bctuI2Xrx9dvW6a9SvtjvWcqAFizObNjfdK24=
-X-Google-Smtp-Source: ABdhPJwAYqYW4YHhzF2Ec+IZHqNwF+ao6AMYUqQEVeGY8STKewvUfQrALFJCitWUYUr7AKbvdcoyPyyZvjtcEAqdMj4=
-X-Received: by 2002:a02:4:: with SMTP id 4mr44086679jaa.121.1608136316013;
- Wed, 16 Dec 2020 08:31:56 -0800 (PST)
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1608136971; x=1639672971;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=EINpcIYTjwYeOkbDneqm5cXPEFSVJPKdld+/Olx8XLU=;
+  b=GVYOr675W7sshryceeJ+4Xx/iwg0CASCV4byI9TColYLIdCJALAp//3R
+   MZ8vI3U+5U9qOKmd4HN/uyn2bRATZyB1u9Ze4bIGoTfbgX351RE+ldYzJ
+   oZUW5ZyypeDKNLTjD67/aTzFAMUcrTCUKha/rRJrdwvipVkRBoqoWTcJx
+   0=;
+X-IronPort-AV: E=Sophos;i="5.78,424,1599523200"; 
+   d="scan'208";a="96586335"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-a70de69e.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 16 Dec 2020 16:42:10 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1e-a70de69e.us-east-1.amazon.com (Postfix) with ESMTPS id 5F44BA2054;
+        Wed, 16 Dec 2020 16:42:07 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 16 Dec 2020 16:42:06 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.144) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 16 Dec 2020 16:42:02 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kafai@fb.com>
+CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 bpf-next 05/11] tcp: Migrate TCP_NEW_SYN_RECV requests.
+Date:   Thu, 17 Dec 2020 01:41:58 +0900
+Message-ID: <20201216164158.65104-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20201215025837.k2cuhykmz6h46fud@kafai-mbp.dhcp.thefacebook.com>
+References: <20201215025837.k2cuhykmz6h46fud@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20201214214352.198172-1-saeed@kernel.org> <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
- <608505778d76b1b01cb3e8d19ecda5b8578f0f79.camel@kernel.org>
- <CAKgT0UfEsd0hS=iJTcVc20gohG0WQwjsGYOw1y0_=DRVbhb1Ng@mail.gmail.com>
- <ecad34f5c813591713bb59d9c5854148c3d7f291.camel@kernel.org>
- <CAKgT0UfTOqS9PBeQFexyxm7ytQzdj0j8VMG71qv4+Vn6koJ5xQ@mail.gmail.com>
- <20201216001946.GF552508@nvidia.com> <CAKgT0UeLBzqh=7gTLtqpOaw7HTSjG+AjXB7EkYBtwA6EJBccbg@mail.gmail.com>
- <20201216030351.GH552508@nvidia.com> <CAKgT0UcwP67ihaTWLY1XsVKEgysa3HnjDn_q=Sgvqnt=Uc7YQg@mail.gmail.com>
- <20201216133309.GI552508@nvidia.com>
-In-Reply-To: <20201216133309.GI552508@nvidia.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 16 Dec 2020 08:31:44 -0800
-Message-ID: <CAKgT0UcRfB8a61rSWW-NPdbGh3VcX_=LCZ5J+-YjqYNtm+RhVg@mail.gmail.com>
-Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.144]
+X-ClientProxiedBy: EX13D47UWA001.ant.amazon.com (10.43.163.6) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 5:33 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> On Tue, Dec 15, 2020 at 08:13:21PM -0800, Alexander Duyck wrote:
->
-> > > > Ugh, don't get me started on switchdev. The biggest issue as I see it
-> > > > with switchev is that you have to have a true switch in order to
-> > > > really be able to use it.
-> > >
-> > > That cuts both ways, suggesting HW with a true switch model itself
-> > > with VMDq is equally problematic.
-> >
-> > Yes and no. For example the macvlan offload I had setup could be
-> > configured both ways and it made use of VMDq. I'm not necessarily
-> > arguing that we need to do VMDq here, however at the same time saying
-> > that this is only meant to replace SR-IOV becomes problematic since we
-> > already have SR-IOV so why replace it with something that has many of
-> > the same limitations?
->
-> Why? Because SR-IOV is the *only* option for many use cases. Still. I
-> said this already, something more generic does not magicaly eliminate
-> SR-IOV.
->
-> The SIOV ADI model is a small refinement to the existing VF scheme, it
-> is completely parallel to making more generic things.
->
-> It is not "repeating mistakes" it is accepting the limitations of
-> SR-IOV because benefits exist and applications need those benefits.
+From:   Martin KaFai Lau <kafai@fb.com>
+Date:   Mon, 14 Dec 2020 18:58:37 -0800
+> On Tue, Dec 15, 2020 at 02:03:13AM +0900, Kuniyuki Iwashima wrote:
+> > From:   Martin KaFai Lau <kafai@fb.com>
+> > Date:   Thu, 10 Dec 2020 10:49:15 -0800
+> > > On Thu, Dec 10, 2020 at 02:15:38PM +0900, Kuniyuki Iwashima wrote:
+> > > > From:   Martin KaFai Lau <kafai@fb.com>
+> > > > Date:   Wed, 9 Dec 2020 16:07:07 -0800
+> > > > > On Tue, Dec 01, 2020 at 11:44:12PM +0900, Kuniyuki Iwashima wrote:
+> > > > > > This patch renames reuseport_select_sock() to __reuseport_select_sock() and
+> > > > > > adds two wrapper function of it to pass the migration type defined in the
+> > > > > > previous commit.
+> > > > > > 
+> > > > > >   reuseport_select_sock          : BPF_SK_REUSEPORT_MIGRATE_NO
+> > > > > >   reuseport_select_migrated_sock : BPF_SK_REUSEPORT_MIGRATE_REQUEST
+> > > > > > 
+> > > > > > As mentioned before, we have to select a new listener for TCP_NEW_SYN_RECV
+> > > > > > requests at receiving the final ACK or sending a SYN+ACK. Therefore, this
+> > > > > > patch also changes the code to call reuseport_select_migrated_sock() even
+> > > > > > if the listening socket is TCP_CLOSE. If we can pick out a listening socket
+> > > > > > from the reuseport group, we rewrite request_sock.rsk_listener and resume
+> > > > > > processing the request.
+> > > > > > 
+> > > > > > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> > > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > > > > > ---
+> > > > > >  include/net/inet_connection_sock.h | 12 +++++++++++
+> > > > > >  include/net/request_sock.h         | 13 ++++++++++++
+> > > > > >  include/net/sock_reuseport.h       |  8 +++----
+> > > > > >  net/core/sock_reuseport.c          | 34 ++++++++++++++++++++++++------
+> > > > > >  net/ipv4/inet_connection_sock.c    | 13 ++++++++++--
+> > > > > >  net/ipv4/tcp_ipv4.c                |  9 ++++++--
+> > > > > >  net/ipv6/tcp_ipv6.c                |  9 ++++++--
+> > > > > >  7 files changed, 81 insertions(+), 17 deletions(-)
+> > > > > > 
+> > > > > > diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+> > > > > > index 2ea2d743f8fc..1e0958f5eb21 100644
+> > > > > > --- a/include/net/inet_connection_sock.h
+> > > > > > +++ b/include/net/inet_connection_sock.h
+> > > > > > @@ -272,6 +272,18 @@ static inline void inet_csk_reqsk_queue_added(struct sock *sk)
+> > > > > >  	reqsk_queue_added(&inet_csk(sk)->icsk_accept_queue);
+> > > > > >  }
+> > > > > >  
+> > > > > > +static inline void inet_csk_reqsk_queue_migrated(struct sock *sk,
+> > > > > > +						 struct sock *nsk,
+> > > > > > +						 struct request_sock *req)
+> > > > > > +{
+> > > > > > +	reqsk_queue_migrated(&inet_csk(sk)->icsk_accept_queue,
+> > > > > > +			     &inet_csk(nsk)->icsk_accept_queue,
+> > > > > > +			     req);
+> > > > > > +	sock_put(sk);
+> > > > > not sure if it is safe to do here.
+> > > > > IIUC, when the req->rsk_refcnt is held, it also holds a refcnt
+> > > > > to req->rsk_listener such that sock_hold(req->rsk_listener) is
+> > > > > safe because its sk_refcnt is not zero.
+> > > > 
+> > > > I think it is safe to call sock_put() for the old listener here.
+> > > > 
+> > > > Without this patchset, at receiving the final ACK or retransmitting
+> > > > SYN+ACK, if sk_state == TCP_CLOSE, sock_put(req->rsk_listener) is done
+> > > > by calling reqsk_put() twice in inet_csk_reqsk_queue_drop_and_put().
+> > > Note that in your example (final ACK), sock_put(req->rsk_listener) is
+> > > _only_ called when reqsk_put() can get refcount_dec_and_test(&req->rsk_refcnt)
+> > > to reach zero.
+> > > 
+> > > Here in this patch, it sock_put(req->rsk_listener) without req->rsk_refcnt
+> > > reaching zero.
+> > > 
+> > > Let says there are two cores holding two refcnt to req (one cnt for each core)
+> > > by looking up the req from ehash.  One of the core do this migrate and
+> > > sock_put(req->rsk_listener).  Another core does sock_hold(req->rsk_listener).
+> > > 
+> > > 	Core1					Core2
+> > > 						sock_put(req->rsk_listener)
+> > > 
+> > > 	sock_hold(req->rsk_listener)
+> > 
+> > I'm sorry for the late reply.
+> > 
+> > I missed this situation that different Cores get into NEW_SYN_RECV path,
+> > but this does exist.
+> > https://lore.kernel.org/netdev/1517977874.3715.153.camel@gmail.com/#t
+> > https://lore.kernel.org/netdev/1518531252.3715.178.camel@gmail.com/
+> > 
+> > 
+> > If close() is called for the listener and the request has the last refcount
+> > for it, sock_put() by Core2 frees it, so Core1 cannot proceed with freed
+> > listener. So, it is good to call refcount_inc_not_zero() instead of
+> > sock_hold(). If refcount_inc_not_zero() fails, it means that the listener
+> _inc_not_zero() usually means it requires rcu_read_lock().
+> That may have rippling effect on other req->rsk_listener readers.
+> 
+> There may also be places assuming that the req->rsk_listener will never
+> change once it is assigned.  not sure.  have not looked closely yet.
 
-If we have two interfaces, both with pretty much the same limitations
-then many would view it as "repeating mistakes". The fact is we
-already have SR-IOV. Why introduce yet another interface that has the
-same functionality?
+I have checked this again. There are no functions that expect explicitly
+req->rsk_listener never change except for BUG_ON in inet_child_forget().
+No BUG_ON/WARN_ON does not mean they does not assume listener never
+change, but such functions still work properly if rsk_listener is changed.
 
-You say this will scale better but I am not even sure about that. The
-fact is SR-IOV could scale to 256 VFs, but for networking I kind of
-doubt the limitation would have been the bus number and would more
-likely be issues with packet replication and PCIe throughput,
-especially when you start dealing with east-west traffic within the
-same system.
 
-> > That said I understand your argument, however I view the elimination
-> > of SR-IOV to be something we do after we get this interface right and
-> > can justify doing so.
->
-> Elimination of SR-IOV isn't even a goal here!
+> It probably needs some more thoughts here to get a simpler solution.
 
-Sorry you used the word "replace", and my assumption here was that the
-goal is to get something in place that can take the place of SR-IOV so
-that you wouldn't be maintaining the two systems at the same time.
-That is my concern as I don't want us having SR-IOV, and then several
-flavors of SIOV. We need to decide on one thing that will be the way
-forward.
+Is it fine to move sock_hold() before assigning rsk_listener and defer
+sock_put() to the end of tcp_v[46]_rcv() ?
 
-> > Also it might be useful to call out the flavours and planned flavours
-> > in the cover page. Admittedly the description is somewhat lacking in
-> > that regard.
->
-> This is more of a general switchdev remark though. In the swithdev
-> model you have a the switch and a switch port. Each port has a
-> swichdev representor on the switch side and a "user port" of some
-> kind.
->
-> It can be a physical thing:
->  - SFP
->  - QSFP
->  - WiFi Antennae
->
-> It could be a semi-physical thing outside the view of the kernel:
->  - SmartNIC VF/SF attached to another CPU
->
-> It can be a semi-physical thing in view of this kernel:
->  - SRIOV VF (struct pci device)
->  - SF (struct aux device)
->
-> It could be a SW construct in this kernel:
->  - netdev (struct net device)
->
-> *all* of these different port types are needed. Probably more down the
-> road!
->
-> Notice I don't have VPDA, VF/SF netdev, or virtio-mdev as a "user
-> port" type here. Instead creating the user port pci or aux device
-> allows the user to use the Linux driver model to control what happens
-> to the pci/aux device next.
+Also, we have to rewrite rsk_listener first and then call sock_put() in
+reqsk_timer_handler() so that rsk_listener always has refcount more than 1.
 
-I get that. That is why I said switchdev isn't a standard for the
-endpoint. One of the biggest issues with SR-IOV that I have seen is
-the fact that the last piece isn't really defined. We never did a good
-job of defining how the ADI should look to the guest and as a result
-it kind of stalled in adoption.
+---8<---
+	struct sock *nsk, *osk;
+	bool migrated = false;
+	...
+	sock_hold(req->rsk_listener);  // (i)
+	sk = req->rsk_listener;
+	...
+	if (sk->sk_state == TCP_CLOSE) {
+		osk = sk;
+		// do migration without sock_put()
+		sock_hold(nsk);  // (ii) (as with (i))
+		sk = nsk;
+		migrated = true;
+	}
+	...
+	if (migrated) {
+		sock_put(sk);  // pair with (ii)
+		sock_put(osk); // decrement old listener's refcount
+		sk = osk;
+	}
+	sock_put(sk);  // pair with (i)
+---8<---
 
-> > I would argue that is one of the reasons why this keeps being
-> > compared to either VMDq or VMQ as it is something that SR-IOV has
-> > yet to fully replace and has many features that would be useful in
-> > an interface that is a subpartition of an existing interface.
->
-> In what sense does switchdev and a VF not fully replace macvlan VMDq?
 
-One of the biggest is east-west traffic. You quickly run up against
-the PCIe bandwidth bottleneck and then the performance tanks. I have
-seen a number of cases where peer-to-peer on the same host swamps the
-network interface.
+> > is closed and the req->rsk_listener is changed in another place. Then, we
+> > can continue processing the request by rewriting sk with rsk_listener and
+> > calling sock_hold() for it.
+> > 
+> > Also, the migration by Core2 can be done after sock_hold() by Core1. Then
+> > if Core1 win the race by removing the request from ehash,
+> > in inet_csk_reqsk_queue_add(), instead of sk, req->rsk_listener should be
+> > used as the proper listener to add the req into its queue. But if the
+> > rsk_listener is also TCP_CLOSE, we have to call inet_child_forget().
+> > 
+> > Moreover, we have to check the listener is freed in the beginning of
+> > reqsk_timer_handler() by refcount_inc_not_zero().
+> > 
+> > 
+> > > > And then, we do `goto lookup;` and overwrite the sk.
+> > > > 
+> > > > In the v2 patchset, refcount_inc_not_zero() is done for the new listener in
+> > > > reuseport_select_migrated_sock(), so we have to call sock_put() for the old
+> > > > listener instead to free it properly.
+> > > > 
+> > > > ---8<---
+> > > > +struct sock *reuseport_select_migrated_sock(struct sock *sk, u32 hash,
+> > > > +					    struct sk_buff *skb)
+> > > > +{
+> > > > +	struct sock *nsk;
+> > > > +
+> > > > +	nsk = __reuseport_select_sock(sk, hash, skb, 0, BPF_SK_REUSEPORT_MIGRATE_REQUEST);
+> > > > +	if (nsk && likely(refcount_inc_not_zero(&nsk->sk_refcnt)))
+> > > There is another potential issue here.  The TCP_LISTEN nsk is protected
+> > > by rcu.  refcount_inc_not_zero(&nsk->sk_refcnt) cannot be done if it
+> > > is not under rcu_read_lock().
+> > > 
+> > > The receive path may be ok as it is in rcu.  You may need to check for
+> > > others.
+> > 
+> > IIUC, is this mean nsk can be NULL after grace period of RCU? If so, I will
+> worse than NULL.  an invalid pointer.
+>  
+> > move rcu_read_lock/unlock() from __reuseport_select_sock() to
+> > reuseport_select_sock() and reuseport_select_migrated_sock().
+> ok.
+> 
+> > 
+> > 
+> > > > +		return nsk;
+> > > > +
+> > > > +	return NULL;
+> > > > +}
+> > > > +EXPORT_SYMBOL(reuseport_select_migrated_sock);
+> > > > ---8<---
+> > > > https://lore.kernel.org/netdev/20201207132456.65472-8-kuniyu@amazon.co.jp/
+> > > > 
+> > > > 
+> > > > > > +	sock_hold(nsk);
+> > > > > > +	req->rsk_listener = nsk;
+> > > It looks like there is another race here.  What
+> > > if multiple cores try to update req->rsk_listener?
+> > 
+> > I think we have to add a lock in struct request_sock, acquire it, check
+> > if the rsk_listener is changed or not, and then do migration. Also, if the
+> > listener has been changed, we have to tell the caller to use it as the new
+> > listener.
+> > 
+> > ---8<---
+> >        spin_lock(&lock)
+> >        if (sk != req->rsk_listener) {
+> >                nsk = req->rsk_listener;
+> >                goto out;
+> >        }
+> > 
+> >        // do migration
+> > out:
+> >        spin_unlock(&lock)
+> >        return nsk;
+> > ---8<---
+> cmpxchg may help here.
 
-> > The Intel drivers still have the macvlan as the assignable ADI and
-> > make use of VMDq to enable it.
->
-> Is this in-tree or only in the proprietary driver? AFAIK there is no
-> in-tree way to extract the DMA queue from the macvlan netdev into
-> userspace..
->
-> Remeber all this VF/SF/VDPA stuff results in a HW dataplane, not a SW
-> one. It doesn't really make sense to compare a SW dataplane to a HW
-> one. HW dataplanes come with limitations and require special driver
-> code.
-
-I get that. At the same time we can mask some of those limitations by
-allowing for the backend to be somewhat abstract so you have the
-possibility of augmenting the hardware dataplane with a software one
-if needed.
-
-> > The limitation as I see it is that the macvlan interface doesn't allow
-> > for much in the way of custom offloads and the Intel hardware doesn't
-> > support switchdev. As such it is good for a basic interface, but
-> > doesn't really do well in terms of supporting advanced vendor-specific
-> > features.
->
-> I don't know what it is that prevents Intel from modeling their
-> selector HW in switchdev, but I think it is on them to work with the
-> switchdev folks to figure something out.
-
-They tried for the ixgbe and i40e. The problem is the hardware
-couldn't conform to what was asked for if I recall. It has been a few
-years since I worked in the Ethernet group at intel so I don't recall
-the exact details.
-
-> I'm a bit surprised HW that can do macvlan can't be modeled with
-> switchdev? What is missing?
-
-If I recall it was the fact that the hardware defaults to transmitting
-everything that doesn't match an existing rule to the external port
-unless it comes from the external port.
-
-> > > That is goal here. This is not about creating just a netdev, this is
-> > > about the whole kit: rdma, netdev, vdpa virtio-net, virtio-mdev.
-> >
-> > One issue is right now we are only seeing the rdma and netdev. It is
-> > kind of backwards as it is using the ADIs on the host when this was
-> > really meant to be used for things like mdev.
->
-> This is second 15 patch series on this path already. It is not
-> possible to pack every single thing into this series. This is the
-> micro step of introducing the SF idea and using SF==VF to show how the
-> driver stack works. The minimal changing to the existing drivers
-> implies this can support an ADI as well.
->
-> Further, this does already show an ADI! vdpa_mlx5 will run on the
-> VF/SF and eventually causes qemu to build a virtio-net ADI that
-> directly passes HW DMA rings into the guest.
->
-> Isn't this exactly the kind of generic SRIOV replacement option you
-> have been asking for? Doesn't this completely supersede stuff built on
-> macvlan?
-
-Something like the vdpa model is more like what I had in mind. Only
-vdpa only works for the userspace networking case.
-
-Basically the idea is to have an assignable device interface that
-isn't directly tied to the hardware. Instead it is making use of a
-slice of it and referencing the PF as the parent leaving the PF as the
-owner of the slice. If at some point in the future we could make
-changes to allow for software to step in and do some switching if
-needed. The key bit is the abstraction of the assignable interface so
-that it is vendor agnostic and could be switched over to pure software
-backing if needed.
-
-> > expected to work. The swtichdev API puts some restrictions in place
-> > but there still ends up being parts without any definition.
->
-> I'm curious what you see as needing definition here?
->
-> The SRIOV model has the HW register programming API is device
-> specific.
->
-> The switchdev model is: no matter what HW register programing is done
-> on the VF/SF all the packets tx/rx'd will flow through the switchdev.
->
-> The purpose of switchdev/SRIOV/SIOV has never been to define a single
-> "one register set to rule them all".
->
-> That is the area that VDPA virtio-net and others are covering.
-
-That is fine and that covers it for direct assigned devices. However
-that doesn't cover the container case. My thought is if we are going
-to partition a PF into multiple netdevices we should have some generic
-interface that can be provided to represent the netdevs so that if
-they are pushed into containers you don't have to rip them out if for
-some reason you need to change the network configuration. For the
-Intel NICs we did that with macvlan in the VMDq case. I see no reason
-why you couldn't do something like that here with the subfunction
-case.
+Thank you, I will use cmpxchg() to rewrite rsk_listener atomically and
+check if req->rsk_listener is updated.
