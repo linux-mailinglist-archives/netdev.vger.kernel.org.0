@@ -2,196 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 584332DBAE3
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 06:58:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 730512DBAF2
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 07:03:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725813AbgLPF6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 00:58:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57943 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725765AbgLPF6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 00:58:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608098196;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6FqvnzyOC+7mLnS9oy1AAJEj1mGXM0+0Ror/7MkANS0=;
-        b=h3kY4f74JXDlFvGTmioZ9YT+4jrjcsL3Oo20x6YyeLX4/W9t1U7itUogeZ+OTvPm7kvWR1
-        DY1QI3lAZAL+LP7z1kvCv5yiPew2yECmroOK7CvrqVDcUY5Pm3+YoMXyXMu8bVJBUzzVJd
-        J3bVAWRaVTZGbBhgkjL9Ri/RTEe4OEY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-17-aW_0H7fbOZmrkY45sCqfgQ-1; Wed, 16 Dec 2020 00:56:32 -0500
-X-MC-Unique: aW_0H7fbOZmrkY45sCqfgQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 43764801A9D;
-        Wed, 16 Dec 2020 05:56:31 +0000 (UTC)
-Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3942E60C5E;
-        Wed, 16 Dec 2020 05:56:31 +0000 (UTC)
-Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
-        by colo-mx.corp.redhat.com (Postfix) with ESMTP id ECF574BB40;
-        Wed, 16 Dec 2020 05:56:30 +0000 (UTC)
-Date:   Wed, 16 Dec 2020 00:56:30 -0500 (EST)
-From:   Jason Wang <jasowang@redhat.com>
-To:     wangyunjian <wangyunjian@huawei.com>
-Cc:     netdev@vger.kernel.org, mst@redhat.com,
-        willemdebruijn kernel <willemdebruijn.kernel@gmail.com>,
-        virtualization@lists.linux-foundation.org,
-        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
-        chenchanghu <chenchanghu@huawei.com>,
-        xudingke <xudingke@huawei.com>,
-        "huangbin (J)" <brian.huangbin@huawei.com>
-Message-ID: <205304638.36191504.1608098190622.JavaMail.zimbra@redhat.com>
-In-Reply-To: <34EFBCA9F01B0748BEB6B629CE643AE60DB82A73@DGGEMM533-MBX.china.huawei.com>
-References: <cover.1608024547.git.wangyunjian@huawei.com> <4be47d3a325983f1bfc39f11f0e015767dd2aa3c.1608024547.git.wangyunjian@huawei.com> <e853a47e-b581-18d9-f13c-b449b176a308@redhat.com> <34EFBCA9F01B0748BEB6B629CE643AE60DB82A73@DGGEMM533-MBX.china.huawei.com>
-Subject: Re: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
+        id S1725879AbgLPGCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 01:02:45 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:37622 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725765AbgLPGCp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 01:02:45 -0500
+Date:   Wed, 16 Dec 2020 09:02:00 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Rob Herring <robh@kernel.org>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Joao Pinto <jpinto@synopsys.com>,
+        Lars Persson <larper@axis.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 06/25] dt-bindings: net: dwmac: Add Tx/Rx clock sources
+Message-ID: <20201216060200.azftg2denbvtmrip@mobilestation>
+References: <20201214091616.13545-1-Sergey.Semin@baikalelectronics.ru>
+ <20201214091616.13545-7-Sergey.Semin@baikalelectronics.ru>
+ <20201215173204.GA4072234@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [10.68.5.20, 10.4.195.8]
-Thread-Topic: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg fails
-Thread-Index: AQHW0oRuvV7yNtzm006vlEv0Vf1dkan3BR2AgADGt5Bmnr+pAA==
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20201215173204.GA4072234@robh.at.kernel.org>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 15, 2020 at 11:32:04AM -0600, Rob Herring wrote:
+> On Mon, Dec 14, 2020 at 12:15:56PM +0300, Serge Semin wrote:
+> > Generic DW *MAC can be connected to an external Tramit and Receive clock
+> 
 
+> s/Tramit/Transmit/
 
------ Original Message -----
->=20
->=20
-> > -----Original Message-----
-> > From: Jason Wang [mailto:jasowang@redhat.com]
-> > Sent: Tuesday, December 15, 2020 12:10 PM
-> > To: wangyunjian <wangyunjian@huawei.com>; netdev@vger.kernel.org;
-> > mst@redhat.com; willemdebruijn.kernel@gmail.com
-> > Cc: virtualization@lists.linux-foundation.org; Lilijun (Jerry)
-> > <jerry.lilijun@huawei.com>; chenchanghu <chenchanghu@huawei.com>;
-> > xudingke <xudingke@huawei.com>; huangbin (J)
-> > <brian.huangbin@huawei.com>
-> > Subject: Re: [PATCH net 2/2] vhost_net: fix high cpu load when sendmsg
-> > fails
-> >=20
-> >=20
-> > On 2020/12/15 =E4=B8=8A=E5=8D=889:48, wangyunjian wrote:
-> > > From: Yunjian Wang <wangyunjian@huawei.com>
-> > >
-> > > Currently we break the loop and wake up the vhost_worker when sendmsg
-> > > fails. When the worker wakes up again, we'll meet the same error. Thi=
-s
-> > > will cause high CPU load. To fix this issue, we can skip this
-> > > description by ignoring the error. When we exceeds sndbuf, the return
-> > > value of sendmsg is -EAGAIN. In the case we don't skip the descriptio=
-n
-> > > and don't drop packet.
-> > >
-> > > Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
-> > > ---
-> > >   drivers/vhost/net.c | 21 +++++++++------------
-> > >   1 file changed, 9 insertions(+), 12 deletions(-)
-> > >
-> > > diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c index
-> > > c8784dfafdd7..f966592d8900 100644
-> > > --- a/drivers/vhost/net.c
-> > > +++ b/drivers/vhost/net.c
-> > > @@ -827,16 +827,13 @@ static void handle_tx_copy(struct vhost_net *ne=
-t,
-> > struct socket *sock)
-> > >   =09=09=09=09msg.msg_flags &=3D ~MSG_MORE;
-> > >   =09=09}
-> > >
-> > > -=09=09/* TODO: Check specific error and bomb out unless ENOBUFS? */
-> > >   =09=09err =3D sock->ops->sendmsg(sock, &msg, len);
-> > > -=09=09if (unlikely(err < 0)) {
-> > > +=09=09if (unlikely(err =3D=3D -EAGAIN)) {
-> > >   =09=09=09vhost_discard_vq_desc(vq, 1);
-> > >   =09=09=09vhost_net_enable_vq(net, vq);
-> > >   =09=09=09break;
-> > > -=09=09}
-> >=20
-> >=20
-> > As I've pointed out in last version. If you don't discard descriptor, y=
-ou
-> > probably
-> > need to add the head to used ring. Otherwise this descriptor will be al=
-ways
-> > inflight that may confuse drivers.
->=20
-> Sorry for missing the comment.
->=20
-> After deleting discard descriptor and break, the next processing will be =
-the
-> same
-> as the normal success of sendmsg(), and vhost_zerocopy_signal_used() or
-> vhost_add_used_and_signal() method will be called to add the head to used
-> ring.
+Thanks. I'll fix it in v2.
 
-It's the next head not the one that contains the buggy packet?
+-Sergey
 
-Thanks
-
->=20
-> Thanks
-> >=20
-> >=20
-> > > -=09=09if (err !=3D len)
-> > > -=09=09=09pr_debug("Truncated TX packet: len %d !=3D %zd\n",
-> > > -=09=09=09=09 err, len);
-> > > +=09=09} else if (unlikely(err < 0 || err !=3D len))
-> >=20
-> >=20
-> > It looks to me err !=3D len covers err < 0.
->=20
-> OK
->=20
-> >=20
-> > Thanks
-> >=20
-> >=20
-> > > +=09=09=09vq_err(vq, "Fail to sending packets err : %d, len : %zd\n",=
- err,
-> > > +len);
-> > >   done:
-> > >   =09=09vq->heads[nvq->done_idx].id =3D cpu_to_vhost32(vq, head);
-> > >   =09=09vq->heads[nvq->done_idx].len =3D 0;
-> > > @@ -922,7 +919,6 @@ static void handle_tx_zerocopy(struct vhost_net
-> > *net, struct socket *sock)
-> > >   =09=09=09msg.msg_flags &=3D ~MSG_MORE;
-> > >   =09=09}
-> > >
-> > > -=09=09/* TODO: Check specific error and bomb out unless ENOBUFS? */
-> > >   =09=09err =3D sock->ops->sendmsg(sock, &msg, len);
-> > >   =09=09if (unlikely(err < 0)) {
-> > >   =09=09=09if (zcopy_used) {
-> > > @@ -931,13 +927,14 @@ static void handle_tx_zerocopy(struct vhost_net
-> > *net, struct socket *sock)
-> > >   =09=09=09=09nvq->upend_idx =3D ((unsigned)nvq->upend_idx - 1)
-> > >   =09=09=09=09=09% UIO_MAXIOV;
-> > >   =09=09=09}
-> > > -=09=09=09vhost_discard_vq_desc(vq, 1);
-> > > -=09=09=09vhost_net_enable_vq(net, vq);
-> > > -=09=09=09break;
-> > > +=09=09=09if (err =3D=3D -EAGAIN) {
-> > > +=09=09=09=09vhost_discard_vq_desc(vq, 1);
-> > > +=09=09=09=09vhost_net_enable_vq(net, vq);
-> > > +=09=09=09=09break;
-> > > +=09=09=09}
-> > >   =09=09}
-> > >   =09=09if (err !=3D len)
-> > > -=09=09=09pr_debug("Truncated TX packet: "
-> > > -=09=09=09=09 " len %d !=3D %zd\n", err, len);
-> > > +=09=09=09vq_err(vq, "Fail to sending packets err : %d, len : %zd\n",=
- err,
-> > > +len);
-> > >   =09=09if (!zcopy_used)
-> > >   =09=09=09vhost_add_used_and_signal(&net->dev, vq, head, 0);
-> > >   =09=09else
->=20
->=20
-
+> 
+> > generators. Add the corresponding clocks description and clock-names to
+> > the generic bindings schema so new DW *MAC-based bindings wouldn't declare
+> > its own names of the same clocks.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > ---
+> >  .../devicetree/bindings/net/snps,dwmac.yaml        | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > index e1ebe5c8b1da..74820f491346 100644
+> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > @@ -126,6 +126,18 @@ properties:
+> >            MCI, CSR and SMA interfaces run on this clock. If it's omitted,
+> >            the CSR interfaces are considered as synchronous to the system
+> >            clock domain.
+> > +      - description:
+> > +          GMAC Tx clock or so called Transmit clock. The clock is supplied
+> > +          by an external with respect to the DW MAC clock generator.
+> > +          The clock source and its frequency depends on the DW MAC xMII mode.
+> > +          In case if it's supplied by PHY/SerDes this property can be
+> > +          omitted.
+> > +      - description:
+> > +          GMAC Rx clock or so called Receive clock. The clock is supplied
+> > +          by an external with respect to the DW MAC clock generator.
+> > +          The clock source and its frequency depends on the DW MAC xMII mode.
+> > +          In case if it's supplied by PHY/SerDes or it's synchronous to
+> > +          the Tx clock this property can be omitted.
+> >        - description:
+> >            PTP reference clock. This clock is used for programming the
+> >            Timestamp Addend Register. If not passed then the system
+> > @@ -139,6 +151,8 @@ properties:
+> >        enum:
+> >          - stmmaceth
+> >          - pclk
+> > +        - tx
+> > +        - rx
+> >          - ptp_ref
+> >  
+> >    resets:
+> > -- 
+> > 2.29.2
+> > 
