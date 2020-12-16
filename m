@@ -2,65 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 572382DBBA2
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 07:52:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 343E92DBBD3
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 08:07:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726125AbgLPGvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 01:51:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44070 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726119AbgLPGvf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 01:51:35 -0500
-Date:   Wed, 16 Dec 2020 08:50:50 +0200
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
-Message-ID: <20201216065050.GR5005@unreal>
-References: <20201214214352.198172-1-saeed@kernel.org>
- <CAKgT0UejoduCB6nYFV2atJ4fa4=v9-dsxNh4kNJNTtoHFd1DuQ@mail.gmail.com>
- <608505778d76b1b01cb3e8d19ecda5b8578f0f79.camel@kernel.org>
- <CAKgT0UfEsd0hS=iJTcVc20gohG0WQwjsGYOw1y0_=DRVbhb1Ng@mail.gmail.com>
- <ecad34f5c813591713bb59d9c5854148c3d7f291.camel@kernel.org>
- <20201215132805.22ddcd44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1725995AbgLPHGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 02:06:40 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:9893 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725769AbgLPHGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 02:06:40 -0500
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CwmNZ42FKz79Zl;
+        Wed, 16 Dec 2020 15:05:18 +0800 (CST)
+Received: from ubuntu.network (10.175.138.68) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.498.0; Wed, 16 Dec 2020 15:05:48 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] net: rds: Change PF_INET to AF_INET
+Date:   Wed, 16 Dec 2020 15:06:20 +0800
+Message-ID: <20201216070620.16063-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201215132805.22ddcd44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.138.68]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 01:28:05PM -0800, Jakub Kicinski wrote:
-> On Tue, 15 Dec 2020 12:35:20 -0800 Saeed Mahameed wrote:
-> > > I think the big thing we really should do if we are going to go this
-> > > route is to look at standardizing what the flavours are that get
-> > > created by the parent netdevice. Otherwise we are just creating the
-> > > same mess we had with SRIOV all over again and muddying the waters of
-> > > mediated devices.
-> >
-> > yes in the near future we will be working on auxbus interfaces for
-> > auto-probing and user flavor selection, this is a must have feature for
-> > us.
->
-> Can you elaborate? I thought config would be via devlink.
+By bsd codestyle, change PF_INET to AF_INET.
 
-Yes, everything continues to be done through devlink.
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ net/rds/rdma_transport.c | 4 ++--
+ net/rds/tcp_listen.c     | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-One of the immediate features is an ability to disable/enable creation
-of specific SF types.
+diff --git a/net/rds/rdma_transport.c b/net/rds/rdma_transport.c
+index 5f741e51b4ba..04102dbc04d2 100644
+--- a/net/rds/rdma_transport.c
++++ b/net/rds/rdma_transport.c
+@@ -249,7 +249,7 @@ static int rds_rdma_listen_init(void)
+ #endif
+ 	struct sockaddr_in sin;
+ 
+-	sin.sin_family = PF_INET;
++	sin.sin_family = AF_INET;
+ 	sin.sin_addr.s_addr = htonl(INADDR_ANY);
+ 	sin.sin_port = htons(RDS_PORT);
+ 	ret = rds_rdma_listen_init_common(rds_rdma_cm_event_handler,
+@@ -259,7 +259,7 @@ static int rds_rdma_listen_init(void)
+ 		return ret;
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+-	sin6.sin6_family = PF_INET6;
++	sin6.sin6_family = AF_INET6;
+ 	sin6.sin6_addr = in6addr_any;
+ 	sin6.sin6_port = htons(RDS_CM_PORT);
+ 	sin6.sin6_scope_id = 0;
+diff --git a/net/rds/tcp_listen.c b/net/rds/tcp_listen.c
+index 101cf14215a0..8dc71aee4691 100644
+--- a/net/rds/tcp_listen.c
++++ b/net/rds/tcp_listen.c
+@@ -281,7 +281,7 @@ struct socket *rds_tcp_listen_init(struct net *net, bool isv6)
+ 
+ 	if (isv6) {
+ 		sin6 = (struct sockaddr_in6 *)&ss;
+-		sin6->sin6_family = PF_INET6;
++		sin6->sin6_family = AF_INET6;
+ 		sin6->sin6_addr = in6addr_any;
+ 		sin6->sin6_port = (__force u16)htons(RDS_TCP_PORT);
+ 		sin6->sin6_scope_id = 0;
+@@ -289,7 +289,7 @@ struct socket *rds_tcp_listen_init(struct net *net, bool isv6)
+ 		addr_len = sizeof(*sin6);
+ 	} else {
+ 		sin = (struct sockaddr_in *)&ss;
+-		sin->sin_family = PF_INET;
++		sin->sin_family = AF_INET;
+ 		sin->sin_addr.s_addr = INADDR_ANY;
+ 		sin->sin_port = (__force u16)htons(RDS_TCP_PORT);
+ 		addr_len = sizeof(*sin);
+-- 
+2.22.0
 
-For example, if user doesn't want RDMA, the SF RDMA won't be created.
-
-Thanks
