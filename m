@@ -2,155 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 011972DC3AE
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 17:03:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 899D12DC3A4
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 17:02:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725936AbgLPQCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 11:02:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
+        id S1725831AbgLPQBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 11:01:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725287AbgLPQCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 11:02:44 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E38D4C061282
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 08:02:03 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id 23so49612527lfg.10
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 08:02:03 -0800 (PST)
+        with ESMTP id S1725287AbgLPQBz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 11:01:55 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451D2C06179C;
+        Wed, 16 Dec 2020 08:01:14 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id u18so49609617lfd.9;
+        Wed, 16 Dec 2020 08:01:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :organization;
-        bh=+hAk/vmovDE/urE2Pq9HRbef7bP2ufQL7iLEf5MXpgg=;
-        b=vtWkupwiayE9uGlEeDkdOSswdiAUHuDQFrBmrsDFWsiv1A5FQgcHba4hJJqNlC3WHg
-         WFrNj1zrmRReOvGizK+dvJehk4E0geHvGuoPM9+iwLptFwqwAP0cxtYlGm60E34hclRs
-         Xql5pUNxuWndacfgLcrayQxBfkJQpbkTJ/A7C1zoSJxrzowMRmGNNaVjFsHCQREVI4/L
-         QyV8LT927+VGnes4Jo5+GGuifrpl6iaawu6T2yL6jwQKkNk4Gk51Mkf2+loA+TozwDau
-         TGlYL3P4KiCLPqfEJnbWBmJhrO5tV4XNExO2aWt9ouzKLQ211eVGM3+M3P8tefMGpQaJ
-         rHsg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kx/f87ywu7inr0rh378haTMjHJCyIdAT53Dvjxsco78=;
+        b=A5t1TGQFhCxRFhcoiRpwJQ3bbWC+enUDoYMD1JcqT1wRzOGnlIeYc/s1M5QI0DgEV6
+         kEnCzeuxPF/kGCPh3bu0M5ZfcWVH19hCuSJSgrzyhhBAIs+6quv40gooDF3Iw6Mbpa95
+         oKmpwJ3bzWVz520ew8+I/uy5ilkgT16MNKbBYpCgIawIGl9/ZtH14w6F/W6EkfDs+lF8
+         3hNKMolyXcsrkxmjQHznVtsISDZ83gT+V1JJ0MM7/BxaWm49WpeqilMc9BJ3cRic3HuM
+         BTU9pVLzVbaralwq0GSXRh58ethvPl4OJnH07seM0jLlp0DbkJXa5bsx1C21dIwQRUzZ
+         K4Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:organization;
-        bh=+hAk/vmovDE/urE2Pq9HRbef7bP2ufQL7iLEf5MXpgg=;
-        b=D9LCywEGvkSmwzPUo4bkIwR+MJKJElWhN1DmKka5MCJOUHP0EdBdsefCLfEunpuJn+
-         vbgjfewFFs15SStjF8om5qz8KikTcI0zVxC9nndBswjDUe0jKmXezhLP99cObrOUKNbN
-         X/CYRPseG6AjSCElCKOKyBjJXUqpLl1bEh+hBgOqRMWIjT5IJTTdzkHdj4XEXMqQmOjZ
-         Myd0cD4lVz1rtBLaFPnT6rW5KzKK4iVQOY7/RzG2hQPZNE3f4BpCdx9NZxfHiyH6xvUl
-         GuWDiK1tc7dWO87GhEbqLz7uAp6o5VpyYCSal1SlWuoWoshmTIwyVOXMalMF/0WnmPr8
-         bpOA==
-X-Gm-Message-State: AOAM531jgCRknj5u4QDUmuOo4BbrfD71khJj8wSWzhtL3UtZajlHwQGR
-        hT3PG1yBnGrJS8fc3NZXg4etHA==
-X-Google-Smtp-Source: ABdhPJxp3smsXxMad4/JIls9dmsnMfljqVmws2Bz/MU7a562QtYD+VFLu6fcmY8w1dZI8Z3x6Bxing==
-X-Received: by 2002:a2e:2a86:: with SMTP id q128mr14748389ljq.158.1608134519850;
-        Wed, 16 Dec 2020 08:01:59 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id e25sm275877lfc.40.2020.12.16.08.01.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Dec 2020 08:01:58 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, netdev@vger.kernel.org
-Subject: [PATCH v4 net-next 5/5] net: dsa: tag_dsa: Support reception of packets from LAG devices
-Date:   Wed, 16 Dec 2020 17:00:56 +0100
-Message-Id: <20201216160056.27526-6-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201216160056.27526-1-tobias@waldekranz.com>
-References: <20201216160056.27526-1-tobias@waldekranz.com>
-Organization: Westermo
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kx/f87ywu7inr0rh378haTMjHJCyIdAT53Dvjxsco78=;
+        b=rRuwJhh3xcuK9VhgxwoeB28wtrH0D/rfYKAry1TVVyOiQAe4EAFAx5AY+u3pA4AslI
+         ac3aSGs5Klra3KeZLbFXMM/+MiK6vm7U71zXp3EQEc5OBZpk/3qcX41Qu+sYHh04CkM6
+         eOBbbdafZaZA4wDlP1w6afjlr6fX5PKe7ESBFm40qSfjx323PWDKisHCTBM4J+iUjJU5
+         ajcXAop/hf3MBs23ZtccAmnP7da4N5fhi0xmN8Z+0fm8yOjbt53YyG2mTVcfVTsNdQDh
+         jkZwzolBeH25DMBFQPdClXGliGCwLuTX8Opk8OSHh3E72UWSO6Y3TFeqqIaGxeN4FiOF
+         ESwA==
+X-Gm-Message-State: AOAM530gcCubZI4qwAu91asaJA7ok6Obz7oVKuPgAOj6rS+d75iyHrmc
+        u40tBuWWMpqMs6a7SxQb2DtMG4/xKapibRatsu87DL2xo1Y=
+X-Google-Smtp-Source: ABdhPJxQKVaJZkKfZDM4v/nBEO60fq6pocpcPSL45goi2KrIOZ2kU+rwSF4iGE0GZMf3iNOHL+ZQc9JfT2J9sb+oIdA=
+X-Received: by 2002:a2e:87cb:: with SMTP id v11mr14384454ljj.218.1608134471054;
+ Wed, 16 Dec 2020 08:01:11 -0800 (PST)
+MIME-Version: 1.0
+References: <SN6PR2101MB1069AC2DC98C74F7C2A71EA3E4C59@SN6PR2101MB1069.namprd21.prod.outlook.com>
+ <20201216210735.2893dd92@canb.auug.org.au>
+In-Reply-To: <20201216210735.2893dd92@canb.auug.org.au>
+From:   Steve French <smfrench@gmail.com>
+Date:   Wed, 16 Dec 2020 10:00:59 -0600
+Message-ID: <CAH2r5mt8ZeX1j2doiZOwJQr_gkDACgeR=F5k1fxXpW8eXYvJew@mail.gmail.com>
+Subject: Re: [EXTERNAL] Re: linux-next: build failure after merge of the
+ net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Steven French <Steven.French@microsoft.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Samuel Cabrero <scabrero@suse.de>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packets ingressing on a LAG that egress on the CPU port, which are not
-classified as management, will have a FORWARD tag that does not
-contain the normal source device/port tuple. Instead the trunk bit
-will be set, and the port field holds the LAG id.
+On Wed, Dec 16, 2020 at 4:08 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi Steven,
+>
+> On Wed, 16 Dec 2020 02:21:26 +0000 Steven French <Steven.French@microsoft.com> wrote:
+> >
+> > I applied your patch to the tip of my tree (cifs-2.6.git for-next) -
+> > hopefully that makes it easier when I sent the PR in a day or two for
+> > cifs/smb3 changes.
+>
+> I think you have just made your tree fail to build as nla_strscpy does
+> not exist in your tree ... Just remove that commit and tell Linus about
+> the necessary change and he can add it to the merge.
 
-Since the exact source port information is not available in the tag,
-frames are injected directly on the LAG interface and thus do never
-pass through any DSA port interface on ingress.
+Done. Removed.
 
-Management frames (TO_CPU) are not affected and will pass through the
-DSA port interface as usual.
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- net/dsa/dsa.c     | 12 +++++++++++-
- net/dsa/tag_dsa.c | 17 ++++++++++++++++-
- 2 files changed, 27 insertions(+), 2 deletions(-)
-
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index a1b1dc8a4d87..7325bf4608e9 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -219,11 +219,21 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
- 	}
- 
- 	skb = nskb;
--	p = netdev_priv(skb->dev);
- 	skb_push(skb, ETH_HLEN);
- 	skb->pkt_type = PACKET_HOST;
- 	skb->protocol = eth_type_trans(skb, skb->dev);
- 
-+	if (unlikely(!dsa_slave_dev_check(skb->dev))) {
-+		/* Packet is to be injected directly on an upper
-+		 * device, e.g. a team/bond, so skip all DSA-port
-+		 * specific actions.
-+		 */
-+		netif_rx(skb);
-+		return 0;
-+	}
-+
-+	p = netdev_priv(skb->dev);
-+
- 	if (unlikely(cpu_dp->ds->untag_bridge_pvid)) {
- 		nskb = dsa_untag_bridge_pvid(skb);
- 		if (!nskb) {
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index 112c7c6dd568..7e7b7decdf39 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -163,6 +163,7 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
- 				  u8 extra)
- {
- 	int source_device, source_port;
-+	bool trunk = false;
- 	enum dsa_code code;
- 	enum dsa_cmd cmd;
- 	u8 *dsa_header;
-@@ -174,6 +175,8 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
- 	switch (cmd) {
- 	case DSA_CMD_FORWARD:
- 		skb->offload_fwd_mark = 1;
-+
-+		trunk = !!(dsa_header[1] & 7);
- 		break;
- 
- 	case DSA_CMD_TO_CPU:
-@@ -216,7 +219,19 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
- 	source_device = dsa_header[0] & 0x1f;
- 	source_port = (dsa_header[1] >> 3) & 0x1f;
- 
--	skb->dev = dsa_master_find_slave(dev, source_device, source_port);
-+	if (trunk) {
-+		struct dsa_port *cpu_dp = dev->dsa_ptr;
-+
-+		/* The exact source port is not available in the tag,
-+		 * so we inject the frame directly on the upper
-+		 * team/bond.
-+		 */
-+		skb->dev = dsa_lag_dev(cpu_dp->dst, source_port);
-+	} else {
-+		skb->dev = dsa_master_find_slave(dev, source_device,
-+						 source_port);
-+	}
-+
- 	if (!skb->dev)
- 		return NULL;
- 
 -- 
-2.17.1
+Thanks,
 
+Steve
