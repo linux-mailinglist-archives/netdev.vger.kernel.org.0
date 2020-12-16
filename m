@@ -2,66 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B56B22DC742
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 20:35:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A64C92DC744
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 20:35:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728373AbgLPTeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 14:34:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727322AbgLPTeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 14:34:19 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F19BC061794;
-        Wed, 16 Dec 2020 11:33:39 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id A403323E5D;
-        Wed, 16 Dec 2020 20:33:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1608147215;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oWFo8whnrVBtSiqbjBXhPZ1u/uhUnmI9/snorRDHcmI=;
-        b=NLB+8EPPn7+sd2Na1GduE+nvGb7rd19MooirM3W5d4T18YkAWztLYc0fxKar6kuI/iaCZ+
-        FEMkiZjf4QFL84WEgV+WhY1EJXfeQmlZXKTUUMZnfyRUkDLm1qlCOUJYM3Kz30QoEVaN+r
-        Zurf1GM7aR+FNpUe8qh6Ezr7Ykp43p8=
+        id S2388827AbgLPTed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 14:34:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58212 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728532AbgLPTed (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 14:34:33 -0500
+Date:   Wed, 16 Dec 2020 11:33:50 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608147232;
+        bh=5Lzz8tRYfQwB4rVb32akD3yWxvXIMSF5hiYECebvzzQ=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Xj3m0EvYHP3WTxGNjE1kcthhiLAqrtDZ8jMrjIkkonRb+22znbn2T0yX4TboReY9W
+         OvgcVUVzU9SafXjA19yszQjqbAj9LI8ntbKjv5Z8GyHPuKu4+4kQ8LR6bWjD7Tnsei
+         f3uNevBcdMZMLsjX/O+vO6AnZ3HKqVVGKb3oufNAgzj/oyQodM3cr6eNwV0pvuLuIL
+         yDpYuSFCHWqDlVsn9KchwBN6Kw1NFoKCKB9wTKldh60Ja2kXRhe+WMhSoLa+OXddxr
+         a6cTv6cDvPfL9isz6iCmjco2K2AaVOI6nW3xHNr7DiSabxyUmE14Lpzhra2g9pm9Zt
+         WNLRdrnFexQKw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yejune Deng <yejune.deng@gmail.com>
+Cc:     davem@davemloft.net, ast@kernel.org, andriin@fb.com,
+        jiri@mellanox.com, edumazet@google.com, ap420073@gmail.com,
+        bjorn.topel@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: core: fix msleep() is not accurate
+Message-ID: <20201216113350.50c3bb67@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1607997865-3437-1-git-send-email-yejune.deng@gmail.com>
+References: <1607997865-3437-1-git-send-email-yejune.deng@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Date:   Wed, 16 Dec 2020 20:33:35 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>
-Subject: Re: [PATCH net-next 0/4] enetc: code cleanups
-In-Reply-To: <20201216192539.3xfxmhpejrmayfge@skbuf>
-References: <20201215212200.30915-1-michael@walle.cc>
- <20201216192539.3xfxmhpejrmayfge@skbuf>
-User-Agent: Roundcube Webmail/1.4.9
-Message-ID: <d5335485b0d62e7c399d342136ac6921@walle.cc>
-X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2020-12-16 20:25, schrieb Vladimir Oltean:
-> Hi Michael,
+On Tue, 15 Dec 2020 10:04:25 +0800 Yejune Deng wrote:
+> See Documentation/timers/timers-howto.rst, msleep() is not
+> for (1ms - 20ms), use usleep_range() instead.
 > 
-> On Tue, Dec 15, 2020 at 10:21:56PM +0100, Michael Walle wrote:
->> This are some code cleanups in the MDIO part of the enetc. They are
->> intended to make the code more readable.
-> 
-> Nice cleanup, please resend it after net-next opens again.
+> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
 
-Ah, I thought it will be picked up automatically after the merge
-window is closed, no?
+# Form letter - net-next is closed
 
--michael
+We have already sent the networking pull request for 5.11 and therefore
+net-next is closed for new drivers, features, code refactoring and
+optimizations. We are currently accepting bug fixes only.
+
+Please repost when net-next reopens after 5.11-rc1 is cut.
+
+Look out for the announcement on the mailing list or check:
+http://vger.kernel.org/~davem/net-next.html
+
+RFC patches sent for review only are obviously welcome at any time.
