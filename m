@@ -2,63 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E81C2DC968
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 00:10:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4995E2DC97A
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 00:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727878AbgLPXKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 18:10:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56300 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727512AbgLPXKr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 18:10:47 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608160206;
-        bh=7r7diXa5I5C1+OxN8TDmWdHKUXQmpfSoh3vC6kWKw1k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eLzpaPN27i7So8m5vTQ2V0BmsVnT+SlCACWtSPRNPoqKE+cRInPwKRAFRENAlBeWM
-         SYQVGiUWJKgqvwL1nr1+MtnSkDNmrV7KbN2oL7zCuBf1TfMTOn6uyk59LaTIkPm1TL
-         AtQLgn5d+AyXhKgZro4DT5hirBBpWT0u53+qRBujU5lZM0e9+snuRzTFFXwG3DrweT
-         js2VTvSeI9dsROmVBoEKf9Om0Iw7vBCQvuTaxK6+7BFst7O6p14KFeCgAeYsUOL0SQ
-         kd2B4+q5shTGARXWywUoNpH5reiGTC+ATFe/sUDPHTmia2hq2R9Pz1wffay6NUSPoB
-         39w1nnIhmmX9A==
+        id S1730335AbgLPXM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 18:12:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36548 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730311AbgLPXMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 18:12:55 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA39C061794;
+        Wed, 16 Dec 2020 15:12:15 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id d13so6496848wrc.13;
+        Wed, 16 Dec 2020 15:12:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OMrxFqhSzJUt3S3zEXkhepxE3kDtdjVy10vlL12sgk0=;
+        b=JDF7QZyA4D1iEjbk7g310/J/btwOxB7/fFfLD0HqjdgjwnkOSqfjLrfbOfv/CictJT
+         VpaSm/ClekrTlnnL6igu5aBEoKzbxCk3nwZir5XQGFOgGKltkI7VaG1BazoV0aFhLghO
+         ZlZ8sS6mlriw64p+xYXjTC9KCToCGeKboM7pdCy5xxDE50/F4EGACGHwc5b4rkgB8rB/
+         QPEAkh1YH4JC0Qd1EUfe4RP9TvHf6TFmbKCCorxD3cisaO6sksiGyRcYRSBryiCwmC6+
+         IrkMx/lLBjIlcawCFDftHNcqj3JJOPJLYzr9HX4bsFk+8klVcmHWsV25iQRguO8hOGfq
+         E54w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OMrxFqhSzJUt3S3zEXkhepxE3kDtdjVy10vlL12sgk0=;
+        b=ZkBgZS4YwYGqpL8oWzQfIM7lilpnDOb61UPlhOzy+X04oagiimBo73I1JAy9DDqMud
+         aeKwBF7WGfr98/haCiRwxPSW5/WGARqL0dQXKAtC5oGNVlv3FXltv0hIHQE3IFdxWYb6
+         6n/bY5eWWJvCgyckh1RNeNdGQmrawbeR/tFUQeNrGvWn2gy3Gnj6tr6IGs8zyPC3+cMN
+         na7h2Z2jgBk8vCXFDFh1ysuJiMv0N60KGB+tL+R5nk+aWjmS1X57B5Bh710OfVqPCxp+
+         Y6FalxNJp4cidS1CAsSBmLdYw/Jpt+7COYBhjM21T5Rvc2nod20q9jbL3mEA5RDZiils
+         /OIA==
+X-Gm-Message-State: AOAM531kEBHdQ7mzg4NwmwdCKS+4l95DcNNiP7K1M9t4+aRxUjYXiBIO
+        RPRQd7VTPasnLnbnyb5t/+0=
+X-Google-Smtp-Source: ABdhPJzF9hoDupK2p/0qDFkMHRtl5GGwjy1hCtt51rFnzOHLJJN0//PxUQJU6EwWxwO/9VICAaD40A==
+X-Received: by 2002:adf:e710:: with SMTP id c16mr41012800wrm.295.1608160334174;
+        Wed, 16 Dec 2020 15:12:14 -0800 (PST)
+Received: from [80.5.128.40] (cpc108961-cmbg20-2-0-cust39.5-4.cable.virginm.net. [80.5.128.40])
+        by smtp.gmail.com with ESMTPSA id k18sm6095339wrd.45.2020.12.16.15.12.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Dec 2020 15:12:13 -0800 (PST)
+Subject: Re: [PATCH net-next] sfc: reduce the number of requested xdp ev
+ queues
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Ivan Babrou <ivan@cloudflare.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@cloudflare.com,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Marek Majtyka <marekx.majtyka@intel.com>
+References: <20201215012907.3062-1-ivan@cloudflare.com>
+ <20201215104327.2be76156@carbon>
+ <205ba636-f180-3003-a41c-828e1fe1a13b@gmail.com>
+ <20201216094524.0c6e521c@carbon>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <2438e8ee-99ad-167d-d00c-fc208ba7caa9@gmail.com>
+Date:   Wed, 16 Dec 2020 23:12:12 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/1] net/smc: fix access to parent of an ib device
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160816020680.24098.3479905096894723694.git-patchwork-notify@kernel.org>
-Date:   Wed, 16 Dec 2020 23:10:06 +0000
-References: <20201215091058.49354-1-kgraul@linux.ibm.com>
-In-Reply-To: <20201215091058.49354-1-kgraul@linux.ibm.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, hca@linux.ibm.com,
-        raspl@linux.ibm.com, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org
+In-Reply-To: <20201216094524.0c6e521c@carbon>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 16/12/2020 08:45, Jesper Dangaard Brouer wrote:
+> So, what I hear is that this fix is just pampering over the real issue.
+Yes, it is, but it's better than nothing in the meantime while we work
+ out the complete fix.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+> I suggest that you/we detect the situation, and have a code path that
+> will take a lock (per 16 packets bulk) and solve the issue.
+Imho that would _also_ paper over the issue, because it would mean the
+ system degraded to a lower performance mode of operation, while still
+ appearing to support XDP_TX.  I think that that in general should not
+ happen unless there is a way for the user to determine at runtime
+ whether it has/should happen.  Perhaps Marek's new XDP feature flags
+ could include a "tx-lockless" flag to indicate this?
 
-On Tue, 15 Dec 2020 10:10:57 +0100 you wrote:
-> Please apply the following patch for smc to netdev's net-next tree.
-> 
-> The patch fixes an access to the parent of an ib device which might be NULL.
-> 
-> I am sending this fix to net-next because the fixed code is still in this
-> tree only.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/1] net/smc: fix access to parent of an ib device
-    https://git.kernel.org/netdev/net/c/995433b795ce
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+-ed
