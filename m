@@ -2,101 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A742DC9C6
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A86C2DC9C7
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:00:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730832AbgLQAA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 19:00:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34508 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726806AbgLQAA2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 19:00:28 -0500
-Date:   Wed, 16 Dec 2020 15:59:45 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608163187;
-        bh=UHUln+VffhOtlnaM/FbAJpt+TQFlYpAye9uDBpb430w=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UnrwKEN61UwZ8pGUaUJIKv2B7TJ38rOQaH0l+cRRAhm4SaM9xSoNmUHnlpAUp2Aij
-         9azDzhZGChfxRE0QzUu6jS/6QKnL9hbyILV80mp4PlvTeIjCNo64XKl5uU5+RZ6Gdc
-         Y8aIXK9rPa450qK7CxlnVKedQC6r15I+X2zldigjYfeILBoNeksOTHNteiYGY52KMq
-         50d9nAfqEfww0A7YDb+Eo0l/UgOqM3Tzy27in50sXszffNcVvsx7Um6eguPNBUjJam
-         +jg34tytJQEJ04IVjP4NitTruUsSsetsXeuFmIhlI73I8pSXriegC3xcslZkcUyuh6
-         fskQrc+qGqvhw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "david.m.ertman@intel.com" <david.m.ertman@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "kiran.patil@intel.com" <kiran.patil@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next v5 03/15] devlink: Introduce PCI SF port flavour and
- port attribute
-Message-ID: <20201216155945.63f07c80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BY5PR12MB432268C16D118BC435C0EF5CDCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20201215090358.240365-1-saeed@kernel.org>
-        <20201215090358.240365-4-saeed@kernel.org>
-        <20201215152740.0b3ed376@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB432268C16D118BC435C0EF5CDCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
+        id S1730919AbgLQAAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 19:00:36 -0500
+Received: from mail2.candelatech.com ([208.74.158.173]:36462 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726806AbgLQAAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 19:00:36 -0500
+Received: from [192.168.254.6] (unknown [50.46.158.169])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 6E4C213C2B0;
+        Wed, 16 Dec 2020 15:59:55 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 6E4C213C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1608163195;
+        bh=ba474zonrNTBOCRoHWQRZYqbP/gxznsMC6EdKcy5IoU=;
+        h=Subject:From:To:References:Date:In-Reply-To:From;
+        b=E87g9AqcM9yZjf0O3wiQjCloQpARFVqZcPPlsYvQbhISQ/skvSS7yRmCaXhX6VsJ2
+         PDv+T1agn38KAHV04exJyOSZB7tNDcrLZ4nYF6pqwq1DmOGeYKU9s7ikBpr0cIpEw/
+         j21hiJX+r2lNiYqVpv8mSEoeKp39MkZYKzyGIg+0=
+Subject: Re: net: tso: add UDP segmentation support: adds regression for ax200
+ upload
+From:   Ben Greear <greearb@candelatech.com>
+To:     netdev <netdev@vger.kernel.org>, edumazet@google.com
+References: <5664fa0f-aef2-c336-651a-093c9eed23ab@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <765f370d-ce2d-b75a-2dde-87f69ae7c185@candelatech.com>
+Date:   Wed, 16 Dec 2020 15:59:54 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <5664fa0f-aef2-c336-651a-093c9eed23ab@candelatech.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-MW
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Dec 2020 03:42:51 +0000 Parav Pandit wrote:
-> > From: Jakub Kicinski <kuba@kernel.org>
-> > So subfunctions don't have a VF id but they may have a controller?
-> >  
-> Right. SF can be on external controller.
->  
-> > Can you tell us more about the use cases and deployment models you're
-> > intending to support? Let's not add attributes and info which will go unused.
-> >   
-> External will be used the same way how it is used for PF and VF.
+On 12/16/20 3:09 PM, Ben Greear wrote:
+> Hello Eric,
 > 
-> > How are SFs supposed to be used with SmartNICs? Are you assuming single
-> > domain of control?  
-> No. it is not assumed. SF can be deployed from smartnic to external host.
-> A user has to pass appropriate controller number, pf number attributes during creation time.
+> The patch below evidently causes TCP throughput to be about 50Mbps instead of 700Mbps
+> when using ax200 to upload tcp traffic.
+> 
+> When I disable TSO, performance goes back up to around 700Mbps.
 
-My problem with this series is that I've gotten some real life
-application exposure over the last year, and still I have no idea 
-who is going to find this feature useful and why.
+As a followup, when I revert the patch, upload speed goes to ~900Mbps,
+so even better than just disabling TSO (I left TSO enabled after reverting the patch).
 
-That's the point of my questions in the previous email - what
-are the use cases, how are they going to operate.
+Thanks,
+Ben
 
-It's hard to review an API without knowing the use of it. iproute2
-is low level plumbing.
+> 
+> I recall ~5 years ago we had similar TCP related performance issues with ath10k.
+> I vaguely recall that there might be some driver-level socket pacing tuning value, but I cannot
+> find the right thing to search for.  Is this really a thing?  If so, maybe it will
+> be a way to resolve this issue?
+> 
+> See this more thorough bug report:
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=209913
+> 
+> Patch description:
+> net: tso: add UDP segmentation support
+> Note that like TCP, we do not support additional encapsulations,
+> and that checksums must be offloaded to the NIC.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+> Thanks,
+> Ben
+> 
 
-Here the patch is adding the ability to apparently create a SF on 
-a remote controller. If you haven't thought that use case through
-just don't allow it until you know how it will work.
-
-> > It seems that the way the industry is moving the major
-> > use case for SmartNICs is bare metal.
-> > 
-> > I always assumed nested eswitches when thinking about SmartNICs, what
-> > are you intending to do?
-> >  
-> Mlx5 doesn't support nested eswitch. SF can be deployed on the external controller PCI function.
-> But this interface neither limited nor enforcing nested or flat eswitch.
->  
-> > What are your plans for enabling this feature in user space project?  
-> Do you mean K8s plugin or iproute2? Can you please tell us what user space project?
-
-That's my question. For SR-IOV it'd be all the virt stacks out there.
-But this can't do virt. So what can it do?
-
-> If iproute2, will send the iproute2 patchset like other patchset pointing to kernel uapi headers..
