@@ -2,85 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD06D2DBCC4
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 09:37:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B36D2DBCCA
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 09:39:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725953AbgLPIhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 03:37:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58040 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725819AbgLPIhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 03:37:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608107758;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=saH67GkyhVIKCCcRqSzTIOd1hMIkUjAXCx4g+f8BafU=;
-        b=Kq/E/W6eI45P/KYUcD2swcQwI1legIu1Hbk6XhA6B30de3bi5ZQemcZT7RGQV6K5QWTQrI
-        bXe+V/o9x8LWNTTfQndLdfCCDC8Egmy6NsbUZrAC1dx69ukW3Z7UCl1jfcfe1NYSs6oM9q
-        Vtf5fsb2LCNhpzTxrDkt8Euu8xVY0HA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-248-n-YLhPFIOYacNy8Z3WBdzg-1; Wed, 16 Dec 2020 03:35:56 -0500
-X-MC-Unique: n-YLhPFIOYacNy8Z3WBdzg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8C36D800D55;
-        Wed, 16 Dec 2020 08:35:54 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 211FC5D9D7;
-        Wed, 16 Dec 2020 08:35:44 +0000 (UTC)
-Date:   Wed, 16 Dec 2020 09:35:43 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        lorenzo.bianconi@redhat.com, alexander.duyck@gmail.com,
-        maciej.fijalkowski@intel.com, saeed@kernel.org, brouer@redhat.com
-Subject: Re: [PATCH v3 bpf-next 1/2] net: xdp: introduce xdp_init_buff
- utility routine
-Message-ID: <20201216093543.73836860@carbon>
-In-Reply-To: <1125364c807a24e03cfdc1901913181fe1457d42.1607794552.git.lorenzo@kernel.org>
-References: <cover.1607794551.git.lorenzo@kernel.org>
-        <1125364c807a24e03cfdc1901913181fe1457d42.1607794552.git.lorenzo@kernel.org>
+        id S1726052AbgLPIjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 03:39:06 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:49780 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726010AbgLPIjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 03:39:06 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BG8Xs8d049930;
+        Wed, 16 Dec 2020 08:38:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=9EzIrzu8yR2bEg9Yuuyun20shVVA58aiXhqv0Ix0rwQ=;
+ b=vBIu8Lr3lYEY0A+mmLenwj7QJvc2oPyu/ObmzIRh/EKVRzCjCfoPxfuWHCW3baX+Jmh1
+ jJRZk0LdrdCSK4daYT5VZOOY/qsIuM8xtqtxWM5EHtI//TnZn+dJPSQCtCHAB8HSH2J5
+ yKmJFPc/2pXPsAeKnYMCxKCjIeyVxixRYd2BvZ5vp0sRR4pGNrihdeTWm/ZXGCep3mS7
+ 4Y5kHbhSLwJWjfeL+za0k0BJLDclV/gsIf/TzwLt2BPMCKEaLKUkWODRm3LoA2b6EuBB
+ sJ6lnXfnYFjiRwWpOBsm3O3+w+/PviTOjOcnO7AxOjFUwsjr09mOYl60ENhWeU/mHE+C +A== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 35cntm6tvh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 16 Dec 2020 08:38:19 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BG8ZBEj114133;
+        Wed, 16 Dec 2020 08:38:18 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 35e6jse0yd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 16 Dec 2020 08:38:18 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0BG8cDdW016655;
+        Wed, 16 Dec 2020 08:38:13 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 16 Dec 2020 00:38:12 -0800
+Date:   Wed, 16 Dec 2020 11:38:04 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Shahed Shaikh <shshaikh@marvell.com>,
+        Sony Chacko <sony.chacko@qlogic.com>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sucheta Chakraborty <sucheta.chakraborty@qlogic.com>,
+        Sritej Velaga <sritej.velaga@qlogic.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] qlcnic: Fix error code in probe
+Message-ID: <X9nHbMqEyI/xPfGd@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9836 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 mlxlogscore=999 phishscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012160055
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9836 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 adultscore=0 malwarescore=0 suspectscore=0
+ mlxlogscore=999 impostorscore=0 priorityscore=1501 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012160055
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Dec 2020 18:41:48 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+Return -EINVAL if we can't find the correct device.  Currently it
+returns success.
 
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> index fcc262064766..b7942c3440c0 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-> @@ -133,12 +133,11 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
->  	dma_sync_single_for_cpu(&pdev->dev, mapping + offset, *len, bp->rx_dir);
->  
->  	txr = rxr->bnapi->tx_ring;
-> +	xdp_init_buff(&xdp, PAGE_SIZE, &rxr->xdp_rxq);
->  	xdp.data_hard_start = *data_ptr - offset;
->  	xdp.data = *data_ptr;
->  	xdp_set_data_meta_invalid(&xdp);
->  	xdp.data_end = *data_ptr + *len;
-> -	xdp.rxq = &rxr->xdp_rxq;
-> -	xdp.frame_sz = PAGE_SIZE; /* BNXT_RX_PAGE_MODE(bp) when XDP enabled */
->  	orig_data = xdp.data;
+Fixes: 13159183ec7a ("qlcnic: 83xx base driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I don't like loosing the comment here.  Other developers reading this
-code might assume that size is always PAGE_SIZE, which is only the case
-when XDP is enabled.  Lets save them from making this mistake.
-
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+index 5a7e240fd469..c2faf96fcade 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
+@@ -2492,6 +2492,7 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		qlcnic_sriov_vf_register_map(ahw);
+ 		break;
+ 	default:
++		err = -EINVAL;
+ 		goto err_out_free_hw_res;
+ 	}
+ 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.29.2
 
