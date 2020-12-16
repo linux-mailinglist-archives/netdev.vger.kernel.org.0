@@ -2,133 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFA902DC724
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 20:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 460BB2DC6B4
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 19:45:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388770AbgLPTdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 14:33:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57262 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388753AbgLPTdD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 14:33:03 -0500
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, brouer@redhat.com,
-        lorenzo.bianconi@redhat.com, toshiaki.makita1@gmail.com
-Subject: [PATCH bpf-next 2/2] net: xdp: introduce xdp_build_skb_from_frame utility routine
-Date:   Wed, 16 Dec 2020 19:38:34 +0100
-Message-Id: <9d24e4c90c91aa2d9de413ee38adc4e8e44fc81a.1608142960.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <cover.1608142960.git.lorenzo@kernel.org>
-References: <cover.1608142960.git.lorenzo@kernel.org>
+        id S1731827AbgLPSpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 13:45:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731826AbgLPSpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 13:45:12 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23AFC061794
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 10:44:31 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id p22so25888780edu.11
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 10:44:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=j2kTvw4kzKrAeKpW0mVY6SZ6bjtqkNGUskE2rkwL8hI=;
+        b=OEVhropBWscsD9XWEs84l01m3kGYZT3e2TWUPlvGGv77dcPrevBNTxWEqoHWF+wG4n
+         hUwaZ2Mw1n+f6OrGxCZMeXo47krazp/V9b7RlS0b11GpN/c1BX6DFouHC4jt68KGYYy2
+         gfnCcEHF/dji4mfzqT6Jep5exhJAv9f6so3sZ8J58Da1C0vGQpbIGQdtmxGLlb4wLF+j
+         ePnf0OpcHLPR3hrLDcX8EPEykAtZORW8scldQeXH4LG8T8NLCsyA8guYFi8qaii2UFaT
+         lQmvttz6hKxQpg/rP8XJJycxI13GKwIj5oXXwP9QP7r49omwwRR7KcI+IsB2ve0mJ57J
+         whYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=j2kTvw4kzKrAeKpW0mVY6SZ6bjtqkNGUskE2rkwL8hI=;
+        b=DIwgvFx92yd1EK6ErPpEY/HQKMONZJAe7sa1M6SXezhOWkMjAsTrrRD8Qe0ZQSxRxY
+         KkEhqfiD/HlkJPQRyRiULdzlP9AYZ0MWr/iK1DbR5lurFSaY9Mvw9ecl35fGZbLlc0hj
+         gE4T3bWeksr8UuydCNwFTfYV8Tz9+aCNRPR/I6R7J6LOvmn/dB66YjsrTD7JZN9rnq/C
+         t+9GPlGW+sl7AfuERRBwe3JQRNwflxESJNnElKU6RJIYpreKldSspEPKf/RV8Vkdr4KT
+         xP8tlqk4E2b5063Pf7PtqRF9uexkRi7JmGlrgZdSPKIToMHiB5S2CH8fzjDowqtS9hO0
+         tDHg==
+X-Gm-Message-State: AOAM532l3+7c1OopZnQO9/5uGt//gADOpi4Ej3OuGzPC9m3pTjKzjXJX
+        d9QXcr1XD5ogG45NJtZTKGU=
+X-Google-Smtp-Source: ABdhPJyOrv2eDAdNDl8mCeozyZj1aDqMcNpkP/s+Xx4OySZPnLZF38VXTs+Esq6475nYvtcqHGLaLg==
+X-Received: by 2002:a50:f604:: with SMTP id c4mr23512092edn.307.1608144269445;
+        Wed, 16 Dec 2020 10:44:29 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id ng1sm1958735ejb.112.2020.12.16.10.44.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Dec 2020 10:44:28 -0800 (PST)
+Date:   Wed, 16 Dec 2020 20:44:27 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/5] net: dsa: Link aggregation support
+Message-ID: <20201216184427.amplixitum6x2zui@skbuf>
+References: <20201216160056.27526-1-tobias@waldekranz.com>
+ <20201216160056.27526-4-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201216160056.27526-4-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp_build_skb_from_frame utility routine to build the skb
-from xdp_frame. Respect to __xdp_build_skb_from_frame,
-xdp_build_skb_from_frame will allocate the skb object. Rely on
-xdp_build_skb_from_frame in veth driver.
+On Wed, Dec 16, 2020 at 05:00:54PM +0100, Tobias Waldekranz wrote:
+> diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+> index 183003e45762..deee4c0ecb31 100644
+> --- a/net/dsa/dsa2.c
+> +++ b/net/dsa/dsa2.c
+> @@ -21,6 +21,46 @@
+>  static DEFINE_MUTEX(dsa2_mutex);
+>  LIST_HEAD(dsa_tree_list);
+>
+> +void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag)
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/veth.c | 18 +++---------------
- include/net/xdp.h  |  2 ++
- net/core/xdp.c     | 15 +++++++++++++++
- 3 files changed, 20 insertions(+), 15 deletions(-)
+Maybe a small comment here and in dsa_lag_unmap, describing what they're
+for? They look a bit bland. Just a few words about the linear array will
+suffice.
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 02bfcdf50a7a..dbacf90df2b5 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -567,16 +567,10 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 					struct veth_xdp_tx_bq *bq,
- 					struct veth_stats *stats)
- {
--	void *hard_start = frame->data - frame->headroom;
--	int len = frame->len, delta = 0;
- 	struct xdp_frame orig_frame;
- 	struct bpf_prog *xdp_prog;
--	unsigned int headroom;
- 	struct sk_buff *skb;
- 
--	/* bpf_xdp_adjust_head() assures BPF cannot access xdp_frame area */
--	hard_start -= sizeof(struct xdp_frame);
--
- 	rcu_read_lock();
- 	xdp_prog = rcu_dereference(rq->xdp_prog);
- 	if (likely(xdp_prog)) {
-@@ -590,8 +584,8 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 
- 		switch (act) {
- 		case XDP_PASS:
--			delta = frame->data - xdp.data;
--			len = xdp.data_end - xdp.data;
-+			if (xdp_update_frame_from_buff(&xdp, frame))
-+				goto err_xdp;
- 			break;
- 		case XDP_TX:
- 			orig_frame = *frame;
-@@ -629,18 +623,12 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 	}
- 	rcu_read_unlock();
- 
--	headroom = sizeof(struct xdp_frame) + frame->headroom - delta;
--	skb = veth_build_skb(hard_start, headroom, len, frame->frame_sz);
-+	skb = xdp_build_skb_from_frame(frame, rq->dev);
- 	if (!skb) {
- 		xdp_return_frame(frame);
- 		stats->rx_drops++;
--		goto err;
- 	}
- 
--	xdp_release_frame(frame);
--	xdp_scrub_frame(frame);
--	skb->protocol = eth_type_trans(skb, rq->dev);
--err:
- 	return skb;
- err_xdp:
- 	rcu_read_unlock();
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index da62fa20fa8a..11ec93f827c0 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -148,6 +148,8 @@ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
- struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct sk_buff *skb,
- 					   struct net_device *dev);
-+struct sk_buff *xdp_build_skb_from_frame(struct xdp_frame *xdpf,
-+					 struct net_device *dev);
- 
- static inline
- void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index aeb09ed0704c..0d2630a35c3e 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -557,3 +557,18 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 	return skb;
- }
- EXPORT_SYMBOL_GPL(__xdp_build_skb_from_frame);
-+
-+struct sk_buff *xdp_build_skb_from_frame(struct xdp_frame *xdpf,
-+					 struct net_device *dev)
-+{
-+	struct sk_buff *skb;
-+
-+	skb = kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
-+	if (unlikely(!skb))
-+		return NULL;
-+
-+	memset(skb, 0, offsetof(struct sk_buff, tail));
-+
-+	return __xdp_build_skb_from_frame(xdpf, skb, dev);
-+}
-+EXPORT_SYMBOL_GPL(xdp_build_skb_from_frame);
--- 
-2.29.2
+> +{
+> +	unsigned int id;
+> +
+> +	if (dsa_lag_id(dst, lag) >= 0)
+> +		/* Already mapped */
+> +		return;
+> +
+> +	for (id = 0; id < dst->lags_len; id++) {
+> +		if (!dsa_lag_dev(dst, id)) {
+> +			dst->lags[id] = lag;
+> +			return;
+> +		}
+> +	}
+> +
+> +	/* No IDs left, which is OK. Some drivers do not need it. The
+> +	 * ones that do, e.g. mv88e6xxx, will discover that
+> +	 * dsa_tree_lag_id returns an error for this device when
+> +	 * joining the LAG. The driver can then return -EOPNOTSUPP
+> +	 * back to DSA, which will fall back to a software LAG.
+> +	 */
+> +}
+> +
+> +void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag)
+> +{
+> +	struct dsa_port *dp;
+> +	unsigned int id;
+> +
+> +	dsa_lag_foreach_port(dp, dst, lag)
+> +		/* There are remaining users of this mapping */
+> +		return;
+> +
+> +	dsa_lags_foreach_id(id, dst) {
+> +		if (dsa_lag_dev(dst, id) == lag) {
+> +			dst->lags[id] = NULL;
+> +			break;
+> +		}
+> +	}
+> +}
+> diff --git a/net/dsa/port.c b/net/dsa/port.c
+> index 73569c9af3cc..121e5044dbe7 100644
+> --- a/net/dsa/port.c
+> +++ b/net/dsa/port.c
+> @@ -193,6 +193,85 @@ void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
+>  	dsa_port_set_state_now(dp, BR_STATE_FORWARDING);
+>  }
+>
+> +int dsa_port_lag_change(struct dsa_port *dp,
+> +			struct netdev_lag_lower_state_info *linfo)
+> +{
+> +	struct dsa_notifier_lag_info info = {
+> +		.sw_index = dp->ds->index,
+> +		.port = dp->index,
+> +	};
+> +	bool tx_enabled;
+> +
+> +	if (!dp->lag_dev)
+> +		return 0;
+> +
+> +	/* On statically configured aggregates (e.g. loadbalance
+> +	 * without LACP) ports will always be tx_enabled, even if the
+> +	 * link is down. Thus we require both link_up and tx_enabled
+> +	 * in order to include it in the tx set.
+> +	 */
+> +	tx_enabled = linfo->link_up && linfo->tx_enabled;
+> +
+> +	if (tx_enabled == dp->lag_tx_enabled)
+> +		return 0;
 
+Why would we get a NETDEV_CHANGELOWERSTATE notification if tx_enabled ==
+dp->lag_tx_enabled? What is it that changed?
+
+> +
+> +	dp->lag_tx_enabled = tx_enabled;
+> +
+> +	return dsa_port_notify(dp, DSA_NOTIFIER_LAG_CHANGE, &info);
+> +}
+
+I am very happy with how simple this turned out. Thanks for the patience.
+You can add these tags when you resend once net-next opens.
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Tested-by: Vladimir Oltean <olteanv@gmail.com>
