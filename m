@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E262DBA51
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 06:07:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 131662DBA5A
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 06:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725765AbgLPFH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 00:07:27 -0500
-Received: from nat-hk.nvidia.com ([203.18.50.4]:56504 "EHLO nat-hk.nvidia.com"
+        id S1725789AbgLPFPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 00:15:53 -0500
+Received: from nat-hk.nvidia.com ([203.18.50.4]:15544 "EHLO nat-hk.nvidia.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725274AbgLPFH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 00:07:27 -0500
-Received: from HKMAIL104.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fd995e40000>; Wed, 16 Dec 2020 13:06:45 +0800
-Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL104.nvidia.com
- (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 16 Dec
- 2020 05:06:40 +0000
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
+        id S1725274AbgLPFPx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 00:15:53 -0500
+Received: from HKMAIL101.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fd997df0000>; Wed, 16 Dec 2020 13:15:11 +0800
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL101.nvidia.com
+ (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 16 Dec
+ 2020 05:15:08 +0000
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.174)
  by HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Wed, 16 Dec 2020 05:06:40 +0000
+ 15.0.1473.3 via Frontend Transport; Wed, 16 Dec 2020 05:15:08 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l0pD//lfHDrvR4QzwDVSV+37QBnFAQMPy5Ti8M1HSJB0TttLWCxG3IgMKRU31Y5xg2hOsdwq0ZO7f2+hNcngUEMn7vPZvyTVCsgrZHP7rnrXKgV1PlZ4nbDmPg0PCQpjFmTiimtnfVyme7A/D1JGuVhLAMJ3fT6ZK3cyIyUtdqJufS5uLRlyAnG9+99lMcYqnOX3AGip6V16sZ7pBvJOtCL2Nr08fKuUPRMSIQmpzlPGzCXr3krP4LvPy1U9fe4Nz+1juyqebUfbYfgiqSxtXPvN6OMz4lzjq/Qlta6at7M0ez8q7Ay/FLAZy8UhoAmOSFgsbdeJ2uFDpOXKD6Z1lA==
+ b=cw5tqZj8QqxhOeD3XWo2/Lx8FxenNuydSKSzR/3hhkbCr2msUBvlKpJ9C+tEeUrR+n5RkPKNdMOB51dt/MVKgc7gyn7I4iDBWdW6WnnK9fsawwzgeMJiGYD8NwK4X1jNz3s3h9PhIonl9D+i50HPv7JhWyHraj7X/3GTZf0B6lCwXOVZaVOPQ4SJ7jXzDYhQ9/Keq/HggjonSgkrZwS75OOpabdavV7/R3Mo7X5TYVf6e70f7dXV6+VHaXWuxCKewDzk3OO9KXu+4pUYTsZIjYUdg/WhNRJ3+M1agqshfRoL68EM8vEu4tJGu54yjPBRgS7nciPhXiPsxcIUtT08zQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ilKBi8bKMdc4QPxLQDBhBtlZlArV8FeTB13nEdAYarY=;
- b=TjSeHv7V+g/UzEYjkXOmqiWrbqlQzGMK8jG/L3qu2u5cvdlSErMt+iprY8MYnnD6Gcoybyd2+sJ0YcegOTaQZX4/GZjm4AGzr0ketSOd9zkW3AiaNN/xqCwhohragcHHr3Fb80dl8PHnJsyTsWVNNfcRnNbZB91RXsmk160gO/VgKDoXUt8V/ZmIu4xptdtGYifzshNM4Q2VTjbLV002gi87GG193XwUYyGUpYFdTIfA0P3MxYmgHTnE0Uf+PQARb96AU69V8XxJyiQZIb3uqKxttMMIAS+R8Ij/CZ10jzjCAUUVRQnnrEJawtWYi+buhJuVlM54tOkVn33XSCdwUw==
+ bh=EejUvS5CEoPgsPKxYcf9wHVxXrg7xtBrov3UtkgvdNw=;
+ b=ZIGvETbcJtmdrGjITo1Od3T+3RlxCwK8TRZy4g8qFFFvBHZQ1rzCXihch7hPH31oK0mmQsWDruEOTEKe9rsT0ePSRCu35EDBIt1c/P4nHWT9BF6x4NO45H/JVjbFAyBdwx5v76H2LkbBkht0KzZgCRalHnPFWLBfzOt4SlIAejcdpmZ84If69O3ghGNBTzaGxAzb2lTpoge+XoP7Pg42viJapkBIIpmYM7wOacQQC6ySS9G96CxNLO5XgJz3zQ0rJIJkHgONJmy08HHq4f8LxUgdTbTImGv6kjXCFDEj0xJA12TdGupKbMwqEAStvw+G5MZ3rSAyLdO76NMCEQlwLg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BY5PR12MB3985.namprd12.prod.outlook.com (2603:10b6:a03:196::32) with
+ by BY5PR12MB4951.namprd12.prod.outlook.com (2603:10b6:a03:1d2::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.15; Wed, 16 Dec
- 2020 05:06:37 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.18; Wed, 16 Dec
+ 2020 05:15:04 +0000
 Received: from BY5PR12MB4322.namprd12.prod.outlook.com
  ([fe80::a1d2:bfae:116c:2f24]) by BY5PR12MB4322.namprd12.prod.outlook.com
  ([fe80::a1d2:bfae:116c:2f24%6]) with mapi id 15.20.3654.026; Wed, 16 Dec 2020
- 05:06:37 +0000
+ 05:15:04 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>, Saeed Mahameed <saeed@kernel.org>
 CC:     "David S. Miller" <davem@davemloft.net>,
@@ -54,15 +54,17 @@ CC:     "David S. Miller" <davem@davemloft.net>,
         "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
         Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: RE: [net-next v5 04/15] devlink: Support add and delete devlink port
-Thread-Topic: [net-next v5 04/15] devlink: Support add and delete devlink port
-Thread-Index: AQHW0sFQJuUIoyweqEChgdwBfoTE3an434EAgABMEpA=
-Date:   Wed, 16 Dec 2020 05:06:37 +0000
-Message-ID: <BY5PR12MB4322EDD8E272D34E263CBFA2DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
+Subject: RE: [net-next v5 05/15] devlink: Support get and set state of port
+ function
+Thread-Topic: [net-next v5 05/15] devlink: Support get and set state of port
+ function
+Thread-Index: AQHW0sFH91yNDr98FE67ntr+TvpO06n44deAgABLWyA=
+Date:   Wed, 16 Dec 2020 05:15:04 +0000
+Message-ID: <BY5PR12MB43225346806029AA31D63918DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
 References: <20201215090358.240365-1-saeed@kernel.org>
-        <20201215090358.240365-5-saeed@kernel.org>
- <20201215162926.0d7f3683@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201215162926.0d7f3683@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201215090358.240365-6-saeed@kernel.org>
+ <20201215163747.4091ff61@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201215163747.4091ff61@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -71,48 +73,48 @@ authentication-results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
 x-originating-ip: [49.207.199.116]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 16505b44-cb09-4a44-3719-08d8a1805dff
-x-ms-traffictypediagnostic: BY5PR12MB3985:
+x-ms-office365-filtering-correlation-id: a1f8c435-e9ce-4d99-13dd-08d8a1818c0d
+x-ms-traffictypediagnostic: BY5PR12MB4951:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR12MB3985781B846603FDEC94BBD0DCC50@BY5PR12MB3985.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-microsoft-antispam-prvs: <BY5PR12MB49510CBDEF22B91D655AA3D6DCC50@BY5PR12MB4951.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +mmZOZsI9qU4f5xB44OiEAlKCDZAQCiNUqgqVQXDYYOk+dlWnm1j+l8E3iDOqCAO0F1MF4DND8Qj35WH+LcK60fJqYsbRgUzkvWjUjCtGKkI4mvGxTUyJzeH6pwV6EjnF+XmD37yZnVjWMXnuxcMijIBZJf60+c6snDOJvZOavHWPD2mV+DqZDE3GmplDUnnpiQL/O6mvG7eIlaSPcAJZi/kLvdrlZ+D+ZjCVT3Hs9um+ESFfDEimpIGQmScWuYr82NFQuYgncb7yboq0+nkMFmgGfF4vjsZfCrqxQONFgCNsr4KvXRFA7n2Zl4QBA/1yvbximkVPC1KImG9YMIz9A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39850400004)(366004)(376002)(396003)(346002)(64756008)(478600001)(7696005)(7416002)(316002)(66446008)(52536014)(66476007)(71200400001)(6506007)(33656002)(54906003)(5660300002)(76116006)(4326008)(83380400001)(26005)(110136005)(8676002)(9686003)(66946007)(55236004)(86362001)(107886003)(66556008)(2906002)(8936002)(55016002)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?6o7EUIIgapGB5axofbSaFQP2vMlt89kmwoGAf+tsZ1vmlIfXv4AKIt6feTlA?=
- =?us-ascii?Q?uv88OsymRcUVXzBb2Iik7E3xqMm1IZtNkdOqmFgPcHAf3RDzhNtwP6MVzxm5?=
- =?us-ascii?Q?C43iHMeYzQ3ZzaQDlY91of1a/Pd8eHGoEo4mo06JdL6fWO0msk2wAIdBeE/M?=
- =?us-ascii?Q?U+zdah4Y63SBzKOXZhn8iD4tq6pO2oC2PUZKFbXP+vRqi3WHKl0utDZfDsPC?=
- =?us-ascii?Q?nNVz6xpI/CjbzHZOjDFWD3qSO8F4dGiKQX/Wt1swNJzIqPvZRDTtSvdPm20n?=
- =?us-ascii?Q?tSBCDPyP8PqOBq2SnbIa/d0BUcmUtgiHpWFFnftOKe7CLfzKeW2xt1c2Q9yF?=
- =?us-ascii?Q?2e3LDk+mkwoOGvEvRCIKBfiVvcg+CqaOdj+pS4/CuU4b3bNHyi9Yt8A8KbWV?=
- =?us-ascii?Q?OCohS/sWMZDPAo/wjIxr0jS4E+89M+XpmA4MXfI886Njrz4fnY2J3oduo19S?=
- =?us-ascii?Q?v3i1VFJ3tzQ/j/nit7Bi/tK4Eeaqp4R9Lju9rsN0UhTbr3R0QbOJqbHSKv8E?=
- =?us-ascii?Q?s53hDAudrFHuyhAMQ1OUWa8/1BTXyFoEEwyCauZk5+To11mE42bHEMVq8Iw7?=
- =?us-ascii?Q?dDCd1TmLPC2NSc/dh8tVFlLEPVj/MQN4YgvVE0aEc4HotQZQ2c58Me0ZOsTR?=
- =?us-ascii?Q?iQHgrzMCW4/e30Lu3YggRO/Jt5GsW0gndzplWkLrpPnwF7IytJxElF42iUXu?=
- =?us-ascii?Q?z1TzioFI0JieVocdo5BZuKHOS0JDxIlHSFLb6NMEl72gZkJOfqSLW5cwlz9V?=
- =?us-ascii?Q?Rt5uNPk1Vs/VZ2OzN5n+uevIek0wuSqZWNTrg5i+LYm/lmoA3JRUbPptt7E+?=
- =?us-ascii?Q?DxqXB36ARibvvLhQ+ImOC3/Yxo64D+dqHLACVFijHZ05XkAQ0RiFF03k2jxU?=
- =?us-ascii?Q?Erl8rHn6o5DgaRvzyKFGkHWMKRdy7AqapAYQVrW82oXY/faBfJB8O2CAddLY?=
- =?us-ascii?Q?FneWTAVfRuufeV1GjgDDjJJX4DOfJVJAs6ARjSSPj/k=3D?=
+x-microsoft-antispam-message-info: H6PLaxNzC8GdSHGCoqdD6fTe71r9mfnyBIH3dBTobVuyxro5gE/E32ZaZmkVydGzNZ5uGfAXDzX0b+TmHMOjeHyv8VR71mTL2IteWt4Kuoj5U7DQdoo3rmQG1M7h/vKKq3hjjhTvBsAE3QYSM1WxSL43cJHwJm8PV4BRHwMkxJ/Dn9SsbRNf90tFj3+uXMj++DR1GnbNFPClpYyPk7R7OUv/JCX2lJ+7VSzp6sbNmrJNZs3eI1BnZVb98/d9o8YFOlRUnQwLqX6R9wkrlxt1LcK1frhX+VFAmdRF8pLKH5SUQEGYYpdHEb+ka96oUEiYVuw8RpdOmdBRyM9mQm79ew==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(136003)(396003)(346002)(366004)(376002)(66476007)(55236004)(76116006)(478600001)(7416002)(4326008)(186003)(110136005)(55016002)(64756008)(107886003)(66556008)(2906002)(316002)(66446008)(71200400001)(5660300002)(86362001)(9686003)(52536014)(7696005)(33656002)(54906003)(66946007)(26005)(8676002)(6506007)(83380400001)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?4gVRkTjWnd4C3VwMU+CuVrzxLL6rXxS3ew/F0gvSlNILx2t/K+9EBs+lY6+b?=
+ =?us-ascii?Q?hvhezFB78d1Wfe+DlI3g6aDvF5VmWW51Iyf3GFqRpKPY+/yGe9p7YYusmpDG?=
+ =?us-ascii?Q?ioUE7QCkPofw2vN0CuZ6I5kbaWUbC3jSZoyqa5rTZKKgYDSt5KtU3XcyN6ns?=
+ =?us-ascii?Q?owuHjSLUmaOue0JiVzFrN+2Kka92aI1Nr2QaH9lyV28qc9DeBLCuGE06yxts?=
+ =?us-ascii?Q?scXHIMW5/J1CVPREFLu6kNkPHL7+UpPrE4QgO9bXBvO9JGG3OB07OCUoy7hR?=
+ =?us-ascii?Q?zlvuuaRWXgwh90Go7rwaDN/NH0k9eDmQ2SIFlo5zez4nkVnt4QrtIOnN282G?=
+ =?us-ascii?Q?NE68nNCVQSqmwxCscpIvn8Bn47te7SabDP8bMLvgcXof9dCAJt0VVY5T9TY8?=
+ =?us-ascii?Q?mOJWpIoLiNQUdO3ukqpSF7w47YsEFGW3Z7imCs/3ogjum8IheLyLvZC5urZY?=
+ =?us-ascii?Q?xYMXpfCaR1cnSxA9O7ogzg/+2KYGOsmtRptCMzmBkndJZ+wgjF/is75EvO1N?=
+ =?us-ascii?Q?865HJJKHWPC8alLLJMPW+VgglKWDBRGHSDPo4SVs+2Zd86WBHdhz3hjGXg/O?=
+ =?us-ascii?Q?eWjFjVeoy2uunHkeE6RGRDZcxB247wBBmTSJ9qiVlv9cvJnzjWshpqE5Ul1w?=
+ =?us-ascii?Q?/Mm9mYX7HHgse0T3GNpntJMDg5zEOfFvNXTXD3BHOdEIWSLjrH9NR35KOwyM?=
+ =?us-ascii?Q?l5/u0Yw8wUkhwlIVCFNulbK0r8KYNmz6stmi5tzm2Svc5B2UjOt4sJIL+kHe?=
+ =?us-ascii?Q?P6/9YdPq7jxDFfUKZZ69jdDReyO35vmxm4Xz5T2wQvNw77t+AJnCFZD3njBq?=
+ =?us-ascii?Q?N3+cA1GD/a3kDu1nyvcFS2lK1FwfCb1Fe/K5DcJU1HdeGWz/qpWoOR6mYukJ?=
+ =?us-ascii?Q?UBLUn3q0OwC5eYojAQiXQM4Dfxjyu+tkA+1LYfn2Mf8gN9+TJLq8B/9MGeRL?=
+ =?us-ascii?Q?KCAqQRbHkob7o+AkllTdZZpyBKEVboKQiEEAk78ix4k=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16505b44-cb09-4a44-3719-08d8a1805dff
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2020 05:06:37.5806
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1f8c435-e9ce-4d99-13dd-08d8a1818c0d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2020 05:15:04.3723
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9HBspPyVX92FyDPMbm70zjEZYAre1keRdPLxlhj/pkc1cRam+ux1QzEhcRGNBeNQ0OZ6wO0zgAcMfkwsQyqrFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3985
+X-MS-Exchange-CrossTenant-userprincipalname: RXPVXA09Zq40M3rgJQhV6kRw5JePQC9R8F+1TFKMXlDKZoZC9Qr4Wp3MRES1VZLiUhhBP18RFZlBggR93jsXqQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4951
 X-OriginatorOrg: Nvidia.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1608095205; bh=ilKBi8bKMdc4QPxLQDBhBtlZlArV8FeTB13nEdAYarY=;
+        t=1608095711; bh=EejUvS5CEoPgsPKxYcf9wHVxXrg7xtBrov3UtkgvdNw=;
         h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
          CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
          In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
@@ -132,153 +134,97 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
          X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
          X-MS-Exchange-CrossTenant-userprincipalname:
          X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=edNSXMd3ORsH38jkh7J1X5ryGE8lgkbYIEN2NLtF1FgflV7Yz/UGmO03WUldosMrI
-         Tic/Z8uV+Cq7NSpOqYpouzCBaw7lX4aqN6dT1dg7U60OcLvMrejH4EUKEzvPbHDzpe
-         DbwquCmzn4KmlpbUFQHvABXa6KoCsu9ZqOBeNC5mU0g0kUWZ1RWqZheFoMqjfIhyUd
-         nkN7yv5flHVtpKoFA996l1HFDR9oVUMc4ZtKe2laNxdWuFJenQd8Mc0ngZNqPf+CDM
-         LmMnSUD4IXtbnG0YrRr5Ew48JY0cBERN8lBeogouNyxFC35sSVI8LkKC7zLgrIYGxs
-         FoVy9PgJ6sS0w==
+        b=AxMmoRWjAzQ9q0Jq/5fyD1Yv4yrXT8OQtzgBYjBp/pAJ2O/W5n+6BkYFhW8MqKUA4
+         M6uZ9nGshubtgC9OB9543xGxP1SMFOtWGtT4OmVv1Vq0WOUkFRuNi/fQg+c8771XZP
+         knCQrPnbo59s6T6DLx7aA5ntHwO26aGTdeOPppk+JEtEUx0R5xqbcta0ZeRJ8YZpWW
+         Jm2ylv7AptzqMHGXka4K2O7RU3BvN/RpWFLc2TH6RxnBnm2FcGRp63yHRJ2MWKmxwz
+         I/Owqg2yJHOOHVUwNzWzeq91KYDMx6RBTW21GkC5Dd4+zKGYmLgFwvvye6s0HN0Ehu
+         ZcQyhnUtDlU8Q==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+
 > From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Wednesday, December 16, 2020 5:59 AM
+> Sent: Wednesday, December 16, 2020 6:08 AM
 >=20
-> > +struct devlink_port_new_attrs {
-> > +	enum devlink_port_flavour flavour;
-> > +	unsigned int port_index;
-> > +	u32 controller;
-> > +	u32 sfnum;
-> > +	u16 pfnum;
+> On Tue, 15 Dec 2020 01:03:48 -0800 Saeed Mahameed wrote:
+> > From: Parav Pandit <parav@nvidia.com>
+> >
+> > devlink port function can be in active or inactive state.
+> > Allow users to get and set port function's state.
+> >
+> > When the port function it activated, its operational state may change
+> > after a while when the device is created and driver binds to it.
+> > Similarly on deactivation flow.
 >=20
-> Oh. So you had the structure which actually gets stored in memory for the
-> lifetime of the device in patch 3 mispacked (u32 / u16 / u32 / u8).
-> But this one with arguments is packed. Please be consistent.
+> So what's the flow device should implement?
+>=20
+> User requests deactivated, the device sends a notification to the driver
+> bound to the device. What if the driver ignores it?
 >
-Ok. I will change the packing in patch 3.
+If driver ignores it, those devices are marked unusable for new allocation.
+Device becomes usable only after it has act on the event.
 =20
-> > +	u8 port_index_valid:1,
-> > +	   controller_valid:1,
-> > +	   sfnum_valid:1;
-> > +};
-> > +
-> >  struct devlink_sb_pool_info {
-> >  	enum devlink_sb_pool_type pool_type;
-> >  	u32 size;
-> > @@ -1363,6 +1374,34 @@ struct devlink_ops {
-> >  	int (*port_function_hw_addr_set)(struct devlink *devlink, struct
-> devlink_port *port,
-> >  					 const u8 *hw_addr, int
-> hw_addr_len,
-> >  					 struct netlink_ext_ack *extack);
-> > +	/**
-> > +	 * @port_new: Port add function.
-> > +	 *
-> > +	 * Should be used by device driver to let caller add new port of a
-> > +	 * specified flavour with optional attributes.
+> > $ devlink port function set pci/0000:06:00.0/32768 hw_addr
+> > 00:00:00:00:88:88 state active
 >=20
-> Add a new port of a specified flavor with optional attributes.
->=20
-> > +	 * Driver should return -EOPNOTSUPP if it doesn't support port
-> > +addition
->=20
-> s/should/must/
+> Is request to deactivate done by settings state to inactive?
 >
-Ack.
-=20
-> > +	 * of a specified flavour or specified attributes. Driver should set
-> > +	 * extack error message in case of fail to add the port. Devlink
-> > +core
->=20
-> s/fail to add the port/failure/
->=20
-Ack.
-
-> > +	 * does not hold a devlink instance lock when this callback is invoke=
-d.
->=20
-> Called without holding the devlink instance lock.
->
-Ack.
-=20
-> > +	 * Driver must ensures synchronization when adding or deleting a
-> port.
->=20
-> s/ensures/ensure/ but really that's pretty obvious from the previous
-> sentence.
->=20
-It may be, but this extra clarity helps, so I am going to keep this explici=
-t description.
-
-> > +	 * Driver must register a port with devlink core.
->=20
-> s/must/is expected to/
->
-Ack.
-=20
-> Please make sure your comments and documentation are proof read by
-> someone.
->=20
-Ack.
-
-> > +static int devlink_nl_cmd_port_new_doit(struct sk_buff *skb,
-> > +					struct genl_info *info)
-> > +{
-> > +	struct netlink_ext_ack *extack =3D info->extack;
-> > +	struct devlink_port_new_attrs new_attrs =3D {};
-> > +	struct devlink *devlink =3D info->user_ptr[0];
-> > +
-> > +	if (!info->attrs[DEVLINK_ATTR_PORT_FLAVOUR] ||
-> > +	    !info->attrs[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]) {
-> > +		NL_SET_ERR_MSG_MOD(extack, "Port flavour or PCI PF are
-> not specified");
-> > +		return -EINVAL;
-> > +	}
-> > +	new_attrs.flavour =3D nla_get_u16(info-
-> >attrs[DEVLINK_ATTR_PORT_FLAVOUR]);
-> > +	new_attrs.pfnum =3D
-> > +		nla_get_u16(info-
-> >attrs[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]);
-> > +
-> > +	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
-> > +		new_attrs.port_index =3D
-> > +			nla_get_u32(info-
-> >attrs[DEVLINK_ATTR_PORT_INDEX]);
-> > +		new_attrs.port_index_valid =3D true;
-> > +	}
->=20
-> This is the desired port index of the new port?
 Yes.
-> Let's make it abundantly clear since its a pass-thru argument for the dri=
-ver to
-> interpret.
->
-Ok. Will add comment here.
 =20
-> > +	if (info->attrs[DEVLINK_ATTR_PORT_CONTROLLER_NUMBER]) {
-> > +		new_attrs.controller =3D
-> > +			nla_get_u16(info-
-> >attrs[DEVLINK_ATTR_PORT_CONTROLLER_NUMBER]);
-> > +		new_attrs.controller_valid =3D true;
-> > +	}
-> > +	if (info->attrs[DEVLINK_ATTR_PORT_PCI_SF_NUMBER]) {
-> > +		new_attrs.sfnum =3D nla_get_u32(info-
-> >attrs[DEVLINK_ATTR_PORT_PCI_SF_NUMBER]);
-> > +		new_attrs.sfnum_valid =3D true;
-> > +	}
-> > +
-> > +	if (!devlink->ops->port_new)
-> > +		return -EOPNOTSUPP;
+> > + * enum devlink_port_function_opstate - indicates operational state
+> > + of port function
+> > + * @DEVLINK_PORT_FUNCTION_OPSTATE_ATTACHED: Driver is attached
+> to the
+> > + function of port,
 >=20
-> Why is this check not at the beginning of the function?
-Will move it up.
+> This name definitely needs to be shortened.
+>
+DEVLINK_PORT_FUNCTION_OPS_ATTACHED
+Or
+DEVLINK_PF_OPS_ATTACHED=20
 
-> Also should there be an extack on it?
+PF - port function
+=20
+> > + *					    gracefufl tear down of the function,
+> after
 >=20
-Will check, and add if required.
-> > +	return devlink->ops->port_new(devlink, &new_attrs, extack);
+> gracefufl
 >=20
-> This should return the identifier of the created port back to user space.
-Ok. Will add.
+> > + *					    inactivation of the port function,
+> user should wait
+> > + *					    for operational state to turn
+> DETACHED.
+>=20
+> Why do you indent the comment by 40 characters and then go over 80
+> chars?
+>=20
+Will fix it.
+
+> > + * @DEVLINK_PORT_FUNCTION_OPSTATE_DETACHED: Driver is detached
+> from the function of port; it is
+> > + *					    safe to delete the port.
+> > + */
+> > +enum devlink_port_function_opstate {
+> > +	DEVLINK_PORT_FUNCTION_OPSTATE_DETACHED,
+>=20
+> The port function must be some Mellanox speak - for the second time - I
+> have no idea what it means. Please use meaningful names.
+>
+It is not a Mellanox term.
+Port function object is the one that represents function behind this port.
+It is not a new term. Port function already exists in devlink whose operati=
+onal state attribute is defined here.
+=20
+> > devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct
+> > devlink_port *por
+> >
+> >  	ops =3D devlink->ops;
+> >  	err =3D devlink_port_function_hw_addr_fill(devlink, ops, port, msg,
+> > extack, &msg_updated);
+>=20
+> Wrap your code, please.
+>
+Sure, will do.
