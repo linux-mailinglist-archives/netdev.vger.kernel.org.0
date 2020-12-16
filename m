@@ -2,154 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F01072DB7B4
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF0AC2DB7B8
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:15:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbgLPAIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 19:08:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40476 "EHLO mail.kernel.org"
+        id S1725816AbgLPANn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 19:13:43 -0500
+Received: from mga12.intel.com ([192.55.52.136]:35187 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726677AbgLPAIo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 19:08:44 -0500
-Date:   Tue, 15 Dec 2020 18:08:02 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608077283;
-        bh=mShOIZcVfxjT4nLnFffDxnJSP9Iv9yA/ljbz77OoHQc=;
-        h=From:To:Cc:Subject:In-Reply-To:From;
-        b=kAFX24Uv+AbU/MQSDcY5CdDRcWgkfXYpsucEb2nzFWxkF8qvL5xcu2T6ZeIkm7m5A
-         BSFCPPqYAUyOnE9cs8HOTrdVjhcHVsived7YJ7tlqktIZDbq+Ma7wcU+MIW0LvUkQS
-         pILt+5o0T9/elaOELq1fiBWusVll9JcHz+KEJVA9gnGWAm+SQ+JAccOh/vv1rBxd4Q
-         qOc3IEkpntdF19l9d7ZeKBdwcRjfNV7Q6Cw4Ug1m7Eu+l6AGa9syGkAMWG9ogwd6Nl
-         H3vlPaR0VhsDwddwboka8j4FKMDLVo2SqN/FSFIkujR8gV2YnAyTR7S9aw0R/4VoEW
-         Ogj35I5ahCOAw==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Ian Kumlien <ian.kumlien@gmail.com>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S1725275AbgLPANi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 19:13:38 -0500
+IronPort-SDR: MvmjlY9+BvDVu/0FYaRZoatX/E59In5bWO2QGXs0lggBR3cxV8CDwqn08JxX8fn8W6eVvXBwPc
+ REUOTbXSBtzA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9836"; a="154206513"
+X-IronPort-AV: E=Sophos;i="5.78,423,1599548400"; 
+   d="scan'208";a="154206513"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2020 16:11:52 -0800
+IronPort-SDR: 71QUg58GsyVwRTYWnZqNNLSzKEGSGg37rstN1sHzUV7cRG6UcYnL6uiXf95QyFtmcDN8BiJDYF
+ uQn8VBclFyrg==
+X-IronPort-AV: E=Sophos;i="5.78,423,1599548400"; 
+   d="scan'208";a="368553698"
+Received: from csando3-mobl.amr.corp.intel.com ([10.251.12.232])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2020 16:11:52 -0800
+Date:   Tue, 15 Dec 2020 16:11:52 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Geliang Tang <geliangtang@gmail.com>
+cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] PCI/ASPM: Use the path max in L1 ASPM latency check
-Message-ID: <20201216000802.GA342490@bjorn-Precision-5520>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org,
+        Christoph Paasch <cpaasch@apple.com>
+Subject: Re: [MPTCP][PATCH net-next] mptcp: clear use_ack and use_map when
+ dropping other suboptions
+In-Reply-To: <ccca4e8f01457a1b495c5d612ed16c5f7a585706.1608010058.git.geliangtang@gmail.com>
+Message-ID: <fd9ba263-de65-75e4-d62e-8bdf9236bf5@linux.intel.com>
+References: <ccca4e8f01457a1b495c5d612ed16c5f7a585706.1608010058.git.geliangtang@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAA85sZvUvUTtyKR8rTDwGa=1sNrhv4cA8LQ+6TXi20Sq9Yn8fw@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 02:09:12PM +0100, Ian Kumlien wrote:
-> On Tue, Dec 15, 2020 at 1:40 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> >
-> > On Mon, Dec 14, 2020 at 11:56:31PM +0100, Ian Kumlien wrote:
-> > > On Mon, Dec 14, 2020 at 8:19 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> >
-> > > > If you're interested, you could probably unload the Realtek drivers,
-> > > > remove the devices, and set the PCI_EXP_LNKCTL_LD (Link Disable) bit
-> > > > in 02:04.0, e.g.,
-> > > >
-> > > >   # RT=/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:04.0
-> > > >   # echo 1 > $RT/0000:04:00.0/remove
-> > > >   # echo 1 > $RT/0000:04:00.1/remove
-> > > >   # echo 1 > $RT/0000:04:00.2/remove
-> > > >   # echo 1 > $RT/0000:04:00.4/remove
-> > > >   # echo 1 > $RT/0000:04:00.7/remove
-> > > >   # setpci -s02:04.0 CAP_EXP+0x10.w=0x0010
-> > > >
-> > > > That should take 04:00.x out of the picture.
-> > >
-> > > Didn't actually change the behaviour, I'm suspecting an errata for AMD pcie...
-> > >
-> > > So did this, with unpatched kernel:
-> > > [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> > > [  5]   0.00-1.00   sec  4.56 MBytes  38.2 Mbits/sec    0   67.9 KBytes
-> > > [  5]   1.00-2.00   sec  4.47 MBytes  37.5 Mbits/sec    0   96.2 KBytes
-> > > [  5]   2.00-3.00   sec  4.85 MBytes  40.7 Mbits/sec    0   50.9 KBytes
-> > > [  5]   3.00-4.00   sec  4.23 MBytes  35.4 Mbits/sec    0   70.7 KBytes
-> > > [  5]   4.00-5.00   sec  4.23 MBytes  35.4 Mbits/sec    0   48.1 KBytes
-> > > [  5]   5.00-6.00   sec  4.23 MBytes  35.4 Mbits/sec    0   45.2 KBytes
-> > > [  5]   6.00-7.00   sec  4.23 MBytes  35.4 Mbits/sec    0   36.8 KBytes
-> > > [  5]   7.00-8.00   sec  3.98 MBytes  33.4 Mbits/sec    0   36.8 KBytes
-> > > [  5]   8.00-9.00   sec  4.23 MBytes  35.4 Mbits/sec    0   36.8 KBytes
-> > > [  5]   9.00-10.00  sec  4.23 MBytes  35.4 Mbits/sec    0   48.1 KBytes
-> > > - - - - - - - - - - - - - - - - - - - - - - - - -
-> > > [ ID] Interval           Transfer     Bitrate         Retr
-> > > [  5]   0.00-10.00  sec  43.2 MBytes  36.2 Mbits/sec    0             sender
-> > > [  5]   0.00-10.00  sec  42.7 MBytes  35.8 Mbits/sec                  receiver
-> > >
-> > > and:
-> > > echo 0 > /sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/link/l1_aspm
-> >
-> > BTW, thanks a lot for testing out the "l1_aspm" sysfs file.  I'm very
-> > pleased that it seems to be working as intended.
-> 
-> It was nice to find it for easy disabling :)
-> 
-> > > and:
-> > > [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> > > [  5]   0.00-1.00   sec   113 MBytes   951 Mbits/sec  153    772 KBytes
-> > > [  5]   1.00-2.00   sec   109 MBytes   912 Mbits/sec  276    550 KBytes
-> > > [  5]   2.00-3.00   sec   111 MBytes   933 Mbits/sec  123    625 KBytes
-> > > [  5]   3.00-4.00   sec   111 MBytes   933 Mbits/sec   31    687 KBytes
-> > > [  5]   4.00-5.00   sec   110 MBytes   923 Mbits/sec    0    679 KBytes
-> > > [  5]   5.00-6.00   sec   110 MBytes   923 Mbits/sec  136    577 KBytes
-> > > [  5]   6.00-7.00   sec   110 MBytes   923 Mbits/sec  214    645 KBytes
-> > > [  5]   7.00-8.00   sec   110 MBytes   923 Mbits/sec   32    628 KBytes
-> > > [  5]   8.00-9.00   sec   110 MBytes   923 Mbits/sec   81    537 KBytes
-> > > [  5]   9.00-10.00  sec   110 MBytes   923 Mbits/sec   10    577 KBytes
-> > > - - - - - - - - - - - - - - - - - - - - - - - - -
-> > > [ ID] Interval           Transfer     Bitrate         Retr
-> > > [  5]   0.00-10.00  sec  1.08 GBytes   927 Mbits/sec  1056             sender
-> > > [  5]   0.00-10.00  sec  1.07 GBytes   923 Mbits/sec                  receiver
-> > >
-> > > But this only confirms that the fix i experience is a side effect.
-> > >
-> > > The original code is still wrong :)
-> >
-> > What exactly is this machine?  Brand, model, config?  Maybe you could
-> > add this and a dmesg log to the buzilla?  It seems like other people
-> > should be seeing the same problem, so I'm hoping to grub around on the
-> > web to see if there are similar reports involving these devices.
-> 
-> ASUS Pro WS X570-ACE with AMD Ryzen 9 3900X
 
-Possible similar issues:
+On Tue, 15 Dec 2020, Geliang Tang wrote:
 
-  https://forums.unraid.net/topic/94274-hardware-upgrade-woes/
-  https://forums.servethehome.com/index.php?threads/upgraded-my-home-server-from-intel-to-amd-virtual-disk-stuck-in-degraded-unhealty-state.25535/ (Windows)
+> This patch cleared use_ack and use_map when dropping other suboptions to
+> fix the following syzkaller BUG:
+>
+> [   15.223006] BUG: unable to handle page fault for address: 0000000000223b10
+> [   15.223700] #PF: supervisor read access in kernel mode
+> [   15.224209] #PF: error_code(0x0000) - not-present page
+> [   15.224724] PGD b8d5067 P4D b8d5067 PUD c0a5067 PMD 0
+> [   15.225237] Oops: 0000 [#1] SMP
+> [   15.225556] CPU: 0 PID: 7747 Comm: syz-executor Not tainted 5.10.0-rc6+ #24
+> [   15.226281] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+> [   15.227292] RIP: 0010:skb_release_data+0x89/0x1e0
+> [   15.227816] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
+> [   15.229669] RSP: 0018:ffffc900019c7c08 EFLAGS: 00010293
+> [   15.230188] RAX: ffff88800daad900 RBX: 0000000000223b08 RCX: 0000000000000006
+> [   15.230895] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6dc700
+> [   15.231593] RBP: ffff88807f71a4c0 R08: 0000000000000001 R09: 0000000000000001
+> [   15.232299] R10: ffffc900019c7c18 R11: 0000000000000000 R12: ffff88807f71a4f0
+> [   15.233007] R13: 0000000000000000 R14: ffff88807f6dc700 R15: 0000000000000002
+> [   15.233714] FS:  00007f65d9b5f700(0000) GS:ffff88807c400000(0000) knlGS:0000000000000000
+> [   15.234509] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   15.235081] CR2: 0000000000223b10 CR3: 000000000b883000 CR4: 00000000000006f0
+> [   15.235788] Call Trace:
+> [   15.236042]  skb_release_all+0x28/0x30
+> [   15.236419]  __kfree_skb+0x11/0x20
+> [   15.236768]  tcp_data_queue+0x270/0x1240
+> [   15.237161]  ? tcp_urg+0x50/0x2a0
+> [   15.237496]  tcp_rcv_established+0x39a/0x890
+> [   15.237997]  ? mark_held_locks+0x49/0x70
+> [   15.238467]  tcp_v4_do_rcv+0xb9/0x270
+> [   15.238915]  __release_sock+0x8a/0x160
+> [   15.239365]  release_sock+0x32/0xd0
+> [   15.239793]  __inet_stream_connect+0x1d2/0x400
+> [   15.240313]  ? do_wait_intr_irq+0x80/0x80
+> [   15.240791]  inet_stream_connect+0x36/0x50
+> [   15.241275]  mptcp_stream_connect+0x69/0x1b0
+> [   15.241787]  __sys_connect+0x122/0x140
+> [   15.242236]  ? syscall_enter_from_user_mode+0x17/0x50
+> [   15.242836]  ? lockdep_hardirqs_on_prepare+0xd4/0x170
+> [   15.243436]  __x64_sys_connect+0x1a/0x20
+> [   15.243924]  do_syscall_64+0x33/0x40
+> [   15.244313]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> [   15.244821] RIP: 0033:0x7f65d946e469
+> [   15.245183] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
+> [   15.247019] RSP: 002b:00007f65d9b5eda8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+> [   15.247770] RAX: ffffffffffffffda RBX: 000000000049bf00 RCX: 00007f65d946e469
+> [   15.248471] RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 0000000000000005
+> [   15.249205] RBP: 000000000049bf00 R08: 0000000000000000 R09: 0000000000000000
+> [   15.249908] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000049bf0c
+> [   15.250603] R13: 00007fffe8a25cef R14: 00007f65d9b3f000 R15: 0000000000000003
+> [   15.251312] Modules linked in:
+> [   15.251626] CR2: 0000000000223b10
+> [   15.251965] BUG: kernel NULL pointer dereference, address: 0000000000000048
+> [   15.252005] ---[ end trace f5c51fe19123c773 ]---
+> [   15.252822] #PF: supervisor read access in kernel mode
+> [   15.252823] #PF: error_code(0x0000) - not-present page
+> [   15.252825] PGD c6c6067 P4D c6c6067 PUD c0d8067
+> [   15.253294] RIP: 0010:skb_release_data+0x89/0x1e0
+> [   15.253910] PMD 0
+> [   15.253914] Oops: 0000 [#2] SMP
+> [   15.253917] CPU: 1 PID: 7746 Comm: syz-executor Tainted: G      D           5.10.0-rc6+ #24
+> [   15.253920] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+> [   15.254435] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
+> [   15.254899] RIP: 0010:skb_release_data+0x89/0x1e0
+> [   15.254902] Code: 5b 5d 41 5c 41 5d 41 5e 41 5f e9 02 06 8a ff e8 fd 05 8a ff 45 31 ed 80 7d 02 00 4c 8d 65 30 74 55 e8 eb 05 8a ff 49 8b 1c 24 <4c> 8b 7b 08 41 f6 c7 01 0f 85 18 01 00 00 e8 d4 05 8a ff 8b 43 34
+> [   15.254905] RSP: 0018:ffffc900019bfc08 EFLAGS: 00010293
+> [   15.255376] RSP: 0018:ffffc900019c7c08 EFLAGS: 00010293
+> [   15.255580]
+> [   15.255583] RAX: ffff888004a7ac80 RBX: 0000000000000040 RCX: 0000000000000000
+> [   15.255912]
+> [   15.256724] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6ddd00
+> [   15.257620] RAX: ffff88800daad900 RBX: 0000000000223b08 RCX: 0000000000000006
+> [   15.259817] RBP: ffff88800e9006c0 R08: 0000000000000000 R09: 0000000000000000
+> [   15.259818] R10: 0000000000000000 R11: 0000000000000000 R12: ffff88800e9006f0
+> [   15.259820] R13: 0000000000000000 R14: ffff88807f6ddd00 R15: 0000000000000002
+> [   15.259822] FS:  00007fae4a60a700(0000) GS:ffff88807c500000(0000) knlGS:0000000000000000
+> [   15.259826] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   15.260296] RDX: 0000000000000000 RSI: ffffffff818e06c5 RDI: ffff88807f6dc700
+> [   15.262514] CR2: 0000000000000048 CR3: 000000000b89c000 CR4: 00000000000006e0
+> [   15.262515] Call Trace:
+> [   15.262519]  skb_release_all+0x28/0x30
+> [   15.262523]  __kfree_skb+0x11/0x20
+> [   15.263054] RBP: ffff88807f71a4c0 R08: 0000000000000001 R09: 0000000000000001
+> [   15.263680]  tcp_data_queue+0x270/0x1240
+> [   15.263843] R10: ffffc900019c7c18 R11: 0000000000000000 R12: ffff88807f71a4f0
+> [   15.264693]  ? tcp_urg+0x50/0x2a0
+> [   15.264856] R13: 0000000000000000 R14: ffff88807f6dc700 R15: 0000000000000002
+> [   15.265720]  tcp_rcv_established+0x39a/0x890
+> [   15.266438] FS:  00007f65d9b5f700(0000) GS:ffff88807c400000(0000) knlGS:0000000000000000
+> [   15.267283]  ? __schedule+0x3fa/0x880
+> [   15.267287]  tcp_v4_do_rcv+0xb9/0x270
+> [   15.267290]  __release_sock+0x8a/0x160
+> [   15.268049] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   15.268788]  release_sock+0x32/0xd0
+> [   15.268791]  __inet_stream_connect+0x1d2/0x400
+> [   15.268795]  ? do_wait_intr_irq+0x80/0x80
+> [   15.269593] CR2: 0000000000223b10 CR3: 000000000b883000 CR4: 00000000000006f0
+> [   15.270246]  inet_stream_connect+0x36/0x50
+> [   15.270250]  mptcp_stream_connect+0x69/0x1b0
+> [   15.270253]  __sys_connect+0x122/0x140
+> [   15.271097] Kernel panic - not syncing: Fatal exception
+> [   15.271820]  ? syscall_enter_from_user_mode+0x17/0x50
+> [   15.283542]  ? lockdep_hardirqs_on_prepare+0xd4/0x170
+> [   15.284275]  __x64_sys_connect+0x1a/0x20
+> [   15.284853]  do_syscall_64+0x33/0x40
+> [   15.285369]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> [   15.286105] RIP: 0033:0x7fae49f19469
+> [   15.286638] Code: 00 f3 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ff 49 2b 00 f7 d8 64 89 01 48
+> [   15.289295] RSP: 002b:00007fae4a609da8 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+> [   15.290375] RAX: ffffffffffffffda RBX: 000000000049bf00 RCX: 00007fae49f19469
+> [   15.291403] RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 0000000000000005
+> [   15.292437] RBP: 000000000049bf00 R08: 0000000000000000 R09: 0000000000000000
+> [   15.293456] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000049bf0c
+> [   15.294473] R13: 00007fff0004b6bf R14: 00007fae4a5ea000 R15: 0000000000000003
+> [   15.295492] Modules linked in:
+> [   15.295944] CR2: 0000000000000048
+> [   15.296567] Kernel Offset: disabled
+> [   15.296941] ---[ end Kernel panic - not syncing: Fatal exception ]---
+>
+> Reported-by: Christoph Paasch <cpaasch@apple.com>
+> Fixes: 84dfe3677a6f (mptcp: send out dedicated ADD_ADDR packet)
+> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+> ---
+> net/mptcp/options.c | 2 ++
+> 1 file changed, 2 insertions(+)
+>
 
-> > https://bugzilla.kernel.org/show_bug.cgi?id=209725
-> >
-> > Here's one that is superficially similar:
-> > https://linux-hardware.org/index.php?probe=e5f24075e5&log=lspci_all
-> > in that it has a RP -- switch -- I211 path.  Interestingly, the switch
-> > here advertises <64us L1 exit latency instead of the <32us latency
-> > your switch advertises.  Of course, I can't tell if it's exactly the
-> > same switch.
-> 
-> Same chipset it seems
-> 
-> I'm running bios version:
->         Version: 2206
->         Release Date: 08/13/2020
-> 
-> ANd latest is:
-> Version 3003
-> 2020/12/07
-> 
-> Will test upgrading that as well, but it could be that they report the
-> incorrect latency of the switch - I don't know how many things AGESA
-> changes but... It's been updated twice since my upgrade.
+David or Jakub, this patch is intended for the -net tree (not net-next as 
+labeled in the subject line). If you can apply it to -net, that's great, 
+otherwise it can be resubmitted as [PATCH net].
 
-I wouldn't be surprised if the advertised exit latencies are writable
-by the BIOS because it probably depends on electrical characteristics
-outside the switch.  If so, it's possible ASUS just screwed it up.
+In any case, the content is good:
+
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+
+--
+Mat Martineau
+Intel
