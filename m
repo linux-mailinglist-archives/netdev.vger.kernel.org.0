@@ -2,88 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A48602DC5D8
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 19:04:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0317A2DC5DB
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 19:04:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728987AbgLPSDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 13:03:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45140 "EHLO
+        id S1729025AbgLPSEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 13:04:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728984AbgLPSDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 13:03:32 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B10C061794
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 10:02:52 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id w1so29397948ejf.11
-        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 10:02:52 -0800 (PST)
+        with ESMTP id S1729010AbgLPSED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 13:04:03 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A07C0617A6
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 10:03:17 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id q75so3315364wme.2
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 10:03:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7/O5jGVd63QArqSj+pteZeX/B13dyDnoBKftzgeM47s=;
-        b=oZeHOzOERk9vs07TkHw6kOrymUBpTDIE8XNYbjtjFYTnK4feBg3EjLGl6V6Cjv1rMY
-         lHx/BGWAAcoP/QCbtszvMcTTCcvcPk4sJA2y6hRsyz2ir6MQ+j5tKHGOGdgnFzTK8DNf
-         SnH8d12EoJnhS+tK0DHRLtq0a5cxcTM2JkkCG0vjv8yfnKNugtGKz3UNlGnEyr+GuArb
-         OjvJSeeocdl7z6rXlvdlvtcYEJBmdv27Pef+ncLTPJ6j2weWr/ZnNCmgrR1b0OwaIBPZ
-         SvMSY4mnN7qNx1B84vw7go4eEs2Qpj4WY++h3PRilkSVgfdniKdXALiM2OpCpBB39EIo
-         2yww==
+        d=nametag.social; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O4OMLeTnocdXkI8S1wmdugEs/trA543kWe7Ll9FnoZ8=;
+        b=Oesy3tqtvt7immDHLptaeAdp9pvH+gEeg/lzRxdkL8kyuARC4gKkORFWbhQCNdlH8s
+         +qxMb+ekzDMbfWAuTbofEneEaeIRz0cn/k5U/cYdK1ZIsq4KO3VzCu7TWba/c/4bZ/Tc
+         MnDdK0vPmuXaiwimW9/RsPTWKk/Xzipv+LFF4LLJabfpnC4lez/oaUW2tAMXfrXvk5Xr
+         dg20KK4BfOgEmFkz6RIXtSipftI/ngdez23arIz9SsSMHe6HXtJ112hPn1FEi4eh8e+s
+         iIh+NnCQ+EY3NHQeS7mr+MLn+in89Kqvii5vnopCDA62zTowy9uNrxOcJfx3SvQZH2Vg
+         okmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7/O5jGVd63QArqSj+pteZeX/B13dyDnoBKftzgeM47s=;
-        b=PCycAGIJxgr83h56hQlnmmDgFXPg5SCNIIDTi02JB0qpJ26du5RsLSR4PMgrFMvesf
-         eMPy53rkI+c587wAlSQTAPK7kMEOjk1ZXQT3z0eNfvWX5utS1XBfN5CzJAEOYfa3F7h4
-         8mfXuzI4wwhrOf1WXcGSby8NSV1tMHgB2kLya64Q8UhcnhHi0M5j6H/9k3pIVlL3eEVV
-         As+wekESN2Fj+/5SGJuzv5N+WeThnx3rdQraFXRieLpSjD/9Hbb5xiwJXppqPicIkuCP
-         ihJlpyDOoFb9E1adtaNePREJxQIWNKbzDNuYD4ABP51brlXnrklujyAT62NZL/8+wIgR
-         vMEQ==
-X-Gm-Message-State: AOAM533ejT32peYCEpRHTw1vn6fXUGoIOIJytnQLjfF1w0TfMf+Fpk3U
-        ggthhn1BopAH2akkq+5tPQ0=
-X-Google-Smtp-Source: ABdhPJzNXK8Hnlq/3R4+COHqObFFwetDb1q07uUdHSCHh5GWHDo64piIir0P33AyhzfGgyrT8yDaTQ==
-X-Received: by 2002:a17:906:1a19:: with SMTP id i25mr31251209ejf.206.1608141770459;
-        Wed, 16 Dec 2020 10:02:50 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id gt11sm1893725ejb.67.2020.12.16.10.02.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Dec 2020 10:02:49 -0800 (PST)
-Date:   Wed, 16 Dec 2020 20:02:48 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/5] net: dsa: Link aggregation support
-Message-ID: <20201216180248.u3uhrec2ssveubyp@skbuf>
-References: <20201216160056.27526-1-tobias@waldekranz.com>
- <20201216160056.27526-4-tobias@waldekranz.com>
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=O4OMLeTnocdXkI8S1wmdugEs/trA543kWe7Ll9FnoZ8=;
+        b=qfDRx56bownUQgORh5CVVpwWiJOQnC0Q9NZ/y/hY2rS3O8NUt5jXNWoL4DDX23sOar
+         JX2wJdsvV6exolX/Mn0RTFfzclOVuX+v+EcvMRh7JmHkhG6gtb1VtMvgzJF0i7EsUAbF
+         EOuIBiQzcOvPdg1y1jT5wFs+COnduDtxH54kJ+kvL0vK8q+W/Q9bJ4CJ8lA+cl9u5KUB
+         rC9JDiyVLr+P4tqrcjPLb3jTmmUny8fe7SXsxy4zKH06yROIZI4bQU9YNYV9E+WZ7Ixu
+         DEp4FSu9A/5qalzBQSvfnTY5NZRHVMWxSoaHzyGsF0x/4T7ZPj01pMRDN/fdUcNPpvjf
+         KUUg==
+X-Gm-Message-State: AOAM531oL2PoTKzhu+V8Qadr9YqLPwmx+lFjHGw+eO0hqSOS7JGRja4V
+        cv/Dmt1idOm1zOZnH4mMBOItcsrs6slH/FW+
+X-Google-Smtp-Source: ABdhPJwFS7otTErfVHRnJroj7nAGGBjz+wlnxOVh/0z0wnZYpTYkaMm+sbRwc75l4uZwunuVvlNf1A==
+X-Received: by 2002:a1c:f406:: with SMTP id z6mr4556950wma.123.1608141796583;
+        Wed, 16 Dec 2020 10:03:16 -0800 (PST)
+Received: from localhost.localdomain ([8.20.101.195])
+        by smtp.gmail.com with ESMTPSA id b13sm4311281wrt.31.2020.12.16.10.03.15
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 16 Dec 2020 10:03:15 -0800 (PST)
+From:   Victor Stewart <v@nametag.social>
+To:     io-uring@vger.kernel.org, soheil@google.com, netdev@vger.kernel.org
+Subject: [PATCH net-next v4] udp:allow UDP cmsghdrs through io_uring 
+Date:   Wed, 16 Dec 2020 18:03:12 +0000
+Message-Id: <20201216180313.46610-1-v@nametag.social>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201216160056.27526-4-tobias@waldekranz.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 05:00:54PM +0100, Tobias Waldekranz wrote:
-> +	/* Drivers that benefit from having an ID associated with each
-> +	 * offloaded LAG should set this to the maximum number of
-> +	 * supported IDs. DSA will then maintain a mapping of _at
-> +	 * least_ these many IDs, accessible to drivers via
-> +	 * dsa_tree_lag_id().
-           ~~~~~~~~~~~~~~~
-           you named it dsa_lag_id() in the end.
+This patch adds PROTO_CMSG_DATA_ONLY to inet_dgram_ops and inet6_dgram_ops so that UDP_SEGMENT (GSO) and UDP_GRO can be used through io_uring.
 
-> +	 */
-> +	unsigned int		num_lag_ids;
-[...]
-> +	/* No IDs left, which is OK. Some drivers do not need it. The
-> +	 * ones that do, e.g. mv88e6xxx, will discover that
-> +	 * dsa_tree_lag_id returns an error for this device when
-           ~~~~~~~~~~~~~~~
-           same thing here.
+GSO and GRO are vital to bring QUIC servers on par with TCP throughputs, and together offer a higher
+throughput gain than io_uring alone (rate of data transit
+considering), thus io_uring is presently the lesser performance choice.
 
-> +	 * joining the LAG. The driver can then return -EOPNOTSUPP
-> +	 * back to DSA, which will fall back to a software LAG.
-> +	 */
+RE http://vger.kernel.org/lpc_net2018_talks/willemdebruijn-lpc2018-udpgso-paper-DRAFT-1.pdf,
+GSO is about +~63% and GRO +~82%.
+
+this patch closes that loophole. 
+
+net/ipv4/af_inet.c  | 1 +
+net/ipv6/af_inet6.c | 1 +
+net/socket.c        | 8 +++++---
+3 files changed, 7 insertions(+), 3 deletions(-)
+
+
