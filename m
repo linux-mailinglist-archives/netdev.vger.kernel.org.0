@@ -2,166 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1A32DC04F
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 13:29:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 773A42DC061
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 13:38:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726072AbgLPM3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 07:29:48 -0500
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:56571 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726056AbgLPM3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 07:29:48 -0500
-X-Originating-IP: 86.202.109.140
-Received: from localhost (lfbn-lyo-1-13-140.w86-202.abo.wanadoo.fr [86.202.109.140])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 946701BF203;
-        Wed, 16 Dec 2020 12:29:03 +0000 (UTC)
-Date:   Wed, 16 Dec 2020 13:29:03 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        id S1725985AbgLPMgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 07:36:49 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:44723 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbgLPMgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 07:36:49 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1kpW2G-0007cd-IZ; Wed, 16 Dec 2020 12:36:04 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [RFC PATCH net-next 10/16] net: mscc: ocelot: reapply bridge
- forwarding mask on bonding join/leave
-Message-ID: <20201216122903.GD2814589@piout.net>
-References: <20201208120802.1268708-1-vladimir.oltean@nxp.com>
- <20201208120802.1268708-11-vladimir.oltean@nxp.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        George Cherian <george.cherian@marvell.com>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] octeontx2-af: Fix undetected unmap PF error check
+Date:   Wed, 16 Dec 2020 12:36:04 +0000
+Message-Id: <20201216123604.15369-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201208120802.1268708-11-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/12/2020 14:07:56+0200, Vladimir Oltean wrote:
-> Applying the bridge forwarding mask currently is done only on the STP
-> state changes for any port. But it depends on both STP state changes,
-> and bonding interface state changes. Export the bit that recalculates
-> the forwarding mask so that it could be reused, and call it when a port
-> starts and stops offloading a bonding interface.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-> ---
->  drivers/net/ethernet/mscc/ocelot.c | 68 +++++++++++++++++-------------
->  1 file changed, 38 insertions(+), 30 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> index c3c6682e6e79..ee0fcee8e09a 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.c
-> +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -899,11 +899,45 @@ static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
->  	return bond_mask;
->  }
->  
-> +static void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
-> +{
-> +	int port;
-> +
-> +	/* Apply FWD mask. The loop is needed to add/remove the current port as
-> +	 * a source for the other ports. If the source port is in a bond, then
-> +	 * all the other ports from that bond need to be removed from this
-> +	 * source port's forwarding mask.
-> +	 */
-> +	for (port = 0; port < ocelot->num_phys_ports; port++) {
-> +		if (ocelot->bridge_fwd_mask & BIT(port)) {
-> +			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(port);
-> +			int lag;
-> +
-> +			for (lag = 0; lag < ocelot->num_phys_ports; lag++) {
-> +				unsigned long bond_mask = ocelot->lags[lag];
-> +
-> +				if (!bond_mask)
-> +					continue;
-> +
-> +				if (bond_mask & BIT(port)) {
-> +					mask &= ~bond_mask;
-> +					break;
-> +				}
-> +			}
-> +
-> +			ocelot_write_rix(ocelot, mask,
-> +					 ANA_PGID_PGID, PGID_SRC + port);
-> +		} else {
-> +			ocelot_write_rix(ocelot, 0,
-> +					 ANA_PGID_PGID, PGID_SRC + port);
-> +		}
-> +	}
-> +}
-> +
->  void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
->  {
->  	struct ocelot_port *ocelot_port = ocelot->ports[port];
->  	u32 port_cfg;
-> -	int p;
->  
->  	if (!(BIT(port) & ocelot->bridge_mask))
->  		return;
-> @@ -927,35 +961,7 @@ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
->  
->  	ocelot_write_gix(ocelot, port_cfg, ANA_PORT_PORT_CFG, port);
->  
-> -	/* Apply FWD mask. The loop is needed to add/remove the current port as
-> -	 * a source for the other ports. If the source port is in a bond, then
-> -	 * all the other ports from that bond need to be removed from this
-> -	 * source port's forwarding mask.
-> -	 */
-> -	for (p = 0; p < ocelot->num_phys_ports; p++) {
-> -		if (ocelot->bridge_fwd_mask & BIT(p)) {
-> -			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(p);
-> -			int lag;
-> -
-> -			for (lag = 0; lag < ocelot->num_phys_ports; lag++) {
-> -				unsigned long bond_mask = ocelot->lags[lag];
-> -
-> -				if (!bond_mask)
-> -					continue;
-> -
-> -				if (bond_mask & BIT(p)) {
-> -					mask &= ~bond_mask;
-> -					break;
-> -				}
-> -			}
-> -
-> -			ocelot_write_rix(ocelot, mask,
-> -					 ANA_PGID_PGID, PGID_SRC + p);
-> -		} else {
-> -			ocelot_write_rix(ocelot, 0,
-> -					 ANA_PGID_PGID, PGID_SRC + p);
-> -		}
-> -	}
-> +	ocelot_apply_bridge_fwd_mask(ocelot);
->  }
->  EXPORT_SYMBOL(ocelot_bridge_stp_state_set);
->  
-> @@ -1315,6 +1321,7 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
->  	}
->  
->  	ocelot_setup_lag(ocelot, lag);
-> +	ocelot_apply_bridge_fwd_mask(ocelot);
->  	ocelot_set_aggr_pgids(ocelot);
->  
->  	return 0;
-> @@ -1350,6 +1357,7 @@ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
->  	ocelot_write_gix(ocelot, port_cfg | ANA_PORT_PORT_CFG_PORTID_VAL(port),
->  			 ANA_PORT_PORT_CFG, port);
->  
-> +	ocelot_apply_bridge_fwd_mask(ocelot);
->  	ocelot_set_aggr_pgids(ocelot);
->  }
->  EXPORT_SYMBOL(ocelot_port_lag_leave);
-> -- 
-> 2.25.1
-> 
+Currently the check for an unmap PF error is always going to be false
+because intr_val is a 32 bit int and is being bit-mask checked against
+1ULL << 32.  Fix this by making intr_val a u64 to match the type at it
+is copied from, namely npa_event_context->npa_af_rvu_ge.
 
+Addresses-Coverity: ("Operands don't affect result")
+Fixes: f1168d1e207c ("octeontx2-af: Add devlink health reporters for NPA")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+index 3f9d0ab6d5ae..bc0e4113370e 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+@@ -275,7 +275,8 @@ static int rvu_npa_report_show(struct devlink_fmsg *fmsg, void *ctx,
+ 			       enum npa_af_rvu_health health_reporter)
+ {
+ 	struct rvu_npa_event_ctx *npa_event_context;
+-	unsigned int intr_val, alloc_dis, free_dis;
++	unsigned int alloc_dis, free_dis;
++	u64 intr_val;
+ 	int err;
+ 
+ 	npa_event_context = ctx;
 -- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.29.2
+
