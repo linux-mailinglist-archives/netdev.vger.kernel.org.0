@@ -2,121 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 860412DC5F0
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 19:07:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05D632DC5FC
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 19:13:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729288AbgLPSH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 13:07:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
+        id S1729634AbgLPSMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 13:12:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727485AbgLPSH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 13:07:27 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94525C06179C;
-        Wed, 16 Dec 2020 10:06:46 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id y128so3610272ybf.10;
-        Wed, 16 Dec 2020 10:06:46 -0800 (PST)
+        with ESMTP id S1729627AbgLPSMi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 13:12:38 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24033C061794;
+        Wed, 16 Dec 2020 10:11:58 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id m5so2091454pjv.5;
+        Wed, 16 Dec 2020 10:11:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VodWZpWl/+uWOhTMN//0IR82qShPVli3GP+B85kzebI=;
-        b=HgkKI4G/HgYCipvAAw6VhORa1cxXlRphEmiOOjtS8+2DFX+gWbUH4AgXZu1fKdwTSn
-         pSEwp3kHpSA4r7/4NxgDyoYMq0tKm/y85UCWN67D5z6XUY7lDLG22Qdtq6qYxvnvjbww
-         vpE5oMNJc7B6/xs9K2YdOq33yJV9YQTkCdIkFNfCYtqUjqu2RcgHZjRislkx1bLKOdB2
-         vKCiFImSSimyu3dWk69QIb5gQzSytCf8ye7F1iUMJgLBIAaX58tad+2YxLXOWsY63wv+
-         euV/PCLRJ3Ri7H7MY6D5AmdYQsejL4SNlH/xxbqY4xjMgJhgB1qJalD8gL2wA6C0a8Cg
-         N7rw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MoM0QOrttNDmqB2jq4Q8+3+4bGHdnVDY4snfv2F9MW8=;
+        b=GOqcFVXBXD3kZ3E2Fj+lUGpeNWjU+dVes9tjvPFA7CjH16JZ8NDQ4tpc7+JrHwCw4c
+         PdsfEj6XV4cy19YvrEpf3SLMCf1TjDmw7wfE4w2Gpb+soC+ikPgsBXkb8f/mRUTzJwCq
+         Jmk/Z+N0QNTB8SYtS17c11G4VeMcAGSlKaJMle+IkV0cfmq+uyFl2G8YInY258jzLNhJ
+         1zoezZ1OXTE1gyQyVbsx9krTbshJch5eEAnr/vOQ1NDlddv/rl0JEs9mvRHoesL4Jcse
+         VYaaLxsYoYLPU3iKqvhNl+gyWhY56pMcfCwAWHym0rR6hxYv2dlhazwB6A+Cf05I3ZjF
+         wIQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VodWZpWl/+uWOhTMN//0IR82qShPVli3GP+B85kzebI=;
-        b=WBpr3s+nT07obq2vNyYuYfh8SSiFdX5lUAYG9YpKX7Nt/pYZBJ8r8/9BL1MTk09Nwh
-         +Y5D0m8utIxUdYEj6HfhVlsKdDG+vBUnsOVHoVsT73oU5fPIy0LZffOHNzMYJ4k+c1Vy
-         4AX/JX7BaVchwO59f6hBUkXkmAkS1ieYsi2DOmSZ3WWWbE2DJqXUokbkg3gs19lyDjjG
-         FqKdBF57qucwKoFw5yc6t008eDZCwkIurWI+6e+NVGCs/bKLxiNjQ8B0qTvOxUQybfQY
-         gZvjBuFZ843okEnVIATNXlpnOxLEG2/LcFQQtN1pQR+9/noYj8i+5TQ2Azid8LgB4drT
-         bFxA==
-X-Gm-Message-State: AOAM531ajL0MXaNg7ZM43zUEltXWJ0T0oNKrikzNEFKh4Z8x/+r3UBvJ
-        u1vgvhd72kIJ3BYbbn2fHQa/L28AcyYFcmhNJJg=
-X-Google-Smtp-Source: ABdhPJy3g5GfYo5WT+IeLrwHD6qpe8ngg3vhanZs6hYwZjszn/hqZ+Z9uHSwjKHHvo6ZnPgPboPTG5wVZW+geoDjMwc=
-X-Received: by 2002:a25:aea8:: with SMTP id b40mr52596024ybj.347.1608142005891;
- Wed, 16 Dec 2020 10:06:45 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MoM0QOrttNDmqB2jq4Q8+3+4bGHdnVDY4snfv2F9MW8=;
+        b=mQ3i58/wAQJ7beU1hEFsp5OPeaRRplBoVVP9o5Gu1Ih9clHWy7IYg43SCZ2pNG6YV4
+         vCl+nXV0pVhbI14NWhnoFcw+2Z0xebgaCZkrRdOGEdoJ5YZCA9oHqY1EkjY7W6HRV8tH
+         RtvzqeTJ8YEM3mVxfaOqhnQXhZweDcBGCpBaNasdNdqtVCtTexQAniCTveeooOI6PUCc
+         it/HxiAL4/wQTSPRRkfqqrTfOXcuZ+2lCLe9JmAUoHeI+tYDX3Bn+v4nZdl0enmzqiQw
+         JS1VFrsj/b5O5CrJiRTci/1OW1DT4Jk081UviLejyBDdIp3Yg0NSpO8Sy/y52kgZ8lZ/
+         vCeg==
+X-Gm-Message-State: AOAM531+tfEyR4RNkdfKf8+iPey5mgkZ8zhzdOuk8GMXJpz58abEU5Pn
+        RYUWgF6AzK3vbNe89USZK8HaRUnMqdnZ/X8=
+X-Google-Smtp-Source: ABdhPJx0TPjLXdmPHeYFKEuRG7aVcagguJHauwL7gnfBW9YwYiJELj+uMIYgG3ooUtvZaZFoslVQnQ==
+X-Received: by 2002:a17:90a:f683:: with SMTP id cl3mr4120692pjb.136.1608142317653;
+        Wed, 16 Dec 2020 10:11:57 -0800 (PST)
+Received: from PWN (59-125-13-244.HINET-IP.hinet.net. [59.125.13.244])
+        by smtp.gmail.com with ESMTPSA id j16sm3530775pgl.50.2020.12.16.10.11.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Dec 2020 10:11:51 -0800 (PST)
+Date:   Wed, 16 Dec 2020 13:11:35 -0500
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     syzbot <syzbot+cfa88ddd0655afa88763@syzkaller.appspotmail.com>
+Cc:     ast@kernel.org, bjorn.topel@intel.com, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, jonathan.lemon@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: memory leak in xskq_create
+Message-ID: <20201216181135.GA94576@PWN>
+References: <0000000000002aca2e05b659af04@google.com>
 MIME-Version: 1.0
-References: <CAEf4BzYBvz4TDayTE=Bc_bjqvOGaavmmw1sJhOCKhq9DwUpd4A@mail.gmail.com>
- <20201215182011.15755-1-kamal@canonical.com>
-In-Reply-To: <20201215182011.15755-1-kamal@canonical.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Dec 2020 10:06:35 -0800
-Message-ID: <CAEf4BzYgnDWRswYJPnMdtACs7K5mckbfHX2i68YXhha4q=ywFw@mail.gmail.com>
-Subject: Re: [PATCH v2] selftests/bpf: clarify build error if no vmlinux
-To:     Kamal Mostafa <kamal@canonical.com>
-Cc:     linux- stable <stable@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000002aca2e05b659af04@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 10:20 AM Kamal Mostafa <kamal@canonical.com> wrote:
->
-> If Makefile cannot find any of the vmlinux's in its VMLINUX_BTF_PATHS list,
-> it tries to run btftool incorrectly, with VMLINUX_BTF unset:
->
->     bpftool btf dump file $(VMLINUX_BTF) format c
->
-> Such that the keyword 'format' is misinterpreted as the path to vmlinux.
-> The resulting build error message is fairly cryptic:
->
->       GEN      vmlinux.h
->     Error: failed to load BTF from format: No such file or directory
->
-> This patch makes the failure reason clearer by yielding this instead:
->
->     Makefile:...: *** cannot find a vmlinux for VMLINUX_BTF at any of
->     "{paths}".  Stop.
->
-> Fixes: acbd06206bbb ("selftests/bpf: Add vmlinux.h selftest exercising tracing of syscalls")
-> Cc: stable@vger.kernel.org # 5.7+
-> Signed-off-by: Kamal Mostafa <kamal@canonical.com>
-> ---
+Hi all,
 
-Applied to bpf tree, thanks. This conflicted with a67079b03165
-("selftests/bpf: fix bpf_testmod.ko recompilation logic"), I resolved
-the conflict and capitalized "Cannot" in the error message.
+On Sun, Dec 13, 2020 at 06:53:10AM -0800, syzbot wrote:
+> BUG: memory leak
+> unreferenced object 0xffff88810f897940 (size 64):
+>   comm "syz-executor991", pid 8502, jiffies 4294942194 (age 14.080s)
+>   hex dump (first 32 bytes):
+>     7f 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 a0 37 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ..7.............
+>   backtrace:
+>     [<00000000639d0dd1>] xskq_create+0x23/0xd0 include/linux/slab.h:552
+>     [<00000000b680b035>] xsk_init_queue net/xdp/xsk.c:508 [inline]
+>     [<00000000b680b035>] xsk_setsockopt+0x1c4/0x590 net/xdp/xsk.c:875
+>     [<000000002b302260>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2132
+>     [<00000000ae03723e>] __do_sys_setsockopt net/socket.c:2143 [inline]
+>     [<00000000ae03723e>] __se_sys_setsockopt net/socket.c:2140 [inline]
+>     [<00000000ae03723e>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2140
+>     [<0000000005c2b4a0>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>     [<0000000003db140f>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
->
-> [v2] moves the check to right after the VMLINUX_BTF definition.
->
->  tools/testing/selftests/bpf/Makefile | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 542768f5195b..7ba631f495f7 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -146,6 +146,9 @@ VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)                                \
->                      /sys/kernel/btf/vmlinux                            \
->                      /boot/vmlinux-$(shell uname -r)
->  VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
-> +ifeq ($(VMLINUX_BTF),)
-> +$(error cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)")
-> +endif
->
->  DEFAULT_BPFTOOL := $(SCRATCH_DIR)/sbin/bpftool
->
-> --
-> 2.17.1
->
+I have tested the following diff locally against syzbot's reproducer,
+and sent a patch to it [1] for testing.  I will send a real patch here
+tomorrow if syzbot is happy about it.  Please see explanation below.
+
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -37,6 +37,9 @@ void xp_destroy(struct xsk_buff_pool *pool)
+        if (!pool)
+                return;
+
++       xskq_destroy(pool->fq);
++       xskq_destroy(pool->cq);
++
+        kvfree(pool->heads);
+        kvfree(pool);
+ }
+@@ -234,16 +237,6 @@ static void xp_release_deferred(struct work_struct *work)
+        xp_clear_dev(pool);
+        rtnl_unlock();
+
+-       if (pool->fq) {
+-               xskq_destroy(pool->fq);
+-               pool->fq = NULL;
+-       }
+-
+-       if (pool->cq) {
+-               xskq_destroy(pool->cq);
+-               pool->cq = NULL;
+-       }
+-
+        xdp_put_umem(pool->umem, false);
+        xp_destroy(pool);
+ }
+
+When xsk_bind() allocates `xs->pool` but something else goes wrong:
+
+		xs->pool = xp_create_and_assign_umem(xs, xs->umem);
+		[...]
+		if (err) {
+			xp_destroy(xs->pool);
+
+xp_destroy() doesn't free `pool->{f,c}q`, causing a memory leak.  Move
+`xskq_destroy(pool->{f,c}q)` from xp_release_deferred() to xp_destroy().
+
+Also, since xskq_destroy() already does null check, I think it's
+unnecessary to do it again here?
+
+Thanks,
+Peilin Ye
+
+[1] https://syzkaller.appspot.com/bug?id=fea808dfe3c6dfdd6ba9778becbffe0b14e91294
