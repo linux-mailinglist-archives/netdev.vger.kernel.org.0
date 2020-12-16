@@ -2,108 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DADF42DBC8E
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 09:22:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06E8E2DBCB9
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 09:32:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725997AbgLPIVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 03:21:43 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:9210 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725274AbgLPIVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 03:21:43 -0500
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Cwp2s1Dc1zkppM;
-        Wed, 16 Dec 2020 16:20:05 +0800 (CST)
-Received: from localhost (10.174.243.127) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.498.0; Wed, 16 Dec 2020
- 16:20:46 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <netdev@vger.kernel.org>, <mst@redhat.com>, <jasowang@redhat.com>,
-        <willemdebruijn.kernel@gmail.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <jerry.lilijun@huawei.com>, <chenchanghu@huawei.com>,
-        <xudingke@huawei.com>, <brian.huangbin@huawei.com>,
-        Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendmsg fails
-Date:   Wed, 16 Dec 2020 16:20:37 +0800
-Message-ID: <6b4c5fff8705dc4b5b6a25a45c50f36349350c73.1608065644.git.wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
-In-Reply-To: <cover.1608065644.git.wangyunjian@huawei.com>
-References: <cover.1608065644.git.wangyunjian@huawei.com>
+        id S1725913AbgLPIb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 03:31:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51373 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725287AbgLPIb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 03:31:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608107430;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rJk4b0qKB9nHSk8Z04RQF0+zGdRza+ILSu4IdYlp+aU=;
+        b=YdT+++jRHXW/my78rtRIFxax7/CGE0yJltnX+NFzeq+iFRkDJbkUaX+Kr0tngjITFOp6IZ
+        LcLpdjkYM+q+5ngb7oc7cuJiCYLH8gdt4f0+COMV6XHn2r8nkh3HXpkqIjq+Igm7arRjBo
+        xy/0opV3YEDIOAUwjgM8ZOd43NgVyjs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-98--dbtsSWaMaaEcTdveJUEGg-1; Wed, 16 Dec 2020 03:30:28 -0500
+X-MC-Unique: -dbtsSWaMaaEcTdveJUEGg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E7657803621;
+        Wed, 16 Dec 2020 08:30:26 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5889860C15;
+        Wed, 16 Dec 2020 08:30:17 +0000 (UTC)
+Date:   Wed, 16 Dec 2020 09:30:15 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, alexander.duyck@gmail.com, saeed@kernel.org,
+        brouer@redhat.com
+Subject: Re: [PATCH v3 bpf-next 2/2] net: xdp: introduce xdp_prepare_buff
+ utility routine
+Message-ID: <20201216093015.3a0b78e2@carbon>
+In-Reply-To: <20201215151344.GA24650@ranger.igk.intel.com>
+References: <cover.1607794551.git.lorenzo@kernel.org>
+        <71d5ae9f810c2c80f1cb09e304330be0b5ce5345.1607794552.git.lorenzo@kernel.org>
+        <20201215123643.GA23785@ranger.igk.intel.com>
+        <20201215134710.GB5477@lore-desk>
+        <6886cd02-8dec-1905-b878-d45ee9a0c9b4@iogearbox.net>
+        <20201215150620.GC5477@lore-desk>
+        <20201215151344.GA24650@ranger.igk.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.243.127]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+On Tue, 15 Dec 2020 16:13:44 +0100
+Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
 
-Currently we break the loop and wake up the vhost_worker when
-sendmsg fails. When the worker wakes up again, we'll meet the
-same error. This will cause high CPU load. To fix this issue,
-we can skip this description by ignoring the error. When we
-exceeds sndbuf, the return value of sendmsg is -EAGAIN. In
-the case we don't skip the description and don't drop packet.
+> On Tue, Dec 15, 2020 at 04:06:20PM +0100, Lorenzo Bianconi wrote:
+> > > On 12/15/20 2:47 PM, Lorenzo Bianconi wrote:
+> > > [...]  
+> > > > > > diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+> > > > > > index 329397c60d84..61d3f5f8b7f3 100644
+> > > > > > --- a/drivers/net/xen-netfront.c
+> > > > > > +++ b/drivers/net/xen-netfront.c
+> > > > > > @@ -866,10 +866,8 @@ static u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
+> > > > > >   	xdp_init_buff(xdp, XEN_PAGE_SIZE - XDP_PACKET_HEADROOM,
+> > > > > >   		      &queue->xdp_rxq);
+> > > > > > -	xdp->data_hard_start = page_address(pdata);
+> > > > > > -	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
+> > > > > > +	xdp_prepare_buff(xdp, page_address(pdata), XDP_PACKET_HEADROOM, len);
+> > > > > >   	xdp_set_data_meta_invalid(xdp);
+> > > > > > -	xdp->data_end = xdp->data + len;
+> > > > > >   	act = bpf_prog_run_xdp(prog, xdp);
+> > > > > >   	switch (act) {
+> > > > > > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > > > > > index 3fb3a9aa1b71..66d8a4b317a3 100644
+> > > > > > --- a/include/net/xdp.h
+> > > > > > +++ b/include/net/xdp.h
+> > > > > > @@ -83,6 +83,18 @@ xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
+> > > > > >   	xdp->rxq = rxq;
+> > > > > >   }
+> > > > > > +static inline void  
+> > > 
+> > > nit: maybe __always_inline  
+> > 
+> > ack, I will add in v4
+> >   
+> > >   
+> > > > > > +xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
+> > > > > > +		 int headroom, int data_len)
+> > > > > > +{
+> > > > > > +	unsigned char *data = hard_start + headroom;
+> > > > > > +
+> > > > > > +	xdp->data_hard_start = hard_start;
+> > > > > > +	xdp->data = data;
+> > > > > > +	xdp->data_end = data + data_len;
+> > > > > > +	xdp->data_meta = data;
+> > > > > > +}
+> > > > > > +
+> > > > > >   /* Reserve memory area at end-of data area.
+> > > > > >    *  
+> > > 
+> > > For the drivers with xdp_set_data_meta_invalid(), we're basically setting xdp->data_meta
+> > > twice unless compiler is smart enough to optimize the first one away (did you double check?).
+> > > Given this is supposed to be a cleanup, why not integrate this logic as well so the
+> > > xdp_set_data_meta_invalid() doesn't get extra treatment?  
+> 
+> That's what I was trying to say previously.
+> 
+> > 
+> > we discussed it before, but I am fine to add it in v4. Something like:
+> > 
+> > static __always_inline void
+> > xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
+> > 		 int headroom, int data_len, bool meta_valid)
+> > {
+> > 	unsigned char *data = hard_start + headroom;
+> > 	
+> > 	xdp->data_hard_start = hard_start;
+> > 	xdp->data = data;
+> > 	xdp->data_end = data + data_len;
+> > 	xdp->data_meta = meta_valid ? data : data + 1;  
+> 
+> This will introduce branch, so for intel drivers we're getting the
+> overhead of one add and a branch. I'm still opting for a separate helper.
 
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/vhost/net.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+I should think, as this gets inlined the compiler should be able to
+remove the branch.  I assume that the usage of 'meta_valid' will be a
+const in the drivers.  Maybe we should have the API be 'const bool meta_valid'?
 
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index c8784dfafdd7..3d33f3183abe 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -827,16 +827,13 @@ static void handle_tx_copy(struct vhost_net *net, struct socket *sock)
- 				msg.msg_flags &= ~MSG_MORE;
- 		}
- 
--		/* TODO: Check specific error and bomb out unless ENOBUFS? */
- 		err = sock->ops->sendmsg(sock, &msg, len);
--		if (unlikely(err < 0)) {
-+		if (unlikely(err == -EAGAIN)) {
- 			vhost_discard_vq_desc(vq, 1);
- 			vhost_net_enable_vq(net, vq);
- 			break;
--		}
--		if (err != len)
--			pr_debug("Truncated TX packet: len %d != %zd\n",
--				 err, len);
-+		} else if (unlikely(err != len))
-+			vq_err(vq, "Fail to sending packets err : %d, len : %zd\n", err, len);
- done:
- 		vq->heads[nvq->done_idx].id = cpu_to_vhost32(vq, head);
- 		vq->heads[nvq->done_idx].len = 0;
-@@ -922,7 +919,6 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
- 			msg.msg_flags &= ~MSG_MORE;
- 		}
- 
--		/* TODO: Check specific error and bomb out unless ENOBUFS? */
- 		err = sock->ops->sendmsg(sock, &msg, len);
- 		if (unlikely(err < 0)) {
- 			if (zcopy_used) {
-@@ -931,13 +927,14 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
- 				nvq->upend_idx = ((unsigned)nvq->upend_idx - 1)
- 					% UIO_MAXIOV;
- 			}
--			vhost_discard_vq_desc(vq, 1);
--			vhost_net_enable_vq(net, vq);
--			break;
-+			if (err == -EAGAIN) {
-+				vhost_discard_vq_desc(vq, 1);
-+				vhost_net_enable_vq(net, vq);
-+				break;
-+			}
- 		}
- 		if (err != len)
--			pr_debug("Truncated TX packet: "
--				 " len %d != %zd\n", err, len);
-+			vq_err(vq, "Fail to sending packets err : %d, len : %zd\n", err, len);
- 		if (!zcopy_used)
- 			vhost_add_used_and_signal(&net->dev, vq, head, 0);
- 		else
+
+> static __always_inline void
+> xdp_prepare_buff(struct xdp_buff *xdp, unsigned char *hard_start,
+> 		 int headroom, int data_len)
+> {
+> 	unsigned char *data = hard_start + headroom;
+> 
+> 	xdp->data_hard_start = hard_start;
+> 	xdp->data = data;
+> 	xdp->data_end = data + data_len;
+> 	xdp_set_data_meta_invalid(xdp);
+> }
+> 
+> static __always_inline void
+> xdp_prepare_buff_meta(struct xdp_buff *xdp, unsigned char *hard_start,
+> 		      int headroom, int data_len)
+> {
+> 	unsigned char *data = hard_start + headroom;
+> 
+> 	xdp->data_hard_start = hard_start;
+> 	xdp->data = data;
+> 	xdp->data_end = data + data_len;
+> 	xdp->data_meta = data;
+> }
+
+Thanks to you Maciej for reviewing this! :-)
+
 -- 
-2.23.0
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
