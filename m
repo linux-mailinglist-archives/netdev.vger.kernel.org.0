@@ -2,136 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 128522DB7C5
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:23:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 636942DB7CF
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725877AbgLPAXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 19:23:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725790AbgLPAXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Dec 2020 19:23:13 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEFAC0613D3;
-        Tue, 15 Dec 2020 16:22:33 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id t37so16360626pga.7;
-        Tue, 15 Dec 2020 16:22:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wN3YakTF57bx+NxMg3BngggjobSuUoCn0/Pw6R9sGEc=;
-        b=b4R4XhW3L8nK6l+Q6vIGv1n0cCr37bXjW2rotMMCCwp98+L/+MPZyz0b7PlbLDtk+L
-         UsH9yrMnTlvu4OcZJ7jTTyE0k/BaSJgRPi7usBvqt2eIs7FzqRjmUAv6KJBOk8pdmrvy
-         PiAaWOu29aJmHY1+qZC8fkf0MyTGoc7tetkB75O8iDrg+SmwilXK0Tfo9ZaHJ82lWb8j
-         XCoPIfRheoF29o7xOD+ihR5QggSECZ/kYm/tnQuzvW/3Ly5TAo7mwUgfW4P+O/HvjqCW
-         6KswOb2zu8cE1rpsnj84a9GtgIDBWzk6e10pzGDh85fmJqjZrC+QvEqCtiaionsqbC9L
-         F36A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wN3YakTF57bx+NxMg3BngggjobSuUoCn0/Pw6R9sGEc=;
-        b=cVXPpykGtfzr4mu1PMkz0UILib1M/5D/1b646REhTZkt4Ny72rpI4OepOMFYv7QW6u
-         Sk3eqSR3mH+ccs7nRwiEIZKsIh2C4KN3SGC/XW8e9a5tnsXR4AxAl1aGs0gDp9fEKMwl
-         dDPYXb2xM8uKXuXR1bxl8EmG6nj/fqvdYvV44fOLJISh31aN3emtXTQnzG06dzIVNIUc
-         DzBh4bG+UxI/AH3eKNQhlFlRuoC/KfI/RHtcOQY33/Rma3cXEJimLon8tHm8JPKFUePX
-         5X1jxZP2JAKR7hMOSgcsq69DXgxLSdoUZ50YaDa0gAHh7MqBCF9XPrqQinTSkCSTCcX1
-         DXiA==
-X-Gm-Message-State: AOAM530Y51KYFkr21dmDf6IqyZW1pwAuqw509DAe4UUSdzpcx+KfqBDI
-        4hdT5JyjUVgaDQ7UBDEab4V867X12r2uuTW9v9c=
-X-Google-Smtp-Source: ABdhPJxHawkzPScjzVdjveBPerMx+xIuOYrlChGQs/tXn8iuXq79QopDja6OgXUsuDWBKSW1k1gBQ0hweBxduEextLU=
-X-Received: by 2002:a63:5114:: with SMTP id f20mr28704493pgb.5.1608078152432;
- Tue, 15 Dec 2020 16:22:32 -0800 (PST)
+        id S1725815AbgLPAaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 19:30:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42426 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725275AbgLPAaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 19:30:09 -0500
+Date:   Tue, 15 Dec 2020 16:29:26 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608078568;
+        bh=VTkAUEAF6WkXQR4gu6m9CwYBNRNST+TytdolTSVmuu4=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hhQqeADMM/A/U51ubJr3+NZz/pYlUuGyNii/DZaPzs1vQVe2E8N6wY+3WWUanwz/z
+         11YuG4J85z9xZAqrkCMqXpuoxaWz431qvDAMfl7pIsbuyVnVX6xWr99iw2o9FmdOkN
+         ZoFxZhTYn5nKCA7z70/FUD0DyenyDwMVPa+fQcbmATsTeRi5h5vKDlLBTYJJK1CXyD
+         T4tv0mnvMv/B7ccj3jH4rfvtW4XeaLe+I7QrgFi1hm5ueOANyJ3JODDRZBbo14b/m/
+         rBs8XEyTH3TR4g08BHOKY7p8M4/vlwUWZAG719/ocuXGSc02uyJvIxa2B886LA8tJB
+         G6tOfhXK9uhMw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        david.m.ertman@intel.com, dan.j.williams@intel.com,
+        kiran.patil@intel.com, gregkh@linuxfoundation.org,
+        Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Vu Pham <vuhuong@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net-next v5 04/15] devlink: Support add and delete devlink
+ port
+Message-ID: <20201215162926.0d7f3683@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201215090358.240365-5-saeed@kernel.org>
+References: <20201215090358.240365-1-saeed@kernel.org>
+        <20201215090358.240365-5-saeed@kernel.org>
 MIME-Version: 1.0
-References: <20201214201118.148126-1-xiyou.wangcong@gmail.com>
- <20201214201118.148126-3-xiyou.wangcong@gmail.com> <CAEf4BzZa15kMT+xEO9ZBmS-1=E85+k02zeddx+a_N_9+MOLhkQ@mail.gmail.com>
- <CAM_iQpVR_owLgZp1tYJyfWco-s4ov_ytL6iisg3NmtyPBdbO2Q@mail.gmail.com>
- <CAEf4BzbyHHDrECCEjrSC3A5X39qb_WZaU_3_qNONP+vHAcUzuQ@mail.gmail.com> <1de72112-d2b8-24c5-de29-0d3dfd361f16@iogearbox.net>
-In-Reply-To: <1de72112-d2b8-24c5-de29-0d3dfd361f16@iogearbox.net>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 15 Dec 2020 16:22:21 -0800
-Message-ID: <CAM_iQpVedtfLLbMroGCJuuRVrBPoVFgsLkQenTrwKD8uRft2wQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v2 2/5] bpf: introduce timeout map
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 3:23 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 12/15/20 11:03 PM, Andrii Nakryiko wrote:
-> > On Tue, Dec 15, 2020 at 12:06 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >>
-> >> On Tue, Dec 15, 2020 at 11:27 AM Andrii Nakryiko
-> >> <andrii.nakryiko@gmail.com> wrote:
-> >>>
-> >>> On Mon, Dec 14, 2020 at 12:17 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >>>>
-> >>>> From: Cong Wang <cong.wang@bytedance.com>
-> >>>>
-> >>>> This borrows the idea from conntrack and will be used for conntrack in
-> >>>> bpf too. Each element in a timeout map has a user-specified timeout
-> >>>> in secs, after it expires it will be automatically removed from the map.
-> [...]
-> >>>>          char key[] __aligned(8);
-> >>>>   };
-> >>>>
-> >>>> @@ -143,6 +151,7 @@ static void htab_init_buckets(struct bpf_htab *htab)
-> >>>>
-> >>>>          for (i = 0; i < htab->n_buckets; i++) {
-> >>>>                  INIT_HLIST_NULLS_HEAD(&htab->buckets[i].head, i);
-> >>>> +               atomic_set(&htab->buckets[i].pending, 0);
-> >>>>                  if (htab_use_raw_lock(htab)) {
-> >>>>                          raw_spin_lock_init(&htab->buckets[i].raw_lock);
-> >>>>                          lockdep_set_class(&htab->buckets[i].raw_lock,
-> >>>> @@ -431,6 +440,14 @@ static int htab_map_alloc_check(union bpf_attr *attr)
-> >>>>          return 0;
-> >>>>   }
-> >>>>
-> >>>> +static void htab_sched_gc(struct bpf_htab *htab, struct bucket *b)
-> >>>> +{
-> >>>> +       if (atomic_fetch_or(1, &b->pending))
-> >>>> +               return;
-> >>>> +       llist_add(&b->gc_node, &htab->gc_list);
-> >>>> +       queue_work(system_unbound_wq, &htab->gc_work);
-> >>>> +}
-> >>>
-> >>> I'm concerned about each bucket being scheduled individually... And
-> >>> similarly concerned that each instance of TIMEOUT_HASH will do its own
-> >>> scheduling independently. Can you think about the way to have a
-> >>> "global" gc/purging logic, and just make sure that buckets that need
-> >>> processing would be just internally chained together. So the purging
-> >>> routing would iterate all the scheduled hashmaps, and within each it
-> >>> will have a linked list of buckets that need processing? And all that
-> >>> is done just once each GC period. Not N times for N maps or N*M times
-> >>> for N maps with M buckets in each.
-> >>
-> >> Our internal discussion went to the opposite actually, people here argued
-> >> one work is not sufficient for a hashtable because there would be millions
-> >> of entries (max_entries, which is also number of buckets). ;)
-> >
-> > I was hoping that it's possible to expire elements without iterating
-> > the entire hash table every single time, only items that need to be
-> > processed. Hashed timing wheel is one way to do something like this,
-> > kernel has to solve similar problems with timeouts as well, why not
-> > taking inspiration there?
->
-> Couldn't this map be coupled with LRU map for example through flag on map
-> creation so that the different LRU map flavors can be used with it? For BPF
-> CT use case we do rely on LRU map to purge 'inactive' entries once full. I
-> wonder if for that case you then still need to schedule a GC at all.. e.g.
-> if you hit the condition time_after_eq64(now, entry->expires) you'd just
-> re-link the expired element from the public htab to e.g. the LRU's local
-> CPU's free/pending-list instead.
+On Tue, 15 Dec 2020 01:03:47 -0800 Saeed Mahameed wrote:
+> From: Parav Pandit <parav@nvidia.com>
+> 
+> Extended devlink interface for the user to add and delete port.
+> Extend devlink to connect user requests to driver to add/delete
+> such port in the device.
+> 
+> When driver routines are invoked, devlink instance lock is not held.
+> This enables driver to perform several devlink objects registration,
+> unregistration such as (port, health reporter, resource etc)
+> by using existing devlink APIs.
+> This also helps to uniformly use the code for port unregistration
+> during driver unload and during port deletion initiated by user.
+> 
+> Examples of add, show and delete commands:
+> $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
+> 
+> $ devlink port show
+> pci/0000:06:00.0/65535: type eth netdev ens2f0np0 flavour physical port 0 splittable false
+> 
+> $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
+> 
+> $ devlink port show pci/0000:06:00.0/32768
+> pci/0000:06:00.0/32768: type eth netdev eth0 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
+>   function:
+>     hw_addr 00:00:00:00:88:88 state inactive opstate detached
+> 
+> $ udevadm test-builtin net_id /sys/class/net/eth0
+> Load module index
+> Parsed configuration file /usr/lib/systemd/network/99-default.link
+> Created link configuration context.
+> Using default interface naming scheme 'v245'.
+> ID_NET_NAMING_SCHEME=v245
+> ID_NET_NAME_PATH=enp6s0f0npf0sf88
+> ID_NET_NAME_SLOT=ens2f0npf0sf88
+> Unload module index
+> Unloaded link configuration context.
+> 
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> Reviewed-by: Vu Pham <vuhuong@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 
-I doubt we can use size as a limit to kick off GC or LRU, it must be
-time-based. And in case of idle, there has to be an async GC, right?
+> diff --git a/include/net/devlink.h b/include/net/devlink.h
+> index 5bd43f0a79a8..f8cff3e402da 100644
+> --- a/include/net/devlink.h
+> +++ b/include/net/devlink.h
+> @@ -153,6 +153,17 @@ struct devlink_port {
+>  	struct mutex reporters_lock; /* Protects reporter_list */
+>  };
+>  
+> +struct devlink_port_new_attrs {
+> +	enum devlink_port_flavour flavour;
+> +	unsigned int port_index;
+> +	u32 controller;
+> +	u32 sfnum;
+> +	u16 pfnum;
 
-Thanks.
+Oh. So you had the structure which actually gets stored in memory for
+the lifetime of the device in patch 3 mispacked (u32 / u16 / u32 / u8).
+But this one with arguments is packed. Please be consistent.
+
+> +	u8 port_index_valid:1,
+> +	   controller_valid:1,
+> +	   sfnum_valid:1;
+> +};
+> +
+>  struct devlink_sb_pool_info {
+>  	enum devlink_sb_pool_type pool_type;
+>  	u32 size;
+> @@ -1363,6 +1374,34 @@ struct devlink_ops {
+>  	int (*port_function_hw_addr_set)(struct devlink *devlink, struct devlink_port *port,
+>  					 const u8 *hw_addr, int hw_addr_len,
+>  					 struct netlink_ext_ack *extack);
+> +	/**
+> +	 * @port_new: Port add function.
+> +	 *
+> +	 * Should be used by device driver to let caller add new port of a
+> +	 * specified flavour with optional attributes.
+
+Add a new port of a specified flavor with optional attributes.
+
+> +	 * Driver should return -EOPNOTSUPP if it doesn't support port addition
+
+s/should/must/
+
+> +	 * of a specified flavour or specified attributes. Driver should set
+> +	 * extack error message in case of fail to add the port. Devlink core
+
+s/fail to add the port/failure/
+
+> +	 * does not hold a devlink instance lock when this callback is invoked.
+
+Called without holding the devlink instance lock.
+
+> +	 * Driver must ensures synchronization when adding or deleting a port.
+
+s/ensures/ensure/ but really that's pretty obvious from the previous
+sentence.
+
+> +	 * Driver must register a port with devlink core.
+
+s/must/is expected to/
+
+Please make sure your comments and documentation are proof read by
+someone.
+
+> +static int devlink_nl_cmd_port_new_doit(struct sk_buff *skb,
+> +					struct genl_info *info)
+> +{
+> +	struct netlink_ext_ack *extack = info->extack;
+> +	struct devlink_port_new_attrs new_attrs = {};
+> +	struct devlink *devlink = info->user_ptr[0];
+> +
+> +	if (!info->attrs[DEVLINK_ATTR_PORT_FLAVOUR] ||
+> +	    !info->attrs[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Port flavour or PCI PF are not specified");
+> +		return -EINVAL;
+> +	}
+> +	new_attrs.flavour = nla_get_u16(info->attrs[DEVLINK_ATTR_PORT_FLAVOUR]);
+> +	new_attrs.pfnum =
+> +		nla_get_u16(info->attrs[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]);
+> +
+> +	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
+> +		new_attrs.port_index =
+> +			nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
+> +		new_attrs.port_index_valid = true;
+> +	}
+
+This is the desired port index of the new port?
+Or the index of the parent port?
+Let's make it abundantly clear since its a pass-thru argument for the
+driver to interpret.
+
+> +	if (info->attrs[DEVLINK_ATTR_PORT_CONTROLLER_NUMBER]) {
+> +		new_attrs.controller =
+> +			nla_get_u16(info->attrs[DEVLINK_ATTR_PORT_CONTROLLER_NUMBER]);
+> +		new_attrs.controller_valid = true;
+> +	}
+> +	if (info->attrs[DEVLINK_ATTR_PORT_PCI_SF_NUMBER]) {
+> +		new_attrs.sfnum = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_PCI_SF_NUMBER]);
+> +		new_attrs.sfnum_valid = true;
+> +	}
+> +
+> +	if (!devlink->ops->port_new)
+> +		return -EOPNOTSUPP;
+
+Why is this check not at the beginning of the function?
+Also should there be an extack on it?
+
+> +	return devlink->ops->port_new(devlink, &new_attrs, extack);
+
+This should return the identifier of the created port back to user
+space.
