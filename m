@@ -2,92 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16C5C2DBDCE
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 10:42:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 235172DBDFA
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 10:50:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725940AbgLPJl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 04:41:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51938 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725889AbgLPJl5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 04:41:57 -0500
-Date:   Wed, 16 Dec 2020 10:42:17 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1608111676;
-        bh=wwOdbgunRq2eKqn6jEC3Bs80LYViiIT+qaz21Cqol+s=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U8xz+2kdTBlKXeI7J5SDrWW1/jaWVXq5kmxd/L7Hil33cr+Dn6ZWIs9+dXhF63c9j
-         jXxlCaGd+cMoN5x6Gi6iY49Bsopmneyw7GqLTpn9Or28wGhUx1PVzIWzrs4d1icDR1
-         +Y9MD0ribWJJi2xNTn8xF88+79NAblfBZ8MLeHs0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Hemant Kumar <hemantk@codeaurora.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH v18 0/3] userspace MHI client interface driver
-Message-ID: <X9nWeXZz7lh4JdCb@kroah.com>
-References: <1607715903-16442-1-git-send-email-hemantk@codeaurora.org>
- <CAMZdPi8=9OsoCH_eV_JZohmFbuXcLv2kWNPLFzQUAKUCUHYs5A@mail.gmail.com>
+        id S1726259AbgLPJtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 04:49:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22338 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726250AbgLPJtU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 04:49:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608112073;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OnpaGqF6fBlhxGH2HmymIgB4u9qh1ujRtHG8EyWDWNA=;
+        b=KkJXAJe6lKZd7Y62+Xt58anaPs/dt07pb2u1UIyL4Qh50xD4e2eGg0dIUbTiarrezdVAa9
+        0fV7hIC51T8SLZKr9SKj9ScCcxfhfLlm6RvAVcWo4/aBlTZVIVVfao3kd87ISxHwe9cFXN
+        QIFJvR2tnad29A6WSfrOB1pHyk1qM2w=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-238-erp4Ffl4MBem82L7y5o0TA-1; Wed, 16 Dec 2020 04:47:50 -0500
+X-MC-Unique: erp4Ffl4MBem82L7y5o0TA-1
+Received: by mail-wr1-f69.google.com with SMTP id w9so7999409wrt.2
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 01:47:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OnpaGqF6fBlhxGH2HmymIgB4u9qh1ujRtHG8EyWDWNA=;
+        b=tFy9ydjEfTxTa52HCs64RzRxhs/qNdbHsELX9CebY27U15enjCf6n6ua2IESkY9mTD
+         Zfw1aksxFG8v9e8aN4vPnegj+mXKd4hUDprugsXDUNPxYGoe5aOhwdEq1mXhGc1iVLRr
+         YrZ9etrO/2n0ud0r41FWzYm267VApBgIynU6vq874dY8QrCoBc7kdMmrBe+nHDM/pDO5
+         +p8kAIXTPsiX3JnLnfMv9EaSJfBoEZSWkX4MQK61oUIlMZr2B/Ei50oc4dStlovF1Ebq
+         vz+PyQX0Ovy4xkjEJiZVXFUT5A6lYED112wXHNOcm2INjNnYqr/8KCpvV800oHm6cfSX
+         LJ0w==
+X-Gm-Message-State: AOAM533R45KRH7CDbA4Ho1l6I+e6qpoA2lZ2NVUiiRASvwiqJZB9vEVW
+        ooijad1d6FjGayg+jrifvkseHJYFVsHxQ9BC7Kv+VTIm+6bYI5CXgtqSZprjXUvrhmzkqf0Dem4
+        5PNH4W3lV0KYvGp1z
+X-Received: by 2002:adf:dc08:: with SMTP id t8mr37436424wri.195.1608112069509;
+        Wed, 16 Dec 2020 01:47:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzfV1vXW29xJdPdujDOdRLOpVukt+skk2qfzG8oqvVv1VkOHFftPxLfa9EpZYgdf+afl0EleA==
+X-Received: by 2002:adf:dc08:: with SMTP id t8mr37436406wri.195.1608112069274;
+        Wed, 16 Dec 2020 01:47:49 -0800 (PST)
+Received: from redhat.com (bzq-109-67-15-113.red.bezeqint.net. [109.67.15.113])
+        by smtp.gmail.com with ESMTPSA id l5sm2422805wrv.44.2020.12.16.01.47.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Dec 2020 01:47:48 -0800 (PST)
+Date:   Wed, 16 Dec 2020 04:47:45 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     eperezma@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lulu@redhat.com, eli@mellanox.com,
+        lingshan.zhu@intel.com, rob.miller@broadcom.com,
+        stefanha@redhat.com, sgarzare@redhat.com
+Subject: Re: [PATCH 00/21] Control VQ support in vDPA
+Message-ID: <20201216044051-mutt-send-email-mst@kernel.org>
+References: <20201216064818.48239-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMZdPi8=9OsoCH_eV_JZohmFbuXcLv2kWNPLFzQUAKUCUHYs5A@mail.gmail.com>
+In-Reply-To: <20201216064818.48239-1-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 10:17:30AM +0100, Loic Poulain wrote:
-> Hi Folks,
+On Wed, Dec 16, 2020 at 02:47:57PM +0800, Jason Wang wrote:
+> Hi All:
 > 
-> On Fri, 11 Dec 2020 at 20:45, Hemant Kumar <hemantk@codeaurora.org> wrote:
-> >
-> > This patch series adds support for UCI driver. UCI driver enables userspace
-> > clients to communicate to external MHI devices like modem. UCI driver probe
-> > creates standard character device file nodes for userspace clients to
-> > perform open, read, write, poll and release file operations. These file
-> > operations call MHI core layer APIs to perform data transfer using MHI bus
-> > to communicate with MHI device.
-> >
-> > This interface allows exposing modem control channel(s) such as QMI, MBIM,
-> > or AT commands to userspace which can be used to configure the modem using
-> > tools such as libqmi, ModemManager, minicom (for AT), etc over MHI. This is
-> > required as there are no kernel APIs to access modem control path for device
-> > configuration. Data path transporting the network payload (IP), however, is
-> > routed to the Linux network via the mhi-net driver. Currently driver supports
-> > QMI channel. libqmi is userspace MHI client which communicates to a QMI
-> > service using QMI channel. Please refer to
-> > https://www.freedesktop.org/wiki/Software/libqmi/ for additional information
-> > on libqmi.
-> >
-> > Patch is tested using arm64 and x86 based platform.
+> This series tries to add the support for control virtqueue in vDPA.
 > 
-> Are there any blockers or unadressed comments remaining on this
-> series? As far as I understand, the original blocker was the net/WiFi
-> mention in the commit message, that caused a legitimate concern from
-> network maintainer. It has been clarified now that this driver is not
-> for exposing any channel that could be otherwise handled properly by
-> an existing Linux subsystem/interface. It will be especially used as a
-> pipe for modem QMI channel (or AT commands) in the same way as the USB
-> CDC-WDM driver is doing (keeping userspace compatibility). Other MHI
-> channels, such as network data, QRTR, etc are not exposed and
-> correctly bound to the corresponding Linux subsystems.
+> Control virtqueue is used by networking device for accepting various
+> commands from the driver. It's a must to support multiqueue and other
+> configurations.
 > 
-> The correlated worry was that it could be a userspace channel facility
-> for 'everything qualcomm', but we could say the same for other
-> existing busses with userspace shunt (/dev/bus/usb, /dev/i2c,
-> /dev/spidev, PCI UIO, UART...). Moreover, it is mitigated by the fact
-> that not all MHI channels are exposed by default, but only the allowed
-> ones (QMI in the initial version). For sure, special care must be
-> given to any further channel addition.
+> When used by vhost-vDPA bus driver for VM, the control virtqueue
+> should be shadowed via userspace VMM (Qemu) instead of being assigned
+> directly to Guest. This is because Qemu needs to know the device state
+> in order to start and stop device correctly (e.g for Live Migration).
+> 
+> This requies to isolate the memory mapping for control virtqueue
+> presented by vhost-vDPA to prevent guest from accesing it directly.
+> To achieve this, vDPA introduce two new abstractions:
+> 
+> - address space: identified through address space id (ASID) and a set
+>                  of memory mapping in maintained
+> - virtqueue group: the minimal set of virtqueues that must share an
+>                  address space
 
-It's the middle of the merge window, we can't do anything with new
-patches at all until 5.11-rc1 is out, so please be patient.
+How will this support the pretty common case where control vq
+is programmed by the kernel through the PF, and others by the VFs?
 
-thanks,
 
-greg k-h
+I actually thought the way to support it is by exposing
+something like an "inject buffers" API which sends data to a given VQ.
+Maybe an ioctl, and maybe down the road uio ring can support batching
+these ....
+
+
+> 
+> Device needs to advertise the following attributes to vDPA:
+> 
+> - the number of address spaces supported in the device
+> - the number of virtqueue groups supported in the device
+> - the mappings from a specific virtqueue to its virtqueue groups
+> 
+> The mappings from virtqueue to virtqueue groups is fixed and defined
+> by vDPA device driver. E.g:
+> 
+> - For the device that has hardware ASID support, it can simply
+>   advertise a per virtqueue virtqueue group.
+> - For the device that does not have hardware ASID support, it can
+>   simply advertise a single virtqueue group that contains all
+>   virtqueues. Or if it wants a software emulated control virtqueue, it
+>   can advertise two virtqueue groups, one is for cvq, another is for
+>   the rest virtqueues.
+> 
+> vDPA also allow to change the association between virtqueue group and
+> address space. So in the case of control virtqueue, userspace
+> VMM(Qemu) may use a dedicated address space for the control virtqueue
+> group to isolate the memory mapping.
+> 
+> The vhost/vhost-vDPA is also extend for the userspace to:
+> 
+> - query the number of virtqueue groups and address spaces supported by
+>   the device
+> - query the virtqueue group for a specific virtqueue
+> - assocaite a virtqueue group with an address space
+> - send ASID based IOTLB commands
+> 
+> This will help userspace VMM(Qemu) to detect whether the control vq
+> could be supported and isolate memory mappings of control virtqueue
+> from the others.
+> 
+> To demonstrate the usage, vDPA simulator is extended to support
+> setting MAC address via a emulated control virtqueue.
+> 
+> Please review.
+> 
+> Changes since RFC:
+> 
+> - tweak vhost uAPI documentation
+> - switch to use device specific IOTLB really in patch 4
+> - tweak the commit log
+> - fix that ASID in vhost is claimed to be 32 actually but 16bit
+>   actually
+> - fix use after free when using ASID with IOTLB batching requests
+> - switch to use Stefano's patch for having separated iov
+> - remove unused "used_as" variable
+> - fix the iotlb/asid checking in vhost_vdpa_unmap()
+> 
+> Thanks
+> 
+> Jason Wang (20):
+>   vhost: move the backend feature bits to vhost_types.h
+>   virtio-vdpa: don't set callback if virtio doesn't need it
+>   vhost-vdpa: passing iotlb to IOMMU mapping helpers
+>   vhost-vdpa: switch to use vhost-vdpa specific IOTLB
+>   vdpa: add the missing comment for nvqs in struct vdpa_device
+>   vdpa: introduce virtqueue groups
+>   vdpa: multiple address spaces support
+>   vdpa: introduce config operations for associating ASID to a virtqueue
+>     group
+>   vhost_iotlb: split out IOTLB initialization
+>   vhost: support ASID in IOTLB API
+>   vhost-vdpa: introduce asid based IOTLB
+>   vhost-vdpa: introduce uAPI to get the number of virtqueue groups
+>   vhost-vdpa: introduce uAPI to get the number of address spaces
+>   vhost-vdpa: uAPI to get virtqueue group id
+>   vhost-vdpa: introduce uAPI to set group ASID
+>   vhost-vdpa: support ASID based IOTLB API
+>   vdpa_sim: advertise VIRTIO_NET_F_MTU
+>   vdpa_sim: factor out buffer completion logic
+>   vdpa_sim: filter destination mac address
+>   vdpasim: control virtqueue support
+> 
+> Stefano Garzarella (1):
+>   vdpa_sim: split vdpasim_virtqueue's iov field in out_iov and in_iov
+> 
+>  drivers/vdpa/ifcvf/ifcvf_main.c   |   9 +-
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c |  11 +-
+>  drivers/vdpa/vdpa.c               |   8 +-
+>  drivers/vdpa/vdpa_sim/vdpa_sim.c  | 292 ++++++++++++++++++++++++------
+>  drivers/vhost/iotlb.c             |  23 ++-
+>  drivers/vhost/vdpa.c              | 246 ++++++++++++++++++++-----
+>  drivers/vhost/vhost.c             |  23 ++-
+>  drivers/vhost/vhost.h             |   4 +-
+>  drivers/virtio/virtio_vdpa.c      |   2 +-
+>  include/linux/vdpa.h              |  42 ++++-
+>  include/linux/vhost_iotlb.h       |   2 +
+>  include/uapi/linux/vhost.h        |  25 ++-
+>  include/uapi/linux/vhost_types.h  |  10 +-
+>  13 files changed, 561 insertions(+), 136 deletions(-)
+> 
+> -- 
+> 2.25.1
+
