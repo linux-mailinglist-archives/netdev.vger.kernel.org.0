@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F332DB809
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 01:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDEB32DB82C
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 02:02:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726190AbgLPA6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Dec 2020 19:58:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49782 "EHLO mail.kernel.org"
+        id S1727036AbgLPBCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Dec 2020 20:02:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725869AbgLPA6k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Dec 2020 19:58:40 -0500
-Date:   Tue, 15 Dec 2020 16:57:58 -0800
+        id S1727006AbgLPBCD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Dec 2020 20:02:03 -0500
+Date:   Tue, 15 Dec 2020 17:00:56 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608080279;
-        bh=yx832H/XjCKHlXnPlAl5Tx/CbmPBGdiZ3w0hWU2l/DM=;
+        s=k20201202; t=1608080457;
+        bh=OJMslagCM3BtDsI4qwSdOMGqTWumk6XWgbXpw3Zb/E0=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QFsk+aIzc1xibj1EMATSReJT9x26YzzxPhWL+vRSD76bJoobbL6PKhWX+/FLuTknT
-         ow7SYsxuXQ89FzQfAOI+d7cJhYvaerF4O29+/0RNfoMFpDYpZL39V6Is2XqJQDoWel
-         jfw8/pDSdxw/w3n7WicI5+81vnMKUjtcJfN6tporfXkSxieMPtEoYX9V2rtvv38jt7
-         f+zMYzY+l7jw0yEZyLyZ3rT92LasK5YQ7zi/yvlMWepLkKhoHMdGQ6ImfiWMxqf0cv
-         O4Vr0ODcg2y9YIUp1akRyB/YyoRqULmQNZBMi+gqe+W5+//Icw2mzzgu9GG8DkiQnr
-         QBgXNDhrBFfwA==
+        b=lG6XgrhGIVZRZYFjUPghJT0v8y/zAZ6dTpoOnBYOVP2W2IxYU9TyzNqITV/masjkx
+         XAXqQhhaA7CMM4Z4ZcEEKpZbZyku01JAisK1UErjbAYcsF6qAAVzPwoG27SCeIWAD9
+         d1XKNVeuMI0+1m2yKN81qDYt9KG53uGsBQlyHbmo92aszKQaVTHDKcZnlCI+I5i6Ey
+         Xhe4oVVEDKfP27MUjDKIkiB976ZAoX9/U6ADSp9OngxthnPB4dXWbmCkRsFOswDDgU
+         CuCmg7xW18Sw72YDseFuDx2mjCq1P4iTB/EWS3je6qFg9JTR0eD3hlMXnvx4yjMFss
+         RjR2bgW/WHKUg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Saeed Mahameed <saeed@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -32,13 +32,14 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>,
         david.m.ertman@intel.com, dan.j.williams@intel.com,
         kiran.patil@intel.com, gregkh@linuxfoundation.org,
-        Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next v5 13/15] devlink: Add devlink port documentation
-Message-ID: <20201215165758.4ff58f85@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201215090358.240365-14-saeed@kernel.org>
+Subject: Re: [net-next v5 14/15] devlink: Extend devlink port documentation
+ for subfunctions
+Message-ID: <20201215170056.6a952e9b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201215090358.240365-15-saeed@kernel.org>
 References: <20201215090358.240365-1-saeed@kernel.org>
-        <20201215090358.240365-14-saeed@kernel.org>
+        <20201215090358.240365-15-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,90 +47,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 01:03:56 -0800 Saeed Mahameed wrote:
-> +PCI controllers
-> +---------------
-> +In most cases a PCI device has only one controller. A controller consists of
-> +potentially multiple physical and virtual functions. Such PCI function consists
-> +of one or more ports.
-
-s/Such//
-
-you say consists in two consecutive sentences.
-
-> This port of the function is represented by the devlink eswitch port.
-
-"This port of the function"? Why not just "Each port"?
-
-> +A PCI Device connected to multiple CPUs or multiple PCI root complexes or
-
-Why is device capitalized all of the sudden?
-
-> +SmartNIC, however, may have multiple controllers. For a device with multiple
-
-a SmartNIC or SmartNICs
-
-> +controllers, each controller is distinguished by a unique controller number.
-> +An eswitch on the PCI device support ports of multiple controllers.
-
-eswitch is on a PCI device?
-
-> +An example view of a system with two controllers::
+On Tue, 15 Dec 2020 01:03:57 -0800 Saeed Mahameed wrote:
+> +Subfunctions are lightweight functions that has parent PCI function on which
+> +it is deployed. Subfunctions are created and deployed in unit of 1. Unlike
+> +SRIOV VFs, they don't require their own PCI virtual function. They communicate
+> +with the hardware through the parent PCI function. Subfunctions can possibly
+> +scale better.
 > +
-> +                 ---------------------------------------------------------
-> +                 |                                                       |
-> +                 |           --------- ---------         ------- ------- |
-> +    -----------  |           | vf(s) | | sf(s) |         |vf(s)| |sf(s)| |
-> +    | server  |  | -------   ----/---- ---/----- ------- ---/--- ---/--- |
-> +    | pci rc  |=== | pf0 |______/________/       | pf1 |___/_______/     |
-> +    | connect |  | -------                       -------                 |
-> +    -----------  |     | controller_num=1 (no eswitch)                   |
-> +                 ------|--------------------------------------------------
-> +                 (internal wire)
-> +                       |
-> +                 ---------------------------------------------------------
-> +                 | devlink eswitch ports and reps                        |
-> +                 | ----------------------------------------------------- |
-> +                 | |ctrl-0 | ctrl-0 | ctrl-0 | ctrl-0 | ctrl-0 |ctrl-0 | |
-> +                 | |pf0    | pf0vfN | pf0sfN | pf1    | pf1vfN |pf1sfN | |
-> +                 | ----------------------------------------------------- |
-> +                 | |ctrl-1 | ctrl-1 | ctrl-1 | ctrl-1 | ctrl-1 |ctrl-1 | |
-> +                 | |pf0    | pf0vfN | pf0sfN | pf1    | pf1vfN |pf1sfN | |
-> +                 | ----------------------------------------------------- |
-> +                 |                                                       |
-> +                 |                                                       |
-> +    -----------  |           --------- ---------         ------- ------- |
-> +    | smartNIC|  |           | vf(s) | | sf(s) |         |vf(s)| |sf(s)| |
-> +    | pci rc  |==| -------   ----/---- ---/----- ------- ---/--- ---/--- |
-> +    | connect |  | | pf0 |______/________/       | pf1 |___/_______/     |
-> +    -----------  | -------                       -------                 |
-> +                 |                                                       |
-> +                 |  local controller_num=0 (eswitch)                     |
-> +                 ---------------------------------------------------------
+> +To use a subfunction, 3 steps setup sequence is followed.
+> +(1) create - create a subfunction;
+> +(2) configure - configure subfunction attributes;
+> +(3) deploy - deploy the subfunction;
 > +
-> +In above example, external controller (identified by controller number = 1)
-> +doesn't have eswitch. Local controller (identified by controller number = 0)
-> +has the eswitch. Devlink instance on local controller has eswitch devlink
-> +ports representing ports for both the controllers.
+> +Subfunction management is done using devlink port user interface.
+> +User performs setup on the subfunction management device.
 > +
-> +Port function configuration
-> +===========================
+> +(1) Create
+> +----------
+> +A subfunction is created using a devlink port interface. User adds the
+> +subfunction by adding a devlink port of subfunction flavour. The devlink
+> +kernel code calls down to subfunction management driver (devlink op) and asks
+> +it to create a subfunction devlink port. Driver then instantiates the
+> +subfunction port and any associated objects such as health reporters and
+> +representor netdevice.
 > +
-> +A user can configure the port function attribute before enumerating the
-
-s/A user/User/
-
-/port function attribute/$something_meaningful/
-
-> +PCI function. Usually it means, user should configure port function attribute
-
-attributes, plural
-
-> +before a bus specific device for the function is created. However, when
-> +SRIOV is enabled, virtual function devices are created on the PCI bus.
-> +Hence, function attribute should be configured before binding virtual
-> +function device to the driver.
+> +(2) Configure
+> +-------------
+> +Subfunction devlink port is created but it is not active yet. That means the
+> +entities are created on devlink side, the e-switch port representor is created,
+> +but the subfunction device itself it not created. User might use e-switch port
+> +representor to do settings, putting it into bridge, adding TC rules, etc. User
+> +might as well configure the hardware address (such as MAC address) of the
+> +subfunction while subfunction is inactive.
 > +
-> +User may set the hardware address of the function represented by the devlink
-> +port function. For Ethernet port function this means a MAC address.
+> +(3) Deploy
+> +----------
+> +Once subfunction is configured, user must activate it to use it. Upon
+> +activation, subfunction management driver asks the subfunction management
+> +device to instantiate the actual subfunction device on particular PCI function.
+> +A subfunction device is created on the :ref:`Documentation/driver-api/auxiliary_bus.rst <auxiliary_bus>`. At this point matching
+> +subfunction driver binds to the subfunction's auxiliary device.
+> +
+> +Terms and Definitions
+> +=====================
+> +
+> +.. list-table:: Terms and Definitions
+> +   :widths: 22 90
+> +
+> +   * - Term
+> +     - Definitions
+> +   * - ``PCI device``
+> +     - A physical PCI device having one or more PCI bus consists of one or
+> +       more PCI controllers.
+> +   * - ``PCI controller``
+> +     -  A controller consists of potentially multiple physical functions,
+> +        virtual functions and subfunctions.
+> +   * - ``Port function``
+> +     -  An object to manage the function of a port.
+> +   * - ``Subfunction``
+> +     -  A lightweight function that has parent PCI function on which it is
+> +        deployed.
+> +   * - ``Subfunction device``
+> +     -  A bus device of the subfunction, usually on a auxiliary bus.
+> +   * - ``Subfunction driver``
+> +     -  A device driver for the subfunction auxiliary device.
+> +   * - ``Subfunction management device``
+> +     -  A PCI physical function that supports subfunction management.
+> +   * - ``Subfunction management driver``
+> +     -  A device driver for PCI physical function that supports
+> +        subfunction management using devlink port interface.
+> +   * - ``Subfunction host driver``
+> +     -  A device driver for PCI physical function that host subfunction
+> +        devices. In most cases it is same as subfunction management driver. When
+> +        subfunction is used on external controller, subfunction management and
+> +        host drivers are different.
 
+Would be great if someone from Mellanox could proof read this before we
+spend cycles on correcting spelling in public review.
