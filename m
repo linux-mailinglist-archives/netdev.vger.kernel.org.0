@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC822DBBE1
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 08:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8522C2DBBF2
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 08:29:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726011AbgLPHPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 02:15:44 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:33693 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbgLPHPo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 02:15:44 -0500
-Received: by mail-io1-f70.google.com with SMTP id t23so15614144ioh.0
-        for <netdev@vger.kernel.org>; Tue, 15 Dec 2020 23:15:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=36zW/PbpiTCKuG8Esvh3+4Beyh5+p/0KAx49415NdvY=;
-        b=mUnni4iNcGwEJPOftSlFnJ5HRUBs6U+Cu4uRxz56CIN8YzeAriF4OdFRjFN+IfKlGW
-         dWHVLWVS7KrKY/e62p2TpFnXTQH2xePi4anDr1lR+skKRj2TEvQDiBIfpn5bv+IPx9lP
-         6ngtvLiIg1hwJ9ZdV8yxEY1eFBQJqbjPrgvUMSs1c681HxpISSpISAhSjU8ml7DiT9M4
-         jR9GG1+isWB0/bQ19KiQnnk85fWJzDTZycs/koEJAUr1YYASd8IzsXvFPhwCI32gzvFq
-         rl4RODsE5Dkv+H0ZK1BkC4NJevB6u0qRZCJrV9fomr+PDObk0Bie5ppdsW4eQu3aQWyp
-         Qtkw==
-X-Gm-Message-State: AOAM532SIa7VxK/jjp5RsgQRCT4+Dbawz0r7HDvv/yLTkzMOhD6zR6LL
-        jIq4wNxzCFlX2u6PxAsXP/WGalrrUPW0DCEgFNBlUl4RFQdT
-X-Google-Smtp-Source: ABdhPJyE+w4DQGI1MtjxdqzF3IywhKSts84lZVnS0w5MQcPUmCQp7IMO10IRfWgV2p9/kkfUbcykf9u+Dd+WT8lfjHM/CdRp4VIy
+        id S1725910AbgLPH33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 02:29:29 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:39354 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725274AbgLPH32 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 02:29:28 -0500
+Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 0D39C44025F;
+        Wed, 16 Dec 2020 09:28:39 +0200 (IST)
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH net] net: af_packet: fix procfs header for 64-bit pointers
+Date:   Wed, 16 Dec 2020 09:28:04 +0200
+Message-Id: <54917251d8433735d9a24e935a6cb8eb88b4058a.1608103684.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-X-Received: by 2002:a6b:c9cb:: with SMTP id z194mr40484133iof.110.1608102903193;
- Tue, 15 Dec 2020 23:15:03 -0800 (PST)
-Date:   Tue, 15 Dec 2020 23:15:03 -0800
-In-Reply-To: <000000000000ab11c505abeb19f5@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004ea4fe05b68fa299@google.com>
-Subject: Re: KASAN: use-after-free Write in __sco_sock_close
-From:   syzbot <syzbot+077eca30d3cb7c02b273@syzkaller.appspotmail.com>
-To:     anmol.karan123@gmail.com, coreteam@netfilter.org,
-        davem@davemloft.net, devel@driverdev.osuosl.org,
-        foxhlchen@gmail.com, gregkh@linuxfoundation.org,
-        johan.hedberg@gmail.com, kaber@trash.net, kadlec@blackhole.kfki.hu,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        marcel@holtmann.org, mchehab@kernel.org, mchehab@s-opensource.com,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+On 64-bit systems the packet procfs header field names following 'sk'
+are not aligned correctly:
 
-commit 6dfccd13db2ff2b709ef60a50163925d477549aa
-Author: Anmol Karn <anmol.karan123@gmail.com>
-Date:   Wed Sep 30 14:18:13 2020 +0000
+sk       RefCnt Type Proto  Iface R Rmem   User   Inode
+00000000605d2c64 3      3    0003   7     1 450880 0      16643
+00000000080e9b80 2      2    0000   0     0 0      0      17404
+00000000b23b8a00 2      2    0000   0     0 0      0      17421
+...
 
-    Bluetooth: Fix null pointer dereference in hci_event_packet()
+With this change field names are correctly aligned:
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14cb845b500000
-start commit:   47ec5303 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e0c783f658542f35
-dashboard link: https://syzkaller.appspot.com/bug?extid=077eca30d3cb7c02b273
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=165a89dc900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130a8c62900000
+sk               RefCnt Type Proto  Iface R Rmem   User   Inode
+000000005c3b1d97 3      3    0003   7     1 21568  0      16178
+000000007be55bb7 3      3    fbce   8     1 0      0      16250
+00000000be62127d 3      3    fbcd   8     1 0      0      16254
+...
 
-If the result looks correct, please mark the issue as fixed by replying with:
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ net/packet/af_packet.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-#syz fix: Bluetooth: Fix null pointer dereference in hci_event_packet()
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 7a18ffff8551..99de3bbe437f 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -4581,7 +4581,9 @@ static void packet_seq_stop(struct seq_file *seq, void *v)
+ static int packet_seq_show(struct seq_file *seq, void *v)
+ {
+ 	if (v == SEQ_START_TOKEN)
+-		seq_puts(seq, "sk       RefCnt Type Proto  Iface R Rmem   User   Inode\n");
++		seq_printf(seq,
++			   "%*sRefCnt Type Proto  Iface R Rmem   User   Inode\n",
++			   IS_ENABLED(CONFIG_64BIT) ? -17 : -9, "sk");
+ 	else {
+ 		struct sock *s = sk_entry(v);
+ 		const struct packet_sock *po = pkt_sk(s);
+-- 
+2.29.2
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
