@@ -2,181 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 130FB2DC98C
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 00:22:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D01B2DC990
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 00:24:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727912AbgLPXVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 18:21:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58446 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726595AbgLPXVp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 18:21:45 -0500
-Date:   Wed, 16 Dec 2020 17:21:03 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608160864;
-        bh=DlV059G7MD38ouJN9A/eajY48qCUy0jnak8uvrblwU4=;
-        h=From:To:Cc:Subject:In-Reply-To:From;
-        b=JY5JI6MgsZxmLnhwVV004hisqnfA06z+u1pzxUt/VbvU9tEy6CADG868bY8I5DYHn
-         AKTR9Xq9+A9WCj/Br4dyuQqG7700OJJuh7re6Swx4X32kIu9viVuycYOqa0yek0J/e
-         IKE5Sw4tRPkI7BQessSiZMu0Xcv5XDiqs+EJsH0jtM4gHG565fSZ76q7Fjf9LmUpwa
-         Yto1hLXNz21eLmAc7FTv+oCa5bMd1C+Pj9G26bvQzB5/NOQWdWTFsGM2xsi/7AG4Fw
-         Fsc1EvXWrk3mgOgjD2/CbOoVA9xxn6XHaArh/oxMd38/c/TrwindqA6ktzkpyyF2f/
-         fCfTpIpePI8Bw==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Ian Kumlien <ian.kumlien@gmail.com>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] PCI/ASPM: Use the path max in L1 ASPM latency check
-Message-ID: <20201216232103.GA368161@bjorn-Precision-5520>
+        id S1730784AbgLPXY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 18:24:26 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:64230 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726865AbgLPXY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 18:24:26 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 0BGNFZoB029125;
+        Wed, 16 Dec 2020 15:23:31 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=fQ891/zI985wiUAkR/Ar3LgH+NK6TfapU13DaHSskkU=;
+ b=G1nZB05O1a184IDsUsYy5V+c58u/+HIq6OjDsB1Zweiz7egMj/LlZtllCMErzagkhupo
+ oPhldEqgsl7ZkScCPxmt2et2M5le2rxh3nveMOV/2GPDRapxll8SgoE0WdTowEz59SJS
+ U//ArhYy7ztCK4ROhslX1RpRggpclCegJzA= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 35f7h65upr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 16 Dec 2020 15:23:31 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 16 Dec 2020 15:23:29 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZFAUJwBDV11MoScwxgkIcAe1iRP8EPl18bCRWxqZJCrJFknIIB4p4VMJQv8qd5zAYcc7TQkdROGrG9VWzOchsm4x1/f0PWsTCw5QG1Igp0nmjdks1bKqPEK7HuDvXYVro+8zDciG8pbSIWsHIayNMSYHO+obsJDHCr1+maPISICfhodCS3UonFT7dBhel3u8RMbrHAhq1G9Rr4D+AjN4GNJE+qSLgQbguKGQRxvjOylyhdn2nZ/vglhSLJoi5hQ99b/DxNhK051+badqdQEj/Yc2Q0g+FoJdwywviT4AQfpcXJJLGnw0/Vo3Ti7qpssEQIvjkmbd7sWrhVzX+OWUtA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fQ891/zI985wiUAkR/Ar3LgH+NK6TfapU13DaHSskkU=;
+ b=UMq2AGV89Lux0Q7IVLre+5FPMOeTOLzkqbr93pkXJVpL09X1kLBPPq10/bGmWCUSjfN8jMKssw1Fs33NwsApbomWzJ89wvJw+Ftbo3L9M1VQSPnE8BkzIII623JWR4VPsb2A332GGOsgVwj1LM596DjGdsgJ3yAjhaslcVkkHsXfniCc1Jct2ws+Ao74JugYh47t3cd7V2wXMVJ4n1ISuIEA2OeHlLHB6zJKj5Ns1AIN25RF2sU7SdKxrhkaVqmJX3QulpjaZD9j5umr5HpaXhQfhAg7EPklRzOaUJuSbUlE158Rltt6PTE104YR0cyfj0VWbvo5I1BUSD9s9rPwCw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fQ891/zI985wiUAkR/Ar3LgH+NK6TfapU13DaHSskkU=;
+ b=fWBFIn4pDC9jgftWCGEdL8rJr6d52lv46I8ybu93jTCzIFCQdcvTXdTvEfHz3zxQt93SMu38xZ94EUKhQDXFtKulnqweBduFuRnXluX2SZOX30oWUUWSMnHZBZiOTpxdE8zNKBI6bClwLKCI+6r5SQOFpW6PhIgXptdelSlwSCM=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2725.namprd15.prod.outlook.com (2603:10b6:a03:158::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.15; Wed, 16 Dec
+ 2020 23:23:24 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::f49e:bdbb:8cd7:bf6b%7]) with mapi id 15.20.3654.025; Wed, 16 Dec 2020
+ 23:23:24 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Yonghong Song <yhs@fb.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "kpsingh@chromium.org" <kpsingh@chromium.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 4/4] selftests/bpf: add test for
+ bpf_iter_task_vma
+Thread-Topic: [PATCH v2 bpf-next 4/4] selftests/bpf: add test for
+ bpf_iter_task_vma
+Thread-Index: AQHW0zs6KjDuN0nfMkKjCJzT2YpTXan6CS4AgABVPwA=
+Date:   Wed, 16 Dec 2020 23:23:24 +0000
+Message-ID: <EE276BC6-9513-414D-91D1-6257909AB952@fb.com>
+References: <20201215233702.3301881-1-songliubraving@fb.com>
+ <20201215233702.3301881-5-songliubraving@fb.com>
+ <29e8f249-a23b-3c17-4000-a4075398b669@fb.com>
+In-Reply-To: <29e8f249-a23b-3c17-4000-a4075398b669@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.4)
+x-originating-ip: [2620:10d:c091:480::1:e346]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6bd5fbe2-e7dc-4193-04bf-08d8a21995b1
+x-ms-traffictypediagnostic: BYAPR15MB2725:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2725AA9E83FF2D9B3390FCF8B3C50@BYAPR15MB2725.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1ELCRliBy0tJCPjWEC6frPuzUhlDZHrzdsCjJ66+UQVvLVie4IZtLCFCJYgo0q/FIvPzeLwcOxQqsF6cVkgQzuL5ki8RTwWsXmXuQVH9jjAeNf3kjqLaz/m5p7YZblEGz9RP+3aU5YLDbXRxV3l/ETBTwALI4Bgc2rhU2EXKiXAv6WBCH4z+X6RW3IbuMkATBGvQQKGdxz7jRXM6EBLyM+9y1ql4/SDhcyrwPA3Q0CPtdNFrqlkgyPop/EjpEUf9y/QxNAZzWet+PL4jpRVghHgSoGWdp0IvRYAmi+hrgoM/JF6oez6Qi0oRMGus60FtzATWZBW2R6UhUIf+Zv02may+b6vcwoZ05oT87vtXC7ZRpleR8n5VratPiQMuoxTm
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(64756008)(66556008)(6862004)(5660300002)(76116006)(91956017)(71200400001)(66946007)(36756003)(66476007)(8936002)(33656002)(2616005)(66446008)(54906003)(8676002)(86362001)(186003)(53546011)(6636002)(37006003)(6506007)(2906002)(498600001)(4326008)(83380400001)(6486002)(6512007)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?a40VVA/CWabO/N+HXls2GvVH/GKon315k3O5HFWCp0G9A6E6N/IvfNGgFeh2?=
+ =?us-ascii?Q?Ouv19FDEXtmw//I7nycMD5U0L844pcd0vD7wMhAYQgeHIPdli23f35vKO+rp?=
+ =?us-ascii?Q?cMZnliQDqX005e9sz5aIZWcvd9bz+ugtobnT2HW7TjC+2GAChXmHhpoqskNJ?=
+ =?us-ascii?Q?pxZ1VskwhemlnPsQvDvnE0oyT27UEBrVxFj5K1PWRKeis90nH9xV1m/1odEW?=
+ =?us-ascii?Q?56mV45BczjYMEosTJAsPNzyRDfa+mTFG+vaFxYJhNdNFPSEs57hHv30P0WQF?=
+ =?us-ascii?Q?3T2mTohe6iguTepVuSUVRjEuJUvmE4LuGFWiaLw9g5pBN6JynoeNuius9+fd?=
+ =?us-ascii?Q?8YGCIqDMTErnn8/qIoDmDQDXzYjgB/Z9jVXjTBvuSh/JBPSUAhQcbT7fkZQj?=
+ =?us-ascii?Q?OY669I0N2BEXscT766kYBWD3l2sgjHBFKbR5xDqpRLSM29zLvJQ/+6aqqKP6?=
+ =?us-ascii?Q?KAe89GEMslWCU4mO27n/yK2p2+iqZKp2FaQQ8IFpOAMC0bkiTBFoB+MCp5pX?=
+ =?us-ascii?Q?9dxPI0N/r4UXfgTXGCs9k17VQmoyPZx0SiluoaFY1ajYWeg5ms55kuh0tWF3?=
+ =?us-ascii?Q?fr1ZwwvVo/ZE/AGgeF8Wia1rrfYgup4DS3zUAWN1sGxHZIlIDhXoPDUWtJrd?=
+ =?us-ascii?Q?m19Fz96GFnHlKYiN037k6QCtqPCJdKtLuCRqOgh48tEWAQ3/ttIXL7D6naKM?=
+ =?us-ascii?Q?mJxTGyZMo0pfdn1xwg+/WGtq7OttILGCP3V2hyO/2skdayTgckIBjyR66RFS?=
+ =?us-ascii?Q?mriyVGxYAX2FNc+WPLfkiXcpUisk+Lm6DnZfj6IgaFQQl5Z+yr0p7z/da8QW?=
+ =?us-ascii?Q?02ySso5imXa9U8SuL6UN5su5dGtyhpzeVdLDe2j+h6dzmT6dBJdfxdVq4Rkk?=
+ =?us-ascii?Q?FnN8dzTofTXSFjmADOcrjlRZ1LKP0gMeG+rJFyeh/dxekgZMwjP0TOJVoHuT?=
+ =?us-ascii?Q?zA9GS6UhVoPGjp5BHS6VB2j1Bec9SuFZcip3x4iZNJDrJAN8iBMUCgpvNmYj?=
+ =?us-ascii?Q?GXqqdzjaZhdHmV9nZsPckg/ooHRVzF0agblmhTWMGRBF0tU=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <31E07C11E3B716419B1D981E66216842@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAA85sZsiuE9rN7uVCuhgiki-rffo4mYbh6BKvuGaJAK5CsPgKw@mail.gmail.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bd5fbe2-e7dc-4193-04bf-08d8a21995b1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2020 23:23:24.0944
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0HEdoJEXaoLPQDMbnXezb0cPUXmfOz4kU3f42kzueGR9uIHd23HKe4G+fWDXep0O7q8bAbaBVZMZ2C0U+0uD5A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2725
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-16_10:2020-12-15,2020-12-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ suspectscore=0 bulkscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0
+ malwarescore=0 mlxlogscore=999 mlxscore=0 clxscore=1015 priorityscore=1501
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012160145
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 12:20:53PM +0100, Ian Kumlien wrote:
-> On Wed, Dec 16, 2020 at 1:08 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > On Tue, Dec 15, 2020 at 02:09:12PM +0100, Ian Kumlien wrote:
-> > > On Tue, Dec 15, 2020 at 1:40 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > On Mon, Dec 14, 2020 at 11:56:31PM +0100, Ian Kumlien wrote:
-> > > > > On Mon, Dec 14, 2020 at 8:19 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > >
-> > > > > > If you're interested, you could probably unload the Realtek drivers,
-> > > > > > remove the devices, and set the PCI_EXP_LNKCTL_LD (Link Disable) bit
-> > > > > > in 02:04.0, e.g.,
-> > > > > >
-> > > > > >   # RT=/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:04.0
-> > > > > >   # echo 1 > $RT/0000:04:00.0/remove
-> > > > > >   # echo 1 > $RT/0000:04:00.1/remove
-> > > > > >   # echo 1 > $RT/0000:04:00.2/remove
-> > > > > >   # echo 1 > $RT/0000:04:00.4/remove
-> > > > > >   # echo 1 > $RT/0000:04:00.7/remove
-> > > > > >   # setpci -s02:04.0 CAP_EXP+0x10.w=0x0010
-> > > > > >
-> > > > > > That should take 04:00.x out of the picture.
-> > > > >
-> > > > > Didn't actually change the behaviour, I'm suspecting an errata for AMD pcie...
-> > > > >
-> > > > > So did this, with unpatched kernel:
-> > > > > [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> > > > > [  5]   0.00-1.00   sec  4.56 MBytes  38.2 Mbits/sec    0   67.9 KBytes
-> > > > > [  5]   1.00-2.00   sec  4.47 MBytes  37.5 Mbits/sec    0   96.2 KBytes
-> > > > > [  5]   2.00-3.00   sec  4.85 MBytes  40.7 Mbits/sec    0   50.9 KBytes
-> > > > > [  5]   3.00-4.00   sec  4.23 MBytes  35.4 Mbits/sec    0   70.7 KBytes
-> > > > > [  5]   4.00-5.00   sec  4.23 MBytes  35.4 Mbits/sec    0   48.1 KBytes
-> > > > > [  5]   5.00-6.00   sec  4.23 MBytes  35.4 Mbits/sec    0   45.2 KBytes
-> > > > > [  5]   6.00-7.00   sec  4.23 MBytes  35.4 Mbits/sec    0   36.8 KBytes
-> > > > > [  5]   7.00-8.00   sec  3.98 MBytes  33.4 Mbits/sec    0   36.8 KBytes
-> > > > > [  5]   8.00-9.00   sec  4.23 MBytes  35.4 Mbits/sec    0   36.8 KBytes
-> > > > > [  5]   9.00-10.00  sec  4.23 MBytes  35.4 Mbits/sec    0   48.1 KBytes
-> > > > > - - - - - - - - - - - - - - - - - - - - - - - - -
-> > > > > [ ID] Interval           Transfer     Bitrate         Retr
-> > > > > [  5]   0.00-10.00  sec  43.2 MBytes  36.2 Mbits/sec    0             sender
-> > > > > [  5]   0.00-10.00  sec  42.7 MBytes  35.8 Mbits/sec                  receiver
-> > > > >
-> > > > > and:
-> > > > > echo 0 > /sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/link/l1_aspm
-> > > >
-> > > > BTW, thanks a lot for testing out the "l1_aspm" sysfs file.  I'm very
-> > > > pleased that it seems to be working as intended.
-> > >
-> > > It was nice to find it for easy disabling :)
-> > >
-> > > > > and:
-> > > > > [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> > > > > [  5]   0.00-1.00   sec   113 MBytes   951 Mbits/sec  153    772 KBytes
-> > > > > [  5]   1.00-2.00   sec   109 MBytes   912 Mbits/sec  276    550 KBytes
-> > > > > [  5]   2.00-3.00   sec   111 MBytes   933 Mbits/sec  123    625 KBytes
-> > > > > [  5]   3.00-4.00   sec   111 MBytes   933 Mbits/sec   31    687 KBytes
-> > > > > [  5]   4.00-5.00   sec   110 MBytes   923 Mbits/sec    0    679 KBytes
-> > > > > [  5]   5.00-6.00   sec   110 MBytes   923 Mbits/sec  136    577 KBytes
-> > > > > [  5]   6.00-7.00   sec   110 MBytes   923 Mbits/sec  214    645 KBytes
-> > > > > [  5]   7.00-8.00   sec   110 MBytes   923 Mbits/sec   32    628 KBytes
-> > > > > [  5]   8.00-9.00   sec   110 MBytes   923 Mbits/sec   81    537 KBytes
-> > > > > [  5]   9.00-10.00  sec   110 MBytes   923 Mbits/sec   10    577 KBytes
-> > > > > - - - - - - - - - - - - - - - - - - - - - - - - -
-> > > > > [ ID] Interval           Transfer     Bitrate         Retr
-> > > > > [  5]   0.00-10.00  sec  1.08 GBytes   927 Mbits/sec  1056             sender
-> > > > > [  5]   0.00-10.00  sec  1.07 GBytes   923 Mbits/sec                  receiver
-> > > > >
-> > > > > But this only confirms that the fix i experience is a side effect.
-> > > > >
-> > > > > The original code is still wrong :)
-> > > >
-> > > > What exactly is this machine?  Brand, model, config?  Maybe you could
-> > > > add this and a dmesg log to the buzilla?  It seems like other people
-> > > > should be seeing the same problem, so I'm hoping to grub around on the
-> > > > web to see if there are similar reports involving these devices.
-> > >
-> > > ASUS Pro WS X570-ACE with AMD Ryzen 9 3900X
-> >
-> > Possible similar issues:
-> >
-> >   https://forums.unraid.net/topic/94274-hardware-upgrade-woes/
-> >   https://forums.servethehome.com/index.php?threads/upgraded-my-home-server-from-intel-to-amd-virtual-disk-stuck-in-degraded-unhealty-state.25535/ (Windows)
-> 
-> Could be, I suspect that we need a workaround (is there a quirk for
-> "reporting wrong latency"?) and the patches.
 
-I don't think there's currently a quirk mechanism that would work for
-correcting latencies, but there should be, and we could add one if we
-can figure out for sure what's wrong.
 
-I found this:
+> On Dec 16, 2020, at 10:18 AM, Yonghong Song <yhs@fb.com> wrote:
+>=20
 
-  https://www.reddit.com/r/VFIO/comments/hgk3cz/x570_pcieclassic_pci_bridge_woes/
+[...]
 
-which looks like it should be the same hardware (if you can collect a
-dmesg log or "lspci -nnvv" output we could tell for sure) and is
-interesting because it includes some lspci output that shows different
-L1 exit latencies than what you see.
+>> +
+>> +	err =3D bpf_iter_task_vma__load(skel);
+>> +	if (CHECK(err, "bpf_iter_task_vma__load", "skeleton load failed\n"))
+>> +		goto out;
+>> +
+>> +	do_dummy_read(skel->progs.proc_maps);
+>=20
+> This do_dummy_read() is not needed, right?
 
-> > > > https://bugzilla.kernel.org/show_bug.cgi?id=209725
-> > > >
-> > > > Here's one that is superficially similar:
-> > > > https://linux-hardware.org/index.php?probe=e5f24075e5&log=lspci_all
-> > > > in that it has a RP -- switch -- I211 path.  Interestingly, the switch
-> > > > here advertises <64us L1 exit latency instead of the <32us latency
-> > > > your switch advertises.  Of course, I can't tell if it's exactly the
-> > > > same switch.
-> > >
-> > > Same chipset it seems
-> > >
-> > > I'm running bios version:
-> > >         Version: 2206
-> > >         Release Date: 08/13/2020
-> > >
-> > > ANd latest is:
-> > > Version 3003
-> > > 2020/12/07
-> > >
-> > > Will test upgrading that as well, but it could be that they report the
-> > > incorrect latency of the switch - I don't know how many things AGESA
-> > > changes but... It's been updated twice since my upgrade.
-> >
-> > I wouldn't be surprised if the advertised exit latencies are writable
-> > by the BIOS because it probably depends on electrical characteristics
-> > outside the switch.  If so, it's possible ASUS just screwed it up.
-> 
-> Not surprisingly, nothing changed.
-> (There was a lot of "stability improvements")
+do_dummy_read() helped me got bug in earlier version. I am planning to=20
+change the following to do smaller reads, then do_dummy_read() is no longer
+needed.=20
 
-I wouldn't be totally surprised if ASUS didn't test that I211 NIC
-under Linux, but I'm sure it must work well under Windows.  If you
-happen to have Windows, a free trial version of AIDA64 should be able
-to give us the equivalent of "lspci -vv".
+[...]
 
-Bjorn
+>=20
+>> +
+>> +SEC("iter.s/task_vma") int proc_maps(struct bpf_iter__task_vma *ctx)
+>> +{
+>> +	struct __vm_area_struct *vma =3D ctx->vma;
+>> +	struct seq_file *seq =3D ctx->meta->seq;
+>> +	struct task_struct *task =3D ctx->task;
+>> +	struct file *file =3D ctx->file;
+>> +	char perm_str[] =3D "----";
+>> +
+>> +	if (task =3D=3D (void *)0 || vma =3D=3D (void *)0 || task->pid !=3D pi=
+d)
+>=20
+> I suppose kernel already filtered all non-group-leader tasks, so here
+> we can have task->tgid !=3D pid?
+
+Yeah, that works.=20
+
+>=20
+>> +		return 0;
+>=20
+> Using /proc system, user typically do cat /proc/pid/maps. How can we
+> have a similar user experience with vma_iter here? One way to do this
+> is:
+>   - We still have this bpf program, filtering based on user pid,
+>   - normal bpftool iter pin command pid the program to say /sys/fs/bpf/ta=
+sk_vma
+>   - since "pid" is in a map, user can use bpftool to update "pid"
+>     with the target pid.
+>   - "cat /sys/fs/bpf/task_vma" will work.
+>=20
+> One thing here is pid and d_path_buf are global (map) variables, so
+> if two users are trying to do "cat /sys/fs/bpf/task_vma" at the same
+> time, there will be interferences and it will not work.
+>=20
+> One possible way is during BPF_ITER_CREATE, we duplicate all program
+> maps. But this is unnecessary as in most cases, the bpf_iter is not
+> pinned and private to applications.
+>=20
+> Any other ideas?
+
+Maybe we can use task local storage for pid and d_path_buf?=20
+
+To make it more practical, we probably want in kernel filtering based=20
+on pid. IOW, let user specify which task to iterate.=20
+
+Thanks,
+Song
+
