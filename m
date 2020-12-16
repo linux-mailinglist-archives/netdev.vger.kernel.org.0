@@ -2,95 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B36D2DBCCA
-	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 09:39:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 724E92DBCEF
+	for <lists+netdev@lfdr.de>; Wed, 16 Dec 2020 09:48:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726052AbgLPIjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 03:39:06 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:49780 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726010AbgLPIjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 03:39:06 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BG8Xs8d049930;
-        Wed, 16 Dec 2020 08:38:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=9EzIrzu8yR2bEg9Yuuyun20shVVA58aiXhqv0Ix0rwQ=;
- b=vBIu8Lr3lYEY0A+mmLenwj7QJvc2oPyu/ObmzIRh/EKVRzCjCfoPxfuWHCW3baX+Jmh1
- jJRZk0LdrdCSK4daYT5VZOOY/qsIuM8xtqtxWM5EHtI//TnZn+dJPSQCtCHAB8HSH2J5
- yKmJFPc/2pXPsAeKnYMCxKCjIeyVxixRYd2BvZ5vp0sRR4pGNrihdeTWm/ZXGCep3mS7
- 4Y5kHbhSLwJWjfeL+za0k0BJLDclV/gsIf/TzwLt2BPMCKEaLKUkWODRm3LoA2b6EuBB
- sJ6lnXfnYFjiRwWpOBsm3O3+w+/PviTOjOcnO7AxOjFUwsjr09mOYl60ENhWeU/mHE+C +A== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 35cntm6tvh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 16 Dec 2020 08:38:19 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BG8ZBEj114133;
-        Wed, 16 Dec 2020 08:38:18 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 35e6jse0yd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 16 Dec 2020 08:38:18 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0BG8cDdW016655;
-        Wed, 16 Dec 2020 08:38:13 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 16 Dec 2020 00:38:12 -0800
-Date:   Wed, 16 Dec 2020 11:38:04 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Shahed Shaikh <shshaikh@marvell.com>,
-        Sony Chacko <sony.chacko@qlogic.com>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        id S1726416AbgLPIrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 03:47:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49089 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725829AbgLPIrE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 03:47:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608108338;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IYnxKZ4kumZ9glZzuqGoRnqAJc8ZF8TPj7iOOqqewlI=;
+        b=RaNZd4qqXf/7c4dm9WTocqJ22b/UFrfw9Zcq3Wz1EfSCcw0mWfNLZ8GWnFBJJVjPzSa3Jd
+        M26rvZJO/uttKbsWK4VrCqMx3nyJGCXqNigVHr4ol7F1XLgxsTf05mKZ56L5MYgL4xA1gm
+        IZ+WHHZQLQXd7j5kteuF5XGpEC6/KhE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-sUjnykzeM-CadnGgUikm8w-1; Wed, 16 Dec 2020 03:45:33 -0500
+X-MC-Unique: sUjnykzeM-CadnGgUikm8w-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 12004107ACE8;
+        Wed, 16 Dec 2020 08:45:32 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A33C35D9E3;
+        Wed, 16 Dec 2020 08:45:25 +0000 (UTC)
+Date:   Wed, 16 Dec 2020 09:45:24 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     brouer@redhat.com, Ivan Babrou <ivan@cloudflare.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@cloudflare.com,
+        Martin Habets <habetsm.xilinx@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sucheta Chakraborty <sucheta.chakraborty@qlogic.com>,
-        Sritej Velaga <sritej.velaga@qlogic.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net] qlcnic: Fix error code in probe
-Message-ID: <X9nHbMqEyI/xPfGd@mwanda>
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH net-next] sfc: reduce the number of requested xdp ev
+ queues
+Message-ID: <20201216094524.0c6e521c@carbon>
+In-Reply-To: <205ba636-f180-3003-a41c-828e1fe1a13b@gmail.com>
+References: <20201215012907.3062-1-ivan@cloudflare.com>
+        <20201215104327.2be76156@carbon>
+        <205ba636-f180-3003-a41c-828e1fe1a13b@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9836 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 bulkscore=0
- malwarescore=0 adultscore=0 mlxlogscore=999 phishscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012160055
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9836 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 mlxscore=0
- lowpriorityscore=0 spamscore=0 adultscore=0 malwarescore=0 suspectscore=0
- mlxlogscore=999 impostorscore=0 priorityscore=1501 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012160055
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return -EINVAL if we can't find the correct device.  Currently it
-returns success.
+On Tue, 15 Dec 2020 18:49:55 +0000
+Edward Cree <ecree.xilinx@gmail.com> wrote:
 
-Fixes: 13159183ec7a ("qlcnic: 83xx base driver")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c | 1 +
- 1 file changed, 1 insertion(+)
+> On 15/12/2020 09:43, Jesper Dangaard Brouer wrote:
+> > On Mon, 14 Dec 2020 17:29:06 -0800
+> > Ivan Babrou <ivan@cloudflare.com> wrote:
+> >   
+> >> Without this change the driver tries to allocate too many queues,
+> >> breaching the number of available msi-x interrupts on machines
+> >> with many logical cpus and default adapter settings:
+> >>
+> >> Insufficient resources for 12 XDP event queues (24 other channels, max 32)
+> >>
+> >> Which in turn triggers EINVAL on XDP processing:
+> >>
+> >> sfc 0000:86:00.0 ext0: XDP TX failed (-22)  
+> > 
+> > I have a similar QA report with XDP_REDIRECT:
+> >   sfc 0000:05:00.0 ens1f0np0: XDP redirect failed (-22)
+> > 
+> > Here we are back to the issue we discussed with ixgbe, that NIC / msi-x
+> > interrupts hardware resources are not enough on machines with many
+> > logical cpus.
+> > 
+> > After this fix, what will happen if (cpu >= efx->xdp_tx_queue_count) ?  
+>
+> Same as happened before: the "failed -22".  But this fix will make that
+>  less likely to happen, because it ties more TXQs to each EVQ, and it's
+>  the EVQs that are in short supply.
+>
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-index 5a7e240fd469..c2faf96fcade 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-@@ -2492,6 +2492,7 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		qlcnic_sriov_vf_register_map(ahw);
- 		break;
- 	default:
-+		err = -EINVAL;
- 		goto err_out_free_hw_res;
- 	}
- 
+So, what I hear is that this fix is just pampering over the real issue.
+
+I suggest that you/we detect the situation, and have a code path that
+will take a lock (per 16 packets bulk) and solve the issue.
+
+If you care about maximum performance you can implement this via
+changing the ndo_xdp_xmit pointer to the fallback function when needed,
+to avoid having a to check for the fallback mode in the fast-path.
+
+>
+> (Strictly speaking, I believe the limitation is a software one, that
+>  comes from the driver's channel structures having been designed a
+>  decade ago when 32 cpus ought to be enough for anybody... AFAIR the
+>  hardware is capable of giving us something like 1024 evqs if we ask
+>  for them, it just might not have that many msi-x vectors for us.)
+> Anyway, the patch looks correct, so
+> Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+
 -- 
-2.29.2
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
