@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 599332DC9D1
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D5B2DC9D8
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:12:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730877AbgLQAJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 19:09:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36684 "EHLO mail.kernel.org"
+        id S1731003AbgLQAMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 19:12:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37722 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729023AbgLQAJc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 19:09:32 -0500
-Date:   Wed, 16 Dec 2020 16:08:50 -0800
+        id S1730802AbgLQAMg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 19:12:36 -0500
+Date:   Wed, 16 Dec 2020 16:11:54 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608163731;
-        bh=g801CA1mP6r8B24edAn5HCOD7wX68sdbO7aF1eAwbMs=;
+        s=k20201202; t=1608163915;
+        bh=ou6Soac3S6dbWdy24RVNUAaduWHENUjupbKslAWzNnE=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=a8mnTHoLnYVS/FWf0dLopw1Dth2zfC1Pfx8NxFC7qlZ5kge18lx+OMb5pWDlKiU8N
-         wivCZTyYQ7zeeg8beWlyL3vwdffC/+96fIxWM30vxorVUXyc2EQPKrvgk0lqTAat48
-         tPEfSbF7rUdH7xkANxCh1bE45sBS0GDXjaYsDExeD9Qo9MI/O3+b0XTiI3X9WMKDXY
-         GPazBaUgq0gYN+GiELoE6ArrPEo1cEdwVGhHiszWuIuLBMOfMiTkrajjR9Q0D0jIWM
-         boWSlujpfyudxGxqVRQ6AaCbGz7t3ygWjSJlrAKcEWViKyhxdnrUQwg/m3Kco33eSQ
-         AOt1VueIwyvkw==
+        b=UjaIxCjuhKbIra6Uivle1mc10pr5jAQQsqQRdw909udq60DfgLjOS43ZcdTFK+ib/
+         KjstJ6vEfvspPTcgX5cqrZQWFXk5aXkNDHPooCB4SWu4Q77JXl3bdX9ewd3H55YPGH
+         JYslxyW2RHCu7jsxIOVUaiaG0Lh5YZgA0ZTRXK51o+mXssplWqQ2SGTfdfZVv8HLC+
+         BL4bNn0lB2lHQhxtzpeEXAwpDVtTVynrh+4hOnp+6eM93ja77c79ri7xBKLjO11y2/
+         MpGOgGp5PBMajIKVxVTaxVnALFOTx6WjQOow7K7W04OdEz/9+m51+mAM5EMC2yipGp
+         87tSehVSkfqgQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Parav Pandit <parav@nvidia.com>
 Cc:     Saeed Mahameed <saeed@kernel.org>,
@@ -37,16 +37,15 @@ Cc:     Saeed Mahameed <saeed@kernel.org>,
         "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
         "kiran.patil@intel.com" <kiran.patil@intel.com>,
         "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
+        Vu Pham <vuhuong@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next v5 05/15] devlink: Support get and set state of port
- function
-Message-ID: <20201216160850.78223a1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BY5PR12MB43225346806029AA31D63918DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
+Subject: Re: [net-next v5 07/15] net/mlx5: SF, Add auxiliary device support
+Message-ID: <20201216161154.69e367fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <BY5PR12MB4322B0DC403D8B5CEFD95585DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
 References: <20201215090358.240365-1-saeed@kernel.org>
-        <20201215090358.240365-6-saeed@kernel.org>
-        <20201215163747.4091ff61@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43225346806029AA31D63918DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
+        <20201215090358.240365-8-saeed@kernel.org>
+        <20201215164341.51fa3a0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BY5PR12MB4322B0DC403D8B5CEFD95585DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,50 +53,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Dec 2020 05:15:04 +0000 Parav Pandit wrote:
+On Wed, 16 Dec 2020 05:19:15 +0000 Parav Pandit wrote:
 > > From: Jakub Kicinski <kuba@kernel.org>
-> > Sent: Wednesday, December 16, 2020 6:08 AM
+> > Sent: Wednesday, December 16, 2020 6:14 AM
 > > 
-> > On Tue, 15 Dec 2020 01:03:48 -0800 Saeed Mahameed wrote:  
-> > > From: Parav Pandit <parav@nvidia.com>
-> > >
-> > > devlink port function can be in active or inactive state.
-> > > Allow users to get and set port function's state.
-> > >
-> > > When the port function it activated, its operational state may change
-> > > after a while when the device is created and driver binds to it.
-> > > Similarly on deactivation flow.  
+> > On Tue, 15 Dec 2020 01:03:50 -0800 Saeed Mahameed wrote:  
+> > > +static ssize_t sfnum_show(struct device *dev, struct device_attribute
+> > > +*attr, char *buf) {
+> > > +	struct auxiliary_device *adev = container_of(dev, struct  
+> > auxiliary_device, dev);  
+> > > +	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev,
+> > > +adev);
+> > > +
+> > > +	return scnprintf(buf, PAGE_SIZE, "%u\n", sf_dev->sfnum); } static
+> > > +DEVICE_ATTR_RO(sfnum);
+> > > +
+> > > +static struct attribute *sf_device_attrs[] = {
+> > > +	&dev_attr_sfnum.attr,
+> > > +	NULL,
+> > > +};
+> > > +
+> > > +static const struct attribute_group sf_attr_group = {
+> > > +	.attrs = sf_device_attrs,
+> > > +};
+> > > +
+> > > +static const struct attribute_group *sf_attr_groups[2] = {
+> > > +	&sf_attr_group,
+> > > +	NULL
+> > > +};  
 > > 
-> > So what's the flow device should implement?
-> > 
-> > User requests deactivated, the device sends a notification to the driver
-> > bound to the device. What if the driver ignores it?
-> >  
-> If driver ignores it, those devices are marked unusable for new allocation.
-> Device becomes usable only after it has act on the event.
+> > Why the sysfs attribute? Devlink should be able to report device name so
+> > there's no need for a tie in from the other end.  
+> There isn't a need to enforce a devlink instance creation either,
 
-But the device remains fully operational?
+You mean there isn't a need for the SF to be spawned by devlink?
 
-So if I'm an admin who wants to unplug a misbehaving "entity"[1]
-the deactivate is not gonna help me, it's just a graceful hint?
-Is there no need for a forceful shutdown?
+> those mlx5 driver does it.
 
-[1] refer to earlier email, IDK what entity is supposed to use this
+Really, no idea what you're trying to say. Read your emails before
+you send them.
 
-> > > + * @DEVLINK_PORT_FUNCTION_OPSTATE_DETACHED: Driver is detached  
-> > from the function of port; it is  
-> > > + *					    safe to delete the port.
-> > > + */
-> > > +enum devlink_port_function_opstate {
-> > > +	DEVLINK_PORT_FUNCTION_OPSTATE_DETACHED,  
-> > 
-> > The port function must be some Mellanox speak - for the second time - I
-> > have no idea what it means. Please use meaningful names.
-> >  
-> It is not a Mellanox term.
-> Port function object is the one that represents function behind this port.
-> It is not a new term. Port function already exists in devlink whose operational state attribute is defined here.
+> systemd/udev looks after the sysfs attributes, so its parent device, similar to how phys_port_name etc looked for representor side.
 
-I must have missed that in review. PCI functions can host multiple
-ports. So "port function" does not compute for me. Can we drop the
-"function"?
