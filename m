@@ -2,55 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28F222DCA32
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:53:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 691362DCA35
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:58:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726653AbgLQAwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 19:52:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47600 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726199AbgLQAwW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 19:52:22 -0500
-Date:   Wed, 16 Dec 2020 16:51:40 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608166301;
-        bh=uCTZv7DXr0LdTQFOKkxi/CJL6ZUHauiKogCjuGGFHpo=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=H1HN4UPsMFXuNW6YNAbm4H3FjXINRbhbsKZf95j96+Xv3nCpIS+0XYsT4ylhP3jHW
-         3E7n8vovaB+U2vkAIcrq2MKPTO80OdIUPpZ3F2/HUtXq50fkx7De/Vwa5Z+0p7nN6f
-         xOwkhL5dHqSVW6N2jhLIDBUY4LxMwQ75DM81cVQ/8JDErdTbaMq63/NOi8xHuHayNQ
-         DuVOqbe8fIF6JcGYCOpQSMNtNm3+0SRBCFW9vcMrgPShSR2JRf37AUHTS0KLNHzPYS
-         Rjc/djeYWi3LfXNPUt3+Mh27gj6FSQUcKcdsRpVJiq8aUnKFKNdfjRzoAjd3Zg+9Op
-         5BGnWpk4QzLrg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: rds: Change PF_INET to AF_INET
-Message-ID: <20201216165140.320c68f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201216070620.16063-1-zhengyongjun3@huawei.com>
-References: <20201216070620.16063-1-zhengyongjun3@huawei.com>
+        id S1726588AbgLQA4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 19:56:12 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:40697 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725974AbgLQA4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 19:56:12 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0BH0tCqzD015933, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb06.realtek.com.tw[172.21.6.99])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0BH0tCqzD015933
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 17 Dec 2020 08:55:12 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Thu, 17 Dec 2020 08:55:12 +0800
+Received: from RTEXDAG02.realtek.com.tw ([fe80::89de:3ef2:d607:5db5]) by
+ RTEXDAG02.realtek.com.tw ([fe80::89de:3ef2:d607:5db5%10]) with mapi id
+ 15.01.2106.004; Thu, 17 Dec 2020 08:55:12 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "zhengyongjun3@huawei.com" <zhengyongjun3@huawei.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: Re: [PATCH wireless -next] rtw88: Delete useless kfree code
+Thread-Topic: [PATCH wireless -next] rtw88: Delete useless kfree code
+Thread-Index: AQHW06wufMk6AY6elEmDiuhimIySVan58QiA
+Date:   Thu, 17 Dec 2020 00:55:12 +0000
+Message-ID: <1608166499.2560.0.camel@realtek.com>
+References: <20201216130442.13869-1-zhengyongjun3@huawei.com>
+In-Reply-To: <20201216130442.13869-1-zhengyongjun3@huawei.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.213]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AD0CF813C7FD8447A8AAD43163028802@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Dec 2020 15:06:20 +0800 Zheng Yongjun wrote:
-> By bsd codestyle, change PF_INET to AF_INET.
-> 
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-
-# Form letter - net-next is closed
-
-We have already sent the networking pull request for 5.11 and therefore
-net-next is closed for new drivers, features, code refactoring and
-optimizations. We are currently accepting bug fixes only.
-
-Please repost when net-next reopens after 5.11-rc1 is cut.
-
-Look out for the announcement on the mailing list or check:
-http://vger.kernel.org/~davem/net-next.html
-
-RFC patches sent for review only are obviously welcome at any time.
+T24gV2VkLCAyMDIwLTEyLTE2IGF0IDEzOjA0ICswMDAwLCBaaGVuZyBZb25nanVuIHdyb3RlOg0K
+PiBUaGUgcGFyYW1ldGVyIG9mIGtmcmVlIGZ1bmN0aW9uIGlzIE5VTEwsIHNvIGtmcmVlIGNvZGUg
+aXMgdXNlbGVzcywgZGVsZXRlIGl0Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogWmhlbmcgWW9uZ2p1
+biA8emhlbmd5b25nanVuM0BodWF3ZWkuY29tPg0KDQpBY2tlZC1ieTogUGluZy1LZSBTaGloIDxw
+a3NoaWhAcmVhbHRlay5jb20+DQoNCj4gLS0tDQo+IMKgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVh
+bHRlay9ydHc4OC9tYWluLmMgfCAxIC0NCj4gwqAxIGZpbGUgY2hhbmdlZCwgMSBkZWxldGlvbigt
+KQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgv
+bWFpbi5jDQo+IGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9tYWluLmMNCj4g
+aW5kZXggNTY1ZWZkODgwNjI0Li4xNTU2OGNkNjcwYTMgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMv
+bmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvbWFpbi5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L3dp
+cmVsZXNzL3JlYWx0ZWsvcnR3ODgvbWFpbi5jDQo+IEBAIC0xMjQ5LDcgKzEyNDksNiBAQCBzdGF0
+aWMgdm9pZCBydHdfc2V0X3N1cHBvcnRlZF9iYW5kKHN0cnVjdCBpZWVlODAyMTFfaHcNCj4gKmh3
+LA0KPiDCoA0KPiDCoGVycl9vdXQ6DQo+IMKgCXJ0d19lcnIocnR3ZGV2LCAiZmFpbGVkIHRvIHNl
+dCBzdXBwb3J0ZWQgYmFuZFxuIik7DQo+IC0Ja2ZyZWUoc2JhbmQpOw0KPiDCoH0NCj4gwqANCj4g
+wqBzdGF0aWMgdm9pZCBydHdfdW5zZXRfc3VwcG9ydGVkX2JhbmQoc3RydWN0IGllZWU4MDIxMV9o
+dyAqaHcsDQoNCg0K
