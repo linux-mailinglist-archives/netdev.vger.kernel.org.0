@@ -2,133 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3C52DC9F7
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:36:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B082DCA0C
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:39:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727149AbgLQAfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 19:35:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727025AbgLQAfi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 19:35:38 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90C0C061794;
-        Wed, 16 Dec 2020 16:34:57 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id y128so4560070ybf.10;
-        Wed, 16 Dec 2020 16:34:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wXbiOWlu/SzBLKPWExoJ6MCxXjSp0oEVp36iYixZQW0=;
-        b=Vsswb0Gq8rQgRuOzI5+QLTrFiSBSWH+iEeH/U+8F8u8DJAXPjjWxEq+GIW7BgownZy
-         Gv0PeQ0Y87ReyiMJgF2qNt5SFz5M/+RLwH8lrjwLJmu8J4s7n4bYbgmE2H/1+HFOZ5JJ
-         64g2QcK2vnZ7aoWTu+3XPHEsZtMfIXj5vU2A8MuzwQv78bhOwITLx2/+t24RH5T9camH
-         NGtEkivmbY+tR9dNKVLGkibKs+yOWoV4611svjOhjbgAYxA3z6ghZFTlZ+Jh2dAB/OT4
-         8JfngUbeudps0uuDUlA6TLQ07QB+Qjds9hRx9jEBM2DzQJ0pX36ekKzVrp0n3x3EAw5o
-         t1FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wXbiOWlu/SzBLKPWExoJ6MCxXjSp0oEVp36iYixZQW0=;
-        b=rUFMAlz49KWKrvmZqU0vQM64tUJ1SZtMWu1mRURyjRzU6/uETKIecBH0QU6A1m9aB0
-         GQ1FS2OhkXzhhMoRTKmUsSpxHzjZZxxrvqWE786OPBBWa2ZEe1TCfvolpvrFtpoUgtNx
-         1KXP7bvZndJXSbqeLPW5T4pA8WkQ7TMwzBJzk3xU9hZmj5kqcDA5qOuqCTpsml6zA2MC
-         AzlHkPf1W9MZ4D+zZ/j+8mh6K88SfM4OMtdj+15SxoC7sLxOPX84sbqAEgv2mLdw8iEy
-         jqErEKo3H3qvUQK+6/Bm4dgnlq3zaZsZga6kbMQ4xHSwLAOnJ5jMiRtRWCVRq3c+Q+Hl
-         jXhQ==
-X-Gm-Message-State: AOAM530G3XCxUNNWoieeBRoqRNj1a7s2z2/pDWDy+F/UPr2saEfgWHkL
-        xyZ4Qi55FZjx1BC7Vkk6WN32ASl4wdJhwbOe2Y8=
-X-Google-Smtp-Source: ABdhPJxid8iDzN640UZtRY3k659ZBI7Mxi59/ofndTRQFRrSqNZldWQN43x2Y+ScoMwI3TZ6jrLK2Es5Q4MP+Gv6648=
-X-Received: by 2002:a25:e804:: with SMTP id k4mr50192621ybd.230.1608165296717;
- Wed, 16 Dec 2020 16:34:56 -0800 (PST)
+        id S1727833AbgLQAjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 19:39:23 -0500
+Received: from nat-hk.nvidia.com ([203.18.50.4]:19992 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727126AbgLQAjV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 19:39:21 -0500
+Received: from HKMAIL104.nvidia.com (Not Verified[10.18.92.9]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fdaa88e0000>; Thu, 17 Dec 2020 08:38:38 +0800
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL104.nvidia.com
+ (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Dec
+ 2020 00:38:34 +0000
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
+ by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 17 Dec 2020 00:38:33 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WgF9HcuKHq4uO6lL4MwEI2YO8ZtuIGSeM8lSXJ3i6LeDwpto/tHx8uKoUBNp84LreNsOAH7mvaJTc+YSBsOgX18E4tqbHaB7GYc8TP4qSDv4wqbpr4diGPlreJ2lalwkKRNaeUYd3zwGWBwYDbbZgShUJ/5SLilT7i34uLdLMoqDIT+bslwvWTHbHd/KIJH3So3qP/x34cDtSD/N9OQiXbrAO05VhIjz6VwGgW0/XbWiNszHvdkXTk8H0VlL3mkHGo2jxKiY0eOlPTjMKw/hSnQuYdk/xzwbS+QGEnCQPDnFel1whIvdGEFnKT3cTSLsAhCWMlK+XypyZnRH/ZNbbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yzzt5Jh3k64uC+nH6bIfnbcwP0H0XHUqCHKVdUAbf/8=;
+ b=bH24DeQnQsXLk7BVQX1z1s7j2TQzmUcWZgPgmotpR4TS08Kq5w18oDUb/7V1qDc2naatKvRrCnQdvQt5JRpywv8RTjYybVExJDLpXF2R7ggSL2aYqEAtYCPGQ13db+SBHCkx7nVT1G81DheQ56o701IWmvtdZWa7rsQ6OziXPovnRqZwFcalu02TE+VBDfn7//aVMoAFGWJtKSIYm41r5vKwzT+8mhl1mIP7GKq6UDJC4f+r8lKoTdjucbqw3WEXmMScGXWv4jE7ENVMqlTOj3UNy647k8VRuCXenO53ytfN6Gsb6PEEqev5z+bu9qNKTsrZ5Az/ldrHWFHI3EnJxw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4497.namprd12.prod.outlook.com (2603:10b6:5:2a5::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Thu, 17 Dec
+ 2020 00:38:31 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1ce9:3434:90fe:3433]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1ce9:3434:90fe:3433%3]) with mapi id 15.20.3654.025; Thu, 17 Dec 2020
+ 00:38:31 +0000
+Date:   Wed, 16 Dec 2020 20:38:29 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+Message-ID: <20201217003829.GN552508@nvidia.com>
+References: <20201216001946.GF552508@nvidia.com>
+ <CAKgT0UeLBzqh=7gTLtqpOaw7HTSjG+AjXB7EkYBtwA6EJBccbg@mail.gmail.com>
+ <20201216030351.GH552508@nvidia.com>
+ <CAKgT0UcwP67ihaTWLY1XsVKEgysa3HnjDn_q=Sgvqnt=Uc7YQg@mail.gmail.com>
+ <20201216133309.GI552508@nvidia.com>
+ <CAKgT0UcRfB8a61rSWW-NPdbGh3VcX_=LCZ5J+-YjqYNtm+RhVg@mail.gmail.com>
+ <20201216175112.GJ552508@nvidia.com>
+ <CAKgT0Uerqg5F5=jrn5Lu33+9Y6pS3=NLnOfvQ0dEZug6Ev5S6A@mail.gmail.com>
+ <20201216203537.GM552508@nvidia.com>
+ <CAKgT0UfuSA9PdtR6ftcq0_JO48Yp4N2ggEMiX9zrXkK6tN4Pmw@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UfuSA9PdtR6ftcq0_JO48Yp4N2ggEMiX9zrXkK6tN4Pmw@mail.gmail.com>
+X-ClientProxiedBy: BL1PR13CA0088.namprd13.prod.outlook.com
+ (2603:10b6:208:2b8::33) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-References: <20201215233702.3301881-1-songliubraving@fb.com> <20201215233702.3301881-2-songliubraving@fb.com>
-In-Reply-To: <20201215233702.3301881-2-songliubraving@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 16 Dec 2020 16:34:46 -0800
-Message-ID: <CAEf4BzYNAd7V=EevVYiz48+q=UjNnRBzfQFA4tTYCX8a9Wfu7A@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: introduce task_vma bpf_iter
-To:     Song Liu <songliubraving@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0088.namprd13.prod.outlook.com (2603:10b6:208:2b8::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.9 via Frontend Transport; Thu, 17 Dec 2020 00:38:30 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kphJN-00C03q-H1; Wed, 16 Dec 2020 20:38:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1608165518; bh=yzzt5Jh3k64uC+nH6bIfnbcwP0H0XHUqCHKVdUAbf/8=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=aqYGPDNQn5nO1MxbqXDsU3xJ6QB08/ZZRyPe8wnKneSSTf7H5Rgp0HVN0ca6/mycD
+         hW92yA+t5oSC2DXk2n/Dic4UKCdfzg0MUE2uVIFKJCiKbR0KHO79iC9JM1Os0n4G6W
+         Z3oye/VGP9R+DNb72v0penUYbO5J3wI7Fu/nuCDs5J4dKjAIBlDKKdmycyAa4LNR6x
+         6IeOG8gc20j76/cj0Pk/UYNi5X/QXCU8I9WC8HqspHBwZKH0rLoh1zLlAooWcwBjhl
+         9gW8Hg+Yr6iXPLohRZKsIBdwXm4uqSGDljy+tG0KCYb1GhLidcU6rcQwyQheAKfCWW
+         tbMyMhSa633pA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 3:37 PM Song Liu <songliubraving@fb.com> wrote:
->
-> Introduce task_vma bpf_iter to print memory information of a process. It
-> can be used to print customized information similar to /proc/<pid>/maps.
->
-> task_vma iterator releases mmap_lock before calling the BPF program.
-> Therefore, we cannot pass vm_area_struct directly to the BPF program. A
-> new __vm_area_struct is introduced to keep key information of a vma. On
-> each iteration, task_vma gathers information in __vm_area_struct and
-> passes it to the BPF program.
->
-> If the vma maps to a file, task_vma also holds a reference to the file
-> while calling the BPF program.
->
-> Signed-off-by: Song Liu <songliubraving@fb.com>
-> ---
->  include/linux/bpf.h    |   2 +-
->  kernel/bpf/task_iter.c | 205 ++++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 205 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 07cb5d15e7439..49dd1e29c8118 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1325,7 +1325,7 @@ enum bpf_iter_feature {
->         BPF_ITER_RESCHED        = BIT(0),
->  };
->
-> -#define BPF_ITER_CTX_ARG_MAX 2
-> +#define BPF_ITER_CTX_ARG_MAX 3
->  struct bpf_iter_reg {
->         const char *target;
->         bpf_iter_attach_target_t attach_target;
-> diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-> index 0458a40edf10a..15a066b442f75 100644
-> --- a/kernel/bpf/task_iter.c
-> +++ b/kernel/bpf/task_iter.c
-> @@ -304,9 +304,183 @@ static const struct seq_operations task_file_seq_ops = {
->         .show   = task_file_seq_show,
->  };
->
-> +/*
-> + * Key information from vm_area_struct. We need this because we cannot
-> + * assume the vm_area_struct is still valid after each iteration.
-> + */
-> +struct __vm_area_struct {
-> +       __u64 start;
-> +       __u64 end;
-> +       __u64 flags;
-> +       __u64 pgoff;
+On Wed, Dec 16, 2020 at 02:53:07PM -0800, Alexander Duyck wrote:
+ 
+> It isn't about the association, it is about who is handling the
+> traffic. Going back to the macvlan model what we did is we had a group
+> of rings on the device that would automatically forward unicast
+> packets to the macvlan interface and would be reserved for
+> transmitting packets from the macvlan interface. We took care of
+> multicast and broadcast replication in software.
 
-I'd keep the original names of the fields (vm_start, vm_end, etc). But
-there are some more fields which seem useful, like vm_page_prot,
-vm_mm, etc.
+Okay, maybe I'm starting to see where you are coming from.
 
-It's quite unfortunate, actually, that bpf_iter program doesn't get
-access to the real vm_area_struct, because it won't be able to do much
-beyond using fields that we pre-defined here. E.g., there could be
-interesting things to do with vm_mm, but unfortunately it won't be
-possible.
+First, I think some clarity here, as I see it the devlink
+infrastructure is all about creating the auxdevice for a switchdev
+port.
 
-Is there any way to still provide access to the original
-vm_area_struct and let BPF programs use BTF magic to follow all those
-pointers (like vm_mm) safely?
+What goes into that auxdevice is *completely* up to the driver. mlx5
+is doing a SF which == VF, but that is not a requirement of the design
+at all.
 
-> +};
-> +
+If an Intel driver wants to put a queue block into the aux device and
+that is != VF, it is just fine.
 
-[...]
+The Intel netdev that binds to the auxdevice can transform the queue
+block and specific switchdev config into a netdev identical to
+accelerated macvlan. Nothing about the breaks the switchdev model.
+
+Essentially think of it as generalizing the acceleration plugin for a
+netdev. Instead of making something specific to limited macvlan, the
+driver gets to provide exactly the structure that matches its HW to
+provide the netdev as the user side of the switchdev port. I see no
+limitation here so long as the switchdev model for controlling traffic
+is followed.
+
+Let me segue into a short story from RDMA.. We've had a netdev called
+IPoIB for a long time. It is actually kind of similar to this general
+thing you are talking about, in that there is a programming layer
+under the IPOIB netdev called RDMA verbs that generalizes the actual
+HW. Over the years this became more complicated because every new
+netdev offloaded needed mirroring into the RDMA verbs general
+API. TSO, GSO, checksum offload, endlessly onwards. It became quite
+dumb in the end. We gave up and said the HW driver should directly
+implement netdev. Implementing a middle API layer makes zero sense
+when netdev is already perfectly suited to implement ontop of
+HW. Removing SW layers caused performance to go up something like
+2x.
+
+The hard earned lesson I take from that is don't put software layers
+between a struct net_device and the actual HW. The closest coupling is
+really the best thing. Provide libary code in the kernel to help
+drivers implement common patterns when making their netdevs, do not
+provide wrapper netdevs around drivers.
+
+IMHO the approach of macvlan accleration made some sense in 2013, but
+today I would say it is mashing unrelated layers together and
+polluting what should be a pure SW implementation with HW hooks.
+
+I see from the mailing list comments this was done because creating a
+device specific netdev via 'ip link add' was rightly rejected. However
+here we *can* create a device specific vmdq *auxdevice*.  This is OK
+because the netdev is controlling and containing the aux device via
+switchdev.
+
+So, Intel can get the "VMDQ link type" that was originally desired more
+or less directly, so long as the associated switchdev port controls
+the MAC filter process, not "ip link add".
+
+And if you want to make the vmdq auxdevice into an ADI by user DMA to
+queues, then sure, that model is completely sane too (vs hacking up
+macvlan to expose user queues) - so long as the kernel controls the
+selection of traffic into those queues and follows the switchdev
+model. I would recommend creating a simple RDMA raw ethernet queue
+driver over the aux device for something like this :)
+
+> That might be a bad example, I was thinking of the issues we have had
+> with VFs and direct assignment to Qemu based guests in the past.
+
+As described, this is solved by VDPA.
+
+> Essentially what I am getting at is that the setup in the container
+> should be vendor agnostic. The interface exposed shouldn't be specific
+> to any one vendor. So if I want to fire up a container or Mellanox,
+> Broadcom, or some other vendor it shouldn't matter or be visible to
+> the user. They should just see a vendor agnostic subfunction
+> netdevice.
+
+Agree. The agnostic container user interface here is 'struct
+net_device'.
+
+> > I have the feeling this stuff you are asking for is already done..
+> 
+> The case you are describing has essentially solved it for Qemu
+> virtualization and direct assignment. It still doesn't necessarily
+> solve it for the container case though.
+
+The container case doesn't need solving.
+
+Any scheme I've heard for container live migration, like CRIU,
+essentially hot plugs the entire kernel in/out of a user process. We
+rely on the kernel providing low leakage of the implementation details
+of the struct net_device as part of it's uAPI contract. When CRIU
+swaps the kernel the new kernel can have any implementation of the
+container netdev it wants.
+
+I've never heard of a use case to hot swap the implemention *under* a
+netdev from a container. macvlan can't do this today. If you have a
+use case here, it really has nothing to do with with this series.
+
+Jason
