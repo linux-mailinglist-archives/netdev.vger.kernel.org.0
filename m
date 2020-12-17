@@ -2,38 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EA2B2DCA17
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:43:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7B312DCA1A
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:46:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726644AbgLQAnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 19:43:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45106 "EHLO mail.kernel.org"
+        id S1726424AbgLQApw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 19:45:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45856 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726259AbgLQAnC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 19:43:02 -0500
-Date:   Wed, 16 Dec 2020 16:42:20 -0800
+        id S1725871AbgLQApw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 19:45:52 -0500
+Date:   Wed, 16 Dec 2020 16:45:10 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608165741;
-        bh=rLt1BcYdaZR7V8OTDL/7lAbV+wFHd9ZgRllzEyTqVz0=;
+        s=k20201202; t=1608165911;
+        bh=Q66mg2D/d0TTX316HWqnvm49rlM0xf7I80MMYN+9C/I=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gdQC0lKHr55Ny2fDADgD1tmwN78PgX/WArDolyAgxTyGsioExJsQxt0NhheOpN7AT
-         sFeMymxe4Y6x/YWWZRousLwTxCnrIQUtIvKOcGmsRoWI3cm7RXLqwamsKzPjCEaXjc
-         RN0thh2MYUcppvRYsS9CJQj+E+DRNlskK8cRA1vkjJoEsRGU2GjMVNGWOBDOgMTjUx
-         0PhFs1TStfLEw97M5RBPPMPcKtp8LbDjVZeLVvN33LkVVr3r+ygjoXkxZCYkIRiZdD
-         QPNT6PoFrN6X7ninL+wJR53EldRXAThhLiefgE1IgKcoYWi+436ltm5WEfLOlRL1Jf
-         8dvEkwABYfiXA==
+        b=bzhLTmnT8IXHgOry0RPcmTyPqf1B0hR3jqlG0bZHZI1Ofap942eMXwnq5VbpfxcnR
+         Hp82hou9TZKWmN5VSh0eg5MHW12MLa9Uhr97moRLVRgyX4b5kUs0BYNON1PtriaesR
+         xupSwZOvYLTDIIJHqQYFtARFvAXgXN9BiUJUakiUyXagsBTpRyr06MoXmADw0WxrB1
+         mbHTL+qShhMJLgru1bL8UKaVz4VKQcbFjD78YGg1UQg0kEZYBFsNYkgPNUz1AFNXrJ
+         YJI0GZKkXYqTWFtUy8SVMDOu4ljzL+5bVGiEOJnQAMVrY+aatvsFa4BaPI7K8QY2Vd
+         Q0oLz0ToZMBfw==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     <stefanc@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <thomas.petazzoni@bootlin.com>,
-        <davem@davemloft.net>, <nadavh@marvell.com>,
-        <ymarkman@marvell.com>, <linux-kernel@vger.kernel.org>,
-        <linux@armlinux.org.uk>, <mw@semihalf.com>, <andrew@lunn.ch>,
-        <rmk+kernel@armlinux.org.uk>
-Subject: Re: [PATCH net 1/2] net: mvpp2: Fix GoP port 3 Networking Complex
- Control configurations
-Message-ID: <20201216164220.71e5fd1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1608039133-16345-1-git-send-email-stefanc@marvell.com>
-References: <1608039133-16345-1-git-send-email-stefanc@marvell.com>
+To:     trix@redhat.com
+Cc:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] atm: ambassador: remove h from printk format specifier
+Message-ID: <20201216164510.770454d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201215142228.1847161-1-trix@redhat.com>
+References: <20201215142228.1847161-1-trix@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,12 +37,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 15:32:12 +0200 stefanc@marvell.com wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
+On Tue, 15 Dec 2020 06:22:28 -0800 trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
 > 
-> During GoP port 2 Networking Complex Control mode of operation configurations,
-> also GoP port 3 mode of operation was wrongly set mode.
-> Patch removes these configurations.
-> GENCONF_CTRL0_PORTX naming also fixed.
+> See Documentation/core-api/printk-formats.rst.
+> h should no longer be used in the format specifier for printk.
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-Can we get a Fixes tag?
+That's for new code I assume?
+
+What's the harm in leaving this ancient code be?
+
+> diff --git a/drivers/atm/ambassador.c b/drivers/atm/ambassador.c
+> index c039b8a4fefe..6b0fff8c0141 100644
+> --- a/drivers/atm/ambassador.c
+> +++ b/drivers/atm/ambassador.c
+> @@ -2169,7 +2169,7 @@ static void setup_pci_dev(struct pci_dev *pci_dev)
+>  		pci_lat = (lat < MIN_PCI_LATENCY) ? MIN_PCI_LATENCY : lat;
+>  
+>  	if (lat != pci_lat) {
+> -		PRINTK (KERN_INFO, "Changing PCI latency timer from %hu to %hu",
+> +		PRINTK (KERN_INFO, "Changing PCI latency timer from %u to %u",
+>  			lat, pci_lat);
+>  		pci_write_config_byte(pci_dev, PCI_LATENCY_TIMER, pci_lat);
+>  	}
+> @@ -2300,7 +2300,7 @@ static void __init amb_check_args (void) {
+>    unsigned int max_rx_size;
+>    
+>  #ifdef DEBUG_AMBASSADOR
+> -  PRINTK (KERN_NOTICE, "debug bitmap is %hx", debug &= DBG_MASK);
+> +  PRINTK (KERN_NOTICE, "debug bitmap is %x", debug &= DBG_MASK);
+>  #else
+>    if (debug)
+>      PRINTK (KERN_NOTICE, "no debugging support");
+
