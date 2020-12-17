@@ -2,171 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 375B72DCE17
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 10:08:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA42F2DCE95
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 10:43:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727376AbgLQJG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 04:06:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725871AbgLQJGy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 04:06:54 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D528EC06138C
-        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 01:06:13 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id o13so32289492lfr.3
-        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 01:06:13 -0800 (PST)
+        id S1727404AbgLQJl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 04:41:57 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:37936 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726155AbgLQJlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 04:41:55 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BH9ZsUD008463;
+        Thu, 17 Dec 2020 01:38:53 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=3gPc6wDrO+0GthwNv7BWaKJFwqa1dWNAlvurewo5oAQ=;
+ b=e/NDaBIozGy/MrybNu2v+kk6ls1GO+1HPZ1qZBci18SqazVMyd+Wl88lEmghVUAPbRiD
+ ZCPg2ZZgBi9VaEHSeDbkUAGktPtGclNnVz0Tx2xL18tve2WKAGVWCIy2qs2Pm/615bRX
+ ulIUPRPq4wShgnV3cs7Ysn2UOjxK9Q9lWdzLlj2cHmYrOzDKGq8ardpbjXne/NN1rssJ
+ QbSWRxy8u3TMQbJWrMNtGfZZarBwxGnzojH6s6xByKGLgeZdNVxuheBEaL7OnViEW+KN
+ QwoCRr1WiVooUYhI8QlRt3+XnimMAXjoP+viubcPLdMxukAUpSZ3ZFLM89ya6vw2JVfl BA== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 35g4rp012t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 17 Dec 2020 01:38:53 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Dec
+ 2020 01:38:52 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Dec
+ 2020 01:38:51 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.107)
+ by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Thu, 17 Dec 2020 01:38:51 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cXXzTDM+xenJL4YddfIxIARRuhMYLCuYNbWhsKtZD+PkMOnVvfcbTnRt2avBjeJHd19ZTeYuZifYZVUGShg4euAEpvWQk29jzoi/lRzYjaUw+pB6nYJWiNX5Y6Tnj5LAj59k8EqJEBnilxm84YISn+7knEyEOowxrAJJBfR08/GqyzJwaS2Opb5VXHqGRNRaR1RN0hr4fAJsB6JYcoHUCjebu6obcPAFjSHyOzTkUzZtVE2TXMRgKfFgedBq3nt91pqC1iv/M+kAmBHbzOhoCFuX33gNyLZK15no+F17BZ51vRf8sJIoFz+ABKDmt0WDmtUYfVHEOi+0DeBaZ/gnRg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3gPc6wDrO+0GthwNv7BWaKJFwqa1dWNAlvurewo5oAQ=;
+ b=nNgfYCHdZbrkxY09FEcU9D2jHjcBFCA31Xra3k/4xYdmm6meswTtqQvkKSEC4d/ptft2Ku0M157omdm5FDfVFLacTwWK0kmi1w9dN3W28dmQhA1qp/GawMdClClK0ZiLSHIcFsebX4CpRApxni9CZBN+fo8Rh2fl05DIAEFOGqVPpIqnhSxZJXbMAK9nER3G5FzvXGLBstUd2XekyRh8Bw8LSG5zyk154beD3efEoeCoFxL+QKducrV4/uRN/QqGFquVi3OakPWOxkA0D6sH/fwX6nQSXyJVNkMMepykCA2bgzYQ0VdFJEktY8bZnG4CY7QUcNskpsJaa2fZxfELuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vAO/2/47mbhlLw+965PNTisNKeQzGGv2Q/ZDNBlq8ho=;
-        b=ug3HU0/BD5jHUI6DBI3tUcGDLe5Vi0dADf7CQjmuw/ZLMEvO78n6LoGbJVJ9/LH/oY
-         02XfSpETFlVPf2/TuFtgteUxWs4gqgZd8XpPPXZqFJ+3W7fYS2Mo4+z/BVYuNpus6vtz
-         pyZo35hXAxYxPKHwOWQEa28G/ws1llfu1/sO/dgTA2sCj2CHq+PjFNtbH5wP9b92HQTt
-         CUhhGqnd82VO3vyy5jObExl/xwXUQsiT+DVOkAQGGLq1JmbCb+tOKMnYVsNUdxnvshLX
-         AD/iJCQ8RHOTiwU9+j7lRaeJCvbkpPvketTDkElKJfk82Cv9xmcLl4GgDQXxLVZm4TIP
-         EXfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vAO/2/47mbhlLw+965PNTisNKeQzGGv2Q/ZDNBlq8ho=;
-        b=R/5XGW4iUmm3857OE/QPP0mSvmCZj8lX40hYB1H0zZ1WTEl7yKmx/oqljt8Zq8uFV1
-         PTcg5JXqsJ2kJv+mhqy6vhasE/OYpiWYq7592jO2H3zs4IxZlxx9psYnorYAfNg36Q+/
-         K+R/GI19gIvaCSyeYSvnUH4RJHF/h2BTDEZ0FagdTcNqyirBB2ITCLddRrnbohG+b4lN
-         E0wnKoKb3sFGi/9pyoGuJJgid7d0o+voCuOXmCooRlhq7si765XogYWSwHSYFL+e51WD
-         dlnnj5KWXvTiV60onMbYMs959xGssO3egvYf06KFgMK94y6oZdJHWRO+ic+cNbM9FSPy
-         4u6w==
-X-Gm-Message-State: AOAM530GkH0yTWtDR31EnvJfXhdiS4N9E9OzLcv5P6MwIDnwfC9Fg4As
-        vie5hhK8BZNyvgvpTaT2vU3vRQrmXyBiNJ4LJqiw9g==
-X-Google-Smtp-Source: ABdhPJxsq2p+kthVsRGDbdBPYMJuYG963MsSL6IXTPPE/fUcPdixmm5ttc1CfxGFCERB7fPnA+WDEJZLkKAp9rbYRAA=
-X-Received: by 2002:a05:6512:30a:: with SMTP id t10mr911692lfp.124.1608195972094;
- Thu, 17 Dec 2020 01:06:12 -0800 (PST)
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3gPc6wDrO+0GthwNv7BWaKJFwqa1dWNAlvurewo5oAQ=;
+ b=CjBP78XnCtqegma0OcEUcj9QUhagVQwKqOZhZ2qXv10SQUV166Ch6aXCEuttNgNTKeiC7pStDcLMQAVwTgCVSzk3yIgfdkfooW37Lh7AAR0OzrcMhiDkrcPHIAJsCA2mQZjefy74eB6a1BL0X7lWGWJ9f/RhWPS6FlCnNWL3vIs=
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
+ by CO6PR18MB3860.namprd18.prod.outlook.com (2603:10b6:5:34d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.13; Thu, 17 Dec
+ 2020 09:38:50 +0000
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::ed55:e9b3:f86c:3e5b]) by CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::ed55:e9b3:f86c:3e5b%7]) with mapi id 15.20.3676.025; Thu, 17 Dec 2020
+ 09:38:50 +0000
+From:   Stefan Chulski <stefanc@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Yan Markman <ymarkman@marvell.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "mw@semihalf.com" <mw@semihalf.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>
+Subject: RE: [EXT] Re: [PATCH net 1/2] net: mvpp2: Fix GoP port 3 Networking
+ Complex Control configurations
+Thread-Topic: [EXT] Re: [PATCH net 1/2] net: mvpp2: Fix GoP port 3 Networking
+ Complex Control configurations
+Thread-Index: AQHW0ubBS3DkwhP9JEKwsigKGIsDqKn6dSYAgACVu1A=
+Date:   Thu, 17 Dec 2020 09:38:50 +0000
+Message-ID: <CO6PR18MB38737D87B39D6BBEE82B83B3B0C40@CO6PR18MB3873.namprd18.prod.outlook.com>
+References: <1608039133-16345-1-git-send-email-stefanc@marvell.com>
+ <20201216164220.71e5fd1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201216164220.71e5fd1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [80.230.78.138]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d47e2c4c-6bc9-49e6-da57-08d8a26f8f69
+x-ms-traffictypediagnostic: CO6PR18MB3860:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CO6PR18MB3860E657E93E8A0A79E8FEE4B0C40@CO6PR18MB3860.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:568;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6dhPMLR+/G+4S75DSCYRSAgl2bkFX6gjA7r4DewNH7b+umI22/QAcu3cdIV6LdlxCzebHF+bA5kJIMbdEwHeST+s3MCOSo1Q9FBQ31vgIQpwcDyXy+jFS+s1v/2QngDKlXMRaWwMXXL2xjVvDkqrrihyWRO1lMvaUMlXgojy+L9H8b9CDFy5OZyCFqdF4s8I/XO39M2goGdmIMOIKC9p9puFN5XEIaCISJkod65zVe/S0Rw09Afi/Xzn0/TgeGrAS9DeWIp+6bEPbdD5LUpCSvlsTk9U3Nvkxy+9tC7H1jll1iYE0HVB9maaM8GXBgHmUNbgdUeU7xPFXp24xuw02A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(6916009)(71200400001)(2906002)(66946007)(66446008)(64756008)(55016002)(66556008)(26005)(186003)(9686003)(5660300002)(54906003)(4744005)(478600001)(66476007)(52536014)(33656002)(6506007)(83380400001)(53546011)(8936002)(4326008)(8676002)(316002)(86362001)(7696005)(76116006);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?yElDzdbEzzbu7NDhKwST6nwcyq+dzxu75xxnq6348KGSa9k4lBDyLb2/DX61?=
+ =?us-ascii?Q?bD7WUBzNsuDGDd6Gf9u71aqkNufGuw7EITCWlrC5wchBG2+xsJlhi6SLF6SP?=
+ =?us-ascii?Q?qd1vRWzlovbmb07MCPvexZZB74xPdkap6zSKRvdKgjSNDtvNh8HgcF8i3dHt?=
+ =?us-ascii?Q?p6SD/F3Q8BcdmNCsw4k4NLSwZ0FacCPkM63myvKTsZUi1kOWzeK4lYIO/Sih?=
+ =?us-ascii?Q?eyo30Q07751w+4jMJgK99rBWCzo/T08lKFd1QEgBmCnbf6hIDOjLRgAfBz6O?=
+ =?us-ascii?Q?P171UzcIT0NDfrCmgM3eXseluTwVkUHX9AkaZEyoFCeNfgqNji3o7Bw9Q8vx?=
+ =?us-ascii?Q?zBdENcxknl/GJr1oLelw530CF/wfHEcztaoqFbtfAh5AxDoPw6d4F755Q1bi?=
+ =?us-ascii?Q?jzGbMlvw23jc9nI6Y9dcUSXYVvwg0nOwsvrLUQywfPemw2KEC6nkHIk3aeUc?=
+ =?us-ascii?Q?Kq/pNbeFEkGDg0nhOmf6VbutqO1QNp2XPOp8kc8VRGkyIc9/88KSu2G+Lt29?=
+ =?us-ascii?Q?GyQxzz5Srw6XZ87QhXyi2qWyFrIvMst4QPuRJ5/kCpvsioPOk/OquO8G39or?=
+ =?us-ascii?Q?PhRtFtGiwPjqJwMEWEwPUy0S4bUDb3xKZhRvxiLc1fZah20i3e0Qrsivhwpq?=
+ =?us-ascii?Q?ZHa8R0qUCB+duiczxsHYMi/saVCB3dSw0XQ/Pg6VdQBFO1GcvYRmdbY5rQae?=
+ =?us-ascii?Q?3oeHM6k1Ng8zTceh+R7UfNyW53Qv397yMufiSOHDSvgn67hQOJ0bWAp0ed9X?=
+ =?us-ascii?Q?qIXHmYiklcsWkwfA0gSpMnicHPqK26oHTx57lLfYK38Lk4RaZdXONrLcvNhW?=
+ =?us-ascii?Q?gCerp6XU/S4ul8akPhBksTEKUnvd31I8RHjpw6Np0X559V7+zz82raM8hbJR?=
+ =?us-ascii?Q?p1QvrgToF9hG243x8UjV90J2BvVj1BAMZ4tS8Pp1R8CsHxrk+pNjKOZLjep1?=
+ =?us-ascii?Q?QgDK7OAJKMpFBvSI6TdEZoYIBoq8vVCvEIs6Wbah/jo=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20201119085022.3606135-1-davidgow@google.com> <CAEf4BzY4i0fH34eO=-4WOzVpifgPmJ0ER5ipBJWB0_4Zdv0AQg@mail.gmail.com>
- <CABVgOSn10kCaD7EQCMJTgD8udNx6fOExqUL1gXHzEViemiq3LA@mail.gmail.com> <3678c6eb-3815-a360-f495-fc246513f0f5@isovalent.com>
-In-Reply-To: <3678c6eb-3815-a360-f495-fc246513f0f5@isovalent.com>
-From:   David Gow <davidgow@google.com>
-Date:   Thu, 17 Dec 2020 17:05:59 +0800
-Message-ID: <CABVgOSmRrtHQ_6n43kFk6MFYCpf+cS-E=TOiwS=__v6wGNeMNQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] bpf: preload: Fix build error when O= is set
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-um <linux-um@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d47e2c4c-6bc9-49e6-da57-08d8a26f8f69
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2020 09:38:50.2271
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 3lgydBs2ZThhspnYgLemipg/IwsXkX3hPfvJjrxH7ZTu4DBNiQfTay24hiM/xDQR9vUMptB7sWu0fa2Kr9wpSw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR18MB3860
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-17_07:2020-12-15,2020-12-17 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 10:53 PM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> 2020-11-21 17:48 UTC+0800 ~ David Gow <davidgow@google.com>
-> > On Sat, Nov 21, 2020 at 3:38 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> >>
-> >> On Thu, Nov 19, 2020 at 12:51 AM David Gow <davidgow@google.com> wrote:
-> >>>
-> >>> If BPF_PRELOAD is enabled, and an out-of-tree build is requested with
-> >>> make O=<path>, compilation seems to fail with:
-> >>>
-> >>> tools/scripts/Makefile.include:4: *** O=.kunit does not exist.  Stop.
-> >>> make[4]: *** [../kernel/bpf/preload/Makefile:8: kernel/bpf/preload/libbpf.a] Error 2
-> >>> make[3]: *** [../scripts/Makefile.build:500: kernel/bpf/preload] Error 2
-> >>> make[2]: *** [../scripts/Makefile.build:500: kernel/bpf] Error 2
-> >>> make[2]: *** Waiting for unfinished jobs....
-> >>> make[1]: *** [.../Makefile:1799: kernel] Error 2
-> >>> make[1]: *** Waiting for unfinished jobs....
-> >>> make: *** [Makefile:185: __sub-make] Error 2
-> >>>
-> >>> By the looks of things, this is because the (relative path) O= passed on
-> >>> the command line is being passed to the libbpf Makefile, which then
-> >>> can't find the directory. Given OUTPUT= is being passed anyway, we can
-> >>> work around this by explicitly setting an empty O=, which will be
-> >>> ignored in favour of OUTPUT= in tools/scripts/Makefile.include.
-> >>
-> >> Strange, but I can't repro it. I use make O=<absolute path> all the
-> >> time with no issues. I just tried specifically with a make O=.build,
-> >> where .build is inside Linux repo, and it still worked fine. See also
-> >> be40920fbf10 ("tools: Let O= makes handle a relative path with -C
-> >> option") which was supposed to address such an issue. So I'm wondering
-> >> what exactly is causing this problem.
-> >>
-> > [+ linux-um list]
+
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, December 17, 2020 2:42 AM
+> To: Stefan Chulski <stefanc@marvell.com>
+> Cc: netdev@vger.kernel.org; thomas.petazzoni@bootlin.com;
+> davem@davemloft.net; Nadav Haklai <nadavh@marvell.com>; Yan Markman
+> <ymarkman@marvell.com>; linux-kernel@vger.kernel.org;
+> linux@armlinux.org.uk; mw@semihalf.com; andrew@lunn.ch;
+> rmk+kernel@armlinux.org.uk
+> Subject: [EXT] Re: [PATCH net 1/2] net: mvpp2: Fix GoP port 3 Networking
+> Complex Control configurations
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> On Tue, 15 Dec 2020 15:32:12 +0200 stefanc@marvell.com wrote:
+> > From: Stefan Chulski <stefanc@marvell.com>
 > >
-> > Hmm... From a quick check, I can't reproduce this on x86, so it's
-> > possibly a UML-specific issue.
-> >
-> > The problem here seems to be that $PWD is, for whatever reason, equal
-> > to the srcdir on x86, but not on UML. In general, $PWD behaves pretty
-> > weirdly -- I don't fully understand it -- but if I add a tactical "PWD
-> > := $(shell pwd)" or use $(CURDIR) instead, the issue shows up on x86
-> > as well. I guess this is because PWD only gets updated when set by a
-> > shell or something, and UML does this somewhere?
-> >
-> > Thoughts?
-> >
-> > Cheers,
-> > -- David
->
-> Hi David, Andrii,
->
-> David, did you use a different command for building for UML and x86? I'm
-> asking because I reproduce on x86, but only for some targets, in
-> particular when I tried bindeb-pkg.
+> > During GoP port 2 Networking Complex Control mode of operation
+> > configurations, also GoP port 3 mode of operation was wrongly set mode.
+> > Patch removes these configurations.
+> > GENCONF_CTRL0_PORTX naming also fixed.
+>=20
+> Can we get a Fixes tag?
 
-I just ran "make ARCH={x86,um} O=.bpftest", with defconfig + enabling
-BPF_PRELOAD and its dependencies. UML fails, x86 works. (Though I can
-reproduce the failure if I make bindeb-pkg on x86).
+Reposting with Fixes tag.
 
-(It also shows up when building UML with the allyesconfig-based KUnit
-alltests option by running "./tools/testing/kunit/kunit.py run
---alltests", though this understandably takes a long time and is less
-obvious)
->
-> With "make O=.build vmlinux", I have:
-> - $(O) for "dummy" check in tools/scripts/Makefile.include set to
-> /linux/.build
-> - $(PWD) for same check set to /linux/tools
-> - Since $(O) is an absolute path, the "dummy" check passes
->
-> With "make O=.build bindeb-pkg", I have instead:
-> - $(O) set to .build (relative path)
-> - $(PWD) set to /linux/.build
-> - "dummy" check changes to /linux/.build and searches for .build in it,
-> which fails and aborts the build
->
-> (tools/scripts/Makefile.include is included from libbpf's Makefile,
-> called from kernel/bpf/preload/Makefile.)
->
-> I'm not sure how exactly the bindeb-pkg target ends up passing these values.
-
-Yeah: I haven't been able to find where uml is changing them either:
-I'm assuming there's something which changes directory and/or spawns a
-shell/recursive make to change $(PWD) or something.
-
-> For what it's worth, I have been solving this (before finding this
-> thread) with a fix close to yours, I pass "O=$(abspath .)" on the
-> command line for building libbpf in kernel/bpf/preload/Makefile. It
-> looked consistent to me with the "tools/:" target from the main
-> Makefile, where "O=$(abspath $(objtree))" is passed (and $(objtree) is ".").
-
-Given that there are several targets being broken here, it's probably
-worth having a fix like this which overrides O= rather than trying to
-hunt down every target which could change $(PWD). I don't particularly
-mind whether we use O= or O=$(abspath .), both are working in the UML
-usecase as well.
-
-Does anyone object to basically accepting either this patch as-is, or
-using O=$(abspath .)?
-
-
-Cheers,
--- David
+Stefan.
