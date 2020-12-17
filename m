@@ -2,93 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E4352DCAFB
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 03:25:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB70C2DCB10
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 03:41:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727812AbgLQCXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 21:23:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727073AbgLQCXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 21:23:20 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642ACC061794;
-        Wed, 16 Dec 2020 18:22:40 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id q22so18022015pfk.12;
-        Wed, 16 Dec 2020 18:22:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kdgZpH5zhK45f9ONEpP7+71rrjeg6WLO9Q4NzwSPfyA=;
-        b=vXecVVRKqSGBP29JUmVEz46Mswwzd6+4DFqEOHeZ19Uw3rEAj0M9Wmp4SbPbzA13+A
-         OZ16G6CkgSsW+44JpD+fgbJWJMJYfghNdCAh/HlYK6lTMYqsvypt48JsQPkW308XTf0U
-         TY0cKi1aOuA8S6LU9R9y2O+nFpWXDP4GEraU6ZdxFrNCGPY6FYV+uK4TBDdJ0gt9WCYX
-         YOWWTWxR7QFWNj90s6AZKPLMUKFkq6UaXipRHyeTIpn2Vskr17GThKxQPbTRHDyeCja4
-         7bWnTjRHEGRojydjgPegOYAAs2WRAUiivZZp7ZojtY0avNqnHxa4XJFwDgLF0krWK2xW
-         0NFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kdgZpH5zhK45f9ONEpP7+71rrjeg6WLO9Q4NzwSPfyA=;
-        b=PmIBQq7rivippGRBGGGgL/CFUi4A0NuzPkAZWr7MFsftNgRO+s7bWpq0RhtmTHHkQm
-         0cjHUrtsaxz9QPiKjasYs9+62MM9RcrpYxHmcdjtKNri3NNMPVCGWhDQTUpKPa5T+ChV
-         lqSUJl4kldNrJoXMkcxXGQp4gW3Sooahq8SJP1rWE+Hq1tC3r50NALKtWMPYYGjBtYzG
-         TOHPgICAkINz49VnsBLMhlWH+yxhHrvLuE9YveSIU5IdCNhAMEDLBe0DZrnMwv2wjJut
-         9d7CDKbN4CfwifmUMS2cXhwfJWVPM5ukH2dv1dQXxRo7xsAUsDWiiz2tjN8oOWeKIrJU
-         gxlw==
-X-Gm-Message-State: AOAM532J5Y4+D8RGfgbOuhmx8G6pEkBJVa2xh6ftEXdksaWyaZAQQwjZ
-        UWv1dIRqISzmNZJiHxAovU8=
-X-Google-Smtp-Source: ABdhPJwaabE+62JHWNklzDe5UAl8rrxr/LynPFYnVqDEgOEZGzOwbeGLHoCSs54O6VOzjy8p0D1Byg==
-X-Received: by 2002:a63:4b1f:: with SMTP id y31mr36353111pga.29.1608171759955;
-        Wed, 16 Dec 2020 18:22:39 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id w70sm3728551pfd.65.2020.12.16.18.22.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Dec 2020 18:22:39 -0800 (PST)
-Date:   Wed, 16 Dec 2020 18:22:36 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Holger Assmann <h.assmann@pengutronix.de>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rayagond Kokatanur <rayagond@vayavyalabs.com>,
-        kernel@pengutronix.de, Michael Olbrich <m.olbrich@pengutronix.de>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Jose Abreu <Jose.Abreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] net: stmmac: retain PTP-clock at hwtstamp_set
-Message-ID: <20201217022236.GA28883@hoboy.vegasvil.org>
-References: <20201216113239.2980816-1-h.assmann@pengutronix.de>
- <20201216171334.1e36fbff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1727368AbgLQCjw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Dec 2020 21:39:52 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2528 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725988AbgLQCjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 21:39:52 -0500
+Received: from DGGEMM402-HUB.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4CxGQK3hFMzQt07;
+        Thu, 17 Dec 2020 10:38:33 +0800 (CST)
+Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.214]) by
+ DGGEMM402-HUB.china.huawei.com ([10.3.20.210]) with mapi id 14.03.0509.000;
+ Thu, 17 Dec 2020 10:38:59 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        chenchanghu <chenchanghu@huawei.com>,
+        xudingke <xudingke@huawei.com>,
+        "huangbin (J)" <brian.huangbin@huawei.com>
+Subject: RE: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendmsg
+ fails
+Thread-Topic: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendmsg
+ fails
+Thread-Index: AQHW04Rfp56K/196YUuYX4LzCnUku6n47QYAgAGeBmA=
+Date:   Thu, 17 Dec 2020 02:38:59 +0000
+Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB86566@DGGEMM533-MBX.china.huawei.com>
+References: <cover.1608065644.git.wangyunjian@huawei.com>
+ <6b4c5fff8705dc4b5b6a25a45c50f36349350c73.1608065644.git.wangyunjian@huawei.com>
+ <20201216042027-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20201216042027-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.243.127]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201216171334.1e36fbff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 05:13:34PM -0800, Jakub Kicinski wrote:
-> On Wed, 16 Dec 2020 12:32:38 +0100 Holger Assmann wrote:
-> > As it is, valid SIOCSHWTSTAMP ioctl calls - i.e. enable/disable time
-> > stamping or changing filter settings - lead to synchronization of the
-> > NIC's hardware clock with CLOCK_REALTIME. This might be necessary
-> > during system initialization, but at runtime, when the PTP clock has
-> > already been synchronized to a grand master, a reset of the timestamp
-> > settings might result in a clock jump.
+> -----Original Message-----
+> From: Michael S. Tsirkin [mailto:mst@redhat.com]
+> Sent: Wednesday, December 16, 2020 5:23 PM
+> To: wangyunjian <wangyunjian@huawei.com>
+> Cc: netdev@vger.kernel.org; jasowang@redhat.com;
+> willemdebruijn.kernel@gmail.com; virtualization@lists.linux-foundation.org;
+> Lilijun (Jerry) <jerry.lilijun@huawei.com>; chenchanghu
+> <chenchanghu@huawei.com>; xudingke <xudingke@huawei.com>; huangbin (J)
+> <brian.huangbin@huawei.com>
+> Subject: Re: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendmsg fails
+> 
+> On Wed, Dec 16, 2020 at 04:20:37PM +0800, wangyunjian wrote:
+> > From: Yunjian Wang <wangyunjian@huawei.com>
+> >
+> > Currently we break the loop and wake up the vhost_worker when sendmsg
+> > fails. When the worker wakes up again, we'll meet the same error. This
+> > will cause high CPU load. To fix this issue, we can skip this
+> > description by ignoring the error. When we exceeds sndbuf, the return
+> > value of sendmsg is -EAGAIN. In the case we don't skip the description
+> > and don't drop packet.
+> 
+> Question: with this patch, what happens if sendmsg is interrupted by a signal?
 
-+1 for keeping the PHC time continuous.
+The descriptors are consumed as normal. However, the packet is discarded.
+Could you explain the specific scenario?
 
-> Please remember to CC Richard, the PTP maintainer.
+> 
+> 
+> >
+> > Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+> > ---
+> >  drivers/vhost/net.c | 21 +++++++++------------
+> >  1 file changed, 9 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c index
+> > c8784dfafdd7..3d33f3183abe 100644
+> > --- a/drivers/vhost/net.c
+> > +++ b/drivers/vhost/net.c
+> > @@ -827,16 +827,13 @@ static void handle_tx_copy(struct vhost_net *net,
+> struct socket *sock)
+> >  				msg.msg_flags &= ~MSG_MORE;
+> >  		}
+> >
+> > -		/* TODO: Check specific error and bomb out unless ENOBUFS? */
+> >  		err = sock->ops->sendmsg(sock, &msg, len);
+> > -		if (unlikely(err < 0)) {
+> > +		if (unlikely(err == -EAGAIN)) {
+> >  			vhost_discard_vq_desc(vq, 1);
+> >  			vhost_net_enable_vq(net, vq);
+> >  			break;
+> > -		}
+> > -		if (err != len)
+> > -			pr_debug("Truncated TX packet: len %d != %zd\n",
+> > -				 err, len);
+> > +		} else if (unlikely(err != len))
+> > +			vq_err(vq, "Fail to sending packets err : %d, len : %zd\n", err,
+> > +len);
+> >  done:
+> >  		vq->heads[nvq->done_idx].id = cpu_to_vhost32(vq, head);
+> >  		vq->heads[nvq->done_idx].len = 0;
+> > @@ -922,7 +919,6 @@ static void handle_tx_zerocopy(struct vhost_net
+> *net, struct socket *sock)
+> >  			msg.msg_flags &= ~MSG_MORE;
+> >  		}
+> >
+> > -		/* TODO: Check specific error and bomb out unless ENOBUFS? */
+> >  		err = sock->ops->sendmsg(sock, &msg, len);
+> >  		if (unlikely(err < 0)) {
+> >  			if (zcopy_used) {
+> > @@ -931,13 +927,14 @@ static void handle_tx_zerocopy(struct vhost_net
+> *net, struct socket *sock)
+> >  				nvq->upend_idx = ((unsigned)nvq->upend_idx - 1)
+> >  					% UIO_MAXIOV;
+> >  			}
+> > -			vhost_discard_vq_desc(vq, 1);
+> > -			vhost_net_enable_vq(net, vq);
+> > -			break;
+> > +			if (err == -EAGAIN) {
+> > +				vhost_discard_vq_desc(vq, 1);
+> > +				vhost_net_enable_vq(net, vq);
+> > +				break;
+> > +			}
+> >  		}
+> >  		if (err != len)
+> > -			pr_debug("Truncated TX packet: "
+> > -				 " len %d != %zd\n", err, len);
+> > +			vq_err(vq, "Fail to sending packets err : %d, len : %zd\n", err,
+> > +len);
+> 
+> I'd rather make the pr_debug -> vq_err a separate change, with proper commit
+> log describing motivation.
 
-+1 to that, too!
+This log was originally triggered when packets were truncated. But after the
+modification of this patch, other error scenarios will also trigger this log.
+That's why I modified the content and level of this log together.
+Now, should I just change the content of this patch?
 
-Thanks,
-Richard
+Thanks
+
+> 
+> 
+> >  		if (!zcopy_used)
+> >  			vhost_add_used_and_signal(&net->dev, vq, head, 0);
+> >  		else
+> > --
+> > 2.23.0
+
