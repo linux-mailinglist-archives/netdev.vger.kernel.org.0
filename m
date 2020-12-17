@@ -2,152 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E252DCCDF
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 08:17:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 337BC2DCCE2
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 08:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbgLQHRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 02:17:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54418 "EHLO
+        id S1727064AbgLQHSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 02:18:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725468AbgLQHRE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 02:17:04 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4877EC061794;
-        Wed, 16 Dec 2020 23:16:24 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id m6so8729742pfm.6;
-        Wed, 16 Dec 2020 23:16:24 -0800 (PST)
+        with ESMTP id S1726512AbgLQHSY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 02:18:24 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA60C0617A7
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 23:17:44 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id e2so19700113pgi.5
+        for <netdev@vger.kernel.org>; Wed, 16 Dec 2020 23:17:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jThrRAJfWnIe1Jvy0RWseTH8BCbAGXHskZcNtWSoEY8=;
-        b=AKZX7XiyNCqz95/QP6yKeWDHHwVJZoP4fdAFUfyWbkzd7QveokreSRF3DMN+hRaQjd
-         48y8wzTtK+CA+2T9vls6u5o0/4mBZWG/pMPAOQGnf0o1SYkmcMcazaBpqlFWs/64sm1D
-         i71U60FwCcCck8Zm/JGXyrHwYkVN24lXu9aPrslnjMkuQHt0wiZmatCDcQ+ON7I0TbXi
-         t6LS7hIp+yXkeGrM0KUS7BdexCqELCudusIHOdvJNP3SkB02/qSb7Yil+0k1ng3H6B0q
-         OIGRAotDH96wbU5CQmc+SiZAzPtF7H7oFjn+FYGA7ljFDguvOpvGlB0L/JmaSt8/fS+W
-         /l1A==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TEO3/oQXoRDhA5Aynf5tOUBOZITapi4dUktMPWEGVZE=;
+        b=ndhZNq/pSBaAgASPaZht6Nko7YjlzT6/xcqnnYlTyx6Yzm41/zdeDh2EXZOVRR8jOU
+         L6jYs1DdTbipR0GET9I8bg6eOds5218HKB8ugQgwO1v0QJMjeVeuIy4L8tiJN5v56VcL
+         9jW6pcdLX16EGoR01wxXTe2H4BP6IELYAp5gg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jThrRAJfWnIe1Jvy0RWseTH8BCbAGXHskZcNtWSoEY8=;
-        b=MHHPJxY1zvU7ezWqLiA40aCekBvBLQa3JZtTUgDRX7FHH46HAEJF4aKoMknSbUuycx
-         mmp+19tK2su7ny3Degs+ou5Ysx1gvPhVV7sU3MUwmWRPoOKyVgVxdkMpe04ozjBVx90i
-         lg1+WXVbAvTp7YkIIWIplazClZT2pDeuoeH4vRfgTFMDIRVN31NfjoBBbVbzEssxAuTp
-         PULq1AcFQJVzmMx0wHVGdoxtVJGGvptHoRlI8mP6l8frLh988FnNKIJSFrisc8x8eUYh
-         own5zbuvW0N3lUVvxoVqcbczkuEf0b4aNI36pLKwEnNn59I6W7IYTgqYIo2enXwKXSNL
-         B8pw==
-X-Gm-Message-State: AOAM533WM0VR8ZGBMcFYmsqlis2T+L5V/OBuVLYp9USCRZYpE/1r3Okd
-        QVTwCYlO7IIaUFJieoLeJe0=
-X-Google-Smtp-Source: ABdhPJy0IxNiaGE7N8ISAO1rCfDDsnoYF78zwU9CkOd0uY0zlGWLcOK6vLaaUfbb9uUXDPVusgH1KQ==
-X-Received: by 2002:aa7:85d2:0:b029:1a2:73fe:5c28 with SMTP id z18-20020aa785d20000b02901a273fe5c28mr24083575pfn.40.1608189383768;
-        Wed, 16 Dec 2020 23:16:23 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:5c8d])
-        by smtp.gmail.com with ESMTPSA id o9sm4148967pjw.9.2020.12.16.23.16.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Dec 2020 23:16:22 -0800 (PST)
-Date:   Wed, 16 Dec 2020 23:16:20 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alan Maguire <alan.maguire@oracle.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: one prog multi fentry. Was: [PATCH bpf-next] libbpf: support
- module BTF for BPF_TYPE_ID_TARGET CO-RE relocation
-Message-ID: <20201217071620.j3uehcshue3ug7fy@ast-mbp>
-References: <20201205025140.443115-1-andrii@kernel.org>
- <alpine.LRH.2.23.451.2012071623080.3652@localhost>
- <20201208031206.26mpjdbrvqljj7vl@ast-mbp>
- <CAEf4BzaXvFQzoYXbfutVn7A9ndQc9472SCK8Gj8R_Yj7=+rTcg@mail.gmail.com>
- <alpine.LRH.2.23.451.2012082202450.25628@localhost>
- <20201208233920.qgrluwoafckvq476@ast-mbp>
- <alpine.LRH.2.23.451.2012092308240.26400@localhost>
- <8d483a31-71a4-1d8c-6fc3-603233be545b@fb.com>
- <alpine.LRH.2.23.451.2012161457030.27611@localhost>
- <CAEf4BzZ0_iGqnzqz3qAEggdTRhXkddtdYRUgs0XxibUyA_KH3w@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TEO3/oQXoRDhA5Aynf5tOUBOZITapi4dUktMPWEGVZE=;
+        b=T3lFVR3Ger5xjGa4VB2zyZY16BXPO2QGSf16zH6OpOxlqR1PEt11eyRc87Rw248LBU
+         QtS6JE9ta4xGWxcvka0/kevBxVmaAtWXXyCJ7yb6y3ITgzmse2acsi3y2bIh+Y0jEp5B
+         +VMtlykDQbJy/8l8tGnqHMXAzPQqLfONj0fmnfbMeAQUzMPrEk8ZjR7PkmIYVbcQKLRG
+         MyLOLfLKZa9scdCndmTXS6S+nZAyuVBu608MFCsGfTdYK3VFzd/Z1CIcdcZLnfuE1AZC
+         ruGNWBtFA8M5/EytAGM6xhN5Xh5jkAHao0RB+Vf8guaezuZKYdqm6BkJMOmAObT0pVzl
+         pC9Q==
+X-Gm-Message-State: AOAM533EC4QKht7PGVz90HrbV9olYtowZ9UI59Lycm8N247gIVM6HP3R
+        ie1H2zQTWJrXEohojXCGO+UowA==
+X-Google-Smtp-Source: ABdhPJyfnhMZrex/tPAF6iMu7BaBNlY7Znatxxe8jrhqGqXY7JjT4xdxaIdYGm2/h8qhP/AaVc152g==
+X-Received: by 2002:a62:1716:0:b029:19d:b78b:ef02 with SMTP id 22-20020a6217160000b029019db78bef02mr8043307pfx.11.1608189463855;
+        Wed, 16 Dec 2020 23:17:43 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:de4a:3eff:fe75:1314])
+        by smtp.gmail.com with ESMTPSA id q26sm4723632pfl.219.2020.12.16.23.17.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Dec 2020 23:17:43 -0800 (PST)
+From:   Miao-chen Chou <mcchou@chromium.org>
+To:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>
+Cc:     Alain Michaud <alainm@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v1 1/4] Bluetooth: Keep MSFT extension info throughout a hci_dev's life cycle
+Date:   Wed, 16 Dec 2020 23:17:27 -0800
+Message-Id: <20201216231652.v1.1.Id9bc5434114de07512661f002cdc0ada8b3d6d02@changeid>
+X-Mailer: git-send-email 2.29.2.684.gfbc64c5ab5-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZ0_iGqnzqz3qAEggdTRhXkddtdYRUgs0XxibUyA_KH3w@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 02:27:23PM -0800, Andrii Nakryiko wrote:
-> 
-> But this seems more "verifiable" and nicer to use, even though it
-> won't substituting an arbitrary btf_id and btf_obj (but that's sort of
-> a goal, I think):
-> 
-> skb = bpf_get_btf_arg(ctx, 1, bpf_core_type_id_kernel(skb));
+This moves msft_do_close() from hci_dev_do_close() to
+hci_unregister_dev() to avoid clearing MSFT extension info. This also
+avoids retrieving MSFT info upon every msft_do_open() if MSFT extension
+has been initialized.
 
-yep. makes sense to me.
-Assuming that ctx has both:
-- BTF of the func and the helper will follow to arg's BTF at run-time
-  to check that it matches 3rd arg btf_id.
-- and the actual arg values as well. So that helper will return them.
+The following test steps were performed.
+(1) boot the test device and verify the MSFT support debug log in syslog
+(2) restart bluetoothd and verify msft_do_close() doesn't get invoked
 
-> > - default mode where we trace function arguments for kprobe and return value
-> >   for kretprobe; that's covered by the above; and
-> > - a mode where the user specifies what they want. For example running
-> >
-> > $ ksnoop "ip_send_skb"
-> >
-> > ...is an example of default mode, this will trace entry/return and print
-> > arguments and return values, while
-> >
-> > $ ksnoop "ip_send_skb(skb)"
-> >
-> > ...will trace the skb argument only, and
-> >
-> > $ ksnoop "ip_send_skb(skb->sk)"
-> >
-> > ...will trace the skb->sk value.  The user-space side of the program
-> > matches the function/arg name and looks up the referenced type, setting it
-> > in the function's map.  For field references such as skb->sk, it also
-> > records offset and whether that offset is a pointer (as is the case for
-> > skb->sk) - in such cases we need to read the offset value via bpf_probe_read()
-> > and use it in bpf_snprintf_btf() along with the referenced type.  Only a
-> > single simple reference like the above is supported currently, but
-> > multiple levels of reference could be made to work too.
+Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+---
 
-Alan,
+ net/bluetooth/hci_core.c | 4 ++--
+ net/bluetooth/msft.c     | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-I'm not sure why the last example is so different form the first two.
-I think ksnoop tool will generate the program on the fly, right?
-So it can generate normal LDX insn with CO-RE relocation (instead of bpf_probe_read)
-to access skb->sk. It can also add relo for that LDX to point to
-struct sk_buff's btf_id defined inside prog's BTF.
-The 'sk' offset inside bpf program and inside BTF can be anything: 0, 4, ...
-libbpf relocation logic will find the right offset in kernel's sk_buff.
-If ksnoop doesn't have an ability to parse vmlinux.h file or kernel's BTF
-it can 'cheat'.
-If the cmdline looks like:
-$ ksnoop "ip_send_skb(skb->sk)"
-It can generate BTF:
-struct sk_buff {
-   struct sock *sk;
-};
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 9d2c9a1c552fd..8471be105a2ac 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -1780,8 +1780,6 @@ int hci_dev_do_close(struct hci_dev *hdev)
+ 
+ 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
+ 
+-	msft_do_close(hdev);
+-
+ 	if (hdev->flush)
+ 		hdev->flush(hdev);
+ 
+@@ -3869,6 +3867,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
+ 	unregister_pm_notifier(&hdev->suspend_notifier);
+ 	cancel_work_sync(&hdev->suspend_prepare);
+ 
++	msft_do_close(hdev);
++
+ 	hci_dev_do_close(hdev);
+ 
+ 	if (!test_bit(HCI_INIT, &hdev->flags) &&
+diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+index 4b39534a14a18..d9d2269bc93ef 100644
+--- a/net/bluetooth/msft.c
++++ b/net/bluetooth/msft.c
+@@ -76,7 +76,8 @@ void msft_do_open(struct hci_dev *hdev)
+ {
+ 	struct msft_data *msft;
+ 
+-	if (hdev->msft_opcode == HCI_OP_NOP)
++	/* Skip if opcode is not supported or MSFT has been initiatlized */
++	if (hdev->msft_opcode == HCI_OP_NOP || hdev->msft_data)
+ 		return;
+ 
+ 	bt_dev_dbg(hdev, "Initialize MSFT extension");
+-- 
+2.29.2.684.gfbc64c5ab5-goog
 
-If cmdline looks like:
-$ ksnoop "ip_send_skb(skb->sock)"
-It can generate BTF:
-struct sk_buff {
-   struct sock *sock;
-};
-Obviously there is no 'sock' field inside kernel's struct sk_buff, but tool
-doesn't need to care. It can let libbpf do the checking and match
-fields properly.
-
-> > into that a bit more if you don't mind because I think some form of
-> > user-space-specified BTF ids may be the easiest approach for more flexible
-> > generic tracing that covers more than function arguments.
-
-I think you're trying to figure out kernel's btf_ids in ksnoop tool.
-I suggest to leave that job to libbpf. Generate local BTFs in ksnoop
-with CO-RE relocs and let libbpf handle insn patching.
-No FDs to worry about from ksnoop side either.
