@@ -2,86 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B28632DDA3B
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 21:41:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3203F2DDA48
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 21:46:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730159AbgLQUlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 15:41:07 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:38688 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728197AbgLQUlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 15:41:07 -0500
-Received: from [192.168.254.6] (unknown [50.46.158.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id B5BE613C2B0;
-        Thu, 17 Dec 2020 12:40:26 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com B5BE613C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1608237626;
-        bh=DQ29MJIWPRFRaFdDkmlWt+wzjarZXVV3DjkZzL3Zaz8=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=mWc/ODm+ORusqK5IzbZubjjunIJgBfX5xEQm+wZpLix6jbTmrv06/GFZgeJhcj9tB
-         I1E05oanhAZhgAz0Uwg7sTc0/Kl0l1q0isOHMhip96H/vgyTwWIWVa30lemOCCI4Hb
-         c6yJ7jPONMBGz5GMxIEG4cPr2HGH9c9VsQryGu9c=
-Subject: Re: net: tso: add UDP segmentation support: adds regression for ax200
- upload
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <5664fa0f-aef2-c336-651a-093c9eed23ab@candelatech.com>
- <765f370d-ce2d-b75a-2dde-87f69ae7c185@candelatech.com>
- <CANn89iKpa1y2SKJuR9kRi=AZs94sj+-tzRs+2D0vmxh+ahEcGA@mail.gmail.com>
- <adbee2ec-c6ba-7a17-eb98-1c53365fa911@candelatech.com>
- <CANn89iJQnSVZFp2XDgREN1QMtU4exOsnJq=5VzJ6tqTCJ7MH-g@mail.gmail.com>
- <c4bcee7d-b2eb-759c-c659-d65f3e7daec9@candelatech.com>
- <CANn89i++Kgkj57ms70a5GDOQ-Cpewx3NQkzP3EmZmLYQ4eHzww@mail.gmail.com>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <5d89fd24-f00a-7e70-00ce-83529f13b05e@candelatech.com>
-Date:   Thu, 17 Dec 2020 12:40:26 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1730253AbgLQUpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 15:45:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40746 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726488AbgLQUpq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 15:45:46 -0500
+Date:   Thu, 17 Dec 2020 12:45:04 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608237906;
+        bh=hu1PIHXgnMbM7Xzdw1Op6CMyMpMS8F4OPFXcL0IU7ZA=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rsRDfX+1i7n/oBWhRFYZf/AEcXktV2uRl/54s0CB2V/7f+FOahRgEczFSQEBprOCm
+         eJV7h6W6UxzPkfEhURmA2iLvSlK4NfQoxNkPotO/i3eFTc7dEOqwKUJQVIQUsfVzyl
+         YE5iPdCVJI8YxtIwQj6e4oUrlDVg+ZvekyKhWSQLLkAzZEuDn6kLgmh3EeHDmpo4E1
+         gshjBmY61/GrAyrNaFZ8wXy2Orvf3A6fr5XYX8n+Eo/0Ov/rWK6bw7dSJ0RgAz2jC3
+         DpBVR+/orqYU1wQWjFWVjuXYjIKnlzKRqXx4FTpzZdnhiac74KAtWDvP3oQhaN246J
+         WcyjZS/NjRe9Q==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net/sched: sch_taprio: reset child qdiscs before
+ freeing them
+Message-ID: <20201217124504.561c67c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <786e7a967a73f29995107412bc3506daf657c29a.camel@redhat.com>
+References: <63b6d79b0e830ebb0283e020db4df3cdfdfb2b94.1608142843.git.dcaratti@redhat.com>
+        <20201217110531.6fd60fe5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <786e7a967a73f29995107412bc3506daf657c29a.camel@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CANn89i++Kgkj57ms70a5GDOQ-Cpewx3NQkzP3EmZmLYQ4eHzww@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-MW
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/20 10:20 AM, Eric Dumazet wrote:
-> On Thu, Dec 17, 2020 at 7:13 PM Ben Greear <greearb@candelatech.com> wrote:
->>
+On Thu, 17 Dec 2020 21:32:29 +0100 Davide Caratti wrote:
+> hello Jakub, and thanks for checking!
 > 
->>
->> It is the iwlwifi/mvm logic that supports ax200.
+> On Thu, 2020-12-17 at 11:05 -0800, Jakub Kicinski wrote:
+> > On Wed, 16 Dec 2020 19:33:29 +0100 Davide Caratti wrote:  
+> > > +	if (q->qdiscs) {
+> > > +		for (i = 0; i < dev->num_tx_queues && q->qdiscs[i]; i++)
+> > > +			qdisc_reset(q->qdiscs[i]);  
+> > 
+> > Are you sure that we can't graft a NULL in the middle of the array?  
 > 
-> Let me ask again :
+> that should not happen, because child qdiscs are checked for being non-
+> NULL when they are created:
 > 
-> I see two different potential call points :
+> https://elixir.bootlin.com/linux/v5.10/source/net/sched/sch_taprio.c#L1674
 > 
-> drivers/net/wireless/intel/iwlwifi/pcie/tx.c:1529:
-> tso_build_hdr(skb, hdr_page->pos, &tso, data_left, !total_len);
-> drivers/net/wireless/intel/iwlwifi/queue/tx.c:427:
-> tso_build_hdr(skb, hdr_page->pos, &tso, data_left, !total_len);
-> 
-> To the best of your knowledge, which one would be used in your case ?
-> 
-> Both are horribly complex, I do not want to spend time studying two
-> implementations.
+> and then assigned to q->qdiscs[i]. So, there might be NULL elements of
+> q->qdiscs[] in the middle of the array when taprio_reset() is called,
+> but it should be ok to finish the loop when we encounter the first one:
+> subsequent ones should be NULL as well.
 
-It is the queue/tx.c code that executes on my system, verified with
-printk.
+Right, but that's init, look at taprio_graft(). The child qdiscs can be
+replaced at any time. And the replacement can be NULL otherwise why
+would graft check "if (new)"
 
-Thanks,
-Ben
-
-> 
-> Thanks.
-> 
-
-
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
