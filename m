@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 117ED2DCE01
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE442DCE02
 	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 10:00:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727605AbgLQI7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 03:59:21 -0500
-Received: from mail-eopbgr60046.outbound.protection.outlook.com ([40.107.6.46]:50264
+        id S1727617AbgLQI72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 03:59:28 -0500
+Received: from mail-eopbgr60079.outbound.protection.outlook.com ([40.107.6.79]:41230
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727345AbgLQI7T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Dec 2020 03:59:19 -0500
+        id S1725950AbgLQI71 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 03:59:27 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QntQj8BBVZhfzdqpf0rRxlNu/MBPXOPVBwmAP0cwSI0ROcnnbeAv3yADzlo2B504W0bjFS25AgPgbCXf9N+Sdekrc+C+ELR3rM12bFaT0P0qDUy9lS75IqrvCwxkfsqMdwey9B3PgMPupGUSF0jef3STfAv5Mezej0zl97DGR4jpj2xKKmYvHpOwekxpTZnGrJ6V0E7qm8t5/AC0KfG85MJBRJv9NBRkYbCsDwixYbJ2ZJJY/JlGyiHe2LC7/sm7Vz/073cOpKGGNi+9uC/5jCcrqDlE00mgtkKhQ94geKQfVaQdJi3yVIwtpJ9B48Ez0fAtOZNy6liHbplbJNSA3g==
+ b=c+dgibNYqlNPSZnhkQHkBC+ls9I201HuRKgFCvT+Gei+wDy1pU9ttRDuidG0mibRsRbMhzPECjPBG2/rY/T3o2Ciy2spLCNPvaUkqQBqY1ZlWjksLC4mDH7stiYVrCzHv3X1FFHSLME69AXEWmUvd1Z85sGNXdz78yTx4SIFoIxlI/8jA3jsIiS68I0AzP552musWtcegPZhO77wduQPEGr9dk507rRDHM7V2DdMSOOzrXpJczFpodnezrQXOcUL02Gi/hkKrupPnPOmtDGWcrjWEi5rG+IZr3B0sh1vpJZgLXjaPwpgDJ7r1n6qm0Px/IbRsgCl8PJwvzxN1lEDug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hKLk6L3XB/vKicYkbSR1skju+GfjNK/S/DzptLIddwg=;
- b=oL/O4k80JFVSBkEucWxhT4TVwEfxZWY3KhGZZvjxhdpFyXlSwjoUaWdAtcYDVEjcrmgIJfOoUvbLy4fSoSdzQHWOonCk2Cg+CIT+xyvb7P/GCr763jmEQbELiMFu0x8HbN97DCCmAvCx6I6X5Cu/rqnyz1DpOb5OUi0kksh7ld0DDcji93lLctryUdwuL4S6oZoRHAqS9iivPRDptJ2efYd1dA6nHQ/mtjhlHHun0/MvSt05SvTMx+a/LY3wHU+i3s2uDgTA4v8TOTqv+Bxgoe5IT0iEgk6StzXYSz3In+XQEYT/9TSYRyiXr+ZBcNhKuz1fIq/dOgLAgunlZbNnZg==
+ bh=fikpkpFomfijCJ3EeseJas8xynwvWLH3NrQQNlEpxqo=;
+ b=TRxZEnb3NXTKEhPur6lyQmarAjk0nL72cz0+MlaQf4ppFzlQXO7l7YtJlk1mUAUNhfVmeUMay7mOWYOjPUlwMTdYUnVL9+Bh5TOs/PWF7E15bKAgXVyA9aFbp6se10E5tHI10vKjy4G3J4/EomqR82coBs/43rRyexYVcsJjRC2Y7SMeEPmENTYQ03XJHyNUpn9jsE/ef6VtX9xfNwJAinjXTb67Moe0SwI2GY6B+9VEUT7js1VSm/4Z3z1DsEOvkjkZhGQE/XTkCae+ST6Wy4UsYN0Ce48bzBzxL+JTqerDiAgBj1YiVjzptUeizvegisBSAfzkW9+Hqu/aRjN9SQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hKLk6L3XB/vKicYkbSR1skju+GfjNK/S/DzptLIddwg=;
- b=S5pczeXgRrDP+oa3GceLAqDRcFN1rR/mqUTggvAK1YgkrnUVv3tLHCakUTJQqp7SbJ1U/YHFvPZITum/LMypN5K2ldJD+/5SfWomWMW/dgIuqR6LMvEw5KjwtxATBlMChKbCpzDb1bGtrDkt8Vp/3B+ehYv0v5hZ496dM1Bh6pU=
+ bh=fikpkpFomfijCJ3EeseJas8xynwvWLH3NrQQNlEpxqo=;
+ b=SKwa/WrWts1kW9NbXxaqk/YGH26Eo2yvV7uVEh2bpCaklYpnh3+qd4ZaIuQRKE/+OU85LFGailFr9dfKPyYBLMhBYqadF0be5sjhd0E6oTjISB8x1BMNgBHgZNIYxLlbI8RR1lqdQLVq+7uEy5LTc+qGa9LfcrG3MkYQqaj9QSE=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none
  header.from=mellanox.com;
@@ -34,20 +34,20 @@ Received: from AM0PR05MB5010.eurprd05.prod.outlook.com (2603:10a6:208:cd::23)
  by AM0PR05MB6674.eurprd05.prod.outlook.com (2603:10a6:20b:151::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.20; Thu, 17 Dec
- 2020 08:57:38 +0000
+ 2020 08:57:40 +0000
 Received: from AM0PR05MB5010.eurprd05.prod.outlook.com
  ([fe80::4d67:7d47:90f1:19be]) by AM0PR05MB5010.eurprd05.prod.outlook.com
  ([fe80::4d67:7d47:90f1:19be%7]) with mapi id 15.20.3654.021; Thu, 17 Dec 2020
- 08:57:38 +0000
+ 08:57:40 +0000
 From:   Danielle Ratson <danieller@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         andrew@lunn.ch, f.fainelli@gmail.com, mkubecek@suse.cz,
         mlxsw@nvidia.com, idosch@nvidia.com,
         Danielle Ratson <danieller@nvidia.com>
-Subject: [PATCH net-next v2 6/7] mlxsw: ethtool: Pass link mode in use to ethtool
-Date:   Thu, 17 Dec 2020 10:57:16 +0200
-Message-Id: <20201217085717.4081793-7-danieller@mellanox.com>
+Subject: [PATCH net-next v2 7/7] net: selftests: Add lanes setting test
+Date:   Thu, 17 Dec 2020 10:57:17 +0200
+Message-Id: <20201217085717.4081793-8-danieller@mellanox.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201217085717.4081793-1-danieller@mellanox.com>
 References: <20201217085717.4081793-1-danieller@mellanox.com>
@@ -59,47 +59,47 @@ X-ClientProxiedBy: VI1PR0601CA0024.eurprd06.prod.outlook.com
  (2603:10a6:208:cd::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by VI1PR0601CA0024.eurprd06.prod.outlook.com (2603:10a6:800:1e::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Thu, 17 Dec 2020 08:57:37 +0000
+Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by VI1PR0601CA0024.eurprd06.prod.outlook.com (2603:10a6:800:1e::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Thu, 17 Dec 2020 08:57:39 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 9f5de219-a726-422f-165a-08d8a269ce39
+X-MS-Office365-Filtering-Correlation-Id: b26dd0d8-2612-4ad5-8470-08d8a269cf16
 X-MS-TrafficTypeDiagnostic: AM0PR05MB6674:
 X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-X-Microsoft-Antispam-PRVS: <AM0PR05MB6674D26D0C8783D87EF29F1ED5C40@AM0PR05MB6674.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:626;
+X-Microsoft-Antispam-PRVS: <AM0PR05MB6674DEA75F0B56C916E39B69D5C40@AM0PR05MB6674.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:107;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bwp1+y98jOSSrDl3kBcaOLdWNH3d6f3OqYHjHcNDmkEffU+vod34i+gFwvhxRJntXoN28GD5SGceX2xyJHCbSC0HLnXtS9Oyn14ht/ESu37ENKPSGBAl4TIBHh7U59DLGIcXS5iuIxTYYEfO0L05TD1JuprIOKLnUjNX13BRh9N/esxC430DIBkJAJYkaj78F+vLmw6i5IK89fxhyfYQor6X3VC3AsWSV6RmZEHD62DjLQIpUZNjQy30HbP7x07tYchanPTlaiAz8xQBHAfZVFK2IHGzapo7VkDudYTL2fpfcObAL1ZpVNmxqQ98lHAtZ5nDbAFqTc38ehhTqDfPUw==
+X-Microsoft-Antispam-Message-Info: M/ZtPCV9/FV5Lo6vWdrfQ3WuGnwE/8lL0tBFPDmgBULZgfPbyCsp/5icn1lqG8IKjWNiDRLI9kLCoYJEGFuwuoCyBaAQvIjDkSLrtehUC4aP9Krtob1R52+Pcw0y0UMJziGAEIlBaZBecvVl1oLEYnx3t0PEshv8oxXW3yYm7psdpWe/5AR4U+WMzskKx1GXW75ZcVuXSUsVjUdvUjt+vwTTKawh+FQ7JRIhGDzDMqtIql4wRBg5510XZciVyqlhybhhOWymCVGH3iD8eDq+JUsYIJ5Xs0AXDfSQg1Jhw7KgtLgJpWiLNDrirkgkR3gt
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB5010.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(346002)(39860400002)(366004)(6916009)(316002)(86362001)(66476007)(2906002)(8936002)(5660300002)(2616005)(6512007)(6486002)(1076003)(4326008)(7416002)(6666004)(6506007)(36756003)(66556008)(26005)(8676002)(956004)(83380400001)(186003)(16526019)(66946007)(52116002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?q+Y/iPvEPn25lWcdVb1kehueEQk2W3JJMCCh4jM8JOckeH/lIiULSuvh6duW?=
- =?us-ascii?Q?+/qEXhQcJf8vS2ZM+y8tYnpKqVFlsP7bT1XIm6eDyYE9iAhsFcibPxJoc+t3?=
- =?us-ascii?Q?RbZZk8jlWdaS0SfNRRB0EPrZ1iCoql6+6jDeg2x3SBp5An6gMJLoROW4FbRE?=
- =?us-ascii?Q?xu2+tGjFJ8sE57QIJwZfb/69PPPUehMAxqMcnJW0m5fFjtGX6NOI2E0zzInO?=
- =?us-ascii?Q?gMz14+Jrbl4zJQLqT+atIDXRjoLA5trxaoRvUxAxaxbzQSZ4bhx1Eov5L1CB?=
- =?us-ascii?Q?wCSFwKhaLwK/WQXVupKT5mvloZR//f3SUoPa690RDsjKW4RCoAImpxRqEY0e?=
- =?us-ascii?Q?iuCa6/tivD6SpmvnzLrhRri9YdcFZ59QMO4jBwHwGYQdKm+w1VUChLSer3Cn?=
- =?us-ascii?Q?oXhpbUxclb4I43RcK09YshcAy58TiSXmmiNh8E2YlARFOiKrfCZmnZ5JhRbR?=
- =?us-ascii?Q?IEfidASB9B+eDMejmTXy2DOXEwI6K32tPLB5CZEeoHnQ4biVrRxkR0HfWxGg?=
- =?us-ascii?Q?KGhkQMB2iao2q1Or9NTqxW9EPI0zX4fsZCLmogwab0ADwwBIgUZEjYdHIMHc?=
- =?us-ascii?Q?peYGJBu+k8JaYuGvk6Iy54jBh8EYE1ff76xX8Yl/yit1pu4q9VoS2/iUCvsL?=
- =?us-ascii?Q?drD3dFlQMGDR6YaWDqkqDaGEpXJFbv7SJPDUmsDpbWP326Y8IRWzZALxYwWc?=
- =?us-ascii?Q?3NFSQOCHIRXsBfaZGNgkqjRhgz5jrU+PQA+EH/LPQg1SZb8rhXq3D9EiM7jc?=
- =?us-ascii?Q?krpo/J8f0QMcKHV2Ehe+x+aoFosXWvUQOmAxbIcdwQytO7QKJiBr/gBUn/g6?=
- =?us-ascii?Q?HVGYVIpSHcNIUCWKiUIGIxW03iF+RUdfbxoTIfWQ0l1/cGM0OD8JbmC8t+ii?=
- =?us-ascii?Q?wV5zIkLTpDjfdkIBk/N9EHDzUQ6PjJrNYoZYNNcu/Dm5ceslL1/CgiakjMhr?=
- =?us-ascii?Q?rIH14g3ZitRrUNAqgw/AOMN/Rq0kiw6wiB/8tSU6U4WDTirDJQvSm94XdYwc?=
- =?us-ascii?Q?ehva?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?4d8oWs29oVNVCq5siN18Y682AtIiG6bS3xrcitpVvLWgdkvlDTAr7P/L1ScM?=
+ =?us-ascii?Q?1z662av5zqhlhgDCVDl/axBxTLQ3v+LOXpMvNTPX3rHbBEe8HO+hLOJWSt6q?=
+ =?us-ascii?Q?qWTZ3Nx8ZEkuCvhdH6pxwouqnSHStfS9Q8TjNnXPtzIjNU1jrJ+E7jHZjyMQ?=
+ =?us-ascii?Q?umF4FSKv/L6wLL5mwT4QsEqNgqidHMAXfTKSsWircsbt/SmJ5FrwKbfpT8d3?=
+ =?us-ascii?Q?vaEAW0ZpzedKwyf5YCTKtFv4QOE0jpf1wC0IWvN1AxsdolDbdDBkKOLGlPPz?=
+ =?us-ascii?Q?UiJMxgC1vGdFKe6seaBFboX+X0vOKE5SqSVjrMGWqvu25x0r4TynfRgOhm2P?=
+ =?us-ascii?Q?V9oZaijrSuLSmQj1sqgGkQ6rFfMq1Ml7BcLP8nf+UWnZ+tiauDUZP0FMOX6d?=
+ =?us-ascii?Q?zdbqy1sHMMuFTiHlfha/SvXOsp5bL+rhgU1PG/ghC97BcFWuSCIZeMnvgCaA?=
+ =?us-ascii?Q?cnAKr3PQYoLRQKgJQJpDxszCQdoVsYEYuVXImaBx2Gl6bM9krLj6gyLF+U1x?=
+ =?us-ascii?Q?J8Kgn4PFC2Fw8xS1wvOJE/ZyntVDYh5LWvSLIXH7oP4j333j2bFEn+4l/BQX?=
+ =?us-ascii?Q?ORzgcSKpNlnQUBBD912+2E5pMPKlR2iTwi8EV7k9c7o1H5RHuSU43hetKZei?=
+ =?us-ascii?Q?wM3Jz9d6lC+3s4yyNbbkMUFhBn8kRaWRh5o5Pt0Eqi7N5ms9c8QGl70PMNFV?=
+ =?us-ascii?Q?zLF/Abl68TFjvJTsZbzbZ/L3gnYkcwL4ZSZpxRMD88FJc+ASXRgR+f2BE0Jo?=
+ =?us-ascii?Q?3AWQEY+wkRULocaN/gfIZ0O0DdTDrgn0He2D2r0qZGqf7oXs3CmUdUuK+38a?=
+ =?us-ascii?Q?QNSLZLuDdoZv7ZJ5BAXTe/vPTxuwdmxKu8lnqQVT85AdC/4pnqfibjC/e5Wf?=
+ =?us-ascii?Q?8KEWWSM3cSkQX0p/xkStldX7V7IbmdmWPuVD2Kaup2bTVtJSNhccesaz7AA7?=
+ =?us-ascii?Q?TknmAoJ/4ecNIPOhn5OkZ9HoeKEyY6M8R4b/DGkV/u1ehn+ku3Kf0yc1OiLC?=
+ =?us-ascii?Q?pwPe?=
 X-MS-Exchange-Transport-Forked: True
 X-OriginatorOrg: Mellanox.com
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB5010.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2020 08:57:38.7259
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2020 08:57:40.1391
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f5de219-a726-422f-165a-08d8a269ce39
+X-MS-Exchange-CrossTenant-Network-Message-Id: b26dd0d8-2612-4ad5-8470-08d8a269cf16
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RFvQDN7+GgskS6dpNnRQl6hEYDU/0V6yPbmnLemzxl+Da3xfxZ0ynIwi1y1JHbdBIcawt6W7pAmZXrIVLqBbzw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: P7JG8cBUe0hb9aZgy+YNQB8uo0hE3bs48Rf7qTODrY7Kvscbcp12BJa9cTtInMJu1MqB98X7x+p9LGxNikRMCQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6674
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -107,140 +107,331 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Danielle Ratson <danieller@nvidia.com>
 
-Currently, when user space queries the link's parameters, as speed and
-duplex, each parameter is passed from the driver to ethtool.
+Test that setting lanes parameter is working.
 
-Instead, pass the link mode bit in use.
-In Spectrum-1, simply pass the bit that is set to '1' from PTYS register.
-In Spectrum-2, pass the first link mode bit in the mask of the used
-link mode.
+Set max speed and max lanes in the list of advertised link modes,
+and then try to set max speed with the lanes below max lanes if exists
+in the list.
+
+And then, test that setting number of lanes larger than max lanes fails.
+
+Do the above for both autoneg on and off.
+
+$ ./ethtool_lanes.sh
+
+TEST: 4 lanes is autonegotiated                                     [ OK ]
+TEST: Lanes number larger than max_width is not set                 [ OK ]
+TEST: Autoneg off, 4 lanes detected during force mode               [ OK ]
+TEST: Lanes number larger than max width is not set                 [ OK ]
 
 Signed-off-by: Danielle Ratson <danieller@nvidia.com>
 ---
 
 Notes:
     v2:
+    	* Fix "then" to "than".
+    	* Remove the test for recieving max_width when lanes is not set by
+    	  user. When not setting lanes, we don't promise anything regarding
+    	  what number of lanes will be chosen.
     	* Reword commit message.
-    	* Pass link mode bit to ethtool instead of link parameters.
-    	* Use u32 for lanes param instead ETHTOOL_LANES defines.
+    	* Reword the skip print when ethtool is old.
 
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  6 +--
- .../mellanox/mlxsw/spectrum_ethtool.c         | 47 +++++++++++--------
- 2 files changed, 30 insertions(+), 23 deletions(-)
+ .../selftests/net/forwarding/ethtool_lanes.sh | 186 ++++++++++++++++++
+ .../selftests/net/forwarding/ethtool_lib.sh   |  34 ++++
+ tools/testing/selftests/net/forwarding/lib.sh |  28 +++
+ 3 files changed, 248 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/ethtool_lanes.sh
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 0ad6b8a581d5..4bf5c4ebc030 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -331,9 +331,9 @@ struct mlxsw_sp_port_type_speed_ops {
- 	void (*from_ptys_link)(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto,
- 			       unsigned long *mode);
- 	u32 (*from_ptys_speed)(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto);
--	void (*from_ptys_speed_duplex)(struct mlxsw_sp *mlxsw_sp,
--				       bool carrier_ok, u32 ptys_eth_proto,
--				       struct ethtool_link_ksettings *cmd);
-+	void (*from_ptys_link_mode)(struct mlxsw_sp *mlxsw_sp,
-+				    bool carrier_ok, u32 ptys_eth_proto,
-+				    struct ethtool_link_ksettings *cmd);
- 	int (*ptys_max_speed)(struct mlxsw_sp_port *mlxsw_sp_port, u32 *p_max_speed);
- 	u32 (*to_ptys_advert_link)(struct mlxsw_sp *mlxsw_sp,
- 				   const struct ethtool_link_ksettings *cmd);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-index b6c19a76388f..db2e61ed47e3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-@@ -966,8 +966,8 @@ static int mlxsw_sp_port_get_link_ksettings(struct net_device *dev,
- 
- 	cmd->base.autoneg = autoneg ? AUTONEG_ENABLE : AUTONEG_DISABLE;
- 	cmd->base.port = mlxsw_sp_port_connector_port(connector_type);
--	ops->from_ptys_speed_duplex(mlxsw_sp, netif_carrier_ok(dev),
--				    eth_proto_oper, cmd);
-+	ops->from_ptys_link_mode(mlxsw_sp, netif_carrier_ok(dev),
-+				 eth_proto_oper, cmd);
- 
- 	return 0;
- }
-@@ -1223,19 +1223,21 @@ mlxsw_sp1_from_ptys_speed(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto)
- }
- 
- static void
--mlxsw_sp1_from_ptys_speed_duplex(struct mlxsw_sp *mlxsw_sp, bool carrier_ok,
--				 u32 ptys_eth_proto,
--				 struct ethtool_link_ksettings *cmd)
-+mlxsw_sp1_from_ptys_link_mode(struct mlxsw_sp *mlxsw_sp, bool carrier_ok,
-+			      u32 ptys_eth_proto,
-+			      struct ethtool_link_ksettings *cmd)
- {
--	cmd->base.speed = SPEED_UNKNOWN;
--	cmd->base.duplex = DUPLEX_UNKNOWN;
-+	int i;
+diff --git a/tools/testing/selftests/net/forwarding/ethtool_lanes.sh b/tools/testing/selftests/net/forwarding/ethtool_lanes.sh
+new file mode 100755
+index 000000000000..54dde2a3fee1
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/ethtool_lanes.sh
+@@ -0,0 +1,186 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
-+	cmd->link_mode = LINK_MODE_UNKNOWN;
- 
- 	if (!carrier_ok)
- 		return;
- 
--	cmd->base.speed = mlxsw_sp1_from_ptys_speed(mlxsw_sp, ptys_eth_proto);
--	if (cmd->base.speed != SPEED_UNKNOWN)
--		cmd->base.duplex = DUPLEX_FULL;
-+	for (i = 0; i < MLXSW_SP1_PORT_LINK_MODE_LEN; i++) {
-+		if (ptys_eth_proto & mlxsw_sp1_port_link_mode[i].mask)
-+			cmd->link_mode = mlxsw_sp1_port_link_mode[i].mask_ethtool;
-+	}
- }
- 
- static int mlxsw_sp1_ptys_max_speed(struct mlxsw_sp_port *mlxsw_sp_port, u32 *p_max_speed)
-@@ -1324,7 +1326,7 @@ const struct mlxsw_sp_port_type_speed_ops mlxsw_sp1_port_type_speed_ops = {
- 	.from_ptys_supported_port	= mlxsw_sp1_from_ptys_supported_port,
- 	.from_ptys_link			= mlxsw_sp1_from_ptys_link,
- 	.from_ptys_speed		= mlxsw_sp1_from_ptys_speed,
--	.from_ptys_speed_duplex		= mlxsw_sp1_from_ptys_speed_duplex,
-+	.from_ptys_link_mode		= mlxsw_sp1_from_ptys_link_mode,
- 	.ptys_max_speed			= mlxsw_sp1_ptys_max_speed,
- 	.to_ptys_advert_link		= mlxsw_sp1_to_ptys_advert_link,
- 	.to_ptys_speed_lanes		= mlxsw_sp1_to_ptys_speed_lanes,
-@@ -1660,19 +1662,24 @@ mlxsw_sp2_from_ptys_speed(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto)
- }
- 
- static void
--mlxsw_sp2_from_ptys_speed_duplex(struct mlxsw_sp *mlxsw_sp, bool carrier_ok,
--				 u32 ptys_eth_proto,
--				 struct ethtool_link_ksettings *cmd)
-+mlxsw_sp2_from_ptys_link_mode(struct mlxsw_sp *mlxsw_sp, bool carrier_ok,
-+			      u32 ptys_eth_proto,
-+			      struct ethtool_link_ksettings *cmd)
- {
--	cmd->base.speed = SPEED_UNKNOWN;
--	cmd->base.duplex = DUPLEX_UNKNOWN;
-+	struct mlxsw_sp2_port_link_mode link;
-+	int i;
++ALL_TESTS="
++	autoneg
++	autoneg_force_mode
++"
 +
-+	cmd->link_mode = LINK_MODE_UNKNOWN;
- 
- 	if (!carrier_ok)
- 		return;
- 
--	cmd->base.speed = mlxsw_sp2_from_ptys_speed(mlxsw_sp, ptys_eth_proto);
--	if (cmd->base.speed != SPEED_UNKNOWN)
--		cmd->base.duplex = DUPLEX_FULL;
-+	for (i = 0; i < MLXSW_SP2_PORT_LINK_MODE_LEN; i++) {
-+		if (ptys_eth_proto & mlxsw_sp2_port_link_mode[i].mask) {
-+			link = mlxsw_sp2_port_link_mode[i];
-+			cmd->link_mode = link.mask_ethtool[1];
-+		}
-+	}
++NUM_NETIFS=2
++: ${TIMEOUT:=30000} # ms
++source lib.sh
++source ethtool_lib.sh
++
++setup_prepare()
++{
++	swp1=${NETIFS[p1]}
++	swp2=${NETIFS[p2]}
++
++	ip link set dev $swp1 up
++	ip link set dev $swp2 up
++
++	busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
++	check_err $? "ports did not come up"
++
++	local chosen_lanes=$(ethtool $swp1 | grep 'Lanes:')
++	chosen_lanes=${chosen_lanes#*"Lanes: "}
++	if [[ $chosen_lanes == "Unknown!" ]]; then
++		log_test "SKIP: driver does not support lanes setting"
++		exit 1
++	fi
++
++	ip link set dev $swp2 down
++	ip link set dev $swp1 down
++}
++
++check_lanes()
++{
++	local dev=$1; shift
++	local lanes=$1; shift
++	local max_speed=$1; shift
++	local chosen_lanes
++
++	chosen_lanes=$(ethtool $dev | grep 'Lanes:')
++	chosen_lanes=${chosen_lanes#*"Lanes: "}
++
++	((chosen_lanes == lanes))
++	check_err $? "swp1 advertise $max_speed and $lanes, devs sync to $chosen_lanes"
++}
++
++check_unsupported_lanes()
++{
++	local dev=$1; shift
++	local max_speed=$1; shift
++	local max_lanes=$1; shift
++	local autoneg=$1; shift
++	local autoneg_str=""
++
++	local unsupported_lanes=$((max_lanes *= 2))
++
++	if [[ $autoneg -eq 0 ]]; then
++		autoneg_str="autoneg off"
++	fi
++
++	ethtool -s $swp1 speed $max_speed lanes $unsupported_lanes $autoneg_str &> /dev/null
++	check_fail $? "Unsuccessful $unsupported_lanes lanes setting was expected"
++}
++
++max_speed_and_lanes_get()
++{
++	local dev=$1; shift
++	local arr=("$@")
++	local max_lanes
++	local max_speed
++	local -a lanes_arr
++	local -a speeds_arr
++	local -a max_values
++
++	for ((i=0; i<${#arr[@]}; i+=2)); do
++		speeds_arr+=("${arr[$i]}")
++		lanes_arr+=("${arr[i+1]}")
++	done
++
++	max_values+=($(get_max "${speeds_arr[@]}"))
++	max_values+=($(get_max "${lanes_arr[@]}"))
++
++	echo ${max_values[@]}
++}
++
++search_linkmode()
++{
++	local speed=$1; shift
++	local lanes=$1; shift
++	local arr=("$@")
++
++	for ((i=0; i<${#arr[@]}; i+=2)); do
++		if [[ $speed -eq ${arr[$i]} && $lanes -eq ${arr[i+1]} ]]; then
++			return 1
++		fi
++	done
++	return 0
++}
++
++autoneg()
++{
++	RET=0
++
++	local lanes
++	local max_speed
++	local max_lanes
++
++	local -a linkmodes_params=($(dev_linkmodes_params_get $swp1 1))
++	local -a max_values=($(max_speed_and_lanes_get $swp1 "${linkmodes_params[@]}"))
++	max_speed=${max_values[0]}
++	max_lanes=${max_values[1]}
++
++	lanes=$max_lanes
++
++	while [[ $lanes -ge 1 ]]; do
++		search_linkmode $max_speed $lanes "${linkmodes_params[@]}"
++		if [[ $? -eq 1 ]]; then
++			ethtool_set $swp1 speed $max_speed lanes $lanes
++			ip link set dev $swp1 up
++			ip link set dev $swp2 up
++			busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
++			check_err $? "ports did not come up"
++
++			check_lanes $swp1 $lanes $max_speed
++			log_test "$lanes lanes is autonegotiated"
++		fi
++		let $((lanes /= 2))
++	done
++
++	check_unsupported_lanes $swp1 $max_speed $max_lanes 1
++	log_test "Lanes number larger than max_width is not set"
++
++	ip link set dev $swp2 down
++	ip link set dev $swp1 down
++}
++
++autoneg_force_mode()
++{
++	RET=0
++
++	local lanes
++	local max_speed
++	local max_lanes
++
++	local -a linkmodes_params=($(dev_linkmodes_params_get $swp1 1))
++	local -a max_values=($(max_speed_and_lanes_get $swp1 "${linkmodes_params[@]}"))
++	max_speed=${max_values[0]}
++	max_lanes=${max_values[1]}
++
++	lanes=$max_lanes
++
++	while [[ $lanes -ge 1 ]]; do
++		search_linkmode $max_speed $lanes "${linkmodes_params[@]}"
++		if [[ $? -eq 1 ]]; then
++			ethtool_set $swp1 speed $max_speed lanes $lanes autoneg off
++			ethtool_set $swp2 speed $max_speed lanes $lanes autoneg off
++			ip link set dev $swp1 up
++			ip link set dev $swp2 up
++			busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
++			check_err $? "ports did not come up"
++
++			check_lanes $swp1 $lanes $max_speed
++			log_test "Autoneg off, $lanes lanes detected during force mode"
++		fi
++		let $((lanes /= 2))
++	done
++
++	check_unsupported_lanes $swp1 $max_speed $max_lanes 0
++	log_test "Lanes number larger than max width is not set"
++
++	ip link set dev $swp2 down
++	ip link set dev $swp1 down
++
++	ethtool -s $swp2 autoneg on
++	ethtool -s $swp1 autoneg on
++}
++
++check_ethtool_lanes_support
++setup_prepare
++
++tests_run
++
++exit $EXIT_STATUS
+diff --git a/tools/testing/selftests/net/forwarding/ethtool_lib.sh b/tools/testing/selftests/net/forwarding/ethtool_lib.sh
+index 9188e624dec0..b9bfb45085af 100644
+--- a/tools/testing/selftests/net/forwarding/ethtool_lib.sh
++++ b/tools/testing/selftests/net/forwarding/ethtool_lib.sh
+@@ -22,6 +22,40 @@ ethtool_set()
+ 	check_err $out "error in configuration. $cmd"
  }
  
- static int mlxsw_sp2_ptys_max_speed(struct mlxsw_sp_port *mlxsw_sp_port, u32 *p_max_speed)
-@@ -1795,7 +1802,7 @@ const struct mlxsw_sp_port_type_speed_ops mlxsw_sp2_port_type_speed_ops = {
- 	.from_ptys_supported_port	= mlxsw_sp2_from_ptys_supported_port,
- 	.from_ptys_link			= mlxsw_sp2_from_ptys_link,
- 	.from_ptys_speed		= mlxsw_sp2_from_ptys_speed,
--	.from_ptys_speed_duplex		= mlxsw_sp2_from_ptys_speed_duplex,
-+	.from_ptys_link_mode		= mlxsw_sp2_from_ptys_link_mode,
- 	.ptys_max_speed			= mlxsw_sp2_ptys_max_speed,
- 	.to_ptys_advert_link		= mlxsw_sp2_to_ptys_advert_link,
- 	.to_ptys_speed_lanes		= mlxsw_sp2_to_ptys_speed_lanes,
++dev_linkmodes_params_get()
++{
++	local dev=$1; shift
++	local adver=$1; shift
++	local -a linkmodes_params
++	local param_count
++	local arr
++
++	if (($adver)); then
++		mode="Advertised link modes"
++	else
++		mode="Supported link modes"
++	fi
++
++	local -a dev_linkmodes=($(dev_speeds_get $dev 1 $adver))
++	for ((i=0; i<${#dev_linkmodes[@]}; i++)); do
++		linkmodes_params[$i]=$(echo -e "${dev_linkmodes[$i]}" | \
++			# Replaces all non numbers with spaces
++			sed -e 's/[^0-9]/ /g' | \
++			# Squeeze spaces in sequence to 1 space
++			tr -s ' ')
++		# Count how many numbers were found in the linkmode
++		param_count=$(echo "${linkmodes_params[$i]}" | wc -w)
++		if [[ $param_count -eq 1 ]]; then
++			linkmodes_params[$i]="${linkmodes_params[$i]} 1"
++		elif [[ $param_count -ge 3 ]]; then
++			arr=(${linkmodes_params[$i]})
++			# Take only first two params
++			linkmodes_params[$i]=$(echo "${arr[@]:0:2}")
++		fi
++	done
++	echo ${linkmodes_params[@]}
++}
++
+ dev_speeds_get()
+ {
+ 	local dev=$1; shift
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index 31ce478686cb..26cfc778ff26 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -69,6 +69,15 @@ check_tc_action_hw_stats_support()
+ 	fi
+ }
+ 
++check_ethtool_lanes_support()
++{
++	ethtool --help 2>&1| grep lanes &> /dev/null
++	if [[ $? -ne 0 ]]; then
++		echo "SKIP: ethtool too old; it is missing lanes support"
++		exit 1
++	fi
++}
++
+ if [[ "$(id -u)" -ne 0 ]]; then
+ 	echo "SKIP: need root privileges"
+ 	exit 0
+@@ -263,6 +272,20 @@ not()
+ 	[[ $? != 0 ]]
+ }
+ 
++get_max()
++{
++	local arr=("$@")
++
++	max=${arr[0]}
++	for cur in ${arr[@]}; do
++		if [[ $cur -gt $max ]]; then
++			max=$cur
++		fi
++	done
++
++	echo $max
++}
++
+ grep_bridge_fdb()
+ {
+ 	local addr=$1; shift
+@@ -279,6 +302,11 @@ grep_bridge_fdb()
+ 	$@ | grep $addr | grep $flag "$word"
+ }
+ 
++wait_for_port_up()
++{
++	"$@" | grep -q "Link detected: yes"
++}
++
+ wait_for_offload()
+ {
+ 	"$@" | grep -q offload
 -- 
 2.26.2
 
