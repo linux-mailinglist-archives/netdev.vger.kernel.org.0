@@ -2,99 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A002DD6A0
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 18:55:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BB472DD6A2
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 18:55:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729285AbgLQRyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 12:54:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49202 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729157AbgLQRyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 12:54:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608227573;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ReBT3i840Sw/YiiTETt/Hew4ycLl9BGmcBjhM24JNYI=;
-        b=HD9FDKGmDfb2nkjJMWmfwKnMjDBMjzmko1cGwlpM94gRlN/uhSw44jfg8HUuFwZ4PoZOY4
-        FBFctd4uTd2B7PQDWaekQXJrA9SyvMw9tlhjngbhJqg3pvEugei7ihzS+YGyXapnZB4NCP
-        PczkHPyGqRjPK8YywiLbF8FkxMqa3Wo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-368-njXg6M41OQqfPSBaR4dbfg-1; Thu, 17 Dec 2020 12:52:51 -0500
-X-MC-Unique: njXg6M41OQqfPSBaR4dbfg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 85DB9100C600;
-        Thu, 17 Dec 2020 17:52:49 +0000 (UTC)
-Received: from localhost (ovpn-115-234.ams2.redhat.com [10.36.115.234])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D710A5D9CD;
-        Thu, 17 Dec 2020 17:52:48 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1729589AbgLQRzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 12:55:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53588 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728185AbgLQRze (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 12:55:34 -0500
+Date:   Thu, 17 Dec 2020 09:54:53 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608227694;
+        bh=0mW1wzMW7BB2MsUlXOLx9yg02heq+dhR7hgUdwhHH8w=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IBkgCx7yvO0bHnONKARbJ7GiQfmqTSVXBoBbsCsc4EiX9Z8au0OEG6Oqd52dror1U
+         Tw6OBebaKygU1+7a60r6LMb+v1zmq2rJOL43c5KL844RnPFrgX71p+Nkumim3HPo47
+         2goMSyn5RG+th27xA6hjCWuVy1vR4c5DOQzXfVz31x/qhnitxtZkGsJfz4xVdnlkfM
+         84k3QlgCDL8nC+6MIbgWxqC6XmZ7fv69V+jnKpPGNyjnInCPF7qXq/M7m0RCTWjQEn
+         p6kRYzdyuZDf6IU3Swee/EYsIk3fYf6h6W6uytUgds81+C6TnrLXURgt7m/evaYJU7
+         Uc83oz5kksjrQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Danielle Ratson <danieller@mellanox.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, mkubecek@suse.cz,
+        mlxsw@nvidia.com, idosch@nvidia.com,
+        Danielle Ratson <danieller@nvidia.com>
+Subject: Re: [PATCH net-next v2 0/7] Support setting lanes via ethtool
+Message-ID: <20201217095453.00a919c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201217085717.4081793-1-danieller@mellanox.com>
+References: <20201217085717.4081793-1-danieller@mellanox.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <1608225791-13127-1-git-send-email-stefanc@marvell.com>
-References: <1608225791-13127-1-git-send-email-stefanc@marvell.com>
-From:   Antoine Tenart <atenart@redhat.com>
-Cc:     thomas.petazzoni@bootlin.com, davem@davemloft.net,
-        nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, stefanc@marvell.com, kuba@kernel.org,
-        linux@armlinux.org.uk, mw@semihalf.com, andrew@lunn.ch,
-        rmk+kernel@armlinux.org.uk, lironh@marvell.com
-To:     netdev@vger.kernel.org, stefanc@marvell.com
-Subject: Re: [PATCH net] net: mvpp2: prs: fix PPPoE with ipv6 packet parse
-Message-ID: <160822756622.3138.4566292085941876073@kwain.local>
-Date:   Thu, 17 Dec 2020 18:52:46 +0100
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
+On Thu, 17 Dec 2020 10:57:10 +0200 Danielle Ratson wrote:
+> From: Danielle Ratson <danieller@nvidia.com>
+> 
+> Some speeds can be achieved with different number of lanes. For example,
+> 100Gbps can be achieved using two lanes of 50Gbps or four lanes of
+> 25Gbps. This patch set adds a new selector that allows ethtool to
+> advertise link modes according to their number of lanes and also force a
+> specific number of lanes when autonegotiation is off.
 
-Quoting stefanc@marvell.com (2020-12-17 18:23:11)
-> From: Stefan Chulski <stefanc@marvell.com>
->=20
-> Current PPPoE+IPv6 entry is jumping to 'next-hdr'
-> field and not to 'DIP' field as done for IPv4.
->=20
-> Fixes: db9d7d36eecc ("net: mvpp2: Split the PPv2 driver to a dedicated di=
-rectory")
+# Form letter - net-next is closed
 
-That's not the commit introducing the issue. You can use
-`git log --follow` to go further back (or directly pointing to the old
-mvpp2.c file).
+We have already sent the networking pull request for 5.11 and therefore
+net-next is closed for new drivers, features, code refactoring and
+optimizations. We are currently accepting bug fixes only.
 
-Thanks!
-Antoine
+Please repost when net-next reopens after 5.11-rc1 is cut.
 
-> Reported-by: Liron Himi <lironh@marvell.com>
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
-> ---
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c b/drivers/net=
-/ethernet/marvell/mvpp2/mvpp2_prs.c
-> index b9e5b08..1a272c2 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-> @@ -1655,8 +1655,9 @@ static int mvpp2_prs_pppoe_init(struct mvpp2 *priv)
->         mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_IP6);
->         mvpp2_prs_sram_ri_update(&pe, MVPP2_PRS_RI_L3_IP6,
->                                  MVPP2_PRS_RI_L3_PROTO_MASK);
-> -       /* Skip eth_type + 4 bytes of IPv6 header */
-> -       mvpp2_prs_sram_shift_set(&pe, MVPP2_ETH_TYPE_LEN + 4,
-> +       /* Jump to DIP of IPV6 header */
-> +       mvpp2_prs_sram_shift_set(&pe, MVPP2_ETH_TYPE_LEN + 8 +
-> +                                MVPP2_MAX_L3_ADDR_SIZE,
->                                  MVPP2_PRS_SRAM_OP_SEL_SHIFT_ADD);
->         /* Set L3 offset */
->         mvpp2_prs_sram_offset_set(&pe, MVPP2_PRS_SRAM_UDF_TYPE_L3,
-> --=20
-> 1.9.1
->=20
+Look out for the announcement on the mailing list or check:
+http://vger.kernel.org/~davem/net-next.html
 
+RFC patches sent for review only are obviously welcome at any time.
