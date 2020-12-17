@@ -2,95 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE3D72DDBAE
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 23:59:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B335D2DDBBC
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 00:06:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732258AbgLQW6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 17:58:06 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:41422 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730768AbgLQW6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 17:58:06 -0500
-Received: from [192.168.254.6] (unknown [50.46.158.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id AE28313C2B0;
-        Thu, 17 Dec 2020 14:57:24 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com AE28313C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1608245845;
-        bh=wKglh9KlDBoYb5sTHp2Zpmla8eV1kaQDIWTUPzEfRyo=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=cS/WEcr87wlLHpBF0id46WWTxCo51XmGYj77Tvo56pnMTrdwLdNB1MtH4HaHyOAjN
-         k+8SxCI7rDeTEcSIPDsVOXRHUWtq7yCy9xsWK0ZvwduUSkfRkXuifou+H8Ku+zn8yO
-         vDCDCIgoHcJwGiTSQV/1oN9T5wv6BwL5dbn9uSl4=
-Subject: Re: [PATCH 0/3] mac80211: Trigger disconnect for STA during recovery
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Youghandhar Chintala <youghand@codeaurora.org>,
-        johannes@sipsolutions.net, ath10k@lists.infradead.org,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuabhs@chromium.org,
-        dianders@chromium.org, pillair@codeaurora.org
-References: <20201215172113.5038-1-youghand@codeaurora.org>
- <18dfa52b-5edd-f737-49c9-f532c1c10ba2@candelatech.com>
- <X9vaqxub2F/8YPT8@google.com>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <6cec8a4c-620f-093d-2739-7eafe89cd79a@candelatech.com>
-Date:   Thu, 17 Dec 2020 14:57:24 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1732322AbgLQXE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 18:04:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730140AbgLQXE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 18:04:56 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A60C0617A7
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 15:04:16 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id c79so357359pfc.2
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 15:04:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xuN3s87sgv5dYv1RWZnvVr37IV4kzzDZbC355KoF86s=;
+        b=gNYVoiuPmDtcwNGgz1b29ap/WFF1trap8wB+8F3/ztzMefmOEU7saVMs3StoaqtlAH
+         9Q8N3sf1nJNiAhPl30mLWT9rNWcMRL/4jESUIXbVfkLi8FQUqfpdgxGE7cbX+EuWkw4P
+         1zxaKNqHwd03cw5UeRIIdyo4kxBqKz2+CUimc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xuN3s87sgv5dYv1RWZnvVr37IV4kzzDZbC355KoF86s=;
+        b=iedkUkk0AT8lbVrTsLurV2YJwSnx3WYlMpOxGYRskbWoYzHC+Q4uQVtfdunljkGXyU
+         zkTpdWzCQAkaHb0jhJC0x+KYBCSCkPPbGgN+2x+9IuvpQ6In9n2YFfe0jpluEBwi/1yb
+         1rASktYDFiykF1pIM0RILIRgvnP39lL5D3pQ60xh12I0Q/c1igwFcQc84Rvgf7jVlE6I
+         dXv+PpqJk9E8k+mJ3HvINghva2wfOLSMcujukrpVFjGS+AP7rPpi60tFDYO8Gc2xSM4p
+         ErgvUtqtjiau3Z6fyHtMtSpIVl+hUKpD28DaMJiwuDFdZ7H2c9/J724uaFwM+oK5NavR
+         GCww==
+X-Gm-Message-State: AOAM531tJu4m54hIOvQtjp9w0HtQllBrspNnet1r3OO3cWvZH5/RGZm1
+        Qe8pKSZNbGzEa3l6n0VJUVvfhw==
+X-Google-Smtp-Source: ABdhPJyY7LcYcKznwl8cdcSmFXO7wsiD2aQSfSQOfEtl4hhRILKgwPonDiZBJATkFfNdYx2HSVXcDg==
+X-Received: by 2002:a63:eb4b:: with SMTP id b11mr1435362pgk.351.1608246255566;
+        Thu, 17 Dec 2020 15:04:15 -0800 (PST)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:7220:84ff:fe09:2b94])
+        by smtp.gmail.com with ESMTPSA id q23sm6001004pgm.89.2020.12.17.15.04.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Dec 2020 15:04:15 -0800 (PST)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Subject: [PATCH] Bluetooth: Pause service discovery for suspend
+Date:   Thu, 17 Dec 2020 15:04:08 -0800
+Message-Id: <20201217150346.1.If6feff48e17a881af9cb55526db7f53bf0db40f1@changeid>
+X-Mailer: git-send-email 2.29.2.729.g45daf8777d-goog
 MIME-Version: 1.0
-In-Reply-To: <X9vaqxub2F/8YPT8@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/20 2:24 PM, Brian Norris wrote:
-> On Tue, Dec 15, 2020 at 10:23:33AM -0800, Ben Greear wrote:
->> On 12/15/20 9:21 AM, Youghandhar Chintala wrote:
->>> From: Rakesh Pillai <pillair@codeaurora.org>
->>>
->>> Currently in case of target hardware restart ,we just reconfig and
->>> re-enable the security keys and enable the network queues to start
->>> data traffic back from where it was interrupted.
->>
->> Are there any known mac80211 radios/drivers that *can* support seamless restarts?
->>
->> If not, then just could always enable this feature in mac80211?
-> 
-> I'm quite sure that iwlwifi intentionally supports a seamless restart.
->  From my experience with dealing with user reports, I don't recall any
-> issues where restart didn't function as expected, unless there was some
-> deeper underlying failure (e.g., hardware/power failure; driver bugs /
-> lockups).
-> 
-> I don't have very good stats for ath10k/QCA6174, but it survives
-> our testing OK and I again don't recall any user-reported complaints in
-> this area. I'd say this is a weaker example though, as I don't have as
-> clear of data. (By contrast, ath10k/WCN399x, which Rakesh, et al, are
-> patching here, does not pass our tests at all, and clearly fails to
-> recover from "seamless" restarts, as noted in patch 3.)
-> 
-> I'd also note that we don't operate in AP mode -- only STA -- and IIRC
-> Ben, you've complained about AP mode in the past.
+Just like MGMT_OP_START_DISCOVERY, we should reject
+MGMT_OP_START_SERVICE_DISCOVERY with MGMT_STATUS_BUSY when we are paused
+for suspend.
 
-I complain about all sorts of things, but I'm usually running
-station mode :)
+Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+---
+On ChromeOS, we started getting reports of scanning failing after
+resuming from suspend. The root cause was that Start Service Discovery
+was being called while discovery was supposed to be paused for suspend
+and it was screwing up some internal state. Adding this check
+immediately fixed it.
 
-Do you actually see iwlwifi stations stay associated through
-firmware crashes?
+The fix was tested by doing the following:
+* Set Discovery Filter ({'transport': 'auto'})
+* Start Discovery
+* Suspend
+* Resume
+* Check the Discovering property
 
-Anyway, happy to hear some have seamless recovery, and in that case,
-I have no objections to the patch.
+Without the fix, this test failed when checking the Discovering
+property above.
 
-Thanks,
-Ben
+ net/bluetooth/mgmt.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index fa0f7a4a1d2fc8a..608dda5403b7327 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -4798,6 +4798,14 @@ static int start_service_discovery(struct sock *sk, struct hci_dev *hdev,
+ 		goto failed;
+ 	}
+ 
++	if (hdev->discovery_paused) {
++		err = mgmt_cmd_complete(sk, hdev->id,
++					MGMT_OP_START_SERVICE_DISCOVERY,
++					MGMT_STATUS_BUSY, &cp->type,
++					sizeof(cp->type));
++		goto failed;
++	}
++
+ 	uuid_count = __le16_to_cpu(cp->uuid_count);
+ 	if (uuid_count > max_uuid_count) {
+ 		bt_dev_err(hdev, "service_discovery: too big uuid_count value %u",
 -- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+2.29.2.729.g45daf8777d-goog
+
