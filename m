@@ -2,185 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 015702DCBC0
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 05:45:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1731E2DCBD5
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 06:13:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726589AbgLQEpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 23:45:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42196 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726155AbgLQEpF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 23:45:05 -0500
-Message-ID: <ecc117632ffa36ae374fb05ed4806af2d7d55576.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608180264;
-        bh=C2Dp3rBR5GQ0a5AgWT1VUBqXvS9jt/oNwSeloGf9IwM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=QcJqYB1zUEcu/Snicq1NtMT9JecUl3EgzYFWN8pyV5kMi1yrRdWrB15oSVpyotOMP
-         EAsaFkX3g0Mc8nqxC8lXWJ85i3pJ4U5QcK3rybWzB+HbtVs6RETwgzSw13IQuicaUf
-         8RpHGzZxf3r1ROVP3hhNCPmcqdWvmt1l3R6GU/o/I8kzAVEEfzQC3JWZ8MUpASVXsE
-         eMugiOxlfwFLJUuYFycs5Rb8BkvzfMQAAV7d7gyHYbh2K3jgxQO3e9fVRIzx1UHvG3
-         b51nf97bdAVtEHhU5H7F8m5hi55cbr9OZ+RE0qZpVlcMg4YcUTDlo+kHpWlakbZf/i
-         mmI2k1wsW3/tg==
-Subject: Re: [net-next v5 03/15] devlink: Introduce PCI SF port flavour and
- port attribute
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>, Parav Pandit <parav@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "david.m.ertman@intel.com" <david.m.ertman@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "kiran.patil@intel.com" <kiran.patil@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>
-Date:   Wed, 16 Dec 2020 20:44:21 -0800
-In-Reply-To: <20201216155945.63f07c80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201215090358.240365-1-saeed@kernel.org>
-         <20201215090358.240365-4-saeed@kernel.org>
-         <20201215152740.0b3ed376@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <BY5PR12MB432268C16D118BC435C0EF5CDCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
-         <20201216155945.63f07c80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1725988AbgLQFHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 00:07:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725830AbgLQFHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 00:07:35 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58EC0C061794;
+        Wed, 16 Dec 2020 21:06:55 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id p18so7923779pgm.11;
+        Wed, 16 Dec 2020 21:06:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=a7OiJrsklst7aG4Q3TdBEgbeMJcuTcoKllnjNyFS4uI=;
+        b=gB8Mgko12WNtUqNOb0XN6bwaat5VGZW8/SsYjD5BEa8HugV+CKEXT++7ORe0izxou+
+         GzcAHO05mpev/zhEX7vUelAt70DnhnPQXBtzX/gWwHLyaNFUGpB7OKnjnUZjOS0QJrId
+         f06+AgqUAtusTWzQ55grIs8DKVwDJ7hsrgA/6Qud/pYab9hp5JR65xBLsz7dKhQdk41S
+         ahOswwbZi3uTUjXCMdd2/XwoPvB9PL6SFOODTUMhjbkLrrEN38uMGg47SWWWcA1hkbiO
+         yHUxr787VsJnz+sp7BO9zMaSQgKimsOsH7nXuCwrd/zQer/jMRyzvN5NPWGcpzAWbgzB
+         WE/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=a7OiJrsklst7aG4Q3TdBEgbeMJcuTcoKllnjNyFS4uI=;
+        b=CEzZfemGl8CUkmIRyEVkAvzVLitSHHxrRl7xvYls7UkUxv1i0vZyY5mFRcdSMoiiic
+         tv5igtWOLIpG8nPs1kBh0DtcHs3hPUoTfRYY7irTunEgNoeMxVA7oPa0ljhVDWOftgOl
+         svHkmqDqyRlzico5Gi2YR8LuNk4mzBdaYl6USC6oa59GA8eP4Q55w3x076/4Ah2aOzBQ
+         UshybTbNaBPzthDBsdVQ7kn6VS/iSwY2S67y+MPIEF6RBwKM5VgPq+Ezg1L0LfPf5DY3
+         Jyb5xjMo8t3qUnxvMe60nudz+DrTbSkcsYsd2Qg2WHME14z0dK2LqdDUTK6urPg94RSo
+         hkCQ==
+X-Gm-Message-State: AOAM5320XDZ74FcEXVRL02wPV/COyd/nwbefaEZQQzFMHt17EDUs0zJg
+        Ka3bbpm3SprQjUoy/Wm1rUKFQgZmALSDO/Uv1Cw=
+X-Google-Smtp-Source: ABdhPJyC02nMnCsWO2h5mc0EPYtwk+v3eXk41+nJeppMTe3M2+qlSW6mOh8XsatUBpeDfFs13rtZVvOwQ5PAmUkVr08=
+X-Received: by 2002:a62:808d:0:b029:19e:b084:d5b0 with SMTP id
+ j135-20020a62808d0000b029019eb084d5b0mr24806204pfd.80.1608181614613; Wed, 16
+ Dec 2020 21:06:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20201214201118.148126-1-xiyou.wangcong@gmail.com>
+ <20201214201118.148126-3-xiyou.wangcong@gmail.com> <CAEf4BzZa15kMT+xEO9ZBmS-1=E85+k02zeddx+a_N_9+MOLhkQ@mail.gmail.com>
+ <CAM_iQpVR_owLgZp1tYJyfWco-s4ov_ytL6iisg3NmtyPBdbO2Q@mail.gmail.com>
+ <CAEf4BzbyHHDrECCEjrSC3A5X39qb_WZaU_3_qNONP+vHAcUzuQ@mail.gmail.com>
+ <1de72112-d2b8-24c5-de29-0d3dfd361f16@iogearbox.net> <CAM_iQpVedtfLLbMroGCJuuRVrBPoVFgsLkQenTrwKD8uRft2wQ@mail.gmail.com>
+ <20201216011422.phgv4o3jgsrg33ob@ast-mbp> <CAM_iQpVJLg5yCF=2w3ZpBBiR3pR4FWSNjz7FvJGqx0R+BomWDw@mail.gmail.com>
+ <CAADnVQL70bVdms6_D_ep1L2v-OcgXu-9KTtLULQdfCMftLhENQ@mail.gmail.com>
+In-Reply-To: <CAADnVQL70bVdms6_D_ep1L2v-OcgXu-9KTtLULQdfCMftLhENQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 16 Dec 2020 21:06:43 -0800
+Message-ID: <CAM_iQpU4ULPqo60o7CuZqqqdrybkqNd5GNufep57UhBpmMGuPg@mail.gmail.com>
+Subject: Re: [Patch bpf-next v2 2/5] bpf: introduce timeout map
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-12-16 at 15:59 -0800, Jakub Kicinski wrote:
-> On Wed, 16 Dec 2020 03:42:51 +0000 Parav Pandit wrote:
-> > > From: Jakub Kicinski <kuba@kernel.org>
-> > > So subfunctions don't have a VF id but they may have a
-> > > controller?
-> > >  
-> > Right. SF can be on external controller.
-> >  
-> > > Can you tell us more about the use cases and deployment models
-> > > you're
-> > > intending to support? Let's not add attributes and info which
-> > > will go unused.
-> > >   
-> > External will be used the same way how it is used for PF and VF.
-> > 
-> > > How are SFs supposed to be used with SmartNICs? Are you assuming
-> > > single
-> > > domain of control?  
-> > No. it is not assumed. SF can be deployed from smartnic to external
-> > host.
-> > A user has to pass appropriate controller number, pf number
-> > attributes during creation time.
-> 
-> My problem with this series is that I've gotten some real life
-> application exposure over the last year, and still I have no idea 
-> who is going to find this feature useful and why.
-> 
-> That's the point of my questions in the previous email - what
-> are the use cases, how are they going to operate.
-> 
+On Tue, Dec 15, 2020 at 6:35 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Dec 15, 2020 at 6:10 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > Sure, people also implement CT on native hash map too and timeout
+> > with user-space timers. ;)
+>
+> exactly. what's wrong with that?
+> Perfectly fine way to do CT.
 
-The main focus of this feature is scale-ability we want to run
-thousands of Containers/VMs, this is useful for both smartnic and
-baremetal hypervisor worlds, where security and control is exclusive to
-the eswitch manager may it be the smarnic embedded CPU or the x86
-Hypervisor.
+Seriously? When we have 8 millions of entries in a hash map, it is
+definitely seriously wrong to purge entries one by one from user-space.
 
-deployment models is identical to SRIOV, the only difference is the
-instantiation model of SF, which is the main discussion point of this
-series (i hope), which to my taste is very modest and minimal.
-after SF is instantiated from that point nothing is new, the SF is
-exposing standard linux interfaces netdev/rdma identical to what VF
-does, most likely you will assign them a namespace and pass them
-through to a container or assign them (not direct assignment) to a VM
-via the virt stack, or create a vdpa instance and pass it to a virtio
-interface.
+In case you don't believe me, take a look at what cilium CT GC does,
+which is precisely expires entries one by one in user-space:
 
-There are endless usecases for the netdev stack, for customers who want
-high scale virtualized/containerized environments, with thousands of
-network functions that can deliver high speed and full offload
-accelerators, Native XDP, Crypto, encap/decap, and HW filtering and
-processing pipeline capabilities.
+https://github.com/cilium/cilium/blob/0f57292c0037ee23ba1ca2f9abb113f36a664645/pkg/bpf/map_linux.go#L728
+https://github.com/cilium/cilium/blob/master/pkg/maps/ctmap/ctmap.go#L398
 
-I have a long list of customers with various and different applications
-and i am not even talking about the rdma and vdpa customers ! those
-customers just can't wait to leave sriov behind and scale up !
+and of course what people complained:
 
-this feature has a lot of value to the netdev users only because of the
-minimal foot print to the netdev stack (to be honest there is no change
-in netdev, only a thin API layer in devlink) and the immediate and
-effortless benefits to deploy multiple (accelerated) netdevs at scale.
+https://github.com/cilium/cilium/issues/5048
+
+>
+> > > Anything extra can be added on top from user space
+> > > which can easily copy with 1 sec granularity.
+> >
+> > The problem is never about granularity, it is about how efficient we can
+> > GC. User-space has to scan the whole table one by one, while the kernel
+> > can just do this behind the scene with a much lower overhead.
+> >
+> > Let's say we arm a timer for each entry in user-space, it requires a syscall
+> > and locking buckets each time for each entry. Kernel could do it without
+> > any additional syscall and batching. Like I said above, we could have
+> > millions of entries, so the overhead would be big in this scenario.
+>
+> and the user space can pick any other implementation instead
+> of trivial entry by entry gc with timer.
+
+Unless they don't have to, right? With timeout implementation in kernel,
+user space does not need to invent any wheel.
 
 
-> It's hard to review an API without knowing the use of it. iproute2
-> is low level plumbing.
-> 
+>
+> > > Say the kernel does GC and deletes htab entries.
+> > > How user space will know that it's gone? There would need to be
+> >
+> > By a lookup.
+> >
+> > > an event sent to user space when entry is being deleted by the kernel.
+> > > But then such event will be racy. Instead when timers and expirations
+> > > are done by user space everything is in sync.
+> >
+> > Why there has to be an event?
+>
+> because when any production worthy implementation moves
+> past the prototype stage there is something that user space needs to keep
+> as well. Sometimes the bpf map in the kernel is alone.
+> But a lot of times there is a user space mirror of the map in c++ or golang
+> with the same key where user space keeps extra data.
 
-I don't know how to put this, let me try:
-A) SRIOV model
-echo 128 > /sys/class/net/eth0/device/sriov_numvfs
-ubind vf
+So... what event does LRU map send when it deletes a different entry
+when the map is full?
 
-ip set vf attribute x
-configure representor .. 
-deploy vf/netdev/rdma interface into the container
-
-B) SF model 
-you do (every thing under the devlink umbrella/switchdev):
-for i in {1..1024} ; do
-devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum $i
-devlink port sf $i set attribute x
-
-# from here on, it is identical to a VF
-configure representor
-deply sf/netdev/rdma interfaces into a container 
-
-B is more scale-able and has more visibility and controllability  to
-the user, after you create the SFs deployment and usecases are
-identical to SRIOV VF usecases.
-
-See the improvement ? :)
-
-> Here the patch is adding the ability to apparently create a SF on 
-> a remote controller. If you haven't thought that use case through
-> just don't allow it until you know how it will work.
-> 
-
-We have thought the use case through it is not any different from the 
-local controller use case. the code is uniform, we need to work hard to
-block a remote controller :) .. 
-
-> > > It seems that the way the industry is moving the major
-> > > use case for SmartNICs is bare metal.
-> > > 
-> > > I always assumed nested eswitches when thinking about SmartNICs,
-> > > what
-> > > are you intending to do?
-> > >  
-> > Mlx5 doesn't support nested eswitch. SF can be deployed on the
-> > external controller PCI function.
-> > But this interface neither limited nor enforcing nested or flat
-> > eswitch.
-> >  
-> > > What are your plans for enabling this feature in user space
-> > > project?  
-> > Do you mean K8s plugin or iproute2? Can you please tell us what
-> > user space project?
-> 
-> That's my question. For SR-IOV it'd be all the virt stacks out there.
-> But this can't do virt. So what can it do?
-> 
-
-you are thinking VF direct assignment. but don't forget
-virt handles netdev assignment to a vm perfectly fine and SF has a
-netdev.
-
-And don't get me started on the weird virt handling of SRIOV VF, the
-whole thing is a big mess :) it shouldn't be a de facto standard that
-we need to follow.. 
-
+Thanks.
