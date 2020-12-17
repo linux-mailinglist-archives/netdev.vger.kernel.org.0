@@ -2,115 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBADD2DD1E6
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 14:08:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE81F2DD1F7
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 14:13:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728323AbgLQNIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 08:08:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47140 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726983AbgLQNIb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Dec 2020 08:08:31 -0500
-Date:   Thu, 17 Dec 2020 13:07:35 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608210470;
-        bh=lVsy2G3PdyS4QvfvMSCeT2JO0KYkPtZ6DgGn8pv6Jp8=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JglEr8u0Klnf9OQlxLN2VLsIS4jdS4YyHoTGFWnZeMJjWhOBp25E1cCo2k4Im/Qgk
-         vSoKJn1uaZ2ju+SNkrspVBpLWyYayWOmey1497JdpWeNdGTyANTgawzGslfYyJpKfn
-         7a0kpZ32anGSB13Uq9M3bp0Pyg9tbHGFsKu6rUS8N2bUeXytTpbudQuUxNJgXIDbmd
-         aKr/DG0N6qyLdprou7fke3bZhYHQRAVS71HgL0ShyB+9vDiv0SOnMnYctqo883IyOU
-         mvkRMjsACENYtIU7Feg+haz1968n2fT/8WutlZCrBFSUP47fDfozcewmcu5YLsgmE4
-         CbCkCRuxWchOg==
-From:   Mark Brown <broonie@kernel.org>
-To:     Seth Forshee <seth.forshee@canonical.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Daniel Diaz <daniel.diaz@linaro.org>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH] selftests: Skip BPF seftests by default
-Message-ID: <20201217130735.GA4708@sirena.org.uk>
-References: <20201210185233.28091-1-broonie@kernel.org>
- <X9qExiKXPVmk3BJI@ubuntu-x1>
+        id S1726595AbgLQNNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 08:13:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725468AbgLQNNF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 08:13:05 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B6CC061794;
+        Thu, 17 Dec 2020 05:12:25 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id e2so20285821pgi.5;
+        Thu, 17 Dec 2020 05:12:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cjO4VbjqTSiJSfh7o6HTbmhfPolYnzmH+2qlwgnhTqw=;
+        b=gxnCOVNWi9imXkTxYIjwVGU5xF8sjdMZCE5U6lisgVWkM6+VpqRFZNvrxTxvfd0nJk
+         KdFGLjZau47dBfaqQoz/+kPl1pc3yLD16uDFa7HSZK045GKCUnEE3YLjgHB6QTOxJBs+
+         zePpCRLicUaeNTB1ZPXZvI3Lzb0xxECk13+txP6JgjkXvatf3KVqiKGDVnz+tm8IaiwW
+         3tK+k6f7k4zsFkULZUyOSW83M0sptFyAVrsJdH+KC1t2LxTCa6ZGb8ewCCBOcovEoFSE
+         04GWjE3h66Bp0ZRB32OSppswRIrIjaw4ARZZ5iM/XUaEx79OfNfvjNZPfLA16kPFhQGi
+         zDSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cjO4VbjqTSiJSfh7o6HTbmhfPolYnzmH+2qlwgnhTqw=;
+        b=ibfIxdm7u1vlLSzK4evhStDpYZq52ag2L6a9NnpOfhE1FWotWW8brI4ZkQajxZtZE1
+         ZCfDbnPrg7QNmz+PJr9DsnY7CAXTJTw+LrhiI+Wp7kKQFcJew5F2GX6ywT5HlOSEcJpS
+         XtccG67VPTxGDov5yWbwGHXlODE8cjTyqKWpYnqxkkLO7nCBHTSPcBQDqYkdu6zFXKTr
+         zRcQxCZq5rNadQNybIl3FkIPe5Jlz0V6GyVL3yP8dQoCqtcZDMLCRm09m/dOdAfvX+uf
+         jW5tEIcV4QgSMwHGlxQUkwsx/y7oKMJpm0LDzc+mqctMzajxhGhM8UlH7vgT0CjATGut
+         Z/5g==
+X-Gm-Message-State: AOAM531ZpJHd7oxOZLosopVhD94Q4JoQ3WdjVKuHYa61vkoV/p7AFpZD
+        KW/dCDSwkxZ6lAFhoR+HJ4mMN1dDWupPPQ==
+X-Google-Smtp-Source: ABdhPJzUzGaZpaIf966PsS0EDcKHKhjFzIge4SuX+biz4WlhPzmivEWM/Abp9tmEgcIA3TQG4BINCg==
+X-Received: by 2002:aa7:810a:0:b029:1a6:501b:19ed with SMTP id b10-20020aa7810a0000b02901a6501b19edmr15118104pfi.17.1608210744773;
+        Thu, 17 Dec 2020 05:12:24 -0800 (PST)
+Received: from [192.168.1.18] (i121-115-229-245.s42.a013.ap.plala.or.jp. [121.115.229.245])
+        by smtp.googlemail.com with ESMTPSA id r10sm1179381pgs.49.2020.12.17.05.12.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Dec 2020 05:12:23 -0800 (PST)
+Subject: Re: [PATCH bpf-next 2/2] net: xdp: introduce xdp_build_skb_from_frame
+ utility routine
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, brouer@redhat.com,
+        lorenzo.bianconi@redhat.com
+References: <cover.1608142960.git.lorenzo@kernel.org>
+ <9d24e4c90c91aa2d9de413ee38adc4e8e44fc81a.1608142960.git.lorenzo@kernel.org>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <434e65f4-0b29-3bfb-b5d3-7eebcdd791db@gmail.com>
+Date:   Thu, 17 Dec 2020 22:12:18 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="FL5UXtIhxfXey3p5"
-Content-Disposition: inline
-In-Reply-To: <X9qExiKXPVmk3BJI@ubuntu-x1>
-X-Cookie: I'll eat ANYTHING that's BRIGHT BLUE!!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <9d24e4c90c91aa2d9de413ee38adc4e8e44fc81a.1608142960.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020/12/17 3:38, Lorenzo Bianconi wrote:
+> Introduce xdp_build_skb_from_frame utility routine to build the skb
+> from xdp_frame. Respect to __xdp_build_skb_from_frame,
+> xdp_build_skb_from_frame will allocate the skb object. Rely on
+> xdp_build_skb_from_frame in veth driver.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
---FL5UXtIhxfXey3p5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Thanks.
+It seems you added missing metadata support in veth_xdp_rcv_one()?
+It might be better to note that in the commitlog.
 
-On Wed, Dec 16, 2020 at 04:05:58PM -0600, Seth Forshee wrote:
-> On Thu, Dec 10, 2020 at 06:52:33PM +0000, Mark Brown wrote:
+The code looks fine to me.
 
-> > as part of the wider kselftest build by specifying SKIP_TARGETS,
-> > including setting an empty SKIP_TARGETS to build everything.  They can
-> > also continue to build the BPF selftests individually in cases where
-> > they are specifically focused on BPF.
-
-> Why not just remove the line which adds bpf to TARGETS? This has the
-> same effect, but doesn't require an emtpy SKIP_TARGETS to run them. We
-> have testing scripts which use 'make TARGETS=bpf ...' which will have to
-> be updated, and I doubt we are the only ones.
-
-> I also feel like this creates confusing semantics around SKIP_TARGETS.
-> If I don't supply a value then I don't get the bpf selftests, but then
-> if I try to use SKIP_TARGETS to skip some other test suddenly I do get
-> them. That's counterintuitive.
-
-That's what I did first, it's also messy just differently.  If you
-don't add bpf to TARGETS then if you do what's needed to get it building
-it becomes inconvenient to run it as part of running everything else at
-the top level since you need to enumerate all the targets.  It felt like
-skipping is what we're actually doing here and it seems like those
-actively working with BPF will be used to having to update things in
-their environment.  People who start using SKIP_TARGETS are *probably*
-going to find out about it from the Makefile anyway so will see the
-default that's there.
-
-Fundamentally having such demanding build dependencies is always going
-to result in some kind of mess, it's just where we push it.
-
-> I also wanted to point out that the net/test_bpf.sh selftest requires
-> having the test_bpf module from the bpf selftest build. So when the bpf
-> selftests aren't built this test is guaranteed to fail. Though it would
-> be nice if the net selftests didn't require building the bpf self tests
-> in order to pass.
-
-Right, that's a separate issue - the net tests should really skip that
-if they don't have BPF, as we do for other runtime detectable
-dependencies.  It's nowhere near as severe as failing to build though.
-
---FL5UXtIhxfXey3p5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl/bWBcACgkQJNaLcl1U
-h9CI7Qf/dFnJBcdvSuzBCAbwNK6RJwenUCBcuGORFGRCDhvwfAZrdR/TP4LgtrwL
-SAjzWHn0ezKuUNw9sQc0LQYKE85E8GgzbEPMq5WMnJRmnKBwKDEFVcR3XJuwuvCR
-vVTIaF1Wv0/eiByX9bfw9tsMEpotGNKdIgvi/VfyE4OI1YmFpEz72VXroWbEItRL
-LfQepUr+u/Ot6pBvk1FH/2dBDQDLS71GmF77nwB1qzmhtWb70fbKkLMFPcis7B9K
-/bUJ+Gs8A7R7mlVGR/beQUO1ZWTj7YTIpAAzRdf1dn3G47o7/tIWVupkgr+qUxmV
-s8CmwqptUdTGytxjqNemtT6o4ygMxg==
-=E8Cw
------END PGP SIGNATURE-----
-
---FL5UXtIhxfXey3p5--
+Reviewed-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
