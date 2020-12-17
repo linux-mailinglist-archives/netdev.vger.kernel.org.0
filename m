@@ -2,100 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5E2B2DD014
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 12:08:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 390452DD044
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 12:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbgLQLIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 06:08:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33310 "EHLO
+        id S1728024AbgLQLXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 06:23:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgLQLH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 06:07:59 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31D1C0617A7
-        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 03:07:18 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id 7so19815965qtp.1
-        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 03:07:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WpyJG39zsZR3QTEsxdeIZ6It7enzbMRWstsw8rPRonw=;
-        b=rFasmzLx8XfOzm6Y+FxLK6NecNAgN+nus0rsYJrLuW+hpzBD/G6Aut+1epJgd3Q9Y3
-         rI4U+FdwwtB+ydXf1iKiX2YBDEoIPOXfOjoxwDsLlRC+VSAaSRks/dwUdbna9h704pS/
-         d2A8hO4XsNEFJP5gOafW/aGB3cdf1Rucz2BtuT7meDa5VftF2vj6TKqvm/XuqnJdLo2v
-         rJfj5QslNlV2FdjWijrHD1hpkaEMpURVzu25lOoF97RlseM6vDkoBhuHL0zQ2qg3FJ/4
-         rLfN4/8uFirSkdP/MspVGyDZ3L7GXufno7ZA4RNMUzeNVlOatGeiFxvigK+pXnDBpG47
-         sfKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WpyJG39zsZR3QTEsxdeIZ6It7enzbMRWstsw8rPRonw=;
-        b=Vuvfx4btCcBxX895Cif9LzCPJWfJTJHLgyJggoyoVc1bV1Qif1K1dByjyaFsM3RVAk
-         FeqoiVWTemU/T97HuuHDn/RSnGQoLwTaseWNL2J+zOd8dOCI9p92ts0VGNFN/Aov/KzY
-         adVgk1ZALV20rjywS2cDaZp9G0oVjHlf9EeprgfazdPtku4VHLQsj/91EgQe/tA6rUK7
-         49o0Dv6z8Yd/sfSUFsfos4zZT1wGNY2pX3xXZwpjrdOg9QbUcCed1Ov2t9Cw/TCcIhlu
-         B4StiuFuUJqLIKz9x1BFHf0zDSuUSSPVJ1Ng1LzQEAFGmcw4KMF77M6KEdilBR6PJPFC
-         Gutw==
-X-Gm-Message-State: AOAM530mJOlC1qbEJc1aXjKJ+J6Q5fIT8lle8et551Q4AfYRBTEmhCr+
-        WuKOwAQyY317MwhI+gSz7yeTLgvliwb3lVm1MeQFyA==
-X-Google-Smtp-Source: ABdhPJwsy+Mk6kAd77qSP1iHQ1KvXJLnVTRVxCZaOziunZ7175tYz6+6XvAtQVR72glNqSkBWHZ8KadI0C3bjv0widA=
-X-Received: by 2002:ac8:5ac3:: with SMTP id d3mr47345365qtd.66.1608203237853;
- Thu, 17 Dec 2020 03:07:17 -0800 (PST)
+        with ESMTP id S1725950AbgLQLXC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 06:23:02 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22885C061794;
+        Thu, 17 Dec 2020 03:22:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=1aCEEVpoJd1AIGaTr9ZimyjwtCpcRYK51chuyXemG1s=; b=F7jvY4ne31zP/fYF9eWsBaklJ
+        6xirSytfI4FVqQf3lEPYxOvCTWDH/DSwogEccpVHKdyOe2+Ud6bImMjqZmIWw6EeENyb3KF9kWmyN
+        l4y8AG6GpSDNOEtsWmbNCVFbsb37CwXcy2CWeuwjhiQ6TZ1wq1yU4Z1a0fmCbrRfk2uUTcRc9+Pcc
+        WrI9wQ2oUoXZlx4twz/Enp7XdL7GymdPs9xrKXk70EJ6Fmin9xiYE41GRvYN0q7KTxCzB0UwgLc9D
+        tQb8LjQXAz6LVEuliNLthlYKNmsp1Ay6d+btYJHbLi7q7I19yIgE4gdDGw7U0nzlUZEX1Na0BDNPi
+        x05tTR73A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44306)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kprMG-0004MK-Ni; Thu, 17 Dec 2020 11:22:08 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kprMB-0006qr-Ie; Thu, 17 Dec 2020 11:22:03 +0000
+Date:   Thu, 17 Dec 2020 11:22:03 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Stefan Chulski <stefanc@marvell.com>,
+        netdev <netdev@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>, nadavh@marvell.com,
+        Yan Markman <ymarkman@marvell.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net v2 2/2] net: mvpp2: disable force link UP during port
+ init procedure
+Message-ID: <20201217112203.GY1551@shell.armlinux.org.uk>
+References: <1608198007-10143-1-git-send-email-stefanc@marvell.com>
+ <1608198007-10143-2-git-send-email-stefanc@marvell.com>
+ <CAPv3WKcwT9F3w=Ua-ktE=eorp0a-HPvoF2U-CwsHVtFw6GKOzQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <000000000000ab11c505abeb19f5@google.com> <0000000000004ea4fe05b68fa299@google.com>
-In-Reply-To: <0000000000004ea4fe05b68fa299@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 17 Dec 2020 12:07:06 +0100
-Message-ID: <CACT4Y+ZyAD1aJtTt0q1E=AmsTwnapjitit82+o-Gn2NyxDZNgQ@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Write in __sco_sock_close
-To:     syzbot <syzbot+077eca30d3cb7c02b273@syzkaller.appspotmail.com>
-Cc:     anmol.karan123@gmail.com, coreteam@netfilter.org,
-        David Miller <davem@davemloft.net>,
-        "open list:ANDROID DRIVERS" <devel@driverdev.osuosl.org>,
-        Fox Chen <foxhlchen@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Patrick McHardy <kaber@trash.net>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        mchehab@s-opensource.com, netdev <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPv3WKcwT9F3w=Ua-ktE=eorp0a-HPvoF2U-CwsHVtFw6GKOzQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 8:15 AM syzbot
-<syzbot+077eca30d3cb7c02b273@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit 6dfccd13db2ff2b709ef60a50163925d477549aa
-> Author: Anmol Karn <anmol.karan123@gmail.com>
-> Date:   Wed Sep 30 14:18:13 2020 +0000
->
->     Bluetooth: Fix null pointer dereference in hci_event_packet()
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14cb845b500000
-> start commit:   47ec5303 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=e0c783f658542f35
-> dashboard link: https://syzkaller.appspot.com/bug?extid=077eca30d3cb7c02b273
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=165a89dc900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=130a8c62900000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: Bluetooth: Fix null pointer dereference in hci_event_packet()
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+On Thu, Dec 17, 2020 at 12:00:49PM +0100, Marcin Wojtas wrote:
+> Hi Stefan,
+> 
+> czw., 17 gru 2020 o 10:42 <stefanc@marvell.com> napisał(a):
+> >
+> > From: Stefan Chulski <stefanc@marvell.com>
+> >
+> > Force link UP can be enabled by bootloader during tftpboot
+> > and breaks NFS support.
+> > Force link UP disabled during port init procedure.
+> >
+> > Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+> > ---
+> 
+> What are the updates against v1? Please note them in this place for
+> individual patches and list all in the cover letter (in case sending a
+> group of patches).
 
-#syz fix: Bluetooth: Fix null pointer dereference in hci_event_packet()
+It seems the only reason this has been resent is because it's
+(incorrectly) part of a series that involved a change to patch 1
+(adding the Fixes: tag).
+
+As this is a stand-alone fix, it shouldn't be part of a series unless
+there really is some kind of dependency with the other patch(es) of
+that series.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
