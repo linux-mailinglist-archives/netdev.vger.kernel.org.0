@@ -2,108 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FD902DD358
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 15:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 939CE2DD393
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 16:02:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728109AbgLQOz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 09:55:28 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:36348 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726569AbgLQOz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 09:55:28 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BHEqAOf007500;
-        Thu, 17 Dec 2020 06:52:35 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=LHVXFgY28iTMTpgbMNDvqeDEq5m7ESsAw4UScbAYjD0=;
- b=HSnpnyS1bdRJ2L3DjLPNohkh3UbQHVN6CL7St5Fsa3B49tVO2LKzF1CI3g+HrZppCWF0
- QyCEjvWC3lb8iPTZvMEw+PDB6U+jdrdXtdaOEp+1gkZ4aE6fENNh/hSBKKEf+vAqRDRy
- hIImxSiInEE+c+SN+FY24o9fJELcWf9gBcoJ3tWMTMmysWjRkGrMGWAdQaMsOe+lXYFQ
- MoLRjRc3gYW6vMJHw2HKVyEJwpni671hyaNun8BRsgo45OQfnjLZcNED4WnyUHfhTFAD
- z83R7MnYE1mE1kV9lOHnrHG7+5YiZMtjBkpgRp3xlUYELKEyVS9VNn9txoE4yzl31WUC 0w== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 35g4rp0sfv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 17 Dec 2020 06:52:35 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Dec
- 2020 06:52:34 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Dec 2020 06:52:34 -0800
-Received: from stefan-pc.marvell.com (unknown [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 9A1E73F703F;
-        Thu, 17 Dec 2020 06:52:31 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH net v3] net: mvpp2: disable force link UP during port init procedure
-Date:   Thu, 17 Dec 2020 16:52:15 +0200
-Message-ID: <1608216735-14501-1-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
+        id S1728953AbgLQPBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 10:01:47 -0500
+Received: from gofer.mess.org ([88.97.38.141]:34059 "EHLO gofer.mess.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728781AbgLQPBq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 10:01:46 -0500
+Received: by gofer.mess.org (Postfix, from userid 1000)
+        id 968C011A001; Thu, 17 Dec 2020 15:01:02 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mess.org; s=2020;
+        t=1608217262; bh=qwTTyCxEAzSEaQKYD8zY8b7vlNqO68xHkST3ZUNBE9c=;
+        h=Date:From:To:Subject:From;
+        b=jYx1M5oMnTMP+35GOb1o3Vm/8kqyX54IA0hlOhXJybCELL3Dt1aFR18GmFSkdyU/S
+         48TtKiiEAuvlwmtRgoImptBfvsdDOwbUpsEOTfJBoGYeIEofo+W3rFlvcMox8I6Zie
+         lwsaJMvKpoeKZDt9sFkFrgfUSQDFetWptc6lKpJtz87E3UldLlOE4xBdlsBsjl5J/5
+         hhTvZXr378YMfaI3VTI0N9egxGMKQVbKAdlIz9O/7aw8IEO9ITV8gp0CmhfeTYnchM
+         Ri6XMh/DxT4FXU1ipaXHbhqf2FpR9ctRPu1lAUpnZ8qoK7zsen0G6zDu8nYPNHaZxp
+         Fo6IaVjcpOOwA==
+Date:   Thu, 17 Dec 2020 15:01:02 +0000
+From:   Sean Young <sean@mess.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: [PATCH] btf: support ints larger than 128 bits
+Message-ID: <20201217150102.GA13532@gofer.mess.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-17_10:2020-12-15,2020-12-17 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+clang supports arbitrary length ints using the _ExtInt extension. This
+can be useful to hold very large values, e.g. 256 bit or 512 bit types.
 
-Force link UP can be enabled by bootloader during tftpboot
-and breaks NFS support.
-Force link UP disabled during port init procedure.
+Larger types (e.g. 1024 bits) are possible but I am unaware of a use
+case for these.
 
-Fixes: f84bf386f395 ("net: mvpp2: initialize the GoP")
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+This requires the _ExtInt extension to enabled for BPF in clang, which
+is under review.
+
+Link: https://clang.llvm.org/docs/LanguageExtensions.html#extended-integer-types
+Link: https://reviews.llvm.org/D93103
+
+Signed-off-by: Sean Young <sean@mess.org>
 ---
+ Documentation/bpf/btf.rst      |  4 ++--
+ include/uapi/linux/btf.h       |  2 +-
+ tools/bpf/bpftool/btf_dumper.c | 39 ++++++++++++++++++++++++++++++++++
+ tools/include/uapi/linux/btf.h |  2 +-
+ 4 files changed, 43 insertions(+), 4 deletions(-)
 
-Changes in v3:
-- Added Fixes tag.
-Changes in v2:
-- No changes.
-
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index d2b0506..0ad3177 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -5479,7 +5479,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
- 	struct mvpp2 *priv = port->priv;
- 	struct mvpp2_txq_pcpu *txq_pcpu;
- 	unsigned int thread;
--	int queue, err;
-+	int queue, err, val;
+diff --git a/Documentation/bpf/btf.rst b/Documentation/bpf/btf.rst
+index 44dc789de2b4..784f1743dbc7 100644
+--- a/Documentation/bpf/btf.rst
++++ b/Documentation/bpf/btf.rst
+@@ -132,7 +132,7 @@ The following sections detail encoding of each kind.
  
- 	/* Checks for hardware constraints */
- 	if (port->first_rxq + port->nrxqs >
-@@ -5493,6 +5493,18 @@ static int mvpp2_port_init(struct mvpp2_port *port)
- 	mvpp2_egress_disable(port);
- 	mvpp2_port_disable(port);
+   #define BTF_INT_ENCODING(VAL)   (((VAL) & 0x0f000000) >> 24)
+   #define BTF_INT_OFFSET(VAL)     (((VAL) & 0x00ff0000) >> 16)
+-  #define BTF_INT_BITS(VAL)       ((VAL)  & 0x000000ff)
++  #define BTF_INT_BITS(VAL)       ((VAL)  & 0x000003ff)
  
-+	if (mvpp2_is_xlg(port->phy_interface)) {
-+		val = readl(port->base + MVPP22_XLG_CTRL0_REG);
-+		val &= ~MVPP22_XLG_CTRL0_FORCE_LINK_PASS;
-+		val |= MVPP22_XLG_CTRL0_FORCE_LINK_DOWN;
-+		writel(val, port->base + MVPP22_XLG_CTRL0_REG);
-+	} else {
-+		val = readl(port->base + MVPP2_GMAC_AUTONEG_CONFIG);
-+		val &= ~MVPP2_GMAC_FORCE_LINK_PASS;
-+		val |= MVPP2_GMAC_FORCE_LINK_DOWN;
-+		writel(val, port->base + MVPP2_GMAC_AUTONEG_CONFIG);
+ The ``BTF_INT_ENCODING`` has the following attributes::
+ 
+@@ -147,7 +147,7 @@ pretty print. At most one encoding can be specified for the int type.
+ The ``BTF_INT_BITS()`` specifies the number of actual bits held by this int
+ type. For example, a 4-bit bitfield encodes ``BTF_INT_BITS()`` equals to 4.
+ The ``btf_type.size * 8`` must be equal to or greater than ``BTF_INT_BITS()``
+-for the type. The maximum value of ``BTF_INT_BITS()`` is 128.
++for the type. The maximum value of ``BTF_INT_BITS()`` is 512.
+ 
+ The ``BTF_INT_OFFSET()`` specifies the starting bit offset to calculate values
+ for this int. For example, a bitfield struct member has:
+diff --git a/include/uapi/linux/btf.h b/include/uapi/linux/btf.h
+index 5a667107ad2c..1696fd02b302 100644
+--- a/include/uapi/linux/btf.h
++++ b/include/uapi/linux/btf.h
+@@ -84,7 +84,7 @@ struct btf_type {
+  */
+ #define BTF_INT_ENCODING(VAL)	(((VAL) & 0x0f000000) >> 24)
+ #define BTF_INT_OFFSET(VAL)	(((VAL) & 0x00ff0000) >> 16)
+-#define BTF_INT_BITS(VAL)	((VAL)  & 0x000000ff)
++#define BTF_INT_BITS(VAL)	((VAL)  & 0x000003ff)
+ 
+ /* Attributes stored in the BTF_INT_ENCODING */
+ #define BTF_INT_SIGNED	(1 << 0)
+diff --git a/tools/bpf/bpftool/btf_dumper.c b/tools/bpf/bpftool/btf_dumper.c
+index 0e9310727281..45ed45ea9962 100644
+--- a/tools/bpf/bpftool/btf_dumper.c
++++ b/tools/bpf/bpftool/btf_dumper.c
+@@ -271,6 +271,40 @@ static void btf_int128_print(json_writer_t *jw, const void *data,
+ 	}
+ }
+ 
++static void btf_bigint_print(json_writer_t *jw, const void *data, int nr_bits,
++			     bool is_plain_text)
++{
++	char buf[nr_bits / 4 + 1];
++	bool first = true;
++	int i;
++
++#ifdef __BIG_ENDIAN_BITFIELD
++	for (i = 0; i < nr_bits / 64; i++) {
++#else
++	for (i = nr_bits / 64 - 1; i >= 0; i++) {
++#endif
++		__u64 v = ((__u64 *)data)[i];
++
++		if (first) {
++			if (!v)
++				continue;
++
++			snprintf(buf, sizeof(buf), "%llx", v);
++
++			first = false;
++		} else {
++			size_t off = strlen(buf);
++
++			snprintf(buf + off, sizeof(buf) - off, "%016llx", v);
++		}
 +	}
 +
- 	port->tx_time_coal = MVPP2_TXDONE_COAL_USEC;
++	if (is_plain_text)
++		jsonw_printf(jw, "0x%s", buf);
++	else
++		jsonw_printf(jw, "\"0x%s\"", buf);
++}
++
+ static void btf_int128_shift(__u64 *print_num, __u16 left_shift_bits,
+ 			     __u16 right_shift_bits)
+ {
+@@ -373,6 +407,11 @@ static int btf_dumper_int(const struct btf_type *t, __u8 bit_offset,
+ 		return 0;
+ 	}
  
- 	port->txqs = devm_kcalloc(dev, port->ntxqs, sizeof(*port->txqs),
++	if (nr_bits > 128) {
++		btf_bigint_print(jw, data, nr_bits, is_plain_text);
++		return 0;
++	}
++
+ 	if (nr_bits == 128) {
+ 		btf_int128_print(jw, data, is_plain_text);
+ 		return 0;
+diff --git a/tools/include/uapi/linux/btf.h b/tools/include/uapi/linux/btf.h
+index 5a667107ad2c..1696fd02b302 100644
+--- a/tools/include/uapi/linux/btf.h
++++ b/tools/include/uapi/linux/btf.h
+@@ -84,7 +84,7 @@ struct btf_type {
+  */
+ #define BTF_INT_ENCODING(VAL)	(((VAL) & 0x0f000000) >> 24)
+ #define BTF_INT_OFFSET(VAL)	(((VAL) & 0x00ff0000) >> 16)
+-#define BTF_INT_BITS(VAL)	((VAL)  & 0x000000ff)
++#define BTF_INT_BITS(VAL)	((VAL)  & 0x000003ff)
+ 
+ /* Attributes stored in the BTF_INT_ENCODING */
+ #define BTF_INT_SIGNED	(1 << 0)
 -- 
-1.9.1
+2.29.2
 
