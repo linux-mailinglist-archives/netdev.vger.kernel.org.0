@@ -2,94 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAED82DD82C
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 19:22:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E332DD82D
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 19:22:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729046AbgLQSVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 13:21:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35366 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725468AbgLQSVT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Dec 2020 13:21:19 -0500
-Date:   Thu, 17 Dec 2020 10:20:37 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608229239;
-        bh=lopp1baHdbxZu/0OjsahYIxemeNxg8EJ4PxKfBGb5Kk=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nxMHBu55Hz/THJg9MBoluBeLK7SaHb+ut23C1aF3Jyy9IyjeWtZNj3GOjrol00Olw
-         3D7bdF+ZqXZT+JS8dD0julR19FwvWCoAesXFjbg/0GHyLnQhXHX755rS0cROZtTtXe
-         wyiS1kwDDFyxLE72QFr/PKVQ3p5tJhv4q7BXgKJPhxrukBL0zEXQuDpuuxU40LFeOH
-         n9IvhfNy6dYFTM8BeG9IoMLBRSxAH03lujo2mEkbn1ofylZnqvldY2Nw/ZwPVD2NQk
-         UVKvnQpZ968M0/BYAjFkg4GAOUEL9roC57GvQNlTlDQ9X/kQOqSVyrC1vV01floYsn
-         OyL7DFXOxDfOw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org,
-        Ulisses Alonso =?UTF-8?B?Q2FtYXLDsw==?= <uaca@alumni.uv.es>
-Subject: Re: [PATCH net 2/2] docs: networking: packet_mmap: don't mention
- PACKET_MMAP
-Message-ID: <20201217102037.6f5ceee9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1fc59ef61e324a969071ea537ccc2856adee3c5b.1608051077.git.baruch@tkos.co.il>
-References: <425a2567dbf8ece01fb54fbb43ceee7b2eab9d05.1608051077.git.baruch@tkos.co.il>
-        <1fc59ef61e324a969071ea537ccc2856adee3c5b.1608051077.git.baruch@tkos.co.il>
+        id S1729573AbgLQSVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 13:21:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43984 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725468AbgLQSVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 13:21:34 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1385DC061794
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 10:20:54 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id p5so26688478iln.8
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 10:20:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fyqNI6mtW7sphWHQsBYKA3i0rPhDeOUk745n7mdOuhk=;
+        b=O544o8FKLI3qEoDpbReiLiaAtPTA5JyBCGnHq0lGvjhEkPoNyL6/Jze35Jgh6RV2uZ
+         VZeFKV5n1B6Xg5OkmwMO90netkfIYnw0PSa8/s7AGE9Su2JRWETDOg7KDSSo6lr+0ddZ
+         MKNe+xtamW7h/EAOWfKydP7agRKRC93acg+/V2q29m2NSpQSylxCsdTNly/Gm59xFVVC
+         TM+JWQ8gxc4BSX+o+02jhjPwW2B5HXhGuww1Hb6qHaepCmlVTDs6BMdgXcBRzeSJ65Zy
+         akRBD7CbK6lmCAuxopkWfn9Eu6dh9Nx4Hx9fF8rCxBRQNMmZPbF0V5n2A50A+p5pi6fe
+         2J8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fyqNI6mtW7sphWHQsBYKA3i0rPhDeOUk745n7mdOuhk=;
+        b=MareG2NXX9Sqywo6Pgwc23uVBhHBvzYnmmeNUQkOLJPh9KO84Vnc/oi8m5Ru1vtkFZ
+         +ngzBp4tjr1pUTSnYeH7BQ3Zh+Eoi5+Jo4lN18X35WWB30vjlqNPB+GjRFZSLhhe6JWm
+         t/snIEcXWlhQpuEjVJ96sWawkOs6fvbD0i0phGFc8v88FBf0I1Q9MZ1Nu2c20JxZxWC9
+         UwuvvPCzE7RLhD6tmGdF0tdE0z52iM3SGHlHE0Amxu0dw2GEx9r+46Xf+n7PMcBGSNJ/
+         GgXtCuDHrP/fyYr/an2EtlTs9kEBghyG2jRjM3SLXRVw5NFA3fhP6RhGStjk8FjR/o0x
+         6x/A==
+X-Gm-Message-State: AOAM5326LeK0+5Dtpd+ZDvKUJKcSjYFn7lHE7HRMRkp7b/g5Tdm328m5
+        pxLZiAcXcXxdZ7pTuWmIkYNddEgFdu64zxedDaiVPg==
+X-Google-Smtp-Source: ABdhPJwpkB+wIMB1sCE+9zcv2IxV06YWUUPzX4kVxd5U2CAUBwEPYlSsENmXG0l3UYMZ/cQigcxcQrcL//NE9RsT7Hc=
+X-Received: by 2002:a92:da82:: with SMTP id u2mr98610iln.137.1608229253255;
+ Thu, 17 Dec 2020 10:20:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <5664fa0f-aef2-c336-651a-093c9eed23ab@candelatech.com>
+ <765f370d-ce2d-b75a-2dde-87f69ae7c185@candelatech.com> <CANn89iKpa1y2SKJuR9kRi=AZs94sj+-tzRs+2D0vmxh+ahEcGA@mail.gmail.com>
+ <adbee2ec-c6ba-7a17-eb98-1c53365fa911@candelatech.com> <CANn89iJQnSVZFp2XDgREN1QMtU4exOsnJq=5VzJ6tqTCJ7MH-g@mail.gmail.com>
+ <c4bcee7d-b2eb-759c-c659-d65f3e7daec9@candelatech.com>
+In-Reply-To: <c4bcee7d-b2eb-759c-c659-d65f3e7daec9@candelatech.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 17 Dec 2020 19:20:42 +0100
+Message-ID: <CANn89i++Kgkj57ms70a5GDOQ-Cpewx3NQkzP3EmZmLYQ4eHzww@mail.gmail.com>
+Subject: Re: net: tso: add UDP segmentation support: adds regression for ax200 upload
+To:     Ben Greear <greearb@candelatech.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 18:51:17 +0200 Baruch Siach wrote:
-> Before commit 889b8f964f2f ("packet: Kill CONFIG_PACKET_MMAP.") there
-> used to be a CONFIG_PACKET_MMAP config symbol that depended on
-> CONFIG_PACKET. The text still refers to PACKET_MMAP as the name of this
-> feature, implying that it can be disabled. Another naming variant is
-> "Packet MMAP".
-> 
-> Use "PACKET mmap()" everywhere to unify the terminology. Rephrase the
-> text the implied mmap() feature disable option.
+On Thu, Dec 17, 2020 at 7:13 PM Ben Greear <greearb@candelatech.com> wrote:
+>
 
-Should we maybe say AF_PACKET mmap() ?
+>
+> It is the iwlwifi/mvm logic that supports ax200.
 
-> -In Linux 2.4/2.6/3.x if PACKET_MMAP is not enabled, the capture process is very
-> -inefficient. It uses very limited buffers and requires one system call to
-> -capture each packet, it requires two if you want to get packet's timestamp
-> -(like libpcap always does).
-> +In Linux 2.4/2.6/3.x non mmap() PACKET capture process is very inefficient. It
+Let me ask again :
 
-We can drop the references to versions. Kernels older than 2.4 are
-prehistoric, and we have 4.x and 5.x now.
+I see two different potential call points :
 
-> +uses very limited buffers and requires one system call to capture each packet,
-> +it requires two if you want to get packet's timestamp (like libpcap always
-> +does).
+drivers/net/wireless/intel/iwlwifi/pcie/tx.c:1529:
+tso_build_hdr(skb, hdr_page->pos, &tso, data_left, !total_len);
+drivers/net/wireless/intel/iwlwifi/queue/tx.c:427:
+tso_build_hdr(skb, hdr_page->pos, &tso, data_left, !total_len);
 
-Would it be possible to avoid re-flowing the existing text. IMHO it's
-okay if we end on a short line, and it makes the diff easier to review.
+To the best of your knowledge, which one would be used in your case ?
 
-> -In the other hand PACKET_MMAP is very efficient. PACKET_MMAP provides a size
-> -configurable circular buffer mapped in user space that can be used to either
-> -send or receive packets. This way reading packets just needs to wait for them,
-> -most of the time there is no need to issue a single system call. Concerning
-> -transmission, multiple packets can be sent through one system call to get the
-> -highest bandwidth. By using a shared buffer between the kernel and the user
-> -also has the benefit of minimizing packet copies.
-> +In the other hand PACKET mmap() is very efficient. PACKET mmap() provides a
+Both are horribly complex, I do not want to spend time studying two
+implementations.
 
-While at it - "on the other hand"?
-
-> +size configurable circular buffer mapped in user space that can be used to
-> +either send or receive packets. This way reading packets just needs to wait for
-> +them, most of the time there is no need to issue a single system call.
-> +Concerning transmission, multiple packets can be sent through one system call
-> +to get the highest bandwidth. By using a shared buffer between the kernel and
-> +the user also has the benefit of minimizing packet copies.
->  
-> -It's fine to use PACKET_MMAP to improve the performance of the capture and
-> +It's fine to use PACKET mmap() to improve the performance of the capture and
->  transmission process, but it isn't everything. At least, if you are capturing
->  at high speeds (this is relative to the cpu speed), you should check if the
->  device driver of your network interface card supports some sort of interrupt
-
+Thanks.
