@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EB102DD005
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 12:05:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20C312DD008
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 12:05:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727780AbgLQLEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 06:04:02 -0500
-Received: from mail-eopbgr50085.outbound.protection.outlook.com ([40.107.5.85]:25356
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        id S1728039AbgLQLFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 06:05:17 -0500
+Received: from mail-eopbgr60061.outbound.protection.outlook.com ([40.107.6.61]:29314
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726160AbgLQLEA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Dec 2020 06:04:00 -0500
+        id S1726533AbgLQLFQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 06:05:16 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kEJu11jCPY6M+obyz8j0yuOHoexHjc9qnDmzqi8509iNPBHYawx+EpS+UXrdoE5y7gMSBXj3H+fyognyLh7jlqKRN0oqNih39VWm9VpLrnfyi4Xk0BFJNJ8jE14xobmHOpXIJqQoqtEQwTPhdgLxcBNVmOMtgbQpiQstv2gim17z25At6A1Msyc8Xt7fzozL4bbJ/P86VvHdgxeoXSDsPeAQSbOJwoz+FxuYLw+VVlwvoymW/s62tQhMmhABEcLeAoscHfUudlVzKG9qn/NpuzE3C1BAR7vgJdynFEyJoYh3E4Rr6DR9RWjb/0VEUZAONHecPM2VUKixZ1IbzY/qXg==
+ b=NYdvU53vck7j+CmhnTSo3IVZMUrqw3ixZct2Sfqy5MNZlpxVftHf+kLfx/Z8wEoXfpQ/IiDGL4h4TKgs4SeXWfhMuPFH7rzhWGOGPl56e8tCtDhjOtRbpkAkf1MHXYPTv68qy/c3kysiwQ8qo/vx3c1ZUfFcSQa3QaWl+nEduIdmyL2Fnq1jlnaD/Rk0yNI5U6v0GDCiI2djjbVPpEBNP/0kRxNz3Og/AWRAxjMMbMfe8eyE0cGunNVSyG9qLMb49oErHWRmH24kRaVbdUpk1qnTOKq3Bax6S4Z+o2ZKTUggwo2nW9b3mvvjo4cDF0oFMV1t1dcePjWVWv87m/CdTw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WqzQwTvtJW6wyhdxeoJqnQWTGfMziRq0JoIA4f+m0dA=;
- b=i3uuIYL8FWcKU9EErgik2CpFao2WqWOt8KqozbFlLHUx0eXOeTKsHoTmIYZrTptiY4wigxff0n9U9h2tswFhLGMEu/JxMJyVAlGs5xX1Mxxyw0+JxaTmKoWzfudE1M7eJ7ti/ne9Iz1794ioSY2Mm9Oec/xx/w1lxkSwn87YnvdpKgwLyJv4w997Kzhc3N+uEuGEUbhNwSLxmHfw7IxEzDUJ5Fc1AZcGLUlfMbC2inWMUGVlP3iFod9wlOchrbdTEayUJdQbaTE+lUp4aNx1+Ycm1w7s3Xm99/FQkcMXp/NqKIydG4Rytoahgf4TxUA6PHDyrNUY9S+rP6VXYVAUnw==
+ bh=/nbdg+dnjxbO+iYzkP9ql9A7Ob4HlcmmKvdtYd8MOyk=;
+ b=LHD0VfNOc8XH4B47KPwWcK4UZu+GhjyrxAPicseESfJmuw7ID7gg9xl7/aVkrb6E+RVlkDAb8JJWvTLZgLwSh2ZMHJZ4ToG6RTsdpWc1Xp+44GPyiZ8BzZMAaxN1iKHXlAuL0k8onKfUBq/Dw8RLO4pXVCs8E7wpeClhgTS2ys6PL4dE+7EbY7OlNZ87fIRTZmduuc91pm4kHEQW06qkOXhY1DYimpquD4IOkrBh7/GuldjV/PAwVrrDzpDAoqFfm2t9ODjjWlF0NL8gEZEQszov+BY866sedEOZgS4X+9EZ3GEyJnbg8m29qTBB+holQbcZh7+/1RJYrKxIBN63IQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WqzQwTvtJW6wyhdxeoJqnQWTGfMziRq0JoIA4f+m0dA=;
- b=BBjvTiYpaRGi4Yo3ogG8ZqV75Q9BB44F1ZDQWIzt/3HRgHZLWJiuzQFNPCOdAO50aqJ1kctL0CDaanCaYzE76RL9UMRPcAbUkZ9CNdLHc9jQAnEsGabPoKlKji5StHCiIDS6bW1crI0cH7ZohjblEgxNs5g7QyQCiL+9NxCDWzw=
+ bh=/nbdg+dnjxbO+iYzkP9ql9A7Ob4HlcmmKvdtYd8MOyk=;
+ b=YHCaoTwYBLaUym9ARcH8ET5e308bhdXMfUXd+dzxrB/S2ASkwaogPS8ptA75XaC/KR6EeL7qjFKxCb4qk2ft9IiH2dw3+RRVEhJs/xXwusIKiu8kiInRe/BktmRvlb2dFq00zvv/XqOMCgg0DR3mwnXOORqrn+RWHlKKKHKxf9Q=
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB6942.eurprd04.prod.outlook.com (2603:10a6:803:136::14) with
+ by VI1PR04MB5855.eurprd04.prod.outlook.com (2603:10a6:803:de::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.17; Thu, 17 Dec
- 2020 11:03:12 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.13; Thu, 17 Dec
+ 2020 11:04:27 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3654.025; Thu, 17 Dec 2020
- 11:03:12 +0000
+ 11:04:27 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -58,16 +58,16 @@ CC:     Florian Fainelli <f.fainelli@gmail.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: Re: [RFC PATCH net-next 5/9] net: dsa: remove the transactional logic
- from MDB entries
-Thread-Topic: [RFC PATCH net-next 5/9] net: dsa: remove the transactional
- logic from MDB entries
-Thread-Index: AQHW1Bg0Hp+3K7+ng0uXRrurJpbRoqn7IDgA
-Date:   Thu, 17 Dec 2020 11:03:11 +0000
-Message-ID: <20201217110310.fqkn7dh5sre7ycqb@skbuf>
+Subject: Re: [RFC PATCH net-next 6/9] net: dsa: remove the transactional logic
+ from VLAN objects
+Thread-Topic: [RFC PATCH net-next 6/9] net: dsa: remove the transactional
+ logic from VLAN objects
+Thread-Index: AQHW1Bg1LphJyPDTWkShJXAdzSKQ5Kn7IJMA
+Date:   Thu, 17 Dec 2020 11:04:27 +0000
+Message-ID: <20201217110426.cacyce4vg643gku6@skbuf>
 References: <20201217015822.826304-1-vladimir.oltean@nxp.com>
- <20201217015822.826304-6-vladimir.oltean@nxp.com>
-In-Reply-To: <20201217015822.826304-6-vladimir.oltean@nxp.com>
+ <20201217015822.826304-7-vladimir.oltean@nxp.com>
+In-Reply-To: <20201217015822.826304-7-vladimir.oltean@nxp.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -77,86 +77,83 @@ authentication-results: davemloft.net; dkim=none (message not signed)
 x-originating-ip: [188.25.2.120]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7f796b7b-ffd7-4bed-1317-08d8a27b586d
-x-ms-traffictypediagnostic: VI1PR04MB6942:
+x-ms-office365-filtering-correlation-id: 6375a81a-adaa-49aa-cba9-08d8a27b8526
+x-ms-traffictypediagnostic: VI1PR04MB5855:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB69421DA83CC4F6E2079279CEE0C40@VI1PR04MB6942.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-microsoft-antispam-prvs: <VI1PR04MB585533EC2BD0AF0343677360E0C40@VI1PR04MB5855.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GwbaxSe/om3j8cfCvknhFPfZdOmK0SRlQzd2r8UztAqpXXSXQGN3aPqiRBZMcArPN9W35AgluY9iSezT34BzeZIyS9Ku0GXSOEmiJkLrs4/UJIwMroUXdXJB4hCqdvL0aMdbmBBf0Q2umYko13gTXI2on6ZBEskwSBDcBl0XHcDvhrzXv2WoRtuw6XObxQccXH2w+A0NGBFrSjy+urhXoodkr7yS5NluyKoDeSDMu8dfzluMZKb0daz8EGY/BzWy9BlJnDO3Fw8Y0QFITbEwSfWHA25cZhKp8gumsDdacuddeYmuuul6SqJtT82hndvk
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(396003)(376002)(39860400002)(136003)(346002)(8936002)(4326008)(66476007)(71200400001)(64756008)(478600001)(6506007)(186003)(66946007)(2906002)(9686003)(26005)(83380400001)(44832011)(6512007)(76116006)(54906003)(8676002)(6486002)(66446008)(66556008)(5660300002)(110136005)(1076003)(86362001)(7416002)(33716001)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?epemUeHmLvKHAsvU8aRBES30C4ly9NBcrZv2RGKTFxgv/l8n/OOONQh+5A7j?=
- =?us-ascii?Q?0P0zjaNA9WG2A0Uf4W1cry5Ej1dfSbRYlFYm1RrWhpkU2F0XLk0/s/ZfxzVH?=
- =?us-ascii?Q?Z0/pbMEw8GnMpDJXUdmcxCVv+uYUq2qIpyvpkZO/yYAXdMfJGwQ2qtPsnD19?=
- =?us-ascii?Q?/ShlUjEXv3SqRSQFxJm1lTZl6B2ZGA00tXFsXNxXesiLOhKJLkt/NWkJdPBn?=
- =?us-ascii?Q?p/FSORXFPAm1DnYfkEc+Pq0kKxO0JIiwrkkhXbvvz8zI/LqH9rrbLb7E1CJx?=
- =?us-ascii?Q?JejZl3YXvShKCM6ceK9YVVr+j78dkJ36LpzesnZpKoWE2o/HmI/5xf5F4iFL?=
- =?us-ascii?Q?+PhEz/brL+0rQ+lUaNqASa87DKOt9sR4xDSnP0On1L+9NPF5qDKVrNHG+kj1?=
- =?us-ascii?Q?8Bbr9F5XNiHbh3UNEM7Agkl0zyQQKmp6Uga+9oQsKQumXl9qhw3crZFkwyjQ?=
- =?us-ascii?Q?hVi3NDn2/xS1T97vyv9yJdPIn84dvsff7W9Y6XJXN70y+SutV2NQ0jIAlYC+?=
- =?us-ascii?Q?H6ah9JNim1afKqVHE7VnkTYQiPeuimQnYYUfhIm3jjiv6144JZrvg+YQP1PB?=
- =?us-ascii?Q?ruUDzfiWr/nX4dZGqvrhDZ1r0oCQHKx19yGf7zi8SF7V+5wKFH2VUpvkyrKw?=
- =?us-ascii?Q?jCl5j9r6msEVjlMbL8qooQHQKivm79X5nplZOzRUf8M2Sq8EK7Eq0aMT6CUp?=
- =?us-ascii?Q?gdzwYM8Ivp7i4Lr3KUyj0QXYlO6CC/mj/dx1ZiQy+LM/XpCNxUFeWo+NE4HJ?=
- =?us-ascii?Q?uRcRBFWfRwKKSc65HhEaoqeUffnRvISyC+2J9hB6p9uc6dUa5c/GS2XMNArA?=
- =?us-ascii?Q?Q84bl2vhk+L50uPDu8SBzbNYfvGD1Yu/VCqiCwaPCaHfhK3FLzsaQ9YFdgGq?=
- =?us-ascii?Q?x1MQOK4vGsdSMdqQuwN4UFOo7iuhfElQK5MBlTZ9qPE8T2aSxC/nkqnDuqr3?=
- =?us-ascii?Q?cnyu+xPcm9Ldw49N+3OrV2s3U060LFeLZ0p1Pv8yzFZyRXg01sMiNp1338YX?=
- =?us-ascii?Q?dLPr?=
+x-microsoft-antispam-message-info: VWPpY7OgmtBa8bQv5rvyU8wdqY6iWbjNzfiBTAHOCp5IAqw1/0wuP8MxP5CvEeLhO9CLMt9hxhU7fKWjsSPE793qIhk3eP43+llv/dpYmOGqZ5hmutU9+5ECeFeQkmCSmsE79FxOVoz07tv+EMsHI24jZ1wlZudxD7E4vTTAsTlOFSydn+tNlqLa7zSJGtdpXDWbtmP24zXbR3QXPixwMSwGG/YK6UNsUMqvBFNyVfGs09FMV5fWXKtbmAByaJKV/IUXPcKASMNYLTyyFdJ1nWnu59heY0P2kETBsYucPOkkNvsOSMLj/rU84df+gGPKcp6yQboh+ZIBSgRF4dHB6g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(136003)(39860400002)(376002)(346002)(366004)(396003)(7416002)(186003)(6486002)(5660300002)(110136005)(54906003)(44832011)(76116006)(64756008)(66476007)(1076003)(8676002)(8936002)(33716001)(9686003)(316002)(6512007)(2906002)(66446008)(86362001)(66946007)(71200400001)(6506007)(66556008)(26005)(4326008)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?C6pbK6Vjxj0ceHAe28lVNhzAVAR8FHYCwe8grlRVcIBY68tSdQDg1ZNhT2GZ?=
+ =?us-ascii?Q?S5No4O4v6LORtJqN4WMJuw4gDTLT9smq7HCX6+GiNxkHVzP2wSv5uC3+8j/Y?=
+ =?us-ascii?Q?RTNyiucf1KiO0oJE1Ahc6H/1dNv5WtoCp0HCG12U9fpaW5NvQtxX5p83qM7j?=
+ =?us-ascii?Q?ouE+G+wOhhtl5SQkz1sH9FiRoInrVdXMKjRsudnsuc3YBQZHAbYk/cmcGAHb?=
+ =?us-ascii?Q?spnRAzJmFAYYhw/vcfhoCFYX3xM7p1wOBTI8f6C2dPryDtpJLZP5FtmvOzUt?=
+ =?us-ascii?Q?tlcnPT4Z87xp4kiFNEznaJMX48V+RRpkOdjBb+Zlt2Tw4i0yIpYT2EU7q08P?=
+ =?us-ascii?Q?yIt9C1cAyKQwjeUFqtqVmdk9CE66eAFnQOGPXi9qmZN7YMhGp5frYpgQEr2a?=
+ =?us-ascii?Q?itLWkeQdIv8Veb4VFurREXa+4XSih2A16yAZ1w+ci0mHvAAAyH11QmSl7xfc?=
+ =?us-ascii?Q?f657jhEt/eHMyi4MDF3X0aHQonrNQid2Mj8CY4uSsnztbRMmBqS6ljFoDTyO?=
+ =?us-ascii?Q?jeTHqoSM+1yqaaNy8If4Rw+o4QjAWp4iiQAfcrERB/iI5+X30asG3qaQF3YV?=
+ =?us-ascii?Q?CrHnJVCaETp2IGdGwgG59gkgR2qw04+RewWON/k1yx++sDaItI1iEFi1W7TC?=
+ =?us-ascii?Q?tGbwCPqRJeEfpX59IrsfHcOgIGHr4Sfm+uDM9s+MPJycpcQDMTcrkvFjjDr8?=
+ =?us-ascii?Q?LC22e9W3JS4VIQRnlUMZizCWBd7fFHRP5JsJRoMTqxjsU8JGDrwxVDIP/rU1?=
+ =?us-ascii?Q?/Ty8btWrGOD56y+DjB6OF5jZ0/207RXUywi9Y1TtsJzLVc/L3xqaxslg1H2n?=
+ =?us-ascii?Q?wjwaoyL3yn3PM750Wb7OVbjiDtnsuKvrFGWtt/DGpLqn9oCesH5wfD1cnaDB?=
+ =?us-ascii?Q?XQOJj6yZ4kCQw0YmbqQId3yoOhTRE2jfj8lgqqPuYyuIInamtpBMyrbTHAFY?=
+ =?us-ascii?Q?yTjlME8oEng0zUSrWIulvZbfcfPSeF607AiUzv/5rjjScUS7J1+6umoQPlhg?=
+ =?us-ascii?Q?KEDj?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <D88F1CE9D80C0C41AEDF9421C6AFD93F@eurprd04.prod.outlook.com>
+Content-ID: <C7F100F5A82F1C4B9C904306CC8CB5A2@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f796b7b-ffd7-4bed-1317-08d8a27b586d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2020 11:03:11.9666
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6375a81a-adaa-49aa-cba9-08d8a27b8526
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2020 11:04:27.0325
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tGSB4IdESwUB9NNGAWY/bY3WnPNHybJ2pWJoLFkwImX3dNiuEm67EBLXymD80Uvf2Lx4e3s0pVix7wpS9UDFwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6942
+X-MS-Exchange-CrossTenant-userprincipalname: /0X3amijcGE3lA0y8aQuFpNAZWeyDpUC3zZ9eG4w1yExrszIkxTpP4jJWt97y8G7eZ+Yv0UoM6bbI4Ct3pNAdw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5855
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 17, 2020 at 03:58:18AM +0200, Vladimir Oltean wrote:
-> For many drivers, the .port_mdb_prepare callback was not a good opportuni=
-ty
-> to avoid any error condition, and they would suppress errors found during
-> the actual commit phase.
+On Thu, Dec 17, 2020 at 03:58:19AM +0200, Vladimir Oltean wrote:
+> It should be the driver's business to logically separate its VLAN
+> offloading into a preparation and a commit phase, and some drivers don't
+> need / can't do this.
 >=20
-> Where a logical separation between the prepare and the commit phase
-> existed, the function that used to implement the .port_mdb_prepare
-> callback still exists, but now it is called directly from .port_mdb_add,
-> which was modified to return an int code.
+> So remove the transactional shim from DSA and let drivers to propagate
+> errors directly from the .port_vlan_add callback.
 >=20
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
 [...]
 > diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-> index 39848eac1da8..65124bc3ddfb 100644
+> index 65124bc3ddfb..bd00ef6296f9 100644
 > --- a/net/dsa/switch.c
 > +++ b/net/dsa/switch.c
-> @@ -178,35 +178,13 @@ static bool dsa_switch_mdb_match(struct dsa_switch =
-*ds, int port,
+> @@ -217,35 +217,13 @@ static bool dsa_switch_vlan_match(struct dsa_switch=
+ *ds, int port,
 >  	return false;
 >  }
 > =20
-> -static int dsa_switch_mdb_prepare(struct dsa_switch *ds,
-> -				  struct dsa_notifier_mdb_info *info)
+> -static int dsa_switch_vlan_prepare(struct dsa_switch *ds,
+> -				   struct dsa_notifier_vlan_info *info)
 > -{
 > -	int port, err;
 > -
-> -	if (!ds->ops->port_mdb_prepare || !ds->ops->port_mdb_add)
+> -	if (!ds->ops->port_vlan_prepare || !ds->ops->port_vlan_add)
 > -		return -EOPNOTSUPP;
 > -
 > -	for (port =3D 0; port < ds->num_ports; port++) {
-> -		if (dsa_switch_mdb_match(ds, port, info)) {
-> -			err =3D ds->ops->port_mdb_prepare(ds, port, info->mdb);
+> -		if (dsa_switch_vlan_match(ds, port, info)) {
+> -			err =3D ds->ops->port_vlan_prepare(ds, port, info->vlan);
 > -			if (err)
 > -				return err;
 > -		}
@@ -165,39 +162,39 @@ ty
 > -	return 0;
 > -}
 > -
->  static int dsa_switch_mdb_add(struct dsa_switch *ds,
->  			      struct dsa_notifier_mdb_info *info)
+>  static int dsa_switch_vlan_add(struct dsa_switch *ds,
+>  			       struct dsa_notifier_vlan_info *info)
 >  {
 >  	int port;
 > =20
 > -	if (switchdev_trans_ph_prepare(info->trans))
-> -		return dsa_switch_mdb_prepare(ds, info);
+> -		return dsa_switch_vlan_prepare(ds, info);
 > -
->  	if (!ds->ops->port_mdb_add)
+>  	if (!ds->ops->port_vlan_add)
 > -		return 0;
 > +		return -EOPNOTSUPP;
 > =20
 >  	for (port =3D 0; port < ds->num_ports; port++)
->  		if (dsa_switch_mdb_match(ds, port, info))
+>  		if (dsa_switch_vlan_match(ds, port, info))
 > --=20
 > 2.25.1
 >=20
 
-For anybody who wants to test, I forgot to update dsa_switch_mdb_add to
-propagate the errors. It should look like this:
+For anybody who wants to test, please paste this instead of the existing
+dsa_switch_vlan_add, to propagate the errors:
 
-static int dsa_switch_mdb_add(struct dsa_switch *ds,
-			      struct dsa_notifier_mdb_info *info)
+static int dsa_switch_vlan_add(struct dsa_switch *ds,
+			       struct dsa_notifier_vlan_info *info)
 {
 	int err =3D 0;
 	int port;
 
-	if (!ds->ops->port_mdb_add)
+	if (!ds->ops->port_vlan_add)
 		return -EOPNOTSUPP;
 
 	for (port =3D 0; port < ds->num_ports; port++) {
-		if (dsa_switch_mdb_match(ds, port, info)) {
-			err =3D ds->ops->port_mdb_add(ds, port, info->mdb);
+		if (dsa_switch_vlan_match(ds, port, info)) {
+			err =3D ds->ops->port_vlan_add(ds, port, info->vlan);
 			if (err)
 				break;
 		}
