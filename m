@@ -2,171 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7BA62DD2FB
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 15:25:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD652DD336
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 15:48:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728414AbgLQOZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 09:25:01 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:13728 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726488AbgLQOY7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 09:24:59 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fdb6a120001>; Thu, 17 Dec 2020 06:24:18 -0800
-Received: from [172.27.13.82] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 17 Dec
- 2020 14:24:05 +0000
-Subject: Re: [PATCH net-next v2 2/4] sch_htb: Hierarchical QoS hardware
- offload
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yossi Kuperman <yossiku@nvidia.com>
-References: <20201211152649.12123-1-maximmi@mellanox.com>
- <20201211152649.12123-3-maximmi@mellanox.com>
- <CAM_iQpUS_71R7wujqhUnF41dtVtNj=5kXcdAHea1euhESbeJrg@mail.gmail.com>
- <7f4b1039-b1be-b8a4-2659-a2b848120f67@nvidia.com>
- <CAM_iQpVrQAT2frpiVYj4eevSO4jFPY8v2moJdorCe3apF7p6mA@mail.gmail.com>
- <bee0d31e-bd3e-b96a-dd98-7b7bf5b087dc@nvidia.com>
- <CAM_iQpW+vqXn6WV6DxBaC5EC0ciSBWtzvXCC57PcDrO2=mFEkg@mail.gmail.com>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <0bdb1540-5712-0176-c187-e7ff80aa704d@nvidia.com>
-Date:   Thu, 17 Dec 2020 16:24:01 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S1726773AbgLQOsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 09:48:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34625 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726012AbgLQOsf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 09:48:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608216428;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9dIgUyuEcjJkPwiD61XKrH42CdrbPPDWnkmKtHwrOL4=;
+        b=YhpuSTQjBIyRDSJ8Xh24xY3BV5YXxq+OEIb88xby/rDa5HTZl56ZH6IyumW2czBUBqkmRl
+        AyNKKbS6pVX9RdEodxmmZa5Ke2mppxmNY1qlS2s90/GDfgk88Wn1Uly8O4xP4PCTz9+0JP
+        KlpROsRsx3IifO82ElvTowSb1B+2ufE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-363-AVE7hUvePDCP6czJlEGH0Q-1; Thu, 17 Dec 2020 09:47:06 -0500
+X-MC-Unique: AVE7hUvePDCP6czJlEGH0Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1FB8551B6;
+        Thu, 17 Dec 2020 14:47:04 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A82E5D9E3;
+        Thu, 17 Dec 2020 14:46:56 +0000 (UTC)
+Date:   Thu, 17 Dec 2020 15:46:55 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V8 5/8] bpf: drop MTU check when doing TC-BPF
+ redirect to ingress
+Message-ID: <20201217154655.42e89d08@carbon>
+In-Reply-To: <af28e4e7-8089-b252-3927-a962b98ad7b8@iogearbox.net>
+References: <160650034591.2890576.1092952641487480652.stgit@firesoul>
+        <160650040292.2890576.17040975200628427127.stgit@firesoul>
+        <af28e4e7-8089-b252-3927-a962b98ad7b8@iogearbox.net>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpW+vqXn6WV6DxBaC5EC0ciSBWtzvXCC57PcDrO2=mFEkg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1608215058; bh=OhvYyrJFk6JGp1bqizCLhfb9qHdSQ45pxG6b5viZ2ek=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=P+j3zbHMMj0Ud1CtuvLXnyI8RHdyzRI+n6qFgJvL/5OmO9U8UwXcfRrhxz3IDCTzn
-         3zDJ8OUbHj42DJJLEqbDzvD2OzBJMO71DcbfIkYEM/JHEzypWhLBtAnRs3tv1+gKxb
-         FuiQtYTxCj8wL62iIFi9YAM9TwZz2lSIvNgy4B15maKdK8nxYlOqEcZTcqJVcFF3iF
-         bYzgl4RW/67aaDTMgQGj5QDNSCy+mNLatpvyuflR+zepUOiIz13SDoh2W65Mtef19k
-         PKc3llL98IjZHmzzT5RTLLA1471K8pOG5s+11z5GcTBWFaoiTq7ihbUEc7ZHBwO3KX
-         PTLtVQFKLZbqw==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-16 21:01, Cong Wang wrote:
-> On Mon, Dec 14, 2020 at 12:30 PM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->>
->> On 2020-12-14 21:35, Cong Wang wrote:
->>> On Mon, Dec 14, 2020 at 7:13 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->>>>
->>>> On 2020-12-11 21:16, Cong Wang wrote:
->>>>> On Fri, Dec 11, 2020 at 7:26 AM Maxim Mikityanskiy <maximmi@mellanox.com> wrote:
->>>>>>
->>>>>> HTB doesn't scale well because of contention on a single lock, and it
->>>>>> also consumes CPU. This patch adds support for offloading HTB to
->>>>>> hardware that supports hierarchical rate limiting.
->>>>>>
->>>>>> This solution addresses two main problems of scaling HTB:
->>>>>>
->>>>>> 1. Contention by flow classification. Currently the filters are attached
->>>>>> to the HTB instance as follows:
->>>>>
->>>>> I do not think this is the reason, tcf_classify() has been called with RCU
->>>>> only on the ingress side for a rather long time. What contentions are you
->>>>> talking about here?
->>>>
->>>> When one attaches filters to HTB, tcf_classify is called from
->>>> htb_classify, which is called from htb_enqueue, which is called with the
->>>> root spinlock of the qdisc taken.
->>>
->>> So it has nothing to do with tcf_classify() itself... :-/
->>>
->>> [...]
->>>
->>>>> And doesn't TBF already work with mq? I mean you can attach it as
->>>>> a leaf to each mq so that the tree lock will not be shared either, but you'd
->>>>> lose the benefits of a global rate limit too.
->>>>
->>>> Yes, I'd lose not only the global rate limit, but also multi-level
->>>> hierarchical limits, which are all provided by this HTB offload - that's
->>>> why TBF is not really a replacement for this feature.
->>>
->>> Interesting, please explain how your HTB offload still has a global rate
->>> limit and borrowing across queues?
->>
->> Sure, I will explain that.
->>
->>> I simply can't see it, all I can see
->>> is you offload HTB into each queue in ->attach(),
->>
->> In the non-offload mode, the same HTB instance would be attached to all
->> queues. In the offload mode, HTB behaves like MQ: there is a root
->> instance of HTB, but each queue gets a separate simple qdisc (pfifo).
->> Only the root qdisc (HTB) gets offloaded, and when that happens, the NIC
->> creates an object for the QoS root.
+On Thu, 3 Dec 2020 00:43:36 +0100
+Daniel Borkmann <daniel@iogearbox.net> wrote:
+
+> On 11/27/20 7:06 PM, Jesper Dangaard Brouer wrote:
+> > The use-case for dropping the MTU check when TC-BPF does redirect to
+> > ingress, is described by Eyal Birger in email[0]. The summary is the
+> > ability to increase packet size (e.g. with IPv6 headers for NAT64) and
+> > ingress redirect packet and let normal netstack fragment packet as needed.
+> > 
+> > [0] https://lore.kernel.org/netdev/CAHsH6Gug-hsLGHQ6N0wtixdOa85LDZ3HNRHVd0opR=19Qo4W4Q@mail.gmail.com/
+> > 
+> > V4:
+> >   - Keep net_device "up" (IFF_UP) check.
+> >   - Adjustment to handle bpf_redirect_peer() helper
+> > 
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---
+> >   include/linux/netdevice.h |   31 +++++++++++++++++++++++++++++--
+> >   net/core/dev.c            |   19 ++-----------------
+> >   net/core/filter.c         |   14 +++++++++++---
+> >   3 files changed, 42 insertions(+), 22 deletions(-)
+> > 
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 7ce648a564f7..4a854e09e918 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -3917,11 +3917,38 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
+> >   bool is_skb_forwardable(const struct net_device *dev,
+> >   			const struct sk_buff *skb);
+> >   
+> > +static __always_inline bool __is_skb_forwardable(const struct net_device *dev,
+> > +						 const struct sk_buff *skb,
+> > +						 const bool check_mtu)
+> > +{
+> > +	const u32 vlan_hdr_len = 4; /* VLAN_HLEN */
+> > +	unsigned int len;
+> > +
+> > +	if (!(dev->flags & IFF_UP))
+> > +		return false;
+> > +
+> > +	if (!check_mtu)
+> > +		return true;
+> > +
+> > +	len = dev->mtu + dev->hard_header_len + vlan_hdr_len;
+> > +	if (skb->len <= len)
+> > +		return true;
+> > +
+> > +	/* if TSO is enabled, we don't care about the length as the packet
+> > +	 * could be forwarded without being segmented before
+> > +	 */
+> > +	if (skb_is_gso(skb))
+> > +		return true;
+> > +
+> > +	return false;
+> > +}
+> > +
+> >   static __always_inline int ____dev_forward_skb(struct net_device *dev,
+> > -					       struct sk_buff *skb)
+> > +					       struct sk_buff *skb,
+> > +					       const bool check_mtu)
+> >   {
+> >   	if (skb_orphan_frags(skb, GFP_ATOMIC) ||
+> > -	    unlikely(!is_skb_forwardable(dev, skb))) {
+> > +	    unlikely(!__is_skb_forwardable(dev, skb, check_mtu))) {
+> >   		atomic_long_inc(&dev->rx_dropped);
+> >   		kfree_skb(skb);
+> >   		return NET_RX_DROP;
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 60d325bda0d7..6ceb6412ee97 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -2189,28 +2189,13 @@ static inline void net_timestamp_set(struct sk_buff *skb)
+> >   
+> >   bool is_skb_forwardable(const struct net_device *dev, const struct sk_buff *skb)
+> >   {
+> > -	unsigned int len;
+> > -
+> > -	if (!(dev->flags & IFF_UP))
+> > -		return false;
+> > -
+> > -	len = dev->mtu + dev->hard_header_len + VLAN_HLEN;
+> > -	if (skb->len <= len)
+> > -		return true;
+> > -
+> > -	/* if TSO is enabled, we don't care about the length as the packet
+> > -	 * could be forwarded without being segmented before
+> > -	 */
+> > -	if (skb_is_gso(skb))
+> > -		return true;
+> > -
+> > -	return false;
+> > +	return __is_skb_forwardable(dev, skb, true);
+> >   }
+> >   EXPORT_SYMBOL_GPL(is_skb_forwardable);  
 > 
-> Please add this to your changelog.
+> Only user of is_skb_forwardable() that is left after this patch is bridge, maybe
+> the whole thing should be moved into the header?
 
-The similar information is already in the commit message (the paragraph 
-under point 2.), but I can rephrase it and elaborate on this, focusing 
-on the interaction between HTB, driver and hardware.
+Well, yes, maybe... I just felt it belongs in another patchset.
 
-> And why is the offloaded root qdisc not visible to software? All you add to
-> root HTB are pointers of direct qdisc's and a boolean, this is what I meant
-> by "not reflected". I expect the hardware parameters/stats are exposed to
-> software too, but I can't find any.
 
-Hardware parameters are rate and ceil, there are no extra parameters 
-that exist only in the offload mode. In the future, we may add the 
-number of queues to reserve for a class - that will be configured and 
-reflected in tc.
+> >   int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
+> >   {
+> > -	int ret = ____dev_forward_skb(dev, skb);
+> > +	int ret = ____dev_forward_skb(dev, skb, true);
+> >   
+> >   	if (likely(!ret)) {
+> >   		skb->protocol = eth_type_trans(skb, dev);
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index d6125cfc49c3..4673afe59533 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -2083,13 +2083,21 @@ static const struct bpf_func_proto bpf_csum_level_proto = {
+> >   
+> >   static inline int __bpf_rx_skb(struct net_device *dev, struct sk_buff *skb)
+> >   {
+> > -	return dev_forward_skb(dev, skb);
+> > +	int ret = ____dev_forward_skb(dev, skb, false);
+> > +
+> > +	if (likely(!ret)) {
+> > +		skb->protocol = eth_type_trans(skb, dev);
+> > +		skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
+> > +		ret = netif_rx(skb);  
+> 
+> Why netif_rx() and not netif_rx_internal() as in dev_forward_skb() originally?
+> One extra call otherwise.
 
-Regarding stats, unfortunately, the hardware doesn't expose any 
-low-level stats like numbers of tokens, etc. Basic stats like packets 
-and bytes are supported and exposed in tc, but they are calculated in 
-software (by per-queue qdiscs) - similarly to how we calculate 
-per-TX-queue packets and bytes in software.
+This is because the function below calls netif_rx(), which is just
+outside patch-diff-window.  Thus, it looked wrong/strange to call
+netif_rx_internal(), but sure I can use netif_rx_internal() instead.
 
 > 
->>
->> Then all configuration changes are sent to the driver, and it issues the
->> corresponding firmware commands to replicate the whole hierarchy in the
->> NIC. Leaf classes correspond to queue groups (in this implementation
->> queue groups contain only one queue, but it can be extended), and inner
->> classes correspond to entities called TSARs.
->>
->> The information about rate limits is stored inside TSARs and queue
->> groups. Queues know what groups they belong to, and groups and TSARs
->> know what TSAR is their parent. A queue is picked in ndo_select_queue by
->> looking at the classification result of clsact. So, when a packet is put
->> onto a queue, the NIC can track the whole hierarchy and do the HTB
->> algorithm.
+> > +	}
+> > +
+> > +	return ret;
+> >   }
+> >   
+> >   static inline int __bpf_rx_skb_no_mac(struct net_device *dev,
+> >   				      struct sk_buff *skb)
+> >   {
+> > -	int ret = ____dev_forward_skb(dev, skb);
+> > +	int ret = ____dev_forward_skb(dev, skb, false);
+> >   
+> >   	if (likely(!ret)) {
+> >   		skb->dev = dev;
+> > @@ -2480,7 +2488,7 @@ int skb_do_redirect(struct sk_buff *skb)
+> >   			goto out_drop;
+> >   		dev = ops->ndo_get_peer_dev(dev);
+> >   		if (unlikely(!dev ||
+> > -			     !is_skb_forwardable(dev, skb) ||
+> > +			     !__is_skb_forwardable(dev, skb, false) ||  
 > 
-> Glad to know hardware still keeps HTB as a hierarchy.
-> 
-> Please also add this either to source code as comments or in your
-> changelog, it is very important to understand what is done by hardware.
+> If we only use __is_skb_forwardable() with false directly here, maybe then
+> lets just have the !(dev->flags & IFF_UP) test here instead..
 
-OK, as I said above in this letter, I can rephrase the commit message, 
-focusing on details about interaction between HTB <-> driver <-> NIC and 
-what happens in the NIC. It should look better if I put it in a 
-dedicated paragraph, instead of mentioning it under the contention problem.
+Sure, let do that.
 
-Thanks,
-Max
+> >   			     net_eq(net, dev_net(dev))))
+> >   			goto out_drop;
+> >   		skb->dev = dev;
+> > 
 
-> Thanks.
-> 
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
