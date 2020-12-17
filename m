@@ -2,111 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B335D2DDBBC
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 00:06:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E622DDBD4
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 00:20:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732322AbgLQXE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 18:04:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59430 "EHLO
+        id S1732155AbgLQXTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 18:19:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730140AbgLQXE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 18:04:56 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A60C0617A7
-        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 15:04:16 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id c79so357359pfc.2
-        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 15:04:16 -0800 (PST)
+        with ESMTP id S1732100AbgLQXTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 18:19:02 -0500
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01EFC061282
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 15:18:21 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id j20so261463otq.5
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 15:18:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xuN3s87sgv5dYv1RWZnvVr37IV4kzzDZbC355KoF86s=;
-        b=gNYVoiuPmDtcwNGgz1b29ap/WFF1trap8wB+8F3/ztzMefmOEU7saVMs3StoaqtlAH
-         9Q8N3sf1nJNiAhPl30mLWT9rNWcMRL/4jESUIXbVfkLi8FQUqfpdgxGE7cbX+EuWkw4P
-         1zxaKNqHwd03cw5UeRIIdyo4kxBqKz2+CUimc=
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bz2IW955KN1kBMML3+o9Rok8vGvt7BDvNsrsFguY/2k=;
+        b=V3ch4Q5Jvb7jrGD/wLFLLaLNoGCKNaFt2CkOj1sJE/RvSa66LeG7kudveh8uXYqPO4
+         koJwcyXMIN1V+HzOaR9TmhmRfURoeVxrvugXQRsvAOZ9zqZSf92LL/XU+pRn0Hx/bvPD
+         idx6f4fUnIGiqbf7HkUhucvt6RjxggQFDgLxE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xuN3s87sgv5dYv1RWZnvVr37IV4kzzDZbC355KoF86s=;
-        b=iedkUkk0AT8lbVrTsLurV2YJwSnx3WYlMpOxGYRskbWoYzHC+Q4uQVtfdunljkGXyU
-         zkTpdWzCQAkaHb0jhJC0x+KYBCSCkPPbGgN+2x+9IuvpQ6In9n2YFfe0jpluEBwi/1yb
-         1rASktYDFiykF1pIM0RILIRgvnP39lL5D3pQ60xh12I0Q/c1igwFcQc84Rvgf7jVlE6I
-         dXv+PpqJk9E8k+mJ3HvINghva2wfOLSMcujukrpVFjGS+AP7rPpi60tFDYO8Gc2xSM4p
-         ErgvUtqtjiau3Z6fyHtMtSpIVl+hUKpD28DaMJiwuDFdZ7H2c9/J724uaFwM+oK5NavR
-         GCww==
-X-Gm-Message-State: AOAM531tJu4m54hIOvQtjp9w0HtQllBrspNnet1r3OO3cWvZH5/RGZm1
-        Qe8pKSZNbGzEa3l6n0VJUVvfhw==
-X-Google-Smtp-Source: ABdhPJyY7LcYcKznwl8cdcSmFXO7wsiD2aQSfSQOfEtl4hhRILKgwPonDiZBJATkFfNdYx2HSVXcDg==
-X-Received: by 2002:a63:eb4b:: with SMTP id b11mr1435362pgk.351.1608246255566;
-        Thu, 17 Dec 2020 15:04:15 -0800 (PST)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:7220:84ff:fe09:2b94])
-        by smtp.gmail.com with ESMTPSA id q23sm6001004pgm.89.2020.12.17.15.04.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Dec 2020 15:04:15 -0800 (PST)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Subject: [PATCH] Bluetooth: Pause service discovery for suspend
-Date:   Thu, 17 Dec 2020 15:04:08 -0800
-Message-Id: <20201217150346.1.If6feff48e17a881af9cb55526db7f53bf0db40f1@changeid>
-X-Mailer: git-send-email 2.29.2.729.g45daf8777d-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bz2IW955KN1kBMML3+o9Rok8vGvt7BDvNsrsFguY/2k=;
+        b=b/zglYcrnxVF4FkW3mgXbWYwF6mpfbwqs6/w7jNcX2mc3kH2hER97ihUV8BHijIjli
+         BBBO4OE8yosIF4BRPV4c3mZFGkX+ZBH738NDXZI5gE7EurwqNuHWFzG4rx95M6ZF/cZ7
+         APlUDl/IVuRy8gyj2BdG55TpiT4wF4vfN2OIc8ydp4vHlq/VrbhBNKN+w1G5SW5z05tX
+         hiaavnf59LRHE7S/nWVlQ3TKKWVHQ1ovneW7N5AtFvg6C68sr4nzmgVIQudQWJG+vb3w
+         IJp9rXVoVzkY+7/IYGKXGMd1BNqh1JeCXEQcJqBoZCrKKqq8A4zmi3M3AiLpGHR3HGYb
+         0Lfw==
+X-Gm-Message-State: AOAM531jxhRjMphddX/J5TPZb2VrvNBXZu/5vE0PIt11dPs4ZV5V3X24
+        YGeFeofCk46C0kRSRnwAvET0rhE+1bnOcw==
+X-Google-Smtp-Source: ABdhPJwfxidd5mlptJ8nIuIeyaCuhS6itqB683HPr03AFnfevC+0r7I2E9tIf7Lg9uX95uzJOe59rg==
+X-Received: by 2002:a9d:650f:: with SMTP id i15mr918456otl.347.1608247099697;
+        Thu, 17 Dec 2020 15:18:19 -0800 (PST)
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com. [209.85.167.173])
+        by smtp.gmail.com with ESMTPSA id r13sm1546453oti.49.2020.12.17.15.18.17
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Dec 2020 15:18:17 -0800 (PST)
+Received: by mail-oi1-f173.google.com with SMTP id q205so823613oig.13
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 15:18:17 -0800 (PST)
+X-Received: by 2002:aca:af4d:: with SMTP id y74mr1029540oie.105.1608247096801;
+ Thu, 17 Dec 2020 15:18:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201215172113.5038-1-youghand@codeaurora.org>
+ <18dfa52b-5edd-f737-49c9-f532c1c10ba2@candelatech.com> <X9vaqxub2F/8YPT8@google.com>
+ <6cec8a4c-620f-093d-2739-7eafe89cd79a@candelatech.com>
+In-Reply-To: <6cec8a4c-620f-093d-2739-7eafe89cd79a@candelatech.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Thu, 17 Dec 2020 15:18:04 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXP+b8bik767LxcN9jV+ETpJ+_4HKH7rvsGgXbAHidFAng@mail.gmail.com>
+Message-ID: <CA+ASDXP+b8bik767LxcN9jV+ETpJ+_4HKH7rvsGgXbAHidFAng@mail.gmail.com>
+Subject: Re: [PATCH 0/3] mac80211: Trigger disconnect for STA during recovery
+To:     Ben Greear <greearb@candelatech.com>
+Cc:     Youghandhar Chintala <youghand@codeaurora.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        ath10k <ath10k@lists.infradead.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        kuabhs@chromium.org, Doug Anderson <dianders@chromium.org>,
+        Rakesh Pillai <pillair@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just like MGMT_OP_START_DISCOVERY, we should reject
-MGMT_OP_START_SERVICE_DISCOVERY with MGMT_STATUS_BUSY when we are paused
-for suspend.
+On Thu, Dec 17, 2020 at 2:57 PM Ben Greear <greearb@candelatech.com> wrote:
+> On 12/17/20 2:24 PM, Brian Norris wrote:
+> > I'd also note that we don't operate in AP mode -- only STA -- and IIRC
+> > Ben, you've complained about AP mode in the past.
+>
+> I complain about all sorts of things, but I'm usually running
+> station mode :)
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
-On ChromeOS, we started getting reports of scanning failing after
-resuming from suspend. The root cause was that Start Service Discovery
-was being called while discovery was supposed to be paused for suspend
-and it was screwing up some internal state. Adding this check
-immediately fixed it.
+Hehe, fair :) Maybe I'm mixed up.
 
-The fix was tested by doing the following:
-* Set Discovery Filter ({'transport': 'auto'})
-* Start Discovery
-* Suspend
-* Resume
-* Check the Discovering property
+But I do get the feeling that specifically within the ath10k family,
+there are wildly different use cases (mobile, PC, AP) and chips (and
+firmware) that tend to go along with them, and that those use cases
+get a fairly different population of {developers, testers, reporters}.
+So claiming "feature X works" pretty much always has to be couched in
+which chips, firmware, and use case. And there's certainly some wisdom
+in these sections:
 
-Without the fix, this test failed when checking the Discovering
-property above.
+https://wireless.wiki.kernel.org/en/users/drivers/ath10k/submittingpatches#hardware_families
+https://wireless.wiki.kernel.org/en/users/drivers/ath10k/submittingpatches#tested-on_tag
 
- net/bluetooth/mgmt.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+> Do you actually see iwlwifi stations stay associated through
+> firmware crashes?
 
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index fa0f7a4a1d2fc8a..608dda5403b7327 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -4798,6 +4798,14 @@ static int start_service_discovery(struct sock *sk, struct hci_dev *hdev,
- 		goto failed;
- 	}
- 
-+	if (hdev->discovery_paused) {
-+		err = mgmt_cmd_complete(sk, hdev->id,
-+					MGMT_OP_START_SERVICE_DISCOVERY,
-+					MGMT_STATUS_BUSY, &cp->type,
-+					sizeof(cp->type));
-+		goto failed;
-+	}
-+
- 	uuid_count = __le16_to_cpu(cp->uuid_count);
- 	if (uuid_count > max_uuid_count) {
- 		bt_dev_err(hdev, "service_discovery: too big uuid_count value %u",
--- 
-2.29.2.729.g45daf8777d-goog
+Yes.
 
+> Anyway, happy to hear some have seamless recovery, and in that case,
+> I have no objections to the patch.
+
+OK! I hope I'm not the only one with such results, because then I
+still might question my sanity (and test coverage), but that's still
+my understanding.
+
+BTW, I haven't yet closely reviewed the patch series myself, but I ACK
+the concept.
+
+Brian
