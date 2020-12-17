@@ -2,92 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 807C02DDADB
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 22:31:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F217E2DDB0F
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 22:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729287AbgLQVbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 16:31:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38095 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728336AbgLQVbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 16:31:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608240599;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9ulptTw1QljZ7bj+CS6pjcsikYpCRgwLuxEmUENeONQ=;
-        b=eAYX0y3CVuSUsBawT+zzu+enZ5x26I92YC7aOxYQvBnwQdmngjhyySXOyIj6Yx1xBIEfGK
-        2BzfCSYQkXwqmKV0U4fXvObyKOZSAG40vCM7XvX0Yd7cjk7mw1L+OFbGojU/8UgD1hf0SL
-        9v0R8MUmA7EHz3Jtrz6IeLxACxwqDcE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-231-jEI9rnMAMIa8VRMp2cCUlg-1; Thu, 17 Dec 2020 16:29:55 -0500
-X-MC-Unique: jEI9rnMAMIa8VRMp2cCUlg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DF557B8100;
-        Thu, 17 Dec 2020 21:29:52 +0000 (UTC)
-Received: from new-host-6.station (unknown [10.40.194.68])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 48BD018A50;
-        Thu, 17 Dec 2020 21:29:50 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net] net/sched: sch_taprio: ensure to reset/destroy all child qdiscs
-Date:   Thu, 17 Dec 2020 22:29:46 +0100
-Message-Id: <13edef6778fef03adc751582562fba4a13e06d6a.1608240532.git.dcaratti@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+        id S1731964AbgLQVvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 16:51:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32802 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731951AbgLQVvM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 16:51:12 -0500
+Subject: Re: [GIT PULL] Networking for 5.11-rc1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608241762;
+        bh=LI6trbnfUu7s3ZsogP+zu1G7Tz/8IjZQ+dzYJrJTZLc=;
+        h=From:In-Reply-To:References:Date:To:Cc:From;
+        b=JZnJuu3V/5WjgkHpIeGMb+RMepFWqmcsEw7zvynKikqRXmehVYndsHrc1STh5ZmEf
+         59JHNlQQbXUGzbhx4+Ryd0hzApvcp3wchT1o+1wwnU1CqarP8KoIbexoRmkmcWHf3e
+         fdGFN6zrw9BET9b9OgcCM7IrgvOxjGulioMtz2n5e308vbeoco6LCaEzqL6oa1BYRq
+         RKKZ4cMOD3SWeLB00Lp1SUE9/Z4rCcaQNkHIr+92+jc4nQdfDIhxyccdhhq29QUCKD
+         LLEE1qiglOjEyBFDWLT0mNaU+gIU8HoJse6wwjLkNB4O2hj0Qcnx237M/pirhTHUQQ
+         GtoC+EDVjnWfg==
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20201217210204.1256850-1-kuba@kernel.org>
+References: <20201217210204.1256850-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20201217210204.1256850-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.11-rc1
+X-PR-Tracked-Commit-Id: 44d4775ca51805b376a8db5b34f650434a08e556
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: d64c6f96ba86bd8b97ed8d6762a8c8cc1770d214
+Message-Id: <160824176246.26275.10068748815417314493.pr-tracker-bot@kernel.org>
+Date:   Thu, 17 Dec 2020 21:49:22 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-taprio_graft() can insert a NULL element in the array of child qdiscs. As
-a consquence, taprio_reset() might not reset child qdiscs completely, and
-taprio_destroy() might leak resources. Fix it by ensuring that loops that
-iterate over q->qdiscs[] don't end when they find the first NULL item.
+The pull request you sent on Thu, 17 Dec 2020 13:02:04 -0800:
 
-Fixes: 44d4775ca518 ("net/sched: sch_taprio: reset child qdiscs before freeing them")
-Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/sched/sch_taprio.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.11-rc1
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index c74817ec9964..6f775275826a 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1605,8 +1605,9 @@ static void taprio_reset(struct Qdisc *sch)
- 
- 	hrtimer_cancel(&q->advance_timer);
- 	if (q->qdiscs) {
--		for (i = 0; i < dev->num_tx_queues && q->qdiscs[i]; i++)
--			qdisc_reset(q->qdiscs[i]);
-+		for (i = 0; i < dev->num_tx_queues; i++)
-+			if (q->qdiscs[i])
-+				qdisc_reset(q->qdiscs[i]);
- 	}
- 	sch->qstats.backlog = 0;
- 	sch->q.qlen = 0;
-@@ -1626,7 +1627,7 @@ static void taprio_destroy(struct Qdisc *sch)
- 	taprio_disable_offload(dev, q, NULL);
- 
- 	if (q->qdiscs) {
--		for (i = 0; i < dev->num_tx_queues && q->qdiscs[i]; i++)
-+		for (i = 0; i < dev->num_tx_queues; i++)
- 			qdisc_put(q->qdiscs[i]);
- 
- 		kfree(q->qdiscs);
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d64c6f96ba86bd8b97ed8d6762a8c8cc1770d214
+
+Thank you!
+
 -- 
-2.29.2
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
