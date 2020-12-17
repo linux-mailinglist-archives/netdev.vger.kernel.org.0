@@ -2,104 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 790A32DD800
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 19:15:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 428322DD819
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 19:16:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731471AbgLQSOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 13:14:07 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:35096 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729976AbgLQSOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 13:14:06 -0500
-Received: from [192.168.3.20] (unknown [50.46.158.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 150E513C2B0;
-        Thu, 17 Dec 2020 10:13:25 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 150E513C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1608228805;
-        bh=uNDMeyMSVSZKT4yBVrKC64LFpkkYstQ9YyO4H6b1XOI=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=WaQMOQJGUhFX4XOhGJTc1rnV41P63GLAfq+n1ikRqALYKD60Ua0l1NlhJhj/OFAJ3
-         aMFOImXYqg9TFmJhxCPCw0EizlNRZO7UO+DqNFdkSoGFLFkD5/3/tk8gvLwYCs+xLH
-         x+qdDGhx98BFmKdDtt+6lM1l1jxyOIp7lKvmTSo4=
-Subject: Re: net: tso: add UDP segmentation support: adds regression for ax200
- upload
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <5664fa0f-aef2-c336-651a-093c9eed23ab@candelatech.com>
- <765f370d-ce2d-b75a-2dde-87f69ae7c185@candelatech.com>
- <CANn89iKpa1y2SKJuR9kRi=AZs94sj+-tzRs+2D0vmxh+ahEcGA@mail.gmail.com>
- <adbee2ec-c6ba-7a17-eb98-1c53365fa911@candelatech.com>
- <CANn89iJQnSVZFp2XDgREN1QMtU4exOsnJq=5VzJ6tqTCJ7MH-g@mail.gmail.com>
-From:   Ben Greear <greearb@candelatech.com>
-Message-ID: <c4bcee7d-b2eb-759c-c659-d65f3e7daec9@candelatech.com>
-Date:   Thu, 17 Dec 2020 10:13:23 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S1731129AbgLQSP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 13:15:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34682 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729995AbgLQSPX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 13:15:23 -0500
+Date:   Thu, 17 Dec 2020 10:14:41 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608228883;
+        bh=F2kRqFoveZqLim73gyQlY/IVH+R3xawt0mEKQXT0R9o=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SPedM0U9zkFeTHRf7UfTt+3J/eE0mx0Hywd3mxj2xfpuD02Naw3sTM3aQJE8vqOaF
+         49ad044EzwspdsF1lw14AXUUa01LcODGu45mkWVuolfCgWR0YIYsDRGMRq5MFsErue
+         AZFMp2L5lqR50ofnKKUXNeZBvxo80PdbLJo//elL+bvIK9p8KAEr8PA4fYBxoi3Irq
+         TuiJMEPgmIkEdDOOc4AsyAGjGvzIDFlpXrwdQiVASTWjziaVUzTlUgUXWcTDnYLmpD
+         nxn8FqrIjRBMbvJa4To+vVAj1vIFAxWieLe4ubkLLslzDkDmt2SHqd6q9XY5XATLBP
+         3pkTPNLcIru5A==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ivan Babrou <ivan@cloudflare.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@cloudflare.com,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH net-next] sfc: reduce the number of requested xdp ev
+ queues
+Message-ID: <20201217101441.3d5085f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201215012907.3062-1-ivan@cloudflare.com>
+References: <20201215012907.3062-1-ivan@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iJQnSVZFp2XDgREN1QMtU4exOsnJq=5VzJ6tqTCJ7MH-g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 14 Dec 2020 17:29:06 -0800 Ivan Babrou wrote:
+> Without this change the driver tries to allocate too many queues,
+> breaching the number of available msi-x interrupts on machines
+> with many logical cpus and default adapter settings:
+> 
+> Insufficient resources for 12 XDP event queues (24 other channels, max 32)
+> 
+> Which in turn triggers EINVAL on XDP processing:
+> 
+> sfc 0000:86:00.0 ext0: XDP TX failed (-22)
+> 
+> Signed-off-by: Ivan Babrou <ivan@cloudflare.com>
 
-On 12/17/2020 10:07 AM, Eric Dumazet wrote:
-> On Thu, Dec 17, 2020 at 6:56 PM Ben Greear <greearb@candelatech.com> wrote:
->> On 12/17/20 2:11 AM, Eric Dumazet wrote:
->>> On Thu, Dec 17, 2020 at 12:59 AM Ben Greear <greearb@candelatech.com> wrote:
->>>> On 12/16/20 3:09 PM, Ben Greear wrote:
->>>>> Hello Eric,
->>>>>
->>>>> The patch below evidently causes TCP throughput to be about 50Mbps instead of 700Mbps
->>>>> when using ax200 to upload tcp traffic.
->>>>>
->>>>> When I disable TSO, performance goes back up to around 700Mbps.
->>>> As a followup, when I revert the patch, upload speed goes to ~900Mbps,
->>>> so even better than just disabling TSO (I left TSO enabled after reverting the patch).
->>>>
->>>> Thanks,
->>>> Ben
->>>>
->>> Thanks for the report !
->>>
->>> It seems drivers/net/wireless/intel/iwlwifi/pcie/tx.c:iwl_fill_data_tbs_amsdu()
->>> calls tso_build_hdr() with extra bytes (SNAP header),
->>> it is not yet clear to me what is broken :/
->> Your patch is guessing tcp vs udp by looking at header length
->> from what I could tell.  So if something uses a different size,
->> it probably gets confused?
-> I do not think so, my patch selects TCP vs UDP by using standard GSO
-> helper skb_is_gso_tcp(skb)
->
-> tso->tlen is initialized from tso_start() :
->
-> int tlen = skb_is_gso_tcp(skb) ? tcp_hdrlen(skb) : sizeof(struct udphdr);
->
-> tso->tlen = tlen;
->
-> Maybe for some reason skb_is_gso_tcp(skb) returns false in your case,
-> some debugging would help.
->
->>> Can you confirm which driver is used for ax200 ?
->>>
->>> I see tso_build_hdr() also being used from
->>> drivers/net/wireless/intel/iwlwifi/queue/tx.c
->> I tested against the un-modified ax200 5.10.0 kernel driver, and it has the issue.
->>
->> The ax200 backports release/core56 driver acts a bit different (poorer performance over all than
->> in-kernel driver), but has similar upstream issues that are mitigated by
->> disabling TSO.
-> Sorry, I can not find ax200 driver.
+Looks like the discussion may have concluded, but we don't take -next
+patches during the merge window, so please repost when net-next reopens.
 
-It is the iwlwifi/mvm logic that supports ax200.
+Thanks!
+--
+# Form letter - net-next is closed
 
-Thanks,
+We have already sent the networking pull request for 5.11 and therefore
+net-next is closed for new drivers, features, code refactoring and
+optimizations. We are currently accepting bug fixes only.
 
-Ben
+Please repost when net-next reopens after 5.11-rc1 is cut.
 
+Look out for the announcement on the mailing list or check:
+http://vger.kernel.org/~davem/net-next.html
 
+RFC patches sent for review only are obviously welcome at any time.
