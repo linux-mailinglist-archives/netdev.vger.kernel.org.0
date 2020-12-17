@@ -2,263 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF6B02DCE08
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 10:05:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 375B72DCE17
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 10:08:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726580AbgLQJEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 04:04:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37659 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726291AbgLQJEe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 04:04:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608195787;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N7BMLAt3Nkb4GWZAxfBiiUdsoewOzT4BGc7hVKvcSzc=;
-        b=DQldMh+Hs8uJuUhnTtjwGK5c/K0Wrfm+/Mwbe6V1QOSLBiy7hHEI3/+W9hMXElQZVwi3AN
-        3S/h1gLW1/Lz8/0LBqvFSeF53tuCQQ7hdRPDIUzNpWAU7bq0vbelbTn3rOzZylI+ebJCQ6
-        f2YuYfM3i7rbtL4O5hrNUWtQikJcYJM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-55-6rdIExmXMbSqGRSDQB8yNA-1; Thu, 17 Dec 2020 04:03:05 -0500
-X-MC-Unique: 6rdIExmXMbSqGRSDQB8yNA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 81710190A7A4;
-        Thu, 17 Dec 2020 09:03:03 +0000 (UTC)
-Received: from [10.72.12.223] (ovpn-12-223.pek2.redhat.com [10.72.12.223])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A76125D9C0;
-        Thu, 17 Dec 2020 09:02:50 +0000 (UTC)
-Subject: Re: [PATCH 00/21] Control VQ support in vDPA
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     eperezma@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lulu@redhat.com, eli@mellanox.com,
-        lingshan.zhu@intel.com, rob.miller@broadcom.com,
-        stefanha@redhat.com, sgarzare@redhat.com
-References: <20201216064818.48239-1-jasowang@redhat.com>
- <20201216044051-mutt-send-email-mst@kernel.org>
- <aa061fcb-9395-3a1b-5d6e-76b5454dfb6c@redhat.com>
- <20201217025410-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <61b60985-142b-10f2-58b8-1d9f57c0cfca@redhat.com>
-Date:   Thu, 17 Dec 2020 17:02:49 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727376AbgLQJG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 04:06:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725871AbgLQJGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 04:06:54 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D528EC06138C
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 01:06:13 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id o13so32289492lfr.3
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 01:06:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vAO/2/47mbhlLw+965PNTisNKeQzGGv2Q/ZDNBlq8ho=;
+        b=ug3HU0/BD5jHUI6DBI3tUcGDLe5Vi0dADf7CQjmuw/ZLMEvO78n6LoGbJVJ9/LH/oY
+         02XfSpETFlVPf2/TuFtgteUxWs4gqgZd8XpPPXZqFJ+3W7fYS2Mo4+z/BVYuNpus6vtz
+         pyZo35hXAxYxPKHwOWQEa28G/ws1llfu1/sO/dgTA2sCj2CHq+PjFNtbH5wP9b92HQTt
+         CUhhGqnd82VO3vyy5jObExl/xwXUQsiT+DVOkAQGGLq1JmbCb+tOKMnYVsNUdxnvshLX
+         AD/iJCQ8RHOTiwU9+j7lRaeJCvbkpPvketTDkElKJfk82Cv9xmcLl4GgDQXxLVZm4TIP
+         EXfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vAO/2/47mbhlLw+965PNTisNKeQzGGv2Q/ZDNBlq8ho=;
+        b=R/5XGW4iUmm3857OE/QPP0mSvmCZj8lX40hYB1H0zZ1WTEl7yKmx/oqljt8Zq8uFV1
+         PTcg5JXqsJ2kJv+mhqy6vhasE/OYpiWYq7592jO2H3zs4IxZlxx9psYnorYAfNg36Q+/
+         K+R/GI19gIvaCSyeYSvnUH4RJHF/h2BTDEZ0FagdTcNqyirBB2ITCLddRrnbohG+b4lN
+         E0wnKoKb3sFGi/9pyoGuJJgid7d0o+voCuOXmCooRlhq7si765XogYWSwHSYFL+e51WD
+         dlnnj5KWXvTiV60onMbYMs959xGssO3egvYf06KFgMK94y6oZdJHWRO+ic+cNbM9FSPy
+         4u6w==
+X-Gm-Message-State: AOAM530GkH0yTWtDR31EnvJfXhdiS4N9E9OzLcv5P6MwIDnwfC9Fg4As
+        vie5hhK8BZNyvgvpTaT2vU3vRQrmXyBiNJ4LJqiw9g==
+X-Google-Smtp-Source: ABdhPJxsq2p+kthVsRGDbdBPYMJuYG963MsSL6IXTPPE/fUcPdixmm5ttc1CfxGFCERB7fPnA+WDEJZLkKAp9rbYRAA=
+X-Received: by 2002:a05:6512:30a:: with SMTP id t10mr911692lfp.124.1608195972094;
+ Thu, 17 Dec 2020 01:06:12 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201217025410-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20201119085022.3606135-1-davidgow@google.com> <CAEf4BzY4i0fH34eO=-4WOzVpifgPmJ0ER5ipBJWB0_4Zdv0AQg@mail.gmail.com>
+ <CABVgOSn10kCaD7EQCMJTgD8udNx6fOExqUL1gXHzEViemiq3LA@mail.gmail.com> <3678c6eb-3815-a360-f495-fc246513f0f5@isovalent.com>
+In-Reply-To: <3678c6eb-3815-a360-f495-fc246513f0f5@isovalent.com>
+From:   David Gow <davidgow@google.com>
+Date:   Thu, 17 Dec 2020 17:05:59 +0800
+Message-ID: <CABVgOSmRrtHQ_6n43kFk6MFYCpf+cS-E=TOiwS=__v6wGNeMNQ@mail.gmail.com>
+Subject: Re: [RFC PATCH] bpf: preload: Fix build error when O= is set
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-um <linux-um@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/12/17 下午3:58, Michael S. Tsirkin wrote:
-> On Thu, Dec 17, 2020 at 11:30:18AM +0800, Jason Wang wrote:
->> On 2020/12/16 下午5:47, Michael S. Tsirkin wrote:
->>> On Wed, Dec 16, 2020 at 02:47:57PM +0800, Jason Wang wrote:
->>>> Hi All:
->>>>
->>>> This series tries to add the support for control virtqueue in vDPA.
->>>>
->>>> Control virtqueue is used by networking device for accepting various
->>>> commands from the driver. It's a must to support multiqueue and other
->>>> configurations.
->>>>
->>>> When used by vhost-vDPA bus driver for VM, the control virtqueue
->>>> should be shadowed via userspace VMM (Qemu) instead of being assigned
->>>> directly to Guest. This is because Qemu needs to know the device state
->>>> in order to start and stop device correctly (e.g for Live Migration).
->>>>
->>>> This requies to isolate the memory mapping for control virtqueue
->>>> presented by vhost-vDPA to prevent guest from accesing it directly.
->>>> To achieve this, vDPA introduce two new abstractions:
->>>>
->>>> - address space: identified through address space id (ASID) and a set
->>>>                    of memory mapping in maintained
->>>> - virtqueue group: the minimal set of virtqueues that must share an
->>>>                    address space
->>> How will this support the pretty common case where control vq
->>> is programmed by the kernel through the PF, and others by the VFs?
->>
->> In this case, the VF parent need to provide a software control vq and decode
->> the command then send them to VF.
+On Wed, Dec 16, 2020 at 10:53 PM Quentin Monnet <quentin@isovalent.com> wrote:
 >
-> But how does that tie to the address space infrastructure?
-
-
-In this case, address space is not a must. But the idea is to make 
-control vq works for all types of hardware:
-
-1) control virtqueue is implemented via VF/PF communication
-2) control virtqueue is implemented by VF but not through DMA
-3) control virtqueue is implemented by VF DMA, it could be either a 
-hardware control virtqueue or other type of DMA
-
-The address space is a must for 3) to work and can work for both 1) and 2).
-
-
+> 2020-11-21 17:48 UTC+0800 ~ David Gow <davidgow@google.com>
+> > On Sat, Nov 21, 2020 at 3:38 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> >>
+> >> On Thu, Nov 19, 2020 at 12:51 AM David Gow <davidgow@google.com> wrote:
+> >>>
+> >>> If BPF_PRELOAD is enabled, and an out-of-tree build is requested with
+> >>> make O=<path>, compilation seems to fail with:
+> >>>
+> >>> tools/scripts/Makefile.include:4: *** O=.kunit does not exist.  Stop.
+> >>> make[4]: *** [../kernel/bpf/preload/Makefile:8: kernel/bpf/preload/libbpf.a] Error 2
+> >>> make[3]: *** [../scripts/Makefile.build:500: kernel/bpf/preload] Error 2
+> >>> make[2]: *** [../scripts/Makefile.build:500: kernel/bpf] Error 2
+> >>> make[2]: *** Waiting for unfinished jobs....
+> >>> make[1]: *** [.../Makefile:1799: kernel] Error 2
+> >>> make[1]: *** Waiting for unfinished jobs....
+> >>> make: *** [Makefile:185: __sub-make] Error 2
+> >>>
+> >>> By the looks of things, this is because the (relative path) O= passed on
+> >>> the command line is being passed to the libbpf Makefile, which then
+> >>> can't find the directory. Given OUTPUT= is being passed anyway, we can
+> >>> work around this by explicitly setting an empty O=, which will be
+> >>> ignored in favour of OUTPUT= in tools/scripts/Makefile.include.
+> >>
+> >> Strange, but I can't repro it. I use make O=<absolute path> all the
+> >> time with no issues. I just tried specifically with a make O=.build,
+> >> where .build is inside Linux repo, and it still worked fine. See also
+> >> be40920fbf10 ("tools: Let O= makes handle a relative path with -C
+> >> option") which was supposed to address such an issue. So I'm wondering
+> >> what exactly is causing this problem.
+> >>
+> > [+ linux-um list]
+> >
+> > Hmm... From a quick check, I can't reproduce this on x86, so it's
+> > possibly a UML-specific issue.
+> >
+> > The problem here seems to be that $PWD is, for whatever reason, equal
+> > to the srcdir on x86, but not on UML. In general, $PWD behaves pretty
+> > weirdly -- I don't fully understand it -- but if I add a tactical "PWD
+> > := $(shell pwd)" or use $(CURDIR) instead, the issue shows up on x86
+> > as well. I guess this is because PWD only gets updated when set by a
+> > shell or something, and UML does this somewhere?
+> >
+> > Thoughts?
+> >
+> > Cheers,
+> > -- David
 >
+> Hi David, Andrii,
 >
+> David, did you use a different command for building for UML and x86? I'm
+> asking because I reproduce on x86, but only for some targets, in
+> particular when I tried bindeb-pkg.
+
+I just ran "make ARCH={x86,um} O=.bpftest", with defconfig + enabling
+BPF_PRELOAD and its dependencies. UML fails, x86 works. (Though I can
+reproduce the failure if I make bindeb-pkg on x86).
+
+(It also shows up when building UML with the allyesconfig-based KUnit
+alltests option by running "./tools/testing/kunit/kunit.py run
+--alltests", though this understandably takes a long time and is less
+obvious)
 >
->>>
->>> I actually thought the way to support it is by exposing
->>> something like an "inject buffers" API which sends data to a given VQ.
->>> Maybe an ioctl, and maybe down the road uio ring can support batching
->>> these ....
->>
->> So the virtuqueue allows the request to be processed asynchronously (e.g
->> driver may choose to use interrupt for control vq). This means we need to
->> support that in uAPI level.
-> I don't think we need to make it async, just a regular ioctl will do.
-> In fact no guest uses the asynchronous property.
-
-
-It was not forbidden by the spec then we need to support that. E.g we 
-can not assume driver doesn't assign interrupt for cvq.
-
-
+> With "make O=.build vmlinux", I have:
+> - $(O) for "dummy" check in tools/scripts/Makefile.include set to
+> /linux/.build
+> - $(PWD) for same check set to /linux/tools
+> - Since $(O) is an absolute path, the "dummy" check passes
 >
+> With "make O=.build bindeb-pkg", I have instead:
+> - $(O) set to .build (relative path)
+> - $(PWD) set to /linux/.build
+> - "dummy" check changes to /linux/.build and searches for .build in it,
+> which fails and aborts the build
 >
->> And if we manage to do that, it's just another
->> type of virtqueue.
->>
->> For virtio-vDPA, this also means the extensions for queue processing which
->> is a functional duplication.
-> I don't see why, just send it to the actual control vq :)
-
-
-But in the case you've pointed out, there's no hardware control vq in fact.
-
-
+> (tools/scripts/Makefile.include is included from libbpf's Makefile,
+> called from kernel/bpf/preload/Makefile.)
 >
->> Using what proposed in this series, we don't
->> need any changes for kernel virtio drivers.
->>
->> What's more important, this series could be used for future features that
->> requires DMA isolation between virtqueues:
->>
->> - report dirty pages via virtqueue
->> - sub function level device slicing
->
-> I agree these are nice to have, but I am not sure basic control vq must
-> be tied to that.
+> I'm not sure how exactly the bindeb-pkg target ends up passing these values.
+
+Yeah: I haven't been able to find where uml is changing them either:
+I'm assuming there's something which changes directory and/or spawns a
+shell/recursive make to change $(PWD) or something.
+
+> For what it's worth, I have been solving this (before finding this
+> thread) with a fix close to yours, I pass "O=$(abspath .)" on the
+> command line for building libbpf in kernel/bpf/preload/Makefile. It
+> looked consistent to me with the "tools/:" target from the main
+> Makefile, where "O=$(abspath $(objtree))" is passed (and $(objtree) is ".").
+
+Given that there are several targets being broken here, it's probably
+worth having a fix like this which overrides O= rather than trying to
+hunt down every target which could change $(PWD). I don't particularly
+mind whether we use O= or O=$(abspath .), both are working in the UML
+usecase as well.
+
+Does anyone object to basically accepting either this patch as-is, or
+using O=$(abspath .)?
 
 
-If the control virtqueue is implemented via DMA through VF, it looks 
-like a must.
-
-Thanks
-
-
->
->> ...
->>
->> Thanks
->>
->>
->>>
->>>> Device needs to advertise the following attributes to vDPA:
->>>>
->>>> - the number of address spaces supported in the device
->>>> - the number of virtqueue groups supported in the device
->>>> - the mappings from a specific virtqueue to its virtqueue groups
->>>>
->>>> The mappings from virtqueue to virtqueue groups is fixed and defined
->>>> by vDPA device driver. E.g:
->>>>
->>>> - For the device that has hardware ASID support, it can simply
->>>>     advertise a per virtqueue virtqueue group.
->>>> - For the device that does not have hardware ASID support, it can
->>>>     simply advertise a single virtqueue group that contains all
->>>>     virtqueues. Or if it wants a software emulated control virtqueue, it
->>>>     can advertise two virtqueue groups, one is for cvq, another is for
->>>>     the rest virtqueues.
->>>>
->>>> vDPA also allow to change the association between virtqueue group and
->>>> address space. So in the case of control virtqueue, userspace
->>>> VMM(Qemu) may use a dedicated address space for the control virtqueue
->>>> group to isolate the memory mapping.
->>>>
->>>> The vhost/vhost-vDPA is also extend for the userspace to:
->>>>
->>>> - query the number of virtqueue groups and address spaces supported by
->>>>     the device
->>>> - query the virtqueue group for a specific virtqueue
->>>> - assocaite a virtqueue group with an address space
->>>> - send ASID based IOTLB commands
->>>>
->>>> This will help userspace VMM(Qemu) to detect whether the control vq
->>>> could be supported and isolate memory mappings of control virtqueue
->>>> from the others.
->>>>
->>>> To demonstrate the usage, vDPA simulator is extended to support
->>>> setting MAC address via a emulated control virtqueue.
->>>>
->>>> Please review.
->>>>
->>>> Changes since RFC:
->>>>
->>>> - tweak vhost uAPI documentation
->>>> - switch to use device specific IOTLB really in patch 4
->>>> - tweak the commit log
->>>> - fix that ASID in vhost is claimed to be 32 actually but 16bit
->>>>     actually
->>>> - fix use after free when using ASID with IOTLB batching requests
->>>> - switch to use Stefano's patch for having separated iov
->>>> - remove unused "used_as" variable
->>>> - fix the iotlb/asid checking in vhost_vdpa_unmap()
->>>>
->>>> Thanks
->>>>
->>>> Jason Wang (20):
->>>>     vhost: move the backend feature bits to vhost_types.h
->>>>     virtio-vdpa: don't set callback if virtio doesn't need it
->>>>     vhost-vdpa: passing iotlb to IOMMU mapping helpers
->>>>     vhost-vdpa: switch to use vhost-vdpa specific IOTLB
->>>>     vdpa: add the missing comment for nvqs in struct vdpa_device
->>>>     vdpa: introduce virtqueue groups
->>>>     vdpa: multiple address spaces support
->>>>     vdpa: introduce config operations for associating ASID to a virtqueue
->>>>       group
->>>>     vhost_iotlb: split out IOTLB initialization
->>>>     vhost: support ASID in IOTLB API
->>>>     vhost-vdpa: introduce asid based IOTLB
->>>>     vhost-vdpa: introduce uAPI to get the number of virtqueue groups
->>>>     vhost-vdpa: introduce uAPI to get the number of address spaces
->>>>     vhost-vdpa: uAPI to get virtqueue group id
->>>>     vhost-vdpa: introduce uAPI to set group ASID
->>>>     vhost-vdpa: support ASID based IOTLB API
->>>>     vdpa_sim: advertise VIRTIO_NET_F_MTU
->>>>     vdpa_sim: factor out buffer completion logic
->>>>     vdpa_sim: filter destination mac address
->>>>     vdpasim: control virtqueue support
->>>>
->>>> Stefano Garzarella (1):
->>>>     vdpa_sim: split vdpasim_virtqueue's iov field in out_iov and in_iov
->>>>
->>>>    drivers/vdpa/ifcvf/ifcvf_main.c   |   9 +-
->>>>    drivers/vdpa/mlx5/net/mlx5_vnet.c |  11 +-
->>>>    drivers/vdpa/vdpa.c               |   8 +-
->>>>    drivers/vdpa/vdpa_sim/vdpa_sim.c  | 292 ++++++++++++++++++++++++------
->>>>    drivers/vhost/iotlb.c             |  23 ++-
->>>>    drivers/vhost/vdpa.c              | 246 ++++++++++++++++++++-----
->>>>    drivers/vhost/vhost.c             |  23 ++-
->>>>    drivers/vhost/vhost.h             |   4 +-
->>>>    drivers/virtio/virtio_vdpa.c      |   2 +-
->>>>    include/linux/vdpa.h              |  42 ++++-
->>>>    include/linux/vhost_iotlb.h       |   2 +
->>>>    include/uapi/linux/vhost.h        |  25 ++-
->>>>    include/uapi/linux/vhost_types.h  |  10 +-
->>>>    13 files changed, 561 insertions(+), 136 deletions(-)
->>>>
->>>> -- 
->>>> 2.25.1
-
+Cheers,
+-- David
