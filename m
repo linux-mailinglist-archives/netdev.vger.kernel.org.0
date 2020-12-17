@@ -2,86 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 645752DCCAA
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 07:47:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 927952DCCD6
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 08:14:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727190AbgLQGqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 01:46:30 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:52872 "EHLO a.mx.secunet.com"
+        id S1726548AbgLQHNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 02:13:19 -0500
+Received: from mga02.intel.com ([134.134.136.20]:59248 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726525AbgLQGq3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Dec 2020 01:46:29 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 1242D204EF;
-        Thu, 17 Dec 2020 07:45:46 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id yg1ZAAZJ2-ox; Thu, 17 Dec 2020 07:45:45 +0100 (CET)
-Received: from mail-essen-01.secunet.de (unknown [10.53.40.204])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 97BBF20265;
-        Thu, 17 Dec 2020 07:45:45 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Thu, 17 Dec 2020 07:45:45 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Thu, 17 Dec
- 2020 07:45:45 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id A3924318070E;
- Thu, 17 Dec 2020 07:45:44 +0100 (CET)
-Date:   Thu, 17 Dec 2020 07:45:44 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     "Marler, Jonathan" <jonathan.j.marler@hp.com>
-CC:     "bpoirier@suse.de" <bpoirier@suse.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "martin@strongswan.org" <martin@strongswan.org>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Bhat, Jayalakshmi Manjunath" <jayalakshmi.bhat@hp.com>,
-        "Shankaranarayana, Viswanatha" <viswanatha.s@hp.com>,
-        "PURTIPLI, SACHIN" <sachin.purtipli@hp.com>
-Subject: Re: USGv6 Tunnel Mode Fragmentation Failures
-Message-ID: <20201217064544.GA3576117@gauss3.secunet.de>
-References: <CS1PR8401MB12862DA9EC8238888449215ADBF90@CS1PR8401MB1286.NAMPRD84.PROD.OUTLOOK.COM>
+        id S1725950AbgLQHNS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 02:13:18 -0500
+IronPort-SDR: kvm8tsI0EyuFkWyVx/qz/FupV9VdV2Lxk/RVcEqEVjVUoKhvNsg9SPyctmSM4Q/GmBMrT4g6Xt
+ HTcK8a7DZQLQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9837"; a="162252227"
+X-IronPort-AV: E=Sophos;i="5.78,426,1599548400"; 
+   d="scan'208";a="162252227"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2020 23:12:36 -0800
+IronPort-SDR: 5Zfia1INRsXjGay5F2bdewOdEaKE5g0chA4V2oJ3TSGqGBK8f1ypgrNIkTdH8Ldx5ELwnj453R
+ ayg7+6QgdEKQ==
+X-IronPort-AV: E=Sophos;i="5.78,426,1599548400"; 
+   d="scan'208";a="369636444"
+Received: from bruennej-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.33.70])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2020 23:12:32 -0800
+Subject: Re: memory leak in xskq_create
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        jonathan.lemon@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, magnus.karlsson@intel.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <0000000000002aca2e05b659af04@google.com>
+ <20201216181135.GA94576@PWN>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <0a6cb67b-c24a-07e3-819b-820f3be9e3cd@intel.com>
+Date:   Thu, 17 Dec 2020 08:12:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CS1PR8401MB12862DA9EC8238888449215ADBF90@CS1PR8401MB1286.NAMPRD84.PROD.OUTLOOK.COM>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <20201216181135.GA94576@PWN>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 26, 2020 at 09:21:39AM +0000, Marler, Jonathan wrote:
-> We've found an issue while running the following USGv6 tests where the kernel drops outgoing packets:
-> 
-> 5.3.11 Tunnel Mode: Fragmentation
-> 5.4.11 Tunnel Mode: Fragmentation
-> 
-> During the test, an esp PING request is sent to our device under test, and we send back a response that is rejected by our router with a "packet to big" error.  This error is fine, it's part of the test.  This error packet then sets the MTU to 1280 (which also happens to be the minimum MTU size allowed by ipv6 and the kernel).
-> 
-> The issue comes up when this mtu is adjusted by the esp6_get_mtu function.  It adjusts it to a value below the 1280 threshold, which causes any packets associated with this MTU to be dropped in the ipv6_setup_cork function.
-> 
-> We are running on kernel version 4.9.180, but this issue looks as if it would still exist in the latest version except that esp6_get_mtu has been replaced by xfrm_state_mtu.  By adding instrumentation, we found during the test the mtu value of 1280 given by the "packet to big" response gets passed to the esp6_get_mtu function, and the following values are what we logged in that function:
-> 
-> mtu = 1280
-> x->props.header_len = 56
-> crypto_aead_authsize(aead) = 12
-> net_adj = 0
-> blocksize = 8
-> 
-> This causes the function to return an mtu size of 1206, causing packets thereafter to be dropped because this falls below the IPV6_MIN_MTU threshold.
-> 
-> Our idea is to modify esp6_get_mtu to limit the minimum mtu to IPV6_MIN_MTU.  We're not certain this is the correct fix, and thought to check with the maintainers of that file, and a few others who have modified that function.  Any help or guidance here is appreciated, thank you.
-> 
 
-We should not return a mtu below IPV6_MIN_MTU for IPv6 and not below
-IPV6_MIN_MTU for IPv4. So the proposed fix looks correct to me.
+On 2020-12-16 19:11, Peilin Ye wrote:
+> Hi all,
+> 
+> On Sun, Dec 13, 2020 at 06:53:10AM -0800, syzbot wrote:
+>> BUG: memory leak
+>> unreferenced object 0xffff88810f897940 (size 64):
+>>    comm "syz-executor991", pid 8502, jiffies 4294942194 (age 14.080s)
+>>    hex dump (first 32 bytes):
+>>      7f 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00  ................
+>>      00 a0 37 0c 81 88 ff ff 00 00 00 00 00 00 00 00  ..7.............
+>>    backtrace:
+>>      [<00000000639d0dd1>] xskq_create+0x23/0xd0 include/linux/slab.h:552
+>>      [<00000000b680b035>] xsk_init_queue net/xdp/xsk.c:508 [inline]
+>>      [<00000000b680b035>] xsk_setsockopt+0x1c4/0x590 net/xdp/xsk.c:875
+>>      [<000000002b302260>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2132
+>>      [<00000000ae03723e>] __do_sys_setsockopt net/socket.c:2143 [inline]
+>>      [<00000000ae03723e>] __se_sys_setsockopt net/socket.c:2140 [inline]
+>>      [<00000000ae03723e>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2140
+>>      [<0000000005c2b4a0>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>>      [<0000000003db140f>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> I have tested the following diff locally against syzbot's reproducer,
+> and sent a patch to it [1] for testing.  I will send a real patch here
+> tomorrow if syzbot is happy about it.  Please see explanation below.
+>
+
+Hi Peilin Ye!
+
+Thanks for taking a look! Magnus has already addressed this problem in
+another patch [1].
+
+
+Cheers,
+Björn
+
+
+
+[1] 
+https://lore.kernel.org/bpf/20201214085127.3960-1-magnus.karlsson@gmail.com/
