@@ -2,82 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3682DCB3B
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 04:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C51FC2DCB40
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 04:23:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725988AbgLQDTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 22:19:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727231AbgLQDTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 22:19:07 -0500
-Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B043EC061794;
-        Wed, 16 Dec 2020 19:18:26 -0800 (PST)
-Received: by mail-vs1-xe36.google.com with SMTP id e20so7465706vsr.12;
-        Wed, 16 Dec 2020 19:18:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XI6ydnrhXpGqiqNBuJrrntaJSLirU11+aB/V6asSn5A=;
-        b=THRZ5wW8iIhZPUE/Yp8az4qhldEtyocNzEeGG03lsb58223kevhXn8ykxBzHc/Y9rN
-         OfH44Ocw4ACcMGPcqJ+VPSdNzwuKwHzzKjSTBt4O3od8wDOkqug1bK0yQNlC7J5pPw1g
-         Yi9lN3lJlv5NfkMWIH/l/Ohgaf2+5Jbx6PX2wKBtvOPSJXM+Waup8Rats/OQsE4gePhN
-         2gYvyJ5qb1v8q8zmNrh9PCu0FBKXPxKkCPIyEZkinRxkM8iiUwQ4u2dfFbFQ9uFsP7Ud
-         T9YiKAJGjSVTdqUWzH080vQemxExn+dfNWFAMYA2/XBOL9OuAHxWnRI2oCWn2ZUwKhYW
-         Ir2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XI6ydnrhXpGqiqNBuJrrntaJSLirU11+aB/V6asSn5A=;
-        b=BdIlyGsuZ6GjyXb8Hh+EYQuYl6UChjNtrEAsdspCRDHy5Y+QjatEc/xYEEpG98+Okq
-         6kSdivm3Iq+tFVhWPu4amAKANiyJ6F+mbBF6p64t2Zn1hGfIQ3s6UtHlgpdGoB3cccp3
-         3XXZIrwU4V42hwhPLBF2jYCuOTmiyiQbe9PSqUsK1v1H6KNhRgtXrHSzJjTqT3HGbxqW
-         5QpnQNjE+Q4ZiHz32H0hV8knyjHRtMf3tZroIwwRb6ffKvA+rYzdLStvU+3c/21wWPNH
-         OIx8Po9639M3WljeyNANOV06eXdXV7WTotobK4L7e3rT4eiz0eRFZKby7xsq2Ts+T7Tm
-         UBMA==
-X-Gm-Message-State: AOAM530cuSn2B7m+0ZiPudww8ahkb9JWkjUMRXav+4GI3eCHqxN2doP5
-        HK0aWpe/p3x/xi31L2zl8A2pKNMf370PFEy2TdU=
-X-Google-Smtp-Source: ABdhPJyatTENn271OLuIaur5t3+y2gHxklIu84d7pM4iShEIwW9cRvfCAeouJxgxBYusQnNQ2Avuxmc0QIYXk3j6epU=
-X-Received: by 2002:a67:2e16:: with SMTP id u22mr30101186vsu.12.1608175105696;
- Wed, 16 Dec 2020 19:18:25 -0800 (PST)
+        id S1728017AbgLQDVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 22:21:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32799 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727268AbgLQDVo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 22:21:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608175218;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WxrLNClNxtWpF/I0GtAX4YWo409+WYEx0FJBCyJA26c=;
+        b=TbTvdZK6aWftaIrTFvEOtp/IuXqhHjgABhgHt1bj1bNqqqeMBdsPgcFQ9rw6KkHXFL9krh
+        LYpe9zaf/hK2TTFMDLGMcODtM+fvGyOy0NV5TCC9WzBbKa5CWlNNktUmCPBSGjI/TDxQmb
+        wgG020reuOCc07Xkrl4t4vY66qcMNJ8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-395-vxQ0rYcbPOmjdfQFLGLTwA-1; Wed, 16 Dec 2020 22:20:13 -0500
+X-MC-Unique: vxQ0rYcbPOmjdfQFLGLTwA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E8037800D62;
+        Thu, 17 Dec 2020 03:20:11 +0000 (UTC)
+Received: from [10.72.12.223] (ovpn-12-223.pek2.redhat.com [10.72.12.223])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7104A10074E0;
+        Thu, 17 Dec 2020 03:19:58 +0000 (UTC)
+Subject: Re: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendmsg
+ fails
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        wangyunjian <wangyunjian@huawei.com>
+Cc:     netdev@vger.kernel.org, willemdebruijn.kernel@gmail.com,
+        virtualization@lists.linux-foundation.org,
+        jerry.lilijun@huawei.com, chenchanghu@huawei.com,
+        xudingke@huawei.com, brian.huangbin@huawei.com
+References: <cover.1608065644.git.wangyunjian@huawei.com>
+ <6b4c5fff8705dc4b5b6a25a45c50f36349350c73.1608065644.git.wangyunjian@huawei.com>
+ <20201216042027-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <482e71e6-2c85-346f-d7f9-10db6a5c716b@redhat.com>
+Date:   Thu, 17 Dec 2020 11:19:57 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20201206034408.31492-1-TheSven73@gmail.com> <20201206034408.31492-2-TheSven73@gmail.com>
- <20201208114314.743ee6ec@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <CAGngYiVSHRGC+eOCeF3Kyj_wOVqxJHvoc9fXRk-w+sVRjeSpcw@mail.gmail.com>
- <20201208225125.GA2602479@lunn.ch> <CAGngYiVp2u-A07rrkbeJCbqPW9efjkJUNC+NBxrtCM2JtXGpVA@mail.gmail.com>
- <3aed88da-8e82-3bd0-6822-d30f1bd5ec9e@gmail.com> <CAGngYiUvJE+L4-tw91ozPaq7mGUbh0PS0q7MpLnHVwDqGrFwEw@mail.gmail.com>
- <20201209140956.GC2611606@lunn.ch> <CAGngYiV=bzc72dpA6TJ7Bo2wcTihmB83HCU63pK4Z_jZ2frKww@mail.gmail.com>
- <b0779675-2bbd-d7c1-6e63-070a98dd5d41@gmail.com>
-In-Reply-To: <b0779675-2bbd-d7c1-6e63-070a98dd5d41@gmail.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Wed, 16 Dec 2020 22:18:14 -0500
-Message-ID: <CAGngYiWFKeXL6SFMEvVyj1rMU3WuC4jDJKGSY4FB_vd=cCZsiQ@mail.gmail.com>
-Subject: Re: [PATCH net v1 2/2] lan743x: boost performance: limit PCIe
- bandwidth requirement
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201216042027-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 8:01 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> x86 is a fully cache and device coherent memory architecture and there
-> are smarts like DDIO to bring freshly DMA'd data into the L3 cache
-> directly. For ARMv7, it depends on the hardware you have, most ARMv7
-> SoCs do not have hardware maintained coherency at all, this means that
-> doing the cache maintenance operations is costly. This is even true on
-> platforms that use an external cache controller (PL310).
 
-Thank you, that's quite fascinating. The functions my armv7 spends most
-time in during ethernet receive (eg. v7_dma_inv_range) do appear to be
-just nops on x86.
+On 2020/12/16 下午5:23, Michael S. Tsirkin wrote:
+> On Wed, Dec 16, 2020 at 04:20:37PM +0800, wangyunjian wrote:
+>> From: Yunjian Wang<wangyunjian@huawei.com>
+>>
+>> Currently we break the loop and wake up the vhost_worker when
+>> sendmsg fails. When the worker wakes up again, we'll meet the
+>> same error. This will cause high CPU load. To fix this issue,
+>> we can skip this description by ignoring the error. When we
+>> exceeds sndbuf, the return value of sendmsg is -EAGAIN. In
+>> the case we don't skip the description and don't drop packet.
+> Question: with this patch, what happens if sendmsg is interrupted by a signal?
+
+
+Since we use MSG_DONTWAIT, we don't need to care about signal I think.
+
+Thanks
+
+
+>
+>
+
