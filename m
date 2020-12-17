@@ -2,229 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DD652DD336
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 15:48:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FD902DD358
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 15:55:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726773AbgLQOsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 09:48:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34625 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726012AbgLQOsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 09:48:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608216428;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9dIgUyuEcjJkPwiD61XKrH42CdrbPPDWnkmKtHwrOL4=;
-        b=YhpuSTQjBIyRDSJ8Xh24xY3BV5YXxq+OEIb88xby/rDa5HTZl56ZH6IyumW2czBUBqkmRl
-        AyNKKbS6pVX9RdEodxmmZa5Ke2mppxmNY1qlS2s90/GDfgk88Wn1Uly8O4xP4PCTz9+0JP
-        KlpROsRsx3IifO82ElvTowSb1B+2ufE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-363-AVE7hUvePDCP6czJlEGH0Q-1; Thu, 17 Dec 2020 09:47:06 -0500
-X-MC-Unique: AVE7hUvePDCP6czJlEGH0Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1FB8551B6;
-        Thu, 17 Dec 2020 14:47:04 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A82E5D9E3;
-        Thu, 17 Dec 2020 14:46:56 +0000 (UTC)
-Date:   Thu, 17 Dec 2020 15:46:55 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH bpf-next V8 5/8] bpf: drop MTU check when doing TC-BPF
- redirect to ingress
-Message-ID: <20201217154655.42e89d08@carbon>
-In-Reply-To: <af28e4e7-8089-b252-3927-a962b98ad7b8@iogearbox.net>
-References: <160650034591.2890576.1092952641487480652.stgit@firesoul>
-        <160650040292.2890576.17040975200628427127.stgit@firesoul>
-        <af28e4e7-8089-b252-3927-a962b98ad7b8@iogearbox.net>
+        id S1728109AbgLQOz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 09:55:28 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:36348 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726569AbgLQOz2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 09:55:28 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BHEqAOf007500;
+        Thu, 17 Dec 2020 06:52:35 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=LHVXFgY28iTMTpgbMNDvqeDEq5m7ESsAw4UScbAYjD0=;
+ b=HSnpnyS1bdRJ2L3DjLPNohkh3UbQHVN6CL7St5Fsa3B49tVO2LKzF1CI3g+HrZppCWF0
+ QyCEjvWC3lb8iPTZvMEw+PDB6U+jdrdXtdaOEp+1gkZ4aE6fENNh/hSBKKEf+vAqRDRy
+ hIImxSiInEE+c+SN+FY24o9fJELcWf9gBcoJ3tWMTMmysWjRkGrMGWAdQaMsOe+lXYFQ
+ MoLRjRc3gYW6vMJHw2HKVyEJwpni671hyaNun8BRsgo45OQfnjLZcNED4WnyUHfhTFAD
+ z83R7MnYE1mE1kV9lOHnrHG7+5YiZMtjBkpgRp3xlUYELKEyVS9VNn9txoE4yzl31WUC 0w== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 35g4rp0sfv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 17 Dec 2020 06:52:35 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Dec
+ 2020 06:52:34 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Dec 2020 06:52:34 -0800
+Received: from stefan-pc.marvell.com (unknown [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 9A1E73F703F;
+        Thu, 17 Dec 2020 06:52:31 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH net v3] net: mvpp2: disable force link UP during port init procedure
+Date:   Thu, 17 Dec 2020 16:52:15 +0200
+Message-ID: <1608216735-14501-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-17_10:2020-12-15,2020-12-17 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Dec 2020 00:43:36 +0100
-Daniel Borkmann <daniel@iogearbox.net> wrote:
+From: Stefan Chulski <stefanc@marvell.com>
 
-> On 11/27/20 7:06 PM, Jesper Dangaard Brouer wrote:
-> > The use-case for dropping the MTU check when TC-BPF does redirect to
-> > ingress, is described by Eyal Birger in email[0]. The summary is the
-> > ability to increase packet size (e.g. with IPv6 headers for NAT64) and
-> > ingress redirect packet and let normal netstack fragment packet as needed.
-> > 
-> > [0] https://lore.kernel.org/netdev/CAHsH6Gug-hsLGHQ6N0wtixdOa85LDZ3HNRHVd0opR=19Qo4W4Q@mail.gmail.com/
-> > 
-> > V4:
-> >   - Keep net_device "up" (IFF_UP) check.
-> >   - Adjustment to handle bpf_redirect_peer() helper
-> > 
-> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > ---
-> >   include/linux/netdevice.h |   31 +++++++++++++++++++++++++++++--
-> >   net/core/dev.c            |   19 ++-----------------
-> >   net/core/filter.c         |   14 +++++++++++---
-> >   3 files changed, 42 insertions(+), 22 deletions(-)
-> > 
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index 7ce648a564f7..4a854e09e918 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -3917,11 +3917,38 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
-> >   bool is_skb_forwardable(const struct net_device *dev,
-> >   			const struct sk_buff *skb);
-> >   
-> > +static __always_inline bool __is_skb_forwardable(const struct net_device *dev,
-> > +						 const struct sk_buff *skb,
-> > +						 const bool check_mtu)
-> > +{
-> > +	const u32 vlan_hdr_len = 4; /* VLAN_HLEN */
-> > +	unsigned int len;
-> > +
-> > +	if (!(dev->flags & IFF_UP))
-> > +		return false;
-> > +
-> > +	if (!check_mtu)
-> > +		return true;
-> > +
-> > +	len = dev->mtu + dev->hard_header_len + vlan_hdr_len;
-> > +	if (skb->len <= len)
-> > +		return true;
-> > +
-> > +	/* if TSO is enabled, we don't care about the length as the packet
-> > +	 * could be forwarded without being segmented before
-> > +	 */
-> > +	if (skb_is_gso(skb))
-> > +		return true;
-> > +
-> > +	return false;
-> > +}
-> > +
-> >   static __always_inline int ____dev_forward_skb(struct net_device *dev,
-> > -					       struct sk_buff *skb)
-> > +					       struct sk_buff *skb,
-> > +					       const bool check_mtu)
-> >   {
-> >   	if (skb_orphan_frags(skb, GFP_ATOMIC) ||
-> > -	    unlikely(!is_skb_forwardable(dev, skb))) {
-> > +	    unlikely(!__is_skb_forwardable(dev, skb, check_mtu))) {
-> >   		atomic_long_inc(&dev->rx_dropped);
-> >   		kfree_skb(skb);
-> >   		return NET_RX_DROP;
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 60d325bda0d7..6ceb6412ee97 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -2189,28 +2189,13 @@ static inline void net_timestamp_set(struct sk_buff *skb)
-> >   
-> >   bool is_skb_forwardable(const struct net_device *dev, const struct sk_buff *skb)
-> >   {
-> > -	unsigned int len;
-> > -
-> > -	if (!(dev->flags & IFF_UP))
-> > -		return false;
-> > -
-> > -	len = dev->mtu + dev->hard_header_len + VLAN_HLEN;
-> > -	if (skb->len <= len)
-> > -		return true;
-> > -
-> > -	/* if TSO is enabled, we don't care about the length as the packet
-> > -	 * could be forwarded without being segmented before
-> > -	 */
-> > -	if (skb_is_gso(skb))
-> > -		return true;
-> > -
-> > -	return false;
-> > +	return __is_skb_forwardable(dev, skb, true);
-> >   }
-> >   EXPORT_SYMBOL_GPL(is_skb_forwardable);  
-> 
-> Only user of is_skb_forwardable() that is left after this patch is bridge, maybe
-> the whole thing should be moved into the header?
+Force link UP can be enabled by bootloader during tftpboot
+and breaks NFS support.
+Force link UP disabled during port init procedure.
 
-Well, yes, maybe... I just felt it belongs in another patchset.
+Fixes: f84bf386f395 ("net: mvpp2: initialize the GoP")
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
 
+Changes in v3:
+- Added Fixes tag.
+Changes in v2:
+- No changes.
 
-> >   int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
-> >   {
-> > -	int ret = ____dev_forward_skb(dev, skb);
-> > +	int ret = ____dev_forward_skb(dev, skb, true);
-> >   
-> >   	if (likely(!ret)) {
-> >   		skb->protocol = eth_type_trans(skb, dev);
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index d6125cfc49c3..4673afe59533 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -2083,13 +2083,21 @@ static const struct bpf_func_proto bpf_csum_level_proto = {
-> >   
-> >   static inline int __bpf_rx_skb(struct net_device *dev, struct sk_buff *skb)
-> >   {
-> > -	return dev_forward_skb(dev, skb);
-> > +	int ret = ____dev_forward_skb(dev, skb, false);
-> > +
-> > +	if (likely(!ret)) {
-> > +		skb->protocol = eth_type_trans(skb, dev);
-> > +		skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
-> > +		ret = netif_rx(skb);  
-> 
-> Why netif_rx() and not netif_rx_internal() as in dev_forward_skb() originally?
-> One extra call otherwise.
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-This is because the function below calls netif_rx(), which is just
-outside patch-diff-window.  Thus, it looked wrong/strange to call
-netif_rx_internal(), but sure I can use netif_rx_internal() instead.
-
-> 
-> > +	}
-> > +
-> > +	return ret;
-> >   }
-> >   
-> >   static inline int __bpf_rx_skb_no_mac(struct net_device *dev,
-> >   				      struct sk_buff *skb)
-> >   {
-> > -	int ret = ____dev_forward_skb(dev, skb);
-> > +	int ret = ____dev_forward_skb(dev, skb, false);
-> >   
-> >   	if (likely(!ret)) {
-> >   		skb->dev = dev;
-> > @@ -2480,7 +2488,7 @@ int skb_do_redirect(struct sk_buff *skb)
-> >   			goto out_drop;
-> >   		dev = ops->ndo_get_peer_dev(dev);
-> >   		if (unlikely(!dev ||
-> > -			     !is_skb_forwardable(dev, skb) ||
-> > +			     !__is_skb_forwardable(dev, skb, false) ||  
-> 
-> If we only use __is_skb_forwardable() with false directly here, maybe then
-> lets just have the !(dev->flags & IFF_UP) test here instead..
-
-Sure, let do that.
-
-> >   			     net_eq(net, dev_net(dev))))
-> >   			goto out_drop;
-> >   		skb->dev = dev;
-> > 
-
-
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index d2b0506..0ad3177 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -5479,7 +5479,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
+ 	struct mvpp2 *priv = port->priv;
+ 	struct mvpp2_txq_pcpu *txq_pcpu;
+ 	unsigned int thread;
+-	int queue, err;
++	int queue, err, val;
+ 
+ 	/* Checks for hardware constraints */
+ 	if (port->first_rxq + port->nrxqs >
+@@ -5493,6 +5493,18 @@ static int mvpp2_port_init(struct mvpp2_port *port)
+ 	mvpp2_egress_disable(port);
+ 	mvpp2_port_disable(port);
+ 
++	if (mvpp2_is_xlg(port->phy_interface)) {
++		val = readl(port->base + MVPP22_XLG_CTRL0_REG);
++		val &= ~MVPP22_XLG_CTRL0_FORCE_LINK_PASS;
++		val |= MVPP22_XLG_CTRL0_FORCE_LINK_DOWN;
++		writel(val, port->base + MVPP22_XLG_CTRL0_REG);
++	} else {
++		val = readl(port->base + MVPP2_GMAC_AUTONEG_CONFIG);
++		val &= ~MVPP2_GMAC_FORCE_LINK_PASS;
++		val |= MVPP2_GMAC_FORCE_LINK_DOWN;
++		writel(val, port->base + MVPP2_GMAC_AUTONEG_CONFIG);
++	}
++
+ 	port->tx_time_coal = MVPP2_TXDONE_COAL_USEC;
+ 
+ 	port->txqs = devm_kcalloc(dev, port->ntxqs, sizeof(*port->txqs),
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+1.9.1
 
