@@ -2,287 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A50D72DD4F4
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 17:08:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 215482DD4FB
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 17:12:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728418AbgLQQHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 11:07:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727769AbgLQQHs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 11:07:48 -0500
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15ABCC061794;
-        Thu, 17 Dec 2020 08:07:08 -0800 (PST)
-Received: by mail-ot1-x32e.google.com with SMTP id b24so10290787otj.0;
-        Thu, 17 Dec 2020 08:07:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eNrflhnat4e4hEDmIASVHKPqsG6rOPWoVu8ELuRKqGQ=;
-        b=RmydDMEBR8naEK20jfZKFVCNmXaxHCFZH0z513cS/Y0n0zsnvzcV5pz2ovSEW+6xmk
-         or/ol+0nA97ibk+WeOTGx67+B5bzmKdCyLINM0xMTwSC/C/p/XXxfBEeStMtNleTtxLo
-         UDs3Il5kcrBpox4ze40rt/rN1/UXjf78XJ90FYLmjp8NqiJ/PFj4xjNlxsx2XJoZqmwi
-         EYsGkbO0S5gR0NTXr+Q1fRBsknRALINLKyxR4ySXf+CanVEQiqsnvADaxva5p7LEWfqS
-         wo3ueRYlb2CPDiNToACHpTNwfYpWlYSiQ9/pjuDqZM1UtPlzm5fmRWUPDvlCIRIiWcmw
-         q4+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eNrflhnat4e4hEDmIASVHKPqsG6rOPWoVu8ELuRKqGQ=;
-        b=GOZfzVjZdRpfF3mnPB5DH/zSnAzzxP+64bBVyXsgfeNnK1K05hNRdN3xROZ7feAqdq
-         JHuZoKcCvIWUm8SQkRvf+STSIdjLLUvII02kTD4rKY/ltKn3GYzi1FRB7rKRkhiRnWMy
-         wdwoYFYh7P0ii0/f6Wy5XuOwIxR8fK8UL5Wlq4wR9dsPh6X01F+QTpEbZbeVDI1BTSz3
-         1UQn+MUXA2xQqkYrdUqw0lzArFGpMzq6JQPxNfOse434wt+KnPaR/4yucNQxB8NMtrR/
-         JpfMlZPYgEneadGbinK3oevP/ct/3fD7dPXUrUJau1irDhdlORynYrxAygGi0TPUqGU+
-         tcZw==
-X-Gm-Message-State: AOAM530AjSRTODmyDtUmjib2QOn78ZQyfu/4Zt9XPKCeUBn0ATngueWa
-        e3S1H5BDAOYdm/uBi6ZGE4A=
-X-Google-Smtp-Source: ABdhPJyGDq/YcwxBRfXA54+QkGci3T5z0W8OASUMhi2SS29NnU+iXblZ3LBKTRjB9HOIPBXkVtMxng==
-X-Received: by 2002:a05:6830:1398:: with SMTP id d24mr31178841otq.199.1608221227480;
-        Thu, 17 Dec 2020 08:07:07 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:4cdf:c7b2:9c38:dc7d])
-        by smtp.googlemail.com with ESMTPSA id l6sm1275815otf.34.2020.12.17.08.07.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Dec 2020 08:07:06 -0800 (PST)
-Subject: Re: [PATCHv12 bpf-next 1/6] bpf: run devmap xdp_prog on flush instead
- of bulk enqueue
-To:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Hangbin Liu <haliu@redhat.com>
-References: <20200907082724.1721685-1-liuhangbin@gmail.com>
- <20201216143036.2296568-1-liuhangbin@gmail.com>
- <20201216143036.2296568-2-liuhangbin@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <913a8e62-3f17-84ed-e4f5-099ba441508c@gmail.com>
-Date:   Thu, 17 Dec 2020 09:07:03 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
+        id S1727769AbgLQQLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 11:11:36 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:10869 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725468AbgLQQLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 11:11:35 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BHG5Bcd024387;
+        Thu, 17 Dec 2020 08:08:33 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=XCAW/nUK0AqsYCHlhDLr5vrqNA+IzYS7C8hKYpqIFBY=;
+ b=UJxgVdrontMzLoUgyuEdgcIQcmTXafH6VPpmiLOub5Laj6m2vVNKv7acFrPhi5vlOZcJ
+ NwKEU2oXp3TADGhNZWpyPl5S4bPGJxx0D3MPZj/XpqHV2sAto5KufV1hqp8ZfjsvEir8
+ X31qVYugoqCO4bI/bJwojTzUplJuXCeoQKUHWxmxtPxFUYsnSEjY1wxqAbJGC7z/RIEJ
+ +jMnRzPRgQDRDDFHnKfrfiT+sRXT4ypKflHe9Yy3wbm7CMSTNQyNZr2D2OTaqamUEX/M
+ UZbLX18mgnR09sP9EDPvbvCO9l5kqKh5y1PJ0XjQNAQbNSrAugCMJN/ig62cdsbdmBYF +w== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 35cx8tg3ve-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 17 Dec 2020 08:08:33 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Dec
+ 2020 08:08:26 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Dec
+ 2020 08:08:25 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Dec 2020 08:08:25 -0800
+Received: from stefan-pc.marvell.com (unknown [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 44C273F703F;
+        Thu, 17 Dec 2020 08:08:22 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <lironh@marvell.com>
+Subject: [PATCH net-next] net: mvpp2: prs: improve ipv4 parse flow
+Date:   Thu, 17 Dec 2020 18:07:58 +0200
+Message-ID: <1608221278-15043-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-In-Reply-To: <20201216143036.2296568-2-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-17_10:2020-12-15,2020-12-17 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/16/20 7:30 AM, Hangbin Liu wrote:
-> @@ -327,40 +328,92 @@ bool dev_map_can_have_prog(struct bpf_map *map)
->  	return false;
->  }
->  
-> +static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
-> +				struct xdp_frame **frames, int n,
-> +				struct net_device *dev)
-> +{
-> +	struct xdp_txq_info txq = { .dev = dev };
-> +	struct xdp_buff xdp;
-> +	int i, nframes = 0;
-> +
-> +	for (i = 0; i < n; i++) {
-> +		struct xdp_frame *xdpf = frames[i];
-> +		u32 act;
-> +		int err;
-> +
-> +		xdp_convert_frame_to_buff(xdpf, &xdp);
-> +		xdp.txq = &txq;
-> +
-> +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> +		switch (act) {
-> +		case XDP_PASS:
-> +			err = xdp_update_frame_from_buff(&xdp, xdpf);
-> +			if (unlikely(err < 0))
-> +				xdp_return_frame_rx_napi(xdpf);
-> +			else
-> +				frames[nframes++] = xdpf;
-> +			break;
-> +		default:
-> +			bpf_warn_invalid_xdp_action(act);
-> +			fallthrough;
-> +		case XDP_ABORTED:
-> +			trace_xdp_exception(dev, xdp_prog, act);
-> +			fallthrough;
-> +		case XDP_DROP:
-> +			xdp_return_frame_rx_napi(xdpf);
-> +			break;
-> +		}
-> +	}
-> +	return n - nframes; /* dropped frames count */
+From: Stefan Chulski <stefanc@marvell.com>
 
-just return nframes here, since ...
+Patch didn't fix any issue, just improve parse flow
+and align ipv4 parse flow with ipv6 parse flow.
 
-> +}
-> +
->  static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
->  {
->  	struct net_device *dev = bq->dev;
->  	int sent = 0, drops = 0, err = 0;
-> +	unsigned int cnt = bq->count;
-> +	unsigned int xdp_drop;
->  	int i;
->  
-> -	if (unlikely(!bq->count))
-> +	if (unlikely(!cnt))
->  		return;
->  
-> -	for (i = 0; i < bq->count; i++) {
-> +	for (i = 0; i < cnt; i++) {
->  		struct xdp_frame *xdpf = bq->q[i];
->  
->  		prefetch(xdpf);
->  	}
->  
-> -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
-> +	if (unlikely(bq->xdp_prog)) {
-> +		xdp_drop = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
-> +		cnt -= xdp_drop;
+Currently ipv4 kenguru parser first check IP protocol(TCP/UDP)
+and then destination IP address.
+Patch introduce reverse ipv4 parse, first destination IP address parsed
+and only then IP protocol.
+This would allow extend capability for packet L4 parsing and align ipv4
+parsing flow with ipv6.
 
-... that is apparently what you really want.
+Suggested-by: Liron Himi <lironh@marvell.com>
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c | 64 ++++++++++++++++----------
+ 1 file changed, 39 insertions(+), 25 deletions(-)
 
-> +		if (!cnt) {
-> +			sent = 0;
-> +			drops = xdp_drop;
-> +			goto out;
-> +		}
-> +	}
-> +
-> +	sent = dev->netdev_ops->ndo_xdp_xmit(dev, cnt, bq->q, flags);
->  	if (sent < 0) {
->  		err = sent;
->  		sent = 0;
->  		goto error;
->  	}
-> -	drops = bq->count - sent;
-> +	drops = (cnt - sent) + xdp_drop;
->  out:
->  	bq->count = 0;
->  
->  	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
->  	bq->dev_rx = NULL;
-> +	bq->xdp_prog = NULL;
->  	__list_del_clearprev(&bq->flush_node);
->  	return;
->  error:
->  	/* If ndo_xdp_xmit fails with an errno, no frames have been
->  	 * xmit'ed and it's our responsibility to them free all.
->  	 */
-> -	for (i = 0; i < bq->count; i++) {
-> +	for (i = 0; i < cnt; i++) {
->  		struct xdp_frame *xdpf = bq->q[i];
->  
->  		xdp_return_frame_rx_napi(xdpf);
-> @@ -408,7 +461,8 @@ struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
->   * Thus, safe percpu variable access.
->   */
->  static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
-> -		       struct net_device *dev_rx)
-> +		       struct net_device *dev_rx,
-> +		       struct bpf_dtab_netdev *dst)
->  {
->  	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
->  	struct xdp_dev_bulk_queue *bq = this_cpu_ptr(dev->xdp_bulkq);
-> @@ -423,6 +477,14 @@ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
->  	if (!bq->dev_rx)
->  		bq->dev_rx = dev_rx;
->  
-> +	/* Store (potential) xdp_prog that run before egress to dev as
-> +	 * part of bulk_queue.  This will be same xdp_prog for all
-> +	 * xdp_frame's in bulk_queue, because this per-CPU store must
-> +	 * be flushed from net_device drivers NAPI func end.
-> +	 */
-> +	if (dst && dst->xdp_prog && !bq->xdp_prog)
-> +		bq->xdp_prog = dst->xdp_prog;
-
-
-if you pass in xdp_prog through __xdp_enqueue you can reduce that to just:
-
-	if (!bq->xdp_prog)
-		bq->xdp_prog = xdp_prog;
-
-
->  	bq->q[bq->count++] = xdpf;
->  
->  	if (!bq->flush_node.prev)
-> @@ -430,7 +492,8 @@ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
->  }
->  
->  static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
-> -			       struct net_device *dev_rx)
-> +				struct net_device *dev_rx,
-> +				struct bpf_dtab_netdev *dst)
->  {
->  	struct xdp_frame *xdpf;
->  	int err;
-> @@ -446,42 +509,14 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
->  	if (unlikely(!xdpf))
->  		return -EOVERFLOW;
->  
-> -	bq_enqueue(dev, xdpf, dev_rx);
-> +	bq_enqueue(dev, xdpf, dev_rx, dst);
->  	return 0;
->  }
->  
-> -static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
-> -					 struct xdp_buff *xdp,
-> -					 struct bpf_prog *xdp_prog)
-> -{
-> -	struct xdp_txq_info txq = { .dev = dev };
-> -	u32 act;
-> -
-> -	xdp_set_data_meta_invalid(xdp);
-> -	xdp->txq = &txq;
-> -
-> -	act = bpf_prog_run_xdp(xdp_prog, xdp);
-> -	switch (act) {
-> -	case XDP_PASS:
-> -		return xdp;
-> -	case XDP_DROP:
-> -		break;
-> -	default:
-> -		bpf_warn_invalid_xdp_action(act);
-> -		fallthrough;
-> -	case XDP_ABORTED:
-> -		trace_xdp_exception(dev, xdp_prog, act);
-> -		break;
-> -	}
-> -
-> -	xdp_return_buff(xdp);
-> -	return NULL;
-> -}
-> -
->  int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
->  		    struct net_device *dev_rx)
->  {
-> -	return __xdp_enqueue(dev, xdp, dev_rx);
-> +	return __xdp_enqueue(dev, xdp, dev_rx, NULL);
->  }
->  
->  int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
-> @@ -489,12 +524,7 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
->  {
->  	struct net_device *dev = dst->dev;
->  
-> -	if (dst->xdp_prog) {
-> -		xdp = dev_map_run_prog(dev, xdp, dst->xdp_prog);
-> -		if (!xdp)
-> -			return 0;
-> -	}
-> -	return __xdp_enqueue(dev, xdp, dev_rx);
-> +	return __xdp_enqueue(dev, xdp, dev_rx, dst);
->  }
->  
->  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
-> 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
+index 5692c60..b9e5b08 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
+@@ -882,15 +882,15 @@ static int mvpp2_prs_ip4_proto(struct mvpp2 *priv, unsigned short proto,
+ 	mvpp2_prs_tcam_lu_set(&pe, MVPP2_PRS_LU_IP4);
+ 	pe.index = tid;
+ 
+-	/* Set next lu to IPv4 */
+-	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_IP4);
+-	mvpp2_prs_sram_shift_set(&pe, 12, MVPP2_PRS_SRAM_OP_SEL_SHIFT_ADD);
++	/* Finished: go to flowid generation */
++	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_FLOWS);
++	mvpp2_prs_sram_bits_set(&pe, MVPP2_PRS_SRAM_LU_GEN_BIT, 1);
++
+ 	/* Set L4 offset */
+ 	mvpp2_prs_sram_offset_set(&pe, MVPP2_PRS_SRAM_UDF_TYPE_L4,
+ 				  sizeof(struct iphdr) - 4,
+ 				  MVPP2_PRS_SRAM_OP_SEL_UDF_ADD);
+-	mvpp2_prs_sram_ai_update(&pe, MVPP2_PRS_IPV4_DIP_AI_BIT,
+-				 MVPP2_PRS_IPV4_DIP_AI_BIT);
++	mvpp2_prs_sram_ai_update(&pe, 0, MVPP2_PRS_IPV4_DIP_AI_BIT);
+ 	mvpp2_prs_sram_ri_update(&pe, ri, ri_mask | MVPP2_PRS_RI_IP_FRAG_MASK);
+ 
+ 	mvpp2_prs_tcam_data_byte_set(&pe, 2, 0x00,
+@@ -899,7 +899,8 @@ static int mvpp2_prs_ip4_proto(struct mvpp2 *priv, unsigned short proto,
+ 				     MVPP2_PRS_TCAM_PROTO_MASK);
+ 
+ 	mvpp2_prs_tcam_data_byte_set(&pe, 5, proto, MVPP2_PRS_TCAM_PROTO_MASK);
+-	mvpp2_prs_tcam_ai_update(&pe, 0, MVPP2_PRS_IPV4_DIP_AI_BIT);
++	mvpp2_prs_tcam_ai_update(&pe, MVPP2_PRS_IPV4_DIP_AI_BIT,
++				 MVPP2_PRS_IPV4_DIP_AI_BIT);
+ 	/* Unmask all ports */
+ 	mvpp2_prs_tcam_port_map_set(&pe, MVPP2_PRS_PORT_MASK);
+ 
+@@ -967,12 +968,17 @@ static int mvpp2_prs_ip4_cast(struct mvpp2 *priv, unsigned short l3_cast)
+ 		return -EINVAL;
+ 	}
+ 
+-	/* Finished: go to flowid generation */
+-	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_FLOWS);
+-	mvpp2_prs_sram_bits_set(&pe, MVPP2_PRS_SRAM_LU_GEN_BIT, 1);
++	/* Go again to ipv4 */
++	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_IP4);
+ 
+-	mvpp2_prs_tcam_ai_update(&pe, MVPP2_PRS_IPV4_DIP_AI_BIT,
++	mvpp2_prs_sram_ai_update(&pe, MVPP2_PRS_IPV4_DIP_AI_BIT,
+ 				 MVPP2_PRS_IPV4_DIP_AI_BIT);
++
++	/* Shift back to IPv4 proto */
++	mvpp2_prs_sram_shift_set(&pe, -12, MVPP2_PRS_SRAM_OP_SEL_SHIFT_ADD);
++
++	mvpp2_prs_tcam_ai_update(&pe, 0, MVPP2_PRS_IPV4_DIP_AI_BIT);
++
+ 	/* Unmask all ports */
+ 	mvpp2_prs_tcam_port_map_set(&pe, MVPP2_PRS_PORT_MASK);
+ 
+@@ -1392,8 +1398,9 @@ static int mvpp2_prs_etype_init(struct mvpp2 *priv)
+ 	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_IP4);
+ 	mvpp2_prs_sram_ri_update(&pe, MVPP2_PRS_RI_L3_IP4,
+ 				 MVPP2_PRS_RI_L3_PROTO_MASK);
+-	/* Skip eth_type + 4 bytes of IP header */
+-	mvpp2_prs_sram_shift_set(&pe, MVPP2_ETH_TYPE_LEN + 4,
++	/* goto ipv4 dest-address (skip eth_type + IP-header-size - 4) */
++	mvpp2_prs_sram_shift_set(&pe, MVPP2_ETH_TYPE_LEN +
++				 sizeof(struct iphdr) - 4,
+ 				 MVPP2_PRS_SRAM_OP_SEL_SHIFT_ADD);
+ 	/* Set L3 offset */
+ 	mvpp2_prs_sram_offset_set(&pe, MVPP2_PRS_SRAM_UDF_TYPE_L3,
+@@ -1597,8 +1604,9 @@ static int mvpp2_prs_pppoe_init(struct mvpp2 *priv)
+ 	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_IP4);
+ 	mvpp2_prs_sram_ri_update(&pe, MVPP2_PRS_RI_L3_IP4_OPT,
+ 				 MVPP2_PRS_RI_L3_PROTO_MASK);
+-	/* Skip eth_type + 4 bytes of IP header */
+-	mvpp2_prs_sram_shift_set(&pe, MVPP2_ETH_TYPE_LEN + 4,
++	/* goto ipv4 dest-address (skip eth_type + IP-header-size - 4) */
++	mvpp2_prs_sram_shift_set(&pe, MVPP2_ETH_TYPE_LEN +
++				 sizeof(struct iphdr) - 4,
+ 				 MVPP2_PRS_SRAM_OP_SEL_SHIFT_ADD);
+ 	/* Set L3 offset */
+ 	mvpp2_prs_sram_offset_set(&pe, MVPP2_PRS_SRAM_UDF_TYPE_L3,
+@@ -1727,19 +1735,20 @@ static int mvpp2_prs_ip4_init(struct mvpp2 *priv)
+ 	mvpp2_prs_tcam_lu_set(&pe, MVPP2_PRS_LU_IP4);
+ 	pe.index = MVPP2_PE_IP4_PROTO_UN;
+ 
+-	/* Set next lu to IPv4 */
+-	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_IP4);
+-	mvpp2_prs_sram_shift_set(&pe, 12, MVPP2_PRS_SRAM_OP_SEL_SHIFT_ADD);
++	/* Finished: go to flowid generation */
++	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_FLOWS);
++	mvpp2_prs_sram_bits_set(&pe, MVPP2_PRS_SRAM_LU_GEN_BIT, 1);
++
+ 	/* Set L4 offset */
+ 	mvpp2_prs_sram_offset_set(&pe, MVPP2_PRS_SRAM_UDF_TYPE_L4,
+ 				  sizeof(struct iphdr) - 4,
+ 				  MVPP2_PRS_SRAM_OP_SEL_UDF_ADD);
+-	mvpp2_prs_sram_ai_update(&pe, MVPP2_PRS_IPV4_DIP_AI_BIT,
+-				 MVPP2_PRS_IPV4_DIP_AI_BIT);
++	mvpp2_prs_sram_ai_update(&pe, 0, MVPP2_PRS_IPV4_DIP_AI_BIT);
+ 	mvpp2_prs_sram_ri_update(&pe, MVPP2_PRS_RI_L4_OTHER,
+ 				 MVPP2_PRS_RI_L4_PROTO_MASK);
+ 
+-	mvpp2_prs_tcam_ai_update(&pe, 0, MVPP2_PRS_IPV4_DIP_AI_BIT);
++	mvpp2_prs_tcam_ai_update(&pe, MVPP2_PRS_IPV4_DIP_AI_BIT,
++				 MVPP2_PRS_IPV4_DIP_AI_BIT);
+ 	/* Unmask all ports */
+ 	mvpp2_prs_tcam_port_map_set(&pe, MVPP2_PRS_PORT_MASK);
+ 
+@@ -1752,14 +1761,19 @@ static int mvpp2_prs_ip4_init(struct mvpp2 *priv)
+ 	mvpp2_prs_tcam_lu_set(&pe, MVPP2_PRS_LU_IP4);
+ 	pe.index = MVPP2_PE_IP4_ADDR_UN;
+ 
+-	/* Finished: go to flowid generation */
+-	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_FLOWS);
+-	mvpp2_prs_sram_bits_set(&pe, MVPP2_PRS_SRAM_LU_GEN_BIT, 1);
++	/* Go again to ipv4 */
++	mvpp2_prs_sram_next_lu_set(&pe, MVPP2_PRS_LU_IP4);
++
++	mvpp2_prs_sram_ai_update(&pe, MVPP2_PRS_IPV4_DIP_AI_BIT,
++				 MVPP2_PRS_IPV4_DIP_AI_BIT);
++
++	/* Shift back to IPv4 proto */
++	mvpp2_prs_sram_shift_set(&pe, -12, MVPP2_PRS_SRAM_OP_SEL_SHIFT_ADD);
++
+ 	mvpp2_prs_sram_ri_update(&pe, MVPP2_PRS_RI_L3_UCAST,
+ 				 MVPP2_PRS_RI_L3_ADDR_MASK);
++	mvpp2_prs_tcam_ai_update(&pe, 0, MVPP2_PRS_IPV4_DIP_AI_BIT);
+ 
+-	mvpp2_prs_tcam_ai_update(&pe, MVPP2_PRS_IPV4_DIP_AI_BIT,
+-				 MVPP2_PRS_IPV4_DIP_AI_BIT);
+ 	/* Unmask all ports */
+ 	mvpp2_prs_tcam_port_map_set(&pe, MVPP2_PRS_PORT_MASK);
+ 
+-- 
+1.9.1
 
