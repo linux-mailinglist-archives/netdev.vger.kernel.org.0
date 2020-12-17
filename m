@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 088812DCA27
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:51:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E442DCA2D
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:51:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726625AbgLQAtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 19:49:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46832 "EHLO mail.kernel.org"
+        id S1726699AbgLQAu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 19:50:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47388 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726380AbgLQAtT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 19:49:19 -0500
-Date:   Wed, 16 Dec 2020 16:48:38 -0800
+        id S1725974AbgLQAu4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 19:50:56 -0500
+Date:   Wed, 16 Dec 2020 16:50:14 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608166119;
-        bh=NLNYrstPfE0QbPFqmX/aq0W0aFwreKPMHKoYADup7O4=;
+        s=k20201202; t=1608166215;
+        bh=aMPx1BS1s58qCfJfx/6jW5tudNHYYiDs0NdSdwcgzks=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TW6bxj7FeH+GBQc7l6QMpag7hNqnreKCz6JXMDRyWX6Iv82o0LSK1Yrp1qI031hPs
-         bY0+t5W81WOc8RuIYMHIZTxU4vYSLMA1g+Ke+7qlOoizQWY2mGKCHVrDYNDPrMtjqB
-         iYHu/B3jvqLDVIuIyRXwuAhm1dW1vrWgw3y9IRvzj6OubwNSeCzODL0ajDhJQiczxM
-         ag0hHUm4iVZ+oppbwZNPTcDzINtgj9dJq4g81jb0JNXp3fFY4Pvd2NuxOMvcgbfllF
-         6uY0jwWGRvyz/lHS8VvWE3jEGwGaLQz5TN00KnRDXI1wcsy+9p5w25+nvheE2s1Vn6
-         iyP0aDd8nqMaw==
+        b=oe4gzm2cjDvXnY4xHqmz14hHXYEjOb4ck/MdE52UGC1PWlh99IKapNZm3cFNlS2p5
+         YjidQljex/vI3KZ6U66AZnCAHc+IuIn5t+T6vKZqrfEphMql1/hdZw8WqNLor+QbTo
+         lCfOpA73jjM5D5wHPHdOBGgsiSgFOT4kUEqZvs1K9lRfXzfAhJXCsfmBc0TJd+QGmA
+         SzsILHsKGyR5DUN4Fq2mS/37lgqLBk+AlKSt3XTH6fBkp2iVTffBk5CqRFuAbaUNp0
+         frxwq675h7E90ROu4RJJQb+cwY9p0T1qtDNQoVFmx6IygbmtNkRFcPJ4ZyaVRp7RR9
+         WNeQe32ehwOTg==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Gao Yan <gao.yanB@h3c.com>
-Cc:     <paulus@samba.org>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: remove disc_data_lock in ppp line discipline
-Message-ID: <20201216164838.55f939a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201215150054.570-1-gao.yanB@h3c.com>
-References: <20201215150054.570-1-gao.yanB@h3c.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] r8169: facilitate adding new chip versions
+Message-ID: <20201216165014.7d26f963@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <d2d55677-3b6a-9918-e177-9968fc59b460@gmail.com>
+References: <d2d55677-3b6a-9918-e177-9968fc59b460@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -37,33 +38,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 23:00:54 +0800 Gao Yan wrote:
-> tty layer provide tty->ldisc_sem lock to protect tty->disc_data;
-> For examlpe, when cpu A is running ppp_synctty_ioctl that
-> hold the tty->ldisc_sem, so if cpu B calls ppp_synctty_close,
-> it will wait until cpu A release tty->ldisc_sem. So I think it is
-> unnecessary to have the disc_data_lock;
+On Tue, 15 Dec 2020 17:15:05 +0100 Heiner Kallweit wrote:
+> Add a constant RTL_GIGA_MAC_MAX and use it if all new chip versions
+> handle a feature in a specific way. As result we have to touch less
+> places when adding support for a new chip version.
 > 
-> cpu A                           cpu B
-> tty_ioctl                       tty_reopen
->  ->hold tty->ldisc_sem            ->hold tty->ldisc_sem(write), failed
->  ->ld->ops->ioctl                 ->wait...
->  ->release tty->ldisc_sem         ->wait...OK,hold tty->ldisc_sem
->                                     ->tty_ldisc_reinit
->                                       ->tty_ldisc_close
->                                         ->ld->ops->close  
-> 
-> Signed-off-by: Gao Yan <gao.yanB@h3c.com>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-# Form letter - net-next is closed
-
-We have already sent the networking pull request for 5.11 and therefore
-net-next is closed for new drivers, features, code refactoring and
-optimizations. We are currently accepting bug fixes only.
-
-Please repost when net-next reopens after 5.11-rc1 is cut.
-
-Look out for the announcement on the mailing list or check:
-http://vger.kernel.org/~davem/net-next.html
-
-RFC patches sent for review only are obviously welcome at any time.
+Looks harmless, but also non-urgent so let's wait for net-next to open.
