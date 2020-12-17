@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A1622DCD20
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 08:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F142DCD2D
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 08:55:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727365AbgLQHx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 02:53:26 -0500
+        id S1727684AbgLQHxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 02:53:50 -0500
 Received: from esa.microchip.iphmx.com ([68.232.154.123]:62476 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727155AbgLQHxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 02:53:25 -0500
+        with ESMTP id S1727151AbgLQHxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 02:53:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1608191605; x=1639727605;
+  t=1608191625; x=1639727625;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CuMzI+OBRamjvRZF2kKrEAHaqnyVWGybQxNhLHvePYo=;
-  b=G4aWOAW//kx19JEVMjkyORjBC92bs7MFSN2nQMDsuY8E4Z9Do6PkyXTX
-   t6E0r4mXSIcUtDNy4kZx44gkY51hfOnbLL+vEGfEJB3LCDslqhlghue6Q
-   gE9xQFOsKXQdwig71VT+gY85tuTVjij23EO5CXMByUSdr0DY+aOmjH8Ps
-   2QY62lhMbjekLmTjlgfCrxTOr3cOXBvowvIGe71JlPQt0fekRbzCjegEn
-   lsWuFs8kPNjG0fk4WuV6raiOb2vaWjonqXQk3ZuZRVpCEJMAcE7AWKxs5
-   YiVAJLCYNeFhhK6rBwJ+o1ePC2FlcJYozLFhFECqz/xgti3yVjOIHrj/Q
-   Q==;
-IronPort-SDR: chOjlrWciLkDgSG1EwmxZPAfcrNbctE26+L2i1dMHM0k61UMcqEzi3/BE0gDlcSxyoWqgOOFRx
- 0anR946mt2by1+C4C/cncg6T3x3F7Xrx4Xc1lAZbYgq0D5NdzqaynMJOHZuxCuXaWqbU8HYfEa
- 1c7DrBUhBUKfS08CqurP0p8rlyM4sSXdlMCqwMOH4KwD4f+qhEVQFVo1Dall1knhP+ZLM2sMNm
- CbxUUQnwZChlWNIMySbv3E6fl6QAEhowsNCz4A4n78o1lv8IgfstVSIrgkYC+KujPF1iFtToWF
- 41w=
+  bh=aFbjaDH9EXbm/Bi3gK+vbc8GnyrplszqMPX9sG16bN4=;
+  b=e1ZroX1rnt/yQWwGvNfvjkjYsDI8WzZvJI9J07rk2LsJVb+x+HNmUGoA
+   L5yS8hrHqZ0QUvw23qCzPk19jWNyP2uyDsvWI6RJFGzcUK/7Kjs3DgIgS
+   3piK3NAEcsX39XSJxwsjWsqVZeQBuA3+5tA9h8gQzorWIg9XSzZXoF1jP
+   MJkNkdNaGLrxmUM+hxkS2V32IvM9dzslQiUuYvvjt/8VebkqWwC6rhF98
+   zWS6YzbCbb4rIL1k+c3iKLWw4aX0UTBEmfL/9lZjUcm3YcSRP19lYpNWS
+   DDgLJ5OFdexcPl75yk+EHJt1fdnjB38RW49Dz2BB34wmvqJiXfYJ0orKD
+   w==;
+IronPort-SDR: pXJTc6yHSA/cdnMx5K/tT9gtj1DCsTPWyihyCfWWB12eP9DDsOo06vbSKUdZcwIkYgMSVHaP2l
+ laeFTp6miANxR8cTlwm4ZfXt4q/n7CLQTNXj2nwYVUy/WbcBdHhmou2IwC9pIHk92rAKABRz4J
+ 1rwa+GRR0XWjzSlZVOihbs+TGdxUDbP3lc5EaTEYNP5jb+vM6/Higx0o6n4DcKrrIyvyE4oqEJ
+ y+Fpws3prLlOqlXGqRTa9kIq2YiW/XscCs0l4DozS3GCWUAXu9URye5+oBitJLvwgSG51qMy0d
+ 74I=
 X-IronPort-AV: E=Sophos;i="5.78,426,1599548400"; 
-   d="scan'208";a="97422899"
+   d="scan'208";a="97422906"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Dec 2020 00:52:09 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Dec 2020 00:52:13 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 17 Dec 2020 00:52:08 -0700
+ 15.1.1979.3; Thu, 17 Dec 2020 00:52:12 -0700
 Received: from mchp-dev-shegelun.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Thu, 17 Dec 2020 00:52:05 -0700
+ 15.1.1979.3 via Frontend Transport; Thu, 17 Dec 2020 00:52:09 -0700
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -57,9 +57,9 @@ CC:     Steen Hegelund <steen.hegelund@microchip.com>,
         Arnd Bergmann <arnd@arndb.de>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [RFC PATCH v2 6/8] net: sparx5: add calendar bandwidth allocation support
-Date:   Thu, 17 Dec 2020 08:51:32 +0100
-Message-ID: <20201217075134.919699-7-steen.hegelund@microchip.com>
+Subject: [RFC PATCH v2 7/8] net: sparx5: add ethtool configuration and statistics support
+Date:   Thu, 17 Dec 2020 08:51:33 +0100
+Message-ID: <20201217075134.919699-8-steen.hegelund@microchip.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201217075134.919699-1-steen.hegelund@microchip.com>
 References: <20201217075134.919699-1-steen.hegelund@microchip.com>
@@ -70,646 +70,1030 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This configures the Sparx5 calendars according to the bandwidth
-requested in the Device Tree nodes.
-It also checks if the total requested bandwidth is within the
-specs of the detected Sparx5 models limits.
+This adds statistic counters for the network interfaces provided
+by the driver.  It also adds CPU port counters (which are not
+exposed by ethtool).
+This also adds support for configuring the network interface
+parameters via ethtool: speed, duplex, aneg etc.
 
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
 Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
 ---
- .../net/ethernet/microchip/sparx5/Makefile    |   2 +-
- .../microchip/sparx5/sparx5_calendar.c        | 595 ++++++++++++++++++
- .../ethernet/microchip/sparx5/sparx5_main.c   |   8 +
- .../ethernet/microchip/sparx5/sparx5_main.h   |   4 +
- 4 files changed, 608 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_calendar.c
+ .../net/ethernet/microchip/sparx5/Makefile    |   3 +-
+ .../microchip/sparx5/sparx5_ethtool.c         | 979 ++++++++++++++++++
+ .../ethernet/microchip/sparx5/sparx5_main.c   |   5 +
+ .../ethernet/microchip/sparx5/sparx5_main.h   |  17 +-
+ .../ethernet/microchip/sparx5/sparx5_netdev.c |   2 +
+ 5 files changed, 1001 insertions(+), 5 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
 
 diff --git a/drivers/net/ethernet/microchip/sparx5/Makefile b/drivers/net/ethernet/microchip/sparx5/Makefile
-index 32e0691e328a..17654ab90ce1 100644
+index 17654ab90ce1..de3155cd582c 100644
 --- a/drivers/net/ethernet/microchip/sparx5/Makefile
 +++ b/drivers/net/ethernet/microchip/sparx5/Makefile
-@@ -7,4 +7,4 @@ obj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o
+@@ -7,4 +7,5 @@ obj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o
  
  sparx5-switch-objs  := sparx5_main.o sparx5_switchdev.o \
   sparx5_vlan.o sparx5_mactable.o sparx5_packet.o \
-- sparx5_netdev.o sparx5_port.o sparx5_phylink.o
-+ sparx5_netdev.o sparx5_port.o sparx5_phylink.o sparx5_calendar.o
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_calendar.c b/drivers/net/ethernet/microchip/sparx5/sparx5_calendar.c
+- sparx5_netdev.o sparx5_port.o sparx5_phylink.o sparx5_calendar.o
++ sparx5_ethtool.o sparx5_netdev.o sparx5_port.o \
++ sparx5_phylink.o sparx5_calendar.o
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
 new file mode 100644
-index 000000000000..932c897c72a7
+index 000000000000..f72f2126fea2
 --- /dev/null
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_calendar.c
-@@ -0,0 +1,595 @@
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
+@@ -0,0 +1,979 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/* Microchip Sparx5 Switch driver
 + *
 + * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
 + */
 +
-+#include <linux/module.h>
-+#include <linux/device.h>
++#include <linux/ethtool.h>
 +
 +#include "sparx5_main.h"
++#include "sparx5_port.h"
 +
-+/* QSYS calendar information */
-+#define SPX5_PORTS_PER_CALREG          10  /* Ports mapped in a calendar register */
-+#define SPX5_CALBITS_PER_PORT          3   /* Bit per port in calendar register */
++/* Add a potentially wrapping 32 bit value to a 64 bit counter */
++static void sparx5_update_counter(u64 *cnt, u32 val)
++{
++	if (val < (*cnt & U32_MAX))
++		*cnt += (u64)1 << 32; /* value has wrapped */
 +
-+/* DSM calendar information */
-+#define SPX5_DSM_CAL_LEN               64
-+#define SPX5_DSM_CAL_EMPTY             0xFFFF
-+#define SPX5_DSM_CAL_MAX_DEVS_PER_TAXI 13
-+#define SPX5_DSM_CAL_TAXIS             8
-+#define SPX5_DSM_CAL_BW_LOSS           553
++	*cnt = (*cnt & ~(u64)U32_MAX) + val;
++}
 +
-+#define SPX5_TAXI_PORT_MAX             70
++/* Get a set of Queue System statistics */
++static void sparx5_xqs_prio_stats(struct sparx5 *sparx5,
++				  u32 addr,
++				  u64 *stats)
++{
++	int idx;
 +
-+#define SPEED_12500                    12500
++	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++addr, ++stats)
++		sparx5_update_counter(stats, spx5_rd(sparx5, XQS_CNT(addr)));
++}
 +
-+/* Maps from taxis to port numbers */
-+static u32 sparx5_taxi_ports[SPX5_DSM_CAL_TAXIS][SPX5_DSM_CAL_MAX_DEVS_PER_TAXI] = {
-+	{57, 12, 0, 1, 2, 16, 17, 18, 19, 20, 21, 22, 23},
-+	{58, 13, 3, 4, 5, 24, 25, 26, 27, 28, 29, 30, 31},
-+	{59, 14, 6, 7, 8, 32, 33, 34, 35, 36, 37, 38, 39},
-+	{60, 15, 9, 10, 11, 40, 41, 42, 43, 44, 45, 46, 47},
-+	{61, 48, 49, 50, 99, 99, 99, 99, 99, 99, 99, 99, 99},
-+	{62, 51, 52, 53, 99, 99, 99, 99, 99, 99, 99, 99, 99},
-+	{56, 63, 54, 55, 99, 99, 99, 99, 99, 99, 99, 99, 99},
-+	{64, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99},
++#define SPX5_STAT_GET(sname)        portstats[spx5_stats_##sname]
++#define SPX5_STAT_SUM(sname)        (portstats[spx5_stats_##sname] + \
++				     portstats[spx5_stats_pmac_##sname])
++#define SPX5_STAT_XQS_PRIOS_COUNTER_SUM(sname)    \
++	(portstats[spx5_stats_green_p0_##sname] + \
++	portstats[spx5_stats_green_p1_##sname] +  \
++	portstats[spx5_stats_green_p2_##sname] +  \
++	portstats[spx5_stats_green_p3_##sname] +  \
++	portstats[spx5_stats_green_p4_##sname] +  \
++	portstats[spx5_stats_green_p5_##sname] +  \
++	portstats[spx5_stats_green_p6_##sname] +  \
++	portstats[spx5_stats_green_p7_##sname] +  \
++	portstats[spx5_stats_yellow_p0_##sname] + \
++	portstats[spx5_stats_yellow_p1_##sname] + \
++	portstats[spx5_stats_yellow_p2_##sname] + \
++	portstats[spx5_stats_yellow_p3_##sname] + \
++	portstats[spx5_stats_yellow_p4_##sname] + \
++	portstats[spx5_stats_yellow_p5_##sname] + \
++	portstats[spx5_stats_yellow_p6_##sname] + \
++	portstats[spx5_stats_yellow_p7_##sname])
++
++enum sparx5_stats_entry {
++	spx5_stats_rx_in_bytes,
++	spx5_stats_rx_symbol_err,
++	spx5_stats_rx_pause,
++	spx5_stats_rx_unsup_opcode,
++	spx5_stats_rx_ok_bytes,
++	spx5_stats_rx_bad_bytes,
++	spx5_stats_rx_unicast,
++	spx5_stats_rx_multicast,
++	spx5_stats_rx_broadcast,
++	spx5_stats_rx_crc_err,
++	spx5_stats_rx_undersize,
++	spx5_stats_rx_fragments,
++	spx5_stats_rx_inrangelen_err,
++	spx5_stats_rx_outofrangelen_err,
++	spx5_stats_rx_oversize,
++	spx5_stats_rx_jabbers,
++	spx5_stats_rx_size64,
++	spx5_stats_rx_size65_127,
++	spx5_stats_rx_size128_255,
++	spx5_stats_rx_size256_511,
++	spx5_stats_rx_size512_1023,
++	spx5_stats_rx_size1024_1518,
++	spx5_stats_rx_size1519_max,
++	spx5_stats_pmac_rx_symbol_err,
++	spx5_stats_pmac_rx_pause,
++	spx5_stats_pmac_rx_unsup_opcode,
++	spx5_stats_pmac_rx_ok_bytes,
++	spx5_stats_pmac_rx_bad_bytes,
++	spx5_stats_pmac_rx_unicast,
++	spx5_stats_pmac_rx_multicast,
++	spx5_stats_pmac_rx_broadcast,
++	spx5_stats_pmac_rx_crc_err,
++	spx5_stats_pmac_rx_undersize,
++	spx5_stats_pmac_rx_fragments,
++	spx5_stats_pmac_rx_inrangelen_err,
++	spx5_stats_pmac_rx_outofrangelen_err,
++	spx5_stats_pmac_rx_oversize,
++	spx5_stats_pmac_rx_jabbers,
++	spx5_stats_pmac_rx_size64,
++	spx5_stats_pmac_rx_size65_127,
++	spx5_stats_pmac_rx_size128_255,
++	spx5_stats_pmac_rx_size256_511,
++	spx5_stats_pmac_rx_size512_1023,
++	spx5_stats_pmac_rx_size1024_1518,
++	spx5_stats_pmac_rx_size1519_max,
++	spx5_stats_green_p0_rx_fwd,
++	spx5_stats_green_p1_rx_fwd,
++	spx5_stats_green_p2_rx_fwd,
++	spx5_stats_green_p3_rx_fwd,
++	spx5_stats_green_p4_rx_fwd,
++	spx5_stats_green_p5_rx_fwd,
++	spx5_stats_green_p6_rx_fwd,
++	spx5_stats_green_p7_rx_fwd,
++	spx5_stats_yellow_p0_rx_fwd,
++	spx5_stats_yellow_p1_rx_fwd,
++	spx5_stats_yellow_p2_rx_fwd,
++	spx5_stats_yellow_p3_rx_fwd,
++	spx5_stats_yellow_p4_rx_fwd,
++	spx5_stats_yellow_p5_rx_fwd,
++	spx5_stats_yellow_p6_rx_fwd,
++	spx5_stats_yellow_p7_rx_fwd,
++	spx5_stats_green_p0_rx_port_drop,
++	spx5_stats_green_p1_rx_port_drop,
++	spx5_stats_green_p2_rx_port_drop,
++	spx5_stats_green_p3_rx_port_drop,
++	spx5_stats_green_p4_rx_port_drop,
++	spx5_stats_green_p5_rx_port_drop,
++	spx5_stats_green_p6_rx_port_drop,
++	spx5_stats_green_p7_rx_port_drop,
++	spx5_stats_yellow_p0_rx_port_drop,
++	spx5_stats_yellow_p1_rx_port_drop,
++	spx5_stats_yellow_p2_rx_port_drop,
++	spx5_stats_yellow_p3_rx_port_drop,
++	spx5_stats_yellow_p4_rx_port_drop,
++	spx5_stats_yellow_p5_rx_port_drop,
++	spx5_stats_yellow_p6_rx_port_drop,
++	spx5_stats_yellow_p7_rx_port_drop,
++	spx5_stats_rx_local_drop,
++	spx5_stats_rx_port_policer_drop,
++	spx5_stats_tx_out_bytes,
++	spx5_stats_tx_pause,
++	spx5_stats_tx_ok_bytes,
++	spx5_stats_tx_unicast,
++	spx5_stats_tx_multicast,
++	spx5_stats_tx_broadcast,
++	spx5_stats_tx_size64,
++	spx5_stats_tx_size65_127,
++	spx5_stats_tx_size128_255,
++	spx5_stats_tx_size256_511,
++	spx5_stats_tx_size512_1023,
++	spx5_stats_tx_size1024_1518,
++	spx5_stats_tx_size1519_max,
++	spx5_stats_tx_multi_coll,
++	spx5_stats_tx_late_coll,
++	spx5_stats_tx_xcoll,
++	spx5_stats_tx_defer,
++	spx5_stats_tx_xdefer,
++	spx5_stats_tx_backoff1,
++	spx5_stats_pmac_tx_pause,
++	spx5_stats_pmac_tx_ok_bytes,
++	spx5_stats_pmac_tx_unicast,
++	spx5_stats_pmac_tx_multicast,
++	spx5_stats_pmac_tx_broadcast,
++	spx5_stats_pmac_tx_size64,
++	spx5_stats_pmac_tx_size65_127,
++	spx5_stats_pmac_tx_size128_255,
++	spx5_stats_pmac_tx_size256_511,
++	spx5_stats_pmac_tx_size512_1023,
++	spx5_stats_pmac_tx_size1024_1518,
++	spx5_stats_pmac_tx_size1519_max,
++	spx5_stats_green_p0_tx_port,
++	spx5_stats_green_p1_tx_port,
++	spx5_stats_green_p2_tx_port,
++	spx5_stats_green_p3_tx_port,
++	spx5_stats_green_p4_tx_port,
++	spx5_stats_green_p5_tx_port,
++	spx5_stats_green_p6_tx_port,
++	spx5_stats_green_p7_tx_port,
++	spx5_stats_yellow_p0_tx_port,
++	spx5_stats_yellow_p1_tx_port,
++	spx5_stats_yellow_p2_tx_port,
++	spx5_stats_yellow_p3_tx_port,
++	spx5_stats_yellow_p4_tx_port,
++	spx5_stats_yellow_p5_tx_port,
++	spx5_stats_yellow_p6_tx_port,
++	spx5_stats_yellow_p7_tx_port,
++	spx5_stats_tx_local_drop,
 +};
 +
-+struct sparx5_calendar_data {
-+	u32 schedule[SPX5_DSM_CAL_LEN];
-+	u32 avg_dist[SPX5_DSM_CAL_MAX_DEVS_PER_TAXI];
-+	u32 taxi_ports[SPX5_DSM_CAL_MAX_DEVS_PER_TAXI];
-+	u32 taxi_speeds[SPX5_DSM_CAL_MAX_DEVS_PER_TAXI];
-+	u32 dev_slots[SPX5_DSM_CAL_MAX_DEVS_PER_TAXI];
-+	u32 new_slots[SPX5_DSM_CAL_LEN];
-+	u32 temp_sched[SPX5_DSM_CAL_LEN];
-+	u32 indices[SPX5_DSM_CAL_LEN];
-+	u32 short_list[SPX5_DSM_CAL_LEN];
-+	u32 long_list[SPX5_DSM_CAL_LEN];
++static const char *const sparx5_stats_layout[] = {
++	"rx_in_bytes",
++	"rx_symbol_err",
++	"rx_pause",
++	"rx_unsup_opcode",
++	"rx_ok_bytes",
++	"rx_bad_bytes",
++	"rx_unicast",
++	"rx_multicast",
++	"rx_broadcast",
++	"rx_crc_err",
++	"rx_undersize",
++	"rx_fragments",
++	"rx_inrangelen_err",
++	"rx_outofrangelen_err",
++	"rx_oversize",
++	"rx_jabbers",
++	"rx_size64",
++	"rx_size65_127",
++	"rx_size128_255",
++	"rx_size256_511",
++	"rx_size512_1023",
++	"rx_size1024_1518",
++	"rx_size1519_max",
++	"pmac_rx_symbol_err",
++	"pmac_rx_pause",
++	"pmac_rx_unsup_opcode",
++	"pmac_rx_ok_bytes",
++	"pmac_rx_bad_bytes",
++	"pmac_rx_unicast",
++	"pmac_rx_multicast",
++	"pmac_rx_broadcast",
++	"pmac_rx_crc_err",
++	"pmac_rx_undersize",
++	"pmac_rx_fragments",
++	"pmac_rx_inrangelen_err",
++	"pmac_rx_outofrangelen_err",
++	"pmac_rx_oversize",
++	"pmac_rx_jabbers",
++	"pmac_rx_size64",
++	"pmac_rx_size65_127",
++	"pmac_rx_size128_255",
++	"pmac_rx_size256_511",
++	"pmac_rx_size512_1023",
++	"pmac_rx_size1024_1518",
++	"pmac_rx_size1519_max",
++	"rx_fwd_green_p0_q",
++	"rx_fwd_green_p1_q",
++	"rx_fwd_green_p2_q",
++	"rx_fwd_green_p3_q",
++	"rx_fwd_green_p4_q",
++	"rx_fwd_green_p5_q",
++	"rx_fwd_green_p6_q",
++	"rx_fwd_green_p7_q",
++	"rx_fwd_yellow_p0_q",
++	"rx_fwd_yellow_p1_q",
++	"rx_fwd_yellow_p2_q",
++	"rx_fwd_yellow_p3_q",
++	"rx_fwd_yellow_p4_q",
++	"rx_fwd_yellow_p5_q",
++	"rx_fwd_yellow_p6_q",
++	"rx_fwd_yellow_p7_q",
++	"rx_port_drop_green_p0_q",
++	"rx_port_drop_green_p1_q",
++	"rx_port_drop_green_p2_q",
++	"rx_port_drop_green_p3_q",
++	"rx_port_drop_green_p4_q",
++	"rx_port_drop_green_p5_q",
++	"rx_port_drop_green_p6_q",
++	"rx_port_drop_green_p7_q",
++	"rx_port_drop_yellow_p0_q",
++	"rx_port_drop_yellow_p1_q",
++	"rx_port_drop_yellow_p2_q",
++	"rx_port_drop_yellow_p3_q",
++	"rx_port_drop_yellow_p4_q",
++	"rx_port_drop_yellow_p5_q",
++	"rx_port_drop_yellow_p6_q",
++	"rx_port_drop_yellow_p7_q",
++	"rx_local_drop",
++	"rx_port_policer_drop",
++	"tx_out_bytes",
++	"tx_pause",
++	"tx_ok_bytes",
++	"tx_unicast",
++	"tx_multicast",
++	"tx_broadcast",
++	"tx_size64",
++	"tx_size65_127",
++	"tx_size128_255",
++	"tx_size256_511",
++	"tx_size512_1023",
++	"tx_size1024_1518",
++	"tx_size1519_max",
++	"tx_multi_coll",
++	"tx_late_coll",
++	"tx_xcoll",
++	"tx_defer",
++	"tx_xdefer",
++	"tx_backoff1",
++	"pmac_tx_pause",
++	"pmac_tx_ok_bytes",
++	"pmac_tx_unicast",
++	"pmac_tx_multicast",
++	"pmac_tx_broadcast",
++	"pmac_tx_size64",
++	"pmac_tx_size65_127",
++	"pmac_tx_size128_255",
++	"pmac_tx_size256_511",
++	"pmac_tx_size512_1023",
++	"pmac_tx_size1024_1518",
++	"pmac_tx_size1519_max",
++	"tx_port_green_p0_q",
++	"tx_port_green_p1_q",
++	"tx_port_green_p2_q",
++	"tx_port_green_p3_q",
++	"tx_port_green_p4_q",
++	"tx_port_green_p5_q",
++	"tx_port_green_p6_q",
++	"tx_port_green_p7_q",
++	"tx_port_yellow_p0_q",
++	"tx_port_yellow_p1_q",
++	"tx_port_yellow_p2_q",
++	"tx_port_yellow_p3_q",
++	"tx_port_yellow_p4_q",
++	"tx_port_yellow_p5_q",
++	"tx_port_yellow_p6_q",
++	"tx_port_yellow_p7_q",
++	"tx_local_drop",
 +};
 +
-+static u32 sparx5_target_bandwidth(struct sparx5 *sparx5)
++/* Device Statistics */
++static void sparx5_get_device_stats(struct sparx5 *sparx5, int portno)
 +{
-+	switch (sparx5->target_ct) {
-+	case SPX5_TARGET_CT_7546:
-+	case SPX5_TARGET_CT_7546TSN:
-+		return 65000;
-+	case SPX5_TARGET_CT_7549:
-+	case SPX5_TARGET_CT_7549TSN:
-+		return 91000;
-+	case SPX5_TARGET_CT_7552:
-+	case SPX5_TARGET_CT_7552TSN:
-+		return 129000;
-+	case SPX5_TARGET_CT_7556:
-+	case SPX5_TARGET_CT_7556TSN:
-+		return 161000;
-+	case SPX5_TARGET_CT_7558:
-+	case SPX5_TARGET_CT_7558TSN:
-+		return 201000;
-+	default:
-+		return 0;
-+	}
++	u64 *portstats = &sparx5->stats[portno * sparx5->num_stats];
++	u32 dev = sparx5_to_high_dev(portno);
++	u32 tinst = sparx5_port_dev_index(portno);
++	void __iomem *inst = spx5_inst_get(sparx5, dev, tinst);
++
++	sparx5_update_counter(&portstats[spx5_stats_rx_in_bytes],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_IN_BYTES_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_symbol_err],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_SYMBOL_ERR_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_pause],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_PAUSE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_unsup_opcode],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_UNSUP_OPCODE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_ok_bytes],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_OK_BYTES_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_bad_bytes],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_BAD_BYTES_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_unicast],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_UC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_multicast],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_MC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_broadcast],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_BC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_crc_err],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_CRC_ERR_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_undersize],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_UNDERSIZE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_fragments],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_FRAGMENTS_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_inrangelen_err],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_IN_RANGE_LEN_ERR_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_outofrangelen_err],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_OUT_OF_RANGE_LEN_ERR_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_oversize],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_OVERSIZE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_jabbers],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_JABBERS_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size64],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_SIZE64_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size65_127],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_SIZE65TO127_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size128_255],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_SIZE128TO255_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size256_511],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_SIZE256TO511_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size512_1023],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_SIZE512TO1023_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size1024_1518],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_SIZE1024TO1518_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size1519_max],
++			      spx5_inst_rd(inst,
++					   DEV5G_RX_SIZE1519TOMAX_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_symbol_err],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_SYMBOL_ERR_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_pause],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_PAUSE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_unsup_opcode],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_UNSUP_OPCODE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_ok_bytes],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_OK_BYTES_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_bad_bytes],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_BAD_BYTES_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_unicast],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_UC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_multicast],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_MC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_broadcast],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_BC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_crc_err],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_CRC_ERR_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_undersize],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_UNDERSIZE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_fragments],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_FRAGMENTS_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_inrangelen_err],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_IN_RANGE_LEN_ERR_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_outofrangelen_err],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_OUT_OF_RANGE_LEN_ERR_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_oversize],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_OVERSIZE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_jabbers],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_JABBERS_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size64],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_SIZE64_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size65_127],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_SIZE65TO127_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size128_255],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_SIZE128TO255_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size256_511],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_SIZE256TO511_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size512_1023],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_SIZE512TO1023_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size1024_1518],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_SIZE1024TO1518_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size1519_max],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_RX_SIZE1519TOMAX_CNT(tinst)));
++	sparx5_xqs_prio_stats(sparx5,
++			      0,
++			      &portstats[spx5_stats_green_p0_rx_fwd]);
++	sparx5_xqs_prio_stats(sparx5,
++			      16,
++			      &portstats[spx5_stats_green_p0_rx_port_drop]);
++	sparx5_update_counter(&portstats[spx5_stats_rx_local_drop],
++			      spx5_rd(sparx5, XQS_CNT(32)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_port_policer_drop],
++			      spx5_rd(sparx5,
++				      ANA_AC_PORT_STAT_LSB_CNT(portno, 1)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_out_bytes],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_OUT_BYTES_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_pause],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_PAUSE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_ok_bytes],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_OK_BYTES_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_unicast],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_UC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_multicast],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_MC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_broadcast],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_BC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size64],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_SIZE64_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size65_127],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_SIZE65TO127_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size128_255],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_SIZE128TO255_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size256_511],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_SIZE256TO511_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size512_1023],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_SIZE512TO1023_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size1024_1518],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_SIZE1024TO1518_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size1519_max],
++			      spx5_inst_rd(inst,
++					   DEV5G_TX_SIZE1519TOMAX_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_pause],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_PAUSE_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_ok_bytes],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_OK_BYTES_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_unicast],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_UC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_multicast],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_MC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_broadcast],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_BC_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size64],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_SIZE64_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size65_127],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_SIZE65TO127_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size128_255],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_SIZE128TO255_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size256_511],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_SIZE256TO511_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size512_1023],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_SIZE512TO1023_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size1024_1518],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_SIZE1024TO1518_CNT(tinst)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size1519_max],
++			      spx5_inst_rd(inst,
++					   DEV5G_PMAC_TX_SIZE1519TOMAX_CNT(tinst)));
++	sparx5_xqs_prio_stats(sparx5,
++			      256,
++			      &portstats[spx5_stats_green_p0_tx_port]);
++	sparx5_update_counter(&portstats[spx5_stats_tx_local_drop],
++			      spx5_rd(sparx5, XQS_CNT(272)));
 +}
 +
-+/* This is used in calendar configuration */
-+enum sparx5_cal_bw {
-+	SPX5_CAL_SPEED_NONE = 0,
-+	SPX5_CAL_SPEED_1G   = 1,
-+	SPX5_CAL_SPEED_2G5  = 2,
-+	SPX5_CAL_SPEED_5G   = 3,
-+	SPX5_CAL_SPEED_10G  = 4,
-+	SPX5_CAL_SPEED_25G  = 5,
-+	SPX5_CAL_SPEED_0G5  = 6,
-+	SPX5_CAL_SPEED_12G5 = 7
++/* ASM Statistics */
++static void sparx5_get_asm_stats(struct sparx5 *sparx5, int portno)
++{
++	u64 *portstats = &sparx5->stats[portno * sparx5->num_stats];
++	u32 dev = TARGET_ASM;
++	void __iomem *inst = spx5_inst_get(sparx5, dev, 0);
++
++	sparx5_update_counter(&portstats[spx5_stats_rx_in_bytes],
++			      spx5_inst_rd(inst,
++					   ASM_RX_IN_BYTES_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_symbol_err],
++			      spx5_inst_rd(inst,
++					   ASM_RX_SYMBOL_ERR_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_pause],
++			      spx5_inst_rd(inst,
++					   ASM_RX_PAUSE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_unsup_opcode],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_UNSUP_OPCODE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_ok_bytes],
++			      spx5_inst_rd(inst,
++					   ASM_RX_OK_BYTES_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_bad_bytes],
++			      spx5_inst_rd(inst,
++					   ASM_RX_BAD_BYTES_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_unicast],
++			      spx5_inst_rd(inst,
++					   ASM_RX_UC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_multicast],
++			      spx5_inst_rd(inst,
++					   ASM_RX_MC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_broadcast],
++			      spx5_inst_rd(inst,
++					   ASM_RX_BC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_crc_err],
++			      spx5_inst_rd(inst,
++					   ASM_RX_CRC_ERR_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_undersize],
++			      spx5_inst_rd(inst,
++					   ASM_RX_UNDERSIZE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_fragments],
++			      spx5_inst_rd(inst,
++					   ASM_RX_FRAGMENTS_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_inrangelen_err],
++			      spx5_inst_rd(inst,
++					   ASM_RX_IN_RANGE_LEN_ERR_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_outofrangelen_err],
++			      spx5_inst_rd(inst,
++					   ASM_RX_OUT_OF_RANGE_LEN_ERR_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_oversize],
++			      spx5_inst_rd(inst,
++					   ASM_RX_OVERSIZE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_jabbers],
++			      spx5_inst_rd(inst,
++					   ASM_RX_JABBERS_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size64],
++			      spx5_inst_rd(inst,
++					   ASM_RX_SIZE64_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size65_127],
++			      spx5_inst_rd(inst,
++					   ASM_RX_SIZE65TO127_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size128_255],
++			      spx5_inst_rd(inst,
++					   ASM_RX_SIZE128TO255_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size256_511],
++			      spx5_inst_rd(inst,
++					   ASM_RX_SIZE256TO511_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size512_1023],
++			      spx5_inst_rd(inst,
++					   ASM_RX_SIZE512TO1023_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size1024_1518],
++			      spx5_inst_rd(inst,
++					   ASM_RX_SIZE1024TO1518_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_size1519_max],
++			      spx5_inst_rd(inst,
++					   ASM_RX_SIZE1519TOMAX_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_symbol_err],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_SYMBOL_ERR_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_pause],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_PAUSE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_unsup_opcode],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_UNSUP_OPCODE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_ok_bytes],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_OK_BYTES_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_bad_bytes],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_BAD_BYTES_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_unicast],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_UC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_multicast],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_MC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_broadcast],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_BC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_crc_err],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_CRC_ERR_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_undersize],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_UNDERSIZE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_fragments],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_FRAGMENTS_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_inrangelen_err],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_IN_RANGE_LEN_ERR_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_outofrangelen_err],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_OUT_OF_RANGE_LEN_ERR_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_oversize],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_OVERSIZE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_jabbers],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_JABBERS_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size64],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_SIZE64_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size65_127],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_SIZE65TO127_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size128_255],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_SIZE128TO255_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size256_511],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_SIZE256TO511_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size512_1023],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_SIZE512TO1023_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size1024_1518],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_SIZE1024TO1518_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_rx_size1519_max],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_RX_SIZE1519TOMAX_CNT(portno)));
++	sparx5_xqs_prio_stats(sparx5,
++			      0,
++			      &portstats[spx5_stats_green_p0_rx_fwd]);
++	sparx5_xqs_prio_stats(sparx5,
++			      16,
++			      &portstats[spx5_stats_green_p0_rx_port_drop]);
++	sparx5_update_counter(&portstats[spx5_stats_rx_local_drop],
++			      spx5_rd(sparx5, XQS_CNT(32)));
++	sparx5_update_counter(&portstats[spx5_stats_rx_port_policer_drop],
++			      spx5_rd(sparx5,
++				      ANA_AC_PORT_STAT_LSB_CNT(portno, 1)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_out_bytes],
++			      spx5_inst_rd(inst,
++					   ASM_TX_OUT_BYTES_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_pause],
++			      spx5_inst_rd(inst,
++					   ASM_TX_PAUSE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_ok_bytes],
++			      spx5_inst_rd(inst,
++					   ASM_TX_OK_BYTES_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_unicast],
++			      spx5_inst_rd(inst,
++					   ASM_TX_UC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_multicast],
++			      spx5_inst_rd(inst,
++					   ASM_TX_MC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_broadcast],
++			      spx5_inst_rd(inst,
++					   ASM_TX_BC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size64],
++			      spx5_inst_rd(inst,
++					   ASM_TX_SIZE64_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size65_127],
++			      spx5_inst_rd(inst,
++					   ASM_TX_SIZE65TO127_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size128_255],
++			      spx5_inst_rd(inst,
++					   ASM_TX_SIZE128TO255_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size256_511],
++			      spx5_inst_rd(inst,
++					   ASM_TX_SIZE256TO511_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size512_1023],
++			      spx5_inst_rd(inst,
++					   ASM_TX_SIZE512TO1023_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size1024_1518],
++			      spx5_inst_rd(inst,
++					   ASM_TX_SIZE1024TO1518_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_size1519_max],
++			      spx5_inst_rd(inst,
++					   ASM_TX_SIZE1519TOMAX_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_multi_coll],
++			      spx5_inst_rd(inst,
++					   ASM_TX_MULTI_COLL_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_late_coll],
++			      spx5_inst_rd(inst,
++					   ASM_TX_LATE_COLL_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_xcoll],
++			      spx5_inst_rd(inst,
++					   ASM_TX_XCOLL_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_defer],
++			      spx5_inst_rd(inst,
++					   ASM_TX_DEFER_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_xdefer],
++			      spx5_inst_rd(inst,
++					   ASM_TX_XDEFER_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_tx_backoff1],
++			      spx5_inst_rd(inst,
++					   ASM_TX_BACKOFF1_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_pause],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_PAUSE_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_ok_bytes],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_OK_BYTES_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_unicast],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_UC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_multicast],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_MC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_broadcast],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_BC_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size64],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_SIZE64_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size65_127],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_SIZE65TO127_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size128_255],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_SIZE128TO255_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size256_511],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_SIZE256TO511_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size512_1023],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_SIZE512TO1023_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size1024_1518],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_SIZE1024TO1518_CNT(portno)));
++	sparx5_update_counter(&portstats[spx5_stats_pmac_tx_size1519_max],
++			      spx5_inst_rd(inst,
++					   ASM_PMAC_TX_SIZE1519TOMAX_CNT(portno)));
++	sparx5_xqs_prio_stats(sparx5,
++			      256,
++			      &portstats[spx5_stats_green_p0_tx_port]);
++	sparx5_update_counter(&portstats[spx5_stats_tx_local_drop],
++			      spx5_rd(sparx5, XQS_CNT(272)));
++}
++
++static void sparx5_update_port_stats(struct sparx5 *sparx5, int portno)
++{
++	bool high_speed_dev = sparx5_is_high_speed_device(&sparx5->ports[portno]->conf);
++
++	/* Set XQS port number */
++	spx5_wr(XQS_STAT_CFG_STAT_VIEW_SET(portno), sparx5, XQS_STAT_CFG);
++	if (high_speed_dev)
++		sparx5_get_device_stats(sparx5, portno);
++	else
++		sparx5_get_asm_stats(sparx5, portno);
++}
++
++static void sparx5_update_stats(struct sparx5 *sparx5)
++{
++	int idx;
++
++	mutex_lock(&sparx5->stats_lock);
++	for (idx = 0; idx < SPX5_PORTS; idx++)
++		if (sparx5->ports[idx])
++			sparx5_update_port_stats(sparx5, idx);
++	mutex_unlock(&sparx5->stats_lock);
++}
++
++static void sparx5_check_stats_work(struct work_struct *work)
++{
++	struct delayed_work *dwork = to_delayed_work(work);
++	struct sparx5 *sparx5 = container_of(dwork, struct sparx5,
++					     stats_work);
++
++	sparx5_update_stats(sparx5);
++
++	queue_delayed_work(sparx5->stats_queue, &sparx5->stats_work,
++			   SPX5_STATS_CHECK_DELAY);
++}
++
++static int sparx5_get_sset_count(struct net_device *ndev, int sset)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5  *sparx5 = port->sparx5;
++
++	if (sset != ETH_SS_STATS)
++		return -EOPNOTSUPP;
++	return sparx5->num_stats;
++}
++
++static void sparx5_get_sset_strings(struct net_device *ndev, u32 sset, u8 *data)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5  *sparx5 = port->sparx5;
++	int idx;
++
++	if (sset != ETH_SS_STATS)
++		return;
++
++	for (idx = 0; idx < sparx5->num_stats; idx++)
++		strncpy(data + idx * ETH_GSTRING_LEN,
++			sparx5->stats_layout[idx], ETH_GSTRING_LEN);
++}
++
++static void sparx5_get_stats(struct net_device *ndev,
++			     struct ethtool_stats *stats, u64 *data)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5  *sparx5 = port->sparx5;
++	u64 *portstats = &sparx5->stats[port->portno * sparx5->num_stats];
++	int idx;
++
++	/* check and update now (all ports) */
++	sparx5_update_stats(sparx5);
++
++	/* Copy port counters to the ethtool buffer */
++	for (idx = 0; idx < sparx5->num_stats; idx++)
++		*data++ = portstats[idx];
++}
++
++void sparx5_get_stats64(struct net_device *ndev,
++			struct rtnl_link_stats64 *stats)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++	struct sparx5 *sparx5 = port->sparx5;
++	u64 *portstats;
++
++	if (!sparx5->stats)
++		return;		/* Not initialized yet */
++
++	portstats = &sparx5->stats[port->portno * sparx5->num_stats];
++
++	mutex_lock(&sparx5->stats_lock);
++
++	stats->rx_errors = SPX5_STAT_SUM(rx_crc_err) +
++		SPX5_STAT_SUM(rx_undersize) + SPX5_STAT_SUM(rx_oversize) +
++		SPX5_STAT_SUM(rx_outofrangelen_err) +
++		SPX5_STAT_SUM(rx_symbol_err) + SPX5_STAT_SUM(rx_jabbers) +
++		SPX5_STAT_SUM(rx_fragments);
++
++	stats->rx_bytes = SPX5_STAT_SUM(rx_ok_bytes) +
++		SPX5_STAT_SUM(rx_bad_bytes);
++
++	stats->rx_packets = SPX5_STAT_SUM(rx_unicast) +
++		SPX5_STAT_SUM(rx_multicast) + SPX5_STAT_SUM(rx_broadcast) +
++		stats->rx_errors;
++
++	stats->multicast = SPX5_STAT_SUM(rx_unicast);
++
++	stats->rx_dropped = SPX5_STAT_GET(rx_port_policer_drop) +
++		SPX5_STAT_XQS_PRIOS_COUNTER_SUM(rx_port_drop);
++
++	/* Get Tx stats */
++	stats->tx_bytes = SPX5_STAT_SUM(tx_ok_bytes);
++
++	stats->tx_packets = SPX5_STAT_SUM(tx_unicast) +
++		SPX5_STAT_SUM(tx_multicast) + SPX5_STAT_SUM(tx_broadcast);
++
++	stats->tx_dropped = SPX5_STAT_GET(tx_local_drop);
++
++	stats->collisions = SPX5_STAT_GET(tx_multi_coll) +
++		SPX5_STAT_GET(tx_late_coll) +
++		SPX5_STAT_GET(tx_xcoll) +
++		SPX5_STAT_GET(tx_backoff1);
++
++	mutex_unlock(&sparx5->stats_lock);
++}
++
++static int sparx5_get_link_settings(struct net_device *ndev,
++				    struct ethtool_link_ksettings *cmd)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++
++	return phylink_ethtool_ksettings_get(port->phylink, cmd);
++}
++
++static int sparx5_set_link_settings(struct net_device *ndev,
++				    const struct ethtool_link_ksettings *cmd)
++{
++	struct sparx5_port *port = netdev_priv(ndev);
++
++	return phylink_ethtool_ksettings_set(port->phylink, cmd);
++}
++
++const struct ethtool_ops sparx5_ethtool_ops = {
++	.get_sset_count         = sparx5_get_sset_count,
++	.get_strings            = sparx5_get_sset_strings,
++	.get_ethtool_stats      = sparx5_get_stats,
++	.get_link_ksettings	= sparx5_get_link_settings,
++	.set_link_ksettings	= sparx5_set_link_settings,
++	.get_link               = ethtool_op_get_link,
 +};
 +
-+static u32 sparx5_clk_to_bandwidth(enum sparx5_core_clockfreq cclock)
++int sparx_stats_init(struct sparx5 *sparx5)
 +{
-+	switch (cclock) {
-+	case SPX5_CORE_CLOCK_250MHZ: return 83000; /* 250000 / 3 */
-+	case SPX5_CORE_CLOCK_500MHZ: return 166000; /* 500000 / 3 */
-+	case SPX5_CORE_CLOCK_625MHZ: return  208000; /* 625000 / 3 */
-+	default: return 0;
-+	}
-+	return 0;
-+}
++	char queue_name[32];
++	int portno;
 +
-+static u32 sparx5_cal_speed_to_value(enum sparx5_cal_bw speed)
-+{
-+	switch (speed) {
-+	case SPX5_CAL_SPEED_1G:   return 1000;
-+	case SPX5_CAL_SPEED_2G5:  return 2500;
-+	case SPX5_CAL_SPEED_5G:   return 5000;
-+	case SPX5_CAL_SPEED_10G:  return 10000;
-+	case SPX5_CAL_SPEED_25G:  return 25000;
-+	case SPX5_CAL_SPEED_0G5:  return 500;
-+	case SPX5_CAL_SPEED_12G5: return 12500;
-+	default: return 0;
-+	}
-+}
-+
-+static u32 sparx5_bandwidth_to_calendar(u32 bw)
-+{
-+	switch (bw) {
-+	case SPEED_10:      return SPX5_CAL_SPEED_0G5;
-+	case SPEED_100:     return SPX5_CAL_SPEED_0G5;
-+	case SPEED_1000:    return SPX5_CAL_SPEED_1G;
-+	case SPEED_2500:    return SPX5_CAL_SPEED_2G5;
-+	case SPEED_5000:    return SPX5_CAL_SPEED_5G;
-+	case SPEED_10000:   return SPX5_CAL_SPEED_10G;
-+	case SPEED_12500:   return SPX5_CAL_SPEED_12G5;
-+	case SPEED_25000:   return SPX5_CAL_SPEED_25G;
-+	case SPEED_UNKNOWN: return SPX5_CAL_SPEED_1G;
-+	default:            return SPX5_CAL_SPEED_NONE;
-+	}
-+}
-+
-+static enum sparx5_cal_bw sparx5_get_port_cal_speed(struct sparx5 *sparx5,
-+						    u32 portno)
-+{
-+	struct sparx5_port *port;
-+
-+	if (portno >= SPX5_PORTS) {
-+		/* Internal ports */
-+		if (portno == SPX5_PORT_CPU_0 || portno == SPX5_PORT_CPU_1) {
-+			/* Equals 1.25G */
-+			return SPX5_CAL_SPEED_2G5;
-+		} else if (portno == SPX5_PORT_VD0) {
-+			/* IPMC only idle BW */
-+			return SPX5_CAL_SPEED_NONE;
-+		} else if (portno == SPX5_PORT_VD1) {
-+			/* OAM only idle BW */
-+			return SPX5_CAL_SPEED_NONE;
-+		} else if (portno == SPX5_PORT_VD2) {
-+			/* IPinIP gets only idle BW */
-+			return SPX5_CAL_SPEED_NONE;
-+		}
-+		/* not in port map */
-+		return SPX5_CAL_SPEED_NONE;
-+	}
-+	/* Front ports - may be used */
-+	port = sparx5->ports[portno];
-+	if (!port)
-+		return SPX5_CAL_SPEED_NONE;
-+	return sparx5_bandwidth_to_calendar(port->conf.max_speed);
-+}
-+
-+/* Auto configure the QSYS calendar based on port configuration */
-+int sparx5_config_auto_calendar(struct sparx5 *sparx5)
-+{
-+	u32 cal[7], value, idx, portno;
-+	u32 max_core_bw;
-+	u32 total_bw = 0, used_port_bw = 0;
-+	int err = 0;
-+	enum sparx5_cal_bw spd;
-+
-+	memset(cal, 0, sizeof(cal));
-+
-+	max_core_bw = sparx5_clk_to_bandwidth(sparx5->coreclock);
-+	if (max_core_bw == 0) {
-+		dev_err(sparx5->dev, "Core clock not supported");
-+		return -EINVAL;
-+	}
-+
-+	/* Setup the calendar with the bandwidth to each port */
-+	for (portno = 0; portno < SPX5_PORTS_ALL; portno++) {
-+		u64 reg, offset, this_bw;
-+
-+		spd = sparx5_get_port_cal_speed(sparx5, portno);
-+		if (spd == SPX5_CAL_SPEED_NONE)
-+			continue;
-+
-+		this_bw = sparx5_cal_speed_to_value(spd);
-+		if (portno < SPX5_PORTS)
-+			used_port_bw += this_bw;
-+		else
-+			/* Internal ports are granted half the value */
-+			this_bw = this_bw / 2;
-+		total_bw += this_bw;
-+		reg = portno;
-+		offset = do_div(reg, SPX5_PORTS_PER_CALREG);
-+		cal[reg] |= spd << (offset * SPX5_CALBITS_PER_PORT);
-+	}
-+
-+	if (used_port_bw > sparx5_target_bandwidth(sparx5)) {
-+		dev_err(sparx5->dev,
-+			"Port BW %u above target BW %u\n",
-+			used_port_bw, sparx5_target_bandwidth(sparx5));
-+		return -EINVAL;
-+	}
-+
-+	if (total_bw > max_core_bw) {
-+		dev_err(sparx5->dev,
-+			"Total BW %u above switch core BW %u\n",
-+			total_bw, max_core_bw);
-+		return -EINVAL;
-+	}
-+
-+	/* Halt the calendar while changing it */
-+	spx5_rmw(QSYS_CAL_CTRL_CAL_MODE_SET(10),
-+		 QSYS_CAL_CTRL_CAL_MODE,
-+		 sparx5, QSYS_CAL_CTRL);
-+
-+	/* Assign port bandwidth to auto calendar */
-+	for (idx = 0; idx < ARRAY_SIZE(cal); idx++)
-+		spx5_wr(cal[idx], sparx5, QSYS_CAL_AUTO(idx));
-+
-+	/* Increase grant rate of all ports to account for
-+	 * core clock ppm deviations
-+	 */
-+	spx5_rmw(QSYS_CAL_CTRL_CAL_AUTO_GRANT_RATE_SET(671), /* 672->671 */
-+		 QSYS_CAL_CTRL_CAL_AUTO_GRANT_RATE,
-+		 sparx5,
-+		 QSYS_CAL_CTRL);
-+
-+	/* Grant idle usage to VD 0-2 */
-+	for (idx = 2; idx < 5; idx++)
-+		spx5_wr(HSCH_OUTB_SHARE_ENA_OUTB_SHARE_ENA_SET(12),
-+			sparx5,
-+			HSCH_OUTB_SHARE_ENA(idx));
-+
-+	/* Enable Auto mode */
-+	spx5_rmw(QSYS_CAL_CTRL_CAL_MODE_SET(8),
-+		 QSYS_CAL_CTRL_CAL_MODE,
-+		 sparx5, QSYS_CAL_CTRL);
-+
-+	/* Verify successful calendar config */
-+	value = spx5_rd(sparx5, QSYS_CAL_CTRL);
-+	if (QSYS_CAL_CTRL_CAL_AUTO_ERROR_GET(value)) {
-+		dev_err(sparx5->dev, "QSYS calendar error\n");
-+		err = -EINVAL;
-+	}
-+	return err;
-+}
-+
-+static u32 sparx5_dsm_exb_gcd(u32 a, u32 b)
-+{
-+	if (b == 0)
-+		return a;
-+	return sparx5_dsm_exb_gcd(b, a % b);
-+}
-+
-+static u32 sparx5_dsm_cal_len(u32 *cal)
-+{
-+	u32 idx = 0, len = 0;
-+
-+	while (idx < SPX5_DSM_CAL_LEN) {
-+		if (cal[idx] != SPX5_DSM_CAL_EMPTY)
-+			len++;
-+		idx++;
-+	}
-+	return len;
-+}
-+
-+static u32 sparx5_dsm_cp_cal(u32 *sched)
-+{
-+	u32 idx = 0, tmp;
-+
-+	while (idx < SPX5_DSM_CAL_LEN) {
-+		if (sched[idx] != SPX5_DSM_CAL_EMPTY) {
-+			tmp = sched[idx];
-+			sched[idx] = SPX5_DSM_CAL_EMPTY;
-+			return tmp;
-+		}
-+		idx++;
-+	}
-+	return SPX5_DSM_CAL_EMPTY;
-+}
-+
-+static int sparx5_dsm_calendar_calc(struct sparx5 *sparx5, u32 taxi,
-+				    struct sparx5_calendar_data *data)
-+{
-+	bool slow_mode;
-+	u32 gcd, idx, sum, min, factor;
-+	u32 num_of_slots, slot_spd, empty_slots;
-+	u32 taxi_bw, clk_period_ps;
-+
-+	clk_period_ps = sparx5_clk_period(sparx5->coreclock);
-+	taxi_bw = 128 * 1000000 / clk_period_ps;
-+	slow_mode = !!(clk_period_ps > 2000);
-+	memcpy(data->taxi_ports, &sparx5_taxi_ports[taxi],
-+	       sizeof(data->taxi_ports));
-+
-+	for (idx = 0; idx < SPX5_DSM_CAL_LEN; idx++) {
-+		data->new_slots[idx] = SPX5_DSM_CAL_EMPTY;
-+		data->schedule[idx] = SPX5_DSM_CAL_EMPTY;
-+		data->temp_sched[idx] = SPX5_DSM_CAL_EMPTY;
-+	}
-+	/* Default empty calendar */
-+	data->schedule[0] = SPX5_DSM_CAL_MAX_DEVS_PER_TAXI;
-+
-+	/* Map ports to taxi positions */
-+	for (idx = 0; idx < SPX5_DSM_CAL_MAX_DEVS_PER_TAXI; idx++) {
-+		u32 portno = data->taxi_ports[idx];
-+
-+		if (portno < SPX5_TAXI_PORT_MAX) {
-+			data->taxi_speeds[idx] = sparx5_cal_speed_to_value
-+				(sparx5_get_port_cal_speed(sparx5, portno));
-+		} else {
-+			data->taxi_speeds[idx] = 0;
-+		}
-+	}
-+
-+	sum = 0;
-+	min = 25000;
-+	for (idx = 0; idx < ARRAY_SIZE(data->taxi_speeds); idx++) {
-+		u32 jdx;
-+
-+		sum += data->taxi_speeds[idx];
-+		if (data->taxi_speeds[idx] && data->taxi_speeds[idx] < min)
-+			min = data->taxi_speeds[idx];
-+		gcd = min;
-+		for (jdx = 0; jdx < ARRAY_SIZE(data->taxi_speeds); jdx++)
-+			gcd = sparx5_dsm_exb_gcd(gcd, data->taxi_speeds[jdx]);
-+	}
-+	if (sum == 0) /* Empty calendar */
-+		return 0;
-+	/* Make room for overhead traffic */
-+	factor = 100 * 100 * 1000 / (100 * 100 - SPX5_DSM_CAL_BW_LOSS);
-+
-+	if (sum * factor > (taxi_bw * 1000)) {
-+		dev_err(sparx5->dev,
-+			"Taxi %u, Requested BW %u above available BW %u\n",
-+			taxi, sum, taxi_bw);
-+		return -EINVAL;
-+	}
-+	for (idx = 0; idx < 4; idx++) {
-+		u32 raw_spd;
-+
-+		if (idx == 0)
-+			raw_spd = gcd / 5;
-+		else if (idx == 1)
-+			raw_spd = gcd / 2;
-+		else if (idx == 2)
-+			raw_spd = gcd;
-+		else
-+			raw_spd = min;
-+		slot_spd = raw_spd * factor / 1000;
-+		num_of_slots = taxi_bw / slot_spd;
-+		if (num_of_slots <= 64)
-+			break;
-+	}
-+
-+	num_of_slots = num_of_slots > 64 ? 64 : num_of_slots;
-+	slot_spd = taxi_bw / num_of_slots;
-+
-+	sum = 0;
-+	for (idx = 0; idx < ARRAY_SIZE(data->taxi_speeds); idx++) {
-+		u32 spd = data->taxi_speeds[idx];
-+		u32 adjusted_speed = data->taxi_speeds[idx] * factor / 1000;
-+
-+		if (adjusted_speed > 0) {
-+			data->avg_dist[idx] = (128 * 1000000 * 10) /
-+				(adjusted_speed * clk_period_ps);
-+		} else {
-+			data->avg_dist[idx] = -1;
-+		}
-+		data->dev_slots[idx] = ((spd * factor / slot_spd) + 999) / 1000;
-+		if (spd != 25000 && (spd != 10000 || !slow_mode)) {
-+			if (num_of_slots < (5 * data->dev_slots[idx])) {
-+				dev_err(sparx5->dev,
-+					"Taxi %u, speed %u, Low slot sep.\n",
-+					taxi, spd);
-+				return -EINVAL;
-+			}
-+		}
-+		sum += data->dev_slots[idx];
-+		if (sum > num_of_slots) {
-+			dev_err(sparx5->dev,
-+				"Taxi %u with overhead factor %u\n",
-+				taxi, factor);
-+			return -EINVAL;
-+		}
-+	}
-+
-+	empty_slots = num_of_slots - sum;
-+
-+	for (idx = 0; idx < empty_slots; idx++)
-+		data->schedule[idx] = SPX5_DSM_CAL_MAX_DEVS_PER_TAXI;
-+
-+	for (idx = 1; idx < num_of_slots; idx++) {
-+		u32 indices_len = 0;
-+		u32 slot, jdx, kdx, ts;
-+		s32 cnt;
-+		u32 num_of_old_slots, num_of_new_slots, tgt_score;
-+
-+		for (slot = 0; slot < ARRAY_SIZE(data->dev_slots); slot++) {
-+			if (data->dev_slots[slot] == idx) {
-+				data->indices[indices_len] = slot;
-+				indices_len++;
-+			}
-+		}
-+		if (indices_len == 0)
-+			continue;
-+		kdx = 0;
-+		for (slot = 0; slot < idx; slot++) {
-+			for (jdx = 0; jdx < indices_len; jdx++, kdx++)
-+				data->new_slots[kdx] = data->indices[jdx];
-+		}
-+
-+		for (slot = 0; slot < SPX5_DSM_CAL_LEN; slot++) {
-+			if (data->schedule[slot] == SPX5_DSM_CAL_EMPTY)
-+				break;
-+		}
-+
-+		num_of_old_slots =  slot;
-+		num_of_new_slots =  kdx;
-+		cnt = 0;
-+		ts = 0;
-+
-+		if (num_of_new_slots > num_of_old_slots) {
-+			memcpy(data->short_list, data->schedule,
-+			       sizeof(data->short_list));
-+			memcpy(data->long_list, data->new_slots,
-+			       sizeof(data->long_list));
-+			tgt_score = 100000 * num_of_old_slots /
-+				num_of_new_slots;
-+		} else {
-+			memcpy(data->short_list, data->new_slots,
-+			       sizeof(data->short_list));
-+			memcpy(data->long_list, data->schedule,
-+			       sizeof(data->long_list));
-+			tgt_score = 100000 * num_of_new_slots /
-+				num_of_old_slots;
-+		}
-+
-+		while (sparx5_dsm_cal_len(data->short_list) > 0 ||
-+		       sparx5_dsm_cal_len(data->long_list) > 0) {
-+			u32 act = 0;
-+
-+			if (sparx5_dsm_cal_len(data->short_list) > 0) {
-+				data->temp_sched[ts] =
-+					sparx5_dsm_cp_cal(data->short_list);
-+				ts++;
-+				cnt += 100000;
-+				act = 1;
-+			}
-+			while (sparx5_dsm_cal_len(data->long_list) > 0 &&
-+			       cnt > 0) {
-+				data->temp_sched[ts] =
-+					sparx5_dsm_cp_cal(data->long_list);
-+				ts++;
-+				cnt -= tgt_score;
-+				act = 1;
-+			}
-+			if (act == 0) {
-+				dev_err(sparx5->dev,
-+					"Error in DSM calendar calculation\n");
-+				return -EINVAL;
-+			}
-+		}
-+
-+		for (slot = 0; slot < SPX5_DSM_CAL_LEN; slot++) {
-+			if (data->temp_sched[slot] == SPX5_DSM_CAL_EMPTY)
-+				break;
-+		}
-+		for (slot = 0; slot < SPX5_DSM_CAL_LEN; slot++) {
-+			data->schedule[slot] = data->temp_sched[slot];
-+			data->temp_sched[slot] = SPX5_DSM_CAL_EMPTY;
-+			data->new_slots[slot] = SPX5_DSM_CAL_EMPTY;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int sparx5_dsm_calendar_check(struct sparx5 *sparx5,
-+				     struct sparx5_calendar_data *data)
-+{
-+	u32 num_of_slots, idx, port;
-+	int cnt, max_dist;
-+	u32 slot_indices[SPX5_DSM_CAL_LEN], distances[SPX5_DSM_CAL_LEN];
-+	u32 cal_length = sparx5_dsm_cal_len(data->schedule);
-+
-+	for (port = 0; port < SPX5_DSM_CAL_MAX_DEVS_PER_TAXI; port++) {
-+		num_of_slots = 0;
-+		max_dist = data->avg_dist[port];
-+		for (idx = 0; idx < SPX5_DSM_CAL_LEN; idx++) {
-+			slot_indices[idx] = SPX5_DSM_CAL_EMPTY;
-+			distances[idx] = SPX5_DSM_CAL_EMPTY;
-+		}
-+
-+		for (idx = 0; idx < cal_length; idx++) {
-+			if (data->schedule[idx] == port) {
-+				slot_indices[num_of_slots] = idx;
-+				num_of_slots++;
-+			}
-+		}
-+
-+		slot_indices[num_of_slots] = slot_indices[0] + cal_length;
-+
-+		for (idx = 0; idx < num_of_slots; idx++) {
-+			distances[idx] = (slot_indices[idx + 1] -
-+					  slot_indices[idx]) * 10;
-+		}
-+
-+		for (idx = 0; idx < num_of_slots; idx++) {
-+			u32 jdx, kdx;
-+
-+			cnt = distances[idx] - max_dist;
-+			if (cnt < 0)
-+				cnt = -cnt;
-+			kdx = 0;
-+			for (jdx = (idx + 1) % num_of_slots;
-+			     jdx != idx;
-+			     jdx = (jdx + 1) % num_of_slots, kdx++) {
-+				cnt =  cnt + distances[jdx] - max_dist;
-+				if (cnt < 0)
-+					cnt = -cnt;
-+				if (cnt > max_dist)
-+					goto check_err;
-+			}
-+		}
-+	}
-+	return 0;
-+check_err:
-+	dev_err(sparx5->dev,
-+		"Port %u: distance %u above limit %d\n",
-+		port, cnt, max_dist);
-+	return -EINVAL;
-+}
-+
-+static int sparx5_dsm_calendar_update(struct sparx5 *sparx5, u32 taxi,
-+				      struct sparx5_calendar_data *data)
-+{
-+	u32 idx;
-+	u32 cal_len = sparx5_dsm_cal_len(data->schedule), len;
-+
-+	spx5_wr(DSM_TAXI_CAL_CFG_CAL_PGM_ENA_SET(1),
-+		sparx5,
-+		DSM_TAXI_CAL_CFG(taxi));
-+	for (idx = 0; idx < cal_len; idx++) {
-+		spx5_rmw(DSM_TAXI_CAL_CFG_CAL_IDX_SET(idx),
-+			 DSM_TAXI_CAL_CFG_CAL_IDX,
-+			 sparx5,
-+			 DSM_TAXI_CAL_CFG(taxi));
-+		spx5_rmw(DSM_TAXI_CAL_CFG_CAL_PGM_VAL_SET(data->schedule[idx]),
-+			 DSM_TAXI_CAL_CFG_CAL_PGM_VAL,
-+			 sparx5,
-+			 DSM_TAXI_CAL_CFG(taxi));
-+	}
-+	spx5_wr(DSM_TAXI_CAL_CFG_CAL_PGM_ENA_SET(0),
-+		sparx5,
-+		DSM_TAXI_CAL_CFG(taxi));
-+	len = DSM_TAXI_CAL_CFG_CAL_CUR_LEN_GET(spx5_rd(sparx5,
-+						       DSM_TAXI_CAL_CFG(taxi)));
-+	if (len != cal_len - 1)
-+		goto update_err;
-+	return 0;
-+update_err:
-+	dev_err(sparx5->dev, "Incorrect calendar length: %u\n", len);
-+	return -EINVAL;
-+}
-+
-+/* Configure the DSM calendar based on port configuration */
-+int sparx5_config_dsm_calendar(struct sparx5 *sparx5)
-+{
-+	int taxi;
-+	struct sparx5_calendar_data *data;
-+	int err = 0;
-+
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data)
++	sparx5->stats_layout = sparx5_stats_layout;
++	sparx5->num_stats = ARRAY_SIZE(sparx5_stats_layout);
++	sparx5->stats = devm_kcalloc(sparx5->dev,
++				     SPX5_PORTS_ALL * sparx5->num_stats,
++				     sizeof(u64), GFP_KERNEL);
++	if (!sparx5->stats)
 +		return -ENOMEM;
 +
-+	for (taxi = 0; taxi < SPX5_DSM_CAL_TAXIS; ++taxi) {
-+		err = sparx5_dsm_calendar_calc(sparx5, taxi, data);
-+		if (err) {
-+			dev_err(sparx5->dev, "DSM calendar calculation failed\n");
-+			goto cal_out;
++	for (portno = 0; portno < SPX5_PORTS; portno++)
++		if (sparx5->ports[portno]) {
++			/* Clear Queue System counters */
++			spx5_wr(XQS_STAT_CFG_STAT_VIEW_SET(portno) |
++				XQS_STAT_CFG_STAT_CLEAR_SHOT_SET(3), sparx5, XQS_STAT_CFG);
 +		}
-+		err = sparx5_dsm_calendar_check(sparx5, data);
-+		if (err) {
-+			dev_err(sparx5->dev, "DSM calendar check failed\n");
-+			goto cal_out;
-+		}
-+		err = sparx5_dsm_calendar_update(sparx5, taxi, data);
-+		if (err) {
-+			dev_err(sparx5->dev, "DSM calendar update failed\n");
-+			goto cal_out;
-+		}
-+	}
-+cal_out:
-+	kfree(data);
-+	return err;
++
++	mutex_init(&sparx5->stats_lock);
++	snprintf(queue_name, sizeof(queue_name), "%s-stats",
++		 dev_name(sparx5->dev));
++	sparx5->stats_queue = create_singlethread_workqueue(queue_name);
++	INIT_DELAYED_WORK(&sparx5->stats_work, sparx5_check_stats_work);
++	queue_delayed_work(sparx5->stats_queue, &sparx5->stats_work,
++			   SPX5_STATS_CHECK_DELAY);
++
++	return 0;
 +}
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-index 30940d9ee916..2b42c72dac72 100644
+index 2b42c72dac72..e1e2384512bc 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-@@ -743,6 +743,14 @@ static int mchp_sparx5_probe(struct platform_device *pdev)
- 			goto cleanup_ports;
- 		}
- 	}
-+	err = sparx5_config_auto_calendar(sparx5);
-+	if (err)
-+		goto cleanup_ports;
-+
-+	err = sparx5_config_dsm_calendar(sparx5);
+@@ -751,6 +751,11 @@ static int mchp_sparx5_probe(struct platform_device *pdev)
+ 	if (err)
+ 		goto cleanup_ports;
+ 
++	/* Init stats */
++	err = sparx_stats_init(sparx5);
 +	if (err)
 +		goto cleanup_ports;
 +
@@ -717,20 +1101,74 @@ index 30940d9ee916..2b42c72dac72 100644
  	mutex_init(&sparx5->mact_lock);
  	INIT_LIST_HEAD(&sparx5->mact_entries);
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-index 49657f9edbf3..e59e1962f7d4 100644
+index e59e1962f7d4..1d1b3b516244 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-@@ -195,6 +195,10 @@ int sparx5_vlan_vid_add(struct sparx5_port *port, u16 vid, bool pvid,
- int sparx5_vlan_vid_del(struct sparx5_port *port, u16 vid);
- void sparx5_vlan_port_apply(struct sparx5 *sparx5, struct sparx5_port *port);
+@@ -130,6 +130,14 @@ struct sparx5 {
+ 	/* port structures are in net device */
+ 	struct sparx5_port                    *ports[SPX5_PORTS];
+ 	enum sparx5_core_clockfreq            coreclock;
++	/* Statistics */
++	u32                                   num_stats;
++	const char * const                    *stats_layout;
++	u64                                   *stats;
++	/* Workqueue for reading stats */
++	struct mutex                          stats_lock;
++	struct delayed_work                   stats_work;
++	struct workqueue_struct               *stats_queue;
+ 	/* Notifiers */
+ 	struct notifier_block                 netdevice_nb;
+ 	struct notifier_block                 switchdev_nb;
+@@ -153,10 +161,6 @@ struct sparx5 {
+ 	bool                                  sd_sgpio_remapping;
+ };
  
-+/* sparx5_calendar.c */
-+int sparx5_config_auto_calendar(struct sparx5 *sparx5);
-+int sparx5_config_dsm_calendar(struct sparx5 *sparx5);
+-/* sparx5_main.c */
+-void sparx5_update_cpuport_stats(struct sparx5 *sparx5, int portno);
+-bool sparx5_is_cpuport_stat(struct sparx5 *sparx5, int idx);
+-
+ /* sparx5_switchdev.c */
+ int sparx5_register_notifier_blocks(struct sparx5 *sparx5);
+ void sparx5_unregister_notifier_blocks(struct sparx5 *sparx5);
+@@ -199,6 +203,10 @@ void sparx5_vlan_port_apply(struct sparx5 *sparx5, struct sparx5_port *port);
+ int sparx5_config_auto_calendar(struct sparx5 *sparx5);
+ int sparx5_config_dsm_calendar(struct sparx5 *sparx5);
+ 
++/* sparx5_ethtool.c */
++void sparx5_get_stats64(struct net_device *ndev, struct rtnl_link_stats64 *stats);
++int sparx_stats_init(struct sparx5 *sparx5);
 +
  /* sparx5_netdev.c */
  bool sparx5_netdevice_check(const struct net_device *dev);
  struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno);
+@@ -226,6 +234,7 @@ static inline u32 sparx5_clk_period(enum sparx5_core_clockfreq cclock)
+ }
+ 
+ extern const struct phylink_mac_ops sparx5_phylink_mac_ops;
++extern const struct ethtool_ops sparx5_ethtool_ops;
+ 
+ /* Calculate raw offset */
+ static inline __pure int spx5_offset(int id, int tinst, int tcnt,
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
+index a0992443ab9f..3b7cfbb14f2e 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
+@@ -176,6 +176,7 @@ static const struct net_device_ops sparx5_port_netdev_ops = {
+ 	.ndo_get_phys_port_name = sparx5_port_get_phys_port_name,
+ 	.ndo_set_mac_address    = sparx5_set_mac_address,
+ 	.ndo_validate_addr      = eth_validate_addr,
++	.ndo_get_stats64        = sparx5_get_stats64,
+ 	.ndo_get_port_parent_id = sparx5_get_port_parent_id,
+ };
+ 
+@@ -203,6 +204,7 @@ struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno)
+ 
+ 	ether_setup(ndev);
+ 	ndev->netdev_ops = &sparx5_port_netdev_ops;
++	ndev->ethtool_ops = &sparx5_ethtool_ops;
+ 	ndev->features |= NETIF_F_LLTX; /* software tx */
+ 
+ 	ether_addr_copy(ndev->dev_addr, sparx5->base_mac);
 -- 
 2.29.2
 
