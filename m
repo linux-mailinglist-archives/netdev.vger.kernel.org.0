@@ -2,95 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA0FF2DD872
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 19:34:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53EEA2DD87B
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 19:36:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730230AbgLQSdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 13:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729838AbgLQSda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 13:33:30 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F601C0617B0
-        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 10:32:49 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id k8so26729833ilr.4
-        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 10:32:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=euqBXwlKpksM2O1B20N3zwYJHM+krRb1R0QlrPJovKs=;
-        b=hloE6vQ34Nt0jvI6wpY7VyipHe1zhzyr1SdISONaS2dIFdFEvi78131QKFFDzX4pKc
-         NrO6qu4ndHfPR+rXUnD3mJbBbsvfgiNoLocM+ZCbE9Ij20m3Kn2GxT755xEKCgh1fvh6
-         yU9lp7+wI8RWhYTb8mQH3oHnDFFN9h94b8WQ8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=euqBXwlKpksM2O1B20N3zwYJHM+krRb1R0QlrPJovKs=;
-        b=GKyAxypIRxCRCm2YeQmJyBtDHHmM3V+dfwllXw8W9sVLCmZFzMpJ7JTH3Q1A/6AX46
-         Gz0YjXkYzUeOtPO+Ws1iWX6Z7ZPEstILc6ZQMVuz2NTVLixSuNnu0VHVDM5lN84lnhzN
-         TLfYxOsn/sXOlTS1DJehJFPmVxEhDNbSqx0J5zZQlF/q65Q+rx1gniKXok4DvbMBtQxP
-         Ab7F/+hxio6bN/ykMRR8fzMOZgRQjsPpKarLFDHDXOMbUtDRFRlrr7V4Y9vCHwkmOwf5
-         mX0X04AhpPBb2ywcnuA9DlZ+mSWNORh+aZViJUecFzxDS2yNyU/UUHGm9oxvHjLBIdCW
-         cS4g==
-X-Gm-Message-State: AOAM533QvRJKtbH125Y8g4mLIhw7iTFgaYsR+AiNI0J4VsMAkDI7D9Jv
-        ZFcGXv8G+VkuSVbBVjGU4peK12TMuxgO0g==
-X-Google-Smtp-Source: ABdhPJwKbvtaglTe9buBF6UPtZDTuxPohT7p6/IvZcZYmSMeL0UCG5btnwEfAEImPVuebSVaKl8DdQ==
-X-Received: by 2002:a92:155b:: with SMTP id v88mr124823ilk.303.1608229968746;
-        Thu, 17 Dec 2020 10:32:48 -0800 (PST)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id d18sm3662791ilo.49.2020.12.17.10.32.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Dec 2020 10:32:48 -0800 (PST)
-Subject: Re: [PATCH] selftests: Skip BPF seftests by default
-To:     Mark Brown <broonie@kernel.org>,
-        Seth Forshee <seth.forshee@canonical.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Daniel Diaz <daniel.diaz@linaro.org>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Guillaume Tucker <guillaume.tucker@collabora.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20201210185233.28091-1-broonie@kernel.org>
- <X9qExiKXPVmk3BJI@ubuntu-x1> <20201217130735.GA4708@sirena.org.uk>
- <94010653-0cb3-d804-7410-a571480d6db2@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <008fb8b6-2632-e0c8-8e6a-c643d953bde5@linuxfoundation.org>
-Date:   Thu, 17 Dec 2020 11:32:47 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1729923AbgLQSf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 13:35:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727368AbgLQSf7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 17 Dec 2020 13:35:59 -0500
+Date:   Thu, 17 Dec 2020 10:35:17 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608230118;
+        bh=LGhVrFTaXwYgvhalPQ0cqXO6yPW4ZzqcxrJG0+nwx9w=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TCNm/R1HgAANTflWPRxRlntr1/vLevn5fm91ldY8/LBj8wa7HxvdlQ+6lhjzfZOlV
+         iU/OzFrhgqFb1wKukGt/6pqOgUVBOIsDcCplmlh6O4uVERyi7Xa3n2Xao95yKWOu7j
+         Tt/i9SnurDaJiq2INCvOY+tJzHIzoqu/2h7+nhk0qCqeSit7M0UdK0jjeSpTOJ7Uj1
+         3KlReTu+BuRynabmV/jyMAH2i4xLRX/v64/1t291lryexw/9TZ9FAuoTpUYYFsFbaR
+         UEk2ycFfNjDU7gG9Lpypj3DwExCMyJOyIh6I54o5AAoNnE0vINtks/v0Z2S1Khwk5I
+         8/i2vSuA2MWLA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net] docs: netdev-FAQ: add missing underlines to
+ questions
+Message-ID: <20201217103517.6ac75a97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <ccd6e8b9f1d87b683a0759e8954d03310cb0c09f.1608052699.git.baruch@tkos.co.il>
+References: <ccd6e8b9f1d87b683a0759e8954d03310cb0c09f.1608052699.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-In-Reply-To: <94010653-0cb3-d804-7410-a571480d6db2@linuxfoundation.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/20 8:53 AM, Shuah Khan wrote:
-> On 12/17/20 6:07 AM, Mark Brown wrote:
->> On Wed, Dec 16, 2020 at 04:05:58PM -0600, Seth Forshee wrote:
->>> On Thu, Dec 10, 2020 at 06:52:33PM +0000, Mark Brown wrote:
->>
->>>> as part of the wider kselftest build by specifying SKIP_TARGETS,
->>>> including setting an empty SKIP_TARGETS to build everything.  They can
->>>> also continue to build the BPF selftests individually in cases where
->>>> they are specifically focused on BPF.
->>
+On Tue, 15 Dec 2020 19:18:19 +0200 Baruch Siach wrote:
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
+>  Documentation/networking/netdev-FAQ.rst | 18 +++++++++++-------
+>  1 file changed, 11 insertions(+), 7 deletions(-)
+> 
+> diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
+> index 4b9ed5874d5a..4ef90fe26640 100644
+> --- a/Documentation/networking/netdev-FAQ.rst
+> +++ b/Documentation/networking/netdev-FAQ.rst
+> @@ -82,6 +82,7 @@ focus for ``net`` is on stabilization and bug fixes.
+>  Finally, the vX.Y gets released, and the whole cycle starts over.
+>  
+>  Q: So where are we now in this cycle?
+> +-------------------------------------
+>  
+>  Load the mainline (Linus) page here:
+>  
+> @@ -108,6 +109,7 @@ with.
+>  Q: I sent a patch and I'm wondering what happened to it?
+>  --------------------------------------------------------
+>  Q: How can I tell whether it got merged?
+> +----------------------------------------
 
-Applied to linuxkselftest fixes for rc2
+I think this and the following fixes should be folded into a single
+line (unless it's possible in RST for header to span multiple lines):
 
-thanks,
--- Shuah
+I sent a patch and I'm wondering what happened to it - how can I tell whether it got merged?
+--------------------------------------------------------------------------------------------
+
+To be honest I think we can also drop the Q: and A: prefixes now that
+we're using RST.
+
+And perhaps we can add an index of questions at the beginning of the
+the file?
