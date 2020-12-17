@@ -2,114 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABB922DCF58
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 11:16:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CD7C2DCFFB
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 12:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727990AbgLQKPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 05:15:09 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:7704 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727796AbgLQKPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 05:15:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1608200107; x=1639736107;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=gEkW6RbrgOxi90YpOZkCKsJYSwuRnd4VKz5XMjUVr8U=;
-  b=xcGhxuPdRWAsVX7+yeKEj0y5FAdxlvAFvyC9AH9jqkk5/K6uVuug2ksq
-   Yw8TkvwMfVlbuws6SuGWGTZ01CI7eYVkrr2UE6FNDGAMtBlcquPxGrPux
-   XROgxmT8uwZ5fOH2i2utlrIsA9cL+l8wxyHPERzpcCId40PHs3BPJU1AU
-   TlIa3jM6cpwks6TJHaSvfmRUCwggdJ2/xfqOD30rxseY1wOGC9Bwl0doB
-   GJJAzdTzFitze01w4w+mWWcicFKJQpU/Z25+swtsbWhiZDTTKIf9i1oVw
-   CvnkGhdZ8GXORhnHnXma/L3/U4AZBYGDERS7BfradQaA/7JH1iYn/a511
-   w==;
-IronPort-SDR: XEIhSz+1243SkrqAaquvhpaycDwjiYjytgf/0ojV8Ra+XGEh7Ub5SegTOh9PrYmkwiHPh9KbLn
- Pl790Ke1EUiS7vYmW3T9r81Eicw8r5rDDCK3xUTlaTjtHmW507fFjDS4WVjSvjas3p4LEpVUOh
- 0Mjngbi1OqJbQkCcJgIPAmdYP3EQFre5wvdcTbEVE0zBzLA8GmtkGyvcxPbhCWJ0eI/LQYnuHV
- m9uYSCejclBipVOKhyxrDIW6kI2bbsPp13sNQI+b+9plwmnNJ5dh4/XqCtQdxDxDUPPMUCVhbO
- vyE=
-X-IronPort-AV: E=Sophos;i="5.78,426,1599548400"; 
-   d="scan'208";a="97439396"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Dec 2020 03:13:51 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 17 Dec 2020 03:13:50 -0700
-Received: from [10.171.246.74] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Thu, 17 Dec 2020 03:13:46 -0700
-Subject: Re: [PATCH v3 0/8] net: macb: add support for sama7g5
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <linux@armlinux.org.uk>, <paul.walmsley@sifive.com>,
-        <palmer@dabbelt.com>, <natechancellor@gmail.com>,
-        <ndesaulniers@google.com>
-CC:     <yash.shah@sifive.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        <clang-built-linux@googlegroups.com>
-References: <1607519019-19103-1-git-send-email-claudiu.beznea@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <419c402d-b214-410d-24c4-45c1d2ba388d@microchip.com>
-Date:   Thu, 17 Dec 2020 11:13:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727066AbgLQLBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 06:01:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725871AbgLQLBo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 06:01:44 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D2DC061282
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 03:01:02 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id h4so21033922qkk.4
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 03:01:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9Imzg8e8xlIRFIOdl2DY/7SAx12RI7ioSsy2IScl6E0=;
+        b=kDRP/xhfnrHzPCmRqaLzaDTwvF0zEJZMvJLflkpZyd9nJKClvtZtWymdXNIXWfZqeB
+         /VM5SySkKDDqlEsAgUa8MmkMLPKZVk9tWSDs7Pjm8LEWdCDWuCEnf5dpgpBvrqgc5Myl
+         xqytZN6Up1tZdVDylWxTKOHaY10a9oJacBRIO2kidBjPdCbmuzEsd20tivJrK/BaRhnD
+         VBJ0DZhlVpF2DqRZZfVUsX/o2WRUiXJyUm+p+I3fUDlORxHI/oBfyNeOStAY/Tmd2xx+
+         hmt4PAUc9x1Ai83/YUdPLhLJ1/RpStpc+DqtP/25/uxvDmlarPSTB8wEogXsm8BtgUD6
+         Cbsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9Imzg8e8xlIRFIOdl2DY/7SAx12RI7ioSsy2IScl6E0=;
+        b=B6nqiAL8A9+PozoSJnsaS/9OzgVoKaVSFd/3O2TiI4pA6R6s49UYG1SHBJ+rgB7uqC
+         s2PD5m1kxH5xLVg3BLb4lnCmiyqIKNQ/qAS1S3dNkBcQMd9JALwcQMA9kaupWRBPfh9S
+         w7eK437933YfBmfc0aDRwtUdCcDL7B3A2SNaBvwzPkdwllQhSCCEPVbPSNiZG0vnKjId
+         VfCzt+MOAPe5Ww/Dl35ciWs8mZeJEPkNgU1zv6eJXvRWS5+hrmAOfS4muxQhq1gxtM0U
+         9DMXCsYJ8PI0qnMYqkUuXR5kSnRm0KHl96pr1PfjYxVgUcxTLtUmHN76bVxA0MgOQRhj
+         ZR2Q==
+X-Gm-Message-State: AOAM531xXwfwBujnO848zR0Zx431u3UiUxy2I19H8bFPjgkrMGISCjIf
+        alvbrHCOhfPzM+dBHmcHtS6DpSGNKm4Oxi/zcR/Arg==
+X-Google-Smtp-Source: ABdhPJw1il1BYSqi4VSEYZluhba8w6tFNcfSV2KFj5T4imgrdg26rf0keo4ft1+EWvlnT2aKbhc1lCQSgD05CEyFCIw=
+X-Received: by 2002:a37:7806:: with SMTP id t6mr47141561qkc.360.1608202861827;
+ Thu, 17 Dec 2020 03:01:01 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1607519019-19103-1-git-send-email-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1608198007-10143-1-git-send-email-stefanc@marvell.com> <1608198007-10143-2-git-send-email-stefanc@marvell.com>
+In-Reply-To: <1608198007-10143-2-git-send-email-stefanc@marvell.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Thu, 17 Dec 2020 12:00:49 +0100
+Message-ID: <CAPv3WKcwT9F3w=Ua-ktE=eorp0a-HPvoF2U-CwsHVtFw6GKOzQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 2/2] net: mvpp2: disable force link UP during port
+ init procedure
+To:     Stefan Chulski <stefanc@marvell.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>, nadavh@marvell.com,
+        Yan Markman <ymarkman@marvell.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/12/2020 at 14:03, Claudiu Beznea wrote:
-> Hi,
-> 
-> This series adds support for SAMA7G5 Ethernet interfaces: one 10/100Mbps
-> and one 1Gbps interfaces.
-> 
-> Along with it I also included a fix to disable clocks for SiFive FU540-C000
-> on failure path of fu540_c000_clk_init().
-> 
-> Thank you,
-> Claudiu Beznea
-> 
-> Changed in v3:
-> - use clk_bulk_disable_unprepare in patch 3/8
-> - corrected clang compilation warning in patch 3/8
-> - revert changes in macb_clk_init() in patch 3/8
-> 
-> Changes in v2:
-> - introduced patch "net: macb: add function to disable all macb clocks" and
->    update patch "net: macb: unprepare clocks in case of failure" accordingly
-> - collected tags
-> 
-> Claudiu Beznea (8):
->    net: macb: add userio bits as platform configuration
->    net: macb: add capability to not set the clock rate
->    net: macb: add function to disable all macb clocks
->    net: macb: unprepare clocks in case of failure
->    dt-bindings: add documentation for sama7g5 ethernet interface
->    dt-bindings: add documentation for sama7g5 gigabit ethernet interface
->    net: macb: add support for sama7g5 gem interface
->    net: macb: add support for sama7g5 emac interface
+Hi Stefan,
 
-For the whole series:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+czw., 17 gru 2020 o 10:42 <stefanc@marvell.com> napisa=C5=82(a):
+>
+> From: Stefan Chulski <stefanc@marvell.com>
+>
+> Force link UP can be enabled by bootloader during tftpboot
+> and breaks NFS support.
+> Force link UP disabled during port init procedure.
+>
+> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+> ---
 
-Thanks Claudiu, best regards,
-   Nicolas
+What are the updates against v1? Please note them in this place for
+individual patches and list all in the cover letter (in case sending a
+group of patches).
 
->   Documentation/devicetree/bindings/net/macb.txt |   2 +
->   drivers/net/ethernet/cadence/macb.h            |  11 ++
->   drivers/net/ethernet/cadence/macb_main.c       | 134 ++++++++++++++++++-------
->   3 files changed, 111 insertions(+), 36 deletions(-)
-> 
+Do you think it's a fix that should be backported to stable branches?
+If yes, please add 'Fixes: <commit ID> ("commit title")' and it may be
+good to add 'Cc: stable@vger.kernel.org' adjacent to the Signed-off-by
+tag.
 
+Thanks,
+Marcin
 
--- 
-Nicolas Ferre
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/ne=
+t/ethernet/marvell/mvpp2/mvpp2_main.c
+> index d2b0506..0ad3177 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -5479,7 +5479,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
+>         struct mvpp2 *priv =3D port->priv;
+>         struct mvpp2_txq_pcpu *txq_pcpu;
+>         unsigned int thread;
+> -       int queue, err;
+> +       int queue, err, val;
+>
+>         /* Checks for hardware constraints */
+>         if (port->first_rxq + port->nrxqs >
+> @@ -5493,6 +5493,18 @@ static int mvpp2_port_init(struct mvpp2_port *port=
+)
+>         mvpp2_egress_disable(port);
+>         mvpp2_port_disable(port);
+>
+> +       if (mvpp2_is_xlg(port->phy_interface)) {
+> +               val =3D readl(port->base + MVPP22_XLG_CTRL0_REG);
+> +               val &=3D ~MVPP22_XLG_CTRL0_FORCE_LINK_PASS;
+> +               val |=3D MVPP22_XLG_CTRL0_FORCE_LINK_DOWN;
+> +               writel(val, port->base + MVPP22_XLG_CTRL0_REG);
+> +       } else {
+> +               val =3D readl(port->base + MVPP2_GMAC_AUTONEG_CONFIG);
+> +               val &=3D ~MVPP2_GMAC_FORCE_LINK_PASS;
+> +               val |=3D MVPP2_GMAC_FORCE_LINK_DOWN;
+> +               writel(val, port->base + MVPP2_GMAC_AUTONEG_CONFIG);
+> +       }
+> +
+>         port->tx_time_coal =3D MVPP2_TXDONE_COAL_USEC;
+>
+>         port->txqs =3D devm_kcalloc(dev, port->ntxqs, sizeof(*port->txqs)=
+,
+> --
+> 1.9.1
+>
