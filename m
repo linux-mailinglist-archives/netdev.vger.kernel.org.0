@@ -2,80 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A86C2DC9C7
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:00:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 419A92DC9D3
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:09:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730919AbgLQAAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 19:00:36 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:36462 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726806AbgLQAAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 19:00:36 -0500
-Received: from [192.168.254.6] (unknown [50.46.158.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 6E4C213C2B0;
-        Wed, 16 Dec 2020 15:59:55 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 6E4C213C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1608163195;
-        bh=ba474zonrNTBOCRoHWQRZYqbP/gxznsMC6EdKcy5IoU=;
-        h=Subject:From:To:References:Date:In-Reply-To:From;
-        b=E87g9AqcM9yZjf0O3wiQjCloQpARFVqZcPPlsYvQbhISQ/skvSS7yRmCaXhX6VsJ2
-         PDv+T1agn38KAHV04exJyOSZB7tNDcrLZ4nYF6pqwq1DmOGeYKU9s7ikBpr0cIpEw/
-         j21hiJX+r2lNiYqVpv8mSEoeKp39MkZYKzyGIg+0=
-Subject: Re: net: tso: add UDP segmentation support: adds regression for ax200
- upload
-From:   Ben Greear <greearb@candelatech.com>
-To:     netdev <netdev@vger.kernel.org>, edumazet@google.com
-References: <5664fa0f-aef2-c336-651a-093c9eed23ab@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <765f370d-ce2d-b75a-2dde-87f69ae7c185@candelatech.com>
-Date:   Wed, 16 Dec 2020 15:59:54 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1730988AbgLQAJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 19:09:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727981AbgLQAJj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Dec 2020 19:09:39 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14929C06179C;
+        Wed, 16 Dec 2020 16:08:59 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id t13so24069591ybq.7;
+        Wed, 16 Dec 2020 16:08:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hzyl8Vanq8UyFw4xpnzrxijKBEvJAOy66S3vapenpIg=;
+        b=j3hinockrKt+52K9QHyd2DrtUBVDY0KVLpsBDFXR2r0FfwRxC05mCilhVcZ6WBvxru
+         ams0rGIKGQ2uwqbgkW6365gJZBqnMlRm2UgqNOX+TAZSOcWqjk7ndf97kllpJkhFP2Xg
+         lKBulALn4BzApe6h4hS9/ee6Mpi7BQNvgxkeXPVvj8sfh3d5hsaJh7C26jsCxmiYp6r1
+         FGakqQbHAugBdALv6FBw9/y2PhYmdfdx6TmlQlFweBGA8X7LnkRQXqhW2E2lxjCsL7kG
+         7Ca5r63eP0K8I043aliRiYIRYQo/QF22S286wGsJLvZ2CxOCEqHk2gaZA5hYFbjJrWRf
+         LrQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hzyl8Vanq8UyFw4xpnzrxijKBEvJAOy66S3vapenpIg=;
+        b=V8b0oztp68wNqoA8thAPDkkaajkIu9kqcW+qlW25aB/nLcgQGQdvkEdg2DoUcfKUoK
+         sW6fbpjfuGzgWobhlKLMlRMYWfvuESQbXSaprldaQpNVp3HOgnEyT6h1JZT5eq+EFL/u
+         9x6mr+T9IgmPNXclMolPnyNem6hhaxEhCGK8lj38yxKn/v2N8LzalAdWY239JaX/tP7F
+         kA8OHqTHp3+v9cxL8Ai4er+XN4QBFtwB6c02BV3oJ4VjDS++LBp9vlnhBl7YEtsd3sJ/
+         DTurA8eYMt4cwVA3gcNCnvRsL/ReF7QbnwataHGBtAYLdUYXKQEimNruRHggv0KL3fBH
+         TElg==
+X-Gm-Message-State: AOAM533YvOVg76M4KpnRTJ8lNXkoPAZoefhEBREYFT1soZl14TGhcqiG
+        GgW0aays07GQh356sj3ogy33W+7WvMAoimet9Lg=
+X-Google-Smtp-Source: ABdhPJwnVERiiFWNoqxv1We2ohuhrUbG4eraM6rSw+kLRCzupSK81hgmWsQQVS2T6iznjq4fyetGj//plfaRpp6Siu8=
+X-Received: by 2002:a25:aea8:: with SMTP id b40mr54523853ybj.347.1608163738352;
+ Wed, 16 Dec 2020 16:08:58 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <5664fa0f-aef2-c336-651a-093c9eed23ab@candelatech.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-MW
-Content-Transfer-Encoding: 8bit
+References: <20201216141806.GA21694@localhost>
+In-Reply-To: <20201216141806.GA21694@localhost>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 16 Dec 2020 16:08:47 -0800
+Message-ID: <CAEf4BzZ_Tk+zk8Sa3A+MhLq-8=8i5yRsUpDG8i8B22N30VgVFQ@mail.gmail.com>
+Subject: Re: [PATCH v9 bpf-next] bpf/selftests: fold test_current_pid_tgid_new_ns
+ into test_progs.
+To:     Carlos Neira <cneirabustos@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/16/20 3:09 PM, Ben Greear wrote:
-> Hello Eric,
-> 
-> The patch below evidently causes TCP throughput to be about 50Mbps instead of 700Mbps
-> when using ax200 to upload tcp traffic.
-> 
-> When I disable TSO, performance goes back up to around 700Mbps.
+On Wed, Dec 16, 2020 at 6:18 AM Carlos Neira <cneirabustos@gmail.com> wrote:
+>
+> Currently tests for bpf_get_ns_current_pid_tgid() are outside test_progs.
+> This change folds test cases into test_progs.
+>
+> Changes from v8:
+>
+>  - Fixed code style
+>  - Fixed CHECK macro usage
+>  - Removed root namespace sub-test
+>  - Split pid_tgid variable
+>
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> ---
+>  tools/testing/selftests/bpf/.gitignore        |   1 -
+>  tools/testing/selftests/bpf/Makefile          |   3 +-
+>  .../bpf/prog_tests/ns_current_pid_tgid.c      | 115 ++++++-------
+>  .../bpf/progs/test_ns_current_pid_tgid.c      |  27 +--
+>  .../bpf/test_current_pid_tgid_new_ns.c        | 160 ------------------
+>  5 files changed, 68 insertions(+), 238 deletions(-)
+>  delete mode 100644 tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+>
 
-As a followup, when I revert the patch, upload speed goes to ~900Mbps,
-so even better than just disabling TSO (I left TSO enabled after reverting the patch).
+[...]
 
-Thanks,
-Ben
+>
+> -       err = bpf_object__load(obj);
+> -       if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
+> +       skel = test_ns_current_pid_tgid__open_and_load();
+> +       if (CHECK(!skel, "skel_open_load", "failed to load skeleton\n"))
+>                 goto cleanup;
+>
+> -       bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
+> -       if (CHECK(!bss_map, "find_bss_map", "failed\n"))
+> -               goto cleanup;
+> +       tid = syscall(SYS_gettid);
+> +       pid = getpid();
 
-> 
-> I recall ~5 years ago we had similar TCP related performance issues with ath10k.
-> I vaguely recall that there might be some driver-level socket pacing tuning value, but I cannot
-> find the right thing to search for.  Is this really a thing?  If so, maybe it will
-> be a way to resolve this issue?
-> 
-> See this more thorough bug report:
-> 
-> https://bugzilla.kernel.org/show_bug.cgi?id=209913
-> 
-> Patch description:
-> net: tso: add UDP segmentation support
-> Note that like TCP, we do not support additional encapsulations,
-> and that checksums must be offloaded to the NIC.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> Thanks,
-> Ben
-> 
+So pid here corresponds to tgid from the BPF program
+tid is thread ID, which is the same as pid in Linux kernel
+terminology. So checks below are wrong and just by coincidence pass.
+Which also might mean that test doesn't test enough?
 
+Would it be possible to also check non-namespaced pid/tgid and see if
+they are at least different? As is, this test doesn't give me enough
+confidence it would catch issues.
+
+>
+> -       prog = bpf_object__find_program_by_title(obj, probe_name);
+> -       if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
+> -                 probe_name))
+> +       err = stat("/proc/self/ns/pid", &st);
+> +       if (CHECK(err, "stat", "failed /proc/self/ns/pid: %d", err))
+>                 goto cleanup;
+>
+> -       memset(&bss, 0, sizeof(bss));
+> -       pid_t tid = syscall(SYS_gettid);
+> -       pid_t pid = getpid();
+> -
+> -       id = (__u64) tid << 32 | pid;
+> -       bss.user_pid_tgid = id;
+> +       bss = skel->bss;
+> +       bss->dev = st.st_dev;
+> +       bss->ino = st.st_ino;
+> +       bss->user_pid = 0;
+> +       bss->user_tgid = 0;
+>
+> -       if (CHECK_FAIL(stat("/proc/self/ns/pid", &st))) {
+> -               perror("Failed to stat /proc/self/ns/pid");
+> +       err = test_ns_current_pid_tgid__attach(skel);
+> +       if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
+>                 goto cleanup;
+> -       }
+>
+> -       bss.dev = st.st_dev;
+> -       bss.ino = st.st_ino;
+> +       /* trigger tracepoint */
+> +       usleep(1);
+>
+> -       err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
+> -       if (CHECK(err, "setting_bss", "failed to set bss : %d\n", err))
+> +       if (CHECK((pid_t)bss->user_pid != pid, "pid", "got %d != exp %d\n",
+> +        (pid_t)bss->user_pid, pid))
+>                 goto cleanup;
+>
+> -       link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
+> -       if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n",
+> -                 PTR_ERR(link))) {
+> -               link = NULL;
+> +       if (CHECK((pid_t)bss->user_tgid != tid, "tgid", "got %d != exp %d\n",
+> +        (pid_t)bss->user_tgid, tid))
+
+wrapped arguments need to be aligned with the first argument on the
+first line, please pay attention to that, you have a similar problem
+above.
+
+But better yet in this case, just use ASSERT_EQ, which is more succinct:
+
+ASSERT_EQ(bss->user_pid, pid, "pid");
+ASSERT_EQ(bss->user_tgid, tid, "pid");
+
+>                 goto cleanup;
+> -       }
+>
+> -       /* trigger some syscalls */
+> -       usleep(1);
+> +cleanup:
+> +       if (skel)
+
+no need to check for null, skeleton's destroy() handles that already
+
+> +               test_ns_current_pid_tgid__destroy(skel);
+>
+> -       err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
+> -       if (CHECK(err, "set_bss", "failed to get bss : %d\n", err))
+> -               goto cleanup;
+> +       return err;
+> +}
+>
+> -       if (CHECK(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
+> -                 "User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
+> -               goto cleanup;
+> -cleanup:
+> -       bpf_link__destroy(link);
+> -       bpf_object__close(obj);
+> +void test_ns_current_pid_tgid(void)
+> +{
+> +       int wstatus, duration = 0;
+> +       pid_t cpid;
+> +
+> +       cpid = clone(newns_pid_tgid,
+> +         child_stack + STACK_SIZE,
+> +         CLONE_NEWPID | SIGCHLD, NULL);
+
+I know nothing about namespaces, but seems like you are not doing
+unshare(CLONE_NEWPID | CLONE_NEWNS) anymore, which previously was done
+in the tests. What's up with that? You also used fork() before, now
+you use clone(). It would be nice to explain the changes in the commit
+message, so that reviewers don't have to dig through `man clone` that
+much.
+
+> +
+> +       if (CHECK(cpid == -1, "clone", strerror(errno)))
+> +               exit(EXIT_FAILURE);
+> +
+> +       if (CHECK(waitpid(cpid, &wstatus, 0) == -1, "waitpid",
+> +        strerror(errno)))
+> +               exit(EXIT_FAILURE);
+> +
+> +
+> +       if (CHECK(WEXITSTATUS(wstatus) != 0, "newns_pidtgid",
+> +        "failed"))
+> +               exit(EXIT_FAILURE);
+>  }
+
+[...]
