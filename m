@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B312DCA1A
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:46:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 088812DCA27
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 01:51:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726424AbgLQApw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Dec 2020 19:45:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45856 "EHLO mail.kernel.org"
+        id S1726625AbgLQAtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Dec 2020 19:49:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46832 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725871AbgLQApw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 16 Dec 2020 19:45:52 -0500
-Date:   Wed, 16 Dec 2020 16:45:10 -0800
+        id S1726380AbgLQAtT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 16 Dec 2020 19:49:19 -0500
+Date:   Wed, 16 Dec 2020 16:48:38 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608165911;
-        bh=Q66mg2D/d0TTX316HWqnvm49rlM0xf7I80MMYN+9C/I=;
+        s=k20201202; t=1608166119;
+        bh=NLNYrstPfE0QbPFqmX/aq0W0aFwreKPMHKoYADup7O4=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bzhLTmnT8IXHgOry0RPcmTyPqf1B0hR3jqlG0bZHZI1Ofap942eMXwnq5VbpfxcnR
-         Hp82hou9TZKWmN5VSh0eg5MHW12MLa9Uhr97moRLVRgyX4b5kUs0BYNON1PtriaesR
-         xupSwZOvYLTDIIJHqQYFtARFvAXgXN9BiUJUakiUyXagsBTpRyr06MoXmADw0WxrB1
-         mbHTL+qShhMJLgru1bL8UKaVz4VKQcbFjD78YGg1UQg0kEZYBFsNYkgPNUz1AFNXrJ
-         YJI0GZKkXYqTWFtUy8SVMDOu4ljzL+5bVGiEOJnQAMVrY+aatvsFa4BaPI7K8QY2Vd
-         Q0oLz0ToZMBfw==
+        b=TW6bxj7FeH+GBQc7l6QMpag7hNqnreKCz6JXMDRyWX6Iv82o0LSK1Yrp1qI031hPs
+         bY0+t5W81WOc8RuIYMHIZTxU4vYSLMA1g+Ke+7qlOoizQWY2mGKCHVrDYNDPrMtjqB
+         iYHu/B3jvqLDVIuIyRXwuAhm1dW1vrWgw3y9IRvzj6OubwNSeCzODL0ajDhJQiczxM
+         ag0hHUm4iVZ+oppbwZNPTcDzINtgj9dJq4g81jb0JNXp3fFY4Pvd2NuxOMvcgbfllF
+         6uY0jwWGRvyz/lHS8VvWE3jEGwGaLQz5TN00KnRDXI1wcsy+9p5w25+nvheE2s1Vn6
+         iyP0aDd8nqMaw==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     trix@redhat.com
-Cc:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] atm: ambassador: remove h from printk format specifier
-Message-ID: <20201216164510.770454d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201215142228.1847161-1-trix@redhat.com>
-References: <20201215142228.1847161-1-trix@redhat.com>
+To:     Gao Yan <gao.yanB@h3c.com>
+Cc:     <paulus@samba.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: remove disc_data_lock in ppp line discipline
+Message-ID: <20201216164838.55f939a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201215150054.570-1-gao.yanB@h3c.com>
+References: <20201215150054.570-1-gao.yanB@h3c.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -37,38 +37,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Dec 2020 06:22:28 -0800 trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
+On Tue, 15 Dec 2020 23:00:54 +0800 Gao Yan wrote:
+> tty layer provide tty->ldisc_sem lock to protect tty->disc_data;
+> For examlpe, when cpu A is running ppp_synctty_ioctl that
+> hold the tty->ldisc_sem, so if cpu B calls ppp_synctty_close,
+> it will wait until cpu A release tty->ldisc_sem. So I think it is
+> unnecessary to have the disc_data_lock;
 > 
-> See Documentation/core-api/printk-formats.rst.
-> h should no longer be used in the format specifier for printk.
+> cpu A                           cpu B
+> tty_ioctl                       tty_reopen
+>  ->hold tty->ldisc_sem            ->hold tty->ldisc_sem(write), failed
+>  ->ld->ops->ioctl                 ->wait...
+>  ->release tty->ldisc_sem         ->wait...OK,hold tty->ldisc_sem
+>                                     ->tty_ldisc_reinit
+>                                       ->tty_ldisc_close
+>                                         ->ld->ops->close  
 > 
-> Signed-off-by: Tom Rix <trix@redhat.com>
+> Signed-off-by: Gao Yan <gao.yanB@h3c.com>
 
-That's for new code I assume?
+# Form letter - net-next is closed
 
-What's the harm in leaving this ancient code be?
+We have already sent the networking pull request for 5.11 and therefore
+net-next is closed for new drivers, features, code refactoring and
+optimizations. We are currently accepting bug fixes only.
 
-> diff --git a/drivers/atm/ambassador.c b/drivers/atm/ambassador.c
-> index c039b8a4fefe..6b0fff8c0141 100644
-> --- a/drivers/atm/ambassador.c
-> +++ b/drivers/atm/ambassador.c
-> @@ -2169,7 +2169,7 @@ static void setup_pci_dev(struct pci_dev *pci_dev)
->  		pci_lat = (lat < MIN_PCI_LATENCY) ? MIN_PCI_LATENCY : lat;
->  
->  	if (lat != pci_lat) {
-> -		PRINTK (KERN_INFO, "Changing PCI latency timer from %hu to %hu",
-> +		PRINTK (KERN_INFO, "Changing PCI latency timer from %u to %u",
->  			lat, pci_lat);
->  		pci_write_config_byte(pci_dev, PCI_LATENCY_TIMER, pci_lat);
->  	}
-> @@ -2300,7 +2300,7 @@ static void __init amb_check_args (void) {
->    unsigned int max_rx_size;
->    
->  #ifdef DEBUG_AMBASSADOR
-> -  PRINTK (KERN_NOTICE, "debug bitmap is %hx", debug &= DBG_MASK);
-> +  PRINTK (KERN_NOTICE, "debug bitmap is %x", debug &= DBG_MASK);
->  #else
->    if (debug)
->      PRINTK (KERN_NOTICE, "no debugging support");
+Please repost when net-next reopens after 5.11-rc1 is cut.
 
+Look out for the announcement on the mailing list or check:
+http://vger.kernel.org/~davem/net-next.html
+
+RFC patches sent for review only are obviously welcome at any time.
