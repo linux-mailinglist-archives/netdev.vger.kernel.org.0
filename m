@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C1552DDAAA
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 22:16:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F21282DDABD
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 22:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731672AbgLQVPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 16:15:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730768AbgLQVPG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 16:15:06 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C57C0617A7;
-        Thu, 17 Dec 2020 13:14:26 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id t22so189181pfl.3;
-        Thu, 17 Dec 2020 13:14:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X8jlvHg6Q7y3xiJzuJA/KXnJAwu4vh56DFFNSdAhHgo=;
-        b=YmyKXAbxl+EEI5A3fL92uUTNa56/jhxrj7Pew7YWXtxSVlJG7oTStecsPLNoi+y4de
-         dlNm1WjjVjIWMl/jA5DzBssSz7mUBMPA4qk0tWxaF15VTMCrUA424xRyt7XmFXNbUyUa
-         5s+8FTnZ+FQR1w4jxBkddsaZU89RlF66JY3PC/4ooaZPVtXZinztM7Qk+sdTKbsDMw2D
-         qKQivk+rYS2h56X1k6sP9CQ0MEIZTbChU07WCG9h7i/9YBI0XWKgQitWTQnG8rlNdrXr
-         uKk9Alx6ZUrFfhQ1peEzipgsssfguMtj2A7DKfE2j/k5eDbnhh7KZT/08XoqJeFrAOcZ
-         q0Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X8jlvHg6Q7y3xiJzuJA/KXnJAwu4vh56DFFNSdAhHgo=;
-        b=uNhQWarZxkQdswF/ORNI52XVSSYO5zgouup74JvvOa2h6f8Z31CdXPICm5Wj62/Xzk
-         cuQt9hdIj9w63n4cez3cEw9bHq36yVycUVF7nkg8hkRUyBc3HO3YMZIq/twaxl69HwXo
-         U2hum5hfbuDutMPHG9pFH5le/IjmMASuguWm34ZYR0XyUdzViANmq14yNN5vrTMODpEf
-         w6oxk4DJ29Fjtjy3FgoYXMsM83heiajsWwhXpNm2uF+varjTqT+VWKMcq6s3jD0qID83
-         0YGLlRLu8uRlZONRUdFthohxUaejEGBmefz2UORCszPBVb8H0CrbY4Rn+1WJ5qPdqfF+
-         1GLA==
-X-Gm-Message-State: AOAM531vuPdkDNDzNFXw9p+GmK5JjlzW4xsubSu+62rVzisetjj8rY2N
-        lT/KCMKTXze+NX1goM984jrw96ElOrwvz5cmUEo=
-X-Google-Smtp-Source: ABdhPJx+A+AZ+b8PrqUGvgQInAugU+o3zKmkIfQWobkx7kkfdwFVsyyGf8bnipMaXTVWN+mZz5aRr/diBK1fYTtlKq4=
-X-Received: by 2002:a63:e109:: with SMTP id z9mr1137578pgh.5.1608239666081;
- Thu, 17 Dec 2020 13:14:26 -0800 (PST)
+        id S1728872AbgLQVUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 16:20:24 -0500
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:58345 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728086AbgLQVUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 16:20:23 -0500
+X-Originating-IP: 86.202.109.140
+Received: from localhost (lfbn-lyo-1-13-140.w86-202.abo.wanadoo.fr [86.202.109.140])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 21204E0006;
+        Thu, 17 Dec 2020 21:19:37 +0000 (UTC)
+Date:   Thu, 17 Dec 2020 22:19:37 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@mellanox.com>
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Message-ID: <20201217211937.GA3177478@piout.net>
+References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
+ <X8ogtmrm7tOzZo+N@kroah.com>
+ <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
+ <X8usiKhLCU3PGL9J@kroah.com>
 MIME-Version: 1.0
-References: <20201214201118.148126-1-xiyou.wangcong@gmail.com>
- <20201214201118.148126-3-xiyou.wangcong@gmail.com> <CAEf4BzZa15kMT+xEO9ZBmS-1=E85+k02zeddx+a_N_9+MOLhkQ@mail.gmail.com>
- <CAM_iQpVR_owLgZp1tYJyfWco-s4ov_ytL6iisg3NmtyPBdbO2Q@mail.gmail.com>
- <CAEf4BzbyHHDrECCEjrSC3A5X39qb_WZaU_3_qNONP+vHAcUzuQ@mail.gmail.com>
- <CAM_iQpVBPRJ+t3HPryh-1eKxV-=2CmxW9T3OyO6-_sQVLskQVQ@mail.gmail.com>
- <CAEf4BzY4fdGieUbuAc4ttzfavBeGtE2a0rDmVfqpmZ6h6_dHiQ@mail.gmail.com> <CAM_iQpVsR=K344msuREEmidwXOeeZ=tdj4zpkrSX5yXz6VhijA@mail.gmail.com>
-In-Reply-To: <CAM_iQpVsR=K344msuREEmidwXOeeZ=tdj4zpkrSX5yXz6VhijA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 17 Dec 2020 13:14:14 -0800
-Message-ID: <CAM_iQpXOts4YFsfaZYKiL-8u=v=0_vQ+DjML8g_JD0jPfz9kpw@mail.gmail.com>
-Subject: Re: [Patch bpf-next v2 2/5] bpf: introduce timeout map
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <X8usiKhLCU3PGL9J@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 16, 2020 at 10:29 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Wed, Dec 16, 2020 at 10:35 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> > Minimize duplication of the code, no one said copy/paste all the code.
-> > But memory bloat is a real problem and should be justification enough
-> > to at least consider other options.
->
-> Sure, I have no problem with this. The question is how do we balance?
-> Is rewriting 200 lines of code to save 8 bytes of each entry acceptable?
-> What about rewriting 2000 lines of code? Do people prefer to review 200
-> or 2000 (or whatever number) lines of code? Or people just want a
-> minimal change for easier reviews?
+Hello,
 
-No worry any more. I manage to find some way to reuse the existing
-members, that is lru_node. So the end result is putting gc stuff into
-the union with lru_node without increasing the size of htab_elem.
-And of course, without duplicating/refactoring regular htab code.
+On 05/12/2020 16:51:36+0100, Greg KH wrote:
+> > To me, the documentation was written, and reviewed, more from the
+> > perspective of "why not open code a custom bus instead". So I can see
+> > after the fact how that is a bit too much theory and justification and
+> > not enough practical application. Before the fact though this was a
+> > bold mechanism to propose and it was not clear that everyone was
+> > grokking the "why" and the tradeoffs.
+> 
+> Understood, I guess I read this from the "of course you should do this,
+> now how do I use it?" point of view.  Which still needs to be addressed
+> I feel.
+> 
+> > I also think it was a bit early to identify consistent design patterns
+> > across the implementations and codify those. I expect this to evolve
+> > convenience macros just like other parts of the driver-core gained
+> > over time. Now that it is in though, another pass through the
+> > documentation to pull in more examples seems warranted.
+> 
+> A real, working, example would be great to have, so that people can know
+> how to use this.  Trying to dig through the sound or IB patches to view
+> how it is being used is not a trivial thing to do, which is why
+> reviewing this took so much work.  Having a simple example test module,
+> that creates a number of devices on a bus, ideally tied into the ktest
+> framework, would be great.  I'll attach below a .c file that I used for
+> some basic local testing to verify some of this working, but it does not
+> implement a aux bus driver, which needs to be also tested.
+> 
 
-Thanks.
+There is something I don't get from the documentation and it is what is
+this introducing that couldn't already be done using platform drivers
+and platform devices?
+
+We already have a bunch of drivers in tree that have to share a state
+and register other drivers from other subsystems for the same device.
+How is the auxiliary bus different?
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
