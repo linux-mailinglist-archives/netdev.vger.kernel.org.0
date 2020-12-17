@@ -2,436 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DE442DCE02
-	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 10:00:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D4602DCDF6
+	for <lists+netdev@lfdr.de>; Thu, 17 Dec 2020 10:00:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727617AbgLQI72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 03:59:28 -0500
-Received: from mail-eopbgr60079.outbound.protection.outlook.com ([40.107.6.79]:41230
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725950AbgLQI71 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 17 Dec 2020 03:59:27 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c+dgibNYqlNPSZnhkQHkBC+ls9I201HuRKgFCvT+Gei+wDy1pU9ttRDuidG0mibRsRbMhzPECjPBG2/rY/T3o2Ciy2spLCNPvaUkqQBqY1ZlWjksLC4mDH7stiYVrCzHv3X1FFHSLME69AXEWmUvd1Z85sGNXdz78yTx4SIFoIxlI/8jA3jsIiS68I0AzP552musWtcegPZhO77wduQPEGr9dk507rRDHM7V2DdMSOOzrXpJczFpodnezrQXOcUL02Gi/hkKrupPnPOmtDGWcrjWEi5rG+IZr3B0sh1vpJZgLXjaPwpgDJ7r1n6qm0Px/IbRsgCl8PJwvzxN1lEDug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fikpkpFomfijCJ3EeseJas8xynwvWLH3NrQQNlEpxqo=;
- b=TRxZEnb3NXTKEhPur6lyQmarAjk0nL72cz0+MlaQf4ppFzlQXO7l7YtJlk1mUAUNhfVmeUMay7mOWYOjPUlwMTdYUnVL9+Bh5TOs/PWF7E15bKAgXVyA9aFbp6se10E5tHI10vKjy4G3J4/EomqR82coBs/43rRyexYVcsJjRC2Y7SMeEPmENTYQ03XJHyNUpn9jsE/ef6VtX9xfNwJAinjXTb67Moe0SwI2GY6B+9VEUT7js1VSm/4Z3z1DsEOvkjkZhGQE/XTkCae+ST6Wy4UsYN0Ce48bzBzxL+JTqerDiAgBj1YiVjzptUeizvegisBSAfzkW9+Hqu/aRjN9SQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fikpkpFomfijCJ3EeseJas8xynwvWLH3NrQQNlEpxqo=;
- b=SKwa/WrWts1kW9NbXxaqk/YGH26Eo2yvV7uVEh2bpCaklYpnh3+qd4ZaIuQRKE/+OU85LFGailFr9dfKPyYBLMhBYqadF0be5sjhd0E6oTjISB8x1BMNgBHgZNIYxLlbI8RR1lqdQLVq+7uEy5LTc+qGa9LfcrG3MkYQqaj9QSE=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from AM0PR05MB5010.eurprd05.prod.outlook.com (2603:10a6:208:cd::23)
- by AM0PR05MB6674.eurprd05.prod.outlook.com (2603:10a6:20b:151::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.20; Thu, 17 Dec
- 2020 08:57:40 +0000
-Received: from AM0PR05MB5010.eurprd05.prod.outlook.com
- ([fe80::4d67:7d47:90f1:19be]) by AM0PR05MB5010.eurprd05.prod.outlook.com
- ([fe80::4d67:7d47:90f1:19be%7]) with mapi id 15.20.3654.021; Thu, 17 Dec 2020
- 08:57:40 +0000
-From:   Danielle Ratson <danieller@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, mkubecek@suse.cz,
-        mlxsw@nvidia.com, idosch@nvidia.com,
-        Danielle Ratson <danieller@nvidia.com>
-Subject: [PATCH net-next v2 7/7] net: selftests: Add lanes setting test
-Date:   Thu, 17 Dec 2020 10:57:17 +0200
-Message-Id: <20201217085717.4081793-8-danieller@mellanox.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201217085717.4081793-1-danieller@mellanox.com>
-References: <20201217085717.4081793-1-danieller@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [37.142.13.130]
-X-ClientProxiedBy: VI1PR0601CA0024.eurprd06.prod.outlook.com
- (2603:10a6:800:1e::34) To AM0PR05MB5010.eurprd05.prod.outlook.com
- (2603:10a6:208:cd::23)
+        id S1727378AbgLQI6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 03:58:50 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:45082 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727323AbgLQI6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 03:58:50 -0500
+Received: by mail-io1-f72.google.com with SMTP id x7so26640081ion.12
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 00:58:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=5cdTyg19qBt9YC2udx7QDD/ru4hNARFKf9MbeLvUc/Q=;
+        b=iBPtphVAzjt6WuFiU2P+kiDYDGSzxfVgke3+itQBQOcWg/Zu3VoPr5XP7lbjG1FUJU
+         8A2yaonX62BxnkS+2R+49VTxGhw/dkLeZbVNQWFSPdZCSt5LfezaB9/hie4p/8YpNUcM
+         oTzXRAixCTVlDQ8TwcQC+mLwkndq3MO2BR2O3ByWwuumMKj9oWCbltwZzDdsbnABaGQd
+         lq4DFS94JIGM0+0LaaFRwaQves3MOX6Yst+b1R8+7TaytRc6bYO5LWFmiM/Tnv+9s1aG
+         fqDeCyOrhQpDH7qSZwzdw0uQqtf3rBpE7OQYkU2QBn2lnj+yBtVHDPYnJlv6WrhrT286
+         euVw==
+X-Gm-Message-State: AOAM531ZVepq9aYZxU5lGa0y0rdxU4H7nIUlBDhALc6A93q7I1NZOpoO
+        FNGcsHflliwQbNtmM8y9vKm6kvo5u+LEAH4GZf7FcJmFjusG
+X-Google-Smtp-Source: ABdhPJyroSQRk3u2Kgqk9k1IMqZK+ZIarvm8U7vD5XMcHIe/xISvRPgvS3PTj7MYKw3HdAMLaRIftbrvL+w3mJGJZtgWCvzAVCJq
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-155.mtr.labs.mlnx (37.142.13.130) by VI1PR0601CA0024.eurprd06.prod.outlook.com (2603:10a6:800:1e::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Thu, 17 Dec 2020 08:57:39 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: b26dd0d8-2612-4ad5-8470-08d8a269cf16
-X-MS-TrafficTypeDiagnostic: AM0PR05MB6674:
-X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-X-Microsoft-Antispam-PRVS: <AM0PR05MB6674DEA75F0B56C916E39B69D5C40@AM0PR05MB6674.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:107;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M/ZtPCV9/FV5Lo6vWdrfQ3WuGnwE/8lL0tBFPDmgBULZgfPbyCsp/5icn1lqG8IKjWNiDRLI9kLCoYJEGFuwuoCyBaAQvIjDkSLrtehUC4aP9Krtob1R52+Pcw0y0UMJziGAEIlBaZBecvVl1oLEYnx3t0PEshv8oxXW3yYm7psdpWe/5AR4U+WMzskKx1GXW75ZcVuXSUsVjUdvUjt+vwTTKawh+FQ7JRIhGDzDMqtIql4wRBg5510XZciVyqlhybhhOWymCVGH3iD8eDq+JUsYIJ5Xs0AXDfSQg1Jhw7KgtLgJpWiLNDrirkgkR3gt
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB5010.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(346002)(39860400002)(366004)(6916009)(316002)(86362001)(66476007)(2906002)(8936002)(5660300002)(2616005)(6512007)(6486002)(1076003)(4326008)(7416002)(6666004)(6506007)(36756003)(66556008)(26005)(8676002)(956004)(83380400001)(186003)(16526019)(66946007)(52116002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?4d8oWs29oVNVCq5siN18Y682AtIiG6bS3xrcitpVvLWgdkvlDTAr7P/L1ScM?=
- =?us-ascii?Q?1z662av5zqhlhgDCVDl/axBxTLQ3v+LOXpMvNTPX3rHbBEe8HO+hLOJWSt6q?=
- =?us-ascii?Q?qWTZ3Nx8ZEkuCvhdH6pxwouqnSHStfS9Q8TjNnXPtzIjNU1jrJ+E7jHZjyMQ?=
- =?us-ascii?Q?umF4FSKv/L6wLL5mwT4QsEqNgqidHMAXfTKSsWircsbt/SmJ5FrwKbfpT8d3?=
- =?us-ascii?Q?vaEAW0ZpzedKwyf5YCTKtFv4QOE0jpf1wC0IWvN1AxsdolDbdDBkKOLGlPPz?=
- =?us-ascii?Q?UiJMxgC1vGdFKe6seaBFboX+X0vOKE5SqSVjrMGWqvu25x0r4TynfRgOhm2P?=
- =?us-ascii?Q?V9oZaijrSuLSmQj1sqgGkQ6rFfMq1Ml7BcLP8nf+UWnZ+tiauDUZP0FMOX6d?=
- =?us-ascii?Q?zdbqy1sHMMuFTiHlfha/SvXOsp5bL+rhgU1PG/ghC97BcFWuSCIZeMnvgCaA?=
- =?us-ascii?Q?cnAKr3PQYoLRQKgJQJpDxszCQdoVsYEYuVXImaBx2Gl6bM9krLj6gyLF+U1x?=
- =?us-ascii?Q?J8Kgn4PFC2Fw8xS1wvOJE/ZyntVDYh5LWvSLIXH7oP4j333j2bFEn+4l/BQX?=
- =?us-ascii?Q?ORzgcSKpNlnQUBBD912+2E5pMPKlR2iTwi8EV7k9c7o1H5RHuSU43hetKZei?=
- =?us-ascii?Q?wM3Jz9d6lC+3s4yyNbbkMUFhBn8kRaWRh5o5Pt0Eqi7N5ms9c8QGl70PMNFV?=
- =?us-ascii?Q?zLF/Abl68TFjvJTsZbzbZ/L3gnYkcwL4ZSZpxRMD88FJc+ASXRgR+f2BE0Jo?=
- =?us-ascii?Q?3AWQEY+wkRULocaN/gfIZ0O0DdTDrgn0He2D2r0qZGqf7oXs3CmUdUuK+38a?=
- =?us-ascii?Q?QNSLZLuDdoZv7ZJ5BAXTe/vPTxuwdmxKu8lnqQVT85AdC/4pnqfibjC/e5Wf?=
- =?us-ascii?Q?8KEWWSM3cSkQX0p/xkStldX7V7IbmdmWPuVD2Kaup2bTVtJSNhccesaz7AA7?=
- =?us-ascii?Q?TknmAoJ/4ecNIPOhn5OkZ9HoeKEyY6M8R4b/DGkV/u1ehn+ku3Kf0yc1OiLC?=
- =?us-ascii?Q?pwPe?=
-X-MS-Exchange-Transport-Forked: True
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB5010.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2020 08:57:40.1391
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-Network-Message-Id: b26dd0d8-2612-4ad5-8470-08d8a269cf16
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: P7JG8cBUe0hb9aZgy+YNQB8uo0hE3bs48Rf7qTODrY7Kvscbcp12BJa9cTtInMJu1MqB98X7x+p9LGxNikRMCQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6674
+X-Received: by 2002:a05:6638:154:: with SMTP id y20mr46705828jao.119.1608195489267;
+ Thu, 17 Dec 2020 00:58:09 -0800 (PST)
+Date:   Thu, 17 Dec 2020 00:58:09 -0800
+In-Reply-To: <000000000000705ff605b5f2b656@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000de052a05b6a5301c@google.com>
+Subject: Re: BUG: unable to handle kernel paging request in smc_nl_handle_smcr_dev
+From:   syzbot <syzbot+600fef7c414ee7e2d71b@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kgraul@linux.ibm.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
+syzbot has found a reproducer for the following issue on:
 
-Test that setting lanes parameter is working.
+HEAD commit:    5e60366d Merge tag 'fallthrough-fixes-clang-5.11-rc1' of g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17842c13500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=503d0089cd701d6d
+dashboard link: https://syzkaller.appspot.com/bug?extid=600fef7c414ee7e2d71b
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17d8e41f500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17962287500000
 
-Set max speed and max lanes in the list of advertised link modes,
-and then try to set max speed with the lanes below max lanes if exists
-in the list.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+600fef7c414ee7e2d71b@syzkaller.appspotmail.com
 
-And then, test that setting number of lanes larger than max lanes fails.
-
-Do the above for both autoneg on and off.
-
-$ ./ethtool_lanes.sh
-
-TEST: 4 lanes is autonegotiated                                     [ OK ]
-TEST: Lanes number larger than max_width is not set                 [ OK ]
-TEST: Autoneg off, 4 lanes detected during force mode               [ OK ]
-TEST: Lanes number larger than max width is not set                 [ OK ]
-
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
----
-
-Notes:
-    v2:
-    	* Fix "then" to "than".
-    	* Remove the test for recieving max_width when lanes is not set by
-    	  user. When not setting lanes, we don't promise anything regarding
-    	  what number of lanes will be chosen.
-    	* Reword commit message.
-    	* Reword the skip print when ethtool is old.
-
- .../selftests/net/forwarding/ethtool_lanes.sh | 186 ++++++++++++++++++
- .../selftests/net/forwarding/ethtool_lib.sh   |  34 ++++
- tools/testing/selftests/net/forwarding/lib.sh |  28 +++
- 3 files changed, 248 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/ethtool_lanes.sh
-
-diff --git a/tools/testing/selftests/net/forwarding/ethtool_lanes.sh b/tools/testing/selftests/net/forwarding/ethtool_lanes.sh
-new file mode 100755
-index 000000000000..54dde2a3fee1
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/ethtool_lanes.sh
-@@ -0,0 +1,186 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+ALL_TESTS="
-+	autoneg
-+	autoneg_force_mode
-+"
-+
-+NUM_NETIFS=2
-+: ${TIMEOUT:=30000} # ms
-+source lib.sh
-+source ethtool_lib.sh
-+
-+setup_prepare()
-+{
-+	swp1=${NETIFS[p1]}
-+	swp2=${NETIFS[p2]}
-+
-+	ip link set dev $swp1 up
-+	ip link set dev $swp2 up
-+
-+	busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
-+	check_err $? "ports did not come up"
-+
-+	local chosen_lanes=$(ethtool $swp1 | grep 'Lanes:')
-+	chosen_lanes=${chosen_lanes#*"Lanes: "}
-+	if [[ $chosen_lanes == "Unknown!" ]]; then
-+		log_test "SKIP: driver does not support lanes setting"
-+		exit 1
-+	fi
-+
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+}
-+
-+check_lanes()
-+{
-+	local dev=$1; shift
-+	local lanes=$1; shift
-+	local max_speed=$1; shift
-+	local chosen_lanes
-+
-+	chosen_lanes=$(ethtool $dev | grep 'Lanes:')
-+	chosen_lanes=${chosen_lanes#*"Lanes: "}
-+
-+	((chosen_lanes == lanes))
-+	check_err $? "swp1 advertise $max_speed and $lanes, devs sync to $chosen_lanes"
-+}
-+
-+check_unsupported_lanes()
-+{
-+	local dev=$1; shift
-+	local max_speed=$1; shift
-+	local max_lanes=$1; shift
-+	local autoneg=$1; shift
-+	local autoneg_str=""
-+
-+	local unsupported_lanes=$((max_lanes *= 2))
-+
-+	if [[ $autoneg -eq 0 ]]; then
-+		autoneg_str="autoneg off"
-+	fi
-+
-+	ethtool -s $swp1 speed $max_speed lanes $unsupported_lanes $autoneg_str &> /dev/null
-+	check_fail $? "Unsuccessful $unsupported_lanes lanes setting was expected"
-+}
-+
-+max_speed_and_lanes_get()
-+{
-+	local dev=$1; shift
-+	local arr=("$@")
-+	local max_lanes
-+	local max_speed
-+	local -a lanes_arr
-+	local -a speeds_arr
-+	local -a max_values
-+
-+	for ((i=0; i<${#arr[@]}; i+=2)); do
-+		speeds_arr+=("${arr[$i]}")
-+		lanes_arr+=("${arr[i+1]}")
-+	done
-+
-+	max_values+=($(get_max "${speeds_arr[@]}"))
-+	max_values+=($(get_max "${lanes_arr[@]}"))
-+
-+	echo ${max_values[@]}
-+}
-+
-+search_linkmode()
-+{
-+	local speed=$1; shift
-+	local lanes=$1; shift
-+	local arr=("$@")
-+
-+	for ((i=0; i<${#arr[@]}; i+=2)); do
-+		if [[ $speed -eq ${arr[$i]} && $lanes -eq ${arr[i+1]} ]]; then
-+			return 1
-+		fi
-+	done
-+	return 0
-+}
-+
-+autoneg()
-+{
-+	RET=0
-+
-+	local lanes
-+	local max_speed
-+	local max_lanes
-+
-+	local -a linkmodes_params=($(dev_linkmodes_params_get $swp1 1))
-+	local -a max_values=($(max_speed_and_lanes_get $swp1 "${linkmodes_params[@]}"))
-+	max_speed=${max_values[0]}
-+	max_lanes=${max_values[1]}
-+
-+	lanes=$max_lanes
-+
-+	while [[ $lanes -ge 1 ]]; do
-+		search_linkmode $max_speed $lanes "${linkmodes_params[@]}"
-+		if [[ $? -eq 1 ]]; then
-+			ethtool_set $swp1 speed $max_speed lanes $lanes
-+			ip link set dev $swp1 up
-+			ip link set dev $swp2 up
-+			busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
-+			check_err $? "ports did not come up"
-+
-+			check_lanes $swp1 $lanes $max_speed
-+			log_test "$lanes lanes is autonegotiated"
-+		fi
-+		let $((lanes /= 2))
-+	done
-+
-+	check_unsupported_lanes $swp1 $max_speed $max_lanes 1
-+	log_test "Lanes number larger than max_width is not set"
-+
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+}
-+
-+autoneg_force_mode()
-+{
-+	RET=0
-+
-+	local lanes
-+	local max_speed
-+	local max_lanes
-+
-+	local -a linkmodes_params=($(dev_linkmodes_params_get $swp1 1))
-+	local -a max_values=($(max_speed_and_lanes_get $swp1 "${linkmodes_params[@]}"))
-+	max_speed=${max_values[0]}
-+	max_lanes=${max_values[1]}
-+
-+	lanes=$max_lanes
-+
-+	while [[ $lanes -ge 1 ]]; do
-+		search_linkmode $max_speed $lanes "${linkmodes_params[@]}"
-+		if [[ $? -eq 1 ]]; then
-+			ethtool_set $swp1 speed $max_speed lanes $lanes autoneg off
-+			ethtool_set $swp2 speed $max_speed lanes $lanes autoneg off
-+			ip link set dev $swp1 up
-+			ip link set dev $swp2 up
-+			busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
-+			check_err $? "ports did not come up"
-+
-+			check_lanes $swp1 $lanes $max_speed
-+			log_test "Autoneg off, $lanes lanes detected during force mode"
-+		fi
-+		let $((lanes /= 2))
-+	done
-+
-+	check_unsupported_lanes $swp1 $max_speed $max_lanes 0
-+	log_test "Lanes number larger than max width is not set"
-+
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+
-+	ethtool -s $swp2 autoneg on
-+	ethtool -s $swp1 autoneg on
-+}
-+
-+check_ethtool_lanes_support
-+setup_prepare
-+
-+tests_run
-+
-+exit $EXIT_STATUS
-diff --git a/tools/testing/selftests/net/forwarding/ethtool_lib.sh b/tools/testing/selftests/net/forwarding/ethtool_lib.sh
-index 9188e624dec0..b9bfb45085af 100644
---- a/tools/testing/selftests/net/forwarding/ethtool_lib.sh
-+++ b/tools/testing/selftests/net/forwarding/ethtool_lib.sh
-@@ -22,6 +22,40 @@ ethtool_set()
- 	check_err $out "error in configuration. $cmd"
- }
- 
-+dev_linkmodes_params_get()
-+{
-+	local dev=$1; shift
-+	local adver=$1; shift
-+	local -a linkmodes_params
-+	local param_count
-+	local arr
-+
-+	if (($adver)); then
-+		mode="Advertised link modes"
-+	else
-+		mode="Supported link modes"
-+	fi
-+
-+	local -a dev_linkmodes=($(dev_speeds_get $dev 1 $adver))
-+	for ((i=0; i<${#dev_linkmodes[@]}; i++)); do
-+		linkmodes_params[$i]=$(echo -e "${dev_linkmodes[$i]}" | \
-+			# Replaces all non numbers with spaces
-+			sed -e 's/[^0-9]/ /g' | \
-+			# Squeeze spaces in sequence to 1 space
-+			tr -s ' ')
-+		# Count how many numbers were found in the linkmode
-+		param_count=$(echo "${linkmodes_params[$i]}" | wc -w)
-+		if [[ $param_count -eq 1 ]]; then
-+			linkmodes_params[$i]="${linkmodes_params[$i]} 1"
-+		elif [[ $param_count -ge 3 ]]; then
-+			arr=(${linkmodes_params[$i]})
-+			# Take only first two params
-+			linkmodes_params[$i]=$(echo "${arr[@]:0:2}")
-+		fi
-+	done
-+	echo ${linkmodes_params[@]}
-+}
-+
- dev_speeds_get()
- {
- 	local dev=$1; shift
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 31ce478686cb..26cfc778ff26 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -69,6 +69,15 @@ check_tc_action_hw_stats_support()
- 	fi
- }
- 
-+check_ethtool_lanes_support()
-+{
-+	ethtool --help 2>&1| grep lanes &> /dev/null
-+	if [[ $? -ne 0 ]]; then
-+		echo "SKIP: ethtool too old; it is missing lanes support"
-+		exit 1
-+	fi
-+}
-+
- if [[ "$(id -u)" -ne 0 ]]; then
- 	echo "SKIP: need root privileges"
- 	exit 0
-@@ -263,6 +272,20 @@ not()
- 	[[ $? != 0 ]]
- }
- 
-+get_max()
-+{
-+	local arr=("$@")
-+
-+	max=${arr[0]}
-+	for cur in ${arr[@]}; do
-+		if [[ $cur -gt $max ]]; then
-+			max=$cur
-+		fi
-+	done
-+
-+	echo $max
-+}
-+
- grep_bridge_fdb()
- {
- 	local addr=$1; shift
-@@ -279,6 +302,11 @@ grep_bridge_fdb()
- 	$@ | grep $addr | grep $flag "$word"
- }
- 
-+wait_for_port_up()
-+{
-+	"$@" | grep -q "Link detected: yes"
-+}
-+
- wait_for_offload()
- {
- 	"$@" | grep -q offload
--- 
-2.26.2
+infiniband syz1: set active
+infiniband syz1: added macvtap0
+RDS/IB: syz1: added
+smc: adding ib device syz1 with port count 1
+smc:    ib device syz1 port 1 has pnetid 
+BUG: unable to handle page fault for address: ffffffffffffff74
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD b48f067 P4D b48f067 PUD b491067 PMD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 8688 Comm: syz-executor225 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:smc_set_pci_values net/smc/smc_core.h:396 [inline]
+RIP: 0010:smc_nl_handle_smcr_dev.isra.0+0x4e1/0x1280 net/smc/smc_ib.c:422
+Code: fc ff df 48 8d bb 74 ff ff ff 48 89 fa 48 c1 ea 03 0f b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 29 0d 00 00 <0f> b7 83 74 ff ff ff 48 8d bb 76 ff ff ff 48 89 fa 48 c1 ea 03 66
+RSP: 0018:ffffc90001f87220 EFLAGS: 00010246
+RAX: 0000000000000005 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffffffffff74
+RBP: ffffffff8d5ac140 R08: 0000000000000001 R09: ffffc90001f87308
+R10: fffff520003f0e64 R11: 1ffffffff1e2db6c R12: 000000001b556831
+R13: ffff888013e29540 R14: dffffc0000000000 R15: ffff88802a360014
+FS:  00000000015bf880(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffff74 CR3: 000000002687b000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ smc_nl_prep_smcr_dev net/smc/smc_ib.c:469 [inline]
+ smcr_nl_get_device+0xdf/0x1f0 net/smc/smc_ib.c:481
+ genl_lock_dumpit+0x60/0x90 net/netlink/genetlink.c:623
+ netlink_dump+0x4d9/0xb90 net/netlink/af_netlink.c:2268
+ __netlink_dump_start+0x665/0x920 net/netlink/af_netlink.c:2373
+ genl_family_rcv_msg_dumpit+0x2af/0x310 net/netlink/genetlink.c:686
+ genl_family_rcv_msg net/netlink/genetlink.c:780 [inline]
+ genl_rcv_msg+0x43c/0x590 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2336
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2390
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2423
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x443fd9
+Code: e8 6c 05 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 07 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffe909694e8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443fd9
+RDX: 0000000000000000 RSI: 0000000020000180 RDI: 0000000000000004
+RBP: 00007ffe909694f0 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
+R10: 0000000001bbbbbb R11: 0000000000000246 R12: 00007ffe90969500
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+CR2: ffffffffffffff74
+---[ end trace 45a80c2d5f347bdc ]---
+RIP: 0010:smc_set_pci_values net/smc/smc_core.h:396 [inline]
+RIP: 0010:smc_nl_handle_smcr_dev.isra.0+0x4e1/0x1280 net/smc/smc_ib.c:422
+Code: fc ff df 48 8d bb 74 ff ff ff 48 89 fa 48 c1 ea 03 0f b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 29 0d 00 00 <0f> b7 83 74 ff ff ff 48 8d bb 76 ff ff ff 48 89 fa 48 c1 ea 03 66
+RSP: 0018:ffffc90001f87220 EFLAGS: 00010246
+RAX: 0000000000000005 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffffffffff74
+RBP: ffffffff8d5ac140 R08: 0000000000000001 R09: ffffc90001f87308
+R10: fffff520003f0e64 R11: 1ffffffff1e2db6c R12: 000000001b556831
+R13: ffff888013e29540 R14: dffffc0000000000 R15: ffff88802a360014
+FS:  00000000015bf880(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffff74 CR3: 000000002687b000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
