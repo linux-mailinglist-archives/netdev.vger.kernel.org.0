@@ -2,192 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E01EB2DE9D9
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:39:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0DA2DE9CF
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:34:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733224AbgLRTjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 14:39:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43132 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725907AbgLRTjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 14:39:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608320268;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=euhdZdMS+kslC9awQUrgUxMC1x1WJq0/J+Ej9Vpprkk=;
-        b=d4KbOWkhX7tbSJSPr1Moc8S736y7HcjjZM9pS1eaPdWM56Ak/n1w6+RZCiwUgr2eTvrZr2
-        z4mxQnK9oncA0Mpw8guLk613EETjiWyS7wbKgV9Fb5N+L4MketL3AQD60Qvqu/nLhvgz40
-        HlBlYfzD9p0RxNII828vev9d5TKESfw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-104-qO8g2BwqPriyJSUG_4pmGw-1; Fri, 18 Dec 2020 14:37:45 -0500
-X-MC-Unique: qO8g2BwqPriyJSUG_4pmGw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9693C100C608;
-        Fri, 18 Dec 2020 19:37:43 +0000 (UTC)
-Received: from f33vm.wilsonet.com.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2CC2239A4B;
-        Fri, 18 Dec 2020 19:37:39 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: [RFC PATCH net-next] bonding: add a vlan+srcmac tx hashing option
-Date:   Fri, 18 Dec 2020 14:30:33 -0500
-Message-Id: <20201218193033.6138-1-jarod@redhat.com>
+        id S1733130AbgLRTe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 14:34:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726241AbgLRTe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 14:34:27 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F13BC0617B0;
+        Fri, 18 Dec 2020 11:33:46 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id u203so2944978ybb.2;
+        Fri, 18 Dec 2020 11:33:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KNBRvdmn/wyHTPHKsxQKl3rgA8nQ9Ef1h/1/1RSinx0=;
+        b=smd6OovZibegU2ze2AZcT6ztlhK9aFY8OGPE8O/x8dVdjACocHuWUkqs1kVbf0FnQs
+         DzvRqEM8tsVULNCUN4uUoaAOyX3BYPY34+3XMmvnrENqgg4F5/ki4Ky5kunhE9j7HO+N
+         hjNQTLhSg/1zUa3kI52+eBPbOyqaP4wsZnZS/ZaLU/Gwzrc3+ehGPq1gYGlOQJwO3ETG
+         cs0hPx1wUbTVkF8mnQ3qfvbr+FdEsnCEsSyJn6mLDxtj4X622XyBpDD/5I/s1Uz9zJx+
+         lxfZFmjKUvSOM/Y9ilH6uN1j5N7/kEvYqCrkxQDCYXCxKPxjOrzCsEk0Ton2xc5ss94j
+         Nt0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KNBRvdmn/wyHTPHKsxQKl3rgA8nQ9Ef1h/1/1RSinx0=;
+        b=mFki/RhdocE1fJ5iHAjP0dMDknX+vWFLKUVcmc+H10x6VjowpFNdlBLoWTULjFkozQ
+         35V4HR0aNniAYr6SxquYRI/Z0HvTWr5e/0mpvbJ/s1USqeDQgQ+3ZuXEz4xJo5kWm5HT
+         k8VnPlxZAd+4d+bQl/+sBVsgl0kTGltv3n3AZk7y429QqkKwykYFzES2qk8QzmOdUjtK
+         fBoCz/hMgOAniOxEvG86WY9Gy94Bz5UzTMbmXQ3Er4VqgzJCFzjAuNRYAahQ59SV57dM
+         lFpaRjGIoMuLkyctybzRlNU6druEVCtDMABedvSHUGA5o8ZjrtKsQzKB4KuowYfb+Gww
+         UT3w==
+X-Gm-Message-State: AOAM5328X9yLyeqztOcNoRGjr+aAU7TSzK9cTds06xfYKINSHu6BHlsu
+        ssKYbKu38HFou8quWWWTEom8XnEU9h8pZpun79A=
+X-Google-Smtp-Source: ABdhPJxEs172K5VHfcViqfe+yfi8RChWTtiy61V1DgUR9JtIfk5I1OUYbtJ2w0fp6/iN5zKhS4GhnS3HcQ+h5sxyBdU=
+X-Received: by 2002:a25:818e:: with SMTP id p14mr7850113ybk.425.1608320025975;
+ Fri, 18 Dec 2020 11:33:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <cover.1608112796.git.christophe.leroy@csgroup.eu>
+ <1fed5e11ba08ee28d12f3f57986e5b143a6aa937.1608112797.git.christophe.leroy@csgroup.eu>
+ <20201217061133.lnfnhbzvikgtjb3i@ast-mbp> <854404a0-1951-91d9-2ebb-208390a64c77@csgroup.eu>
+In-Reply-To: <854404a0-1951-91d9-2ebb-208390a64c77@csgroup.eu>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 18 Dec 2020 11:33:35 -0800
+Message-ID: <CAEf4BzbNp0bvTbh4UjHO0KTs3Q83yuBMdh-8wCHCcTrPWnO25Q@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 7/7] powerpc/bpf: Implement extended BPF on PPC32
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, naveen.n.rao@linux.ibm.com,
+        sandipan@linux.ibm.com, open list <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This comes from an end-user request, where they're running multiple VMs on
-hosts with bonded interfaces connected to some interest switch topologies,
-where 802.3ad isn't an option. They're currently running a proprietary
-solution that effectively achieves load-balancing of VMs and bandwidth
-utilization improvements with a similar form of transmission algorithm.
+On Thu, Dec 17, 2020 at 1:54 AM Christophe Leroy
+<christophe.leroy@csgroup.eu> wrote:
+>
+>
+>
+> Le 17/12/2020 =C3=A0 07:11, Alexei Starovoitov a =C3=A9crit :
+> > On Wed, Dec 16, 2020 at 10:07:37AM +0000, Christophe Leroy wrote:
+> >> Implement Extended Berkeley Packet Filter on Powerpc 32
+> >>
+> >> Test result with test_bpf module:
+> >>
+> >>      test_bpf: Summary: 378 PASSED, 0 FAILED, [354/366 JIT'ed]
+> >
+> > nice!
+> >
+> >> Registers mapping:
+> >>
+> >>      [BPF_REG_0] =3D r11-r12
+> >>      /* function arguments */
+> >>      [BPF_REG_1] =3D r3-r4
+> >>      [BPF_REG_2] =3D r5-r6
+> >>      [BPF_REG_3] =3D r7-r8
+> >>      [BPF_REG_4] =3D r9-r10
+> >>      [BPF_REG_5] =3D r21-r22 (Args 9 and 10 come in via the stack)
+> >>      /* non volatile registers */
+> >>      [BPF_REG_6] =3D r23-r24
+> >>      [BPF_REG_7] =3D r25-r26
+> >>      [BPF_REG_8] =3D r27-r28
+> >>      [BPF_REG_9] =3D r29-r30
+> >>      /* frame pointer aka BPF_REG_10 */
+> >>      [BPF_REG_FP] =3D r31
+> >>      /* eBPF jit internal registers */
+> >>      [BPF_REG_AX] =3D r19-r20
+> >>      [TMP_REG] =3D r18
+> >>
+> >> As PPC32 doesn't have a redzone in the stack,
+> >> use r17 as tail call counter.
+> >>
+> >> r0 is used as temporary register as much as possible. It is referenced
+> >> directly in the code in order to avoid misuse of it, because some
+> >> instructions interpret it as value 0 instead of register r0
+> >> (ex: addi, addis, stw, lwz, ...)
+> >>
+> >> The following operations are not implemented:
+> >>
+> >>              case BPF_ALU64 | BPF_DIV | BPF_X: /* dst /=3D src */
+> >>              case BPF_ALU64 | BPF_MOD | BPF_X: /* dst %=3D src */
+> >>              case BPF_STX | BPF_XADD | BPF_DW: /* *(u64 *)(dst + off) =
++=3D src */
+> >>
+> >> The following operations are only implemented for power of two constan=
+ts:
+> >>
+> >>              case BPF_ALU64 | BPF_MOD | BPF_K: /* dst %=3D imm */
+> >>              case BPF_ALU64 | BPF_DIV | BPF_K: /* dst /=3D imm */
+> >
+> > Those are sensible limitations. MOD and DIV are rare, but XADD is commo=
+n.
+> > Please consider doing it as a cmpxchg loop in the future.
+> >
+> > Also please run test_progs. It will give a lot better coverage than tes=
+t_bpf.ko
+> >
+>
+> I'm having hard time cross building test_progs:
+>
+> ~/linux-powerpc/tools/testing/selftests/bpf/$ make CROSS_COMPILE=3Dppc-li=
+nux-
+> ...
+>    GEN
+> /home/chr/linux-powerpc/tools/testing/selftests/bpf/tools/build/bpftool/D=
+ocumentation/bpf-helpers.7
+>    INSTALL  eBPF_helpers-manpage
+>    INSTALL  Documentation-man
+>    GEN      vmlinux.h
+> /bin/sh: /home/chr/linux-powerpc/tools/testing/selftests/bpf/tools/sbin/b=
+pftool: cannot execute
+> binary file
+> make: *** [/home/chr/linux-powerpc/tools/testing/selftests/bpf/tools/incl=
+ude/vmlinux.h] Error 126
+> make: *** Deleting file `/home/chr/linux-powerpc/tools/testing/selftests/=
+bpf/tools/include/vmlinux.h'
+>
+> Looks like it builds bpftool for powerpc and tries to run it on my x86.
+> How should I proceed ?
 
-Basically, each VM has it's own vlan, so it always sends its traffic out
-the same interface, unless that interface fails. Traffic gets split
-between the interfaces, maintaining a consistent path, with failover still
-available if an interface goes down.
 
-This has been rudimetarily tested to provide similar results, suitable for
-them to use to move off their current proprietary solution.
+The best way would be to fix whatever needs to be fixed in
+selftests/bpf and/or bpftool Makefiles to support cross-compilation.
+There was some work already for bpftool to support that (with building
+bpftool-bootstrap separately for a host architecture, etc). Please
+check what's broken and let's try to fix it.
 
-Still on the TODO list, if these even looks sane to begin with, is
-fleshing out Documentation/networking/bonding.rst.
-
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Thomas Davis <tadavis@lbl.gov>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
----
- drivers/net/bonding/bond_main.c    | 27 +++++++++++++++++++++++++--
- drivers/net/bonding/bond_options.c |  1 +
- include/linux/netdevice.h          |  1 +
- include/uapi/linux/if_bonding.h    |  1 +
- 4 files changed, 28 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 5fe5232cc3f3..151ce8c7a56f 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -164,7 +164,7 @@ module_param(xmit_hash_policy, charp, 0);
- MODULE_PARM_DESC(xmit_hash_policy, "balance-alb, balance-tlb, balance-xor, 802.3ad hashing method; "
- 				   "0 for layer 2 (default), 1 for layer 3+4, "
- 				   "2 for layer 2+3, 3 for encap layer 2+3, "
--				   "4 for encap layer 3+4");
-+				   "4 for encap layer 3+4, 5 for vlan+srcmac");
- module_param(arp_interval, int, 0);
- MODULE_PARM_DESC(arp_interval, "arp interval in milliseconds");
- module_param_array(arp_ip_target, charp, NULL, 0);
-@@ -1434,6 +1434,8 @@ static enum netdev_lag_hash bond_lag_hash_type(struct bonding *bond,
- 		return NETDEV_LAG_HASH_E23;
- 	case BOND_XMIT_POLICY_ENCAP34:
- 		return NETDEV_LAG_HASH_E34;
-+	case BOND_XMIT_POLICY_VLAN_SRCMAC:
-+		return NETDEV_LAG_HASH_VLAN_SRCMAC;
- 	default:
- 		return NETDEV_LAG_HASH_UNKNOWN;
- 	}
-@@ -3494,6 +3496,20 @@ static bool bond_flow_ip(struct sk_buff *skb, struct flow_keys *fk,
- 	return true;
- }
- 
-+static inline u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
-+{
-+	struct ethhdr *mac_hdr = (struct ethhdr *)skb_mac_header(skb);
-+	u32 srcmac = mac_hdr->h_source[5];
-+	u16 vlan;
-+
-+	if (!skb_vlan_tag_present(skb))
-+		return srcmac;
-+
-+	vlan = skb_vlan_tag_get(skb);
-+
-+	return srcmac ^ vlan;
-+}
-+
- /* Extract the appropriate headers based on bond's xmit policy */
- static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb,
- 			      struct flow_keys *fk)
-@@ -3501,10 +3517,14 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb,
- 	bool l34 = bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER34;
- 	int noff, proto = -1;
- 
--	if (bond->params.xmit_policy > BOND_XMIT_POLICY_LAYER23) {
-+	switch (bond->params.xmit_policy) {
-+	case BOND_XMIT_POLICY_ENCAP23:
-+	case BOND_XMIT_POLICY_ENCAP34:
- 		memset(fk, 0, sizeof(*fk));
- 		return __skb_flow_dissect(NULL, skb, &flow_keys_bonding,
- 					  fk, NULL, 0, 0, 0, 0);
-+	default:
-+		break;
- 	}
- 
- 	fk->ports.ports = 0;
-@@ -3556,6 +3576,9 @@ u32 bond_xmit_hash(struct bonding *bond, struct sk_buff *skb)
- 	    skb->l4_hash)
- 		return skb->hash;
- 
-+	if (bond->params.xmit_policy == BOND_XMIT_POLICY_VLAN_SRCMAC)
-+		return bond_vlan_srcmac_hash(skb);
-+
- 	if (bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER2 ||
- 	    !bond_flow_dissect(bond, skb, &flow))
- 		return bond_eth_hash(skb);
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index a4e4e15f574d..9826fe46fca1 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -101,6 +101,7 @@ static const struct bond_opt_value bond_xmit_hashtype_tbl[] = {
- 	{ "layer2+3", BOND_XMIT_POLICY_LAYER23, 0},
- 	{ "encap2+3", BOND_XMIT_POLICY_ENCAP23, 0},
- 	{ "encap3+4", BOND_XMIT_POLICY_ENCAP34, 0},
-+	{ "vlansrc",  BOND_XMIT_POLICY_VLAN_SRCMAC,  0},
- 	{ NULL,       -1,                       0},
- };
- 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 7bf167993c05..551eac4ab747 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2633,6 +2633,7 @@ enum netdev_lag_hash {
- 	NETDEV_LAG_HASH_L23,
- 	NETDEV_LAG_HASH_E23,
- 	NETDEV_LAG_HASH_E34,
-+	NETDEV_LAG_HASH_VLAN_SRCMAC,
- 	NETDEV_LAG_HASH_UNKNOWN,
- };
- 
-diff --git a/include/uapi/linux/if_bonding.h b/include/uapi/linux/if_bonding.h
-index 45f3750aa861..e8eb4ad03cf1 100644
---- a/include/uapi/linux/if_bonding.h
-+++ b/include/uapi/linux/if_bonding.h
-@@ -94,6 +94,7 @@
- #define BOND_XMIT_POLICY_LAYER23	2 /* layer 2+3 (IP ^ MAC) */
- #define BOND_XMIT_POLICY_ENCAP23	3 /* encapsulated layer 2+3 */
- #define BOND_XMIT_POLICY_ENCAP34	4 /* encapsulated layer 3+4 */
-+#define BOND_XMIT_POLICY_VLAN_SRCMAC	5 /* vlan + source MAC */
- 
- /* 802.3ad port state definitions (43.4.2.2 in the 802.3ad standard) */
- #define LACP_STATE_LACP_ACTIVITY   0x1
--- 
-2.29.2
-
+>
+> Thanks
+> Christophe
