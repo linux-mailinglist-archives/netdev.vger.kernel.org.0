@@ -2,147 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DEA52DE997
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:11:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D5322DE9A6
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:16:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726019AbgLRTJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 14:09:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725875AbgLRTJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 14:09:56 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACF7C0617A7
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 11:09:15 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id r7so3444371wrc.5
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 11:09:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DsPzYSmK1PzNzvrUgHsnSLZZOIK5NlSaB+JDZhlEtOQ=;
-        b=KQQTxWZhnTj/uNvQiy5xn4LTnyxBdtGdpkYyOFIpxGKBvQ0jRZD0TcZ/LTAWdqpOMc
-         iBcpeBjOV6WolPKdkW0k8N0vFjZSuoQjHFQImAfO7PL9uwRQteKZBpMRX1HBVjykkDEA
-         U3qmmLIdCJs5EYo9f3hmuHygRAauxGP2e50tehtEmbR5vg9qpkq3aVmWqG/A+Y3wM9B5
-         x2A2CCcjsXOySa5bkd3cVqt3gKt7Jjj6iBIA9+aTTnKeHl3699g09lg3tnN0bCuc9+Po
-         MkaSkh0ais3cCFxxZPmnNI/HE5mGjItnY4PhUTeeO8CRkP8j2f19YX9GIjqHvIP3l0rR
-         LM9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DsPzYSmK1PzNzvrUgHsnSLZZOIK5NlSaB+JDZhlEtOQ=;
-        b=RIJVx06VgeilY/SYQJvdmr6Z9zvUlRbzueqZZ1ljlkH2hSPPdsfE0CT9sNYgkDGuOC
-         mBXlcdcKFe12z9ptom2bmsFLVUQKVrw4cm18e+EvnPWXAshMKimw8t87/fWGdgaehp8c
-         ggSKZCH/GLA2FQE84s+YsNdtRKb1nTR/fRwYy73GD04NrI6GW+n8k7mPcxjnCXyxzW3Q
-         GZImEVjW7P+I5r3PjnZG9CuC72E9JR/5glOAwD05VLarpoV/dxPWobi6aEVDluzrwNCR
-         A9Ys+J5CTUW9T7TLb/pXUhN029mBu6vFL7S1z9RoH9q3KAJ7/0M9hPeMexKnz5mijYqu
-         5yMQ==
-X-Gm-Message-State: AOAM533xYaGdZazIzBAvi4ZICTmWvCrwMYd5piIRm652jna+Z8sAvFmk
-        EGIlMG3KIX9UIw6A7ZHbVLoNvg==
-X-Google-Smtp-Source: ABdhPJw2jm4Tmi76TPXnjr8OBHNcrvwwjBfCy+FlD9dVZuo+ZdRb6pVpABn/SW3x01x5YHD7dj9svw==
-X-Received: by 2002:a5d:4d50:: with SMTP id a16mr5940186wru.43.1608318554221;
-        Fri, 18 Dec 2020 11:09:14 -0800 (PST)
-Received: from dell ([91.110.221.216])
-        by smtp.gmail.com with ESMTPSA id s13sm12555285wmj.28.2020.12.18.11.09.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Dec 2020 11:09:13 -0800 (PST)
-Date:   Fri, 18 Dec 2020 19:09:11 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20201218190911.GT207743@dell>
-References: <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
- <X8usiKhLCU3PGL9J@kroah.com>
- <20201217211937.GA3177478@piout.net>
- <X9xV+8Mujo4dhfU4@kroah.com>
- <20201218131709.GA5333@sirena.org.uk>
- <20201218140854.GW552508@nvidia.com>
- <20201218155204.GC5333@sirena.org.uk>
- <20201218162817.GX552508@nvidia.com>
- <20201218180310.GD5333@sirena.org.uk>
- <20201218184150.GY552508@nvidia.com>
+        id S1733166AbgLRTP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 14:15:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51008 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727889AbgLRTP6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 14:15:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608318872;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uV2i2Mj7h3i2oT/BVy2+5TUCaZ0dyQPv7Y9cwu2xvwk=;
+        b=bEYRuMPbAjgb57V1I53YpzcuZIWEqId23EICmknao9YIH6IQJi28z/nEqg8FHNYEkZ40Cc
+        KFAsALBqYdp35kjPHHqftDbx0VCoTRUJDiGfmCaSib1TeKSJR2hEm5UFI6i44MbLV7EiII
+        bTNSGDrkoUcYCa09rvwv4SW3UZ+b688=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-143-zAJIMG_6Of-8Vj1WF9FNmQ-1; Fri, 18 Dec 2020 14:14:31 -0500
+X-MC-Unique: zAJIMG_6Of-8Vj1WF9FNmQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED3EC1842141;
+        Fri, 18 Dec 2020 19:14:29 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-114-0.ams2.redhat.com [10.36.114.0])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1953B19CB6;
+        Fri, 18 Dec 2020 19:14:28 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2 0/2] Some fixes to lib/fs.c
+Date:   Fri, 18 Dec 2020 20:09:21 +0100
+Message-Id: <cover.1608315719.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201218184150.GY552508@nvidia.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Dec 2020, Jason Gunthorpe wrote:
+This series contains a couple of fixes and improvements on lib/fs.c
+- in functions get_cgroup2_id() and get_cgroup2_path(), fixes cleanup on
+  single return point;
+- in function make_path(), avoid to call mkdir() two times in a row.
 
-> On Fri, Dec 18, 2020 at 06:03:10PM +0000, Mark Brown wrote:
-> > On Fri, Dec 18, 2020 at 12:28:17PM -0400, Jason Gunthorpe wrote:
-> > > On Fri, Dec 18, 2020 at 03:52:04PM +0000, Mark Brown wrote:
-> > > > On Fri, Dec 18, 2020 at 10:08:54AM -0400, Jason Gunthorpe wrote:
-> > 
-> > > > > I thought the recent LWN article summed it up nicely, auxillary bus is
-> > > > > for gluing to subsystems together using a driver specific software API
-> > > > > to connect to the HW, MFD is for splitting a physical HW into disjoint
-> > > > > regions of HW.
-> > 
-> > > > This conflicts with the statements from Greg about not using the
-> > > > platform bus for things that aren't memory mapped or "direct firmware",
-> > > > a large proportion of MFD subfunctions are neither at least in so far as
-> > > > I can understand what direct firmware means.
-> > 
-> > > I assume MFD will keep existing and it will somehow stop using
-> > > platform device for the children it builds.
-> > 
-> > If it's not supposed to use platform devices so I'm assuming that the
-> > intention is that it should use aux devices, otherwise presumably it'd
-> > be making some new clone of the platform bus but I've not seen anyone
-> > suggesting this.
-> 
-> I wouldn't assume that, I certainly don't want to see all the HW
-> related items in platform_device cloned roughly into aux device.
-> 
-> I've understood the bus type should be basically related to the thing
-> that is creating the device. In a clean view platform code creates
-> platform devices. DT should create DT devices, ACPI creates ACPI
-> devices, PNP does pnp devices, etc
-> 
-> So, I strongly suspect, MFD should create mfd devices on a MFD bus
-> type.
-> 
-> Alexandre's point is completely valid, and I think is the main
-> challenge here, somehow avoiding duplication.
-> 
-> If we were to look at it with some OOP viewpoint I'd say the generic
-> HW resource related parts should be some shared superclass between
-> 'struct device' and 'struct platform/pnp/pci/acpi/mfd/etc_device'.
+Andrea Claudi (2):
+  lib/fs: avoid double call to mkdir on make_path()
+  lib/fs: Fix single return points for get_cgroup2_*
 
-You're confusing things here.
-
-ACPI, DT and MFD are not busses.  They are just methods to
-describe/register devices which will operate on buses.
-
-Busses include things like; I2C, SPI, PCI, USB and Platform (MMIO).
+ lib/fs.c | 29 ++++++++++++++++++-----------
+ 1 file changed, 18 insertions(+), 11 deletions(-)
 
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.29.2
+
