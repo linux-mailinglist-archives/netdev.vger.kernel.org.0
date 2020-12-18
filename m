@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A85822DE9F0
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:52:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DA6A2DE9F8
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:59:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387394AbgLRTvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 14:51:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40280 "EHLO mail.kernel.org"
+        id S1733285AbgLRT7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 14:59:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42750 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733281AbgLRTvw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Dec 2020 14:51:52 -0500
-Date:   Fri, 18 Dec 2020 11:51:10 -0800
+        id S1732542AbgLRT7R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Dec 2020 14:59:17 -0500
+Date:   Fri, 18 Dec 2020 11:58:34 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608321072;
-        bh=RSO0yLTp2FUp2v/AQEcpoKcMsAnSeDJ+jiiYucr5iLg=;
+        s=k20201202; t=1608321516;
+        bh=9ngB505xju7IsMH0G1hSgFXxGJ2q97uYt4vXPItOjzU=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WlIBXvf4edN/BDeOtbvA4nzTLj7ZR5rw1LTEyD2FXH2u83mlABZBaRkAgyI97S4l0
-         x/XteeuzLUNkLp54QG/hbbFBgSMtozyWfD1S11ztnyOjLRD8w3YhnPcvZiBy68do6b
-         VTkdx6yA/rtsIj57Iv8sEAPac+uC/J39H5gsPmKypRDMCtMvS+0e3mflgn7am8pnsH
-         mwr21h2mv2zIdxJJZd3Jq+94Xty7kRwlzbWYHPBh23CYpE2Gnq7OLE/G6fPAK1dCgj
-         3bl1e4nGv74N6hIe4zbyv3s5QdnseJdFVWy5/DbYRKcK9+JA9sggq9ByeT94SgFT1x
-         OQfaZkaQUdPLw==
+        b=q3GMhE5Uklef/dvvJrkxTWvSWaLi01HsE3bq34FMywBDFWE4KsZjtCgNtVJUivMVB
+         AkCuw2vt3hGM2ZH/DakWo6/IyQ/06yllm0TYef9LZJ6baQNeD/M6eEhb4feMWZiV46
+         4KtkRgXIrws+Ige3bc48//rFS/3uv1H4fVbfnVD1DbI0U0FQ4HcNzS2nigxy+sBivQ
+         2/qkZKyFVBzyQMp8yUMJaziDJNKaOHE5JaUh7rhsiraXwipSBdozcfVlOfL46v/67u
+         Ru6pJ+7oRcb8KJ7+dxoGfD0hXtz/gca8Oog4V1sWwE6cx7Tb7uz64Ok8vPOftzwQks
+         wh4pRCHl3vBeA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Parav Pandit <parav@nvidia.com>
 Cc:     Saeed Mahameed <saeed@kernel.org>,
@@ -37,18 +37,17 @@ Cc:     Saeed Mahameed <saeed@kernel.org>,
         "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
         "kiran.patil@intel.com" <kiran.patil@intel.com>,
         "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
+        Vu Pham <vuhuong@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next v5 05/15] devlink: Support get and set state of port
- function
-Message-ID: <20201218115110.33701ded@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BY5PR12MB43229F0FB38429E826DE1060DCC40@BY5PR12MB4322.namprd12.prod.outlook.com>
+Subject: Re: [net-next v5 07/15] net/mlx5: SF, Add auxiliary device support
+Message-ID: <20201218115834.0f710e0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <BY5PR12MB4322009AFF1E26F8BEF72C72DCC40@BY5PR12MB4322.namprd12.prod.outlook.com>
 References: <20201215090358.240365-1-saeed@kernel.org>
-        <20201215090358.240365-6-saeed@kernel.org>
-        <20201215163747.4091ff61@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43225346806029AA31D63918DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20201216160850.78223a1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43229F0FB38429E826DE1060DCC40@BY5PR12MB4322.namprd12.prod.outlook.com>
+        <20201215090358.240365-8-saeed@kernel.org>
+        <20201215164341.51fa3a0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BY5PR12MB4322B0DC403D8B5CEFD95585DCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
+        <20201216161154.69e367fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BY5PR12MB4322009AFF1E26F8BEF72C72DCC40@BY5PR12MB4322.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,48 +55,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Dec 2020 05:46:45 +0000 Parav Pandit wrote:
+On Thu, 17 Dec 2020 05:23:10 +0000 Parav Pandit wrote:
 > > From: Jakub Kicinski <kuba@kernel.org>
-> > Sent: Thursday, December 17, 2020 5:39 AM
+> > Sent: Thursday, December 17, 2020 5:42 AM
 > > 
-> > On Wed, 16 Dec 2020 05:15:04 +0000 Parav Pandit wrote:  
+> > On Wed, 16 Dec 2020 05:19:15 +0000 Parav Pandit wrote:  
 > > > > From: Jakub Kicinski <kuba@kernel.org>
-> > > > Sent: Wednesday, December 16, 2020 6:08 AM
+> > > > Sent: Wednesday, December 16, 2020 6:14 AM
 > > > >
-> > > > On Tue, 15 Dec 2020 01:03:48 -0800 Saeed Mahameed wrote:  
-> > > > > From: Parav Pandit <parav@nvidia.com>
-> > > > >
-> > > > > devlink port function can be in active or inactive state.
-> > > > > Allow users to get and set port function's state.
-> > > > >
-> > > > > When the port function it activated, its operational state may
-> > > > > change after a while when the device is created and driver binds to it.
-> > > > > Similarly on deactivation flow.  
+> > > > On Tue, 15 Dec 2020 01:03:50 -0800 Saeed Mahameed wrote:  
+> > > > > +static ssize_t sfnum_show(struct device *dev, struct
+> > > > > +device_attribute *attr, char *buf) {
+> > > > > +	struct auxiliary_device *adev = container_of(dev, struct  
+> > > > auxiliary_device, dev);  
+> > > > > +	struct mlx5_sf_dev *sf_dev = container_of(adev, struct
+> > > > > +mlx5_sf_dev, adev);
+> > > > > +
+> > > > > +	return scnprintf(buf, PAGE_SIZE, "%u\n", sf_dev->sfnum); }
+> > > > > +static DEVICE_ATTR_RO(sfnum);
+> > > > > +
+> > > > > +static struct attribute *sf_device_attrs[] = {
+> > > > > +	&dev_attr_sfnum.attr,
+> > > > > +	NULL,
+> > > > > +};
+> > > > > +
+> > > > > +static const struct attribute_group sf_attr_group = {
+> > > > > +	.attrs = sf_device_attrs,
+> > > > > +};
+> > > > > +
+> > > > > +static const struct attribute_group *sf_attr_groups[2] = {
+> > > > > +	&sf_attr_group,
+> > > > > +	NULL
+> > > > > +};  
 > > > >
-> > > > So what's the flow device should implement?
-> > > >
-> > > > User requests deactivated, the device sends a notification to the
-> > > > driver bound to the device. What if the driver ignores it?
-> > > >  
-> > > If driver ignores it, those devices are marked unusable for new allocation.
-> > > Device becomes usable only after it has act on the event.  
+> > > > Why the sysfs attribute? Devlink should be able to report device
+> > > > name so there's no need for a tie in from the other end.  
+> > > There isn't a need to enforce a devlink instance creation either,  
 > > 
-> > But the device remains fully operational?
-> > 
-> > So if I'm an admin who wants to unplug a misbehaving "entity"[1] the
-> > deactivate is not gonna help me, it's just a graceful hint?  
-> Right.
-> > Is there no need for a forceful shutdown?  
-> In this patchset, no. I didn't add the knob for it. It is already at 15 patches.
-> But yes, forceful shutdown extension can be done by the admin in future patchset as,
+> > You mean there isn't a need for the SF to be spawned by devlink?
+> >  
+> No. sorry for the confusion.
+> Let me list down the sequence and plumbing.
+> 1. Devlink instance having eswitch spawns the SF port (port add, flavour = pcisf [..]).
+> 2. This SF is either for local or external controller. Just like today's VF.
+> 3. When SF port is activated (port function set state), SF auxiliary device is spawned on the hosting PF.
+> 4. This SF auxiliary device when attached to mlx5_core driver it registers devlink instance (auxiliary/mlx5_core.sf.4).
+> 5. When netdev of SF dev is created, it register devlink port of virtual flavour with link to its netdev.
+> /sys/class/net/<sf_netdev>/device points to the auxiliary device.
+> /sys/class/infiniband/<sf_rdma_dev>/device points to the auxiliary device.
 > 
-> $ devlink port del pci/0000:06:00.0/<port_index> force true
->                                                                                          ^^^^^^^^
-> Above will be the extension in control of the admin.
+> 6. SF auxiliary device has the sysfs file read by systemd/udev to rename netdev and rdma devices of SF.
 
-Can we come up with operational states that would encompass that?
+Why can't the SF ID match aux dev ID? You only register one aux dev per
+SF, right? Or one for RDMA, one for netdev, etc?
 
-The "force true" does not look too clean.
-
-And let's document meaning of the states. We don't want the next vendor
-to just "assume" the states match their own interpretation.
+> Steps 4,5,6 are equivalent to an existing VF.
