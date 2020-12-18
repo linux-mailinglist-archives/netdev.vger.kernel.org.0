@@ -2,125 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 989FF2DEC14
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 00:38:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D7B2DEC1D
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 00:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725965AbgLRXhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 18:37:00 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1379 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbgLRXg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 18:36:59 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fdd3cf20000>; Fri, 18 Dec 2020 15:36:19 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 18 Dec
- 2020 23:36:14 +0000
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
- by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Fri, 18 Dec 2020 23:36:14 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SUM18Li+OD6oZot96kwzfdpwhALdNg1E86WLn4EGUzQBtmc0og9ERAAY6Pu+uzK1QXAadzF9+MUWIZ3RNbMEeIR74kYVP9EMUrRuqwwaOHTjV1YzazaqWmGZKQZJgL874xkw6dLi8L/vww35ZsapzsWrgF5MjZn5zVe57ZtSjj5OtbpXBjI5c4pbNoS+3D4GvQb6pGff+EZF6xDM8bzkr7YzCFEw7pjqj1kc9AeCeRpCqNaBspHzfVyiHSeTmn78Qhv/ab5iWGdPwKdGLotRlhorNXc5m+qRQkiJUIjM/uoCR0e5vDeSmp31lOqE5BzLVbjVlEYvugH9EzpNYf/ziA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bOoZnI1dWjtEDwoJCz481pyZxuXVUsn9C9DiAjS/ycc=;
- b=A5Ag30jNJLzs/wUhvL1apO51GmEta+wao6D+5tRyC2Laah3FEeXbx4l2BpPUVPPplAmakBCeCBvkeR7ucLILW7q/yZ2DOemttstZFBai5h8BUOlGsmiIBczoKwDduA6rWqQSffDWouIpmpFO3kRdq5r/edriqWpqYsrXPHAM6jL5tD6iyCiENnrWH7e6ht7G9JpUcyxAuflMhBMv499wCfNYLAV7RgKv/LqY9+0JMxqgmMdlndIX+nRxXMuOWawJMX6fEDR51k/0x/dgDtLpKBIaDWRhdIkD4dMVlZSYjiTcRpwsE2dOQJpmf0TfRIiD/1oD6UMO7v2kKxAESfZALQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4250.namprd12.prod.outlook.com (2603:10b6:5:21a::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.13; Fri, 18 Dec
- 2020 23:36:10 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3676.025; Fri, 18 Dec 2020
- 23:36:10 +0000
-Date:   Fri, 18 Dec 2020 19:36:08 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-CC:     Mark Brown <broonie@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "Dan Williams" <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        <alsa-devel@alsa-project.org>,
-        "Kiran Patil" <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        "Ranjani Sridharan" <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>, <lee.jones@linaro.org>
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20201218233608.GA552508@nvidia.com>
-References: <X9xV+8Mujo4dhfU4@kroah.com> <20201218131709.GA5333@sirena.org.uk>
- <20201218140854.GW552508@nvidia.com> <20201218155204.GC5333@sirena.org.uk>
- <20201218162817.GX552508@nvidia.com> <20201218180310.GD5333@sirena.org.uk>
- <20201218184150.GY552508@nvidia.com> <20201218203211.GE5333@sirena.org.uk>
- <20201218205856.GZ552508@nvidia.com> <20201218211658.GH3143569@piout.net>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20201218211658.GH3143569@piout.net>
-X-ClientProxiedBy: MN2PR11CA0018.namprd11.prod.outlook.com
- (2603:10b6:208:23b::23) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1726109AbgLRXuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 18:50:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35781 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725858AbgLRXuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 18:50:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608335325;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+ltfjKp0a0CZjK5VqWOENgE7djMo2w8zSxVmcmLegAo=;
+        b=cCI35rG0EgMsIpBcQyllz8zUMtI09O8trpCaun2Fh6dkKNuRjd6hS0Kg4qLAO2g28ITRkM
+        B2xIG1AR9Ce7yotaUG0VMXpXPT0nG18geAfSXlIswyPhOgUPMqYsrR0ktFQb7+D9IzzBHp
+        ibgAzh57Nw5MJ1q+d1TL5CnWQWj04iA=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-581-G3QGR46YNviPexUXrefJjA-1; Fri, 18 Dec 2020 18:48:43 -0500
+X-MC-Unique: G3QGR46YNviPexUXrefJjA-1
+Received: by mail-oo1-f70.google.com with SMTP id x191so1879465ooa.1
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 15:48:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+ltfjKp0a0CZjK5VqWOENgE7djMo2w8zSxVmcmLegAo=;
+        b=n8l61Mjcmvfc5zY5OeVhX75vvrrbPsNneGNC4KRG/tNSG10+HTqNEx24BM/bsWV/HX
+         QtSyMZsTJ2afjcoIs+IWrveuMpF+IdjVdOd6M6+xzpnjXAjJwks7cnY5r9FxbDgC83RW
+         NrJg5W1cYUYwcOtB+qhYK289T6bKCtdldaE1PCn428ei5z6WpuS+6LeEwWh7QdWhQz7O
+         fptpDd2Ex+ivQwTPCsdVZZTad3Yu7UHHlRuu3JpcV+bsqEkGH4tCkzeP5PWXNW8p1YW6
+         FrZ4H4Fz5y4K66zs3A3Je1cfUeKesiyXYGPs+QWI+WZcstSXPc1Q26P8/KmPaYViAfCT
+         +Mvg==
+X-Gm-Message-State: AOAM530IEEcswc0h+9cMFdboI7oQUsMUbGCFms6P6kKT617BwMg8ByVt
+        3U9goDBbBOAwlzLVvbSs7jAt8VDsGkJypnf82871pA6pUFq08wZwFiH/hGzaeYlYiYnmFhcSRmU
+        QzEHeT4YDVlCG5+GkhWzdvZ/YojBOZ8fa
+X-Received: by 2002:a9d:749a:: with SMTP id t26mr4581973otk.277.1608335323018;
+        Fri, 18 Dec 2020 15:48:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyJ2nN1vXngcVUoOEAG74s5U3e8lcwmpg38reul9rkZLcrTb66nfk4bZlJ62m+lBkyygSFDFV1MAs6YD3J999k=
+X-Received: by 2002:a9d:749a:: with SMTP id t26mr4581966otk.277.1608335322797;
+ Fri, 18 Dec 2020 15:48:42 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR11CA0018.namprd11.prod.outlook.com (2603:10b6:208:23b::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Fri, 18 Dec 2020 23:36:09 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kqPI8-00D0qq-6X; Fri, 18 Dec 2020 19:36:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1608334579; bh=bOoZnI1dWjtEDwoJCz481pyZxuXVUsn9C9DiAjS/ycc=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=BSODxxd/ar+TcgODfIh6ppHx4AR6kDVAUk470dVqSWPro4nSIQArmHHgV8QOIRbax
-         XNR4GetYf9KwxkDhv12jsLKxLGIo0StEMZAAgAEamLUo1fU1oSI8JFsW1VqMmrzVo2
-         cNddSRtIQux8jXOzG9f3lRZtWTgoMJmP70XA8JKbCmJk7+zyt2HTDWP6JXo1/hymt8
-         TlD/klmyLBZxs5Ogfy/OdwuuzAw6nKIANOyNW0oeegxsBM2q+s0/YLl0sAxQAQ8F7P
-         9sP0pLXalIJHG6yC2/tYKfClffHJMYBGBVvp/1gmXIRL80FoYw/oNaAxHy6u3uZo7s
-         mUomKkcABraHQ==
+References: <20201205234354.1710-1-jarod@redhat.com> <11900.1607459690@famine>
+In-Reply-To: <11900.1607459690@famine>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Fri, 18 Dec 2020 18:48:32 -0500
+Message-ID: <CAKfmpSfnD6-7UmaMCN10xvhZq1cbqosRQd9S6H_xjT=Oqi41JA@mail.gmail.com>
+Subject: Re: [PATCH net] bonding: reduce rtnl lock contention in mii monitor thread
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 10:16:58PM +0100, Alexandre Belloni wrote:
+On Tue, Dec 8, 2020 at 3:35 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>
+> Jarod Wilson <jarod@redhat.com> wrote:
+...
+> >The addition of a case BOND_LINK_BACK in bond_miimon_commit() is somewhat
+> >separate from the fix for the actual hang, but it eliminates a constant
+> >"invalid new link 3 on slave" message seen related to this issue, and it's
+> >not actually an invalid state here, so we shouldn't be reporting it as an
+> >error.
+...
+>         In principle, bond_miimon_commit should not see _BACK or _FAIL
+> state as a new link state, because those states should be managed at the
+> bond_miimon_inspect level (as they are the result of updelay and
+> downdelay).  These states should not be "committed" in the sense of
+> causing notifications or doing actions that require RTNL.
+>
+>         My recollection is that the "invalid new link" messages were the
+> result of a bug in de77ecd4ef02, which was fixed in 1899bb325149
+> ("bonding: fix state transition issue in link monitoring"), but maybe
+> the RTNL problem here induces that in some other fashion.
+>
+>         Either way, I believe this message is correct as-is.
 
-> But then again, what about non-enumerable devices on the PCI device? I
-> feel this would exactly fit MFD. This is a collection of IPs that exist
-> as standalone but in this case are grouped in a single device.
+For reference, with 5.10.1 and this script:
 
-So, if mfd had a mfd_device and a mfd bus_type then drivers would need
-to have both a mfd_driver and a platform_driver to bind. Look at
-something like drivers/char/tpm/tpm_tis.c to see how a multi-probe
-driver is structured
+#!/bin/sh
 
-See Mark's remarks about the old of_platform_device, to explain why we
-don't have a 'dt_device' today
+slave1=ens4f0
+slave2=ens4f1
 
-> Note that I then have another issue because the kernel doesn't support
-> irq controllers on PCI and this is exactly what my SoC has. But for now,
-> I can just duplicate the irqchip driver in the MFD driver.
+modprobe -rv bonding
+modprobe -v bonding mode=2 miimon=100 updelay=200
+ip link set bond0 up
+ifenslave bond0 $slave1 $slave2
+sleep 5
 
-I think Thomas fixed that recently on x86 at least.. 
+while :
+do
+        ip link set $slave1 down
+        sleep 1
+        ip link set $slave1 up
+        sleep 1
+done
 
-Having to put dummy irq chip drivers in MFD anything sounds scary :|
+I get this repeating log output:
 
-> Let me point to drivers/net/ethernet/cadence/macb_pci.c which is a
-> fairly recent example. It does exactly that and I'm not sure you could
-> do it otherwise while still not having to duplicate most of macb_probe.
+[ 9488.262291] sfc 0000:05:00.0 ens4f0: link up at 10000Mbps
+full-duplex (MTU 1500)
+[ 9488.339508] bond0: (slave ens4f0): link status up, enabling it in 200 ms
+[ 9488.339511] bond0: (slave ens4f0): invalid new link 3 on slave
+[ 9488.547643] bond0: (slave ens4f0): link status definitely up, 10000
+Mbps full duplex
+[ 9489.276614] bond0: (slave ens4f0): link status definitely down,
+disabling slave
+[ 9490.273830] sfc 0000:05:00.0 ens4f0: link up at 10000Mbps
+full-duplex (MTU 1500)
+[ 9490.315540] bond0: (slave ens4f0): link status up, enabling it in 200 ms
+[ 9490.315543] bond0: (slave ens4f0): invalid new link 3 on slave
+[ 9490.523641] bond0: (slave ens4f0): link status definitely up, 10000
+Mbps full duplex
+[ 9491.356526] bond0: (slave ens4f0): link status definitely down,
+disabling slave
+[ 9492.285249] sfc 0000:05:00.0 ens4f0: link up at 10000Mbps
+full-duplex (MTU 1500)
+[ 9492.291522] bond0: (slave ens4f0): link status up, enabling it in 200 ms
+[ 9492.291523] bond0: (slave ens4f0): invalid new link 3 on slave
+[ 9492.499604] bond0: (slave ens4f0): link status definitely up, 10000
+Mbps full duplex
+[ 9493.331594] bond0: (slave ens4f0): link status definitely down,
+disabling slave
 
-Creating a platform_device to avoid restructuring the driver's probe
-and device logic to be generic is a *really* horrible reason to use a
-platform device.
+"invalid new link 3 on slave" is there every single time.
 
-Jason
+Side note: I'm not actually able to reproduce the repeating "link
+status up, enabling it in 200 ms" and never recovering from a downed
+link on this host, no clue why it's so reproducible w/another system.
+
+-- 
+Jarod Wilson
+jarod@redhat.com
+
