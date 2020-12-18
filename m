@@ -2,125 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43AB22DE6F9
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 16:53:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C16F22DE700
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 16:55:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728981AbgLRPw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 10:52:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37252 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725949AbgLRPw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Dec 2020 10:52:59 -0500
-Date:   Fri, 18 Dec 2020 15:52:04 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608306738;
-        bh=hh6kmTaYw7S1ycwZ4+Gi2lG2vKviQu4KRDfzNgRJMMs=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UyU1MPj7dIcBqLmjerLEZsmEzC9n1onWw7rJnwndCFVtu521SPmOch8eA090w9V2H
-         ebUvciuQh2tgliNsbPhJ+d7famGJ5HrWsYQXOFYFawsqG7YFaYaENY1wZ3I+lQvhM3
-         sBTMAP+TWsAs/Y2hGXv08Pw61G+jsbNEjrvVOliXG1QnXFRMS7pL33FrykEC15cAbc
-         2EPJnk8WkKwkraXP8CJjbdl6y+P9OpU1+fs8usTsCYpva/XnIg5e4tdCor3867HRms
-         tVOavWiyg+wnpW7nD1Pb2LmOxcN9bu82ySjirX3es0l64KZmVFEC9qMU+j+GVrqdxQ
-         J63Ghc7zBNX5A==
-From:   Mark Brown <broonie@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>, lee.jones@linaro.org
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20201218155204.GC5333@sirena.org.uk>
-References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
- <X8ogtmrm7tOzZo+N@kroah.com>
- <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
- <X8usiKhLCU3PGL9J@kroah.com>
- <20201217211937.GA3177478@piout.net>
- <X9xV+8Mujo4dhfU4@kroah.com>
- <20201218131709.GA5333@sirena.org.uk>
- <20201218140854.GW552508@nvidia.com>
+        id S1729972AbgLRPyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 10:54:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727608AbgLRPyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 10:54:54 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E6CCC0617B0;
+        Fri, 18 Dec 2020 07:54:14 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id g1so2542499ilk.7;
+        Fri, 18 Dec 2020 07:54:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GG5YSJLZCFDt7QNCE/vwN55fkJ3cTJGKNzrFWdqOj4Y=;
+        b=I8OHrapLlq6YAySgnLzaUG5fIukPRzi2ypDxQHAlwDFwWbDbzP4Gx4Vjh3FN3q70Yi
+         RuPAXhI9fya4UUTbF3QNGeY0lOcAG6JR2YlRCOrS1xFq6d0lRP/ADWEzMw+tVtzkkOgI
+         HsuOAARvvFpjFhEZPfY7Ba9Thof223Rn8eIrjVH+8isZPpez3+R6dVNDcNPJSh8umblt
+         WIu5O1OjITKeMKLLnoPi1XltIOVPD+oGRSynTEdoiZKx2shYeYgx2GXWKhAHSpixOa/R
+         TEPF2AKOQZ67c6Z/I5tv99+xMsNYP3mmHMQeSfjWIO1Zml63ybQlk4wn8gxKdXDrhqnk
+         IyKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GG5YSJLZCFDt7QNCE/vwN55fkJ3cTJGKNzrFWdqOj4Y=;
+        b=ectchmDsqoTI94cDuU97Bol5+SmgpEltMJpKuYcSq19bYJ+PdhooIbsadxpHHaLgMe
+         +nFfzvgT1dRDNPobwj+hnkUnocUfDdzAP88BE4a1JqQeLC9Ulf8QHhPrTEEXS5hC1c/s
+         XKh/1x2OaX9vxD7cekOPJWivGf73vfsNWx34l7pmSe1EHz2FKUBPAO17hNtYATA29OgB
+         o1tiV1NZBmTd4vQ0L2AbkCkFtHpoBdDv2JCa3UkZamitpX0nQ5EHHTvuZHD3ssRcQjbM
+         hyQS9pdyeD1vPrEi48RedAdoBsv5Y6Dq8N/6CH0kuzZZJCnvWgXcVKUgfcGYYdqteeu6
+         8aCg==
+X-Gm-Message-State: AOAM533ZevvCv6D+n0wII3I0PVgU/ly351Yd5oXn1gxoj19G/AOYden2
+        wgh57osiBG45VSHJm/LtafPkdCbmIeLueUNmAZo=
+X-Google-Smtp-Source: ABdhPJzRTRU+B7kA5MlG5AyxI9xE6wNPHLtokoBbiINqAgP2ChnLZdvQboeLJBHdjHtSw/YJYgOnJZ5rFEXdk3XSq1k=
+X-Received: by 2002:a92:d8cc:: with SMTP id l12mr4455778ilo.64.1608306853720;
+ Fri, 18 Dec 2020 07:54:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ABTtc+pdwF7KHXCz"
-Content-Disposition: inline
-In-Reply-To: <20201218140854.GW552508@nvidia.com>
-X-Cookie: Password:
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <ecad34f5c813591713bb59d9c5854148c3d7f291.camel@kernel.org>
+ <CAKgT0UfTOqS9PBeQFexyxm7ytQzdj0j8VMG71qv4+Vn6koJ5xQ@mail.gmail.com>
+ <20201216001946.GF552508@nvidia.com> <CAKgT0UeLBzqh=7gTLtqpOaw7HTSjG+AjXB7EkYBtwA6EJBccbg@mail.gmail.com>
+ <20201216030351.GH552508@nvidia.com> <CAKgT0UcwP67ihaTWLY1XsVKEgysa3HnjDn_q=Sgvqnt=Uc7YQg@mail.gmail.com>
+ <20201216133309.GI552508@nvidia.com> <CAKgT0UcRfB8a61rSWW-NPdbGh3VcX_=LCZ5J+-YjqYNtm+RhVg@mail.gmail.com>
+ <20201216175112.GJ552508@nvidia.com> <CAKgT0Uerqg5F5=jrn5Lu33+9Y6pS3=NLnOfvQ0dEZug6Ev5S6A@mail.gmail.com>
+ <20201216203537.GM552508@nvidia.com> <CAKgT0UfuSA9PdtR6ftcq0_JO48Yp4N2ggEMiX9zrXkK6tN4Pmw@mail.gmail.com>
+ <c737048e-5e65-4b16-ffba-5493da556151@gmail.com> <CAKgT0UdxVytp4+zYh+gOYDOc4+ZNNx3mW+F9f=UTiKxyWuMVbQ@mail.gmail.com>
+ <fa864ac9-8a7e-ce42-b93b-1a2762386caf@gmail.com>
+In-Reply-To: <fa864ac9-8a7e-ce42-b93b-1a2762386caf@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 18 Dec 2020 07:54:02 -0800
+Message-ID: <CAKgT0UcyyaWOw1BnH8XSW2Endpm+1EqHGtrwj1kjtkTDpNUprw@mail.gmail.com>
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Dec 17, 2020 at 7:55 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 12/17/20 8:11 PM, Alexander Duyck wrote:
+> > On Thu, Dec 17, 2020 at 5:30 PM David Ahern <dsahern@gmail.com> wrote:
+> >>
+> >> On 12/16/20 3:53 PM, Alexander Duyck wrote:
+> >>> The problem in my case was based on a past experience where east-west
+> >>> traffic became a problem and it was easily shown that bypassing the
+> >>> NIC for traffic was significantly faster.
+> >>
+> >> If a deployment expects a lot of east-west traffic *within a host* why
+> >> is it using hardware based isolation like a VF. That is a side effect of
+> >> a design choice that is remedied by other options.
+> >
+> > I am mostly talking about this from past experience as I had seen a
+> > few instances when I was at Intel when it became an issue. Sales and
+> > marketing people aren't exactly happy when you tell them "don't sell
+> > that" in response to them trying to sell a feature into an area where
+>
+> that's a problem engineers can never solve...
+>
+> > it doesn't belong. Generally they want a solution. The macvlan offload
+> > addressed these issues as the replication and local switching can be
+> > handled in software.
+>
+> well, I guess almost never. :-)
+>
+> >
+> > The problem is PCIe DMA wasn't designed to function as a network
+> > switch fabric and when we start talking about a 400Gb NIC trying to
+> > handle over 256 subfunctions it will quickly reduce the
+> > receive/transmit throughput to gigabit or less speeds when
+> > encountering hardware multicast/broadcast replication. With 256
+> > subfunctions a simple 60B ARP could consume more than 19KB of PCIe
+> > bandwidth due to the packet having to be duplicated so many times. In
+> > my mind it should be simpler to simply clone a single skb 256 times,
+> > forward that to the switchdev ports, and have them perform a bypass
+> > (if available) to deliver it to the subfunctions. That's why I was
+> > thinking it might be a good time to look at addressing it.
+> >
+>
+> east-west traffic within a host is more than likely the same tenant in
+> which case a proper VPC is a better solution than the s/w stack trying
+> to detect and guess that a bypass is needed. Guesses cost cycles in the
+> fast path which is a net loss - and even more so as speeds increase.
 
---ABTtc+pdwF7KHXCz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Yes, but this becomes the hardware limitations deciding the layout of
+the network. I lean towards more flexibility to allow more
+configuration options being a good thing rather than us needing to
+dictate how a network has to be constructed based on the limitations
+of the hardware and software.
 
-On Fri, Dec 18, 2020 at 10:08:54AM -0400, Jason Gunthorpe wrote:
-> On Fri, Dec 18, 2020 at 01:17:09PM +0000, Mark Brown wrote:
-
-> > As previously discussed this will need the auxilliary bus extending to
-> > support at least interrupts and possibly also general resources.
-
-> I thought the recent LWN article summed it up nicely, auxillary bus is
-> for gluing to subsystems together using a driver specific software API
-> to connect to the HW, MFD is for splitting a physical HW into disjoint
-> regions of HW.
-
-This conflicts with the statements from Greg about not using the
-platform bus for things that aren't memory mapped or "direct firmware",
-a large proportion of MFD subfunctions are neither at least in so far as
-I can understand what direct firmware means.
-
-To be honest I don't find the LWN article clarifies things particularly
-here, the rationale appears to involve some misconceptions about what
-MFDs look like.  It looks like it assumes that MFD functions have
-physically separate register sets for example which is not a reliable
-feature of MFDs, nor is the assumption that there's no shared
-functionality which appears to be there.  It also appears to assume that
-MFD subfunctions can clearly be described by ACPI (where it would be
-unidiomatic, we just don't see this happening for the MFDs that appear
-on ACPI systems and I'm not sure bindings exist within ACPI) or DT
-(where even where subfunctions are individually described it's rarely
-doing more than enumerating that things exist).
-
-> Maybe there is some overlap, but if you want to add HW representations
-> to the general auxillary device then I think you are using it for the
-> wrong thing.
-
-Even for the narrowest use case for auxiliary devices that I can think
-of I think the assumption that nobody will ever design something which
-can wire an interrupt intended to be serviced by a subfunction is a bit
-optimistic.  If Greg's statements about not using platform buses for
-MMIO or direct firmware devices are accurate then those cases already
-exist, if nothing else a common subfunction for MFDs is an interrupt
-controller.
-
---ABTtc+pdwF7KHXCz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl/c0CMACgkQJNaLcl1U
-h9AEzwf+O76Uw7BDG33tM6xhLOwoq847RdyVqkI6RrFlyIlLsFlIt49fbXRIuXTF
-Pviz3SUZ268ihxH3NrtuGLDtkdVL70oKo26hEppOtp877dhmkjK/BCnnkqIiERro
-4Hpxo/eoIjqT0lnx+ah2ge9q5cDhT9s1mMH8vkvdOSGa2a9z71uYEzOARmvUbXy9
-LK4/z9VmLS0wmO6YPxwc4Nq6afaa0m/yGhGFxu2aKT9aKfzbBIywl6WFllPz1Y1H
-G+ZxfgLJ6sZON36FToD7/FEDUuZxBUGjA5d2txOX0xpx/ZsnvapoRypEvotufObZ
-ZVX/PBjkUnHdClRckKl3LHCok9Xw1w==
-=lhpS
------END PGP SIGNATURE-----
-
---ABTtc+pdwF7KHXCz--
+For broadcast/multicast it isn't so much a guess. It would be a single
+bit test. My understanding is the switchdev setup is already making
+special cases for things like broadcast/multicast due to the extra
+overhead incurred. I mentioned ARP because in many cases it has to be
+offloaded specifically due to these sorts of issues.
