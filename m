@@ -2,183 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C62CA2DDC4C
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 01:09:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B1BD2DDC72
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 01:45:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732226AbgLRAIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 19:08:51 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:8726 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727172AbgLRAIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 19:08:51 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fdbf2ea0002>; Thu, 17 Dec 2020 16:08:10 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 18 Dec
- 2020 00:08:07 +0000
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.171)
- by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Fri, 18 Dec 2020 00:08:07 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kv0E/Q/bhUndrKtH2JpQS04ShTLLqlYvPCN0EoaSDMqqZwpZu1AazlPtRMyHIvM6RMmFylqW6B0HxSu75tQFAKMQoZys6AXxnItHd3/zWEasrWXrj7tKKj4vCq/uKNWTVXS572yMgJ1wb1bAI9amWaUXucNejd7FLkHbhfI7AuVSUOC+XFBi2L6dIQNpsMkeMT7lG6kH7YtCC+Om7tAWqZlI++Ou504IJJmXJyxkvqtsJHkVeOLZCpKP/gYqedOQWA8DOySqyNt0aZjww0yNe8q7MfIJiQ9Y8Tc2JpfEKBFGjMTf1gh42oQlMJQKDKWXrsegHopOgUgX4QTHwXbjLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0zdYqW5xRnD6xXAD4tYf3uQxeKd3HbbwLC6f4b3gye8=;
- b=D6gKaPsPxt2Frl0HOkmEGDMG+Sn3h2Z4Gz2msqi6n2Te9zLKi0EINEpAjmIcRHKOVhtDm77wnUzZBlStjIE5Blutq7PCnmXqi+GWZX/65r/rzSSXCcn+ObuTiPUp/468eKvauQam5h1jtFoUzEaiIZjj7o0xlgixjuG3lMUo/Tqt9SwJjZWLn0xgxAuXKQ462uxbnLbg0jNgpfk4nN7lx+7UUbadrYh/FaRwMO9G/PNMYioy1EModh5+tFJczV6KLhg/SswNm2CQvKVVsCR50juV4BMAlywirsPxf5a/i1nA0kfSZ9YmlCJdzkr6NX3CHKMMNMhLTO8k40vxPdgp/g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from CH2PR12MB3831.namprd12.prod.outlook.com (2603:10b6:610:29::13)
- by CH2PR12MB4134.namprd12.prod.outlook.com (2603:10b6:610:a7::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.25; Fri, 18 Dec
- 2020 00:08:06 +0000
-Received: from CH2PR12MB3831.namprd12.prod.outlook.com
- ([fe80::9935:c6d7:b453:861f]) by CH2PR12MB3831.namprd12.prod.outlook.com
- ([fe80::9935:c6d7:b453:861f%5]) with mapi id 15.20.3654.024; Fri, 18 Dec 2020
- 00:08:06 +0000
-Date:   Thu, 17 Dec 2020 20:08:02 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-CC:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Netdev <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
-Message-ID: <20201218000802.GV552508@nvidia.com>
-References: <20201216133309.GI552508@nvidia.com>
- <CAKgT0UcRfB8a61rSWW-NPdbGh3VcX_=LCZ5J+-YjqYNtm+RhVg@mail.gmail.com>
- <20201216175112.GJ552508@nvidia.com>
- <CAKgT0Uerqg5F5=jrn5Lu33+9Y6pS3=NLnOfvQ0dEZug6Ev5S6A@mail.gmail.com>
- <20201216203537.GM552508@nvidia.com>
- <CAKgT0UfuSA9PdtR6ftcq0_JO48Yp4N2ggEMiX9zrXkK6tN4Pmw@mail.gmail.com>
- <20201217003829.GN552508@nvidia.com>
- <CAKgT0UcEjekh0Z+A+aZKWJmeudr5CZTXPwPtYb52pokDi1TF_w@mail.gmail.com>
- <20201217194035.GT552508@nvidia.com>
- <CAKgT0Ue9+cd-Mp4qgusorDX1mnjfzMXrQvB2FqLaH+ouzVTMRQ@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAKgT0Ue9+cd-Mp4qgusorDX1mnjfzMXrQvB2FqLaH+ouzVTMRQ@mail.gmail.com>
-X-ClientProxiedBy: BL1PR13CA0330.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::35) To CH2PR12MB3831.namprd12.prod.outlook.com
- (2603:10b6:610:29::13)
+        id S1730833AbgLRApI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 19:45:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727136AbgLRApH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 19:45:07 -0500
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7698FC061794
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 16:44:27 -0800 (PST)
+Received: by mail-oo1-xc33.google.com with SMTP id y14so172183oom.10
+        for <netdev@vger.kernel.org>; Thu, 17 Dec 2020 16:44:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RcG8UuuKICrSkT4O/nksVbgVV1JKB9kCFu7KnueB7gw=;
+        b=SaDvPSn5+60md6Os91Kxf0BMZzgV/1uVPwm70Viav40Uqbw+0I0w9NX7eoY70bn85V
+         9DaqGR2LpjhPmtyz6+hvwgUM/DMxDYiepu9+y7PVo/opvhL/B5/lmAMP5n3Np3HP5vhM
+         7iaNVMvn8QZklV3bOPy5YigyG44Ui+kXhRiWzOI/ZwEmLEo5WR8dUNo3bn4TAJZHIW4+
+         qLXCrWHRBpkWDeH8jppPd9xnJ1SvVgO69282LITjngcSAH2fuOk3A6crh5zhhNz/rUFT
+         ecxo7oRajXdXIUmzWGGdoRZp3z4Jjcb1iOPtRp2cL/BXVpgxJrPCfEN+7jdtilg4zTc4
+         UtfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RcG8UuuKICrSkT4O/nksVbgVV1JKB9kCFu7KnueB7gw=;
+        b=Y2ntEJVE/s3coKJzEPQAd8Q8erLuzjJxSFaOukdV+ccJaM0nl7z16aze1wtfrqtc1B
+         EaiF0sSrEIoYMmaKqsPizjJ/mDKZhBxqftrqbHNIr4G02gt1UYeSfNKrJzzN+JKuM3G4
+         FDpvjpD1tLvBOdMAFxzKMeuDsBfBLkDbljs/8yB9NkMYebU9KoCJOtgYnygJIsDdBEZy
+         wdHAnsSglIQXwt1/zBXtJiSHMKVZQvblqOfo5iwCyvaxoQh/rsUuvSgpa1pq+X4izb9v
+         88VzKNwHw8957cB4hCs5/wYo4PZu9QraIJ4sTuGti5Pnh3OCi/3fKdfO0ZzlCOtp9n4E
+         TxCA==
+X-Gm-Message-State: AOAM5329XHfVhzgRfiyROPgiIdq5w88yPObwNKraYRBmwDqVIFgOloIo
+        G/YDpuBUTG/Eodb91dFVX/4=
+X-Google-Smtp-Source: ABdhPJw3reQHTuSmZBr762IvUXpUS8kWFbqz4KDwcnIinsYjB8dkOq/EkmFXmiEy9dpahXd9ldTzvQ==
+X-Received: by 2002:a4a:6f0d:: with SMTP id h13mr1239416ooc.2.1608252266733;
+        Thu, 17 Dec 2020 16:44:26 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.51])
+        by smtp.googlemail.com with ESMTPSA id a22sm304517otr.75.2020.12.17.16.44.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Dec 2020 16:44:25 -0800 (PST)
+Subject: Re: [PATCH v1 net-next 02/15] net: Introduce direct data placement
+ tcp offload
+To:     Boris Pismenny <borispismenny@gmail.com>,
+        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
+        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de,
+        sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
+        viro@zeniv.linux.org.uk, edumazet@google.com
+Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Yoray Zack <yorayz@mellanox.com>,
+        Boris Pismenny <borisp@nvidia.com>
+References: <20201207210649.19194-1-borisp@mellanox.com>
+ <20201207210649.19194-3-borisp@mellanox.com>
+ <6f48fa5d-465c-5c38-ea45-704e86ba808b@gmail.com>
+ <f52a99d2-03a4-6e9f-603e-feba4aad0512@gmail.com>
+ <65dc5bba-13e6-110a-ddae-3d0c260aa875@gmail.com>
+ <ab298844-c95e-43e6-b4bb-fe5ce78655d8@gmail.com>
+ <921a110f-60fa-a711-d386-39eeca52199f@gmail.com>
+ <ca9f42e5-fa4b-1fa0-c2a8-393e577cb6c9@gmail.com>
+ <128d5ddc-ef46-1125-c27e-381f78a49a96@gmail.com>
+ <999f935c-310b-39e0-6f77-6f39192cabc2@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1b6314aa-fa22-0847-67e6-280f73281110@gmail.com>
+Date:   Thu, 17 Dec 2020 17:44:22 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0330.namprd13.prod.outlook.com (2603:10b6:208:2c1::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.13 via Frontend Transport; Fri, 18 Dec 2020 00:08:04 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kq3JS-00CSTV-BI; Thu, 17 Dec 2020 20:08:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1608250090; bh=0zdYqW5xRnD6xXAD4tYf3uQxeKd3HbbwLC6f4b3gye8=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=HkLBJG6odtJ5r6ri2P/F+9QS2LRBIT55VzGRQbwsSozRk4VNN8LDu5V7ZmpPww7Ft
-         YiLhzxJOLzAQqk1saAvZmyh9JItgTuy6xRniNWDzPywqSGh25BrgBpKYvuRmvGVryA
-         jxiyCYMFm0odx+a5nDAKcY+jB+Coqpt0S1BKByX5qAHorT0o3pUbsaeqjR0JpFfMu4
-         v7++dGVnYIdwGGTvbhfI13+tkyz7GzKQeVN/Ucx5FBqkbMchgogdaPakpyWosCQ7m6
-         SCGCllzF4M5tZxNnJEZRsG+f8HAPYgp6b/Xv/69SPrxJa46hNYZhFtnwr48ijiNJeT
-         MFe9+Kjk7MlbQ==
+In-Reply-To: <999f935c-310b-39e0-6f77-6f39192cabc2@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 17, 2020 at 01:05:03PM -0800, Alexander Duyck wrote:
-
-> > I view the SW bypass path you are talking about similarly to
-> > GSO/etc. It should be accessed by the HW driver as an optional service
-> > provided by the core netdev, not implemented as some wrapper netdev
-> > around a HW implementation.
+On 12/17/20 12:06 PM, Boris Pismenny wrote:
 > 
-> I view it as being something that would be a part of the switchdev API
-> itself. Basically the switchev and endpoint would need to be able to
-> control something like this because if XDP were enabled on one end or
-> the other you would need to be able to switch it off so that all of
-> the packets followed the same flow and could be scanned by the XDP
-> program.
-
-To me that still all comes down to being something like an optional
-offload that the HW driver can trigger if the conditions are met.
-
-> > It is simple enough, the HW driver's tx path would somehow detect
-> > east/west and queue it differently, and the rx path would somehow be
-> > able to mux in skbs from a SW queue. Not seeing any blockers here.
 > 
-> In my mind the simple proof of concept for this would be to check for
-> the multicast bit being set in the destination MAC address for packets
-> coming from the subfunction. If it is then shunt to this bypass route,
-> and if not then you transmit to the hardware queues. 
-
-Sure, not sure multicast optimization like this isn't incredibly niche
-too, but it would be an interesting path to explore.
-
-But again, there is nothing fundamental about the model here that
-precludes this optional optimization.
-
-> > Even if that is true, I don't belive for a second that adding a
-> > different HW abstraction layer is going to somehow undo the mistakes
-> > of the last 20 years.
+> On 15/12/2020 7:19, David Ahern wrote:
+>> On 12/13/20 11:21 AM, Boris Pismenny wrote:
+>>>>> as zerocopy for the following reasons:
+>>>>> (1) The former places buffers *exactly* where the user requests
+>>>>> regardless of the order of response arrivals, while the latter places packets
+>>>>> in anonymous buffers according to packet arrival order. Therefore, zerocopy
+>>>>> can be implemented using data placement, but not vice versa.
+>>>>
+>>>> Fundamentally, it is an SGL and a TCP sequence number. There is a
+>>>> starting point where seq N == sgl element 0, position 0. Presumably
+>>>> there is a hardware cursor to track where you are in filling the SGL as
+>>>> packets are processed. You abort on OOO, so it seems like a fairly
+>>>> straightfoward problem.
+>>>>
+>>>
+>>> We do not abort on OOO. Moreover, we can keep going as long as
+>>> PDU headers are not reordered.
+>>
+>> Meaning packets received OOO which contain all or part of a PDU header
+>> are aborted, but pure data packets can arrive out-of-order?
+>>
+>> Did you measure the affect of OOO packets? e.g., randomly drop 1 in 1000
+>> nvme packets, 1 in 10,000, 1 in 100,000? How does that affect the fio
+>> benchmarks?
+>>
 > 
-> It depends on how it is done. The general idea is to address the
-> biggest limitation that has occured, which is the fact that in many
-> cases we don't have software offloads to take care of things when the
-> hardware offloads provided by a certain piece of hardware are not
-> present. 
+> Yes for TLS where similar ideas are used, but not for NVMe-TCP, yet.
+> At the worst case we measured (5% OOO), and we got the same performance
+> as pure software TLS under these conditions. We will strive to have the
+> same for nvme-tcp. We would be able to test this on nvme-tcp only when we
+> have hardware. For now, we are using a mix of emulation and simulation to
+> test and benchmark.
 
-This is really disappointing to hear. Admittedly I don't follow all
-the twists and turns on the mailing list, but I thought having a SW
-version of everything was one of the fundamental tenants of netdev
-that truly distinguished it from something like RDMA.
+Interesting. So you don't have hardware today for this feature.
 
-> It would basically allow us to reset the feature set. If something
-> cannot be offloaded in software in a reasonable way, it is not
-> allowed to be present in the interface provided to a container.
-> That way instead of having to do all the custom configuration in the
-> container recipe it can be centralized to one container handling all
-> of the switching and hardware configuration.
+> 
+>>>> Similarly for the NVMe SGLs and DDP offload - a more generic solution
+>>>> allows other use cases to build on this as opposed to the checks you
+>>>> want for a special case. For example, a split at the protocol headers /
+>>>> payload boundaries would be a generic solution where kernel managed
+>>>> protocols get data in one buffer and socket data is put into a given
+>>>> SGL. I am guessing that you have to be already doing this to put PDU
+>>>> payloads into an SGL and other headers into other memory to make a
+>>>> complete packet, so this is not too far off from what you are already doing.
+>>>>
+>>>
+>>> Splitting at protocol header boundaries and placing data at socket defined
+>>> SGLs is not enough for nvme-tcp because the nvme-tcp protocol can reorder
+>>> responses. Here is an example:
+>>>
+>>> the host submits the following requests:
+>>> +--------+--------+--------+
+>>> | Read 1 | Read 2 | Read 3 |
+>>> +--------+--------+--------+
+>>>
+>>> the target responds with the following responses:
+>>> +--------+--------+--------+
+>>> | Resp 2 | Resp 3 | Resp 1 |
+>>> +--------+--------+--------+
+>>
+>> Does 'Resp N' == 'PDU + data' like this:
+>>
+>>  +---------+--------+---------+--------+---------+--------+
+>>  | PDU hdr | Resp 2 | PDU hdr | Resp 3 | PDU hdr | Resp 1 |
+>>  +---------+--------+---------+--------+---------+--------+
+>>
+>> or is it 1 PDU hdr + all of the responses?
+>>
+> 
+> Yes, 'RespN = PDU header + PDU data' segmented by TCP whichever way it
+> chooses to do so. The PDU header's command_id field correlates between
 
-Well, you could start by blocking stuff without a SW fallback..
+I thought so and verified in the NVME over Fabrics spec. Not sure why
+you brought up order of responses; that should be irrelevant to the design.
 
-> There I disagree. Now I can agree that most of the series is about
-> presenting the aux device and that part I am fine with. However when
-> the aux device is a netdev and that netdev is being loaded into the
-> same kernel as the switchdev port is where the red flags start flying,
-> especially when we start talking about how it is the same as a VF.
+> the request and the response. We use that correlation in hardware to
+> identify the buffers where data needs to be scattered. In other words,
+> hardware holds a map between command_id and block layer buffers SGL.
 
-Well, it happens for the same reason a VF can create a netdev,
-stopping it would actually be more patches. As I said before, people
-are already doing this model with VFs.
+Understood. Your design is forcing a command id to sgl correlation vs
+handing h/w generic or shaped SGLs for writing the socket data.
 
-I can agree with some of our points, but this is not the series to
-argue them. What you want is to start some new thread on optimizing
-switchdev for the container user case.
+> 
+>>>
+>>> I think that the interface we created (tcp_ddp) is sufficiently generic
+>>> for the task at hand, which is offloading protocols that can re-order
+>>> their responses, a non-trivial task that we claim is important.
+>>>
+>>> We designed it to support other protocols and not just nvme-tcp,
+>>> which is merely an example. For instance, I think that supporting iSCSI
+>>> would be natural, and that other protocols will fit nicely.
+>>
+>> It would be good to add documentation that describes the design, its
+>> assumptions and its limitations. tls has several under
+>> Documentation/networking. e.g., one important limitation to note is that
+>> this design only works for TCP sockets owned by kernel modules.
+>>
+> 
+> You are right. I'll do so for tcp_ddp. You are right that it works only
+> for kernel TCP sockets, but maybe future work will extend it.
 
-> In my mind we are talking about how the switchdev will behave and it
-> makes sense to see about defining if a east-west bypass makes sense
-> and how it could be implemented, rather than saying we won't bother
-> for now and potentially locking in the subfunction to virtual function
-> equality.
+Little to nothing about this design can work for userspace sockets or
+setups like Jonathan's netgpu. e.g., the memory address compares for
+whether to copy the data will not work with userspace buffers which is
+why I suggested something more generic like marking the skb as "h/w
+offload" but that does not work for you since your skbs have a mixed bag
+of fragments.
 
-At least for mlx5 SF == VF, that is a consequence of the HW. Any SW
-bypass would need to be specially built in the mlx5 netdev running on
-a VF/SF attached to a switchdev port.
-
-I don't see anything about this part of the model that precludes ever
-doing that, and I also don't see this optimization as being valuable
-enough to block things "just to be sure"
-
-> In my mind we need more than just the increased count to justify
-> going to subfunctions, and I think being able to solve the east-west
-> problem at least in terms of containers would be such a thing.
-
-Increased count is pretty important for users with SRIOV.
-
-Jason
