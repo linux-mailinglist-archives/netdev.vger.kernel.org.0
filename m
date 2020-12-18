@@ -2,215 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 881C52DDBF0
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 00:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C62CA2DDC4C
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 01:09:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732161AbgLQXiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Dec 2020 18:38:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726789AbgLQXiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 18:38:09 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BFBC061794;
-        Thu, 17 Dec 2020 15:37:28 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id a6so145518qtw.6;
-        Thu, 17 Dec 2020 15:37:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kD1MCPsoar6G9vdvcEBH5KP4RAgDclspZS+ZkNc4Ibw=;
-        b=vF1XpAg3XI4izQ9RMo3HIqPyUz+/ETJm89Xj86uC113NDLGEhaO0joAeBhgp1fZ3Du
-         rNVPb8S2hZecAOpE2YsGcafHsDWtyXjI01SgtBra1oQbjY6nDfBzzFMPhsidwZ9o1ZQm
-         kCVZSO1smvTI9+tYfEC9A3JGkmA5gHniIbefKqv0Qo6LHVB2znzwx/Aob970XlUClcce
-         /HLH2bnFpNFIx8Z4ovAIU30r/uGnZ266YC+rScWuKg5Qm2pquEW7PU0fvvLuTcJ/AFmC
-         hAco2pfmL97oiHf1D9kgKxKxF2PMv5d2F3sWwNgv7ERM2/r+TUGaUYfhN0ocCUUquNWk
-         TRWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kD1MCPsoar6G9vdvcEBH5KP4RAgDclspZS+ZkNc4Ibw=;
-        b=pTONdIMn81O6o89g3/12xl//LNOD9NvFYDOkDmci6hqqzRCV2oREWHidDX+x+bSe69
-         d7Q0KbU83HmYjTufKFoN1soylD5j8zwJV0zZSaJCCK+E8XNUByLgmpE3sVMfVtC8XQ2L
-         Zyjx/7qn8agq68oAPQqpK3I/MebU4X18S56z+qVIg5w5wSHejtsjLGTndG6Kjxlf6H3x
-         UfCoCI2Hz4jEbjhq31ENYaFVJKp7hA6Xq5n14tiaCaY8gzD7Ib1uWEKVUCecJJgbwVHc
-         CUVHdmomO6G9KAQ9NuVbNdfCvO41EY4zs6+jhuqX+WzfXnM4bQXK+LYuTylMUx/C3WLb
-         nmPQ==
-X-Gm-Message-State: AOAM532bl4kBEaG45DninfPPXprJ7Xgy5xtZ/PnjjVGra7Fcv8HFA/Qb
-        OuCg2uL98HaUbiCUXeWnaGI//qyhzrmSbsAtIyw=
-X-Google-Smtp-Source: ABdhPJxTAw/uYHDkTUNNqfptLLfb2aLcIaqUznoO4lkmP/y4u+xIxscOz0xMEGy3En40Zo/6ZZjRIsbVCe9ALFWfGks=
-X-Received: by 2002:ac8:4e47:: with SMTP id e7mr1374898qtw.262.1608248247634;
- Thu, 17 Dec 2020 15:37:27 -0800 (PST)
-MIME-Version: 1.0
-References: <CAA85sZsiuE9rN7uVCuhgiki-rffo4mYbh6BKvuGaJAK5CsPgKw@mail.gmail.com>
- <20201216232103.GA368161@bjorn-Precision-5520>
-In-Reply-To: <20201216232103.GA368161@bjorn-Precision-5520>
-From:   Ian Kumlien <ian.kumlien@gmail.com>
-Date:   Fri, 18 Dec 2020 00:37:16 +0100
-Message-ID: <CAA85sZtez59wrAr8AVdbaZWvkPhVeurcznQ0kbL3UVx2FqLJ7w@mail.gmail.com>
-Subject: Re: [PATCH 1/3] PCI/ASPM: Use the path max in L1 ASPM latency check
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S1732226AbgLRAIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Dec 2020 19:08:51 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:8726 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727172AbgLRAIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Dec 2020 19:08:51 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fdbf2ea0002>; Thu, 17 Dec 2020 16:08:10 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 18 Dec
+ 2020 00:08:07 +0000
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.171)
+ by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 18 Dec 2020 00:08:07 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Kv0E/Q/bhUndrKtH2JpQS04ShTLLqlYvPCN0EoaSDMqqZwpZu1AazlPtRMyHIvM6RMmFylqW6B0HxSu75tQFAKMQoZys6AXxnItHd3/zWEasrWXrj7tKKj4vCq/uKNWTVXS572yMgJ1wb1bAI9amWaUXucNejd7FLkHbhfI7AuVSUOC+XFBi2L6dIQNpsMkeMT7lG6kH7YtCC+Om7tAWqZlI++Ou504IJJmXJyxkvqtsJHkVeOLZCpKP/gYqedOQWA8DOySqyNt0aZjww0yNe8q7MfIJiQ9Y8Tc2JpfEKBFGjMTf1gh42oQlMJQKDKWXrsegHopOgUgX4QTHwXbjLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0zdYqW5xRnD6xXAD4tYf3uQxeKd3HbbwLC6f4b3gye8=;
+ b=D6gKaPsPxt2Frl0HOkmEGDMG+Sn3h2Z4Gz2msqi6n2Te9zLKi0EINEpAjmIcRHKOVhtDm77wnUzZBlStjIE5Blutq7PCnmXqi+GWZX/65r/rzSSXCcn+ObuTiPUp/468eKvauQam5h1jtFoUzEaiIZjj7o0xlgixjuG3lMUo/Tqt9SwJjZWLn0xgxAuXKQ462uxbnLbg0jNgpfk4nN7lx+7UUbadrYh/FaRwMO9G/PNMYioy1EModh5+tFJczV6KLhg/SswNm2CQvKVVsCR50juV4BMAlywirsPxf5a/i1nA0kfSZ9YmlCJdzkr6NX3CHKMMNMhLTO8k40vxPdgp/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from CH2PR12MB3831.namprd12.prod.outlook.com (2603:10b6:610:29::13)
+ by CH2PR12MB4134.namprd12.prod.outlook.com (2603:10b6:610:a7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.25; Fri, 18 Dec
+ 2020 00:08:06 +0000
+Received: from CH2PR12MB3831.namprd12.prod.outlook.com
+ ([fe80::9935:c6d7:b453:861f]) by CH2PR12MB3831.namprd12.prod.outlook.com
+ ([fe80::9935:c6d7:b453:861f%5]) with mapi id 15.20.3654.024; Fri, 18 Dec 2020
+ 00:08:06 +0000
+Date:   Thu, 17 Dec 2020 20:08:02 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     Saeed Mahameed <saeed@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+Message-ID: <20201218000802.GV552508@nvidia.com>
+References: <20201216133309.GI552508@nvidia.com>
+ <CAKgT0UcRfB8a61rSWW-NPdbGh3VcX_=LCZ5J+-YjqYNtm+RhVg@mail.gmail.com>
+ <20201216175112.GJ552508@nvidia.com>
+ <CAKgT0Uerqg5F5=jrn5Lu33+9Y6pS3=NLnOfvQ0dEZug6Ev5S6A@mail.gmail.com>
+ <20201216203537.GM552508@nvidia.com>
+ <CAKgT0UfuSA9PdtR6ftcq0_JO48Yp4N2ggEMiX9zrXkK6tN4Pmw@mail.gmail.com>
+ <20201217003829.GN552508@nvidia.com>
+ <CAKgT0UcEjekh0Z+A+aZKWJmeudr5CZTXPwPtYb52pokDi1TF_w@mail.gmail.com>
+ <20201217194035.GT552508@nvidia.com>
+ <CAKgT0Ue9+cd-Mp4qgusorDX1mnjfzMXrQvB2FqLaH+ouzVTMRQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Ue9+cd-Mp4qgusorDX1mnjfzMXrQvB2FqLaH+ouzVTMRQ@mail.gmail.com>
+X-ClientProxiedBy: BL1PR13CA0330.namprd13.prod.outlook.com
+ (2603:10b6:208:2c1::35) To CH2PR12MB3831.namprd12.prod.outlook.com
+ (2603:10b6:610:29::13)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0330.namprd13.prod.outlook.com (2603:10b6:208:2c1::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.13 via Frontend Transport; Fri, 18 Dec 2020 00:08:04 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kq3JS-00CSTV-BI; Thu, 17 Dec 2020 20:08:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1608250090; bh=0zdYqW5xRnD6xXAD4tYf3uQxeKd3HbbwLC6f4b3gye8=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=HkLBJG6odtJ5r6ri2P/F+9QS2LRBIT55VzGRQbwsSozRk4VNN8LDu5V7ZmpPww7Ft
+         YiLhzxJOLzAQqk1saAvZmyh9JItgTuy6xRniNWDzPywqSGh25BrgBpKYvuRmvGVryA
+         jxiyCYMFm0odx+a5nDAKcY+jB+Coqpt0S1BKByX5qAHorT0o3pUbsaeqjR0JpFfMu4
+         v7++dGVnYIdwGGTvbhfI13+tkyz7GzKQeVN/Ucx5FBqkbMchgogdaPakpyWosCQ7m6
+         SCGCllzF4M5tZxNnJEZRsG+f8HAPYgp6b/Xv/69SPrxJa46hNYZhFtnwr48ijiNJeT
+         MFe9+Kjk7MlbQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 17, 2020 at 12:21 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Wed, Dec 16, 2020 at 12:20:53PM +0100, Ian Kumlien wrote:
-> > On Wed, Dec 16, 2020 at 1:08 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > On Tue, Dec 15, 2020 at 02:09:12PM +0100, Ian Kumlien wrote:
-> > > > On Tue, Dec 15, 2020 at 1:40 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > > On Mon, Dec 14, 2020 at 11:56:31PM +0100, Ian Kumlien wrote:
-> > > > > > On Mon, Dec 14, 2020 at 8:19 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > > >
-> > > > > > > If you're interested, you could probably unload the Realtek drivers,
-> > > > > > > remove the devices, and set the PCI_EXP_LNKCTL_LD (Link Disable) bit
-> > > > > > > in 02:04.0, e.g.,
-> > > > > > >
-> > > > > > >   # RT=/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:04.0
-> > > > > > >   # echo 1 > $RT/0000:04:00.0/remove
-> > > > > > >   # echo 1 > $RT/0000:04:00.1/remove
-> > > > > > >   # echo 1 > $RT/0000:04:00.2/remove
-> > > > > > >   # echo 1 > $RT/0000:04:00.4/remove
-> > > > > > >   # echo 1 > $RT/0000:04:00.7/remove
-> > > > > > >   # setpci -s02:04.0 CAP_EXP+0x10.w=0x0010
-> > > > > > >
-> > > > > > > That should take 04:00.x out of the picture.
-> > > > > >
-> > > > > > Didn't actually change the behaviour, I'm suspecting an errata for AMD pcie...
-> > > > > >
-> > > > > > So did this, with unpatched kernel:
-> > > > > > [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> > > > > > [  5]   0.00-1.00   sec  4.56 MBytes  38.2 Mbits/sec    0   67.9 KBytes
-> > > > > > [  5]   1.00-2.00   sec  4.47 MBytes  37.5 Mbits/sec    0   96.2 KBytes
-> > > > > > [  5]   2.00-3.00   sec  4.85 MBytes  40.7 Mbits/sec    0   50.9 KBytes
-> > > > > > [  5]   3.00-4.00   sec  4.23 MBytes  35.4 Mbits/sec    0   70.7 KBytes
-> > > > > > [  5]   4.00-5.00   sec  4.23 MBytes  35.4 Mbits/sec    0   48.1 KBytes
-> > > > > > [  5]   5.00-6.00   sec  4.23 MBytes  35.4 Mbits/sec    0   45.2 KBytes
-> > > > > > [  5]   6.00-7.00   sec  4.23 MBytes  35.4 Mbits/sec    0   36.8 KBytes
-> > > > > > [  5]   7.00-8.00   sec  3.98 MBytes  33.4 Mbits/sec    0   36.8 KBytes
-> > > > > > [  5]   8.00-9.00   sec  4.23 MBytes  35.4 Mbits/sec    0   36.8 KBytes
-> > > > > > [  5]   9.00-10.00  sec  4.23 MBytes  35.4 Mbits/sec    0   48.1 KBytes
-> > > > > > - - - - - - - - - - - - - - - - - - - - - - - - -
-> > > > > > [ ID] Interval           Transfer     Bitrate         Retr
-> > > > > > [  5]   0.00-10.00  sec  43.2 MBytes  36.2 Mbits/sec    0             sender
-> > > > > > [  5]   0.00-10.00  sec  42.7 MBytes  35.8 Mbits/sec                  receiver
-> > > > > >
-> > > > > > and:
-> > > > > > echo 0 > /sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/link/l1_aspm
-> > > > >
-> > > > > BTW, thanks a lot for testing out the "l1_aspm" sysfs file.  I'm very
-> > > > > pleased that it seems to be working as intended.
-> > > >
-> > > > It was nice to find it for easy disabling :)
-> > > >
-> > > > > > and:
-> > > > > > [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-> > > > > > [  5]   0.00-1.00   sec   113 MBytes   951 Mbits/sec  153    772 KBytes
-> > > > > > [  5]   1.00-2.00   sec   109 MBytes   912 Mbits/sec  276    550 KBytes
-> > > > > > [  5]   2.00-3.00   sec   111 MBytes   933 Mbits/sec  123    625 KBytes
-> > > > > > [  5]   3.00-4.00   sec   111 MBytes   933 Mbits/sec   31    687 KBytes
-> > > > > > [  5]   4.00-5.00   sec   110 MBytes   923 Mbits/sec    0    679 KBytes
-> > > > > > [  5]   5.00-6.00   sec   110 MBytes   923 Mbits/sec  136    577 KBytes
-> > > > > > [  5]   6.00-7.00   sec   110 MBytes   923 Mbits/sec  214    645 KBytes
-> > > > > > [  5]   7.00-8.00   sec   110 MBytes   923 Mbits/sec   32    628 KBytes
-> > > > > > [  5]   8.00-9.00   sec   110 MBytes   923 Mbits/sec   81    537 KBytes
-> > > > > > [  5]   9.00-10.00  sec   110 MBytes   923 Mbits/sec   10    577 KBytes
-> > > > > > - - - - - - - - - - - - - - - - - - - - - - - - -
-> > > > > > [ ID] Interval           Transfer     Bitrate         Retr
-> > > > > > [  5]   0.00-10.00  sec  1.08 GBytes   927 Mbits/sec  1056             sender
-> > > > > > [  5]   0.00-10.00  sec  1.07 GBytes   923 Mbits/sec                  receiver
-> > > > > >
-> > > > > > But this only confirms that the fix i experience is a side effect.
-> > > > > >
-> > > > > > The original code is still wrong :)
-> > > > >
-> > > > > What exactly is this machine?  Brand, model, config?  Maybe you could
-> > > > > add this and a dmesg log to the buzilla?  It seems like other people
-> > > > > should be seeing the same problem, so I'm hoping to grub around on the
-> > > > > web to see if there are similar reports involving these devices.
-> > > >
-> > > > ASUS Pro WS X570-ACE with AMD Ryzen 9 3900X
-> > >
-> > > Possible similar issues:
-> > >
-> > >   https://forums.unraid.net/topic/94274-hardware-upgrade-woes/
-> > >   https://forums.servethehome.com/index.php?threads/upgraded-my-home-server-from-intel-to-amd-virtual-disk-stuck-in-degraded-unhealty-state.25535/ (Windows)
-> >
-> > Could be, I suspect that we need a workaround (is there a quirk for
-> > "reporting wrong latency"?) and the patches.
->
-> I don't think there's currently a quirk mechanism that would work for
-> correcting latencies, but there should be, and we could add one if we
-> can figure out for sure what's wrong.
->
-> I found this:
->
->   https://www.reddit.com/r/VFIO/comments/hgk3cz/x570_pcieclassic_pci_bridge_woes/
->
-> which looks like it should be the same hardware (if you can collect a
-> dmesg log or "lspci -nnvv" output we could tell for sure) and is
-> interesting because it includes some lspci output that shows different
-> L1 exit latencies than what you see.
+On Thu, Dec 17, 2020 at 01:05:03PM -0800, Alexander Duyck wrote:
 
-I'll send both of them separately to you, no reason to push that to
-everyone i assume.. =)
+> > I view the SW bypass path you are talking about similarly to
+> > GSO/etc. It should be accessed by the HW driver as an optional service
+> > provided by the core netdev, not implemented as some wrapper netdev
+> > around a HW implementation.
+> 
+> I view it as being something that would be a part of the switchdev API
+> itself. Basically the switchev and endpoint would need to be able to
+> control something like this because if XDP were enabled on one end or
+> the other you would need to be able to switch it off so that all of
+> the packets followed the same flow and could be scanned by the XDP
+> program.
 
-> > > > > https://bugzilla.kernel.org/show_bug.cgi?id=209725
-> > > > >
-> > > > > Here's one that is superficially similar:
-> > > > > https://linux-hardware.org/index.php?probe=e5f24075e5&log=lspci_all
-> > > > > in that it has a RP -- switch -- I211 path.  Interestingly, the switch
-> > > > > here advertises <64us L1 exit latency instead of the <32us latency
-> > > > > your switch advertises.  Of course, I can't tell if it's exactly the
-> > > > > same switch.
-> > > >
-> > > > Same chipset it seems
-> > > >
-> > > > I'm running bios version:
-> > > >         Version: 2206
-> > > >         Release Date: 08/13/2020
-> > > >
-> > > > ANd latest is:
-> > > > Version 3003
-> > > > 2020/12/07
-> > > >
-> > > > Will test upgrading that as well, but it could be that they report the
-> > > > incorrect latency of the switch - I don't know how many things AGESA
-> > > > changes but... It's been updated twice since my upgrade.
-> > >
-> > > I wouldn't be surprised if the advertised exit latencies are writable
-> > > by the BIOS because it probably depends on electrical characteristics
-> > > outside the switch.  If so, it's possible ASUS just screwed it up.
-> >
-> > Not surprisingly, nothing changed.
-> > (There was a lot of "stability improvements")
->
-> I wouldn't be totally surprised if ASUS didn't test that I211 NIC
-> under Linux, but I'm sure it must work well under Windows.  If you
-> happen to have Windows, a free trial version of AIDA64 should be able
-> to give us the equivalent of "lspci -vv".
+To me that still all comes down to being something like an optional
+offload that the HW driver can trigger if the conditions are met.
 
-I don't have windows, haven't had windows at home since '98 ;)
+> > It is simple enough, the HW driver's tx path would somehow detect
+> > east/west and queue it differently, and the rx path would somehow be
+> > able to mux in skbs from a SW queue. Not seeing any blockers here.
+> 
+> In my mind the simple proof of concept for this would be to check for
+> the multicast bit being set in the destination MAC address for packets
+> coming from the subfunction. If it is then shunt to this bypass route,
+> and if not then you transmit to the hardware queues. 
 
-I'll check with some friends that dualboot om systems that might be
-similar - will see what i can get
+Sure, not sure multicast optimization like this isn't incredibly niche
+too, but it would be an interesting path to explore.
 
+But again, there is nothing fundamental about the model here that
+precludes this optional optimization.
 
-> Bjorn
+> > Even if that is true, I don't belive for a second that adding a
+> > different HW abstraction layer is going to somehow undo the mistakes
+> > of the last 20 years.
+> 
+> It depends on how it is done. The general idea is to address the
+> biggest limitation that has occured, which is the fact that in many
+> cases we don't have software offloads to take care of things when the
+> hardware offloads provided by a certain piece of hardware are not
+> present. 
+
+This is really disappointing to hear. Admittedly I don't follow all
+the twists and turns on the mailing list, but I thought having a SW
+version of everything was one of the fundamental tenants of netdev
+that truly distinguished it from something like RDMA.
+
+> It would basically allow us to reset the feature set. If something
+> cannot be offloaded in software in a reasonable way, it is not
+> allowed to be present in the interface provided to a container.
+> That way instead of having to do all the custom configuration in the
+> container recipe it can be centralized to one container handling all
+> of the switching and hardware configuration.
+
+Well, you could start by blocking stuff without a SW fallback..
+
+> There I disagree. Now I can agree that most of the series is about
+> presenting the aux device and that part I am fine with. However when
+> the aux device is a netdev and that netdev is being loaded into the
+> same kernel as the switchdev port is where the red flags start flying,
+> especially when we start talking about how it is the same as a VF.
+
+Well, it happens for the same reason a VF can create a netdev,
+stopping it would actually be more patches. As I said before, people
+are already doing this model with VFs.
+
+I can agree with some of our points, but this is not the series to
+argue them. What you want is to start some new thread on optimizing
+switchdev for the container user case.
+
+> In my mind we are talking about how the switchdev will behave and it
+> makes sense to see about defining if a east-west bypass makes sense
+> and how it could be implemented, rather than saying we won't bother
+> for now and potentially locking in the subfunction to virtual function
+> equality.
+
+At least for mlx5 SF == VF, that is a consequence of the HW. Any SW
+bypass would need to be specially built in the mlx5 netdev running on
+a VF/SF attached to a switchdev port.
+
+I don't see anything about this part of the model that precludes ever
+doing that, and I also don't see this optimization as being valuable
+enough to block things "just to be sure"
+
+> In my mind we need more than just the increased count to justify
+> going to subfunctions, and I think being able to solve the east-west
+> problem at least in terms of containers would be such a thing.
+
+Increased count is pretty important for users with SRIOV.
+
+Jason
