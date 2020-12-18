@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61F6D2DE6B7
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 16:36:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08BDD2DE6C0
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 16:38:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728730AbgLRPgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 10:36:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
+        id S1728595AbgLRPhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 10:37:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726677AbgLRPgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 10:36:15 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700E4C0617B0;
-        Fri, 18 Dec 2020 07:35:35 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id n10so1524628pgl.10;
-        Fri, 18 Dec 2020 07:35:35 -0800 (PST)
+        with ESMTP id S1727817AbgLRPhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 10:37:38 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59273C0617B0;
+        Fri, 18 Dec 2020 07:36:58 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id v2so1740505pfm.9;
+        Fri, 18 Dec 2020 07:36:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7xxcDN6HCVBj/n2MlzzYP00orDljms2QLMLINjiTeKg=;
-        b=PE89hqai0/jIJUHPqZ7bRVSqKfzWQ/DhvoEEQ4sspOUPUhLGpHBNxu9U1C2M/8I4n4
-         DVzd32+NCzVyWuKEUcsihuNq2qxMxqdnthytjkif66VngeSNwttZEz3FS7dPIx7KbYdB
-         5JHf90i8Jkjj18qMEgi7pknOQirHGNujvq5Vy8n0rXQZkqX+CDx46/BY4H8gY8jmjLAW
-         QLYMKFlZC7Y6iPwb8fGmViDYBpcnSV0moF8CRkbeEyfQ7CgEvu094FrnnbT85W6jNDPb
-         H7EXObGdWHIDj5DE0Xxeyl/JDV2B1b7PacNJp62azmLXBvbu21RYReIA8cRKRlT/YYb0
-         NMVQ==
+        bh=+KLSZTU5ExRpj/cZNjbTv8MS71w3sCFIMI4H99ieEKo=;
+        b=D3L/yJ8R/OunwhSbKyc2rz9lb4mfdgQquJr33FFTlqhVg6z/JACxfrmS720bcqh/Ib
+         Pw6mECItEwlQUWPQ4EJ+EJJ2tyRVYW25NC0zrIoyhgMW+8C+iFOSkenV50hekAvn7Z6y
+         BJRQumM4mlXxzFNbWqLA3Wqzx8JdX08m7T0zc6Q/jAilDAIrPXlUSuImzXGGTDyhn3S7
+         XfXgPr0sZSFXBQH0Sm7I8Zq8Dwh20lkzfCHSGuzEu6Vly96TvmUxV75SfHSbEidDQnlk
+         SHqQVtoSbC1tMVCZniDtNjymplJpvdwZEvSzq1wxQmbYSrUiDsOIU9LuCaxQ/5w13OEK
+         7qLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7xxcDN6HCVBj/n2MlzzYP00orDljms2QLMLINjiTeKg=;
-        b=NUy1RV/u5TzZyGA5XkG2lR3Ay6Y/8IlGMpB/vvjF6Hev9WOZUWzT0FE57H7x6kCmwQ
-         T4rADExdMr/+3PvoimQfaeDhy8hEPN1zVVhyduYDNXtpOAOuJAPFDaf4EsKUkHeKqBPv
-         5WTZC6SDck4zU6tlX9Yp7cwiuVhrTLF5DGhIVQ+SXms7UavGPAsVR5wk/mJTv1+jFscE
-         ACVY1+f8AeTKL4aEeTRiolzZtZNjIVKgc2IR5rrH1mv9MN+9qS/552+9tA6AnW/bAa1z
-         tMlhYrzfM7vyJJqldNuXtZoAySJSbHijWJE1/Gpu4bnb+ZD6Ka8V53CAQVWB/QBlPPl8
-         t7Sw==
-X-Gm-Message-State: AOAM532sOXgpVzooYfRd6P0J1LBrLdwRdo182IKauBpTbUdir8tCb1ut
-        AGtyZmygh/dvSiJNOWF8yQJFB4+BO6CNkpnFUf8=
-X-Google-Smtp-Source: ABdhPJzMq/DpCv05vW4vujkFDPFHUdO8ySOlZHFnDqZRGc41djLydqFSESwRz1xasN7D7grqT31Q5+xe5XXkf2GP3Kk=
-X-Received: by 2002:a63:74b:: with SMTP id 72mr4675770pgh.4.1608305734916;
- Fri, 18 Dec 2020 07:35:34 -0800 (PST)
+        bh=+KLSZTU5ExRpj/cZNjbTv8MS71w3sCFIMI4H99ieEKo=;
+        b=rUfZCmCxMtlT86M+ccMiICo7SnOsqhJRpGW+dNN4I5LUZYdqpnkUFc2lw3U9+C5of8
+         uinsbfk6oIp8fVXpPYUHnJjesgH77zM5uT3DOPpv/1b30eOhtVCecRa2tx2XGir3egR8
+         ya3eqTc/Yg5ipR6Mw+de9UQu1ouWZIcR2heZcxmk2HjtSIMGiOrJkzXMjmB06gJQcV/y
+         as+lAmnI5O+EJP3ySnw8xyhRIt56hEZnX9EdZMk8Z2Jo8fQZBH2QAkr4uGzstaZzTHvM
+         ZCFfPeyRtqave7ROU4dUcEUIdPxpppKLSkHpMqV+vtgE9RlDJthIesBcc5VU8cokbrvR
+         Xd1Q==
+X-Gm-Message-State: AOAM531lAqqvLFrL9mdCyC1aU+cOYhdKys1jYT0w1c2UOeLMNAfRmZEX
+        gFtjWZg+JQ9q11pkF/fQnNVX//ZQK2AE/NajiC8=
+X-Google-Smtp-Source: ABdhPJyhQWu/LkN+fP3nOWDXs/TSnn33BgzHb1Co9HMOBy4XiN4f0exFG/8nxg1+9UOhOdoEd6TyXUQIQCRxNmCW63I=
+X-Received: by 2002:a63:74b:: with SMTP id 72mr4681349pgh.4.1608305817763;
+ Fri, 18 Dec 2020 07:36:57 -0800 (PST)
 MIME-Version: 1.0
 References: <20201215164315.3666-1-calvin.johnson@oss.nxp.com>
- <20201215164315.3666-7-calvin.johnson@oss.nxp.com> <CAHp75VcY2uOirAXGv5kFvHbNfHcZ6-gPsUMTB-_5AuBkHdu-0A@mail.gmail.com>
- <20201218053423.GA14594@lsv03152.swis.in-blr01.nxp.com>
-In-Reply-To: <20201218053423.GA14594@lsv03152.swis.in-blr01.nxp.com>
+ <20201215164315.3666-9-calvin.johnson@oss.nxp.com> <CAHp75Vf69NuxqcJntQi+CT1QN4cpdr2LYNzo6=t-pBWcWgufPA@mail.gmail.com>
+ <20201218054044.GB14594@lsv03152.swis.in-blr01.nxp.com>
+In-Reply-To: <20201218054044.GB14594@lsv03152.swis.in-blr01.nxp.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 18 Dec 2020 17:35:18 +0200
-Message-ID: <CAHp75Vd=dia5_a3dYvxd14UxHzL-FPuggi7SrwKdY1PUm7j9Ug@mail.gmail.com>
-Subject: Re: [net-next PATCH v2 06/14] net: mdiobus: Introduce fwnode_mdiobus_register_phy()
+Date:   Fri, 18 Dec 2020 17:36:41 +0200
+Message-ID: <CAHp75Vd4+b9asXXVGnFAH8nuDgyzR+ocaKaf7ibdt88gpMMT9w@mail.gmail.com>
+Subject: Re: [net-next PATCH v2 08/14] net: mdiobus: Introduce fwnode_mdiobus_register()
 To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
 Cc:     Grant Likely <grant.likely@arm.com>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
@@ -81,31 +81,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 7:34 AM Calvin Johnson
+On Fri, Dec 18, 2020 at 7:40 AM Calvin Johnson
 <calvin.johnson@oss.nxp.com> wrote:
->
-> On Tue, Dec 15, 2020 at 07:33:40PM +0200, Andy Shevchenko wrote:
+> On Tue, Dec 15, 2020 at 07:53:26PM +0200, Andy Shevchenko wrote:
 > > On Tue, Dec 15, 2020 at 6:44 PM Calvin Johnson
 > > <calvin.johnson@oss.nxp.com> wrote:
 
 ...
 
-> > > +               /* phy->mii_ts may already be defined by the PHY driver. A
-> > > +                * mii_timestamper probed via the device tree will still have
-> > > +                * precedence.
-> > > +                */
+> > I would rather see this as simple as
 > >
-> > > +               if (mii_ts)
-> > > +                       phy->mii_ts = mii_ts;
+> >      if (is_of_node(fwnode))
+> >                return of_mdiobus_register(mdio, to_of_node(fwnode));
+> >      if (is_acpi_node(fwnode))
+> >                return acpi_mdiobus_register(mdio, fwnode);
 > >
-> > How is that defined? Do you need to do something with an old pointer?
->
-> As the comment says, I think PHY drivers which got invoked before calling
-> of_mdiobus_register_phy() may have defined phy->mii_ts.
+> > where the latter one is defined somewhere in drivers/acpi/.
+> Makes sense. I'll do it. But I think it will be better to place
+> acpi_mdiobus_register() here itself in the network subsystem, maybe
+> /drivers/net/mdio/acpi_mdio.c.
 
-What I meant here is that the old pointer might need some care (freeing?).
-
-> > > +       }
+Even better, thanks!
 
 -- 
 With Best Regards,
