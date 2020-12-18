@@ -2,141 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D071B2DE372
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 14:47:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6201A2DE394
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 15:00:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbgLRNrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 08:47:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
+        id S1726811AbgLRN7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 08:59:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726417AbgLRNrF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 08:47:05 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7590CC061248
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 05:46:07 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id r7so2223631wrc.5
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 05:46:07 -0800 (PST)
+        with ESMTP id S1726677AbgLRN73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 08:59:29 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DE8C0617A7;
+        Fri, 18 Dec 2020 05:58:49 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id 2so2191102ilg.9;
+        Fri, 18 Dec 2020 05:58:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Ka1x3IgXnDKEVbUNgJSUcPN8PzFVanlFrtTuT6E8rts=;
-        b=D86dpjGakhZl+5XAKRbJimghynE7rov8qUJl/t75gAK4y/Fp5ssvHO49HPwJtIaWW7
-         X0ZJnoyYSQEoJHAhiXySsnJJYjhmZB45KowbpkHybNPtkPHbDggsC/oXZOIjNV0OxfIP
-         JtLk8ioNSYQNcBqUgcvb8hGzTjMFok0Z5d20D9TGp+gj3yAWd0tBwAcawAEAoclM3CeV
-         hlVaCtzhQlhb3gLpgfbarf5Mch5uuBb3PuxZXm6+Qk42SmEjVCjqSdKkAl+v/+V8XpWa
-         kzHRKLbBkT4RUsGzpF0vZVjKR15UffhOdqNzvt5OEAGmcdsDkI4BoE2RGEi1CeWWnZHq
-         NPTw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EDAU6nY9p4JViJ1ZtWWUnNfwjvP6XwdpVGYZtIrcXWQ=;
+        b=PL8VyLbUwqFXlBwLOPUUfJ1KfTBRCO5Tozs9ZKhu6CHYATSFIEhmxWudavUSP5FdY8
+         kzBoek/oX7T0d5EXtCng6zZV4U9lt+bWBIaDovMCBL/UQmjWj8F+3t0BUKo3FpB+LcoT
+         m/VquDR/zEVE5Al88oUileGSIyrY1v6IUvSJ8nLMktp7TPm2ArM6cJRkzIicpOdft1tP
+         TJY8WNwXrZd/JYLpy59vBi5OXtkQmbo9Et9rTo4L1BequnVN2csq9Fc2nI4GiNKKZPtW
+         6qphDDUI4D7dgw6spkxeNaicBMMaDnQCsAxM1Q/CGl3Cmx0fdqMq0RNDFi+FVPhMf4oQ
+         U84w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Ka1x3IgXnDKEVbUNgJSUcPN8PzFVanlFrtTuT6E8rts=;
-        b=WYQSG6xc7hrIuhQghj5GKsdzgoAbTl8pukPsGUMVu88mB+JclRAhiD3lyP5p2Uoz4G
-         IXj1wt3hn1Z4cMPiG5qrsRt5lik9r+ghgLULXt04QOJBB52lY+ALOYwW0DikgRfxxmCT
-         Fow/9E6X6295P0aWxeRvQzS5BfSHo9GkYMpqNSF/ZIC2e32Z1Y1XpNk2hCcu5qtFEKaQ
-         +O1uLdp+fO2ZdVCUJAF5nmWURlbbJWEFkgoBTAjUN+G/jAVeKEM+vwi2+cIs0OIJ7fIO
-         zcTUbOfEnUSv4DxxGgNzVLknwiY0YOF8r/QNZIj7EMBchc9B7Ox3M7rgXPL8+IuF90S4
-         Fq0Q==
-X-Gm-Message-State: AOAM533eQPmuMjdWgw6gTph5Xy5QoICJaU34NrZ9cJviUvdTLudULvV0
-        aHQwU0xA+n69BZ6boUINUNKcAQ==
-X-Google-Smtp-Source: ABdhPJzuzueQDnbBnCkvc22NOc11UsjLlpycV2v2yPaJ9/Pn3FrNYBjDBsPM3Sqix1VPGW3J6EwCWQ==
-X-Received: by 2002:a5d:52c1:: with SMTP id r1mr4590809wrv.255.1608299166077;
-        Fri, 18 Dec 2020 05:46:06 -0800 (PST)
-Received: from dell ([91.110.221.216])
-        by smtp.gmail.com with ESMTPSA id l1sm14124574wrq.64.2020.12.18.05.46.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Dec 2020 05:46:05 -0800 (PST)
-Date:   Fri, 18 Dec 2020 13:46:03 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20201218134603.GS207743@dell>
-References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
- <X8ogtmrm7tOzZo+N@kroah.com>
- <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
- <X8usiKhLCU3PGL9J@kroah.com>
- <20201217211937.GA3177478@piout.net>
- <X9xV+8Mujo4dhfU4@kroah.com>
- <20201218131709.GA5333@sirena.org.uk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EDAU6nY9p4JViJ1ZtWWUnNfwjvP6XwdpVGYZtIrcXWQ=;
+        b=Uq9znm2WWMPnwNs7ciwJQ2uN8KNvY7T3RT0PDXENcMYCeqUK9Pgs+IEezpP03Mu2lO
+         JZwjCTlEVVySUuSp733lfoRfo+WRn1nq3z3xOCp0Qlo6LZrcoV2/IWLU6kmfPMmrer4l
+         goa5tOksZFZ4MB+5FQI8OtQmoQV1Igcc7C8gpjomcZwfoYlIqekXqLrrXcbfMHduS7jj
+         vYup0Lcz6HEf2PTYpcSqi0Ovz0zXSFsvp5cZENcnz9AJZX+hjJa2e4DzNGmtQ9ILId0M
+         C2kd5fBYvWlR0Hv0AdAD0Wr7O8hbhhWzlGQy4+7lgn2w9MhxAhqc0jEtzHd6M12KFNNT
+         3I5A==
+X-Gm-Message-State: AOAM531Ec6k3Fxpshl1fY5YZxEYRzmSb4eNTqmULn45Albym7r9YDmjc
+        6nINupst7qmSd94cT/iZDUIRWzqpvkmL2grDeaE=
+X-Google-Smtp-Source: ABdhPJx0+8chZmRyFSFyB+5va1/s+Y2azdW2Sodly9Pzsl2yNzxcuNvlJ4EWcp9eR7qZ19JE/aLMAILIVW/GDMTP8vg=
+X-Received: by 2002:a92:d641:: with SMTP id x1mr3923332ilp.19.1608299928779;
+ Fri, 18 Dec 2020 05:58:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201218131709.GA5333@sirena.org.uk>
+References: <20201216130239.13759-1-zhengyongjun3@huawei.com> <20201216172031.16ef7195@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201216172031.16ef7195@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Ilya Dryomov <idryomov@gmail.com>
+Date:   Fri, 18 Dec 2020 14:58:35 +0100
+Message-ID: <CAOi1vP9FCeP_+7KDcTCr-st5bMUi-jJeJ9WCxD9bAPSKAki9yg@mail.gmail.com>
+Subject: Re: [PATCH net-next] ceph: Delete useless kfree code
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Dec 2020, Mark Brown wrote:
+On Thu, Dec 17, 2020 at 2:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 16 Dec 2020 21:02:39 +0800 Zheng Yongjun wrote:
+> > The parameter of kfree function is NULL, so kfree code is useless, delete it.
+> >
+> > Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+>
+> To be clear the subject tags is misleading we're not taking this
+> into the networking tree, ceph folk please go ahead :)
 
-> On Fri, Dec 18, 2020 at 08:10:51AM +0100, Greg KH wrote:
-> > On Thu, Dec 17, 2020 at 10:19:37PM +0100, Alexandre Belloni wrote:
-> 
-> > > There is something I don't get from the documentation and it is what is
-> > > this introducing that couldn't already be done using platform drivers
-> > > and platform devices?
-> 
-> > Because platform drivers and devices should ONLY be for actual platform
-> > devices.  Do NOT use that interface to fake up a non-platform device
-> > (i.e. something that is NOT connected to a cpu through a memory-mapped
-> > or direct-firmware interface).
-> 
-> > Do not abuse the platform code anymore than it currently is, it's bad
-> > enough what has been done to it over time, let's not make it any worse.
-> 
-> I am not clear on why you're giving direct-firmware devices (which I
-> assume means things like ARM SCMI where we're talking directly to some
-> firmware?) a pass here but not for example a GPIO controlled devices.
-> If this is mainly about improving abstractions it seems like the
-> boundary here isn't great.  Or perhaps I'm just missing what
-> direct-firmware is supposed to mean?
-> 
-> In any case, to be clear part of what you're saying here is that all
-> I2C and SPI MFDs should be rewritten to use this new bus - I've just
-> copied Lee in again since he keeps getting missed from these threads.
-> As previously discussed this will need the auxilliary bus extending to
-> support at least interrupts and possibly also general resources.
+I still didn't get the original patch for some reason, but looking at
 
-Thanks Mark.
+  https://lists.openwall.net/netdev/2020/12/16/163
 
-Not entirely sure why this needed an entirely new subsystem to handle
-non-MMIO Multi-Functional Devices (MFD).  Or why I was not approached
-by any of the developers during the process.
+the kfree is not useless.  If ceph_decode_need() fails, the array needs
+to be freed, so we are not taking this into the ceph tree either ;)
 
-Having 2 entirely separate subsystems where MFDs can now be registered
-sounds confusing and convoluted at best.  Why not simply extend actual
-MFD to be capable of registering non-pure platform devices via other
-means?  By doing so you keep things bound to a central location
-resulting in less chance of misuse.
+Thanks,
 
-I turn away MFD implementation abuses all the time.  Seeing as the 2
-subsystems are totally disjoint, this just unwittingly opened up
-another back-channel opportunity for those abuses to make it into the
-mainline kernel.
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+                Ilya
