@@ -2,164 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 570422DEB86
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 23:27:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A0F72DEBA9
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 23:37:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726177AbgLRW1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 17:27:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25332 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725813AbgLRW1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 17:27:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608330334;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=2UEg7rTwvMDl0DHk9Qkqg2wipeCmQ+4GrSnazeVy3F8=;
-        b=Oc6FqPQ9MCRBD6OAUJnoL0umyfKWBsWdluDpRAPZfYk5GI6wln1QMbv5F4iUwq+u/ZrvRY
-        Lr5MRxSQeIKz4htvWR0ZOkvbt/iLfBbzhfbPrl63LBzfSXUNzvb6Xt7ZrwUtb8QsjOWPPV
-        8mGwRX5vD/0j+Dp0yYjEPQNvhB8uHq0=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-518-uapyJqjMMvee-VFPDVjLzw-1; Fri, 18 Dec 2020 17:25:32 -0500
-X-MC-Unique: uapyJqjMMvee-VFPDVjLzw-1
-Received: by mail-wr1-f71.google.com with SMTP id j5so2074446wro.12
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 14:25:32 -0800 (PST)
+        id S1726145AbgLRWhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 17:37:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbgLRWhH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 17:37:07 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF6DC0617A7
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 14:36:26 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id w1so5410275ejf.11
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 14:36:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xTXy3XpNAms3ekkwQw/otErW5WULs88likHcciGFXeM=;
+        b=m3zOHE0w3r6ahzpcAgQfVzAPl2i6KJvip2SKXyaczrJEGZnlHaHWDc6Y6e6Ue/Fk3w
+         conhoHW1dPczYVsQmj2eLqr1B0wAyqCg0qSM7LzF0bAk5x3WGRvz9e63oJoCLrRPxcAo
+         NCup3hmGffugX6i074UpCmza+m0e4URw20OviQ33kIumJ5YVLEwK+806pVpfQefsT2xX
+         +qBOFn99wzNCn8q6eC1jAdUSPLxRJcloKOs+Xtbapw/PIX8mOrEx3E5skNWYliCtMaLN
+         OEAidGbLkRLvVIrKn49ZsuMwTg+JPymV16f3E3Q1jq0ujaCjujl+6wptrt/7u45O2l8Y
+         TryQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=2UEg7rTwvMDl0DHk9Qkqg2wipeCmQ+4GrSnazeVy3F8=;
-        b=OnypdsTbNfvFeRwIbQxrwK46fAZ9XX2NwbFbec/TVb6HjxcQlE0/8OadB5KlIIFiQv
-         z+IabChoo9Zc+75p3gDzk+i7EiNJ1Vm8WXqgqHuPhlK6VMhE+lPM+zNDn+uGMjd7Bfy5
-         T2Wt4eVN6sF9c9r7GQ0pRzZo5Zfp54C4l4fMmK/AsmqOAuxKkzZHnu1rA7JnRAwtOPLU
-         SwMePV4kU9UrqPFOKslFZRxunO1XIU4fb3BVrGSTHEUwdD1t9HLWY0P7mBeQK3O+gau5
-         Ds/u9ljizAr/AZiKEVnXiBbgyQPsbEkcyZx/3a7lGcgVMV/HDRt0FW72Vj8sC+fAveEu
-         DQRw==
-X-Gm-Message-State: AOAM532dedtlyqsain3tdewNw0e6ol0anY99XPeOCzn9stLHOAePf9Vh
-        omklzBoRwbq2WFf49Qu1zPQKXZRArssbuFtcEzY7p5nvocXaAtYAmPRJf+g3+8luDGjU6zA6FNB
-        /3DkgqZ2f/xWungLS
-X-Received: by 2002:a5d:5387:: with SMTP id d7mr6486784wrv.417.1608330330977;
-        Fri, 18 Dec 2020 14:25:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxIMyH+EpjTWOnrJtbf5XGW/HHdUDdh+9qR3M/mJ/FOmVxehWTcqhwxP35HTRi14SnYKfqBkA==
-X-Received: by 2002:a5d:5387:: with SMTP id d7mr6486775wrv.417.1608330330785;
-        Fri, 18 Dec 2020 14:25:30 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id g184sm14217884wma.16.2020.12.18.14.25.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Dec 2020 14:25:30 -0800 (PST)
-Date:   Fri, 18 Dec 2020 23:25:28 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH iproute2] tc: flower: fix json output with mpls lse
-Message-ID: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xTXy3XpNAms3ekkwQw/otErW5WULs88likHcciGFXeM=;
+        b=qHlXXDo3TtdMwjB4NImEsYAKByvWOBFYj8Q74CnpWSsbg+kikCSEVhEXeWntEcNI0I
+         /bft/2Kn77iMMWnPX1Quktvm6BO7HH+adlEBJbi/am8HdTWolkuyZV6uOG3ZgkyJiwdk
+         eC6tPecEWc0G977IKbSYW4BAvfyow+UIL/41CsbyegyDeJTF7uLNJ1uExXnz5L1cK8jK
+         vdGXo7U31PMYv0m6yu0dUggRxY+12KmLvjCLL+eAAygj4vkQz1sCnYRNA9KcKPl6wTkg
+         zFsEBZWY3Kt/ZsHGn5t/d2pOcSV2UP0fD23IDZb02E+QJPTE1QBZNqFLE2C5Us9KKWyQ
+         mTyA==
+X-Gm-Message-State: AOAM531kVU5iph2lamvOIO8oSOCc6fDNsX6YX0pLt3J4en5YRxIGwSFw
+        Z71S8gO372vWwT6Zw6y24h3pw4qBnPOBuz2MRL684dBeFUw=
+X-Google-Smtp-Source: ABdhPJxVIJsNw1VhtEN2EC6NpPsqgkomLtwJyLMDGzQEDyQsVR1b9PxyeXfVm3r7ts5mggWcfo7h1ujtbU0n5AwKaRw=
+X-Received: by 2002:a17:906:a29a:: with SMTP id i26mr6063250ejz.45.1608330985195;
+ Fri, 18 Dec 2020 14:36:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20201217211937.GA3177478@piout.net> <X9xV+8Mujo4dhfU4@kroah.com>
+ <20201218131709.GA5333@sirena.org.uk> <20201218140854.GW552508@nvidia.com>
+ <20201218155204.GC5333@sirena.org.uk> <20201218162817.GX552508@nvidia.com>
+ <20201218180310.GD5333@sirena.org.uk> <20201218184150.GY552508@nvidia.com>
+ <20201218203211.GE5333@sirena.org.uk> <20201218205856.GZ552508@nvidia.com> <20201218211658.GH3143569@piout.net>
+In-Reply-To: <20201218211658.GH3143569@piout.net>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Fri, 18 Dec 2020 14:36:14 -0800
+Message-ID: <CAPcyv4iruqY546kM68Dy_h4J5Qc6Ry-eGyVKhAp5eufsZcNksQ@mail.gmail.com>
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>, Mark Brown <broonie@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@mellanox.com>,
+        Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The json output of the TCA_FLOWER_KEY_MPLS_OPTS attribute was invalid.
+On Fri, Dec 18, 2020 at 1:17 PM Alexandre Belloni
+<alexandre.belloni@bootlin.com> wrote:
+>
+> On 18/12/2020 16:58:56-0400, Jason Gunthorpe wrote:
+> > On Fri, Dec 18, 2020 at 08:32:11PM +0000, Mark Brown wrote:
+> >
+> > > > So, I strongly suspect, MFD should create mfd devices on a MFD bus
+> > > > type.
+> > >
+> > > Historically people did try to create custom bus types, as I have
+> > > pointed out before there was then pushback that these were duplicating
+> > > the platform bus so everything uses platform bus.
+> >
+> > Yes, I vaugely remember..
+> >
+> > I don't know what to say, it seems Greg doesn't share this view of
+> > platform devices as a universal device.
+> >
+> > Reading between the lines, I suppose things would have been happier
+> > with some kind of inheritance scheme where platform device remained as
+> > only instantiated directly in board files, while drivers could bind to
+> > OF/DT/ACPI/FPGA/etc device instantiations with minimal duplication &
+> > boilerplate.
+> >
+> > And maybe that is exactly what we have today with platform devices,
+> > though the name is now unfortunate.
+> >
+> > > I can't tell the difference between what it's doing and what SOF is
+> > > doing, the code I've seen is just looking at the system it's running
+> > > on and registering a fixed set of client devices.  It looks slightly
+> > > different because it's registering a device at a time with some wrapper
+> > > functions involved but that's what the code actually does.
+> >
+> > SOF's aux bus usage in general seems weird to me, but if you think
+> > it fits the mfd scheme of primarily describing HW to partition vs
+> > describing a SW API then maybe it should use mfd.
+> >
+> > The only problem with mfd as far as SOF is concerned was Greg was not
+> > happy when he saw PCI stuff in the MFD subsystem.
+> >
+>
+> But then again, what about non-enumerable devices on the PCI device? I
+> feel this would exactly fit MFD. This is a collection of IPs that exist
+> as standalone but in this case are grouped in a single device.
+>
+> Note that I then have another issue because the kernel doesn't support
+> irq controllers on PCI and this is exactly what my SoC has. But for now,
+> I can just duplicate the irqchip driver in the MFD driver.
+>
+> > This whole thing started when Intel first proposed to directly create
+> > platform_device's in their ethernet driver and Greg had a quite strong
+> > NAK to that.
+>
+> Let me point to drivers/net/ethernet/cadence/macb_pci.c which is a
+> fairly recent example. It does exactly that and I'm not sure you could
+> do it otherwise while still not having to duplicate most of macb_probe.
+>
 
-Example:
-
-  $ tc filter add dev eth0 ingress protocol mpls_uc flower mpls \
-      lse depth 1 label 100                                     \
-      lse depth 2 label 200
-
-  $ tc -json filter show dev eth0 ingress
-    ...{"eth_type":"8847",
-        "  mpls":["    lse":["depth":1,"label":100],
-                  "    lse":["depth":2,"label":200]]}...
-
-This is invalid as the arrays, introduced by "[", can't contain raw
-string:value pairs. Those must be enclosed into "{}" to form valid json
-ojects. Also, there are spurious whitespaces before the mpls and lse
-strings because of the indentation used for normal output.
-
-Fix this by putting all LSE parameters (depth, label, tc, bos and ttl)
-into the same json object. The "mpls" key now directly contains a list
-of such objects.
-
-Also, handle strings differently for normal and json output, so that
-json strings don't get spurious indentation whitespaces.
-
-Normal output isn't modified.
-The json output now looks like:
-
-  $ tc -json filter show dev eth0 ingress
-    ...{"eth_type":"8847",
-        "mpls":[{"depth":1,"label":100},
-                {"depth":2,"label":200}]}...
-
-Fixes: eb09a15c12fb ("tc: flower: support multiple MPLS LSE match")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- tc/f_flower.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index 00c919fd..27731078 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -2476,7 +2476,7 @@ static void flower_print_u32(const char *name, struct rtattr *attr)
- 	print_uint(PRINT_ANY, name, namefrm, rta_getattr_u32(attr));
- }
- 
--static void flower_print_mpls_opt_lse(const char *name, struct rtattr *lse)
-+static void flower_print_mpls_opt_lse(struct rtattr *lse)
- {
- 	struct rtattr *tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1];
- 	struct rtattr *attr;
-@@ -2493,7 +2493,8 @@ static void flower_print_mpls_opt_lse(const char *name, struct rtattr *lse)
- 		     RTA_PAYLOAD(lse));
- 
- 	print_nl();
--	open_json_array(PRINT_ANY, name);
-+	print_string(PRINT_FP, NULL, "    lse", NULL);
-+	open_json_object(NULL);
- 	attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH];
- 	if (attr)
- 		print_hhu(PRINT_ANY, "depth", " depth %u",
-@@ -2511,10 +2512,10 @@ static void flower_print_mpls_opt_lse(const char *name, struct rtattr *lse)
- 	attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL];
- 	if (attr)
- 		print_hhu(PRINT_ANY, "ttl", " ttl %u", rta_getattr_u8(attr));
--	close_json_array(PRINT_JSON, NULL);
-+	close_json_object();
- }
- 
--static void flower_print_mpls_opts(const char *name, struct rtattr *attr)
-+static void flower_print_mpls_opts(struct rtattr *attr)
- {
- 	struct rtattr *lse;
- 	int rem;
-@@ -2523,11 +2524,12 @@ static void flower_print_mpls_opts(const char *name, struct rtattr *attr)
- 		return;
- 
- 	print_nl();
--	open_json_array(PRINT_ANY, name);
-+	print_string(PRINT_FP, NULL, "  mpls", NULL);
-+	open_json_array(PRINT_JSON, "mpls");
- 	rem = RTA_PAYLOAD(attr);
- 	lse = RTA_DATA(attr);
- 	while (RTA_OK(lse, rem)) {
--		flower_print_mpls_opt_lse("    lse", lse);
-+		flower_print_mpls_opt_lse(lse);
- 		lse = RTA_NEXT(lse, rem);
- 	};
- 	if (rem)
-@@ -2650,7 +2652,7 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	flower_print_ip_attr("ip_ttl", tb[TCA_FLOWER_KEY_IP_TTL],
- 			    tb[TCA_FLOWER_KEY_IP_TTL_MASK]);
- 
--	flower_print_mpls_opts("  mpls", tb[TCA_FLOWER_KEY_MPLS_OPTS]);
-+	flower_print_mpls_opts(tb[TCA_FLOWER_KEY_MPLS_OPTS]);
- 	flower_print_u32("mpls_label", tb[TCA_FLOWER_KEY_MPLS_LABEL]);
- 	flower_print_u8("mpls_tc", tb[TCA_FLOWER_KEY_MPLS_TC]);
- 	flower_print_u8("mpls_bos", tb[TCA_FLOWER_KEY_MPLS_BOS]);
--- 
-2.21.3
-
+This still feels an orthogonal example to the problem auxiliary-bus is
+solving. If a platform-device and a pci-device surface an IP with a
+shared programming model that's an argument for a shared library, like
+libata to house the commonality. In contrast auxiliary-bus is a
+software model for software-defined sub-functionality to be wrapped in
+a driver model. It assumes a parent-device / parent-driver hierarchy
+that platform-bus and pci-bus do not imply.
