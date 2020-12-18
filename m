@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23EDC2DEBB1
+	by mail.lfdr.de (Postfix) with ESMTP id 916092DEBB2
 	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 23:41:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726254AbgLRWk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 17:40:56 -0500
-Received: from mail-eopbgr80080.outbound.protection.outlook.com ([40.107.8.80]:29348
+        id S1726288AbgLRWlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 17:41:08 -0500
+Received: from mail-eopbgr80054.outbound.protection.outlook.com ([40.107.8.54]:27453
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726117AbgLRWkz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Dec 2020 17:40:55 -0500
+        id S1726117AbgLRWlH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Dec 2020 17:41:07 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UkHzXajJn9yxKShLqTkvanj9E5EbGBUsYy+TX84JZrvrnc1i4MMq8lPbAVP9g2mQSAHcu59qSUfgBX9Hhw2WsnUkh0lu1o7go5g4QI2FVeLnF3VVQf+IADc9YvbIJpje1qj6opes/kbdexqfDznWXRoJ3Xz38wsAyYw77OKwjoFZM5iI11QEuDs5K9wmUfeCiFEzy4vLPjQy+faUSuD7ZPhJgccwHq/ee0N6VIln+lJLq+xEILORh4aVcOSbHDFrdhLCpDCDJbw46NlsQJPrsd+stkBijHdJEUIffCEL0yx8K676GO+1+TwRkc/OEhkXcjvi7dCzMyWTHo76sJT9Xw==
+ b=Mqr1DRCrS+2hHYg9gNiM8DVz44ISSLeKvdthhtcJG/7m32mYhhURX1dc185MEgASGTyk5cqmOVHn0Vkdxz9nlq5A5syDom0RVNRXU8OziLZAmivNQ7vap88wPiXBrLGdv63G1HnGrylmdKqYf7ICAelrjNNhjtugff9bJ9GdziWR42M2o0DypRLGSMj/go/HTsry3xhkm/8z+XTdTepQikbW479ssLe7IedQw2Exepd2Ffh4F7k4ooiVS4GgwnnMWap8rPKJ0imeAyWYHJ6KD353b+cghrVHZeDHKSteyCipLF8U8mJTEEjn/N4ZW+HmVv8oLGkuBgnvPQuNhG2ZYw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xp1Z1uQmY0JJ3dyZXwIayuBCFZ4eQChuVTsNVG78siM=;
- b=UUe8dc+/VyHCdUImauQWEW6VEy/R79M+XBmoisRJDPLzhAoCr7ykHDKNmWxE+0L7xAQeZd759pUj244XqVCshh81CYvivVo5kyFQIzwuU+PKo8KTwR4lTlS9IqHk+XYIvCmVLy5PI/EgDxs8t23VcnQkdIOzJE40UsBJW5orbdFadN6Op1NVuvK++MiFky2ue8NN/plA5DmdbMtYpfkCdhsClr3muCboxkt1A1LYwCVW5+ALLnCE6U41Ui5Llq+kqElMbqevY18WFHElnqOioWMyUmWxpQWFG/eeKd9diO+zlsoAxt0/oTcgxG+TQvTP24JWJr0OSt09KGrhS7FSTQ==
+ bh=bx3h0y6UYjUygMUCeUWSDtHYQbozDzBvDUymzCWSC/8=;
+ b=aMUqmIfVi2C+wUVka2L9j5812GbHWdDlJDKHY3pFZyJQCiuHzaQvSAYa/5uwV9ktWJz/wZI5l5ZKliE4rZUo2Ic0U34i0/VO1CmJhYWDyvMlhEXcAPhPvmQ9Zk1cx7WghRPYhfjFYPLKPa3jO6ueeIAx2lXI3dsuOWifR3+hfoNDrVv5BCFmtxPmqlRoypOq7Muqifi5PxGHFjoTO/F2oZVs6kQplkAumGyYEnGxYtSoYUOht9GcT2m2OVcG4D8ptvksn+FS8sJQdmvzB4nF2pUI8rwc2znVCJTU6j5n9aFUfKFIGDUMFICSpSNFQ/UdzbURSGSrnLTD8MJxE2yTgQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xp1Z1uQmY0JJ3dyZXwIayuBCFZ4eQChuVTsNVG78siM=;
- b=U9RaYijUvUJkBDm+sVoQMXWb3R8PRFHg2B6Jo3B7knf0LAxs+xNHRkrf4dh0S3bdk4tlyaTxzuS0ZmVJe+3UpntIUmp+ZDsvJ8YZHuUH7Iat2E5gS20gPK65wNyweJhgRcl4V4Oe8L/RVsiDpF7C/VEuhtjpB/b/wutsKvslEcg=
+ bh=bx3h0y6UYjUygMUCeUWSDtHYQbozDzBvDUymzCWSC/8=;
+ b=gtcmBBeNtRCtnmPjCnERIdhKHBna3m3kOqzcZ985fr+0SMbzSjIy2OjSvhYfpVGvjHnBEiNQBnOYmtTzKfrTWwiFvut52B/ovogUQZkn9DNNAdi+T42gvA6mdOt4rVm6RcpMAUGaw5O+1F32GO3XAkQrbd+oIIe4F9cdFI52Rkg=
 Authentication-Results: gmail.com; dkim=none (message not signed)
  header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR0401MB2686.eurprd04.prod.outlook.com (2603:10a6:800:5b::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.25; Fri, 18 Dec
- 2020 22:39:25 +0000
+ 2020 22:39:27 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3654.025; Fri, 18 Dec 2020
- 22:39:25 +0000
+ 22:39:27 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-Subject: [RFC PATCH net-next 3/4] net: systemport: use standard netdevice notifier to detect DSA presence
-Date:   Sat, 19 Dec 2020 00:38:51 +0200
-Message-Id: <20201218223852.2717102-4-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 4/4] net: dsa: remove the DSA specific notifiers
+Date:   Sat, 19 Dec 2020 00:38:52 +0200
+Message-Id: <20201218223852.2717102-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201218223852.2717102-1-vladimir.oltean@nxp.com>
 References: <20201218223852.2717102-1-vladimir.oltean@nxp.com>
@@ -57,223 +57,194 @@ X-ClientProxiedBy: AM8P191CA0030.EURP191.PROD.OUTLOOK.COM
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.120) by AM8P191CA0030.EURP191.PROD.OUTLOOK.COM (2603:10a6:20b:21a::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.28 via Frontend Transport; Fri, 18 Dec 2020 22:39:24 +0000
+Received: from localhost.localdomain (188.25.2.120) by AM8P191CA0030.EURP191.PROD.OUTLOOK.COM (2603:10a6:20b:21a::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.28 via Frontend Transport; Fri, 18 Dec 2020 22:39:26 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: ea9c7929-75f8-4d0c-4407-08d8a3a5c5e1
+X-MS-Office365-Filtering-Correlation-Id: 45dba43f-6b65-4cae-b416-08d8a3a5c6a3
 X-MS-TrafficTypeDiagnostic: VI1PR0401MB2686:
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB2686800101D232F01802A87DE0C30@VI1PR0401MB2686.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:949;
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB26864CF69ACCAC01947F68CEE0C30@VI1PR0401MB2686.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:291;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: woVed9+UV4v/ElmhKHcuoDrbMgMsZ40rCgZOCcTw7MHMDcXbiVtH/MOC7lZJllBaDmKBGIiXBMG0OLPsHPb4J6CpQV1zBWcI3nCk8DuNtE6kVd/mhnjdof2D98BflIkc7QdoWdCaowg/X12+n2ON+cZnTkFlycM4oVisB72xJbpXSJajV+IHVSFo7yewLPLXaSVQermbwInn/I9hfC8D7G/ALgRNMkzgKpXnMRlDnZGCFRp4PBiykvobMzA90MkJLdQdLOnNhOffRAOtp41xIX5mlQzXWpHknQ2tGTdOhO+TaB0ftJhKUsl6ljY6egF2F/gmlfZ90ZkfIclMoKrnmNjxQIMAwnnxXzW2ke+S7NzgGQnSRtclLaHD1XSD18KBaUvB4NG1SnTf/iS3tS7R+9u8nUjH++sU8OPSBAECEt4mqsYLhc/upFIQDp0YwQ1h
+X-Microsoft-Antispam-Message-Info: 44PrIBsO4D56649aRCaJOVMg5+p5Cv/YiklPx1TF0PCToOp+7npfQqIgrNuGfuXdokYjl6D78A0RiMxv7AaGEKqUTMQ2P5J8289i1xbWxw5vNvGPYxR7V63H1x9jOLnc2x9XsbDej1Zug2Iu3bU0UL8RyAtlNyukaTgKQAxYQ3NHXeTdarwT7Du/CRxlJXnbY/ojGFiY+ZR4xR/zcILDLiWfX6tUZCIJad7WxLa3mGLaOoEIVQl4qqdlPOvoB2NWN91gky5gqROdnf1D6IfgDgpqtnnt0thJKst2UxyQh/V8fdF7qQmaJGG90S0hYldwbAasWVfxpLCHHqzMAdyhcARhDlsnYZ5p78BDj9kLpCcfWqkYaIm3JzwtU1531NhbTW2aEjbGvex3EhZcDt4VPNarwgdQUVpiL5GHObgKrpEPnYDKG/iCLft5pifUiMcoQjI10xuGJ7D3yQYauJI79Q==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(346002)(376002)(136003)(366004)(52116002)(2616005)(66476007)(66556008)(956004)(83380400001)(478600001)(8936002)(69590400008)(86362001)(44832011)(66946007)(6512007)(36756003)(316002)(5660300002)(110136005)(16526019)(186003)(8676002)(26005)(6666004)(1076003)(6486002)(2906002)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?r9/xKNBEQXk7g7xcMYGdi3vIz9yH99lXbdeiTYPa2tHlVUIRPqD6by64y767?=
- =?us-ascii?Q?lbzYunYcl785a3+aSHybmrSPWWutu49WaJdMWQunnFIP6vuch8Z5hseAhjKf?=
- =?us-ascii?Q?t46GRbEPQi57eihSFqOHt43P7z00L4IFNkKFjCMn3anhdtBvF/NqQhAFNmHL?=
- =?us-ascii?Q?DoSdUW4tvtWfYfzf+ZhvHRpuiVm3V6S8tRAcTGSz0JUWA0DaiH83Ax7DMd+I?=
- =?us-ascii?Q?EU98i+UKudT3NtgKA081JfxZ3PtxcOte8D6LUKbNbd33sq9+GfTkyohWctUg?=
- =?us-ascii?Q?xedmaJh5P5a9s7ZwuzLDqRpe5A8DXFPOiS6qYgzPi9xUwNQKwndsidHD6d2e?=
- =?us-ascii?Q?aSs/04dy5Ml7m0P9LahVbaVj8zuRZBZ00A8QQl7oiVhlRYVvdkTv2nd711Bb?=
- =?us-ascii?Q?+5W96NHCoGO5+X6laR1mt7t0WdfaYYXbehevDlzkflhcZgJu/3x3TnvD6Ky2?=
- =?us-ascii?Q?x7fkrBaJ8U/dMkTzKxq+heZcfWfFu3VBBLmmT1VM99aU5sormu1bRewSAkph?=
- =?us-ascii?Q?gmsCZySDxCn1npZXigduMz86rDoRxocnZ9HPCL8nefffpqWg5X8LcMMyAuUd?=
- =?us-ascii?Q?yQEfNKLfywBSTiSAH+XMWRLNy+33qb4frKxSyknOPbZPkD6RSZG8nMvajiH/?=
- =?us-ascii?Q?O090azqPjwsSb6RzkTIEswJQT0wA1oxXjnzViijGdM7j8HeC7LmrhmZsHJu1?=
- =?us-ascii?Q?nX3PHA3/TPxu08khvcPTEGeyIPwCGEf8yZsAxe6Autdj5BkkULWJtuPwHh8I?=
- =?us-ascii?Q?pilubVaCLR5JaOxAAGmQP1BxzoSNdDpQmVo/ZtCCM6JWZ+ulMcBFAXEEFyPd?=
- =?us-ascii?Q?c4GiJXfa1pugAy0lHylZaMbNPHPpK/RmT4yBz7n0yjFQXnMW8E3ZnI0JzfqV?=
- =?us-ascii?Q?V5kOn4QIUxuuUHZIEA/4BuS7j7O50ucTgK8tS4w7h8nK0RsY9XcVNAf/1tWb?=
- =?us-ascii?Q?PpzUhJ+2/JKpir3p2STPULHtjqUA9TQq548XLR9rTuhBD5WubmBAD6eIj/hp?=
- =?us-ascii?Q?Fhwg?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?4V29wezfnIIxjTxruEmVX7FPhzIljOUZLif7ReP1vW6bAhRrYpiPZEkS7g5H?=
+ =?us-ascii?Q?8GGbMYziX2pYhjqB2Lr2zEphnKRCCi+WtC1DNnV/pW58AGLhTxXbBsjdkv8C?=
+ =?us-ascii?Q?VZhWOLdELZiWq5UD3kV7o/3UUrSILgxVI5lwuuJEYa7XgC7dAjtM1WNvLN96?=
+ =?us-ascii?Q?lCYWiRviqFsbAjPtd48VpixqnoXvwcZpoOkzm0/QxN4e7OVsRRdkq4kX9WTc?=
+ =?us-ascii?Q?INSnLcgxR9SDtm1zo54S4RmEcvRLCU9ruuI/D1IGI/cbRuK35bUev+BMVMie?=
+ =?us-ascii?Q?IqYpSQeIS7DajsnEc4D/okgHmNicmSJtVuh/Nb2RtBOVMlW3Wiz4o6FlaYcs?=
+ =?us-ascii?Q?4zqf/fDhqYLlgxPAQ9dMJ52C1PSEpTu57PcRLRKSmiW8wO4jWZYVoIFdjZxX?=
+ =?us-ascii?Q?m1KTr3YHmUSdkxEAcgHoKkpY98pW1+lL6unvCU+LJ9c5bzC5adqPA/aYP72J?=
+ =?us-ascii?Q?WlibYtMxna5Oa05W4Qe0uiMohixcARAoOUACUwo2cUDoU7QlMeRoHgf3cUXN?=
+ =?us-ascii?Q?zRvLN1TvRrr3L1gTQ11PS/Wyxd/PWrXq+2uXRxQdiWcx6trpEWpKynFEytSS?=
+ =?us-ascii?Q?VNqwhpyWKtxBJYmRXjuyeCoy6C8B3o45dBTKCmFeXHUE84AMEFjytzatRSHj?=
+ =?us-ascii?Q?Q6yuoTkSjRYs40DqFhvv8McIcNcgOS5JhEeAVFhZ62PgJn1C1XIlczA8/345?=
+ =?us-ascii?Q?P7l9T/tdpwa5aLW94IrFg/DD4zc6QSIreVjPLskyS/LKPFliBwe4UiAXVoCs?=
+ =?us-ascii?Q?Lxd6dEaeGfOQ2DdejNJZ1R6MDXGG4qtCsZfHSk9/tcxiGoGwYipULTEJa8p7?=
+ =?us-ascii?Q?b4GlwwF/Ux6Rr6uoaqMWNz8U5bYGVKl4q833efzn/MGQYBnd0nAIAPHQrl3I?=
+ =?us-ascii?Q?QuoSjkY9e0noUJtXoPwc/eGSkxpVsnkg4+cyc8ie5e6hgbi4pMn44yIiFXpu?=
+ =?us-ascii?Q?WWACmYkzY4YTfEzjRWCPIFLAEMArQqnLQbq2/kUes94=3D?=
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2020 22:39:25.6921
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2020 22:39:26.9564
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea9c7929-75f8-4d0c-4407-08d8a3a5c5e1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45dba43f-6b65-4cae-b416-08d8a3a5c6a3
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A3iMucK26hSFgIDL4SCQ70P1zLt2BY7RoRcfeqfENlyPh2EdvudrxtNc5/yxx9w5dgGcAxKQDjOMzsipnJb+YA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: zp3t6Gz0aya6B2eJLMORdqlBcLrlteF5hTcJH9g1F/0TG0UtIPDBBJySIN4lzE43XSJH49CmNqPDGhOvXjbK+g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2686
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SYSTEMPORT driver maps each port of the embedded Broadcom DSA switch
-port to a certain queue of the master Ethernet controller. For that it
-currently uses a dedicated notifier infrastructure which was added in
-commit 60724d4bae14 ("net: dsa: Add support for DSA specific notifiers").
-
-However, since commit 2f1e8ea726e9 ("net: dsa: link interfaces with the
-DSA master to get rid of lockdep warnings"), DSA is actually an upper of
-the Broadcom SYSTEMPORT as far as the netdevice adjacency lists are
-concerned. So naturally, the plain NETDEV_CHANGEUPPER net device notifiers
-are emitted. It looks like there is enough API exposed by DSA to the
-outside world already to make the call_dsa_notifiers API redundant. So
-let's convert its only user to plain netdev notifiers.
+This effectively reverts commit 60724d4bae14 ("net: dsa: Add support for
+DSA specific notifiers"). The reason is that since commit 2f1e8ea726e9
+("net: dsa: link interfaces with the DSA master to get rid of lockdep
+warnings"), it appears that there is a generic way to achieve the same
+purpose. The only user thus far, the Broadcom SYSTEMPORT driver, was
+converted to use the generic notifiers.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/broadcom/bcmsysport.c | 76 +++++++++-------------
- drivers/net/ethernet/broadcom/bcmsysport.h |  2 +-
- 2 files changed, 32 insertions(+), 46 deletions(-)
+ include/net/dsa.h | 42 ------------------------------------------
+ net/dsa/dsa.c     | 22 ----------------------
+ net/dsa/slave.c   | 17 -----------------
+ 3 files changed, 81 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 82541352b1eb..c5df235975e7 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -2311,33 +2311,22 @@ static const struct net_device_ops bcm_sysport_netdev_ops = {
- 	.ndo_select_queue	= bcm_sysport_select_queue,
- };
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 5badfd6403c5..3950e4832a33 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -828,51 +828,9 @@ static inline int dsa_switch_resume(struct dsa_switch *ds)
+ }
+ #endif /* CONFIG_PM_SLEEP */
  
--static int bcm_sysport_map_queues(struct notifier_block *nb,
--				  struct dsa_notifier_register_info *info)
-+static int bcm_sysport_map_queues(struct net_device *dev,
-+				  struct net_device *slave_dev)
- {
-+	struct dsa_port *dp = dsa_port_from_netdev(slave_dev);
-+	struct bcm_sysport_priv *priv = netdev_priv(dev);
- 	struct bcm_sysport_tx_ring *ring;
--	struct bcm_sysport_priv *priv;
--	struct net_device *slave_dev;
- 	unsigned int num_tx_queues;
- 	unsigned int q, qp, port;
+-enum dsa_notifier_type {
+-	DSA_PORT_REGISTER,
+-	DSA_PORT_UNREGISTER,
+-};
+-
+-struct dsa_notifier_info {
 -	struct net_device *dev;
+-};
 -
--	priv = container_of(nb, struct bcm_sysport_priv, dsa_notifier);
--	if (priv->netdev != info->master)
--		return 0;
+-struct dsa_notifier_register_info {
+-	struct dsa_notifier_info info;	/* must be first */
+-	struct net_device *master;
+-	unsigned int port_number;
+-	unsigned int switch_number;
+-};
 -
--	dev = info->master;
- 
- 	/* We can't be setting up queue inspection for non directly attached
- 	 * switches
- 	 */
--	if (info->switch_number)
-+	if (dp->ds->index)
- 		return 0;
- 
--	if (dev->netdev_ops != &bcm_sysport_netdev_ops)
--		return 0;
+-static inline struct net_device *
+-dsa_notifier_info_to_dev(const struct dsa_notifier_info *info)
+-{
+-	return info->dev;
+-}
 -
--	port = info->port_number;
--	slave_dev = info->info.dev;
-+	port = dp->index;
+ #if IS_ENABLED(CONFIG_NET_DSA)
+-int register_dsa_notifier(struct notifier_block *nb);
+-int unregister_dsa_notifier(struct notifier_block *nb);
+-int call_dsa_notifiers(unsigned long val, struct net_device *dev,
+-		       struct dsa_notifier_info *info);
+ bool dsa_slave_dev_check(const struct net_device *dev);
+ #else
+-static inline int register_dsa_notifier(struct notifier_block *nb)
+-{
+-	return 0;
+-}
+-
+-static inline int unregister_dsa_notifier(struct notifier_block *nb)
+-{
+-	return 0;
+-}
+-
+-static inline int call_dsa_notifiers(unsigned long val, struct net_device *dev,
+-				     struct dsa_notifier_info *info)
+-{
+-	return NOTIFY_DONE;
+-}
+-
+ static inline bool dsa_slave_dev_check(const struct net_device *dev)
+ {
+ 	return false;
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index a1b1dc8a4d87..df75481b12ed 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -309,28 +309,6 @@ bool dsa_schedule_work(struct work_struct *work)
+ 	return queue_work(dsa_owq, work);
+ }
  
- 	/* On SYSTEMPORT Lite we have twice as less queues, so we cannot do a
- 	 * 1:1 mapping, we can only do a 2:1 mapping. By reducing the number of
-@@ -2377,27 +2366,16 @@ static int bcm_sysport_map_queues(struct notifier_block *nb,
+-static ATOMIC_NOTIFIER_HEAD(dsa_notif_chain);
+-
+-int register_dsa_notifier(struct notifier_block *nb)
+-{
+-	return atomic_notifier_chain_register(&dsa_notif_chain, nb);
+-}
+-EXPORT_SYMBOL_GPL(register_dsa_notifier);
+-
+-int unregister_dsa_notifier(struct notifier_block *nb)
+-{
+-	return atomic_notifier_chain_unregister(&dsa_notif_chain, nb);
+-}
+-EXPORT_SYMBOL_GPL(unregister_dsa_notifier);
+-
+-int call_dsa_notifiers(unsigned long val, struct net_device *dev,
+-		       struct dsa_notifier_info *info)
+-{
+-	info->dev = dev;
+-	return atomic_notifier_call_chain(&dsa_notif_chain, val, info);
+-}
+-EXPORT_SYMBOL_GPL(call_dsa_notifiers);
+-
+ int dsa_devlink_param_get(struct devlink *dl, u32 id,
+ 			  struct devlink_param_gset_ctx *ctx)
+ {
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index c01bc7ebeb14..1b511895e7a5 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1764,20 +1764,6 @@ int dsa_slave_resume(struct net_device *slave_dev)
  	return 0;
  }
  
--static int bcm_sysport_unmap_queues(struct notifier_block *nb,
--				    struct dsa_notifier_register_info *info)
-+static int bcm_sysport_unmap_queues(struct net_device *dev,
-+				    struct net_device *slave_dev)
+-static void dsa_slave_notify(struct net_device *dev, unsigned long val)
+-{
+-	struct net_device *master = dsa_slave_to_master(dev);
+-	struct dsa_port *dp = dsa_slave_to_port(dev);
+-	struct dsa_notifier_register_info rinfo = {
+-		.switch_number = dp->ds->index,
+-		.port_number = dp->index,
+-		.master = master,
+-		.info.dev = dev,
+-	};
+-
+-	call_dsa_notifiers(val, dev, &rinfo.info);
+-}
+-
+ int dsa_slave_create(struct dsa_port *port)
  {
-+	struct dsa_port *dp = dsa_port_from_netdev(slave_dev);
-+	struct bcm_sysport_priv *priv = netdev_priv(dev);
- 	struct bcm_sysport_tx_ring *ring;
--	struct bcm_sysport_priv *priv;
--	struct net_device *slave_dev;
- 	unsigned int num_tx_queues;
--	struct net_device *dev;
- 	unsigned int q, qp, port;
- 
--	priv = container_of(nb, struct bcm_sysport_priv, dsa_notifier);
--	if (priv->netdev != info->master)
--		return 0;
--
--	dev = info->master;
--
--	if (dev->netdev_ops != &bcm_sysport_netdev_ops)
--		return 0;
--
--	port = info->port_number;
--	slave_dev = info->info.dev;
-+	port = dp->index;
- 
- 	num_tx_queues = slave_dev->real_num_tx_queues;
- 
-@@ -2418,17 +2396,25 @@ static int bcm_sysport_unmap_queues(struct notifier_block *nb,
- 	return 0;
- }
- 
--static int bcm_sysport_dsa_notifier(struct notifier_block *nb,
--				    unsigned long event, void *ptr)
-+static int bcm_sysport_netdevice_event(struct notifier_block *nb,
-+				       unsigned long event, void *ptr)
- {
--	int ret = NOTIFY_DONE;
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-+	struct netdev_notifier_changeupper_info *info = ptr;
-+	int ret = 0;
- 
- 	switch (event) {
--	case DSA_PORT_REGISTER:
--		ret = bcm_sysport_map_queues(nb, ptr);
--		break;
--	case DSA_PORT_UNREGISTER:
--		ret = bcm_sysport_unmap_queues(nb, ptr);
-+	case NETDEV_CHANGEUPPER:
-+		if (dev->netdev_ops != &bcm_sysport_netdev_ops)
-+			return NOTIFY_DONE;
-+
-+		if (!dsa_slave_dev_check(info->upper_dev))
-+			return NOTIFY_DONE;
-+
-+		if (info->linking)
-+			ret = bcm_sysport_map_queues(dev, info->upper_dev);
-+		else
-+			ret = bcm_sysport_unmap_queues(dev, info->upper_dev);
- 		break;
+ 	const struct dsa_port *cpu_dp = port->cpu_dp;
+@@ -1863,8 +1849,6 @@ int dsa_slave_create(struct dsa_port *port)
+ 		goto out_gcells;
  	}
  
-@@ -2600,9 +2586,9 @@ static int bcm_sysport_probe(struct platform_device *pdev)
- 	priv->rx_max_coalesced_frames = 1;
- 	u64_stats_init(&priv->syncp);
+-	dsa_slave_notify(slave_dev, DSA_PORT_REGISTER);
+-
+ 	rtnl_lock();
  
--	priv->dsa_notifier.notifier_call = bcm_sysport_dsa_notifier;
-+	priv->netdev_notifier.notifier_call = bcm_sysport_netdevice_event;
+ 	ret = register_netdevice(slave_dev);
+@@ -1913,7 +1897,6 @@ void dsa_slave_destroy(struct net_device *slave_dev)
+ 	phylink_disconnect_phy(dp->pl);
+ 	rtnl_unlock();
  
--	ret = register_dsa_notifier(&priv->dsa_notifier);
-+	ret = register_netdevice_notifier(&priv->netdev_notifier);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to register DSA notifier\n");
- 		goto err_deregister_fixed_link;
-@@ -2629,7 +2615,7 @@ static int bcm_sysport_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_deregister_notifier:
--	unregister_dsa_notifier(&priv->dsa_notifier);
-+	unregister_netdevice_notifier(&priv->netdev_notifier);
- err_deregister_fixed_link:
- 	if (of_phy_is_fixed_link(dn))
- 		of_phy_deregister_fixed_link(dn);
-@@ -2647,7 +2633,7 @@ static int bcm_sysport_remove(struct platform_device *pdev)
- 	/* Not much to do, ndo_close has been called
- 	 * and we use managed allocations
- 	 */
--	unregister_dsa_notifier(&priv->dsa_notifier);
-+	unregister_netdevice_notifier(&priv->netdev_notifier);
- 	unregister_netdev(dev);
- 	if (of_phy_is_fixed_link(dn))
- 		of_phy_deregister_fixed_link(dn);
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.h b/drivers/net/ethernet/broadcom/bcmsysport.h
-index 3a5cb6f128f5..fefd3ccf0379 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.h
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.h
-@@ -787,7 +787,7 @@ struct bcm_sysport_priv {
- 	struct u64_stats_sync	syncp;
- 
- 	/* map information between switch port queues and local queues */
--	struct notifier_block	dsa_notifier;
-+	struct notifier_block	netdev_notifier;
- 	unsigned int		per_port_num_tx_queues;
- 	struct bcm_sysport_tx_ring *ring_map[DSA_MAX_PORTS * 8];
- 
+-	dsa_slave_notify(slave_dev, DSA_PORT_UNREGISTER);
+ 	phylink_destroy(dp->pl);
+ 	gro_cells_destroy(&p->gcells);
+ 	free_percpu(slave_dev->tstats);
 -- 
 2.25.1
 
