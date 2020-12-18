@@ -2,159 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 546C42DE9B6
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:23:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 167142DE9C4
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:29:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730555AbgLRTXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 14:23:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
+        id S1733198AbgLRT3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 14:29:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730082AbgLRTXE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 14:23:04 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588EBC0617A7;
-        Fri, 18 Dec 2020 11:22:24 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id r17so3122010ilo.11;
-        Fri, 18 Dec 2020 11:22:24 -0800 (PST)
+        with ESMTP id S1728047AbgLRT3B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 14:29:01 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463B3C0617A7;
+        Fri, 18 Dec 2020 11:28:21 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id a16so2917016ybh.5;
+        Fri, 18 Dec 2020 11:28:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lBAy0stBOkcu8fodY1L3CFnmTdsk4sYtix1WdMWHeV4=;
-        b=aHWHqDQw4RGtaqUqQ6SlKBNyrb87KiMiSHaFFiNd7nGlU+mNn0lKL905I7ocyWxVnN
-         RJLWD8mkuNmB/GkY6ATqApZN3ui82weHujtw0REw2chpSP3agmIR5/XYSl7GPFAUC7ZB
-         C4lJeoV/TAz76F7tQ3XLTPZms8G2F++/dhL0EzQK0zBQPsxnamwzCgk5YXjzfxWeNMNN
-         +MnTzf3nLFCfBnOkRWiMKJs8jopydRmH25EiqIX1JfnxhPf1blWdvp1II7yhNFcJg80e
-         zxs1wlGyxfvqezriV3wbgt3Kdp+Iwv+PSG22EzOt73Mg+GrnkOMQuddjySMsKq/8uqFA
-         to3w==
+        bh=wnpolTQE1naHbMkiLa2YAnTdWLIqwUiPErnB2DB2JVk=;
+        b=tJokmAO6LVc+K5BaD9NcE3BESVQWw+mVPCMZ8VR9CJVXdS6MLpgfnUkW6ugvpWnz5R
+         mymZlQImu0PQut9q4Sk4h91uKJ90Gl1dvsu5a+CpgMZ2bHnsm8UXAiNN4fBMMSN3/5Lr
+         VaiuZIEjpVNu3bJytlmyjejncug6MkkTuhflD00/XCaB3OB+S5NesPpLPypG+yT/cgTm
+         TZWLUv/0rvZxtKUJ+B3o1CsrpUHhqQpyNJ1wPVMhl+fK0vBLX9z1XYA4vUQozD87AFQl
+         DrskADJxHml6s0E1k5TF+BaYGpWX0ZQEK2zD21L3wQg+LQ+YVqYgPNVmE5fwuBXq6yOl
+         Qe5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lBAy0stBOkcu8fodY1L3CFnmTdsk4sYtix1WdMWHeV4=;
-        b=ndSGypxVwTfl1xVsfXeaX8lcxKdD6ci8k6iNw+TY8vRgLnCG6ii9diXA8uAvEYL4eH
-         zwM1nO6s6P24cf3/fXe+mgfUDOZmDpXUyK9eez/q20D+Nn+rhwX2AzVTz37ym+o8ejea
-         wTZBigNBcW9RnGEXe7nWik9dzu5Yr3q+Hhc7d/C5+Hh0CBl0oVHQXdvWUxOeQ6X2xADR
-         G5urPMAcgMPb2TNrJBwETMJO7nuBKgaxkCDTnx7gcUjqFdYzDKQf9Y6id2iAJbhrtkej
-         NK0vfbBqqSSltMHNhC0hcs42aBGxjLIj5XeWhqy2znBFSUhaO8fBtbr/thh0IgGqt9/1
-         Vx5g==
-X-Gm-Message-State: AOAM532rMwC4ut0PaV+OPXCRkLtpOK88Nm9B1v1dzjDcOnzIKDYa9Bfe
-        wxUDhE8hryyq2D71iTEk97xlABKFsNLX+WwU9do=
-X-Google-Smtp-Source: ABdhPJyLToaHF3ZBbBd7rQ3s0zfjtGFOHbRZI8Ss5kVckmrxjlAfIJKP1D6eEqBBignzB8wWVwWTV+IdNqLr+5krNu8=
-X-Received: by 2002:a92:c682:: with SMTP id o2mr5517065ilg.97.1608319343638;
- Fri, 18 Dec 2020 11:22:23 -0800 (PST)
+        bh=wnpolTQE1naHbMkiLa2YAnTdWLIqwUiPErnB2DB2JVk=;
+        b=YawwB9e+Am7OAY2iFH7y5yMbcRgW3Uf0h/s8+Dxpqu74G8aXZqj+p5A5oemWL4iL1V
+         UmHFp148jMqCAtFZ/68C9gamblwRjuIw67pbHD+vrTSHJbueC/WkX30TrUiMpOIhSVhf
+         VHg/7CQcR0Lv/IeXXGL6cOQjSvVrRoG46WPHA5l1AR47mJyXASWwyoL+iQd+8pDqJk2f
+         PnaILsjHRbG3wqQRg3s1x3XsyYsNjPU9T592RBbynI5ChxEAFvDnxeBimS5VH062nl6c
+         ICeNmA9uFmcgLqNbqVlNFXU8s/95L6K+hsWWLM3NuIpDa1tSx2Ri17wayEJVw4sPugbt
+         yXdA==
+X-Gm-Message-State: AOAM533pTxAnTt/VlMU6NWKsBhvOUuDmTKcqWEMEAkD9Dtyt7eFW4k5C
+        Z9DwNL+te0Im5TWuY3+NDxblukOAIalYojYC5DAHAurvYd0=
+X-Google-Smtp-Source: ABdhPJyZ23bRiU12zQOyXzsZH+yd8qibZe3Vzsvj0NMZ+K3XCMkwN/jt9veXThGG9UWLZl/r+sKLQ5N/81pGOg73zho=
+X-Received: by 2002:a25:4107:: with SMTP id o7mr8041778yba.459.1608319700465;
+ Fri, 18 Dec 2020 11:28:20 -0800 (PST)
 MIME-Version: 1.0
-References: <ecad34f5c813591713bb59d9c5854148c3d7f291.camel@kernel.org>
- <CAKgT0UfTOqS9PBeQFexyxm7ytQzdj0j8VMG71qv4+Vn6koJ5xQ@mail.gmail.com>
- <20201216001946.GF552508@nvidia.com> <CAKgT0UeLBzqh=7gTLtqpOaw7HTSjG+AjXB7EkYBtwA6EJBccbg@mail.gmail.com>
- <20201216030351.GH552508@nvidia.com> <CAKgT0UcwP67ihaTWLY1XsVKEgysa3HnjDn_q=Sgvqnt=Uc7YQg@mail.gmail.com>
- <20201216133309.GI552508@nvidia.com> <CAKgT0UcRfB8a61rSWW-NPdbGh3VcX_=LCZ5J+-YjqYNtm+RhVg@mail.gmail.com>
- <20201216175112.GJ552508@nvidia.com> <CAKgT0Uerqg5F5=jrn5Lu33+9Y6pS3=NLnOfvQ0dEZug6Ev5S6A@mail.gmail.com>
- <20201216203537.GM552508@nvidia.com> <CAKgT0UfuSA9PdtR6ftcq0_JO48Yp4N2ggEMiX9zrXkK6tN4Pmw@mail.gmail.com>
- <c737048e-5e65-4b16-ffba-5493da556151@gmail.com> <CAKgT0UdxVytp4+zYh+gOYDOc4+ZNNx3mW+F9f=UTiKxyWuMVbQ@mail.gmail.com>
- <BY5PR12MB43220950B3A93B9E548976C7DCC30@BY5PR12MB4322.namprd12.prod.outlook.com>
- <CAKgT0UdtEJ0Xe5icMOSj0dg-unEgTR8AwDrtdAWTKEH4D-0www@mail.gmail.com> <BY5PR12MB43223E49FF50757D8FD80738DCC30@BY5PR12MB4322.namprd12.prod.outlook.com>
-In-Reply-To: <BY5PR12MB43223E49FF50757D8FD80738DCC30@BY5PR12MB4322.namprd12.prod.outlook.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 18 Dec 2020 11:22:12 -0800
-Message-ID: <CAKgT0Uetb7_P541Sd5t5Rne=np_+8AzJrv6GWqsFW_2A-kYEFw@mail.gmail.com>
-Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     David Ahern <dsahern@gmail.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Netdev <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
+References: <20201211171138.63819-1-jonathan.lemon@gmail.com>
+ <20201211171138.63819-2-jonathan.lemon@gmail.com> <39fcac29-4c93-1c76-62ba-728618a25fe5@fb.com>
+ <20201218180628.qz3qjb7y3sa4rbn3@bsd-mbp>
+In-Reply-To: <20201218180628.qz3qjb7y3sa4rbn3@bsd-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 18 Dec 2020 11:28:09 -0800
+Message-ID: <CAEf4BzbnCucxBBZ2pcD8st1k4auf4kfvDGD4870oVoNtw4i0xA@mail.gmail.com>
+Subject: Re: [PATCH 1/1 v3 bpf-next] bpf: increment and use correct thread iterator
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 10:01 AM Parav Pandit <parav@nvidia.com> wrote:
+On Fri, Dec 18, 2020 at 10:08 AM Jonathan Lemon
+<jonathan.lemon@gmail.com> wrote:
 >
->
-> > From: Alexander Duyck <alexander.duyck@gmail.com>
-> > Sent: Friday, December 18, 2020 9:31 PM
+> On Fri, Dec 18, 2020 at 08:53:22AM -0800, Yonghong Song wrote:
 > >
-> > On Thu, Dec 17, 2020 at 9:20 PM Parav Pandit <parav@nvidia.com> wrote:
+> >
+> > On 12/11/20 9:11 AM, Jonathan Lemon wrote:
+> > > From: Jonathan Lemon <bsd@fb.com>
 > > >
+> > > On some systems, some variant of the following splat is
+> > > repeatedly seen.  The common factor in all traces seems
+> > > to be the entry point to task_file_seq_next().  With the
+> > > patch, all warnings go away.
 > > >
-> > > > From: Alexander Duyck <alexander.duyck@gmail.com>
-> > > > Sent: Friday, December 18, 2020 8:41 AM
-> > > >
-> > > > On Thu, Dec 17, 2020 at 5:30 PM David Ahern <dsahern@gmail.com>
-> > wrote:
-> > > > >
-> > > > > On 12/16/20 3:53 PM, Alexander Duyck wrote:
-> > > > The problem is PCIe DMA wasn't designed to function as a network
-> > > > switch fabric and when we start talking about a 400Gb NIC trying to
-> > > > handle over 256 subfunctions it will quickly reduce the
-> > > > receive/transmit throughput to gigabit or less speeds when encountering
-> > hardware multicast/broadcast replication.
-> > > > With 256 subfunctions a simple 60B ARP could consume more than 19KB
-> > > > of PCIe bandwidth due to the packet having to be duplicated so many
-> > > > times. In my mind it should be simpler to simply clone a single skb
-> > > > 256 times, forward that to the switchdev ports, and have them
-> > > > perform a bypass (if available) to deliver it to the subfunctions.
-> > > > That's why I was thinking it might be a good time to look at addressing it.
-> > > Linux tc framework is rich to address this and already used by openvswich
-> > for years now.
-> > > Today arp broadcasts are not offloaded. They go through software path
-> > and replicated in the L2 domain.
-> > > It is a solved problem for many years now.
+> > >      rcu: INFO: rcu_sched self-detected stall on CPU
+> > >      rcu: \x0926-....: (20992 ticks this GP) idle=d7e/1/0x4000000000000002 softirq=81556231/81556231 fqs=4876
+> > >      \x09(t=21033 jiffies g=159148529 q=223125)
+> > >      NMI backtrace for cpu 26
+> > >      CPU: 26 PID: 2015853 Comm: bpftool Kdump: loaded Not tainted 5.6.13-0_fbk4_3876_gd8d1f9bf80bb #1
+> > >      Hardware name: Quanta Twin Lakes MP/Twin Lakes Passive MP, BIOS F09_3A12 10/08/2018
+> > >      Call Trace:
+> > >       <IRQ>
+> > >       dump_stack+0x50/0x70
+> > >       nmi_cpu_backtrace.cold.6+0x13/0x50
+> > >       ? lapic_can_unplug_cpu.cold.30+0x40/0x40
+> > >       nmi_trigger_cpumask_backtrace+0xba/0xca
+> > >       rcu_dump_cpu_stacks+0x99/0xc7
+> > >       rcu_sched_clock_irq.cold.90+0x1b4/0x3aa
+> > >       ? tick_sched_do_timer+0x60/0x60
+> > >       update_process_times+0x24/0x50
+> > >       tick_sched_timer+0x37/0x70
+> > >       __hrtimer_run_queues+0xfe/0x270
+> > >       hrtimer_interrupt+0xf4/0x210
+> > >       smp_apic_timer_interrupt+0x5e/0x120
+> > >       apic_timer_interrupt+0xf/0x20
+> > >       </IRQ>
+> > >      RIP: 0010:get_pid_task+0x38/0x80
+> > >      Code: 89 f6 48 8d 44 f7 08 48 8b 00 48 85 c0 74 2b 48 83 c6 55 48 c1 e6 04 48 29 f0 74 19 48 8d 78 20 ba 01 00 00 00 f0 0f c1 50 20 <85> d2 74 27 78 11 83 c2 01 78 0c 48 83 c4 08 c3 31 c0 48 83 c4 08
+> > >      RSP: 0018:ffffc9000d293dc8 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
+> > >      RAX: ffff888637c05600 RBX: ffffc9000d293e0c RCX: 0000000000000000
+> > >      RDX: 0000000000000001 RSI: 0000000000000550 RDI: ffff888637c05620
+> > >      RBP: ffffffff8284eb80 R08: ffff88831341d300 R09: ffff88822ffd8248
+> > >      R10: ffff88822ffd82d0 R11: 00000000003a93c0 R12: 0000000000000001
+> > >      R13: 00000000ffffffff R14: ffff88831341d300 R15: 0000000000000000
+> > >       ? find_ge_pid+0x1b/0x20
+> > >       task_seq_get_next+0x52/0xc0
+> > >       task_file_seq_get_next+0x159/0x220
+> > >       task_file_seq_next+0x4f/0xa0
+> > >       bpf_seq_read+0x159/0x390
+> > >       vfs_read+0x8a/0x140
+> > >       ksys_read+0x59/0xd0
+> > >       do_syscall_64+0x42/0x110
+> > >       entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > >      RIP: 0033:0x7f95ae73e76e
+> > >      Code: Bad RIP value.
+> > >      RSP: 002b:00007ffc02c1dbf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+> > >      RAX: ffffffffffffffda RBX: 000000000170faa0 RCX: 00007f95ae73e76e
+> > >      RDX: 0000000000001000 RSI: 00007ffc02c1dc30 RDI: 0000000000000007
+> > >      RBP: 00007ffc02c1ec70 R08: 0000000000000005 R09: 0000000000000006
+> > >      R10: fffffffffffff20b R11: 0000000000000246 R12: 00000000019112a0
+> > >      R13: 0000000000000000 R14: 0000000000000007 R15: 00000000004283c0
+> > >
+> > > The attached patch does 3 things:
+> > >
+> > > 1) If unable to obtain the file structure for the current task,
+> > >     proceed to the next task number after the one returned from
+> > >     task_seq_get_next(), instead of the next task number from the
+> > >     original iterator.
 > >
-> > When you say they are replicated in the L2 domain I assume you are talking
-> > about the software switch connected to the switchdev ports.
-> Yes.
->
-> > My question is
-> > what are you doing with them after you have replicated them? I'm assuming
-> > they are being sent to the other switchdev ports which will require a DMA to
-> > transmit them, and another to receive them on the VF/SF, or are you saying
-> > something else is going on here?
+> > Looks like this fix is the real fix for the above warnings.
+> > Basically, say we have
+> >    info->tid = 10 and returned curr_tid = 3000 and tid 3000 has no files.
+> > the current logic will go through
+> >    - set curr_tid = 11 (info->tid++) and returned curr_tid = 3000
+> >    - set curr_tid = 12 and returned curr_tid = 3000
+> >    ...
+> >    - set curr_tid = 3000 and returned curr_tid = 3000
+> >    - set curr_tid = 3001 and return curr_tid >= 3001
 > >
-> Yes, that is correct.
+> > All the above works are redundant work, and it may cause issues
+> > for non preemptable kernel.
+> >
+> > I suggest you factor out this change plus the following change
+> > which suggested by Andrii early to a separate patch carried with
+> > the below Fixes tag.
+> >
+> > diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
+> > index 0458a40edf10..56bcaef72e36 100644
+> > --- a/kernel/bpf/task_iter.c
+> > +++ b/kernel/bpf/task_iter.c
+> > @@ -158,6 +158,7 @@ task_file_seq_get_next(struct
+> > bpf_iter_seq_task_file_info *info)
+> >                 if (!curr_task) {
+> >                         info->task = NULL;
+> >                         info->files = NULL;
+> > +                       info->tid = curr_tid + 1;
+> >                         return NULL;
+> >                 }
 >
-> > My argument is that this cuts into both the transmit and receive DMA
-> > bandwidth of the NIC, and could easily be avoided in the case where SF
-> > exists in the same kernel as the switchdev port by identifying the multicast
-> > bit being set and simply bypassing the device.
-> It probably can be avoided but its probably not worth for occasional ARP packets on neighbor cache miss.
-> If I am not mistaken, even some recent HW can forward such ARP packets to multiple switchdev ports with commit 7ee3f6d2486e without following the above described DMA path.
+> Sure this isn't supposed to be 'curr_tid'?  task_seq_get_next() stops
+> when there are no more threads found.  This increments the thread id
+> past the search point, and would seem to introduce a potential off-by-one
+> error.
+>
+> That is:
+>    curr_tid = 3000.
+>    call task_seq_get_next() --> return NULL, curr_tid = 3000.
+>       (so there is no tid >= 3000)
+>    set curr_tid = 3001.
+>
+>    next restart (if there is one) skips a newly created 3000.
 
-Even with that it sounds like it will have to DMA the packet to
-multiple Rx destinations even if it is only performing the Tx DMA
-once. The Intel NICs did all this replication in hardware as well so
-that is what I was thinking of when I was talking about the
-replication behavior seen with SR-IOV.
+Seems fine to me to skip 3000 in such case. 3000 didn't exist at the
+time of iteration. If there was >=3001 it would have been skipped as
+well.
 
-Basically what I am getting at is that this could be used as an
-architectural feature for switchdev to avoid creating increased DMA
-overhead for broadcast, multicast and unknown-unicast traffic. I'm not
-saying this is anything mandatory, and I would be perfectly okay with
-something like this being optional and defaulted to off. In my mind
-the setup only has the interfaces handling traffic to single point
-destinations so that at most you are only looking at a 2x bump in PCIe
-bandwidth for those cases where the packet ends up needing to go out
-the physical port. It would essentially be a software offload to avoid
-saturating the PCIe bus.
-
-This setup would only work if both interfaces are present in the same
-kernel though so that is why I chose now to bring it up as
-historically SR-IOV hasn't normally been associated with containers
-due to the limited number of interfaces that could be created.
-
-Also as far as the patch count complaints I have seen in a few threads
-I would be fine with splitting things up so that the devlink and aux
-device creation get handled in one set, and then we work out the
-details of mlx5 attaching to the devices and spawning of the SF
-netdevs in another since that seems to be where the debate is.
+>
+> --
+> Jonathan
