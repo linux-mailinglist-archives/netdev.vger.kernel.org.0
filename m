@@ -2,317 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 383B12DEA07
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 21:14:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE3B82DEA0E
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 21:17:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387415AbgLRUOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 15:14:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
+        id S2387424AbgLRUOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 15:14:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726697AbgLRUOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 15:14:37 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68BFC0617A7;
-        Fri, 18 Dec 2020 12:13:56 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id a16so3025563ybh.5;
-        Fri, 18 Dec 2020 12:13:56 -0800 (PST)
+        with ESMTP id S1726697AbgLRUOv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 15:14:51 -0500
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246D5C0617B0
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 12:14:11 -0800 (PST)
+Received: by mail-qv1-xf2a.google.com with SMTP id d11so1486144qvo.11
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 12:14:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PhPOI3RSL/Me8q5ZKaUmaGiiPfOru1ej3QAdbJ76iaw=;
-        b=sbg8ni2O6oEMIjvwiTa16ooNV1sJSkC9DcSy7OujiTKP9l0SgookngOSGx4gChapY1
-         5bXqyYgg2atSc6jwzRGjURWXZgzYaWFsiZI5nxZDxnm9bv3oqq0faWi62zgL1ppEXveD
-         W4AAzKaMFIN5yWoX2lSwXpM/oSxSz3oT5YGJQcIMrIiwcggMQbqJs9VnYdnv3FoLCZw5
-         DUG5o5vaZDzkp92zQfq+xk8ANGKdVLp7DtcCu9Ffcad3glJcyEwDw50bHD2UduwMGXzZ
-         ksQfgCjWr0ljrhokfM4S+TYJUnspW1V5lgJv11e2gZM2QOniGTNLiWOx5E7P9zAPt9mu
-         dBsg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+6dOcXCZmIRThv69enwRAoT3Ssvc0OhfvILN9vdlg4o=;
+        b=jHvWhOqW9gjdg6bCt0oq8HPNAPiqjsnvVkc2ZUdCGpEZNIdSLT+GDPCECJElwUYAxA
+         Y1pIExXfv/DBr7VTF+bFuxD1/qc48sp4jjZGVoGH32YbTQAwsodVlyqEal+TFhSvUReR
+         bQH7LL5BN51mLTZ7XWLywXYOanGqutzAK76tB+8PuUq+RbgeAnOhwHP+K4O7eHiCyJ6Z
+         PbkZyuovTuop9ttweKxiab8tuHcdQfnii8DrxMLWuGsSk2o7ieWZHMk1nqidqmHDP5kd
+         mRvodxQKAx0bRwGOtG28y4RrryymGsGvvkNhr00Frg6N6/bpTYHvKS3sn6joFWSellTo
+         IV4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PhPOI3RSL/Me8q5ZKaUmaGiiPfOru1ej3QAdbJ76iaw=;
-        b=sMho2tdGJ/cnUcs63cCj9dvBIb4U3NYLCMgvoh8C/VLC4gY3L+UvbQh1aqdp3t9Exl
-         bS7Vnp2+Yz2rlvGV0wDPnBrfAnDSNDtdxN4DrJzXYKSRwbUgZGrN6RB5oGAURRdmAm96
-         u3cd+pfnT8lp3qk/zHeV2pwivHiK3+NO8ycfIlpmgz8XnKwKCJ5KiQILzDgott/j8pZV
-         9Kt9bo8z4B3z2sNpOLlPNeu3ZCYZLP/YF2O3AfN3R/3ljciwu6bz0QLKmX4eUFIrQROW
-         yTnxMv0ACc+pEd87O41Jod+LzDbYapPRBk+BB1QbAg+YJ7AES6AcC9b5g3y695tsdoh+
-         U5ow==
-X-Gm-Message-State: AOAM533ldIZ83f5ss12oEwnTS61OxC78Dl5uU3LwX3fBmS7nayNxoqNy
-        m2LSHjTf7JglCgZfg/YyuY4HruN0aJy9mJoJNSM=
-X-Google-Smtp-Source: ABdhPJwXqy/T12Sf1WPbuhjB9Dbwevq/yrphHHK4H/R55uj2E6uWfa+z3g3Ty4CX9sFX5GVAdFdAYGOTdOLR2PLGcqU=
-X-Received: by 2002:a25:818e:: with SMTP id p14mr8062412ybk.425.1608322435860;
- Fri, 18 Dec 2020 12:13:55 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+6dOcXCZmIRThv69enwRAoT3Ssvc0OhfvILN9vdlg4o=;
+        b=jxnMlSR28nUaW7LBSz6Dv0P7tJ49UmmjDjtfhjAbth4+03YH/pBewK0LR1pESbVnVo
+         JEKE+GscJTQJ82PLC4niHhrFuurk13T5izZPvLxBVag4PtKJ066IZQsonn7UdpDySVDA
+         iSZk5oa61hc1fHhTyUramsyjhXM5ea6b6CbKGxgQerKrZoVgg049Jj8+msa0oo3sEuLx
+         YrS+eM6H/U5v92MO44mHTmmWWKY6ndCHfzN7SH6/vpXSvK18NwsrwcoKIPdBBkjsdQxN
+         nvfIIpoU+8DBPjTsWIs7etOPA4TDOeNr3cvMh9tQe42v8xi3J+rugGDP8Pue6a1p/1Qi
+         +W2Q==
+X-Gm-Message-State: AOAM531+xHwPHjaXW03FJ/WJB6fuSg+PsHidC6pzMIgUP1fhUeuf5EPf
+        rMhXIufrXh+aJLdN+DFdB0FGrA==
+X-Google-Smtp-Source: ABdhPJz7x65BC/4X9IrtWfhOoatGUO93t2Fz3LqYQnC1yk/9wcYLKCu/MCpGx2+lmEtdYxTq7GxBsw==
+X-Received: by 2002:a05:6214:15c1:: with SMTP id p1mr6432035qvz.8.1608322450319;
+        Fri, 18 Dec 2020 12:14:10 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-115-133.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.115.133])
+        by smtp.gmail.com with ESMTPSA id p15sm6479556qke.11.2020.12.18.12.14.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Dec 2020 12:14:09 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1kqM8e-00CtcB-SK; Fri, 18 Dec 2020 16:14:08 -0400
+Date:   Fri, 18 Dec 2020 16:14:08 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@mellanox.com>
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Message-ID: <20201218201408.GP5487@ziepe.ca>
+References: <X8usiKhLCU3PGL9J@kroah.com>
+ <20201217211937.GA3177478@piout.net>
+ <X9xV+8Mujo4dhfU4@kroah.com>
+ <20201218131709.GA5333@sirena.org.uk>
+ <20201218140854.GW552508@nvidia.com>
+ <20201218155204.GC5333@sirena.org.uk>
+ <20201218162817.GX552508@nvidia.com>
+ <20201218180310.GD5333@sirena.org.uk>
+ <20201218184150.GY552508@nvidia.com>
+ <20201218190911.GT207743@dell>
 MIME-Version: 1.0
-References: <160822594178.3481451.1208057539613401103.stgit@firesoul> <160822601093.3481451.9135115478358953965.stgit@firesoul>
-In-Reply-To: <160822601093.3481451.9135115478358953965.stgit@firesoul>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 18 Dec 2020 12:13:45 -0800
-Message-ID: <CAEf4Bzbud5EWAo9E=95VzGeCZGLA9_MdQUrAc8unh3izXcd3AA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next V9 7/7] bpf/selftests: tests using bpf_check_mtu BPF-helper
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201218190911.GT207743@dell>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 17, 2020 at 9:30 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> Adding selftest for BPF-helper bpf_check_mtu(). Making sure
-> it can be used from both XDP and TC.
->
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
->  tools/testing/selftests/bpf/prog_tests/check_mtu.c |  204 ++++++++++++++++++++
->  tools/testing/selftests/bpf/progs/test_check_mtu.c |  196 +++++++++++++++++++
->  2 files changed, 400 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/check_mtu.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_check_mtu.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/check_mtu.c b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
-> new file mode 100644
-> index 000000000000..b5d0c3a9abe8
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
-> @@ -0,0 +1,204 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2020 Jesper Dangaard Brouer */
-> +
-> +#include <linux/if_link.h> /* before test_progs.h, avoid bpf_util.h redefines */
-> +
-> +#include <test_progs.h>
-> +#include "test_check_mtu.skel.h"
-> +#include <network_helpers.h>
-> +
-> +#include <stdlib.h>
-> +#include <inttypes.h>
-> +
-> +#define IFINDEX_LO 1
-> +
-> +static __u32 duration; /* Hint: needed for CHECK macro */
-> +
-> +static int read_mtu_device_lo(void)
-> +{
-> +       const char *filename = "/sys/devices/virtual/net/lo/mtu";
-> +       char buf[11] = {};
-> +       int value;
-> +       int fd;
-> +
-> +       fd = open(filename, 0, O_RDONLY);
-> +       if (fd == -1)
-> +               return -1;
-> +
-> +       if (read(fd, buf, sizeof(buf)) == -1)
+On Fri, Dec 18, 2020 at 07:09:11PM +0000, Lee Jones wrote:
 
-close fd missing here?
+> ACPI, DT and MFD are not busses.  
 
-> +               return -2;
-> +       close(fd);
-> +
-> +       value = strtoimax(buf, NULL, 10);
-> +       if (errno == ERANGE)
-> +               return -3;
-> +
-> +       return value;
-> +}
-> +
-> +static void test_check_mtu_xdp_attach(struct bpf_program *prog)
-> +{
-> +       int err = 0;
-> +       int fd;
-> +
-> +       fd = bpf_program__fd(prog);
-> +       err = bpf_set_link_xdp_fd(IFINDEX_LO, fd, XDP_FLAGS_SKB_MODE);
-> +       if (CHECK(err, "XDP-attach", "failed"))
-> +               return;
-> +
-> +       bpf_set_link_xdp_fd(IFINDEX_LO, -1, 0);
+And yet ACPI and PNP have a bus:
+  extern struct bus_type acpi_bus_type;
+  extern struct bus_type pnp_bus_type;
 
-can you please use bpf_link-based bpf_program__attach_xdp() which will
-provide auto-cleanup in case of crash?
+Why? Because in the driver core if you subclass struct device and want
+to bind drivers, as both PNP and ACPI do, you must place those devices
+on a bus with a bus_type matching the device type. Thus subclassing
+the device means subclassing the bus as well.
 
-also check that it succeeded?
+The purpose of the bus_type is to match drivers to devices and provide
+methods to the driver core. The bus_type also defines the unique name
+space of the device names.
 
-> +}
-> +
-> +static void test_check_mtu_run_xdp(struct test_check_mtu *skel,
-> +                                  struct bpf_program *prog,
-> +                                  __u32 mtu_expect)
-> +{
-> +       const char *prog_name = bpf_program__name(prog);
-> +       int retval_expect = XDP_PASS;
-> +       __u32 mtu_result = 0;
-> +       char buf[256];
-> +       int err;
-> +
-> +       struct bpf_prog_test_run_attr tattr = {
-> +               .repeat = 1,
-> +               .data_in = &pkt_v4,
-> +               .data_size_in = sizeof(pkt_v4),
-> +               .data_out = buf,
-> +               .data_size_out = sizeof(buf),
-> +               .prog_fd = bpf_program__fd(prog),
-> +       };
+It is confusing because the word bus immediately makes people think of
+physical objects like I2C, PCI, etc, but that is not what bus_type
+does in the object model of the driver core, IMHO.
 
-nit: it's a variable declaration, so keep it all in one block. There
-is also opts-based variant, which might be good to use here instead.
+So, if you subclass struct device for MFD's usage, then you must also
+create a bus_type to handle driver binding. The MFD bus_type. Just
+like auxillary does.
 
-> +
-> +       memset(buf, 0, sizeof(buf));
+Making a mfd subclass is the logical thing for a subsystem to do,
+co-opting another subsystem's bus_type is just really weird/abusive.
 
-char buf[256] = {}; would make this unnecessary
+auxillary bus shows how all these parts work, and it is simple enough
+to see the pieces clearly.
 
-
-> +
-> +       err = bpf_prog_test_run_xattr(&tattr);
-> +       CHECK_ATTR(err != 0 || errno != 0, "bpf_prog_test_run",
-> +                  "prog_name:%s (err %d errno %d retval %d)\n",
-> +                  prog_name, err, errno, tattr.retval);
-> +
-> +        CHECK(tattr.retval != retval_expect, "retval",
-
-whitespaces are off?
-
-> +             "progname:%s unexpected retval=%d expected=%d\n",
-> +             prog_name, tattr.retval, retval_expect);
-> +
-> +       /* Extract MTU that BPF-prog got */
-> +       mtu_result = skel->bss->global_bpf_mtu_xdp;
-> +       CHECK(mtu_result != mtu_expect, "MTU-compare-user",
-> +             "failed (MTU user:%d bpf:%d)", mtu_expect, mtu_result);
-
-There is nicer ASSERT_EQ() macro for such cases:
-
-ASSERT_EQ(mtu_result, mtu_expect, "MTU-compare-user"); it will format
-sensible error message automatically
-
-> +}
-> +
-
-[...]
-
-> +       char buf[256];
-> +       int err;
-> +
-> +       struct bpf_prog_test_run_attr tattr = {
-> +               .repeat = 1,
-> +               .data_in = &pkt_v4,
-> +               .data_size_in = sizeof(pkt_v4),
-> +               .data_out = buf,
-> +               .data_size_out = sizeof(buf),
-> +               .prog_fd = bpf_program__fd(prog),
-> +       };
-> +
-> +       memset(buf, 0, sizeof(buf));
-> +
-
-same as above
-
-> +       err = bpf_prog_test_run_xattr(&tattr);
-> +       CHECK_ATTR(err != 0 || errno != 0, "bpf_prog_test_run",
-> +                  "prog_name:%s (err %d errno %d retval %d)\n",
-> +                  prog_name, err, errno, tattr.retval);
-> +
-> +        CHECK(tattr.retval != retval_expect, "retval",
-
-same :)
-
-> +             "progname:%s unexpected retval=%d expected=%d\n",
-> +             prog_name, tattr.retval, retval_expect);
-> +
-> +       /* Extract MTU that BPF-prog got */
-> +       mtu_result = skel->bss->global_bpf_mtu_tc;
-> +       CHECK(mtu_result != mtu_expect, "MTU-compare-user",
-> +             "failed (MTU user:%d bpf:%d)", mtu_expect, mtu_result);
-> +}
-> +
-> +
-
-[...]
-
-> +
-> +void test_check_mtu(void)
-> +{
-> +       struct test_check_mtu *skel;
-> +       __u32 mtu_lo;
-> +
-> +       skel = test_check_mtu__open_and_load();
-> +       if (CHECK(!skel, "open and load skel", "failed"))
-> +               return; /* Exit if e.g. helper unknown to kernel */
-> +
-> +       if (test__start_subtest("bpf_check_mtu XDP-attach"))
-> +               test_check_mtu_xdp_attach(skel->progs.xdp_use_helper_basic);
-> +
-> +       test_check_mtu__destroy(skel);
-
-here it's not clear why you instantiate skeleton outside of
-test_check_mtu_xdp_attach() subtest. Can you please move it in? It
-will keep this failure local to that specific subtest, not the entire
-test. And is just cleaner, of course.
-
-> +
-> +       mtu_lo = read_mtu_device_lo();
-> +       if (CHECK(mtu_lo < 0, "reading MTU value", "failed (err:%d)", mtu_lo))
-
-ASSERT_OK() could be used here
-
-> +               return;
-> +
-> +       if (test__start_subtest("bpf_check_mtu XDP-run"))
-> +               test_check_mtu_xdp(mtu_lo, 0);
-> +
-> +       if (test__start_subtest("bpf_check_mtu XDP-run ifindex-lookup"))
-> +               test_check_mtu_xdp(mtu_lo, IFINDEX_LO);
-> +
-> +       if (test__start_subtest("bpf_check_mtu TC-run"))
-> +               test_check_mtu_tc(mtu_lo, 0);
-> +
-> +       if (test__start_subtest("bpf_check_mtu TC-run ifindex-lookup"))
-> +               test_check_mtu_tc(mtu_lo, IFINDEX_LO);
-> +}
-
-[...]
-
-> +
-> +       global_bpf_mtu_tc = mtu_len;
-> +       return retval;
-> +}
-> +
-> +SEC("classifier")
-
-nice use of the same SEC()'tion BPF programs!
-
-
-> +int tc_minus_delta(struct __sk_buff *ctx)
-> +{
-> +       int retval = BPF_OK; /* Expected retval on successful test */
-> +       __u32 ifindex = GLOBAL_USER_IFINDEX;
-> +       __u32 skb_len = ctx->len;
-> +       __u32 mtu_len = 0;
-> +       int delta;
-> +
-> +       /* Boarderline test case: Minus delta exceeding packet length allowed */
-> +       delta = -((skb_len - ETH_HLEN) + 1);
-> +
-> +       /* Minus length (adjusted via delta) still pass MTU check, other helpers
-> +        * are responsible for catching this, when doing actual size adjust
-> +        */
-> +       if (bpf_check_mtu(ctx, ifindex, &mtu_len, delta, 0))
-> +               retval = BPF_DROP;
-> +
-> +       global_bpf_mtu_xdp = mtu_len;
-> +       return retval;
-> +}
->
->
+Jason
