@@ -2,135 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F208C2DE17C
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 11:50:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E54922DE192
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 11:55:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389210AbgLRKs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 05:48:59 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18047 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733211AbgLRKs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 05:48:58 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fdc88f20000>; Fri, 18 Dec 2020 02:48:18 -0800
-Received: from [172.27.0.216] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 18 Dec
- 2020 10:48:06 +0000
-Subject: Re: [PATCH net-next v2 2/4] sch_htb: Hierarchical QoS hardware
- offload
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yossi Kuperman <yossiku@nvidia.com>
-References: <20201211152649.12123-1-maximmi@mellanox.com>
- <20201211152649.12123-3-maximmi@mellanox.com>
- <CAM_iQpUS_71R7wujqhUnF41dtVtNj=5kXcdAHea1euhESbeJrg@mail.gmail.com>
- <7f4b1039-b1be-b8a4-2659-a2b848120f67@nvidia.com>
- <CAM_iQpVrQAT2frpiVYj4eevSO4jFPY8v2moJdorCe3apF7p6mA@mail.gmail.com>
- <bee0d31e-bd3e-b96a-dd98-7b7bf5b087dc@nvidia.com>
- <845d2678-b679-b2a8-cf00-d4c7791cd540@mojatatu.com>
- <5f4f0785-54cb-debc-1f16-b817b83fbd96@nvidia.com>
- <f15342fb-714b-32d9-ef95-07b2e13bbc9b@mojatatu.com>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <35ace422-b5d7-3b16-95c3-457d3736a2d6@nvidia.com>
-Date:   Fri, 18 Dec 2020 12:48:02 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S2389254AbgLRKzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 05:55:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36637 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389206AbgLRKzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 05:55:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608288813;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mVhVm6FP2/9asw/6EvqMmdP5RwQaxD96nqDsZxgzE2w=;
+        b=dTBprpyuVRToXqHdHZPkQKOFStm/+Xl26tlc2iEyjwQSju9nwgPWeqiWkt2i1ukTD+7zy3
+        zJwpu93SZlppDLGkjAv1ccsmQ6rwiUHLF30xbiFYhdYtcOY66+4ycUwXkPdzw9NDxy39aG
+        8Ti1/ZiZyVP6MBeG89iMhiNWLK17dwo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-584-ZFuF22dbM_uK-BM88tz7Vw-1; Fri, 18 Dec 2020 05:53:30 -0500
+X-MC-Unique: ZFuF22dbM_uK-BM88tz7Vw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DECBAC7400;
+        Fri, 18 Dec 2020 10:53:28 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EE7D960CEF;
+        Fri, 18 Dec 2020 10:53:21 +0000 (UTC)
+Date:   Fri, 18 Dec 2020 11:53:20 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V9 7/7] bpf/selftests: tests using
+ bpf_check_mtu BPF-helper
+Message-ID: <20201218115320.396dbcfc@carbon>
+In-Reply-To: <160822601093.3481451.9135115478358953965.stgit@firesoul>
+References: <160822594178.3481451.1208057539613401103.stgit@firesoul>
+        <160822601093.3481451.9135115478358953965.stgit@firesoul>
 MIME-Version: 1.0
-In-Reply-To: <f15342fb-714b-32d9-ef95-07b2e13bbc9b@mojatatu.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-17 17:09, Jamal Hadi Salim wrote:
-> On 2020-12-16 6:47 a.m., Maxim Mikityanskiy wrote:
->> On 2020-12-15 18:37, Jamal Hadi Salim wrote:
-> 
-> [..]
-> 
->>>
->>> Same question above:
->>> Is there a limit to the number of classes that can be created?
->>
->> Yes, the commit message of the mlx5 patch lists the limitations of our 
->> NICs. Basically, it's 256 leaf classes and 3 levels of hierarchy.
->>
-> 
-> Ok, thats what i was looking for.
-> 
-> 
->>> IOW, if someone just created an arbitrary number of queues do they
->>> get errored-out if it doesnt make sense for the hardware?
->>
->> The current implementation starts failing gracefully if the limits are 
->> exceeded. The tc command won't succeed, and everything will roll back 
->> to the stable state, which was just before the tc command.
->>
-> 
-> Does the user gets notified somehow or it fails silently?
-> An extack message would help.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-	t=1608288498; bh=RMhOdIb4utXHB89dvxKO9kM+jQNSV+kIKsJ0O6KNJWs=;
-	h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-	 MIME-Version:In-Reply-To:Content-Type:Content-Language:
-	 Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-	b=pThe8Bqxykn4jFcf5ZYZMSgEPZZBiId+lReLZZ9KFCdbROoDwWPTGDWFNhOADAvRA
-	 7bjihDOFAvu2+MXP1m9/IS0lQgKXa2iOKAk5S1QwZj+aF5m9bZ1ya7uRSZiK7k32Tp
-	 cPyfic9k+SXTN0zyJovtWc5i4QlwnHWCQ7zPvMYwB4Kmvmk/YiRwIQvEooMDQaq92Z
-	 7+scnlRaNVAEd8ZERye9Fxa7htaGiUArPQR3aS7ol1QmrCXaN1hZA84lySCaLcJ6JA
-	 6qFKvjj0XWP0TsYJqpZzkS+F0yfGOAphtaIMWq/o8m5Julk0e90Yj6maRvGG3kFOaY
-	 c4zEilz1uAHKA==
+On Thu, 17 Dec 2020 18:26:50 +0100
+Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 
-The current implementation doesn't use extack, just returns an error 
-code, because many callbacks to the qdisc don't get extack as a 
-parameter. However, I agree with you, these messages would be helpful 
-for the user when an operation fails due to hardware limitations - it 
-will be easier than guessing what caused a EINVAL, so I'll add them. I 
-will review which callbacks lacked an extack, and I might add it if it's 
-meaningful for them.
-
+> Adding selftest for BPF-helper bpf_check_mtu(). Making sure
+> it can be used from both XDP and TC.
 > 
->>> If such limits exist, it may make sense to provide a knob to query
->>> (maybe ethtool)
->>
->> Sounds legit, but I'm not sure what would be the best interface for 
->> that. Ethtool is not involved at all in this implementation, and AFAIK 
->> it doesn't contain any existing command for similar stuff. We could 
->> hook into set-channels and add new type of channels for HTB, but the 
->> semantics isn't very clear, because HTB queues != HTB leaf classes, 
->> and I don't know if it's allowed to extend this interface (if so, I 
->> have more thoughts of extending it for other purposes).
->>
-> 
-> More looking to make sure no suprise to the user. Either the user can
-> discover what the constraints are or when they provision they get a
-> a message like "cannot offload more than 3 hierarchies" or "use devlink
-> if you want to use more than 256 classes", etc.
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/check_mtu.c |  204 ++++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/test_check_mtu.c |  196 +++++++++++++++++++
+>  2 files changed, 400 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/check_mtu.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_check_mtu.c
 
-Yes, it makes perfect sense. Messages are even more user-friendly, as 
-for me. So, I'll add such messages to extack, and as the limitations are 
-driver-specific, I'll pass extack to the driver.
+Will send V10 as I have an error in this selftests
 
-I will respin when net-next reopens, in the meanwhile comments are welcome.
+> diff --git a/tools/testing/selftests/bpf/prog_tests/check_mtu.c b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
+> new file mode 100644
+> index 000000000000..b5d0c3a9abe8
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
+[...]
+> +static void test_check_mtu_run_xdp(struct test_check_mtu *skel,
+> +				   struct bpf_program *prog,
+> +				   __u32 mtu_expect)
+> +{
+> +	const char *prog_name = bpf_program__name(prog);
+> +	int retval_expect = XDP_PASS;
+> +	__u32 mtu_result = 0;
+> +	char buf[256];
+> +	int err;
+> +
+> +	struct bpf_prog_test_run_attr tattr = {
+> +		.repeat = 1,
+> +		.data_in = &pkt_v4,
+> +		.data_size_in = sizeof(pkt_v4),
+> +		.data_out = buf,
+> +		.data_size_out = sizeof(buf),
+> +		.prog_fd = bpf_program__fd(prog),
+> +	};
+> +
+> +	memset(buf, 0, sizeof(buf));
+> +
+> +	err = bpf_prog_test_run_xattr(&tattr);
+> +	CHECK_ATTR(err != 0 || errno != 0, "bpf_prog_test_run",
+                               ^^^^^^^^^^^
+You/I cannot use the check "errno != 0" here, as something else could
+have set it earlier.
 
-Thanks,
-Max
 
-> 
-> cheers,
-> jamal
+> +		   "prog_name:%s (err %d errno %d retval %d)\n",
+> +		   prog_name, err, errno, tattr.retval);
+> +
+> +        CHECK(tattr.retval != retval_expect, "retval",
+> +	      "progname:%s unexpected retval=%d expected=%d\n",
+> +	      prog_name, tattr.retval, retval_expect);
+> +
+> +	/* Extract MTU that BPF-prog got */
+> +	mtu_result = skel->bss->global_bpf_mtu_xdp;
+> +	CHECK(mtu_result != mtu_expect, "MTU-compare-user",
+> +	      "failed (MTU user:%d bpf:%d)", mtu_expect, mtu_result);
+> +}
+
+
+> +static void test_check_mtu_run_tc(struct test_check_mtu *skel,
+> +				  struct bpf_program *prog,
+> +				  __u32 mtu_expect)
+> +{
+[...]
+> +	err = bpf_prog_test_run_xattr(&tattr);
+> +	CHECK_ATTR(err != 0 || errno != 0, "bpf_prog_test_run",
+> +		   "prog_name:%s (err %d errno %d retval %d)\n",
+> +		   prog_name, err, errno, tattr.retval);
+
+Same issue here.
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
