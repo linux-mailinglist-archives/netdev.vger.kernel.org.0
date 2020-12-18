@@ -2,85 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D702DEC0C
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 00:31:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 989FF2DEC14
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 00:38:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725936AbgLRXaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 18:30:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60393 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725831AbgLRXaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 18:30:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608334159;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9L6dlKMbE1KBwzhNvipaTQJktDWMfhXVxZST2OF6X/s=;
-        b=I+qt55E9NtFln9OC2qEHDurrstF5QwrZlre9oP+rlILax6915OzK4LOiRisK/1a11gBXlN
-        hlgdmOU4ONwBe+jAu3ZhMJoxFYSe1zr2mNKKw2nCz9iBByNvLLvaAY1WNv5wKQQAt5g6ZO
-        YfdvXuTQNvurl+hqc2FuPgBBkOcsfs4=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-506-uppOZAiEMKuoAqihHXaykw-1; Fri, 18 Dec 2020 18:29:17 -0500
-X-MC-Unique: uppOZAiEMKuoAqihHXaykw-1
-Received: by mail-ed1-f70.google.com with SMTP id cm4so1743762edb.0
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 15:29:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=9L6dlKMbE1KBwzhNvipaTQJktDWMfhXVxZST2OF6X/s=;
-        b=qYRBb/J57skgfRclCn75L/sMlB97T4fd9L9qosk0J3bwu2QGAl44ijaTLzX6W+jt7R
-         6y8BqSUS0vHvVXUGAJ07g0zbTdIe+FAvMuyYrYqJChgouPjgxjoift6ZS+psLVlZMq+g
-         Nmy0troZIGv68BYqQyB8gTxD7tFqdAd4l4yArFy10BAvM3X0zFghpW1lNLHTH1+gd7Lv
-         5spUOE2w/gZFWdMsMDfia7NF8SaFELBoq5lxnxlEccjUDFmaYUaH41zxOJF9KJGc4CXF
-         st4+rCnP5nBY6XmBK6vw2UODY0D7ffp/FG5L5ldAimccqyMM6x0bugpdCwGLI37Ofxtr
-         8CNw==
-X-Gm-Message-State: AOAM532PocmYYuMWu8sUk+Nf5IQVQZ9TFmMui/j2oB2XYZkztVG8K99H
-        Pslj9qjsIbsQtIwaiHI0BUoR+XmuNbCUsZWoECT8qm46rDYPDK5g8fsMET7Qkqi1v6NpsFHAF8d
-        eoQShcPggChLQOP423nOhoBFLFfK0Zp/Z
-X-Received: by 2002:a50:955b:: with SMTP id v27mr6612844eda.324.1608334156476;
-        Fri, 18 Dec 2020 15:29:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy5Dn6pUGFNUEonqACDVZrpe8rIudPjqGqLAcANwps9DekTZ2ANYrlZPML4s/bzFtzCZMqv4AXBcA0dWfI0yHM=
-X-Received: by 2002:a50:955b:: with SMTP id v27mr6612832eda.324.1608334156303;
- Fri, 18 Dec 2020 15:29:16 -0800 (PST)
+        id S1725965AbgLRXhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 18:37:00 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1379 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725815AbgLRXg7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 18:36:59 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fdd3cf20000>; Fri, 18 Dec 2020 15:36:19 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 18 Dec
+ 2020 23:36:14 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
+ by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 18 Dec 2020 23:36:14 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SUM18Li+OD6oZot96kwzfdpwhALdNg1E86WLn4EGUzQBtmc0og9ERAAY6Pu+uzK1QXAadzF9+MUWIZ3RNbMEeIR74kYVP9EMUrRuqwwaOHTjV1YzazaqWmGZKQZJgL874xkw6dLi8L/vww35ZsapzsWrgF5MjZn5zVe57ZtSjj5OtbpXBjI5c4pbNoS+3D4GvQb6pGff+EZF6xDM8bzkr7YzCFEw7pjqj1kc9AeCeRpCqNaBspHzfVyiHSeTmn78Qhv/ab5iWGdPwKdGLotRlhorNXc5m+qRQkiJUIjM/uoCR0e5vDeSmp31lOqE5BzLVbjVlEYvugH9EzpNYf/ziA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bOoZnI1dWjtEDwoJCz481pyZxuXVUsn9C9DiAjS/ycc=;
+ b=A5Ag30jNJLzs/wUhvL1apO51GmEta+wao6D+5tRyC2Laah3FEeXbx4l2BpPUVPPplAmakBCeCBvkeR7ucLILW7q/yZ2DOemttstZFBai5h8BUOlGsmiIBczoKwDduA6rWqQSffDWouIpmpFO3kRdq5r/edriqWpqYsrXPHAM6jL5tD6iyCiENnrWH7e6ht7G9JpUcyxAuflMhBMv499wCfNYLAV7RgKv/LqY9+0JMxqgmMdlndIX+nRxXMuOWawJMX6fEDR51k/0x/dgDtLpKBIaDWRhdIkD4dMVlZSYjiTcRpwsE2dOQJpmf0TfRIiD/1oD6UMO7v2kKxAESfZALQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4250.namprd12.prod.outlook.com (2603:10b6:5:21a::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.13; Fri, 18 Dec
+ 2020 23:36:10 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3676.025; Fri, 18 Dec 2020
+ 23:36:10 +0000
+Date:   Fri, 18 Dec 2020 19:36:08 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+CC:     Mark Brown <broonie@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Dan Williams" <dan.j.williams@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        <alsa-devel@alsa-project.org>,
+        "Kiran Patil" <kiran.patil@intel.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "Ranjani Sridharan" <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@mellanox.com>, <lee.jones@linaro.org>
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Message-ID: <20201218233608.GA552508@nvidia.com>
+References: <X9xV+8Mujo4dhfU4@kroah.com> <20201218131709.GA5333@sirena.org.uk>
+ <20201218140854.GW552508@nvidia.com> <20201218155204.GC5333@sirena.org.uk>
+ <20201218162817.GX552508@nvidia.com> <20201218180310.GD5333@sirena.org.uk>
+ <20201218184150.GY552508@nvidia.com> <20201218203211.GE5333@sirena.org.uk>
+ <20201218205856.GZ552508@nvidia.com> <20201218211658.GH3143569@piout.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20201218211658.GH3143569@piout.net>
+X-ClientProxiedBy: MN2PR11CA0018.namprd11.prod.outlook.com
+ (2603:10b6:208:23b::23) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-References: <cover.1608315719.git.aclaudi@redhat.com> <9b07b59c4c422b29d6c8297f7f7ec0f2dcc7fb3f.1608315719.git.aclaudi@redhat.com>
- <20201218230835.GY28824@orbyte.nwl.cc>
-In-Reply-To: <20201218230835.GY28824@orbyte.nwl.cc>
-From:   Andrea Claudi <aclaudi@redhat.com>
-Date:   Sat, 19 Dec 2020 00:29:05 +0100
-Message-ID: <CAPpH65zBxNo9W3VnVsSBfNsGwvVyyw5ZMnHzqSpmMuj7NbaYJQ@mail.gmail.com>
-Subject: Re: [PATCH iproute2 2/2] lib/fs: Fix single return points for get_cgroup2_*
-To:     Phil Sutter <phil@nwl.cc>, Andrea Claudi <aclaudi@redhat.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR11CA0018.namprd11.prod.outlook.com (2603:10b6:208:23b::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Fri, 18 Dec 2020 23:36:09 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kqPI8-00D0qq-6X; Fri, 18 Dec 2020 19:36:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1608334579; bh=bOoZnI1dWjtEDwoJCz481pyZxuXVUsn9C9DiAjS/ycc=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=BSODxxd/ar+TcgODfIh6ppHx4AR6kDVAUk470dVqSWPro4nSIQArmHHgV8QOIRbax
+         XNR4GetYf9KwxkDhv12jsLKxLGIo0StEMZAAgAEamLUo1fU1oSI8JFsW1VqMmrzVo2
+         cNddSRtIQux8jXOzG9f3lRZtWTgoMJmP70XA8JKbCmJk7+zyt2HTDWP6JXo1/hymt8
+         TlD/klmyLBZxs5Ogfy/OdwuuzAw6nKIANOyNW0oeegxsBM2q+s0/YLl0sAxQAQ8F7P
+         9sP0pLXalIJHG6yC2/tYKfClffHJMYBGBVvp/1gmXIRL80FoYw/oNaAxHy6u3uZo7s
+         mUomKkcABraHQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 19, 2020 at 12:08 AM Phil Sutter <phil@nwl.cc> wrote:
->
-> On Fri, Dec 18, 2020 at 08:09:23PM +0100, Andrea Claudi wrote:
-> > Functions get_cgroup2_id() and get_cgroup2_path() uncorrectly performs
-> > cleanup on the single return point. Both of them may get to use close()
-> > with a negative argument, if open() fails.
-> >
-> > Fix this adding proper labels and gotos to make sure we clean up only
-> > resources we are effectively used before.
->
-> Since free(NULL) is OK according to POSIX, the fds are initialized to -1
-> and open() returns -1 on error, you may simplify these
-> changes down to making the close() calls conditional:
->
-> | if (fd >= 0)
-> |       close(fd);
->
-> Cheers, Phil
->
+On Fri, Dec 18, 2020 at 10:16:58PM +0100, Alexandre Belloni wrote:
 
-Thanks for the suggestion, Phil. Will do in v2.
+> But then again, what about non-enumerable devices on the PCI device? I
+> feel this would exactly fit MFD. This is a collection of IPs that exist
+> as standalone but in this case are grouped in a single device.
 
+So, if mfd had a mfd_device and a mfd bus_type then drivers would need
+to have both a mfd_driver and a platform_driver to bind. Look at
+something like drivers/char/tpm/tpm_tis.c to see how a multi-probe
+driver is structured
+
+See Mark's remarks about the old of_platform_device, to explain why we
+don't have a 'dt_device' today
+
+> Note that I then have another issue because the kernel doesn't support
+> irq controllers on PCI and this is exactly what my SoC has. But for now,
+> I can just duplicate the irqchip driver in the MFD driver.
+
+I think Thomas fixed that recently on x86 at least.. 
+
+Having to put dummy irq chip drivers in MFD anything sounds scary :|
+
+> Let me point to drivers/net/ethernet/cadence/macb_pci.c which is a
+> fairly recent example. It does exactly that and I'm not sure you could
+> do it otherwise while still not having to duplicate most of macb_probe.
+
+Creating a platform_device to avoid restructuring the driver's probe
+and device logic to be generic is a *really* horrible reason to use a
+platform device.
+
+Jason
