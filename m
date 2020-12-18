@@ -2,85 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2D352DEA18
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 21:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 118C92DEA1F
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 21:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387452AbgLRURV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 18 Dec 2020 15:17:21 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:21810 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729424AbgLRURU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 15:17:20 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BIKEJED009793
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 12:16:39 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 35gxyf1k8k-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 12:16:39 -0800
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 18 Dec 2020 12:16:38 -0800
-Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
-        id 05E2259FBE7D; Fri, 18 Dec 2020 12:16:34 -0800 (PST)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     <netdev@vger.kernel.org>, <edumazet@google.com>,
-        <willemdebruijn.kernel@gmail.com>
-CC:     <kernel-team@fb.com>
-Subject: [PATCH 9/9 v1 RFC] skbuff: Call skb_zcopy_clear() before unref'ing fragments
-Date:   Fri, 18 Dec 2020 12:16:33 -0800
-Message-ID: <20201218201633.2735367-10-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201218201633.2735367-1-jonathan.lemon@gmail.com>
-References: <20201218201633.2735367-1-jonathan.lemon@gmail.com>
+        id S2387504AbgLRUSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 15:18:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387496AbgLRUSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 15:18:49 -0500
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0873C0617A7
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 12:18:06 -0800 (PST)
+Received: by mail-qk1-x734.google.com with SMTP id i67so3191140qkf.11
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 12:18:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TN0YKydFOcwaoL0LprOHmYM5z1euEdDwBFvpqdblXvs=;
+        b=UXAPftnZ62lfDQZO6VMuyWluH5OP9yuMUyZvxPCaFLZwji7q8uQx2BfJWYDrWiJkSJ
+         ljf7wkT62mhdorwbCMReuNyHhVFCbjaxshGPm6PAtZkuM2BOpyPRIxaPRhKi83WaPoYT
+         spywgkVUhBYFJLlpOUFnPmzhnifKoS9IdSIXC3m7pmPk5VAwxg/KTSVWsa0IKlqIBy8Y
+         Db2RhAeWVe6NIOIdKwsI6pqwwlj4t8njKOJCZs1/Hqb1ihmSGicwfdC8jKJCb4lb6Grr
+         /8nEpQMo721xvJfD972MCxnEkTbgdx62C5291zCTiBQspPyeLxXQUHts+Tsv/nQJdBWw
+         V5aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TN0YKydFOcwaoL0LprOHmYM5z1euEdDwBFvpqdblXvs=;
+        b=Q7ZsfzpI8epXCPBP2Un5/sIz9R76n2LJcQJwmdXBlurRIBHFGhjFGQwKSqms+FPEYC
+         AySqCqA6+BhvonYKgOC2jP4feGp4G6S3LtV7PKH3PJIMu3pLMGFb+CnQpEJ+Li2L8MFG
+         ITjpk7eLKvAH/UdRBrVWQ7ALg+I6I2Qq9wDq7pBLKHiojcXmtPFX24IBczbYTxhhc5Dz
+         ZjEx0imtmnl8wKIvq/TEYLlSsbXXNa35HXCd35bLAIDAmQ7RWcbH8ssfdjGVzfrk5ava
+         HbwPIjazsl2FQ9RGQvbi2thjKTB9Uq3NTE1xJY4xV/L+tZqkRetTolH8GQHfBC9CDIIF
+         lu/A==
+X-Gm-Message-State: AOAM532SAXSP0JHEmhuD7yVsQswY95rilV7athUTX763aQwiz37dwxyy
+        xDZqpVL6CoSIOSXkyKEJAKbLkA==
+X-Google-Smtp-Source: ABdhPJzqt2OVq2gxNomgOEqcAGDJcT+MkbCR1AE0CrFP1EVr8TeDBcLZ4GpnxOxyn/dDv0ApFuP8pA==
+X-Received: by 2002:a37:b82:: with SMTP id 124mr6640244qkl.294.1608322686035;
+        Fri, 18 Dec 2020 12:18:06 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-115-133.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.115.133])
+        by smtp.gmail.com with ESMTPSA id 60sm5782291qth.14.2020.12.18.12.18.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Dec 2020 12:18:05 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1kqMCS-00Ctfw-PO; Fri, 18 Dec 2020 16:18:04 -0400
+Date:   Fri, 18 Dec 2020 16:18:04 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Parav Pandit <parav@nvidia.com>, David Ahern <dsahern@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [net-next v4 00/15] Add mlx5 subfunction support
+Message-ID: <20201218201804.GQ5487@ziepe.ca>
+References: <20201216175112.GJ552508@nvidia.com>
+ <CAKgT0Uerqg5F5=jrn5Lu33+9Y6pS3=NLnOfvQ0dEZug6Ev5S6A@mail.gmail.com>
+ <20201216203537.GM552508@nvidia.com>
+ <CAKgT0UfuSA9PdtR6ftcq0_JO48Yp4N2ggEMiX9zrXkK6tN4Pmw@mail.gmail.com>
+ <c737048e-5e65-4b16-ffba-5493da556151@gmail.com>
+ <CAKgT0UdxVytp4+zYh+gOYDOc4+ZNNx3mW+F9f=UTiKxyWuMVbQ@mail.gmail.com>
+ <BY5PR12MB43220950B3A93B9E548976C7DCC30@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <CAKgT0UdtEJ0Xe5icMOSj0dg-unEgTR8AwDrtdAWTKEH4D-0www@mail.gmail.com>
+ <BY5PR12MB43223E49FF50757D8FD80738DCC30@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <CAKgT0Uetb7_P541Sd5t5Rne=np_+8AzJrv6GWqsFW_2A-kYEFw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-18_12:2020-12-18,2020-12-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- mlxlogscore=450 suspectscore=0 impostorscore=0 priorityscore=1501
- spamscore=0 clxscore=1034 mlxscore=0 bulkscore=0 adultscore=0
- malwarescore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2012180136
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Uetb7_P541Sd5t5Rne=np_+8AzJrv6GWqsFW_2A-kYEFw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <bsd@fb.com>
+On Fri, Dec 18, 2020 at 11:22:12AM -0800, Alexander Duyck wrote:
 
-RX zerocopy fragment pages which are not allocated from the
-system page pool require special handling.  Give the callback
-in skb_zcopy_clear() a chance to process them first.
+> Also as far as the patch count complaints I have seen in a few threads
+> I would be fine with splitting things up so that the devlink and aux
+> device creation get handled in one set, and then we work out the
+> details of mlx5 attaching to the devices and spawning of the SF
+> netdevs in another since that seems to be where the debate is.
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- net/core/skbuff.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+It doesn't work like that. The aux device creates a mlx5_core and
+every mlx5_core can run mlx5_en.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 463078ba663f..ee75279c7c78 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -605,13 +605,14 @@ static void skb_release_data(struct sk_buff *skb)
- 			      &shinfo->dataref))
- 		return;
- 
-+	skb_zcopy_clear(skb, true);
-+
- 	for (i = 0; i < shinfo->nr_frags; i++)
- 		__skb_frag_unref(&shinfo->frags[i]);
- 
- 	if (shinfo->frag_list)
- 		kfree_skb_list(shinfo->frag_list);
- 
--	skb_zcopy_clear(skb, true);
- 	skb_free_head(skb);
- }
- 
--- 
-2.24.1
+This really isn't the series to raise this feature request. Adding an
+optional short cut path to VF/SF is something that can be done later
+if up to date benchmarks show it has value. There is no blocker in
+this model to doing that.
 
+Jason
