@@ -2,125 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 087DD2DE36E
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 14:47:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D071B2DE372
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 14:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbgLRNqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 08:46:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
+        id S1727004AbgLRNrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 08:47:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726540AbgLRNqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 08:46:33 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E6BC06138C;
-        Fri, 18 Dec 2020 05:45:52 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id s21so1549847pfu.13;
-        Fri, 18 Dec 2020 05:45:52 -0800 (PST)
+        with ESMTP id S1726417AbgLRNrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 08:47:05 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7590CC061248
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 05:46:07 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id r7so2223631wrc.5
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 05:46:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=puW3DbJ+oWMyv153IUMmlQ4G7FVM7E3yY+4xe0UfzkA=;
-        b=FCJ8Yw15ZeymnEvZv6tabs1xv8nR/E4Nn9pAqHXavlPiofDnnrrMeO6QeDW5S+S0nn
-         NpbWrcIa/QtJA989zng4CDLJgGYc+K5kn/t/nkPaYJl/phfTt89vv7OoyjXYbqmyR6Z6
-         hYGq89/p3/3SBZF9tD23EeI/Q3/tnePky6QjDrWLBiLg3o8YRzYSMahtdUOGVvFW3ATu
-         17+W5sd1/2rQxXq+tG+tfyyrWQqFQhWeRPUUSLaO7I4aE7XYkyAV7s9MAfCJo4gCebrp
-         K8/ChM2vAA7T8jrSMpgmYe0f/uGYFc+3IHYAYEPOysCmUiQvP1gHtxanxBLT3CtFkkb+
-         K4qQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Ka1x3IgXnDKEVbUNgJSUcPN8PzFVanlFrtTuT6E8rts=;
+        b=D86dpjGakhZl+5XAKRbJimghynE7rov8qUJl/t75gAK4y/Fp5ssvHO49HPwJtIaWW7
+         X0ZJnoyYSQEoJHAhiXySsnJJYjhmZB45KowbpkHybNPtkPHbDggsC/oXZOIjNV0OxfIP
+         JtLk8ioNSYQNcBqUgcvb8hGzTjMFok0Z5d20D9TGp+gj3yAWd0tBwAcawAEAoclM3CeV
+         hlVaCtzhQlhb3gLpgfbarf5Mch5uuBb3PuxZXm6+Qk42SmEjVCjqSdKkAl+v/+V8XpWa
+         kzHRKLbBkT4RUsGzpF0vZVjKR15UffhOdqNzvt5OEAGmcdsDkI4BoE2RGEi1CeWWnZHq
+         NPTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=puW3DbJ+oWMyv153IUMmlQ4G7FVM7E3yY+4xe0UfzkA=;
-        b=jTjQhHgjSvLgIOc8CBFJDkv8fIjjCwqkBYHB8SckfPLxjlSzIteAZYZjeAp7XaeIjs
-         iwnvuc/U30XIIvyUT/sFd42Rxv373/aQl3t67jCTP6pEETjAQP2E4YKH2DRlJJc0FFuJ
-         u0+cCLfe8255xxDZ55ieFeXFIfixw10fBw3vfJ7ZhQ9d170i7LOEa5fDMJJ5lVEcueSJ
-         /Y45bva+XYFVA82qAEJ4J2U4hZBRPmVfUQLSLTQh7aH+oSesFNGTUxyvnZic6Dpa8ez6
-         +ZkpgZCXUWJL6zUSMsO3leTMbtWliI/kQwjueQdhqctb7bS4n0sC5bcpweJlLvClGthA
-         aKbA==
-X-Gm-Message-State: AOAM532vtA1yzN1DTs7suE3vz7Ug/Ji6sA4DtBfBj15iUIpiRBLAERcx
-        3IXsPo4e4tShEKMkoYQ6Jn8=
-X-Google-Smtp-Source: ABdhPJz0tU/9pyS2OnRIpSGN2I6ROVPelmMlTbNo3XMMNncgzYMcCwm7WkPPNN3mct/m5pLZHd/8Fw==
-X-Received: by 2002:aa7:84d5:0:b029:19d:da20:73fe with SMTP id x21-20020aa784d50000b029019dda2073femr4364071pfn.16.1608299152520;
-        Fri, 18 Dec 2020 05:45:52 -0800 (PST)
-Received: from VM.ger.corp.intel.com ([192.55.54.44])
-        by smtp.gmail.com with ESMTPSA id r185sm9075906pfc.53.2020.12.18.05.45.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 18 Dec 2020 05:45:52 -0800 (PST)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org, A.Zema@falconvsystems.com,
-        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH bpf v2 2/2] xsk: rollback reservation at NETDEV_TX_BUSY
-Date:   Fri, 18 Dec 2020 14:45:25 +0100
-Message-Id: <20201218134525.13119-3-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20201218134525.13119-1-magnus.karlsson@gmail.com>
-References: <20201218134525.13119-1-magnus.karlsson@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Ka1x3IgXnDKEVbUNgJSUcPN8PzFVanlFrtTuT6E8rts=;
+        b=WYQSG6xc7hrIuhQghj5GKsdzgoAbTl8pukPsGUMVu88mB+JclRAhiD3lyP5p2Uoz4G
+         IXj1wt3hn1Z4cMPiG5qrsRt5lik9r+ghgLULXt04QOJBB52lY+ALOYwW0DikgRfxxmCT
+         Fow/9E6X6295P0aWxeRvQzS5BfSHo9GkYMpqNSF/ZIC2e32Z1Y1XpNk2hCcu5qtFEKaQ
+         +O1uLdp+fO2ZdVCUJAF5nmWURlbbJWEFkgoBTAjUN+G/jAVeKEM+vwi2+cIs0OIJ7fIO
+         zcTUbOfEnUSv4DxxGgNzVLknwiY0YOF8r/QNZIj7EMBchc9B7Ox3M7rgXPL8+IuF90S4
+         Fq0Q==
+X-Gm-Message-State: AOAM533eQPmuMjdWgw6gTph5Xy5QoICJaU34NrZ9cJviUvdTLudULvV0
+        aHQwU0xA+n69BZ6boUINUNKcAQ==
+X-Google-Smtp-Source: ABdhPJzuzueQDnbBnCkvc22NOc11UsjLlpycV2v2yPaJ9/Pn3FrNYBjDBsPM3Sqix1VPGW3J6EwCWQ==
+X-Received: by 2002:a5d:52c1:: with SMTP id r1mr4590809wrv.255.1608299166077;
+        Fri, 18 Dec 2020 05:46:06 -0800 (PST)
+Received: from dell ([91.110.221.216])
+        by smtp.gmail.com with ESMTPSA id l1sm14124574wrq.64.2020.12.18.05.46.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Dec 2020 05:46:05 -0800 (PST)
+Date:   Fri, 18 Dec 2020 13:46:03 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@mellanox.com>
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Message-ID: <20201218134603.GS207743@dell>
+References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
+ <X8ogtmrm7tOzZo+N@kroah.com>
+ <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
+ <X8usiKhLCU3PGL9J@kroah.com>
+ <20201217211937.GA3177478@piout.net>
+ <X9xV+8Mujo4dhfU4@kroah.com>
+ <20201218131709.GA5333@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201218131709.GA5333@sirena.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+On Fri, 18 Dec 2020, Mark Brown wrote:
 
-Rollback the reservation in the completion ring when we get a
-NETDEV_TX_BUSY. When this error is received from the driver, we are
-supposed to let the user application retry the transmit again. And in
-order to do this, we need to roll back the failed send so it can be
-retried. Unfortunately, we did not cancel the reservation we had made
-in the completion ring. By not doing this, we actually make the
-completion ring one entry smaller per NETDEV_TX_BUSY error we get, and
-after enough of these errors the completion ring will be of size zero
-and transmit will stop working.
+> On Fri, Dec 18, 2020 at 08:10:51AM +0100, Greg KH wrote:
+> > On Thu, Dec 17, 2020 at 10:19:37PM +0100, Alexandre Belloni wrote:
+> 
+> > > There is something I don't get from the documentation and it is what is
+> > > this introducing that couldn't already be done using platform drivers
+> > > and platform devices?
+> 
+> > Because platform drivers and devices should ONLY be for actual platform
+> > devices.  Do NOT use that interface to fake up a non-platform device
+> > (i.e. something that is NOT connected to a cpu through a memory-mapped
+> > or direct-firmware interface).
+> 
+> > Do not abuse the platform code anymore than it currently is, it's bad
+> > enough what has been done to it over time, let's not make it any worse.
+> 
+> I am not clear on why you're giving direct-firmware devices (which I
+> assume means things like ARM SCMI where we're talking directly to some
+> firmware?) a pass here but not for example a GPIO controlled devices.
+> If this is mainly about improving abstractions it seems like the
+> boundary here isn't great.  Or perhaps I'm just missing what
+> direct-firmware is supposed to mean?
+> 
+> In any case, to be clear part of what you're saying here is that all
+> I2C and SPI MFDs should be rewritten to use this new bus - I've just
+> copied Lee in again since he keeps getting missed from these threads.
+> As previously discussed this will need the auxilliary bus extending to
+> support at least interrupts and possibly also general resources.
 
-Fix this by cancelling the reservation when we get a NETDEV_TX_BUSY
-error.
+Thanks Mark.
 
-Fixes: 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Reported-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Acked-by: Björn Töpel <bjorn.topel@intel.com>
----
- net/xdp/xsk.c       | 3 +++
- net/xdp/xsk_queue.h | 5 +++++
- 2 files changed, 8 insertions(+)
+Not entirely sure why this needed an entirely new subsystem to handle
+non-MMIO Multi-Functional Devices (MFD).  Or why I was not approached
+by any of the developers during the process.
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index d531f9cd0de6..8037b04a9edd 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -487,6 +487,9 @@ static int xsk_generic_xmit(struct sock *sk)
- 		if  (err == NETDEV_TX_BUSY) {
- 			/* Tell user-space to retry the send */
- 			skb->destructor = sock_wfree;
-+			spin_lock_irqsave(&xs->pool->cq_lock, flags);
-+			xskq_prod_cancel(xs->pool->cq);
-+			spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
- 			/* Free skb without triggering the perf drop trace */
- 			consume_skb(skb);
- 			err = -EAGAIN;
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index 4a9663aa7afe..2823b7c3302d 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -334,6 +334,11 @@ static inline bool xskq_prod_is_full(struct xsk_queue *q)
- 	return xskq_prod_nb_free(q, 1) ? false : true;
- }
- 
-+static inline void xskq_prod_cancel(struct xsk_queue *q)
-+{
-+	q->cached_prod--;
-+}
-+
- static inline int xskq_prod_reserve(struct xsk_queue *q)
- {
- 	if (xskq_prod_is_full(q))
+Having 2 entirely separate subsystems where MFDs can now be registered
+sounds confusing and convoluted at best.  Why not simply extend actual
+MFD to be capable of registering non-pure platform devices via other
+means?  By doing so you keep things bound to a central location
+resulting in less chance of misuse.
+
+I turn away MFD implementation abuses all the time.  Seeing as the 2
+subsystems are totally disjoint, this just unwittingly opened up
+another back-channel opportunity for those abuses to make it into the
+mainline kernel.
+
 -- 
-2.29.0
-
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
