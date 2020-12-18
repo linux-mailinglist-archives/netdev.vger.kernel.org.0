@@ -2,169 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F0DA2DE9CF
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:34:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13E9B2DE9EC
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 20:49:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733130AbgLRTe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 14:34:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726241AbgLRTe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 14:34:27 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F13BC0617B0;
-        Fri, 18 Dec 2020 11:33:46 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id u203so2944978ybb.2;
-        Fri, 18 Dec 2020 11:33:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KNBRvdmn/wyHTPHKsxQKl3rgA8nQ9Ef1h/1/1RSinx0=;
-        b=smd6OovZibegU2ze2AZcT6ztlhK9aFY8OGPE8O/x8dVdjACocHuWUkqs1kVbf0FnQs
-         DzvRqEM8tsVULNCUN4uUoaAOyX3BYPY34+3XMmvnrENqgg4F5/ki4Ky5kunhE9j7HO+N
-         hjNQTLhSg/1zUa3kI52+eBPbOyqaP4wsZnZS/ZaLU/Gwzrc3+ehGPq1gYGlOQJwO3ETG
-         cs0hPx1wUbTVkF8mnQ3qfvbr+FdEsnCEsSyJn6mLDxtj4X622XyBpDD/5I/s1Uz9zJx+
-         lxfZFmjKUvSOM/Y9ilH6uN1j5N7/kEvYqCrkxQDCYXCxKPxjOrzCsEk0Ton2xc5ss94j
-         Nt0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KNBRvdmn/wyHTPHKsxQKl3rgA8nQ9Ef1h/1/1RSinx0=;
-        b=mFki/RhdocE1fJ5iHAjP0dMDknX+vWFLKUVcmc+H10x6VjowpFNdlBLoWTULjFkozQ
-         35V4HR0aNniAYr6SxquYRI/Z0HvTWr5e/0mpvbJ/s1USqeDQgQ+3ZuXEz4xJo5kWm5HT
-         k8VnPlxZAd+4d+bQl/+sBVsgl0kTGltv3n3AZk7y429QqkKwykYFzES2qk8QzmOdUjtK
-         fBoCz/hMgOAniOxEvG86WY9Gy94Bz5UzTMbmXQ3Er4VqgzJCFzjAuNRYAahQ59SV57dM
-         lFpaRjGIoMuLkyctybzRlNU6druEVCtDMABedvSHUGA5o8ZjrtKsQzKB4KuowYfb+Gww
-         UT3w==
-X-Gm-Message-State: AOAM5328X9yLyeqztOcNoRGjr+aAU7TSzK9cTds06xfYKINSHu6BHlsu
-        ssKYbKu38HFou8quWWWTEom8XnEU9h8pZpun79A=
-X-Google-Smtp-Source: ABdhPJxEs172K5VHfcViqfe+yfi8RChWTtiy61V1DgUR9JtIfk5I1OUYbtJ2w0fp6/iN5zKhS4GhnS3HcQ+h5sxyBdU=
-X-Received: by 2002:a25:818e:: with SMTP id p14mr7850113ybk.425.1608320025975;
- Fri, 18 Dec 2020 11:33:45 -0800 (PST)
+        id S1733289AbgLRTsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 14:48:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39702 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1733261AbgLRTsz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Dec 2020 14:48:55 -0500
+Date:   Fri, 18 Dec 2020 11:48:12 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608320894;
+        bh=Qh4llrMn/hHqVQmIdxUlhe+2N4zekdVkoAsd89dOM0s=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LposW1O1LVNeCBAcVnKEPJHfQ1VWNPHV637iCLI218ju7AZPhWS6ZsfWQa4gvJIoR
+         eUUHtT8BOhveCJa0nIGR5HLDXN8tAO2k1NJ1QPcKKVxGXZlwp0iSMwQL8fMY/ijmPC
+         HelwgMSXicXYgNu3JgKbMBlqNwz+3THEj7Oe6nC52i6Gq9/GbZT7X1gM5UPN3DGrir
+         k/1g2MqPii37of7vGGt5n6j5tlFghGc3S8e/9ROhJYof+P+87kzyEKVp7evCMwsW/V
+         /Oy1eQ1XyxA+/RkIzlEU3C6keLu7qT+PQWhk6Nf5EPRwZR78yOI8SmXEkx7h7Rbkgk
+         9S8DnEpW4eKUw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        "david.m.ertman@intel.com" <david.m.ertman@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "kiran.patil@intel.com" <kiran.patil@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>
+Subject: Re: [net-next v5 03/15] devlink: Introduce PCI SF port flavour and
+ port attribute
+Message-ID: <20201218114812.28db7084@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <ecc117632ffa36ae374fb05ed4806af2d7d55576.camel@kernel.org>
+References: <20201215090358.240365-1-saeed@kernel.org>
+        <20201215090358.240365-4-saeed@kernel.org>
+        <20201215152740.0b3ed376@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BY5PR12MB432268C16D118BC435C0EF5CDCC50@BY5PR12MB4322.namprd12.prod.outlook.com>
+        <20201216155945.63f07c80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <ecc117632ffa36ae374fb05ed4806af2d7d55576.camel@kernel.org>
 MIME-Version: 1.0
-References: <cover.1608112796.git.christophe.leroy@csgroup.eu>
- <1fed5e11ba08ee28d12f3f57986e5b143a6aa937.1608112797.git.christophe.leroy@csgroup.eu>
- <20201217061133.lnfnhbzvikgtjb3i@ast-mbp> <854404a0-1951-91d9-2ebb-208390a64c77@csgroup.eu>
-In-Reply-To: <854404a0-1951-91d9-2ebb-208390a64c77@csgroup.eu>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 18 Dec 2020 11:33:35 -0800
-Message-ID: <CAEf4BzbNp0bvTbh4UjHO0KTs3Q83yuBMdh-8wCHCcTrPWnO25Q@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 7/7] powerpc/bpf: Implement extended BPF on PPC32
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, naveen.n.rao@linux.ibm.com,
-        sandipan@linux.ibm.com, open list <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 17, 2020 at 1:54 AM Christophe Leroy
-<christophe.leroy@csgroup.eu> wrote:
->
->
->
-> Le 17/12/2020 =C3=A0 07:11, Alexei Starovoitov a =C3=A9crit :
-> > On Wed, Dec 16, 2020 at 10:07:37AM +0000, Christophe Leroy wrote:
-> >> Implement Extended Berkeley Packet Filter on Powerpc 32
-> >>
-> >> Test result with test_bpf module:
-> >>
-> >>      test_bpf: Summary: 378 PASSED, 0 FAILED, [354/366 JIT'ed]
-> >
-> > nice!
-> >
-> >> Registers mapping:
-> >>
-> >>      [BPF_REG_0] =3D r11-r12
-> >>      /* function arguments */
-> >>      [BPF_REG_1] =3D r3-r4
-> >>      [BPF_REG_2] =3D r5-r6
-> >>      [BPF_REG_3] =3D r7-r8
-> >>      [BPF_REG_4] =3D r9-r10
-> >>      [BPF_REG_5] =3D r21-r22 (Args 9 and 10 come in via the stack)
-> >>      /* non volatile registers */
-> >>      [BPF_REG_6] =3D r23-r24
-> >>      [BPF_REG_7] =3D r25-r26
-> >>      [BPF_REG_8] =3D r27-r28
-> >>      [BPF_REG_9] =3D r29-r30
-> >>      /* frame pointer aka BPF_REG_10 */
-> >>      [BPF_REG_FP] =3D r31
-> >>      /* eBPF jit internal registers */
-> >>      [BPF_REG_AX] =3D r19-r20
-> >>      [TMP_REG] =3D r18
-> >>
-> >> As PPC32 doesn't have a redzone in the stack,
-> >> use r17 as tail call counter.
-> >>
-> >> r0 is used as temporary register as much as possible. It is referenced
-> >> directly in the code in order to avoid misuse of it, because some
-> >> instructions interpret it as value 0 instead of register r0
-> >> (ex: addi, addis, stw, lwz, ...)
-> >>
-> >> The following operations are not implemented:
-> >>
-> >>              case BPF_ALU64 | BPF_DIV | BPF_X: /* dst /=3D src */
-> >>              case BPF_ALU64 | BPF_MOD | BPF_X: /* dst %=3D src */
-> >>              case BPF_STX | BPF_XADD | BPF_DW: /* *(u64 *)(dst + off) =
-+=3D src */
-> >>
-> >> The following operations are only implemented for power of two constan=
-ts:
-> >>
-> >>              case BPF_ALU64 | BPF_MOD | BPF_K: /* dst %=3D imm */
-> >>              case BPF_ALU64 | BPF_DIV | BPF_K: /* dst /=3D imm */
-> >
-> > Those are sensible limitations. MOD and DIV are rare, but XADD is commo=
-n.
-> > Please consider doing it as a cmpxchg loop in the future.
-> >
-> > Also please run test_progs. It will give a lot better coverage than tes=
-t_bpf.ko
-> >
->
-> I'm having hard time cross building test_progs:
->
-> ~/linux-powerpc/tools/testing/selftests/bpf/$ make CROSS_COMPILE=3Dppc-li=
-nux-
-> ...
->    GEN
-> /home/chr/linux-powerpc/tools/testing/selftests/bpf/tools/build/bpftool/D=
-ocumentation/bpf-helpers.7
->    INSTALL  eBPF_helpers-manpage
->    INSTALL  Documentation-man
->    GEN      vmlinux.h
-> /bin/sh: /home/chr/linux-powerpc/tools/testing/selftests/bpf/tools/sbin/b=
-pftool: cannot execute
-> binary file
-> make: *** [/home/chr/linux-powerpc/tools/testing/selftests/bpf/tools/incl=
-ude/vmlinux.h] Error 126
-> make: *** Deleting file `/home/chr/linux-powerpc/tools/testing/selftests/=
-bpf/tools/include/vmlinux.h'
->
-> Looks like it builds bpftool for powerpc and tries to run it on my x86.
-> How should I proceed ?
+On Wed, 16 Dec 2020 20:44:21 -0800 Saeed Mahameed wrote:
+> On Wed, 2020-12-16 at 15:59 -0800, Jakub Kicinski wrote:
+> > On Wed, 16 Dec 2020 03:42:51 +0000 Parav Pandit wrote:  
+> > > > From: Jakub Kicinski <kuba@kernel.org>
+> > > > So subfunctions don't have a VF id but they may have a
+> > > > controller?
+> > > >    
+> > > Right. SF can be on external controller.
+> > >    
+> > > > Can you tell us more about the use cases and deployment models
+> > > > you're
+> > > > intending to support? Let's not add attributes and info which
+> > > > will go unused.
+> > > >     
+> > > External will be used the same way how it is used for PF and VF.
+> > >   
+> > > > How are SFs supposed to be used with SmartNICs? Are you assuming
+> > > > single
+> > > > domain of control?    
+> > > No. it is not assumed. SF can be deployed from smartnic to external
+> > > host.
+> > > A user has to pass appropriate controller number, pf number
+> > > attributes during creation time.  
+> > 
+> > My problem with this series is that I've gotten some real life
+> > application exposure over the last year, and still I have no idea 
+> > who is going to find this feature useful and why.
+> > 
+> > That's the point of my questions in the previous email - what
+> > are the use cases, how are they going to operate.
+> >   
+> 
+> The main focus of this feature is scale-ability we want to run
+> thousands of Containers/VMs, this is useful for both smartnic and
+> baremetal hypervisor worlds, where security and control is exclusive to
+> the eswitch manager may it be the smarnic embedded CPU or the x86
+> Hypervisor.
+> 
+> deployment models is identical to SRIOV, the only difference is the
+> instantiation model of SF, which is the main discussion point of this
+> series (i hope), which to my taste is very modest and minimal.
+> after SF is instantiated from that point nothing is new, the SF is
+> exposing standard linux interfaces netdev/rdma identical to what VF
+> does, most likely you will assign them a namespace and pass them
+> through to a container or assign them (not direct assignment) to a VM
+> via the virt stack, or create a vdpa instance and pass it to a virtio
+> interface.
+> 
+> There are endless usecases for the netdev stack, for customers who want
 
+"endless" :)
 
-The best way would be to fix whatever needs to be fixed in
-selftests/bpf and/or bpftool Makefiles to support cross-compilation.
-There was some work already for bpftool to support that (with building
-bpftool-bootstrap separately for a host architecture, etc). Please
-check what's broken and let's try to fix it.
+> high scale virtualized/containerized environments, with thousands of
+> network functions that can deliver high speed and full offload
+> accelerators, Native XDP, Crypto, encap/decap, and HW filtering and
+> processing pipeline capabilities.
+> 
+> I have a long list of customers with various and different applications
+> and i am not even talking about the rdma and vdpa customers ! those
+> customers just can't wait to leave sriov behind and scale up !
+> 
+> this feature has a lot of value to the netdev users only because of the
+> minimal foot print to the netdev stack (to be honest there is no change
+> in netdev, only a thin API layer in devlink) and the immediate and
+> effortless benefits to deploy multiple (accelerated) netdevs at scale.
 
->
-> Thanks
-> Christophe
+The acceleration can hopefully be plumbed through the software devices.
+
+I think your HW is capable of doing large queue sets so I'm curious
+how this actually performs. We're probably talking 1000+ queues here -
+the CPU will have hard time serving so many queues. In my experiments
+basically the more queues the more cache trashing, the more interrupts,
+etc. and the lower the performance.
+
+> > It's hard to review an API without knowing the use of it. iproute2
+> > is low level plumbing.
+> 
+> I don't know how to put this, let me try:
+> A) SRIOV model
+> echo 128 > /sys/class/net/eth0/device/sriov_numvfs
+> ubind vf
+> 
+> ip set vf attribute x
+> configure representor .. 
+> deploy vf/netdev/rdma interface into the container
+
+No, no, my point is that for SR-IOV it's OpenStack, libvirt etc. which
+do this. I understand the manual steps. Often problems pop up when real
+systems try to string the HW objects together, allocated them, learn
+their capabilities, etc.
+
+> B) SF model 
+> you do (every thing under the devlink umbrella/switchdev):
+> for i in {1..1024} ; do
+> devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum $i
+> devlink port sf $i set attribute x
+> 
+> # from here on, it is identical to a VF
+> configure representor
+> deply sf/netdev/rdma interfaces into a container 
+> 
+> B is more scale-able and has more visibility and controllability  to
+> the user, after you create the SFs deployment and usecases are
+> identical to SRIOV VF usecases.
+> 
+> See the improvement ? :)
+> 
+> > Here the patch is adding the ability to apparently create a SF on 
+> > a remote controller. If you haven't thought that use case through
+> > just don't allow it until you know how it will work.
+> 
+> We have thought the use case through it is not any different from the 
+> local controller use case. the code is uniform, we need to work hard to
+> block a remote controller :) .. 
+
+So the SF is always created from the eswitch controller side?
+How does the host side look?
+
+I really think that for ease of merging this we should leave 
+the remote controller out at the beginning - only allow local
+creation.
+
+> > > > It seems that the way the industry is moving the major
+> > > > use case for SmartNICs is bare metal.
+> > > > 
+> > > > I always assumed nested eswitches when thinking about SmartNICs,
+> > > > what
+> > > > are you intending to do?
+> > > >    
+> > > Mlx5 doesn't support nested eswitch. SF can be deployed on the
+> > > external controller PCI function.
+> > > But this interface neither limited nor enforcing nested or flat
+> > > eswitch.
+> > >    
+> > > > What are your plans for enabling this feature in user space
+> > > > project?    
+> > > Do you mean K8s plugin or iproute2? Can you please tell us what
+> > > user space project?  
+> > 
+> > That's my question. For SR-IOV it'd be all the virt stacks out there.
+> > But this can't do virt. So what can it do?
+> 
+> you are thinking VF direct assignment. but don't forget
+> virt handles netdev assignment to a vm perfectly fine and SF has a
+> netdev.
+> 
+> And don't get me started on the weird virt handling of SRIOV VF, the
+> whole thing is a big mess :) it shouldn't be a de facto standard that
+> we need to follow.. 
