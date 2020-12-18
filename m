@@ -2,160 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0402DE51A
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 15:50:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F33C52DE655
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 16:17:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728070AbgLROtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 09:49:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726215AbgLROtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 09:49:00 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9A5C0617A7;
-        Fri, 18 Dec 2020 06:48:20 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id w124so3029938oia.6;
-        Fri, 18 Dec 2020 06:48:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=16yKO6jO+Y1W+raoao4y5ptagCxfaD7UbTLUEFgLqGg=;
-        b=WFYJiSNVrEZyaxntrhKoKVWyCxR71d5WDq4I8J94QxJ3sICcB5g5rGaIurvEdI2qN0
-         QjvH/dReKGX+TvzunY60v/9ovpjAexsSvOGEid/1cplVm4wThza71Fz7smIpP4GjWYdS
-         4T3+hZcJdVoxu/geFOTENj2VkSNckpElL/jeMQrAepJ13vrihRU8CG5z8njm/1sgJl0l
-         a+0SE8rDH24oYiXfuSuS6B7KPAxbv0PIbUQG28Fm1GHVkcm39ejiai9RGCvMfRbvDo9k
-         5hkseIR7F+QPo0eCiuNmJNvNCUBZGE82I9WvIrBBOr7Wc3pw8eownxw4OqxircKBMDnP
-         KhDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=16yKO6jO+Y1W+raoao4y5ptagCxfaD7UbTLUEFgLqGg=;
-        b=UiMzAeNRw3eUEKt8kLb3VC0Jfyb/SYHaSomfTQJ6AoqNtZBNPHWtPtIC78eyaMX0oY
-         N3CeNAMRacQIaYwIY/6h/yam1TrNCBQNjK1MWFmMM1qjrpzSz+HbrplQaoLNj0Mqq4HD
-         9B+XiQuSbw5Vh2qWaUawEN9EbSUWjJD3DpY7nd96/IOXtonVagrT1VeFM8bfqC3TGbZT
-         0L5GnD21NKgZfLERAq6vDf562HUtflYh8T4OELMMAyidFN54W6+TbLHKdnQLiuRb42eE
-         IuQPoIYO0FRw004TSbd/tXCzl8BGf6dSJS9fE2kscGtaV7P7Dc2uPg4fC55a8kp1wPfD
-         eZ9g==
-X-Gm-Message-State: AOAM533zA/P3xR7myY0T35RNojTjDG9OZsqznjMBNfa3cd79Z5o/Rbyl
-        6kG21WbbYrbD/RBRxQVBec8+iQgBKqA=
-X-Google-Smtp-Source: ABdhPJxL9PCfdfMcHyMMXbjtJZWMuzi7joIstYK29AMmol8L3Nx3b9V36kACswwiSxIic5bcZZiH6g==
-X-Received: by 2002:aca:1907:: with SMTP id l7mr2972269oii.141.1608302899229;
-        Fri, 18 Dec 2020 06:48:19 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id g3sm1538323ooi.28.2020.12.18.06.48.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Dec 2020 06:48:18 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Subject: Re: [PATCH] dt-bindings: Fix JSON pointers
-To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org
-References: <20201217223429.354283-1-robh@kernel.org>
-From:   Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- xsFNBE6H1WcBEACu6jIcw5kZ5dGeJ7E7B2uweQR/4FGxH10/H1O1+ApmcQ9i87XdZQiB9cpN
- RYHA7RCEK2dh6dDccykQk3bC90xXMPg+O3R+C/SkwcnUak1UZaeK/SwQbq/t0tkMzYDRxfJ7
- nyFiKxUehbNF3r9qlJgPqONwX5vJy4/GvDHdddSCxV41P/ejsZ8PykxyJs98UWhF54tGRWFl
- 7i1xvaDB9lN5WTLRKSO7wICuLiSz5WZHXMkyF4d+/O5ll7yz/o/JxK5vO/sduYDIlFTvBZDh
- gzaEtNf5tQjsjG4io8E0Yq0ViobLkS2RTNZT8ICq/Jmvl0SpbHRvYwa2DhNsK0YjHFQBB0FX
- IdhdUEzNefcNcYvqigJpdICoP2e4yJSyflHFO4dr0OrdnGLe1Zi/8Xo/2+M1dSSEt196rXaC
- kwu2KgIgmkRBb3cp2vIBBIIowU8W3qC1+w+RdMUrZxKGWJ3juwcgveJlzMpMZNyM1jobSXZ0
- VHGMNJ3MwXlrEFPXaYJgibcg6brM6wGfX/LBvc/haWw4yO24lT5eitm4UBdIy9pKkKmHHh7s
- jfZJkB5fWKVdoCv/omy6UyH6ykLOPFugl+hVL2Prf8xrXuZe1CMS7ID9Lc8FaL1ROIN/W8Vk
- BIsJMaWOhks//7d92Uf3EArDlDShwR2+D+AMon8NULuLBHiEUQARAQABzTJHdWVudGVyIFJv
- ZWNrIChMaW51eCBhY2NvdW50KSA8bGludXhAcm9lY2stdXMubmV0PsLBgQQTAQIAKwIbAwYL
- CQgHAwIGFQgCCQoLBBYCAwECHgECF4ACGQEFAlVcphcFCRmg06EACgkQyx8mb86fmYFg0RAA
- nzXJzuPkLJaOmSIzPAqqnutACchT/meCOgMEpS5oLf6xn5ySZkl23OxuhpMZTVX+49c9pvBx
- hpvl5bCWFu5qC1jC2eWRYU+aZZE4sxMaAGeWenQJsiG9lP8wkfCJP3ockNu0ZXXAXwIbY1O1
- c+l11zQkZw89zNgWgKobKzrDMBFOYtAh0pAInZ9TSn7oA4Ctejouo5wUugmk8MrDtUVXmEA9
- 7f9fgKYSwl/H7dfKKsS1bDOpyJlqhEAH94BHJdK/b1tzwJCFAXFhMlmlbYEk8kWjcxQgDWMu
- GAthQzSuAyhqyZwFcOlMCNbAcTSQawSo3B9yM9mHJne5RrAbVz4TWLnEaX8gA5xK3uCNCeyI
- sqYuzA4OzcMwnnTASvzsGZoYHTFP3DQwf2nzxD6yBGCfwNGIYfS0i8YN8XcBgEcDFMWpOQhT
- Pu3HeztMnF3HXrc0t7e5rDW9zCh3k2PA6D2NV4fews9KDFhLlTfCVzf0PS1dRVVWM+4jVl6l
- HRIAgWp+2/f8dx5vPc4Ycp4IsZN0l1h9uT7qm1KTwz+sSl1zOqKD/BpfGNZfLRRxrXthvvY8
- BltcuZ4+PGFTcRkMytUbMDFMF9Cjd2W9dXD35PEtvj8wnEyzIos8bbgtLrGTv/SYhmPpahJA
- l8hPhYvmAvpOmusUUyB30StsHIU2LLccUPPOwU0ETofVZwEQALlLbQeBDTDbwQYrj0gbx3bq
- 7kpKABxN2MqeuqGr02DpS9883d/t7ontxasXoEz2GTioevvRmllJlPQERVxM8gQoNg22twF7
- pB/zsrIjxkE9heE4wYfN1AyzT+AxgYN6f8hVQ7Nrc9XgZZe+8IkuW/Nf64KzNJXnSH4u6nJM
- J2+Dt274YoFcXR1nG76Q259mKwzbCukKbd6piL+VsT/qBrLhZe9Ivbjq5WMdkQKnP7gYKCAi
- pNVJC4enWfivZsYupMd9qn7Uv/oCZDYoBTdMSBUblaLMwlcjnPpOYK5rfHvC4opxl+P/Vzyz
- 6WC2TLkPtKvYvXmdsI6rnEI4Uucg0Au/Ulg7aqqKhzGPIbVaL+U0Wk82nz6hz+WP2ggTrY1w
- ZlPlRt8WM9w6WfLf2j+PuGklj37m+KvaOEfLsF1v464dSpy1tQVHhhp8LFTxh/6RWkRIR2uF
- I4v3Xu/k5D0LhaZHpQ4C+xKsQxpTGuYh2tnRaRL14YMW1dlI3HfeB2gj7Yc8XdHh9vkpPyuT
- nY/ZsFbnvBtiw7GchKKri2gDhRb2QNNDyBnQn5mRFw7CyuFclAksOdV/sdpQnYlYcRQWOUGY
- HhQ5eqTRZjm9z+qQe/T0HQpmiPTqQcIaG/edgKVTUjITfA7AJMKLQHgp04Vylb+G6jocnQQX
- JqvvP09whbqrABEBAAHCwWUEGAECAA8CGwwFAlVcpi8FCRmg08MACgkQyx8mb86fmYHNRQ/+
- J0OZsBYP4leJvQF8lx9zif+v4ZY/6C9tTcUv/KNAE5leyrD4IKbnV4PnbrVhjq861it/zRQW
- cFpWQszZyWRwNPWUUz7ejmm9lAwPbr8xWT4qMSA43VKQ7ZCeTQJ4TC8kjqtcbw41SjkjrcTG
- wF52zFO4bOWyovVAPncvV9eGA/vtnd3xEZXQiSt91kBSqK28yjxAqK/c3G6i7IX2rg6pzgqh
- hiH3/1qM2M/LSuqAv0Rwrt/k+pZXE+B4Ud42hwmMr0TfhNxG+X7YKvjKC+SjPjqp0CaztQ0H
- nsDLSLElVROxCd9m8CAUuHplgmR3seYCOrT4jriMFBtKNPtj2EE4DNV4s7k0Zy+6iRQ8G8ng
- QjsSqYJx8iAR8JRB7Gm2rQOMv8lSRdjva++GT0VLXtHULdlzg8VjDnFZ3lfz5PWEOeIMk7Rj
- trjv82EZtrhLuLjHRCaG50OOm0hwPSk1J64R8O3HjSLdertmw7eyAYOo4RuWJguYMg5DRnBk
- WkRwrSuCn7UG+qVWZeKEsFKFOkynOs3pVbcbq1pxbhk3TRWCGRU5JolI4ohy/7JV1TVbjiDI
- HP/aVnm6NC8of26P40Pg8EdAhajZnHHjA7FrJXsy3cyIGqvg9os4rNkUWmrCfLLsZDHD8FnU
- mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-Message-ID: <9cc080ea-ce25-45f4-3975-cdc0ac77c1c1@roeck-us.net>
-Date:   Fri, 18 Dec 2020 06:48:15 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728249AbgLRPQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 10:16:57 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:47798 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725878AbgLRPQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Dec 2020 10:16:56 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 1EEF72057E;
+        Fri, 18 Dec 2020 16:16:14 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id eC8_xBHs8Rf3; Fri, 18 Dec 2020 16:16:13 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 98FA420569;
+        Fri, 18 Dec 2020 16:16:13 +0100 (CET)
+Received: from mbx-dresden-01.secunet.de (10.53.40.199) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 18 Dec 2020 16:16:13 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-dresden-01.secunet.de
+ (10.53.40.199) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Fri, 18 Dec
+ 2020 16:16:12 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 185A331806B6; Fri, 18 Dec 2020 16:16:12 +0100 (CET)
+Date:   Fri, 18 Dec 2020 16:16:12 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Shmulik Ladkani <shmulik@metanetworks.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Subject: Re: [PATCH] xfrm: Fix oops in xfrm_replay_advance_bmp
+Message-ID: <20201218151612.GC3576117@gauss3.secunet.de>
+References: <20201214133832.438945-1-shmulik.ladkani@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201217223429.354283-1-robh@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20201214133832.438945-1-shmulik.ladkani@gmail.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-dresden-01.secunet.de (10.53.40.199)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/20 2:34 PM, Rob Herring wrote:
-> The correct syntax for JSON pointers begins with a '/' after the '#'.
-> Without a '/', the string should be interpretted as a subschema
-> identifier. The jsonschema module currently doesn't handle subschema
-> identifiers and incorrectly allows JSON pointers to begin without a '/'.
-> Let's fix this before it becomes a problem when jsonschema module is
-> fixed.
+On Mon, Dec 14, 2020 at 03:38:32PM +0200, Shmulik Ladkani wrote:
+> When setting xfrm replay_window to values higher than 32, a rare
+> page-fault occurs in xfrm_replay_advance_bmp:
 > 
-> Converted with:
-> perl -p -i -e 's/yaml#definitions/yaml#\/definitions/g' `find Documentation/devicetree/bindings/ -name "*.yaml"`
+>   BUG: unable to handle page fault for address: ffff8af350ad7920
+>   #PF: supervisor write access in kernel mode
+>   #PF: error_code(0x0002) - not-present page
+>   PGD ad001067 P4D ad001067 PUD 0
+>   Oops: 0002 [#1] SMP PTI
+>   CPU: 3 PID: 30 Comm: ksoftirqd/3 Kdump: loaded Not tainted 5.4.52-050452-generic #202007160732
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2.el7 04/01/2014
+>   RIP: 0010:xfrm_replay_advance_bmp+0xbb/0x130
+>   RSP: 0018:ffffa1304013ba40 EFLAGS: 00010206
+>   RAX: 000000000000010d RBX: 0000000000000002 RCX: 00000000ffffff4b
+>   RDX: 0000000000000018 RSI: 00000000004c234c RDI: 00000000ffb3dbff
+>   RBP: ffffa1304013ba50 R08: ffff8af330ad7920 R09: 0000000007fffffa
+>   R10: 0000000000000800 R11: 0000000000000010 R12: ffff8af29d6258c0
+>   R13: ffff8af28b95c700 R14: 0000000000000000 R15: ffff8af29d6258fc
+>   FS:  0000000000000000(0000) GS:ffff8af339ac0000(0000) knlGS:0000000000000000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: ffff8af350ad7920 CR3: 0000000015ee4000 CR4: 00000000001406e0
+>   Call Trace:
+>    xfrm_input+0x4e5/0xa10
+>    xfrm4_rcv_encap+0xb5/0xe0
+>    xfrm4_udp_encap_rcv+0x140/0x1c0
 > 
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Daniel Thompson <daniel.thompson@linaro.org>
-> Cc: Jingoo Han <jingoohan1@gmail.com>
-> Cc: Pavel Machek <pavel@ucw.cz>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
+> Analysis revealed offending code is when accessing:
+> 
+> 	replay_esn->bmp[nr] |= (1U << bitnr);
+> 
+> with 'nr' being 0x07fffffa.
+> 
+> This happened in an SMP system when reordering of packets was present;
+> A packet arrived with a "too old" sequence number (outside the window,
+> i.e 'diff > replay_window'), and therefore the following calculation:
+> 
+> 			bitnr = replay_esn->replay_window - (diff - pos);
+> 
+> yields a negative result, but since bitnr is u32 we get a large unsigned
+> quantity (in crash dump above: 0xffffff4b seen in ecx).
+> 
+> This was supposed to be protected by xfrm_input()'s former call to:
+> 
+> 		if (x->repl->check(x, skb, seq)) {
+> 
+> However, the state's spinlock x->lock is *released* after '->check()'
+> is performed, and gets re-acquired before '->advance()' - which gives a
+> chance for a different core to update the xfrm state, e.g. by advancing
+> 'replay_esn->seq' when it encounters more packets - leading to a
+> 'diff > replay_window' situation when original core continues to
+> xfrm_replay_advance_bmp().
+> 
+> An attempt to fix this issue was suggested in commit bcf66bf54aab
+> ("xfrm: Perform a replay check after return from async codepaths"),
+> by calling 'x->repl->recheck()' after lock is re-acquired, but fix
+> applied only to asyncronous crypto algorithms.
+> 
+> Augment the fix, by *always* calling 'recheck()' - irrespective if we're
+> using async crypto.
+> 
+> Fixes: 0ebea8ef3559 ("[IPSEC]: Move state lock into x->type->input")
+> Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
 
->  .../bindings/hwmon/moortec,mr75203.yaml       |  2 +-
->  .../bindings/hwmon/sensirion,shtc1.yaml       |  4 +-
->  .../devicetree/bindings/hwmon/ti,tmp513.yaml  |  2 +-
-
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+Applied, thanks a lot Shmulik!
