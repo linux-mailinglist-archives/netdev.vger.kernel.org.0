@@ -2,95 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BED42DEAB2
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 22:03:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C373D2DEAB6
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 22:04:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726020AbgLRVDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 16:03:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35752 "EHLO
+        id S1726177AbgLRVDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 16:03:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725778AbgLRVDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 16:03:01 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E9EC0617A7;
-        Fri, 18 Dec 2020 13:02:21 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id d37so3137098ybi.4;
-        Fri, 18 Dec 2020 13:02:21 -0800 (PST)
+        with ESMTP id S1725778AbgLRVDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 16:03:34 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA2BC0617B0;
+        Fri, 18 Dec 2020 13:02:53 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id j16so3769616edr.0;
+        Fri, 18 Dec 2020 13:02:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=47vveCYCVpthvHmKjVidfRBrMv4CgoZqAi5d0tl2Cos=;
-        b=XtCtwzQ+h11D7UFAoi3ICRNh21XpjfVsLQhKHtKE5iuXoN8prq/7NPSPTzzTdC9V2u
-         IF3lr0G0JRSG7rNYtON4nkoI5y6w3SjUoVKOof5Q4YCFi7V+I0Dt2LRs/Ynu2Zf2StNj
-         ld9qC/LFcH5ToZBjA1MRu62ggju5ufdz8PHdbpdYY/usbYdYao9FJVIkhpARsRDejEIu
-         0T2E2QOXxoxS+c7x317TNe0ZYdCe78xfLjCI7leJOal3oKChOYPHXt1p86WUVh2tihvj
-         s4UK6FB7vdBFGJvxzXdY42xoDfUCDZF4QK31/x/W05ZMG5pi7S0swq5clNJOCsQUUoGY
-         k4Qw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mzct5htaiEux0x9rPO5sq+ILOG2h8DTokZY7C5lhKkg=;
+        b=BCdINtKQLiA24DLJWFXMCfu1JUUFx6/f4n5yu+UBopNswmAxv/YeeRIN2QCueWboqR
+         cd0KcpYSCh0qBNkyup0yexILujiXngAJJC+qXT/eLyc3y5XQ/VFiW/SgeF4fkjSIDCSu
+         Cml9Rn28XDqWQq5Xn2LVaVWES1qzDmEkc4cTASvE9KJjTIJFTngn5+naCcHDQOTwEEDH
+         kejOxYMzU0GCTssnuPimA0Ye1ce1fqn0zhIfl7QN4WArFoKleOuizh7jPzbhVFYYObcy
+         s06YveS12GdZ/VMe2rk9gZLD3vpes5/BGSng81VIs/wZrQWmoqocqXW9KJIDQ2EX9rVD
+         xOOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=47vveCYCVpthvHmKjVidfRBrMv4CgoZqAi5d0tl2Cos=;
-        b=OqaQEWP8sin07vAHbqv2PQHHrTmesKhtnofTgl2mYF6gH2HDyVJDXR0DxTXaH3Fbi1
-         2YjzCQkV9kVaY4SVvyOLsQHXTI4bWG1vMAtsvKPSbasy+oTulL9zonpsqd9t4OhoedXf
-         hUB+NA45xPnPiDGk6dPBF9fm1yYu/ohfvsFnGbCjyBzvoyGFsZASATvq5UYTMXth60+0
-         FRovz9SAm0S2fDiL3DHQBrFduJ52L0bJ+5V0s6ZXm1f8+1FTBwP19K+Hdr2CHkecX12M
-         n85vIzavKefPYjL3cHpd0HS0ayIV+o0saTaMc0iIaIZl1pKOuhp63RFa5T5D1rqBxlv8
-         R3bg==
-X-Gm-Message-State: AOAM532ryyLmWVY9QHiylQ7gdgijIs82T2GeKFWBappkHBKC/429qRFP
-        v/FBYBXVtT4YRq6bQ5KqJ/89WjFsUZci5WXsMgiiGNhdzS9bXQ==
-X-Google-Smtp-Source: ABdhPJzBgMlm072gAVrdjohI/+hpToRVyiTWOyroNg6+1ZV3zwU96R+xEYyces14KuflWU2B6dalESZ2SFukyhV7RZo=
-X-Received: by 2002:a25:c089:: with SMTP id c131mr8115190ybf.510.1608325340765;
- Fri, 18 Dec 2020 13:02:20 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mzct5htaiEux0x9rPO5sq+ILOG2h8DTokZY7C5lhKkg=;
+        b=rsWT+PBNyW0EctaobrIuOuT0njMmuKeLPimG2XINzcdJJLyWizXpH0vO8/+gzxO5N8
+         ncw4QKq9uVPQAmeAmkg8d0Je7r0SpgdiR+ajzlLknMNFRMDYk9+gFsb1rB+eUHVq+P0o
+         HBtHalLQcwziOTOmxRFUAgI1HIDCOwqWDQIlV74jQpmp7EXx522DJVDkPxBWTuSUCC5B
+         PCQlKh1M/YVN9AisFIWTUXhW+zEOAqPOAZX0LsLdJZVT0ERoLaPv49Kxq3HxiRP/YOaz
+         v3QZ+t2lWi+uf0zjPWrcCvOKW5NtYWKa3dr+WyeJOl7cBo3ChKnYmEW6IM/zgnbAu2K3
+         Ow8Q==
+X-Gm-Message-State: AOAM531XpkB3Hjbr56XKTJwmrEoQ8k4l3yxx22z8oz+HDVb09o/m6681
+        AjDe8hEme3M0Ll6tW/doJdY=
+X-Google-Smtp-Source: ABdhPJyxJWD4Fo3smfSZgPoleK1imWoabQUl6UBIgTiStR84QFPZOnmgOBoAgDJHdYgvnkLOwRGGPQ==
+X-Received: by 2002:aa7:c78c:: with SMTP id n12mr6347111eds.363.1608325372500;
+        Fri, 18 Dec 2020 13:02:52 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id r1sm5901368eje.51.2020.12.18.13.02.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Dec 2020 13:02:51 -0800 (PST)
+Date:   Fri, 18 Dec 2020 23:02:50 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "open list:BROADCOM SYSTEMPORT ETHERNET DRIVER" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: systemport: set dev->max_mtu to
+ UMAC_MAX_MTU_SIZE
+Message-ID: <20201218210250.owahylqnagtssbsw@skbuf>
+References: <20201218173843.141046-1-f.fainelli@gmail.com>
+ <20201218202441.ppcxswvlix3xszsn@skbuf>
+ <c178b5db-3de4-5f02-eee3-c9e69393174a@gmail.com>
+ <20201218205220.jb3kh7v23gtpymmx@skbuf>
+ <b8e61c3f-179f-7d8f-782a-86a8c69c5a75@gmail.com>
 MIME-Version: 1.0
-References: <20201218185032.2464558-1-jonathan.lemon@gmail.com> <20201218185032.2464558-3-jonathan.lemon@gmail.com>
-In-Reply-To: <20201218185032.2464558-3-jonathan.lemon@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 18 Dec 2020 13:02:09 -0800
-Message-ID: <CAEf4BzY8ePP7PoOpeU1uS1AFicGzY-w28KM2DMhjPqz4Tuh7bA@mail.gmail.com>
-Subject: Re: [PATCH 2/3 v4 bpf-next] bpf: Use thread_group_leader()
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b8e61c3f-179f-7d8f-782a-86a8c69c5a75@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 12:47 PM Jonathan Lemon
-<jonathan.lemon@gmail.com> wrote:
->
-> From: Jonathan Lemon <bsd@fb.com>
->
-> Instead of directly comparing task->tgid and task->pid, use the
-> thread_group_leader() helper.  This helps with readability, and
-> there should be no functional change.
->
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
+On Fri, Dec 18, 2020 at 12:54:33PM -0800, Florian Fainelli wrote:
+> On 12/18/20 12:52 PM, Vladimir Oltean wrote:
+> > On Fri, Dec 18, 2020 at 12:30:20PM -0800, Florian Fainelli wrote:
+> >> On 12/18/20 12:24 PM, Vladimir Oltean wrote:
+> >>> Hi Florian,
+> >>>
+> >>> On Fri, Dec 18, 2020 at 09:38:43AM -0800, Florian Fainelli wrote:
+> >>>> The driver is already allocating receive buffers of 2KiB and the
+> >>>> Ethernet MAC is configured to accept frames up to UMAC_MAX_MTU_SIZE.
+> >>>>
+> >>>> Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
+> >>>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> >>>> ---
+> >>>>  drivers/net/ethernet/broadcom/bcmsysport.c | 1 +
+> >>>>  1 file changed, 1 insertion(+)
+> >>>>
+> >>>> diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+> >>>> index 0fdd19d99d99..b1ae9eb8f247 100644
+> >>>> --- a/drivers/net/ethernet/broadcom/bcmsysport.c
+> >>>> +++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+> >>>> @@ -2577,6 +2577,7 @@ static int bcm_sysport_probe(struct platform_device *pdev)
+> >>>>  			 NETIF_F_HW_VLAN_CTAG_TX;
+> >>>>  	dev->hw_features |= dev->features;
+> >>>>  	dev->vlan_features |= dev->features;
+> >>>> +	dev->max_mtu = UMAC_MAX_MTU_SIZE;
+> >>>>  
+> >>>>  	/* Request the WOL interrupt and advertise suspend if available */
+> >>>>  	priv->wol_irq_disabled = 1;
+> >>>> -- 
+> >>>> 2.25.1
+> >>>>
+> >>>
+> >>> Do you want to treat the SYSTEMPORT Lite differently?
+> >>>
+> >>> 	/* Set maximum frame length */
+> >>> 	if (!priv->is_lite)
+> >>> 		umac_writel(priv, UMAC_MAX_MTU_SIZE, UMAC_MAX_FRAME_LEN);
+> >>> 	else
+> >>> 		gib_set_pad_extension(priv);
+> >>
+> >> SYSTEMPORT Lite does not actually validate the frame length, so setting
+> >> a maximum number to the buffer size we allocate could work, but I don't
+> >> see a reason to differentiate the two types of MACs here.
+> > 
+> > And if the Lite doesn't validate the frame length, then shouldn't it
+> > report a max_mtu equal to the max_mtu of the attached DSA switch, plus
+> > the Broadcom tag length? Doesn't the b53 driver support jumbo frames?
+> 
+> And how would I do that without create a horrible layering violation in
+> either the systemport driver or DSA? Yes the b53 driver supports jumbo
+> frames.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Sorry, I don't understand where is the layering violation (maybe it doesn't
+help me either that I'm not familiar with Broadcom architectures).
 
->  kernel/bpf/task_iter.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-> index 8033ab19138a..dc4007f1843b 100644
-> --- a/kernel/bpf/task_iter.c
-> +++ b/kernel/bpf/task_iter.c
-> @@ -37,7 +37,7 @@ static struct task_struct *task_seq_get_next(struct pid_namespace *ns,
->                 if (!task) {
->                         ++*tid;
->                         goto retry;
-> -               } else if (skip_if_dup_files && task->tgid != task->pid &&
-> +               } else if (skip_if_dup_files && !thread_group_leader(task) &&
->                            task->files == task->group_leader->files) {
->                         put_task_struct(task);
->                         task = NULL;
-> --
-> 2.24.1
->
+Is the SYSTEMPORT Lite always used as a DSA master, or could it also be
+used standalone? What would be the issue with hardcoding a max_mtu value
+which is large enough for b53 to use jumbo frames?
