@@ -2,111 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D60BA2DE335
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 14:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 891D42DE368
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 14:46:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727689AbgLRNSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 08:18:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45628 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725710AbgLRNSE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Dec 2020 08:18:04 -0500
-Date:   Fri, 18 Dec 2020 13:17:09 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608297443;
-        bh=v6z69yu84QJf1R6RvlLOXcMX6c+Fwb3zy/Gr6WnNltI=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=K8gcgeKnC82VwJ4M0CQaQG76QT5VP10SRDtN8kNVWnNlu9I+CSCB07c6/MlHjQ0Uz
-         UgHPhAhbKPEycfLmxUpE90p2yL9EEcFZB2xNdla2NOTYpt7Dvedq97d45Eke9KATbn
-         P//PsnL7JlZCm5UW3XbqO8BpQots8yJ0Hvw9VmkWLEuVHMQ6ClLaHMe1M9wj523Qms
-         GU5BMD3lgQIiQuNHn6YHpbMwYIjIBH9UAac0IYZo3CXmCZ3+QN0Yaw4Bs1HyzOjDlV
-         e8ctID2YzuRNAFf3XpZ1a5+J+jjnmBAm5sfwb7gAk5F6fnqby1jOCOGCbGHp8OMyXh
-         qm/zJM/YVhnoA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>, lee.jones@linaro.org
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20201218131709.GA5333@sirena.org.uk>
-References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
- <X8ogtmrm7tOzZo+N@kroah.com>
- <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
- <X8usiKhLCU3PGL9J@kroah.com>
- <20201217211937.GA3177478@piout.net>
- <X9xV+8Mujo4dhfU4@kroah.com>
+        id S1726605AbgLRNqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 08:46:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726540AbgLRNqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 08:46:24 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD79C0617A7;
+        Fri, 18 Dec 2020 05:45:44 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id c12so1555681pfo.10;
+        Fri, 18 Dec 2020 05:45:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tfEG5+93hdirKem4pujisx1ka8zWI8Yjrbd+CvFVRyc=;
+        b=GKgBRDnqMb23hOq8VGHpSLoqvGzWTJx6qRYL/RzEKEax+j/6lx1plZS20MNfXRuBOd
+         oY8H4m3/iM8o5JpSF2j+u/isrWe0BBAcpqwGOXq8IndwMkkVSOwPAWTC2BhB7qXVUDnZ
+         w31qhCr2c9/MKu9YkeRDvrlR4vruYQCR07UMvlfkNsODyBKELyoDa/f5AGMyzHzErcJn
+         sowMF6kzLN1tdHHCmm012ufVzcRv2U86m45gWN74x5UblJqKjU44rrtzGNPNRcPFC9y4
+         NoMkznVUnlrddnU4FEbfc8qk3ybsGDI8fc9PHgYrDpIp3n8c+DYGkIuiRMEWBg7u9ZbN
+         mMmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tfEG5+93hdirKem4pujisx1ka8zWI8Yjrbd+CvFVRyc=;
+        b=ft6HBJf0yCvTj0hPb1cBIWyEJKr5tfBg4xjaKJt4It/Tl5G6eE2S0lJzJt0+45gB2F
+         YjF4d346BjA85HWjF/2a4y2Gb2ihujxClZXjddhQMXB/mtNkSaz1BX4mJs1DJViZ4tW1
+         fHT0dxc9kmWUUfEAu+rTrAlxGd8EPaoxsWASXL6Wdgllfqz9FuicQ0agBabvWAa9uR2M
+         kqthnO/93PBxzqr8cbGNTEVg3+Xq8xQmYDdqlC558GHxyuhTsvbT8lOdLoVTIXZqdsDW
+         EbcXEbxnD3IsDnxgMGyCWVFSjMyzQiYwkLdcG9ownaia/z7sqrh0ZDm2aF/eaqkjYbZM
+         w+nw==
+X-Gm-Message-State: AOAM5311p5sBVgFhAgCOzG8sCoQ3z40BHR3s+Xj5TLk0sRzmTVAEcM+u
+        yuQ0dxq/CKN+bcVyQoAWUQk=
+X-Google-Smtp-Source: ABdhPJxLK+CNLybCetelhwAtztMSyHlBtifNPqn8L/0NfGMxssMZEGsra7ePaBWkGKdKEbjE6WrR4A==
+X-Received: by 2002:a63:f84d:: with SMTP id v13mr4158059pgj.234.1608299144177;
+        Fri, 18 Dec 2020 05:45:44 -0800 (PST)
+Received: from VM.ger.corp.intel.com ([192.55.54.44])
+        by smtp.gmail.com with ESMTPSA id r185sm9075906pfc.53.2020.12.18.05.45.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Dec 2020 05:45:43 -0800 (PST)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>, bpf@vger.kernel.org,
+        A.Zema@falconvsystems.com, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com
+Subject: [PATCH bpf v2 0/2] xsk: fix two bugs in the SKB Tx path
+Date:   Fri, 18 Dec 2020 14:45:23 +0100
+Message-Id: <20201218134525.13119-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zhXaljGHf11kAtnf"
-Content-Disposition: inline
-In-Reply-To: <X9xV+8Mujo4dhfU4@kroah.com>
-X-Cookie: Password:
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set contains two bug fixes to the Tx SKB path. Details can
+be found in the individual commit messages. Special thanks to Xuan
+Zhuo for spotting both of them.
 
---zhXaljGHf11kAtnf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+v1 -> v2:
+* Rebase
 
-On Fri, Dec 18, 2020 at 08:10:51AM +0100, Greg KH wrote:
-> On Thu, Dec 17, 2020 at 10:19:37PM +0100, Alexandre Belloni wrote:
+Thanks: Magnus
 
-> > There is something I don't get from the documentation and it is what is
-> > this introducing that couldn't already be done using platform drivers
-> > and platform devices?
+Magnus Karlsson (2):
+  xsk: fix race in SKB mode transmit with shared cq
+  xsk: rollback reservation at NETDEV_TX_BUSY
 
-> Because platform drivers and devices should ONLY be for actual platform
-> devices.  Do NOT use that interface to fake up a non-platform device
-> (i.e. something that is NOT connected to a cpu through a memory-mapped
-> or direct-firmware interface).
+ include/net/xdp_sock.h      |  4 ----
+ include/net/xsk_buff_pool.h |  5 +++++
+ net/xdp/xsk.c               | 12 +++++++++---
+ net/xdp/xsk_buff_pool.c     |  1 +
+ net/xdp/xsk_queue.h         |  5 +++++
+ 5 files changed, 20 insertions(+), 7 deletions(-)
 
-> Do not abuse the platform code anymore than it currently is, it's bad
-> enough what has been done to it over time, let's not make it any worse.
 
-I am not clear on why you're giving direct-firmware devices (which I
-assume means things like ARM SCMI where we're talking directly to some
-firmware?) a pass here but not for example a GPIO controlled devices.
-If this is mainly about improving abstractions it seems like the
-boundary here isn't great.  Or perhaps I'm just missing what
-direct-firmware is supposed to mean?
-
-In any case, to be clear part of what you're saying here is that all
-I2C and SPI MFDs should be rewritten to use this new bus - I've just
-copied Lee in again since he keeps getting missed from these threads.
-As previously discussed this will need the auxilliary bus extending to
-support at least interrupts and possibly also general resources.
-
---zhXaljGHf11kAtnf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl/cq9QACgkQJNaLcl1U
-h9Cf2wf/V/9ux9B/P6JhOdSp8/cnAt5M1bqV3QMIpBxKfkDzfpIhgCbQHcuTHohO
-GadrjXD1DMJSWcpx/mh1qNjeEYyROMYnVN7UrxVgTgrCD/HN/MqpgvWlLA8ubGTH
-S6/1XPHbMOsHIIXclMzGpmO4jA9hOwKz14gnvnWraHDojOhymTJV9Jl2wQ9UaOV/
-FDPyY3zYA0fUvzSkIDkzHAcjhdpulnxztlYYH73f81R1L1NTdfMn1E4mZMBIBMMD
-94BiLYMhjiFBXH2MkTbSugyxARIgOM9uKM3AIttLQq7l4deMDjvOX85wlcGA6JjM
-/jmS76XyUz+UNO505l7CrvuL0X37jQ==
-=ErBA
------END PGP SIGNATURE-----
-
---zhXaljGHf11kAtnf--
+base-commit: 8bee683384087a6275c9183a483435225f7bb209
+--
+2.29.0
