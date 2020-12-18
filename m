@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED6392DDE20
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 06:42:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4BB32DDE32
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 06:49:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727196AbgLRFls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 00:41:48 -0500
-Received: from mail-eopbgr10073.outbound.protection.outlook.com ([40.107.1.73]:14542
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        id S1727153AbgLRFtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 00:49:15 -0500
+Received: from mail-eopbgr20041.outbound.protection.outlook.com ([40.107.2.41]:25533
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725290AbgLRFls (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Dec 2020 00:41:48 -0500
+        id S1725894AbgLRFtO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Dec 2020 00:49:14 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GvGziMdIm79vcEOlNDtUyUewi/JiP+5UQHOz07wB8+rjyfd59MaDu7IlutJONVfIJkD5aDnkC7PhXigiU9GQkZNSSFtRLKf8Q4q3t0PYPJNIFSDb0XCa/ZH0xy0yJhWsC8yHlPGSqeU0SzHZcKXf3hDu6OpOBSY+19wi7+Vv/0juHDf7dBCdEb3JoVP5Cq3gWMvoGzVWkZTdFQO14/KTOvugRzM8kB8mNTCbptiqfgzhv0wIYZLP6Z2+e/sfq6QsDBxP/qQAq5GOceSauDfUeXWwzkWiRw8csAUQuRrOk6AJYxJzTHWR4PjihXaVYpG5iLtni4WIioZBo8LJMb+fyQ==
+ b=Gm4dMyC0YKdJckmbwmkvyTKQP+GZ4/10HUmakVjr39o6p6YuC//bl9FZ6nfsnPi+ZAeRMsp5ccFECCXwqjsMl+3pTm2x1dnKa3m/5Y8MxWwGZhIePtPTaDNMU4FMK1RTwL25Da5IeYMJn0KB9em/PAPg4dF2wMG/YjcN5qJZ7M4oVRxn4QNS3NiCJuiDds1eu+HyGP24K+nNyaFc8nZLgNJDEqovuJGjyGi5p8/Ot6Fxk7TUkcSafNBgef7sd4wZV7UP8Mbk8BjVxAbUajnvxYSN7/yZ2Q5paN8ZE0Kn1bN4qp5Blj7eFDZfCLmQUNFc+QLBIj/cCgP3dH1W+AledA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+inXbZbZfl3IyyKicFW207m7Z1Pe1lfqTYdg6xeyBc0=;
- b=HLYHvjqCG//XRGfTFyK/I+8GKBMe8K0Ye9XqR00SPpwicgUuHMizonjKnEUgM5uQ4F1z6KyOiDG8LvOdYnt7b41FNKTcuxTbJLz+uJlNoC2ICzJRi2nRL4DqnBRgYI5/iY550SWn3bUwuJVXXK1nyHaFPTIcRYMljfkxMyWkX8D6vvUDX37ushmRLxSxZf0sKfbC5RXczHAH2HTqrOok2KjBmgotV/RYKKK5dkOnu/VaV4qDsefwyGlImSWBlfhGzk1dMqCJ2zmZKTGjw532kbTH/M10Ooa0IUmEoRbAgoy2Hy5HsccydTdeEbwLHXlQGeOcr3zlDCjyfWb9zDTUWw==
+ bh=uL8j7/fMIXv3TSDVk2+xAJ5C5c8KKJcdDUYXEXSITzw=;
+ b=n86L57QkV/zxfzHcI8gIwMQytdh6bVEej/Pt0TtSUHH1NkeBio8gqwsGSCqLGIAYmJ95n9qLfMqAdcbMZkylpyx1WkTCrlPBBza/zYbQlQbza8ZgbyMR3d4KlzhXkipdVa0oQP9GeYYmtVb1SlArn/xawkDskepmShHOuc5NS/Nmirmx4YK2GrkBUdt9yE/t3r2igLmApFXPHQP3J/iGaNsHqqsoru3VYZ1OqqVx6OXQAQH2zak8UXyYhN/5VKK+YkECSX3QmXKVF5//N1PIW/M9TLJ97yTfC56BEOFRYhXDWXbZ4eY2/x+eZ6MNyCicoqPbO0y/fTNyPsc/Jp0Lkw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+inXbZbZfl3IyyKicFW207m7Z1Pe1lfqTYdg6xeyBc0=;
- b=Zl3ZTcB9RMvYSShlQ3+7diuPa9r1k6iJYN9k1JvJUmmFl/+XEU95BBzgL/t47V7YwI95a25itS/Ljwh4uDCOQommOFBV+rd6dzj9ldTi9MDLOf6gyqR7sJwtwexgAMY2e01Jr1iCi7c1Tpa4bnkijUltRp4andc4DhXGE2oMjJY=
+ bh=uL8j7/fMIXv3TSDVk2+xAJ5C5c8KKJcdDUYXEXSITzw=;
+ b=GR8qXlj5Ykzv9ShvYn8fmFDHd1C7nV91b9DIOeeRNVjXY13OqO5e0WMP1IKCyWt/A3voY75c9xqT5q4BvqPfQXfnKfgXFwP15XD9nFj7zr8NLkCGvmG+9F4+k7etzaSCzpQ1LZx3i3/uOlD0EEk/pZhawrSW2Xw9jwJ/jLnqpTc=
 Authentication-Results: gmail.com; dkim=none (message not signed)
  header.d=none;gmail.com; dmarc=none action=none header.from=oss.nxp.com;
 Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB7108.eurprd04.prod.outlook.com (2603:10a6:208:19e::21) with
+ by AM0PR04MB6065.eurprd04.prod.outlook.com (2603:10a6:208:139::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.25; Fri, 18 Dec
- 2020 05:40:57 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.21; Fri, 18 Dec
+ 2020 05:48:23 +0000
 Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
  ([fe80::a891:518d:935c:30dd]) by AM0PR04MB5636.eurprd04.prod.outlook.com
  ([fe80::a891:518d:935c:30dd%6]) with mapi id 15.20.3654.020; Fri, 18 Dec 2020
- 05:40:57 +0000
-Date:   Fri, 18 Dec 2020 11:10:44 +0530
+ 05:48:23 +0000
+Date:   Fri, 18 Dec 2020 11:18:10 +0530
 From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     Grant Likely <grant.likely@arm.com>,
@@ -62,153 +62,108 @@ Cc:     Grant Likely <grant.likely@arm.com>,
         linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         netdev <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next PATCH v2 08/14] net: mdiobus: Introduce
- fwnode_mdiobus_register()
-Message-ID: <20201218054044.GB14594@lsv03152.swis.in-blr01.nxp.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamie Iles <jamie@nuviainc.com>
+Subject: Re: [net-next PATCH v2 09/14] net/fsl: Use fwnode_mdiobus_register()
+Message-ID: <20201218054810.GC14594@lsv03152.swis.in-blr01.nxp.com>
 References: <20201215164315.3666-1-calvin.johnson@oss.nxp.com>
- <20201215164315.3666-9-calvin.johnson@oss.nxp.com>
- <CAHp75Vf69NuxqcJntQi+CT1QN4cpdr2LYNzo6=t-pBWcWgufPA@mail.gmail.com>
+ <20201215164315.3666-10-calvin.johnson@oss.nxp.com>
+ <CAHp75Vc19QCqYpp12Q3ofzXCVsujc0qVuhtQo5LhDJqiy+JNpw@mail.gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75Vf69NuxqcJntQi+CT1QN4cpdr2LYNzo6=t-pBWcWgufPA@mail.gmail.com>
+In-Reply-To: <CAHp75Vc19QCqYpp12Q3ofzXCVsujc0qVuhtQo5LhDJqiy+JNpw@mail.gmail.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 X-Originating-IP: [14.142.151.118]
-X-ClientProxiedBy: SG2PR01CA0124.apcprd01.prod.exchangelabs.com
- (2603:1096:4:40::28) To AM0PR04MB5636.eurprd04.prod.outlook.com
+X-ClientProxiedBy: SG2PR02CA0093.apcprd02.prod.outlook.com
+ (2603:1096:4:90::33) To AM0PR04MB5636.eurprd04.prod.outlook.com
  (2603:10a6:208:130::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR01CA0124.apcprd01.prod.exchangelabs.com (2603:1096:4:40::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Fri, 18 Dec 2020 05:40:51 +0000
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR02CA0093.apcprd02.prod.outlook.com (2603:1096:4:90::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Fri, 18 Dec 2020 05:48:17 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 9570226d-a23e-4b08-72ca-08d8a3177e75
-X-MS-TrafficTypeDiagnostic: AM0PR04MB7108:
+X-MS-Office365-Filtering-Correlation-Id: f9180948-91e4-44dc-c8cb-08d8a3188887
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6065:
 X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB71089D2DB16C8D8A7F53EE5AD2C30@AM0PR04MB7108.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6065E541D8BF99B28D39DAD1D2C30@AM0PR04MB6065.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /BFeHM80Z1RsJOfiY9Du2sYs0ZBxeo8nNOsCAfxTmLnOwtuFdrx3zSPwtaGnxkdbBRjhamDLUorsRk4Ea6p6BmT5BNyP86RvhM5+4CN/fzDgOUzOyF6R04uF98TRMj2S5PpcakAfOj+bFZss+6E+TdPXat6iS/eiRpTRR0VBU+dNchatPFEz5CQilKujdhik4/1UgLdUDCEFDrU6JvazYmSxv2AHrQDRJdMTPvLW6XlYQ4C+yn0Q8hQEqxB2eglDUG6m897PAZnY/HqHbSDKnieJFBw/AqYgkWn9XfoRM4PEG0eSRNA4o//oIMCskbzOXh6QG3FWLg22+hNOmIH1GNNsH1Ht8aDW4Eswlp2XnhXdZRq/HkK1ZdifaXN8hYGIRj35FwCuk2ATziMR8xyHkoZWNX8jICp7um+rdB85QnJCub91ywr0Dsh2U+WggGSr
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39860400002)(376002)(366004)(346002)(396003)(26005)(186003)(956004)(6916009)(7696005)(33656002)(6506007)(5660300002)(55236004)(16526019)(52116002)(53546011)(1076003)(7416002)(66556008)(2906002)(8676002)(66946007)(4326008)(66476007)(86362001)(44832011)(54906003)(6666004)(55016002)(478600001)(316002)(9686003)(83380400001)(1006002)(8936002)(110426006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?kk99CjF4LzCUdiAKfpz32B+Uzfbwb31A52FzaLwh1hb8mS6cuFQ9CpTwIjtZ?=
- =?us-ascii?Q?axAbc3/xJ+WkX/TGGcKMoSC8BFMVzOBkrfhrVBxXrgXwKoh/mdtweGTDLVfP?=
- =?us-ascii?Q?kviyOOsgyZratazB2RUzHnJ0uZUmjf9yMR3u0Nayz9Snmk6INyo0YD+DmB68?=
- =?us-ascii?Q?JK3fcEeuKKJICjRlSK1AjQfGMr/urz/pDkkAU3t6IWMDBBHaRYr5mstpKsV7?=
- =?us-ascii?Q?c0eK6DOPdEBLH9gl5fiUzKTuJT51Ki1VeXFoBRvHFoR0vEjtY8owyNryDe4l?=
- =?us-ascii?Q?gqA9LOYl7gmzVSFFk/7HbpI6rwBxGKZu5QUOBVFEJAbBvD8V4RDbZZ8zyPpE?=
- =?us-ascii?Q?8Iy46/KjBZCkJTNhW55HE4SH3irT8BgXs+wf/5WGtrK6q8lqzhXrWFRu8jDh?=
- =?us-ascii?Q?JLet5qsVqIHRwPJzqCnSUBnuqFdq9kIyscPjen0TbAF2dVD4rMTeawAQOnGN?=
- =?us-ascii?Q?acsae6XR7JCgid0TjJcclCa0jwI023cq7G5t0XCGDm8xnvjTZU7Xf8v6X1tA?=
- =?us-ascii?Q?QHltgxwpE65PQVhBVKRX0AqDhGP36wnP9A2iyOEpnAfoVAX4lkbe93g187Dt?=
- =?us-ascii?Q?NIObejkWasN2dEioOW1QXUzq/JZ36pfalk749wi1QuBZFI1e3jN+9EPtbjtg?=
- =?us-ascii?Q?CETajZbEV+1JrFNnr4Abg/B1aR9WsCSPcJ2C+n18BrGMl6YOIijyFVyRXfVn?=
- =?us-ascii?Q?AKLXa/g0TfTDXjt+Pa552RNXEiKJ4+qvSioTDxw0ZBO5XpjZmo7DIwwrOkBS?=
- =?us-ascii?Q?1VxdTLTHc8KqHQObB/QDW0sa0arTpBGgJsn2kQsLQZn9XgbbTPI4RRy2Cvv2?=
- =?us-ascii?Q?ZMxqP7sJPIxOnFZQT/GKyJbD2cbM0EoPyeFpWQgO+aJci5KFaSVVqN0styK9?=
- =?us-ascii?Q?wjuR9nzreaG4AJpWO8EKRpfrkraH46J/hAVWYOO0NtvU96Qms5m2UsnKXJ1y?=
- =?us-ascii?Q?LWAYYscaxAuHq/UA70bRCOk7PQX7BHposDMHvZPsX4C0z7sew9O/vOd7kGwI?=
- =?us-ascii?Q?NIx8?=
+X-Microsoft-Antispam-Message-Info: 4GQOSBLTKf0Y8JP0RxU+uTHErq/kOeI33X7Ry1qwhZZx6WwZSzAK9vywLOdga/N7L1D7TisOHm/4LS4N5Hs77EC2HFGYOG/GUEQs37d5f7Fkj/NuKd0hO3HbIcL7GoTZaGCLW5BfL8h9AWSRIYsqKzlmJOwafl5Pv9vKz6CPA90DAR+3nyb/pY0puqTmyankv8vDlc/GrKxKDcRj2ecSQaDYQm2jADGmck9yDVt564345KNtwU2kHJlk+ZxUpTZF4DoxdS/DcMPAWWvjxJmaHpXFRE9R4yNpVR02G9DWO81zQrgTpRV4wnl60sK0NHHlwwjzO+k7xaIGRN7eJK3QRwU+m2zMXIdPAUk8UqFQ1aQDKSuC+uaYwTnjrMLn4F3N
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(346002)(396003)(39860400002)(366004)(956004)(55236004)(44832011)(316002)(54906003)(186003)(16526019)(26005)(53546011)(6506007)(478600001)(86362001)(52116002)(7696005)(6916009)(8936002)(1006002)(6666004)(7416002)(1076003)(4326008)(9686003)(33656002)(55016002)(8676002)(2906002)(66476007)(66556008)(66946007)(5660300002)(110426006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?bSHnDDmHDti7FhAJvyc8ebOt2wXTTQX8V2yLgnsvF1TvVwe0qoV240u7J88i?=
+ =?us-ascii?Q?snGiQ3Z+iAdVhKHLTFubVvyvfffIPuOE8zGr0HoRi8MH1pWSUNvO0v2acx2Y?=
+ =?us-ascii?Q?G+yEsx/yDNp/snzyOPYIseoiJNjMKgXjK4BRnfvo66IA2fcJAq+DiWdX1ppj?=
+ =?us-ascii?Q?T7Li6jmdxenoq32r2pYi3+B6a8kwhKPLJSM63oHrAtbaxLSYF98jCH9i0Ywq?=
+ =?us-ascii?Q?JwGvKEVoBZ0EfHQgvUU/A9468GegFwJPMnqH+iFp66mqRGfDGTuThEr/KoMt?=
+ =?us-ascii?Q?84rmuK9pxHLaOnrCHSogfWrgWXw6mVIbvho7dyemG0QKsqKhcQmZZOSrnZ87?=
+ =?us-ascii?Q?JPXLupU3QvCL9enq99vyZ6V4+ygM5fBPDzSwdiRbxufqCeK0O3ymvwgsOj4b?=
+ =?us-ascii?Q?4cBn9fhasn2AvcxzVYUKlNf4Inh8BDeiWCb4sQ4zsiy6DYtmKo5GWWGiuN51?=
+ =?us-ascii?Q?p0gIYElLO0dOHGAXmwtU1dPpJah03h2Bw2I9JG2AuEMcCuwdpkN8BdPEun5c?=
+ =?us-ascii?Q?ycK2lGvUfpgEVUXffJ09hgGDeSz7lgENWJwEw0D2R0cFZaUjiBnN68+ZQAAq?=
+ =?us-ascii?Q?7stGBjpFOmRfafNEscc4Co/N0/cxnYQtVivO97YhVDpRK4FFyuUKnDe7erWl?=
+ =?us-ascii?Q?LizZt21i0ocKLe6ibl+TfOaIdnNdz8LfqGFSsL+bQsDI1iyej93+zNXZfgcY?=
+ =?us-ascii?Q?Wi3uROMUQkVYOYjfilPmHzEk6KxkKqe3pOnjd1XtaljfOnPgjwNyt/IEWlHz?=
+ =?us-ascii?Q?rYsb/LU+kAqURmH/lgaXm/L5ac7eJCLzzOnbj1xEhWv1TkDGTmod+xLj6onz?=
+ =?us-ascii?Q?2YaJw/l/iuIPRYPwIFG3D8hKe+dEdQZ0Nz8pK0PRAdnO02VdxgmC+GanuUQ1?=
+ =?us-ascii?Q?keM/1prMqf3HeqQ4RFrRZnZ93eVE/DnTxoBgeAA/8D9RQ9lujkxSoBLuSiQl?=
+ =?us-ascii?Q?0YBqIF7wOp0s4+VZLxOXG9d8Zh2zRapfxduHDs/UOaYpKpvgg24pPWaRG5/E?=
+ =?us-ascii?Q?ARza?=
 X-OriginatorOrg: oss.nxp.com
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2020 05:40:57.2917
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2020 05:48:23.6858
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9570226d-a23e-4b08-72ca-08d8a3177e75
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9180948-91e4-44dc-c8cb-08d8a3188887
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0/MUxcAC+43oW0o8v6XnWu9wfK1Ff0MhLGVLdQQQX1Lz196R1YkqR/Q9o0iyioKUyEIi+BTkkkUcAr4ZDOyNgw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB7108
+X-MS-Exchange-CrossTenant-UserPrincipalName: JWS6V3o6Co/ZpkSW80N9L644lg3gFxLWl4Se/T3rFRD4Wiuq+82rMUnfJ1za7SmrcyOIf4Ll62xLiVlV/GnQVg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6065
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 15, 2020 at 07:53:26PM +0200, Andy Shevchenko wrote:
+On Tue, Dec 15, 2020 at 07:55:01PM +0200, Andy Shevchenko wrote:
 > On Tue, Dec 15, 2020 at 6:44 PM Calvin Johnson
 > <calvin.johnson@oss.nxp.com> wrote:
 > >
-> > Introduce fwnode_mdiobus_register() to register PHYs on the  mdiobus.
-> > If the fwnode is DT node, then call of_mdiobus_register().
-> > If it is an ACPI node, then:
-> >         - disable auto probing of mdiobus
-> >         - register mdiobus
-> >         - save fwnode to mdio structure
-> >         - loop over child nodes & register a phy_device for each PHY
+> > fwnode_mdiobus_register() internally takes care of both DT
+> > and ACPI cases to register mdiobus. Replace existing
+> > of_mdiobus_register() with fwnode_mdiobus_register().
+> >
+> > Note: For both ACPI and DT cases, endianness of MDIO controller
+> > need to be specified using "little-endian" property.
 > 
 > ...
 > 
-> > +/**
-> > + * fwnode_mdiobus_register - Register mii_bus and create PHYs from fwnode
-> > + * @mdio: pointer to mii_bus structure
-> > + * @fwnode: pointer to fwnode of MDIO bus.
-> > + *
-> > + * This function registers the mii_bus structure and registers a phy_device
-> > + * for each child node of @fwnode.
-> > + */
-> > +int fwnode_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
-> > +{
-> > +       struct fwnode_handle *child;
-> > +       unsigned long long addr;
-> > +       acpi_status status;
-> > +       int ret;
-> > +
-> > +       if (is_of_node(fwnode)) {
-> > +               return of_mdiobus_register(mdio, to_of_node(fwnode));
-> > +       } else if (is_acpi_node(fwnode)) {
+> > @@ -2,6 +2,7 @@
+> >   * QorIQ 10G MDIO Controller
+> >   *
+> >   * Copyright 2012 Freescale Semiconductor, Inc.
+> > + * Copyright 2020 NXP
+> >   *
+> >   * Authors: Andy Fleming <afleming@freescale.com>
+> >   *          Timur Tabi <timur@freescale.com>
+> > @@ -11,6 +12,7 @@
 > 
-> I would rather see this as simple as
+> I guess this...
 > 
->      if (is_of_node(fwnode))
->                return of_mdiobus_register(mdio, to_of_node(fwnode));
->      if (is_acpi_node(fwnode))
->                return acpi_mdiobus_register(mdio, fwnode);
+> >         priv->is_little_endian = device_property_read_bool(&pdev->dev,
+> >                                                            "little-endian");
+> > -
+> >         priv->has_a011043 = device_property_read_bool(&pdev->dev,
+> >                                                       "fsl,erratum-a011043");
 > 
-> where the latter one is defined somewhere in drivers/acpi/.
-Makes sense. I'll do it. But I think it will be better to place
-acpi_mdiobus_register() here itself in the network subsystem, maybe
-/drivers/net/mdio/acpi_mdio.c.
+> ...this...
 > 
-> > +               /* Mask out all PHYs from auto probing. */
-> > +               mdio->phy_mask = ~0;
-> > +               ret = mdiobus_register(mdio);
-> > +               if (ret)
-> > +                       return ret;
-> > +
-> > +               mdio->dev.fwnode = fwnode;
-> > +       /* Loop over the child nodes and register a phy_device for each PHY */
-> > +               fwnode_for_each_child_node(fwnode, child) {
+> > -
 > 
-> > +                       status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(child),
-> > +                                                      "_ADR", NULL, &addr);
-> > +                       if (ACPI_FAILURE(status)) {
-> 
-> Isn't it fwnode_get_id() now?
-Yes. Will change it.
-> 
-> > +                               pr_debug("_ADR returned %d\n", status);
-> > +                               continue;
-> > +                       }
-> 
-> > +                       if (addr < 0 || addr >= PHY_MAX_ADDR)
-> > +                               continue;
-> 
-> addr can't be less than 0.
-Yes. will update in v3.
-> 
-> > +                       ret = fwnode_mdiobus_register_phy(mdio, child, addr);
-> > +                       if (ret == -ENODEV)
-> > +                               dev_err(&mdio->dev,
-> > +                                       "MDIO device at address %lld is missing.\n",
-> > +                                       addr);
-> > +               }
-> > +               return 0;
-> > +       }
-> > +       return -EINVAL;
-> > +}
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+> ...and this changes can go to a separate patch.
+
+I think I'll remove the unnecessary cleanup.
+
+Regards
+Calvin
+
