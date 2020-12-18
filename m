@@ -2,172 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 260C52DEA3A
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 21:32:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D012DEA44
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 21:34:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732281AbgLRUbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 15:31:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731893AbgLRUbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 15:31:10 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90DAC0617A7;
-        Fri, 18 Dec 2020 12:30:29 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id be12so2008944plb.4;
-        Fri, 18 Dec 2020 12:30:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CDALKKIXOkGYN3IZKp1cx2QzFoc+xiaO0Zwqnz5KkGU=;
-        b=jra/zTEaFAOMTDD2cuTwu3Vrt7ZzfnEiGOkbkbE89HGO30TREdYKkgEBP2iAQViKTz
-         R7Dg/71C04FE3WDB7Bwpdm56oASGEWU3P7fwmys+VoVdtTTBpRW1rMGtIfyV/hdMt+aX
-         rXN6gq2UIgmaLAoIqdJiU0JH2b7wh1nTEKFoA1FS2UAkbg5SOWpEEcA6SGSZQ1qSUpGh
-         s17rbANradmXEmldhAZlpoQy9uMlHm489gCAaN+9bFMtERs2PcuBrlLm1AFkDnCZiVvo
-         93OAgEVqXVJriUXW07+ve0BpXppQIZxLkLy9Lx1FqLe6eYV74wQyEROs5ea5zeMkROIv
-         J/zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=CDALKKIXOkGYN3IZKp1cx2QzFoc+xiaO0Zwqnz5KkGU=;
-        b=I81NdQJjFKRA7dweU6iEeqIe61cotbu2ycJQC0SQuS7Fi7M0VP4U2wSTsEeB7oVCWa
-         /84xzgVjc9cx632QeCN262CrzW9rGj8zcGlO2IJF2lAIoCljG8GCxH1Tzl14LyeqKdTx
-         T0O5tC5Rg5VhgiqUNXW+s38l6aN7NIay/WFaBy6BsXTLFx9nhyTd6hvQwWC336aNfelz
-         D6r12AZQ5Q/YcdAQRRyB/tTQCrCZhRGQX3cuJTfa0bxiM/O0EhzS0NG9K/X4UelweWC0
-         NaQIITseBE7GXg5meyGtRmt4lVlTxHgnmBAEY2Gnijl0qsZ2MURJkfCrGJmR+7F0+xMR
-         1yCg==
-X-Gm-Message-State: AOAM5339VnT/XBV8tFLzp6NvAJkPrhRxaX3sGCZpwgqdE84BJ7Jj4V6b
-        EGFGCm6aqbjq8p1UcNBt6FuvD7T4FTk=
-X-Google-Smtp-Source: ABdhPJy2wr2N9ZawYOkZjy6tlo7YMxsuweTwSze9FS28ok+395Ir9pQDtgoCmERrojxWeiJQ/UF0Yw==
-X-Received: by 2002:a17:902:7205:b029:db:d2d5:fe79 with SMTP id ba5-20020a1709027205b02900dbd2d5fe79mr5991114plb.30.1608323429139;
-        Fri, 18 Dec 2020 12:30:29 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id j12sm8897353pjd.8.2020.12.18.12.30.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Dec 2020 12:30:28 -0800 (PST)
-Subject: Re: [PATCH net] net: systemport: set dev->max_mtu to
- UMAC_MAX_MTU_SIZE
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch,
-        "David S. Miller" <davem@davemloft.net>,
+        id S2387515AbgLRUdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 15:33:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47780 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387492AbgLRUdG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Dec 2020 15:33:06 -0500
+Date:   Fri, 18 Dec 2020 20:32:11 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608323545;
+        bh=k7mZa1Db33KpTT5s4Uwf4FgA1fS6r85FOeZ5aqVIEIU=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Tl4HfRDBx/GegI5g9piovvRek4amjx318VmTrnZ9w4OwIXuIG3DF6PIuju1dw4PTX
+         prtq7Fp1Xf2K1AuILyHN3i7QpNbptNKr+IIXp9D9tosc9dsPwvB/t1xvOjNCG6Y/H0
+         YkLqYOhXohLoODT1sQcuTbD3pNThLnuFtq28bim5QymPLb9pN/aklDplHJcCAnUb2G
+         L8Bv59ttURYon0zLZlyU4UflQ5bmQID9ajYNGpObnyDzPa/wKtN9htk5U+nVm08sEg
+         m1c0v4+gdvRgVDUywWkmKvIX34hWsljD6dfshxYLlWUc2VxqOkI4YYqz9icxASM+es
+         YJdDWBHoBXI3Q==
+From:   Mark Brown <broonie@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Murali Krishna Policharla <murali.policharla@broadcom.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "open list:BROADCOM SYSTEMPORT ETHERNET DRIVER" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20201218173843.141046-1-f.fainelli@gmail.com>
- <20201218202441.ppcxswvlix3xszsn@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <c178b5db-3de4-5f02-eee3-c9e69393174a@gmail.com>
-Date:   Fri, 18 Dec 2020 12:30:20 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@mellanox.com>, lee.jones@linaro.org
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Message-ID: <20201218203211.GE5333@sirena.org.uk>
+References: <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
+ <X8usiKhLCU3PGL9J@kroah.com>
+ <20201217211937.GA3177478@piout.net>
+ <X9xV+8Mujo4dhfU4@kroah.com>
+ <20201218131709.GA5333@sirena.org.uk>
+ <20201218140854.GW552508@nvidia.com>
+ <20201218155204.GC5333@sirena.org.uk>
+ <20201218162817.GX552508@nvidia.com>
+ <20201218180310.GD5333@sirena.org.uk>
+ <20201218184150.GY552508@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20201218202441.ppcxswvlix3xszsn@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PPYy/fEw/8QCHSq3"
+Content-Disposition: inline
+In-Reply-To: <20201218184150.GY552508@nvidia.com>
+X-Cookie: Password:
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/18/20 12:24 PM, Vladimir Oltean wrote:
-> Hi Florian,
-> 
-> On Fri, Dec 18, 2020 at 09:38:43AM -0800, Florian Fainelli wrote:
->> The driver is already allocating receive buffers of 2KiB and the
->> Ethernet MAC is configured to accept frames up to UMAC_MAX_MTU_SIZE.
->>
->> Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->>  drivers/net/ethernet/broadcom/bcmsysport.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
->> index 0fdd19d99d99..b1ae9eb8f247 100644
->> --- a/drivers/net/ethernet/broadcom/bcmsysport.c
->> +++ b/drivers/net/ethernet/broadcom/bcmsysport.c
->> @@ -2577,6 +2577,7 @@ static int bcm_sysport_probe(struct platform_device *pdev)
->>  			 NETIF_F_HW_VLAN_CTAG_TX;
->>  	dev->hw_features |= dev->features;
->>  	dev->vlan_features |= dev->features;
->> +	dev->max_mtu = UMAC_MAX_MTU_SIZE;
->>  
->>  	/* Request the WOL interrupt and advertise suspend if available */
->>  	priv->wol_irq_disabled = 1;
->> -- 
->> 2.25.1
->>
-> 
-> Do you want to treat the SYSTEMPORT Lite differently?
-> 
-> 	/* Set maximum frame length */
-> 	if (!priv->is_lite)
-> 		umac_writel(priv, UMAC_MAX_MTU_SIZE, UMAC_MAX_FRAME_LEN);
-> 	else
-> 		gib_set_pad_extension(priv);
 
-SYSTEMPORT Lite does not actually validate the frame length, so setting
-a maximum number to the buffer size we allocate could work, but I don't
-see a reason to differentiate the two types of MACs here.
--- 
-Florian
+--PPYy/fEw/8QCHSq3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Fri, Dec 18, 2020 at 02:41:50PM -0400, Jason Gunthorpe wrote:
+> On Fri, Dec 18, 2020 at 06:03:10PM +0000, Mark Brown wrote:
+
+> > If it's not supposed to use platform devices so I'm assuming that the
+> > intention is that it should use aux devices, otherwise presumably it'd
+> > be making some new clone of the platform bus but I've not seen anyone
+> > suggesting this.
+
+> I wouldn't assume that, I certainly don't want to see all the HW
+> related items in platform_device cloned roughly into aux device.
+
+> I've understood the bus type should be basically related to the thing
+> that is creating the device. In a clean view platform code creates
+> platform devices. DT should create DT devices, ACPI creates ACPI
+> devices, PNP does pnp devices, etc
+
+Ah, so we *used* to do that and in fact at least acpi_device still
+exists but it was realized that this was causing a lot of effort with
+boilerplate - like Lee said board files, ACPI and DT are all just
+enumeration methods which have zero effect on the underlying hardware so
+you end up having duplication on both the bus and driver side.  Since
+this applies to all non-enumerable buses this process gets repeated for
+all of them, we wouldn't just have an of_device we'd have of_i2c_device,
+of_spi_device, of_1wire_device and so on or have to jump through hoops
+to map things into the actual bus type.  See eca3930163ba8884060ce9d9
+(of: Merge of_platform_bus_type with platform_bus_type) for part of this
+getting unwound.
+
+Fundamentally this is conflating physical bus type and enumeration
+method, for enumerable buses they are of course the same (mostly) but
+for non-enumerable buses not so much.
+
+> So, I strongly suspect, MFD should create mfd devices on a MFD bus
+> type.
+
+Historically people did try to create custom bus types, as I have
+pointed out before there was then pushback that these were duplicating
+the platform bus so everything uses platform bus.
+
+> Alexandre's point is completely valid, and I think is the main
+> challenge here, somehow avoiding duplication.
+
+> If we were to look at it with some OOP viewpoint I'd say the generic
+> HW resource related parts should be some shared superclass between
+> 'struct device' and 'struct platform/pnp/pci/acpi/mfd/etc_device'.
+
+Right, duplication is the big issue with separate firmware based bus
+types particularly as we consider all non-enumerable buses.  I think
+what you're looking for here is multiple inheritance, that's potentially
+interesting but it's pretty much what we have already TBH.  We have the
+physical bus type as a primary type for devices but we also can enquire
+if they also have the properties of a DT or ACPI object and then use
+those APIs on them.
+
+Consider also FPGAs which can have the same problem Alexandre raised,
+there's the parent device for the FPGA and then we can instantiate
+bitstreams within that which may expose standard IPs which can also
+appear directly within a SoC.
+
+> > > The places I see aux device being used are a terrible fit for the cell
+> > > idea. If there are MFD drivers that are awkardly crammed into that
+> > > cell description then maybe they should be aux devices?
+
+> > When you say the MFD cell model it's not clear what you mean - I *think*
+> > you're referring to the idea of the subdevices getting all the
+
+> I mean using static "struct mfd_cell" arrays to describe things.
+
+OK, but then SOF has been actively pushed into using auxiliary devices
+since there is a desire to avoid using mfd_cells on PCI devices rather
+than the fact that it wasn't able to use a static array, and of course
+you might have devices with a mix of static and dynamic functions, or
+functions that can be both static and dynamic.
+
+> > Look at something like wm8994 for example - the subdevices just know
+> > which addresses in the device I2C/SPI regmap to work with but some of
+> > them have interrupts passed through to them (and could potentially also
+> > have separate subdevices for clocks and pinctrl).  These subdevices are
+> > not memory mapped, not enumerated by firmware and the hardware has
+> > indistinct separation of functions in the register map compared to how
+> > Linux models the chips.
+
+> wm8994 seems to fit in the mfd_cell static arrays pretty well..
+
+I can't tell the difference between what it's doing and what SOF is
+doing, the code I've seen is just looking at the system it's running
+on and registering a fixed set of client devices.  It looks slightly
+different because it's registering a device at a time with some wrapper
+functions involved but that's what the code actually does.
+
+Clearly there's something other than just the registration method going
+on here.
+
+--PPYy/fEw/8QCHSq3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl/dEcoACgkQJNaLcl1U
+h9Dm3Qf+LvCppUIG0y7HXRZYLp+1HOlN8M+sp19Wq4MznAs+tmiEitSg2oduI6VS
+IU8r1EmDjL95wDsXFirSPzs+HbNxhOiTd/5vqgA4fBypxy3TYyhnhd1DWyq18T+t
+Tskz/3SktXCO9x7LlPrWbrEbIKJOkQz65dKIrQ+KpDZ62flhnNlE/vMeGOY8vTmg
+LfNSdEAdHETxzvBCGqinCBv2NHJT38RXrB/IC89cl6Tep0PUXt6Inqlg1C1MtwFT
+9QtQZpn9lznr2oxUB6gTbZwmnYABHnK00a4uzU5rqMedWTWYuJoTECjYfZAAvu70
+nn1zTw/DzitPu9qhkCb83kMTBgL7xg==
+=BJk5
+-----END PGP SIGNATURE-----
+
+--PPYy/fEw/8QCHSq3--
