@@ -2,107 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BDD2DE6C0
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 16:38:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43AB22DE6F9
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 16:53:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728595AbgLRPhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 10:37:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727817AbgLRPhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 10:37:38 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59273C0617B0;
-        Fri, 18 Dec 2020 07:36:58 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id v2so1740505pfm.9;
-        Fri, 18 Dec 2020 07:36:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+KLSZTU5ExRpj/cZNjbTv8MS71w3sCFIMI4H99ieEKo=;
-        b=D3L/yJ8R/OunwhSbKyc2rz9lb4mfdgQquJr33FFTlqhVg6z/JACxfrmS720bcqh/Ib
-         Pw6mECItEwlQUWPQ4EJ+EJJ2tyRVYW25NC0zrIoyhgMW+8C+iFOSkenV50hekAvn7Z6y
-         BJRQumM4mlXxzFNbWqLA3Wqzx8JdX08m7T0zc6Q/jAilDAIrPXlUSuImzXGGTDyhn3S7
-         XfXgPr0sZSFXBQH0Sm7I8Zq8Dwh20lkzfCHSGuzEu6Vly96TvmUxV75SfHSbEidDQnlk
-         SHqQVtoSbC1tMVCZniDtNjymplJpvdwZEvSzq1wxQmbYSrUiDsOIU9LuCaxQ/5w13OEK
-         7qLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+KLSZTU5ExRpj/cZNjbTv8MS71w3sCFIMI4H99ieEKo=;
-        b=rUfZCmCxMtlT86M+ccMiICo7SnOsqhJRpGW+dNN4I5LUZYdqpnkUFc2lw3U9+C5of8
-         uinsbfk6oIp8fVXpPYUHnJjesgH77zM5uT3DOPpv/1b30eOhtVCecRa2tx2XGir3egR8
-         ya3eqTc/Yg5ipR6Mw+de9UQu1ouWZIcR2heZcxmk2HjtSIMGiOrJkzXMjmB06gJQcV/y
-         as+lAmnI5O+EJP3ySnw8xyhRIt56hEZnX9EdZMk8Z2Jo8fQZBH2QAkr4uGzstaZzTHvM
-         ZCFfPeyRtqave7ROU4dUcEUIdPxpppKLSkHpMqV+vtgE9RlDJthIesBcc5VU8cokbrvR
-         Xd1Q==
-X-Gm-Message-State: AOAM531lAqqvLFrL9mdCyC1aU+cOYhdKys1jYT0w1c2UOeLMNAfRmZEX
-        gFtjWZg+JQ9q11pkF/fQnNVX//ZQK2AE/NajiC8=
-X-Google-Smtp-Source: ABdhPJyhQWu/LkN+fP3nOWDXs/TSnn33BgzHb1Co9HMOBy4XiN4f0exFG/8nxg1+9UOhOdoEd6TyXUQIQCRxNmCW63I=
-X-Received: by 2002:a63:74b:: with SMTP id 72mr4681349pgh.4.1608305817763;
- Fri, 18 Dec 2020 07:36:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20201215164315.3666-1-calvin.johnson@oss.nxp.com>
- <20201215164315.3666-9-calvin.johnson@oss.nxp.com> <CAHp75Vf69NuxqcJntQi+CT1QN4cpdr2LYNzo6=t-pBWcWgufPA@mail.gmail.com>
- <20201218054044.GB14594@lsv03152.swis.in-blr01.nxp.com>
-In-Reply-To: <20201218054044.GB14594@lsv03152.swis.in-blr01.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 18 Dec 2020 17:36:41 +0200
-Message-ID: <CAHp75Vd4+b9asXXVGnFAH8nuDgyzR+ocaKaf7ibdt88gpMMT9w@mail.gmail.com>
-Subject: Re: [net-next PATCH v2 08/14] net: mdiobus: Introduce fwnode_mdiobus_register()
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, "linux.cj" <linux.cj@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        id S1728981AbgLRPw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 10:52:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37252 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725949AbgLRPw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Dec 2020 10:52:59 -0500
+Date:   Fri, 18 Dec 2020 15:52:04 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608306738;
+        bh=hh6kmTaYw7S1ycwZ4+Gi2lG2vKviQu4KRDfzNgRJMMs=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UyU1MPj7dIcBqLmjerLEZsmEzC9n1onWw7rJnwndCFVtu521SPmOch8eA090w9V2H
+         ebUvciuQh2tgliNsbPhJ+d7famGJ5HrWsYQXOFYFawsqG7YFaYaENY1wZ3I+lQvhM3
+         sBTMAP+TWsAs/Y2hGXv08Pw61G+jsbNEjrvVOliXG1QnXFRMS7pL33FrykEC15cAbc
+         2EPJnk8WkKwkraXP8CJjbdl6y+P9OpU1+fs8usTsCYpva/XnIg5e4tdCor3867HRms
+         tVOavWiyg+wnpW7nD1Pb2LmOxcN9bu82ySjirX3es0l64KZmVFEC9qMU+j+GVrqdxQ
+         J63Ghc7zBNX5A==
+From:   Mark Brown <broonie@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Miller <davem@davemloft.net>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Parav Pandit <parav@mellanox.com>, lee.jones@linaro.org
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Message-ID: <20201218155204.GC5333@sirena.org.uk>
+References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
+ <X8ogtmrm7tOzZo+N@kroah.com>
+ <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
+ <X8usiKhLCU3PGL9J@kroah.com>
+ <20201217211937.GA3177478@piout.net>
+ <X9xV+8Mujo4dhfU4@kroah.com>
+ <20201218131709.GA5333@sirena.org.uk>
+ <20201218140854.GW552508@nvidia.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ABTtc+pdwF7KHXCz"
+Content-Disposition: inline
+In-Reply-To: <20201218140854.GW552508@nvidia.com>
+X-Cookie: Password:
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 7:40 AM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
-> On Tue, Dec 15, 2020 at 07:53:26PM +0200, Andy Shevchenko wrote:
-> > On Tue, Dec 15, 2020 at 6:44 PM Calvin Johnson
-> > <calvin.johnson@oss.nxp.com> wrote:
 
-...
+--ABTtc+pdwF7KHXCz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> > I would rather see this as simple as
-> >
-> >      if (is_of_node(fwnode))
-> >                return of_mdiobus_register(mdio, to_of_node(fwnode));
-> >      if (is_acpi_node(fwnode))
-> >                return acpi_mdiobus_register(mdio, fwnode);
-> >
-> > where the latter one is defined somewhere in drivers/acpi/.
-> Makes sense. I'll do it. But I think it will be better to place
-> acpi_mdiobus_register() here itself in the network subsystem, maybe
-> /drivers/net/mdio/acpi_mdio.c.
+On Fri, Dec 18, 2020 at 10:08:54AM -0400, Jason Gunthorpe wrote:
+> On Fri, Dec 18, 2020 at 01:17:09PM +0000, Mark Brown wrote:
 
-Even better, thanks!
+> > As previously discussed this will need the auxilliary bus extending to
+> > support at least interrupts and possibly also general resources.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> I thought the recent LWN article summed it up nicely, auxillary bus is
+> for gluing to subsystems together using a driver specific software API
+> to connect to the HW, MFD is for splitting a physical HW into disjoint
+> regions of HW.
+
+This conflicts with the statements from Greg about not using the
+platform bus for things that aren't memory mapped or "direct firmware",
+a large proportion of MFD subfunctions are neither at least in so far as
+I can understand what direct firmware means.
+
+To be honest I don't find the LWN article clarifies things particularly
+here, the rationale appears to involve some misconceptions about what
+MFDs look like.  It looks like it assumes that MFD functions have
+physically separate register sets for example which is not a reliable
+feature of MFDs, nor is the assumption that there's no shared
+functionality which appears to be there.  It also appears to assume that
+MFD subfunctions can clearly be described by ACPI (where it would be
+unidiomatic, we just don't see this happening for the MFDs that appear
+on ACPI systems and I'm not sure bindings exist within ACPI) or DT
+(where even where subfunctions are individually described it's rarely
+doing more than enumerating that things exist).
+
+> Maybe there is some overlap, but if you want to add HW representations
+> to the general auxillary device then I think you are using it for the
+> wrong thing.
+
+Even for the narrowest use case for auxiliary devices that I can think
+of I think the assumption that nobody will ever design something which
+can wire an interrupt intended to be serviced by a subfunction is a bit
+optimistic.  If Greg's statements about not using platform buses for
+MMIO or direct firmware devices are accurate then those cases already
+exist, if nothing else a common subfunction for MFDs is an interrupt
+controller.
+
+--ABTtc+pdwF7KHXCz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl/c0CMACgkQJNaLcl1U
+h9AEzwf+O76Uw7BDG33tM6xhLOwoq847RdyVqkI6RrFlyIlLsFlIt49fbXRIuXTF
+Pviz3SUZ268ihxH3NrtuGLDtkdVL70oKo26hEppOtp877dhmkjK/BCnnkqIiERro
+4Hpxo/eoIjqT0lnx+ah2ge9q5cDhT9s1mMH8vkvdOSGa2a9z71uYEzOARmvUbXy9
+LK4/z9VmLS0wmO6YPxwc4Nq6afaa0m/yGhGFxu2aKT9aKfzbBIywl6WFllPz1Y1H
+G+ZxfgLJ6sZON36FToD7/FEDUuZxBUGjA5d2txOX0xpx/ZsnvapoRypEvotufObZ
+ZVX/PBjkUnHdClRckKl3LHCok9Xw1w==
+=lhpS
+-----END PGP SIGNATURE-----
+
+--ABTtc+pdwF7KHXCz--
