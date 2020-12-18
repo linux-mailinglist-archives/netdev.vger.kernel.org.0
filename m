@@ -2,173 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D72422DE8B2
-	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 19:06:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 931092DE8BA
+	for <lists+netdev@lfdr.de>; Fri, 18 Dec 2020 19:06:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728326AbgLRSEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 13:04:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47408 "EHLO mail.kernel.org"
+        id S1728560AbgLRSFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 13:05:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48254 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725766AbgLRSEG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 18 Dec 2020 13:04:06 -0500
-Date:   Fri, 18 Dec 2020 18:03:10 +0000
+        id S1726224AbgLRSFz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 18 Dec 2020 13:05:55 -0500
+Date:   Fri, 18 Dec 2020 18:05:01 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608314605;
-        bh=FkUoSS1XA/fvcfYoGeT7JpiQyIA2Fo3T+sJ2XEZSLaw=;
+        s=k20201202; t=1608314714;
+        bh=NdVqBMtoRocNA2YPB3gxwzcZOZ5Lc5aEsvs74M1GU+o=;
         h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vBlfg0MwKW270LXGfrZkKmF/HDxuLBQ3qvI+ZLjeS0L/BqO/maY80b990QQIyWH3x
-         GAGvZgjDLAggmWs7x9ExGnAACvu0jyphastaI5fxVpno8mdKP4wk0jHWYOTmbEjjDu
-         e7L+AAfqxItRHVuyllwhleMlWSnYKJRG2zV4/Mz0ixnfVuzEIz6zGV2OWykCzsCFTc
-         IyEcBvmsfCxIWuWxhR9f5z2nmFkwQakYggOhoRhNFhm1S529GZY2dfL62VeZmfe89M
-         d4KuFB3bYT21V9m2KOQYGX/SPMHUwOc5cJD/fasUASfO83K+X7oaIv2bd1P38hiX06
-         xl7PQzyddmU/g==
+        b=BRDVO50wHKlGAD5qiF/1c3cHXBdUjdySFj7cCYHZFP7hg5VMIFrBs9M8ZE7M9lOWb
+         w/QSgenWviEs/BRyTgLzmxGV6KpEzW1oVd1BeEmvpez1pwXAuMUIoQjpzfbzVJqMuz
+         xckZiJciy8PF29r16te2+p2AnfMD+DQAoH20ViDcoxk91rwY/i/zPD+OrwxeTTrkBD
+         unt6XOr8LdH9x/btrK3F1w1jJ2YHpbu4FHdOTzxGkgM8Mp3AHQ/EOTHC7IKfzAEjiq
+         YayGtfiPnimOB5IpFWn7NxJWr992NpubmVgcmrGiBiXl1o62QsBtFABsWiFA2SAUua
+         x2V1EdvRPmWLw==
 From:   Mark Brown <broonie@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>, lee.jones@linaro.org
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20201218180310.GD5333@sirena.org.uk>
-References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
- <X8ogtmrm7tOzZo+N@kroah.com>
- <CAPcyv4iLG7V9JT34La5PYfyM9378acbLnkShx=6pOmpPK7yg3A@mail.gmail.com>
- <X8usiKhLCU3PGL9J@kroah.com>
- <20201217211937.GA3177478@piout.net>
- <X9xV+8Mujo4dhfU4@kroah.com>
- <20201218131709.GA5333@sirena.org.uk>
- <20201218140854.GW552508@nvidia.com>
- <20201218155204.GC5333@sirena.org.uk>
- <20201218162817.GX552508@nvidia.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maxime Ripard <mripard@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Fix JSON pointers
+Message-ID: <20201218180500.GA35480@sirena.org.uk>
+References: <20201217223429.354283-1-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gE7i1rD7pdK0Ng3j"
+        protocol="application/pgp-signature"; boundary="pWyiEgJYm5f9v55/"
 Content-Disposition: inline
-In-Reply-To: <20201218162817.GX552508@nvidia.com>
-X-Cookie: Password:
+In-Reply-To: <20201217223429.354283-1-robh@kernel.org>
+X-Cookie: Can I have an IMPULSE ITEM instead?
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---gE7i1rD7pdK0Ng3j
+--pWyiEgJYm5f9v55/
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 18, 2020 at 12:28:17PM -0400, Jason Gunthorpe wrote:
-> On Fri, Dec 18, 2020 at 03:52:04PM +0000, Mark Brown wrote:
-> > On Fri, Dec 18, 2020 at 10:08:54AM -0400, Jason Gunthorpe wrote:
+On Thu, Dec 17, 2020 at 04:34:29PM -0600, Rob Herring wrote:
+> The correct syntax for JSON pointers begins with a '/' after the '#'.
+> Without a '/', the string should be interpretted as a subschema
+> identifier. The jsonschema module currently doesn't handle subschema
+> identifiers and incorrectly allows JSON pointers to begin without a '/'.
+> Let's fix this before it becomes a problem when jsonschema module is
+> fixed.
 
-> > > I thought the recent LWN article summed it up nicely, auxillary bus is
-> > > for gluing to subsystems together using a driver specific software API
-> > > to connect to the HW, MFD is for splitting a physical HW into disjoint
-> > > regions of HW.
+Acked-by: Mark Brown <broonie@kernel.org>
 
-> > This conflicts with the statements from Greg about not using the
-> > platform bus for things that aren't memory mapped or "direct firmware",
-> > a large proportion of MFD subfunctions are neither at least in so far as
-> > I can understand what direct firmware means.
-
-> I assume MFD will keep existing and it will somehow stop using
-> platform device for the children it builds.
-
-If it's not supposed to use platform devices so I'm assuming that the
-intention is that it should use aux devices, otherwise presumably it'd
-be making some new clone of the platform bus but I've not seen anyone
-suggesting this.
-
-> That doesn't mean MFD must use aux device, so I don't see what you
-> mean by conflicts?
-
-I was excluding the possibility that we have to make a third bus which
-clones platform bus which nobody has been visibly suggesting.
-
-> If someone has a PCI device and they want to split it up, they should
-> choose between aux device and MFD (assuming MFD gets fixed, as Greg
-> has basically blanket NAK'd adding more of them to MFD as is)
-
-It is unclear to me how one is intended to choose between these
-approaches, especially for systems that have a range of subdevices with
-a range of characteristics.
-
-> > To be honest I don't find the LWN article clarifies things particularly
-> > here, the rationale appears to involve some misconceptions about what
-> > MFDs look like.  It looks like it assumes that MFD functions have
-> > physically separate register sets for example which is not a reliable
-> > feature of MFDs, nor is the assumption that there's no shared
-> > functionality which appears to be there.  It also appears to assume that
-
-> I think the MFD cell model is probably the deciding feature. If that
-> cell description scheme suites the device, and it is very HW focused,
-> then MFD is probably the answer.
-
-> The places I see aux device being used are a terrible fit for the cell
-> idea. If there are MFD drivers that are awkardly crammed into that
-> cell description then maybe they should be aux devices?
-
-When you say the MFD cell model it's not clear what you mean - I *think*
-you're referring to the idea of the subdevices getting all the
-information they need to talk to the hardware from the device resources.
-That's actually relatively uncommon with I2C/SPI MFDs, usually there's
-at least some element of just knowing what's going on and the mfd_cells
-are to some extent just a list of things to register rather than a model
-of anything.
-
-Look at something like wm8994 for example - the subdevices just know
-which addresses in the device I2C/SPI regmap to work with but some of
-them have interrupts passed through to them (and could potentially also
-have separate subdevices for clocks and pinctrl).  These subdevices are
-not memory mapped, not enumerated by firmware and the hardware has
-indistinct separation of functions in the register map compared to how
-Linux models the chips.
-
-> > > Maybe there is some overlap, but if you want to add HW representations
-> > > to the general auxillary device then I think you are using it for the
-> > > wrong thing.
-
-> > Even for the narrowest use case for auxiliary devices that I can think
-> > of I think the assumption that nobody will ever design something which
-> > can wire an interrupt intended to be serviced by a subfunction is a bit
-> > optimistic. =20
-
-> mlx5, for example, uses interrupts but an aux device is not assigned
-> an exclusive MSI interrupt list.
-
-> These devices have a very dynamic interrupt scheme, pre-partitioning
-> the MSI vector table is completely the wrong API.
-
-I'm not saying dynamic interrupt schemes or event queues from firmware
-can't exist, I'm saying not all interrupt schemes are dynamic.
-
---gE7i1rD7pdK0Ng3j
+--pWyiEgJYm5f9v55/
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl/c7t4ACgkQJNaLcl1U
-h9DZ9ggAhWS2GLzG19WitcNZFN865NLdPy+QPB5dNfJqSEWdIANmNlivsdyHbIae
-pMP4f/TZReaOIA0LD4bUZuAoDdQobMvxI7Mg1Y7qg1wy5+SA2dGRJYUsYCNaGQs+
-clPY3qNsHgcmbUNVbbZjSpxY3sLSpStsSeQb22JGqc9438HQ26c8xAj7/wbiUyjU
-N8PozJPh+++afQFAP+hgWux0THNNrDTKlAZMZOD7AL1o/2M4Z2EHx5Lu3/XXJXaO
-ihRdaMWFrQ9p7vCoZkutTw8wnoMhqxnST4EP1ZejtWNQZcXqf5wdTm/hDBTzgKmx
-fe4rfElBhVvfORw9UTYh3Bjkit+xNQ==
-=Im3G
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl/c70wACgkQJNaLcl1U
+h9C6xgf9GjyMMhxOLX/4FgKAp9F6/WeX1DyiCkHx+c5d/DWDd3e6moV9ahFZFTfE
+LrJs1vcq4nCVKZUpsrP1igIKVm9HGo72kHsmh5MGJCiXfu0PLDBcOVW7Usr8rp4S
+i4USBt22cnVncSx48sFNIbqOYBmwVLKZpX7Xv4UK7lCQWQ/xS7X9K7Ywolmg/Hvw
+rgEcSLE0YfA7INdLl3CrXHouY90pR/yzx30b8GH4OvxVy8bHobQvtLUfg0ITSHdU
+AM/dgOB/iDzxLWtpq8OAjUgB1GWkdPOTAjcQJVEDTMJra1e0Rln5uad7DWf2ggj8
+Y4qUdmvrYgeXtl9ugMXRG1lZg8+3lw==
+=4D70
 -----END PGP SIGNATURE-----
 
---gE7i1rD7pdK0Ng3j--
+--pWyiEgJYm5f9v55/--
