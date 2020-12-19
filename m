@@ -2,173 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 091BD2DF122
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 19:57:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D54E02DF12D
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 20:02:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727446AbgLSS4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 13:56:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36004 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725951AbgLSS43 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Dec 2020 13:56:29 -0500
-From:   Jakub Kicinski <kuba@kernel.org>
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, pv-drivers@vmware.com, doshir@vmware.com,
-        UNGLinuxDriver@microchip.com, steve.glendinning@shawell.net,
-        woojung.huh@microchip.com, ath9k-devel@qca.qualcomm.com,
-        linux-wireless@vger.kernel.org, drivers@pensando.io,
-        snelson@pensando.io, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        bryan.whitehead@microchip.com, o.rempel@pengutronix.de,
-        kernel@pengutronix.de, robin@protonic.nl, hkallweit1@gmail.com,
-        nic_swsd@realtek.com, lars.povlsen@microchip.com,
-        Steen.Hegelund@microchip.com, linux-kernel@vger.kernel.org,
-        corbet@lwn.net, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] MAINTAINERS: remove names from mailing list maintainers
-Date:   Sat, 19 Dec 2020 10:55:38 -0800
-Message-Id: <20201219185538.750076-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1727387AbgLSTCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 14:02:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726206AbgLSTCe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 14:02:34 -0500
+Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA98C0613CF
+        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 11:01:35 -0800 (PST)
+Received: by mail-ua1-x929.google.com with SMTP id j59so253421uad.5
+        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 11:01:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g//FK5JkJqWq/N862JClyeKYzop8m+pqv7c8aODeHsQ=;
+        b=NsTivoLTBppWKjs2xWnb1uUHlEt44+3Q6KKyZt3U8nHqWzWFUc0vNLDwnpx/+VPJic
+         BzAyBb8G1i/KV8NZqI55DIs1JSJZgNa55esIeeDlhWMYDpKmYJWDhIvcA2Vi5LjpydLK
+         Nw2ug2nExi0kPedShhF8zD69bHitY+t+9DYcdW11tU0VKMMWAixRHK60Eug5LJGpe227
+         2wfnTW6Khz9xUJPlDNc8eV/T9cZrWtovD5z0pSLcEhG8T/DizPFU81erwsX2JRGCKKsO
+         l7yGnKChL2pnYb85zJidU4DDODAPr2P1CmkXzMPIGDAH1xGMX/Ig7mWWmXqwPcshTi9A
+         hjzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g//FK5JkJqWq/N862JClyeKYzop8m+pqv7c8aODeHsQ=;
+        b=HLPnFIiBCEZOw5YcoVnN7KUQn9zV92tVTh1qQ6bmxdJn5Mzns+PvaT21r/7cSB4BkO
+         wcW098RiDg3/hD/yPm87GGEg7GdGO67W8aE76yv+T3/Lufm7BcravfsVxwEl9GHEM9NI
+         ixiUsZdVIV6KWUGg8DjPym1UFNmWrs3hSKJdd2yKSmWFp4W+acgJhm63mhebPofYD3Pe
+         tSHgqk9LODaSEwFIzAoKUfNtrMTzWBkX5EKujt/3zxUl+oOvY3C1UNOSL2MihOsC2VVE
+         10dMFVBDcmfHkNckcR3M76RopSOGgO7/HGONucXxQgFdlc2I1IVy3aCMFi7b6ptUDBW/
+         8G0w==
+X-Gm-Message-State: AOAM533XNf+Z/OiAI2cFhQhJKoyaWZVniq2UNn7nGlT+axyfi9iVW30z
+        Z5dY+TMGUlJ6FmiYfiquWJ9YC6Q0Fg0=
+X-Google-Smtp-Source: ABdhPJzmnMRHcRPq5N2NnRLkHVlMXLo0vYrvMBxtyACwOvrIvY5Il5d/GSGny4Se12h1MOKJpdJVnA==
+X-Received: by 2002:ab0:65c2:: with SMTP id n2mr9001608uaq.73.1608404493843;
+        Sat, 19 Dec 2020 11:01:33 -0800 (PST)
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
+        by smtp.gmail.com with ESMTPSA id i18sm1788228vkp.48.2020.12.19.11.01.33
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Dec 2020 11:01:33 -0800 (PST)
+Received: by mail-ua1-f45.google.com with SMTP id 73so2004446uac.8
+        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 11:01:33 -0800 (PST)
+X-Received: by 2002:ab0:5e98:: with SMTP id y24mr9154720uag.108.1608404492560;
+ Sat, 19 Dec 2020 11:01:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201218201633.2735367-1-jonathan.lemon@gmail.com>
+ <CA+FuTSeM0pqj=LywVUUpNyekRDmpES1y8ksSi5PJ==rw2-=cug@mail.gmail.com> <20201218211648.rh5ktnkm333sw4hf@bsd-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201218211648.rh5ktnkm333sw4hf@bsd-mbp.dhcp.thefacebook.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 19 Dec 2020 14:00:55 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfcxCncqzUsQh22A5Kdha_+wXmE=tqPk4SiJ3+CEui_Vw@mail.gmail.com>
+Message-ID: <CA+FuTSfcxCncqzUsQh22A5Kdha_+wXmE=tqPk4SiJ3+CEui_Vw@mail.gmail.com>
+Subject: Re: [PATCH 0/9 v1 RFC] Generic zcopy_* functions
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When searching for inactive maintainers it's useful to filter
-out mailing list addresses. Such "maintainers" will obviously
-never feature in a "From:" line of an email or a review tag.
+On Fri, Dec 18, 2020 at 4:27 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+>
+> On Fri, Dec 18, 2020 at 03:49:44PM -0500, Willem de Bruijn wrote:
+> > On Fri, Dec 18, 2020 at 3:23 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+> > >
+> > > From: Jonathan Lemon <bsd@fb.com>
+> > >
+> > > This is set of cleanup patches for zerocopy which are intended
+> > > to allow a introduction of a different zerocopy implementation.
+> >
+> > Can you describe in more detail what exactly is lacking in the current
+> > zerocopy interface for this this different implementation? Or point to
+> > a github tree with the feature patches attached, perhaps.
+>
+> I'll get the zctap features up into a github tree.
+>
+> Essentially, I need different behavior from ubuf_info:
+>   - no refcounts on RX packets (static ubuf)
 
-Since "L:" entries only provide the address of a mailing list
-without a fancy name extend this pattern to "M:" entries.
+That is already the case for vhost and tpacket zerocopy use cases.
 
-Alternatively we could reserve M: entries for humans only
-and move the fake "maintainers" to L:. While I'd personally
-prefer to reserve M: for humans only, I'm not 100% that's
-a great choice either, given most L: entries are in fact
-open mailing lists with public archives.
+>   - access to the skb on RX skb free (for page handling)
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- MAINTAINERS | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+To refers only to patch 9, moving the callback earlier in
+skb_release_data, right?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 28d7acdb0591..20cd4cc08dd1 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -203,8 +203,8 @@ F:	include/uapi/linux/nl80211.h
- F:	net/wireless/
- 
- 8169 10/100/1000 GIGABIT ETHERNET DRIVER
--M:	Realtek linux nic maintainers <nic_swsd@realtek.com>
- M:	Heiner Kallweit <hkallweit1@gmail.com>
-+M:	nic_swsd@realtek.com
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/realtek/r8169*
-@@ -2119,7 +2119,7 @@ N:	atmel
- ARM/Microchip Sparx5 SoC support
- M:	Lars Povlsen <lars.povlsen@microchip.com>
- M:	Steen Hegelund <Steen.Hegelund@microchip.com>
--M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-+M:	UNGLinuxDriver@microchip.com
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Supported
- T:	git git://github.com/microchip-ung/linux-upstream.git
-@@ -3958,7 +3958,7 @@ F:	net/can/
- CAN-J1939 NETWORK LAYER
- M:	Robin van der Gracht <robin@protonic.nl>
- M:	Oleksij Rempel <o.rempel@pengutronix.de>
--R:	Pengutronix Kernel Team <kernel@pengutronix.de>
-+R:	kernel@pengutronix.de
- L:	linux-can@vger.kernel.org
- S:	Maintained
- F:	Documentation/networking/j1939.rst
-@@ -11651,7 +11651,7 @@ F:	drivers/media/platform/atmel/atmel-isi.h
- 
- MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER
- M:	Woojung Huh <woojung.huh@microchip.com>
--M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-+M:	UNGLinuxDriver@microchip.com
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-@@ -11661,7 +11661,7 @@ F:	net/dsa/tag_ksz.c
- 
- MICROCHIP LAN743X ETHERNET DRIVER
- M:	Bryan Whitehead <bryan.whitehead@microchip.com>
--M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-+M:	UNGLinuxDriver@microchip.com
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/microchip/lan743x_*
-@@ -11755,7 +11755,7 @@ F:	drivers/net/wireless/microchip/wilc1000/
- 
- MICROSEMI MIPS SOCS
- M:	Alexandre Belloni <alexandre.belloni@bootlin.com>
--M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-+M:	UNGLinuxDriver@microchip.com
- L:	linux-mips@vger.kernel.org
- S:	Supported
- F:	Documentation/devicetree/bindings/mips/mscc.txt
-@@ -12809,10 +12809,10 @@ F:	tools/objtool/
- F:	include/linux/objtool.h
- 
- OCELOT ETHERNET SWITCH DRIVER
--M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
- M:	Vladimir Oltean <vladimir.oltean@nxp.com>
- M:	Claudiu Manoil <claudiu.manoil@nxp.com>
- M:	Alexandre Belloni <alexandre.belloni@bootlin.com>
-+M:	UNGLinuxDriver@microchip.com
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/dsa/ocelot/*
-@@ -13874,7 +13874,7 @@ F:	drivers/platform/x86/peaq-wmi.c
- 
- PENSANDO ETHERNET DRIVERS
- M:	Shannon Nelson <snelson@pensando.io>
--M:	Pensando Drivers <drivers@pensando.io>
-+M:	drivers@pensando.io
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	Documentation/networking/device_drivers/ethernet/pensando/ionic.rst
-@@ -14653,7 +14653,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
- F:	drivers/net/wireless/ath/ath11k/
- 
- QUALCOMM ATHEROS ATH9K WIRELESS DRIVER
--M:	QCA ath9k Development <ath9k-devel@qca.qualcomm.com>
-+M:	ath9k-devel@qca.qualcomm.com
- L:	linux-wireless@vger.kernel.org
- S:	Supported
- W:	https://wireless.wiki.kernel.org/en/users/Drivers/ath9k
-@@ -18338,7 +18338,7 @@ F:	include/linux/usb/isp116x.h
- 
- USB LAN78XX ETHERNET DRIVER
- M:	Woojung Huh <woojung.huh@microchip.com>
--M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-+M:	UNGLinuxDriver@microchip.com
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/net/microchip,lan78xx.txt
-@@ -18452,7 +18452,7 @@ F:	drivers/net/usb/smsc75xx.*
- 
- USB SMSC95XX ETHERNET DRIVER
- M:	Steve Glendinning <steve.glendinning@shawell.net>
--M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-+M:	UNGLinuxDriver@microchip.com
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/usb/smsc95xx.*
-@@ -18999,7 +18999,7 @@ F:	drivers/input/mouse/vmmouse.h
- 
- VMWARE VMXNET3 ETHERNET DRIVER
- M:	Ronak Doshi <doshir@vmware.com>
--M:	"VMware, Inc." <pv-drivers@vmware.com>
-+M:	pv-drivers@vmware.com
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/vmxnet3/
--- 
-2.26.2
+>   - no page pinning on TX/tx completion
 
+That is not part of the skb zerocopy infrastructure?
+
+>   - marking the skb data as inaccessible so skb_condense()
+>     and skb_zeroocopy_clone() leave it alone.
+
+Yep. Skipping content access on the Rx path will be interesting. I
+wonder if that should be a separate opaque skb feature, independent
+from whether the data is owned by userspace, peripheral memory, the
+page cache or anything else.
+
+> > I think it's good to split into multiple smaller patchsets, starting
+> > with core stack support. But find it hard to understand which of these
+> > changes are truly needed to support a new use case.
+>
+> Agree - kind of hard to see why this is done without a use case.
+> These patches are purely restructuring, and don't introduce any
+> new features.
+>
+>
+> > If anything, eating up the last 8 bits in skb_shared_info should be last resort.
+>
+> I would like to add 2 more bits in the future, which is why I
+> moved them.  Is there a compelling reason to leave the bits alone?
+
+Opportunity cost.
+
+We cannot grow skb_shared_info due to colocation with MTU sized linear
+skbuff's in half a page.
+
+It took me quite some effort to free up a few bytes in commit
+4d276eb6a478 ("net: remove deprecated syststamp timestamp").
+
+If we are very frugal, we could shadow some bits to have different
+meaning in different paths. SKBTX_IN_PROGRESS is transmit only, I
+think. But otherwise we'll have to just dedicate the byte to more
+flags. Yours are likely not to be the last anyway.
