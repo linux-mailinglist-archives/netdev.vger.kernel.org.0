@@ -2,81 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 983DC2DF101
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 19:24:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E78FB2DF109
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 19:32:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727362AbgLSSV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 13:21:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59868 "EHLO mail.kernel.org"
+        id S1727348AbgLSSas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 13:30:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726144AbgLSSV6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Dec 2020 13:21:58 -0500
-Date:   Sat, 19 Dec 2020 10:21:16 -0800
+        id S1725960AbgLSSar (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Dec 2020 13:30:47 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608402077;
-        bh=9anSoEyGYfwJXexpe6AJSpZfREs9m9aRLDWzjrBcS+4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eRsUzkUv7P5atJeg5AJ+M/FUr1Xe/SC+T0zH0T9jEQz3uDHCWgy/YaWidKSZkdn8y
-         02zDl8WpDmKwYzq12Z8KXRogx7MRBtYhZY31H4nhdb6NLnQToffek+G7BA2TnT9ILK
-         QGr1dIaPIrdF/Er7oYa0GSNeUn8YhNzRgXHek1wZR/p8O+kk4IDErMzcsOGPhkdmTt
-         TksQ8wUkma8m/S4nov+Pp7PyvrxMEoKBAtDUu9eQmyrwndrMlzXMSKncUz7Kesy5Wh
-         ioMMjyr2ZAzLpjDswBwpa6iGEwfYig60X5fJJnZ+ByxepjGwvynPuAW5wsoKGAQt8V
-         S0xPrW6/LqbLA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     weichenchen <weichen.chen@linux.alibaba.com>
-Cc:     davem@davemloft.net, liuhangbin@gmail.com, dsahern@kernel.org,
-        jdike@akamai.com, mrv@mojatatu.com, lirongqing@baidu.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        splendidsky.cwc@alibaba-inc.com, yanxu.zw@alibaba-inc.com
-Subject: Re: [PATCH] net: neighbor: fix a crash caused by mod zero
-Message-ID: <20201219102116.3cc0d74c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201218042019.52096-1-weichen.chen@linux.alibaba.com>
-References: <20201218042019.52096-1-weichen.chen@linux.alibaba.com>
+        s=k20201202; t=1608402607;
+        bh=cj45JuCXNPY3xInrOk6ZUDWlvxGH+VBZTSXSTW9cwnw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=czwBzABW3OCfP0WhsNTn+7idFg+dAGyQjZkn9Qagmyvuuar3o4moPYpxsYm1XIaeI
+         9fd0T1cwneVCVq4hZf8+sxQYJD5mI8Y6mFGk7e9t4a4j2VZmaXa0ijksm5pxdkJLgI
+         JyojnRyz77gghEE4PE5qF+k86jlJ1YV7a5lQKyVjqXpVYn8spiTgdmZ7U8N0/Gncj/
+         kXBbdq/zlKl6zXgAw6s0YQZiqJoWigZKlz7mHYINv1kb9bCKBGmyg1kyG/sTnjcrPo
+         iygzBGKUGf6dfEAFRxIPGt4GGwwiScnGVq97DzqDZPqASUiEVMKRyux8HXip050pdY
+         zdvt8NdGVAOwg==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] net: mvpp2: prs: fix PPPoE with ipv6 packet parse
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160840260707.19884.10591726484296178579.git-patchwork-notify@kernel.org>
+Date:   Sat, 19 Dec 2020 18:30:07 +0000
+References: <1608230266-22111-1-git-send-email-stefanc@marvell.com>
+In-Reply-To: <1608230266-22111-1-git-send-email-stefanc@marvell.com>
+To:     Stefan Chulski <stefanc@marvell.com>
+Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
+        linux-kernel@vger.kernel.org, kuba@kernel.org,
+        linux@armlinux.org.uk, mw@semihalf.com, andrew@lunn.ch,
+        rmk+kernel@armlinux.org.uk, atenart@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Dec 2020 12:20:19 +0800 weichenchen wrote:
-> pneigh_enqueue() tries to obtain a random delay by mod
-> NEIGH_VAR(p, PROXY_DELAY). However, NEIGH_VAR(p, PROXY_DELAY)
-> migth be zero at that point because someone could write zero
-> to /proc/sys/net/ipv4/neigh/[device]/proxy_delay after the
-> callers check it.
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Thu, 17 Dec 2020 20:37:46 +0200 you wrote:
+> From: Stefan Chulski <stefanc@marvell.com>
 > 
-> This patch double-checks NEIGH_VAR(p, PROXY_DELAY) in
-> pneigh_enqueue() to ensure not to take zero as modulus.
+> Current PPPoE+IPv6 entry is jumping to 'next-hdr'
+> field and not to 'DIP' field as done for IPv4.
 > 
-> Signed-off-by: weichenchen <weichen.chen@linux.alibaba.com>
+> Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
+> Reported-by: Liron Himi <lironh@marvell.com>
+> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+> 
+> [...]
 
-Let's have the caller pass in the value since it did the checking?
+Here is the summary with links:
+  - [net,v2] net: mvpp2: prs: fix PPPoE with ipv6 packet parse
+    https://git.kernel.org/netdev/net/c/fec6079b2eea
 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 9500d28a43b0..eb5d015c53d3 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -1570,9 +1570,14 @@ void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
->  		    struct sk_buff *skb)
->  {
->  	unsigned long now = jiffies;
-> +	unsigned long sched_next;
->  
-> -	unsigned long sched_next = now + (prandom_u32() %
-> -					  NEIGH_VAR(p, PROXY_DELAY));
-> +	int delay = NEIGH_VAR(p, PROXY_DELAY);
-> +
-> +	if (delay <= 0)
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Not that this still doesn't guarantee that the compiler won't re-read
-the value (however unlikely). We need a READ_ONCE().
-
-> +		sched_next = now;
-> +	else
-> +		sched_next = now + (prandom_u32() % delay);
->  
->  	if (tbl->proxy_queue.qlen > NEIGH_VAR(p, PROXY_QLEN)) {
->  		kfree_skb(skb);
 
