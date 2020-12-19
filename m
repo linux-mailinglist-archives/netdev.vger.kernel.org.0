@@ -2,115 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 139B42DF0BD
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 18:47:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2F12DF0C1
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 18:51:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbgLSRrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 12:47:36 -0500
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:30620 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725944AbgLSRrg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 12:47:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1608400056; x=1639936056;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=F7IdQ8uO633RpYfrqVxuaxBymtGiyiFpbnJzX3JKznU=;
-  b=Ga9+16TqPHBUQzdAfDz4JfbEUMrEXqB8TeDCcKxefp8L0u47xW9yWtQp
-   8plwczOlNF4MRRCCf8NnSVaObv290pM79aU7LLekfB2A3UHkWLIbzluSS
-   tumXl6mAK5n2EXzxV3ezW3I9aeEGlEioVYcmU+XEP6uXgvbmDMAPVgCwk
-   4=;
-X-IronPort-AV: E=Sophos;i="5.78,433,1599523200"; 
-   d="scan'208";a="97458502"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-807d4a99.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 19 Dec 2020 17:46:48 +0000
-Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1a-807d4a99.us-east-1.amazon.com (Postfix) with ESMTPS id 1C467A1F4B;
-        Sat, 19 Dec 2020 17:46:43 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.160.90) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sat, 19 Dec 2020 17:46:36 +0000
-References: <cover.1607349924.git.lorenzo@kernel.org>
- <a12bf957bf99fa86d229f383f615f11ee7153340.1607349924.git.lorenzo@kernel.org>
-User-agent: mu4e 1.4.12; emacs 27.1
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <sameehj@amazon.com>,
-        <john.fastabend@gmail.com>, <dsahern@kernel.org>,
-        <brouer@redhat.com>, <echaudro@redhat.com>,
-        <lorenzo.bianconi@redhat.com>, <jasowang@redhat.com>
-Subject: Re: [PATCH v5 bpf-next 11/14] bpf: cpumap: introduce xdp multi-buff
- support
-In-Reply-To: <a12bf957bf99fa86d229f383f615f11ee7153340.1607349924.git.lorenzo@kernel.org>
-Date:   Sat, 19 Dec 2020 19:46:15 +0200
-Message-ID: <pj41zleejlpu3c.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        id S1727162AbgLSRup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 12:50:45 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:48894 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725562AbgLSRuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 12:50:44 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 952E11C0B77; Sat, 19 Dec 2020 18:49:46 +0100 (CET)
+Date:   Sat, 19 Dec 2020 18:49:45 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maxime Ripard <mripard@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Fix JSON pointers
+Message-ID: <20201219174945.GA25643@amd>
+References: <20201217223429.354283-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.160.90]
-X-ClientProxiedBy: EX13D19UWA004.ant.amazon.com (10.43.160.102) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
+Content-Disposition: inline
+In-Reply-To: <20201217223429.354283-1-robh@kernel.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Lorenzo Bianconi <lorenzo@kernel.org> writes:
+--bp/iNruPH9dso1Pn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Introduce __xdp_build_skb_from_frame and 
-> xdp_build_skb_from_frame
-> utility routines to build the skb from xdp_frame.
-> Add xdp multi-buff support to cpumap
+On Thu 2020-12-17 16:34:29, Rob Herring wrote:
+> The correct syntax for JSON pointers begins with a '/' after the '#'.
+> Without a '/', the string should be interpretted as a subschema
+> identifier. The jsonschema module currently doesn't handle subschema
+> identifiers and incorrectly allows JSON pointers to begin without a '/'.
+> Let's fix this before it becomes a problem when jsonschema module is
+> fixed.
+>=20
+> Converted with:
+> perl -p -i -e 's/yaml#definitions/yaml#\/definitions/g' `find Documentati=
+on/devicetree/bindings/ -name "*.yaml"`
 >
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  include/net/xdp.h   |  5 ++++
->  kernel/bpf/cpumap.c | 45 +---------------------------
->  net/core/xdp.c      | 73 
->  +++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 79 insertions(+), 44 deletions(-)
->
-[...]
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 6c8e743ad03a..55f3e9c69427 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -597,3 +597,76 @@ void xdp_warn(const char *msg, const char 
-> *func, const int line)
->  	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
->  };
->  EXPORT_SYMBOL_GPL(xdp_warn);
-> +
-> +struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame 
-> *xdpf,
-> +					   struct sk_buff *skb,
-> +					   struct net_device *dev)
-> +{
-> +	unsigned int headroom = sizeof(*xdpf) + xdpf->headroom;
-> +	void *hard_start = xdpf->data - headroom;
-> +	skb_frag_t frag_list[MAX_SKB_FRAGS];
-> +	struct xdp_shared_info *xdp_sinfo;
-> +	int i, num_frags = 0;
-> +
-> +	xdp_sinfo = xdp_get_shared_info_from_frame(xdpf);
-> +	if (unlikely(xdpf->mb)) {
-> +		num_frags = xdp_sinfo->nr_frags;
-> +		memcpy(frag_list, xdp_sinfo->frags,
-> +		       sizeof(skb_frag_t) * num_frags);
-> +	}
 
-nit, can you please move the xdp_sinfo assignment inside this 'if' 
-? This would help to emphasize that regarding xdp_frame tailroom 
-as xdp_shared_info struct (rather than skb_shared_info) is correct 
-only when the mb bit is set
+Acked-by: Pavel Machek <pavel@ucw.cz>
 
-thanks,
-Shay
+--=20
+http://www.livejournal.com/~pavelmachek
 
-> +
-> +	skb = build_skb_around(skb, hard_start, xdpf->frame_sz);
-> +	if (unlikely(!skb))
-> +		return NULL;
-[...]
+--bp/iNruPH9dso1Pn
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAl/ePTgACgkQMOfwapXb+vIsEwCgoqapZig1frJsLt79Dd1jHccN
+75EAoLe+6pWK3uzfpcvabTuRJpWKz3ku
+=1T8V
+-----END PGP SIGNATURE-----
+
+--bp/iNruPH9dso1Pn--
