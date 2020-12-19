@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC6A2DF0EC
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 19:00:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 361D02DF0EE
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 19:03:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727533AbgLSSAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 13:00:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58354 "EHLO mail.kernel.org"
+        id S1727335AbgLSSDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 13:03:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58584 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727208AbgLSR77 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Dec 2020 12:59:59 -0500
-Date:   Sat, 19 Dec 2020 09:59:17 -0800
+        id S1726979AbgLSSDS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Dec 2020 13:03:18 -0500
+Date:   Sat, 19 Dec 2020 10:02:37 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608400758;
-        bh=pdO7yN27dVbxPgRegNWOCdEQpv/5y8Wa0WcvQGFzoF0=;
+        s=k20201202; t=1608400958;
+        bh=vulkPc+nc9Z0STr+6nVLelSgT/jX6gZ8O+Uare0Tt88=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=holaY5/ZCCy1tufiJqgn51KOF2wx6Aj5L6gpdupdp1Aef7D3Qz+DFS+1NsIWj5dI6
-         4Y+bmaLuRfbn+jJzt71J8teHp8fKi8Fue6d4IHYtCOo3DCAPxFoAosOqoG6ryJWC8r
-         nj9LVLzSlpiAkHHG+gMXCSSekXcFU6DRuilthVueCPRd5rUQrtqshhm7oxpQN3Y7se
-         fRu6yNjjXZdvvsqcv2rNY+383gExHrktmnsZe7rMcIKcHvSuGfiqLtBQpifnpvhhHg
-         5MfeDGukiurVImv2FKWdjJKjDQREOanCavrUmQ7Fam0n/k6Z4YFMuFzPu8KOpvBqY6
-         xgocci6UgjGUg==
+        b=Rn9qIB88TNXkLpmmqd7Fq3HZT56lZ1D0JByxlru+4h782to0F5VtQdtr09w8Jgeu5
+         DdIr3wOvhDVnZ/hysffRpTZQizEJcekvjLFHVoXYEhWisOvI2sswWMec1OOhrUfySX
+         ABfzTfh14nG30B+lTcqjKwKxo8Y+hYCdKysg0swS4ZS2xRK7uVUk1JQ3SjLixlw+LL
+         kzuQ3jOo7URFPTmG2ejaaGYVB1gEEyPrQSkwOwoqvMKaTUtd4SMntDxWU2W+fW8QBz
+         FKh+aj5oUbjUSLSDhNJvzdnLavxJ11sPCt2xmyHKUXTub15tuqkQsQ3O0PQPZfleoG
+         seOAY66eWsr9Q==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     <stefanc@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <thomas.petazzoni@bootlin.com>,
-        <davem@davemloft.net>, <nadavh@marvell.com>,
-        <ymarkman@marvell.com>, <linux-kernel@vger.kernel.org>,
-        <linux@armlinux.org.uk>, <mw@semihalf.com>, <andrew@lunn.ch>,
-        <rmk+kernel@armlinux.org.uk>, <stable@vger.kernel.org>
-Subject: Re: [PATCH net v3] net: mvpp2: Fix GoP port 3 Networking Complex
- Control configurations
-Message-ID: <20201219095917.67401234@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1608208648-13710-1-git-send-email-stefanc@marvell.com>
-References: <1608208648-13710-1-git-send-email-stefanc@marvell.com>
+To:     Marcin Wojtas <mw@semihalf.com>,
+        Stefan Chulski <stefanc@marvell.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>, nadavh@marvell.com,
+        Yan Markman <ymarkman@marvell.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH net v3] net: mvpp2: disable force link UP during port
+ init procedure
+Message-ID: <20201219100237.0d3baa1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAPv3WKcL_mj=Zk8MrnQ_=m1nv5EzbpurYsLadSXMNZ3BKjzQVw@mail.gmail.com>
+References: <1608216735-14501-1-git-send-email-stefanc@marvell.com>
+        <CAPv3WKcL_mj=Zk8MrnQ_=m1nv5EzbpurYsLadSXMNZ3BKjzQVw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Dec 2020 14:37:28 +0200 stefanc@marvell.com wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
-> 
-> During GoP port 2 Networking Complex Control mode of operation configurations,
-> also GoP port 3 mode of operation was wrongly set.
-> Patch removes these configurations.
-> GENCONF_CTRL0_PORTX naming also fixed.
+On Fri, 18 Dec 2020 04:36:18 +0100 Marcin Wojtas wrote:
+> czw., 17 gru 2020 o 15:54 <stefanc@marvell.com> napisa=C5=82(a):
+> >
+> > From: Stefan Chulski <stefanc@marvell.com>
+> >
+> > Force link UP can be enabled by bootloader during tftpboot
+> > and breaks NFS support.
+> > Force link UP disabled during port init procedure.
+> >
+> > Fixes: f84bf386f395 ("net: mvpp2: initialize the GoP")
+> > Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+>=20
+> I confirm the patch fixes issue - tested on CN913x-DB and RGMII port.
+> Other boards there I see no regression.
+>=20
+> Acked-by: Marcin Wojtas <mw@semihalf.com>
 
-Testing the stable backport it looks like this addition change will be
-problematic. Not to mention it goes against the "fixes should be
-minimal" rule.
-
-Could you please send just a one liner which removes the offending
-ORing in of the bad bit?
-
-We can do the rename soon after in net-next, the trees are merged
-pretty much every week so it won't be a long wait.
-
-> Cc: stable@vger.kernel.org
-> Fixes: f84bf386f395 ("net: mvpp2: initialize the GoP")
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+Applied, thanks!
