@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0C82DF02D
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 16:20:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B512DF03E
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 16:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbgLSPTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 10:19:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33604 "EHLO
+        id S1726753AbgLSPbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 10:31:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726578AbgLSPTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 10:19:34 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2FBC0617B0;
-        Sat, 19 Dec 2020 07:18:53 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kqe0H-00Bye3-DL; Sat, 19 Dec 2020 16:18:41 +0100
-Message-ID: <9003ea3720a03b4bd1b8abf3d8f645563a58f953.camel@sipsolutions.net>
-Subject: Re: net: tso: add UDP segmentation support: adds regression for
- ax200 upload
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Ben Greear <greearb@candelatech.com>,
-        Luca Coelho <luciano.coelho@intel.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org
-Date:   Sat, 19 Dec 2020 16:18:40 +0100
-In-Reply-To: <20201218121627.603329b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <5664fa0f-aef2-c336-651a-093c9eed23ab@candelatech.com>
-         <765f370d-ce2d-b75a-2dde-87f69ae7c185@candelatech.com>
-         <CANn89iKpa1y2SKJuR9kRi=AZs94sj+-tzRs+2D0vmxh+ahEcGA@mail.gmail.com>
-         <adbee2ec-c6ba-7a17-eb98-1c53365fa911@candelatech.com>
-         <CANn89iJQnSVZFp2XDgREN1QMtU4exOsnJq=5VzJ6tqTCJ7MH-g@mail.gmail.com>
-         <c4bcee7d-b2eb-759c-c659-d65f3e7daec9@candelatech.com>
-         <CANn89i++Kgkj57ms70a5GDOQ-Cpewx3NQkzP3EmZmLYQ4eHzww@mail.gmail.com>
-         <5d89fd24-f00a-7e70-00ce-83529f13b05e@candelatech.com>
-         <20201218121627.603329b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        with ESMTP id S1726581AbgLSPbl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 10:31:41 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4C2C061282
+        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 07:31:00 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id f26so3379115qka.0
+        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 07:31:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Mnxj/ATKB1MlnwmVSmmqoIzxnVWNw1Scl7Hlo4abUiM=;
+        b=D7dkAyOOc5bVta3x8wWCYTWw1buGNRmbtzcYzjYdJWXPolSNZDWMiMVKUfWmfBANIS
+         oXrUNye9INjyClpMBL3xQA02Wja2ixQA8BIcdtAcOr/aNFAEnUPl/il9sWaHtk+v17d9
+         /oUO3Q0ki25SC6vP8lNzrPtcpT0CzQX/kUEq+FxjDhZnR2HeGocKAXsdHILkjxlCJFZw
+         VjfbfhOIuJgCe3ac6fwX4hyh9iMUnAS6nePg3vqvV/iCFlIE7KL6fy49P+nVYQoxsKhs
+         Q/DPMRfy0lIaoulhUwr+n2fKpJD6m8utYFo4GmppIOT1a+nuLuvL6wlsmLVdGlfw9CXl
+         9FxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Mnxj/ATKB1MlnwmVSmmqoIzxnVWNw1Scl7Hlo4abUiM=;
+        b=K3MMfSHaBnFMoZrzcJIrRd9SvRIVCxyYIckUVEUua93uqr3TdsoCiU2VPiLV8C0TYu
+         8Hh17zkn6pLsgXwwXHPFHw9VrdroOuouGGVf1z5lz93f/kmgVrb+sRWFy6gnRVLriXoF
+         jr29lzjp968MROHxoL80EEekQ/H/BIclNMl+5F94YU9xAKvkjoLEH57bjuD4xTMQT4GF
+         51Kn8Xmukr1iKjMTAlEnBfnkKMRLfp3ZqVFzPemkAccZ99bJHl6GxnoXrP9jw9N10f7D
+         JEXIAq6Ei3b24KmxXhh84qC7lIwRGjEIq3xcZjf/fYtq8D/Rlb1jaxcgbV+FzUBGvvIU
+         2HUQ==
+X-Gm-Message-State: AOAM533MXrMkypVDO+CzFSZYNDSLSJHihNIYYKtKxoQ/oGiZun6/yU8a
+        uO7Xecry/cuRXpY+QkMIvSfoMA==
+X-Google-Smtp-Source: ABdhPJwhOkMU+H59rE17l5pxJhljj5GBsKjG6MoQ59lAlOlhF0nAFXHlWYWPQeeaOFRFDK2I2Et4Bg==
+X-Received: by 2002:a37:a110:: with SMTP id k16mr10395520qke.320.1608391859778;
+        Sat, 19 Dec 2020 07:30:59 -0800 (PST)
+Received: from [192.168.2.48] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
+        by smtp.googlemail.com with ESMTPSA id m8sm418094qkh.21.2020.12.19.07.30.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 19 Dec 2020 07:30:58 -0800 (PST)
+Subject: Re: [PATCH v5 bpf-next 03/14] xdp: add xdp_shared_info data structure
+To:     Shay Agroskin <shayagr@amazon.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, sameehj@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com
+References: <cover.1607349924.git.lorenzo@kernel.org>
+ <21d27f233e37b66c9ad4073dd09df5c2904112a4.1607349924.git.lorenzo@kernel.org>
+ <5465830698257f18ae474877648f4a9fe2e1eefe.camel@kernel.org>
+ <20201208110125.GC36228@lore-desk>
+ <pj41zlk0tdq22i.fsf@u68c7b5b1d2d758.ant.amazon.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <1b0a5b59-f7e6-78b3-93bd-2ea35274e783@mojatatu.com>
+Date:   Sat, 19 Dec 2020 10:30:57 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.3
 MIME-Version: 1.0
+In-Reply-To: <pj41zlk0tdq22i.fsf@u68c7b5b1d2d758.ant.amazon.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-12-18 at 12:16 -0800, Jakub Kicinski wrote:
-> On Thu, 17 Dec 2020 12:40:26 -0800 Ben Greear wrote:
-> > On 12/17/20 10:20 AM, Eric Dumazet wrote:
-> > > On Thu, Dec 17, 2020 at 7:13 PM Ben Greear <greearb@candelatech.com> wrote:  
-> > > > It is the iwlwifi/mvm logic that supports ax200.  
-> > > 
-> > > Let me ask again :
-> > > 
-> > > I see two different potential call points :
-> > > 
-> > > drivers/net/wireless/intel/iwlwifi/pcie/tx.c:1529:
-> > > tso_build_hdr(skb, hdr_page->pos, &tso, data_left, !total_len);
-> > > drivers/net/wireless/intel/iwlwifi/queue/tx.c:427:
-> > > tso_build_hdr(skb, hdr_page->pos, &tso, data_left, !total_len);
-> > > 
-> > > To the best of your knowledge, which one would be used in your case ?
-> > > 
-> > > Both are horribly complex, I do not want to spend time studying two
-> > > implementations.  
-> > 
-> > It is the queue/tx.c code that executes on my system, verified with
-> > printk.
+On 2020-12-19 9:53 a.m., Shay Agroskin wrote:
 > 
-> Not sure why Intel's not on CC here. 
+> Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
+> 
 
-Heh :)
+>> for the moment I do not know if this area is used for other purposes.
+>> Do you think there are other use-cases for it?
 
-Let's also add linux-wireless.
+Sorry to interject:
+Does it make sense to use it to store arbitrary metadata or a scratchpad
+in this space? Something equivalent to skb->cb which is lacking in
+XDP.
 
-> Luca, is the ax200 TSO performance regression with recent kernel on your
-> radar?
-
-It wasn't on mine for sure, so far. But it's supposed to be Christmas
-vacation, so haven't checked our bug tracker etc. I see Emmanuel was at
-least looking at the bug report, but not sure what else happened yet.
-
-Off the top of my head, I don't really see the issue. Does anyone have
-the ability to capture the frames over the air (e.g. with another AX200
-in monitor mode, load the driver with amsdu_size=3 module parameter to
-properly capture A-MSDUs)?
-
-johannes
-
+cheers,
+jamal
