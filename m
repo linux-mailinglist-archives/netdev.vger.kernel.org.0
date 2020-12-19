@@ -2,172 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE15A2DF01A
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 16:00:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A47B2DF01B
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 16:03:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbgLSO7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 09:59:37 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:9610 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726510AbgLSO7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 09:59:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1608389976; x=1639925976;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=tvjbOZ8zpKBoBtL3XeqPW67PPKjbir27mkK3gEAWW7Q=;
-  b=iBTFaSv2yMJf4M1g5SGzPQNJKnxMB5jifYkh4E+IlI7ALZvrG7kxUz3r
-   cIbvGA0VvHdsB+pKkP5Ne6eJXxt4MfNyr2oRq8sNTx70/QmbkytDUDfU9
-   qSmBi5UN97zqpmemxXQpLxOcCUxpZam5P1gThwdCSHqzp2etdKrw6r3kl
-   I=;
-X-IronPort-AV: E=Sophos;i="5.78,433,1599523200"; 
-   d="scan'208";a="104462864"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-859fe132.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 19 Dec 2020 14:58:49 +0000
-Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-859fe132.us-west-2.amazon.com (Postfix) with ESMTPS id E0481225F69;
-        Sat, 19 Dec 2020 14:54:27 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.161.43) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sat, 19 Dec 2020 14:54:20 +0000
-References: <cover.1607349924.git.lorenzo@kernel.org>
- <21d27f233e37b66c9ad4073dd09df5c2904112a4.1607349924.git.lorenzo@kernel.org>
- <5465830698257f18ae474877648f4a9fe2e1eefe.camel@kernel.org>
- <20201208110125.GC36228@lore-desk>
-User-agent: mu4e 1.4.12; emacs 27.1
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-CC:     Saeed Mahameed <saeed@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <sameehj@amazon.com>,
-        <john.fastabend@gmail.com>, <dsahern@kernel.org>,
-        <brouer@redhat.com>, <echaudro@redhat.com>, <jasowang@redhat.com>
-Subject: Re: [PATCH v5 bpf-next 03/14] xdp: add xdp_shared_info data structure
-In-Reply-To: <20201208110125.GC36228@lore-desk>
-Date:   Sat, 19 Dec 2020 16:53:57 +0200
-Message-ID: <pj41zlk0tdq22i.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        id S1726746AbgLSPCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 10:02:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40432 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726694AbgLSPCI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Dec 2020 10:02:08 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608390087;
+        bh=7Hn2F2SBF/YJrzz+D+SNg2+EbPONa2KSwrLTscj8rxE=;
+        h=In-Reply-To:References:To:From:Subject:Cc:Date:From;
+        b=TYK+8jqg4THpapjN8kgdvrzz9GCSKu4biY+QgPlOTrKCOjynx3T+CJOuUwhZQyrhF
+         ReeOwRy/XkzaNQfGXvqLN4BBvcbJy7TUlrDXnrTWZdP6WPDvc/KVeXSX4mj4gQtdMa
+         QE288XEfqiWNDRx7LvyuyfnjfiryrA3ATli8Nk2mkWWtxgokbglwwQfaXbrEkG21FM
+         h6oqBbLPs+MBdyVfMKn8WP1LXCTNXEKxDJZk4OcWebWxwaz8YrozMPqyOdrYPhPY9x
+         fnNyDL45IDtrbQibZLuIgmb/fwN+S1zyblcyt/GOef16YcjpFIgkFWVVdlB8Z0gQRQ
+         vkN2wwwi2JlRg==
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.161.43]
-X-ClientProxiedBy: EX13D22UWB004.ant.amazon.com (10.43.161.165) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAKgT0UeSSwU+pdujyTKNiQXuO4+UAyRxeCr9tB4dwO2n9a-KyA@mail.gmail.com>
+References: <20201217162521.1134496-1-atenart@kernel.org> <20201217162521.1134496-2-atenart@kernel.org> <20201218163041.78f36cc2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CAKgT0UeSSwU+pdujyTKNiQXuO4+UAyRxeCr9tB4dwO2n9a-KyA@mail.gmail.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Antoine Tenart <atenart@kernel.org>
+Subject: Re: [PATCH net 1/4] net-sysfs: take the rtnl lock when storing xps_cpus
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Message-ID: <160839008460.3141.80891004725293385@kwain.local>
+Date:   Sat, 19 Dec 2020 16:01:24 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jakub, Alexander,
 
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
+Quoting Alexander Duyck (2020-12-19 02:41:08)
+> On Fri, Dec 18, 2020 at 4:30 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > Two things: (a) is the datapath not exposed to a similar problem?
+> > __get_xps_queue_idx() uses dev->tc_num in a very similar fashion.
+>=20
+> I think we are shielded from this by the fact that if you change the
+> number of tc the Tx path has to be torn down and rebuilt since you are
+> normally changing the qdisc configuration anyway.
 
->> On Mon, 2020-12-07 at 17:32 +0100, Lorenzo Bianconi wrote:
->> > Introduce xdp_shared_info data structure to contain info 
->> > about
->> > "non-linear" xdp frame. xdp_shared_info will alias 
->> > skb_shared_info
->> > allowing to keep most of the frags in the same cache-line.
-[...]
->> 
->> > +	u16 nr_frags;
->> > +	u16 data_length; /* paged area length */
->> > +	skb_frag_t frags[MAX_SKB_FRAGS];
->> 
->> why MAX_SKB_FRAGS ? just use a flexible array member 
->> skb_frag_t frags[]; 
->> 
->> and enforce size via the n_frags and on the construction of the
->> tailroom preserved buffer, which is already being done.
->> 
->> this is waste of unnecessary space, at lease by definition of 
->> the
->> struct, in your use case you do:
->> memcpy(frag_list, xdp_sinfo->frags, sizeof(skb_frag_t) * 
->> num_frags);
->> And the tailroom space was already preserved for a full 
->> skb_shinfo.
->> so i don't see why you need this array to be of a fixed 
->> MAX_SKB_FRAGS
->> size.
->
-> In order to avoid cache-misses, xdp_shared info is built as a 
-> variable
-> on mvneta_rx_swbm() stack and it is written to "shared_info" 
-> area only on the
-> last fragment in mvneta_swbm_add_rx_fragment(). I used 
-> MAX_SKB_FRAGS to be
-> aligned with skb_shared_info struct but probably we can use even 
-> a smaller value.
-> Another approach would be to define two different struct, e.g.
->
-> stuct xdp_frag_metadata {
-> 	u16 nr_frags;
-> 	u16 data_length; /* paged area length */
-> };
->
-> struct xdp_frags {
-> 	skb_frag_t frags[MAX_SKB_FRAGS];
-> };
->
-> and then define xdp_shared_info as
->
-> struct xdp_shared_info {
-> 	stuct xdp_frag_metadata meta;
-> 	skb_frag_t frags[];
-> };
->
-> In this way we can probably optimize the space. What do you 
-> think?
+That's right. But there's nothing preventing users to call functions
+using the xps maps in between. There are a few functions being exposed.
 
-We're still reserving ~sizeof(skb_shared_info) bytes at the end of 
-the first buffer and it seems like in mvneta code you keep 
-updating all three fields (frags, nr_frags and data_length).
-Can you explain how the space is optimized by splitting the 
-structs please?
+One (similar) example of that is another bug I reproduced, were the old
+and the new map in __netif_set_xps_queue do not have the same size,
+because num_tc was updated in between two calls to this function. The
+root cause is the same: the size of the map is not embedded in it and
+whenever we access it we can make an out of bound access.
 
->> 
->> > +};
->> > +
->> > +static inline struct xdp_shared_info *
->> >  xdp_get_shared_info_from_buff(struct xdp_buff *xdp)
->> >  {
->> > -	return (struct skb_shared_info *)xdp_data_hard_end(xdp);
->> > +	BUILD_BUG_ON(sizeof(struct xdp_shared_info) >
->> > +		     sizeof(struct skb_shared_info));
->> > +	return (struct xdp_shared_info *)xdp_data_hard_end(xdp);
->> > +}
->> > +
->> 
->> Back to my first comment, do we have plans to use this tail 
->> room buffer
->> for other than frag_list use cases ? what will be the buffer 
->> format
->> then ? should we push all new fields to the end of the 
->> xdp_shared_info
->> struct ? or deal with this tailroom buffer as a stack ? 
->> my main concern is that for drivers that don't support frag 
->> list and
->> still want to utilize the tailroom buffer for other usecases 
->> they will
->> have to skip the first sizeof(xdp_shared_info) so they won't 
->> break the
->> stack.
->
-> for the moment I do not know if this area is used for other 
-> purposes.
-> Do you think there are other use-cases for it?
->
+> > Should we perhaps make the "num_tcs" part of the XPS maps which is
+> > under RCU protection rather than accessing the netdev copy?
 
-Saeed, the stack receives skb_shared_info when the frames are 
-passed to the stack (skb_add_rx_frag is used to add the whole 
-information to skb's shared info), and for XDP_REDIRECT use case, 
-it doesn't seem like all drivers check page's tailroom for more 
-information anyway (ena doesn't at least).
-Can you please explain what do you mean by "break the stack"?
+Yes, I have a local patch (untested, still WIP) doing exactly that. The
+idea is we can't make sure a num_tc update will trigger an xps
+reallocation / reconfiguration of the map; but at least we can make sure
+the map won't be accessed out of bounds.
 
-Thanks, Shay
+It's a different issue though: not being able to access a map out of
+bound once it has been allocated whereas this patch wants to prevent an
+update of num_tc while the xps map allocation/setup is in progress.
 
->> 
-[...]
->
->> 
+> So it looks like the issue is the fact that we really need to
+> synchronize netdev_reset_tc, netdev_set_tc_queue, and
+> netdev_set_num_tc with __netif_set_xps_queue.
+>=20
+> > (b) if we always take rtnl_lock, why have xps_map_mutex? Can we
+> > rearrange things so that xps_map_mutex is sufficient?
+>=20
+> It seems like the quick and dirty way would be to look at updating the
+> 3 functions I called out so that they were holding the xps_map_mutex
+> while they were updating things, and for __netif_set_xps_queue to
+> expand out the mutex to include the code starting at "if (dev->num_tc)
+> {".
 
+That should do the trick. The only downside is xps_map_mutex is only
+defined with CONFIG_XPS while netdev_set_num_tc is not, adding more
+ifdef to it. But that's probably a better compromise than taking the
+rtnl lock.
+
+Thanks for the review and suggestions!
+Antoine
