@@ -2,93 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 175262DEFCC
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 14:16:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A2972DEFE8
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 14:54:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727176AbgLSNQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 08:16:16 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:59268 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727086AbgLSNQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 08:16:15 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1608383755; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=9MLE9xXcHVscsLaARtC7eXD9drmxQPheUZGSBIyh8W4=; b=eAa8kA8K7xAP6vLONL1JTxCPDhmgwYyAUgcBLLrz3ZBYOSjOz0+D0GaUKP7VBult2LnLL5ZN
- BhEiMSrrYGAScQlMcTqQ4nM6Y69+grKXvnZYVHeruxajJ4p01HBg/572BwO3E5P/O84pTu1z
- IApevrBMjsPE75AJU44j2ksq3F4=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5fddfce6944e4d244760e815 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 19 Dec 2020 13:15:18
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 1C614C43461; Sat, 19 Dec 2020 13:15:18 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0B4ACC433CA;
-        Sat, 19 Dec 2020 13:15:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0B4ACC433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Srinivasan Raju <srini.raju@purelifi.com>
-Cc:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS \(WIRELESS\)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] [v7] wireless: Initial driver submission for pureLiFi STA devices
-References: <20201116092253.1302196-1-srini.raju@purelifi.com>
-        <20201124144448.4E95EC43460@smtp.codeaurora.org>
-        <CWXP265MB17998453F1460D55FA667E51E0F90@CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM>
-        <CWXP265MB17995D2233C32796091FFEE4E0F20@CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM>
-        <87h7p2hoex.fsf@codeaurora.org>
-        <CWXP265MB1799A9CC75C3B506E1475D4EE0F20@CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM>
-Date:   Sat, 19 Dec 2020 15:15:12 +0200
-In-Reply-To: <CWXP265MB1799A9CC75C3B506E1475D4EE0F20@CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM>
-        (Srinivasan Raju's message of "Thu, 3 Dec 2020 16:50:43 +0000")
-Message-ID: <87k0teq6n3.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726574AbgLSNxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 08:53:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726479AbgLSNxc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 08:53:32 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625F9C0617B0;
+        Sat, 19 Dec 2020 05:52:52 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id g20so7308452ejb.1;
+        Sat, 19 Dec 2020 05:52:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cScwhsBDy0n9T2wqbVdNhwbfWnu1a8RovKqaENONwz4=;
+        b=nszt3lSg8u2a+DKQJGUP6VbGxeBTEE/qgMQ90FcGJpGEpnExbZUvjyvBI0DjcOizjj
+         kdu7+9dC8UI4j75AKBHuKcQxXOrbOQc1hJhKKLGibeenNBvLbLiAUC59oKBg/PPTJf4r
+         4S3kIsEt95CYHB7h+moqQqUuTUd6Egn4kVALTErqj6kvn+dBz92Ggga0EghHzyuZX7CA
+         ObOvYQxIlg/nlwmJhWWinegugQ6JiqPz8HBGYtKM0HP/sOW7wB0OkAaXC6yQZCvyBQHR
+         6YN9a0sXtTAeCFgc6WWCc10axj89g/dr/ojAMIwDDwTm7oF/n7q61h/lwS9kEidinCKw
+         8L9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cScwhsBDy0n9T2wqbVdNhwbfWnu1a8RovKqaENONwz4=;
+        b=RxsnKrKLRhrDu/nrEG53XkKFmV1DK6VYaWFjLv0CJLBSHPdsHrSQfeqIWvtsYVVvBU
+         vlgXFF41/Cf4CM2RDB3JVqUumd+kXrOMbeI/P7E1Jrtq4Hf7nt11uisFkmPKT8X8azF/
+         /TLhSt7ujxFfHhT0cFK77cCilaUokeVv4U2Gwz9xiPfnWL7GtcLhimoAFcqKOFrzOiRd
+         zkLAVubm5Lp3tK4IRqgK0zA5FAhM+pIkEiyj0E1dinjFcFJyN21t0z+cEZHfu64FUATZ
+         10Xtbx12N8InSFGCu37qKC84VesNwm+J9HufB/H7TWZk9X5vSil+hIxVYQrECV6yE8ey
+         W/SA==
+X-Gm-Message-State: AOAM531LMiVFMLDBwkLcGbM0VI3k4RPSqmGSbiFjo1ylwZkAtBE6VkpT
+        Cbv1kxWrtvWB3cQlaBwuxJ6NqRTzfJw=
+X-Google-Smtp-Source: ABdhPJye4mu3SslUsrOAPhFcctjWk9HUb8WOw+y+woblvSNlNSjhvmvpKNIPWAnCXjeFfHVzukqsJw==
+X-Received: by 2002:a17:907:3e23:: with SMTP id hp35mr8522020ejc.254.1608385970812;
+        Sat, 19 Dec 2020 05:52:50 -0800 (PST)
+Received: from localhost.localdomain (p200300f137299d00428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:3729:9d00:428d:5cff:feb9:9db8])
+        by smtp.googlemail.com with ESMTPSA id s5sm6823063eju.98.2020.12.19.05.52.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Dec 2020 05:52:50 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     khilman@baylibre.com, jbrunet@baylibre.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Thomas Graichen <thomas.graichen@gmail.com>
+Subject: [PATCH] net: stmmac: dwmac-meson8b: ignore the second clock input
+Date:   Sat, 19 Dec 2020 14:50:36 +0100
+Message-Id: <20201219135036.3216017-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivasan Raju <srini.raju@purelifi.com> writes:
+The dwmac glue registers on Amlogic Meson8b and newer SoCs has two clock
+inputs:
+- Meson8b and Meson8m2: MPLL2 and MPLL2 (the same parent is wired to
+  both inputs)
+- GXBB, GXL, GXM, AXG, G12A, G12B, SM1: FCLK_DIV2 and MPLL2
 
->> What will be the directory structure in linux-firmware? It should be
->> unique so that it's not possible to mix with other drivers.
->
-> I have created the following directory structure, Please let me know if this is OK.
->
->  LICENCE.purelifi_firmware |  29 +++++++++++++++++++++++++++++
->  purelifi/Li-Fi-XL.bin     | Bin 0 -> 70228 bytes
->  purelifi/fpga.bit         | Bin 0 -> 3825907 bytes
->  purelifi/fpga_xc.bit      | Bin 0 -> 3825906 bytes
->  4 files changed, 29 insertions(+)
+All known vendor kernels and u-boots are using the first input only. We
+let the common clock framework automatically choose the "right" parent.
+For some boards this causes a problem though, specificially with G12A and
+newer SoCs. The clock input is used for generating the 125MHz RGMII TX
+clock. For the two input clocks this means on G12A:
+- FCLK_DIV2: 999999985Hz / 8 = 124999998.125Hz
+- MPLL2: 499999993Hz / 4 = 124999998.25Hz
 
-I would prefer to change purelifi to the name of the driver, I'll
-explain more in my review in v11.
+In theory MPLL2 is the "better" clock input because it's gets us 0.125Hz
+closer to the requested frequency than FCLK_DIV2. In reality however
+there is a resource conflict because MPLL2 is needed to generate some of
+the audio clocks. dwmac-meson8b probes first and sets up the clock tree
+with MPLL2. This works fine until the audio driver comes and "steals"
+the MPLL2 clocks and configures it with it's own rate (294909637Hz). The
+common clock framework happily changes the MPLL2 rate but does not
+reconfigure our RGMII TX clock tree, which then ends up at 73727409Hz,
+which is more than 40% off the requested 125MHz.
 
+Don't use the second clock input for now to force the common clock
+framework to always select the first parent. This mimics the behavior
+from the vendor driver and fixes the clock resource conflict with the
+audio driver on G12A boards. Once the common clock framework can handle
+this situation this change can be reverted again.
+
+Fixes: 566e8251625304 ("net: stmmac: add a glue driver for the Amlogic Meson 8b / GXBB DWMAC")
+Reported-by: Thomas Graichen <thomas.graichen@gmail.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+index 459ae715b33d..f184b00f5116 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+@@ -135,7 +135,7 @@ static int meson8b_init_rgmii_tx_clk(struct meson8b_dwmac *dwmac)
+ 	struct device *dev = dwmac->dev;
+ 	static const struct clk_parent_data mux_parents[] = {
+ 		{ .fw_name = "clkin0", },
+-		{ .fw_name = "clkin1", },
++		{ .index = -1, },
+ 	};
+ 	static const struct clk_div_table div_table[] = {
+ 		{ .div = 2, .val = 2, },
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.29.2
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
