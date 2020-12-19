@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 475BA2DF0F7
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 19:16:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 983DC2DF101
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 19:24:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727270AbgLSSOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 13:14:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59220 "EHLO mail.kernel.org"
+        id S1727362AbgLSSV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 13:21:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59868 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725562AbgLSSOS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Dec 2020 13:14:18 -0500
-Date:   Sat, 19 Dec 2020 10:13:37 -0800
+        id S1726144AbgLSSV6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Dec 2020 13:21:58 -0500
+Date:   Sat, 19 Dec 2020 10:21:16 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608401618;
-        bh=ptVwJyI5H10k0583Y1hewpHYrQYSx7sniB/tuySg6Xo=;
+        s=k20201202; t=1608402077;
+        bh=9anSoEyGYfwJXexpe6AJSpZfREs9m9aRLDWzjrBcS+4=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jsZJg6srgtVdkNysI/WvNsSVYEXSY01PeP4QSFp84TzcUN5lMyaicO8Soqv5RKV3Z
-         3IvDxP2lULd0o+M/cFxggb3qjInW6wnMNqkzXaCxir2Xst1B4BY5o+wnmjqcwObOdI
-         KGBnql3XZD66SfYsmWt5ZUM+3fJfk0KUFN6tH6dWxLFFS957T0rA7r8AC4VNH8M3yL
-         DvJQ46ObNBEvUSSfBNALV6YXHKTcB9b9Q94a4aloSifLzJPfP8cpotq74pQUWgp0QL
-         BArmah3Vakl01H/0bYqJwIPGE4h9aw6o9H4YhNvOZq8BtewYTUWdmH/88UqP7fVq5G
-         9dhECq1PLWIdA==
+        b=eRsUzkUv7P5atJeg5AJ+M/FUr1Xe/SC+T0zH0T9jEQz3uDHCWgy/YaWidKSZkdn8y
+         02zDl8WpDmKwYzq12Z8KXRogx7MRBtYhZY31H4nhdb6NLnQToffek+G7BA2TnT9ILK
+         QGr1dIaPIrdF/Er7oYa0GSNeUn8YhNzRgXHek1wZR/p8O+kk4IDErMzcsOGPhkdmTt
+         TksQ8wUkma8m/S4nov+Pp7PyvrxMEoKBAtDUu9eQmyrwndrMlzXMSKncUz7Kesy5Wh
+         ioMMjyr2ZAzLpjDswBwpa6iGEwfYig60X5fJJnZ+ByxepjGwvynPuAW5wsoKGAQt8V
+         S0xPrW6/LqbLA==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     <stefanc@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <thomas.petazzoni@bootlin.com>,
-        <davem@davemloft.net>, <nadavh@marvell.com>,
-        <ymarkman@marvell.com>, <linux-kernel@vger.kernel.org>,
-        <linux@armlinux.org.uk>, <mw@semihalf.com>, <andrew@lunn.ch>,
-        <rmk+kernel@armlinux.org.uk>
-Subject: Re: [PATCH net v2] net: mvpp2: Add TCAM entry to drop flow control
- pause frames
-Message-ID: <20201219101337.65e1795c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1608229817-21951-1-git-send-email-stefanc@marvell.com>
-References: <1608229817-21951-1-git-send-email-stefanc@marvell.com>
+To:     weichenchen <weichen.chen@linux.alibaba.com>
+Cc:     davem@davemloft.net, liuhangbin@gmail.com, dsahern@kernel.org,
+        jdike@akamai.com, mrv@mojatatu.com, lirongqing@baidu.com,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        splendidsky.cwc@alibaba-inc.com, yanxu.zw@alibaba-inc.com
+Subject: Re: [PATCH] net: neighbor: fix a crash caused by mod zero
+Message-ID: <20201219102116.3cc0d74c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201218042019.52096-1-weichen.chen@linux.alibaba.com>
+References: <20201218042019.52096-1-weichen.chen@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,39 +40,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 17 Dec 2020 20:30:17 +0200 stefanc@marvell.com wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
+On Fri, 18 Dec 2020 12:20:19 +0800 weichenchen wrote:
+> pneigh_enqueue() tries to obtain a random delay by mod
+> NEIGH_VAR(p, PROXY_DELAY). However, NEIGH_VAR(p, PROXY_DELAY)
+> migth be zero at that point because someone could write zero
+> to /proc/sys/net/ipv4/neigh/[device]/proxy_delay after the
+> callers check it.
 > 
-> Issue:
-> Flow control frame used to pause GoP(MAC) was delivered to the CPU
-> and created a load on the CPU. Since XOFF/XON frames are used only
-> by MAC, these frames should be dropped inside MAC.
+> This patch double-checks NEIGH_VAR(p, PROXY_DELAY) in
+> pneigh_enqueue() to ensure not to take zero as modulus.
 > 
-> Fix:
-> According to 802.3-2012 - IEEE Standard for Ethernet pause frame
-> has unique destination MAC address 01-80-C2-00-00-01.
-> Add TCAM parser entry to track and drop pause frames by destination MAC.
-> 
-> Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+> Signed-off-by: weichenchen <weichen.chen@linux.alibaba.com>
 
-Applied, thanks..
+Let's have the caller pass in the value since it did the checking?
 
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-> index 1a272c2..3a9c747 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-> @@ -405,6 +405,39 @@ static int mvpp2_prs_tcam_first_free(struct mvpp2 *priv, unsigned char start,
->  	return -EINVAL;
->  }
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index 9500d28a43b0..eb5d015c53d3 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -1570,9 +1570,14 @@ void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
+>  		    struct sk_buff *skb)
+>  {
+>  	unsigned long now = jiffies;
+> +	unsigned long sched_next;
 >  
-> +/* Drop flow control pause frames */
-> +static void mvpp2_prs_drop_fc(struct mvpp2 *priv)
-> +{
-> +	struct mvpp2_prs_entry pe;
-> +	unsigned int len;
-> +	unsigned char da[ETH_ALEN] = {
-> +			0x01, 0x80, 0xC2, 0x00, 0x00, 0x01 };
+> -	unsigned long sched_next = now + (prandom_u32() %
+> -					  NEIGH_VAR(p, PROXY_DELAY));
+> +	int delay = NEIGH_VAR(p, PROXY_DELAY);
+> +
+> +	if (delay <= 0)
 
-but I reordered these so they follow the reverse xmas tree ordering
-netdev prefers.
+Not that this still doesn't guarantee that the compiler won't re-read
+the value (however unlikely). We need a READ_ONCE().
+
+> +		sched_next = now;
+> +	else
+> +		sched_next = now + (prandom_u32() % delay);
+>  
+>  	if (tbl->proxy_queue.qlen > NEIGH_VAR(p, PROXY_QLEN)) {
+>  		kfree_skb(skb);
+
