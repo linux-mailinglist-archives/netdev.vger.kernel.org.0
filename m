@@ -2,92 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2B512DF03E
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 16:31:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC502DF051
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 16:58:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbgLSPbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 10:31:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbgLSPbl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 10:31:41 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4C2C061282
-        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 07:31:00 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id f26so3379115qka.0
-        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 07:31:00 -0800 (PST)
+        id S1726793AbgLSP5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 10:57:34 -0500
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:37850 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726774AbgLSP5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 10:57:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Mnxj/ATKB1MlnwmVSmmqoIzxnVWNw1Scl7Hlo4abUiM=;
-        b=D7dkAyOOc5bVta3x8wWCYTWw1buGNRmbtzcYzjYdJWXPolSNZDWMiMVKUfWmfBANIS
-         oXrUNye9INjyClpMBL3xQA02Wja2ixQA8BIcdtAcOr/aNFAEnUPl/il9sWaHtk+v17d9
-         /oUO3Q0ki25SC6vP8lNzrPtcpT0CzQX/kUEq+FxjDhZnR2HeGocKAXsdHILkjxlCJFZw
-         VjfbfhOIuJgCe3ac6fwX4hyh9iMUnAS6nePg3vqvV/iCFlIE7KL6fy49P+nVYQoxsKhs
-         Q/DPMRfy0lIaoulhUwr+n2fKpJD6m8utYFo4GmppIOT1a+nuLuvL6wlsmLVdGlfw9CXl
-         9FxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Mnxj/ATKB1MlnwmVSmmqoIzxnVWNw1Scl7Hlo4abUiM=;
-        b=K3MMfSHaBnFMoZrzcJIrRd9SvRIVCxyYIckUVEUua93uqr3TdsoCiU2VPiLV8C0TYu
-         8Hh17zkn6pLsgXwwXHPFHw9VrdroOuouGGVf1z5lz93f/kmgVrb+sRWFy6gnRVLriXoF
-         jr29lzjp968MROHxoL80EEekQ/H/BIclNMl+5F94YU9xAKvkjoLEH57bjuD4xTMQT4GF
-         51Kn8Xmukr1iKjMTAlEnBfnkKMRLfp3ZqVFzPemkAccZ99bJHl6GxnoXrP9jw9N10f7D
-         JEXIAq6Ei3b24KmxXhh84qC7lIwRGjEIq3xcZjf/fYtq8D/Rlb1jaxcgbV+FzUBGvvIU
-         2HUQ==
-X-Gm-Message-State: AOAM533MXrMkypVDO+CzFSZYNDSLSJHihNIYYKtKxoQ/oGiZun6/yU8a
-        uO7Xecry/cuRXpY+QkMIvSfoMA==
-X-Google-Smtp-Source: ABdhPJwhOkMU+H59rE17l5pxJhljj5GBsKjG6MoQ59lAlOlhF0nAFXHlWYWPQeeaOFRFDK2I2Et4Bg==
-X-Received: by 2002:a37:a110:: with SMTP id k16mr10395520qke.320.1608391859778;
-        Sat, 19 Dec 2020 07:30:59 -0800 (PST)
-Received: from [192.168.2.48] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
-        by smtp.googlemail.com with ESMTPSA id m8sm418094qkh.21.2020.12.19.07.30.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 19 Dec 2020 07:30:58 -0800 (PST)
-Subject: Re: [PATCH v5 bpf-next 03/14] xdp: add xdp_shared_info data structure
-To:     Shay Agroskin <shayagr@amazon.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, sameehj@amazon.com,
-        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, jasowang@redhat.com
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1608393453; x=1639929453;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=jprTllV/NKMcaUlvqLC9ko9oxhLiTxLoJPYf+AZaJ94=;
+  b=sVnNa7rOHezATUx4758vBWXwC96iakQrsWrJ42MZYtmSi8otRCKWZs7n
+   ZUCgFZ8MKE4MA1azuoE96Yq6Kn3bnvZFTuKIIZKU9fegghrqZG8JKSF9m
+   /eAf3sk7oU0X8BlXRF5AKp7ssIsi7GgCy+aXPO5Flfdc11u9wV5jXPHEA
+   U=;
+X-IronPort-AV: E=Sophos;i="5.78,433,1599523200"; 
+   d="scan'208";a="70394141"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 19 Dec 2020 15:56:46 +0000
+Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com (Postfix) with ESMTPS id 9959F282434;
+        Sat, 19 Dec 2020 15:56:42 +0000 (UTC)
+Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.162.125) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sat, 19 Dec 2020 15:56:35 +0000
 References: <cover.1607349924.git.lorenzo@kernel.org>
- <21d27f233e37b66c9ad4073dd09df5c2904112a4.1607349924.git.lorenzo@kernel.org>
- <5465830698257f18ae474877648f4a9fe2e1eefe.camel@kernel.org>
- <20201208110125.GC36228@lore-desk>
- <pj41zlk0tdq22i.fsf@u68c7b5b1d2d758.ant.amazon.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <1b0a5b59-f7e6-78b3-93bd-2ea35274e783@mojatatu.com>
-Date:   Sat, 19 Dec 2020 10:30:57 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+ <f3d2937208eae9644f36d805cd5b30e0985767a6.1607349924.git.lorenzo@kernel.org>
+User-agent: mu4e 1.4.12; emacs 27.1
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <sameehj@amazon.com>,
+        <john.fastabend@gmail.com>, <dsahern@kernel.org>,
+        <brouer@redhat.com>, <echaudro@redhat.com>,
+        <lorenzo.bianconi@redhat.com>, <jasowang@redhat.com>
+Subject: Re: [PATCH v5 bpf-next 06/14] net: mvneta: add multi buffer support
+ to XDP_TX
+In-Reply-To: <f3d2937208eae9644f36d805cd5b30e0985767a6.1607349924.git.lorenzo@kernel.org>
+Date:   Sat, 19 Dec 2020 17:56:22 +0200
+Message-ID: <pj41zlh7ohpz6h.fsf@u68c7b5b1d2d758.ant.amazon.com>
 MIME-Version: 1.0
-In-Reply-To: <pj41zlk0tdq22i.fsf@u68c7b5b1d2d758.ant.amazon.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.162.125]
+X-ClientProxiedBy: EX13D30UWC003.ant.amazon.com (10.43.162.122) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-19 9:53 a.m., Shay Agroskin wrote:
-> 
-> Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
-> 
 
->> for the moment I do not know if this area is used for other purposes.
->> Do you think there are other use-cases for it?
+Lorenzo Bianconi <lorenzo@kernel.org> writes:
 
-Sorry to interject:
-Does it make sense to use it to store arbitrary metadata or a scratchpad
-in this space? Something equivalent to skb->cb which is lacking in
-XDP.
+> Introduce the capability to map non-linear xdp buffer running
+> mvneta_xdp_submit_frame() for XDP_TX and XDP_REDIRECT
+>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c | 94 
+>  ++++++++++++++++-----------
+>  1 file changed, 56 insertions(+), 38 deletions(-)
+[...]
+>  			if (napi && buf->type == 
+>  MVNETA_TYPE_XDP_TX)
+>  				xdp_return_frame_rx_napi(buf->xdpf);
+>  			else
+> @@ -2054,45 +2054,64 @@ mvneta_xdp_put_buff(struct mvneta_port 
+> *pp, struct mvneta_rx_queue *rxq,
+>  
+>  static int
+>  mvneta_xdp_submit_frame(struct mvneta_port *pp, struct 
+>  mvneta_tx_queue *txq,
+> -			struct xdp_frame *xdpf, bool dma_map)
+> +			struct xdp_frame *xdpf, int *nxmit_byte, 
+> bool dma_map)
+>  {
+> -	struct mvneta_tx_desc *tx_desc;
+> -	struct mvneta_tx_buf *buf;
+> -	dma_addr_t dma_addr;
+> +	struct xdp_shared_info *xdp_sinfo = 
+> xdp_get_shared_info_from_frame(xdpf);
+> +	int i, num_frames = xdpf->mb ? xdp_sinfo->nr_frags + 1 : 
+> 1;
+> +	struct mvneta_tx_desc *tx_desc = NULL;
+> +	struct page *page;
+>  
+> -	if (txq->count >= txq->tx_stop_threshold)
+> +	if (txq->count + num_frames >= txq->size)
+>  		return MVNETA_XDP_DROPPED;
+>  
+> -	tx_desc = mvneta_txq_next_desc_get(txq);
+> +	for (i = 0; i < num_frames; i++) {
+> +		struct mvneta_tx_buf *buf = 
+> &txq->buf[txq->txq_put_index];
+> +		skb_frag_t *frag = i ? &xdp_sinfo->frags[i - 1] : 
+> NULL;
+> +		int len = frag ? xdp_get_frag_size(frag) : 
+> xdpf->len;
 
-cheers,
-jamal
+nit, from branch prediction point of view, maybe it would be 
+better to write
+     int len = i ? xdp_get_frag_size(frag) : xdpf->len;
+
+since the value of i is checked one line above
+Disclaimer: I'm far from a compiler expert, and don't know whether 
+the compiler would know to group these two assignments together 
+into a single branch prediction decision, but it feels like using 
+'i' would make this decision easier for it.
+
+Thanks,
+Shay
+
+[...]
+
