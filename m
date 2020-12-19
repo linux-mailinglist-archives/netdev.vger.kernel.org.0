@@ -2,108 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D032DEC58
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 01:24:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E2242DEC5E
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 01:26:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726335AbgLSAWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Dec 2020 19:22:53 -0500
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:51157 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725925AbgLSAWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 19:22:53 -0500
-X-Greylist: delayed 97350 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Dec 2020 19:22:52 EST
-X-Originating-IP: 86.202.109.140
-Received: from localhost (lfbn-lyo-1-13-140.w86-202.abo.wanadoo.fr [86.202.109.140])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 73881E0002;
-        Sat, 19 Dec 2020 00:22:08 +0000 (UTC)
-Date:   Sat, 19 Dec 2020 01:22:08 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        alsa-devel@alsa-project.org, Kiran Patil <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>, lee.jones@linaro.org
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20201219002208.GI3143569@piout.net>
-References: <20201218131709.GA5333@sirena.org.uk>
- <20201218140854.GW552508@nvidia.com>
- <20201218155204.GC5333@sirena.org.uk>
- <20201218162817.GX552508@nvidia.com>
- <20201218180310.GD5333@sirena.org.uk>
- <20201218184150.GY552508@nvidia.com>
- <20201218203211.GE5333@sirena.org.uk>
- <20201218205856.GZ552508@nvidia.com>
- <20201218211658.GH3143569@piout.net>
- <20201218233608.GA552508@nvidia.com>
+        id S1726231AbgLSAZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Dec 2020 19:25:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725914AbgLSAZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Dec 2020 19:25:05 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39984C0617B0
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 16:24:25 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id b5so2257650pjl.0
+        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 16:24:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=YLHp6XoiAnLdgiBSw3CYGVylQZ3lIJLdYmuZRtM9bSU=;
+        b=VUFCbdBKD6uoPSxRqaEoagO63iKB/LbxnA3m3k6qmi51MxODjzFTFWE7j9jNCN3aAH
+         0Wviw6M5MP9Ka+bQxtgKL8+XPI/Qy/BvJEj27ED88idASyiJ5UTVpqRA4v0LhqXgInUi
+         LhraHHTf3yJKpWHbyyo7djRrLVDV7RGcx86uX8knVLk6DJDY1Vq6ZrpfCURTVJkU1ex9
+         hQktAcZBW0Ugj5Hq77m6dCkTAFmFgh/m7NyLdC2tfsnVhE8KOst0ZO2XWNnXG6XU/Urf
+         d214Rin2NfwM6g4wWRn4bl2jz2K7rHa/egoPT9oQmPOavve3dBYioTKlhWEmMw4ft8RB
+         Ak9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YLHp6XoiAnLdgiBSw3CYGVylQZ3lIJLdYmuZRtM9bSU=;
+        b=dfuG60X//yHdGgozu15dSVryBbDzv+xf6Mtxme5u82sqj0sivIUrOYZ42WIRKowCYO
+         MVxAnErAITZ9d4J4p40PO61MH95nHG5YiuCVj1FWV0wLKK+WC+lMsljeogAEV+h+P9TU
+         JuEygVBcky94zy/lz7Y4Vt8i6Cbspcj2NTVvitTmI3mvt5197Du2kZtpKyNUtH1RbvZx
+         V8YA/l1OOziuCWDXN6zR55Y04iPtef8I6SDOod/JZF0rxjiHZS19jfouJebFU2QWQT8r
+         lJ2RBYWeYIam0PpPduDbfgRS2AjdOyt57UpcFVDH3ggu2d6dJ7AOMGiTHxb2nWRiZ4Vs
+         Wgmw==
+X-Gm-Message-State: AOAM5332sIMCYG9E5GAoOfjUs5S0F2nhw+Ixiwao0LYhhizItnngNkzD
+        LB4vWawF9yDCsh/3zyDeaP2PEPC53fk=
+X-Google-Smtp-Source: ABdhPJyYQN4T8YIScvlfryIVeBxSjlwHWLeZqJeQMthANe5B7lP3BoKLOip8+e75WC4/zXT1HUHkpQ==
+X-Received: by 2002:a17:902:e98c:b029:da:cb88:f11d with SMTP id f12-20020a170902e98cb02900dacb88f11dmr6823390plb.17.1608337463380;
+        Fri, 18 Dec 2020 16:24:23 -0800 (PST)
+Received: from [10.230.29.166] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j14sm8497200pjm.10.2020.12.18.16.24.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Dec 2020 16:24:22 -0800 (PST)
+Subject: Re: [RFC PATCH net-next 4/4] net: dsa: remove the DSA specific
+ notifiers
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+References: <20201218223852.2717102-1-vladimir.oltean@nxp.com>
+ <20201218223852.2717102-5-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <3da4edeb-6d12-8166-dc0f-ede5757454cc@gmail.com>
+Date:   Fri, 18 Dec 2020 16:24:20 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201218233608.GA552508@nvidia.com>
+In-Reply-To: <20201218223852.2717102-5-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/12/2020 19:36:08-0400, Jason Gunthorpe wrote:
-> On Fri, Dec 18, 2020 at 10:16:58PM +0100, Alexandre Belloni wrote:
-> 
-> > But then again, what about non-enumerable devices on the PCI device? I
-> > feel this would exactly fit MFD. This is a collection of IPs that exist
-> > as standalone but in this case are grouped in a single device.
-> 
-> So, if mfd had a mfd_device and a mfd bus_type then drivers would need
-> to have both a mfd_driver and a platform_driver to bind. Look at
-> something like drivers/char/tpm/tpm_tis.c to see how a multi-probe
-> driver is structured
-> 
-> See Mark's remarks about the old of_platform_device, to explain why we
-> don't have a 'dt_device' today
-> 
 
-So, what would that mfd_driver have that the platform_driver doesn't
-already provide?
 
-> > Note that I then have another issue because the kernel doesn't support
-> > irq controllers on PCI and this is exactly what my SoC has. But for now,
-> > I can just duplicate the irqchip driver in the MFD driver.
+On 12/18/2020 2:38 PM, Vladimir Oltean wrote:
+> This effectively reverts commit 60724d4bae14 ("net: dsa: Add support for
+> DSA specific notifiers"). The reason is that since commit 2f1e8ea726e9
+> ("net: dsa: link interfaces with the DSA master to get rid of lockdep
+> warnings"), it appears that there is a generic way to achieve the same
+> purpose. The only user thus far, the Broadcom SYSTEMPORT driver, was
+> converted to use the generic notifiers.
 > 
-> I think Thomas fixed that recently on x86 at least.. 
-> 
-> Having to put dummy irq chip drivers in MFD anything sounds scary :|
-> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This isn't a dummy driver it is a real irqchip, what issue is there to
-register an irqchip from MFD ?
-
-> > Let me point to drivers/net/ethernet/cadence/macb_pci.c which is a
-> > fairly recent example. It does exactly that and I'm not sure you could
-> > do it otherwise while still not having to duplicate most of macb_probe.
-> 
-> Creating a platform_device to avoid restructuring the driver's probe
-> and device logic to be generic is a *really* horrible reason to use a
-> platform device.
-> 
-
-Definitively but it made it in and seemed reasonable at the time it
-seems. I stumbled upon that a while ago because I wanted to remove
-platform_data support from the macb driver and this is the last user. I
-never got the time to tackle that.
-
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Florian
