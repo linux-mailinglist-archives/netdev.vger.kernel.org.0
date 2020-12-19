@@ -2,64 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D5D2DF188
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 21:23:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0151F2DF18C
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 21:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727755AbgLSUVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 15:21:43 -0500
-Received: from smtprelay0221.hostedemail.com ([216.40.44.221]:52270 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727599AbgLSUVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 15:21:43 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 8984B837F24A;
-        Sat, 19 Dec 2020 20:21:01 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:152:355:379:582:599:982:988:989:1152:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2693:2911:3138:3139:3140:3141:3142:3350:3698:3865:3866:3867:3868:3870:3872:4321:4425:5007:6261:6742:6743:7576:9010:9012:10004:10400:10848:11232:11658:11914:12297:12740:12760:12895:13069:13311:13357:14659:14685:14777:21080:21324:21433:21451:21627:21819:30022:30029:30030:30054:30060,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: trail89_47117a927448
-X-Filterd-Recvd-Size: 1890
-Received: from perches-mx.perches.com (imap-ext [216.40.42.5])
-        (Authenticated sender: webmail@joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 19 Dec 2020 20:21:00 +0000 (UTC)
+        id S1727608AbgLSUZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 15:25:44 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:34424 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727370AbgLSUZo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Dec 2020 15:25:44 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kqimW-00CtUt-Oo; Sat, 19 Dec 2020 21:24:48 +0100
+Date:   Sat, 19 Dec 2020 21:24:48 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Device Tree List <devicetree@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC PATCH v2 8/8] arm64: dts: sparx5: Add the Sparx5 switch node
+Message-ID: <20201219202448.GE3026679@lunn.ch>
+References: <20201217075134.919699-1-steen.hegelund@microchip.com>
+ <20201217075134.919699-9-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Sat, 19 Dec 2020 12:20:59 -0800
-From:   Joe Perches <joe@perches.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pv-drivers@vmware.com,
-        doshir@vmware.com, UNGLinuxDriver@microchip.com,
-        steve.glendinning@shawell.net, woojung.huh@microchip.com,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        drivers@pensando.io, snelson@pensando.io, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        bryan.whitehead@microchip.com, o.rempel@pengutronix.de,
-        kernel@pengutronix.de, robin@protonic.nl, hkallweit1@gmail.com,
-        nic_swsd@realtek.com, lars.povlsen@microchip.com,
-        Steen.Hegelund@microchip.com, linux-kernel@vger.kernel.org,
-        corbet@lwn.net
-Subject: Re: [PATCH net] MAINTAINERS: remove names from mailing list
- maintainers
-In-Reply-To: <20201219185538.750076-1-kuba@kernel.org>
-References: <20201219185538.750076-1-kuba@kernel.org>
-User-Agent: Roundcube Webmail/1.4-rc2
-Message-ID: <53a3855a184f5af5b829065962ae5773@perches.com>
-X-Sender: joe@perches.com
-X-Originating-IP: [172.58.31.245]
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201217075134.919699-9-steen.hegelund@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-19 10:55, Jakub Kicinski wrote:
-> When searching for inactive maintainers it's useful to filter
-> out mailing list addresses. Such "maintainers" will obviously
-> never feature in a "From:" line of an email or a review tag.
-> 
-> Since "L:" entries only provide the address of a mailing list
-> without a fancy name extend this pattern to "M:" entries.
+> +		port13: port@13 {
+> +			reg = <13>;
+> +			/* Example: CU SFP, 1G speed */
+> +			max-speed = <10000>;
 
+One too many 0's for 1G.
 
-As these are not actual people I suggest using
-R: entries and not removing the more descriptive names.
+> +		/* 25G SFPs */
+> +		port56: port@56 {
+> +			reg = <56>;
+> +			max-speed = <10000>;
+
+Why limit a 25G SFP to 10G?
+
+    Andrew
