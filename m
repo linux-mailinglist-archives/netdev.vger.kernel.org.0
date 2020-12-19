@@ -2,134 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDCD22DEDC8
-	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 08:57:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CB3C2DEE62
+	for <lists+netdev@lfdr.de>; Sat, 19 Dec 2020 12:05:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726362AbgLSH4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 02:56:50 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:56425 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726407AbgLSH4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 02:56:49 -0500
-Received: by mail-io1-f70.google.com with SMTP id e14so3544634iow.23
-        for <netdev@vger.kernel.org>; Fri, 18 Dec 2020 23:56:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=s7h6mFvDc/Ce4O+16ifiHi7SJvQ+hFCpQ5/hLq9F0WE=;
-        b=NwBthns4pjuihxxcntCZEjP3mMMAQHlTeP5N4usnnxnxDIVLcGLYT+aOkSa4u1uHdw
-         8sRIPjZfK8rqpG8UXnvh8aB91VoAwyMtEDS/sGQ09fFpu5Si7EAWqLPFmlzwKwyPEDfC
-         ZGFkM9ppc/kBMvIpD2rRDUvsH+aSorGqTxOoopVAxkVQkfyqPKPIHzr0DnDdSKtvmiJe
-         fivSsMFyBkBKcNuvDgbitguSHoScmQMq8jInTnSeaWPy3ZBkvdSmK2Yu9XVzArK00jt8
-         8rveNCqP0QlFCltFysm8utfFIRkWhbiX6ns+K2zcS0f4ueDGV66go2AfdlQAdsd85jHE
-         CvkQ==
-X-Gm-Message-State: AOAM533bcCxrq0U0ZKH0m20WZQuf9s2g9/wp281k6PPVDXOGoROk6tZG
-        Lk9p+IW/lseHEuzmODHTjHo3sQBTFHtTexYEhhpkTvwy2rdZ
-X-Google-Smtp-Source: ABdhPJyL6kaL6yC7lhDapNwEFM/IpUCqIzxIKUgqIy+Z9+eiXOgO14e7Ej7292RRBChagRerhZVj6Ug9ir22pzfgCemOP0usSCWv
+        id S1726668AbgLSLFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 06:05:13 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:39396 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726545AbgLSLFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 06:05:13 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BJAxrZq070732;
+        Sat, 19 Dec 2020 11:04:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=KqQd5C/oVrn9Vxupsvz0V8EFYbvRMSsdVu9QXDDGAmU=;
+ b=vSTQQcG6HevAdfoUQxk/2UFagc387B4z1Hql1d6E9PV1qiJuSKAkK9ZZuIcxIfj1YfVH
+ U2KOic291zED1r05bNla6ihFzrHgzpqcjzkKWLn/uyN5OtI+mdtxfk6J98+NzrqCyef6
+ 0tdtxTbQV8GyuPCyrefW5m5vMDN1bXUbT6TQdIHUZdgV4usaf0oy89yfllLOjmwhdDLs
+ XMT/nBsaefkaYckmlCplknaiKZPCbwcWwaq0ZtThWWfgW8A9H9eP4qJdTcEGfhAQaLxb
+ tWgMzrgBp1C0JQ+s64Fx0BFkdsfmUwfcXyVXBCSHMl8W2XLeKv64gPH+gVHCxG0678SA dw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 35h9fkrnnr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sat, 19 Dec 2020 11:03:55 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0BJB1Nsx084404;
+        Sat, 19 Dec 2020 11:01:54 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 35h8ugsta9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 19 Dec 2020 11:01:54 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0BJB1qSY001476;
+        Sat, 19 Dec 2020 11:01:53 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sat, 19 Dec 2020 03:01:52 -0800
+Date:   Sat, 19 Dec 2020 14:01:44 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Chas Williams <3chas3@gmail.com>
+Cc:     chas williams - CONTRACTOR <chas@cmf.nrl.navy.mil>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] atm: idt77252: call pci_disable_device() on error path
+Message-ID: <X93dmC4NX0vbTpGp@mwanda>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c206:: with SMTP id j6mr7819867ilo.189.1608364568409;
- Fri, 18 Dec 2020 23:56:08 -0800 (PST)
-Date:   Fri, 18 Dec 2020 23:56:08 -0800
-In-Reply-To: <000000000000e2852705ac9cfd73@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c4fd0405b6cc8e53@google.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in lock_sock_nested
-From:   syzbot <syzbot+9a0875bc1b2ca466b484@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9839 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0 phishscore=0
+ malwarescore=0 suspectscore=0 spamscore=0 bulkscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012190080
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9839 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 bulkscore=0
+ lowpriorityscore=0 mlxscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
+ adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012190080
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+This error path needs to disable the pci device before returning.
 
-HEAD commit:    a409ed15 Merge tag 'gpio-v5.11-1' of git://git.kernel.org/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=174778a7500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=20efebc728efc8ff
-dashboard link: https://syzkaller.appspot.com/bug?extid=9a0875bc1b2ca466b484
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10a4445b500000
+Fixes: ede58ef28e10 ("atm: remove deprecated use of pci api")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/atm/idt77252.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9a0875bc1b2ca466b484@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: slab-out-of-bounds in __lock_acquire+0x3da6/0x54b0 kernel/locking/lockdep.c:4702
-Read of size 8 at addr ffff88801938c0a0 by task kworker/1:1/34
-
-CPU: 1 PID: 34 Comm: kworker/1:1 Not tainted 5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events l2cap_chan_timeout
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- print_address_description.constprop.0.cold+0xae/0x497 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- __lock_acquire+0x3da6/0x54b0 kernel/locking/lockdep.c:4702
- lock_acquire kernel/locking/lockdep.c:5437 [inline]
- lock_acquire+0x29d/0x750 kernel/locking/lockdep.c:5402
- __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
- _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
- spin_lock_bh include/linux/spinlock.h:359 [inline]
- lock_sock_nested+0x3b/0x110 net/core/sock.c:3049
- l2cap_sock_teardown_cb+0xa1/0x660 net/bluetooth/l2cap_sock.c:1520
- l2cap_chan_del+0xbc/0xaa0 net/bluetooth/l2cap_core.c:618
- l2cap_chan_close+0x1bc/0xaf0 net/bluetooth/l2cap_core.c:823
- l2cap_chan_timeout+0x17e/0x2f0 net/bluetooth/l2cap_core.c:436
- process_one_work+0x98d/0x1630 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Allocated by task 11222:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:461
- __do_kmalloc mm/slab.c:3659 [inline]
- __kmalloc+0x18b/0x340 mm/slab.c:3668
- kmalloc include/linux/slab.h:557 [inline]
- kzalloc include/linux/slab.h:682 [inline]
- tomoyo_get_name+0x22b/0x4c0 security/tomoyo/memory.c:173
- tomoyo_parse_name_union+0xbc/0x160 security/tomoyo/util.c:260
- tomoyo_update_path_acl security/tomoyo/file.c:395 [inline]
- tomoyo_write_file+0x4c0/0x7f0 security/tomoyo/file.c:1022
- tomoyo_write_domain2+0x116/0x1d0 security/tomoyo/common.c:1152
- tomoyo_add_entry security/tomoyo/common.c:2042 [inline]
- tomoyo_supervisor+0xbee/0xf20 security/tomoyo/common.c:2103
- tomoyo_audit_path_log security/tomoyo/file.c:168 [inline]
- tomoyo_path_permission security/tomoyo/file.c:587 [inline]
- tomoyo_path_permission+0x270/0x3a0 security/tomoyo/file.c:573
- tomoyo_path_perm+0x37c/0x3f0 security/tomoyo/file.c:838
- tomoyo_path_symlink+0x94/0xe0 security/tomoyo/tomoyo.c:200
- security_path_symlink+0xdf/0x150 security/security.c:1111
- do_symlinkat+0x123/0x2c0 fs/namei.c:3985
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff88801938c000
- which belongs to the cache kmalloc-128 of size 128
-The buggy address is located 32 bytes to the right of
- 128-byte region [ffff88801938c000, ffff88801938c080)
-The buggy address belongs to the page:
-page:00000000b7b67fec refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1938c
-flags: 0xfff00000000200(slab)
-raw: 00fff00000000200 ffffea00004e6508 ffffea0000a5cf48 ffff888010840400
-raw: 0000000000000000 ffff88801938c000 0000000100000010 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88801938bf80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88801938c000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff88801938c080: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                               ^
- ffff88801938c100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff88801938c180: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
+diff --git a/drivers/atm/idt77252.c b/drivers/atm/idt77252.c
+index 65a3886f68c9..5f0472c18bcb 100644
+--- a/drivers/atm/idt77252.c
++++ b/drivers/atm/idt77252.c
+@@ -3607,7 +3607,7 @@ static int idt77252_init_one(struct pci_dev *pcidev,
+ 
+ 	if ((err = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32)))) {
+ 		printk("idt77252: can't enable DMA for PCI device at %s\n", pci_name(pcidev));
+-		return err;
++		goto err_out_disable_pdev;
+ 	}
+ 
+ 	card = kzalloc(sizeof(struct idt77252_dev), GFP_KERNEL);
+-- 
+2.29.2
 
