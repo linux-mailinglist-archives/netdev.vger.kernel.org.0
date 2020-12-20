@@ -2,139 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFA92DF553
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 13:07:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CFA02DF56B
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 13:46:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727446AbgLTMF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 07:05:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        id S1727461AbgLTMlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 07:41:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727300AbgLTMF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 07:05:28 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8ACC0613CF
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 04:04:47 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id e25so7966779wme.0
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 04:04:47 -0800 (PST)
+        with ESMTP id S1726938AbgLTMlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 07:41:19 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C16C0617B0
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 04:40:03 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id e2so4145527plt.12
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 04:40:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qrn+x9lX3jcTz2wVgUBrM7DkKsxjXEra+Jy1eyLqErQ=;
-        b=naOTe06SHxPS/6OBbwjbFP5gEyKx1oosTrOeIpFENcucHkj6M4BfldEb5/KPevKmPh
-         GEvTH5RMMRe8fhVSGC9wo6nFZZgYw7UuM5HUcD11IYQnXd9kNy3KL0KT73L/CUfAd/zr
-         VqwkA7HvmRn839TISjpwe3EHBnX2wevB/duyQQGMN/q2vNXgBIwvahKUWHWKkeo+picP
-         an/z/7NZC0ZBN9sH+GcEFEn0pGKl2erSIACTjL2vrUkSXWaQqrFrZmXOKPlcUF39/qrd
-         tTjO1+HcQBilpqR+04mYryhDX+0xRWnwVe6rI5tgRh/6A1aPAovhMMOGYvrQB0QO91YH
-         vOJg==
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jtxiRMfkRL1YRiP7RlXXAREOdwgbveWdB9KWOtaNwU4=;
+        b=RqpWxpaTDaliHG3jV+Hzf3asb5bZ1FMSpbLtNNFwHSDEkmuBQO4yU7nV7ajtqaeevu
+         BJ0qaGsaxDTGsA0AtVSANKYJ15N1HMG/fsN3Su4q8DBjMvaEn1VNkwUpi2fdmLMChHHL
+         UW+4X/tziA2JSgPYKmuVYgVF+0gGEM+nptNEF88Il8xdhsCLoXMwjYeyMwnoPSXmRTp8
+         wZyhjVdlbtyUJL3Z77+OmXUjyTUeQg6A+f+IDPllNgH6fmAoZi+tocaJJoLM9Y3G67+l
+         /QCmc3BpTWLueqmKnO9lYIbrErvNdCZY7WJKyV8KHdhrHm0zlRYVgAEP5Tmp2cFzkn2s
+         GGwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qrn+x9lX3jcTz2wVgUBrM7DkKsxjXEra+Jy1eyLqErQ=;
-        b=M1tRC+UX0o9UTDKr/IFJNh/BawgHOIyjF2mho5qdxbpNYUMX6sBQ2H4zmxkfi79I1d
-         F1OU29NokPYeC0MD0o8IHty9cSCDoZ2V4U73XxtkEovJDIz3o4Dx3OxjG/kTpFQzzOLH
-         qSXArmdvEXL6YBLlRrGwBxqhFhksyKbTquMXW2evw0114vy6cFOPKO+hRhRpPfULAVe5
-         ZOSF6rx/ZkjGIYegMFdwun3SM0p80luwLA+DiAhrgX2S2TF4+eEBbDCYnA4Z59m/miX0
-         juhpYM1xkSiHjQWNNAVYZdfTqK4Swdngg5ix6ucBtIBCXCAAny0qzhn7xp7ed3ugqhAs
-         4BOA==
-X-Gm-Message-State: AOAM532AJ/ybvdacMLc70HAG46daeAJkf9hJ6sb/mfjg+RXGmhRguqhb
-        vajpWgmUCuE/W1ECNvnkKRRkVw==
-X-Google-Smtp-Source: ABdhPJxKHrA3iDITLiCdMUF/9mnzJFyxnL6Rem0UwUvdhjFOojYMyvms6s//StCF5cJVpP/1sBw0Mg==
-X-Received: by 2002:a7b:c208:: with SMTP id x8mr11862312wmi.179.1608465886268;
-        Sun, 20 Dec 2020 04:04:46 -0800 (PST)
-Received: from larix.localdomain ([2001:1715:4e26:a7e0:ed35:e18a:5e36:8c84])
-        by smtp.gmail.com with ESMTPSA id g5sm21652517wro.60.2020.12.20.04.04.44
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jtxiRMfkRL1YRiP7RlXXAREOdwgbveWdB9KWOtaNwU4=;
+        b=TxVkpoN+XbSX6EV3rGqu+sd6S0IURLk4SRzO703KrIPbCvx3vWyos0kVl1boj/Z9+x
+         sGD7jv0Bns2gcrmFxuxBou5NK4o3Hq43E25aRyAZySJEICyBh4mE//nFGZhahkzhJmvA
+         TXzxriTORO886fCrrGok+4y0Hq06hoBsjeo9t57c+LBEJl3YiIDCdoMduiwt/9bHWeRO
+         DKWfOgbl3qABxDhhXc8L79GVPafZ6u3yQNoO0YfBLzAQYrB9fNP5IIcgxkytGI3M5eie
+         4eu+dCrdxIHFSKkwv5oESlY1qiYSd9/ol166eneE42c9805TSwHu1z3NRJUqxK2xLkg5
+         AxzQ==
+X-Gm-Message-State: AOAM532+i4FtW+YzQ/IUcJNfKkjIILbDWkQBUSEAZ8B0bsQ7Bsci26xB
+        hhMXk3B+WMzBi+3FiGda1piF/w==
+X-Google-Smtp-Source: ABdhPJyVwAzyLybxUH37C7/5e2VQOzyFvgGDV7+GpK0DQa07WEAiMo45Ff9QoKqRzlPH0cK1E3t9cA==
+X-Received: by 2002:a17:90b:203:: with SMTP id fy3mr13281579pjb.231.1608468002812;
+        Sun, 20 Dec 2020 04:40:02 -0800 (PST)
+Received: from localhost ([61.120.150.72])
+        by smtp.gmail.com with ESMTPSA id f64sm14421047pfb.146.2020.12.20.04.40.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Dec 2020 04:04:45 -0800 (PST)
-Date:   Sun, 20 Dec 2020 13:05:19 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.4 08/10] selftests/bpf: Fix array access with
- signed variable test
-Message-ID: <X989/9omnIGyDvzV@larix.localdomain>
-References: <20201220033457.2728519-1-sashal@kernel.org>
- <20201220033457.2728519-8-sashal@kernel.org>
+        Sun, 20 Dec 2020 04:40:02 -0800 (PST)
+From:   John Wang <wangzhiqiang.bj@bytedance.com>
+To:     xuxiaohan@bytedance.com, yulei.sh@bytedance.com, joel@jms.id.au
+Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Gavin Shan <gwshan@linux.vnet.ibm.com>,
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] net/ncsi: Use real net-device for response handler
+Date:   Sun, 20 Dec 2020 20:39:57 +0800
+Message-Id: <20201220123957.1694-1-wangzhiqiang.bj@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201220033457.2728519-8-sashal@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+When aggregating ncsi interfaces and dedicated interfaces to bond
+interfaces, the ncsi response handler will use the wrong net device to
+find ncsi_dev, so that the ncsi interface will not work properly.
+Here, we use the net device registered to packet_type to fix it.
 
-On Sat, Dec 19, 2020 at 10:34:55PM -0500, Sasha Levin wrote:
-> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> 
-> [ Upstream commit 77ce220c0549dcc3db8226c61c60e83fc59dfafc ]
-> 
-> The test fails because of a recent fix to the verifier, even though this
+Fixes: 138635cc27c9 ("net/ncsi: NCSI response packet handler")
+Signed-off-by: John Wang <wangzhiqiang.bj@bytedance.com>
+---
+ net/ncsi/ncsi-rsp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-That fix is commit b02709587ea3 ("bpf: Fix propagation of 32-bit signed
-bounds from 64-bit bounds.") upstream, which only needed backport to 5.9.
-So although backporting this patch to 5.4 shouldn't break anything, I
-wouldn't bother. 
+diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
+index a94bb59793f0..60ae32682904 100644
+--- a/net/ncsi/ncsi-rsp.c
++++ b/net/ncsi/ncsi-rsp.c
+@@ -1120,7 +1120,7 @@ int ncsi_rcv_rsp(struct sk_buff *skb, struct net_device *dev,
+ 	int payload, i, ret;
+ 
+ 	/* Find the NCSI device */
+-	nd = ncsi_find_dev(dev);
++	nd = ncsi_find_dev(pt->dev);
+ 	ndp = nd ? TO_NCSI_DEV_PRIV(nd) : NULL;
+ 	if (!ndp)
+ 		return -ENODEV;
+-- 
+2.25.1
 
-Thanks,
-Jean
-
-> program is valid. In details what happens is:
-> 
->     7: (61) r1 = *(u32 *)(r0 +0)
-> 
-> Load a 32-bit value, with signed bounds [S32_MIN, S32_MAX]. The bounds
-> of the 64-bit value are [0, U32_MAX]...
-> 
->     8: (65) if r1 s> 0xffffffff goto pc+1
-> 
-> ... therefore this is always true (the operand is sign-extended).
-> 
->     10: (b4) w2 = 11
->     11: (6d) if r2 s> r1 goto pc+1
-> 
-> When true, the 64-bit bounds become [0, 10]. The 32-bit bounds are still
-> [S32_MIN, 10].
-> 
->     13: (64) w1 <<= 2
-> 
-> Because this is a 32-bit operation, the verifier propagates the new
-> 32-bit bounds to the 64-bit ones, and the knowledge gained from insn 11
-> is lost.
-> 
->     14: (0f) r0 += r1
->     15: (7a) *(u64 *)(r0 +0) = 4
-> 
-> Then the verifier considers r0 unbounded here, rejecting the test. To
-> make the test work, change insn 8 to check the sign of the 32-bit value.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  tools/testing/selftests/bpf/verifier/array_access.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/verifier/array_access.c b/tools/testing/selftests/bpf/verifier/array_access.c
-> index f3c33e128709b..a80d806ead15f 100644
-> --- a/tools/testing/selftests/bpf/verifier/array_access.c
-> +++ b/tools/testing/selftests/bpf/verifier/array_access.c
-> @@ -68,7 +68,7 @@
->  	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
->  	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 9),
->  	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_0, 0),
-> -	BPF_JMP_IMM(BPF_JSGT, BPF_REG_1, 0xffffffff, 1),
-> +	BPF_JMP32_IMM(BPF_JSGT, BPF_REG_1, 0xffffffff, 1),
->  	BPF_MOV32_IMM(BPF_REG_1, 0),
->  	BPF_MOV32_IMM(BPF_REG_2, MAX_ENTRIES),
->  	BPF_JMP_REG(BPF_JSGT, BPF_REG_2, BPF_REG_1, 1),
-> -- 
-> 2.27.0
-> 
