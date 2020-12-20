@@ -2,26 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8912DF2FF
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 04:40:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46BE62DF2FD
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 04:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727495AbgLTDf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 22:35:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57982 "EHLO mail.kernel.org"
+        id S1727446AbgLTDf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 22:35:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726953AbgLTDf5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727318AbgLTDf5 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 19 Dec 2020 22:35:57 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
+Cc:     Fugang Duan <fugang.duan@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 06/15] lwt: Disable BH too in run_lwt_bpf()
-Date:   Sat, 19 Dec 2020 22:34:24 -0500
-Message-Id: <20201220033434.2728348-6-sashal@kernel.org>
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.9 07/15] net: stmmac: increase the timeout for dma reset
+Date:   Sat, 19 Dec 2020 22:34:25 -0500
+Message-Id: <20201220033434.2728348-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201220033434.2728348-1-sashal@kernel.org>
 References: <20201220033434.2728348-1-sashal@kernel.org>
@@ -33,63 +34,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dongdong Wang <wangdongdong.6@bytedance.com>
+From: Fugang Duan <fugang.duan@nxp.com>
 
-[ Upstream commit d9054a1ff585ba01029584ab730efc794603d68f ]
+[ Upstream commit 9d14edfdeabf37d8d8f045e63e5873712aadcd6b ]
 
-The per-cpu bpf_redirect_info is shared among all skb_do_redirect()
-and BPF redirect helpers. Callers on RX path are all in BH context,
-disabling preemption is not sufficient to prevent BH interruption.
+Current timeout value is not enough for gmac5 dma reset
+on imx8mp platform, increase the timeout range.
 
-In production, we observed strange packet drops because of the race
-condition between LWT xmit and TC ingress, and we verified this issue
-is fixed after we disable BH.
-
-Although this bug was technically introduced from the beginning, that
-is commit 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure"),
-at that time call_rcu() had to be call_rcu_bh() to match the RCU context.
-So this patch may not work well before RCU flavor consolidation has been
-completed around v5.0.
-
-Update the comments above the code too, as call_rcu() is now BH friendly.
-
-Signed-off-by: Dongdong Wang <wangdongdong.6@bytedance.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Link: https://lore.kernel.org/bpf/20201205075946.497763-1-xiyou.wangcong@gmail.com
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/lwt_bpf.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/lwt_bpf.c b/net/core/lwt_bpf.c
-index 7d3438215f32c..4f3cb7c15ddfe 100644
---- a/net/core/lwt_bpf.c
-+++ b/net/core/lwt_bpf.c
-@@ -39,12 +39,11 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
- {
- 	int ret;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+index 6e30d7eb4983d..0b4ee2dbb691d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+@@ -22,7 +22,7 @@ int dwmac4_dma_reset(void __iomem *ioaddr)
  
--	/* Preempt disable is needed to protect per-cpu redirect_info between
--	 * BPF prog and skb_do_redirect(). The call_rcu in bpf_prog_put() and
--	 * access to maps strictly require a rcu_read_lock() for protection,
--	 * mixing with BH RCU lock doesn't work.
-+	/* Preempt disable and BH disable are needed to protect per-cpu
-+	 * redirect_info between BPF prog and skb_do_redirect().
- 	 */
- 	preempt_disable();
-+	local_bh_disable();
- 	bpf_compute_data_pointers(skb);
- 	ret = bpf_prog_run_save_cb(lwt->prog, skb);
+ 	return readl_poll_timeout(ioaddr + DMA_BUS_MODE, value,
+ 				 !(value & DMA_BUS_MODE_SFT_RESET),
+-				 10000, 100000);
++				 10000, 1000000);
+ }
  
-@@ -78,6 +77,7 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
- 		break;
- 	}
- 
-+	local_bh_enable();
- 	preempt_enable();
- 
- 	return ret;
+ void dwmac4_set_rx_tail_ptr(void __iomem *ioaddr, u32 tail_ptr, u32 chan)
 -- 
 2.27.0
 
