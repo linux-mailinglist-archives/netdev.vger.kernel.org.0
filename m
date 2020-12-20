@@ -2,169 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B426E2DF861
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 05:48:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 850E82DF6DF
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 22:19:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728386AbgLUEqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 23:46:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727569AbgLUEqc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 23:46:32 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC955C061285
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 20:45:51 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id t6so4998720plq.1
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 20:45:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/5I+IwRWc6yQaXHGrTaY4QXvxkqMztX8GLLvJNaqk9E=;
-        b=Hd4HuEMllJJEoa/SS2OsonS1BJlQfxzuBz16/REMsf8ufv/5+RuJz4IKMXzCdhBNU/
-         qFHd1Fx4AZPQwQjT1xziamasIjEYoqcs4AwD8Jkpje4Lk/51aCN0gG/ClLqArUSB8khu
-         KdV7p7EyTDEXGcB4VL3G6aXCxUzOIrPQuki4NFfBXn/8zOn9eekzWbrncwFtEOXetnGm
-         sIO6cAdW03LU3RVCnCdMhC3374WDNDxhZkXj5VWpbJjXA9YXNaWxByCeUik3R+OfVXdj
-         1CmhqDSYBAPQ7kVBhuonjrU9socBsNCavOJqs4R73co839NcoXjDJnvMfKbIWXekiC1M
-         uK2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/5I+IwRWc6yQaXHGrTaY4QXvxkqMztX8GLLvJNaqk9E=;
-        b=dpnsvsgAkhFO6ZmnziALgke4KM1U7Y0e44A4xhpc5LpiM/UflpjjzjrHxvv99xO0wb
-         9CU5c8Gjnv6bcVYtbCtuuFHPk3nATFK4eKDTflHN12SuIv/Wj2cBHv8V5mc32It+n4xt
-         ab06FCJ6PNlxTQy2qURbtiKEZ5SwA1aehNYlr1D+qEd5hkXW6484BKROe8OOH4i5A1Ne
-         cwtAvwWetFsrDlhWSLtoJEw4bpNoEUj1sQoWlidlEwyx4ttCzgIU4PoqXO366kyXHEeW
-         jZh6iOTT8h+FSsocd8hPNwGVlb5FP/YJQVAGjUs6BxZiTNU2RDcNCZJjciuTvXq7YRwB
-         mRCg==
-X-Gm-Message-State: AOAM531SjdkF3/aIWGc5s48cgQ8dzLOgwL5zKKf/706f3KpSEzugamXo
-        z01CIv9mYqvDi8himH1HM8Na8YzC5YJ+OA==
-X-Google-Smtp-Source: ABdhPJw7V/aqh2FEI4h4RrbwnB+ZyOTeaGsRVfub7RkBdm2z1yqOnvyQl6xkyxFM37roY3x4dYhExg==
-X-Received: by 2002:a17:902:7c0a:b029:da:62c8:90cb with SMTP id x10-20020a1709027c0ab02900da62c890cbmr13521856pll.59.1608497223942;
-        Sun, 20 Dec 2020 12:47:03 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id h24sm14687489pfq.13.2020.12.20.12.47.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Dec 2020 12:47:03 -0800 (PST)
-Date:   Sun, 20 Dec 2020 12:46:42 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [ANNOUNCE] iproute2-5.10
-Message-ID: <20201220124642.53cb4311@hermes.local>
+        id S1727377AbgLTVLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 16:11:54 -0500
+Received: from mail.zx2c4.com ([192.95.5.64]:38439 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727130AbgLTVLx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Dec 2020 16:11:53 -0500
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id ce323d38
+        for <netdev@vger.kernel.org>;
+        Sun, 20 Dec 2020 21:03:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=zmDED1Y+07Jzv5N5n9KH6ZmggEQ=; b=TlHwmD
+        ZGs0AMG7W1B76oAS2fgJDNIKPKU1NDV3KZFmW4eTpQ80UZWQToQ1V0vBUVcT4VA0
+        MMtunVyFA0qtfWpTaFVq85TjuNN/xgiylil0Am72aNbMjUi8q75nHqi2T2l8l2jV
+        W5nR1jb1b9tJHczXi8NC2DYpQRfhLzx/gioVYh04RMpFrdA1hWEENNqN+f2CKuX7
+        ABLF1jERPlpKPDwac55aUOflyQ6/E00ZzSR9njSirczWd2C8UAYETH8M9D6696DD
+        p7CdU68yZEDgNgaQkep/ONBvl9x75Sc9xT3QNnYPOa/DH669E2xXIggj2izFo8bz
+        DnCBi5ftlTW2Lupw==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f7036f09 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Sun, 20 Dec 2020 21:03:00 +0000 (UTC)
+Received: by mail-yb1-f181.google.com with SMTP id w135so7095920ybg.13
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 13:11:11 -0800 (PST)
+X-Gm-Message-State: AOAM530W8RttfyVoOwXOS9WxpH+Oj9jNfhd6e1q6G3nZLmtSmzLZPnQ4
+        bWAvDDvMcvQto/A2eR9fExq1SzMgFan+Z4ICHS4=
+X-Google-Smtp-Source: ABdhPJzwDxy3f0LzIY+2Z+AQrvE7snpg47zmrQJtcuWWdaZy2pS0N6uFr10oKvcfkZu+YsLadEXVlHGoUZbqIsmdbjg=
+X-Received: by 2002:a25:4845:: with SMTP id v66mr15227490yba.178.1608498670933;
+ Sun, 20 Dec 2020 13:11:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <000000000000e13e2905b6e830bb@google.com>
+In-Reply-To: <000000000000e13e2905b6e830bb@google.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Sun, 20 Dec 2020 22:11:00 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qwbB7kbD=1sg_81=82vO07XMV7GyqBcCoC=zwM-v47HQ@mail.gmail.com>
+Message-ID: <CAHmME9qwbB7kbD=1sg_81=82vO07XMV7GyqBcCoC=zwM-v47HQ@mail.gmail.com>
+Subject: Re: UBSAN: object-size-mismatch in wg_xmit
+To:     Netdev <netdev@vger.kernel.org>
+Cc:     syzkaller-bugs@googlegroups.com,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just in time for the holidays, new iproute2!
+Hmm, on first glance, I'm not sure I'm seeing the bug:
 
-This update is smaller than usual, not a lot of new features.
-It does NOT include libbpf, that will be merged in 5.11 (iproute2-next).
+On Sun, Dec 20, 2020 at 5:54 PM syzbot
+<syzbot+8f90d005ab2d22342b6d@syzkaller.appspotmail.com> wrote:
+> UBSAN: object-size-mismatch in ./include/linux/skbuff.h:2021:28
+> member access within address 0000000085889cc2 with insufficient space
+> for an object of type 'struct sk_buff'
+>  __skb_queue_before include/linux/skbuff.h:2021 [inline]
+>  __skb_queue_tail include/linux/skbuff.h:2054 [inline]
+>  wg_xmit+0x45d/0xdf0 drivers/net/wireguard/device.c:182
 
-Download:
-    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.10.0.tar.gz
+The code in question is:
 
-Repository for upcoming release:
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+        struct sk_buff_head packets;
+        __skb_queue_head_init(&packets);
+...
+        skb_list_walk_safe(skb, skb, next) {
+               skb_mark_not_on_list(skb);
 
-And future release (net-next):
-    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
+               skb = skb_share_check(skb, GFP_ATOMIC);
+               if (unlikely(!skb))
+                       continue;
+...
+               __skb_queue_tail(&packets, skb);
+       }
 
-Thanks for all the contributions.
+We're in a netdev's xmit function, so nothing else should have skb at
+that point. Given the warning is about "member access", I assume it's
+the next->prev dereference here:
 
-Report problems (or enhancements) to the netdev@vger.kernel.org mailing list.
+static inline void __skb_queue_before(struct sk_buff_head *list,
+                                     struct sk_buff *next,
+                                     struct sk_buff *newsk)
+{
+       __skb_insert(newsk, next->prev, next, list);
+}
 
----
-Andrea Claudi (4):
-      man: tc-flower: fix manpage
-      devlink: fix memory leak in cmd_dev_flash()
-      tc: pedit: fix memory leak in print_pedit
-      ss: mptcp: fix add_addr_accepted stat print
+So where is "next" coming from that UBSAN would complain about
+object-size-mismatch?
 
-Antony Antony (2):
-      ip xfrm: support printing XFRMA_SET_MARK_MASK attribute in states
-      ip xfrm: support setting XFRMA_SET_MARK_MASK attribute in states
+static inline void __skb_queue_tail(struct sk_buff_head *list,
+                                  struct sk_buff *newsk)
+{
+       __skb_queue_before(list, (struct sk_buff *)list, newsk);
+}
 
-Ciara Loftus (1):
-      ss: add support for xdp statistics
+It comes from casting "list" into an sk_buff. While this might be some
+CFI-violating polymorphism, I can't see why this cast would actually
+be a problem in practice. The top of sk_buff is intentionally the same
+as sk_buff_head:
 
-David Ahern (5):
-      Update kernel headers
-      Update kernel headers
-      Update kernel headers
-      Update kernel headers
-      Update kernel headers
+struct sk_buff_head {
+       struct sk_buff  *next;
+       struct sk_buff  *prev;
+...
+struct sk_buff {
+       union {
+               struct {
+                       struct sk_buff          *next;
+                       struct sk_buff          *prev;
+...
 
-Guillaume Nault (5):
-      m_vlan: add pop_eth and push_eth actions
-      m_mpls: add mac_push action
-      m_mpls: test the 'mac_push' action after 'modify'
-      tc-vlan: fix help and error message strings
-      tc-mpls: fix manpage example and help message string
+I'd suspect, "oh maybe it's just a clang 11 bug", but syzbot says it
+can't reproduce. So that makes me a little more nervous.
 
-Hoang Le (1):
-      tipc: support 128bit node identity for peer removing
+Does anybody see something I've missed?
 
-Jacob Keller (2):
-      devlink: support setting the overwrite mask attribute
-      devlink: display elapsed time during flash update
-
-Jakub Kicinski (1):
-      ip: promote missed packets to the -s row
-
-Jiri Pirko (1):
-      devlink: Add health reporter test command support
-
-Johannes Berg (5):
-      libnetlink: add rtattr_for_each_nested() iteration macro
-      libnetlink: add nl_print_policy() helper
-      genl: ctrl: support dumping netlink policy
-      genl: ctrl: print op -> policy idx mapping
-      libnetlink: define __aligned conditionally
-
-Luca Boccassi (2):
-      ip/netns: use flock when setting up /run/netns
-      tc/mqprio: json-ify output
-
-Nikolay Aleksandrov (6):
-      bridge: mdb: add support for source address
-      bridge: mdb: print fast_leave flag
-      bridge: mdb: show igmpv3/mldv2 flags
-      bridge: mdb: print filter mode when available
-      bridge: mdb: print source list when available
-      bridge: mdb: print protocol when available
-
-Parav Pandit (2):
-      devlink: Show external port attribute
-      devlink: Show controller number of a devlink port
-
-Roopa Prabhu (1):
-      iplink: add support for protodown reason
-
-Stephen Hemminger (15):
-      v5.9.0
-      uapi: updates from 5.10-rc1
-      tc/m_gate: fix spelling errors
-      man: fix spelling errors
-      rdma: fix spelling error in comment
-      uapi: update kernel headers from 5.10-rc2
-      bridge: report correct version
-      devlink: fix uninitialized warning
-      bridge: fix string length warning
-      tc: fix compiler warnings in ip6 pedit
-      misc: fix compiler warning in ifstat and nstat
-      f_u32: fix compiler gcc-10 compiler warning
-      uapi: update devlink.h
-      uapi: update devlink.h
-      uapi: merge in change to bpf.h
-
-Tuong Lien (2):
-      tipc: add option to set master key for encryption
-      tipc: add option to set rekeying for encryption
-
-Wei Wang (1):
-      iproute2: ss: add support to expose various inet sockopts
-
+Jason
