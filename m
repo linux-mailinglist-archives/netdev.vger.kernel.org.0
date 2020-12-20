@@ -2,87 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B124F2DF493
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 10:12:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F37712DF4BD
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 10:38:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727161AbgLTJIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 04:08:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbgLTJIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 04:08:38 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878C5C0613CF
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 01:07:58 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id d17so9326743ejy.9
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 01:07:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/DIvBKhgnt5Ly3+S8IYKgzsTzNYNuBFOXEam0Euc3U8=;
-        b=i7icMjIef/QgVSpp+8Lz6c1txrG1SuK0VYZRHwjHMtm9iyv5TjGtXaJZJHCLV8YULn
-         ZWhnGFh7UpC0PG45+nm3MxpmUa31XqQlk2qRfmRrWorzufxKsMfwtis+G8/TCZprAjDL
-         H84fbXJkH33QiMBaclrTgngEOncCyp85c+b0+gqA/MIFPJQbsqoatIldoIArMjZC9Zlp
-         rGiO9wxJ3N6le3LF1+01NvGenoSOwV5Wi6n7pTiCpodmrkDTwWhbt5xjypydbxkv0O50
-         HOhKzKf1+oHnf9a8zMuHXdSvx8DhPFP21pdAiy/31AdZh7DUlxkGakKJIOImMnrMn1Vy
-         DEPA==
+        id S1727386AbgLTJhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 04:37:45 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:35679 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727236AbgLTJho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 04:37:44 -0500
+Received: by mail-il1-f200.google.com with SMTP id p6so6698837ilb.2
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 01:37:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/DIvBKhgnt5Ly3+S8IYKgzsTzNYNuBFOXEam0Euc3U8=;
-        b=AuCracj2gxb6nQjw9S00VOlURExLazLirA5pEEfTUjW1L0ab0jPh+IQVy+1J3TTNqB
-         ecUa4hUciqlTqs2vRuSqbCF8gbeXxnIi++nLtiAlgmz13O83Wi6V59ewloFKFrQZL1jo
-         6iYWhI3Gmd1/Wpk9zNPPM/sSmlspZ1F2Hfhb1lj6a3vFweyQg3BBryVQT3CG+3xyd8Fp
-         kLvzF86Whw3uiTaHX8FTxh3s+EVU8ZRAEBbevRpcnYYNJMML9ojOzNJq16pLVcGpnHGZ
-         4t018nRJ7uj1dE8G5kc8/Mx6QZFFAs3xF7GnAjYdOU3G6Hnq13NjUzF/pxIe+G4+Rg8+
-         Wq8Q==
-X-Gm-Message-State: AOAM533+ETKMb3rz1oFzlT7NnVcelhTme8pYBnCPY0/SpYabImdwgyYR
-        3fX1N6WuAUFrsrVVOOOQOpo=
-X-Google-Smtp-Source: ABdhPJxibYJYYAnPASg1TTu1ArW8y5xpfLQ/rPDUAcFK3hQJlEihbU3mYcnQEMxaqzEGE0oLTsvl7Q==
-X-Received: by 2002:a17:906:4d8d:: with SMTP id s13mr11120229eju.305.1608455277160;
-        Sun, 20 Dec 2020 01:07:57 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id hb18sm7641896ejb.86.2020.12.20.01.07.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Dec 2020 01:07:56 -0800 (PST)
-Date:   Sun, 20 Dec 2020 11:07:55 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Greg Ungerer <gerg@kernel.org>,
-        Rene van Dorst <opensource@vdorst.com>,
-        John Crispin <john@phrozen.org>
-Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: rename MT7621 compatible
-Message-ID: <20201220090755.2fuxts4mhsa4sbgm@skbuf>
-References: <20201219162153.23126-1-dqfext@gmail.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=0fT5mqBE94g71/WluOC6bf1J/UQhmIMm/DUDfbpZB9U=;
+        b=ugywrVN+UbiONoxdQNvbiobnlfu7X25B8ktQH354s5qLo3Wz5AWwqByMBxKbWFMiaS
+         gfClKbevhxoQ7U54qfd/Hx2d55H08URa/esGYXJs7L5XmClFZczWmKEniJpUMEw20rZE
+         G4un9zyhsZMyms+GX5oK23ctXiyxWjeunqsVcx34nywybBo0j5Wrs7Lmmzse0ivu8x+T
+         x+heJfJr9yKaW7cCvLK2kHcFNTpfXXmHjINnynvoVzYCJHUWrgvT+TnRDq1Zc24HA5hK
+         yT+OLH1SYzQsvxWcdCVOySkeIp3kOR4EeSSIinLmcx5mxcIJ+oTiSm/nw7ZJOIpd0Ejb
+         3RyA==
+X-Gm-Message-State: AOAM530KZ+jAsZN0S+67UfkQe9heECkRyB8iyVm/CJqFjbF4HRI2ak+h
+        m7ZFmk1GGct9Ks5jrWg5vXK7yjE79zZB+gWl7VW1XUeVMb4E
+X-Google-Smtp-Source: ABdhPJy/2OvStEVOk368NFkl05TcHnoLfL9VubxJP+qHGmxR1gjcoH5bassxkyk/ywRnffzn1GiHR9p3jFp67h07+mij430mJ0zN
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201219162153.23126-1-dqfext@gmail.com>
+X-Received: by 2002:a5d:8704:: with SMTP id u4mr10573638iom.3.1608457023536;
+ Sun, 20 Dec 2020 01:37:03 -0800 (PST)
+Date:   Sun, 20 Dec 2020 01:37:03 -0800
+In-Reply-To: <000000000000264c6305a9c74d9b@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008647f705b6e215de@google.com>
+Subject: Re: INFO: rcu detected stall in tipc_release
+From:   syzbot <syzbot+3654c027d861c6df4b06@syzkaller.appspotmail.com>
+To:     Markus.Elfring@web.de, bp@alien8.de, coreteam@netfilter.org,
+        davem@davemloft.net, fw@strlen.de, fweisbec@gmail.com,
+        hdanton@sina.com, hpa@zytor.com, jmaloy@redhat.com,
+        jmattson@google.com, joro@8bytes.org, kadlec@netfilter.org,
+        kuba@kernel.org, kuznet@ms2.inr.ac.ru, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mingo@kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, subashab@codeaurora.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        tuong.t.lien@dektech.com.au, vkuznets@redhat.com,
+        wanpengli@tencent.com, x86@kernel.org, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 20, 2020 at 12:21:53AM +0800, DENG Qingfang wrote:
-> MT7621 is a SoC, so using "mediatek,mt7621" as its compatible is ambiguous.
-> Rename it to "mediatek,mt7621-gsw".
-> 
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> ---
+syzbot suspects this issue was fixed by commit:
 
-I would say that you need to resolve the situation with the docs at
-Documentation/devicetree/bindings/net/mediatek,mt7620-gsw.txt
-and with the bindings at drivers/staging/mt7621-dts/mt7621.dtsi first
-(or in the same series). And still then, it would be nice if you could
-preserve compatibility with the existing bindings at least for a while.
+commit cc00bcaa589914096edef7fb87ca5cee4a166b5c
+Author: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Date:   Wed Nov 25 18:27:22 2020 +0000
+
+    netfilter: x_tables: Switch synchronization to RCU
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1445cb37500000
+start commit:   7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7be693511b29b338
+dashboard link: https://syzkaller.appspot.com/bug?extid=3654c027d861c6df4b06
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12948233100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11344c05100000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: netfilter: x_tables: Switch synchronization to RCU
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
