@@ -2,103 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBEA42DF36B
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 04:45:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E7A42DF394
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 05:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbgLTDov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 22:44:51 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:51474 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726815AbgLTDou (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 22:44:50 -0500
-Received: by mail-il1-f200.google.com with SMTP id 1so6198125ilg.18
-        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 19:44:35 -0800 (PST)
+        id S1727249AbgLTEs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 23:48:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726997AbgLTEs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Dec 2020 23:48:59 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAD3C0613CF
+        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 20:48:19 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id r9so5891614ioo.7
+        for <netdev@vger.kernel.org>; Sat, 19 Dec 2020 20:48:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d+I+MxhZRgbV94D9EabdQV93ne2lYILR2KlRArwUle8=;
+        b=TN1bLPEVwPotLjbi2RZbsJX5S4wR2E4B8mbH1BYhBabbCuGoCKpl2Zf2Y0wdg4XAb0
+         suhvR5RwoQ8qEy90zVWD0cnyQhbdCEQWVzUnGlf2ak2e6dJbSTr48/1WtjyFNiJAKjEM
+         JsbWEmouQB5DXkCr3q+rfzDllPdYBGYAWdccnKPQS0EBEkFcDF0Zg9s6vByyaSN4zjV+
+         jaxyHDVbyX4ZI8IvpttYYc8qvFbefCuCfi9l238hR8oy8paQhTTXoe5wCNrSBmAUUTYx
+         HqkwYiAts7Vdmd8DxRsKQW/36d1e0xgpXFb5gSDk/mAIoGMu9WdShnG5Iq6JYlohv0wI
+         D2pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=UubbcTnFvAdUtoFBZ+hCLa1NkxHJbmCBB4mCfGjoNzc=;
-        b=rwdq961JpKV9ykAVDulzVN6+AGKP5dGTT9fs5wbulbR97DGrHataDqpXk2DQIuzW4p
-         9WrPQnZ1rEkUcF1DOixxQIsWVpsU7RSFMB6H/EVAlZ43aISmPuwSKVhSoYvoRIcgODJF
-         m0iYsEFuSrQf5WtmnYN8ygIkeJsiELei6+/Z1pzvaDD1bfUesuLkQ1mwBiX+V/XXaWcH
-         5onZzIZFZ/U9Qmw1C5CtG98jV2jOqSmnBFDj/u9Jp5i1FAd4JyOlbIm3ZjxCZ4NtEnUl
-         Ygt2nqZJYRxrBdgdQJstdsmgWpMt/1sEUXG9mukqfAC/uUMN4E9VuGcyC51wz/VxunqK
-         vl2A==
-X-Gm-Message-State: AOAM531HDyhrETIE7WckkZBweUh8GRaI1pQfMU4/G0cQ8F+GR7Vwm024
-        iaSqorKjmGaKXD4k7n2wO/yUFgZxSgLgN2bwmw9k8HTWg1eB
-X-Google-Smtp-Source: ABdhPJwX8qhKyoJbSUGIjokthVh4nyAx842fsSvzfDHXWiEmnnqdEUEqxVEYbhdSZOaR0ktXGNs/z1Mse29eILcxDLbZtoHhmPI9
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d+I+MxhZRgbV94D9EabdQV93ne2lYILR2KlRArwUle8=;
+        b=CUhqzXI8z2qlK1CanlRaNwSnsoL7MSl5jDp/loGbsLooaW3FQkjzobccgQow+JetGU
+         3HcnwlgbsBkA9Vi+1fa0yXp4TGVY8PDoFbSqkzxFKzADFC/mT//MBViTWzoEuu/Q1Yy+
+         vZdgNfHVrW8CcJQly1pt2hIk7DcLOpPYlaaJ2iQFziF+hZf2EZqq+MY/sIC67Ot+Q2yq
+         VwY2/1W6yNVouNBxqZpnCvpZDXKO/59dsEPNfn90hy6Ya9ActXUYJWPnFkzuzZn2Q26r
+         usub71rvQnAaLj8cJsGsBbFRcQn0kgpJnWPDXvgQuI5M97QcllJk6i6p01fL+6G/dj22
+         wSNQ==
+X-Gm-Message-State: AOAM532Mawh5SMDSlJ5+kcwe0NPxiLED2VndD9vNk1H1oB4ns7axUJDI
+        w5Tque8BgYUsdRrF7AkbydlWcJjocbvunGEVuWM=
+X-Google-Smtp-Source: ABdhPJyXPQSHJwF4yd0MdFCn+ETOqT2J1/g879Vm4IgiWsocYgSJZll/tV0usL2TvKecEvQcfCrjdUQLRGLcqOxT2EI=
+X-Received: by 2002:a6b:3788:: with SMTP id e130mr10222133ioa.23.1608439698367;
+ Sat, 19 Dec 2020 20:48:18 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:c850:: with SMTP id r16mr10235491jao.18.1608435849939;
- Sat, 19 Dec 2020 19:44:09 -0800 (PST)
-Date:   Sat, 19 Dec 2020 19:44:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007acf2605b6dd2767@google.com>
-Subject: WARNING in ext4_evict_inode
-From:   syzbot <syzbot+f3e5bd9358af6c9a28c5@syzkaller.appspotmail.com>
-To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tytso@mit.edu
+References: <20201219162153.23126-1-dqfext@gmail.com> <20201219162601.GE3008889@lunn.ch>
+ <47673b0d-1da8-d93e-8b56-995a651aa7fd@gmail.com> <20201219194831.5mjlmjfbcpggrh45@skbuf>
+In-Reply-To: <20201219194831.5mjlmjfbcpggrh45@skbuf>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Sun, 20 Dec 2020 12:48:08 +0800
+Message-ID: <CALW65jYtW7EEnXuj2dGSDwYC=3sBLCP0Q9J=tMozkrP6W0gq0w@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: rename MT7621 compatible
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Ungerer <gerg@kernel.org>,
+        Rene van Dorst <opensource@vdorst.com>,
+        John Crispin <john@phrozen.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Vladimir,
 
-syzbot found the following issue on:
+On Sun, Dec 20, 2020 at 3:48 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> Hi Andrew, Florian,
+>
+> On Sat, Dec 19, 2020 at 09:07:13AM -0800, Florian Fainelli wrote:
+> > On 12/19/2020 8:26 AM, Andrew Lunn wrote:
+> > >> --- a/drivers/net/dsa/mt7530.c
+> > >> +++ b/drivers/net/dsa/mt7530.c
+> > >> @@ -2688,7 +2688,7 @@ static const struct mt753x_info mt753x_table[] = {
+> > >>  };
+> > >>
+> > >>  static const struct of_device_id mt7530_of_match[] = {
+> > >> -  { .compatible = "mediatek,mt7621", .data = &mt753x_table[ID_MT7621], },
+> > >> +  { .compatible = "mediatek,mt7621-gsw", .data = &mt753x_table[ID_MT7621], },
+> > >>    { .compatible = "mediatek,mt7530", .data = &mt753x_table[ID_MT7530], },
+> > >>    { .compatible = "mediatek,mt7531", .data = &mt753x_table[ID_MT7531], },
+> > >>    { /* sentinel */ },
+> > >
+> > > This will break backwards compatibility with existing DT blobs. You
+> > > need to keep the old "mediatek,mt7621", but please add a comment that
+> > > it is deprecated.
+> >
+> > Besides, adding -gsw would make it inconsistent with the existing
+> > matching compatible strings. While it's not ideal to have the same
+> > top-level SoC compatible and having another sub-node within that SoC's
+> > DTS have the same compatible, given this would be break backwards
+> > compatibility, cannot you stay with what is defined today?
+>
+> The MT7621 device tree is in staging. I suppose that some amount of
+> breaking changes could be tolerated?
+>
+> But Qingfang, I'm confused when looking at drivers/staging/mt7621-dts/mt7621.dtsi.
+>
+> /ethernet@1e100000/mdio-bus {
+>         switch0: switch0@0 {
+>                 compatible = "mediatek,mt7621";
+>                 #address-cells = <1>;
+>                 #size-cells = <0>;
+>                 reg = <0>;
+>                 mediatek,mcm;
+>                 resets = <&rstctrl 2>;
+>                 reset-names = "mcm";
+>
+>                 ports {
+>                         #address-cells = <1>;
+>                         #size-cells = <0>;
+>                         reg = <0>;
+>                         port@0 {
+>                                 status = "off";
+>                                 reg = <0>;
+>                                 label = "lan0";
+>                         };
+>                         port@1 {
+>                                 status = "off";
+>                                 reg = <1>;
+>                                 label = "lan1";
+>                         };
+>                         port@2 {
+>                                 status = "off";
+>                                 reg = <2>;
+>                                 label = "lan2";
+>                         };
+>                         port@3 {
+>                                 status = "off";
+>                                 reg = <3>;
+>                                 label = "lan3";
+>                         };
+>                         port@4 {
+>                                 status = "off";
+>                                 reg = <4>;
+>                                 label = "lan4";
+>                         };
+>                         port@6 {
+>                                 reg = <6>;
+>                                 label = "cpu";
+>                                 ethernet = <&gmac0>;
+>                                 phy-mode = "trgmii";
+>                                 fixed-link {
+>                                         speed = <1000>;
+>                                         full-duplex;
+>                                 };
+>                         };
+>                 };
+>         };
+> };
+>
+> / {
+>         gsw: gsw@1e110000 {
+>                 compatible = "mediatek,mt7621-gsw";
+>                 reg = <0x1e110000 0x8000>;
+>                 interrupt-parent = <&gic>;
+>                 interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
+>         };
+> };
+>
+> What is the platform device at the memory address 1e110000?
+> There is no driver for it. The documentation only has me even more
+> confused:
+>
+> Mediatek Gigabit Switch
+> =======================
+>
+> The mediatek gigabit switch can be found on Mediatek SoCs (mt7620, mt7621).
+>
+> Required properties:
+> - compatible: Should be "mediatek,mt7620-gsw" or "mediatek,mt7621-gsw"
+> - reg: Address and length of the register set for the device
+> - interrupts: Should contain the gigabit switches interrupt
+> - resets: Should contain the gigabit switches resets
+> - reset-names: Should contain the reset names "gsw"
+>
+> Example:
+>
+> gsw@10110000 {
+>         compatible = "ralink,mt7620-gsw";     <- notice how even the example is bad and inconsistent
+>         reg = <0x10110000 8000>;
+>
+>         resets = <&rstctrl 23>;
+>         reset-names = "gsw";
+>
+>         interrupt-parent = <&intc>;
+>         interrupts = <17>;
+> };
+>
+> Does the MT7621 contain two Ethernet switches, one accessed over MMIO
+> and another over MDIO? Or is it the same switch? I don't understand.
+> What is the relationship between the new compatible that you're
+> proposing, Qingfang, and the existing device tree bindings?
 
-HEAD commit:    3db1a3fa Merge tag 'staging-5.11-rc1' of git://git.kernel...
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=15c2f30f500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2764fc28a92339f9
-dashboard link: https://syzkaller.appspot.com/bug?extid=f3e5bd9358af6c9a28c5
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+The current dtsi is copied from OpenWrt, so the existing "mt7621-gsw"
+/ "mt7620-gsw" compatible is for their swconfig driver.
+MT7621 has only one switch, accessed over MDIO, so the reg property
+has no effect.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+f3e5bd9358af6c9a28c5@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 8514 at fs/ext4/inode.c:229 ext4_evict_inode+0x112c/0x1800 fs/ext4/inode.c:229
-Modules linked in:
-CPU: 1 PID: 8514 Comm: syz-executor.1 Not tainted 5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:ext4_evict_inode+0x112c/0x1800 fs/ext4/inode.c:229
-Code: 05 72 d6 d3 0a 01 e8 ea 75 ae 06 e9 08 f5 ff ff c7 44 24 2c 06 00 00 00 c7 44 24 28 06 00 00 00 e9 9f f6 ff ff e8 54 29 6b ff <0f> 0b e9 34 f4 ff ff e8 48 29 6b ff e8 73 07 57 ff 31 ff 41 89 c5
-RSP: 0018:ffffc9000166fcb8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 1ffff920002cdf9e RCX: ffffffff8205683e
-RDX: ffff8880125fb580 RSI: ffffffff8205740c RDI: 0000000000000005
-RBP: ffff888059bf0338 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
-R13: ffff888015bb1070 R14: ffffffff895fec20 R15: ffff888059bf4b00
-FS:  000000000258e940(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b30522000 CR3: 0000000047a9c000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- evict+0x2ed/0x750 fs/inode.c:578
- iput_final fs/inode.c:1654 [inline]
- iput.part.0+0x3fe/0x820 fs/inode.c:1680
- iput+0x58/0x70 fs/inode.c:1670
- do_unlinkat+0x40b/0x660 fs/namei.c:3903
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45dea7
-Code: 00 66 90 b8 58 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 57 00 00 00 0f 05 <48> 3d 01 f0 ff ff 0f 83 8d b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff0cd52098 EFLAGS: 00000246 ORIG_RAX: 0000000000000057
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000045dea7
-RDX: 00007fff0cd520b0 RSI: 00007fff0cd520b0 RDI: 00007fff0cd52140
-RBP: 0000000000000714 R08: 0000000000000000 R09: 000000000000001b
-R10: 0000000000000015 R11: 0000000000000246 R12: 00007fff0cd531d0
-R13: 000000000258fa60 R14: 0000000000000000 R15: 00000000000ab9e5
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Should this patch be accepted, the existing gsw nodes can be dropped.
