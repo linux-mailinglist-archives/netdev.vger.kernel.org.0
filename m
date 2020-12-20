@@ -2,119 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 850E82DF6DF
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 22:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D32C92DF6EF
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 22:46:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727377AbgLTVLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 16:11:54 -0500
-Received: from mail.zx2c4.com ([192.95.5.64]:38439 "EHLO mail.zx2c4.com"
+        id S1728344AbgLTVoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 16:44:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727130AbgLTVLx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Dec 2020 16:11:53 -0500
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id ce323d38
-        for <netdev@vger.kernel.org>;
-        Sun, 20 Dec 2020 21:03:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=zmDED1Y+07Jzv5N5n9KH6ZmggEQ=; b=TlHwmD
-        ZGs0AMG7W1B76oAS2fgJDNIKPKU1NDV3KZFmW4eTpQ80UZWQToQ1V0vBUVcT4VA0
-        MMtunVyFA0qtfWpTaFVq85TjuNN/xgiylil0Am72aNbMjUi8q75nHqi2T2l8l2jV
-        W5nR1jb1b9tJHczXi8NC2DYpQRfhLzx/gioVYh04RMpFrdA1hWEENNqN+f2CKuX7
-        ABLF1jERPlpKPDwac55aUOflyQ6/E00ZzSR9njSirczWd2C8UAYETH8M9D6696DD
-        p7CdU68yZEDgNgaQkep/ONBvl9x75Sc9xT3QNnYPOa/DH669E2xXIggj2izFo8bz
-        DnCBi5ftlTW2Lupw==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f7036f09 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Sun, 20 Dec 2020 21:03:00 +0000 (UTC)
-Received: by mail-yb1-f181.google.com with SMTP id w135so7095920ybg.13
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 13:11:11 -0800 (PST)
-X-Gm-Message-State: AOAM530W8RttfyVoOwXOS9WxpH+Oj9jNfhd6e1q6G3nZLmtSmzLZPnQ4
-        bWAvDDvMcvQto/A2eR9fExq1SzMgFan+Z4ICHS4=
-X-Google-Smtp-Source: ABdhPJzwDxy3f0LzIY+2Z+AQrvE7snpg47zmrQJtcuWWdaZy2pS0N6uFr10oKvcfkZu+YsLadEXVlHGoUZbqIsmdbjg=
-X-Received: by 2002:a25:4845:: with SMTP id v66mr15227490yba.178.1608498670933;
- Sun, 20 Dec 2020 13:11:10 -0800 (PST)
+        id S1727446AbgLTVoQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Dec 2020 16:44:16 -0500
+Date:   Sun, 20 Dec 2020 22:43:33 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608500615;
+        bh=zRypDAurjZALqdycTeLM6FlnjpYaL3xGyF7Jl1kx6wo=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VJF6f1B8B2qhaBmMVTYvthwdFabElcMLeF5plZQPkiJCep81WhVNZF82y3T2DxTiB
+         LtL666DiCuXarYr8K/jV0btKq7GIrC5hk5NA+HeRKVvjyDfjqRgZIk6Sg01GBMxPtm
+         AF7DnduLJmI0C8vZL7yHQ1pa2EUks2QlRj3Q1OTR9XBCs3+VvmGCgt5jEzOhgVx7jV
+         rBwGSi/qAPgZpf+ydtMzwsUuA6UIQqNntcLRW+4Bhq1lvXMWtXJz62kL1r7AdLRcOs
+         LIJZXb8718PqTumZO5gzRLuXtoYjqdw8lqlYbMK/c6ASp6NgCgh9JfDuy6iPSpxqk1
+         YRze22M4a03RA==
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Tsuchiya Yuto <kitakar@gmail.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
+Subject: Re: [PATCH 0/3] mwifiex: disable ps_mode by default for stability
+Message-ID: <20201220214333.rxtkt72niq7adfin@pali>
+References: <20201028142433.18501-1-kitakar@gmail.com>
 MIME-Version: 1.0
-References: <000000000000e13e2905b6e830bb@google.com>
-In-Reply-To: <000000000000e13e2905b6e830bb@google.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Sun, 20 Dec 2020 22:11:00 +0100
-X-Gmail-Original-Message-ID: <CAHmME9qwbB7kbD=1sg_81=82vO07XMV7GyqBcCoC=zwM-v47HQ@mail.gmail.com>
-Message-ID: <CAHmME9qwbB7kbD=1sg_81=82vO07XMV7GyqBcCoC=zwM-v47HQ@mail.gmail.com>
-Subject: Re: UBSAN: object-size-mismatch in wg_xmit
-To:     Netdev <netdev@vger.kernel.org>
-Cc:     syzkaller-bugs@googlegroups.com,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201028142433.18501-1-kitakar@gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hmm, on first glance, I'm not sure I'm seeing the bug:
+Hello!
 
-On Sun, Dec 20, 2020 at 5:54 PM syzbot
-<syzbot+8f90d005ab2d22342b6d@syzkaller.appspotmail.com> wrote:
-> UBSAN: object-size-mismatch in ./include/linux/skbuff.h:2021:28
-> member access within address 0000000085889cc2 with insufficient space
-> for an object of type 'struct sk_buff'
->  __skb_queue_before include/linux/skbuff.h:2021 [inline]
->  __skb_queue_tail include/linux/skbuff.h:2054 [inline]
->  wg_xmit+0x45d/0xdf0 drivers/net/wireguard/device.c:182
+Please CC me in future for mwifiex discussion :-)
 
-The code in question is:
+On Wednesday 28 October 2020 23:24:30 Tsuchiya Yuto wrote:
+> Hello all,
+> 
+> On Microsoft Surface devices (PCIe-88W8897), we are observing stability
+> issues when ps_mode (IEEE power_save) is enabled, then eventually causes
+> firmware crash. Especially on 5GHz APs, the connection is completely
+> unstable and almost unusable.
+> 
+> I think the most desirable change is to fix the ps_mode itself. But is
+> seems to be hard work [1], I'm afraid we have to go this way.
+> 
+> Therefore, the first patch of this series disables the ps_mode by default
+> instead of enabling it on driver init. I'm not sure if explicitly
+> disabling it is really required or not. I don't have access to the details
+> of this chip. Let me know if it's enough to just remove the code that
+> enables ps_mode.
+> 
+> The Second patch adds a new module parameter named "allow_ps_mode". Since
+> other wifi drivers just disable power_save by default by module parameter
+> like this, I also added this.
+> 
+> The third patch adds a message when ps_mode will be changed. Useful when
+> diagnosing connection issues.
 
-        struct sk_buff_head packets;
-        __skb_queue_head_init(&packets);
-...
-        skb_list_walk_safe(skb, skb, next) {
-               skb_mark_not_on_list(skb);
+There are more issues with power save API and implementation in mwifiex.
 
-               skb = skb_share_check(skb, GFP_ATOMIC);
-               if (unlikely(!skb))
-                       continue;
-...
-               __skb_queue_tail(&packets, skb);
-       }
+See my email for more details:
+https://lore.kernel.org/linux-wireless/20200609111544.v7u5ort3yk4s7coy@pali/T/#u
 
-We're in a netdev's xmit function, so nothing else should have skb at
-that point. Given the warning is about "member access", I assume it's
-the next->prev dereference here:
+These patches would just break power save API and reporting status to
+userspace even more due to WIPHY_FLAG_PS_ON_BY_DEFAULT and
+CONFIG_CFG80211_DEFAULT_PS options.
 
-static inline void __skb_queue_before(struct sk_buff_head *list,
-                                     struct sk_buff *next,
-                                     struct sk_buff *newsk)
-{
-       __skb_insert(newsk, next->prev, next, list);
-}
+I would suggest to first fix issues mentioned in my email and then start
+providing a way how to blacklist or whitelist power save feature
+depending on firmware or card/chip version.
 
-So where is "next" coming from that UBSAN would complain about
-object-size-mismatch?
+From my experience I know that e.g. 88W8997 cards have lot of bugs in
+their firmware and I'm not aware that bugs are going to be fixed... So
+we really need workarounds, like disabling power save mode to have cards
+usable.
 
-static inline void __skb_queue_tail(struct sk_buff_head *list,
-                                  struct sk_buff *newsk)
-{
-       __skb_queue_before(list, (struct sk_buff *)list, newsk);
-}
-
-It comes from casting "list" into an sk_buff. While this might be some
-CFI-violating polymorphism, I can't see why this cast would actually
-be a problem in practice. The top of sk_buff is intentionally the same
-as sk_buff_head:
-
-struct sk_buff_head {
-       struct sk_buff  *next;
-       struct sk_buff  *prev;
-...
-struct sk_buff {
-       union {
-               struct {
-                       struct sk_buff          *next;
-                       struct sk_buff          *prev;
-...
-
-I'd suspect, "oh maybe it's just a clang 11 bug", but syzbot says it
-can't reproduce. So that makes me a little more nervous.
-
-Does anybody see something I've missed?
-
-Jason
+> Thanks,
+> Tsuchiya Yuto
+> 
+> [1] https://bugzilla.kernel.org/show_bug.cgi?id=109681
+> 
+> Tsuchiya Yuto (3):
+>   mwifiex: disable ps_mode explicitly by default instead
+>   mwifiex: add allow_ps_mode module parameter
+>   mwifiex: print message when changing ps_mode
+> 
+>  .../net/wireless/marvell/mwifiex/cfg80211.c   | 23 +++++++++++++++++++
+>  .../net/wireless/marvell/mwifiex/sta_cmd.c    | 11 ++++++---
+>  2 files changed, 31 insertions(+), 3 deletions(-)
+> 
+> -- 
+> 2.29.1
+> 
