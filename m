@@ -2,74 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E87A2DF477
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 09:37:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B61B2DF478
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 09:37:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727302AbgLTIgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 03:36:51 -0500
-Received: from mail.zju.edu.cn ([61.164.42.155]:45724 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727010AbgLTIgu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Dec 2020 03:36:50 -0500
-X-Greylist: delayed 358 seconds by postgrey-1.27 at vger.kernel.org; Sun, 20 Dec 2020 03:36:49 EST
-Received: from localhost.localdomain (unknown [10.192.85.18])
-        by mail-app3 (Coremail) with SMTP id cC_KCgAXzw5qC99fGvNYAA--.32924S4;
-        Sun, 20 Dec 2020 16:29:34 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1727348AbgLTIhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 03:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727321AbgLTIhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 03:37:24 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFE5C0613CF
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 00:36:37 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id k8so6196047ilr.4
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 00:36:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VeTpENt6JQ8He7PxkHgDwT6tFX6J/wKrgI0Io1Fiukc=;
+        b=S5ruBZqc8QVT+NDMsWF7fW9OqXQPEi/VjQY+AxQZE/SxLPM3YxEb2Xi0QxmN4GQ3/B
+         s3C5589KmghTtUF2TYeTy83vThtoWQ5pSJduu6U4lV/dHaB1HejEtmcUaHK4RSA2auTW
+         Oeyj7aldX2g9QEaZsfPNuxNOBsvh4+KI99jk97dQEiXQTSVya2+XJFdB0QQlbzVGigur
+         DuwbufmmarRL+vn+Y5+aGT6sDLkbncFs8ldsV8djcHaRsShPoUlQzWnf1sK3Su1pBL2x
+         rLMe6xG7oh5EnitoYk/WQneVtbwqTL9gcWGVGgzGM+CLVbZsbgD4A5C6NUmzjj3D7cVO
+         PwhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VeTpENt6JQ8He7PxkHgDwT6tFX6J/wKrgI0Io1Fiukc=;
+        b=pDQ8rEeiEz8wm5KX56z+PpO/I+Sff3GgVh8HRHkG970/liD6tBb7nZL3QydUd8r/Hi
+         6weZ1URNbdwqCMUZ1Y3bBhClx3jRCu3Ay/EKN1QGKbeVTDfD3y3+QzFH1lfvOiYn6tzU
+         GUx+VfiSDH5DmrN+tiZb6JZf/+SqqQFN2AQJ9MBmuhWFsjfZeTkTmdDMui4qGnWlB5L4
+         +364v7iYkRK6kVfG9gGplOzGLlUuNjb6XwadyotQwXul7ggdiRyoWk/WevEXakQxtT7a
+         bi+8h8kR2e283GEoqJvX9dfi4KQCl3g28dZNICuQ+vyg2T82Y2Pa+4xIGincZ/V5RlM3
+         z/lA==
+X-Gm-Message-State: AOAM530BmL3Cu4xmk29ycljWdjqeLetMLPKXJ83gJd+PlLEz1XAtUzAS
+        0Ivvk2bNgpvcqvbdZMehzJQA5zUckXr8o3xMN2o=
+X-Google-Smtp-Source: ABdhPJyfWlLXMSMxTroy7d2Dji3JTVuRmQwEgIf1TG1OiqpAzO7+cbeNFrn/5RKhoatAoI42k4Noh6nsN1XEVUaN3uw=
+X-Received: by 2002:a92:c04f:: with SMTP id o15mr12213601ilf.31.1608453397161;
+ Sun, 20 Dec 2020 00:36:37 -0800 (PST)
+MIME-Version: 1.0
+References: <20201219162153.23126-1-dqfext@gmail.com> <20201219162601.GE3008889@lunn.ch>
+ <47673b0d-1da8-d93e-8b56-995a651aa7fd@gmail.com> <20201219194831.5mjlmjfbcpggrh45@skbuf>
+ <CALW65jYtW7EEnXuj2dGSDwYC=3sBLCP0Q9J=tMozkrP6W0gq0w@mail.gmail.com> <20201220074936.ic2mtta7ihg7n3or@skbuf>
+In-Reply-To: <20201220074936.ic2mtta7ihg7n3or@skbuf>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Sun, 20 Dec 2020 16:36:27 +0800
+Message-ID: <CALW65jY29uPMGuMCXHsPgf2n5nNPivxmkLWuP_0zO82OL8rZrA@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: rename MT7621 compatible
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Sascha Hauer <s.hauer@pengutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: mvneta: Fix error handling in mvneta_probe
-Date:   Sun, 20 Dec 2020 16:29:30 +0800
-Message-Id: <20201220082930.21623-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgAXzw5qC99fGvNYAA--.32924S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xw13ZF4DJF1DCF1UuryUZFb_yoWfZrcEgr
-        WxuFs3Ww45Kryjyw1jyr45C34Ik3Z8XF1vyFsrtFZ3tayxJ3Wjqr1v9FZ2vryDWw40qF9r
-        Ar42vrZIy3s3tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbcxFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxF
-        aVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
-        CI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
-        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgUMBlZdtRf+rwAKs-
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Greg Ungerer <gerg@kernel.org>,
+        Rene van Dorst <opensource@vdorst.com>,
+        John Crispin <john@phrozen.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When mvneta_port_power_up() fails, we should execute
-cleanup functions after label err_netdev to avoid memleak.
+On Sun, Dec 20, 2020 at 3:49 PM Vladimir Oltean <olteanv@gmail.com> wrote:
 
-Fixes: 41c2b6b4f0f80 ("net: ethernet: mvneta: Add back interface mode validation")
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
----
- drivers/net/ethernet/marvell/mvneta.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> But still, what is at memory address 0x1e110000, if the switch is
+> accessed over MDIO?
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 563ceac3060f..3369ec717a51 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -5255,7 +5255,7 @@ static int mvneta_probe(struct platform_device *pdev)
- 	err = mvneta_port_power_up(pp, pp->phy_interface);
- 	if (err < 0) {
- 		dev_err(&pdev->dev, "can't power up port\n");
--		return err;
-+		goto err_netdev;
- 	}
- 
- 	/* Armada3700 network controller does not support per-cpu
--- 
-2.17.1
-
+It's "Ethernet GMAC", handled by mtk_eth_soc.
