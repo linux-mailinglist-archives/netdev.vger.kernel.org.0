@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46BE62DF2FD
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 04:40:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50DEF2DF363
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 04:41:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727446AbgLTDf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 22:35:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57984 "EHLO mail.kernel.org"
+        id S1727427AbgLTDjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 22:39:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58002 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727318AbgLTDf5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Dec 2020 22:35:57 -0500
+        id S1727470AbgLTDf7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Dec 2020 22:35:59 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.9 07/15] net: stmmac: increase the timeout for dma reset
-Date:   Sat, 19 Dec 2020 22:34:25 -0500
-Message-Id: <20201220033434.2728348-7-sashal@kernel.org>
+Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.9 11/15] selftests/bpf: Fix array access with signed variable test
+Date:   Sat, 19 Dec 2020 22:34:29 -0500
+Message-Id: <20201220033434.2728348-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201220033434.2728348-1-sashal@kernel.org>
 References: <20201220033434.2728348-1-sashal@kernel.org>
@@ -34,34 +34,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fugang Duan <fugang.duan@nxp.com>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-[ Upstream commit 9d14edfdeabf37d8d8f045e63e5873712aadcd6b ]
+[ Upstream commit 77ce220c0549dcc3db8226c61c60e83fc59dfafc ]
 
-Current timeout value is not enough for gmac5 dma reset
-on imx8mp platform, increase the timeout range.
+The test fails because of a recent fix to the verifier, even though this
+program is valid. In details what happens is:
 
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+    7: (61) r1 = *(u32 *)(r0 +0)
+
+Load a 32-bit value, with signed bounds [S32_MIN, S32_MAX]. The bounds
+of the 64-bit value are [0, U32_MAX]...
+
+    8: (65) if r1 s> 0xffffffff goto pc+1
+
+... therefore this is always true (the operand is sign-extended).
+
+    10: (b4) w2 = 11
+    11: (6d) if r2 s> r1 goto pc+1
+
+When true, the 64-bit bounds become [0, 10]. The 32-bit bounds are still
+[S32_MIN, 10].
+
+    13: (64) w1 <<= 2
+
+Because this is a 32-bit operation, the verifier propagates the new
+32-bit bounds to the 64-bit ones, and the knowledge gained from insn 11
+is lost.
+
+    14: (0f) r0 += r1
+    15: (7a) *(u64 *)(r0 +0) = 4
+
+Then the verifier considers r0 unbounded here, rejecting the test. To
+make the test work, change insn 8 to check the sign of the 32-bit value.
+
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c | 2 +-
+ tools/testing/selftests/bpf/verifier/array_access.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-index 6e30d7eb4983d..0b4ee2dbb691d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-@@ -22,7 +22,7 @@ int dwmac4_dma_reset(void __iomem *ioaddr)
- 
- 	return readl_poll_timeout(ioaddr + DMA_BUS_MODE, value,
- 				 !(value & DMA_BUS_MODE_SFT_RESET),
--				 10000, 100000);
-+				 10000, 1000000);
- }
- 
- void dwmac4_set_rx_tail_ptr(void __iomem *ioaddr, u32 tail_ptr, u32 chan)
+diff --git a/tools/testing/selftests/bpf/verifier/array_access.c b/tools/testing/selftests/bpf/verifier/array_access.c
+index 1c4b1939f5a8d..bed53b561e044 100644
+--- a/tools/testing/selftests/bpf/verifier/array_access.c
++++ b/tools/testing/selftests/bpf/verifier/array_access.c
+@@ -68,7 +68,7 @@
+ 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
+ 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 9),
+ 	BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_0, 0),
+-	BPF_JMP_IMM(BPF_JSGT, BPF_REG_1, 0xffffffff, 1),
++	BPF_JMP32_IMM(BPF_JSGT, BPF_REG_1, 0xffffffff, 1),
+ 	BPF_MOV32_IMM(BPF_REG_1, 0),
+ 	BPF_MOV32_IMM(BPF_REG_2, MAX_ENTRIES),
+ 	BPF_JMP_REG(BPF_JSGT, BPF_REG_2, BPF_REG_1, 1),
 -- 
 2.27.0
 
