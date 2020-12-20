@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 395AB2DF325
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 04:40:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD352DF32D
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 04:41:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728303AbgLTDga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Dec 2020 22:36:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57984 "EHLO mail.kernel.org"
+        id S1728381AbgLTDgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Dec 2020 22:36:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57994 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727979AbgLTDg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 19 Dec 2020 22:36:27 -0500
+        id S1728283AbgLTDga (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 19 Dec 2020 22:36:30 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
@@ -19,9 +19,9 @@ Cc:     Sara Sharon <sara.sharon@intel.com>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 1/3] cfg80211: initialize rekey_data
-Date:   Sat, 19 Dec 2020 22:35:24 -0500
-Message-Id: <20201220033526.2728841-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 1/3] cfg80211: initialize rekey_data
+Date:   Sat, 19 Dec 2020 22:35:29 -0500
+Message-Id: <20201220033531.2728916-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 X-stable: review
@@ -47,10 +47,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 5bd89f536720d..ab8bca39afa3f 100644
+index 7748d674677c9..eb25998a0032e 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -10428,7 +10428,7 @@ static int nl80211_set_rekey_data(struct sk_buff *skb, struct genl_info *info)
+@@ -9836,7 +9836,7 @@ static int nl80211_set_rekey_data(struct sk_buff *skb, struct genl_info *info)
  	struct net_device *dev = info->user_ptr[1];
  	struct wireless_dev *wdev = dev->ieee80211_ptr;
  	struct nlattr *tb[NUM_NL80211_REKEY_DATA];
