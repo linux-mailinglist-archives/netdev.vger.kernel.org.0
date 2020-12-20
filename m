@@ -2,147 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 465472DF66A
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 19:09:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E852DF6A2
+	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 20:25:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727533AbgLTSI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 13:08:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45252 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726779AbgLTSI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 13:08:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608487622;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4wC6925RUdwnOWULkOoUOrNkkpuduWiXS0s9QV8Mu2A=;
-        b=M8Kkx5VovNCW1No8EZ9tt4mp/9baF1EnidI389lU5c3K5f64C4Kp4x8YmdYVMCrOSyk2J4
-        09tYFsg2Hpf0Zsc37GXlUPoq70eLzH55PQAA/3U2aUSiZmLt2PItFchavO0b88NZhHQR9P
-        xslGfaUB8pMwZUN0ozFfcUxq+kW3Ayo=
-Received: from mail-yb1-f199.google.com (mail-yb1-f199.google.com
- [209.85.219.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-25-BaLsZY-XO7CXw_jvbheMbw-1; Sun, 20 Dec 2020 13:07:00 -0500
-X-MC-Unique: BaLsZY-XO7CXw_jvbheMbw-1
-Received: by mail-yb1-f199.google.com with SMTP id z62so11317255yba.23
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 10:07:00 -0800 (PST)
+        id S1727355AbgLTTYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 14:24:54 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:54221 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727094AbgLTTYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 14:24:54 -0500
+Received: by mail-io1-f70.google.com with SMTP id l20so4445706ioc.20
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 11:24:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4wC6925RUdwnOWULkOoUOrNkkpuduWiXS0s9QV8Mu2A=;
-        b=oIgNZd3zaVO2IlJwCvJ1TSMKfpNod7oMfvughRUkABnv2yVQCKAYIHnz/xVYwnv57d
-         a5XW18RvHlamKHH+hpghVMmIrd0EHibklsavD4+16oyrJcpWRvnwWvo57u/donI1SMdR
-         ozLsm/gcGXAuuMrhUJBT2nVW6CcJwD6wXDt4jvFy+mwr5dCOVtiqlcR/6YkC25j0BmIM
-         2PLVzR3rhm8S54aJy+pJ/slYp4zuevbo4ycyK9pbZTv3/AphDZz71+glAWAIoRGQw1nf
-         hdoDvKud8uOhOiaRAFN8Y8o7JkBvY0JlXLdhZOnKbz3dFEhDABLhqpkIsqObGfT8cFCP
-         7sZg==
-X-Gm-Message-State: AOAM531fNH4qAGT6FRP4LbrLEdFHwRlHUzZUNU5FZ4mW9qWRYDinm8OS
-        wKH+74qr9ueQ6auBT7Bx9potoZK+41Oxwxl6xaeoxg1g6t/XhohB8WDBceM8vJNbGZ2pqZmnwgw
-        Q0b7Bfh/g/pSra6+tqis0g3LNswygvDMr
-X-Received: by 2002:a25:dc7:: with SMTP id 190mr18137235ybn.73.1608487619967;
-        Sun, 20 Dec 2020 10:06:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyRGo97tZJiV3Qqn1a+pmbVfcUP+6oubUCyA0D12F68fTdXKxtujCPRyDphaJXw1ZNt3Q2d0shUDUrpsLzeGKc=
-X-Received: by 2002:a25:dc7:: with SMTP id 190mr18137210ybn.73.1608487619764;
- Sun, 20 Dec 2020 10:06:59 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=GyOG4XA5FlPhLyTLbf58ICy4Vxq4ozvrlX7yh9oblAY=;
+        b=Fc2SOS5CvHoF31rQ2iH7fbUG71jjqX0szAYByzIH3LlbfhbTcrvkilxF9uTEMqDLSH
+         GI4zYAPMxFxUaJNWGXRntH29uJymGoddsVHqmRlRRDHygYss+FKRoRib8LD73XHDSRn2
+         X3DCL8/CHvh38RBTK6HOqkhb6M+KEKp0umDTGKUyTOq1RQXNlmtKEkToLAMyu7WOVM4N
+         N1bP4hOUuenGRh0CQtwyMCD3qZbbm6avQLpD8ey5sZowIQYO3jV8hsGrvsjh+/2J8POj
+         51k55GYaWtrBdfKwTpM88iDBCwzJ30aWzmS9AMI9UgE5+2II7SEIsYHBqg4M8TvXjsrQ
+         8WXQ==
+X-Gm-Message-State: AOAM532CfFZgX7HrzlZXgTfITNBVo2HbAOGLDeytH0UddyHlshg6mN75
+        zZmxICM+95m+8VTLxHM8VZ93pj2eZDqTXnYZmqNb1UIv8wZe
+X-Google-Smtp-Source: ABdhPJwUJ3iWBy970TpS/a/xCqT1Sv0iPqDvMmOTiB8cCrbt7fiGDb+EYJE4FZBl3zG78UnV0O0GBY3G2juTQGxYJ61aoIDXnYJp
 MIME-Version: 1.0
-References: <cover.1607349924.git.lorenzo@kernel.org> <f3d2937208eae9644f36d805cd5b30e0985767a6.1607349924.git.lorenzo@kernel.org>
- <pj41zlh7ohpz6h.fsf@u68c7b5b1d2d758.ant.amazon.com>
-In-Reply-To: <pj41zlh7ohpz6h.fsf@u68c7b5b1d2d758.ant.amazon.com>
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date:   Sun, 20 Dec 2020 19:06:56 +0100
-Message-ID: <CAJ0CqmXB1yUzBAxjeyxDw2smpOMXqN=3TdqwwAkr49k8-6x8qA@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 06/14] net: mvneta: add multi buffer support
- to XDP_TX
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
+X-Received: by 2002:a02:ac18:: with SMTP id a24mr12196966jao.24.1608492253174;
+ Sun, 20 Dec 2020 11:24:13 -0800 (PST)
+Date:   Sun, 20 Dec 2020 11:24:13 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005fe14605b6ea4958@google.com>
+Subject: WARNING in isotp_tx_timer_handler
+From:   syzbot <syzbot+78bab6958a614b0c80b9@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
+        netdev@vger.kernel.org, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 19, 2020 at 4:56 PM Shay Agroskin <shayagr@amazon.com> wrote:
->
->
-> Lorenzo Bianconi <lorenzo@kernel.org> writes:
->
-> > Introduce the capability to map non-linear xdp buffer running
-> > mvneta_xdp_submit_frame() for XDP_TX and XDP_REDIRECT
-> >
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  drivers/net/ethernet/marvell/mvneta.c | 94
-> >  ++++++++++++++++-----------
-> >  1 file changed, 56 insertions(+), 38 deletions(-)
-> [...]
-> >                       if (napi && buf->type ==
-> >  MVNETA_TYPE_XDP_TX)
-> >                               xdp_return_frame_rx_napi(buf->xdpf);
-> >                       else
-> > @@ -2054,45 +2054,64 @@ mvneta_xdp_put_buff(struct mvneta_port
-> > *pp, struct mvneta_rx_queue *rxq,
-> >
-> >  static int
-> >  mvneta_xdp_submit_frame(struct mvneta_port *pp, struct
-> >  mvneta_tx_queue *txq,
-> > -                     struct xdp_frame *xdpf, bool dma_map)
-> > +                     struct xdp_frame *xdpf, int *nxmit_byte,
-> > bool dma_map)
-> >  {
-> > -     struct mvneta_tx_desc *tx_desc;
-> > -     struct mvneta_tx_buf *buf;
-> > -     dma_addr_t dma_addr;
-> > +     struct xdp_shared_info *xdp_sinfo =
-> > xdp_get_shared_info_from_frame(xdpf);
-> > +     int i, num_frames = xdpf->mb ? xdp_sinfo->nr_frags + 1 :
-> > 1;
-> > +     struct mvneta_tx_desc *tx_desc = NULL;
-> > +     struct page *page;
-> >
-> > -     if (txq->count >= txq->tx_stop_threshold)
-> > +     if (txq->count + num_frames >= txq->size)
-> >               return MVNETA_XDP_DROPPED;
-> >
-> > -     tx_desc = mvneta_txq_next_desc_get(txq);
-> > +     for (i = 0; i < num_frames; i++) {
-> > +             struct mvneta_tx_buf *buf =
-> > &txq->buf[txq->txq_put_index];
-> > +             skb_frag_t *frag = i ? &xdp_sinfo->frags[i - 1] :
-> > NULL;
-> > +             int len = frag ? xdp_get_frag_size(frag) :
-> > xdpf->len;
->
-> nit, from branch prediction point of view, maybe it would be
-> better to write
->      int len = i ? xdp_get_frag_size(frag) : xdpf->len;
->
+Hello,
 
-ack, I will fix it in v6.
+syzbot found the following issue on:
 
-Regards,
-Lorenzo
+HEAD commit:    5e60366d Merge tag 'fallthrough-fixes-clang-5.11-rc1' of g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=179a2287500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=db720fe37a6a41d8
+dashboard link: https://syzkaller.appspot.com/bug?extid=78bab6958a614b0c80b9
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10ea3e0f500000
 
-> since the value of i is checked one line above
-> Disclaimer: I'm far from a compiler expert, and don't know whether
-> the compiler would know to group these two assignments together
-> into a single branch prediction decision, but it feels like using
-> 'i' would make this decision easier for it.
->
-> Thanks,
-> Shay
->
-> [...]
->
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+78bab6958a614b0c80b9@syzkaller.appspotmail.com
 
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 9908 at net/can/isotp.c:835 isotp_tx_timer_handler+0x65f/0xba0 net/can/isotp.c:835
+Modules linked in:
+CPU: 0 PID: 9908 Comm: systemd-udevd Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:isotp_tx_timer_handler+0x65f/0xba0 net/can/isotp.c:835
+Code: c1 e8 03 83 e1 07 0f b6 04 28 38 c8 7f 08 84 c0 0f 85 b8 04 00 00 41 88 54 24 05 e9 07 fb ff ff 40 84 ed 75 21 e8 21 11 80 f9 <0f> 0b 45 31 e4 e8 17 11 80 f9 44 89 e0 48 83 c4 48 5b 5d 41 5c 41
+RSP: 0018:ffffc90000007dc8 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: ffff88803e4e8518 RCX: 0000000000000100
+RDX: ffff8880117d5040 RSI: ffffffff87f2102f RDI: 0000000000000003
+RBP: 0000000000000000 R08: ffffffff8a7b6540 R09: ffffffff87f20a2e
+R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff8880b9c26c80 R14: ffff8880b9c26a00 R15: ffff88803e4e8000
+FS:  00007fc247dbb8c0(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffcab7e7800 CR3: 000000001c8c6000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ __run_hrtimer kernel/time/hrtimer.c:1519 [inline]
+ __hrtimer_run_queues+0x609/0xea0 kernel/time/hrtimer.c:1583
+ hrtimer_run_softirq+0x17b/0x360 kernel/time/hrtimer.c:1600
+ __do_softirq+0x2bc/0xa77 kernel/softirq.c:343
+ asm_call_irq_on_stack+0xf/0x20
+ </IRQ>
+ __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
+ run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
+ do_softirq_own_stack+0xaa/0xd0 arch/x86/kernel/irq_64.c:77
+ invoke_softirq kernel/softirq.c:226 [inline]
+ __irq_exit_rcu+0x17f/0x200 kernel/softirq.c:420
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:432
+ sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1096
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:628
+RIP: 0010:call_rcu+0x2e7/0x710 kernel/rcu/tree.c:3039
+Code: 3c 02 00 0f 85 bb 03 00 00 48 8b 05 63 75 1a 0a 49 03 84 24 f0 00 00 00 49 39 c7 0f 8f 72 01 00 00 e8 5d e4 18 00 ff 34 24 9d <48> 83 c4 20 5b 5d 41 5c 41 5d 41 5e 41 5f c3 80 3c 02 00 0f 84 2f
+RSP: 0018:ffffc9000adafb88 EFLAGS: 00000246
+RAX: 00000000000010e9 RBX: ffff8880143c1780 RCX: ffffffff815740d7
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffff8880b9c35b70 R08: 0000000000000001 R09: ffffffff8f4f983f
+R10: fffffbfff1e9f307 R11: 0000000000000000 R12: ffff8880b9c35a80
+R13: ffff8880b9c35b60 R14: ffff8880b9c35b18 R15: 000000000000002c
+ security_inode_free+0x9a/0xc0 security/security.c:1005
+ __destroy_inode+0x24d/0x740 fs/inode.c:259
+ destroy_inode+0x91/0x1b0 fs/inode.c:282
+ iput_final fs/inode.c:1654 [inline]
+ iput.part.0+0x41e/0x840 fs/inode.c:1680
+ iput+0x58/0x70 fs/inode.c:1670
+ dentry_unlink_inode+0x2b1/0x3d0 fs/dcache.c:374
+ __dentry_kill+0x3c0/0x640 fs/dcache.c:579
+ dentry_kill fs/dcache.c:717 [inline]
+ dput+0x696/0xc10 fs/dcache.c:878
+ do_renameat2+0xae7/0xbf0 fs/namei.c:4461
+ __do_sys_rename fs/namei.c:4503 [inline]
+ __se_sys_rename fs/namei.c:4501 [inline]
+ __x64_sys_rename+0x5d/0x80 fs/namei.c:4501
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7fc246bb7d47
+Code: 75 12 48 89 df e8 19 84 07 00 85 c0 0f 95 c0 0f b6 c0 f7 d8 5b c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 b8 52 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 21 41 33 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffcab6e3c68 EFLAGS: 00000246 ORIG_RAX: 0000000000000052
+RAX: ffffffffffffffda RBX: 00005556c8f7a380 RCX: 00007fc246bb7d47
+RDX: 0000000000000000 RSI: 00007ffcab6e3c70 RDI: 00005556c8f823b0
+RBP: 00007ffcab6e3d30 R08: 00005556c8f812c0 R09: 00005556c8f811e0
+R10: 00007fc247dbb8c0 R11: 0000000000000246 R12: 00007ffcab6e3c70
+R13: 0000000000000001 R14: 00005556c71306cb R15: 0000000000000000
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
