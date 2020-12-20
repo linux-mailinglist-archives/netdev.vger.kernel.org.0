@@ -2,137 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28E852DF6A2
-	for <lists+netdev@lfdr.de>; Sun, 20 Dec 2020 20:25:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C802DF859
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 05:45:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727355AbgLTTYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 14:24:54 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:54221 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727094AbgLTTYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 14:24:54 -0500
-Received: by mail-io1-f70.google.com with SMTP id l20so4445706ioc.20
-        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 11:24:38 -0800 (PST)
+        id S1728337AbgLUEn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 23:43:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726533AbgLUEn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 23:43:57 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6EBC061282
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 20:43:17 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id c12so5750854pfo.10
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 20:43:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BFnwQlQd49M9djaObusfiUyKPA9qWoz8f0zAPt1iI+Q=;
+        b=kJQBL871Th/KU+Ekq3VjH9JbizT3zh7Ig0x5S+kWKj+auI5CtE1pifVfgRltYiYeCI
+         emKZUb6ZuqcBuZOeNSxF2nCZb+1OhT43bIS4CkaxNUHz+/AqtrV5fYI1EBo0G7/rz6zf
+         T4wXOnrQFcR+M8mO9ifE8CoKLdrBYJJ520fAW1mIJsfhSff70NzFfA974kLUSY6arNpI
+         bigyIvcC/vn/MyxpLvyKON0LNazuwYsfOkjbstGUyA9H1K9e9JHlp6HsSIs906o8cnjL
+         +zRLVy54MGG2q5f44IG8Ni9fn4Fc7q1n+0qX+inXTDrmNhtKY7aFVRdB8yQ4aWEPIRpY
+         FeqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=GyOG4XA5FlPhLyTLbf58ICy4Vxq4ozvrlX7yh9oblAY=;
-        b=Fc2SOS5CvHoF31rQ2iH7fbUG71jjqX0szAYByzIH3LlbfhbTcrvkilxF9uTEMqDLSH
-         GI4zYAPMxFxUaJNWGXRntH29uJymGoddsVHqmRlRRDHygYss+FKRoRib8LD73XHDSRn2
-         X3DCL8/CHvh38RBTK6HOqkhb6M+KEKp0umDTGKUyTOq1RQXNlmtKEkToLAMyu7WOVM4N
-         N1bP4hOUuenGRh0CQtwyMCD3qZbbm6avQLpD8ey5sZowIQYO3jV8hsGrvsjh+/2J8POj
-         51k55GYaWtrBdfKwTpM88iDBCwzJ30aWzmS9AMI9UgE5+2II7SEIsYHBqg4M8TvXjsrQ
-         8WXQ==
-X-Gm-Message-State: AOAM532CfFZgX7HrzlZXgTfITNBVo2HbAOGLDeytH0UddyHlshg6mN75
-        zZmxICM+95m+8VTLxHM8VZ93pj2eZDqTXnYZmqNb1UIv8wZe
-X-Google-Smtp-Source: ABdhPJwUJ3iWBy970TpS/a/xCqT1Sv0iPqDvMmOTiB8cCrbt7fiGDb+EYJE4FZBl3zG78UnV0O0GBY3G2juTQGxYJ61aoIDXnYJp
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BFnwQlQd49M9djaObusfiUyKPA9qWoz8f0zAPt1iI+Q=;
+        b=XMDvEdZ3CjSl4vjWXOdli9lLLVfLsP9+cxH6k2ZWkxwJqSO03prtNBK3GkSnXAyhBj
+         t4a+CXe53tx+8s/ruj56wiCG8r9P7fRJsjZmh0UdZkyPki+66zcx4MB8B1kDfw5R+xzj
+         MStAC/gP933TegOFPtIaDz6ZLuSBwam3mKJOV1bgB1o0M9Ybtnf6mJXrDbURnS55NsIC
+         MdNsjg3vaSGhU0LILfVO2p4fXg2rka3aezCRxG+J37Yj2AdhgnAoKTXRneXqGk1FJAUg
+         yFb2ZJvCE5NjrEgiSzmvdW1NWH2BihOW12wyLg72BOh7Yh0dMxMjqKMNroBIIaLqhNvb
+         aK1g==
+X-Gm-Message-State: AOAM530Q16q6ZFp23paLYXqTnxtn52YRw30DzD9kqN1PePvz9YIIlvPI
+        uOay4OYSWMZ6/J9z9b0yKkVoaepceLqLOg==
+X-Google-Smtp-Source: ABdhPJxoJvDgE/QxAfZQR26eQqs9zy2Ed/zhWp4YGJQQ+Uy2A7SmfnrPaJ7Ck0W/E56fxJBG8EIPew==
+X-Received: by 2002:a63:c155:: with SMTP id p21mr12281784pgi.377.1608495879689;
+        Sun, 20 Dec 2020 12:24:39 -0800 (PST)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id cq15sm13138470pjb.27.2020.12.20.12.24.38
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Dec 2020 12:24:39 -0800 (PST)
+Date:   Sun, 20 Dec 2020 12:24:21 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 210781] New: Tun.c fails with tc mirror when using bridges
+Message-ID: <20201220122421.028c2f48@hermes.local>
 MIME-Version: 1.0
-X-Received: by 2002:a02:ac18:: with SMTP id a24mr12196966jao.24.1608492253174;
- Sun, 20 Dec 2020 11:24:13 -0800 (PST)
-Date:   Sun, 20 Dec 2020 11:24:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005fe14605b6ea4958@google.com>
-Subject: WARNING in isotp_tx_timer_handler
-From:   syzbot <syzbot+78bab6958a614b0c80b9@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    5e60366d Merge tag 'fallthrough-fixes-clang-5.11-rc1' of g..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=179a2287500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=db720fe37a6a41d8
-dashboard link: https://syzkaller.appspot.com/bug?extid=78bab6958a614b0c80b9
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10ea3e0f500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+78bab6958a614b0c80b9@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 9908 at net/can/isotp.c:835 isotp_tx_timer_handler+0x65f/0xba0 net/can/isotp.c:835
-Modules linked in:
-CPU: 0 PID: 9908 Comm: systemd-udevd Not tainted 5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:isotp_tx_timer_handler+0x65f/0xba0 net/can/isotp.c:835
-Code: c1 e8 03 83 e1 07 0f b6 04 28 38 c8 7f 08 84 c0 0f 85 b8 04 00 00 41 88 54 24 05 e9 07 fb ff ff 40 84 ed 75 21 e8 21 11 80 f9 <0f> 0b 45 31 e4 e8 17 11 80 f9 44 89 e0 48 83 c4 48 5b 5d 41 5c 41
-RSP: 0018:ffffc90000007dc8 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: ffff88803e4e8518 RCX: 0000000000000100
-RDX: ffff8880117d5040 RSI: ffffffff87f2102f RDI: 0000000000000003
-RBP: 0000000000000000 R08: ffffffff8a7b6540 R09: ffffffff87f20a2e
-R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff8880b9c26c80 R14: ffff8880b9c26a00 R15: ffff88803e4e8000
-FS:  00007fc247dbb8c0(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffcab7e7800 CR3: 000000001c8c6000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- __run_hrtimer kernel/time/hrtimer.c:1519 [inline]
- __hrtimer_run_queues+0x609/0xea0 kernel/time/hrtimer.c:1583
- hrtimer_run_softirq+0x17b/0x360 kernel/time/hrtimer.c:1600
- __do_softirq+0x2bc/0xa77 kernel/softirq.c:343
- asm_call_irq_on_stack+0xf/0x20
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
- do_softirq_own_stack+0xaa/0xd0 arch/x86/kernel/irq_64.c:77
- invoke_softirq kernel/softirq.c:226 [inline]
- __irq_exit_rcu+0x17f/0x200 kernel/softirq.c:420
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:432
- sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1096
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:628
-RIP: 0010:call_rcu+0x2e7/0x710 kernel/rcu/tree.c:3039
-Code: 3c 02 00 0f 85 bb 03 00 00 48 8b 05 63 75 1a 0a 49 03 84 24 f0 00 00 00 49 39 c7 0f 8f 72 01 00 00 e8 5d e4 18 00 ff 34 24 9d <48> 83 c4 20 5b 5d 41 5c 41 5d 41 5e 41 5f c3 80 3c 02 00 0f 84 2f
-RSP: 0018:ffffc9000adafb88 EFLAGS: 00000246
-RAX: 00000000000010e9 RBX: ffff8880143c1780 RCX: ffffffff815740d7
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffff8880b9c35b70 R08: 0000000000000001 R09: ffffffff8f4f983f
-R10: fffffbfff1e9f307 R11: 0000000000000000 R12: ffff8880b9c35a80
-R13: ffff8880b9c35b60 R14: ffff8880b9c35b18 R15: 000000000000002c
- security_inode_free+0x9a/0xc0 security/security.c:1005
- __destroy_inode+0x24d/0x740 fs/inode.c:259
- destroy_inode+0x91/0x1b0 fs/inode.c:282
- iput_final fs/inode.c:1654 [inline]
- iput.part.0+0x41e/0x840 fs/inode.c:1680
- iput+0x58/0x70 fs/inode.c:1670
- dentry_unlink_inode+0x2b1/0x3d0 fs/dcache.c:374
- __dentry_kill+0x3c0/0x640 fs/dcache.c:579
- dentry_kill fs/dcache.c:717 [inline]
- dput+0x696/0xc10 fs/dcache.c:878
- do_renameat2+0xae7/0xbf0 fs/namei.c:4461
- __do_sys_rename fs/namei.c:4503 [inline]
- __se_sys_rename fs/namei.c:4501 [inline]
- __x64_sys_rename+0x5d/0x80 fs/namei.c:4501
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x7fc246bb7d47
-Code: 75 12 48 89 df e8 19 84 07 00 85 c0 0f 95 c0 0f b6 c0 f7 d8 5b c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 b8 52 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 21 41 33 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffcab6e3c68 EFLAGS: 00000246 ORIG_RAX: 0000000000000052
-RAX: ffffffffffffffda RBX: 00005556c8f7a380 RCX: 00007fc246bb7d47
-RDX: 0000000000000000 RSI: 00007ffcab6e3c70 RDI: 00005556c8f823b0
-RBP: 00007ffcab6e3d30 R08: 00005556c8f812c0 R09: 00005556c8f811e0
-R10: 00007fc247dbb8c0 R11: 0000000000000246 R12: 00007ffcab6e3c70
-R13: 0000000000000001 R14: 00005556c71306cb R15: 0000000000000000
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Begin forwarded message:
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Date: Fri, 18 Dec 2020 23:24:31 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 210781] New: Tun.c fails with tc mirror when using bridges
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=210781
+
+            Bug ID: 210781
+           Summary: Tun.c fails with tc mirror when using bridges
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.4.78
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: pablo.catalina@gmail.com
+        Regression: No
+
+Hi,
+
+I got a kernel panic and after reboot I tried again and I got the following
+error:
+
+
+[17665.950212] u32 classifier
+[17665.950247]     input device check on
+[17665.950278]     Actions configured
+[17665.993688] Mirror/redirect action on
+[17673.994202] tun: unexpected GSO type: 0x0, gso_size 289, hdr_len 355
+[17673.994242] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17673.994288] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17673.994333] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17673.994378] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17673.994432] ------------[ cut here ]------------
+[17673.994479] WARNING: CPU: 7 PID: 4700 at drivers/net/tun.c:2129
+tun_do_read+0x535/0x6d0
+[17673.994525] Modules linked in: sch_prio act_mirred cls_u32 sch_ingress
+iptable_mangle xt_TEE nf_dup_ipv6 nf_dup_ipv4 snd_hda_codec_realtek
+snd_hda_codec_generic ledtrig_audio veth nfsv3 rpcsec_gss_krb5 nfsv4 nfs
+fscache ebtable_filter ebtables ip6table_raw ip6t_REJECT nf_reject_ipv6
+ip6table_filter ip6_tables iptable_raw ipt_REJECT nf_reject_ipv4 xt_NFLOG
+xt_set xt_physdev xt_addrtype xt_multiport xt_conntrack xt_mark ip_set_hash_net
+ip_set sctp iptable_filter xt_nat xt_tcpudp xt_MASQUERADE xt_comment
+iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 bpfilter bonding
+zram softdog nfnetlink_log nfnetlink binfmt_misc i915 intel_rapl_msr
+intel_rapl_common drm_kms_helper drm x86_pkg_temp_thermal intel_powerclamp
+i2c_algo_bit coretemp fb_sys_fops syscopyarea sysfillrect sysimgblt
+dm_thin_pool dm_persistent_data dm_bio_prison dm_bufio kvm_intel kvm
+snd_hda_intel snd_intel_dspcfg irqbypass snd_hda_codec snd_hda_core
+crct10dif_pclmul snd_hwdep crc32_pclmul snd_pcm ghash_clmulni_intel
+[17673.994547]  aesni_intel ie31200_edac snd_timer snd crypto_simd eeepc_wmi
+cryptd soundcore input_leds glue_helper rapl mac_hid asus_wmi intel_cstate
+sparse_keymap serio_raw wmi_bmof vhost_net vhost tap ib_iser nfsd auth_rpcgss
+nfs_acl lockd rdma_cm iw_cm ib_cm grace ib_core sunrpc iscsi_tcp libiscsi_tcp
+libiscsi scsi_transport_iscsi ip_tables x_tables autofs4 btrfs zstd_compress
+raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor
+raid6_pq libcrc32c raid1 raid0 multipath linear ahci xhci_pci i2c_i801 libahci
+lpc_ich e1000e xhci_hcd ehci_pci ehci_hcd megaraid_sas wmi video
+[17673.994984] CPU: 7 PID: 4700 Comm: vhost-4644 Not tainted 5.4.78-2-pve #1
+[17673.995022] Hardware name: System manufacturer System Product Name/P8B WS,
+BIOS 9922 06/20/2019
+[17673.995075] RIP: 0010:tun_do_read+0x535/0x6d0
+[17673.995113] Code: 00 00 6a 01 0f b7 45 aa b9 10 00 00 00 48 c7 c6 f4 63 40
+8a 48 c7 c7 ff 5c 35 8a 83 f8 40 48 0f 4f c2 31 d2 50 e8 6b c7 d5 ff <0f> 0b 58
+5a 49 c7 c4 ea ff ff ff e9 c2 fc ff ff 4c 89 ea be 04 00
+[17673.995187] RSP: 0018:ffffac334350bc80 EFLAGS: 00010246
+[17673.995224] RAX: 0000000000000000 RBX: ffff992cb1941600 RCX:
+0000000000000006
+[17673.995263] RDX: 0000000000000000 RSI: 0000000000000096 RDI:
+ffff992d1f3d78c0
+[17673.995303] RBP: ffffac334350bd08 R08: 0000000000000643 R09:
+ffffffff8abb56ec
+[17673.995342] R10: 000000000000072e R11: ffffac334350ba08 R12:
+000000000000016f
+[17673.995381] R13: ffffac334350be30 R14: ffff992b7bd548c0 R15:
+0000000000000000
+[17673.995421] FS:  0000000000000000(0000) GS:ffff992d1f3c0000(0000)
+knlGS:0000000000000000
+[17673.996652] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[17673.996688] CR2: 00007f9a5458ad38 CR3: 00000006969bc003 CR4:
+00000000001626e0
+[17673.996726] Call Trace:
+[17673.996763]  tun_recvmsg+0x76/0x110
+[17673.996799]  handle_rx+0x5d4/0xa20 [vhost_net]
+[17673.996837]  handle_rx_net+0x15/0x20 [vhost_net]
+[17673.996873]  vhost_worker+0xba/0x110 [vhost]
+[17673.996910]  kthread+0x120/0x140
+[17673.996944]  ? log_used.part.45+0x20/0x20 [vhost]
+[17673.996980]  ? kthread_park+0x90/0x90
+[17673.997015]  ret_from_fork+0x35/0x40
+[17673.997049] ---[ end trace dc2c3635b10ec80e ]---
+[17674.304983] tun: unexpected GSO type: 0x0, gso_size 91, hdr_len 157
+[17674.305024] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17674.305070] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17674.305116] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17674.305161] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17685.611046] device eth0 left promiscuous mode
+[17691.890075] device eth0 entered promiscuous mode
+[17698.446189] device eth0 entered promiscuous mode
+[17734.423198] tun: unexpected GSO type: 0x0, gso_size 497, hdr_len 563
+[17734.423240] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17734.423288] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17734.423335] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17734.423382] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17750.949141] tun: unexpected GSO type: 0x0, gso_size 497, hdr_len 563
+[17750.949185] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17750.949233] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17750.949284] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+[17750.949334] tun: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+................
+
+
+
+Now, the environment:
+
+Server using proxmox latest version.
+I have ethernet connection, a tap interface using OpenVPN and two Linux
+Bridges:
+* VMBR0: several KVM VMs and LXC containers
+* VMBR3: only one interface of one KVM
+
+I wanted to mirror all the traffic on VMBR0 to VMBR3. THe iptables solution
+does not work fine, the traffic appears duplicated or I miss the traffic from
+VMBR0 to the TAP0 interface.
+
+I tried to use tc to mirror the traffic using the following script:
+
+#!/bin/sh
+sif="vmbr0"
+dif="vmbr3"
+
+
+case "$1" in
+        start)
+                sif=vmbr0
+                dif=vmbr3
+
+                # ingress
+                tc qdisc add dev "$sif" ingress
+                tc filter add dev "$sif" parent ffff: \
+                          protocol all \
+                          u32 match u8 0 0 \
+                          action mirred egress mirror dev "$dif"
+
+                # egress
+                tc qdisc add dev "$sif" handle 1: root prio
+                tc filter add dev "$sif" parent 1: \
+                          protocol all \
+                          u32 match u8 0 0 \
+                          action mirred egress mirror dev "$dif"
+
+                ;;
+        stop)
+                tc qdisc del dev $sif ingress
+                tc qdisc del dev $sif root
+                ;;
+        *)
+                echo "usage $0 <start|stop>"
+esac
+
+
+When I start it I got the error above.
+If I try to stop it, I get a kernel panic (I don't have access to the console,
+so I cannot see the kernel panic).
+
+Cheers,
+
+Pablo
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
