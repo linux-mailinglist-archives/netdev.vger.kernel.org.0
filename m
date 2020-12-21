@@ -2,49 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 295582DFC12
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 13:59:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2850A2DFC21
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 14:01:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbgLUM6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 07:58:17 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.166]:23545 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725807AbgLUM6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 07:58:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1608555322;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:From:
-        Subject:Sender;
-        bh=H58C0j9gHK/cSRes9bGVTzbsbmeIVSPc3HRYF3jeGLA=;
-        b=PumkfYQQ6K7WabLJqfmHLXC5AwqPAqk64bA+TWBXikthGFGaJk97gLQLc7D77S2Orn
-        Wig8lN1QZ1mhwk5f5BAsufG6o2S8M4F0RqMC3nWFuXNoZLTmf+UNmkET/m5EBa3iR5By
-        KFA4dEZt1Ab4JZ/XY0PnUaG2tiQ8yNDREMUpbf4jdD+4VVAwLEM+9TFxz6NEEP/iq8Hc
-        aMWX1ZMQG0c1IaOSWm08fvS2yXMBs5poH4w8ZmsM4nObOpQR72APbupNMZDHLr/t/TZN
-        czNgpI6cOD3u9A010O26D88gop6sBNQRwQr11a72WqvzWnVsVuLMH2FrY//euWFPkwxt
-        K+2Q==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTEVR9J8xty10="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.10.177]
-        by smtp.strato.de (RZmta 47.10.0 SBL|AUTH)
-        with ESMTPSA id Q06fc3wBLCt40lo
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Mon, 21 Dec 2020 13:55:04 +0100 (CET)
-Subject: Re: WARNING in isotp_tx_timer_handler
-To:     Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+78bab6958a614b0c80b9@syzkaller.appspotmail.com>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mkl@pengutronix.de, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <0000000000005fe14605b6ea4958@google.com>
- <20201221054031.1468-1-hdanton@sina.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <0f27c47f-b16e-b80e-2fbc-df7894266671@hartkopp.net>
-Date:   Mon, 21 Dec 2020 13:55:04 +0100
+        id S1726873AbgLUNBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 08:01:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725807AbgLUNBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 08:01:13 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56B8C0613D3
+        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 05:00:32 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id 186so8624365qkj.3
+        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 05:00:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1bfoGOpJts7jaVWLrYThHJnE3Hjye0rclWOun0MdVuI=;
+        b=gq8AxiPdrhZAFV/+9bswUF8u6F7YLtuabgKaboFK4nurUWIDGR4Y+Cg7KouefoLG4t
+         /dLHKupZO2KkySj5/GJizJJmes0ZTEvKe11MWWoUTg2MU4LppsBhueMdmTCmLImbW9g/
+         ea6DFGa/VC9YVkIJrbuwU9B31Fc1sYm9GmYGER2GgL6HMWkcxsLgmFwDsxKFWuKL3UNe
+         zCCipXeu9QLwCUmlVXosQMeDpDbI3naEuhihA+UPdE7rwiOgyQMs9OfhBMd4QGjkHBaV
+         liU3un0js/RBN9NB4m+5lkPtTCWbJjU+lkpHK6BJEKyXKE5sPVdM7b1IAQNtS82hyohG
+         94vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1bfoGOpJts7jaVWLrYThHJnE3Hjye0rclWOun0MdVuI=;
+        b=EhWO6K9gwNPIo66fur01ZRJzKUcHRS/39fTXpf5qqxxZexAZstnJyiCbbTWt9NW1XU
+         PfycNq2+P/bFOe6dOJ9aA91/+YOVvgW1ZKlGYJi6WTtwgxGktTcM+ZJB/OXo2FyqYW9k
+         TVMCs92+qx+2w08hPxlaZMoI15POpBGgxiwtaZc7h2rbj17lVZJZEA8hAU4iF5bvl6ri
+         RvThYyL7KQWrHz35FkRyafAgsZMdmzYIQPVbBatvgwc4vc3Dkgc4GrLLKQcS3djo6nun
+         zNFw2PAymm4tebfmojFks/C0Zt3LXGeRKB2T/ciA4Fxm1O1NRFpT3oBstvXIYXaNTXcI
+         eICg==
+X-Gm-Message-State: AOAM531A25mZV2Brvm9x2o3OvCwgbiI7E7jr+YBwPfvKBjBpYZfWYO9H
+        wi/NofdPI0GzXCzKhUiNEkTutg==
+X-Google-Smtp-Source: ABdhPJzvIlGiY8gz/R5rJyoN53CSLcFCkOP2l5RsSai5M3qf2GfskqoTGcfovPIvZt2xcdJCzbmsRg==
+X-Received: by 2002:a37:6382:: with SMTP id x124mr16619138qkb.398.1608555631945;
+        Mon, 21 Dec 2020 05:00:31 -0800 (PST)
+Received: from [192.168.2.48] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
+        by smtp.googlemail.com with ESMTPSA id w33sm9350850qth.34.2020.12.21.05.00.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Dec 2020 05:00:30 -0800 (PST)
+Subject: Re: [PATCH v5 bpf-next 03/14] xdp: add xdp_shared_info data structure
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Shay Agroskin <shayagr@amazon.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, sameehj@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, echaudro@redhat.com,
+        jasowang@redhat.com
+References: <cover.1607349924.git.lorenzo@kernel.org>
+ <21d27f233e37b66c9ad4073dd09df5c2904112a4.1607349924.git.lorenzo@kernel.org>
+ <5465830698257f18ae474877648f4a9fe2e1eefe.camel@kernel.org>
+ <20201208110125.GC36228@lore-desk>
+ <pj41zlk0tdq22i.fsf@u68c7b5b1d2d758.ant.amazon.com>
+ <1b0a5b59-f7e6-78b3-93bd-2ea35274e783@mojatatu.com>
+ <20201221100152.58fa6bd7@carbon>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <c7434cfc-66ed-8795-06b1-ec296eefc484@mojatatu.com>
+Date:   Mon, 21 Dec 2020 08:00:29 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+ Thunderbird/78.4.3
 MIME-Version: 1.0
-In-Reply-To: <20201221054031.1468-1-hdanton@sina.com>
+In-Reply-To: <20201221100152.58fa6bd7@carbon>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -52,114 +79,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Hillf,
+On 2020-12-21 4:01 a.m., Jesper Dangaard Brouer wrote:
+> On Sat, 19 Dec 2020 10:30:57 -0500
 
-On 21.12.20 06:40, Hillf Danton wrote:
-> Sun, 20 Dec 2020 11:24:13 -0800
->> syzbot found the following issue on:
->>
->> HEAD commit:    5e60366d Merge tag 'fallthrough-fixes-clang-5.11-rc1' of g..
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=179a2287500000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=db720fe37a6a41d8
->> dashboard link: https://syzkaller.appspot.com/bug?extid=78bab6958a614b0c80b9
->> compiler:       gcc (GCC) 10.1.0-syz 20200507
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10ea3e0f500000
->>
->> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->> Reported-by: syzbot+78bab6958a614b0c80b9@syzkaller.appspotmail.com
->>
->> ------------[ cut here ]------------
->> WARNING: CPU: 0 PID: 9908 at net/can/isotp.c:835 isotp_tx_timer_handler+0x65f/0xba0 net/can/isotp.c:835
->> Modules linked in:
->> CPU: 0 PID: 9908 Comm: systemd-udevd Not tainted 5.10.0-syzkaller #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->> RIP: 0010:isotp_tx_timer_handler+0x65f/0xba0 net/can/isotp.c:835
->> Code: c1 e8 03 83 e1 07 0f b6 04 28 38 c8 7f 08 84 c0 0f 85 b8 04 00 00 41 88 54 24 05 e9 07 fb ff ff 40 84 ed 75 21 e8 21 11 80 f9 <0f> 0b 45 31 e4 e8 17 11 80 f9 44 89 e0 48 83 c4 48 5b 5d 41 5c 41
->> RSP: 0018:ffffc90000007dc8 EFLAGS: 00010246
->> RAX: 0000000000000000 RBX: ffff88803e4e8518 RCX: 0000000000000100
->> RDX: ffff8880117d5040 RSI: ffffffff87f2102f RDI: 0000000000000003
->> RBP: 0000000000000000 R08: ffffffff8a7b6540 R09: ffffffff87f20a2e
->> R10: 0000000000000003 R11: 0000000000000000 R12: 0000000000000000
->> R13: ffff8880b9c26c80 R14: ffff8880b9c26a00 R15: ffff88803e4e8000
->> FS:  00007fc247dbb8c0(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
->> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> CR2: 00007ffcab7e7800 CR3: 000000001c8c6000 CR4: 00000000001506f0
->> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> Call Trace:
->>   <IRQ>
->>   __run_hrtimer kernel/time/hrtimer.c:1519 [inline]
->>   __hrtimer_run_queues+0x609/0xea0 kernel/time/hrtimer.c:1583
->>   hrtimer_run_softirq+0x17b/0x360 kernel/time/hrtimer.c:1600
->>   __do_softirq+0x2bc/0xa77 kernel/softirq.c:343
->>   asm_call_irq_on_stack+0xf/0x20
->>   </IRQ>
->>   __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
->>   run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
->>   do_softirq_own_stack+0xaa/0xd0 arch/x86/kernel/irq_64.c:77
->>   invoke_softirq kernel/softirq.c:226 [inline]
->>   __irq_exit_rcu+0x17f/0x200 kernel/softirq.c:420
->>   irq_exit_rcu+0x5/0x20 kernel/softirq.c:432
->>   sysvec_apic_timer_interrupt+0x4d/0x100 arch/x86/kernel/apic/apic.c:1096
->>   asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:628
->> RIP: 0010:call_rcu+0x2e7/0x710 kernel/rcu/tree.c:3039
->> Code: 3c 02 00 0f 85 bb 03 00 00 48 8b 05 63 75 1a 0a 49 03 84 24 f0 00 00 00 49 39 c7 0f 8f 72 01 00 00 e8 5d e4 18 00 ff 34 24 9d <48> 83 c4 20 5b 5d 41 5c 41 5d 41 5e 41 5f c3 80 3c 02 00 0f 84 2f
->> RSP: 0018:ffffc9000adafb88 EFLAGS: 00000246
->> RAX: 00000000000010e9 RBX: ffff8880143c1780 RCX: ffffffff815740d7
->> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
->> RBP: ffff8880b9c35b70 R08: 0000000000000001 R09: ffffffff8f4f983f
->> R10: fffffbfff1e9f307 R11: 0000000000000000 R12: ffff8880b9c35a80
->> R13: ffff8880b9c35b60 R14: ffff8880b9c35b18 R15: 000000000000002c
->>   security_inode_free+0x9a/0xc0 security/security.c:1005
->>   __destroy_inode+0x24d/0x740 fs/inode.c:259
->>   destroy_inode+0x91/0x1b0 fs/inode.c:282
->>   iput_final fs/inode.c:1654 [inline]
->>   iput.part.0+0x41e/0x840 fs/inode.c:1680
->>   iput+0x58/0x70 fs/inode.c:1670
->>   dentry_unlink_inode+0x2b1/0x3d0 fs/dcache.c:374
->>   __dentry_kill+0x3c0/0x640 fs/dcache.c:579
->>   dentry_kill fs/dcache.c:717 [inline]
->>   dput+0x696/0xc10 fs/dcache.c:878
->>   do_renameat2+0xae7/0xbf0 fs/namei.c:4461
->>   __do_sys_rename fs/namei.c:4503 [inline]
->>   __se_sys_rename fs/namei.c:4501 [inline]
->>   __x64_sys_rename+0x5d/0x80 fs/namei.c:4501
->>   do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->>   entry_SYSCALL_64_after_hwframe+0x44/0xa9
->> RIP: 0033:0x7fc246bb7d47
->> Code: 75 12 48 89 df e8 19 84 07 00 85 c0 0f 95 c0 0f b6 c0 f7 d8 5b c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 b8 52 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 21 41 33 00 f7 d8 64 89 01 48
->> RSP: 002b:00007ffcab6e3c68 EFLAGS: 00000246 ORIG_RAX: 0000000000000052
->> RAX: ffffffffffffffda RBX: 00005556c8f7a380 RCX: 00007fc246bb7d47
->> RDX: 0000000000000000 RSI: 00007ffcab6e3c70 RDI: 00005556c8f823b0
->> RBP: 00007ffcab6e3d30 R08: 00005556c8f812c0 R09: 00005556c8f811e0
->> R10: 00007fc247dbb8c0 R11: 0000000000000246 R12: 00007ffcab6e3c70
->> R13: 0000000000000001 R14: 00005556c71306cb R15: 0000000000000000
+>> Sorry to interject:
+>> Does it make sense to use it to store arbitrary metadata or a scratchpad
+>> in this space? Something equivalent to skb->cb which is lacking in
+>> XDP.
 > 
-> Canceling a running timer that handles ISOTP_WAIT_FC/ISOTP_WAIT_FIRST_FC
-> ends up with the so->tx.state assigned to be ISOTP_IDLE.  That triggers
-> the warning. Fix it by correcting state before adding timer.
-> 
-> --- a/net/can/isotp.c
-> +++ b/net/can/isotp.c
-> @@ -378,6 +378,7 @@ static int isotp_rcv_fc(struct isotp_soc
->   		break;
->   
->   	case ISOTP_FC_WT:
-> +		so->tx.state = ISOTP_WAIT_FC;
->   		/* start timer to wait for next FC frame */
->   		hrtimer_start(&so->txtimer, ktime_set(1, 0),
->   			      HRTIMER_MODE_REL_SOFT);
+> Well, XDP have the data_meta area.  But difficult to rely on because a
+> lot of driver don't implement it.  And Saeed and I plan to use this
+> area and populate it with driver info from RX-descriptor.
 > 
 
-Thanks for looking into this!
+What i was thinking is some scratch pad that i can write to within
+an XDP prog (not driver); example, in a prog array map the scratch
+pad is written by one program in the array and read by another later on.
+skb->cb allows for that. Unless you mean i can already write to some
+XDP data_meta area?
 
-But how did you get to this insight?
-
-When going through isotp_rcv_fc() there is no other way than 
-so->tx.state already contains ISOTP_WAIT_FC at that point.
-
-Or did I miss something?
-
-Best regards,
-Oliver
+cheers,
+jamal
