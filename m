@@ -2,279 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AA452E0222
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 22:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 565DE2E0231
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 22:50:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726127AbgLUVl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 16:41:26 -0500
-Received: from mail-oo1-f46.google.com ([209.85.161.46]:43071 "EHLO
-        mail-oo1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbgLUVlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 16:41:25 -0500
-Received: by mail-oo1-f46.google.com with SMTP id y14so2527697oom.10;
-        Mon, 21 Dec 2020 13:41:09 -0800 (PST)
+        id S1726022AbgLUVts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 16:49:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725848AbgLUVtr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 16:49:47 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE15C0613D3;
+        Mon, 21 Dec 2020 13:49:07 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id b5so193067pjl.0;
+        Mon, 21 Dec 2020 13:49:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+FYR4QlIrV7Uo+1R8C6OqoNhPOdSs1swgFiPbk9OqFk=;
+        b=tYXHnBSiD10qBUjqnTt6Hwb01VTwo9uBj+wAqoM8ruWPtsYhqGhqBP84jV+vtfb+wi
+         WfGrUXalRrlmEZxBt4jR6a4I070pMRTgs5/jVGUVo9W+W9GsP0n+k0N3RivbX4opF9K2
+         1fxkduQ9wnUlCPZ1WHs2LlVS1ggG5U1noWq5bBm1QrEmbyKdgUyPFn0C3GWya76hPURA
+         cKBvHzSZGqp3MQ8OTFjcQa74sHVI75d2N/z3dURRhT1ELsZ/+Jb/jzdvXlKKsOsRMLP5
+         Uc/ZAbXZ8hoLJ0fXeaxeBN+qRFA74FhewzYf6CZYKyyyV+OtGA/EZumyfm3HjVmM3ZKF
+         oiuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MsDWEDLGUo2wKHbTPaKIbDp1wp/1cG8iI898N+T9yX0=;
-        b=DKwmgpTZ60JfohWIfFOPFEEOBgWYhAOf6GvDT3kz6Peu6ZRBaxnwtqAAuWAvWiuX72
-         jVHGqDBDR9VRElp84CEIi/joiOS3Jrimnd0oO4DlH7qeQopnR2o2JAXQdYxIEMfpYpV2
-         xfdHSwzY4O4vvV2K5WFJLrVfxJUDaXCEFEHZsgRu2My8HbCADQsw8gkK++0muDMmWgYi
-         JzBaSRYKnBcDdmOcvtPc1iq9fUWytOLDQWPavZ5VHgAINcS53yVHrfnYwEoszpfV/3B2
-         WW4ZjXzdqNtNDbwcdJ1VEAePWLj7InH+1/4/2f6VaQ3pAxsJEnARM7Qsll4w4jUuoDQt
-         yIhA==
-X-Gm-Message-State: AOAM532QsGdz8gFPG7LnWGdKpfKeFrvx2XqQ5ibXfSQk8N6Lj/NX61GV
-        kihICdj/udJtMZ/sM0v7lt89vexoFw==
-X-Google-Smtp-Source: ABdhPJwZTgbrOGmtRx8F0ujJe3gRA4dzDPzK6IRuMUd+wKSPdctcWIf9jtmEn7jQQdQ3MVHh7WHLjQ==
-X-Received: by 2002:a4a:751a:: with SMTP id j26mr12971469ooc.68.1608586844312;
-        Mon, 21 Dec 2020 13:40:44 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id n22sm3840304oig.32.2020.12.21.13.40.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Dec 2020 13:40:43 -0800 (PST)
-Received: (nullmailer pid 609332 invoked by uid 1000);
-        Mon, 21 Dec 2020 21:40:41 -0000
-Date:   Mon, 21 Dec 2020 14:40:41 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+FYR4QlIrV7Uo+1R8C6OqoNhPOdSs1swgFiPbk9OqFk=;
+        b=XZ0T57HWmNtf/1a9PINvv5LaTSAKZVrMmp/vNelnfs6mxyynv8GN16vQPN0jBcNo2o
+         uGDZ5RhLz3HigRjISGLfc1/j+mLcwHFtiXXfUb4Ca7jmXHp3Z4NbJDznAoME/iL3cazJ
+         rvgTbz/j44zKYktS6DqbdB5zd3lZilnwbIMPGzREUMZbR2bgtOrm9191f69vTpzRZr7p
+         etgqcQuqyZh2Cl+icQlattOlCXjXGA3smALLeoEHVk6yqUdLJs1SyBpvdh1hTpPZcMY0
+         RITPh3Rv+i3usA5USnNo+D7fjbOaeT3REQHHDC9joB2tbLRzjJJAq6f33UKyg89G/U+E
+         3nUQ==
+X-Gm-Message-State: AOAM531WGCTLZZxZOH27DjVGhE6Kezfd9cGuevx0L10gzT/NzjIdexSw
+        sYYxTi6YO9u0WrB402SuN/mV2iE1w4c=
+X-Google-Smtp-Source: ABdhPJz/KODIFXC6Z3Os4C+wDb7uNyoGDKjqgDhX7r7ij6eBChGBleQaDVvEz3FB+7KXiPmlBS3/Cg==
+X-Received: by 2002:a17:902:59dd:b029:db:cda3:39c0 with SMTP id d29-20020a17090259ddb02900dbcda339c0mr18037417plj.81.1608587346341;
+        Mon, 21 Dec 2020 13:49:06 -0800 (PST)
+Received: from [10.230.29.166] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id p9sm17989574pfq.109.2020.12.21.13.49.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Dec 2020 13:49:05 -0800 (PST)
+Subject: Re: [PATCH net] net: systemport: set dev->max_mtu to
+ UMAC_MAX_MTU_SIZE
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Device Tree List <devicetree@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH v2 1/8] dt-bindings: net: sparx5: Add sparx5-switch
- bindings
-Message-ID: <20201221214041.GA599050@robh.at.kernel.org>
-References: <20201217075134.919699-1-steen.hegelund@microchip.com>
- <20201217075134.919699-2-steen.hegelund@microchip.com>
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "open list:BROADCOM SYSTEMPORT ETHERNET DRIVER" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20201218173843.141046-1-f.fainelli@gmail.com>
+ <20201218202441.ppcxswvlix3xszsn@skbuf>
+ <c178b5db-3de4-5f02-eee3-c9e69393174a@gmail.com>
+ <20201218205220.jb3kh7v23gtpymmx@skbuf>
+ <b8e61c3f-179f-7d8f-782a-86a8c69c5a75@gmail.com>
+ <20201218210250.owahylqnagtssbsw@skbuf>
+ <cf2daa3c-8f64-0f58-5a42-2182cec5ba4a@gmail.com>
+ <20201218211435.mjdknhltolu4gvqr@skbuf>
+ <f558368a-ec7f-c604-9be5-bd5b810b5bfa@gmail.com>
+Message-ID: <6d54c372-86bc-b28f-00b0-c22e46215116@gmail.com>
+Date:   Mon, 21 Dec 2020 13:49:03 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201217075134.919699-2-steen.hegelund@microchip.com>
+In-Reply-To: <f558368a-ec7f-c604-9be5-bd5b810b5bfa@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 17, 2020 at 08:51:27AM +0100, Steen Hegelund wrote:
-> Document the Sparx5 switch device driver bindings
+
+
+On 12/18/2020 1:17 PM, Florian Fainelli wrote:
+>>>>>>> SYSTEMPORT Lite does not actually validate the frame length, so setting
+>>>>>>> a maximum number to the buffer size we allocate could work, but I don't
+>>>>>>> see a reason to differentiate the two types of MACs here.
+>>>>>>
+>>>>>> And if the Lite doesn't validate the frame length, then shouldn't it
+>>>>>> report a max_mtu equal to the max_mtu of the attached DSA switch, plus
+>>>>>> the Broadcom tag length? Doesn't the b53 driver support jumbo frames?
+>>>>>
+>>>>> And how would I do that without create a horrible layering violation in
+>>>>> either the systemport driver or DSA? Yes the b53 driver supports jumbo
+>>>>> frames.
+>>>>
+>>>> Sorry, I don't understand where is the layering violation (maybe it doesn't
+>>>> help me either that I'm not familiar with Broadcom architectures).
+>>>>
+>>>> Is the SYSTEMPORT Lite always used as a DSA master, or could it also be
+>>>> used standalone? What would be the issue with hardcoding a max_mtu value
+>>>> which is large enough for b53 to use jumbo frames?
+>>>
+>>> SYSTEMPORT Lite is always used as a DSA master AFAICT given its GMII
+>>> Integration Block (GIB) was specifically designed with another MAC and
+>>> particularly that of a switch on the other side.
+>>>
+>>> The layering violation I am concerned with is that we do not know ahead
+>>> of time which b53 switch we are going to be interfaced with, and they
+>>> have various limitations on the sizes they support. Right now b53 only
+>>> concerns itself with returning JMS_MAX_SIZE, but I am fairly positive
+>>> this needs fixing given the existing switches supported by the driver.
+>>
+>> Maybe we don't need to over-engineer this. As long as you report a large
+>> enough max_mtu in the SYSTEMPORT Lite driver to accomodate for all
+>> possible revisions of embedded switches, and the max_mtu of the switch
+>> itself is still accurate and representative of the switch revision limits,
+>> I think that's good enough.
 > 
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> ---
->  .../bindings/net/microchip,sparx5-switch.yaml | 178 ++++++++++++++++++
->  1 file changed, 178 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
-> new file mode 100644
-> index 000000000000..6e3ef8285e9a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
-> @@ -0,0 +1,178 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/microchip,sparx5-switch.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Microchip Sparx5 Ethernet switch controller
-> +
-> +maintainers:
-> +  - Lars Povlsen <lars.povlsen@microchip.com>
-> +  - Steen Hegelund <steen.hegelund@microchip.com>
-> +
-> +description: |
-> +  The SparX-5 Enterprise Ethernet switch family provides a rich set of
-> +  Enterprise switching features such as advanced TCAM-based VLAN and
-> +  QoS processing enabling delivery of differentiated services, and
-> +  security through TCAM-based frame processing using versatile content
-> +  aware processor (VCAP).
-> +
-> +  IPv4/IPv6 Layer 3 (L3) unicast and multicast routing is supported
-> +  with up to 18K IPv4/9K IPv6 unicast LPM entries and up to 9K IPv4/3K
-> +  IPv6 (S,G) multicast groups.
-> +
-> +  L3 security features include source guard and reverse path
-> +  forwarding (uRPF) tasks. Additional L3 features include VRF-Lite and
-> +  IP tunnels (IP over GRE/IP).
-> +
-> +  The SparX-5 switch family targets managed Layer 2 and Layer 3
-> +  equipment in SMB, SME, and Enterprise where high port count
-> +  1G/2.5G/5G/10G switching with 10G/25G aggregation links is required.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^switch@[0-9a-f]+$"
-> +
-> +  compatible:
-> +    const: microchip,sparx5-switch
-> +
-> +  reg:
-> +    minItems: 2
-> +
-> +  reg-names:
-> +    minItems: 2
+> I suppose that is fair, v2 coming, thanks!
 
-This is the default based on 'items' length.
-
-> +    items:
-> +      - const: devices
-> +      - const: gcb
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +    description: Interrupt used for reception of packets to the CPU
-> +
-> +  ethernet-ports:
-> +    type: object
-> +    properties:
-> +      '#address-cells':
-> +        const: 1
-> +      '#size-cells':
-> +        const: 0
-> +
-> +    patternProperties:
-> +      "^port@[0-9]+$":
-> +        type: object
-> +        description: Switch ports
-> +
-> +        allOf:
-> +          - $ref: ethernet-controller.yaml#
-> +
-> +        properties:
-> +          reg:
-> +            description: Switch port number
-> +
-> +          max-speed:
-> +            maxItems: 1
-
-Is that an array?
-
-> +            description: Bandwidth allocated to this port
-> +
-> +          phys:
-
-How many? (maxItems)
-
-> +            description: phandle of a Ethernet Serdes PHY
-> +
-> +          phy-handle:
-> +            description: phandle of a Ethernet PHY
-> +
-> +          phy-mode:
-> +            description: Interface between the serdes and the phy
-
-The whole set of modes defined is supported?
-
-> +
-> +          sfp:
-> +            description: phandle of an SFP
-> +
-> +          managed:
-> +            maxItems: 1
-
-An array?
-
-> +            description: SFP management
-> +
-> +        required:
-> +          - reg
-> +          - max-speed
-> +          - phys
-> +
-> +        oneOf:
-> +          - required:
-> +              - phy-handle
-> +              - phy-mode
-> +          - required:
-> +              - sfp
-> +              - managed
-> +
-> +        additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - reg-names
-> +  - interrupts
-> +  - ethernet-ports
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    switch: switch@600000000 {
-> +      compatible = "microchip,sparx5-switch";
-> +      reg =  <0x10000000 0x800000>,
-> +             <0x11010000 0x1b00000>;
-> +      reg-names = "devices", "gcb";
-> +
-> +      interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
-> +      ethernet-ports {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        port0: port@0 {
-> +          reg = <0>;
-> +          max-speed = <1000>;
-> +          phys = <&serdes 13>;
-> +          phy-handle = <&phy0>;
-> +          phy-mode = "qsgmii";
-> +        };
-> +        /* ... */
-> +        /* Then the 25G interfaces */
-> +        port60: port@60 {
-> +          reg = <60>;
-> +          max-speed = <25000>;
-> +          phys = <&serdes 29>;
-> +          sfp = <&sfp_eth60>;
-> +          managed = "in-band-status";
-> +        };
-> +        port61: port@61 {
-> +          reg = <61>;
-> +          max-speed = <25000>;
-> +          phys = <&serdes 30>;
-> +          sfp = <&sfp_eth61>;
-> +          managed = "in-band-status";
-> +        };
-> +        port62: port@62 {
-> +          reg = <62>;
-> +          max-speed = <25000>;
-> +          phys = <&serdes 31>;
-> +          sfp = <&sfp_eth62>;
-> +          managed = "in-band-status";
-> +        };
-> +        port63: port@63 {
-> +          reg = <63>;
-> +          max-speed = <25000>;
-> +          phys = <&serdes 32>;
-> +          sfp = <&sfp_eth63>;
-> +          managed = "in-band-status";
-> +        };
-> +        /* Finally the Management interface */
-> +        port64: port@64 {
-> +          reg = <64>;
-> +          max-speed = <1000>;
-> +          phys = <&serdes 0>;
-> +          phy-handle = <&phy64>;
-> +          phy-mode = "sgmii";
-> +        };
-> +      };
-> +    };
-> +
-> +...
-> -- 
-> 2.29.2
-> 
+I was going to issue a v2 for this patch, but given that we don't
+allocate buffers larger than 2KiB and there is really no need to
+implement ndo_change_mtu(), is there really a point not to use
+UMAC_MAX_MTU_SIZE for both variants of the SYSTEMPORT MAC?
+-- 
+Florian
