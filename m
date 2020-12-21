@@ -2,113 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6F7A2DF831
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 05:17:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BD6E2DF86E
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 05:54:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726166AbgLUENu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 23:13:50 -0500
-Received: from mga06.intel.com ([134.134.136.31]:53629 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725497AbgLUENu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Dec 2020 23:13:50 -0500
-IronPort-SDR: xA+QjOxGXWbdUsxZjachEfi5Z6vhRkXW1rjp+26oivzwL8Vqi1pJ17HKQyokIaks2UWBMe8nqo
- FE4a+BjV50wg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9841"; a="237242128"
-X-IronPort-AV: E=Sophos;i="5.78,436,1599548400"; 
-   d="scan'208";a="237242128"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2020 20:13:09 -0800
-IronPort-SDR: 2e6+EDVG09xs0KSwhSVwh5sUHxPtxNxR4F/gr9Nmmg7qdCXVAYPLifofn2ANDASWfGAS+Fxb2s
- QM7xdpt6x08Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,436,1599548400"; 
-   d="scan'208";a="372175808"
-Received: from pl-dbox.sh.intel.com (HELO intel.com) ([10.239.159.39])
-  by orsmga008.jf.intel.com with ESMTP; 20 Dec 2020 20:13:06 -0800
-Date:   Mon, 21 Dec 2020 12:09:27 +0800
-From:   Philip Li <philip.li@intel.com>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kernel test robot <lkp@intel.com>,
-        kuba@kernel.org, kbuild-all@lists.01.org,
-        clang-built-linux@googlegroups.com, netdev@vger.kernel.org,
-        pabeni@redhat.com
-Subject: Re: [kbuild-all] Re: [PATCH net 1/4] net-sysfs: take the rtnl lock
- when storing xps_cpus
-Message-ID: <20201221040927.GA26736@intel.com>
-References: <20201217162521.1134496-2-atenart@kernel.org>
- <202012182344.1bEcUiOJ-lkp@intel.com>
- <160830788823.3591.10049543791193131034@kwain.local>
+        id S1728410AbgLUEyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 23:54:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728361AbgLUEyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Dec 2020 23:54:43 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB90C061285
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 20:54:03 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id b8so5006001plx.0
+        for <netdev@vger.kernel.org>; Sun, 20 Dec 2020 20:54:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5qdPp2BYunqFGDO9k8px1utwe8+O1xFnwXZ4RMNjg5g=;
+        b=VVxoAVrvs4vst4okoKw7IdBGX7w9d49iwVeFeVxqhTbZZR68W0fvrwi77P7n7lnBAZ
+         YFKO50G4hrQI9PiIPJXTIDnmjM955gL5hxHNPTM36B14EvFEhADKPx2A/kvo+WJkujq9
+         e/dLybFKTyUqZHFNWYiGzYRgDIJRcXJdZKesghxtyPCNfFsYprsTax3RwjBMNe9qD5MC
+         nJLsQ6F01DWCSGfTbBPjkyzNu03OsgwpwHTlq2Qe6UW7J/R13PsnN4wS2i0kPx5e2JUI
+         N5A3xBEye3qDS875E/DyhGofnNmYNY0ZUSwskHeqE9v6kaR0AnGhaUU8xawlizK+fYPR
+         +31g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5qdPp2BYunqFGDO9k8px1utwe8+O1xFnwXZ4RMNjg5g=;
+        b=TOmRZWfSAvhao6dOocuiaL+2hvXJKcHw4QfDBNkBJWZIBmG1plhW51dJNqpytFlLQ3
+         uhQmS3xueWwDEVOixuD3Ik3JxtRIwK1YmIoZE1KFN9cq2onS6TfOBOGVy9p5AhinzNY+
+         C4sRMvAwpyA0/5gNfITnupzJfns+y3mVGtvi1vJJ2ludcvZSKV5gpzoWSVlIAIt37mRd
+         JjPGeT2w8E8rwOfcRkoMXaSo206ghUiMk4h4NaA1alBJ8n5/2fgTjRryugU5yh6VVPmO
+         +IX1Tgl24/Uai5l7t2SbEmJVf2qyEXG4ODYig83MupLN8v4ADFVotgcX2y57qqiYKILE
+         qkog==
+X-Gm-Message-State: AOAM532y45I0lZlnmn9LIsjbhJez9TNNHzEOK0GnaX1O8ziWPEyhIAR4
+        0ZyWMn3z6rd4ii71fkmwmx9sAj79fUg=
+X-Google-Smtp-Source: ABdhPJw8B32GiwILnXPGDBfIBRelxzy1YV6y5ShTH+tlGTtpts1e/zOgqhARK9HA2JricygHeyChvw==
+X-Received: by 2002:a17:902:9b8a:b029:dc:3baf:201e with SMTP id y10-20020a1709029b8ab02900dc3baf201emr4743495plp.15.1608526442173;
+        Sun, 20 Dec 2020 20:54:02 -0800 (PST)
+Received: from [10.230.29.166] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b1sm13848114pjh.54.2020.12.20.20.54.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Dec 2020 20:54:01 -0800 (PST)
+Subject: Re: [RFC PATCH net-next 3/4] net: systemport: use standard netdevice
+ notifier to detect DSA presence
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20201218223852.2717102-1-vladimir.oltean@nxp.com>
+ <20201218223852.2717102-4-vladimir.oltean@nxp.com>
+ <e9f3188d-558c-cb3a-6d5c-17d7d93c5416@gmail.com>
+ <20201219121237.tq3pxquyaq4q547t@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <f2f420d3-baa0-e999-d23a-3e817e706cc7@gmail.com>
+Date:   Sun, 20 Dec 2020 20:53:58 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <160830788823.3591.10049543791193131034@kwain.local>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20201219121237.tq3pxquyaq4q547t@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 05:11:28PM +0100, Antoine Tenart wrote:
-> That build issue seems unrelated to the patch. The series as a whole
-> builds fine according to the same report, and this code is not modified
-> by later patches.
-Hi Antoine, this is a false positive report, kindly ignore this.
-Sorry for inconvenience.
+
+
+On 12/19/2020 4:12 AM, Vladimir Oltean wrote:
+> On Fri, Dec 18, 2020 at 08:08:56PM -0800, Florian Fainelli wrote:
+>> On 12/18/2020 2:38 PM, Vladimir Oltean wrote:
+>>> The SYSTEMPORT driver maps each port of the embedded Broadcom DSA switch
+>>> port to a certain queue of the master Ethernet controller. For that it
+>>> currently uses a dedicated notifier infrastructure which was added in
+>>> commit 60724d4bae14 ("net: dsa: Add support for DSA specific notifiers").
+>>>
+>>> However, since commit 2f1e8ea726e9 ("net: dsa: link interfaces with the
+>>> DSA master to get rid of lockdep warnings"), DSA is actually an upper of
+>>> the Broadcom SYSTEMPORT as far as the netdevice adjacency lists are
+>>> concerned. So naturally, the plain NETDEV_CHANGEUPPER net device notifiers
+>>> are emitted. It looks like there is enough API exposed by DSA to the
+>>> outside world already to make the call_dsa_notifiers API redundant. So
+>>> let's convert its only user to plain netdev notifiers.
+>>>
+>>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>>
+>> The CHANGEUPPER has a slightly different semantic than the current DSA
+>> notifier, and so events that would look like this during
+>> bcm_sysport_init_tx_ring() (good):
+>>
+>> [    6.781064] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=0,port=0
+>> [    6.789214] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=1,port=0
+>> [    6.797337] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=2,port=0
+>> [    6.805464] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=3,port=0
+>> [    6.813583] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=0,port=1
+>> [    6.821701] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=1,port=1
+>> [    6.829819] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=2,port=1
+>> [    6.837944] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=3,port=1
+>> [    6.846063] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=0,port=2
+>> [    6.854183] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=1,port=2
+>> [    6.862303] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=2,port=2
+>> [    6.870425] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=3,port=2
+>> [    6.878544] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=0,port=5
+>> [    6.886663] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=1,port=5
+>> [    6.894783] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=2,port=5
+>> [    6.902906] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=3,port=5
+>>
+>> now we are getting (bad):
+>>
+>> [    6.678157] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=0,port=0
+>> [    6.686302] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=1,port=0
+>> [    6.694434] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=2,port=0
+>> [    6.702554] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=3,port=0
+>> [    6.710679] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=0,port=0
+>> [    6.718797] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=1,port=0
+>> [    6.726914] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=2,port=0
+>> [    6.735033] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=3,port=0
+>> [    6.743156] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=0,port=1
+>> [    6.751275] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=1,port=1
+>> [    6.759395] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=2,port=1
+>> [    6.767514] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=3,port=1
+>> [    6.775636] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=0,port=1
+>> [    6.783754] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=1,port=1
+>> [    6.791874] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=2,port=1
+>> [    6.799992] brcm-systemport 9300000.ethernet eth0: TDMA cfg, size=256, switch q=3,port=1
+>>
+>> Looking further in bcm_sysport_map_queues() we are getting the following:
+>>
+>>     6.223042] brcm-systemport 9300000.ethernet eth0: mapping q=0, p=0
+>> [    6.229369] brcm-systemport 9300000.ethernet eth0: mapping q=1, p=0
+>> [    6.235659] brcm-systemport 9300000.ethernet eth0: mapping q=2, p=0
+>> [    6.241945] brcm-systemport 9300000.ethernet eth0: mapping q=3, p=0
+>> [    6.248232] brcm-systemport 9300000.ethernet eth0: mapping q=4, p=0
+>> [    6.254519] brcm-systemport 9300000.ethernet eth0: mapping q=5, p=0
+>> [    6.260805] brcm-systemport 9300000.ethernet eth0: mapping q=6, p=0
+>> [    6.267092] brcm-systemport 9300000.ethernet eth0: mapping q=7, p=0
+>>
+>> which means that the call to netif_set_real_num_tx_queues() that is
+>> executed for the SYSTEMPORT Lite is not taking effect because it is
+>> after the register_netdevice(). Insead of using a CHANGEUPPER notifier,
+>> we can use a REGISTER notifier event and doing that works just fine with
+>> the same semantics as the DSA notifier being removed. This incremental
+>> patch on top of your patch works for me (tm):
+>>
+>> https://github.com/ffainelli/linux/commit/f5095ab5c1f31db133d62273928b224674626b75
+> 
+> This is odd, the netif_set_real_num_tx_queues() call should not fail or
+> be ignored even if the interface was registered. I had tested this already
+> on my enetc + felix combo on LS1028A.
+
+Yes that part is fine, see below.
 
 > 
-> It looks a lot like this report from yesterday:
-> https://www.spinics.net/lists/netdev/msg709132.html
+> static int enetc_dsa_join(struct net_device *dev,
+> 			  struct net_device *slave_dev)
+> {
+> 	int err;
 > 
-> Which also seemed unrelated to the changes:
-> https://www.spinics.net/lists/netdev/msg709264.html
+> 	netdev_err(slave_dev, "Hello!\n");
 > 
-> Thanks!
-> Antoine
+> 	err = netif_set_real_num_tx_queues(slave_dev,
+> 					   slave_dev->num_tx_queues / 2);
+> 	if (err)
+> 		return err;
 > 
-> Quoting kernel test robot (2020-12-18 16:27:46)
-> > Hi Antoine,
-> > 
-> > I love your patch! Yet something to improve:
-> > 
-> > [auto build test ERROR on net/master]
-> > 
-> > url:    https://github.com/0day-ci/linux/commits/Antoine-Tenart/net-sysfs-fix-race-conditions-in-the-xps-code/20201218-002852
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 3ae32c07815a24ae12de2e7838d9d429ba31e5e0
-> > config: riscv-randconfig-r014-20201217 (attached as .config)
-> > compiler: clang version 12.0.0 (https://github.com/llvm/llvm-project cee1e7d14f4628d6174b33640d502bff3b54ae45)
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # install riscv cross compiling tool for clang build
-> >         # apt-get install binutils-riscv64-linux-gnu
-> >         # https://github.com/0day-ci/linux/commit/f989c3dcbe4d9abd1c6c48b34f08c6c0cd9d44b3
-> >         git remote add linux-review https://github.com/0day-ci/linux
-> >         git fetch --no-tags linux-review Antoine-Tenart/net-sysfs-fix-race-conditions-in-the-xps-code/20201218-002852
-> >         git checkout f989c3dcbe4d9abd1c6c48b34f08c6c0cd9d44b3
-> >         # save the attached .config to linux build tree
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=riscv 
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > Note: the linux-review/Antoine-Tenart/net-sysfs-fix-race-conditions-in-the-xps-code/20201218-002852 HEAD 563d144b47845dea594b409ecf22914b9797cd1e builds fine.
-> >       It only hurts bisectibility.
-> > 
-> > All errors (new ones prefixed by >>):
-> > 
-> >    /tmp/ics932s401-422897.s: Assembler messages:
-> > >> /tmp/ics932s401-422897.s:260: Error: unrecognized opcode `zext.b a1,s11'
-> >    /tmp/ics932s401-422897.s:362: Error: unrecognized opcode `zext.b a1,s11'
-> >    /tmp/ics932s401-422897.s:518: Error: unrecognized opcode `zext.b a1,s11'
-> >    /tmp/ics932s401-422897.s:637: Error: unrecognized opcode `zext.b a1,s11'
-> >    /tmp/ics932s401-422897.s:774: Error: unrecognized opcode `zext.b a1,s11'
-> >    /tmp/ics932s401-422897.s:893: Error: unrecognized opcode `zext.b a1,s11'
-> >    /tmp/ics932s401-422897.s:1021: Error: unrecognized opcode `zext.b a1,s11'
-> > >> /tmp/ics932s401-422897.s:1180: Error: unrecognized opcode `zext.b a1,s2'
-> >    clang-12: error: assembler command failed with exit code 1 (use -v to see invocation)
-> > 
-> > ---
-> > 0-DAY CI Kernel Test Service, Intel Corporation
-> > https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-> _______________________________________________
-> kbuild-all mailing list -- kbuild-all@lists.01.org
-> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+> 	netdev_err(slave_dev, "New number of real TX queues: %d\n",
+> 		   slave_dev->real_num_tx_queues);
+> 
+> 	return 0;
+> }
+> 
+> prints:
+> 
+> [    7.002328] mscc_felix 0000:00:00.5 swp0 (uninitialized): PHY [0000:00:00.3:10] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    7.021190] mscc_felix 0000:00:00.5 swp0: Hello!
+> [    7.028657] mscc_felix 0000:00:00.5 swp0: New number of real TX queues: 4
+> [    7.035589] mscc_felix 0000:00:00.5 swp0: Hello!
+> [    7.040380] mscc_felix 0000:00:00.5 swp0: New number of real TX queues: 4
+> [    7.290236] mscc_felix 0000:00:00.5 swp1 (uninitialized): PHY [0000:00:00.3:11] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    7.314383] mscc_felix 0000:00:00.5 swp1: Hello!
+> [    7.321292] mscc_felix 0000:00:00.5 swp1: New number of real TX queues: 4
+> [    7.328223] mscc_felix 0000:00:00.5 swp1: Hello!
+> [    7.332967] mscc_felix 0000:00:00.5 swp1: New number of real TX queues: 4
+> [    7.574254] mscc_felix 0000:00:00.5 swp2 (uninitialized): PHY [0000:00:00.3:12] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    7.598431] mscc_felix 0000:00:00.5 swp2: Hello!
+> [    7.605215] mscc_felix 0000:00:00.5 swp2: New number of real TX queues: 4
+> [    7.612145] mscc_felix 0000:00:00.5 swp2: Hello!
+> [    7.616889] mscc_felix 0000:00:00.5 swp2: New number of real TX queues: 4
+> [    7.858868] mscc_felix 0000:00:00.5 swp3 (uninitialized): PHY [0000:00:00.3:13] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    7.884240] mscc_felix 0000:00:00.5 swp3: Hello!
+> [    7.891086] mscc_felix 0000:00:00.5 swp3: New number of real TX queues: 4
+> [    7.898018] mscc_felix 0000:00:00.5 swp3: Hello!
+> [    7.902763] mscc_felix 0000:00:00.5 swp3: New number of real TX queues: 4
+> 
+> (I am not sure why the notifier is called twice though)
+
+This is the actual issue that messes up the queue assignment for
+bcmsysport because we assign queue/switch port pairs and don't really
+expect to be re-doing that once ring->inspect is set to true.
+
+> 
+> You are saying that here:
+> 
+> 	num_tx_queues = slave_dev->real_num_tx_queues;
+> 
+> num_tx_queues remains assigned to 8? Does this mean that netif_set_real_num_tx_queues
+> has returned an error code? Can you check why?
+> 
+
+The call to netif_set_real_num_tx_queues() succeeds and
+slave_dev->real_num_tx_queues is changed to 4 accordingly. The loop that
+assigns the internal queue mapping (priv->ring_map) is correctly limited
+to 4, however we get two calls per switch port instead of one. I did not
+have much time to debug why we get called twice but I will be looking
+into this tomorrow.
+-- 
+Florian
