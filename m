@@ -2,40 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25FF22E0257
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 23:11:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 784CF2E025F
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 23:13:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726130AbgLUWKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 17:10:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36922 "EHLO mail.kernel.org"
+        id S1726319AbgLUWMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 17:12:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725780AbgLUWKm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Dec 2020 17:10:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E28BE22A85;
-        Mon, 21 Dec 2020 22:10:00 +0000 (UTC)
+        id S1726112AbgLUWMP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Dec 2020 17:12:15 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3815922A85;
+        Mon, 21 Dec 2020 22:11:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608588601;
-        bh=uDT47mqlwZJogTvzDKTcNjDb5AtGGqiU+C0elNRtlUs=;
+        s=k20201202; t=1608588695;
+        bh=DnNgEVjCfrprNJ9RSZxsFZvFFS3e09k0MYPLmOzZhho=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BEoPU/HmBBjQweFz6iJ5YNRI+fF9rXp8BVBPrL0gvz8h8Qp/q7n0hw358NiGxm94H
-         mMdgMphnGCXZWZS8q2gfonobPE/pKTT30kH4dzjs/h8+b1e8Kw+UU0HSHEseDB3JWN
-         nFGErKGVeBHOhKCNwVlo2h0SZ9t0rjmmvvmW2mpNuy6GXxlPexI4myc3F/2q3tOoI3
-         91je3V4hNVMIv1uHidqVt2Fzf17bJId4c0nPlpcij+0U9XnZxUu54rpd4odOxnEycU
-         h43qYLu5R54xsdBi+0YYBYVLGuAQh23CHEMPgNP3ZUBfUiucktqCD5tsWKMrE+u3PA
-         4amqDED6SP1zw==
-Date:   Mon, 21 Dec 2020 14:09:59 -0800
+        b=IYjo4gN+7De6IfK1dHFK1kt7nvn9kdaSINp3mSvKLeROgVcWOGBHLA18DIpy4n0c6
+         ZlHRZ4V4h3xkdK7p1j0NIT5YngfruJqBEwT4fHcMxHbnzvK6kkWIOYjiGfdMOwBmDt
+         d35FEDfG2/a+G/LQYaagbYYNr3rNF3T4OjSv/rSnM/JK06Ei0JU6cn3UwsgQZOL8Jn
+         7AN4opSg4mLN99Dmnl9ndHYYnG2nX9n0QpIUpe6bm7ZiP1035LIDSMleyavC+Jz/0i
+         0P5HHx/y2v2kkllR8j/3ssA8MbSZyDeYkJV8WLvyKtYhPeB8eKxZSDDpv3fm98H1ae
+         4LeK3WnlJdXxg==
+Date:   Mon, 21 Dec 2020 14:11:34 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hongwei Zhang <hongweiz@ami.com>
-Cc:     <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <openbmc@lists.ozlabs.org>, David S Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>
-Subject: Re: [Aspeed,ncsi-rx, v2 1/1] net: ftgmac100: Fix AST2600 EVB NCSI
- RX issue
-Message-ID: <20201221140959.793449e8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201221194026.30715-2-hongweiz@ami.com>
-References: <20201215192323.24359-1-hongweiz@ami.com>
-        <20201221194026.30715-2-hongweiz@ami.com>
+To:     Nick Lowe <nick.lowe@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net] igb: Enable RSS for Intel I211 Ethernet Controller
+Message-ID: <20201221141134.55ad507a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201221191549.4311-1-nick.lowe@gmail.com>
+References: <20201221191549.4311-1-nick.lowe@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,75 +38,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Dec 2020 14:40:26 -0500 Hongwei Zhang wrote:
-> When FTGMAC100 driver is used on other NCSI Ethernet controllers, few
-
-When you say NCSI Ethernet controller here you mean the main system
-NIC, right? The MAC on the NCSI side is FTGMAC100, correct?
-
-In that case I'm not sure how user is supposed to control this setting
-at build time. The system NIC is often pluggable on the PCIe bus, and
-can be changed at will.
-
-> controllers have compatible issue, removing FTGMAC100_RXDES0_RX_ERR bit
-> from RXDES0_ANY_ERROR can fix the issue.
+On Mon, 21 Dec 2020 19:15:49 +0000 Nick Lowe wrote:
+> The Intel I211 Ethernet Controller supports 2 Receive Side Scaling (RSS) queues.
+> It should not be excluded from having this feature enabled.
 > 
-> Fixes: 7ee2d5b4d4340353 ("ARM: dts: nuvoton: Add Fii Kudo system")
-
-Please fix the commit hash, this hash does not exist upstream:
-
-Commit: 8711d4ef64fa ("net: ftgmac100: Fix AST2600 EVB NCSI RX issue")
-	Fixes tag: Fixes: 7ee2d5b4d4340353 ("ARM: dts: nuvoton: Add Fii Kudo system")
-	Has these problem(s):
-		- Target SHA1 does not exist
-
-> Signed-off-by: Hongwei Zhang <hongweiz@ami.com>
-> ---
->  drivers/net/ethernet/faraday/Kconfig     | 9 +++++++++
->  drivers/net/ethernet/faraday/ftgmac100.h | 8 ++++++++
->  2 files changed, 17 insertions(+)
+> Via commit c883de9fd787b6f49bf825f3de3601aeb78a7114
+> E1000_MRQC_ENABLE_RSS_4Q was renamed to E1000_MRQC_ENABLE_RSS_MQ to
+> indicate that this is a generic bit flag to enable queues and not
+> a flag that is specific to devices that support 4 queues
 > 
-> diff --git a/drivers/net/ethernet/faraday/Kconfig b/drivers/net/ethernet/faraday/Kconfig
-> index c2677ec0564d..ccd0c30be0db 100644
-> --- a/drivers/net/ethernet/faraday/Kconfig
-> +++ b/drivers/net/ethernet/faraday/Kconfig
-> @@ -38,4 +38,13 @@ config FTGMAC100
->  	  from Faraday. It is used on Faraday A369, Andes AG102 and some
->  	  other ARM/NDS32 SoC's.
->  
-> +config FTGMAC100_RXDES0_RX_ERR_CHK
-> +	bool "Include FTGMAC100_RXDES0_RX_ERR in RXDES0_ANY_ERROR"
-> +	default y
-> +	depends on FTGMAC100
-> +	help
-> +	  Say N here if the NCSI controller on your platform has compatible
-> +	  issue with FTGMAC100, thus always trigger RXDES0_RX_ERR. Exclude
-> +	  this bit can fix the issue.
-> +
->  endif # NET_VENDOR_FARADAY
-> diff --git a/drivers/net/ethernet/faraday/ftgmac100.h b/drivers/net/ethernet/faraday/ftgmac100.h
-> index 63b3e02fab16..59e1bd52d261 100644
-> --- a/drivers/net/ethernet/faraday/ftgmac100.h
-> +++ b/drivers/net/ethernet/faraday/ftgmac100.h
-> @@ -251,12 +251,20 @@ struct ftgmac100_rxdes {
->  #define FTGMAC100_RXDES0_RXPKT_RDY	(1 << 31)
->  
->  /* Errors we care about for dropping packets */
-> +#ifdef CONFIG_FTGMAC100_RXDES0_RX_ERR_CHK
->  #define RXDES0_ANY_ERROR		( \
->  	FTGMAC100_RXDES0_RX_ERR		| \
->  	FTGMAC100_RXDES0_CRC_ERR	| \
->  	FTGMAC100_RXDES0_FTL		| \
->  	FTGMAC100_RXDES0_RUNT		| \
->  	FTGMAC100_RXDES0_RX_ODD_NB)
-> +#else
-> +#define RXDES0_ANY_ERROR		( \
-> +	FTGMAC100_RXDES0_CRC_ERR	| \
-> +	FTGMAC100_RXDES0_FTL		| \
-> +	FTGMAC100_RXDES0_RUNT		| \
-> +	FTGMAC100_RXDES0_RX_ODD_NB)
-> +#endif
->  
->  #define FTGMAC100_RXDES1_VLANTAG_CI	0xffff
->  #define FTGMAC100_RXDES1_PROT_MASK	(0x3 << 20)
+> The bit flag enables 2, 4 or 8 queues appropriately depending on the part.
+> 
+> Tested with a multicore CPU and frames were then distributed as expected.
+> 
+> This issue appears to have been introduced because of confusion caused
+> by the prior name.
+> 
+> Signed-off-by: Nick Lowe <nick.lowe@gmail.com>
 
+Please repost CCing the maintainers.
