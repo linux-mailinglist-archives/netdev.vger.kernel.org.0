@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F28332DF722
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 00:38:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D34DE2DF73B
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 01:30:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726952AbgLTXgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Dec 2020 18:36:50 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35060 "EHLO vps0.lunn.ch"
+        id S1726604AbgLUA0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Dec 2020 19:26:48 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35102 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726776AbgLTXgu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 20 Dec 2020 18:36:50 -0500
+        id S1725272AbgLUA0s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 20 Dec 2020 19:26:48 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kr8Ep-00D2nd-74; Mon, 21 Dec 2020 00:35:43 +0100
-Date:   Mon, 21 Dec 2020 00:35:43 +0100
+        id 1kr91Q-00D37t-Qr; Mon, 21 Dec 2020 01:25:56 +0100
+Date:   Mon, 21 Dec 2020 01:25:56 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Steen Hegelund <steen.hegelund@microchip.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -30,164 +30,200 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Masahiro Yamada <masahiroy@kernel.org>,
         Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH v2 4/8] net: sparx5: add port module support
-Message-ID: <20201220233543.GB3107610@lunn.ch>
+Subject: Re: [RFC PATCH v2 5/8] net: sparx5: add switching, vlan and mactable
+ support
+Message-ID: <20201221002556.GC3107610@lunn.ch>
 References: <20201217075134.919699-1-steen.hegelund@microchip.com>
- <20201217075134.919699-5-steen.hegelund@microchip.com>
+ <20201217075134.919699-6-steen.hegelund@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201217075134.919699-5-steen.hegelund@microchip.com>
+In-Reply-To: <20201217075134.919699-6-steen.hegelund@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +	/* Aneg complete provides more information  */
-> +	if (DEV2G5_PCS1G_ANEG_STATUS_ANEG_COMPLETE_GET(value)) {
-> +		if (port->conf.portmode == PHY_INTERFACE_MODE_SGMII) {
-> +			/* SGMII cisco aneg */
-> +			u32 spdvalue = ((lp_abil >> 10) & 3);
+> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+> +
+> +static inline int sparx5_mact_get_status(struct sparx5 *sparx5)
+> +{
+> +	return spx5_rd(sparx5, LRN_COMMON_ACCESS_CTRL);
+> +}
+> +
+> +static inline int sparx5_mact_wait_for_completion(struct sparx5 *sparx5)
+> +{
+> +	u32 val;
+> +
+> +	return readx_poll_timeout(sparx5_mact_get_status,
+> +		sparx5, val,
+> +		LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT_GET(val) == 0,
+> +		TABLE_UPDATE_SLEEP_US, TABLE_UPDATE_TIMEOUT_US);
+> +}
 
-			u32 spdvalue = lp_abil & LPA_SGMII_SPD_MASK;
+No inline functions in C files please.
+
+> +void sparx5_mact_init(struct sparx5 *sparx5)
+> +{
+> +	mutex_init(&sparx5->lock);
+> +
+> +	mutex_lock(&sparx5->lock);
+> +
+> +	/*  Flush MAC table */
+> +	spx5_wr(LRN_COMMON_ACCESS_CTRL_CPU_ACCESS_CMD_SET(MAC_CMD_CLEAR_ALL) |
+> +		LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT_SET(1),
+> +		sparx5, LRN_COMMON_ACCESS_CTRL);
+> +
+> +	if (sparx5_mact_wait_for_completion(sparx5) != 0)
+> +		dev_warn(sparx5->dev, "MAC flush error\n");
+> +
+> +	mutex_unlock(&sparx5->lock);
+
+It always seems odd to me, when you initialise a mutex, and then
+immediately take it. Who are you locking against? I'm not saying it is
+wrong though, especially if you have code in spx5_wr() and spx5_rd()
+which check the lock is actually taken. I've found a number of locking
+bugs in mv88e6xxx by having such checks.
 
 > +
-> +			status->link = !!((lp_abil >> 15) == 1) && status->link;
+> +	sparx5_set_ageing(sparx5, 10 * MSEC_PER_SEC); /* 10 sec */
 
-Maybe
+BR_DEFAULT_AGEING_TIME is 300 seconds. Is this the same thing?
 
-			status->link = !!((lp_abil & LPA_SGMII_LINK) && status->link;
+> +static int sparx5_port_bridge_join(struct sparx5_port *port,
+> +				   struct net_device *bridge)
+> +{
+> +	struct sparx5 *sparx5 = port->sparx5;
+> +
+> +	if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
+> +		/* First bridged port */
+> +		sparx5->hw_bridge_dev = bridge;
+> +	else
+> +		if (sparx5->hw_bridge_dev != bridge)
+> +			/* This is adding the port to a second bridge, this is
+> +			 * unsupported
+> +			 */
+> +			return -ENODEV;
 
-> +			status->an_complete = true;
-> +			status->duplex = (lp_abil >> 12) & 0x1 ?  DUPLEX_FULL : DUPLEX_HALF;
+Just checking my understanding. You have a 64 port switch, which only
+supports a single bridge?
 
-			status->duplex = (lp_abil & LPA_SGMII_FULL_DUPLEX) ?  DUPLEX_FULL : DUPLEX_HALF;
+-EOPNOTSUPP seems like a better return code.
+
+> +
+> +	set_bit(port->portno, sparx5->bridge_mask);
+> +
+> +	/* Port enters in bridge mode therefor don't need to copy to CPU
+> +	 * frames for multicast in case the bridge is not requesting them
+> +	 */
+> +	__dev_mc_unsync(port->ndev, sparx5_mc_unsync);
+
+Did you copy that from the mellanox driver? I think in DSA we take the
+opposite approach. Multicast/broadcast goes to the CPU until the CPU
+says it does not want it.
+
+> +static void sparx5_port_bridge_leave(struct sparx5_port *port,
+> +				     struct net_device *bridge)
+> +{
+> +	struct sparx5 *sparx5 = port->sparx5;
+> +
+> +	clear_bit(port->portno, sparx5->bridge_mask);
+> +	if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
+> +		sparx5->hw_bridge_dev = NULL;
+> +
+> +	/* Clear bridge vlan settings before updating the port settings */
+> +	port->vlan_aware = 0;
+> +	port->pvid = NULL_VID;
+> +	port->vid = NULL_VID;
+> +
+> +	/* Port enters in host more therefore restore mc list */
+
+s/more/mode
+
+> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
+> @@ -0,0 +1,223 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/* Microchip Sparx5 Switch driver
+> + *
+> + * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
+> + */
+> +
+> +#include "sparx5_main.h"
+> +
+> +static int sparx5_vlant_set_mask(struct sparx5 *sparx5, u16 vid)
+
+Is the t in vlant typ0?
+
+> +int sparx5_vlan_vid_add(struct sparx5_port *port, u16 vid, bool pvid,
+> +			bool untagged)
+> +{
+> +	struct sparx5 *sparx5 = port->sparx5;
+> +	int ret;
+> +
+> +	/* Make the port a member of the VLAN */
+> +	set_bit(port->portno, sparx5->vlan_mask[vid]);
+> +	ret = sparx5_vlant_set_mask(sparx5, vid);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Default ingress vlan classification */
+> +	if (pvid)
+> +		port->pvid = vid;
+> +
+> +	/* Untagged egress vlan clasification */
+
+classification
+
+> +	if (untagged && port->vid != vid) {
+> +		if (port->vid) {
+> +			netdev_err(port->ndev,
+> +				   "Port already has a native VLAN: %d\n",
+> +				   port->vid);
+> +			return -EBUSY;
+> +		}
+> +		port->vid = vid;
+> +	}
+> +
+> +	sparx5_vlan_port_apply(sparx5, port);
+> +
+> +	return 0;
+> +}
 
 
-> +			if (spdvalue == LPA_SGMII_10)
-> +				status->speed = SPEED_10;
-> +			else if (spdvalue == LPA_SGMII_100)
-> +				status->speed = SPEED_100;
-> +			else
-> +				status->speed = SPEED_1000;
-
-I wonder if there is a helper for this?
-
-
+> +void sparx5_update_fwd(struct sparx5 *sparx5)
+> +{
+> +	u32 mask[3];
+> +	DECLARE_BITMAP(workmask, SPX5_PORTS);
+> +	int port;
+> +
+> +	/* Divide up fwd mask in 32 bit words */
+> +	bitmap_to_arr32(mask, sparx5->bridge_fwd_mask, SPX5_PORTS);
+> +
+> +	/* Update flood masks */
+> +	for (port = PGID_UC_FLOOD; port <= PGID_BCAST; port++) {
+> +		spx5_wr(mask[0], sparx5, ANA_AC_PGID_CFG(port));
+> +		spx5_wr(mask[1], sparx5, ANA_AC_PGID_CFG1(port));
+> +		spx5_wr(mask[2], sparx5, ANA_AC_PGID_CFG2(port));
+> +	}
+> +
+> +	/* Update SRC masks */
+> +	for (port = 0; port < SPX5_PORTS; port++) {
+> +		if (test_bit(port, sparx5->bridge_fwd_mask)) {
+> +			/* Allow to send to all bridged but self */
+> +			bitmap_copy(workmask, sparx5->bridge_fwd_mask, SPX5_PORTS);
+> +			clear_bit(port, workmask);
+> +			bitmap_to_arr32(mask, workmask, SPX5_PORTS);
+> +			spx5_wr(mask[0], sparx5, ANA_AC_SRC_CFG(port));
+> +			spx5_wr(mask[1], sparx5, ANA_AC_SRC_CFG1(port));
+> +			spx5_wr(mask[2], sparx5, ANA_AC_SRC_CFG2(port));
 > +		} else {
-> +			/* Clause 37 Aneg */
-> +			status->link = !((lp_abil >> 12) & 3) && status->link;
-> +			status->an_complete = true;
-> +			status->duplex = ((lp_abil >> 5) & 1) ? DUPLEX_FULL : DUPLEX_UNKNOWN;
-> +			if ((lp_abil >> 8) & 1) /* symmetric pause */
-> +				status->pause = MLO_PAUSE_RX | MLO_PAUSE_TX;
-> +			if (lp_abil & (1 << 7)) /* asymmetric pause */
-> +				status->pause |= MLO_PAUSE_RX;
+> +			spx5_wr(0, sparx5, ANA_AC_SRC_CFG(port));
+> +			spx5_wr(0, sparx5, ANA_AC_SRC_CFG1(port));
+> +			spx5_wr(0, sparx5, ANA_AC_SRC_CFG2(port));
 > +		}
 
-Please check if there are any standard #defines you can use for
-this. Russell King has done some work for clause 37. Maybe there is
-some code in phy_driver.c you can use? phylink_decode_sgmii_word()
-
-> +static int sparx5_port_verify_speed(struct sparx5 *sparx5,
-> +				    struct sparx5_port *port,
-> +				    struct sparx5_port_config *conf)
-> +{
-> +	case PHY_INTERFACE_MODE_SGMII:
-> +		if (conf->speed != SPEED_1000 &&
-> +		    conf->speed != SPEED_100 &&
-> +		    conf->speed != SPEED_10 &&
-> +		    conf->speed != SPEED_2500)
-> +			return sparx5_port_error(port, conf, SPX5_PERR_SPEED);
-
-Is it really SGMII over clocked at 2500? Or 2500BaseX?
-
-> +static int sparx5_port_fifo_sz(struct sparx5 *sparx5,
-> +			       u32 portno, u32 speed)
-> +{
-> +	u32 sys_clk    = sparx5_clk_period(sparx5->coreclock);
-> +	u32 mac_width  = 8;
-> +	u32 fifo_width = 16;
-> +	u32 addition   = 0;
-> +	u32 mac_per    = 6400, tmp1, tmp2, tmp3;
-> +	u32 taxi_dist[SPX5_PORTS_ALL] = {
-
-const. As it is at the moment, it gets copied onto the stack, so it
-can be modified. Const i guess prevents that copy?
-
-> +		6, 8, 10, 6, 8, 10, 6, 8, 10, 6, 8, 10,
-> +		4, 4, 4, 4,
-> +		11, 12, 13, 14, 15, 16, 17, 18,
-> +		11, 12, 13, 14, 15, 16, 17, 18,
-> +		11, 12, 13, 14, 15, 16, 17, 18,
-> +		11, 12, 13, 14, 15, 16, 17, 18,
-> +		4, 6, 8, 4, 6, 8, 6, 8,
-> +		2, 2, 2, 2, 2, 2, 2, 4, 2
-> +	};
-
-> +static int sparx5_port_fwd_urg(struct sparx5 *sparx5, u32 speed)
-
-What is urg? 
-
-> +static u16 sparx5_get_aneg_word(struct sparx5_port_config *conf)
-> +{
-> +	if (conf->portmode == PHY_INTERFACE_MODE_1000BASEX) /* cl-37 aneg */
-> +		return ((1 << 14) | /* ack */
-> +		((conf->pause ? 1 : 0) << 8) | /* asymmetric pause */
-> +		((conf->pause ? 1 : 0) << 7) | /* symmetric pause */
-> +		(1 << 5)); /* FDX only */
-
-ADVERTISE_LPACK, ADVERTISE_PAUSE_ASYM, ADVERTISE_PAUSE_CAP, ADVERTISE_1000XFULL?
-
-> +int sparx5_port_config(struct sparx5 *sparx5,
-> +		       struct sparx5_port *port,
-> +		       struct sparx5_port_config *conf)
-> +{
-> +	bool high_speed_dev = sparx5_is_high_speed_device(conf);
-> +	int err, urgency, stop_wm;
-> +
-> +	err = sparx5_port_verify_speed(sparx5, port, conf);
-> +	if (err)
-> +		return err;
-> +
-> +	/* high speed device is already configured */
-> +	if (!high_speed_dev)
-> +		sparx5_port_config_low_set(sparx5, port, conf);
-> +
-> +	/* Configure flow control */
-> +	err = sparx5_port_fc_setup(sparx5, port, conf);
-> +	if (err)
-> +		return err;
-> +
-> +	/* Set the DSM stop watermark */
-> +	stop_wm = sparx5_port_fifo_sz(sparx5, port->portno, conf->speed);
-> +	spx5_rmw(DSM_DEV_TX_STOP_WM_CFG_DEV_TX_STOP_WM_SET(stop_wm),
-> +		 DSM_DEV_TX_STOP_WM_CFG_DEV_TX_STOP_WM,
-> +		 sparx5,
-> +		 DSM_DEV_TX_STOP_WM_CFG(port->portno));
-> +
-> +	/* Enable port forwarding */
-> +	urgency = sparx5_port_fwd_urg(sparx5, conf->speed);
-> +	spx5_rmw(QFWD_SWITCH_PORT_MODE_PORT_ENA_SET(1) |
-> +		 QFWD_SWITCH_PORT_MODE_FWD_URGENCY_SET(urgency),
-> +		 QFWD_SWITCH_PORT_MODE_PORT_ENA |
-> +		 QFWD_SWITCH_PORT_MODE_FWD_URGENCY,
-> +		 sparx5,
-> +		 QFWD_SWITCH_PORT_MODE(port->portno));
-
-What does it mean by port forwarding? By default, packets should only
-go to the CPU, until the port is added to a bridge. I've not thought
-much about L3, since DSA so far only has L2 switches, but i guess you
-don't need to enable L3 forwarding until a route out the port has been
-added?
-
-> +/* Initialize port config to default */
-> +int sparx5_port_init(struct sparx5 *sparx5,
-> +		     struct sparx5_port *port,
-> +		     struct sparx5_port_config *conf)
-> +{
-> +	/* Discard pause frame 01-80-C2-00-00-01 */
-> +	spx5_wr(0xC, sparx5, ANA_CL_CAPTURE_BPDU_CFG(port->portno));
-
-The comment is about pause frames, but the macro contain BPDU?
+Humm, interesting. This seems to control what other ports a port can
+send to. That is one of the basic features you need for supporting
+multiple bridges. So i assume your problems is you cannot partition
+the MAC table?
 
     Andrew
