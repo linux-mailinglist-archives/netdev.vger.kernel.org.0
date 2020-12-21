@@ -2,91 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9116B2DFAF8
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 11:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB2562DFA9E
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 10:57:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbgLUKVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 05:21:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725796AbgLUKVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 05:21:46 -0500
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECBCC0613D3
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 02:21:06 -0800 (PST)
-Received: by mail-qk1-x72d.google.com with SMTP id v126so3786048qkd.11
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 02:21:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x3vPUkaHqxxnpGause6hsihZy19vITzBYUQC4M2DuK0=;
-        b=GkpADlDK6kXFRky6ufX56elk9icvfmz+M/J6l59CmtSlPLH4ncsqlMJrTCazhfJ5X3
-         s9uf+YK+LyK5apriQZBpnEe1NOezzU8cY+o290rhjsdfxEecdiilZc14u0sDnzJy5+wK
-         OtdoxUWZxuNBbRed6LfnlO+DpyZeSGcQeOffSLDYxyFYwgQ9CEcOKy3n6eJPErWfK7Jk
-         nSuSI9xfPG0v4U8ei7XwFxiujcljbZe5+5BLMpycVMd2+eNjFbc7ZT9GhSvrycBtyEFO
-         dKDkTVLlpCjAzIWfJSqZvbeQd5BMRNMsjHRU23Y285BmuAQism5IhrPL23rJoADHHKFo
-         HvHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x3vPUkaHqxxnpGause6hsihZy19vITzBYUQC4M2DuK0=;
-        b=VSeNvdutOOroD9IgQgoLj5B0Eh3ptflzsVGnfPa4aQYwtUmAikaSRakYu8QKrvFV8t
-         Eti0jd1B09zPbvXvUbzGF43Q87/PTxmQD3NGxg0nEA5qpCtT5a04oOV0KoaOnnKxnlYU
-         UH65yLn64BjbXAIU96A4xeHUeHAOg3G73dNjKwSIa9dLa1jCoXJW+tFmbNfOuMkmlhah
-         8Fpg+mjeq6qAMTDzJd/q/vlGuAWCmjp9XsgaJJ0ufqSbkmitQi0wyNrhBmoJql6IFXLT
-         HTFzw5psN+BY9r0UwyBvz131QzyALC3od2b5p5yRJVA65s6Z/8cdSiHSrQzJO9Vdgm2Z
-         Be9w==
-X-Gm-Message-State: AOAM533VyTk3aoDW0dWuiUO3HwzJedOlwYtNx04/88kGsOx34V6a+vnU
-        SMDzkQzdk9Bm+4XyWgAyT+/ZFOg6JYF7OEc4UdK4spdXVPHJqA==
-X-Google-Smtp-Source: ABdhPJwtyyMOp1Nmg+ViXvFUW653vwTmL49q8hTvJK0JtvTBFPAhiP+BL5Kb8rFGMs48uUDJmg8O9hGVZy8dmJkgz6o=
-X-Received: by 2002:a05:620a:713:: with SMTP id 19mr16429791qkc.424.1608542538865;
- Mon, 21 Dec 2020 01:22:18 -0800 (PST)
+        id S1726718AbgLUJ4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 04:56:51 -0500
+Received: from nautica.notk.org ([91.121.71.147]:60161 "EHLO nautica.notk.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725976AbgLUJ4v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Dec 2020 04:56:51 -0500
+X-Greylist: delayed 445 seconds by postgrey-1.27 at vger.kernel.org; Mon, 21 Dec 2020 04:56:50 EST
+Received: by nautica.notk.org (Postfix, from userid 1001)
+        id 7E30CC009; Mon, 21 Dec 2020 10:48:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1608544123; bh=yaoe7VEoIsbp6ANgyjvB2rbl6fDDGfIoT92WryR11jA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=l45pzB0m0fqAo09GFPF53/iGtj27iX1hR5cWIsE8auoQyemq/OkWReTXL/7Nrc84p
+         gRprPtw6k2DuST4DT5ZpFDCLPBHleC0ttIDDi/Paq2fHUDaSXOpOMgjyeqP9BcHawC
+         nwJPm4rc/0wlS843TIBX490a/uxhgjOeEQAZvWRdMI5txx2wTiQkLGDoHRoqY3dAXE
+         Q6+rIo+i7Zt6pC+JMvpm947jOTqVk90ESexSVnjS/zTpqqkLOUZ8utoXgJ2+ZiwCDT
+         2zA2cSxY84+KY7DR4iPuLOVspzEr9oNOP2Mb1Ql4XvFKzwYy75XInYJw4v5C3Me+gF
+         rCN9sahac3tKw==
+Date:   Mon, 21 Dec 2020 10:48:28 +0100
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, v9fs-developer@lists.sourceforge.net
+Subject: [GIT PULL] 9p update for 5.11-rc1
+Message-ID: <20201221094828.GA6602@nautica>
 MIME-Version: 1.0
-References: <00000000000089904d057f1e0ae0@google.com> <00000000000014086305b6e54cfc@google.com>
-In-Reply-To: <00000000000014086305b6e54cfc@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 21 Dec 2020 10:22:07 +0100
-Message-ID: <CACT4Y+a+KHz924KNzNkxs=kWwM9Udf8t7=uCfg+uH_WPyJN=qg@mail.gmail.com>
-Subject: Re: general protection fault in rose_send_frame
-To:     syzbot <syzbot+7078ae989d857fe17988@syzkaller.appspotmail.com>
-Cc:     anmol.karan123@gmail.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-hams <linux-hams@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Peilin Ye <yepeilin.cs@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 20, 2020 at 2:27 PM syzbot
-<syzbot+7078ae989d857fe17988@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit 3b3fd068c56e3fbea30090859216a368398e39bf
-> Author: Anmol Karn <anmol.karan123@gmail.com>
-> Date:   Thu Nov 19 19:10:43 2020 +0000
->
->     rose: Fix Null pointer dereference in rose_send_frame()
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=139e2b9b500000
-> start commit:   23ee3e4e Merge tag 'pci-v5.8-fixes-2' of git://git.kernel...
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=f87a5e4232fdb267
-> dashboard link: https://syzkaller.appspot.com/bug?extid=7078ae989d857fe17988
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=157e8964900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10046c54900000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: rose: Fix Null pointer dereference in rose_send_frame()
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-#syz fix: rose: Fix Null pointer dereference in rose_send_frame()
+Hi Linus,
+
+here's this cycle's update, finally finished on some very old patches
+(originally april 2015!) to allow fixing open-unlink-fgetattr pattern.
+
+Thanks to Eric, Greg and Jianyong for the bulk of the work, and Dan for
+static analysis fixes on -next.
+
+
+The following changes since commit 3cea11cd5e3b00d91caf0b4730194039b45c5891:
+
+  Linux 5.10-rc2 (2020-11-01 14:43:51 -0800)
+
+are available in the Git repository at:
+
+  https://github.com/martinetd/linux tags/9p-for-5.11-rc1
+
+for you to fetch changes up to cfd1d0f524a87b7d6d14b41a14fa4cbe522cf8cc:
+
+  9p: Remove unnecessary IS_ERR() check (2020-12-01 08:19:02 +0100)
+
+----------------------------------------------------------------
+9p for 5.11-rc1
+
+- fix long-standing limitation on open-unlink-fop pattern
+- add refcount to p9_fid (fixes the above and will allow for more
+cleanups and simplifications in the future)
+
+----------------------------------------------------------------
+Dan Carpenter (2):
+      9p: Uninitialized variable in v9fs_writeback_fid()
+      9p: Remove unnecessary IS_ERR() check
+
+Dominique Martinet (2):
+      9p: apply review requests for fid refcounting
+      9p: Fix writeback fid incorrectly being attached to dentry
+
+Eric Van Hensbergen (1):
+      fs/9p: fix create-unlink-getattr idiom
+
+Greg Kurz (2):
+      fs/9p: track open fids
+      fs/9p: search open fids first
+
+Jianyong Wu (1):
+      9p: add refcount to p9_fid struct
+
+ fs/9p/fid.c             | 65  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----
+ fs/9p/fid.h             | 11 ++++++++++-
+ fs/9p/vfs_dentry.c      |  2 ++
+ fs/9p/vfs_dir.c         |  6 +++++-
+ fs/9p/vfs_file.c        |  7 ++++---
+ fs/9p/vfs_inode.c       | 47  ++++++++++++++++++++++++++++++++++++++---------
+ fs/9p/vfs_inode_dotl.c  | 35 +++++++++++++++++++++++++++++------
+ fs/9p/vfs_super.c       |  1 +
+ fs/9p/xattr.c           | 16 +++++++++++++---
+ include/net/9p/client.h |  7 +++++++
+ net/9p/client.c         | 14 +++++++++-----
+ 11 files changed, 178 insertions(+), 33 deletions(-)
+
+-- 
+Dominique
