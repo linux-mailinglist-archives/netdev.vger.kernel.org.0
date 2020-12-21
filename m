@@ -2,90 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 093842DF90A
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 06:58:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0D0A2DF934
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 07:20:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728530AbgLUF6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 00:58:20 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:13778 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728518AbgLUF6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 00:58:20 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1608530274; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=sEY+xIJ0XXXuL7Fjm7+Q2MBFKhj3vlIlLwjAvEKA18A=; b=nnzEZQ5VHwCxOpSDGqNtVbbHhCDvxhmBhlV7Gc7QHBall4bxHEwGQcTHTSHsdyLVSak+Vjog
- DojCBcS2p9DOuWk2GVmriS4XidKZrYluA6Y3QxwJbcL9cEw5y8HHwfxLb5hG36qE40L7jGRi
- b6OuTTXDS2EasYjKH+Q8MmR5gr0=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 5fe0394475ab652e87bad560 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Dec 2020 05:57:24
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 009E3C433CA; Mon, 21 Dec 2020 05:57:23 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A35E9C433CA;
-        Mon, 21 Dec 2020 05:57:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A35E9C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Srinivasan Raju <srini.raju@purelifi.com>
-Cc:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS \(WIRELESS\)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] [v11] wireless: Initial driver submission for pureLiFi STA devices
-References: <20200928102008.32568-1-srini.raju@purelifi.com>
-        <20201208115719.349553-1-srini.raju@purelifi.com>
-        <87o8iqq6os.fsf@codeaurora.org>
-        <CWXP265MB17998064FCE8FCE6B313FAD1E0C00@CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM>
-Date:   Mon, 21 Dec 2020 07:57:17 +0200
-In-Reply-To: <CWXP265MB17998064FCE8FCE6B313FAD1E0C00@CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM>
-        (Srinivasan Raju's message of "Mon, 21 Dec 2020 05:52:16 +0000")
-Message-ID: <877dpbd7lu.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728436AbgLUGUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 01:20:32 -0500
+Received: from conssluserg-02.nifty.com ([210.131.2.81]:41324 "EHLO
+        conssluserg-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726140AbgLUGUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 01:20:31 -0500
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 0BL6Jbgn024900;
+        Mon, 21 Dec 2020 15:19:37 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 0BL6Jbgn024900
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1608531578;
+        bh=BYlCTuhSzV6TRqa7tXYTcFDqgVKa7TxcGPT3foHwNXs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hyOhPooQuC6c16OkErO/kv5Nd7W/E29yS78DeXcxbDDsqCqepVcUpLsSX6xmZqKMN
+         kFZO1TH4QG1XAYVWaJgjo8t1HWnBSWKb//s1iSE/yFiTW+HXe1Tx11HC60U8rdBNiN
+         8qmYtfe5V1pSJWIhNFPLlgf2Hir0FMN6GRp/u+Dhy7ahlk9rGaE9FGIQF9wfmMDGcU
+         dztpm9zrLJYVh2IoCTVYFOONxslnFij98XwpNdFtwxYmbDPGeGjhvt+MjmKAMSNA7q
+         CcjqLvDpByyGrnVyuc1PuGzRJcmJkTPMuL4K2Pe60ZfzxTjqYtoZwv8UOqLjzdLDc9
+         VcUb9vQ/QHtHw==
+X-Nifty-SrcIP: [209.85.210.181]
+Received: by mail-pf1-f181.google.com with SMTP id v2so5883335pfm.9;
+        Sun, 20 Dec 2020 22:19:37 -0800 (PST)
+X-Gm-Message-State: AOAM5319u3yN+Of6s1LnIP6Aj3EOkwytJmq98U8IxGiZYWLaBk45Ffst
+        Qa6pTUKOm20eC/4AaROis81aB/KM86P6IjvP1Ec=
+X-Google-Smtp-Source: ABdhPJyTGmpFdbbWcUsN7vwbZtf5cf/Z4qlcgRfZbI9ZKyKFX7z9MBplWa/TWblbbnO2J/T7wiw0B8s5pwv5XMbvdJE=
+X-Received: by 2002:a63:3205:: with SMTP id y5mr14082429pgy.47.1608531576913;
+ Sun, 20 Dec 2020 22:19:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201128193335.219395-1-masahiroy@kernel.org> <20201212161831.GA28098@roeck-us.net>
+ <CANiq72=e9Csgpcu3MdLGB77dL_QBn6PpqoG215YUHZLNCUGP0w@mail.gmail.com>
+ <8f645b94-80e5-529c-7b6a-d9b8d8c9685e@roeck-us.net> <CANiq72kML=UmMLyKcorYwOhp2oqjfz7_+JN=EmPp05AapHbFSg@mail.gmail.com>
+ <X9YwXZvjSWANm4wR@kroah.com> <CANiq72=UzRTkh6bcNSjE-kSgBJYX12+zQUYphZ1GcY-7kNxaLA@mail.gmail.com>
+In-Reply-To: <CANiq72=UzRTkh6bcNSjE-kSgBJYX12+zQUYphZ1GcY-7kNxaLA@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 21 Dec 2020 15:18:59 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARXa1CQSFJjcqN7Y_8dZ1CSGqjoeox3oGAS_3=4QrHs9g@mail.gmail.com>
+Message-ID: <CAK7LNARXa1CQSFJjcqN7Y_8dZ1CSGqjoeox3oGAS_3=4QrHs9g@mail.gmail.com>
+Subject: Re: [PATCH v3] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        wireguard@lists.zx2c4.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivasan Raju <srini.raju@purelifi.com> writes:
-
->> I see lots of magic numbers in the driver like 2, 0x33 and 0x34 here.
->> Please convert the magic numbers to proper defines explaining the
->> meaning. And for vendor commands you could even use enum to group
->> them better in .h file somewhere.
+On Mon, Dec 14, 2020 at 12:27 AM Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
 >
-> Hi Kalle,
+> On Sun, Dec 13, 2020 at 4:16 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > Because if you get a report of something breaking for your change, you
+> > need to work to resolve it, not argue about it.  Otherwise it needs to
+> > be dropped/reverted.
 >
-> Thanks for reviewing the driver, We will work on the comments.
+> Nobody has argued that. In fact, I explicitly said the opposite: "So I
+> think we can fix them as they come.".
+>
+> I am expecting Masahiro to follow up. It has been less than 24 hours
+> since the report, on a weekend.
+>
+> Cheers,
+> Miguel
 
-I haven't had time to do a throrough review yet, but I suggest fixing
-the stuff I commented and submitting v12. I'll then do a new review with
-v12.
+
+Sorry for the delay.
+
+Now I sent out the fix for lantiq_etop.c
+
+https://lore.kernel.org/patchwork/patch/1355595/
+
+
+The reason of the complication was
+I was trying to merge the following patch in the same development cycle:
+https://patchwork.kernel.org/project/linux-kbuild/patch/20201117104736.24997-1-olaf@aepfle.de/
+
+
+-Werror=return-type gives a bigger impact
+because any instance of __must_check violation
+results in build breakage.
+So, I just dropped it from my tree (and, I will aim for 5.12).
+
+The removal of CONFIG_ENABLE_MUST_CHECK is less impactive,
+because we are still able to build with some warnings.
+
+
+Tomorrow's linux-next should be OK
+and, you can send my patch in this merge window.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Best Regards
+Masahiro Yamada
