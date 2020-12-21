@@ -2,127 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33DD42E002C
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 19:43:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47C3B2DFD19
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 15:57:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727466AbgLUSmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 13:42:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726518AbgLUSmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 13:42:05 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F0BC0613D6;
-        Mon, 21 Dec 2020 10:41:25 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id n26so14827788eju.6;
-        Mon, 21 Dec 2020 10:41:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ivcI0E1dfE9znJYym7OouNXXxQL5iEPpA65NR/BqsvU=;
-        b=Uf4Zq6nwXH5HFYce5cZXSxE758PBzIjjVAxIen46sx3/xgAEuLjw2yvIHR8LuDW3wL
-         Oy/F7P5CflHacUKJbunTFbzTOD7SXNz0Bhdd/zxVG9/9HhBUzsw5VVwLicZ7SxZ06AcM
-         pnmfHUcBp75GJl3WG4VZPSxWxTXr1Wjrh6TNthgbWZQhkSvtAehMwyUJ9msvXzAFVzR5
-         b75ZVbENujJE2GqrkG9NArm87aZRXSs9mOT+cV3CLdozG0AEtZrYar89hzTCHeq60V8T
-         Ewub2ewQz6ZKI+6TNbV5xxrSiqHMlzxPrjphrSRcUgX9I/z37w0xG+//zc68Odkjrzgh
-         G9vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ivcI0E1dfE9znJYym7OouNXXxQL5iEPpA65NR/BqsvU=;
-        b=ai5Hj+rT9bf00K/d3ksE6Jxx6f9McvGHP/DUVEyeoT/jtl9iL1nNzUFPnhfLsxZQhS
-         MOwxYds1JgJopWV5yyfDohhyoPoDmDdlYwS1pDr7mIIXw2uHNpvB/B0m3G4mkQ0gkGak
-         PjITfUML5E5RBvgIxS7XRf9ugxHi/WsFfrUbDkdzrj1D4UcMdDMYLM8/jGmLk78wXvLs
-         Z4SjU3TrbO2JddX98AGf3a7NynuH3D5AD8mZdLYc2A08cvufm4bTGBTpez5s/0xvSHHb
-         BcOY78bq6UA08baPF1KhyFiZlMcBNRDzLEE9gtKWAw596ipS2pOyFhGyx7HU7OpP1r4H
-         8sAA==
-X-Gm-Message-State: AOAM5319IZmZf82ZTiBN0mqIOTwnNkZiyN7C1Lq7l79vs0dU+k+D9e9k
-        xnVemdxPEDSMaI6eX2AxkbyyWu3od9g=
-X-Google-Smtp-Source: ABdhPJy9So/0c1r35c60UF2Y3VriQiM7zFEN6wB/+tagc03nN4kSaA5SLtFO0Gr7AaZ5FAsACHQgzQ==
-X-Received: by 2002:a19:83c9:: with SMTP id f192mr6473888lfd.399.1608561301587;
-        Mon, 21 Dec 2020 06:35:01 -0800 (PST)
-Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
-        by smtp.googlemail.com with ESMTPSA id p24sm2076049lfo.53.2020.12.21.06.35.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Dec 2020 06:35:00 -0800 (PST)
-Subject: Re: [PATCH v1] Bluetooth: Set missing suspend task bits
-To:     Howard Chung <howardchung@google.com>,
-        linux-bluetooth@vger.kernel.org
-Cc:     alainm@chromium.org, mmandlik@chromium.org, mcchou@chromium.org,
-        marcel@holtmann.org, abhishekpandit@chromium.org,
-        apusaka@chromium.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20201204111038.v1.1.I4557a89427f61427e65d85bc51cca9e65607488e@changeid>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <ec27a562-d53b-a947-1a93-bd55a2dfcc91@gmail.com>
-Date:   Mon, 21 Dec 2020 17:35:00 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.2
+        id S1726746AbgLUO4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 09:56:43 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:11646 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725807AbgLUO4n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 09:56:43 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BLEoGfw022091;
+        Mon, 21 Dec 2020 06:56:00 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=g9Ds/7ffhqzh4ZTp7G8cA76fTF/sixWysoQH3p1zzS4=;
+ b=bqP5sRmO6DsS/Nh8SpHwtTKXzIS49Nj5O4dak+HAkBVvPkNhGdcvSZFk2898y34ihGEd
+ gIR0TENHECSHAXkXBc+pmA2wFmeAOKnIGm0WXFh37WDZL3GbRQzgpgmoXNTp1e2OzxWH
+ yCrx5pTMWWooP2wPEeszRgcuUnn42eeydmWr6HyxaWM5tT8lE/kXdP2asaIRlvfHcvnz
+ T/dQLCb0IMfkzVEDYYQ4NwfuSoXHy+DChwwCw0VvB10mzC0DKow6UjNzWU9pqXRI/77U
+ 9s1EjJSo3J+CLTnWewlqccJHbC3NJ0qxA6Qx9TeJzqnaNfymMl+Ju5ZmiWOU0uo8zXrj Uw== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 35j4wvjgdr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 21 Dec 2020 06:55:59 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Dec
+ 2020 06:55:58 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Dec
+ 2020 06:55:57 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 21 Dec 2020 06:55:57 -0800
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 117B93F7040;
+        Mon, 21 Dec 2020 06:55:57 -0800 (PST)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 0BLEtuwM007816;
+        Mon, 21 Dec 2020 06:55:56 -0800
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 0BLEtuBQ007815;
+        Mon, 21 Dec 2020 06:55:56 -0800
+From:   Manish Chopra <manishc@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
+        <irusskikh@marvell.com>, <skalluru@marvell.com>
+Subject: [PATCH net 1/1] qede: fix offload for IPIP tunnel packets
+Date:   Mon, 21 Dec 2020 06:55:30 -0800
+Message-ID: <20201221145530.7771-1-manishc@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201204111038.v1.1.I4557a89427f61427e65d85bc51cca9e65607488e@changeid>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-21_08:2020-12-21,2020-12-21 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-04.12.2020 06:14, Howard Chung пишет:
-> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> 
-> When suspending, mark SUSPEND_SCAN_ENABLE and SUSPEND_SCAN_DISABLE tasks
-> correctly when either classic or le scanning is modified.
-> 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Signed-off-by: Howard Chung <howardchung@google.com>
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
-> ---
-> 
->  net/bluetooth/hci_request.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-> index 80dc451d6e124..71bffd7454720 100644
-> --- a/net/bluetooth/hci_request.c
-> +++ b/net/bluetooth/hci_request.c
-> @@ -707,6 +707,9 @@ void hci_req_add_le_scan_disable(struct hci_request *req, bool rpa_le_conn)
->  		return;
->  	}
->  
-> +	if (hdev->suspended)
-> +		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
-> +
->  	if (use_ext_scan(hdev)) {
->  		struct hci_cp_le_set_ext_scan_enable cp;
->  
-> @@ -1159,6 +1162,11 @@ static void hci_req_set_event_filter(struct hci_request *req)
->  		scan = SCAN_PAGE;
->  	}
->  
-> +	if (scan)
-> +		set_bit(SUSPEND_SCAN_ENABLE, hdev->suspend_tasks);
-> +	else
-> +		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
-> +
->  	hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
->  }
->  
-> 
+IPIP tunnels packets are unknown to device,
+hence these packets are incorrectly parsed and
+caused the packet corruption, so disable offlods
+for such packets at run time.
 
-Hi,
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Sudarsana Kalluru <skalluru@marvell.com>
+Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qede/qede_fp.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-This commit caused a regression on entering into suspend for Broadcom
-Bluetooth 4330 on Nexus 7:
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+index a2494bf..ca0ee29 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+@@ -1799,6 +1799,11 @@ netdev_features_t qede_features_check(struct sk_buff *skb,
+ 			      ntohs(udp_hdr(skb)->dest) != gnv_port))
+ 				return features & ~(NETIF_F_CSUM_MASK |
+ 						    NETIF_F_GSO_MASK);
++		} else if (l4_proto == IPPROTO_IPIP) {
++			/* IPIP tunnels are unknown to the device or at least unsupported natively,
++			 * offloads for them can't be done trivially, so disable them for such skb.
++			 */
++			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+ 		}
+ 	}
+ 
+-- 
+1.8.3.1
 
- Bluetooth: hci0: Timed out waiting for suspend events
- Bluetooth: hci0: Suspend timeout bit: 4
- Bluetooth: hci0: Suspend notifier action (3) failed: -110
-
-I don't see this problem using BCM4329 chip on another device.
-
-Please fix, thanks in advance.
