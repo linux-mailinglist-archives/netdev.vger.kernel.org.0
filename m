@@ -2,171 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D216B2E011E
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:38:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A542E0130
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:42:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbgLUThh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 14:37:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59638 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725783AbgLUThh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Dec 2020 14:37:37 -0500
-From:   Antoine Tenart <atenart@kernel.org>
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     davem@davemloft.net, kuba@kernel.org, alexander.duyck@gmail.com
-Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
-        pabeni@redhat.com
-Subject: [PATCH net v2 3/3] net: move the xps rxqs retrieval out of net-sysfs
-Date:   Mon, 21 Dec 2020 20:36:44 +0100
-Message-Id: <20201221193644.1296933-4-atenart@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201221193644.1296933-1-atenart@kernel.org>
-References: <20201221193644.1296933-1-atenart@kernel.org>
+        id S1726670AbgLUTlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 14:41:21 -0500
+Received: from atlmailgw1.ami.com ([63.147.10.40]:58593 "EHLO
+        atlmailgw1.ami.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726333AbgLUTlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 14:41:21 -0500
+X-AuditID: ac1060b2-a93ff700000017ec-ee-5fe0fa37947c
+Received: from atlms1.us.megatrends.com (atlms1.us.megatrends.com [172.16.96.144])
+        (using TLS with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by atlmailgw1.ami.com (Symantec Messaging Gateway) with SMTP id 91.7D.06124.73AF0EF5; Mon, 21 Dec 2020 14:40:39 -0500 (EST)
+Received: from ami-us-wk.us.megatrends.com (172.16.98.207) by
+ atlms1.us.megatrends.com (172.16.96.144) with Microsoft SMTP Server (TLS) id
+ 14.3.468.0; Mon, 21 Dec 2020 14:40:38 -0500
+From:   Hongwei Zhang <hongweiz@ami.com>
+To:     <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <openbmc@lists.ozlabs.org>, Jakub Kicinski <kuba@kernel.org>,
+        David S Miller <davem@davemloft.net>
+CC:     Hongwei Zhang <hongweiz@ami.com>, netdev <netdev@vger.kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Subject: [Aspeed,ncsi-rx, v2 0/1] net: ftgmac100: Fix AST2600EVB NCSI RX issue 
+Date:   Mon, 21 Dec 2020 14:40:25 -0500
+Message-ID: <20201221194026.30715-1-hongweiz@ami.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201215192323.24359-1-hongweiz@ami.com>
+References: <20201215192323.24359-1-hongweiz@ami.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.98.207]
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBLMWRmVeSWpSXmKPExsWyRiBhgq75rwfxBgsXq1vsusxhMed8C4vF
+        7/N/mS0ubOtjtWhefY7Z4vKuOWwWxxaIWZxqecHiwOFxtX0Xu8eWlTeZPC5+PMbssWlVJ5vH
+        +RkLGT0+b5ILYIvisklJzcksSy3St0vgyjjzqJGxYI1UxeRzR5gaGHeLdTFyckgImEgcPrqV
+        rYuRi0NIYBeTxIvLm9ihHEaJZ5+fsYJUsQmoSezdPIcJJCEisJpRomfDL0YQh1mgg1Fi6ouv
+        7CBVwgL+EvMOfQHrYBFQldjU+IUJxOYVMJU4cGENG8Q+eYnVGw4wdzFycHAKmEnsOSUHEhYC
+        Kmnd9w6qXFDi5MwnLCA2s4CExMEXL5ghamQlbh16zAQxRlHiwa/vrBMYBWYhaZmFpGUBI9Mq
+        RqHEkpzcxMyc9HJDvcTcTL3k/NxNjJDQ3rSDseWi+SFGJg7GQ4wSHMxKIrxmUvfjhXhTEiur
+        Uovy44tKc1KLDzFKc7AoifOucj8aLySQnliSmp2aWpBaBJNl4uCUamAUMdNWXbqdt3l7Tb7i
+        VuuD53/csbn87FRJjsKDigVu8kKLLBd4vYjN3rG344qRof1Se52fn/tsT5W4bCgSzvbKTtm1
+        4b98waHS5DO3vm9I9ypbJidyoG6Hx+GpGewFtut/rH/6d8oN14msnEWTvx0TSYzonNYYa8ip
+        4VrRueqF972XBuY/F/QqsRRnJBpqMRcVJwIA6loq6lsCAAA=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Accesses to dev->xps_rxqs_map (when using dev->num_tc) should be
-protected by the xps_map mutex, to avoid possible race conditions when
-dev->num_tc is updated while the map is accessed. Make use of the now
-available netif_show_xps_queue helper which does just that.
+Dear Reviewer,
 
-This also helps to keep xps_cpus_show and xps_rxqs_show synced as their
-logic is the same (as in __netif_set_xps_queue, the function allocating
-and setting them up).
+When FTGMAC100 driver is used on other NCSI Ethernet controllers, few
+controllers have compatible issue. One example is Intel I210 Ethernet
+controller on AST2600 BMC, with FTGMAC100 driver, it always trigger
+RXDES0_RX_ERR error, cause NCSI initialization failure, removing
+FTGMAC100_RXDES0_RX_ERR bit from RXDES0_ANY_ERROR fix the issue.
 
-Fixes: 8af2c06ff4b1 ("net-sysfs: Add interface for Rx queue(s) map per Tx queue")
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
- include/linux/netdevice.h |  5 +++--
- net/core/dev.c            | 15 ++++++++++-----
- net/core/net-sysfs.c      | 37 ++++++-------------------------------
- 3 files changed, 19 insertions(+), 38 deletions(-)
+Here are part of the debug logs:
+......
+[   35.075552] ftgmac100_hard_start_xmit TXDESO=b000003c
+[   35.080843] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 55
+[   35.087141] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
+[   35.094448] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8 
+[   35.101498] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
+[   35.108205] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
+[   35.287808] i2c i2c-1: new_device: Instantiated device slave-mqueue at 0x12
+[   35.428379] ftgmac100_hard_start_xmit TXDESO=b000003c
+[   35.433624] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 56
+[   35.439915] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
+[   35.447225] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8
+[   35.454273] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
+[   35.460972] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
+[   35.797825] ftgmac100_hard_start_xmit TXDESO=b000003c
+[   35.803241] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 57
+[   35.809541] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
+[   35.816848] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8
+[   35.823899] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
+[   35.830597] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
+[   36.179914] ftgmac100_hard_start_xmit TXDESO=b000003c
+[   36.185160] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 58
+[   36.191454] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
+[   36.198761] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8
+[   36.205813] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
+[   36.212513] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
+[   36.593688] ftgmac100_hard_start_xmit TXDESO=b000003c
+[   36.602937] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 59
+[   36.609244] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
+[   36.616558] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8
+[   36.623608] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
+[   36.630315] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
+[   37.031524] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+[   37.067831] IPv6: ADDRCONF(NETDEV_UP): eth1: link is not ready
+............
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index bfd6cfa3ea90..5c3e16464c3f 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3672,7 +3672,7 @@ int netif_set_xps_queue(struct net_device *dev, const struct cpumask *mask,
- int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
- 			  u16 index, bool is_rxqs_map);
- int netif_show_xps_queue(struct net_device *dev, unsigned long **mask,
--			 u16 index);
-+			 u16 index, bool is_rxqs_map);
- 
- /**
-  *	netif_attr_test_mask - Test a CPU or Rx queue set in a mask
-@@ -3773,7 +3773,8 @@ static inline int __netif_set_xps_queue(struct net_device *dev,
- }
- 
- static inline int netif_show_xps_queue(struct net_device *dev,
--				       unsigned long **mask, u16 index)
-+				       unsigned long **mask, u16 index,
-+				       bool is_rxqs_map)
- {
- 	return 0;
- }
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a0257da4160a..e5cc2939e4d9 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2832,7 +2832,7 @@ int netif_set_xps_queue(struct net_device *dev, const struct cpumask *mask,
- EXPORT_SYMBOL(netif_set_xps_queue);
- 
- int netif_show_xps_queue(struct net_device *dev, unsigned long **mask,
--			 u16 index)
-+			 u16 index, bool is_rxqs_map)
- {
- 	const unsigned long *possible_mask = NULL;
- 	int j, num_tc = 1, tc = 0, ret = 0;
-@@ -2859,12 +2859,17 @@ int netif_show_xps_queue(struct net_device *dev, unsigned long **mask,
- 		}
- 	}
- 
--	dev_maps = rcu_dereference(dev->xps_cpus_map);
-+	if (is_rxqs_map) {
-+		dev_maps = rcu_dereference(dev->xps_rxqs_map);
-+		nr_ids = dev->num_rx_queues;
-+	} else {
-+		dev_maps = rcu_dereference(dev->xps_cpus_map);
-+		nr_ids = nr_cpu_ids;
-+		if (num_possible_cpus() > 1)
-+			possible_mask = cpumask_bits(cpu_possible_mask);
-+	}
- 	if (!dev_maps)
- 		goto out_no_map;
--	nr_ids = nr_cpu_ids;
--	if (num_possible_cpus() > 1)
--		possible_mask = cpumask_bits(cpu_possible_mask);
- 
- 	for (j = -1; j = netif_attrmask_next(j, possible_mask, nr_ids),
- 	     j < nr_ids;) {
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 29ee69b67972..4f58b38dfc7d 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -1329,7 +1329,7 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue, char *buf)
- 	if (!mask)
- 		return -ENOMEM;
- 
--	ret = netif_show_xps_queue(dev, &mask, index);
-+	ret = netif_show_xps_queue(dev, &mask, index, false);
- 	if (ret) {
- 		bitmap_free(mask);
- 		return ret;
-@@ -1379,45 +1379,20 @@ static struct netdev_queue_attribute xps_cpus_attribute __ro_after_init
- static ssize_t xps_rxqs_show(struct netdev_queue *queue, char *buf)
- {
- 	struct net_device *dev = queue->dev;
--	struct xps_dev_maps *dev_maps;
- 	unsigned long *mask, index;
--	int j, len, num_tc = 1, tc = 0;
-+	int len, ret;
- 
- 	index = get_netdev_queue_index(queue);
- 
--	if (dev->num_tc) {
--		num_tc = dev->num_tc;
--		tc = netdev_txq_to_tc(dev, index);
--		if (tc < 0)
--			return -EINVAL;
--	}
- 	mask = bitmap_zalloc(dev->num_rx_queues, GFP_KERNEL);
- 	if (!mask)
- 		return -ENOMEM;
- 
--	rcu_read_lock();
--	dev_maps = rcu_dereference(dev->xps_rxqs_map);
--	if (!dev_maps)
--		goto out_no_maps;
--
--	for (j = -1; j = netif_attrmask_next(j, NULL, dev->num_rx_queues),
--	     j < dev->num_rx_queues;) {
--		int i, tci = j * num_tc + tc;
--		struct xps_map *map;
--
--		map = rcu_dereference(dev_maps->attr_map[tci]);
--		if (!map)
--			continue;
--
--		for (i = map->len; i--;) {
--			if (map->queues[i] == index) {
--				set_bit(j, mask);
--				break;
--			}
--		}
-+	ret = netif_show_xps_queue(dev, &mask, index, true);
-+	if (ret) {
-+		bitmap_free(mask);
-+		return ret;
- 	}
--out_no_maps:
--	rcu_read_unlock();
- 
- 	len = bitmap_print_to_pagebuf(false, buf, mask, dev->num_rx_queues);
- 	bitmap_free(mask);
+This patch add a configurable flag, FTGMAC100_RXDES0_RX_ERR_CHK, in FTGMAC100
+ driver, it is YES by default, so keep the orignal define of
+RXDES0_ANY_ERROR. If it is needed, user can set the flag to NO to remove
+the RXDES0_RX_ERR bit, to fix the issue.
+
+Hongwei Zhang (1):
+  net: ftgmac100: Fix AST2600 EVB NCSI RX issue
+
+ drivers/net/ethernet/faraday/Kconfig     | 9 +++++++++
+ drivers/net/ethernet/faraday/ftgmac100.h | 8 ++++++++
+ 2 files changed, 17 insertions(+)
+
 -- 
-2.29.2
+2.17.1
 
