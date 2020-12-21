@@ -2,67 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D51BB2E00AC
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF142E00B4
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbgLUTIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 14:08:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55546 "EHLO mail.kernel.org"
+        id S1726859AbgLUTIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 14:08:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55584 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725780AbgLUTIK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Dec 2020 14:08:10 -0500
-Date:   Mon, 21 Dec 2020 11:07:28 -0800
+        id S1725818AbgLUTIY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Dec 2020 14:08:24 -0500
+Date:   Mon, 21 Dec 2020 14:07:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608577649;
-        bh=mVMpxRgVbjqNwdwri6h6wUuxC8sIdUi3TgWil6YcDxo=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KSqQNDmWh4BBGkZfDc/8l6sN7aRCvvjpnBOe6DRzWQo/7kvd4zZHpo8ue99bdeafO
-         gDpsGlO/fDWJaq2chzxcI3ARaRL50VNLbK+1b/94BvKn0LHg5Ydgj8itYD6bglG+Xj
-         5fW/2mUbrKKTnGyNkgUcjUU4JvogIfH/1uVBziQeQUPYkFodlQjayZl1F0stmUpQuZ
-         kXisE1q8NqykH+sTlg5cMMePQm//k1yvieW6vJjP4u8Kc6TNsDyHwr5/2cND8SUHpF
-         h0RgYzwB2KDfarbTq7Iy18dvFrlwoNmblr3nDhFiXHytnfEgEvZl1EF5sye9MMfJgZ
-         qrN9/pXbgRytg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
-        Liron Himi <lironh@marvell.com>
-Subject: Re: [EXT] Re: [PATCH net-next] net: mvpp2: prs: improve ipv4 parse
- flow
-Message-ID: <20201221110728.22e91152@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CO6PR18MB3873C6157D3F89092964B14FB0C10@CO6PR18MB3873.namprd18.prod.outlook.com>
-References: <1608221278-15043-1-git-send-email-stefanc@marvell.com>
-        <20201219100345.22d86122@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CO6PR18MB3873C6157D3F89092964B14FB0C10@CO6PR18MB3873.namprd18.prod.outlook.com>
+        s=k20201202; t=1608577663;
+        bh=nzodhQOYcOtmkolYERXSw4lgxDNMgE+5FfZpLkVIado=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JZs/Comh3uyd98CpHKwcSiNXvWMsci4k+kM3LQOVJqZ/VgTxn/RGvUYZm17eQQxbP
+         oSt2fbpKFTMx1Klj4ri10ibTY0MQiyYU6PkFQu23Rx1O5iJ2XL/NoFvrzRBfWvvS+h
+         gFBg8SflDbPTYPmCfz/KL4kc+bMuoweP8S73WANMzMy3lE/0eDMHGJWB1r4k6BORwa
+         io3WZ8hoheA19U4JwOAA7gSRvVkY6STRCNA/NXI/NLWQreOUsNgPlm7yLCVDYGv+GJ
+         1DEe5Enpcuflj62iAF2Nmt3hRp68FJqa0EeYxXgQaC3C3AvWgqGceMcYoG491Scy1D
+         gbUbAigvgS+ZQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        stable@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Gabor Samu <samu_gabor@yahoo.ca>,
+        Jon Nettleton <jon@solid-run.com>,
+        Andrew Elwell <andrew.elwell@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH net-next 2/4] net: mvpp2: add mvpp2_phylink_to_port()
+ helper
+Message-ID: <20201221190742.GE643756@sasha-vm>
+References: <20201102180326.GA2416734@kroah.com>
+ <CAPv3WKf0fNOOovq9UzoxoAXwGLMe_MHdfCZ6U9sjgKxarUKA+Q@mail.gmail.com>
+ <20201208133532.GH643756@sasha-vm>
+ <CAPv3WKed9zhe0q2noGKiKdzd=jBNLtN6vRW0fnQddJhhiD=rkg@mail.gmail.com>
+ <X9CuTjdgD3tDKWwo@kroah.com>
+ <CAPv3WKdKOnd+iBkfcVkoOZkHj16jOpBprY3A01ERJeq6ZQCkVQ@mail.gmail.com>
+ <CAPv3WKfCfECmwjtXLAMbNe-vuGkws_icoQ+MrgJhZJqFcgGDyw@mail.gmail.com>
+ <20201221102539.6bdb9f5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201221183032.GA1551@shell.armlinux.org.uk>
+ <20201221104757.2cd8d68c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201221104757.2cd8d68c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 20 Dec 2020 11:11:35 +0000 Stefan Chulski wrote:
-> > RFC patches sent for review only are obviously welcome at any time.  
-> 
-> If I post RFC patches for review only, should I add some prefix or tag for this?
+On Mon, Dec 21, 2020 at 10:47:57AM -0800, Jakub Kicinski wrote:
+>On Mon, 21 Dec 2020 18:30:32 +0000 Russell King - ARM Linux admin wrote:
+>> On Mon, Dec 21, 2020 at 10:25:39AM -0800, Jakub Kicinski wrote:
+>> > We need to work with stable maintainers on this, let's see..
+>> >
+>> > Greg asked for a clear description of what happens, from your
+>> > previous response it sounds like a null-deref in mvpp2_mac_config().
+>> > Is the netdev -> config -> netdev linking not ready by the time
+>> > mvpp2_mac_config() is called?
+>>
+>> We are going round in circles, so nothing is going to happen.
+>>
+>> I stated in detail in one of my emails on the 10th December why the
+>> problem occurs. So, Greg has the description already. There is no
+>> need to repeat it.
+>>
+>> Can we please move forward with this?
+>
+>Well, the fact it wasn't quoted in Marcin's reply and that I didn't
+>spot it when scanning the 30 email thread should be a clear enough
+>indication whether pinging threads is a good strategy..
+>
+>A clear, fresh backport request would had been much more successful
+>and easier for Greg to process. If you still don't see a reply in
+>2 weeks, please just do that.
+>
+>In case Greg is in fact reading this:
+>
+>
+>Greg, can we backport:
+>
+>6c2b49eb9671 ("net: mvpp2: add mvpp2_phylink_to_port() helper")
 
-Include RFC in the tag: [RFC net-next] or [PATCH RFC net-next],
-this way patchwork will automatically mark it as RFC and we'll
-know you're not expecting us to apply the patch.
+I've queued it for 5.4, thanks!
 
-> And if all reviewers OK with change(or no comments at all), should I
-> repost this patch again after net-next opened?
-
-Sure, if there are no comments or you're confident the change is
-correct there is no need for an RFC posting. I'm guessing that was 
-your question? If you're asking if you _have_ to repost even if there 
-are not comments the answer is yes, we don't queue patches "to be
-applied later", fresh posting will be needed.
+-- 
+Thanks,
+Sasha
