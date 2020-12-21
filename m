@@ -2,242 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 477072DFBD8
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 13:29:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E24B2DFBE6
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 13:37:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbgLUM26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 07:28:58 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:19985 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725807AbgLUM25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 07:28:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1608553562;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:From:
-        Subject:Sender;
-        bh=SbD4hSbPipS+g1Ay3/o8KasZvvZKwV35sLmkWfN4Zxs=;
-        b=ZWw8pOhUhX+9GzT3Kp7QoIbTZUyou/EI8TQMyBgssbtVY1yLXqkDy16Q7AZUcaFC8q
-        +OdAZ4OcqOpPs72CNPW1yIlOSUfBAZnXC5iiX2ZGeF8qifLleoHYoq0wfgl+jx563gyW
-        tMFeon5lf2/4yemKwtzz7v9jpkZ2gUhIyHfirQTgIwsaCgsHddGajwUmMv3uy7rMqSPB
-        QAxsclfhKtyWO/7F5yIB2tVCkwX9utQaNfQQLoMlYkwQFHbijGA5fR5NiMfiu29hPNn7
-        ftUCD9s38+fX1ST6Q10n26n+KJ6bEqcdz8awsILmPgP3H9ziILFNL+qUJxXMxli/Ndrj
-        BTKg==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTEVR9J8xty10="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.10.177]
-        by smtp.strato.de (RZmta 47.10.0 SBL|AUTH)
-        with ESMTPSA id Q06fc3wBLCPp0g4
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Mon, 21 Dec 2020 13:25:51 +0100 (CET)
-Subject: Re: general protection fault in j1939_netdev_notify (2)
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     linux@rempel-privat.de, mkl@pengutronix.de, robin@protonic.nl,
-        davem@davemloft.net,
-        syzbot <syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com>,
-        hkallweit1@gmail.com, kuba@kernel.org,
-        syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-References: <000000000000e5b07c05b6deb081@google.com>
- <d9be63e3-a432-aa5c-d3a9-17138d1953d3@hartkopp.net>
- <20201220143734.dm2nz3eadhqfcx36@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <822244cd-3b4e-f3e8-c11e-2edb701ca30d@hartkopp.net>
-Date:   Mon, 21 Dec 2020 13:25:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S1726821AbgLUMgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 07:36:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53968 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726598AbgLUMgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 07:36:03 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3BDC0613D3;
+        Mon, 21 Dec 2020 04:35:23 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id z12so6107589pjn.1;
+        Mon, 21 Dec 2020 04:35:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Ulgk96wPy+Ee8QTzpnx1U5Ga4okXYkg3GKF44NBjl7k=;
+        b=CRs7210Hm4E0krnc1uDSIIZDnGskcFHwxDlvfU+nnnWL/FpKscZDbME1pgNOui227T
+         Vrdr8jIZkTL9lbqxFpxZ9HsgC2TLBVdBrYVrbSfPPpI7BH7zmdDkxujchMBgithYtF76
+         kYSkVcFf7Gm0LpMtZOAZUqpMDfPQjiWaOwlUpSiPE8zkP0vTcz6LpwATjL7VeeHoc1ZW
+         gXhfy7t5aDWQ/Qfau2TUNiuaYBFpECRS+V4clCNlZbM7xMn3FOEHj2aBpFy1EjBRFbkr
+         SZ9Q7Simh8U69q1GNy8Ul2UQvg+gROsF7sMtyhcoXeFsWOyTRxEzyr3BV5u6KyYfYxGK
+         VP/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Ulgk96wPy+Ee8QTzpnx1U5Ga4okXYkg3GKF44NBjl7k=;
+        b=MIW2B2aDeosPxPCpZs2expSYNuucmDIyn63jplu5DlszLOcGRaf94/pZJtppXS3IHA
+         gG61kUj7rL0NzcLG6DXsC+rZToKwoci2QS6aUKV/7p+dz6T/uR1RLJ1/X30PmU+5BL08
+         Dv6GwCSFPMXioKccjtLcFeHe6VFxwgTHIM4dqujfJbicqfbpjn12mukZAQwBC01MZY+Y
+         witFfUzLKpG2gMEPYsz+iVga9B8Sx3rrvAXpbkxiQdGLHyvCMjfiPweAiIwcmrFo5XFn
+         H4I6dtbje1BggNXVCvfI8mAcMLp8SXx9QObZGTLBZC4hGLVcMaeTeNKXiUzaeB8VUuaO
+         Dn+g==
+X-Gm-Message-State: AOAM5327jpdALyOthuKYpmiyc6FhNYDhT7FaFhT8ZDB3otp9umTb8CSR
+        N4+eC7ZBriUOss3Vvc80XBx3+oJdLj1Yuhav
+X-Google-Smtp-Source: ABdhPJzgwteHYy9de7zfsbDxzF8KJ4uYkfqueD25TFPg5Y+uL+6xzoJSt8i1epSyAOQQD/7SZgjf7g==
+X-Received: by 2002:a17:90a:5d03:: with SMTP id s3mr16504092pji.150.1608554122369;
+        Mon, 21 Dec 2020 04:35:22 -0800 (PST)
+Received: from localhost.localdomain.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a26sm15382204pgd.64.2020.12.21.04.35.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Dec 2020 04:35:21 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv13 bpf-next 0/6] xdp: add a new helper for dev map multicast support
+Date:   Mon, 21 Dec 2020 20:34:59 +0800
+Message-Id: <20201221123505.1962185-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201216143036.2296568-1-liuhangbin@gmail.com>
+References: <20201216143036.2296568-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201220143734.dm2nz3eadhqfcx36@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch is for xdp multicast support. which has been discussed before[0],
+The goal is to be able to implement an OVS-like data plane in XDP, i.e.,
+a software switch that can forward XDP frames to multiple ports.
 
+To achieve this, an application needs to specify a group of interfaces
+to forward a packet to. It is also common to want to exclude one or more
+physical interfaces from the forwarding operation - e.g., to forward a
+packet to all interfaces in the multicast group except the interface it
+arrived on. While this could be done simply by adding more groups, this
+quickly leads to a combinatorial explosion in the number of groups an
+application has to maintain.
 
-On 20.12.20 15:37, Oleksij Rempel wrote:
-> Hello Oliver,
-> 
-> On Sun, Dec 20, 2020 at 02:18:27PM +0100, Oliver Hartkopp wrote:
->> Hello Oleksij,
->>
->> I assume there is some ndev->ml_priv value set - but not from a CAN
->> netdevice.
-> 
-> it is kind of CAN device :)
+To avoid the combinatorial explosion, we propose to include the ability
+to specify an "exclude group" as part of the forwarding operation. This
+needs to be a group (instead of just a single port index), because there
+may have multi interfaces you want to exclude.
 
-No, it is not.
+Thus, the logical forwarding operation becomes a "set difference"
+operation, i.e. "forward to all ports in group A that are not also in
+group B". This series implements such an operation using device maps to
+represent the groups. This means that the XDP program specifies two
+device maps, one containing the list of netdevs to redirect to, and the
+other containing the exclude list.
 
-Team and bonding devices copy elements like dev->type but do not take 
-care about the CAN specific ml_priv.
+To achieve this, I re-implement a new helper bpf_redirect_map_multi()
+to accept two maps, the forwarding map and exclude map. If user
+don't want to use exclude map and just want simply stop redirecting back
+to ingress device, they can use flag BPF_F_EXCLUDE_INGRESS.
 
-I don't know if this is the case here. I can take a look later.
+The 1st patch is Jesper's run devmap xdp_prog later in bulking step.
+The 2st patch add a new bpf arg to allow NULL map pointer.
+The 3rd patch add the new bpf_redirect_map_multi() helper.
+The 4-6 patches are for usage sample and testing purpose.
 
->> What was the reason to fiddle with the 'priv' stuff in j1939_netdev_notify()
->> before checking if it was a CAN device?
->>
->> Would this patch fix the issue then?
-> 
-> No, j1939_priv_get_by_ndev() already has an internal test for
-> ARPHRD_CAN. One of this tests can be removed, to make the code clear.
-> So, we get netdev with ARPHRD_CAN and ml_priv == something.
-> 
-> Right now I do not know how to fix it.
-> 
-> Ideas?
+I did same perf tests with the following topo:
 
-IMO the patch is still an improvement as it swaps the testing and 
-reduces complexity.
+---------------------             ---------------------
+| Host A (i40e 10G) |  ---------- | eno1(i40e 10G)    |
+---------------------             |                   |
+                                  |   Host B          |
+---------------------             |                   |
+| Host C (i40e 10G) |  ---------- | eno2(i40e 10G)    |
+---------------------    vlan2    |          -------- |
+                                  | veth1 -- | veth0| |
+                                  |          -------- |
+                                  --------------------|
+On Host A:
+# pktgen/pktgen_sample03_burst_single_flow.sh -i eno1 -d $dst_ip -m $dst_mac -s 64
 
-Regards,
-Oliver
+On Host B(Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz, 128G Memory):
+Use xdp_redirect_map and xdp_redirect_map_multi in samples/bpf for testing.
+The veth0 in netns load dummy drop program. The forward_map max_entries in
+xdp_redirect_map_multi is modify to 4.
 
-> 
->> diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
->> index bb914d8b4216..6940f98b81fb 100644
->> --- a/net/can/j1939/main.c
->> +++ b/net/can/j1939/main.c
->> @@ -348,26 +348,25 @@ static int j1939_netdev_notify(struct notifier_block
->> *nb,
->>   			       unsigned long msg, void *data)
->>   {
->>   	struct net_device *ndev = netdev_notifier_info_to_dev(data);
->>   	struct j1939_priv *priv;
->>
->> +	if (ndev->type != ARPHRD_CAN)
->> +		goto notify_done;
->> +
->>   	priv = j1939_priv_get_by_ndev(ndev);
->>   	if (!priv)
->>   		goto notify_done;
->>
->> -	if (ndev->type != ARPHRD_CAN)
->> -		goto notify_put;
->> -
->>   	switch (msg) {
->>   	case NETDEV_DOWN:
->>   		j1939_cancel_active_session(priv, NULL);
->>   		j1939_sk_netdev_event_netdown(priv);
->>   		j1939_ecu_unmap_all(priv);
->>   		break;
->>   	}
->>
->> -notify_put:
->>   	j1939_priv_put(priv);
->>
->>   notify_done:
->>   	return NOTIFY_DONE;
->>   }
->>
->> If so, I can send a proper patch if you like.
->>
->> Best regards,
->> Oliver
->>
->>
->> On 20.12.20 06:34, syzbot wrote:
->>> Hello,
->>>
->>> syzbot found the following issue on:
->>>
->>> HEAD commit:    d635a69d Merge tag 'net-next-5.11' of git://git.kernel.org..
->>> git tree:       upstream
->>> console output: https://syzkaller.appspot.com/x/log.txt?x=1315f123500000
->>> kernel config:  https://syzkaller.appspot.com/x/.config?x=c3556e4856b17a95
->>> dashboard link: https://syzkaller.appspot.com/bug?extid=5138c4dd15a0401bec7b
->>> compiler:       clang version 11.0.0 (https://github.com/llvm/llvm-project.git ca2dcbd030eadbf0aa9b660efe864ff08af6e18b)
->>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12955123500000
->>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f2f30f500000
->>>
->>> The issue was bisected to:
->>>
->>> commit 497a5757ce4e8f37219a3989ac6a561eb9a8e6c7
->>> Author: Heiner Kallweit <hkallweit1@gmail.com>
->>> Date:   Sat Nov 7 20:50:56 2020 +0000
->>>
->>>       tun: switch to net core provided statistics counters
->>>
->>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=143b845b500000
->>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=163b845b500000
->>> console output: https://syzkaller.appspot.com/x/log.txt?x=123b845b500000
->>>
->>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->>> Reported-by: syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com
->>> Fixes: 497a5757ce4e ("tun: switch to net core provided statistics counters")
->>>
->>> general protection fault, probably for non-canonical address 0xe000080fe8c072f1: 0000 [#1] PREEMPT SMP KASAN
->>> KASAN: probably user-memory-access in range [0x0000607f46039788-0x0000607f4603978f]
->>> CPU: 1 PID: 8472 Comm: syz-executor635 Not tainted 5.10.0-syzkaller #0
->>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->>> RIP: 0010:j1939_ndev_to_priv net/can/j1939/main.c:219 [inline]
->>> RIP: 0010:j1939_priv_get_by_ndev_locked net/can/j1939/main.c:231 [inline]
->>> RIP: 0010:j1939_priv_get_by_ndev net/can/j1939/main.c:243 [inline]
->>> RIP: 0010:j1939_netdev_notify+0x115/0x320 net/can/j1939/main.c:353
->>> Code: 00 74 08 48 89 df e8 ba 1e 48 f9 48 8b 1b 48 85 db 0f 84 f0 00 00 00 4c 89 64 24 08 48 81 c3 28 60 00 00 48 89 d8 48 c1 e8 03 <42> 80 3c 30 00 74 08 48 89 df e8 8c 1e 48 f9 4c 8b 23 4d 85 e4 0f
->>> RSP: 0018:ffffc90000e9fd68 EFLAGS: 00010202
->>> RAX: 00000c0fe8c072f1 RBX: 0000607f46039788 RCX: ffff88801456d040
->>> RDX: ffff88801456d040 RSI: 0000000000000118 RDI: 0000000000000118
->>> RBP: 0000000000000118 R08: ffffffff8870585d R09: fffff520001d3fa5
->>> R10: fffff520001d3fa5 R11: 0000000000000000 R12: 0000000000000010
->>> R13: 1ffff1100293e848 R14: dffffc0000000000 R15: ffff8880149f4244
->>> FS:  0000000001d13880(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
->>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> CR2: 0000000020000080 CR3: 000000001402f000 CR4: 00000000001506e0
->>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->>> Call Trace:
->>>    notifier_call_chain kernel/notifier.c:83 [inline]
->>>    raw_notifier_call_chain+0xe7/0x170 kernel/notifier.c:410
->>>    call_netdevice_notifiers_info net/core/dev.c:2022 [inline]
->>>    call_netdevice_notifiers_extack net/core/dev.c:2034 [inline]
->>>    call_netdevice_notifiers+0xeb/0x150 net/core/dev.c:2048
->>>    __tun_chr_ioctl+0x2337/0x4860 drivers/net/tun.c:3093
->>>    vfs_ioctl fs/ioctl.c:48 [inline]
->>>    __do_sys_ioctl fs/ioctl.c:753 [inline]
->>>    __se_sys_ioctl+0xfb/0x170 fs/ioctl.c:739
->>>    do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->>>    entry_SYSCALL_64_after_hwframe+0x44/0xa9
->>> RIP: 0033:0x440359
->>> Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
->>> RSP: 002b:00007fffd37b9c98 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
->>> RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440359
->>> RDX: 0000000000000118 RSI: 00000000400454cd RDI: 0000000000000003
->>> RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
->>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401b60
->>> R13: 0000000000401bf0 R14: 0000000000000000 R15: 0000000000000000
->>> Modules linked in:
->>> ---[ end trace 7688a2c3c10da2e1 ]---
->>> RIP: 0010:j1939_ndev_to_priv net/can/j1939/main.c:219 [inline]
->>> RIP: 0010:j1939_priv_get_by_ndev_locked net/can/j1939/main.c:231 [inline]
->>> RIP: 0010:j1939_priv_get_by_ndev net/can/j1939/main.c:243 [inline]
->>> RIP: 0010:j1939_netdev_notify+0x115/0x320 net/can/j1939/main.c:353
->>> Code: 00 74 08 48 89 df e8 ba 1e 48 f9 48 8b 1b 48 85 db 0f 84 f0 00 00 00 4c 89 64 24 08 48 81 c3 28 60 00 00 48 89 d8 48 c1 e8 03 <42> 80 3c 30 00 74 08 48 89 df e8 8c 1e 48 f9 4c 8b 23 4d 85 e4 0f
->>> RSP: 0018:ffffc90000e9fd68 EFLAGS: 00010202
->>> RAX: 00000c0fe8c072f1 RBX: 0000607f46039788 RCX: ffff88801456d040
->>> RDX: ffff88801456d040 RSI: 0000000000000118 RDI: 0000000000000118
->>> RBP: 0000000000000118 R08: ffffffff8870585d R09: fffff520001d3fa5
->>> R10: fffff520001d3fa5 R11: 0000000000000000 R12: 0000000000000010
->>> R13: 1ffff1100293e848 R14: dffffc0000000000 R15: ffff8880149f4244
->>> FS:  0000000001d13880(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
->>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> CR2: 0000000020000080 CR3: 000000001402f000 CR4: 00000000001506e0
->>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->>>
->>>
->>> ---
->>> This report is generated by a bot. It may contain errors.
->>> See https://goo.gl/tpsmEJ for more information about syzbot.
->>> syzbot engineers can be reached at syzkaller@googlegroups.com.
->>>
->>> syzbot will keep track of this issue. See:
->>> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->>> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
->>> syzbot can test patches for this issue, for details see:
->>> https://goo.gl/tpsmEJ#testing-patches
->>>
->>
-> 
+Here is the perf result with 5.10 rc6:
+
+The are about +/- 0.1M deviation for native testing
+Version             | Test                                    | Generic | Native | Native + 2nd
+5.10 rc6            | xdp_redirect_map        i40e->i40e      |    2.0M |   9.1M |  8.0M
+5.10 rc6            | xdp_redirect_map        i40e->veth      |    1.7M |  11.0M |  9.7M
+5.10 rc6 + patch1   | xdp_redirect_map        i40e->i40e      |    2.0M |   9.5M |  7.5M
+5.10 rc6 + patch1   | xdp_redirect_map        i40e->veth      |    1.7M |  11.6M |  9.1M
+5.10 rc6 + patch1-6 | xdp_redirect_map        i40e->i40e      |    2.0M |   9.5M |  7.5M
+5.10 rc6 + patch1-6 | xdp_redirect_map        i40e->veth      |    1.7M |  11.6M |  9.1M
+5.10 rc6 + patch1-6 | xdp_redirect_map_multi  i40e->i40e      |    1.7M |   7.8M |  6.4M
+5.10 rc6 + patch1-6 | xdp_redirect_map_multi  i40e->veth      |    1.4M |   9.3M |  7.5M
+5.10 rc6 + patch1-6 | xdp_redirect_map_multi  i40e->i40e+veth |    1.0M |   3.2M |  2.7M
+
+Last but not least, thanks a lot to Toke, Jesper, Jiri and Eelco for
+suggestions and help on implementation.
+
+[0] https://xdp-project.net/#Handling-multicast
+
+v13:
+Pass in xdp_prog through __xdp_enqueue() for patch 01. Update related
+code in patch 03.
+
+v12:
+Add Jesper's xdp_prog patch, rebase my works on this and latest bpf-next
+Add 2nd xdp_prog test on the sample and selftests.
+
+v11:
+Fix bpf_redirect_map_multi() helper description typo.
+Add loop limit for devmap_get_next_obj() and dev_map_redirect_multi().
+
+v10:
+Rebase the code to latest bpf-next.
+Update helper bpf_xdp_redirect_map_multi()
+- No need to check map pointer as we will do the check in verifier.
+
+v9:
+Update helper bpf_xdp_redirect_map_multi()
+- Use ARG_CONST_MAP_PTR_OR_NULL for helper arg2
+
+v8:
+a) Update function dev_in_exclude_map():
+   - remove duplicate ex_map map_type check in
+   - lookup the element in dev map by obj dev index directly instead
+     of looping all the map
+
+v7:
+a) Fix helper flag check
+b) Limit the *ex_map* to use DEVMAP_HASH only and update function
+   dev_in_exclude_map() to get better performance.
+
+v6: converted helper return types from int to long
+
+v5:
+a) Check devmap_get_next_key() return value.
+b) Pass through flags to __bpf_tx_xdp_map() instead of bool value.
+c) In function dev_map_enqueue_multi(), consume xdpf for the last
+   obj instead of the first on.
+d) Update helper description and code comments to explain that we
+   use NULL target value to distinguish multicast and unicast
+   forwarding.
+e) Update memory model, memory id and frame_sz in xdpf_clone().
+f) Split the tests from sample and add a bpf kernel selftest patch.
+
+v4: Fix bpf_xdp_redirect_map_multi_proto arg2_type typo
+
+v3: Based on Toke's suggestion, do the following update
+a) Update bpf_redirect_map_multi() description in bpf.h.
+b) Fix exclude_ifindex checking order in dev_in_exclude_map().
+c) Fix one more xdpf clone in dev_map_enqueue_multi().
+d) Go find next one in dev_map_enqueue_multi() if the interface is not
+   able to forward instead of abort the whole loop.
+e) Remove READ_ONCE/WRITE_ONCE for ex_map.
+
+v2: Add new syscall bpf_xdp_redirect_map_multi() which could accept
+include/exclude maps directly.
+
+Hangbin Liu (5):
+  bpf: add a new bpf argument type ARG_CONST_MAP_PTR_OR_NULL
+  xdp: add a new helper for dev map multicast support
+  sample/bpf: add xdp_redirect_map_multicast test
+  selftests/bpf: Add verifier tests for bpf arg
+    ARG_CONST_MAP_PTR_OR_NULL
+  selftests/bpf: add xdp_redirect_multi test
+
+Jesper Dangaard Brouer (1):
+  bpf: run devmap xdp_prog on flush instead of bulk enqueue
+
+ include/linux/bpf.h                           |  21 ++
+ include/linux/filter.h                        |   1 +
+ include/net/xdp.h                             |   1 +
+ include/uapi/linux/bpf.h                      |  27 ++
+ kernel/bpf/devmap.c                           | 235 +++++++++++---
+ kernel/bpf/verifier.c                         |  16 +-
+ net/core/filter.c                             | 118 ++++++-
+ net/core/xdp.c                                |  29 ++
+ samples/bpf/Makefile                          |   3 +
+ samples/bpf/xdp_redirect_map_multi_kern.c     |  96 ++++++
+ samples/bpf/xdp_redirect_map_multi_user.c     | 301 ++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  27 ++
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../bpf/progs/xdp_redirect_multi_kern.c       | 120 +++++++
+ tools/testing/selftests/bpf/test_verifier.c   |  22 +-
+ .../selftests/bpf/test_xdp_redirect_multi.sh  | 208 ++++++++++++
+ .../testing/selftests/bpf/verifier/map_ptr.c  |  70 ++++
+ .../selftests/bpf/xdp_redirect_multi.c        | 252 +++++++++++++++
+ 18 files changed, 1502 insertions(+), 48 deletions(-)
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
+
+-- 
+2.26.2
+
