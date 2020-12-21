@@ -2,116 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD42F2E013C
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:51:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB2B2E013F
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726127AbgLUTux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 14:50:53 -0500
-Received: from smtp6.emailarray.com ([65.39.216.46]:34879 "EHLO
-        smtp6.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbgLUTux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 14:50:53 -0500
-Received: (qmail 57725 invoked by uid 89); 21 Dec 2020 19:50:11 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
-  by smtp6.emailarray.com with SMTP; 21 Dec 2020 19:50:11 -0000
-Date:   Mon, 21 Dec 2020 11:50:09 -0800
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH 0/9 v1 RFC] Generic zcopy_* functions
-Message-ID: <20201221195009.kmo32xt4wyz2atkg@bsd-mbp>
-References: <20201218201633.2735367-1-jonathan.lemon@gmail.com>
- <CA+FuTSeM0pqj=LywVUUpNyekRDmpES1y8ksSi5PJ==rw2-=cug@mail.gmail.com>
- <20201218211648.rh5ktnkm333sw4hf@bsd-mbp.dhcp.thefacebook.com>
- <CA+FuTSfcxCncqzUsQh22A5Kdha_+wXmE=tqPk4SiJ3+CEui_Vw@mail.gmail.com>
+        id S1726279AbgLUTvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 14:51:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726161AbgLUTvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 14:51:08 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994D8C0613D3;
+        Mon, 21 Dec 2020 11:50:28 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id l207so12450097oib.4;
+        Mon, 21 Dec 2020 11:50:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EKHYKYvJjr3SdNV5NJTpZB/AVd6o6kMyWNYzPfDbcJc=;
+        b=YnXqy4eXAFUfb3hjUiHXsYInF3Oc2mtZnO/TB8nfwAaTHeA37m/d6ewTHREipO8DV7
+         Hh7p4CfD3gHI7eMtGXxeOQqxb0sLu4BSSjT/qMZBuEU5ucUzX74/tb1ckPOEyxsk8Lmf
+         Jl7d8+KNZ/KPwq3hNvuK8HsnneueBecghDuCixOWKMWKXduVPPfm7C7sYEIvg4lzQpTI
+         Ufe1LmNSMDPB3asTurRECDfSaMLCWCvpm6GvDYkbDIwney/WkQqT3lCUab4KloXfVGD/
+         37eNollIh5mENPH6JICo0VdKF3jw/+roj1BwC9SUBc3TKkcsUwyEDNzfQ+S2zvzjUQx7
+         FwSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EKHYKYvJjr3SdNV5NJTpZB/AVd6o6kMyWNYzPfDbcJc=;
+        b=WMcilFwJeIBcNqyNpL/GzpbEPC7nnv2g8FAX+SWahLRTTMnrK+PIMgS0lkXSu0iU8w
+         /dqFMWVhWO6ZsjYi8fRJlMsdz65gD+lePT3Tv+aRwSmGbTEJGPYwMM7JpqrwJCEkwtpg
+         Y/Jiu0zmt1y1jUpS+S9OgWWeoNklkRPsd9FDsVhjXkl8/PefT2YeaTKx5uPpE10+JvpE
+         eaV3PMk8u4tQAqTQR4b4XQGu6c6b7lZGxEdHulSkzD7fOI1WGkgW24uJWmKdN2B/OzLU
+         2E09+ln0IN/fSapwSFl1lDSLtx/bFfja3YunRP8kadicpTy4JwK5LBwG+I1zgNhhglIW
+         ZOfg==
+X-Gm-Message-State: AOAM5327lvRhy1JuscwoE0rPUbqp5mLvIYIzUey319onGBTroGX+FNxF
+        Wa68zvEeZV8E8VhvjZPS83uLmVj4iKcPmIYh43o=
+X-Google-Smtp-Source: ABdhPJyTF8Ofb7lnfU1nNVBGH3z83jxGYZHPN6muNzO3z236Fn3gpYFV724Nul736pJL7mdxpOixxpXuNOkl2dee1oA=
+X-Received: by 2002:aca:3306:: with SMTP id z6mr1799369oiz.141.1608580228062;
+ Mon, 21 Dec 2020 11:50:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSfcxCncqzUsQh22A5Kdha_+wXmE=tqPk4SiJ3+CEui_Vw@mail.gmail.com>
+References: <20201219135036.3216017-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20201219135036.3216017-1-martin.blumenstingl@googlemail.com>
+From:   Thomas Graichen <thomas.graichen@googlemail.com>
+Date:   Mon, 21 Dec 2020 20:50:14 +0100
+Message-ID: <CAOUEw12Ldi9Kv2Gd=OCEgeVa+jv_FM1HqGRQBiEYCo==8PcrWA@mail.gmail.com>
+Subject: Re: [PATCH] net: stmmac: dwmac-meson8b: ignore the second clock input
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        davem@davemloft.net, kuba@kernel.org, khilman@baylibre.com,
+        jbrunet@baylibre.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 19, 2020 at 02:00:55PM -0500, Willem de Bruijn wrote:
-> On Fri, Dec 18, 2020 at 4:27 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
-> >
-> > On Fri, Dec 18, 2020 at 03:49:44PM -0500, Willem de Bruijn wrote:
-> > > On Fri, Dec 18, 2020 at 3:23 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
-> > > >
-> > > > From: Jonathan Lemon <bsd@fb.com>
-> > > >
-> > > > This is set of cleanup patches for zerocopy which are intended
-> > > > to allow a introduction of a different zerocopy implementation.
-> > >
-> > > Can you describe in more detail what exactly is lacking in the current
-> > > zerocopy interface for this this different implementation? Or point to
-> > > a github tree with the feature patches attached, perhaps.
-> >
-> > I'll get the zctap features up into a github tree.
-> >
-> > Essentially, I need different behavior from ubuf_info:
-> >   - no refcounts on RX packets (static ubuf)
-> 
-> That is already the case for vhost and tpacket zerocopy use cases.
-> 
-> >   - access to the skb on RX skb free (for page handling)
-> 
-> To refers only to patch 9, moving the callback earlier in
-> skb_release_data, right?
+On Sat, Dec 19, 2020 at 2:52 PM Martin Blumenstingl
+<martin.blumenstingl@googlemail.com> wrote:
+>
+> The dwmac glue registers on Amlogic Meson8b and newer SoCs has two clock
+> inputs:
+> - Meson8b and Meson8m2: MPLL2 and MPLL2 (the same parent is wired to
+>   both inputs)
+> - GXBB, GXL, GXM, AXG, G12A, G12B, SM1: FCLK_DIV2 and MPLL2
+>
+> All known vendor kernels and u-boots are using the first input only. We
+> let the common clock framework automatically choose the "right" parent.
+> For some boards this causes a problem though, specificially with G12A and
+> newer SoCs. The clock input is used for generating the 125MHz RGMII TX
+> clock. For the two input clocks this means on G12A:
+> - FCLK_DIV2: 999999985Hz / 8 = 124999998.125Hz
+> - MPLL2: 499999993Hz / 4 = 124999998.25Hz
+>
+> In theory MPLL2 is the "better" clock input because it's gets us 0.125Hz
+> closer to the requested frequency than FCLK_DIV2. In reality however
+> there is a resource conflict because MPLL2 is needed to generate some of
+> the audio clocks. dwmac-meson8b probes first and sets up the clock tree
+> with MPLL2. This works fine until the audio driver comes and "steals"
+> the MPLL2 clocks and configures it with it's own rate (294909637Hz). The
+> common clock framework happily changes the MPLL2 rate but does not
+> reconfigure our RGMII TX clock tree, which then ends up at 73727409Hz,
+> which is more than 40% off the requested 125MHz.
+>
+> Don't use the second clock input for now to force the common clock
+> framework to always select the first parent. This mimics the behavior
+> from the vendor driver and fixes the clock resource conflict with the
+> audio driver on G12A boards. Once the common clock framework can handle
+> this situation this change can be reverted again.
+>
+> Fixes: 566e8251625304 ("net: stmmac: add a glue driver for the Amlogic Meson 8b / GXBB DWMAC")
+> Reported-by: Thomas Graichen <thomas.graichen@gmail.com>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-Yes.
+Tested-by: thomas graichen <thomas.graichen@gmail.com>
 
-
-> >   - no page pinning on TX/tx completion
-> 
-> That is not part of the skb zerocopy infrastructure?
-
-That's specific to msg_zerocopy.  zctap uses the same network stack
-paths, but pins the pages during setup, not during each each system call.
-
-
-> >   - marking the skb data as inaccessible so skb_condense()
-> >     and skb_zeroocopy_clone() leave it alone.
-> 
-> Yep. Skipping content access on the Rx path will be interesting. I
-> wonder if that should be a separate opaque skb feature, independent
-> from whether the data is owned by userspace, peripheral memory, the
-> page cache or anything else.
-
-Would that be indicated by a bit on the skb (like pfmemalloc), or 
-a bit in the skb_shared structure, as I'm leaning towards doing here?
-
-
-> > > I think it's good to split into multiple smaller patchsets, starting
-> > > with core stack support. But find it hard to understand which of these
-> > > changes are truly needed to support a new use case.
-> >
-> > Agree - kind of hard to see why this is done without a use case.
-> > These patches are purely restructuring, and don't introduce any
-> > new features.
-> >
-> >
-> > > If anything, eating up the last 8 bits in skb_shared_info should be last resort.
-> >
-> > I would like to add 2 more bits in the future, which is why I
-> > moved them.  Is there a compelling reason to leave the bits alone?
-> 
-> Opportunity cost.
-> 
-> We cannot grow skb_shared_info due to colocation with MTU sized linear
-> skbuff's in half a page.
-> 
-> It took me quite some effort to free up a few bytes in commit
-> 4d276eb6a478 ("net: remove deprecated syststamp timestamp").
-> 
-> If we are very frugal, we could shadow some bits to have different
-> meaning in different paths. SKBTX_IN_PROGRESS is transmit only, I
-> think. But otherwise we'll have to just dedicate the byte to more
-> flags. Yours are likely not to be the last anyway.
-
-The zerocopy/enable flags could be encoded in one of the lower 3 bits
-in the destructor_arg, (similar to nouarg) but that seems messy.
--- 
-Jonathan
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+> index 459ae715b33d..f184b00f5116 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+> @@ -135,7 +135,7 @@ static int meson8b_init_rgmii_tx_clk(struct meson8b_dwmac *dwmac)
+>         struct device *dev = dwmac->dev;
+>         static const struct clk_parent_data mux_parents[] = {
+>                 { .fw_name = "clkin0", },
+> -               { .fw_name = "clkin1", },
+> +               { .index = -1, },
+>         };
+>         static const struct clk_div_table div_table[] = {
+>                 { .div = 2, .val = 2, },
+> --
+> 2.29.2
+>
