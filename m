@@ -2,110 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A542E0130
+	by mail.lfdr.de (Postfix) with ESMTP id AEC3F2E0131
 	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:42:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbgLUTlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 14:41:21 -0500
-Received: from atlmailgw1.ami.com ([63.147.10.40]:58593 "EHLO
-        atlmailgw1.ami.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726333AbgLUTlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 14:41:21 -0500
-X-AuditID: ac1060b2-a93ff700000017ec-ee-5fe0fa37947c
+        id S1727169AbgLUTlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 14:41:25 -0500
+Received: from atlmailgw2.ami.com ([63.147.10.42]:44677 "EHLO
+        atlmailgw2.ami.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726518AbgLUTlZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 14:41:25 -0500
+X-AuditID: ac10606f-231ff70000001934-53-5fe0fa3b97ea
 Received: from atlms1.us.megatrends.com (atlms1.us.megatrends.com [172.16.96.144])
         (using TLS with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (Client did not present a certificate)
-        by atlmailgw1.ami.com (Symantec Messaging Gateway) with SMTP id 91.7D.06124.73AF0EF5; Mon, 21 Dec 2020 14:40:39 -0500 (EST)
+        by atlmailgw2.ami.com (Symantec Messaging Gateway) with SMTP id AE.EF.06452.B3AF0EF5; Mon, 21 Dec 2020 14:40:44 -0500 (EST)
 Received: from ami-us-wk.us.megatrends.com (172.16.98.207) by
  atlms1.us.megatrends.com (172.16.96.144) with Microsoft SMTP Server (TLS) id
- 14.3.468.0; Mon, 21 Dec 2020 14:40:38 -0500
+ 14.3.468.0; Mon, 21 Dec 2020 14:40:43 -0500
 From:   Hongwei Zhang <hongweiz@ami.com>
 To:     <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
         <openbmc@lists.ozlabs.org>, Jakub Kicinski <kuba@kernel.org>,
         David S Miller <davem@davemloft.net>
 CC:     Hongwei Zhang <hongweiz@ami.com>, netdev <netdev@vger.kernel.org>,
         Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
-Subject: [Aspeed,ncsi-rx, v2 0/1] net: ftgmac100: Fix AST2600EVB NCSI RX issue 
-Date:   Mon, 21 Dec 2020 14:40:25 -0500
-Message-ID: <20201221194026.30715-1-hongweiz@ami.com>
+Subject: [Aspeed,ncsi-rx, v2 1/1] net: ftgmac100: Fix AST2600 EVB NCSI RX issue
+Date:   Mon, 21 Dec 2020 14:40:26 -0500
+Message-ID: <20201221194026.30715-2-hongweiz@ami.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201215192323.24359-1-hongweiz@ami.com>
 References: <20201215192323.24359-1-hongweiz@ami.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [172.16.98.207]
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBLMWRmVeSWpSXmKPExsWyRiBhgq75rwfxBgsXq1vsusxhMed8C4vF
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrOLMWRmVeSWpSXmKPExsWyRiBhgq7NrwfxBr/Ps1nsusxhMed8C4vF
         7/N/mS0ubOtjtWhefY7Z4vKuOWwWxxaIWZxqecHiwOFxtX0Xu8eWlTeZPC5+PMbssWlVJ5vH
-        +RkLGT0+b5ILYIvisklJzcksSy3St0vgyjjzqJGxYI1UxeRzR5gaGHeLdTFyckgImEgcPrqV
-        rYuRi0NIYBeTxIvLm9ihHEaJZ5+fsYJUsQmoSezdPIcJJCEisJpRomfDL0YQh1mgg1Fi6ouv
-        7CBVwgL+EvMOfQHrYBFQldjU+IUJxOYVMJU4cGENG8Q+eYnVGw4wdzFycHAKmEnsOSUHEhYC
-        Kmnd9w6qXFDi5MwnLCA2s4CExMEXL5ghamQlbh16zAQxRlHiwa/vrBMYBWYhaZmFpGUBI9Mq
-        RqHEkpzcxMyc9HJDvcTcTL3k/NxNjJDQ3rSDseWi+SFGJg7GQ4wSHMxKIrxmUvfjhXhTEiur
-        Uovy44tKc1KLDzFKc7AoifOucj8aLySQnliSmp2aWpBaBJNl4uCUamAUMdNWXbqdt3l7Tb7i
-        VuuD53/csbn87FRJjsKDigVu8kKLLBd4vYjN3rG344qRof1Se52fn/tsT5W4bCgSzvbKTtm1
-        4b98waHS5DO3vm9I9ypbJidyoG6Hx+GpGewFtut/rH/6d8oN14msnEWTvx0TSYzonNYYa8ip
-        4VrRueqF972XBuY/F/QqsRRnJBpqMRcVJwIA6loq6lsCAAA=
+        +RkLGT0+b5ILYIvisklJzcksSy3St0vgypg/W6egT6Biz/rdjA2MJ3m7GDk5JARMJI4daWfu
+        YuTiEBLYxSRx4vUhViiHUeLzuQ0sIFVsAmoSezfPYQJJiAisZpTo2fCLEcRhFuhglJj64is7
+        SJWwgL/Euu+TwDpYBFQl9u68wgRi8wqYSrxZ/JYJYp+8xOoNB4D2cXBwCphJ7DklBxIWAipp
+        3fcOqlxQ4uTMJ2BjmAUkJA6+eMEMUSMrcevQY6gxihIPfn1nncAoMAtJyywkLQsYmVYxCiWW
+        5OQmZuaklxvpJeZm6iXn525ihAR2/g7Gjx/NDzEycTAeYpTgYFYS4TWTuh8vxJuSWFmVWpQf
+        X1Sak1p8iFGag0VJnHeV+9F4IYH0xJLU7NTUgtQimCwTB6dUA+NE76s2TWf3rrr3ffO8TQqz
+        P5T9F03U9kphXT5PiOWt55ZndsnvNj1V/5EszP1tlq/ul+l3D5c/7PwaaREgOV056si5vzv1
+        DtZLdRj5fD65480HJrP64j/PrJm3ZNfv+fEuvaB6vdnzhpQFntObtsrn7HfIO7ZfaO5jDZ8N
+        YY7RjBpCM+5sSexXYinOSDTUYi4qTgQAMXQx8FoCAAA=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Reviewer,
-
 When FTGMAC100 driver is used on other NCSI Ethernet controllers, few
-controllers have compatible issue. One example is Intel I210 Ethernet
-controller on AST2600 BMC, with FTGMAC100 driver, it always trigger
-RXDES0_RX_ERR error, cause NCSI initialization failure, removing
-FTGMAC100_RXDES0_RX_ERR bit from RXDES0_ANY_ERROR fix the issue.
+controllers have compatible issue, removing FTGMAC100_RXDES0_RX_ERR bit
+from RXDES0_ANY_ERROR can fix the issue.
 
-Here are part of the debug logs:
-......
-[   35.075552] ftgmac100_hard_start_xmit TXDESO=b000003c
-[   35.080843] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 55
-[   35.087141] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
-[   35.094448] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8 
-[   35.101498] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
-[   35.108205] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
-[   35.287808] i2c i2c-1: new_device: Instantiated device slave-mqueue at 0x12
-[   35.428379] ftgmac100_hard_start_xmit TXDESO=b000003c
-[   35.433624] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 56
-[   35.439915] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
-[   35.447225] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8
-[   35.454273] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
-[   35.460972] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
-[   35.797825] ftgmac100_hard_start_xmit TXDESO=b000003c
-[   35.803241] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 57
-[   35.809541] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
-[   35.816848] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8
-[   35.823899] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
-[   35.830597] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
-[   36.179914] ftgmac100_hard_start_xmit TXDESO=b000003c
-[   36.185160] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 58
-[   36.191454] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
-[   36.198761] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8
-[   36.205813] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
-[   36.212513] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
-[   36.593688] ftgmac100_hard_start_xmit TXDESO=b000003c
-[   36.602937] ftgmac100 1e660000.ethernet eth0: tx_complete_packet 59
-[   36.609244] ftgmac100 1e660000.ethernet eth0: rx_packet_error RXDES0=0xb0070040
-[   36.616558] ftgmac100_rx_packet RXDES0=b0070040 RXDES1=f0800000 RXDES2=88f8
-[   36.623608] ftgmac100 1e660000.ethernet eth0: rx_packet_error 0xb0070040
-[   36.630315] ftgmac100 1e660000.ethernet eth0: [ISR] = 0xb0070040: RX_ERR
-[   37.031524] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
-[   37.067831] IPv6: ADDRCONF(NETDEV_UP): eth1: link is not ready
-............
-
-This patch add a configurable flag, FTGMAC100_RXDES0_RX_ERR_CHK, in FTGMAC100
- driver, it is YES by default, so keep the orignal define of
-RXDES0_ANY_ERROR. If it is needed, user can set the flag to NO to remove
-the RXDES0_RX_ERR bit, to fix the issue.
-
-Hongwei Zhang (1):
-  net: ftgmac100: Fix AST2600 EVB NCSI RX issue
-
+Fixes: 7ee2d5b4d4340353 ("ARM: dts: nuvoton: Add Fii Kudo system")
+Signed-off-by: Hongwei Zhang <hongweiz@ami.com>
+---
  drivers/net/ethernet/faraday/Kconfig     | 9 +++++++++
  drivers/net/ethernet/faraday/ftgmac100.h | 8 ++++++++
  2 files changed, 17 insertions(+)
 
+diff --git a/drivers/net/ethernet/faraday/Kconfig b/drivers/net/ethernet/faraday/Kconfig
+index c2677ec0564d..ccd0c30be0db 100644
+--- a/drivers/net/ethernet/faraday/Kconfig
++++ b/drivers/net/ethernet/faraday/Kconfig
+@@ -38,4 +38,13 @@ config FTGMAC100
+ 	  from Faraday. It is used on Faraday A369, Andes AG102 and some
+ 	  other ARM/NDS32 SoC's.
+ 
++config FTGMAC100_RXDES0_RX_ERR_CHK
++	bool "Include FTGMAC100_RXDES0_RX_ERR in RXDES0_ANY_ERROR"
++	default y
++	depends on FTGMAC100
++	help
++	  Say N here if the NCSI controller on your platform has compatible
++	  issue with FTGMAC100, thus always trigger RXDES0_RX_ERR. Exclude
++	  this bit can fix the issue.
++
+ endif # NET_VENDOR_FARADAY
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.h b/drivers/net/ethernet/faraday/ftgmac100.h
+index 63b3e02fab16..59e1bd52d261 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.h
++++ b/drivers/net/ethernet/faraday/ftgmac100.h
+@@ -251,12 +251,20 @@ struct ftgmac100_rxdes {
+ #define FTGMAC100_RXDES0_RXPKT_RDY	(1 << 31)
+ 
+ /* Errors we care about for dropping packets */
++#ifdef CONFIG_FTGMAC100_RXDES0_RX_ERR_CHK
+ #define RXDES0_ANY_ERROR		( \
+ 	FTGMAC100_RXDES0_RX_ERR		| \
+ 	FTGMAC100_RXDES0_CRC_ERR	| \
+ 	FTGMAC100_RXDES0_FTL		| \
+ 	FTGMAC100_RXDES0_RUNT		| \
+ 	FTGMAC100_RXDES0_RX_ODD_NB)
++#else
++#define RXDES0_ANY_ERROR		( \
++	FTGMAC100_RXDES0_CRC_ERR	| \
++	FTGMAC100_RXDES0_FTL		| \
++	FTGMAC100_RXDES0_RUNT		| \
++	FTGMAC100_RXDES0_RX_ODD_NB)
++#endif
+ 
+ #define FTGMAC100_RXDES1_VLANTAG_CI	0xffff
+ #define FTGMAC100_RXDES1_PROT_MASK	(0x3 << 20)
 -- 
 2.17.1
 
