@@ -2,136 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A2B62DFF37
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 19:05:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C06652DFF81
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 19:17:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbgLUSFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 13:05:21 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35974 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725902AbgLUSFU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Dec 2020 13:05:20 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1krPXt-00DBHi-F6; Mon, 21 Dec 2020 19:04:33 +0100
-Date:   Mon, 21 Dec 2020 19:04:33 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        id S1726714AbgLUSQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 13:16:41 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:50153 "EHLO
+        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726066AbgLUSQk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 13:16:40 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1608574584; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=advVr5rSg5zOOn4yjOEJUBXVBEt3L/mvo2faQIC58Bc=; b=bKkNriUjWnUrWoMflfY7dvcOiaZd+47FNYlwSh7EJv9rwskyMFgMb4y6K8qLjR21BGMnSnHJ
+ 3/koP8G8LWQGPXGv/rKZQ1SG/f/UvCNq0khOtsUOOf3tTfGzu0ViLWp/XUDx2l+sV8jl/RH9
+ XYSh+GROXYRVWDYaGSADr08D0VY=
+X-Mailgun-Sending-Ip: 198.61.254.31
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 5fe0e63fda4719818836360d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Dec 2020 18:15:27
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 4CE6DC43464; Mon, 21 Dec 2020 18:15:27 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id E500AC433ED;
+        Mon, 21 Dec 2020 18:15:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E500AC433ED
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Zekun Shen <bruceshenzk@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Miguel Ojeda <ojeda@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] net: lantiq_etop: check the result of request_irq()
-Message-ID: <20201221180433.GE3107610@lunn.ch>
-References: <20201221054323.247483-1-masahiroy@kernel.org>
- <20201221152645.GH3026679@lunn.ch>
- <CAK7LNAQ9vhB6iYHeGV3xcyo8_iLqmGJeJUYOvbdHqN9Wn0mEJg@mail.gmail.com>
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] net: ath10k: santity check for ep connectivity
+References: <20200622022055.16028-1-bruceshenzk@gmail.com>
+Date:   Mon, 21 Dec 2020 20:15:22 +0200
+In-Reply-To: <20200622022055.16028-1-bruceshenzk@gmail.com> (Zekun Shen's
+        message of "Sun, 21 Jun 2020 22:20:54 -0400")
+Message-ID: <87sg7znhz9.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK7LNAQ9vhB6iYHeGV3xcyo8_iLqmGJeJUYOvbdHqN9Wn0mEJg@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 22, 2020 at 12:59:08AM +0900, Masahiro Yamada wrote:
-> On Tue, Dec 22, 2020 at 12:26 AM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Mon, Dec 21, 2020 at 02:43:23PM +0900, Masahiro Yamada wrote:
-> > > The declaration of request_irq() in <linux/interrupt.h> is marked as
-> > > __must_check.
-> > >
-> > > Without the return value check, I see the following warnings:
-> > >
-> > > drivers/net/ethernet/lantiq_etop.c: In function 'ltq_etop_hw_init':
-> > > drivers/net/ethernet/lantiq_etop.c:273:4: warning: ignoring return value of 'request_irq', declared with attribute warn_unused_result [-Wunused-result]
-> > >   273 |    request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
-> > >       |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > drivers/net/ethernet/lantiq_etop.c:281:4: warning: ignoring return value of 'request_irq', declared with attribute warn_unused_result [-Wunused-result]
-> > >   281 |    request_irq(irq, ltq_etop_dma_irq, 0, "etop_rx", priv);
-> > >       |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > >
-> > > Reported-by: Miguel Ojeda <ojeda@kernel.org>
-> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > > ---
-> > >
-> > >  drivers/net/ethernet/lantiq_etop.c | 13 +++++++++++--
-> > >  1 file changed, 11 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
-> > > index 2d0c52f7106b..960494f9752b 100644
-> > > --- a/drivers/net/ethernet/lantiq_etop.c
-> > > +++ b/drivers/net/ethernet/lantiq_etop.c
-> > > @@ -264,13 +264,18 @@ ltq_etop_hw_init(struct net_device *dev)
-> > >       for (i = 0; i < MAX_DMA_CHAN; i++) {
-> > >               int irq = LTQ_DMA_CH0_INT + i;
-> > >               struct ltq_etop_chan *ch = &priv->ch[i];
-> > > +             int ret;
-> > >
-> > >               ch->idx = ch->dma.nr = i;
-> > >               ch->dma.dev = &priv->pdev->dev;
-> > >
-> > >               if (IS_TX(i)) {
-> > >                       ltq_dma_alloc_tx(&ch->dma);
-> > > -                     request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
-> > > +                     ret = request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
-> > > +                     if (ret) {
-> > > +                             netdev_err(dev, "failed to request irq\n");
-> > > +                             return ret;
-> >
-> > You need to cleanup what ltq_dma_alloc_tx() did.
-> 
-> 
-> Any failure from this function will roll back
-> in the following paths:
-> 
->   ltq_etop_hw_exit()
->      -> ltq_etop_free_channel()
->           -> ltq_dma_free()
-> 
-> 
-> So, dma is freed anyway.
-> 
-> One problem I see is,
-> ltq_etop_hw_exit() frees all DMA channels,
-> some of which may not have been allocated yet.
-> 
-> If it is a bug, it is an existing bug.
-> 
-> 
-> >
-> > > +                     }
-> > >               } else if (IS_RX(i)) {
-> > >                       ltq_dma_alloc_rx(&ch->dma);
-> > >                       for (ch->dma.desc = 0; ch->dma.desc < LTQ_DESC_NUM;
-> > > @@ -278,7 +283,11 @@ ltq_etop_hw_init(struct net_device *dev)
-> > >                               if (ltq_etop_alloc_skb(ch))
-> > >                                       return -ENOMEM;
-> 
-> 
-> This -ENOMEM does not roll back anything here.
-> 
-> As stated above, dma_free_coherent() is called.
-> The problem is, ltq_etop_hw_exit() rolls back too much.
-> 
-> If your requirement is "this driver is completely wrong. Please rewrite it",
-> sorry, I cannot (unless I am paid to do so).
-> 
-> I am just following this driver's roll-back model.
-> 
-> Please do not expect more to a person who
-> volunteers to eliminate build warnings.
-> 
-> Of course, if somebody volunteers to rewrite this driver correctly,
-> that is appreciated.
+Zekun Shen <bruceshenzk@gmail.com> writes:
 
-Hi Hauke
+> Function ep_rx_complete is being called without NULL checking
+> in ath10k_htc_rx_completion_handler. Without such check, mal-
+> formed packet is able to cause jump to NULL.
+>
+> ep->service_id seems a good candidate for sanity check as it is
+> used in usb.c.
+>
+> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+> ---
+>  drivers/net/wireless/ath/ath10k/htc.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/drivers/net/wireless/ath/ath10k/htc.c b/drivers/net/wireless/ath/ath10k/htc.c
+> index 31df6dd04..e00794d97 100644
+> --- a/drivers/net/wireless/ath/ath10k/htc.c
+> +++ b/drivers/net/wireless/ath/ath10k/htc.c
+> @@ -450,6 +450,11 @@ void ath10k_htc_rx_completion_handler(struct ath10k *ar, struct sk_buff *skb)
+>  
+>  	ep = &htc->endpoint[eid];
+>  
+> +	if (ep->service_id == 0) {
+> +		ath10k_warn(ar, "HTC Rx: ep %d is not connect\n", eid);
+> +		goto out;
+> +	}
 
-Do you still have this hardware? Do you have time to take a look at
-the cleanup code?
+I think using ATH10K_HTC_SVC_ID_UNUSED is more descriptive than zero, as
+ath10k_htc_reset_endpoint_states() uses it. I fixed in the pending
+branch.
 
-Thanks
-	Andrew
+I think also ath10k_htc_process_credit_report() might have a similar
+problem, can you take a look?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
