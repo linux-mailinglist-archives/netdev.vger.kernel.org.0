@@ -2,138 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F23E12E02E1
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 00:23:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9720E2E02F7
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 00:42:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726101AbgLUXWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 18:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
+        id S1726207AbgLUXmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 18:42:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbgLUXWt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 18:22:49 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427C9C0613D3
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 15:22:09 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id q1so10408405ilt.6
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 15:22:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nKBSHG6KDmtV3l2AhApkAlTc7JRuGFd2X8Ov/hLUXsk=;
-        b=rnVEzSgiIWyLER4vtLzDABVc02/ghcO/TUN5ofdq28J/jKFOVUrFvFjK5r3scrDIuk
-         htR8iVZFxjY4vwYlqZyruzV2CzThg6cK4ry83cOLF9wIhYIBkjTmmo6yTCH/9KNoNdbO
-         MjUtvYit1q3AqrsxCqrp+788CBBrbOftJTfA1FiWnXNXMjB2GJDP4AJ8xpXpya8iR7Rk
-         VV2thuGBaVD6OB0gPWNELbyU2hgVw8qw8w0eqwH25mRxiWanH9zi1cTkOa8P3S3Kephy
-         WdlPPjnBUWxn7gknrGFI+8riWM1Rs6P+gabKWOHJWOLkKDJh/ggjogau6B+eHN+KUKIA
-         RwGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nKBSHG6KDmtV3l2AhApkAlTc7JRuGFd2X8Ov/hLUXsk=;
-        b=f7iKbE1b4/5yW2hI7vQ7h9oMadDWOVZIKrBTqx89+Ie1n/dtCck7dvN1kfQr6e1YCM
-         UnpTKlLP9erVNoaCwuQUCLupkavLTHgCeESiSIp7lNnYrVNBpUQd1iofWtblPV1JqHfh
-         zNWyOHbZYnlljFOxhQWWggujgS/Hfx9bBJpIi8bJ3/ta9XL01v5w21cT/V8YZYwHlzz7
-         XPvqzyVk0trg862wsPSX8EIsr/3EoaH+67RrfrK3ndVxn0rONCmnEX3L2FmUGhzYXUhE
-         TqaGA0DnwV9FXs8LYMKLYO28yuRJeTN6TGJr5ycIiwlQJC9v6pGrbjgGQbbQzvHIzZk5
-         2W8Q==
-X-Gm-Message-State: AOAM5309penm1omgZ58zWYB3d8s8yxb0N21QDG/2Cp1Bme3ms+sn8gfD
-        uRNFON0TKUXRG9mQckoZjTpsZexxQFibO8W3SHAX2/vDA28=
-X-Google-Smtp-Source: ABdhPJyfvljHaxzRwORw2gxANI8H4t6KJrIBnEwdC7roJsMk8dpsqw/atPAl7Lk1qFgHu4eQggxyL6DD9BR5I7GMQIs=
-X-Received: by 2002:a05:6e02:929:: with SMTP id o9mr17970250ilt.42.1608592928569;
- Mon, 21 Dec 2020 15:22:08 -0800 (PST)
-MIME-Version: 1.0
-References: <20201221193644.1296933-1-atenart@kernel.org> <20201221193644.1296933-2-atenart@kernel.org>
-In-Reply-To: <20201221193644.1296933-2-atenart@kernel.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 21 Dec 2020 15:21:57 -0800
-Message-ID: <CAKgT0UfTgYhED1f6vdsoT72A3=D2Grh4U-A6pp43FLZoCs30Gw@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/3] net: fix race conditions in xps by locking the
- maps and dev->tc_num
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
+        with ESMTP id S1725780AbgLUXmX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 18:42:23 -0500
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7992C0613D3;
+        Mon, 21 Dec 2020 15:41:42 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4D0GFQ12YqzQlRQ;
+        Tue, 22 Dec 2020 00:41:14 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
+        t=1608594072;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+SpruTXWYI7kkzwg63Wix/B+XVjogO4KHpq9u4eVk54=;
+        b=Ybn4OFRR+VInPVGyZV73PMKEPvPapPVC1CzoUAMxyGHCd+9WGv1gzGf+lVS9QrtrhDgWSy
+        nn/ceE4Rfw5TungqySaBY8qZ+OrHKwon8aza7v7pWj1a7BnhGLCht3KJyknv+T66ySY3Ax
+        P0Z1kmQr6tpn5R3w2oGdxbVQZkPcyO6Gfcma2EJPp3BlTSgi2cgNVufffBCGN6HuPwuSXB
+        y+o+Vcj/b8T4SyTwGVdrdrn/pSf4aiImISYyhP7fsTF3/rXpnMRsc0WD4O2dOHZSCy/TV4
+        UTKrQmtFbNPlD2S1BDqdPkDriBYNXITssU9aNkasLxMxE6h35EcKSXwG5ISO4A==
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id qLzPmxt2L1dn; Tue, 22 Dec 2020 00:41:09 +0100 (CET)
+Subject: Re: [PATCH] net: lantiq_etop: check the result of request_irq()
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20201221054323.247483-1-masahiroy@kernel.org>
+ <20201221152645.GH3026679@lunn.ch>
+ <CAK7LNAQ9vhB6iYHeGV3xcyo8_iLqmGJeJUYOvbdHqN9Wn0mEJg@mail.gmail.com>
+ <20201221180433.GE3107610@lunn.ch>
+From:   Hauke Mehrtens <hauke@hauke-m.de>
+Message-ID: <3197556a-8df8-3959-895b-e4b82de904aa@hauke-m.de>
+Date:   Tue, 22 Dec 2020 00:41:07 +0100
+MIME-Version: 1.0
+In-Reply-To: <20201221180433.GE3107610@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -6.06 / 15.00 / 15.00
+X-Rspamd-Queue-Id: E311F1718
+X-Rspamd-UID: a3b417
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 21, 2020 at 11:36 AM Antoine Tenart <atenart@kernel.org> wrote:
->
-> Two race conditions can be triggered in xps, resulting in various oops
-> and invalid memory accesses:
->
-> 1. Calling netdev_set_num_tc while netif_set_xps_queue:
->
->    - netdev_set_num_tc sets dev->tc_num.
->
->    - netif_set_xps_queue uses dev->tc_num as one of the parameters to
->      compute the size of new_dev_maps when allocating it. dev->tc_num is
->      also used to access the map, and the compiler may generate code to
->      retrieve this field multiple times in the function.
->
->    If new_dev_maps is allocated using dev->tc_num and then dev->tc_num
->    is set to a higher value through netdev_set_num_tc, later accesses to
->    new_dev_maps in netif_set_xps_queue could lead to accessing memory
->    outside of new_dev_maps; triggering an oops.
->
->    One way of triggering this is to set an iface up (for which the
->    driver uses netdev_set_num_tc in the open path, such as bnx2x) and
->    writing to xps_cpus or xps_rxqs in a concurrent thread. With the
->    right timing an oops is triggered.
->
-> 2. Calling netif_set_xps_queue while netdev_set_num_tc is running:
->
->    2.1. netdev_set_num_tc starts by resetting the xps queues,
->         dev->tc_num isn't updated yet.
->
->    2.2. netif_set_xps_queue is called, setting up the maps with the
->         *old* dev->num_tc.
->
->    2.3. dev->tc_num is updated.
->
->    2.3. Later accesses to the map leads to out of bound accesses and
->         oops.
->
->    A similar issue can be found with netdev_reset_tc.
->
->    The fix can't be to only link the size of the maps to them, as
->    invalid configuration could still occur. The reset then set logic in
->    both netdev_set_num_tc and netdev_reset_tc must be protected by a
->    lock.
->
-> Both issues have the same fix: netif_set_xps_queue, netdev_set_num_tc
-> and netdev_reset_tc should be mutually exclusive.
->
-> This patch fixes those races by:
->
-> - Reworking netif_set_xps_queue by moving the xps_map_mutex up so the
->   access of dev->num_tc is done under the lock.
->
-> - Using xps_map_mutex in both netdev_set_num_tc and netdev_reset_tc for
->   the reset and set logic:
->
->   + As xps_map_mutex was taken in the reset path, netif_reset_xps_queues
->     had to be reworked to offer an unlocked version (as well as
->     netdev_unbind_all_sb_channels which calls it).
->
->   + cpus_read_lock was taken in the reset path as well, and is always
->     taken before xps_map_mutex. It had to be moved out of the unlocked
->     version as well.
->
->   This is why the patch is a little bit longer, and moves
->   netdev_unbind_sb_channel up in the file.
->
-> Fixes: 184c449f91fe ("net: Add support for XPS with QoS via traffic classes")
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
+On 12/21/20 7:04 PM, Andrew Lunn wrote:
+> On Tue, Dec 22, 2020 at 12:59:08AM +0900, Masahiro Yamada wrote:
+>> On Tue, Dec 22, 2020 at 12:26 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>>>
+>>> On Mon, Dec 21, 2020 at 02:43:23PM +0900, Masahiro Yamada wrote:
+>>>> The declaration of request_irq() in <linux/interrupt.h> is marked as
+>>>> __must_check.
+>>>>
+>>>> Without the return value check, I see the following warnings:
+>>>>
+>>>> drivers/net/ethernet/lantiq_etop.c: In function 'ltq_etop_hw_init':
+>>>> drivers/net/ethernet/lantiq_etop.c:273:4: warning: ignoring return value of 'request_irq', declared with attribute warn_unused_result [-Wunused-result]
+>>>>    273 |    request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
+>>>>        |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>> drivers/net/ethernet/lantiq_etop.c:281:4: warning: ignoring return value of 'request_irq', declared with attribute warn_unused_result [-Wunused-result]
+>>>>    281 |    request_irq(irq, ltq_etop_dma_irq, 0, "etop_rx", priv);
+>>>>        |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>
+>>>> Reported-by: Miguel Ojeda <ojeda@kernel.org>
+>>>> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+>>>> ---
+>>>>
+>>>>   drivers/net/ethernet/lantiq_etop.c | 13 +++++++++++--
+>>>>   1 file changed, 11 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+>>>> index 2d0c52f7106b..960494f9752b 100644
+>>>> --- a/drivers/net/ethernet/lantiq_etop.c
+>>>> +++ b/drivers/net/ethernet/lantiq_etop.c
+>>>> @@ -264,13 +264,18 @@ ltq_etop_hw_init(struct net_device *dev)
+>>>>        for (i = 0; i < MAX_DMA_CHAN; i++) {
+>>>>                int irq = LTQ_DMA_CH0_INT + i;
+>>>>                struct ltq_etop_chan *ch = &priv->ch[i];
+>>>> +             int ret;
+>>>>
+>>>>                ch->idx = ch->dma.nr = i;
+>>>>                ch->dma.dev = &priv->pdev->dev;
+>>>>
+>>>>                if (IS_TX(i)) {
+>>>>                        ltq_dma_alloc_tx(&ch->dma);
+>>>> -                     request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
+>>>> +                     ret = request_irq(irq, ltq_etop_dma_irq, 0, "etop_tx", priv);
+>>>> +                     if (ret) {
+>>>> +                             netdev_err(dev, "failed to request irq\n");
+>>>> +                             return ret;
+>>>
+>>> You need to cleanup what ltq_dma_alloc_tx() did.
+>>
+>>
+>> Any failure from this function will roll back
+>> in the following paths:
+>>
+>>    ltq_etop_hw_exit()
+>>       -> ltq_etop_free_channel()
+>>            -> ltq_dma_free()
+>>
+>>
+>> So, dma is freed anyway.
+>>
+>> One problem I see is,
+>> ltq_etop_hw_exit() frees all DMA channels,
+>> some of which may not have been allocated yet.
+>>
+>> If it is a bug, it is an existing bug.
+>>
+>>
+>>>
+>>>> +                     }
+>>>>                } else if (IS_RX(i)) {
+>>>>                        ltq_dma_alloc_rx(&ch->dma);
+>>>>                        for (ch->dma.desc = 0; ch->dma.desc < LTQ_DESC_NUM;
+>>>> @@ -278,7 +283,11 @@ ltq_etop_hw_init(struct net_device *dev)
+>>>>                                if (ltq_etop_alloc_skb(ch))
+>>>>                                        return -ENOMEM;
+>>
+>>
+>> This -ENOMEM does not roll back anything here.
+>>
+>> As stated above, dma_free_coherent() is called.
+>> The problem is, ltq_etop_hw_exit() rolls back too much.
+>>
+>> If your requirement is "this driver is completely wrong. Please rewrite it",
+>> sorry, I cannot (unless I am paid to do so).
+>>
+>> I am just following this driver's roll-back model.
+>>
+>> Please do not expect more to a person who
+>> volunteers to eliminate build warnings.
+>>
+>> Of course, if somebody volunteers to rewrite this driver correctly,
+>> that is appreciated.
+> 
+> Hi Hauke
+> 
+> Do you still have this hardware? Do you have time to take a look at
+> the cleanup code?
+> 
+> Thanks
+> 	Andrew
+> 
 
-Looking over this patch it seems kind of obvious that extending the
-xps_map_mutex is making things far more complex then they need to be.
+Hi Andrew,
 
-Applying the rtnl_mutex would probably be much simpler. Although as I
-think you have already discovered we need to apply it to the store,
-and show for this interface. In addition we probably need to perform
-similar locking around traffic_class_show in order to prevent it from
-generating a similar error.
+I have this hardware somewhere at home, but I never made it work.
+If I find some time I can have a loom at this problem in the next few weeks.
+
+Hauke
