@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 440B22DFE5A
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 17:58:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7CD2DFE55
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 17:58:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726045AbgLUQ6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 11:58:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25945 "EHLO
+        id S1725993AbgLUQ6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 11:58:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30019 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725909AbgLUQ6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 11:58:13 -0500
+        by vger.kernel.org with ESMTP id S1725961AbgLUQ6Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 11:58:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608569804;
+        s=mimecast20190719; t=1608569808;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=K4+cQynOaPWMM6UVfebDrf8g6JKTvCGf7Xx1gFDGVrA=;
-        b=U+0TRM2IKL5H7jMpXpHtGcYPFo+r8NNn0rPygCEEile1nchITFUN5j9phzCz/fOcsDDNP4
-        dkhsVKo4QhJ6aoBoFm2LkoVTxxAE2cXeF5gKUlykA4C2AuPUtIEocxtbRrFeUNnfziSlCo
-        CrAQ7mGq+uzK7/UdQq6Aq3GIsLjDdKI=
+         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
+        bh=Id8f26eNO3ff1AgF6FhoxhHwYj2M7QGHCIh8k7esAP8=;
+        b=i1krqnDKDGwT3x/0jr7/E28/iarTS9aSUNg9dmNJ9C1JRaee6IE27dOLZTq+y85wUjJ4fd
+        /1riec5C1IeYPWKrgFF1xfJBeYSpziwht3uNGHOGHVVXzqsSIDF6PQIcZgHdCOZv5pLh5u
+        rVA3rKfum71CRdSzjXc/rdMGKwXeySk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-51-lkdv1rgYOR2d0dbOXuWXyQ-1; Mon, 21 Dec 2020 11:56:39 -0500
-X-MC-Unique: lkdv1rgYOR2d0dbOXuWXyQ-1
+ us-mta-156-2kg_Q8PBNzicKDNLHVYkuA-1; Mon, 21 Dec 2020 11:56:46 -0500
+X-MC-Unique: 2kg_Q8PBNzicKDNLHVYkuA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EF40C190D343;
-        Mon, 21 Dec 2020 16:56:36 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 29DDA100C600;
+        Mon, 21 Dec 2020 16:56:44 +0000 (UTC)
 Received: from madcap2.tricolour.ca (unknown [10.10.110.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F174F60C0F;
-        Mon, 21 Dec 2020 16:56:21 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 386C960C61;
+        Mon, 21 Dec 2020 16:56:37 +0000 (UTC)
 From:   Richard Guy Briggs <rgb@redhat.com>
 To:     Linux Containers List <containers@lists.linux-foundation.org>,
         Linux API <linux-api@vger.kernel.org>,
@@ -48,392 +49,575 @@ Cc:     Neil Horman <nhorman@tuxdriver.com>,
         Jens Axboe <axboe@kernel.dk>,
         Christian Brauner <christian.brauner@ubuntu.com>,
         Richard Guy Briggs <rgb@redhat.com>
-Subject: [PATCH ghak90 v10 00/11] audit: implement container identifier
-Date:   Mon, 21 Dec 2020 11:55:34 -0500
-Message-Id: <cover.1608225886.git.rgb@redhat.com>
+Subject: [PATCH ghak90 v10 01/11] audit: collect audit task parameters
+Date:   Mon, 21 Dec 2020 11:55:35 -0500
+Message-Id: <982b9adffbd32264a853fe7f4f06f0d0a882c11d.1608225886.git.rgb@redhat.com>
+In-Reply-To: <cover.1608225886.git.rgb@redhat.com>
+References: <cover.1608225886.git.rgb@redhat.com>
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement kernel audit container identifier.
+The audit-related parameters in struct task_struct should ideally be
+collected together and accessed through a standard audit API and the audit
+structures made opaque to other kernel subsystems.
 
-This patchset is an eighth based on the proposal document (V4) posted:
-	https://www.redhat.com/archives/linux-audit/2019-September/msg00052.html
+Collect the existing loginuid, sessionid and audit_context together in a
+new opaque struct audit_task_info called "audit" in struct task_struct.
 
-The first patch was the last patch from ghak81 that was absorbed into
-this patchset since its primary justification is the rest of this
-patchset.  It abstracts the audit kernel internal api to be able to better
-regulate audit operations.
+Use kmem_cache to manage this pool of memory.
+Un-inline audit_free() to be able to always recover that memory.
 
-The second patch implements the proc fs write to set the audit container
-identifier of a process, emitting an AUDIT_CONTAINER_OP record to
-announce the registration of that audit container identifier on that
-process.  The ID can be read from the same file.  This patch requires
-userspace support for record acceptance and proper type display.  The ID is
-stored as an object that includes owner information to check for
-descendancy, allow process injection into a container and prevent id reuse
-by other orchestrators.  The same record type is emitted once all tasks
-using that audit container identifier have exited.
+Please see the upstream github issues
+https://github.com/linux-audit/audit-kernel/issues/81
+https://github.com/linux-audit/audit-kernel/issues/90
 
-The 3rd implements the auxiliary record AUDIT_CONTAINER_ID if an audit
-container identifier is associated with an event.  This patch requires
-userspace support for proper type display.
+Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+Acked-by: Neil Horman <nhorman@tuxdriver.com>
+Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
+---
+ fs/io-wq.c            |   8 +--
+ fs/io_uring.c         |  16 ++---
+ include/linux/audit.h |  49 +++++---------
+ include/linux/sched.h |   7 +-
+ init/init_task.c      |   3 +-
+ init/main.c           |   2 +
+ kernel/audit.c        | 154 +++++++++++++++++++++++++++++++++++++++++-
+ kernel/audit.h        |   7 ++
+ kernel/auditsc.c      |  24 ++++---
+ kernel/fork.c         |   1 -
+ 10 files changed, 205 insertions(+), 66 deletions(-)
 
-The 4th adds audit daemon signalling provenance through audit_sig_info2.
-
-The 5th creates a local audit context to be able to bind a standalone
-record with a locally created auxiliary record.
-
-The 6th patch adds audit container identifier records to the user
-standalone records.
-
-The 7th adds audit container identifier filtering to the exit,
-exclude and user lists.  This patch adds the AUDIT_CONTID field and
-requires auditctl userspace support for the --contid option.
-
-The 8th adds network namespace audit container identifier labelling
-based on member tasks' audit container identifier labels which supports
-standalone netfilter records that don't have a task context and lists
-each container to which that net namespace belongs.
-
-The 9th checks that the target is a descendant for nesting and
-refactors to avoid a duplicate of the copied function.
-
-The 10th adds tracking and reporting for container nesting.  
-This enables kernel filtering and userspace searches of nested audit
-container identifiers.
-
-The 11th adds a mechanism to allow a process to be designated as a
-container orchestrator/engine in non-init user namespaces.
-
-
-Example: Set an audit container identifier of 123456 to the "sleep" task:
-
-  sleep 2&
-  child=$!
-  echo 123456 > /proc/$child/audit_containerid; echo $?
-  ausearch -ts recent -i -m container_op
-  echo child:$child contid:$( cat /proc/$child/audit_containerid)
-
-This should produce an event such as:
-
-  type=PROCTITLE msg=audit(2020-11-26 11:03:36.566:174604) : proctitle=-bash
-  type=SYSCALL msg=audit(2020-11-26 11:03:36.566:174604) : arch=x86_64 syscall=write success=no exit=ENOTUNIQ(Name not unique on network) a0=0x1 a1=0x55cf347b27c0a2=0x7 a3=0x55cf3480ded0 items=0 ppid=483 pid=507 auid=root uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=ttyS0 ses=1 comm=bash exe=/usr/bin/bash subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=(null)
-  type=CONTAINER_OP msg=audit(2020-11-26 11:03:36.566:174604) : op=set opid=9069 contid=123456 old-contid=unset
-
-Example: Set a filter on an audit container identifier 123459 on /tmp/tmpcontainerid:
-
-  contid=123459
-  key=tmpcontainerid
-  auditctl -a exit,always -F dir=/tmp -F perm=wa -F contid=$contid -F key=$key
-  perl -e "sleep 1; open(my \$tmpfile, '>', \"/tmp/$key\"); close(\$tmpfile);" &
-  child=$!
-  echo $contid > /proc/$child/audit_containerid
-  sleep 2
-  ausearch -i -ts recent -k $key
-  auditctl -d exit,always -F dir=/tmp -F perm=wa -F contid=$contid -F key=$key
-  rm -f /tmp/$key
-
-This should produce an event such as:
-
-  type=CONTAINER_ID msg=audit(2020-11-26 12:46:31.707:26953) : record=1 contid=123459
-  type=PROCTITLE msg=audit(2020-11-26 12:46:31.707:26953) : proctitle=perl -e sleep 1; open(my $tmpfile, '>', "/tmp/tmpcontainerid"); close($tmpfile);
-  type=PATH msg=audit(2020-11-26 12:46:31.707:26953) : item=1 name=/tmp/tmpcontainerid inode=25656 dev=00:26 mode=file,644 ouid=root ogid=root rdev=00:00 obj=unconfined_u:object_r:user_tmp_t:s0 nametype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0
-  type=PATH msg=audit(2020-11-26 12:46:31.707:26953) : item=0 name=/tmp/ inode=8985 dev=00:26 mode=dir,sticky,777 ouid=root ogid=root rdev=00:00 obj=system_u:object_r:tmp_t:s0 nametype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0
-  type=CWD msg=audit(2020-11-26 12:46:31.707:26953) : cwd=/root
-  type=SYSCALL msg=audit(2020-11-26 12:46:31.707:26953) : arch=x86_64 syscall=openat success=yes exit=3 a0=0xffffffffffffff9c a1=0x5621f2b81900 a2=O_WRONLY|O_CREAT|O_TRUNC a3=0x1b6 items=2 ppid=628 pid=2232 auid=root uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=ttyS0 ses=1 comm=perl exe=/usr/bin/perl subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=tmpcontainerid record=1
-
-Example: Test multiple containers on one netns:
-
-  sleep 5 &
-  child1=$!
-  containerid1=123451
-  echo $containerid1 > /proc/$child1/audit_containerid
-  sleep 5 &
-  child2=$!
-  containerid2=123452
-  echo $containerid2 > /proc/$child2/audit_containerid
-  iptables -I INPUT -i lo -p icmp --icmp-type echo-request -j AUDIT --type accept
-  iptables -I INPUT  -t mangle -i lo -p icmp --icmp-type echo-request -j MARK --set-mark 0x12345555
-  sleep 1;
-  bash -c "ping -q -c 1 127.0.0.1 >/dev/null 2>&1"
-  sleep 1;
-  ausearch -i -m NETFILTER_PKT -ts boot|grep mark=0x12345555
-  ausearch -i -m NETFILTER_PKT -ts boot|grep contid=|grep $containerid1|grep $containerid2
-
-This would produce an event such as:
-
-  type=NETFILTER_PKT msg=audit(2020-11-26 14:16:13.369:244) : mark=0x12345555 saddr=127.0.0.1 daddr=127.0.0.1 proto=icmp record=1
-  type=CONTAINER_ID msg=audit(2020-11-26 14:16:13.369:244) : record=1 contid=123452,123451
-
-
-Includes the last patch of https://github.com/linux-audit/audit-kernel/issues/81
-Please see the github audit kernel issue for the main feature:
-  https://github.com/linux-audit/audit-kernel/issues/90
-and the kernel filter code:
-  https://github.com/linux-audit/audit-kernel/issues/91
-and the network support:
-  https://github.com/linux-audit/audit-kernel/issues/92
-Please see the github audit userspace issue for supporting record types:
-  https://github.com/linux-audit/audit-userspace/issues/51
-and filter code:
-  https://github.com/linux-audit/audit-userspace/issues/40
-Please see the github audit testsuiite issue for the test case:
-  https://github.com/linux-audit/audit-testsuite/issues/64
-  https://github.com/rgbriggs/audit-testsuite/tree/ghat64-contid
-  https://githu.com/linux-audit/audit-testsuite/pull/91
-Please see the github audit wiki for the feature overview:
-  https://github.com/linux-audit/audit-kernel/wiki/RFE-Audit-Container-ID
-
-The code is also posted at:
-  git://toccata2.tricolour.ca/linux-2.6-rgb.git ghak90-contid.v10
-
-Changelog:
-v10
-- rebase on ghak124, ghak96, ghak84, actual wait, 5.9-rc1, ghak120, 5.10-rc1, io_uring
-- localize struct struct audit_task_info to audit.c, move related functions from proc/base.c, audit.h, auditsc.c to audit.c                                                                                                         
-- add Documentation/ABI for /proc/PID/audit_*containerid
-- convert from rcu to spin lock around contid put and optimize other spinlock use
-- swap task_lock and tasklist_lock in audit_set_contid (deadlock with sys_prlimit64)
-- restructure audit_set_contid intro (elsif ladder)
-- open code audit_contid_valid and audit_contid_set
-- rename contobj_get to contobj_get_bytask, contobj_hold to contobj_get
-- squash in audit contid drop, change new contid to -1
-- squash in proc audit contid read
-- add count param to audit_contobj_put to reduce locking, free target_cid keyed on target_pid
-- add record= field to CONTAINER_ID record to link to OBJ_PID, SYSCALL, NETFILTER_PKT
-- add helper function audit_log_container_id_ctx
-- rename audit_sig_atsk to audit_sig_adtsk
-- add missing contobj_put in audit_log_exit and of audit_sig_cid in AUDIT_SIGNAL_INFO
-- switch from -ESHUTDOWN to -ENOTUNIQ for as yet unreaped contid
-- add helper audit_contid_comparator in audit.c (part of hide)
-- move audit_contobj_netns to audit.c (part of hide)
-- fix spin_lock with irq option for network interrupt support
-- add missing check for audit_get_capcontid in audit_set_contid
-- check individual patch complilation
-- patch description cleanups (in_syscall vs local, contid nesting examples)
-- remove unnecessary audit_log_format() calls
-- remove unnecessary rcu locking aroung net_generic call()
-
-v9
-- rebase on v5.8-rc1
-- fix whitespace and oversize lines where practicable
-- remove harmless duplicate S_IRUSR in capcontid
-- return -EBUSY for both threading and children (drop -EALREADY)
-- return -EEXIST if already set and not nesting (drop -ECHILD)
-- fix unbalanced brace and remove elseif ladder
-- drop check for same contid set again as redundant (drop -EADDRINUSE)
-- get reference to contobj's parent taskstruct
-- protect all contid list updates with audit_contobj_list_lock
-- protect refcounts with rcu read lock
-- convert _audit_contobj to _audit_contobj_get, which calls _audit_contobj_hold
-- convert audit_log_container_id() and audit_log_contid() from u64 to contobj, simplifying
-- issue death certificate on contid after exit of last task
-- keep contobj ref to block reuse with -ESHUTDOWN until auditd exit or signal info
-- report all contids nested
-- rework sig_info2 format to accommodate contid list
-- fix zero-length array in include/linux/audit.h struct audit_sig_info2 data[]
-- found bug in audit_alloc_local, don't check audit_ever_enabled, since all callers check audit_enabled
-- remove warning at declaration of audit_sig_cid of reuse since reuse is now blocked
-- report descendancy checking errcodes under -EXDEV (drop -EBADSLT)
-- add missed check, replace audit_contid_isowner with audit_contid_isnesting
-- limit calls to audit_log_format() with if(iter->parent) ...
-- list only one contid in contid, nested in old-contid to avoid duplication
-- switch to comma delimiter, carrat modifier in nested contid list
-- special case -1 for AUDIT_CID_UNSET printing
-- drop contid depth limit and netns contid limit patches
-- enforce capcontid policy on contid write and read
-- squash conversion to contobj into contid intro patch
-
-v8
-- rebase on v5.5-rc1 audit/next
-- remove subject attrs in CONTAINER_OP record
-- group audit_contid_list_lock with audit_contid_hash
-- in audit_{set,log}_contid(), break out of loop after finding target
-- use target var to size kmalloc
-- rework audit_cont_owner() to bool audit_contid_isowner() and move to where used
-- create static void audit_cont_hold(struct audit_contobj *cont) { refcount_inc(&cont->refcount); }
-- rename audit_cont{,_*} refs to audit_contobj{,_*}
-- prefix special local functions with _ [audit_contobj*()]
-- protect contid list traversals with rcu_read_lock() and updates with audit_contid_list_lock
-- protect real_parent in audit_contid_depth() with rcu_dereference
-- give new contid field nesting format in patch description
-- squash task_is_descendant()
-- squash support for NETFILTER_PKT into network namespaces
-- limit nesting depth based on record length overflow, bandwidth and storage
-- implent control for audit container identifier nesting depth limit
-- make room for audit_bpf patches (bump CONTAINER_ID to 1335)
-- squash proc interface into capcontid
-- remove netlink access to loginuid/sessionid/contid/capcontid
-- delete 32k contid limit patch
-- document potential overlap between signal delivery and contid reuse
-- document audit_contobj_list_lock coverage
-- document disappearing orch task injection limitation
-- limit the number of containers that can be associated with a network namespace
-- implent control for audit container identifier netns count limit 
-
-v7
-- remove BUG() in audit_comparator64()
-- rebase on v5.2-rc1 audit/next
-- resolve merge conflict with ghak111 (signal_info regardless syscall)
-- resolve merge conflict with ghak73 (audit_field_valid)
-- resolve merge conflict with ghak64 (saddr_fam filter)
-- resolve merge conflict with ghak10 (ntp audit) change AUDIT_CONTAINER_ID from 1332 to 1334
-- rebase on v5.3-rc1 audit/next
-- track container owner
-- only permit setting contid of descendants for nesting
-- track drop of contid and permit reuse
-- track and report container nesting
-- permit filtering on any nested contid
-- set/get contid and loginuid/sessionid via netlink
-- implement capcontid to enable orchestrators in non-init user
-  namespaces
-- limit number of containers
-- limit depth of container nesting
-
-v6
-- change TMPBUFLEN from 11 to 21 to cover the decimal value of contid
-  u64 (nhorman)
-- fix bug overwriting ctx in struct audit_sig_info, move cid above
-  ctx[0] (nhorman)
-- fix bug skipping remaining fields and not advancing bufp when copying
-  out contid in audit_krule_to_data (omosnacec)
-- add acks, tidy commit descriptions, other formatting fixes (checkpatch
-  wrong on audit_log_lost)
-- cast ull for u64 prints
-- target_cid tracking was moved from the ptrace/signal patch to
-  container_op
-- target ptrace and signal records were moved from the ptrace/signal
-  patch to container_id
-- auditd signaller tracking was moved to a new AUDIT_SIGNAL_INFO2
-  request and record
-- ditch unnecessary list_empty() checks
-- check for null net and aunet in audit_netns_contid_add()
-- swap CONTAINER_OP contid/old-contid order to ease parsing
-
-v5
-- address loginuid and sessionid syscall scope in ghak104
-- address audit_context in CONFIG_AUDIT vs CONFIG_AUDITSYSCALL in ghak105
-- remove tty patch, addressed in ghak106
-- rebase on audit/next v5.0-rc1
-  w/ghak59/ghak104/ghak103/ghak100/ghak107/ghak105/ghak106/ghak105sup
-- update CONTAINER_ID to CONTAINER_OP in patch description
-- move audit_context in audit_task_info to CONFIG_AUDITSYSCALL
-- move audit_alloc() and audit_free() out of CONFIG_AUDITSYSCALL and into
-  CONFIG_AUDIT and create audit_{alloc,free}_syscall
-- use plain kmem_cache_alloc() rather than kmem_cache_zalloc() in audit_alloc()
-- fix audit_get_contid() declaration type error
-- move audit_set_contid() from auditsc.c to audit.c
-- audit_log_contid() returns void
-- audit_log_contid() handed contid rather than tsk
-- switch from AUDIT_CONTAINER to AUDIT_CONTAINER_ID for aux record
-- move audit_log_contid(tsk/contid) & audit_contid_set(tsk)/audit_contid_valid(contid)
-- switch from tsk to current
-- audit_alloc_local() calls audit_log_lost() on failure to allocate a context
-- add AUDIT_USER* non-syscall contid record
-- cosmetic cleanup double parens, goto out on err
-- ditch audit_get_ns_contid_list_lock(), fix aunet lock race
-- switch from all-cpu read spinlock to rcu, keep spinlock for write
-- update audit_alloc_local() to use ktime_get_coarse_real_ts64()
-- add nft_log support
-- add call from do_exit() in audit_free() to remove contid from netns
-- relegate AUDIT_CONTAINER ref= field (was op=) to debug patch
-
-v4
-- preface set with ghak81:"collect audit task parameters"
-- add shallyn and sgrubb acks
-- rename feature bitmap macro
-- rename cid_valid() to audit_contid_valid()
-- rename AUDIT_CONTAINER_ID to AUDIT_CONTAINER_OP
-- delete audit_get_contid_list() from headers
-- move work into inner if, delete "found"
-- change netns contid list function names
-- move exports for audit_log_contid audit_alloc_local audit_free_context to non-syscall patch
-- list contids CSV
-- pass in gfp flags to audit_alloc_local() (fix audit_alloc_context callers)
-- use "local" in lieu of abusing in_syscall for auditsc_get_stamp()
-- read_lock(&tasklist_lock) around children and thread check
-- task_lock(tsk) should be taken before first check of tsk->audit
-- add spin lock to contid list in aunet
-- restrict /proc read to CAP_AUDIT_CONTROL
-- remove set again prohibition and inherited flag
-- delete contidion spelling fix from patchset, send to netdev/linux-wireless
-
-v3
-- switched from containerid in task_struct to audit_task_info (depends on ghak81)
-- drop INVALID_CID in favour of only AUDIT_CID_UNSET
-- check for !audit_task_info, throw -ENOPROTOOPT on set
-- changed -EPERM to -EEXIST for parent check
-- return AUDIT_CID_UNSET if !audit_enabled
-- squash child/thread check patch into AUDIT_CONTAINER_ID patch
-- changed -EPERM to -EBUSY for child check
-- separate child and thread checks, use -EALREADY for latter
-- move addition of op= from ptrace/signal patch to AUDIT_CONTAINER patch
-- fix && to || bashism in ptrace/signal patch
-- uninline and export function for audit_free_context()
-- drop CONFIG_CHANGE, FEATURE_CHANGE, ANOM_ABEND, ANOM_SECCOMP patches
-- move audit_enabled check (xt_AUDIT)
-- switched from containerid list in struct net to net_generic's struct audit_net
-- move containerid list iteration into audit (xt_AUDIT)
-- create function to move namespace switch into audit
-- switched /proc/PID/ entry from containerid to audit_containerid
-- call kzalloc with GFP_ATOMIC on in_atomic() in audit_alloc_context()
-- call kzalloc with GFP_ATOMIC on in_atomic() in audit_log_container_info()
-- use xt_net(par) instead of sock_net(skb->sk) to get net
-- switched record and field names: initial CONTAINER_ID, aux CONTAINER, field CONTID
-- allow to set own contid
-- open code audit_set_containerid
-- add contid inherited flag
-- ccontainerid and pcontainerid eliminated due to inherited flag
-- change name of container list funcitons
-- rename containerid to contid
-- convert initial container record to syscall aux
-- fix spelling mistake of contidion in net/rfkill/core.c to avoid contid name collision
-
-v2
-- add check for children and threads
-- add network namespace container identifier list
-- add NETFILTER_PKT audit container identifier logging
-- patch description and documentation clean-up and example
-- reap unused ppid
-
-Richard Guy Briggs (11):
-  audit: collect audit task parameters
-  audit: add container id
-  audit: log container info of syscalls
-  audit: add contid support for signalling the audit daemon
-  audit: add support for non-syscall auxiliary records
-  audit: add containerid support for user records
-  audit: add containerid filtering
-  audit: add support for containerid to network namespaces
-  audit: contid check descendancy and nesting
-  audit: track container nesting
-  audit: add capcontid to set contid outside init_user_ns
-
- .../ABI/testing/procfs-audit_containerid      |  29 +
- fs/io-wq.c                                    |   8 +-
- fs/io_uring.c                                 |  16 +-
- fs/proc/base.c                                | 110 ++-
- include/linux/audit.h                         |  83 +-
- include/linux/sched.h                         |  10 +-
- include/uapi/linux/audit.h                    |  10 +-
- init/init_task.c                              |   3 +-
- init/main.c                                   |   2 +
- kernel/audit.c                                | 877 +++++++++++++++++-
- kernel/audit.h                                |  19 +
- kernel/auditfilter.c                          |  46 +
- kernel/auditsc.c                              | 109 ++-
- kernel/fork.c                                 |   1 -
- kernel/nsproxy.c                              |   4 +
- kernel/sched/core.c                           |  33 +
- net/netfilter/nft_log.c                       |  14 +-
- net/netfilter/xt_AUDIT.c                      |  14 +-
- security/selinux/nlmsgtab.c                   |   1 +
- security/yama/yama_lsm.c                      |  33 -
- 20 files changed, 1294 insertions(+), 128 deletions(-)
- create mode 100644 Documentation/ABI/testing/procfs-audit_containerid
-
+diff --git a/fs/io-wq.c b/fs/io-wq.c
+index 02894df7656d..1c39207f3ffc 100644
+--- a/fs/io-wq.c
++++ b/fs/io-wq.c
+@@ -496,8 +496,8 @@ static void io_impersonate_work(struct io_worker *worker,
+ 		current->signal->rlim[RLIMIT_FSIZE].rlim_cur = RLIM_INFINITY;
+ 	io_wq_switch_blkcg(worker, work);
+ #ifdef CONFIG_AUDIT
+-	current->loginuid = work->identity->loginuid;
+-	current->sessionid = work->identity->sessionid;
++	audit_set_loginuid_iouring(work->identity->loginuid);
++	audit_set_sessionid_iouring(work->identity->sessionid);
+ #endif
+ }
+ 
+@@ -512,8 +512,8 @@ static void io_assign_current_work(struct io_worker *worker,
+ 	}
+ 
+ #ifdef CONFIG_AUDIT
+-	current->loginuid = KUIDT_INIT(AUDIT_UID_UNSET);
+-	current->sessionid = AUDIT_SID_UNSET;
++	audit_set_loginuid_iouring(KUIDT_INIT(AUDIT_UID_UNSET));
++	audit_set_sessionid_iouring(AUDIT_SID_UNSET);
+ #endif
+ 
+ 	spin_lock_irq(&worker->lock);
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index b42dfa0243bf..a1e178d8b040 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -1064,8 +1064,8 @@ static void io_init_identity(struct io_identity *id)
+ 	id->fs = current->fs;
+ 	id->fsize = rlimit(RLIMIT_FSIZE);
+ #ifdef CONFIG_AUDIT
+-	id->loginuid = current->loginuid;
+-	id->sessionid = current->sessionid;
++	id->loginuid = audit_get_loginuid(current);
++	id->sessionid = audit_get_sessionid(current);
+ #endif
+ 	refcount_set(&id->count, 1);
+ }
+@@ -1335,8 +1335,8 @@ static bool io_grab_identity(struct io_kiocb *req)
+ 		req->work.flags |= IO_WQ_WORK_CREDS;
+ 	}
+ #ifdef CONFIG_AUDIT
+-	if (!uid_eq(current->loginuid, id->loginuid) ||
+-	    current->sessionid != id->sessionid)
++	if (!uid_eq(audit_get_loginuid(current), id->loginuid) ||
++	    audit_get_sessionid(current) != id->sessionid)
+ 		return false;
+ #endif
+ 	if (!(req->work.flags & IO_WQ_WORK_FS) &&
+@@ -6771,8 +6771,8 @@ static int io_sq_thread(void *data)
+ 			}
+ 			io_sq_thread_associate_blkcg(ctx, &cur_css);
+ #ifdef CONFIG_AUDIT
+-			current->loginuid = ctx->loginuid;
+-			current->sessionid = ctx->sessionid;
++			audit_set_loginuid_iouring(ctx->loginuid);
++			audit_set_sessionid_iouring(ctx->sessionid);
+ #endif
+ 
+ 			ret |= __io_sq_thread(ctx, start_jiffies, cap_entries);
+@@ -9205,8 +9205,8 @@ static int io_uring_create(unsigned entries, struct io_uring_params *p,
+ 	ctx->user = user;
+ 	ctx->creds = get_current_cred();
+ #ifdef CONFIG_AUDIT
+-	ctx->loginuid = current->loginuid;
+-	ctx->sessionid = current->sessionid;
++	ctx->loginuid = audit_get_loginuid(current);
++	ctx->sessionid = audit_get_sessionid(current);
+ #endif
+ 	ctx->sqo_task = get_task_struct(current);
+ 
+diff --git a/include/linux/audit.h b/include/linux/audit.h
+index 82b7c1116a85..515cc89a7e0c 100644
+--- a/include/linux/audit.h
++++ b/include/linux/audit.h
+@@ -154,6 +154,9 @@ struct filename;
+ #ifdef CONFIG_AUDIT
+ /* These are defined in audit.c */
+ 				/* Public API */
++extern int  audit_alloc(struct task_struct *task);
++extern void audit_free(struct task_struct *task);
++extern void __init audit_task_init(void);
+ extern __printf(4, 5)
+ void audit_log(struct audit_context *ctx, gfp_t gfp_mask, int type,
+ 	       const char *fmt, ...);
+@@ -194,22 +197,26 @@ extern int audit_rule_change(int type, int seq, void *data, size_t datasz);
+ extern int audit_list_rules_send(struct sk_buff *request_skb, int seq);
+ 
+ extern int audit_set_loginuid(kuid_t loginuid);
++extern void audit_set_loginuid_iouring(kuid_t loginuid);
+ 
+-static inline kuid_t audit_get_loginuid(struct task_struct *tsk)
+-{
+-	return tsk->loginuid;
+-}
++extern kuid_t audit_get_loginuid(struct task_struct *tsk);
+ 
+-static inline unsigned int audit_get_sessionid(struct task_struct *tsk)
+-{
+-	return tsk->sessionid;
+-}
++extern unsigned int audit_get_sessionid(struct task_struct *tsk);
++extern void audit_set_sessionid_iouring(unsigned int sessionid);
+ 
+ extern u32 audit_enabled;
+ 
+ extern int audit_signal_info(int sig, struct task_struct *t);
+ 
+ #else /* CONFIG_AUDIT */
++static inline int audit_alloc(struct task_struct *task)
++{
++	return 0;
++}
++static inline void audit_free(struct task_struct *task)
++{ }
++static inline void __init audit_task_init(void)
++{ }
+ static inline __printf(4, 5)
+ void audit_log(struct audit_context *ctx, gfp_t gfp_mask, int type,
+ 	       const char *fmt, ...)
+@@ -285,8 +292,6 @@ static inline int audit_signal_info(int sig, struct task_struct *t)
+ 
+ /* These are defined in auditsc.c */
+ 				/* Public API */
+-extern int  audit_alloc(struct task_struct *task);
+-extern void __audit_free(struct task_struct *task);
+ extern void __audit_syscall_entry(int major, unsigned long a0, unsigned long a1,
+ 				  unsigned long a2, unsigned long a3);
+ extern void __audit_syscall_exit(int ret_success, long ret_value);
+@@ -303,26 +308,14 @@ extern void audit_seccomp_actions_logged(const char *names,
+ 					 const char *old_names, int res);
+ extern void __audit_ptrace(struct task_struct *t);
+ 
+-static inline void audit_set_context(struct task_struct *task, struct audit_context *ctx)
+-{
+-	task->audit_context = ctx;
+-}
+-
+-static inline struct audit_context *audit_context(void)
+-{
+-	return current->audit_context;
+-}
++extern struct audit_context *audit_context(void);
+ 
+ static inline bool audit_dummy_context(void)
+ {
+ 	void *p = audit_context();
+ 	return !p || *(int *)p;
+ }
+-static inline void audit_free(struct task_struct *task)
+-{
+-	if (unlikely(task->audit_context))
+-		__audit_free(task);
+-}
++
+ static inline void audit_syscall_entry(int major, unsigned long a0,
+ 				       unsigned long a1, unsigned long a2,
+ 				       unsigned long a3)
+@@ -550,12 +543,6 @@ static inline void audit_log_nfcfg(const char *name, u8 af,
+ extern int audit_n_rules;
+ extern int audit_signals;
+ #else /* CONFIG_AUDITSYSCALL */
+-static inline int audit_alloc(struct task_struct *task)
+-{
+-	return 0;
+-}
+-static inline void audit_free(struct task_struct *task)
+-{ }
+ static inline void audit_syscall_entry(int major, unsigned long a0,
+ 				       unsigned long a1, unsigned long a2,
+ 				       unsigned long a3)
+@@ -566,8 +553,6 @@ static inline bool audit_dummy_context(void)
+ {
+ 	return true;
+ }
+-static inline void audit_set_context(struct task_struct *task, struct audit_context *ctx)
+-{ }
+ static inline struct audit_context *audit_context(void)
+ {
+ 	return NULL;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 063cd120b459..b28348868b27 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -36,7 +36,6 @@
+ #include <linux/kcsan.h>
+ 
+ /* task_struct member predeclarations (sorted alphabetically): */
+-struct audit_context;
+ struct backing_dev_info;
+ struct bio_list;
+ struct blk_plug;
+@@ -958,11 +957,7 @@ struct task_struct {
+ 	struct callback_head		*task_works;
+ 
+ #ifdef CONFIG_AUDIT
+-#ifdef CONFIG_AUDITSYSCALL
+-	struct audit_context		*audit_context;
+-#endif
+-	kuid_t				loginuid;
+-	unsigned int			sessionid;
++	void				*audit;
+ #endif
+ 	struct seccomp			seccomp;
+ 
+diff --git a/init/init_task.c b/init/init_task.c
+index a56f0abb63e9..2909c46056e1 100644
+--- a/init/init_task.c
++++ b/init/init_task.c
+@@ -134,8 +134,7 @@ struct task_struct init_task
+ 	.thread_group	= LIST_HEAD_INIT(init_task.thread_group),
+ 	.thread_node	= LIST_HEAD_INIT(init_signals.thread_head),
+ #ifdef CONFIG_AUDIT
+-	.loginuid	= INVALID_UID,
+-	.sessionid	= AUDIT_SID_UNSET,
++	.audit		= NULL,
+ #endif
+ #ifdef CONFIG_PERF_EVENTS
+ 	.perf_event_mutex = __MUTEX_INITIALIZER(init_task.perf_event_mutex),
+diff --git a/init/main.c b/init/main.c
+index 130376ec10ba..da821e5ce077 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -98,6 +98,7 @@
+ #include <linux/mem_encrypt.h>
+ #include <linux/kcsan.h>
+ #include <linux/init_syscalls.h>
++#include <linux/audit.h>
+ 
+ #include <asm/io.h>
+ #include <asm/bugs.h>
+@@ -1036,6 +1037,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 	nsfs_init();
+ 	cpuset_init();
+ 	cgroup_init();
++	audit_task_init();
+ 	taskstats_init_early();
+ 	delayacct_init();
+ 
+diff --git a/kernel/audit.c b/kernel/audit.c
+index 1ffc2e059027..2719ca147150 100644
+--- a/kernel/audit.c
++++ b/kernel/audit.c
+@@ -208,6 +208,148 @@ struct audit_reply {
+ 	struct sk_buff *skb;
+ };
+ 
++struct audit_task_info {
++	kuid_t			loginuid;
++	unsigned int		sessionid;
++#ifdef CONFIG_AUDITSYSCALL
++	struct audit_context	*ctx;
++#endif
++};
++
++static struct kmem_cache *audit_task_cache;
++
++void __init audit_task_init(void)
++{
++	audit_task_cache = kmem_cache_create("audit_task",
++					     sizeof(struct audit_task_info),
++					     0, SLAB_PANIC, NULL);
++}
++
++inline kuid_t audit_get_loginuid(struct task_struct *tsk)
++{
++	struct audit_task_info *info = tsk->audit;
++
++	if (!info)
++		return INVALID_UID;
++	return info->loginuid;
++}
++
++inline void audit_set_loginuid_iouring(kuid_t loginuid)
++{
++	struct audit_task_info *info = current->audit;
++
++	if (!info)
++		return;
++	info->loginuid = loginuid;
++}
++
++inline unsigned int audit_get_sessionid(struct task_struct *tsk)
++{
++	struct audit_task_info *info = tsk->audit;
++
++	if (!info)
++		return AUDIT_SID_UNSET;
++	return info->sessionid;
++}
++
++inline void audit_set_sessionid_iouring(unsigned int sessionid)
++{
++	struct audit_task_info *info = current->audit;
++
++	if (!info)
++		return;
++	info->sessionid = sessionid;
++}
++
++inline struct audit_context *_audit_context(struct task_struct *tsk)
++{
++	struct audit_task_info *info = tsk->audit;
++
++	if (!info)
++		return NULL;
++	return info->ctx;
++}
++
++struct audit_context *audit_context(void)
++{
++	return _audit_context(current);
++}
++EXPORT_SYMBOL(audit_context);
++
++static void audit_alloc_task(struct task_struct *tsk)
++{
++	struct audit_task_info *info = tsk->audit;
++
++	if (info && !IS_ERR(info))
++		return;
++	info = kmem_cache_alloc(audit_task_cache, GFP_KERNEL);
++	if (!info) {
++		tsk->audit = ERR_PTR(-ENOMEM);
++		return;
++	}
++	info->loginuid = audit_get_loginuid(current);
++	info->sessionid = audit_get_sessionid(current);
++	tsk->audit = info;
++}
++
++void audit_set_context(struct task_struct *tsk, struct audit_context *ctx)
++{
++	struct audit_task_info *info;
++
++	audit_alloc_task(tsk);
++	info = tsk->audit;
++	if (!IS_ERR(info))
++		info->ctx = ctx;
++	else
++		tsk->audit = NULL;
++}
++
++/**
++ * audit_alloc - allocate an audit info block for a task
++ * @tsk: task
++ *
++ * Call audit_alloc_syscall to filter on the task information and
++ * allocate a per-task audit context if necessary.  This is called from
++ * copy_process, so no lock is needed.
++ */
++int audit_alloc(struct task_struct *tsk)
++{
++	int ret = 0;
++
++	tsk->audit = NULL;
++	audit_alloc_task(tsk);
++	if (IS_ERR(tsk->audit)) {
++		ret = PTR_ERR(tsk->audit);
++		tsk->audit = NULL;
++		goto out;
++	}
++	ret = audit_alloc_syscall(tsk);
++	if (ret) {
++		kmem_cache_free(audit_task_cache, tsk->audit);
++		tsk->audit = NULL;
++	}
++out:
++	return ret;
++}
++
++/**
++ * audit_free - free per-task audit info
++ * @tsk: task whose audit info block to free
++ *
++ * Called from copy_process and do_exit
++ */
++void audit_free(struct task_struct *tsk)
++{
++	struct audit_task_info *info = tsk->audit;
++
++	audit_free_syscall(tsk);
++	/* Freeing the audit_task_info struct must be performed after
++	 * audit_log_exit() due to need for loginuid and sessionid.
++	 */
++	tsk->audit = NULL;
++	kmem_cache_free(audit_task_cache, info);
++}
++
+ /**
+  * auditd_test_task - Check to see if a given task is an audit daemon
+  * @task: the task to check
+@@ -2310,6 +2452,7 @@ int audit_set_loginuid(kuid_t loginuid)
+ 	unsigned int oldsessionid, sessionid = AUDIT_SID_UNSET;
+ 	kuid_t oldloginuid;
+ 	int rc;
++	struct audit_task_info *info;
+ 
+ 	oldloginuid = audit_get_loginuid(current);
+ 	oldsessionid = audit_get_sessionid(current);
+@@ -2317,6 +2460,12 @@ int audit_set_loginuid(kuid_t loginuid)
+ 	rc = audit_set_loginuid_perm(loginuid);
+ 	if (rc)
+ 		goto out;
++	audit_alloc_task(current);
++	if (IS_ERR(current->audit)) {
++		rc = PTR_ERR(current->audit);
++		current->audit = NULL;
++		goto out;
++	}
+ 
+ 	/* are we setting or clearing? */
+ 	if (uid_valid(loginuid)) {
+@@ -2325,8 +2474,9 @@ int audit_set_loginuid(kuid_t loginuid)
+ 			sessionid = (unsigned int)atomic_inc_return(&session_id);
+ 	}
+ 
+-	current->sessionid = sessionid;
+-	current->loginuid = loginuid;
++	info = current->audit;
++	info->sessionid = sessionid;
++	info->loginuid = loginuid;
+ out:
+ 	audit_log_set_loginuid(oldloginuid, loginuid, oldsessionid, sessionid, rc);
+ 	return rc;
+diff --git a/kernel/audit.h b/kernel/audit.h
+index 3b9c0945225a..aa81d913a3d2 100644
+--- a/kernel/audit.h
++++ b/kernel/audit.h
+@@ -251,6 +251,10 @@ extern void audit_put_tty(struct tty_struct *tty);
+ extern unsigned int audit_serial(void);
+ extern int auditsc_get_stamp(struct audit_context *ctx,
+ 			      struct timespec64 *t, unsigned int *serial);
++extern void audit_set_context(struct task_struct *task, struct audit_context *ctx);
++extern struct audit_context *_audit_context(struct task_struct *tsk);
++extern int audit_alloc_syscall(struct task_struct *tsk);
++extern void audit_free_syscall(struct task_struct *tsk);
+ 
+ extern void audit_put_watch(struct audit_watch *watch);
+ extern void audit_get_watch(struct audit_watch *watch);
+@@ -292,6 +296,9 @@ extern void audit_filter_inodes(struct task_struct *tsk,
+ extern struct list_head *audit_killed_trees(void);
+ #else /* CONFIG_AUDITSYSCALL */
+ #define auditsc_get_stamp(c, t, s) 0
++#define audit_alloc_syscall(t) 0
++#define audit_free_syscall(t) {}
++
+ #define audit_put_watch(w) {}
+ #define audit_get_watch(w) {}
+ #define audit_to_watch(k, p, l, o) (-EINVAL)
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index 9cbe6d5437be..dc8dc103a8a4 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -932,23 +932,25 @@ static inline struct audit_context *audit_alloc_context(enum audit_state state)
+ 	return context;
+ }
+ 
+-/**
+- * audit_alloc - allocate an audit context block for a task
++/*
++ * audit_alloc_syscall - allocate an audit context block for a task
+  * @tsk: task
+  *
+  * Filter on the task information and allocate a per-task audit context
+  * if necessary.  Doing so turns on system call auditing for the
+- * specified task.  This is called from copy_process, so no lock is
+- * needed.
++ * specified task.  This is called from copy_process via audit_alloc, so
++ * no lock is needed.
+  */
+-int audit_alloc(struct task_struct *tsk)
++int audit_alloc_syscall(struct task_struct *tsk)
+ {
+ 	struct audit_context *context;
+ 	enum audit_state     state;
+ 	char *key = NULL;
+ 
+-	if (likely(!audit_ever_enabled))
++	if (likely(!audit_ever_enabled)) {
++		audit_set_context(tsk, NULL);
+ 		return 0; /* Return if not auditing. */
++	}
+ 
+ 	state = audit_filter_task(tsk, &key);
+ 	if (state == AUDIT_DISABLED) {
+@@ -958,7 +960,7 @@ int audit_alloc(struct task_struct *tsk)
+ 
+ 	if (!(context = audit_alloc_context(state))) {
+ 		kfree(key);
+-		audit_log_lost("out of memory in audit_alloc");
++		audit_log_lost("out of memory in audit_alloc_syscall");
+ 		return -ENOMEM;
+ 	}
+ 	context->filterkey = key;
+@@ -1603,14 +1605,14 @@ static void audit_log_exit(void)
+ }
+ 
+ /**
+- * __audit_free - free a per-task audit context
++ * audit_free_syscall - free per-task audit context info
+  * @tsk: task whose audit context block to free
+  *
+- * Called from copy_process and do_exit
++ * Called from audit_free
+  */
+-void __audit_free(struct task_struct *tsk)
++void audit_free_syscall(struct task_struct *tsk)
+ {
+-	struct audit_context *context = tsk->audit_context;
++	struct audit_context *context = _audit_context(tsk);
+ 
+ 	if (!context)
+ 		return;
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 32083db7a2a2..261446f7bbee 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -2024,7 +2024,6 @@ static __latent_entropy struct task_struct *copy_process(
+ 	posix_cputimers_init(&p->posix_cputimers);
+ 
+ 	p->io_context = NULL;
+-	audit_set_context(p, NULL);
+ 	cgroup_fork(p);
+ #ifdef CONFIG_NUMA
+ 	p->mempolicy = mpol_dup(p->mempolicy);
 -- 
 2.18.4
 
