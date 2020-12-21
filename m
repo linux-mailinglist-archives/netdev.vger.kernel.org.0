@@ -2,93 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D1F42DFF8E
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 19:21:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 739FA2DFFAB
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 19:27:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726256AbgLUSUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 13:20:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725898AbgLUSUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 13:20:23 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4D0C0613D6;
-        Mon, 21 Dec 2020 10:19:43 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id h22so16394543lfu.2;
-        Mon, 21 Dec 2020 10:19:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nhDe/BCMy1bpe8hCLM6n7IPRX35zLkRkFl/2FWYE0uw=;
-        b=bBWPTdcOWNF92BGCJhlfyeagaCyjwJYP95MUzWvg0Gq5sFv/Nn3W+7XFNn6f8U1l5E
-         O6oow7bVnCet+4KRcT0unKxhsfttaHpCf8Ck/L69YMdklnTPer4Lma9jJeoV4D4lxqsP
-         qtBoi9B8v0pga1/ZYkv8jclxyLY/4mycCF9vllLy1gojO/LYzCRRmhARFHwwmKvAo7zD
-         8fOcyU7UZDv0XpQWaYCwb7Wrhhjmhtwzxc9TLGPo84Skw1QLRXrtoU++iPZF72FG+ep1
-         Bf4AUtJ0G7Q9+nj0MI5Yn2jewwtXe/5yKnw1O8nXOrGtGOymS6Ag1g2Q/gtlhEnIL8di
-         tSSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nhDe/BCMy1bpe8hCLM6n7IPRX35zLkRkFl/2FWYE0uw=;
-        b=fPe4pNeEKuA0pzTSbF8LbM5/vXMofYdBX8+RtdEBMdwKzIqVLXaEd6sUNUy4Tsj8AM
-         NVtgsPrXcFuinHVhvnU9DqIZHMkCz2Bm60HiOsDaO4/wIZt3nn9bIDqaFVsh0Mhk3Yzn
-         t6TeqPnMBDIapQ44Z1u46a0+tcYGNW2BEjCxSo5p7wgPPwy+7EWtDjJ5yfwAQBDJ4rmF
-         uUtCSRfrtnSUHyZNhaZFwlZGwlLsJCX1Wejjr+iCuqRn/CP8ZeZPwE5Ky1DLQPiUxat/
-         qvD0QAhbpC9Upnbh0Hn7FjzyFvTEw+P+OsZHnIe7Ubma1UO3vyKXa2eigNH4mYCmebAQ
-         pzKw==
-X-Gm-Message-State: AOAM5328PuVYOu8cThWyT5omiiV8yzvBfG8C9Ar765U6DuJRtfxS9iEe
-        6Bdk2GlPYUnuDu0+MdgzOqJZIfFz9j8=
-X-Google-Smtp-Source: ABdhPJxypbmeb2XpRvaDP4/ZTe6ZZFdYrqnoeS28/f9lmNV2Gx1Bp3LzPG7EKopUAU6W1XKav2M5eg==
-X-Received: by 2002:ac2:5f06:: with SMTP id 6mr7275073lfq.135.1608574781591;
-        Mon, 21 Dec 2020 10:19:41 -0800 (PST)
-Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
-        by smtp.googlemail.com with ESMTPSA id c5sm2292599ljj.67.2020.12.21.10.19.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Dec 2020 10:19:40 -0800 (PST)
-Subject: Re: [PATCH v1] Bluetooth: Set missing suspend task bits
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Cc:     Howard Chung <howardchung@google.com>,
-        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Manish Mandlik <mmandlik@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>, apusaka@chromium.org,
+        id S1726485AbgLUS0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 13:26:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47150 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725785AbgLUS0V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Dec 2020 13:26:21 -0500
+Date:   Mon, 21 Dec 2020 10:25:39 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608575140;
+        bh=NzyDKbSpNFfRnN3VsafpplD3Q/O8witvPQs21aT4BTY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Kt2xoIzQV21HnsZ6nFoAD3Siae9kSxWyti/StkwSTCJ3xrjeLzbakIAa8K0tFq7bs
+         EdjsQnfFhcV2PLYqSQNp//GfUZkFQwkYl1/3rP3wAF0koyesxBDfw69JE0xcWFJ6W2
+         xeaQLUt2tnL1V39CiJzTCLEPuhzIq8zNS4xBv5xzKfiBS3mEH2aDBpeLi7hW8BgVmb
+         25tbNOlocH4gUDlWuASsLZWrEqhKeEk8MiU5OyJqbn2uWmTjyb5y44ZgCIUKLksrzk
+         ikTtbG3/WaX3lL2KpNVsm76kWnbSXwCpM8sw5fuavNSK/zAVdHfiL9Sy4fSHAft0ZL
+         kRrOJXCML2dSA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        stable@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-References: <20201204111038.v1.1.I4557a89427f61427e65d85bc51cca9e65607488e@changeid>
- <ec27a562-d53b-a947-1a93-bd55a2dfcc91@gmail.com>
- <CANFp7mXdz8jYB0=tkj-mzWETo+M-Tx9ecTwEquh-JoDXRT54qw@mail.gmail.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <ff05fc01-3976-060f-ea68-8adf0f9321a2@gmail.com>
-Date:   Mon, 21 Dec 2020 21:19:39 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.2
+        netdev <netdev@vger.kernel.org>,
+        Gabor Samu <samu_gabor@yahoo.ca>,
+        Jon Nettleton <jon@solid-run.com>,
+        Andrew Elwell <andrew.elwell@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH net-next 2/4] net: mvpp2: add mvpp2_phylink_to_port()
+ helper
+Message-ID: <20201221102539.6bdb9f5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAPv3WKfCfECmwjtXLAMbNe-vuGkws_icoQ+MrgJhZJqFcgGDyw@mail.gmail.com>
+References: <20200620092047.GR1551@shell.armlinux.org.uk>
+        <E1jmZgq-0001UG-1c@rmk-PC.armlinux.org.uk>
+        <CAPv3WKdJKAEwCoj5z6NzP2xRFfT1HG+2o0wigt=Czi4bG7EQcg@mail.gmail.com>
+        <CAPv3WKfEN22cKbM8=+qDANefQE67KQ1zwURrCqAsrbo1+gBCDA@mail.gmail.com>
+        <20201102180326.GA2416734@kroah.com>
+        <CAPv3WKf0fNOOovq9UzoxoAXwGLMe_MHdfCZ6U9sjgKxarUKA+Q@mail.gmail.com>
+        <20201208133532.GH643756@sasha-vm>
+        <CAPv3WKed9zhe0q2noGKiKdzd=jBNLtN6vRW0fnQddJhhiD=rkg@mail.gmail.com>
+        <X9CuTjdgD3tDKWwo@kroah.com>
+        <CAPv3WKdKOnd+iBkfcVkoOZkHj16jOpBprY3A01ERJeq6ZQCkVQ@mail.gmail.com>
+        <CAPv3WKfCfECmwjtXLAMbNe-vuGkws_icoQ+MrgJhZJqFcgGDyw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CANFp7mXdz8jYB0=tkj-mzWETo+M-Tx9ecTwEquh-JoDXRT54qw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-21.12.2020 20:58, Abhishek Pandit-Subedi пишет:
-> Hi Dmitry,
+On Sun, 20 Dec 2020 18:08:19 +0100 Marcin Wojtas wrote:
+> > > > > >> > > This patch fixes a regression that was introduced in v5.3:
+> > > > > >> > > Commit 44cc27e43fa3 ("net: phylink: Add struct phylink_config to PHYLINK API")
+> > > > > >> > >
+> > > > > >> > > Above results in a NULL pointer dereference when booting the
+> > > > > >> > > Armada7k8k/CN913x with ACPI between 5.3 and 5.8, which will be
+> > > > > >> > > problematic especially for the distros using LTSv5.4 and above (the
+> > > > > >> > > issue was reported on Fedora 32).
+> > > > > >> > >
+> > > > > >> > > Please help with backporting to the stable v5.3+ branches (it applies
+> > > > > >> > > smoothly on v5.4/v5.6/v5.8).
+> > > > > >> > >  
+> > > > > >> >
+> > > > > >> > Any chances to backport this patch to relevant v5.3+ stable branches?  
+> > > > > >>
+> > > > > >> What patch?  What git commit id needs to be backported?
+> > > > > >>  
+> > > > > >
+> > > > > >The actual patch is:
+> > > > > >Commit 6c2b49eb9671  ("net: mvpp2: add mvpp2_phylink_to_port() helper").
+> > > > > >
+> > > > > >URL for reference:
+> > > > > >https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/ethernet/marvell/mvpp2?h=v5.10-rc7&id=6c2b49eb96716e91f202756bfbd3f5fea3b2b172
+> > > > > >
+> > > > > >Do you think it would be possible to get it merged to v5.3+ stable branches?  
+> > > > >
+> > > > > Could you explain how that patch fixes anything? It reads like a
+> > > > > cleanup.
+> > > > >  
+> > > >
+> > > > Indeed, I am aware of it, but I'm not sure about the best way to fix
+> > > > it. In fact the mentioned patch is an unintentional fix. Commit
+> > > > 44cc27e43fa3 ("net: phylink: Add struct phylink_config to PHYLINK
+> > > > API") reworked an argument list of mvpp2_mac_config() routine in a way
+> > > > that resulted in a NULL pointer dereference when booting the
+> > > > Armada7k8k/CN913x with ACPI between 5.3 and 5.8. Part of Russell's
+> > > > patch resolves this issue.  
+> > >
+> > > What part fixes the issue?  I can't see it...
+> > >  
+> >
+> > I re-checked in my setup and here's the smallest part of the original
+> > patch, that fixes previously described issue:
+> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > index e98be8372780..9d71a4fe1750 100644
+> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > @@ -4767,6 +4767,11 @@ static void mvpp2_port_copy_mac_addr(struct
+> > net_device *dev, struct mvpp2 *priv,
+> >         eth_hw_addr_random(dev);
+> >  }
+> >
+> > +static struct mvpp2_port *mvpp2_phylink_to_port(struct phylink_config *config)
+> > +{
+> > +       return container_of(config, struct mvpp2_port, phylink_config);
+> > +}
+> > +
+> >  static void mvpp2_phylink_validate(struct phylink_config *config,
+> >                                    unsigned long *supported,
+> >                                    struct phylink_link_state *state)
+> > @@ -5105,13 +5110,12 @@ static void mvpp2_gmac_config(struct
+> > mvpp2_port *port, unsigned int mode,
+> >  static void mvpp2_mac_config(struct phylink_config *config, unsigned int mode,
+> >                              const struct phylink_link_state *state)
+> >  {
+> > -       struct net_device *dev = to_net_dev(config->dev);
+> > -       struct mvpp2_port *port = netdev_priv(dev);
+> > +       struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+> >         bool change_interface = port->phy_interface != state->interface;
+> >
+> >         /* Check for invalid configuration */
+> >         if (mvpp2_is_xlg(state->interface) && port->gop_id != 0) {
+> > -               netdev_err(dev, "Invalid mode on %s\n", dev->name);
+> > +               netdev_err(port->dev, "Invalid mode on %s\n", port->dev->name);
+> >                 return;
+> >         }
+> >
+> > @@ -5151,8 +5155,7 @@ static void mvpp2_mac_link_up(struct
+> > phylink_config *config,
+> >                               int speed, int duplex,
+> >                               bool tx_pause, bool rx_pause)
+> >  {
+> > -       struct net_device *dev = to_net_dev(config->dev);
+> > -       struct mvpp2_port *port = netdev_priv(dev);
+> > +       struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+> >         u32 val;
+> >
+> >         if (mvpp2_is_xlg(interface)) {
+> > @@ -5199,7 +5202,7 @@ static void mvpp2_mac_link_up(struct
+> > phylink_config *config,
+> >
+> >         mvpp2_egress_enable(port);
+> >         mvpp2_ingress_enable(port);
+> > -       netif_tx_wake_all_queues(dev);
+> > +       netif_tx_wake_all_queues(port->dev);
+> >  }
+> >
+> >  static void mvpp2_mac_link_down(struct phylink_config *config,
+> > --
+> >
+> > Do you think there is a point of slicing the original patch or rather
+> > cherry-pick as-is?
+> >  
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=295fa2a5647b13681594bb1bcc76c74619035218
-> should fix this issue.
-> 
-> Your issue seems the same as the one I encountered -- the
-> SUSPEND_DISABLE bit (0x4) wasn't being cleared by the request
-> completion handler.
+> Do you think there is a chance to get the above fix merged to stable (v5.3+)?
 
-Hello Abhishek,
+We need to work with stable maintainers on this, let's see..
 
-It fixes the problem using today's linux-next, which already includes
-that commit, thank you.
+Greg asked for a clear description of what happens, from your 
+previous response it sounds like a null-deref in mvpp2_mac_config(). 
+Is the netdev -> config -> netdev linking not ready by the time
+mvpp2_mac_config() is called?
