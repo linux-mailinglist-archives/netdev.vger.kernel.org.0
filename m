@@ -2,117 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61F1F2E01D3
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 22:13:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CBD02E021A
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 22:38:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725908AbgLUVNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 16:13:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49982 "EHLO
+        id S1725899AbgLUVhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 16:37:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725818AbgLUVNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 16:13:17 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D90C0613D6
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 13:12:37 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id a4so4777945qvd.12
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 13:12:37 -0800 (PST)
+        with ESMTP id S1725780AbgLUVhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 16:37:48 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4ABC0613D3;
+        Mon, 21 Dec 2020 13:37:07 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id i24so10994298edj.8;
+        Mon, 21 Dec 2020 13:37:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=+WOcy9/zFWjAy/cnSZdM3quM5/ns6g+r9EnHa3AUEvs=;
-        b=byJl2EOCeyXfUbVnmmrQrKoVJESZL3ZBx7wa4cBFup83V/0mcOOZkpFf8yqNUL3oma
-         WntBzVY3V7JeY/w2vhFVzH1j0y4AGVb6KJ24mhaad0CH9AvewJ+2iDgeP2LKuEXk46u1
-         BXOc/oKF/BjSzrXcfVPmvnhy/4LOENPLUo3LpGzzwRLnDTOyqUpiDCTZ1x9pm4BZHK0Q
-         kYyRqhsxpg/oq07HKBOMQxKHRiKxvcPbIiF5WiDHiFZYandsmFYSu0wg49Tcmf03uRZ3
-         wiJHjIeuB3EbuoxDtZLz71F8w7309o9CSPY9pxvlAL4BlhlXsaFZBWkXO7J5koqq8NDR
-         ESqA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=hQggwWPPkn+WMdoPfwbk6PXTqnMay86HYcER0pUuPDU=;
+        b=mme2YD4QrmilHl3rH4PtxXh4y8Phq4UwwyTKfowp7vxflfYKXuGNAwaWvgzd3Wooso
+         Ut9BfVdgSAefeuATpsq7l6HYtzEx1jKyNqaI+8dIUS0oT6B/zUHDXPQSNRDYdUW8Mk2L
+         D2jgh26Sgy/fLFI9ZFJaLzcy4jEo12N9HmYnoAcmlEpO3MWd6mrsjMQWonMFOBpQq4kS
+         kGiuoV8gxQ/toIvEl6axAMzOWQmgD+7wmukKWe75saFipTLNyDv48dP90OspIdeFaB14
+         9/lURxLTxYuKHcPnJoFA5qHKl4etjpd4OonH4l0dP4BZFitewHAYN60CIyKX0QiuSEgV
+         6S0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=+WOcy9/zFWjAy/cnSZdM3quM5/ns6g+r9EnHa3AUEvs=;
-        b=RkGhlQznDTvNnKDpGJmoNOePYEO1iFjobKvC1fw5TirCja4mWbhIqryNkdjf42TEhY
-         X3xm5B8Rp9nr5SwqbtX+yAc5EF+Tbth5QK1uYIlqoTIGt9I6bV1JG3CrfDGRTdn3YXye
-         awer54+EwxTBAX36lha0AUz/mzIyX45nuXbl3idr9bMtnQqXclY1oHufs+EF37WaLRME
-         23ngdy/tK9Y75NxknQegAuQrcRRINnumElRJpVj+GRy/jy4PaIUcpXuISNEZXCTviHPj
-         5PNsq2Ki/JJQl3bFss/oT94WZmqcIYyj4V7Bt/e1XWQGtc17dfVrl5B0bryp94fYOBCs
-         gTVA==
-X-Gm-Message-State: AOAM532ln9VrM2gQJcbBWy3GzTj8JOsp4StkXmJius4rTabtlwNJOR27
-        MDA6N/tkRrsg4AlHU2u2Soh047ssi8ulY3sdzMq/dQ==
-X-Google-Smtp-Source: ABdhPJwkV3K1zmg1hOcr/zrvR5tmKGs8hh32twqJveHYBrFX/1CQ8OGGW4WIoxJLJg4oCH3/UVdT66u3d/UTg7ft+u4=
-X-Received: by 2002:a05:6214:20a7:: with SMTP id 7mr18940616qvd.59.1608585156192;
- Mon, 21 Dec 2020 13:12:36 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=hQggwWPPkn+WMdoPfwbk6PXTqnMay86HYcER0pUuPDU=;
+        b=R//L0E587e5MfjWcYmMp6rqLm80QqyHDCPXWWwYSBTqbkNtqzacnJY2N/pEa/UZ7dA
+         pWFDWY7Cv44l95zR0NAFNCTCPsBwH56W6a6XAhc+e2TjQKrDIwIrQtYUmGHRPG+DTYoE
+         M9vpEyrEN+KiL99ejQI4wilmiGau+L6vnIJzsnwXUlaPOzuBoPWNCVdQ2F1CSORnkYBQ
+         dCNoX/MHDKh2jMC7VKKtYYtebJoL3KOHC8tg6IwKqYZJkl2TsjVhjEYE1SaENoEaVz0A
+         8evSSVx83IuqbWqbar38yCjj6j7Mmaz0otwS8wvkPZLBYmROvvORXEiMOw4YQwuHBpwE
+         6+Cw==
+X-Gm-Message-State: AOAM530v9/LZGKPoQkOHorKXAD1C6obXFmbGxXfN2BLtM2KfFZzjnJzp
+        pYyxGHigXWhIpvBvnyhJmUgGYG89VLU=
+X-Google-Smtp-Source: ABdhPJyxPsg4QZqk0I6q3W047zja/4kF/0lD+UExgg5XcSg+P4YpCkZo5ten+TN3uXrk85CGMihysQ==
+X-Received: by 2002:a50:8b61:: with SMTP id l88mr17968781edl.250.1608586626276;
+        Mon, 21 Dec 2020 13:37:06 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:cd72:cf28:16d9:79dc? (p200300ea8f065500cd72cf2816d979dc.dip0.t-ipconnect.de. [2003:ea:8f06:5500:cd72:cf28:16d9:79dc])
+        by smtp.googlemail.com with ESMTPSA id a6sm29216403edv.74.2020.12.21.13.37.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Dec 2020 13:37:05 -0800 (PST)
+Subject: Re: [Aspeed, v1 1/1] net: ftgmac100: Change the order of getting MAC
+ address
+To:     Hongwei Zhang <hongweiz@ami.com>, linux-aspeed@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David S Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>
+References: <20201221205157.31501-1-hongweiz@ami.com>
+ <20201221205157.31501-2-hongweiz@ami.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <55803a8a-7ec9-5d60-04bd-d1e163174250@gmail.com>
+Date:   Mon, 21 Dec 2020 22:36:59 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-References: <20201102180326.GA2416734@kroah.com> <CAPv3WKf0fNOOovq9UzoxoAXwGLMe_MHdfCZ6U9sjgKxarUKA+Q@mail.gmail.com>
- <20201208133532.GH643756@sasha-vm> <CAPv3WKed9zhe0q2noGKiKdzd=jBNLtN6vRW0fnQddJhhiD=rkg@mail.gmail.com>
- <X9CuTjdgD3tDKWwo@kroah.com> <CAPv3WKdKOnd+iBkfcVkoOZkHj16jOpBprY3A01ERJeq6ZQCkVQ@mail.gmail.com>
- <CAPv3WKfCfECmwjtXLAMbNe-vuGkws_icoQ+MrgJhZJqFcgGDyw@mail.gmail.com>
- <20201221102539.6bdb9f5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201221183032.GA1551@shell.armlinux.org.uk> <20201221104757.2cd8d68c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201221190742.GE643756@sasha-vm>
-In-Reply-To: <20201221190742.GE643756@sasha-vm>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Mon, 21 Dec 2020 22:12:24 +0100
-Message-ID: <CAPv3WKfR7tF5E1NSGdb_0vLkLqPPaBn52B0wo19ZN7EO7QWv=A@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/4] net: mvpp2: add mvpp2_phylink_to_port() helper
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        stable@vger.kernel.org,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Gabor Samu <samu_gabor@yahoo.ca>,
-        Jon Nettleton <jon@solid-run.com>,
-        Andrew Elwell <andrew.elwell@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20201221205157.31501-2-hongweiz@ami.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pon., 21 gru 2020 o 20:07 Sasha Levin <sashal@kernel.org> napisa=C5=82(a):
->
-> On Mon, Dec 21, 2020 at 10:47:57AM -0800, Jakub Kicinski wrote:
-> >On Mon, 21 Dec 2020 18:30:32 +0000 Russell King - ARM Linux admin wrote:
-> >> On Mon, Dec 21, 2020 at 10:25:39AM -0800, Jakub Kicinski wrote:
-> >> > We need to work with stable maintainers on this, let's see..
-> >> >
-> >> > Greg asked for a clear description of what happens, from your
-> >> > previous response it sounds like a null-deref in mvpp2_mac_config().
-> >> > Is the netdev -> config -> netdev linking not ready by the time
-> >> > mvpp2_mac_config() is called?
-> >>
-> >> We are going round in circles, so nothing is going to happen.
-> >>
-> >> I stated in detail in one of my emails on the 10th December why the
-> >> problem occurs. So, Greg has the description already. There is no
-> >> need to repeat it.
-> >>
-> >> Can we please move forward with this?
-> >
-> >Well, the fact it wasn't quoted in Marcin's reply and that I didn't
-> >spot it when scanning the 30 email thread should be a clear enough
-> >indication whether pinging threads is a good strategy..
-> >
-> >A clear, fresh backport request would had been much more successful
-> >and easier for Greg to process. If you still don't see a reply in
-> >2 weeks, please just do that.
-> >
-> >In case Greg is in fact reading this:
-> >
-> >
-> >Greg, can we backport:
-> >
-> >6c2b49eb9671 ("net: mvpp2: add mvpp2_phylink_to_port() helper")
->
-> I've queued it for 5.4, thanks!
->
+Am 21.12.2020 um 21:51 schrieb Hongwei Zhang:
+> Change the order of reading MAC address, try to read it from MAC chip
+> first, if it's not availabe, then try to read it from device tree.
+> 
+This commit message leaves a number of questions. It seems the change
+isn't related at all to the change that it's supposed to fix.
 
-Thank you!
+- What is the issue that you're trying to fix?
+- And what is wrong with the original change?
 
-Best regards,
-Marcin
+> Fixes: 35c54922dc97 ("ARM: dts: tacoma: Add reserved memory for ramoops")
+> Signed-off-by: Hongwei Zhang <hongweiz@ami.com>
+> ---
+>  drivers/net/ethernet/faraday/ftgmac100.c | 22 +++++++++++++---------
+>  1 file changed, 13 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> index 65cd25372020..9be69cbdab96 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -184,14 +184,7 @@ static void ftgmac100_initial_mac(struct ftgmac100 *priv)
+>  	unsigned int l;
+>  	void *addr;
+>  
+> -	addr = device_get_mac_address(priv->dev, mac, ETH_ALEN);
+> -	if (addr) {
+> -		ether_addr_copy(priv->netdev->dev_addr, mac);
+> -		dev_info(priv->dev, "Read MAC address %pM from device tree\n",
+> -			 mac);
+> -		return;
+> -	}
+> -
+> +	/* Read from Chip if not from chip */
+
+?!?
+
+>  	m = ioread32(priv->base + FTGMAC100_OFFSET_MAC_MADR);
+>  	l = ioread32(priv->base + FTGMAC100_OFFSET_MAC_LADR);
+>  
+> @@ -205,7 +198,18 @@ static void ftgmac100_initial_mac(struct ftgmac100 *priv)
+>  	if (is_valid_ether_addr(mac)) {
+>  		ether_addr_copy(priv->netdev->dev_addr, mac);
+>  		dev_info(priv->dev, "Read MAC address %pM from chip\n", mac);
+> -	} else {
+> +		return;
+> +	}
+> +
+> +	/* Read from Chip if not from device tree */
+
+Isn't this how it works now?
+
+> +	addr = device_get_mac_address(priv->dev, mac, ETH_ALEN);
+> +	if (addr) {
+> +		ether_addr_copy(priv->netdev->dev_addr, mac);
+> +		dev_info(priv->dev, "Read MAC address %pM from device tree\n",
+> +				mac);
+> +		return;
+> +	}
+> +	else {
+>  		eth_hw_addr_random(priv->netdev);
+>  		dev_info(priv->dev, "Generated random MAC address %pM\n",
+>  			 priv->netdev->dev_addr);
+> 
+
