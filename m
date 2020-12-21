@@ -2,289 +2,422 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DDDA2E00DA
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:20:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 929C92E00EB
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 20:24:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726264AbgLUTTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 14:19:22 -0500
-Received: from smtp1.emailarray.com ([65.39.216.14]:14363 "EHLO
-        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726025AbgLUTTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 14:19:22 -0500
-Received: (qmail 71921 invoked by uid 89); 21 Dec 2020 19:18:37 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 21 Dec 2020 19:18:37 -0000
-Date:   Mon, 21 Dec 2020 11:18:35 -0800
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH 3/9 v1 RFC] skbuff: replace sock_zerocopy_put() with
- skb_zcopy_put()
-Message-ID: <20201221191835.ic3aln6ib5hbftlk@bsd-mbp>
-References: <20201218201633.2735367-1-jonathan.lemon@gmail.com>
- <20201218201633.2735367-4-jonathan.lemon@gmail.com>
- <CA+FuTSeaero7hwvDR=1M6z3SZgf_bm+KjQWVzqeS_a42hQ-91Q@mail.gmail.com>
+        id S1726112AbgLUTYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 14:24:18 -0500
+Received: from mail-ot1-f44.google.com ([209.85.210.44]:42307 "EHLO
+        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgLUTYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 14:24:17 -0500
+Received: by mail-ot1-f44.google.com with SMTP id 11so9778448oty.9;
+        Mon, 21 Dec 2020 11:24:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+MPNyh0ZC8yCZNgAA8bBziqErQk6Du1uyBnItE5vWOk=;
+        b=VdatDiDU0HDhmdfrTdWSoyFbLDJqD8VBkTNxsK+E6cyOrnuGURq4NeNoBPb466rrqv
+         jPC+jCPSld3ibKCLW0gsAzVt+YS4svMH3zR2a8SH2oLA63UFsJeK+74bXzT8xV5G7Vxa
+         N+ziO+IWxULlYuPVBC1WsRRMCGN2sYmKv+bQ/w2zt1k9UQNl6xBBltQU9+J3zONNKlO/
+         ZQCTmC6DaFAHjyokDRJZ8zy5cqBZ0HJPgmxDECMw62JUnPIkR/nVQuW5wg2IhGDMkp+G
+         UOVJjJOIfbFKgIvQdUOSozua45xpECcp1AUYPNAaSEH+Suiwbnbbqgje5ax90QRxNnr3
+         buGw==
+X-Gm-Message-State: AOAM533d2eH6x6RTEhsKP0HHVpHkvN/VMnrlNnVKxywY1l3hj1HoWxNB
+        6R1DjDGwW/BWAqQLdjkDGA==
+X-Google-Smtp-Source: ABdhPJw8sn/9WeuLHtFs0WeLDQRAe3SaSuVwLcfO25J9NdUxHirMOVK0RIDfGlk2pwG94/gLFc60nA==
+X-Received: by 2002:a9d:22ca:: with SMTP id y68mr12915993ota.22.1608578615333;
+        Mon, 21 Dec 2020 11:23:35 -0800 (PST)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id r15sm3737855oie.33.2020.12.21.11.23.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Dec 2020 11:23:34 -0800 (PST)
+Received: (nullmailer pid 401014 invoked by uid 1000);
+        Mon, 21 Dec 2020 19:23:29 -0000
+Date:   Mon, 21 Dec 2020 12:23:29 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Min Guo <min.guo@mediatek.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-usb@vger.kernel.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Subject: Re: [PATCH v4 09/11] dt-bindings: usb: convert mediatek,mtk-xhci.txt
+ to YAML schema
+Message-ID: <20201221192329.GA383663@robh.at.kernel.org>
+References: <20201216093012.24406-1-chunfeng.yun@mediatek.com>
+ <20201216093012.24406-9-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+FuTSeaero7hwvDR=1M6z3SZgf_bm+KjQWVzqeS_a42hQ-91Q@mail.gmail.com>
+In-Reply-To: <20201216093012.24406-9-chunfeng.yun@mediatek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 19, 2020 at 01:46:13PM -0500, Willem de Bruijn wrote:
-> On Fri, Dec 18, 2020 at 3:20 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
-> >
-> > From: Jonathan Lemon <bsd@fb.com>
-> >
-> > In preparation for further work, the zcopy* routines will
-> > become basic building blocks, while the zerocopy* ones will
-> > be specific for the existing zerocopy implementation.
+On Wed, Dec 16, 2020 at 05:30:10PM +0800, Chunfeng Yun wrote:
+> Convert mediatek,mtk-xhci.txt to YAML schema mediatek,mtk-xhci.yaml
 > 
-> Plural. There already are multiple disjoint zerocopy implementations:
-> msg_zerocopy, tpacket and vhost_net.
-
-Yes - I'm having to take all of those into account when adding
-zctap as well.
-
-
-> Which API is each intended to use? After this patch
-> tcp_sendmsg_locked() calls both skb_zcopy_put and
-> sock_zerocopy_put_abort, so I don't think that that is simplifying the
-> situation.
-
-I'm trying to make the skb_zcopy_ routines the top level API, and 
-the sock_zerocopy_ routines specific to msg_zerocopy().  Patch 6 adds
-the skb_zcopy_put_abort() function, which unfortunately still uses
-the uarg->callback for switching.
-
-
-> This is tricky code. Perhaps best to change only what is needed
-> instead of targeting a larger cleanup. It's hard to reason that this
-> patch is safe in all three existing cases, for instance.
-
-Exactly.  I'm trying to simplify things here so it's easier to reason
-through all the cases.
-
-
-> > All uargs should have a callback function, (unless nouarg
-> > is set), so push all special case logic handling down into
-> > the callbacks.  This slightly pessimizes the refcounted cases,
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> ---
+> v4: update it according to Rob's suggestion
+>   1. modify dictionary of phys
+>   2. fix endentation in "mediatek,syscon-wakeup" items
+>   3. remove reference to usb-hcd.yaml
 > 
-> What does this mean?
-
-The current zerocopy_put() code does:
-  1) if uarg, dec refcount, if refcount == 0:
-     if callback, run callback, else consume skb.
-
-This is called from the main TCP/UDP send path.  These would be called
-for the zctap case as well, so it should be made generic - not specific
-to the current zerocopy implementation.  The patch changes this into:
-
-  1) if uarg, run callback.
-
-Then, the msg_zerocopy code does:
-
-  1) save state,
-  2) dec refcount, run rest of callback on 0.
-
-Which is the same as before.  The !uarg case is never handled here.
-The zctap cases switch to their own callbacks.
-
-
-The current zerocopy clear code does:
-  1) if no_uarg, skip 
-  2) if msg_zerocopy, save state, dec refcount, run callback when 0.
-  3) otherwise just run callback.
-  4) clear flags
-
-I would like to remove the msg_zerocopy specific logic from the function,
-so this becomes:
-
-  1) if uarg, run callback.
-  2) clear flags
-
-
-
-> > but makes the skb_zcopy_*() routines clearer.
-> >
-> > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> > ---
-> >  include/linux/skbuff.h | 19 +++++++++----------
-> >  net/core/skbuff.c      | 21 +++++++++------------
-> >  net/ipv4/tcp.c         |  2 +-
-> >  3 files changed, 19 insertions(+), 23 deletions(-)
-> >
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index fb6dd6af0f82..df98d61e8c51 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -499,7 +499,6 @@ static inline void sock_zerocopy_get(struct ubuf_info *uarg)
-> >         refcount_inc(&uarg->refcnt);
-> >  }
-> >
-> > -void sock_zerocopy_put(struct ubuf_info *uarg);
-> >  void sock_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref);
+> v3:
+>   1. fix yamllint warning
+>   2. remove pinctrl* properties supported by default suggested by Rob
+>   3. drop unused labels
+>   4. modify description of mediatek,syscon-wakeup
+>   5. remove type of imod-interval-ns
 > 
-> The rename of sock_zerocopy_put without rename of
-> sock_zerocopy_put_abort makes the API less consistent, I believe. See
-> how the calls are close together in tcp_sendmsg_locked.
-
-See patch 6.
-
-
-> >  void sock_zerocopy_callback(struct ubuf_info *uarg, bool success);
-> > @@ -1474,20 +1473,20 @@ static inline void *skb_zcopy_get_nouarg(struct sk_buff *skb)
-> >         return (void *)((uintptr_t) skb_shinfo(skb)->destructor_arg & ~0x1UL);
-> >  }
-> >
-> > +static inline void skb_zcopy_put(struct ubuf_info *uarg)
-> > +{
-> > +       if (uarg)
-> > +               uarg->callback(uarg, true);
-> > +}
-> > +
+> v2: new patch
+> ---
+>  .../bindings/usb/mediatek,mtk-xhci.txt        | 121 -------------
+>  .../bindings/usb/mediatek,mtk-xhci.yaml       | 171 ++++++++++++++++++
+>  2 files changed, 171 insertions(+), 121 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.txt
+>  create mode 100644 Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
 > 
-> Can we just use skb_zcopy_clear?
+> diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.txt b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.txt
+> deleted file mode 100644
+> index 42d8814f903a..000000000000
+> --- a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.txt
+> +++ /dev/null
+> @@ -1,121 +0,0 @@
+> -MT8173 xHCI
+> -
+> -The device node for Mediatek SOC USB3.0 host controller
+> -
+> -There are two scenarios: the first one only supports xHCI driver;
+> -the second one supports dual-role mode, and the host is based on xHCI
+> -driver. Take account of backward compatibility, we divide bindings
+> -into two parts.
+> -
+> -1st: only supports xHCI driver
+> -------------------------------------------------------------------------
+> -
+> -Required properties:
+> - - compatible : should be "mediatek,<soc-model>-xhci", "mediatek,mtk-xhci",
+> -	soc-model is the name of SoC, such as mt8173, mt2712 etc, when using
+> -	"mediatek,mtk-xhci" compatible string, you need SoC specific ones in
+> -	addition, one of:
+> -	- "mediatek,mt8173-xhci"
+> - - reg : specifies physical base address and size of the registers
+> - - reg-names: should be "mac" for xHCI MAC and "ippc" for IP port control
+> - - interrupts : interrupt used by the controller
+> - - power-domains : a phandle to USB power domain node to control USB's
+> -	mtcmos
+> - - vusb33-supply : regulator of USB avdd3.3v
+> -
+> - - clocks : a list of phandle + clock-specifier pairs, one for each
+> -	entry in clock-names
+> - - clock-names : must contain
+> -	"sys_ck": controller clock used by normal mode,
+> -	the following ones are optional:
+> -	"ref_ck": reference clock used by low power mode etc,
+> -	"mcu_ck": mcu_bus clock for register access,
+> -	"dma_ck": dma_bus clock for data transfer by DMA,
+> -	"xhci_ck": controller clock
+> -
+> - - phys : see usb-hcd.yaml in the current directory
+> -
+> -Optional properties:
+> - - wakeup-source : enable USB remote wakeup;
+> - - mediatek,syscon-wakeup : phandle to syscon used to access the register
+> -	of the USB wakeup glue layer between xHCI and SPM; it depends on
+> -	"wakeup-source", and has two arguments:
+> -	- the first one : register base address of the glue layer in syscon;
+> -	- the second one : hardware version of the glue layer
+> -		- 1 : used by mt8173 etc
+> -		- 2 : used by mt2712 etc
+> - - mediatek,u3p-dis-msk : mask to disable u3ports, bit0 for u3port0,
+> -	bit1 for u3port1, ... etc;
+> - - vbus-supply : reference to the VBUS regulator;
+> - - usb3-lpm-capable : supports USB3.0 LPM
+> - - pinctrl-names : a pinctrl state named "default" must be defined
+> - - pinctrl-0 : pin control group
+> -	See: Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
+> - - imod-interval-ns: default interrupt moderation interval is 5000ns
+> -
+> -additionally the properties from usb-hcd.yaml (in the current directory) are
+> -supported.
+> -
+> -Example:
+> -usb30: usb@11270000 {
+> -	compatible = "mediatek,mt8173-xhci";
+> -	reg = <0 0x11270000 0 0x1000>,
+> -	      <0 0x11280700 0 0x0100>;
+> -	reg-names = "mac", "ippc";
+> -	interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_LOW>;
+> -	power-domains = <&scpsys MT8173_POWER_DOMAIN_USB>;
+> -	clocks = <&topckgen CLK_TOP_USB30_SEL>, <&clk26m>,
+> -		 <&pericfg CLK_PERI_USB0>,
+> -		 <&pericfg CLK_PERI_USB1>;
+> -	clock-names = "sys_ck", "ref_ck";
+> -	phys = <&phy_port0 PHY_TYPE_USB3>,
+> -	       <&phy_port1 PHY_TYPE_USB2>;
+> -	vusb33-supply = <&mt6397_vusb_reg>;
+> -	vbus-supply = <&usb_p1_vbus>;
+> -	usb3-lpm-capable;
+> -	mediatek,syscon-wakeup = <&pericfg 0x400 1>;
+> -	wakeup-source;
+> -	imod-interval-ns = <10000>;
+> -};
+> -
+> -2nd: dual-role mode with xHCI driver
+> -------------------------------------------------------------------------
+> -
+> -In the case, xhci is added as subnode to mtu3. An example and the DT binding
+> -details of mtu3 can be found in:
+> -Documentation/devicetree/bindings/usb/mediatek,mtu3.txt
+> -
+> -Required properties:
+> - - compatible : should be "mediatek,<soc-model>-xhci", "mediatek,mtk-xhci",
+> -	soc-model is the name of SoC, such as mt8173, mt2712 etc, when using
+> -	"mediatek,mtk-xhci" compatible string, you need SoC specific ones in
+> -	addition, one of:
+> -	- "mediatek,mt8173-xhci"
+> - - reg : specifies physical base address and size of the registers
+> - - reg-names: should be "mac" for xHCI MAC
+> - - interrupts : interrupt used by the host controller
+> - - power-domains : a phandle to USB power domain node to control USB's
+> -	mtcmos
+> - - vusb33-supply : regulator of USB avdd3.3v
+> -
+> - - clocks : a list of phandle + clock-specifier pairs, one for each
+> -	entry in clock-names
+> - - clock-names : must contain "sys_ck", and the following ones are optional:
+> -	"ref_ck", "mcu_ck" and "dma_ck", "xhci_ck"
+> -
+> -Optional properties:
+> - - vbus-supply : reference to the VBUS regulator;
+> - - usb3-lpm-capable : supports USB3.0 LPM
+> -
+> -Example:
+> -usb30: usb@11270000 {
+> -	compatible = "mediatek,mt8173-xhci";
+> -	reg = <0 0x11270000 0 0x1000>;
+> -	reg-names = "mac";
+> -	interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_LOW>;
+> -	power-domains = <&scpsys MT8173_POWER_DOMAIN_USB>;
+> -	clocks = <&topckgen CLK_TOP_USB30_SEL>, <&clk26m>;
+> -	clock-names = "sys_ck", "ref_ck";
+> -	vusb33-supply = <&mt6397_vusb_reg>;
+> -	usb3-lpm-capable;
+> -};
+> diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
+> new file mode 100644
+> index 000000000000..e5e03f902802
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
+> @@ -0,0 +1,171 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (c) 2020 MediaTek
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/usb/mediatek,mtk-xhci.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek USB3 xHCI Device Tree Bindings
+> +
+> +maintainers:
+> +  - Chunfeng Yun <chunfeng.yun@mediatek.com>
+> +
+> +allOf:
+> +  - $ref: "usb-hcd.yaml"
 
-skb_zcopy_clear also clears the flags, so no.
+This will need to reference Serge's xhci.yaml instead.
 
- 
-> >  /* Release a reference on a zerocopy structure */
-> > -static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy)
-> > +static inline void skb_zcopy_clear(struct sk_buff *skb, bool succsss)
+> +
+> +description: |
+> +  There are two scenarios:
+> +  case 1: only supports xHCI driver;
+> +  case 2: supports dual-role mode, and the host is based on xHCI driver.
+> +
+> +properties:
+> +  # common properties for both case 1 and case 2
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - mediatek,mt2712-xhci
+> +          - mediatek,mt7622-xhci
+> +          - mediatek,mt7629-xhci
+> +          - mediatek,mt8173-xhci
+> +          - mediatek,mt8183-xhci
+> +      - const: mediatek,mtk-xhci
+> +
+> +  reg:
+> +    minItems: 1
+> +    maxItems: 2
+
+You can drop maxItems, as that is implied by length of 'items'.
+
+> +    items:
+> +      - description: the registers of xHCI MAC
+> +      - description: the registers of IP Port Control
+> +
+> +  reg-names:
+> +    minItems: 1
+> +    maxItems: 2
+> +    items:
+> +      - const: mac
+> +      - const: ippc  # optional, only needed for case 1.
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  power-domains:
+> +    description: A phandle to USB power domain node to control USB's MTCMOS
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    minItems: 1
+> +    maxItems: 5
+> +    items:
+> +      - description: Controller clock used by normal mode
+> +      - description: Reference clock used by low power mode etc
+> +      - description: Mcu bus clock for register access
+> +      - description: DMA bus clock for data transfer
+> +      - description: controller clock
+> +
+> +  clock-names:
+> +    minItems: 1
+> +    maxItems: 5
+> +    items:
+> +      - const: sys_ck  # required, the following ones are optional
+> +      - const: ref_ck
+> +      - const: mcu_ck
+> +      - const: dma_ck
+> +      - const: xhci_ck
+> +
+> +  phys:
+> +    description: List of at most 5 USB2 PHYs and 4 USB3 PHYs on this HCD
+
+If it's less, how does one know what each phy is?
+
+> +    minItems: 0
+
+minItems: 0 is never correct. That's phys not being present.
+
+> +    maxItems: 9
+> +
+> +  vusb33-supply:
+> +    description: Regulator of USB AVDD3.3v
+> +
+> +  vbus-supply:
+> +    description: Regulator of USB VBUS5v
+> +
+> +  usb3-lpm-capable:
+> +    description: supports USB3.0 LPM
+> +    type: boolean
+> +
+> +  imod-interval-ns:
+> +    description:
+> +      Interrupt moderation interval value, it is 8 times as much as that
+> +      defined in the xHCI spec on MTK's controller.
+> +    default: 5000
+> +
+> +  # the following properties are only used for case 1
+> +  wakeup-source:
+> +    description: enable USB remote wakeup, see power/wakeup-source.txt
+> +    type: boolean
+> +
+> +  mediatek,syscon-wakeup:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    maxItems: 1
+> +    description:
+> +      A phandle to syscon used to access the register of the USB wakeup glue
+> +      layer between xHCI and SPM, the field should always be 3 cells long.
+> +    items:
+> +      items:
+> +        - description:
+> +            The first cell represents a phandle to syscon
+> +        - description:
+> +            The second cell represents the register base address of the glue
+> +            layer in syscon
+> +        - description:
+> +            The third cell represents the hardware version of the glue layer,
+> +            1 is used by mt8173 etc, 2 is used by mt2712 etc
+> +          enum: [1, 2]
+> +
+> +  mediatek,u3p-dis-msk:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: The mask to disable u3ports, bit0 for u3port0,
+> +      bit1 for u3port1, ... etc
+> +
+> +  "#address-cells":
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 0
+> +
+> +patternProperties:
+> +  "^[a-f]+@[0-9a-f]+$":
+
+[a-f]+ doesn't cover all possible node names. Just '@[0-9a-f]+$', though 
+I assume you have some max number of ports less than 16?
+
+> +    type: object
+> +    description: The hard wired USB devices.
+
+This needs to reference usb-device.yaml. Or usb-hcd.yaml does and 
+then this isn't needed. It depends if child nodes of USB host controller 
+are always USB devices or not. Serge?
+
+> +
+> +dependencies:
+> +  wakeup-source: [ 'mediatek,syscon-wakeup' ]
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/mt8173-clk.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/phy/phy.h>
+> +    #include <dt-bindings/power/mt8173-power.h>
+> +
+> +    usb@11270000 {
+> +        compatible = "mediatek,mt8173-xhci", "mediatek,mtk-xhci";
+> +        reg = <0x11270000 0x1000>, <0x11280700 0x0100>;
+> +        reg-names = "mac", "ippc";
+> +        interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_LOW>;
+> +        power-domains = <&scpsys MT8173_POWER_DOMAIN_USB>;
+> +        clocks = <&topckgen CLK_TOP_USB30_SEL>, <&clk26m>;
+> +        clock-names = "sys_ck", "ref_ck";
+> +        phys = <&u3port0 PHY_TYPE_USB3>, <&u2port1 PHY_TYPE_USB2>;
+> +        vusb33-supply = <&mt6397_vusb_reg>;
+> +        vbus-supply = <&usb_p1_vbus>;
+> +        imod-interval-ns = <10000>;
+> +        mediatek,syscon-wakeup = <&pericfg 0x400 1>;
+> +        wakeup-source;
+> +        usb3-lpm-capable;
+> +    };
+> +...
+> -- 
+> 2.18.0
 > 
-> succsss -> success. More importantly, why change the argument name?
-
-It is already named inconsistently:
-   struct ubuf_info {
-        void (*callback)(struct ubuf_info *, bool zerocopy_success);
-
-   void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
-   static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy)
-
-I picked one and made them the same.
-
-
-
-
-> 
-> >  {
-> >         struct ubuf_info *uarg = skb_zcopy(skb);
-> >
-> >         if (uarg) {
-> > -               if (skb_zcopy_is_nouarg(skb)) {
-> > -                       /* no notification callback */
-> > -               } else if (uarg->callback == sock_zerocopy_callback) {
-> > -                       uarg->zerocopy = uarg->zerocopy && zerocopy;
-> > -                       sock_zerocopy_put(uarg);
-> > -               } else {
-> > -                       uarg->callback(uarg, zerocopy);
-> > -               }
-> > +               if (!skb_zcopy_is_nouarg(skb))
-> > +                       uarg->callback(uarg, succsss);
-> >
-> >                 skb_shinfo(skb)->zc_flags &= ~SKBZC_FRAGMENTS;
-> >         }
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 327ee8938f78..984760dd670b 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -1194,7 +1194,7 @@ static bool skb_zerocopy_notify_extend(struct sk_buff *skb, u32 lo, u16 len)
-> >         return true;
-> >  }
-> >
-> > -void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
-> > +static void __sock_zerocopy_callback(struct ubuf_info *uarg)
-> >  {
-> >         struct sk_buff *tail, *skb = skb_from_uarg(uarg);
-> >         struct sock_exterr_skb *serr;
-> > @@ -1222,7 +1222,7 @@ void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
-> >         serr->ee.ee_origin = SO_EE_ORIGIN_ZEROCOPY;
-> >         serr->ee.ee_data = hi;
-> >         serr->ee.ee_info = lo;
-> > -       if (!success)
-> > +       if (!uarg->zerocopy)
-> >                 serr->ee.ee_code |= SO_EE_CODE_ZEROCOPY_COPIED;
-> >
-> >         q = &sk->sk_error_queue;
-> > @@ -1241,18 +1241,15 @@ void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
-> >         consume_skb(skb);
-> >         sock_put(sk);
-> >  }
-> > -EXPORT_SYMBOL_GPL(sock_zerocopy_callback);
-> >
-> > -void sock_zerocopy_put(struct ubuf_info *uarg)
-> > +void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
-> >  {
-> > -       if (uarg && refcount_dec_and_test(&uarg->refcnt)) {
-> > -               if (uarg->callback)
-> > -                       uarg->callback(uarg, uarg->zerocopy);
-> > -               else
-> > -                       consume_skb(skb_from_uarg(uarg));
-> 
-> I suppose this can be removed after commit 0a4a060bb204 ("sock: fix
-> zerocopy_success regression with msg_zerocopy"). Cleaning that up
-> would better be a separate patch that explains why the removal is
-> safe.
-
-I'll split the patches out.
-
-
-> It's also fine to bundle with moving refcount_dec_and_test into
-> sock_zerocopy_callback, which indeed follows from it.
-> 
-> > -       }
-> > +       uarg->zerocopy = uarg->zerocopy & success;
-> > +
-> > +       if (refcount_dec_and_test(&uarg->refcnt))
-> > +               __sock_zerocopy_callback(uarg);
-> 
-> This can be wrapped in existing sock_zerocopy_callback. No need for a
-> __sock_zerocopy_callback.
-
-The compiler will inline the helper anyway, since it's a single
-callsite.
-
-
-> 
-> If you do want a separate API for existing msg_zerocopy distinct from
-> existing skb_zcopy, then maybe rename the functions only used by
-> msg_zerocopy to have prefix msg_zerocopy_ instead of sock_zerocopy_
-
-That's a good suggestion, thanks!
-
- 
-> >  }
-> > -EXPORT_SYMBOL_GPL(sock_zerocopy_put);
-> > +EXPORT_SYMBOL_GPL(sock_zerocopy_callback);
-> >
-> >  void sock_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref)
-> >  {
-> > @@ -1263,7 +1260,7 @@ void sock_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref)
-> >                 uarg->len--;
-> >
-> >                 if (have_uref)
-> > -                       sock_zerocopy_put(uarg);
-> > +                       skb_zcopy_put(uarg);
-> >         }
-> >  }
-> >  EXPORT_SYMBOL_GPL(sock_zerocopy_put_abort);
-> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > index fea9bae370e4..5c38080df13f 100644
-> > --- a/net/ipv4/tcp.c
-> > +++ b/net/ipv4/tcp.c
-> > @@ -1429,7 +1429,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
-> >                 tcp_push(sk, flags, mss_now, tp->nonagle, size_goal);
-> >         }
-> >  out_nopush:
-> > -       sock_zerocopy_put(uarg);
-> > +       skb_zcopy_put(uarg);
-> >         return copied + copied_syn;
-> >
-> >  do_error:
-> > --
-> > 2.24.1
-> >
