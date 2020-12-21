@@ -2,100 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C06652DFF81
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 19:17:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D1F42DFF8E
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 19:21:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgLUSQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 13:16:41 -0500
-Received: from so254-31.mailgun.net ([198.61.254.31]:50153 "EHLO
-        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726066AbgLUSQk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 13:16:40 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1608574584; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=advVr5rSg5zOOn4yjOEJUBXVBEt3L/mvo2faQIC58Bc=; b=bKkNriUjWnUrWoMflfY7dvcOiaZd+47FNYlwSh7EJv9rwskyMFgMb4y6K8qLjR21BGMnSnHJ
- 3/koP8G8LWQGPXGv/rKZQ1SG/f/UvCNq0khOtsUOOf3tTfGzu0ViLWp/XUDx2l+sV8jl/RH9
- XYSh+GROXYRVWDYaGSADr08D0VY=
-X-Mailgun-Sending-Ip: 198.61.254.31
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 5fe0e63fda4719818836360d (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Dec 2020 18:15:27
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4CE6DC43464; Mon, 21 Dec 2020 18:15:27 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E500AC433ED;
-        Mon, 21 Dec 2020 18:15:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E500AC433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Zekun Shen <bruceshenzk@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
+        id S1726256AbgLUSUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 13:20:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725898AbgLUSUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 13:20:23 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4D0C0613D6;
+        Mon, 21 Dec 2020 10:19:43 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id h22so16394543lfu.2;
+        Mon, 21 Dec 2020 10:19:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nhDe/BCMy1bpe8hCLM6n7IPRX35zLkRkFl/2FWYE0uw=;
+        b=bBWPTdcOWNF92BGCJhlfyeagaCyjwJYP95MUzWvg0Gq5sFv/Nn3W+7XFNn6f8U1l5E
+         O6oow7bVnCet+4KRcT0unKxhsfttaHpCf8Ck/L69YMdklnTPer4Lma9jJeoV4D4lxqsP
+         qtBoi9B8v0pga1/ZYkv8jclxyLY/4mycCF9vllLy1gojO/LYzCRRmhARFHwwmKvAo7zD
+         8fOcyU7UZDv0XpQWaYCwb7Wrhhjmhtwzxc9TLGPo84Skw1QLRXrtoU++iPZF72FG+ep1
+         Bf4AUtJ0G7Q9+nj0MI5Yn2jewwtXe/5yKnw1O8nXOrGtGOymS6Ag1g2Q/gtlhEnIL8di
+         tSSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nhDe/BCMy1bpe8hCLM6n7IPRX35zLkRkFl/2FWYE0uw=;
+        b=fPe4pNeEKuA0pzTSbF8LbM5/vXMofYdBX8+RtdEBMdwKzIqVLXaEd6sUNUy4Tsj8AM
+         NVtgsPrXcFuinHVhvnU9DqIZHMkCz2Bm60HiOsDaO4/wIZt3nn9bIDqaFVsh0Mhk3Yzn
+         t6TeqPnMBDIapQ44Z1u46a0+tcYGNW2BEjCxSo5p7wgPPwy+7EWtDjJ5yfwAQBDJ4rmF
+         uUtCSRfrtnSUHyZNhaZFwlZGwlLsJCX1Wejjr+iCuqRn/CP8ZeZPwE5Ky1DLQPiUxat/
+         qvD0QAhbpC9Upnbh0Hn7FjzyFvTEw+P+OsZHnIe7Ubma1UO3vyKXa2eigNH4mYCmebAQ
+         pzKw==
+X-Gm-Message-State: AOAM5328PuVYOu8cThWyT5omiiV8yzvBfG8C9Ar765U6DuJRtfxS9iEe
+        6Bdk2GlPYUnuDu0+MdgzOqJZIfFz9j8=
+X-Google-Smtp-Source: ABdhPJxypbmeb2XpRvaDP4/ZTe6ZZFdYrqnoeS28/f9lmNV2Gx1Bp3LzPG7EKopUAU6W1XKav2M5eg==
+X-Received: by 2002:ac2:5f06:: with SMTP id 6mr7275073lfq.135.1608574781591;
+        Mon, 21 Dec 2020 10:19:41 -0800 (PST)
+Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
+        by smtp.googlemail.com with ESMTPSA id c5sm2292599ljj.67.2020.12.21.10.19.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Dec 2020 10:19:40 -0800 (PST)
+Subject: Re: [PATCH v1] Bluetooth: Set missing suspend task bits
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Cc:     Howard Chung <howardchung@google.com>,
+        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Manish Mandlik <mmandlik@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>, apusaka@chromium.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] net: ath10k: santity check for ep connectivity
-References: <20200622022055.16028-1-bruceshenzk@gmail.com>
-Date:   Mon, 21 Dec 2020 20:15:22 +0200
-In-Reply-To: <20200622022055.16028-1-bruceshenzk@gmail.com> (Zekun Shen's
-        message of "Sun, 21 Jun 2020 22:20:54 -0400")
-Message-ID: <87sg7znhz9.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20201204111038.v1.1.I4557a89427f61427e65d85bc51cca9e65607488e@changeid>
+ <ec27a562-d53b-a947-1a93-bd55a2dfcc91@gmail.com>
+ <CANFp7mXdz8jYB0=tkj-mzWETo+M-Tx9ecTwEquh-JoDXRT54qw@mail.gmail.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <ff05fc01-3976-060f-ea68-8adf0f9321a2@gmail.com>
+Date:   Mon, 21 Dec 2020 21:19:39 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <CANFp7mXdz8jYB0=tkj-mzWETo+M-Tx9ecTwEquh-JoDXRT54qw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zekun Shen <bruceshenzk@gmail.com> writes:
+21.12.2020 20:58, Abhishek Pandit-Subedi пишет:
+> Hi Dmitry,
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git/commit/?id=295fa2a5647b13681594bb1bcc76c74619035218
+> should fix this issue.
+> 
+> Your issue seems the same as the one I encountered -- the
+> SUSPEND_DISABLE bit (0x4) wasn't being cleared by the request
+> completion handler.
 
-> Function ep_rx_complete is being called without NULL checking
-> in ath10k_htc_rx_completion_handler. Without such check, mal-
-> formed packet is able to cause jump to NULL.
->
-> ep->service_id seems a good candidate for sanity check as it is
-> used in usb.c.
->
-> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-> ---
->  drivers/net/wireless/ath/ath10k/htc.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/net/wireless/ath/ath10k/htc.c b/drivers/net/wireless/ath/ath10k/htc.c
-> index 31df6dd04..e00794d97 100644
-> --- a/drivers/net/wireless/ath/ath10k/htc.c
-> +++ b/drivers/net/wireless/ath/ath10k/htc.c
-> @@ -450,6 +450,11 @@ void ath10k_htc_rx_completion_handler(struct ath10k *ar, struct sk_buff *skb)
->  
->  	ep = &htc->endpoint[eid];
->  
-> +	if (ep->service_id == 0) {
-> +		ath10k_warn(ar, "HTC Rx: ep %d is not connect\n", eid);
-> +		goto out;
-> +	}
+Hello Abhishek,
 
-I think using ATH10K_HTC_SVC_ID_UNUSED is more descriptive than zero, as
-ath10k_htc_reset_endpoint_states() uses it. I fixed in the pending
-branch.
-
-I think also ath10k_htc_process_credit_report() might have a similar
-problem, can you take a look?
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+It fixes the problem using today's linux-next, which already includes
+that commit, thank you.
