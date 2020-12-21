@@ -2,154 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D3812DFA06
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 09:39:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D0682DFA0A
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 09:41:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728307AbgLUIid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 03:38:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38884 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725878AbgLUIid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 03:38:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608539826;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4SXCl0QIzH64Vxn0oBAU/MjIwf7VvPol07R1vFHiaYg=;
-        b=Ya8dw3RrKNpijboc7v61e21zIjcudMObwRciXu/CIcEiHtrKGWY5ANcRFTRVi2io0vrzrE
-        JmwO2YsD+pA5s/DAuCJjHg/pAZqMuq2Du6ayg2i9/e8sCuHEz2uoRyCpBgsoaOm34M0XQ/
-        UgwnsSuQoX6CROo8LfWrqN6hbUW/j0Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-357-znt9a7rBN72WbXd9PzaLZA-1; Mon, 21 Dec 2020 03:37:04 -0500
-X-MC-Unique: znt9a7rBN72WbXd9PzaLZA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5505D801817;
-        Mon, 21 Dec 2020 08:37:02 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E5C7810016FB;
-        Mon, 21 Dec 2020 08:36:52 +0000 (UTC)
-Date:   Mon, 21 Dec 2020 09:36:51 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        lorenzo.bianconi@redhat.com, alexander.duyck@gmail.com,
-        maciej.fijalkowski@intel.com, saeed@kernel.org, brouer@redhat.com
-Subject: Re: [PATCH v4 bpf-next 1/2] net: xdp: introduce xdp_init_buff
- utility routine
-Message-ID: <20201221093651.44ff4195@carbon>
-In-Reply-To: <7f8329b6da1434dc2b05a77f2e800b29628a8913.1608399672.git.lorenzo@kernel.org>
-References: <cover.1608399672.git.lorenzo@kernel.org>
-        <7f8329b6da1434dc2b05a77f2e800b29628a8913.1608399672.git.lorenzo@kernel.org>
+        id S1728448AbgLUIjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 03:39:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728428AbgLUIje (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 03:39:34 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FE3C061282;
+        Mon, 21 Dec 2020 00:38:54 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id w5so5960669pgj.3;
+        Mon, 21 Dec 2020 00:38:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6ZLY8sD0xtzGQ6bTKBu3ddMABucrM5ugzsGXgPCG6xk=;
+        b=k2OVdU3RqaSif2X2I6Vki1uhik9+/6coTO3uKPCGnJM9c6YgOTDXFlHt5YgP29i0pp
+         a5xPJSpTxNUBeU9LuVHGzP/41GBVvH9uTVbxGo/y4xkpURCirhPMCAJWLqwbvLmk5NMv
+         7K9AOZBP1F78rANe8PtfEF0lC7w3ZRLMY5JhrnTgSn5V1Mx+5QrPEHG4zk1QFlr+0dje
+         uRY1KLq//nt3e2LfR2Mki7R/wZ184ALlQ4YKIgL2eKhiYoykroPqXmf4Z2fI3BOZjBZK
+         nB6gjWCg82AOK7oZ1XoMeAhhmJC/7d1nO/dMuBwPaNJdP8akm5+loLzjn9xnPh7ScddR
+         Mkmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6ZLY8sD0xtzGQ6bTKBu3ddMABucrM5ugzsGXgPCG6xk=;
+        b=c9vryzAExQymhmua/DYLXz87og83vsMIA2AfdSEz62trvbBuOjIhIw9MhP6YGMj0lN
+         0dy9xB6mXvUTarq75JYG7OEgycgW6O8XAMNPaLBud8L78KD8Jz/kWlXCwc9HSGQhkjM7
+         i0bukQtx/ULk53jOf+y48uDSpAFEg8iFqULvfbXlFhmzB5sNjEEpMuPYhER6zr8203Lr
+         KwNLA2UASnpWSC/Wsi/iPn27eg9LdgHbdVt2BDMYZd5xykjnRP9tklY0Yyt3JIzdp1P6
+         NdU0G8Ir1hDfvRLM7tG+Q0JWtdIIuZyh/8v1GR73SHPQMG/BaKucosDbquhTPd9RHKPZ
+         6RdQ==
+X-Gm-Message-State: AOAM531tALJFJYBea/oEzBWfLM+S3+e5EmEcaClpyUBD/2qqOGwgEug6
+        x35/Ek58599ytwz5NLUBy9g=
+X-Google-Smtp-Source: ABdhPJwWFK2oLX98n2UD5k4I/+FzpaTxfCsHZYPlLgWOLdQMEEOB3M6NLgnAgmbsK38VK5vFTiZJ1g==
+X-Received: by 2002:aa7:9813:0:b029:19d:c82a:92e7 with SMTP id e19-20020aa798130000b029019dc82a92e7mr14481702pfl.71.1608539933962;
+        Mon, 21 Dec 2020 00:38:53 -0800 (PST)
+Received: from localhost.localdomain ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 19sm15964424pfu.85.2020.12.21.00.38.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Dec 2020 00:38:53 -0800 (PST)
+Date:   Mon, 21 Dec 2020 16:38:41 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <haliu@redhat.com>
+Subject: Re: [PATCHv12 bpf-next 1/6] bpf: run devmap xdp_prog on flush
+ instead of bulk enqueue
+Message-ID: <20201221083841.GA95616@localhost.localdomain>
+References: <20200907082724.1721685-1-liuhangbin@gmail.com>
+ <20201216143036.2296568-1-liuhangbin@gmail.com>
+ <20201216143036.2296568-2-liuhangbin@gmail.com>
+ <913a8e62-3f17-84ed-e4f5-099ba441508c@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <913a8e62-3f17-84ed-e4f5-099ba441508c@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 19 Dec 2020 18:55:00 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+Hi David,
 
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index 11ec93f827c0..323340caef88 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -76,6 +76,13 @@ struct xdp_buff {
->  	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
->  };
->  
-> +static __always_inline void
-> +xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
-> +{
-> +	xdp->frame_sz = frame_sz;
-> +	xdp->rxq = rxq;
+I just aware that,
+On Thu, Dec 17, 2020 at 09:07:03AM -0700, David Ahern wrote:
+> > +static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
+> > +				struct xdp_frame **frames, int n,
+> > +				struct net_device *dev)
+> > +{
+> > +	struct xdp_txq_info txq = { .dev = dev };
+> > +	struct xdp_buff xdp;
+> > +	int i, nframes = 0;
+> > +
+> > +	for (i = 0; i < n; i++) {
+> > +		struct xdp_frame *xdpf = frames[i];
+> > +		u32 act;
+> > +		int err;
+> > +
+> > +		xdp_convert_frame_to_buff(xdpf, &xdp);
+> > +		xdp.txq = &txq;
+> > +
+> > +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
+> > +		switch (act) {
+> > +		case XDP_PASS:
+> > +			err = xdp_update_frame_from_buff(&xdp, xdpf);
+> > +			if (unlikely(err < 0))
+> > +				xdp_return_frame_rx_napi(xdpf);
+> > +			else
+> > +				frames[nframes++] = xdpf;
+> > +			break;
+> > +		default:
+> > +			bpf_warn_invalid_xdp_action(act);
+> > +			fallthrough;
+> > +		case XDP_ABORTED:
+> > +			trace_xdp_exception(dev, xdp_prog, act);
+> > +			fallthrough;
+> > +		case XDP_DROP:
+> > +			xdp_return_frame_rx_napi(xdpf);
+> > +			break;
+> > +		}
+> > +	}
+> > +	return n - nframes; /* dropped frames count */
+> 
+> just return nframes here, since ...
 
-Later you will add 'xdp->mb = 0' here.
+If we return nframes here,
+> 
+> > +}
+> > +
+> >  static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+> >  {
+> >  	struct net_device *dev = bq->dev;
+> >  	int sent = 0, drops = 0, err = 0;
+> > +	unsigned int cnt = bq->count;
+> > +	unsigned int xdp_drop;
+> >  	int i;
+> >  
+> > -	if (unlikely(!bq->count))
+> > +	if (unlikely(!cnt))
+> >  		return;
+> >  
+> > -	for (i = 0; i < bq->count; i++) {
+> > +	for (i = 0; i < cnt; i++) {
+> >  		struct xdp_frame *xdpf = bq->q[i];
+> >  
+> >  		prefetch(xdpf);
+> >  	}
+> >  
+> > -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
+> > +	if (unlikely(bq->xdp_prog)) {
+> > +		xdp_drop = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
+> > +		cnt -= xdp_drop;
+> 
+> ... that is apparently what you really want.
 
-> +}
+then this will be 
 
-Via the names of your functions, I assume that xdp_init_buff() is
-called before xdp_prepare_buff(), right?
-(And your pending 'xdp->mb = 0' also prefer this.)
+		cnt = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
+		xdp_drop = bq->count - cnt;
 
-Below in bpf_prog_test_run_xdp() and netif_receive_generic_xdp() you
-violate this order... which will give you headaches when implementing
-the multi-buff support.  It is also a bad example for driver developer
-that need to figure out this calling-order from the function names.
+So there is no much difference whether we return passed frames or dropped
+frames.
+> 
+> > +		if (!cnt) {
+> > +			sent = 0;
+> > +			drops = xdp_drop;
+> > +			goto out;
+> > +		}
+> > +	}
 
-Below, will it be possible to have 'init' before 'prepare'?
-
-
-> +
->  /* Reserve memory area at end-of data area.
->   *
->   * This macro reserves tailroom in the XDP buffer by limiting the
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index c1c30a9f76f3..a8fa5a9e4137 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -640,10 +640,10 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
->  	xdp.data = data + headroom;
->  	xdp.data_meta = xdp.data;
->  	xdp.data_end = xdp.data + size;
-> -	xdp.frame_sz = headroom + max_data_sz + tailroom;
->  
->  	rxqueue = __netif_get_rx_queue(current->nsproxy->net_ns->loopback_dev, 0);
-> -	xdp.rxq = &rxqueue->xdp_rxq;
-> +	xdp_init_buff(&xdp, headroom + max_data_sz + tailroom,
-> +		      &rxqueue->xdp_rxq);
->  	bpf_prog_change_xdp(NULL, prog);
->  	ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration, true);
->  	if (ret)
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index a46334906c94..b1a765900c01 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4588,11 +4588,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	struct netdev_rx_queue *rxqueue;
->  	void *orig_data, *orig_data_end;
->  	u32 metalen, act = XDP_DROP;
-> +	u32 mac_len, frame_sz;
->  	__be16 orig_eth_type;
->  	struct ethhdr *eth;
->  	bool orig_bcast;
->  	int hlen, off;
-> -	u32 mac_len;
->  
->  	/* Reinjected packets coming from act_mirred or similar should
->  	 * not get XDP generic processing.
-> @@ -4631,8 +4631,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	xdp->data_hard_start = skb->data - skb_headroom(skb);
->  
->  	/* SKB "head" area always have tailroom for skb_shared_info */
-> -	xdp->frame_sz  = (void *)skb_end_pointer(skb) - xdp->data_hard_start;
-> -	xdp->frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> +	frame_sz = (void *)skb_end_pointer(skb) - xdp->data_hard_start;
-> +	frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->  
->  	orig_data_end = xdp->data_end;
->  	orig_data = xdp->data;
-> @@ -4641,7 +4641,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	orig_eth_type = eth->h_proto;
->  
->  	rxqueue = netif_get_rxqueue(skb);
-> -	xdp->rxq = &rxqueue->xdp_rxq;
-> +	xdp_init_buff(xdp, frame_sz, &rxqueue->xdp_rxq);
->  
->  	act = bpf_prog_run_xdp(xdp_prog, xdp);
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Thanks
+Hangbin
