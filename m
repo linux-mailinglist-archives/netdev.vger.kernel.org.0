@@ -2,89 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 130342DFA2A
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 09:51:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF4282DFABB
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 11:06:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727725AbgLUIvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 03:51:44 -0500
-Received: from spam.zju.edu.cn ([61.164.42.155]:8864 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726168AbgLUIvo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 21 Dec 2020 03:51:44 -0500
-Received: from localhost.localdomain (unknown [10.192.85.18])
-        by mail-app3 (Coremail) with SMTP id cC_KCgA37w7WYeBfFXRhAA--.42123S4;
-        Mon, 21 Dec 2020 16:50:34 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        id S1725976AbgLUKFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 05:05:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44687 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725833AbgLUKFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 05:05:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608545059;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Nna0WyFAUg/twizuTevbFjazTbDOQamogbH2vekU5NI=;
+        b=VZ3lT/jvz0GBsAYSrkz3zMS7giKhQXgZi/CM6Gjzyf4oa+xF59FDGyhUUCq/iJFCyOjbZM
+        4W5Dg8P/nQbhzV0qiW17bJUUv8+pABQDeovjMwOHx0CLJTSKIMu0P3CkyyCSmwoBZp9MDy
+        ZrtBq+AswO/BZdGP5GnnlNWxujUV2RE=
+Received: from mail-yb1-f200.google.com (mail-yb1-f200.google.com
+ [209.85.219.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-45-GMs5xZAyPqaaAQdWSNTdOw-1; Mon, 21 Dec 2020 03:58:05 -0500
+X-MC-Unique: GMs5xZAyPqaaAQdWSNTdOw-1
+Received: by mail-yb1-f200.google.com with SMTP id c9so13142999ybs.8
+        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 00:58:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Nna0WyFAUg/twizuTevbFjazTbDOQamogbH2vekU5NI=;
+        b=g8OGPVrHYoAzAa3cJ0JPU5I96UqkmYfGXFkII+I5V8Bj/+Dy1D6kOftxZmiEv+vS2+
+         ARJftLGoHr9VTSMpU8ROamOq7cM/L6xqz0wS2olSkv0Cd/rpQYTLJirjD4G1QgqaQoYw
+         Cd2K0zZjUMYAw8OrQ2kPNfqhVZYKr6QEcontGDFI4g8TebT+OnDleiplEqXZQLeJxTBX
+         26dAmwilDXn1Uedt7xNNsAZXdsHsEAlTVn5HC9QJt1Q7xhuObgMUI6fvFtXZJWHqYbHR
+         dfNNZhiN+x++38AV4MAAGz3ApiugEQ1eDu50/5/Ujwp2i7osfBmZvKmIliWHqzaHctfi
+         CyxQ==
+X-Gm-Message-State: AOAM531ailKJDT7dH632mgUQRt+5I9RMwGFpC63w4Qj2caKEEcZScG5j
+        gAHPyQFybxoLSec/+P6wPtUy0spLd++Oga0cYqVCHeXd7U6+P6vbZwHGYzDrAPTofErU0QwFQdL
+        frhnB0jUAJLJIBiG6fh7+qfdBTxjXDF6c
+X-Received: by 2002:a25:3a04:: with SMTP id h4mr4979018yba.285.1608541084810;
+        Mon, 21 Dec 2020 00:58:04 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx7Grd39SHBvfVHkJSNoRoyV+tt/RVvmmcNPisLAhXi1kiHqXtzG3oeuoxkY87t7gthMnmnxpRmTUR5VL05sMo=
+X-Received: by 2002:a25:3a04:: with SMTP id h4mr4979002yba.285.1608541084601;
+ Mon, 21 Dec 2020 00:58:04 -0800 (PST)
+MIME-Version: 1.0
+References: <cover.1608399672.git.lorenzo@kernel.org> <7f8329b6da1434dc2b05a77f2e800b29628a8913.1608399672.git.lorenzo@kernel.org>
+ <20201221093651.44ff4195@carbon>
+In-Reply-To: <20201221093651.44ff4195@carbon>
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Date:   Mon, 21 Dec 2020 09:58:18 +0100
+Message-ID: <CAJ0CqmWaE67g7BZ2r0ephBrUL9YGur==J9ryW6nSxAHCUYAdbw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 1/2] net: xdp: introduce xdp_init_buff utility routine
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/mlx5e: Fix two double free cases
-Date:   Mon, 21 Dec 2020 16:50:31 +0800
-Message-Id: <20201221085031.6591-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgA37w7WYeBfFXRhAA--.42123S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7uFWDXr1UXFWDKF47Cr18Grg_yoW8GF1Dpa
-        1rCr9FgFyfX34UXayDAFWFqw1rCw4ktay0g3WS934Svr1DGrW0vFyrWrWDAF97GFWUWF4a
-        qw1xAw1UAF4DJa7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
-        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
-        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv
-        6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
-        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48J
-        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
-        IF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgUMBlZdtRf+rwANs4
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Saeed Mahameed <saeed@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mlx5e_create_ttc_table_groups() frees ft->g on failure of
-kvzalloc(), but such failure will be caught by its caller
-in mlx5e_create_ttc_table() and ft->g will be freed again
-in mlx5e_destroy_flow_table(). The same issue also occurs
-in mlx5e_create_ttc_table_groups().
+On Mon, Dec 21, 2020 at 9:37 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> On Sat, 19 Dec 2020 18:55:00 +0100
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > index 11ec93f827c0..323340caef88 100644
+> > --- a/include/net/xdp.h
+> > +++ b/include/net/xdp.h
+> > @@ -76,6 +76,13 @@ struct xdp_buff {
+> >       u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
+> >  };
+> >
+> > +static __always_inline void
+> > +xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
+> > +{
+> > +     xdp->frame_sz = frame_sz;
+> > +     xdp->rxq = rxq;
+>
+> Later you will add 'xdp->mb = 0' here.
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+right
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-index fa8149f6eb08..63323c5b6a50 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-@@ -940,10 +940,8 @@ static int mlx5e_create_ttc_table_groups(struct mlx5e_ttc_table *ttc,
- 	if (!ft->g)
- 		return -ENOMEM;
- 	in = kvzalloc(inlen, GFP_KERNEL);
--	if (!in) {
--		kfree(ft->g);
-+	if (!in)
- 		return -ENOMEM;
--	}
- 
- 	/* L4 Group */
- 	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
-@@ -1085,10 +1083,8 @@ static int mlx5e_create_inner_ttc_table_groups(struct mlx5e_ttc_table *ttc)
- 	if (!ft->g)
- 		return -ENOMEM;
- 	in = kvzalloc(inlen, GFP_KERNEL);
--	if (!in) {
--		kfree(ft->g);
-+	if (!in)
- 		return -ENOMEM;
--	}
- 
- 	/* L4 Group */
- 	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
--- 
-2.17.1
+>
+> > +}
+>
+> Via the names of your functions, I assume that xdp_init_buff() is
+> called before xdp_prepare_buff(), right?
+> (And your pending 'xdp->mb = 0' also prefer this.)
+>
+> Below in bpf_prog_test_run_xdp() and netif_receive_generic_xdp() you
+> violate this order... which will give you headaches when implementing
+> the multi-buff support.  It is also a bad example for driver developer
+> that need to figure out this calling-order from the function names.
+>
+> Below, will it be possible to have 'init' before 'prepare'?
+>
+
+ack, right. Looking at the code we can fix it and have xdp_init_buff()
+before xdp_prepare_buff(). I will fix it in v5.
+
+Regards,
+Lorenzo
+
+>
+> > +
+> >  /* Reserve memory area at end-of data area.
+> >   *
+> >   * This macro reserves tailroom in the XDP buffer by limiting the
+> > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> > index c1c30a9f76f3..a8fa5a9e4137 100644
+> > --- a/net/bpf/test_run.c
+> > +++ b/net/bpf/test_run.c
+> > @@ -640,10 +640,10 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
+> >       xdp.data = data + headroom;
+> >       xdp.data_meta = xdp.data;
+> >       xdp.data_end = xdp.data + size;
+> > -     xdp.frame_sz = headroom + max_data_sz + tailroom;
+> >
+> >       rxqueue = __netif_get_rx_queue(current->nsproxy->net_ns->loopback_dev, 0);
+> > -     xdp.rxq = &rxqueue->xdp_rxq;
+> > +     xdp_init_buff(&xdp, headroom + max_data_sz + tailroom,
+> > +                   &rxqueue->xdp_rxq);
+> >       bpf_prog_change_xdp(NULL, prog);
+> >       ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration, true);
+> >       if (ret)
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index a46334906c94..b1a765900c01 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -4588,11 +4588,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+> >       struct netdev_rx_queue *rxqueue;
+> >       void *orig_data, *orig_data_end;
+> >       u32 metalen, act = XDP_DROP;
+> > +     u32 mac_len, frame_sz;
+> >       __be16 orig_eth_type;
+> >       struct ethhdr *eth;
+> >       bool orig_bcast;
+> >       int hlen, off;
+> > -     u32 mac_len;
+> >
+> >       /* Reinjected packets coming from act_mirred or similar should
+> >        * not get XDP generic processing.
+> > @@ -4631,8 +4631,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+> >       xdp->data_hard_start = skb->data - skb_headroom(skb);
+> >
+> >       /* SKB "head" area always have tailroom for skb_shared_info */
+> > -     xdp->frame_sz  = (void *)skb_end_pointer(skb) - xdp->data_hard_start;
+> > -     xdp->frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> > +     frame_sz = (void *)skb_end_pointer(skb) - xdp->data_hard_start;
+> > +     frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> >
+> >       orig_data_end = xdp->data_end;
+> >       orig_data = xdp->data;
+> > @@ -4641,7 +4641,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+> >       orig_eth_type = eth->h_proto;
+> >
+> >       rxqueue = netif_get_rxqueue(skb);
+> > -     xdp->rxq = &rxqueue->xdp_rxq;
+> > +     xdp_init_buff(xdp, frame_sz, &rxqueue->xdp_rxq);
+> >
+> >       act = bpf_prog_run_xdp(xdp_prog, xdp);
+>
+>
+>
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>
 
