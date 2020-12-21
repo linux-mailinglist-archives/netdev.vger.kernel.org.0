@@ -2,135 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CBD02E021A
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 22:38:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AA452E0222
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 22:41:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725899AbgLUVhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 16:37:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbgLUVhs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 16:37:48 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4ABC0613D3;
-        Mon, 21 Dec 2020 13:37:07 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id i24so10994298edj.8;
-        Mon, 21 Dec 2020 13:37:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=hQggwWPPkn+WMdoPfwbk6PXTqnMay86HYcER0pUuPDU=;
-        b=mme2YD4QrmilHl3rH4PtxXh4y8Phq4UwwyTKfowp7vxflfYKXuGNAwaWvgzd3Wooso
-         Ut9BfVdgSAefeuATpsq7l6HYtzEx1jKyNqaI+8dIUS0oT6B/zUHDXPQSNRDYdUW8Mk2L
-         D2jgh26Sgy/fLFI9ZFJaLzcy4jEo12N9HmYnoAcmlEpO3MWd6mrsjMQWonMFOBpQq4kS
-         kGiuoV8gxQ/toIvEl6axAMzOWQmgD+7wmukKWe75saFipTLNyDv48dP90OspIdeFaB14
-         9/lURxLTxYuKHcPnJoFA5qHKl4etjpd4OonH4l0dP4BZFitewHAYN60CIyKX0QiuSEgV
-         6S0A==
+        id S1726127AbgLUVl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 16:41:26 -0500
+Received: from mail-oo1-f46.google.com ([209.85.161.46]:43071 "EHLO
+        mail-oo1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbgLUVlZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 16:41:25 -0500
+Received: by mail-oo1-f46.google.com with SMTP id y14so2527697oom.10;
+        Mon, 21 Dec 2020 13:41:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=hQggwWPPkn+WMdoPfwbk6PXTqnMay86HYcER0pUuPDU=;
-        b=R//L0E587e5MfjWcYmMp6rqLm80QqyHDCPXWWwYSBTqbkNtqzacnJY2N/pEa/UZ7dA
-         pWFDWY7Cv44l95zR0NAFNCTCPsBwH56W6a6XAhc+e2TjQKrDIwIrQtYUmGHRPG+DTYoE
-         M9vpEyrEN+KiL99ejQI4wilmiGau+L6vnIJzsnwXUlaPOzuBoPWNCVdQ2F1CSORnkYBQ
-         dCNoX/MHDKh2jMC7VKKtYYtebJoL3KOHC8tg6IwKqYZJkl2TsjVhjEYE1SaENoEaVz0A
-         8evSSVx83IuqbWqbar38yCjj6j7Mmaz0otwS8wvkPZLBYmROvvORXEiMOw4YQwuHBpwE
-         6+Cw==
-X-Gm-Message-State: AOAM530v9/LZGKPoQkOHorKXAD1C6obXFmbGxXfN2BLtM2KfFZzjnJzp
-        pYyxGHigXWhIpvBvnyhJmUgGYG89VLU=
-X-Google-Smtp-Source: ABdhPJyxPsg4QZqk0I6q3W047zja/4kF/0lD+UExgg5XcSg+P4YpCkZo5ten+TN3uXrk85CGMihysQ==
-X-Received: by 2002:a50:8b61:: with SMTP id l88mr17968781edl.250.1608586626276;
-        Mon, 21 Dec 2020 13:37:06 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:cd72:cf28:16d9:79dc? (p200300ea8f065500cd72cf2816d979dc.dip0.t-ipconnect.de. [2003:ea:8f06:5500:cd72:cf28:16d9:79dc])
-        by smtp.googlemail.com with ESMTPSA id a6sm29216403edv.74.2020.12.21.13.37.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Dec 2020 13:37:05 -0800 (PST)
-Subject: Re: [Aspeed, v1 1/1] net: ftgmac100: Change the order of getting MAC
- address
-To:     Hongwei Zhang <hongweiz@ami.com>, linux-aspeed@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MsDWEDLGUo2wKHbTPaKIbDp1wp/1cG8iI898N+T9yX0=;
+        b=DKwmgpTZ60JfohWIfFOPFEEOBgWYhAOf6GvDT3kz6Peu6ZRBaxnwtqAAuWAvWiuX72
+         jVHGqDBDR9VRElp84CEIi/joiOS3Jrimnd0oO4DlH7qeQopnR2o2JAXQdYxIEMfpYpV2
+         xfdHSwzY4O4vvV2K5WFJLrVfxJUDaXCEFEHZsgRu2My8HbCADQsw8gkK++0muDMmWgYi
+         JzBaSRYKnBcDdmOcvtPc1iq9fUWytOLDQWPavZ5VHgAINcS53yVHrfnYwEoszpfV/3B2
+         WW4ZjXzdqNtNDbwcdJ1VEAePWLj7InH+1/4/2f6VaQ3pAxsJEnARM7Qsll4w4jUuoDQt
+         yIhA==
+X-Gm-Message-State: AOAM532QsGdz8gFPG7LnWGdKpfKeFrvx2XqQ5ibXfSQk8N6Lj/NX61GV
+        kihICdj/udJtMZ/sM0v7lt89vexoFw==
+X-Google-Smtp-Source: ABdhPJwZTgbrOGmtRx8F0ujJe3gRA4dzDPzK6IRuMUd+wKSPdctcWIf9jtmEn7jQQdQ3MVHh7WHLjQ==
+X-Received: by 2002:a4a:751a:: with SMTP id j26mr12971469ooc.68.1608586844312;
+        Mon, 21 Dec 2020 13:40:44 -0800 (PST)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id n22sm3840304oig.32.2020.12.21.13.40.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Dec 2020 13:40:43 -0800 (PST)
+Received: (nullmailer pid 609332 invoked by uid 1000);
+        Mon, 21 Dec 2020 21:40:41 -0000
+Date:   Mon, 21 Dec 2020 14:40:41 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        David S Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>
-References: <20201221205157.31501-1-hongweiz@ami.com>
- <20201221205157.31501-2-hongweiz@ami.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <55803a8a-7ec9-5d60-04bd-d1e163174250@gmail.com>
-Date:   Mon, 21 Dec 2020 22:36:59 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Device Tree List <devicetree@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC PATCH v2 1/8] dt-bindings: net: sparx5: Add sparx5-switch
+ bindings
+Message-ID: <20201221214041.GA599050@robh.at.kernel.org>
+References: <20201217075134.919699-1-steen.hegelund@microchip.com>
+ <20201217075134.919699-2-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-In-Reply-To: <20201221205157.31501-2-hongweiz@ami.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201217075134.919699-2-steen.hegelund@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 21.12.2020 um 21:51 schrieb Hongwei Zhang:
-> Change the order of reading MAC address, try to read it from MAC chip
-> first, if it's not availabe, then try to read it from device tree.
+On Thu, Dec 17, 2020 at 08:51:27AM +0100, Steen Hegelund wrote:
+> Document the Sparx5 switch device driver bindings
 > 
-This commit message leaves a number of questions. It seems the change
-isn't related at all to the change that it's supposed to fix.
-
-- What is the issue that you're trying to fix?
-- And what is wrong with the original change?
-
-> Fixes: 35c54922dc97 ("ARM: dts: tacoma: Add reserved memory for ramoops")
-> Signed-off-by: Hongwei Zhang <hongweiz@ami.com>
+> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
 > ---
->  drivers/net/ethernet/faraday/ftgmac100.c | 22 +++++++++++++---------
->  1 file changed, 13 insertions(+), 9 deletions(-)
+>  .../bindings/net/microchip,sparx5-switch.yaml | 178 ++++++++++++++++++
+>  1 file changed, 178 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
 > 
-> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-> index 65cd25372020..9be69cbdab96 100644
-> --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> @@ -184,14 +184,7 @@ static void ftgmac100_initial_mac(struct ftgmac100 *priv)
->  	unsigned int l;
->  	void *addr;
->  
-> -	addr = device_get_mac_address(priv->dev, mac, ETH_ALEN);
-> -	if (addr) {
-> -		ether_addr_copy(priv->netdev->dev_addr, mac);
-> -		dev_info(priv->dev, "Read MAC address %pM from device tree\n",
-> -			 mac);
-> -		return;
-> -	}
-> -
-> +	/* Read from Chip if not from chip */
-
-?!?
-
->  	m = ioread32(priv->base + FTGMAC100_OFFSET_MAC_MADR);
->  	l = ioread32(priv->base + FTGMAC100_OFFSET_MAC_LADR);
->  
-> @@ -205,7 +198,18 @@ static void ftgmac100_initial_mac(struct ftgmac100 *priv)
->  	if (is_valid_ether_addr(mac)) {
->  		ether_addr_copy(priv->netdev->dev_addr, mac);
->  		dev_info(priv->dev, "Read MAC address %pM from chip\n", mac);
-> -	} else {
-> +		return;
-> +	}
+> diff --git a/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+> new file mode 100644
+> index 000000000000..6e3ef8285e9a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+> @@ -0,0 +1,178 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/microchip,sparx5-switch.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	/* Read from Chip if not from device tree */
+> +title: Microchip Sparx5 Ethernet switch controller
+> +
+> +maintainers:
+> +  - Lars Povlsen <lars.povlsen@microchip.com>
+> +  - Steen Hegelund <steen.hegelund@microchip.com>
+> +
+> +description: |
+> +  The SparX-5 Enterprise Ethernet switch family provides a rich set of
+> +  Enterprise switching features such as advanced TCAM-based VLAN and
+> +  QoS processing enabling delivery of differentiated services, and
+> +  security through TCAM-based frame processing using versatile content
+> +  aware processor (VCAP).
+> +
+> +  IPv4/IPv6 Layer 3 (L3) unicast and multicast routing is supported
+> +  with up to 18K IPv4/9K IPv6 unicast LPM entries and up to 9K IPv4/3K
+> +  IPv6 (S,G) multicast groups.
+> +
+> +  L3 security features include source guard and reverse path
+> +  forwarding (uRPF) tasks. Additional L3 features include VRF-Lite and
+> +  IP tunnels (IP over GRE/IP).
+> +
+> +  The SparX-5 switch family targets managed Layer 2 and Layer 3
+> +  equipment in SMB, SME, and Enterprise where high port count
+> +  1G/2.5G/5G/10G switching with 10G/25G aggregation links is required.
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^switch@[0-9a-f]+$"
+> +
+> +  compatible:
+> +    const: microchip,sparx5-switch
+> +
+> +  reg:
+> +    minItems: 2
+> +
+> +  reg-names:
+> +    minItems: 2
 
-Isn't this how it works now?
+This is the default based on 'items' length.
 
-> +	addr = device_get_mac_address(priv->dev, mac, ETH_ALEN);
-> +	if (addr) {
-> +		ether_addr_copy(priv->netdev->dev_addr, mac);
-> +		dev_info(priv->dev, "Read MAC address %pM from device tree\n",
-> +				mac);
-> +		return;
-> +	}
-> +	else {
->  		eth_hw_addr_random(priv->netdev);
->  		dev_info(priv->dev, "Generated random MAC address %pM\n",
->  			 priv->netdev->dev_addr);
+> +    items:
+> +      - const: devices
+> +      - const: gcb
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +    description: Interrupt used for reception of packets to the CPU
+> +
+> +  ethernet-ports:
+> +    type: object
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^port@[0-9]+$":
+> +        type: object
+> +        description: Switch ports
+> +
+> +        allOf:
+> +          - $ref: ethernet-controller.yaml#
+> +
+> +        properties:
+> +          reg:
+> +            description: Switch port number
+> +
+> +          max-speed:
+> +            maxItems: 1
+
+Is that an array?
+
+> +            description: Bandwidth allocated to this port
+> +
+> +          phys:
+
+How many? (maxItems)
+
+> +            description: phandle of a Ethernet Serdes PHY
+> +
+> +          phy-handle:
+> +            description: phandle of a Ethernet PHY
+> +
+> +          phy-mode:
+> +            description: Interface between the serdes and the phy
+
+The whole set of modes defined is supported?
+
+> +
+> +          sfp:
+> +            description: phandle of an SFP
+> +
+> +          managed:
+> +            maxItems: 1
+
+An array?
+
+> +            description: SFP management
+> +
+> +        required:
+> +          - reg
+> +          - max-speed
+> +          - phys
+> +
+> +        oneOf:
+> +          - required:
+> +              - phy-handle
+> +              - phy-mode
+> +          - required:
+> +              - sfp
+> +              - managed
+> +
+> +        additionalProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - interrupts
+> +  - ethernet-ports
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    switch: switch@600000000 {
+> +      compatible = "microchip,sparx5-switch";
+> +      reg =  <0x10000000 0x800000>,
+> +             <0x11010000 0x1b00000>;
+> +      reg-names = "devices", "gcb";
+> +
+> +      interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
+> +      ethernet-ports {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        port0: port@0 {
+> +          reg = <0>;
+> +          max-speed = <1000>;
+> +          phys = <&serdes 13>;
+> +          phy-handle = <&phy0>;
+> +          phy-mode = "qsgmii";
+> +        };
+> +        /* ... */
+> +        /* Then the 25G interfaces */
+> +        port60: port@60 {
+> +          reg = <60>;
+> +          max-speed = <25000>;
+> +          phys = <&serdes 29>;
+> +          sfp = <&sfp_eth60>;
+> +          managed = "in-band-status";
+> +        };
+> +        port61: port@61 {
+> +          reg = <61>;
+> +          max-speed = <25000>;
+> +          phys = <&serdes 30>;
+> +          sfp = <&sfp_eth61>;
+> +          managed = "in-band-status";
+> +        };
+> +        port62: port@62 {
+> +          reg = <62>;
+> +          max-speed = <25000>;
+> +          phys = <&serdes 31>;
+> +          sfp = <&sfp_eth62>;
+> +          managed = "in-band-status";
+> +        };
+> +        port63: port@63 {
+> +          reg = <63>;
+> +          max-speed = <25000>;
+> +          phys = <&serdes 32>;
+> +          sfp = <&sfp_eth63>;
+> +          managed = "in-band-status";
+> +        };
+> +        /* Finally the Management interface */
+> +        port64: port@64 {
+> +          reg = <64>;
+> +          max-speed = <1000>;
+> +          phys = <&serdes 0>;
+> +          phy-handle = <&phy64>;
+> +          phy-mode = "sgmii";
+> +        };
+> +      };
+> +    };
+> +
+> +...
+> -- 
+> 2.29.2
 > 
-
