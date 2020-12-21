@@ -2,99 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D53692DFCE3
-	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 15:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33DD42E002C
+	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 19:43:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727146AbgLUOdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 09:33:03 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:54437 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726841AbgLUOdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 09:33:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1608561182; x=1640097182;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=npsp6D6KpZSySB/81WkWRdNBxbaJJ+zM3AnwuQB/ZWo=;
-  b=KPbRcpvvD385ZlfjLAL98KzNmiUJRhvf+9nPjG3GObC2Klg9mHbaE/Ji
-   bEp85yrlPVYWtxCBucr8SJGIwD7ekjISbJ//oHOiFj5fC0tzNtzuLkR5O
-   3OBioIFxCuyll+JKtM7r28JmzOoQvMmSkvNZYXcKwTw67mN2k6nbng9+i
-   V1R0CRxDsGkk0PCCaR0PZNcc38FJypVcjOMTRfGeyElCRBgQUnKQHNCXj
-   Cz7hhIytpm+pbIHIDjDbqYYpURGOruVZw3LfBzoii6q1RFC3DL5LahXGd
-   DzdlTWWgI7wpyvHsXjoBehanp73J3JcDimVyJ8WE0Y69Ch5ZGOhARAGeh
-   w==;
-IronPort-SDR: V+DIF/vwyUcNooaG7XOAGSSXcXTCJUd5ZRPuzbMPG/UgJRVGbiKDXXVZM8S3FyLXxvxgVNd3I8
- o0ekHQ1lm23rh0xTXTqhUu6Wi7QgU+HnawQAavujJelZPklbdQ9bqOWXYlfpBkC3NFWqlbbccO
- fZdLYNvB7YgTuz1KHxw59PNlnIm3xmZALwTwSY1Gfx8WCrlRTDfE4LniJjSbMFrNFpvrXYf5nP
- k/9tHKrF1ADgqEK6+HwH8Pvc+CO409e8iVGNI9y+yZJug9ryaPIubC4jqwX323ucZ3Kt+8w94Z
- Tr0=
-X-IronPort-AV: E=Sophos;i="5.78,436,1599548400"; 
-   d="scan'208";a="100587126"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Dec 2020 07:31:46 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 21 Dec 2020 07:31:46 -0700
-Received: from tyr.hegelund-hansen.dk (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Mon, 21 Dec 2020 07:31:42 -0700
-Message-ID: <1ffe38e1f38766ca38fbc6ee32481067892e3b91.camel@microchip.com>
-Subject: Re: [RFC PATCH v2 0/8] Adding the Sparx5 Switch Driver
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-        "Lars Povlsen" <lars.povlsen@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1727466AbgLUSmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 13:42:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726518AbgLUSmF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 13:42:05 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F0BC0613D6;
+        Mon, 21 Dec 2020 10:41:25 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id n26so14827788eju.6;
+        Mon, 21 Dec 2020 10:41:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ivcI0E1dfE9znJYym7OouNXXxQL5iEPpA65NR/BqsvU=;
+        b=Uf4Zq6nwXH5HFYce5cZXSxE758PBzIjjVAxIen46sx3/xgAEuLjw2yvIHR8LuDW3wL
+         Oy/F7P5CflHacUKJbunTFbzTOD7SXNz0Bhdd/zxVG9/9HhBUzsw5VVwLicZ7SxZ06AcM
+         pnmfHUcBp75GJl3WG4VZPSxWxTXr1Wjrh6TNthgbWZQhkSvtAehMwyUJ9msvXzAFVzR5
+         b75ZVbENujJE2GqrkG9NArm87aZRXSs9mOT+cV3CLdozG0AEtZrYar89hzTCHeq60V8T
+         Ewub2ewQz6ZKI+6TNbV5xxrSiqHMlzxPrjphrSRcUgX9I/z37w0xG+//zc68Odkjrzgh
+         G9vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ivcI0E1dfE9znJYym7OouNXXxQL5iEPpA65NR/BqsvU=;
+        b=ai5Hj+rT9bf00K/d3ksE6Jxx6f9McvGHP/DUVEyeoT/jtl9iL1nNzUFPnhfLsxZQhS
+         MOwxYds1JgJopWV5yyfDohhyoPoDmDdlYwS1pDr7mIIXw2uHNpvB/B0m3G4mkQ0gkGak
+         PjITfUML5E5RBvgIxS7XRf9ugxHi/WsFfrUbDkdzrj1D4UcMdDMYLM8/jGmLk78wXvLs
+         Z4SjU3TrbO2JddX98AGf3a7NynuH3D5AD8mZdLYc2A08cvufm4bTGBTpez5s/0xvSHHb
+         BcOY78bq6UA08baPF1KhyFiZlMcBNRDzLEE9gtKWAw596ipS2pOyFhGyx7HU7OpP1r4H
+         8sAA==
+X-Gm-Message-State: AOAM5319IZmZf82ZTiBN0mqIOTwnNkZiyN7C1Lq7l79vs0dU+k+D9e9k
+        xnVemdxPEDSMaI6eX2AxkbyyWu3od9g=
+X-Google-Smtp-Source: ABdhPJy9So/0c1r35c60UF2Y3VriQiM7zFEN6wB/+tagc03nN4kSaA5SLtFO0Gr7AaZ5FAsACHQgzQ==
+X-Received: by 2002:a19:83c9:: with SMTP id f192mr6473888lfd.399.1608561301587;
+        Mon, 21 Dec 2020 06:35:01 -0800 (PST)
+Received: from [192.168.2.145] (109-252-192-57.dynamic.spd-mgts.ru. [109.252.192.57])
+        by smtp.googlemail.com with ESMTPSA id p24sm2076049lfo.53.2020.12.21.06.35.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Dec 2020 06:35:00 -0800 (PST)
+Subject: Re: [PATCH v1] Bluetooth: Set missing suspend task bits
+To:     Howard Chung <howardchung@google.com>,
+        linux-bluetooth@vger.kernel.org
+Cc:     alainm@chromium.org, mmandlik@chromium.org, mcchou@chromium.org,
+        marcel@holtmann.org, abhishekpandit@chromium.org,
+        apusaka@chromium.org, "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "Arnd Bergmann" <arnd@arndb.de>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Mon, 21 Dec 2020 15:31:42 +0100
-In-Reply-To: <6645f038-7101-67e4-0843-35125f74597a@gmail.com>
-References: <20201217075134.919699-1-steen.hegelund@microchip.com>
-         <6645f038-7101-67e4-0843-35125f74597a@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.2 
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20201204111038.v1.1.I4557a89427f61427e65d85bc51cca9e65607488e@changeid>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <ec27a562-d53b-a947-1a93-bd55a2dfcc91@gmail.com>
+Date:   Mon, 21 Dec 2020 17:35:00 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20201204111038.v1.1.I4557a89427f61427e65d85bc51cca9e65607488e@changeid>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
-
-On Sun, 2020-12-20 at 16:58 -0800, Florian Fainelli wrote:
-> > 
-> > The Sparx5 Switch chip register model can be browsed here:
-> > Link:  
-> > https://microchip-ung.github.io/sparx-5_reginfo/reginfo_sparx-5.html
+04.12.2020 06:14, Howard Chung пишет:
+> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 > 
-> Out of curiosity, what tool was used to generate the register
-> information page? It looks really neat and well organized.
+> When suspending, mark SUSPEND_SCAN_ENABLE and SUSPEND_SCAN_DISABLE tasks
+> correctly when either classic or le scanning is modified.
+> 
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> Signed-off-by: Howard Chung <howardchung@google.com>
+> Reviewed-by: Alain Michaud <alainm@chromium.org>
+> ---
+> 
+>  net/bluetooth/hci_request.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+> index 80dc451d6e124..71bffd7454720 100644
+> --- a/net/bluetooth/hci_request.c
+> +++ b/net/bluetooth/hci_request.c
+> @@ -707,6 +707,9 @@ void hci_req_add_le_scan_disable(struct hci_request *req, bool rpa_le_conn)
+>  		return;
+>  	}
+>  
+> +	if (hdev->suspended)
+> +		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
+> +
+>  	if (use_ext_scan(hdev)) {
+>  		struct hci_cp_le_set_ext_scan_enable cp;
+>  
+> @@ -1159,6 +1162,11 @@ static void hci_req_set_event_filter(struct hci_request *req)
+>  		scan = SCAN_PAGE;
+>  	}
+>  
+> +	if (scan)
+> +		set_bit(SUSPEND_SCAN_ENABLE, hdev->suspend_tasks);
+> +	else
+> +		set_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
+> +
+>  	hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
+>  }
+>  
+> 
 
-It is an in-house tool that is used in our so-called VML-flow
-(Versatile Markup Language), so it is not out in the open yet.
+Hi,
 
-The same model file is used internally in many ways - but exposing it
-to the public is something we have not tried before, and having this
-view is so much nicer that the usual datasheet, I find...
+This commit caused a regression on entering into suspend for Broadcom
+Bluetooth 4330 on Nexus 7:
 
-And thanks for the kind words - I passed them on to the author.
+ Bluetooth: hci0: Timed out waiting for suspend events
+ Bluetooth: hci0: Suspend timeout bit: 4
+ Bluetooth: hci0: Suspend notifier action (3) failed: -110
 
-BR
-Steen
-> --
-> Florian
+I don't see this problem using BCM4329 chip on another device.
 
-
-
-
+Please fix, thanks in advance.
