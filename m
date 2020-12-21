@@ -2,100 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E79F92E027C
+	by mail.lfdr.de (Postfix) with ESMTP id D49772E027B
 	for <lists+netdev@lfdr.de>; Mon, 21 Dec 2020 23:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726203AbgLUW01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 17:26:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
+        id S1726156AbgLUW0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 17:26:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbgLUW00 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 17:26:26 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E09AC061793
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 14:25:46 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id i9so12676027wrc.4
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 14:25:46 -0800 (PST)
+        with ESMTP id S1725782AbgLUW0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 17:26:17 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50859C0613D6;
+        Mon, 21 Dec 2020 14:25:37 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id dk8so11142639edb.1;
+        Mon, 21 Dec 2020 14:25:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7Hgqtg/BM45Gm64DFcm4q1HmsKbajvebg47kADOweA4=;
-        b=QgSbLRFwjK/MsfiXMQB75ws0gBS3IxdWi2bJ+/i9JOudGaKfrfE2Mgpz4LoH1+2ZGs
-         XnsbW3DUhSHYjCuLc1sYHjWOhde1gz+7nGb+DjBENMrZNgBG5lh9dEPbkzHgH8UDAp5B
-         h4pSablc3g1zpjLXEGM5kXk71WHHqNWYdt2q8XReGp+ssouM6qSQQm1sgigk45YK6/7W
-         8SIFZkvvRyTM/mrCf6s4ZDYsbfXzWrOKDctqw40CGwSN6V2ZuzCyNllubixTXLcrngZf
-         8Gm6gKLOpY171qEMU9FuybZB5ovRBjXSmAMKQLJoegjXAl8cSnHDXBsSw152eFwGzS1H
-         NrDQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6lNTKSuS3VqpcSa/CTPY27q/5iitGsEsvvKQc7I5n2w=;
+        b=NdA3rT0PUrDC9akyDO+o4y2HBqwn6xnbsWE2P1ljtRSIfSuodNLHoWKCXp8xrVPXK0
+         1wVQIx959aTaIjVEBE8XzK5E5WaT8bSguPXElyRZNPF2rqkc93pTa098BuZp/8dljCSL
+         wPCxxExWSv9hwW+7fyIDH2X6AQUsR6BZ2AKCxsFwuQ0rW5xfCaOLexXSHWAoBCUn9WBJ
+         k25Oc9tFGAJXWhR8dya4fiaQwWrmOEhJ6aVJJtykXCDjXCxv86DbPzzDDNALgOgH0Dwu
+         d54lqDjLS/32+61J7AEjLUB8ff73Ed/lHtolXLsHBoSXx5EDhey1VXrfGcECcmozhwtb
+         dhrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7Hgqtg/BM45Gm64DFcm4q1HmsKbajvebg47kADOweA4=;
-        b=HxRPCOn+SaChHOPNRmie7lRnTS3FO3FOpIPADCf3Wl1ld7Fr4+6STu6TJXR3GXxCLC
-         nhLbNJ4hk3meQgDjnFrFopdsD4cwJMpnXQWYUf8WTCWq2576LKkXC0nDlxT07POe4QXw
-         1By50Rw4e6vaWfsBi93w8YDiU5DHrh0GaOs6oBZnrGhNJTPJv7bzN0uzO9gIRJFlybrr
-         5klp1+rV9aBPNxYOCQycClG9pu83dxyiASlwL5pAMyd7lhQvutp+D95nvVKnzSN72mGf
-         AQEpfXJPFOJzPaG8Q9c9p4GFUEjOTUmx4NNmevad4pB3VBCx7CrF7zpBQEJrLe2dYl5m
-         /T1Q==
-X-Gm-Message-State: AOAM533DIK8NkoU+GxNsPnlQUZthrtf92m5L3etFAlyN1Ghn3sa5SOOs
-        /Pt5jTYRYs/bi431SzTj9qpVhGveXCkudQ==
-X-Google-Smtp-Source: ABdhPJyCtXsgCG+Yw6sLJYkIj322kEd26a+QNph35iicN9udxSX2OqVVGoJo2od2Vt73Z7HUYfgTtw==
-X-Received: by 2002:adf:f891:: with SMTP id u17mr21073755wrp.253.1608589543623;
-        Mon, 21 Dec 2020 14:25:43 -0800 (PST)
-Received: from localhost.localdomain ([137.220.95.74])
-        by smtp.googlemail.com with ESMTPSA id z3sm29467961wrn.59.2020.12.21.14.25.43
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6lNTKSuS3VqpcSa/CTPY27q/5iitGsEsvvKQc7I5n2w=;
+        b=JJox9SXX9UlbIPm/Xdxz3wfQmqSeOIjWqT+Kx3fQh0LEoXO1yYc0KPPNGy/UWh7NCM
+         IxbiFiJbHZFfHONqs7wkRQAwt37PmQ9a8+fpa+haPj9lApEwPSRH9XKmmuJ7lCNcvLWr
+         mr4nDN4I1n2/CG6rm3DvHcNwTPXsEmYzF+CXRacp/Qyp8NWSMUkk99nF1bJvl1M1nYKF
+         89CDEb70PisbpjP1nEg/V2NlMWi57gcV7eZx0mZ49X6zNl58Z5d2pZPxp/D2z5AiMuk/
+         2xZBs3fNeJLvE61dCR8qx+5wjKDvD0yVSHs6fhNxFjaQd6Se51b8kexDNPxrBgaZ9Ygt
+         VuBw==
+X-Gm-Message-State: AOAM531H1usFN6TxvhzkzwCxxGvgLr88TCT+wtZ/Pkl+1AOPvmv9mM1H
+        WoS0QDhCywwkLxqoRukSXoQ=
+X-Google-Smtp-Source: ABdhPJy85PiYMitI9XBh7zpqSE0bayChQF8Lrnat0DAXajI0G5aFdzj8ekv2eM/WKEwKKVFzqbnEog==
+X-Received: by 2002:a50:ee8e:: with SMTP id f14mr17486909edr.176.1608589536003;
+        Mon, 21 Dec 2020 14:25:36 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id s1sm9674394ejx.25.2020.12.21.14.25.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Dec 2020 14:25:43 -0800 (PST)
-From:   Nick Lowe <nick.lowe@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     anthony.l.nguyen@intel.com, kuba@kernel.org,
-        jesse.brandeburg@intel.com, intel-wired-lan@lists.osuosl.org,
-        davem@davemloft.net, Nick Lowe <nick.lowe@gmail.com>
-Subject: [PATCH net] igb: Enable RSS for Intel I211 Ethernet Controller
-Date:   Mon, 21 Dec 2020 22:25:02 +0000
-Message-Id: <20201221222502.1706-1-nick.lowe@gmail.com>
-X-Mailer: git-send-email 2.29.2
+        Mon, 21 Dec 2020 14:25:35 -0800 (PST)
+Date:   Tue, 22 Dec 2020 00:25:34 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "open list:BROADCOM SYSTEMPORT ETHERNET DRIVER" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: systemport: set dev->max_mtu to
+ UMAC_MAX_MTU_SIZE
+Message-ID: <20201221222534.ln4onsjpryqzzfqq@skbuf>
+References: <20201218173843.141046-1-f.fainelli@gmail.com>
+ <20201218202441.ppcxswvlix3xszsn@skbuf>
+ <c178b5db-3de4-5f02-eee3-c9e69393174a@gmail.com>
+ <20201218205220.jb3kh7v23gtpymmx@skbuf>
+ <b8e61c3f-179f-7d8f-782a-86a8c69c5a75@gmail.com>
+ <20201218210250.owahylqnagtssbsw@skbuf>
+ <cf2daa3c-8f64-0f58-5a42-2182cec5ba4a@gmail.com>
+ <20201218211435.mjdknhltolu4gvqr@skbuf>
+ <f558368a-ec7f-c604-9be5-bd5b810b5bfa@gmail.com>
+ <6d54c372-86bc-b28f-00b0-c22e46215116@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6d54c372-86bc-b28f-00b0-c22e46215116@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Intel I211 Ethernet Controller supports 2 Receive Side Scaling (RSS) queues.
-It should not be excluded from having this feature enabled.
+On Mon, Dec 21, 2020 at 01:49:03PM -0800, Florian Fainelli wrote:
+> On 12/18/2020 1:17 PM, Florian Fainelli wrote:
+> >>>>>>> SYSTEMPORT Lite does not actually validate the frame length, so setting
+> >>>>>>> a maximum number to the buffer size we allocate could work, but I don't
+> >>>>>>> see a reason to differentiate the two types of MACs here.
+> >>>>>>
+> >>>>>> And if the Lite doesn't validate the frame length, then shouldn't it
+> >>>>>> report a max_mtu equal to the max_mtu of the attached DSA switch, plus
+> >>>>>> the Broadcom tag length? Doesn't the b53 driver support jumbo frames?
+> >>>>>
+> >>>>> And how would I do that without create a horrible layering violation in
+> >>>>> either the systemport driver or DSA? Yes the b53 driver supports jumbo
+> >>>>> frames.
+> >>>>
+> >>>> Sorry, I don't understand where is the layering violation (maybe it doesn't
+> >>>> help me either that I'm not familiar with Broadcom architectures).
+> >>>>
+> >>>> Is the SYSTEMPORT Lite always used as a DSA master, or could it also be
+> >>>> used standalone? What would be the issue with hardcoding a max_mtu value
+> >>>> which is large enough for b53 to use jumbo frames?
+> >>>
+> >>> SYSTEMPORT Lite is always used as a DSA master AFAICT given its GMII
+> >>> Integration Block (GIB) was specifically designed with another MAC and
+> >>> particularly that of a switch on the other side.
+> >>>
+> >>> The layering violation I am concerned with is that we do not know ahead
+> >>> of time which b53 switch we are going to be interfaced with, and they
+> >>> have various limitations on the sizes they support. Right now b53 only
+> >>> concerns itself with returning JMS_MAX_SIZE, but I am fairly positive
+> >>> this needs fixing given the existing switches supported by the driver.
+> >>
+> >> Maybe we don't need to over-engineer this. As long as you report a large
+> >> enough max_mtu in the SYSTEMPORT Lite driver to accomodate for all
+> >> possible revisions of embedded switches, and the max_mtu of the switch
+> >> itself is still accurate and representative of the switch revision limits,
+> >> I think that's good enough.
+> >
+> > I suppose that is fair, v2 coming, thanks!
+>
+> I was going to issue a v2 for this patch, but given that we don't
+> allocate buffers larger than 2KiB and there is really no need to
+> implement ndo_change_mtu(), is there really a point not to use
+> UMAC_MAX_MTU_SIZE for both variants of the SYSTEMPORT MAC?
 
-Via commit c883de9fd787b6f49bf825f3de3601aeb78a7114
-E1000_MRQC_ENABLE_RSS_4Q was renamed to E1000_MRQC_ENABLE_RSS_MQ to
-indicate that this is a generic bit flag to enable queues and not
-a flag that is specific to devices that support 4 queues
+After your first reply that "the Lite doesn't validate the frame length", I was
+under the impression that it is sufficient to declare a larger max_mtu such as
+JMS_MAX_SIZE and 9K jumbo frames would just work. But with the current buffer
+allocation in bcm_sysport_rx_refill it clearly wouldn't. A stupid confusion
+really. So yeah, sorry for having you resend a v2 with no change.
+If it helps you could add to the patch:
 
-The bit flag enables 2, 4 or 8 queues appropriately depending on the part.
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-Tested with a multicore CPU and frames were then distributed as expected.
-
-This issue appears to have been introduced because of confusion caused
-by the prior name.
-
-Signed-off-by: Nick Lowe <nick.lowe@gmail.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 03f78fdb0dcd..87ac1d3e25cb 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4482,8 +4482,7 @@ static void igb_setup_mrqc(struct igb_adapter *adapter)
- 		else
- 			mrqc |= E1000_MRQC_ENABLE_VMDQ;
- 	} else {
--		if (hw->mac.type != e1000_i211)
--			mrqc |= E1000_MRQC_ENABLE_RSS_MQ;
-+		mrqc |= E1000_MRQC_ENABLE_RSS_MQ;
- 	}
- 	igb_vmm_control(adapter);
- 
--- 
-2.29.2
-
+Thanks again for explaining.
