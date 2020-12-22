@@ -2,137 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C242E0F20
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 20:56:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A802E0F3B
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 21:17:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbgLVTy0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 22 Dec 2020 14:54:26 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11720 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726526AbgLVTy0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 14:54:26 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BMJo9jc018203
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 11:53:45 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 35k0e866du-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 11:53:45 -0800
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 22 Dec 2020 11:53:42 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id E0FBB2ECBD59; Tue, 22 Dec 2020 11:53:38 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH bpf] selftests/bpf: work-around EBUSY errors from hashmap update/delete
-Date:   Tue, 22 Dec 2020 11:53:37 -0800
-Message-ID: <20201222195337.2175297-1-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S1727404AbgLVUP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 15:15:28 -0500
+Received: from atlmailgw2.ami.com ([63.147.10.42]:46440 "EHLO
+        atlmailgw2.ami.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725782AbgLVUP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 15:15:28 -0500
+X-AuditID: ac10606f-231ff70000001934-4f-5fe253b6a921
+Received: from atlms1.us.megatrends.com (atlms1.us.megatrends.com [172.16.96.144])
+        (using TLS with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by atlmailgw2.ami.com (Symantec Messaging Gateway) with SMTP id F1.71.06452.6B352EF5; Tue, 22 Dec 2020 15:14:47 -0500 (EST)
+Received: from ami-us-wk.us.megatrends.com (172.16.98.207) by
+ atlms1.us.megatrends.com (172.16.96.144) with Microsoft SMTP Server (TLS) id
+ 14.3.468.0; Tue, 22 Dec 2020 15:14:44 -0500
+From:   Hongwei Zhang <hongweiz@ami.com>
+To:     <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <openbmc@lists.ozlabs.org>, Jakub Kicinski <kuba@kernel.org>,
+        David S Miller <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+CC:     Hongwei Zhang <hongweiz@ami.com>, netdev <netdev@vger.kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Subject: [Aspeed, v2 0/2] net: ftgmac100: Change the order of getting MAC address
+Date:   Tue, 22 Dec 2020 15:14:35 -0500
+Message-ID: <20201222201437.5588-1-hongweiz@ami.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201221205157.31501-2-hongweiz@ami.com>
+References: <20201221205157.31501-2-hongweiz@ami.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-22_10:2020-12-21,2020-12-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- spamscore=0 bulkscore=0 impostorscore=0 mlxlogscore=999 suspectscore=0
- clxscore=1034 mlxscore=0 phishscore=0 adultscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012220144
-X-FB-Internal: deliver
+X-Originating-IP: [172.16.98.207]
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMLMWRmVeSWpSXmKPExsWyRiBhgu724EfxBpNvs1vsusxhMed8C4vF
+        ovczWC1+n//LbHFhWx+rRfPqc8wWl3fNYbM4tkDM4lTLCxYHTo+r7bvYPbasvMnksXPWXXaP
+        ix+PMXtsWtXJ5nF+xkJGj8+b5ALYo7hsUlJzMstSi/TtErgyDtw/wVjwkqXi+LE5TA2Mn5m7
+        GDk5JARMJLpnrWfqYuTiEBLYxSTx5uRsGIdRYte79WwgVWwCahJ7N88BS4gIXGaUuNH1hBnE
+        YRboYJSY+uIrO0iVsECgxNMr51hBbBYBVYlX9yFsXqAdJ56tY4HYJy+xesMBsN2cAmYSF7pn
+        gcWFBEwlVvz9yAxRLyhxcuYTsDizgITEwRcvmCFqZCVuHXrMBDFHUeLBr++sExgFZiFpmYWk
+        ZQEj0ypGocSSnNzEzJz0ciO9xNxMveT83E2MkIDP38H48aP5IUYmDsZDjBIczEoivGZS9+OF
+        eFMSK6tSi/Lji0pzUosPMUpzsCiJ865yPxovJJCeWJKanZpakFoEk2Xi4JRqYHQyTb9XNPPT
+        jnn/ZB8G/oqzndBaVXb8spzp/ToRv7TSjbH36ibdju30W2Tt0fPxzrKsWbIfdXQWyPrs/TeV
+        d+92gb+pDOsYduy68HXRz6YKf7c3HpaZHN7xd/YstIjclM33/7KW6NfTT2ZE5SfcmqlQckVt
+        Z/aR54mhPxcxZ7b0PZ7nHzRx0wslluKMREMt5qLiRAAUA96kZgIAAA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-20b6cc34ea74 ("bpf: Avoid hashtab deadlock with map_locked") introduced
-a possibility of getting EBUSY error on lock contention, which seems to happen
-very deterministically in test_maps when running 1024 threads on low-CPU
-machine. In libbpf CI case, it's a 2 CPU VM and it's hitting this 100% of the
-time. Work around by retrying on EBUSY (and EAGAIN, while we are at it) after
-a small sleep. sched_yield() is too agressive and fails even after 20 retries,
-so I went with usleep(1) for backoff.
+Dear Reviewer,
 
-Also log actual error returned to make it easier to see what's going on.
+Use native MAC address is preferred over other choices, thus change the order
+of reading MAC address, try to read it from MAC chip first, if it's not
+ availabe, then try to read it from device tree.
 
-Fixes: 20b6cc34ea74 ("bpf: Avoid hashtab deadlock with map_locked")
-Cc: Song Liu <songliubraving@fb.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/testing/selftests/bpf/test_maps.c | 46 +++++++++++++++++++++----
- 1 file changed, 40 insertions(+), 6 deletions(-)
+Thanks,
+--Hongwei
 
-diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
-index 0ad3e6305ff0..809004f4995f 100644
---- a/tools/testing/selftests/bpf/test_maps.c
-+++ b/tools/testing/selftests/bpf/test_maps.c
-@@ -1312,22 +1312,56 @@ static void test_map_stress(void)
- #define DO_UPDATE 1
- #define DO_DELETE 0
- 
-+static int map_update_retriable(int map_fd, const void *key, const void *value,
-+				int flags, int attempts)
-+{
-+	while (bpf_map_update_elem(map_fd, key, value, flags)) {
-+		if (!attempts || (errno != EAGAIN && errno != EBUSY))
-+			return -errno;
-+
-+		usleep(1);
-+		attempts--;
-+	}
-+
-+	return 0;
-+}
-+
-+static int map_delete_retriable(int map_fd, const void *key, int attempts)
-+{
-+	while (bpf_map_delete_elem(map_fd, key)) {
-+		if (!attempts || (errno != EAGAIN && errno != EBUSY))
-+			return -errno;
-+
-+		usleep(1);
-+		attempts--;
-+	}
-+
-+	return 0;
-+}
-+
- static void test_update_delete(unsigned int fn, void *data)
- {
- 	int do_update = ((int *)data)[1];
- 	int fd = ((int *)data)[0];
--	int i, key, value;
-+	int i, key, value, err;
- 
- 	for (i = fn; i < MAP_SIZE; i += TASKS) {
- 		key = value = i;
- 
- 		if (do_update) {
--			assert(bpf_map_update_elem(fd, &key, &value,
--						   BPF_NOEXIST) == 0);
--			assert(bpf_map_update_elem(fd, &key, &value,
--						   BPF_EXIST) == 0);
-+			err = map_update_retriable(fd, &key, &value, BPF_NOEXIST, 20);
-+			if (err)
-+				printf("error %d %d\n", err, errno);
-+			assert(err == 0);
-+			err = map_update_retriable(fd, &key, &value, BPF_EXIST, 20);
-+			if (err)
-+				printf("error %d %d\n", err, errno);
-+			assert(err == 0);
- 		} else {
--			assert(bpf_map_delete_elem(fd, &key) == 0);
-+			err = map_delete_retriable(fd, &key, 5);
-+			if (err)
-+				printf("error %d %d\n", err, errno);
-+			assert(err == 0);
- 		}
- 	}
- }
+Changelog:
+v2:
+- Corrected comments in the patch
+
+v1: https://patchwork.ozlabs.org/project/linux-aspeed/list/?series=221576
+- Initial submission
+
+Hongwei Zhang (1):
+  net: ftgmac100: Change the order of getting MAC address
+
+ drivers/net/ethernet/faraday/ftgmac100.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
 -- 
-2.24.1
+2.17.1
 
