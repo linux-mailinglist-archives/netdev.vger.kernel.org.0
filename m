@@ -2,220 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EF122E0C4F
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 16:02:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DECE2E0C52
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 16:04:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727921AbgLVPCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 10:02:15 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:37042 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727770AbgLVPCP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 10:02:15 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1krjAA-00DOpW-57; Tue, 22 Dec 2020 16:01:22 +0100
-Date:   Tue, 22 Dec 2020 16:01:22 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH v2 2/8] net: sparx5: add the basic sparx5 driver
-Message-ID: <20201222150122.GM3107610@lunn.ch>
-References: <20201217075134.919699-1-steen.hegelund@microchip.com>
- <20201217075134.919699-3-steen.hegelund@microchip.com>
- <20201219191157.GC3026679@lunn.ch>
- <37309f64bf0bb94e55bc2db4c482c1e3e7f1be6f.camel@microchip.com>
+        id S1727691AbgLVPEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 10:04:33 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:39031 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727301AbgLVPEd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 10:04:33 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1608649449; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=Ko0cYP+ruBsHvHtPFfJioTlxlBelsXkFGfnxaOLV8Ic=; b=iMa9mYcUJ9ozsXbD8AfuRb4XOvjCY4acljbXTrsUdbbA7iYF7Ps3b/mRWqSViY45VvsRC6pK
+ Tq5kuQXg+psJ8x7cEgWKPSF6J7JwvfJZ7WjfrM+YeI10Q73ivmdcdnOjDIMpq6xMLq7lT9Wl
+ XAcAl4TXNQK4doIrQA2dFjE8KM4=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n08.prod.us-west-2.postgun.com with SMTP id
+ 5fe20a95cfe5dd67db4ba025 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 22 Dec 2020 15:02:45
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 02922C43466; Tue, 22 Dec 2020 15:02:45 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BF67AC433C6;
+        Tue, 22 Dec 2020 15:02:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BF67AC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org,
+        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v3 03/24] wfx: add Makefile/Kconfig
+References: <20201104155207.128076-1-Jerome.Pouiller@silabs.com>
+        <20201104155207.128076-4-Jerome.Pouiller@silabs.com>
+Date:   Tue, 22 Dec 2020 17:02:38 +0200
+In-Reply-To: <20201104155207.128076-4-Jerome.Pouiller@silabs.com> (Jerome
+        Pouiller's message of "Wed, 4 Nov 2020 16:51:46 +0100")
+Message-ID: <8735zxanox.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <37309f64bf0bb94e55bc2db4c482c1e3e7f1be6f.camel@microchip.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > +static void sparx5_board_init(struct sparx5 *sparx5)
-> > > +{
-> > > +     int idx;
-> > > +
-> > > +     if (!sparx5->sd_sgpio_remapping)
-> > > +             return;
-> > > +
-> > > +     /* Enable SGPIO Signal Detect remapping */
-> > > +     spx5_rmw(GCB_HW_SGPIO_SD_CFG_SD_MAP_SEL,
-> > > +              GCB_HW_SGPIO_SD_CFG_SD_MAP_SEL,
-> > > +              sparx5,
-> > > +              GCB_HW_SGPIO_SD_CFG);
-> > > +
-> > > +     /* Refer to LOS SGPIO */
-> > > +     for (idx = 0; idx < SPX5_PORTS; idx++) {
-> > > +             if (sparx5->ports[idx]) {
-> > > +                     if (sparx5->ports[idx]->conf.sd_sgpio != ~0)
-> > > {
-> > > +                             spx5_wr(sparx5->ports[idx]-
-> > > >conf.sd_sgpio,
-> > > +                                     sparx5,
-> > > +                                    
-> > > GCB_HW_SGPIO_TO_SD_MAP_CFG(idx));
-> > > +                     }
-> > > +             }
-> > > +     }
-> > > +}
-> > 
-> > I've not looked at how you do SFP integration yet. Is this the LOS
-> > from the SFP socket? Is there a Linux GPIO controller exported by
-> > this
-> > driver, so the SFP driver can use the GPIOs?
-> 
-> Yes the SFP driver (used by the Sparx5 SerDes driver) will use the
-> SGPIO LOS, Module Detect etc, and the Port Modules are aware of the
-> location of the LOS, and use this by default without any driver
-> configuration.
-> But on the PCB134 the SGPIOs are shifted one bit by a mistake, and they
-> are not located in the expected position, so we have this board
-> remapping function to handle that aspect.
+Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
 
-Is it possible to turn this off in the hardware? It might be less
-confusing if LOS it determined by phylink, not phylink and the switch
-itself. Especially when we get into race conditions between PHYLINK
-polling the GPIO and the hardware taking the short cut?
+> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>
+> Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
 
+[...]
 
-> > > +static int mchp_sparx5_probe(struct platform_device *pdev)
-> > > +{
-> > > +     struct device_node *np = pdev->dev.of_node;
-> > > +     struct sparx5 *sparx5;
-> > > +     struct device_node *ports, *portnp;
-> > > +     const u8 *mac_addr;
-> > > +     int err = 0;
-> > > +
-> > > +     if (!np && !pdev->dev.platform_data)
-> > > +             return -ENODEV;
-> > > +
-> > > +     sparx5 = devm_kzalloc(&pdev->dev, sizeof(*sparx5),
-> > > GFP_KERNEL);
-> > > +     if (!sparx5)
-> > > +             return -ENOMEM;
-> > > +
-> > > +     platform_set_drvdata(pdev, sparx5);
-> > > +     sparx5->pdev = pdev;
-> > > +     sparx5->dev = &pdev->dev;
-> > > +
-> > > +     /* Default values, some from DT */
-> > > +     sparx5->coreclock = SPX5_CORE_CLOCK_DEFAULT;
-> > > +
-> > > +     mac_addr = of_get_mac_address(np);
-> > > +     if (IS_ERR_OR_NULL(mac_addr)) {
-> > > +             dev_info(sparx5->dev, "MAC addr was not set, use
-> > > random MAC\n");
-> > > +             eth_random_addr(sparx5->base_mac);
-> > > +             sparx5->base_mac[5] = 0;
-> > > +     } else {
-> > > +             ether_addr_copy(sparx5->base_mac, mac_addr);
-> > > +     }
-> > 
-> > The binding document does not say anything about a MAC address at the
-> > top level. What is this used for?
-> 
-> This the base MAC address used for generating the the switch NI's MAC
-> addresses.
+> +wfx-$(CONFIG_SPI) +=3D bus_spi.o
+> +wfx-$(subst m,y,$(CONFIG_MMC)) +=3D bus_sdio.o
 
-Yes, that is obvious from the code. But all DT properties must be in
-the binding Documentation. The DT verifier is going to complain when
-it finds a mac-address property which is not described in the yaml
-file.
+Why this subst? And why only for MMC?
 
-> > > +             config.media_type = ETH_MEDIA_DAC;
-> > > +             config.serdes_reset = true;
-> > > +             config.portmode = config.phy_mode;
-> > > +             err = sparx5_probe_port(sparx5, portnp, serdes,
-> > > portno, &config);
-> > > +             if (err) {
-> > > +                     dev_err(sparx5->dev, "port probe error\n");
-> > > +                     goto cleanup_ports;
-> > > +             }
-> > > +     }
-> > > +     sparx5_board_init(sparx5);
-> > > +
-> > > +cleanup_ports:
-> > > +     return err;
-> > 
-> > Seems missed named, no cleanup.
-> 
-> Ah - this comes later (as the driver was split in functional groups for
-> reviewing). I hope this is OK, as it is only temporary - I could add a
-> comment to that effect.
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Yes, this is fine. Here, and in other places, a comment like:
-
-/* More code to be added in later patches */
-
-would of been nice, just as a heads up. That is the problem with
-linear patch review.
-
-> > > +static int __init sparx5_switch_reset(void)
-> > > +{
-> > > +     const char *syscon_cpu = "microchip,sparx5-cpu-syscon",
-> > > +             *syscon_gcb = "microchip,sparx5-gcb-syscon";
-> > > +     struct regmap *cpu_ctrl, *gcb_ctrl;
-> > > +     u32 val;
-> > > +
-> > > +     cpu_ctrl = syscon_regmap_lookup_by_compatible(syscon_cpu);
-> > > +     if (IS_ERR(cpu_ctrl)) {
-> > > +             pr_err("No '%s' syscon map\n", syscon_cpu);
-> > > +             return PTR_ERR(cpu_ctrl);
-> > > +     }
-> > > +
-> > > +     gcb_ctrl = syscon_regmap_lookup_by_compatible(syscon_gcb);
-> > > +     if (IS_ERR(gcb_ctrl)) {
-> > > +             pr_err("No '%s' syscon map\n", syscon_gcb);
-> > > +             return PTR_ERR(gcb_ctrl);
-> > > +     }
-> > > +
-> > > +     /* Make sure the core is PROTECTED from reset */
-> > > +     regmap_update_bits(cpu_ctrl, RESET_PROT_STAT,
-> > > +                        SYS_RST_PROT_VCORE, SYS_RST_PROT_VCORE);
-> > > +
-> > > +     regmap_write(gcb_ctrl, spx5_offset(GCB_SOFT_RST),
-> > > +                  GCB_SOFT_RST_SOFT_SWC_RST_SET(1));
-> > > +
-> > > +     return readx_poll_timeout(sparx5_read_gcb_soft_rst, gcb_ctrl,
-> > > val,
-> > > +                               GCB_SOFT_RST_SOFT_SWC_RST_GET(val)
-> > > == 0,
-> > > +                               1, 100);
-> > > +}
-> > > +postcore_initcall(sparx5_switch_reset);
-> > 
-> > That is pretty unusual. Why cannot this be done at probe time?
-> 
-> The problem is that the switch core reset also affects (reset) the
-> SGPIO controller.
-> 
-> We tried to put this in the reset driver, but it was rejected. If the
-> reset is done at probe time, the SGPIO driver may already have
-> initialized state.
-> 
-> The switch core reset will then reset all SGPIO registers. 
-
-Ah, O.K. Dumb question. Why is the SGPIO driver a separate driver? It
-sounds like it should be embedded inside this driver if it is sharing
-hardware.
-
-Another option would be to look at the reset subsystem, and have this
-driver export a reset controller, which the SGPIO driver can bind to.
-Given that the GPIO driver has been merged, if this will work, it is
-probably a better solution.
-
-       Andrew
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
