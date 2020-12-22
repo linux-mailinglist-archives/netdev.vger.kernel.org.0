@@ -2,163 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2A022E0A21
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 13:44:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5959F2E0ACA
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 14:33:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgLVMnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 07:43:50 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:47483 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726644AbgLVMnu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 07:43:50 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R881e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=weichen.chen@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0UJRQD2S_1608640950;
-Received: from localhost(mailfrom:weichen.chen@linux.alibaba.com fp:SMTPD_---0UJRQD2S_1608640950)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 22 Dec 2020 20:43:00 +0800
-From:   weichenchen <weichen.chen@linux.alibaba.com>
-Cc:     splendidsky.cwc@alibaba-inc.com, yanxu.zw@alibaba-inc.com,
-        weichenchen <weichen.chen@linux.alibaba.com>,
+        id S1727164AbgLVNdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 08:33:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727093AbgLVNdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 08:33:02 -0500
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE08C061793
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 05:32:22 -0800 (PST)
+Received: by mail-il1-x12a.google.com with SMTP id v3so12015872ilo.5
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 05:32:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1h+XS3Jpg37m9OWU9Zgfs5kJQZ5F9azt5axjaoAFa+o=;
+        b=AZpT2+SASG9nJBeXvpxrCgYcrKqMNKBOKhzbZE3iQHjPReCYhNxsX1FIcoozKiaYV+
+         oeNdLumwRlra/kfdUg8dNPyqt/2WT7UP590126MBFhOxbKcmgEHCq97+3rSbF9mHWrD9
+         gwwpYdZ711yTLP5cXBBBMF+bczS9F+VvUZUmA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1h+XS3Jpg37m9OWU9Zgfs5kJQZ5F9azt5axjaoAFa+o=;
+        b=BP9if4fV6hxDiwsfRLbgs57Ylbz64fGnS6OrViNufW1+s3XcXeVOZKyMyFWWHG4eNM
+         Wbx/F96AHttiw7qVhD9XDkON4FtAjxnlk+U7DNaIR/ann1rYECzAR7jSQ27rn76KOgrH
+         FClD8kEkoef1bjnl0cgWPd4jQHOPbra8eeJ1YOlK8oZCvG2FKK+xjuOV531+n2rdPZGg
+         SK/5sw/2ZnFc7awn66eNuw/oAYAcNFmlygmzhPtLsNuT/OxTjBRlDESugyl3m2zxYIQZ
+         76TmPAQnnoEO/4HP/l/+medVf0KETkvCo2UP3KDIApiZWP/X7ODPJGijkRZKD6QGpbfp
+         B5OA==
+X-Gm-Message-State: AOAM53269K3ZDzPnrGGJ2+Ep9WhqpPfG874HZBqRigpQNL7Xywx9Pobp
+        rADYtEiP2Ng+QFUbEVIYELnjyyhX+QtU7A==
+X-Google-Smtp-Source: ABdhPJyQG7N3kXgSBl8zSeDDDpQE2eNi22yYVF7ddAXWlUZNzn4bpdY2d8S070MVCt/SQB5C6Vxhlg==
+X-Received: by 2002:a92:b652:: with SMTP id s79mr21318208ili.251.1608643941395;
+        Tue, 22 Dec 2020 05:32:21 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id o7sm23739687iov.1.2020.12.22.05.32.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Dec 2020 05:32:20 -0800 (PST)
+Subject: Re: [PATCH] dt-bindings: net: qcom,ipa: Drop unnecessary type ref on
+ 'memory-region'
+To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        David Ahern <dsahern@kernel.org>, Jeff Dike <jdike@akamai.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Li RongQing <lirongqing@baidu.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] net: neighbor: fix a crash caused by mod zero
-Date:   Tue, 22 Dec 2020 20:38:33 +0800
-Message-Id: <20201222123838.12951-1-weichen.chen@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
-In-Reply-To: <20201221113240.2ae38a77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201221113240.2ae38a77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Alex Elder <elder@kernel.org>, netdev@vger.kernel.org
+References: <20201222040121.1314370-1-robh@kernel.org>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <8d7ee97e-1730-908f-9576-88950fd59c91@ieee.org>
+Date:   Tue, 22 Dec 2020 07:32:20 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <20201222040121.1314370-1-robh@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pneigh_enqueue() tries to obtain a random delay by mod
-NEIGH_VAR(p, PROXY_DELAY). However, NEIGH_VAR(p, PROXY_DELAY)
-migth be zero at that point because someone could write zero
-to /proc/sys/net/ipv4/neigh/[device]/proxy_delay after the
-callers check it.
+On 12/21/20 10:01 PM, Rob Herring wrote:
+> 'memory-region' is a common property, so it doesn't need a type ref here.
 
-This patch makes pneigh_enqueue() get a delay time passed in
-by the callers and the callers guarantee it is not zero.
+Acked-by: Alex Elder <elder@linaro.org>
 
-Signed-off-by: weichenchen <weichen.chen@linux.alibaba.com>
----
-V3:
-    - Callers need to pass the delay time to pneigh_enqueue()
-      now and they should guarantee it is not zero.
-    - Use READ_ONCE() to read NEIGH_VAR(p, PROXY_DELAY) in both
-      of the existing callers of pneigh_enqueue() and then pass
-      it to pneigh_enqueue().
-V2:
-    - Use READ_ONCE() to prevent the complier from re-reading
-      NEIGH_VAR(p, PROXY_DELAY).
-    - Give a hint to the complier that delay <= 0 is unlikely
-      to happen.
----
- include/net/neighbour.h | 2 +-
- net/core/neighbour.c    | 5 ++---
- net/ipv4/arp.c          | 8 +++++---
- net/ipv6/ndisc.c        | 6 +++---
- 4 files changed, 11 insertions(+), 10 deletions(-)
-
-diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-index 22ced1381ede..f7564dc5304d 100644
---- a/include/net/neighbour.h
-+++ b/include/net/neighbour.h
-@@ -352,7 +352,7 @@ struct net *neigh_parms_net(const struct neigh_parms *parms)
- unsigned long neigh_rand_reach_time(unsigned long base);
- 
- void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
--		    struct sk_buff *skb);
-+		    struct sk_buff *skb, int delay);
- struct pneigh_entry *pneigh_lookup(struct neigh_table *tbl, struct net *net,
- 				   const void *key, struct net_device *dev,
- 				   int creat);
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 9500d28a43b0..b440f966d109 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1567,12 +1567,11 @@ static void neigh_proxy_process(struct timer_list *t)
- }
- 
- void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
--		    struct sk_buff *skb)
-+		    struct sk_buff *skb, int delay)
- {
- 	unsigned long now = jiffies;
- 
--	unsigned long sched_next = now + (prandom_u32() %
--					  NEIGH_VAR(p, PROXY_DELAY));
-+	unsigned long sched_next = now + (prandom_u32() % delay);
- 
- 	if (tbl->proxy_queue.qlen > NEIGH_VAR(p, PROXY_QLEN)) {
- 		kfree_skb(skb);
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 922dd73e5740..6ddce6e0a648 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -841,20 +841,22 @@ static int arp_process(struct net *net, struct sock *sk, struct sk_buff *skb)
- 			     arp_fwd_pvlan(in_dev, dev, rt, sip, tip) ||
- 			     (rt->dst.dev != dev &&
- 			      pneigh_lookup(&arp_tbl, net, &tip, dev, 0)))) {
-+				int delay;
-+
- 				n = neigh_event_ns(&arp_tbl, sha, &sip, dev);
- 				if (n)
- 					neigh_release(n);
- 
-+				delay = READ_ONCE(NEIGH_VAR(in_dev->arp_parms, PROXY_DELAY));
- 				if (NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED ||
--				    skb->pkt_type == PACKET_HOST ||
--				    NEIGH_VAR(in_dev->arp_parms, PROXY_DELAY) == 0) {
-+				    skb->pkt_type == PACKET_HOST || delay == 0) {
- 					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,
- 						     sip, dev, tip, sha,
- 						     dev->dev_addr, sha,
- 						     reply_dst);
- 				} else {
- 					pneigh_enqueue(&arp_tbl,
--						       in_dev->arp_parms, skb);
-+						       in_dev->arp_parms, skb, delay);
- 					goto out_free_dst;
- 				}
- 				goto out_consume_skb;
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 76717478f173..efdaaab47535 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -892,10 +892,10 @@ static void ndisc_recv_ns(struct sk_buff *skb)
- 		    (idev->cnf.forwarding &&
- 		     (net->ipv6.devconf_all->proxy_ndp || idev->cnf.proxy_ndp) &&
- 		     (is_router = pndisc_is_router(&msg->target, dev)) >= 0)) {
-+			int delay = READ_ONCE(NEIGH_VAR(idev->nd_parms, PROXY_DELAY));
- 			if (!(NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED) &&
- 			    skb->pkt_type != PACKET_HOST &&
--			    inc &&
--			    NEIGH_VAR(idev->nd_parms, PROXY_DELAY) != 0) {
-+			    inc && delay != 0) {
- 				/*
- 				 * for anycast or proxy,
- 				 * sender should delay its response
-@@ -905,7 +905,7 @@ static void ndisc_recv_ns(struct sk_buff *skb)
- 				 */
- 				struct sk_buff *n = skb_clone(skb, GFP_ATOMIC);
- 				if (n)
--					pneigh_enqueue(&nd_tbl, idev->nd_parms, n);
-+					pneigh_enqueue(&nd_tbl, idev->nd_parms, n, delay);
- 				goto out;
- 			}
- 		} else
--- 
-2.20.1 (Apple Git-117)
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Alex Elder <elder@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> I'll take this via the DT tree.
+> 
+>   Documentation/devicetree/bindings/net/qcom,ipa.yaml | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> index d0cbbcf1b0e5..8a2d12644675 100644
+> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+> @@ -121,7 +121,6 @@ properties:
+>         receive and act on notifications of modem up/down events.
+>   
+>     memory-region:
+> -    $ref: /schemas/types.yaml#/definitions/phandle-array
+>       maxItems: 1
+>       description:
+>         If present, a phandle for a reserved memory area that holds
+> 
 
