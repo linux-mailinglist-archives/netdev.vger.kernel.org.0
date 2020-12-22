@@ -2,136 +2,332 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C0B62E0607
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 07:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 014ED2E06BB
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 08:32:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725833AbgLVG27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 01:28:59 -0500
-Received: from mail-vi1eur05on2127.outbound.protection.outlook.com ([40.107.21.127]:33888
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725300AbgLVG27 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 01:28:59 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ezTvw5NYgfnPNsx3R0uhno3dA+XAjU+AdpulfLtfx/g3jp3d5TYFPMxAhRXjW754pw5yOaDbo2XOFfViG0qFAhWaWX3adf/b68MlY0T/QG3420p+DbFSOZUEIYiMzCO0FmZk7JNKL/Ry6A5vSHHD8UZqck661zcWzDxXhtgch6htax+f46hvHSVWjD9nlEAl+Llm/GXgJupGSXhAVaRbe6J7asPsQjYUf1IPzs9yNBXWq/qB422M7Y+O7UNQvHisVPU3sMqugohC6CfPznCl5baYV39d5M1CNcxOmPAScExRbL/wQ8rftzEfDT5WHc3B/nFUzpyXKFKHl9TeTV59IA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vFbjvmWGWyuUQRSD+K/5eWXgEBu6pVkh/siqC1iLoIs=;
- b=F6NFKGd0pwZRMx9T4r2Y3zSMIN0pSd0GfU5Gj8IHwmmf0jkeZdROd9yyUO5ER7xF97Ov0NSi0U0XBYOMBSGO0KzzI4V3zxYvsYWXmZc3MdpctviuJPkRRWIjirqypTSklL9FyVGQZntWtXrRu03lAqs7kCsY8kWxmMfq2Wk2AmVlncRWfifyWnzhkBEd9L1bflx8RJJ9Op+KIwa+iG7f4A2ngtgJAIo8R3V04M+Mfj0h+ufWIBQpMrwn2rJEy80IanMC7rsgO6jgIdr3O/+cojWjmBg63Z9CTYsWzO2QL5a0qWKcCJ7znr6KhFDKMNQuxpSwxycoDiB9J9sat5jnGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silicom.dk; dmarc=pass action=none header.from=silicom.dk;
- dkim=pass header.d=silicom.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=SILICOMLTD.onmicrosoft.com; s=selector2-SILICOMLTD-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vFbjvmWGWyuUQRSD+K/5eWXgEBu6pVkh/siqC1iLoIs=;
- b=OkPVKu8oYWKB4/lkIOP20Ru2TNo+Exss7y/YTm3yKZtVdN6iezOqaa8R1UeqDy5zgvtOTTa7IYzco3vN7FC949bO81bvSNtxgUplisUVCBotQ9EpnAMOM4oJJkN8edp3aODzRApNJXJ/kAOZO4VmfpBcr6/0eHkpO2mOdqrPX7o=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=silicom.dk;
-Received: from AM0PR0402MB3426.eurprd04.prod.outlook.com
- (2603:10a6:208:22::15) by AM0PR04MB6882.eurprd04.prod.outlook.com
- (2603:10a6:208:184::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.25; Tue, 22 Dec
- 2020 06:28:11 +0000
-Received: from AM0PR0402MB3426.eurprd04.prod.outlook.com
- ([fe80::58c9:a2cd:46c5:912e]) by AM0PR0402MB3426.eurprd04.prod.outlook.com
- ([fe80::58c9:a2cd:46c5:912e%5]) with mapi id 15.20.3676.033; Tue, 22 Dec 2020
- 06:28:11 +0000
-Subject: Re: Reporting SFP presence status
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <5db3cbd8-ec1c-a156-bcb9-50fb3b8391b0@silicom.dk>
- <20201221152205.GG3026679@lunn.ch>
-From:   =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <mhu@silicom.dk>
-Message-ID: <24cb0fa7-13fc-4463-bb3e-fcd1d13b3fcc@silicom.dk>
-Date:   Tue, 22 Dec 2020 07:28:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-In-Reply-To: <20201221152205.GG3026679@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [85.184.138.169]
-X-ClientProxiedBy: AM6P192CA0048.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:209:82::25) To AM0PR0402MB3426.eurprd04.prod.outlook.com
- (2603:10a6:208:22::15)
+        id S1726146AbgLVHcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 02:32:03 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:37558 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725782AbgLVHcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 02:32:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1608622321; x=1640158321;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=fiSj1G3bsRHVgJi4A4NbaPKhuzCrlQNF4M9ZnyJ3ZQQ=;
+  b=YRrzDwtMRgpamRvi+UFNV6xn0ktuJS3YpiSOU4DSVbE7EtmBdtriNc9n
+   T0nPVajxpv2Hrrod3KEE8uvU0b+S0+vUESb0zTJ1ADigFFMs5UUHG7psC
+   IXWZnOr1I+ImCtu8+ds7MSigk+f+yEHsjXT2JXrQnJj0ci3nnSlBu83aG
+   ZR7MkFvU2y+PcPZ2zQ7EVvZQ770hYJsNOY1raXA9FPCVwL1twxueO5pvu
+   j7kF9Z2tE3/F6+m6r94qEnZZB7ssuwZkt26iDmoVlCs8CpJWDRE+JFURW
+   s2i5Yw3ul/uZ2IwrooggkenHNiP15Hv8gI2fF8CCtJt2GTxZao/tCMT2F
+   A==;
+IronPort-SDR: Y+yNfPyybZTRusIEJfIptk1cWNyIdlvvxhNu0kFNxnzKm3ay01vsX7KAid0fIjOB5JWvZUmJuh
+ hIhvVwQMVyLjgb7muGBJ5+gRKR0yR6CPpm5C3+e+wOiXsRET18WTajWg5bx9BDm/MJR++uNTzn
+ iAazcKX8K9FbGDJzooTD56RO9b4sSFMQOG9fSzhhz3FIsMtxN0uLhcbAJYJK0eVkq1ghzRILrC
+ fgme//W0hSsXg1Hp0C5Pr+CAjjT16T832ZAdXY56JaM08JFuthZ0Uw8aRbx3qjswJvwQWgmBKr
+ wVA=
+X-IronPort-AV: E=Sophos;i="5.78,438,1599548400"; 
+   d="scan'208";a="108551061"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Dec 2020 00:30:45 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 22 Dec 2020 00:30:45 -0700
+Received: from tyr.hegelund-hansen.dk (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Tue, 22 Dec 2020 00:30:42 -0700
+Message-ID: <daaae525cf3715068f6d0851a3dfce2466dc2ff0.camel@microchip.com>
+Subject: Re: [RFC PATCH v2 1/8] dt-bindings: net: sparx5: Add sparx5-switch
+ bindings
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Device Tree List <devicetree@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        "Arnd Bergmann" <arnd@arndb.de>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Date:   Tue, 22 Dec 2020 08:30:41 +0100
+In-Reply-To: <20201221214041.GA599050@robh.at.kernel.org>
+References: <20201217075134.919699-1-steen.hegelund@microchip.com>
+         <20201217075134.919699-2-steen.hegelund@microchip.com>
+         <20201221214041.GA599050@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.2 
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.8.20] (85.184.138.169) by AM6P192CA0048.EURP192.PROD.OUTLOOK.COM (2603:10a6:209:82::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3700.27 via Frontend Transport; Tue, 22 Dec 2020 06:28:10 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bb893123-96d7-4c26-538d-08d8a642c111
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6882:
-X-Microsoft-Antispam-PRVS: <AM0PR04MB6882DD52B2E3DDB85E57AB3ED5DF0@AM0PR04MB6882.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ApOYXHqsQf0ECFCt1rZxpmZMpcWREdmTW4CmETEmqYQpMWEHdirsJIaj6ez5xFrfVJdEgMevaFNvPvqLruEzRbVoqZv9E2ipVTQdDDgc1kbeSH8f32LLNzxwrSQtAcw2NA4VtVT5AJqSp0e3bFF/UKe+CYUIgeB7kbwh7LU6Ppa1CFJlzObpPw1JNixVnvrN4K/iuKoOz/z+DrZemLKzU8PSwDXalCpTR6e6nh71A01GjBOADXNGGh/qbucgmKYDM7ClzBhpDwWitF00bVg7DWRQDdCJwR/mWe0D+a/oQKMLfwT2KGIPE31Kpvfms111WDpBuedlNTkJp8ZlMVtPjwbupLst0NhB40FAkDQSEDW7kyufEhOU8J/lmAklBwzmj5m8xXk7vKP3SGQiQcKwtScjKQ6mW4sajBl2b7jf8kbTto4nLw7Ar/9zwlZw3YDcP1nMEiFO5vomYD03f52s8T2Wz6oruCBsjOLjICcQ5F8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0402MB3426.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(39850400004)(346002)(376002)(366004)(66574015)(2616005)(83380400001)(6486002)(8676002)(5660300002)(2906002)(26005)(956004)(31696002)(86362001)(16526019)(66556008)(36756003)(186003)(6916009)(31686004)(16576012)(3480700007)(8976002)(66946007)(316002)(4326008)(8936002)(66476007)(478600001)(52116002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cE9SY2VEdytuU3UyQ0N4dFhDVmp1QmY0c2NDTWdKL0lCVGVDclhiZ3cwWld0?=
- =?utf-8?B?Z091S3BEbkFDOElLRnRjL05sc24yMWkwdDM4aGNuV21vSHlZYmRRMCswZ0lQ?=
- =?utf-8?B?ZGtXWjNhbElTNUFiazZ2QTd0OFQzelBKSFZSUUsyck5yYW1VKy9RZ2s4SkF4?=
- =?utf-8?B?MUNhUEtFV2QxU0phT1I0WjBFZjVVNE1HSGVRWkhJS2NNT3dBWVdreFpNSXdk?=
- =?utf-8?B?bFN5OXgycmxlbm9iSkFZL2JkajlzTkxESTRjbkZkZE5pZFVLWjRvU1Z6ckZD?=
- =?utf-8?B?d3o5bDA4WXRXWXRta0p5ZW5KaVNRUDQ4d1FoU1NqY1MwY1p6VkVyblJ1NXMx?=
- =?utf-8?B?VWg4T01yWXpYWXhtWGt6UnRFSWtZaUlMTUt5MHB2bytRa1VSdTJqcXpuRThi?=
- =?utf-8?B?bXhESndiakRIOGlMeDhNeXVBbW5vRGIwd3k4dlFGYzhielNhdWxnSkJyQXVR?=
- =?utf-8?B?TXNCdC9RS2l4NDZ4SjlHNlNDYjQ1OVBRYVpOSmpWZUloV29udmhzbGs2YkxB?=
- =?utf-8?B?TCttWXJSbWVjWVl3NWk1SnM0NGtXV2F4Q2w1enJzYmZ2TzV3OTJvcFRUckox?=
- =?utf-8?B?eTE0K096SjZBZFdvcnFicVNhZFJscVBrdWt3dTRJUHNDcEwwaThBK3pQaEcz?=
- =?utf-8?B?eGdad2NZRHlkMFFhTDhBN20rVzh0NHJOMnJLV2dZU0tLQURlRk13RTZZQmZ2?=
- =?utf-8?B?N0VhcTExakVud09EaHJGSS9TN1g3V2lWRjdUUklIcTYrMkxhdkJXdmtyV29I?=
- =?utf-8?B?YzMrdGFaZzUwaGFLRjNDRVZ4dUk3WmJxUGRXd2ROTmVZLzl2MWtjVmpFa1lq?=
- =?utf-8?B?bCsyWFhDUlZXWWRmYlQyYlVNRXJaclEzb1hkTDRjRS92WE1NYUgybjN2S1dx?=
- =?utf-8?B?bklZOHBkVEg2TVk2TEM1VkRRMjNVWFFzL1kvemdLazdka2Mzb3lxNjE5dGFw?=
- =?utf-8?B?S0VPTmJqejlRQWVuTHFraFRCcnA2K0QrdWNHVTVGTm9Tc2hUc0FKYmhBZUlY?=
- =?utf-8?B?TlNQMVpMME5KZjhHOVh2RGxjMVpzejN4TGlLWUJnRVVDMGJZTmR6NzFreFFn?=
- =?utf-8?B?bDVDTmk4YjNFQXkyV3ZyellBNXVsWTlrTGxJVGNQbFFMMm9kaHl0clF3dnJD?=
- =?utf-8?B?dVNSRC9Nb3RrQ1dWRlpqVXBIYlNDWTREUTNKVFNoN21raWU0eC81amJXbTFl?=
- =?utf-8?B?ZDg0SDAweXo0N0RVWFFSZklTKzRUK3JENy9nT2UvL01QQWZQdlROZWJGQktk?=
- =?utf-8?B?L1kxVW9tRGdFRkZWRlhZTEU4RHRRMjNUYTNhc1ZpQ0RrZCsxUTB6VlhORlk0?=
- =?utf-8?Q?EMjgO/30HnFY4Mckxmi8F8KjmNBnjr1HYg?=
-X-OriginatorOrg: silicom.dk
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR0402MB3426.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2020 06:28:10.9286
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: c9e326d8-ce47-4930-8612-cc99d3c87ad1
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb893123-96d7-4c26-538d-08d8a642c111
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ICHwNMTumWYcOFle15RBJRHb2PUiCwY5CigtkTgFt62kNJ33evxxaNj0PRmSNB56
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6882
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi Rob,
 
-On 21/12/2020 16.22, Andrew Lunn wrote:
-> On Mon, Dec 21, 2020 at 11:37:55AM +0100, Martin Hundebøll wrote:
->> Hi Andrew,
->>
->> I've browsed the code in drivers/net/phy, but haven't found a place where
->> the SFP module status/change is reported to user-space. Is there a
->> "standard" way to report insert/remove events for SFP modules, or should we
->> just add a custom sysfs attribute to our driver?
+On Mon, 2020-12-21 at 14:40 -0700, Rob Herring wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you
+> know the content is safe
 > 
-> Hi Martin
+> On Thu, Dec 17, 2020 at 08:51:27AM +0100, Steen Hegelund wrote:
+> > Document the Sparx5 switch device driver bindings
+> > 
+> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> > Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
+> > ---
+> >  .../bindings/net/microchip,sparx5-switch.yaml | 178
+> > ++++++++++++++++++
+> >  1 file changed, 178 insertions(+)
+> >  create mode 100644
+> > Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+> > 
+> > diff --git
+> > a/Documentation/devicetree/bindings/net/microchip,sparx5-
+> > switch.yaml
+> > b/Documentation/devicetree/bindings/net/microchip,sparx5-
+> > switch.yaml
+> > new file mode 100644
+> > index 000000000000..6e3ef8285e9a
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/microchip,sparx5-
+> > switch.yaml
+> > @@ -0,0 +1,178 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: 
+> > http://devicetree.org/schemas/net/microchip,sparx5-switch.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Microchip Sparx5 Ethernet switch controller
+> > +
+> > +maintainers:
+> > +  - Lars Povlsen <lars.povlsen@microchip.com>
+> > +  - Steen Hegelund <steen.hegelund@microchip.com>
+> > +
+> > +description: |
+> > +  The SparX-5 Enterprise Ethernet switch family provides a rich
+> > set of
+> > +  Enterprise switching features such as advanced TCAM-based VLAN
+> > and
+> > +  QoS processing enabling delivery of differentiated services, and
+> > +  security through TCAM-based frame processing using versatile
+> > content
+> > +  aware processor (VCAP).
+> > +
+> > +  IPv4/IPv6 Layer 3 (L3) unicast and multicast routing is
+> > supported
+> > +  with up to 18K IPv4/9K IPv6 unicast LPM entries and up to 9K
+> > IPv4/3K
+> > +  IPv6 (S,G) multicast groups.
+> > +
+> > +  L3 security features include source guard and reverse path
+> > +  forwarding (uRPF) tasks. Additional L3 features include VRF-Lite
+> > and
+> > +  IP tunnels (IP over GRE/IP).
+> > +
+> > +  The SparX-5 switch family targets managed Layer 2 and Layer 3
+> > +  equipment in SMB, SME, and Enterprise where high port count
+> > +  1G/2.5G/5G/10G switching with 10G/25G aggregation links is
+> > required.
+> > +
+> > +properties:
+> > +  $nodename:
+> > +    pattern: "^switch@[0-9a-f]+$"
+> > +
+> > +  compatible:
+> > +    const: microchip,sparx5-switch
+> > +
+> > +  reg:
+> > +    minItems: 2
+> > +
+> > +  reg-names:
+> > +    minItems: 2
 > 
-> There is currently no standard way of notifying user space. But it is
-> something which could be added. But it should not be systfs. This
-> should be a netlink notification, probably as part of ethtool netlink
-> API. Or maybe the extended link info.
-> 
-> What is your intended use case? Why do you need to know when a module
-> has been inserted? It seems like you cannot do too much on such a
-> notification. It seems lots of modules don't conform to the standard,
-> will not immediately respond on the i2c bus. So ethtool -m is probably
-> not going to be useful. You probably need to poll until it does
-> respond, which defeats the purpose of having a notification.
+> This is the default based on 'items' length.
 
-You're right; a notification isn't what I need. But a way to query the 
-current state of the module would be nice, i.e. using ethtool.
+Does that mean that I should omit minItems here?
 
-// Martin
+> 
+> > +    items:
+> > +      - const: devices
+> > +      - const: gcb
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +    description: Interrupt used for reception of packets to the
+> > CPU
+> > +
+> > +  ethernet-ports:
+> > +    type: object
+> > +    properties:
+> > +      '#address-cells':
+> > +        const: 1
+> > +      '#size-cells':
+> > +        const: 0
+> > +
+> > +    patternProperties:
+> > +      "^port@[0-9]+$":
+> > +        type: object
+> > +        description: Switch ports
+> > +
+> > +        allOf:
+> > +          - $ref: ethernet-controller.yaml#
+> > +
+> > +        properties:
+> > +          reg:
+> > +            description: Switch port number
+> > +
+> > +          max-speed:
+> > +            maxItems: 1
+> 
+> Is that an array?
+
+No it is just a single value.
+> 
+> > +            description: Bandwidth allocated to this port
+> > +
+> > +          phys:
+> 
+> How many? (maxItems)
+
+I will add "maxItems: 1"
+
+> 
+> > +            description: phandle of a Ethernet Serdes PHY
+> > +
+> > +          phy-handle:
+> > +            description: phandle of a Ethernet PHY
+> > +
+> > +          phy-mode:
+> > +            description: Interface between the serdes and the phy
+> 
+> The whole set of modes defined is supported?
+
+This driver does not impose any limits on phy-mode.  It is passed on to
+the phy, so all modes are supported as I see it.
+
+> 
+> > +
+> > +          sfp:
+> > +            description: phandle of an SFP
+> > +
+> > +          managed:
+> > +            maxItems: 1
+> 
+> An array?
+
+No just a single item.
+
+
+Thanks for your comments.
+
+BR
+Steen
+
+> 
+> > +            description: SFP management
+> > +
+> > +        required:
+> > +          - reg
+> > +          - max-speed
+> > +          - phys
+> > +
+> > +        oneOf:
+> > +          - required:
+> > +              - phy-handle
+> > +              - phy-mode
+> > +          - required:
+> > +              - sfp
+> > +              - managed
+> > +
+> > +        additionalProperties: false
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - reg-names
+> > +  - interrupts
+> > +  - ethernet-ports
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> > +    switch: switch@600000000 {
+> > +      compatible = "microchip,sparx5-switch";
+> > +      reg =  <0x10000000 0x800000>,
+> > +             <0x11010000 0x1b00000>;
+> > +      reg-names = "devices", "gcb";
+> > +
+> > +      interrupts = <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>;
+> > +      ethernet-ports {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        port0: port@0 {
+> > +          reg = <0>;
+> > +          max-speed = <1000>;
+> > +          phys = <&serdes 13>;
+> > +          phy-handle = <&phy0>;
+> > +          phy-mode = "qsgmii";
+> > +        };
+> > +        /* ... */
+> > +        /* Then the 25G interfaces */
+> > +        port60: port@60 {
+> > +          reg = <60>;
+> > +          max-speed = <25000>;
+> > +          phys = <&serdes 29>;
+> > +          sfp = <&sfp_eth60>;
+> > +          managed = "in-band-status";
+> > +        };
+> > +        port61: port@61 {
+> > +          reg = <61>;
+> > +          max-speed = <25000>;
+> > +          phys = <&serdes 30>;
+> > +          sfp = <&sfp_eth61>;
+> > +          managed = "in-band-status";
+> > +        };
+> > +        port62: port@62 {
+> > +          reg = <62>;
+> > +          max-speed = <25000>;
+> > +          phys = <&serdes 31>;
+> > +          sfp = <&sfp_eth62>;
+> > +          managed = "in-band-status";
+> > +        };
+> > +        port63: port@63 {
+> > +          reg = <63>;
+> > +          max-speed = <25000>;
+> > +          phys = <&serdes 32>;
+> > +          sfp = <&sfp_eth63>;
+> > +          managed = "in-band-status";
+> > +        };
+> > +        /* Finally the Management interface */
+> > +        port64: port@64 {
+> > +          reg = <64>;
+> > +          max-speed = <1000>;
+> > +          phys = <&serdes 0>;
+> > +          phy-handle = <&phy64>;
+> > +          phy-mode = "sgmii";
+> > +        };
+> > +      };
+> > +    };
+> > +
+> > +...
+> > --
+> > 2.29.2
+> > 
+
+
