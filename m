@@ -2,78 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B0AA2E0D98
+	by mail.lfdr.de (Postfix) with ESMTP id D2AA82E0D99
 	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 17:58:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727618AbgLVQ4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 11:56:50 -0500
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:62701 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726991AbgLVQ4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 11:56:50 -0500
-X-Originating-IP: 176.167.34.245
-Received: from localhost (unknown [176.167.34.245])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 75EA424000E;
-        Tue, 22 Dec 2020 16:56:03 +0000 (UTC)
-Date:   Tue, 22 Dec 2020 17:56:00 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH v2 2/8] net: sparx5: add the basic sparx5 driver
-Message-ID: <20201222165600.GE3819852@piout.net>
-References: <20201217075134.919699-1-steen.hegelund@microchip.com>
- <20201217075134.919699-3-steen.hegelund@microchip.com>
- <20201219191157.GC3026679@lunn.ch>
- <37309f64bf0bb94e55bc2db4c482c1e3e7f1be6f.camel@microchip.com>
- <20201222150122.GM3107610@lunn.ch>
+        id S1727793AbgLVQ5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 11:57:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726991AbgLVQ5Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 11:57:25 -0500
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D872C0613D3
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 08:56:45 -0800 (PST)
+Received: by mail-ot1-x32c.google.com with SMTP id d20so12514173otl.3
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 08:56:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=c5lpnq8f4m8C48I2U05aP6/lzHvCNt8Al3Z21qBvhuU=;
+        b=BV26B3AEyONshCIUv4By7QMNPivMX6MjL9eyPPv3qSaaI8VtCJAQuTJLEGPGUorh9r
+         evbzxTHRw2jf4ol/6Vjq8M5rrT9wJ1bBior/fnN2gCmx8DMVPAOWXR6CXrF3GFpBndUf
+         CCsPFSYVVa+GJ4HmtWveE2UzB9H0JlxtTEbLUrHZzT5kraBF4k20sh/qqRAt5vYmKhoE
+         whXhU8CaQd0cuS+2YjjD3mChzopOMGMVFuVfHSr9tOsGoEcYzrwsWKILRrbTp7L3uZlB
+         8Xv9XVgayMeFPjGtASDYLWQDI4oUJrZIElBMyZKmzJa3L9+R9uNPuvgILoGovYqiF/Bi
+         Uqgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=c5lpnq8f4m8C48I2U05aP6/lzHvCNt8Al3Z21qBvhuU=;
+        b=E1PALBpOcZaC7gjmgkhhiWxJv7yxo/N8I1UKFhEu09s2B+JYdRgv+V8xYs61cdgJRY
+         +Lg5XxwMiGKhaNwyPwo/Bm2DaMuQs9WrnK2FrnSeDICd152fohhxIKcdD+o5RnHqw75i
+         OusnlNEgIZ+lX27UzPz/pVnrnkzWzmxuyoT9IkvYf+fgraWYGlzNkuVuLOHp/MLrVYMK
+         a3nY3y9neepFzgxHL1SaEP8FXglJ0NQ5ujzRmfCetVdfTIFxNi7hYLyxndh/e+uiMEVZ
+         FJJW94U9C1+Sy1Jbey2MxihDGVyExfD3ZWrzZqLZq980UK6/5fIi7RO5DX4yIxeNoBRH
+         pfpg==
+X-Gm-Message-State: AOAM5302eH/gpKM18hc4cZDP9En+hJxb1Yvobnmx6/gE9x9ABHbdtlSB
+        qphf0HcSHPmso9FFpdtcaR2kLJcp6fA=
+X-Google-Smtp-Source: ABdhPJzscRzVww1cvXkz7vHrcLZqQk2qT3EzrMwJ2/tcPRVRtr7sYStLUhjK3RH8/fNNmEI6Nyv9PQ==
+X-Received: by 2002:a9d:2248:: with SMTP id o66mr1296396ota.236.1608656204386;
+        Tue, 22 Dec 2020 08:56:44 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:84d8:b3da:d879:3ea8])
+        by smtp.googlemail.com with ESMTPSA id x20sm4465528oov.33.2020.12.22.08.56.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Dec 2020 08:56:43 -0800 (PST)
+Subject: Re: [PATCH 03/12 v2 RFC] skbuff: simplify sock_zerocopy_put
+From:   David Ahern <dsahern@gmail.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
+        edumazet@google.com, willemdebruijn.kernel@gmail.com
+Cc:     kernel-team@fb.com
+References: <20201222000926.1054993-1-jonathan.lemon@gmail.com>
+ <20201222000926.1054993-4-jonathan.lemon@gmail.com>
+ <aefbc3aa-c538-1948-3a3a-a6d4456c829b@gmail.com>
+Message-ID: <88a4e130-c726-2782-6d9a-093e326c38b2@gmail.com>
+Date:   Tue, 22 Dec 2020 09:56:43 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201222150122.GM3107610@lunn.ch>
+In-Reply-To: <aefbc3aa-c538-1948-3a3a-a6d4456c829b@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/12/2020 16:01:22+0100, Andrew Lunn wrote:
-> > The problem is that the switch core reset also affects (reset) the
-> > SGPIO controller.
-> > 
-> > We tried to put this in the reset driver, but it was rejected. If the
-> > reset is done at probe time, the SGPIO driver may already have
-> > initialized state.
-> > 
-> > The switch core reset will then reset all SGPIO registers. 
+On 12/22/20 9:52 AM, David Ahern wrote:
+> On 12/21/20 5:09 PM, Jonathan Lemon wrote:
+>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>> index 327ee8938f78..ea32b3414ad6 100644
+>> --- a/net/core/skbuff.c
+>> +++ b/net/core/skbuff.c
+>> @@ -1245,12 +1245,8 @@ EXPORT_SYMBOL_GPL(sock_zerocopy_callback);
+>>  
+>>  void sock_zerocopy_put(struct ubuf_info *uarg)
+>>  {
+>> -	if (uarg && refcount_dec_and_test(&uarg->refcnt)) {
+>> -		if (uarg->callback)
+>> -			uarg->callback(uarg, uarg->zerocopy);
+>> -		else
+>> -			consume_skb(skb_from_uarg(uarg));
+>> -	}
+>> +	if (uarg && refcount_dec_and_test(&uarg->refcnt))
+>> +		uarg->callback(uarg, uarg->zerocopy);
+>>  }
+>>  EXPORT_SYMBOL_GPL(sock_zerocopy_put);
+>>  
+>>
 > 
-> Ah, O.K. Dumb question. Why is the SGPIO driver a separate driver? It
-> sounds like it should be embedded inside this driver if it is sharing
-> hardware.
-> 
-> Another option would be to look at the reset subsystem, and have this
-> driver export a reset controller, which the SGPIO driver can bind to.
-> Given that the GPIO driver has been merged, if this will work, it is
-> probably a better solution.
+> since it is down to 2 lines, move to skbuff.h as an inline?
 > 
 
-That was my suggestion. Then you can ensure from the reset controller
-driver that this is done exactly once, either from the sgpio driver or
-from the switchdev driver. IIRC, the sgpio from the other SoCs are not
-affected by the reset.
-
-
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+nm. that is done in patch 5.
