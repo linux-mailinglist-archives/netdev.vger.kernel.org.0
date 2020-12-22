@@ -2,46 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C7D82E0418
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 02:51:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63D1E2E0416
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 02:51:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726317AbgLVBvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 20:51:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56736 "EHLO mail.kernel.org"
+        id S1725938AbgLVBvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 20:51:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725938AbgLVBvf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726032AbgLVBvf (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 21 Dec 2020 20:51:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id E1E7622B3B;
+Received: by mail.kernel.org (Postfix) with ESMTPS id D41C722A83;
         Tue, 22 Dec 2020 01:50:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1608601854;
-        bh=fhDEJKcSp76v5b8A714FLOPeK0bkDcfBNhK4T/8mRwY=;
+        bh=lsnE4BE4U5bUwGsqrqYaDruRhu9YBHUbN19RrCHxI9I=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=I1yN3pBicd7o/JDpvyVQYR1qT552fuJ1uDO1MCBMLEZAjI6GwwACBBBZD4BH1Fq7S
-         7WrZBuy4c0pGpOmigO/o1LGss4l1H7g9vb72ykH56nh9r5/KTddJc9Ltqr2UgrHdBX
-         AcPDk58m2Q9+mdk/KI4JRfuC5kVbcmGUQ88OYfH4Gxv3o36PNj4hqVvVLw3YlpwnVJ
-         Ru+RMDNf5VJSpCnEG1VWE1dCg3r9zycyl10XYGtfJSlrdijgAxUmHCBKG9Od2Nof+k
-         +ENY12gzfpVuLNsTLVH7WwVPmEBGdUDrXvky6stxgwy3wSRti1QLNfK1bd20c+5jjv
-         3PrszQLpBmdAw==
+        b=ROQWlvoyRYQXbhDmYJ/N8k+rStNf+pziibVawxZ+/IwX0DF5sua2D4dRXPguUqEJ2
+         41tFPHCYpENCN1y8adGFpLn/iwDRyqXIhXbGUXcnQbEXyBdlfRlZrT/cWV+vDx8grv
+         purW9pBP+yyTnfPNmli2LYtQsWiSBpUWBTtQitHYNbERmPoSsayDr3LK8YP2rhc/br
+         IKC6mi/5jH3Xx5z8ofO5cpdVDVWM/E0U6/9rglI2TNE8wh1l1k/GGJnV3mDBt0/dqM
+         6+V3S0/bV3yYza7c9tnaP7vuy63T9ka7JGfFrriYCj1BxWI29BRqaPN3QldXM5cj//
+         SslxSq/ezWhTA==
 Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id D7B9260387;
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id CB063603F8;
         Tue, 22 Dec 2020 01:50:54 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v4] net: mvpp2: Fix GoP port 3 Networking Complex Control
- configurations
+Subject: Re: [PATCH net] ppp: Fix PPPIOCUNBRIDGECHAN request number
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160860185487.6881.12430244209662770782.git-patchwork-notify@kernel.org>
+Message-Id: <160860185482.6881.9727379640203695231.git-patchwork-notify@kernel.org>
 Date:   Tue, 22 Dec 2020 01:50:54 +0000
-References: <1608462149-1702-1-git-send-email-stefanc@marvell.com>
-In-Reply-To: <1608462149-1702-1-git-send-email-stefanc@marvell.com>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org,
-        linux@armlinux.org.uk, mw@semihalf.com, andrew@lunn.ch,
-        rmk+kernel@armlinux.org.uk
+References: <e3a4c355e3820331d8e1fffef8522739aae58b57.1608380117.git.gnault@redhat.com>
+In-Reply-To: <e3a4c355e3820331d8e1fffef8522739aae58b57.1608380117.git.gnault@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        tparkin@katalix.com, jchapman@katalix.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -50,22 +46,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sun, 20 Dec 2020 13:02:29 +0200 you wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
+On Sat, 19 Dec 2020 13:19:24 +0100 you wrote:
+> PPPIOCGL2TPSTATS already uses 54. This shouldn't be a problem in
+> practice, but let's keep the logical decreasing assignment scheme.
 > 
-> During GoP port 2 Networking Complex Control mode of operation configurations,
-> also GoP port 3 mode of operation was wrongly set.
-> Patch removes these configurations.
-> 
-> Fixes: f84bf386f395 ("net: mvpp2: initialize the GoP")
-> Acked-by: Marcin Wojtas <mw@semihalf.com>
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+> Fixes: 4cf476ced45d ("ppp: add PPPIOCBRIDGECHAN and PPPIOCUNBRIDGECHAN ioctls")
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> ---
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v4] net: mvpp2: Fix GoP port 3 Networking Complex Control configurations
-    https://git.kernel.org/netdev/net/c/2575bc1aa9d5
+  - [net] ppp: Fix PPPIOCUNBRIDGECHAN request number
+    https://git.kernel.org/netdev/net/c/bcce55f556e8
 
 You are awesome, thank you!
 --
