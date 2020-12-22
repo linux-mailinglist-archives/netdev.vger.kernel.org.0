@@ -2,120 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62DE02E0C2D
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 15:55:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 787062E0C3C
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 15:57:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbgLVOzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 09:55:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        id S1727448AbgLVO4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 09:56:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727801AbgLVOzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 09:55:03 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EDAC0611CA
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 06:54:35 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id y8so7536528plp.8
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 06:54:35 -0800 (PST)
+        with ESMTP id S1727094AbgLVO4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 09:56:34 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5D3C0613D3
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 06:55:53 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id c7so13161232edv.6
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 06:55:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RADXly6HG+PYDpCqLXRZWwmhkpi+THQigpZFKjj79E0=;
-        b=owxkRQAn8mi1u29AGfOZBHVkYG9INTpWMi5SOSOPS1fT0xL7YABZ+pMsbu77MelNiV
-         cz0vixAFJ99sCW6JKgiaxHZA2cNY/HTaM57igo63TGRJKdt+BHU+/2asqycutk8mm8b0
-         lIhdZCvqQFuRRM2rNq8a2/6rb75wbQ/3i5/RGb3awDl8Tc0KVl6PKUk3kdUcLlOe5e8M
-         QtxtTkBREHqhY23FIjRWJ7V+R4+DdxA2wyrgmjildb72k1ujFqvDMQCtGl9ERlqQ0zG7
-         HRKB3Qa1MxltAVTZvwH6Vj1aygNmWJw2lrFJAEnE3fFc8uUeRxwtlIhZYfX68XxNQFWk
-         pzDA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9h/KkQElsEegosmLGqsjOSdH+E/iRHvuJ77iESbkm0Y=;
+        b=rlBg+BhWjCazSLcAq96vRwli0L908Uspz5iI4bi4NZDIJk+0WRAbP3aX2QDBwxC/HY
+         Wj1BsGKGXUXkkLwWK9xqArHM58WCRAajSj9y2TmqEIvHhDs3Uy9/zf1ZpWLZzoiYnguy
+         UqPBFRz4FOfJgU5AkaHyVxp2Dre7f84yFirRXBe8/SE6lBWXsSfikGb2XwSo/1Zv+p7s
+         Hkcp18ifujSW0GoToj3eL7HH4+D2nSsUGPKgU+Avr9J/WHARGeTfno0wgvnboFfFVAj9
+         QkUj7aWSPm7OF0IYNrKUxMETJzcnogecUtbRH8kzK7ubzBgoWdUMXWYYBDTOvqogbOm0
+         831A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RADXly6HG+PYDpCqLXRZWwmhkpi+THQigpZFKjj79E0=;
-        b=BiiAOlbKEfwVpGz1JjIrjdweyN05UymFrBgrxxMnVbMcPx3aX8YIKq9rYRqsvfledw
-         NgJ29xbJWCDzvAVhyVEQDPuk6S8rPS0HbES7THETxcPqDZBhU9gJyHjWugk3E9LGikwR
-         ks/IPwQ4tmjgar7hGFmcMGz8DLpVFuagm+ZbIlHuW+nzjIep5LLtjj87fZCLXhWUNHZV
-         Y3laOf90rTQaEI+D/4GPlZSq31jX4llFxTMuTDbEaBiEPr+Gv9vP8D4DeFZvIGknTgQZ
-         2W11ZvWFaYxgiu8ZegiWoOggwdj4wIGsmfqfs453/2TEacqTH4LEtYvdrVyU+JPZPWGa
-         egpg==
-X-Gm-Message-State: AOAM5336LsyBLvfDEG/kYBcyVPQIGVVkndmgYBM6StnOtZej4j4wWF/P
-        Lr5AHK2GFLBY4KqYbpMQukxF
-X-Google-Smtp-Source: ABdhPJxkRSBlcvxchIiS81ezO9xwR9ohQaUb5Kh8NPRBIkVLcDIYT224UEl4mr18HZP/oEI6uKUnAw==
-X-Received: by 2002:a17:902:8343:b029:dc:231e:110a with SMTP id z3-20020a1709028343b02900dc231e110amr21401236pln.67.1608648875434;
-        Tue, 22 Dec 2020 06:54:35 -0800 (PST)
-Received: from localhost ([139.177.225.248])
-        by smtp.gmail.com with ESMTPSA id t9sm14483845pgh.41.2020.12.22.06.54.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Dec 2020 06:54:34 -0800 (PST)
-From:   Xie Yongji <xieyongji@bytedance.com>
-To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
-        sgarzare@redhat.com, parav@nvidia.com, akpm@linux-foundation.org,
-        rdunlap@infradead.org, willy@infradead.org,
-        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
-        corbet@lwn.net
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Subject: [RFC v2 13/13] vduse: Introduce a workqueue for irq injection
-Date:   Tue, 22 Dec 2020 22:52:21 +0800
-Message-Id: <20201222145221.711-14-xieyongji@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201222145221.711-1-xieyongji@bytedance.com>
-References: <20201222145221.711-1-xieyongji@bytedance.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9h/KkQElsEegosmLGqsjOSdH+E/iRHvuJ77iESbkm0Y=;
+        b=fxeIAvxZCDfo853t5JX72KdwfmecB/2VCw7nC1HNeOLLHtGxyWtIrdMaYGF7Z9sjSp
+         FSKVI4snre/fY9u6jKRtuYxkOLtLgwK0E/PGnNiJ2Ui5jImMv1jx1Xslw2qgfc+r/xEF
+         oNKkFWKdEMo9KywSfi7yS8Kz1LczBLRv505vQ8y72h3e7Vq12TPECwuD+JNHUbqyAB9d
+         kYtCPADn6hF9DFWZ1N1WBOPBnQbULkiHV41I0sff6w1U7f1FoQueeR4GliepXj5Dd7CJ
+         S9gi72gwOrsgdiCP2XiTsL1D1YmWE0ohzhz1t6Cy/Ww2PzRdGzGuTc4RwK+ALj/5ae9J
+         vtog==
+X-Gm-Message-State: AOAM531S/enhaGR7B0PFZbqcilMcn3XyTFp6Scw/V5Ybtvy+RCGA3thR
+        slbutEVhrI8kWsL+w4wP7z0q4afbG+dbsq+t0nU=
+X-Google-Smtp-Source: ABdhPJzLd5mtMkOuyR9r0OJC2gmF2s73c6KZ6jVcCz2Cnkgk+3XUFkEwgsSwOr90Bd3fzX/gND6vFjtwONeDE6Ry3RI=
+X-Received: by 2002:aa7:c603:: with SMTP id h3mr16081321edq.254.1608648952783;
+ Tue, 22 Dec 2020 06:55:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201222000926.1054993-1-jonathan.lemon@gmail.com> <20201222000926.1054993-13-jonathan.lemon@gmail.com>
+In-Reply-To: <20201222000926.1054993-13-jonathan.lemon@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 22 Dec 2020 09:55:17 -0500
+Message-ID: <CAF=yD-L3pL7gX7=M0GiAnBB_2AB=4JDwGRmQ4o9ZzBp-WSE5fw@mail.gmail.com>
+Subject: Re: [PATCH 12/12 v2 RFC] skbuff: rename sock_zerocopy_* to msg_zerocopy_*
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduces a dedicated workqueue for irq injection
-so that we are able to do some performance tuning for it.
+On Mon, Dec 21, 2020 at 7:09 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+>
+> From: Jonathan Lemon <bsd@fb.com>
+>
+> At Willem's suggestion, rename the sock_zerocopy_* functions
+> so that they match the MSG_ZEROCOPY flag, which makes it clear
+> they are specific to this zerocopy implementation.
+>
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
----
- drivers/vdpa/vdpa_user/eventfd.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/vdpa/vdpa_user/eventfd.c b/drivers/vdpa/vdpa_user/eventfd.c
-index dbffddb08908..caf7d8d68ac0 100644
---- a/drivers/vdpa/vdpa_user/eventfd.c
-+++ b/drivers/vdpa/vdpa_user/eventfd.c
-@@ -18,6 +18,7 @@
- #include "eventfd.h"
- 
- static struct workqueue_struct *vduse_irqfd_cleanup_wq;
-+static struct workqueue_struct *vduse_irq_wq;
- 
- static void vduse_virqfd_shutdown(struct work_struct *work)
- {
-@@ -57,7 +58,7 @@ static int vduse_virqfd_wakeup(wait_queue_entry_t *wait, unsigned int mode,
- 	__poll_t flags = key_to_poll(key);
- 
- 	if (flags & EPOLLIN)
--		schedule_work(&virqfd->inject);
-+		queue_work(vduse_irq_wq, &virqfd->inject);
- 
- 	if (flags & EPOLLHUP) {
- 		spin_lock(&vq->irq_lock);
-@@ -165,11 +166,18 @@ int vduse_virqfd_init(void)
- 	if (!vduse_irqfd_cleanup_wq)
- 		return -ENOMEM;
- 
-+	vduse_irq_wq = alloc_workqueue("vduse-irq", WQ_SYSFS | WQ_UNBOUND, 0);
-+	if (!vduse_irq_wq) {
-+		destroy_workqueue(vduse_irqfd_cleanup_wq);
-+		return -ENOMEM;
-+	}
-+
- 	return 0;
- }
- 
- void vduse_virqfd_exit(void)
- {
-+	destroy_workqueue(vduse_irq_wq);
- 	destroy_workqueue(vduse_irqfd_cleanup_wq);
- }
- 
--- 
-2.11.0
-
+Acked-by: Willem de Bruijn <willemb@google.com>
