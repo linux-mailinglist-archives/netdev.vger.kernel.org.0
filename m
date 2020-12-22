@@ -2,148 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A36D2E0BF6
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 15:45:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 737182E0BF8
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 15:45:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727689AbgLVOo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 09:44:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727452AbgLVOo4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 09:44:56 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56378C061793
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 06:44:16 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id g20so18604354ejb.1
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 06:44:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/apQBmIE+eRmGfxUP2AaP3keXDSxAJxxcb6srxtXySA=;
-        b=lQnkPWxQH/f4zHFjB577T5xdaPOP/85mW9iN+kWsKZLHZPGHQ83o/9sE3Kb3DK+Eyz
-         RNS4veOVNk6oVoDScSfIHysv86J99eF0awMopRNfTac3ncXkZSz7u2yXC1Nk98hBmZ9z
-         TXnrg0JKBP9zaClGXcUaECwNoGG2i83wV5JTgtzsx7SGuP3rX50twhG/eSKNzH6NKRG8
-         v13zjit2QHbPCn6/m18/nVXQoYknskcqOcsecpFufR/NtaWqGdmOnvuofXHo/0vomLTq
-         D/WDPEfNOVDy/o4WuZd5hqpeJg2U1LDTVp6vZelUSGK//Uii1xkFVgBrJaJjBOnxADrZ
-         JQ3A==
+        id S1727725AbgLVOpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 09:45:00 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:47533 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727452AbgLVOo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 09:44:59 -0500
+Received: by mail-io1-f69.google.com with SMTP id q21so7485051ios.14
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 06:44:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/apQBmIE+eRmGfxUP2AaP3keXDSxAJxxcb6srxtXySA=;
-        b=Q+mavEYsDgJWLhkRY1Tve1b/1d1jKU45EGuyLDHiZ948M4ykeJ7sObIAcuW3MIXTvW
-         n5L6+uTVwJ7Nm4vHvrhgU5uduhrqE1N5FBR4Bo+E1mjP4/75Q1QzV2dKbgagxCEOpgJ0
-         A884BKlSJhk7b5TBcVOfBfBf2Wk31LocGdKRVK0gpN6d5zLLBsrBmIT7H7vrxB+OsJxq
-         kNQQiJDi3yKvKZpEx5SDpDO2RcpiiYJO4EaN30vLWXt4pkWrK72dhxEFPRYe0hCPMGDo
-         K/9l+ObM2lCji1IHBJFhVnzu/Sm9WLlltRuB2VM4Axeb8m55/Qy2aeW8MnoDDwb6Vo3L
-         CZSA==
-X-Gm-Message-State: AOAM532E+cH0d2Pp7Qn5msoO3/m6EjP762eM+Ao7h6r56p7duSpmUhJs
-        eKNlA6RQEBy6VM8dkCPWhbWaBzefITuCkADNCV40tstY
-X-Google-Smtp-Source: ABdhPJz2KNfAhl6tCGwqtHnEDR8tQvRvmwOLihT1StN/sZbri+RuIjFUnuhK9vR+e7Q6bMeGPseQhkdeRrPIpGntW5c=
-X-Received: by 2002:a17:906:e94c:: with SMTP id jw12mr20615624ejb.56.1608648255147;
- Tue, 22 Dec 2020 06:44:15 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=lSpvPfHKy5MMJb/4IlgookwUdWGXdnIGkTfYTOdiS6s=;
+        b=rpL5aiVS+QV6iytitCc2OGw+tXNFepRMdH2HcVU5vJdPvw4FXVnGty0Cg7taYRj5Ro
+         57lsXFE3vl68DyAF4NKUtB0R3QcnQRlvML/eFAeu7kvf/HvMtRESftnl5MzF84IgKASY
+         3VlIM/nud/Nk5G4qDfSoHz09pt8NL+SysP3ddLot2yeVYRBjr5x1dEL2GlWOMlV0E107
+         6hQlbWiE+m0DNoSy1NPoqQZSRFputd6lLVf617rVZKarrEVdWcKHpgCW9s7H5bXJgVf1
+         SOAtadj9Yx1Ul0QLeOTtWAZ5AzQP6Z3TD4IUkCCloIK+mqoBnJf9120mSe3aztb+E3kM
+         79tg==
+X-Gm-Message-State: AOAM531IurJSsW4FO8S1lWsesCmmG9S/UBlsJL/v4wxCwE9ukfRXXIOB
+        gr3r7mpSt6J4vtxvQ1mGPwsnoKMQnyICkEZENr3MrLJoOc2L
+X-Google-Smtp-Source: ABdhPJzO+Xa22wZShSH2UAxVctto7w9362EjTW8gO3kxBl/A3SQo0GbXLRlvVRAcOiX2W+A5n6C9n0E1mU/IQRkfRt8PmSs25kUX
 MIME-Version: 1.0
-References: <20201222000926.1054993-1-jonathan.lemon@gmail.com> <20201222000926.1054993-5-jonathan.lemon@gmail.com>
-In-Reply-To: <20201222000926.1054993-5-jonathan.lemon@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 22 Dec 2020 09:43:39 -0500
-Message-ID: <CAF=yD-K7bWE-U-O2J2Bwwi3E0NrX+horDARRgmBUU8Pqh6pH3Q@mail.gmail.com>
-Subject: Re: [PATCH 04/12 v2 RFC] skbuff: Push status and refcounts into sock_zerocopy_callback
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kernel Team <kernel-team@fb.com>
+X-Received: by 2002:a92:1517:: with SMTP id v23mr21862018ilk.280.1608648258008;
+ Tue, 22 Dec 2020 06:44:18 -0800 (PST)
+Date:   Tue, 22 Dec 2020 06:44:18 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fcbe0705b70e9bd9@google.com>
+Subject: kernel BUG at lib/string.c:LINE! (6)
+From:   syzbot <syzbot+e86f7c428c8c50db65b4@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, coreteam@netfilter.org,
+        davem@davemloft.net, fw@strlen.de, jakub@redhat.com,
+        jiangshanlai@gmail.com, kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        peterz@infradead.org, syzkaller-bugs@googlegroups.com,
+        tj@kernel.org, torvalds@linux-foundation.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 21, 2020 at 7:09 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
->
-> From: Jonathan Lemon <bsd@fb.com>
->
-> Before this change, the caller of sock_zerocopy_callback would
-> need to save the zerocopy status, decrement and check the refcount,
-> and then call the callback function - the callback was only invoked
-> when the refcount reached zero.
->
-> Now, the caller just passes the status into the callback function,
-> which saves the status and handles its own refcounts.
->
-> This makes the behavior of the sock_zerocopy_callback identical
-> to the tpacket and vhost callbacks.
->
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  include/linux/skbuff.h |  3 ---
->  net/core/skbuff.c      | 14 +++++++++++---
->  2 files changed, 11 insertions(+), 6 deletions(-)
->
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index fb6dd6af0f82..c9d7de9d624d 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -1482,9 +1482,6 @@ static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy)
->         if (uarg) {
->                 if (skb_zcopy_is_nouarg(skb)) {
->                         /* no notification callback */
-> -               } else if (uarg->callback == sock_zerocopy_callback) {
-> -                       uarg->zerocopy = uarg->zerocopy && zerocopy;
-> -                       sock_zerocopy_put(uarg);
->                 } else {
->                         uarg->callback(uarg, zerocopy);
->                 }
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index ea32b3414ad6..73699dbdc4a1 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -1194,7 +1194,7 @@ static bool skb_zerocopy_notify_extend(struct sk_buff *skb, u32 lo, u16 len)
->         return true;
->  }
->
-> -void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
-> +static void __sock_zerocopy_callback(struct ubuf_info *uarg)
->  {
->         struct sk_buff *tail, *skb = skb_from_uarg(uarg);
->         struct sock_exterr_skb *serr;
-> @@ -1222,7 +1222,7 @@ void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
->         serr->ee.ee_origin = SO_EE_ORIGIN_ZEROCOPY;
->         serr->ee.ee_data = hi;
->         serr->ee.ee_info = lo;
-> -       if (!success)
-> +       if (!uarg->zerocopy)
->                 serr->ee.ee_code |= SO_EE_CODE_ZEROCOPY_COPIED;
->
->         q = &sk->sk_error_queue;
-> @@ -1241,11 +1241,19 @@ void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
->         consume_skb(skb);
->         sock_put(sk);
->  }
-> +
-> +void sock_zerocopy_callback(struct ubuf_info *uarg, bool success)
-> +{
-> +       uarg->zerocopy = uarg->zerocopy & success;
-> +
-> +       if (refcount_dec_and_test(&uarg->refcnt))
-> +               __sock_zerocopy_callback(uarg);
-> +}
->  EXPORT_SYMBOL_GPL(sock_zerocopy_callback);
+Hello,
 
-I still think this helper is unnecessary. Just return immediately in
-existing sock_zerocopy_callback if refcount is not zero.
+syzbot found the following issue on:
 
->  void sock_zerocopy_put(struct ubuf_info *uarg)
->  {
-> -       if (uarg && refcount_dec_and_test(&uarg->refcnt))
-> +       if (uarg)
->                 uarg->callback(uarg, uarg->zerocopy);
->  }
->  EXPORT_SYMBOL_GPL(sock_zerocopy_put);
+HEAD commit:    d64c6f96 Merge tag 'net-5.11-rc1' of git://git.kernel.org/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10bc5613500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=aca0dc5c721fe9e5
+dashboard link: https://syzkaller.appspot.com/bug?extid=e86f7c428c8c50db65b4
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=169378a7500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144692cb500000
 
-This does increase the number of indirect function calls. Which are
-not cheap post spectre.
+The issue was bisected to:
 
-In the common case for msg_zerocopy we only have two clones, one sent
-out and one on the retransmit queue. So I guess the cost will be
-acceptable.
+commit 2f78788b55baa3410b1ec91a576286abe1ad4d6a
+Author: Jakub Jelinek <jakub@redhat.com>
+Date:   Wed Dec 16 04:43:37 2020 +0000
+
+    ilog2: improve ilog2 for constant arguments
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1584f137500000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1784f137500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1384f137500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e86f7c428c8c50db65b4@syzkaller.appspotmail.com
+Fixes: 2f78788b55ba ("ilog2: improve ilog2 for constant arguments")
+
+detected buffer overflow in strlen
+------------[ cut here ]------------
+kernel BUG at lib/string.c:1149!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 8713 Comm: syz-executor731 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:fortify_panic+0xf/0x11 lib/string.c:1149
+Code: b5 78 a3 04 48 c7 c7 c0 8f c2 89 58 5b 5d 41 5c 41 5d 41 5e 41 5f e9 30 ba ee ff 48 89 fe 48 c7 c7 80 90 c2 89 e8 21 ba ee ff <0f> 0b e8 90 f9 97 f8 0f b6 f3 48 c7 c7 20 f4 10 8c e8 41 e8 fc fa
+RSP: 0018:ffffc900020af500 EFLAGS: 00010282
+RAX: 0000000000000022 RBX: ffff888011c26768 RCX: 0000000000000000
+RDX: ffff88801bad0000 RSI: ffffffff815a6925 RDI: fffff52000415e92
+RBP: ffff88801be7c220 R08: 0000000000000022 R09: 0000000000000000
+R10: ffffffff815a4d7b R11: 0000000000000000 R12: ffff88801180ec00
+R13: ffff888011c26700 R14: 1ffff92000415ea2 R15: 0000000000000010
+FS:  0000000000812880(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000006dcf60 CR3: 00000000141ee000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ strlen include/linux/string.h:325 [inline]
+ strlcpy include/linux/string.h:348 [inline]
+ xt_rateest_tg_checkentry+0x2a5/0x6b0 net/netfilter/xt_RATEEST.c:143
+ xt_check_target+0x26c/0x9e0 net/netfilter/x_tables.c:1019
+ check_target net/ipv6/netfilter/ip6_tables.c:529 [inline]
+ find_check_entry.constprop.0+0x7f1/0x9e0 net/ipv6/netfilter/ip6_tables.c:572
+ translate_table+0xc8b/0x1750 net/ipv6/netfilter/ip6_tables.c:734
+ do_replace net/ipv6/netfilter/ip6_tables.c:1152 [inline]
+ do_ip6t_set_ctl+0x553/0xb70 net/ipv6/netfilter/ip6_tables.c:1636
+ nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+ ipv6_setsockopt+0x122/0x180 net/ipv6/ipv6_sockglue.c:1008
+ tcp_setsockopt+0x136/0x2440 net/ipv4/tcp.c:3597
+ __sys_setsockopt+0x2db/0x610 net/socket.c:2115
+ __do_sys_setsockopt net/socket.c:2126 [inline]
+ __se_sys_setsockopt net/socket.c:2123 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2123
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x4493d9
+Code: e8 0c ca 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b cb fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff679a3898 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 00000000200002c0 RCX: 00000000004493d9
+RDX: 0000000000000040 RSI: 0000000000000029 RDI: 0000000000000006
+RBP: 00007fff679a38b0 R08: 0000000000000470 R09: 00000000000000c2
+R10: 0000000020000080 R11: 0000000000000246 R12: 00000000000112d5
+R13: 00000000006d7dc8 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace e17a915ca7e8b666 ]---
+RIP: 0010:fortify_panic+0xf/0x11 lib/string.c:1149
+Code: b5 78 a3 04 48 c7 c7 c0 8f c2 89 58 5b 5d 41 5c 41 5d 41 5e 41 5f e9 30 ba ee ff 48 89 fe 48 c7 c7 80 90 c2 89 e8 21 ba ee ff <0f> 0b e8 90 f9 97 f8 0f b6 f3 48 c7 c7 20 f4 10 8c e8 41 e8 fc fa
+RSP: 0018:ffffc900020af500 EFLAGS: 00010282
+RAX: 0000000000000022 RBX: ffff888011c26768 RCX: 0000000000000000
+RDX: ffff88801bad0000 RSI: ffffffff815a6925 RDI: fffff52000415e92
+RBP: ffff88801be7c220 R08: 0000000000000022 R09: 0000000000000000
+R10: ffffffff815a4d7b R11: 0000000000000000 R12: ffff88801180ec00
+R13: ffff888011c26700 R14: 1ffff92000415ea2 R15: 0000000000000010
+FS:  0000000000812880(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000006dcf60 CR3: 00000000141ee000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
