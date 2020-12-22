@@ -2,118 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC2A02E041F
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 02:58:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB632E0435
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 03:00:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726032AbgLVB5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 20:57:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgLVB5z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 20:57:55 -0500
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40E1C0613D3
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 17:57:14 -0800 (PST)
-Received: by mail-qv1-xf4a.google.com with SMTP id l3so9431461qvr.10
-        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 17:57:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=R+Me/78QC9MGNY142zs6FXYrVvJlP5KajbEKMV2esN8=;
-        b=RtD1RW+bnzt1MwmEnVlgqlh5swyYjZwEmdtXZS5RreJNQ6c1qXY1iLZY215+9RgwL/
-         J9GJ1PrCGeQ9OOpFzMjkr2qnKRJk7Pk2JuKsUULw9n4OOJ+XM8J77TypxMBUYAXM7z6j
-         MPCmGYYNvrklAx4xV+ltqnEQSjJeb8By29uTRhqVPqn0xGKFJkGedeVg/n6EqqoqWu7i
-         VtJTqwIwg8BZZLLpZB+K038/w9x+n8evVXxL0dW2eUmHB13ho5Cd7GkuqH4UFe7VOtV6
-         NAXtve5ml3jajU47sP+1Oaw/oq/KYRszF014Ff2t6a4Hs91gTpQKCbOacmhHa6QKVl1v
-         sq5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=R+Me/78QC9MGNY142zs6FXYrVvJlP5KajbEKMV2esN8=;
-        b=uAdPiefvOixGdEk9yaCp+di+ODFqPTJ+Qz6Hu5MLXNvWYpZMYjve+NacwQjVOJfDSU
-         KPi4FGXyEH3gI9oMURKRG+z5B9cgeJsCPLaiiMwYk9IMZRtDGFScac/hZoELrYIoAR9m
-         8ZuxvZ1i09tFkYuRyqzZRQF7Kn/KVwQUvAFuACcA08ncufr+3LcKHpjBG7RkIpvjrJiA
-         o/7A/HjCtaNhK0fV5nJ2wCnL80LqD9KyzxaqcjhOhilY4xmLF3ZcEMN7Z5OA7JUqioZ6
-         pL4/Q1xWtLDK/JvaR93Z1I04lTgAScMVLJZ0Q85Y05535F1W/hLv72zGM8rfjiBblfx2
-         jVWg==
-X-Gm-Message-State: AOAM531GJc5iAaI0yALeFUYOXiBuU7mk5gXNi94QTqSnceLIspIk1RF9
-        CZk6Xme9tqI6CGD4ncERbkdV3yk=
-X-Google-Smtp-Source: ABdhPJwQsRO828tY99BYHKRf98l4td5Wps0RnD9Wo1SCAGF3GMjTFqH+i+M6ClxmAjC9LLKC+OSK7Fg=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:ad4:43ea:: with SMTP id f10mr20122956qvu.52.1608602233472;
- Mon, 21 Dec 2020 17:57:13 -0800 (PST)
-Date:   Mon, 21 Dec 2020 17:57:11 -0800
-In-Reply-To: <CAPhsuW63um6NL6QF4E=iYpCeCiavuqYahO1h39Eu=agQU8LL5g@mail.gmail.com>
-Message-Id: <X+FSd9IEvxqEXmIr@google.com>
-Mime-Version: 1.0
-References: <20201217172324.2121488-1-sdf@google.com> <20201217172324.2121488-3-sdf@google.com>
- <CAPhsuW63um6NL6QF4E=iYpCeCiavuqYahO1h39Eu=agQU8LL5g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] bpf: split cgroup_bpf_enabled per attach type
-From:   sdf@google.com
-To:     Song Liu <song@kernel.org>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S1726429AbgLVCA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 21:00:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59030 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725850AbgLVCAZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 21 Dec 2020 21:00:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9195622B3B;
+        Tue, 22 Dec 2020 01:59:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608602385;
+        bh=MpYfLO66Zem586idWaT6mjA3K0YrVVbMETgKtaR+fnU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ax/o0iayyOnKobbTkdtRrbsmWbuOfUq1MmonmYQEgnA9GCKsweJ31OM02d0pH6GFH
+         QpuvWlEZE9aesiB9si0y0NHdMVLZQgeUrhzJddIOcvmGSvLPG8JdS8+sQgurJ34u+/
+         fPjDpxuemG6+NDVsetQFbvde1/Ueay0LQiG8P4l1aX4RXC29q9muVedpAifc4Z3sRu
+         GgfJJWvLksfDNgoDaHxfLnrbHT1Z4bpdu4YWGePqq/4KTiVPZnHY/Pf7Z5NK8KUTXf
+         +1OGX5qeJkj2U992Okvyycvxyuj17PxLrrXLxU5PlyZsN+wOOuB+y09jw9BIHbCfuY
+         pWIMrvtIk/tpA==
+Date:   Mon, 21 Dec 2020 17:59:43 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v6 net-next 2/2] net: dsa: qca: ar9331: export stats64
+Message-ID: <20201221175943.0990ee18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201219195833.29197-3-o.rempel@pengutronix.de>
+References: <20201219195833.29197-1-o.rempel@pengutronix.de>
+        <20201219195833.29197-3-o.rempel@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/21, Song Liu wrote:
-> On Thu, Dec 17, 2020 at 9:26 AM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > When we attach any cgroup hook, the rest (even if unused/unattached)  
-> start
-> > to contribute small overhead. In particular, the one we want to avoid is
-> > __cgroup_bpf_run_filter_skb which does two redirections to get to
-> > the cgroup and pushes/pulls skb.
-> >
-> > Let's split cgroup_bpf_enabled to be per-attach to make sure
-> > only used attach types trigger.
-> >
-> > I've dropped some existing high-level cgroup_bpf_enabled in some
-> > places because BPF_PROG_CGROUP_XXX_RUN macros usually have another
-> > cgroup_bpf_enabled check.
-> >
-> > I also had to copy-paste BPF_CGROUP_RUN_SA_PROG_LOCK for
-> > GETPEERNAME/GETSOCKNAME because type for cgroup_bpf_enabled[type]
-> > has to be constant and known at compile time.
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+On Sat, 19 Dec 2020 20:58:33 +0100 Oleksij Rempel wrote:
+> +	stats->rx_nohandler += raw.filtered;
+> +	stats->rx_errors += raw.rxfcserr + raw.rxalignerr + raw.rxrunt +
+> +		raw.rxfragment + raw.rxoverflow + raw.filtered + raw.rxtoolong;
 
-> [...]
+What happened to my suggestion to report filtered in dropped?
 
-> > @@ -252,8 +252,10 @@ int bpf_percpu_cgroup_storage_update(struct  
-> bpf_map *map, void *key,
-> >  #define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk,  
-> uaddr)                        \
-> >         BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET6_BIND,  
-> NULL)
-> >
-> > -#define BPF_CGROUP_PRE_CONNECT_ENABLED(sk) (cgroup_bpf_enabled && \
-> > -                                           sk->sk_prot->pre_connect)
-> > +#define  
-> BPF_CGROUP_PRE_CONNECT_ENABLED(sk)                                    \
-> > +       ((cgroup_bpf_enabled(BPF_CGROUP_INET4_CONNECT) | 
-> |                      \
-> > +         cgroup_bpf_enabled(BPF_CGROUP_INET6_CONNECT))  
-> &&                     \
-> > +        sk->sk_prot->pre_connect)
+If you repost before -rc1 please post as RFC as net-next is currently
+closed.
 
-> Patchworks highlighted the following (from checkpatch.pl I guess):
+--
 
-> CHECK: Macro argument 'sk' may be better as '(sk)' to avoid precedence  
-> issues
-> #99: FILE: include/linux/bpf-cgroup.h:255:
-> +#define BPF_CGROUP_PRE_CONNECT_ENABLED(sk)       \
-> + ((cgroup_bpf_enabled(BPF_CGROUP_INET4_CONNECT) ||       \
-> +  cgroup_bpf_enabled(BPF_CGROUP_INET6_CONNECT)) &&       \
-> + sk->sk_prot->pre_connect)
+# Form letter - net-next is closed
 
-> Other than, looks good to me.
-Good point, will fix in a respin.
+We have already sent the networking pull request for 5.11 and therefore
+net-next is closed for new drivers, features, code refactoring and
+optimizations. We are currently accepting bug fixes only.
 
-> Acked-by: Song Liu <songliubraving@fb.com>
+Please repost when net-next reopens after 5.11-rc1 is cut.
+
+Look out for the announcement on the mailing list or check:
+http://vger.kernel.org/~davem/net-next.html
+
+RFC patches sent for review only are obviously welcome at any time.
