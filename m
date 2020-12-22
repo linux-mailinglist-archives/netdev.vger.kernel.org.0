@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E9242E0C4C
+	by mail.lfdr.de (Postfix) with ESMTP id 8C0BE2E0C4D
 	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 16:02:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727646AbgLVPBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 10:01:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44692 "EHLO
+        id S1727863AbgLVPCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 10:02:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727558AbgLVPBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 10:01:54 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4EBC0613D3
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 07:01:13 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id r5so13141567eda.12
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 07:01:13 -0800 (PST)
+        with ESMTP id S1727779AbgLVPCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 10:02:05 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B427C0613D6
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 07:01:24 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id b2so13233533edm.3
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 07:01:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ist76ku/eI9g9aKNEvnTWGLg70PGAK8h1pcGHAbVGGk=;
-        b=mNiPkIU6/S5cUtp4NAGUPoNlGVhni1qmY9KTYoYDvgFFa3FNNCQaIXz2KGmSW9HCuk
-         jpdB3mIExFlxm+YyZr7uio347bPZov6oZ1WV4yiVAOg1kWRT5zd6tREPPkXftnrFSw+G
-         m7cS4JzbpLJ50pxVdtYlm2mpER97NJwgC77BlxrkoQ13JftM957tVctqje4MpRd0OCxd
-         3phA0glcbRAoCZBW2F8Tq1i4CR5A3OXBJvXGDO2GWrwKm9GLwOUOOpYGjqofhUhYCTN6
-         3fKk3wBKV3Wz4Wo/7ESDA5TGR5+cs2wJQHCESu/nmwrfttlepNXPqiKHygZfnlAEadpJ
-         WlKQ==
+        bh=aVWruGcE/Vgy7q+GH/8AbK7dekWv4+aZfA36+pIPLmo=;
+        b=ce9EmOfyRI0Ge/qUT7f89YUYzAsW3nX9I62DrhL78suNe3OhHcD6O9BAc/7Ufnf0AN
+         zfnHE3QP6sauYJ9UEAnVQkm12e8VqDWusCbSJC6Mdrm6HQO6ozdXOl54iGA+ORdsSi88
+         qwtivXvLb5zbs1zi34FWPYRasQR61rjMx4kQt2Rlw9KlpGPGPVlfQSq4iaRYkI+qPJYA
+         lQ4w0aF29bSsCa0lbwQBP3h0AZ0R+xhRj0t73L8W90lJmHXlD7hh0+x9EgsDuib+dqqN
+         q088eFIFdOVWXj6g5NP6/KgLzn/2m680Fyk3+RqiEC8uzZhpi38In3gixkkXv5vjVvHT
+         u3rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ist76ku/eI9g9aKNEvnTWGLg70PGAK8h1pcGHAbVGGk=;
-        b=AjxcDBrfnf/BPg3e+Ym7QCh7Z9az+Xnx3n762a5RqZT17kWoRPVm3wOF6irkKpx+YS
-         ELexZt9F0BwjpuO3anBZR1ccEt/xkPLieXa7kZdN2GOWYPjrtbw+hwQtHgpL6i1kGjZf
-         Id4IMDa2+g2DKZGfC2t8TNGHwDTpUBYFq/9X8I/bTZXKP106kjLu7abvcqTB5MJapHxj
-         MDQmWd77QQ4jZRLk6pYoaHt2HHJf//xB8kDSxLAhbcAnbwy/POy4cgfooWzaw5J8FzJv
-         721o5sWGVB5xi+QWvbn5zvyK/fnJ4VeIOmSMcNVnIrYZVBn5IfjiFU2p6avZSVPju0q1
-         F3dg==
-X-Gm-Message-State: AOAM531wxRDcIFS/5wwgj7OM2MftiFu5Jy3UeasWbPfTnwPnR2M1EZHw
-        xTW9AGIBubyAQZy+aCRJPHdL7LhrJPyTKGpOA84=
-X-Google-Smtp-Source: ABdhPJzJJUvdgWN4/q3xCYSPcsfAu+WsF/J/nNrdFSWIWO/ZyG67dQFtoeUa2WbfCpLxFy3PzXSudBvV1Q3MZJD55yQ=
-X-Received: by 2002:a50:9f4a:: with SMTP id b68mr20503992edf.296.1608649272624;
- Tue, 22 Dec 2020 07:01:12 -0800 (PST)
+        bh=aVWruGcE/Vgy7q+GH/8AbK7dekWv4+aZfA36+pIPLmo=;
+        b=Y4mPA4LZjgHwD5PRYjreZ4lpN3yc5yOIex8d7G3w1NWdytWKEaWwta+9MzQiseGbpf
+         s3d/olFj5svwcFaAurPc6zqVdOqN/x8PaBVUffTlkGMhh/XwKWLASzYLsVeb2s0Rd7ds
+         65YJE51OtjDVdaBT8TntU9RJddetQJomKTC8DmO+Uh7k+JBEq1kWZ/ZmDScsFpjM7B/z
+         yeR8Gx4D8P5Wnca/GvWDuBYBGpwRpbdDaKSZaFlGyyAWMEhwMSoK7Xzjc9wUh7/1iFiP
+         r1kfI8XYUx20cwl4qaOnUlRsCkIYJxIy+VRdUmRTje4YeB03lJX1XTQnyS7taAX9cIDx
+         3VZg==
+X-Gm-Message-State: AOAM532f3eDJ0zZijSweVn98fF9VsnBaNgXAk1JQWN8WQhKGOaiL4RqL
+        RH14vP93lhfmzpatEY8peYEP0qnJU1etYJIHKOc=
+X-Google-Smtp-Source: ABdhPJzZFvkDIyNFlqRn//LMkftfi9nAey8aWqwMR8FKnIUb21j7YT9VFUApX0ED514Cpdns2p4xA/4Us5qImgM7BjU=
+X-Received: by 2002:aa7:dd05:: with SMTP id i5mr20646555edv.223.1608649283426;
+ Tue, 22 Dec 2020 07:01:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20201222000926.1054993-1-jonathan.lemon@gmail.com> <20201222000926.1054993-10-jonathan.lemon@gmail.com>
-In-Reply-To: <20201222000926.1054993-10-jonathan.lemon@gmail.com>
+References: <20201222000926.1054993-1-jonathan.lemon@gmail.com> <20201222000926.1054993-3-jonathan.lemon@gmail.com>
+In-Reply-To: <20201222000926.1054993-3-jonathan.lemon@gmail.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 22 Dec 2020 10:00:37 -0500
-Message-ID: <CAF=yD-+W93Gz4QygA=J0zME=sxVwzkKw3Q9BviwzNwkjziXPmg@mail.gmail.com>
-Subject: Re: [PATCH 09/12 v2 RFC] skbuff: add zc_flags to ubuf_info for ubuf setup
+Date:   Tue, 22 Dec 2020 10:00:47 -0500
+Message-ID: <CAF=yD-+Y4dboCq-kc3-cwPBd3PrxC-0XXoXxEv0W=0XiJ88zkw@mail.gmail.com>
+Subject: Re: [PATCH 02/12 v2 RFC] skbuff: remove unused skb_zcopy_abort function
 To:     Jonathan Lemon <jonathan.lemon@gmail.com>
 Cc:     Network Development <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
@@ -63,39 +63,12 @@ On Mon, Dec 21, 2020 at 7:09 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
 >
 > From: Jonathan Lemon <bsd@fb.com>
 >
-> Currently, an ubuf is attached to a new skb, the skb zc_flags
-> is initialized to a fixed value.  Instead of doing this, set
-> the default zc_flags in the ubuf, and have new skb's inherit
-> from this default.
->
-> This is needed when setting up different zerocopy types.
+> skb_zcopy_abort() has no in-tree consumers, remove it.
 >
 > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  include/linux/skbuff.h | 3 ++-
->  net/core/skbuff.c      | 1 +
->  2 files changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index da0c1dddd0da..b90be4b0b2de 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -478,6 +478,7 @@ struct ubuf_info {
->                 };
->         };
->         refcount_t refcnt;
-> +       u8 zc_flags;
->
->         struct mmpin {
->                 struct user_struct *user;
 
-When allocating ubuf_info for msg_zerocopy, we actually allocate the
-notification skb, to be sure that notifications won't be dropped due
-to memory pressure at notification time. We actually allocate the skb
-and place ubuf_info in skb->cb[].
+Acked-by: Willem de Bruijn <willemb@google.com>
 
-The struct is exactly 48 bytes on 64-bit platforms, filling all of cb.
-This new field fills a 4B hole, so it should still be fine.
-
-Just being very explicit, as this is a fragile bit of code. Come to
-think of it, this probably deserves a BUILD_BUG_ON.
+Indeed unused. This was used in the packet and raw zerocopy patches in
+the original patchset. But we never merged those, for lack of copy
+avoidance benefit at small packet sizes.
