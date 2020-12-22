@@ -2,89 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F9C22E0329
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 01:08:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 269402E0345
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 01:12:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726175AbgLVAIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 19:08:22 -0500
-Received: from smtp4.emailarray.com ([65.39.216.22]:37535 "EHLO
-        smtp4.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbgLVAIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 19:08:22 -0500
-Received: (qmail 91121 invoked by uid 89); 22 Dec 2020 00:07:40 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
-  by smtp4.emailarray.com with SMTP; 22 Dec 2020 00:07:40 -0000
-Date:   Mon, 21 Dec 2020 16:07:38 -0800
+        id S1726901AbgLVAKf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Dec 2020 19:10:35 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:15306 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725782AbgLVAKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 19:10:13 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BM09LL0023891
+        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 16:09:32 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 35k0du9tbr-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 21 Dec 2020 16:09:32 -0800
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 21 Dec 2020 16:09:28 -0800
+Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
+        id 0D5DA5BD9C26; Mon, 21 Dec 2020 16:09:26 -0800 (PST)
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH 0/9 v1 RFC] Generic zcopy_* functions
-Message-ID: <20201222000738.taiw4jq6kmyuwt65@bsd-mbp.dhcp.thefacebook.com>
-References: <20201218201633.2735367-1-jonathan.lemon@gmail.com>
- <CA+FuTSeM0pqj=LywVUUpNyekRDmpES1y8ksSi5PJ==rw2-=cug@mail.gmail.com>
- <20201218211648.rh5ktnkm333sw4hf@bsd-mbp.dhcp.thefacebook.com>
- <CA+FuTSfcxCncqzUsQh22A5Kdha_+wXmE=tqPk4SiJ3+CEui_Vw@mail.gmail.com>
- <20201221195009.kmo32xt4wyz2atkg@bsd-mbp>
- <CAF=yD-+bVFBHPfFB+E1s4Qae5PZGQJaiarAN9hwpP2aTs1f_jg@mail.gmail.com>
+To:     <netdev@vger.kernel.org>, <edumazet@google.com>,
+        <willemdebruijn.kernel@gmail.com>
+CC:     <kernel-team@fb.com>
+Subject: [PATCH 00/12 v2 RFC]  Generic zcopy_* functions
+Date:   Mon, 21 Dec 2020 16:09:14 -0800
+Message-ID: <20201222000926.1054993-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF=yD-+bVFBHPfFB+E1s4Qae5PZGQJaiarAN9hwpP2aTs1f_jg@mail.gmail.com>
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-21_13:2020-12-21,2020-12-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034
+ suspectscore=0 mlxlogscore=590 adultscore=0 phishscore=0 impostorscore=0
+ malwarescore=0 spamscore=0 lowpriorityscore=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012210164
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 21, 2020 at 05:52:08PM -0500, Willem de Bruijn wrote:
-> > > >   - marking the skb data as inaccessible so skb_condense()
-> > > >     and skb_zeroocopy_clone() leave it alone.
-> > >
-> > > Yep. Skipping content access on the Rx path will be interesting. I
-> > > wonder if that should be a separate opaque skb feature, independent
-> > > from whether the data is owned by userspace, peripheral memory, the
-> > > page cache or anything else.
-> >
-> > Would that be indicated by a bit on the skb (like pfmemalloc), or
-> > a bit in the skb_shared structure, as I'm leaning towards doing here?
-> 
-> I would guide it in part by avoiding cold cacheline accesses. That
-> might be hard if using skb_shinfo. OTOH, you don't have to worry about
-> copying the bit during clone operations.
-> 
-> > > > > If anything, eating up the last 8 bits in skb_shared_info should be last resort.
-> > > >
-> > > > I would like to add 2 more bits in the future, which is why I
-> > > > moved them.  Is there a compelling reason to leave the bits alone?
-> > >
-> > > Opportunity cost.
-> > >
-> > > We cannot grow skb_shared_info due to colocation with MTU sized linear
-> > > skbuff's in half a page.
-> > >
-> > > It took me quite some effort to free up a few bytes in commit
-> > > 4d276eb6a478 ("net: remove deprecated syststamp timestamp").
-> > >
-> > > If we are very frugal, we could shadow some bits to have different
-> > > meaning in different paths. SKBTX_IN_PROGRESS is transmit only, I
-> > > think. But otherwise we'll have to just dedicate the byte to more
-> > > flags. Yours are likely not to be the last anyway.
-> >
-> > The zerocopy/enable flags could be encoded in one of the lower 3 bits
-> > in the destructor_arg, (similar to nouarg) but that seems messy.
-> 
-> Agreed :)
-> 
-> Let's just expand the flags for now. It may be better to have one
-> general purpose 16 bit flags bitmap, rather than reserving 8 bits
-> specifically to zerocopy features.
+From: Jonathan Lemon <bsd@fb.com>
 
-I was considering doing that also, but that would need to rearrange
-the flags in skb_shared_info.  Then I realized that there are currently
-only TX flags and ZC flags, so went with that.  I have no objections
-to doing it either way.
+This is set of cleanup patches for zerocopy which are intended
+to allow a introduction of a different zerocopy implementation.
 
-My motivation here is when MSG_ZCTAP is added to tcp_sendmsg_locked(),
-it the returned uarg is self-contained for the rest of the function.
+The top level API will use the skb_zcopy_*() functions, while
+the current TCP specific zerocopy ends up using msg_zerocopy_*()
+calls.
+
+There should be no functional changes from these patches.
+
+v1->v2:
+ Break changes to skb_zcopy_put into 3 patches, in order to
+ make it easier to follow the changes.  Add Willem's suggestion
+ about renaming sock_zerocopy_
+
+Patch 1:
+  Move zerocopy bits from tx_flags into zc_flags for clarity.
+  These bits will be used in the RX path in the future.
+Patch 2: remove dead function
+Patch 3: simplify sock_zerocopy_put
+Patch 4: push status/refcounts into sock_zerocopy_callback
+Patch 5: replace sock_zerocopy_put with skb_zcopy_put
+Patch 6: rename sock_zerocopy_get
+Patch 7:
+  Add an optional skb parameter to callback, allowing access to
+  the attached skb from the callback.
+Patch 8:
+  Add skb_zcopy_put_abort, and move zerocopy logic into the
+  callback function.  There unfortunately is still a check
+  against the callback type here.
+Patch 9:
+  Set the skb zc_flags from the ubuf being attached, instead
+  of a fixed value, allowing different initialization types.
+Patch 10: Replace open-coded assignments
+Patch 11: Relocate skb_zcopy_clear() in skb_release_data()
+Patch 12: rename sock_zerocopy_ to msg_zerocpy_
+
+Jonathan Lemon (12):
+  net: group skb_shinfo zerocopy related bits together.
+  skbuff: remove unused skb_zcopy_abort function
+  skbuff: simplify sock_zerocopy_put
+  skbuff: Push status and refcounts into sock_zerocopy_callback
+  skbuff: replace sock_zerocopy_put() with skb_zcopy_put()
+  skbuff: replace sock_zerocopy_get with skb_zcopy_get
+  skbuff: Add skb parameter to the ubuf zerocopy callback
+  skbuff: Call sock_zerocopy_put_abort from skb_zcopy_put_abort
+  skbuff: add zc_flags to ubuf_info for ubuf setup
+  tap/tun: use skb_zcopy_set() instead of open coded assignment
+  skbuff: Call skb_zcopy_clear() before unref'ing fragments
+  skbuff: rename sock_zerocopy_* to msg_zerocopy_*
+
+ drivers/net/tap.c                   |  6 +-
+ drivers/net/tun.c                   |  6 +-
+ drivers/net/xen-netback/common.h    |  3 +-
+ drivers/net/xen-netback/interface.c |  4 +-
+ drivers/net/xen-netback/netback.c   |  7 ++-
+ drivers/vhost/net.c                 |  4 +-
+ include/linux/skbuff.h              | 95 +++++++++++++++--------------
+ net/core/skbuff.c                   | 66 ++++++++++----------
+ net/ipv4/ip_output.c                |  5 +-
+ net/ipv4/tcp.c                      |  8 +--
+ net/ipv6/ip6_output.c               |  5 +-
+ net/kcm/kcmsock.c                   |  4 +-
+ 12 files changed, 106 insertions(+), 107 deletions(-)
+
 -- 
-Jonathan
+2.24.1
+
