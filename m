@@ -2,679 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D74402E0B28
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 14:52:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 455A92E0B2A
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 14:52:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727163AbgLVNv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 08:51:26 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:31094 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726904AbgLVNvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 08:51:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1608645083; x=1640181083;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=hrj6leNWbiNlB1yMhkWpxPniGijUhb9xanYr79R/vXk=;
-  b=MA8QtgbjIwFTbNdR9DSkf7BUd5AytilrS/Oyl9CMrwQGJBcqOVXR6r/j
-   sR7MDwKb0F6APAix+W/yTvOPypbtbeGvzTjQMfY1IfIImIILDUS6QbhY4
-   k91qaQM+XkaQIuaGSwks5Jb0ntDv8PIsaT5eorJ15rwLkeN7YqcJjRivN
-   zC3PPXkEkX/ZF04SLNE5fuUYyfjIqipPQH9Ox7palkPkdNqEcOFOz3enU
-   6siu9a5UaLPky3kJcD3Gutr0p6gK4/C4zuD6b5nejEpmHhaY9gv8YjxWZ
-   bNb4c2pEPBQIQDcX6GxZeWnZtPXPsCTXLK/tpmNFI4b/z/nyPRC5OmIca
-   g==;
-IronPort-SDR: L58ZmoQhv43ANMv4/H6fcZ5gbRm+5/gqDap2fMIvR3bX3rVtLf011lbPfBolS/o73CAgkZ1MxG
- jsUZL5cHAEgpISbBX2OHlV/F7x9siPqBSo1OV3JujHWv47lhZvl3aRIEk1mcnKfZr+a7w9KEuy
- Qn1PkbM0R5scjnByVA8UkmUkfAGEAdKbUP15PWV/dsY7wQlkVgeDCy870Uqrw7urGMkASIH+Qc
- fyN4RG75kh+K4jFQutFqHwO1U7wlsJr8+H1DFtWDb3a7xNob/4he5KFV/Sl0hCURKqmfUKoSM1
- Zc4=
-X-IronPort-AV: E=Sophos;i="5.78,438,1599548400"; 
-   d="scan'208";a="108586615"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Dec 2020 06:50:07 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 22 Dec 2020 06:50:06 -0700
-Received: from tyr.hegelund-hansen.dk (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 22 Dec 2020 06:50:03 -0700
-Message-ID: <37309f64bf0bb94e55bc2db4c482c1e3e7f1be6f.camel@microchip.com>
-Subject: Re: [RFC PATCH v2 2/8] net: sparx5: add the basic sparx5 driver
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "Arnd Bergmann" <arnd@arndb.de>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Tue, 22 Dec 2020 14:50:02 +0100
-In-Reply-To: <20201219191157.GC3026679@lunn.ch>
-References: <20201217075134.919699-1-steen.hegelund@microchip.com>
-         <20201217075134.919699-3-steen.hegelund@microchip.com>
-         <20201219191157.GC3026679@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.2 
+        id S1727389AbgLVNv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 08:51:56 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:9472 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726904AbgLVNv4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 08:51:56 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4D0d515ddDzhvQW;
+        Tue, 22 Dec 2020 21:50:13 +0800 (CST)
+Received: from ubuntu.network (10.175.138.68) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 22 Dec 2020 21:50:40 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <SHA-cyfmac-dev-list@infineon.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <Markus.Elfring@web.de>
+CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH wireless v3 -next] brcmfmac: Delete useless kfree code
+Date:   Tue, 22 Dec 2020 21:51:13 +0800
+Message-ID: <20201222135113.20680-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.138.68]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+A null pointer will be passed to a kfree() call after a kzalloc() call failed.
+This code is useless. Thus delete the extra function call.
 
-On Sat, 2020-12-19 at 20:11 +0100, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you
-> know the content is safe
-> 
-> On Thu, Dec 17, 2020 at 08:51:28AM +0100, Steen Hegelund wrote:
-> 
-> > +static struct sparx5_io_resource sparx5_iomap[] =  {
-> 
-> This could be made const i think,.
+A goto statement is also no longer needed. Thus adjust an if branch.
 
-Yes
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ .../wireless/broadcom/brcm80211/brcmfmac/firmware.c    | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-> 
-> > +     { TARGET_DEV2G5,         0,         0 }, /* 0x610004000:
-> > dev2g5_0 */
-> > +     { TARGET_DEV5G,          0x4000,    0 }, /* 0x610008000:
-> > dev5g_0 */
-> > +     { TARGET_PCS5G_BR,       0x8000,    0 }, /* 0x61000c000:
-> > pcs5g_br_0 */
-> > +     { TARGET_DEV2G5 + 1,     0xc000,    0 }, /* 0x610010000:
-> > dev2g5_1 */
-> 
-> > +static int sparx5_create_targets(struct sparx5 *sparx5)
-> > +{
-> > +     int idx, jdx;
-> > +     struct resource *iores[IO_RANGES];
-> > +     void __iomem *iomem[IO_RANGES];
-> > +     void __iomem *begin[IO_RANGES];
-> > +     int range_id[IO_RANGES];
-> 
-> Reverse Christmas tree. idx, jdx need to come last.
-
-Yes - I will check the entire file for RCT...
-> 
-> > +
-> > +     /* Check if done previously (deferred by serdes load) */
-> > +     if (sparx5->regs[sparx5_iomap[0].id])
-> > +             return 0;
-> 
-> Could you explain this a bit more. Do you mean -EPROBE_DEFER?
-
-Yes that was the intended usage. I will change the startup flow to try
-to avoid checking this-
-> 
-> > +static int sparx5_probe_port(struct sparx5 *sparx5,
-> > +                          struct device_node *portnp,
-> > +                          struct phy *serdes,
-> > +                          u32 portno,
-> > +                          struct sparx5_port_config *conf)
-> > +{
-> > +     struct sparx5_port *spx5_port;
-> > +     struct net_device *ndev;
-> > +     int err;
-> > +
-> > +     err = sparx5_create_targets(sparx5);
-> > +     if (err)
-> > +             return err;
-> 
-> This sees odd here. Don't sparx5_create_targets() create all the
-> targets, where as this creates one specific port? Seems like
-> sparx5_create_targets() should be in the devices as a whole probe,
-> not
-> the port probe.
-
-You are right - the name does not really fit (anymore). I will rework
-this.
-> 
-> > +     spx5_port = netdev_priv(ndev);
-> > +     spx5_port->of_node = portnp;
-> > +     spx5_port->serdes = serdes;
-> > +     spx5_port->pvid = NULL_VID;
-> > +     spx5_port->signd_internal = true;
-> > +     spx5_port->signd_active_high = true;
-> > +     spx5_port->signd_enable = true;
-> > +     spx5_port->flow_control = false;
-> > +     spx5_port->max_vlan_tags = SPX5_PORT_MAX_TAGS_NONE;
-> > +     spx5_port->vlan_type = SPX5_VLAN_PORT_TYPE_UNAWARE;
-> > +     spx5_port->custom_etype = 0x8880; /* Vitesse */
-> > +     conf->portmode = conf->phy_mode;
-> > +     spx5_port->conf.speed = SPEED_UNKNOWN;
-> > +     spx5_port->conf.power_down = true;
-> > +     sparx5->ports[portno] = spx5_port;
-> > +     return 0;
-> 
-> I'm also not sure this has the correct name. This does not look like
-> a
-> typical probe function.
-
-Agree.
-> 
-> 
-> > +}
-> > +
-> > +static int sparx5_init_switchcore(struct sparx5 *sparx5)
-> > +{
-> > +     u32 value, pending, jdx, idx;
-> > +     struct {
-> > +             bool gazwrap;
-> > +             void __iomem *init_reg;
-> > +             u32  init_val;
-> > +     } ram, ram_init_list[] = {
-> > +             {false, spx5_reg_get(sparx5, ANA_AC_STAT_RESET),
-> > +              ANA_AC_STAT_RESET_RESET},
-> > +             {false, spx5_reg_get(sparx5, ASM_STAT_CFG),
-> > +              ASM_STAT_CFG_STAT_CNT_CLR_SHOT},
-> > +             {true,  spx5_reg_get(sparx5, QSYS_RAM_INIT), 0},
-> > +             {true,  spx5_reg_get(sparx5, REW_RAM_INIT), 0},
-> > +             {true,  spx5_reg_get(sparx5, VOP_RAM_INIT), 0},
-> > +             {true,  spx5_reg_get(sparx5, ANA_AC_RAM_INIT), 0},
-> > +             {true,  spx5_reg_get(sparx5, ASM_RAM_INIT), 0},
-> > +             {true,  spx5_reg_get(sparx5, EACL_RAM_INIT), 0},
-> > +             {true,  spx5_reg_get(sparx5, VCAP_SUPER_RAM_INIT),
-> > 0},
-> > +             {true,  spx5_reg_get(sparx5, DSM_RAM_INIT), 0}
-> > +     };
-> 
-> Looks like this could be const as well. And this does not really fit
-> reverse christmas tree.
-
-I will update this.
-> 
-> > +
-> > +     spx5_rmw(EACL_POL_EACL_CFG_EACL_FORCE_INIT_SET(1),
-> > +              EACL_POL_EACL_CFG_EACL_FORCE_INIT,
-> > +              sparx5,
-> > +              EACL_POL_EACL_CFG);
-> > +
-> > +     spx5_rmw(EACL_POL_EACL_CFG_EACL_FORCE_INIT_SET(0),
-> > +              EACL_POL_EACL_CFG_EACL_FORCE_INIT,
-> > +              sparx5,
-> > +              EACL_POL_EACL_CFG);
-> > +
-> > +     /* Initialize memories, if not done already */
-> > +     value = spx5_rd(sparx5, HSCH_RESET_CFG);
-> > +
-> > +     if (!(value & HSCH_RESET_CFG_CORE_ENA)) {
-> > +             for (idx = 0; idx < 10; idx++) {
-> > +                     pending = ARRAY_SIZE(ram_init_list);
-> > +                     for (jdx = 0; jdx <
-> > ARRAY_SIZE(ram_init_list); jdx++) {
-> > +                             ram = ram_init_list[jdx];
-> > +                             if (ram.gazwrap)
-> > +                                     ram.init_val =
-> > QSYS_RAM_INIT_RAM_INIT;
-> > +
-> > +                             if (idx == 0) {
-> > +                                     writel(ram.init_val,
-> > ram.init_reg);
-> > +                             } else {
-> > +                                     value = readl(ram.init_reg);
-> > +                                     if ((value & ram.init_val) !=
-> > +                                         ram.init_val) {
-> > +                                             pending--;
-> > +                                     }
-> > +                             }
-> > +                     }
-> > +                     if (!pending)
-> > +                             break;
-> > +                     usleep_range(USEC_PER_MSEC, 2 *
-> > USEC_PER_MSEC);
-> > +             }
-> 
-> You are getting pretty deeply nested here. Might be better to pull
-> this out into a helpers.
-
-Yes.
-
-> 
-> > +
-> > +             if (pending > 0) {
-> > +                     /* Still initializing, should be complete in
-> > +                      * less than 1ms
-> > +                      */
-> > +                     dev_err(sparx5->dev, "Memory initialization
-> > error\n");
-> > +                     return -EINVAL;
-> > +             }
-> > +     }
-> > +
-> > +     /* Reset counters */
-> > +     spx5_wr(ANA_AC_STAT_RESET_RESET_SET(1), sparx5,
-> > ANA_AC_STAT_RESET);
-> > +     spx5_wr(ASM_STAT_CFG_STAT_CNT_CLR_SHOT_SET(1), sparx5,
-> > ASM_STAT_CFG);
-> > +
-> > +     /* Enable switch-core and queue system */
-> > +     spx5_wr(HSCH_RESET_CFG_CORE_ENA_SET(1), sparx5,
-> > HSCH_RESET_CFG);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int sparx5_init_coreclock(struct sparx5 *sparx5)
-> > +{
-> > +     u32 clk_div, clk_period, pol_upd_int, idx;
-> > +     enum sparx5_core_clockfreq freq = sparx5->coreclock;
-> 
-> More reverse christmas tree. Please review the whole driver.
-
-I will do that.
-
-> 
-> > +
-> > +     /* Verify if core clock frequency is supported on target.
-> > +      * If 'VTSS_CORE_CLOCK_DEFAULT' then the highest supported
-> > +      * freq. is used
-> > +      */
-> > +     switch (sparx5->target_ct) {
-> > +     case SPX5_TARGET_CT_7546:
-> > +             if (sparx5->coreclock == SPX5_CORE_CLOCK_DEFAULT)
-> > +                     freq = SPX5_CORE_CLOCK_250MHZ;
-> > +             else if (sparx5->coreclock != SPX5_CORE_CLOCK_250MHZ)
-> > +                     freq = 0; /* Not supported */
-> > +             break;
-> > +     case SPX5_TARGET_CT_7549:
-> > +     case SPX5_TARGET_CT_7552:
-> > +     case SPX5_TARGET_CT_7556:
-> > +             if (sparx5->coreclock == SPX5_CORE_CLOCK_DEFAULT)
-> > +                     freq = SPX5_CORE_CLOCK_500MHZ;
-> > +             else if (sparx5->coreclock != SPX5_CORE_CLOCK_500MHZ)
-> > +                     freq = 0; /* Not supported */
-> > +             break;
-> > +     case SPX5_TARGET_CT_7558:
-> > +     case SPX5_TARGET_CT_7558TSN:
-> > +             if (sparx5->coreclock == SPX5_CORE_CLOCK_DEFAULT)
-> > +                     freq = SPX5_CORE_CLOCK_625MHZ;
-> > +             else if (sparx5->coreclock != SPX5_CORE_CLOCK_625MHZ)
-> > +                     freq = 0; /* Not supported */
-> > +             break;
-> > +     case SPX5_TARGET_CT_7546TSN:
-> > +             if (sparx5->coreclock == SPX5_CORE_CLOCK_DEFAULT)
-> > +                     freq = SPX5_CORE_CLOCK_625MHZ;
-> > +             break;
-> > +     case SPX5_TARGET_CT_7549TSN:
-> > +     case SPX5_TARGET_CT_7552TSN:
-> > +     case SPX5_TARGET_CT_7556TSN:
-> > +             if (sparx5->coreclock == SPX5_CORE_CLOCK_DEFAULT)
-> > +                     freq = SPX5_CORE_CLOCK_625MHZ;
-> > +             else if (sparx5->coreclock == SPX5_CORE_CLOCK_250MHZ)
-> > +                     freq = 0; /* Not supported */
-> > +             break;
-> > +     default:
-> > +             dev_err(sparx5->dev, "Target (%#04x) not
-> > supported\n", sparx5->target_ct);
-> 
-> netdev is staying with 80 character lines. Please fold this, here and
-> every where else, where possible. The exception is, you should not
-> split a string.
-
-Will do.
-
-> 
-> > +             return -ENODEV;
-> > +     }
-> > +
-> > +     switch (freq) {
-> > +     case SPX5_CORE_CLOCK_250MHZ:
-> > +             clk_div = 10;
-> > +             pol_upd_int = 312;
-> > +             break;
-> > +     case SPX5_CORE_CLOCK_500MHZ:
-> > +             clk_div = 5;
-> > +             pol_upd_int = 624;
-> > +             break;
-> > +     case SPX5_CORE_CLOCK_625MHZ:
-> > +             clk_div = 4;
-> > +             pol_upd_int = 780;
-> > +             break;
-> > +     default:
-> > +             dev_err(sparx5->dev, "%s: Frequency (%d) not
-> > supported on target (%#04x)\n",
-> > +                     __func__,
-> > +                     sparx5->coreclock, sparx5->target_ct);
-> > +             return 0;
-> 
-> -EINVAL? Or is it not fatal to use an unsupported frequency?
-
-Yes - it should be fatal.
-> 
-> > +static int sparx5_init(struct sparx5 *sparx5)
-> > +{
-> > +     u32 idx;
-> > +
-> > +     if (sparx5_create_targets(sparx5))
-> > +             return -ENODEV;
-> 
-> Hum, sparx5_create_targets() again?
-
-Yes that was due to the PROBE_DEFER - but I will go over this again.
-
-> 
-> > +
-> > +     /* Read chip ID to check CPU interface */
-> > +     sparx5->chip_id = spx5_rd(sparx5, GCB_CHIP_ID);
-> > +
-> > +     sparx5->target_ct = (enum spx5_target_chiptype)
-> > +             GCB_CHIP_ID_PART_ID_GET(sparx5->chip_id);
-> > +
-> > +     /* Initialize Switchcore and internal RAMs */
-> > +     if (sparx5_init_switchcore(sparx5)) {
-> > +             dev_err(sparx5->dev, "Switchcore initialization
-> > error\n");
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     /* Initialize the LC-PLL (core clock) and set affected
-> > registers */
-> > +     if (sparx5_init_coreclock(sparx5)) {
-> > +             dev_err(sparx5->dev, "LC-PLL initialization
-> > error\n");
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     /* Setup own UPSIDs */
-> > +     for (idx = 0; idx < 3; idx++) {
-> > +             spx5_wr(idx, sparx5, ANA_AC_OWN_UPSID(idx));
-> > +             spx5_wr(idx, sparx5, ANA_CL_OWN_UPSID(idx));
-> > +             spx5_wr(idx, sparx5, ANA_L2_OWN_UPSID(idx));
-> > +             spx5_wr(idx, sparx5, REW_OWN_UPSID(idx));
-> > +     }
-> > +
-> > +     /* Enable switch ports */
-> > +     for (idx = SPX5_PORTS; idx < SPX5_PORTS_ALL; idx++) {
-> > +             spx5_rmw(QFWD_SWITCH_PORT_MODE_PORT_ENA_SET(1),
-> > +                      QFWD_SWITCH_PORT_MODE_PORT_ENA,
-> > +                      sparx5,
-> > +                      QFWD_SWITCH_PORT_MODE(idx));
-> > +     }
-> 
-> What happens when you enable the ports? Why is this here, and not in
-> the port specific open call?
-
-The comment is not correct.  This is just enabling the CPU ports, so it
-belongs with the other switch core initialization. I will update the
-comment.
-
-> 
-> > +/* Some boards needs to map the SGPIO for signal detect explicitly
-> > to the
-> > + * port module
-> > + */
-> > +static void sparx5_board_init(struct sparx5 *sparx5)
-> > +{
-> > +     int idx;
-> > +
-> > +     if (!sparx5->sd_sgpio_remapping)
-> > +             return;
-> > +
-> > +     /* Enable SGPIO Signal Detect remapping */
-> > +     spx5_rmw(GCB_HW_SGPIO_SD_CFG_SD_MAP_SEL,
-> > +              GCB_HW_SGPIO_SD_CFG_SD_MAP_SEL,
-> > +              sparx5,
-> > +              GCB_HW_SGPIO_SD_CFG);
-> > +
-> > +     /* Refer to LOS SGPIO */
-> > +     for (idx = 0; idx < SPX5_PORTS; idx++) {
-> > +             if (sparx5->ports[idx]) {
-> > +                     if (sparx5->ports[idx]->conf.sd_sgpio != ~0)
-> > {
-> > +                             spx5_wr(sparx5->ports[idx]-
-> > >conf.sd_sgpio,
-> > +                                     sparx5,
-> > +                                    
-> > GCB_HW_SGPIO_TO_SD_MAP_CFG(idx));
-> > +                     }
-> > +             }
-> > +     }
-> > +}
-> 
-> I've not looked at how you do SFP integration yet. Is this the LOS
-> from the SFP socket? Is there a Linux GPIO controller exported by
-> this
-> driver, so the SFP driver can use the GPIOs?
-
-Yes the SFP driver (used by the Sparx5 SerDes driver) will use the
-SGPIO LOS, Module Detect etc, and the Port Modules are aware of the
-location of the LOS, and use this by default without any driver
-configuration.
-But on the PCB134 the SGPIOs are shifted one bit by a mistake, and they
-are not located in the expected position, so we have this board
-remapping function to handle that aspect.
-
-> 
-> > +
-> > +static int mchp_sparx5_probe(struct platform_device *pdev)
-> > +{
-> > +     struct device_node *np = pdev->dev.of_node;
-> > +     struct sparx5 *sparx5;
-> > +     struct device_node *ports, *portnp;
-> > +     const u8 *mac_addr;
-> > +     int err = 0;
-> > +
-> > +     if (!np && !pdev->dev.platform_data)
-> > +             return -ENODEV;
-> > +
-> > +     sparx5 = devm_kzalloc(&pdev->dev, sizeof(*sparx5),
-> > GFP_KERNEL);
-> > +     if (!sparx5)
-> > +             return -ENOMEM;
-> > +
-> > +     platform_set_drvdata(pdev, sparx5);
-> > +     sparx5->pdev = pdev;
-> > +     sparx5->dev = &pdev->dev;
-> > +
-> > +     /* Default values, some from DT */
-> > +     sparx5->coreclock = SPX5_CORE_CLOCK_DEFAULT;
-> > +
-> > +     mac_addr = of_get_mac_address(np);
-> > +     if (IS_ERR_OR_NULL(mac_addr)) {
-> > +             dev_info(sparx5->dev, "MAC addr was not set, use
-> > random MAC\n");
-> > +             eth_random_addr(sparx5->base_mac);
-> > +             sparx5->base_mac[5] = 0;
-> > +     } else {
-> > +             ether_addr_copy(sparx5->base_mac, mac_addr);
-> > +     }
-> 
-> The binding document does not say anything about a MAC address at the
-> top level. What is this used for?
-
-This the base MAC address used for generating the the switch NI's MAC
-addresses.
-> 
-> +
-> > +     if (sparx5_init(sparx5)) {
-> > +             dev_err(sparx5->dev, "Init failed\n");
-> > +             return -ENODEV;
-> > +     }
-> > +     ports = of_get_child_by_name(np, "ethernet-ports");
-> > +     if (!ports) {
-> > +             dev_err(sparx5->dev, "no ethernet-ports child node
-> > found\n");
-> > +             return -ENODEV;
-> > +     }
-> > +     sparx5->port_count = of_get_child_count(ports);
-> > +
-> > +     for_each_available_child_of_node(ports, portnp) {
-> > +             struct sparx5_port_config config = {};
-> > +             u32 portno;
-> > +             struct phy *serdes;
-> > +
-> > +             err = of_property_read_u32(portnp, "reg", &portno);
-> > +             if (err) {
-> > +                     dev_err(sparx5->dev, "port reg property
-> > error\n");
-> > +                     continue;
-> > +             }
-> > +             err = of_property_read_u32(portnp, "max-speed",
-> > +                                        &config.max_speed);
-> > +             if (err) {
-> > +                     dev_err(sparx5->dev, "port max-speed property
-> > error\n");
-> > +                     continue;
-> > +             }
-> > +             config.speed = SPEED_UNKNOWN;
-> > +             err = of_property_read_u32(portnp, "sd_sgpio",
-> > &config.sd_sgpio);
-> 
-> Not in the binding documentation. I think i need to withdraw my
-> Reviewed-by :-(
-
-Ooops - yes that is a mistake that these 2 items were not included.
-
-> 
-> > +             if (err)
-> > +                     config.sd_sgpio = ~0;
-> > +             else
-> > +                     sparx5->sd_sgpio_remapping = true;
-> > +             serdes = devm_of_phy_get(sparx5->dev, portnp, NULL);
-> > +             if (IS_ERR(serdes)) {
-> > +                     err = PTR_ERR(serdes);
-> > +                     if (err != -EPROBE_DEFER)
-> > +                             dev_err(sparx5->dev,
-> > +                                     "missing SerDes phys for
-> > port%d\n",
-> > +                                     portno);
-> > +                     return err;
-> > +             }
-> > +
-> > +             err = of_get_phy_mode(portnp, &config.phy_mode);
-> > +             if (err)
-> > +                     config.power_down = true;
-> 
-> You should indicate in the binding it is optional. And what happens
-> when it is missing.
-
-Will update the description.
-
-> 
-> > +             config.media_type = ETH_MEDIA_DAC;
-> > +             config.serdes_reset = true;
-> > +             config.portmode = config.phy_mode;
-> > +             err = sparx5_probe_port(sparx5, portnp, serdes,
-> > portno, &config);
-> > +             if (err) {
-> > +                     dev_err(sparx5->dev, "port probe error\n");
-> > +                     goto cleanup_ports;
-> > +             }
-> > +     }
-> > +     sparx5_board_init(sparx5);
-> > +
-> > +cleanup_ports:
-> > +     return err;
-> 
-> Seems missed named, no cleanup.
-
-Ah - this comes later (as the driver was split in functional groups for
-reviewing). I hope this is OK, as it is only temporary - I could add a
-comment to that effect.
-
-> 
-> > +static int __init sparx5_switch_reset(void)
-> > +{
-> > +     const char *syscon_cpu = "microchip,sparx5-cpu-syscon",
-> > +             *syscon_gcb = "microchip,sparx5-gcb-syscon";
-> > +     struct regmap *cpu_ctrl, *gcb_ctrl;
-> > +     u32 val;
-> > +
-> > +     cpu_ctrl = syscon_regmap_lookup_by_compatible(syscon_cpu);
-> > +     if (IS_ERR(cpu_ctrl)) {
-> > +             pr_err("No '%s' syscon map\n", syscon_cpu);
-> > +             return PTR_ERR(cpu_ctrl);
-> > +     }
-> > +
-> > +     gcb_ctrl = syscon_regmap_lookup_by_compatible(syscon_gcb);
-> > +     if (IS_ERR(gcb_ctrl)) {
-> > +             pr_err("No '%s' syscon map\n", syscon_gcb);
-> > +             return PTR_ERR(gcb_ctrl);
-> > +     }
-> > +
-> > +     /* Make sure the core is PROTECTED from reset */
-> > +     regmap_update_bits(cpu_ctrl, RESET_PROT_STAT,
-> > +                        SYS_RST_PROT_VCORE, SYS_RST_PROT_VCORE);
-> > +
-> > +     regmap_write(gcb_ctrl, spx5_offset(GCB_SOFT_RST),
-> > +                  GCB_SOFT_RST_SOFT_SWC_RST_SET(1));
-> > +
-> > +     return readx_poll_timeout(sparx5_read_gcb_soft_rst, gcb_ctrl,
-> > val,
-> > +                               GCB_SOFT_RST_SOFT_SWC_RST_GET(val)
-> > == 0,
-> > +                               1, 100);
-> > +}
-> > +postcore_initcall(sparx5_switch_reset);
-> 
-> That is pretty unusual. Why cannot this be done at probe time?
-
-The problem is that the switch core reset also affects (reset) the
-SGPIO controller.
-
-We tried to put this in the reset driver, but it was rejected. If the
-reset is done at probe time, the SGPIO driver may already have
-initialized state.
-
-The switch core reset will then reset all SGPIO registers. 
-
-> 
-> > +/* Clock period in picoseconds */
-> > +static inline u32 sparx5_clk_period(enum sparx5_core_clockfreq
-> > cclock)
-> > +{
-> > +     switch (cclock) {
-> > +     case SPX5_CORE_CLOCK_250MHZ:
-> > +             return 4000;
-> > +     case SPX5_CORE_CLOCK_500MHZ:
-> > +             return 2000;
-> > +     case SPX5_CORE_CLOCK_625MHZ:
-> > +     default:
-> > +             return 1600;
-> > +     }
-> > +}
-> 
-> Is this something which is used in the hot path?
-
-No - so maybe this should just be a regular function?
-> 
-> > --- /dev/null
-> > +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
-> > @@ -0,0 +1,3922 @@
-> > +/* SPDX-License-Identifier: GPL-2.0+
-> > + * Microchip Sparx5 Switch driver
-> > + *
-> > + * Copyright (c) 2020 Microchip Technology Inc.
-> > + */
-> > +
-> > +/* This file is autogenerated by cml-utils 2020-11-19 10:41:34
-> > +0100.
-> > + * Commit ID: f34790e69dc252103e2cc3e85b1a5e4d9e3aa190
-> > + */
-> 
-> How reproducible this is generation process? If you have to run it
-> again, will it keep the same order of lines?
-
-As long as the CML (Chip Markup Language) file has not changed
-(documentation fields not considered), this is reproducible. The tool
-parses the XML nodes in a deterministic order.
-
-
-> 
->        Andrew
-
-Thanks for your comments
-/Steen
-
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+index d821a4758f8c..d40104b8df55 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+@@ -319,8 +319,10 @@ static void brcmf_fw_strip_multi_v2(struct nvram_parser *nvp, u16 domain_nr,
+ 	u8 *nvram;
+ 
+ 	nvram = kzalloc(nvp->nvram_len + 1 + 3 + sizeof(u32), GFP_KERNEL);
+-	if (!nvram)
+-		goto fail;
++	if (!nvram) {
++		nvp->nvram_len = 0;
++		return;
++	}
+ 
+ 	/* Copy all valid entries, release old nvram and assign new one.
+ 	 * Valid entries are of type pcie/X/Y/ where X = domain_nr and
+@@ -350,10 +352,6 @@ static void brcmf_fw_strip_multi_v2(struct nvram_parser *nvp, u16 domain_nr,
+ 	kfree(nvp->nvram);
+ 	nvp->nvram = nvram;
+ 	nvp->nvram_len = j;
+-	return;
+-fail:
+-	kfree(nvram);
+-	nvp->nvram_len = 0;
+ }
+ 
+ static void brcmf_fw_add_defaults(struct nvram_parser *nvp)
+-- 
+2.22.0
 
