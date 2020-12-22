@@ -2,89 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 951CC2E0F3E
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 21:17:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53DFC2E0F5A
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 21:29:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727700AbgLVUPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 15:15:44 -0500
-Received: from atlmailgw2.ami.com ([63.147.10.42]:46440 "EHLO
-        atlmailgw2.ami.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbgLVUPo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 15:15:44 -0500
-X-AuditID: ac10606f-231ff70000001934-51-5fe253ca7038
-Received: from atlms1.us.megatrends.com (atlms1.us.megatrends.com [172.16.96.144])
-        (using TLS with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by atlmailgw2.ami.com (Symantec Messaging Gateway) with SMTP id A2.71.06452.AC352EF5; Tue, 22 Dec 2020 15:15:06 -0500 (EST)
-Received: from ami-us-wk.us.megatrends.com (172.16.98.207) by
- atlms1.us.megatrends.com (172.16.96.144) with Microsoft SMTP Server (TLS) id
- 14.3.468.0; Tue, 22 Dec 2020 15:15:05 -0500
-From:   Hongwei Zhang <hongweiz@ami.com>
-To:     <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <openbmc@lists.ozlabs.org>, Jakub Kicinski <kuba@kernel.org>,
-        David S Miller <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-CC:     Hongwei Zhang <hongweiz@ami.com>, netdev <netdev@vger.kernel.org>,
-        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
-Subject: [Aspeed, v2 2/2] net: ftgmac100: Change the order of getting MAC address
-Date:   Tue, 22 Dec 2020 15:14:37 -0500
-Message-ID: <20201222201437.5588-3-hongweiz@ami.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201221205157.31501-2-hongweiz@ami.com>
-References: <20201221205157.31501-2-hongweiz@ami.com>
+        id S1727165AbgLVU04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 15:26:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725850AbgLVU04 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 15:26:56 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0371CC0613D6;
+        Tue, 22 Dec 2020 12:26:16 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id y128so12734007ybf.10;
+        Tue, 22 Dec 2020 12:26:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ermr6PxSdkqdl6C4e8zOwEP5CSB/npdZD7dWzOJcfEI=;
+        b=YWeA6/659b0M8FU2KGposW8zm39hjbllOwFzCNSp4j3xHC7mFFq0pb/DLfBitKz8cj
+         I5ZcBhsG+BfJ1hSBvdVCwmZMobQ9GnccjFpVHJQ39V02WeNW9oDxawCgzI8QwiworYtA
+         tcPvFbed1XAsGuYKGVXfyqi0EdRA+iw/+tM0vyUSfcRB15+HrsJNcrYsCAqdjdoVshG/
+         KbSYFmwHRxNlgqK8HHaZyyKrDNUNzMVSHWs2LYXbWlfGXXT7Euisti/4xcY+wf4owlWw
+         Ef8ppBGxDb3ICd02Wvefd8qYb0tABZ7ibut13aEW95Z7kfyRigUlatAXKJaT+NrfcE82
+         6lMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ermr6PxSdkqdl6C4e8zOwEP5CSB/npdZD7dWzOJcfEI=;
+        b=Xd85v5Ws95N1MIxArKrci7518v3yfqFxPT7f9Rp/3XyGyKhcpVnymCrPeX3WH+DrbD
+         WlXmRrE0fTeeAklrdG1qZ3Ki/UTsrGJZ9Q2h+7w+2KnZZ8dqpWfcABp1oHIAc3Nx1qtX
+         7C/1vniea9xKd9IA6k1v98uLyXn/xdwc9eo6Ec5rPhcmPm3yxgG+SsaLAzkDLqI6d5td
+         zWVLATumXWijp3TV9JiTtPbA5wPKeN5GWt+6ElFGmDHFogYkLJdqOO9TRmFuOZixr02I
+         xUEPyp0v+ighCtI65JQV7WtXoUYtS+kRzLYdzN5gVQ95ceEInXP5i2tzRFzMWCbW0GEt
+         Lq+g==
+X-Gm-Message-State: AOAM5306R4L72QcvC8Hgzgpqz6bL486TkQuDv/4jwHbEuD8NYxEcV/0Y
+        72sUHrKUpXE45OosKJdEqbf3Td2RgCc1gnuTyYA=
+X-Google-Smtp-Source: ABdhPJzSVMnCErl9KWdmGy6rTbYfFrR7pwbRRjKHCJsflHUHxe8ShOlt9r8bOriqW4cSM9PWGMk1v8GtXnmVdw166jI=
+X-Received: by 2002:a25:c089:: with SMTP id c131mr29307609ybf.510.1608668775278;
+ Tue, 22 Dec 2020 12:26:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.98.207]
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrMLMWRmVeSWpSXmKPExsWyRiBhgu6p4EfxBgenSljsusxhMed8C4vF
-        ovczWC1+n//LbHFhWx+rRfPqc8wWl3fNYbM4tkDM4lTLCxYHTo+r7bvYPbasvMnksXPWXXaP
-        ix+PMXtsWtXJ5nF+xkJGj8+b5ALYo7hsUlJzMstSi/TtErgy1l28zlrQwFPx7GEfWwPjfs4u
-        Rk4OCQETids/7jF3MXJxCAnsYpLYNr2JBcphlHjeeoARpIpNQE1i7+Y5TCAJEYHLjBI3up6A
-        tTALdDBKTH3xlR2kSlggUOLpl0VMIDaLgKrEvJ6VYHFeoB0P711igtgnL7F6wwFmEJtTwEzi
-        QvcsFhBbSMBUYsXfj8wQ9YISJ2c+AYszC0hIHHzxghmiRlbi1qHHUHMUJR78+s46gVFgFpKW
-        WUhaFjAyrWIUSizJyU3MzEkvN9JLzM3US87P3cQICfj8HYwfP5ofYmTiYDzEKMHBrCTCayZ1
-        P16INyWxsiq1KD++qDQntfgQozQHi5I47yr3o/FCAumJJanZqakFqUUwWSYOTqkGxltFXUm5
-        r/TFMh7FMLO33LzheOeHZDXb7x4dH83nd2KF3XdVsbz8ffynRKkGV6iN6N1ALfmPFtxVHXyv
-        Z8ttcXOzPzxlusFae7csXvm1v48Zba4pm33u/X0xxv5AruevmlnyXn/oNW73XG0WsMuF4cXy
-        vOWXOk3C/r/52BK1Z8uZ0FkpF3wWKrEUZyQaajEXFScCAJCVVJ5mAgAA
+References: <20201221222315.GA19972@localhost>
+In-Reply-To: <20201221222315.GA19972@localhost>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 22 Dec 2020 12:26:04 -0800
+Message-ID: <CAEf4BzbqWa+Eco4u1zN4RqyprezBAJM-O6Oq4xv9q8Ac74ZhWg@mail.gmail.com>
+Subject: Re: [PATCH v10 bpf-next] bpf/selftests: fold test_current_pid_tgid_new_ns
+ into test_progs.
+To:     Carlos Neira <cneirabustos@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Reviewer,
+On Mon, Dec 21, 2020 at 2:25 PM Carlos Neira <cneirabustos@gmail.com> wrote:
+>
+> Currently tests for bpf_get_ns_current_pid_tgid() are outside test_progs.
+> This change folds test cases into test_progs.
+>
+> Changes from v9:
+>
+>  - Added test in root namespace.
+>  - Fixed changed tracepoint from sys_enter to sys_usleep.
+>  - Fixed pid, tgid values were inverted.
+>  - Used CLONE(2) for namespaced test, the new process pid will be 1.
+>  - Used ASSERTEQ on pid/tgid validation.
+>  - Added comment on CLONE(2) call
+>
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> ---
 
-Use native MAC address is preferred over other choices, thus change the order
-of reading MAC address, try to read it from MAC chip first, if it's not
- availabe, then try to read it from device tree.
+See checkpatch.pl errors ([0]), ignore the "do not initialize globals
+with zero" ones. Next time, please don't wait for me to point out
+every single instance where you didn't align wrapped around
+parameters.
 
+  [0] https://patchwork.hopto.org/static/nipa/405025/11985347/checkpatch/stdout
 
-Hi Heiner,
+>  tools/testing/selftests/bpf/.gitignore        |   1 -
+>  tools/testing/selftests/bpf/Makefile          |   3 +-
+>  .../bpf/prog_tests/ns_current_pid_tgid.c      | 149 ++++++++++------
+>  .../bpf/progs/test_ns_current_pid_tgid.c      |  29 ++--
+>  .../bpf/test_current_pid_tgid_new_ns.c        | 160 ------------------
+>  5 files changed, 106 insertions(+), 236 deletions(-)
+>  delete mode 100644 tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+>
 
-> From:	Heiner Kallweit <hkallweit1@gmail.com>
-> Sent:	Monday, December 21, 2020 4:37 PM
-> > Change the order of reading MAC address, try to read it from MAC chip 
-> > first, if it's not availabe, then try to read it from device tree.
-> > 
-> This commit message leaves a number of questions. It seems the change isn't related at all to the 
-> change that it's supposed to fix.
-> 
-> - What is the issue that you're trying to fix?
-> - And what is wrong with the original change?
+[...]
 
-There is no bug or something wrong with the original code. This patch is for
-improving the code. We thought if the native MAC address is available, then
-it's preferred over MAC address from dts (assuming both sources are available).
+> -       id = (__u64) tid << 32 | pid;
+> -       bss.user_pid_tgid = id;
+> +cleanup:
+> +        test_ns_current_pid_tgid__destroy(skel);
+> +}
+> +
+> +static int newns_pidtgid(void *arg)
 
-One possible scenario, a MAC address is set in dts and the BMC image is 
-compiled and loaded into more than one platform, then the platforms will
-have network issue due to the same MAC address they read.
+newns_pidtgid and test_ns_current_pid_tgid_global_ns look identical to
+me, am I missing something on why you didn't reuse the testing logic
+between the two?
 
-Thanks for your review, I've update the patch to fix the comments.
-> 
-> > Fixes: 35c54922dc97 ("ARM: dts: tacoma: Add reserved memory for 
-> > ramoops")
-> > Signed-off-by: Hongwei Zhang <hongweiz@ami.com>
-> > ---
-> >  drivers/net/ethernet/faraday/ftgmac100.c | 22 +++++++++++++---------
-> >  1 file changed, 13 insertions(+), 9 deletions(-)
+> +{
+> +       struct test_ns_current_pid_tgid__bss  *bss;
+> +       int err = 0, duration = 0;
+> +       struct test_ns_current_pid_tgid *skel;
+> +       pid_t pid, tgid;
+> +       struct stat st;
+>
 
---Hongwei
+[...]
