@@ -2,98 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A84112E1040
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 23:37:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 938D92E104D
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 23:37:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727448AbgLVW2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 17:28:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56822 "EHLO
+        id S1728401AbgLVWa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 17:30:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726615AbgLVW2V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 17:28:21 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25445C0611E4
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 14:26:53 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id p22so14352342edu.11
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 14:26:53 -0800 (PST)
+        with ESMTP id S1728163AbgLVWa4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 17:30:56 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7845DC0613D6
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 14:30:16 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id b26so26103031lff.9
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 14:30:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QM3qTNIGNxG/WHeZll7yyCa9Z+1LXQcPrYea97FUIZM=;
-        b=xpXcwW8quCCuPqxyQZj2SpKSrzj/zkryI+VwMag56clV+jcfZcIIFKL8soE2BoTbNL
-         WylfRmHyEQP0zXxGtpirQ+q9C9LnK4fgTSoTBh/wM3QaJgPOJ+W4OERNi6qan+qhJtYU
-         tfuygKi8jLoTG3UC19rsnJ0fVcb8zVnfHgo2dpApzbt52n/dq+LmQAdcQWshgnEfznSh
-         hm+xkpP9/UHmB3RNy13LMIfBp/asFo+dZZXDmmUpgKyN+strf9BX2dkkq+Ss5yX6jF8f
-         olQ8LSE0h3Um7/QKEG8xactGpvCwmkwhaKPtiDImEst0ro07kkAGCgCjHp8LIfJNEZSD
-         smlQ==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vjYFPjk7rgVuqAwGx+B/otvJ3LuNwvpN2FEt46eyObc=;
+        b=amvUI7K4WAcLJ9tnS+LAQ/n1NuF8P0UHe7+AYMNPMZnlv7fJUTNx6E64RbgvlZ8Owe
+         TJ2z8GKkZYGOSNicckNAcD9zOIvW/TqKNSMHTQvnPxXGufSRr4imYMXgwJdUYT5XGD2N
+         NiKRNsdPVxPuEYBGxfX557J2zseQwqgqzGg3c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QM3qTNIGNxG/WHeZll7yyCa9Z+1LXQcPrYea97FUIZM=;
-        b=mgD5NlH38Pgs+voVLVzVddGLLZ4kVSNeb0NAPmFhUUowq2XU+q2eA6A9CKITZvCFEW
-         jzCjb9YRY+GLlK+Vg3AAQ6H6mrdEbGBE7AK8db/8zdtKM74f1lFlDJleU1tk9weZBXLV
-         urzQNATaHz6tXHUdagyYvHWCfzL9PWDC3/Ushf3LmGXcx1laOc8nKipfm6eM/0p9Rc3l
-         qSrWiEhNe1nm8bhrITEWf8UKglI9nMSW080FF/G8BUXQFgqCynMnmv1Cj24mp5jq5Gzu
-         rOVkkeER3GDJwDr4a0n3sDDdS7CYSBlXB/mOj8HpUZ43RzX/yiVIfJFxkgVCx+1ltSLT
-         tZrw==
-X-Gm-Message-State: AOAM5311cSwa8eRT478YUQHIgRTsc7upkdZa7Mb3eh8WGlhkFfHaaMXf
-        M1gz9RSh+hyG38VkH7lHSa/3Ng==
-X-Google-Smtp-Source: ABdhPJySHq30/8MvKbEXin/mTMu57vy/4J8Vl2P3EGx+35Mk/rcBJce2OTlDJz7DA4LHpKHkv2/vxA==
-X-Received: by 2002:aa7:cb49:: with SMTP id w9mr22911540edt.357.1608676011907;
-        Tue, 22 Dec 2020 14:26:51 -0800 (PST)
-Received: from localhost.localdomain (dh207-99-167.xnet.hr. [88.207.99.167])
-        by smtp.googlemail.com with ESMTPSA id c23sm30515385eds.88.2020.12.22.14.26.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Dec 2020 14:26:51 -0800 (PST)
-From:   Robert Marko <robert.marko@sartura.hr>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, andrew@lunn.ch, linux@armlinux.org.uk
-Cc:     Robert Marko <robert.marko@sartura.hr>,
-        Luka Perkov <luka.perkov@sartura.hr>
-Subject: [PATCH 4/4] MAINTAINERS: Add entry for Qualcomm QCA807x PHY driver
-Date:   Tue, 22 Dec 2020 23:26:37 +0100
-Message-Id: <20201222222637.3204929-5-robert.marko@sartura.hr>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201222222637.3204929-1-robert.marko@sartura.hr>
-References: <20201222222637.3204929-1-robert.marko@sartura.hr>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vjYFPjk7rgVuqAwGx+B/otvJ3LuNwvpN2FEt46eyObc=;
+        b=Ak9EcESe0qzgPwa7dwIRGZUwE9ve03urP+N0U+NAVRDkTpRZiQ1OkxmNsIjMccSy8H
+         w9U/CSCqScRoh6S25l4O7xuMu4jMH0acS/zHS+k4PXAlkSE0tUzeq1dd8V7wBVbmNTYA
+         7eTOf10Vv9D2Vwlb0nv6XgISSxvgCx4iLniDKxlq9WjkUexa5MwjHOIz7+i1J30ZDKbn
+         o6fWIqTl59E7qrC9uBDZmrphsrSdUJvmIx37nBp4blnKUiFkalf0fqTzz4hpR+UoD27w
+         DIXfqK0wcOLLveSOatQuyRRYt3vMOZQDqzRMZOqP2YTfsA6EVf7yazax4qpT1zS4X2Qe
+         9tYw==
+X-Gm-Message-State: AOAM533dr9otUy6LVwcZRhzO2jAmAYYJJPM8A1dQcd28++rVpE2lhoS4
+        QbwgvOgW4H9tLfyPypEyfGdTtyFajA28Bg==
+X-Google-Smtp-Source: ABdhPJyfpO4Kqt28nTSYOsVKsSaEUPOfTsWqykkkc2rZXmF9+vDSP05mmsflrVMLdVq5y2QhZid7zg==
+X-Received: by 2002:a19:e20a:: with SMTP id z10mr2904328lfg.295.1608676214540;
+        Tue, 22 Dec 2020 14:30:14 -0800 (PST)
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com. [209.85.167.52])
+        by smtp.gmail.com with ESMTPSA id i18sm3028615lja.102.2020.12.22.14.30.13
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Dec 2020 14:30:13 -0800 (PST)
+Received: by mail-lf1-f52.google.com with SMTP id o13so35620747lfr.3
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 14:30:13 -0800 (PST)
+X-Received: by 2002:a05:6512:789:: with SMTP id x9mr9144963lfr.487.1608676213222;
+ Tue, 22 Dec 2020 14:30:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <000000000000fcbe0705b70e9bd9@google.com> <20201222222356.22645-1-fw@strlen.de>
+In-Reply-To: <20201222222356.22645-1-fw@strlen.de>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 22 Dec 2020 14:29:57 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wjB83CZvzp88Axc278L+uSKEdztA9OO7kjx64R7Y9n31A@mail.gmail.com>
+Message-ID: <CAHk-=wjB83CZvzp88Axc278L+uSKEdztA9OO7kjx64R7Y9n31A@mail.gmail.com>
+Subject: Re: [PATCH nf] netfilter: xt_RATEEST: reject non-null terminated
+ string from userspace
+To:     Florian Westphal <fw@strlen.de>
+Cc:     NetFilter <netfilter-devel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        syzbot <syzbot+e86f7c428c8c50db65b4@syzkaller.appspotmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add maintainers entry for the Qualcomm QCA807x PHY driver.
+On Tue, Dec 22, 2020 at 2:24 PM Florian Westphal <fw@strlen.de> wrote:
+>
+> strlcpy assumes src is a c-string. Check info->name before its used.
 
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Cc: Luka Perkov <luka.perkov@sartura.hr>
----
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+If strlcpy is the only problem, then the fix is to use strscpy(),
+which doesn't have the design mistake that strlcpy has.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 281de213ef47..a86731f86292 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14546,6 +14546,15 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/regulator/vqmmc-ipq4019-regulator.yaml
- F:	drivers/regulator/vqmmc-ipq4019-regulator.c
- 
-+QUALCOMM QCA807X PHY DRIVER
-+M:	Robert Marko <robert.marko@sartura.hr>
-+M:	Luka Perkov <luka.perkov@sartura.hr>
-+L:	linux-arm-msm@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/net/qcom,qca807x.yaml
-+F:	drivers/net/phy/qca807x.c
-+F:	include/dt-bindings/net/qcom-qca807x.h
-+
- QUALCOMM RMNET DRIVER
- M:	Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
- M:	Sean Tranchetti <stranche@codeaurora.org>
--- 
-2.29.2
+Of course, if the size limit of the source and the destination differ
+(ie if you really want to limit the source to one thing, and the
+destination to another - there are in theory valid cases where that
+happens), then there are no useful helper functions for that.
 
+                Linus
