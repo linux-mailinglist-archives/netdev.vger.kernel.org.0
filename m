@@ -2,96 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1922E0FF4
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 22:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67F9B2E0FFE
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 23:03:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727210AbgLVVvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 16:51:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51182 "EHLO
+        id S1727448AbgLVWCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 17:02:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727015AbgLVVvQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 16:51:16 -0500
-Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F46AC0613D6
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 13:50:36 -0800 (PST)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4D0qlG0B0RzQlLY;
-        Tue, 22 Dec 2020 22:50:34 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1608673832;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=TY4LDJh9wcqqtp5tnR+ZsWCbZ9+r9ZBo+R2YqzcN4Dg=;
-        b=SZZ6v9DQYjEAlYELFcPkPkyKv1Q9t5lZkTX/WfXTTQBybcDjrZWEh/m5BPRR8rYcPHTunN
-        UZPpDoJvQ0xyaeRKKfUF0EmcuYBCOJjr/Z/NyPTdxaAG0ct6zu2MbPovPO2KIIqwy9aRvm
-        TtdaSxkUoQ/fpJfkWRrAhZYMlBQRUAxMSctPcZ5LoJcxoePF2UEIOPkwIkyrb0W/KSdjsX
-        z7QiLavkMDpdOciNqXbQxmKW4pO1ooafLWLVHcNK+QAmgRoN2adiPkCJK/dlXpAd0xDrV0
-        kv8ipV1EQgSZgOrCOjByzZxdf46wR8x+kNgE4T9rdVuydaV4MSsB96xQAFEADg==
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id 0OpqD9u4VWWj; Tue, 22 Dec 2020 22:50:30 +0100 (CET)
-From:   Petr Machata <me@pmachata.org>
-To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Petr Machata <me@pmachata.org>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Peter P Waskiewicz Jr <peter.p.waskiewicz.jr@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [PATCH net] net: dcb: Validate netlink message in DCB handler
-Date:   Tue, 22 Dec 2020 22:49:44 +0100
-Message-Id: <a2a9b88418f3a58ef211b718f2970128ef9e3793.1608673640.git.me@pmachata.org>
+        with ESMTP id S1726685AbgLVWCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 17:02:21 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E725CC061793
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 14:01:40 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id y19so35322541lfa.13
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 14:01:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sWeDwihFxTAhPlT/W6WCEEMXK+OSXU/rLqIMA122Kog=;
+        b=GjeV9Ro1lac75aJ1KhE1sLyHOPZXVUp/KPe4acgRmCwKMsU9DeFCk+XqwMBKtfrRVH
+         FaezK4cxCAXlid5LxjkWJT0btYkMqhexFp2DXti9Vq/0oH/3FpIXcfV9VGJLdEjS/1XP
+         BAPUt7f+o5dbn1daNL+Qkzu9xrbRHZq9ha5ZI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sWeDwihFxTAhPlT/W6WCEEMXK+OSXU/rLqIMA122Kog=;
+        b=VKoM5ZdlBd4IBwmQInj7yGXdlNFa8EL6XUgzYV/Da2L/Fqrg48AEkyrVi1RrLUHq7t
+         emTbvmBfYd+mCy4H8qFAVkKkcCAZpKFfA3PAcz0KqN7vHtDuSL4kg/nhYHZQikDCHLUT
+         ruKlccHMEZFVdIf8hle+KA6tJI1aEBB6uHBP1BWTMlxfsN+jO5VRpu5Hf+cooujjAXvk
+         IGZ8H8S5nymuls/n2wdZpy14UaHQkI2Q7pv1KchkAVdd+QY5wJwi7f5QPC9ux27aI3Wt
+         No+JNsFO0eZ+LoeEsdHP6pNH/3UFR3sAFz35WLG3VE6A6lNwE+Y3PsUJ+vOcNMY4TuB7
+         gVLg==
+X-Gm-Message-State: AOAM530G5RpvGg7EhreItLCNKVttOJk7ehLGXt1BsUSqMSNBI31MF5tR
+        Cvsvibv6dhcCUQyEUEidC8H5cF25Uonx1A==
+X-Google-Smtp-Source: ABdhPJzUuLwRe7FzYv+pmSoIcqLbomhxpbuhnJ06+biQ9ZVMsgcS9zNm+yr2kxxaGz7ttv9alRhGwg==
+X-Received: by 2002:a19:38e:: with SMTP id 136mr9158213lfd.346.1608674499145;
+        Tue, 22 Dec 2020 14:01:39 -0800 (PST)
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
+        by smtp.gmail.com with ESMTPSA id x1sm3100666ljc.20.2020.12.22.14.01.37
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Dec 2020 14:01:38 -0800 (PST)
+Received: by mail-lf1-f49.google.com with SMTP id 23so35397527lfg.10
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 14:01:37 -0800 (PST)
+X-Received: by 2002:a2e:3211:: with SMTP id y17mr10182715ljy.61.1608674497556;
+ Tue, 22 Dec 2020 14:01:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: *
-X-Rspamd-Score: 0.16 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 07B60170D
-X-Rspamd-UID: 82b425
+References: <000000000000fcbe0705b70e9bd9@google.com>
+In-Reply-To: <000000000000fcbe0705b70e9bd9@google.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 22 Dec 2020 14:01:21 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com>
+Message-ID: <CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com>
+Subject: Re: kernel BUG at lib/string.c:LINE! (6)
+To:     syzbot <syzbot+e86f7c428c8c50db65b4@syzkaller.appspotmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, coreteam@netfilter.org,
+        David Miller <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Jakub Jelinek <jakub@redhat.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Tejun Heo <tj@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DCB uses the same handler function for both RTM_GETDCB and RTM_SETDCB
-messages. dcb_doit() bounces RTM_SETDCB mesasges if the user does not have
-the CAP_NET_ADMIN capability.
+On Tue, Dec 22, 2020 at 6:44 AM syzbot
+<syzbot+e86f7c428c8c50db65b4@syzkaller.appspotmail.com> wrote:
+>
+> The issue was bisected to:
+>
+> commit 2f78788b55ba ("ilog2: improve ilog2 for constant arguments")
 
-However, the operation to be performed is not decided from the DCB message
-type, but from the DCB command. Thus DCB_CMD_*_GET commands are used for
-reading DCB objects, the corresponding SET and DEL commands are used for
-manipulation.
+That looks unlikely, although possibly some constant folding
+improvement might make the fortify code notice something with it.
 
-The assumption is that set-like commands will be sent via an RTM_SETDCB
-message, and get-like ones via RTM_GETDCB. However, this assumption is not
-enforced.
+> detected buffer overflow in strlen
+> ------------[ cut here ]------------
+> kernel BUG at lib/string.c:1149!
+> Call Trace:
+>  strlen include/linux/string.h:325 [inline]
+>  strlcpy include/linux/string.h:348 [inline]
+>  xt_rateest_tg_checkentry+0x2a5/0x6b0 net/netfilter/xt_RATEEST.c:143
 
-It is therefore possible to manipulate DCB objects without CAP_NET_ADMIN
-capability by sending the corresponding command in an RTM_GETDCB message.
-That is a bug. Fix it by validating the type of the request message against
-the type used for the response.
+Honestly, this just looks like the traditional bug in "strlcpy()".
 
-Fixes: 2f90b8657ec9 ("ixgbe: this patch adds support for DCB to the kernel and ixgbe driver")
-Signed-off-by: Petr Machata <me@pmachata.org>
----
- net/dcb/dcbnl.c | 2 ++
- 1 file changed, 2 insertions(+)
+That BSD function is complete garbage, exactly because it doesn't
+limit the source length. People tend to _think_ it does ("what's that
+size_t argument for?") but strlcpy() only limits the *destination*
+size, and the source is always read fully.
 
-diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
-index 084e159a12ba..7d49b6fd6cef 100644
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -1765,6 +1765,8 @@ static int dcb_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	fn = &reply_funcs[dcb->cmd];
- 	if (!fn->cb)
- 		return -EOPNOTSUPP;
-+	if (fn->type != nlh->nlmsg_type)
-+		return -EPERM;
- 
- 	if (!tb[DCB_ATTR_IFNAME])
- 		return -EINVAL;
--- 
-2.25.1
+So it's a completely useless function if you can't implicitly trust
+the source string - but that is almost always why people think they
+should use it!
 
+Nobody should use it. I really would like to remove it, and let
+everybody know how incredibly broken sh*t that function is.
+
+Can we please have everybody stop using strlcpy(). But in this
+particular case, it's that xt_rateest_tg_checkentry() in
+net/netfilter/xt_RATEEST.c
+
+That said, this may be a real FORTIFY report if that info->name is
+*supposed* to be trustworthy? The xt_RATETEST code does use
+"info->name" a few lines earlier when it does
+
+        est = __xt_rateest_lookup(xn, info->name);
+
+or maybe the bisection is right, and this points to some problem with
+__builtin_clzll?
+
+                 Linus
