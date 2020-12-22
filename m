@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4602E0B1D
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 14:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 344AA2E0B1F
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 14:48:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727511AbgLVNrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 08:47:08 -0500
-Received: from mail-eopbgr70089.outbound.protection.outlook.com ([40.107.7.89]:35431
+        id S1727566AbgLVNrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 08:47:24 -0500
+Received: from mail-eopbgr70042.outbound.protection.outlook.com ([40.107.7.42]:47547
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727052AbgLVNrH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 08:47:07 -0500
+        id S1727206AbgLVNrX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 08:47:23 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TGepN5T02fze7Qd5HMeTBAEKq92XZ5iXpW6gQ76onHDVta3imw3IBn5YeFLDdDkQvCMXq6b0XGVDv6ZSbHmY1B38A1BRwnBEbKyl6gksog8IJVqYwaECPeuJyl75i22dn+3COWrCxK3/ypRWJWpqJT0nwrMqEDch9XGa4Pc5c4x8nwWxMGhV+Zn7UPMzLSup9eFuX6qlL84pOuMnD0nP+Bw39BKAY7zjIVjFvu8NOX9eEiB6ZTYdtsdsl/7/ijoRSooSCJjsaWVuG4CNYlU04Hd66PMfy+BMRPzlx9eD/n4cWa5dxFitpmupmyc5wPtoTNvZGzDYSC51yFSKU5VQbQ==
+ b=n8PnPN05o8UwM+XWZP0kjy40Cpu5iQYtItspklbeBeUAf1BJdMG9w0Z177rwjV2mIA8dWvTCBSAG2keXBX4+zPzFWIaVoET5cA6rMOx04o0OvDIUP8KhYh5t6YKLBevwZlik93VSyzX0n7NKNCmmubaxG3j9ZikV6i4uuppcgwJY2nJiL14K9NGHeROfea0x7jG70alT+WB3Rb5JezAFYSqjZfp2dO5BIw5JiokB94NRLq5OzN9k+SD/NNPQmpYGrLV1nzEszcsV47ZA4uVBRbaencvz78gLOLxLdWgjMkXrDjPmXTnaRt4Tjr/hwGYxdadKF8leyS7XXNHj4WEcxQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OeC2ykBWXlKOnx21mjQxTrlKstDkJD5SZopTilkp5DY=;
- b=hjzfZmVQJhcHzzLRmdOR8ywGQkSwWuXiIIayI8kVpBm+Gu4SL6z7cgd1BtvdfxgrLQJXFI4W3OM79IRx2VYKCVlZAdtSygeoNzw8z5M+urfCVk8uN4CUwAylT2vVccrxUIq0CPL8OcD+GrNS2jABmWytMWqEfRqxE6MpZOuxHImg417XqWLBI3ymdLbvIusJRePZIII2EsZ5KJsD26pjAOHwBTBEiwk/j8aD7l5XwjKeK3sB9urzFyiCbzTl2LW2dqvZSgl7W50W89jxywf4z+LVvlgQuTRSy2nGMU1nQDm3DLw/134+NWv3DDK2dUgDLQ5WflKZrfHfzebTdVbdPw==
+ bh=jmzXs/oyVrzrP3yKPOZZiSkEqVD8MNn08SSzgLqTjnE=;
+ b=keOYP+JxW2NmeRPh4V1aH232juAYGVmIsm1Pbys9shAdQVNSMhbiuc+r4ApdYB1UaXnRjYAj454JaPY9vM9MTS9Z15hGUnhWJlRS9yFw8l2F0NM0OwQ3o4mtCgQxcgUBII2JtxP/nts/EQ1ot+NIVLvZQ2aV8VfUHLPkKoHGrC20Qx9sokNE0KyBft6OcIooss9GTExNeLaB8MDw01dh24Bximd56Y8lksg9Hw+imb80X2pSh8JU3lkwqp2h8zZMPcQG6jCXVpJA0CrV8jA6c9hGOWrUAgeZnlBYu1vhf8ThE0evgWMDuNGqqGz5hee7i6J3RlBmcLTQoXzf3xbB8g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OeC2ykBWXlKOnx21mjQxTrlKstDkJD5SZopTilkp5DY=;
- b=D5OIs5WmjqNny/KtyTis2i0zRnNuL/qHXPVe7L28baH/8ory7TCjuu5I9xwvPr3LGxUdRM/1ZJziQpmN4DB54b2shJDNVXcpo6YT7fyhD0wAbmruo9xBMZv+9jECpn3YPJubpPB20xIhHr8Sx1lu4AWS0Qbfzvh5wkgzqhwD4Ug=
+ bh=jmzXs/oyVrzrP3yKPOZZiSkEqVD8MNn08SSzgLqTjnE=;
+ b=M9qn5g3FmrpG+b6sEpooh20BDqLpjXPKf/W53dGGLjjLYG1kcDPiQzy21rkXQTkWq7LU4Rxg65zvuo9QrtShYxczPImd9Fz9aIZFleeez+tE1m7NN3X4X/iSrLDwP8eon6TjvZ+YZsGt97IVPbSz5+lFtGPZPSkvJNPcwj6Kd9s=
 Authentication-Results: lunn.ch; dkim=none (message not signed)
  header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
@@ -51,9 +51,9 @@ Cc:     Richard Cochran <richardcochran@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         UNGLinuxDriver@microchip.com
-Subject: [RFC PATCH v2 net-next 12/15] net: mscc: ocelot: refactor ocelot_xtr_irq_handler into ocelot_xtr_poll
-Date:   Tue, 22 Dec 2020 15:44:36 +0200
-Message-Id: <20201222134439.2478449-13-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH v2 net-next 13/15] net: dsa: felix: setup MMIO filtering rules for PTP when using tag_8021q
+Date:   Tue, 22 Dec 2020 15:44:37 +0200
+Message-Id: <20201222134439.2478449-14-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201222134439.2478449-1-vladimir.oltean@nxp.com>
 References: <20201222134439.2478449-1-vladimir.oltean@nxp.com>
@@ -65,468 +65,230 @@ X-ClientProxiedBy: VI1PR08CA0169.eurprd08.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0169.eurprd08.prod.outlook.com (2603:10a6:800:d1::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.29 via Frontend Transport; Tue, 22 Dec 2020 13:45:03 +0000
+Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0169.eurprd08.prod.outlook.com (2603:10a6:800:d1::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.29 via Frontend Transport; Tue, 22 Dec 2020 13:45:04 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6a976bff-fda2-4be1-763b-08d8a67fc95e
+X-MS-Office365-Filtering-Correlation-Id: 416d4351-e44a-4019-d29b-08d8a67fc9c9
 X-MS-TrafficTypeDiagnostic: VE1PR04MB7408:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB740852CE668FECC6C51E7E25E0DF0@VE1PR04MB7408.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB740848EE3F5CC61E49800BA1E0DF0@VE1PR04MB7408.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rocq6cp8xY7M9VwoTsSUcz1dW55acv2UTcvKUOHKg7wBWmQvC1t2SCWLSfk+2F69Oy8uXd/IFrSesiIKVPrr504zct5ZdMiyY/ZMnW6D/q9nijHrK/uOSFaWZeCmN/KMQI77u8eqRuZ4YpyvquBQYGcfbjpdXWqAZtNvkpXPk7qRaWIi8aZHiv9DjbuDHWARBBV/sChD/ZwtpStCaiRh4nfdjRdH9HQuQFi2x2hP4AoRz5w0Kx8Krav7borIxFWBqRx+d+DZDIUFnU+mLcR5EFJ3VxUk+hlEPE+ZMExHgo0HqoisBmrG762W0o8+dZWEyALSrLNQWlyAicsrhtn9kna9NJv73i4Nusu6eLZoUrkowo1jta43+Yor2DDg5UWistftsrJAB9VPx8YszNlSuXL7otLrZsPhDLFn+P5Z8zlathnJNGEV3yp8EHBWlL5rh17DCNpn0i9O3ks7FILPSA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(69590400010)(8676002)(956004)(186003)(4326008)(36756003)(2616005)(6512007)(498600001)(16526019)(44832011)(2906002)(83380400001)(8936002)(110136005)(54906003)(26005)(6666004)(66476007)(5660300002)(6486002)(86362001)(6506007)(30864003)(66946007)(1076003)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?85iRc3cZmtzoXBldaZC6gaW6jUrjIKJoOcDuvZhhyHBz+yRCgikIR1hI76CX?=
- =?us-ascii?Q?+fKNKsKQHoRCsm5E/9zusSvKxorHmcMCxs7u054t52wniyUNXBzYjh0GWJ9L?=
- =?us-ascii?Q?KuF3mwZwule02nli3a4SMXAyjhrzrs2BFDp78hoSw6fBvabVL7Zd3iBj20lI?=
- =?us-ascii?Q?BHqQNmuEvXIQ3VWXB0uecxJlvRJvK+sO4VSGHZtcDtqr0wkduqssQDHPDH3I?=
- =?us-ascii?Q?pYoYvvBw954cDIjGiKgOppvRMDST4WuHm3NDWH+6yVmXZT0n9i7WcPcCfiO0?=
- =?us-ascii?Q?82duR3CPLG+gT3OXig/jIy2F18UlzayWS1RdiLq7OcsrwUs+ZPpo5az6CEPw?=
- =?us-ascii?Q?hk43Zxik5aQE3t6G0qqfol/Pd1VkUPrC1iV5r5djmo2a9NwJxVNaPgBAWJIy?=
- =?us-ascii?Q?EUBWjC0g5uhd0qHKLVHmaZCgniGWlhufRByGQukErBKuhMwWaY8R7JhP+vcu?=
- =?us-ascii?Q?y6IxZl9hL9eX4ZBw994EeNyqOty1e8fiXvIDqx9t5KigxYiU126txnfrejTZ?=
- =?us-ascii?Q?LUPcBIZOnnYGG83Hbi2JbRzAAz+c9KWUvpI1mhvXXc2GUNxpQjjtTXM7aph7?=
- =?us-ascii?Q?RXHxU6AeW8ieo6eUhaSrf8jzPdvxOdVJEeuGsyOmJ3h4BEQtISo/6EoErVV/?=
- =?us-ascii?Q?XTSrrtRf8VEjf+Gyk/iVxJ6by3QIklfiyHgcq/yulrjUYbWwYZQ7iX+iXWbX?=
- =?us-ascii?Q?9AQvAlIoYZZx0ZLOKhkMMNnDfEiZe7YSh25o/XPm4kSOIn0vdBYWGoA0VMf9?=
- =?us-ascii?Q?pvHwMRay/Na/CQUbr45SX3/8Q69bELWB/OL+Zx6Rl7a8+ZQB1pMficPY6AMO?=
- =?us-ascii?Q?dTC1qkmuPJ/hF/qr9Y+cZJna5YwSs4p7KMivTMiMWes83sywF2cBpS1nvkMP?=
- =?us-ascii?Q?KY3EqYC6iCLIgfAoSof6Q2Jh2UBclH7Arb5zBnlQ3w+WUvd1+2LfKmRz+Xh5?=
- =?us-ascii?Q?UrhHSKqGZDGAZ1MkX9ddeF/dWVWZHY7kJcMZK/jXsw6KmPulg2tTPnniSbpy?=
- =?us-ascii?Q?rYuf?=
+X-Microsoft-Antispam-Message-Info: MYL1ay0TTNNI50aG8Ext8mbBxHjIi7gLj/0Pbb2eRjUYepuxL9qLra/kKrPvMq/XYNA5wOiHpJ4Xy+ns8+kf4sm+ECmg1fkYgZHEcP9d8ORPyrzwon1tRgVB06nUsK2Xycg5kBgwmOhsfRpBKq2lwredPSvI430kzDLLe+I3msTWuw0AJNNzfjpaF8mMrWowZn7lS2BS+Ch8M1JfIQJm8j2lSgdlFZgpFz0BF0PQE9BtmYV7wcoVnmEy/An3jiYgBy8ozUskE1x6ATyWeNR9/8lWrqRGvSkRuPyXXstp87HuoID99JvU2rA2gsgswniKUXnp59oEoagF1rZ7kOacZdWT1KnHnjziQld5/Lfs4QG2yJDA6ByxD8oG3A+YeCKQ8c8CFbTw6D7PQlYixYhZOzBrhv8dIiHDy0si7B131V3nAMUoOV3eYrvaTANPOXfDEi7nFeojtHLO91gQZGNzAw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(69590400010)(8676002)(956004)(186003)(4326008)(36756003)(2616005)(6512007)(498600001)(16526019)(44832011)(2906002)(83380400001)(8936002)(110136005)(54906003)(26005)(6666004)(66476007)(5660300002)(6486002)(86362001)(6506007)(66946007)(1076003)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?hs7ogb7w8IIppnw0tb2SpxeSeErDOGPMkFM0HjKsBn5fZCN7x92bfYNeieWS?=
+ =?us-ascii?Q?GHLWUvxYNoSTUlXAow49EtwTVW1zZZ7Jf/ZmgsApLpphHkQdzxi8mz/Pt3OL?=
+ =?us-ascii?Q?TLPTQAwSYoynO52Qbu2CLpWMqmn5kEFc0qk1bZ55Ts0ZltaCz1Pc2IV7iZBI?=
+ =?us-ascii?Q?xmf6lBWJgccgNiDXzg0kQUUwYfAdChJXEfYRRdHzQMwgVYXZZtOypzMlFFx8?=
+ =?us-ascii?Q?IngOUOYdNuQvASZWaO6hNknO1xbql+7q6IAMLcp4z1DJXyTFlhPXxfKDka67?=
+ =?us-ascii?Q?Cat2dhQ/g5Eb83myLHLJNpP37ffEBI4Bet03tm0s4uzoEg3Ym1lHPw8iqL+t?=
+ =?us-ascii?Q?NMVMyHvRPcpmsVM/wCJkAgz3eq7aS0Y+7ZBPFBntBRJ73poDKZgl/GpCaet1?=
+ =?us-ascii?Q?IiVPx1ts7j43gOsLrl41Bk2TtzySrop4yORMtMbxPy/ljg/So5atAnipz1Nl?=
+ =?us-ascii?Q?S26Dazq36lml0bu0nmj+Z6ZTtrZPkekOd6ai1kORI7sdUNbCPTDDqC0qlppt?=
+ =?us-ascii?Q?5h4ijH4i4FiMCtOq5y7P5Iy8YGyAOMO6ah5KPH6Y0ShsoEwBuXPVg6UQzbZF?=
+ =?us-ascii?Q?9gsUhwUBR1A/8lDfAENSmJm6v8mts2ohXZ9dHFVMa8p/7W92PG3+/SIZiyKc?=
+ =?us-ascii?Q?3CFwvI1aK9KgFw9srDARk5Mz4VZCsC2AAaUdgwlPrf/ulLcEQHtBCkGuznrE?=
+ =?us-ascii?Q?bKDNLfflpABbzGhg0AuiFN3QjMeC2wyzBnE6yJDuAHfchZ/UiKhy4Xtg2Sc9?=
+ =?us-ascii?Q?QZhvkWz44nZd+GtfZYsacCyPi5gJsLdpIiGGoeMa08nkOdiTaC6GIebfgIlZ?=
+ =?us-ascii?Q?eerMx2E+0almSJaj/Gx28c4cjkuPKW8byqVwf7srlhQT0vkXzNol/ZM2DRCW?=
+ =?us-ascii?Q?tc9WVOgPy0iyFiGqpdvjlyecb48J6CXsNg0hXzHIEnZE042ubiVNucfisndV?=
+ =?us-ascii?Q?UCwfJUWc9R3YsCCbwIP06SHTEvY4aWt3T5phMi6l6GjnjO4osTKwKfFXjWak?=
+ =?us-ascii?Q?IG3n?=
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2020 13:45:04.0384
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2020 13:45:04.7910
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a976bff-fda2-4be1-763b-08d8a67fc95e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 416d4351-e44a-4019-d29b-08d8a67fc9c9
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KesDlmOoK5hSDJnUnt0RS7x6DEm5JbGg6NUOBschJyYax103i5ATM9zDcmzUoMM10ZgYXdHCYW4RXMJuBJiH7A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: gb2iU5pq3OGyQMvq66APaQNYsAMEAMJhZg6y3J+gnliZgU7ZjWXC9qWRKx/FEu2GE7QaxcAS6FE6N2oGbu8/+Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7408
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the felix DSA driver will need to poll the CPU port module for
-extracted frames as well, let's create some common functions that read
-an Extraction Frame Header, and then an skb, from a CPU extraction
-group.
+Since the tag_8021q tagger is software-defined, it has no means by
+itself for retrieving hardware timestamps of PTP event messages.
 
-This is so complicated, because the procedure to retrieve a struct
-net_device pointer based on the source port is different for DSA and
-switchdev. So this is the reason why the polling function is split in
-the middle. The ocelot_xtr_poll_xfh() permits the caller to get a struct
-net_device pointer based on the XFH port field, then pass this to the
-ocelot_xtr_poll_frame() function.
+Because we do want to support PTP on ocelot even with tag_8021q, we need
+to use the CPU port module for that. The RX timestamp is present in the
+Extraction Frame Header. And because we can't use NPI mode which redirects
+the CPU queues to an "external CPU" (meaning the ARM CPU), then we need
+to poll the CPU port module through the MMIO registers to retrieve TX
+and RX timestamps.
+
+Sadly, on NXP LS1028A, the Felix switch was integrated into the SoC
+without wiring the extraction IRQ line to the ARM GIC. So, if we want to
+be notified of any PTP packets received on the CPU port module, we have
+a problem.
+
+There is a possible workaround, which is to use the Ethernet CPU port as
+a notification channel that packets are available on the CPU port module
+as well. When a PTP packet is received by the DSA tagger (without timestamp,
+of course), we go to the CPU extraction queues, poll for it there, then
+we drop the original Ethernet packet and masquerade the packet retrieved
+over MMIO (plus the timestamp) as the original when we inject it up the
+stack.
+
+Create a quirk in struct felix is selected by the Felix driver (but not
+by Seville, since that doesn't support PTP at all). We want to do this
+such that the workaround is minimally invasive for future switches that
+don't require this workaround.
+
+The only traffic for which we need timestamps is PTP traffic, so add a
+redirection rule to the CPU port module for this. Currently we only have
+the need for PTP over L2, so redirection rules for UDP ports 319 and 320
+are TBD for now.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
 Patch is new.
 
- drivers/net/ethernet/mscc/ocelot.c         | 163 +++++++++++++++++++++
- drivers/net/ethernet/mscc/ocelot.h         |   6 +
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 158 ++------------------
- 3 files changed, 179 insertions(+), 148 deletions(-)
+ drivers/net/dsa/ocelot/felix.h           | 13 ++++
+ drivers/net/dsa/ocelot/felix_tag_8021q.c | 83 +++++++++++++++++++++++-
+ drivers/net/dsa/ocelot/felix_vsc9959.c   |  1 +
+ 3 files changed, 96 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 7d73c3251dfb..b91d4c31d3d7 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -12,6 +12,9 @@
- #define TABLE_UPDATE_SLEEP_US 10
- #define TABLE_UPDATE_TIMEOUT_US 100000
- 
-+#define IFH_EXTRACT_BITFIELD64(x, o, w) \
-+	(((x) >> (o)) & GENMASK_ULL((w) - 1, 0))
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 71f343326c00..c75a934c3e0b 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -25,6 +25,19 @@ struct felix_info {
+ 	int				switch_pci_bar;
+ 	int				imdio_pci_bar;
+ 	const struct ptp_clock_info	*ptp_caps;
 +
- struct ocelot_mact_entry {
- 	u8 mac[ETH_ALEN];
- 	u16 vid;
-@@ -566,6 +569,166 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
- }
- EXPORT_SYMBOL(ocelot_get_txtstamp);
- 
-+static int ocelot_parse_xfh(u32 *_ifh, struct ocelot_frame_info *info)
-+{
-+	u8 llen, wlen;
-+	u64 ifh[2];
-+
-+	ifh[0] = be64_to_cpu(((__force __be64 *)_ifh)[0]);
-+	ifh[1] = be64_to_cpu(((__force __be64 *)_ifh)[1]);
-+
-+	wlen = IFH_EXTRACT_BITFIELD64(ifh[0], 7,  8);
-+	llen = IFH_EXTRACT_BITFIELD64(ifh[0], 15,  6);
-+
-+	info->len = OCELOT_BUFFER_CELL_SZ * wlen + llen - 80;
-+
-+	info->timestamp = IFH_EXTRACT_BITFIELD64(ifh[0], 21, 32);
-+
-+	info->port = IFH_EXTRACT_BITFIELD64(ifh[1], 43, 4);
-+
-+	info->tag_type = IFH_EXTRACT_BITFIELD64(ifh[1], 16,  1);
-+	info->vid = IFH_EXTRACT_BITFIELD64(ifh[1], 0,  12);
-+
-+	return 0;
-+}
-+
-+static int ocelot_rx_frame_word(struct ocelot *ocelot, u8 grp, bool ifh,
-+				u32 *rval)
-+{
-+	u32 val;
-+	u32 bytes_valid;
-+
-+	val = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
-+	if (val == XTR_NOT_READY) {
-+		if (ifh)
-+			return -EIO;
-+
-+		do {
-+			val = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
-+		} while (val == XTR_NOT_READY);
-+	}
-+
-+	switch (val) {
-+	case XTR_ABORT:
-+		return -EIO;
-+	case XTR_EOF_0:
-+	case XTR_EOF_1:
-+	case XTR_EOF_2:
-+	case XTR_EOF_3:
-+	case XTR_PRUNED:
-+		bytes_valid = XTR_VALID_BYTES(val);
-+		val = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
-+		if (val == XTR_ESCAPE)
-+			*rval = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
-+		else
-+			*rval = val;
-+
-+		return bytes_valid;
-+	case XTR_ESCAPE:
-+		*rval = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
-+
-+		return 4;
-+	default:
-+		*rval = val;
-+
-+		return 4;
-+	}
-+}
-+
-+int ocelot_xtr_poll_xfh(struct ocelot *ocelot, int grp,
-+			struct ocelot_frame_info *info)
-+{
-+	u32 ifh[OCELOT_TAG_LEN / 4];
-+	int i, err = 0;
-+
-+	for (i = 0; i < OCELOT_TAG_LEN / 4; i++) {
-+		err = ocelot_rx_frame_word(ocelot, grp, true, &ifh[i]);
-+		if (err != 4)
-+			return (err < 0) ? err : -EIO;
-+	}
-+
-+	ocelot_parse_xfh(ifh, info);
-+
-+	return 0;
-+}
-+
-+int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp,
-+			  struct net_device *dev,
-+			  struct ocelot_frame_info *info,
-+			  struct sk_buff **nskb)
-+{
-+	struct skb_shared_hwtstamps *shhwtstamps;
-+	u64 tod_in_ns, full_ts_in_ns;
-+	struct timespec64 ts;
-+	int sz, len, buf_len;
-+	struct sk_buff *skb;
-+	u32 val, *buf;
-+	int err = 0;
-+
-+	skb = netdev_alloc_skb(dev, info->len);
-+	if (unlikely(!skb)) {
-+		netdev_err(dev, "Unable to allocate sk_buff\n");
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	buf_len = info->len - ETH_FCS_LEN;
-+	buf = (u32 *)skb_put(skb, buf_len);
-+
-+	len = 0;
-+	do {
-+		sz = ocelot_rx_frame_word(ocelot, grp, false, &val);
-+		if (sz < 0) {
-+			err = sz;
-+			goto out;
-+		}
-+		*buf++ = val;
-+		len += sz;
-+	} while (len < buf_len);
-+
-+	/* Read the FCS */
-+	sz = ocelot_rx_frame_word(ocelot, grp, false, &val);
-+	if (sz < 0) {
-+		err = sz;
-+		goto out;
-+	}
-+
-+	/* Update the statistics if part of the FCS was read before */
-+	len -= ETH_FCS_LEN - sz;
-+
-+	if (unlikely(dev->features & NETIF_F_RXFCS)) {
-+		buf = (u32 *)skb_put(skb, ETH_FCS_LEN);
-+		*buf = val;
-+	}
-+
-+	if (ocelot->ptp) {
-+		ocelot_ptp_gettime64(&ocelot->ptp_info, &ts);
-+
-+		tod_in_ns = ktime_set(ts.tv_sec, ts.tv_nsec);
-+		if ((tod_in_ns & 0xffffffff) < info->timestamp)
-+			full_ts_in_ns = (((tod_in_ns >> 32) - 1) << 32) |
-+					info->timestamp;
-+		else
-+			full_ts_in_ns = (tod_in_ns & GENMASK_ULL(63, 32)) |
-+					info->timestamp;
-+
-+		shhwtstamps = skb_hwtstamps(skb);
-+		memset(shhwtstamps, 0, sizeof(struct skb_shared_hwtstamps));
-+		shhwtstamps->hwtstamp = full_ts_in_ns;
-+	}
-+
-+	/* Everything we see on an interface that is in the HW bridge
-+	 * has already been forwarded.
++	/* Some Ocelot switches are integrated into the SoC without the
++	 * extraction IRQ line connected to the ARM GIC. By enabling this
++	 * workaround, the few packets that are delivered to the CPU port
++	 * module (currently only PTP) are copied not only to the hardware CPU
++	 * port module, but also to the 802.1Q Ethernet CPU port, and polling
++	 * the extraction registers is triggered once the DSA tagger sees a PTP
++	 * frame. The Ethernet frame is only used as a notification: it is
++	 * dropped, and the original frame is extracted over MMIO and annotated
++	 * with the RX timestamp.
 +	 */
-+	if (ocelot->bridge_mask & BIT(info->port))
-+		skb->offload_fwd_mark = 1;
++	bool				quirk_no_xtr_irq;
 +
-+	skb->protocol = eth_type_trans(skb, dev);
-+	*nskb = skb;
-+out:
-+	return err;
+ 	int	(*mdio_bus_alloc)(struct ocelot *ocelot);
+ 	void	(*mdio_bus_free)(struct ocelot *ocelot);
+ 	void	(*phylink_validate)(struct ocelot *ocelot, int port,
+diff --git a/drivers/net/dsa/ocelot/felix_tag_8021q.c b/drivers/net/dsa/ocelot/felix_tag_8021q.c
+index f209273bbf69..5243e55a8054 100644
+--- a/drivers/net/dsa/ocelot/felix_tag_8021q.c
++++ b/drivers/net/dsa/ocelot/felix_tag_8021q.c
+@@ -142,6 +142,85 @@ static const struct dsa_8021q_ops felix_tag_8021q_ops = {
+ 	.vlan_add	= felix_tag_8021q_vlan_add,
+ };
+ 
++/* Set up a VCAP IS2 rule for delivering PTP frames to the CPU port module.
++ * If the NET_DSA_TAG_OCELOT_QUIRK_NO_XTR_IRQ is in place, then also copy those
++ * PTP frames to the tag_8021q CPU port.
++ */
++static int felix_setup_mmio_filtering(struct felix *felix)
++{
++	struct ocelot_vcap_filter *redirect_rule;
++	struct ocelot_vcap_filter *tagging_rule;
++	struct ocelot *ocelot = &felix->ocelot;
++	unsigned long ingress_port_mask;
++	int cpu = ocelot->dsa_8021q_cpu;
++	int ret;
++
++	tagging_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
++	if (!tagging_rule)
++		return -ENOMEM;
++
++	redirect_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
++	if (!redirect_rule) {
++		kfree(tagging_rule);
++		return -ENOMEM;
++	}
++
++	ingress_port_mask = GENMASK(ocelot->num_phys_ports - 1, 0) & ~BIT(cpu);
++
++	tagging_rule->key_type = OCELOT_VCAP_KEY_ETYPE;
++	*(u16 *)tagging_rule->key.etype.etype.value = htons(ETH_P_1588);
++	*(u16 *)tagging_rule->key.etype.etype.mask = 0xffff;
++	tagging_rule->ingress_port_mask = ingress_port_mask;
++	tagging_rule->prio = 1;
++	tagging_rule->id.cookie = ocelot->num_phys_ports;
++	tagging_rule->id.tc_offload = false;
++	tagging_rule->block_id = VCAP_IS1;
++	tagging_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
++	tagging_rule->lookup = 0;
++	tagging_rule->action.pag_override_mask = 0xff;
++	tagging_rule->action.pag_val = ocelot->num_phys_ports;
++
++	ret = ocelot_vcap_filter_add(ocelot, tagging_rule, NULL);
++	if (ret) {
++		kfree(tagging_rule);
++		kfree(redirect_rule);
++		return ret;
++	}
++
++	redirect_rule->key_type = OCELOT_VCAP_KEY_ANY;
++	redirect_rule->ingress_port_mask = ingress_port_mask;
++	redirect_rule->pag = ocelot->num_phys_ports;
++	redirect_rule->prio = 1;
++	redirect_rule->id.cookie = ocelot->num_phys_ports;
++	redirect_rule->id.tc_offload = false;
++	redirect_rule->block_id = VCAP_IS2;
++	redirect_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
++	redirect_rule->lookup = 0;
++	redirect_rule->action.cpu_copy_ena = true;
++	if (felix->info->quirk_no_xtr_irq) {
++		/* Redirect to the tag_8021q CPU but also copy PTP packets to
++		 * the CPU port module
++		 */
++		redirect_rule->action.mask_mode = OCELOT_MASK_MODE_REDIRECT;
++		redirect_rule->action.port_mask = BIT(cpu);
++	} else {
++		/* Trap PTP packets only to the CPU port module (which is
++		 * redirected to the NPI port)
++		 */
++		redirect_rule->action.mask_mode = OCELOT_MASK_MODE_PERMIT_DENY;
++		redirect_rule->action.port_mask = 0;
++	}
++
++	ret = ocelot_vcap_filter_add(ocelot, redirect_rule, NULL);
++	if (ret) {
++		ocelot_vcap_filter_del(ocelot, tagging_rule);
++		kfree(redirect_rule);
++		return ret;
++	}
++
++	return 0;
 +}
 +
- /* Generate the IFH for frame injection
-  *
-  * The IFH is a 128bit-value
-diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index 7dac0edd7767..68b089d1d81b 100644
---- a/drivers/net/ethernet/mscc/ocelot.h
-+++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -120,6 +120,12 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
- bool ocelot_can_inject(struct ocelot *ocelot, int grp);
- void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
- 			      u32 rew_op, struct sk_buff *skb);
-+int ocelot_xtr_poll_xfh(struct ocelot *ocelot, int grp,
-+			struct ocelot_frame_info *info);
-+int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp,
-+			  struct net_device *dev,
-+			  struct ocelot_frame_info *info,
-+			  struct sk_buff **skb);
- 
- extern struct notifier_block ocelot_netdevice_nb;
- extern struct notifier_block ocelot_switchdev_nb;
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 504881d531e5..a1d7698be78b 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -18,8 +18,6 @@
- #include <soc/mscc/ocelot_hsio.h>
- #include "ocelot.h"
- 
--#define IFH_EXTRACT_BITFIELD64(x, o, w) (((x) >> (o)) & GENMASK_ULL((w) - 1, 0))
--
- static const u32 ocelot_ana_regmap[] = {
- 	REG(ANA_ADVLEARN,				0x009000),
- 	REG(ANA_VLANMASK,				0x009004),
-@@ -533,173 +531,37 @@ static int ocelot_chip_init(struct ocelot *ocelot, const struct ocelot_ops *ops)
- 	return 0;
- }
- 
--static int ocelot_parse_ifh(u32 *_ifh, struct ocelot_frame_info *info)
--{
--	u8 llen, wlen;
--	u64 ifh[2];
--
--	ifh[0] = be64_to_cpu(((__force __be64 *)_ifh)[0]);
--	ifh[1] = be64_to_cpu(((__force __be64 *)_ifh)[1]);
--
--	wlen = IFH_EXTRACT_BITFIELD64(ifh[0], 7,  8);
--	llen = IFH_EXTRACT_BITFIELD64(ifh[0], 15,  6);
--
--	info->len = OCELOT_BUFFER_CELL_SZ * wlen + llen - 80;
--
--	info->timestamp = IFH_EXTRACT_BITFIELD64(ifh[0], 21, 32);
--
--	info->port = IFH_EXTRACT_BITFIELD64(ifh[1], 43, 4);
--
--	info->tag_type = IFH_EXTRACT_BITFIELD64(ifh[1], 16,  1);
--	info->vid = IFH_EXTRACT_BITFIELD64(ifh[1], 0,  12);
--
--	return 0;
--}
--
--static int ocelot_rx_frame_word(struct ocelot *ocelot, u8 grp, bool ifh,
--				u32 *rval)
--{
--	u32 val;
--	u32 bytes_valid;
--
--	val = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
--	if (val == XTR_NOT_READY) {
--		if (ifh)
--			return -EIO;
--
--		do {
--			val = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
--		} while (val == XTR_NOT_READY);
--	}
--
--	switch (val) {
--	case XTR_ABORT:
--		return -EIO;
--	case XTR_EOF_0:
--	case XTR_EOF_1:
--	case XTR_EOF_2:
--	case XTR_EOF_3:
--	case XTR_PRUNED:
--		bytes_valid = XTR_VALID_BYTES(val);
--		val = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
--		if (val == XTR_ESCAPE)
--			*rval = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
--		else
--			*rval = val;
--
--		return bytes_valid;
--	case XTR_ESCAPE:
--		*rval = ocelot_read_rix(ocelot, QS_XTR_RD, grp);
--
--		return 4;
--	default:
--		*rval = val;
--
--		return 4;
--	}
--}
--
- static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
+ int felix_setup_8021q_tagging(struct ocelot *ocelot)
  {
- 	struct ocelot *ocelot = arg;
--	int i = 0, grp = 0;
--	int err = 0;
-+	int grp = 0, err;
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+@@ -161,6 +240,8 @@ int felix_setup_8021q_tagging(struct ocelot *ocelot)
+ 	rtnl_lock();
+ 	ret = dsa_8021q_setup(felix->dsa_8021q_ctx, true);
+ 	rtnl_unlock();
++	if (ret)
++		return ret;
  
- 	while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp)) {
--		struct skb_shared_hwtstamps *shhwtstamps;
- 		struct ocelot_frame_info info = {};
- 		struct ocelot_port_private *priv;
- 		struct ocelot_port *ocelot_port;
--		u64 tod_in_ns, full_ts_in_ns;
- 		struct net_device *dev;
--		u32 ifh[4], val, *buf;
--		struct timespec64 ts;
--		int sz, len, buf_len;
- 		struct sk_buff *skb;
- 
--		for (i = 0; i < OCELOT_TAG_LEN / 4; i++) {
--			err = ocelot_rx_frame_word(ocelot, grp, true, &ifh[i]);
--			if (err != 4)
--				goto out;
--		}
--
--		/* At this point the IFH was read correctly, so it is safe to
--		 * presume that there is no error. The err needs to be reset
--		 * otherwise a frame could come in CPU queue between the while
--		 * condition and the check for error later on. And in that case
--		 * the new frame is just removed and not processed.
--		 */
--		err = 0;
-+		err = ocelot_xtr_poll_xfh(ocelot, grp, &info);
-+		if (err)
-+			break;
- 
--		ocelot_parse_ifh(ifh, &info);
-+		if (WARN_ON(info.port >= ocelot->num_phys_ports))
-+			goto out;
- 
- 		ocelot_port = ocelot->ports[info.port];
- 		priv = container_of(ocelot_port, struct ocelot_port_private,
- 				    port);
- 		dev = priv->dev;
- 
--		skb = netdev_alloc_skb(dev, info.len);
--
--		if (unlikely(!skb)) {
--			netdev_err(dev, "Unable to allocate sk_buff\n");
--			err = -ENOMEM;
--			goto out;
--		}
--		buf_len = info.len - ETH_FCS_LEN;
--		buf = (u32 *)skb_put(skb, buf_len);
--
--		len = 0;
--		do {
--			sz = ocelot_rx_frame_word(ocelot, grp, false, &val);
--			if (sz < 0) {
--				err = sz;
--				goto out;
--			}
--			*buf++ = val;
--			len += sz;
--		} while (len < buf_len);
--
--		/* Read the FCS */
--		sz = ocelot_rx_frame_word(ocelot, grp, false, &val);
--		if (sz < 0) {
--			err = sz;
--			goto out;
--		}
--
--		/* Update the statistics if part of the FCS was read before */
--		len -= ETH_FCS_LEN - sz;
--
--		if (unlikely(dev->features & NETIF_F_RXFCS)) {
--			buf = (u32 *)skb_put(skb, ETH_FCS_LEN);
--			*buf = val;
--		}
--
--		if (ocelot->ptp) {
--			ocelot_ptp_gettime64(&ocelot->ptp_info, &ts);
--
--			tod_in_ns = ktime_set(ts.tv_sec, ts.tv_nsec);
--			if ((tod_in_ns & 0xffffffff) < info.timestamp)
--				full_ts_in_ns = (((tod_in_ns >> 32) - 1) << 32) |
--						info.timestamp;
--			else
--				full_ts_in_ns = (tod_in_ns & GENMASK_ULL(63, 32)) |
--						info.timestamp;
--
--			shhwtstamps = skb_hwtstamps(skb);
--			memset(shhwtstamps, 0, sizeof(struct skb_shared_hwtstamps));
--			shhwtstamps->hwtstamp = full_ts_in_ns;
--		}
--
--		/* Everything we see on an interface that is in the HW bridge
--		 * has already been forwarded.
--		 */
--		if (ocelot->bridge_mask & BIT(info.port))
--			skb->offload_fwd_mark = 1;
-+		err = ocelot_xtr_poll_frame(ocelot, grp, dev, &info, &skb);
-+		if (err)
-+			break;
- 
--		skb->protocol = eth_type_trans(skb, dev);
- 		if (!skb_defer_rx_timestamp(skb))
- 			netif_rx(skb);
--		dev->stats.rx_bytes += len;
-+		dev->stats.rx_bytes += info.len;
- 		dev->stats.rx_packets++;
- 	}
- 
+-	return ret;
++	return felix_setup_mmio_filtering(felix);
+ }
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 2e5bbdca5ea4..3bbc500f28ea 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1362,6 +1362,7 @@ static const struct felix_info felix_info_vsc9959 = {
+ 	.num_tx_queues		= FELIX_NUM_TC,
+ 	.switch_pci_bar		= 4,
+ 	.imdio_pci_bar		= 0,
++	.quirk_no_xtr_irq	= true,
+ 	.ptp_caps		= &vsc9959_ptp_caps,
+ 	.mdio_bus_alloc		= vsc9959_mdio_bus_alloc,
+ 	.mdio_bus_free		= vsc9959_mdio_bus_free,
 -- 
 2.25.1
 
