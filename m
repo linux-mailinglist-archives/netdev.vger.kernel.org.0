@@ -2,114 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC5B2E04D8
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 04:51:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 805C32E0538
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 05:02:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726068AbgLVDum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Dec 2020 22:50:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49189 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725969AbgLVDum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 22:50:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608608955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LP/jJCPXp1ZjxGWbs4WF0FNxRzF7g1uBxZujdFuaZik=;
-        b=CwYzGcC/LnRuGCdrdTpllvICU3HlNUjEyfn0iy1IA5m/AfxholOGMgrhZx+4U1tf+il+7p
-        BANMLEFR1SaNgbz2NkoKc78CsSUwpQaUB/VS7aQxfD5jMlVbeqCkANUPhfN1o8gUV5ntRI
-        c3klVxIBnoU7Ba4ftjh8AldPTBiMPZY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-485-DnmK1liDNoCCV-6_azYVEw-1; Mon, 21 Dec 2020 22:49:11 -0500
-X-MC-Unique: DnmK1liDNoCCV-6_azYVEw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 50399801817;
-        Tue, 22 Dec 2020 03:49:10 +0000 (UTC)
-Received: from [10.72.13.168] (ovpn-13-168.pek2.redhat.com [10.72.13.168])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 948DC1B534;
-        Tue, 22 Dec 2020 03:49:05 +0000 (UTC)
-Subject: Re: [PATCH] virtio_net: Fix recursive call to cpus_read_lock()
-To:     Jeff Dike <jdike@akamai.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20201222033648.14752-1-jdike@akamai.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <e8379ba8-6578-baa0-8a67-1deada809271@redhat.com>
-Date:   Tue, 22 Dec 2020 11:49:04 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726129AbgLVECG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Dec 2020 23:02:06 -0500
+Received: from mail-oi1-f170.google.com ([209.85.167.170]:46724 "EHLO
+        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725881AbgLVECF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Dec 2020 23:02:05 -0500
+Received: by mail-oi1-f170.google.com with SMTP id q205so13456681oig.13;
+        Mon, 21 Dec 2020 20:01:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ww/zGSC3PEvJtOMfeswjOnuHgN6OVeMi/BWgMwdkPTo=;
+        b=hElIWTZdJ8sVsA+XmjNtsQ2kkuIgUPheD/72KGd2nBXzf+9vsZlpr06ATL/Id6ui+y
+         Tez2LM0JpwsQu+33OxKTHBDK/ji/jRQ2f/WGURQBuwn4o37ti2JqvQIgXAknXSKlZzQD
+         hoc9BK9qDEZ09BpprpvwRrNa2qo2STrJq6jOVqVwTFT2ia+03sWr3wT6g37zvKc3JktM
+         c5XVYOAJ3fODTD8HQoBcuwYR3iPjfE5Wft4HLnorLvYwmXDJeilkiwZ3i0YFUS6NF0/V
+         NvJNtIQceh9Yr5JlK7e2BUCJZ/qqu5PqG832Ot1j0PvyKGIzwoc192E68M1ZAA50EQsV
+         vv8w==
+X-Gm-Message-State: AOAM533hv0jweev83OWEnlncWTIMTp6+yNSg8R8feoRsOciAXcDll38g
+        G9JuE+KAvbv3QYPqSlQZkawwcDBr6g==
+X-Google-Smtp-Source: ABdhPJzOtBcRwErYwDAgOk1doNr8YVJw5jAmYzxYzVn64tH9uQ/u9mYsaRCyBaZGXlaREOglFnnkxQ==
+X-Received: by 2002:aca:1004:: with SMTP id 4mr13331771oiq.4.1608609684079;
+        Mon, 21 Dec 2020 20:01:24 -0800 (PST)
+Received: from xps15.herring.priv ([64.188.179.253])
+        by smtp.googlemail.com with ESMTPSA id y65sm3741695oie.39.2020.12.21.20.01.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Dec 2020 20:01:23 -0800 (PST)
+From:   Rob Herring <robh@kernel.org>
+To:     devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alex Elder <elder@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: qcom,ipa: Drop unnecessary type ref on 'memory-region'
+Date:   Mon, 21 Dec 2020 21:01:21 -0700
+Message-Id: <20201222040121.1314370-1-robh@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20201222033648.14752-1-jdike@akamai.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+'memory-region' is a common property, so it doesn't need a type ref here.
 
-On 2020/12/22 上午11:36, Jeff Dike wrote:
-> virtnet_set_channels can recursively call cpus_read_lock if CONFIG_XPS
-> and CONFIG_HOTPLUG are enabled.
->
-> The path is:
->      virtnet_set_channels - calls get_online_cpus(), which is a trivial
-> wrapper around cpus_read_lock()
->      netif_set_real_num_tx_queues
->      netif_reset_xps_queues_gt
->      netif_reset_xps_queues - calls cpus_read_lock()
->
-> This call chain and potential deadlock happens when the number of TX
-> queues is reduced.
->
-> This commit the removes netif_set_real_num_[tr]x_queues calls from
-> inside the get/put_online_cpus section, as they don't require that it
-> be held.
->
-> Signed-off-by: Jeff Dike <jdike@akamai.com>
-> ---
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Alex Elder <elder@kernel.org>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+I'll take this via the DT tree.
 
+ Documentation/devicetree/bindings/net/qcom,ipa.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-Adding netdev.
-
-The patch can go with -net and is needed for -stable.
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
->   drivers/net/virtio_net.c | 12 +++++++-----
->   1 file changed, 7 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 052975ea0af4..e02c7e0f1cf9 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -2093,14 +2093,16 @@ static int virtnet_set_channels(struct net_device *dev,
->   
->   	get_online_cpus();
->   	err = _virtnet_set_queues(vi, queue_pairs);
-> -	if (!err) {
-> -		netif_set_real_num_tx_queues(dev, queue_pairs);
-> -		netif_set_real_num_rx_queues(dev, queue_pairs);
-> -
-> -		virtnet_set_affinity(vi);
-> +	if (err){
-> +		put_online_cpus();
-> +		goto err;
->   	}
-> +	virtnet_set_affinity(vi);
->   	put_online_cpus();
->   
-> +	netif_set_real_num_tx_queues(dev, queue_pairs);
-> +	netif_set_real_num_rx_queues(dev, queue_pairs);
-> + err:
->   	return err;
->   }
->   
+diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+index d0cbbcf1b0e5..8a2d12644675 100644
+--- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
++++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+@@ -121,7 +121,6 @@ properties:
+       receive and act on notifications of modem up/down events.
+ 
+   memory-region:
+-    $ref: /schemas/types.yaml#/definitions/phandle-array
+     maxItems: 1
+     description:
+       If present, a phandle for a reserved memory area that holds
+-- 
+2.27.0
 
