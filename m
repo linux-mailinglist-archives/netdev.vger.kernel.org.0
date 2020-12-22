@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A3372E0CCB
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 16:32:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 392E02E0CE3
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 16:46:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727756AbgLVPc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 10:32:28 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:32644 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727680AbgLVPc1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 10:32:27 -0500
+        id S1727749AbgLVPpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 10:45:04 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:31565 "EHLO
+        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727621AbgLVPpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 10:45:04 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1608651121; h=Content-Type: MIME-Version: Message-ID:
+ s=smtp; t=1608651880; h=Content-Type: MIME-Version: Message-ID:
  In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=fEWw24nI30LjEVmqX2PihyrbqlViK7eac/PwbPUEdAc=; b=H9z10+oFump8KOJcenHQ6A9ELXt7uUrHt2i4rF22KUxFh29sbZojOhuO1lBssCO7rkMO/A1y
- lnf2n7btHeArzoafuquy95Y4En/R93LsYofgLLw2jKrZn2xWvZEz6uM9bCS1ASGZB3J2LDYf
- RSoZZmQ7cohoFjUC40+9jxIaqBo=
-X-Mailgun-Sending-Ip: 69.72.43.15
+ bh=V3is/KP9X3iODvQMYSfeCfbe4PwUmMc4FyAr6uEgGbc=; b=rYwX2QVCsBhZgg2K4ovCC9pAzCIT8OxGcYh5lQxVaD0zkqCCmsf0Z2YmpE/HI5xvUGIP/sMh
+ pC/g5ZzLGt2j/b7+tligsQPXtqW93D+xb3jIJGbpzywG6rDSyKa7bJFq+jd4ivOQ/69mAWLO
+ lxP81y9ukJS/WsVkPsSkbSgryg4=
+X-Mailgun-Sending-Ip: 198.61.254.31
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 5fe211507036173f4f9c15f2 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 22 Dec 2020 15:31:28
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 5fe2144cb00c0d7ad4391caf (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 22 Dec 2020 15:44:12
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 144EAC43463; Tue, 22 Dec 2020 15:31:28 +0000 (UTC)
+        id 88A61C43466; Tue, 22 Dec 2020 15:44:11 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,9 +37,9 @@ Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.11
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 910B7C433C6;
-        Tue, 22 Dec 2020 15:31:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 910B7C433C6
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id DEE1FC433C6;
+        Tue, 22 Dec 2020 15:44:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DEE1FC433C6
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
 From:   Kalle Valo <kvalo@codeaurora.org>
@@ -52,13 +52,13 @@ Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-mmc@vger.kernel.org,
         Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
         Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v3 18/24] wfx: add data_tx.c/data_tx.h
+Subject: Re: [PATCH v3 05/24] wfx: add main.c/main.h
 References: <20201104155207.128076-1-Jerome.Pouiller@silabs.com>
-        <20201104155207.128076-19-Jerome.Pouiller@silabs.com>
-Date:   Tue, 22 Dec 2020 17:31:22 +0200
-In-Reply-To: <20201104155207.128076-19-Jerome.Pouiller@silabs.com> (Jerome
-        Pouiller's message of "Wed, 4 Nov 2020 16:52:01 +0100")
-Message-ID: <874kkd97sl.fsf@codeaurora.org>
+        <20201104155207.128076-6-Jerome.Pouiller@silabs.com>
+Date:   Tue, 22 Dec 2020 17:44:05 +0200
+In-Reply-To: <20201104155207.128076-6-Jerome.Pouiller@silabs.com> (Jerome
+        Pouiller's message of "Wed, 4 Nov 2020 16:51:48 +0100")
+Message-ID: <87a6u57smy.fsf@codeaurora.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -68,22 +68,60 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
 
-> +void wfx_tx(struct ieee80211_hw *hw, struct ieee80211_tx_control *control,
-> +	    struct sk_buff *skb)
+> +/* NOTE: wfx_send_pds() destroy buf */
+> +int wfx_send_pds(struct wfx_dev *wdev, u8 *buf, size_t len)
 > +{
-> +	struct wfx_dev *wdev = hw->priv;
-> +	struct wfx_vif *wvif;
-> +	struct ieee80211_sta *sta = control ? control->sta : NULL;
-> +	struct ieee80211_tx_info *tx_info = IEEE80211_SKB_CB(skb);
-> +	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
-> +	size_t driver_data_room = sizeof_field(struct ieee80211_tx_info,
-> +					       rate_driver_data);
+> +	int ret;
+> +	int start, brace_level, i;
 > +
-> +	compiletime_assert(sizeof(struct wfx_tx_priv) <= driver_data_room,
-> +			   "struct tx_priv is too large");
+> +	start = 0;
+> +	brace_level = 0;
+> +	if (buf[0] != '{') {
+> + dev_err(wdev->dev, "valid PDS start with '{'. Did you forget to
+> compress it?\n");
+> +		return -EINVAL;
+> +	}
+> +	for (i = 1; i < len - 1; i++) {
+> +		if (buf[i] == '{')
+> +			brace_level++;
+> +		if (buf[i] == '}')
+> +			brace_level--;
+> +		if (buf[i] == '}' && !brace_level) {
+> +			i++;
+> +			if (i - start + 1 > WFX_PDS_MAX_SIZE)
+> +				return -EFBIG;
+> +			buf[start] = '{';
+> +			buf[i] = 0;
+> +			dev_dbg(wdev->dev, "send PDS '%s}'\n", buf + start);
+> +			buf[i] = '}';
+> +			ret = hif_configuration(wdev, buf + start,
+> +						i - start + 1);
+> +			if (ret > 0) {
+> + dev_err(wdev->dev, "PDS bytes %d to %d: invalid data (unsupported
+> options?)\n",
+> +					start, i);
+> +				return -EINVAL;
+> +			}
+> +			if (ret == -ETIMEDOUT) {
+> + dev_err(wdev->dev, "PDS bytes %d to %d: chip didn't reply (corrupted
+> file?)\n",
+> +					start, i);
+> +				return ret;
+> +			}
+> +			if (ret) {
+> + dev_err(wdev->dev, "PDS bytes %d to %d: chip returned an unknown
+> error\n",
+> +					start, i);
+> +				return -EIO;
+> +			}
+> +			buf[i] = ',';
+> +			start = i;
+> +		}
+> +	}
+> +	return 0;
+> +}
 
-Interesting, never seen compiletime_assert() before. But I suspect
-BUILD_BUG_ON_MSG() is preferred, at least there are more users.
+What does this function do? Looks very strange.
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
