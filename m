@@ -2,98 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5959F2E0ACA
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 14:33:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C42212E0ADB
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 14:35:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbgLVNdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 08:33:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727093AbgLVNdC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 08:33:02 -0500
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE08C061793
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 05:32:22 -0800 (PST)
-Received: by mail-il1-x12a.google.com with SMTP id v3so12015872ilo.5
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 05:32:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1h+XS3Jpg37m9OWU9Zgfs5kJQZ5F9azt5axjaoAFa+o=;
-        b=AZpT2+SASG9nJBeXvpxrCgYcrKqMNKBOKhzbZE3iQHjPReCYhNxsX1FIcoozKiaYV+
-         oeNdLumwRlra/kfdUg8dNPyqt/2WT7UP590126MBFhOxbKcmgEHCq97+3rSbF9mHWrD9
-         gwwpYdZ711yTLP5cXBBBMF+bczS9F+VvUZUmA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1h+XS3Jpg37m9OWU9Zgfs5kJQZ5F9azt5axjaoAFa+o=;
-        b=BP9if4fV6hxDiwsfRLbgs57Ylbz64fGnS6OrViNufW1+s3XcXeVOZKyMyFWWHG4eNM
-         Wbx/F96AHttiw7qVhD9XDkON4FtAjxnlk+U7DNaIR/ann1rYECzAR7jSQ27rn76KOgrH
-         FClD8kEkoef1bjnl0cgWPd4jQHOPbra8eeJ1YOlK8oZCvG2FKK+xjuOV531+n2rdPZGg
-         SK/5sw/2ZnFc7awn66eNuw/oAYAcNFmlygmzhPtLsNuT/OxTjBRlDESugyl3m2zxYIQZ
-         76TmPAQnnoEO/4HP/l/+medVf0KETkvCo2UP3KDIApiZWP/X7ODPJGijkRZKD6QGpbfp
-         B5OA==
-X-Gm-Message-State: AOAM53269K3ZDzPnrGGJ2+Ep9WhqpPfG874HZBqRigpQNL7Xywx9Pobp
-        rADYtEiP2Ng+QFUbEVIYELnjyyhX+QtU7A==
-X-Google-Smtp-Source: ABdhPJyQG7N3kXgSBl8zSeDDDpQE2eNi22yYVF7ddAXWlUZNzn4bpdY2d8S070MVCt/SQB5C6Vxhlg==
-X-Received: by 2002:a92:b652:: with SMTP id s79mr21318208ili.251.1608643941395;
-        Tue, 22 Dec 2020 05:32:21 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id o7sm23739687iov.1.2020.12.22.05.32.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Dec 2020 05:32:20 -0800 (PST)
-Subject: Re: [PATCH] dt-bindings: net: qcom,ipa: Drop unnecessary type ref on
- 'memory-region'
-To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alex Elder <elder@kernel.org>, netdev@vger.kernel.org
-References: <20201222040121.1314370-1-robh@kernel.org>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <8d7ee97e-1730-908f-9576-88950fd59c91@ieee.org>
-Date:   Tue, 22 Dec 2020 07:32:20 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1727676AbgLVNeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 08:34:25 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:9237 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727264AbgLVNeY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 08:34:24 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4D0chv1ZJbzkWrN;
+        Tue, 22 Dec 2020 21:32:47 +0800 (CST)
+Received: from ubuntu.network (10.175.138.68) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 22 Dec 2020 21:33:32 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <jmaloy@redhat.com>, <ying.xue@windriver.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <tipc-discussion@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] net: tipc: Replace expression with offsetof()
+Date:   Tue, 22 Dec 2020 21:34:07 +0800
+Message-ID: <20201222133407.19861-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-In-Reply-To: <20201222040121.1314370-1-robh@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.138.68]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/21/20 10:01 PM, Rob Herring wrote:
-> 'memory-region' is a common property, so it doesn't need a type ref here.
+Use the existing offsetof() macro instead of duplicating code.
 
-Acked-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ net/tipc/monitor.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Alex Elder <elder@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> I'll take this via the DT tree.
-> 
->   Documentation/devicetree/bindings/net/qcom,ipa.yaml | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> index d0cbbcf1b0e5..8a2d12644675 100644
-> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> @@ -121,7 +121,6 @@ properties:
->         receive and act on notifications of modem up/down events.
->   
->     memory-region:
-> -    $ref: /schemas/types.yaml#/definitions/phandle-array
->       maxItems: 1
->       description:
->         If present, a phandle for a reserved memory area that holds
-> 
+diff --git a/net/tipc/monitor.c b/net/tipc/monitor.c
+index 6dce2abf436e..48fac3b17e40 100644
+--- a/net/tipc/monitor.c
++++ b/net/tipc/monitor.c
+@@ -108,7 +108,7 @@ const int tipc_max_domain_size = sizeof(struct tipc_mon_domain);
+  */
+ static int dom_rec_len(struct tipc_mon_domain *dom, u16 mcnt)
+ {
+-	return ((void *)&dom->members - (void *)dom) + (mcnt * sizeof(u32));
++	return (offsetof(struct tipc_mon_domain, members)) + (mcnt * sizeof(u32));
+ }
+ 
+ /* dom_size() : calculate size of own domain based on number of peers
+-- 
+2.22.0
 
