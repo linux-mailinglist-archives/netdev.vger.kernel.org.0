@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56BBA2E0B12
+	by mail.lfdr.de (Postfix) with ESMTP id D35532E0B13
 	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 14:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727354AbgLVNqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 08:46:15 -0500
-Received: from mail-eopbgr70082.outbound.protection.outlook.com ([40.107.7.82]:47333
+        id S1727266AbgLVNqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 08:46:20 -0500
+Received: from mail-eopbgr70089.outbound.protection.outlook.com ([40.107.7.89]:35431
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727271AbgLVNqL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 08:46:11 -0500
+        id S1727271AbgLVNqT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 08:46:19 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eC3U+3PyaLgLGYH6dV8Ue4PwbFSZUdZcPWC49P1lh8lRUhaLNcb4nfnzsM0hjM/BJqCs+357ribgpyEv95fFmMWM+RMPh7qOe3/C4VshUxdOZeGOYlICbRt0xjSLW+zoxA+/X7TUgOqketjZ+wr6pQJZBNCvSWBHed5F03Jn16mwuSZwpSKOhxl0PiDR+wiPIvmZ5wI1DvYoFYKpyVFKfszkX2YOp75w9kb4xJjgoRZ0wNKy7GfWpkmZo75jGsD5OuIAFB9LV7nWrxTi7L+rO2IhLHksSVklnLh+HGLCNTE6eXP5w9yzxOshGvBeTJ9+Gj2iLIvGEZKOK+9+J4ESyA==
+ b=gHDZMzJmEVD/0tyjn2KK2COJ6mS3iGEQpQ/U8VEBspQFZZyNLV1HF3Yx9kFIxX+/GlL3LCHbfzNpWyOlpjxbwnDe8AiE5kMVTPDZmfeXBVJJOwKEPGCs/edGIQNztYGFHSiMIi+qCbM+FwXPD1o3G9PsCH47HwVzdQi+Flhq+ZoEcwV1zcdZOoznVw1UEzX1QTahTmgGRXQ2uKqelCFBljuJ/LMFc1nXzrOUi6MZzN/o2zxny9tRjCdG+UgLywBM7wfKWB/1syr70H8WaJmXmJw69y4dZBhNWitDuzDa+T/zpGFnfc06Za2OC4P7ERZSsBRPSuPURr/XgO5k3p/01w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d9FOywM5i+U8D4LoluqhiCcmpfbuR+XsQF7kn/+eprs=;
- b=aA6oQiLck23YqGSPEut9uu0otW10g+GgXyDus8/+CQXw3Ocbx1WtSfLj0HPDHbMSuu/Rk6Vh/CAh7qR9a2y9DtYuMq5r4wo70jGJcJzJkLJxtMW7L7RJ1egLfjSUPoRWBLpUIwKQp1EJmerL8fcVUN0/YQruKW+5QP+v6JdKykDeqDlweVhlsDEOB5PxqEqX5izX1TJGPnHHQvFEqwSMm+v2IR4wmVF1GkGz842hXwxgJLk54vORdc4Et3MCsvbve49S7HdDiqvD6AHGdU9rg3nidw0oYCBYFgzEQ2Zeyxl7Qi98m+wyjjXVB4mWYI92YK7ldbGvzempBrdgIdScpw==
+ bh=ah+EXuMvY9bZ2ifh/HiQF2WNdLQxn71hVwR9LUfLoUo=;
+ b=E+nEiUQ9J2iX/6InVygCLNKws4yAN4VpxbE03sXD3fSZAmMZ9Ru8a8BX++oi4TnA4ENa1Qz1Vki12wVMqk37Zne9JLjMLuYvfR3fJIOUE20y4w9dh1BRYjh8ZXQjlhBY3JIE/EKnIGO16xV7JaU/NYzl+hGETwFmK2aJZyDz34h+HUxFAnJAVBTqcl7Q0KemfdNLTKylx6oHqO9mpq/C4E/hbvRsyxRZwIz36mK3ZxtMwFziq3qiElzUy8LNIF3CISydk9/L6tM5Mw525LL0o0nAQdv+yltrYlzS5u3s4Yw7R/asys+z15silYI56/B5JW2mXdz6yBumy+0yHCHvRw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d9FOywM5i+U8D4LoluqhiCcmpfbuR+XsQF7kn/+eprs=;
- b=QEdBT++WMkD1MH+jVcKkiRzdyhmS38Gj8sIDaww0ROqtvWvIHB/PjHD0kKr0gEGM71pRdhst1qWux7xwhn0BtQe+TA6JujJxAw9HnSNvoez7GADh9Cjcn6/qG5HtpmiyV4xA9U2ZbKp0R/uiW43Z+yLdbxgVUa5EYYj7yChDIeQ=
+ bh=ah+EXuMvY9bZ2ifh/HiQF2WNdLQxn71hVwR9LUfLoUo=;
+ b=YVdnYo4bKvaKyPhD67dbKBPeL5MLp+QbEpr/loQpFNmG2TTj83/slRSZuopeE493wzxqZnguY7uS7ym896f6pqajMb7g9HIz9+S5/PHAKLXwUWm2cMItU+XjDlehkPsJiHXuEx35irplFQjYS277oitBMvIGtTAIdgdIPWOHe5A=
 Authentication-Results: lunn.ch; dkim=none (message not signed)
  header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VE1PR04MB7408.eurprd04.prod.outlook.com (2603:10a6:800:1b3::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.25; Tue, 22 Dec
- 2020 13:44:58 +0000
+ 2020 13:44:59 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3676.033; Tue, 22 Dec 2020
- 13:44:58 +0000
+ 13:44:59 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -51,9 +51,9 @@ Cc:     Richard Cochran <richardcochran@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         UNGLinuxDriver@microchip.com
-Subject: [RFC PATCH v2 net-next 05/15] net: mscc: ocelot: stop returning IRQ_NONE in ocelot_xtr_irq_handler
-Date:   Tue, 22 Dec 2020 15:44:29 +0200
-Message-Id: <20201222134439.2478449-6-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH v2 net-next 06/15] net: mscc: ocelot: only drain extraction queue on error
+Date:   Tue, 22 Dec 2020 15:44:30 +0200
+Message-Id: <20201222134439.2478449-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201222134439.2478449-1-vladimir.oltean@nxp.com>
 References: <20201222134439.2478449-1-vladimir.oltean@nxp.com>
@@ -65,88 +65,93 @@ X-ClientProxiedBy: VI1PR08CA0169.eurprd08.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0169.eurprd08.prod.outlook.com (2603:10a6:800:d1::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.29 via Frontend Transport; Tue, 22 Dec 2020 13:44:57 +0000
+Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0169.eurprd08.prod.outlook.com (2603:10a6:800:d1::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.29 via Frontend Transport; Tue, 22 Dec 2020 13:44:58 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6fd53968-f14c-4bf3-fd22-08d8a67fc5e5
+X-MS-Office365-Filtering-Correlation-Id: b7cab140-b285-4576-7f5e-08d8a67fc663
 X-MS-TrafficTypeDiagnostic: VE1PR04MB7408:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB7408D045AF63147FF3781DBAE0DF0@VE1PR04MB7408.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB740885A5B6BD40C0679241F4E0DF0@VE1PR04MB7408.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6AwkpbCQ0k0UI2ranLloGkPFxwM94cp8/J+WzfVJK4L4RLAxc7S7rDUowFhD0UOeo72Hbjibu4gUx1pNC4/9YaxqXy145hemxbsea262sAPsRBIty++AXJlj2aSQCbIybyadwxh/LWMcqQtZofLYuKejzL13gE9nM9UyXww7bpb3fcgeFjkAMQxb5Ddek/9PwcBscjJppj1MTOh+AqWAt9RsoTMPtpuI6wYygyXE6+Y/Cwl+s6DtpUw6e1VJ/ls6I7YgqWBDQO9VAvLzbcNuFWdQdAHRMHaDGFtQy2m2A0vQnuUG2uDPwYtrsFRnP0EjMdXKN/2e6wXWGQbSY29NHFitDTI/nSocAQ6XY3Vx7O2RUFX0lDsuFpxpmUjWDvQZTkfNueLntl8QgfrkbIQ6Tsh5F82ubhrpFvlyvLjUdTDFEn4gUS8goTmi6BDscow/awOOxfL0OSgI0zqfadjsjQ==
+X-Microsoft-Antispam-Message-Info: bcyEw6ZwLO8OeeU6mhE7msUA9IDlRPlZoFr42vv5WvZURewyKdhO2ihrXZrnriSa6iWjIbxDP0MayJdCYVYM6bCKOYlieSr316wzfe+nY6B7Mqf0keslbnPHHIZs4LNuU1B+pvFm1wAfEwk4hMwgssplPlNnizVV2vCeO49MEwoV86jl2aFUHUyyI++a3yg9rctYRW7r7+X0pKOrteRVdzEts8S3804g9YjF6KRy8s0XqiM+kbZ7TDDJpZQ3Zda0yZoc+Sl8NPzJiKNV+qAKRKIwnsmpaILogkG6OWDWKYOTUmONPw1iCtdKYRNVEhXcbzQ48xCIrPXIRKJWfZ1jQKV6w1LLg0Ych/mIW17xs9OGSCzQ481cZEhnahNOawCskuder28oqHB+9BtotcSIAMU/M8FewFHcAH4SatoBO1m6Yp5dMqI7RhuIhxTgams0O3Wc53xig2cqx3Xq9Ql0rg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(69590400010)(8676002)(956004)(186003)(4326008)(36756003)(2616005)(6512007)(498600001)(16526019)(44832011)(2906002)(83380400001)(8936002)(110136005)(54906003)(26005)(6666004)(66476007)(5660300002)(6486002)(86362001)(6506007)(66946007)(1076003)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?09/fX8PE0I+ED8KyhGrQI4t9rEXeUyfjnLXS2NYk8hkd6p1+cmWaNQXBUfbh?=
- =?us-ascii?Q?e5zOihRy4I7aq6UVzkAzUxNUgIW81NDsDMFpDrE/y0zHu9jIKIm7zQGqRRyd?=
- =?us-ascii?Q?LynjznE8+4+hwu3idJHSzlGMZLv+Hs1ZGRhX4i0w4LSca5+PXoDqcfteldcZ?=
- =?us-ascii?Q?kdR6f36gzuFwXZ/pUwRFr4oSHpm2sqWT1DbfHi/HFchsZqv+jFx+IDe3XF3W?=
- =?us-ascii?Q?HPxMs2GpBNU1/UlehqFwcCgrrpGo16rp4abO0hde4f1RjXIK9Gurb9YxHB3O?=
- =?us-ascii?Q?IaFqqSi5zr/3ci8yQrRPutPBD3QeeIK77UZrQcuc7Fqw6KfyVK2fVn1DUzjr?=
- =?us-ascii?Q?Qb8F3V7RjeWOMwa2+/4cUxZU/BrG09/OMfdx+qyDdJoFj/ur3b1QCgd9Z5+6?=
- =?us-ascii?Q?wyRw7AWc1qY99jxaFx7MVd5E46nAPmn3x+tVrRHnYsaN3XgS+9EDjExJxdJI?=
- =?us-ascii?Q?ZiqFDC7WA8xBnDU/TFHDk6VUAQdnGFzro+jQ2oWpjj8xqmFKLL+BMvLkcZAl?=
- =?us-ascii?Q?KuigmZJEYpzAbij5eU8VohKvBgZfRyFwfTvQ9lrqj5ij+bvyjtDnRQWdnhcv?=
- =?us-ascii?Q?gEr5MVO/3T+dibHK6jk8N5ziSiUCK7ytsyILbXaNNTzOJOKggf2230jo1K7A?=
- =?us-ascii?Q?Ei7vV7GCBlKV1jNhX0WXbs+uIn+hsuu6wqfKe3UecqazjoW+g0Q2nRWcIPQG?=
- =?us-ascii?Q?NnNZwUOxC4CmSPHUz3YegiuQAel2kKRw0tiULcmrldf8Po2bhlGlp5Lp3sDg?=
- =?us-ascii?Q?Dy7a7k79EQkbmZ4p5LQLXnlRzXjwWJsd6ZCsi+OHf3C60jJe/zkqn/R5roBc?=
- =?us-ascii?Q?FN/i8suMPu5vrBHTmKqU2B3VTYQoj/LzE1XFnrrp1PPbNcQh9oTOM/56eoOC?=
- =?us-ascii?Q?zBcZLSvpkyL2E4762U3IMgwsMRWAbBdXd/svvTFFdzbWW+XfTa+tcprvOCBs?=
- =?us-ascii?Q?rN+GlwrYrXFNTvOw/PqWmGYuu/k2BTYRmtSVplQEiNFLIEtBVV5rDJkEz0iU?=
- =?us-ascii?Q?43GE?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?4gmueqGKC+hpZ8mPqZySMtkxo+Za9M6nJbaK8NIX5uU2EFdJfIFEkLgo0wyL?=
+ =?us-ascii?Q?rbg8/dBu0q/qA+BykOGtcBmulJ5fiz6fXJV6bMNGrBe9G4zw2/isRQbw/Ncf?=
+ =?us-ascii?Q?2kgvO0GHcoWDssw1UNCyEmnvLsZkk6m1jqYGIDe2vPC/jrYDmcOHRNqk/JsE?=
+ =?us-ascii?Q?VtwQdMsGwRnEMZkRWmvwEbSkUIu8f83Tj5pyT2vZHtqvL4LjcUTkqVrih4JX?=
+ =?us-ascii?Q?1MW8MDq5yiShOPjoPJUw6yNhEOPNKYGM8ygFogn/mfIGCdCfBB7FmiG5xWbj?=
+ =?us-ascii?Q?qpTDsUF0Q3ITieslh2Lj11CV3Bz7D2RvWuJbSbvaUoaYhUed0Ff7mb63lpeK?=
+ =?us-ascii?Q?7zTW/fnqn0MWVE+SHkpC/1OrnXyQnAQdLyON6fd61CPXQPCKKtyj2s6R0MyP?=
+ =?us-ascii?Q?uu0bZTpp1wwmcHLbIGrhVpBiPo2hH4Wxfxt2pbOoQ8nl6cmUUhcPsvdcqzM3?=
+ =?us-ascii?Q?QqHmG5pTTQr4sJZGc/mHyENH2fR4ZHLaMtZD4a2hS8+OrEDfJXJ2VBA/k9DS?=
+ =?us-ascii?Q?lK4MnuC8arzQiEHH5yN5IvI+1QnVvKhQwz3e1Ii/jUhuuOdjVsaoSBMnkDup?=
+ =?us-ascii?Q?zT6XVHBM7hfAlE9iPGT6eFHU35KfdMbXjm1cQJDlqy/ONfGiIwmluWOCTQTc?=
+ =?us-ascii?Q?sgLRQL70lVMMxKNlD1tslyveQ1h2UYZHazFAb4fcV23uW50HQ0Z7gxdQKl+h?=
+ =?us-ascii?Q?zZ3q0KV7N1v/yzdhI6/uEhPnnQR1ZcaT97lMTHSrgdUie9pmvz6izqgmCNG2?=
+ =?us-ascii?Q?x4QJ6IiwBbjb1IpL1+vyGuGwoZiannSsszdi+Ou/0CVJNdLxXwT6t9R0kA4W?=
+ =?us-ascii?Q?ujIJElRtIz91IlRAhy9FmyyhdktRMVlC2t3uD3hZf/My5ivlC8nqj6xS3/xh?=
+ =?us-ascii?Q?Zq84k5KHPo/faifgLnaMpeGyOn37XKdPEGPi07rFtAGzIwkfZ6YEswrJnfsj?=
+ =?us-ascii?Q?zuTbfIb3C7Pv//Ll3cVCspDhEMag/vhuwKulcKDPTBnnyhBos742M8KZp9oa?=
+ =?us-ascii?Q?5o3t?=
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2020 13:44:58.2367
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2020 13:44:59.0792
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6fd53968-f14c-4bf3-fd22-08d8a67fc5e5
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7cab140-b285-4576-7f5e-08d8a67fc663
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YJuuxLS9I0dac6tbfmfOjmwJ8AlFoxPwGdfcNbylG7jwi/f/yKYs3uWvKVtUbU0Hl3JaMhUzkdyKn/ELovyd/Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6Mc5MH9ikpeYo7SzqcnerHwYyh8aM4wJAki2MbG95uCa3Ka0dYArFp2dkfGAz3ECp/qBLiANRFJGYpneMf7vuQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7408
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the xtr (extraction) IRQ of the ocelot switch is not shared, then
-if it fired, it means that some data must be present in the queues of
-the CPU port module. So simplify the code.
+It appears that the intention of this snippet of code is to not exit
+ocelot_xtr_irq_handler() while in the middle of extracting a frame.
+The problem in extracting it word by word is that future extraction
+attempts are really easy to get desynchronized, since the IRQ handler
+assumes that the first 16 bytes are the IFH, which give further
+information about the frame, such as frame length.
+
+But during normal operation, "err" will not be 0, but 4, set from here:
+
+		for (i = 0; i < OCELOT_TAG_LEN / 4; i++) {
+			err = ocelot_rx_frame_word(ocelot, grp, true, &ifh[i]);
+			if (err != 4)
+				break;
+		}
+
+		if (err != 4)
+			break;
+
+In that case, draining the extraction queue is a no-op. So explicitly
+make this code execute only on negative err.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
 Patch is new.
 
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 1e7729421a82..00c6d9838970 100644
+index 00c6d9838970..ed632dd79245 100644
 --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
 +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -605,10 +605,7 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
- 	int i = 0, grp = 0;
- 	int err = 0;
- 
--	if (!(ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp)))
--		return IRQ_NONE;
--
--	do {
-+	while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp)) {
- 		struct skb_shared_hwtstamps *shhwtstamps;
- 		struct ocelot_port_private *priv;
- 		struct ocelot_port *ocelot_port;
-@@ -703,7 +700,7 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
- 			netif_rx(skb);
- 		dev->stats.rx_bytes += len;
+@@ -702,7 +702,7 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
  		dev->stats.rx_packets++;
--	} while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp));
-+	}
+ 	}
  
- 	if (err)
+-	if (err)
++	if (err < 0)
  		while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp))
+ 			ocelot_read_rix(ocelot, QS_XTR_RD, grp);
+ 
 -- 
 2.25.1
 
