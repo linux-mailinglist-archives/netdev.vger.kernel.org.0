@@ -2,88 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B30B52E0C7F
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 16:11:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B23182E0C91
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 16:18:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728097AbgLVPK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 10:10:58 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:35191 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727978AbgLVPK5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 10:10:57 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1608649833; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=k4T60vC2s1dNLZaTWXiVi917FKafMfvtENzWjJYqIVo=; b=TetvwAE2lBqdxvmTEKJTMK3TDnc7ghh9GUVhlEiVjCmCodunr8JaGGTXyH3jkr7086YP9d65
- mM/7FuIc965FJklTDJHFO/+WX40YjIki25i6DzO8kQQhsVT61PAUH2Y0QvqAcNwkX+IETcn1
- SM7h3wrzysg6h3s4lIeOnIbMp9o=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 5fe20c58da47198188df83a5 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 22 Dec 2020 15:10:16
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 89E4FC43462; Tue, 22 Dec 2020 15:10:16 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4A212C433C6;
-        Tue, 22 Dec 2020 15:10:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4A212C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org,
-        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v3 09/24] wfx: add hwio.c/hwio.h
-References: <20201104155207.128076-1-Jerome.Pouiller@silabs.com>
-        <20201104155207.128076-10-Jerome.Pouiller@silabs.com>
-Date:   Tue, 22 Dec 2020 17:10:11 +0200
-In-Reply-To: <20201104155207.128076-10-Jerome.Pouiller@silabs.com> (Jerome
-        Pouiller's message of "Wed, 4 Nov 2020 16:51:52 +0100")
-Message-ID: <87lfdp98rw.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728022AbgLVPQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 10:16:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727452AbgLVPQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 10:16:58 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D25C0613D6
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 07:16:17 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id k8so12298679ilr.4
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 07:16:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vFVTJ+0eHU766NlPjzayRjSs+Vk0hqn0SrA9Il/j3JU=;
+        b=sSZ3NgXR3fJvfO5KGnv/psaGcLEYQx0ftL8WbaYkt8YldWrlXDxO++LjxIQlaQp2Gc
+         OgeLUUG3UQ2h2zHrrl3apTSKHaGHKooKuTysvMaGtrWMsGBMFVHJzrzJank70A3eNjRE
+         VE0x6tKeooyjNNQzhdzDM8H5Hcp85GyoldwT3wfua1IK6NehDHUti7oaQ8+DgzV0gFUA
+         pB0OJ8mYiHHYhJfiVti+d93k7FG3ri+F2MxaCtnXXVM9YFBF6K4CM9HGJavi4cDbVGbm
+         DWjzXdINbuB/YhGtk8jPzqwbAmzRq/4d+f79gnv67on9zioICf8uxrHr4QFwZH2wRIJv
+         LExw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vFVTJ+0eHU766NlPjzayRjSs+Vk0hqn0SrA9Il/j3JU=;
+        b=ER+fm3zFA8wzaz9Tvi0JEF3OQjlu78YzTklVxBRmF5WCEhrfbnTyRHYfN7AYYT9+tx
+         xdmRj52DdGe8MrrRBlqcHUXcGQVCgvB6ieCvlr2LQvyhctrWT/rsUK8L4MnMGpYm2POe
+         2ody+iyTxrm8qyLFDXVd38axGiY0RChDAes50KXodTAO+EArdCAm9bpISLpl5GNVPYta
+         yoIwZBRhm4nqyiM4xm5rXLG3COvdu1m5DIyXCIxV5oHhzJ6af+2GWB70nS/qwx7gpUn1
+         mLffpKuLEq+dK9ZF0kRSzbP9giGoewVdcCTaa1hDyGYJqWNjgngsGwwHEUOkxGQqbFiX
+         sW4g==
+X-Gm-Message-State: AOAM530tpzj1vHJcGhJuPVKy1xvEoQAoEScUUkeEi5xPMgvz+r4FJdxH
+        wz6Hhb/wZDc2KARIL2yGSV/JCA==
+X-Google-Smtp-Source: ABdhPJwaOHaof7kWQzq09EHsW3c4mVjlyzv7VpeJxVjjJGoRP/WrHHG5ESBgvzgjiV+0jk1k664e9A==
+X-Received: by 2002:a05:6e02:1bcb:: with SMTP id x11mr20217449ilv.32.1608650177174;
+        Tue, 22 Dec 2020 07:16:17 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id e25sm24018458iom.40.2020.12.22.07.16.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Dec 2020 07:16:16 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, cpratapa@codeaurora.org,
+        bjorn.andersson@linaro.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: ipa: fix interconnect enable bug
+Date:   Tue, 22 Dec 2020 09:16:13 -0600
+Message-Id: <20201222151613.5730-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+When the core clock rate and interconnect bandwidth specifications
+were moved into configuration data, a copy/paste bug was introduced,
+causing the memory interconnect bandwidth to be set three times
+rather than enabling the three different interconnects.
 
-> +/*
-> + * Internal helpers.
-> + *
-> + * About CONFIG_VMAP_STACK:
-> + * When CONFIG_VMAP_STACK is enabled, it is not possible to run DMA on stack
-> + * allocated data. Functions below that work with registers (aka functions
-> + * ending with "32") automatically reallocate buffers with kmalloc. However,
-> + * functions that work with arbitrary length buffers let's caller to handle
-> + * memory location. In doubt, enable CONFIG_DEBUG_SG to detect badly located
-> + * buffer.
-> + */
+Fix this bug.
 
-This sounds very hacky to me, I have understood that you should never
-use stack with DMA.
+Fixes: 91d02f9551501 ("net: ipa: use config data for clocking")
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/ipa_clock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
+index 9dcf16f399b7a..135c393437f12 100644
+--- a/drivers/net/ipa/ipa_clock.c
++++ b/drivers/net/ipa/ipa_clock.c
+@@ -115,13 +115,13 @@ static int ipa_interconnect_enable(struct ipa *ipa)
+ 		return ret;
+ 
+ 	data = &clock->interconnect_data[IPA_INTERCONNECT_IMEM];
+-	ret = icc_set_bw(clock->memory_path, data->average_rate,
++	ret = icc_set_bw(clock->imem_path, data->average_rate,
+ 			 data->peak_rate);
+ 	if (ret)
+ 		goto err_memory_path_disable;
+ 
+ 	data = &clock->interconnect_data[IPA_INTERCONNECT_CONFIG];
+-	ret = icc_set_bw(clock->memory_path, data->average_rate,
++	ret = icc_set_bw(clock->config_path, data->average_rate,
+ 			 data->peak_rate);
+ 	if (ret)
+ 		goto err_imem_path_disable;
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.20.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
