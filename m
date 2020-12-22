@@ -2,76 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5964F2E0D0D
-	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 17:06:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B712E0D1F
+	for <lists+netdev@lfdr.de>; Tue, 22 Dec 2020 17:14:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbgLVQF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 11:05:29 -0500
-Received: from mga01.intel.com ([192.55.52.88]:36057 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727230AbgLVQF3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 11:05:29 -0500
-IronPort-SDR: eznndMjYX+qoacIH4nWjHWtysxO3iNvKdv7f1yMxP5WOIifUt1EPE2A5uahiwdA8BtKq3kn3xY
- pziG69doPzzA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9842"; a="194326427"
-X-IronPort-AV: E=Sophos;i="5.78,439,1599548400"; 
-   d="scan'208";a="194326427"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2020 08:04:48 -0800
-IronPort-SDR: Ub16STipXKVbct2Ux+UQzCGb8H8E0ZRhshgqs0PUyl0ilggYSReuBHn6mOzbH2JHcHSkyssSQE
- 5kN9o289/c6A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,439,1599548400"; 
-   d="scan'208";a="492272029"
-Received: from zulkifl3-ilbpg0.png.intel.com ([10.88.229.114])
-  by orsmga004.jf.intel.com with ESMTP; 22 Dec 2020 08:04:44 -0800
-From:   Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
-To:     davem@davemloft.net, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     noor.azura.ahmad.tarmizi@intel.com, weifeng.voon@intel.com
-Subject: [PATCH net-next v1] stmmac: intel: Add PCI IDs for TGL-H platform
-Date:   Wed, 23 Dec 2020 00:03:37 +0800
-Message-Id: <20201222160337.30870-1-muhammad.husaini.zulkifli@intel.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727719AbgLVQNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 11:13:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727628AbgLVQNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 11:13:20 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E35C0613D6
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 08:12:40 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id 81so12400355ioc.13
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 08:12:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=njGlXLtRwielxtlKtHoN0vNxunsd02VjgOVbDtsTLkw=;
+        b=dn6eHmwnqPMSXPIwlarnk7uXiPAPDWrZOzg9C4jQ8omAuizTUuU8vCLnBPQWXNsVy5
+         1dpsie+9js8dg+7SpmRkLkcfWse15WudB/0WagvMEcJb+7j8Y4OJPE6yX8Q/wAdhL4mZ
+         8MJQhlPIt/txTywQDrnbqm3/pFmgVDaImF9OS6qcv2j8DG94PjL/DRCdXS8BSkGAmbgN
+         MdreiI5Fg5+teiBVAxiY+H+C1Tep0ut+zFBPTER6sa7k0ZU0Z+Ib+KSccNY01FZnfcAr
+         rPPJBcjUSr4Mw1DRZnRiKxI7Wv9tmCcC6i514Btwbk/4fEa7qq6YxUAwLy655NwjjVQX
+         a23w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=njGlXLtRwielxtlKtHoN0vNxunsd02VjgOVbDtsTLkw=;
+        b=Thc90fmsT4uPfHZTmDBbSKeHFgdrifwdg9Jf5nktrCQTuDqjMi3GIT6zY4x2sXf8Hc
+         c3OI729hSKVz0lbAh6jgPsNE6LM3ksr65PKIjZ8RjIS+qY2xXl8lAU+zRGbyEj33NLTW
+         OgSmRy8Oa+N2JbmvkG3F8kF9xzsqllDmF0k7wi1dvAo6AXluYiNvotTrU2xQsLZQbwP0
+         PdaE8Er/HhF/bhmhhOaP7YWSrIJrpBqDNfO2Koo+u+DwWBU1Sv7qYKjLiFCb1TXZenFM
+         XVGXDQ3xPgM0ZfWMvbIZ7ytciTxXgUDbugunrvrbsNs46wTB2hRuxu/J5UoO6ohbGK3r
+         qdKA==
+X-Gm-Message-State: AOAM533qOvJLDxO0T5r1qg1q+w1n+GGg83BPy2tTnR2BD9pd39zLS7HI
+        aTHeSmNLBQnCsbU6xEPPhzg1dixKwvAQ1ZlpdGg=
+X-Google-Smtp-Source: ABdhPJxSn3S7ZI8tS57H0NWxGrwVVAGT2UNyti2EpmfrwEzb5f2mPeylacplg7FGOjKXEJcDexQg7Lb22NMcS859it4=
+X-Received: by 2002:a05:6602:150b:: with SMTP id g11mr18350594iow.88.1608653559857;
+ Tue, 22 Dec 2020 08:12:39 -0800 (PST)
+MIME-Version: 1.0
+References: <20201221193644.1296933-1-atenart@kernel.org> <20201221193644.1296933-2-atenart@kernel.org>
+ <CAKgT0UfTgYhED1f6vdsoT72A3=D2Grh4U-A6pp43FLZoCs30Gw@mail.gmail.com> <160862887909.1246462.8442420561350999328@kwain.local>
+In-Reply-To: <160862887909.1246462.8442420561350999328@kwain.local>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 22 Dec 2020 08:12:28 -0800
+Message-ID: <CAKgT0UfzNA8qk+QFTN6ihXTxZkcE=vfrjBtyHKL6_9Yyzxt=eQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/3] net: fix race conditions in xps by locking the
+ maps and dev->tc_num
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Noor Azura Ahmad Tarmizi <noor.azura.ahmad.tarmizi@intel.com>
+On Tue, Dec 22, 2020 at 1:21 AM Antoine Tenart <atenart@kernel.org> wrote:
+>
+> Hello Alexander, Jakub,
+>
+> Quoting Alexander Duyck (2020-12-22 00:21:57)
+> >
+> > Looking over this patch it seems kind of obvious that extending the
+> > xps_map_mutex is making things far more complex then they need to be.
+> >
+> > Applying the rtnl_mutex would probably be much simpler. Although as I
+> > think you have already discovered we need to apply it to the store,
+> > and show for this interface. In addition we probably need to perform
+> > similar locking around traffic_class_show in order to prevent it from
+> > generating a similar error.
+>
+> I don't think we have the same kind of issues with traffic_class_show:
+> dev->num_tc is used, but not for navigating through the map. Protecting
+> only a single read wouldn't change much. We can still think about what
+> could go wrong here without the lock, but that is not related to this
+> series of fixes.
 
-Add TGL-H PCI info and PCI IDs for the new TSN Controller to the list
-of supported devices.
+The problem is we are actually reading the netdev, tx queue, and
+tc_to_txq mapping. Basically we have several different items that we
+are accessing at the same time. If any one is updated while we are
+doing it then it will throw things off.
 
-Signed-off-by: Noor Azura Ahmad Tarmizi <noor.azura.ahmad.tarmizi@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> If I understood correctly, as things are a bit too complex now, you
+> would prefer that we go for the solution proposed in v1?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 55dbb1a930da..d3608db576f7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -723,6 +723,8 @@ static SIMPLE_DEV_PM_OPS(intel_eth_pm_ops, intel_eth_pci_suspend,
- #define PCI_DEVICE_ID_INTEL_EHL_PSE1_RGMII1G_ID		0x4bb0
- #define PCI_DEVICE_ID_INTEL_EHL_PSE1_SGMII1G_ID		0x4bb1
- #define PCI_DEVICE_ID_INTEL_EHL_PSE1_SGMII2G5_ID	0x4bb2
-+#define PCI_DEVICE_ID_INTEL_TGLH_SGMII1G_0_ID		0x43ac
-+#define PCI_DEVICE_ID_INTEL_TGLH_SGMII1G_1_ID		0x43a2
- #define PCI_DEVICE_ID_INTEL_TGL_SGMII1G_ID		0xa0ac
- 
- static const struct pci_device_id intel_eth_pci_id_table[] = {
-@@ -737,6 +739,8 @@ static const struct pci_device_id intel_eth_pci_id_table[] = {
- 	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII1G_ID, &ehl_pse1_sgmii1g_info) },
- 	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII2G5_ID, &ehl_pse1_sgmii1g_info) },
- 	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_0_ID, &tgl_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_1_ID, &tgl_sgmii1g_info) },
- 	{}
- };
- MODULE_DEVICE_TABLE(pci, intel_eth_pci_id_table);
--- 
-2.17.1
+Yeah, that is what I am thinking. Basically we just need to make sure
+the num_tc cannot be updated while we are reading the other values.
 
+> I can still do the code factoring for the 2 sysfs show operations, but
+> that would then target net-next and would be in a different series. So I
+> believe we'll use the patches of v1, unmodified.
+
+I agree the code factoring would be better targeted to net-next.
+
+The rtnl_lock approach from v1 would work for net and for backports.
+
+> Jakub, should I send a v3 then?
+>
+> Thanks!
+> Antoine
