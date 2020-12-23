@@ -2,74 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B02082E21CB
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4222E21CD
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:01:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbgLWU7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 15:59:38 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:59393 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726650AbgLWU7h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 15:59:37 -0500
-X-Originating-IP: 176.167.17.253
-Received: from localhost (unknown [176.167.17.253])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 4C22760005;
-        Wed, 23 Dec 2020 20:58:53 +0000 (UTC)
-Date:   Wed, 23 Dec 2020 21:58:52 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH v2 3/8] net: sparx5: add hostmode with phylink support
-Message-ID: <20201223205852.GA4138276@piout.net>
-References: <20201217075134.919699-1-steen.hegelund@microchip.com>
- <20201217075134.919699-4-steen.hegelund@microchip.com>
- <20201219195133.GD3026679@lunn.ch>
- <fabe6df8e8d1fab86860164ced4142afae3bd70d.camel@microchip.com>
- <20201222144141.GK3107610@lunn.ch>
+        id S1729096AbgLWU7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 15:59:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43694 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726650AbgLWU7m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 15:59:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 71D88224B2;
+        Wed, 23 Dec 2020 20:59:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608757141;
+        bh=hwyV9m/DOq1mzuCAyM3ww3sqRezZ0VcoMY3occQEJCI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=N+fggvsyVQzXiiWlJnO+iQSmgZ/JoNKVq+N/n5uWlNW9w6dsOt73bDs//WsYxaypF
+         +KJr44KyQYtViruMWO5S/zcWie46CIboSfiIzedc0CY2ZjgI7IPVh+wMoDwKNW2rC9
+         f86/zQm1cp20JB1EqCyFcJyJ4ol19PEYI1bpJAdPD+snWJrYYy2FMIefGmUvLJC2wx
+         UrRjDMTzPc8oOFxJvPDFETdG/2PGn4uU0As6eMMYGSyVPz4MwDUjvYKKbv8we/Xus/
+         7FnCJjLykx5S6EcDnOQhPjNlqD6KdxF3vqv1SwbMCR3VQdb9Eh/pYEgCNr0RtVMy8T
+         vD3Zx20ZPu+NA==
+Date:   Wed, 23 Dec 2020 12:59:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     David Miller <davem@davemloft.net>
+Subject: Winter solstice pause
+Message-ID: <20201223125900.686cc1f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201222144141.GK3107610@lunn.ch>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/12/2020 15:41:41+0100, Andrew Lunn wrote:
-> > Yes the register based injection/extration is not going to be fast, but
-> > the FDMA and its driver is being sent later as separate series to keep
-> > the size of this review down.
-> 
-> FDMA?
-> 
-> I need a bit more background here, just to make use this should be a
-> pure switchdev driver and not a DSA driver.
-> 
+Hi all, just a quick FYI.
 
-I don't think this should be a DSA driver. As for Ocelot, the CPU
-port is not a MAC and in that use case, this would be like a top of the
-rack switch with traffic going to the CPU port being mostly used for
-managmement (dhcp, stp, etc...) as opposed to being used to forward
-traffic to another interface, like WAN or wifi.
+Patches had slowed down to a trickle, so we'll most likely leave the
+trees be until Monday starting now. Many reviewers and maintainers are
+likely to be AFK for the next few days.
 
-However, I would think there will be cases where the internal CPU is not
-use and instead use ths switch in a DSA setting, very much like what is
-done for Felix with regards to Ocelot.
-
-
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Please let us know if anything requires urgent attention :)
