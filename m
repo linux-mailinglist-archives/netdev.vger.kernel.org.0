@@ -2,137 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E76B2E1BB1
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 12:13:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E8D42E1BBA
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 12:16:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728649AbgLWLJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 06:09:32 -0500
-Received: from so254-31.mailgun.net ([198.61.254.31]:43295 "EHLO
-        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728413AbgLWLJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 06:09:28 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1608721742; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=sS6gB7NQorNHJ1fvmwVd8pHeIbjE7GGfwVzQmbtlg/E=; b=lJTOiRv6OzT57aT0JpC8BzAO2Smt2q94uBL7lHhIN1wdisn42YcD6UL2LbFfaE1GaYwtQRwR
- IdsGsEt0cXlwHINRXGiI3zcyXYAwAfRUCnDBx6kgdVuNd5N3ZqA9P7XNCscIs4MObjGMEeoq
- 6YVRBXfUMRW8PcQ7bgQwqJLqxvI=
-X-Mailgun-Sending-Ip: 198.61.254.31
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n10.prod.us-west-2.postgun.com with SMTP id
- 5fe325331d5c1fa42751c66d (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 23 Dec 2020 11:08:35
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 47494C433C6; Wed, 23 Dec 2020 11:08:35 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0BDF2C433ED;
-        Wed, 23 Dec 2020 11:08:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0BDF2C433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     Youghandhar Chintala <youghand@codeaurora.org>,
-        netdev <netdev@vger.kernel.org>,
-        Brian Norris <briannorris@chromium.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        ath10k <ath10k@lists.infradead.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 3/3] ath10k: Set wiphy flag to trigger sta disconnect on hardware restart
-References: <20201215172435.5388-1-youghand@codeaurora.org>
-        <CACTWRwsM_RJnssBpxDpRSbex4_1T9QDv3+ZT7eLnYsgOgtGFQw@mail.gmail.com>
-Date:   Wed, 23 Dec 2020 13:08:29 +0200
-In-Reply-To: <CACTWRwsM_RJnssBpxDpRSbex4_1T9QDv3+ZT7eLnYsgOgtGFQw@mail.gmail.com>
-        (Abhishek Kumar's message of "Tue, 22 Dec 2020 14:36:58 -0800")
-Message-ID: <878s9o6aqa.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728512AbgLWLN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 06:13:58 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:56828 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728249AbgLWLN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 06:13:57 -0500
+Received: by mail-io1-f69.google.com with SMTP id e14so9221773iow.23
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 03:13:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ms/ZOYDFKayMY7pJ4cwiOOATwf8SFvl/AGcvDodOii8=;
+        b=D2nGKKzvEApqjB+vCdy8HlO0ppDD50ftHngmx+aHXGqOvPD6rjGN59634cbCoZ5ohL
+         PCjDNkTihu2KaQEN1x+0sY08n4KKwT2TGhiWr98yK+jjf4ExM3t5qRD5jSm4RtOPj9og
+         4NGGWix/Ut7c5PW3Ph81Lg2y7JaFURN7eINTxQ0ccXxdL2PMPfbCaG5RN7pphSkynhnL
+         YRM5wxncUXEHqBg5JY5a7IyYlHEX++Kv4gZkew8M7wE9Dvx26Vp3117nCnxLbsrMmxv0
+         nwUOTAXS73gmxSPryTOM1hXFNEVKsPR0Hgsjydtjs7ckgi7D+/ZBT1YRpMi1ZkgQSPhD
+         W+8g==
+X-Gm-Message-State: AOAM533V3Se+bU6IGCJxfeS5TO9ojijlh4tjpZBju9+c9r9JfJtkaF5Y
+        wb5btL54WWWjXT59MlRgQR/TODiJXBuXB55+v4MxXbb5vr3l
+X-Google-Smtp-Source: ABdhPJxBNDQjNENCbM+It/qq4sl9wEhzqw1neLZOVMbVQPBPaH1+gcXzResLlwdLED5ncrrPiJgoQze+eeduRItouDIDJx6uPbL9
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Received: by 2002:a05:6e02:f0f:: with SMTP id x15mr24551579ilj.12.1608721996209;
+ Wed, 23 Dec 2020 03:13:16 -0800 (PST)
+Date:   Wed, 23 Dec 2020 03:13:16 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000020641905b71fc7dd@google.com>
+Subject: general protection fault in tipc_crypto_key_distr
+From:   syzbot <syzbot+fff41d21ca02315bd004@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abhishek Kumar <kuabhs@chromium.org> writes:
+Hello,
 
-> On Tue, Dec 15, 2020 at 9:24 AM Youghandhar Chintala
-> <youghand@codeaurora.org> wrote:
->>
->> From: Rakesh Pillai <pillair@codeaurora.org>
->>
->> Currently after the hardware restart triggered from the driver,
->> the station interface connection remains intact, since a disconnect
->> trigger is not sent to userspace. This can lead to a problem in
->> hardwares where the wifi mac sequence is added by the firmware.
->>
->> After the firmware restart, during subsytem recovery, the firmware
->> restarts its wifi mac sequence number. Hence AP to which our device
->> is connected will receive frames with a  wifi mac sequence number jump
->> to the past, thereby resulting in the AP dropping all these frames,
->> until the frame arrives with a wifi mac sequence number which AP was
->> expecting.
->>
->> To avoid such frame drops, its better to trigger a station disconnect
->> upon the  hardware restart. Indicate this support via a WIPHY flag
->> to mac80211, if the hardware params flag mentions the support to
->> add wifi mac sequence numbers for TX frames in the firmware.
->>
->> All the other hardwares, except WCN3990, are not affected by this
->> change, since the hardware params flag is not set for any hardware
->> except for WCN3990
->>
->> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.1-01040-QCAHLSWMTPLZ-1
->> Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00110-QCARMSWP-1
->> Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00048
->>
->> Signed-off-by: Rakesh Pillai <pillair@codeaurora.org>
->> Signed-off-by: Youghandhar Chintala <youghand@codeaurora.org>
->> ---
->>  drivers/net/wireless/ath/ath10k/core.c | 15 +++++++++++++++
->>  drivers/net/wireless/ath/ath10k/hw.h   |  3 +++
->>  drivers/net/wireless/ath/ath10k/mac.c  |  3 +++
->>  3 files changed, 21 insertions(+)
->>
->> diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
->> index 796107b..4155f94 100644
->> --- a/drivers/net/wireless/ath/ath10k/core.c
->> +++ b/drivers/net/wireless/ath/ath10k/core.c
->> @@ -90,6 +90,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
->>                 .hw_filter_reset_required = true,
->>                 .fw_diag_ce_download = false,
->>                 .tx_stats_over_pktlog = true,
->> +               .tx_mac_seq_by_fw = false,
->
-> Probably orthogonal to this patch, there is a static array maintained
-> for different hardware configs and the structure members like
-> "tx_mac_seq_by_fw" are initialized. This does not seem to be scalable
-> and probably these parameters can be auto populated based on FW
-> capabilities and so we don't have to maintain the static array.
-> Thoughts?
+syzbot found the following issue on:
 
-I'm not sure what you mean. But if you are saying that we should move
-ath10k_hw_params_list entirely to firmware then that is a huge task as
-we would need to make changes in every firmware branch, and there are so
-many different branches that I have lost count. And due to backwards
-compatibility we still need to have ath10k_hw_params_list in ath10k for
-few years.
+HEAD commit:    3db1a3fa Merge tag 'staging-5.11-rc1' of git://git.kernel...
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=107df123500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2764fc28a92339f9
+dashboard link: https://syzkaller.appspot.com/bug?extid=fff41d21ca02315bd004
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Unfortunately, I don't have any reproducer for this issue yet.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+fff41d21ca02315bd004@syzkaller.appspotmail.com
+
+RBP: 00007f349d602ca0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000030
+R13: 00007fff8446099f R14: 00007f349d6039c0 R15: 000000000119bf8c
+general protection fault, probably for non-canonical address 0xdffffc0000000004: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+CPU: 0 PID: 5549 Comm: syz-executor.0 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:tipc_aead_key_size include/uapi/linux/tipc.h:254 [inline]
+RIP: 0010:tipc_crypto_key_xmit net/tipc/crypto.c:2245 [inline]
+RIP: 0010:tipc_crypto_key_distr+0x218/0xa70 net/tipc/crypto.c:2211
+Code: 02 00 0f 85 51 08 00 00 48 8b 45 00 49 8d 4d 20 48 89 ca 48 89 4c 24 10 48 c1 ea 03 48 89 04 24 48 b8 00 00 00 00 00 fc ff df <0f> b6 14 02 48 89 c8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 3d
+RSP: 0018:ffffc900025073f0 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff88804fc22e00 RCX: 0000000000000020
+RDX: 0000000000000004 RSI: ffffffff88771597 RDI: ffff88804fc22e40
+RBP: ffff888016bc3000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007f349d603700(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fa36516cdb8 CR3: 0000000025ae0000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __tipc_nl_node_set_key net/tipc/node.c:3008 [inline]
+ tipc_nl_node_set_key+0xcb4/0xf30 net/tipc/node.c:3023
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2336
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2390
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2423
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45e149
+Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f349d602c68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 000000000045e149
+RDX: 0000000000000000 RSI: 0000000020000340 RDI: 0000000000000003
+RBP: 00007f349d602ca0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000030
+R13: 00007fff8446099f R14: 00007f349d6039c0 R15: 000000000119bf8c
+Modules linked in:
+---[ end trace a296abf4d3e5aa59 ]---
+RIP: 0010:tipc_aead_key_size include/uapi/linux/tipc.h:254 [inline]
+RIP: 0010:tipc_crypto_key_xmit net/tipc/crypto.c:2245 [inline]
+RIP: 0010:tipc_crypto_key_distr+0x218/0xa70 net/tipc/crypto.c:2211
+Code: 02 00 0f 85 51 08 00 00 48 8b 45 00 49 8d 4d 20 48 89 ca 48 89 4c 24 10 48 c1 ea 03 48 89 04 24 48 b8 00 00 00 00 00 fc ff df <0f> b6 14 02 48 89 c8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 3d
+RSP: 0018:ffffc900025073f0 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff88804fc22e00 RCX: 0000000000000020
+RDX: 0000000000000004 RSI: ffffffff88771597 RDI: ffff88804fc22e40
+RBP: ffff888016bc3000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000001
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007f349d603700(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fa36516cdb8 CR3: 0000000025ae0000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
