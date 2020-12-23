@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE9F2E15EF
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5797C2E1613
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731355AbgLWCze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:55:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49738 "EHLO mail.kernel.org"
+        id S1731285AbgLWC5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:57:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729157AbgLWCVA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:21:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E526022A83;
-        Wed, 23 Dec 2020 02:20:18 +0000 (UTC)
+        id S1729077AbgLWCUp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:20:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 56672229C5;
+        Wed, 23 Dec 2020 02:20:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690019;
-        bh=QYRAE2X+HHZqjjCwgB3WBYTMKTi+/y4nGivXKqzuziE=;
+        s=k20201202; t=1608690030;
+        bh=CLpvyJm6ey7siVxyqi+mtoGI9mlj4GFiKdSRV/eta8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QXK0Akfmg084XlbK6qFzXmVqLk/fwiz8K7qAl76mSCR9fOIY+QSg3UV5zWJWXyOmA
-         gbFOAx0I7HxI281mHnG6efsDCBdpKZdcvZT+WcNEXuUZPSQzZ5dnNp2eVOQ8ctf0ea
-         rZmY4nTh7TxjgmtR8yV6I4zHjaKcqoG2kQhGtm+ApWy/sLsmloqDZOpM1z4Zu6+6g3
-         1vvRhbAif1mAJV8Uo1Y1VMuwZGbZb62N3UFRXRuUavX6yPfMEKsrNhkFwQCs4hXIdX
-         HZmSzX+XRxwnPtHaLnkE00+o6hWUmvrqr0hh94hGi+pbYeR7tq2eXxYFakU83q8w3Y
-         ZYcpFfes7Py8Q==
+        b=bQLATC8+z/sKizgIv+Z/8+XYSJj1k4GDJz1+RVsfr6HcLBLrCohPxVyh1MXXoWB6d
+         Nkrp8MPmbZsI+eNmKyI8aQGLrWgoikDeMI2Kqydy36M1KeEZZhy3Z3pRbNhQM/wB8+
+         6muKQrqRwW8WQ2fi5I8tUmZ+JvARYxKfpL7ETOjBNkDHMVyq/ZQ8tly7u3bE+XerdU
+         oI9SZ0vwms77af8jLB8fxU5/N5NKzTkmPTNcrwyQUMGyomNA9O+aDzYY7kU9yIuOiw
+         C/tQYZ/VC3sVvhT59k3pSpfsAGIN8UX1crRGeyAzRdDxYpyz9p2f/Q/Jyan5SuckM4
+         ZKtRUxr0xopwA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 097/130] rtlwifi: rtl8192de: fix ofdm power compensation
-Date:   Tue, 22 Dec 2020 21:17:40 -0500
-Message-Id: <20201223021813.2791612-97-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 106/130] iwlwifi: avoid endless HW errors at assert time
+Date:   Tue, 22 Dec 2020 21:17:49 -0500
+Message-Id: <20201223021813.2791612-106-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
@@ -44,60 +43,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: Mordechay Goodstein <mordechay.goodstein@intel.com>
 
-[ Upstream commit 3f79e541593fecc2a90687eb7162e15a499caa33 ]
+[ Upstream commit 861bae42e1f125a5a255ace3ccd731e59f58ddec ]
 
-ofdm_index[] is used to indicate how many power compensation is needed to
-current thermal value. For internal PA module or 2.4G band, the min_index
-is different from other cases.
+Curretly we only mark HW error state "after" trying to collect HW data,
+but if any HW error happens while colleting HW data we go into endless
+loop. avoid this by setting HW error state "before" collecting HW data.
 
-This issue originally is reported by Dan. He found the size of ofdm_index[]
-is 2, but access index 'i' may be equal to 2 if 'rf' is 2 in case of
-'is2t'.
-
-In fact, the chunk of code is added to wrong place, so move it back to
-proper place, and then power compensation and buffer overflow are fixed.
-
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20201207031903.7599-1-pkshih@realtek.com
+Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20201209231352.4c7e5a87da15.Ic35b2f28ff08f7ac23143c80f224d52eb97a0454@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c
-index 71f3b6b5d7bd9..5baa1b127fff0 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c
-@@ -986,18 +986,19 @@ static void rtl92d_dm_txpower_tracking_callback_thermalmeter(
- 			 rtlpriv->dm.cck_index);
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+index 3acbd5b7ab4b2..87f53810fdac3 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+@@ -1291,6 +1291,12 @@ void iwl_mvm_nic_restart(struct iwl_mvm *mvm, bool fw_error)
+ 	} else if (mvm->fwrt.cur_fw_img == IWL_UCODE_REGULAR &&
+ 		   mvm->hw_registered &&
+ 		   !test_bit(STATUS_TRANS_DEAD, &mvm->trans->status)) {
++		/* This should be first thing before trying to collect any
++		 * data to avoid endless loops if any HW error happens while
++		 * collecting debug data.
++		 */
++		set_bit(IWL_MVM_STATUS_HW_RESTART_REQUESTED, &mvm->status);
++
+ 		if (mvm->fw->ucode_capa.error_log_size) {
+ 			u32 src_size = mvm->fw->ucode_capa.error_log_size;
+ 			u32 src_addr = mvm->fw->ucode_capa.error_log_addr;
+@@ -1309,7 +1315,6 @@ void iwl_mvm_nic_restart(struct iwl_mvm *mvm, bool fw_error)
+ 
+ 		if (fw_error && mvm->fw_restart > 0)
+ 			mvm->fw_restart--;
+-		set_bit(IWL_MVM_STATUS_HW_RESTART_REQUESTED, &mvm->status);
+ 		ieee80211_restart_hw(mvm->hw);
  	}
- 	for (i = 0; i < rf; i++) {
--		if (ofdm_index[i] > OFDM_TABLE_SIZE_92D - 1)
-+		if (ofdm_index[i] > OFDM_TABLE_SIZE_92D - 1) {
- 			ofdm_index[i] = OFDM_TABLE_SIZE_92D - 1;
--		else if (ofdm_index[i] < ofdm_min_index)
-+		} else if (internal_pa ||
-+			   rtlhal->current_bandtype == BAND_ON_2_4G) {
-+			if (ofdm_index[i] < ofdm_min_index_internal_pa)
-+				ofdm_index[i] = ofdm_min_index_internal_pa;
-+		} else if (ofdm_index[i] < ofdm_min_index) {
- 			ofdm_index[i] = ofdm_min_index;
-+		}
- 	}
- 	if (rtlhal->current_bandtype == BAND_ON_2_4G) {
- 		if (cck_index > CCK_TABLE_SIZE - 1) {
- 			cck_index = CCK_TABLE_SIZE - 1;
--		} else if (internal_pa ||
--			   rtlhal->current_bandtype == BAND_ON_2_4G) {
--			if (ofdm_index[i] < ofdm_min_index_internal_pa)
--				ofdm_index[i] = ofdm_min_index_internal_pa;
- 		} else if (cck_index < 0) {
- 			cck_index = 0;
- 		}
+ }
 -- 
 2.27.0
 
