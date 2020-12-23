@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D052E12D5
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:28:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F9A2E12DA
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:28:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730442AbgLWCZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:25:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54924 "EHLO mail.kernel.org"
+        id S1728463AbgLWCZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:25:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52758 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730419AbgLWCZO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:25:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0475923331;
-        Wed, 23 Dec 2020 02:24:57 +0000 (UTC)
+        id S1730461AbgLWCZV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:25:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B9C2C22248;
+        Wed, 23 Dec 2020 02:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690298;
-        bh=qTIW01HslnQB8/7Do60W1UDScsQm6zVFr5VugLYSJ4o=;
+        s=k20201202; t=1608690304;
+        bh=dSJT/hf9sQ4STW0fKdZkEoCl8LAygSmBoFKw60XSpeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prbHZdsSXkx1Ya23WNa1FhBke1yDuyajeBTyT5wGeDT7OhwKUtXF3tkph60Ly5Ci4
-         3qwZ3Ghu4cTlU6wrKknoxay/elr+jhyaa29MVdRjgLpBv5MdIOz+i7WfmDUIenCdYh
-         3oAQ9lKcjpLBQDIotcVzBZmNC3fGZiZ2AVTlEdcL7MfyEIB0sUIxB7+62xc7C6Nxmw
-         WBHGC2DzA/9hK3DIsRyUxldMNcQ93xALK5YnY6lmu5R0OSKGsSpkFeBNab0vnkUDjP
-         XcmBB8Y9y/CCOS/7kD5VvwuWO18WoxOR26PPgQ53GAvt3agAoYiQ/j91jg8Xz1mZM9
-         gb46/yIXzmiUA==
+        b=I8DFRsmFrJ1gUzoiTBLpGHGTfOPN3/9GQmNT2PxCNpPReONaZyPxOBwmPNZ/DFvs7
+         KWeKVnKQM1IqN4Rr/yOp5XJz31M4puSkfQbxVZ1xspfzaFXLdWgtWfYAGiCV/7VM3H
+         cqGpqYc6HR7W4wLA5wcxZHnNEodefVS7ttOONVqNaCDb9zCFXaKTbiy2FbHZklqE0D
+         Zbs3FIKNwiWadx0EdX0crEVwsxrQcHGPBM2jNOAFQzO/hZKGoH3PyHUk1jx+jnCBxk
+         JP26esxUS+GU0T/oTag0oiR5Up618QA2EyGz+HLWoYB0U1JbrmWFDLTsq8Py0q9Uv5
+         /Ibcgm0JaeVGA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Martin Schiller <ms@dev.tdt.de>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 34/48] net/lapb: fix t1 timer handling for LAPB_STATE_0
-Date:   Tue, 22 Dec 2020 21:24:02 -0500
-Message-Id: <20201223022417.2794032-34-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 39/48] iwlwifi: trans: consider firmware dead after errors
+Date:   Tue, 22 Dec 2020 21:24:07 -0500
+Message-Id: <20201223022417.2794032-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022417.2794032-1-sashal@kernel.org>
 References: <20201223022417.2794032-1-sashal@kernel.org>
@@ -42,48 +43,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Schiller <ms@dev.tdt.de>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 62480b992ba3fb1d7260b11293aed9d6557831c7 ]
+[ Upstream commit 152fdc0f698896708f9d7889a4ba4da6944b74f7 ]
 
-1. DTE interface changes immediately to LAPB_STATE_1 and start sending
-   SABM(E).
+If we get an error, no longer consider the firmware to be
+in IWL_TRANS_FW_ALIVE state.
 
-2. DCE interface sends N2-times DM and changes to LAPB_STATE_1
-   afterwards if there is no response in the meantime.
-
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20201209231352.a9d01e79c1c7.Ib2deb076b392fb516a7230bac91d7ab8a9586d86@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/lapb/lapb_timer.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-trans.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/lapb/lapb_timer.c b/net/lapb/lapb_timer.c
-index 355cc3b6fa4d3..3d99205f003da 100644
---- a/net/lapb/lapb_timer.c
-+++ b/net/lapb/lapb_timer.c
-@@ -92,11 +92,18 @@ static void lapb_t1timer_expiry(unsigned long param)
- 	switch (lapb->state) {
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-trans.h b/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
+index 0296124a7f9cf..360554727a817 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
+@@ -1238,8 +1238,10 @@ static inline void iwl_trans_fw_error(struct iwl_trans *trans)
+ 		return;
  
- 		/*
--		 *	If we are a DCE, keep going DM .. DM .. DM
-+		 *	If we are a DCE, send DM up to N2 times, then switch to
-+		 *	STATE_1 and send SABM(E).
- 		 */
- 		case LAPB_STATE_0:
--			if (lapb->mode & LAPB_DCE)
-+			if (lapb->mode & LAPB_DCE &&
-+			    lapb->n2count != lapb->n2) {
-+				lapb->n2count++;
- 				lapb_send_control(lapb, LAPB_DM, LAPB_POLLOFF, LAPB_RESPONSE);
-+			} else {
-+				lapb->state = LAPB_STATE_1;
-+				lapb_establish_data_link(lapb);
-+			}
- 			break;
+ 	/* prevent double restarts due to the same erroneous FW */
+-	if (!test_and_set_bit(STATUS_FW_ERROR, &trans->status))
++	if (!test_and_set_bit(STATUS_FW_ERROR, &trans->status)) {
+ 		iwl_op_mode_nic_error(trans->op_mode);
++		trans->state = IWL_TRANS_NO_FW;
++	}
+ }
  
- 		/*
+ /*****************************************************
 -- 
 2.27.0
 
