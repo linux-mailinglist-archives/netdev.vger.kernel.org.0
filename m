@@ -2,65 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0B52E213D
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 21:23:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B73F72E214C
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 21:26:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728903AbgLWUWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 15:22:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38744 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726159AbgLWUWx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 15:22:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 65DD42151B;
-        Wed, 23 Dec 2020 20:22:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608754932;
-        bh=6nziSX9pXTDslXWk3xxiYG4rsaGTqy0cKAr4xbFjJ1M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z8KoyYaCVfHRdKD5Nb7P/iNPfwSH+o8AJWWbl+4mzgFAtIEVEenthmRtCM0NRuePK
-         kBtFvgJYTEQdTmiS3Rk1p+05UfvBPY8YnYu6anjyfLQq1eYsh6kFC3SnmwCkxJJ9On
-         mzeP/1HTm0qP2xZmsG9Ioibog9LItNChUyYEILHwvsae7ZzRj+1hzmKskCE6A5yNf5
-         1BGKFYycqdUUMwBUWdDuo4WQg4ckolPX4s8a7TNdGadLy04NEp7LeWRvIXPVCu/zxe
-         BpYuOkDq8CjqaxYKWKzjuNWzbGFxwxjvtDdEmtwcOTQ0hwVlKGNqMbKBoqmMrl167a
-         OGplU2edDQfcA==
-Date:   Wed, 23 Dec 2020 12:22:11 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Petr Machata <me@pmachata.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        Peter P Waskiewicz Jr <peter.p.waskiewicz.jr@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: Re: [PATCH net] net: dcb: Validate netlink message in DCB handler
-Message-ID: <20201223122211.31b8f3c4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <a2a9b88418f3a58ef211b718f2970128ef9e3793.1608673640.git.me@pmachata.org>
-References: <a2a9b88418f3a58ef211b718f2970128ef9e3793.1608673640.git.me@pmachata.org>
+        id S1729034AbgLWUZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 15:25:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55914 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728872AbgLWUZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 15:25:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608755014;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jEGCTVE9ATlTdf8ZAj1SWqLSDSDRJD/XzKNah8054b8=;
+        b=AHlAMYcaRPRNwiBsobD2ml70F4X0ITzIGrNM/12ZI/EglEMkTVzD9q0OM+Y/2bQbp3kjUR
+        y0nip7POYx92FQf0EE+cPVMvcDQ7vmo74j9AUbqVGgHZhB/McYM1mlP5MsMmgMnTVUon0L
+        UB3GRvD/Ob4UaRSbtGN3jY+w3SUD8TA=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-354-CEn2CnmXOG62UL3lXHraCg-1; Wed, 23 Dec 2020 15:23:32 -0500
+X-MC-Unique: CEn2CnmXOG62UL3lXHraCg-1
+Received: by mail-ot1-f69.google.com with SMTP id q8so103710otk.6
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 12:23:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jEGCTVE9ATlTdf8ZAj1SWqLSDSDRJD/XzKNah8054b8=;
+        b=FHTM1ygKhh/HbiXanbIJKWI231Ke+UEfPbHoD/K9PA72ud+XOLQzUZw6ruk2WCQUIg
+         mVpkXWuMZTCo/qUsG6vZGLuUHZO0xNmd25QiSG9u3LCnwV2VDxhnwDdAl/UZRuodYVVc
+         EXbUVwa7GsZSA6VfLxb23PTpafbdZuL01V6PLH1gS2FOfqFMcrW84tIkf2+UWFmP+31I
+         vv//LFjhQ0Y8s4MRuW3G0un19Uylam7ZabmxjI0hY+FoFE25wvIjYLWskqv8ozFQUyhE
+         Sof9M4Z4X4B4LUMsucB9kXih4wHH3VQABbo2NpyTiUhVyXScuLTuKxcROvzwU4NJqllh
+         oXLg==
+X-Gm-Message-State: AOAM530LuVKpoxOrP0pk1EqN8U7QJUKLiZXU4hxBaSTirf63e9q6YIjD
+        +3BsPZPpRiwNErAO7CX7NmojWoOaAXY81r6YcI2zMBwWl6qk3o9TDDD4Myr/yDkNXnTNK+XJtrQ
+        eVFsMwZbHganCmuHg
+X-Received: by 2002:a9d:1720:: with SMTP id i32mr20877435ota.84.1608755011396;
+        Wed, 23 Dec 2020 12:23:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyFbSWkQxwEnx6ttmV2i8WlJq8bdhyK9MqNLBTw0YAoOpjxrAWooucw9P+vlT0EwJQN/JS9SA==
+X-Received: by 2002:a9d:1720:: with SMTP id i32mr20877423ota.84.1608755011205;
+        Wed, 23 Dec 2020 12:23:31 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id r204sm6107896oif.0.2020.12.23.12.23.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Dec 2020 12:23:30 -0800 (PST)
+From:   trix@redhat.com
+To:     romieu@fr.zoreil.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] via-velocity: remove h from printk format specifier
+Date:   Wed, 23 Dec 2020 12:23:26 -0800
+Message-Id: <20201223202326.132054-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Dec 2020 22:49:44 +0100 Petr Machata wrote:
-> DCB uses the same handler function for both RTM_GETDCB and RTM_SETDCB
-> messages. dcb_doit() bounces RTM_SETDCB mesasges if the user does not have
-> the CAP_NET_ADMIN capability.
-> 
-> However, the operation to be performed is not decided from the DCB message
-> type, but from the DCB command. Thus DCB_CMD_*_GET commands are used for
-> reading DCB objects, the corresponding SET and DEL commands are used for
-> manipulation.
-> 
-> The assumption is that set-like commands will be sent via an RTM_SETDCB
-> message, and get-like ones via RTM_GETDCB. However, this assumption is not
-> enforced.
-> 
-> It is therefore possible to manipulate DCB objects without CAP_NET_ADMIN
-> capability by sending the corresponding command in an RTM_GETDCB message.
-> That is a bug. Fix it by validating the type of the request message against
-> the type used for the response.
-> 
-> Fixes: 2f90b8657ec9 ("ixgbe: this patch adds support for DCB to the kernel and ixgbe driver")
-> Signed-off-by: Petr Machata <me@pmachata.org>
+From: Tom Rix <trix@redhat.com>
 
-Applied, thanks!
+This change fixes the checkpatch warning described in this commit
+commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of unnecessary %h[xudi] and %hh[xudi]")
+
+Standard integer promotion is already done and %hx and %hhx is useless
+so do not encourage the use of %hh[xudi] or %h[xudi].
+
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/via/via-velocity.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/via/via-velocity.c b/drivers/net/ethernet/via/via-velocity.c
+index b65767f9e499..119439f78c1b 100644
+--- a/drivers/net/ethernet/via/via-velocity.c
++++ b/drivers/net/ethernet/via/via-velocity.c
+@@ -1823,7 +1823,7 @@ static void velocity_error(struct velocity_info *vptr, int status)
+ 	if (status & ISR_TXSTLI) {
+ 		struct mac_regs __iomem *regs = vptr->mac_regs;
+ 
+-		netdev_err(vptr->netdev, "TD structure error TDindex=%hx\n",
++		netdev_err(vptr->netdev, "TD structure error TDindex=%x\n",
+ 			   readw(&regs->TDIdx[0]));
+ 		BYTE_REG_BITS_ON(TXESR_TDSTR, &regs->TXESR);
+ 		writew(TRDCSR_RUN, &regs->TDCSRClr);
+-- 
+2.27.0
+
