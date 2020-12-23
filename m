@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A672E14C1
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 143B92E1446
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:47:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731136AbgLWCnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:43:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51348 "EHLO mail.kernel.org"
+        id S1729928AbgLWCXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:23:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729839AbgLWCXG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:23:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EFCD22332A;
-        Wed, 23 Dec 2020 02:22:45 +0000 (UTC)
+        id S1729870AbgLWCXJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:23:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4C54A22202;
+        Wed, 23 Dec 2020 02:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690166;
-        bh=9afOb1yIlqNHf4dkTNn5sLg+EXwzsf4Rj+/X9KXuxSo=;
+        s=k20201202; t=1608690168;
+        bh=ZSp/1PNOV/gCSe20vBJHVmzdqDwADT4YFNctmtlsOi8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CMfk1ypolnMOHQGyc36EiKTbjS9XyVN13PeM8FjaPWTWR+kaERyegxGuwp1XSH6uN
-         +6ZnoE0u0QZsTIlViiECCsfyMKVKsxbIHWAjf2elyVv+flEnBseFk3XrmEOY3k3p9t
-         CWvYYHY9vYfFsR5NG00Ra6Z9dFSuOTo3oDIPkZqIfVg2BLoMt6LM5xzDvZENMgjo89
-         CGk0R5TBK5onloZoWe9DDJQloAYsSNtWmRYNEvh/0va8VZIfClOnQ6aHgcjw9tvGFe
-         /Wp2VJtAjwbhEMxsk24c7Ulr9aVIMSN0Gqi2Bjh4aKZDuTMeC0mipd+VMKEnPAOjMM
-         aE6/FIcZpECVQ==
+        b=A+4Q7RTOqgJ4KWJWxzdaXondSuNkTIqtTS061qhksoCRkRBikdz2XlA/r+vULG+PD
+         cQCRA/smyo5xUaeOH8DefWw3P6f5TDI285j5PxOnZ5B4yrTcaK1wR7FspKrsaITPvQ
+         FgPZrCkRyJrkc8VNchh1iFR3sPwcdP0+bAfB6LSTXnMO7cguhVPRdEBM2PAuHWf6Fp
+         J6QOwLaND7TUa/lIiAK13kEXnXeoy4wc0BCtTsZHIBNIo82LtsQRsrujbV33MV6v/X
+         X9O3PGoEuKYnL9BDpMQ14/3Ps7AHEAbQ7GXpwskUNXRUjtpgWDwWnwDxeHfMIMMo9A
+         aYrclyHSv/Vig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+Cc:     Ilan Peer <ilan.peer@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 83/87] mac80211: don't filter out beacons once we start CSA
-Date:   Tue, 22 Dec 2020 21:20:59 -0500
-Message-Id: <20201223022103.2792705-83-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 84/87] mac80211: Update rate control on channel change
+Date:   Tue, 22 Dec 2020 21:21:00 -0500
+Message-Id: <20201223022103.2792705-84-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022103.2792705-1-sashal@kernel.org>
 References: <20201223022103.2792705-1-sashal@kernel.org>
@@ -44,49 +44,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit 189a164d0fc6c59a22c4486d641d0a0a0d33387a ]
+[ Upstream commit 44b72ca8163b8cf94384a11fdec716f5478411bf ]
 
-I hit a bug in which we started a CSA with an action frame,
-but the AP changed its mind and didn't change the beacon.
-The CSA wasn't cancelled and we lost the connection.
+A channel change or a channel bandwidth change can impact the
+rate control logic. However, the rate control logic was not updated
+before/after such a change, which might result in unexpected
+behavior.
 
-The beacons were ignored because they never changed: they
-never contained any CSA IE. Because they never changed, the
-CRC of the beacon didn't change either which made us ignore
-the beacons instead of processing them.
+Fix this by updating the stations rate control logic when the
+corresponding channel context changes.
 
-Now what happens is:
-1) beacon has CRC X and it is valid. No CSA IE in the beacon
-2) as long as beacon's CRC X, don't process their IEs
-3) rx action frame with CSA
-4) invalidate the beacon's CRC
-5) rx beacon, CRC is still X, but now it is invalid
-6) process the beacon, detect there is no CSA IE
-7) abort CSA
-
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20201206145305.83470b8407e6.I739b907598001362744692744be15335436b8351@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20201206145305.600d967fe3c9.I48305f25cfcc9c032c77c51396e9e9b882748a86@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mlme.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/mac80211/chan.c | 61 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index eb711475cb140..75d791bceb1c6 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -1347,6 +1347,7 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
- 	sdata->csa_chandef = csa_ie.chandef;
- 	sdata->csa_block_tx = csa_ie.mode;
- 	ifmgd->csa_ignored_same_chan = false;
-+	ifmgd->beacon_crc_valid = false;
+diff --git a/net/mac80211/chan.c b/net/mac80211/chan.c
+index b58813568c9ff..cc693ec0777d5 100644
+--- a/net/mac80211/chan.c
++++ b/net/mac80211/chan.c
+@@ -8,6 +8,7 @@
+ #include <net/cfg80211.h>
+ #include "ieee80211_i.h"
+ #include "driver-ops.h"
++#include "rate.h"
  
- 	if (sdata->csa_block_tx)
- 		ieee80211_stop_vif_queues(local, sdata,
+ static int ieee80211_chanctx_num_assigned(struct ieee80211_local *local,
+ 					  struct ieee80211_chanctx *ctx)
+@@ -339,10 +340,42 @@ void ieee80211_recalc_chanctx_min_def(struct ieee80211_local *local,
+ 	drv_change_chanctx(local, ctx, IEEE80211_CHANCTX_CHANGE_MIN_WIDTH);
+ }
+ 
++static void ieee80211_chan_bw_change(struct ieee80211_local *local,
++				     struct ieee80211_chanctx *ctx)
++{
++	struct sta_info *sta;
++	struct ieee80211_supported_band *sband =
++		local->hw.wiphy->bands[ctx->conf.def.chan->band];
++
++	rcu_read_lock();
++	list_for_each_entry_rcu(sta, &local->sta_list,
++				list) {
++		enum ieee80211_sta_rx_bandwidth new_sta_bw;
++
++		if (!ieee80211_sdata_running(sta->sdata))
++			continue;
++
++		if (rcu_access_pointer(sta->sdata->vif.chanctx_conf) !=
++		    &ctx->conf)
++			continue;
++
++		new_sta_bw = ieee80211_sta_cur_vht_bw(sta);
++		if (new_sta_bw == sta->sta.bandwidth)
++			continue;
++
++		sta->sta.bandwidth = new_sta_bw;
++		rate_control_rate_update(local, sband, sta,
++					 IEEE80211_RC_BW_CHANGED);
++	}
++	rcu_read_unlock();
++}
++
+ static void ieee80211_change_chanctx(struct ieee80211_local *local,
+ 				     struct ieee80211_chanctx *ctx,
+ 				     const struct cfg80211_chan_def *chandef)
+ {
++	enum nl80211_chan_width width;
++
+ 	if (cfg80211_chandef_identical(&ctx->conf.def, chandef)) {
+ 		ieee80211_recalc_chanctx_min_def(local, ctx);
+ 		return;
+@@ -350,7 +383,25 @@ static void ieee80211_change_chanctx(struct ieee80211_local *local,
+ 
+ 	WARN_ON(!cfg80211_chandef_compatible(&ctx->conf.def, chandef));
+ 
++	width = ctx->conf.def.width;
+ 	ctx->conf.def = *chandef;
++
++	/* expected to handle only 20/40/80/160 channel widths */
++	switch (chandef->width) {
++	case NL80211_CHAN_WIDTH_20_NOHT:
++	case NL80211_CHAN_WIDTH_20:
++	case NL80211_CHAN_WIDTH_40:
++	case NL80211_CHAN_WIDTH_80:
++	case NL80211_CHAN_WIDTH_80P80:
++	case NL80211_CHAN_WIDTH_160:
++		break;
++	default:
++		WARN_ON(1);
++	}
++
++	if (chandef->width < width)
++		ieee80211_chan_bw_change(local, ctx);
++
+ 	drv_change_chanctx(local, ctx, IEEE80211_CHANCTX_CHANGE_WIDTH);
+ 	ieee80211_recalc_chanctx_min_def(local, ctx);
+ 
+@@ -358,6 +409,9 @@ static void ieee80211_change_chanctx(struct ieee80211_local *local,
+ 		local->_oper_chandef = *chandef;
+ 		ieee80211_hw_config(local, 0);
+ 	}
++
++	if (chandef->width > width)
++		ieee80211_chan_bw_change(local, ctx);
+ }
+ 
+ static struct ieee80211_chanctx *
+@@ -1040,8 +1094,14 @@ ieee80211_vif_use_reserved_reassign(struct ieee80211_sub_if_data *sdata)
+ 	if (WARN_ON(!chandef))
+ 		return -EINVAL;
+ 
++	if (old_ctx->conf.def.width > new_ctx->conf.def.width)
++		ieee80211_chan_bw_change(local, new_ctx);
++
+ 	ieee80211_change_chanctx(local, new_ctx, chandef);
+ 
++	if (old_ctx->conf.def.width < new_ctx->conf.def.width)
++		ieee80211_chan_bw_change(local, new_ctx);
++
+ 	vif_chsw[0].vif = &sdata->vif;
+ 	vif_chsw[0].old_ctx = &old_ctx->conf;
+ 	vif_chsw[0].new_ctx = &new_ctx->conf;
+@@ -1432,6 +1492,7 @@ static int ieee80211_vif_use_reserved_switch(struct ieee80211_local *local)
+ 		ieee80211_recalc_smps_chanctx(local, ctx);
+ 		ieee80211_recalc_radar_chanctx(local, ctx);
+ 		ieee80211_recalc_chanctx_min_def(local, ctx);
++		ieee80211_chan_bw_change(local, ctx);
+ 
+ 		list_for_each_entry_safe(sdata, sdata_tmp, &ctx->reserved_vifs,
+ 					 reserved_chanctx_list) {
 -- 
 2.27.0
 
