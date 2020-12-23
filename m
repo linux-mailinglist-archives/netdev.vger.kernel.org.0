@@ -2,66 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CA6F2E1D0E
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 15:14:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6DC12E1D33
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 15:15:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728910AbgLWOMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 09:12:15 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:9677 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728576AbgLWOMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 09:12:14 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4D1FV44Tf3zkvJg;
-        Wed, 23 Dec 2020 22:10:36 +0800 (CST)
-Received: from ubuntu.network (10.175.138.68) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.498.0; Wed, 23 Dec 2020 22:11:24 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH -next] atmel/at76c50x-usb: use DEFINE_MUTEX (and mutex_init() had been too late)
-Date:   Wed, 23 Dec 2020 22:12:00 +0800
-Message-ID: <20201223141200.32619-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.22.0
+        id S1729153AbgLWOPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 09:15:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55968 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728705AbgLWOPB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 09:15:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1276C2313C;
+        Wed, 23 Dec 2020 14:14:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608732861;
+        bh=A37SSG8eWeOuwQ8uyZJAhWEriNMTI/mw/UyINjzNu4A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p6zvua8a42L42/819eIXq6I+lLKWtfzjstmWe8yYFS6kifaHIm/rPDJriH5BOmBOG
+         JgQJ5n+b0kFkmCcG3BDmbvEWHlGP929GWvQogCOQrI+mzj+QPUoyPA/CT012cmEfM+
+         HSdYSgXTdkUz2Cy9ngCVWlzsXSwB8YS3ZhYuu7qE78GKL6rKttultdNGfx82006/Vj
+         hT2QqVHvQJ1jtLjvim62kQNuMoDRvaXKs6VzKGAFc4dG2AHAI2Ek4dwi5FH5QL+A7/
+         nTJxMZs+UfMayIhkaBz32pTSnLdPFBuMqvgB0khXTTuqS7LSHD/95IrRGW7TAcQMU3
+         yWxzNTYgN99Eg==
+Date:   Wed, 23 Dec 2020 09:14:19 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 4.4 03/38] staging: wimax: depends on NET
+Message-ID: <20201223141419.GA2790422@sasha-vm>
+References: <20201223022516.2794471-1-sashal@kernel.org>
+ <20201223022516.2794471-3-sashal@kernel.org>
+ <20201222183801.327b964f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.138.68]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201222183801.327b964f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/wireless/atmel/at76c50x-usb.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Tue, Dec 22, 2020 at 06:38:01PM -0800, Jakub Kicinski wrote:
+>On Tue, 22 Dec 2020 21:24:41 -0500 Sasha Levin wrote:
+>> From: Randy Dunlap <rdunlap@infradead.org>
+>>
+>> [ Upstream commit 9364a2cf567187c0a075942c22d1f434c758de5d ]
+>>
+>> Fix build errors when CONFIG_NET is not enabled. E.g. (trimmed):
+>
+>This one can be dropped, before wimax moved to staging the dependency
+>was met thru the directory structure.
 
-diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
-index 404257800033..7582761c61e2 100644
---- a/drivers/net/wireless/atmel/at76c50x-usb.c
-+++ b/drivers/net/wireless/atmel/at76c50x-usb.c
-@@ -101,7 +101,7 @@ do {									\
- static uint at76_debug = DBG_DEFAULTS;
- 
- /* Protect against concurrent firmware loading and parsing */
--static struct mutex fw_mutex;
-+static DEFINE_MUTEX(fw_mutex);
- 
- static struct fwentry firmwares[] = {
- 	[0] = { "" },
-@@ -2572,8 +2572,6 @@ static int __init at76_mod_init(void)
- 
- 	printk(KERN_INFO DRIVER_DESC " " DRIVER_VERSION " loading\n");
- 
--	mutex_init(&fw_mutex);
--
- 	/* register this driver with the USB subsystem */
- 	result = usb_register(&at76_driver);
- 	if (result < 0)
+I'll drop it, thanks.
+
 -- 
-2.22.0
-
+Thanks,
+Sasha
