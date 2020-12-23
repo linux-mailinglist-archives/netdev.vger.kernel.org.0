@@ -2,105 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAAE22E212A
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 21:13:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 240F32E212B
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 21:13:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728885AbgLWUL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 15:11:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728872AbgLWUL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 15:11:26 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD13C061794
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 12:10:45 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id c124so413703wma.5
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 12:10:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bztQyLyNoExLthSWLymcM6P8FK1bAjbp8emMGk+l/K4=;
-        b=FX0ZbASq3LHjfN/9tbJ6Ba/avlE3wDJrxWtEBWjXSzuH7kGCHwq/d953n5+b7HnpRs
-         B5AU/syw85nY0U/Dtkyqt5XyEp2GdHF+NbXDtFTUbyBEbb0kP9zo5Drvfyw9Mf+CxLFO
-         BsBIjiedd1Z0ulSmrdwi+56AN1tt7dIhz9GTMZ5ZFzKeX/fW4T+7jBuOAoN2ihmbOWtS
-         Yz9LtKGew8EoxubjSu5iWKbrihWFdIuJDgZ7LxFlTwUcFEwTHRP7AUxleG3tgF3QudGO
-         eGRygk4Kp85nL31MupihzOLqTa7BPrsu2wlTpKvl0YkqBiRgbPRp2Acb33UYHpJrd215
-         JzXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bztQyLyNoExLthSWLymcM6P8FK1bAjbp8emMGk+l/K4=;
-        b=s2PImw52BW3Ap2BCG8rVoVFuEpNVto8nuqAd/RzGqAka0CNR2ejghRdBihf4npx8Yr
-         0OAJC6RiYGhEHbeZcpeMA8RUob6ycSmOyqblEwyS+WFdizDoKixNdcchB6QEqADhoCoH
-         1PWJM64sP7Z+NIiGA/W+xXaGGcbOOC1CWO47SX9zdsHRphvsJcIPpDWlx1771Y+3pI0y
-         EP/ECBzqi7E2QdfZ8sH694YKc/66bzwQT2w6F5iwOZ3KlYs+xzz4H2gpZzpj2Tx3zIXD
-         tjAsfpxvVtzQGows4MV7tT5tKMoHqTvfgOvXjd3koPfq9quG6PFUMjdM1ldSr/A33YOk
-         fmzQ==
-X-Gm-Message-State: AOAM532f4wLfv6A3Lg+RyZ3kyGc/Mt9KQSjqqfLbjnqeuGETk9Z9064U
-        zTHOuAehtNJdVJdWUZqSyFv+0b00zOVYfmOlgtjVBJ7GCmIZew==
-X-Google-Smtp-Source: ABdhPJxO5IEfRMAXlgqjdZ+LW/4xnE4P3NlJSGKdEmJVQjGhiHxbViZLNmey8PemTzB6qwH9g7f3sziwmQJHB8Occg4=
-X-Received: by 2002:a1c:220b:: with SMTP id i11mr1284856wmi.8.1608754243335;
- Wed, 23 Dec 2020 12:10:43 -0800 (PST)
+        id S1728722AbgLWULw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 15:11:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37534 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728444AbgLWULw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 15:11:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 27B09223E4;
+        Wed, 23 Dec 2020 20:11:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608754271;
+        bh=EEDhB1/RZds6D1bnPUvgChYVFG1ElLm+RDVB9ksbuwA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bGDZ/W1WwxjNZH+KrkdOtM2THvbNpr+oQlWMU4zBqGZutp/0kY/HnhYOAntcxE9hM
+         DouODgDtoynA31hxVgSPfIiCnZx1Sea7ouFR1x1z9fUHzTLCa7nWTgCJuP6HlizX+E
+         qvB3lsRdgo3KOENxI6NkZ0s89eg0TN4SJSmSpZuwPi6rFlQcTyK5YYRAfQNBpdHrTk
+         coYN5ehjJ+CuG3Tv1YOdgD5/GuizgMcQL4WVL2oSa7fTsRMYR8FS76j6UiAOL3ZA8J
+         YTQjH/EolXtrmp9vu9Z9DWJuBH9wuYnI2mMTWowa/bFeYAhEZZTRtcOEhIN+jNrcVu
+         /RYW2WuwaN2Cg==
+Date:   Wed, 23 Dec 2020 12:11:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net v2 1/3] net: fix race conditions in xps by locking
+ the maps and dev->tc_num
+Message-ID: <20201223121110.65effe06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <160875219353.1783433.8066935261216141538@kwain.local>
+References: <20201221193644.1296933-1-atenart@kernel.org>
+        <20201221193644.1296933-2-atenart@kernel.org>
+        <CAKgT0UfTgYhED1f6vdsoT72A3=D2Grh4U-A6pp43FLZoCs30Gw@mail.gmail.com>
+        <160862887909.1246462.8442420561350999328@kwain.local>
+        <CAKgT0UfzNA8qk+QFTN6ihXTxZkcE=vfrjBtyHKL6_9Yyzxt=eQ@mail.gmail.com>
+        <20201223102729.6463a5c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <160875219353.1783433.8066935261216141538@kwain.local>
 MIME-Version: 1.0
-References: <20201219214034.21123-1-ljp@linux.ibm.com> <20201222184615.13ba9cad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAOhMmr6c2M68fj0Mec=vhHr7krYkB8Bih-koC9o9F=0CJOCQgQ@mail.gmail.com> <20201223085047.402fa916@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201223085047.402fa916@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Lijun Pan <lijunp213@gmail.com>
-Date:   Wed, 23 Dec 2020 14:10:32 -0600
-Message-ID: <CAOhMmr4dOvA8O8Y_H7z6D+QPNVwHq1D0z3e=h75QdPb9JR=3Rg@mail.gmail.com>
-Subject: Re: [PATCH net] ibmvnic: continue fatal error reset after passive init
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lijun Pan <ljp@linux.ibm.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 23, 2020 at 10:50 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 23 Dec 2020 02:21:09 -0600 Lijun Pan wrote:
-> > On Tue, Dec 22, 2020 at 8:48 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Sat, 19 Dec 2020 15:40:34 -0600 Lijun Pan wrote:
-> > > > Commit f9c6cea0b385 ("ibmvnic: Skip fatal error reset after passive init")
-> > > > says "If the passive
-> > > > CRQ initialization occurs before the FATAL reset task is processed,
-> > > > the FATAL error reset task would try to access a CRQ message queue
-> > > > that was freed, causing an oops. The problem may be most likely to
-> > > > occur during DLPAR add vNIC with a non-default MTU, because the DLPAR
-> > > > process will automatically issue a change MTU request.
-> > > > Fix this by not processing fatal error reset if CRQ is passively
-> > > > initialized after client-driven CRQ initialization fails."
-> > > >
-> > > > Even with this commit, we still see similar kernel crashes. In order
-> > > > to completely solve this problem, we'd better continue the fatal error
-> > > > reset, capture the kernel crash, and try to fix it from that end.
-> > >
-> > > This basically reverts the quoted fix. Does the quoted fix make things
-> > > worse? Otherwise we should leave the code be until proper fix is found.
-> >
-> > Yes, I think the quoted commit makes things worse. It skips the specific
-> > reset condition, but that does not fix the problem it claims to fix.
->
-> Okay, let's make sure the commit message explains how it makes things
-> worse.
+On Wed, 23 Dec 2020 20:36:33 +0100 Antoine Tenart wrote:
+> Quoting Jakub Kicinski (2020-12-23 19:27:29)
+> > On Tue, 22 Dec 2020 08:12:28 -0800 Alexander Duyck wrote: =20
+> > > On Tue, Dec 22, 2020 at 1:21 AM Antoine Tenart <atenart@kernel.org> w=
+rote:
+> > >  =20
+> > > > If I understood correctly, as things are a bit too complex now, you
+> > > > would prefer that we go for the solution proposed in v1?   =20
+> > >=20
+> > > Yeah, that is what I am thinking. Basically we just need to make sure
+> > > the num_tc cannot be updated while we are reading the other values. =
+=20
+> >=20
+> > Yeah, okay, as much as I dislike this approach 300 lines may be a little
+> > too large for stable.
+> >  =20
+> > > > I can still do the code factoring for the 2 sysfs show operations, =
+but
+> > > > that would then target net-next and would be in a different series.=
+ So I
+> > > > believe we'll use the patches of v1, unmodified.   =20
+> >=20
+> > Are you saying just patch 3 for net-next? =20
+>=20
+> The idea would be to:
+>=20
+> - For net, to take all 4 patches from v1. If so, do I need to resend
+>   them?
 
-I will reword the commit message.
+Yes, please.
 
->
-> > The effective fix is upstream SHA 0e435befaea4 and a0faaa27c716. So I
-> > think reverting it to the original "else" condition is the right thing to do.
->
-> Hm. So the problem is fixed? But the commit message says "we still see
-> similar kernel crashes", that's present tense suggesting that crashes
-> are seen on current net/master. Are you saying that's not the case and
-> after 0e435befaea4 and a0faaa27c716 there are no more crashes?
+> - For net-next, to resend patches 2 and 3 from v2 (they'll have to be
+>   slightly reworked, to take into account the review from Alexander and
+>   the rtnl lock). The patches can be sent once the ones for net land in
+>   net-next.
 
-This patch was formed before I submitted 0e435befaea4 and a0faaa27c716, so
-I used the wording "we still see similar kernel crashes". I will modify
-the commit message before I submit v2 of this patch.
-After 0e435befaea4 and a0faaa27c716, I don't see any crashes as described
-in this quoted commit even without this quoted commit.
-That's why I am sure this quoted commit does not fix the described problem
-and I want to revert it.
+If the direction is to remove xps_map_mutex, why would we need patch 2?
+=F0=9F=A4=94
+
+> > We need to do something about the fact that with sysfs taking
+> > rtnl_lock xps_map_mutex is now entirely pointless. I guess its value
+> > eroded over the years since Tom's initial design so we can just get
+> > rid of it. =20
+>=20
+> We should be able to remove the mutex (I'll double check as more
+> functions are involved). If so, I can send a patch to net-next.
