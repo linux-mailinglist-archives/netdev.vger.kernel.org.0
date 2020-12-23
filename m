@@ -2,37 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 011F02E15BA
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:58:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB0D2E1588
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:58:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730366AbgLWCwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:52:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45492 "EHLO mail.kernel.org"
+        id S1731030AbgLWCtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:49:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51082 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728110AbgLWCVY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:21:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 58C5422525;
-        Wed, 23 Dec 2020 02:21:08 +0000 (UTC)
+        id S1729542AbgLWCWE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:22:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ACEE722A83;
+        Wed, 23 Dec 2020 02:21:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690069;
-        bh=fjgtExWZPnGJ3WXsk0hpeCWTgmFczn/s8VSI2lMl0as=;
+        s=k20201202; t=1608690083;
+        bh=Cl6NP0zqV8K6cUf7Tyq92YjgTqKWZ92pk4ideqkSxB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PoqtuYGuNbtGot8PqVYFNAuGyJJP2V66+aSEe6aXaQD0nVqk4h+vdt/bwC8c2XJsm
-         QuHOIcKW5ImOd0UvLC8QMHIy7oX9fhLd/m6rJ7z5xS6gHYaoo0RzD5oNDa/nXhne4X
-         23byY2+uCUKiDUopV6TnFno6EXAwzsKSEtMWONzR7f/Qvan5Tfo/GadZmTzMYhnRo/
-         gXjPW/YwyK18K0c3udHJTUYuWP/U1Myr8ROL34v2newhgaGRP3tTy2CDKkrFbUbJsq
-         h/gbVDGdVOct9wQAhdV2Y9eamn8r/KCw6tup4cc6wDpagzN2/IVxIHVD0Zh3amXHS4
-         fXj8Oj7EKkfOQ==
+        b=pmyF+yL13XvXY+9d1RzrBRRwYZoOIA10+XAiO6O0JnJC0Gu2ZQVj04okMdBCSezHh
+         mq/FmOB/KxcJAp4m+KeJo0dXgD4S/+pJApS0mcae4MW3GILP5mh6XUAudX+LOUf8y4
+         MXD4+f83HUMUx25/zbEkMCT2leA8do4uGIA+sQQfMJIloXZsNbw2qZ6KW/5VJkvW7V
+         JmRxK7hh2g/wiT8K58/N7E293MJiOtIu0npMypdlJdNwJDIsZ61oQh/k2PulKGsm4B
+         vjX58yDbQ2P/Bg671h2376EKnjTvJflT9R30pY5Q9nuHZqfVbg2kQsvG5g8c/RwwFA
+         77gkx4UXs0QVA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Cc:     Marek Vasut <marex@denx.de>, Angus Ainslie <angus@akkea.ca>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Martin Kepplinger <martink@posteo.de>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 04/87] staging: wimax: depends on NET
-Date:   Tue, 22 Dec 2020 21:19:40 -0500
-Message-Id: <20201223022103.2792705-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 15/87] rsi: Fix TX EAPOL packet handling against iwlwifi AP
+Date:   Tue, 22 Dec 2020 21:19:51 -0500
+Message-Id: <20201223022103.2792705-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022103.2792705-1-sashal@kernel.org>
 References: <20201223022103.2792705-1-sashal@kernel.org>
@@ -44,56 +49,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 9364a2cf567187c0a075942c22d1f434c758de5d ]
+[ Upstream commit 65277100caa2f2c62b6f3c4648b90d6f0435f3bc ]
 
-Fix build errors when CONFIG_NET is not enabled. E.g. (trimmed):
+In case RSI9116 SDIO WiFi operates in STA mode against Intel 9260 in AP mode,
+the association fails. The former is using wpa_supplicant during association,
+the later is set up using hostapd:
 
-ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_alloc':
-op-msg.c:(.text+0xa9): undefined reference to `__alloc_skb'
-ld: op-msg.c:(.text+0xcc): undefined reference to `genlmsg_put'
-ld: op-msg.c:(.text+0xfc): undefined reference to `nla_put'
-ld: op-msg.c:(.text+0x168): undefined reference to `kfree_skb'
-ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_data_len':
-op-msg.c:(.text+0x1ba): undefined reference to `nla_find'
-ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_send':
-op-msg.c:(.text+0x311): undefined reference to `init_net'
-ld: op-msg.c:(.text+0x326): undefined reference to `netlink_broadcast'
-ld: drivers/staging/wimax/stack.o: in function `__wimax_state_change':
-stack.c:(.text+0x433): undefined reference to `netif_carrier_off'
-ld: stack.c:(.text+0x46b): undefined reference to `netif_carrier_on'
-ld: stack.c:(.text+0x478): undefined reference to `netif_tx_wake_queue'
-ld: drivers/staging/wimax/stack.o: in function `wimax_subsys_exit':
-stack.c:(.exit.text+0xe): undefined reference to `genl_unregister_family'
-ld: drivers/staging/wimax/stack.o: in function `wimax_subsys_init':
-stack.c:(.init.text+0x1a): undefined reference to `genl_register_family'
+iwl$ cat hostapd.conf
+interface=wlp1s0
+ssid=test
+country_code=DE
+hw_mode=g
+channel=1
+wpa=2
+wpa_passphrase=test
+wpa_key_mgmt=WPA-PSK
+iwl$ hostapd -d hostapd.conf
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+rsi$ wpa_supplicant -i wlan0 -c <(wpa_passphrase test test)
+
+The problem is that the TX EAPOL data descriptor RSI_DESC_REQUIRE_CFM_TO_HOST
+flag and extended descriptor EAPOL4_CONFIRM frame type are not set in case the
+AP is iwlwifi, because in that case the TX EAPOL packet is 2 bytes shorter.
+
+The downstream vendor driver has this change in place already [1], however
+there is no explanation for it, neither is there any commit history from which
+such explanation could be obtained.
+
+[1] https://github.com/SiliconLabs/RS911X-nLink-OSD/blob/master/rsi/rsi_91x_hal.c#L238
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Angus Ainslie <angus@akkea.ca>
+Cc: David S. Miller <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Martin Kepplinger <martink@posteo.de>
+Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20201102072456.20303-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20201015111616.429220-1-marex@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wimax/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/rsi/rsi_91x_hal.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/wimax/Kconfig b/net/wimax/Kconfig
-index e4d97ab476d58..945bdf4738eb6 100644
---- a/net/wimax/Kconfig
-+++ b/net/wimax/Kconfig
-@@ -4,6 +4,7 @@
- 
- menuconfig WIMAX
- 	tristate "WiMAX Wireless Broadband support"
-+	depends on NET
- 	depends on RFKILL || !RFKILL
- 	help
- 
+diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
+index a7b341e95e764..0da95777f1c15 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_hal.c
++++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
+@@ -238,7 +238,8 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
+ 			rsi_set_len_qno(&data_desc->len_qno,
+ 					(skb->len - FRAME_DESC_SZ),
+ 					RSI_WIFI_MGMT_Q);
+-		if ((skb->len - header_size) == EAPOL4_PACKET_LEN) {
++		if (((skb->len - header_size) == EAPOL4_PACKET_LEN) ||
++		    ((skb->len - header_size) == EAPOL4_PACKET_LEN - 2)) {
+ 			data_desc->misc_flags |=
+ 				RSI_DESC_REQUIRE_CFM_TO_HOST;
+ 			xtend_desc->confirm_frame_type = EAPOL4_CONFIRM;
 -- 
 2.27.0
 
