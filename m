@@ -2,75 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5841A2E1EEB
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 16:51:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AEF52E1F60
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 17:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728209AbgLWPua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 10:50:30 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38818 "EHLO vps0.lunn.ch"
+        id S1726396AbgLWQTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 11:19:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56712 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726885AbgLWPu3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 10:50:29 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ks6OM-00Dc5c-Q3; Wed, 23 Dec 2020 16:49:34 +0100
-Date:   Wed, 23 Dec 2020 16:49:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
+        id S1726247AbgLWQTc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 11:19:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6AC6722BF3;
+        Wed, 23 Dec 2020 16:18:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608740331;
+        bh=3+M5dgFaogEfz2BIpAkiSTBvxwVIpEs3yiTB1VyEuUs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=P8HMSPHsWn6XRJQUqh9mUm96xAaICT16epLDMBPr20CAhP2IcMk354rtUtftIdWdY
+         t6ZhVAcchO35Br4gp7qlOYfnwK2ncnals2kYVaamDRxbyunNEy89Xx023xVhPljir7
+         eD7UsRWvKdH7ogjONvYLq50NzznX165MSMRNY+dXTAc9ivIzw/be0iFJxHCfuJ8b/W
+         JstkAY3wg7Y6hbPWYF07GfxBPMV5iGVOn2dNbaWsZK/DstsBLgQwUsI0fVQMSOhA8m
+         ZDQcXuMXiJqfasTNBO2JhKj6oRV3gdy3M6yTetAawGst3wOyC1ba5RWGBNcQBoEkGW
+         ZJwUCgdP5ao/w==
+Date:   Wed, 23 Dec 2020 08:18:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Baruch Siach <baruch@tkos.co.il>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Device Tree List <devicetree@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH v2 8/8] arm64: dts: sparx5: Add the Sparx5 switch node
-Message-ID: <20201223154934.GE3198262@lunn.ch>
-References: <20201217075134.919699-1-steen.hegelund@microchip.com>
- <20201217075134.919699-9-steen.hegelund@microchip.com>
- <20201219202448.GE3026679@lunn.ch>
- <20201223143124.tr2vejqgpf2qsot2@mchp-dev-shegelun>
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH v2] docs: netdev-FAQ: fix question headers formatting
+Message-ID: <20201223081850.772efcbf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f76078ba5547744f2ec178984c32fbc7dcd29a2b.1608454187.git.baruch@tkos.co.il>
+References: <f76078ba5547744f2ec178984c32fbc7dcd29a2b.1608454187.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201223143124.tr2vejqgpf2qsot2@mchp-dev-shegelun>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 23, 2020 at 03:31:24PM +0100, Steen Hegelund wrote:
-> On 19.12.2020 21:24, Andrew Lunn wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > > +             port13: port@13 {
-> > > +                     reg = <13>;
-> > > +                     /* Example: CU SFP, 1G speed */
-> > > +                     max-speed = <10000>;
-> > 
-> > One too many 0's for 1G.
+On Sun, 20 Dec 2020 10:49:47 +0200 Baruch Siach wrote:
+> Join adjacent questions to a single question line. This fixes the
+> formatting of questions that were not part of the heading.
 > 
-> Ah, but this is allocation for the port, not the speed.
+> Also, drop Q: and A: prefixes. We don't need them now that questions and
+> answers are visually separated.
+> 
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 
-phylib will look for this property and change what the PHY advertises
-based on this. There are some devices with Fast Ethernet but with a 1G
-PHY, because they are cheaper. By setting max-speed=<100>; phylib will
-stop the PHY advertising 1000Base-T/Full and 1000Base-T/Half. I can
-imaging the same is used when the MAC can do 2.5G, but the PHY is 5G
-capable, etc.
-
-> This just used by the calendar module to allocate slots on the taxis
-> as requested.  So I would say it is OK to overallocate in this case
-> (but you could argue it does not make much sense).
-
-Rather than misusing the max-speed property, it would be better to add
-a property with your specific meaning.
-
-  Andrew
+Applied, thanks!
