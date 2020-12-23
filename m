@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 023A62E1FBB
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 18:09:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD0A2E1FC8
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 18:14:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727152AbgLWRIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 12:08:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36004 "EHLO mail.kernel.org"
+        id S1726859AbgLWRO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 12:14:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725950AbgLWRIK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 12:08:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 933182229C;
-        Wed, 23 Dec 2020 17:07:29 +0000 (UTC)
+        id S1725807AbgLWRO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 12:14:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EB84422202;
+        Wed, 23 Dec 2020 17:13:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608743250;
-        bh=Tul9GE02D4kuMrXf8XkIEh/AjbOZAulo27rJPi4l0pI=;
+        s=k20201202; t=1608743626;
+        bh=qmTMa9lSuuSm2XZ5ja0n+u8oUv/CyBev2vPCt8NrB0M=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qSNp5/hyMYbmggWwtV0ksWzRu5UyjSAn6Amx3xwfbuiJjtoZuwPXAT5zOKaSXfMJQ
-         qlrqDtIpFK7FgTbWqTryBMexZ9B+uIJCHPYHOpcce2kVF1HXqyb6RR9xs3Ok5eqjbT
-         mLHpDO/cQHg8kkNYQ/PyKQMMdbCJhirvpPMr5hX9VMEPgxJzdIl6xn0nbjztwLcJSo
-         iOrIQIKoyyJcOdLCxHi0ogT0sVBRH5vsET9sCCOtXVfRzDquIK987fXcdW0zinKX/o
-         46pcNrW2nVX7b6Uuk+u4ARDPKpStgsYOmw+kE0GAUNGQoLP89Zc3foeKy+i0MvjLjH
-         AbNQkbpbHa3Aw==
-Date:   Wed, 23 Dec 2020 09:07:28 -0800
+        b=KUE2akLmaK6jET7gtbtiTTeG7yupaxsB8GrZww3vT5gr8mMWtwZXHla+uA7t+/Iu2
+         9Kkq35vd6szc1vgcMmtaeApSHdyNytnRn0CN2l3TR/6EAV7G4PMnzvObtKYKa1f7d0
+         RDBKba0N6fj9S9jaJPrGkPU5Iq58DUYV5JNrY56dsoK3ukm/+xcIPepNKIJwsLAwk8
+         wvKXEADbNiYATYFzfjBcVu0I5rTHHN+cT2LPU45h5kM3nGbp0p6bYkCcbU5eDMmMNl
+         j6h2/dW7aGAmESMc813B2hYY9ASMI/ZJpXr7T+3LvGPn/xAIA3I5K7TGdStSMmVJM/
+         3Tyw/hYfDC8LA==
+Date:   Wed, 23 Dec 2020 09:13:44 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Robert Marko <robert.marko@sartura.hr>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, andrew@lunn.ch, linux@armlinux.org.uk,
-        Luka Perkov <luka.perkov@sartura.hr>
-Subject: Re: [PATCH 3/4] net: phy: Add Qualcomm QCA807x driver
-Message-ID: <20201223090728.38fa059d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201222222637.3204929-4-robert.marko@sartura.hr>
-References: <20201222222637.3204929-1-robert.marko@sartura.hr>
-        <20201222222637.3204929-4-robert.marko@sartura.hr>
+To:     Jeff Dike <jdike@akamai.com>
+Cc:     <netdev@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, <stable@vger.kernel.org>
+Subject: Re: [PATCH Repost to netdev] virtio_net: Fix recursive call to
+ cpus_read_lock()
+Message-ID: <20201223091344.1363c061@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201223025421.671-1-jdike@akamai.com>
+References: <20201223025421.671-1-jdike@akamai.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Dec 2020 23:26:36 +0100 Robert Marko wrote:
-> This adds driver for the Qualcomm QCA8072 and QCA8075 PHY-s.
->=20
-> They are 2 or 5 port IEEE 802.3 clause 22 compliant
-> 10BASE-Te, 100BASE-TX and 1000BASE-T PHY-s.
->=20
-> They feature 2 SerDes, one for PSGMII or QSGMII connection with MAC,
-> while second one is SGMII for connection to MAC or fiber.
->=20
-> Both models have a combo port that supports 1000BASE-X and 100BASE-FX
-> fiber.
->=20
-> Each PHY inside of QCA807x series has 2 digitally controlled output only
-> pins that natively drive LED-s.
-> But some vendors used these to driver generic LED-s controlled by
-> user space, so lets enable registering each PHY as GPIO controller and
-> add driver for it.
->=20
-> This also adds the ability to specify DT properties so that 1000 Base-T
-> LED will also be lit up for 100 and 10 Base connections.
->=20
-> This is usually done by U-boot, but boards running mainline U-boot are
-> not configuring this yet.
->=20
-> These PHY-s are commonly used in Qualcomm IPQ40xx, IPQ60xx and IPQ807x
-> boards.
->=20
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> Cc: Luka Perkov <luka.perkov@sartura.hr>
+On Tue, 22 Dec 2020 21:54:21 -0500 Jeff Dike wrote:
+> virtnet_set_channels can recursively call cpus_read_lock if CONFIG_XPS
+> and CONFIG_HOTPLUG are enabled.
+> 
+> The path is:
+>     virtnet_set_channels - calls get_online_cpus(), which is a trivial
+> wrapper around cpus_read_lock()
+>     netif_set_real_num_tx_queues
+>     netif_reset_xps_queues_gt
+>     netif_reset_xps_queues - calls cpus_read_lock()
+> 
+> This call chain and potential deadlock happens when the number of TX
+> queues is reduced.
+> 
+> This commit the removes netif_set_real_num_[tr]x_queues calls from
+> inside the get/put_online_cpus section, as they don't require that it
+> be held.
 
-You need to rebase this on a more current tree:
+Fixes: 47be24796c13 ("virtio-net: fix the set affinity bug when CPU IDs are not consecutive")
 
-../drivers/net/phy/qca807x.c:770:4: error: =E2=80=98struct phy_driver=E2=80=
-=99 has no member named =E2=80=98ack_interrupt=E2=80=99; did you mean =E2=
-=80=98handle_interrupt=E2=80=99?
-  770 |   .ack_interrupt =3D qca807x_ack_intr,
-      |    ^~~~~~~~~~~~~
-      |    handle_interrupt
-../drivers/net/phy/qca807x.c:770:20: error: initialization of =E2=80=98irqr=
-eturn_t (*)(struct phy_device *)=E2=80=99 {aka =E2=80=98enum irqreturn (*)(=
-struct phy_device *)=E2=80=99} from incompatible pointer type =E2=80=98int =
-(*)(struct phy_device *)=E2=80=99 [-Werror=3Dincompatible-pointer-types]
-  770 |   .ack_interrupt =3D qca807x_ack_intr,
-      |                    ^~~~~~~~~~~~~~~~
+> Signed-off-by: Jeff Dike <jdike@akamai.com>
+> Acked-by: Jason Wang <jasowang@redhat.com>
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+> Cc: stable@vger.kernel.org
+
+Queued for stable.
+
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 052975ea0af4..e02c7e0f1cf9 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -2093,14 +2093,16 @@ static int virtnet_set_channels(struct net_device *dev,
+>  
+>  	get_online_cpus();
+>  	err = _virtnet_set_queues(vi, queue_pairs);
+> -	if (!err) {
+> -		netif_set_real_num_tx_queues(dev, queue_pairs);
+> -		netif_set_real_num_rx_queues(dev, queue_pairs);
+> -
+> -		virtnet_set_affinity(vi);
+> +	if (err){
+
+Added missing space here.
+
+> +		put_online_cpus();
+> +		goto err;
+>  	}
+
+And applied, thanks!
