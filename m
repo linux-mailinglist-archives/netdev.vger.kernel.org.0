@@ -2,105 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D83952E20EB
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 20:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBF5E2E20F2
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 20:40:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728642AbgLWTdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 14:33:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35238 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727794AbgLWTdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 14:33:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608751915;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=IMMzliPJltnJSKAXZOaKlHE4t3zwiI7ZHw+YJUrquL4=;
-        b=NhA6RvYjmlaKmL2I4shcyZFCCtDfI9g/jpYlosqlFKBLCkWBw8LNJ2rqAPIm5b+v75x8U/
-        fryysQwDhgidU8x41bS5YXAqQ29bguDYRlIf0ntnl3YA7k2J5/nZMv2zNRpMXYbUtc4HsU
-        WHwbjl4yY/It0RAW7m5ZgufkN15LSzY=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-443-FM1aIxNeOC-64WFJiY0i9A-1; Wed, 23 Dec 2020 14:31:53 -0500
-X-MC-Unique: FM1aIxNeOC-64WFJiY0i9A-1
-Received: by mail-qt1-f197.google.com with SMTP id n12so31113qta.9
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 11:31:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IMMzliPJltnJSKAXZOaKlHE4t3zwiI7ZHw+YJUrquL4=;
-        b=WrYoXoI1OytRXp2Vqct4tGkoqpCjN3TwahbsvLy5IotF+1FseoRxB0phsB34ikt0LK
-         B6OjazaEHKW4yteT8gQwIWPmx2Q4ndpDGMA4oee4Gugc84UqzqjNJuTEILx4XO9rQe2D
-         p5KnYaUUrIEQw9vIdQRLIT/WNMf9WS7t6TV3iWTuloQcG06HdQHE2f7WGeLsm/iY4/IP
-         6MLcA0y8Uh3dP4pAuyp8G6DdwCR6JgqG/MKctEN82UQ+hI5wf0rz+JPN+whX1AwMyhH2
-         ab1HOmLFtccT+E3q77vXDSSLD0ag3j5AaPstKsPWbo0vBWE36uxtb6EShTkVlizKsxXF
-         ZLTw==
-X-Gm-Message-State: AOAM5327qVALbLWgNqAtyUBzG+v+eofn4tm7u0ZC5FPSTSJdqCMgQc8n
-        vi+dk9p/JIUxjSyKUzop1qxuXVBcYNS+jKL1mrqRhVRoszZphvZ9zA2sC2wN+0RbRkHJVhD7mPp
-        4EREnAoaWlLbRLOgn
-X-Received: by 2002:a37:9f82:: with SMTP id i124mr28376814qke.264.1608751913032;
-        Wed, 23 Dec 2020 11:31:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwi/OMM/MITqjGQW17zbEfqi8WbAkgk/usV9HUq/eBvDm1TbQeVMU4ddfCjtHUaIjfIMqO1sg==
-X-Received: by 2002:a37:9f82:: with SMTP id i124mr28376790qke.264.1608751912830;
-        Wed, 23 Dec 2020 11:31:52 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id f6sm15956912qkh.2.2020.12.23.11.31.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Dec 2020 11:31:52 -0800 (PST)
-From:   trix@redhat.com
-To:     netanel@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
-        saeedb@amazon.com, zorik@amazon.com, davem@davemloft.net,
-        kuba@kernel.org, sameehj@amazon.com, shayagr@amazon.com,
-        amitbern@amazon.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: ena: remove h from printk format specifier
-Date:   Wed, 23 Dec 2020 11:31:44 -0800
-Message-Id: <20201223193144.123521-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        id S1728176AbgLWThR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 14:37:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33204 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727794AbgLWThR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 14:37:17 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1F2C322202;
+        Wed, 23 Dec 2020 19:36:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608752196;
+        bh=1D5Iynoo5CSgModaUyibjHKSmHY39reLEMiW+yosW2o=;
+        h=In-Reply-To:References:To:From:Subject:Cc:Date:From;
+        b=t1xS2x8PRV8NWzCG2lSXRvjXyT85ZVxq33blrJvcSlVLXd1u8DGI4F9Oo0Rtllz4V
+         FGX3P2gFkz+lYpoIplUsQRwOv5Y1YdH76vmM0KdrhXXEvE5BQOYCHshzp/FoYhSmwN
+         3fWj9KDlXb/ZxMXwmCPtR4d0Xjftm8lpxnUWFbqGir5kNHJOBNcTC1aP+WPWi9exd5
+         z0LtBvLzqzytRKHgEdVS9GS9qUj5x756N+OaY6wTOzpr0iXR8tgInjR46GRkmidTRz
+         Jz9QMvSrrZeybvs0YHGUPcBXqBmNvwz5NSWHbCmj90k8B5NbyBEnd/1mdBiMtpin8K
+         aQUs7nOMrVjCQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20201223102729.6463a5c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201221193644.1296933-1-atenart@kernel.org> <20201221193644.1296933-2-atenart@kernel.org> <CAKgT0UfTgYhED1f6vdsoT72A3=D2Grh4U-A6pp43FLZoCs30Gw@mail.gmail.com> <160862887909.1246462.8442420561350999328@kwain.local> <CAKgT0UfzNA8qk+QFTN6ihXTxZkcE=vfrjBtyHKL6_9Yyzxt=eQ@mail.gmail.com> <20201223102729.6463a5c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Antoine Tenart <atenart@kernel.org>
+Subject: Re: [PATCH net v2 1/3] net: fix race conditions in xps by locking the maps and dev->tc_num
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Message-ID: <160875219353.1783433.8066935261216141538@kwain.local>
+Date:   Wed, 23 Dec 2020 20:36:33 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Hi Jakub,
 
-This change fixes the checkpatch warning described in this commit
-commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of unnecessary %h[xudi] and %hh[xudi]")
+Quoting Jakub Kicinski (2020-12-23 19:27:29)
+> On Tue, 22 Dec 2020 08:12:28 -0800 Alexander Duyck wrote:
+> > On Tue, Dec 22, 2020 at 1:21 AM Antoine Tenart <atenart@kernel.org> wro=
+te:
+> >=20
+> > > If I understood correctly, as things are a bit too complex now, you
+> > > would prefer that we go for the solution proposed in v1? =20
+> >=20
+> > Yeah, that is what I am thinking. Basically we just need to make sure
+> > the num_tc cannot be updated while we are reading the other values.
+>=20
+> Yeah, okay, as much as I dislike this approach 300 lines may be a little
+> too large for stable.
+>=20
+> > > I can still do the code factoring for the 2 sysfs show operations, but
+> > > that would then target net-next and would be in a different series. S=
+o I
+> > > believe we'll use the patches of v1, unmodified. =20
+>=20
+> Are you saying just patch 3 for net-next?
 
-Standard integer promotion is already done and %hx and %hhx is useless
-so do not encourage the use of %hh[xudi] or %h[xudi].
+The idea would be to:
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/ethernet/amazon/ena/ena_com.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+- For net, to take all 4 patches from v1. If so, do I need to resend
+  them?
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 02087d443e73..764852ead1d6 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -863,7 +863,7 @@ static u32 ena_com_reg_bar_read32(struct ena_com_dev *ena_dev, u16 offset)
- 
- 	if (unlikely(i == timeout)) {
- 		netdev_err(ena_dev->net_device,
--			   "Reading reg failed for timeout. expected: req id[%hu] offset[%hu] actual: req id[%hu] offset[%hu]\n",
-+			   "Reading reg failed for timeout. expected: req id[%u] offset[%u] actual: req id[%u] offset[%u]\n",
- 			   mmio_read->seq_num, offset, read_resp->req_id,
- 			   read_resp->reg_off);
- 		ret = ENA_MMIO_READ_TIMEOUT;
-@@ -2396,7 +2396,7 @@ int ena_com_fill_hash_function(struct ena_com_dev *ena_dev,
- 		if (key) {
- 			if (key_len != sizeof(hash_key->key)) {
- 				netdev_err(ena_dev->net_device,
--					   "key len (%hu) doesn't equal the supported size (%zu)\n",
-+					   "key len (%u) doesn't equal the supported size (%zu)\n",
- 					   key_len, sizeof(hash_key->key));
- 				return -EINVAL;
- 			}
--- 
-2.27.0
+- For net-next, to resend patches 2 and 3 from v2 (they'll have to be
+  slightly reworked, to take into account the review from Alexander and
+  the rtnl lock). The patches can be sent once the ones for net land in
+  net-next.
 
+> We need to do something about the fact that with sysfs taking
+> rtnl_lock xps_map_mutex is now entirely pointless. I guess its value
+> eroded over the years since Tom's initial design so we can just get
+> rid of it.
+
+We should be able to remove the mutex (I'll double check as more
+functions are involved). If so, I can send a patch to net-next.
+
+Thanks!
+Antoine
