@@ -2,117 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A77B82E1887
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 06:31:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A88A2E188D
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 06:31:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgLWF3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 00:29:46 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:34354 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbgLWF3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 00:29:46 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1608701365; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=+PgCftFCNKFXUIzjrZaJrrb1dDkJP0N7TDJaNh3c03M=; b=P8KGtr8Ih/acNhKj7ec2Y1pWv6wpuKN2gGELepv2/Rkq6HBI5L4rIsRoxsauN8DTcFUUdJ2n
- umyAHf7D6MgqXH0NUzyjkqpQMiPc8frZangTw+VvT99oSDk33e0x3iBNXumqu2Ih7CwTMH6Z
- ke+BfXB0Xvm9FFcbqGIzZTmPewE=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 5fe2d591da471981883969b9 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 23 Dec 2020 05:28:49
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DC5C9C43461; Wed, 23 Dec 2020 05:28:49 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 460EBC433C6;
-        Wed, 23 Dec 2020 05:28:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 460EBC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devel@driverdev.osuosl.org, devicetree@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, linux-mmc@vger.kernel.org,
-        Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v3 09/24] wfx: add hwio.c/hwio.h
-References: <20201104155207.128076-1-Jerome.Pouiller@silabs.com>
-        <87lfdp98rw.fsf@codeaurora.org> <X+IQRct0Zsm87H4+@kroah.com>
-        <4279510.LvFx2qVVIh@pc-42>
-Date:   Wed, 23 Dec 2020 07:28:44 +0200
-In-Reply-To: <4279510.LvFx2qVVIh@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
- Pouiller"'s message of "Tue,
-        22 Dec 2020 22:02:09 +0100")
-Message-ID: <87im8t5bw3.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1727315AbgLWFaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 00:30:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725820AbgLWFaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 00:30:18 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD00C0613D6
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 21:29:38 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id f132so17132888oib.12
+        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 21:29:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ckDdbUcmSv8suHJ0Br0fYaqVg4stCeKAgQL1SJGUzN4=;
+        b=ZTf5JopKkhBTo52bTwN8FLIb3S2t0sfmXWc8KKAMzcurRe60VTjQ5se0hf+A7kFZ5s
+         yEtJW0WN6s2LNyWDv7cqOYWuuy0INFF3vnIljt2krH3i8nwdUNqh4ATTkpql3pyTb/94
+         i2ZGdC1f5AgA3RW0JnG7dtPNoHCYqMXjQqVnNVOA6p3zK3fPg201VekPtSazoFxK/rHu
+         pz9dcVtpw4bsItpmNmMYRBqLnZ1/DFseOGDJIC1G/ma1qogROXImO2ywq3YWN0keBqz9
+         x11r5dHaOy9OvEyXzwMw8ZKgJsRWGSVAHkJtdqbl1Jb437fYCJVFlJzCd6UCJIKr6YkQ
+         J9UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ckDdbUcmSv8suHJ0Br0fYaqVg4stCeKAgQL1SJGUzN4=;
+        b=TAmjOScEyxksy0v90dtGR7gibDsw2yCFopUfDUc9sIbdCrhJfT9hi/bQOKDmEUykky
+         PENgjPeSOciy6BctqG47wqrKA6/hOduIfbGcOpMOGKWUaMwBD0wtJp11gpRNTEEta0+R
+         XtuB2ER7KxNhWy+ucM05wRBLYRdItKYQv0YvdfKWmVEl0bZiUqwk1NtFg1VH0FYCOWMu
+         QP3851Ski+k03w0625chtw2qrlnS6l/ix9aaN0bK3c365sJZWPjBYD9V4p/2NzVorqms
+         AH64V3DaGPkht9cdN2m6Vxfp0sgEQD08GtF6RcY+8x1rFaYTQUwWZHZWCH5FjH37gGQl
+         2DhA==
+X-Gm-Message-State: AOAM530EYmCMKzCN5TSnNwTojmmBRAJZVhKFiwQ6nqfXu98xkf6+VPXv
+        r6W+oadPHFDLba+Nw3enTijBjZNZ9b8dM6/H1qadmQ==
+X-Google-Smtp-Source: ABdhPJxoT0Y5RB5h/wdMRwBJfSojVFR1qtn0SkjV5n57Zer5wK4gcMmNUWO5DnHF8Zw065hpqMBZrkAydq8Sq81wk5Q=
+X-Received: by 2002:a05:6808:2cb:: with SMTP id a11mr16735294oid.93.1608701377553;
+ Tue, 22 Dec 2020 21:29:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20201220123957.1694-1-wangzhiqiang.bj@bytedance.com>
+ <CACPK8XexOmUOdGmHCYVXVgA0z5m99XCAbixcgODSoUSRNCY+zA@mail.gmail.com>
+ <4a9cab3660503483fd683c89c84787a7a1b492b1.camel@mendozajonas.com> <20201222182458.4651c564@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201222182458.4651c564@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   John Wang <wangzhiqiang.bj@bytedance.com>
+Date:   Wed, 23 Dec 2020 13:29:26 +0800
+Message-ID: <CAH0XSJvAKqYTeL+=7biS2jgwUL4mgY-WqZhwDb4Mx46Z0PSpWw@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH] net/ncsi: Use real net-device for response handler
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Lotus Xu <xuxiaohan@bytedance.com>,
+        =?UTF-8?B?6YOB6Zu3?= <yulei.sh@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Gavin Shan <gwshan@linux.vnet.ibm.com>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Bo Chen <chenbo.gil@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
-
-> On Tuesday 22 December 2020 16:27:01 CET Greg Kroah-Hartman wrote:
->>=20
->> On Tue, Dec 22, 2020 at 05:10:11PM +0200, Kalle Valo wrote:
->> > Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
->> >
->> > > +/*
->> > > + * Internal helpers.
->> > > + *
->> > > + * About CONFIG_VMAP_STACK:
->> > > + * When CONFIG_VMAP_STACK is enabled, it is not possible to run DMA=
- on stack
->> > > + * allocated data. Functions below that work with registers (aka fu=
-nctions
->> > > + * ending with "32") automatically reallocate buffers with kmalloc.=
- However,
->> > > + * functions that work with arbitrary length buffers let's caller t=
-o handle
->> > > + * memory location. In doubt, enable CONFIG_DEBUG_SG to detect badl=
-y located
->> > > + * buffer.
->> > > + */
->> >
->> > This sounds very hacky to me, I have understood that you should never
->> > use stack with DMA.
->>=20
->> You should never do that because some platforms do not support it, so no
->> driver should ever try to do that as they do not know what platform they
->> are running on.
+On Wed, Dec 23, 2020 at 10:25 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Yes, I have learned this rule the hard way.
+> On Tue, 22 Dec 2020 10:38:21 -0800 Samuel Mendoza-Jonas wrote:
+> > On Tue, 2020-12-22 at 06:13 +0000, Joel Stanley wrote:
+> > > On Sun, 20 Dec 2020 at 12:40, John Wang wrote:
+> > > > When aggregating ncsi interfaces and dedicated interfaces to bond
+> > > > interfaces, the ncsi response handler will use the wrong net device
+> > > > to
+> > > > find ncsi_dev, so that the ncsi interface will not work properly.
+> > > > Here, we use the net device registered to packet_type to fix it.
+> > > >
+> > > > Fixes: 138635cc27c9 ("net/ncsi: NCSI response packet handler")
+> > > > Signed-off-by: John Wang <wangzhiqiang.bj@bytedance.com>
 >
-> There is no better way than a comment to warn the user that the argument
-> will be used with a DMA? A Sparse annotation, for example?
+> This sounds like exactly the case for which orig_dev was introduced.
+> I think you should use the orig_dev argument, rather than pt->dev.
 
-I have not seen anything, but something like sparse annotation would be
-useful. Please let me know if you find anything like that.
+will send a v2
 
-But I think that CONFIG_VMAP_STACK is irrelevant and the comment should
-be clarified that using stack memory must NOT be used for DMA operations
-in any circumstances.
+>
+> Can you test if that works?
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+Yes,  it works.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+>
+> > > Can you show me how to reproduce this?
+
+On g220a, eth1 is the dedicated interface, eth0 is the ncsi interface
+
+kernel cfg:
+CONFIG_BONDING=y
+
+cat /etc/systemd/network/00-bmc-bond1.netdev
+[NetDev]
+Name=bond1
+Description=Bond eth0 and eth1
+Kind=bond
+
+[Bond]
+Mode=active-backup
+
+cat /etc/systemd/network/00-bmc-eth0.network
+[Match]
+Name=eth0
+[Network]
+Bond=bond1
+
+cat /etc/systemd/network/00-bmc-eth0.network
+[Match]
+Name=eth1
+[Network]
+Bond=bond1
+PrimarySlave=true
+
+ip addr
+....
+6: bond1: <BROADCAST,MULTICAST,UP,LOWER_UP400> mtu 1500 qdisc noqueue qlen 1000
+    link/ether b4:05:5d:8f:6a:ad brd ff:ff:ff:ff:ff:ff
+    inet 169.254.11.178/16 brd 169.254.255.255 scope link bond1
+       valid_lft forever preferred_lft forever
+    inet 192.168.1.108/24 brd 192.168.1.255 scope global bond1
+       valid_lft forever preferred_lft forever
+    inet 10.2.16.118/24 brd 10.2.16.255 scope global bond1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::b605:5dff:fe8f:6aad/64 scope link
+...
+
+
+Without this patch:
+After bmc boots:
+echo eth0 > /sys/class/net/bond1/bonding/active_slave
+admin@g220a:~#
+admin@g220a:~# echo eth0 > /sys/class/net/bond1/bonding/active_slave
+[  105.964357] bond1: (slave eth0): making interface the new active one
+admin@g220a:~# ping 10.2.16.1
+PING 10.2.16.1 (10.2.16.1): 56 data bytes
+64 bytes from 10.2.16.1: seq=0 ttl=255 time=7.096 ms
+64 bytes from 10.2.16.1: seq=1 ttl=255 time=2.143 ms
+64 bytes from 10.2.16.1: seq=2 ttl=255 time=2.111 ms
+[  112.642734] ftgmac100 1e660000.ethernet eth0: NCSI Channel 0 timed out!
+64 bytes from 10.2.16.1: seq=3 ttl=255 time=2.039 ms
+64 bytes from 10.2.16.1: seq=4 ttl=255 time=2.037 ms
+[  117.842814] ftgmac100 1e660000.ethernet eth0: NCSI: No channel with
+link found, configuring channel 0
+[  134.482746] ftgmac100 1e660000.ethernet eth0: NCSI Channel 0 timed out!
+[  139.682820] ftgmac100 1e660000.ethernet eth0: NCSI: No channel with
+link found, configuring channel 0
+
+with this patch:
+After bmc boots:
+
+admin@g220a:~# echo eth0 > /sys/class/net/bond1/bonding/active_slave
+[58332.123754] bond1: (slave eth0): making interface the new active one
+admin@g220a:~# ping 10.2.16.1
+PING 10.2.16.1 (10.2.16.1): 56 data bytes
+64 bytes from 10.2.16.1: seq=0 ttl=255 time=7.279 ms
+...
+...
+64 bytes from 10.2.16.1: seq=N ttl=255 time=2.037 ms
+
+
+
+> > >
+> > > I don't know the ncsi or net code well enough to know if this is the
+> > > correct fix. If you are confident it is correct then I have no
+> > > objections.
+> >
+> > This looks like it is probably right; pt->dev will be the original
+> > device from ncsi_register_dev(), if a response comes in to
+> > ncsi_rcv_rsp() associated with a different device then the driver will
+> > fail to find the correct ncsi_dev_priv. An example of the broken case
+> > would be good to see though.
+>
+> From the description sounds like the case is whenever the ncsi
+> interface is in a bond, the netdev from the second argument is
+> the bond not the interface from which the frame came. It should
+> be possible to repro even with only one interface on the system,
+> create a bond or a team and add the ncsi interface to it.
+>
+> Does that make sense? I'm likely missing the subtleties here.
+
+:)  I guess so.
