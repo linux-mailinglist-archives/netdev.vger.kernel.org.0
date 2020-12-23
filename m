@@ -2,104 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B21F2E1596
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:58:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A5B82E15A7
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:58:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731186AbgLWCuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:50:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44882 "EHLO mail.kernel.org"
+        id S1731229AbgLWCuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:50:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45306 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729533AbgLWCuI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:50:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DBB332256F;
-        Wed, 23 Dec 2020 02:49:27 +0000 (UTC)
+        id S1731205AbgLWCus (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:50:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5A16122A83;
+        Wed, 23 Dec 2020 02:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608691768;
-        bh=eS4fWQh/jaxSMtCZ4b30PYeWYMXX9WVqGZxVxgBaCjA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tqNxEfPhUKCrxH1as8VAfyxu6FNEFS4WWJWysumBmamEe79YCgYp8AcSvhaYmbyW4
-         khuN6WcOcls+mPGylfKkWzPiVkPn1Msh80E5cJv3vjfvomjg4zAEK+c7suR7DxXhPG
-         MlTJvt8Q3nutK+lA5+dxEA5IFavxR6OKtpnQiXW4WjO497CcQ3nE16MAOIfLxLRcVu
-         SBoj051RKD36lQc5v14wmKurFtoK21RooSjNIxKnSyRRJpntWWM8vTOcJqf1c+Eoq4
-         SK5xzYoCG5ocNwhJsLfqNvLbbvn86yOBao20RYGpjHURtP3aXXCWog478xWtjMoX2o
-         WfJkLA9nUdY0A==
-Date:   Tue, 22 Dec 2020 18:49:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Roland Dreier <roland@kernel.org>
-Cc:     Oliver Neukum <oliver@neukum.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: cdc_ncm kernel log spam with trendnet 2.5G USB adapter
-Message-ID: <20201222184926.35382198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201219222140.4161646-1-roland@kernel.org>
-References: <3a9b2c8c275d56d9c7904cf9b5177047b196173d.camel@neukum.org>
-        <20201219222140.4161646-1-roland@kernel.org>
+        s=k20201202; t=1608691807;
+        bh=8VFXTEfHDGjNESRmbEEfEo5L/KJO3UHHaAHamquqEoQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rzI03I4pbTjxU0N2WSCSMJpYVJX/MjsP24v1Rz3Hov6OSRHasrvk5xB7lP1XWgcQi
+         o8kwj5M8r9hAG/kpuiL4jPwc6Wd++5rdUO0aQk0cGlNZfsveEir0bpkwvUXIlcie2Q
+         kagTdULleRX29NlCW/8S5RQVUP5NbGKkfGxPnHRnmnzmBZmREcpMruFKQEktPfEJPu
+         DKRZ4X/3KnYRZ8f1WViLhyHY4WMJQlimQr53rBnRGTCRQ6RRBMvoock4DKfJDPO/ce
+         C8xtbkSckGTltbaBcD9dNZg79KnZb67uFb3urDB/eoLe9sEkEXPXCw1r0dwLsBrkud
+         Ed72tqzn1MrvQ==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 4A03F60593;
+        Wed, 23 Dec 2020 02:50:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] MAINTAINERS: remove names from mailing list maintainers
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160869180729.29227.5706578456404319351.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Dec 2020 02:50:07 +0000
+References: <20201219185538.750076-1-kuba@kernel.org>
+In-Reply-To: <20201219185538.750076-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, pv-drivers@vmware.com,
+        doshir@vmware.com, UNGLinuxDriver@microchip.com,
+        steve.glendinning@shawell.net, woojung.huh@microchip.com,
+        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
+        drivers@pensando.io, snelson@pensando.io, vladimir.oltean@nxp.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        bryan.whitehead@microchip.com, o.rempel@pengutronix.de,
+        kernel@pengutronix.de, robin@protonic.nl, hkallweit1@gmail.com,
+        nic_swsd@realtek.com, lars.povlsen@microchip.com,
+        Steen.Hegelund@microchip.com, linux-kernel@vger.kernel.org,
+        corbet@lwn.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 19 Dec 2020 14:21:40 -0800 Roland Dreier wrote:
-> (Apologies, trying one more time with a better mailer)
-> 
-> Sorry it took so long, but I finally got a chance to test the patches.  They
-> seem to work well, but they only get rid of the downlink / uplink speed spam -
-> I still get the following filling my kernel log with a patched kernel:
-> 
->   [   29.830383] cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
->   [   29.894359] cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
->   [   29.958601] cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
->   [   30.022473] cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
->   [   30.086548] cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
-> 
-> with the below patch on top of your 3, then my kernel log is clean.
-> 
-> Please apply your patches plus my patch, and feel free to add
-> 
-> Tested-by: Roland Dreier <roland@kernel.org>
-> 
-> to the other three.
+Hello:
 
-Hi Ronald, thanks for the patch.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-I'm not sure what the story here is but if this change is expected to
-get into the networking tree we'll need a fresh posting. This sort of
-scissored reply does not get into patchwork.
+On Sat, 19 Dec 2020 10:55:38 -0800 you wrote:
+> When searching for inactive maintainers it's useful to filter
+> out mailing list addresses. Such "maintainers" will obviously
+> never feature in a "From:" line of an email or a review tag.
+> 
+> Since "L:" entries only provide the address of a mailing list
+> without a fancy name extend this pattern to "M:" entries.
+> 
+> [...]
 
-> Subject: [PATCH] CDC-NCM: remove "connected" log message
-> 
-> The cdc_ncm driver passes network connection notifications up to
-> usbnet_link_change(), which is the right place for any logging.
-> Remove the netdev_info() duplicating this from the driver itself.
-> 
-> This stops devices such as my "TRENDnet USB 10/100/1G/2.5G LAN"
-> (ID 20f4:e02b) adapter from spamming the kernel log with
-> 
->     cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
-> 
-> messages every 60 msec or so.
-> 
-> Signed-off-by: Roland Dreier <roland@kernel.org>
-> ---
->  drivers/net/usb/cdc_ncm.c | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-> index a45fcc44facf..50d3a4e6d445 100644
-> --- a/drivers/net/usb/cdc_ncm.c
-> +++ b/drivers/net/usb/cdc_ncm.c
-> @@ -1850,9 +1850,6 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
->  		 * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
->  		 * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
->  		 */
-> -		netif_info(dev, link, dev->net,
-> -			   "network connection: %sconnected\n",
-> -			   !!event->wValue ? "" : "dis");
->  		usbnet_link_change(dev, !!event->wValue, 0);
->  		break;
->  
+Here is the summary with links:
+  - [net] MAINTAINERS: remove names from mailing list maintainers
+    https://git.kernel.org/netdev/net/c/8b0f64b113d6
 
-It sounds like you're getting tens of those messages a second, we can
-remove the message but the device is still generating spurious events,
-wasting CPU cycles. Was blocking those events deemed unfeasible? 
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
