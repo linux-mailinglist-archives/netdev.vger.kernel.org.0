@@ -2,64 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B96352E21D4
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:01:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32EBC2E21D5
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728989AbgLWVAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 16:00:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43910 "EHLO mail.kernel.org"
+        id S1729185AbgLWVAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 16:00:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43996 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726650AbgLWVAd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 16:00:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D666223E4;
-        Wed, 23 Dec 2020 20:59:52 +0000 (UTC)
+        id S1726650AbgLWVAq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 16:00:46 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 85565224B1;
+        Wed, 23 Dec 2020 21:00:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608757192;
-        bh=xQmwr5xugEhCyXPMARkJAPoy6g+JnO7T7Rf68FgrIPA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=niK3HTQ4YevnvjWItGcG+0lt/lPoVY4EXhCjxi1B6wlATUHsZURG4eWFSt3Bs4u/T
-         xAbJLjztHhXwv+ONpmL9fCFiCJEGiImBRIyZUHsSComWr4l8AvBg8TF8hwRJUKwNSx
-         fvteKyp9KOIhvgMbixakvBuhl+8EhWqzP+DtuGbyreacl6GKaQPo0YdvH/9qxpNmh1
-         QwPj5aDVtW4Zr074cw31VIE5jP6onnOKH0oH3HZIAHUN57lucAFnHV6Uh6YZFVDOMM
-         udDXYEk+q4BG0OfXE0MwqNXw4EPKfHm3aXBQdF/vKoXEST6VESRC1e8hzbW6I/bFv7
-         BnFn+Efrk/pLA==
-Date:   Wed, 23 Dec 2020 12:59:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net v2 1/3] net: fix race conditions in xps by locking
- the maps and dev->tc_num
-Message-ID: <20201223125951.44cc281c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <160875701664.1783433.16072409555972227523@kwain.local>
-References: <20201221193644.1296933-1-atenart@kernel.org>
-        <20201221193644.1296933-2-atenart@kernel.org>
-        <CAKgT0UfTgYhED1f6vdsoT72A3=D2Grh4U-A6pp43FLZoCs30Gw@mail.gmail.com>
-        <160862887909.1246462.8442420561350999328@kwain.local>
-        <CAKgT0UfzNA8qk+QFTN6ihXTxZkcE=vfrjBtyHKL6_9Yyzxt=eQ@mail.gmail.com>
-        <20201223102729.6463a5c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <160875219353.1783433.8066935261216141538@kwain.local>
-        <20201223121110.65effe06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <160875571511.1783433.16922263997505181889@kwain.local>
-        <20201223124315.27451932@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <160875701664.1783433.16072409555972227523@kwain.local>
+        s=k20201202; t=1608757206;
+        bh=yhzxiJd4hgztG7awmhk1MMg0dvOXUhAS4fgVddXEHJA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HjLstbdtRZpyZLCTHLD8YzdWT9tZAPVFH98jmAxxNeI93ngSV4a8zmpS8SrlcNrGE
+         uy2Is63c9QMC7vtkUsxu6oouFCBQY2Kn0xT1nIzH/MTQwFAPu6l/i/emKZMXs32gkf
+         hQyngd94ONNVTHAoZwHg0806jbNKTCCpLJIwRfoCYem8yf621WTJhh6q8Y2ZLRxy2X
+         TL6pWMUVfbbNj0NXwO2OpZbw9QJHWUK69KE7DleQe+3wfSkn5scxjCJiW9CwK0iYj/
+         wYDXwIoWcsZ2KFdxx95qQKTJH//mQWxIR++JxuVhYAZaJUSAz1ZO4VrgbvvYmcUw79
+         2Jtjb6kCgZh3g==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 7C9F6604E9;
+        Wed, 23 Dec 2020 21:00:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] ibmvnic: continue fatal error reset after passive init
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160875720650.3668.9679522106628985157.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Dec 2020 21:00:06 +0000
+References: <20201223204904.12677-1-ljp@linux.ibm.com>
+In-Reply-To: <20201223204904.12677-1-ljp@linux.ibm.com>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Dec 2020 21:56:56 +0100 Antoine Tenart wrote:
-> You understood correctly, the only reason to move this code out of sysfs
-> was to access the xps_map lock. Without the need, the code can stay in
-> sysfs.
->=20
-> Patch 2 is not only moving the code out of sysfs, but also reworking
-> xps_cpus_show. I think I now see where the confusion comes from: the
-> reason patches 2 and 3 were in two different patches was because they
-> were targeting net and different kernel versions. They could be squashed
-> now.
+Hello:
 
-=F0=9F=91=8D
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Wed, 23 Dec 2020 14:49:04 -0600 you wrote:
+> Commit f9c6cea0b385 ("ibmvnic: Skip fatal error reset after passive init")
+> says "If the passive
+> CRQ initialization occurs before the FATAL reset task is processed,
+> the FATAL error reset task would try to access a CRQ message queue
+> that was freed, causing an oops. The problem may be most likely to
+> occur during DLPAR add vNIC with a non-default MTU, because the DLPAR
+> process will automatically issue a change MTU request.
+> Fix this by not processing fatal error reset if CRQ is passively
+> initialized after client-driven CRQ initialization fails."
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2] ibmvnic: continue fatal error reset after passive init
+    https://git.kernel.org/netdev/net/c/1f45dc220667
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
