@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C19772E1249
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:21:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DFFE2E124D
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:21:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729127AbgLWCUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:20:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45428 "EHLO mail.kernel.org"
+        id S1729243AbgLWCVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:21:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45492 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729108AbgLWCUu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:20:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 755A823159;
-        Wed, 23 Dec 2020 02:20:34 +0000 (UTC)
+        id S1729220AbgLWCVI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:21:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 97D3622248;
+        Wed, 23 Dec 2020 02:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690035;
-        bh=Mkb77UdVz/5p1f8UEjjbVmNsg1UaKH/m8P8zqp2BlQI=;
+        s=k20201202; t=1608690051;
+        bh=YwjFq9eQoOMILFRZBYqTpmj9LvL2hqjEzS9MxOIB9DQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M0o4CtxZk8oHhMjVoUhdeKLdkBC+jh0rIXIh03INyqGMi6bIQJs2/U00z/42sJRD5
-         8t5F94ovA+M+l5NuweH7VSbh6uZBBr1PFrMqOmiVgG4c6nHrYrD/+Mj78/PC+wr6Cl
-         nt41SNNNdF339Bje60PNWqK7aLbq+YVUNXryPNPGfb7Gxlil49e/SVaJF27P5M/pqL
-         jFAcG/Nc74GEU0Ul+8foRcjP1CohUP+IagGsp7e68LP7Y36hsIw/B3t7XGUtaKvSVL
-         mFZ0t8eiVoEjwDQ8/hNMGWBAdLQXkKtMHwCHChk3ptPPb8QCktlVYWW73pKOadk6zP
-         O9R/Klodu44WA==
+        b=AuicxnknObDioFiQZkaCG0Vrdr6+rEYwJvrX8NYGAcgrqyy3Wd4ZGimX32INahoTL
+         JZMKtE9xLYTHmFwSsL4b51iG1c1jkJnNhfOSjSdUDjKGbxIr8/SJuXfdJOS3GYl5MS
+         vsIDI0M8dRDI+Qb4ujjsBLNudiDESL0mpx51VheXAAVCU6LtqWzRG8NegeIpqG+Daw
+         NdJzBUff4eOH9U2L+8OOM/k5LZrCQQL8EJS1nrrH8ARG+ZIX8b1U3ODVzFb+S73UDr
+         2yybu3uAktmSBRd7b8WMOOLL0RChc+jK++XYzYB24LNBhQCAkogOUEgTC5ZRHKZi+L
+         czPxAlRGNTfDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 110/130] iwlwifi: trans: consider firmware dead after errors
-Date:   Tue, 22 Dec 2020 21:17:53 -0500
-Message-Id: <20201223021813.2791612-110-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 122/130] mac80211: ignore country element TX power on 6 GHz
+Date:   Tue, 22 Dec 2020 21:18:05 -0500
+Message-Id: <20201223021813.2791612-122-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
@@ -45,36 +45,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 152fdc0f698896708f9d7889a4ba4da6944b74f7 ]
+[ Upstream commit 2dedfe1dbdf27ac344584ed03c3876c85d2779fb ]
 
-If we get an error, no longer consider the firmware to be
-in IWL_TRANS_FW_ALIVE state.
+Updates to the 802.11ax draft are coming that deprecate the
+country element in favour of the transmit power envelope
+element, and make the maximum transmit power level field in
+the triplets reserved, so if we parse them we'd use 0 dBm
+transmit power.
+
+Follow suit and completely ignore the element on 6 GHz for
+purposes of determining TX power.
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20201209231352.a9d01e79c1c7.Ib2deb076b392fb516a7230bac91d7ab8a9586d86@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20201206145305.9abf9f6b4f88.Icb6e52af586edcc74f1f0360e8f6fc9ef2bfe8f5@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-trans.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/mac80211/mlme.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-trans.h b/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
-index 1e85d59b91613..b31bb56ca6591 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
-@@ -1230,8 +1230,10 @@ static inline void iwl_trans_fw_error(struct iwl_trans *trans)
- 		return;
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index 236ddc6b891c2..ba1e5cac32adb 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -1487,6 +1487,15 @@ ieee80211_find_80211h_pwr_constr(struct ieee80211_sub_if_data *sdata,
+ 	case NL80211_BAND_5GHZ:
+ 		chan_increment = 4;
+ 		break;
++	case NL80211_BAND_6GHZ:
++		/*
++		 * In the 6 GHz band, the "maximum transmit power level"
++		 * field in the triplets is reserved, and thus will be
++		 * zero and we shouldn't use it to control TX power.
++		 * The actual TX power will be given in the transmit
++		 * power envelope element instead.
++		 */
++		return false;
+ 	}
  
- 	/* prevent double restarts due to the same erroneous FW */
--	if (!test_and_set_bit(STATUS_FW_ERROR, &trans->status))
-+	if (!test_and_set_bit(STATUS_FW_ERROR, &trans->status)) {
- 		iwl_op_mode_nic_error(trans->op_mode);
-+		trans->state = IWL_TRANS_NO_FW;
-+	}
- }
- 
- static inline void iwl_trans_sync_nmi(struct iwl_trans *trans)
+ 	/* find channel */
 -- 
 2.27.0
 
