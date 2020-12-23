@@ -2,313 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90D1A2E1C27
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 13:15:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E85A32E1C3E
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 13:26:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728453AbgLWMO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 07:14:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728376AbgLWMO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 07:14:57 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F07DC0613D6
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 04:14:17 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id w1so22517817ejf.11
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 04:14:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=35ZYuDz/NHbYVvs0C4L+62CLzf5DN21GLodcbsEQFC8=;
-        b=aJinXqPssChyo572Y/V2zRy6J5OkTR1TQN+MEuQ4oNarcAhB2somhmUhWV0HmgGikG
-         e+TIqXxNraeIrU+WeupO3HTQPFteA8XEkMdqkUmBSeAWWQs239UH4vagR6/13LiAJHu8
-         yfWpPCNf4skU5igECuQuVO1SHWwpluiHTqNlURKhYiKtdGrksxeXzX0NDUalwkVuAbQA
-         JYQ12n2V0vxQ1VS2QymReXwjFDLc0DV3Lf73j6tylIA9XUeIy1YBOKqikAtUUQm99Hoa
-         /NV96IPBMICQtMBOSsG2cV1Ym4ZQLD07TZef94tSuVP7IBfcKCUbc+9mwgP2H9hgqYLx
-         Ly5A==
+        id S1728535AbgLWM00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 07:26:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56779 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726839AbgLWM0W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 07:26:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608726295;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=0UNmcgKiAU5Ao1EWHMSNYvqkNdmnpc0OSfrJWGti+po=;
+        b=IMvFAIplD+9/ww8I4Sn0BBcHPG2FfLwLi9JKfObkZgNTje8HBy7yqraxJ9LUa2sMqPItEW
+        Bf1S6XeWVnxko7TV6SpT266o187QpknzVkBCZET99SJKl+sZb3VVw9GJI4a+lTXf5H+6Zf
+        IMsYbt+SAMaErZuALjzLCjT0KqvPFV0=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-546-ghHX6CCkPQSuyZQEGTblzw-1; Wed, 23 Dec 2020 07:24:53 -0500
+X-MC-Unique: ghHX6CCkPQSuyZQEGTblzw-1
+Received: by mail-wr1-f69.google.com with SMTP id w5so12377118wrl.9
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 04:24:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=35ZYuDz/NHbYVvs0C4L+62CLzf5DN21GLodcbsEQFC8=;
-        b=Eiv/MFlkZLUHirNqvwojGgVF2VU3hzzQxZL6+NoQxruqr8C6TWrOXnou87lDlCWsjP
-         HXNW1z5o1YX60MIZbKRrPSHbQsh6lJHiUtvuczBNM59CYOKQdxCoOLhMJcop2UB4xyLh
-         DsnLT74tV3YtFK3Hxsab8sB4Gk8O02nOBn6j7c3e40rebmTscU+s+g+4k75kpOcANNnn
-         2wMa6dzjEcr6aEQ/LoYlGr/ddIcU1Nr1cuu5VpzXa1770u+tYF/BY/lZqynz9E43KOgx
-         Dx51FwcQBbIvFrdY3g4MhNFpkvrxHMzJOPhV2iRiOMhDaOgRin73ATwEUXiVp9VtDO3y
-         OHvg==
-X-Gm-Message-State: AOAM531qrBZLlX7PmU/HsCz/UQ0ufr9UvzQmm34+6nLIwKo3fFpK7mXp
-        uPfSbEh5dyO3rQ+UepE1Nko9gWn2v17MUmqpau2U
-X-Google-Smtp-Source: ABdhPJxvFGv55SXnvmstsRrPts85FfsZeW8DhW7IZ56OFMBLubAQ02qrxBnCF2WTw9XipJ1ju0Clb5hATd78E6jruXA=
-X-Received: by 2002:a17:906:94c5:: with SMTP id d5mr23137335ejy.427.1608725655618;
- Wed, 23 Dec 2020 04:14:15 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=0UNmcgKiAU5Ao1EWHMSNYvqkNdmnpc0OSfrJWGti+po=;
+        b=OT68Mt34IaPu39lOwzT/l2+7/UoAv0GJeJL0pFyBon3zB18XaWWZbbqUm3jvq4Svhv
+         wO9XEwTd6vJb7rqSXtSv9CwLwLf3YqaIucYxcsMKm60ivZmyc3Q5DkgTZcmxzu8qCi9e
+         icEEIAUoHeH/f+EYeKZfYSIjpqtryQloYlFcSWUjFdDr3rMSuXdX7Ck0Z7g03UYfRPkq
+         4gJogP1X8Njy1qnCj8luOLQs7bhZQkmMKpvKHy7kDNBv83jrJIaStxAIbxhj/d1N9NUB
+         SXbXsVJD3vSvWPCi4iSzO+Zgw9DBkkgW/EVS+x5kEg04tCfqW4PA+8teY+C0jsAr/e6A
+         e94g==
+X-Gm-Message-State: AOAM5312Ei/7iUk4DmC9MuM6EFknWsw7VyDU9sSIrizpDBpYPtQEAusq
+        UvcGacBqCgEXLBQFaXOMi6TQrzzCX5sxTyLOqnNiN39P8CNZ45ugg7nKiSxhWvjypEgA9DZ6V0Q
+        /GOAeefrtRe5bGkFH
+X-Received: by 2002:a5d:5181:: with SMTP id k1mr28572186wrv.226.1608726292443;
+        Wed, 23 Dec 2020 04:24:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwnplIWRt16fzmwKMP8PwnlFgcdIWksMaeKxiGfFwfPmRzkFhUmLY7vWPm5sRt5yZ7jOcB35A==
+X-Received: by 2002:a5d:5181:: with SMTP id k1mr28572175wrv.226.1608726292284;
+        Wed, 23 Dec 2020 04:24:52 -0800 (PST)
+Received: from redhat.com (bzq-79-178-32-166.red.bezeqint.net. [79.178.32.166])
+        by smtp.gmail.com with ESMTPSA id z3sm36346271wrn.59.2020.12.23.04.24.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Dec 2020 04:24:51 -0800 (PST)
+Date:   Wed, 23 Dec 2020 07:24:48 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, christophe.jaillet@wanadoo.fr,
+        dan.carpenter@oracle.com, david@redhat.com, elic@nvidia.com,
+        file@sect.tu-berlin.de, hulkci@huawei.com, info@metux.net,
+        jasowang@redhat.com, mgurtovoy@nvidia.com, mhocko@kernel.org,
+        mst@redhat.com, osalvador@suse.de, pankaj.gupta.linux@gmail.com,
+        parav@nvidia.com, peng.fan@nxp.com,
+        richard.weiyang@linux.alibaba.com, robert.buhren@sect.tu-berlin.de,
+        sgarzare@redhat.com, tiantao6@hisilicon.com,
+        zhangchangzhong@huawei.com
+Subject: [GIT PULL] virtio,vdpa: features, cleanups, fixes
+Message-ID: <20201223072448-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-References: <20201222145221.711-1-xieyongji@bytedance.com> <20201222145221.711-10-xieyongji@bytedance.com>
- <6818a214-d587-4f0b-7de6-13c4e7e94ab6@redhat.com>
-In-Reply-To: <6818a214-d587-4f0b-7de6-13c4e7e94ab6@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Wed, 23 Dec 2020 20:14:04 +0800
-Message-ID: <CACycT3vVU9vg6R6UujSnSdk8cwxWPVgeJJs0JaBH_Zg4xC-epQ@mail.gmail.com>
-Subject: Re: [External] Re: [RFC v2 09/13] vduse: Add support for processing
- vhost iotlb message
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 23, 2020 at 5:05 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2020/12/22 =E4=B8=8B=E5=8D=8810:52, Xie Yongji wrote:
-> > To support vhost-vdpa bus driver, we need a way to share the
-> > vhost-vdpa backend process's memory with the userspace VDUSE process.
-> >
-> > This patch tries to make use of the vhost iotlb message to achieve
-> > that. We will get the shm file from the iotlb message and pass it
-> > to the userspace VDUSE process.
-> >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > ---
-> >   Documentation/driver-api/vduse.rst |  15 +++-
-> >   drivers/vdpa/vdpa_user/vduse_dev.c | 147 ++++++++++++++++++++++++++++=
-++++++++-
-> >   include/uapi/linux/vduse.h         |  11 +++
-> >   3 files changed, 171 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/Documentation/driver-api/vduse.rst b/Documentation/driver-=
-api/vduse.rst
-> > index 623f7b040ccf..48e4b1ba353f 100644
-> > --- a/Documentation/driver-api/vduse.rst
-> > +++ b/Documentation/driver-api/vduse.rst
-> > @@ -46,13 +46,26 @@ The following types of messages are provided by the=
- VDUSE framework now:
-> >
-> >   - VDUSE_GET_CONFIG: Read from device specific configuration space
-> >
-> > +- VDUSE_UPDATE_IOTLB: Update the memory mapping in device IOTLB
-> > +
-> > +- VDUSE_INVALIDATE_IOTLB: Invalidate the memory mapping in device IOTL=
-B
-> > +
-> >   Please see include/linux/vdpa.h for details.
-> >
-> > -In the data path, VDUSE framework implements a MMU-based on-chip IOMMU
-> > +The data path of userspace vDPA device is implemented in different way=
-s
-> > +depending on the vdpa bus to which it is attached.
-> > +
-> > +In virtio-vdpa case, VDUSE framework implements a MMU-based on-chip IO=
-MMU
-> >   driver which supports mapping the kernel dma buffer to a userspace io=
-va
-> >   region dynamically. The userspace iova region can be created by passi=
-ng
-> >   the userspace vDPA device fd to mmap(2).
-> >
-> > +In vhost-vdpa case, the dma buffer is reside in a userspace memory reg=
-ion
-> > +which will be shared to the VDUSE userspace processs via the file
-> > +descriptor in VDUSE_UPDATE_IOTLB message. And the corresponding addres=
-s
-> > +mapping (IOVA of dma buffer <-> VA of the memory region) is also inclu=
-ded
-> > +in this message.
-> > +
-> >   Besides, the eventfd mechanism is used to trigger interrupt callbacks=
- and
-> >   receive virtqueue kicks in userspace. The following ioctls on the use=
-rspace
-> >   vDPA device fd are provided to support that:
-> > diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_use=
-r/vduse_dev.c
-> > index b974333ed4e9..d24aaacb6008 100644
-> > --- a/drivers/vdpa/vdpa_user/vduse_dev.c
-> > +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-> > @@ -34,6 +34,7 @@
-> >
-> >   struct vduse_dev_msg {
-> >       struct vduse_dev_request req;
-> > +     struct file *iotlb_file;
-> >       struct vduse_dev_response resp;
-> >       struct list_head list;
-> >       wait_queue_head_t waitq;
-> > @@ -325,12 +326,80 @@ static int vduse_dev_set_vq_state(struct vduse_de=
-v *dev,
-> >       return ret;
-> >   }
-> >
-> > +static int vduse_dev_update_iotlb(struct vduse_dev *dev, struct file *=
-file,
-> > +                             u64 offset, u64 iova, u64 size, u8 perm)
-> > +{
-> > +     struct vduse_dev_msg *msg;
-> > +     int ret;
-> > +
-> > +     if (!size)
-> > +             return -EINVAL;
-> > +
-> > +     msg =3D vduse_dev_new_msg(dev, VDUSE_UPDATE_IOTLB);
-> > +     msg->req.size =3D sizeof(struct vduse_iotlb);
-> > +     msg->req.iotlb.offset =3D offset;
-> > +     msg->req.iotlb.iova =3D iova;
-> > +     msg->req.iotlb.size =3D size;
-> > +     msg->req.iotlb.perm =3D perm;
-> > +     msg->req.iotlb.fd =3D -1;
-> > +     msg->iotlb_file =3D get_file(file);
-> > +
-> > +     ret =3D vduse_dev_msg_sync(dev, msg);
->
->
-> My feeling is that we should provide consistent API for the userspace
-> device to use.
->
-> E.g we'd better carry the IOTLB message for both virtio/vhost drivers.
->
-> It looks to me for virtio drivers we can still use UPDAT_IOTLB message
-> by using VDUSE file as msg->iotlb_file here.
->
+The following changes since commit 2c85ebc57b3e1817b6ce1a6b703928e113a90442:
 
-It's OK for me. One problem is when to transfer the UPDATE_IOTLB
-message in virtio cases.
+  Linux 5.10 (2020-12-13 14:41:30 -0800)
 
->
-> > +     vduse_dev_msg_put(msg);
-> > +     fput(file);
-> > +
-> > +     return ret;
-> > +}
-> > +
-> > +static int vduse_dev_invalidate_iotlb(struct vduse_dev *dev,
-> > +                                     u64 iova, u64 size)
-> > +{
-> > +     struct vduse_dev_msg *msg;
-> > +     int ret;
-> > +
-> > +     if (!size)
-> > +             return -EINVAL;
-> > +
-> > +     msg =3D vduse_dev_new_msg(dev, VDUSE_INVALIDATE_IOTLB);
-> > +     msg->req.size =3D sizeof(struct vduse_iotlb);
-> > +     msg->req.iotlb.iova =3D iova;
-> > +     msg->req.iotlb.size =3D size;
-> > +
-> > +     ret =3D vduse_dev_msg_sync(dev, msg);
-> > +     vduse_dev_msg_put(msg);
-> > +
-> > +     return ret;
-> > +}
-> > +
-> > +static unsigned int perm_to_file_flags(u8 perm)
-> > +{
-> > +     unsigned int flags =3D 0;
-> > +
-> > +     switch (perm) {
-> > +     case VHOST_ACCESS_WO:
-> > +             flags |=3D O_WRONLY;
-> > +             break;
-> > +     case VHOST_ACCESS_RO:
-> > +             flags |=3D O_RDONLY;
-> > +             break;
-> > +     case VHOST_ACCESS_RW:
-> > +             flags |=3D O_RDWR;
-> > +             break;
-> > +     default:
-> > +             WARN(1, "invalidate vhost IOTLB permission\n");
-> > +             break;
-> > +     }
-> > +
-> > +     return flags;
-> > +}
-> > +
-> >   static ssize_t vduse_dev_read_iter(struct kiocb *iocb, struct iov_ite=
-r *to)
-> >   {
-> >       struct file *file =3D iocb->ki_filp;
-> >       struct vduse_dev *dev =3D file->private_data;
-> >       struct vduse_dev_msg *msg;
-> > -     int size =3D sizeof(struct vduse_dev_request);
-> > +     unsigned int flags;
-> > +     int fd, size =3D sizeof(struct vduse_dev_request);
-> >       ssize_t ret =3D 0;
-> >
-> >       if (iov_iter_count(to) < size)
-> > @@ -349,6 +418,18 @@ static ssize_t vduse_dev_read_iter(struct kiocb *i=
-ocb, struct iov_iter *to)
-> >               if (ret)
-> >                       return ret;
-> >       }
-> > +
-> > +     if (msg->req.type =3D=3D VDUSE_UPDATE_IOTLB && msg->req.iotlb.fd =
-=3D=3D -1) {
-> > +             flags =3D perm_to_file_flags(msg->req.iotlb.perm);
-> > +             fd =3D get_unused_fd_flags(flags);
-> > +             if (fd < 0) {
-> > +                     vduse_dev_enqueue_msg(dev, msg, &dev->send_list);
-> > +                     return fd;
-> > +             }
-> > +             fd_install(fd, get_file(msg->iotlb_file));
-> > +             msg->req.iotlb.fd =3D fd;
-> > +     }
-> > +
-> >       ret =3D copy_to_iter(&msg->req, size, to);
-> >       if (ret !=3D size) {
-> >               vduse_dev_enqueue_msg(dev, msg, &dev->send_list);
-> > @@ -565,6 +646,69 @@ static void vduse_vdpa_set_config(struct vdpa_devi=
-ce *vdpa, unsigned int offset,
-> >       vduse_dev_set_config(dev, offset, buf, len);
-> >   }
-> >
-> > +static void vduse_vdpa_invalidate_iotlb(struct vduse_dev *dev,
-> > +                                     struct vhost_iotlb_msg *msg)
-> > +{
-> > +     vduse_dev_invalidate_iotlb(dev, msg->iova, msg->size);
-> > +}
-> > +
-> > +static int vduse_vdpa_update_iotlb(struct vduse_dev *dev,
-> > +                                     struct vhost_iotlb_msg *msg)
-> > +{
-> > +     u64 uaddr =3D msg->uaddr;
-> > +     u64 iova =3D msg->iova;
-> > +     u64 size =3D msg->size;
-> > +     u64 offset;
-> > +     struct vm_area_struct *vma;
-> > +     int ret;
-> > +
-> > +     while (uaddr < msg->uaddr + msg->size) {
-> > +             vma =3D find_vma(current->mm, uaddr);
-> > +             ret =3D -EINVAL;
-> > +             if (!vma)
-> > +                     goto err;
-> > +
-> > +             size =3D min(msg->size, vma->vm_end - uaddr);
-> > +             offset =3D (vma->vm_pgoff << PAGE_SHIFT) + uaddr - vma->v=
-m_start;
-> > +             if (vma->vm_file && (vma->vm_flags & VM_SHARED)) {
-> > +                     ret =3D vduse_dev_update_iotlb(dev, vma->vm_file,=
- offset,
-> > +                                                     iova, size, msg->=
-perm);
-> > +                     if (ret)
-> > +                             goto err;
->
->
-> My understanding is that vma is something that should not be known by a
-> device. So I suggest to move the above processing to vhost-vdpa.c.
->
+are available in the Git repository at:
 
-Will do it.
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-Thanks,
-Yongji
+for you to fetch changes up to 418eddef050d5f6393c303a94e3173847ab85466:
+
+  vdpa: Use simpler version of ida allocation (2020-12-18 16:14:31 -0500)
+
+----------------------------------------------------------------
+virtio,vdpa: features, cleanups, fixes
+
+vdpa sim refactoring
+virtio mem  Big Block Mode support
+misc cleanus, fixes
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Christophe JAILLET (1):
+      vdpa: ifcvf: Use dma_set_mask_and_coherent to simplify code
+
+Dan Carpenter (3):
+      virtio_ring: Cut and paste bugs in vring_create_virtqueue_packed()
+      virtio_net: Fix error code in probe()
+      virtio_ring: Fix two use after free bugs
+
+David Hildenbrand (29):
+      virtio-mem: determine nid only once using memory_add_physaddr_to_nid()
+      virtio-mem: more precise calculation in virtio_mem_mb_state_prepare_next_mb()
+      virtio-mem: simplify MAX_ORDER - 1 / pageblock_order handling
+      virtio-mem: drop rc2 in virtio_mem_mb_plug_and_add()
+      virtio-mem: use "unsigned long" for nr_pages when fake onlining/offlining
+      virtio-mem: factor out calculation of the bit number within the subblock bitmap
+      virtio-mem: print debug messages from virtio_mem_send_*_request()
+      virtio-mem: factor out fake-offlining into virtio_mem_fake_offline()
+      virtio-mem: factor out handling of fake-offline pages in memory notifier
+      virtio-mem: retry fake-offlining via alloc_contig_range() on ZONE_MOVABLE
+      virtio-mem: generalize check for added memory
+      virtio-mem: generalize virtio_mem_owned_mb()
+      virtio-mem: generalize virtio_mem_overlaps_range()
+      virtio-mem: drop last_mb_id
+      virtio-mem: don't always trigger the workqueue when offlining memory
+      virtio-mem: generalize handling when memory is getting onlined deferred
+      virito-mem: document Sub Block Mode (SBM)
+      virtio-mem: memory block states are specific to Sub Block Mode (SBM)
+      virito-mem: subblock states are specific to Sub Block Mode (SBM)
+      virtio-mem: nb_sb_per_mb and subblock_size are specific to Sub Block Mode (SBM)
+      virtio-mem: memory block ids are specific to Sub Block Mode (SBM)
+      virito-mem: existing (un)plug functions are specific to Sub Block Mode (SBM)
+      virtio-mem: memory notifier callbacks are specific to Sub Block Mode (SBM)
+      virtio-mem: factor out adding/removing memory from Linux
+      virtio-mem: Big Block Mode (BBM) memory hotplug
+      virtio-mem: allow to force Big Block Mode (BBM) and set the big block size
+      mm/memory_hotplug: extend offline_and_remove_memory() to handle more than one memory block
+      virtio-mem: Big Block Mode (BBM) - basic memory hotunplug
+      virtio-mem: Big Block Mode (BBM) - safe memory hotunplug
+
+Eli Cohen (1):
+      vdpa/mlx5: Use write memory barrier after updating CQ index
+
+Enrico Weigelt, metux IT consult (2):
+      uapi: virtio_ids.h: consistent indentions
+      uapi: virtio_ids: add missing device type IDs from OASIS spec
+
+Max Gurtovoy (2):
+      vdpa_sim: remove hard-coded virtq count
+      vdpa: split vdpasim to core and net modules
+
+Parav Pandit (2):
+      vdpa: Add missing comment for virtqueue count
+      vdpa: Use simpler version of ida allocation
+
+Peng Fan (3):
+      tools/virtio: include asm/bug.h
+      tools/virtio: add krealloc_array
+      tools/virtio: add barrier for aarch64
+
+Stefano Garzarella (16):
+      vdpa: remove unnecessary 'default n' in Kconfig entries
+      vdpa_sim: remove unnecessary headers inclusion
+      vdpa_sim: make IOTLB entries limit configurable
+      vdpa_sim: rename vdpasim_config_ops variables
+      vdpa_sim: add struct vdpasim_dev_attr for device attributes
+      vdpa_sim: add device id field in vdpasim_dev_attr
+      vdpa_sim: add supported_features field in vdpasim_dev_attr
+      vdpa_sim: add work_fn in vdpasim_dev_attr
+      vdpa_sim: store parsed MAC address in a buffer
+      vdpa_sim: make 'config' generic and usable for any device type
+      vdpa_sim: add get_config callback in vdpasim_dev_attr
+      vdpa_sim: add set_config callback in vdpasim_dev_attr
+      vdpa_sim: set vringh notify callback
+      vdpa_sim: use kvmalloc to allocate vdpasim->buffer
+      vdpa_sim: make vdpasim->buffer size configurable
+      vdpa_sim: split vdpasim_virtqueue's iov field in out_iov and in_iov
+
+Tian Tao (1):
+      vhost_vdpa: switch to vmemdup_user()
+
+Zhang Changzhong (1):
+      vhost scsi: fix error return code in vhost_scsi_set_endpoint()
+
+ drivers/net/virtio_net.c             |    1 +
+ drivers/vdpa/Kconfig                 |   18 +-
+ drivers/vdpa/ifcvf/ifcvf_main.c      |   11 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c    |    5 +
+ drivers/vdpa/vdpa.c                  |    2 +-
+ drivers/vdpa/vdpa_sim/Makefile       |    1 +
+ drivers/vdpa/vdpa_sim/vdpa_sim.c     |  298 ++----
+ drivers/vdpa/vdpa_sim/vdpa_sim.h     |  105 ++
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  177 ++++
+ drivers/vhost/scsi.c                 |    3 +-
+ drivers/vhost/vdpa.c                 |   10 +-
+ drivers/virtio/virtio_mem.c          | 1835 ++++++++++++++++++++++++----------
+ drivers/virtio/virtio_ring.c         |    8 +-
+ include/linux/vdpa.h                 |    1 +
+ include/uapi/linux/virtio_ids.h      |   44 +-
+ mm/memory_hotplug.c                  |  109 +-
+ tools/virtio/asm/barrier.h           |   10 +
+ tools/virtio/linux/bug.h             |    2 +
+ tools/virtio/linux/kernel.h          |   13 +-
+ 19 files changed, 1843 insertions(+), 810 deletions(-)
+ create mode 100644 drivers/vdpa/vdpa_sim/vdpa_sim.h
+ create mode 100644 drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+
