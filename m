@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6362E131A
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:28:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D9112E12FE
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:28:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730042AbgLWC2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:28:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52102 "EHLO mail.kernel.org"
+        id S1729948AbgLWC0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:26:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57228 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730813AbgLWC0O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:26:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B192F22273;
-        Wed, 23 Dec 2020 02:25:58 +0000 (UTC)
+        id S1730922AbgLWC0l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:26:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ED33C22248;
+        Wed, 23 Dec 2020 02:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690359;
-        bh=sWQGtVQf3/N0vVvHADMoc+JEYJhR94KGod+bU12/zT4=;
+        s=k20201202; t=1608690360;
+        bh=ryRJWofLmghc/1eZGaFkWYYlcQWzVNLksYImCUQLffY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IW+vbORsAMg4QaS/ZDTyQ01TIgo3Q1847wI9b6rlR9moMD2cYkf9IJPMtaXROyAJm
-         3r6GICRGV7M9wkPOJULjjZSY7F76XZkC9TbIvJtD6e2o2F+5cFVO31sBSq9nwEQNYC
-         m4qpr6v3cf2TWxQVSEYxWvB80/Bfb7bn350DIJn9oxsno2fycD4P3FzR56Hes88gq1
-         F3uwYynO94ryWv6jJDDB518YBTBbuI+YiaZtIt5teOjDdZhy7AoRWshriK7JE6bCY8
-         o6D6eBUO2+ExJJavLKHSbD9mwgJZxBdNrBcx+GxQSm8WGiCNL1DEWfP8ITCeL+QjG/
-         PiNiIZF++Nt/Q==
+        b=N2ECdGBtTIDd8McJZY1NdmQJyARsRqJh5s77ccC1ZcE/lSSFf3Fj1oz+dEP3F2zdU
+         k1VThM+Qo+RLTaF36YeiIE2F7OnFVyKqAz5n7GbhqzRJGOY156JwgVOUqvajIXk3s7
+         o2P9Nl2K3LrRYGSv4fN1fw7SDLu1nCqdL0qyWNz/EMvfccE6jBkbniYJMOZ2CjAHiG
+         dJHykOeCWFIITH3ZISRNrZgnGM3/S25fwKHranrtCbo1Z2W4vEVTduHp+o1Kn9ZJjt
+         YgUFP1AFzDB5HxMWkfKIrQnfHUD67qTB7YDCgWZQPnd8AelMJOGHxWoN+CF7lOWAR7
+         ovTTfU8rq7C8g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 34/38] iwlwifi: add an extra firmware state in the transport
-Date:   Tue, 22 Dec 2020 21:25:12 -0500
-Message-Id: <20201223022516.2794471-34-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 35/38] mac80211: disallow band-switch during CSA
+Date:   Tue, 22 Dec 2020 21:25:13 -0500
+Message-Id: <20201223022516.2794471-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022516.2794471-1-sashal@kernel.org>
 References: <20201223022516.2794471-1-sashal@kernel.org>
@@ -45,63 +45,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit b2ed841ed070ccbe908016537f429a3a8f0221bf ]
+[ Upstream commit 3660944a37ce73890292571f44f04891834f9044 ]
 
-Start tracking not just if the firmware is dead or alive,
-but also if it's starting.
+If the AP advertises a band switch during CSA, we will not have
+the right information to continue working with it, since it will
+likely (have to) change its capabilities and we don't track any
+capability changes at all. Additionally, we store e.g. supported
+rates per band, and that information would become invalid.
 
+Since this is a fringe scenario, just disconnect explicitly.
+
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20201129172929.0e2327107c06.I461adb07704e056b054a4a7c29b80c95a9f56637@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20201209231352.33e50d40b688.I8bbd41af7aa5e769273a6fc1c06fbf548dd2eb26@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/iwlwifi/iwl-trans.h | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ net/mac80211/mlme.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/iwlwifi/iwl-trans.h b/drivers/net/wireless/iwlwifi/iwl-trans.h
-index 8dd30de1976f0..ea60143e60fa4 100644
---- a/drivers/net/wireless/iwlwifi/iwl-trans.h
-+++ b/drivers/net/wireless/iwlwifi/iwl-trans.h
-@@ -619,12 +619,14 @@ struct iwl_trans_ops {
- /**
-  * enum iwl_trans_state - state of the transport layer
-  *
-- * @IWL_TRANS_NO_FW: no fw has sent an alive response
-- * @IWL_TRANS_FW_ALIVE: a fw has sent an alive response
-+ * @IWL_TRANS_NO_FW: firmware wasn't started yet, or crashed
-+ * @IWL_TRANS_FW_STARTED: FW was started, but not alive yet
-+ * @IWL_TRANS_FW_ALIVE: FW has sent an alive response
-  */
- enum iwl_trans_state {
--	IWL_TRANS_NO_FW = 0,
--	IWL_TRANS_FW_ALIVE	= 1,
-+	IWL_TRANS_NO_FW,
-+	IWL_TRANS_FW_STARTED,
-+	IWL_TRANS_FW_ALIVE,
- };
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index 4ab78bc6c2ca5..6a94b14817471 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -1210,6 +1210,17 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
+ 	if (res)
+ 		return;
  
- /**
-@@ -780,12 +782,18 @@ static inline int iwl_trans_start_fw(struct iwl_trans *trans,
- 				     const struct fw_img *fw,
- 				     bool run_in_rfkill)
- {
-+	int ret;
++	if (sdata->vif.bss_conf.chandef.chan->band !=
++	    csa_ie.chandef.chan->band) {
++		sdata_info(sdata,
++			   "AP %pM switches to different band (%d MHz, width:%d, CF1/2: %d/%d MHz), disconnecting\n",
++			   ifmgd->associated->bssid,
++			   csa_ie.chandef.chan->center_freq,
++			   csa_ie.chandef.width, csa_ie.chandef.center_freq1,
++			   csa_ie.chandef.center_freq2);
++		goto lock_and_drop_connection;
++	}
 +
- 	might_sleep();
+ 	if (!cfg80211_chandef_usable(local->hw.wiphy, &csa_ie.chandef,
+ 				     IEEE80211_CHAN_DISABLED)) {
+ 		sdata_info(sdata,
+@@ -1218,9 +1229,7 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
+ 			   csa_ie.chandef.chan->center_freq,
+ 			   csa_ie.chandef.width, csa_ie.chandef.center_freq1,
+ 			   csa_ie.chandef.center_freq2);
+-		ieee80211_queue_work(&local->hw,
+-				     &ifmgd->csa_connection_drop_work);
+-		return;
++		goto lock_and_drop_connection;
+ 	}
  
- 	WARN_ON_ONCE(!trans->rx_mpdu_cmd);
- 
- 	clear_bit(STATUS_FW_ERROR, &trans->status);
--	return trans->ops->start_fw(trans, fw, run_in_rfkill);
-+	ret = trans->ops->start_fw(trans, fw, run_in_rfkill);
-+	if (ret == 0)
-+		trans->state = IWL_TRANS_FW_STARTED;
-+
-+	return ret;
- }
- 
- static inline int iwl_trans_update_sf(struct iwl_trans *trans,
+ 	if (cfg80211_chandef_identical(&csa_ie.chandef,
+@@ -1310,6 +1319,9 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
+ 			  TU_TO_EXP_TIME((csa_ie.count - 1) *
+ 					 cbss->beacon_interval));
+ 	return;
++ lock_and_drop_connection:
++	mutex_lock(&local->mtx);
++	mutex_lock(&local->chanctx_mtx);
+  drop_connection:
+ 	ieee80211_queue_work(&local->hw, &ifmgd->csa_connection_drop_work);
+ 	mutex_unlock(&local->chanctx_mtx);
 -- 
 2.27.0
 
