@@ -2,62 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 892BF2E21D9
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:04:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5C6A2E21E3
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:06:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729209AbgLWVBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 16:01:48 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:39142 "EHLO vps0.lunn.ch"
+        id S1729178AbgLWVGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 16:06:12 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:39162 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727605AbgLWVBs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 16:01:48 -0500
+        id S1729110AbgLWVGL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 16:06:11 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1ksBFU-00DeoG-9X; Wed, 23 Dec 2020 22:00:44 +0100
-Date:   Wed, 23 Dec 2020 22:00:44 +0100
+        id 1ksBJx-00Der5-RT; Wed, 23 Dec 2020 22:05:21 +0100
+Date:   Wed, 23 Dec 2020 22:05:21 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>, kjlu@umn.edu,
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ethernet: Fix memleak in ethoc_probe
-Message-ID: <20201223210044.GA3253993@lunn.ch>
-References: <20201223110615.31389-1-dinghao.liu@zju.edu.cn>
- <20201223153304.GD3198262@lunn.ch>
- <20201223123218.1cf7d9cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC PATCH v2 3/8] net: sparx5: add hostmode with phylink support
+Message-ID: <20201223210521.GB3253993@lunn.ch>
+References: <20201217075134.919699-1-steen.hegelund@microchip.com>
+ <20201217075134.919699-4-steen.hegelund@microchip.com>
+ <20201219195133.GD3026679@lunn.ch>
+ <fabe6df8e8d1fab86860164ced4142afae3bd70d.camel@microchip.com>
+ <20201222144141.GK3107610@lunn.ch>
+ <20201223205852.GA4138276@piout.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201223123218.1cf7d9cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201223205852.GA4138276@piout.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 23, 2020 at 12:32:18PM -0800, Jakub Kicinski wrote:
-> On Wed, 23 Dec 2020 16:33:04 +0100 Andrew Lunn wrote:
-> > On Wed, Dec 23, 2020 at 07:06:12PM +0800, Dinghao Liu wrote:
-> > > When mdiobus_register() fails, priv->mdio allocated
-> > > by mdiobus_alloc() has not been freed, which leads
-> > > to memleak.
-> > > 
-> > > Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>  
+On Wed, Dec 23, 2020 at 09:58:52PM +0100, Alexandre Belloni wrote:
+> On 22/12/2020 15:41:41+0100, Andrew Lunn wrote:
+> > > Yes the register based injection/extration is not going to be fast, but
+> > > the FDMA and its driver is being sent later as separate series to keep
+> > > the size of this review down.
 > > 
-> > Fixes: bfa49cfc5262 ("net/ethoc: fix null dereference on error exit path")
+> > FDMA?
 > > 
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> > I need a bit more background here, just to make use this should be a
+> > pure switchdev driver and not a DSA driver.
+> > 
 > 
-> Ooof, I applied without looking at your email and I added:
+> I don't think this should be a DSA driver. As for Ocelot, the CPU
+> port is not a MAC and in that use case, this would be like a top of the
+> rack switch with traffic going to the CPU port being mostly used for
+> managmement (dhcp, stp, etc...) as opposed to being used to forward
+> traffic to another interface, like WAN or wifi.
 > 
-> Fixes: e7f4dc3536a4 ("mdio: Move allocation of interrupts into core")
+> However, I would think there will be cases where the internal CPU is not
+> use and instead use ths switch in a DSA setting, very much like what is
+> done for Felix with regards to Ocelot.
 
-[Goes and looks deeper]
+From what i have heard so far, it does seem like a pure switchdev
+driver is correct. So long as FDMA is not a standalone Ethernet
+driver, but just a DMA engine incorporated into this driver, the
+architecture looks correct.
 
-Yes, commit e7f4dc3536a4 looks like it introduced the original
-problem. bfa49cfc5262 just moved to code around a bit.
+I was asking because from the information that was available, it was
+impossible to say what the correct architecture should be.
 
-Does patchwork not automagically add Fixes: lines from full up emails?
-That seems like a reasonable automation.
-
-	 Andrew
+     Andrew
