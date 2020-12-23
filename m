@@ -2,92 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD0A2E1FC8
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 18:14:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD23D2E203F
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 18:58:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726859AbgLWRO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 12:14:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38286 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725807AbgLWRO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 12:14:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EB84422202;
-        Wed, 23 Dec 2020 17:13:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608743626;
-        bh=qmTMa9lSuuSm2XZ5ja0n+u8oUv/CyBev2vPCt8NrB0M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KUE2akLmaK6jET7gtbtiTTeG7yupaxsB8GrZww3vT5gr8mMWtwZXHla+uA7t+/Iu2
-         9Kkq35vd6szc1vgcMmtaeApSHdyNytnRn0CN2l3TR/6EAV7G4PMnzvObtKYKa1f7d0
-         RDBKba0N6fj9S9jaJPrGkPU5Iq58DUYV5JNrY56dsoK3ukm/+xcIPepNKIJwsLAwk8
-         wvKXEADbNiYATYFzfjBcVu0I5rTHHN+cT2LPU45h5kM3nGbp0p6bYkCcbU5eDMmMNl
-         j6h2/dW7aGAmESMc813B2hYY9ASMI/ZJpXr7T+3LvGPn/xAIA3I5K7TGdStSMmVJM/
-         3Tyw/hYfDC8LA==
-Date:   Wed, 23 Dec 2020 09:13:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jeff Dike <jdike@akamai.com>
-Cc:     <netdev@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, <stable@vger.kernel.org>
-Subject: Re: [PATCH Repost to netdev] virtio_net: Fix recursive call to
- cpus_read_lock()
-Message-ID: <20201223091344.1363c061@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201223025421.671-1-jdike@akamai.com>
-References: <20201223025421.671-1-jdike@akamai.com>
+        id S1727955AbgLWR6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 12:58:43 -0500
+Received: from smtprelay0078.hostedemail.com ([216.40.44.78]:36632 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726554AbgLWR6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 12:58:43 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 195C818045A48;
+        Wed, 23 Dec 2020 17:58:02 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:967:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2553:2560:2563:2682:2685:2691:2693:2828:2859:2911:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3698:3865:3866:3867:3868:3870:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4425:5007:6742:6743:7576:9010:9012:9025:9040:10004:10400:10848:10967:11232:11596:11658:11783:11914:12043:12297:12679:12740:12895:13019:13069:13161:13229:13311:13357:13439:13846:13894:14180:14181:14659:14721:14777:21080:21324:21433:21451:21611:21627:21740:21819:21990:30022:30029:30030:30054:30060:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: smell21_3f007b52746a
+X-Filterd-Recvd-Size: 2644
+Received: from XPS-9350.home (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf03.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 23 Dec 2020 17:57:58 +0000 (UTC)
+Message-ID: <36399d76993cf04661b4ade819b3245951ae650b.camel@perches.com>
+Subject: Re: [PATCH net] MAINTAINERS: remove names from mailing list
+ maintainers
+From:   Joe Perches <joe@perches.com>
+To:     patchwork-bot+netdevbpf@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, pv-drivers@vmware.com,
+        doshir@vmware.com, UNGLinuxDriver@microchip.com,
+        steve.glendinning@shawell.net, woojung.huh@microchip.com,
+        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
+        drivers@pensando.io, snelson@pensando.io, vladimir.oltean@nxp.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        bryan.whitehead@microchip.com, o.rempel@pengutronix.de,
+        kernel@pengutronix.de, robin@protonic.nl, hkallweit1@gmail.com,
+        nic_swsd@realtek.com, lars.povlsen@microchip.com,
+        Steen.Hegelund@microchip.com, linux-kernel@vger.kernel.org,
+        corbet@lwn.net
+Date:   Wed, 23 Dec 2020 09:57:57 -0800
+In-Reply-To: <160869180729.29227.5706578456404319351.git-patchwork-notify@kernel.org>
+References: <20201219185538.750076-1-kuba@kernel.org>
+         <160869180729.29227.5706578456404319351.git-patchwork-notify@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Dec 2020 21:54:21 -0500 Jeff Dike wrote:
-> virtnet_set_channels can recursively call cpus_read_lock if CONFIG_XPS
-> and CONFIG_HOTPLUG are enabled.
+On Wed, 2020-12-23 at 02:50 +0000, patchwork-bot+netdevbpf@kernel.org
+wrote:
+> Hello:
 > 
-> The path is:
->     virtnet_set_channels - calls get_online_cpus(), which is a trivial
-> wrapper around cpus_read_lock()
->     netif_set_real_num_tx_queues
->     netif_reset_xps_queues_gt
->     netif_reset_xps_queues - calls cpus_read_lock()
+> This patch was applied to netdev/net.git (refs/heads/master):
 > 
-> This call chain and potential deadlock happens when the number of TX
-> queues is reduced.
+> On Sat, 19 Dec 2020 10:55:38 -0800 you wrote:
+> > When searching for inactive maintainers it's useful to filter
+> > out mailing list addresses. Such "maintainers" will obviously
+> > never feature in a "From:" line of an email or a review tag.
+> > 
+> > Since "L:" entries only provide the address of a mailing list
+> > without a fancy name extend this pattern to "M:" entries.
+> > 
+> > [...]
 > 
-> This commit the removes netif_set_real_num_[tr]x_queues calls from
-> inside the get/put_online_cpus section, as they don't require that it
-> be held.
+> Here is the summary with links:
+>   - [net] MAINTAINERS: remove names from mailing list maintainers
+>     https://git.kernel.org/netdev/net/c/8b0f64b113d6
+> 
+> You are awesome, thank you!
 
-Fixes: 47be24796c13 ("virtio-net: fix the set affinity bug when CPU IDs are not consecutive")
+I still think this is not a good patch nor mechanism to
+show what is generally used as exploders rather than
+individuals.
 
-> Signed-off-by: Jeff Dike <jdike@akamai.com>
-> Acked-by: Jason Wang <jasowang@redhat.com>
-> Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> Cc: stable@vger.kernel.org
+Effectively only individuals can submit patches and so
+can be M: Maintainers.
 
-Queued for stable.
+I believe these entries should really use R: Reviewer
+entries and keep the descriptive naming content.
 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 052975ea0af4..e02c7e0f1cf9 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -2093,14 +2093,16 @@ static int virtnet_set_channels(struct net_device *dev,
->  
->  	get_online_cpus();
->  	err = _virtnet_set_queues(vi, queue_pairs);
-> -	if (!err) {
-> -		netif_set_real_num_tx_queues(dev, queue_pairs);
-> -		netif_set_real_num_rx_queues(dev, queue_pairs);
-> -
-> -		virtnet_set_affinity(vi);
-> +	if (err){
+The descriptive naming does add value and this patch
+loses that value.
 
-Added missing space here.
 
-> +		put_online_cpus();
-> +		goto err;
->  	}
 
-And applied, thanks!
