@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21A5B2E1768
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:11:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F2382E1781
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:12:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731721AbgLWDJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 22:09:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46368 "EHLO mail.kernel.org"
+        id S1727995AbgLWCSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:18:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45396 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728146AbgLWCSd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:18:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B159823331;
-        Wed, 23 Dec 2020 02:17:01 +0000 (UTC)
+        id S1727898AbgLWCSX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:18:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E2A472222A;
+        Wed, 23 Dec 2020 02:17:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608689822;
-        bh=slLvqsqHnC8JapO+m9u5I9+dSWBpjs/s0tl4hUefA+A=;
+        s=k20201202; t=1608689836;
+        bh=55FbdZozjY9wsOB2yAn394jO2YjjJI+sp8UYjuYc7aM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vCvQXCxSRLFtJt0eClQKGtrn89NF7m9FzKaTQURQeAgLJmQQGeV1Te6oqHY2xyI+g
-         0eIEhCN061EsPSFW0I0Yw/vUoz6nb5U7tOHQlT7XJXeKW6bccXl7kOm7Idw8yW4w5e
-         keUYba1J2xEvJun6SQMxRNuBpmz7WyK5naK0pGlkblEEBoKBcHSq2FNv4GLc6g3V+1
-         WZ+ktFmqo4sAWV62FUEnzFGMWvAva69sCzPQLZiL5S2EadAHkLffKYTDKR2s2PMSLO
-         orCWcpIYr09S8wFWUnBX1G36UeDe2gwENlJ8wCi2KkoYgw5U7Rc7xkuxrIJURByVSp
-         p90wCotIk7Gxg==
+        b=LdHLz//Al/C241hU3rDkSn10rFYH9hiA4pdHL0GR3DtXbLpFxxqVDR4TTLZXubdEC
+         xBA/C2lpN1fJLHh4TACxlrZTCQr4kqKXh/x+/aR0991oPjm5IrCboXGNC4GEOFqJVu
+         cQ/82fCrwDXGR6e4TCu+8s5oV4QayAmLxoEJiAH6HYK+REaju0ZTJsSBbbJqsCczPa
+         +4S2u1M5l5ByVsFxDer8Muug10uE2MvqRUrfoI5/I7+v0fAT4b4GTlfjS8N6sJQ1Ep
+         SFyU5EeHAYS8/GgFq8tMWfs6HImCKR3M6yc2XJuJ1+fleiUNZjg9WMUh8cnE4nNRBd
+         THWO3sbxPfF2w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 027/217] net: mscc: ocelot: don't reset the pvid to 0 when deleting it
-Date:   Tue, 22 Dec 2020 21:13:16 -0500
-Message-Id: <20201223021626.2790791-27-sashal@kernel.org>
+Cc:     Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 037/217] mac80211: don't overwrite QoS TID of injected frames
+Date:   Tue, 22 Dec 2020 21:13:26 -0500
+Message-Id: <20201223021626.2790791-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021626.2790791-1-sashal@kernel.org>
 References: <20201223021626.2790791-1-sashal@kernel.org>
@@ -42,61 +43,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>
 
-[ Upstream commit 110e847ca7d5e712cabc8cb866a66b629832f4a2 ]
+[ Upstream commit 527d675969a1dff17baa270d4447ac1c87058299 ]
 
-I have no idea why this code is here, but I have 2 hypotheses:
+Currently ieee80211_set_qos_hdr sets the QoS TID of all frames based
+on the value assigned to skb->priority. This means it will also
+overwrite the QoS TID of injected frames. The commit 753ffad3d624
+("mac80211: fix TID field in monitor mode transmit") prevented
+injected frames from being modified because of this by setting
+skb->priority to the TID of the injected frame, which assured the
+QoS TID will not be changed to a different value. Unfortunately,
+this workaround complicates the handling of injected frames because
+we can't set skb->priority without affecting the TID value in the
+QoS field of injected frames.
 
-1.
-A desperate attempt to keep untagged traffic working when the bridge
-deletes the pvid on a port.
+To avoid this, and to simplify the next patch, detect if a frame is
+injected in ieee80211_set_qos_hdr and if so do not change its QoS
+field.
 
-There was a fairly okay discussion here:
-https://lore.kernel.org/netdev/CA+h21hrRMrLH-RjBGhEJSTZd6_QPRSd3RkVRQF-wNKkrgKcRSA@mail.gmail.com/#t
-which established that in vlan_filtering=1 mode, the absence of a pvid
-should denote that the ingress port should drop untagged and priority
-tagged traffic. While in vlan_filtering=0 mode, nothing should change.
-
-So in vlan_filtering=1 mode, we should simply let things happen, and not
-attempt to save the day. And in vlan_filtering=0 mode, the pvid is 0
-anyway, no need to do anything.
-
-2.
-The driver encodes the native VLAN (ocelot_port->vid) value of 0 as
-special, meaning "not valid". There are checks based on that. But there
-are no such checks for the ocelot_port->pvid value of 0. In fact, that's
-a perfectly valid value, which is used in standalone mode. Maybe there
-was some confusion and the author thought that 0 means "invalid" here as
-well.
-
-In conclusion, delete the code*.
-
-*in fact we'll add it back later, in a slightly different form, but for
-an entirely different reason than the one for which this exists now.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>
+Link: https://lore.kernel.org/r/20201104061823.197407-4-Mathy.Vanhoef@kuleuven.be
+[fix typos in commit message]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 4 ----
- 1 file changed, 4 deletions(-)
+ net/mac80211/tx.c  | 5 +----
+ net/mac80211/wme.c | 8 ++++++++
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index a53bd36b11c60..ba17cd64c352e 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -289,10 +289,6 @@ int ocelot_vlan_del(struct ocelot *ocelot, int port, u16 vid)
- 	if (ret)
- 		return ret;
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 56a4d0d20a267..bedb9d85f3d65 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -2279,10 +2279,7 @@ netdev_tx_t ieee80211_monitor_start_xmit(struct sk_buff *skb,
+ 						    payload[7]);
+ 	}
  
--	/* Ingress */
--	if (ocelot_port->pvid == vid)
--		ocelot_port_set_pvid(ocelot, port, 0);
--
- 	/* Egress */
- 	if (ocelot_port->vid == vid)
- 		ocelot_port_set_native_vlan(ocelot, port, 0);
+-	/*
+-	 * Initialize skb->priority for QoS frames. This is put in the TID field
+-	 * of the frame before passing it to the driver.
+-	 */
++	/* Initialize skb->priority for QoS frames */
+ 	if (ieee80211_is_data_qos(hdr->frame_control)) {
+ 		u8 *p = ieee80211_get_qos_ctl(hdr);
+ 		skb->priority = *p & IEEE80211_QOS_CTL_TAG1D_MASK;
+diff --git a/net/mac80211/wme.c b/net/mac80211/wme.c
+index 2fb99325135a0..b74cd9bd5f95e 100644
+--- a/net/mac80211/wme.c
++++ b/net/mac80211/wme.c
+@@ -249,6 +249,14 @@ void ieee80211_set_qos_hdr(struct ieee80211_sub_if_data *sdata,
+ 
+ 	p = ieee80211_get_qos_ctl(hdr);
+ 
++	/* don't overwrite the QoS field of injected frames */
++	if (info->flags & IEEE80211_TX_CTL_INJECTED) {
++		/* do take into account Ack policy of injected frames */
++		if (*p & IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
++			info->flags |= IEEE80211_TX_CTL_NO_ACK;
++		return;
++	}
++
+ 	/* set up the first byte */
+ 
+ 	/*
 -- 
 2.27.0
 
