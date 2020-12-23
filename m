@@ -2,36 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE57F2E1702
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:11:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 488D12E16F6
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:11:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731325AbgLWDEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 22:04:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45510 "EHLO mail.kernel.org"
+        id S1731722AbgLWDEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 22:04:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46424 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728543AbgLWCTO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:19:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9217A2312E;
-        Wed, 23 Dec 2020 02:18:33 +0000 (UTC)
+        id S1728611AbgLWCTY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:19:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5F47B23340;
+        Wed, 23 Dec 2020 02:18:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608689914;
-        bh=RdtcM6zViuzlK2Nkml3KLpxbfyMc0DyP2XN/pSqi9Cw=;
+        s=k20201202; t=1608689923;
+        bh=g91U7yPyMHEYKX3YE/NWQ4eODxOH5znFdldeJSG4I8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KRX5gJNg4nHXjBAYzkc7vqiiWRCGI5ztss5klPlveW8mE2UHP7R4iqDnes49BpFqh
-         wvj2Z/ZoOik0laJVP2qsrR7/UnImFnM9MB5lFwCK3w8l5BHDJZTP3qs6TeGLlxHGxd
-         7dRIbqArTZQQ3W3KOJ4bTQPCx3rifAVsjkFhlb/ptF1A8FZOdV+t1uY5HcQSUr9qO9
-         zSMhkeK26aixkRlTDdUYWDhJ1679xcm6/Hn/hgPO2Hl299OrhWvbkrfQWemJcY/hHs
-         WG60upA51w/ofTYauBzOvx5+BkLnfv/M8w5n3vZAhl4ttQph2h6upyL9j/wqrrv9rg
-         Qf7YS3py7h6KA==
+        b=dvzoYuIVdo3kh73CFa7LvSHBN0LhCoI1YIqy4mn8BH6XuRc8fbpgjWup2V3dfzbBw
+         Nyjkc//9hN3OuCRGY3qSwU3X0S/LKJXawktEO4i1XQlLRI4t1TZGXaBSQUH0/BLoxh
+         xDlWB6uLitygYPILjD/+LIEvt/fEjdj1mRIGXXdEO+nuGgNrspv9C/a7bmSfp4Jamv
+         UuZgIY+XFUt2HXhHPJ0v+m5ZFOSbHeOl/pZwf9oHtyeYTd66yJlt5xGpa+cruGUc8B
+         GkzIqHGTyEmEjlyLlEPmfTmqn9u8a7OL20z7a+PXp3j3oV4J25i3a9Zj0yes/ODevl
+         gNtHzX6lNc6Cg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 015/130] mac80211: don't overwrite QoS TID of injected frames
-Date:   Tue, 22 Dec 2020 21:16:18 -0500
-Message-Id: <20201223021813.2791612-15-sashal@kernel.org>
+Cc:     Marek Vasut <marex@denx.de>, Angus Ainslie <angus@akkea.ca>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Martin Kepplinger <martink@posteo.de>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 023/130] rsi: Fix TX EAPOL packet handling against iwlwifi AP
+Date:   Tue, 22 Dec 2020 21:16:26 -0500
+Message-Id: <20201223021813.2791612-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
@@ -43,70 +49,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 527d675969a1dff17baa270d4447ac1c87058299 ]
+[ Upstream commit 65277100caa2f2c62b6f3c4648b90d6f0435f3bc ]
 
-Currently ieee80211_set_qos_hdr sets the QoS TID of all frames based
-on the value assigned to skb->priority. This means it will also
-overwrite the QoS TID of injected frames. The commit 753ffad3d624
-("mac80211: fix TID field in monitor mode transmit") prevented
-injected frames from being modified because of this by setting
-skb->priority to the TID of the injected frame, which assured the
-QoS TID will not be changed to a different value. Unfortunately,
-this workaround complicates the handling of injected frames because
-we can't set skb->priority without affecting the TID value in the
-QoS field of injected frames.
+In case RSI9116 SDIO WiFi operates in STA mode against Intel 9260 in AP mode,
+the association fails. The former is using wpa_supplicant during association,
+the later is set up using hostapd:
 
-To avoid this, and to simplify the next patch, detect if a frame is
-injected in ieee80211_set_qos_hdr and if so do not change its QoS
-field.
+iwl$ cat hostapd.conf
+interface=wlp1s0
+ssid=test
+country_code=DE
+hw_mode=g
+channel=1
+wpa=2
+wpa_passphrase=test
+wpa_key_mgmt=WPA-PSK
+iwl$ hostapd -d hostapd.conf
 
-Signed-off-by: Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>
-Link: https://lore.kernel.org/r/20201104061823.197407-4-Mathy.Vanhoef@kuleuven.be
-[fix typos in commit message]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+rsi$ wpa_supplicant -i wlan0 -c <(wpa_passphrase test test)
+
+The problem is that the TX EAPOL data descriptor RSI_DESC_REQUIRE_CFM_TO_HOST
+flag and extended descriptor EAPOL4_CONFIRM frame type are not set in case the
+AP is iwlwifi, because in that case the TX EAPOL packet is 2 bytes shorter.
+
+The downstream vendor driver has this change in place already [1], however
+there is no explanation for it, neither is there any commit history from which
+such explanation could be obtained.
+
+[1] https://github.com/SiliconLabs/RS911X-nLink-OSD/blob/master/rsi/rsi_91x_hal.c#L238
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Angus Ainslie <angus@akkea.ca>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Martin Kepplinger <martink@posteo.de>
+Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20201015111616.429220-1-marex@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/tx.c  | 5 +----
- net/mac80211/wme.c | 8 ++++++++
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_hal.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index 30a0c7c6224b3..11085a4b5ee3a 100644
---- a/net/mac80211/tx.c
-+++ b/net/mac80211/tx.c
-@@ -2280,10 +2280,7 @@ netdev_tx_t ieee80211_monitor_start_xmit(struct sk_buff *skb,
- 						    payload[7]);
- 	}
- 
--	/*
--	 * Initialize skb->priority for QoS frames. This is put in the TID field
--	 * of the frame before passing it to the driver.
--	 */
-+	/* Initialize skb->priority for QoS frames */
- 	if (ieee80211_is_data_qos(hdr->frame_control)) {
- 		u8 *p = ieee80211_get_qos_ctl(hdr);
- 		skb->priority = *p & IEEE80211_QOS_CTL_TAG1D_MASK;
-diff --git a/net/mac80211/wme.c b/net/mac80211/wme.c
-index 72920d82928c4..8cd157e67fc77 100644
---- a/net/mac80211/wme.c
-+++ b/net/mac80211/wme.c
-@@ -249,6 +249,14 @@ void ieee80211_set_qos_hdr(struct ieee80211_sub_if_data *sdata,
- 
- 	p = ieee80211_get_qos_ctl(hdr);
- 
-+	/* don't overwrite the QoS field of injected frames */
-+	if (info->flags & IEEE80211_TX_CTL_INJECTED) {
-+		/* do take into account Ack policy of injected frames */
-+		if (*p & IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
-+			info->flags |= IEEE80211_TX_CTL_NO_ACK;
-+		return;
-+	}
-+
- 	/* set up the first byte */
- 
- 	/*
+diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
+index 6f8d5f9a9f7e6..a07304405b2cc 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_hal.c
++++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
+@@ -248,7 +248,8 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
+ 			rsi_set_len_qno(&data_desc->len_qno,
+ 					(skb->len - FRAME_DESC_SZ),
+ 					RSI_WIFI_MGMT_Q);
+-		if ((skb->len - header_size) == EAPOL4_PACKET_LEN) {
++		if (((skb->len - header_size) == EAPOL4_PACKET_LEN) ||
++		    ((skb->len - header_size) == EAPOL4_PACKET_LEN - 2)) {
+ 			data_desc->misc_flags |=
+ 				RSI_DESC_REQUIRE_CFM_TO_HOST;
+ 			xtend_desc->confirm_frame_type = EAPOL4_CONFIRM;
 -- 
 2.27.0
 
