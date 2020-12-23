@@ -2,38 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E6822E21E6
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:10:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 849382E21F4
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728824AbgLWVJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 16:09:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48972 "EHLO mail.kernel.org"
+        id S1729226AbgLWVMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 16:12:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726462AbgLWVJD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 16:09:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4C6F4223E4;
-        Wed, 23 Dec 2020 21:08:22 +0000 (UTC)
+        id S1726279AbgLWVMa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 16:12:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 10743223E4;
+        Wed, 23 Dec 2020 21:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608757702;
-        bh=9o+wLiiWUlEclcEO6RrklnPQZ/hwz8qssl8eooZrwmY=;
+        s=k20201202; t=1608757910;
+        bh=qA5zu6kLWTjMvdfo1scNBtwChRieVHSK00bO38S7dHw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pLLIUMPbjykoJIdEF9TptnyNl4rNCAb/0Rg7hJlopLVTGsiG4OJAHvpNFF83zD878
-         8G68o5AxOFTfaXAqkCXYil4p9d8yFY6EvpVjU0LgQBuulzVRIibcr6qj8YdWOSH0e3
-         mnu6tojED3dMGubbWzkxFDboknprS0WrqMQOWHzg02fKpMqrB11FZTUi4csbUtI+H+
-         pGfucF58SA/d9DUAyY4kccANR7G4lWaVttS7Btv7szOYK4BohJH13h2Z6D52qPBP0y
-         6mpC6ZKwA/OrG/WfcT9vZnJOSos0vZpWixHAKeFmqPZV2lKpuyWOxAhccrPWuJ+mtf
-         ukaOx7qd+Go0Q==
-Date:   Wed, 23 Dec 2020 13:08:21 -0800
+        b=UtpPGvViLwTfXb2WRIrZFzDgpGAAlvFQhp0ToOfInk0z7vRTpCO3nL4rrB8KmOcU+
+         6lcVlCRZEITojcJe7OzxK7irYRpmHOnbvD0z7mGka73/xggWbzo42QKUUlZe+D6Nf5
+         B6TjMW8zwOQbiqxD4UDabaRkQa9egq/+np5ufB6/2KOUV5mOepOoCoSgPHxRMNy+Pn
+         Ux+uNAtZRz3v0MpMwvEYbtqD5HSbuD2UZTZG3/70Vn6c+KRL8w1Zoew/FWVNvCm/nt
+         5nLdh7Zpqo1ka2bUcXKKcgo6REo000djrSVwyh8KdjznNpQVSt/+YB9Yc/QSoX+GIe
+         iJwLTd4K3FIUA==
+Date:   Wed, 23 Dec 2020 13:11:49 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     trix@redhat.com
-Cc:     netanel@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
-        saeedb@amazon.com, zorik@amazon.com, davem@davemloft.net,
-        sameehj@amazon.com, shayagr@amazon.com, amitbern@amazon.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ena: remove h from printk format specifier
-Message-ID: <20201223130821.3fb80f37@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201223193144.123521-1-trix@redhat.com>
-References: <20201223193144.123521-1-trix@redhat.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>, kjlu@umn.edu,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ethernet: Fix memleak in ethoc_probe
+Message-ID: <20201223131149.15fff8d2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201223210044.GA3253993@lunn.ch>
+References: <20201223110615.31389-1-dinghao.liu@zju.edu.cn>
+        <20201223153304.GD3198262@lunn.ch>
+        <20201223123218.1cf7d9cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201223210044.GA3253993@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,24 +45,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Dec 2020 11:31:44 -0800 trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
+On Wed, 23 Dec 2020 22:00:44 +0100 Andrew Lunn wrote:
+> On Wed, Dec 23, 2020 at 12:32:18PM -0800, Jakub Kicinski wrote:
+> > On Wed, 23 Dec 2020 16:33:04 +0100 Andrew Lunn wrote:  
+> > > On Wed, Dec 23, 2020 at 07:06:12PM +0800, Dinghao Liu wrote:  
+> > > > When mdiobus_register() fails, priv->mdio allocated
+> > > > by mdiobus_alloc() has not been freed, which leads
+> > > > to memleak.
+> > > > 
+> > > > Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>    
+> > > 
+> > > Fixes: bfa49cfc5262 ("net/ethoc: fix null dereference on error exit path")
+> > > 
+> > > Reviewed-by: Andrew Lunn <andrew@lunn.ch>  
+> > 
+> > Ooof, I applied without looking at your email and I added:
+> > 
+> > Fixes: e7f4dc3536a4 ("mdio: Move allocation of interrupts into core")  
 > 
-> This change fixes the checkpatch warning described in this commit
-> commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of unnecessary %h[xudi] and %hh[xudi]")
+> [Goes and looks deeper]
 > 
-> Standard integer promotion is already done and %hx and %hhx is useless
-> so do not encourage the use of %hh[xudi] or %h[xudi].
+> Yes, commit e7f4dc3536a4 looks like it introduced the original
+> problem. bfa49cfc5262 just moved to code around a bit.
 > 
-> Signed-off-by: Tom Rix <trix@redhat.com>
+> Does patchwork not automagically add Fixes: lines from full up emails?
+> That seems like a reasonable automation.
 
-This really is not a change worth making in existing code, IMO.
+Looks like it's been a TODO for 3 years now:
 
-I find it a little ironic that nacking of unnecessary code churn has
-spawned unnecessary code churn in the opposite direction.
+https://github.com/getpatchwork/patchwork/issues/151
 
-I'd leave it up to maintainers of specific drivers to decide, but for
-now - net-next is closed anyway, please come back with these after
-merge window is over.
-
-Thanks!
+:(
