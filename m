@@ -2,117 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D42972E21BF
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 21:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 219192E21C2
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 21:58:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728727AbgLWUyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 15:54:32 -0500
-Received: from smtprelay0229.hostedemail.com ([216.40.44.229]:47208 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726650AbgLWUyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 15:54:32 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id EC02F18015400;
-        Wed, 23 Dec 2020 20:53:50 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1434:1437:1515:1516:1518:1534:1544:1593:1594:1711:1730:1747:1777:1792:1801:2194:2199:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3354:3622:3653:3865:3866:3867:3868:3870:3871:3872:4321:4605:5007:6119:6235:7557:7576:7902:7903:10004:10848:11026:11232:11657:11658:11914:12043:12048:12294:12296:12297:12438:12555:12740:12760:12895:12986:13439:14181:14659:14721:21080:21433:21451:21627:30003:30054:30070:30080:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: toys42_2915b912746b
-X-Filterd-Recvd-Size: 4983
-Received: from XPS-9350.home (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf03.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 23 Dec 2020 20:53:49 +0000 (UTC)
-Message-ID: <46c0d5336f079e9f889af711a478d189313d278d.camel@perches.com>
-Subject: Re: [PATCH] amd-xgbe: remove h from printk format specifier
-From:   Joe Perches <joe@perches.com>
-To:     Tom Rix <trix@redhat.com>, thomas.lendacky@amd.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 23 Dec 2020 12:53:48 -0800
-In-Reply-To: <d1257604-c462-8fbc-612e-41ec2f552ff8@redhat.com>
-References: <20201223194345.125205-1-trix@redhat.com>
-         <46b3bba25d09e89471048ae119a2c3b460b6b7be.camel@perches.com>
-         <d1257604-c462-8fbc-612e-41ec2f552ff8@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1728916AbgLWU5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 15:57:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43430 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727040AbgLWU5k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 15:57:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 10F3922283;
+        Wed, 23 Dec 2020 20:56:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1608757019;
+        bh=w9trtVYU9YFPGD/CjcB7w7pmj0FTTRIMnOUAteoSgrE=;
+        h=In-Reply-To:References:To:From:Subject:Cc:Date:From;
+        b=iIdzn4EKVuCGfeDP9H6c4RE0YvcUEm4geJEbEv+26YaKubazZvx9qVDfSWvVcmNz/
+         RehuZuZBypkms2VyyUqFCVOy/KLdltyym7gyXX9LTvwc7t9yoLLpdG03yrutoTAyx6
+         Hkd/KCM8M7gAvgqgbPiztmzX4x9rEZDsxkOuu0+1xhRq1WJez9VQdP76dLSxVAPFcu
+         1ouN95fPf5+qEFWHSoVbU/DTL9Yb9yjyocoXYsXtoGG7W7/LQa48LIC2FI2Dd8zS+/
+         PDOIUUojDl4HF9PCY0lsrVsFnDsVMm3MDHVoX6+1VNuN/c/b6ziTIkIgcDYzKNvQhC
+         fPODfCjQWkQ9w==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20201223124315.27451932@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201221193644.1296933-1-atenart@kernel.org> <20201221193644.1296933-2-atenart@kernel.org> <CAKgT0UfTgYhED1f6vdsoT72A3=D2Grh4U-A6pp43FLZoCs30Gw@mail.gmail.com> <160862887909.1246462.8442420561350999328@kwain.local> <CAKgT0UfzNA8qk+QFTN6ihXTxZkcE=vfrjBtyHKL6_9Yyzxt=eQ@mail.gmail.com> <20201223102729.6463a5c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <160875219353.1783433.8066935261216141538@kwain.local> <20201223121110.65effe06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <160875571511.1783433.16922263997505181889@kwain.local> <20201223124315.27451932@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+From:   Antoine Tenart <atenart@kernel.org>
+Subject: Re: [PATCH net v2 1/3] net: fix race conditions in xps by locking the maps and dev->tc_num
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Message-ID: <160875701664.1783433.16072409555972227523@kwain.local>
+Date:   Wed, 23 Dec 2020 21:56:56 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-12-23 at 12:33 -0800, Tom Rix wrote:
-> On 12/23/20 12:14 PM, Joe Perches wrote:
-> > On Wed, 2020-12-23 at 11:43 -0800, trix@redhat.com wrote:
-> > > From: Tom Rix <trix@redhat.com>
-> > > 
-> > > This change fixes the checkpatch warning described in this commit
-> > > commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of unnecessary %h[xudi] and %hh[xudi]")
-> > > 
-> > > Standard integer promotion is already done and %hx and %hhx is useless
-> > > so do not encourage the use of %hh[xudi] or %h[xudi].
-> > Why only xgbe-ethtool?
-> > 
-> > Perhaps your script only converts direct uses of functions
-> > marked with __printf and not any uses of the same functions
-> > via macros.
-> 
-> The fixer may have issues.
+Quoting Jakub Kicinski (2020-12-23 21:43:15)
+> On Wed, 23 Dec 2020 21:35:15 +0100 Antoine Tenart wrote:
+> > > > - For net-next, to resend patches 2 and 3 from v2 (they'll have to =
+be
+> > > >   slightly reworked, to take into account the review from Alexander=
+ and
+> > > >   the rtnl lock). The patches can be sent once the ones for net lan=
+d in
+> > > >   net-next. =20
+> > >=20
+> > > If the direction is to remove xps_map_mutex, why would we need patch =
+2?
+> > > =F0=9F=A4=94 =20
+> >=20
+> > Only the patches for net are needed to fix the race conditions.
+> >=20
+> > In addition to use the xps_map mutex, patches 2 and 3 from v2 factorize
+> > the code into a single function, as xps_cpus_show and xps_rxqs_show
+> > share the same logic. That would improve maintainability, but isn't
+> > mandatory.
+> >=20
+> > Sorry, it was not very clear...
+>=20
+> I like the cleanup, sorry I'm net very clear either.
+>=20
+> My understanding was that patch 2 was only needed to have access to the
+> XPS lock, if we don't plan to use that lock netif_show_xps_queue() can
+> stay in the sysfs file, right? I'm all for the cleanup and code reuse
+> for rxqs, I'm just making sure I'm not missing anything. I wasn't
+> seeing a reason to move netif_show_xps_queue(), that's all.
 
-Perhaps until the fixer is fixed, it'd be more
-complete coverage to use checkpatch like:
+You understood correctly, the only reason to move this code out of sysfs
+was to access the xps_map lock. Without the need, the code can stay in
+sysfs.
 
-$ git ls-files <path> | \
-  xargs ./scripts/checkpatch.pl -f --fix-inplace --types=unnecessary_modifier
+Patch 2 is not only moving the code out of sysfs, but also reworking
+xps_cpus_show. I think I now see where the confusion comes from: the
+reason patches 2 and 3 were in two different patches was because they
+were targeting net and different kernel versions. They could be squashed
+now.
 
-e.g.:
-
-$ git ls-files drivers/net/ethernet/amd/xgbe | \
-  xargs ./scripts/checkpatch.pl -f --fix-inplace --types=unnecessary_modifier
-
-$ git diff -U0 drivers/net/ethernet/amd/xgbe/
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-dcb.c b/drivers/net/ethernet/amd/xgbe/xgbe-dcb.c
-index 895d35639129..dcd2a181d43a 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-dcb.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-dcb.c
-@@ -155 +155 @@ static int xgbe_dcb_ieee_setets(struct net_device *netdev,
--                         "TC%u: tx_bw=%hhu, rx_bw=%hhu, tsa=%hhu\n", i,
-+                         "TC%u: tx_bw=%u, rx_bw=%u, tsa=%u\n", i,
-@@ -158 +158 @@ static int xgbe_dcb_ieee_setets(struct net_device *netdev,
--               netif_dbg(pdata, drv, netdev, "PRIO%u: TC=%hhu\n", i,
-+               netif_dbg(pdata, drv, netdev, "PRIO%u: TC=%u\n", i,
-@@ -233 +233 @@ static int xgbe_dcb_ieee_setpfc(struct net_device *netdev,
--                 "cap=%hhu, en=%#hhx, mbc=%hhu, delay=%hhu\n",
-+                 "cap=%u, en=%#x, mbc=%u, delay=%u\n",
-@@ -267 +267 @@ static u8 xgbe_dcb_setdcbx(struct net_device *netdev, u8 dcbx)
--       netif_dbg(pdata, drv, netdev, "DCBX=%#hhx\n", dcbx);
-+       netif_dbg(pdata, drv, netdev, "DCBX=%#x\n", dcbx);
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-dev.c b/drivers/net/ethernet/amd/xgbe/xgbe-dev.c
-index d5fd49dd25f3..ff0cd94bb91a 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-dev.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-dev.c
-@@ -488 +488 @@ static void xgbe_set_vxlan_id(struct xgbe_prv_data *pdata)
--       netif_dbg(pdata, drv, pdata->netdev, "VXLAN tunnel id set to %hx\n",
-+       netif_dbg(pdata, drv, pdata->netdev, "VXLAN tunnel id set to %x\n",
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-index 2709a2db5657..0ae16bc87833 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -2781 +2781 @@ void xgbe_print_pkt(struct net_device *netdev, struct sk_buff *skb, bool tx_rx)
--       netdev_dbg(netdev, "Protocol: %#06hx\n", ntohs(eth->h_proto));
-+       netdev_dbg(netdev, "Protocol: %#06x\n", ntohs(eth->h_proto));
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c b/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
-index 61f39a0e04f9..3c18f26bf2a5 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-ethtool.c
-@@ -342 +342 @@ static int xgbe_set_link_ksettings(struct net_device *netdev,
--               netdev_err(netdev, "invalid phy address %hhu\n",
-+               netdev_err(netdev, "invalid phy address %u\n",
-@@ -349 +349 @@ static int xgbe_set_link_ksettings(struct net_device *netdev,
--               netdev_err(netdev, "unsupported autoneg %hhu\n",
-+               netdev_err(netdev, "unsupported autoneg %u\n",
-@@ -361 +361 @@ static int xgbe_set_link_ksettings(struct net_device *netdev,
--                       netdev_err(netdev, "unsupported duplex %hhu\n",
-+                       netdev_err(netdev, "unsupported duplex %u\n",
-
-
+Antoine
