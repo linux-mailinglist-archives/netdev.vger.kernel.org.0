@@ -2,77 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 849382E21F4
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:13:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CAC52E2201
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 22:25:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729226AbgLWVMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 16:12:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49394 "EHLO mail.kernel.org"
+        id S1729004AbgLWVYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 16:24:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50936 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726279AbgLWVMa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 16:12:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 10743223E4;
-        Wed, 23 Dec 2020 21:11:50 +0000 (UTC)
+        id S1727147AbgLWVYG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 16:24:06 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8BB5B22273;
+        Wed, 23 Dec 2020 21:23:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608757910;
-        bh=qA5zu6kLWTjMvdfo1scNBtwChRieVHSK00bO38S7dHw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UtpPGvViLwTfXb2WRIrZFzDgpGAAlvFQhp0ToOfInk0z7vRTpCO3nL4rrB8KmOcU+
-         6lcVlCRZEITojcJe7OzxK7irYRpmHOnbvD0z7mGka73/xggWbzo42QKUUlZe+D6Nf5
-         B6TjMW8zwOQbiqxD4UDabaRkQa9egq/+np5ufB6/2KOUV5mOepOoCoSgPHxRMNy+Pn
-         Ux+uNAtZRz3v0MpMwvEYbtqD5HSbuD2UZTZG3/70Vn6c+KRL8w1Zoew/FWVNvCm/nt
-         5nLdh7Zpqo1ka2bUcXKKcgo6REo000djrSVwyh8KdjznNpQVSt/+YB9Yc/QSoX+GIe
-         iJwLTd4K3FIUA==
-Date:   Wed, 23 Dec 2020 13:11:49 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>, kjlu@umn.edu,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ethernet: Fix memleak in ethoc_probe
-Message-ID: <20201223131149.15fff8d2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201223210044.GA3253993@lunn.ch>
-References: <20201223110615.31389-1-dinghao.liu@zju.edu.cn>
-        <20201223153304.GD3198262@lunn.ch>
-        <20201223123218.1cf7d9cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201223210044.GA3253993@lunn.ch>
+        s=k20201202; t=1608758606;
+        bh=Byb4fjHHlydql2g8PI51aKxdzGmYBaZL8YcYQ25sw7U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=K7z1359uO7p0AStNOI1MRhtU/Hj2e7xMxUvnkFjyf/RFUUkDq09C+Dizt5skFTDPM
+         8J5Qwk4Jkes4ceA9Wbu5bj1xntU75SRMq+Uc49aOpYZZebQ+yyIGwIYNXrynJMcX/v
+         wbYato8F4SwTmGd0OZ/mDehzpf+aFmNwPt/K/802OgZidOvPHHJH0kUeeT50GJ3tSp
+         labSaOOMe2lH2rkcHLBNm9H//+TF5pGwzB2eMGyY/wXzPPnt5NNJP9JKT7ih+EBywh
+         L/5+7vXAb2BmxR7nztRHoH9MLCZuezhjMZFm47Y4Q6RSEHPl8SeHEEpbrTOfDLJwOx
+         LvonziJ9DXU1w==
+From:   Antoine Tenart <atenart@kernel.org>
+To:     davem@davemloft.net, kuba@kernel.org, alexander.duyck@gmail.com
+Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
+        pabeni@redhat.com
+Subject: [PATCH net v3 0/4] net-sysfs: fix race conditions in the xps code
+Date:   Wed, 23 Dec 2020 22:23:19 +0100
+Message-Id: <20201223212323.3603139-1-atenart@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Dec 2020 22:00:44 +0100 Andrew Lunn wrote:
-> On Wed, Dec 23, 2020 at 12:32:18PM -0800, Jakub Kicinski wrote:
-> > On Wed, 23 Dec 2020 16:33:04 +0100 Andrew Lunn wrote:  
-> > > On Wed, Dec 23, 2020 at 07:06:12PM +0800, Dinghao Liu wrote:  
-> > > > When mdiobus_register() fails, priv->mdio allocated
-> > > > by mdiobus_alloc() has not been freed, which leads
-> > > > to memleak.
-> > > > 
-> > > > Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>    
-> > > 
-> > > Fixes: bfa49cfc5262 ("net/ethoc: fix null dereference on error exit path")
-> > > 
-> > > Reviewed-by: Andrew Lunn <andrew@lunn.ch>  
-> > 
-> > Ooof, I applied without looking at your email and I added:
-> > 
-> > Fixes: e7f4dc3536a4 ("mdio: Move allocation of interrupts into core")  
-> 
-> [Goes and looks deeper]
-> 
-> Yes, commit e7f4dc3536a4 looks like it introduced the original
-> problem. bfa49cfc5262 just moved to code around a bit.
-> 
-> Does patchwork not automagically add Fixes: lines from full up emails?
-> That seems like a reasonable automation.
+Hello all,
 
-Looks like it's been a TODO for 3 years now:
+This series fixes race conditions in the xps code, where out of bound
+accesses can occur when dev->num_tc is updated, triggering oops. The
+root cause is linked to locking issues. An explanation is given in each
+of the commit logs.
 
-https://github.com/getpatchwork/patchwork/issues/151
+We had a discussion on the v1 of this series about using the xps_map
+mutex instead of the rtnl lock. While that seemed a better compromise,
+v2 showed the added complexity wasn't best for fixes. So we decided to
+go back to v1 and use the rtnl lock.
 
-:(
+Because of this, the only differences between v1 and v3 are improvements
+in the commit messages.
+
+Thanks!
+Antoine
+
+Antoine Tenart (4):
+  net-sysfs: take the rtnl lock when storing xps_cpus
+  net-sysfs: take the rtnl lock when accessing xps_cpus_map and num_tc
+  net-sysfs: take the rtnl lock when storing xps_rxqs
+  net-sysfs: take the rtnl lock when accessing xps_rxqs_map and num_tc
+
+ net/core/net-sysfs.c | 65 ++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 53 insertions(+), 12 deletions(-)
+
+-- 
+2.29.2
+
