@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F8B62E1D8A
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 15:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E1A2E1D92
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 15:49:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727890AbgLWOqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 09:46:33 -0500
-Received: from mail-eopbgr00126.outbound.protection.outlook.com ([40.107.0.126]:61785
+        id S1728151AbgLWOrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 09:47:13 -0500
+Received: from mail-eopbgr00123.outbound.protection.outlook.com ([40.107.0.123]:53315
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726631AbgLWOqc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 09:46:32 -0500
+        id S1726319AbgLWOrM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 09:47:12 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=flmTNvqHV1LfKXhgq9mPTyiYfNjjIGgLllc0Qby+uczALYk3A4zASbSvSvjOKZNGSG1OiuRW74HzMIzYtfliS4cZYQyel6WUSIEA5+I8qBN4DEeyFFPNJFGdOUBBgOktswZXi4smToJiW+aXP3qmGMscQ99CFsE7qSV5g6MBzIs4CzH3oqLVCNRhH3v5g2QYRTobAVML4F5FkgW/0tV4Nwx5IcEoVQR5+v/7mshMiuZ9Cz6dySEYlj6+uUvyGEzKJ/lXa5MYnZQBSYflmlGTVC24bI/ZRrRYuNDDzqroU3qk+4RJoeVciYNjQ1Hrn+aimCxO03CYLAR6CePSvTrcYg==
+ b=nn6+AVRNUHTNe2fjebfg1uQAEbu7nGNNYdeQUg2P20UzyT2iFDmejA1MNOlyf0gk64cZKHE270eXnjSh9MkyjEUF2Q9hwv3f6dDjXMNF3PB1anMT9FcDFbd7Ws5WGCeqtlDc0TDnga57ab5kNiNyYrJI2VE4Cew01wORSJP1a24nJ40GondE4KEL+EZ+mzs8SGg+SoZYg0Z7weqxQOwXjKBJs23aHO+PFC2MCbkjUwpoPiOFKdRL8Y/YkPrDV4prvwxDFS0sPpFqf8hSb9Fz09AKcoTTCSzqm0W3DHdndAYSlqigIX6N97F/yRVz/KKj7xfUkSjh1HEIuq/BnoaBzg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=++z9tOgtmh/5x4eGs+urNGZf48et0pU2jXHFgyS8Vd4=;
- b=ZB7X9W6n4JnijeAzYFhGRmBqlCBaQEnrU/CgciJsoS1+1GRTI0DGP1TMbmxLpASYTaIGmcZuVr7v4/LUSWU76jqTTU16gvN+8h3IKd9cYrMhQpb2gLEPu5zkzBcNtVFQm0Aovq0M/SmVDwuO4K5YQxFqL9G3OPLBtcsAGgWmbS50kUZ3dsMj2mN4DV2jJJQkYQNV4M06HJfaQ2FWdMRuwhkCvH82nMvnvOe5Fx+WcHHlyy2pjS9GqAWv86dGft6wc2XwCp8YwL/L0hh0k+XLGvenMxaESU4xB8ge2u6WGQo5PEDIX2hPxV+4WKLRqzve3HdAXnjWwlj7YBO7lcC0VQ==
+ bh=8u6NHXWZ9zjKXMRd6L0LMxvEChU5Pzhl5HVbsvRjgwA=;
+ b=hGsYAlF5E5X84cyyHrTuvOY5EOV5iaIksqEtRk9vN68ilvq1nspCXDUpPWYQw56w8vJzKqILbvpu+kktmY7QEXgSo7J9hIEEV+zLASSujELS2n+kGPR3+wgICNdrF5+efVkJ9nBGNhIlQ3/6HfnaPjRvmJJuiYoWXHzT9SIYkiO3xNpfRutXEIQulGJYP6qUFYJqmrLRyMvChLQ8fz4Dpk3f6y5XiQd0kPHWyS0a/XTSF3yshvimz3B9HLa1hwoiCYtzBUPGDqB5zlw1Iy8T9Hu+duH2Dgk7wabBKouUKjrx9DzVaYGBS4CYzFdcLOLaMp/9oMhH84L24Uj4lDXMLw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
  dkim=pass header.d=prevas.dk; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=++z9tOgtmh/5x4eGs+urNGZf48et0pU2jXHFgyS8Vd4=;
- b=hywU5WJraksGHYpq3iBFwV3XjQplPcF81ETFMOFjEM03qo8jX825RKdar1aJ1fAJYp4nn4o8GNaby64Tzt4hkmlyQRZs38OwaRXDsR0JtMJsi9wkkyh9WhH+gptDn0lUb395jWNBmP9TlKj66bFAvjufWW9X0RFY9w7ECBgHARw=
+ bh=8u6NHXWZ9zjKXMRd6L0LMxvEChU5Pzhl5HVbsvRjgwA=;
+ b=aBEzWC855dqv5kwXdNX6irK+gqtxa4njb1tBk6oEa3oOf2ye8p1StVemTJ0xEDxUdZ9aDcZ65RHV6fpCv21kOYMtZL/E+EdUxo3In76yAULJutr5vR0HOiUNvMQ1f1wfo4HxcqEiVXT/1oJ6G5y/gNe7guQZaHXSAUgAHHLfnKU=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=prevas.dk;
 Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
  by AM0PR10MB3057.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:162::32) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.33; Wed, 23 Dec
- 2020 14:45:43 +0000
+ 2020 14:45:44 +0000
 Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::9068:c899:48f:a8e3]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::9068:c899:48f:a8e3%6]) with mapi id 15.20.3676.033; Wed, 23 Dec 2020
- 14:45:43 +0000
+ 14:45:44 +0000
 From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 To:     netdev@vger.kernel.org,
         Horatiu Vultur <horatiu.vultur@microchip.com>
 Cc:     linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: [PATCH net 0/2] MRP without hardware offload?
-Date:   Wed, 23 Dec 2020 15:45:31 +0100
-Message-Id: <20201223144533.4145-1-rasmus.villemoes@prevas.dk>
+Subject: [PATCH net 1/2] net: mrp: fix definitions of MRP test packets
+Date:   Wed, 23 Dec 2020 15:45:32 +0100
+Message-Id: <20201223144533.4145-2-rasmus.villemoes@prevas.dk>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20201223144533.4145-1-rasmus.villemoes@prevas.dk>
+References: <20201223144533.4145-1-rasmus.villemoes@prevas.dk>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [5.186.115.188]
@@ -58,76 +60,101 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from prevas-ravi.prevas.se (5.186.115.188) by AS8PR04CA0142.eurprd04.prod.outlook.com (2603:10a6:20b:127::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3700.27 via Frontend Transport; Wed, 23 Dec 2020 14:45:43 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e4a2411a-da2f-4bcd-9a8e-08d8a7516d0f
+X-MS-Office365-Filtering-Correlation-Id: 385178f8-f60d-4934-007c-08d8a7516d6e
 X-MS-TrafficTypeDiagnostic: AM0PR10MB3057:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR10MB3057847CA18D11877A1C364193DE0@AM0PR10MB3057.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
+X-Microsoft-Antispam-PRVS: <AM0PR10MB305744D551AE68AC0EA0508593DE0@AM0PR10MB3057.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TGFSEAvxqbojSxxC05QG08ZKxQPOqkTZ7Bxh6WjMaTvKHRu8r99Z6tEq5lyxk+AqzVHtflfTaeTXRRY6dgAgfUr6fwN1YaTmWNNTciabTHvCVWVmOLje8tUWlScWIKihhG/Ni9ewPQLQhg9eaZfhNFpkDeq3DSSvy+BtkzBagG418yla1GD32FCqA+hFBYePzmv4suVYIIV4DkIyo6TtjY8e9KJ1/EcPVFCnoFvtimjLtw78II7NAJMMv0T0Eb0BdeEmC0CAGj+dEepzgMau1oKMHSYc6MWGdOCv6VYElmF+QU8IvnIa+FU+32VJMw+DOUdXlo73TWq6OS8avTpSlvrMEEglMpCgngy1kisppcixY9iJ56wZ5XhkuNE78E93tGt+8u2S7lQaVKmqSmTi15uPgtb+WGrFANUkfMstTQSQ/p/tsP+E+G2NOPp5QWIbocIg7hWtdBg8Zz2eS4ce/w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(396003)(136003)(39840400004)(376002)(346002)(54906003)(4326008)(6512007)(6486002)(107886003)(316002)(16526019)(5660300002)(26005)(66476007)(8676002)(66556008)(6506007)(83380400001)(66946007)(186003)(52116002)(2616005)(6916009)(6666004)(966005)(44832011)(1076003)(86362001)(8976002)(36756003)(2906002)(8936002)(956004)(478600001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Moh9GryaefRQX7hH0n7Vw8Gm2HHt+Yll0hR/Vc6j1Wp8JWNWm0RzdgudVwyB?=
- =?us-ascii?Q?69hBV4y6R3Fa0hE1QH508rWtI2i/Q6p7oky2lR2I7GVrd6rXBy5YRu34arrU?=
- =?us-ascii?Q?XyP7RM/bv6q7ma9qo2yyIIXxKtrE2j6sz5tiFrogEdzNBEEXKtCQb3f9qGU+?=
- =?us-ascii?Q?LZJXgfhRRs3MUhG4xmlgCed3+ztNJ3WRL38QML+IdU7K8x2BCcr2Z0JFtrp6?=
- =?us-ascii?Q?I7JcLFgzCtg7v0okLKoxoIZNZgyLW5tmYlbsveDIecndtJ1+2dX2spX6QxPz?=
- =?us-ascii?Q?il0u4mDgCrl7KxNAe3nRd2E4q3TvYBmoQOmzML/aVLTUC1OEyyj1gPtM23Vu?=
- =?us-ascii?Q?Jmu3Bf6K1XRFlYiIVZlH3o7E9qV+Whua6HiTI8ik+MO0n5ksha/NxD1BRd6v?=
- =?us-ascii?Q?NKeihG2yuig4lM/Ba8RiShekRC8oT/a03udNuIg+0GxVPEWXNjhLXVIlzk6j?=
- =?us-ascii?Q?Fpj2v4jwnlXd/jKBhBv/F0lRNz/pDsNolj0OnLRD07al/cf+qghMfAIw3X5p?=
- =?us-ascii?Q?xDx8WE29Xs0v7eZL4HeLXFtHR0NkoL+YJYHS5x/fgqqa+qwjdHADBq8vitEo?=
- =?us-ascii?Q?Ou7BF0xg6bdefxWnxAxh1PntlZcYbEXVV1GYfJWDIe1a3L74Jol3BIDfb0Nj?=
- =?us-ascii?Q?YkZAuPeIwbXa0aP52lE7OcWrEmRxGhvFlKqJXjgQQUboqKp7gxkveKrEK8KB?=
- =?us-ascii?Q?feakctqULiQdgXlix3zk6HVK78sQ7k2zMMZcivOeIRHGAspYSBzxM6UCkTSW?=
- =?us-ascii?Q?lWYLHE2aie8uig+IwYMNidpdEbXep4gWTSFRONDNl34im7mMaU3kqrv4Pbtr?=
- =?us-ascii?Q?QfZxL+HgiuAxlODpfWzjSKoO+ygKlhQat2QvZthVp1UQjVyhDj72BaNsX1Kk?=
- =?us-ascii?Q?ZPXATXrHK8RXWif5CIzT9wlxAJ0q7R1XC5fo/gIgHskANnrGueprKQJImXby?=
- =?us-ascii?Q?Uxao9Rkvz5/Cf0XhX+hqkKiJfE/fyHwz12gmDvoV9T9Bmtu2+7eAcWScVGZ5?=
- =?us-ascii?Q?FWZA?=
+X-Microsoft-Antispam-Message-Info: Uxx4LpjiWiLsmBTCFv6Kw6qnCX9RvD53UFIYNbO9wL3mh6bAaOhMtYKmiangYuo9eW52QQKN5tWu2kxr+CjFveBHZDKd6egLU61n0sXaDqrdVCaWl+J0EBVeGzzqo8k/atE4W2MQkQp92bn3S/nklBsknVDrK5SeKCGttOE26EQP0qPpGfd3Rv1rp5rJxbAXsRiV69az3fZ6mB1s0NVthTaSdmoOp55rSyAr3VdMdAYCFBK08j4i/lHRZK5zDzAUcIDD5dNdB6oYr4IowOfQXyyFqxWOmoWfi90AtdlvwDs2KcJvlvKAua1odFmydmNvCQsU2gii5mKVKhFejxiGjcSqPo1XMTsQdBX+l54J4dk6xdFci9KCEwgB8AtuTr3nOvABnn2p18nK496SDoYmFw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(396003)(136003)(39840400004)(376002)(346002)(54906003)(4326008)(6512007)(6486002)(107886003)(316002)(16526019)(5660300002)(26005)(66476007)(8676002)(66556008)(6506007)(83380400001)(66946007)(186003)(52116002)(2616005)(6916009)(6666004)(44832011)(1076003)(86362001)(8976002)(36756003)(2906002)(8936002)(956004)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?u6QzcvLGCsdzHKKu2Z1sK81tGQm6dCiKv8sdAIGnoVn2YMzUNte47JUhwGQo?=
+ =?us-ascii?Q?OHEbz0u3vrpTWudNSVtwJ7xKUL9iO6rRLGnC/aBBLYGDfMjKS2m1KVvKlze+?=
+ =?us-ascii?Q?8YZTu5n8lJHpqC4qbgLBQSkLb7UMiF2CHpnJiwgBc4fIuxzojMwduSQF/IVt?=
+ =?us-ascii?Q?41s7JGzttuA/qeob1YQKL1qzD0MsiMIqnbmYjhHZPAHchHVXxJUeWO859r46?=
+ =?us-ascii?Q?AV1RJmA9vu3grAHtUmNd4itRShUyBm0yZhSuTUQhoyUSLtTyWreDHEHOXCVn?=
+ =?us-ascii?Q?wJQOSXGUmoLhdC3SkgrlpQqzIQ4CHyCgrFhtwLBxdA7lTzMve8rYMnGs84GX?=
+ =?us-ascii?Q?adKAv/EELIz1jNDA6YpqfdYyVDa5JuNRoPjObHniez6On2jfH1yk/IScmH0C?=
+ =?us-ascii?Q?uLhMAmGRJG5SicAfORSs3MDza0Mq2IjmY33yd5bexDzUQWncyMroDsQnqN+l?=
+ =?us-ascii?Q?jsvqknxteyVYS6zoMhragm7r3F0nmn7598L+F0cxXbLTSg+rxMcvOrci7cFC?=
+ =?us-ascii?Q?TCQxmXuL7mh5oeA8Khz9zcRUI+E6rT/HRPBDMr19lzwpVSytX/ew7jecYqGz?=
+ =?us-ascii?Q?yPnT4kY6MUynEKrkk7sYXGV6YX/A5ZzbyyhuoYTwC7kzlfvq9w2pv9vrjRkz?=
+ =?us-ascii?Q?QMmaZ0rM1cJ/O15MA9uwT6WId+TWqMzpcLyfDQ7q7rY5pOWUDNIGhcaTG3vr?=
+ =?us-ascii?Q?tXUB7q5CzFSpllltKj4Xpi6/XXayuQ5m/c/kuMQ0a36L4WwYwVBiKYmM0RXI?=
+ =?us-ascii?Q?RbWhf/ezaLZAGQy/dPwgflD40U+KUccdL+thtW9HfH0p879jnatLzUCE1V3G?=
+ =?us-ascii?Q?kVB1N1KRTSboex/IWP7MeqX26KLk343GlqKy36jAMm6vB0OFLGUvCWybiSI6?=
+ =?us-ascii?Q?42NFZpxLuk//XCj9gGWyAOmgVUDpaAW7UFLdVWzyoTnyW2sRMVmP1jB8cO5b?=
+ =?us-ascii?Q?/uJMxACgt8b62jk3h88CGJwP6JjiVuS9Xg2ByarhWM54RZzNDT9SRtxiUzXI?=
+ =?us-ascii?Q?zyUx?=
 X-OriginatorOrg: prevas.dk
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Dec 2020 14:45:43.5014
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Dec 2020 14:45:44.0022
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-Network-Message-Id: e4a2411a-da2f-4bcd-9a8e-08d8a7516d0f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 385178f8-f60d-4934-007c-08d8a7516d6e
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SPwHdR7w431i4fYvllln4odSqe6LxmD5iD9rrc3QHoJbjjquu50GO16Rsc2uxcfPPG8AySsHAGTZ3y6V/hh4Q1ZL1DmOPEzf8YC2P84P+YI=
+X-MS-Exchange-CrossTenant-UserPrincipalName: k+Pld56rplTeqpYkQ0d28M7qwJb5QJx5bTwmahBkpdUc9LHTxa3J5H4ZM3yPoABlg22fCgcRolJRypy06qAkssuwDENoHFHG7wlwx7KGp48=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3057
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu and net folks
+Wireshark says that the MRP test packets cannot be decoded - and the
+reason for that is that there's a two-byte hole filled with garbage
+between the "transitions" and "timestamp" members.
 
-I'm having quite some trouble getting MRP working in a simple setup
-involving three mv88e6250 switches in a ring, with one node set as
-manager and the other two as clients.
+So Wireshark decodes the two garbage bytes and the top two bytes of
+the timestamp written by the kernel as the timestamp value (which thus
+fluctuates wildly), and interprets the lower two bytes of the
+timestamp as a new (type, length) pair, which is of course broken.
 
-I'm reasonably confident these two patches are necessary and correct
-(though the second one affects quite a bit more than MRP, so comments
-welcome), but they are not sufficient - for example, I'm wondering
-about why there doesn't seem to be any code guarding against sending a
-test packet back out the port it came in.
+While my copy of the MRP standard is still under way [*], I cannot
+imagine the standard specifying a two-byte hole here, and whoever
+wrote the Wireshark decoding code seems to agree with that.
 
-I have tried applying a few more patches, but since the end result
-still doesn't seem to result in a working MRP setup, I'm a bit out of
-ideas, and not proposing any of those yet.
+The struct definitions live under include/uapi/, but they are not
+really part of any kernel<->userspace API/ABI, so fixing the
+definitions by adding the packed attribute should not cause any
+compatibility issues.
 
-Has anyone managed to set up an MRP ring with no hardware offload
-support? I'm using commit 9030e898a2f232fdb4a3b2ec5e91fa483e31eeaf
-from https://github.com/microchip-ung/mrp.git and kernel v5.10.2.
+The remaining on-the-wire packet formats likely also don't contain
+holes, but pahole and manual inspection says the current definitions
+suffice. So adding the packed attribute to those is not strictly
+needed, but might be done for good measure.
 
-Rasmus Villemoes (2):
-  net: mrp: fix definitions of MRP test packets
-  net: switchdev: don't set port_obj_info->handled true when -EOPNOTSUPP
+[*] I will never understand how something hidden behind a +1000$
+paywall can be called a standard.
 
- include/uapi/linux/mrp_bridge.h |  4 ++--
- net/switchdev/switchdev.c       | 23 +++++++++++++----------
- 2 files changed, 15 insertions(+), 12 deletions(-)
+Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+---
+ include/uapi/linux/mrp_bridge.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/include/uapi/linux/mrp_bridge.h b/include/uapi/linux/mrp_bridge.h
+index 6aeb13ef0b1e..d1d0cf65916d 100644
+--- a/include/uapi/linux/mrp_bridge.h
++++ b/include/uapi/linux/mrp_bridge.h
+@@ -96,7 +96,7 @@ struct br_mrp_ring_test_hdr {
+ 	__be16 state;
+ 	__be16 transitions;
+ 	__be32 timestamp;
+-};
++} __attribute__((__packed__));
+ 
+ struct br_mrp_ring_topo_hdr {
+ 	__be16 prio;
+@@ -141,7 +141,7 @@ struct br_mrp_in_test_hdr {
+ 	__be16 state;
+ 	__be16 transitions;
+ 	__be32 timestamp;
+-};
++} __attribute__((__packed__));
+ 
+ struct br_mrp_in_topo_hdr {
+ 	__u8 sa[ETH_ALEN];
 -- 
 2.23.0
 
