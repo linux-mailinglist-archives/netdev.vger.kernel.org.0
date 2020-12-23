@@ -2,108 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF8CF2E2051
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 19:16:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E62D2E206C
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 19:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727373AbgLWSPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 13:15:47 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:39732 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726923AbgLWSPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 13:15:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1608747346; x=1640283346;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aqMqNfUUrBSBGofkDY2MEj+70emrzEpu+BRSKs82Hro=;
-  b=MV/tQOCFmwMUPW93EXB/55DOBBkB8TOQyhdAAtgd/7XavewZ4Lh3Vx3L
-   5YhRhk1Bx9YfrxOtiGHRiR1GuraoFNkBu2AOEhYMBN1+ps9SVxcc/eNbO
-   laNJVbIDM7BDO1GEIxxisZ1XJAFAVWUROi/mY1doc7W/XSZae+9hcNfLh
-   yzvUxRJR1xl1gmtNBXLXz80ONtH9pTHwFie6iEwASQTXFm0vrwy92gQVB
-   6hitbkXVrONnBjw/481j5L7uevAq/8JjgRhd+Kb8FE6Ll6wO5fVqKCUDt
-   4tjALCc+PFU6znrpK5sLWmp3cmqGoQPA3dTyOUqQqdtGnsL7Sj5aHipAc
-   A==;
-IronPort-SDR: 7gtpuIo/8p7UWhPzt9mZ166K9XuYHg1MHrYESZN32nOfyPNHPutB6hU+DgpKrvPuO91z7VNgi9
- idcdhYCBdBtcHSrQaUc1BA+dpPvyYXXKFsjBQsw0n22IWAvHJDRH6hTL0NQaCQgtNAQeJoxeFB
- cjxWhkorWw+qp5dYZPPoB6sGGLDtufV42uZOzbFyawYJATJuSvUWHPQH4ZHzxakjFhchr1SENE
- QtuVrB+IK6ZQvtes67PN/C+PjGy0XvbPI5XJASEkS+OyOFg64bJ7tiZMTBRTiRrOtkHFh8Q0jG
- VSI=
-X-IronPort-AV: E=Sophos;i="5.78,442,1599548400"; 
-   d="scan'208";a="108760320"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Dec 2020 11:14:30 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 23 Dec 2020 11:14:30 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 23 Dec 2020 11:14:30 -0700
-Date:   Wed, 23 Dec 2020 19:14:29 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net 0/2] MRP without hardware offload?
-Message-ID: <20201223181429.h4q3e37qs5g2sp46@soft-dev3.localdomain>
-References: <20201223144533.4145-1-rasmus.villemoes@prevas.dk>
+        id S1728151AbgLWS1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 13:27:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726923AbgLWS1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 13:27:44 -0500
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B852C061257
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 10:26:45 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4D1M962F3YzQlKq;
+        Wed, 23 Dec 2020 19:26:18 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+        s=MBO0001; t=1608747976;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=68AaHC38DS9Upylni2zj/H/1wNKyAcR0Mugc/+a2K/g=;
+        b=UdM6TTYDjMArgyngkca3gUsXSHNU+cMMn+0kmscIT8/qH4A70IDJB0AnlqWucNKLdl+dVK
+        a8pWW6wYY0lbhFVr4PwEQb4uFyupX8YTS/kdlFMYjDrtyWMpg4AtVNcaiOosmCh+wFMk0P
+        Zci6S741PDU89eVh9u+SqSp6MNJ/dPijqFvLsqCrcQOMrsXO7d8YQ+KNP8gKrOY7+ZOa8O
+        51DOJAjhyDU7R5smR3vFZkK82c21/pSKw4JcMo3yuB0RidMsT1iZBBqn3zeJV3OBd8WejJ
+        xIc0VXAVYz1bsauBft+mdfHzL+Bl9OTCROlXQaZF4jVBImU7PWX5m2bOuV3tnw==
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id S9KyEFftNpr2; Wed, 23 Dec 2020 19:26:14 +0100 (CET)
+From:   Petr Machata <me@pmachata.org>
+To:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org
+Cc:     Petr Machata <me@pmachata.org>
+Subject: [PATCH iproute2-next 0/9] dcb: Support APP, DCBX objects
+Date:   Wed, 23 Dec 2020 19:25:38 +0100
+Message-Id: <cover.1608746691.git.me@pmachata.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20201223144533.4145-1-rasmus.villemoes@prevas.dk>
+Content-Transfer-Encoding: 8bit
+X-MBO-SPAM-Probability: *
+X-Rspamd-Score: 1.48 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 7379E172A
+X-Rspamd-UID: 9212d9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 12/23/2020 15:45, Rasmus Villemoes wrote:
-> 
-> Hi Horatiu and net folks
+Add support to the dcb tool for the following two DCB objects:
 
-Hi Rasmus,
+- APP, which allows configuration of traffic prioritization rules based on
+  several possible packet headers.
 
-> 
-> I'm having quite some trouble getting MRP working in a simple setup
-> involving three mv88e6250 switches in a ring, with one node set as
-> manager and the other two as clients.
-> 
-> I'm reasonably confident these two patches are necessary and correct
-> (though the second one affects quite a bit more than MRP, so comments
-> welcome), but they are not sufficient - for example, I'm wondering
-> about why there doesn't seem to be any code guarding against sending a
-> test packet back out the port it came in.
-> 
-> I have tried applying a few more patches, but since the end result
-> still doesn't seem to result in a working MRP setup, I'm a bit out of
-> ideas, and not proposing any of those yet.
-> 
-> Has anyone managed to set up an MRP ring with no hardware offload
-> support? I'm using commit 9030e898a2f232fdb4a3b2ec5e91fa483e31eeaf
-> from https://github.com/microchip-ung/mrp.git and kernel v5.10.2.
+- DCBX, which is a 1-byte bitfield of flags that configure whether the DCBX
+  protocol is implemented in the device or in the host, and which version
+  of the protocol should be used.
 
-I was expecting that you still need to do something in the switchdev
-callbacks. Because otherwise I expect that the HW will flood these
-frames. For a client I was expecting to add a MDB entry and have the
-ring ports in this entry. While for a manager you can have also an MDB
-where the host joined and could return -EOPNOTSUPP so then the SW will
-detect when it stops receiving these frames.
+Patches #1 and #2 fix issues in the current DCB code.
 
-Most of my tests where done when there was not HW offload at all(no
-switchdev) or when there was MRP hardware offload.
+Patch #3 adds a new helper for finding a name of a given dsfield value.
+This is useful for APP DSCP-to-priority rules, which can use human-readable
+DSCP names.
 
-> 
-> Rasmus Villemoes (2):
->   net: mrp: fix definitions of MRP test packets
->   net: switchdev: don't set port_obj_info->handled true when -EOPNOTSUPP
-> 
->  include/uapi/linux/mrp_bridge.h |  4 ++--
->  net/switchdev/switchdev.c       | 23 +++++++++++++----------
->  2 files changed, 15 insertions(+), 12 deletions(-)
-> 
-> --
-> 2.23.0
-> 
+Patches #4, #5 and #6 extend existing interfaces for, respectively, parsing
+of the X:Y mappings, for setting a DCB object, and for getting a DCB
+object.
+
+In patch #7, support for the command line argument -n / --no-nice-names is
+added. The APP tool later uses it to decide whether to format DSCP values
+as human-readable strings or as plain numbers.
+
+Patches #8 and #9 add the subtools themselves and their man pages.
+
+Petr Machata (9):
+  dcb: Set values with RTM_SETDCB type
+  dcb: Plug a leaking DCB socket buffer
+  lib: rt_names: Add rtnl_dsfield_get_name()
+  lib: Generalize parse_mapping()
+  dcb: Generalize dcb_set_attribute()
+  dcb: Generalize dcb_get_attribute()
+  dcb: Support -n to suppress translation to nice names
+  dcb: Add a subtool for the DCB APP object
+  dcb: Add a subtool for the DCBX object
+
+ dcb/Makefile        |   8 +-
+ dcb/dcb.c           | 194 +++++++++--
+ dcb/dcb.h           |  20 ++
+ dcb/dcb_app.c       | 796 ++++++++++++++++++++++++++++++++++++++++++++
+ dcb/dcb_dcbx.c      | 192 +++++++++++
+ include/rt_names.h  |   1 +
+ include/utils.h     |   5 +
+ lib/rt_names.c      |  20 +-
+ lib/utils.c         |  37 +-
+ man/man8/dcb-app.8  | 237 +++++++++++++
+ man/man8/dcb-dcbx.8 | 108 ++++++
+ man/man8/dcb.8      |  12 +-
+ 12 files changed, 1592 insertions(+), 38 deletions(-)
+ create mode 100644 dcb/dcb_app.c
+ create mode 100644 dcb/dcb_dcbx.c
+ create mode 100644 man/man8/dcb-app.8
+ create mode 100644 man/man8/dcb-dcbx.8
 
 -- 
-/Horatiu
+2.25.1
+
