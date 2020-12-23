@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CF6C2E144D
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:47:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8899E2E14CA
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:48:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728099AbgLWCXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:23:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52738 "EHLO mail.kernel.org"
+        id S1730092AbgLWCnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:43:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50890 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729968AbgLWCXW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:23:22 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C3138229CA;
-        Wed, 23 Dec 2020 02:22:40 +0000 (UTC)
+        id S1729811AbgLWCXA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:23:00 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 65FDE23137;
+        Wed, 23 Dec 2020 02:22:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690161;
-        bh=RsKqvpTWRMGO19pQbyx25KClsdDeOiMRfeaF3Z3H4FQ=;
+        s=k20201202; t=1608690164;
+        bh=1IopgCTr5CLfw4tXu/+atusloBng3yRw1mvj7xroQs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zt9yBpwVaWXUPrYT+jd7Tucc3F1RucF/VljzW1e1sCtv4aejKEPIXapncJN/086KE
-         fGOIuZrMiSu0gOhVEEZlBnHoMdgFC4HdAB8yuokWSiNzFj2f7iR7b3BYNr5OD0PuZ7
-         s3HxAHvqloeyjTUgcSCIppD1Rbcew/4Gskd6rTisr975MkI79dkbIWjbGU8P64ZY8r
-         65bUXJv5jXfUnBIFU7b0OoneHDiP1IdYk+/6FwA44t6saabLuMWSmgusUQqP6rZ8xD
-         GqWGovf9WgXCiBo1v1SEwSu0FVkA1P3ruqe3VQnygNUYCmmb5j3FpOR39Qk7DfARbk
-         QCQFTLpejGBrw==
+        b=OIMWCY8egYpgwaJ1Esmqpk9AgbkRyiV7r8pQkNEtY6CsJHe97+6T1l33An8VxeiHc
+         8KJKdvziTG1d2M/12u1ARP4wVS+cpgyYM+XMqQs6MpbSd1KBwZcjn1q/hH7+82qMcG
+         iP5W36zrnGqbApfu96m+W6ci8hhcumO4p7Iuduaw7eltCxmprAqOtOIN6OZG3nYU8t
+         Xgw/Iwaa6qnYBquF6HnkGcv8lXn6sVtEyDxdxdiEtRMGydzn5lzBOu2tAX2Y0vTwoq
+         Sy2TzkhQNPvwI3kBSVyED/gu3TsvqbZXplTEKb4YePFL2y1iRoOOSb06b6egEaHI3E
+         uYPdrHYgPXl2Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 79/87] mac80211: disallow band-switch during CSA
-Date:   Tue, 22 Dec 2020 21:20:55 -0500
-Message-Id: <20201223022103.2792705-79-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 81/87] mac80211: use bitfield helpers for BA session action frames
+Date:   Tue, 22 Dec 2020 21:20:57 -0500
+Message-Id: <20201223022103.2792705-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022103.2792705-1-sashal@kernel.org>
 References: <20201223022103.2792705-1-sashal@kernel.org>
@@ -45,67 +45,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 3660944a37ce73890292571f44f04891834f9044 ]
+[ Upstream commit db8ebd06ccb87b7bea8e50f3d4ba5dc0142093b8 ]
 
-If the AP advertises a band switch during CSA, we will not have
-the right information to continue working with it, since it will
-likely (have to) change its capabilities and we don't track any
-capability changes at all. Additionally, we store e.g. supported
-rates per band, and that information would become invalid.
+Use the appropriate bitfield helpers for encoding and decoding
+the capability field in the BA session action frames instead of
+open-coding the shifts/masks.
 
-Since this is a fringe scenario, just disconnect explicitly.
-
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20201129172929.0e2327107c06.I461adb07704e056b054a4a7c29b80c95a9f56637@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20201206145305.0c46e5097cc0.I06e75706770c40b9ba1cabd1f8a78ab7a05c5b73@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mlme.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ net/mac80211/agg-rx.c |  8 ++++----
+ net/mac80211/agg-tx.c | 12 ++++++------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index c53a332f7d65a..eb711475cb140 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -1261,6 +1261,17 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
- 	if (res)
- 		return;
+diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
+index 6a4f154c99f6b..dd2e421bda6e5 100644
+--- a/net/mac80211/agg-rx.c
++++ b/net/mac80211/agg-rx.c
+@@ -216,10 +216,10 @@ static void ieee80211_send_addba_resp(struct ieee80211_sub_if_data *sdata, u8 *d
+ 	mgmt->u.action.u.addba_resp.action_code = WLAN_ACTION_ADDBA_RESP;
+ 	mgmt->u.action.u.addba_resp.dialog_token = dialog_token;
  
-+	if (sdata->vif.bss_conf.chandef.chan->band !=
-+	    csa_ie.chandef.chan->band) {
-+		sdata_info(sdata,
-+			   "AP %pM switches to different band (%d MHz, width:%d, CF1/2: %d/%d MHz), disconnecting\n",
-+			   ifmgd->associated->bssid,
-+			   csa_ie.chandef.chan->center_freq,
-+			   csa_ie.chandef.width, csa_ie.chandef.center_freq1,
-+			   csa_ie.chandef.center_freq2);
-+		goto lock_and_drop_connection;
-+	}
-+
- 	if (!cfg80211_chandef_usable(local->hw.wiphy, &csa_ie.chandef,
- 				     IEEE80211_CHAN_DISABLED)) {
- 		sdata_info(sdata,
-@@ -1269,9 +1280,7 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
- 			   csa_ie.chandef.chan->center_freq,
- 			   csa_ie.chandef.width, csa_ie.chandef.center_freq1,
- 			   csa_ie.chandef.center_freq2);
--		ieee80211_queue_work(&local->hw,
--				     &ifmgd->csa_connection_drop_work);
--		return;
-+		goto lock_and_drop_connection;
- 	}
+-	capab = (u16)(amsdu << 0);	/* bit 0 A-MSDU support */
+-	capab |= (u16)(policy << 1);	/* bit 1 aggregation policy */
+-	capab |= (u16)(tid << 2); 	/* bit 5:2 TID number */
+-	capab |= (u16)(buf_size << 6);	/* bit 15:6 max size of aggregation */
++	capab = u16_encode_bits(amsdu, IEEE80211_ADDBA_PARAM_AMSDU_MASK);
++	capab |= u16_encode_bits(policy, IEEE80211_ADDBA_PARAM_POLICY_MASK);
++	capab |= u16_encode_bits(tid, IEEE80211_ADDBA_PARAM_TID_MASK);
++	capab |= u16_encode_bits(buf_size, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
  
- 	if (cfg80211_chandef_identical(&csa_ie.chandef,
-@@ -1361,6 +1370,9 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
- 			  TU_TO_EXP_TIME((csa_ie.count - 1) *
- 					 cbss->beacon_interval));
- 	return;
-+ lock_and_drop_connection:
-+	mutex_lock(&local->mtx);
-+	mutex_lock(&local->chanctx_mtx);
-  drop_connection:
- 	/*
- 	 * This is just so that the disconnect flow will know that
+ 	mgmt->u.action.u.addba_resp.capab = cpu_to_le16(capab);
+ 	mgmt->u.action.u.addba_resp.timeout = cpu_to_le16(timeout);
+diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
+index 54821fb1a960d..4cb7695a208ac 100644
+--- a/net/mac80211/agg-tx.c
++++ b/net/mac80211/agg-tx.c
+@@ -98,10 +98,10 @@ static void ieee80211_send_addba_request(struct ieee80211_sub_if_data *sdata,
+ 	mgmt->u.action.u.addba_req.action_code = WLAN_ACTION_ADDBA_REQ;
+ 
+ 	mgmt->u.action.u.addba_req.dialog_token = dialog_token;
+-	capab = (u16)(1 << 0);		/* bit 0 A-MSDU support */
+-	capab |= (u16)(1 << 1);		/* bit 1 aggregation policy */
+-	capab |= (u16)(tid << 2); 	/* bit 5:2 TID number */
+-	capab |= (u16)(agg_size << 6);	/* bit 15:6 max size of aggergation */
++	capab = IEEE80211_ADDBA_PARAM_AMSDU_MASK;
++	capab |= IEEE80211_ADDBA_PARAM_POLICY_MASK;
++	capab |= u16_encode_bits(tid, IEEE80211_ADDBA_PARAM_TID_MASK);
++	capab |= u16_encode_bits(agg_size, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
+ 
+ 	mgmt->u.action.u.addba_req.capab = cpu_to_le16(capab);
+ 
+@@ -924,8 +924,8 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
+ 
+ 	capab = le16_to_cpu(mgmt->u.action.u.addba_resp.capab);
+ 	amsdu = capab & IEEE80211_ADDBA_PARAM_AMSDU_MASK;
+-	tid = (capab & IEEE80211_ADDBA_PARAM_TID_MASK) >> 2;
+-	buf_size = (capab & IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK) >> 6;
++	tid = u16_get_bits(capab, IEEE80211_ADDBA_PARAM_TID_MASK);
++	buf_size = u16_get_bits(capab, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
+ 	buf_size = min(buf_size, local->hw.max_tx_aggregation_subframes);
+ 
+ 	txq = sta->sta.txq[tid];
 -- 
 2.27.0
 
