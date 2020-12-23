@@ -2,84 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 535532E13AD
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:37:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC382E13A9
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:37:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730418AbgLWCdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:33:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54254 "EHLO mail.kernel.org"
+        id S1730635AbgLWCdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:33:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60118 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730425AbgLWCZP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:25:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B6DF229C5;
-        Wed, 23 Dec 2020 02:24:59 +0000 (UTC)
+        id S1730211AbgLWCam (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:30:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 128BA206EC;
+        Wed, 23 Dec 2020 02:30:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690299;
-        bh=V9hK6tZTtM/ji+HJVscJbz4WI8B3CTyVYiz1PbLvnXs=;
+        s=k20201202; t=1608690602;
+        bh=xj+iTXA2OLJtRA4SqQtsCKFWxLpQpoedBDnznjwDLww=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ai1I5FmyMwx/34XoDqbh8/B7kjykZ6stIWAIe+V3s+WYfduNPH+ih60OzfNepPfyH
-         HphN8ATPwIkTxa9g8l+yZtVZzADKQ3KM50IoolkXJTtiKgNF7DXpfsUUrTCfpA1sL0
-         goFFYrfRgUDBrtZn1qoG0iCM0nTE6nyoR4jTz4evcCaBFjM4DTIreKLZh98oCA5D5W
-         csDV28B0BDh0BpSQdNV/VvGH2EZwEEwrNUxgvBrslU88+9zVegVl0tDS8E41ilIQlY
-         MZm8ZHoUuvcVTXyeUwpYDrron12de3fo+9JGifpnb1MBW9NpB2oDSyb0HThxcxf+bh
-         2epKPsv9hvfeQ==
-Date:   Tue, 22 Dec 2020 18:24:58 -0800
+        b=Iam8VpcIzfHIwKPOGXAC6N3o6/eYvO9CsaLwGfCXo//PSbmer31Ti6YW+ROMV6bGg
+         iikxjHB3v1iEke0u68s1Nc+v491PfhqegnqIGZGb34ZgmN/kkzWM7PqhxZvcJP6rg6
+         z/3496iUeIHYdRzejC1BT1Qi0Mfnad9+e5j9ma6SIj8ikRowQ8yKxC4jgPh+FBu3vF
+         n/qoNXdQc2shDE+V8fy7QWo5bukB9s4U87P7symn/NKpWo5f9+86wcm7fbkNsbqjF4
+         gOWtetOzB4nblnzTMxbTFoCBPlvoa27chhstFsUi4EUIM265RusOr2jOaVUmMYB/S/
+         vbHB5MCfGi0Uw==
+Date:   Tue, 22 Dec 2020 18:30:01 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>
-Cc:     Joel Stanley <joel@jms.id.au>,
-        John Wang <wangzhiqiang.bj@bytedance.com>,
-        xuxiaohan@bytedance.com,
-        =?UTF-8?B?6YOB?= =?UTF-8?B?6Zu3?= <yulei.sh@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Gavin Shan <gwshan@linux.vnet.ibm.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net/ncsi: Use real net-device for response handler
-Message-ID: <20201222182458.4651c564@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <4a9cab3660503483fd683c89c84787a7a1b492b1.camel@mendozajonas.com>
-References: <20201220123957.1694-1-wangzhiqiang.bj@bytedance.com>
-        <CACPK8XexOmUOdGmHCYVXVgA0z5m99XCAbixcgODSoUSRNCY+zA@mail.gmail.com>
-        <4a9cab3660503483fd683c89c84787a7a1b492b1.camel@mendozajonas.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jeff Dike <jdike@akamai.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] virtio_net: Fix recursive call to cpus_read_lock()
+Message-ID: <20201222183001.4e88f959@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e8379ba8-6578-baa0-8a67-1deada809271@redhat.com>
+References: <20201222033648.14752-1-jdike@akamai.com>
+        <e8379ba8-6578-baa0-8a67-1deada809271@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Dec 2020 10:38:21 -0800 Samuel Mendoza-Jonas wrote:
-> On Tue, 2020-12-22 at 06:13 +0000, Joel Stanley wrote:
-> > On Sun, 20 Dec 2020 at 12:40, John Wang wrote:
-> > > When aggregating ncsi interfaces and dedicated interfaces to bond
-> > > interfaces, the ncsi response handler will use the wrong net device
-> > > to
-> > > find ncsi_dev, so that the ncsi interface will not work properly.
-> > > Here, we use the net device registered to packet_type to fix it.
-> > >=20
-> > > Fixes: 138635cc27c9 ("net/ncsi: NCSI response packet handler")
-> > > Signed-off-by: John Wang <wangzhiqiang.bj@bytedance.com> =20
-
-This sounds like exactly the case for which orig_dev was introduced.
-I think you should use the orig_dev argument, rather than pt->dev.
-
-Can you test if that works?
-
-> > Can you show me how to reproduce this?
-> >=20
-> > I don't know the ncsi or net code well enough to know if this is the
-> > correct fix. If you are confident it is correct then I have no
-> > objections. =20
+On Tue, 22 Dec 2020 11:49:04 +0800 Jason Wang wrote:
+> On 2020/12/22 =E4=B8=8A=E5=8D=8811:36, Jeff Dike wrote:
+> > virtnet_set_channels can recursively call cpus_read_lock if CONFIG_XPS
+> > and CONFIG_HOTPLUG are enabled.
+> >
+> > The path is:
+> >      virtnet_set_channels - calls get_online_cpus(), which is a trivial
+> > wrapper around cpus_read_lock()
+> >      netif_set_real_num_tx_queues
+> >      netif_reset_xps_queues_gt
+> >      netif_reset_xps_queues - calls cpus_read_lock()
+> >
+> > This call chain and potential deadlock happens when the number of TX
+> > queues is reduced.
+> >
+> > This commit the removes netif_set_real_num_[tr]x_queues calls from
+> > inside the get/put_online_cpus section, as they don't require that it
+> > be held.
+> >
+> > Signed-off-by: Jeff Dike <jdike@akamai.com>
 >=20
-> This looks like it is probably right; pt->dev will be the original
-> device from ncsi_register_dev(), if a response comes in to
-> ncsi_rcv_rsp() associated with a different device then the driver will
-> fail to find the correct ncsi_dev_priv. An example of the broken case
-> would be good to see though.
+> Adding netdev.
+>=20
+> The patch can go with -net and is needed for -stable.
+>=20
+> Acked-by: Jason Wang <jasowang@redhat.com>
 
-=46rom the description sounds like the case is whenever the ncsi
-interface is in a bond, the netdev from the second argument is=20
-the bond not the interface from which the frame came. It should=20
-be possible to repro even with only one interface on the system,
-create a bond or a team and add the ncsi interface to it.
+Thanks, we'll need a repost with netdev CCed to apply it to net,=20
+I don't have this one in my inbox or in patchwork.
 
-Does that make sense? I'm likely missing the subtleties here.
+Jeff please make sure to keep the acks when reposting.
+
