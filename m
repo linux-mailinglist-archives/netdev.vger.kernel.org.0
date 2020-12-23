@@ -2,66 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95E192E17DB
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:51:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FAE72E1835
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 05:58:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727759AbgLWDus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 22:50:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35422 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727261AbgLWDus (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 22:50:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id B9FE7223E8;
-        Wed, 23 Dec 2020 03:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608695407;
-        bh=68YIAocpAegvJarZSQkOD4cnGMaKrBeBemQS7jDpLMI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=V/bLbmVyULUTh1+0FCW8Uk6LpWbhfUz1jXd8N/SQmktK3SR75DWwekVLpXrTtY0Sk
-         TtxQOQaoOUwCcwjmV8aG9xItJv/ykqdV8G195HZbgsY/KQ6UccA1WT9V0Wy1/+TZMG
-         80K/dUxRG1RbQugUrI6Rlzj+lw2SUR1tZU0ZlGd4KdCXC4KsXUmcoN8skMg7cOY/sm
-         Ik9GGdGs9ItCfq6G2cqhg0W1A/1qL2LEUvWgYoiYftQZabuldByQ7kc35/kk/bogqS
-         STg4F0D2Q+FpHzo+tj821pU7dTn3m3+ZXvHKIJQOiA4wg6lpcs7FaqKX1JRnOSk2KU
-         XYuAAin40VcQA==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id AD655604E9;
-        Wed, 23 Dec 2020 03:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1727268AbgLWE5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 23:57:44 -0500
+Received: from outbound-relay9.guardedhost.com ([216.239.133.221]:44207 "EHLO
+        outbound-relay9.guardedhost.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726161AbgLWE5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 23:57:44 -0500
+X-Greylist: delayed 549 seconds by postgrey-1.27 at vger.kernel.org; Tue, 22 Dec 2020 23:57:44 EST
+Received: from mail.guardedhost.com (mx01.guardedhost.com [IPv6:2607:fe90:1:1::52:1])
+        by outbound-relay1.guardedhost.com (Postfix) with ESMTP id 4D110n20fGz4x8Fn;
+        Wed, 23 Dec 2020 04:47:53 +0000 (GMT)
+Received: from Alans-MacBook-Pro.local (c-73-254-147-133.hsd1.wa.comcast.net [73.254.147.133])
+        (Authenticated sender: alanp@snowmoose.com)
+        by mail.guardedhost.com (Postfix) with ESMTPSA id 4D110m2qxnz30BY;
+        Wed, 23 Dec 2020 04:47:52 +0000 (GMT)
+To:     leonro@mellanox.com, netdev@vger.kernel.org
+From:   Alan Perry <alanp@snowmoose.com>
+Subject: [PATCH] rdma.8: Add basic description for users unfamiliar with rdma
+Organization: Snowmoose Software
+Message-ID: <eb358848-49a8-1a8e-3919-c07b6aa3d21d@snowmoose.com>
+Date:   Tue, 22 Dec 2020 20:47:51 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-drivers-2020-12-22
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160869540770.24460.3222068973861028264.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Dec 2020 03:50:07 +0000
-References: <20201222163727.D4336C433C6@smtp.codeaurora.org>
-In-Reply-To: <20201222163727.D4336C433C6@smtp.codeaurora.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+Authentication-Results: mail.guardedhost.com;auth=pass
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse-Id: 04462CBE-44DA-11EB-834B-C8F70D9453E0
+X-Virus-Scanned: clamav-milter 0.102.2 at tev-mx1.omnis.com
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Add a description section with basic info about the rdma command for 
+users unfamiliar with it.
 
-This pull request was applied to netdev/net.git (refs/heads/master):
+Signed-off-by: Alan Perry <alanp@snowmoose.com>
+---
+  man/man8/rdma.8 | 6 +++++-
+  1 file changed, 5 insertion(+), 1 deletion(-)
 
-On Tue, 22 Dec 2020 16:37:27 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net tree, more info below. Please let me know if there
-> are any problems.
-> 
-> Kalle
-> 
-> [...]
+diff --git a/man/man8/rdma.8 b/man/man8/rdma.8
+index c9e5d50d..d68d0cf6 100644
+--- a/man/man8/rdma.8
++++ b/man/man8/rdma.8
+@@ -1,4 +1,4 @@
+-.TH RDMA 8 "28 Mar 2017" "iproute2" "Linux"
++.TH RDMA 8 "22 Dec 2020" "iproute2" "Linux"
+  .SH NAME
+  rdma \- RDMA tool
+  .SH SYNOPSIS
+@@ -29,6 +29,10 @@ rdma \- RDMA tool
+  \fB\-j\fR[\fIson\fR] }
+  \fB\-p\fR[\fIretty\fR] }
 
-Here is the summary with links:
-  - pull-request: wireless-drivers-2020-12-22
-    https://git.kernel.org/netdev/net/c/e77c725a445a
++.SH DESCRIPTION
++.B rdma
++is a tool for querying and setting the configuration for RDMA, direct 
+memory access between the memory of two computers without use of the 
+operating system on either computer.
++
+  .SH OPTIONS
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+  .TP
