@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA352E1344
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:36:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 339D72E1399
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:37:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730467AbgLWCZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:25:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54312 "EHLO mail.kernel.org"
+        id S1730683AbgLWCb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:31:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52102 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729535AbgLWCZS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:25:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7078D23333;
-        Wed, 23 Dec 2020 02:25:01 +0000 (UTC)
+        id S1728889AbgLWCZZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:25:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EA93A2256F;
+        Wed, 23 Dec 2020 02:25:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690302;
-        bh=tRYjj1tnATnvy2ObahLEndF8reBD0F02HwaULfa6ITU=;
+        s=k20201202; t=1608690305;
+        bh=uOn4KuImGI6YWXKxFLzAQRXB6bKZf/q2T+OvJ/Btyac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HkPra7B5v2utUino4gPdmx14PHSGy3FHse56daOBzP+thPC1Ivx2hwvBG9CUDtFJ+
-         AeOCnnoc0nPA471GfRpOTF+sm7Lt/2F2hN7jiR1nmUrQuzOT7G70OcqqKzC9GkgZdo
-         H+6/y1iVtd9wX3kZIR4648SI11Le9MlqVZVNsbQhOUdrmWIAE3uQkmWT+6qAaoFkis
-         pq0lwBEeQBIKz4YaswhQHwsNJfT8NDWLNlpp23N64UNCwVICqlMl47Ph26iRiriD04
-         DOVxFvav4jf36J+2ip7zKCOV6KS3Zuq2Pdmb837RagVtoV5RJrzs31ylys2T7ona0o
-         tPbTRnTAkGRWw==
+        b=I06+xGprfhd+DgIR5iQAlsMXCNPYaQhhuo+oeHAMiZLuagiH8AJ/lHmXa1F6oulQG
+         yUMhY/YzFyvpA3dinqJqBHWwarQu8Sjnu1n0F/f/swXlU/YczQd+vFJQKBPqGx2bKo
+         F48Z1YUmR8pt5IWggcQn6MIvJiFSNlryE3p9tszLIe0YFYIGQgGh+dJ/1JEpTM62Kx
+         PzorIJ+BRoT09cbkZVDNtqSxzHoy/gTj2j8K+Epi4TMJYdvwVTOq5fZyQW6wycPCxo
+         WoFS9KaB4UeLJG4qu3LdgseMrJaiPaxQQLGCqbjmuXcKN84VTUvuI6H9R3VYYNwZI7
+         krqJrFrcF6uPQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhang Xiaohui <ruc_zhangxiaohui@163.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 37/48] mwifiex: Fix possible buffer overflows in mwifiex_cmd_802_11_ad_hoc_start
-Date:   Tue, 22 Dec 2020 21:24:05 -0500
-Message-Id: <20201223022417.2794032-37-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 40/48] iwlwifi: add an extra firmware state in the transport
+Date:   Tue, 22 Dec 2020 21:24:08 -0500
+Message-Id: <20201223022417.2794032-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022417.2794032-1-sashal@kernel.org>
 References: <20201223022417.2794032-1-sashal@kernel.org>
@@ -43,37 +43,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 5c455c5ab332773464d02ba17015acdca198f03d ]
+[ Upstream commit b2ed841ed070ccbe908016537f429a3a8f0221bf ]
 
-mwifiex_cmd_802_11_ad_hoc_start() calls memcpy() without checking
-the destination size may trigger a buffer overflower,
-which a local user could use to cause denial of service
-or the execution of arbitrary code.
-Fix it by putting the length check before calling memcpy().
+Start tracking not just if the firmware is dead or alive,
+but also if it's starting.
 
-Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20201206084801.26479-1-ruc_zhangxiaohui@163.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20201209231352.33e50d40b688.I8bbd41af7aa5e769273a6fc1c06fbf548dd2eb26@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/join.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/iwl-trans.h | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/join.c b/drivers/net/wireless/marvell/mwifiex/join.c
-index b89596c18b41a..313b5d9fd08ed 100644
---- a/drivers/net/wireless/marvell/mwifiex/join.c
-+++ b/drivers/net/wireless/marvell/mwifiex/join.c
-@@ -877,6 +877,8 @@ mwifiex_cmd_802_11_ad_hoc_start(struct mwifiex_private *priv,
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-trans.h b/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
+index 360554727a817..b1cc2b9f82ab6 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
+@@ -681,12 +681,14 @@ struct iwl_trans_ops {
+ /**
+  * enum iwl_trans_state - state of the transport layer
+  *
+- * @IWL_TRANS_NO_FW: no fw has sent an alive response
+- * @IWL_TRANS_FW_ALIVE: a fw has sent an alive response
++ * @IWL_TRANS_NO_FW: firmware wasn't started yet, or crashed
++ * @IWL_TRANS_FW_STARTED: FW was started, but not alive yet
++ * @IWL_TRANS_FW_ALIVE: FW has sent an alive response
+  */
+ enum iwl_trans_state {
+-	IWL_TRANS_NO_FW = 0,
+-	IWL_TRANS_FW_ALIVE	= 1,
++	IWL_TRANS_NO_FW,
++	IWL_TRANS_FW_STARTED,
++	IWL_TRANS_FW_ALIVE,
+ };
  
- 	memset(adhoc_start->ssid, 0, IEEE80211_MAX_SSID_LEN);
+ /**
+@@ -909,12 +911,18 @@ static inline int iwl_trans_start_fw(struct iwl_trans *trans,
+ 				     const struct fw_img *fw,
+ 				     bool run_in_rfkill)
+ {
++	int ret;
++
+ 	might_sleep();
  
-+	if (req_ssid->ssid_len > IEEE80211_MAX_SSID_LEN)
-+		req_ssid->ssid_len = IEEE80211_MAX_SSID_LEN;
- 	memcpy(adhoc_start->ssid, req_ssid->ssid, req_ssid->ssid_len);
+ 	WARN_ON_ONCE(!trans->rx_mpdu_cmd);
  
- 	mwifiex_dbg(adapter, INFO, "info: ADHOC_S_CMD: SSID = %s\n",
+ 	clear_bit(STATUS_FW_ERROR, &trans->status);
+-	return trans->ops->start_fw(trans, fw, run_in_rfkill);
++	ret = trans->ops->start_fw(trans, fw, run_in_rfkill);
++	if (ret == 0)
++		trans->state = IWL_TRANS_FW_STARTED;
++
++	return ret;
+ }
+ 
+ static inline int iwl_trans_update_sf(struct iwl_trans *trans,
 -- 
 2.27.0
 
