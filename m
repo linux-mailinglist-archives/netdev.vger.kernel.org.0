@@ -2,67 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 283052E19CD
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 09:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95C972E19D9
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 09:17:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728107AbgLWIOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 03:14:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727838AbgLWIOW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 03:14:22 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A401C0613D6;
-        Wed, 23 Dec 2020 00:13:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=9mT6ehxNEt1jUz3TfJecdTTXQ2Ih2qfV3QTcUD44O04=; b=JPB0a4t7K8WEKPQv3hVXh7yGzq
-        9wAt2jVARSqPuaCHW+1jygDtQ11enIvosGCFjiLDVmuSCI8gUnDAxJtkTlAzV5L94gaz7Nlurb6om
-        yHj7+cinD8X0Hx0hjLaW/sFbtlTe5TqGuH4hTiPGacWQ8228r7/V1ZR7RvvW/gervcVRB6cU7hP9j
-        8Ye+VK76pyC3CaL4DQ/AVEiAzsuPUIrmQTmCmkIqWzDKIiHn5tTplGa0VeBlmQNf2yjzl2DdKFAXy
-        p/0B807UKBAiXZohjVUCLoOmCQL5L6j1HusyL4nlAeQapxfq2STMvgRXEPAa76V5nNERvvE7Y7T2U
-        AR6qBiNQ==;
-Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1krzGu-0005kz-5Q; Wed, 23 Dec 2020 08:13:24 +0000
-Date:   Wed, 23 Dec 2020 08:13:24 +0000
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [RFC v2 01/13] mm: export zap_page_range() for driver use
-Message-ID: <20201223081324.GA21558@infradead.org>
-References: <CACycT3vevQQ8cGK_ac-1oyCb9+YPSAhLMue=4J3=2HzXVK7XHw@mail.gmail.com>
+        id S1728166AbgLWIQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 03:16:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58139 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727670AbgLWIQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 03:16:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608711286;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u0U6heNY7fxOOhdzytPgLhxCjf8UFXUIBZYCgUBbqf4=;
+        b=iIMVhk3gC8aX6+dHB57JL6bu1BifZ/q9tmnGkWpw+IUZYQQh6ibZ38OzyZmAUfrrR20a3O
+        CRGmp3R1YLdObpgPNcOY0SYH6dPfL2oV76daQP8mDLSpZDydhZiTuA42Sufp9WYR0FLUEZ
+        sNLwarLDn6/S/zCW5IFTIYZ+Y22G6Sg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-394-6cTF2La4MIuhN7JQfCiujg-1; Wed, 23 Dec 2020 03:14:42 -0500
+X-MC-Unique: 6cTF2La4MIuhN7JQfCiujg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 460971005513;
+        Wed, 23 Dec 2020 08:14:40 +0000 (UTC)
+Received: from [10.72.12.54] (ovpn-12-54.pek2.redhat.com [10.72.12.54])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2AE6060C69;
+        Wed, 23 Dec 2020 08:14:28 +0000 (UTC)
+Subject: Re: [RFC v2 00/13] Introduce VDUSE - vDPA Device in Userspace
+From:   Jason Wang <jasowang@redhat.com>
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
+        akpm@linux-foundation.org, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net
+Cc:     linux-aio@kvack.org, kvm@vger.kernel.org, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20201222145221.711-1-xieyongji@bytedance.com>
+ <c892652a-3f57-c337-8c67-084ba6d10834@redhat.com>
+Message-ID: <faa0b9ba-c230-931b-86c6-624a302f6637@redhat.com>
+Date:   Wed, 23 Dec 2020 16:14:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACycT3vevQQ8cGK_ac-1oyCb9+YPSAhLMue=4J3=2HzXVK7XHw@mail.gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <c892652a-3f57-c337-8c67-084ba6d10834@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 23, 2020 at 02:32:07PM +0800, Yongji Xie wrote:
-> Now I want to map/unmap some pages in an userland vma dynamically. The
-> vm_insert_page() is being used for mapping. In the unmapping case, it
-> looks like the zap_page_range() does what I want. So I export it.
-> Otherwise, we need some ways to notify userspace to trigger it with
-> madvise(MADV_DONTNEED), which might not be able to meet all our needs.
-> For example, unmapping some pages in a memory shrinker function.
-> 
-> So I'd like to know what's the limitation to use zap_page_range() in a
-> module. And if we can't use it in a module, is there any acceptable
-> way to achieve that?
 
-I think the anser is: don't play funny games with unmapped outside of
-munmap.  Especially as synchronization is very hard to get right.
+On 2020/12/23 下午2:38, Jason Wang wrote:
+>>
+>> V1 to V2:
+>> - Add vhost-vdpa support
+>
+>
+> I may miss something but I don't see any code to support that. E.g 
+> neither set_map nor dma_map/unmap is implemented in the config ops.
+>
+> Thanks 
+
+
+Speak too fast :(
+
+I saw a new config ops was introduced.
+
+Let me dive into that.
+
+Thanks
+
