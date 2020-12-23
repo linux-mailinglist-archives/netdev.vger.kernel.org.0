@@ -2,102 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C398F2E1DB2
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 16:02:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A2B12E1DED
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 16:35:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727880AbgLWPCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 10:02:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40002 "EHLO
+        id S1727641AbgLWPco (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 10:32:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbgLWPCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 10:02:50 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F90C061793;
-        Wed, 23 Dec 2020 07:02:10 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id c7so16460656edv.6;
-        Wed, 23 Dec 2020 07:02:10 -0800 (PST)
+        with ESMTP id S1727039AbgLWPcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 10:32:39 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD394C0617A6;
+        Wed, 23 Dec 2020 07:31:58 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id g24so16561301edw.9;
+        Wed, 23 Dec 2020 07:31:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Oj1uLQphjM5m67YDASt6Wdxp/c4NyvEZdxL2VxWRwS8=;
-        b=RWOG23AoTw1lOJcOYpr6/hBrgxOLufI8yrMWh9D0JjhPq4VQ4NfMXISCMAwQafwBZs
-         tcPHIHpKKJGtUqgvn5Z5+mUhZDzhE+7+HAf/3yWam36cIwFcl2Rmpa/nYjE/btU8wsOl
-         /XggaFpOG7IXRc6yhBcRifDapxygw4xWGvyNI5oP08+tQh7yxyz/kgv9k3zlhDpfdE9O
-         jlGNuSCLz9Q2c/dyL9fuIUNU9K24ePegh7K2PWA7u0xfl0I3aw3h78g2kun5uUlrlYx2
-         QIPffj+fEOVOVejodpbrgVaI1R+vchNMn6hZOVSUDnx1QmrqFQwh7OZbtXmO2DVGTMvw
-         ItRA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4ZX/oY/UMh+zpGx1mdoH5h4IbrR1t26jLXfuR6PIHus=;
+        b=gUfgl9ha7ZaX82C1DhmTvyl5Reu1sMt8IXJeECjnH1nCWXv+b8NtbsVWmnxpR45HBK
+         u4bxL2Hjrv5ljk9QLG6kceFL2lSiJvzcHUANFwblBUWT3clOX5X2Su9S1fZnyLkmLosE
+         Xevz3BMSemRImdclS/xbZ5gEmC5fPuPPT1ZeBICtF3oZlQ5KDWllYrJGuLkdF2BUZtEk
+         qMZ0/j/o8wazvDsNdoOJpbAYEdSNwIagHJyIuLvxsaFdyMjeKEmStVf0EgviLykkrxZ8
+         A6g1OUvG1USwp+UOqpjl1FZ9Fispt91vi8gJeoImli3s9th4KwMk7bEqMrPNjgflgAWU
+         WCtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Oj1uLQphjM5m67YDASt6Wdxp/c4NyvEZdxL2VxWRwS8=;
-        b=t1GKhDWcebDUWQpDTAiOdStJcVsIn/24TEdO8gjP/19H1QFulSDZv7lbL1g+BDdRV0
-         zIOeLDei/219LdLfKv65cZZJ3kujhd9+yOs7D0THsIO9vX9F3zWifsFI98wEq97xbfjl
-         4Lj3AJGSxM9pNBc8D/Yb9gopNClggrLG1x9Kdqhbua2mC0xS7AmoBSlLmeId/ffjSmtL
-         jSBCtIQ4DHDezCvPlzye9+NCFLsdUwVy9JLGA6LDg8+HGdBI6JFtd+LsJa1vfSJRtLQ2
-         S5W6Nt8x5J+IHhs09Tsqy9pT6DnbjFY9eW7u9Tp8io6vjUjRpRG1EVHNX+vLcuAkN2XX
-         eAjw==
-X-Gm-Message-State: AOAM5318NELdMgZT1VV3s72lXzHumz5xnPZxSzGYgbdL9fmczwIJP2zG
-        egV0cmZo022sPiXlebgsnazj4Woadac=
-X-Google-Smtp-Source: ABdhPJwJsQG0ksLeVR+faNKXCvdcUfX+FYmdg82lxtNlMXDAgpc6ElHfXuCO8g1yUj5hWvDkjFDx7w==
-X-Received: by 2002:a05:6402:2710:: with SMTP id y16mr14773513edd.21.1608735728783;
-        Wed, 23 Dec 2020 07:02:08 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:f15a:e2ad:a009:fa06? (p200300ea8f065500f15ae2ada009fa06.dip0.t-ipconnect.de. [2003:ea:8f06:5500:f15a:e2ad:a009:fa06])
-        by smtp.googlemail.com with ESMTPSA id g10sm30898976edu.97.2020.12.23.07.02.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Dec 2020 07:02:08 -0800 (PST)
-Subject: Re: [PATCH -next] intel/iwlwifi: use DEFINE_MUTEX (and mutex_init()
- had been too late)
-To:     Zheng Yongjun <zhengyongjun3@huawei.com>, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201223141152.32564-1-zhengyongjun3@huawei.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <35876d6b-f5bd-daed-f2e3-cb78e9bc8206@gmail.com>
-Date:   Wed, 23 Dec 2020 16:02:03 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4ZX/oY/UMh+zpGx1mdoH5h4IbrR1t26jLXfuR6PIHus=;
+        b=RBn3gr1e0YHaMmVr7P5iJSCciof4XxtU9ej6uSn/RTwDfe/6UO8I1vIoCLalCzsqKN
+         eHW3i+HkGP84Jb3EMorYMDgW/t1GXWr93dLtj1VIvXmAQkc0CVqmSUBzKojY3nScAufs
+         1XfGzR42rvtwueJ7Pdue69sIpry0U2InsM5C7hrcyYv5Pt4k4qRan8XLI1URYy+Ebr9E
+         meqqXdYdd1cW4f2++n1Fm/HZnBchLlrItIXdccCnktClQyyhtRisCOk8gZp3wLpdiNqi
+         i8AI9kVnrpKVfAXbFFGeymRsq4wZAGVU7FMxgIOo+BKFUMJjw+FskebEG7QYgJULsr1A
+         KlRw==
+X-Gm-Message-State: AOAM5301V1eXr18yXSQB9/9cuZ2dt/5p4sdA0kd3Psc3nYgV48/jKulU
+        d/bdc+BNQk73kzUubmj2gCc=
+X-Google-Smtp-Source: ABdhPJz7qunYCzByIufCe9LefmAJBHO+dxaqq5T6ePnJaklV7S98rLzR9x5Ul5EUKOKyQwge3EVtjA==
+X-Received: by 2002:a05:6402:171a:: with SMTP id y26mr25771935edu.371.1608737517461;
+        Wed, 23 Dec 2020 07:31:57 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id d3sm27554041edt.32.2020.12.23.07.31.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Dec 2020 07:31:56 -0800 (PST)
+Date:   Wed, 23 Dec 2020 17:31:52 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Danielle Ratson <danieller@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH AUTOSEL 4.14 48/66] bridge: switchdev: Notify about VLAN
+ protocol changes
+Message-ID: <20201223153152.zbzgs63dykehwk5x@skbuf>
+References: <20201223022253.2793452-1-sashal@kernel.org>
+ <20201223022253.2793452-48-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20201223141152.32564-1-zhengyongjun3@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201223022253.2793452-48-sashal@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23.12.2020 15:11, Zheng Yongjun wrote:
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+On Tue, Dec 22, 2020 at 09:22:34PM -0500, Sasha Levin wrote:
+> From: Danielle Ratson <danieller@nvidia.com>
+> 
+> [ Upstream commit 22ec19f3aee327806c37c9fa1188741574bc6445 ]
+> 
+> Drivers that support bridge offload need to be notified about changes to
+> the bridge's VLAN protocol so that they could react accordingly and
+> potentially veto the change.
+> 
+> Add a new switchdev attribute to communicate the change to drivers.
+> 
+> Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+> Reviewed-by: Petr Machata <petrm@nvidia.com>
+> Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Reviewed-by: Ivan Vecera <ivecera@redhat.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->  drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-> index 9dcd2e990c9c..71119044382f 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-> @@ -133,7 +133,7 @@ enum {
->  };
->  
->  /* Protects the table contents, i.e. the ops pointer & drv list */
-> -static struct mutex iwlwifi_opmode_table_mtx;
-> +static DEFINE_MUTEX(iwlwifi_opmode_table_mtx);
->  static struct iwlwifi_opmode_table {
->  	const char *name;			/* name: iwldvm, iwlmvm, etc */
->  	const struct iwl_op_mode_ops *ops;	/* pointer to op_mode ops */
-> @@ -1786,8 +1786,6 @@ static int __init iwl_drv_init(void)
->  {
->  	int i, err;
->  
-> -	mutex_init(&iwlwifi_opmode_table_mtx);
-> -
->  	for (i = 0; i < ARRAY_SIZE(iwlwifi_opmode_table); i++)
->  		INIT_LIST_HEAD(&iwlwifi_opmode_table[i].drv);
->  
-> 
-The change itself is ok, but:
-- commit message is missing (did you run checkpatch?)
-- Why should the current mutex_init() call be too late?
+
+This looks like a bit of an odd patch to backport?
+Are we also going to backport driver changes that make use of this new
+switchdev notifier?
