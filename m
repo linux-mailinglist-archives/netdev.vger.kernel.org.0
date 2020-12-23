@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B1002E1643
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03AEA2E1624
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731240AbgLWC7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:59:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45508 "EHLO mail.kernel.org"
+        id S1731342AbgLWC6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:58:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728863AbgLWCUF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:20:05 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D290E229CA;
-        Wed, 23 Dec 2020 02:19:49 +0000 (UTC)
+        id S1729000AbgLWCUa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:20:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C3087225AC;
+        Wed, 23 Dec 2020 02:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608689990;
-        bh=jLzGRxX7wGnjD1ePymmJU26q2mDCYyl+VD6tfsHXQjc=;
+        s=k20201202; t=1608690015;
+        bh=ZqsyhDJr975uH78eq9vlqfIjc4P44FyApTZEkqL50qQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NPnh9927eb9as6I0bsMe5BtEUdl2qfUJTqlJbzvmOcp59bSpgOz/5dZuZvmGnTUMS
-         20SXakHuVGiN3s2tg7247ZxUKCLDcAW3SZJ0b8SPA/uOYkN1NDxrORK2j0oOp0aMZu
-         892j7G0lkpz70g0ahtq0miNt9dFxzR5Rjt0x/kEdt6QR/wy9HejRFV7t40utQbSy0c
-         b1utCs3USQn/itCAO0yilEWyGFpYCGuNLMqTAMDRbO+V2XfWUfBcKU6jD3fYlsaKsI
-         2ljqgKk8mfWnSsfUKKGnoCLMsausLQg7ZWgDsP6A4qo4Q6A2YAB9f85vN5yg03FI00
-         od+4WQyeclp/A==
+        b=py3Szs3P2mDnGr+6zQ5Bk835mT58sT/be7XwyTBNAb3M443WVAA2nNnyIkjDsquyA
+         98gRF9GhnqzjAmUY2dFj/AZRl9Rha8SJP0s2xIowMFqVF0ROjVB5fNSv3ejZoDS8hE
+         7VMLUFf3pIigugVPE6KY4ULyNy3E3ZAuuYjo15YbZriL4N2Ohe2A9ax7QvakSVGazX
+         Pznc5qSAdMn+YozP0PPvdMqXuNg+DdnhUsqljKm9QKFbiD2GbRgHiBETOPbALs+L0/
+         SbcfgPINOOgMoOucRLFNuHzIOxMCuVNK89FMAJ4l0jbBGCRIA+nV4sBGxtIo38R6KD
+         ZKEWGGRjvM73A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Martin Schiller <ms@dev.tdt.de>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 075/130] net/lapb: fix t1 timer handling for LAPB_STATE_0
-Date:   Tue, 22 Dec 2020 21:17:18 -0500
-Message-Id: <20201223021813.2791612-75-sashal@kernel.org>
+Cc:     Zhang Xiaohui <ruc_zhangxiaohui@163.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 094/130] mwifiex: Fix possible buffer overflows in mwifiex_cmd_802_11_ad_hoc_start
+Date:   Tue, 22 Dec 2020 21:17:37 -0500
+Message-Id: <20201223021813.2791612-94-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
@@ -42,48 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Schiller <ms@dev.tdt.de>
+From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
 
-[ Upstream commit 62480b992ba3fb1d7260b11293aed9d6557831c7 ]
+[ Upstream commit 5c455c5ab332773464d02ba17015acdca198f03d ]
 
-1. DTE interface changes immediately to LAPB_STATE_1 and start sending
-   SABM(E).
+mwifiex_cmd_802_11_ad_hoc_start() calls memcpy() without checking
+the destination size may trigger a buffer overflower,
+which a local user could use to cause denial of service
+or the execution of arbitrary code.
+Fix it by putting the length check before calling memcpy().
 
-2. DCE interface sends N2-times DM and changes to LAPB_STATE_1
-   afterwards if there is no response in the meantime.
-
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20201206084801.26479-1-ruc_zhangxiaohui@163.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/lapb/lapb_timer.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/join.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/lapb/lapb_timer.c b/net/lapb/lapb_timer.c
-index 8f5b17001a076..baa247fe4ed05 100644
---- a/net/lapb/lapb_timer.c
-+++ b/net/lapb/lapb_timer.c
-@@ -85,11 +85,18 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 	switch (lapb->state) {
+diff --git a/drivers/net/wireless/marvell/mwifiex/join.c b/drivers/net/wireless/marvell/mwifiex/join.c
+index d87aeff70cefb..c2cb1e711c06e 100644
+--- a/drivers/net/wireless/marvell/mwifiex/join.c
++++ b/drivers/net/wireless/marvell/mwifiex/join.c
+@@ -877,6 +877,8 @@ mwifiex_cmd_802_11_ad_hoc_start(struct mwifiex_private *priv,
  
- 		/*
--		 *	If we are a DCE, keep going DM .. DM .. DM
-+		 *	If we are a DCE, send DM up to N2 times, then switch to
-+		 *	STATE_1 and send SABM(E).
- 		 */
- 		case LAPB_STATE_0:
--			if (lapb->mode & LAPB_DCE)
-+			if (lapb->mode & LAPB_DCE &&
-+			    lapb->n2count != lapb->n2) {
-+				lapb->n2count++;
- 				lapb_send_control(lapb, LAPB_DM, LAPB_POLLOFF, LAPB_RESPONSE);
-+			} else {
-+				lapb->state = LAPB_STATE_1;
-+				lapb_establish_data_link(lapb);
-+			}
- 			break;
+ 	memset(adhoc_start->ssid, 0, IEEE80211_MAX_SSID_LEN);
  
- 		/*
++	if (req_ssid->ssid_len > IEEE80211_MAX_SSID_LEN)
++		req_ssid->ssid_len = IEEE80211_MAX_SSID_LEN;
+ 	memcpy(adhoc_start->ssid, req_ssid->ssid, req_ssid->ssid_len);
+ 
+ 	mwifiex_dbg(adapter, INFO, "info: ADHOC_S_CMD: SSID = %s\n",
 -- 
 2.27.0
 
