@@ -2,108 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 894FE2E1114
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 02:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52E102E115D
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 02:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726608AbgLWBQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 20:16:03 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:36682 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbgLWBQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Dec 2020 20:16:02 -0500
-Received: by mail-il1-f198.google.com with SMTP id z15so13142142ilb.3
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 17:15:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=qqkeSoCm1Vpmyy4eSZobyfGFupqnSFHUvlxIBcfud7U=;
-        b=Yi87KE6qBUKTtpt5jYr17kfCJeVbuH0uVkl+864RrXz3Xj7qJD7HRihlqpfa+5lT9T
-         ksrwOuRoT7+nH2ll+B/3vYXsl17dygfp3qOf+mfOwWFgs1/+yCIV1fdqwWzr8mP4e7iH
-         ccx7syNK7gpbERXDPyc30+lQILBjtq4wtSQk8qSDZlZC3Yahf2+eDqFUAIjnm3A4Iht6
-         pyCV1yYLQP6CoiRhUP1VaetH71waI1rkl6z5e6VsjaaudCfy2U2r4I39FzoqYVyyw2U5
-         DExtHY25IXNQc+4Z0eEwvAfzuZlaHlqhlpqOEZxwzSwc/02UE0fIKKFKg06sn0atHy5E
-         cRFQ==
-X-Gm-Message-State: AOAM533IPN3fu6O21HuGSeT3Dw/EuSsowyoqDWgfpxJBs09/X/SAPokV
-        XOh6uioLEXj9742xqw1dlRxO8NmR0DwKRLOOu6jxNYt9haiL
-X-Google-Smtp-Source: ABdhPJySr8OIgv3X1rOc7nug6+rxsOMQLNYBj5rqV5LsnaYUu+bS5j8Ep54xe4R2dg9JCqH/RvRc739Rmb5YFyonKIo67Zaud7d7
+        id S1727013AbgLWBYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 20:24:42 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:37668 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726112AbgLWBYm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 20:24:42 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1krssf-00DU5r-3T; Wed, 23 Dec 2020 02:23:57 +0100
+Date:   Wed, 23 Dec 2020 02:23:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Robert Marko <robert.marko@sartura.hr>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux@armlinux.org.uk,
+        Luka Perkov <luka.perkov@sartura.hr>
+Subject: Re: [PATCH 3/4] net: phy: Add Qualcomm QCA807x driver
+Message-ID: <20201223012357.GS3107610@lunn.ch>
+References: <20201222222637.3204929-1-robert.marko@sartura.hr>
+ <20201222222637.3204929-4-robert.marko@sartura.hr>
 MIME-Version: 1.0
-X-Received: by 2002:a02:834b:: with SMTP id w11mr21524195jag.5.1608686121215;
- Tue, 22 Dec 2020 17:15:21 -0800 (PST)
-Date:   Tue, 22 Dec 2020 17:15:21 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cf6d3705b7176c3d@google.com>
-Subject: UBSAN: shift-out-of-bounds in sfq_init
-From:   syzbot <syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201222222637.3204929-4-robert.marko@sartura.hr>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> +++ b/drivers/net/phy/Kconfig
+> @@ -264,6 +264,16 @@ config QSEMI_PHY
+>  	help
+>  	  Currently supports the qs6612
+>  
+> +config QCA807X_PHY
+> +	tristate "Qualcomm QCA807X PHYs"
 
-syzbot found the following issue on:
+Kconfig is sorted based on the tristate string. So this should be
+after AT803X_PHY.
 
-HEAD commit:    a409ed15 Merge tag 'gpio-v5.11-1' of git://git.kernel.org/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=164f5123500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f7c39e7211134bc0
-dashboard link: https://syzkaller.appspot.com/bug?extid=97c5bd9cc81eca63d36e
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1136680f500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14383487500000
+> +	depends on OF_MDIO
+> +	help
+> +	  Adds support for the Qualcomm QCA807x PHYs.
+> +	  These are 802.3 Clause 22 compliant PHYs supporting gigabit
+> +	  ethernet as well as 100Base-FX and 1000Base-X fibre.
+> +
+> +	  Currently supports the QCA8072 and QCA8075 models.
+> +
+>  config REALTEK_PHY
+>  	tristate "Realtek PHYs"
+>  	help
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index ca0a313423b9..5f463ce0f711 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -74,6 +74,7 @@ obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
+>  obj-$(CONFIG_NATIONAL_PHY)	+= national.o
+>  obj-$(CONFIG_NXP_TJA11XX_PHY)	+= nxp-tja11xx.o
+>  obj-$(CONFIG_QSEMI_PHY)		+= qsemi.o
+> +obj-$(CONFIG_QCA807X_PHY)		+= qca807x.o
+>  obj-$(CONFIG_REALTEK_PHY)	+= realtek.o
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com
+One line earlier please.
 
-================================================================================
-UBSAN: shift-out-of-bounds in ./include/net/red.h:252:22
-shift exponent 72 is too large for 32-bit type 'int'
-CPU: 1 PID: 8479 Comm: syz-executor063 Not tainted 5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
- __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
- red_set_parms include/net/red.h:252 [inline]
- sfq_change net/sched/sch_sfq.c:674 [inline]
- sfq_init.cold+0x4f/0xd5 net/sched/sch_sfq.c:762
- qdisc_create+0x4ba/0x13a0 net/sched/sch_api.c:1246
- tc_modify_qdisc+0x4c8/0x1a30 net/sched/sch_api.c:1662
- rtnetlink_rcv_msg+0x498/0xb80 net/core/rtnetlink.c:5564
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4404f9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fffef145e18 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004404f9
-RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000004
-RBP: 00000000006ca018 R08: 00000000ffffffff R09: 00000000004002c8
-R10: 00000000ffffffff R11: 0000000000000246 R12: 0000000000401d00
-R13: 0000000000401d90 R14: 0000000000000000 R15: 0000000000000000
-================================================================================
+> +static int qca807x_cable_test_report_trans(int result)
+> +{
+> +	switch (result) {
+> +	case QCA807X_CDT_RESULTS_OK:
+> +		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
+> +	case QCA807X_CDT_RESULTS_OPEN:
+> +		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
+> +	case QCA807X_CDT_RESULTS_SAME_SHORT:
+> +		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI1_SAME_OK:
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI2_SAME_OK:
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI3_SAME_OK:
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI1_SAME_OPEN:
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI2_SAME_OPEN:
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI3_SAME_OPEN:
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI1_SAME_SHORT:
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI2_SAME_SHORT:
+> +	case QCA807X_CDT_RESULTS_CROSS_SHORT_WITH_MDI3_SAME_SHORT:
 
+Feel free to add an optional pair to the netlink message, indicating
+which pair this pair is shorted to.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> +		return ETHTOOL_A_CABLE_RESULT_CODE_CROSS_SHORT;
+> +	default:
+> +		return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
+> +	}
+> +}
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+> +static int qca807x_cable_test_start(struct phy_device *phydev)
+> +{
+> +	int val, ret;
+> +
+> +	val = phy_read(phydev, QCA807X_CDT);
+> +	/* Enable inter-pair short check as well */
+> +	val &= ~QCA807X_CDT_ENABLE_INTER_PAIR_SHORT;
+> +	val |= QCA807X_CDT_ENABLE;
+> +	ret = phy_write(phydev, QCA807X_CDT, val);
+
+What happens when you are using the PHY as a media converted to Fibre?
+Should we return -EOPNOTSUPP here? I'm assuming it cannot do cable
+test on a fibre pair.
+
+> +static int qca807x_read_fiber_status(struct phy_device *phydev, bool combo_port)
+> +{
+> +	int ss, err, page, lpa, old_link = phydev->link;
+> +
+> +	/* Check whether fiber page is set and set if needed */
+> +	page = phy_read(phydev, QCA807X_CHIP_CONFIGURATION);
+> +	if (page & QCA807X_BT_BX_REG_SEL) {
+> +		page &= ~QCA807X_BT_BX_REG_SEL;
+> +		phy_write(phydev, QCA807X_CHIP_CONFIGURATION, page);
+> +	}
+> +
+> +	/* Update the link, but return if there was an error */
+> +	err = genphy_update_link(phydev);
+> +	if (err)
+> +		return err;
+> +
+> +	/* why bother the PHY if nothing can have changed */
+> +	if (phydev->autoneg == AUTONEG_ENABLE && old_link && phydev->link)
+> +		return 0;
+> +
+> +	phydev->speed = SPEED_UNKNOWN;
+> +	phydev->duplex = DUPLEX_UNKNOWN;
+> +	phydev->pause = 0;
+> +	phydev->asym_pause = 0;
+> +
+> +	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
+> +		lpa = phy_read(phydev, MII_LPA);
+> +		if (lpa < 0)
+> +			return lpa;
+> +
+> +		linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+> +				 phydev->lp_advertising, lpa & LPA_LPACK);
+> +		linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
+> +				 phydev->lp_advertising, lpa & LPA_1000XFULL);
+> +		linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+> +				 phydev->lp_advertising, lpa & LPA_1000XPAUSE);
+> +		linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+> +				 phydev->lp_advertising,
+> +				 lpa & LPA_1000XPAUSE_ASYM);
+> +
+> +		phy_resolve_aneg_linkmode(phydev);
+> +	}
+
+This looks a lot like genphy_c37_read_status(). You could call it, and
+then over write the speed and duplex with values from the PHY specific
+registers.
+
+> +static int qca807x_config_intr(struct phy_device *phydev)
+> +{
+> +	int ret, val;
+> +
+> +	val = phy_read(phydev, QCA807X_INTR_ENABLE);
+> +
+> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+> +		/* Check for combo port as it has fewer interrupts */
+> +		if (phy_read(phydev, QCA807X_CHIP_CONFIGURATION)) {
+> +			val |= QCA807X_INTR_ENABLE_SPEED_CHANGED;
+> +			val |= QCA807X_INTR_ENABLE_LINK_FAIL;
+> +			val |= QCA807X_INTR_ENABLE_LINK_SUCCESS;
+> +		} else {
+> +			val |= QCA807X_INTR_ENABLE_AUTONEG_ERR;
+> +			val |= QCA807X_INTR_ENABLE_SPEED_CHANGED;
+> +			val |= QCA807X_INTR_ENABLE_DUPLEX_CHANGED;
+> +			val |= QCA807X_INTR_ENABLE_LINK_FAIL;
+> +			val |= QCA807X_INTR_ENABLE_LINK_SUCCESS;
+> +		}
+> +		ret = phy_write(phydev, QCA807X_INTR_ENABLE, val);
+> +	} else {
+> +		ret = phy_write(phydev, QCA807X_INTR_ENABLE, 0);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int qca807x_ack_intr(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	ret = phy_read(phydev, QCA807X_INTR_STATUS);
+> +
+> +	return (ret < 0) ? ret : 0;
+> +}
+
+You need to rework this to follow what Ioana has done for interrupt
+handling.
+
+> +	{
+> +		PHY_ID_MATCH_EXACT(PHY_ID_QCA8075),
+> +		.name           = "Qualcomm QCA8075",
+> +		.flags		= PHY_POLL_CABLE_TEST,
+> +		/* PHY_GBIT_FEATURES */
+> +		.probe		= qca807x_probe,
+> +		.config_init	= qca807x_config,
+> +		.read_status	= qca807x_read_status,
+> +		.config_intr	= qca807x_config_intr,
+> +		.ack_interrupt	= qca807x_ack_intr,
+> +		.soft_reset	= genphy_soft_reset,
+> +		.get_tunable	= qca807x_get_tunable,
+> +		.set_tunable	= qca807x_set_tunable,
+> +		.cable_test_start	= qca807x_cable_test_start,
+> +		.cable_test_get_status	= qca807x_cable_test_get_status,
+> +	},
+> +	{
+> +		PHY_ID_MATCH_EXACT(PHY_ID_QCA807X_PSGMII),
+> +		.name           = "Qualcomm QCA807x PSGMII",
+> +		.probe		= qca807x_psgmii_config,
+
+This looks odd. 
+
+     Andrew
