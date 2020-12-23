@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0752E1444
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:47:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89A672E14C1
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:48:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729887AbgLWCXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:23:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51318 "EHLO mail.kernel.org"
+        id S1731136AbgLWCnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:43:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51348 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729870AbgLWCXD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:23:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A6BC0225AB;
-        Wed, 23 Dec 2020 02:22:44 +0000 (UTC)
+        id S1729839AbgLWCXG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:23:06 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EFCD22332A;
+        Wed, 23 Dec 2020 02:22:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690165;
-        bh=+q+gSVCRGwd6pCl4K2v/dH+8UUl1ZK+npmBeqtDjgck=;
+        s=k20201202; t=1608690166;
+        bh=9afOb1yIlqNHf4dkTNn5sLg+EXwzsf4Rj+/X9KXuxSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B+5LD3Maws5ZC/WBttyYWrHi42HsxEZd3rLspncMASS+U+yJ1jC72TeKqH8nsJYxn
-         hPRAQvXz248a7HVRjfAptYQfAwmCyixXMxn3m6Z7yjfrqwpQv376w7hscon6fJHPJo
-         9qVYVn1VTvtGXLdSMdU+FeT0KBvR2/Hxm2Sn5i/ipbaKwEAV8zo8FuIi1X6PT4zsbq
-         VkTX91q4mW8Dzl7KOEUfDraJbWqwhl6CMCzxgA3iScg991xAVsnhY+6m2E9v8NBqrW
-         iWTGWZ/fZsfcxzrzHzfdAfQTUql9KI+KRit+3pfVeT7bTh3qaGfxHzcICotV2SmX5l
-         inJFzaaNmJluA==
+        b=CMfk1ypolnMOHQGyc36EiKTbjS9XyVN13PeM8FjaPWTWR+kaERyegxGuwp1XSH6uN
+         +6ZnoE0u0QZsTIlViiECCsfyMKVKsxbIHWAjf2elyVv+flEnBseFk3XrmEOY3k3p9t
+         CWvYYHY9vYfFsR5NG00Ra6Z9dFSuOTo3oDIPkZqIfVg2BLoMt6LM5xzDvZENMgjo89
+         CGk0R5TBK5onloZoWe9DDJQloAYsSNtWmRYNEvh/0va8VZIfClOnQ6aHgcjw9tvGFe
+         /Wp2VJtAjwbhEMxsk24c7Ulr9aVIMSN0Gqi2Bjh4aKZDuTMeC0mipd+VMKEnPAOjMM
+         aE6/FIcZpECVQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
+Cc:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 82/87] mac80211: Fix calculation of minimal channel width
-Date:   Tue, 22 Dec 2020 21:20:58 -0500
-Message-Id: <20201223022103.2792705-82-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 83/87] mac80211: don't filter out beacons once we start CSA
+Date:   Tue, 22 Dec 2020 21:20:59 -0500
+Message-Id: <20201223022103.2792705-83-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022103.2792705-1-sashal@kernel.org>
 References: <20201223022103.2792705-1-sashal@kernel.org>
@@ -44,70 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
 
-[ Upstream commit bbf31e88df2f5da20ce613c340ce508d732046b3 ]
+[ Upstream commit 189a164d0fc6c59a22c4486d641d0a0a0d33387a ]
 
-When calculating the minimal channel width for channel context,
-the current operation Rx channel width of a station was used and not
-the overall channel width capability of the station, i.e., both for
-Tx and Rx.
+I hit a bug in which we started a CSA with an action frame,
+but the AP changed its mind and didn't change the beacon.
+The CSA wasn't cancelled and we lost the connection.
 
-Fix ieee80211_get_sta_bw() to use the maximal channel width the
-station is capable. While at it make the function static.
+The beacons were ignored because they never changed: they
+never contained any CSA IE. Because they never changed, the
+CRC of the beacon didn't change either which made us ignore
+the beacons instead of processing them.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Now what happens is:
+1) beacon has CRC X and it is valid. No CSA IE in the beacon
+2) as long as beacon's CRC X, don't process their IEs
+3) rx action frame with CSA
+4) invalidate the beacon's CRC
+5) rx beacon, CRC is still X, but now it is invalid
+6) process the beacon, detect there is no CSA IE
+7) abort CSA
+
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20201206145305.4387040b99a0.I74bcf19238f75a5960c4098b10e355123d933281@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20201206145305.83470b8407e6.I739b907598001362744692744be15335436b8351@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/chan.c        | 10 ++++++----
- net/mac80211/ieee80211_i.h |  1 -
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ net/mac80211/mlme.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/mac80211/chan.c b/net/mac80211/chan.c
-index d9558ffb8acf7..b58813568c9ff 100644
---- a/net/mac80211/chan.c
-+++ b/net/mac80211/chan.c
-@@ -190,11 +190,13 @@ ieee80211_find_reservation_chanctx(struct ieee80211_local *local,
- 	return NULL;
- }
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index eb711475cb140..75d791bceb1c6 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -1347,6 +1347,7 @@ ieee80211_sta_process_chanswitch(struct ieee80211_sub_if_data *sdata,
+ 	sdata->csa_chandef = csa_ie.chandef;
+ 	sdata->csa_block_tx = csa_ie.mode;
+ 	ifmgd->csa_ignored_same_chan = false;
++	ifmgd->beacon_crc_valid = false;
  
--enum nl80211_chan_width ieee80211_get_sta_bw(struct ieee80211_sta *sta)
-+static enum nl80211_chan_width ieee80211_get_sta_bw(struct sta_info *sta)
- {
--	switch (sta->bandwidth) {
-+	enum ieee80211_sta_rx_bandwidth width = ieee80211_sta_cap_rx_bw(sta);
-+
-+	switch (width) {
- 	case IEEE80211_STA_RX_BW_20:
--		if (sta->ht_cap.ht_supported)
-+		if (sta->sta.ht_cap.ht_supported)
- 			return NL80211_CHAN_WIDTH_20;
- 		else
- 			return NL80211_CHAN_WIDTH_20_NOHT;
-@@ -231,7 +233,7 @@ ieee80211_get_max_required_bw(struct ieee80211_sub_if_data *sdata)
- 		    !(sta->sdata->bss && sta->sdata->bss == sdata->bss))
- 			continue;
- 
--		max_bw = max(max_bw, ieee80211_get_sta_bw(&sta->sta));
-+		max_bw = max(max_bw, ieee80211_get_sta_bw(sta));
- 	}
- 	rcu_read_unlock();
- 
-diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index 43edb903be693..285a541549aaa 100644
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -2165,7 +2165,6 @@ int ieee80211_check_combinations(struct ieee80211_sub_if_data *sdata,
- 				 enum ieee80211_chanctx_mode chanmode,
- 				 u8 radar_detect);
- int ieee80211_max_num_channels(struct ieee80211_local *local);
--enum nl80211_chan_width ieee80211_get_sta_bw(struct ieee80211_sta *sta);
- void ieee80211_recalc_chanctx_chantype(struct ieee80211_local *local,
- 				       struct ieee80211_chanctx *ctx);
- 
+ 	if (sdata->csa_block_tx)
+ 		ieee80211_stop_vif_queues(local, sdata,
 -- 
 2.27.0
 
