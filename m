@@ -2,41 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6136B2E16F4
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8BE12E16EC
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:10:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731598AbgLWDEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 22:04:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45430 "EHLO mail.kernel.org"
+        id S1731576AbgLWDDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 22:03:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728625AbgLWCT1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728626AbgLWCT1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 22 Dec 2020 21:19:27 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A43C23384;
-        Wed, 23 Dec 2020 02:18:47 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1120823357;
+        Wed, 23 Dec 2020 02:18:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608689928;
-        bh=T/VZIlNzE9W1wJeFx/Oo2JyFg8ywD/lUvkfv0SXgFmg=;
+        s=k20201202; t=1608689930;
+        bh=L7OzlzhzJeRLg/LF4grC5PTeNyaU23gvMseOIVwHHhM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZmvrS862fNjHDSPjFbR5fiMq/9Bol++ABZ0lFkA/hG4WcWkUrpeOHKlTvJUmNTNiC
-         ssUAAwu0Q4tDqiIrpHeAhtsKYSQA7xfSeFTYPKfs3DpaXR/VLL94lSgW1Gy8jMCqPX
-         W4cb94VcdeO77Se9VLdHmrms4cirYp/O+P1CDCDbz3TUTzgtKHBHxaHIFYXdwLrmgS
-         8fcmriB8N7/Tey4rgDdewIabddIkhW8rzNgo65jH4of2jQXP29ep6/aD5r3Mza2Znr
-         syErjhIBIH0jOkwrIujI6SadzRD35R+mJvOrYRRcwkVhOUEJ/V51xV5k7nZNu8JEOs
-         ae1bd78iGwgkg==
+        b=aeAIVOkyp/vLTWZOLWOk4z+jYJYGNBCjZaWrARg1jpUggdP2uokdt9qS682vQD1o5
+         j9jlNVOX5fHoqR/FQVyVutEUETzfPi60YlXuQza8Dhkz70juuhGGbeIJvX0PYe3J7l
+         wH7lO79um0dwOLQ0QHc3uQkDDLHym3w0x2+Wkx1+ADCbZvuqAk2rlnq2LamnV9+xDk
+         Zk4uIq4PcgScmmp1MXUHZzouCgT3Cg6Ukq8mSBe1OHf0kGEYuMcxvU1iH3l/5MwsRe
+         Zf0KH5Rq1p4Q/RHklyCMC0if7LyG1/arMkY3LqG27vlCZ7RV0T5i5wty0SSjBOYTjT
+         AzvAHcZ7YbejQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Ole=20Bj=C3=B8rn=20Midtb=C3=B8?= <omidtbo@cisco.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 027/130] Bluetooth: hidp: use correct wait queue when removing ctrl_wait
-Date:   Tue, 22 Dec 2020 21:16:30 -0500
-Message-Id: <20201223021813.2791612-27-sashal@kernel.org>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 029/130] net: skb_vlan_untag(): don't reset transport offset if set by GRO layer
+Date:   Tue, 22 Dec 2020 21:16:32 -0500
+Message-Id: <20201223021813.2791612-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,72 +42,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ole Bjørn Midtbø <omidtbo@cisco.com>
+From: Alexander Lobakin <alobakin@pm.me>
 
-[ Upstream commit cca342d98bef68151a80b024f7bf5f388d1fbdea ]
+[ Upstream commit 8be33ecfc1ffd2da20cc29e957e4cb6eb99310cb ]
 
-A different wait queue was used when removing ctrl_wait than when adding
-it. This effectively made the remove operation without locking compared
-to other operations on the wait queue ctrl_wait was part of. This caused
-issues like below where dead000000000100 is LIST_POISON1 and
-dead000000000200 is LIST_POISON2.
+Similar to commit fda55eca5a33f
+("net: introduce skb_transport_header_was_set()"), avoid resetting
+transport offsets that were already set by GRO layer. This not only
+mirrors the behavior of __netif_receive_skb_core(), but also makes
+sense when it comes to UDP GSO fraglists forwarding: transport offset
+of such skbs is set only once by GRO receive callback and remains
+untouched and correct up to the xmitting driver in 1:1 case, but
+becomes junk after untagging in ingress VLAN case and breaks UDP
+GSO offload. This does not happen after this change, and all types
+of forwarding of UDP GSO fraglists work as expected.
 
- list_add corruption. next->prev should be prev (ffffffc1b0a33a08), \
-	but was dead000000000200. (next=ffffffc03ac77de0).
- ------------[ cut here ]------------
- CPU: 3 PID: 2138 Comm: bluetoothd Tainted: G           O    4.4.238+ #9
- ...
- ---[ end trace 0adc2158f0646eac ]---
- Call trace:
- [<ffffffc000443f78>] __list_add+0x38/0xb0
- [<ffffffc0000f0d04>] add_wait_queue+0x4c/0x68
- [<ffffffc00020eecc>] __pollwait+0xec/0x100
- [<ffffffc000d1556c>] bt_sock_poll+0x74/0x200
- [<ffffffc000bdb8a8>] sock_poll+0x110/0x128
- [<ffffffc000210378>] do_sys_poll+0x220/0x480
- [<ffffffc0002106f0>] SyS_poll+0x80/0x138
- [<ffffffc00008510c>] __sys_trace_return+0x0/0x4
+Since v1 [1]:
+ - keep the code 1:1 with __netif_receive_skb_core() (Jakub).
 
- Unable to handle kernel paging request at virtual address dead000000000100
- ...
- CPU: 4 PID: 5387 Comm: kworker/u15:3 Tainted: G        W  O    4.4.238+ #9
- ...
- Call trace:
-  [<ffffffc0000f079c>] __wake_up_common+0x7c/0xa8
-  [<ffffffc0000f0818>] __wake_up+0x50/0x70
-  [<ffffffc000be11b0>] sock_def_wakeup+0x58/0x60
-  [<ffffffc000de5e10>] l2cap_sock_teardown_cb+0x200/0x224
-  [<ffffffc000d3f2ac>] l2cap_chan_del+0xa4/0x298
-  [<ffffffc000d45ea0>] l2cap_conn_del+0x118/0x198
-  [<ffffffc000d45f8c>] l2cap_disconn_cfm+0x6c/0x78
-  [<ffffffc000d29934>] hci_event_packet+0x564/0x2e30
-  [<ffffffc000d19b0c>] hci_rx_work+0x10c/0x360
-  [<ffffffc0000c2218>] process_one_work+0x268/0x460
-  [<ffffffc0000c2678>] worker_thread+0x268/0x480
-  [<ffffffc0000c94e0>] kthread+0x118/0x128
-  [<ffffffc000085070>] ret_from_fork+0x10/0x20
-  ---[ end trace 0adc2158f0646ead ]---
+[1] https://lore.kernel.org/netdev/zYurwsZRN7BkqSoikWQLVqHyxz18h4LhHU4NFa2Vw@cp4-web-038.plabs.ch
 
-Signed-off-by: Ole Bjørn Midtbø <omidtbo@cisco.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Link: https://lore.kernel.org/r/7JgIkgEztzt0W6ZtC9V9Cnk5qfkrUFYcpN871syCi8@cp4-web-040.plabs.ch
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hidp/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/skbuff.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
-index bef84b95e2c47..ac98e3b37ab47 100644
---- a/net/bluetooth/hidp/core.c
-+++ b/net/bluetooth/hidp/core.c
-@@ -1290,7 +1290,7 @@ static int hidp_session_thread(void *arg)
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index a0486dcf5425b..5f9035f462445 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5333,7 +5333,8 @@ struct sk_buff *skb_vlan_untag(struct sk_buff *skb)
+ 		goto err_free;
  
- 	/* cleanup runtime environment */
- 	remove_wait_queue(sk_sleep(session->intr_sock->sk), &intr_wait);
--	remove_wait_queue(sk_sleep(session->intr_sock->sk), &ctrl_wait);
-+	remove_wait_queue(sk_sleep(session->ctrl_sock->sk), &ctrl_wait);
- 	wake_up_interruptible(&session->report_queue);
- 	hidp_del_timer(session);
+ 	skb_reset_network_header(skb);
+-	skb_reset_transport_header(skb);
++	if (!skb_transport_header_was_set(skb))
++		skb_reset_transport_header(skb);
+ 	skb_reset_mac_len(skb);
  
+ 	return skb;
 -- 
 2.27.0
 
