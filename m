@@ -2,46 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB0D2E1588
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:58:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA0EB2E1571
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:58:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731030AbgLWCtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:49:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51082 "EHLO mail.kernel.org"
+        id S1727879AbgLWCVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:21:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729542AbgLWCWE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:22:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ACEE722A83;
-        Wed, 23 Dec 2020 02:21:21 +0000 (UTC)
+        id S1729440AbgLWCVn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:21:43 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C0F22256F;
+        Wed, 23 Dec 2020 02:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690083;
-        bh=Cl6NP0zqV8K6cUf7Tyq92YjgTqKWZ92pk4ideqkSxB0=;
+        s=k20201202; t=1608690087;
+        bh=BMOzuK7goc7lyIgUrqsjQrJDXK5vhvo9v2GD2jclSpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pmyF+yL13XvXY+9d1RzrBRRwYZoOIA10+XAiO6O0JnJC0Gu2ZQVj04okMdBCSezHh
-         mq/FmOB/KxcJAp4m+KeJo0dXgD4S/+pJApS0mcae4MW3GILP5mh6XUAudX+LOUf8y4
-         MXD4+f83HUMUx25/zbEkMCT2leA8do4uGIA+sQQfMJIloXZsNbw2qZ6KW/5VJkvW7V
-         JmRxK7hh2g/wiT8K58/N7E293MJiOtIu0npMypdlJdNwJDIsZ61oQh/k2PulKGsm4B
-         vjX58yDbQ2P/Bg671h2376EKnjTvJflT9R30pY5Q9nuHZqfVbg2kQsvG5g8c/RwwFA
-         77gkx4UXs0QVA==
+        b=MYDvh5Mknk2y54AZ8WJTVXgk3n4v4cYO8I8+oEt2o9a9aVLRPVSPq9XOQt6ObZE+l
+         6sQIjL9aRZQbLa30hpCj+m6Hc23ngB5FSmrTHR/ZI9aAgFRu5FnfBrF3nsAOLp1W6E
+         bYaApyZ/WTu3c+P1iwlD8j2Pf9KK4y6X88slLZLxRaKXUeZbMNGUBK4ijNMZ4hvUak
+         9OQdoUbezISprbSKXuoQjq/BjLSh9KtPF0Lnb7ZNSfUDLvUyeXmtEx3C6fFTfmLHYn
+         C9XAMr36OCbStqablvSCQx9aQ4FsSJCLadFQoMCHqAsE/iHGr7BxBhCyJuCeYTi9M2
+         IqasO9GXlpa1g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>, Angus Ainslie <angus@akkea.ca>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Martin Kepplinger <martink@posteo.de>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 15/87] rsi: Fix TX EAPOL packet handling against iwlwifi AP
-Date:   Tue, 22 Dec 2020 21:19:51 -0500
-Message-Id: <20201223022103.2792705-15-sashal@kernel.org>
+Cc:     =?UTF-8?q?Ole=20Bj=C3=B8rn=20Midtb=C3=B8?= <omidtbo@cisco.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 19/87] Bluetooth: hidp: use correct wait queue when removing ctrl_wait
+Date:   Tue, 22 Dec 2020 21:19:55 -0500
+Message-Id: <20201223022103.2792705-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022103.2792705-1-sashal@kernel.org>
 References: <20201223022103.2792705-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -49,69 +44,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Ole Bjørn Midtbø <omidtbo@cisco.com>
 
-[ Upstream commit 65277100caa2f2c62b6f3c4648b90d6f0435f3bc ]
+[ Upstream commit cca342d98bef68151a80b024f7bf5f388d1fbdea ]
 
-In case RSI9116 SDIO WiFi operates in STA mode against Intel 9260 in AP mode,
-the association fails. The former is using wpa_supplicant during association,
-the later is set up using hostapd:
+A different wait queue was used when removing ctrl_wait than when adding
+it. This effectively made the remove operation without locking compared
+to other operations on the wait queue ctrl_wait was part of. This caused
+issues like below where dead000000000100 is LIST_POISON1 and
+dead000000000200 is LIST_POISON2.
 
-iwl$ cat hostapd.conf
-interface=wlp1s0
-ssid=test
-country_code=DE
-hw_mode=g
-channel=1
-wpa=2
-wpa_passphrase=test
-wpa_key_mgmt=WPA-PSK
-iwl$ hostapd -d hostapd.conf
+ list_add corruption. next->prev should be prev (ffffffc1b0a33a08), \
+	but was dead000000000200. (next=ffffffc03ac77de0).
+ ------------[ cut here ]------------
+ CPU: 3 PID: 2138 Comm: bluetoothd Tainted: G           O    4.4.238+ #9
+ ...
+ ---[ end trace 0adc2158f0646eac ]---
+ Call trace:
+ [<ffffffc000443f78>] __list_add+0x38/0xb0
+ [<ffffffc0000f0d04>] add_wait_queue+0x4c/0x68
+ [<ffffffc00020eecc>] __pollwait+0xec/0x100
+ [<ffffffc000d1556c>] bt_sock_poll+0x74/0x200
+ [<ffffffc000bdb8a8>] sock_poll+0x110/0x128
+ [<ffffffc000210378>] do_sys_poll+0x220/0x480
+ [<ffffffc0002106f0>] SyS_poll+0x80/0x138
+ [<ffffffc00008510c>] __sys_trace_return+0x0/0x4
 
-rsi$ wpa_supplicant -i wlan0 -c <(wpa_passphrase test test)
+ Unable to handle kernel paging request at virtual address dead000000000100
+ ...
+ CPU: 4 PID: 5387 Comm: kworker/u15:3 Tainted: G        W  O    4.4.238+ #9
+ ...
+ Call trace:
+  [<ffffffc0000f079c>] __wake_up_common+0x7c/0xa8
+  [<ffffffc0000f0818>] __wake_up+0x50/0x70
+  [<ffffffc000be11b0>] sock_def_wakeup+0x58/0x60
+  [<ffffffc000de5e10>] l2cap_sock_teardown_cb+0x200/0x224
+  [<ffffffc000d3f2ac>] l2cap_chan_del+0xa4/0x298
+  [<ffffffc000d45ea0>] l2cap_conn_del+0x118/0x198
+  [<ffffffc000d45f8c>] l2cap_disconn_cfm+0x6c/0x78
+  [<ffffffc000d29934>] hci_event_packet+0x564/0x2e30
+  [<ffffffc000d19b0c>] hci_rx_work+0x10c/0x360
+  [<ffffffc0000c2218>] process_one_work+0x268/0x460
+  [<ffffffc0000c2678>] worker_thread+0x268/0x480
+  [<ffffffc0000c94e0>] kthread+0x118/0x128
+  [<ffffffc000085070>] ret_from_fork+0x10/0x20
+  ---[ end trace 0adc2158f0646ead ]---
 
-The problem is that the TX EAPOL data descriptor RSI_DESC_REQUIRE_CFM_TO_HOST
-flag and extended descriptor EAPOL4_CONFIRM frame type are not set in case the
-AP is iwlwifi, because in that case the TX EAPOL packet is 2 bytes shorter.
-
-The downstream vendor driver has this change in place already [1], however
-there is no explanation for it, neither is there any commit history from which
-such explanation could be obtained.
-
-[1] https://github.com/SiliconLabs/RS911X-nLink-OSD/blob/master/rsi/rsi_91x_hal.c#L238
-
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Lee Jones <lee.jones@linaro.org>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20201015111616.429220-1-marex@denx.de
+Signed-off-by: Ole Bjørn Midtbø <omidtbo@cisco.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/rsi/rsi_91x_hal.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/bluetooth/hidp/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
-index a7b341e95e764..0da95777f1c15 100644
---- a/drivers/net/wireless/rsi/rsi_91x_hal.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
-@@ -238,7 +238,8 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
- 			rsi_set_len_qno(&data_desc->len_qno,
- 					(skb->len - FRAME_DESC_SZ),
- 					RSI_WIFI_MGMT_Q);
--		if ((skb->len - header_size) == EAPOL4_PACKET_LEN) {
-+		if (((skb->len - header_size) == EAPOL4_PACKET_LEN) ||
-+		    ((skb->len - header_size) == EAPOL4_PACKET_LEN - 2)) {
- 			data_desc->misc_flags |=
- 				RSI_DESC_REQUIRE_CFM_TO_HOST;
- 			xtend_desc->confirm_frame_type = EAPOL4_CONFIRM;
+diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+index 253975cce943e..0cbd0bca971ff 100644
+--- a/net/bluetooth/hidp/core.c
++++ b/net/bluetooth/hidp/core.c
+@@ -1282,7 +1282,7 @@ static int hidp_session_thread(void *arg)
+ 
+ 	/* cleanup runtime environment */
+ 	remove_wait_queue(sk_sleep(session->intr_sock->sk), &intr_wait);
+-	remove_wait_queue(sk_sleep(session->intr_sock->sk), &ctrl_wait);
++	remove_wait_queue(sk_sleep(session->ctrl_sock->sk), &ctrl_wait);
+ 	wake_up_interruptible(&session->report_queue);
+ 	hidp_del_timer(session);
+ 
 -- 
 2.27.0
 
