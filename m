@@ -2,89 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD23D2E203F
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 18:58:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9401A2E2047
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 19:00:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727955AbgLWR6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 12:58:43 -0500
-Received: from smtprelay0078.hostedemail.com ([216.40.44.78]:36632 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726554AbgLWR6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 12:58:43 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 195C818045A48;
-        Wed, 23 Dec 2020 17:58:02 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:967:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2553:2560:2563:2682:2685:2691:2693:2828:2859:2911:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3698:3865:3866:3867:3868:3870:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4425:5007:6742:6743:7576:9010:9012:9025:9040:10004:10400:10848:10967:11232:11596:11658:11783:11914:12043:12297:12679:12740:12895:13019:13069:13161:13229:13311:13357:13439:13846:13894:14180:14181:14659:14721:14777:21080:21324:21433:21451:21611:21627:21740:21819:21990:30022:30029:30030:30054:30060:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: smell21_3f007b52746a
-X-Filterd-Recvd-Size: 2644
-Received: from XPS-9350.home (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf03.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 23 Dec 2020 17:57:58 +0000 (UTC)
-Message-ID: <36399d76993cf04661b4ade819b3245951ae650b.camel@perches.com>
-Subject: Re: [PATCH net] MAINTAINERS: remove names from mailing list
- maintainers
-From:   Joe Perches <joe@perches.com>
-To:     patchwork-bot+netdevbpf@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pv-drivers@vmware.com,
-        doshir@vmware.com, UNGLinuxDriver@microchip.com,
-        steve.glendinning@shawell.net, woojung.huh@microchip.com,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        drivers@pensando.io, snelson@pensando.io, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        bryan.whitehead@microchip.com, o.rempel@pengutronix.de,
-        kernel@pengutronix.de, robin@protonic.nl, hkallweit1@gmail.com,
-        nic_swsd@realtek.com, lars.povlsen@microchip.com,
-        Steen.Hegelund@microchip.com, linux-kernel@vger.kernel.org,
-        corbet@lwn.net
-Date:   Wed, 23 Dec 2020 09:57:57 -0800
-In-Reply-To: <160869180729.29227.5706578456404319351.git-patchwork-notify@kernel.org>
-References: <20201219185538.750076-1-kuba@kernel.org>
-         <160869180729.29227.5706578456404319351.git-patchwork-notify@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1728043AbgLWSA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 13:00:28 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:53779 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726554AbgLWSA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 13:00:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1608746427; x=1640282427;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=47r11GPRFhq3kFKg3DEtYYb9IpOCEZgBgEMABlO6tnQ=;
+  b=K78l9kP6cv7pXXDye8hsQ9+Zztb/ba48efmGMdQvOd+mKfn2lhWaqNxn
+   WsGu1cZg8UoUKsIBckzSIHhQahgsexyel3wdGD1gIjpFfaiiDCt0bNm2w
+   XhPMagy79gSCD2HQ4yLKh/eds/rvJvfTEvGVJTtF+HP6ojaLAfevwuVhT
+   qD2Ys+0TYYna3zwAne1rYxk/MoJ6B1ZazMgyeJ0Ys6+9uM3xnpnvlPGqc
+   x09wsHSowg/TWBDMXPU6zCmDB3Nw5xxF95y6B+Pph/9tLTzkPWGVdCibc
+   kYmgHljgTR9dhuJMxc91CO+3kP1iYIGgO0cw+CIgSQ1NhbouyE6DbHkph
+   Q==;
+IronPort-SDR: VbMItp7eqgc6S1n0XuY9L3oN/3JOHEV5urxycxQ78oZy7UX33+VepDUFlH4w2nNTzNNRFWgdyk
+ Yd7wq3OaODn/Ope0K1IvCTA3PQDGm4IjzLQKLXTZ1uq5l3T0v8dXmTG80X/oxghIfLYwA+b81B
+ C4E9nSs39d2SOa8N2qLCZok9JIB+U0ygEcLecAbHwl6AemmB5y0H2Ygt1Zs9NEhCXSd3H4b2BI
+ 6Q98u6W8VixUYIqON/esoAPdNIYS7mfM30loudA1xKTXDITWjTnCAdM3Bfhd7/RxejA7cCWiku
+ YU8=
+X-IronPort-AV: E=Sophos;i="5.78,441,1599548400"; 
+   d="scan'208";a="98105173"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Dec 2020 10:59:11 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Dec 2020 10:59:11 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 23 Dec 2020 10:59:10 -0700
+Date:   Wed, 23 Dec 2020 18:59:10 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net 1/2] net: mrp: fix definitions of MRP test packets
+Message-ID: <20201223175910.2ipmowhcn63mqtqt@soft-dev3.localdomain>
+References: <20201223144533.4145-1-rasmus.villemoes@prevas.dk>
+ <20201223144533.4145-2-rasmus.villemoes@prevas.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20201223144533.4145-2-rasmus.villemoes@prevas.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-12-23 at 02:50 +0000, patchwork-bot+netdevbpf@kernel.org
-wrote:
-> Hello:
+The 12/23/2020 15:45, Rasmus Villemoes wrote:
+
+Hi Rasmus,
 > 
-> This patch was applied to netdev/net.git (refs/heads/master):
+> Wireshark says that the MRP test packets cannot be decoded - and the
+> reason for that is that there's a two-byte hole filled with garbage
+> between the "transitions" and "timestamp" members.
 > 
-> On Sat, 19 Dec 2020 10:55:38 -0800 you wrote:
-> > When searching for inactive maintainers it's useful to filter
-> > out mailing list addresses. Such "maintainers" will obviously
-> > never feature in a "From:" line of an email or a review tag.
-> > 
-> > Since "L:" entries only provide the address of a mailing list
-> > without a fancy name extend this pattern to "M:" entries.
-> > 
-> > [...]
+> So Wireshark decodes the two garbage bytes and the top two bytes of
+> the timestamp written by the kernel as the timestamp value (which thus
+> fluctuates wildly), and interprets the lower two bytes of the
+> timestamp as a new (type, length) pair, which is of course broken.
 > 
-> Here is the summary with links:
->   - [net] MAINTAINERS: remove names from mailing list maintainers
->     https://git.kernel.org/netdev/net/c/8b0f64b113d6
+> While my copy of the MRP standard is still under way [*], I cannot
+> imagine the standard specifying a two-byte hole here, and whoever
+> wrote the Wireshark decoding code seems to agree with that.
 > 
-> You are awesome, thank you!
+> The struct definitions live under include/uapi/, but they are not
+> really part of any kernel<->userspace API/ABI, so fixing the
+> definitions by adding the packed attribute should not cause any
+> compatibility issues.
+> 
+> The remaining on-the-wire packet formats likely also don't contain
+> holes, but pahole and manual inspection says the current definitions
+> suffice. So adding the packed attribute to those is not strictly
+> needed, but might be done for good measure.
+> 
+> [*] I will never understand how something hidden behind a +1000$
+> paywall can be called a standard.
+> 
+> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> ---
+>  include/uapi/linux/mrp_bridge.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/mrp_bridge.h b/include/uapi/linux/mrp_bridge.h
+> index 6aeb13ef0b1e..d1d0cf65916d 100644
+> --- a/include/uapi/linux/mrp_bridge.h
+> +++ b/include/uapi/linux/mrp_bridge.h
+> @@ -96,7 +96,7 @@ struct br_mrp_ring_test_hdr {
+>         __be16 state;
+>         __be16 transitions;
+>         __be32 timestamp;
+> -};
+> +} __attribute__((__packed__));
 
-I still think this is not a good patch nor mechanism to
-show what is generally used as exploders rather than
-individuals.
+Yes, I agree that this should be packed but it also needs to be 32 bit
+alligned, so extra 2 bytes are needed.
+The same will apply also for 'br_mrp_ring_topo_hdr'
 
-Effectively only individuals can submit patches and so
-can be M: Maintainers.
+> 
+>  struct br_mrp_ring_topo_hdr {
+>         __be16 prio;
+> @@ -141,7 +141,7 @@ struct br_mrp_in_test_hdr {
+>         __be16 state;
+>         __be16 transitions;
+>         __be32 timestamp;
+> -};
+> +} __attribute__((__packed__));
+> 
+>  struct br_mrp_in_topo_hdr {
+>         __u8 sa[ETH_ALEN];
+> --
+> 2.23.0
+> 
 
-I believe these entries should really use R: Reviewer
-entries and keep the descriptive naming content.
-
-The descriptive naming does add value and this patch
-loses that value.
-
-
-
+-- 
+/Horatiu
