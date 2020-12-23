@@ -2,116 +2,336 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19EBD2E1C8B
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 14:23:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE99B2E1C91
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 14:32:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728516AbgLWNWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 08:22:04 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2409 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727422AbgLWNWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 08:22:03 -0500
-Received: from DGGEMM402-HUB.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4D1DN928Vhz56YR;
-        Wed, 23 Dec 2020 21:20:25 +0800 (CST)
-Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.214]) by
- DGGEMM402-HUB.china.huawei.com ([10.3.20.210]) with mapi id 14.03.0509.000;
- Wed, 23 Dec 2020 21:21:11 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
-        chenchanghu <chenchanghu@huawei.com>,
-        xudingke <xudingke@huawei.com>,
-        "huangbin (J)" <brian.huangbin@huawei.com>
-Subject: RE: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendmsg
- fails
-Thread-Topic: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendmsg
- fails
-Thread-Index: AQHW04Rfp56K/196YUuYX4LzCnUku6oBrxQAgABdIgCAAKMSgIAA0TwAgADtrdA=
-Date:   Wed, 23 Dec 2020 13:21:11 +0000
-Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB8E046@DGGEMM533-MBX.china.huawei.com>
-References: <cover.1608065644.git.wangyunjian@huawei.com>
- <6b4c5fff8705dc4b5b6a25a45c50f36349350c73.1608065644.git.wangyunjian@huawei.com>
- <CAF=yD-K6EM3zfZtEh=305P4Z6ehO6TzfQC4cxp5+gHYrxEtXSg@mail.gmail.com>
- <acebdc23-7627-e170-cdfb-b7656c05e5c5@redhat.com>
- <CAF=yD-KCs5x1oX-02aDM=5JyLP=BaA7_Jg7Wxt3=JmK8JBnyiA@mail.gmail.com>
- <2a309efb-0ea5-c40e-5564-b8900601da97@redhat.com>
-In-Reply-To: <2a309efb-0ea5-c40e-5564-b8900601da97@redhat.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.243.127]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728625AbgLWNaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 08:30:22 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:30717 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727160AbgLWNaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 08:30:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1608730220; x=1640266220;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Uj4DgBXjn7cjAX1n2PgHvT65+CnWhWza9EYwXvd/c7k=;
+  b=D7w9csvib0fYx3vtrLkmBBTMtWPj9TXiXA9pSROc+WCaSpxEmDjBPd5M
+   +9gB6LmaCBJc1RSXTsIrAGe337ersECmUb/wElryI8wRQR5csmchOF9el
+   svJo+byxpNSIJoJlDPFXmak30DWte3qxnG1uVZ/Fe2do1Ax2+b/5LxRcs
+   PyUg1+rjH1Af60QDlQx3rbMlb4kddBgX6a19aUhQHHZdRq3SfMR/I9EnR
+   OXPGmNRxddaP//m6A3Ii/EFECjtzlZY8eCRA2LShpCQNJdE7WBddNRj71
+   KhWo5Rx8Uxwcfub/GimhQH30b93FeanoiJ+qeStKI1BOJZjUCWAVvWedz
+   A==;
+IronPort-SDR: lt15U4MpYgc1VaNWIBcb2K5rqwzgpE5prDrNuzOdGrvuzYo//5Nsl7ctbFenkOW+WYshGVGnTG
+ mPBefYVHaJiM5FeHD+6Omx3lHrQ11heQZblNB13htAu2zXy0nvjxakGL4R87NDYqAlSVvPojF2
+ 6hz8Kvv9rbOTcKJy2j5x5K/zm4+EF8uU8kG2wYzayAiO3vM0DOPckkZI9uCqkpmReBUkAF1P9D
+ Uf7s6i0UU1SUQpBOJpRFoN4ajflwUtKmKyfPatS8ArFv7GwJP0fbWzpn65zSSZc5XSGiPGDs42
+ RbM=
+X-IronPort-AV: E=Sophos;i="5.78,441,1599548400"; 
+   d="scan'208";a="38411225"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Dec 2020 06:29:04 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Dec 2020 06:29:04 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 23 Dec 2020 06:29:04 -0700
+Date:   Wed, 23 Dec 2020 14:29:03 +0100
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [RFC PATCH v2 3/8] net: sparx5: add hostmode with phylink support
+Message-ID: <20201223132903.gkle4552uahgqk55@mchp-dev-shegelun>
+References: <20201217075134.919699-1-steen.hegelund@microchip.com>
+ <20201217075134.919699-4-steen.hegelund@microchip.com>
+ <20201219195133.GD3026679@lunn.ch>
+ <fabe6df8e8d1fab86860164ced4142afae3bd70d.camel@microchip.com>
+ <20201222144141.GK3107610@lunn.ch>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201222144141.GK3107610@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYXNvbiBXYW5nIFttYWlsdG86
-amFzb3dhbmdAcmVkaGF0LmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBEZWNlbWJlciAyMywgMjAy
-MCAxMDo1NCBBTQ0KPiBUbzogV2lsbGVtIGRlIEJydWlqbiA8d2lsbGVtZGVicnVpam4ua2VybmVs
-QGdtYWlsLmNvbT4NCj4gQ2M6IHdhbmd5dW5qaWFuIDx3YW5neXVuamlhbkBodWF3ZWkuY29tPjsg
-TmV0d29yayBEZXZlbG9wbWVudA0KPiA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IE1pY2hhZWwg
-Uy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+Ow0KPiB2aXJ0dWFsaXphdGlvbkBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZzsgTGlsaWp1biAoSmVycnkpDQo+IDxqZXJyeS5saWxpanVuQGh1YXdl
-aS5jb20+OyBjaGVuY2hhbmdodSA8Y2hlbmNoYW5naHVAaHVhd2VpLmNvbT47DQo+IHh1ZGluZ2tl
-IDx4dWRpbmdrZUBodWF3ZWkuY29tPjsgaHVhbmdiaW4gKEopDQo+IDxicmlhbi5odWFuZ2JpbkBo
-dWF3ZWkuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG5ldCB2MiAyLzJdIHZob3N0X25ldDog
-Zml4IGhpZ2ggY3B1IGxvYWQgd2hlbiBzZW5kbXNnIGZhaWxzDQo+IA0KPiANCj4gT24gMjAyMC8x
-Mi8yMiDkuIvljYgxMDoyNCwgV2lsbGVtIGRlIEJydWlqbiB3cm90ZToNCj4gPiBPbiBNb24sIERl
-YyAyMSwgMjAyMCBhdCAxMTo0MSBQTSBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRoYXQuY29tPg0K
-PiB3cm90ZToNCj4gPj4NCj4gPj4gT24gMjAyMC8xMi8yMiDkuIrljYg3OjA3LCBXaWxsZW0gZGUg
-QnJ1aWpuIHdyb3RlOg0KPiA+Pj4gT24gV2VkLCBEZWMgMTYsIDIwMjAgYXQgMzoyMCBBTSB3YW5n
-eXVuamlhbjx3YW5neXVuamlhbkBodWF3ZWkuY29tPg0KPiB3cm90ZToNCj4gPj4+PiBGcm9tOiBZ
-dW5qaWFuIFdhbmc8d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT4NCj4gPj4+Pg0KPiA+Pj4+IEN1cnJl
-bnRseSB3ZSBicmVhayB0aGUgbG9vcCBhbmQgd2FrZSB1cCB0aGUgdmhvc3Rfd29ya2VyIHdoZW4N
-Cj4gPj4+PiBzZW5kbXNnIGZhaWxzLiBXaGVuIHRoZSB3b3JrZXIgd2FrZXMgdXAgYWdhaW4sIHdl
-J2xsIG1lZXQgdGhlIHNhbWUNCj4gPj4+PiBlcnJvci4NCj4gPj4+IFRoZSBwYXRjaCBpcyBiYXNl
-ZCBvbiB0aGUgYXNzdW1wdGlvbiB0aGF0IHN1Y2ggZXJyb3IgY2FzZXMgYWx3YXlzDQo+ID4+PiBy
-ZXR1cm4gRUFHQUlOLiBDYW4gaXQgbm90IGFsc28gYmUgRU5PTUVNLCBzdWNoIGFzIGZyb20gdHVu
-X2J1aWxkX3NrYj8NCj4gPj4+DQo+ID4+Pj4gVGhpcyB3aWxsIGNhdXNlIGhpZ2ggQ1BVIGxvYWQu
-IFRvIGZpeCB0aGlzIGlzc3VlLCB3ZSBjYW4gc2tpcCB0aGlzDQo+ID4+Pj4gZGVzY3JpcHRpb24g
-YnkgaWdub3JpbmcgdGhlIGVycm9yLiBXaGVuIHdlIGV4Y2VlZHMgc25kYnVmLCB0aGUNCj4gPj4+
-PiByZXR1cm4gdmFsdWUgb2Ygc2VuZG1zZyBpcyAtRUFHQUlOLiBJbiB0aGUgY2FzZSB3ZSBkb24n
-dCBza2lwIHRoZQ0KPiA+Pj4+IGRlc2NyaXB0aW9uIGFuZCBkb24ndCBkcm9wIHBhY2tldC4NCj4g
-Pj4+IHRoZSAtPiB0aGF0DQo+ID4+Pg0KPiA+Pj4gaGVyZSBhbmQgYWJvdmU6IGRlc2NyaXB0aW9u
-IC0+IGRlc2NyaXB0b3INCj4gPj4+DQo+ID4+PiBQZXJoYXBzIHNsaWdodGx5IHJldmlzZSB0byBt
-b3JlIGV4cGxpY2l0bHkgc3RhdGUgdGhhdA0KPiA+Pj4NCj4gPj4+IDEuIGluIHRoZSBjYXNlIG9m
-IHBlcnNpc3RlbnQgZmFpbHVyZSAoaS5lLiwgYmFkIHBhY2tldCksIHRoZSBkcml2ZXINCj4gPj4+
-IGRyb3BzIHRoZSBwYWNrZXQgMi4gaW4gdGhlIGNhc2Ugb2YgdHJhbnNpZW50IGZhaWx1cmUgKGUu
-ZywuIG1lbW9yeQ0KPiA+Pj4gcHJlc3N1cmUpIHRoZSBkcml2ZXIgc2NoZWR1bGVzIHRoZSB3b3Jr
-ZXIgdG8gdHJ5IGFnYWluIGxhdGVyDQo+ID4+DQo+ID4+IElmIHdlIHdhbnQgdG8gZ28gd2l0aCB0
-aGlzIHdheSwgd2UgbmVlZCBhIGJldHRlciB0aW1lIHRvIHdha2V1cCB0aGUNCj4gPj4gd29ya2Vy
-LiBPdGhlcndpc2UgaXQganVzdCBwcm9kdWNlcyBtb3JlIHN0cmVzcyBvbiB0aGUgY3B1IHRoYXQg
-aXMNCj4gPj4gd2hhdCB0aGlzIHBhdGNoIHRyaWVzIHRvIGF2b2lkLg0KPiA+IFBlcmhhcHMgSSBt
-aXN1bmRlcnN0b29kIHRoZSBwdXJwb3NlIG9mIHRoZSBwYXRjaDogaXMgaXQgdG8gZHJvcA0KPiA+
-IGV2ZXJ5dGhpbmcsIHJlZ2FyZGxlc3Mgb2YgdHJhbnNpZW50IG9yIHBlcnNpc3RlbnQgZmFpbHVy
-ZSwgdW50aWwgdGhlDQo+ID4gcmluZyBydW5zIG91dCBvZiBkZXNjcmlwdG9ycz8NCj4gDQo+IA0K
-PiBNeSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQgdGhlIG1haW4gbW90aXZhdGlvbiBpcyB0byBhdm9p
-ZCBoaWdoIGNwdSB1dGlsaXphdGlvbg0KPiB3aGVuIHNlbmRtc2coKSBmYWlsIGR1ZSB0byBndWVz
-dCByZWFzb24gKGUuZyBiYWQgcGFja2V0KS4NCj4gDQoNCk15IG1haW4gbW90aXZhdGlvbiBpcyB0
-byBhdm9pZCB0aGUgdHggcXVldWUgc3R1Y2suDQoNClNob3VsZCBJIGRlc2NyaWJlIGl0IGxpa2Ug
-dGhpczoNCkN1cnJlbnRseSB0aGUgZHJpdmVyIGRvbid0IGRyb3AgYSBwYWNrZXQgd2hpY2ggY2Fu
-J3QgYmUgc2VuZCBieSB0dW4NCihlLmcgYmFkIHBhY2tldCkuIEluIHRoaXMgY2FzZSwgdGhlIGRy
-aXZlciB3aWxsIGFsd2F5cyBwcm9jZXNzIHRoZQ0Kc2FtZSBwYWNrZXQgbGVhZCB0byB0aGUgdHgg
-cXVldWUgc3R1Y2suDQoNClRvIGZpeCB0aGlzIGlzc3VlOg0KMS4gaW4gdGhlIGNhc2Ugb2YgcGVy
-c2lzdGVudCBmYWlsdXJlIChlLmcgYmFkIHBhY2tldCksIHRoZSBkcml2ZXIgY2FuIHNraXANCnRo
-aXMgZGVzY3JpcHRpb3IgYnkgaWdub3JpbmcgdGhlIGVycm9yLg0KMi4gaW4gdGhlIGNhc2Ugb2Yg
-dHJhbnNpZW50IGZhaWx1cmUgKGUuZyAtRUFHQUlOIGFuZCAtRU5PTUVNKSwgdGhlIGRyaXZlcg0K
-c2NoZWR1bGVzIHRoZSB3b3JrZXIgdG8gdHJ5IGFnYWluLg0KDQpUaGFua3MNCg0KPiANCj4gPg0K
-PiA+IEkgY2FuIHVuZGVyc3RhbmQgYm90aCBhIGJsb2NraW5nIGFuZCBkcm9wIHN0cmF0ZWd5IGR1
-cmluZyBtZW1vcnkNCj4gPiBwcmVzc3VyZS4gQnV0IHBhcnRpYWwgZHJvcCBzdHJhdGVneSB1bnRp
-bCBleGNlZWRpbmcgcmluZyBjYXBhY2l0eQ0KPiA+IHNlZW1zIGxpa2UgYSBwZWN1bGlhciBoeWJy
-aWQ/DQo+IA0KPiANCj4gWWVzLiBTbyBJIHdvbmRlciBpZiB3ZSB3YW50IHRvIGJlIGRvIGJldHRl
-ciB3aGVuIHdlIGFyZSBpbiB0aGUgbWVtb3J5DQo+IHByZXNzdXJlLiBFLmcgY2FuIHdlIGxldCBz
-b2NrZXQgd2FrZSB1cCB1cyBpbnN0ZWFkIG9mIHJlc2NoZWR1bGluZyB0aGUNCj4gd29ya2VycyBo
-ZXJlPyBBdCBsZWFzdCBpbiB0aGlzIGNhc2Ugd2Uga25vdyBzb21lIG1lbW9yeSBtaWdodCBiZSBm
-cmVlZD8NCj4gDQo+IFRoYW5rcw0KPiANCj4gDQo+ID4NCg0K
+Hi Andrew,
+
+On 22.12.2020 15:41, Andrew Lunn wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>On Tue, Dec 22, 2020 at 10:46:12AM +0100, Steen Hegelund wrote:
+>> Hi Andrew,
+>>
+>> On Sat, 2020-12-19 at 20:51 +0100, Andrew Lunn wrote:
+>> > EXTERNAL EMAIL: Do not click links or open attachments unless you
+>> > know the content is safe
+>> >
+>> > > +     /* Create a phylink for PHY management.  Also handles SFPs */
+>> > > +     spx5_port->phylink_config.dev = &spx5_port->ndev->dev;
+>> > > +     spx5_port->phylink_co
+>> > > nfig.type = PHYLINK_NETDEV;
+>> > > +     spx5_port->phylink_config.pcs_poll = true;
+>> > > +
+>> > > +     /* phylink needs a valid interface mode to parse dt node */
+>> > > +     if (phy_mode == PHY_INTERFACE_MODE_NA)
+>> > > +             phy_mode = PHY_INTERFACE_MODE_10GBASER;
+>> >
+>> > Maybe just enforce a valid value in DT?
+>>
+>> Maybe I need to clarify that you must choose between an Ethernet cuPHY
+>> or an SFP, so it is optional.
+>
+>But you also need to watch out for somebody putting a copper modules
+>in an SFP port. phylink will then set the mode to SGMII for a 1G
+>copper module, etc.
+>
+The cuPHY SFPs are handled by phylink out-of-the-box if the
+kernel has added support for the particular cuPHY driver, and that is
+done just by specifying the SFP phandle.
+So here we just need to know if the user has attached a cuPHY directly
+or an SFP.
+
+The phylink_of_phy_connect function provides a way to add a cuPHY
+direcly to the PHYLINK instance, but I have not found a way that you can
+specify a specific cuPHY embedded in an SFP, so here PHYLINK determines
+what is the appropriate PHY (driver) to use.
+
+Could this be done in a simpler way?
+
+>> > > +/* Configuration */
+>> > > +static inline bool sparx5_use_cu_phy(struct sparx5_port *port)
+>> > > +{
+>> > > +     return port->conf.phy_mode != PHY_INTERFACE_MODE_NA;
+>> > > +}
+>> >
+>> > That is a rather odd definition of copper.
+>>
+>> Should I rather use a bool property to select between the two options
+>> (cuPHY or SFP)?
+>
+>I guess what you are trying to indicate is between a hard wired Copper
+>PHY and an SFP cage? You have some sort of MII switch which allows the
+>MAC to be connected to either the QSGMII PHY, or an SFP cage? But
+>since the SFP cage could be populated with a copper PHY, and PHYLINK
+>will then instantiate a phylib copper PHY driver for it, looking at
+>phy_mode is not reliable. You need a property which selects the port,
+>not the technology.
+
+Yes the intention was to be able to distinguish between the hardwired 
+cuPHY case and the SFP case.
+
+I am OK with adding a property to distinguish between the two cases, but
+if the SFP handle is present, PHYLINK has been able to handle an
+embedded cuPHY (if the driver is available) and use that in the tests
+that I have done so far. So my thinking was that if a phy handle is
+present, then the user wants a directly attached cuPHY, not an SFP.
+
+>
+>> > > +static int sparx5_port_open(struct net_device *ndev)
+>> > > +{
+>> > > +     struct sparx5_port *port = netdev_priv(ndev);
+>> > > +     int err = 0;
+>> > > +
+>> > > +     err = phylink_of_phy_connect(port->phylink, port->of_node,
+>> > > 0);
+>> > > +     if (err) {
+>> > > +             netdev_err(ndev, "Could not attach to PHY\n");
+>> > > +             return err;
+>> > > +     }
+>> > > +
+>> > > +     phylink_start(port->phylink);
+>> > > +
+>> > > +     if (!ndev->phydev) {
+>> >
+>> > Humm. When is ndev->phydev set? I don't think phylink ever sets it.
+>>
+>> Indirectly: phylink_of_phy_connect uses phy_attach_direct and that sets
+>> the phydev.
+>
+>Ah, O.K. But watch out for a copper SFP module!
+
+Hmm, my expectation is that we have this covered by now.
+
+>
+>> > > +static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool
+>> > > byte_swap)
+>> > > +{
+>> > > +     int i, byte_cnt = 0;
+>> > > +     bool eof_flag = false, pruned_flag = false, abort_flag =
+>> > > false;
+>> > > +     u32 ifh[IFH_LEN];
+>> > > +     struct sk_buff *skb;
+>> > > +     struct frame_info fi;
+>> > > +     struct sparx5_port *port;
+>> > > +     struct net_device *netdev;
+>> > > +     u32 *rxbuf;
+>> > > +
+>> > > +     /* Get IFH */
+>> > > +     for (i = 0; i < IFH_LEN; i++)
+>> > > +             ifh[i] = spx5_rd(sparx5, QS_XTR_RD(grp));
+>> > > +
+>> > > +     /* Decode IFH (whats needed) */
+>> > > +     sparx5_ifh_parse(ifh, &fi);
+>> > > +
+>> > > +     /* Map to port netdev */
+>> > > +     port = fi.src_port < SPX5_PORTS ?
+>> > > +             sparx5->ports[fi.src_port] : NULL;
+>> > > +     if (!port || !port->ndev) {
+>> > > +             dev_err(sparx5->dev, "Data on inactive port %d\n",
+>> > > fi.src_port);
+>> > > +             sparx5_xtr_flush(sparx5, grp);
+>> > > +             return;
+>> > > +     }
+>> > > +
+>> > > +     /* Have netdev, get skb */
+>> > > +     netdev = port->ndev;
+>> > > +     skb = netdev_alloc_skb(netdev, netdev->mtu + ETH_HLEN);
+>> > > +     if (!skb) {
+>> > > +             sparx5_xtr_flush(sparx5, grp);
+>> > > +             dev_err(sparx5->dev, "No skb allocated\n");
+>> > > +             return;
+>> > > +     }
+>> > > +     rxbuf = (u32 *)skb->data;
+>> > > +
+>> > > +     /* Now, pull frame data */
+>> > > +     while (!eof_flag) {
+>> > > +             u32 val = spx5_rd(sparx5, QS_XTR_RD(grp));
+>> > > +             u32 cmp = val;
+>> > > +
+>> > > +             if (byte_swap)
+>> > > +                     cmp = ntohl((__force __be32)val);
+>> > > +
+>> > > +             switch (cmp) {
+>> > > +             case XTR_NOT_READY:
+>> > > +                     break;
+>> > > +             case XTR_ABORT:
+>> > > +                     /* No accompanying data */
+>> > > +                     abort_flag = true;
+>> > > +                     eof_flag = true;
+>> > > +                     break;
+>> > > +             case XTR_EOF_0:
+>> > > +             case XTR_EOF_1:
+>> > > +             case XTR_EOF_2:
+>> > > +             case XTR_EOF_3:
+>> > > +                     /* This assumes STATUS_WORD_POS == 1, Status
+>> > > +                      * just after last data
+>> > > +                      */
+>> > > +                     byte_cnt -= (4 - XTR_VALID_BYTES(val));
+>> > > +                     eof_flag = true;
+>> > > +                     break;
+>> > > +             case XTR_PRUNED:
+>> > > +                     /* But get the last 4 bytes as well */
+>> > > +                     eof_flag = true;
+>> > > +                     pruned_flag = true;
+>> > > +                     fallthrough;
+>> > > +             case XTR_ESCAPE:
+>> > > +                     *rxbuf = spx5_rd(sparx5, QS_XTR_RD(grp));
+>> > > +                     byte_cnt += 4;
+>> > > +                     rxbuf++;
+>> > > +                     break;
+>> > > +             default:
+>> > > +                     *rxbuf = val;
+>> > > +                     byte_cnt += 4;
+>> > > +                     rxbuf++;
+>> > > +             }
+>> > > +     }
+>> > > +
+>> > > +     if (abort_flag || pruned_flag || !eof_flag) {
+>> > > +             netdev_err(netdev, "Discarded frame: abort:%d
+>> > > pruned:%d eof:%d\n",
+>> > > +                        abort_flag, pruned_flag, eof_flag);
+>> > > +             kfree_skb(skb);
+>> > > +             return;
+>> > > +     }
+>> > > +
+>> > > +     if (!netif_oper_up(netdev)) {
+>> > > +             netdev_err(netdev, "Discarded frame: Interface not
+>> > > up\n");
+>> > > +             kfree_skb(skb);
+>> > > +             return;
+>> > > +     }
+>> >
+>> > Why is it sending frames when it is not up?
+>>
+>> This is intended for received frames. A situation where the lower
+>> layers have been enabled correctly but not the port.
+>
+>But why should that happen? It suggests you have the order wrong. The
+>lower level should only be enabled once the port is opened.
+
+Yes, on second thought I think this was added to capture an error
+situation with a particular cuPHY that we were testing.
+It should be removed now.
+>
+>> > No DMA? What sort of performance do you get? Enough for the odd BPDU,
+>> > IGMP frame etc, but i guess you don't want any real bulk data to be
+>> > sent this way?
+>>
+>> Yes the register based injection/extration is not going to be fast, but
+>> the FDMA and its driver is being sent later as separate series to keep
+>> the size of this review down.
+>
+>FDMA?
+
+Ah, I should qualify this a bit more: A "Frame DMA" to transfer rx/tx
+frames via CPU ports instead of the register based injection/extraction
+that is in the driver at the moment.
+>
+>I need a bit more background here, just to make use this should be a
+>pure switchdev driver and not a DSA driver.
+>
+It is not a DSA driver (if I have understood the principle correctly).
+>>
+>> >
+>> > > +irqreturn_t sparx5_xtr_handler(int irq, void *_sparx5)
+>> > > +{
+>> > > +     struct sparx5 *sparx5 = _sparx5;
+>> > > +
+>> > > +     /* Check data in queue */
+>> > > +     while (spx5_rd(sparx5, QS_XTR_DATA_PRESENT) & BIT(XTR_QUEUE))
+>> > > +             sparx5_xtr_grp(sparx5, XTR_QUEUE, false);
+>> > > +
+>> > > +     return IRQ_HANDLED;
+>> > > +}
+>> >
+>> > Is there any sort of limit how many times this will loop? If somebody
+>> > is blasting 10Gbps at the CPU, will it ever get out of this loop?
+>>
+>> Hmmm, not at the moment but this is because the FDMA driver is intended
+>> to be used in these scenarios.
+>
+>So throwing out an idea, which might be terrible. How about limiting
+>it to 64 loops, the same as the NAPI poll? That might allow the
+>machine to get some work done before the next interrupt? Does the
+>hardware do interrupt coalescing? But is this is going to be quickly
+>thrown away and replaced with FDMA, don't spend too much time on it.
+
+I agree with you.  I will put a cap on the number of loops.
+
+>
+>         Andrew
+
+BR
+Steen
+
+---------------------------------------
+Steen Hegelund
+steen.hegelund@microchip.com
