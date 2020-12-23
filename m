@@ -2,160 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D94532E1CDD
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 14:52:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FEF62E1CE6
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 14:57:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728588AbgLWNtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 08:49:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728251AbgLWNtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 08:49:53 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D15C0613D3
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 05:49:12 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id jx16so22879983ejb.10
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 05:49:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kDoBl5kU7Uu0Oj9/VHW59eqfYVVogbWtg6TAfuelOT4=;
-        b=d/91sDdmpZPQFWzTl8F0ahMMmMRudzBe8ccDSqM9uQnMHNRW8ZAQ7/tbq6b0jOYUUd
-         AUtnzZEz9up0A5OJdTS8ldALNVgz1ITWGsXgEWyEqIs34kSZulHfIaXTa/9YewhtoDMT
-         tjn0JNgopMuVE87XZ1tSJorwZd97oFRBlNgmcEoovO5Z53USYJtxLnQ/p+F64zPlqabX
-         CpBG+qxPjiaaSnP8MYYxGA4D01k5//CY3llLclOfm2Xd4IrOvB+/S7kVXV9bnxvEDM3M
-         zcxjMbr/K/HbXOkk8fDj7+JU1EhrMRsO2HeKjJgo8PVtptYoo5W8vI8h2y8oXfpxwAT6
-         a1Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kDoBl5kU7Uu0Oj9/VHW59eqfYVVogbWtg6TAfuelOT4=;
-        b=HcgcifG7hr+x4Hn/utN0swO5LUJiRg+MoBV9CDpTuOq6W5i3xLOraO9HQ8eOiLayqe
-         yOJ27tDk/ZJf9i4fz7qs/JFMOa/c9Avt3qE34QdWfCmw7+T9/x523d60PYvPlqWH0RMj
-         fika13sBfdTQ4wHvMsPskgeF2dtSxWvvcf7fGnQ7HRxBPk6r1xOz8vHOvAwVjFCtq0dX
-         3yC/La/pKZl3gfTbmeeiw9GrblbT8UznqDPlSviKz283sZj4YtJmlaW8tviaypqCGttu
-         mnLqxh9fOBrjv++zcl10r1wguUfHYoydPs1e7nPWNyVedBNT1tqp2KmJshJrq5tP4Yrz
-         czEw==
-X-Gm-Message-State: AOAM533Std3HbxOvcfTAuZjme5ea6tefwDijQQJ6AjBemnYqBeAtnOvF
-        zatQDIBUL3ElXg8pvG0beOrlrzauR87J4qLLYu0=
-X-Google-Smtp-Source: ABdhPJy8nTS5vZDsnThh6gD/GDIH0m+tO/6dB07om3hIzXT4luOhuL7Pta9B/WxeohScHf4CL8NX/9sd2r5J9cIQx1s=
-X-Received: by 2002:a17:906:aeda:: with SMTP id me26mr23844396ejb.11.1608731351205;
- Wed, 23 Dec 2020 05:49:11 -0800 (PST)
+        id S1728727AbgLWNz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 08:55:29 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:49329 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728581AbgLWNz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 08:55:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1608731729; x=1640267729;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0baOEf/dlj0n6rdHsUM8wiZs8wduZgzozALMV9bUji4=;
+  b=MGbJvprX/TCEfjgcj3BpeRl95GgLSyEsyCsoyA0ID7Gj9RLdavnWe3Bo
+   YUveByVYWmIeoWkhJMH/OQ25vmTRAiiC3bAW60E6ixjHbpa0L/Gbw/4cM
+   9gfSvhjjiJy7M/YuI6Pb9+kIOl0Rfnigq0G/VMZm4CNGQVRtYdWKdGbeA
+   oQl3NnXGHf2w7ZDAJHYsxEBhBF3rMe0fROfeanCiHQuu+zfTeB+qOmCdm
+   Ul2kpvMIvbeQNBmzAcOcVIfIZOsKuIkjiGZjMUVW6vOFI7tBD/dPeL+ns
+   P0kItZ5fjhF8/ryT7HHagMtkh/0lLiKzRd072ycVEgnPskT4ZumucQBVs
+   w==;
+IronPort-SDR: 6EvuGI0Ar1AW5mM5mGzskubsadcHIEgtHUesu9I12AUnIfpjRRSunWAsmS25WWeTFCkRgS6qLJ
+ +Gtju27pU6s7zy0d5HQeBp8wdntgB3FgrafCSHcUzkJsioszCLgCAcEFyZbP+rnWJljdCZIgwO
+ FYILuXs6bH9wQElRM6fZhmqow6cXY5m6NTW3A97NKEopG8tPKZdyspEYc9ICa0yG7ArgLIzrYQ
+ 6uZ+lBMoqfWiCBfhYnlMMmoGd+RBuQYerUkXUN2JKUlAwBQqNmrsrto7lStRg4dgxlibPNTgCS
+ IBY=
+X-IronPort-AV: E=Sophos;i="5.78,441,1599548400"; 
+   d="scan'208";a="98083193"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Dec 2020 06:54:12 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Dec 2020 06:54:12 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 23 Dec 2020 06:54:12 -0700
+Date:   Wed, 23 Dec 2020 14:54:11 +0100
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [RFC PATCH v2 5/8] net: sparx5: add switching, vlan and mactable
+ support
+Message-ID: <20201223135411.qca4ury2h44yxbzu@mchp-dev-shegelun>
+References: <20201217075134.919699-1-steen.hegelund@microchip.com>
+ <20201217075134.919699-6-steen.hegelund@microchip.com>
+ <20201221002556.GC3107610@lunn.ch>
 MIME-Version: 1.0
-References: <cover.1608065644.git.wangyunjian@huawei.com> <6b4c5fff8705dc4b5b6a25a45c50f36349350c73.1608065644.git.wangyunjian@huawei.com>
- <CAF=yD-K6EM3zfZtEh=305P4Z6ehO6TzfQC4cxp5+gHYrxEtXSg@mail.gmail.com>
- <acebdc23-7627-e170-cdfb-b7656c05e5c5@redhat.com> <CAF=yD-KCs5x1oX-02aDM=5JyLP=BaA7_Jg7Wxt3=JmK8JBnyiA@mail.gmail.com>
- <2a309efb-0ea5-c40e-5564-b8900601da97@redhat.com> <34EFBCA9F01B0748BEB6B629CE643AE60DB8E046@DGGEMM533-MBX.china.huawei.com>
-In-Reply-To: <34EFBCA9F01B0748BEB6B629CE643AE60DB8E046@DGGEMM533-MBX.china.huawei.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 23 Dec 2020 08:48:34 -0500
-Message-ID: <CAF=yD-Kt0uk=xyCmdfRzddV5LdTebXnAfoEYVX3bzM=L2B2VDQ@mail.gmail.com>
-Subject: Re: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendmsg fails
-To:     wangyunjian <wangyunjian@huawei.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
-        chenchanghu <chenchanghu@huawei.com>,
-        xudingke <xudingke@huawei.com>,
-        "huangbin (J)" <brian.huangbin@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201221002556.GC3107610@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 23, 2020 at 8:21 AM wangyunjian <wangyunjian@huawei.com> wrote:
->
-> > -----Original Message-----
-> > From: Jason Wang [mailto:jasowang@redhat.com]
-> > Sent: Wednesday, December 23, 2020 10:54 AM
-> > To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> > Cc: wangyunjian <wangyunjian@huawei.com>; Network Development
-> > <netdev@vger.kernel.org>; Michael S. Tsirkin <mst@redhat.com>;
-> > virtualization@lists.linux-foundation.org; Lilijun (Jerry)
-> > <jerry.lilijun@huawei.com>; chenchanghu <chenchanghu@huawei.com>;
-> > xudingke <xudingke@huawei.com>; huangbin (J)
-> > <brian.huangbin@huawei.com>
-> > Subject: Re: [PATCH net v2 2/2] vhost_net: fix high cpu load when sendm=
-sg fails
-> >
-> >
-> > On 2020/12/22 =E4=B8=8B=E5=8D=8810:24, Willem de Bruijn wrote:
-> > > On Mon, Dec 21, 2020 at 11:41 PM Jason Wang <jasowang@redhat.com>
-> > wrote:
-> > >>
-> > >> On 2020/12/22 =E4=B8=8A=E5=8D=887:07, Willem de Bruijn wrote:
-> > >>> On Wed, Dec 16, 2020 at 3:20 AM wangyunjian<wangyunjian@huawei.com>
-> > wrote:
-> > >>>> From: Yunjian Wang<wangyunjian@huawei.com>
-> > >>>>
-> > >>>> Currently we break the loop and wake up the vhost_worker when
-> > >>>> sendmsg fails. When the worker wakes up again, we'll meet the same
-> > >>>> error.
-> > >>> The patch is based on the assumption that such error cases always
-> > >>> return EAGAIN. Can it not also be ENOMEM, such as from tun_build_sk=
-b?
-> > >>>
-> > >>>> This will cause high CPU load. To fix this issue, we can skip this
-> > >>>> description by ignoring the error. When we exceeds sndbuf, the
-> > >>>> return value of sendmsg is -EAGAIN. In the case we don't skip the
-> > >>>> description and don't drop packet.
-> > >>> the -> that
-> > >>>
-> > >>> here and above: description -> descriptor
-> > >>>
-> > >>> Perhaps slightly revise to more explicitly state that
-> > >>>
-> > >>> 1. in the case of persistent failure (i.e., bad packet), the driver
-> > >>> drops the packet 2. in the case of transient failure (e.g,. memory
-> > >>> pressure) the driver schedules the worker to try again later
-> > >>
-> > >> If we want to go with this way, we need a better time to wakeup the
-> > >> worker. Otherwise it just produces more stress on the cpu that is
-> > >> what this patch tries to avoid.
-> > > Perhaps I misunderstood the purpose of the patch: is it to drop
-> > > everything, regardless of transient or persistent failure, until the
-> > > ring runs out of descriptors?
-> >
-> >
-> > My understanding is that the main motivation is to avoid high cpu utili=
-zation
-> > when sendmsg() fail due to guest reason (e.g bad packet).
-> >
->
-> My main motivation is to avoid the tx queue stuck.
->
-> Should I describe it like this:
-> Currently the driver don't drop a packet which can't be send by tun
-> (e.g bad packet). In this case, the driver will always process the
-> same packet lead to the tx queue stuck.
->
-> To fix this issue:
-> 1. in the case of persistent failure (e.g bad packet), the driver can ski=
-p
-> this descriptior by ignoring the error.
-> 2. in the case of transient failure (e.g -EAGAIN and -ENOMEM), the driver
-> schedules the worker to try again.
+Hi Andrew,
 
-That sounds good to me, thanks.
-
-> Thanks
+On 21.12.2020 01:25, Andrew Lunn wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 >
-> >
-> > >
-> > > I can understand both a blocking and drop strategy during memory
-> > > pressure. But partial drop strategy until exceeding ring capacity
-> > > seems like a peculiar hybrid?
-> >
-> >
-> > Yes. So I wonder if we want to be do better when we are in the memory
-> > pressure. E.g can we let socket wake up us instead of rescheduling the
-> > workers here? At least in this case we know some memory might be freed?
+>> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+>> +
+>> +static inline int sparx5_mact_get_status(struct sparx5 *sparx5)
+>> +{
+>> +     return spx5_rd(sparx5, LRN_COMMON_ACCESS_CTRL);
+>> +}
+>> +
+>> +static inline int sparx5_mact_wait_for_completion(struct sparx5 *sparx5)
+>> +{
+>> +     u32 val;
+>> +
+>> +     return readx_poll_timeout(sparx5_mact_get_status,
+>> +             sparx5, val,
+>> +             LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT_GET(val) == 0,
+>> +             TABLE_UPDATE_SLEEP_US, TABLE_UPDATE_TIMEOUT_US);
+>> +}
+>
+>No inline functions in C files please.
 
-I don't know whether a blocking or drop strategy is the better choice.
-Either way, it probably deserves to be handled separately.
+OK.
+
+>
+>> +void sparx5_mact_init(struct sparx5 *sparx5)
+>> +{
+>> +     mutex_init(&sparx5->lock);
+>> +
+>> +     mutex_lock(&sparx5->lock);
+>> +
+>> +     /*  Flush MAC table */
+>> +     spx5_wr(LRN_COMMON_ACCESS_CTRL_CPU_ACCESS_CMD_SET(MAC_CMD_CLEAR_ALL) |
+>> +             LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT_SET(1),
+>> +             sparx5, LRN_COMMON_ACCESS_CTRL);
+>> +
+>> +     if (sparx5_mact_wait_for_completion(sparx5) != 0)
+>> +             dev_warn(sparx5->dev, "MAC flush error\n");
+>> +
+>> +     mutex_unlock(&sparx5->lock);
+>
+>It always seems odd to me, when you initialise a mutex, and then
+>immediately take it. Who are you locking against? I'm not saying it is
+>wrong though, especially if you have code in spx5_wr() and spx5_rd()
+>which check the lock is actually taken. I've found a number of locking
+>bugs in mv88e6xxx by having such checks.
+
+The driver has a workqueue and a notifier callback that may want to
+access the table, and will have to wait in line to be served, but since
+they have not yet been activated at this point, you are probably correct
+in saying that locking is not needed at init time.
+I will investigate this..
+
+>
+>> +
+>> +     sparx5_set_ageing(sparx5, 10 * MSEC_PER_SEC); /* 10 sec */
+>
+>BR_DEFAULT_AGEING_TIME is 300 seconds. Is this the same thing?
+
+Same thing but different value.  I think this should change to same
+default, but I will test it out.
+>
+>> +static int sparx5_port_bridge_join(struct sparx5_port *port,
+>> +                                struct net_device *bridge)
+>> +{
+>> +     struct sparx5 *sparx5 = port->sparx5;
+>> +
+>> +     if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
+>> +             /* First bridged port */
+>> +             sparx5->hw_bridge_dev = bridge;
+>> +     else
+>> +             if (sparx5->hw_bridge_dev != bridge)
+>> +                     /* This is adding the port to a second bridge, this is
+>> +                      * unsupported
+>> +                      */
+>> +                     return -ENODEV;
+>
+>Just checking my understanding. You have a 64 port switch, which only
+>supports a single bridge?
+
+Yes, at least for the initial version. The switch has some
+virtualization features, but were not using that just yet.
+
+>
+>-EOPNOTSUPP seems like a better return code.
+>
+>> +
+>> +     set_bit(port->portno, sparx5->bridge_mask);
+>> +
+>> +     /* Port enters in bridge mode therefor don't need to copy to CPU
+>> +      * frames for multicast in case the bridge is not requesting them
+>> +      */
+>> +     __dev_mc_unsync(port->ndev, sparx5_mc_unsync);
+>
+>Did you copy that from the mellanox driver? I think in DSA we take the
+>opposite approach. Multicast/broadcast goes to the CPU until the CPU
+>says it does not want it.
+>
+>
+It is "inspired" by the Ocelot driver. MC is explicitly opted in.
+
+>> +static void sparx5_port_bridge_leave(struct sparx5_port *port,
+>> +                                  struct net_device *bridge)
+>> +{
+>> +     struct sparx5 *sparx5 = port->sparx5;
+>> +
+>> +     clear_bit(port->portno, sparx5->bridge_mask);
+>> +     if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
+>> +             sparx5->hw_bridge_dev = NULL;
+>> +
+>> +     /* Clear bridge vlan settings before updating the port settings */
+>> +     port->vlan_aware = 0;
+>> +     port->pvid = NULL_VID;
+>> +     port->vid = NULL_VID;
+>> +
+>> +     /* Port enters in host more therefore restore mc list */
+>
+>s/more/mode
+
+OK.
+
+>
+>> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
+>> @@ -0,0 +1,223 @@
+>> +// SPDX-License-Identifier: GPL-2.0+
+>> +/* Microchip Sparx5 Switch driver
+>> + *
+>> + * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
+>> + */
+>> +
+>> +#include "sparx5_main.h"
+>> +
+>> +static int sparx5_vlant_set_mask(struct sparx5 *sparx5, u16 vid)
+>
+>Is the t in vlant typ0?
+
+No, it is probably short for "vlan table". Again the inspiration comes
+from the Ocelot implementation.
+
+>
+>> +int sparx5_vlan_vid_add(struct sparx5_port *port, u16 vid, bool pvid,
+>> +                     bool untagged)
+>> +{
+>> +     struct sparx5 *sparx5 = port->sparx5;
+>> +     int ret;
+>> +
+>> +     /* Make the port a member of the VLAN */
+>> +     set_bit(port->portno, sparx5->vlan_mask[vid]);
+>> +     ret = sparx5_vlant_set_mask(sparx5, vid);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     /* Default ingress vlan classification */
+>> +     if (pvid)
+>> +             port->pvid = vid;
+>> +
+>> +     /* Untagged egress vlan clasification */
+>
+>classification
+
+OK.
+
+>
+>> +     if (untagged && port->vid != vid) {
+>> +             if (port->vid) {
+>> +                     netdev_err(port->ndev,
+>> +                                "Port already has a native VLAN: %d\n",
+>> +                                port->vid);
+>> +                     return -EBUSY;
+>> +             }
+>> +             port->vid = vid;
+>> +     }
+>> +
+>> +     sparx5_vlan_port_apply(sparx5, port);
+>> +
+>> +     return 0;
+>> +}
+>
+>
+>> +void sparx5_update_fwd(struct sparx5 *sparx5)
+>> +{
+>> +     u32 mask[3];
+>> +     DECLARE_BITMAP(workmask, SPX5_PORTS);
+>> +     int port;
+>> +
+>> +     /* Divide up fwd mask in 32 bit words */
+>> +     bitmap_to_arr32(mask, sparx5->bridge_fwd_mask, SPX5_PORTS);
+>> +
+>> +     /* Update flood masks */
+>> +     for (port = PGID_UC_FLOOD; port <= PGID_BCAST; port++) {
+>> +             spx5_wr(mask[0], sparx5, ANA_AC_PGID_CFG(port));
+>> +             spx5_wr(mask[1], sparx5, ANA_AC_PGID_CFG1(port));
+>> +             spx5_wr(mask[2], sparx5, ANA_AC_PGID_CFG2(port));
+>> +     }
+>> +
+>> +     /* Update SRC masks */
+>> +     for (port = 0; port < SPX5_PORTS; port++) {
+>> +             if (test_bit(port, sparx5->bridge_fwd_mask)) {
+>> +                     /* Allow to send to all bridged but self */
+>> +                     bitmap_copy(workmask, sparx5->bridge_fwd_mask, SPX5_PORTS);
+>> +                     clear_bit(port, workmask);
+>> +                     bitmap_to_arr32(mask, workmask, SPX5_PORTS);
+>> +                     spx5_wr(mask[0], sparx5, ANA_AC_SRC_CFG(port));
+>> +                     spx5_wr(mask[1], sparx5, ANA_AC_SRC_CFG1(port));
+>> +                     spx5_wr(mask[2], sparx5, ANA_AC_SRC_CFG2(port));
+>> +             } else {
+>> +                     spx5_wr(0, sparx5, ANA_AC_SRC_CFG(port));
+>> +                     spx5_wr(0, sparx5, ANA_AC_SRC_CFG1(port));
+>> +                     spx5_wr(0, sparx5, ANA_AC_SRC_CFG2(port));
+>> +             }
+>
+>Humm, interesting. This seems to control what other ports a port can
+>send to. That is one of the basic features you need for supporting
+>multiple bridges. So i assume your problems is you cannot partition
+>the MAC table?
+>
+No, the MAC table is VLAN aware.
+
+>
+>    Andrew
+
+BR
+Steen
+
+---------------------------------------
+Steen Hegelund
+steen.hegelund@microchip.com
