@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 292282E13E5
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:38:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB79D2E13C6
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:37:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730397AbgLWCgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:36:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52234 "EHLO mail.kernel.org"
+        id S1728987AbgLWCel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:34:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51348 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730271AbgLWCYi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:24:38 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 850B4225AC;
-        Wed, 23 Dec 2020 02:24:21 +0000 (UTC)
+        id S1730310AbgLWCYr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:24:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EAC5C2313F;
+        Wed, 23 Dec 2020 02:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690262;
-        bh=fjgtExWZPnGJ3WXsk0hpeCWTgmFczn/s8VSI2lMl0as=;
+        s=k20201202; t=1608690271;
+        bh=zPXB7wyDekSdccQ22KuAKpHqjNfCvVWvWNbp+TJu9ME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sx7vCIQNfz4qo9YpGqqD4NmSD/3NquICG7x88eaB3OQm3cfphybBJ/UxYBrVrEngG
-         PmZTy33V9DjhnVakGZ3jZ7x9rPale7QDufMNHszX9MuAzN2gUiRGvf5cQg7AilVEvC
-         U8mKKSwAxA5FqUgnfl1Ybjow96xNOjURaeiR75UOgpzZLnyheXH8195ltcesmImoDK
-         klfffEtGxRhQyQUu9/Jst3l3VHi6VJ+e8EOK4ivjo46OReQqE6XZj6k1VZVKJLDf3y
-         vZ29yR870kA1dLoexkUyZcRIoW1/4++zFU3uN2fkzNZVZQvrRVh7ObSl72mrhlk8Cf
-         iLfQqNtgb4hrg==
+        b=MZ5aUR0rAsSfRo8SOQHlctmJxjRJrYyLGjxZ6O6LeKFhT52EWa6yNxCoI0NerhXEp
+         5KzE+cEwUoIuZe9u9qJshnLMBYe2K+KcjAnodiIxarxnm6hmZwk7BkoTD/CMnA6SV0
+         hRe0E9qzE1glYxxdqXsTDB1iLkH7sH7mSRgOZiytnoP0TP+TR0bWQ5s4w0cvG5a2io
+         O0ZUNOrYE/j7dnvZjiB6z5fEGSYGS9Z4yvNWjnag1IX9DrcvimIFF73j7n1dRz/QjQ
+         QnLoEnaW//vMvk8+x9Qg8yOVJ17ttK6eMtnRr/++xOFSdAze00Nez/s3a2dtfvZ74O
+         GYrXqITujVrBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 04/48] staging: wimax: depends on NET
-Date:   Tue, 22 Dec 2020 21:23:32 -0500
-Message-Id: <20201223022417.2794032-4-sashal@kernel.org>
+Cc:     =?UTF-8?q?Ole=20Bj=C3=B8rn=20Midtb=C3=B8?= <omidtbo@cisco.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 12/48] Bluetooth: hidp: use correct wait queue when removing ctrl_wait
+Date:   Tue, 22 Dec 2020 21:23:40 -0500
+Message-Id: <20201223022417.2794032-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022417.2794032-1-sashal@kernel.org>
 References: <20201223022417.2794032-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,55 +44,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Ole Bjørn Midtbø <omidtbo@cisco.com>
 
-[ Upstream commit 9364a2cf567187c0a075942c22d1f434c758de5d ]
+[ Upstream commit cca342d98bef68151a80b024f7bf5f388d1fbdea ]
 
-Fix build errors when CONFIG_NET is not enabled. E.g. (trimmed):
+A different wait queue was used when removing ctrl_wait than when adding
+it. This effectively made the remove operation without locking compared
+to other operations on the wait queue ctrl_wait was part of. This caused
+issues like below where dead000000000100 is LIST_POISON1 and
+dead000000000200 is LIST_POISON2.
 
-ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_alloc':
-op-msg.c:(.text+0xa9): undefined reference to `__alloc_skb'
-ld: op-msg.c:(.text+0xcc): undefined reference to `genlmsg_put'
-ld: op-msg.c:(.text+0xfc): undefined reference to `nla_put'
-ld: op-msg.c:(.text+0x168): undefined reference to `kfree_skb'
-ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_data_len':
-op-msg.c:(.text+0x1ba): undefined reference to `nla_find'
-ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_send':
-op-msg.c:(.text+0x311): undefined reference to `init_net'
-ld: op-msg.c:(.text+0x326): undefined reference to `netlink_broadcast'
-ld: drivers/staging/wimax/stack.o: in function `__wimax_state_change':
-stack.c:(.text+0x433): undefined reference to `netif_carrier_off'
-ld: stack.c:(.text+0x46b): undefined reference to `netif_carrier_on'
-ld: stack.c:(.text+0x478): undefined reference to `netif_tx_wake_queue'
-ld: drivers/staging/wimax/stack.o: in function `wimax_subsys_exit':
-stack.c:(.exit.text+0xe): undefined reference to `genl_unregister_family'
-ld: drivers/staging/wimax/stack.o: in function `wimax_subsys_init':
-stack.c:(.init.text+0x1a): undefined reference to `genl_register_family'
+ list_add corruption. next->prev should be prev (ffffffc1b0a33a08), \
+	but was dead000000000200. (next=ffffffc03ac77de0).
+ ------------[ cut here ]------------
+ CPU: 3 PID: 2138 Comm: bluetoothd Tainted: G           O    4.4.238+ #9
+ ...
+ ---[ end trace 0adc2158f0646eac ]---
+ Call trace:
+ [<ffffffc000443f78>] __list_add+0x38/0xb0
+ [<ffffffc0000f0d04>] add_wait_queue+0x4c/0x68
+ [<ffffffc00020eecc>] __pollwait+0xec/0x100
+ [<ffffffc000d1556c>] bt_sock_poll+0x74/0x200
+ [<ffffffc000bdb8a8>] sock_poll+0x110/0x128
+ [<ffffffc000210378>] do_sys_poll+0x220/0x480
+ [<ffffffc0002106f0>] SyS_poll+0x80/0x138
+ [<ffffffc00008510c>] __sys_trace_return+0x0/0x4
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: netdev@vger.kernel.org
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20201102072456.20303-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ Unable to handle kernel paging request at virtual address dead000000000100
+ ...
+ CPU: 4 PID: 5387 Comm: kworker/u15:3 Tainted: G        W  O    4.4.238+ #9
+ ...
+ Call trace:
+  [<ffffffc0000f079c>] __wake_up_common+0x7c/0xa8
+  [<ffffffc0000f0818>] __wake_up+0x50/0x70
+  [<ffffffc000be11b0>] sock_def_wakeup+0x58/0x60
+  [<ffffffc000de5e10>] l2cap_sock_teardown_cb+0x200/0x224
+  [<ffffffc000d3f2ac>] l2cap_chan_del+0xa4/0x298
+  [<ffffffc000d45ea0>] l2cap_conn_del+0x118/0x198
+  [<ffffffc000d45f8c>] l2cap_disconn_cfm+0x6c/0x78
+  [<ffffffc000d29934>] hci_event_packet+0x564/0x2e30
+  [<ffffffc000d19b0c>] hci_rx_work+0x10c/0x360
+  [<ffffffc0000c2218>] process_one_work+0x268/0x460
+  [<ffffffc0000c2678>] worker_thread+0x268/0x480
+  [<ffffffc0000c94e0>] kthread+0x118/0x128
+  [<ffffffc000085070>] ret_from_fork+0x10/0x20
+  ---[ end trace 0adc2158f0646ead ]---
+
+Signed-off-by: Ole Bjørn Midtbø <omidtbo@cisco.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wimax/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ net/bluetooth/hidp/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/wimax/Kconfig b/net/wimax/Kconfig
-index e4d97ab476d58..945bdf4738eb6 100644
---- a/net/wimax/Kconfig
-+++ b/net/wimax/Kconfig
-@@ -4,6 +4,7 @@
+diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+index 552e00b07196e..9ec37c6c8c4aa 100644
+--- a/net/bluetooth/hidp/core.c
++++ b/net/bluetooth/hidp/core.c
+@@ -1282,7 +1282,7 @@ static int hidp_session_thread(void *arg)
  
- menuconfig WIMAX
- 	tristate "WiMAX Wireless Broadband support"
-+	depends on NET
- 	depends on RFKILL || !RFKILL
- 	help
+ 	/* cleanup runtime environment */
+ 	remove_wait_queue(sk_sleep(session->intr_sock->sk), &intr_wait);
+-	remove_wait_queue(sk_sleep(session->intr_sock->sk), &ctrl_wait);
++	remove_wait_queue(sk_sleep(session->ctrl_sock->sk), &ctrl_wait);
+ 	wake_up_interruptible(&session->report_queue);
+ 	hidp_del_timer(session);
  
 -- 
 2.27.0
