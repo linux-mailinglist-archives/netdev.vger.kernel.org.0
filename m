@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 339D72E1399
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:37:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C0B2E1398
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:37:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730683AbgLWCb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:31:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52102 "EHLO mail.kernel.org"
+        id S1730606AbgLWCbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:31:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728889AbgLWCZZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1730488AbgLWCZZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 22 Dec 2020 21:25:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EA93A2256F;
-        Wed, 23 Dec 2020 02:25:04 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 262422222D;
+        Wed, 23 Dec 2020 02:25:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690305;
-        bh=uOn4KuImGI6YWXKxFLzAQRXB6bKZf/q2T+OvJ/Btyac=;
+        s=k20201202; t=1608690307;
+        bh=0yuO77tEj9bbvyov5gDt3NsurVaiXCATldWbzucj6PI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I06+xGprfhd+DgIR5iQAlsMXCNPYaQhhuo+oeHAMiZLuagiH8AJ/lHmXa1F6oulQG
-         yUMhY/YzFyvpA3dinqJqBHWwarQu8Sjnu1n0F/f/swXlU/YczQd+vFJQKBPqGx2bKo
-         F48Z1YUmR8pt5IWggcQn6MIvJiFSNlryE3p9tszLIe0YFYIGQgGh+dJ/1JEpTM62Kx
-         PzorIJ+BRoT09cbkZVDNtqSxzHoy/gTj2j8K+Epi4TMJYdvwVTOq5fZyQW6wycPCxo
-         WoFS9KaB4UeLJG4qu3LdgseMrJaiPaxQQLGCqbjmuXcKN84VTUvuI6H9R3VYYNwZI7
-         krqJrFrcF6uPQ==
+        b=VuKn8+4C33nBon9hW2zZ6dq5WQNCNVgruL7IfHQog7FkKTmgZuc7gvgyoDscA9JpC
+         1jlor0/x3GRWzDv18U0SrVeVdjdm9UOlcopY5dGZw3eDOnnGjG+mzwOGWYzf2Kg0ky
+         v4Qyj3gV9t/2IpyTFFdg8SraB/zJKREWEh3zFyXHbVPe6+LjpJEE7zRkcGKRXkZ04k
+         wcpC9t6GIkPAfVgUTfWldm91lvDtdyccaQnOhP2/rCXOvYyMqX36TSWf63hSST/BBN
+         z+c0rwJ1WYTWcylbgrfpFmQ91GgK6hVWEcf9rPAgiSPr2nJq4voHYnA0dDRQlVxvbL
+         LC21vqtOwfX9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
+Cc:     Avraham Stern <avraham.stern@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 40/48] iwlwifi: add an extra firmware state in the transport
-Date:   Tue, 22 Dec 2020 21:24:08 -0500
-Message-Id: <20201223022417.2794032-40-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 41/48] nl80211: always accept scan request with the duration set
+Date:   Tue, 22 Dec 2020 21:24:09 -0500
+Message-Id: <20201223022417.2794032-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022417.2794032-1-sashal@kernel.org>
 References: <20201223022417.2794032-1-sashal@kernel.org>
@@ -43,65 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Avraham Stern <avraham.stern@intel.com>
 
-[ Upstream commit b2ed841ed070ccbe908016537f429a3a8f0221bf ]
+[ Upstream commit c837cbad40d949feaff86734d637c7602ae0b56b ]
 
-Start tracking not just if the firmware is dead or alive,
-but also if it's starting.
+Accept a scan request with the duration set even if the driver
+does not support setting the scan dwell. The duration can be used
+as a hint to the driver, but the driver may use its internal logic
+for setting the scan dwell.
 
+Signed-off-by: Avraham Stern <avraham.stern@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20201129172929.9491a12f9226.Ia9c5b24fcefc5ce5592537507243391633a27e5f@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20201209231352.33e50d40b688.I8bbd41af7aa5e769273a6fc1c06fbf548dd2eb26@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-trans.h | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ net/wireless/nl80211.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-trans.h b/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
-index 360554727a817..b1cc2b9f82ab6 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-trans.h
-@@ -681,12 +681,14 @@ struct iwl_trans_ops {
- /**
-  * enum iwl_trans_state - state of the transport layer
-  *
-- * @IWL_TRANS_NO_FW: no fw has sent an alive response
-- * @IWL_TRANS_FW_ALIVE: a fw has sent an alive response
-+ * @IWL_TRANS_NO_FW: firmware wasn't started yet, or crashed
-+ * @IWL_TRANS_FW_STARTED: FW was started, but not alive yet
-+ * @IWL_TRANS_FW_ALIVE: FW has sent an alive response
-  */
- enum iwl_trans_state {
--	IWL_TRANS_NO_FW = 0,
--	IWL_TRANS_FW_ALIVE	= 1,
-+	IWL_TRANS_NO_FW,
-+	IWL_TRANS_FW_STARTED,
-+	IWL_TRANS_FW_ALIVE,
- };
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 5bd89f536720d..4820f36807ed7 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -6681,12 +6681,6 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+ 	}
  
- /**
-@@ -909,12 +911,18 @@ static inline int iwl_trans_start_fw(struct iwl_trans *trans,
- 				     const struct fw_img *fw,
- 				     bool run_in_rfkill)
- {
-+	int ret;
-+
- 	might_sleep();
- 
- 	WARN_ON_ONCE(!trans->rx_mpdu_cmd);
- 
- 	clear_bit(STATUS_FW_ERROR, &trans->status);
--	return trans->ops->start_fw(trans, fw, run_in_rfkill);
-+	ret = trans->ops->start_fw(trans, fw, run_in_rfkill);
-+	if (ret == 0)
-+		trans->state = IWL_TRANS_FW_STARTED;
-+
-+	return ret;
- }
- 
- static inline int iwl_trans_update_sf(struct iwl_trans *trans,
+ 	if (info->attrs[NL80211_ATTR_MEASUREMENT_DURATION]) {
+-		if (!wiphy_ext_feature_isset(wiphy,
+-					NL80211_EXT_FEATURE_SET_SCAN_DWELL)) {
+-			err = -EOPNOTSUPP;
+-			goto out_free;
+-		}
+-
+ 		request->duration =
+ 			nla_get_u16(info->attrs[NL80211_ATTR_MEASUREMENT_DURATION]);
+ 		request->duration_mandatory =
 -- 
 2.27.0
 
