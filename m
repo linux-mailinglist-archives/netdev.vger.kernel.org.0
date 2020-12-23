@@ -2,81 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95C972E19D9
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 09:17:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4285A2E19E4
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 09:22:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728166AbgLWIQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 03:16:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58139 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727670AbgLWIQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 03:16:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608711286;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u0U6heNY7fxOOhdzytPgLhxCjf8UFXUIBZYCgUBbqf4=;
-        b=iIMVhk3gC8aX6+dHB57JL6bu1BifZ/q9tmnGkWpw+IUZYQQh6ibZ38OzyZmAUfrrR20a3O
-        CRGmp3R1YLdObpgPNcOY0SYH6dPfL2oV76daQP8mDLSpZDydhZiTuA42Sufp9WYR0FLUEZ
-        sNLwarLDn6/S/zCW5IFTIYZ+Y22G6Sg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-394-6cTF2La4MIuhN7JQfCiujg-1; Wed, 23 Dec 2020 03:14:42 -0500
-X-MC-Unique: 6cTF2La4MIuhN7JQfCiujg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 460971005513;
-        Wed, 23 Dec 2020 08:14:40 +0000 (UTC)
-Received: from [10.72.12.54] (ovpn-12-54.pek2.redhat.com [10.72.12.54])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2AE6060C69;
-        Wed, 23 Dec 2020 08:14:28 +0000 (UTC)
-Subject: Re: [RFC v2 00/13] Introduce VDUSE - vDPA Device in Userspace
-From:   Jason Wang <jasowang@redhat.com>
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        akpm@linux-foundation.org, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net
-Cc:     linux-aio@kvack.org, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <20201222145221.711-1-xieyongji@bytedance.com>
- <c892652a-3f57-c337-8c67-084ba6d10834@redhat.com>
-Message-ID: <faa0b9ba-c230-931b-86c6-624a302f6637@redhat.com>
-Date:   Wed, 23 Dec 2020 16:14:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728116AbgLWIWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 03:22:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727775AbgLWIWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 03:22:02 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D93AC061793
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 00:21:21 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id r7so17730475wrc.5
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 00:21:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xCgAcM2zJXz2tYkyh6YBwPXZD93lL3eP2t44LAAIMqc=;
+        b=VcaD4Zmz2ZTl2f86HVvCWDFT59gagppGVrnTcZ1bwmc8WJp6WjjocW7KL9gZ6j8WNp
+         U/7v2atJzUqCwDirE8uaupPpjMuh3Oo9xT3h4s6+29loVhQjAJhLTwTVNqyvSNhyiaI5
+         fPo/aSqFraT8n4O70n/N6LRhybnbTc6PWkZodRBj5y8ahvqTKzXX9upTszeyV1A5VYu1
+         U7hsVrjatitiJpHx+DDzBqUAKuk0CdCOQg7wEw4xIIbFcUT2Tr9n1z3oKKNEswh1TR/U
+         kVzvcQWnYCT6mqFUO7/IpwfpXK7VaA5c7sqdqs8Bg9d1vZVG/F9JuWrN9ZaaLFC6y6ED
+         2MSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xCgAcM2zJXz2tYkyh6YBwPXZD93lL3eP2t44LAAIMqc=;
+        b=IfJUg6T1HR1TwNfJf9J61eKBTSgrgH14DjbzgUcCrbaZP5OZQvIvTuu3LnrQwns7R2
+         1llKQNsq5z6WIfvkbQWjJhd/IaagHjAEot9f8A7dz0RtLHuee4kff3CbTqjo5zdnTrv5
+         hiWNkKUdLZeP3oW/s+8xK/Y53R9Oz4hHf9iKImyT0LMFJKQ124BFnu38xkGUNkPNfnB5
+         gKO8QGXg2cF2rJLw4a60UnLXp2SGPamQH6uo3d9k9NZAZMs+OBtBveexQbjy7FP1YfR+
+         VxHZQyST119bMSKMwY6frDjtaESvaLR/jDizZcXEoLajYdzZ6p0kwxNW9ZxrasMUtrjF
+         fafQ==
+X-Gm-Message-State: AOAM533g4pwisiEHemJ9+kM8NCncu8hnddilkK/oJkrLx0QGW33K4xMX
+        Hf7qzQ81ua98vy0U+yXbF309pEVWSqspHyVG2Is=
+X-Google-Smtp-Source: ABdhPJyQD4NG0TjivqR01JoubjqyczV8neIUJq28oPS04uYsKmuZo/DveNKmCMG3NtGypAdPpDjBn2qaeTIWSBPDFnE=
+X-Received: by 2002:a5d:6a83:: with SMTP id s3mr28759297wru.334.1608711680352;
+ Wed, 23 Dec 2020 00:21:20 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <c892652a-3f57-c337-8c67-084ba6d10834@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20201219214034.21123-1-ljp@linux.ibm.com> <20201222184615.13ba9cad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201222184615.13ba9cad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Lijun Pan <lijunp213@gmail.com>
+Date:   Wed, 23 Dec 2020 02:21:09 -0600
+Message-ID: <CAOhMmr6c2M68fj0Mec=vhHr7krYkB8Bih-koC9o9F=0CJOCQgQ@mail.gmail.com>
+Subject: Re: [PATCH net] ibmvnic: continue fatal error reset after passive init
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Lijun Pan <ljp@linux.ibm.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/12/23 下午2:38, Jason Wang wrote:
->>
->> V1 to V2:
->> - Add vhost-vdpa support
+On Tue, Dec 22, 2020 at 8:48 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
+> On Sat, 19 Dec 2020 15:40:34 -0600 Lijun Pan wrote:
+> > Commit f9c6cea0b385 ("ibmvnic: Skip fatal error reset after passive init")
+> > says "If the passive
+> > CRQ initialization occurs before the FATAL reset task is processed,
+> > the FATAL error reset task would try to access a CRQ message queue
+> > that was freed, causing an oops. The problem may be most likely to
+> > occur during DLPAR add vNIC with a non-default MTU, because the DLPAR
+> > process will automatically issue a change MTU request.
+> > Fix this by not processing fatal error reset if CRQ is passively
+> > initialized after client-driven CRQ initialization fails."
+> >
+> > Even with this commit, we still see similar kernel crashes. In order
+> > to completely solve this problem, we'd better continue the fatal error
+> > reset, capture the kernel crash, and try to fix it from that end.
 >
-> I may miss something but I don't see any code to support that. E.g 
-> neither set_map nor dma_map/unmap is implemented in the config ops.
->
-> Thanks 
+> This basically reverts the quoted fix. Does the quoted fix make things
+> worse? Otherwise we should leave the code be until proper fix is found.
 
-
-Speak too fast :(
-
-I saw a new config ops was introduced.
-
-Let me dive into that.
-
-Thanks
-
+Yes, I think the quoted commit makes things worse. It skips the specific
+reset condition, but that does not fix the problem it claims to fix.
+The effective fix is upstream SHA 0e435befaea4 and a0faaa27c716. So I
+think reverting it to the original "else" condition is the right thing to do.
