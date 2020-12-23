@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03AEA2E1624
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFE9F2E15EF
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731342AbgLWC6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:58:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45394 "EHLO mail.kernel.org"
+        id S1731355AbgLWCze (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:55:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49738 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729000AbgLWCUa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:20:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C3087225AC;
-        Wed, 23 Dec 2020 02:20:14 +0000 (UTC)
+        id S1729157AbgLWCVA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:21:00 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E526022A83;
+        Wed, 23 Dec 2020 02:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690015;
-        bh=ZqsyhDJr975uH78eq9vlqfIjc4P44FyApTZEkqL50qQ=;
+        s=k20201202; t=1608690019;
+        bh=QYRAE2X+HHZqjjCwgB3WBYTMKTi+/y4nGivXKqzuziE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=py3Szs3P2mDnGr+6zQ5Bk835mT58sT/be7XwyTBNAb3M443WVAA2nNnyIkjDsquyA
-         98gRF9GhnqzjAmUY2dFj/AZRl9Rha8SJP0s2xIowMFqVF0ROjVB5fNSv3ejZoDS8hE
-         7VMLUFf3pIigugVPE6KY4ULyNy3E3ZAuuYjo15YbZriL4N2Ohe2A9ax7QvakSVGazX
-         Pznc5qSAdMn+YozP0PPvdMqXuNg+DdnhUsqljKm9QKFbiD2GbRgHiBETOPbALs+L0/
-         SbcfgPINOOgMoOucRLFNuHzIOxMCuVNK89FMAJ4l0jbBGCRIA+nV4sBGxtIo38R6KD
-         ZKEWGGRjvM73A==
+        b=QXK0Akfmg084XlbK6qFzXmVqLk/fwiz8K7qAl76mSCR9fOIY+QSg3UV5zWJWXyOmA
+         gbFOAx0I7HxI281mHnG6efsDCBdpKZdcvZT+WcNEXuUZPSQzZ5dnNp2eVOQ8ctf0ea
+         rZmY4nTh7TxjgmtR8yV6I4zHjaKcqoG2kQhGtm+ApWy/sLsmloqDZOpM1z4Zu6+6g3
+         1vvRhbAif1mAJV8Uo1Y1VMuwZGbZb62N3UFRXRuUavX6yPfMEKsrNhkFwQCs4hXIdX
+         HZmSzX+XRxwnPtHaLnkE00+o6hWUmvrqr0hh94hGi+pbYeR7tq2eXxYFakU83q8w3Y
+         ZYcpFfes7Py8Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhang Xiaohui <ruc_zhangxiaohui@163.com>,
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 094/130] mwifiex: Fix possible buffer overflows in mwifiex_cmd_802_11_ad_hoc_start
-Date:   Tue, 22 Dec 2020 21:17:37 -0500
-Message-Id: <20201223021813.2791612-94-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 097/130] rtlwifi: rtl8192de: fix ofdm power compensation
+Date:   Tue, 22 Dec 2020 21:17:40 -0500
+Message-Id: <20201223021813.2791612-97-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
@@ -43,37 +44,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit 5c455c5ab332773464d02ba17015acdca198f03d ]
+[ Upstream commit 3f79e541593fecc2a90687eb7162e15a499caa33 ]
 
-mwifiex_cmd_802_11_ad_hoc_start() calls memcpy() without checking
-the destination size may trigger a buffer overflower,
-which a local user could use to cause denial of service
-or the execution of arbitrary code.
-Fix it by putting the length check before calling memcpy().
+ofdm_index[] is used to indicate how many power compensation is needed to
+current thermal value. For internal PA module or 2.4G band, the min_index
+is different from other cases.
 
-Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+This issue originally is reported by Dan. He found the size of ofdm_index[]
+is 2, but access index 'i' may be equal to 2 if 'rf' is 2 in case of
+'is2t'.
+
+In fact, the chunk of code is added to wrong place, so move it back to
+proper place, and then power compensation and buffer overflow are fixed.
+
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20201206084801.26479-1-ruc_zhangxiaohui@163.com
+Link: https://lore.kernel.org/r/20201207031903.7599-1-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/join.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/join.c b/drivers/net/wireless/marvell/mwifiex/join.c
-index d87aeff70cefb..c2cb1e711c06e 100644
---- a/drivers/net/wireless/marvell/mwifiex/join.c
-+++ b/drivers/net/wireless/marvell/mwifiex/join.c
-@@ -877,6 +877,8 @@ mwifiex_cmd_802_11_ad_hoc_start(struct mwifiex_private *priv,
- 
- 	memset(adhoc_start->ssid, 0, IEEE80211_MAX_SSID_LEN);
- 
-+	if (req_ssid->ssid_len > IEEE80211_MAX_SSID_LEN)
-+		req_ssid->ssid_len = IEEE80211_MAX_SSID_LEN;
- 	memcpy(adhoc_start->ssid, req_ssid->ssid, req_ssid->ssid_len);
- 
- 	mwifiex_dbg(adapter, INFO, "info: ADHOC_S_CMD: SSID = %s\n",
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c
+index 71f3b6b5d7bd9..5baa1b127fff0 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/dm.c
+@@ -986,18 +986,19 @@ static void rtl92d_dm_txpower_tracking_callback_thermalmeter(
+ 			 rtlpriv->dm.cck_index);
+ 	}
+ 	for (i = 0; i < rf; i++) {
+-		if (ofdm_index[i] > OFDM_TABLE_SIZE_92D - 1)
++		if (ofdm_index[i] > OFDM_TABLE_SIZE_92D - 1) {
+ 			ofdm_index[i] = OFDM_TABLE_SIZE_92D - 1;
+-		else if (ofdm_index[i] < ofdm_min_index)
++		} else if (internal_pa ||
++			   rtlhal->current_bandtype == BAND_ON_2_4G) {
++			if (ofdm_index[i] < ofdm_min_index_internal_pa)
++				ofdm_index[i] = ofdm_min_index_internal_pa;
++		} else if (ofdm_index[i] < ofdm_min_index) {
+ 			ofdm_index[i] = ofdm_min_index;
++		}
+ 	}
+ 	if (rtlhal->current_bandtype == BAND_ON_2_4G) {
+ 		if (cck_index > CCK_TABLE_SIZE - 1) {
+ 			cck_index = CCK_TABLE_SIZE - 1;
+-		} else if (internal_pa ||
+-			   rtlhal->current_bandtype == BAND_ON_2_4G) {
+-			if (ofdm_index[i] < ofdm_min_index_internal_pa)
+-				ofdm_index[i] = ofdm_min_index_internal_pa;
+ 		} else if (cck_index < 0) {
+ 			cck_index = 0;
+ 		}
 -- 
 2.27.0
 
