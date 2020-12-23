@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F422E1688
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:10:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2DB2E16B6
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 04:10:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728781AbgLWCTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:19:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45510 "EHLO mail.kernel.org"
+        id S1731627AbgLWDB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 22:01:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46328 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728756AbgLWCTs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:19:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DD2AE22D73;
-        Wed, 23 Dec 2020 02:19:19 +0000 (UTC)
+        id S1728790AbgLWCTw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:19:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F0072313F;
+        Wed, 23 Dec 2020 02:19:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608689960;
-        bh=h2zF7WsF0kn+m51N13kQ8pFg/eImiX8gIVmjxPTyqio=;
+        s=k20201202; t=1608689968;
+        bh=bUikZc6WrHRG8DzuQtqkB5TrUw9iQtknHqSrG9JnOtM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PIe6lrOCT6v/28k8cj/gr3WStdLMSiu0lxF3mg4KOaiUcIY70lRE6N8KM0fts43ow
-         P/fuEbAxA3LqDhyrEOfpI/YyYOFax/paEO+FaWgT0SLBw9jwSmTgqFEsMQnl/cE/Y8
-         IDZoifVGEEpULLDbYNUOnAxlD3lIhoACXVi71GLmhQdwwl0xLpe1kZWfQM8OaFHZiq
-         lGQt65GiTQ6R9ss97lWPBKnnT9FS2gGSGURXE2nc4/0fqJE9fGiyqFZ2c/x8i75UL9
-         dRcpOj5xHff0UAvrxVEo5ZWijOKxw9NXR2n/Sgq/fivQAFsGbYFU98G9YUimY33t3o
-         bdKyBf8qQ65RA==
+        b=Em+58dAYGxOYH33LrUOFQQ+6RZ8jYmdq7NUpI/GfCqzlEHmbZaNxo6LKtCx5AQDVG
+         A0cxLHQyIlI0YkVV3zVkXtdABO373bb/UZB6YjKT1WSm7KfulTnLNX58Ffk0FsDKRy
+         3dxdVPUTvMQrES2AOkTSAhAn8xLe8eKh+eY8ejs8JALSw2AkHuR9VCcb09JniRw7YV
+         ibvKckYV58jCG1abWDjVZpp83W94o0GoJYjylCK/PT7PpBmtsgsxy9LU7+auW3M3hF
+         fV+lXuSn4YfnUgGe732nJEr080in1BES4FKU7pMr3b9G1m1YKHBsYcwb6HPXdCmZj+
+         OUU0HPh1Csv3w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Eggers <ceggers@arri.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 052/130] net: dsa: avoid potential use-after-free error
-Date:   Tue, 22 Dec 2020 21:16:55 -0500
-Message-Id: <20201223021813.2791612-52-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
+        keyrings@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 058/130] rxrpc: Don't leak the service-side session key to userspace
+Date:   Tue, 22 Dec 2020 21:17:01 -0500
+Message-Id: <20201223021813.2791612-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
@@ -44,42 +42,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christian Eggers <ceggers@arri.de>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 30abc9cd9c6bdd44d23fc49a9c2526a86fba4305 ]
+[ Upstream commit d2ae4e918218f543214fbd906db68a6c580efbbb ]
 
-If dsa_switch_ops::port_txtstamp() returns false, clone will be freed
-immediately. Shouldn't store a pointer to freed memory.
+Don't let someone reading a service-side rxrpc-type key get access to the
+session key that was exchanged with the client.  The server application
+will, at some point, need to be able to read the information in the ticket,
+but this probably shouldn't include the key material.
 
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Tested-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20201119110906.25558-1-ceggers@arri.de
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/slave.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/keys/rxrpc-type.h | 1 +
+ net/rxrpc/key.c           | 8 ++++++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index f734ce0bcb56e..2b657e88d8017 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -476,10 +476,10 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
- 	if (!clone)
- 		return;
+diff --git a/include/keys/rxrpc-type.h b/include/keys/rxrpc-type.h
+index a183278c3e9ef..63dc02507b8f3 100644
+--- a/include/keys/rxrpc-type.h
++++ b/include/keys/rxrpc-type.h
+@@ -84,6 +84,7 @@ struct rxk5_key {
+  */
+ struct rxrpc_key_token {
+ 	u16	security_index;		/* RxRPC header security index */
++	bool	no_leak_key;		/* Don't copy the key to userspace */
+ 	struct rxrpc_key_token *next;	/* the next token in the list */
+ 	union {
+ 		struct rxkad_key *kad;
+diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
+index 85a9ff8cd236a..131fd90638248 100644
+--- a/net/rxrpc/key.c
++++ b/net/rxrpc/key.c
+@@ -1075,7 +1075,8 @@ static long rxrpc_read(const struct key *key,
+ 		case RXRPC_SECURITY_RXKAD:
+ 			toksize += 8 * 4;	/* viceid, kvno, key*2, begin,
+ 						 * end, primary, tktlen */
+-			toksize += RND(token->kad->ticket_len);
++			if (!token->no_leak_key)
++				toksize += RND(token->kad->ticket_len);
+ 			break;
  
--	DSA_SKB_CB(skb)->clone = clone;
--
--	if (ds->ops->port_txtstamp(ds, p->dp->index, clone, type))
-+	if (ds->ops->port_txtstamp(ds, p->dp->index, clone, type)) {
-+		DSA_SKB_CB(skb)->clone = clone;
- 		return;
-+	}
+ 		case RXRPC_SECURITY_RXK5:
+@@ -1179,7 +1180,10 @@ static long rxrpc_read(const struct key *key,
+ 			ENCODE(token->kad->start);
+ 			ENCODE(token->kad->expiry);
+ 			ENCODE(token->kad->primary_flag);
+-			ENCODE_DATA(token->kad->ticket_len, token->kad->ticket);
++			if (token->no_leak_key)
++				ENCODE(0);
++			else
++				ENCODE_DATA(token->kad->ticket_len, token->kad->ticket);
+ 			break;
  
- 	kfree_skb(clone);
- }
+ 		case RXRPC_SECURITY_RXK5:
 -- 
 2.27.0
 
