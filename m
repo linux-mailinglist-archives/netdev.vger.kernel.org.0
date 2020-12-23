@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CFBE2E22B6
+	by mail.lfdr.de (Postfix) with ESMTP id D9BFA2E22B7
 	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 00:32:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727320AbgLWXbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 18:31:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33120 "EHLO
+        id S1727882AbgLWXbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 18:31:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726611AbgLWXbT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 18:31:19 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB56AC061794;
-        Wed, 23 Dec 2020 15:30:38 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id t30so724185wrb.0;
-        Wed, 23 Dec 2020 15:30:38 -0800 (PST)
+        with ESMTP id S1726611AbgLWXbU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 18:31:20 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04207C06179C;
+        Wed, 23 Dec 2020 15:30:40 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id a12so683350wrv.8;
+        Wed, 23 Dec 2020 15:30:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d0QCnb34c04FUIUph7Atv00YFsD83+fw9aPx7/l0+OY=;
-        b=lJAsDsYmIDdsffMxA2rZbm43WXPHBC7WLpNYUeTylT8vMumehFIWy9smiJziGDx5Ii
-         uBOEiUx1pMsDuEIT0yi3c1X4fQ559oMLwQx+UU2FgfA7nzwgUApyvn5th111FZkuGnM5
-         WU4O0bP0blUA/dkHymZDLXRDIrPAbXxLo7O6R30qnAQi+zksuGu8g9Ss9Owv7yoFe+TA
-         rNa94y2mqMFAXLh1mT1T9fJSsL8VyL4dDgBbu1kdzPhxScmEPxU6AIxXaoobKj7qzHsY
-         T1yRW6q013b84ySt2ccFs+w9Hs3iTNNQkMnhs8SItUmkIjGrGgYWyqEfgYK7FcTmeEsb
-         ypCA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hQPHIvsAjymwrj88eayvDfWVEI3FeVG9migi2sLEfas=;
+        b=rd7j9CDFeZd22ADwPLkZVVMl3AS7J/1IrJGa6JJ1zOW2YUp/XJZEQo1iCxPfE5L+sn
+         +uakY57HlN/ymRkT/2xWJvEmW7e3T2Aah+R3TEcVastQzJM9f4yUbOlrNDWF6u/t4z0Z
+         60ke+dD6pN22DJ+mfaYKd8wZy+h1VAJTW2xoTQ2hftyMHWj/dga3nxt48KDBBx+aZ5TX
+         m+qX4cLSjshjPR4ZTuqFbmxWgFYzNXGVTXfUtFXNiu8SrZj/RVZO9GqAFSUa2nwMgBCh
+         PpMCEO4pp28IURbB0ZvygGm+3S/DpGWAg2ct6SSjgQWjiQGc8EpfgAA3bhpzBpOSKJEB
+         0q0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d0QCnb34c04FUIUph7Atv00YFsD83+fw9aPx7/l0+OY=;
-        b=cGxG913E+6IrMRORkmX5McSiaxY2PEJLW9UJOwMmvP4Mmb4xPgZIbdw596D7cUaRXE
-         VhhfFN16cOiklveui1C1udmvqnBVwWeLfCZYnuWVaf2zgrkR5l8XsTCyy01uDso7Gvjg
-         +YwRX6A7JC8EIvSA88bPq/NKS/61bFZbGCjWP2/YIaCZDoPAeb/QTT8bG4nOa7PNaXqM
-         ejs6FFfZujt6PLsvaqwm1QWKrdokSUw5UTJUQZ8ODBVarzdE+fxI8LlfM1LXFdOYv9zn
-         SmR/T3Vgmkqh7dhiKYwMD8SOSf0ZNlxTkE0wi3rtNMuDq6KXQ8r2DNkKhuNeBoGAolgp
-         CEkA==
-X-Gm-Message-State: AOAM530NtpXItEKiQyZWzMnySjzYXB5tubJyyuqeJO/ATECc9dHVBzRQ
-        ///3XhlIMr1cN0VzujIpHzE=
-X-Google-Smtp-Source: ABdhPJxq+f5gRLUxPkgo6Y1oMCTTfqeQdiK+rbwX9uaakYBSBIg/QlWSR0j/XXXO9fsiKTUxQ5cfEg==
-X-Received: by 2002:adf:a29d:: with SMTP id s29mr31181017wra.272.1608766237686;
-        Wed, 23 Dec 2020 15:30:37 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hQPHIvsAjymwrj88eayvDfWVEI3FeVG9migi2sLEfas=;
+        b=S+h5viEE8Jc8fjTmYaD+OBbqaWj5fwCLdAZI6QVrSOqAH5KT7zKxt8s7EKxQ0HCnbb
+         jnlU80Ejtgtf6M1YWFgs4+KG/sM8NppzUWeSqxPWcaIo0UlCGY+vG95NVVswUVOKqqdy
+         9qTN1luNHVuU0M8Au4CICjgK+NEN2bA1/28B3ORO5LTVQfMr9L2lxLHr3YBB7xQOu+/M
+         nn8TE4H2+ZfiAU2YYOPlFTCzS5546TqEJ9ssDkjXWMadmBay5zEYGXIMgvdC0mSWo2sB
+         /dob942L1sWwaPFU2bLxuShffx4/Wnu2uMKgjRpwSQrm3Iz0WnQ+S6TdfOCCugzI+58h
+         ZoVQ==
+X-Gm-Message-State: AOAM530P45ja2ednXroylIErwYWM60v2ZyKj/H3rVcHyzjrGszT2l6yM
+        ArdbWKdJzlvBiHvGpGbxWIo=
+X-Google-Smtp-Source: ABdhPJzAZbpyPuBWW2KBcu9dJa/qHhI0eE1CLPKrGsAQYhn1R/e7UieMPCs4eQ6SiOV0e6Noluus/Q==
+X-Received: by 2002:adf:eec6:: with SMTP id a6mr31354990wrp.239.1608766238726;
+        Wed, 23 Dec 2020 15:30:38 -0800 (PST)
 Received: from localhost.localdomain (p200300f1371a0900428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:371a:900:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id l16sm37926657wrx.5.2020.12.23.15.30.36
+        by smtp.googlemail.com with ESMTPSA id l16sm37926657wrx.5.2020.12.23.15.30.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Dec 2020 15:30:36 -0800 (PST)
+        Wed, 23 Dec 2020 15:30:38 -0800 (PST)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
         netdev@vger.kernel.org
@@ -56,120 +56,106 @@ Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         jbrunet@baylibre.com,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 0/5] dwmac-meson8b: picosecond precision RX delay support
-Date:   Thu, 24 Dec 2020 00:29:00 +0100
-Message-Id: <20201223232905.2958651-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 1/5] dt-bindings: net: dwmac-meson: use picoseconds for the RGMII RX delay
+Date:   Thu, 24 Dec 2020 00:29:01 +0100
+Message-Id: <20201223232905.2958651-2-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201223232905.2958651-1-martin.blumenstingl@googlemail.com>
+References: <20201223232905.2958651-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Amlogic Meson G12A, G12B and SM1 SoCs have a more advanced RGMII RX
+delay register which allows picoseconds precision. Deprecate the old
+"amlogic,rx-delay-ns" in favour of the generic "rx-internal-delay-ps"
+property.
 
-with the help of Jianxin Pan (many thanks!) the meaning of the "new"
-PRG_ETH1[19:16] register bits on Amlogic Meson G12A, G12B and SM1 SoCs
-are finally known. These SoCs allow fine-tuning the RGMII RX delay in
-200ps steps (contrary to what I have thought in the past [0] these are
-not some "calibration" values).
+For older SoCs the only known supported values were 0ns and 2ns. The new
+SoCs have support for RGMII RX delays between 0ps and 3000ps in 200ps
+steps.
 
-The vendor u-boot has code to automatically detect the best RX/TX delay
-settings. For now we keep it simple and add a device-tree property with
-200ps precision to select the "right" RX delay for each board.
+Don't carry over the description for the "rx-internal-delay-ps" property
+and inherit that from ethernet-controller.yaml instead.
 
-While here, deprecate the "amlogic,rx-delay-ns" property as it's not
-used on any upstream .dts (yet). The driver is backwards compatible.
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ .../bindings/net/amlogic,meson-dwmac.yaml     | 55 +++++++++++++++++--
+ 1 file changed, 49 insertions(+), 6 deletions(-)
 
-I have tested this on an X96 Air 4GB board (not upstream yet). Testing
-with iperf3 gives 938 Mbits/sec in both directions (RX and TX). The
-following network settings were used in the .dts (2ns TX delay
-generated by the PHY, 800ps RX delay generated by the MAC as the PHY
-only supports 0ns or 2ns RX delays):
-        &ext_mdio {
-                external_phy: ethernet-phy@0 {
-                        /* Realtek RTL8211F (0x001cc916) */
-                        reg = <0>;
-                        eee-broken-1000t;
-
-                        reset-assert-us = <10000>;
-                        reset-deassert-us = <30000>;
-                        reset-gpios = <&gpio GPIOZ_15 (GPIO_ACTIVE_LOW |
-                                                GPIO_OPEN_DRAIN)>;
-
-                        interrupt-parent = <&gpio_intc>;
-                        /* MAC_INTR on GPIOZ_14 */
-                        interrupts = <26 IRQ_TYPE_LEVEL_LOW>;
-                };
-        };
-
-        &ethmac {
-                status = "okay";
-
-                pinctrl-0 = <&eth_pins>, <&eth_rgmii_pins>;
-                pinctrl-names = "default";
-
-                phy-mode = "rgmii-txid";
-                phy-handle = <&external_phy>;
-
-                amlogic,rgmii-rx-delay-ps = <800>;
-        };
-
-To use the same settings from vendor u-boot (which in my case has broken
-Ethernet) the following commands can be used:
-  mw.l 0xff634540 0x1621
-  mw.l 0xff634544 0x30000
-  phyreg w 0x0 0x1040
-  phyreg w 0x1f 0xd08
-  phyreg w 0x11 0x9
-  phyreg w 0x15 0x11
-  phyreg w 0x1f 0x0
-  phyreg w 0x0 0x9200
-
-Also I have tested this on a X96 Max board without any .dts changes
-to confirm that other boards with the same IP block still work fine
-with these changes.
-
-
-Changes since v2 at [2]:
-- use the generic property name "rx-internal-delay-ps" as suggested by
-  Rob (thanks!). This affects patches #1 and #3. The biggest change is
-  is in patch #1 which is why I didn't add Florian's and Andrew's
-  Reviewed-by
-- added Andrew's and Florian's Reviewed-by to patches 2, 3, 4, 5 (many
-  thanks to both!). I decided to do this despite renaming the property
-  to the generic name "rx-internal-delay-ps" as it only affects the
-  patch description and one line of code
-- updated patch description of patch #3 to explain why there's not a
-  lot of validation when parsing the old device-tree property (in
-  nanosecond precision)
-- dropped RFC status
-
-Changes since v1 at [1]:
-- updated patch 1 by making it more clear when the RX delay is applied.
-  Thanks to Andrew for the suggestion!
-- added a fix to enabling the timing-adjustment clock only when really
-  needed. Found by Andrew - thanks!
-- added testing not about X96 Max
-- v1 did not go to the netdev mailing list, v2 fixes this
-
-
-[0] https://lore.kernel.org/netdev/CAFBinCATt4Hi9rigj52nMf3oygyFbnopZcsakGL=KyWnsjY3JA@mail.gmail.com/
-[1] https://patchwork.kernel.org/project/linux-amlogic/list/?series=384279
-[2] https://patchwork.kernel.org/project/linux-amlogic/list/?series=384491&state=%2A&archive=both
-
-
-Martin Blumenstingl (5):
-  dt-bindings: net: dwmac-meson: use picoseconds for the RGMII RX delay
-  net: stmmac: dwmac-meson8b: fix enabling the timing-adjustment clock
-  net: stmmac: dwmac-meson8b: use picoseconds for the RGMII RX delay
-  net: stmmac: dwmac-meson8b: move RGMII delays into a separate function
-  net: stmmac: dwmac-meson8b: add support for the RGMII RX delay on G12A
-
- .../bindings/net/amlogic,meson-dwmac.yaml     | 55 +++++++++--
- .../ethernet/stmicro/stmmac/dwmac-meson8b.c   | 91 +++++++++++++++----
- 2 files changed, 120 insertions(+), 26 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+index 6b057b117aa0..a406e38e1848 100644
+--- a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+@@ -74,17 +74,60 @@ allOf:
+             Any configuration is ignored when the phy-mode is set to "rmii".
+ 
+         amlogic,rx-delay-ns:
++          deprecated: true
+           enum:
+             - 0
+             - 2
+           default: 0
+           description:
+-            The internal RGMII RX clock delay (provided by this IP block) in
+-            nanoseconds. When phy-mode is set to "rgmii" then the RX delay
+-            should be explicitly configured. When the phy-mode is set to
+-            either "rgmii-id" or "rgmii-rxid" the RX clock delay is already
+-            provided by the PHY. Any configuration is ignored when the
+-            phy-mode is set to "rmii".
++            The internal RGMII RX clock delay in nanoseconds. Deprecated, use
++            rx-internal-delay-ps instead.
++
++        rx-internal-delay-ps:
++          default: 0
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - amlogic,meson8b-dwmac
++              - amlogic,meson8m2-dwmac
++              - amlogic,meson-gxbb-dwmac
++              - amlogic,meson-axg-dwmac
++    then:
++      properties:
++        rx-internal-delay-ps:
++          enum:
++            - 0
++            - 2000
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - amlogic,meson-g12a-dwmac
++    then:
++      properties:
++        rx-internal-delay-ps:
++          enum:
++            - 0
++            - 200
++            - 400
++            - 600
++            - 800
++            - 1000
++            - 1200
++            - 1400
++            - 1600
++            - 1800
++            - 2000
++            - 2200
++            - 2400
++            - 2600
++            - 2800
++            - 3000
+ 
+ properties:
+   compatible:
 -- 
 2.29.2
 
