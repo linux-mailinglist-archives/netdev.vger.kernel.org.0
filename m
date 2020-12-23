@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DB92E15C8
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0022E1609
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731080AbgLWCxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:53:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50010 "EHLO mail.kernel.org"
+        id S1731254AbgLWC4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:56:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45492 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729256AbgLWCVO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:21:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 27AE22333F;
-        Wed, 23 Dec 2020 02:20:33 +0000 (UTC)
+        id S1729112AbgLWCUv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:20:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AF347225AC;
+        Wed, 23 Dec 2020 02:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690034;
-        bh=YeXqw5xi1gALHucOZiATwzeu2KtvzLknT2hatzq7bZI=;
+        s=k20201202; t=1608690036;
+        bh=zktbvyeBRJW9xPFIDbQduVFW7ampvIQ6IY6hQF+Inwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TkHJZ8gxzlazvdp4BI+7vmN7wjbEsZrDT+bZfoUkPrtQJecMU7Zz9Keirgxul7D6H
-         tROLPPeWCNPZAybz2Xh7JCgiqQdyWRYnHNQnMFN4JqfJONVe/So4BUsZd2vhYlBbAn
-         p8dNybUauqy66yjomOyCIryf3OomNCPGs6WZYIe7bw3B9yKaXXCMBiZRVFfOTaGT+G
-         aIJFWgGIKzSuPwFxtXpL4oiObmJ5mMttERJEWVS1/4bA8fgD8NzU3cb+Qe6L105tCf
-         WL3fFXuqV7uAWAwvLSftq1CrODfoRtLbk7s80tCtcpdB2ZXknmMSwnmueH+QQ8Sb8m
-         0vBzH2hCyldsA==
+        b=QHnJ6tJdbOICIKOaz4b/P2gQYlRLZVq4TTpKXQQ9gHOn0RqiqhOf/mZQuP8tnsPEH
+         1WlauuFVN+bcU1Z17ktK4hgKGucoXUy5Et7pSZTLTRkXxaLFcIA61IvEX+Q1sOixvF
+         4o7WUBQT1QLsV9gBzbYUDLambI5sgDPZlF2eu2sqTOy4wCZD4PyFiFp7cX4gTSYxpA
+         7D1pvjjXbjFGly26gWeee2bi81XYL0BeQQWPLOhEe+8O853Rc6cC+66H+aRyWqJqAd
+         02XWmHuXdaEeVI8W7lh9z2fJrDMsJd2gaCrJ336pG9lY1OqmXIgCdFyXoNS/3f7zvd
+         uep3Ws/80LGpA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 109/130] iwlwifi: mvm: fix 22000 series driver NMI
-Date:   Tue, 22 Dec 2020 21:17:52 -0500
-Message-Id: <20201223021813.2791612-109-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 111/130] iwlwifi: mvm: validate firmware sync response size
+Date:   Tue, 22 Dec 2020 21:17:54 -0500
+Message-Id: <20201223021813.2791612-111-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
@@ -45,52 +45,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 9e8338ad17eb8976edd5d2def516e4b3346a4470 ]
+[ Upstream commit b570e5b0592a56c5990ae3aa0fdb93dd9b545d43 ]
 
-For triggering an NMI in the firmware, we should only set BIT(24)
-in the corresponding register, not the entire mask that's usable
-by the driver.
-
-This currently doesn't matter because the firmware only enables
-BIT(24), but we'll start using BIT(25) for other purposes with an
-upcoming API change.
+We send some data to the firmware and expect to get it back,
+but we shouldn't really trust the firmware on this. Check the
+size of all the data we send down to avoid using bad or just
+uninitialized data when the firmware doesn't respond right.
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20201209231352.2f982365d085.Id09daabfd331ba9e120abcbbedd2ad6448902ed0@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20201209231352.a5a8173f16c7.I4fa68bb2b1c7dcc52ddd381c4042722d27c4a34d@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-io.c   | 2 +-
- drivers/net/wireless/intel/iwlwifi/iwl-prph.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-io.c b/drivers/net/wireless/intel/iwlwifi/iwl-io.c
-index 1b7414bf7bef2..2144c1f745337 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-io.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-io.c
-@@ -309,7 +309,7 @@ void iwl_force_nmi(struct iwl_trans *trans)
- 			       DEVICE_SET_NMI_VAL_DRV);
- 	else if (trans->trans_cfg->device_family < IWL_DEVICE_FAMILY_AX210)
- 		iwl_write_umac_prph(trans, UREG_NIC_SET_NMI_DRIVER,
--				UREG_NIC_SET_NMI_DRIVER_NMI_FROM_DRIVER_MSK);
-+				UREG_NIC_SET_NMI_DRIVER_NMI_FROM_DRIVER);
- 	else
- 		iwl_write_umac_prph(trans, UREG_DOORBELL_TO_ISR6,
- 				    UREG_DOORBELL_TO_ISR6_NMI_BIT);
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-index 23c25a7665f27..80b3fca8f2328 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-prph.h
-@@ -111,7 +111,7 @@
- #define DEVICE_SET_NMI_VAL_DRV BIT(7)
- /* Device NMI register and value for 9000 family and above hw's */
- #define UREG_NIC_SET_NMI_DRIVER 0x00a05c10
--#define UREG_NIC_SET_NMI_DRIVER_NMI_FROM_DRIVER_MSK 0xff000000
-+#define UREG_NIC_SET_NMI_DRIVER_NMI_FROM_DRIVER BIT(24)
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+index d0bfcee59a3a7..545a84e08816e 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+@@ -763,10 +763,18 @@ void iwl_mvm_rx_queue_notif(struct iwl_mvm *mvm, struct napi_struct *napi,
+ 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
+ 	struct iwl_rxq_sync_notification *notif;
+ 	struct iwl_mvm_internal_rxq_notif *internal_notif;
++	u32 len = iwl_rx_packet_payload_len(pkt);
  
- /* Shared registers (0x0..0x3ff, via target indirect or periphery */
- #define SHR_BASE	0x00a10000
+ 	notif = (void *)pkt->data;
+ 	internal_notif = (void *)notif->payload;
+ 
++	if (WARN_ONCE(len < sizeof(*notif) + sizeof(*internal_notif),
++		      "invalid notification size %d (%d)",
++		      len, (int)(sizeof(*notif) + sizeof(*internal_notif))))
++		return;
++	/* remove only the firmware header, we want all of our payload below */
++	len -= sizeof(*notif);
++
+ 	if (internal_notif->sync &&
+ 	    mvm->queue_sync_cookie != internal_notif->cookie) {
+ 		WARN_ONCE(1, "Received expired RX queue sync message\n");
+@@ -775,11 +783,22 @@ void iwl_mvm_rx_queue_notif(struct iwl_mvm *mvm, struct napi_struct *napi,
+ 
+ 	switch (internal_notif->type) {
+ 	case IWL_MVM_RXQ_EMPTY:
++		WARN_ONCE(len != sizeof(*internal_notif),
++			  "invalid empty notification size %d (%d)",
++			  len, (int)sizeof(*internal_notif));
+ 		break;
+ 	case IWL_MVM_RXQ_NOTIF_DEL_BA:
++		if (WARN_ONCE(len != sizeof(struct iwl_mvm_rss_sync_notif),
++			      "invalid delba notification size %d (%d)",
++			      len, (int)sizeof(struct iwl_mvm_rss_sync_notif)))
++			break;
+ 		iwl_mvm_del_ba(mvm, queue, (void *)internal_notif->data);
+ 		break;
+ 	case IWL_MVM_RXQ_NSSN_SYNC:
++		if (WARN_ONCE(len != sizeof(struct iwl_mvm_rss_sync_notif),
++			      "invalid nssn sync notification size %d (%d)",
++			      len, (int)sizeof(struct iwl_mvm_rss_sync_notif)))
++			break;
+ 		iwl_mvm_nssn_sync(mvm, napi, queue,
+ 				  (void *)internal_notif->data);
+ 		break;
 -- 
 2.27.0
 
