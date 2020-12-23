@@ -2,41 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7BA12E12E3
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:28:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFC032E12EE
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:28:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730615AbgLWCZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:25:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55386 "EHLO mail.kernel.org"
+        id S1730815AbgLWC0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:26:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52102 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730595AbgLWCZq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:25:46 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 726272256F;
-        Wed, 23 Dec 2020 02:25:30 +0000 (UTC)
+        id S1730660AbgLWCZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:25:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7112922202;
+        Wed, 23 Dec 2020 02:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690331;
-        bh=zPXB7wyDekSdccQ22KuAKpHqjNfCvVWvWNbp+TJu9ME=;
+        s=k20201202; t=1608690343;
+        bh=B+8l2agkKDcZLAW+qbtt2QYxTPDQoPOWLdsRuzdY8ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IV9V+T6VslvwJxRN5XfdWjFa6z+Xxt3XDSUF4YiIjmWZyC+B3bYl6/TfbzCxIRfvC
-         2Iyqmgn3S9EU/fqvXmB5hOy8rG/ZJnGvesmJLULD1yXQOOND+9bWwUDH4BKYXini+I
-         CqfQgXdUVB/F5N4CDpJV4aMcZIA9J4lEIFYKtB00El4WFRmfou+xlujvYux7id8qCL
-         z2fRPHvo2MxrMZKJbRG310Vzg5f71vg1KUNNJBfRkAJqHcRO9i1bTwLCNMWXmUgCxq
-         9bHFcThY9stbyRQh2Sj31pD82d/lh8I0AhQOgyEab1lDBTqwQbh7Cdi2Xp3rl7Z5kC
-         voXxUH2StF40g==
+        b=MQO0d9k6S74vHpHrv5RZcCG53plCEwkDpHRZcbsyN3rV65HxKHGu4Mm6CLedcEvlZ
+         qTsF9D1EJIE+GSSivj4p8TuRkt1DNRCIHEVEy4pOJeqjrqAwb6/CMndvlIuHs38dSA
+         dcLUeIIq3mPKWV4Q2f8j+FZTlHx/PUZr2Y9bH2Xx/fnCGUlPhPxupu/4PahiNbrJ2V
+         t8kMXfOnj/DCVsSk09EB4Q5eshr6UnwQ/GftZetqjLo5DxMMXZf8gUrzyZNtUy+Mfi
+         bFI0inP4sd4bznD4nRufX+di1IZHl1NEe2hsCL/SR5unXPruklrfHprWfhjz1N/i1Q
+         6RvEo3aHnIs7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Ole=20Bj=C3=B8rn=20Midtb=C3=B8?= <omidtbo@cisco.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 11/38] Bluetooth: hidp: use correct wait queue when removing ctrl_wait
-Date:   Tue, 22 Dec 2020 21:24:49 -0500
-Message-Id: <20201223022516.2794471-11-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
+        keyrings@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 21/38] rxrpc: Don't leak the service-side session key to userspace
+Date:   Tue, 22 Dec 2020 21:24:59 -0500
+Message-Id: <20201223022516.2794471-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022516.2794471-1-sashal@kernel.org>
 References: <20201223022516.2794471-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,72 +42,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ole Bjørn Midtbø <omidtbo@cisco.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit cca342d98bef68151a80b024f7bf5f388d1fbdea ]
+[ Upstream commit d2ae4e918218f543214fbd906db68a6c580efbbb ]
 
-A different wait queue was used when removing ctrl_wait than when adding
-it. This effectively made the remove operation without locking compared
-to other operations on the wait queue ctrl_wait was part of. This caused
-issues like below where dead000000000100 is LIST_POISON1 and
-dead000000000200 is LIST_POISON2.
+Don't let someone reading a service-side rxrpc-type key get access to the
+session key that was exchanged with the client.  The server application
+will, at some point, need to be able to read the information in the ticket,
+but this probably shouldn't include the key material.
 
- list_add corruption. next->prev should be prev (ffffffc1b0a33a08), \
-	but was dead000000000200. (next=ffffffc03ac77de0).
- ------------[ cut here ]------------
- CPU: 3 PID: 2138 Comm: bluetoothd Tainted: G           O    4.4.238+ #9
- ...
- ---[ end trace 0adc2158f0646eac ]---
- Call trace:
- [<ffffffc000443f78>] __list_add+0x38/0xb0
- [<ffffffc0000f0d04>] add_wait_queue+0x4c/0x68
- [<ffffffc00020eecc>] __pollwait+0xec/0x100
- [<ffffffc000d1556c>] bt_sock_poll+0x74/0x200
- [<ffffffc000bdb8a8>] sock_poll+0x110/0x128
- [<ffffffc000210378>] do_sys_poll+0x220/0x480
- [<ffffffc0002106f0>] SyS_poll+0x80/0x138
- [<ffffffc00008510c>] __sys_trace_return+0x0/0x4
-
- Unable to handle kernel paging request at virtual address dead000000000100
- ...
- CPU: 4 PID: 5387 Comm: kworker/u15:3 Tainted: G        W  O    4.4.238+ #9
- ...
- Call trace:
-  [<ffffffc0000f079c>] __wake_up_common+0x7c/0xa8
-  [<ffffffc0000f0818>] __wake_up+0x50/0x70
-  [<ffffffc000be11b0>] sock_def_wakeup+0x58/0x60
-  [<ffffffc000de5e10>] l2cap_sock_teardown_cb+0x200/0x224
-  [<ffffffc000d3f2ac>] l2cap_chan_del+0xa4/0x298
-  [<ffffffc000d45ea0>] l2cap_conn_del+0x118/0x198
-  [<ffffffc000d45f8c>] l2cap_disconn_cfm+0x6c/0x78
-  [<ffffffc000d29934>] hci_event_packet+0x564/0x2e30
-  [<ffffffc000d19b0c>] hci_rx_work+0x10c/0x360
-  [<ffffffc0000c2218>] process_one_work+0x268/0x460
-  [<ffffffc0000c2678>] worker_thread+0x268/0x480
-  [<ffffffc0000c94e0>] kthread+0x118/0x128
-  [<ffffffc000085070>] ret_from_fork+0x10/0x20
-  ---[ end trace 0adc2158f0646ead ]---
-
-Signed-off-by: Ole Bjørn Midtbø <omidtbo@cisco.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hidp/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/keys/rxrpc-type.h | 1 +
+ net/rxrpc/ar-key.c        | 8 ++++++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
-index 552e00b07196e..9ec37c6c8c4aa 100644
---- a/net/bluetooth/hidp/core.c
-+++ b/net/bluetooth/hidp/core.c
-@@ -1282,7 +1282,7 @@ static int hidp_session_thread(void *arg)
+diff --git a/include/keys/rxrpc-type.h b/include/keys/rxrpc-type.h
+index fc48754338179..5bd32114a51ad 100644
+--- a/include/keys/rxrpc-type.h
++++ b/include/keys/rxrpc-type.h
+@@ -88,6 +88,7 @@ struct rxk5_key {
+  */
+ struct rxrpc_key_token {
+ 	u16	security_index;		/* RxRPC header security index */
++	bool	no_leak_key;		/* Don't copy the key to userspace */
+ 	struct rxrpc_key_token *next;	/* the next token in the list */
+ 	union {
+ 		struct rxkad_key *kad;
+diff --git a/net/rxrpc/ar-key.c b/net/rxrpc/ar-key.c
+index ea615e53eab28..ab4e21ffb4de9 100644
+--- a/net/rxrpc/ar-key.c
++++ b/net/rxrpc/ar-key.c
+@@ -1081,7 +1081,8 @@ static long rxrpc_read(const struct key *key,
+ 		case RXRPC_SECURITY_RXKAD:
+ 			toksize += 8 * 4;	/* viceid, kvno, key*2, begin,
+ 						 * end, primary, tktlen */
+-			toksize += RND(token->kad->ticket_len);
++			if (!token->no_leak_key)
++				toksize += RND(token->kad->ticket_len);
+ 			break;
  
- 	/* cleanup runtime environment */
- 	remove_wait_queue(sk_sleep(session->intr_sock->sk), &intr_wait);
--	remove_wait_queue(sk_sleep(session->intr_sock->sk), &ctrl_wait);
-+	remove_wait_queue(sk_sleep(session->ctrl_sock->sk), &ctrl_wait);
- 	wake_up_interruptible(&session->report_queue);
- 	hidp_del_timer(session);
+ 		case RXRPC_SECURITY_RXK5:
+@@ -1190,7 +1191,10 @@ static long rxrpc_read(const struct key *key,
+ 			ENCODE(token->kad->start);
+ 			ENCODE(token->kad->expiry);
+ 			ENCODE(token->kad->primary_flag);
+-			ENCODE_DATA(token->kad->ticket_len, token->kad->ticket);
++			if (token->no_leak_key)
++				ENCODE(0);
++			else
++				ENCODE_DATA(token->kad->ticket_len, token->kad->ticket);
+ 			break;
  
+ 		case RXRPC_SECURITY_RXK5:
 -- 
 2.27.0
 
