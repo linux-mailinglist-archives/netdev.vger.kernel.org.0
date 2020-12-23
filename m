@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7CA2E129D
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:27:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 390452E12A3
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728285AbgLWCWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:22:45 -0500
+        id S1729865AbgLWCXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:23:02 -0500
 Received: from mail.kernel.org ([198.145.29.99]:49802 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729762AbgLWCWk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:22:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A987F225AB;
-        Wed, 23 Dec 2020 02:22:24 +0000 (UTC)
+        id S1729839AbgLWCW7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:22:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 101F82313F;
+        Wed, 23 Dec 2020 02:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690145;
-        bh=ZqsyhDJr975uH78eq9vlqfIjc4P44FyApTZEkqL50qQ=;
+        s=k20201202; t=1608690162;
+        bh=d6XhwrcEFVTHkM6rI7NkPi4qFZlLUNkeJ5b1KvMIDso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WsJERloCOO1sEcnC3KH3uUL1DqJTLCoTslLq6iZ0XN/CTCPQrRUlII5NV6bybneJp
-         zSveHGUUqwr0Ufk02PxN1hmKKc/9nwsbzyGKdK5Cuh7pT/c4jiasNCpJgN67Pry57C
-         LrCSXn4WdRYRagKPr0S2Ka59WY8BfGqNIm/fek0/1N+hoi0eb4n8CoqJ9bM4+5ZouT
-         exjh33OMIJLIu4ttHkJwaGRChRLkHTjpq1UPuLD+rn05zu80ChEXTi5oBly1MhWrF8
-         Efjy5x4YBW70+9TmH0cVV37rcK7XtjFYPcE471kYXuDR9zMQVQ7NX7d7hUcQbg+qe2
-         +ZBCYX8CtdZgQ==
+        b=etO+6Jwe4uwBnyVUBqxK0fU+tzi64dxQ3IChaJI8FbtlabiRsHI9br6Pn9x75bWkz
+         O/S0WBc3K5kEeI/66/9h6Q34vX3mfWoyzz/5+EPfAf4sVKqTVfeSJws94UWji0l8O1
+         gVAkyAMOMe56N2pmovAF8bzFJKqOvpgCexKUyITPq4FXhIk0C3PFJPgjgo/7ceaw6e
+         hNBZj/5VLTrCC689LCmth3LxB6z7CbD4hsledRRRvP56aq2xIX/591ZCjOdBdmht4q
+         81lnGDb6FqBNa6j49iOPOEXsTKKt6SLzb2o1E/MMZIi2dvgD1FqqN4lepYfQY35Fmy
+         auC4Ww9GanjJw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhang Xiaohui <ruc_zhangxiaohui@163.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Avraham Stern <avraham.stern@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 66/87] mwifiex: Fix possible buffer overflows in mwifiex_cmd_802_11_ad_hoc_start
-Date:   Tue, 22 Dec 2020 21:20:42 -0500
-Message-Id: <20201223022103.2792705-66-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 80/87] mac80211: support Rx timestamp calculation for all preamble types
+Date:   Tue, 22 Dec 2020 21:20:56 -0500
+Message-Id: <20201223022103.2792705-80-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223022103.2792705-1-sashal@kernel.org>
 References: <20201223022103.2792705-1-sashal@kernel.org>
@@ -43,37 +44,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+From: Avraham Stern <avraham.stern@intel.com>
 
-[ Upstream commit 5c455c5ab332773464d02ba17015acdca198f03d ]
+[ Upstream commit da3882331a55ba8c8eda0cfc077ad3b88c257e22 ]
 
-mwifiex_cmd_802_11_ad_hoc_start() calls memcpy() without checking
-the destination size may trigger a buffer overflower,
-which a local user could use to cause denial of service
-or the execution of arbitrary code.
-Fix it by putting the length check before calling memcpy().
+Add support for calculating the Rx timestamp for HE frames.
+Since now all frame types are supported, allow setting the Rx
+timestamp regardless of the frame type.
 
-Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20201206084801.26479-1-ruc_zhangxiaohui@163.com
+Signed-off-by: Avraham Stern <avraham.stern@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20201206145305.4786559af475.Ia54486bb0a12e5351f9d5c60ef6fcda7c9e7141c@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/join.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/mac80211/ieee80211_i.h |  9 ++----
+ net/mac80211/util.c        | 66 +++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 67 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/join.c b/drivers/net/wireless/marvell/mwifiex/join.c
-index d87aeff70cefb..c2cb1e711c06e 100644
---- a/drivers/net/wireless/marvell/mwifiex/join.c
-+++ b/drivers/net/wireless/marvell/mwifiex/join.c
-@@ -877,6 +877,8 @@ mwifiex_cmd_802_11_ad_hoc_start(struct mwifiex_private *priv,
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index a879d8071712b..43edb903be693 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -1529,13 +1529,8 @@ ieee80211_have_rx_timestamp(struct ieee80211_rx_status *status)
+ {
+ 	WARN_ON_ONCE(status->flag & RX_FLAG_MACTIME_START &&
+ 		     status->flag & RX_FLAG_MACTIME_END);
+-	if (status->flag & (RX_FLAG_MACTIME_START | RX_FLAG_MACTIME_END))
+-		return true;
+-	/* can't handle non-legacy preamble yet */
+-	if (status->flag & RX_FLAG_MACTIME_PLCP_START &&
+-	    status->encoding == RX_ENC_LEGACY)
+-		return true;
+-	return false;
++	return !!(status->flag & (RX_FLAG_MACTIME_START | RX_FLAG_MACTIME_END |
++				  RX_FLAG_MACTIME_PLCP_START));
+ }
  
- 	memset(adhoc_start->ssid, 0, IEEE80211_MAX_SSID_LEN);
+ void ieee80211_vif_inc_num_mcast(struct ieee80211_sub_if_data *sdata);
+diff --git a/net/mac80211/util.c b/net/mac80211/util.c
+index 7fa9871b1db9f..0234fae673ec2 100644
+--- a/net/mac80211/util.c
++++ b/net/mac80211/util.c
+@@ -2897,6 +2897,7 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
+ 	u64 ts = status->mactime;
+ 	struct rate_info ri;
+ 	u16 rate;
++	u8 n_ltf;
  
-+	if (req_ssid->ssid_len > IEEE80211_MAX_SSID_LEN)
-+		req_ssid->ssid_len = IEEE80211_MAX_SSID_LEN;
- 	memcpy(adhoc_start->ssid, req_ssid->ssid, req_ssid->ssid_len);
+ 	if (WARN_ON(!ieee80211_have_rx_timestamp(status)))
+ 		return 0;
+@@ -2907,11 +2908,58 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
  
- 	mwifiex_dbg(adapter, INFO, "info: ADHOC_S_CMD: SSID = %s\n",
+ 	/* Fill cfg80211 rate info */
+ 	switch (status->encoding) {
++	case RX_ENC_HE:
++		ri.flags |= RATE_INFO_FLAGS_HE_MCS;
++		ri.mcs = status->rate_idx;
++		ri.nss = status->nss;
++		ri.he_ru_alloc = status->he_ru;
++		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
++			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
++
++		/*
++		 * See P802.11ax_D6.0, section 27.3.4 for
++		 * VHT PPDU format.
++		 */
++		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
++			mpdu_offset += 2;
++			ts += 36;
++
++			/*
++			 * TODO:
++			 * For HE MU PPDU, add the HE-SIG-B.
++			 * For HE ER PPDU, add 8us for the HE-SIG-A.
++			 * For HE TB PPDU, add 4us for the HE-STF.
++			 * Add the HE-LTF durations - variable.
++			 */
++		}
++
++		break;
+ 	case RX_ENC_HT:
+ 		ri.mcs = status->rate_idx;
+ 		ri.flags |= RATE_INFO_FLAGS_MCS;
+ 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
+ 			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
++
++		/*
++		 * See P802.11REVmd_D3.0, section 19.3.2 for
++		 * HT PPDU format.
++		 */
++		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
++			mpdu_offset += 2;
++			if (status->enc_flags & RX_ENC_FLAG_HT_GF)
++				ts += 24;
++			else
++				ts += 32;
++
++			/*
++			 * Add Data HT-LTFs per streams
++			 * TODO: add Extension HT-LTFs, 4us per LTF
++			 */
++			n_ltf = ((ri.mcs >> 3) & 3) + 1;
++			n_ltf = n_ltf == 3 ? 4 : n_ltf;
++			ts += n_ltf * 4;
++		}
++
+ 		break;
+ 	case RX_ENC_VHT:
+ 		ri.flags |= RATE_INFO_FLAGS_VHT_MCS;
+@@ -2919,6 +2967,23 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
+ 		ri.nss = status->nss;
+ 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
+ 			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
++
++		/*
++		 * See P802.11REVmd_D3.0, section 21.3.2 for
++		 * VHT PPDU format.
++		 */
++		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
++			mpdu_offset += 2;
++			ts += 36;
++
++			/*
++			 * Add VHT-LTFs per streams
++			 */
++			n_ltf = (ri.nss != 1) && (ri.nss % 2) ?
++				ri.nss + 1 : ri.nss;
++			ts += 4 * n_ltf;
++		}
++
+ 		break;
+ 	default:
+ 		WARN_ON(1);
+@@ -2942,7 +3007,6 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
+ 		ri.legacy = DIV_ROUND_UP(bitrate, (1 << shift));
+ 
+ 		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
+-			/* TODO: handle HT/VHT preambles */
+ 			if (status->band == NL80211_BAND_5GHZ) {
+ 				ts += 20 << shift;
+ 				mpdu_offset += 2;
 -- 
 2.27.0
 
