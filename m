@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C672C2E15DD
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A64C2E15D7
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:59:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728564AbgLWCyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:54:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49598 "EHLO mail.kernel.org"
+        id S1729396AbgLWCyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:54:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45428 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729205AbgLWCVF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:21:05 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 21C0022573;
-        Wed, 23 Dec 2020 02:20:48 +0000 (UTC)
+        id S1729212AbgLWCVH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:21:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 71F3C22525;
+        Wed, 23 Dec 2020 02:20:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608690049;
-        bh=Gu4frbtfGq85P2ApmCxRMWO2NZ1UrtLluCUI0/A3CgI=;
+        s=k20201202; t=1608690050;
+        bh=OOvL48awBBRzLmQEbK7Ney9ldGZAun+UOni2ZChnpxE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RGXiUU+IXXh7ibaO0bRH7fQ3xjE9wJMt6UjMKRRjpxx+JXH3vqJCFggqJ0vJl7WeQ
-         +V+mxs7K54FKQ4QgAlvux6hpYh2FbOQvtNCd4qbi15rMqd3/vOXF0N6Y3gyMdR7ff/
-         EHrzAgVIv44i+eSyTKAZWCvXizX8qW5QgJve4wgIt1NOni6QQXsGGjDqcWkdskMSWf
-         W6D2VbhL7D6L2WmnlEF3+mgV+Dtyzm5szyLQ3sjonRdv5PRD6BdP9dDRiRF5wmhYkw
-         LxW45/sS+gYabQO1v1YYFveV10aiQtCPsn+savYXl7cfMFmaXN/1QMKMMjbL4PxiNX
-         6Ey/n0vtdjYFQ==
+        b=hV6XjnIpEL4Ynhy6s9qhNMDU5/u1e4DT8B+M0IIhuS7iQqn77fvpHJ8Hna50JKyZc
+         cUX05FxKJDfySGxv1jNzn5+e5lDuvPFHO7woqnktGp7RfDFaSuzgVea6AjA9yOUmDp
+         seJOIhzhJ1ZoUOLwKQTdtXilgpwf30n91XJ9mcc1EVZRFzC59sdE4Pba7idWP8Hv+u
+         XGPvQFE78P1+iCriiikJB2fO/be9d6Tq7SZsHVODEHYOxvZvMt7RCOqYQbhtuUGy60
+         bC5jBOI7q1gzGpxl6J6Dj8rrxDsqwOGd82G3xx5n90qu9HUYrCbX7gBQu9+uhGCJNu
+         aux+FyaAtC/5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Avraham Stern <avraham.stern@intel.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 120/130] mac80211: support Rx timestamp calculation for all preamble types
-Date:   Tue, 22 Dec 2020 21:18:03 -0500
-Message-Id: <20201223021813.2791612-120-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 121/130] mac80211: use bitfield helpers for BA session action frames
+Date:   Tue, 22 Dec 2020 21:18:04 -0500
+Message-Id: <20201223021813.2791612-121-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201223021813.2791612-1-sashal@kernel.org>
 References: <20201223021813.2791612-1-sashal@kernel.org>
@@ -44,147 +43,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Avraham Stern <avraham.stern@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit da3882331a55ba8c8eda0cfc077ad3b88c257e22 ]
+[ Upstream commit db8ebd06ccb87b7bea8e50f3d4ba5dc0142093b8 ]
 
-Add support for calculating the Rx timestamp for HE frames.
-Since now all frame types are supported, allow setting the Rx
-timestamp regardless of the frame type.
+Use the appropriate bitfield helpers for encoding and decoding
+the capability field in the BA session action frames instead of
+open-coding the shifts/masks.
 
-Signed-off-by: Avraham Stern <avraham.stern@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20201206145305.4786559af475.Ia54486bb0a12e5351f9d5c60ef6fcda7c9e7141c@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20201206145305.0c46e5097cc0.I06e75706770c40b9ba1cabd1f8a78ab7a05c5b73@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/ieee80211_i.h |  9 ++----
- net/mac80211/util.c        | 66 +++++++++++++++++++++++++++++++++++++-
- 2 files changed, 67 insertions(+), 8 deletions(-)
+ net/mac80211/agg-rx.c |  8 ++++----
+ net/mac80211/agg-tx.c | 12 ++++++------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index 05406e9c05b32..7ad21d041f063 100644
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -1561,13 +1561,8 @@ ieee80211_have_rx_timestamp(struct ieee80211_rx_status *status)
- {
- 	WARN_ON_ONCE(status->flag & RX_FLAG_MACTIME_START &&
- 		     status->flag & RX_FLAG_MACTIME_END);
--	if (status->flag & (RX_FLAG_MACTIME_START | RX_FLAG_MACTIME_END))
--		return true;
--	/* can't handle non-legacy preamble yet */
--	if (status->flag & RX_FLAG_MACTIME_PLCP_START &&
--	    status->encoding == RX_ENC_LEGACY)
--		return true;
--	return false;
-+	return !!(status->flag & (RX_FLAG_MACTIME_START | RX_FLAG_MACTIME_END |
-+				  RX_FLAG_MACTIME_PLCP_START));
- }
+diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
+index 4d1c335e06e57..93285f9a2bbd5 100644
+--- a/net/mac80211/agg-rx.c
++++ b/net/mac80211/agg-rx.c
+@@ -250,10 +250,10 @@ static void ieee80211_send_addba_resp(struct sta_info *sta, u8 *da, u16 tid,
+ 	mgmt->u.action.u.addba_resp.action_code = WLAN_ACTION_ADDBA_RESP;
+ 	mgmt->u.action.u.addba_resp.dialog_token = dialog_token;
  
- void ieee80211_vif_inc_num_mcast(struct ieee80211_sub_if_data *sdata);
-diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index decd46b383938..9f05336509210 100644
---- a/net/mac80211/util.c
-+++ b/net/mac80211/util.c
-@@ -3238,6 +3238,7 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
- 	u64 ts = status->mactime;
- 	struct rate_info ri;
- 	u16 rate;
-+	u8 n_ltf;
+-	capab = (u16)(amsdu << 0);	/* bit 0 A-MSDU support */
+-	capab |= (u16)(policy << 1);	/* bit 1 aggregation policy */
+-	capab |= (u16)(tid << 2); 	/* bit 5:2 TID number */
+-	capab |= (u16)(buf_size << 6);	/* bit 15:6 max size of aggregation */
++	capab = u16_encode_bits(amsdu, IEEE80211_ADDBA_PARAM_AMSDU_MASK);
++	capab |= u16_encode_bits(policy, IEEE80211_ADDBA_PARAM_POLICY_MASK);
++	capab |= u16_encode_bits(tid, IEEE80211_ADDBA_PARAM_TID_MASK);
++	capab |= u16_encode_bits(buf_size, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
  
- 	if (WARN_ON(!ieee80211_have_rx_timestamp(status)))
- 		return 0;
-@@ -3248,11 +3249,58 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
+ 	mgmt->u.action.u.addba_resp.capab = cpu_to_le16(capab);
+ 	mgmt->u.action.u.addba_resp.timeout = cpu_to_le16(timeout);
+diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
+index b11883d268759..ea6bc02c900bf 100644
+--- a/net/mac80211/agg-tx.c
++++ b/net/mac80211/agg-tx.c
+@@ -95,10 +95,10 @@ static void ieee80211_send_addba_request(struct ieee80211_sub_if_data *sdata,
+ 	mgmt->u.action.u.addba_req.action_code = WLAN_ACTION_ADDBA_REQ;
  
- 	/* Fill cfg80211 rate info */
- 	switch (status->encoding) {
-+	case RX_ENC_HE:
-+		ri.flags |= RATE_INFO_FLAGS_HE_MCS;
-+		ri.mcs = status->rate_idx;
-+		ri.nss = status->nss;
-+		ri.he_ru_alloc = status->he_ru;
-+		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
-+			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
-+
-+		/*
-+		 * See P802.11ax_D6.0, section 27.3.4 for
-+		 * VHT PPDU format.
-+		 */
-+		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
-+			mpdu_offset += 2;
-+			ts += 36;
-+
-+			/*
-+			 * TODO:
-+			 * For HE MU PPDU, add the HE-SIG-B.
-+			 * For HE ER PPDU, add 8us for the HE-SIG-A.
-+			 * For HE TB PPDU, add 4us for the HE-STF.
-+			 * Add the HE-LTF durations - variable.
-+			 */
-+		}
-+
-+		break;
- 	case RX_ENC_HT:
- 		ri.mcs = status->rate_idx;
- 		ri.flags |= RATE_INFO_FLAGS_MCS;
- 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
- 			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
-+
-+		/*
-+		 * See P802.11REVmd_D3.0, section 19.3.2 for
-+		 * HT PPDU format.
-+		 */
-+		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
-+			mpdu_offset += 2;
-+			if (status->enc_flags & RX_ENC_FLAG_HT_GF)
-+				ts += 24;
-+			else
-+				ts += 32;
-+
-+			/*
-+			 * Add Data HT-LTFs per streams
-+			 * TODO: add Extension HT-LTFs, 4us per LTF
-+			 */
-+			n_ltf = ((ri.mcs >> 3) & 3) + 1;
-+			n_ltf = n_ltf == 3 ? 4 : n_ltf;
-+			ts += n_ltf * 4;
-+		}
-+
- 		break;
- 	case RX_ENC_VHT:
- 		ri.flags |= RATE_INFO_FLAGS_VHT_MCS;
-@@ -3260,6 +3308,23 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
- 		ri.nss = status->nss;
- 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
- 			ri.flags |= RATE_INFO_FLAGS_SHORT_GI;
-+
-+		/*
-+		 * See P802.11REVmd_D3.0, section 21.3.2 for
-+		 * VHT PPDU format.
-+		 */
-+		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
-+			mpdu_offset += 2;
-+			ts += 36;
-+
-+			/*
-+			 * Add VHT-LTFs per streams
-+			 */
-+			n_ltf = (ri.nss != 1) && (ri.nss % 2) ?
-+				ri.nss + 1 : ri.nss;
-+			ts += 4 * n_ltf;
-+		}
-+
- 		break;
- 	default:
- 		WARN_ON(1);
-@@ -3283,7 +3348,6 @@ u64 ieee80211_calculate_rx_timestamp(struct ieee80211_local *local,
- 		ri.legacy = DIV_ROUND_UP(bitrate, (1 << shift));
+ 	mgmt->u.action.u.addba_req.dialog_token = dialog_token;
+-	capab = (u16)(1 << 0);		/* bit 0 A-MSDU support */
+-	capab |= (u16)(1 << 1);		/* bit 1 aggregation policy */
+-	capab |= (u16)(tid << 2); 	/* bit 5:2 TID number */
+-	capab |= (u16)(agg_size << 6);	/* bit 15:6 max size of aggergation */
++	capab = IEEE80211_ADDBA_PARAM_AMSDU_MASK;
++	capab |= IEEE80211_ADDBA_PARAM_POLICY_MASK;
++	capab |= u16_encode_bits(tid, IEEE80211_ADDBA_PARAM_TID_MASK);
++	capab |= u16_encode_bits(agg_size, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
  
- 		if (status->flag & RX_FLAG_MACTIME_PLCP_START) {
--			/* TODO: handle HT/VHT preambles */
- 			if (status->band == NL80211_BAND_5GHZ) {
- 				ts += 20 << shift;
- 				mpdu_offset += 2;
+ 	mgmt->u.action.u.addba_req.capab = cpu_to_le16(capab);
+ 
+@@ -921,8 +921,8 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
+ 
+ 	capab = le16_to_cpu(mgmt->u.action.u.addba_resp.capab);
+ 	amsdu = capab & IEEE80211_ADDBA_PARAM_AMSDU_MASK;
+-	tid = (capab & IEEE80211_ADDBA_PARAM_TID_MASK) >> 2;
+-	buf_size = (capab & IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK) >> 6;
++	tid = u16_get_bits(capab, IEEE80211_ADDBA_PARAM_TID_MASK);
++	buf_size = u16_get_bits(capab, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
+ 	buf_size = min(buf_size, local->hw.max_tx_aggregation_subframes);
+ 
+ 	txq = sta->sta.txq[tid];
 -- 
 2.27.0
 
