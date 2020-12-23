@@ -2,87 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 681612E2070
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 19:29:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA1112E207E
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 19:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728312AbgLWS2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 13:28:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43774 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727678AbgLWS2L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 13:28:11 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3D2A222287;
-        Wed, 23 Dec 2020 18:27:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608748050;
-        bh=Z5xODn+IvbDBsPmKFYmrF505ldukXJ1K5bdX4rxgeGQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BnumjNjPSVrrfXxNOCnui2niY6YSa67I5SxqqAQPIhJacNQsWOzNk+fggCtOaHU1D
-         5P1uccWMbuKYrjCC7HqgsBeFtTijFWoYyI+QRo0h53k9Fdn6KHIng83cUo8GePYBHM
-         DAItaxaoz2YtHwY1ZaUQgnd6vk/CpZsu2fcozUHg+yMby4MsFyzVjxMZn8xCr6ZfGG
-         gDryZAymkAX3BX7W2gI0tBgBY/5H4Cmymyi89SuPPR+3J178+88IMu72WjtIt+ctGP
-         CMTRIw1tRP6h1hbEQTPqgQuxMz+BlLFMQFMPOpfr+Ea4jSq3Ulz9im9D7mUxHxR+gr
-         2wo3sKc9KOfVg==
-Date:   Wed, 23 Dec 2020 10:27:29 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Antoine Tenart <atenart@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net v2 1/3] net: fix race conditions in xps by locking
- the maps and dev->tc_num
-Message-ID: <20201223102729.6463a5c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAKgT0UfzNA8qk+QFTN6ihXTxZkcE=vfrjBtyHKL6_9Yyzxt=eQ@mail.gmail.com>
-References: <20201221193644.1296933-1-atenart@kernel.org>
-        <20201221193644.1296933-2-atenart@kernel.org>
-        <CAKgT0UfTgYhED1f6vdsoT72A3=D2Grh4U-A6pp43FLZoCs30Gw@mail.gmail.com>
-        <160862887909.1246462.8442420561350999328@kwain.local>
-        <CAKgT0UfzNA8qk+QFTN6ihXTxZkcE=vfrjBtyHKL6_9Yyzxt=eQ@mail.gmail.com>
+        id S1728176AbgLWSir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 13:38:47 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:4854 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726923AbgLWSir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 13:38:47 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BNIHKCu029568;
+        Wed, 23 Dec 2020 10:35:43 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=P+WpMiPyk7oIrJqS4VH5QprshtGLxMyxirTRn4K0GVM=;
+ b=RRQZmjEExJnk1pAHgv+LZYkaH5YVk9MqYNJQwa+TNdzBx+D91JNj5GN1pZwYyw3wqf/e
+ afVJNMk6j3Iliko+QNWGQITJF/olJt+XbtpXMwIwoJQl4MI9BgI3Bv4ui8nLzi6YXtmQ
+ szeD3oBc43w0Xn/ShcXK1nnnrwrDsrREpuD2NBPJefKvbvQ/Gtv2ZXHLFu5cCP6aId+a
+ 6XjCcoJn1/BdaoX2AewmcmAOH+cJ0Uko3q0qSnTrZfVOpamnOA0pqx9GyolDKo5r2iJc
+ VVV4y2i6mv2J30ZT3Wvq4bcFQPnIwHPJifL+BpFvnoFrf8JvWWgqKijyWIMJBB0iVEfD eQ== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 35k0ebevr2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 23 Dec 2020 10:35:43 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 23 Dec
+ 2020 10:35:42 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 23 Dec 2020 10:35:42 -0800
+Received: from stefan-pc.marvell.com (unknown [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 96A753F703F;
+        Wed, 23 Dec 2020 10:35:39 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>
+Subject: [PATCH net] net: mvpp2: fix pkt coalescing int-threshold configuration
+Date:   Wed, 23 Dec 2020 20:35:21 +0200
+Message-ID: <1608748521-11033-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-23_10:2020-12-23,2020-12-23 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Dec 2020 08:12:28 -0800 Alexander Duyck wrote:
-> On Tue, Dec 22, 2020 at 1:21 AM Antoine Tenart <atenart@kernel.org> wrote:
-> > Quoting Alexander Duyck (2020-12-22 00:21:57)  
-> > >
-> > > Looking over this patch it seems kind of obvious that extending the
-> > > xps_map_mutex is making things far more complex then they need to be.
-> > >
-> > > Applying the rtnl_mutex would probably be much simpler. Although as I
-> > > think you have already discovered we need to apply it to the store,
-> > > and show for this interface. In addition we probably need to perform
-> > > similar locking around traffic_class_show in order to prevent it from
-> > > generating a similar error.  
-> >
-> > I don't think we have the same kind of issues with traffic_class_show:
-> > dev->num_tc is used, but not for navigating through the map. Protecting
-> > only a single read wouldn't change much. We can still think about what
-> > could go wrong here without the lock, but that is not related to this
-> > series of fixes.  
-> 
-> The problem is we are actually reading the netdev, tx queue, and
-> tc_to_txq mapping. Basically we have several different items that we
-> are accessing at the same time. If any one is updated while we are
-> doing it then it will throw things off.
-> 
-> > If I understood correctly, as things are a bit too complex now, you
-> > would prefer that we go for the solution proposed in v1?  
-> 
-> Yeah, that is what I am thinking. Basically we just need to make sure
-> the num_tc cannot be updated while we are reading the other values.
+From: Stefan Chulski <stefanc@marvell.com>
 
-Yeah, okay, as much as I dislike this approach 300 lines may be a little
-too large for stable.
+The packet coalescing interrupt threshold has separated registers
+for different aggregated/cpu (sw-thread). The required value should
+be loaded for every thread but not only for 1 current cpu.
 
-> > I can still do the code factoring for the 2 sysfs show operations, but
-> > that would then target net-next and would be in a different series. So I
-> > believe we'll use the patches of v1, unmodified.  
+Fixes: 213f428f5056 ("net: mvpp2: add support for TX interrupts and RX queue distribution modes")
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-Are you saying just patch 3 for net-next? We need to do something about
-the fact that with sysfs taking rtnl_lock xps_map_mutex is now entirely
-pointless. I guess its value eroded over the years since Tom's initial
-design so we can just get rid of it.
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 87068eb..3982956 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -2370,17 +2370,18 @@ static void mvpp2_rx_pkts_coal_set(struct mvpp2_port *port,
+ static void mvpp2_tx_pkts_coal_set(struct mvpp2_port *port,
+ 				   struct mvpp2_tx_queue *txq)
+ {
+-	unsigned int thread = mvpp2_cpu_to_thread(port->priv, get_cpu());
++	unsigned int thread;
+ 	u32 val;
+ 
+ 	if (txq->done_pkts_coal > MVPP2_TXQ_THRESH_MASK)
+ 		txq->done_pkts_coal = MVPP2_TXQ_THRESH_MASK;
+ 
+ 	val = (txq->done_pkts_coal << MVPP2_TXQ_THRESH_OFFSET);
+-	mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_NUM_REG, txq->id);
+-	mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_THRESH_REG, val);
+-
+-	put_cpu();
++	/* PKT-coalescing registers are per-queue + per-thread */
++	for (thread = 0; thread < MVPP2_MAX_THREADS; thread++) {
++		mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_NUM_REG, txq->id);
++		mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_THRESH_REG, val);
++	}
+ }
+ 
+ static u32 mvpp2_usec_to_cycles(u32 usec, unsigned long clk_hz)
+-- 
+1.9.1
+
