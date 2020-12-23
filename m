@@ -2,186 +2,313 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E72E2E1C17
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 13:10:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90D1A2E1C27
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 13:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728442AbgLWMJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 07:09:56 -0500
-Received: from mail-bn7nam10on2064.outbound.protection.outlook.com ([40.107.92.64]:18850
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726530AbgLWMJz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Dec 2020 07:09:55 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SXniekk8jPTtsb07OYLDc8WSKdyZ15PyC7X1LbMtHQg9gWRrOKaBNcOcs4U6GGnaNiIpI9D1zgYEnCEVTw2Bv+pwHW05Z70905rkmP7IoShNzeXhNWSvELC976wnVCL5AE3yD3vrc9y8rSjwkqyY4y83dshmlEtaCH0K3tdBpZnMIPG5C+l3PVUPREz2dJEd3a5QVDd9dxjoCiO6GJOvJUfdsh4j6gPnntplORDMypKjiU4rklImHkOQen3UADhdmnXRBa1Zbi/OSZJuYwdtUvtgZUDTdLwSWjoqHETLWCsVVoZUx6y2Ws2x1jYqzZUcXoyhDMplH0sPHCntXYfWQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2svG06xrb910Q2Jbpe3Z1w3GZjC9YjQYw1gqoDrVcis=;
- b=g9ZtZDKRTa4ivtivm+97gqqxiLK2LAXDc0E+WYZnVYeznUamU4LvHqW23+KcW27UHwcoZvH4/d/q5dui1weNNmjpOsTfy9Y39wpxA9IyfxapleyVcAG+dOeNjD4mvQhl0xn3JpytiUTAFeiV5FIPBcBTCg6JCEwDr7yI5hfVsxqT+OAH08mbKSJoREvXAIZit7SysRE1R93n3GFLVqKQLE6De4Yw14kwY7ul9wglRQWOxSvoCgRky9PICak31lMaurcuFBfYB8kFryLVu/Q3TNxcJX72h9t+jxO3VwfD9FLMVnoJPiJrSh5epPEPkG5ndANZoNLQ1TZVNwLKhKuncw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+        id S1728453AbgLWMO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 07:14:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728376AbgLWMO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 07:14:57 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F07DC0613D6
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 04:14:17 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id w1so22517817ejf.11
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 04:14:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2svG06xrb910Q2Jbpe3Z1w3GZjC9YjQYw1gqoDrVcis=;
- b=iaRdw0QTiLWuEh7BFlrMf4hqqaCxR8V8i8kAwUETuJ3IARMpPi20vsrFKdCD3V98p6X+cEMt9wQ3BQN2BCxcJkd/k0ebyQZo1iEaH0dnoRfw262CvyUbL5ygiQIuQV61k1MRUWMbr9R+L2j3RSw467CxGq9gaCa6SvoYjO29Pls=
-Authentication-Results: codeaurora.org; dkim=none (message not signed)
- header.d=none;codeaurora.org; dmarc=none action=none header.from=silabs.com;
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
- by SN6PR11MB3408.namprd11.prod.outlook.com (2603:10b6:805:bc::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.33; Wed, 23 Dec
- 2020 12:09:06 +0000
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::a989:f850:6736:97ca]) by SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::a989:f850:6736:97ca%5]) with mapi id 15.20.3700.026; Wed, 23 Dec 2020
- 12:09:06 +0000
-From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org,
-        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v3 05/24] wfx: add main.c/main.h
-Date:   Wed, 23 Dec 2020 13:09:01 +0100
-Message-ID: <4307946.LvFx2qVVIh@pc-42>
-Organization: Silicon Labs
-In-Reply-To: <87a6u57smy.fsf@codeaurora.org>
-References: <20201104155207.128076-1-Jerome.Pouiller@silabs.com> <20201104155207.128076-6-Jerome.Pouiller@silabs.com> <87a6u57smy.fsf@codeaurora.org>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-Originating-IP: [82.67.86.106]
-X-ClientProxiedBy: SN4PR0501CA0110.namprd05.prod.outlook.com
- (2603:10b6:803:42::27) To SN6PR11MB2718.namprd11.prod.outlook.com
- (2603:10b6:805:63::18)
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=35ZYuDz/NHbYVvs0C4L+62CLzf5DN21GLodcbsEQFC8=;
+        b=aJinXqPssChyo572Y/V2zRy6J5OkTR1TQN+MEuQ4oNarcAhB2somhmUhWV0HmgGikG
+         e+TIqXxNraeIrU+WeupO3HTQPFteA8XEkMdqkUmBSeAWWQs239UH4vagR6/13LiAJHu8
+         yfWpPCNf4skU5igECuQuVO1SHWwpluiHTqNlURKhYiKtdGrksxeXzX0NDUalwkVuAbQA
+         JYQ12n2V0vxQ1VS2QymReXwjFDLc0DV3Lf73j6tylIA9XUeIy1YBOKqikAtUUQm99Hoa
+         /NV96IPBMICQtMBOSsG2cV1Ym4ZQLD07TZef94tSuVP7IBfcKCUbc+9mwgP2H9hgqYLx
+         Ly5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=35ZYuDz/NHbYVvs0C4L+62CLzf5DN21GLodcbsEQFC8=;
+        b=Eiv/MFlkZLUHirNqvwojGgVF2VU3hzzQxZL6+NoQxruqr8C6TWrOXnou87lDlCWsjP
+         HXNW1z5o1YX60MIZbKRrPSHbQsh6lJHiUtvuczBNM59CYOKQdxCoOLhMJcop2UB4xyLh
+         DsnLT74tV3YtFK3Hxsab8sB4Gk8O02nOBn6j7c3e40rebmTscU+s+g+4k75kpOcANNnn
+         2wMa6dzjEcr6aEQ/LoYlGr/ddIcU1Nr1cuu5VpzXa1770u+tYF/BY/lZqynz9E43KOgx
+         Dx51FwcQBbIvFrdY3g4MhNFpkvrxHMzJOPhV2iRiOMhDaOgRin73ATwEUXiVp9VtDO3y
+         OHvg==
+X-Gm-Message-State: AOAM531qrBZLlX7PmU/HsCz/UQ0ufr9UvzQmm34+6nLIwKo3fFpK7mXp
+        uPfSbEh5dyO3rQ+UepE1Nko9gWn2v17MUmqpau2U
+X-Google-Smtp-Source: ABdhPJxvFGv55SXnvmstsRrPts85FfsZeW8DhW7IZ56OFMBLubAQ02qrxBnCF2WTw9XipJ1ju0Clb5hATd78E6jruXA=
+X-Received: by 2002:a17:906:94c5:: with SMTP id d5mr23137335ejy.427.1608725655618;
+ Wed, 23 Dec 2020 04:14:15 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc-42.localnet (82.67.86.106) by SN4PR0501CA0110.namprd05.prod.outlook.com (2603:10b6:803:42::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3700.19 via Frontend Transport; Wed, 23 Dec 2020 12:09:04 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e5f41423-ebd9-4834-03eb-08d8a73b8c1c
-X-MS-TrafficTypeDiagnostic: SN6PR11MB3408:
-X-Microsoft-Antispam-PRVS: <SN6PR11MB340832A65AE593E4BE33B51E93DE0@SN6PR11MB3408.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qbgm34KqCUfopWLFMxn/tGA8wuDxukU4df+fQO2mWZvwO8NIE8w/ZCHjltIiYuT4HjMp3nJkZDuitctL1JjgciCBti05xjbDqAG6OfWZ4iFNP9R6ZA0QUUPCHGL0yLKzsSWi2x0HX1Z45KBHG0ZsIShOeXn2RyP7VpqtJxkzNTuoHATkdjkqqxjSqJ7/EI0qLBhYIwSGNuKsm0gr0w1+tJMsUGuPnP4D8cZDnttGBF91TaeBVtuOJUDroaR1icjAGTwGNBhu/kUIG0k+bjWVVG6vppJUuxPA4RFbKLunOjtDtnKjO9PIP22ppA0hwBXAVBcE1naK4iG6kOGLrUJc9zlR+Xd9LkCQ3HZjBft7z1h0k9mj5207230DrivHTNdOGMyfkHtEcfp8WmnT2QOsEIes1H/WIthNtaxTRgjnThxEFIETtR3DPWkJ9lJpWXdJKQPe0zvQzMO5FNCZK0QKl1HkszPH20BHyIoLzdl8ZLK2dgGoJvcGG+GwHIo5iOrymZHSGNWKvB1Y8jDrpto8zQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(39850400004)(366004)(136003)(396003)(36916002)(52116002)(6916009)(2906002)(26005)(4326008)(33716001)(186003)(16526019)(8676002)(7416002)(5660300002)(6506007)(66574015)(6512007)(54906003)(956004)(9686003)(6666004)(86362001)(66556008)(8936002)(66476007)(66946007)(316002)(478600001)(966005)(6486002)(39026012);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?iso-8859-1?Q?tCScRIHVvJbZNrjLS9FszSTw2JAxuMBgRjAu6v7nluHfxYQX9QGo3F6M4D?=
- =?iso-8859-1?Q?ODusWZiArLwAMSA77rIvz4qzzcvTqjhLIVXCmdjfl0/kZWQlkzKpKTmJLZ?=
- =?iso-8859-1?Q?gfnbbnyApgFwGq3z6AhUss0G4DEr8qZDhIs2SMkYOY9l2YMob/PB/PXk4o?=
- =?iso-8859-1?Q?Ym67dqLvFczpx8UnxOfdIih/nH0/YqKCUgyxmRCPSPxvTBFkf40QmWBzXD?=
- =?iso-8859-1?Q?ejg+b9xowIAFfEozd6CLU/7XfxipZKUkUwtFFgQ0CGIcbzPVOMJt3xb5On?=
- =?iso-8859-1?Q?soNZHPUeXr+0ZQyun+fqbO7QdCJ2nKXLTWKbF5toV/BnDcn6WP9YZ8+9Gu?=
- =?iso-8859-1?Q?4AfRA8OB2VA4tgasHOmoKI1bufGONJ4qPSn88BFzP0/qJ9S457EzFdRo3j?=
- =?iso-8859-1?Q?+n7stgtXX0nXs2lax7W+C5mGcW1kmD36+tisgLcZ7AMqcBrmEZR1gltBL6?=
- =?iso-8859-1?Q?DW4i1LY9AWD1+m5RCdjHAwS4sWp7B71Fd/qkpjE3uH6/sUX60rBwzL5kr6?=
- =?iso-8859-1?Q?RwTNi+xiI3LzT9FGLeDKUFSMMU1KfpopHlLAsZLGnwq2JxW449kPels+7P?=
- =?iso-8859-1?Q?H+0gQZDtuHJ1SYDVSz3xOoTSbb4JONaMS8sFIfNZq0mbA3VTslZKLzQI31?=
- =?iso-8859-1?Q?r2GTtaemA3QZjFGCvCfBQWf9D8EAedIPwsz0UYH9NG+w7pNBqebGMaWcIK?=
- =?iso-8859-1?Q?je6HEbC6Nbw2vPXeAH6L9lAWLABdutj64nnBI7HmAp/ZppC9VikuHkpm3F?=
- =?iso-8859-1?Q?hlP6D9UNwQYKUxs9vguihMw02Coa4e6D/gLo8M1fx4uHa8HDpmuOy+ZguF?=
- =?iso-8859-1?Q?lLqk+m+uxvRfvMJVmW8VE0x3b6f9mh3mS7qUoFw/tigq+SDbdPRfrw2J8g?=
- =?iso-8859-1?Q?P4KKzUEsnL3cYVmd/wi1S1FicmBdLLgdOFvFi0hidsbSP20xpXd9VzLew8?=
- =?iso-8859-1?Q?jOugxWmwYRbZvwYuLbSjxLbXaerL79YKy7vecONUQ/c49WKtFL+7bLVHRH?=
- =?iso-8859-1?Q?17p32wiMAS00bZ0cs=3D?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Dec 2020 12:09:06.7451
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5f41423-ebd9-4834-03eb-08d8a73b8c1c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dfYcw6rhgwSue5niOD6R3zZ73NCp2Ty4koRSSRC9M6WPT33UivQ7JnDGM720VSJLfShT7UxWWKXTIbvHMtsn8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3408
+References: <20201222145221.711-1-xieyongji@bytedance.com> <20201222145221.711-10-xieyongji@bytedance.com>
+ <6818a214-d587-4f0b-7de6-13c4e7e94ab6@redhat.com>
+In-Reply-To: <6818a214-d587-4f0b-7de6-13c4e7e94ab6@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 23 Dec 2020 20:14:04 +0800
+Message-ID: <CACycT3vVU9vg6R6UujSnSdk8cwxWPVgeJJs0JaBH_Zg4xC-epQ@mail.gmail.com>
+Subject: Re: [External] Re: [RFC v2 09/13] vduse: Add support for processing
+ vhost iotlb message
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
+        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday 22 December 2020 16:44:05 CET Kalle Valo wrote:
-> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
->=20
-> > +/* NOTE: wfx_send_pds() destroy buf */
-> > +int wfx_send_pds(struct wfx_dev *wdev, u8 *buf, size_t len)
-> > +{
-> > +     int ret;
-> > +     int start, brace_level, i;
+On Wed, Dec 23, 2020 at 5:05 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2020/12/22 =E4=B8=8B=E5=8D=8810:52, Xie Yongji wrote:
+> > To support vhost-vdpa bus driver, we need a way to share the
+> > vhost-vdpa backend process's memory with the userspace VDUSE process.
+> >
+> > This patch tries to make use of the vhost iotlb message to achieve
+> > that. We will get the shm file from the iotlb message and pass it
+> > to the userspace VDUSE process.
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > ---
+> >   Documentation/driver-api/vduse.rst |  15 +++-
+> >   drivers/vdpa/vdpa_user/vduse_dev.c | 147 ++++++++++++++++++++++++++++=
+++++++++-
+> >   include/uapi/linux/vduse.h         |  11 +++
+> >   3 files changed, 171 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/Documentation/driver-api/vduse.rst b/Documentation/driver-=
+api/vduse.rst
+> > index 623f7b040ccf..48e4b1ba353f 100644
+> > --- a/Documentation/driver-api/vduse.rst
+> > +++ b/Documentation/driver-api/vduse.rst
+> > @@ -46,13 +46,26 @@ The following types of messages are provided by the=
+ VDUSE framework now:
+> >
+> >   - VDUSE_GET_CONFIG: Read from device specific configuration space
+> >
+> > +- VDUSE_UPDATE_IOTLB: Update the memory mapping in device IOTLB
 > > +
-> > +     start =3D 0;
-> > +     brace_level =3D 0;
-> > +     if (buf[0] !=3D '{') {
-> > + dev_err(wdev->dev, "valid PDS start with '{'. Did you forget to
-> > compress it?\n");
+> > +- VDUSE_INVALIDATE_IOTLB: Invalidate the memory mapping in device IOTL=
+B
+> > +
+> >   Please see include/linux/vdpa.h for details.
+> >
+> > -In the data path, VDUSE framework implements a MMU-based on-chip IOMMU
+> > +The data path of userspace vDPA device is implemented in different way=
+s
+> > +depending on the vdpa bus to which it is attached.
+> > +
+> > +In virtio-vdpa case, VDUSE framework implements a MMU-based on-chip IO=
+MMU
+> >   driver which supports mapping the kernel dma buffer to a userspace io=
+va
+> >   region dynamically. The userspace iova region can be created by passi=
+ng
+> >   the userspace vDPA device fd to mmap(2).
+> >
+> > +In vhost-vdpa case, the dma buffer is reside in a userspace memory reg=
+ion
+> > +which will be shared to the VDUSE userspace processs via the file
+> > +descriptor in VDUSE_UPDATE_IOTLB message. And the corresponding addres=
+s
+> > +mapping (IOVA of dma buffer <-> VA of the memory region) is also inclu=
+ded
+> > +in this message.
+> > +
+> >   Besides, the eventfd mechanism is used to trigger interrupt callbacks=
+ and
+> >   receive virtqueue kicks in userspace. The following ioctls on the use=
+rspace
+> >   vDPA device fd are provided to support that:
+> > diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_use=
+r/vduse_dev.c
+> > index b974333ed4e9..d24aaacb6008 100644
+> > --- a/drivers/vdpa/vdpa_user/vduse_dev.c
+> > +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+> > @@ -34,6 +34,7 @@
+> >
+> >   struct vduse_dev_msg {
+> >       struct vduse_dev_request req;
+> > +     struct file *iotlb_file;
+> >       struct vduse_dev_response resp;
+> >       struct list_head list;
+> >       wait_queue_head_t waitq;
+> > @@ -325,12 +326,80 @@ static int vduse_dev_set_vq_state(struct vduse_de=
+v *dev,
+> >       return ret;
+> >   }
+> >
+> > +static int vduse_dev_update_iotlb(struct vduse_dev *dev, struct file *=
+file,
+> > +                             u64 offset, u64 iova, u64 size, u8 perm)
+> > +{
+> > +     struct vduse_dev_msg *msg;
+> > +     int ret;
+> > +
+> > +     if (!size)
 > > +             return -EINVAL;
-> > +     }
-> > +     for (i =3D 1; i < len - 1; i++) {
-> > +             if (buf[i] =3D=3D '{')
-> > +                     brace_level++;
-> > +             if (buf[i] =3D=3D '}')
-> > +                     brace_level--;
-> > +             if (buf[i] =3D=3D '}' && !brace_level) {
-> > +                     i++;
-> > +                     if (i - start + 1 > WFX_PDS_MAX_SIZE)
-> > +                             return -EFBIG;
-> > +                     buf[start] =3D '{';
-> > +                     buf[i] =3D 0;
-> > +                     dev_dbg(wdev->dev, "send PDS '%s}'\n", buf + star=
-t);
-> > +                     buf[i] =3D '}';
-> > +                     ret =3D hif_configuration(wdev, buf + start,
-> > +                                             i - start + 1);
-> > +                     if (ret > 0) {
-> > + dev_err(wdev->dev, "PDS bytes %d to %d: invalid data (unsupported
-> > options?)\n",
-> > +                                     start, i);
-> > +                             return -EINVAL;
-> > +                     }
-> > +                     if (ret =3D=3D -ETIMEDOUT) {
-> > + dev_err(wdev->dev, "PDS bytes %d to %d: chip didn't reply (corrupted
-> > file?)\n",
-> > +                                     start, i);
-> > +                             return ret;
-> > +                     }
-> > +                     if (ret) {
-> > + dev_err(wdev->dev, "PDS bytes %d to %d: chip returned an unknown
-> > error\n",
-> > +                                     start, i);
-> > +                             return -EIO;
-> > +                     }
-> > +                     buf[i] =3D ',';
-> > +                     start =3D i;
-> > +             }
-> > +     }
-> > +     return 0;
+> > +
+> > +     msg =3D vduse_dev_new_msg(dev, VDUSE_UPDATE_IOTLB);
+> > +     msg->req.size =3D sizeof(struct vduse_iotlb);
+> > +     msg->req.iotlb.offset =3D offset;
+> > +     msg->req.iotlb.iova =3D iova;
+> > +     msg->req.iotlb.size =3D size;
+> > +     msg->req.iotlb.perm =3D perm;
+> > +     msg->req.iotlb.fd =3D -1;
+> > +     msg->iotlb_file =3D get_file(file);
+> > +
+> > +     ret =3D vduse_dev_msg_sync(dev, msg);
+>
+>
+> My feeling is that we should provide consistent API for the userspace
+> device to use.
+>
+> E.g we'd better carry the IOTLB message for both virtio/vhost drivers.
+>
+> It looks to me for virtio drivers we can still use UPDAT_IOTLB message
+> by using VDUSE file as msg->iotlb_file here.
+>
+
+It's OK for me. One problem is when to transfer the UPDATE_IOTLB
+message in virtio cases.
+
+>
+> > +     vduse_dev_msg_put(msg);
+> > +     fput(file);
+> > +
+> > +     return ret;
 > > +}
->=20
-> What does this function do? Looks very strange.
+> > +
+> > +static int vduse_dev_invalidate_iotlb(struct vduse_dev *dev,
+> > +                                     u64 iova, u64 size)
+> > +{
+> > +     struct vduse_dev_msg *msg;
+> > +     int ret;
+> > +
+> > +     if (!size)
+> > +             return -EINVAL;
+> > +
+> > +     msg =3D vduse_dev_new_msg(dev, VDUSE_INVALIDATE_IOTLB);
+> > +     msg->req.size =3D sizeof(struct vduse_iotlb);
+> > +     msg->req.iotlb.iova =3D iova;
+> > +     msg->req.iotlb.size =3D size;
+> > +
+> > +     ret =3D vduse_dev_msg_sync(dev, msg);
+> > +     vduse_dev_msg_put(msg);
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static unsigned int perm_to_file_flags(u8 perm)
+> > +{
+> > +     unsigned int flags =3D 0;
+> > +
+> > +     switch (perm) {
+> > +     case VHOST_ACCESS_WO:
+> > +             flags |=3D O_WRONLY;
+> > +             break;
+> > +     case VHOST_ACCESS_RO:
+> > +             flags |=3D O_RDONLY;
+> > +             break;
+> > +     case VHOST_ACCESS_RW:
+> > +             flags |=3D O_RDWR;
+> > +             break;
+> > +     default:
+> > +             WARN(1, "invalidate vhost IOTLB permission\n");
+> > +             break;
+> > +     }
+> > +
+> > +     return flags;
+> > +}
+> > +
+> >   static ssize_t vduse_dev_read_iter(struct kiocb *iocb, struct iov_ite=
+r *to)
+> >   {
+> >       struct file *file =3D iocb->ki_filp;
+> >       struct vduse_dev *dev =3D file->private_data;
+> >       struct vduse_dev_msg *msg;
+> > -     int size =3D sizeof(struct vduse_dev_request);
+> > +     unsigned int flags;
+> > +     int fd, size =3D sizeof(struct vduse_dev_request);
+> >       ssize_t ret =3D 0;
+> >
+> >       if (iov_iter_count(to) < size)
+> > @@ -349,6 +418,18 @@ static ssize_t vduse_dev_read_iter(struct kiocb *i=
+ocb, struct iov_iter *to)
+> >               if (ret)
+> >                       return ret;
+> >       }
+> > +
+> > +     if (msg->req.type =3D=3D VDUSE_UPDATE_IOTLB && msg->req.iotlb.fd =
+=3D=3D -1) {
+> > +             flags =3D perm_to_file_flags(msg->req.iotlb.perm);
+> > +             fd =3D get_unused_fd_flags(flags);
+> > +             if (fd < 0) {
+> > +                     vduse_dev_enqueue_msg(dev, msg, &dev->send_list);
+> > +                     return fd;
+> > +             }
+> > +             fd_install(fd, get_file(msg->iotlb_file));
+> > +             msg->req.iotlb.fd =3D fd;
+> > +     }
+> > +
+> >       ret =3D copy_to_iter(&msg->req, size, to);
+> >       if (ret !=3D size) {
+> >               vduse_dev_enqueue_msg(dev, msg, &dev->send_list);
+> > @@ -565,6 +646,69 @@ static void vduse_vdpa_set_config(struct vdpa_devi=
+ce *vdpa, unsigned int offset,
+> >       vduse_dev_set_config(dev, offset, buf, len);
+> >   }
+> >
+> > +static void vduse_vdpa_invalidate_iotlb(struct vduse_dev *dev,
+> > +                                     struct vhost_iotlb_msg *msg)
+> > +{
+> > +     vduse_dev_invalidate_iotlb(dev, msg->iova, msg->size);
+> > +}
+> > +
+> > +static int vduse_vdpa_update_iotlb(struct vduse_dev *dev,
+> > +                                     struct vhost_iotlb_msg *msg)
+> > +{
+> > +     u64 uaddr =3D msg->uaddr;
+> > +     u64 iova =3D msg->iova;
+> > +     u64 size =3D msg->size;
+> > +     u64 offset;
+> > +     struct vm_area_struct *vma;
+> > +     int ret;
+> > +
+> > +     while (uaddr < msg->uaddr + msg->size) {
+> > +             vma =3D find_vma(current->mm, uaddr);
+> > +             ret =3D -EINVAL;
+> > +             if (!vma)
+> > +                     goto err;
+> > +
+> > +             size =3D min(msg->size, vma->vm_end - uaddr);
+> > +             offset =3D (vma->vm_pgoff << PAGE_SHIFT) + uaddr - vma->v=
+m_start;
+> > +             if (vma->vm_file && (vma->vm_flags & VM_SHARED)) {
+> > +                     ret =3D vduse_dev_update_iotlb(dev, vma->vm_file,=
+ offset,
+> > +                                                     iova, size, msg->=
+perm);
+> > +                     if (ret)
+> > +                             goto err;
+>
+>
+> My understanding is that vma is something that should not be known by a
+> device. So I suggest to move the above processing to vhost-vdpa.c.
+>
 
-I am going to add this comment:
+Will do it.
 
-The device need data about the antenna configuration. This information in
-provided by PDS (Platform Data Set, this is the wording used in WF200
-documentation) files. For hardware integrators, the full process to create
-PDS files is described here:
-  https://github.com/SiliconLabs/wfx-firmware/blob/master/PDS/README.md
-
-So this function aims to send PDS to the device. However, the PDS file is
-often bigger than Rx buffers of the chip, so it has to be sent in multiple
-parts.
-
-In add, the PDS data cannot be split anywhere. The PDS files contains tree
-structures. Braces are used to enter/leave a level of the tree (in a JSON
-fashion). PDS files can only been split between root nodes.
-
---=20
-J=E9r=F4me Pouiller
-
-
-
+Thanks,
+Yongji
