@@ -2,115 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F13582E1D70
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 15:33:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 751112E1D77
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 15:39:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727268AbgLWOcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 09:32:43 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:9399 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725957AbgLWOcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 09:32:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1608733962; x=1640269962;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mCXL6f9tv64JDm7NFojUga1H6cDJs67q/mMzoMR+F6o=;
-  b=j5CXUGTzsHG+ZZZwF0FKf6ChKJABmVy9Th4TfEW1F0HurEPspl7t01b5
-   STtRpoQprP8MKkct3uCOG0q21Kqvn2xFNPwfyQwgRxaaMyc8i00M//Qi5
-   2p/mAqgUujNJn4y33Xmb8Q1NS8K/jRG0NjXpXGxXoiv//ueVbE6zWl7b2
-   7TrULt+6GLXXx3cVvLgS757nOD/CF8Jue2HnfKddoZ7LULkaW5EvAFlkj
-   5Z40KT6NqgWf8vsn9/AM33mQlL1jdT1X8rrf60jfldp2GRAlGNgl9So0n
-   qvSaeHPvhgBIyw2s1DHnZz/jInYEnXr96YQWolLrltSrzgKBBPQQRK0dm
-   g==;
-IronPort-SDR: XCNArEeyOBPN8MtiaCVgnuE8FzgmXjXzIk+Nw5p7b7ARTv2oGMHdjg0r1nMc1L7FVBYsPMaHDL
- 2kJGCJjInutd3mgrv1HCOhEdNFqhZBGtsP4oquGt7nPekeM9HfKwqOKHYz2jQWxDf5ofWfT3kn
- rQJdP5JpWHdvRneFEkxNujRqdNRtpZg2TWPUjvHTFDS7C9IC1qdl2hw5PiKyDJ+84Epm6QNP4T
- Fs8fmtTP2XKnU25lqZgD+df7mlkfa1+UGOzKHCJNXVi89QQ1TWgXq/aEcH7d0P2H7D36VQyKS5
- BXg=
-X-IronPort-AV: E=Sophos;i="5.78,441,1599548400"; 
-   d="scan'208";a="100844053"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Dec 2020 07:31:26 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 23 Dec 2020 07:31:26 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 23 Dec 2020 07:31:25 -0700
-Date:   Wed, 23 Dec 2020 15:31:24 +0100
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Device Tree List <devicetree@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "Lars Povlsen" <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [RFC PATCH v2 8/8] arm64: dts: sparx5: Add the Sparx5 switch node
-Message-ID: <20201223143124.tr2vejqgpf2qsot2@mchp-dev-shegelun>
-References: <20201217075134.919699-1-steen.hegelund@microchip.com>
- <20201217075134.919699-9-steen.hegelund@microchip.com>
- <20201219202448.GE3026679@lunn.ch>
+        id S1727360AbgLWOiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 09:38:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59417 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726387AbgLWOiT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 09:38:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608734212;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dUU452tRqrvkfJMA+eezzExr3vkzl56EFOyXCB1EYnQ=;
+        b=SzOAH6BDhQniPwPGeVNyjUKZegECYuLXJ4jjsBOeohY5WI4YXsPGpwmvZ2xhx1QnbKAf3K
+        0wnHtOPq09iE8XoVop9yggnwuD2mrGWQw/C2UMiXEBZBm2OJmTfN6DBn2k0NsXSQ5NtxW2
+        yRih0N4QIOv/qK+fPGgABqRnRA5LlmA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-462--u0xtbG2N-2sRj1vrceUuw-1; Wed, 23 Dec 2020 09:36:49 -0500
+X-MC-Unique: -u0xtbG2N-2sRj1vrceUuw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9091E180A097;
+        Wed, 23 Dec 2020 14:36:48 +0000 (UTC)
+Received: from steredhat.redhat.com (ovpn-112-247.ams2.redhat.com [10.36.112.247])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 89294614F5;
+        Wed, 23 Dec 2020 14:36:39 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: [PATCH v2] vhost/vsock: add IOTLB API support
+Date:   Wed, 23 Dec 2020 15:36:38 +0100
+Message-Id: <20201223143638.123417-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20201219202448.GE3026679@lunn.ch>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19.12.2020 21:24, Andrew Lunn wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->
->> +             port13: port@13 {
->> +                     reg = <13>;
->> +                     /* Example: CU SFP, 1G speed */
->> +                     max-speed = <10000>;
->
->One too many 0's for 1G.
+This patch enables the IOTLB API support for vhost-vsock devices,
+allowing the userspace to emulate an IOMMU for the guest.
 
-Ah, but this is allocation for the port, not the speed.  This just
-used by the calendar module to allocate slots on the taxis as requested.
-So I would say it is OK to overallocate in this case (but you could
-argue it does not make much sense).
+These changes were made following vhost-net, in details this patch:
+- exposes VIRTIO_F_ACCESS_PLATFORM feature and inits the iotlb
+  device if the feature is acked
+- implements VHOST_GET_BACKEND_FEATURES and
+  VHOST_SET_BACKEND_FEATURES ioctls
+- calls vq_meta_prefetch() before vq processing to prefetch vq
+  metadata address in IOTLB
+- provides .read_iter, .write_iter, and .poll callbacks for the
+  chardev; they are used by the userspace to exchange IOTLB messages
 
->
->> +             /* 25G SFPs */
->> +             port56: port@56 {
->> +                     reg = <56>;
->> +                     max-speed = <10000>;
->
->Why limit a 25G SFP to 10G?
+This patch was tested specifying "intel_iommu=strict" in the guest
+kernel command line. I used QEMU with a patch applied [1] to fix a
+simple issue (that patch was merged in QEMU v5.2.0):
+    $ qemu -M q35,accel=kvm,kernel-irqchip=split \
+           -drive file=fedora.qcow2,format=qcow2,if=virtio \
+           -device intel-iommu,intremap=on,device-iotlb=on \
+           -device vhost-vsock-pci,guest-cid=3,iommu_platform=on,ats=on
 
-In the PCB134 case it is to keep the total allocation below 200Gbits
-((12+8)*10G).  There is a port mux mode that provides 8*25G on the 25G
-SerDes'es, but that would be a different DT.
+[1] https://lists.gnu.org/archive/html/qemu-devel/2020-10/msg09077.html
 
-The Datasheet shows which port mux combinations are possible, and not
-all combinations of SerDes, Speed and interface are allowed.
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
 
-The PCB134 was designed to showcase this "many 10G ports" mode, so that
-is why we have the current DT.
+The patch is the same of v1, but I re-tested it with:
+- QEMU v5.2.0-551-ga05f8ecd88
+- Linux 5.9.15 (host)
+- Linux 5.9.15 and 5.10.0 (guest)
+Now, enabling 'ats' it works well, there are just a few simple changes.
 
->
->    Andrew
+v1: https://www.spinics.net/lists/kernel/msg3716022.html
+v2:
+- updated commit message about QEMU version and string used to test
+- rebased on mst/vhost branch
 
-BR
-Steen
+Thanks,
+Stefano
+---
+ drivers/vhost/vsock.c | 68 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 65 insertions(+), 3 deletions(-)
 
----------------------------------------
-Steen Hegelund
-steen.hegelund@microchip.com
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index a483cec31d5c..5e78fb719602 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -30,7 +30,12 @@
+ #define VHOST_VSOCK_PKT_WEIGHT 256
+ 
+ enum {
+-	VHOST_VSOCK_FEATURES = VHOST_FEATURES,
++	VHOST_VSOCK_FEATURES = VHOST_FEATURES |
++			       (1ULL << VIRTIO_F_ACCESS_PLATFORM)
++};
++
++enum {
++	VHOST_VSOCK_BACKEND_FEATURES = (1ULL << VHOST_BACKEND_F_IOTLB_MSG_V2)
+ };
+ 
+ /* Used to track all the vhost_vsock instances on the system. */
+@@ -94,6 +99,9 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 	if (!vhost_vq_get_backend(vq))
+ 		goto out;
+ 
++	if (!vq_meta_prefetch(vq))
++		goto out;
++
+ 	/* Avoid further vmexits, we're already processing the virtqueue */
+ 	vhost_disable_notify(&vsock->dev, vq);
+ 
+@@ -449,6 +457,9 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+ 	if (!vhost_vq_get_backend(vq))
+ 		goto out;
+ 
++	if (!vq_meta_prefetch(vq))
++		goto out;
++
+ 	vhost_disable_notify(&vsock->dev, vq);
+ 	do {
+ 		u32 len;
+@@ -766,8 +777,12 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
+ 	mutex_lock(&vsock->dev.mutex);
+ 	if ((features & (1 << VHOST_F_LOG_ALL)) &&
+ 	    !vhost_log_access_ok(&vsock->dev)) {
+-		mutex_unlock(&vsock->dev.mutex);
+-		return -EFAULT;
++		goto err;
++	}
++
++	if ((features & (1ULL << VIRTIO_F_ACCESS_PLATFORM))) {
++		if (vhost_init_device_iotlb(&vsock->dev, true))
++			goto err;
+ 	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
+@@ -778,6 +793,10 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
+ 	}
+ 	mutex_unlock(&vsock->dev.mutex);
+ 	return 0;
++
++err:
++	mutex_unlock(&vsock->dev.mutex);
++	return -EFAULT;
+ }
+ 
+ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+@@ -811,6 +830,18 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+ 		if (copy_from_user(&features, argp, sizeof(features)))
+ 			return -EFAULT;
+ 		return vhost_vsock_set_features(vsock, features);
++	case VHOST_GET_BACKEND_FEATURES:
++		features = VHOST_VSOCK_BACKEND_FEATURES;
++		if (copy_to_user(argp, &features, sizeof(features)))
++			return -EFAULT;
++		return 0;
++	case VHOST_SET_BACKEND_FEATURES:
++		if (copy_from_user(&features, argp, sizeof(features)))
++			return -EFAULT;
++		if (features & ~VHOST_VSOCK_BACKEND_FEATURES)
++			return -EOPNOTSUPP;
++		vhost_set_backend_features(&vsock->dev, features);
++		return 0;
+ 	default:
+ 		mutex_lock(&vsock->dev.mutex);
+ 		r = vhost_dev_ioctl(&vsock->dev, ioctl, argp);
+@@ -823,6 +854,34 @@ static long vhost_vsock_dev_ioctl(struct file *f, unsigned int ioctl,
+ 	}
+ }
+ 
++static ssize_t vhost_vsock_chr_read_iter(struct kiocb *iocb, struct iov_iter *to)
++{
++	struct file *file = iocb->ki_filp;
++	struct vhost_vsock *vsock = file->private_data;
++	struct vhost_dev *dev = &vsock->dev;
++	int noblock = file->f_flags & O_NONBLOCK;
++
++	return vhost_chr_read_iter(dev, to, noblock);
++}
++
++static ssize_t vhost_vsock_chr_write_iter(struct kiocb *iocb,
++					struct iov_iter *from)
++{
++	struct file *file = iocb->ki_filp;
++	struct vhost_vsock *vsock = file->private_data;
++	struct vhost_dev *dev = &vsock->dev;
++
++	return vhost_chr_write_iter(dev, from);
++}
++
++static __poll_t vhost_vsock_chr_poll(struct file *file, poll_table *wait)
++{
++	struct vhost_vsock *vsock = file->private_data;
++	struct vhost_dev *dev = &vsock->dev;
++
++	return vhost_chr_poll(file, dev, wait);
++}
++
+ static const struct file_operations vhost_vsock_fops = {
+ 	.owner          = THIS_MODULE,
+ 	.open           = vhost_vsock_dev_open,
+@@ -830,6 +889,9 @@ static const struct file_operations vhost_vsock_fops = {
+ 	.llseek		= noop_llseek,
+ 	.unlocked_ioctl = vhost_vsock_dev_ioctl,
+ 	.compat_ioctl   = compat_ptr_ioctl,
++	.read_iter      = vhost_vsock_chr_read_iter,
++	.write_iter     = vhost_vsock_chr_write_iter,
++	.poll           = vhost_vsock_chr_poll,
+ };
+ 
+ static struct miscdevice vhost_vsock_misc = {
+-- 
+2.26.2
+
