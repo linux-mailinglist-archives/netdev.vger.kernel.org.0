@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DC842E145F
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:47:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3439D2E1506
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 03:48:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730721AbgLWCip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Dec 2020 21:38:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38304 "EHLO mail.kernel.org"
+        id S1731024AbgLWCrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Dec 2020 21:47:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42814 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730115AbgLWCin (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 22 Dec 2020 21:38:43 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 58CE72245C;
-        Wed, 23 Dec 2020 02:38:02 +0000 (UTC)
+        id S1730960AbgLWCq6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 22 Dec 2020 21:46:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D4B7225AC;
+        Wed, 23 Dec 2020 02:46:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1608691082;
-        bh=aDwJGnKtC5b+/IhpLBbDVnB03LBgSAU4U6/zGDqihoY=;
+        s=k20201202; t=1608691577;
+        bh=fwl/zGdy/F41clowIZcduV9ITHzuom7p0Cs0+cLYeoA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=c2+RnXuYXJy0qyj0d6ajKFyiB4IyWrrYH5wGApxtEFESZ1YNFveJslWiUN2/S7KeG
-         bB/fjo3eG4MD7u1t4xQslNTfBQiXM63XAF15S+qe2ZQ4y169r5VNX5KXA+Jeol3NYN
-         QmViRpKk7HSDR3u1gZaRj5QcBXa2nr2oofD8kFGxqEBgrhLQ88I9U6AS7lzjTxzzS5
-         lmAw7I5YOTJojBruphP5xlgqJh6nj4wuP+NiSL+1lhBBe73mbtsEFaHS52y2GIIUdr
-         WaHNM6pec7h2h9BQ4+kJObVC9U6y8Jiufue6lX7+/lO8Wsbz7jQK3NKOW/gX+ezd/W
-         8PXIO6d1qGZ8A==
-Date:   Tue, 22 Dec 2020 18:38:01 -0800
+        b=b2cfukww6oGD7vILcxKaGODJvhgjuVxLuW2EJuv1ZuG/VY7wfk97wZue34HuodzJV
+         B9QZ1BqLXqhxb6Vc+VrvdsHCegL/oNs8IzzSM7FUEry1TjWKx6xzexvyWYScHamyAD
+         3NEfgSPmkVeM902ZUs01Thp5VxC8xFH9a49I9j7aEOYEu6Tt3NB3HVRZvRE+1avys9
+         b6EQyW6VWmMBEKIFNDMw0oaXOzIQufBmGePJbxE+XCVl+lr9SFFTnDB8iZiCU1HB5c
+         3mv3JTdO7AJvRBnzuT1SkM3h7sZBVXt9iu9EJ11U2rZPYSfL0UO/ifGjl5toYgfwkG
+         VV3NX4plCuo2g==
+Date:   Tue, 22 Dec 2020 18:46:15 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 4.4 03/38] staging: wimax: depends on NET
-Message-ID: <20201222183801.327b964f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201223022516.2794471-3-sashal@kernel.org>
-References: <20201223022516.2794471-1-sashal@kernel.org>
-        <20201223022516.2794471-3-sashal@kernel.org>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net] ibmvnic: continue fatal error reset after passive
+ init
+Message-ID: <20201222184615.13ba9cad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201219214034.21123-1-ljp@linux.ibm.com>
+References: <20201219214034.21123-1-ljp@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,12 +39,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 22 Dec 2020 21:24:41 -0500 Sasha Levin wrote:
-> From: Randy Dunlap <rdunlap@infradead.org>
+On Sat, 19 Dec 2020 15:40:34 -0600 Lijun Pan wrote:
+> Commit f9c6cea0b385 ("ibmvnic: Skip fatal error reset after passive init")
+> says "If the passive
+> CRQ initialization occurs before the FATAL reset task is processed,
+> the FATAL error reset task would try to access a CRQ message queue
+> that was freed, causing an oops. The problem may be most likely to
+> occur during DLPAR add vNIC with a non-default MTU, because the DLPAR
+> process will automatically issue a change MTU request.
+> Fix this by not processing fatal error reset if CRQ is passively
+> initialized after client-driven CRQ initialization fails."
 > 
-> [ Upstream commit 9364a2cf567187c0a075942c22d1f434c758de5d ]
-> 
-> Fix build errors when CONFIG_NET is not enabled. E.g. (trimmed):
+> Even with this commit, we still see similar kernel crashes. In order
+> to completely solve this problem, we'd better continue the fatal error
+> reset, capture the kernel crash, and try to fix it from that end.
 
-This one can be dropped, before wimax moved to staging the dependency
-was met thru the directory structure.
+This basically reverts the quoted fix. Does the quoted fix make things
+worse? Otherwise we should leave the code be until proper fix is found.
