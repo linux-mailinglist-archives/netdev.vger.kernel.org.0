@@ -2,118 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54C512E2107
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 20:47:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B5202E2123
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 21:09:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728808AbgLWTqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 14:46:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59341 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728497AbgLWTqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 14:46:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608752721;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=hz7m6V9y9LKYDbuYf1YRMJjX+MWq8iR3kXuzC0duUxI=;
-        b=ixdpsCKZTix9zGrqoVSBBDeHcnPiiTI/1x4aYP4m0nyE1TmInT557HzEA0fDc7twM2X7Gr
-        OAoVT18NIzukeM4ZTzJKoGkZF4kJGik49PQohJy0+cHXZuMKdVvqZNeQgxYUcukq1RAIbI
-        mL0396SdqPUwxWuD1YvgOR3Z/GiwDqQ=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-412-L-87JRzSOqiz30y6Lvj3vQ-1; Wed, 23 Dec 2020 14:45:19 -0500
-X-MC-Unique: L-87JRzSOqiz30y6Lvj3vQ-1
-Received: by mail-qv1-f72.google.com with SMTP id cc1so207528qvb.3
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 11:45:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hz7m6V9y9LKYDbuYf1YRMJjX+MWq8iR3kXuzC0duUxI=;
-        b=R/5ebTqDRHsWZnrkBM1nhGIvgHvQXiwUSwB0o9wlyFdcovhOWMb8zb3OLKX011/ZvH
-         8XChEBSsROjGbvFNyWwLRgiZXQr2b/ycNxa3xYa+MzHIlPnY/al01z2tV7DgcNoKcpSJ
-         ticNsWrdYtXXtpiC4/6LAnKpK1SbI/1sLlfRi+rHDXyYaTucqa+mR6y5Yq2d6Ua5lTkl
-         D6wM0JqICNf5kQNRF5xKHVZqplgE/cpgyCiZoVur3RoMjXR//5jm0YQtRlrFx9RrfFi5
-         LClv1wakpV/prwtOQuzTGo3j4qGUFdrVNUol9ZirbjvkjDGXMIfP2yoCQFEGFMpCrgVC
-         bU7A==
-X-Gm-Message-State: AOAM532jdr6p075/X7mR/OOu3PQ7SYuspq/eY/uAxrlLIbzHeT6uXxtj
-        xii+Y0swQ5C921Vc9RseUlVjYCmmeAfhPOF6ljH+Ca0Ussb3Vka2Eh/6NRctHTeG+fiXxGKZ6nz
-        cWlwOsDViy1V+LErc
-X-Received: by 2002:ac8:5286:: with SMTP id s6mr27092691qtn.22.1608752719378;
-        Wed, 23 Dec 2020 11:45:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwvaGHXwGzRvaSpvVyxfxvDK522ewEsI68QgpytD4dBD53dYAsdhkiyCvoclzmTjNngfpObRQ==
-X-Received: by 2002:ac8:5286:: with SMTP id s6mr27092678qtn.22.1608752719201;
-        Wed, 23 Dec 2020 11:45:19 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id u4sm14517904qtv.49.2020.12.23.11.45.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Dec 2020 11:45:18 -0800 (PST)
-From:   trix@redhat.com
-To:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, vladyslavt@nvidia.com, maximmi@mellanox.com,
-        tariqt@nvidia.com, bjorn.topel@intel.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] net/mlx5e: remove h from printk format specifier
-Date:   Wed, 23 Dec 2020 11:45:12 -0800
-Message-Id: <20201223194512.126231-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        id S1728775AbgLWUHm convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 23 Dec 2020 15:07:42 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:6498 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728530AbgLWUHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 15:07:41 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BNK1gje014076
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 12:07:01 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 35k0e932xr-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 12:07:01 -0800
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Dec 2020 12:06:58 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 0A8EE2ECBE98; Wed, 23 Dec 2020 12:06:55 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v2 bpf] selftests/bpf: work-around EBUSY errors from hashmap update/delete
+Date:   Wed, 23 Dec 2020 12:06:52 -0800
+Message-ID: <20201223200652.3417075-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-23_12:2020-12-23,2020-12-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ priorityscore=1501 impostorscore=0 mlxscore=0 suspectscore=0 bulkscore=0
+ spamscore=0 mlxlogscore=999 malwarescore=0 adultscore=0 clxscore=1034
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012230143
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+20b6cc34ea74 ("bpf: Avoid hashtab deadlock with map_locked") introduced
+a possibility of getting EBUSY error on lock contention, which seems to happen
+very deterministically in test_maps when running 1024 threads on low-CPU
+machine. In libbpf CI case, it's a 2 CPU VM and it's hitting this 100% of the
+time. Work around by retrying on EBUSY (and EAGAIN, while we are at it) after
+a small sleep. sched_yield() is too agressive and fails even after 20 retries,
+so I went with usleep(1) for backoff.
 
-This change fixes the checkpatch warning described in this commit
-commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of unnecessary %h[xudi] and %hh[xudi]")
+Also log actual error returned to make it easier to see what's going on.
 
-Standard integer promotion is already done and %hx and %hhx is useless
-so do not encourage the use of %hh[xudi] or %h[xudi].
-
-Signed-off-by: Tom Rix <trix@redhat.com>
+Fixes: 20b6cc34ea74 ("bpf: Avoid hashtab deadlock with map_locked")
+Cc: Song Liu <songliubraving@fb.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/test_maps.c | 48 +++++++++++++++++++++----
+ 1 file changed, 42 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 43271a3856ca..36381a2ed5a5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -179,7 +179,7 @@ int mlx5e_validate_params(struct mlx5e_priv *priv, struct mlx5e_params *params)
+diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
+index 0ad3e6305ff0..51adc42b2b40 100644
+--- a/tools/testing/selftests/bpf/test_maps.c
++++ b/tools/testing/selftests/bpf/test_maps.c
+@@ -1312,22 +1312,58 @@ static void test_map_stress(void)
+ #define DO_UPDATE 1
+ #define DO_DELETE 0
  
- 	stop_room = mlx5e_calc_sq_stop_room(priv->mdev, params);
- 	if (stop_room >= sq_size) {
--		netdev_err(priv->netdev, "Stop room %hu is bigger than the SQ size %zu\n",
-+		netdev_err(priv->netdev, "Stop room %u is bigger than the SQ size %zu\n",
- 			   stop_room, sq_size);
- 		return -EINVAL;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 03831650f655..d41bfea85aa2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3763,7 +3763,7 @@ static int set_feature_lro(struct net_device *netdev, bool enable)
- 	mutex_lock(&priv->state_lock);
++#define MAP_RETRIES 20
++
++static int map_update_retriable(int map_fd, const void *key, const void *value,
++				int flags, int attempts)
++{
++	while (bpf_map_update_elem(map_fd, key, value, flags)) {
++		if (!attempts || (errno != EAGAIN && errno != EBUSY))
++			return -errno;
++
++		usleep(1);
++		attempts--;
++	}
++
++	return 0;
++}
++
++static int map_delete_retriable(int map_fd, const void *key, int attempts)
++{
++	while (bpf_map_delete_elem(map_fd, key)) {
++		if (!attempts || (errno != EAGAIN && errno != EBUSY))
++			return -errno;
++
++		usleep(1);
++		attempts--;
++	}
++
++	return 0;
++}
++
+ static void test_update_delete(unsigned int fn, void *data)
+ {
+ 	int do_update = ((int *)data)[1];
+ 	int fd = ((int *)data)[0];
+-	int i, key, value;
++	int i, key, value, err;
  
- 	if (enable && priv->xsk.refcnt) {
--		netdev_warn(netdev, "LRO is incompatible with AF_XDP (%hu XSKs are active)\n",
-+		netdev_warn(netdev, "LRO is incompatible with AF_XDP (%u XSKs are active)\n",
- 			    priv->xsk.refcnt);
- 		err = -EINVAL;
- 		goto out;
-@@ -4005,7 +4005,7 @@ static bool mlx5e_xsk_validate_mtu(struct net_device *netdev,
- 			max_mtu_page = mlx5e_xdp_max_mtu(new_params, &xsk);
- 			max_mtu = min(max_mtu_frame, max_mtu_page);
+ 	for (i = fn; i < MAP_SIZE; i += TASKS) {
+ 		key = value = i;
  
--			netdev_err(netdev, "MTU %d is too big for an XSK running on channel %hu. Try MTU <= %d\n",
-+			netdev_err(netdev, "MTU %d is too big for an XSK running on channel %u. Try MTU <= %d\n",
- 				   new_params->sw_mtu, ix, max_mtu);
- 			return false;
+ 		if (do_update) {
+-			assert(bpf_map_update_elem(fd, &key, &value,
+-						   BPF_NOEXIST) == 0);
+-			assert(bpf_map_update_elem(fd, &key, &value,
+-						   BPF_EXIST) == 0);
++			err = map_update_retriable(fd, &key, &value, BPF_NOEXIST, MAP_RETRIES);
++			if (err)
++				printf("error %d %d\n", err, errno);
++			assert(err == 0);
++			err = map_update_retriable(fd, &key, &value, BPF_EXIST, MAP_RETRIES);
++			if (err)
++				printf("error %d %d\n", err, errno);
++			assert(err == 0);
+ 		} else {
+-			assert(bpf_map_delete_elem(fd, &key) == 0);
++			err = map_delete_retriable(fd, &key, MAP_RETRIES);
++			if (err)
++				printf("error %d %d\n", err, errno);
++			assert(err == 0);
  		}
+ 	}
+ }
 -- 
-2.27.0
+2.24.1
 
