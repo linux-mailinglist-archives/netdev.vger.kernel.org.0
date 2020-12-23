@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F95F2E2105
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 20:47:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C512E2107
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 20:47:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728762AbgLWTqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 14:46:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52489 "EHLO
+        id S1728808AbgLWTqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 14:46:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59341 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728620AbgLWTqB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 14:46:01 -0500
+        by vger.kernel.org with ESMTP id S1728497AbgLWTqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 14:46:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608752675;
+        s=mimecast20190719; t=1608752721;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=EuGy6qIW0/paAvyDjWz+UUhD6lrJF9atn4prE3pJJ6w=;
-        b=WDNwjDgnVXgEcEYAYwbZ7ml5NALur6oqeNj/zWptfALNiywVAC2AT2jaazoWny3CjNJZso
-        VlMdH2ICNYtzyq+mIyGLSgaMSthTewtb6e2a6pTJhTF6lKASFJO+fUpRDCOft5E1FlrEOK
-        NFdOnjnrvTKhAXnaS1PsPA8azksI3TU=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-265-AKrtKLjGPxeccq_JspZQuA-1; Wed, 23 Dec 2020 14:44:32 -0500
-X-MC-Unique: AKrtKLjGPxeccq_JspZQuA-1
-Received: by mail-qk1-f197.google.com with SMTP id p185so66588qkc.9
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 11:44:32 -0800 (PST)
+        bh=hz7m6V9y9LKYDbuYf1YRMJjX+MWq8iR3kXuzC0duUxI=;
+        b=ixdpsCKZTix9zGrqoVSBBDeHcnPiiTI/1x4aYP4m0nyE1TmInT557HzEA0fDc7twM2X7Gr
+        OAoVT18NIzukeM4ZTzJKoGkZF4kJGik49PQohJy0+cHXZuMKdVvqZNeQgxYUcukq1RAIbI
+        mL0396SdqPUwxWuD1YvgOR3Z/GiwDqQ=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-412-L-87JRzSOqiz30y6Lvj3vQ-1; Wed, 23 Dec 2020 14:45:19 -0500
+X-MC-Unique: L-87JRzSOqiz30y6Lvj3vQ-1
+Received: by mail-qv1-f72.google.com with SMTP id cc1so207528qvb.3
+        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 11:45:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=EuGy6qIW0/paAvyDjWz+UUhD6lrJF9atn4prE3pJJ6w=;
-        b=YK+8Qz0ksh/yo4ksvR32n8uKzyMkKO72hhOJ+epDIJcjaUIVoNg4xpu1qDhP+4oOG8
-         HcHZBWf6OfkkfGxssIL6LFBio/0UAlTDgHwegDdphvrJyGTyzM+UZOZQ6ddqG2F09xoV
-         1mNslb+T8eY3Ak4z9Y8QcHf7c740MQkMKkgk+hCFuVaESGBAb4iVh05oECuiYRUb1rQC
-         EXgTmp5sFvoipxE0bUTJke8CV1MBbXBZIUP9DE2FXNs6VW3DKkKuDYh94+YKwn8KlEeT
-         mVNg3RqiNE+LStv7K7/CXaDGs6uOnJURr8L8ShWbJffeevS7Y6np3cXWJ2hVcpGVcEV1
-         Jh9w==
-X-Gm-Message-State: AOAM533GBX89aC93terAhmogylsX4oVCm4FQwnPYwflgO4U4B7ERMN0f
-        fcKKPuhQ7lmWBZNqMra6S3GOTT4uSXcuKwoxEhYHRZU3Cy2RqQMjMzTIdiPSrSqxQB+LSyNjcyn
-        UZAQu40KWNLhbjfZs
-X-Received: by 2002:a37:5b46:: with SMTP id p67mr28428052qkb.124.1608752672457;
-        Wed, 23 Dec 2020 11:44:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwnc84b1xei0cRwwa2LGRxGKjZwkeTxy1ErJZY1x5QNthF2Qqq8Btc61gyWkWl6PYehaSPqyw==
-X-Received: by 2002:a37:5b46:: with SMTP id p67mr28428041qkb.124.1608752672297;
-        Wed, 23 Dec 2020 11:44:32 -0800 (PST)
+        bh=hz7m6V9y9LKYDbuYf1YRMJjX+MWq8iR3kXuzC0duUxI=;
+        b=R/5ebTqDRHsWZnrkBM1nhGIvgHvQXiwUSwB0o9wlyFdcovhOWMb8zb3OLKX011/ZvH
+         8XChEBSsROjGbvFNyWwLRgiZXQr2b/ycNxa3xYa+MzHIlPnY/al01z2tV7DgcNoKcpSJ
+         ticNsWrdYtXXtpiC4/6LAnKpK1SbI/1sLlfRi+rHDXyYaTucqa+mR6y5Yq2d6Ua5lTkl
+         D6wM0JqICNf5kQNRF5xKHVZqplgE/cpgyCiZoVur3RoMjXR//5jm0YQtRlrFx9RrfFi5
+         LClv1wakpV/prwtOQuzTGo3j4qGUFdrVNUol9ZirbjvkjDGXMIfP2yoCQFEGFMpCrgVC
+         bU7A==
+X-Gm-Message-State: AOAM532jdr6p075/X7mR/OOu3PQ7SYuspq/eY/uAxrlLIbzHeT6uXxtj
+        xii+Y0swQ5C921Vc9RseUlVjYCmmeAfhPOF6ljH+Ca0Ussb3Vka2Eh/6NRctHTeG+fiXxGKZ6nz
+        cWlwOsDViy1V+LErc
+X-Received: by 2002:ac8:5286:: with SMTP id s6mr27092691qtn.22.1608752719378;
+        Wed, 23 Dec 2020 11:45:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwvaGHXwGzRvaSpvVyxfxvDK522ewEsI68QgpytD4dBD53dYAsdhkiyCvoclzmTjNngfpObRQ==
+X-Received: by 2002:ac8:5286:: with SMTP id s6mr27092678qtn.22.1608752719201;
+        Wed, 23 Dec 2020 11:45:19 -0800 (PST)
 Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id p75sm16054644qka.72.2020.12.23.11.44.30
+        by smtp.gmail.com with ESMTPSA id u4sm14517904qtv.49.2020.12.23.11.45.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Dec 2020 11:44:31 -0800 (PST)
+        Wed, 23 Dec 2020 11:45:18 -0800 (PST)
 From:   trix@redhat.com
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+To:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, vladyslavt@nvidia.com, maximmi@mellanox.com,
+        tariqt@nvidia.com, bjorn.topel@intel.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] igb: remove h from printk format specifier
-Date:   Wed, 23 Dec 2020 11:44:25 -0800
-Message-Id: <20201223194425.125605-1-trix@redhat.com>
+Subject: [PATCH] net/mlx5e: remove h from printk format specifier
+Date:   Wed, 23 Dec 2020 11:45:12 -0800
+Message-Id: <20201223194512.126231-1-trix@redhat.com>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -74,22 +75,45 @@ so do not encourage the use of %hh[xudi] or %h[xudi].
 
 Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 03f78fdb0dcd..cb682232df16 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -3156,7 +3156,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	 * the PCIe SR-IOV capability.
- 	 */
- 	if (pdev->is_virtfn) {
--		WARN(1, KERN_ERR "%s (%hx:%hx) should not be a VF!\n",
-+		WARN(1, KERN_ERR "%s (%x:%x) should not be a VF!\n",
- 			pci_name(pdev), pdev->vendor, pdev->device);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 43271a3856ca..36381a2ed5a5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -179,7 +179,7 @@ int mlx5e_validate_params(struct mlx5e_priv *priv, struct mlx5e_params *params)
+ 
+ 	stop_room = mlx5e_calc_sq_stop_room(priv->mdev, params);
+ 	if (stop_room >= sq_size) {
+-		netdev_err(priv->netdev, "Stop room %hu is bigger than the SQ size %zu\n",
++		netdev_err(priv->netdev, "Stop room %u is bigger than the SQ size %zu\n",
+ 			   stop_room, sq_size);
  		return -EINVAL;
  	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 03831650f655..d41bfea85aa2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3763,7 +3763,7 @@ static int set_feature_lro(struct net_device *netdev, bool enable)
+ 	mutex_lock(&priv->state_lock);
+ 
+ 	if (enable && priv->xsk.refcnt) {
+-		netdev_warn(netdev, "LRO is incompatible with AF_XDP (%hu XSKs are active)\n",
++		netdev_warn(netdev, "LRO is incompatible with AF_XDP (%u XSKs are active)\n",
+ 			    priv->xsk.refcnt);
+ 		err = -EINVAL;
+ 		goto out;
+@@ -4005,7 +4005,7 @@ static bool mlx5e_xsk_validate_mtu(struct net_device *netdev,
+ 			max_mtu_page = mlx5e_xdp_max_mtu(new_params, &xsk);
+ 			max_mtu = min(max_mtu_frame, max_mtu_page);
+ 
+-			netdev_err(netdev, "MTU %d is too big for an XSK running on channel %hu. Try MTU <= %d\n",
++			netdev_err(netdev, "MTU %d is too big for an XSK running on channel %u. Try MTU <= %d\n",
+ 				   new_params->sw_mtu, ix, max_mtu);
+ 			return false;
+ 		}
 -- 
 2.27.0
 
