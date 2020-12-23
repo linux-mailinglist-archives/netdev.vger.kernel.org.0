@@ -2,109 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A24D92E1957
-	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 08:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 458052E195F
+	for <lists+netdev@lfdr.de>; Wed, 23 Dec 2020 08:31:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727160AbgLWHQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 02:16:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726923AbgLWHQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 02:16:56 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6BEC0613D3
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 23:16:15 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id e25so5214640wme.0
-        for <netdev@vger.kernel.org>; Tue, 22 Dec 2020 23:16:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BSmgSuDuoUx/Y5HZU+3fSaL+Xdhrw1YtSQJpgb6Oa8Y=;
-        b=hm0Ds+6pK6QZDqGwbArkm4DzLIIUwwbOiBcBsOufWtbNW/i2nLgcIOgAITYLVODQHd
-         HtR5YnRuLF/FfbHrXInUYPbKWoLzpAYMw4KldIgiS9TwlmmZBBtoYGi6i8vvQ03+pag1
-         k+66ZwGD8dsJJpUYD5CKZx/SroXlBjQtzcdjvY3ia3FNgD/n7ezy+9nOnv8iCFhMBEKG
-         S8bZbImta7AvyQ+sqtdhFHJjC5OrZqNpdETZ/QzXJ02yyxstUkSHUiOcPjuKCTbaa4fG
-         vgT3cW0R0eMaZuo5G/0xDMD7wvskEPIGoHRKBdIyKh0Ji0jXm+ip4NRwItGP+POt0oQQ
-         zc6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BSmgSuDuoUx/Y5HZU+3fSaL+Xdhrw1YtSQJpgb6Oa8Y=;
-        b=rQWEBqIYdWiebRkZ2Wk5KNitKQBlVh9Npo6JeM/vNM36rm4LwGqQ94yy2BDsfyMX/y
-         qferJBBXCF7WsnbV0Eg+hOxmh5Ua8sRn2N3sQrmEanvK7c/DrqZy5B7WJswL3CqZe2EL
-         pVDsO3QaV7qga9zi58qkgq3WIaOlWLK2aSyj583XB8itmpJ07PUUU44kr2trILMYO/t5
-         Xibs+SFJoUWzRLnHTwSBumQcLwSjEcw+blTyv7Nk4tVT50cBlwXuGdhmCz++wTQ1i8rv
-         BXQ2o+fogoA0nDsGV6CpJWrrVJckbNJPs4r3xUcBs0vcFWaFidO38y/QKbgPCzNt1KVi
-         m24g==
-X-Gm-Message-State: AOAM531MYigr2GwVqqELVS/rumbr0I31M54NDM7GINYqMTb1WMCz/UNu
-        f3XC/hAy4roYoTQRrxQOqRo=
-X-Google-Smtp-Source: ABdhPJwUVA2xRfrbr5tXIRWXxf8tCKxhtb/5fkKv0ArMVrSn6BnmmPkxwfbnC9Qlup1k2Z/dOztOag==
-X-Received: by 2002:a1c:2091:: with SMTP id g139mr25716513wmg.133.1608707773488;
-        Tue, 22 Dec 2020 23:16:13 -0800 (PST)
-Received: from localhost.localdomain ([213.57.166.51])
-        by smtp.gmail.com with ESMTPSA id 125sm27926105wmc.27.2020.12.22.23.16.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Dec 2020 23:16:12 -0800 (PST)
-From:   Eyal Birger <eyal.birger@gmail.com>
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        shmulik.ladkani@gmail.com, Eyal Birger <eyal.birger@gmail.com>
-Subject: [RFC ipsec-next] xfrm: interface: enable TSO on xfrm interfaces
-Date:   Wed, 23 Dec 2020 09:15:38 +0200
-Message-Id: <20201223071538.3573783-1-eyal.birger@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727207AbgLWHaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 02:30:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38446 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726463AbgLWHaX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Dec 2020 02:30:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BCF0E222F9;
+        Wed, 23 Dec 2020 07:29:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1608708582;
+        bh=PF5HuekUsT713qQgf2j3FzPybto+Ng9waUvqmkHycKE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cthZNCYtfZy3W3g0+zfB6bDi4zo6q8YLbCgwJ5mulh5BSyK1qVd3xvGCWpnb1z48s
+         2KeV4eDpZ6WAbhoFySGDOE0WHQsw8amBZcRi0aDUBIoJGeqBOxCDk9ioRYaeq3vrMQ
+         caGmL1GcpfUXP8o6JCTJNWnGuFT47T/QwlRsg7SM=
+Date:   Wed, 23 Dec 2020 08:29:39 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.4 008/130] staging: wimax: depends on NET
+Message-ID: <X+Lx4wtqgIRwqaQO@kroah.com>
+References: <20201223021813.2791612-1-sashal@kernel.org>
+ <20201223021813.2791612-8-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201223021813.2791612-8-sashal@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Underlying xfrm output supports gso packets.
-Declare support in hw_features and adapt the xmit MTU check to pass GSO
-packets.
+On Tue, Dec 22, 2020 at 09:16:11PM -0500, Sasha Levin wrote:
+> From: Randy Dunlap <rdunlap@infradead.org>
+> 
+> [ Upstream commit 9364a2cf567187c0a075942c22d1f434c758de5d ]
+> 
+> Fix build errors when CONFIG_NET is not enabled. E.g. (trimmed):
+> 
+> ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_alloc':
+> op-msg.c:(.text+0xa9): undefined reference to `__alloc_skb'
+> ld: op-msg.c:(.text+0xcc): undefined reference to `genlmsg_put'
+> ld: op-msg.c:(.text+0xfc): undefined reference to `nla_put'
+> ld: op-msg.c:(.text+0x168): undefined reference to `kfree_skb'
+> ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_data_len':
+> op-msg.c:(.text+0x1ba): undefined reference to `nla_find'
+> ld: drivers/staging/wimax/op-msg.o: in function `wimax_msg_send':
+> op-msg.c:(.text+0x311): undefined reference to `init_net'
+> ld: op-msg.c:(.text+0x326): undefined reference to `netlink_broadcast'
+> ld: drivers/staging/wimax/stack.o: in function `__wimax_state_change':
+> stack.c:(.text+0x433): undefined reference to `netif_carrier_off'
+> ld: stack.c:(.text+0x46b): undefined reference to `netif_carrier_on'
+> ld: stack.c:(.text+0x478): undefined reference to `netif_tx_wake_queue'
+> ld: drivers/staging/wimax/stack.o: in function `wimax_subsys_exit':
+> stack.c:(.exit.text+0xe): undefined reference to `genl_unregister_family'
+> ld: drivers/staging/wimax/stack.o: in function `wimax_subsys_init':
+> stack.c:(.init.text+0x1a): undefined reference to `genl_register_family'
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: netdev@vger.kernel.org
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Link: https://lore.kernel.org/r/20201102072456.20303-1-rdunlap@infradead.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  net/wimax/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 
-Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
----
- net/xfrm/xfrm_interface.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+This isn't needed in any backported kernel as it only is relevant when
+the code moved to drivers/staging/
 
-diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index 9b8e292a7c6a..d28e9f05d9dd 100644
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -296,7 +296,8 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
- 	}
- 
- 	mtu = dst_mtu(dst);
--	if (skb->len > mtu) {
-+	if ((!skb_is_gso(skb) && skb->len > mtu) ||
-+	    (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))) {
- 		skb_dst_update_pmtu_no_confirm(skb, mtu);
- 
- 		if (skb->protocol == htons(ETH_P_IPV6)) {
-@@ -579,6 +580,11 @@ static void xfrmi_dev_setup(struct net_device *dev)
- 	eth_broadcast_addr(dev->broadcast);
- }
- 
-+#define XFRMI_FEATURES (NETIF_F_SG |		\
-+			NETIF_F_FRAGLIST |	\
-+			NETIF_F_GSO_SOFTWARE |	\
-+			NETIF_F_HW_CSUM)
-+
- static int xfrmi_dev_init(struct net_device *dev)
- {
- 	struct xfrm_if *xi = netdev_priv(dev);
-@@ -596,6 +602,8 @@ static int xfrmi_dev_init(struct net_device *dev)
- 	}
- 
- 	dev->features |= NETIF_F_LLTX;
-+	dev->features |= XFRMI_FEATURES;
-+	dev->hw_features |= XFRMI_FEATURES;
- 
- 	if (phydev) {
- 		dev->needed_headroom = phydev->needed_headroom;
--- 
-2.25.1
+thanks,
 
+greg k-h
