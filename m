@@ -2,70 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94F942E2747
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 14:26:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A3022E2760
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 14:34:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729037AbgLXNZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 08:25:24 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:9487 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728367AbgLXNZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 08:25:23 -0500
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4D1rPs3Dx1zhvVj;
-        Thu, 24 Dec 2020 21:24:01 +0800 (CST)
-Received: from ubuntu.network (10.175.138.68) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 24 Dec 2020 21:24:27 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <luciano.coelho@intel.com>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH v2 -next] intel: iwlwifi: use DEFINE_MUTEX() for mutex lock
-Date:   Thu, 24 Dec 2020 21:25:03 +0800
-Message-ID: <20201224132503.31397-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.22.0
+        id S1728971AbgLXNcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 08:32:21 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:35058 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728701AbgLXNcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 08:32:21 -0500
+Date:   Thu, 24 Dec 2020 14:31:37 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1608816698;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kj19jrn3JZDiqAb47VRLam2/Y7njoczA4wmTN/+icz8=;
+        b=0mxtZ5msZR9fZtUR6kwi4JnSZ1GJWyp0fYY/dbvBLYP+ZKDm36BTziTN3g3Ze8NBRGZI51
+        VFMj/K7rkRnz5ilV9iLBGG3pBAvOTESLlU4H7TSSVo1y85OrcZYT63+ZvMbRpKhAGBdCT2
+        8LFnvw/mcLG8hDYvVCB964vcUQw3InKRaIPcffWeXq+NWX8yyurNbUX42dNSoO5Belq1SO
+        q7izcEzcByqyxiQlLNrAp4IxGxJMtafNLGBXai1nR/JK5DFAtAU4EB8IVYvzsPgW2WswY8
+        /PdDjdgGmEHcwClVw0SrB5HjfWtHgJmkMHsyrkes9j7+wZ6WXMTXQslGQWWkCg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1608816698;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kj19jrn3JZDiqAb47VRLam2/Y7njoczA4wmTN/+icz8=;
+        b=S/gHJK0rwAUxhKpvRxUhW2dcGuPnXF0/mNeFaH6wQ8HDVZm0JHJ3cZWT1DKOapoEd8ahn9
+        8T0tN785V5D2VZBQ==
+From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
+To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Sebastian A. Siewior" <bigeasy@linutronix.de>
+Subject: Re: [RFC PATCH 1/3] chelsio: cxgb: Remove ndo_poll_controller()
+Message-ID: <X+SYOYn3jnwrldnA@lx-t490>
+References: <20201224131148.300691-1-a.darwish@linutronix.de>
+ <20201224131148.300691-2-a.darwish@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.138.68]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201224131148.300691-2-a.darwish@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mutex lock can be initialized automatically with DEFINE_MUTEX()
-rather than explicitly calling mutex_init().
+[[ Actually adding Eric to Cc ]]
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index 9dcd2e990c9c..71119044382f 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -133,7 +133,7 @@ enum {
- };
- 
- /* Protects the table contents, i.e. the ops pointer & drv list */
--static struct mutex iwlwifi_opmode_table_mtx;
-+static DEFINE_MUTEX(iwlwifi_opmode_table_mtx);
- static struct iwlwifi_opmode_table {
- 	const char *name;			/* name: iwldvm, iwlmvm, etc */
- 	const struct iwl_op_mode_ops *ops;	/* pointer to op_mode ops */
-@@ -1786,8 +1786,6 @@ static int __init iwl_drv_init(void)
- {
- 	int i, err;
- 
--	mutex_init(&iwlwifi_opmode_table_mtx);
--
- 	for (i = 0; i < ARRAY_SIZE(iwlwifi_opmode_table); i++)
- 		INIT_LIST_HEAD(&iwlwifi_opmode_table[i].drv);
- 
--- 
-2.22.0
-
+On Thu, Dec 24, 2020 at 02:11:46PM +0100, Ahmed S. Darwish wrote:
+> Since commit ac3d9dd034e5 ("netpoll: make ndo_poll_controller()
+> optional"), networking drivers which use NAPI for clearing their TX
+> completions should not provide an ndo_poll_controller(). Netpoll simply
+> triggers the necessary TX queues cleanup by synchronously calling the
+> driver's NAPI poll handler -- with irqs off and a zero budget.
+>
+> Modify the cxgb's poll method to clear the TX queues upon zero budget.
+> Per API requirements, make sure to never consume any RX packet in that
+> case (budget=0), and thus also not to increment the budget upon return.
+>
+> Afterwards, remove ndo_poll_controller().
+>
+> Link: https://lkml.kernel.org/r/20180921222752.101307-1-edumazet@google.com
+> Link: https://lkml.kernel.org/r/A782704A-DF97-4E85-B10A-D2268A67DFD7@fb.com
+> References: 822d54b9c2c1 ("netpoll: Drop budget parameter from NAPI polling call hierarchy")
+> Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+> Cc: Eric Dumazet <edumazet@google.com>
+> ---
+>  drivers/net/ethernet/chelsio/cxgb/cxgb2.c | 14 --------------
+>  drivers/net/ethernet/chelsio/cxgb/sge.c   |  9 ++++++++-
+>  2 files changed, 8 insertions(+), 15 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
+> index 0e4a0f413960..7b5a98330ef7 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
+> @@ -878,17 +878,6 @@ static int t1_set_features(struct net_device *dev, netdev_features_t features)
+>
+>  	return 0;
+>  }
+> -#ifdef CONFIG_NET_POLL_CONTROLLER
+> -static void t1_netpoll(struct net_device *dev)
+> -{
+> -	unsigned long flags;
+> -	struct adapter *adapter = dev->ml_priv;
+> -
+> -	local_irq_save(flags);
+> -	t1_interrupt(adapter->pdev->irq, adapter);
+> -	local_irq_restore(flags);
+> -}
+> -#endif
+>
+>  /*
+>   * Periodic accumulation of MAC statistics.  This is used only if the MAC
+> @@ -973,9 +962,6 @@ static const struct net_device_ops cxgb_netdev_ops = {
+>  	.ndo_set_mac_address	= t1_set_mac_addr,
+>  	.ndo_fix_features	= t1_fix_features,
+>  	.ndo_set_features	= t1_set_features,
+> -#ifdef CONFIG_NET_POLL_CONTROLLER
+> -	.ndo_poll_controller	= t1_netpoll,
+> -#endif
+>  };
+>
+>  static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+> diff --git a/drivers/net/ethernet/chelsio/cxgb/sge.c b/drivers/net/ethernet/chelsio/cxgb/sge.c
+> index 2d9c2b5a690a..d6df1a87db0b 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb/sge.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb/sge.c
+> @@ -1609,7 +1609,14 @@ static int process_pure_responses(struct adapter *adapter)
+>  int t1_poll(struct napi_struct *napi, int budget)
+>  {
+>  	struct adapter *adapter = container_of(napi, struct adapter, napi);
+> -	int work_done = process_responses(adapter, budget);
+> +	int work_done = 0;
+> +
+> +	if (budget)
+> +		work_done = process_responses(adapter, budget);
+> +	else {
+> +		/* budget=0 means: don't poll rx data */
+> +		process_pure_responses(adapter);
+> +	}
+>
+>  	if (likely(work_done < budget)) {
+>  		napi_complete_done(napi, work_done);
+> --
+> 2.29.2
+>
