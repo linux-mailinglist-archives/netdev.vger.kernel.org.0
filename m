@@ -2,127 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94AA52E28AD
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 20:03:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D07172E28C9
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 21:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728700AbgLXTCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 14:02:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48327 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728563AbgLXTCp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 14:02:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608836478;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=Z8MpfZcGhrP8iGy29XT88QvFzgqRvNA/G6lBDtAxjSI=;
-        b=J4fH0kEPQORPQZ5RpaNbLTyssXdPTGqiIZItj7egQkzYpcTesrO4mNwhE9uujCkQlh2B5k
-        5Q+r4QMu3k7kNVEsAqMfnve6d1i80ieAfDuapwT/1zMhAkTWVq3WggV9iTs+hdK06Zv8L0
-        r+DXPknLnLdpm6jyQw4Wb5pfBdRjILQ=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-528-WkrCTilSNceRAdzwnIi2QQ-1; Thu, 24 Dec 2020 14:01:13 -0500
-X-MC-Unique: WkrCTilSNceRAdzwnIi2QQ-1
-Received: by mail-wr1-f72.google.com with SMTP id u29so1209510wru.6
-        for <netdev@vger.kernel.org>; Thu, 24 Dec 2020 11:01:13 -0800 (PST)
+        id S1728901AbgLXUWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 15:22:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728704AbgLXUWg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 15:22:36 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B237C061575
+        for <netdev@vger.kernel.org>; Thu, 24 Dec 2020 12:21:56 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id u19so2952186edx.2
+        for <netdev@vger.kernel.org>; Thu, 24 Dec 2020 12:21:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OSyMhhLOs+gJkV1hBlUrD8wxjF+XuKOQBS1qIF2OVBo=;
+        b=GXPu9iXNKroXhBQ3NuRBUyu7qwxpJj81nQEXg6lFqE6JtI9vqTmWWqPkzUvISXEHpS
+         rnEP5EeblPBviGkjtRHNCCkG13ZHUKPHzkVq93cWpTuWXWopRXTQDvOK9pA26MNpeuXa
+         crtsjTt+QHR+qkS9WUBfdkJ87O06hQpwNNPYjimDPJduZA+m6xHVKw7txDROvCt2IkGW
+         u2PgQfUnO1Cc/6YFyoTEce0z18kr7TuYXwthdzE/CDIswLOUpMiRDMn4p78YJqu9j32O
+         p5frJeCjMv7+Qz5a5TjGCL7Ur3Z7+L6fq/nNXS5GRHEX6wh3OPGEG55SouTEzPhqv91m
+         lGDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Z8MpfZcGhrP8iGy29XT88QvFzgqRvNA/G6lBDtAxjSI=;
-        b=WoG+wabpy9HymY1ex4fYNJ6zRw634RBZlg8OkPAe6q50gCKOfHH2lNy1Mf01hHmxI6
-         EUrOxTBTk0jdCkxWhVVpG5vTp69IzIarQHkz7ZU2REp9z1+HKo/0iEk+BKQ36iqZPniw
-         aG+0VKp93GYz8u3gpCslDGm9JKvt+Cvkf/i9A3V/WmUvoh/LbLB6Zb1ZHD7c8LrjXU4N
-         D5kMDfInjtNYBICXpmUKOrVGn3UfTTzYPjNq7VaMLvNtZ2M0T6wWfvZx/ru5dSRipl8e
-         eHbZfyCN4CeDRmGfGS6BCTd3+m7rz3TiNGA4zgQubQvkQEcX+upVULgqNeh/+rPMZD0U
-         Be/A==
-X-Gm-Message-State: AOAM531R/Lzn7bgLPJkpm9sEEz++VEzbUy/G/duCKpQabHZgXAeABthv
-        2vUMTSClqxjHa2PzBVHCUtNNHP8KXECgFNYdGr5sgcMvamyP26qxPRwD6eRGe7Uz6hnWZRtZ7Na
-        plvfr1p6SaW99pHsi
-X-Received: by 2002:a1c:2e88:: with SMTP id u130mr5501001wmu.83.1608836472016;
-        Thu, 24 Dec 2020 11:01:12 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzjug5k5Hu6/nXivtFpCBUcIbzBxu94e7Zi5ybGss+pMF8ofMM1a4nzikRpQmOLzOIRBKLjWg==
-X-Received: by 2002:a1c:2e88:: with SMTP id u130mr5500988wmu.83.1608836471846;
-        Thu, 24 Dec 2020 11:01:11 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id i11sm4367126wmd.47.2020.12.24.11.01.10
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OSyMhhLOs+gJkV1hBlUrD8wxjF+XuKOQBS1qIF2OVBo=;
+        b=d4xh3SkZbT+DVmXI7umKBxCfmrHXNSBYFOVgd3Cxff2Wa2V0CXfVQVA8FcbSqiyQu6
+         lGXk+tQQ+gIbdcK9Plh4SnQVj6zTmcC8ei1QTwXV0MrT3lcKM6D+Pih/QkXJQbkfAtzB
+         f3vCJBFnbiFriQna+Po/tWCQmy1wyZ7pU2H0t4vSTxLfbKcfS67YqYMs9ePhAfAGxOmq
+         S9H410bH7qEJPtgWGUHHuPlauT3TjYLCjR3jV3ejElXetD4VNz1aN79mgKZZ3iWAvImL
+         aghrp0HshqK9dGdh1hYvc3siTI62Z6i9bLZp/Of8/8yAEcZPqEze6yG1F74fLvdfDgDN
+         xW0g==
+X-Gm-Message-State: AOAM532nM4km3dh6+WPaWmDHF21qIfV/+noMCuiYHBXhIDIf1UGFbqE1
+        iS6ZrhkEf4dzp5IbIyhNKMwB1g==
+X-Google-Smtp-Source: ABdhPJx+uTKMo065QA17ljoCp5G/bHHEIvKZRQvh62B1ObvYgNEWw5suRU9fRncpMLe+WStRSvqviw==
+X-Received: by 2002:a05:6402:5114:: with SMTP id m20mr19785736edd.35.1608841315120;
+        Thu, 24 Dec 2020 12:21:55 -0800 (PST)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id q25sm32419922eds.85.2020.12.24.12.21.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Dec 2020 11:01:11 -0800 (PST)
-Date:   Thu, 24 Dec 2020 20:01:09 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net] ipv4: Ignore ECN bits for fib lookups in
- fib_compute_spec_dst()
-Message-ID: <49ff39b1f55c914847cd58678bae6282112db701.1608836260.git.gnault@redhat.com>
+        Thu, 24 Dec 2020 12:21:54 -0800 (PST)
+Date:   Thu, 24 Dec 2020 21:21:53 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     trix@redhat.com
+Cc:     kuba@kernel.org, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, gustavoars@kernel.org,
+        louis.peens@netronome.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, oss-drivers@netronome.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nfp: remove h from printk format specifier
+Message-ID: <20201224202152.GA3380@netronome.com>
+References: <20201223202053.131157-1-trix@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20201223202053.131157-1-trix@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RT_TOS() only clears one of the ECN bits. Therefore, when
-fib_compute_spec_dst() resorts to a fib lookup, it can return
-different results depending on the value of the second ECN bit.
+On Wed, Dec 23, 2020 at 12:20:53PM -0800, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> This change fixes the checkpatch warning described in this commit
+> commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of unnecessary %h[xudi] and %hh[xudi]")
+> 
+> Standard integer promotion is already done and %hx and %hhx is useless
+> so do not encourage the use of %hh[xudi] or %h[xudi].
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-For example, ECT(0) and ECT(1) packets could be treated differently.
+Hi Tom,
 
-  $ ip netns add ns0
-  $ ip netns add ns1
-  $ ip link add name veth01 netns ns0 type veth peer name veth10 netns ns1
-  $ ip -netns ns0 link set dev lo up
-  $ ip -netns ns1 link set dev lo up
-  $ ip -netns ns0 link set dev veth01 up
-  $ ip -netns ns1 link set dev veth10 up
+This patch looks appropriate for net-next, which is currently closed.
 
-  $ ip -netns ns0 address add 192.0.2.10/24 dev veth01
-  $ ip -netns ns1 address add 192.0.2.11/24 dev veth10
+The changes look fine, but I'm curious to know if its intentionally that
+the following was left alone in ethernet/netronome/nfp/nfp_net_ethtool.c:nfp_net_get_nspinfo()
 
-  $ ip -netns ns1 address add 192.0.2.21/32 dev lo
-  $ ip -netns ns1 route add 192.0.2.10/32 tos 4 dev veth10 src 192.0.2.21
-  $ ip netns exec ns1 sysctl -wq net.ipv4.icmp_echo_ignore_broadcasts=0
+	snprintf(version, ETHTOOL_FWVERS_LEN, "%hu.%hu"
 
-With TOS 4 and ECT(1), ns1 replies using source address 192.0.2.21
-(ping uses -Q to set all TOS and ECN bits):
+If the above was not intentional then perhaps you could respin with that
+updated and resubmit when net-next re-opens. Feel free to add:
 
-  $ ip netns exec ns0 ping -c 1 -b -Q 5 192.0.2.255
-  [...]
-  64 bytes from 192.0.2.21: icmp_seq=1 ttl=64 time=0.544 ms
-
-But with TOS 4 and ECT(0), ns1 replies using source address 192.0.2.11
-because the "tos 4" route isn't matched:
-
-  $ ip netns exec ns0 ping -c 1 -b -Q 6 192.0.2.255
-  [...]
-  64 bytes from 192.0.2.11: icmp_seq=1 ttl=64 time=0.597 ms
-
-After this patch the ECN bits don't affect the result anymore:
-
-  $ ip netns exec ns0 ping -c 1 -b -Q 6 192.0.2.255
-  [...]
-  64 bytes from 192.0.2.21: icmp_seq=1 ttl=64 time=0.591 ms
-
-Fixes: 35ebf65e851c ("ipv4: Create and use fib_compute_spec_dst() helper.")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- net/ipv4/fib_frontend.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index cdf6ec5aa45d..84bb707bd88d 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -292,7 +292,7 @@ __be32 fib_compute_spec_dst(struct sk_buff *skb)
- 			.flowi4_iif = LOOPBACK_IFINDEX,
- 			.flowi4_oif = l3mdev_master_ifindex_rcu(dev),
- 			.daddr = ip_hdr(skb)->saddr,
--			.flowi4_tos = RT_TOS(ip_hdr(skb)->tos),
-+			.flowi4_tos = ip_hdr(skb)->tos & IPTOS_RT_MASK,
- 			.flowi4_scope = scope,
- 			.flowi4_mark = vmark ? skb->mark : 0,
- 		};
--- 
-2.21.3
-
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
