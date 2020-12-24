@@ -2,93 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 418342E27FF
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 17:02:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55A192E280D
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 17:21:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728655AbgLXP5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 10:57:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728266AbgLXP5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 10:57:38 -0500
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E8AC061573
-        for <netdev@vger.kernel.org>; Thu, 24 Dec 2020 07:56:58 -0800 (PST)
-Received: by mail-ua1-x935.google.com with SMTP id w7so780067uap.13
-        for <netdev@vger.kernel.org>; Thu, 24 Dec 2020 07:56:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XRYO0lFUVOrah75uQXi2tgidobUUXCXbkVzNcCSUK7Y=;
-        b=vD+85mxRjBfgH/Sr9fNWdZGEZkGCHFeLsjU3Ur+c3zJ5wpb8lGtmkFUlNYttDgBl3q
-         pA+Xr1MSgCOJD31ItdxXMEyce5g0ByZJ9cV5+yoh1TlZ15r9KptXP5AmQAA5IDLtQhSo
-         ufPxBCA+vBcRbjE/l97R4uobG1CxRofdyDygsn0r4YzTJg8fHwRFCRGXpRcV5HWb4UPy
-         822ceXGoh7xsp9/ALp7vqguO5tHDyI9vzdm+X9EY4dOxT5LvNdfSw1BnYqGU9VZB5pot
-         qJt/EEOUvT0cHl2EwwDJ6Hu7uMhSyi+zlsutqz9l1oa6vxvhfH+qb8i8zb7TkPf/dwEh
-         7QGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XRYO0lFUVOrah75uQXi2tgidobUUXCXbkVzNcCSUK7Y=;
-        b=XZT/IdY4sMZOgVaw5eBx3Ejiiy2j9FV1Fov1RA9bn+B+8rBLjNdMRGyBjItqngZbwx
-         O0Kz0dvZ5l1BZlK1JMMw84VSzMy2lEQ8E4jTy84yhQXLvlyht0FH3JBewf4oiPQ845LL
-         Ie+VMN7aprJGi4FUCTldCo+UrtUgl4hjBlx0tYbZ3206aN0ETH6edaUuARBAuCcMOPEM
-         nSrK0Pto9iLCipAZ/ZN2nnymIL5qgbRhf304KZodxeMWf8fDQO5wHrs+duF3dmn+Nouf
-         A0KPX7GhYN1pyP/OpUKzzFOtD0qB1V7Q1Lj475fegeKHQZEz/TDZbKdTADl7Ju245Twk
-         237Q==
-X-Gm-Message-State: AOAM532Hzbsto0LpZqHWzhW7GglZLl3raYmAPfT9ltkJpqzmrFlwhEzz
-        ccboGOT4E11Jh7xWthbLkeMPkBZYIPU=
-X-Google-Smtp-Source: ABdhPJwmlVswiRCzCp8b33mjw5JxPXMhBKxKeMQpzEbqXvWUimj1yUpse5RfPVQp/1f+oUgCkzTvRQ==
-X-Received: by 2002:ab0:1866:: with SMTP id j38mr20116644uag.27.1608825415636;
-        Thu, 24 Dec 2020 07:56:55 -0800 (PST)
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
-        by smtp.gmail.com with ESMTPSA id z10sm3208037vsf.26.2020.12.24.07.56.54
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Dec 2020 07:56:54 -0800 (PST)
-Received: by mail-vs1-f48.google.com with SMTP id h6so1501601vsr.6
-        for <netdev@vger.kernel.org>; Thu, 24 Dec 2020 07:56:54 -0800 (PST)
-X-Received: by 2002:a67:3201:: with SMTP id y1mr21661285vsy.22.1608825414045;
- Thu, 24 Dec 2020 07:56:54 -0800 (PST)
+        id S1728065AbgLXQVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 11:21:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49704 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727081AbgLXQVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 11:21:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608826776;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AAfT+BsMBBm+hMNjIwD1FhtI2G3uVNwHXDU1KcG/lpc=;
+        b=L0/SUZV11X7RvNO72AQziDQg3s6QJLAg7EkJ2cXLKMAA6CEnIg81nJUAic52e2FbbdtQie
+        Ms02sB0sJpq2pyjaSG1Ob7usqWqFjtoNB23RyvFFiSkWhcLUaxbMXGP1kIeWNgDddK8ooQ
+        MCROiVoyCCmfx+iYDzC0lEE7bkC2HKA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-388-vj3Ex3tKPvipUzpXQJ4qiw-1; Thu, 24 Dec 2020 11:19:34 -0500
+X-MC-Unique: vj3Ex3tKPvipUzpXQJ4qiw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0AD07107ACF5;
+        Thu, 24 Dec 2020 16:19:33 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7E50C5D747;
+        Thu, 24 Dec 2020 16:19:22 +0000 (UTC)
+Date:   Thu, 24 Dec 2020 17:19:21 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        lorenzo.bianconi@redhat.com, alexander.duyck@gmail.com,
+        maciej.fijalkowski@intel.com, saeed@kernel.org, brouer@redhat.com
+Subject: Re: [PATCH v5 bpf-next 2/2] net: xdp: introduce xdp_prepare_buff
+ utility routine
+Message-ID: <20201224171921.0461fe24@carbon>
+In-Reply-To: <45f46f12295972a97da8ca01990b3e71501e9d89.1608670965.git.lorenzo@kernel.org>
+References: <cover.1608670965.git.lorenzo@kernel.org>
+        <45f46f12295972a97da8ca01990b3e71501e9d89.1608670965.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-References: <1608810533-8308-1-git-send-email-wangyunjian@huawei.com>
-In-Reply-To: <1608810533-8308-1-git-send-email-wangyunjian@huawei.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 24 Dec 2020 10:56:16 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfmKFVZ7_q6nU92YYk-MLKWTa_bkE+L4C8vi5+UQ1_a8A@mail.gmail.com>
-Message-ID: <CA+FuTSfmKFVZ7_q6nU92YYk-MLKWTa_bkE+L4C8vi5+UQ1_a8A@mail.gmail.com>
-Subject: Re: [PATCH net] tun: fix return value when the number of iovs exceeds MAX_SKB_FRAGS
-To:     wangyunjian <wangyunjian@huawei.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        virtualization@lists.linux-foundation.org,
-        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
-        chenchanghu <chenchanghu@huawei.com>,
-        xudingke <xudingke@huawei.com>,
-        "huangbin (J)" <brian.huangbin@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 24, 2020 at 6:51 AM wangyunjian <wangyunjian@huawei.com> wrote:
->
-> From: Yunjian Wang <wangyunjian@huawei.com>
->
-> Currently the tun_napi_alloc_frags() function returns -ENOMEM when the
-> number of iovs exceeds MAX_SKB_FRAGS + 1. However this is inappropriate,
-> we should use -EMSGSIZE instead of -ENOMEM.
->
-> Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
-> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+On Tue, 22 Dec 2020 22:09:29 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+> Introduce xdp_prepare_buff utility routine to initialize per-descriptor
+> xdp_buff fields (e.g. xdp_buff pointers). Rely on xdp_prepare_buff() in
+> all XDP capable drivers.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c  |  7 +++----
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |  5 +----
+>  .../net/ethernet/cavium/thunder/nicvf_main.c  |  8 ++++----
+>  .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  6 ++----
+>  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 14 +++++--------
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 12 +++++------
+>  drivers/net/ethernet/intel/ice/ice_txrx.c     |  9 +++++----
+>  drivers/net/ethernet/intel/igb/igb_main.c     | 12 +++++------
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 12 +++++------
+>  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c | 12 +++++------
+>  drivers/net/ethernet/marvell/mvneta.c         |  7 ++-----
+>  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  8 +++-----
+>  drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  6 ++----
+>  .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  5 +----
+>  .../ethernet/netronome/nfp/nfp_net_common.c   |  8 ++++----
+>  drivers/net/ethernet/qlogic/qede/qede_fp.c    |  6 ++----
+>  drivers/net/ethernet/sfc/rx.c                 |  7 ++-----
+>  drivers/net/ethernet/socionext/netsec.c       |  6 ++----
+>  drivers/net/ethernet/ti/cpsw.c                | 16 +++++----------
+>  drivers/net/ethernet/ti/cpsw_new.c            | 16 +++++----------
+>  drivers/net/hyperv/netvsc_bpf.c               |  5 +----
+>  drivers/net/tun.c                             |  5 +----
+>  drivers/net/veth.c                            |  8 ++------
+>  drivers/net/virtio_net.c                      | 12 ++++-------
+>  drivers/net/xen-netfront.c                    |  6 ++----
+>  include/net/xdp.h                             | 12 +++++++++++
+>  net/bpf/test_run.c                            |  7 ++-----
+>  net/core/dev.c                                | 20 +++++++++----------
+>  28 files changed, 105 insertions(+), 152 deletions(-)
 
-It might be good to explain why the distinction matters: one denotes a
-transient failure that the caller (specifically vhost_net) can retry,
-the other a persistent failure due to bad packet geometry that should
-be dropped.
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
