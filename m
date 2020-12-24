@@ -2,109 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 506A62E2544
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 08:38:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BADE2E2556
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 08:56:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727114AbgLXHiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 02:38:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbgLXHiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 02:38:09 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DD2C061282
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 23:37:29 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id z11so1527572qkj.7
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 23:37:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7S1VNj0uTb/MJfvKq1LUlvfvpbeOc2dUFGeGmoStAm8=;
-        b=y2mAMKLBvkKfyhdrzexVASAiK4vVWCJCZ1hJFltArLr3X1Jhz324nsnHE0Wxu7AGxF
-         WIJhWKqkDLQKQjswtS0LBcPfkDId7FmhXya+y9k0gjUCuVMvutc9Ow/zxNrd8e+HmCEd
-         /cTqjKf9/xenfIRkxwMQkoR8gmSpIrFtVSqzv4szfTC7xVKInGpy69Sfy7rbYzp+SOdW
-         DqJhOaoIPepTc7To14a5hcr0B4fwSjruYLh0zcEY9H0C5SiNhgsXDRp4HjrVnXccHMz9
-         qEh8HOWFDuCC2ayKu8FDr9fevYARazKo7YQLnxKInxu94x4Py+fTPWLRSlT3/E3TuOzl
-         f6QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7S1VNj0uTb/MJfvKq1LUlvfvpbeOc2dUFGeGmoStAm8=;
-        b=nUhPNoRDS7p1U9b+Q5d2lleUsCL3Q2e9IZblO945ritH8UHIMtcY/YpOqGX6dnnA+7
-         swISclbp76o1wcn1zILy19H0RDtwt0e2qnXUhdcGRNm9PtEZig1Zo2jTfA2wfaSaXN/x
-         RCzCuHAS0Zb8DxwH5kGkCKRobCytbY6u6kQMydqdgs7muxLmGR/j1mSj8I6kzZtU2wFm
-         f02x3Pxj8HBBITv2KuXbmz2aOHS+gavAWHtV/AFYr2VgXA6NAO1Mh9H5SB6Bu1Xc11JF
-         o/FiPI6Ix1q+iGit3tSkJHTZocUOeI31DCJSaVjcIS/6vvuCiK9E1r2ZXVNoF9n2cupa
-         pKZg==
-X-Gm-Message-State: AOAM532kWYeAuzzbEfwRmbMlYyVWF5T6McTwCDniyT0lZjod0VAqny/x
-        sn5Deegx9LeWrIgSpZ+bargeJrQj1K7NIlJ8lYFUpA==
-X-Google-Smtp-Source: ABdhPJzQQ4GzEZTmGKjmIbLIe0upxe08WCOP6ndJIIbMwHsp06H66JTTLqM7gjsRc84WYR0Wz7EQdFZ/EVzv53erssA=
-X-Received: by 2002:a37:7981:: with SMTP id u123mr21185427qkc.360.1608795448285;
- Wed, 23 Dec 2020 23:37:28 -0800 (PST)
+        id S1726934AbgLXHyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 02:54:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51982 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725613AbgLXHyg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Dec 2020 02:54:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8BA2222571;
+        Thu, 24 Dec 2020 07:53:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1608796436;
+        bh=JpdEM1KFQ9SN6wPewCJ79XuY6eR+d8OwNoFGLsjFUu0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Qp/bvnXpT/PnmnCXsrLeKWcmUDYta8PAaXDNiRdYCgphAPyTpAceVFFAVeVtJatWF
+         Qookzrnw9T40URK8dgNtLZqoKQEevdsjQ2h0/7UtItuh5GsFxQXYQV1HYTjJujMtkP
+         imf7G234fFqee6MGSRfuGUupAuGWau6taCZarQHU=
+Date:   Thu, 24 Dec 2020 08:53:52 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Roland Dreier <roland@kernel.org>
+Cc:     Oliver Neukum <oliver@neukum.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] CDC-NCM: remove "connected" log message
+Message-ID: <X+RJEI+1AR5E0z3z@kroah.com>
+References: <20201222184926.35382198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201224032116.2453938-1-roland@kernel.org>
 MIME-Version: 1.0
-References: <cover.1608670965.git.lorenzo@kernel.org>
-In-Reply-To: <cover.1608670965.git.lorenzo@kernel.org>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 24 Dec 2020 08:37:17 +0100
-Message-ID: <CAPv3WKd-OFco5E56RtzO3QgJg-b5+s7ukVazUYSOtNBczQOViw@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 0/2] introduce xdp_init_buff/xdp_prepare_buff
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net, Jesper Dangaard Brouer <brouer@redhat.com>,
-        lorenzo.bianconi@redhat.com, alexander.duyck@gmail.com,
-        maciej.fijalkowski@intel.com, saeed@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201224032116.2453938-1-roland@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo,
+On Wed, Dec 23, 2020 at 07:21:16PM -0800, Roland Dreier wrote:
+> The cdc_ncm driver passes network connection notifications up to
+> usbnet_link_change(), which is the right place for any logging.
+> Remove the netdev_info() duplicating this from the driver itself.
+> 
+> This stops devices such as my "TRENDnet USB 10/100/1G/2.5G LAN"
+> (ID 20f4:e02b) adapter from spamming the kernel log with
+> 
+>     cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
+> 
+> messages every 60 msec or so.
+> 
+> Signed-off-by: Roland Dreier <roland@kernel.org>
+> ---
+>  drivers/net/usb/cdc_ncm.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+> index a45fcc44facf..50d3a4e6d445 100644
+> --- a/drivers/net/usb/cdc_ncm.c
+> +++ b/drivers/net/usb/cdc_ncm.c
+> @@ -1850,9 +1850,6 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
+>  		 * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
+>  		 * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
+>  		 */
+> -		netif_info(dev, link, dev->net,
+> -			   "network connection: %sconnected\n",
+> -			   !!event->wValue ? "" : "dis");
+>  		usbnet_link_change(dev, !!event->wValue, 0);
+>  		break;
+>  
+> -- 
+> 2.29.2
+> 
 
-
-wt., 22 gru 2020 o 22:13 Lorenzo Bianconi <lorenzo@kernel.org> napisa=C5=82=
-(a):
->
-> Introduce xdp_init_buff and xdp_prepare_buff utility routines to initiali=
-ze
-> xdp_buff data structure and remove duplicated code in all XDP capable
-> drivers.
->
-> Changes since v4:
-> - fix xdp_init_buff/xdp_prepare_buff (natural order is xdp_init_buff() fi=
-rst
->   and then xdp_prepare_buff())
->
-> Changes since v3:
-> - use __always_inline instead of inline for xdp_init_buff/xdp_prepare_buf=
-f
-> - add 'const bool meta_valid' to xdp_prepare_buff signature to avoid
->   overwriting data_meta with xdp_set_data_meta_invalid()
-> - introduce removed comment in bnxt driver
->
-> Changes since v2:
-> - precompute xdp->data as hard_start + headroom and save it in a local
->   variable to reuse it for xdp->data_end and xdp->data_meta in
->   xdp_prepare_buff()
->
-> Changes since v1:
-> - introduce xdp_prepare_buff utility routine
->
-> Lorenzo Bianconi (2):
->   net: xdp: introduce xdp_init_buff utility routine
->   net: xdp: introduce xdp_prepare_buff utility routine
->
-> Acked-by: Shay Agroskin <shayagr@amazon.com>
-> Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
-> Acked-by: Camelia Groza <camelia.groza@nxp.com>
->
-
-For Marvell mvpp2:
-Acked-by: Marcin Wojtas <mw@semihalf.com>
-
-Thanks,
-Marcin
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
