@@ -2,135 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3022E2760
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 14:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 400B42E27A3
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 15:27:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728971AbgLXNcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 08:32:21 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:35058 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728701AbgLXNcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 08:32:21 -0500
-Date:   Thu, 24 Dec 2020 14:31:37 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1608816698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kj19jrn3JZDiqAb47VRLam2/Y7njoczA4wmTN/+icz8=;
-        b=0mxtZ5msZR9fZtUR6kwi4JnSZ1GJWyp0fYY/dbvBLYP+ZKDm36BTziTN3g3Ze8NBRGZI51
-        VFMj/K7rkRnz5ilV9iLBGG3pBAvOTESLlU4H7TSSVo1y85OrcZYT63+ZvMbRpKhAGBdCT2
-        8LFnvw/mcLG8hDYvVCB964vcUQw3InKRaIPcffWeXq+NWX8yyurNbUX42dNSoO5Belq1SO
-        q7izcEzcByqyxiQlLNrAp4IxGxJMtafNLGBXai1nR/JK5DFAtAU4EB8IVYvzsPgW2WswY8
-        /PdDjdgGmEHcwClVw0SrB5HjfWtHgJmkMHsyrkes9j7+wZ6WXMTXQslGQWWkCg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1608816698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kj19jrn3JZDiqAb47VRLam2/Y7njoczA4wmTN/+icz8=;
-        b=S/gHJK0rwAUxhKpvRxUhW2dcGuPnXF0/mNeFaH6wQ8HDVZm0JHJ3cZWT1DKOapoEd8ahn9
-        8T0tN785V5D2VZBQ==
-From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Sebastian A. Siewior" <bigeasy@linutronix.de>
-Subject: Re: [RFC PATCH 1/3] chelsio: cxgb: Remove ndo_poll_controller()
-Message-ID: <X+SYOYn3jnwrldnA@lx-t490>
-References: <20201224131148.300691-1-a.darwish@linutronix.de>
- <20201224131148.300691-2-a.darwish@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201224131148.300691-2-a.darwish@linutronix.de>
+        id S1728673AbgLXO0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 09:26:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728571AbgLXO0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 09:26:34 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4475CC06179C;
+        Thu, 24 Dec 2020 06:25:54 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id i5so1659713pgo.1;
+        Thu, 24 Dec 2020 06:25:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=M1ZWqv1znGqr6p1lRTewGyanamdITR8p87XaqsvWjsM=;
+        b=Wh/DAn1Lg1lqObkMZFfvyZF388WBeIbZXFBq13tAd1VEgkw+M4LJXfjs0b95ahtOMX
+         c32Vv0rwkYWwbPaug66GZYzdpluAsMTAp4v5g/aTMPwCtrRomVxyktE06en1BFEHHKYh
+         Au6IaYUjex7Joi/d3HkP4UKEy/J9x/1D5VyWUysSNubgG1RbcgY5lefa7gbqytCWjqPF
+         9pctvA8uVHEL0dPMJ2hblTTx/Yi+4k3uRAn/3LDBUKM7+UWwRK89o1DwVs3HXm7kOUGB
+         q0L2gdlFO9T6xRv7xeGmpstUqGsIw2VMyAFFG6SQe4XT8I+gWMupEhdTi71QJZw62WLc
+         nkYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=M1ZWqv1znGqr6p1lRTewGyanamdITR8p87XaqsvWjsM=;
+        b=k7DudgeDgQ+lzbUP8qQsRJ4Vpd3Ql/eMF5BSMUK3QMUO/mrhr1smojXZ0rHhzjo7CG
+         eMkjIbMAFl/C+T99HiJP4cp7/mnqiUruGPEFef2vEvV4f7UiJeCv0dTJS7YTWdbDOMsR
+         VXU2MvYMqimRFQmoZo1FLtr6JzYAVrfAXpd7EMzFtIk4bVzvWnjA+8+WPPr9kJ+jkQes
+         4Wyk07KW7y/omEwXAm2uUsXZ4xUsnWjJ2FiRJ8PVwV9J/mtaUk/+HlQ+EWLhc8+l5llr
+         WvZeTttXsdAWlSs9kWRIruWc0o4uW5GiJpcQXRTWW53JX1xcUp1zfahknYotM7YhaS/U
+         k4IA==
+X-Gm-Message-State: AOAM530XGtucnP2NKjYC5OvicVanKdykac9PFc2b5GiScZB12E/YnJWH
+        M465CdY1nP+QNqQpK22OA0c=
+X-Google-Smtp-Source: ABdhPJxahunFhGBPVq1miW5Ne/emwEly58wXygON2lajXZ4StPqI8VIN/zU1tYPEPO5hDWAoiF5xVg==
+X-Received: by 2002:a63:1220:: with SMTP id h32mr28741916pgl.309.1608819953741;
+        Thu, 24 Dec 2020 06:25:53 -0800 (PST)
+Received: from DESKTOP-8REGVGF.localdomain ([124.13.157.5])
+        by smtp.gmail.com with ESMTPSA id r185sm26936351pfc.53.2020.12.24.06.25.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Dec 2020 06:25:53 -0800 (PST)
+From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        Sieng Piaw Liew <liew.s.piaw@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/6] bcm63xx_enet: major makeover of driver
+Date:   Thu, 24 Dec 2020 22:24:15 +0800
+Message-Id: <20201224142421.32350-1-liew.s.piaw@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[[ Actually adding Eric to Cc ]]
+This patch series aim to improve the bcm63xx_enet driver by integrating the
+latest networking features, i.e. batched rx processing, BQL, build_skb, etc.
 
-On Thu, Dec 24, 2020 at 02:11:46PM +0100, Ahmed S. Darwish wrote:
-> Since commit ac3d9dd034e5 ("netpoll: make ndo_poll_controller()
-> optional"), networking drivers which use NAPI for clearing their TX
-> completions should not provide an ndo_poll_controller(). Netpoll simply
-> triggers the necessary TX queues cleanup by synchronously calling the
-> driver's NAPI poll handler -- with irqs off and a zero budget.
->
-> Modify the cxgb's poll method to clear the TX queues upon zero budget.
-> Per API requirements, make sure to never consume any RX packet in that
-> case (budget=0), and thus also not to increment the budget upon return.
->
-> Afterwards, remove ndo_poll_controller().
->
-> Link: https://lkml.kernel.org/r/20180921222752.101307-1-edumazet@google.com
-> Link: https://lkml.kernel.org/r/A782704A-DF97-4E85-B10A-D2268A67DFD7@fb.com
-> References: 822d54b9c2c1 ("netpoll: Drop budget parameter from NAPI polling call hierarchy")
-> Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
-> Cc: Eric Dumazet <edumazet@google.com>
-> ---
->  drivers/net/ethernet/chelsio/cxgb/cxgb2.c | 14 --------------
->  drivers/net/ethernet/chelsio/cxgb/sge.c   |  9 ++++++++-
->  2 files changed, 8 insertions(+), 15 deletions(-)
->
-> diff --git a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-> index 0e4a0f413960..7b5a98330ef7 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-> @@ -878,17 +878,6 @@ static int t1_set_features(struct net_device *dev, netdev_features_t features)
->
->  	return 0;
->  }
-> -#ifdef CONFIG_NET_POLL_CONTROLLER
-> -static void t1_netpoll(struct net_device *dev)
-> -{
-> -	unsigned long flags;
-> -	struct adapter *adapter = dev->ml_priv;
-> -
-> -	local_irq_save(flags);
-> -	t1_interrupt(adapter->pdev->irq, adapter);
-> -	local_irq_restore(flags);
-> -}
-> -#endif
->
->  /*
->   * Periodic accumulation of MAC statistics.  This is used only if the MAC
-> @@ -973,9 +962,6 @@ static const struct net_device_ops cxgb_netdev_ops = {
->  	.ndo_set_mac_address	= t1_set_mac_addr,
->  	.ndo_fix_features	= t1_fix_features,
->  	.ndo_set_features	= t1_set_features,
-> -#ifdef CONFIG_NET_POLL_CONTROLLER
-> -	.ndo_poll_controller	= t1_netpoll,
-> -#endif
->  };
->
->  static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
-> diff --git a/drivers/net/ethernet/chelsio/cxgb/sge.c b/drivers/net/ethernet/chelsio/cxgb/sge.c
-> index 2d9c2b5a690a..d6df1a87db0b 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb/sge.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb/sge.c
-> @@ -1609,7 +1609,14 @@ static int process_pure_responses(struct adapter *adapter)
->  int t1_poll(struct napi_struct *napi, int budget)
->  {
->  	struct adapter *adapter = container_of(napi, struct adapter, napi);
-> -	int work_done = process_responses(adapter, budget);
-> +	int work_done = 0;
-> +
-> +	if (budget)
-> +		work_done = process_responses(adapter, budget);
-> +	else {
-> +		/* budget=0 means: don't poll rx data */
-> +		process_pure_responses(adapter);
-> +	}
->
->  	if (likely(work_done < budget)) {
->  		napi_complete_done(napi, work_done);
-> --
-> 2.29.2
->
+The newer enetsw SoCs are found to be able to do unaligned rx DMA by adding
+NET_IP_ALIGN padding which, combined with these patches, improved packet
+processing performance by ~50% on BCM6328.
+
+Older non-enetsw SoCs still benefit mainly from rx batching. Performance
+improvement of ~30% is observed on BCM6333.
+
+The BCM63xx SoCs are designed for routers. As such, having BQL is beneficial
+as well as trivial to add.
+
+v2:
+* Add xmit_more support and rx loop improvisation patches.
+* Moved BQL netdev_reset_queue() to bcm_enet_stop()/bcm_enetsw_stop()
+  functions as suggested by Florian Fainelli.
+* Improved commit messages.
+
+Sieng Piaw Liew (6):
+  bcm63xx_enet: batch process rx path
+  bcm63xx_enet: add BQL support
+  bcm63xx_enet: add xmit_more support
+  bcm63xx_enet: alloc rx skb with NET_IP_ALIGN
+  bcm63xx_enet: convert to build_skb
+  bcm63xx_enet: improve rx loop
+
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c | 184 ++++++++++---------
+ drivers/net/ethernet/broadcom/bcm63xx_enet.h |  14 +-
+ 2 files changed, 103 insertions(+), 95 deletions(-)
+
+-- 
+2.17.1
+
