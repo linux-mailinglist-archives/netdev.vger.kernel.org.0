@@ -2,172 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7213D2E2532
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 08:26:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67A662E2537
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 08:27:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726186AbgLXHZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 02:25:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbgLXHZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 02:25:47 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B24C061794
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 23:25:06 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id dk8so1432500edb.1
-        for <netdev@vger.kernel.org>; Wed, 23 Dec 2020 23:25:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wqSoUJ0wK428r/8qtbJUJtWlo8/XxBIZ7I2arOIoVvg=;
-        b=uCfDQp+rckuVdcZ/vely7IwCRxCR6p1idVLIxaoZT9ytRtnDQPr53X7ewWQqhyQeRt
-         DGMuYQ/Fnt3huQeBJtDG+Ek3MxXEHmmOPiQWIkWYaFZlyepi/JdTJezVIRCTSKgSdiQo
-         QYx56uo5cPF/9QZ0DvERgrRadxTp4j/sFjxeGc8+d1FaZPqGAMURnQONgUeeIzc+/VRS
-         AsZlCV8qbRQeBZ2i0xspi7zbX3DtDcn2ZK8muC7HN9BMacgiC+ikbOEG7paMdjGNt+a2
-         mvJycjddQn7HMe4Xj8tNRld7Dr4eRKlgCuW44RhNjMZ33MP8wgf+4jDILoVtr+fht/nF
-         NSFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wqSoUJ0wK428r/8qtbJUJtWlo8/XxBIZ7I2arOIoVvg=;
-        b=ZT/EKo+AlhRU1/A3RHLh3e2dlKha9xBFnbkhjcKlIR0zK1sPrp5HOPd8DOZEwa6zKB
-         ZJo0kkoYkaOH/9lSv507BbD3wZDgH2PQ3PLesQEfe/YWHXwV5GRuYEWsX8Iieh0Jx3tQ
-         A9Ut7FWUM7bZExZqxuLUz6cgJ9z/raDROvpJ4WuEJYglDFu8Dr9rcf+dPO1EBvEohTZQ
-         4KY7MdmPlazmqCHcXL8oECFB7c6XJ/JLLLF0bZBi6tpiLU9j2ZgBFlURHHDpormSOsOV
-         BP+aTZBwHYzBpHIdDNXVDy9uS2A5XxMYiyQGR5xYqNu2rPLFdbWrAQzYDR1y14StSeaR
-         eRdQ==
-X-Gm-Message-State: AOAM533ZHG4y5KYg3tVakH7RbwRVTrVHSqS9Ar/bYQf6YeqooHbfnhXb
-        3NW6I9WdTtPSEH9OBpMUxPseEmrUHkO6Sgdawovt
-X-Google-Smtp-Source: ABdhPJxYtKj5zSF9sYKP0JW8AGDlYbzQ/DtgYlMviG2drnktYahrLMoBL4l3uXC37jhXyO2bXLesu8cNLrFWF81FKb8=
-X-Received: by 2002:aa7:c60c:: with SMTP id h12mr27893759edq.145.1608794704858;
- Wed, 23 Dec 2020 23:25:04 -0800 (PST)
-MIME-Version: 1.0
-References: <20201222145221.711-1-xieyongji@bytedance.com> <20201222145221.711-9-xieyongji@bytedance.com>
- <5b36bc51-1e19-2b59-6287-66aed435c8ed@redhat.com> <CACycT3tP8mgj043idjJW3BF12qmOhmHzYz8X5FyL8t5MbwLysw@mail.gmail.com>
- <4b13e574-d898-55cc-9ec6-78f28a7f2cd9@redhat.com>
-In-Reply-To: <4b13e574-d898-55cc-9ec6-78f28a7f2cd9@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 24 Dec 2020 15:24:54 +0800
-Message-ID: <CACycT3uPGEGsY-=Yak02B0pb77KCKH=bgvHMCQXvBdaWU=22zg@mail.gmail.com>
-Subject: Re: Re: [RFC v2 08/13] vdpa: Introduce process_iotlb_msg() in vdpa_config_ops
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+        id S1726746AbgLXH1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 02:27:31 -0500
+Received: from mailgw02.mediatek.com ([1.203.163.81]:11586 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726258AbgLXH1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 02:27:31 -0500
+X-UUID: dda500f35131466e85b4d15b9edbda0e-20201224
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=sTA9GxzeiTWZ8Bb1AzVPoBBRf2w9jvzoOgYWkMxjLWk=;
+        b=V2m93C+mJ/lNd3Kma1Ao953qg0XQpgYHzo7sEzco8QIUdo4XBSjRucU+4Q6UKU1T2CXaedQlkUs7LjMxZun8AMXOhfnHclupAxOKzuEeegkiYz+9YfmCnib3bR2fWKdOlQCHft5o2499PfbTT/WdYuCjZv8C0WiC3NEK8r2gzdI=;
+X-UUID: dda500f35131466e85b4d15b9edbda0e-20201224
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 268527532; Thu, 24 Dec 2020 15:26:42 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31DR.mediatek.inc
+ (172.27.6.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 24 Dec
+ 2020 15:26:39 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Dec 2020 15:26:38 +0800
+Message-ID: <1608794799.7499.2.camel@mhfsdcap03>
+Subject: Re: [PATCH v4 01/11] dt-bindings: usb: convert usb-device.txt to
+ YAML schema
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Min Guo <min.guo@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <linux-usb@vger.kernel.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Date:   Thu, 24 Dec 2020 15:26:39 +0800
+In-Reply-To: <20201221190937.GA369845@robh.at.kernel.org>
+References: <20201216093012.24406-1-chunfeng.yun@mediatek.com>
+         <20201221190937.GA369845@robh.at.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mailer: Evolution 3.10.4-0ubuntu2 
+MIME-Version: 1.0
+X-TM-SNTS-SMTP: 74766EA34054B7FEA51C94AAD0ECCBCC07057C7F26AB70431A5FC6B4C07CE5A72000:8
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 24, 2020 at 10:37 AM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2020/12/23 =E4=B8=8B=E5=8D=887:06, Yongji Xie wrote:
-> > On Wed, Dec 23, 2020 at 4:37 PM Jason Wang <jasowang@redhat.com> wrote:
-> >>
-> >> On 2020/12/22 =E4=B8=8B=E5=8D=8810:52, Xie Yongji wrote:
-> >>> This patch introduces a new method in the vdpa_config_ops to
-> >>> support processing the raw vhost memory mapping message in the
-> >>> vDPA device driver.
-> >>>
-> >>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> >>> ---
-> >>>    drivers/vhost/vdpa.c | 5 ++++-
-> >>>    include/linux/vdpa.h | 7 +++++++
-> >>>    2 files changed, 11 insertions(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> >>> index 448be7875b6d..ccbb391e38be 100644
-> >>> --- a/drivers/vhost/vdpa.c
-> >>> +++ b/drivers/vhost/vdpa.c
-> >>> @@ -728,6 +728,9 @@ static int vhost_vdpa_process_iotlb_msg(struct vh=
-ost_dev *dev,
-> >>>        if (r)
-> >>>                return r;
-> >>>
-> >>> +     if (ops->process_iotlb_msg)
-> >>> +             return ops->process_iotlb_msg(vdpa, msg);
-> >>> +
-> >>>        switch (msg->type) {
-> >>>        case VHOST_IOTLB_UPDATE:
-> >>>                r =3D vhost_vdpa_process_iotlb_update(v, msg);
-> >>> @@ -770,7 +773,7 @@ static int vhost_vdpa_alloc_domain(struct vhost_v=
-dpa *v)
-> >>>        int ret;
-> >>>
-> >>>        /* Device want to do DMA by itself */
-> >>> -     if (ops->set_map || ops->dma_map)
-> >>> +     if (ops->set_map || ops->dma_map || ops->process_iotlb_msg)
-> >>>                return 0;
-> >>>
-> >>>        bus =3D dma_dev->bus;
-> >>> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> >>> index 656fe264234e..7bccedf22f4b 100644
-> >>> --- a/include/linux/vdpa.h
-> >>> +++ b/include/linux/vdpa.h
-> >>> @@ -5,6 +5,7 @@
-> >>>    #include <linux/kernel.h>
-> >>>    #include <linux/device.h>
-> >>>    #include <linux/interrupt.h>
-> >>> +#include <linux/vhost_types.h>
-> >>>    #include <linux/vhost_iotlb.h>
-> >>>    #include <net/genetlink.h>
-> >>>
-> >>> @@ -172,6 +173,10 @@ struct vdpa_iova_range {
-> >>>     *                          @vdev: vdpa device
-> >>>     *                          Returns the iova range supported by
-> >>>     *                          the device.
-> >>> + * @process_iotlb_msg:               Process vhost memory mapping me=
-ssage (optional)
-> >>> + *                           Only used for VDUSE device now
-> >>> + *                           @vdev: vdpa device
-> >>> + *                           @msg: vhost memory mapping message
-> >>>     * @set_map:                        Set device memory mapping (opt=
-ional)
-> >>>     *                          Needed for device that using device
-> >>>     *                          specific DMA translation (on-chip IOMM=
-U)
-> >>> @@ -240,6 +245,8 @@ struct vdpa_config_ops {
-> >>>        struct vdpa_iova_range (*get_iova_range)(struct vdpa_device *v=
-dev);
-> >>>
-> >>>        /* DMA ops */
-> >>> +     int (*process_iotlb_msg)(struct vdpa_device *vdev,
-> >>> +                              struct vhost_iotlb_msg *msg);
-> >>>        int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb *i=
-otlb);
-> >>>        int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
-> >>>                       u64 pa, u32 perm);
-> >>
-> >> Is there any reason that it can't be done via dma_map/dma_unmap or set=
-_map?
-> >>
-> > To get the shmfd, we need the vma rather than physical address. And
-> > it's not necessary to pin the user pages in VDUSE case.
->
->
-> Right, actually, vhost-vDPA is planning to support shared virtual
-> address space.
->
-> So let's try to reuse the existing config ops. How about just introduce
-> an attribute to vdpa device that tells the bus tells the bus it can do
-> shared virtual memory. Then when the device is probed by vhost-vDPA, use
-> pages won't be pinned and we will do VA->VA mapping as IOVA->PA mapping
-> in the vhost IOTLB and the config ops. vhost IOTLB needs to be extended
-> to accept opaque pointer to store the file. And the file was pass via
-> the config ops as well.
->
+T24gTW9uLCAyMDIwLTEyLTIxIGF0IDEyOjA5IC0wNzAwLCBSb2IgSGVycmluZyB3cm90ZToNCj4g
+T24gV2VkLCBEZWMgMTYsIDIwMjAgYXQgMDU6MzA6MDJQTSArMDgwMCwgQ2h1bmZlbmcgWXVuIHdy
+b3RlOg0KPiA+IENvbnZlcnQgdXNiLWRldmljZS50eHQgdG8gWUFNTCBzY2hlbWEgdXNiLWRldmlj
+ZS55YW1sDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogQ2h1bmZlbmcgWXVuIDxjaHVuZmVuZy55
+dW5AbWVkaWF0ZWsuY29tPg0KPiA+IC0tLQ0KPiA+IHY0OiBubyBjaGFuZ2VzLCB1cGRhdGUgZGVw
+ZW5kZW50IHNlcmllczoNCj4gPiAgICAgaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9wcm9q
+ZWN0L2xpbnV4LXVzYi9saXN0Lz9zZXJpZXM9Mzk5NTYxDQo+ID4gICAgIFt2NiwwMC8xOV0gZHQt
+YmluZGluZ3M6IHVzYjogQWRkIGdlbmVyaWMgVVNCIEhDRCwgeEhDSSwgRFdDIFVTQjMgRFQgc2No
+ZW1hDQpbLi4uXQ0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvdXNiL3VzYi1kZXZpY2UueWFtbCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5k
+aW5ncy91c2IvdXNiLWRldmljZS55YW1sDQo+ID4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gPiBp
+bmRleCAwMDAwMDAwMDAwMDAuLmYzMWQ4YTg1ZDNlNg0KPiA+IC0tLSAvZGV2L251bGwNCj4gPiAr
+KysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvdXNiL3VzYi1kZXZpY2UueWFt
+bA0KPiA+IEBAIC0wLDAgKzEsMTI1IEBADQo+ID4gKyMgU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6
+IChHUEwtMi4wLW9ubHkgT1IgQlNELTItQ2xhdXNlKQ0KPiA+ICslWUFNTCAxLjINCj4gPiArLS0t
+DQo+ID4gKyRpZDogaHR0cDovL2RldmljZXRyZWUub3JnL3NjaGVtYXMvdXNiL3VzYi1kZXZpY2Uu
+eWFtbCMNCj4gPiArJHNjaGVtYTogaHR0cDovL2RldmljZXRyZWUub3JnL21ldGEtc2NoZW1hcy9j
+b3JlLnlhbWwjDQo+ID4gKw0KPiA+ICt0aXRsZTogVGhlIGRldmljZSB0cmVlIGJpbmRpbmdzIGZv
+ciB0aGUgR2VuZXJpYyBVU0IgRGV2aWNlDQo+ID4gKw0KPiA+ICttYWludGFpbmVyczoNCj4gPiAr
+ICAtIEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+DQo+ID4g
+Kw0KPiA+ICtkZXNjcmlwdGlvbjogfA0KPiA+ICsgIFVzdWFsbHksIHdlIG9ubHkgdXNlIGRldmlj
+ZSB0cmVlIGZvciBoYXJkIHdpcmVkIFVTQiBkZXZpY2UuDQo+ID4gKyAgVGhlIHJlZmVyZW5jZSBi
+aW5kaW5nIGRvYyBpcyBmcm9tOg0KPiA+ICsgIGh0dHA6Ly93d3cuZGV2aWNldHJlZS5vcmcvb3Bl
+bi1maXJtd2FyZS9iaW5kaW5ncy91c2IvdXNiLTFfMC5wcw0KPiA+ICsNCj4gPiArICBGb3VyIHR5
+cGVzIG9mIGRldmljZS10cmVlIG5vZGVzIGFyZSBkZWZpbmVkOiAiaG9zdC1jb250cm9sbGVyIG5v
+ZGVzIg0KPiA+ICsgIHJlcHJlc2VudGluZyBVU0IgaG9zdCBjb250cm9sbGVycywgImRldmljZSBu
+b2RlcyIgcmVwcmVzZW50aW5nIFVTQiBkZXZpY2VzLA0KPiA+ICsgICJpbnRlcmZhY2Ugbm9kZXMi
+IHJlcHJlc2VudGluZyBVU0IgaW50ZXJmYWNlcyBhbmQgImNvbWJpbmVkIG5vZGVzIg0KPiA+ICsg
+IHJlcHJlc2VudGluZyBzaW1wbGUgVVNCIGRldmljZXMuDQo+ID4gKw0KPiA+ICsgIEEgY29tYmlu
+ZWQgbm9kZSBzaGFsbCBiZSB1c2VkIGluc3RlYWQgb2YgYSBkZXZpY2Ugbm9kZSBhbmQgYW4gaW50
+ZXJmYWNlIG5vZGUNCj4gPiArICBmb3IgZGV2aWNlcyBvZiBjbGFzcyAwIG9yIDkgKGh1Yikgd2l0
+aCBhIHNpbmdsZSBjb25maWd1cmF0aW9uIGFuZCBhIHNpbmdsZQ0KPiA+ICsgIGludGVyZmFjZS4N
+Cj4gPiArDQo+ID4gKyAgQSAiaHViIG5vZGUiIGlzIGEgY29tYmluZWQgbm9kZSBvciBhbiBpbnRl
+cmZhY2Ugbm9kZSB0aGF0IHJlcHJlc2VudHMgYSBVU0INCj4gPiArICBodWIuDQo+ID4gKw0KPiA+
+ICtwcm9wZXJ0aWVzOg0KPiA+ICsgIGNvbXBhdGlibGU6DQo+ID4gKyAgICBwYXR0ZXJuOiAiXnVz
+YlswLTlhLWZdKyxbMC05YS1mXSskIg0KPiANCj4gWW91IGNhbiByZWZpbmUgdGhlIGxlbmd0aCBh
+bGxvd2VkIGEgYml0OiBbMC05YS1mXXsxLDR9DQo+IA0KPiBTYW1lIGFwcGxpZXMgZWxzZXdoZXJl
+Lg0KT2sNCj4gDQo+ID4gKyAgICBkZXNjcmlwdGlvbjogRGV2aWNlIG5vZGVzIG9yIGNvbWJpbmVk
+IG5vZGVzLg0KPiA+ICsgICAgICAidXNiVklELFBJRCIsIHdoZXJlIFZJRCBpcyB0aGUgdmVuZG9y
+IGlkIGFuZCBQSUQgdGhlIHByb2R1Y3QgaWQuDQo+ID4gKyAgICAgIFRoZSB0ZXh0dWFsIHJlcHJl
+c2VudGF0aW9uIG9mIFZJRCBhbmQgUElEIHNoYWxsIGJlIGluIGxvd2VyIGNhc2UNCj4gPiArICAg
+ICAgaGV4YWRlY2ltYWwgd2l0aCBsZWFkaW5nIHplcm9lcyBzdXBwcmVzc2VkLiBUaGUgb3RoZXIg
+Y29tcGF0aWJsZQ0KPiA+ICsgICAgICBzdHJpbmdzIGZyb20gdGhlIGFib3ZlIHN0YW5kYXJkIGJp
+bmRpbmcgY291bGQgYWxzbyBiZSB1c2VkLA0KPiA+ICsgICAgICBidXQgYSBkZXZpY2UgYWRoZXJp
+bmcgdG8gdGhpcyBiaW5kaW5nIG1heSBsZWF2ZSBvdXQgYWxsIGV4Y2VwdA0KPiA+ICsgICAgICBm
+b3IgInVzYlZJRCxQSUQiLg0KPiA+ICsNClsuLi5dDQo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50
+YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy91c2IvdXNiLWhjZC55YW1sIGIvRG9jdW1lbnRhdGlv
+bi9kZXZpY2V0cmVlL2JpbmRpbmdzL3VzYi91c2ItaGNkLnlhbWwNCj4gPiBpbmRleCA5ODgxYWMx
+MDM4MGQuLjVkMGM2YjU1MDBkNiAxMDA3NTUNCj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvdXNiL3VzYi1oY2QueWFtbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24v
+ZGV2aWNldHJlZS9iaW5kaW5ncy91c2IvdXNiLWhjZC55YW1sDQo+ID4gQEAgLTIzLDYgKzIzLDMy
+IEBAIHByb3BlcnRpZXM6DQo+ID4gICAgICAgIHRhcmdldGVkIGhvc3RzIChub24tUEMgaG9zdHMp
+Lg0KPiA+ICAgICAgdHlwZTogYm9vbGVhbg0KPiA+ICANCj4gPiArICAiI2FkZHJlc3MtY2VsbHMi
+Og0KPiA+ICsgICAgY29uc3Q6IDENCj4gPiArDQo+ID4gKyAgIiNzaXplLWNlbGxzIjoNCj4gPiAr
+ICAgIGNvbnN0OiAwDQo+ID4gKw0KPiA+ICtwYXR0ZXJuUHJvcGVydGllczoNCj4gPiArICAiQFsw
+LTlhLWZdKyQiOg0KPiA+ICsgICAgdHlwZTogb2JqZWN0DQo+ID4gKyAgICBkZXNjcmlwdGlvbjog
+VGhlIGhhcmQgd2lyZWQgVVNCIGRldmljZXMNCj4gPiArDQo+ID4gKyAgICBwcm9wZXJ0aWVzOg0K
+PiA+ICsgICAgICBjb21wYXRpYmxlOg0KPiA+ICsgICAgICAgIHBhdHRlcm46ICJedXNiWzAtOWEt
+Zl0rLFswLTlhLWZdKyQiDQo+ID4gKyAgICAgICAgJHJlZjogL3VzYi91c2ItZGV2aWNlLnlhbWwN
+Cj4gDQo+IFRoaXMgaXMgd3JvbmcuIEl0IHNob3VsZCBiZSB1cCBhIGxldmVsLg0KT2sNCj4gIEFu
+ZCBubyBuZWVkIHRvIGRlZmluZSANCj4gJ2NvbXBhdGlibGUnIG9yICdyZWcnIGhlcmUgYmVjYXVz
+ZSB0aG9zZSBhcmUgZGVmaW5lZCB3aXRoaW4gDQo+IHVzYi1kZXZpY2UueWFtbC4NCndpbGwgZHJv
+cCBpdA0KPiANCj4gPiArICAgICAgICBkZXNjcmlwdGlvbjogdGhlIHN0cmluZyBpcyAndXNiVklE
+LFBJRCcsIHdoZXJlIFZJRCBpcyB0aGUgdmVuZG9yIGlkDQo+ID4gKyAgICAgICAgICBhbmQgUElE
+IGlzIHRoZSBwcm9kdWN0IGlkDQo+ID4gKw0KPiA+ICsgICAgICByZWc6DQo+ID4gKyAgICAgICAg
+JHJlZjogL3VzYi91c2ItZGV2aWNlLnlhbWwNCj4gPiArICAgICAgICBtYXhJdGVtczogMQ0KPiA+
+ICsNCj4gPiArICAgIHJlcXVpcmVkOg0KPiA+ICsgICAgICAtIGNvbXBhdGlibGUNCj4gPiArICAg
+ICAgLSByZWcNCj4gPiArDQo+ID4gIGFkZGl0aW9uYWxQcm9wZXJ0aWVzOiB0cnVlDQo+ID4gIA0K
+PiA+ICBleGFtcGxlczoNCj4gPiBAQCAtMzAsNCArNTYsMTEgQEAgZXhhbXBsZXM6DQo+ID4gICAg
+ICB1c2Igew0KPiA+ICAgICAgICAgIHBoeXMgPSA8JnVzYjJfcGh5MT4sIDwmdXNiM19waHkxPjsN
+Cj4gPiAgICAgICAgICBwaHktbmFtZXMgPSAidXNiIjsNCj4gPiArICAgICAgICAjYWRkcmVzcy1j
+ZWxscyA9IDwxPjsNCj4gPiArICAgICAgICAjc2l6ZS1jZWxscyA9IDwwPjsNCj4gPiArDQo+ID4g
+KyAgICAgICAgaHViQDEgew0KPiA+ICsgICAgICAgICAgICBjb21wYXRpYmxlID0gInVzYjVlMyw2
+MTAiOw0KPiA+ICsgICAgICAgICAgICByZWcgPSA8MT47DQo+ID4gKyAgICAgICAgfTsNCj4gPiAg
+ICAgIH07DQo+ID4gLS0gDQo+ID4gMi4xOC4wDQo+ID4gDQoNCg==
 
-OK, I see. Will try it in v3.
-
-Thanks,
-Yongji
