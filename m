@@ -2,139 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67A662E2537
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 08:27:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8971E2E253B
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 08:33:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726746AbgLXH1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 02:27:31 -0500
-Received: from mailgw02.mediatek.com ([1.203.163.81]:11586 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726258AbgLXH1b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 02:27:31 -0500
-X-UUID: dda500f35131466e85b4d15b9edbda0e-20201224
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=sTA9GxzeiTWZ8Bb1AzVPoBBRf2w9jvzoOgYWkMxjLWk=;
-        b=V2m93C+mJ/lNd3Kma1Ao953qg0XQpgYHzo7sEzco8QIUdo4XBSjRucU+4Q6UKU1T2CXaedQlkUs7LjMxZun8AMXOhfnHclupAxOKzuEeegkiYz+9YfmCnib3bR2fWKdOlQCHft5o2499PfbTT/WdYuCjZv8C0WiC3NEK8r2gzdI=;
-X-UUID: dda500f35131466e85b4d15b9edbda0e-20201224
-Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 268527532; Thu, 24 Dec 2020 15:26:42 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31DR.mediatek.inc
- (172.27.6.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 24 Dec
- 2020 15:26:39 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 24 Dec 2020 15:26:38 +0800
-Message-ID: <1608794799.7499.2.camel@mhfsdcap03>
-Subject: Re: [PATCH v4 01/11] dt-bindings: usb: convert usb-device.txt to
- YAML schema
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Min Guo <min.guo@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-usb@vger.kernel.org>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Date:   Thu, 24 Dec 2020 15:26:39 +0800
-In-Reply-To: <20201221190937.GA369845@robh.at.kernel.org>
-References: <20201216093012.24406-1-chunfeng.yun@mediatek.com>
-         <20201221190937.GA369845@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+        id S1726258AbgLXHdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 02:33:12 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:61990 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725747AbgLXHdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 02:33:12 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BO7QeX5021134;
+        Wed, 23 Dec 2020 23:32:06 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=qyAtjEJh0oGiL51M+hEsi+h4PaIYCIN/7tFxMM0uvpw=;
+ b=Q2T8B08IoDWKvQU5aOCczYzZm50p5dHZvfb3FvpU5GABW3OUQ9SOtkRFdXOC374ecDrN
+ nG+z/GgO6XxSypWAaK7iz92o36m9Ca9w8X3lxSa5qegdIOX3On7+z9U18CsFyubQO+6H
+ xc/2EG5U+y27hml72OQFee9zplPwEEQdPUA= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 35mfabs9j6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 23 Dec 2020 23:32:06 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 23 Dec 2020 23:32:05 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nK/8dj5Q7c1tIHM5c5tzRwDexmh+JNCrXX9BEVPX1FL6KGz8omFZOldcc/+KGhuuOUVhPXhNVPcVBsRoGhTpwDbu/yU+xTUuJDOcaWucIMw9d5U2PpDPEL5xaQfawdo1cIGdXAiwfNQhs4A7xLh8OvRmGpbOdotZkjxMFbJWTZfQ5aKL7G7lgUk/kc4wwuoriiS2VPjs+GSqUXHA51b1QST7Rs6HtoX5jcIHYvd3VEUhSTr9DrXhIfYNyvA2QwCzMKLKSb0dUsxqDhcpBnJ18TcGTT7X5w0NkwXnQLz8gSr6UXXnTIptBRwj8m5p1xCi/GiLusbl6YD+XKAiLngPPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qyAtjEJh0oGiL51M+hEsi+h4PaIYCIN/7tFxMM0uvpw=;
+ b=QShbKrTCpHSWwhhkOKauv1OSj+EUbZ5yDByrTBrpFs2A2w/A7AtRIJB4Po7AYVeoAcUMOWIL8Htc373b0SXJAfnY9XEGgu9LJ7lqm10T0HKBF6ZrWtYihZyqsBmJ1z/MPGY4sMIH/bSJT9nmPyynKu5WS1aKU+6O5wnjJFPSwOAILd5iGIqG3j00UNWc75kKds4+15oxHwkn5nYpyRVdYmZry7WwyFGj9TV1w/NLXA85+s9vGpbv8Nn3vXAguvsKqQtQyClQ1DGv0Mk2m9IzR7rgyj5+imlMB3KW1G30IBuwSkVv5EXiinMnIqW+zDjV643Ym0pE95kFg67GIWNNTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qyAtjEJh0oGiL51M+hEsi+h4PaIYCIN/7tFxMM0uvpw=;
+ b=IZzn5F0pURRhgp4TmKhxua6seRcfZP4HMxD+qM5YCrKBfSN5z4ThOaGqxFlqn3mKynOcT3Ng3XglM7Tybj36+/163R3RGHpEs27aPitwRIbkfh4ug2Y14eyjifbP+fPjZWDMH5zwld/gmyKA+WZdLWTcKu9B5OX8MrV6Y7GbnnQ=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2246.namprd15.prod.outlook.com (2603:10b6:a02:8d::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3676.30; Thu, 24 Dec
+ 2020 07:32:03 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3676.034; Thu, 24 Dec 2020
+ 07:32:02 +0000
+Subject: Re: [PATCH] bpf: fix: address of local auto-variable assigned to a
+ function parameter.
+To:     YANG LI <abaci-bugfix@linux.alibaba.com>, <ast@kernel.org>
+CC:     <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <kpsingh@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1608793298-123684-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <bd622b3f-7912-e61d-8101-379ebbdf094f@fb.com>
+Date:   Wed, 23 Dec 2020 23:31:58 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
+In-Reply-To: <1608793298-123684-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [2620:10d:c090:400::5:20ab]
+X-ClientProxiedBy: CO2PR04CA0139.namprd04.prod.outlook.com (2603:10b6:104::17)
+ To BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 74766EA34054B7FEA51C94AAD0ECCBCC07057C7F26AB70431A5FC6B4C07CE5A72000:8
-X-MTK:  N
-Content-Transfer-Encoding: base64
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c1::135f] (2620:10d:c090:400::5:20ab) by CO2PR04CA0139.namprd04.prod.outlook.com (2603:10b6:104::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3700.27 via Frontend Transport; Thu, 24 Dec 2020 07:32:01 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 67040cb3-7c71-445c-077f-08d8a7de01ea
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2246:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB224679D02BE2606D18AA315CD3DD0@BYAPR15MB2246.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: O/u2nNteFuuAaRF1ZpdWFMjamFgd+WNgf+aw21Bcq4UeftGCb0Hlon7tG74WqaUYmaiJU/inVCICkoH4xuqOC9vM0/vMst1nbrVBOs5hD1V41pLVDUGtlvovsVcjS3gVpsXrx5iS5213R6g1UjewTLG0ag6Y84fnzVhWVFD0P1YFUcoFN2cyiT0GeBZ5spm+C8A3o/+W+AnUdYC8SFgobjgXYqa5FpJvjVLz8l6/0mFfPFCWPW985CpprUfLbpKKn3FN5/XK4hPOZ2UNqyerggJb1RiY1qITSbdBVzDzzpu+oh6MQhLPtQaEqM/tWMSrEe1m86u02oodHwkfckEsWGT7nkBxfy3cKkSNU6i6/if7FDmO+jhFf7eF+4O3R/6TUTPm6KuFGCieU2BIl/eoPlGq7Pc3temHsjaYbYlCwVs821He95AMM5mGDpp8nK3zSlJB6sBn4dxHyPzIghS2sVUZi+is7J1Jx2LQcdngwGg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39860400002)(366004)(136003)(376002)(346002)(2616005)(8936002)(4326008)(36756003)(31686004)(6486002)(7416002)(83380400001)(6666004)(66556008)(186003)(86362001)(316002)(52116002)(8676002)(66946007)(5660300002)(478600001)(53546011)(31696002)(2906002)(16526019)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?TFBmcFQrZ2lHbC9ybjlMR3FNcjNWbjVMZ0hpMjBmK0VqS3NuZFdmeHo2WmNi?=
+ =?utf-8?B?NGlDM1JpcVZVbmsya2oxZlBSbVlXd2hGYWN0aGlld3ZVcVZodEdVMHVlYytX?=
+ =?utf-8?B?L0ZzcDF6ZWlIOFBUWlFYK2w2NW9nbk9oKzdPQzdEWjRYQ0hlU2lWZ016QzZs?=
+ =?utf-8?B?NklUU0wvcVE5cGh2RC8yd1FWb0FoQ09vT0thM0VKWmlPNHhtR3NCSm9NWWtl?=
+ =?utf-8?B?ZThydjQ2RUMrM0lSZW1PM3FUM0pxaXZsVTYwbTRNYklwLzZ6S3VMZGVNeUdU?=
+ =?utf-8?B?WkVDNFNpK1FINlN3YUVVeC9WV0hpQmhoS0x3NUlKeWdGYXJZVVNkOElLZmtv?=
+ =?utf-8?B?RjU1ZnZMZGxhOW9yYUxyZ0hVcUg1U3FZNVkvUzNRaENHQk9HbitMRGxFRjFM?=
+ =?utf-8?B?M0djcmErdTVJM0RvZUV3VmdVbHlxc2IrUHBHZzlwblVCWlZ5bFk4QWl1Q3lG?=
+ =?utf-8?B?VDRYdThMRy9xWDJkN0dZajg4eVRQbTZ6TmxqK01hZHl2RTN1eFpHcGY0V1JG?=
+ =?utf-8?B?dFNXNFRwQi9pTzVsLzZWUXBVS0c5L1NSaWhOL09TL3BjMzRKNDlaZ2Qzb3Fp?=
+ =?utf-8?B?T09vekJBdEJWNytSMXBFUjQrOFg1TlRpN0VoYzBpVkpHZ1U2MUhPTHpLSEMr?=
+ =?utf-8?B?b1ZZTkJ2MXo5S3gwMXhKN05SUExaUGJYbnY5czk4a3llaDh1VWc1VXN0NElO?=
+ =?utf-8?B?STdUbVhtTTdocDlUeGVFYXRmd2x3SW51YTVoUlpweDl2eHd3eUk0UG41UDdh?=
+ =?utf-8?B?T1dtVHRreVlBb2E4bFVCVHhjckdEbkFSeDVGbVdRVEpRc1llZk1vMm1wWkk3?=
+ =?utf-8?B?NlBlK3FNbGxXeEdpLzBFUFl3blpqVXZTVUtRbW1Ea2FHc1RZTnB1RWVQVkR1?=
+ =?utf-8?B?YnQyRFN2YXVXTEtENitjOXo2aWRibkVpNXpOK1hSRUxZdDV5UUdZZXlkZi9C?=
+ =?utf-8?B?ZW5LVlJrYTR0N3crR0pCbzlBQzloeXNGSWtUKzBYcDlQcEcrSmJlMlVsL2R2?=
+ =?utf-8?B?ckUxYjRsekpQS29zcVNlZ0NHVVQ4eTl0OE56czA1bk5PcTZZZEg4M1ZzSzR3?=
+ =?utf-8?B?UjlXQXErd1orS3Fra3FtSUVGMGlTZm9kY0huUkdpaVcwWWxDbWRYcURvcEV6?=
+ =?utf-8?B?Zjc2bU1yVnpraW16L1NVY0JTVStyeVRpdkZJWWY2M3NPUWt2WmdoVXdJREZT?=
+ =?utf-8?B?Y2FkOGVFbStJQmxweDI5QTJRdjVKNk53bmtEblNVVDBwRlllUExYbVQ1cDlh?=
+ =?utf-8?B?bGNyOW9INnZsKzlNd0t1WWlUUXVqaEtFQ3FlWlYwZzFhTlE0RUJSOXJRRFdq?=
+ =?utf-8?B?RlNWcmRobThlc251Ry9vRHFpK3NSalV0NlBuamRXK0piUGR3OTZ1Wkc4bFo2?=
+ =?utf-8?B?R2JLVmtMaHhPRkE9PQ==?=
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Dec 2020 07:32:02.8808
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67040cb3-7c71-445c-077f-08d8a7de01ea
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xFSsyfkrwKvw65EeCqZ8PcJQkoyWTTB0o7w2mBMaVkKI4JiR4TwZs/NH1avbCqfA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2246
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-24_05:2020-12-24,2020-12-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ clxscore=1011 mlxscore=0 bulkscore=0 impostorscore=0 suspectscore=0
+ phishscore=0 priorityscore=1501 spamscore=0 mlxlogscore=999 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012240045
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIwLTEyLTIxIGF0IDEyOjA5IC0wNzAwLCBSb2IgSGVycmluZyB3cm90ZToNCj4g
-T24gV2VkLCBEZWMgMTYsIDIwMjAgYXQgMDU6MzA6MDJQTSArMDgwMCwgQ2h1bmZlbmcgWXVuIHdy
-b3RlOg0KPiA+IENvbnZlcnQgdXNiLWRldmljZS50eHQgdG8gWUFNTCBzY2hlbWEgdXNiLWRldmlj
-ZS55YW1sDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogQ2h1bmZlbmcgWXVuIDxjaHVuZmVuZy55
-dW5AbWVkaWF0ZWsuY29tPg0KPiA+IC0tLQ0KPiA+IHY0OiBubyBjaGFuZ2VzLCB1cGRhdGUgZGVw
-ZW5kZW50IHNlcmllczoNCj4gPiAgICAgaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9wcm9q
-ZWN0L2xpbnV4LXVzYi9saXN0Lz9zZXJpZXM9Mzk5NTYxDQo+ID4gICAgIFt2NiwwMC8xOV0gZHQt
-YmluZGluZ3M6IHVzYjogQWRkIGdlbmVyaWMgVVNCIEhDRCwgeEhDSSwgRFdDIFVTQjMgRFQgc2No
-ZW1hDQpbLi4uXQ0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
-ZGluZ3MvdXNiL3VzYi1kZXZpY2UueWFtbCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5k
-aW5ncy91c2IvdXNiLWRldmljZS55YW1sDQo+ID4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gPiBp
-bmRleCAwMDAwMDAwMDAwMDAuLmYzMWQ4YTg1ZDNlNg0KPiA+IC0tLSAvZGV2L251bGwNCj4gPiAr
-KysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvdXNiL3VzYi1kZXZpY2UueWFt
-bA0KPiA+IEBAIC0wLDAgKzEsMTI1IEBADQo+ID4gKyMgU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6
-IChHUEwtMi4wLW9ubHkgT1IgQlNELTItQ2xhdXNlKQ0KPiA+ICslWUFNTCAxLjINCj4gPiArLS0t
-DQo+ID4gKyRpZDogaHR0cDovL2RldmljZXRyZWUub3JnL3NjaGVtYXMvdXNiL3VzYi1kZXZpY2Uu
-eWFtbCMNCj4gPiArJHNjaGVtYTogaHR0cDovL2RldmljZXRyZWUub3JnL21ldGEtc2NoZW1hcy9j
-b3JlLnlhbWwjDQo+ID4gKw0KPiA+ICt0aXRsZTogVGhlIGRldmljZSB0cmVlIGJpbmRpbmdzIGZv
-ciB0aGUgR2VuZXJpYyBVU0IgRGV2aWNlDQo+ID4gKw0KPiA+ICttYWludGFpbmVyczoNCj4gPiAr
-ICAtIEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+DQo+ID4g
-Kw0KPiA+ICtkZXNjcmlwdGlvbjogfA0KPiA+ICsgIFVzdWFsbHksIHdlIG9ubHkgdXNlIGRldmlj
-ZSB0cmVlIGZvciBoYXJkIHdpcmVkIFVTQiBkZXZpY2UuDQo+ID4gKyAgVGhlIHJlZmVyZW5jZSBi
-aW5kaW5nIGRvYyBpcyBmcm9tOg0KPiA+ICsgIGh0dHA6Ly93d3cuZGV2aWNldHJlZS5vcmcvb3Bl
-bi1maXJtd2FyZS9iaW5kaW5ncy91c2IvdXNiLTFfMC5wcw0KPiA+ICsNCj4gPiArICBGb3VyIHR5
-cGVzIG9mIGRldmljZS10cmVlIG5vZGVzIGFyZSBkZWZpbmVkOiAiaG9zdC1jb250cm9sbGVyIG5v
-ZGVzIg0KPiA+ICsgIHJlcHJlc2VudGluZyBVU0IgaG9zdCBjb250cm9sbGVycywgImRldmljZSBu
-b2RlcyIgcmVwcmVzZW50aW5nIFVTQiBkZXZpY2VzLA0KPiA+ICsgICJpbnRlcmZhY2Ugbm9kZXMi
-IHJlcHJlc2VudGluZyBVU0IgaW50ZXJmYWNlcyBhbmQgImNvbWJpbmVkIG5vZGVzIg0KPiA+ICsg
-IHJlcHJlc2VudGluZyBzaW1wbGUgVVNCIGRldmljZXMuDQo+ID4gKw0KPiA+ICsgIEEgY29tYmlu
-ZWQgbm9kZSBzaGFsbCBiZSB1c2VkIGluc3RlYWQgb2YgYSBkZXZpY2Ugbm9kZSBhbmQgYW4gaW50
-ZXJmYWNlIG5vZGUNCj4gPiArICBmb3IgZGV2aWNlcyBvZiBjbGFzcyAwIG9yIDkgKGh1Yikgd2l0
-aCBhIHNpbmdsZSBjb25maWd1cmF0aW9uIGFuZCBhIHNpbmdsZQ0KPiA+ICsgIGludGVyZmFjZS4N
-Cj4gPiArDQo+ID4gKyAgQSAiaHViIG5vZGUiIGlzIGEgY29tYmluZWQgbm9kZSBvciBhbiBpbnRl
-cmZhY2Ugbm9kZSB0aGF0IHJlcHJlc2VudHMgYSBVU0INCj4gPiArICBodWIuDQo+ID4gKw0KPiA+
-ICtwcm9wZXJ0aWVzOg0KPiA+ICsgIGNvbXBhdGlibGU6DQo+ID4gKyAgICBwYXR0ZXJuOiAiXnVz
-YlswLTlhLWZdKyxbMC05YS1mXSskIg0KPiANCj4gWW91IGNhbiByZWZpbmUgdGhlIGxlbmd0aCBh
-bGxvd2VkIGEgYml0OiBbMC05YS1mXXsxLDR9DQo+IA0KPiBTYW1lIGFwcGxpZXMgZWxzZXdoZXJl
-Lg0KT2sNCj4gDQo+ID4gKyAgICBkZXNjcmlwdGlvbjogRGV2aWNlIG5vZGVzIG9yIGNvbWJpbmVk
-IG5vZGVzLg0KPiA+ICsgICAgICAidXNiVklELFBJRCIsIHdoZXJlIFZJRCBpcyB0aGUgdmVuZG9y
-IGlkIGFuZCBQSUQgdGhlIHByb2R1Y3QgaWQuDQo+ID4gKyAgICAgIFRoZSB0ZXh0dWFsIHJlcHJl
-c2VudGF0aW9uIG9mIFZJRCBhbmQgUElEIHNoYWxsIGJlIGluIGxvd2VyIGNhc2UNCj4gPiArICAg
-ICAgaGV4YWRlY2ltYWwgd2l0aCBsZWFkaW5nIHplcm9lcyBzdXBwcmVzc2VkLiBUaGUgb3RoZXIg
-Y29tcGF0aWJsZQ0KPiA+ICsgICAgICBzdHJpbmdzIGZyb20gdGhlIGFib3ZlIHN0YW5kYXJkIGJp
-bmRpbmcgY291bGQgYWxzbyBiZSB1c2VkLA0KPiA+ICsgICAgICBidXQgYSBkZXZpY2UgYWRoZXJp
-bmcgdG8gdGhpcyBiaW5kaW5nIG1heSBsZWF2ZSBvdXQgYWxsIGV4Y2VwdA0KPiA+ICsgICAgICBm
-b3IgInVzYlZJRCxQSUQiLg0KPiA+ICsNClsuLi5dDQo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy91c2IvdXNiLWhjZC55YW1sIGIvRG9jdW1lbnRhdGlv
-bi9kZXZpY2V0cmVlL2JpbmRpbmdzL3VzYi91c2ItaGNkLnlhbWwNCj4gPiBpbmRleCA5ODgxYWMx
-MDM4MGQuLjVkMGM2YjU1MDBkNiAxMDA3NTUNCj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2Rldmlj
-ZXRyZWUvYmluZGluZ3MvdXNiL3VzYi1oY2QueWFtbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24v
-ZGV2aWNldHJlZS9iaW5kaW5ncy91c2IvdXNiLWhjZC55YW1sDQo+ID4gQEAgLTIzLDYgKzIzLDMy
-IEBAIHByb3BlcnRpZXM6DQo+ID4gICAgICAgIHRhcmdldGVkIGhvc3RzIChub24tUEMgaG9zdHMp
-Lg0KPiA+ICAgICAgdHlwZTogYm9vbGVhbg0KPiA+ICANCj4gPiArICAiI2FkZHJlc3MtY2VsbHMi
-Og0KPiA+ICsgICAgY29uc3Q6IDENCj4gPiArDQo+ID4gKyAgIiNzaXplLWNlbGxzIjoNCj4gPiAr
-ICAgIGNvbnN0OiAwDQo+ID4gKw0KPiA+ICtwYXR0ZXJuUHJvcGVydGllczoNCj4gPiArICAiQFsw
-LTlhLWZdKyQiOg0KPiA+ICsgICAgdHlwZTogb2JqZWN0DQo+ID4gKyAgICBkZXNjcmlwdGlvbjog
-VGhlIGhhcmQgd2lyZWQgVVNCIGRldmljZXMNCj4gPiArDQo+ID4gKyAgICBwcm9wZXJ0aWVzOg0K
-PiA+ICsgICAgICBjb21wYXRpYmxlOg0KPiA+ICsgICAgICAgIHBhdHRlcm46ICJedXNiWzAtOWEt
-Zl0rLFswLTlhLWZdKyQiDQo+ID4gKyAgICAgICAgJHJlZjogL3VzYi91c2ItZGV2aWNlLnlhbWwN
-Cj4gDQo+IFRoaXMgaXMgd3JvbmcuIEl0IHNob3VsZCBiZSB1cCBhIGxldmVsLg0KT2sNCj4gIEFu
-ZCBubyBuZWVkIHRvIGRlZmluZSANCj4gJ2NvbXBhdGlibGUnIG9yICdyZWcnIGhlcmUgYmVjYXVz
-ZSB0aG9zZSBhcmUgZGVmaW5lZCB3aXRoaW4gDQo+IHVzYi1kZXZpY2UueWFtbC4NCndpbGwgZHJv
-cCBpdA0KPiANCj4gPiArICAgICAgICBkZXNjcmlwdGlvbjogdGhlIHN0cmluZyBpcyAndXNiVklE
-LFBJRCcsIHdoZXJlIFZJRCBpcyB0aGUgdmVuZG9yIGlkDQo+ID4gKyAgICAgICAgICBhbmQgUElE
-IGlzIHRoZSBwcm9kdWN0IGlkDQo+ID4gKw0KPiA+ICsgICAgICByZWc6DQo+ID4gKyAgICAgICAg
-JHJlZjogL3VzYi91c2ItZGV2aWNlLnlhbWwNCj4gPiArICAgICAgICBtYXhJdGVtczogMQ0KPiA+
-ICsNCj4gPiArICAgIHJlcXVpcmVkOg0KPiA+ICsgICAgICAtIGNvbXBhdGlibGUNCj4gPiArICAg
-ICAgLSByZWcNCj4gPiArDQo+ID4gIGFkZGl0aW9uYWxQcm9wZXJ0aWVzOiB0cnVlDQo+ID4gIA0K
-PiA+ICBleGFtcGxlczoNCj4gPiBAQCAtMzAsNCArNTYsMTEgQEAgZXhhbXBsZXM6DQo+ID4gICAg
-ICB1c2Igew0KPiA+ICAgICAgICAgIHBoeXMgPSA8JnVzYjJfcGh5MT4sIDwmdXNiM19waHkxPjsN
-Cj4gPiAgICAgICAgICBwaHktbmFtZXMgPSAidXNiIjsNCj4gPiArICAgICAgICAjYWRkcmVzcy1j
-ZWxscyA9IDwxPjsNCj4gPiArICAgICAgICAjc2l6ZS1jZWxscyA9IDwwPjsNCj4gPiArDQo+ID4g
-KyAgICAgICAgaHViQDEgew0KPiA+ICsgICAgICAgICAgICBjb21wYXRpYmxlID0gInVzYjVlMyw2
-MTAiOw0KPiA+ICsgICAgICAgICAgICByZWcgPSA8MT47DQo+ID4gKyAgICAgICAgfTsNCj4gPiAg
-ICAgIH07DQo+ID4gLS0gDQo+ID4gMi4xOC4wDQo+ID4gDQoNCg==
 
+
+On 12/23/20 11:01 PM, YANG LI wrote:
+> Assigning local variable txq to the outputting parameter xdp->txq is not
+> safe, txq will be released after the end of the function call.
+> Then the result of using xdp is unpredictable.
+> 
+> Fix this error by defining the struct xdp_txq_info in function
+> dev_map_run_prog() as a static type.
+> 
+> Signed-off-by: YANG LI <abaci-bugfix@linux.alibaba.com>
+> Reported-by: Abaci <abaci@linux.alibaba.com>
+> ---
+>   kernel/bpf/devmap.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index f6e9c68..af6f004 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -454,7 +454,7 @@ static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
+>   					 struct xdp_buff *xdp,
+>   					 struct bpf_prog *xdp_prog)
+>   {
+> -	struct xdp_txq_info txq = { .dev = dev };
+> +	static struct xdp_txq_info txq = { .dev = dev };
+>   	u32 act;
+>   
+>   	xdp_set_data_meta_invalid(xdp);
+
+exposing txq outside the routine with 'static' definition is not
+a good practice. maybe just reset xdp->txq = NULl right before
+function return?
+
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index f6e9c68afdd4..50f5c20a33a3 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -475,6 +475,7 @@ static struct xdp_buff *dev_map_run_prog(struct 
+net_device *dev,
+         }
+
+         xdp_return_buff(xdp);
++       xdp->txq = NULL;
+         return NULL;
+  }
+
+-bash-4.4$
