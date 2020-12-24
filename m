@@ -2,65 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7C32E2680
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 12:50:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09B6E2E271C
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 14:14:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727185AbgLXLuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 06:50:01 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:9645 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbgLXLuA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 06:50:00 -0500
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4D1pHQ4hd7z15jKY;
-        Thu, 24 Dec 2020 19:48:18 +0800 (CST)
-Received: from localhost (10.174.243.127) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.498.0; Thu, 24 Dec 2020
- 19:48:56 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <netdev@vger.kernel.org>, <mst@redhat.com>, <jasowang@redhat.com>,
-        <willemdebruijn.kernel@gmail.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <jerry.lilijun@huawei.com>, <chenchanghu@huawei.com>,
-        <xudingke@huawei.com>, <brian.huangbin@huawei.com>,
-        Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net] tun: fix return value when the number of iovs exceeds MAX_SKB_FRAGS
-Date:   Thu, 24 Dec 2020 19:48:53 +0800
-Message-ID: <1608810533-8308-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+        id S1727778AbgLXNMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 08:12:34 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:34942 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726544AbgLXNMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 08:12:33 -0500
+From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1608815511;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=TvNobAOXgUaUxeUOktLm8nVfhFlqbD/7mmuwOekg2Ck=;
+        b=V5fhsFabHjfhFvk1l/6VpGj62n4oHO63kDs1Djnqfju5XN/4Uv8nRaR+ZDZ0mu9pv7zxdG
+        uBMroYfUXuSAoim5SjtYoDbxvZgPYIt6LRlKFldN1kuB0HGI7M9RDgBqRAboIaT5tif7or
+        I7piWVOyXzPL7pMfepSZjJc07vofD8VH6HjD2s+SwSaWB8fCsOtnDUEy4IKFjrZNgIVqNl
+        B/rN8YXo5apy6895rdhqmuQqh9g1s6zJ8clI/rwzW3dpJIoIy4DG6oc4HKT9QT0l1Rl+bw
+        hBL030dxhbmK62piBPatfVSjk59PjLCl+swGtDAHNvUR/lCxMMlfsJU50mObhw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1608815511;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=TvNobAOXgUaUxeUOktLm8nVfhFlqbD/7mmuwOekg2Ck=;
+        b=12iMUtFHUZVpbaWtCf92xXB0pzMfftm74gs82EBUJoizkVkCfFtPnVBxW5tbM4ttYI7pkJ
+        iFtk3r6KgrqmzeBA==
+To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Sebastian A. Siewior" <bigeasy@linutronix.de>,
+        "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Subject: [RFC PATCH 0/3] chelsio: cxgb: Use threaded irqs
+Date:   Thu, 24 Dec 2020 14:11:45 +0100
+Message-Id: <20201224131148.300691-1-a.darwish@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.243.127]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+Folks,
 
-Currently the tun_napi_alloc_frags() function returns -ENOMEM when the
-number of iovs exceeds MAX_SKB_FRAGS + 1. However this is inappropriate,
-we should use -EMSGSIZE instead of -ENOMEM.
+The t1_interrupt() irq handler calls del_timer_sync() down the chain:
 
-Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/net/tun.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+   sge.c: t1_interrupt()
+     -> subr.c: t1_slow_intr_handler()
+       -> asic_slow_intr() || fpga_slow_intr()
+         -> t1_pci_intr_handler()
+ 	  -> cxgb2.c: t1_fatal_err()		# Cont. at [*]
+       -> fpga_slow_intr()
+         -> sge.c: t1_sge_intr_error_handler()
+ 	  -> cxgb2.c: t1_fatal_err()		# Cont. at [*]
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 2dc1988a8973..15c6dd7fb04c 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1365,7 +1365,7 @@ static struct sk_buff *tun_napi_alloc_frags(struct tun_file *tfile,
- 	int i;
- 
- 	if (it->nr_segs > MAX_SKB_FRAGS + 1)
--		return ERR_PTR(-ENOMEM);
-+		return ERR_PTR(-EMSGSIZE);
- 
- 	local_bh_disable();
- 	skb = napi_get_frags(&tfile->napi);
+[*] cxgb2.c: t1_fatal_err()
+      -> sge.c: t1_sge_stop()
+        -> timer.c: del_timer_sync()
+
+This is invalid: if an irq handler calls del_timer_sync() on a timer
+it has already interrupted, it will just loop forever.  That's why
+del_timer_sync() also has a WARN_ON(in_irq()).
+
+Included is an RFC patch series that runs the interrupt handler slow
+path, t1_slow_intr_handler(), in a threaded-irq context.
+
+This also leads to nice code savings across the driver, as some
+workqueues and spinlocks are no longer needed.
+
+Note: Only compile-tested. I do not have the hardware in question.
+
+Thanks,
+
+8<--------------
+
+Ahmed S. Darwish (3):
+  chelsio: cxgb: Remove ndo_poll_controller()
+  chelsio: cxgb: Move slow interrupt handling to threaded irqs
+  chelsio: cxgb: Do not schedule a workqueue for external interrupts
+
+ drivers/net/ethernet/chelsio/cxgb/common.h |  2 -
+ drivers/net/ethernet/chelsio/cxgb/cxgb2.c  | 58 ++--------------------
+ drivers/net/ethernet/chelsio/cxgb/sge.c    | 25 +++++++---
+ drivers/net/ethernet/chelsio/cxgb/sge.h    |  3 +-
+ drivers/net/ethernet/chelsio/cxgb/subr.c   |  2 +-
+ 5 files changed, 25 insertions(+), 65 deletions(-)
+
+base-commit: 2c85ebc57b3e1817b6ce1a6b703928e113a90442
 -- 
-2.23.0
+2.29.2
 
