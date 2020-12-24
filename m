@@ -2,138 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0A122E23F5
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 04:12:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E7B72E240A
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 04:22:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728758AbgLXDMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Dec 2020 22:12:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42065 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728357AbgLXDMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 22:12:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608779439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=d5ECQoERo7ozEZ7ZyUdd7rpKW0sc1bjVRvw6JsEPNx0=;
-        b=eSVK/7HHm8IeuYJEdjfXouoH8eMlJg+7kGSlOmMHHQvAeKdYbJrLUnPz7eTuDkuIFudC/y
-        fGKEjuG5FMe3xS5iktVjR2eU6cACkzakSOwmXQTPlwqNvg25Heu649htzE5w9+nw92HR9k
-        Q3TtH7fL+bNA9MSNQchvKnnguWWuQSw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-225-d9-m4xBwMgqmP6KrJLO4rA-1; Wed, 23 Dec 2020 22:10:35 -0500
-X-MC-Unique: d9-m4xBwMgqmP6KrJLO4rA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3F7A5107ACE6;
-        Thu, 24 Dec 2020 03:10:33 +0000 (UTC)
-Received: from [10.72.13.109] (ovpn-13-109.pek2.redhat.com [10.72.13.109])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 054165D9CD;
-        Thu, 24 Dec 2020 03:10:26 +0000 (UTC)
-Subject: Re: [PATCH net v4 2/2] vhost_net: fix tx queue stuck when sendmsg
- fails
-To:     wangyunjian <wangyunjian@huawei.com>, netdev@vger.kernel.org,
-        mst@redhat.com, willemdebruijn.kernel@gmail.com
-Cc:     virtualization@lists.linux-foundation.org,
-        jerry.lilijun@huawei.com, chenchanghu@huawei.com,
-        xudingke@huawei.com, brian.huangbin@huawei.com
-References: <1608776746-4040-1-git-send-email-wangyunjian@huawei.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c854850b-43ab-c98d-a4d8-36ad7cd6364c@redhat.com>
-Date:   Thu, 24 Dec 2020 11:10:25 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1729022AbgLXDWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Dec 2020 22:22:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729003AbgLXDV7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Dec 2020 22:21:59 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E30EC061794;
+        Wed, 23 Dec 2020 19:21:19 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id n10so774442pgl.10;
+        Wed, 23 Dec 2020 19:21:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fLyH75XG6Wmzd+2wrXyTN5Uo0F1DMeQJARxHlPuP6sc=;
+        b=UTIOHIEVvNb6XSXtWB3bAJnO7fZhtp0vBO+34Oyn23WUqr5uRdznZ3czuFXh2tIpbY
+         58t2783NcHZGFJxDcu6NRKEt5qkoz3qy6D+tNrJbydJaaknY200ZKqgrMC7Jm1W6EWYV
+         8RZg670gszb51+w89+Hi3ji0SU5VUbP1RusVzv/WRofnPQbjok1AHomI74IPgpoyKaMM
+         TN9mTSwLsUJz2MuxQAWx3gsXqO9hxjY0i500GuVUFDMqylbccw8DOJglplCkKqVLxbnG
+         vZ7uOFSOPRG/SJ0IN7suRH9FjmBZkcVigyPgQhEqzuNngTqPevSTh6HQ3EH41ZmTrOBi
+         JKvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=fLyH75XG6Wmzd+2wrXyTN5Uo0F1DMeQJARxHlPuP6sc=;
+        b=qYAC8T7THR/Uqt+w9JIrG7QssvlvZ+t8Jxbcjz7AnMJY+VzP0+0l1xLMDA6fnSOKhZ
+         kri56feBS/tKwnMnHgBp2xxppui9pUjsU0tZzsPff8AtH5HYcKqqWs8Du43lUToT0DgU
+         9AsII5jqMe7a3gVztYnIsBBQ7mYdA9ud1jtwtZH1byhUhSab8ecjS0HMfnDQB/T5zABm
+         MxJbaitaAxr1dm2SvIzjsEVM7MSwniWHV2yjMK+56jszm0OZQfagfuTNaHotsf6vqXmp
+         Ui+meGew8gR0G33cWc/2XMB0X/1Kfq3FLl/F52w8wK5oVGojRJ3FTE7SJVcv53v8Tb8A
+         WtfQ==
+X-Gm-Message-State: AOAM531p+Gg4aZni1rdPBaoSSAcydVd2t+OzVQMKZuAmI4Treg7i2Q0W
+        lmfqAcmxBefN2wKzkwW0xIdmaV2kav3fGQ==
+X-Google-Smtp-Source: ABdhPJwg2xSyIuYOaEycUufOSiSkSb0cs3q/L4f2raPLjYLzPI/nSTxMkjUeidZKO3wdhpJFHbsT4A==
+X-Received: by 2002:a62:63c5:0:b029:1a9:3a46:7d32 with SMTP id x188-20020a6263c50000b02901a93a467d32mr26580023pfb.39.1608780078929;
+        Wed, 23 Dec 2020 19:21:18 -0800 (PST)
+Received: from localhost ([2601:647:5e00:17f0:9f6f:76e5:8291:c7e1])
+        by smtp.gmail.com with ESMTPSA id a131sm18468728pfd.171.2020.12.23.19.21.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Dec 2020 19:21:18 -0800 (PST)
+Sender: Roland Dreier <roland.dreier@gmail.com>
+From:   Roland Dreier <roland@kernel.org>
+To:     Oliver Neukum <oliver@neukum.org>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH] CDC-NCM: remove "connected" log message
+Date:   Wed, 23 Dec 2020 19:21:16 -0800
+Message-Id: <20201224032116.2453938-1-roland@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20201222184926.35382198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201222184926.35382198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <1608776746-4040-1-git-send-email-wangyunjian@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The cdc_ncm driver passes network connection notifications up to
+usbnet_link_change(), which is the right place for any logging.
+Remove the netdev_info() duplicating this from the driver itself.
 
-On 2020/12/24 上午10:25, wangyunjian wrote:
-> From: Yunjian Wang <wangyunjian@huawei.com>
->
-> Currently the driver doesn't drop a packet which can't be sent by tun
-> (e.g bad packet). In this case, the driver will always process the
-> same packet lead to the tx queue stuck.
->
-> To fix this issue:
-> 1. in the case of persistent failure (e.g bad packet), the driver
-> can skip this descriptor by ignoring the error.
-> 2. in the case of transient failure (e.g -EAGAIN and -ENOMEM), the
-> driver schedules the worker to try again.
+This stops devices such as my "TRENDnet USB 10/100/1G/2.5G LAN"
+(ID 20f4:e02b) adapter from spamming the kernel log with
 
+    cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
 
-I might be wrong but looking at alloc_skb_with_frags(), it returns 
--ENOBUFS actually:
+messages every 60 msec or so.
 
-     *errcode = -ENOBUFS;
-     skb = alloc_skb(header_len, gfp_mask);
-     if (!skb)
-         return NULL;
+Signed-off-by: Roland Dreier <roland@kernel.org>
+---
+ drivers/net/usb/cdc_ncm.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Thanks
-
-
->
-> Fixes: 3a4d5c94e959 ("vhost_net: a kernel-level virtio server")
-> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
-> ---
->   drivers/vhost/net.c | 16 ++++++++--------
->   1 file changed, 8 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-> index c8784dfafdd7..e76245daa7f6 100644
-> --- a/drivers/vhost/net.c
-> +++ b/drivers/vhost/net.c
-> @@ -827,14 +827,13 @@ static void handle_tx_copy(struct vhost_net *net, struct socket *sock)
->   				msg.msg_flags &= ~MSG_MORE;
->   		}
->   
-> -		/* TODO: Check specific error and bomb out unless ENOBUFS? */
->   		err = sock->ops->sendmsg(sock, &msg, len);
-> -		if (unlikely(err < 0)) {
-> +		if (unlikely(err == -EAGAIN || err == -ENOMEM)) {
->   			vhost_discard_vq_desc(vq, 1);
->   			vhost_net_enable_vq(net, vq);
->   			break;
->   		}
-> -		if (err != len)
-> +		if (err >= 0 && err != len)
->   			pr_debug("Truncated TX packet: len %d != %zd\n",
->   				 err, len);
->   done:
-> @@ -922,7 +921,6 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
->   			msg.msg_flags &= ~MSG_MORE;
->   		}
->   
-> -		/* TODO: Check specific error and bomb out unless ENOBUFS? */
->   		err = sock->ops->sendmsg(sock, &msg, len);
->   		if (unlikely(err < 0)) {
->   			if (zcopy_used) {
-> @@ -931,11 +929,13 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
->   				nvq->upend_idx = ((unsigned)nvq->upend_idx - 1)
->   					% UIO_MAXIOV;
->   			}
-> -			vhost_discard_vq_desc(vq, 1);
-> -			vhost_net_enable_vq(net, vq);
-> -			break;
-> +			if (err == -EAGAIN || err == -ENOMEM) {
-> +				vhost_discard_vq_desc(vq, 1);
-> +				vhost_net_enable_vq(net, vq);
-> +				break;
-> +			}
->   		}
-> -		if (err != len)
-> +		if (err >= 0 && err != len)
->   			pr_debug("Truncated TX packet: "
->   				 " len %d != %zd\n", err, len);
->   		if (!zcopy_used)
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+index a45fcc44facf..50d3a4e6d445 100644
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1850,9 +1850,6 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
+ 		 * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
+ 		 * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
+ 		 */
+-		netif_info(dev, link, dev->net,
+-			   "network connection: %sconnected\n",
+-			   !!event->wValue ? "" : "dis");
+ 		usbnet_link_change(dev, !!event->wValue, 0);
+ 		break;
+ 
+-- 
+2.29.2
 
