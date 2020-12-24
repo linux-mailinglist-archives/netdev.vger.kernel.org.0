@@ -2,1019 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ECF52E257A
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 09:36:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F1FA2E2581
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 09:40:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727184AbgLXIfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 03:35:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726859AbgLXIfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 03:35:14 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C033C0617A6
-        for <netdev@vger.kernel.org>; Thu, 24 Dec 2020 00:34:33 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id b73so1488653edf.13
-        for <netdev@vger.kernel.org>; Thu, 24 Dec 2020 00:34:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Q9OhbNMCa8UWlY1b20M7zatg3t3q0S6RJlrpBoSAN1Q=;
-        b=F6sHql0k55r76fgdg80xlEvrVc9Y9Sm4Dzh4wKk7D+xeRMjHULP25DUF+h1tb11Ru5
-         N5qQguis0yulxmb+LdbtbZBxIQ19y5B5iYWHmzXYK0uZ7/WYDXDhOFMsuop15Gzd/VOP
-         Rrvm1zHMtKuJGzK6BDSLynDGJDGvM605d/9rIu2ffYxGyP51pv4XezpH957sc05i7tzz
-         Gu1Sz6VnVmk3uaRQHvikGcaRFasVaLiB3FgjuipIo7J/QF4ZA6qM0csTfrXV3cUi4YbT
-         nxAl3iFK/md0hDUDTCOlHvoErpdkwHJSOmv4IquC30PVJeEtjwMWZL3QVb2wwCXvN2oO
-         TOuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Q9OhbNMCa8UWlY1b20M7zatg3t3q0S6RJlrpBoSAN1Q=;
-        b=L7KaLao8KQlwQ3FdaRjftvNVm+ibyW17MfECyOYBWH8MgzBceIsiRQwUupBnrU9f3o
-         xFNnPShtX4EbQMe6VFIDCC/X5/n3cn3Hdww3EzRLocSjMsN6245M0ArsB2ZjfgPD6+fW
-         DbKIbcDBJt8HKn182y2XYf3KfBONeRMYuMrMZA8vOxypa4BBZCvSFHKAYPQIMlTTaRgK
-         01ctQlkvFFJfEsa5uTYWWu0BIUD8g+Deosz7x2VeVBcefp5jA5PLbYBm/3V7kHBaRslp
-         xBTCV7q7xIdcXKsjU9p8O9v7plJXw1Zr7merkb8eBGj+ZOjQwtWfObB98Ej9Dsprs9Se
-         QEfg==
-X-Gm-Message-State: AOAM533dcu7yLUg1U1uAyjmrZMU1l156JN8NKluhQJZAfJg30XCWgUsA
-        GRnyF7cpsHvh/aoGtzjPSvI6xqH62ulhNDal/rv2
-X-Google-Smtp-Source: ABdhPJzRK1N0/jUhMenXAVFcuqxRZDOts7sTsaZhCjH29vaPFU+fezf79qd8l0BjGp2SXQHoKtBZUL5aMKXWWPR39tA=
-X-Received: by 2002:aa7:c60c:: with SMTP id h12mr28055459edq.145.1608798871456;
- Thu, 24 Dec 2020 00:34:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20201222145221.711-1-xieyongji@bytedance.com> <20201222145221.711-7-xieyongji@bytedance.com>
- <468be90d-1d98-c819-5492-32a2152d2e36@redhat.com> <CACycT3vYb_CdWz3wZ1OY=KynG=1qZgaa_Ngko2AO0JHn_fFXEA@mail.gmail.com>
- <26ea3a3d-b06b-6256-7243-8ca9eae61bce@redhat.com>
-In-Reply-To: <26ea3a3d-b06b-6256-7243-8ca9eae61bce@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 24 Dec 2020 16:34:20 +0800
-Message-ID: <CACycT3uKb1P7zXyCBYWDb6VhGXV0cdJPH3CPcRzjwz57tyODgA@mail.gmail.com>
-Subject: Re: Re: [RFC v2 06/13] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+        id S1727332AbgLXIkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 03:40:13 -0500
+Received: from Mailgw01.mediatek.com ([1.203.163.78]:48650 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726159AbgLXIkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 03:40:12 -0500
+X-UUID: ef1fe8f8b4f64611a21798122845098d-20201224
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=HnNHSUya+E39U9AkaEhIWA7siDKFVrRDx52iOd3sKfA=;
+        b=LNIbmGQWBzdiOCfEH6qlWcAr0j/fnAAYrCIeKx/ycZqVrc377aypnQ3zhl3Sbbd4CHkNBB7bZwhQ1p7o0+J9TLdbrKgmq6pwS152VdVGMPlhN+H87rY3WcFoH3qUEtGF60mKdVyX+QtPMuchwBcHspZeBEXx2TEaSze38KLD1hY=;
+X-UUID: ef1fe8f8b4f64611a21798122845098d-20201224
+Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1851281395; Thu, 24 Dec 2020 16:39:22 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
+ (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 24 Dec
+ 2020 16:39:20 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Dec 2020 16:39:09 +0800
+Message-ID: <1608799150.7499.15.camel@mhfsdcap03>
+Subject: Re: [PATCH v4 09/11] dt-bindings: usb: convert
+ mediatek,mtk-xhci.txt to YAML schema
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Min Guo <min.guo@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <linux-usb@vger.kernel.org>,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Date:   Thu, 24 Dec 2020 16:39:10 +0800
+In-Reply-To: <20201221192329.GA383663@robh.at.kernel.org>
+References: <20201216093012.24406-1-chunfeng.yun@mediatek.com>
+         <20201216093012.24406-9-chunfeng.yun@mediatek.com>
+         <20201221192329.GA383663@robh.at.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mailer: Evolution 3.10.4-0ubuntu2 
+MIME-Version: 1.0
+X-TM-SNTS-SMTP: B0E7AFE2A7F32C33A0BEE84B97AD5D0B6081D92F6AF66A51A52DB0B396C9C0142000:8
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 24, 2020 at 11:01 AM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2020/12/23 =E4=B8=8B=E5=8D=8810:17, Yongji Xie wrote:
-> > On Wed, Dec 23, 2020 at 4:08 PM Jason Wang <jasowang@redhat.com> wrote:
-> >>
-> >> On 2020/12/22 =E4=B8=8B=E5=8D=8810:52, Xie Yongji wrote:
-> >>> This VDUSE driver enables implementing vDPA devices in userspace.
-> >>> Both control path and data path of vDPA devices will be able to
-> >>> be handled in userspace.
-> >>>
-> >>> In the control path, the VDUSE driver will make use of message
-> >>> mechnism to forward the config operation from vdpa bus driver
-> >>> to userspace. Userspace can use read()/write() to receive/reply
-> >>> those control messages.
-> >>>
-> >>> In the data path, the VDUSE driver implements a MMU-based on-chip
-> >>> IOMMU driver which supports mapping the kernel dma buffer to a
-> >>> userspace iova region dynamically. Userspace can access those
-> >>> iova region via mmap(). Besides, the eventfd mechanism is used to
-> >>> trigger interrupt callbacks and receive virtqueue kicks in userspace
-> >>>
-> >>> Now we only support virtio-vdpa bus driver with this patch applied.
-> >>>
-> >>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> >>> ---
-> >>>    Documentation/driver-api/vduse.rst                 |   74 ++
-> >>>    Documentation/userspace-api/ioctl/ioctl-number.rst |    1 +
-> >>>    drivers/vdpa/Kconfig                               |    8 +
-> >>>    drivers/vdpa/Makefile                              |    1 +
-> >>>    drivers/vdpa/vdpa_user/Makefile                    |    5 +
-> >>>    drivers/vdpa/vdpa_user/eventfd.c                   |  221 ++++
-> >>>    drivers/vdpa/vdpa_user/eventfd.h                   |   48 +
-> >>>    drivers/vdpa/vdpa_user/iova_domain.c               |  442 ++++++++
-> >>>    drivers/vdpa/vdpa_user/iova_domain.h               |   93 ++
-> >>>    drivers/vdpa/vdpa_user/vduse.h                     |   59 ++
-> >>>    drivers/vdpa/vdpa_user/vduse_dev.c                 | 1121 ++++++++=
-++++++++++++
-> >>>    include/uapi/linux/vdpa.h                          |    1 +
-> >>>    include/uapi/linux/vduse.h                         |   99 ++
-> >>>    13 files changed, 2173 insertions(+)
-> >>>    create mode 100644 Documentation/driver-api/vduse.rst
-> >>>    create mode 100644 drivers/vdpa/vdpa_user/Makefile
-> >>>    create mode 100644 drivers/vdpa/vdpa_user/eventfd.c
-> >>>    create mode 100644 drivers/vdpa/vdpa_user/eventfd.h
-> >>>    create mode 100644 drivers/vdpa/vdpa_user/iova_domain.c
-> >>>    create mode 100644 drivers/vdpa/vdpa_user/iova_domain.h
-> >>>    create mode 100644 drivers/vdpa/vdpa_user/vduse.h
-> >>>    create mode 100644 drivers/vdpa/vdpa_user/vduse_dev.c
-> >>>    create mode 100644 include/uapi/linux/vduse.h
-> >>>
-> >>> diff --git a/Documentation/driver-api/vduse.rst b/Documentation/drive=
-r-api/vduse.rst
-> >>> new file mode 100644
-> >>> index 000000000000..da9b3040f20a
-> >>> --- /dev/null
-> >>> +++ b/Documentation/driver-api/vduse.rst
-> >>> @@ -0,0 +1,74 @@
-> >>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >>> +VDUSE - "vDPA Device in Userspace"
-> >>> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >>> +
-> >>> +vDPA (virtio data path acceleration) device is a device that uses a
-> >>> +datapath which complies with the virtio specifications with vendor
-> >>> +specific control path. vDPA devices can be both physically located o=
-n
-> >>> +the hardware or emulated by software. VDUSE is a framework that make=
-s it
-> >>> +possible to implement software-emulated vDPA devices in userspace.
-> >>> +
-> >>> +How VDUSE works
-> >>> +------------
-> >>> +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl =
-on
-> >>> +the VDUSE character device (/dev/vduse). Then a file descriptor poin=
-ting
-> >>> +to the new resources will be returned, which can be used to implemen=
-t the
-> >>> +userspace vDPA device's control path and data path.
-> >>> +
-> >>> +To implement control path, the read/write operations to the file des=
-criptor
-> >>> +will be used to receive/reply the control messages from/to VDUSE dri=
-ver.
-> >>> +Those control messages are based on the vdpa_config_ops which define=
-s a
-> >>> +unified interface to control different types of vDPA device.
-> >>> +
-> >>> +The following types of messages are provided by the VDUSE framework =
-now:
-> >>> +
-> >>> +- VDUSE_SET_VQ_ADDR: Set the addresses of the different aspects of v=
-irtqueue.
-> >>> +
-> >>> +- VDUSE_SET_VQ_NUM: Set the size of virtqueue
-> >>> +
-> >>> +- VDUSE_SET_VQ_READY: Set ready status of virtqueue
-> >>> +
-> >>> +- VDUSE_GET_VQ_READY: Get ready status of virtqueue
-> >>> +
-> >>> +- VDUSE_SET_FEATURES: Set virtio features supported by the driver
-> >>> +
-> >>> +- VDUSE_GET_FEATURES: Get virtio features supported by the device
-> >>> +
-> >>> +- VDUSE_SET_STATUS: Set the device status
-> >>> +
-> >>> +- VDUSE_GET_STATUS: Get the device status
-> >>> +
-> >>> +- VDUSE_SET_CONFIG: Write to device specific configuration space
-> >>> +
-> >>> +- VDUSE_GET_CONFIG: Read from device specific configuration space
-> >>> +
-> >>> +Please see include/linux/vdpa.h for details.
-> >>> +
-> >>> +In the data path, VDUSE framework implements a MMU-based on-chip IOM=
-MU
-> >>> +driver which supports mapping the kernel dma buffer to a userspace i=
-ova
-> >>> +region dynamically. The userspace iova region can be created by pass=
-ing
-> >>> +the userspace vDPA device fd to mmap(2).
-> >>> +
-> >>> +Besides, the eventfd mechanism is used to trigger interrupt callback=
-s and
-> >>> +receive virtqueue kicks in userspace. The following ioctls on the us=
-erspace
-> >>> +vDPA device fd are provided to support that:
-> >>> +
-> >>> +- VDUSE_VQ_SETUP_KICKFD: set the kickfd for virtqueue, this eventfd =
-is used
-> >>> +  by VDUSE driver to notify userspace to consume the vring.
-> >>> +
-> >>> +- VDUSE_VQ_SETUP_IRQFD: set the irqfd for virtqueue, this eventfd is=
- used
-> >>> +  by userspace to notify VDUSE driver to trigger interrupt callbacks=
-.
-> >>> +
-> >>> +MMU-based IOMMU Driver
-> >>> +----------------------
-> >>> +The basic idea behind the IOMMU driver is treating MMU (VA->PA) as
-> >>> +IOMMU (IOVA->PA). This driver will set up MMU mapping instead of IOM=
-MU mapping
-> >>> +for the DMA transfer so that the userspace process is able to use it=
-s virtual
-> >>> +address to access the dma buffer in kernel.
-> >>> +
-> >>> +And to avoid security issue, a bounce-buffering mechanism is introdu=
-ced to
-> >>> +prevent userspace accessing the original buffer directly which may c=
-ontain other
-> >>> +kernel data. During the mapping, unmapping, the driver will copy the=
- data from
-> >>> +the original buffer to the bounce buffer and back, depending on the =
-direction of
-> >>> +the transfer. And the bounce-buffer addresses will be mapped into th=
-e user address
-> >>> +space instead of the original one.
-> >>> diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Doc=
-umentation/userspace-api/ioctl/ioctl-number.rst
-> >>> index a4c75a28c839..71722e6f8f23 100644
-> >>> --- a/Documentation/userspace-api/ioctl/ioctl-number.rst
-> >>> +++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
-> >>> @@ -300,6 +300,7 @@ Code  Seq#    Include File                       =
-                    Comments
-> >>>    'z'   10-4F  drivers/s390/crypto/zcrypt_api.h                     =
-   conflict!
-> >>>    '|'   00-7F  linux/media.h
-> >>>    0x80  00-1F  linux/fb.h
-> >>> +0x81  00-1F  linux/vduse.h
-> >>>    0x89  00-06  arch/x86/include/asm/sockios.h
-> >>>    0x89  0B-DF  linux/sockios.h
-> >>>    0x89  E0-EF  linux/sockios.h                                      =
-   SIOCPROTOPRIVATE range
-> >>> diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
-> >>> index 4be7be39be26..211cc449cbd3 100644
-> >>> --- a/drivers/vdpa/Kconfig
-> >>> +++ b/drivers/vdpa/Kconfig
-> >>> @@ -21,6 +21,14 @@ config VDPA_SIM
-> >>>          to RX. This device is used for testing, prototyping and
-> >>>          development of vDPA.
-> >>>
-> >>> +config VDPA_USER
-> >>> +     tristate "VDUSE (vDPA Device in Userspace) support"
-> >>> +     depends on EVENTFD && MMU && HAS_DMA
-> >>> +     default n
-> >>
-> >> The "default n" is not necessary.
-> >>
-> > OK.
-> >>> +     help
-> >>> +       With VDUSE it is possible to emulate a vDPA Device
-> >>> +       in a userspace program.
-> >>> +
-> >>>    config IFCVF
-> >>>        tristate "Intel IFC VF vDPA driver"
-> >>>        depends on PCI_MSI
-> >>> diff --git a/drivers/vdpa/Makefile b/drivers/vdpa/Makefile
-> >>> index d160e9b63a66..66e97778ad03 100644
-> >>> --- a/drivers/vdpa/Makefile
-> >>> +++ b/drivers/vdpa/Makefile
-> >>> @@ -1,5 +1,6 @@
-> >>>    # SPDX-License-Identifier: GPL-2.0
-> >>>    obj-$(CONFIG_VDPA) +=3D vdpa.o
-> >>>    obj-$(CONFIG_VDPA_SIM) +=3D vdpa_sim/
-> >>> +obj-$(CONFIG_VDPA_USER) +=3D vdpa_user/
-> >>>    obj-$(CONFIG_IFCVF)    +=3D ifcvf/
-> >>>    obj-$(CONFIG_MLX5_VDPA) +=3D mlx5/
-> >>> diff --git a/drivers/vdpa/vdpa_user/Makefile b/drivers/vdpa/vdpa_user=
-/Makefile
-> >>> new file mode 100644
-> >>> index 000000000000..b7645e36992b
-> >>> --- /dev/null
-> >>> +++ b/drivers/vdpa/vdpa_user/Makefile
-> >>> @@ -0,0 +1,5 @@
-> >>> +# SPDX-License-Identifier: GPL-2.0
-> >>> +
-> >>> +vduse-y :=3D vduse_dev.o iova_domain.o eventfd.o
-> >>
-> >> Do we really need eventfd.o here consider we've selected it.
-> >>
-> > Do you mean the file "drivers/vdpa/vdpa_user/eventfd.c"?
->
->
-> My bad, I confuse this with the common eventfd. So the code is fine here.
->
->
-> >
-> >>> +
-> >>> +obj-$(CONFIG_VDPA_USER) +=3D vduse.o
-> >>> diff --git a/drivers/vdpa/vdpa_user/eventfd.c b/drivers/vdpa/vdpa_use=
-r/eventfd.c
-> >>> new file mode 100644
-> >>> index 000000000000..dbffddb08908
-> >>> --- /dev/null
-> >>> +++ b/drivers/vdpa/vdpa_user/eventfd.c
-> >>> @@ -0,0 +1,221 @@
-> >>> +// SPDX-License-Identifier: GPL-2.0-only
-> >>> +/*
-> >>> + * Eventfd support for VDUSE
-> >>> + *
-> >>> + * Copyright (C) 2020 Bytedance Inc. and/or its affiliates. All righ=
-ts reserved.
-> >>> + *
-> >>> + * Author: Xie Yongji <xieyongji@bytedance.com>
-> >>> + *
-> >>> + */
-> >>> +
-> >>> +#include <linux/eventfd.h>
-> >>> +#include <linux/poll.h>
-> >>> +#include <linux/wait.h>
-> >>> +#include <linux/slab.h>
-> >>> +#include <linux/file.h>
-> >>> +#include <uapi/linux/vduse.h>
-> >>> +
-> >>> +#include "eventfd.h"
-> >>> +
-> >>> +static struct workqueue_struct *vduse_irqfd_cleanup_wq;
-> >>> +
-> >>> +static void vduse_virqfd_shutdown(struct work_struct *work)
-> >>> +{
-> >>> +     u64 cnt;
-> >>> +     struct vduse_virqfd *virqfd =3D container_of(work,
-> >>> +                                     struct vduse_virqfd, shutdown);
-> >>> +
-> >>> +     eventfd_ctx_remove_wait_queue(virqfd->ctx, &virqfd->wait, &cnt)=
-;
-> >>> +     flush_work(&virqfd->inject);
-> >>> +     eventfd_ctx_put(virqfd->ctx);
-> >>> +     kfree(virqfd);
-> >>> +}
-> >>> +
-> >>> +static void vduse_virqfd_inject(struct work_struct *work)
-> >>> +{
-> >>> +     struct vduse_virqfd *virqfd =3D container_of(work,
-> >>> +                                     struct vduse_virqfd, inject);
-> >>> +     struct vduse_virtqueue *vq =3D virqfd->vq;
-> >>> +
-> >>> +     spin_lock_irq(&vq->irq_lock);
-> >>> +     if (vq->ready && vq->cb)
-> >>> +             vq->cb(vq->private);
-> >>> +     spin_unlock_irq(&vq->irq_lock);
-> >>> +}
-> >>> +
-> >>> +static void virqfd_deactivate(struct vduse_virqfd *virqfd)
-> >>> +{
-> >>> +     queue_work(vduse_irqfd_cleanup_wq, &virqfd->shutdown);
-> >>> +}
-> >>> +
-> >>> +static int vduse_virqfd_wakeup(wait_queue_entry_t *wait, unsigned in=
-t mode,
-> >>> +                             int sync, void *key)
-> >>> +{
-> >>> +     struct vduse_virqfd *virqfd =3D container_of(wait, struct vduse=
-_virqfd, wait);
-> >>> +     struct vduse_virtqueue *vq =3D virqfd->vq;
-> >>> +
-> >>> +     __poll_t flags =3D key_to_poll(key);
-> >>> +
-> >>> +     if (flags & EPOLLIN)
-> >>> +             schedule_work(&virqfd->inject);
-> >>> +
-> >>> +     if (flags & EPOLLHUP) {
-> >>> +             spin_lock(&vq->irq_lock);
-> >>> +             if (vq->virqfd =3D=3D virqfd) {
-> >>> +                     vq->virqfd =3D NULL;
-> >>> +                     virqfd_deactivate(virqfd);
-> >>> +             }
-> >>> +             spin_unlock(&vq->irq_lock);
-> >>> +     }
-> >>> +
-> >>> +     return 0;
-> >>> +}
-> >>> +
-> >>> +static void vduse_virqfd_ptable_queue_proc(struct file *file,
-> >>> +                     wait_queue_head_t *wqh, poll_table *pt)
-> >>> +{
-> >>> +     struct vduse_virqfd *virqfd =3D container_of(pt, struct vduse_v=
-irqfd, pt);
-> >>> +
-> >>> +     add_wait_queue(wqh, &virqfd->wait);
-> >>> +}
-> >>> +
-> >>> +int vduse_virqfd_setup(struct vduse_dev *dev,
-> >>> +                     struct vduse_vq_eventfd *eventfd)
-> >>> +{
-> >>> +     struct vduse_virqfd *virqfd;
-> >>> +     struct fd irqfd;
-> >>> +     struct eventfd_ctx *ctx;
-> >>> +     struct vduse_virtqueue *vq;
-> >>> +     __poll_t events;
-> >>> +     int ret;
-> >>> +
-> >>> +     if (eventfd->index >=3D dev->vq_num)
-> >>> +             return -EINVAL;
-> >>> +
-> >>> +     vq =3D &dev->vqs[eventfd->index];
-> >>> +     virqfd =3D kzalloc(sizeof(*virqfd), GFP_KERNEL);
-> >>> +     if (!virqfd)
-> >>> +             return -ENOMEM;
-> >>> +
-> >>> +     INIT_WORK(&virqfd->shutdown, vduse_virqfd_shutdown);
-> >>> +     INIT_WORK(&virqfd->inject, vduse_virqfd_inject);
-> >>
-> >> Any reason that a workqueue is must here?
-> >>
-> > Mainly for performance considerations. Make sure the push() and pop()
-> > for used vring can be asynchronous.
->
->
-> I see.
->
->
-> >
-> >>> +
-> >>> +     ret =3D -EBADF;
-> >>> +     irqfd =3D fdget(eventfd->fd);
-> >>> +     if (!irqfd.file)
-> >>> +             goto err_fd;
-> >>> +
-> >>> +     ctx =3D eventfd_ctx_fileget(irqfd.file);
-> >>> +     if (IS_ERR(ctx)) {
-> >>> +             ret =3D PTR_ERR(ctx);
-> >>> +             goto err_ctx;
-> >>> +     }
-> >>> +
-> >>> +     virqfd->vq =3D vq;
-> >>> +     virqfd->ctx =3D ctx;
-> >>> +     spin_lock(&vq->irq_lock);
-> >>> +     if (vq->virqfd)
-> >>> +             virqfd_deactivate(virqfd);
-> >>> +     vq->virqfd =3D virqfd;
-> >>> +     spin_unlock(&vq->irq_lock);
-> >>> +
-> >>> +     init_waitqueue_func_entry(&virqfd->wait, vduse_virqfd_wakeup);
-> >>> +     init_poll_funcptr(&virqfd->pt, vduse_virqfd_ptable_queue_proc);
-> >>> +
-> >>> +     events =3D vfs_poll(irqfd.file, &virqfd->pt);
-> >>> +
-> >>> +     /*
-> >>> +      * Check if there was an event already pending on the eventfd
-> >>> +      * before we registered and trigger it as if we didn't miss it.
-> >>> +      */
-> >>> +     if (events & EPOLLIN)
-> >>> +             schedule_work(&virqfd->inject);
-> >>> +
-> >>> +     fdput(irqfd);
-> >>> +
-> >>> +     return 0;
-> >>> +err_ctx:
-> >>> +     fdput(irqfd);
-> >>> +err_fd:
-> >>> +     kfree(virqfd);
-> >>> +     return ret;
-> >>> +}
-> >>> +
-> >>> +void vduse_virqfd_release(struct vduse_dev *dev)
-> >>> +{
-> >>> +     int i;
-> >>> +
-> >>> +     for (i =3D 0; i < dev->vq_num; i++) {
-> >>> +             struct vduse_virtqueue *vq =3D &dev->vqs[i];
-> >>> +
-> >>> +             spin_lock(&vq->irq_lock);
-> >>> +             if (vq->virqfd) {
-> >>> +                     virqfd_deactivate(vq->virqfd);
-> >>> +                     vq->virqfd =3D NULL;
-> >>> +             }
-> >>> +             spin_unlock(&vq->irq_lock);
-> >>> +     }
-> >>> +     flush_workqueue(vduse_irqfd_cleanup_wq);
-> >>> +}
-> >>> +
-> >>> +int vduse_virqfd_init(void)
-> >>> +{
-> >>> +     vduse_irqfd_cleanup_wq =3D alloc_workqueue("vduse-irqfd-cleanup=
-",
-> >>> +                                             WQ_UNBOUND, 0);
-> >>> +     if (!vduse_irqfd_cleanup_wq)
-> >>> +             return -ENOMEM;
-> >>> +
-> >>> +     return 0;
-> >>> +}
-> >>> +
-> >>> +void vduse_virqfd_exit(void)
-> >>> +{
-> >>> +     destroy_workqueue(vduse_irqfd_cleanup_wq);
-> >>> +}
-> >>> +
-> >>> +void vduse_vq_kick(struct vduse_virtqueue *vq)
-> >>> +{
-> >>> +     spin_lock(&vq->kick_lock);
-> >>> +     if (vq->ready && vq->kickfd)
-> >>> +             eventfd_signal(vq->kickfd, 1);
-> >>> +     spin_unlock(&vq->kick_lock);
-> >>> +}
-> >>> +
-> >>> +int vduse_kickfd_setup(struct vduse_dev *dev,
-> >>> +                     struct vduse_vq_eventfd *eventfd)
-> >>> +{
-> >>> +     struct eventfd_ctx *ctx;
-> >>> +     struct vduse_virtqueue *vq;
-> >>> +
-> >>> +     if (eventfd->index >=3D dev->vq_num)
-> >>> +             return -EINVAL;
-> >>> +
-> >>> +     vq =3D &dev->vqs[eventfd->index];
-> >>> +     ctx =3D eventfd_ctx_fdget(eventfd->fd);
-> >>> +     if (IS_ERR(ctx))
-> >>> +             return PTR_ERR(ctx);
-> >>> +
-> >>> +     spin_lock(&vq->kick_lock);
-> >>> +     if (vq->kickfd)
-> >>> +             eventfd_ctx_put(vq->kickfd);
-> >>> +     vq->kickfd =3D ctx;
-> >>> +     spin_unlock(&vq->kick_lock);
-> >>> +
-> >>> +     return 0;
-> >>> +}
-> >>> +
-> >>> +void vduse_kickfd_release(struct vduse_dev *dev)
-> >>> +{
-> >>> +     int i;
-> >>> +
-> >>> +     for (i =3D 0; i < dev->vq_num; i++) {
-> >>> +             struct vduse_virtqueue *vq =3D &dev->vqs[i];
-> >>> +
-> >>> +             spin_lock(&vq->kick_lock);
-> >>> +             if (vq->kickfd) {
-> >>> +                     eventfd_ctx_put(vq->kickfd);
-> >>> +                     vq->kickfd =3D NULL;
-> >>> +             }
-> >>> +             spin_unlock(&vq->kick_lock);
-> >>> +     }
-> >>> +}
-> >>> diff --git a/drivers/vdpa/vdpa_user/eventfd.h b/drivers/vdpa/vdpa_use=
-r/eventfd.h
-> >>> new file mode 100644
-> >>> index 000000000000..14269ff27f47
-> >>> --- /dev/null
-> >>> +++ b/drivers/vdpa/vdpa_user/eventfd.h
-> >>> @@ -0,0 +1,48 @@
-> >>> +/* SPDX-License-Identifier: GPL-2.0-only */
-> >>> +/*
-> >>> + * Eventfd support for VDUSE
-> >>> + *
-> >>> + * Copyright (C) 2020 Bytedance Inc. and/or its affiliates. All righ=
-ts reserved.
-> >>> + *
-> >>> + * Author: Xie Yongji <xieyongji@bytedance.com>
-> >>> + *
-> >>> + */
-> >>> +
-> >>> +#ifndef _VDUSE_EVENTFD_H
-> >>> +#define _VDUSE_EVENTFD_H
-> >>> +
-> >>> +#include <linux/eventfd.h>
-> >>> +#include <linux/poll.h>
-> >>> +#include <linux/wait.h>
-> >>> +#include <uapi/linux/vduse.h>
-> >>> +
-> >>> +#include "vduse.h"
-> >>> +
-> >>> +struct vduse_dev;
-> >>> +
-> >>> +struct vduse_virqfd {
-> >>> +     struct eventfd_ctx *ctx;
-> >>> +     struct vduse_virtqueue *vq;
-> >>> +     struct work_struct inject;
-> >>> +     struct work_struct shutdown;
-> >>> +     wait_queue_entry_t wait;
-> >>> +     poll_table pt;
-> >>> +};
-> >>> +
-> >>> +int vduse_virqfd_setup(struct vduse_dev *dev,
-> >>> +                     struct vduse_vq_eventfd *eventfd);
-> >>> +
-> >>> +void vduse_virqfd_release(struct vduse_dev *dev);
-> >>> +
-> >>> +int vduse_virqfd_init(void);
-> >>> +
-> >>> +void vduse_virqfd_exit(void);
-> >>> +
-> >>> +void vduse_vq_kick(struct vduse_virtqueue *vq);
-> >>> +
-> >>> +int vduse_kickfd_setup(struct vduse_dev *dev,
-> >>> +                     struct vduse_vq_eventfd *eventfd);
-> >>> +
-> >>> +void vduse_kickfd_release(struct vduse_dev *dev);
-> >>> +
-> >>> +#endif /* _VDUSE_EVENTFD_H */
-> >>> diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa=
-_user/iova_domain.c
-> >>> new file mode 100644
-> >>> index 000000000000..27022157abc6
-> >>> --- /dev/null
-> >>> +++ b/drivers/vdpa/vdpa_user/iova_domain.c
-> >>> @@ -0,0 +1,442 @@
-> >>> +// SPDX-License-Identifier: GPL-2.0-only
-> >>> +/*
-> >>> + * MMU-based IOMMU implementation
-> >>> + *
-> >>> + * Copyright (C) 2020 Bytedance Inc. and/or its affiliates. All righ=
-ts reserved.
-> >>> + *
-> >>> + * Author: Xie Yongji <xieyongji@bytedance.com>
-> >>> + *
-> >>> + */
-> >>> +
-> >>> +#include <linux/wait.h>
-> >>> +#include <linux/slab.h>
-> >>> +#include <linux/genalloc.h>
-> >>> +#include <linux/dma-mapping.h>
-> >>> +
-> >>> +#include "iova_domain.h"
-> >>> +
-> >>> +#define IOVA_CHUNK_SHIFT 26
-> >>> +#define IOVA_CHUNK_SIZE (_AC(1, UL) << IOVA_CHUNK_SHIFT)
-> >>> +#define IOVA_CHUNK_MASK (~(IOVA_CHUNK_SIZE - 1))
-> >>> +
-> >>> +#define IOVA_MIN_SIZE (IOVA_CHUNK_SIZE << 1)
-> >>> +
-> >>> +#define IOVA_ALLOC_ORDER 12
-> >>> +#define IOVA_ALLOC_SIZE (1 << IOVA_ALLOC_ORDER)
-> >>> +
-> >>> +struct vduse_mmap_vma {
-> >>> +     struct vm_area_struct *vma;
-> >>> +     struct list_head list;
-> >>> +};
-> >>> +
-> >>> +static inline struct page *
-> >>> +vduse_domain_get_bounce_page(struct vduse_iova_domain *domain,
-> >>> +                             unsigned long iova)
-> >>> +{
-> >>> +     unsigned long index =3D iova >> IOVA_CHUNK_SHIFT;
-> >>> +     unsigned long chunkoff =3D iova & ~IOVA_CHUNK_MASK;
-> >>> +     unsigned long pgindex =3D chunkoff >> PAGE_SHIFT;
-> >>> +
-> >>> +     return domain->chunks[index].bounce_pages[pgindex];
-> >>> +}
-> >>> +
-> >>> +static inline void
-> >>> +vduse_domain_set_bounce_page(struct vduse_iova_domain *domain,
-> >>> +                             unsigned long iova, struct page *page)
-> >>> +{
-> >>> +     unsigned long index =3D iova >> IOVA_CHUNK_SHIFT;
-> >>> +     unsigned long chunkoff =3D iova & ~IOVA_CHUNK_MASK;
-> >>> +     unsigned long pgindex =3D chunkoff >> PAGE_SHIFT;
-> >>> +
-> >>> +     domain->chunks[index].bounce_pages[pgindex] =3D page;
-> >>> +}
-> >>> +
-> >>> +static inline struct vduse_iova_map *
-> >>> +vduse_domain_get_iova_map(struct vduse_iova_domain *domain,
-> >>> +                             unsigned long iova)
-> >>> +{
-> >>> +     unsigned long index =3D iova >> IOVA_CHUNK_SHIFT;
-> >>> +     unsigned long chunkoff =3D iova & ~IOVA_CHUNK_MASK;
-> >>> +     unsigned long mapindex =3D chunkoff >> IOVA_ALLOC_ORDER;
-> >>> +
-> >>> +     return domain->chunks[index].iova_map[mapindex];
-> >>> +}
-> >>> +
-> >>> +static inline void
-> >>> +vduse_domain_set_iova_map(struct vduse_iova_domain *domain,
-> >>> +                     unsigned long iova, struct vduse_iova_map *map)
-> >>> +{
-> >>> +     unsigned long index =3D iova >> IOVA_CHUNK_SHIFT;
-> >>> +     unsigned long chunkoff =3D iova & ~IOVA_CHUNK_MASK;
-> >>> +     unsigned long mapindex =3D chunkoff >> IOVA_ALLOC_ORDER;
-> >>> +
-> >>> +     domain->chunks[index].iova_map[mapindex] =3D map;
-> >>> +}
-> >>> +
-> >>> +static int
-> >>> +vduse_domain_free_bounce_pages(struct vduse_iova_domain *domain,
-> >>> +                             unsigned long iova, size_t size)
-> >>> +{
-> >>> +     struct page *page;
-> >>> +     size_t walk_sz =3D 0;
-> >>> +     int frees =3D 0;
-> >>> +
-> >>> +     while (walk_sz < size) {
-> >>> +             page =3D vduse_domain_get_bounce_page(domain, iova);
-> >>> +             if (page) {
-> >>> +                     vduse_domain_set_bounce_page(domain, iova, NULL=
-);
-> >>> +                     put_page(page);
-> >>> +                     frees++;
-> >>> +             }
-> >>> +             iova +=3D PAGE_SIZE;
-> >>> +             walk_sz +=3D PAGE_SIZE;
-> >>> +     }
-> >>> +
-> >>> +     return frees;
-> >>> +}
-> >>> +
-> >>> +int vduse_domain_add_vma(struct vduse_iova_domain *domain,
-> >>> +                             struct vm_area_struct *vma)
-> >>> +{
-> >>> +     unsigned long size =3D vma->vm_end - vma->vm_start;
-> >>> +     struct vduse_mmap_vma *mmap_vma;
-> >>> +
-> >>> +     if (WARN_ON(size !=3D domain->size))
-> >>> +             return -EINVAL;
-> >>> +
-> >>> +     mmap_vma =3D kmalloc(sizeof(*mmap_vma), GFP_KERNEL);
-> >>> +     if (!mmap_vma)
-> >>> +             return -ENOMEM;
-> >>> +
-> >>> +     mmap_vma->vma =3D vma;
-> >>> +     mutex_lock(&domain->vma_lock);
-> >>> +     list_add(&mmap_vma->list, &domain->vma_list);
-> >>> +     mutex_unlock(&domain->vma_lock);
-> >>> +
-> >>> +     return 0;
-> >>> +}
-> >>> +
-> >>> +void vduse_domain_remove_vma(struct vduse_iova_domain *domain,
-> >>> +                             struct vm_area_struct *vma)
-> >>> +{
-> >>> +     struct vduse_mmap_vma *mmap_vma;
-> >>> +
-> >>> +     mutex_lock(&domain->vma_lock);
-> >>> +     list_for_each_entry(mmap_vma, &domain->vma_list, list) {
-> >>> +             if (mmap_vma->vma =3D=3D vma) {
-> >>> +                     list_del(&mmap_vma->list);
-> >>> +                     kfree(mmap_vma);
-> >>> +                     break;
-> >>> +             }
-> >>> +     }
-> >>> +     mutex_unlock(&domain->vma_lock);
-> >>> +}
-> >>> +
-> >>> +int vduse_domain_add_mapping(struct vduse_iova_domain *domain,
-> >>> +                             unsigned long iova, unsigned long orig,
-> >>> +                             size_t size, enum dma_data_direction di=
-r)
-> >>> +{
-> >>> +     struct vduse_iova_map *map;
-> >>> +     unsigned long last =3D iova + size;
-> >>> +
-> >>> +     map =3D kzalloc(sizeof(struct vduse_iova_map), GFP_ATOMIC);
-> >>> +     if (!map)
-> >>> +             return -ENOMEM;
-> >>> +
-> >>> +     map->iova =3D iova;
-> >>> +     map->orig =3D orig;
-> >>> +     map->size =3D size;
-> >>> +     map->dir =3D dir;
-> >>> +
-> >>> +     while (iova < last) {
-> >>> +             vduse_domain_set_iova_map(domain, iova, map);
-> >>> +             iova +=3D IOVA_ALLOC_SIZE;
-> >>> +     }
-> >>> +
-> >>> +     return 0;
-> >>> +}
-> >>> +
-> >>> +struct vduse_iova_map *
-> >>> +vduse_domain_get_mapping(struct vduse_iova_domain *domain,
-> >>> +                     unsigned long iova)
-> >>> +{
-> >>> +     return vduse_domain_get_iova_map(domain, iova);
-> >>> +}
-> >>> +
-> >>> +void vduse_domain_remove_mapping(struct vduse_iova_domain *domain,
-> >>> +                             struct vduse_iova_map *map)
-> >>> +{
-> >>> +     unsigned long iova =3D map->iova;
-> >>> +     unsigned long last =3D iova + map->size;
-> >>> +
-> >>> +     while (iova < last) {
-> >>> +             vduse_domain_set_iova_map(domain, iova, NULL);
-> >>> +             iova +=3D IOVA_ALLOC_SIZE;
-> >>> +     }
-> >>> +}
-> >>> +
-> >>> +void vduse_domain_unmap(struct vduse_iova_domain *domain,
-> >>> +                     unsigned long iova, size_t size)
-> >>> +{
-> >>> +     struct vduse_mmap_vma *mmap_vma;
-> >>> +     unsigned long uaddr;
-> >>> +
-> >>> +     mutex_lock(&domain->vma_lock);
-> >>> +     list_for_each_entry(mmap_vma, &domain->vma_list, list) {
-> >>> +             mmap_read_lock(mmap_vma->vma->vm_mm);
-> >>> +             uaddr =3D iova + mmap_vma->vma->vm_start;
-> >>> +             zap_page_range(mmap_vma->vma, uaddr, size);
-> >>> +             mmap_read_unlock(mmap_vma->vma->vm_mm);
-> >>> +     }
-> >>> +     mutex_unlock(&domain->vma_lock);
-> >>> +}
-> >>> +
-> >>> +int vduse_domain_direct_map(struct vduse_iova_domain *domain,
-> >>> +                     struct vm_area_struct *vma, unsigned long iova)
-> >>> +{
-> >>> +     unsigned long uaddr =3D iova + vma->vm_start;
-> >>> +     unsigned long start =3D iova & PAGE_MASK;
-> >>> +     unsigned long last =3D start + PAGE_SIZE - 1;
-> >>> +     unsigned long offset;
-> >>> +     struct vduse_iova_map *map;
-> >>> +     struct page *page =3D NULL;
-> >>> +
-> >>> +     map =3D vduse_domain_get_iova_map(domain, iova);
-> >>> +     if (map) {
-> >>> +             offset =3D last - map->iova;
-> >>> +             page =3D virt_to_page(map->orig + offset);
-> >>> +     }
-> >>> +
-> >>> +     return page ? vm_insert_page(vma, uaddr, page) : -EFAULT;
-> >>> +}
-> >>
-> >> So as we discussed before, we need to find way to make vhost work. And
-> >> it's better to make vhost transparent to VDUSE. One idea is to impleme=
-nt
-> >> shadow virtqueue here, that is, instead of trying to insert the pages =
-to
-> >> VDUSE userspace, we use the shadow virtqueue to relay the descriptors =
-to
-> >> userspace. With this, we don't need stuffs like shmfd etc.
-> >>
-> > Good idea! The disadvantage is performance will go down (one more
-> > thread switch overhead and vhost-liked kworker will become bottleneck
-> > without multi-thread support).
->
->
-> Yes, the disadvantage is the performance. But it should be simpler (I
-> guess) and we know it can succeed.
->
+T24gTW9uLCAyMDIwLTEyLTIxIGF0IDEyOjIzIC0wNzAwLCBSb2IgSGVycmluZyB3cm90ZToNCj4g
+T24gV2VkLCBEZWMgMTYsIDIwMjAgYXQgMDU6MzA6MTBQTSArMDgwMCwgQ2h1bmZlbmcgWXVuIHdy
+b3RlOg0KPiA+IENvbnZlcnQgbWVkaWF0ZWssbXRrLXhoY2kudHh0IHRvIFlBTUwgc2NoZW1hIG1l
+ZGlhdGVrLG10ay14aGNpLnlhbWwNCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBDaHVuZmVuZyBZ
+dW4gPGNodW5mZW5nLnl1bkBtZWRpYXRlay5jb20+DQo+ID4gLS0tDQo+ID4gdjQ6IHVwZGF0ZSBp
+dCBhY2NvcmRpbmcgdG8gUm9iJ3Mgc3VnZ2VzdGlvbg0KPiA+ICAgMS4gbW9kaWZ5IGRpY3Rpb25h
+cnkgb2YgcGh5cw0KPiA+ICAgMi4gZml4IGVuZGVudGF0aW9uIGluICJtZWRpYXRlayxzeXNjb24t
+d2FrZXVwIiBpdGVtcw0KPiA+ICAgMy4gcmVtb3ZlIHJlZmVyZW5jZSB0byB1c2ItaGNkLnlhbWwN
+Cj4gPiANCj4gPiB2MzoNCj4gPiAgIDEuIGZpeCB5YW1sbGludCB3YXJuaW5nDQo+ID4gICAyLiBy
+ZW1vdmUgcGluY3RybCogcHJvcGVydGllcyBzdXBwb3J0ZWQgYnkgZGVmYXVsdCBzdWdnZXN0ZWQg
+YnkgUm9iDQo+ID4gICAzLiBkcm9wIHVudXNlZCBsYWJlbHMNCj4gPiAgIDQuIG1vZGlmeSBkZXNj
+cmlwdGlvbiBvZiBtZWRpYXRlayxzeXNjb24td2FrZXVwDQo+ID4gICA1LiByZW1vdmUgdHlwZSBv
+ZiBpbW9kLWludGVydmFsLW5zDQo+ID4gDQo+ID4gdjI6IG5ldyBwYXRjaA0KPiA+IC0tLQ0KPiA+
+ICAuLi4vYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnR4dCAgICAgICAgfCAxMjEgLS0t
+LS0tLS0tLS0tLQ0KPiA+ICAuLi4vYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnlhbWwg
+ICAgICAgfCAxNzEgKysrKysrKysrKysrKysrKysrDQo+ID4gIDIgZmlsZXMgY2hhbmdlZCwgMTcx
+IGluc2VydGlvbnMoKyksIDEyMSBkZWxldGlvbnMoLSkNCj4gPiAgZGVsZXRlIG1vZGUgMTAwNjQ0
+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy91c2IvbWVkaWF0ZWssbXRrLXhoY2ku
+dHh0DQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnlhbWwNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEv
+RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3VzYi9tZWRpYXRlayxtdGsteGhjaS50
+eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14
+aGNpLnR4dA0KPiA+IGRlbGV0ZWQgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDQyZDg4MTRm
+OTAzYS4uMDAwMDAwMDAwMDAwDQo+ID4gLS0tIGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
+bmRpbmdzL3VzYi9tZWRpYXRlayxtdGsteGhjaS50eHQNCj4gPiArKysgL2Rldi9udWxsDQpbLi4u
+XQ0KPiA+ICskaWQ6IGh0dHA6Ly9kZXZpY2V0cmVlLm9yZy9zY2hlbWFzL3VzYi9tZWRpYXRlayxt
+dGsteGhjaS55YW1sIw0KPiA+ICskc2NoZW1hOiBodHRwOi8vZGV2aWNldHJlZS5vcmcvbWV0YS1z
+Y2hlbWFzL2NvcmUueWFtbCMNCj4gPiArDQo+ID4gK3RpdGxlOiBNZWRpYVRlayBVU0IzIHhIQ0kg
+RGV2aWNlIFRyZWUgQmluZGluZ3MNCj4gPiArDQo+ID4gK21haW50YWluZXJzOg0KPiA+ICsgIC0g
+Q2h1bmZlbmcgWXVuIDxjaHVuZmVuZy55dW5AbWVkaWF0ZWsuY29tPg0KPiA+ICsNCj4gPiArYWxs
+T2Y6DQo+ID4gKyAgLSAkcmVmOiAidXNiLWhjZC55YW1sIg0KPiANCj4gVGhpcyB3aWxsIG5lZWQg
+dG8gcmVmZXJlbmNlIFNlcmdlJ3MgeGhjaS55YW1sIGluc3RlYWQuDQpZZXMsIEkgZm9yZ290IGl0
+DQo+IA0KPiA+ICsNCj4gPiArZGVzY3JpcHRpb246IHwNCj4gPiArICBUaGVyZSBhcmUgdHdvIHNj
+ZW5hcmlvczoNCj4gPiArICBjYXNlIDE6IG9ubHkgc3VwcG9ydHMgeEhDSSBkcml2ZXI7DQo+ID4g
+KyAgY2FzZSAyOiBzdXBwb3J0cyBkdWFsLXJvbGUgbW9kZSwgYW5kIHRoZSBob3N0IGlzIGJhc2Vk
+IG9uIHhIQ0kgZHJpdmVyLg0KPiA+ICsNCj4gPiArcHJvcGVydGllczoNCj4gPiArICAjIGNvbW1v
+biBwcm9wZXJ0aWVzIGZvciBib3RoIGNhc2UgMSBhbmQgY2FzZSAyDQo+ID4gKyAgY29tcGF0aWJs
+ZToNCj4gPiArICAgIGl0ZW1zOg0KPiA+ICsgICAgICAtIGVudW06DQo+ID4gKyAgICAgICAgICAt
+IG1lZGlhdGVrLG10MjcxMi14aGNpDQo+ID4gKyAgICAgICAgICAtIG1lZGlhdGVrLG10NzYyMi14
+aGNpDQo+ID4gKyAgICAgICAgICAtIG1lZGlhdGVrLG10NzYyOS14aGNpDQo+ID4gKyAgICAgICAg
+ICAtIG1lZGlhdGVrLG10ODE3My14aGNpDQo+ID4gKyAgICAgICAgICAtIG1lZGlhdGVrLG10ODE4
+My14aGNpDQo+ID4gKyAgICAgIC0gY29uc3Q6IG1lZGlhdGVrLG10ay14aGNpDQo+ID4gKw0KPiA+
+ICsgIHJlZzoNCj4gPiArICAgIG1pbkl0ZW1zOiAxDQo+ID4gKyAgICBtYXhJdGVtczogMg0KPiAN
+Cj4gWW91IGNhbiBkcm9wIG1heEl0ZW1zLCBhcyB0aGF0IGlzIGltcGxpZWQgYnkgbGVuZ3RoIG9m
+ICdpdGVtcycuDQpPaywgd2lsbCBkcm9wIGl0IGZvciB0aGUgZm9sbG93aW5nIG9uZXMNCj4gDQo+
+ID4gKyAgICBpdGVtczoNCj4gPiArICAgICAgLSBkZXNjcmlwdGlvbjogdGhlIHJlZ2lzdGVycyBv
+ZiB4SENJIE1BQw0KPiA+ICsgICAgICAtIGRlc2NyaXB0aW9uOiB0aGUgcmVnaXN0ZXJzIG9mIElQ
+IFBvcnQgQ29udHJvbA0KPiA+ICsNCj4gPiArICByZWctbmFtZXM6DQo+ID4gKyAgICBtaW5JdGVt
+czogMQ0KPiA+ICsgICAgbWF4SXRlbXM6IDINCj4gPiArICAgIGl0ZW1zOg0KPiA+ICsgICAgICAt
+IGNvbnN0OiBtYWMNCj4gPiArICAgICAgLSBjb25zdDogaXBwYyAgIyBvcHRpb25hbCwgb25seSBu
+ZWVkZWQgZm9yIGNhc2UgMS4NCj4gPiArDQo+ID4gKyAgaW50ZXJydXB0czoNCj4gPiArICAgIG1h
+eEl0ZW1zOiAxDQo+ID4gKw0KPiA+ICsgIHBvd2VyLWRvbWFpbnM6DQo+ID4gKyAgICBkZXNjcmlw
+dGlvbjogQSBwaGFuZGxlIHRvIFVTQiBwb3dlciBkb21haW4gbm9kZSB0byBjb250cm9sIFVTQidz
+IE1UQ01PUw0KPiA+ICsgICAgbWF4SXRlbXM6IDENCj4gPiArDQo+ID4gKyAgY2xvY2tzOg0KPiA+
+ICsgICAgbWluSXRlbXM6IDENCj4gPiArICAgIG1heEl0ZW1zOiA1DQo+ID4gKyAgICBpdGVtczoN
+Cj4gPiArICAgICAgLSBkZXNjcmlwdGlvbjogQ29udHJvbGxlciBjbG9jayB1c2VkIGJ5IG5vcm1h
+bCBtb2RlDQo+ID4gKyAgICAgIC0gZGVzY3JpcHRpb246IFJlZmVyZW5jZSBjbG9jayB1c2VkIGJ5
+IGxvdyBwb3dlciBtb2RlIGV0Yw0KPiA+ICsgICAgICAtIGRlc2NyaXB0aW9uOiBNY3UgYnVzIGNs
+b2NrIGZvciByZWdpc3RlciBhY2Nlc3MNCj4gPiArICAgICAgLSBkZXNjcmlwdGlvbjogRE1BIGJ1
+cyBjbG9jayBmb3IgZGF0YSB0cmFuc2Zlcg0KPiA+ICsgICAgICAtIGRlc2NyaXB0aW9uOiBjb250
+cm9sbGVyIGNsb2NrDQo+ID4gKw0KPiA+ICsgIGNsb2NrLW5hbWVzOg0KPiA+ICsgICAgbWluSXRl
+bXM6IDENCj4gPiArICAgIG1heEl0ZW1zOiA1DQo+ID4gKyAgICBpdGVtczoNCj4gPiArICAgICAg
+LSBjb25zdDogc3lzX2NrICAjIHJlcXVpcmVkLCB0aGUgZm9sbG93aW5nIG9uZXMgYXJlIG9wdGlv
+bmFsDQo+ID4gKyAgICAgIC0gY29uc3Q6IHJlZl9jaw0KPiA+ICsgICAgICAtIGNvbnN0OiBtY3Vf
+Y2sNCj4gPiArICAgICAgLSBjb25zdDogZG1hX2NrDQo+ID4gKyAgICAgIC0gY29uc3Q6IHhoY2lf
+Y2sNCj4gPiArDQo+ID4gKyAgcGh5czoNCj4gPiArICAgIGRlc2NyaXB0aW9uOiBMaXN0IG9mIGF0
+IG1vc3QgNSBVU0IyIFBIWXMgYW5kIDQgVVNCMyBQSFlzIG9uIHRoaXMgSENEDQo+IA0KPiBJZiBp
+dCdzIGxlc3MsIGhvdyBkb2VzIG9uZSBrbm93IHdoYXQgZWFjaCBwaHkgaXM/DQpUaGUgU29DJ3Mg
+c3BlYyB3aWxsIHRlbGwgaG93IG1hbnkgcGh5cyB1c2VkLCBidXQgZWFjaCBwcm9qZWN0IG1heSB1
+c2UNCnNvbWUgcGh5cyBvZiB0aGVtLCBkdWUgdG8gbm90IGFsbCBwb3J0cyBhcmUgdXNlZCBmb3Ig
+c29tZSBzY2VuYXJpb3MuDQoNCj4gDQo+ID4gKyAgICBtaW5JdGVtczogMA0KPiANCj4gbWluSXRl
+bXM6IDAgaXMgbmV2ZXIgY29ycmVjdC4gVGhhdCdzIHBoeXMgbm90IGJlaW5nIHByZXNlbnQuDQpP
+aywgd2lsbCBtb2RpZnkgaXQuDQoNCkJ1dCBpdCdzIHVzZWZ1bCBmb3IgdGhlIGNhc2UgdGhhdCB0
+aGUgcGh5IGlzIGFuIGV4dGVybmFsIHN1Yi1ib2FyZCwgYW5kDQpjYW4gd29ya3Mgd2l0aG91dCBp
+bml0aWFsaXphdGlvbi4gKEZQR0EgZW52LikNCg0KPiANCj4gPiArICAgIG1heEl0ZW1zOiA5DQo+
+ID4gKw0KPiA+ICsgIHZ1c2IzMy1zdXBwbHk6DQo+ID4gKyAgICBkZXNjcmlwdGlvbjogUmVndWxh
+dG9yIG9mIFVTQiBBVkREMy4zdg0KPiA+ICsNCj4gPiArICB2YnVzLXN1cHBseToNCj4gPiArICAg
+IGRlc2NyaXB0aW9uOiBSZWd1bGF0b3Igb2YgVVNCIFZCVVM1dg0KPiA+ICsNCj4gPiArICB1c2Iz
+LWxwbS1jYXBhYmxlOg0KPiA+ICsgICAgZGVzY3JpcHRpb246IHN1cHBvcnRzIFVTQjMuMCBMUE0N
+Cj4gPiArICAgIHR5cGU6IGJvb2xlYW4NCj4gPiArDQo+ID4gKyAgaW1vZC1pbnRlcnZhbC1uczoN
+Cj4gPiArICAgIGRlc2NyaXB0aW9uOg0KPiA+ICsgICAgICBJbnRlcnJ1cHQgbW9kZXJhdGlvbiBp
+bnRlcnZhbCB2YWx1ZSwgaXQgaXMgOCB0aW1lcyBhcyBtdWNoIGFzIHRoYXQNCj4gPiArICAgICAg
+ZGVmaW5lZCBpbiB0aGUgeEhDSSBzcGVjIG9uIE1USydzIGNvbnRyb2xsZXIuDQo+ID4gKyAgICBk
+ZWZhdWx0OiA1MDAwDQo+ID4gKw0KPiA+ICsgICMgdGhlIGZvbGxvd2luZyBwcm9wZXJ0aWVzIGFy
+ZSBvbmx5IHVzZWQgZm9yIGNhc2UgMQ0KPiA+ICsgIHdha2V1cC1zb3VyY2U6DQo+ID4gKyAgICBk
+ZXNjcmlwdGlvbjogZW5hYmxlIFVTQiByZW1vdGUgd2FrZXVwLCBzZWUgcG93ZXIvd2FrZXVwLXNv
+dXJjZS50eHQNCj4gPiArICAgIHR5cGU6IGJvb2xlYW4NCj4gPiArDQo+ID4gKyAgbWVkaWF0ZWss
+c3lzY29uLXdha2V1cDoNCj4gPiArICAgICRyZWY6IC9zY2hlbWFzL3R5cGVzLnlhbWwjL2RlZmlu
+aXRpb25zL3BoYW5kbGUtYXJyYXkNCj4gPiArICAgIG1heEl0ZW1zOiAxDQo+ID4gKyAgICBkZXNj
+cmlwdGlvbjoNCj4gPiArICAgICAgQSBwaGFuZGxlIHRvIHN5c2NvbiB1c2VkIHRvIGFjY2VzcyB0
+aGUgcmVnaXN0ZXIgb2YgdGhlIFVTQiB3YWtldXAgZ2x1ZQ0KPiA+ICsgICAgICBsYXllciBiZXR3
+ZWVuIHhIQ0kgYW5kIFNQTSwgdGhlIGZpZWxkIHNob3VsZCBhbHdheXMgYmUgMyBjZWxscyBsb25n
+Lg0KPiA+ICsgICAgaXRlbXM6DQo+ID4gKyAgICAgIGl0ZW1zOg0KPiA+ICsgICAgICAgIC0gZGVz
+Y3JpcHRpb246DQo+ID4gKyAgICAgICAgICAgIFRoZSBmaXJzdCBjZWxsIHJlcHJlc2VudHMgYSBw
+aGFuZGxlIHRvIHN5c2Nvbg0KPiA+ICsgICAgICAgIC0gZGVzY3JpcHRpb246DQo+ID4gKyAgICAg
+ICAgICAgIFRoZSBzZWNvbmQgY2VsbCByZXByZXNlbnRzIHRoZSByZWdpc3RlciBiYXNlIGFkZHJl
+c3Mgb2YgdGhlIGdsdWUNCj4gPiArICAgICAgICAgICAgbGF5ZXIgaW4gc3lzY29uDQo+ID4gKyAg
+ICAgICAgLSBkZXNjcmlwdGlvbjoNCj4gPiArICAgICAgICAgICAgVGhlIHRoaXJkIGNlbGwgcmVw
+cmVzZW50cyB0aGUgaGFyZHdhcmUgdmVyc2lvbiBvZiB0aGUgZ2x1ZSBsYXllciwNCj4gPiArICAg
+ICAgICAgICAgMSBpcyB1c2VkIGJ5IG10ODE3MyBldGMsIDIgaXMgdXNlZCBieSBtdDI3MTIgZXRj
+DQo+ID4gKyAgICAgICAgICBlbnVtOiBbMSwgMl0NCj4gPiArDQo+ID4gKyAgbWVkaWF0ZWssdTNw
+LWRpcy1tc2s6DQo+ID4gKyAgICAkcmVmOiAvc2NoZW1hcy90eXBlcy55YW1sIy9kZWZpbml0aW9u
+cy91aW50MzINCj4gPiArICAgIGRlc2NyaXB0aW9uOiBUaGUgbWFzayB0byBkaXNhYmxlIHUzcG9y
+dHMsIGJpdDAgZm9yIHUzcG9ydDAsDQo+ID4gKyAgICAgIGJpdDEgZm9yIHUzcG9ydDEsIC4uLiBl
+dGMNCj4gPiArDQo+ID4gKyAgIiNhZGRyZXNzLWNlbGxzIjoNCj4gPiArICAgIGNvbnN0OiAxDQo+
+ID4gKw0KPiA+ICsgICIjc2l6ZS1jZWxscyI6DQo+ID4gKyAgICBjb25zdDogMA0KPiA+ICsNCj4g
+PiArcGF0dGVyblByb3BlcnRpZXM6DQo+ID4gKyAgIl5bYS1mXStAWzAtOWEtZl0rJCI6DQo+IA0K
+PiBbYS1mXSsgZG9lc24ndCBjb3ZlciBhbGwgcG9zc2libGUgbm9kZSBuYW1lcy4gSnVzdCAnQFsw
+LTlhLWZdKyQnLCB0aG91Z2ggDQo+IEkgYXNzdW1lIHlvdSBoYXZlIHNvbWUgbWF4IG51bWJlciBv
+ZiBwb3J0cyBsZXNzIHRoYW4gMTY/DQpZZXMsIGluIGZhY3QsIGxlc3MgdGhhbiA2LCB3aWxsIGxp
+bWl0IHRoZSBhbGxvd2VkIGxlbmd0aA0KDQo+IA0KPiA+ICsgICAgdHlwZTogb2JqZWN0DQo+ID4g
+KyAgICBkZXNjcmlwdGlvbjogVGhlIGhhcmQgd2lyZWQgVVNCIGRldmljZXMuDQo+IA0KPiBUaGlz
+IG5lZWRzIHRvIHJlZmVyZW5jZSB1c2ItZGV2aWNlLnlhbWwuIE9yIHVzYi1oY2QueWFtbCBkb2Vz
+IGFuZCANCj4gdGhlbiB0aGlzIGlzbid0IG5lZWRlZC4NCnVzYi1oY2QueWFtbCBhcmVhZHkgZG9l
+cw0KDQpUaGFua3MgYSBsb3QNCj4gIEl0IGRlcGVuZHMgaWYgY2hpbGQgbm9kZXMgb2YgVVNCIGhv
+c3QgY29udHJvbGxlciANCj4gYXJlIGFsd2F5cyBVU0IgZGV2aWNlcyBvciBub3QuIFNlcmdlPw0K
+PiANCj4gPiArDQo+ID4gK2RlcGVuZGVuY2llczoNCj4gPiArICB3YWtldXAtc291cmNlOiBbICdt
+ZWRpYXRlayxzeXNjb24td2FrZXVwJyBdDQo+ID4gKw0KPiA+ICtyZXF1aXJlZDoNCj4gPiArICAt
+IGNvbXBhdGlibGUNCj4gPiArICAtIHJlZw0KPiA+ICsgIC0gcmVnLW5hbWVzDQo+ID4gKyAgLSBp
+bnRlcnJ1cHRzDQo+ID4gKyAgLSBjbG9ja3MNCj4gPiArICAtIGNsb2NrLW5hbWVzDQo+ID4gKw0K
+PiA+ICthZGRpdGlvbmFsUHJvcGVydGllczogZmFsc2UNCj4gPiArDQo+ID4gK2V4YW1wbGVzOg0K
+PiA+ICsgIC0gfA0KPiA+ICsgICAgI2luY2x1ZGUgPGR0LWJpbmRpbmdzL2Nsb2NrL210ODE3My1j
+bGsuaD4NCj4gPiArICAgICNpbmNsdWRlIDxkdC1iaW5kaW5ncy9pbnRlcnJ1cHQtY29udHJvbGxl
+ci9hcm0tZ2ljLmg+DQo+ID4gKyAgICAjaW5jbHVkZSA8ZHQtYmluZGluZ3MvaW50ZXJydXB0LWNv
+bnRyb2xsZXIvaXJxLmg+DQo+ID4gKyAgICAjaW5jbHVkZSA8ZHQtYmluZGluZ3MvcGh5L3BoeS5o
+Pg0KPiA+ICsgICAgI2luY2x1ZGUgPGR0LWJpbmRpbmdzL3Bvd2VyL210ODE3My1wb3dlci5oPg0K
+PiA+ICsNCj4gPiArICAgIHVzYkAxMTI3MDAwMCB7DQo+ID4gKyAgICAgICAgY29tcGF0aWJsZSA9
+ICJtZWRpYXRlayxtdDgxNzMteGhjaSIsICJtZWRpYXRlayxtdGsteGhjaSI7DQo+ID4gKyAgICAg
+ICAgcmVnID0gPDB4MTEyNzAwMDAgMHgxMDAwPiwgPDB4MTEyODA3MDAgMHgwMTAwPjsNCj4gPiAr
+ICAgICAgICByZWctbmFtZXMgPSAibWFjIiwgImlwcGMiOw0KPiA+ICsgICAgICAgIGludGVycnVw
+dHMgPSA8R0lDX1NQSSAxMTUgSVJRX1RZUEVfTEVWRUxfTE9XPjsNCj4gPiArICAgICAgICBwb3dl
+ci1kb21haW5zID0gPCZzY3BzeXMgTVQ4MTczX1BPV0VSX0RPTUFJTl9VU0I+Ow0KPiA+ICsgICAg
+ICAgIGNsb2NrcyA9IDwmdG9wY2tnZW4gQ0xLX1RPUF9VU0IzMF9TRUw+LCA8JmNsazI2bT47DQo+
+ID4gKyAgICAgICAgY2xvY2stbmFtZXMgPSAic3lzX2NrIiwgInJlZl9jayI7DQo+ID4gKyAgICAg
+ICAgcGh5cyA9IDwmdTNwb3J0MCBQSFlfVFlQRV9VU0IzPiwgPCZ1MnBvcnQxIFBIWV9UWVBFX1VT
+QjI+Ow0KPiA+ICsgICAgICAgIHZ1c2IzMy1zdXBwbHkgPSA8Jm10NjM5N192dXNiX3JlZz47DQo+
+ID4gKyAgICAgICAgdmJ1cy1zdXBwbHkgPSA8JnVzYl9wMV92YnVzPjsNCj4gPiArICAgICAgICBp
+bW9kLWludGVydmFsLW5zID0gPDEwMDAwPjsNCj4gPiArICAgICAgICBtZWRpYXRlayxzeXNjb24t
+d2FrZXVwID0gPCZwZXJpY2ZnIDB4NDAwIDE+Ow0KPiA+ICsgICAgICAgIHdha2V1cC1zb3VyY2U7
+DQo+ID4gKyAgICAgICAgdXNiMy1scG0tY2FwYWJsZTsNCj4gPiArICAgIH07DQo+ID4gKy4uLg0K
+PiA+IC0tIA0KPiA+IDIuMTguMA0KPiA+IA0KDQo=
 
-Yes, another advantage is that we can support the VM using anonymous memory=
-.
-
->
->
-> > I think I can try this in v3. And the
-> > MMU-based IOMMU implementation can be a future optimization in the
-> > virtio-vdpa case. What's your opinion?
->
->
-> Maybe I was wrong, but I think we can try as what has been proposed here
-> first and use shadow virtqueue as backup plan if we fail.
->
-
-OK, I will continue to work on this proposal.
-
->
-> >
-> >>> +
-> >>> +void vduse_domain_bounce(struct vduse_iova_domain *domain,
-> >>> +                     unsigned long iova, unsigned long orig,
-> >>> +                     size_t size, enum dma_data_direction dir)
-> >>> +{
-> >>> +     unsigned int offset =3D offset_in_page(iova);
-> >>> +
-> >>> +     while (size) {
-> >>> +             struct page *p =3D vduse_domain_get_bounce_page(domain,=
- iova);
-> >>> +             size_t copy_len =3D min_t(size_t, PAGE_SIZE - offset, s=
-ize);
-> >>> +             void *addr;
-> >>> +
-> >>> +             if (p) {
-> >>> +                     addr =3D page_address(p) + offset;
-> >>> +                     if (dir =3D=3D DMA_TO_DEVICE)
-> >>> +                             memcpy(addr, (void *)orig, copy_len);
-> >>> +                     else if (dir =3D=3D DMA_FROM_DEVICE)
-> >>> +                             memcpy((void *)orig, addr, copy_len);
-> >>> +             }
-> >>
-> >> I think I miss something, for DMA_FROM_DEVICE, if p doesn't exist how =
-is
-> >> it expected to work? Or do we need to warn here in this case?
-> >>
-> > Yes, I think we need a WARN_ON here.
->
->
-> Ok.
->
->
-> >
-> >
-> >>> +             size -=3D copy_len;
-> >>> +             orig +=3D copy_len;
-> >>> +             iova +=3D copy_len;
-> >>> +             offset =3D 0;
-> >>> +     }
-> >>> +}
-> >>> +
-> >>> +int vduse_domain_bounce_map(struct vduse_iova_domain *domain,
-> >>> +                     struct vm_area_struct *vma, unsigned long iova)
-> >>> +{
-> >>> +     unsigned long uaddr =3D iova + vma->vm_start;
-> >>> +     unsigned long start =3D iova & PAGE_MASK;
-> >>> +     unsigned long offset =3D 0;
-> >>> +     bool found =3D false;
-> >>> +     struct vduse_iova_map *map;
-> >>> +     struct page *page;
-> >>> +
-> >>> +     mutex_lock(&domain->map_lock);
-> >>> +
-> >>> +     page =3D vduse_domain_get_bounce_page(domain, iova);
-> >>> +     if (page)
-> >>> +             goto unlock;
-> >>> +
-> >>> +     page =3D alloc_page(GFP_KERNEL);
-> >>> +     if (!page)
-> >>> +             goto unlock;
-> >>> +
-> >>> +     while (offset < PAGE_SIZE) {
-> >>> +             unsigned int src_offset =3D 0, dst_offset =3D 0;
-> >>> +             void *src, *dst;
-> >>> +             size_t copy_len;
-> >>> +
-> >>> +             map =3D vduse_domain_get_iova_map(domain, start + offse=
-t);
-> >>> +             if (!map) {
-> >>> +                     offset +=3D IOVA_ALLOC_SIZE;
-> >>> +                     continue;
-> >>> +             }
-> >>> +
-> >>> +             found =3D true;
-> >>> +             offset +=3D map->size;
-> >>> +             if (map->dir =3D=3D DMA_FROM_DEVICE)
-> >>> +                     continue;
-> >>> +
-> >>> +             if (start > map->iova)
-> >>> +                     src_offset =3D start - map->iova;
-> >>> +             else
-> >>> +                     dst_offset =3D map->iova - start;
-> >>> +
-> >>> +             src =3D (void *)(map->orig + src_offset);
-> >>> +             dst =3D page_address(page) + dst_offset;
-> >>> +             copy_len =3D min_t(size_t, map->size - src_offset,
-> >>> +                             PAGE_SIZE - dst_offset);
-> >>> +             memcpy(dst, src, copy_len);
-> >>> +     }
-> >>> +     if (!found) {
-> >>> +             put_page(page);
-> >>> +             page =3D NULL;
-> >>> +     }
-> >>> +     vduse_domain_set_bounce_page(domain, iova, page);
-> >>> +unlock:
-> >>> +     mutex_unlock(&domain->map_lock);
-> >>> +
-> >>> +     return page ? vm_insert_page(vma, uaddr, page) : -EFAULT;
-> >>> +}
-> >>> +
-> >>> +bool vduse_domain_is_direct_map(struct vduse_iova_domain *domain,
-> >>> +                             unsigned long iova)
-> >>> +{
-> >>> +     unsigned long index =3D iova >> IOVA_CHUNK_SHIFT;
-> >>> +     struct vduse_iova_chunk *chunk =3D &domain->chunks[index];
-> >>> +
-> >>> +     return atomic_read(&chunk->map_type) =3D=3D TYPE_DIRECT_MAP;
-> >>> +}
-> >>> +
-> >>> +unsigned long vduse_domain_alloc_iova(struct vduse_iova_domain *doma=
-in,
-> >>> +                                     size_t size, enum iova_map_type=
- type)
-> >>> +{
-> >>> +     struct vduse_iova_chunk *chunk;
-> >>> +     unsigned long iova =3D 0;
-> >>> +     int align =3D (type =3D=3D TYPE_DIRECT_MAP) ? PAGE_SIZE : IOVA_=
-ALLOC_SIZE;
-> >>> +     struct genpool_data_align data =3D { .align =3D align };
-> >>> +     int i;
-> >>> +
-> >>> +     for (i =3D 0; i < domain->chunk_num; i++) {
-> >>> +             chunk =3D &domain->chunks[i];
-> >>> +             if (unlikely(atomic_read(&chunk->map_type) =3D=3D TYPE_=
-NONE))
-> >>> +                     atomic_cmpxchg(&chunk->map_type, TYPE_NONE, typ=
-e);
-> >>> +
-> >>> +             if (atomic_read(&chunk->map_type) !=3D type)
-> >>> +                     continue;
-> >>> +
-> >>> +             iova =3D gen_pool_alloc_algo(chunk->pool, size,
-> >>> +                                     gen_pool_first_fit_align, &data=
-);
-> >>> +             if (iova)
-> >>> +                     break;
-> >>> +     }
-> >>> +
-> >>> +     return iova;
-> >>
-> >> I wonder why not just reuse the iova domain implements in
-> >> driver/iommu/iova.c
-> >>
-> > The iova domain in driver/iommu/iova.c is only an iova allocator which
-> > is implemented by the genpool memory allocator in our case. The other
-> > part in our iova domain is chunk management and iova_map management.
-> > We need different chunks to distinguish different dma mapping types:
-> > consistent mapping or streaming mapping. We can only use
-> > bouncing-mechanism in the streaming mapping case.
->
->
-> To differ dma mappings, you can use two iova domains with different
-> ranges. It looks simpler than the gen_pool. (AFAIK most IOMMU driver is
-> using iova domain).
->
-
-OK, I see. Will do it in v3.
-
-Thanks,
-Yongji
