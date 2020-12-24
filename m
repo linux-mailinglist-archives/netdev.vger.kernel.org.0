@@ -2,101 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 675672E27AC
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 15:27:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7571A2E279F
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 15:27:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727240AbgLXO0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 09:26:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727114AbgLXO0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 09:26:51 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA302C061285;
-        Thu, 24 Dec 2020 06:26:11 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id i5so1660082pgo.1;
-        Thu, 24 Dec 2020 06:26:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wInGYZW902haXHZAS7+jdP03lOS8ZfWDpKlc2Tn45Ao=;
-        b=I8xmwus3SEPujM74SNuswxSxEoRpFhK/jDLHHWMqFyaaPztpMTc6zTfp4STG9OgEXm
-         ZeuQd2oHIT07bwKHbcSnXWMa8M5g5sGAgI0uHglVNZxxNGsT5uESubAPgw4AaV+ErZ8r
-         A7lni0GJ14LppPWthKkUC6dZoWzkOjxCPHnFz8/XoqdvzNQSxTpVItUWEpnswRoiIVxJ
-         ZP/OaQopViNQEpElfxWPvjjRwGsYhkaNlb1TcO0UzePJVdSRnJrr3D0H33T5PflQLIvE
-         seYKXOYTiWFs6/cI8J6TxYmqGMM82hkTUZmm4u5I5sn/HiK2vfvlr1F2mAY54nkS5XLY
-         aS0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=wInGYZW902haXHZAS7+jdP03lOS8ZfWDpKlc2Tn45Ao=;
-        b=NfkjK0lz0ZamYJr3Ijz1NXp9uibsWlFN8NR3t0JOTN9ZX3xRFOBMnR06BrjRxDoi8y
-         SqDLFWhQ/7u//LTG+BbQ9ZiQRJwy/zfb+bF7HS3xZN3S83QYSWHjEJ64XcVDnxivNGfO
-         CwH8zyP+CjmbBWUiTCPliSJicOBbERhaS0WWPhIHoGzmjynvqEFNlOu7yMooLKRZWW2S
-         Xrwysb94V2zvygPi21XddCShPCsFuNtmdnfbYVYWrS9US6LmvXbzUGXS8MiWJfXAFaVx
-         B7Q965GidcbHRonfHBVa9+08noahGbY1hSTYz/J5B4Ey5l7iVnvPjmUCJn0Lyt/j4FA2
-         zPzg==
-X-Gm-Message-State: AOAM533VYjlHHe8vwfJ9O3zx+xpDt169Lh4Uq8qsj2OLOheF4OgvLOtQ
-        3VmipWjmHEIm4c7MSBbOs98=
-X-Google-Smtp-Source: ABdhPJzfgac7PKJRU95xB5cjnCwfgXMEfr4mk9P5ourOpELETk3+5iGbIKQVB3Bu1c63G6QeFBhnfw==
-X-Received: by 2002:a62:2cc:0:b029:1a8:4d9b:8e8d with SMTP id 195-20020a6202cc0000b02901a84d9b8e8dmr5655649pfc.8.1608819971314;
-        Thu, 24 Dec 2020 06:26:11 -0800 (PST)
-Received: from DESKTOP-8REGVGF.localdomain ([124.13.157.5])
-        by smtp.gmail.com with ESMTPSA id r185sm26936351pfc.53.2020.12.24.06.26.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Dec 2020 06:26:10 -0800 (PST)
-From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        Sieng Piaw Liew <liew.s.piaw@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 6/6] bcm63xx_enet: improve rx loop
-Date:   Thu, 24 Dec 2020 22:24:21 +0800
-Message-Id: <20201224142421.32350-7-liew.s.piaw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201224142421.32350-1-liew.s.piaw@gmail.com>
-References: <20201224142421.32350-1-liew.s.piaw@gmail.com>
+        id S1728334AbgLXOZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 09:25:14 -0500
+Received: from mail.katalix.com ([3.9.82.81]:52450 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727144AbgLXOZO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Dec 2020 09:25:14 -0500
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 79B607D496;
+        Thu, 24 Dec 2020 14:24:32 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1608819872; bh=jNOi0hSPHlJyw+NSkrS6mIuQu0x16xHp3SmhQ1urGto=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Thu,=2024=20Dec=202020=2014:24:32=20+0000|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20Guillaume=20Nault=20<gnault@re
+         dhat.com>|Cc:=20netdev@vger.kernel.org,=20jchapman@katalix.com|Sub
+         ject:=20Re:=20[PATCH=20net]=20ppp:=20hold=20mutex=20when=20unbridg
+         ing=20channels=20in=0D=0A=20unregister=20path|Message-ID:=20<20201
+         224142431.GA4594@katalix.com>|References:=20<20201223184730.30057-
+         1-tparkin@katalix.com>=0D=0A=20<20201224102818.GA27423@linux.home>
+         |MIME-Version:=201.0|Content-Disposition:=20inline|In-Reply-To:=20
+         <20201224102818.GA27423@linux.home>;
+        b=UYI9lny+5lhfP2FMDnIJXpyPNwafkJceMMDq8Nn4zWTdoAPYKCiJvnGDujGrh9vb7
+         YTSZuiD4OGTFqbVZ9k+W9Q7vSulND7Zh5lxmCOmPDnbiiUaW/smKuG6IUvvM3jOccI
+         XtajUVtTFL1TN+qVSyPey5kJF2zSQPQyLmj3qienouSe1vwmwkAjYUY5nvEm1jre/J
+         uhIpvAzam9XDgE10VFn2SWAgXfyNbPTJyR/ftzlf2WolcI4Aa3b+jTn9j1UvwY+4OZ
+         5cuO1rmmxr5OjVQ9jliZcKPS/fuSP9fS00sQ8HH+o8E8atAIq3ko3/I7vfsMcu1FNc
+         o/vsqTmaqV7dw==
+Date:   Thu, 24 Dec 2020 14:24:32 +0000
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH net] ppp: hold mutex when unbridging channels in
+ unregister path
+Message-ID: <20201224142431.GA4594@katalix.com>
+References: <20201223184730.30057-1-tparkin@katalix.com>
+ <20201224102818.GA27423@linux.home>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="huq684BweRXVnRxX"
+Content-Disposition: inline
+In-Reply-To: <20201224102818.GA27423@linux.home>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use existing rx processed count to track against budget, thereby making
-budget decrement operation redundant.
 
-rx_desc_count can be calculated outside the rx loop, making the loop a
-bit smaller.
+--huq684BweRXVnRxX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
----
- drivers/net/ethernet/broadcom/bcm63xx_enet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On  Thu, Dec 24, 2020 at 11:28:18 +0100, Guillaume Nault wrote:
+> On Wed, Dec 23, 2020 at 06:47:30PM +0000, Tom Parkin wrote:
+> > Channels are bridged using the PPPIOCBRIDGECHAN ioctl, which executes
+> > with the ppp_mutex held.
+> >=20
+> > Unbridging may occur in two code paths: firstly an explicit
+> > PPPIOCUNBRIDGECHAN ioctl, and secondly on channel unregister.  The
+> > latter may occur when closing the /dev/ppp instance or on teardown of
+> > the channel itself.
+> >=20
+> > This opens up a refcount underflow bug if ppp_bridge_channels called vi=
+a.
+> > ioctl races with ppp_unbridge_channels called via. file release.
+> >=20
+> > The race is triggered by ppp_unbridge_channels taking the error path
+>=20
+> This is actually ppp_bridge_channels.
+>=20
 
-diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-index 8c2e97311a2c..5ff0d39be2b2 100644
---- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-@@ -339,7 +339,6 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
- 		priv->rx_curr_desc++;
- 		if (priv->rx_curr_desc == priv->rx_ring_size)
- 			priv->rx_curr_desc = 0;
--		priv->rx_desc_count--;
- 
- 		/* if the packet does not have start of packet _and_
- 		 * end of packet flag set, then just recycle it */
-@@ -404,9 +403,10 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
- 		dev->stats.rx_bytes += len;
- 		list_add_tail(&skb->list, &rx_list);
- 
--	} while (--budget > 0);
-+	} while (processed < budget);
- 
- 	netif_receive_skb_list(&rx_list);
-+	priv->rx_desc_count -= processed;
- 
- 	if (processed || !priv->rx_desc_count) {
- 		bcm_enet_refill_rx(dev, true);
--- 
-2.17.1
+Will fix, thanks.
 
+> > through the 'err_unset' label.  In this scenario, pch->bridge has been
+> > set, but no reference will be taken on pch->file because the function
+> > errors out.  Therefore, if ppp_unbridge_channels is called in the window
+> > between pch->bridge being set and pch->bridge being unset, it will
+> > erroneously drop the reference on pch->file and cause a refcount
+> > underflow.
+> >=20
+> > To avoid this, hold the ppp_mutex while calling ppp_unbridge_channels in
+> > the shutdown path.  This serialises the unbridge operation with any
+> > concurrently executing ioctl.
+> >=20
+> > Signed-off-by: Tom Parkin <tparkin@katalix.com>
+> > ---
+> >  drivers/net/ppp/ppp_generic.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >=20
+> > diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generi=
+c.c
+> > index 09c27f7773f9..e87a05fee2db 100644
+> > --- a/drivers/net/ppp/ppp_generic.c
+> > +++ b/drivers/net/ppp/ppp_generic.c
+> > @@ -2938,7 +2938,9 @@ ppp_unregister_channel(struct ppp_channel *chan)
+> >  	list_del(&pch->list);
+> >  	spin_unlock_bh(&pn->all_channels_lock);
+> > =20
+> > +	mutex_lock(&ppp_mutex);
+> >  	ppp_unbridge_channels(pch);
+> > +	mutex_unlock(&ppp_mutex);
+> > =20
+> >  	pch->file.dead =3D 1;
+> >  	wake_up_interruptible(&pch->file.rwait);
+> > --=20
+> > 2.17.1
+> >=20
+>=20
+> The problem is that assigning ->bridge and taking a reference on that
+> channel isn't atomic. Holding ppp_mutex looks like a workaround for
+> this problem.
+
+You're quite right -- that is the underlying issue.
+
+> I think the refcount should be taken before unlocking ->upl in
+> ppp_bridge_channels().
+
+Aye, that's the other option :-)
+
+I wasn't sure whether it was better to use the same locking structure
+as the ioctl call, or to rework the code to make the two things
+effectively atomic as you suggest.
+
+I'll try this approach.
+
+Thanks for your review!
+
+>=20
+> Something like this (completely untested):
+>=20
+> ---- 8< ----
+>  static int ppp_bridge_channels(struct channel *pch, struct channel *pchb)
+>  {
+>  	write_lock_bh(&pch->upl);
+>  	if (pch->ppp ||
+>  	    rcu_dereference_protected(pch->bridge, lockdep_is_held(&pch->upl)))=
+ {
+>  		write_unlock_bh(&pch->upl);
+>  		return -EALREADY;
+>  	}
+> +
+> +	refcount_inc(&pchb->file.refcnt);
+>  	rcu_assign_pointer(pch->bridge, pchb);
+>  	write_unlock_bh(&pch->upl);
+>=20
+> 	write_lock_bh(&pchb->upl);
+> 	if (pchb->ppp ||
+> 	    rcu_dereference_protected(pchb->bridge, lockdep_is_held(&pchb->upl))=
+) {
+> 		write_unlock_bh(&pchb->upl);
+> 		goto err_unset;
+> 	}
+> +
+> +	refcount_inc(&pch->file.refcnt);
+> 	rcu_assign_pointer(pchb->bridge, pch);
+> 	write_unlock_bh(&pchb->upl);
+>=20
+> -	refcount_inc(&pch->file.refcnt);
+> -	refcount_inc(&pchb->file.refcnt);
+> -
+> 	return 0;
+>=20
+> err_unset:
+> 	write_lock_bh(&pch->upl);
+> 	RCU_INIT_POINTER(pch->bridge, NULL);
+> 	write_unlock_bh(&pch->upl);
+> 	synchronize_rcu();
+> +
+> +	if (refcount_dec_and_test(&pchb->file.refcnt))
+> +		ppp_destroy_channel(pchb);
+> +
+> 	return -EALREADY;
+> }
+>=20
+
+--huq684BweRXVnRxX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl/kpJsACgkQlIwGZQq6
+i9A+Fwf/ahnyKKlJisYH/TYkSE02nFwVY9iyGcrGqz+7dN1IbVmqzljBvrDnhAne
+/MUhk0DZWniiJdAtj5KrxdpYiUywvUfnanFPbUGC0i/P1Mzlm0z5ZTIA25IJAqKx
+Os2rwI/szW3dEM8BXkUAezP70f7COtawbsTiivdQA7Qmz7n3gwYHxAj2+G1O8fst
+SfwTVvaFtNJsjKUnQIobzSuX9zF6pzSUHfS8wNzmj1H6DjAuQB7b/z1dprWqTTlN
+tLEpD81RGZRqMzz0CxmnlbzPSCrcHgpW3LPdYHjm3AFYcIkiVHqKFZwys8sW4OXI
+DRFxxaGHI7SB5vif0Kt4lKDK6U2H9Q==
+=o3gS
+-----END PGP SIGNATURE-----
+
+--huq684BweRXVnRxX--
