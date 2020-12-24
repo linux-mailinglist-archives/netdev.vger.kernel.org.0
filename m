@@ -2,145 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4E32E259A
-	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 10:12:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E30142E25C3
+	for <lists+netdev@lfdr.de>; Thu, 24 Dec 2020 10:50:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727350AbgLXJLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 04:11:07 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:4118 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbgLXJLG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 04:11:06 -0500
-Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4D1kmR2BFHzXrDV;
-        Thu, 24 Dec 2020 17:09:43 +0800 (CST)
-Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.214]) by
- DGGEMM401-HUB.china.huawei.com ([10.3.20.209]) with mapi id 14.03.0509.000;
- Thu, 24 Dec 2020 17:09:37 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
-        chenchanghu <chenchanghu@huawei.com>,
-        xudingke <xudingke@huawei.com>,
-        "huangbin (J)" <brian.huangbin@huawei.com>
-Subject: RE: [PATCH net v4 2/2] vhost_net: fix tx queue stuck when sendmsg
- fails
-Thread-Topic: [PATCH net v4 2/2] vhost_net: fix tx queue stuck when sendmsg
- fails
-Thread-Index: AQHW2ZwauZy8siBskUC5fxxdcA2PEKoFC1CAgACM7xD//6FcAIAAuqIg
-Date:   Thu, 24 Dec 2020 09:09:36 +0000
-Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB8EE1C@DGGEMM533-MBX.china.huawei.com>
-References: <1608776746-4040-1-git-send-email-wangyunjian@huawei.com>
- <c854850b-43ab-c98d-a4d8-36ad7cd6364c@redhat.com>
- <34EFBCA9F01B0748BEB6B629CE643AE60DB8ED23@DGGEMM533-MBX.china.huawei.com>
- <823a1558-70fb-386d-fd28-d0c9bdbe9dac@redhat.com>
-In-Reply-To: <823a1558-70fb-386d-fd28-d0c9bdbe9dac@redhat.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.243.127]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727300AbgLXJuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 04:50:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726186AbgLXJui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 04:50:38 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87129C061794;
+        Thu, 24 Dec 2020 01:49:58 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id lj6so878265pjb.0;
+        Thu, 24 Dec 2020 01:49:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pR2ACc6d8aTjF9n2K3igB+WCeCgG4pxrdUZ6N6y3XI8=;
+        b=F0hRaYSIk4MzxylL/ODRdzxdbcBJG2XTEKKFPPjS/e6+wv80GeoxPfKfzYneDuCNCC
+         CHiQngXEUCEHaSxZQbe0EvGvKuJBzn4uUQZsOhoNlBfM+EQD+7hcS2TdqDQDPXg7aq24
+         IWm8zHFInPmY9dfoaethXfjxzbiY0N/7CjnmYXj+r/riZAy5ljkCgDOPqsUYVMlzWFt9
+         qIrGIel3ehiGDT3y8ufUGJCvnvZ5BfpnpjxelSVkfc5Xl1Q968ZWdYclR7PNXWzTMlUP
+         ApzZ1jaXDMRwxhwewd2oMVNALF06JfTuUJBrmCYUieUpyd1Pyu36pOE7PYZqJcYpQkcH
+         hSjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pR2ACc6d8aTjF9n2K3igB+WCeCgG4pxrdUZ6N6y3XI8=;
+        b=i2ZHrqwuAs/SNiS49OO37d6SjCCBboxzCW3EwMNP2sOi4UrQlszvMs9CA1AyscqfPv
+         47HFDjuWHH8aSrAtaW7HhQzPobLpz8yx1MVBXzM2sJ+/Moqx6xOJoh6yWEa0OlXA54CC
+         T7L3h10gOH7c0mcg9B1BsW89C5hxzC/8i+dL4VSZlBljYh0cYcAYWQGZx3RgKilPCM40
+         FsxTrNN7SVKeml9ZEOf3DGKPiunthD11ciBFyXlwN3iS9a/pm0lXW42f4sD+HAm3Eq4t
+         +6N4iJrHis9DbkQGfb+LjlIy71hJxQkPBw6xe1LixSJ0lh53oiA5jNtkjnEJfOAMlg9H
+         VgeA==
+X-Gm-Message-State: AOAM532QQhFuwl0miYMqwi2b8eeLPJFGD0FQb2wP6O+sfo3AOtijsJsC
+        WkXarmHpmYfhu1RG9vdYEKXO41MxPHVbvgx9jLs=
+X-Google-Smtp-Source: ABdhPJx6rI4RiBLIO4l3nCt1PYNHCcwysmC0IXsyW95+37z9CtvbEcPAuccSa7faEIs2R4EY4ijJ9MtYuA7iy5RTf/8=
+X-Received: by 2002:a17:902:9a4a:b029:dc:435c:70ad with SMTP id
+ x10-20020a1709029a4ab02900dc435c70admr13573744plv.77.1608803398081; Thu, 24
+ Dec 2020 01:49:58 -0800 (PST)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20201223021813.2791612-75-sashal@kernel.org> <20201223170124.5963-1-xie.he.0141@gmail.com>
+In-Reply-To: <20201223170124.5963-1-xie.he.0141@gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Thu, 24 Dec 2020 01:49:47 -0800
+Message-ID: <CAJht_EOXf4Z3G-rq92hb_YvJEsHtDy15FE7WuthqDQsPY039QQ@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.4 075/130] net/lapb: fix t1 timer handling for LAPB_STATE_0
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYXNvbiBXYW5nIFttYWlsdG86
-amFzb3dhbmdAcmVkaGF0LmNvbV0NCj4gU2VudDogVGh1cnNkYXksIERlY2VtYmVyIDI0LCAyMDIw
-IDE6NTYgUE0NCj4gVG86IHdhbmd5dW5qaWFuIDx3YW5neXVuamlhbkBodWF3ZWkuY29tPg0KPiBD
-YzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbXN0QHJlZGhhdC5jb207DQo+IHdpbGxlbWRlYnJ1
-aWpuLmtlcm5lbEBnbWFpbC5jb207IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnOw0KPiBMaWxpanVuIChKZXJyeSkgPGplcnJ5LmxpbGlqdW5AaHVhd2VpLmNvbT47IGNo
-ZW5jaGFuZ2h1DQo+IDxjaGVuY2hhbmdodUBodWF3ZWkuY29tPjsgeHVkaW5na2UgPHh1ZGluZ2tl
-QGh1YXdlaS5jb20+OyBodWFuZ2JpbiAoSikNCj4gPGJyaWFuLmh1YW5nYmluQGh1YXdlaS5jb20+
-DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0IHY0IDIvMl0gdmhvc3RfbmV0OiBmaXggdHggcXVl
-dWUgc3R1Y2sgd2hlbiBzZW5kbXNnDQo+IGZhaWxzDQo+IA0KPiANCj4gT24gMjAyMC8xMi8yNCDk
-uIvljYgxMjozNywgd2FuZ3l1bmppYW4gd3JvdGU6DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2Fn
-ZS0tLS0tDQo+ID4+IEZyb206IEphc29uIFdhbmcgW21haWx0bzpqYXNvd2FuZ0ByZWRoYXQuY29t
-XQ0KPiA+PiBTZW50OiBUaHVyc2RheSwgRGVjZW1iZXIgMjQsIDIwMjAgMTE6MTAgQU0NCj4gPj4g
-VG86IHdhbmd5dW5qaWFuIDx3YW5neXVuamlhbkBodWF3ZWkuY29tPjsgbmV0ZGV2QHZnZXIua2Vy
-bmVsLm9yZzsNCj4gPj4gbXN0QHJlZGhhdC5jb207IHdpbGxlbWRlYnJ1aWpuLmtlcm5lbEBnbWFp
-bC5jb20NCj4gPj4gQ2M6IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-OyBMaWxpanVuIChKZXJyeSkNCj4gPj4gPGplcnJ5LmxpbGlqdW5AaHVhd2VpLmNvbT47IGNoZW5j
-aGFuZ2h1IDxjaGVuY2hhbmdodUBodWF3ZWkuY29tPjsNCj4gPj4geHVkaW5na2UgPHh1ZGluZ2tl
-QGh1YXdlaS5jb20+OyBodWFuZ2JpbiAoSikNCj4gPj4gPGJyaWFuLmh1YW5nYmluQGh1YXdlaS5j
-b20+DQo+ID4+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0IHY0IDIvMl0gdmhvc3RfbmV0OiBmaXgg
-dHggcXVldWUgc3R1Y2sgd2hlbg0KPiA+PiBzZW5kbXNnIGZhaWxzDQo+ID4+DQo+ID4+DQo+ID4+
-IE9uIDIwMjAvMTIvMjQg5LiK5Y2IMTA6MjUsIHdhbmd5dW5qaWFuIHdyb3RlOg0KPiA+Pj4gRnJv
-bTogWXVuamlhbiBXYW5nIDx3YW5neXVuamlhbkBodWF3ZWkuY29tPg0KPiA+Pj4NCj4gPj4+IEN1
-cnJlbnRseSB0aGUgZHJpdmVyIGRvZXNuJ3QgZHJvcCBhIHBhY2tldCB3aGljaCBjYW4ndCBiZSBz
-ZW50IGJ5DQo+ID4+PiB0dW4gKGUuZyBiYWQgcGFja2V0KS4gSW4gdGhpcyBjYXNlLCB0aGUgZHJp
-dmVyIHdpbGwgYWx3YXlzIHByb2Nlc3MNCj4gPj4+IHRoZSBzYW1lIHBhY2tldCBsZWFkIHRvIHRo
-ZSB0eCBxdWV1ZSBzdHVjay4NCj4gPj4+DQo+ID4+PiBUbyBmaXggdGhpcyBpc3N1ZToNCj4gPj4+
-IDEuIGluIHRoZSBjYXNlIG9mIHBlcnNpc3RlbnQgZmFpbHVyZSAoZS5nIGJhZCBwYWNrZXQpLCB0
-aGUgZHJpdmVyDQo+ID4+PiBjYW4gc2tpcCB0aGlzIGRlc2NyaXB0b3IgYnkgaWdub3JpbmcgdGhl
-IGVycm9yLg0KPiA+Pj4gMi4gaW4gdGhlIGNhc2Ugb2YgdHJhbnNpZW50IGZhaWx1cmUgKGUuZyAt
-RUFHQUlOIGFuZCAtRU5PTUVNKSwgdGhlDQo+ID4+PiBkcml2ZXIgc2NoZWR1bGVzIHRoZSB3b3Jr
-ZXIgdG8gdHJ5IGFnYWluLg0KPiA+Pg0KPiA+PiBJIG1pZ2h0IGJlIHdyb25nIGJ1dCBsb29raW5n
-IGF0IGFsbG9jX3NrYl93aXRoX2ZyYWdzKCksIGl0IHJldHVybnMNCj4gPj4gLUVOT0JVRlMNCj4g
-Pj4gYWN0dWFsbHk6DQo+ID4+DQo+ID4+ICAgwqDCoMKgICplcnJjb2RlID0gLUVOT0JVRlM7DQo+
-ID4+ICAgwqDCoMKgIHNrYiA9IGFsbG9jX3NrYihoZWFkZXJfbGVuLCBnZnBfbWFzayk7DQo+ID4+
-ICAgwqDCoMKgIGlmICghc2tiKQ0KPiA+PiAgIMKgwqDCoCDCoMKgwqAgcmV0dXJuIE5VTEw7DQo+
-ID4gWWVzLCBidXQgdGhlIHNvY2tfYWxsb2Nfc2VuZF9wc2tiKCkgcmV0dXJucyAtIEVBR0FJTiB3
-aGVuIG5vIHNuZGJ1ZiBzcGFjZS4NCj4gPiBTbyB0aGVyZSBpcyBuZWVkIHRvIGNoZWNrIHJldHVy
-biB2YWx1ZSB3aGljaCBpcyAtRUFHQUlOIG9yIC1FTk9NRU0gb3IgLQ0KPiBFQUdBSU4/DQo+ID4N
-Cj4gPiBzdHJ1Y3Qgc2tfYnVmZiAqc29ja19hbGxvY19zZW5kX3Bza2IoKSB7IC4uLg0KPiA+IAlm
-b3IgKDs7KSB7DQo+ID4gLi4uDQo+ID4gCQlza19zZXRfYml0KFNPQ0tXUV9BU1lOQ19OT1NQQUNF
-LCBzayk7DQo+ID4gCQlzZXRfYml0KFNPQ0tfTk9TUEFDRSwgJnNrLT5za19zb2NrZXQtPmZsYWdz
-KTsNCj4gPiAJCWVyciA9IC1FQUdBSU47DQo+ID4gCQlpZiAoIXRpbWVvKQ0KPiA+IAkJCWdvdG8g
-ZmFpbHVyZTsNCj4gPiAuLi4NCj4gPiAJfQ0KPiA+IAlza2IgPSBhbGxvY19za2Jfd2l0aF9mcmFn
-cyhoZWFkZXJfbGVuLCBkYXRhX2xlbiwgbWF4X3BhZ2Vfb3JkZXIsDQo+ID4gCQkJCSAgIGVycmNv
-ZGUsIHNrLT5za19hbGxvY2F0aW9uKTsNCj4gPiAJaWYgKHNrYikNCj4gPiAJCXNrYl9zZXRfb3du
-ZXJfdyhza2IsIHNrKTsNCj4gPiAJcmV0dXJuIHNrYjsNCj4gPiAuLi4NCj4gPiAJKmVycmNvZGUg
-PSBlcnI7DQo+ID4gCXJldHVybiBOVUxMOw0KPiA+IH0NCj4gDQo+IA0KPiAtRUFHQUlOIGFuZCAt
-RU5PQkZTIGFyZSBmaW5lLiBCdXQgSSBkb24ndCBzZWUgaG93IC1FTk9NRU0gY2FuIGJlIHJldHVy
-bmVkLg0KDQpUaGUgdHVuX2J1aWxkX3NrYigpIGFuZCB0dW5fbmFwaV9hbGxvY19mcmFncygpIHJl
-dHVybiAtRU5PTUVNIHdoZW4gbWVtb3J5DQphbGxvY2F0aW9uIGZhaWxzLg0KDQpUaGFua3MNCg0K
-PiANCj4gVGhhbmtzDQo+IA0KPiANCj4gPj4gVGhhbmtzDQo+ID4+DQo+ID4+DQo+ID4+PiBGaXhl
-czogM2E0ZDVjOTRlOTU5ICgidmhvc3RfbmV0OiBhIGtlcm5lbC1sZXZlbCB2aXJ0aW8gc2VydmVy
-IikNCj4gPj4+IFNpZ25lZC1vZmYtYnk6IFl1bmppYW4gV2FuZyA8d2FuZ3l1bmppYW5AaHVhd2Vp
-LmNvbT4NCj4gPj4+IC0tLQ0KPiA+Pj4gICAgZHJpdmVycy92aG9zdC9uZXQuYyB8IDE2ICsrKysr
-KysrLS0tLS0tLS0NCj4gPj4+ICAgIDEgZmlsZSBjaGFuZ2VkLCA4IGluc2VydGlvbnMoKyksIDgg
-ZGVsZXRpb25zKC0pDQo+ID4+Pg0KPiA+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmhvc3QvbmV0
-LmMgYi9kcml2ZXJzL3Zob3N0L25ldC5jIGluZGV4DQo+ID4+PiBjODc4NGRmYWZkZDcuLmU3NjI0
-NWRhYTdmNiAxMDA2NDQNCj4gPj4+IC0tLSBhL2RyaXZlcnMvdmhvc3QvbmV0LmMNCj4gPj4+ICsr
-KyBiL2RyaXZlcnMvdmhvc3QvbmV0LmMNCj4gPj4+IEBAIC04MjcsMTQgKzgyNywxMyBAQCBzdGF0
-aWMgdm9pZCBoYW5kbGVfdHhfY29weShzdHJ1Y3Qgdmhvc3RfbmV0DQo+ID4+PiAqbmV0LA0KPiA+
-PiBzdHJ1Y3Qgc29ja2V0ICpzb2NrKQ0KPiA+Pj4gICAgCQkJCW1zZy5tc2dfZmxhZ3MgJj0gfk1T
-R19NT1JFOw0KPiA+Pj4gICAgCQl9DQo+ID4+Pg0KPiA+Pj4gLQkJLyogVE9ETzogQ2hlY2sgc3Bl
-Y2lmaWMgZXJyb3IgYW5kIGJvbWIgb3V0IHVubGVzcyBFTk9CVUZTPw0KPiAqLw0KPiA+Pj4gICAg
-CQllcnIgPSBzb2NrLT5vcHMtPnNlbmRtc2coc29jaywgJm1zZywgbGVuKTsNCj4gPj4+IC0JCWlm
-ICh1bmxpa2VseShlcnIgPCAwKSkgew0KPiA+Pj4gKwkJaWYgKHVubGlrZWx5KGVyciA9PSAtRUFH
-QUlOIHx8IGVyciA9PSAtRU5PTUVNKSkgew0KPiA+Pj4gICAgCQkJdmhvc3RfZGlzY2FyZF92cV9k
-ZXNjKHZxLCAxKTsNCj4gPj4+ICAgIAkJCXZob3N0X25ldF9lbmFibGVfdnEobmV0LCB2cSk7DQo+
-ID4+PiAgICAJCQlicmVhazsNCj4gPj4+ICAgIAkJfQ0KPiA+Pj4gLQkJaWYgKGVyciAhPSBsZW4p
-DQo+ID4+PiArCQlpZiAoZXJyID49IDAgJiYgZXJyICE9IGxlbikNCj4gPj4+ICAgIAkJCXByX2Rl
-YnVnKCJUcnVuY2F0ZWQgVFggcGFja2V0OiBsZW4gJWQgIT0gJXpkXG4iLA0KPiA+Pj4gICAgCQkJ
-CSBlcnIsIGxlbik7DQo+ID4+PiAgICBkb25lOg0KPiA+Pj4gQEAgLTkyMiw3ICs5MjEsNiBAQCBz
-dGF0aWMgdm9pZCBoYW5kbGVfdHhfemVyb2NvcHkoc3RydWN0IHZob3N0X25ldA0KPiA+PiAqbmV0
-LCBzdHJ1Y3Qgc29ja2V0ICpzb2NrKQ0KPiA+Pj4gICAgCQkJbXNnLm1zZ19mbGFncyAmPSB+TVNH
-X01PUkU7DQo+ID4+PiAgICAJCX0NCj4gPj4+DQo+ID4+PiAtCQkvKiBUT0RPOiBDaGVjayBzcGVj
-aWZpYyBlcnJvciBhbmQgYm9tYiBvdXQgdW5sZXNzIEVOT0JVRlM/DQo+ICovDQo+ID4+PiAgICAJ
-CWVyciA9IHNvY2stPm9wcy0+c2VuZG1zZyhzb2NrLCAmbXNnLCBsZW4pOw0KPiA+Pj4gICAgCQlp
-ZiAodW5saWtlbHkoZXJyIDwgMCkpIHsNCj4gPj4+ICAgIAkJCWlmICh6Y29weV91c2VkKSB7DQo+
-ID4+PiBAQCAtOTMxLDExICs5MjksMTMgQEAgc3RhdGljIHZvaWQgaGFuZGxlX3R4X3plcm9jb3B5
-KHN0cnVjdA0KPiA+Pj4gdmhvc3RfbmV0DQo+ID4+ICpuZXQsIHN0cnVjdCBzb2NrZXQgKnNvY2sp
-DQo+ID4+PiAgICAJCQkJbnZxLT51cGVuZF9pZHggPSAoKHVuc2lnbmVkKW52cS0+dXBlbmRfaWR4
-IC0gMSkNCj4gPj4+ICAgIAkJCQkJJSBVSU9fTUFYSU9WOw0KPiA+Pj4gICAgCQkJfQ0KPiA+Pj4g
-LQkJCXZob3N0X2Rpc2NhcmRfdnFfZGVzYyh2cSwgMSk7DQo+ID4+PiAtCQkJdmhvc3RfbmV0X2Vu
-YWJsZV92cShuZXQsIHZxKTsNCj4gPj4+IC0JCQlicmVhazsNCj4gPj4+ICsJCQlpZiAoZXJyID09
-IC1FQUdBSU4gfHwgZXJyID09IC1FTk9NRU0pIHsNCj4gPj4+ICsJCQkJdmhvc3RfZGlzY2FyZF92
-cV9kZXNjKHZxLCAxKTsNCj4gPj4+ICsJCQkJdmhvc3RfbmV0X2VuYWJsZV92cShuZXQsIHZxKTsN
-Cj4gPj4+ICsJCQkJYnJlYWs7DQo+ID4+PiArCQkJfQ0KPiA+Pj4gICAgCQl9DQo+ID4+PiAtCQlp
-ZiAoZXJyICE9IGxlbikNCj4gPj4+ICsJCWlmIChlcnIgPj0gMCAmJiBlcnIgIT0gbGVuKQ0KPiA+
-Pj4gICAgCQkJcHJfZGVidWcoIlRydW5jYXRlZCBUWCBwYWNrZXQ6ICINCj4gPj4+ICAgIAkJCQkg
-IiBsZW4gJWQgIT0gJXpkXG4iLCBlcnIsIGxlbik7DQo+ID4+PiAgICAJCWlmICghemNvcHlfdXNl
-ZCkNCg0K
+On Wed, Dec 23, 2020 at 9:01 AM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> I don't think this patch is suitable for stable branches. This patch is
+> part of a patch series that changes the lapb module from "establishing the
+> L2 connection only when needed by L3", to "establishing the L2 connection
+> automatically whenever we are able to". This is a behavioral change. It
+> should be seen as a new feature. It is not a bug fix.
+
+Applying this patch without other patches in the same series will also
+introduce problems, because this patch relies on part of the changes
+in the subsequent patch in the same series to be correct.
+
+Hi Martin,
+
+It's better that we avoid using words like "fix" in non-bug-fix
+patches, and make every patch work on its own without subsequent
+patches. Otherwise we'll make people confused.
