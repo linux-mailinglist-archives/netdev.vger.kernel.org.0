@@ -2,223 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB10A2E2B5C
-	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 12:40:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AACE32E2B92
+	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 14:48:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729227AbgLYLhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Dec 2020 06:37:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729106AbgLYLhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 06:37:20 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E44C061573
-        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 03:36:40 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id b2so4060591edm.3
-        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 03:36:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dW0U27CQ5PW1ixet51Jw3cXT7HN2RV6YZF1yER1fAkk=;
-        b=bP1qF27nPbQAJyxjeo2/LdyaHDUjjfA+i2j4NfbjaBRu45vb1JR6A0dR2/3VUsfZqP
-         qyhuiBcWlp8cJMZe672468m9IfFb2puLOZ1RmA5ZpV5v3ouDorQZxqrdJFjBR+KwkqJ2
-         k4MBOGfo+dEB+SG8+JYvOjc1xuElJPrKH4TT4SV+EHb9uETKBpDAkdStgJ1pAtJrrQJN
-         U0CydeZsnEl9IB6/DDlyqO8L58oaAH3Ld9C0J34VFkeAedS5NnepeFaWERhL3PQ3vq9v
-         v7AkE0/uyDbOK8NAPHASAFb04Ipic29wbXY+L02DUfLDiGmayao5aPFG0VZUQL7Dk2ir
-         xXjw==
+        id S1726275AbgLYNpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Dec 2020 08:45:54 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:36897 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbgLYNpx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 08:45:53 -0500
+Received: by mail-il1-f197.google.com with SMTP id g10so3728141ile.4
+        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 05:45:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dW0U27CQ5PW1ixet51Jw3cXT7HN2RV6YZF1yER1fAkk=;
-        b=hDwGUTx5JkLOxrccdsu/JW2X3TrW3V547BNy0Hbnu58CMRBQeOcsGL3rF4guRvVio2
-         LEUgoXtZha5MlxbjE60YOwULGppYA41p5fPpMjNoW6loEK3dKXms4IjWGiI5obM9MusT
-         AVVFl0zAuECfYkK6zSp+wXqDTwYckWB6980jQYhvzAJ3l2OKwgbtseEQRhF3rQTk6+cC
-         Pl3NlY3FW+JOAOJ5ws9S3TiG1aOlhTw+Utsg7jDHTzivmkuOjImGMS/THc+3me+S7UHq
-         X/tyziU4xqWZ56b8q+2DMblcKtXKjc1C7Vv47iWm2Gcqu/tj/LqY8c0NhTq8mo5G1BA6
-         ShJg==
-X-Gm-Message-State: AOAM531EF7KML5W+Qy9QwhAn9JhUC7SRhHsqCOT9m8nTBvN32geuirU7
-        MBBZzOej0mxGyANCx/jydp+XhfHgnwTR30bIRQtY
-X-Google-Smtp-Source: ABdhPJyfzVm0KQD3jJjRSeRPyWJpRRybRK+7ycfHra1KVC7YY/1Zl7tBpHlK54DG5AW8RaYtsXWSJpqzc1yIYXCPwj4=
-X-Received: by 2002:a50:f304:: with SMTP id p4mr30922018edm.118.1608896198476;
- Fri, 25 Dec 2020 03:36:38 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=MiLat2U8UEzOxwhkBLLYRXZSjkbCjoTbUJUVgvs4p/U=;
+        b=HI5KD3ZPrJml5myxX83aTacaERE14QtuvzxBDv6WHfWkFZ/Mh8RvjZZoREvAemznNs
+         wTGrW7I7aNd0QWbajrh763bMt2RAQixC27sbMaoxbG19OY8X90EKeE72JeZM3UhxL/N4
+         slTqYKOfowx3gUh0X3cVRIb67UxKu6Dwyph1LAigaSpXFNxK9dzu/stwkQQmEK3ME4Ms
+         a6Ll49hpyMDD64P5ANECbHlA8hKZ+8ni16dliJHMf09zI3ECnGYsMKxNs8r7+/yd+iAF
+         4CFB9ZLPtt2/PdAO1tGkagqzDqxJ1ngWj2h1oiU66k+4yB9mCXd3Auc0pAZ2xmzx4cnE
+         cCkw==
+X-Gm-Message-State: AOAM533IEBWczUflz3AVuRGhS1fh2C5hjcZpjx2RTdrxiBnFB/AEri9j
+        FoeEo9mRgr/lF32oshS/2fGcpCLvP8cA7MwXi9O3Oq9PNDlJ
+X-Google-Smtp-Source: ABdhPJz1FbKHY94IuX+pEbL1DG1NajS0jAZdTM2jf2z2SZfUDNUXjIm70aqEQuhfJbqmfJK83yVv5J96mG3HgtzZL7kJayEWosmM
 MIME-Version: 1.0
-References: <20201222145221.711-1-xieyongji@bytedance.com> <20201222145221.711-10-xieyongji@bytedance.com>
- <6818a214-d587-4f0b-7de6-13c4e7e94ab6@redhat.com> <CACycT3vVU9vg6R6UujSnSdk8cwxWPVgeJJs0JaBH_Zg4xC-epQ@mail.gmail.com>
- <595fe7d6-7876-26e4-0b7c-1d63ca6d7a97@redhat.com> <CACycT3s=m=PQb5WFoMGhz8TNGme4+=rmbbBTtrugF9ZmNnWxEw@mail.gmail.com>
- <CACycT3tLG=13fDdY0YPzViK2-AUy5F+uJor2cmVDFOGjXTOaYA@mail.gmail.com> <cc8b670c-66b9-9513-1ffb-b0bcef6ccf21@redhat.com>
-In-Reply-To: <cc8b670c-66b9-9513-1ffb-b0bcef6ccf21@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Fri, 25 Dec 2020 19:36:28 +0800
-Message-ID: <CACycT3vPzPiK-qMOvnNx=oWmZgQd35QjLRW_kQGMu2W349e9RA@mail.gmail.com>
-Subject: Re: Re: [RFC v2 09/13] vduse: Add support for processing vhost iotlb message
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+X-Received: by 2002:a02:856d:: with SMTP id g100mr29932134jai.10.1608903912007;
+ Fri, 25 Dec 2020 05:45:12 -0800 (PST)
+Date:   Fri, 25 Dec 2020 05:45:12 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000272c1005b74a223b@google.com>
+Subject: BUG: sleeping function called from invalid context in
+ do_user_addr_fault (2)
+From:   syzbot <syzbot+6ce719ff413f52e0a0f2@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, andriin@fb.com, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        dsahern@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@chromium.org, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, toke@redhat.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 25, 2020 at 3:02 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2020/12/25 =E4=B8=8A=E5=8D=8810:37, Yongji Xie wrote:
-> > On Thu, Dec 24, 2020 at 3:37 PM Yongji Xie <xieyongji@bytedance.com> wr=
-ote:
-> >> On Thu, Dec 24, 2020 at 10:41 AM Jason Wang <jasowang@redhat.com> wrot=
-e:
-> >>>
-> >>> On 2020/12/23 =E4=B8=8B=E5=8D=888:14, Yongji Xie wrote:
-> >>>> On Wed, Dec 23, 2020 at 5:05 PM Jason Wang <jasowang@redhat.com> wro=
-te:
-> >>>>> On 2020/12/22 =E4=B8=8B=E5=8D=8810:52, Xie Yongji wrote:
-> >>>>>> To support vhost-vdpa bus driver, we need a way to share the
-> >>>>>> vhost-vdpa backend process's memory with the userspace VDUSE proce=
-ss.
-> >>>>>>
-> >>>>>> This patch tries to make use of the vhost iotlb message to achieve
-> >>>>>> that. We will get the shm file from the iotlb message and pass it
-> >>>>>> to the userspace VDUSE process.
-> >>>>>>
-> >>>>>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> >>>>>> ---
-> >>>>>>     Documentation/driver-api/vduse.rst |  15 +++-
-> >>>>>>     drivers/vdpa/vdpa_user/vduse_dev.c | 147 +++++++++++++++++++++=
-+++++++++++++++-
-> >>>>>>     include/uapi/linux/vduse.h         |  11 +++
-> >>>>>>     3 files changed, 171 insertions(+), 2 deletions(-)
-> >>>>>>
-> >>>>>> diff --git a/Documentation/driver-api/vduse.rst b/Documentation/dr=
-iver-api/vduse.rst
-> >>>>>> index 623f7b040ccf..48e4b1ba353f 100644
-> >>>>>> --- a/Documentation/driver-api/vduse.rst
-> >>>>>> +++ b/Documentation/driver-api/vduse.rst
-> >>>>>> @@ -46,13 +46,26 @@ The following types of messages are provided b=
-y the VDUSE framework now:
-> >>>>>>
-> >>>>>>     - VDUSE_GET_CONFIG: Read from device specific configuration sp=
-ace
-> >>>>>>
-> >>>>>> +- VDUSE_UPDATE_IOTLB: Update the memory mapping in device IOTLB
-> >>>>>> +
-> >>>>>> +- VDUSE_INVALIDATE_IOTLB: Invalidate the memory mapping in device=
- IOTLB
-> >>>>>> +
-> >>>>>>     Please see include/linux/vdpa.h for details.
-> >>>>>>
-> >>>>>> -In the data path, VDUSE framework implements a MMU-based on-chip =
-IOMMU
-> >>>>>> +The data path of userspace vDPA device is implemented in differen=
-t ways
-> >>>>>> +depending on the vdpa bus to which it is attached.
-> >>>>>> +
-> >>>>>> +In virtio-vdpa case, VDUSE framework implements a MMU-based on-ch=
-ip IOMMU
-> >>>>>>     driver which supports mapping the kernel dma buffer to a users=
-pace iova
-> >>>>>>     region dynamically. The userspace iova region can be created b=
-y passing
-> >>>>>>     the userspace vDPA device fd to mmap(2).
-> >>>>>>
-> >>>>>> +In vhost-vdpa case, the dma buffer is reside in a userspace memor=
-y region
-> >>>>>> +which will be shared to the VDUSE userspace processs via the file
-> >>>>>> +descriptor in VDUSE_UPDATE_IOTLB message. And the corresponding a=
-ddress
-> >>>>>> +mapping (IOVA of dma buffer <-> VA of the memory region) is also =
-included
-> >>>>>> +in this message.
-> >>>>>> +
-> >>>>>>     Besides, the eventfd mechanism is used to trigger interrupt ca=
-llbacks and
-> >>>>>>     receive virtqueue kicks in userspace. The following ioctls on =
-the userspace
-> >>>>>>     vDPA device fd are provided to support that:
-> >>>>>> diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdp=
-a_user/vduse_dev.c
-> >>>>>> index b974333ed4e9..d24aaacb6008 100644
-> >>>>>> --- a/drivers/vdpa/vdpa_user/vduse_dev.c
-> >>>>>> +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-> >>>>>> @@ -34,6 +34,7 @@
-> >>>>>>
-> >>>>>>     struct vduse_dev_msg {
-> >>>>>>         struct vduse_dev_request req;
-> >>>>>> +     struct file *iotlb_file;
-> >>>>>>         struct vduse_dev_response resp;
-> >>>>>>         struct list_head list;
-> >>>>>>         wait_queue_head_t waitq;
-> >>>>>> @@ -325,12 +326,80 @@ static int vduse_dev_set_vq_state(struct vdu=
-se_dev *dev,
-> >>>>>>         return ret;
-> >>>>>>     }
-> >>>>>>
-> >>>>>> +static int vduse_dev_update_iotlb(struct vduse_dev *dev, struct f=
-ile *file,
-> >>>>>> +                             u64 offset, u64 iova, u64 size, u8 p=
-erm)
-> >>>>>> +{
-> >>>>>> +     struct vduse_dev_msg *msg;
-> >>>>>> +     int ret;
-> >>>>>> +
-> >>>>>> +     if (!size)
-> >>>>>> +             return -EINVAL;
-> >>>>>> +
-> >>>>>> +     msg =3D vduse_dev_new_msg(dev, VDUSE_UPDATE_IOTLB);
-> >>>>>> +     msg->req.size =3D sizeof(struct vduse_iotlb);
-> >>>>>> +     msg->req.iotlb.offset =3D offset;
-> >>>>>> +     msg->req.iotlb.iova =3D iova;
-> >>>>>> +     msg->req.iotlb.size =3D size;
-> >>>>>> +     msg->req.iotlb.perm =3D perm;
-> >>>>>> +     msg->req.iotlb.fd =3D -1;
-> >>>>>> +     msg->iotlb_file =3D get_file(file);
-> >>>>>> +
-> >>>>>> +     ret =3D vduse_dev_msg_sync(dev, msg);
-> >>>>> My feeling is that we should provide consistent API for the userspa=
-ce
-> >>>>> device to use.
-> >>>>>
-> >>>>> E.g we'd better carry the IOTLB message for both virtio/vhost drive=
-rs.
-> >>>>>
-> >>>>> It looks to me for virtio drivers we can still use UPDAT_IOTLB mess=
-age
-> >>>>> by using VDUSE file as msg->iotlb_file here.
-> >>>>>
-> >>>> It's OK for me. One problem is when to transfer the UPDATE_IOTLB
-> >>>> message in virtio cases.
-> >>>
-> >>> Instead of generating IOTLB messages for userspace.
-> >>>
-> >>> How about record the mappings (which is a common case for device have
-> >>> on-chip IOMMU e.g mlx5e and vdpa simlator), then we can introduce ioc=
-tl
-> >>> for userspace to query?
-> >>>
-> >> If so, the IOTLB UPDATE is actually triggered by ioctl, but
-> >> IOTLB_INVALIDATE is triggered by the message. Is it a little odd? Or
-> >> how about trigger it when userspace call mmap() on the device fd?
-> >>
-> > Oh sorry, looks like mmap() needs to be called in IOTLB UPDATE message
-> > handler. Is it possible for the vdpa device to know which vdpa bus it
-> > is attached to?
->
->
-> We'd better not. It's kind of layer violation.
->
+Hello,
 
-OK. Now I think both ioctl and message are needed. The ioctl is useful
-when VDUSE userspace daemon reboot. And the IOTLB_UPDATE message could
-be generated during the first DMA mapping in the virtio-vdpa case.
+syzbot found the following issue on:
 
-Thanks,
-Yongji
+HEAD commit:    d467d80d bpf: Remove unused including <linux/version.h>
+git tree:       bpf
+console output: https://syzkaller.appspot.com/x/log.txt?x=159392cb500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2764fc28a92339f9
+dashboard link: https://syzkaller.appspot.com/bug?extid=6ce719ff413f52e0a0f2
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17234333500000
+
+The issue was bisected to:
+
+commit 64b59025c15b244c0954cf52b24fbabfcf5ed8f6
+Author: David Ahern <dsahern@kernel.org>
+Date:   Fri May 29 22:07:14 2020 +0000
+
+    xdp: Add xdp_txq_info to xdp_buff
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=129bcb37500000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=119bcb37500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=169bcb37500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6ce719ff413f52e0a0f2@syzkaller.appspotmail.com
+Fixes: 64b59025c15b ("xdp: Add xdp_txq_info to xdp_buff")
+
+BUG: sleeping function called from invalid context at arch/x86/mm/fault.c:1351
+in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 8781, name: syz-executor.0
+2 locks held by syz-executor.0/8781:
+ #0: ffffffff8b33a020 (rcu_read_lock){....}-{1:2}, at: bpf_test_run+0x116/0xcc0 net/bpf/test_run.c:28
+ #1: ffff888013428158 (&mm->mmap_lock#2){++++}-{3:3}, at: mmap_read_trylock include/linux/mmap_lock.h:136 [inline]
+ #1: ffff888013428158 (&mm->mmap_lock#2){++++}-{3:3}, at: do_user_addr_fault+0x25f/0xc50 arch/x86/mm/fault.c:1334
+Preemption disabled at:
+[<ffffffff814b8a6e>] migrate_disable+0x5e/0x160 kernel/sched/core.c:1753
+CPU: 0 PID: 8781 Comm: syz-executor.0 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:7911
+ do_user_addr_fault+0x29c/0xc50 arch/x86/mm/fault.c:1351
+ handle_page_fault arch/x86/mm/fault.c:1450 [inline]
+ exc_page_fault+0x9e/0x180 arch/x86/mm/fault.c:1506
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:580
+RIP: 0010:bpf_prog_e48ebe87b99394c4+0x11/0xa48
+Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 66 90 55 48 89 e5 31 c0 48 8b 47 28 <48> 8b 40 00 8b 80 00 01 00 00 c9 c3 cc cc cc cc cc cc cc cc cc cc
+RSP: 0018:ffffc9000165fb30 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffffff87314b68
+RDX: ffff88802bfeb580 RSI: ffffc90000e8e038 RDI: ffffc9000165fcb0
+RBP: ffffc9000165fb30 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: dffffc0000000000 R14: 0000000000000001 R15: ffffc90000e8e000
+ bpf_prog_run_xdp include/linux/filter.h:743 [inline]
+ bpf_test_run+0x21c/0xcc0 net/bpf/test_run.c:48
+ bpf_prog_test_run_xdp+0x2ca/0x510 net/bpf/test_run.c:648
+ bpf_prog_test_run kernel/bpf/syscall.c:3120 [inline]
+ __do_sys_bpf+0x2174/0x5130 kernel/bpf/syscall.c:4412
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45e149
+Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f7d79602c68 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045e149
+RDX: 0000000000000028 RSI: 00000000200000c0 RDI: 000000000000000a
+RBP: 000000000119bfc0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119bf8c
+R13: 00007ffdea4f396f R14: 00007f7d796039c0 R15: 000000000119bf8c
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 1eb8b067 P4D 1eb8b067 PUD 1cd90067 PMD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 8781 Comm: syz-executor.0 Tainted: G        W         5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:bpf_prog_e48ebe87b99394c4+0x11/0xa48
+Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 66 90 55 48 89 e5 31 c0 48 8b 47 28 <48> 8b 40 00 8b 80 00 01 00 00 c9 c3 cc cc cc cc cc cc cc cc cc cc
+RSP: 0018:ffffc9000165fb30 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffffff87314b68
+RDX: ffff88802bfeb580 RSI: ffffc90000e8e038 RDI: ffffc9000165fcb0
+RBP: ffffc9000165fb30 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: dffffc0000000000 R14: 0000000000000001 R15: ffffc90000e8e000
+FS:  00007f7d79603700(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fb3f42c0018 CR3: 0000000014825000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ bpf_prog_run_xdp include/linux/filter.h:743 [inline]
+ bpf_test_run+0x21c/0xcc0 net/bpf/test_run.c:48
+ bpf_prog_test_run_xdp+0x2ca/0x510 net/bpf/test_run.c:648
+ bpf_prog_test_run kernel/bpf/syscall.c:3120 [inline]
+ __do_sys_bpf+0x2174/0x5130 kernel/bpf/syscall.c:4412
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45e149
+Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f7d79602c68 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045e149
+RDX: 0000000000000028 RSI: 00000000200000c0 RDI: 000000000000000a
+RBP: 000000000119bfc0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119bf8c
+R13: 00007ffdea4f396f R14: 00007f7d796039c0 R15: 000000000119bf8c
+Modules linked in:
+CR2: 0000000000000000
+---[ end trace f373adf0128c937b ]---
+RIP: 0010:bpf_prog_e48ebe87b99394c4+0x11/0xa48
+Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 66 90 55 48 89 e5 31 c0 48 8b 47 28 <48> 8b 40 00 8b 80 00 01 00 00 c9 c3 cc cc cc cc cc cc cc cc cc cc
+RSP: 0018:ffffc9000165fb30 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffffff87314b68
+RDX: ffff88802bfeb580 RSI: ffffc90000e8e038 RDI: ffffc9000165fcb0
+RBP: ffffc9000165fb30 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: dffffc0000000000 R14: 0000000000000001 R15: ffffc90000e8e000
+FS:  00007f7d79603700(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fb3f42c0018 CR3: 0000000014825000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
