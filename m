@@ -2,182 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AACE32E2B92
-	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 14:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 913CC2E2BD1
+	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 16:02:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726275AbgLYNpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Dec 2020 08:45:54 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:36897 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725863AbgLYNpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 08:45:53 -0500
-Received: by mail-il1-f197.google.com with SMTP id g10so3728141ile.4
-        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 05:45:37 -0800 (PST)
+        id S1726737AbgLYO6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Dec 2020 09:58:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59601 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725867AbgLYO6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 09:58:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608908206;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=h67Ik1L4EFeN6xNYPE5yqVkOkBhTnSq5wIBHrTpEQ/g=;
+        b=Q7vRHl8O2hjP7cAahqNuT1q3LoY2/GecOOEWN7OPm08FX+zjem5esnKIdtqp802g7ZrfXh
+        Sqn6oMi6dqxhBeXzIEon2MSZ3n+5/mAh+STwdr0v8AVDc0r35ghHgqxsxBOitfcm5Gj6TT
+        X1dQlm5FCpOB4004rKBnI1wUPcTVSeA=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-503-pFuKxxTNM2uFmTs9pVVB3g-1; Fri, 25 Dec 2020 09:56:45 -0500
+X-MC-Unique: pFuKxxTNM2uFmTs9pVVB3g-1
+Received: by mail-ot1-f72.google.com with SMTP id l37so2595946ota.1
+        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 06:56:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=MiLat2U8UEzOxwhkBLLYRXZSjkbCjoTbUJUVgvs4p/U=;
-        b=HI5KD3ZPrJml5myxX83aTacaERE14QtuvzxBDv6WHfWkFZ/Mh8RvjZZoREvAemznNs
-         wTGrW7I7aNd0QWbajrh763bMt2RAQixC27sbMaoxbG19OY8X90EKeE72JeZM3UhxL/N4
-         slTqYKOfowx3gUh0X3cVRIb67UxKu6Dwyph1LAigaSpXFNxK9dzu/stwkQQmEK3ME4Ms
-         a6Ll49hpyMDD64P5ANECbHlA8hKZ+8ni16dliJHMf09zI3ECnGYsMKxNs8r7+/yd+iAF
-         4CFB9ZLPtt2/PdAO1tGkagqzDqxJ1ngWj2h1oiU66k+4yB9mCXd3Auc0pAZ2xmzx4cnE
-         cCkw==
-X-Gm-Message-State: AOAM533IEBWczUflz3AVuRGhS1fh2C5hjcZpjx2RTdrxiBnFB/AEri9j
-        FoeEo9mRgr/lF32oshS/2fGcpCLvP8cA7MwXi9O3Oq9PNDlJ
-X-Google-Smtp-Source: ABdhPJz1FbKHY94IuX+pEbL1DG1NajS0jAZdTM2jf2z2SZfUDNUXjIm70aqEQuhfJbqmfJK83yVv5J96mG3HgtzZL7kJayEWosmM
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=h67Ik1L4EFeN6xNYPE5yqVkOkBhTnSq5wIBHrTpEQ/g=;
+        b=aMLzPcZ/i8N8dp1E57UqN7KximfcQgRPR/LKLhT4cZj9YRsK6pub/MOrjebfp6eDKv
+         vt0j14Pl1P0Jrx9EmLcH8hv1C4A5HjQOF+u2n+VRe5Y+xfL2lVd3Se7f4oZ4w7xXwLgS
+         pFRbDXhSjS+27Fufh4ftdE46qEHx+g3VuKBqcAsTYd3LzPUZYrSuXg4DJFDtg1DokrDo
+         MgTi2AP8q5X7vvwBvLYBRNvnJPqPVW+t7rgRr86PQt8RxucEXxXyJs3rlVJ3rD+7usHv
+         rlqpVwfII0y1g/xYRnjfppnRJRSTBsYJ531gIVf9kHvMc2BttI8oE3xyPg4RVwVg9Lyl
+         cTgg==
+X-Gm-Message-State: AOAM530/17bZW4ZTjeQ3EINUhVwOBQJE627BykQpMzy1KV4xphFSBO2O
+        N8hfT8Yi7iGukVW/KOAOqdOmcHgDw366d9fv7KvW5xbm9oX5aoiN3F7Wyx8W75SUcymBCf+DSy8
+        5fuQyRX1iiW5hMhNS
+X-Received: by 2002:a05:6808:148:: with SMTP id h8mr5521650oie.10.1608908204722;
+        Fri, 25 Dec 2020 06:56:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw2QlzbWDcBFNn++yW7Xiy4zYIJEj/pqT2gvxb+VW6ALnn1r0RllmCbZ7v3Vh3jzXzhWihxAg==
+X-Received: by 2002:a05:6808:148:: with SMTP id h8mr5521637oie.10.1608908204539;
+        Fri, 25 Dec 2020 06:56:44 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id j126sm3841502oif.8.2020.12.25.06.56.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Dec 2020 06:56:43 -0800 (PST)
+Subject: Re: [PATCH] nfp: remove h from printk format specifier
+To:     Joe Perches <joe@perches.com>,
+        Simon Horman <simon.horman@netronome.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, gustavoars@kernel.org,
+        louis.peens@netronome.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, oss-drivers@netronome.com,
+        linux-kernel@vger.kernel.org
+References: <20201223202053.131157-1-trix@redhat.com>
+ <20201224202152.GA3380@netronome.com>
+ <bac92bab-243b-ca48-647c-dad5688fa060@redhat.com>
+ <18c81854639aa21e76c8b26cc3e7999b0428cc4e.camel@perches.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <7b5517e6-41a9-cc7f-f42f-8ef449f3898e@redhat.com>
+Date:   Fri, 25 Dec 2020 06:56:41 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-X-Received: by 2002:a02:856d:: with SMTP id g100mr29932134jai.10.1608903912007;
- Fri, 25 Dec 2020 05:45:12 -0800 (PST)
-Date:   Fri, 25 Dec 2020 05:45:12 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000272c1005b74a223b@google.com>
-Subject: BUG: sleeping function called from invalid context in
- do_user_addr_fault (2)
-From:   syzbot <syzbot+6ce719ff413f52e0a0f2@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, andriin@fb.com, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        dsahern@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@chromium.org, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, toke@redhat.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <18c81854639aa21e76c8b26cc3e7999b0428cc4e.camel@perches.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+On 12/24/20 2:39 PM, Joe Perches wrote:
+> On Thu, 2020-12-24 at 14:14 -0800, Tom Rix wrote:
+>> On 12/24/20 12:21 PM, Simon Horman wrote:
+>>> On Wed, Dec 23, 2020 at 12:20:53PM -0800, trix@redhat.com wrote:
+>>>> From: Tom Rix <trix@redhat.com>
+>>>>
+>>>> This change fixes the checkpatch warning described in this commit
+>>>> commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of unnecessary %h[xudi] and %hh[xudi]")
+>>>>
+>>>> Standard integer promotion is already done and %hx and %hhx is useless
+>>>> so do not encourage the use of %hh[xudi] or %h[xudi].
+>>>>
+>>>> Signed-off-by: Tom Rix <trix@redhat.com>
+>>> Hi Tom,
+>>>
+>>> This patch looks appropriate for net-next, which is currently closed.
+>>>
+>>> The changes look fine, but I'm curious to know if its intentionally that
+>>> the following was left alone in ethernet/netronome/nfp/nfp_net_ethtool.c:nfp_net_get_nspinfo()
+>>>
+>>> 	snprintf(version, ETHTOOL_FWVERS_LEN, "%hu.%hu"
+>> I am limiting changes to logging functions, what is roughly in checkpatch.
+>>
+>> I can add this snprintf in if you want.
+> I'm a bit confused here Tom.
+>
+> I thought your clang-tidy script was looking for anything marked with
+> __printf() that is using %h[idux] or %hh[idux].
+Yes, it uses the format attribute to find the logging functions.
+>
+> Wouldn't snprintf qualify for this already?
+>
+> include/linux/kernel.h-extern __printf(3, 4)
+> include/linux/kernel.h:int snprintf(char *buf, size_t size, const char *fmt, ...);
 
-HEAD commit:    d467d80d bpf: Remove unused including <linux/version.h>
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=159392cb500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2764fc28a92339f9
-dashboard link: https://syzkaller.appspot.com/bug?extid=6ce719ff413f52e0a0f2
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17234333500000
+Yes, this is found.
 
-The issue was bisected to:
+But since snprintf is not really a logging function, I ignore these.
 
-commit 64b59025c15b244c0954cf52b24fbabfcf5ed8f6
-Author: David Ahern <dsahern@kernel.org>
-Date:   Fri May 29 22:07:14 2020 +0000
+If someone asks for them not to be ignored in a specific change, I will do that.
 
-    xdp: Add xdp_txq_info to xdp_buff
+>
+> Kernel code doesn't use a signed char or short with %hx or %hu very often
+> but in case you didn't already know, any signed char/short emitted with
+> anything like %hx or %hu needs to be left alone as sign extension occurs so:
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=129bcb37500000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=119bcb37500000
-console output: https://syzkaller.appspot.com/x/log.txt?x=169bcb37500000
+Yes, this would also effect checkpatch.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6ce719ff413f52e0a0f2@syzkaller.appspotmail.com
-Fixes: 64b59025c15b ("xdp: Add xdp_txq_info to xdp_buff")
+Tom
 
-BUG: sleeping function called from invalid context at arch/x86/mm/fault.c:1351
-in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 8781, name: syz-executor.0
-2 locks held by syz-executor.0/8781:
- #0: ffffffff8b33a020 (rcu_read_lock){....}-{1:2}, at: bpf_test_run+0x116/0xcc0 net/bpf/test_run.c:28
- #1: ffff888013428158 (&mm->mmap_lock#2){++++}-{3:3}, at: mmap_read_trylock include/linux/mmap_lock.h:136 [inline]
- #1: ffff888013428158 (&mm->mmap_lock#2){++++}-{3:3}, at: do_user_addr_fault+0x25f/0xc50 arch/x86/mm/fault.c:1334
-Preemption disabled at:
-[<ffffffff814b8a6e>] migrate_disable+0x5e/0x160 kernel/sched/core.c:1753
-CPU: 0 PID: 8781 Comm: syz-executor.0 Not tainted 5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:7911
- do_user_addr_fault+0x29c/0xc50 arch/x86/mm/fault.c:1351
- handle_page_fault arch/x86/mm/fault.c:1450 [inline]
- exc_page_fault+0x9e/0x180 arch/x86/mm/fault.c:1506
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:580
-RIP: 0010:bpf_prog_e48ebe87b99394c4+0x11/0xa48
-Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 66 90 55 48 89 e5 31 c0 48 8b 47 28 <48> 8b 40 00 8b 80 00 01 00 00 c9 c3 cc cc cc cc cc cc cc cc cc cc
-RSP: 0018:ffffc9000165fb30 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffffff87314b68
-RDX: ffff88802bfeb580 RSI: ffffc90000e8e038 RDI: ffffc9000165fcb0
-RBP: ffffc9000165fb30 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: dffffc0000000000 R14: 0000000000000001 R15: ffffc90000e8e000
- bpf_prog_run_xdp include/linux/filter.h:743 [inline]
- bpf_test_run+0x21c/0xcc0 net/bpf/test_run.c:48
- bpf_prog_test_run_xdp+0x2ca/0x510 net/bpf/test_run.c:648
- bpf_prog_test_run kernel/bpf/syscall.c:3120 [inline]
- __do_sys_bpf+0x2174/0x5130 kernel/bpf/syscall.c:4412
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45e149
-Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f7d79602c68 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045e149
-RDX: 0000000000000028 RSI: 00000000200000c0 RDI: 000000000000000a
-RBP: 000000000119bfc0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119bf8c
-R13: 00007ffdea4f396f R14: 00007f7d796039c0 R15: 000000000119bf8c
-BUG: kernel NULL pointer dereference, address: 0000000000000000
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 1eb8b067 P4D 1eb8b067 PUD 1cd90067 PMD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 8781 Comm: syz-executor.0 Tainted: G        W         5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:bpf_prog_e48ebe87b99394c4+0x11/0xa48
-Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 66 90 55 48 89 e5 31 c0 48 8b 47 28 <48> 8b 40 00 8b 80 00 01 00 00 c9 c3 cc cc cc cc cc cc cc cc cc cc
-RSP: 0018:ffffc9000165fb30 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffffff87314b68
-RDX: ffff88802bfeb580 RSI: ffffc90000e8e038 RDI: ffffc9000165fcb0
-RBP: ffffc9000165fb30 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: dffffc0000000000 R14: 0000000000000001 R15: ffffc90000e8e000
-FS:  00007f7d79603700(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fb3f42c0018 CR3: 0000000014825000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- bpf_prog_run_xdp include/linux/filter.h:743 [inline]
- bpf_test_run+0x21c/0xcc0 net/bpf/test_run.c:48
- bpf_prog_test_run_xdp+0x2ca/0x510 net/bpf/test_run.c:648
- bpf_prog_test_run kernel/bpf/syscall.c:3120 [inline]
- __do_sys_bpf+0x2174/0x5130 kernel/bpf/syscall.c:4412
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45e149
-Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f7d79602c68 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045e149
-RDX: 0000000000000028 RSI: 00000000200000c0 RDI: 000000000000000a
-RBP: 000000000119bfc0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119bf8c
-R13: 00007ffdea4f396f R14: 00007f7d796039c0 R15: 000000000119bf8c
-Modules linked in:
-CR2: 0000000000000000
----[ end trace f373adf0128c937b ]---
-RIP: 0010:bpf_prog_e48ebe87b99394c4+0x11/0xa48
-Code: cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 66 90 55 48 89 e5 31 c0 48 8b 47 28 <48> 8b 40 00 8b 80 00 01 00 00 c9 c3 cc cc cc cc cc cc cc cc cc cc
-RSP: 0018:ffffc9000165fb30 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: ffffffff87314b68
-RDX: ffff88802bfeb580 RSI: ffffc90000e8e038 RDI: ffffc9000165fcb0
-RBP: ffffc9000165fb30 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: dffffc0000000000 R14: 0000000000000001 R15: ffffc90000e8e000
-FS:  00007f7d79603700(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fb3f42c0018 CR3: 0000000014825000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>
+> 	signed char foo = -1;
+> 	printk("%hx", foo);
+>
+> emits ffff but
+>
+> 	printk("%x", foo);
+>
+> emits ffffffff
+>
+> An example:
+>
+> $ gcc -x c -
+> #include <stdio.h>
+> #include <stdlib.h>
+>
+> int main(int argc, char **argv)
+> {
+> 	signed short i = -1;
+> 	printf("hx: %hx\n", i);
+> 	printf("x:  %x\n", i);
+> 	printf("hu: %hu\n", i);
+> 	printf("u:  %u\n", i);
+> 	return 0;
+> }
+>
+> $ ./a.out
+> hx: ffff
+> x:  ffffffff
+> hu: 65535
+> u:  4294967295
+>
+> $
+>
+>
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
