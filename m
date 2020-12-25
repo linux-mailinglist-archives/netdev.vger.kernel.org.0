@@ -2,105 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D782E2956
-	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 01:54:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 665F52E295A
+	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 02:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729060AbgLYAum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Dec 2020 19:50:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728914AbgLYAul (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 19:50:41 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A17C061573;
-        Thu, 24 Dec 2020 16:50:01 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id s2so3772185oij.2;
-        Thu, 24 Dec 2020 16:50:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tUcbf0/5kFSHpbnINiAwr5z5XqMGqzPagwcsvJX6bBc=;
-        b=iTWax7kVaE7/2quYQ7BEN6fzFSflmL5oFNU+MQshM6Wfq9qhHPU4PlSOpxAtoUBYb7
-         F7MBG/ph94JDgD1d7d68x+C+Oo+HwZ6+eSjS2kFk/gUvlutOAlN/Dr/rJvM7H8PBaqiq
-         rtj+gVGFvF1dK5vGsyuB/Sn4y3YkrcT8NSUItE9eZeU/PcYsjAq/Yh8Q1g72cTaAbz9I
-         qqXrFiXPD2TvnJ5cb1fCVfnqsEigsKVJb3u7J2utyKvIlMa8mquQlN2EBHwuq6BoRU2C
-         AfmjjVCRXG+JiiuYkL6MsmE41MyuG668nNOArg/6BToMgTiD1few+dxnfdm2Mazwc2eI
-         Wv7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tUcbf0/5kFSHpbnINiAwr5z5XqMGqzPagwcsvJX6bBc=;
-        b=n/IQSOhAGXSzu6STNCRJyWIXfmPTn1RTq0BCoQpfAiSrkaLF8gZnq3kBWZncWSx+o7
-         z2U6LerU6+0pWS4dNkuvGERMJRGd4hTVtSEY9WHR5WKvhFGBTaTvcBvBQpkW1zQc5i0k
-         sSBn/v180Ctq4/7Zj2u/T4lHMuC/mbh2ijkigXXF9TgMxX2w29StLicCaoWB+Fl5DSVl
-         FmAt/1F7UiDFaG+H7OjYLr2SY9LxlLfNGh/Sy4TixF6Y5No7mhlzL+X7A/lQwNVErq2R
-         ga+2NQ8fZO5z+yllndWAPFnVeIAuXLk1ima/z2wYmZUSSLI4d3jU+d8NhGm8NOC510AR
-         imTQ==
-X-Gm-Message-State: AOAM533u53nIelnup1IBtdIbYwY3XIwFK1Fu0nYLMn39rnptcFyBz9NQ
-        kdXQZ7cnNW+nDawrQuG8jL18aug8kYs=
-X-Google-Smtp-Source: ABdhPJz15axGDXO5d4uqd3jsnWAx+j8ol/W3HiRnu4P+wf1BgjFpvdxMyp2sjJC9O40mRvNBC1HQnw==
-X-Received: by 2002:aca:cc01:: with SMTP id c1mr4321575oig.18.1608857399639;
-        Thu, 24 Dec 2020 16:49:59 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:284:8203:54f0:413b:36ec:90b2:7739])
-        by smtp.googlemail.com with ESMTPSA id s66sm5996272ooa.37.2020.12.24.16.49.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Dec 2020 16:49:59 -0800 (PST)
-Subject: Re: [PATCH] bpf: fix: address of local auto-variable assigned to a
- function parameter.
-To:     YANG LI <abaci-bugfix@linux.alibaba.com>, ast@kernel.org
-Cc:     daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1608793298-123684-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <00a09a61-be9b-4b5a-bd46-6f7604a4358d@gmail.com>
-Date:   Thu, 24 Dec 2020 17:49:57 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
-MIME-Version: 1.0
-In-Reply-To: <1608793298-123684-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1729034AbgLYA7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Dec 2020 19:59:37 -0500
+Received: from esa9.hc1455-7.c3s2.iphmx.com ([139.138.36.223]:50829 "EHLO
+        esa9.hc1455-7.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728989AbgLYA7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Dec 2020 19:59:37 -0500
+X-Greylist: delayed 456 seconds by postgrey-1.27 at vger.kernel.org; Thu, 24 Dec 2020 19:59:36 EST
+IronPort-SDR: d7IXgYJDrjgDNb5IO15YzNax0Vri7SVVA0vyxWrZeSCvxXSQNCdZ0SDtGhz/LnapuJS4SQqpLs
+ cwfzVZ3k+Rky6kMjxfzsY35HtccQDeXg3zKGMZ9CaD4PzM59YZdqhi8tSI8JIzgdFra/mHMk+o
+ WwL7kFDAZKphYOR9dHiTGaCzyQyH+0tnQijaz9o82/wWdlXw1Rinm8I0IxRh2JbWJsgQe/HW41
+ VtHXIPBFlpyuiu0jzTme78B1EmiRMT8xwR4oFtt5vdktNjj1cAC9eDWhgUCSaM5DWzQ0dU9Wbu
+ RZM=
+X-IronPort-AV: E=McAfee;i="6000,8403,9845"; a="607538"
+X-IronPort-AV: E=Sophos;i="5.78,446,1599490800"; 
+   d="scan'208";a="607538"
+Received: from unknown (HELO oym-r4.gw.nic.fujitsu.com) ([210.162.30.92])
+  by esa9.hc1455-7.c3s2.iphmx.com with ESMTP; 25 Dec 2020 09:49:43 +0900
+Received: from oym-m4.gw.nic.fujitsu.com (oym-nat-oym-m4.gw.nic.fujitsu.com [192.168.87.61])
+        by oym-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 12587EF95D
+        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 09:49:43 +0900 (JST)
+Received: from durio.utsfd.cs.fujitsu.co.jp (durio.utsfd.cs.fujitsu.co.jp [10.24.20.112])
+        by oym-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 4833244AB37
+        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 09:49:42 +0900 (JST)
+Received: by durio.utsfd.cs.fujitsu.co.jp (Postfix, from userid 1006)
+        id DE2541FF263; Fri, 25 Dec 2020 09:49:41 +0900 (JST)
+From:   Yuusuke Ashizuka <ashiduka@fujitsu.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, ashiduka@fujitsu.com,
+        torii.ken1@fujitsu.com
+Subject: [PATCH] net: phy: realtek: Add support for RTL9000AA/AN
+Date:   Fri, 25 Dec 2020 09:47:51 +0900
+Message-Id: <20201225004751.26075-1-ashiduka@fujitsu.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/24/20 12:01 AM, YANG LI wrote:
-> Assigning local variable txq to the outputting parameter xdp->txq is not
-> safe, txq will be released after the end of the function call. 
-> Then the result of using xdp is unpredictable.
+RTL9000AA/AN as 100BASE-T1 is following:
+- 100 Mbps
+- Full duplex
+- Link Status Change Interrupt
 
-txq can only be accessed in this devmap context. Was it actually hit
-during runtime or is this report based on code analysis?
+Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
+Signed-off-by: Torii Kenichi <torii.ken1@fujitsu.com>
+---
+ drivers/net/phy/realtek.c | 51 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 575580d3ffe0..ccd3368ba14e 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -54,6 +54,9 @@
+ #define RTL_LPADV_5000FULL			BIT(6)
+ #define RTL_LPADV_2500FULL			BIT(5)
+ 
++#define RTL9000A_GINMR				0x14
++#define RTL9000A_GINMR_LINK_STATUS		BIT(4)
++
+ #define RTLGEN_SPEED_MASK			0x0630
+ 
+ #define RTL_GENERIC_PHYID			0x001cc800
+@@ -547,6 +550,41 @@ static int rtlgen_resume(struct phy_device *phydev)
+ 	return ret;
+ }
+ 
++static int rtl9000a_config_init(struct phy_device *phydev)
++{
++	phydev->autoneg = AUTONEG_DISABLE;
++	phydev->speed = SPEED_100;
++	phydev->duplex = DUPLEX_FULL;
++
++	return 0;
++}
++
++static int rtl9000a_config_aneg(struct phy_device *phydev)
++{
++	return 0;
++}
++
++static int rtl9000a_ack_interrupt(struct phy_device *phydev)
++{
++	int err;
++
++	err = phy_read(phydev, RTL8211F_INSR);
++
++	return (err < 0) ? err : 0;
++}
++
++static int rtl9000a_config_intr(struct phy_device *phydev)
++{
++	u16 val;
++
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
++		val = (u16)~RTL9000A_GINMR_LINK_STATUS;
++	else
++		val = ~0;
++
++	return phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
++}
++
+ static struct phy_driver realtek_drvs[] = {
+ 	{
+ 		PHY_ID_MATCH_EXACT(0x00008201),
+@@ -674,6 +712,19 @@ static struct phy_driver realtek_drvs[] = {
+ 		.config_intr	= genphy_no_config_intr,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
++	}, {
++		PHY_ID_MATCH_EXACT(0x001ccb00),
++		.name		= "RTL9000AA/AN Ethernet",
++		.features       = PHY_BASIC_T1_FEATURES,
++		.config_init	= rtl9000a_config_init,
++		.config_aneg	= rtl9000a_config_aneg,
++		.read_status	= genphy_update_link,
++		.ack_interrupt	= rtl9000a_ack_interrupt,
++		.config_intr	= rtl9000a_config_intr,
++		.suspend	= genphy_suspend,
++		.resume		= genphy_resume,
++		.read_page	= rtl821x_read_page,
++		.write_page	= rtl821x_write_page,
+ 	},
+ };
+ 
+-- 
+2.29.2
 
-> 
-> Fix this error by defining the struct xdp_txq_info in function
-> dev_map_run_prog() as a static type.
-> 
-> Signed-off-by: YANG LI <abaci-bugfix@linux.alibaba.com>
-> Reported-by: Abaci <abaci@linux.alibaba.com>
-> ---
->  kernel/bpf/devmap.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index f6e9c68..af6f004 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -454,7 +454,7 @@ static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
->  					 struct xdp_buff *xdp,
->  					 struct bpf_prog *xdp_prog)
->  {
-> -	struct xdp_txq_info txq = { .dev = dev };
-> +	static struct xdp_txq_info txq = { .dev = dev };
->  	u32 act;
->  
->  	xdp_set_data_meta_invalid(xdp);
-> 
