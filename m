@@ -2,162 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A772E2BF9
-	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 18:09:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 133C52E2C1F
+	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 20:14:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726565AbgLYRJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Dec 2020 12:09:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725856AbgLYRJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 12:09:10 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C53C061573
-        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 09:08:30 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id lt17so6787634ejb.3
-        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 09:08:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rYP1O8K5SsQ9FCv0gq+YuTqkohWzCkxa+DwnvyAasc8=;
-        b=STeluDTRfGm2RNZuU9LFUCxitJ8N0gU6e8FZT+qEg/3yp9wfWF0kJo0OgF5bxFApGC
-         oe2yl9+J6wPi+voDGIceXpE3FVQAQnocLfhGUnAM3ukgXL8mRh4MVT+kxyuRMcg6iioT
-         Wg8BIXSRz2hFBkohAwUGYCP1RSmpP9492F1rexDGTvn8Z0su82eD2NuweKBp0QEIVttF
-         rQZqvEDNoyJTULqjUhxg730RZzgzsFA5LrXn1NV2wWGzV9eCHyEtnWWAD3XTIWeaybDA
-         dESQUW0ZY+kQCOxfM1M1GDzuDJgWRIkPN3J6P1Dbh6onDZ75IGqvYUEB547ECDagFYDX
-         /SEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rYP1O8K5SsQ9FCv0gq+YuTqkohWzCkxa+DwnvyAasc8=;
-        b=RfslBXEha7E3TazUg49nO6Ojgbku7T2JnjT8DDdTQUkxjEo8uNRklt5UqHcZg1SqSR
-         wUUN6wEvYnH7HnrHxJmGzoJwYJ16kJZ+n0KqCNmwfpHX24uCCG2VSmHwvl3GfyVWH0Y2
-         yLs1TCobt1fzmKc59P+3+NYbXDhYROrAK3B1NCmYFvyfHAuYjVcsKRwzaW1VfH8pxh9P
-         Oo4rkz1U/GB3ih4Q7CL6PkL4Tzje5u+WfmfsdmvTfRXlk7ML77yac6qMfn4fSpZjhdgG
-         TuhhvYltxLGSoC5uUxjNoI3Y/f6tdKEvDN4jLl/fVrz0R3xeZ4AEm0+Tnsy638m1wIOJ
-         /tow==
-X-Gm-Message-State: AOAM531bRWsVRxFm4MBMypQvugpV8dJslTyx6nOTJCufPBJJviLeM+ne
-        4ZLQ3tG1VUug0Bu1ItDDpm0=
-X-Google-Smtp-Source: ABdhPJwd904M/K2z7Op3GNxTcjs0iSTCg5c7NTTrFgYDchbXAQM+9YQUa4dg5dVolQJiTt4wgfJRPQ==
-X-Received: by 2002:a17:906:591a:: with SMTP id h26mr31771152ejq.174.1608916108943;
-        Fri, 25 Dec 2020 09:08:28 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:ad53:85a4:d62:cc8c? (p200300ea8f065500ad5385a40d62cc8c.dip0.t-ipconnect.de. [2003:ea:8f06:5500:ad53:85a4:d62:cc8c])
-        by smtp.googlemail.com with ESMTPSA id a2sm6984687ejt.46.2020.12.25.09.08.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Dec 2020 09:08:28 -0800 (PST)
-Subject: Re: [PATCH] net: phy: realtek: Add support for RTL9000AA/AN
-To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>, andrew@lunn.ch,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, torii.ken1@fujitsu.com
-References: <20201225004751.26075-1-ashiduka@fujitsu.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <d9bb2855-e9a1-239f-b1cd-2be8294f357a@gmail.com>
-Date:   Fri, 25 Dec 2020 18:08:24 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S1726950AbgLYTOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Dec 2020 14:14:20 -0500
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.219]:23490 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726291AbgLYTOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 14:14:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1608923428;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=Message-Id:Date:Subject:Cc:To:From:From:Subject:Sender;
+        bh=EaTZMYup884BzWi92+HHYjKXVVZIKnErZ2yMyFuBn8s=;
+        b=D8aw2eGSgRAeSclml9hoM8iGR1VpDfCNNH4cbEumId6J9u4wf9/mKEMZCoLQAbW0E8
+        50Od1AlQqc2rsXgb8L8fJOOaXsxDLhQk9lY/ATTeIj/Zel+UVIytZ30MsHBkh2G6oQRK
+        L0jdkr+0RR+SjUI57yG9f6ac9LzJpC64qFja/3ut+qUVnrl4Lh67ZRyyyAlFCRaLer3d
+        DzdhyB3Cs+fWTLvCP48PIazjEdilYcsW0NPfGCBOqEj+Ziqe7DNLlcVLorfK7vub9yIR
+        672DsOifbSP2FkY2pxyR9PdCFFAKlohxQJ6xs9qOJ6JEoChSBgitKg78NgC8tZhUrSXR
+        lR0Q==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS0lO8DsfULo/u/TWn4+x4="
+X-RZG-CLASS-ID: mo00
+Received: from silver.lan
+        by smtp.strato.de (RZmta 47.10.7 DYNA|AUTH)
+        with ESMTPSA id u00528wBPJAR3is
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Fri, 25 Dec 2020 20:10:27 +0100 (CET)
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: [PATCH iproute2 5.11 1/2] iplink_can: add Classical CAN frame LEN8_DLC support
+Date:   Fri, 25 Dec 2020 20:10:14 +0100
+Message-Id: <20201225191015.3584-1-socketcan@hartkopp.net>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-In-Reply-To: <20201225004751.26075-1-ashiduka@fujitsu.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.12.2020 01:47, Yuusuke Ashizuka wrote:
-> RTL9000AA/AN as 100BASE-T1 is following:
-> - 100 Mbps
-> - Full duplex
-> - Link Status Change Interrupt
-> 
-> Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
-> Signed-off-by: Torii Kenichi <torii.ken1@fujitsu.com>
-> ---
->  drivers/net/phy/realtek.c | 51 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 51 insertions(+)
-> 
-> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-> index 575580d3ffe0..ccd3368ba14e 100644
-> --- a/drivers/net/phy/realtek.c
-> +++ b/drivers/net/phy/realtek.c
-> @@ -54,6 +54,9 @@
->  #define RTL_LPADV_5000FULL			BIT(6)
->  #define RTL_LPADV_2500FULL			BIT(5)
->  
-> +#define RTL9000A_GINMR				0x14
-> +#define RTL9000A_GINMR_LINK_STATUS		BIT(4)
-> +
->  #define RTLGEN_SPEED_MASK			0x0630
->  
->  #define RTL_GENERIC_PHYID			0x001cc800
-> @@ -547,6 +550,41 @@ static int rtlgen_resume(struct phy_device *phydev)
->  	return ret;
->  }
->  
-> +static int rtl9000a_config_init(struct phy_device *phydev)
-> +{
-> +	phydev->autoneg = AUTONEG_DISABLE;
-> +	phydev->speed = SPEED_100;
-> +	phydev->duplex = DUPLEX_FULL;
-> +
-> +	return 0;
-> +}
-> +
-> +static int rtl9000a_config_aneg(struct phy_device *phydev)
-> +{
-> +	return 0;
-> +}
-> +
-> +static int rtl9000a_ack_interrupt(struct phy_device *phydev)
-> +{
-> +	int err;
-> +
-> +	err = phy_read(phydev, RTL8211F_INSR);
-> +
-> +	return (err < 0) ? err : 0;
-> +}
-> +
-> +static int rtl9000a_config_intr(struct phy_device *phydev)
-> +{
-> +	u16 val;
-> +
-> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> +		val = (u16)~RTL9000A_GINMR_LINK_STATUS;
-> +	else
-> +		val = ~0;
-> +
-> +	return phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
-> +}
-> +
->  static struct phy_driver realtek_drvs[] = {
->  	{
->  		PHY_ID_MATCH_EXACT(0x00008201),
-> @@ -674,6 +712,19 @@ static struct phy_driver realtek_drvs[] = {
->  		.config_intr	= genphy_no_config_intr,
->  		.suspend	= genphy_suspend,
->  		.resume		= genphy_resume,
-> +	}, {
-> +		PHY_ID_MATCH_EXACT(0x001ccb00),
-> +		.name		= "RTL9000AA/AN Ethernet",
+The len8_dlc element is filled by the CAN interface driver and used for CAN
+frame creation by the CAN driver when the CAN_CTRLMODE_CC_LEN8_DLC flag is
+supported by the driver and enabled via netlink configuration interface.
 
-Better don't use a slash in the name. This breaks usage of sysfs:
-/sys/bus/mdio_bus/drivers/<driver_name>
+Add the command line support for cc-len8-dlc for Linux 5.11+
 
-> +		.features       = PHY_BASIC_T1_FEATURES,
-> +		.config_init	= rtl9000a_config_init,
-> +		.config_aneg	= rtl9000a_config_aneg,
-> +		.read_status	= genphy_update_link,
-> +		.ack_interrupt	= rtl9000a_ack_interrupt,
-> +		.config_intr	= rtl9000a_config_intr,
-> +		.suspend	= genphy_suspend,
-> +		.resume		= genphy_resume,
-> +		.read_page	= rtl821x_read_page,
-> +		.write_page	= rtl821x_write_page,
->  	},
->  };
->  
-> 
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+---
+ ip/iplink_can.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/ip/iplink_can.c b/ip/iplink_can.c
+index 735ab941..6a26f3ff 100644
+--- a/ip/iplink_can.c
++++ b/ip/iplink_can.c
+@@ -35,10 +35,11 @@ static void print_usage(FILE *f)
+ 		"\t[ one-shot { on | off } ]\n"
+ 		"\t[ berr-reporting { on | off } ]\n"
+ 		"\t[ fd { on | off } ]\n"
+ 		"\t[ fd-non-iso { on | off } ]\n"
+ 		"\t[ presume-ack { on | off } ]\n"
++		"\t[ cc-len8-dlc { on | off } ]\n"
+ 		"\n"
+ 		"\t[ restart-ms TIME-MS ]\n"
+ 		"\t[ restart ]\n"
+ 		"\n"
+ 		"\t[ termination { 0..65535 } ]\n"
+@@ -101,10 +102,11 @@ static void print_ctrlmode(FILE *f, __u32 cm)
+ 	_PF(CAN_CTRLMODE_ONE_SHOT, "ONE-SHOT");
+ 	_PF(CAN_CTRLMODE_BERR_REPORTING, "BERR-REPORTING");
+ 	_PF(CAN_CTRLMODE_FD, "FD");
+ 	_PF(CAN_CTRLMODE_FD_NON_ISO, "FD-NON-ISO");
+ 	_PF(CAN_CTRLMODE_PRESUME_ACK, "PRESUME-ACK");
++	_PF(CAN_CTRLMODE_CC_LEN8_DLC, "CC-LEN8-DLC");
+ #undef _PF
+ 	if (cm)
+ 		print_hex(PRINT_ANY, NULL, "%x", cm);
+ 	close_json_array(PRINT_ANY, "> ");
+ }
+@@ -209,10 +211,14 @@ static int can_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				     CAN_CTRLMODE_FD_NON_ISO);
+ 		} else if (matches(*argv, "presume-ack") == 0) {
+ 			NEXT_ARG();
+ 			set_ctrlmode("presume-ack", *argv, &cm,
+ 				     CAN_CTRLMODE_PRESUME_ACK);
++		} else if (matches(*argv, "cc-len8-dlc") == 0) {
++			NEXT_ARG();
++			set_ctrlmode("cc-len8-dlc", *argv, &cm,
++				     CAN_CTRLMODE_CC_LEN8_DLC);
+ 		} else if (matches(*argv, "restart") == 0) {
+ 			__u32 val = 1;
+ 
+ 			addattr32(n, 1024, IFLA_CAN_RESTART, val);
+ 		} else if (matches(*argv, "restart-ms") == 0) {
+-- 
+2.29.2
 
