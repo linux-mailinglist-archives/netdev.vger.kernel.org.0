@@ -2,68 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C3D22E2BF7
-	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 18:09:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A772E2BF9
+	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 18:09:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726345AbgLYRHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Dec 2020 12:07:37 -0500
-Received: from smtprelay0121.hostedemail.com ([216.40.44.121]:53988 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725953AbgLYRHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 12:07:37 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id E8A0118029140;
-        Fri, 25 Dec 2020 17:06:55 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4321:5007:6742:7652:7902:10004:10400:10848:11232:11658:11914:12297:12740:12760:12895:13069:13076:13311:13357:13439:14659:14721:21080:21627:30012:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: band89_34144c92747b
-X-Filterd-Recvd-Size: 1987
-Received: from [192.168.1.159] (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 25 Dec 2020 17:06:53 +0000 (UTC)
-Message-ID: <327d6cad23720c8fe984aa75a046ff69499568c8.camel@perches.com>
-Subject: Re: [PATCH] nfp: remove h from printk format specifier
-From:   Joe Perches <joe@perches.com>
-To:     Tom Rix <trix@redhat.com>,
-        Simon Horman <simon.horman@netronome.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, gustavoars@kernel.org,
-        louis.peens@netronome.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, oss-drivers@netronome.com,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 25 Dec 2020 09:06:51 -0800
-In-Reply-To: <7b5517e6-41a9-cc7f-f42f-8ef449f3898e@redhat.com>
-References: <20201223202053.131157-1-trix@redhat.com>
-         <20201224202152.GA3380@netronome.com>
-         <bac92bab-243b-ca48-647c-dad5688fa060@redhat.com>
-         <18c81854639aa21e76c8b26cc3e7999b0428cc4e.camel@perches.com>
-         <7b5517e6-41a9-cc7f-f42f-8ef449f3898e@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1726565AbgLYRJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Dec 2020 12:09:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725856AbgLYRJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 12:09:10 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C53C061573
+        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 09:08:30 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id lt17so6787634ejb.3
+        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 09:08:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rYP1O8K5SsQ9FCv0gq+YuTqkohWzCkxa+DwnvyAasc8=;
+        b=STeluDTRfGm2RNZuU9LFUCxitJ8N0gU6e8FZT+qEg/3yp9wfWF0kJo0OgF5bxFApGC
+         oe2yl9+J6wPi+voDGIceXpE3FVQAQnocLfhGUnAM3ukgXL8mRh4MVT+kxyuRMcg6iioT
+         Wg8BIXSRz2hFBkohAwUGYCP1RSmpP9492F1rexDGTvn8Z0su82eD2NuweKBp0QEIVttF
+         rQZqvEDNoyJTULqjUhxg730RZzgzsFA5LrXn1NV2wWGzV9eCHyEtnWWAD3XTIWeaybDA
+         dESQUW0ZY+kQCOxfM1M1GDzuDJgWRIkPN3J6P1Dbh6onDZ75IGqvYUEB547ECDagFYDX
+         /SEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rYP1O8K5SsQ9FCv0gq+YuTqkohWzCkxa+DwnvyAasc8=;
+        b=RfslBXEha7E3TazUg49nO6Ojgbku7T2JnjT8DDdTQUkxjEo8uNRklt5UqHcZg1SqSR
+         wUUN6wEvYnH7HnrHxJmGzoJwYJ16kJZ+n0KqCNmwfpHX24uCCG2VSmHwvl3GfyVWH0Y2
+         yLs1TCobt1fzmKc59P+3+NYbXDhYROrAK3B1NCmYFvyfHAuYjVcsKRwzaW1VfH8pxh9P
+         Oo4rkz1U/GB3ih4Q7CL6PkL4Tzje5u+WfmfsdmvTfRXlk7ML77yac6qMfn4fSpZjhdgG
+         TuhhvYltxLGSoC5uUxjNoI3Y/f6tdKEvDN4jLl/fVrz0R3xeZ4AEm0+Tnsy638m1wIOJ
+         /tow==
+X-Gm-Message-State: AOAM531bRWsVRxFm4MBMypQvugpV8dJslTyx6nOTJCufPBJJviLeM+ne
+        4ZLQ3tG1VUug0Bu1ItDDpm0=
+X-Google-Smtp-Source: ABdhPJwd904M/K2z7Op3GNxTcjs0iSTCg5c7NTTrFgYDchbXAQM+9YQUa4dg5dVolQJiTt4wgfJRPQ==
+X-Received: by 2002:a17:906:591a:: with SMTP id h26mr31771152ejq.174.1608916108943;
+        Fri, 25 Dec 2020 09:08:28 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:ad53:85a4:d62:cc8c? (p200300ea8f065500ad5385a40d62cc8c.dip0.t-ipconnect.de. [2003:ea:8f06:5500:ad53:85a4:d62:cc8c])
+        by smtp.googlemail.com with ESMTPSA id a2sm6984687ejt.46.2020.12.25.09.08.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Dec 2020 09:08:28 -0800 (PST)
+Subject: Re: [PATCH] net: phy: realtek: Add support for RTL9000AA/AN
+To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>, andrew@lunn.ch,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, torii.ken1@fujitsu.com
+References: <20201225004751.26075-1-ashiduka@fujitsu.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <d9bb2855-e9a1-239f-b1cd-2be8294f357a@gmail.com>
+Date:   Fri, 25 Dec 2020 18:08:24 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <20201225004751.26075-1-ashiduka@fujitsu.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-12-25 at 06:56 -0800, Tom Rix wrote:
-> On 12/24/20 2:39 PM, Joe Perches wrote:
-[]
-> > Kernel code doesn't use a signed char or short with %hx or %hu very often
-> > but in case you didn't already know, any signed char/short emitted with
-> > anything like %hx or %hu needs to be left alone as sign extension occurs so:
+On 25.12.2020 01:47, Yuusuke Ashizuka wrote:
+> RTL9000AA/AN as 100BASE-T1 is following:
+> - 100 Mbps
+> - Full duplex
+> - Link Status Change Interrupt
 > 
-> Yes, this would also effect checkpatch.
+> Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
+> Signed-off-by: Torii Kenichi <torii.ken1@fujitsu.com>
+> ---
+>  drivers/net/phy/realtek.c | 51 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 51 insertions(+)
+> 
+> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> index 575580d3ffe0..ccd3368ba14e 100644
+> --- a/drivers/net/phy/realtek.c
+> +++ b/drivers/net/phy/realtek.c
+> @@ -54,6 +54,9 @@
+>  #define RTL_LPADV_5000FULL			BIT(6)
+>  #define RTL_LPADV_2500FULL			BIT(5)
+>  
+> +#define RTL9000A_GINMR				0x14
+> +#define RTL9000A_GINMR_LINK_STATUS		BIT(4)
+> +
+>  #define RTLGEN_SPEED_MASK			0x0630
+>  
+>  #define RTL_GENERIC_PHYID			0x001cc800
+> @@ -547,6 +550,41 @@ static int rtlgen_resume(struct phy_device *phydev)
+>  	return ret;
+>  }
+>  
+> +static int rtl9000a_config_init(struct phy_device *phydev)
+> +{
+> +	phydev->autoneg = AUTONEG_DISABLE;
+> +	phydev->speed = SPEED_100;
+> +	phydev->duplex = DUPLEX_FULL;
+> +
+> +	return 0;
+> +}
+> +
+> +static int rtl9000a_config_aneg(struct phy_device *phydev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static int rtl9000a_ack_interrupt(struct phy_device *phydev)
+> +{
+> +	int err;
+> +
+> +	err = phy_read(phydev, RTL8211F_INSR);
+> +
+> +	return (err < 0) ? err : 0;
+> +}
+> +
+> +static int rtl9000a_config_intr(struct phy_device *phydev)
+> +{
+> +	u16 val;
+> +
+> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
+> +		val = (u16)~RTL9000A_GINMR_LINK_STATUS;
+> +	else
+> +		val = ~0;
+> +
+> +	return phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
+> +}
+> +
+>  static struct phy_driver realtek_drvs[] = {
+>  	{
+>  		PHY_ID_MATCH_EXACT(0x00008201),
+> @@ -674,6 +712,19 @@ static struct phy_driver realtek_drvs[] = {
+>  		.config_intr	= genphy_no_config_intr,
+>  		.suspend	= genphy_suspend,
+>  		.resume		= genphy_resume,
+> +	}, {
+> +		PHY_ID_MATCH_EXACT(0x001ccb00),
+> +		.name		= "RTL9000AA/AN Ethernet",
 
-Of course but checkpatch is stupid and doesn't know types
-so it just assumes that the type argument is not signed.
+Better don't use a slash in the name. This breaks usage of sysfs:
+/sys/bus/mdio_bus/drivers/<driver_name>
 
-In general, that's a reasonable but imperfect assumption.
-
-coccinelle could probably do this properly as it's a much
-better parser.  clang-tidy should be able to as well.
-
+> +		.features       = PHY_BASIC_T1_FEATURES,
+> +		.config_init	= rtl9000a_config_init,
+> +		.config_aneg	= rtl9000a_config_aneg,
+> +		.read_status	= genphy_update_link,
+> +		.ack_interrupt	= rtl9000a_ack_interrupt,
+> +		.config_intr	= rtl9000a_config_intr,
+> +		.suspend	= genphy_suspend,
+> +		.resume		= genphy_resume,
+> +		.read_page	= rtl821x_read_page,
+> +		.write_page	= rtl821x_write_page,
+>  	},
+>  };
+>  
+> 
 
