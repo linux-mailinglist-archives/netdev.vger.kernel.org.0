@@ -2,92 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F03B2E29E6
-	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 06:49:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EBA2E29F5
+	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 07:17:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726691AbgLYFpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Dec 2020 00:45:51 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:53766 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725681AbgLYFpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 00:45:51 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=weichen.chen@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0UJi-oZZ_1608875106;
-Received: from localhost(mailfrom:weichen.chen@linux.alibaba.com fp:SMTPD_---0UJi-oZZ_1608875106)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 25 Dec 2020 13:45:06 +0800
-From:   weichenchen <weichen.chen@linux.alibaba.com>
-To:     eric.dumazet@gmail.com, kuba@kernel.org, davem@davemloft.net
-Cc:     splendidsky.cwc@alibaba-inc.com, yanxu.zw@alibaba-inc.com,
-        weichenchen <weichen.chen@linux.alibaba.com>,
-        David Ahern <dsahern@kernel.org>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Jeff Dike <jdike@akamai.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Li RongQing <lirongqing@baidu.com>,
-        Roman Mashak <mrv@mojatatu.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4] net: neighbor: fix a crash caused by mod zero
-Date:   Fri, 25 Dec 2020 13:44:45 +0800
-Message-Id: <20201225054448.73256-1-weichen.chen@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
-In-Reply-To: <dbc6cd85-c58b-add2-5801-06e8e94b7d6b@gmail.com>
-References: <dbc6cd85-c58b-add2-5801-06e8e94b7d6b@gmail.com>
+        id S1726506AbgLYGQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Dec 2020 01:16:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59252 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725779AbgLYGQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 01:16:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1608876923;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w7tJ3BxFC3bqQCGNgX0REDThHWaozRXz9C3kfzP9GPY=;
+        b=YsvpdLsHc78idb/xT5QY6F0Cvegv2wytd1iAHAyO3zFDRwPFwWHJX6oevU4sTrYnBJhLdw
+        K3k5+5GyHFbeqMK77wr0NUPCUmBcX8TkYk6GhwRqRBOzcJj9h7QcBOfmUb/tYWvUVwfnyC
+        RCwUpruQPEFKEtwgF2VnaILQmfiNPpQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-258-SkLE0mm2NW-nxfCujw0HdA-1; Fri, 25 Dec 2020 01:15:21 -0500
+X-MC-Unique: SkLE0mm2NW-nxfCujw0HdA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0CC4D10054FF;
+        Fri, 25 Dec 2020 06:15:19 +0000 (UTC)
+Received: from [10.72.12.166] (ovpn-12-166.pek2.redhat.com [10.72.12.166])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3D4BA6F816;
+        Fri, 25 Dec 2020 06:15:11 +0000 (UTC)
+Subject: Re: [PATCH net v4 2/2] vhost_net: fix tx queue stuck when sendmsg
+ fails
+To:     wangyunjian <wangyunjian@huawei.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        chenchanghu <chenchanghu@huawei.com>,
+        xudingke <xudingke@huawei.com>,
+        "huangbin (J)" <brian.huangbin@huawei.com>
+References: <1608776746-4040-1-git-send-email-wangyunjian@huawei.com>
+ <c854850b-43ab-c98d-a4d8-36ad7cd6364c@redhat.com>
+ <34EFBCA9F01B0748BEB6B629CE643AE60DB8ED23@DGGEMM533-MBX.china.huawei.com>
+ <823a1558-70fb-386d-fd28-d0c9bdbe9dac@redhat.com>
+ <34EFBCA9F01B0748BEB6B629CE643AE60DB8EE1C@DGGEMM533-MBX.china.huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <c4587112-cd05-aeec-3307-8fd813060dd8@redhat.com>
+Date:   Fri, 25 Dec 2020 14:15:10 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <34EFBCA9F01B0748BEB6B629CE643AE60DB8EE1C@DGGEMM533-MBX.china.huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pneigh_enqueue() tries to obtain a random delay by mod
-NEIGH_VAR(p, PROXY_DELAY). However, NEIGH_VAR(p, PROXY_DELAY)
-migth be zero at that point because someone could write zero
-to /proc/sys/net/ipv4/neigh/[device]/proxy_delay after the
-callers check it.
 
-This patch uses prandom_u32_max() to get a random delay instead
-which avoids potential division by zero.
+On 2020/12/24 下午5:09, wangyunjian wrote:
+>> -EAGAIN and -ENOBFS are fine. But I don't see how -ENOMEM can be returned.
+> The tun_build_skb() and tun_napi_alloc_frags() return -ENOMEM when memory
+> allocation fails.
+>
+> Thanks
+>
 
-Signed-off-by: weichenchen <weichen.chen@linux.alibaba.com>
----
-V4:
-    - Use prandom_u32_max() to get a random delay in
-      pneigh_enqueue().
-V3:
-    - Callers need to pass the delay time to pneigh_enqueue()
-      now and they should guarantee it is not zero.
-    - Use READ_ONCE() to read NEIGH_VAR(p, PROXY_DELAY) in both
-      of the existing callers of pneigh_enqueue() and then pass
-      it to pneigh_enqueue().
-V2:
-    - Use READ_ONCE() to prevent the complier from re-reading
-      NEIGH_VAR(p, PROXY_DELAY).
-    - Give a hint to the complier that delay <= 0 is unlikely
-      to happen.
+You're right. So I think we need check them all.
 
-V4 is quite concise and works well.
-Thanks for Eric's and Jakub's advice.
----
- net/core/neighbour.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+In the future, we need think of a better way. I feel such check is kind 
+of fragile since people may modify core sock codes without having a look 
+at what vhost does.
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 9500d28a43b0..277ed854aef1 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1569,10 +1569,8 @@ static void neigh_proxy_process(struct timer_list *t)
- void pneigh_enqueue(struct neigh_table *tbl, struct neigh_parms *p,
- 		    struct sk_buff *skb)
- {
--	unsigned long now = jiffies;
--
--	unsigned long sched_next = now + (prandom_u32() %
--					  NEIGH_VAR(p, PROXY_DELAY));
-+	unsigned long sched_next = jiffies +
-+			prandom_u32_max(NEIGH_VAR(p, PROXY_DELAY));
- 
- 	if (tbl->proxy_queue.qlen > NEIGH_VAR(p, PROXY_QLEN)) {
- 		kfree_skb(skb);
--- 
-2.20.1 (Apple Git-117)
+Thanks
 
