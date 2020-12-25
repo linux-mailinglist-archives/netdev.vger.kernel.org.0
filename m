@@ -2,99 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 998ED2E29F7
-	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 07:21:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E7662E29FB
+	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 07:26:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726126AbgLYGTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Dec 2020 01:19:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50731 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725781AbgLYGTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 01:19:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608877097;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TpqVkUDXq+c4toXVZRgWMvwCiy7iTphoDiBdMjsrs6k=;
-        b=LOkm3u6PsKWTZtzPJMDG7eM8uxPJ04ZcCJFkwjBHKw+0iqUFtnnnrHsUG+1gAdMEysINNJ
-        29Dta6bZ+oTHGa6pWsehX+MKzZhDuERCY+DRaMevFxEeE3tnUKtoR7GgXhv5+g804y/fJH
-        FBo3NIHC4qMJTPkHkOdU3fNzKOysvwc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-187-xPtuXUzFMiK4Elmmw801lQ-1; Fri, 25 Dec 2020 01:18:13 -0500
-X-MC-Unique: xPtuXUzFMiK4Elmmw801lQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9B22B107ACF5;
-        Fri, 25 Dec 2020 06:18:11 +0000 (UTC)
-Received: from [10.72.12.166] (ovpn-12-166.pek2.redhat.com [10.72.12.166])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B987B10023B9;
-        Fri, 25 Dec 2020 06:18:04 +0000 (UTC)
-Subject: Re: [PATCH net v2] tun: fix return value when the number of iovs
- exceeds MAX_SKB_FRAGS
-To:     wangyunjian <wangyunjian@huawei.com>, netdev@vger.kernel.org,
-        mst@redhat.com, willemdebruijn.kernel@gmail.com
-Cc:     virtualization@lists.linux-foundation.org,
-        jerry.lilijun@huawei.com, chenchanghu@huawei.com,
-        xudingke@huawei.com, brian.huangbin@huawei.com
-References: <1608864736-24332-1-git-send-email-wangyunjian@huawei.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <b9de1be1-159f-455d-445a-c37edae32574@redhat.com>
-Date:   Fri, 25 Dec 2020 14:18:03 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726134AbgLYGYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Dec 2020 01:24:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbgLYGYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 01:24:38 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495B7C061573;
+        Thu, 24 Dec 2020 22:23:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=OUyXenwUk1NdejfVecrnP4oMGsrPNabBoQsyGjxq9ac=; b=F6wc6t4pXvJNMQzfzns1lkXE8x
+        HxQXYESa/5nfxtyacEzBezlwTFHo1dctO/gfygHHtFi06MRIHzZvHi/i8qp6PU/2WJUvvnKlKNdnw
+        /wgc54GZi5fKHls83je8lfo6E2Aa+40NrvbXuzMjUHjWAeOCEpdJuVSkFTUCj//l66zdFiWUghj/l
+        SXzQC1+GbcLV8n4/cJXKuDwCCTYuh7ZV/tpAmQO+VZ2r4qfty63FgNJp3QQVwScn8wjPzCp/DUKDo
+        3BkoPa9pczG+0pH4ZZWN4NcFvQfpFWVhR7vCLuNfbGP0iVy4/IuRJw2/oX4TzREgcbQ/1A2vngrh2
+        HPwQ32sg==;
+Received: from [2601:1c0:6280:3f0::64ea] (helo=smtpauth.infradead.org)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1ksgW0-0000tv-Qf; Fri, 25 Dec 2020 06:23:53 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com,
+        Nogah Frankel <nogahf@mellanox.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH -net] net: sched: prevent invalid Scell_log shift count
+Date:   Thu, 24 Dec 2020 22:23:44 -0800
+Message-Id: <20201225062344.32566-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <1608864736-24332-1-git-send-email-wangyunjian@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Check Scell_log shift size in red_check_params() and modify all callers
+of red_check_params() to pass Scell_log.
 
-On 2020/12/25 上午10:52, wangyunjian wrote:
-> From: Yunjian Wang <wangyunjian@huawei.com>
->
-> Currently the tun_napi_alloc_frags() function returns -ENOMEM when the
-> number of iovs exceeds MAX_SKB_FRAGS + 1. However this is inappropriate,
-> we should use -EMSGSIZE instead of -ENOMEM.
->
-> The following distinctions are matters:
-> 1. the caller need to drop the bad packet when -EMSGSIZE is returned,
->     which means meeting a persistent failure.
-> 2. the caller can try again when -ENOMEM is returned, which means
->     meeting a transient failure.
->
-> Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
-> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
-> Acked-by: Willem de Bruijn <willemb@google.com>
-> ---
-> v2:
->    * update commit log suggested by Willem de Bruijn
-> ---
->   drivers/net/tun.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index 2dc1988a8973..15c6dd7fb04c 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -1365,7 +1365,7 @@ static struct sk_buff *tun_napi_alloc_frags(struct tun_file *tfile,
->   	int i;
->   
->   	if (it->nr_segs > MAX_SKB_FRAGS + 1)
-> -		return ERR_PTR(-ENOMEM);
-> +		return ERR_PTR(-EMSGSIZE);
->   
->   	local_bh_disable();
->   	skb = napi_get_frags(&tfile->napi);
+This prevents a shift out-of-bounds as detected by UBSAN:
+  UBSAN: shift-out-of-bounds in ./include/net/red.h:252:22
+  shift exponent 72 is too large for 32-bit type 'int'
 
+Fixes: 8afa10cbe281 ("net_sched: red: Avoid illegal values")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com
+Cc: Nogah Frankel <nogahf@mellanox.com>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+---
+ include/net/red.h     |    4 +++-
+ net/sched/sch_choke.c |    2 +-
+ net/sched/sch_gred.c  |    2 +-
+ net/sched/sch_red.c   |    2 +-
+ net/sched/sch_sfq.c   |    2 +-
+ 5 files changed, 7 insertions(+), 5 deletions(-)
 
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
+--- lnx-510.orig/include/net/red.h
++++ lnx-510/include/net/red.h
+@@ -168,12 +168,14 @@ static inline void red_set_vars(struct r
+ 	v->qcount	= -1;
+ }
+ 
+-static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog)
++static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog, u8 Scell_log)
+ {
+ 	if (fls(qth_min) + Wlog > 32)
+ 		return false;
+ 	if (fls(qth_max) + Wlog > 32)
+ 		return false;
++	if (Scell_log >= 32)
++		return false;
+ 	if (qth_max < qth_min)
+ 		return false;
+ 	return true;
+--- lnx-510.orig/net/sched/sch_sfq.c
++++ lnx-510/net/sched/sch_sfq.c
+@@ -647,7 +647,7 @@ static int sfq_change(struct Qdisc *sch,
+ 	}
+ 
+ 	if (ctl_v1 && !red_check_params(ctl_v1->qth_min, ctl_v1->qth_max,
+-					ctl_v1->Wlog))
++					ctl_v1->Wlog, ctl_v1->Scell_log))
+ 		return -EINVAL;
+ 	if (ctl_v1 && ctl_v1->qth_min) {
+ 		p = kmalloc(sizeof(*p), GFP_KERNEL);
+--- lnx-510.orig/net/sched/sch_choke.c
++++ lnx-510/net/sched/sch_choke.c
+@@ -362,7 +362,7 @@ static int choke_change(struct Qdisc *sc
+ 
+ 	ctl = nla_data(tb[TCA_CHOKE_PARMS]);
+ 
+-	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
++	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
+ 		return -EINVAL;
+ 
+ 	if (ctl->limit > CHOKE_MAX_QUEUE)
+--- lnx-510.orig/net/sched/sch_gred.c
++++ lnx-510/net/sched/sch_gred.c
+@@ -480,7 +480,7 @@ static inline int gred_change_vq(struct
+ 	struct gred_sched *table = qdisc_priv(sch);
+ 	struct gred_sched_data *q = table->tab[dp];
+ 
+-	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog)) {
++	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "invalid RED parameters");
+ 		return -EINVAL;
+ 	}
+--- lnx-510.orig/net/sched/sch_red.c
++++ lnx-510/net/sched/sch_red.c
+@@ -250,7 +250,7 @@ static int __red_change(struct Qdisc *sc
+ 	max_P = tb[TCA_RED_MAX_P] ? nla_get_u32(tb[TCA_RED_MAX_P]) : 0;
+ 
+ 	ctl = nla_data(tb[TCA_RED_PARMS]);
+-	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
++	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
+ 		return -EINVAL;
+ 
+ 	err = red_get_flags(ctl->flags, TC_RED_HISTORIC_FLAGS,
