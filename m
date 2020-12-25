@@ -2,57 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D03582E2C7A
-	for <lists+netdev@lfdr.de>; Fri, 25 Dec 2020 23:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EA812E2C8A
+	for <lists+netdev@lfdr.de>; Sat, 26 Dec 2020 00:02:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728058AbgLYWOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Dec 2020 17:14:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52498 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726737AbgLYWOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 17:14:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1608934394;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=djDla7QC8stvJV4tixUAcw5nNMxJs92TkvEUyKHn9Vg=;
-        b=iyXFKTye7amsEzSeBW4GlB1zt7HOdXPyS3B7rFHfjOhL+ohr4S3g3kBxZ3f+NF0LEJ9vVh
-        xa2XUC3BmMi8HuN+fMqzMGQwJLlJ7W6bZbPRg6WFdO8izoWr5YWXxTK9nYo6iF+pvNtJRY
-        dVrZbz6PgGNxa77UgBFzdU61ZzdhkyE=
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
- [209.85.161.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-549-VVWDAMOLMyqlm1yVuIPTtg-1; Fri, 25 Dec 2020 17:13:12 -0500
-X-MC-Unique: VVWDAMOLMyqlm1yVuIPTtg-1
-Received: by mail-oo1-f71.google.com with SMTP id a5so2407147oob.4
-        for <netdev@vger.kernel.org>; Fri, 25 Dec 2020 14:13:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=djDla7QC8stvJV4tixUAcw5nNMxJs92TkvEUyKHn9Vg=;
-        b=Njiat9xY/86+pQG5o6jpl1w8YPCj3DzE36fG5x70IrFD9Ijz3qVqu7KqsXODyT5jux
-         OQQpA4/3dHjMRDj1VLIW7UXCTKTQf8wv5gjgYd349dlQPZsAxwvncQXw8Hedt+Wyk5PE
-         zt9R/DHMOJdaP6a8L6Dn28aMGfSjIp1ZivnIV0SK0Z52xhjnasb0BtHSnIpI8yraqxjs
-         EthHTAmAuH6m8zBfbLPwimIvUfofioM1e3/KuqQyns0waQy6T0r7ym6vIkrDc3EKTlO2
-         RNtPJan08KunweD8u6IKaiydtpNqcs87ley6ktauTwB6CWW9XIOmOEX25kHYisPzTqIV
-         PtFQ==
-X-Gm-Message-State: AOAM530U+R6lEsRFtQfChVeX6RC3Qg1LwTVIRa18h9CNpnSjx/rPg4Hk
-        0CXt61kgBxKj5v4yyg3JNA+lMahgC9I/MsOyEacfETZddeIU0jSgLhzXYBMG8IvzLN87Evmg5tt
-        xqCW5oiGdIKp8iBQ9
-X-Received: by 2002:a05:6830:114:: with SMTP id i20mr25982229otp.20.1608934392166;
-        Fri, 25 Dec 2020 14:13:12 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxJpR9lfMGCJ88XnkdY/FBVOnq4zIsz+YSGbfz9PGiOt60dSXbfTPKL9rOPGWuEai5fY964Sg==
-X-Received: by 2002:a05:6830:114:: with SMTP id i20mr25982216otp.20.1608934391944;
-        Fri, 25 Dec 2020 14:13:11 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id n13sm7651392otk.58.2020.12.25.14.13.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Dec 2020 14:13:11 -0800 (PST)
+        id S1727379AbgLYXBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Dec 2020 18:01:38 -0500
+Received: from smtprelay0240.hostedemail.com ([216.40.44.240]:49070 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725953AbgLYXBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Dec 2020 18:01:38 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id D7F36100E7B43;
+        Fri, 25 Dec 2020 23:00:56 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2689:2828:2915:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4321:5007:6742:7652:7902:10004:10400:10848:11232:11658:11914:12297:12740:12760:12895:13069:13076:13161:13229:13311:13357:13439:13548:14096:14097:14659:14721:14819:21080:21627:21740:30012:30054:30069:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: juice07_1a0bb6b2747d
+X-Filterd-Recvd-Size: 2936
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf13.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 25 Dec 2020 23:00:54 +0000 (UTC)
+Message-ID: <8401b60d35698e68bcf84e977b1b735c131d0b1e.camel@perches.com>
 Subject: Re: [PATCH] nfp: remove h from printk format specifier
-To:     Joe Perches <joe@perches.com>,
+From:   Joe Perches <joe@perches.com>
+To:     Tom Rix <trix@redhat.com>,
         Simon Horman <simon.horman@netronome.com>
 Cc:     kuba@kernel.org, davem@davemloft.net, ast@kernel.org,
         daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
@@ -61,48 +34,57 @@ Cc:     kuba@kernel.org, davem@davemloft.net, ast@kernel.org,
         louis.peens@netronome.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org, oss-drivers@netronome.com,
         linux-kernel@vger.kernel.org
+Date:   Fri, 25 Dec 2020 15:00:52 -0800
+In-Reply-To: <65755252-96c3-a808-3e01-e377dd395ee7@redhat.com>
 References: <20201223202053.131157-1-trix@redhat.com>
- <20201224202152.GA3380@netronome.com>
- <bac92bab-243b-ca48-647c-dad5688fa060@redhat.com>
- <18c81854639aa21e76c8b26cc3e7999b0428cc4e.camel@perches.com>
- <7b5517e6-41a9-cc7f-f42f-8ef449f3898e@redhat.com>
- <327d6cad23720c8fe984aa75a046ff69499568c8.camel@perches.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <65755252-96c3-a808-3e01-e377dd395ee7@redhat.com>
-Date:   Fri, 25 Dec 2020 14:13:06 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+         <20201224202152.GA3380@netronome.com>
+         <bac92bab-243b-ca48-647c-dad5688fa060@redhat.com>
+         <18c81854639aa21e76c8b26cc3e7999b0428cc4e.camel@perches.com>
+         <7b5517e6-41a9-cc7f-f42f-8ef449f3898e@redhat.com>
+         <327d6cad23720c8fe984aa75a046ff69499568c8.camel@perches.com>
+         <65755252-96c3-a808-3e01-e377dd395ee7@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-In-Reply-To: <327d6cad23720c8fe984aa75a046ff69499568c8.camel@perches.com>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 2020-12-25 at 14:13 -0800, Tom Rix wrote:
+> On 12/25/20 9:06 AM, Joe Perches wrote:
+> > On Fri, 2020-12-25 at 06:56 -0800, Tom Rix wrote:
+> > > On 12/24/20 2:39 PM, Joe Perches wrote:
+> > []
+> > > > Kernel code doesn't use a signed char or short with %hx or %hu very often
+> > > > but in case you didn't already know, any signed char/short emitted with
+> > > > anything like %hx or %hu needs to be left alone as sign extension occurs so:
+> > > Yes, this would also effect checkpatch.
+> > Of course but checkpatch is stupid and doesn't know types
+> > so it just assumes that the type argument is not signed.
+> > 
+> > In general, that's a reasonable but imperfect assumption.
+> > 
+> > coccinelle could probably do this properly as it's a much
+> > better parser.  clang-tidy should be able to as well.
+> > 
+> Ok.
+> 
+> But types not matching the format string is a larger problem.
+> 
+> Has there been an effort to clean these up ?
 
-On 12/25/20 9:06 AM, Joe Perches wrote:
-> On Fri, 2020-12-25 at 06:56 -0800, Tom Rix wrote:
->> On 12/24/20 2:39 PM, Joe Perches wrote:
-> []
->>> Kernel code doesn't use a signed char or short with %hx or %hu very often
->>> but in case you didn't already know, any signed char/short emitted with
->>> anything like %hx or %hu needs to be left alone as sign extension occurs so:
->> Yes, this would also effect checkpatch.
-> Of course but checkpatch is stupid and doesn't know types
-> so it just assumes that the type argument is not signed.
->
-> In general, that's a reasonable but imperfect assumption.
->
-> coccinelle could probably do this properly as it's a much
-> better parser.  clang-tidy should be able to as well.
->
-Ok.
+Not really no.  __printf already does a reasonable job for that.
 
-But types not matching the format string is a larger problem.
+The biggest issue for format type mismatches is the %p<foo> extensions.
 
-Has there been an effort to clean these up ?
+__printf can only verify that the argument is a pointer, not
+necessarily the 'right' type of pointed to object.
 
-Tom
+There are overflow possibilities like '"%*ph", len, pointer'
+where pointer may not have len bytes available and, for instance,
+mismatched uses of %pI4 and %pI6 where %pI4 expects a pointer to
+4 bytes and %pI6 expects a pointer to 16 bytes.
+
+Anyway it's not that easy a problem to analyze.
 
