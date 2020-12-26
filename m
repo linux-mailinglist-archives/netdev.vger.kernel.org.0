@@ -2,86 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 569E52E2E13
-	for <lists+netdev@lfdr.de>; Sat, 26 Dec 2020 12:55:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7081B2E2EB8
+	for <lists+netdev@lfdr.de>; Sat, 26 Dec 2020 18:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726010AbgLZLxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Dec 2020 06:53:30 -0500
-Received: from fallback17.m.smailru.net ([94.100.176.130]:37696 "EHLO
-        fallback17.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725954AbgLZLx3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Dec 2020 06:53:29 -0500
-X-Greylist: delayed 3172 seconds by postgrey-1.27 at vger.kernel.org; Sat, 26 Dec 2020 06:53:27 EST
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=In2wv/p6a/1VVwiCznM4zbujVCuMut6Th0d++MEkXfM=;
-        b=ABN3GvzV9/9ATmldBm7f0HEaSlyH2oqNx9/FhVApFsIyPQUXVVcI9rSBWFqICR3Z8UiKviYbS8whbkZeZ/uxiiUxjaP0zvu+A+JAj67Kl7FjrUKTBjRrKPeR/NL+5knmBxFyBVvx4UTyTyt/SbPvJv81w5WhNThvXADelQBkzeY=;
-Received: from [10.161.64.56] (port=53098 helo=smtp48.i.mail.ru)
-        by fallback17.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1kt7Ia-0005mu-Aa; Sat, 26 Dec 2020 13:59:48 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=In2wv/p6a/1VVwiCznM4zbujVCuMut6Th0d++MEkXfM=;
-        b=DWeR0JmIjaScGXns8Nt98G4V7wfhqk+43KoIojc71Ir2YaD0TbXLjJ4UbfsMMP1vm+wjhwAit4B+KgJxr6Rc/DtBkFida85gF9mGdPIc7NJoSwri0Kni6hoA7kMl+gjVbWKCHmGgZ86EcMyCqtSR/pb9c7PycJJd8MX8JJDcU6k=;
-Received: by smtp48.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1kt7Ho-0000R0-Is; Sat, 26 Dec 2020 13:59:00 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-Cc:     madalin.bucur@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH] fsl/fman: Add MII mode support.
-Date:   Sat, 26 Dec 2020 13:59:56 +0300
-Message-Id: <20201226105956.147025-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.29.2
+        id S1726277AbgLZRLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Dec 2020 12:11:38 -0500
+Received: from smtprelay0220.hostedemail.com ([216.40.44.220]:60050 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726010AbgLZRLh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Dec 2020 12:11:37 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 43300181D3026;
+        Sat, 26 Dec 2020 17:10:56 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:800:960:968:973:988:989:1260:1261:1277:1311:1313:1314:1345:1437:1515:1516:1518:1535:1544:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3354:3865:3867:3868:3871:4321:4419:4605:5007:6117:6119:6742:7652:7903:10004:10848:11026:11473:11657:11658:11914:12043:12296:12297:12438:12555:12760:12986:13439:14181:14394:14659:14721:21080:21324:21627:21987:21990:30054:30055,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: boats47_2f0077427484
+X-Filterd-Recvd-Size: 5425
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf11.hostedemail.com (Postfix) with ESMTPA;
+        Sat, 26 Dec 2020 17:10:54 +0000 (UTC)
+Message-ID: <d1ea50ed47e2e9ca65a67ffc2ca0eee08e662132.camel@perches.com>
+Subject: [PATCH] ethernet: Remove invalid trailers after %pI4
+From:   Joe Perches <joe@perches.com>
+To:     netdev@vger.kernel.org
+Cc:     Tom Rix <trix@redhat.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2@marvell.com, linux-kernel@vger.kernel.org,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Date:   Sat, 26 Dec 2020 09:10:53 -0800
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD9D0E79FBC973162CDAC53986DC5FB1AB1465E8C05863AF8B800894C459B0CD1B9114F3DA3B500B081C701B3810CD51A398F90BBA3B2AFFE206C2BE0BE76D801B4
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE79EDB57D1FB735487EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637651D61939D0B3DD78638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC0467DDC7B76A68C157CFA4A7088D387CA153B446C8109F68389733CBF5DBD5E913377AFFFEAFD2690E30A4C9C8E338DA6CDB2E15ACB7FB748941B15DA834481FCF19DD082D7633A0EF3E4896CB9E6436389733CBF5DBD5E9D5E8D9A59859A8B6D07623A0E6354027CC7F00164DA146DA6F5DAA56C3B73B237318B6A418E8EAB8D32BA5DBAC0009BE9E8FC8737B5C224997E92A89321C69D73AA81AA40904B5D9CF19DD082D7633A078D18283394535A93AA81AA40904B5D98AA50765F790063729D75DFF2CCF83ADEC76A7562686271EEC990983EF5C032935872C767BF85DA29E625A9149C048EE1B544F03EFBC4D57444A83B712AC01484AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8B779DE599495CD83275ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57285124B2A10EEC6C00306258E7E6ABB4E4A6367B16DE6309
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C464F4FFC9BB38C8A83815A825E6ECAC449392C043BC2687B9C2B6934AE262D3EE7EAB7254005DCED556CBE7F905700A49510FB958DCE06DB6ED91DBE5ABE359ADBCB5631A0A9D21F2272C4C079A4C8AD93EDB24507CE13387DFF0A840B692CF8
-X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D342833AC5E8E9ACF1CB418CE84BD9B213B64268EC74EDC0645D25BFF22A1F149B5EF2C05E7456F00B21D7E09C32AA3244C66956EED7ABE9FC6A08E824D0C495DD4B018FE5BB746DCD183B48618A63566E0
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj259Y6Rtb/c72TujYIrk9Yw==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24AB0EEF02F18787F4D38539FD7D8E47EDA32FDEA59E113C28EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: B8F34718100C35BD
-X-77F55803: 6242723A09DB00B40E5D90E44ABF6C6604BA033ECC7B62DED2F9F6C864F8F230049FFFDB7839CE9EFE8CDD85D95C076F776ABC80EB6D567368CD6F073DFE136B2FB902A390BCC9A1
-X-7FA49CB5: 0D63561A33F958A510B4AC05B09E366B05D3795D5E2E2311BF1D34D21D0DEC588941B15DA834481FA18204E546F3947C151DCBF0643CA2B4F6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F7900637178027617757BE7C389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F790063728469018A2C41E93D81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636A7F4EDE966BC389F9E8FC8737B5C2249752EA26FB5CEBF11089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7C72845C242D3D018543847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148FA8EF81845B15A4842623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C464F4FFC9BB38C8A86F0D9E26B1C0ACB93AD85B275A26DEF9C2B6934AE262D3EE7EAB7254005DCED556CBE7F905700A4DC48ACC2A39D04F89CDFB48F4795C241BDAD6C7F3747799A
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2bioj259Y6Rtb/c7Nq2NjygBzgA==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C90057D89EA641BAE1DDB4621589DC03868B617635BFF0140C49FB79490FA07EBBC7EC099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: Ok
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set proper value to IF_MODE register for MII mode.
+Alphanumeric characters after vsprintf pointer extension %pI4 are
+not valid and are not emitted.
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+Remove the invalid characters from the %pI4 uses.
+
+Signed-off-by: Joe Perches <joe@perches.com>
 ---
- drivers/net/ethernet/freescale/fman/fman_memac.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c          | 6 +++---
+ drivers/net/ethernet/intel/i40e/i40e_main.c           | 4 ++--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c           | 4 ++--
+ 4 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
-index bb9887f98841..62f42921933d 100644
---- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-@@ -111,6 +111,7 @@ do {									\
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+index 5e4429b14b8c..213cbdea3888 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+@@ -1232,7 +1232,7 @@ static int bnxt_tc_resolve_tunnel_hdrs(struct bnxt *bp,
  
- #define IF_MODE_MASK		0x00000003 /* 30-31 Mask on i/f mode bits */
- #define IF_MODE_10G		0x00000000 /* 30-31 10G interface */
-+#define IF_MODE_MII		0x00000001 /* 30-31 MII interface */
- #define IF_MODE_GMII		0x00000002 /* 30-31 GMII (1G) interface */
- #define IF_MODE_RGMII		0x00000004
- #define IF_MODE_RGMII_AUTO	0x00008000
-@@ -442,6 +443,9 @@ static int init(struct memac_regs __iomem *regs, struct memac_cfg *cfg,
- 	case PHY_INTERFACE_MODE_XGMII:
- 		tmp |= IF_MODE_10G;
- 		break;
-+	case PHY_INTERFACE_MODE_MII:
-+		tmp |= IF_MODE_MII;
-+		break;
- 	default:
- 		tmp |= IF_MODE_GMII;
- 		if (phy_if == PHY_INTERFACE_MODE_RGMII ||
--- 
-2.29.2
+ 	rt = ip_route_output_key(dev_net(real_dst_dev), &flow);
+ 	if (IS_ERR(rt)) {
+-		netdev_info(bp->dev, "no route to %pI4b\n", &flow.daddr);
++		netdev_info(bp->dev, "no route to %pI4\n", &flow.daddr);
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -1258,7 +1258,7 @@ static int bnxt_tc_resolve_tunnel_hdrs(struct bnxt *bp,
+ #endif
+ 	} else if (dst_dev != real_dst_dev) {
+ 		netdev_info(bp->dev,
+-			    "dst_dev(%s) for %pI4b is not PF-if(%s)\n",
++			    "dst_dev(%s) for %pI4 is not PF-if(%s)\n",
+ 			    netdev_name(dst_dev), &flow.daddr,
+ 			    netdev_name(real_dst_dev));
+ 		rc = -EOPNOTSUPP;
+@@ -1267,7 +1267,7 @@ static int bnxt_tc_resolve_tunnel_hdrs(struct bnxt *bp,
+ 
+ 	nbr = dst_neigh_lookup(&rt->dst, &flow.daddr);
+ 	if (!nbr) {
+-		netdev_info(bp->dev, "can't lookup neighbor for %pI4b\n",
++		netdev_info(bp->dev, "can't lookup neighbor for %pI4\n",
+ 			    &flow.daddr);
+ 		rc = -EOPNOTSUPP;
+ 		goto put_rt;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 1db482d310c2..eab6ce63b63d 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -7924,7 +7924,7 @@ static int i40e_parse_cls_flower(struct i40e_vsi *vsi,
+ 			if (match.mask->dst == cpu_to_be32(0xffffffff)) {
+ 				field_flags |= I40E_CLOUD_FIELD_IIP;
+ 			} else {
+-				dev_err(&pf->pdev->dev, "Bad ip dst mask %pI4b\n",
++				dev_err(&pf->pdev->dev, "Bad ip dst mask %pI4\n",
+ 					&match.mask->dst);
+ 				return I40E_ERR_CONFIG;
+ 			}
+@@ -7934,7 +7934,7 @@ static int i40e_parse_cls_flower(struct i40e_vsi *vsi,
+ 			if (match.mask->src == cpu_to_be32(0xffffffff)) {
+ 				field_flags |= I40E_CLOUD_FIELD_IIP;
+ 			} else {
+-				dev_err(&pf->pdev->dev, "Bad ip src mask %pI4b\n",
++				dev_err(&pf->pdev->dev, "Bad ip src mask %pI4\n",
+ 					&match.mask->src);
+ 				return I40E_ERR_CONFIG;
+ 			}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 41424ee909a0..6c711385aae9 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -2297,7 +2297,7 @@ static void mlxsw_sp_router_neigh_ent_ipv4_process(struct mlxsw_sp *mlxsw_sp,
+ 	if (!n)
+ 		return;
+ 
+-	netdev_dbg(dev, "Updating neighbour with IP=%pI4h\n", &dip);
++	netdev_dbg(dev, "Updating neighbour with IP=%pI4\n", &dip);
+ 	neigh_event_send(n, NULL);
+ 	neigh_release(n);
+ }
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index a99861124630..6756f7919deb 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -584,7 +584,7 @@ qed_iwarp_print_tcp_ramrod(struct qed_hwfn *p_hwfn,
+ 
+ 	if (p_tcp_ramrod->tcp.ip_version == TCP_IPV4) {
+ 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
+-			   "local_ip=%pI4h:%x, remote_ip=%pI4h:%x, vlan=%x\n",
++			   "local_ip=%pI4:%x, remote_ip=%pI4:%x, vlan=%x\n",
+ 			   p_tcp_ramrod->tcp.local_ip,
+ 			   p_tcp_ramrod->tcp.local_port,
+ 			   p_tcp_ramrod->tcp.remote_ip,
+@@ -1548,7 +1548,7 @@ qed_iwarp_print_cm_info(struct qed_hwfn *p_hwfn,
+ 
+ 	if (cm_info->ip_version == QED_TCP_IPV4)
+ 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
+-			   "remote_ip %pI4h:%x, local_ip %pI4h:%x vlan=%x\n",
++			   "remote_ip %pI4:%x, local_ip %pI4:%x vlan=%x\n",
+ 			   cm_info->remote_ip, cm_info->remote_port,
+ 			   cm_info->local_ip, cm_info->local_port,
+ 			   cm_info->vlan);
+
 
