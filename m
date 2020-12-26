@@ -2,149 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7081B2E2EB8
+	by mail.lfdr.de (Postfix) with ESMTP id DDA2D2E2EB9
 	for <lists+netdev@lfdr.de>; Sat, 26 Dec 2020 18:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726277AbgLZRLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Dec 2020 12:11:38 -0500
-Received: from smtprelay0220.hostedemail.com ([216.40.44.220]:60050 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726010AbgLZRLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Dec 2020 12:11:37 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 43300181D3026;
-        Sat, 26 Dec 2020 17:10:56 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:800:960:968:973:988:989:1260:1261:1277:1311:1313:1314:1345:1437:1515:1516:1518:1535:1544:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3354:3865:3867:3868:3871:4321:4419:4605:5007:6117:6119:6742:7652:7903:10004:10848:11026:11473:11657:11658:11914:12043:12296:12297:12438:12555:12760:12986:13439:14181:14394:14659:14721:21080:21324:21627:21987:21990:30054:30055,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: boats47_2f0077427484
-X-Filterd-Recvd-Size: 5425
-Received: from [192.168.1.159] (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf11.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 26 Dec 2020 17:10:54 +0000 (UTC)
-Message-ID: <d1ea50ed47e2e9ca65a67ffc2ca0eee08e662132.camel@perches.com>
-Subject: [PATCH] ethernet: Remove invalid trailers after %pI4
-From:   Joe Perches <joe@perches.com>
-To:     netdev@vger.kernel.org
-Cc:     Tom Rix <trix@redhat.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2@marvell.com, linux-kernel@vger.kernel.org,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Date:   Sat, 26 Dec 2020 09:10:53 -0800
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726314AbgLZRNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Dec 2020 12:13:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726010AbgLZRNH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Dec 2020 12:13:07 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D0CC061757
+        for <netdev@vger.kernel.org>; Sat, 26 Dec 2020 09:12:27 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id b8so3654801plx.0
+        for <netdev@vger.kernel.org>; Sat, 26 Dec 2020 09:12:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=KqZFcqW2oDj+zmhGfW8tx5eW3FwdJZXkV1RKInL+8Fw=;
+        b=Uwq9Hi4LNp1JAbZbHl0me2I1MNBJ1K1PmsMtL8wglMCWD07UzQnUnbuNYxKR2oUp8K
+         uqkFYToq6lKlU6XrO1jnnoPXtIPJL/4sQIHv7H4QF4qSuRwHcM0DBXVYnU6Sd7TvbY4A
+         m+ScgYmRFev0oPnWwSh7Wu+Y5UUWiQTNMFI2tHOie3CyntTWWZPjB5mEclteGr7Tqz7W
+         qeMaaf/ydf/fNHN5ufw2pTKGOfcEyfQnxt5EJf1m/uU+DLgy8JUjRynSzeZPITZsLWGi
+         VAqBWQwa7o5S8cilmxDDnVKNuG774At6Awgpc9KP3cfKP8idOcHK8+0nH/uk1c+eHlY2
+         2Bdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KqZFcqW2oDj+zmhGfW8tx5eW3FwdJZXkV1RKInL+8Fw=;
+        b=IkJhJhpLf9S6qY7zOz4c6BbLBO05wnS2/Xeqw7suYgRKoR2FRuvAbEhRH1kprVHMXE
+         738AEWVmbyKbFCWBN9Xtok8TaLTOil51NNzKCjWLIHuKEwJ8krqphQoTc0u7uGvzBIYg
+         0obXAYvkKlEzt6P0vs8+8g/SYjIWbPRlSOVs0wG6AcOav5S92u6eUA3SS+gMN8GAXpTr
+         mL3WpTQ+tBU5WPgV0z+uXtmjOnTennbPaqCXUjqVpmTS3zBx7gpF6tMDKCXJJfkJih5Z
+         iF+U8ehTUOMZJlA7GdRTQwJOjyu0vzrSIt8/5FTWBcvtPUk1Yd5J0PUC1Emtp2ulOXZJ
+         OFVA==
+X-Gm-Message-State: AOAM530JfvExvqBy9N4oZ0A5hdnxpNz6crY4WTIG89/RpjtOqXu1LWf4
+        03DSb5U/qe0tuMqRvWIxeHI=
+X-Google-Smtp-Source: ABdhPJw0zkKFlpeqGe8dX5k7MmRsO5DoEFtIpCZAEeaZXt/KKptmbO4C+Uwm9al5HTrq8gFFmy41hw==
+X-Received: by 2002:a17:90a:b118:: with SMTP id z24mr13260428pjq.14.1609002746683;
+        Sat, 26 Dec 2020 09:12:26 -0800 (PST)
+Received: from localhost.localdomain ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id d203sm31888611pfd.148.2020.12.26.09.12.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Dec 2020 09:12:25 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com, martin.varghese@nokia.com
+Subject: [PATCH net 0/2] bareudp: fix several issues
+Date:   Sat, 26 Dec 2020 17:12:14 +0000
+Message-Id: <20201226171214.4108-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alphanumeric characters after vsprintf pointer extension %pI4 are
-not valid and are not emitted.
+This patchset is to fix problems when bareudp is used nestedly.
 
-Remove the invalid characters from the %pI4 uses.
+1. If the NETIF_F_LLTX flag is not set, the lockdep warns about
+a possible deadlock scenario when bareudp interfaces are used nestedly.
+But, like other tunneling interfaces, bareudp doesn't need xmit lock.
+So, it sets NETIF_F_LLTTX.
+Lockdep no more warns about a possible deadlock scenario.
 
-Signed-off-by: Joe Perches <joe@perches.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c          | 6 +++---
- drivers/net/ethernet/intel/i40e/i40e_main.c           | 4 ++--
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
- drivers/net/ethernet/qlogic/qed/qed_iwarp.c           | 4 ++--
- 4 files changed, 8 insertions(+), 8 deletions(-)
+2. bareudp interface calculates min_headroom when it sends a packet.
+When it calculates min_headroom, it uses the size of struct iphdr even
+the ipv6 packet is going to be sent.
+It would result in a lack of headroom so eventually occurs kernel panic.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index 5e4429b14b8c..213cbdea3888 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -1232,7 +1232,7 @@ static int bnxt_tc_resolve_tunnel_hdrs(struct bnxt *bp,
- 
- 	rt = ip_route_output_key(dev_net(real_dst_dev), &flow);
- 	if (IS_ERR(rt)) {
--		netdev_info(bp->dev, "no route to %pI4b\n", &flow.daddr);
-+		netdev_info(bp->dev, "no route to %pI4\n", &flow.daddr);
- 		return -EOPNOTSUPP;
- 	}
- 
-@@ -1258,7 +1258,7 @@ static int bnxt_tc_resolve_tunnel_hdrs(struct bnxt *bp,
- #endif
- 	} else if (dst_dev != real_dst_dev) {
- 		netdev_info(bp->dev,
--			    "dst_dev(%s) for %pI4b is not PF-if(%s)\n",
-+			    "dst_dev(%s) for %pI4 is not PF-if(%s)\n",
- 			    netdev_name(dst_dev), &flow.daddr,
- 			    netdev_name(real_dst_dev));
- 		rc = -EOPNOTSUPP;
-@@ -1267,7 +1267,7 @@ static int bnxt_tc_resolve_tunnel_hdrs(struct bnxt *bp,
- 
- 	nbr = dst_neigh_lookup(&rt->dst, &flow.daddr);
- 	if (!nbr) {
--		netdev_info(bp->dev, "can't lookup neighbor for %pI4b\n",
-+		netdev_info(bp->dev, "can't lookup neighbor for %pI4\n",
- 			    &flow.daddr);
- 		rc = -EOPNOTSUPP;
- 		goto put_rt;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 1db482d310c2..eab6ce63b63d 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -7924,7 +7924,7 @@ static int i40e_parse_cls_flower(struct i40e_vsi *vsi,
- 			if (match.mask->dst == cpu_to_be32(0xffffffff)) {
- 				field_flags |= I40E_CLOUD_FIELD_IIP;
- 			} else {
--				dev_err(&pf->pdev->dev, "Bad ip dst mask %pI4b\n",
-+				dev_err(&pf->pdev->dev, "Bad ip dst mask %pI4\n",
- 					&match.mask->dst);
- 				return I40E_ERR_CONFIG;
- 			}
-@@ -7934,7 +7934,7 @@ static int i40e_parse_cls_flower(struct i40e_vsi *vsi,
- 			if (match.mask->src == cpu_to_be32(0xffffffff)) {
- 				field_flags |= I40E_CLOUD_FIELD_IIP;
- 			} else {
--				dev_err(&pf->pdev->dev, "Bad ip src mask %pI4b\n",
-+				dev_err(&pf->pdev->dev, "Bad ip src mask %pI4\n",
- 					&match.mask->src);
- 				return I40E_ERR_CONFIG;
- 			}
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 41424ee909a0..6c711385aae9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -2297,7 +2297,7 @@ static void mlxsw_sp_router_neigh_ent_ipv4_process(struct mlxsw_sp *mlxsw_sp,
- 	if (!n)
- 		return;
- 
--	netdev_dbg(dev, "Updating neighbour with IP=%pI4h\n", &dip);
-+	netdev_dbg(dev, "Updating neighbour with IP=%pI4\n", &dip);
- 	neigh_event_send(n, NULL);
- 	neigh_release(n);
- }
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-index a99861124630..6756f7919deb 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
-@@ -584,7 +584,7 @@ qed_iwarp_print_tcp_ramrod(struct qed_hwfn *p_hwfn,
- 
- 	if (p_tcp_ramrod->tcp.ip_version == TCP_IPV4) {
- 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
--			   "local_ip=%pI4h:%x, remote_ip=%pI4h:%x, vlan=%x\n",
-+			   "local_ip=%pI4:%x, remote_ip=%pI4:%x, vlan=%x\n",
- 			   p_tcp_ramrod->tcp.local_ip,
- 			   p_tcp_ramrod->tcp.local_port,
- 			   p_tcp_ramrod->tcp.remote_ip,
-@@ -1548,7 +1548,7 @@ qed_iwarp_print_cm_info(struct qed_hwfn *p_hwfn,
- 
- 	if (cm_info->ip_version == QED_TCP_IPV4)
- 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
--			   "remote_ip %pI4h:%x, local_ip %pI4h:%x vlan=%x\n",
-+			   "remote_ip %pI4:%x, local_ip %pI4:%x vlan=%x\n",
- 			   cm_info->remote_ip, cm_info->remote_port,
- 			   cm_info->local_ip, cm_info->local_port,
- 			   cm_info->vlan);
+Taehee Yoo (2):
+  bareudp: set NETIF_F_LLTX flag
+  bareudp: Fix use of incorrect min_headroom size
 
+ drivers/net/bareudp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+-- 
+2.17.1
 
