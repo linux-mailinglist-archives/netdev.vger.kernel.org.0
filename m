@@ -2,90 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94D972E30A3
-	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 10:48:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C210C2E30BA
+	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 11:54:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726127AbgL0JrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Dec 2020 04:47:16 -0500
-Received: from mx2.suse.de ([195.135.220.15]:54786 "EHLO mx2.suse.de"
+        id S1726148AbgL0Kxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Dec 2020 05:53:49 -0500
+Received: from correo.us.es ([193.147.175.20]:34380 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726019AbgL0JrP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Dec 2020 04:47:15 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id ED3A0AEB6;
-        Sun, 27 Dec 2020 09:46:33 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 84B0C603AA; Sun, 27 Dec 2020 10:46:33 +0100 (CET)
-Date:   Sun, 27 Dec 2020 10:46:33 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Bruce LIU <ccieliu@gmail.com>
-Cc:     netdev@vger.kernel.org, shlei@cisco.com
-Subject: Re: "ethtool" missing "master-slave" args in "do_sset"
- function.[TEXT/PLAIN]
-Message-ID: <20201227094633.GA5267@lion.mk-sys.cz>
-References: <d7196d65-c994-2e19-d41c-386a4957ac63@gmail.com>
+        id S1726075AbgL0Kxt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Dec 2020 05:53:49 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 3E413E34C3
+        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 11:52:40 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2F083DA78D
+        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 11:52:40 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 246E4DA789; Sun, 27 Dec 2020 11:52:40 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0BE2BDA72F;
+        Sun, 27 Dec 2020 11:52:38 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 27 Dec 2020 11:52:38 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id D8A06426CC84;
+        Sun, 27 Dec 2020 11:52:37 +0100 (CET)
+Date:   Sun, 27 Dec 2020 11:53:05 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        torvalds@linux-foundation.org, syzkaller-bugs@googlegroups.com,
+        syzbot+e86f7c428c8c50db65b4@syzkaller.appspotmail.com
+Subject: Re: [PATCH nf] netfilter: xt_RATEEST: reject non-null terminated
+ string from userspace
+Message-ID: <20201227105305.GA3870@salvia>
+References: <000000000000fcbe0705b70e9bd9@google.com>
+ <20201222222356.22645-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <d7196d65-c994-2e19-d41c-386a4957ac63@gmail.com>
+In-Reply-To: <20201222222356.22645-1-fw@strlen.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 27, 2020 at 12:34:09PM +0800, Bruce LIU wrote:
-> Hi Michal Kubecek and Network dev team,
+On Tue, Dec 22, 2020 at 11:23:56PM +0100, Florian Westphal wrote:
+> syzbot reports:
+> detected buffer overflow in strlen
+> [..]
+> Call Trace:
+>  strlen include/linux/string.h:325 [inline]
+>  strlcpy include/linux/string.h:348 [inline]
+>  xt_rateest_tg_checkentry+0x2a5/0x6b0 net/netfilter/xt_RATEEST.c:143
 > 
-> Good day! Hope you are doing well.
-> This is Bruce from China, and please allow me to cc Rudy from Cisco Systems
-> in China team.
-> 
-> We are facing a weird behavior about "master-slave configuration" function
-> in ethtool.
-> Please correct me if I am wrong....
-> 
-> As you know, start from ethtool 5.8,  "master/slave configuration support"
-> added.
-> https://lwn.net/Articles/828044/
-> 
-> ========================================================================
-> Appeal:
-> Confirm and discuss workaround
-> 
-> ========================================================================
-> Issue description:
-> As we test in lab, no "master-slave" option supported.
-> 
-> ========================================================================
-> Issue reproduce:
-> root@raspberrypi:~# ethtool -s eth0 master-slave master-preferred
-> ethtool: bad command line argument(s)
-> For more information run ethtool -h
-> 
-> ========================================================================
-> Environment:
-> debian-live-10.7.0-amd64-standard.iso
-> Kernel 5.4.79
+> strlcpy assumes src is a c-string. Check info->name before its used.
 
-This is the problem. Kernel support for this feature was added in
-5.8-rc1 so that your kernel does not have it and there is no chance it
-could possibly work. Newer ethtool has support for this feature but
-kernel must support it as well for it to actually work.
-
-But I agree that the error message is misleading. We handle subcommands
-supported only in netlink with proper error message when ioctl fallback
-is used but we don't do the same for new parameters of existing
-subcommands which are generally supported by ioctl code. That's why the
-command line parser used by ioctl code does not recognize the new
-parameter and handles it as a syntax error.
-
-We'll need to handle new parameters in ioctl parser so that it produces
-more meaningful error for parameters only supported via netlink. Long
-term, the proper solution would probably be using one parser for both
-netlink and ioctl but that was something I wanted to avoid for now to
-reduce the risk of introducing subtle changes in behaviour of existing
-code.
-
-Michal
+Applied, thanks Florian.
