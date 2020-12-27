@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A495A2E314F
-	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 14:30:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9222E3151
+	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 14:34:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726114AbgL0N1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Dec 2020 08:27:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57646 "EHLO
+        id S1726187AbgL0Nbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Dec 2020 08:31:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726055AbgL0N1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Dec 2020 08:27:11 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A57C061794
-        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 05:26:30 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id h205so18490883lfd.5
-        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 05:26:30 -0800 (PST)
+        with ESMTP id S1726085AbgL0Nbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Dec 2020 08:31:32 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024AAC061794
+        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 05:30:51 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id o13so18529335lfr.3
+        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 05:30:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rC8WYDaPAGaKZsax6JzUfwPBT2bhu6OdOlZysCNVxEQ=;
-        b=MyLFc95ZX/e+3qAPPm+anEekAlQBsjTcXdlf9VRrsPYD8mKInxAljdYc2Qrn9mG+9M
-         qJiXSiQrl6yv3mqNaHGpVGviIBIEGZCfY53g5FOiS5mZGgffGq2+9r0SHDKIfxSePP3B
-         6dJiI5/Ix9Cvhe6Af17UoingYoUdKnutyo/rKDItqhzjfqQh6tcTF2GVak6bkPt/C1iP
-         ieZV41rAnBM/TF0StT0gjRLONOFqrO7NQ0cPaafgnFIJ/ktSGPLGyurO9hXs9r5cEPRf
-         0uvGa+k5iOgHmRPsR9t5YXKTu7C7WqjS2QfDxOrK12rEHvN9fA9wv6MRjWcCJyrFpzd7
-         zJTQ==
+        bh=tz1mAFw66QY5Tipa3rFek9g52QGL2+XNARFqDDD7d3k=;
+        b=dkkMx6B45ucpdecFpa0rNUAFRtLd0CLlaqMNLhAqeDKNWgRu95Z7xhgquqtWbKgny5
+         ZTBmqmXe2wCtuzKl3uATCzT9vajL4Yg0DaKvE+sNLnZmQdL5dA8zrkjmoeZx6ti+CjYG
+         XIG+QwP1jeL4PyA9i5gfUR0Ji8gKi90dvy03RRqlw76Pfy8kYTrYDZUaB764dBZO3Rci
+         IjW0Xs6URALcZgwAJazJhqi5gU4584qGOFXLWAhLo3Sa5N+mY/7rribShUpUOigRi/T4
+         Mpkli1/2TokHnbF4zwUv2zoEh6IUWEE0Z43B6WfRKBVX7SYNQdeEaXypYubzFqxGhNEO
+         J8TQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rC8WYDaPAGaKZsax6JzUfwPBT2bhu6OdOlZysCNVxEQ=;
-        b=mIS85iu/e1XXMxrOQkKLcmej/xuVWJk8l8HbO7+9lVXdrFrfTDeVVRXPVmJydtIH4H
-         gxGPWAoStRpWcjB/8Kobc/lV/JzZxvd8s8/BNfLuNMWzUYzBGJvY7y2eLJ1yIZG5VxtF
-         QbQlU9D6ogF6q8uqfpCPdMiO0stLxcgKtP2U6NKtx1YRBStLRHSvksCObWoGCVeZYtk1
-         psklr7hu9J7LAaJ/7ZNy4+SjKmwYPARZjFV+bgxxxObGyCMMLMBaB7VBvla9IcIbcQwa
-         wGqfXZsAMka9zk0nCQ9B7h6qSVx8EeGHizT6QqXvKxbXcl4YEXLWU70SKgEiMrfQNjpX
-         02zA==
-X-Gm-Message-State: AOAM532xtsfEMBWOQ4Hu+ZBSBtTXmBhOM4rsot7Kli05g3Fv8wMGS3Z3
-        usmruLo+NMQJrExKZKzrVqUBXH0QZlSszPdbmqtoUg==
-X-Google-Smtp-Source: ABdhPJzrGWRHJfWOxkYG0uZPJWtKac7deYL4y52FYgWiFrF+XrFwybDqwVMKcDSi53uNkoxWsio1uXN3bmQe2uY9J5M=
-X-Received: by 2002:ac2:5597:: with SMTP id v23mr11613584lfg.649.1609075588999;
- Sun, 27 Dec 2020 05:26:28 -0800 (PST)
+        bh=tz1mAFw66QY5Tipa3rFek9g52QGL2+XNARFqDDD7d3k=;
+        b=hOt0465JCSj74/p64UN4jvqwRK8LuzlZOYZps+IlpXzxEOsOLEXm2hzRVAeqLosRrP
+         J+O2pP5LSXr/L78ffCU/18JoSCHpKkQx2YERwIcRE9IyRohVxu+uBMzG1bAE9LXGOruN
+         YSPH2U+84hvxNdYKhCbTr3bDTVmLMzcxqWzY9yLMQ0BHQZd3IGVhsXf7vGuOTLXhG7Tq
+         Dx0/si48tExuSt9rGo+kK6RsAkJLa3kIn6R44HDJPjWh34YFXlaE9DPB8+aOR5q8H8mY
+         lWlvWb8Dg8iVKbMDCOgzf/exLTbPl3e+zOiw7ikPlRG1HD/ocJ96G13dotmQ23pnB5pk
+         +YyA==
+X-Gm-Message-State: AOAM5332w09J/fFjuHHFQjH6/CVQfhzOzhxAKTdLX35YToMg5qFP1Ig8
+        gY3jhn4xPGx6SggP3ze6e/T8XL820nr14wIAMJTmuA==
+X-Google-Smtp-Source: ABdhPJyR6gaQ5e4tR9/517i/V4cwMK13k2OqsG+yetQR4XPj4GEBHy9ogpB0oxSKRXrSTXui9eVOx8sBqSYiWDnESkw=
+X-Received: by 2002:a19:8bc6:: with SMTP id n189mr16717281lfd.291.1609075848866;
+ Sun, 27 Dec 2020 05:30:48 -0800 (PST)
 MIME-Version: 1.0
-References: <20201217015822.826304-1-vladimir.oltean@nxp.com> <20201217015822.826304-4-vladimir.oltean@nxp.com>
-In-Reply-To: <20201217015822.826304-4-vladimir.oltean@nxp.com>
+References: <20201217015822.826304-1-vladimir.oltean@nxp.com> <20201217015822.826304-7-vladimir.oltean@nxp.com>
+In-Reply-To: <20201217015822.826304-7-vladimir.oltean@nxp.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 27 Dec 2020 14:26:18 +0100
-Message-ID: <CACRpkdYODzaUT-OCpbsuQ=t8_DuCO5LtSurdMDx0nyWXXYjPzA@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 3/9] net: switchdev: remove the transaction
- structure from port attributes
+Date:   Sun, 27 Dec 2020 14:30:37 +0100
+Message-ID: <CACRpkdbJAwFNDgsJ6dhrH8DA=YBiDf=c-dwBsQi=XMSfGsZJ0A@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 6/9] net: dsa: remove the transactional logic
+ from VLAN objects
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -80,47 +80,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Dec 17, 2020 at 2:59 AM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 
-> Since the introduction of the switchdev API, port attributes were
-> transmitted to drivers for offloading using a two-step transactional
-> model, with a prepare phase that was supposed to catch all errors, and a
-> commit phase that was supposed to never fail.
+> It should be the driver's business to logically separate its VLAN
+> offloading into a preparation and a commit phase, and some drivers don't
+> need / can't do this.
 >
-> Some classes of failures can never be avoided, like hardware access, or
-> memory allocation. In the latter case, merely attempting to move the
-> memory allocation to the preparation phase makes it impossible to avoid
-> memory leaks, since commit 91cf8eceffc1 ("switchdev: Remove unused
-> transaction item queue") which has removed the unused mechanism of
-> passing on the allocated memory between one phase and another.
->
-> It is time we admit that separating the preparation from the commit
-> phase is something that is best left for the driver to decide, and not
-> something that should be baked into the API, especially since there are
-> no switchdev callers that depend on this.
->
-> This patch removes the struct switchdev_trans member from switchdev port
-> attribute notifier structures, and converts drivers to not look at this
-> member.
->
-> In part, this patch contains a revert of my previous commit 2e554a7a5d8a
-> ("net: dsa: propagate switchdev vlan_filtering prepare phase to
-> drivers").
->
-> For the most part, the conversion was trivial except for:
-> - Rocker's world implementation based on Broadcom OF-DPA had an odd
->   implementation of ofdpa_port_attr_bridge_flags_set. The conversion was
->   done mechanically, by pasting the implementation twice, then only
->   keeping the code that would get executed during prepare phase on top,
->   then only keeping the code that gets executed during the commit phase
->   on bottom, then simplifying the resulting code until this was obtained.
-> - DSA's offloading of STP state, bridge flags, VLAN filtering and
->   multicast router could be converted right away. But the ageing time
->   could not, so a shim was introduced and this was left for a further
->   commit.
+> So remove the transactional shim from DSA and let drivers to propagate
+> errors directly from the .port_vlan_add callback.
 >
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-For RTL8366RB it seems to do what the commit text says so:
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+This makes the RTL8366 handle errors in a strict way so:
+Reviewed-by: Linus Wallei <linus.walleij@linaro.org>
 
 Yours,
 Linus Walleij
