@@ -2,87 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D8612E3298
-	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 20:36:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E87C2E32F8
+	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 22:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726172AbgL0Tff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Dec 2020 14:35:35 -0500
-Received: from h4.fbrelay.privateemail.com ([131.153.2.45]:49160 "EHLO
-        h4.fbrelay.privateemail.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726067AbgL0Tff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Dec 2020 14:35:35 -0500
-Received: from MTA-06-3.privateemail.com (mta-06.privateemail.com [68.65.122.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 0CF3C805A5
-        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 14:34:54 -0500 (EST)
-Received: from MTA-06.privateemail.com (localhost [127.0.0.1])
-        by MTA-06.privateemail.com (Postfix) with ESMTP id B8E2D6005C;
-        Sun, 27 Dec 2020 14:34:12 -0500 (EST)
-Received: from [192.168.0.46] (unknown [10.20.151.241])
-        by MTA-06.privateemail.com (Postfix) with ESMTPA id 1A77B60059;
-        Sun, 27 Dec 2020 19:34:11 +0000 (UTC)
-Date:   Sun, 27 Dec 2020 14:34:05 -0500
-From:   Hamza Mahfooz <someguy@effective-light.com>
-Subject: Re: Fwd: Solidrun ClearFog Base and Huawei MA5671A SFP
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Message-Id: <TOJ0MQ.ZNYLUGUM091D@effective-light.com>
-In-Reply-To: <20201226222740.GE1551@shell.armlinux.org.uk>
-References: <GXUYLQ.NU2JKDF3FRP51@effective-light.com>
-        <8394f1c8-0b27-c1aa-37d4-77d65bdccade@gmail.com>
-        <20201226222740.GE1551@shell.armlinux.org.uk>
-X-Mailer: geary/3.38.1
+        id S1726386AbgL0V23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Dec 2020 16:28:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37246 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726105AbgL0V22 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Dec 2020 16:28:28 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BEBF8207AE;
+        Sun, 27 Dec 2020 21:27:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609104468;
+        bh=dlUOHzdT6jqxNMlS7tKqm2HOUmsvt41fj/QA+qUzYuY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LmC2caxmKrmbf7bEAgezvmwRBWBxQ0zThEPdwxvwtMI9dZ6Ri2AeWQrxIypSzHa4U
+         MuvrouwwqnAi+Bz4M08GCuZp1ESgAYv5x5k38Dr25b2vwhVA2uSmbQi+jxW7uFfLjM
+         cAR64DMSdHM7T91XYSvTrgc7hiPjKBPYOFdy55iiN2iugdPwONLW9+tLOGm9hYpVM+
+         1kFXEEnPiaZK+1zMwiw460a/7go+/uHu2FZ52+cdFdRxbfSj4oGZre/BVnNtVogWkN
+         zk12bzwTSn2UHGfqr5sF38U+er57hCVHQaJYSX1DQZV1loLFycMID4Mo5OG/is3fsG
+         yS3yQCE0VHAvA==
+Date:   Sun, 27 Dec 2020 16:27:46 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: [PATCH AUTOSEL 5.4 075/130] net/lapb: fix t1 timer handling for
+ LAPB_STATE_0
+Message-ID: <20201227212746.GF2790422@sasha-vm>
+References: <20201223021813.2791612-75-sashal@kernel.org>
+ <20201223170124.5963-1-xie.he.0141@gmail.com>
+ <CAJht_EOXf4Z3G-rq92hb_YvJEsHtDy15FE7WuthqDQsPY039QQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Disposition: inline
+In-Reply-To: <CAJht_EOXf4Z3G-rq92hb_YvJEsHtDy15FE7WuthqDQsPY039QQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Would it not be possible to disable dying gasp (assuming I can access 
-the module using some other hardware)?
+On Thu, Dec 24, 2020 at 01:49:47AM -0800, Xie He wrote:
+>On Wed, Dec 23, 2020 at 9:01 AM Xie He <xie.he.0141@gmail.com> wrote:
+>>
+>> I don't think this patch is suitable for stable branches. This patch is
+>> part of a patch series that changes the lapb module from "establishing the
+>> L2 connection only when needed by L3", to "establishing the L2 connection
+>> automatically whenever we are able to". This is a behavioral change. It
+>> should be seen as a new feature. It is not a bug fix.
+>
+>Applying this patch without other patches in the same series will also
+>introduce problems, because this patch relies on part of the changes
+>in the subsequent patch in the same series to be correct.
 
-On Sat, Dec 26, 2020 at 10:27 pm, Russell King - ARM Linux admin 
-<linux@armlinux.org.uk> wrote:
-> Sorry, this will not work. The MA5671A modules are configured to use
-> dying gasp on pin 7, and pin 7 is grounded on the Armada 388 Clearfog
-> platforms, resulting in the module not booting.
-> 
-> I'm sorry, I can't recommend a module; I don't use SFP GPON modules
-> myself.
-> 
-> On Sat, Dec 26, 2020 at 11:15:18PM +0100, Heiner Kallweit wrote:
->>  Sounds like something where you may be able to help.
->> 
->>  Heiner
->> 
->>  -------- Forwarded Message --------
->>  Subject: Solidrun ClearFog Base and Huawei MA5671A SFP
->>  Date: Sat, 26 Dec 2020 16:41:40 -0500
->>  From: Hamza Mahfooz <someguy@effective-light.com>
->>  To: netdev@vger.kernel.org
->> 
->>  Hey, has anyone got the ClearFog (ARMADA 388 SoC) to work with the
->>  MA5671A? I've to been trying to get the ClearFog to read the 
->> MA5671A's
->>  EEPROM however it always throws the following error:
->> 
->>  > # dmesg | grep sfp
->>  > [ 4.550651] sfp sfp: Host maximum power 2.0W
->>  > [ 5.875047] sfp sfp: please wait, module slow to respond
->>  > [ 61.295045] sfp sfp: failed to read EEPROM: -6
->> 
->>  I've tried to increase the retry timeout in `/drivers/net/phy/sfp.c`
->>  (i.e. T_PROBE_RETRY_SLOW) so far, any suggestions would be 
->> appreciated.
->>  Also, I'm on kernel version 5.9.13.
->> 
->> 
->> 
-> 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I'll drop it, thanks!
 
-
+-- 
+Thanks,
+Sasha
