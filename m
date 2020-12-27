@@ -2,94 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C77552E3152
-	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 14:34:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CDE12E325F
+	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 19:15:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726172AbgL0NdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Dec 2020 08:33:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726075AbgL0Nc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Dec 2020 08:32:59 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8F2C061794
-        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 05:32:19 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id x20so18436038lfe.12
-        for <netdev@vger.kernel.org>; Sun, 27 Dec 2020 05:32:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7+2MaTVk9MO/ZlMlRNbdyrazjx7GQTPFQAFjVFjafBY=;
-        b=qz5UDvjTpcHtF/aA56EQLAmwXBCmNEaiAF6llEWtxqGFHJqjGdJFyi4xAZDGOP3tc2
-         xTyCuWZE54JpvaQ3mtxdgDxslcPhtxfPOLrNO2y/W6fb9Be85ALafmFaAowJVV3lK/EP
-         ZKi4m0Ix/SDwA9F0LpMiwLWIEBSCXbU5goNVWtL3NDDVqSSMWFf3lG4Y1WnRqTTLy7Ei
-         +2r6GU6KyFHS5ZIZqLC+o0yPqhcjXp7YcOGKI1+7Og8ITglD7F9lgWONv+1LhbAlbv79
-         nsxmpWXg/GeMB4zAyRnX7nlBR3bnCwoWK18FkflQR6gl1xDTF+Px3r+/2lja41EntcOk
-         3TBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7+2MaTVk9MO/ZlMlRNbdyrazjx7GQTPFQAFjVFjafBY=;
-        b=lnnKs69o+YQ6GRkKVowovYM26SV6cVlGO48wMv5bZfVTO5W57ESwNI4vpSYf0axzYm
-         HrMH+nZ8d32Lj4lmhIKW5vO2uj0xTdxoynCYOzSBsBPvaxIx3/bu9mGqEafEV95V19aR
-         wE+JWSW/Jm3xukc/76sgJZlmUSPQRHB9ok6jmcPxGeZCuhMc2WvzMEYmaqXtc+qD/vz8
-         tQWWhdx73IHDr2+43FJt8BUgobbRiZ57cYFxQqBygQI9x1rpdZ82oYLBFXYRjIsJ3oOL
-         p6Y5HaCr7b83RwISD2X9tvncdptKz3zBO4RArDGe3qbZC8lEMjFxV4WIBMuvFpyUBoXZ
-         Rb1A==
-X-Gm-Message-State: AOAM533j25Q8NPEFd2CEgZ4o5AtKlwD6qBFzqXOYYdh3mMuSAj85YT3E
-        oXCodmTdRfQE8tSi19d5vkozGggFWxNsGDn79D2P6g==
-X-Google-Smtp-Source: ABdhPJzSqIG9dRqmDEuRhJG8EFDVDbN3EWy8sjym5t05J6B7o6KfPSN4tytH++CB5HZ/Xvm9OtXPy53vu9hxitigfzo=
-X-Received: by 2002:a05:6512:3238:: with SMTP id f24mr17170390lfe.29.1609075937583;
- Sun, 27 Dec 2020 05:32:17 -0800 (PST)
-MIME-Version: 1.0
-References: <20201217015822.826304-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20201217015822.826304-1-vladimir.oltean@nxp.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 27 Dec 2020 14:32:06 +0100
-Message-ID: <CACRpkdbVX2NmJyPwPfEn40H543aUoQmobHUoq0sY3ReEoECq8Q@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 0/9] Get rid of the switchdev transactional model
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726279AbgL0SPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Dec 2020 13:15:25 -0500
+Received: from mail-m963.mail.126.com ([123.126.96.3]:51156 "EHLO
+        mail-m963.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbgL0SPZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Dec 2020 13:15:25 -0500
+X-Greylist: delayed 3331 seconds by postgrey-1.27 at vger.kernel.org; Sun, 27 Dec 2020 13:15:24 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=V0motPXrHIE470fx0+
+        pT3LORve4Gw0vkJkk+XZZKFjs=; b=c6XELI8MoVdhagQkThGG6BMqDK+1IKa3rH
+        2djFF3jgO9WAKaZIBFjyk2Z/xezNyu9CurfBVLIZoWzbq4+J5VfpP3WF/LrBgPtT
+        +C4PcA9fDVttkiS2+BH0hQj8Fgxue9sZsMqqHAhqJ+XEMPUOWWq97hBULFkRdDvv
+        Ex+lvKfUs=
+Received: from localhost.localdomain (unknown [36.112.86.14])
+        by smtp8 (Coremail) with SMTP id NORpCgB3xaQdluhfSPVxBA--.32014S2;
+        Sun, 27 Dec 2020 22:11:43 +0800 (CST)
+From:   Defang Bo <bodefang@126.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Defang Bo <bodefang@126.com>
+Subject: [PATCH] ipv6: Prevent overrun when parsing v6 header options
+Date:   Sun, 27 Dec 2020 22:11:35 +0800
+Message-Id: <1609078295-4025719-1-git-send-email-bodefang@126.com>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: NORpCgB3xaQdluhfSPVxBA--.32014S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxZrWkJr4fAFy3Ar1rZFyrWFg_yoW5WrykpF
+        1DK3WktrsrK3y0gr4xCrs5uryrKa4kGFWUAa4Ik3yFkryDtr1FqFykCryjgFWftFy8uw1f
+        JryrtrWrWryIvrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UVuWJUUUUU=
+X-Originating-IP: [36.112.86.14]
+X-CM-SenderInfo: pergvwxdqjqiyswou0bp/1tbiCx8I11x5cpn-rgAAsU
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 17, 2020 at 2:59 AM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+Similar to commit<2423496af35>, the fragmentation code tries to parse the header options in order
+to figure out where to insert the fragment option.  Since nexthdr points
+to an invalid option, the calculation of the size of the network header
+can made to be much larger than the linear section of the skb and data
+is read outside of it.
 
-> This series comes after the late realization that the prepare/commit
-> separation imposed by switchdev does not help literally anybody:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20201212203901.351331-1-vladimir.oltean@nxp.com/
->
-> We should kill it before it inflicts even more damage to the error
-> handling logic in drivers.
+Signed-off-by: Defang Bo <bodefang@126.com>
+---
+ net/ipv6/mip6.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
-I agree with the goal and the series make the kernel less
-complex so:
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-for the series.
+diff --git a/net/ipv6/mip6.c b/net/ipv6/mip6.c
+index 878fcec..adf984c 100644
+--- a/net/ipv6/mip6.c
++++ b/net/ipv6/mip6.c
+@@ -251,8 +251,7 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 			       u8 **nexthdr)
+ {
+ 	u16 offset = sizeof(struct ipv6hdr);
+-	struct ipv6_opt_hdr *exthdr =
+-				   (struct ipv6_opt_hdr *)(ipv6_hdr(skb) + 1);
++
+ 	const unsigned char *nh = skb_network_header(skb);
+ 	unsigned int packet_len = skb_tail_pointer(skb) -
+ 		skb_network_header(skb);
+@@ -261,6 +260,7 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 	*nexthdr = &ipv6_hdr(skb)->nexthdr;
+ 
+ 	while (offset + 1 <= packet_len) {
++		struct ipv6_opt_hdr *exthdr;
+ 
+ 		switch (**nexthdr) {
+ 		case NEXTHDR_HOP:
+@@ -287,12 +287,15 @@ static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 			return offset;
+ 		}
+ 
++		if (offset + sizeof(struct ipv6_opt_hdr) > packet_len)
++			return -EINVAL;
++
++		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+ 		offset += ipv6_optlen(exthdr);
+ 		*nexthdr = &exthdr->nexthdr;
+-		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+ 	}
+ 
+-	return offset;
++	return -EINVAL;
+ }
+ 
+ static int mip6_destopt_init_state(struct xfrm_state *x)
+@@ -387,8 +390,7 @@ static int mip6_rthdr_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 			     u8 **nexthdr)
+ {
+ 	u16 offset = sizeof(struct ipv6hdr);
+-	struct ipv6_opt_hdr *exthdr =
+-				   (struct ipv6_opt_hdr *)(ipv6_hdr(skb) + 1);
++
+ 	const unsigned char *nh = skb_network_header(skb);
+ 	unsigned int packet_len = skb_tail_pointer(skb) -
+ 		skb_network_header(skb);
+@@ -396,7 +398,8 @@ static int mip6_rthdr_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 
+ 	*nexthdr = &ipv6_hdr(skb)->nexthdr;
+ 
+-	while (offset + 1 <= packet_len) {
++	while (offset <= packet_len) {
++		struct ipv6_opt_hdr *exthdr;
+ 
+ 		switch (**nexthdr) {
+ 		case NEXTHDR_HOP:
+@@ -422,12 +425,15 @@ static int mip6_rthdr_offset(struct xfrm_state *x, struct sk_buff *skb,
+ 			return offset;
+ 		}
+ 
++		if (offset + sizeof(struct ipv6_opt_hdr) > packet_len)
++			return -EINVAL;
++
++		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+ 		offset += ipv6_optlen(exthdr);
+ 		*nexthdr = &exthdr->nexthdr;
+-		exthdr = (struct ipv6_opt_hdr *)(nh + offset);
+ 	}
+ 
+-	return offset;
++	return -EINVAL;
+ }
+ 
+ static int mip6_rthdr_init_state(struct xfrm_state *x)
+-- 
+2.7.4
 
-Yours,
-Linus Walleij
