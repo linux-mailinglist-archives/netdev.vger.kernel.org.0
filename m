@@ -2,41 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 471B12E6C63
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:24:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E93312E6C69
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:24:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729813AbgL1Wzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 17:55:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47632 "EHLO mail.kernel.org"
+        id S1729836AbgL1Wzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 17:55:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47772 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729429AbgL1Ui0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Dec 2020 15:38:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 41794222B3;
-        Mon, 28 Dec 2020 20:37:45 +0000 (UTC)
+        id S1729431AbgL1Ujr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Dec 2020 15:39:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BC7C5222B3;
+        Mon, 28 Dec 2020 20:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609187865;
-        bh=jKsuQqJ9tD8ix6GIefAnDlAfbWqdefgsaGPxPfxb7JA=;
+        s=k20201202; t=1609187947;
+        bh=VTWjReRS4Z3OBvORpv7OORcjw+MCvDX/NCFz7CoDXW0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KmgS6pTUFXJgv3bPAxBSOf/ocpXNDqomPoD21MQX7n4RKxTEZzqT+43Iif/jNE5cj
-         dEUPa26psd04wwyrR9ynaVkcXpp0jL3itOaUNyffgpcpRGtBx6VAg6XtVwPJu8jFNH
-         8bUK//+r/GLj92Ok8AIzqBo3fyS3Q3T+MemfHwYuD/qQk5ELaKzLs2tGjjaFs5BdEq
-         H9ZRuuzaNNgkNGaYrIK9sGAxizIzSlRwuSagL2lijxXVTXALpX/Ka4xauVjX3JDaCv
-         Kga1rxs05/qJudhxIHoT6RcyYEvyVFKg+2X6wJ4XIcIcfFxFcSCDje3WxZ6UEBaIGc
-         10ulu1Chb7jcQ==
-Date:   Mon, 28 Dec 2020 12:37:44 -0800
+        b=Y23hlb09w0/oRIEHJpjilrTMMORnC6qmkyLC4jxkcp6YcWlpxOUcGVUOfwaKeiBl1
+         wUCLoLHUkWmbutS2FWw4qGTiLqMeOmyQBIQeXsL/8yAZUDdpCgYACLTW2hP1kHmds8
+         PZW/BaxOTU4C3glzebGFNSLrC/+mdG8urrFXmMX5QijMPTtp8ipFDf0pXw5JGh/6Az
+         cw2cnfnEVpI7vyYDn5FLTOc67Vry3Np6zEjbWg/C/I+RoK0YH4elaiZiv7niS54D8s
+         Lcvog+wj+cE3FpGejE1ZCExsqoA/hYzN8rPYsKD/6NbzjKfT1ZV1A/s0etGcfALlBZ
+         ycmM9nBREEkgg==
+Date:   Mon, 28 Dec 2020 12:39:06 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, robh+dt@kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com, jianxin.pan@amlogic.com,
-        narmstrong@baylibre.com, khilman@baylibre.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        jbrunet@baylibre.com
-Subject: Re: [PATCH v3 0/5] dwmac-meson8b: picosecond precision RX delay
- support
-Message-ID: <20201228123744.551d1364@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201223232905.2958651-1-martin.blumenstingl@googlemail.com>
-References: <20201223232905.2958651-1-martin.blumenstingl@googlemail.com>
+To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/6] bcm63xx_enet: major makeover of driver
+Message-ID: <20201228123906.69b929e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201224142421.32350-1-liew.s.piaw@gmail.com>
+References: <20201224142421.32350-1-liew.s.piaw@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,15 +40,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Dec 2020 00:29:00 +0100 Martin Blumenstingl wrote:
-> Hello,
+On Thu, 24 Dec 2020 22:24:15 +0800 Sieng Piaw Liew wrote:
+> This patch series aim to improve the bcm63xx_enet driver by integrating the
+> latest networking features, i.e. batched rx processing, BQL, build_skb, etc.
 > 
-> with the help of Jianxin Pan (many thanks!) the meaning of the "new"
-> PRG_ETH1[19:16] register bits on Amlogic Meson G12A, G12B and SM1 SoCs
-> are finally known. These SoCs allow fine-tuning the RGMII RX delay in
-> 200ps steps (contrary to what I have thought in the past [0] these are
-> not some "calibration" values).
+> The newer enetsw SoCs are found to be able to do unaligned rx DMA by adding
+> NET_IP_ALIGN padding which, combined with these patches, improved packet
+> processing performance by ~50% on BCM6328.
+> 
+> Older non-enetsw SoCs still benefit mainly from rx batching. Performance
+> improvement of ~30% is observed on BCM6333.
+> 
+> The BCM63xx SoCs are designed for routers. As such, having BQL is beneficial
+> as well as trivial to add.
 
-Could you repost in a few days? Net-next is still closed:
+Hopefully we can get some reviews now, but for inclusion in the tree
+you'll need to repost once net-next opens (should happen in the next
+few days):
 
 http://vger.kernel.org/~davem/net-next.html
