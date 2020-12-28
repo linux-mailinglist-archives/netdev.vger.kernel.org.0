@@ -2,69 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E3862E364D
-	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 12:17:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B04002E36C9
+	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 12:56:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727275AbgL1LQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 06:16:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53632 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727019AbgL1LQQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Dec 2020 06:16:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7BD2F22583;
-        Mon, 28 Dec 2020 11:15:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609154136;
-        bh=p/d9NYlRf2ZDsjuZYUJr8g6BtTGtaBFrKLIAM/vqTPs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MORuj9xwiOPBco/0e42u+QXr446Q86w1dpcRwtrz91efiB24qedqo35x0YJe/qQRR
-         tHAhtqC2v4hR8Ti3Ap7j+vj80PFK8s0A/xNmkzZYGn0NfW7zlsTxBP8EwOMkTlMw9i
-         q8GMNI4sSsmpzTaFoCFTcbUbEIYxV+OeMseb8xH94nqgLoOmu3h69iedGqonu/jxzy
-         SlyAUuyw4MwGz37V+7hguuHn0w456xOinnH7y9A3PZ4SbCjPIPF43GTGNNNl2T0o2i
-         pyZBDDfYeOHC2LLNrEUdW9R0R8SGNlBNrLeHxYC466pQT8viCFMgmQe2f1sS3WE57F
-         QEhRUNT5ttFQA==
-Date:   Mon, 28 Dec 2020 13:15:32 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dinghao Liu <dinghao.liu@zju.edu.cn>
-Cc:     kjlu@umn.edu, Saeed Mahameed <saeedm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Gal Pressman <galp@mellanox.com>,
-        Maor Gottlieb <maorg@mellanox.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [v2] net/mlx5e: Fix two double free cases
-Message-ID: <20201228111532.GJ4457@unreal>
-References: <20201228084840.5013-1-dinghao.liu@zju.edu.cn>
+        id S1727085AbgL1L42 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Dec 2020 06:56:28 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:4126 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726924AbgL1L42 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 06:56:28 -0500
+Received: from DGGEMM402-HUB.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4D4GFK0lnWzXrqk;
+        Mon, 28 Dec 2020 19:55:01 +0800 (CST)
+Received: from DGGEMM421-HUB.china.huawei.com (10.1.198.38) by
+ DGGEMM402-HUB.china.huawei.com (10.3.20.210) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Mon, 28 Dec 2020 19:55:43 +0800
+Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.164]) by
+ dggemm421-hub.china.huawei.com ([10.1.198.38]) with mapi id 14.03.0509.000;
+ Mon, 28 Dec 2020 19:55:38 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        chenchanghu <chenchanghu@huawei.com>,
+        xudingke <xudingke@huawei.com>,
+        "huangbin (J)" <brian.huangbin@huawei.com>
+Subject: RE: [PATCH net v5 2/2] vhost_net: fix tx queue stuck when sendmsg
+ fails
+Thread-Topic: [PATCH net v5 2/2] vhost_net: fix tx queue stuck when sendmsg
+ fails
+Thread-Index: AQHW2o8CIIFi7oWOkU++EKfH1Cw3SqoKSW4AgAIdiAA=
+Date:   Mon, 28 Dec 2020 11:55:36 +0000
+Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DBA7B3C@DGGEMM533-MBX.china.huawei.com>
+References: <1608881073-19004-1-git-send-email-wangyunjian@huawei.com>
+ <20201227061916-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20201227061916-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.243.127]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201228084840.5013-1-dinghao.liu@zju.edu.cn>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 28, 2020 at 04:48:40PM +0800, Dinghao Liu wrote:
-> mlx5e_create_ttc_table_groups() frees ft->g on failure of
-> kvzalloc(), but such failure will be caught by its caller
-> in mlx5e_create_ttc_table() and ft->g will be freed again
-> in mlx5e_destroy_flow_table(). The same issue also occurs
-> in mlx5e_create_ttc_table_groups(). Set ft->g to NULL after
-> kfree() to avoid double free.
->
-> Fixes: 7b3722fa9ef64 ("net/mlx5e: Support RSS for GRE tunneled packets")
-> Fixes: 33cfaaa8f36ff ("net/mlx5e: Split the main flow steering table")
-> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
-> ---
->
-> Changelog:
->
-> v2: - Set ft->g to NULL after kfree() instead of removing kfree().
->       Refine commit message.
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_fs.c | 2 ++
->  1 file changed, 2 insertions(+)
->
+> -----Original Message-----
+> From: Michael S. Tsirkin [mailto:mst@redhat.com]
+> Sent: Sunday, December 27, 2020 7:21 PM
+> To: wangyunjian <wangyunjian@huawei.com>
+> Cc: netdev@vger.kernel.org; jasowang@redhat.com;
+> willemdebruijn.kernel@gmail.com; virtualization@lists.linux-foundation.org;
+> Lilijun (Jerry) <jerry.lilijun@huawei.com>; chenchanghu
+> <chenchanghu@huawei.com>; xudingke <xudingke@huawei.com>; huangbin (J)
+> <brian.huangbin@huawei.com>
+> Subject: Re: [PATCH net v5 2/2] vhost_net: fix tx queue stuck when sendmsg
+> fails
+> 
+> On Fri, Dec 25, 2020 at 03:24:33PM +0800, wangyunjian wrote:
+> > From: Yunjian Wang <wangyunjian@huawei.com>
+> >
+> > Currently the driver doesn't drop a packet which can't be sent by tun
+> > (e.g bad packet). In this case, the driver will always process the
+> > same packet lead to the tx queue stuck.
+> 
+> So not making progress on a bad packet has some advantages, e.g. this is
+> easier to debug.
+> When is it important to drop the packet and continue?
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+In the case, the VM will not be able to send packets persistently. Services of VM
+are affected.
+
+Thanks
+
+> 
+> 
+> > To fix this issue:
+> > 1. in the case of persistent failure (e.g bad packet), the driver
+> >    can skip this descriptor by ignoring the error.
+> > 2. in the case of transient failure (e.g -ENOBUFS, -EAGAIN and -ENOMEM),
+> >    the driver schedules the worker to try again.
+> >
+> > Fixes: 3a4d5c94e959 ("vhost_net: a kernel-level virtio server")
+> 
+> I'd just drop this tag, looks more like a feature than a bug ...
+
+OK
+
+> 
+> 
+> > Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+> > Acked-by: Willem de Bruijn <willemb@google.com>
+> > ---
+> >  drivers/vhost/net.c | 16 ++++++++--------
+> >  1 file changed, 8 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c index
+> > c8784dfafdd7..01558fb2c552 100644
+> > --- a/drivers/vhost/net.c
+> > +++ b/drivers/vhost/net.c
+> > @@ -827,14 +827,13 @@ static void handle_tx_copy(struct vhost_net *net,
+> struct socket *sock)
+> >  				msg.msg_flags &= ~MSG_MORE;
+> >  		}
+> >
+> > -		/* TODO: Check specific error and bomb out unless ENOBUFS? */
+> >  		err = sock->ops->sendmsg(sock, &msg, len);
+> > -		if (unlikely(err < 0)) {
+> > +		if (unlikely(err == -EAGAIN || err == -ENOMEM || err == -ENOBUFS))
+> > +{
+> >  			vhost_discard_vq_desc(vq, 1);
+> >  			vhost_net_enable_vq(net, vq);
+> >  			break;
+> >  		}
+> > -		if (err != len)
+> > +		if (err >= 0 && err != len)
+> >  			pr_debug("Truncated TX packet: len %d != %zd\n",
+> >  				 err, len);
+> >  done:
+> > @@ -922,7 +921,6 @@ static void handle_tx_zerocopy(struct vhost_net
+> *net, struct socket *sock)
+> >  			msg.msg_flags &= ~MSG_MORE;
+> >  		}
+> >
+> > -		/* TODO: Check specific error and bomb out unless ENOBUFS? */
+> >  		err = sock->ops->sendmsg(sock, &msg, len);
+> >  		if (unlikely(err < 0)) {
+> >  			if (zcopy_used) {
+> > @@ -931,11 +929,13 @@ static void handle_tx_zerocopy(struct vhost_net
+> *net, struct socket *sock)
+> >  				nvq->upend_idx = ((unsigned)nvq->upend_idx - 1)
+> >  					% UIO_MAXIOV;
+> >  			}
+> > -			vhost_discard_vq_desc(vq, 1);
+> > -			vhost_net_enable_vq(net, vq);
+> > -			break;
+> > +			if (err == -EAGAIN || err == -ENOMEM || err == -ENOBUFS) {
+> > +				vhost_discard_vq_desc(vq, 1);
+> > +				vhost_net_enable_vq(net, vq);
+> > +				break;
+> > +			}
+> >  		}
+> > -		if (err != len)
+> > +		if (err >= 0 && err != len)
+> >  			pr_debug("Truncated TX packet: "
+> >  				 " len %d != %zd\n", err, len);
+> >  		if (!zcopy_used)
+> > --
+> > 2.23.0
+
