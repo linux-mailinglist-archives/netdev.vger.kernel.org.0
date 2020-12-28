@@ -2,157 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A38E2E427D
-	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 16:23:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FC7D2E427B
+	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 16:23:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439388AbgL1PXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 10:23:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42058 "EHLO
+        id S2438148AbgL1PXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 10:23:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439699AbgL1PWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 10:22:23 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788CBC061794
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 07:21:43 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id n10so7476781pgl.10
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 07:21:43 -0800 (PST)
+        with ESMTP id S2440813AbgL1PWf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 10:22:35 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBC5C061795
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 07:21:54 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id g3so5779689plp.2
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 07:21:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=u/ofVvhOCIG7qFUy4N/rKxov7RxqX9WJvodYbTo5M4Q=;
-        b=lLeByGQuSAo/yAdlTFlDvxFkAnIMz/fPQpUtb/4oHOVRNiRu18kQPNxMkpe10jrzb7
-         TGXBSRUTnQ4imkmTK6HO4WO0rv5Svy50TW1Rnyw3dbB5sYZUbniKlvyRBIPhhJdCPayM
-         RpDWqho39zG6F+9hYxAB2DQRse8R/U/IYh6LBWMV5vuQaFwPh8bhhKMPux+rbmXBN+hN
-         rXfVcADN+pkJ+pEkJ1VHxU9gZu+1bnrnHrmxT4sj3IhmivY/r7BILFTvsKVObTyss1QQ
-         VNfyHl5jgIblyx2wYcDXREnunofYLDCeA/FhwrmurvmrCchnPOLC2p6S/aeS6Ofuna99
-         5lbg==
+        bh=KxqkXXpiH9gbpda63RV+Fl689fW9Bh7P4x7g9cPeDLg=;
+        b=Z5Qu5Xq39pVoVSpN7hgC2zCyGi8HgdqzWpPwegV64PHJc3fZ3++Iz2NCqYV3b4KKFK
+         gJwZmuFJaTlMJMmcajCMKTvmU9fzj1D6tkFM0HSPKnuKabWT3YkZF030y/p3DyG0bmNE
+         vLOX0bb4V9TF6zgfz1brBi2C2PSOsRwuxt1oCHCl2DdoTuvvCoiolPZ+jYo2aPC0pDpO
+         f/fR0xFgbAiJKhoDFM8XXPBIYxJGzPh6iXgJVsqn24F+nnmRI3DLAHZrBS/TIWDMi4Lz
+         K6Msi4vbYBsIDyarOqmQtofd8y9SaynQtkO73mxlmAK1LoQvmuICaFZ4XPeE9tmBckf2
+         1reg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=u/ofVvhOCIG7qFUy4N/rKxov7RxqX9WJvodYbTo5M4Q=;
-        b=EvctodOI6pqizWRwpqo+HM7djZvMOnHAGhZ+MYmRMbj8hK+6rnZ4lBHY+pYqbad035
-         YzAh5GOn49uI82rM7r7uW/CdSq2t2UC++rtN3x6KW231y7cO+hGMHEGvrWpxooiTOgp1
-         eJ9UnMhQLuSe9CMcwYnMdu4isVdMXbROvIqLSaNBzrxRXC7heu+Vqr6/z+BmuRP6j+me
-         DXtTwQJrNa5/lZ/Fjji1LZbxVvPGb6R6kSKdui6CmASM4dD7bdQy/JnrryIkKYnCO9Dp
-         oD71EDIs9Q3O73Bh1ifQzK+dZ//RZv5KoSP/XcaSE7GFAncVI0sPq66sVvuvszR60uks
-         iXGQ==
-X-Gm-Message-State: AOAM532kCjevs2FC16HAxfLLQcSxYG2H/Jdl4y0NsvIPBag1zxESBFjG
-        c4hG/2I3tPzDay/OD5pCZa8=
-X-Google-Smtp-Source: ABdhPJwDM5DQU0Lpv1JoUm4hTJd9/GHfBZV1cDFqD7F5Ndj6KKWR147nprRrstaPvQWL+vAmJYcEyw==
-X-Received: by 2002:a63:174f:: with SMTP id 15mr37754228pgx.49.1609168903022;
-        Mon, 28 Dec 2020 07:21:43 -0800 (PST)
+        bh=KxqkXXpiH9gbpda63RV+Fl689fW9Bh7P4x7g9cPeDLg=;
+        b=iR1LlMcEgTzTcNfWZ1n6mP4SR0xuTZ7bWBagPrxZDA4IHPnuzY/LSK35JDwOS8nb9e
+         +fkRt0F/KdNcewykZkM8R+c3YcZWCrHFye5z9SoUAoK/s+2Q0AZ19A42N1td+R/3ovkk
+         wH7dOfvpnkerrPXTRrV19A1+GevFh8dQQxZjQQd0jLtxMGcsCxYv+6qmA2tX7jmgQyg3
+         fif3INkz79EXjKvMucibFUwCtg97vA2b020fX6hkj6bWmhEX4Pdl4vAi4xfHV6BHx7hM
+         4PEmm8wrQGEPC9l4T2f2u8jo/UBXVf/jhXQJXxqi0M8J8/NUZo6IvnlrZqxSp0R9IfGb
+         HtTQ==
+X-Gm-Message-State: AOAM533DGWTmRWmF7QfZseQBGo+dcHMjHQq24x6FddSjZr9qK5o+nQ6P
+        3OgMFAxsgcVVxF4JUUQmqxY=
+X-Google-Smtp-Source: ABdhPJxok/KfMHrlL/WNy/xoTKAdkUq+Cq4WNtonvjy4CcCw+gdPLMpUCREmoOvqMXkpIRe5d6XkZg==
+X-Received: by 2002:a17:902:ee83:b029:da:3483:3957 with SMTP id a3-20020a170902ee83b02900da34833957mr20986961pld.38.1609168914059;
+        Mon, 28 Dec 2020 07:21:54 -0800 (PST)
 Received: from localhost.localdomain ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id e29sm37948850pfj.174.2020.12.28.07.21.40
+        by smtp.gmail.com with ESMTPSA id b17sm14340690pjz.44.2020.12.28.07.21.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Dec 2020 07:21:42 -0800 (PST)
+        Mon, 28 Dec 2020 07:21:53 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com, gnault@redhat.com
-Subject: [PATCH net v2 1/2] bareudp: set NETIF_F_LLTX flag
-Date:   Mon, 28 Dec 2020 15:21:36 +0000
-Message-Id: <20201228152136.24215-1-ap420073@gmail.com>
+Subject: [PATCH net v2 2/2] bareudp: Fix use of incorrect min_headroom size
+Date:   Mon, 28 Dec 2020 15:21:46 +0000
+Message-Id: <20201228152146.24270-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like other tunneling interfaces, the bareudp doesn't need TXLOCK.
-So, It is good to set the NETIF_F_LLTX flag to improve performance and
-to avoid lockdep's false-positive warning.
+In the bareudp6_xmit_skb(), it calculates min_headroom.
+At that point, it uses struct iphdr, but it's not correct.
+So panic could occur.
+The struct ipv6hdr should be used.
 
 Test commands:
     ip netns add A
     ip netns add B
     ip link add veth0 netns A type veth peer name veth1 netns B
     ip netns exec A ip link set veth0 up
-    ip netns exec A ip a a 10.0.0.1/24 dev veth0
+    ip netns exec A ip a a 2001:db8:0::1/64 dev veth0
     ip netns exec B ip link set veth1 up
-    ip netns exec B ip a a 10.0.0.2/24 dev veth1
+    ip netns exec B ip a a 2001:db8:0::2/64 dev veth1
 
-    for i in {2..1}
+    for i in {10..1}
     do
             let A=$i-1
-            ip netns exec A ip link add bareudp$i type bareudp \
-		    dstport $i ethertype ip
+            ip netns exec A ip link add bareudp$i type bareudp dstport $i \
+		    ethertype 0x86dd
             ip netns exec A ip link set bareudp$i up
-            ip netns exec A ip a a 10.0.$i.1/24 dev bareudp$i
-            ip netns exec A ip r a 10.0.$i.2 encap ip src 10.0.$A.1 \
-		    dst 10.0.$A.2 via 10.0.$i.2 dev bareudp$i
+            ip netns exec A ip -6 a a 2001:db8:$i::1/64 dev bareudp$i
+            ip netns exec A ip -6 r a 2001:db8:$i::2 encap ip6 src \
+		    2001:db8:$A::1 dst 2001:db8:$A::2 via 2001:db8:$i::2 \
+		    dev bareudp$i
 
-            ip netns exec B ip link add bareudp$i type bareudp \
-		    dstport $i ethertype ip
+            ip netns exec B ip link add bareudp$i type bareudp dstport $i \
+		    ethertype 0x86dd
             ip netns exec B ip link set bareudp$i up
-            ip netns exec B ip a a 10.0.$i.2/24 dev bareudp$i
-            ip netns exec B ip r a 10.0.$i.1 encap ip src 10.0.$A.2 \
-		    dst 10.0.$A.1 via 10.0.$i.1 dev bareudp$i
+            ip netns exec B ip -6 a a 2001:db8:$i::2/64 dev bareudp$i
+            ip netns exec B ip -6 r a 2001:db8:$i::1 encap ip6 src \
+		    2001:db8:$A::2 dst 2001:db8:$A::1 via 2001:db8:$i::1 \
+		    dev bareudp$i
     done
-    ip netns exec A ping 10.0.2.2
+    ip netns exec A ping 2001:db8:7::2
 
 Splat looks like:
-[   96.992803][  T822] ============================================
-[   96.993954][  T822] WARNING: possible recursive locking detected
-[   96.995102][  T822] 5.10.0+ #819 Not tainted
-[   96.995927][  T822] --------------------------------------------
-[   96.997091][  T822] ping/822 is trying to acquire lock:
-[   96.998083][  T822] ffff88810f753898 (_xmit_NONE#2){+.-.}-{2:2}, at: __dev_queue_xmit+0x1f52/0x2960
-[   96.999813][  T822]
-[   96.999813][  T822] but task is already holding lock:
-[   97.001192][  T822] ffff88810c385498 (_xmit_NONE#2){+.-.}-{2:2}, at: __dev_queue_xmit+0x1f52/0x2960
-[   97.002908][  T822]
-[   97.002908][  T822] other info that might help us debug this:
-[   97.004401][  T822]  Possible unsafe locking scenario:
-[   97.004401][  T822]
-[   97.005784][  T822]        CPU0
-[   97.006407][  T822]        ----
-[   97.007010][  T822]   lock(_xmit_NONE#2);
-[   97.007779][  T822]   lock(_xmit_NONE#2);
-[   97.008550][  T822]
-[   97.008550][  T822]  *** DEADLOCK ***
-[   97.008550][  T822]
-[   97.010057][  T822]  May be due to missing lock nesting notation
-[   97.010057][  T822]
-[   97.011594][  T822] 7 locks held by ping/822:
-[   97.012426][  T822]  #0: ffff888109a144f0 (sk_lock-AF_INET){+.+.}-{0:0}, at: raw_sendmsg+0x12f7/0x2b00
-[   97.014191][  T822]  #1: ffffffffbce2f5a0 (rcu_read_lock_bh){....}-{1:2}, at: ip_finish_output2+0x249/0x2020
-[   97.016045][  T822]  #2: ffffffffbce2f5a0 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x1fd/0x2960
-[   97.017897][  T822]  #3: ffff88810c385498 (_xmit_NONE#2){+.-.}-{2:2}, at: __dev_queue_xmit+0x1f52/0x2960
-[   97.019684][  T822]  #4: ffffffffbce2f600 (rcu_read_lock){....}-{1:2}, at: bareudp_xmit+0x31b/0x3690 [bareudp]
-[   97.021573][  T822]  #5: ffffffffbce2f5a0 (rcu_read_lock_bh){....}-{1:2}, at: ip_finish_output2+0x249/0x2020
-[   97.023424][  T822]  #6: ffffffffbce2f5a0 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x1fd/0x2960
-[   97.025259][  T822]
-[   97.025259][  T822] stack backtrace:
-[   97.026349][  T822] CPU: 3 PID: 822 Comm: ping Not tainted 5.10.0+ #819
-[   97.027609][  T822] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-[   97.029407][  T822] Call Trace:
-[   97.030015][  T822]  dump_stack+0x99/0xcb
-[   97.030783][  T822]  __lock_acquire.cold.77+0x149/0x3a9
-[   97.031773][  T822]  ? stack_trace_save+0x81/0xa0
-[   97.032661][  T822]  ? register_lock_class+0x1910/0x1910
-[   97.033673][  T822]  ? register_lock_class+0x1910/0x1910
-[   97.034679][  T822]  ? rcu_read_lock_sched_held+0x91/0xc0
-[   97.035697][  T822]  ? rcu_read_lock_bh_held+0xa0/0xa0
-[   97.036690][  T822]  lock_acquire+0x1b2/0x730
-[   97.037515][  T822]  ? __dev_queue_xmit+0x1f52/0x2960
-[   97.038466][  T822]  ? check_flags+0x50/0x50
-[   97.039277][  T822]  ? netif_skb_features+0x296/0x9c0
-[   97.040226][  T822]  ? validate_xmit_skb+0x29/0xb10
-[   97.041151][  T822]  _raw_spin_lock+0x30/0x70
-[   97.041977][  T822]  ? __dev_queue_xmit+0x1f52/0x2960
-[   97.042927][  T822]  __dev_queue_xmit+0x1f52/0x2960
-[   97.043852][  T822]  ? netdev_core_pick_tx+0x290/0x290
-[   97.044824][  T822]  ? mark_held_locks+0xb7/0x120
-[   97.045712][  T822]  ? lockdep_hardirqs_on_prepare+0x12c/0x3e0
-[   97.046824][  T822]  ? __local_bh_enable_ip+0xa5/0xf0
-[   97.047771][  T822]  ? ___neigh_create+0x12a8/0x1eb0
-[   97.048710][  T822]  ? trace_hardirqs_on+0x41/0x120
-[   97.049626][  T822]  ? ___neigh_create+0x12a8/0x1eb0
-[   97.050556][  T822]  ? __local_bh_enable_ip+0xa5/0xf0
-[   97.051509][  T822]  ? ___neigh_create+0x12a8/0x1eb0
-[   97.052443][  T822]  ? check_chain_key+0x244/0x5f0
-[   97.053352][  T822]  ? rcu_read_lock_bh_held+0x56/0xa0
-[   97.054317][  T822]  ? ip_finish_output2+0x6ea/0x2020
-[   97.055263][  T822]  ? pneigh_lookup+0x410/0x410
-[   97.056135][  T822]  ip_finish_output2+0x6ea/0x2020
+[   66.436679][    C2] skbuff: skb_under_panic: text:ffffffff928614c8 len:454 put:14 head:ffff88810abb4000 data:ffff88810abb3ffa tail:0x1c0 end:0x3ec0 dev:veth0
+[   66.441626][    C2] ------------[ cut here ]------------
+[   66.443458][    C2] kernel BUG at net/core/skbuff.c:109!
+[   66.445313][    C2] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+[   66.447606][    C2] CPU: 2 PID: 913 Comm: ping Not tainted 5.10.0+ #819
+[   66.450251][    C2] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+[   66.453713][    C2] RIP: 0010:skb_panic+0x15d/0x15f
+[   66.455345][    C2] Code: 98 fe 4c 8b 4c 24 10 53 8b 4d 70 45 89 e0 48 c7 c7 60 8b 78 93 41 57 41 56 41 55 48 8b 54 24 20 48 8b 74 24 28 e8 b5 40 f9 ff <0f> 0b 48 8b 6c 24 20 89 34 24 e8 08 c9 98 fe 8b 34 24 48 c7 c1 80
+[   66.462314][    C2] RSP: 0018:ffff888119209648 EFLAGS: 00010286
+[   66.464281][    C2] RAX: 0000000000000089 RBX: ffff888003159000 RCX: 0000000000000000
+[   66.467216][    C2] RDX: 0000000000000089 RSI: 0000000000000008 RDI: ffffed10232412c0
+[   66.469768][    C2] RBP: ffff88810a53d440 R08: ffffed102328018d R09: ffffed102328018d
+[   66.472297][    C2] R10: ffff888119400c67 R11: ffffed102328018c R12: 000000000000000e
+[   66.474833][    C2] R13: ffff88810abb3ffa R14: 00000000000001c0 R15: 0000000000003ec0
+[   66.477361][    C2] FS:  00007f37c0c72f00(0000) GS:ffff888119200000(0000) knlGS:0000000000000000
+[   66.480214][    C2] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   66.482296][    C2] CR2: 000055a058808570 CR3: 000000011039e002 CR4: 00000000003706e0
+[   66.484811][    C2] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   66.487793][    C2] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   66.490424][    C2] Call Trace:
+[   66.491469][    C2]  <IRQ>
+[   66.492374][    C2]  ? eth_header+0x28/0x190
+[   66.494054][    C2]  ? eth_header+0x28/0x190
+[   66.495401][    C2]  skb_push.cold.99+0x22/0x22
+[   66.496700][    C2]  eth_header+0x28/0x190
+[   66.497867][    C2]  neigh_resolve_output+0x3de/0x720
+[   66.499615][    C2]  ? __neigh_update+0x7e8/0x20a0
+[   66.501176][    C2]  __neigh_update+0x8bd/0x20a0
+[   66.502749][    C2]  ndisc_update+0x34/0xc0
+[   66.504010][    C2]  ndisc_recv_na+0x8da/0xb80
+[   66.505041][    C2]  ? pndisc_redo+0x20/0x20
+[   66.505888][    C2]  ? rcu_read_lock_sched_held+0xc0/0xc0
+[   66.506965][    C2]  ndisc_rcv+0x3a0/0x470
+[   66.507797][    C2]  icmpv6_rcv+0xad9/0x1b00
+[   66.508645][    C2]  ip6_protocol_deliver_rcu+0xcd6/0x1560
+[   66.509719][    C2]  ip6_input_finish+0x5b/0xf0
+[   66.510615][    C2]  ip6_input+0xcd/0x2d0
+[   66.511406][    C2]  ? ip6_input_finish+0xf0/0xf0
+[   66.512327][    C2]  ? rcu_read_lock_held+0x91/0xa0
+[   66.513279][    C2]  ? ip6_protocol_deliver_rcu+0x1560/0x1560
+[   66.514414][    C2]  ipv6_rcv+0xe8/0x300
 [ ... ]
 
 Acked-by: Guillaume Nault <gnault@redhat.com>
@@ -161,23 +141,24 @@ Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
 v1 -> v2:
- - Change reproducer script
+ - Fix reproducer script
 
- drivers/net/bareudp.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/bareudp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 85ebd2b7e446..aea10196c222 100644
+index aea10196c222..708171c0d628 100644
 --- a/drivers/net/bareudp.c
 +++ b/drivers/net/bareudp.c
-@@ -534,6 +534,7 @@ static void bareudp_setup(struct net_device *dev)
- 	SET_NETDEV_DEVTYPE(dev, &bareudp_type);
- 	dev->features    |= NETIF_F_SG | NETIF_F_HW_CSUM;
- 	dev->features    |= NETIF_F_RXCSUM;
-+	dev->features    |= NETIF_F_LLTX;
- 	dev->features    |= NETIF_F_GSO_SOFTWARE;
- 	dev->hw_features |= NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_RXCSUM;
- 	dev->hw_features |= NETIF_F_GSO_SOFTWARE;
+@@ -380,7 +380,7 @@ static int bareudp6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 		goto free_dst;
+ 
+ 	min_headroom = LL_RESERVED_SPACE(dst->dev) + dst->header_len +
+-		BAREUDP_BASE_HLEN + info->options_len + sizeof(struct iphdr);
++		BAREUDP_BASE_HLEN + info->options_len + sizeof(struct ipv6hdr);
+ 
+ 	err = skb_cow_head(skb, min_headroom);
+ 	if (unlikely(err))
 -- 
 2.17.1
 
