@@ -2,139 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 798ED2E34B6
-	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 08:29:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7524A2E34CE
+	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 08:45:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726418AbgL1H25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 02:28:57 -0500
-Received: from smtp.h3c.com ([60.191.123.50]:29530 "EHLO h3cspam02-ex.h3c.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726282AbgL1H25 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Dec 2020 02:28:57 -0500
-Received: from DAG2EX08-IDC.srv.huawei-3com.com ([10.8.0.71])
-        by h3cspam02-ex.h3c.com with ESMTP id 0BS7QSOe066825;
-        Mon, 28 Dec 2020 15:26:28 +0800 (GMT-8)
-        (envelope-from gao.yanB@h3c.com)
-Received: from localhost.localdomain (10.99.212.201) by
- DAG2EX08-IDC.srv.huawei-3com.com (10.8.0.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 28 Dec 2020 15:26:30 +0800
-From:   Gao Yan <gao.yanB@h3c.com>
-To:     <paulus@samba.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-ppp@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Gao Yan <gao.yanB@h3c.com>
-Subject: [PATCH] net: remove disc_data_lock in ppp line discipline
-Date:   Mon, 28 Dec 2020 15:15:50 +0800
-Message-ID: <20201228071550.15745-1-gao.yanB@h3c.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726371AbgL1How (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 02:44:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55467 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726253AbgL1How (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 02:44:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609141404;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DUqT+VEpmHhWLOUn9+3++KLEXvtfbXB6JHxQWM389zk=;
+        b=Mf3skb855UcWMBxlbI+XUXdQD2yA8N+9ZQ1+DmnKdPP76L1sTCCcNBsApgSBWoJLGIRzZf
+        on3fGEmmAlKG21ZeSrg04tyowkL6uvWi9JVUZ/zA5wrixAZ1epvLg8gIRj4K4FOUAhQP8J
+        NL1ibJ/Nnuw8hh46d7jzPPJjL+2k7y0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-205-inycoFP9NTmopTKJEXh3dg-1; Mon, 28 Dec 2020 02:43:20 -0500
+X-MC-Unique: inycoFP9NTmopTKJEXh3dg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 88979800D53;
+        Mon, 28 Dec 2020 07:43:17 +0000 (UTC)
+Received: from [10.72.13.159] (ovpn-13-159.pek2.redhat.com [10.72.13.159])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E52E60CC4;
+        Mon, 28 Dec 2020 07:43:04 +0000 (UTC)
+Subject: Re: [RFC v2 09/13] vduse: Add support for processing vhost iotlb
+ message
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
+        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+References: <20201222145221.711-1-xieyongji@bytedance.com>
+ <20201222145221.711-10-xieyongji@bytedance.com>
+ <6818a214-d587-4f0b-7de6-13c4e7e94ab6@redhat.com>
+ <CACycT3vVU9vg6R6UujSnSdk8cwxWPVgeJJs0JaBH_Zg4xC-epQ@mail.gmail.com>
+ <595fe7d6-7876-26e4-0b7c-1d63ca6d7a97@redhat.com>
+ <CACycT3s=m=PQb5WFoMGhz8TNGme4+=rmbbBTtrugF9ZmNnWxEw@mail.gmail.com>
+ <0e6faf9c-117a-e23c-8d6d-488d0ec37412@redhat.com>
+ <CACycT3uwXBYvRbKDWdN3oCekv+o6_Lc=-KTrxejD=fr-zgibGw@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <2b24398c-e6d9-14ec-2c0d-c303d528e377@redhat.com>
+Date:   Mon, 28 Dec 2020 15:43:03 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.99.212.201]
-X-ClientProxiedBy: BJSMTP02-EX.srv.huawei-3com.com (10.63.20.133) To
- DAG2EX08-IDC.srv.huawei-3com.com (10.8.0.71)
-X-DNSRBL: 
-X-MAIL: h3cspam02-ex.h3c.com 0BS7QSOe066825
+In-Reply-To: <CACycT3uwXBYvRbKDWdN3oCekv+o6_Lc=-KTrxejD=fr-zgibGw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In tty layer, it use tty->ldisc_sem to proect tty_ldisc_ops.
-So I think tty->ldisc_sem can also protect tty->disc_data;
-For examlpe,
-When cpu A is running ppp_synctty_ioctl that hold the tty->ldisc_sem,
-at the same time  if cpu B calls ppp_synctty_close, it will wait until
-cpu A release tty->ldisc_sem. So I think it is unnecessary to have the
-disc_data_lock;
 
-cpu A                           cpu B
-tty_ioctl                       tty_reopen
- ->hold tty->ldisc_sem            ->hold tty->ldisc_sem(write), failed
- ->ld->ops->ioctl                 ->wait...
- ->release tty->ldisc_sem         ->wait...OK,hold tty->ldisc_sem
-                                    ->tty_ldisc_reinit
-                                      ->tty_ldisc_close
-                                        ->ld->ops->close
+On 2020/12/25 下午6:31, Yongji Xie wrote:
+> On Fri, Dec 25, 2020 at 2:58 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> On 2020/12/24 下午3:37, Yongji Xie wrote:
+>>> On Thu, Dec 24, 2020 at 10:41 AM Jason Wang <jasowang@redhat.com> wrote:
+>>>> On 2020/12/23 下午8:14, Yongji Xie wrote:
+>>>>> On Wed, Dec 23, 2020 at 5:05 PM Jason Wang <jasowang@redhat.com> wrote:
+>>>>>> On 2020/12/22 下午10:52, Xie Yongji wrote:
+>>>>>>> To support vhost-vdpa bus driver, we need a way to share the
+>>>>>>> vhost-vdpa backend process's memory with the userspace VDUSE process.
+>>>>>>>
+>>>>>>> This patch tries to make use of the vhost iotlb message to achieve
+>>>>>>> that. We will get the shm file from the iotlb message and pass it
+>>>>>>> to the userspace VDUSE process.
+>>>>>>>
+>>>>>>> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+>>>>>>> ---
+>>>>>>>      Documentation/driver-api/vduse.rst |  15 +++-
+>>>>>>>      drivers/vdpa/vdpa_user/vduse_dev.c | 147 ++++++++++++++++++++++++++++++++++++-
+>>>>>>>      include/uapi/linux/vduse.h         |  11 +++
+>>>>>>>      3 files changed, 171 insertions(+), 2 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/Documentation/driver-api/vduse.rst b/Documentation/driver-api/vduse.rst
+>>>>>>> index 623f7b040ccf..48e4b1ba353f 100644
+>>>>>>> --- a/Documentation/driver-api/vduse.rst
+>>>>>>> +++ b/Documentation/driver-api/vduse.rst
+>>>>>>> @@ -46,13 +46,26 @@ The following types of messages are provided by the VDUSE framework now:
+>>>>>>>
+>>>>>>>      - VDUSE_GET_CONFIG: Read from device specific configuration space
+>>>>>>>
+>>>>>>> +- VDUSE_UPDATE_IOTLB: Update the memory mapping in device IOTLB
+>>>>>>> +
+>>>>>>> +- VDUSE_INVALIDATE_IOTLB: Invalidate the memory mapping in device IOTLB
+>>>>>>> +
+>>>>>>>      Please see include/linux/vdpa.h for details.
+>>>>>>>
+>>>>>>> -In the data path, VDUSE framework implements a MMU-based on-chip IOMMU
+>>>>>>> +The data path of userspace vDPA device is implemented in different ways
+>>>>>>> +depending on the vdpa bus to which it is attached.
+>>>>>>> +
+>>>>>>> +In virtio-vdpa case, VDUSE framework implements a MMU-based on-chip IOMMU
+>>>>>>>      driver which supports mapping the kernel dma buffer to a userspace iova
+>>>>>>>      region dynamically. The userspace iova region can be created by passing
+>>>>>>>      the userspace vDPA device fd to mmap(2).
+>>>>>>>
+>>>>>>> +In vhost-vdpa case, the dma buffer is reside in a userspace memory region
+>>>>>>> +which will be shared to the VDUSE userspace processs via the file
+>>>>>>> +descriptor in VDUSE_UPDATE_IOTLB message. And the corresponding address
+>>>>>>> +mapping (IOVA of dma buffer <-> VA of the memory region) is also included
+>>>>>>> +in this message.
+>>>>>>> +
+>>>>>>>      Besides, the eventfd mechanism is used to trigger interrupt callbacks and
+>>>>>>>      receive virtqueue kicks in userspace. The following ioctls on the userspace
+>>>>>>>      vDPA device fd are provided to support that:
+>>>>>>> diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+>>>>>>> index b974333ed4e9..d24aaacb6008 100644
+>>>>>>> --- a/drivers/vdpa/vdpa_user/vduse_dev.c
+>>>>>>> +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+>>>>>>> @@ -34,6 +34,7 @@
+>>>>>>>
+>>>>>>>      struct vduse_dev_msg {
+>>>>>>>          struct vduse_dev_request req;
+>>>>>>> +     struct file *iotlb_file;
+>>>>>>>          struct vduse_dev_response resp;
+>>>>>>>          struct list_head list;
+>>>>>>>          wait_queue_head_t waitq;
+>>>>>>> @@ -325,12 +326,80 @@ static int vduse_dev_set_vq_state(struct vduse_dev *dev,
+>>>>>>>          return ret;
+>>>>>>>      }
+>>>>>>>
+>>>>>>> +static int vduse_dev_update_iotlb(struct vduse_dev *dev, struct file *file,
+>>>>>>> +                             u64 offset, u64 iova, u64 size, u8 perm)
+>>>>>>> +{
+>>>>>>> +     struct vduse_dev_msg *msg;
+>>>>>>> +     int ret;
+>>>>>>> +
+>>>>>>> +     if (!size)
+>>>>>>> +             return -EINVAL;
+>>>>>>> +
+>>>>>>> +     msg = vduse_dev_new_msg(dev, VDUSE_UPDATE_IOTLB);
+>>>>>>> +     msg->req.size = sizeof(struct vduse_iotlb);
+>>>>>>> +     msg->req.iotlb.offset = offset;
+>>>>>>> +     msg->req.iotlb.iova = iova;
+>>>>>>> +     msg->req.iotlb.size = size;
+>>>>>>> +     msg->req.iotlb.perm = perm;
+>>>>>>> +     msg->req.iotlb.fd = -1;
+>>>>>>> +     msg->iotlb_file = get_file(file);
+>>>>>>> +
+>>>>>>> +     ret = vduse_dev_msg_sync(dev, msg);
+>>>>>> My feeling is that we should provide consistent API for the userspace
+>>>>>> device to use.
+>>>>>>
+>>>>>> E.g we'd better carry the IOTLB message for both virtio/vhost drivers.
+>>>>>>
+>>>>>> It looks to me for virtio drivers we can still use UPDAT_IOTLB message
+>>>>>> by using VDUSE file as msg->iotlb_file here.
+>>>>>>
+>>>>> It's OK for me. One problem is when to transfer the UPDATE_IOTLB
+>>>>> message in virtio cases.
+>>>> Instead of generating IOTLB messages for userspace.
+>>>>
+>>>> How about record the mappings (which is a common case for device have
+>>>> on-chip IOMMU e.g mlx5e and vdpa simlator), then we can introduce ioctl
+>>>> for userspace to query?
+>>>>
+>>> If so, the IOTLB UPDATE is actually triggered by ioctl, but
+>>> IOTLB_INVALIDATE is triggered by the message. Is it a little odd?
+>>
+>> Good point.
+>>
+>> Some questions here:
+>>
+>> 1) Userspace think the IOTLB was flushed after IOTLB_INVALIDATE syscall
+>> is returned. But this patch doesn't have this guarantee. Can this lead
+>> some issues?
+> I'm not sure. But should it be guaranteed in VDUSE userspace? Just
+> like what vhost-user backend process does.
 
-Signed-off-by: Gao Yan <gao.yanB@h3c.com>
----
- drivers/net/ppp/ppp_async.c   | 11 ++---------
- drivers/net/ppp/ppp_synctty.c | 12 ++----------
- 2 files changed, 4 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ppp/ppp_async.c b/drivers/net/ppp/ppp_async.c
-index 29a0917a8..20b50facd 100644
---- a/drivers/net/ppp/ppp_async.c
-+++ b/drivers/net/ppp/ppp_async.c
-@@ -127,17 +127,13 @@ static const struct ppp_channel_ops async_ops = {
-  * FIXME: this is no longer true. The _close path for the ldisc is
-  * now guaranteed to be sane.
-  */
--static DEFINE_RWLOCK(disc_data_lock);
- 
- static struct asyncppp *ap_get(struct tty_struct *tty)
- {
--	struct asyncppp *ap;
-+	struct asyncppp *ap = tty->disc_data;
- 
--	read_lock(&disc_data_lock);
--	ap = tty->disc_data;
- 	if (ap != NULL)
- 		refcount_inc(&ap->refcnt);
--	read_unlock(&disc_data_lock);
- 	return ap;
- }
- 
-@@ -214,12 +210,9 @@ ppp_asynctty_open(struct tty_struct *tty)
- static void
- ppp_asynctty_close(struct tty_struct *tty)
- {
--	struct asyncppp *ap;
-+	struct asyncppp *ap = tty->disc_data;
- 
--	write_lock_irq(&disc_data_lock);
--	ap = tty->disc_data;
- 	tty->disc_data = NULL;
--	write_unlock_irq(&disc_data_lock);
- 	if (!ap)
- 		return;
- 
-diff --git a/drivers/net/ppp/ppp_synctty.c b/drivers/net/ppp/ppp_synctty.c
-index 0f338752c..53fb68e29 100644
---- a/drivers/net/ppp/ppp_synctty.c
-+++ b/drivers/net/ppp/ppp_synctty.c
-@@ -129,17 +129,12 @@ ppp_print_buffer (const char *name, const __u8 *buf, int count)
-  *
-  * FIXME: Fixed in tty_io nowadays.
-  */
--static DEFINE_RWLOCK(disc_data_lock);
--
- static struct syncppp *sp_get(struct tty_struct *tty)
- {
--	struct syncppp *ap;
-+	struct syncppp *ap = tty->disc_data;
- 
--	read_lock(&disc_data_lock);
--	ap = tty->disc_data;
- 	if (ap != NULL)
- 		refcount_inc(&ap->refcnt);
--	read_unlock(&disc_data_lock);
- 	return ap;
- }
- 
-@@ -213,12 +208,9 @@ ppp_sync_open(struct tty_struct *tty)
- static void
- ppp_sync_close(struct tty_struct *tty)
- {
--	struct syncppp *ap;
-+	struct syncppp *ap = tty->disc_data;
- 
--	write_lock_irq(&disc_data_lock);
--	ap = tty->disc_data;
- 	tty->disc_data = NULL;
--	write_unlock_irq(&disc_data_lock);
- 	if (!ap)
- 		return;
- 
--- 
-2.17.1
+I think so. This is because the userspace device needs a way to 
+synchronize invalidation with its datapath. Otherwise, guest may thing 
+the buffer is freed to be used by other parts but the it actually can be 
+used by the VDUSE device. The may cause security issues.
+
+
+>
+>> 2) I think after VDUSE userspace receives IOTLB_INVALIDATE, it needs to
+>> issue a munmap(). What if it doesn't do that?
+>>
+> Yes, the munmap() is needed. If it doesn't do that, VDUSE userspace
+> could still access the corresponding guest memory region.
+
+
+I see. So all the above two questions are because VHOST_IOTLB_INVALIDATE 
+is expected to be synchronous. This need to be solved by tweaking the 
+current VDUSE API or we can re-visit to go with descriptors relaying first.
+
+Thanks
+
+
+>
+> Thanks,
+> Yongji
+>
 
