@@ -2,61 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3262E6C4C
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 129A32E6C48
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:18:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730092AbgL1Wzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 17:55:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729515AbgL1VbR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Dec 2020 16:31:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EE6FF208D5;
-        Mon, 28 Dec 2020 21:30:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609191037;
-        bh=mBn4kEKq5fTLloy0XBZkBU+UnHh4E+qddzACieSTL5o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dwJFsqIfvpiuVWwDDR5yo9uHaiibQuIrhyfWpZIIE8NBF4EMbcKgW3h1kdvRZAyxZ
-         VKFSISthzvHbGqCKSeGIqbPLPSqP6au7wxnJOQ5M8sqBHW1cWA4Q5pSb3BaYgtbOfj
-         PG4/YYLHZPYscR7sbiF7T4xnnGSve66/0WKFHDNsLNcWT7n6yJTftHYy1vGh10ieSc
-         GrmDMk/8BVMgZneIkGxRjShnjbt1j3EtGDLp2vKTo3GqQZfe7VDINJyW2+FJCQPXlV
-         ncf0wA+6CTVUrzROsqf7zhUVHmFSb6lG1L69zcU4Nf0XWHwz9nO57YTntmPgRfKHud
-         BtVMD0gSOpRFQ==
-Date:   Mon, 28 Dec 2020 13:30:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Roland Dreier <roland@kernel.org>
-Cc:     Oliver Neukum <oliver@neukum.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] CDC-NCM: remove "connected" log message
-Message-ID: <20201228133036.3a2e9fb5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <X+RJEI+1AR5E0z3z@kroah.com>
-References: <20201222184926.35382198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201224032116.2453938-1-roland@kernel.org>
-        <X+RJEI+1AR5E0z3z@kroah.com>
+        id S1730110AbgL1Wzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 17:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729522AbgL1Vc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 16:32:56 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FB5C061793;
+        Mon, 28 Dec 2020 13:32:16 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id 2so10561840ilg.9;
+        Mon, 28 Dec 2020 13:32:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0mgkEBKIgthZwWHaiaeNu2SDu9707vUBzGfBzMLaV6Y=;
+        b=O/WiIoBhWkr8USQeFOPH6PH2BVd2jaVYBAIFzOYkmx0ONnlsHRjaIk4CUVP6lEGiUg
+         rP8t0I9iFTH2MAfc5MCf20HsHO3+/OLK/8CPUqJIMLArDZsDmFnGZXq87DuCh8mHXDS9
+         4vqT7OCiG7zo4Coc63pJYpaAhTx6rohb3yIiTeAV9dIQAgWl3hsD/0scF4wbkmJtxJmA
+         cAWu98GZK+7+8HA2+N+VgZlXpw//HD5YfUKhuqahPCPuIahVAgNLX5DQX91/4MovR2BD
+         0NA18UaUiY+Vz6AyV0oNpoMhFiO3KItYSEerqtzTNRVnuRs24J24lWnMkajFmvEsXDgp
+         5pgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0mgkEBKIgthZwWHaiaeNu2SDu9707vUBzGfBzMLaV6Y=;
+        b=C79XtdZQFH3izK2vO14SgAmpVbXBToFI+lxOs9bJUZy7aBZaxW6UYmMoQNZw44gJ7P
+         xRWKFmHgBQfUYoEHwHEFZg80jzjtqduWGvs6i3P4TouNEUgIiSODxpjxj8CsyU7NIInd
+         JyMEVWqmhsCHfPF7cuawaHiTNR4Mf4TBBOD2zMK6FI2tyUHSHSwJta/QIbTIzpVjEFuF
+         OL6R63F2gK6HBOe1dWz5nwhOOiliH8zlEuLI5wWvhAyUq1LHlBtF3KC7fE+1MlcVlC5Y
+         m3BXpG4/TQsIoRAja1ARePcfeUOmvqLS34M42P7RMCa27VMVqaFWHuCPN8VK3XyIuBj8
+         e9pQ==
+X-Gm-Message-State: AOAM530wwlfwebve6CgaQpWwCpX1GvypZyVDxPJo1BTskPPIR5ewy+84
+        oiXkmWQ59tDE4hGNNyh5qCCgf1iHJ8/9HQ==
+X-Google-Smtp-Source: ABdhPJzaz0G0X0wJXZF1uo8GTeZwZfzPWHCfWSYQIuJg3ssr/osNzmLj7vgStIksKo3Dtj994NVBIg==
+X-Received: by 2002:a92:6410:: with SMTP id y16mr46130029ilb.126.1609191135309;
+        Mon, 28 Dec 2020 13:32:15 -0800 (PST)
+Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:f45d:df49:9a4c:4914])
+        by smtp.gmail.com with ESMTPSA id r10sm27671275ilo.34.2020.12.28.13.32.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Dec 2020 13:32:14 -0800 (PST)
+From:   Adam Ford <aford173@gmail.com>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     aford@beaconembedded.com, Adam Ford <aford173@gmail.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] dt-bindings: net: renesas,etheravb: Add additional clocks
+Date:   Mon, 28 Dec 2020 15:31:17 -0600
+Message-Id: <20201228213121.2331449-1-aford173@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Dec 2020 08:53:52 +0100 Greg KH wrote:
-> On Wed, Dec 23, 2020 at 07:21:16PM -0800, Roland Dreier wrote:
-> > The cdc_ncm driver passes network connection notifications up to
-> > usbnet_link_change(), which is the right place for any logging.
-> > Remove the netdev_info() duplicating this from the driver itself.
-> > 
-> > This stops devices such as my "TRENDnet USB 10/100/1G/2.5G LAN"
-> > (ID 20f4:e02b) adapter from spamming the kernel log with
-> > 
-> >     cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
-> > 
-> > messages every 60 msec or so.
-> > 
-> > Signed-off-by: Roland Dreier <roland@kernel.org>
->
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The AVB driver assumes there is an external clock, but it could
+be driven by an external clock.  In order to enable a programmable
+clock, it needs to be added to the clocks list and enabled in the
+driver.  Since there currently only one clock, there is no
+clock-names list either.
 
-Applied to net and queued for LTS, thanks!
+Update bindings to add the additional optional clock, and explicitly
+name both of them.
+
+Signed-off-by: Adam Ford <aford173@gmail.com>
+---
+ .../devicetree/bindings/net/renesas,etheravb.yaml     | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+index 244befb6402a..c1a06510f056 100644
+--- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
++++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+@@ -49,7 +49,16 @@ properties:
+   interrupt-names: true
+ 
+   clocks:
+-    maxItems: 1
++    minItems: 1
++    maxItems: 2
++    items:
++      - description: AVB functional clock
++      - description: Optional TXC reference clock
++
++  clock-names:
++    items:
++      - const: fck
++      - const: txc_refclk
+ 
+   iommus:
+     maxItems: 1
+-- 
+2.25.1
+
