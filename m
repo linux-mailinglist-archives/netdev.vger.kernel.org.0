@@ -2,30 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CA12E6896
-	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 17:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E9A2E6884
+	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 17:38:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633714AbgL1QiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 11:38:19 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:42709 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729780AbgL1NB0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 08:01:26 -0500
+        id S2442185AbgL1QiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 11:38:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47744 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729793AbgL1NB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 08:01:29 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C256C061794;
+        Mon, 28 Dec 2020 05:00:48 -0800 (PST)
 Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 17BEA22EEB;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id EA44923E55;
         Mon, 28 Dec 2020 14:00:42 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1609160442;
+        t=1609160443;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=HYM/FGC1y56/lX0Aezq6NeaOgnYUFJ9zMlvrdTGdE+8=;
-        b=VXQhj/yuaAHAiNZROZAW18tV7n9cfGAsh1X1HMd8f5poWXCIv8aqqqNvsyxfAiqsvFf0Ao
-        3kHQJfas87fDtmRQcwEmDnvUTi7xGSxnef8RYWqB85rlthibFKPCF1uULhCVsCSgxBXtp8
-        YLHma/tj1hUCq38Fj4v5fq8FSNpGTY8=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vjpepY/ZB+uKL1dmKQMhKyCYYaItu58ciQCJ4gf6/28=;
+        b=I3rlXOBwv2JCH6nuRl9SGT/Lt1JjF2SowPPkMOzz81v5qG5dR6GODH4gGzpmYgN0PV8qx1
+        0MZlX1Tc4UCodfEiDfUhYPrUy6jXqw/au0jvt8McAI05b0gofaqdLnsqJFGdtOYV2kIahF
+        msCkMNRiIYZsHtIK/cnuY9Y5eg2Gaqo=
 From:   Michael Walle <michael@walle.cc>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
@@ -33,29 +37,149 @@ Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Alex Marginean <alexandru.marginean@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH RESEND net-next 0/4] enetc: code cleanups
-Date:   Mon, 28 Dec 2020 14:00:30 +0100
-Message-Id: <20201228130034.21577-1-michael@walle.cc>
+        Michael Walle <michael@walle.cc>, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH RESEND net-next 1/4] enetc: drop unneeded indirection
+Date:   Mon, 28 Dec 2020 14:00:31 +0100
+Message-Id: <20201228130034.21577-2-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201228130034.21577-1-michael@walle.cc>
+References: <20201228130034.21577-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This are some code cleanups in the MDIO part of the enetc. They are
-intended to make the code more readable.
+Before commit 6517798dd343 ("enetc: Make MDIO accessors more generic and
+export to include/linux/fsl") these macros actually had some benefits.
+But after the commit it just makes the code hard to read. Drop the macro
+indirections.
 
-Michael Walle (4):
-  enetc: drop unneeded indirection
-  enetc: don't use macro magic for the readx_poll_timeout() callback
-  enetc: drop MDIO_DATA() macro
-  enetc: reorder macros and functions
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ .../net/ethernet/freescale/enetc/enetc_mdio.c | 32 ++++++++-----------
+ 1 file changed, 14 insertions(+), 18 deletions(-)
 
- .../net/ethernet/freescale/enetc/enetc_mdio.c | 61 +++++++++----------
- 1 file changed, 29 insertions(+), 32 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
+index ee0116ed4738..94fcc76dc590 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_mdio.c
+@@ -14,21 +14,17 @@
+ #define	ENETC_MDIO_DATA	0x8	/* MDIO data */
+ #define	ENETC_MDIO_ADDR	0xc	/* MDIO address */
+ 
+-static inline u32 _enetc_mdio_rd(struct enetc_mdio_priv *mdio_priv, int off)
++static inline u32 enetc_mdio_rd(struct enetc_mdio_priv *mdio_priv, int off)
+ {
+ 	return enetc_port_rd_mdio(mdio_priv->hw, mdio_priv->mdio_base + off);
+ }
+ 
+-static inline void _enetc_mdio_wr(struct enetc_mdio_priv *mdio_priv, int off,
+-				  u32 val)
++static inline void enetc_mdio_wr(struct enetc_mdio_priv *mdio_priv, int off,
++				 u32 val)
+ {
+ 	enetc_port_wr_mdio(mdio_priv->hw, mdio_priv->mdio_base + off, val);
+ }
+ 
+-#define enetc_mdio_rd(mdio_priv, off) \
+-	_enetc_mdio_rd(mdio_priv, ENETC_##off)
+-#define enetc_mdio_wr(mdio_priv, off, val) \
+-	_enetc_mdio_wr(mdio_priv, ENETC_##off, val)
+ #define enetc_mdio_rd_reg(off)	enetc_mdio_rd(mdio_priv, off)
+ 
+ #define MDIO_CFG_CLKDIV(x)	((((x) >> 1) & 0xff) << 8)
+@@ -54,7 +50,7 @@ static int enetc_mdio_wait_complete(struct enetc_mdio_priv *mdio_priv)
+ {
+ 	u32 val;
+ 
+-	return readx_poll_timeout(enetc_mdio_rd_reg, MDIO_CFG, val,
++	return readx_poll_timeout(enetc_mdio_rd_reg, ENETC_MDIO_CFG, val,
+ 				  !(val & MDIO_CFG_BSY), 10, 10 * TIMEOUT);
+ }
+ 
+@@ -75,7 +71,7 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
+ 		mdio_cfg &= ~MDIO_CFG_ENC45;
+ 	}
+ 
+-	enetc_mdio_wr(mdio_priv, MDIO_CFG, mdio_cfg);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
+ 
+ 	ret = enetc_mdio_wait_complete(mdio_priv);
+ 	if (ret)
+@@ -83,11 +79,11 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
+ 
+ 	/* set port and dev addr */
+ 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
+-	enetc_mdio_wr(mdio_priv, MDIO_CTL, mdio_ctl);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
+ 
+ 	/* set the register address */
+ 	if (regnum & MII_ADDR_C45) {
+-		enetc_mdio_wr(mdio_priv, MDIO_ADDR, regnum & 0xffff);
++		enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
+ 
+ 		ret = enetc_mdio_wait_complete(mdio_priv);
+ 		if (ret)
+@@ -95,7 +91,7 @@ int enetc_mdio_write(struct mii_bus *bus, int phy_id, int regnum, u16 value)
+ 	}
+ 
+ 	/* write the value */
+-	enetc_mdio_wr(mdio_priv, MDIO_DATA, MDIO_DATA(value));
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_DATA, MDIO_DATA(value));
+ 
+ 	ret = enetc_mdio_wait_complete(mdio_priv);
+ 	if (ret)
+@@ -121,7 +117,7 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 		mdio_cfg &= ~MDIO_CFG_ENC45;
+ 	}
+ 
+-	enetc_mdio_wr(mdio_priv, MDIO_CFG, mdio_cfg);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CFG, mdio_cfg);
+ 
+ 	ret = enetc_mdio_wait_complete(mdio_priv);
+ 	if (ret)
+@@ -129,11 +125,11 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 
+ 	/* set port and device addr */
+ 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
+-	enetc_mdio_wr(mdio_priv, MDIO_CTL, mdio_ctl);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
+ 
+ 	/* set the register address */
+ 	if (regnum & MII_ADDR_C45) {
+-		enetc_mdio_wr(mdio_priv, MDIO_ADDR, regnum & 0xffff);
++		enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
+ 
+ 		ret = enetc_mdio_wait_complete(mdio_priv);
+ 		if (ret)
+@@ -141,21 +137,21 @@ int enetc_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 	}
+ 
+ 	/* initiate the read */
+-	enetc_mdio_wr(mdio_priv, MDIO_CTL, mdio_ctl | MDIO_CTL_READ);
++	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl | MDIO_CTL_READ);
+ 
+ 	ret = enetc_mdio_wait_complete(mdio_priv);
+ 	if (ret)
+ 		return ret;
+ 
+ 	/* return all Fs if nothing was there */
+-	if (enetc_mdio_rd(mdio_priv, MDIO_CFG) & MDIO_CFG_RD_ER) {
++	if (enetc_mdio_rd(mdio_priv, ENETC_MDIO_CFG) & MDIO_CFG_RD_ER) {
+ 		dev_dbg(&bus->dev,
+ 			"Error while reading PHY%d reg at %d.%hhu\n",
+ 			phy_id, dev_addr, regnum);
+ 		return 0xffff;
+ 	}
+ 
+-	value = enetc_mdio_rd(mdio_priv, MDIO_DATA) & 0xffff;
++	value = enetc_mdio_rd(mdio_priv, ENETC_MDIO_DATA) & 0xffff;
+ 
+ 	return value;
+ }
 -- 
 2.20.1
 
