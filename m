@@ -2,72 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F78C2E6BF0
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:15:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9342D2E6B40
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:02:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730545AbgL1Wzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 17:55:50 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:44328 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729696AbgL1WwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 17:52:09 -0500
+        id S1730667AbgL1XAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 18:00:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730482AbgL1XAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 18:00:37 -0500
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72772C0613D6;
+        Mon, 28 Dec 2020 14:54:44 -0800 (PST)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id AC5C04CE686D1;
-        Mon, 28 Dec 2020 14:51:28 -0800 (PST)
-Date:   Mon, 28 Dec 2020 14:51:28 -0800 (PST)
-Message-Id: <20201228.145128.1498314185351532341.davem@davemloft.net>
-To:     weichen.chen@linux.alibaba.com
-Cc:     eric.dumazet@gmail.com, kuba@kernel.org,
-        splendidsky.cwc@alibaba-inc.com, yanxu.zw@alibaba-inc.com,
-        dsahern@kernel.org, liuhangbin@gmail.com,
-        roopa@cumulusnetworks.com, jdike@akamai.com,
-        nikolay@cumulusnetworks.com, lirongqing@baidu.com,
-        mrv@mojatatu.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] net: neighbor: fix a crash caused by mod zero
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 93CCF4CE93100;
+        Mon, 28 Dec 2020 14:54:01 -0800 (PST)
+Date:   Mon, 28 Dec 2020 14:54:01 -0800 (PST)
+Message-Id: <20201228.145401.2067471886598959966.davem@davemloft.net>
+To:     rdunlap@infradead.org
+Cc:     linux-kernel@vger.kernel.org,
+        syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com,
+        nogahf@mellanox.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, netdev@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH -net] net: sched: prevent invalid Scell_log shift count
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201225054448.73256-1-weichen.chen@linux.alibaba.com>
-References: <dbc6cd85-c58b-add2-5801-06e8e94b7d6b@gmail.com>
-        <20201225054448.73256-1-weichen.chen@linux.alibaba.com>
+In-Reply-To: <20201225062344.32566-1-rdunlap@infradead.org>
+References: <20201225062344.32566-1-rdunlap@infradead.org>
 X-Mailer: Mew version 6.8 on Emacs 27.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 28 Dec 2020 14:51:29 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 28 Dec 2020 14:54:01 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: weichenchen <weichen.chen@linux.alibaba.com>
-Date: Fri, 25 Dec 2020 13:44:45 +0800
+From: Randy Dunlap <rdunlap@infradead.org>
+Date: Thu, 24 Dec 2020 22:23:44 -0800
 
-> pneigh_enqueue() tries to obtain a random delay by mod
-> NEIGH_VAR(p, PROXY_DELAY). However, NEIGH_VAR(p, PROXY_DELAY)
-> migth be zero at that point because someone could write zero
-> to /proc/sys/net/ipv4/neigh/[device]/proxy_delay after the
-> callers check it.
+> Check Scell_log shift size in red_check_params() and modify all callers
+> of red_check_params() to pass Scell_log.
 > 
-> This patch uses prandom_u32_max() to get a random delay instead
-> which avoids potential division by zero.
+> This prevents a shift out-of-bounds as detected by UBSAN:
+>   UBSAN: shift-out-of-bounds in ./include/net/red.h:252:22
+>   shift exponent 72 is too large for 32-bit type 'int'
 > 
-> Signed-off-by: weichenchen <weichen.chen@linux.alibaba.com>
-> ---
-> V4:
->     - Use prandom_u32_max() to get a random delay in
->       pneigh_enqueue().
-> V3:
->     - Callers need to pass the delay time to pneigh_enqueue()
->       now and they should guarantee it is not zero.
->     - Use READ_ONCE() to read NEIGH_VAR(p, PROXY_DELAY) in both
->       of the existing callers of pneigh_enqueue() and then pass
->       it to pneigh_enqueue().
-> V2:
->     - Use READ_ONCE() to prevent the complier from re-reading
->       NEIGH_VAR(p, PROXY_DELAY).
->     - Give a hint to the complier that delay <= 0 is unlikely
->       to happen.
-> 
-> V4 is quite concise and works well.
-> Thanks for Eric's and Jakub's advice.
+> Fixes: 8afa10cbe281 ("net_sched: red: Avoid illegal values")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com
 
 Applied and queued up for -stable, thanks.
