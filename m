@@ -2,111 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3431B2E6C5F
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:24:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B353B2E6C64
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:24:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729760AbgL1Wzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 17:55:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        id S1729796AbgL1Wzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 17:55:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729349AbgL1Tw3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 14:52:29 -0500
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09242C0613D6
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:51:49 -0800 (PST)
-Received: by mail-ua1-x92b.google.com with SMTP id k47so3686564uad.1
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:51:48 -0800 (PST)
+        with ESMTP id S1729410AbgL1UXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 15:23:46 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40436C061798
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 12:23:06 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id p14so9814572qke.6
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 12:23:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Zzyjd88NUbxeK6ogA3JXthDFCQ1wxhoB9rYZKCKLlyk=;
-        b=ln4L3Lw7MRyfZYMURHOVQ/6Q+rtDd1F16YYABE2HRAKpLkQ+Z+znsJprN+n0CQWh0n
-         WUE1nt0HHttwIpNrZeJgMPCQIDzUYa6ylf3rg+x3+SpsZGaOD3+VDydr6wJUJzxwmNQX
-         wek2Od4vkwkXRJWGJZkfugjcut1pUEeXrN8OmzHFOKy/FvKwKkm6wOWwRXKa/JUiJ7va
-         HbJA4urwcfQxHgh/ciGfSzbPiFV0HPYpoVFzKhxRYkTjCLrDV1khyxJNTTcutQy7cjzF
-         KFjLe7ktglKjKEsB58whX/4elHCkOXIarUjpaT4hKYOxaQs9SsnzVWe2sWogkM9NfIze
-         vmmQ==
+        d=linuxfoundation.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9EpTdIYOFXIEGqAx9s+sFGrEVZtrYKtNXXy9SEY9qRE=;
+        b=XzEoX7se7gdT+PPesqt7TRoQ5DJYbGHBQPFSEnWBTeaycsn8zErxFaVUwZ6O0/eBQX
+         JvXxcj07SrGRt8NC+oCDbEX8H9ZEy8wQwyzMPGTYjfgh5PwbOjZCH4sux40D36rzbCl8
+         a5zKHuOxyxEYgEc6rSpQIj9wvML1U7hH2O23Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Zzyjd88NUbxeK6ogA3JXthDFCQ1wxhoB9rYZKCKLlyk=;
-        b=AdfrTd1YG579hVCEvaQVcF0Z0FKBM3iXlXjFGC/rODy+gCYjK3cPOk8ovARMlCWbuZ
-         5VSfQTC0cCp+0oV0rPxynC7F4DA2Cs6tqB/AWA+JQlNGQoW+geyMllijUg6EixiSMFMG
-         +begnZaBQapNwIfqZXUBl1rJpFFEvwrmQef/aolk6Om82HRXXOeffLAijt+5jLrggOmm
-         zwwaaaDHPYb4Pp4fRgILoI5m+lridPzVG2HwjjNZkvggLPxrIXPJgSMCQeHdveNajnHU
-         VPBNMYGuvNCygNOmeDlRK6zN3pjmrbjI6/FnxBrbEfsM0wB0D3EOoEZMszvgSzGO4TEf
-         cfgA==
-X-Gm-Message-State: AOAM531BxcsFJ9I47EvkrBt6iZak2lxwLJULGeWq5u+Kb2Qjy2XNiFN5
-        zl7B4Z8hRoKZWVIiE9W3FUb8f2qG4z0=
-X-Google-Smtp-Source: ABdhPJwUJKGyMP87tjxsaAjxHKJioyhVCddLpAImBUGYvHpfPrSVfcGt1xUaMjKoVEz1RpayXpxzxg==
-X-Received: by 2002:ab0:3359:: with SMTP id h25mr28726848uap.76.1609185107732;
-        Mon, 28 Dec 2020 11:51:47 -0800 (PST)
-Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
-        by smtp.gmail.com with ESMTPSA id q124sm3790079vsd.6.2020.12.28.11.51.46
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Dec 2020 11:51:47 -0800 (PST)
-Received: by mail-ua1-f50.google.com with SMTP id f29so3688824uab.0
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:51:46 -0800 (PST)
-X-Received: by 2002:ab0:7386:: with SMTP id l6mr30028720uap.141.1609185106156;
- Mon, 28 Dec 2020 11:51:46 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9EpTdIYOFXIEGqAx9s+sFGrEVZtrYKtNXXy9SEY9qRE=;
+        b=K2OZe9B0PlWVcCu6yPYeD6cj8sDBr0r/gfynol4A6dgB6FuW9zKdpycUxijdzyJeZs
+         yvc88r5kNwkTiCca8zWZtKI8zNW3yt/V1cbexlLujq8tj5CFClzYoKoK2JokRUjBhnUX
+         3IEAtI8IFL7lbfSsaa4WuOxxZ9sYtn1H9ouDhuFbZ0T7FJwOGBYCfP6wi62a8JOXGV8x
+         MkwmkX5jSpG8XRPhGnjnoO8ss5+cDcZMRBmrKZmsSkR7fTEfWaceQ6nvB9Q8w4bE7/tZ
+         LelmneNYiKbARfcSKQu0H/HKKUphGIk0dNQ9G5y0voVo8tabqYdq+z6nGrhgckeVV+4O
+         pkAA==
+X-Gm-Message-State: AOAM532CbvQ5+TJRWASVqqb8Y8lE2memfKz3+I+hgoEPrJkHolkYA08C
+        lRsnxffKQYu4a6QZ33jqhIuGpgtEZZmiMlp7
+X-Google-Smtp-Source: ABdhPJxq/0XcSIyWLCuk2o5XNjIVM6Bureox3/RV7HCZzpMA0Y+pdx2v3wSOCsNVXetAzx3iObNPoQ==
+X-Received: by 2002:a37:b543:: with SMTP id e64mr37520059qkf.10.1609186985195;
+        Mon, 28 Dec 2020 12:23:05 -0800 (PST)
+Received: from chatter.i7.local ([89.36.78.230])
+        by smtp.gmail.com with ESMTPSA id g26sm24036747qkl.60.2020.12.28.12.23.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Dec 2020 12:23:04 -0800 (PST)
+Date:   Mon, 28 Dec 2020 15:23:02 -0500
+From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Dinghao Liu <dinghao.liu@zju.edu.cn>, kjlu@umn.edu,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ethernet: Fix memleak in ethoc_probe
+Message-ID: <20201228202302.afkxtco27j4ahh6d@chatter.i7.local>
+References: <20201223110615.31389-1-dinghao.liu@zju.edu.cn>
+ <20201223153304.GD3198262@lunn.ch>
+ <20201223123218.1cf7d9cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201223210044.GA3253993@lunn.ch>
+ <20201223131149.15fff8d2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <680850a9-8ab0-4672-498e-6dc740720da3@gmail.com>
+ <20201223174146.37e62326@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201224180631.l4zieher54ncqvwl@chatter.i7.local>
+ <fc7be127-648c-6b09-6f00-3542e0388197@gmail.com>
 MIME-Version: 1.0
-References: <20201228162233.2032571-1-willemdebruijn.kernel@gmail.com> <20201228122911-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20201228122911-mutt-send-email-mst@kernel.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 28 Dec 2020 14:51:09 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScXQ0U1+rFFpKxB1Qn73pG8jmFuujONov_9yEEKyyer_g@mail.gmail.com>
-Message-ID: <CA+FuTScXQ0U1+rFFpKxB1Qn73pG8jmFuujONov_9yEEKyyer_g@mail.gmail.com>
-Subject: Re: [PATCH rfc 0/3] virtio-net: add tx-hash, rx-tstamp and tx-tstamp
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        virtualization@lists.linux-foundation.org,
-        Network Development <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <fc7be127-648c-6b09-6f00-3542e0388197@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 28, 2020 at 12:29 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Dec 28, 2020 at 11:22:30AM -0500, Willem de Bruijn wrote:
-> > From: Willem de Bruijn <willemb@google.com>
-> >
-> > RFC for three new features to the virtio network device:
-> >
-> > 1. pass tx flow hash and state to host, for routing + telemetry
-> > 2. pass rx tstamp to guest, for better RTT estimation
-> > 3. pass tx tstamp to host, for accurate pacing
-> >
-> > All three would introduce an extension to the virtio spec.
-> > I assume this would require opening three ballots against v1.2 at
-> > https://www.oasis-open.org/committees/ballots.php?wg_abbrev=virtio
-> >
-> > This RFC is to informally discuss the proposals first.
-> >
-> > The patchset is against v5.10. Evaluation additionally requires
-> > changes to qemu and at least one back-end. I implemented preliminary
-> > support in Linux vhost-net. Both patches available through github at
-> >
-> > https://github.com/wdebruij/linux/tree/virtio-net-txhash-1
-> > https://github.com/wdebruij/qemu/tree/virtio-net-txhash-1
->
-> Any data on what the benefits are?
+On Thu, Dec 24, 2020 at 01:57:40PM -0800, Florian Fainelli wrote:
+> >> Konstantin, would you be willing to mod the kernel.org instance of
+> >> patchwork to populate Fixes tags in the generated mboxes?
+> > 
+> > I'd really rather not -- we try not to diverge from project upstream if at all
+> > possible, as this dramatically complicates upgrades.
+> 
+> Well that is really unfortunate then because the Linux developer
+> community settled on using the Fixes: tag for years now and having
+> patchwork automatically append those tags would greatly help maintainers.
 
-For the general method, yes. For this specific implementation, not  yet.
+I agree -- but this is something that needs to be implemented upstream.
+Picking up a one-off patch just for patchwork.kernel.org is not the right way
+to go about this.
 
-Swift congestion control is delay based. It won the best paper award
-at SIGCOMM this year. That paper has a lot of data:
-https://dl.acm.org/doi/pdf/10.1145/3387514.3406591 . Section 3.1 talks
-about the different components that contribute to delay and how to
-isolate them.
-
-BBR and BBRv2 also have an explicit ProbeRTT phase as part of the design.
-
-The specific additional benefits for VM-based TCP depends on many
-conditions, e.g., whether a vCPU is exclusively owned and pinned. But
-the same reasoning should be even more applicable to this even longer
-stack, especially in the worst case conditions.
+-K
