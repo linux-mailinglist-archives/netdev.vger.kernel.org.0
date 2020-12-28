@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6272E2E6C61
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:24:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3431B2E6C5F
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:24:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729679AbgL1Wzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729760AbgL1Wzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 28 Dec 2020 17:55:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52930 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729275AbgL1Tbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 14:31:51 -0500
-Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9893AC0613D6
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:31:11 -0800 (PST)
-Received: by mail-ua1-x934.google.com with SMTP id t15so3654299ual.6
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:31:11 -0800 (PST)
+        with ESMTP id S1729349AbgL1Tw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 14:52:29 -0500
+Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09242C0613D6
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:51:49 -0800 (PST)
+Received: by mail-ua1-x92b.google.com with SMTP id k47so3686564uad.1
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:51:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=3BJ5esnFQukEGJPUA6O1ADA24la79M+/XQkO2LPRNkc=;
-        b=X+XV3552fBBK1tjz6k7cY5dwoNjbSrjXQc3RWSQdXdcf0dfgE9zyb5x1nX6/LMsK60
-         rL17SN/dFQQ7K33yH9hwaZBWI7V3aEGm5l5802qrTv09DHOEcoUdDw20uFNyB0PSDJj9
-         2NMnbeaQ/rBrZAMDg09MisaS6oTW/ulCMeMIP3T7lDBjdZOuwR7sIZQXzCCiDOIfqgYj
-         TJbtPEZnhiGCcWOIIBjYG1Cba0Sf64Pfr2qn2F81VSChxVuOsPNqWcssLEbUdzeeEinp
-         9j2guH6TQhNsx4COPZaJ2NHnFLEMFqOp4SzMc4geWkcmvefs4XhnGoETeFkb0LBRqvRz
-         f3Zg==
+        bh=Zzyjd88NUbxeK6ogA3JXthDFCQ1wxhoB9rYZKCKLlyk=;
+        b=ln4L3Lw7MRyfZYMURHOVQ/6Q+rtDd1F16YYABE2HRAKpLkQ+Z+znsJprN+n0CQWh0n
+         WUE1nt0HHttwIpNrZeJgMPCQIDzUYa6ylf3rg+x3+SpsZGaOD3+VDydr6wJUJzxwmNQX
+         wek2Od4vkwkXRJWGJZkfugjcut1pUEeXrN8OmzHFOKy/FvKwKkm6wOWwRXKa/JUiJ7va
+         HbJA4urwcfQxHgh/ciGfSzbPiFV0HPYpoVFzKhxRYkTjCLrDV1khyxJNTTcutQy7cjzF
+         KFjLe7ktglKjKEsB58whX/4elHCkOXIarUjpaT4hKYOxaQs9SsnzVWe2sWogkM9NfIze
+         vmmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3BJ5esnFQukEGJPUA6O1ADA24la79M+/XQkO2LPRNkc=;
-        b=i7vhhlgihvVszAdCESZYK7Yv7f/5G2yIHR/CnGQ1lbM84KCKQCRxCcVafqbnJaFuim
-         0wArugFNlyPjZdJIuKM2/N6+p5CrrWUxMosmdb2insvzAwMsweMrVSNfudAN+xfPMUvf
-         D6BzIYkBoVl7JvU4SleMVSWy/SLZLVlsQQvly2mT66ZEheMwGM2SMrO40AM7QmpY0NWC
-         UDuv4Pbp3iHhJVWLmymB/qqwzqizcT2LY8AHYrq/c8y1CCdYGG7Qd65MwRHpkL+p5eku
-         tRU5zmwRPzUPZ8eXqq+o474ExmIgP5DTzSYs49E71q+B3FucxyX6pbw/OZkNsAWFH620
-         TGXw==
-X-Gm-Message-State: AOAM533lpnUzp/7QfuaHd8rj9TEl+J2QbFeC6IkhkRFUDz+gT+8tAOrk
-        bRjV24JFnPCCpwGdn24oGR6YEeP3utM=
-X-Google-Smtp-Source: ABdhPJwBgvQAhJVt2SLU9ImZYaMheqHoHJeUiFaNWPCQnMsr4uYH3DxME0n/Lyt9Ynwij5tdqtWCag==
-X-Received: by 2002:ab0:2e8e:: with SMTP id f14mr28605397uaa.22.1609183869839;
-        Mon, 28 Dec 2020 11:31:09 -0800 (PST)
-Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com. [209.85.221.179])
-        by smtp.gmail.com with ESMTPSA id b7sm4699037uaq.4.2020.12.28.11.31.08
+        bh=Zzyjd88NUbxeK6ogA3JXthDFCQ1wxhoB9rYZKCKLlyk=;
+        b=AdfrTd1YG579hVCEvaQVcF0Z0FKBM3iXlXjFGC/rODy+gCYjK3cPOk8ovARMlCWbuZ
+         5VSfQTC0cCp+0oV0rPxynC7F4DA2Cs6tqB/AWA+JQlNGQoW+geyMllijUg6EixiSMFMG
+         +begnZaBQapNwIfqZXUBl1rJpFFEvwrmQef/aolk6Om82HRXXOeffLAijt+5jLrggOmm
+         zwwaaaDHPYb4Pp4fRgILoI5m+lridPzVG2HwjjNZkvggLPxrIXPJgSMCQeHdveNajnHU
+         VPBNMYGuvNCygNOmeDlRK6zN3pjmrbjI6/FnxBrbEfsM0wB0D3EOoEZMszvgSzGO4TEf
+         cfgA==
+X-Gm-Message-State: AOAM531BxcsFJ9I47EvkrBt6iZak2lxwLJULGeWq5u+Kb2Qjy2XNiFN5
+        zl7B4Z8hRoKZWVIiE9W3FUb8f2qG4z0=
+X-Google-Smtp-Source: ABdhPJwUJKGyMP87tjxsaAjxHKJioyhVCddLpAImBUGYvHpfPrSVfcGt1xUaMjKoVEz1RpayXpxzxg==
+X-Received: by 2002:ab0:3359:: with SMTP id h25mr28726848uap.76.1609185107732;
+        Mon, 28 Dec 2020 11:51:47 -0800 (PST)
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
+        by smtp.gmail.com with ESMTPSA id q124sm3790079vsd.6.2020.12.28.11.51.46
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Dec 2020 11:31:08 -0800 (PST)
-Received: by mail-vk1-f179.google.com with SMTP id l187so2518095vki.6
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:31:08 -0800 (PST)
-X-Received: by 2002:a1f:9ed4:: with SMTP id h203mr29461301vke.1.1609183868110;
- Mon, 28 Dec 2020 11:31:08 -0800 (PST)
+        Mon, 28 Dec 2020 11:51:47 -0800 (PST)
+Received: by mail-ua1-f50.google.com with SMTP id f29so3688824uab.0
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 11:51:46 -0800 (PST)
+X-Received: by 2002:ab0:7386:: with SMTP id l6mr30028720uap.141.1609185106156;
+ Mon, 28 Dec 2020 11:51:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20201228162233.2032571-1-willemdebruijn.kernel@gmail.com>
- <20201228162233.2032571-3-willemdebruijn.kernel@gmail.com> <20201228122253-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20201228122253-mutt-send-email-mst@kernel.org>
+References: <20201228162233.2032571-1-willemdebruijn.kernel@gmail.com> <20201228122911-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20201228122911-mutt-send-email-mst@kernel.org>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 28 Dec 2020 14:30:31 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScguDWkvk=Lc+GzP=UCK2wjRFNJ_GEn_bniHpCDWdkfjg@mail.gmail.com>
-Message-ID: <CA+FuTScguDWkvk=Lc+GzP=UCK2wjRFNJ_GEn_bniHpCDWdkfjg@mail.gmail.com>
-Subject: Re: [PATCH rfc 2/3] virtio-net: support receive timestamp
+Date:   Mon, 28 Dec 2020 14:51:09 -0500
+X-Gmail-Original-Message-ID: <CA+FuTScXQ0U1+rFFpKxB1Qn73pG8jmFuujONov_9yEEKyyer_g@mail.gmail.com>
+Message-ID: <CA+FuTScXQ0U1+rFFpKxB1Qn73pG8jmFuujONov_9yEEKyyer_g@mail.gmail.com>
+Subject: Re: [PATCH rfc 0/3] virtio-net: add tx-hash, rx-tstamp and tx-tstamp
 To:     "Michael S. Tsirkin" <mst@redhat.com>
 Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         virtualization@lists.linux-foundation.org,
@@ -73,73 +72,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Dec 28, 2020 at 12:29 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 >
-> On Mon, Dec 28, 2020 at 11:22:32AM -0500, Willem de Bruijn wrote:
+> On Mon, Dec 28, 2020 at 11:22:30AM -0500, Willem de Bruijn wrote:
 > > From: Willem de Bruijn <willemb@google.com>
 > >
-> > Add optional PTP hardware timestamp offload for virtio-net.
+> > RFC for three new features to the virtio network device:
 > >
-> > Accurate RTT measurement requires timestamps close to the wire.
-> > Introduce virtio feature VIRTIO_NET_F_RX_TSTAMP. If negotiated, the
-> > virtio-net header is expanded with room for a timestamp. A host may
-> > pass receive timestamps for all or some packets. A timestamp is valid
-> > if non-zero.
+> > 1. pass tx flow hash and state to host, for routing + telemetry
+> > 2. pass rx tstamp to guest, for better RTT estimation
+> > 3. pass tx tstamp to host, for accurate pacing
 > >
-> > The timestamp straddles (virtual) hardware domains. Like PTP, use
-> > international atomic time (CLOCK_TAI) as global clock base. It is
-> > guest responsibility to sync with host, e.g., through kvm-clock.
+> > All three would introduce an extension to the virtio spec.
+> > I assume this would require opening three ballots against v1.2 at
+> > https://www.oasis-open.org/committees/ballots.php?wg_abbrev=virtio
 > >
-> > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
-> > index f6881b5b77ee..0ffe2eeebd4a 100644
-> > --- a/include/uapi/linux/virtio_net.h
-> > +++ b/include/uapi/linux/virtio_net.h
-> > @@ -57,6 +57,7 @@
-> >                                        * Steering */
-> >  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23        /* Set MAC address */
+> > This RFC is to informally discuss the proposals first.
 > >
-> > +#define VIRTIO_NET_F_RX_TSTAMP         55    /* Host sends TAI receive time */
-> >  #define VIRTIO_NET_F_TX_HASH   56    /* Guest sends hash report */
-> >  #define VIRTIO_NET_F_HASH_REPORT  57 /* Supports hash report */
-> >  #define VIRTIO_NET_F_RSS       60    /* Supports RSS RX steering */
-> > @@ -182,6 +183,17 @@ struct virtio_net_hdr_v1_hash {
-> >       };
-> >  };
+> > The patchset is against v5.10. Evaluation additionally requires
+> > changes to qemu and at least one back-end. I implemented preliminary
+> > support in Linux vhost-net. Both patches available through github at
 > >
-> > +struct virtio_net_hdr_v12 {
-> > +     struct virtio_net_hdr_v1 hdr;
-> > +     struct {
-> > +             __le32 value;
-> > +             __le16 report;
-> > +             __le16 flow_state;
-> > +     } hash;
-> > +     __virtio32 reserved;
-> > +     __virtio64 tstamp;
-> > +};
-> > +
-> >  #ifndef VIRTIO_NET_NO_LEGACY
-> >  /* This header comes first in the scatter-gather list.
-> >   * For legacy virtio, if VIRTIO_F_ANY_LAYOUT is not negotiated, it must
+> > https://github.com/wdebruij/linux/tree/virtio-net-txhash-1
+> > https://github.com/wdebruij/qemu/tree/virtio-net-txhash-1
 >
->
-> So it looks like VIRTIO_NET_F_RX_TSTAMP should depend on both
-> VIRTIO_NET_F_RX_TSTAMP and VIRTIO_NET_F_HASH_REPORT then?
+> Any data on what the benefits are?
 
-Do you mean VIRTIO_NET_F_TX_TSTAMP depends on VIRTIO_NET_F_RX_TSTAMP?
+For the general method, yes. For this specific implementation, not  yet.
 
-I think if either is enabled we need to enable the extended layout.
-Regardless of whether TX_HASH or HASH_REPORT are enabled. If they are
-not, then those fields are ignored.
+Swift congestion control is delay based. It won the best paper award
+at SIGCOMM this year. That paper has a lot of data:
+https://dl.acm.org/doi/pdf/10.1145/3387514.3406591 . Section 3.1 talks
+about the different components that contribute to delay and how to
+isolate them.
 
-> I am not sure what does v12 mean here.
->
-> virtio_net_hdr_v1 is just with VIRTIO_F_VERSION_1,
-> virtio_net_hdr_v1_hash is with VIRTIO_F_VERSION_1 and
-> VIRTIO_NET_F_HASH_REPORT.
->
-> So this one is virtio_net_hdr_hash_tstamp I guess?
+BBR and BBRv2 also have an explicit ProbeRTT phase as part of the design.
 
-Sounds better, yes, will change that.
-
-This was an attempt at identifying the layout with the likely next
-generation of the spec, 1.2. Similar to virtio_net_hdr_v1. But that is
-both premature and not very helpful.
+The specific additional benefits for VM-based TCP depends on many
+conditions, e.g., whether a vCPU is exclusively owned and pinned. But
+the same reasoning should be even more applicable to this even longer
+stack, especially in the worst case conditions.
