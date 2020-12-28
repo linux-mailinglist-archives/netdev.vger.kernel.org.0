@@ -2,98 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D190B2E359F
-	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 11:02:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A892E35B7
+	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 11:13:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727084AbgL1KAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 05:00:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
+        id S1727164AbgL1KM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 05:12:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727013AbgL1KAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 05:00:12 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EFEC061794
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 01:59:31 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id g24so9243304edw.9
-        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 01:59:31 -0800 (PST)
+        with ESMTP id S1726958AbgL1KM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 05:12:29 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FA2C061795
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 02:11:48 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id j16so9318520edr.0
+        for <netdev@vger.kernel.org>; Mon, 28 Dec 2020 02:11:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=ohmxakg2s974QnM8v946sOkR4ToKBSOibLcBOIb3lZw=;
-        b=O8mxvwijH80CKd3cIzi4GTRtJM12Uw6Idz9RKqMi+rkSkEBeVcEMd/OpidJIpAVm3T
-         B/dgPn25E3fcOFjes5ZO+YtdJFuevUJf3XGLALiDi+I6dkvu8NqTHvpixRZFLZoWztFe
-         VjN77g6aUT5n2S0wLQ1Vc3EdChmQSNGHnwsiIANEXQK7lw1JocpsfbfEjYDjIIMVtQ0V
-         VSQT/69hRkdhhQZ3WTkkQFuuFE7X0iWk1y6v619PVXpqrDo4SaeuWNyCslomISQlU2A6
-         KfIaWHPRwfFkNq+ADY6RGarDI2GFD7sU+5DJ+ObMzt6kJIzeU4IreltsvEIgXjsDR9pI
-         Ltlw==
+        bh=MdQ/D46RCr2gXEW9dmoWKE5z9/ANQwkSP5KORk8yc40=;
+        b=ZBuKDesRddgX9RuM0o93raruELuqg8VG7S9kK93UqTMa+aks62BN7/+4o//wzVUEBh
+         qivzEiNeTLfajSJaZvGzJFLYS91CJyuMy1vK6xu91HjRGkvqTUJCxNSzLfdCspYqLb+w
+         EqBzSdBsJIewfU/F9vkeMKceMOcSBYu4944ZBdpRyqAn7zGEWn31Gkf3KYGqJXNL1wuv
+         14bjishNlU0BYaYxRsocQQqsVDHKbmpI5ZIOvS6L1aNs2TiIvgLK5dQr5hROvFPYJ4a4
+         4iQ0OizTb5qe2A58Mt8b2ugNilPKaFLLx6DFZ9BAyEp8qAX8chL4eLNJ6zGhO9kkhyfF
+         LzSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ohmxakg2s974QnM8v946sOkR4ToKBSOibLcBOIb3lZw=;
-        b=OIwhNdsMN+gu2XS+8TH9I1cZlWg0hWVi6C19SUd51lH1vDz74yYTtcMAU7Tb3aqfT1
-         osHrKtH3gFK2GVBEVlLLXL6hT3sVowmJOyQoof2zAzV3unBwffh6PNnPBbiSsQdrh3ek
-         MEVRMDXxRKLHDTpxrNHpagpyxyPqi+cuimG4UOewLhTHQK+JlS0LYcDZ/TCOMUPaPsZ2
-         1koetB0v8uXOx6jfrO/ioLqxyRaZdIdQXl7x24Tuut+MV4HdR4GZId6aOkW0UbpfT0cS
-         TCKB0ONeN9cgJykFEKoZmCWLHyebSkK+v/6Ytfj5elMZIxKXrIpz+PSepFd4T/cwa7qM
-         E0mw==
-X-Gm-Message-State: AOAM533w+7RikJgxYcG8KqwqFqF9pDQSN73AekYnjMkII/HPNsYxn+ko
-        78SJ/jWpbQi9IYqVY/P4Vueeew==
-X-Google-Smtp-Source: ABdhPJy78Lupt7SboqBGFXs6LyLUicBN9prN/z0zgpnCjapDwAjner/CywqBp8I4xQ87ZSQvb/ZTug==
-X-Received: by 2002:a50:aac8:: with SMTP id r8mr40900026edc.9.1609149570304;
-        Mon, 28 Dec 2020 01:59:30 -0800 (PST)
+        bh=MdQ/D46RCr2gXEW9dmoWKE5z9/ANQwkSP5KORk8yc40=;
+        b=JZzorlq9I+Jt+n5XmbhG+aU9CPF8byqo4RSBVaZvjkuj9mRpIHMRtYlFKJVPGBzMbi
+         gDxKzSG4pUT0O+Z2t/ly6b6NVRbISKR9hgbi/tl+nH2etv34e1Oo77hBs0/CwEneeM38
+         Xiyp0+5rXcX8DxJDiURYqHLfI3A532zLEDxHLFjyARmxieap68gtwiRyNTAN3rtijTdF
+         +kF/ZpM7mM6+SUjjP8YQNkI3XdpQ4azWTlzw8HjbfSiv9rTi6VVj6YhCgoz4+yLQgWTr
+         SbvX1xU/LsCHF3C8su3id0amee/0mBeGnUtWVzMk2x2TErCGce6yRKuwvM20FhbkeHak
+         MnyQ==
+X-Gm-Message-State: AOAM533975Ckh02ntSFNIh18fXCSHv/pMsj/c3L/bsvJxZBowe/gi9jy
+        RH3Yg00sO0H7BPAnodbyQ2FJZg==
+X-Google-Smtp-Source: ABdhPJzeBaAkxj3tRnfGYpjL14Szrs6UwTMpJTmk/jp+31CRpAHxsvrevzdJBUP+5u2X2QeyPEqkdA==
+X-Received: by 2002:a50:d5d5:: with SMTP id g21mr42913750edj.41.1609150306867;
+        Mon, 28 Dec 2020 02:11:46 -0800 (PST)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id j23sm22561262edv.45.2020.12.28.01.59.29
+        by smtp.gmail.com with ESMTPSA id ca4sm35731648edb.80.2020.12.28.02.11.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Dec 2020 01:59:29 -0800 (PST)
-Date:   Mon, 28 Dec 2020 10:59:28 +0100
+        Mon, 28 Dec 2020 02:11:46 -0800 (PST)
+Date:   Mon, 28 Dec 2020 11:11:45 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>
-Subject: Re: [RFC PATCH net-next 0/9] Get rid of the switchdev transactional
- model
-Message-ID: <20201228095928.GA3565223@nanopsycho.orion>
-References: <20201217015822.826304-1-vladimir.oltean@nxp.com>
+To:     Jarod Wilson <jarod@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH net-next] bonding: add a vlan+srcmac tx hashing option
+Message-ID: <20201228101145.GC3565223@nanopsycho.orion>
+References: <20201218193033.6138-1-jarod@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201217015822.826304-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20201218193033.6138-1-jarod@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Dec 17, 2020 at 02:58:13AM CET, vladimir.oltean@nxp.com wrote:
->This series comes after the late realization that the prepare/commit
->separation imposed by switchdev does not help literally anybody:
->https://patchwork.kernel.org/project/netdevbpf/patch/20201212203901.351331-1-vladimir.oltean@nxp.com/
+Fri, Dec 18, 2020 at 08:30:33PM CET, jarod@redhat.com wrote:
+>This comes from an end-user request, where they're running multiple VMs on
+>hosts with bonded interfaces connected to some interest switch topologies,
+>where 802.3ad isn't an option. They're currently running a proprietary
+>solution that effectively achieves load-balancing of VMs and bandwidth
+>utilization improvements with a similar form of transmission algorithm.
 >
->We should kill it before it inflicts even more damage to the error
->handling logic in drivers.
+>Basically, each VM has it's own vlan, so it always sends its traffic out
+>the same interface, unless that interface fails. Traffic gets split
+>between the interfaces, maintaining a consistent path, with failover still
+>available if an interface goes down.
+>
+>This has been rudimetarily tested to provide similar results, suitable for
+>them to use to move off their current proprietary solution.
+>
+>Still on the TODO list, if these even looks sane to begin with, is
+>fleshing out Documentation/networking/bonding.rst.
 
-Awesome, I totally like this patchset. To be honest, I didn't see much
-or a point to do the transaction model from the start, yet I remember
-there were people requiring it. I guess they are fine now without
-it or they don't care anymore.
-
-Acked-by: Jiri Pirko <jiri@nvidia.com>
+Jarod, did you consider using team driver instead ? :)
