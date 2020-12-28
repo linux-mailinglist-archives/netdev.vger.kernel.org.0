@@ -2,73 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 513372E6BFB
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24B062E6BF4
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:15:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730503AbgL1Wzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730527AbgL1Wzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 28 Dec 2020 17:55:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56428 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729658AbgL1Wkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Dec 2020 17:40:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9DE0E2226A;
-        Mon, 28 Dec 2020 22:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609195206;
-        bh=LOpW0D/hKl7s2Hevz0EZd1EZMNL9HK6X8L+OXqXX97E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Tkzc327BEsdAWc3xBf7vYR2zsfcgDmwT/IfNeDLtAWzrvIhLpWsoQ9FfvT7WVHiE9
-         mb/ZUBSbgpZPRKOkE34i0nqsDkYBBx0RpbvTJWQqX1J0bjnrHjek1Uq3Y6DGpaatLl
-         IyJSL2bSz5MB1s/Y0bIW3Ot7dH+t6JyPk2ZqpuJNC+2xjcK8x7g6Zn8HU6b5j7x97X
-         fvlnvlDc5n/4CMwJytmUJ1rGGerFr9WfniRJ9e0Yad5U5xacgkEw7MWOa/7EqBEjWu
-         K6j5V+XnI71IL/crW5Xm/iXSRhh1qIsY6YTsIAMnk0si/v0FxQp+mf5RnmxuAbRzYg
-         ghSjaaiHhNNZA==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 8EFF960591;
-        Mon, 28 Dec 2020 22:40:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: mvpp2: fix pkt coalescing int-threshold
- configuration
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160919520658.5818.13471657001953997070.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Dec 2020 22:40:06 +0000
-References: <1608748521-11033-1-git-send-email-stefanc@marvell.com>
-In-Reply-To: <1608748521-11033-1-git-send-email-stefanc@marvell.com>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org,
-        linux@armlinux.org.uk, mw@semihalf.com, andrew@lunn.ch,
-        rmk+kernel@armlinux.org.uk, atenart@kernel.org
+Received: from shards.monkeyblade.net ([23.128.96.9]:44046 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729676AbgL1WqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 17:46:08 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 99E164CE686C5;
+        Mon, 28 Dec 2020 14:45:27 -0800 (PST)
+Date:   Mon, 28 Dec 2020 14:45:22 -0800 (PST)
+Message-Id: <20201228.144522.2164224163258675861.davem@davemloft.net>
+To:     gnault@redhat.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net] ipv4: Ignore ECN bits for fib lookups in
+ fib_compute_spec_dst()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <49ff39b1f55c914847cd58678bae6282112db701.1608836260.git.gnault@redhat.com>
+References: <49ff39b1f55c914847cd58678bae6282112db701.1608836260.git.gnault@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 28 Dec 2020 14:45:27 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Guillaume Nault <gnault@redhat.com>
+Date: Thu, 24 Dec 2020 20:01:09 +0100
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Wed, 23 Dec 2020 20:35:21 +0200 you wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
+> RT_TOS() only clears one of the ECN bits. Therefore, when
+> fib_compute_spec_dst() resorts to a fib lookup, it can return
+> different results depending on the value of the second ECN bit.
 > 
-> The packet coalescing interrupt threshold has separated registers
-> for different aggregated/cpu (sw-thread). The required value should
-> be loaded for every thread but not only for 1 current cpu.
+> For example, ECT(0) and ECT(1) packets could be treated differently.
 > 
-> Fixes: 213f428f5056 ("net: mvpp2: add support for TX interrupts and RX queue distribution modes")
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+>   $ ip netns add ns0
+>   $ ip netns add ns1
+>   $ ip link add name veth01 netns ns0 type veth peer name veth10 netns ns1
+>   $ ip -netns ns0 link set dev lo up
+>   $ ip -netns ns1 link set dev lo up
+>   $ ip -netns ns0 link set dev veth01 up
+>   $ ip -netns ns1 link set dev veth10 up
 > 
-> [...]
+>   $ ip -netns ns0 address add 192.0.2.10/24 dev veth01
+>   $ ip -netns ns1 address add 192.0.2.11/24 dev veth10
+> 
+>   $ ip -netns ns1 address add 192.0.2.21/32 dev lo
+>   $ ip -netns ns1 route add 192.0.2.10/32 tos 4 dev veth10 src 192.0.2.21
+>   $ ip netns exec ns1 sysctl -wq net.ipv4.icmp_echo_ignore_broadcasts=0
+> 
+> With TOS 4 and ECT(1), ns1 replies using source address 192.0.2.21
+> (ping uses -Q to set all TOS and ECN bits):
+> 
+>   $ ip netns exec ns0 ping -c 1 -b -Q 5 192.0.2.255
+>   [...]
+>   64 bytes from 192.0.2.21: icmp_seq=1 ttl=64 time=0.544 ms
+> 
+> But with TOS 4 and ECT(0), ns1 replies using source address 192.0.2.11
+> because the "tos 4" route isn't matched:
+> 
+>   $ ip netns exec ns0 ping -c 1 -b -Q 6 192.0.2.255
+>   [...]
+>   64 bytes from 192.0.2.11: icmp_seq=1 ttl=64 time=0.597 ms
+> 
+> After this patch the ECN bits don't affect the result anymore:
+> 
+>   $ ip netns exec ns0 ping -c 1 -b -Q 6 192.0.2.255
+>   [...]
+>   64 bytes from 192.0.2.21: icmp_seq=1 ttl=64 time=0.591 ms
+> 
+> Fixes: 35ebf65e851c ("ipv4: Create and use fib_compute_spec_dst() helper.")
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
-Here is the summary with links:
-  - [net] net: mvpp2: fix pkt coalescing int-threshold configuration
-    https://git.kernel.org/netdev/net/c/4f374d2c43a9
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Applied and queued up for -stable, thanks.
 
