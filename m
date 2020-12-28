@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D02E22E6C43
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:18:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2BF2E6C07
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 00:17:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730160AbgL1Wzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 17:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43334 "EHLO
+        id S1730187AbgL1Wzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 17:55:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729526AbgL1VdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 16:33:01 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA76C061798;
-        Mon, 28 Dec 2020 13:32:21 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id d9so10540989iob.6;
-        Mon, 28 Dec 2020 13:32:21 -0800 (PST)
+        with ESMTP id S1729527AbgL1VdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 16:33:04 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C2CC061799;
+        Mon, 28 Dec 2020 13:32:23 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id e7so6843118ile.7;
+        Mon, 28 Dec 2020 13:32:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yQsgNyGUTm64m9DqBT5jJ+3g5SgjdTF9MLP6v+471uQ=;
-        b=TzJmxAcmKfKrzu7W7F9P7Q+W6FrWbjg/NN78X7mhL02ARGPP+2XWr3ghcoK4wu4A4t
-         NEzvyNATi/BBCJdiYuS9EkarmxFQNaRZzu8byiLSk+NIKVc3zixPh+brHwNBgycjx/Ge
-         PqD+Fe/CkpGQT2lm9RNH99gkNYY3aF4q0yNpeQ3fKcTJudlOiSDdo9AazujcuAqaE4F+
-         iWUadihiOv4dyKsASs16l4886iiSLuNiqlXm03ZsfbwgLKPEnmvp3OZbwAnf+5U6g4Ir
-         Qa8y1oF5N1ZKKL2B3huzXWlG9FYA54/RnQE2WpEulLK6QRGzYdMx0MuFTwuuNwQtXY2g
-         nk+w==
+        bh=pd9JDNXSanSEISdKkZD+jfC3tgahpgbgsLxkysRm1fc=;
+        b=bQjaIIbKvOO7VMApQrS6uW2u1Fx0FB6FCFuiBmSLco7mfI0ScIscF/W96hLlx0rPsJ
+         XXgWyTyP2ny3mjX8Gfxc/piIGaSWzcuuFZyo+5uI9KC+x6IRunBtmWrDC7uNSf/6ouzK
+         J3VZaC6sKJqNI9Tr/IUE/9jSv+8ff1DvLF90XnXGe+GKAeW/I16K6ZGukCw1+XJ1N3Rt
+         UzAx5shA36DWE88Rzyyx4VeqwGyLMuNpLiOow1dYpdbEy4PapPctc8X7vKg98j/H22jF
+         rSresmHaHkapAoyAstwZ9wmoFEyoWMUmpQPKFyWnqQ8T4rKwnFVUtt6OukutCd9Ondub
+         +Dcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yQsgNyGUTm64m9DqBT5jJ+3g5SgjdTF9MLP6v+471uQ=;
-        b=qFbUICEBkQQ3Teau9l7rZIzdyUA1iSITPIHlE9X5WZvCYxh+5zd6i/GeL+gq5G7mxS
-         q2BVkm45Jm7LFeibgXP0tXg88KRdDBHfb6QBXEOIxFqFC6PMEn8hYv2w1Mh+WivXjGpN
-         ZZ6XAVSlN83GEGfxKSYOaEpq3es8ZkTtjoR/sT2sO3Pxh/ZVEGJmg9lY3XY6XmQJLbPx
-         13bPmEHOZSCci8hyDhDDW2cBkvjdBlMyIw8Sx0IotkQNGOVWS5FXio6Zouy3X/In7C31
-         E8HWU2Ey3MA7vvQF2vgHouWvP4odo/XB87oTnwVKB/jpGENfa48zP4/oHwqskKk53/w+
-         unWA==
-X-Gm-Message-State: AOAM5301ndwhBmuLRb00HdhB5tQdqoREL5cplS4BYvmd9V/vsrTTpdv4
-        0nLmU9lLEfErnLuiKEWyE4lCXN2rBJOqbQ==
-X-Google-Smtp-Source: ABdhPJx5aknZYGg+8QNscwf/G+L7PjDGf8mMJZl1ktkIul3qxNejCprbGKh54tHj/G9/Vv2cXGT7Zg==
-X-Received: by 2002:a6b:8e92:: with SMTP id q140mr38263962iod.182.1609191140408;
-        Mon, 28 Dec 2020 13:32:20 -0800 (PST)
+        bh=pd9JDNXSanSEISdKkZD+jfC3tgahpgbgsLxkysRm1fc=;
+        b=NjEFwl/Z/sYtWcd/jUhv7PK6p6w/UL5ptwK5A7FIh74GKxZt4PmdhrWF53o0IxqAcV
+         PezsFqmzqcQo22i0zg4Ux38Z2fp6pWoUf/9n3N75QB1GjmHz25BNakLHii/Y3xEDDEP7
+         mPLrzKTPl7VNKwEJUsiSg2KMnyw4e8gLlqWKMaVhkli8ee18wipl+1Rsk9dlK7rvfvTq
+         iIq/GHTZjQ4mGrbfD1eTLWr+Lt6m4q5lmrBRR9Xi2HUR+31Ea/ts0+kF52fxfktvwKWX
+         Ni+0eFD5vABmu5KtOuTvOAOYuw5jBLl+x6OwLZ9VkuZcRpQ+Yx/11cCWsgNTeVKHId87
+         wM6A==
+X-Gm-Message-State: AOAM533OSMUwnC6FKQ1IG3dTGfLDy3k6FpjZFt/x6Shc0slbra65r2lv
+        ygmXSwyvqISHjPziJVuvZQbbdqYrIfiQ7Q==
+X-Google-Smtp-Source: ABdhPJwQk5EldEbD49R9I1pl8Sj17DXV1DdXh74DVmOsYmJXmDTAdxw+eJZGzTlF3jzV3yIDB5MGtA==
+X-Received: by 2002:a05:6e02:1192:: with SMTP id y18mr46127975ili.58.1609191142798;
+        Mon, 28 Dec 2020 13:32:22 -0800 (PST)
 Received: from aford-IdeaCentre-A730.lan ([2601:448:8400:9e8:f45d:df49:9a4c:4914])
-        by smtp.gmail.com with ESMTPSA id r10sm27671275ilo.34.2020.12.28.13.32.19
+        by smtp.gmail.com with ESMTPSA id r10sm27671275ilo.34.2020.12.28.13.32.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Dec 2020 13:32:19 -0800 (PST)
+        Mon, 28 Dec 2020 13:32:22 -0800 (PST)
 From:   Adam Ford <aford173@gmail.com>
 To:     linux-renesas-soc@vger.kernel.org
 Cc:     aford@beaconembedded.com, Adam Ford <aford173@gmail.com>,
@@ -57,9 +57,9 @@ Cc:     aford@beaconembedded.com, Adam Ford <aford173@gmail.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] arm64: dts: renesas: Add fck to etheravb-rcar-gen3 clock-names list
-Date:   Mon, 28 Dec 2020 15:31:19 -0600
-Message-Id: <20201228213121.2331449-3-aford173@gmail.com>
+Subject: [PATCH 4/4] net: ethernet: ravb: Name the AVB functional clock fck
+Date:   Mon, 28 Dec 2020 15:31:20 -0600
+Message-Id: <20201228213121.2331449-4-aford173@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201228213121.2331449-1-aford173@gmail.com>
 References: <20201228213121.2331449-1-aford173@gmail.com>
@@ -70,169 +70,27 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 The bindings have been updated to support two clocks, but the
-original clock now requires the name fck.  Add a clock-names
-list in the device tree with fck in it.
+original clock now requires the name fck to distinguish it
+from the other.
 
 Signed-off-by: Adam Ford <aford173@gmail.com>
 ---
- arch/arm64/boot/dts/renesas/r8a774a1.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a774b1.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a774c0.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a774e1.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a77951.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a77960.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a77961.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a77965.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a77970.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a77980.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a77990.dtsi | 1 +
- arch/arm64/boot/dts/renesas/r8a77995.dtsi | 1 +
- 12 files changed, 12 insertions(+)
+ drivers/net/ethernet/renesas/ravb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-index d37ec42a1caa..6804de678453 100644
---- a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-@@ -1112,6 +1112,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A774A1_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-index 83523916d360..179817de1bef 100644
---- a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-@@ -986,6 +986,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A774B1_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-index e0e54342cd4c..e43e8b0a167b 100644
---- a/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774c0.dtsi
-@@ -957,6 +957,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A774C0_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-index 1333b02d623a..c6b47ca9ed45 100644
---- a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-@@ -1215,6 +1215,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A774E1_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77951.dtsi b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-index 5c39152e4570..1e622ab8a044 100644
---- a/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-@@ -1312,6 +1312,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77960.dtsi b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-index 25d947a81b29..a3d1c33cbc1d 100644
---- a/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-@@ -1188,6 +1188,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77961.dtsi b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-index e8c31ebec097..55a3ba3c844f 100644
---- a/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-@@ -1144,6 +1144,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A77961_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77965.dtsi b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-index 657b20d3533b..dd4c0e621b9c 100644
---- a/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-@@ -1050,6 +1050,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A77965_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77970.dtsi b/arch/arm64/boot/dts/renesas/r8a77970.dtsi
-index 5a5d5649332a..d4b0b9952619 100644
---- a/arch/arm64/boot/dts/renesas/r8a77970.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77970.dtsi
-@@ -612,6 +612,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A77970_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77980.dtsi b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-index ec7ca72399ec..992a577a3b17 100644
---- a/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-@@ -664,6 +664,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A77980_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77990.dtsi b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-index 5010f23fafcc..cc56267e0850 100644
---- a/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77990.dtsi
-@@ -1000,6 +1000,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A77990_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
-diff --git a/arch/arm64/boot/dts/renesas/r8a77995.dtsi b/arch/arm64/boot/dts/renesas/r8a77995.dtsi
-index 2319271c881b..84dba3719381 100644
---- a/arch/arm64/boot/dts/renesas/r8a77995.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77995.dtsi
-@@ -760,6 +760,7 @@ avb: ethernet@e6800000 {
- 					  "ch20", "ch21", "ch22", "ch23",
- 					  "ch24";
- 			clocks = <&cpg CPG_MOD 812>;
-+			clock-names = "fck";
- 			power-domains = <&sysc R8A77995_PD_ALWAYS_ON>;
- 			resets = <&cpg 812>;
- 			phy-mode = "rgmii";
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index bd30505fbc57..99a6ef9c15c1 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -2142,7 +2142,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 
+ 	priv->chip_id = chip_id;
+ 
+-	priv->clk = devm_clk_get(&pdev->dev, NULL);
++	priv->clk = devm_clk_get(&pdev->dev, "fck");
+ 	if (IS_ERR(priv->clk)) {
+ 		error = PTR_ERR(priv->clk);
+ 		goto out_release;
 -- 
 2.25.1
 
