@@ -2,101 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49E012E33C1
-	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 03:55:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3B472E33DC
+	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 04:16:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726348AbgL1Cyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Dec 2020 21:54:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726289AbgL1Cyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Dec 2020 21:54:32 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09CEC061794;
-        Sun, 27 Dec 2020 18:53:52 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id h186so5605741pfe.0;
-        Sun, 27 Dec 2020 18:53:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y9GjcdWdDXwMVCPh4R/oYm+2IT0dwMb9tBB+uvycjjY=;
-        b=l4he/Zrdd8dEAvIQeOJrYq5TwY3Ue9Ac0Jbj1lBgvPCYkCVWuqZjJwM2b3M1MN/Epb
-         axdGL6/adhs4+V1u49MGNqkANkVhFjH0RfH3ypPBYG9EGx2Dromy3BXrMAj4uHDkvrcJ
-         L8JGAFXogegZ2VjDQkpHsfKxrEVOsyxzrgx037xjqF6ntEYgWAtH/EqQ2iI0Pugthh+o
-         zIdnjNNsNrUcXw/wrIPc8yJqGybwSK3eXFMNwEDrXu1ECil+2hpy9MnFEA8HOEiNJEf1
-         3WXqSmDkRQHP9G7sj0246rHZAIUItkvd97keN7AstN4yJmhn2deIo/3CibVN7p/VXb9v
-         uxxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y9GjcdWdDXwMVCPh4R/oYm+2IT0dwMb9tBB+uvycjjY=;
-        b=saEHyxZF+iJw6xew5ESly4zuEHaN3HPL5GpQho0frjyhmMc3KTLOS+1xJgQj6N5YoW
-         W9sOZCzTinkYudURvA2EzmkI5oYI0i9bEwJLHV8reDbNJzaqgdUPPx4VAXT0uB8Ot7cD
-         hybojQQSAB5KasVcXs/m1Q1dp6xECH4cksWJ6ZJWSwVgl5YyI6u0uqr86PnGSoWpqms1
-         zsv25CHR5H+RbAQD73iTsgDv20R7AFiFXHuY8kMeClIJe5QToQ4pRC/3/0ZdgdaYVhBP
-         Tuc0LvAaUObYowO8ApuhZ1N3Uo/1MU0EyU2BD13W38eGqf3RWH6aLIlhlOGXYKghNWRV
-         kahA==
-X-Gm-Message-State: AOAM5318Dd0GqagY84YtkfWC9Eber6p4sPd9bWAusqHhLFubadF/pMc5
-        y02yEgxSmVzyYdh4LQDvCUQ=
-X-Google-Smtp-Source: ABdhPJzIdlsTokLU8dAzHzq5D8auP0RtqFTMMHRBSKvnByGmzfxb+8rnlAhix0kwm/4v3BrpqiPm6A==
-X-Received: by 2002:a62:3503:0:b029:1aa:6f15:b9fe with SMTP id c3-20020a6235030000b02901aa6f15b9femr39125193pfa.65.1609124032133;
-        Sun, 27 Dec 2020 18:53:52 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:feaa:4103:8c8c:bf1])
-        by smtp.gmail.com with ESMTPSA id w1sm12425173pjt.23.2020.12.27.18.53.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Dec 2020 18:53:51 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net v2] net: hdlc_ppp: Fix issues when mod_timer is called while timer is running
-Date:   Sun, 27 Dec 2020 18:53:39 -0800
-Message-Id: <20201228025339.3210-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726392AbgL1DPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Dec 2020 22:15:11 -0500
+Received: from mail.zju.edu.cn ([61.164.42.155]:33232 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726289AbgL1DPL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Dec 2020 22:15:11 -0500
+Received: by ajax-webmail-mail-app3 (Coremail) ; Mon, 28 Dec 2020 11:14:11
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.192.85.18]
+Date:   Mon, 28 Dec 2020 11:14:11 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   dinghao.liu@zju.edu.cn
+To:     "Leon Romanovsky" <leon@kernel.org>
+Cc:     kjlu@umn.edu, "Saeed Mahameed" <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH] net/mlx5e: Fix two double free cases
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20200917(3e19599d)
+ Copyright (c) 2002-2020 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20201227084001.GF4457@unreal>
+References: <20201221085031.6591-1-dinghao.liu@zju.edu.cn>
+ <20201227084001.GF4457@unreal>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <79a35d07.7894.176a756c881.Coremail.dinghao.liu@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgDHPw+DTelfTCEeAA--.5808W
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgYEBlZdtRrnPgAash
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ppp_cp_event is called directly or indirectly by ppp_rx with "ppp->lock"
-held. It may call mod_timer to add a new timer. However, at the same time
-ppp_timer may be already running and waiting for "ppp->lock". In this
-case, there's no need for ppp_timer to continue running and it can just
-exit.
-
-If we let ppp_timer continue running, it may call add_timer. This causes
-kernel panic because add_timer can't be called with a timer pending.
-This patch fixes this problem.
-
-Fixes: e022c2f07ae5 ("WAN: new synchronous PPP implementation for generic HDLC.")
-Cc: Krzysztof Halasa <khc@pm.waw.pl>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/hdlc_ppp.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
-index 64f855651336..261b53fc8e04 100644
---- a/drivers/net/wan/hdlc_ppp.c
-+++ b/drivers/net/wan/hdlc_ppp.c
-@@ -569,6 +569,13 @@ static void ppp_timer(struct timer_list *t)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&ppp->lock, flags);
-+	/* mod_timer could be called after we entered this function but
-+	 * before we got the lock.
-+	 */
-+	if (timer_pending(&proto->timer)) {
-+		spin_unlock_irqrestore(&ppp->lock, flags);
-+		return;
-+	}
- 	switch (proto->state) {
- 	case STOPPING:
- 	case REQ_SENT:
--- 
-2.27.0
-
+PiBPbiBNb24sIERlYyAyMSwgMjAyMCBhdCAwNDo1MDozMVBNICswODAwLCBEaW5naGFvIExpdSB3
+cm90ZToKPiA+IG1seDVlX2NyZWF0ZV90dGNfdGFibGVfZ3JvdXBzKCkgZnJlZXMgZnQtPmcgb24g
+ZmFpbHVyZSBvZgo+ID4ga3Z6YWxsb2MoKSwgYnV0IHN1Y2ggZmFpbHVyZSB3aWxsIGJlIGNhdWdo
+dCBieSBpdHMgY2FsbGVyCj4gPiBpbiBtbHg1ZV9jcmVhdGVfdHRjX3RhYmxlKCkgYW5kIGZ0LT5n
+IHdpbGwgYmUgZnJlZWQgYWdhaW4KPiA+IGluIG1seDVlX2Rlc3Ryb3lfZmxvd190YWJsZSgpLiBU
+aGUgc2FtZSBpc3N1ZSBhbHNvIG9jY3Vycwo+ID4gaW4gbWx4NWVfY3JlYXRlX3R0Y190YWJsZV9n
+cm91cHMoKS4KPiA+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBEaW5naGFvIExpdSA8ZGluZ2hhby5saXVA
+emp1LmVkdS5jbj4KPiA+IC0tLQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21s
+eDUvY29yZS9lbl9mcy5jIHwgOCArKy0tLS0tLQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2Vy
+dGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCj4gCj4gSSdtIG5vdCB0aHJpbGxlZCB0byBzZWUgcmVs
+ZWFzZSBpbiB0aGUgZXJyb3IgZmxvdyB0aGF0IHdpbGwgYmUgZG9uZSBpbgo+IHRoZSBkaWZmZXJl
+bnQgZnVuY3Rpb24uIFRoZSBtaXNzaW5nIHBpZWNlIGlzICJmdC0+ZyA9IE5VTEwiIGFmdGVyIGtm
+cmVlKCkuCj4gCj4gQW5kIGFsc28gZml4ZXMgbGluZXMgYXJlIG1pc3NpbmcgaW4gYWxsIHlvdXIg
+cGF0Y2hlcy4KPiAKClRoYW5rIHlvdSBmb3IgeW91ciBhZHZpY2UhIEkgd2lsbCByZXNlbmQgYSBu
+ZXcgcGF0Y2ggc29vbi4KClJlZ2FyZHMsCkRpbmdoYW8=
