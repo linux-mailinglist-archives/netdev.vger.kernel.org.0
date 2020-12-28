@@ -2,64 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E87C2E32F8
-	for <lists+netdev@lfdr.de>; Sun, 27 Dec 2020 22:29:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EAA32E3346
+	for <lists+netdev@lfdr.de>; Mon, 28 Dec 2020 01:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbgL0V23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Dec 2020 16:28:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37246 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726105AbgL0V22 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Dec 2020 16:28:28 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BEBF8207AE;
-        Sun, 27 Dec 2020 21:27:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609104468;
-        bh=dlUOHzdT6jqxNMlS7tKqm2HOUmsvt41fj/QA+qUzYuY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LmC2caxmKrmbf7bEAgezvmwRBWBxQ0zThEPdwxvwtMI9dZ6Ri2AeWQrxIypSzHa4U
-         MuvrouwwqnAi+Bz4M08GCuZp1ESgAYv5x5k38Dr25b2vwhVA2uSmbQi+jxW7uFfLjM
-         cAR64DMSdHM7T91XYSvTrgc7hiPjKBPYOFdy55iiN2iugdPwONLW9+tLOGm9hYpVM+
-         1kFXEEnPiaZK+1zMwiw460a/7go+/uHu2FZ52+cdFdRxbfSj4oGZre/BVnNtVogWkN
-         zk12bzwTSn2UHGfqr5sF38U+er57hCVHQaJYSX1DQZV1loLFycMID4Mo5OG/is3fsG
-         yS3yQCE0VHAvA==
-Date:   Sun, 27 Dec 2020 16:27:46 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: [PATCH AUTOSEL 5.4 075/130] net/lapb: fix t1 timer handling for
- LAPB_STATE_0
-Message-ID: <20201227212746.GF2790422@sasha-vm>
-References: <20201223021813.2791612-75-sashal@kernel.org>
- <20201223170124.5963-1-xie.he.0141@gmail.com>
- <CAJht_EOXf4Z3G-rq92hb_YvJEsHtDy15FE7WuthqDQsPY039QQ@mail.gmail.com>
+        id S1726360AbgL1AP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Dec 2020 19:15:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726226AbgL1APZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Dec 2020 19:15:25 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D27EC061794;
+        Sun, 27 Dec 2020 16:14:45 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id j13so5596494pjz.3;
+        Sun, 27 Dec 2020 16:14:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oZEv+bW9CjN9VY+lYyzIh0+MFHMRTUdBkL+wcZGDg9Y=;
+        b=kwRbPeE0fgWdNQ4lqr4Jhs1gVJjwKgWhSv72K82HBsI/KW+TjSmex65EU8rReNhtUh
+         OtjwVxh8PKzHED8BiYKbwaSV6vmtok0MGPVsb9OZ6z19ayn9TCdWi85ePfP2TMREy9aE
+         OBESMeP3y3MiDTeFNFXE/vWfHM2yIUwHm0UkbLZIJGCMkoDkuKTg8Or31rofkKf3mtxe
+         oOGfB+OVOmZampjKcs5TQ09ggOfwS5NntWeZ4BLShMnTsj7hSK5zrZ4AvySoRuWEwq41
+         aEPlueCtDl5x/ZWTaVRJ9JG578dsDYXKrfRroJ51YNamg8ijdr1nKD4vyAnaOI1L4mix
+         5jUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oZEv+bW9CjN9VY+lYyzIh0+MFHMRTUdBkL+wcZGDg9Y=;
+        b=eMadlIzYYtm3KS6/+ZMKTT9+IdHwS5bnqT5CJ57190MKpRFW8vS7NiL1b6wWXeIkLR
+         kXr2SjQhhcsdoUJRaU8R8AiEZ2WPjFBlD5uzTq37YDLz9707at29fGLuYCMH04zBFqPW
+         7aNH1zIb9ldmIMeFy1D1Rae96e2Ov3+zukyoulywp9ZQ3uzrupZH3Dy+73mSAFIfJrad
+         lW4a+zOBdJ/IceJ3lS9lsGrQZ531knNc5xhB2J1iBQNCL0lTg2i6QvjAhOjV6jTqMtfw
+         kHTzEunSNFLloizktvRvg4AntqrBYSxCeH6QbdyLfVX45pWQRhP2tUt2ENHNHiU/kLeB
+         1IHg==
+X-Gm-Message-State: AOAM531TN7gzpPpK1LnRp4GFbBCnNMd0d/4/MILIKrS/1mhX5bM1a6x4
+        PUF4B9wcE1EyupD/RnWRrsAW+iyIOVY=
+X-Google-Smtp-Source: ABdhPJyhlMx0whdIo9jQVDIbnh+9K2BVgp9oMxEatRqEcUYClluPO3un6EJcAYJyuz5KQ499Xna5tA==
+X-Received: by 2002:a17:90a:a012:: with SMTP id q18mr17928439pjp.223.1609114484297;
+        Sun, 27 Dec 2020 16:14:44 -0800 (PST)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:936f:d5a6:f7f3:4f2d])
+        by smtp.gmail.com with ESMTPSA id p9sm12359660pjb.3.2020.12.27.16.14.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Dec 2020 16:14:43 -0800 (PST)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net] net: hdlc_ppp: Fix issues when mod_timer is called while timer is running
+Date:   Sun, 27 Dec 2020 16:14:25 -0800
+Message-Id: <20201228001425.821582-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CAJht_EOXf4Z3G-rq92hb_YvJEsHtDy15FE7WuthqDQsPY039QQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 24, 2020 at 01:49:47AM -0800, Xie He wrote:
->On Wed, Dec 23, 2020 at 9:01 AM Xie He <xie.he.0141@gmail.com> wrote:
->>
->> I don't think this patch is suitable for stable branches. This patch is
->> part of a patch series that changes the lapb module from "establishing the
->> L2 connection only when needed by L3", to "establishing the L2 connection
->> automatically whenever we are able to". This is a behavioral change. It
->> should be seen as a new feature. It is not a bug fix.
->
->Applying this patch without other patches in the same series will also
->introduce problems, because this patch relies on part of the changes
->in the subsequent patch in the same series to be correct.
+ppp_cp_event is called directly or indirectly by ppp_rx with "ppp->lock"
+held. It may call mod_timer to add a new timer. However, at the same time
+ppp_timer may be already running and waiting for "ppp->lock". In this
+case, there's no need for ppp_timer to continue running and it can just
+exit.
 
-I'll drop it, thanks!
+If we let ppp_timer continue running, it may call add_timer. This causes
+kernel panic because add_timer can't be called with a timer pending.
+This patch fixes this problem.
 
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_ppp.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
+index 64f855651336..261b53fc8e04 100644
+--- a/drivers/net/wan/hdlc_ppp.c
++++ b/drivers/net/wan/hdlc_ppp.c
+@@ -569,6 +569,13 @@ static void ppp_timer(struct timer_list *t)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&ppp->lock, flags);
++	/* mod_timer could be called after we entered this function but
++	 * before we got the lock.
++	 */
++	if (timer_pending(&proto->timer)) {
++		spin_unlock_irqrestore(&ppp->lock, flags);
++		return;
++	}
+ 	switch (proto->state) {
+ 	case STOPPING:
+ 	case REQ_SENT:
 -- 
-Thanks,
-Sasha
+2.27.0
+
