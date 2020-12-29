@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 301482E7323
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 20:02:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C84D2E732C
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 20:09:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbgL2TBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 14:01:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43752 "EHLO mail.kernel.org"
+        id S1726203AbgL2TJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 14:09:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726156AbgL2TBx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Dec 2020 14:01:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 296AE2074B;
-        Tue, 29 Dec 2020 19:01:12 +0000 (UTC)
+        id S1726111AbgL2TJT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Dec 2020 14:09:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DB876207CC;
+        Tue, 29 Dec 2020 19:08:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609268472;
-        bh=gbihcHQsXDrC/i8VMlXVaelWOathEKGyHnbkck553gY=;
+        s=k20201202; t=1609268919;
+        bh=xM2U2x0Y/Ber8zTRSI8K8l/zwjlXobgrzvh08myXKZU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rNLvq5kbdSUUuXxBgRSMGv2Fem3rHUpxQCI+Xpq1i5HqSQFMczLDjJt48lYEr9A4F
-         IPATKxn0Z1NpJMUMuxiu0FlbuazMIWNp9X1jpBGffDvRksPyqu9w7N1QGMjIUYaTVw
-         Duy/iwN14N+D0gpHmnuzXxMSw9OM0sCf3GfZnrY8UbpcBhvCMBakasmJ7RnCF3uUEP
-         f6J1o0UqVTxR+pRC6y/3DnOUEyjVpUIXpdXLwZcOGWakURKj72Vm+9POobslJXzjMU
-         t33Bg6lz5Bja1Le+IwcUzgOQdELTDBRcfyMyMKuTXtiQsFCwdiJfaABmZENw1FdU3N
-         TQhukoNJbEAVQ==
-Date:   Tue, 29 Dec 2020 11:01:10 -0800
+        b=MZvqWY0/IZnFbgRID8zhw1fMrvTkdjELsDdOFyWMkttqeRMbAdFubiWlbNKrIcnVK
+         CBOIJTO2pHifqImyODBhAFsCfupJ74WBLOavk6xIi/ZA43QQXtiE+3Ophjr6oM6LQx
+         UWIR4S+Su/srD+VMfKJgXbM1Eh4QZFkwSabzKDWpORdprz7OcX9GDjhRW4oV7Eh+zZ
+         sWWfbz38zf1evzamF5bxb1RjH4ZF1Glw84V8CIcuAWSuEM/a4hSpnBvZ1aTJgJDPm5
+         dTgMHP4ak8Qv6EIVbEjAmrtja3Lc6kQLXutnoWzv6Nnwauqs7ylC8Fzfj6Gc0vsBsO
+         dNr53E4SEO3Zg==
+Date:   Tue, 29 Dec 2020 11:08:38 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     syzbot <syzbot+35bc8fe94c9f38db8320@syzkaller.appspotmail.com>
-Cc:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
-        davejwatson@fb.com, davem@davemloft.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+To:     syzbot <syzbot+ba431dd9afc3a918981a@syzkaller.appspotmail.com>
+Cc:     andriin@fb.com, ast@kernel.org, aviadye@mellanox.com,
+        borisp@mellanox.com, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, john.fastabend@gmail.com, kafai@fb.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: memory leak in tls_init
-Message-ID: <20201229110106.430c6859@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <00000000000047a6eb05937eaced@google.com>
-References: <00000000000047a6eb05937eaced@google.com>
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Subject: Re: INFO: task hung in tls_sw_cancel_work_tx
+Message-ID: <20201229110838.7d3b080e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <000000000000861441059e047626@google.com>
+References: <000000000000861441059e047626@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,41 +42,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Sep 2019 18:19:09 -0700 syzbot wrote:
-> 2019/09/26 13:11:21 executed programs: 23
-> BUG: memory leak
-> unreferenced object 0xffff88810e482a00 (size 512):
->    comm "syz-executor.4", pid 6874, jiffies 4295090041 (age 14.090s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    backtrace:
->      [<00000000e93f019a>] kmemleak_alloc_recursive  
-> include/linux/kmemleak.h:43 [inline]
->      [<00000000e93f019a>] slab_post_alloc_hook mm/slab.h:586 [inline]
->      [<00000000e93f019a>] slab_alloc mm/slab.c:3319 [inline]
->      [<00000000e93f019a>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
->      [<00000000268637bd>] kmalloc include/linux/slab.h:552 [inline]
->      [<00000000268637bd>] kzalloc include/linux/slab.h:686 [inline]
->      [<00000000268637bd>] create_ctx net/tls/tls_main.c:611 [inline]
->      [<00000000268637bd>] tls_init net/tls/tls_main.c:794 [inline]
->      [<00000000268637bd>] tls_init+0xbc/0x200 net/tls/tls_main.c:773
->      [<00000000f52c33c5>] __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
->      [<00000000f52c33c5>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:160
->      [<0000000009cb49a0>] do_tcp_setsockopt.isra.0+0x1c1/0xe10  
-> net/ipv4/tcp.c:2825
->      [<00000000b9d96429>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3152
->      [<0000000038a5546c>] sock_common_setsockopt+0x38/0x50  
-> net/core/sock.c:3142
->      [<00000000d945b2a0>] __sys_setsockopt+0x10f/0x220 net/socket.c:2084
->      [<000000003c3afaa0>] __do_sys_setsockopt net/socket.c:2100 [inline]
->      [<000000003c3afaa0>] __se_sys_setsockopt net/socket.c:2097 [inline]
->      [<000000003c3afaa0>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2097
->      [<00000000f7f21cbd>] do_syscall_64+0x73/0x1f0  
-> arch/x86/entry/common.c:290
->      [<00000000d4c003b9>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+On Fri, 07 Feb 2020 15:08:09 -0800 syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    90568ecf Merge tag 'kvm-5.6-2' of git://git.kernel.org/pub..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=16513809e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=69fa012479f9a62
+> dashboard link: https://syzkaller.appspot.com/bug?extid=ba431dd9afc3a918981a
+> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1036b6b5e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1651f6e9e00000
 
-#syz invalid
+#syz dup: INFO: task hung in tls_sk_proto_close
 
-This hasn't happened for over a year, so perhaps the TOE-related
-restructuring accidentally fixed it, somehow.
+Looks like the exact same bug, perhaps syzbot got LTO enabled around
+March which changed the function in which hung is reported..
