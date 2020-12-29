@@ -2,103 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 676DD2E6F3E
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 10:12:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C600F2E6F40
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 10:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726197AbgL2JJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 04:09:40 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:47623 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726138AbgL2JJf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Dec 2020 04:09:35 -0500
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1725994AbgL2JNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 04:13:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45495 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725986AbgL2JNB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 04:13:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609233094;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V4ZbLL6gLiqu8bhAJp7vBUQdf9XdTVKfkKmlq8ZgHmE=;
+        b=IHuOJTBMUM0P5glrFzUgS/Un5YjLcjSPCfP+bUkAMfWIjQS8C+dcAgVutSPnzI8FJQEB/J
+        aUgWt1KIN+Y1InHXaZriCtvfFw9+iL96EQ4cpQPrk3WHL8ixg38y36C5uNfBIPr+KEBzkM
+        L0wavAsq5pNuQpDxeNFrrYHkFyBFsuA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-463-52sI5t4GNvatqdItb3kogA-1; Tue, 29 Dec 2020 04:11:30 -0500
+X-MC-Unique: 52sI5t4GNvatqdItb3kogA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 14BEF440B08;
-        Tue, 29 Dec 2020 11:08:51 +0200 (IST)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        =?UTF-8?q?Ulisses=20Alonso=20Camar=C3=B3?= <uaca@alumni.uv.es>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH v2 2/2] docs: networking: packet_mmap: fix old config reference
-Date:   Tue, 29 Dec 2020 11:08:39 +0200
-Message-Id: <80089f3783372c8fd7833f28ce774a171b2ef252.1609232919.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <5cb47005e7a59b64299e038827e295822193384c.1609232919.git.baruch@tkos.co.il>
-References: <5cb47005e7a59b64299e038827e295822193384c.1609232919.git.baruch@tkos.co.il>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CACA8800D55;
+        Tue, 29 Dec 2020 09:11:27 +0000 (UTC)
+Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8AAA35D9DC;
+        Tue, 29 Dec 2020 09:11:27 +0000 (UTC)
+Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
+        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 138524BB40;
+        Tue, 29 Dec 2020 09:11:26 +0000 (UTC)
+Date:   Tue, 29 Dec 2020 04:11:08 -0500 (EST)
+From:   Jason Wang <jasowang@redhat.com>
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
+        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+Message-ID: <1356137727.40748805.1609233068675.JavaMail.zimbra@redhat.com>
+In-Reply-To: <CACycT3soQoX5avZiFBLEGBuJpdni6-UxdhAPGpWHBWVf+dEySg@mail.gmail.com>
+References: <20201222145221.711-1-xieyongji@bytedance.com> <CACycT3s=m=PQb5WFoMGhz8TNGme4+=rmbbBTtrugF9ZmNnWxEw@mail.gmail.com> <0e6faf9c-117a-e23c-8d6d-488d0ec37412@redhat.com> <CACycT3uwXBYvRbKDWdN3oCekv+o6_Lc=-KTrxejD=fr-zgibGw@mail.gmail.com> <2b24398c-e6d9-14ec-2c0d-c303d528e377@redhat.com> <CACycT3uDV43ecScrMh1QVpStuwDETHykJzzY=pkmZjP2Dd2kvg@mail.gmail.com> <e77c97c5-6bdc-cdd0-62c0-6ff75f6dbdff@redhat.com> <CACycT3soQoX5avZiFBLEGBuJpdni6-UxdhAPGpWHBWVf+dEySg@mail.gmail.com>
+Subject: Re: [RFC v2 09/13] vduse: Add support for processing vhost iotlb
+ message
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [10.68.5.20, 10.4.195.9]
+Thread-Topic: vduse: Add support for processing vhost iotlb message
+Thread-Index: OBugpafsf525DDt1uUEs5wc+oTZ2vg==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before commit 889b8f964f2f ("packet: Kill CONFIG_PACKET_MMAP.") there
-used to be a CONFIG_PACKET_MMAP config symbol that depended on
-CONFIG_PACKET. The text still implies that PACKET_MMAP can be disabled.
-Remove that from the text, as well as reference to old kernel versions.
 
-Also, drop reference to broken link to information for pre 2.6.5
-kernels.
 
-Make a slight working improvement (s/In/On/) while at it.
+----- Original Message -----
+> On Mon, Dec 28, 2020 at 4:43 PM Jason Wang <jasowang@redhat.com> wrote:
+> >
+> >
+> > On 2020/12/28 =E4=B8=8B=E5=8D=884:14, Yongji Xie wrote:
+> > >> I see. So all the above two questions are because VHOST_IOTLB_INVALI=
+DATE
+> > >> is expected to be synchronous. This need to be solved by tweaking th=
+e
+> > >> current VDUSE API or we can re-visit to go with descriptors relaying
+> > >> first.
+> > >>
+> > > Actually all vdpa related operations are synchronous in current
+> > > implementation. The ops.set_map/dma_map/dma_unmap should not return
+> > > until the VDUSE_UPDATE_IOTLB/VDUSE_INVALIDATE_IOTLB message is replie=
+d
+> > > by userspace. Could it solve this problem?
+> >
+> >
+> >   I was thinking whether or not we need to generate IOTLB_INVALIDATE
+> > message to VDUSE during dma_unmap (vduse_dev_unmap_page).
+> >
+> > If we don't, we're probably fine.
+> >
+>=20
+> It seems not feasible. This message will be also used in the
+> virtio-vdpa case to notify userspace to unmap some pages during
+> consistent dma unmapping. Maybe we can document it to make sure the
+> users can handle the message correctly.
 
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
-v2: Address comments from Jakub Kicinski and Willem de Bruijn
+Just to make sure I understand your point.
 
-  * Don't change PACKET_MMAP
+Do you mean you plan to notify the unmap of 1) streaming DMA or 2)
+coherent DMA?
 
-  * Remove mention of specific kernel versions
+For 1) you probably need a workqueue to do that since dma unmap can
+be done in irq or bh context. And if usrspace does't do the unmap, it
+can still access the bounce buffer (if you don't zap pte)?
 
-  * Don't reflow paragraphs
+Thanks
 
-  * s/In/On/
----
- Documentation/networking/packet_mmap.rst | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/networking/packet_mmap.rst b/Documentation/networking/packet_mmap.rst
-index f3646c80b019..500ef60b1b82 100644
---- a/Documentation/networking/packet_mmap.rst
-+++ b/Documentation/networking/packet_mmap.rst
-@@ -8,7 +8,7 @@ Abstract
- ========
- 
- This file documents the mmap() facility available with the PACKET
--socket interface on 2.4/2.6/3.x kernels. This type of sockets is used for
-+socket interface. This type of sockets is used for
- 
- i) capture network traffic with utilities like tcpdump,
- ii) transmit network traffic, or any other that needs raw
-@@ -25,12 +25,12 @@ Please send your comments to
- Why use PACKET_MMAP
- ===================
- 
--In Linux 2.4/2.6/3.x if PACKET_MMAP is not enabled, the capture process is very
-+Non PACKET_MMAP capture process (plain AF_PACKET) is very
- inefficient. It uses very limited buffers and requires one system call to
- capture each packet, it requires two if you want to get packet's timestamp
- (like libpcap always does).
- 
--In the other hand PACKET_MMAP is very efficient. PACKET_MMAP provides a size
-+On the other hand PACKET_MMAP is very efficient. PACKET_MMAP provides a size
- configurable circular buffer mapped in user space that can be used to either
- send or receive packets. This way reading packets just needs to wait for them,
- most of the time there is no need to issue a single system call. Concerning
-@@ -252,8 +252,7 @@ PACKET_MMAP setting constraints
- 
- In kernel versions prior to 2.4.26 (for the 2.4 branch) and 2.6.5 (2.6 branch),
- the PACKET_MMAP buffer could hold only 32768 frames in a 32 bit architecture or
--16384 in a 64 bit architecture. For information on these kernel versions
--see http://pusa.uv.es/~ulisses/packet_mmap/packet_mmap.pre-2.4.26_2.6.5.txt
-+16384 in a 64 bit architecture.
- 
- Block size limit
- ----------------
--- 
-2.29.2
+>=20
+> Thanks,
+> Yongji
+>=20
+>=20
 
