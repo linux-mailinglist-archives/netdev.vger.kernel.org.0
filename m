@@ -2,170 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD912E72C5
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 18:41:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E78CF2E72D6
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 18:56:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbgL2Rkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 12:40:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27337 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726138AbgL2Rkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 12:40:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609263566;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0N2HePoQRmdLA5K1yApdE8rhkgViaY5rXeLPZJah4TQ=;
-        b=MmG9nWwLMBau8P4IIoveWubOWmOSNfUSUvwH75MXpKMVkkpvt18+Rz8Y3cuDTsnbBrnchQ
-        7fCkRicPDxHCpk4iN2zL24T2EYBGv8gC2AfgzyYMj90EbiusAewGD1bRgC8eWILZh6RMBC
-        5XgCi5r6OH+cHIzH00xat0oiapgVUuY=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-278-nPcUYq-wN9-qaxvisBV2kw-1; Tue, 29 Dec 2020 12:39:22 -0500
-X-MC-Unique: nPcUYq-wN9-qaxvisBV2kw-1
-Received: by mail-oo1-f72.google.com with SMTP id w3so8283854oov.16
-        for <netdev@vger.kernel.org>; Tue, 29 Dec 2020 09:39:22 -0800 (PST)
+        id S1726196AbgL2Rzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 12:55:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726158AbgL2Rzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 12:55:44 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC48C061574
+        for <netdev@vger.kernel.org>; Tue, 29 Dec 2020 09:55:04 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id z5so12709551iob.11
+        for <netdev@vger.kernel.org>; Tue, 29 Dec 2020 09:55:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=1y3pV584V3g0aQzXo6vCXwip+/VMr06hodMcN4IEtoE=;
+        b=eBRiMlaoAoEceZblPywSP5u1U9i+l5BvKGeQ3bGK1Id+qLsWMpWv8B6CWuNshZGjb0
+         mKm0lkNgUd+j6XFBao5Pve2kHPfZxLGXzJqeB6GREBQsI+9BPacbImlvM7Cnco5W+cY7
+         2p74n4mc9s6wp6XIIl2Ewws7PIfbbfOfEEKrxVQIvkjHU1tEwwD3TinkPMdH7AhHT8zl
+         V3sKFVpA629lsmRVyuMTboN4ahrvChv7fPYAVVjLl7bRe85GCGYZIGOyDXVypdUQvK+5
+         ShPYADLDYL6KWrE3DlKY2+YBAt8jbb/NOQ/Cu1PtKL2sRHmVxm+Qi+k+29+FcY2Pmcai
+         SzNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0N2HePoQRmdLA5K1yApdE8rhkgViaY5rXeLPZJah4TQ=;
-        b=NGxUYgDCadZ6dUZ03jIl0Nyzwo/NrglbKtIIZBlw/OpAIN40++vBpkAYPdlI1NuIst
-         yU4He+yzDepswlOv0enpY4zbe6tO0zOZyvkmK7ep48Slr/k3BoXYdH04lYkOaEuW3ray
-         GQDESp9ilPrU5tjmrVWllfzVbKprt/gMqxhrCD+fiTtrivTuSWpi5V69vwMCnjs2e43l
-         FsM8FXAoLHg8084M6Qn1SHCtV4K7D9M+WGfiAeJl05WUGcezZS0E8CV06V/UbpIWyfv0
-         1+bU8hpaLElwL8Rx+ds+PI8NTT6wGNmKUf7IPObzQOuQ2n/74D3qOrJ7wUAotWg9BDU1
-         1F/Q==
-X-Gm-Message-State: AOAM531eLLaRfisw9168mSPkqnXEKpOyZCONTvdl7zETHu1XW5c+kTwi
-        0FfyODs50/JIM7MAdkla3HVtP2VgwzG34F5DV4Oa9lkK9ADoVnxXaKnB32b0kQ/9XclbiSk5eB/
-        Zj+DyIkWHtQKMS+2q
-X-Received: by 2002:a4a:c4c7:: with SMTP id g7mr34109291ooq.50.1609263562111;
-        Tue, 29 Dec 2020 09:39:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwZkhEccaqdwFw1KqH+CndueSbBG4594RPWMr0slNPBBY1NHS22T8wMLn2iZEPQfjiQTKuBeQ==
-X-Received: by 2002:a4a:c4c7:: with SMTP id g7mr34109277ooq.50.1609263561902;
-        Tue, 29 Dec 2020 09:39:21 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id s26sm9997234otd.8.2020.12.29.09.39.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Dec 2020 09:39:21 -0800 (PST)
-From:   trix@redhat.com
-To:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com
-Cc:     linux-afs@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] rxrpc: fix handling of an unsupported token type in rxrpc_read()
-Date:   Tue, 29 Dec 2020 09:39:16 -0800
-Message-Id: <20201229173916.1459499-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=1y3pV584V3g0aQzXo6vCXwip+/VMr06hodMcN4IEtoE=;
+        b=RHvG40iegD6bWuMLd3kFcRMy7IaTy5XRZD+HZTM//bK0LL/vXX1nmYOcirgzkMA8lq
+         Mj72Oi928B0MlVfQ46IFCOHq1DKkDww4XiAaQOFSyq/axg9nqgPflYPu59LgEciVZsL2
+         OzJ9xdJ90cCYPTR6ZjOZtPBp5hhPzxJDizDo7DFZxWNZj96pjZUgRu+XvMcdde2C4Byp
+         wentaCZkgf15OcXGR3+AaIRCLgnXG9WKaDB+8HONMGypo5Gg/yg2/O4k7LsqQdnmENi5
+         Kuto0R2BUTC4784eqFbc49DT1wOg/sYeiybbWwkp1+LHdFQUZG2zJvhUeZ3uSPoA7r2M
+         qCDQ==
+X-Gm-Message-State: AOAM530RRQxJhvj99ila5o8nCTXVOmX2njBDIwbrO4AsKN+almifQ5uM
+        37UoDtfU+8tRNjiHW3C4HwQfUxDFU8cDWb6IX/4=
+X-Google-Smtp-Source: ABdhPJypggvcGsvGXPdp241ke62Ar7YSREzi6Z5B2N1/KyWc2u+o8j9r3uwauzUtcwNYz1oJ+U8JAtUa9CIm5eskWzE=
+X-Received: by 2002:a6b:d010:: with SMTP id x16mr40818657ioa.161.1609264503576;
+ Tue, 29 Dec 2020 09:55:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:ac0:c2cd:0:0:0:0:0 with HTTP; Tue, 29 Dec 2020 09:55:03
+ -0800 (PST)
+Reply-To: angeladrchantal@gmail.com
+From:   MRS Chantal Angela <esther.laboso45@gmail.com>
+Date:   Tue, 29 Dec 2020 18:55:03 +0100
+Message-ID: <CAJAkD3LtDvRaic9edh3DppfN4PV5bP8xn4zxV0uaAg-51Xap2Q@mail.gmail.com>
+Subject: Dear Beneficiary
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Dear Beneficiary
 
-clang static analysis reports this problem
+I am Mrs. Chantal. I am sending this brief letter to solicit your
+partnership to transfer a sum of 15.9 Million Dollars into your
+reliable account as my business partner. However, it's my urgent need
+for foreign partner that made me to contact you for this
+transaction.Further details of the transfer will be forwarded to you
+if you are
 
-net/rxrpc/key.c:657:11: warning: Assigned value is garbage or undefined
-                toksize = toksizes[tok++];
-                        ^ ~~~~~~~~~~~~~~~
+ready to assist me. This is my private email address
 
-rxrpc_read() contains two loops.  The first loop calculates the token
-sizes and stores the results in toksizes[] and the second one uses the
-array.  When there is an error in identifying the token in the first
-loop, the token is skipped, no change is made to the toksizes[] array.
-When the same error happens in the second loop, the token is not
-skipped.  This will cause the toksizes[] array to be out of step and
-will overrun past the calculated sizes.
+(angeladrchantal@gmail.com)
 
-Change the error handling in the second loop to be consistent with
-the first.  Simplify the error handling to an if check.
+Best Regards.
 
-Fixes: 9a059cd5ca7d ("rxrpc: Downgrade the BUG() for unsupported token type in rxrpc_read()")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- net/rxrpc/key.c | 48 ++++++++++++++++++++++--------------------------
- 1 file changed, 22 insertions(+), 26 deletions(-)
-
-diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
-index 9631aa8543b5..eea877ee6ab3 100644
---- a/net/rxrpc/key.c
-+++ b/net/rxrpc/key.c
-@@ -587,20 +587,19 @@ static long rxrpc_read(const struct key *key,
- 	for (token = key->payload.data[0]; token; token = token->next) {
- 		toksize = 4;	/* sec index */
- 
--		switch (token->security_index) {
--		case RXRPC_SECURITY_RXKAD:
--			toksize += 8 * 4;	/* viceid, kvno, key*2, begin,
--						 * end, primary, tktlen */
--			if (!token->no_leak_key)
--				toksize += RND(token->kad->ticket_len);
--			break;
--
--		default: /* we have a ticket we can't encode */
-+		if (token->security_index != RXRPC_SECURITY_RXKAD) {
-+			/* we have a ticket we can't encode */
- 			pr_err("Unsupported key token type (%u)\n",
- 			       token->security_index);
- 			continue;
- 		}
- 
-+		/* viceid, kvno, key*2, begin, end, primary, tktlen */
-+		toksize += 8 * 4;
-+
-+		if (!token->no_leak_key)
-+			toksize += RND(token->kad->ticket_len);
-+
- 		_debug("token[%u]: toksize=%u", ntoks, toksize);
- 		ASSERTCMP(toksize, <=, AFSTOKEN_LENGTH_MAX);
- 
-@@ -654,28 +653,25 @@ static long rxrpc_read(const struct key *key,
- 
- 	tok = 0;
- 	for (token = key->payload.data[0]; token; token = token->next) {
-+		/* error reported above */
-+		if (token->security_index != RXRPC_SECURITY_RXKAD)
-+			continue;
-+
- 		toksize = toksizes[tok++];
- 		ENCODE(toksize);
- 		oldxdr = xdr;
- 		ENCODE(token->security_index);
- 
--		switch (token->security_index) {
--		case RXRPC_SECURITY_RXKAD:
--			ENCODE(token->kad->vice_id);
--			ENCODE(token->kad->kvno);
--			ENCODE_BYTES(8, token->kad->session_key);
--			ENCODE(token->kad->start);
--			ENCODE(token->kad->expiry);
--			ENCODE(token->kad->primary_flag);
--			if (token->no_leak_key)
--				ENCODE(0);
--			else
--				ENCODE_DATA(token->kad->ticket_len, token->kad->ticket);
--			break;
--
--		default:
--			break;
--		}
-+		ENCODE(token->kad->vice_id);
-+		ENCODE(token->kad->kvno);
-+		ENCODE_BYTES(8, token->kad->session_key);
-+		ENCODE(token->kad->start);
-+		ENCODE(token->kad->expiry);
-+		ENCODE(token->kad->primary_flag);
-+		if (token->no_leak_key)
-+			ENCODE(0);
-+		else
-+			ENCODE_DATA(token->kad->ticket_len, token->kad->ticket);
- 
- 		ASSERTCMP((unsigned long)xdr - (unsigned long)oldxdr, ==,
- 			  toksize);
--- 
-2.27.0
-
+MRS Chantal Angela Rowland
