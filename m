@@ -2,117 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E482E7320
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 20:00:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 301482E7323
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 20:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726285AbgL2S65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 13:58:57 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:49483 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbgL2S65 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 13:58:57 -0500
-Received: by mail-io1-f69.google.com with SMTP id m19so6122212iow.16
-        for <netdev@vger.kernel.org>; Tue, 29 Dec 2020 10:58:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=+TBsWIfvGU4VhD7Hd6BwPAnBfpcnr8dDlMOLqb/jGdg=;
-        b=k2pewZAqeROFj762gYeooY0rXyNS2DkT8wayMLAZmUAo/Af6aMtDPlk6MJg5c78xDj
-         /cYvwnEo+Kh6lZYX15LSnYJncC8U7vvZEwlxajO96bNqyL28cR3hOKVqAKyEXZiFmYdD
-         OaUP2NsQEUdxcWaVH5No/KELyob9I4SiPVUL6LP4Lv3cNm4bELaRosehMfCDcSvaX9Fu
-         g+entc+3aCyngyBX552UrPV3JhbJKvdpw6/wRsHk8aNUvyIXMJMUG6dQCkKTH4e1uwxN
-         Rwepq2DKS2+yTtOMxgPOvB7gAKSwQyzULx3/VMmGN7CoRYeC2y2/NMIGW8JXeI4h1OoP
-         MIKQ==
-X-Gm-Message-State: AOAM533flQiAcy65uDjJTrTilcrbkOrApWqo5I4fTioOwXelfL5t30q6
-        r1dDBWf4AWgU3Ccx1Cqq1sUtCvChFu5hKJmtqEJbgtK3Mr+s
-X-Google-Smtp-Source: ABdhPJxen17g8uLsEGBTknQu7HdfqvdN+/NqwsWzSwD2/BFCe4x0NLdNg22WkK4cejrtf7o4wbRuIrIcLWjQAbh5AtxdAyK5PK75
+        id S1726240AbgL2TBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 14:01:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43752 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726156AbgL2TBx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Dec 2020 14:01:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 296AE2074B;
+        Tue, 29 Dec 2020 19:01:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609268472;
+        bh=gbihcHQsXDrC/i8VMlXVaelWOathEKGyHnbkck553gY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rNLvq5kbdSUUuXxBgRSMGv2Fem3rHUpxQCI+Xpq1i5HqSQFMczLDjJt48lYEr9A4F
+         IPATKxn0Z1NpJMUMuxiu0FlbuazMIWNp9X1jpBGffDvRksPyqu9w7N1QGMjIUYaTVw
+         Duy/iwN14N+D0gpHmnuzXxMSw9OM0sCf3GfZnrY8UbpcBhvCMBakasmJ7RnCF3uUEP
+         f6J1o0UqVTxR+pRC6y/3DnOUEyjVpUIXpdXLwZcOGWakURKj72Vm+9POobslJXzjMU
+         t33Bg6lz5Bja1Le+IwcUzgOQdELTDBRcfyMyMKuTXtiQsFCwdiJfaABmZENw1FdU3N
+         TQhukoNJbEAVQ==
+Date:   Tue, 29 Dec 2020 11:01:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     syzbot <syzbot+35bc8fe94c9f38db8320@syzkaller.appspotmail.com>
+Cc:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
+        davejwatson@fb.com, davem@davemloft.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: memory leak in tls_init
+Message-ID: <20201229110106.430c6859@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <00000000000047a6eb05937eaced@google.com>
+References: <00000000000047a6eb05937eaced@google.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:b02:: with SMTP id 2mr43666362jad.15.1609268296590;
- Tue, 29 Dec 2020 10:58:16 -0800 (PST)
-Date:   Tue, 29 Dec 2020 10:58:16 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002aa9f905b79ef9c3@google.com>
-Subject: UBSAN: shift-out-of-bounds in choke_change
-From:   syzbot <syzbot+4eda8c01ca2315d1722e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, 26 Sep 2019 18:19:09 -0700 syzbot wrote:
+> 2019/09/26 13:11:21 executed programs: 23
+> BUG: memory leak
+> unreferenced object 0xffff88810e482a00 (size 512):
+>    comm "syz-executor.4", pid 6874, jiffies 4295090041 (age 14.090s)
+>    hex dump (first 32 bytes):
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>    backtrace:
+>      [<00000000e93f019a>] kmemleak_alloc_recursive  
+> include/linux/kmemleak.h:43 [inline]
+>      [<00000000e93f019a>] slab_post_alloc_hook mm/slab.h:586 [inline]
+>      [<00000000e93f019a>] slab_alloc mm/slab.c:3319 [inline]
+>      [<00000000e93f019a>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
+>      [<00000000268637bd>] kmalloc include/linux/slab.h:552 [inline]
+>      [<00000000268637bd>] kzalloc include/linux/slab.h:686 [inline]
+>      [<00000000268637bd>] create_ctx net/tls/tls_main.c:611 [inline]
+>      [<00000000268637bd>] tls_init net/tls/tls_main.c:794 [inline]
+>      [<00000000268637bd>] tls_init+0xbc/0x200 net/tls/tls_main.c:773
+>      [<00000000f52c33c5>] __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
+>      [<00000000f52c33c5>] tcp_set_ulp+0xe2/0x190 net/ipv4/tcp_ulp.c:160
+>      [<0000000009cb49a0>] do_tcp_setsockopt.isra.0+0x1c1/0xe10  
+> net/ipv4/tcp.c:2825
+>      [<00000000b9d96429>] tcp_setsockopt+0x71/0x80 net/ipv4/tcp.c:3152
+>      [<0000000038a5546c>] sock_common_setsockopt+0x38/0x50  
+> net/core/sock.c:3142
+>      [<00000000d945b2a0>] __sys_setsockopt+0x10f/0x220 net/socket.c:2084
+>      [<000000003c3afaa0>] __do_sys_setsockopt net/socket.c:2100 [inline]
+>      [<000000003c3afaa0>] __se_sys_setsockopt net/socket.c:2097 [inline]
+>      [<000000003c3afaa0>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2097
+>      [<00000000f7f21cbd>] do_syscall_64+0x73/0x1f0  
+> arch/x86/entry/common.c:290
+>      [<00000000d4c003b9>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-syzbot found the following issue on:
+#syz invalid
 
-HEAD commit:    71c5f031 Merge tag 'docs-5.11-2' of git://git.lwn.net/linux
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15103693500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3e7e34a83d606100
-dashboard link: https://syzkaller.appspot.com/bug?extid=4eda8c01ca2315d1722e
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143d33ff500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13725277500000
-
-Bisection is inconclusive: the issue happens on the oldest tested release.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=137f60db500000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=10ff60db500000
-console output: https://syzkaller.appspot.com/x/log.txt?x=177f60db500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4eda8c01ca2315d1722e@syzkaller.appspotmail.com
-
-netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-================================================================================
-UBSAN: shift-out-of-bounds in ./include/net/red.h:252:22
-shift exponent 96 is too large for 32-bit type 'int'
-CPU: 0 PID: 8513 Comm: syz-executor800 Not tainted 5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
- __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
- red_set_parms include/net/red.h:252 [inline]
- choke_change.cold+0xce/0x115 net/sched/sch_choke.c:413
- qdisc_create+0x4ba/0x13a0 net/sched/sch_api.c:1246
- tc_modify_qdisc+0x4c8/0x1a30 net/sched/sch_api.c:1662
- rtnetlink_rcv_msg+0x498/0xb80 net/core/rtnetlink.c:5564
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4437b9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 eb 0d fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff205ca1d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004437b9
-RDX: 0000000000000000 RSI: 00000000200007c0 RDI: 0000000000000004
-RBP: 00007fff205ca1e0 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-R10: 0000000001bbbbbb R11: 0000000000000246 R12: 00007fff205ca1f0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-================================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+This hasn't happened for over a year, so perhaps the TOE-related
+restructuring accidentally fixed it, somehow.
