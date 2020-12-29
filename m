@@ -2,53 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 104492E6ED2
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 08:57:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D23BD2E6EDD
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 09:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726061AbgL2H5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 02:57:32 -0500
-Received: from mail-oi1-f169.google.com ([209.85.167.169]:37778 "EHLO
-        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725866AbgL2H5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 02:57:32 -0500
-Received: by mail-oi1-f169.google.com with SMTP id l207so13915823oib.4;
-        Mon, 28 Dec 2020 23:57:17 -0800 (PST)
+        id S1726181AbgL2IRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 03:17:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725979AbgL2IRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 03:17:51 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A0AC0613D6;
+        Tue, 29 Dec 2020 00:17:11 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id 23so29087878lfg.10;
+        Tue, 29 Dec 2020 00:17:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8yoRVgdzslZ2s5VNKQ7c0EICKigH3eQ9ghrStUXwk4g=;
+        b=NAXzB5SEXKT2bdZhaJkeCOkkfpKiPGJBBASxeYQOSpuat0xf42fmQCDnSwxSBPCWrh
+         2jFqaAMVDjwhpqvLkqvaAHUjh1AKm0Y6j3+PWZMuoVRtshT8nnuNM3EVkQCFTdQbo5/k
+         k2TkqTCZfQfb0nVfkP+r0Tbq2K9Wzc0l+NdO9x1GS+HfUFW/WCJzSSG/5cm51cubJrak
+         jwLpgut8CURr+wpKmoAOwYaNa1KDQ7fMv4GFHmkkW3d5tgRL0jER429lsliDYUG7B9Fh
+         A3lTxYrbbrA8C7qGq4PAZ3U3PrvXW4K4dIdS6wCCXu1Tndl3KPSpMIjumF+l6pGv3Ahc
+         hYzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oMPZ3DxBbc0lAKaQmoEELbbnrNIMTsZVrRlvJMn6IWU=;
-        b=QypvsQM46keFFzHTb3Am10PMu6FIUqJq37tOwghHez8DGUkzN+6xRoT9KZ3AiPe/Qz
-         q/iWKCwjsAkogdOYQ7jRzGT9HcMulN8HuKvKe4cw1Uu1LYm3kbbzoZR/YFmf77o6p79E
-         i8gW8xtgzxe+b7kaBZPdyCG/9CEfxImkQB12ZpT8jQDGU2EHw5s85xTZODGqKdM6QwjD
-         uyg+zNsU9pTZeOejqwXyIbgM53v6y4KXroQDdAXIH7c8BXG55ZB0A73n51GvgE7oRl0B
-         ZglMVAyBPgZ6Kxb/2KRHo5cVaXbHWcD2X0NHgkcRssQsBHCrS7/X9nYcu1/XDkynwVYr
-         DJ+g==
-X-Gm-Message-State: AOAM530Hl7PL9R/lb6wqGvBNCYitQazKJmu7qVjOV927GEHsM7hL3aEK
-        2+jJHksPUcQX2BkqoD3dV2nefp8tymPSM+2t0lSSoo0qblw=
-X-Google-Smtp-Source: ABdhPJzNGJGEy8ppBWe2WqSc3W7SOXJx6+xS6SXmAHxzBe05sOkLQa/LD4DLp3aPjhQ9PxWEVWOIpV4tJZb/H0u7BW8=
-X-Received: by 2002:a05:6808:199:: with SMTP id w25mr1625378oic.151.1609228611780;
- Mon, 28 Dec 2020 23:56:51 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=8yoRVgdzslZ2s5VNKQ7c0EICKigH3eQ9ghrStUXwk4g=;
+        b=a4x0iYhvLQWm1PU2aF69o4K94pxIEP8xueIeUQ94i4F1HJO1ZTFDklUfYc1GGDaR9a
+         z5vQmCWgSZ4EgqmkwTx3+JGStLYshKQKYkMY6heAScwXR5v2mC1lM7myPZ91SJLF2EVu
+         KAEFtiKAiMrYmZXVgvGVz1CGyZ8ppi+MPbcPMvok6ZTs3A/dhjLQ1UUoyK0496RiMmiL
+         nq32WXaP3bjIMiPTQfmwLN1nd3MMPUQFgD6k05DNrurzS7fEQq6VImmOaGhFvgrgdnGM
+         65rrXY8fPlLtelwg8DwHdvFpMT7cEw3sl5AP2tjcY3ti7QZl6ubMT+EPaiu0mimOyZ7G
+         Fbkw==
+X-Gm-Message-State: AOAM53272ZsMdStBke1kNsJ/FN0oRYdPKD7heOpyPWIS6doni/GLszF/
+        60reyDokhxp1NTCZjF3pVedE4ujv+I4=
+X-Google-Smtp-Source: ABdhPJwI4Qk5tmYMi5kKb5Z0GK99s9dL1UCkByjF5rAXM5cHmVOfPpXmRZYHrusB374Mi/s3hM8iwQ==
+X-Received: by 2002:a19:9d8:: with SMTP id 207mr20532632lfj.581.1609229829361;
+        Tue, 29 Dec 2020 00:17:09 -0800 (PST)
+Received: from [192.168.1.100] ([178.176.78.246])
+        by smtp.gmail.com with ESMTPSA id u14sm6875979ljo.72.2020.12.29.00.17.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Dec 2020 00:17:08 -0800 (PST)
+Subject: Re: [PATCH 1/4] dt-bindings: net: renesas,etheravb: Add additional
+ clocks
+To:     Adam Ford <aford173@gmail.com>, linux-renesas-soc@vger.kernel.org
+Cc:     aford@beaconembedded.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201228213121.2331449-1-aford173@gmail.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Organization: Brain-dead Software
+Message-ID: <7b271d36-3178-0338-7bfb-558115cb2516@gmail.com>
+Date:   Tue, 29 Dec 2020 11:17:01 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-References: <20201222184926.35382198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201224032116.2453938-1-roland@kernel.org> <X+RJEI+1AR5E0z3z@kroah.com> <20201228133036.3a2e9fb5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201228133036.3a2e9fb5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Roland Dreier <roland@kernel.org>
-Date:   Mon, 28 Dec 2020 23:56:35 -0800
-Message-ID: <CAG4TOxNM8du=xadLeVwNU5Zq=MW7Kj74-1d9ThZ0q2OrXHE5qQ@mail.gmail.com>
-Subject: Re: [PATCH] CDC-NCM: remove "connected" log message
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oliver@neukum.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201228213121.2331449-1-aford173@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Applied to net and queued for LTS, thanks!
+Hello!
 
-Thanks - is Oliver's series of 3 patches that get rid of the other
-half of the log spam also on the way upstream?
+On 29.12.2020 0:31, Adam Ford wrote:
 
- - R.
+> The AVB driver assumes there is an external clock, but it could
+> be driven by an external clock.
+
+     Driver can be driven by external clock? :-)
+
+> In order to enable a programmable
+> clock, it needs to be added to the clocks list and enabled in the
+> driver.  Since there currently only one clock, there is no
+                       ^ is
+> clock-names list either.
+> 
+> Update bindings to add the additional optional clock, and explicitly
+> name both of them.
+> 
+> Signed-off-by: Adam Ford <aford173@gmail.com>
+[...]
+
+MBR, Sergei
