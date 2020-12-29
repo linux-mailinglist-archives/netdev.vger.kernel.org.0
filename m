@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 566122E7030
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 12:55:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0CDD2E707A
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 13:06:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726352AbgL2Lyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 06:54:44 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7443 "EHLO
+        id S1726487AbgL2MGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 07:06:09 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:8373 "EHLO
         hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725964AbgL2Lyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 06:54:44 -0500
+        with ESMTP id S1725866AbgL2MGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 07:06:09 -0500
 Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5feb18db0000>; Tue, 29 Dec 2020 03:54:03 -0800
+        id <B5feb1b880005>; Tue, 29 Dec 2020 04:05:28 -0800
 Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
  HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Tue, 29 Dec 2020 11:53:44 +0000
-Date:   Tue, 29 Dec 2020 13:53:40 +0200
+ 15.0.1473.3; Tue, 29 Dec 2020 12:05:08 +0000
+Date:   Tue, 29 Dec 2020 14:05:04 +0200
 From:   Eli Cohen <elic@nvidia.com>
 To:     Jason Wang <jasowang@redhat.com>
 CC:     <mst@redhat.com>, <eperezma@redhat.com>, <kvm@vger.kernel.org>,
@@ -26,7 +26,7 @@ CC:     <mst@redhat.com>, <eperezma@redhat.com>, <kvm@vger.kernel.org>,
         <rob.miller@broadcom.com>, <stefanha@redhat.com>,
         <sgarzare@redhat.com>
 Subject: Re: [PATCH 11/21] vhost-vdpa: introduce asid based IOTLB
-Message-ID: <20201229115340.GD195479@mtl-vdi-166.wap.labs.mlnx>
+Message-ID: <20201229120504.GE195479@mtl-vdi-166.wap.labs.mlnx>
 References: <20201216064818.48239-1-jasowang@redhat.com>
  <20201216064818.48239-12-jasowang@redhat.com>
 MIME-Version: 1.0
@@ -35,19 +35,19 @@ Content-Disposition: inline
 In-Reply-To: <20201216064818.48239-12-jasowang@redhat.com>
 User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
 X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1609242843; bh=KQD3OrCeFs+jURKnQzJB+fjVhrIz4DS9epB6vpa/2GE=;
+        t=1609243528; bh=yeL80eBThKjFpOyBauK8Udo5xRQYwPMG1nU63oHFHLE=;
         h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
          Content-Type:Content-Disposition:In-Reply-To:User-Agent:
          X-Originating-IP:X-ClientProxiedBy;
-        b=sMk7nHqV4p7W0GvdWKDBlvr3NR8cyJT86pXMJGiCdJ2GUjr24f+5aC3hrqMC/SZ33
-         lUgWIPGnqSDZfdfhSBMEvCpi37fl3hbIEP4hBzuKM9qW+dKmeQhKKMgXNKKgd70LQN
-         13gXBNhiOOIvWSGzA6ZQG6pq8EmzVPczXvoZtLpKAOYJE6y5D3WMORlF/AxJA8daYw
-         2oM6fr7KgrA6jeDu1CHNLxhWCIMAp6G7Akl1NBoAlx+nka5s2CwmYF12cG7zVeNzGE
-         QXhArEogDkx/RiP8o1Zp+3RYdERCb0+21arst0TJReS6n8KdMKyqauxIeEInBOVGBm
-         hc2txR3XGPUOg==
+        b=NkfwIkCS9nIBxWzBGFRJtDaauSGIxIQCPgCG3atO90ORA3NatItqDs0B7mvN5WKoj
+         bDE8qwXsa/NJWo9hZnTH5Lz4tdUXvVjfBMZw3Fx9MVwCVuYUfE5HgMVDMy9WZARn84
+         +ApjOimDt5GgGzD8ZD8SEai0aEzQJ0knO/GngwXXhZL5k/pcDZffkNAgRLE+ebCZYa
+         c6lAltWqm4i1w3tWhdL9gK8pWoqK+NpmWibAIPn1rw8st6xmvVwH2wt/EOHfJRbxXL
+         Jn7gBHRibUj+181BhGBVy7WvwO7RDOwS2cdHz18dtoqzbbKy3D1/4pmg3ppUK1Hlud
+         K+c2KhUCIR4sg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -121,9 +121,6 @@ On Wed, Dec 16, 2020 at 02:48:08PM +0800, Jason Wang wrote:
 > +		return NULL;
 > +
 > +	as = kmalloc(sizeof(*as), GFP_KERNEL);
-
-kzalloc()? See comment below.
-
 > +	if (!as)
 > +		return NULL;
 > +
@@ -131,22 +128,25 @@ kzalloc()? See comment below.
 > +	as->id = asid;
 > +	hlist_add_head(&as->hash_link, head);
 > +	++v->used_as;
-
-Although you eventually ended up removing used_as, this is a bug since
-you're incrementing a random value. Maybe it's better to be on the safe
-side and use kzalloc() for as above.
-
 > +
 > +	return as;
 > +}
 > +
 > +static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
+
+The return value is never interpreted. I think it should either be made
+void or return values checked.
+
 > +{
 > +	struct vhost_vdpa_as *as = asid_to_as(v, asid);
 > +
 > +	/* Remove default address space is not allowed */
 > +	if (asid == 0)
 > +		return -EINVAL;
+
+Can you explain why? I think you have a memory leak due to this as no
+one will ever free as with id 0.
+
 > +
 > +	if (!as)
 > +		return -EINVAL;
