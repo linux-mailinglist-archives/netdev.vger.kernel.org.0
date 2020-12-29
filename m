@@ -2,70 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 291E12E6FD6
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 12:11:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D372E700A
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 12:43:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726277AbgL2LKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 06:10:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55994 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgL2LKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 06:10:35 -0500
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DF4C0613D6
-        for <netdev@vger.kernel.org>; Tue, 29 Dec 2020 03:09:55 -0800 (PST)
-Received: by mail-ot1-x32b.google.com with SMTP id q25so11520553otn.10
-        for <netdev@vger.kernel.org>; Tue, 29 Dec 2020 03:09:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=3zEcY2lrqea6fKEaaFzcRyNNAZsEG3k13YGDmXMGD5U=;
-        b=kmihcb+3r5V8hEUoqcgMNUt6wl62tqTyG3GCME8Jq3voULOwaZNpWO4iSHxZnVOL/p
-         5yF9iVxuuJDtb1hJLlkHWvrptZrZGlC0efzY/W/pDp+SGuIjeqL8s7HmNSaB3vmebtX+
-         z7htDvN9h2xR+G6izrfUYSJxHkmXkDfYz7/CQ6XGZDM1TL1CDR10rH6xVFTcREjLO/aO
-         x/KK1/jvXf+1/R4+RILd5RGKdEbX3NT4zU1il/vHbPWW6RLuAeB/Qo19ohZIKNJgrcNl
-         GnHPRrq8RU54p5wg9K9SG6zKoxDSNcRLLx5VeQea4jOlXrJbPDAdojX0+sd2NxcJ59P3
-         doBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=3zEcY2lrqea6fKEaaFzcRyNNAZsEG3k13YGDmXMGD5U=;
-        b=T6/xtYjFg8p8W2i/y1Vwt4hkQY1czP2liauLASdZ5FMkRNZl6lfAap5WAWd0vQ5pMn
-         A23DaFaS9ct1cq7HoujMpSvTcB0b2rIcXaO5TkS0drzGUb3F09Of5tfvwJZnIEWGzcje
-         Svn1bj1Q0lMz8YjJ09iRHjI910HT6FIhaNaxG7QaP9gflEmWN1Xj/ru+tWssy7MAUA6q
-         /kV+wVt5Nr6BWIzlF67zByl6i2BNhO3lM1D9Ec4nfy/lmlFPV/RwQHwHDDjDlfu+puNn
-         I/AhQYJFGbFtEyjUzI3cJ+hC8SXTGTXzJV8Ymxyj6azyIJp3l/wZYJExx+LCbIPtDtqg
-         pwtg==
-X-Gm-Message-State: AOAM5330sDNfro1l3pVmGGIfiIUmLU0nm+E7MEC+tqxHcVUJyDC+lIeQ
-        99vQmwvvGVXLwoSSvzbe3PghE3KWoUjMUM3/qo0=
-X-Google-Smtp-Source: ABdhPJwFrwVhn1qyQuduadSCLTySddWLq/XAniMtLewwTCMhd6KzdefBzAPsta5IQDbmw/csFZTlojXHNkETc6GWSTI=
-X-Received: by 2002:a9d:27e9:: with SMTP id c96mr34464307otb.15.1609240194775;
- Tue, 29 Dec 2020 03:09:54 -0800 (PST)
+        id S1726488AbgL2Lmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 06:42:31 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55468 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726196AbgL2LmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 06:42:11 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@nvidia.com)
+        with SMTP; 29 Dec 2020 13:41:20 +0200
+Received: from dev-l-vrt-206-005.mtl.labs.mlnx (dev-l-vrt-206-005.mtl.labs.mlnx [10.234.206.5])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0BTBfKQe031596;
+        Tue, 29 Dec 2020 13:41:20 +0200
+From:   Tariq Toukan <tariqt@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>, netdev@vger.kernel.org,
+        Moshe Shemesh <moshe@nvidia.com>, andy@greyhouse.net,
+        vfalico@gmail.com, j.vosburgh@gmail.com,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH RFC net-next 0/6] RFC: TLS TX HW offload for Bond
+Date:   Tue, 29 Dec 2020 13:40:58 +0200
+Message-Id: <20201229114104.7120-1-tariqt@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Received: by 2002:a9d:4794:0:0:0:0:0 with HTTP; Tue, 29 Dec 2020 03:09:54
- -0800 (PST)
-Reply-To: hs8qfc11@gmail.com
-From:   "Dr. Keshinton Desmond" <keshintondesmond12@gmail.com>
-Date:   Tue, 29 Dec 2020 12:09:54 +0100
-Message-ID: <CADCet9rBdnSgY0uzBkSjPGdbSE-ZU8LLZCpijSWYNQ-3=bziRQ@mail.gmail.com>
-Subject: Good Morning,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
+
+This is an RFC of the series that opens TLS TX HW offload for bond interfaces.
+It allows them to benefit from capable slave devices.
+
+To keep simple track of the HW and SW TLS contexts, we bind each socket to
+a specific slave for the socket's whole lifetime. This is logically valid
+(and similar to the SW kTLS behavior) in the following bond configuration, 
+so we restrict the offload support to it:
+
+((mode == balance-xor) or (mode == 802.3ad))
+and xmit_hash_policy == layer3+4.
+
+Opens/points for discussion:
+- New ndo_sk_get_slave is introduced, as the existing ndo_get_xmit_slave returns
+  a slave based on SKB fields, which in throry could give different results
+  along the socket's lifetime.
+
+- In this design, bond driver has no way to specify its own restrictions on
+  when the TLS device offload is supported (depending on mode and xmit_policy).
+  The best it can do today is return NULL in bond_sk_get_slave().
+  This is not optimal, non-TLS cases might also want to call bond_sk_get_slave()
+  in the future, and they might have other restrictions (for example, they might
+  be okay in working with layer != LAYER34).
+  That's another reason why I didn't combine ndo_sk_get_slave/ndo_get_xmit_slave
+  into a single operation in this RFC.
+
+- Patch #3 adds two explicit exceptions for bond devices in the TLS module.
+  First is because a bond device supports the device offload without having
+  a tls_dev_ops structure of it's own.
+  Second, the TLS context is totally unaware of the bond netdev, but SKBs 
+  still go through its xmit/validate functions.
+  This is not very clean. What do you think?
+
+- This bond design and implementation for the TLS device offload differs from the
+  xfrm/ipsec offload. Bond does have struct xfrmdev_ops and callbacks of its own,
+  communication is done via the bond and not directly to the lowest device.
+
+Regards,
+Tariq
+
+
+Tariq Toukan (6):
+  net: netdevice: Add operation ndo_sk_get_slave
+  net/tls: Device offload to use lowest netdevice in chain
+  net/tls: Except bond interface from some TLS checks
+  net/bonding: Take IP hash logic into a helper
+  net/bonding: Implement ndo_sk_get_slave
+  net/bonding: Support TLS TX device offload
+
+ drivers/net/bonding/bond_main.c    | 134 +++++++++++++++++++++++++++--
+ drivers/net/bonding/bond_options.c |  27 ++++--
+ include/linux/netdevice.h          |   4 +
+ include/net/bonding.h              |   2 +
+ net/core/dev.c                     |  32 +++++++
+ net/tls/tls_device.c               |   4 +-
+ net/tls/tls_device_fallback.c      |   3 +-
+ 7 files changed, 194 insertions(+), 12 deletions(-)
+
 -- 
-I'm Dr. Keshinton Desmond, did you Receive the (FUND), that was paid
-to you? please, do not hesitate to Let me know with your full name:..
-for immediate verification notice,
+2.21.0
 
-Thanks,
-Dr. Keshinton Desmond
-Foreign Remittance Director
-
-Sincerely Yours, Respectfully,
-
-Mr Bill T Winters,
-Group Chief Executive Officer & Executive Director,
