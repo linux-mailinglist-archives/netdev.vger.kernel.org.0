@@ -2,93 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE242E6D2A
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 03:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE042E6D80
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 04:13:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727035AbgL2CCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Dec 2020 21:02:49 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:9653 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbgL2CCs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 21:02:48 -0500
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4D4d1n6HM9z15lDx;
-        Tue, 29 Dec 2020 10:01:17 +0800 (CST)
-Received: from localhost (10.174.243.127) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.498.0; Tue, 29 Dec 2020
- 10:01:55 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <mst@redhat.com>,
-        <jasowang@redhat.com>, <willemdebruijn.kernel@gmail.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <jerry.lilijun@huawei.com>, <chenchanghu@huawei.com>,
-        <xudingke@huawei.com>, <brian.huangbin@huawei.com>,
-        Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net v6] vhost_net: fix ubuf refcount incorrectly when sendmsg fails
-Date:   Tue, 29 Dec 2020 10:01:48 +0800
-Message-ID: <1609207308-20544-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+        id S1727705AbgL2DMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Dec 2020 22:12:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727648AbgL2DMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Dec 2020 22:12:24 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30972C061793;
+        Mon, 28 Dec 2020 19:11:44 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id c22so8422714pgg.13;
+        Mon, 28 Dec 2020 19:11:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cUly1AgH09bKcQKGZSMiPnEKvApULnMTjHcxsPTjH9A=;
+        b=hga1AZWs48sXAgyIwbs06iVeLS1Sodoziu2DsSspADo8yQcDYunpdLDqAaI6n9J1pW
+         CambmoZo3q/DgM58v4ibezx4NwpkfngrugG6fS7quZgz94WZQozBlHB76RGV6PURkSag
+         5Kg7i2AVUspQx4s9eScQa9pcRn6hI9EtePTHNn+NOH6zxA0nTNaFCeXjyATroquXgeVB
+         8+L8GD94Azeb3Q3CtCuRukR0IVNH75ru1uHR8rkUCmshdjSMVXipNcyKzubPuvsChu49
+         CWGk/l3bFQ78vW3+OkHAEaJp4HWxtpGGjDaEDQLIfHExx4YOAGkUHf66t3ynXhDsTwgW
+         Gecg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cUly1AgH09bKcQKGZSMiPnEKvApULnMTjHcxsPTjH9A=;
+        b=lRMFR89MDQ5iSN+3LAe2J8ZEYjtQu80wMowvXoW9plbUh1Phj8nFo6i4OYci/A3gD5
+         nK0WeVxvbi+4wj1R69hur6ZIIHngv5D6hJYqu/Q0+94GHNzQzUzRQeWIPERMB2eQFnZk
+         g5uvuS1Nommh5wgreZy6vbc0bcBiuv9GeNh9sv3ckWpRy5f6BXid5y8t6j5xD9kMD1CT
+         lYimAvuqMOmzq5/r8/em2KcD6q90pHcNW5D4mSFUA7VdX3FOZ4khJV+qv+nUWLkZHJKt
+         hU8MA1m7oguYGrm4EKjC0aEALHEHuXRL7R5X9jqVIx7qtvAwDIxzVbyfZPoPseWFKuBe
+         Hhxg==
+X-Gm-Message-State: AOAM531934e6Afm5ZSURIe80UEKPnjtBXkHkqMccFLFjZ8XiY1tUKlj0
+        HWZraytNzruEszILJall4bGrORcsJBw=
+X-Google-Smtp-Source: ABdhPJwGcSKWPl8PN+X4tEgXJ9grrBvzaxERTQa0KbIyrBm2zXNwO5eoq7qCjVIKc7iDpLCkE7CXnQ==
+X-Received: by 2002:a63:cf56:: with SMTP id b22mr46612409pgj.16.1609211503434;
+        Mon, 28 Dec 2020 19:11:43 -0800 (PST)
+Received: from [10.230.29.27] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id gj1sm854367pjb.11.2020.12.28.19.11.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Dec 2020 19:11:42 -0800 (PST)
+Subject: Re: [PATCH net-next v2 1/6] bcm63xx_enet: batch process rx path
+To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20201224142421.32350-1-liew.s.piaw@gmail.com>
+ <20201224142421.32350-2-liew.s.piaw@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <edad0329-af52-e9d7-71c6-0fa480c62176@gmail.com>
+Date:   Mon, 28 Dec 2020 19:11:40 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.243.127]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20201224142421.32350-2-liew.s.piaw@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
 
-Currently the vhost_zerocopy_callback() maybe be called to decrease
-the refcount when sendmsg fails in tun. The error handling in vhost
-handle_tx_zerocopy() will try to decrease the same refcount again.
-This is wrong. To fix this issue, we only call vhost_net_ubuf_put()
-when vq->heads[nvq->desc].len == VHOST_DMA_IN_PROGRESS.
 
-Fixes: bab632d69ee4 ("vhost: vhost TX zero-copy support")
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
----
-v6:
-   * update patch Fixes tag
----
- drivers/vhost/net.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On 12/24/2020 6:24 AM, Sieng Piaw Liew wrote:
+> Use netif_receive_skb_list to batch process rx skb.
+> Tested on BCM6328 320 MHz using iperf3 -M 512, increasing performance
+> by 12.5%.
+> 
+> Before:
+> [ ID] Interval           Transfer     Bandwidth       Retr
+> [  4]   0.00-30.00  sec   120 MBytes  33.7 Mbits/sec  277         sender
+> [  4]   0.00-30.00  sec   120 MBytes  33.5 Mbits/sec            receiver
+> 
+> After:
+> [ ID] Interval           Transfer     Bandwidth       Retr
+> [  4]   0.00-30.00  sec   136 MBytes  37.9 Mbits/sec  203         sender
+> [  4]   0.00-30.00  sec   135 MBytes  37.7 Mbits/sec            receiver
+> 
+> Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
 
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index 531a00d703cd..c8784dfafdd7 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -863,6 +863,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
- 	size_t len, total_len = 0;
- 	int err;
- 	struct vhost_net_ubuf_ref *ubufs;
-+	struct ubuf_info *ubuf;
- 	bool zcopy_used;
- 	int sent_pkts = 0;
- 
-@@ -895,9 +896,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
- 
- 		/* use msg_control to pass vhost zerocopy ubuf info to skb */
- 		if (zcopy_used) {
--			struct ubuf_info *ubuf;
- 			ubuf = nvq->ubuf_info + nvq->upend_idx;
--
- 			vq->heads[nvq->upend_idx].id = cpu_to_vhost32(vq, head);
- 			vq->heads[nvq->upend_idx].len = VHOST_DMA_IN_PROGRESS;
- 			ubuf->callback = vhost_zerocopy_callback;
-@@ -927,7 +926,8 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
- 		err = sock->ops->sendmsg(sock, &msg, len);
- 		if (unlikely(err < 0)) {
- 			if (zcopy_used) {
--				vhost_net_ubuf_put(ubufs);
-+				if (vq->heads[ubuf->desc].len == VHOST_DMA_IN_PROGRESS)
-+					vhost_net_ubuf_put(ubufs);
- 				nvq->upend_idx = ((unsigned)nvq->upend_idx - 1)
- 					% UIO_MAXIOV;
- 			}
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.23.0
-
+Florian
