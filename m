@@ -2,136 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ED482E7354
-	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 21:09:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18CEF2E741F
+	for <lists+netdev@lfdr.de>; Tue, 29 Dec 2020 22:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726354AbgL2UIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 15:08:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53956 "EHLO
+        id S1726263AbgL2VRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 16:17:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726138AbgL2UIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 15:08:36 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C957C061574;
-        Tue, 29 Dec 2020 12:07:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=E77MjteSX9Gv4JJYTtjfORNLKf/P9uvGSm5tAe4Q2ZY=; b=M4Kz/Xe9DGmsoT8pIlyvKb78Vw
-        veVfk8O6NHdkh34VEqTeq/YVNG2ooDrH+LFnLOsmSKxZwOq8Iq7I4su+dJ8qrCOpG8GDRUu44VIcg
-        LtSgu2EiY/ByePwEw4EvPxZYsBsIvGeyPfihLfpI73TkTbHK8tXLgRVJdSRGCXyehUSgitsd/7cwR
-        13OvL85B/lQKc2MgjC1s811the09DMUf3XhQeSoJ0WZAZq2w8qdNuCLSXu+qOKHGRy50anBaPvtG0
-        cc5T4JsPWLE/OnWWdsx1hbRd+eZL0guwcdSdWYw26QS0j5Q716emBU3QzgPdicjp0QToYG3+yV3Bi
-        iLKIbQTA==;
-Received: from [2601:1c0:6280:3f0::2c43]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kuLHS-000236-It; Tue, 29 Dec 2020 20:07:42 +0000
-Subject: Re: UBSAN: shift-out-of-bounds in choke_change
-To:     syzbot <syzbot+4eda8c01ca2315d1722e@syzkaller.appspotmail.com>,
-        davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-References: <0000000000002aa9f905b79ef9c3@google.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <6106b587-1b5c-ba12-94d6-fe637e71abca@infradead.org>
-Date:   Tue, 29 Dec 2020 12:07:36 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        with ESMTP id S1726111AbgL2VRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 16:17:06 -0500
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FCDC061574;
+        Tue, 29 Dec 2020 13:16:26 -0800 (PST)
+Received: by mail-qt1-x82c.google.com with SMTP id 2so9798271qtt.10;
+        Tue, 29 Dec 2020 13:16:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e5c5L6PkkRukqnqeirSiRa0wobmulUeCxBAdDa7q5Wo=;
+        b=LBdtKJhZaU2qug8bi0oFTpSYo1HQ1o+LWSO4EH6JqS0CUojDNPaxArNMKzmAvKG1QV
+         xTH8T0iAeZ6VNgO1+Nb03Qy9FRjnXiCpb0zRo7jmwbtncZedDuM/WLY1L51m8cc9Bqym
+         xoFCi8UpXrDSH+BXcfyU9vrj++WU4BuP4NIXnA9pksYbHlotLtetUpkImMPquuoXnj3H
+         F7wx0n15Q2mm7na2izyy98jq0aDd/z3/TAxKHwzYIuTrEeluSLvL45J4UHffgOYbPhp1
+         KjtveWHrpl/a70y22HNIKbMkxGdurizftBVc5V9OGn7HJ2zThfzmX6s8/dQ3uFslF4kb
+         r+Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e5c5L6PkkRukqnqeirSiRa0wobmulUeCxBAdDa7q5Wo=;
+        b=VaNdtaVK+JMh6F3vKtXXZ2z/1ZBrEtQXz/6rsyXU4cYBoQm71E20sLECQD1CHHzwr7
+         aiWDJtzHb+mwI/gnVPiBQ5ZIptv+a/yWjrU6HjVNfZLTuh02Lus3EANpjbU1S32KgZlY
+         Q4glZ9Ks6wDRK5QRv7dqpF4gUlz+aiclccUmP3JTDzUTHiRwicl0B5LBnDcie1V1aFZa
+         SaSt1rxEgvxrNexgd4Rn5ztmw7JZdk1cJ6I+hRGPDJ9CryjiyqvFrxg2Pq/VpEtf3ALg
+         ejyprzUFf8em7WkfEhfaN+Lod7WieMHlSvOjBsn8nRb8aKIYxKPxT5jDiqxE6mvnB2nR
+         GiyA==
+X-Gm-Message-State: AOAM532OFVbWGciDmRQZITjHKfXUm1h/0cbrIwkO/ZHUpUXs14GV6/6x
+        bBdxXzWVE8mMXWJ2sMGsbek=
+X-Google-Smtp-Source: ABdhPJxykmySgmkP73cl/xMh/k7U71ysJZwMD04YDaZs3K5u4rIQSefyX4MBBc4sjEUyhHi9+/ANtA==
+X-Received: by 2002:ac8:5786:: with SMTP id v6mr51450739qta.268.1609276585265;
+        Tue, 29 Dec 2020 13:16:25 -0800 (PST)
+Received: from localhost.localdomain ([2604:1380:45f1:1d00::1])
+        by smtp.gmail.com with ESMTPSA id l11sm26656665qtn.83.2020.12.29.13.16.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Dec 2020 13:16:24 -0800 (PST)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc:     Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] mt76: Fix queue ID variable types after mcu queue split
+Date:   Tue, 29 Dec 2020 14:15:48 -0700
+Message-Id: <20201229211548.1348077-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-In-Reply-To: <0000000000002aa9f905b79ef9c3@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi bot,
+Clang warns in both mt7615 and mt7915:
 
-On 12/29/20 10:58 AM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    71c5f031 Merge tag 'docs-5.11-2' of git://git.lwn.net/linux
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15103693500000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3e7e34a83d606100
-> dashboard link: https://syzkaller.appspot.com/bug?extid=4eda8c01ca2315d1722e
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143d33ff500000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13725277500000
-> 
-> Bisection is inconclusive: the issue happens on the oldest tested release.
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=137f60db500000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=10ff60db500000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=177f60db500000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+4eda8c01ca2315d1722e@syzkaller.appspotmail.com
+drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:271:9: warning: implicit
+conversion from enumeration type 'enum mt76_mcuq_id' to different
+enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+                txq = MT_MCUQ_FWDL;
+                    ~ ^~~~~~~~~~~~
+drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:278:9: warning: implicit
+conversion from enumeration type 'enum mt76_mcuq_id' to different
+enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+                txq = MT_MCUQ_WA;
+                    ~ ^~~~~~~~~~
+drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:282:9: warning: implicit
+conversion from enumeration type 'enum mt76_mcuq_id' to different
+enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+                txq = MT_MCUQ_WM;
+                    ~ ^~~~~~~~~~
+3 warnings generated.
 
-#syz dup: UBSAN: shift-out-of-bounds in sfq_init
+drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:238:9: warning: implicit
+conversion from enumeration type 'enum mt76_mcuq_id' to different
+enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+                qid = MT_MCUQ_WM;
+                    ~ ^~~~~~~~~~
+drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:240:9: warning: implicit
+conversion from enumeration type 'enum mt76_mcuq_id' to different
+enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+                qid = MT_MCUQ_FWDL;
+                    ~ ^~~~~~~~~~~~
+2 warnings generated.
 
-Fixed by:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=bd1248f1ddbc48b0c30565fce897a3b6423313b8
+Use the proper type for the queue ID variables to fix these warnings.
+Additionally, rename the txq variable in mt7915_mcu_send_message to be
+more neutral like mt7615_mcu_send_message.
 
+Fixes: e637763b606b ("mt76: move mcu queues to mt76_dev q_mcu array")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1229
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/net/wireless/mediatek/mt76/mt7615/mcu.c |  2 +-
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-> netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-> netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-> netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-> ================================================================================
-> UBSAN: shift-out-of-bounds in ./include/net/red.h:252:22
-> shift exponent 96 is too large for 32-bit type 'int'
-> CPU: 0 PID: 8513 Comm: syz-executor800 Not tainted 5.10.0-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x107/0x163 lib/dump_stack.c:120
->  ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
->  __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
->  red_set_parms include/net/red.h:252 [inline]
->  choke_change.cold+0xce/0x115 net/sched/sch_choke.c:413
->  qdisc_create+0x4ba/0x13a0 net/sched/sch_api.c:1246
->  tc_modify_qdisc+0x4c8/0x1a30 net/sched/sch_api.c:1662
->  rtnetlink_rcv_msg+0x498/0xb80 net/core/rtnetlink.c:5564
->  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
->  netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
->  sock_sendmsg_nosec net/socket.c:652 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:672
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x4437b9
-> Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 eb 0d fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007fff205ca1d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004437b9
-> RDX: 0000000000000000 RSI: 00000000200007c0 RDI: 0000000000000004
-> RBP: 00007fff205ca1e0 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-> R10: 0000000001bbbbbb R11: 0000000000000246 R12: 00007fff205ca1f0
-> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> ================================================================================
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
-> 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+index a44b7766dec6..c13547841a4e 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -231,7 +231,7 @@ mt7615_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,
+ 			int cmd, int *seq)
+ {
+ 	struct mt7615_dev *dev = container_of(mdev, struct mt7615_dev, mt76);
+-	enum mt76_txq_id qid;
++	enum mt76_mcuq_id qid;
+ 
+ 	mt7615_mcu_fill_msg(dev, skb, cmd, seq);
+ 	if (test_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state))
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 5fdd1a6d32ee..e211a2bd4d3c 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -256,7 +256,7 @@ mt7915_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,
+ 	struct mt7915_dev *dev = container_of(mdev, struct mt7915_dev, mt76);
+ 	struct mt7915_mcu_txd *mcu_txd;
+ 	u8 seq, pkt_fmt, qidx;
+-	enum mt76_txq_id txq;
++	enum mt76_mcuq_id qid;
+ 	__le32 *txd;
+ 	u32 val;
+ 
+@@ -268,18 +268,18 @@ mt7915_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,
+ 		seq = ++dev->mt76.mcu.msg_seq & 0xf;
+ 
+ 	if (cmd == -MCU_CMD_FW_SCATTER) {
+-		txq = MT_MCUQ_FWDL;
++		qid = MT_MCUQ_FWDL;
+ 		goto exit;
+ 	}
+ 
+ 	mcu_txd = (struct mt7915_mcu_txd *)skb_push(skb, sizeof(*mcu_txd));
+ 
+ 	if (test_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state)) {
+-		txq = MT_MCUQ_WA;
++		qid = MT_MCUQ_WA;
+ 		qidx = MT_TX_MCU_PORT_RX_Q0;
+ 		pkt_fmt = MT_TX_TYPE_CMD;
+ 	} else {
+-		txq = MT_MCUQ_WM;
++		qid = MT_MCUQ_WM;
+ 		qidx = MT_TX_MCU_PORT_RX_Q0;
+ 		pkt_fmt = MT_TX_TYPE_CMD;
+ 	}
+@@ -326,7 +326,7 @@ mt7915_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,
+ 	if (wait_seq)
+ 		*wait_seq = seq;
+ 
+-	return mt76_tx_queue_skb_raw(dev, mdev->q_mcu[txq], skb, 0);
++	return mt76_tx_queue_skb_raw(dev, mdev->q_mcu[qid], skb, 0);
+ }
+ 
+ static void
 
-
+base-commit: 5c8fe583cce542aa0b84adc939ce85293de36e5e
 -- 
-~Randy
+2.30.0
 
