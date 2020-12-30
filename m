@@ -2,90 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DD02E7834
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 12:46:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE28F2E786C
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 13:07:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726428AbgL3LoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 06:44:00 -0500
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:52161 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726203AbgL3Ln7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 06:43:59 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 09EF1AFB;
-        Wed, 30 Dec 2020 06:43:13 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 30 Dec 2020 06:43:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=rqZN38f4IL3zOVZP7
-        gM9ewsKQG2aBF42mdbZ/MNtjew=; b=YtUzuwWjn+GeHuf0NsnimHk+aIPFKDd4t
-        Q1PWCEW2VIDV5iFfKb3NcTMd6wYojHABivICUnjYW3jhaLAziZW4df+JixGRwqWd
-        QdezVQuGjoOY2Fjmn8O0H54VGOj6JXLDRIYaaZgBU6QnHs8h18jq4m2vvY1THcYc
-        iSIcxRZa4rpiqaBWGsrZ++Xmd7PV0IyTAS6HnC1kB4TWn2hX5ZWjhj0VPmFPaFOD
-        BOsvnjyZ0oly1n4I3DM+v5ya+XuZvFQH3TYeKLivBnsqSt9B+cSiPNdv5C9V1jWf
-        kQdxNUJeexyePx2IyzqLOj3iKQcKb+74RzvJBtF/uc6xWlE68Jltg==
-X-ME-Sender: <xms:0WfsX10E2A_MNA6jPovB2CVZZCn-1svCIY2t_xh__kvyhPu4GfvH6g>
-    <xme:0WfsX8GFl8b8OWX1w_49sxHJs53tyNGst__RLGjhR-kzbVBvIbg35IfpSXc3UdTpg
-    pLUu6a7vwnhYeM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvddvfedgfeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:0WfsX16x-1PcexL7CelFtwWhd1W0PA616dlHCiyvQVrIdSKcO6QxzA>
-    <xmx:0WfsXy1lEC-YqFHSkf2v3s7z1fdWCAHG29eN_tRKfNL_m674780t8w>
-    <xmx:0WfsX4FGoUzOviUoy4rdgCWuzFgYrMTDsrtSrRuP_CJbYYW5NNWY5g>
-    <xmx:0WfsX9RCBBhdMY4Ix9y3Q7M-f8VFyYZbckoakgsuedF2tDWQjVg4PQ>
-Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 7D50024005D;
-        Wed, 30 Dec 2020 06:43:11 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net] selftests: mlxsw: Set headroom size of correct port
-Date:   Wed, 30 Dec 2020 13:42:51 +0200
-Message-Id: <20201230114251.394009-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.29.2
+        id S1726583AbgL3MHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 07:07:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726322AbgL3MHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 07:07:14 -0500
+Received: from vale.hankala.org (vale.hankala.org [IPv6:2a02:2770:3:0:21a:4aff:fefb:f65c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8580EC061799
+        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 04:06:33 -0800 (PST)
+Received: by vale.hankala.org (OpenSMTPD) with ESMTPS id 6b24027b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 30 Dec 2020 12:06:25 +0000 (UTC)
+Date:   Wed, 30 Dec 2020 12:06:23 +0000
+From:   Visa Hankala <visa@hankala.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] xfrm: Fix wraparound in xfrm_policy_addr_delta()
+Message-ID: <20201230115517.iZlNGikD3bKtySfO@hankala.org>
+References: <20201229145009.cGOUak0JdKIIgGAv@hankala.org>
+ <20201229160127.GA30823@breakpoint.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201229160127.GA30823@breakpoint.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Tue, Dec 29, 2020 at 05:01:27PM +0100, Florian Westphal wrote:
+> Visa Hankala <visa@hankala.org> wrote:
+> > Use three-way comparison for address elements to avoid integer
+> > wraparound in the result of xfrm_policy_addr_delta().
+> > 
+> > This ensures that the search trees are built and traversed correctly
+> > when the difference between compared address elements is larger
+> > than INT_MAX.
+> 
+> Please provide an update to tools/testing/selftests/net/xfrm_policy.sh
+> that shows that this is a problem.
 
-The test was setting the headroom size of the wrong port. This was not
-visible because of a firmware bug that canceled this bug.
+I will do that in the next revision.
 
-Set the headroom size of the correct port, so that the test will pass
-with both old and new firmware versions.
+> >  	switch (family) {
+> >  	case AF_INET:
+> > -		if (sizeof(long) == 4 && prefixlen == 0)
+> > -			return ntohl(a->a4) - ntohl(b->a4);
+> > -		return (ntohl(a->a4) & ((~0UL << (32 - prefixlen)))) -
+> > -		       (ntohl(b->a4) & ((~0UL << (32 - prefixlen))));
+> > +		mask = ~0U << (32 - prefixlen);
+> > +		ma = ntohl(a->a4) & mask;
+> > +		mb = ntohl(b->a4) & mask;
+> 
+> This is suspicious.  Is prefixlen == 0 impossible?
+> 
+> If not, then after patch
+> mask = ~0U << 32;
+> 
+> ... and function returns 0.
 
-Fixes: bfa804784e32 ("selftests: mlxsw: Add a PFC test")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Petr Machata <petrm@nvidia.com>
----
- tools/testing/selftests/drivers/net/mlxsw/qos_pfc.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+prefixlen == 0 is possible. However, I now realize that left shift
+by 32 should be avoided with 32-bit integers.
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/qos_pfc.sh b/tools/testing/selftests/drivers/net/mlxsw/qos_pfc.sh
-index 4d900bc1f76c..5c7700212f75 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/qos_pfc.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/qos_pfc.sh
-@@ -230,7 +230,7 @@ switch_create()
- 	__mlnx_qos -i $swp4 --pfc=0,1,0,0,0,0,0,0 >/dev/null
- 	# PG0 will get autoconfigured to Xoff, give PG1 arbitrarily 100K, which
- 	# is (-2*MTU) about 80K of delay provision.
--	__mlnx_qos -i $swp3 --buffer_size=0,$_100KB,0,0,0,0,0,0 >/dev/null
-+	__mlnx_qos -i $swp4 --buffer_size=0,$_100KB,0,0,0,0,0,0 >/dev/null
- 
- 	# bridges
- 	# -------
--- 
-2.29.2
+With prefixlen == 0, there is only one equivalence class, so
+returning 0 seems reasonable to me.
 
+Is there a reason why the function has treated /0 prefix as /32
+with IPv4? IPv6 does not have this treatment.
