@@ -2,99 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9467A2E7A23
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 15:59:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77EEA2E7A2D
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 16:07:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726657AbgL3O7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 09:59:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39766 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726161AbgL3O7L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Dec 2020 09:59:11 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D1C5921973;
-        Wed, 30 Dec 2020 14:58:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609340310;
-        bh=YmXXZasBhC28kFabVxJRx0dXwyd4dmoFQ/gA9h33sCo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UW34aLh145QaqjBnp+g6dzEwT+Oueu1jffOyUTwBaoepdYBlMQ/IvRhOH0OU79Ntx
-         5rc6EZOchQ394ucyO/7FRiDl/DcRRqmb8gLpoO7saF8Caju+ZNt6ojeLTpId+v2emU
-         BHA6nKigaeOQRewQxVSdBRQXeg6m85l3NhHeaGQv0+DXpI2599jM3ec3Lhtvd5gsFx
-         QJ59lICWsUvlUFwnIOq0FwBRQ//WeqbdqetvUW/oki/c4bNz/GinNyw++/4hK9P+6i
-         Cn+H+sKLrODLDOYgaISGmsOBtqeWDiOV9HB8omGlnvObaLRXttoSMAxttec22XtU8C
-         sQoYl4Vh+5+HA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Ryder Lee <ryder.lee@mediatek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <objelf@gmail.com>,
-        Wan-Feng Jiang <Wan-Feng.Jiang@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Yiwei Chung <yiwei.chung@mediatek.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mt76: fix enum conversion warning
-Date:   Wed, 30 Dec 2020 15:57:55 +0100
-Message-Id: <20201230145824.3203726-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S1726485AbgL3PGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 10:06:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:42342 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726247AbgL3PGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 10:06:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609340679;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kZIXZvnYFXxS/me1jrkJ7b6mDqrcu//hDM6B6mG0eeg=;
+        b=JlXLmWN3tCG2LY7O6WNNB+FJHMHsHW0FohbasyWWX9UeNrGMLq41yfXV8D3U58oNmG78qh
+        bATuYOSn7vRXCFyB4LuNwuWSywZ82APy461HAZ6sm9JUO8EwK+/aZ+JsBdAy2+LGxo0RZ9
+        5sc6FUw5U8JtPOzgk3NU+Om3TpJho0w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-232-mjACzZMjMGuoINdeD4oG3A-1; Wed, 30 Dec 2020 10:04:35 -0500
+X-MC-Unique: mjACzZMjMGuoINdeD4oG3A-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 43FF4801AC0;
+        Wed, 30 Dec 2020 15:04:34 +0000 (UTC)
+Received: from krava (unknown [10.40.192.27])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 2379B5D9CC;
+        Wed, 30 Dec 2020 15:04:31 +0000 (UTC)
+Date:   Wed, 30 Dec 2020 16:04:31 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Qais Yousef <qais.yousef@arm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: BTFIDS: FAILED unresolved symbol udp6_sock
+Message-ID: <20201230150431.GA587975@krava>
+References: <20201229151352.6hzmjvu3qh6p2qgg@e107158-lin>
+ <20201229173401.GH450923@krava>
+ <20201229232835.cbyfmja3bu3lx7we@e107158-lin>
+ <20201230090333.GA577428@krava>
+ <20201230132759.GB577428@krava>
+ <20201230132852.GC577428@krava>
+ <20201230141936.GA3922432@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201230141936.GA3922432@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Wed, Dec 30, 2020 at 11:19:36AM -0300, Arnaldo Carvalho de Melo wrote:
+> Em Wed, Dec 30, 2020 at 02:28:52PM +0100, Jiri Olsa escreveu:
+> > On Wed, Dec 30, 2020 at 02:28:02PM +0100, Jiri Olsa wrote:
+> > > On Wed, Dec 30, 2020 at 10:03:37AM +0100, Jiri Olsa wrote:
+> > > > On Tue, Dec 29, 2020 at 11:28:35PM +0000, Qais Yousef wrote:
+> > > > > Hi Jiri
+> > > > > 
+> > > > > On 12/29/20 18:34, Jiri Olsa wrote:
+> > > > > > On Tue, Dec 29, 2020 at 03:13:52PM +0000, Qais Yousef wrote:
+> > > > > > > Hi
+> > > > > > > 
+> > > > > > > When I enable CONFIG_DEBUG_INFO_BTF I get the following error in the BTFIDS
+> > > > > > > stage
+> > > > > > > 
+> > > > > > > 	FAILED unresolved symbol udp6_sock
+> > > > > > > 
+> > > > > > > I cross compile for arm64. My .config is attached.
+> > > > > > > 
+> > > > > > > I managed to reproduce the problem on v5.9 and v5.10. Plus 5.11-rc1.
+> > > > > > > 
+> > > > > > > Have you seen this before? I couldn't find a specific report about this
+> > > > > > > problem.
+> > > > > > > 
+> > > > > > > Let me know if you need more info.
+> > > > > > 
+> > > > > > hi,
+> > > > > > this looks like symptom of the gcc DWARF bug we were
+> > > > > > dealing with recently:
+> > > > > > 
+> > > > > >   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97060
+> > > > > >   https://lore.kernel.org/lkml/CAE1WUT75gu9G62Q9uAALGN6vLX=o7vZ9uhqtVWnbUV81DgmFPw@mail.gmail.com/#r
+> > > > > > 
+> > > > > > what pahole/gcc version are you using?
+> > > > > 
+> > > > > I'm on gcc 9.3.0
+> > > > > 
+> > > > > 	aarch64-linux-gnu-gcc (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
+> > > > > 
+> > > > > I was on pahole v1.17. I moved to v1.19 but I still see the same problem.
+> 
+> There are some changes post v1.19 in the git repo:
+> 
+> [acme@five pahole]$ git log --oneline v1.19..
+> b688e35970600c15 (HEAD -> master) btf_encoder: fix skipping per-CPU variables at offset 0
+> 8c009d6ce762dfc9 btf_encoder: fix BTF variable generation for kernel modules
+> b94e97e015a94e6b dwarves: Fix compilation on 32-bit architectures
+> 17df51c700248f02 btf_encoder: Detect kernel module ftrace addresses
+> 06ca639505fc56c6 btf_encoder: Use address size based on ELF's class
+> aff60970d16b909e btf_encoder: Factor filter_functions function
+> 1e6a3fed6e52d365 (quaco/master) rpm: Fix changelog date
+> [acme@five pahole]$
+> 
+> But I think these won't matter in this case :-\
 
-A recent patch changed some enum values, but not the type
-declaration for the assignment:
+yep, it did not.. I used the latest dwarves code
 
-drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:238:9: error: implicit conversion from enumeration type 'enum mt76_mcuq_id' to different enumeration type 'enum mt76_txq_id' [-Werror,-Wenum-conversion]
-                qid = MT_MCUQ_WM;
-                    ~ ^~~~~~~~~~
-drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:240:9: error: implicit conversion from enumeration type 'enum mt76_mcuq_id' to different enumeration type 'enum mt76_txq_id' [-Werror,-Wenum-conversion]
-                qid = MT_MCUQ_FWDL;
-                    ~ ^~~~~~~~~~~~
-
-Change the type to match again.
-
-Fixes: e637763b606b ("mt76: move mcu queues to mt76_dev q_mcu array")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-index a44b7766dec6..c13547841a4e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-@@ -231,7 +231,7 @@ mt7615_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,
- 			int cmd, int *seq)
- {
- 	struct mt7615_dev *dev = container_of(mdev, struct mt7615_dev, mt76);
--	enum mt76_txq_id qid;
-+	enum mt76_mcuq_id qid;
- 
- 	mt7615_mcu_fill_msg(dev, skb, cmd, seq);
- 	if (test_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state))
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index 5fdd1a6d32ee..22753fbb05e5 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -256,7 +256,7 @@ mt7915_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,
- 	struct mt7915_dev *dev = container_of(mdev, struct mt7915_dev, mt76);
- 	struct mt7915_mcu_txd *mcu_txd;
- 	u8 seq, pkt_fmt, qidx;
--	enum mt76_txq_id txq;
-+	enum mt76_mcuq_id txq;
- 	__le32 *txd;
- 	u32 val;
- 
--- 
-2.29.2
+jirka
 
