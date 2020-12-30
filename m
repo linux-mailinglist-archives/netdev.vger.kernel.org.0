@@ -2,88 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45C132E7899
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 13:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE562E78A5
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 13:49:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbgL3Mjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 07:39:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36398 "EHLO
+        id S1726716AbgL3MrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 07:47:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726547AbgL3Mji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 07:39:38 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D1CC06179C
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 04:38:57 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id v5so10786095qtv.7
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 04:38:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=g6B1jvIYFNt+pTQgSfU1BPvEpqDrU6ozA3BgZ6EYLDY=;
-        b=MXjsAv14Rgr17h9d/jZDMcK6WGX/Qm47KQois39oxpdzXXuMfTpGM+vM40WUp68V0y
-         SYPZeeb94DYDRpgbigP/zp3zBaG7Eyl2Gc+NazI7Wk+pLXqR/1xd6JbGOtQwLdi17sE5
-         RDv+0NwHiJloiJHye4rgN753/IUpTeMYI+2WlqXeOtsqolF6U7wKD2AuIVaJRkUUJAvj
-         9DZylmvo3nL8qDZJ2RLkxf+RCZWgZm/ezo/0Oi/PDL3/nBYWG1V2R3pl5kq7c7I3o6fb
-         h+obDDcmvrWmBFsU0Jjry78JJF+/0CSTUDkyoLKKYLXSKO5sX+7z2UWXE9+AbPKnCAcT
-         SSyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=g6B1jvIYFNt+pTQgSfU1BPvEpqDrU6ozA3BgZ6EYLDY=;
-        b=Pk/HHX+IP/Vt0zG3k2odrukyYc3qx/t0j98Cx+ysElXS0jh17rb0RYWGyfIDjT+gUN
-         UGNTx5UML+pgI4oOqA6wkOa/aXk9kZHj361V8UEZgcdbgnvYgWU+Iqvzw1GU8UArMkAe
-         k3Fuuxsgc+CUIaxUJHAfryp92nFdzMv8M6svKaXjSLEUv7CoRHFT/SoWD16++WgzJoJs
-         swoiLzlhju/6SoLBO/uS7oV13oFXygfFbuPupnEw7tM/gNe5NUN99ZxgmptGn7HHObgg
-         Gd0BauAoypqBwlR/mKF1ZNEIV9TuU7wmLS8oEVXh67zAy04KsrAkFUtFNe3HrrCaVco+
-         /Lfw==
-X-Gm-Message-State: AOAM530dUw2XkVRT2PWM6XpNVX6yKhbYjzQ7nEKwGyqZ2kIoRoczfId+
-        WiVUpf3sALpW4e0wMlIItQ8=
-X-Google-Smtp-Source: ABdhPJyRju1DejHML5loTCAkgAtI+mezYkUzSQrbnfYJYwEvq1ilZdfnRz5sE67uPagoixp8Sr3F5g==
-X-Received: by 2002:ac8:5794:: with SMTP id v20mr52481966qta.175.1609331937122;
-        Wed, 30 Dec 2020 04:38:57 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-76-110-219-245.hsd1.fl.comcast.net. [76.110.219.245])
-        by smtp.gmail.com with ESMTPSA id l1sm27717119qtb.42.2020.12.30.04.38.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Dec 2020 04:38:56 -0800 (PST)
-Date:   Wed, 30 Dec 2020 04:38:54 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        mst@redhat.com, jasowang@redhat.com,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH rfc 3/3] virtio-net: support transmit timestamp
-Message-ID: <20201230123854.GB2034@hoboy.vegasvil.org>
-References: <20201228162233.2032571-1-willemdebruijn.kernel@gmail.com>
- <20201228162233.2032571-4-willemdebruijn.kernel@gmail.com>
+        with ESMTP id S1726470AbgL3MrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 07:47:11 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4035C061799
+        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 04:46:30 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1kuarr-0005T2-FG; Wed, 30 Dec 2020 13:46:19 +0100
+Date:   Wed, 30 Dec 2020 13:46:19 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Visa Hankala <visa@hankala.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] xfrm: Fix wraparound in xfrm_policy_addr_delta()
+Message-ID: <20201230124619.GB30823@breakpoint.cc>
+References: <20201229145009.cGOUak0JdKIIgGAv@hankala.org>
+ <20201229160127.GA30823@breakpoint.cc>
+ <20201230115517.iZlNGikD3bKtySfO@hankala.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201228162233.2032571-4-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20201230115517.iZlNGikD3bKtySfO@hankala.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 28, 2020 at 11:22:33AM -0500, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
+Visa Hankala <visa@hankala.org> wrote:
+> On Tue, Dec 29, 2020 at 05:01:27PM +0100, Florian Westphal wrote:
+> > This is suspicious.  Is prefixlen == 0 impossible?
+> > 
+> > If not, then after patch
+> > mask = ~0U << 32;
+> > 
+> > ... and function returns 0.
 > 
-> Add optional delivery time (SO_TXTIME) offload for virtio-net.
-> 
-> The Linux TCP/IP stack tries to avoid bursty transmission and network
-> congestion through pacing: computing an skb delivery time based on
-> congestion information. Userspace protocol implementations can achieve
-> the same with SO_TXTIME. This may also reduce scheduling jitter and
-> improve RTT estimation.
+> With prefixlen == 0, there is only one equivalence class, so
+> returning 0 seems reasonable to me.
 
-This description is clear, but the Subject line is confusing.  It made
-me wonder whether this series is somehow about host/guest synchronization
-(but your comments do explain that that isn't the case).
+Right, that seems reasonable indeed.
 
-How about this instead?
+> Is there a reason why the function has treated /0 prefix as /32
+> with IPv4? IPv6 does not have this treatment.
 
-   virtio-net: support future packet transmit time
-
-Thanks,
-Richard
+Not that I recall, looks like a bug.
