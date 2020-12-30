@@ -2,169 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0272B2E77B0
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 11:15:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 451522E77C5
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 11:37:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbgL3KNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 05:13:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726161AbgL3KNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 05:13:32 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A018C06179E
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 02:12:52 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id b9so21381271ejy.0
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 02:12:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=J5WJPM6JQMx4Jbj6E9atrShfsotzXemKwoPLiDZZeBk=;
-        b=rxuHPmrEKQkHWNReHzNXMMVqRLOCJizhg5zmF8EXSiwuAnfVOYbth3/EzLtp5m31bP
-         xaanEaEdkEsLiYv5Rw8VhMhbaWSk5vQ6QGR8dPzTgWHKGG7jf5EEaoD46EPhgg3kgKiC
-         Sp/iJpU5Lvh0tRAS/oacUHmEZf8ZL1o4KTwZN6hSI7GiJ0NY/YMyfFNt+17zgAV+RezW
-         0cl4iyu2wLI9FM79Z7ibczdgISZ80aptDAiWswwdM/Lge9mNEWI4yH1JyLl9xVRY0uEa
-         B07wMrk/Vk5tSBA0FQyPUhs64R9GxUaaS6coE2ln9Wz8I5oKwQLjO56qcGvqffzupefC
-         1NMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=J5WJPM6JQMx4Jbj6E9atrShfsotzXemKwoPLiDZZeBk=;
-        b=qpjf/+pIx/2E6pVEEfSvIe0JErBh8EGhamLz4aUFuFHZSeXsx2qP0fzRp00BXcCytW
-         h2a9ZRbzSIsl1sqYPM0r3XOU4eeYPOok5rn9IUo7nXj894YLLKwDpIRftTIV78Op89Xj
-         0Y7g98IOko5Abf3Yt+EFFHla3boHKVHkGbbDDw4JnM/ExiZumCFBxHME8w2ssJoBrBp/
-         b409gUkytgipT5PshN0+8HxOdKqtXdWf/n/E6T4m5x54AANw7JZ8/eaGkGEENBncOHyv
-         pxM4Jvmfzo+JbBn3JiOIQ+zEOhNKEI5TjoqMnGxOvMfwiPRrG0T8MCIjQGfHqgadonAd
-         FE9A==
-X-Gm-Message-State: AOAM530/GzLCzYehvYt1V2B2gN+9hI81IIP1D2I5erVWaRrzSqj6JLP+
-        jSwi3z9Pc3RVd6GH5U6WBJv/rq1hvPxlFPBJ34SV
-X-Google-Smtp-Source: ABdhPJzfcf6oYCVKKo5/Wxp79G1FfJjdqXlE5V4OiBdpmsAmSa6Oyi1m1HZCfASuNteTrZena0AnCK+Qcxz5m86DSM4=
-X-Received: by 2002:a17:906:878d:: with SMTP id za13mr48518386ejb.395.1609323170757;
- Wed, 30 Dec 2020 02:12:50 -0800 (PST)
+        id S1726352AbgL3KeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 05:34:01 -0500
+Received: from mx0b-001ae601.pphosted.com ([67.231.152.168]:11844 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726203AbgL3KeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 05:34:01 -0500
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BUASpjX014943;
+        Wed, 30 Dec 2020 04:33:11 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type;
+ s=PODMain02222019; bh=Dj3uGFpCas2ZcpTl/fagKZPqCx58KdfIZrGAnDfbp9o=;
+ b=JiCGweW+zMJQhkKnitr6790PAyG6BXYzAWSZZwZoDKMXSa6NQB9JZpITRKwQpBBffhLb
+ HNuT0TGu8TbqB/I4mD9NneD3ytxzbiwCiXnc4IQ2SSAc3Iwm1qlzaz6RilQ41g7LZXuU
+ y7eo5mCCZeLc10GI3CZjoUQIgQH2Zwj9LH9IBr1uAY72aXuuEp733E44Q3uuX6lPu4D8
+ ApopV4sQ0dCan5Hz1v9EWMIC1xeh9xnULGip64pXUjhD0/+R3gGzvLczcPx1Q/SZlyci
+ GzkxI+0r5qCxOjP9rSuoIF2H/2C9D8vCpduIv7IC6H1SkRBAUiIG5TyFVSSDJYLUo5Sv pQ== 
+Received: from ediex02.ad.cirrus.com ([87.246.76.36])
+        by mx0b-001ae601.pphosted.com with ESMTP id 35p2fs372g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 30 Dec 2020 04:33:11 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Wed, 30 Dec
+ 2020 10:33:09 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.1913.5 via Frontend
+ Transport; Wed, 30 Dec 2020 10:33:09 +0000
+Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 6EF5A45;
+        Wed, 30 Dec 2020 10:33:09 +0000 (UTC)
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] net: macb: Correct usage of MACB_CAPS_CLK_HW_CHG flag
+Date:   Wed, 30 Dec 2020 10:33:09 +0000
+Message-ID: <20201230103309.8956-1-ckeepax@opensource.cirrus.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-References: <20201222145221.711-1-xieyongji@bytedance.com> <CACycT3s=m=PQb5WFoMGhz8TNGme4+=rmbbBTtrugF9ZmNnWxEw@mail.gmail.com>
- <0e6faf9c-117a-e23c-8d6d-488d0ec37412@redhat.com> <CACycT3uwXBYvRbKDWdN3oCekv+o6_Lc=-KTrxejD=fr-zgibGw@mail.gmail.com>
- <2b24398c-e6d9-14ec-2c0d-c303d528e377@redhat.com> <CACycT3uDV43ecScrMh1QVpStuwDETHykJzzY=pkmZjP2Dd2kvg@mail.gmail.com>
- <e77c97c5-6bdc-cdd0-62c0-6ff75f6dbdff@redhat.com> <CACycT3soQoX5avZiFBLEGBuJpdni6-UxdhAPGpWHBWVf+dEySg@mail.gmail.com>
- <1356137727.40748805.1609233068675.JavaMail.zimbra@redhat.com>
- <CACycT3sg61yRdupnD+jQEkWKsVEvMWfhkJ=5z_bYZLxCibDiHw@mail.gmail.com>
- <b1aef426-29c7-7244-5fc9-56d52e86abb4@redhat.com> <CACycT3vZ7V5WWhCFLBK6FuvVNmPmMj_yc=COOB4cjjC13yHUwg@mail.gmail.com>
- <3fc6a132-9fc2-c4e2-7fb1-b5a8bfb771fa@redhat.com>
-In-Reply-To: <3fc6a132-9fc2-c4e2-7fb1-b5a8bfb771fa@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Wed, 30 Dec 2020 18:12:40 +0800
-Message-ID: <CACycT3tD3zyvV6Zy5NT4x=02hBgrRGq35xeTsRXXx-_wPGJXpQ@mail.gmail.com>
-Subject: Re: Re: [RFC v2 09/13] vduse: Add support for processing vhost iotlb message
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 impostorscore=0 mlxscore=0
+ suspectscore=0 lowpriorityscore=0 priorityscore=1501 malwarescore=0
+ clxscore=1015 mlxlogscore=999 spamscore=0 bulkscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012300063
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 30, 2020 at 4:41 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2020/12/30 =E4=B8=8B=E5=8D=883:09, Yongji Xie wrote:
-> > On Wed, Dec 30, 2020 at 2:11 PM Jason Wang <jasowang@redhat.com> wrote:
-> >>
-> >> On 2020/12/29 =E4=B8=8B=E5=8D=886:26, Yongji Xie wrote:
-> >>> On Tue, Dec 29, 2020 at 5:11 PM Jason Wang <jasowang@redhat.com> wrot=
-e:
-> >>>>
-> >>>> ----- Original Message -----
-> >>>>> On Mon, Dec 28, 2020 at 4:43 PM Jason Wang <jasowang@redhat.com> wr=
-ote:
-> >>>>>> On 2020/12/28 =E4=B8=8B=E5=8D=884:14, Yongji Xie wrote:
-> >>>>>>>> I see. So all the above two questions are because VHOST_IOTLB_IN=
-VALIDATE
-> >>>>>>>> is expected to be synchronous. This need to be solved by tweakin=
-g the
-> >>>>>>>> current VDUSE API or we can re-visit to go with descriptors rela=
-ying
-> >>>>>>>> first.
-> >>>>>>>>
-> >>>>>>> Actually all vdpa related operations are synchronous in current
-> >>>>>>> implementation. The ops.set_map/dma_map/dma_unmap should not retu=
-rn
-> >>>>>>> until the VDUSE_UPDATE_IOTLB/VDUSE_INVALIDATE_IOTLB message is re=
-plied
-> >>>>>>> by userspace. Could it solve this problem?
-> >>>>>>     I was thinking whether or not we need to generate IOTLB_INVALI=
-DATE
-> >>>>>> message to VDUSE during dma_unmap (vduse_dev_unmap_page).
-> >>>>>>
-> >>>>>> If we don't, we're probably fine.
-> >>>>>>
-> >>>>> It seems not feasible. This message will be also used in the
-> >>>>> virtio-vdpa case to notify userspace to unmap some pages during
-> >>>>> consistent dma unmapping. Maybe we can document it to make sure the
-> >>>>> users can handle the message correctly.
-> >>>> Just to make sure I understand your point.
-> >>>>
-> >>>> Do you mean you plan to notify the unmap of 1) streaming DMA or 2)
-> >>>> coherent DMA?
-> >>>>
-> >>>> For 1) you probably need a workqueue to do that since dma unmap can
-> >>>> be done in irq or bh context. And if usrspace does't do the unmap, i=
-t
-> >>>> can still access the bounce buffer (if you don't zap pte)?
-> >>>>
-> >>> I plan to do it in the coherent DMA case.
-> >>
-> >> Any reason for treating coherent DMA differently?
-> >>
-> > Now the memory of the bounce buffer is allocated page by page in the
-> > page fault handler. So it can't be used in coherent DMA mapping case
-> > which needs some memory with contiguous virtual addresses. I can use
-> > vmalloc() to do allocation for the bounce buffer instead. But it might
-> > cause some memory waste. Any suggestion?
->
->
-> I may miss something. But I don't see a relationship between the
-> IOTLB_UNMAP and vmalloc().
->
+A new flag MACB_CAPS_CLK_HW_CHG was added and all callers of
+macb_set_tx_clk were gated on the presence of this flag.
 
-In the vmalloc() case, the coherent DMA page will be taken from the
-memory allocated by vmalloc(). So IOTLB_UNMAP is not needed anymore
-during coherent DMA unmapping because those vmalloc'ed memory which
-has been mapped into userspace address space during initialization can
-be reused. And userspace should not unmap the region until we destroy
-the device.
+-   if (!clk)
++ if (!bp->tx_clk || !(bp->caps & MACB_CAPS_CLK_HW_CHG))
 
->
-> >
-> >>> It's true that userspace can
-> >>> access the dma buffer if userspace doesn't do the unmap. But the dma
-> >>> pages would not be freed and reused unless user space called munmap()
-> >>> for them.
-> >>
-> >> I wonder whether or not we could recycle IOVA in this case to avoid th=
-e
-> >> IOTLB_UMAP message.
-> >>
-> > We can achieve that if we use vmalloc() to do allocation for the
-> > bounce buffer which can be used in coherent DMA mapping case. But
-> > looks like we still have no way to avoid the IOTLB_UMAP message in
-> > vhost-vdpa case.
->
->
-> I think that's fine. For virtio-vdpa, from VDUSE userspace perspective,
-> it works like a driver that is using SWIOTLB in this case.
->
+However the flag was not added to anything other than the new
+sama7g5_gem, turning that function call into a no op for all other
+systems. This breaks the networking on Zynq.
 
-OK, will do it in v3.
+The commit message adding this states: a new capability so that
+macb_set_tx_clock() to not be called for IPs having this
+capability
+
+This strongly implies that present of the flag was intended to skip
+the function not absence of the flag. Update the if statement to
+this effect, which repairs the existing users.
+
+Fixes: daafa1d33cc9 ("net: macb: add capability to not set the clock rate")
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+---
+
+Changes since v1:
+ - Updated flag semantics to skip function, as appears to have been
+   intended by the initial commit.
 
 Thanks,
-Yongji
+Charles
+
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d5d910916c2e8..814a5b10141d1 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -467,7 +467,7 @@ static void macb_set_tx_clk(struct macb *bp, int speed)
+ {
+ 	long ferr, rate, rate_rounded;
+ 
+-	if (!bp->tx_clk || !(bp->caps & MACB_CAPS_CLK_HW_CHG))
++	if (!bp->tx_clk || (bp->caps & MACB_CAPS_CLK_HW_CHG))
+ 		return;
+ 
+ 	switch (speed) {
+-- 
+2.11.0
+
