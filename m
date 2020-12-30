@@ -2,65 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CB802E7592
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 02:39:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 781F02E7593
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 02:45:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgL3BiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Dec 2020 20:38:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47454 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726185AbgL3BiM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Dec 2020 20:38:12 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 55BE920867;
-        Wed, 30 Dec 2020 01:37:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609292251;
-        bh=Zj+7kvWGhFidy9YRhsyGr5SYm2+ujzEHQdRwB6kn1b8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DODA7CW0dRa25xofNIoZcBPNVfB+QrSeUoUmboId5tMusHc9ySf4G8wZhtEKW7Xge
-         QwpUXedVeu+0v5rdwlWeVk7rAARlX5ZXAZhKKlXdq+F2I4+UN1ERCTg+whIGXrM84E
-         VBcG4ulG7SM6Tp/eulZZWDcyNR2PgZnivsf7OtH+SyBP4ChJiBHjglozKp6i2AkJis
-         hOu5Ue6Uoc40Kz/Tmf7LYPH7I52Gl1ZHltAXujY9q3j0G+9EobeHYX0aU5byVhp7XI
-         dodMyLUsaX4UEVb8AAgqc+GTRHF6CnpELPTRX0iAlseoFGTjdLcSazdjJH5GLqSFKu
-         BQ5wDSPJAZKYw==
-Date:   Tue, 29 Dec 2020 17:37:30 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     syzbot <syzbot+eaaf6c4a6a8cb1869d86@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        keescook@chromium.org, ktkhai@virtuozzo.com, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pombredanne@nexb.com, stephen@networkplumber.org,
-        syzkaller-bugs@googlegroups.com, tom@herbertland.com,
-        yoshfuji@linux-ipv6.org
-Subject: Re: inconsistent lock state in ila_xlat_nl_cmd_add_mapping
-Message-ID: <20201229173730.65f74253@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <000000000000b14d8c05735dcdf8@google.com>
-References: <000000000000b14d8c05735dcdf8@google.com>
+        id S1726338AbgL3Bnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Dec 2020 20:43:41 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:10095 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726161AbgL3Bnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Dec 2020 20:43:41 -0500
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4D5DY058FhzMC5F;
+        Wed, 30 Dec 2020 09:41:56 +0800 (CST)
+Received: from ubuntu.network (10.175.138.68) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.498.0; Wed, 30 Dec 2020 09:42:50 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <Markus.Elfring@web.de>, Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH v2 net-next] net: kcm: Replace fput with sockfd_put
+Date:   Wed, 30 Dec 2020 09:43:29 +0800
+Message-ID: <20201230014329.29159-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.138.68]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Aug 2018 21:40:03 -0700 syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    78cbac647e61 Merge branch 'ip-faster-in-order-IP-fragments'
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14df4828400000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=9100338df26ab75
-> dashboard link: https://syzkaller.appspot.com/bug?extid=eaaf6c4a6a8cb1869d86
-> compiler:       gcc (GCC) 8.0.1 20180413 (experimental)
-> syzkaller repro:https://syzkaller.appspot.com/x/repro.syz?x=13069ad2400000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+eaaf6c4a6a8cb1869d86@syzkaller.appspotmail.com
+The function sockfd_lookup uses fget on the value that is stored in
+the file field of the returned structure, so fput should ultimately be
+applied to this value.  This can be done directly, but it seems better
+to use the specific macro sockfd_put, which does the same thing.
 
-#syz invalid
+The refactoring proposed was found using the following semantic patch.
 
-Hard to track down what fixed this, but the lockdep splat is mixing up
-locks from two different hashtables, so there was never a real issue
-here.
+    // <smpl>
+    @@
+    expression s;
+    @@
+
+       s = sockfd_lookup(...)
+       ...
+    +  sockfd_put(s);
+    - fput(s->file);
+    // </smpl>
+
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ net/kcm/kcmsock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
+index 56dad9565bc9..a9eb616f5521 100644
+--- a/net/kcm/kcmsock.c
++++ b/net/kcm/kcmsock.c
+@@ -1496,7 +1496,7 @@ static int kcm_attach_ioctl(struct socket *sock, struct kcm_attach *info)
+ 
+ 	return 0;
+ out:
+-	fput(csock->file);
++	sockfd_put(csock);
+ 	return err;
+ }
+ 
+@@ -1644,7 +1644,7 @@ static int kcm_unattach_ioctl(struct socket *sock, struct kcm_unattach *info)
+ 	spin_unlock_bh(&mux->lock);
+ 
+ out:
+-	fput(csock->file);
++	sockfd_put(csock);
+ 	return err;
+ }
+ 
+-- 
+2.22.0
+
