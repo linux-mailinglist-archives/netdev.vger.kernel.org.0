@@ -2,131 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1258D2E79B2
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 14:32:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D97C12E79B6
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 14:32:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727040AbgL3Na2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 08:30:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36030 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726683AbgL3Na1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 08:30:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609334941;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tRSc7sq5Dg0Q3HCfyMcMQGHnajfmpPOySohf9FwY6XM=;
-        b=S4muftB167TIjmgd/5xl4t1Yn5JfNuubtUbworCJLyNiVkKgJu2wXjrWZU354r2w9/kt/d
-        FqMcQMZCHVQVcwH1kxkBYcfQcRUWzZLE/Cae/9EYNwAE3yPDjzDaXLGfj94cTFnXVLJhMZ
-        j+6KGDdNHdfLNP61TS/Wk4TfCNsVAGA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-433-8lLkK23FMAiWkvqeQIIBOA-1; Wed, 30 Dec 2020 08:28:57 -0500
-X-MC-Unique: 8lLkK23FMAiWkvqeQIIBOA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727125AbgL3Nbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 08:31:44 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:48941 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726827AbgL3Nbo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Dec 2020 08:31:44 -0500
+Received: from tarshish (unknown [10.0.8.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A3CA879500;
-        Wed, 30 Dec 2020 13:28:55 +0000 (UTC)
-Received: from krava (unknown [10.40.192.129])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 4602317C5F;
-        Wed, 30 Dec 2020 13:28:53 +0000 (UTC)
-Date:   Wed, 30 Dec 2020 14:28:52 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Qais Yousef <qais.yousef@arm.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Subject: Re: BTFIDS: FAILED unresolved symbol udp6_sock
-Message-ID: <20201230132852.GC577428@krava>
-References: <20201229151352.6hzmjvu3qh6p2qgg@e107158-lin>
- <20201229173401.GH450923@krava>
- <20201229232835.cbyfmja3bu3lx7we@e107158-lin>
- <20201230090333.GA577428@krava>
- <20201230132759.GB577428@krava>
+        by mx.tkos.co.il (Postfix) with ESMTPS id 4CCE9440DBB;
+        Wed, 30 Dec 2020 15:31:00 +0200 (IST)
+References: <5cb47005e7a59b64299e038827e295822193384c.1609232919.git.baruch@tkos.co.il>
+ <80089f3783372c8fd7833f28ce774a171b2ef252.1609232919.git.baruch@tkos.co.il>
+ <CAPfuSqFOHDaxuUDwD6m3NVfzk+VTLKwvseOPrVYdchZAYF+sYQ@mail.gmail.com>
+User-agent: mu4e 1.4.13; emacs 27.1
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Ulises Alonso <ulises.alonso@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org,
+        Ulisses Alonso =?utf-8?Q?Camar=C3=B3?= <uaca@alumni.uv.es>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH v2 2/2] docs: networking: packet_mmap: fix old config
+ reference
+In-reply-to: <CAPfuSqFOHDaxuUDwD6m3NVfzk+VTLKwvseOPrVYdchZAYF+sYQ@mail.gmail.com>
+Date:   Wed, 30 Dec 2020 15:30:59 +0200
+Message-ID: <87eej78lpo.fsf@tarshish>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201230132759.GB577428@krava>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 30, 2020 at 02:28:02PM +0100, Jiri Olsa wrote:
-> On Wed, Dec 30, 2020 at 10:03:37AM +0100, Jiri Olsa wrote:
-> > On Tue, Dec 29, 2020 at 11:28:35PM +0000, Qais Yousef wrote:
-> > > Hi Jiri
-> > > 
-> > > On 12/29/20 18:34, Jiri Olsa wrote:
-> > > > On Tue, Dec 29, 2020 at 03:13:52PM +0000, Qais Yousef wrote:
-> > > > > Hi
-> > > > > 
-> > > > > When I enable CONFIG_DEBUG_INFO_BTF I get the following error in the BTFIDS
-> > > > > stage
-> > > > > 
-> > > > > 	FAILED unresolved symbol udp6_sock
-> > > > > 
-> > > > > I cross compile for arm64. My .config is attached.
-> > > > > 
-> > > > > I managed to reproduce the problem on v5.9 and v5.10. Plus 5.11-rc1.
-> > > > > 
-> > > > > Have you seen this before? I couldn't find a specific report about this
-> > > > > problem.
-> > > > > 
-> > > > > Let me know if you need more info.
-> > > > 
-> > > > hi,
-> > > > this looks like symptom of the gcc DWARF bug we were
-> > > > dealing with recently:
-> > > > 
-> > > >   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97060
-> > > >   https://lore.kernel.org/lkml/CAE1WUT75gu9G62Q9uAALGN6vLX=o7vZ9uhqtVWnbUV81DgmFPw@mail.gmail.com/#r
-> > > > 
-> > > > what pahole/gcc version are you using?
-> > > 
-> > > I'm on gcc 9.3.0
-> > > 
-> > > 	aarch64-linux-gnu-gcc (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
-> > > 
-> > > I was on pahole v1.17. I moved to v1.19 but I still see the same problem.
-> > 
-> > I can reproduce with your .config, but make 'defconfig' works,
-> > so I guess it's some config option issue, I'll check later today
-> 
-> so your .config has
->   CONFIG_CRYPTO_DEV_BCM_SPU=y
-> 
-> and that defines 'struct device_private' which
-> clashes with the same struct defined in drivers/base/base.h
-> 
-> so several networking structs will be doubled, like net_device:
-> 
-> 	$ bpftool btf dump file ../vmlinux.config | grep net_device\' | grep STRUCT
-> 	[2731] STRUCT 'net_device' size=2240 vlen=133
-> 	[113981] STRUCT 'net_device' size=2240 vlen=133
-> 
-> each is using different 'struct device_private' when it's unwinded
-> 
-> and that will confuse BTFIDS logic, becase we have multiple structs
-> with the same name, and we can't be sure which one to pick
-> 
-> perhaps we should check on this in pahole and warn earlier with
-> better error message.. I'll check, but I'm not sure if pahole can
-> survive another hastab ;-)
-> 
-> Andrii, any ideas on this? ;-)
-> 
-> easy fix is the patch below that renames the bcm's structs,
-> it makes the kernel to compile.. but of course the new name
-> is probably wrong and we should push this through that code
-> authors
+Hi Ulises,
 
-also another quick fix is to switch it to module
+On Tue, Dec 29 2020, Ulises Alonso wrote:
+> Can you also replace the sentence
+>
+>      "(like libpcap always does)."
+>
+> with
+>
+>     "(which old libpcap versions used do)."
 
-jirka
+Are you sure this change is correct? The text says:
 
+  ... it requires two if you want to get packet's timestamp
+  (like libpcap always does).
+
+I think libpcap still reads packets timestamps, though it most likely
+uses the newer interface for that.
+
+Maybe we should just drop the libpcap reference here?
+
+Thanks for reviewing the patch,
+baruch
+
+> On Tue, Dec 29, 2020 at 10:11 AM Baruch Siach <baruch@tkos.co.il> wrote:
+>
+>> Before commit 889b8f964f2f ("packet: Kill CONFIG_PACKET_MMAP.") there
+>> used to be a CONFIG_PACKET_MMAP config symbol that depended on
+>> CONFIG_PACKET. The text still implies that PACKET_MMAP can be disabled.
+>> Remove that from the text, as well as reference to old kernel versions.
+>>
+>> Also, drop reference to broken link to information for pre 2.6.5
+>> kernels.
+>>
+>> Make a slight working improvement (s/In/On/) while at it.
+>>
+>> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+>> ---
+>> v2: Address comments from Jakub Kicinski and Willem de Bruijn
+>>
+>>   * Don't change PACKET_MMAP
+>>
+>>   * Remove mention of specific kernel versions
+>>
+>>   * Don't reflow paragraphs
+>>
+>>   * s/In/On/
+>> ---
+>>  Documentation/networking/packet_mmap.rst | 9 ++++-----
+>>  1 file changed, 4 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/Documentation/networking/packet_mmap.rst
+>> b/Documentation/networking/packet_mmap.rst
+>> index f3646c80b019..500ef60b1b82 100644
+>> --- a/Documentation/networking/packet_mmap.rst
+>> +++ b/Documentation/networking/packet_mmap.rst
+>> @@ -8,7 +8,7 @@ Abstract
+>>  ========
+>>
+>>  This file documents the mmap() facility available with the PACKET
+>> -socket interface on 2.4/2.6/3.x kernels. This type of sockets is used for
+>> +socket interface. This type of sockets is used for
+>>
+>>  i) capture network traffic with utilities like tcpdump,
+>>  ii) transmit network traffic, or any other that needs raw
+>> @@ -25,12 +25,12 @@ Please send your comments to
+>>  Why use PACKET_MMAP
+>>  ===================
+>>
+>> -In Linux 2.4/2.6/3.x if PACKET_MMAP is not enabled, the capture process
+>> is very
+>> +Non PACKET_MMAP capture process (plain AF_PACKET) is very
+>>  inefficient. It uses very limited buffers and requires one system call to
+>>  capture each packet, it requires two if you want to get packet's timestamp
+>>  (like libpcap always does).
+>>
+>> -In the other hand PACKET_MMAP is very efficient. PACKET_MMAP provides a
+>> size
+>> +On the other hand PACKET_MMAP is very efficient. PACKET_MMAP provides a
+>> size
+>>  configurable circular buffer mapped in user space that can be used to
+>> either
+>>  send or receive packets. This way reading packets just needs to wait for
+>> them,
+>>  most of the time there is no need to issue a single system call.
+>> Concerning
+>> @@ -252,8 +252,7 @@ PACKET_MMAP setting constraints
+>>
+>>  In kernel versions prior to 2.4.26 (for the 2.4 branch) and 2.6.5 (2.6
+>> branch),
+>>  the PACKET_MMAP buffer could hold only 32768 frames in a 32 bit
+>> architecture or
+>> -16384 in a 64 bit architecture. For information on these kernel versions
+>> -see
+>> http://pusa.uv.es/~ulisses/packet_mmap/packet_mmap.pre-2.4.26_2.6.5.txt
+>> +16384 in a 64 bit architecture.
+>>
+>>  Block size limit
+>>  ----------------
+>> --
+>> 2.29.2
+
+-- 
+                                                     ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
