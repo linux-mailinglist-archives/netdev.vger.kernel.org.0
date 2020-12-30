@@ -2,135 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF42F2E76AD
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 07:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0C2E2E76AB
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 07:51:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbgL3Gup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 01:50:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:57655 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726230AbgL3Gup (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 01:50:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609310958;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=heg1e+a0V0k76vMPfwBRgNJmwNSkeMx7Vj1PPs8FGPE=;
-        b=VKKPcvhHq6gU9fQeXblMMGEbp3CZ6GsWgUTCkToPC0WiIigTK+l3djt2pnO/Ea9xwfEY4x
-        MfzvOD2yJXEdpw1/ZM9Y8Uw7V/5dr0kt6jSMu7Q9NUcpMmG/+P8bQFxeLkDo+9UHw+Bmr1
-        v8rr/TMiWKeCv3Cyp0dhFO31tJ/f/kc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-138-Te43lXXeP_qDJgvLF9ML3Q-1; Wed, 30 Dec 2020 01:49:17 -0500
-X-MC-Unique: Te43lXXeP_qDJgvLF9ML3Q-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6C497107ACE6;
-        Wed, 30 Dec 2020 06:49:15 +0000 (UTC)
-Received: from [10.72.13.30] (ovpn-13-30.pek2.redhat.com [10.72.13.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E61FA71CBB;
-        Wed, 30 Dec 2020 06:49:04 +0000 (UTC)
-Subject: Re: [PATCH 12/21] vhost-vdpa: introduce uAPI to get the number of
- virtqueue groups
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, eperezma@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lulu@redhat.com, eli@mellanox.com,
-        lingshan.zhu@intel.com, rob.miller@broadcom.com,
-        stefanha@redhat.com, sgarzare@redhat.com
-References: <20201216064818.48239-1-jasowang@redhat.com>
- <20201216064818.48239-13-jasowang@redhat.com>
- <20201229122455.GF195479@mtl-vdi-166.wap.labs.mlnx>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f7e603f1-0200-566a-5360-f093da358b6d@redhat.com>
-Date:   Wed, 30 Dec 2020 14:49:03 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726313AbgL3GuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 01:50:15 -0500
+Received: from smtprelay0131.hostedemail.com ([216.40.44.131]:48084 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726203AbgL3GuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 01:50:15 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id C3A88180A7FCD;
+        Wed, 30 Dec 2020 06:49:33 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:973:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3868:3871:3872:3874:4321:5007:7652:10004:10400:10471:10848:11026:11232:11473:11657:11658:11914:12043:12296:12297:12438:12740:12895:13069:13161:13229:13255:13311:13357:13439:13894:14659:14721:21080:21627:21660:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: angle06_3e022d3274a3
+X-Filterd-Recvd-Size: 2065
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf15.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 30 Dec 2020 06:49:32 +0000 (UTC)
+Message-ID: <42f953220e40a2e32540f729f03b762610b35a42.camel@perches.com>
+Subject: Re: [PATCH] liquidio: fix: warning: %u in format string (no. 3)
+ requires 'unsigned int' but the argument type is 'signed int'.
+From:   Joe Perches <joe@perches.com>
+To:     YANG LI <abaci-bugfix@linux.alibaba.com>, davem@davemloft.net
+Cc:     kuba@kernel.org, dchickles@marvell.com, sburla@marvell.com,
+        fmanlunas@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 29 Dec 2020 22:49:31 -0800
+In-Reply-To: <1609310480-80777-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+References: <1609310480-80777-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-In-Reply-To: <20201229122455.GF195479@mtl-vdi-166.wap.labs.mlnx>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 2020-12-30 at 14:41 +0800, YANG LI wrote:
+> For safety, modify '%u' to '%d' to keep the type consistent.
 
-On 2020/12/29 ä¸‹åˆ8:24, Eli Cohen wrote:
-> On Wed, Dec 16, 2020 at 02:48:09PM +0800, Jason Wang wrote:
->> Follows the vDPA support for multiple address spaces, this patch
->> introduce uAPI for the userspace to know the number of virtqueue
->> groups supported by the vDPA device.
-> Can you explain what exactly you mean be userspace?
+There is no additional safety here.
 
+The for loop ensures that i is positive as num_ioq_vector is also
+int and so i can not be negative as it's incremented from 0.
 
-It's the userspace that uses the uAPI introduced in this patch.
+> diff --git a/drivers/net/ethernet/cavium/liquidio/lio_core.c b/drivers/net/ethernet/cavium/liquidio/lio_core.c
+[]
+> @@ -1109,12 +1109,12 @@ int octeon_setup_interrupt(struct octeon_device *oct, u32 num_ioqs)
+>  		for (i = 0 ; i < num_ioq_vectors ; i++) {
+>  			if (OCTEON_CN23XX_PF(oct))
+>  				snprintf(&queue_irq_names[IRQ_NAME_OFF(i)],
+> -					 INTRNAMSIZ, "LiquidIO%u-pf%u-rxtx-%u",
+> +					 INTRNAMSIZ, "LiquidIO%u-pf%u-rxtx-%d",
+>  					 oct->octeon_id, oct->pf_num, i);
+>  
+> 
+>  			if (OCTEON_CN23XX_VF(oct))
+>  				snprintf(&queue_irq_names[IRQ_NAME_OFF(i)],
+> -					 INTRNAMSIZ, "LiquidIO%u-vf%u-rxtx-%u",
+> +					 INTRNAMSIZ, "LiquidIO%u-vf%u-rxtx-%d",
+>  					 oct->octeon_id, oct->vf_num, i);
+>  
+> 
+>  			irqret = request_irq(msix_entries[i].vector,
 
-
-> Is it just qemu or
-> is it destined to the virtio_net driver run by the qemu process?
-
-
-It could be Qemu, DPDK or other userspace program.
-
-The guest virtio-net driver will not use this but talks to the virtio 
-device emulated by Qemu.
-
-
-> Also can you say for what purpose?
-
-
-This can be used for facilitate the checking of whether the control vq 
-could be supported.
-
-E.g if the device support less than 2 groups, qemu won't advertise 
-control vq.
-
-Yes, #groups could be inferred from GET_VRING_GROUP. But it's not 
-straightforward as this.
-
-Thanks
-
-
->
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   drivers/vhost/vdpa.c       | 4 ++++
->>   include/uapi/linux/vhost.h | 3 +++
->>   2 files changed, 7 insertions(+)
->>
->> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->> index 060d5b5b7e64..1ba5901b28e7 100644
->> --- a/drivers/vhost/vdpa.c
->> +++ b/drivers/vhost/vdpa.c
->> @@ -536,6 +536,10 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
->>   	case VHOST_VDPA_GET_VRING_NUM:
->>   		r = vhost_vdpa_get_vring_num(v, argp);
->>   		break;
->> +	case VHOST_VDPA_GET_GROUP_NUM:
->> +		r = copy_to_user(argp, &v->vdpa->ngroups,
->> +				 sizeof(v->vdpa->ngroups));
->> +		break;
->>   	case VHOST_SET_LOG_BASE:
->>   	case VHOST_SET_LOG_FD:
->>   		r = -ENOIOCTLCMD;
->> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
->> index 59c6c0fbaba1..8a4e6e426bbf 100644
->> --- a/include/uapi/linux/vhost.h
->> +++ b/include/uapi/linux/vhost.h
->> @@ -145,4 +145,7 @@
->>   /* Get the valid iova range */
->>   #define VHOST_VDPA_GET_IOVA_RANGE	_IOR(VHOST_VIRTIO, 0x78, \
->>   					     struct vhost_vdpa_iova_range)
->> +/* Get the number of virtqueue groups. */
->> +#define VHOST_VDPA_GET_GROUP_NUM	_IOR(VHOST_VIRTIO, 0x79, unsigned int)
->> +
->>   #endif
->> -- 
->> 2.25.1
->>
 
