@@ -2,74 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE28F2E786C
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 13:07:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8F92E787F
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 13:25:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726583AbgL3MHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 07:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726322AbgL3MHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 07:07:14 -0500
-Received: from vale.hankala.org (vale.hankala.org [IPv6:2a02:2770:3:0:21a:4aff:fefb:f65c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8580EC061799
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 04:06:33 -0800 (PST)
-Received: by vale.hankala.org (OpenSMTPD) with ESMTPS id 6b24027b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 30 Dec 2020 12:06:25 +0000 (UTC)
-Date:   Wed, 30 Dec 2020 12:06:23 +0000
-From:   Visa Hankala <visa@hankala.org>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] xfrm: Fix wraparound in xfrm_policy_addr_delta()
-Message-ID: <20201230115517.iZlNGikD3bKtySfO@hankala.org>
-References: <20201229145009.cGOUak0JdKIIgGAv@hankala.org>
- <20201229160127.GA30823@breakpoint.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201229160127.GA30823@breakpoint.cc>
+        id S1726600AbgL3MY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 07:24:57 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:53439 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726539AbgL3MY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 07:24:56 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
+        with SMTP; 30 Dec 2020 14:24:00 +0200
+Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.234.210.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0BUCNxmX011571;
+        Wed, 30 Dec 2020 14:23:59 +0200
+Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id 0BUCNx3S002609;
+        Wed, 30 Dec 2020 14:23:59 +0200
+Received: (from ayal@localhost)
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 0BUCNv3c002607;
+        Wed, 30 Dec 2020 14:23:57 +0200
+From:   Aya Levin <ayal@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Daniel Axtens <dja@axtens.net>, netdev@vger.kernel.org,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Tariq Toukan <tariqt@nvidia.com>, Aya Levin <ayal@nvidia.com>
+Subject: [PATCH net] net: ipv6: Validate GSO SKB before finish IPv6 processing
+Date:   Wed, 30 Dec 2020 14:23:48 +0200
+Message-Id: <1609331028-2566-1-git-send-email-ayal@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 29, 2020 at 05:01:27PM +0100, Florian Westphal wrote:
-> Visa Hankala <visa@hankala.org> wrote:
-> > Use three-way comparison for address elements to avoid integer
-> > wraparound in the result of xfrm_policy_addr_delta().
-> > 
-> > This ensures that the search trees are built and traversed correctly
-> > when the difference between compared address elements is larger
-> > than INT_MAX.
-> 
-> Please provide an update to tools/testing/selftests/net/xfrm_policy.sh
-> that shows that this is a problem.
+There are cases where GSO segment's length exceeds the egress MTU.
+If so:
+ - Consume the SKB and its segments.
+ - Issue an ICMP packet with 'Packet Too Big' message containing the
+   MTU, allowing the source host to reduce its Path MTU appropriately.
 
-I will do that in the next revision.
+Note: These cases are handled in the same manner in IPv4 output finish.
+This patch aligns the behavior of IPv6 and IPv4.
 
-> >  	switch (family) {
-> >  	case AF_INET:
-> > -		if (sizeof(long) == 4 && prefixlen == 0)
-> > -			return ntohl(a->a4) - ntohl(b->a4);
-> > -		return (ntohl(a->a4) & ((~0UL << (32 - prefixlen)))) -
-> > -		       (ntohl(b->a4) & ((~0UL << (32 - prefixlen))));
-> > +		mask = ~0U << (32 - prefixlen);
-> > +		ma = ntohl(a->a4) & mask;
-> > +		mb = ntohl(b->a4) & mask;
-> 
-> This is suspicious.  Is prefixlen == 0 impossible?
-> 
-> If not, then after patch
-> mask = ~0U << 32;
-> 
-> ... and function returns 0.
+Fixes: 9e50849054a4 ("netfilter: ipv6: move POSTROUTING invocation before fragmentation")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+---
+ net/ipv6/ip6_output.c | 41 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
 
-prefixlen == 0 is possible. However, I now realize that left shift
-by 32 should be avoided with 32-bit integers.
+Hi,
 
-With prefixlen == 0, there is only one equivalence class, so
-returning 0 seems reasonable to me.
+Please queue to -stable >= v2.6.35.
 
-Is there a reason why the function has treated /0 prefix as /32
-with IPv4? IPv6 does not have this treatment.
+Daniel Axtens, does this solve the issue referred in your commit?
+8914a595110a bnx2x: disable GSO where gso_size is too big for hardware
+
+Thanks,
+Aya
+
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 749ad72386b2..36466f2211bd 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -125,8 +125,43 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ 	return -EINVAL;
+ }
+ 
++static int
++ip6_finish_output_gso_slowpath_drop(struct net *net, struct sock *sk,
++				    struct sk_buff *skb, unsigned int mtu)
++{
++	struct sk_buff *segs, *nskb;
++	netdev_features_t features;
++	int ret;
++
++	/* Please see corresponding comment in ip_finish_output_gso
++	 * describing the cases where GSO segment length exceeds the
++	 * egress MTU.
++	 */
++	features = netif_skb_features(skb);
++	segs = skb_gso_segment(skb, features & ~NETIF_F_GSO_MASK);
++	if (IS_ERR_OR_NULL(segs)) {
++		kfree_skb(skb);
++		return -ENOMEM;
++	}
++
++	consume_skb(skb);
++
++	skb_list_walk_safe(segs, segs, nskb) {
++		int err;
++
++		skb_mark_not_on_list(segs);
++		err = ip6_fragment(net, sk, segs, ip6_finish_output2);
++		if (err && ret == 0)
++			ret = err;
++	}
++
++	return ret;
++}
++
+ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
++	unsigned int mtu;
++
+ #if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
+ 	/* Policy lookup after SNAT yielded a new policy */
+ 	if (skb_dst(skb)->xfrm) {
+@@ -135,7 +170,11 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
+ 	}
+ #endif
+ 
+-	if ((skb->len > ip6_skb_dst_mtu(skb) && !skb_is_gso(skb)) ||
++	mtu = ip6_skb_dst_mtu(skb);
++	if (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))
++		return ip6_finish_output_gso_slowpath_drop(net, sk, skb, mtu);
++
++	if ((skb->len > mtu && !skb_is_gso(skb)) ||
+ 	    dst_allfrag(skb_dst(skb)) ||
+ 	    (IP6CB(skb)->frag_max_size && skb->len > IP6CB(skb)->frag_max_size))
+ 		return ip6_fragment(net, sk, skb, ip6_finish_output2);
+-- 
+2.14.1
+
