@@ -2,71 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0C2E2E76AB
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 07:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 754E92E76C1
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 08:10:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726313AbgL3GuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 01:50:15 -0500
-Received: from smtprelay0131.hostedemail.com ([216.40.44.131]:48084 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726203AbgL3GuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 01:50:15 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id C3A88180A7FCD;
-        Wed, 30 Dec 2020 06:49:33 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:973:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3868:3871:3872:3874:4321:5007:7652:10004:10400:10471:10848:11026:11232:11473:11657:11658:11914:12043:12296:12297:12438:12740:12895:13069:13161:13229:13255:13311:13357:13439:13894:14659:14721:21080:21627:21660:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: angle06_3e022d3274a3
-X-Filterd-Recvd-Size: 2065
-Received: from [192.168.1.159] (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf15.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 30 Dec 2020 06:49:32 +0000 (UTC)
-Message-ID: <42f953220e40a2e32540f729f03b762610b35a42.camel@perches.com>
-Subject: Re: [PATCH] liquidio: fix: warning: %u in format string (no. 3)
- requires 'unsigned int' but the argument type is 'signed int'.
-From:   Joe Perches <joe@perches.com>
-To:     YANG LI <abaci-bugfix@linux.alibaba.com>, davem@davemloft.net
-Cc:     kuba@kernel.org, dchickles@marvell.com, sburla@marvell.com,
-        fmanlunas@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 29 Dec 2020 22:49:31 -0800
-In-Reply-To: <1609310480-80777-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-References: <1609310480-80777-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1726279AbgL3HJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 02:09:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725814AbgL3HJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 02:09:55 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED0FC061799
+        for <netdev@vger.kernel.org>; Tue, 29 Dec 2020 23:09:15 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id w1so20815232ejf.11
+        for <netdev@vger.kernel.org>; Tue, 29 Dec 2020 23:09:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=l8j4LBcYSM3A9J/lyobN/Td5iPDnCHBqIY/lSxbOPoI=;
+        b=an2vDV1/CDDLLSUvQH6Uvml6j8CxlkgAoU852XXsrwcYFpo5Ao01qFD5HAOuScQ+qa
+         QT3/PEoDuXvZdIc3jQfO05AoGVp8vIC6pI0hZBL+jA0VmErjD1qwAbj8HHm6s0ZO4EWi
+         QcYdggbqXxbShmXxf5mFh1jWSRWQe8ZIiP2WbCTnMFvvUFncKOinCVEORK9dYWS7Srq2
+         F2tyiD7J/Pq/Dp/lkoub23RdxuPhavSZPsXlGQGJ13t08izTxWrSz97txktHmXo2EqrK
+         lwl2krXf/q/AAWhJkgwnSu3ndkhVAy3gtvXeReSa5rG/wgPR/MHX2nNOcHFN5YUyI5Ot
+         xfDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=l8j4LBcYSM3A9J/lyobN/Td5iPDnCHBqIY/lSxbOPoI=;
+        b=rgjsjQkhcFEarrdF1KMAlM6JZdpYKJSaxfWOEwpmtwtQt7dSI+0ESJ5GjuBrTJCVAG
+         m/dYEPH/JwcYBp21CamAqtqFOBv8Df/EeAyAeS6NU/ACUQHS8Kt1V9aO7hojWMMIbxq5
+         +idKBJInywnP2FONK0UNlg9GpG7rE5KlkwediydFehxO6FKE7uTocubC7T7KRknpjHXB
+         9EV8iiGa2z64bexd6o7xWnS9yMDuoNS3MVdGIULOeOXosHEJcUy6HQ0V9sf/N6dOWpxG
+         l8O2bOY17ZhP9sMsRwifzZtGaMNzbzCX/j4dewKYwULzTot5Nc7By/4uvziOvun9elDY
+         wc7g==
+X-Gm-Message-State: AOAM533zwclJ6WwmidJKxXWqRyMh5u5YENmjxniKNCFJ2+FHUaui/XWa
+        PsCyUNTV2+0BCCRiRRzdI0OhQTrKL/VSxae+0iRnIC8TC9rI
+X-Google-Smtp-Source: ABdhPJxSggzhnaXhPdSiv6Fgwwsm7jrYKdGJWgqP2yGg8R6DbCqwUHnGXSyfiUFMd9tVV3XFaaGE9JgwBqfN+ujcONk=
+X-Received: by 2002:a17:907:961e:: with SMTP id gb30mr46516203ejc.197.1609312154151;
+ Tue, 29 Dec 2020 23:09:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201222145221.711-1-xieyongji@bytedance.com> <CACycT3s=m=PQb5WFoMGhz8TNGme4+=rmbbBTtrugF9ZmNnWxEw@mail.gmail.com>
+ <0e6faf9c-117a-e23c-8d6d-488d0ec37412@redhat.com> <CACycT3uwXBYvRbKDWdN3oCekv+o6_Lc=-KTrxejD=fr-zgibGw@mail.gmail.com>
+ <2b24398c-e6d9-14ec-2c0d-c303d528e377@redhat.com> <CACycT3uDV43ecScrMh1QVpStuwDETHykJzzY=pkmZjP2Dd2kvg@mail.gmail.com>
+ <e77c97c5-6bdc-cdd0-62c0-6ff75f6dbdff@redhat.com> <CACycT3soQoX5avZiFBLEGBuJpdni6-UxdhAPGpWHBWVf+dEySg@mail.gmail.com>
+ <1356137727.40748805.1609233068675.JavaMail.zimbra@redhat.com>
+ <CACycT3sg61yRdupnD+jQEkWKsVEvMWfhkJ=5z_bYZLxCibDiHw@mail.gmail.com> <b1aef426-29c7-7244-5fc9-56d52e86abb4@redhat.com>
+In-Reply-To: <b1aef426-29c7-7244-5fc9-56d52e86abb4@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 30 Dec 2020 15:09:03 +0800
+Message-ID: <CACycT3vZ7V5WWhCFLBK6FuvVNmPmMj_yc=COOB4cjjC13yHUwg@mail.gmail.com>
+Subject: Re: Re: [RFC v2 09/13] vduse: Add support for processing vhost iotlb message
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
+        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-12-30 at 14:41 +0800, YANG LI wrote:
-> For safety, modify '%u' to '%d' to keep the type consistent.
+On Wed, Dec 30, 2020 at 2:11 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2020/12/29 =E4=B8=8B=E5=8D=886:26, Yongji Xie wrote:
+> > On Tue, Dec 29, 2020 at 5:11 PM Jason Wang <jasowang@redhat.com> wrote:
+> >>
+> >>
+> >> ----- Original Message -----
+> >>> On Mon, Dec 28, 2020 at 4:43 PM Jason Wang <jasowang@redhat.com> wrot=
+e:
+> >>>>
+> >>>> On 2020/12/28 =E4=B8=8B=E5=8D=884:14, Yongji Xie wrote:
+> >>>>>> I see. So all the above two questions are because VHOST_IOTLB_INVA=
+LIDATE
+> >>>>>> is expected to be synchronous. This need to be solved by tweaking =
+the
+> >>>>>> current VDUSE API or we can re-visit to go with descriptors relayi=
+ng
+> >>>>>> first.
+> >>>>>>
+> >>>>> Actually all vdpa related operations are synchronous in current
+> >>>>> implementation. The ops.set_map/dma_map/dma_unmap should not return
+> >>>>> until the VDUSE_UPDATE_IOTLB/VDUSE_INVALIDATE_IOTLB message is repl=
+ied
+> >>>>> by userspace. Could it solve this problem?
+> >>>>
+> >>>>    I was thinking whether or not we need to generate IOTLB_INVALIDAT=
+E
+> >>>> message to VDUSE during dma_unmap (vduse_dev_unmap_page).
+> >>>>
+> >>>> If we don't, we're probably fine.
+> >>>>
+> >>> It seems not feasible. This message will be also used in the
+> >>> virtio-vdpa case to notify userspace to unmap some pages during
+> >>> consistent dma unmapping. Maybe we can document it to make sure the
+> >>> users can handle the message correctly.
+> >> Just to make sure I understand your point.
+> >>
+> >> Do you mean you plan to notify the unmap of 1) streaming DMA or 2)
+> >> coherent DMA?
+> >>
+> >> For 1) you probably need a workqueue to do that since dma unmap can
+> >> be done in irq or bh context. And if usrspace does't do the unmap, it
+> >> can still access the bounce buffer (if you don't zap pte)?
+> >>
+> > I plan to do it in the coherent DMA case.
+>
+>
+> Any reason for treating coherent DMA differently?
+>
 
-There is no additional safety here.
+Now the memory of the bounce buffer is allocated page by page in the
+page fault handler. So it can't be used in coherent DMA mapping case
+which needs some memory with contiguous virtual addresses. I can use
+vmalloc() to do allocation for the bounce buffer instead. But it might
+cause some memory waste. Any suggestion?
 
-The for loop ensures that i is positive as num_ioq_vector is also
-int and so i can not be negative as it's incremented from 0.
+>
+> > It's true that userspace can
+> > access the dma buffer if userspace doesn't do the unmap. But the dma
+> > pages would not be freed and reused unless user space called munmap()
+> > for them.
+>
+>
+> I wonder whether or not we could recycle IOVA in this case to avoid the
+> IOTLB_UMAP message.
+>
 
-> diff --git a/drivers/net/ethernet/cavium/liquidio/lio_core.c b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-[]
-> @@ -1109,12 +1109,12 @@ int octeon_setup_interrupt(struct octeon_device *oct, u32 num_ioqs)
->  		for (i = 0 ; i < num_ioq_vectors ; i++) {
->  			if (OCTEON_CN23XX_PF(oct))
->  				snprintf(&queue_irq_names[IRQ_NAME_OFF(i)],
-> -					 INTRNAMSIZ, "LiquidIO%u-pf%u-rxtx-%u",
-> +					 INTRNAMSIZ, "LiquidIO%u-pf%u-rxtx-%d",
->  					 oct->octeon_id, oct->pf_num, i);
->  
-> 
->  			if (OCTEON_CN23XX_VF(oct))
->  				snprintf(&queue_irq_names[IRQ_NAME_OFF(i)],
-> -					 INTRNAMSIZ, "LiquidIO%u-vf%u-rxtx-%u",
-> +					 INTRNAMSIZ, "LiquidIO%u-vf%u-rxtx-%d",
->  					 oct->octeon_id, oct->vf_num, i);
->  
-> 
->  			irqret = request_irq(msix_entries[i].vector,
+We can achieve that if we use vmalloc() to do allocation for the
+bounce buffer which can be used in coherent DMA mapping case. But
+looks like we still have no way to avoid the IOTLB_UMAP message in
+vhost-vdpa case.
 
-
+Thanks,
+Yongji
