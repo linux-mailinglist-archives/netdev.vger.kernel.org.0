@@ -2,88 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F14C92E7C11
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 20:14:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D75A12E7C0A
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 20:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726733AbgL3TNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 14:13:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726305AbgL3TNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 14:13:40 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69053C061573;
-        Wed, 30 Dec 2020 11:12:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=375e4YxYTm0FF5RfAlPr3QpppBYCWWAfCx/myiWk9aE=; b=R9tUBgUMK6SgV2DTDEFZbkSmw
-        /+3mwuqVYJdpva4pZYDnPutmWlIj7BZArJBm/AxQExQtNSrG2bdyBHWk19HMKW8uxr01/KLZ5cJee
-        3EX+zn+C7r7AHyNEP2y/bRv6LQi9m9kelncNUC1d2+XbtHuqbSZ3JeguecwezK0SRH9neP2895W3h
-        Pnob3axSu9nkA8ZP0v/KD5tlx1VAQqQpORpLc45sxTc4sJrLOY4H0OlaOBvPrl/C+dijG9v7hVsuw
-        Uomx9iPhJeWHvMapCzZHSJvJk+x/ADk1K5Yc58nTCtIDoQYQPwjdgArLnlpp6Z4968o00tQmaOcYp
-        OrdOvZgkQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44928)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kugtk-0005tJ-Ty; Wed, 30 Dec 2020 19:12:40 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kugtk-0002R8-Ni; Wed, 30 Dec 2020 19:12:40 +0000
-Date:   Wed, 30 Dec 2020 19:12:40 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] net: sfp: allow to use also SFP modules which are
- detected as SFF
-Message-ID: <20201230191240.GX1551@shell.armlinux.org.uk>
-References: <20201230154755.14746-1-pali@kernel.org>
- <20201230154755.14746-3-pali@kernel.org>
- <20201230161151.GS1551@shell.armlinux.org.uk>
- <20201230170652.of3m226tidtunslm@pali>
- <20201230182707.4a8b13d0@kernel.org>
+        id S1726636AbgL3TNe convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 30 Dec 2020 14:13:34 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:16822 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726277AbgL3TNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 14:13:32 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 0BUJ8ELk031236
+        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 11:12:51 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 35p1qtq95k-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 11:12:51 -0800
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 30 Dec 2020 11:12:49 -0800
+Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
+        id 4C0A1610FBBE; Wed, 30 Dec 2020 11:12:44 -0800 (PST)
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     <netdev@vger.kernel.org>, <willemdebruijn.kernel@gmail.com>,
+        <edumazet@google.com>, <dsahern@gmail.com>
+CC:     <kernel-team@fb.com>
+Subject: [RFC PATCH v3 08/12] skbuff: Call skb_zcopy_clear() before unref'ing fragments
+Date:   Wed, 30 Dec 2020 11:12:40 -0800
+Message-ID: <20201230191244.610449-9-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20201230191244.610449-1-jonathan.lemon@gmail.com>
+References: <20201230191244.610449-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201230182707.4a8b13d0@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-30_12:2020-12-30,2020-12-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
+ mlxlogscore=505 adultscore=0 malwarescore=0 impostorscore=0 suspectscore=0
+ spamscore=0 clxscore=1034 priorityscore=1501 lowpriorityscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012300118
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 30, 2020 at 06:27:07PM +0100, Marek Behún wrote:
-> On Wed, 30 Dec 2020 18:06:52 +0100
-> Pali Rohár <pali@kernel.org> wrote:
-> 
-> > 	if (!sfp->type->module_supported(&id) &&
-> > 	    (memcmp(id.base.vendor_name, "UBNT            ", 16) ||
-> > 	     memcmp(id.base.vendor_pn, "UF-INSTANT      ", 16)))
-> 
-> I would rather add a quirk member (bitfield) to the sfp structure and do
-> something like this
-> 
-> if (!sfp->type->module_supported(&id) &&
->     !(sfp->quirks & SFP_QUIRK_BAD_PHYS_ID))
-> 
-> or maybe put this check into the module_supported method.
+From: Jonathan Lemon <bsd@fb.com>
 
-Sorry, definitely not. If you've ever looked at the SDHCI driver with
-its multiple "quirks" bitfields, doing this is a recipe for creating
-a very horrid hard to understand mess.
+RX zerocopy fragment pages which are not allocated from the
+system page pool require special handling.  Give the callback
+in skb_zcopy_clear() a chance to process them first.
 
-What you suggest just results in yet more complexity.
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+---
+ net/core/skbuff.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5b9cd528d6a6..6d031ed99182 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -605,13 +605,14 @@ static void skb_release_data(struct sk_buff *skb)
+ 			      &shinfo->dataref))
+ 		return;
+ 
++	skb_zcopy_clear(skb, true);
++
+ 	for (i = 0; i < shinfo->nr_frags; i++)
+ 		__skb_frag_unref(&shinfo->frags[i]);
+ 
+ 	if (shinfo->frag_list)
+ 		kfree_skb_list(shinfo->frag_list);
+ 
+-	skb_zcopy_clear(skb, true);
+ 	skb_free_head(skb);
+ }
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.24.1
+
