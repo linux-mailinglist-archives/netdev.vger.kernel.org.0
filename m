@@ -2,79 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0362E7C14
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 20:15:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E123E2E7C06
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 20:14:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726802AbgL3TNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 14:13:48 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57570 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726663AbgL3TNs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 14:13:48 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@nvidia.com)
-        with SMTP; 30 Dec 2020 21:13:01 +0200
-Received: from mtr-vdi-191.wap.labs.mlnx. (mtr-vdi-191.wap.labs.mlnx [10.209.100.28])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0BUJD0Cn020823;
-        Wed, 30 Dec 2020 21:13:01 +0200
-From:   Roi Dayan <roid@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     Roi Dayan <roid@nvidia.com>, David Ahern <dsahern@gmail.com>,
-        Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2] build: Fix link errors on some systems
-Date:   Wed, 30 Dec 2020 21:11:43 +0200
-Message-Id: <1609355503-7981-1-git-send-email-roid@nvidia.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726531AbgL3TNa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 30 Dec 2020 14:13:30 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:39096 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726185AbgL3TNa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 14:13:30 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BUJ9WW7013809
+        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 11:12:49 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 35r7f1my0b-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 11:12:49 -0800
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 30 Dec 2020 11:12:48 -0800
+Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
+        id 296C4610FBAE; Wed, 30 Dec 2020 11:12:44 -0800 (PST)
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     <netdev@vger.kernel.org>, <willemdebruijn.kernel@gmail.com>,
+        <edumazet@google.com>, <dsahern@gmail.com>
+CC:     <kernel-team@fb.com>
+Subject: [RFC PATCH v3 00/12] Generic zcopy_* functions
+Date:   Wed, 30 Dec 2020 11:12:32 -0800
+Message-ID: <20201230191244.610449-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-30_12:2020-12-30,2020-12-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ malwarescore=0 impostorscore=0 suspectscore=0 phishscore=0 adultscore=0
+ clxscore=1034 lowpriorityscore=0 priorityscore=1501 spamscore=0 mlxscore=0
+ mlxlogscore=493 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012300118
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since moving get_rate() and get_size() from tc to lib, on some
-systems we fail to link because of missing the math lib.
-Move the link flag from tc makefile to the main makefile.
+From: Jonathan Lemon <bsd@fb.com>
 
-../lib/libutil.a(utils.o): In function `get_rate':
-utils.c:(.text+0x10dc): undefined reference to `floor'
-../lib/libutil.a(utils.o): In function `get_size':
-utils.c:(.text+0x1394): undefined reference to `floor'
-../lib/libutil.a(json_print.o): In function `sprint_size':
-json_print.c:(.text+0x14c0): undefined reference to `rint'
-json_print.c:(.text+0x14f4): undefined reference to `rint'
-json_print.c:(.text+0x157c): undefined reference to `rint'
+This is set of cleanup patches for zerocopy which are intended
+to allow a introduction of a different zerocopy implementation.
 
-Fixes: f3be0e6366ac ("lib: Move get_rate(), get_rate64() from tc here")
-Fixes: 44396bdfcc0a ("lib: Move get_size() from tc here")
-Fixes: adbe5de96662 ("lib: Move sprint_size() from tc here, add print_size()")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
----
- Makefile    | 1 +
- tc/Makefile | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+The top level API will use the skb_zcopy_*() functions, while
+the current TCP specific zerocopy ends up using msg_zerocopy_*()
+calls.
 
-diff --git a/Makefile b/Makefile
-index e64c65992585..2a604ec58905 100644
---- a/Makefile
-+++ b/Makefile
-@@ -59,6 +59,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man
- 
- LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
- LDLIBS += $(LIBNETLINK)
-+LDFLAGS += -lm
- 
- all: config.mk
- 	@set -e; \
-diff --git a/tc/Makefile b/tc/Makefile
-index 5a517af20b7c..8d91900716c1 100644
---- a/tc/Makefile
-+++ b/tc/Makefile
-@@ -110,7 +110,7 @@ ifneq ($(TC_CONFIG_NO_XT),y)
- endif
- 
- TCOBJ += $(TCMODULES)
--LDLIBS += -L. -lm
-+LDLIBS += -L.
- 
- ifeq ($(SHARED_LIBS),y)
- LDLIBS += -ldl
+There should be no functional changes from these patches.
+
+v2->v3:
+ Rename zc_flags to 'flags'.  Use SKBFL_xxx naming, similar
+ to the SKBTX_xx naming.  Leave zerocopy_success naming alone.
+ Reorder patches.
+
+v1->v2:
+ Break changes to skb_zcopy_put into 3 patches, in order to
+ make it easier to follow the changes.  Add Willem's suggestion
+ about renaming sock_zerocopy_
+
+Patch 1: remove dead function
+Patch 2: simplify sock_zerocopy_put
+Patch 3: push status/refcounts into sock_zerocopy_callback
+Patch 4: replace sock_zerocopy_put with skb_zcopy_put
+Patch 5: rename sock_zerocopy_get
+Patch 6:
+  Add an optional skb parameter to callback, allowing access to
+  the attached skb from the callback.
+Patch 7:
+  Add skb_zcopy_put_abort, and move zerocopy logic into the
+  callback function.  There unfortunately is still a check
+  against the callback type here.
+Patch 8: Relocate skb_zcopy_clear() in skb_release_data()
+Patch 9: rename sock_zerocopy_ to msg_zerocopy_
+Patch 10:
+  Move zerocopy bits from tx_flags into flags for clarity.
+  These bits will be used in the RX path in the future.
+Patch 11:
+  Set the skb flags from the ubuf being attached, instead
+  of a fixed value, allowing different initialization types.
+Patch 12: Replace open-coded assignments with skb_zcopy_init()
+
+Jonathan Lemon (12):
+  skbuff: remove unused skb_zcopy_abort function
+  skbuff: simplify sock_zerocopy_put
+  skbuff: Push status and refcounts into sock_zerocopy_callback
+  skbuff: replace sock_zerocopy_put() with skb_zcopy_put()
+  skbuff: replace sock_zerocopy_get with skb_zcopy_get
+  skbuff: Add skb parameter to the ubuf zerocopy callback
+  skbuff: Call sock_zerocopy_put_abort from skb_zcopy_put_abort
+  skbuff: Call skb_zcopy_clear() before unref'ing fragments
+  skbuff: rename sock_zerocopy_* to msg_zerocopy_*
+  net: group skb_shinfo zerocopy related bits together.
+  skbuff: add flags to ubuf_info for ubuf setup
+  tap/tun: add skb_zcopy_init() helper for initialization.
+
+ drivers/net/tap.c                   |   6 +-
+ drivers/net/tun.c                   |   6 +-
+ drivers/net/xen-netback/common.h    |   3 +-
+ drivers/net/xen-netback/interface.c |   4 +-
+ drivers/net/xen-netback/netback.c   |   5 +-
+ drivers/vhost/net.c                 |   4 +-
+ include/linux/skbuff.h              | 106 +++++++++++++++-------------
+ net/core/skbuff.c                   |  65 ++++++++---------
+ net/ipv4/ip_output.c                |   5 +-
+ net/ipv4/tcp.c                      |   8 +--
+ net/ipv6/ip6_output.c               |   5 +-
+ net/kcm/kcmsock.c                   |   4 +-
+ 12 files changed, 113 insertions(+), 108 deletions(-)
+
 -- 
-1.8.3.1
+2.24.1
 
