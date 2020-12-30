@@ -2,135 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 733112E7A58
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 16:32:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BC722E7A65
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 16:38:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726419AbgL3Pag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 10:30:36 -0500
-Received: from foss.arm.com ([217.140.110.172]:40584 "EHLO foss.arm.com"
+        id S1726491AbgL3Ph1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 10:37:27 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:44628 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726197AbgL3Pag (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Dec 2020 10:30:36 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2DBC8101E;
-        Wed, 30 Dec 2020 07:29:50 -0800 (PST)
-Received: from e107158-lin (unknown [10.1.194.78])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E8F323F719;
-        Wed, 30 Dec 2020 07:29:48 -0800 (PST)
-Date:   Wed, 30 Dec 2020 15:29:46 +0000
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Subject: Re: BTFIDS: FAILED unresolved symbol udp6_sock
-Message-ID: <20201230152946.gththmiujgj7qkj4@e107158-lin>
-References: <20201229151352.6hzmjvu3qh6p2qgg@e107158-lin>
- <20201229173401.GH450923@krava>
- <20201229232835.cbyfmja3bu3lx7we@e107158-lin>
- <20201230090333.GA577428@krava>
- <20201230132759.GB577428@krava>
- <20201230132852.GC577428@krava>
+        id S1726356AbgL3Ph0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Dec 2020 10:37:26 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kudWg-00F36b-BJ; Wed, 30 Dec 2020 16:36:38 +0100
+Date:   Wed, 30 Dec 2020 16:36:38 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+Cc:     Moshe Shemesh <moshe@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Adrian Pop <pop.adrian61@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: Re: [PATCH net-next v2 0/2] Add support for DSFP transceiver type
+Message-ID: <X+yehiw/6DYUyPzy@lunn.ch>
+References: <20201124131608.1b884063@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <98319caa-de5f-6f5e-9c9e-ee680e5abdc0@nvidia.com>
+ <20201125141822.GI2075216@lunn.ch>
+ <a9835ab6-70a1-5a15-194e-977ff9c859ec@nvidia.com>
+ <20201126152113.GM2073444@lunn.ch>
+ <6a9bbcb0-c0c4-92fe-f3c1-581408d1e7da@nvidia.com>
+ <20201127155637.GS2073444@lunn.ch>
+ <0f021f89-35d4-4d99-b0b1-451f09636e58@nvidia.com>
+ <X+tYamjmow0MfFxz@lunn.ch>
+ <45a1b5c6-d348-cc62-681d-b2f257b578f9@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20201230132852.GC577428@krava>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <45a1b5c6-d348-cc62-681d-b2f257b578f9@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/30/20 14:28, Jiri Olsa wrote:
-> On Wed, Dec 30, 2020 at 02:28:02PM +0100, Jiri Olsa wrote:
-> > On Wed, Dec 30, 2020 at 10:03:37AM +0100, Jiri Olsa wrote:
-> > > On Tue, Dec 29, 2020 at 11:28:35PM +0000, Qais Yousef wrote:
-> > > > Hi Jiri
-> > > > 
-> > > > On 12/29/20 18:34, Jiri Olsa wrote:
-> > > > > On Tue, Dec 29, 2020 at 03:13:52PM +0000, Qais Yousef wrote:
-> > > > > > Hi
-> > > > > > 
-> > > > > > When I enable CONFIG_DEBUG_INFO_BTF I get the following error in the BTFIDS
-> > > > > > stage
-> > > > > > 
-> > > > > > 	FAILED unresolved symbol udp6_sock
-> > > > > > 
-> > > > > > I cross compile for arm64. My .config is attached.
-> > > > > > 
-> > > > > > I managed to reproduce the problem on v5.9 and v5.10. Plus 5.11-rc1.
-> > > > > > 
-> > > > > > Have you seen this before? I couldn't find a specific report about this
-> > > > > > problem.
-> > > > > > 
-> > > > > > Let me know if you need more info.
-> > > > > 
-> > > > > hi,
-> > > > > this looks like symptom of the gcc DWARF bug we were
-> > > > > dealing with recently:
-> > > > > 
-> > > > >   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97060
-> > > > >   https://lore.kernel.org/lkml/CAE1WUT75gu9G62Q9uAALGN6vLX=o7vZ9uhqtVWnbUV81DgmFPw@mail.gmail.com/#r
-> > > > > 
-> > > > > what pahole/gcc version are you using?
-> > > > 
-> > > > I'm on gcc 9.3.0
-> > > > 
-> > > > 	aarch64-linux-gnu-gcc (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
-> > > > 
-> > > > I was on pahole v1.17. I moved to v1.19 but I still see the same problem.
-> > > 
-> > > I can reproduce with your .config, but make 'defconfig' works,
-> > > so I guess it's some config option issue, I'll check later today
-
-My .config was a defconfig + CONFIG_DEBUG_INFO_BTF + convert all modules to
-built-in.
-
-> > 
-> > so your .config has
-> >   CONFIG_CRYPTO_DEV_BCM_SPU=y
-
-Ah, how random. I removed this config and indeed it does work then, thanks!
-
-> > 
-> > and that defines 'struct device_private' which
-> > clashes with the same struct defined in drivers/base/base.h
-> > 
-> > so several networking structs will be doubled, like net_device:
-> > 
-> > 	$ bpftool btf dump file ../vmlinux.config | grep net_device\' | grep STRUCT
-> > 	[2731] STRUCT 'net_device' size=2240 vlen=133
-> > 	[113981] STRUCT 'net_device' size=2240 vlen=133
-> > 
-> > each is using different 'struct device_private' when it's unwinded
-> > 
-> > and that will confuse BTFIDS logic, becase we have multiple structs
-> > with the same name, and we can't be sure which one to pick
-
-We can't tell which object/subsystem the struct come from?
-
-Or maybe we can introduce some annotation to help BTFIDS to pick the right one?
-
-> > 
-> > perhaps we should check on this in pahole and warn earlier with
-> > better error message.. I'll check, but I'm not sure if pahole can
-> > survive another hastab ;-)
-> > 
-> > Andrii, any ideas on this? ;-)
-> > 
-> > easy fix is the patch below that renames the bcm's structs,
-> > it makes the kernel to compile.. but of course the new name
-> > is probably wrong and we should push this through that code
-> > authors
+On Wed, Dec 30, 2020 at 03:55:02PM +0200, Vladyslav Tarasiuk wrote:
 > 
-> also another quick fix is to switch it to module
+> On 29-Dec-20 18:25, Andrew Lunn wrote:
+> > > Hi Andrew,
+> > > 
+> > > Following this conversation, I wrote some pseudocode checking if I'm on
+> > > right path here.
+> > > Please review:
+> > > 
+> > > struct eeprom_page {
+> > >          u8 page_number;
+> > >          u8 bank_number;
+> > >          u16 offset;
+> > >          u16 data_length;
+> > >          u8 *data;
+> > > }
+> > I'm wondering about offset and data_length, in this context. I would
+> > expect you always ask the kernel for the full page, not part of
+> > it. Even when user space asks for just part of a page. That keeps you
+> > cache management simpler.
+> As far as I know, there may be bytes, which may change on read.
+> For example, clear on read values in CMIS 4.0.
 
-This works too.
+Ah, i did not know there were such bits. I will go read the spec. But
+it should not really matter. If the SFP driver is interested in these
+bits, it will have to intercept the read and act on the values.
 
-Thanks for your speedy response.
+> I wasn't aware of that. It complicates things a bit, should we add a
+> parameter of i2c address? So in this case page 0 will be with i2c
+> address A0h. And if user needs page 0 from i2c address A2h, he will
+> specify it in command line.
 
-Cheers
+Not on the command line. You should be able to determine from reading
+page 0 at A0h is the diagnostics are at A2h or a page of A0h. That is
+the whole point of this API, we decode the first page, and that tells
+us what other pages should be available. So adding the i2c address to
+the netlink message would be sensible. And i would not be too
+surprised if there are SFPs with proprietary registers on other
+addresses, which could be interesting to dump, if you can get access
+to the needed datasheets.
 
---
-Qais Yousef
+   Andrew
