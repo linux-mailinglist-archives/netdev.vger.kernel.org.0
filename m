@@ -2,157 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 623642E7AFE
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 17:17:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C35442E7AFD
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 17:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726561AbgL3QQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 11:16:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
+        id S1726485AbgL3QQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 11:16:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726168AbgL3QQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 11:16:43 -0500
-Received: from vale.hankala.org (vale.hankala.org [IPv6:2a02:2770:3:0:21a:4aff:fefb:f65c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CD7C06179B
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 08:16:02 -0800 (PST)
-Received: by vale.hankala.org (OpenSMTPD) with ESMTPS id 3ab65689 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 30 Dec 2020 16:15:55 +0000 (UTC)
-Date:   Wed, 30 Dec 2020 16:15:53 +0000
-From:   Visa Hankala <visa@hankala.org>
-To:     Florian Westphal <fw@strlen.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH v2] xfrm: Fix wraparound in xfrm_policy_addr_delta()
-Message-ID: <20201230160902.sYeDeDSVSPay2WBC@hankala.org>
+        with ESMTP id S1726230AbgL3QQj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 11:16:39 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1396C061799;
+        Wed, 30 Dec 2020 08:15:59 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id q205so19066132oig.13;
+        Wed, 30 Dec 2020 08:15:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sT1WfvZ/VNnT+yFaWuGoi/l7Bq1FMUDHZOCC1Y2+fPE=;
+        b=ethJ4BLM6aV4G/eZ9jcZg5lqzDbFG2IfsH7b4uaCZR9REUgYTXWiPs5FIeEPR57Vxx
+         Aft8UtClyiKajFgK74xqklRmLnUUyg9d3F+ZBgJjZyJIm/71Og5HJWVNEgMKoMglJfC9
+         5uPpbbxMVtRnIcBDUEDcu998/tKDg8hWX0jsO1vSTmMqkfBoR9K5if9tuabQegzqUsB+
+         LGLlTRqh3FBi3nXgoijiBcEeYoupqPiW3Eko5C49pv7sR5rJjsePRhgMSSRlN4fCh0+7
+         VuDngK9QfwDK9eiLVC+NjPpluyrLgyJiCl+HMJ5XG8yBgrqNp/qfrbUjDiduBwdzmjIj
+         Ub1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sT1WfvZ/VNnT+yFaWuGoi/l7Bq1FMUDHZOCC1Y2+fPE=;
+        b=iiuHLM0/7WqICStEcnLTRQEiKVrLGfLw7UtxVwkWt4Jj6roe8v8/Md4xoeAduktdxa
+         dyxtZMKFkicQ5811hwbO50Wd/erfJ0kn40GmgfOi00W+WyDSXy5sQC2yYwZnZvvMluzb
+         0/n+wFJ2kvktRIZTxgcsID+dwRLwFYHfzIfXRXLN8wVJjCwwFDjULLXfMN7YdBlveqHU
+         rFxVAvIrqAvKH8bL6nlrq7kPW1VVqadIKQ0+gs+yWfCgPx2YsOYiUR3zjkgqHTQNSQx3
+         /GjgLobqzinPQxn+Ssvz21o9NoAwLmA17aZ6pxgubDz7alWN+diZ0UsDzYaq9JbhC4MS
+         CGvA==
+X-Gm-Message-State: AOAM530aq5CHTFaTyS/z8jODEwSDblpV6FkANkUu9UN33kguzN2cIcn0
+        i9JnMaVnUYQy8rgOOFgmBXM=
+X-Google-Smtp-Source: ABdhPJxkAuKmzzPyrPRqPj0G3+aF8DzJxOnTYHUg43sHLpgCHtEew7hUypkyDpPQf97bis89/nR4Cg==
+X-Received: by 2002:a54:4711:: with SMTP id k17mr5569826oik.149.1609344959037;
+        Wed, 30 Dec 2020 08:15:59 -0800 (PST)
+Received: from ?IPv6:2600:1700:dfe0:49f0:549a:788d:4851:c1b0? ([2600:1700:dfe0:49f0:549a:788d:4851:c1b0])
+        by smtp.gmail.com with ESMTPSA id z3sm10684023otq.22.2020.12.30.08.15.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Dec 2020 08:15:58 -0800 (PST)
+Subject: Re: Registering IRQ for MT7530 internal PHYs
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Weijie Gao <weijie.gao@mediatek.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>
+References: <20201230042208.8997-1-dqfext@gmail.com>
+ <a64312eb-8b4c-d6d4-5624-98f55e33e0b7@gmail.com>
+ <CALW65jbV-RwbmmiGjfq8P-ZcApOW0YyN6Ez5FvhhP4dgaA+VjQ@mail.gmail.com>
+ <fa7951e1-4a98-8488-d724-3eda9b97e376@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <546a8430-8865-1be8-4561-6681c7fa8ef8@gmail.com>
+Date:   Wed, 30 Dec 2020 08:15:54 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <fa7951e1-4a98-8488-d724-3eda9b97e376@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use three-way comparison for address components to avoid integer
-wraparound in the result of xfrm_policy_addr_delta(). This ensures
-that the search trees are built and traversed correctly.
 
-Treat IPv4 and IPv6 similarly by returning 0 when prefixlen == 0.
-Prefix /0 has only one equivalence class.
 
-Fixes: 9cf545ebd591d ("xfrm: policy: store inexact policies in a tree ordered by destination address")
-Signed-off-by: Visa Hankala <visa@hankala.org>
----
- net/xfrm/xfrm_policy.c                     | 26 +++++++++----
- tools/testing/selftests/net/xfrm_policy.sh | 43 ++++++++++++++++++++++
- 2 files changed, 61 insertions(+), 8 deletions(-)
+On 12/30/2020 1:12 AM, Heiner Kallweit wrote:
+> On 30.12.2020 10:07, DENG Qingfang wrote:
+>> Hi Heiner,
+>> Thanks for your reply.
+>>
+>> On Wed, Dec 30, 2020 at 3:39 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>> I don't think that's the best option.
+>>
+>> I'm well aware of that.
+>>
+>>> You may want to add a PHY driver for your chip. Supposedly it
+>>> supports at least PHY suspend/resume. You can use the RTL8366RB
+>>> PHY driver as template.
+>>
+>> There's no MediaTek PHY driver yet. Do we really need a new one just
+>> for the interrupts?
+>>
+> Not only for the interrupts. The genphy driver e.g. doesn't support
+> PHY suspend/resume. And the PHY driver needs basically no code,
+> just set the proper callbacks.
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index d622c2548d22..68258ff6a30b 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -793,15 +793,22 @@ static int xfrm_policy_addr_delta(const xfrm_address_t *a,
- 				  const xfrm_address_t *b,
- 				  u8 prefixlen, u16 family)
- {
-+	u32 ma, mb, mask;
- 	unsigned int pdw, pbi;
- 	int delta = 0;
- 
- 	switch (family) {
- 	case AF_INET:
--		if (sizeof(long) == 4 && prefixlen == 0)
--			return ntohl(a->a4) - ntohl(b->a4);
--		return (ntohl(a->a4) & ((~0UL << (32 - prefixlen)))) -
--		       (ntohl(b->a4) & ((~0UL << (32 - prefixlen))));
-+		if (prefixlen == 0)
-+			return 0;
-+		mask = ~0U << (32 - prefixlen);
-+		ma = ntohl(a->a4) & mask;
-+		mb = ntohl(b->a4) & mask;
-+		if (ma < mb)
-+			delta = -1;
-+		else if (ma > mb)
-+			delta = 1;
-+		break;
- 	case AF_INET6:
- 		pdw = prefixlen >> 5;
- 		pbi = prefixlen & 0x1f;
-@@ -812,10 +819,13 @@ static int xfrm_policy_addr_delta(const xfrm_address_t *a,
- 				return delta;
- 		}
- 		if (pbi) {
--			u32 mask = ~0u << (32 - pbi);
--
--			delta = (ntohl(a->a6[pdw]) & mask) -
--				(ntohl(b->a6[pdw]) & mask);
-+			mask = ~0U << (32 - pbi);
-+			ma = ntohl(a->a6[pdw]) & mask;
-+			mb = ntohl(b->a6[pdw]) & mask;
-+			if (ma < mb)
-+				delta = -1;
-+			else if (ma > mb)
-+				delta = 1;
- 		}
- 		break;
- 	default:
-diff --git a/tools/testing/selftests/net/xfrm_policy.sh b/tools/testing/selftests/net/xfrm_policy.sh
-index 7a1bf94c5bd3..9e2dffb670d5 100755
---- a/tools/testing/selftests/net/xfrm_policy.sh
-+++ b/tools/testing/selftests/net/xfrm_policy.sh
-@@ -287,6 +287,47 @@ check_hthresh_repeat()
- 	return 0
- }
- 
-+# insert non-overlapping policies in a random order and check that
-+# all of them can be fetched using the traffic selectors.
-+check_random_order()
-+{
-+	local ns=$1
-+	local log=$2
-+
-+	for i in $(seq 100); do
-+		ip -net $ns xfrm policy flush
-+		for j in $(seq 0 16 255 | sort -R); do
-+			ip -net $ns xfrm policy add dst $j.0.0.0/24 dir out priority 10 action allow
-+		done
-+		for j in $(seq 0 16 255); do
-+			if ! ip -net $ns xfrm policy get dst $j.0.0.0/24 dir out > /dev/null; then
-+				echo "FAIL: $log" 1>&2
-+				return 1
-+			fi
-+		done
-+	done
-+
-+	for i in $(seq 100); do
-+		ip -net $ns xfrm policy flush
-+		for j in $(seq 0 16 255 | sort -R); do
-+			local addr=$(printf "e000:0000:%02x00::/56" $j)
-+			ip -net $ns xfrm policy add dst $addr dir out priority 10 action allow
-+		done
-+		for j in $(seq 0 16 255); do
-+			local addr=$(printf "e000:0000:%02x00::/56" $j)
-+			if ! ip -net $ns xfrm policy get dst $addr dir out > /dev/null; then
-+				echo "FAIL: $log" 1>&2
-+				return 1
-+			fi
-+		done
-+	done
-+
-+	ip -net $ns xfrm policy flush
-+
-+	echo "PASS: $log"
-+	return 0
-+}
-+
- #check for needed privileges
- if [ "$(id -u)" -ne 0 ];then
- 	echo "SKIP: Need root privileges"
-@@ -438,6 +479,8 @@ check_exceptions "exceptions and block policies after htresh change to normal"
- 
- check_hthresh_repeat "policies with repeated htresh change"
- 
-+check_random_order ns3 "policies inserted in random order"
-+
- for i in 1 2 3 4;do ip netns del ns$i;done
- 
- exit $ret
+That statement about not supporting suspend/resume is not exactly true,
+the generic "1g" PHY driver only implements suspend/resume through the
+use of the standard BMCR power down bit, but not anything more
+complicated than that.
+
+Interrupt handling within the PHY itself is not defined by the existing
+standard registers and will typically not reside in a standard register
+space either, so just for that reason you do need a custom PHY driver.
+There are other advantages if you need to expose additional PHY features
+down the road like PHY counters, energy detection, automatic power down etc.
+
+I don't believe we will see discrete/standalone Mediatek PHY chips, but
+if that happens, then you would already have a framework for supporting
+them.
+-- 
+Florian
