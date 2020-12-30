@@ -2,156 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D52B42E7C13
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 20:15:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F14C92E7C11
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 20:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726779AbgL3TNq convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 30 Dec 2020 14:13:46 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35990 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726663AbgL3TNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 14:13:35 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BUJAZmB017371
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 11:12:55 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 35rk9ytnca-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 11:12:54 -0800
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 30 Dec 2020 11:12:54 -0800
-Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
-        id 47BFB610FBBC; Wed, 30 Dec 2020 11:12:44 -0800 (PST)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     <netdev@vger.kernel.org>, <willemdebruijn.kernel@gmail.com>,
-        <edumazet@google.com>, <dsahern@gmail.com>
-CC:     <kernel-team@fb.com>
-Subject: [RFC PATCH v3 07/12] skbuff: Call sock_zerocopy_put_abort from skb_zcopy_put_abort
-Date:   Wed, 30 Dec 2020 11:12:39 -0800
-Message-ID: <20201230191244.610449-8-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201230191244.610449-1-jonathan.lemon@gmail.com>
-References: <20201230191244.610449-1-jonathan.lemon@gmail.com>
+        id S1726733AbgL3TNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 14:13:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726305AbgL3TNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 14:13:40 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69053C061573;
+        Wed, 30 Dec 2020 11:12:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=375e4YxYTm0FF5RfAlPr3QpppBYCWWAfCx/myiWk9aE=; b=R9tUBgUMK6SgV2DTDEFZbkSmw
+        /+3mwuqVYJdpva4pZYDnPutmWlIj7BZArJBm/AxQExQtNSrG2bdyBHWk19HMKW8uxr01/KLZ5cJee
+        3EX+zn+C7r7AHyNEP2y/bRv6LQi9m9kelncNUC1d2+XbtHuqbSZ3JeguecwezK0SRH9neP2895W3h
+        Pnob3axSu9nkA8ZP0v/KD5tlx1VAQqQpORpLc45sxTc4sJrLOY4H0OlaOBvPrl/C+dijG9v7hVsuw
+        Uomx9iPhJeWHvMapCzZHSJvJk+x/ADk1K5Yc58nTCtIDoQYQPwjdgArLnlpp6Z4968o00tQmaOcYp
+        OrdOvZgkQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44928)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kugtk-0005tJ-Ty; Wed, 30 Dec 2020 19:12:40 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kugtk-0002R8-Ni; Wed, 30 Dec 2020 19:12:40 +0000
+Date:   Wed, 30 Dec 2020 19:12:40 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] net: sfp: allow to use also SFP modules which are
+ detected as SFF
+Message-ID: <20201230191240.GX1551@shell.armlinux.org.uk>
+References: <20201230154755.14746-1-pali@kernel.org>
+ <20201230154755.14746-3-pali@kernel.org>
+ <20201230161151.GS1551@shell.armlinux.org.uk>
+ <20201230170652.of3m226tidtunslm@pali>
+ <20201230182707.4a8b13d0@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-30_12:2020-12-30,2020-12-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
- lowpriorityscore=0 suspectscore=0 mlxscore=0 phishscore=0 mlxlogscore=452
- impostorscore=0 spamscore=0 clxscore=1034 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012300118
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201230182707.4a8b13d0@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <bsd@fb.com>
+On Wed, Dec 30, 2020 at 06:27:07PM +0100, Marek Behún wrote:
+> On Wed, 30 Dec 2020 18:06:52 +0100
+> Pali Rohár <pali@kernel.org> wrote:
+> 
+> > 	if (!sfp->type->module_supported(&id) &&
+> > 	    (memcmp(id.base.vendor_name, "UBNT            ", 16) ||
+> > 	     memcmp(id.base.vendor_pn, "UF-INSTANT      ", 16)))
+> 
+> I would rather add a quirk member (bitfield) to the sfp structure and do
+> something like this
+> 
+> if (!sfp->type->module_supported(&id) &&
+>     !(sfp->quirks & SFP_QUIRK_BAD_PHYS_ID))
+> 
+> or maybe put this check into the module_supported method.
 
-The sock_zerocopy_put_abort function contains logic which is
-specific to the current zerocopy implementation.  Add a wrapper
-which checks the callback and dispatches apppropriately.
+Sorry, definitely not. If you've ever looked at the SDHCI driver with
+its multiple "quirks" bitfields, doing this is a recipe for creating
+a very horrid hard to understand mess.
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- include/linux/skbuff.h | 10 ++++++++++
- net/core/skbuff.c      | 12 +++++-------
- net/ipv4/ip_output.c   |  3 +--
- net/ipv4/tcp.c         |  2 +-
- net/ipv6/ip6_output.c  |  3 +--
- 5 files changed, 18 insertions(+), 12 deletions(-)
+What you suggest just results in yet more complexity.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index b23c3b4b3209..9f7393167f0a 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1478,6 +1478,16 @@ static inline void skb_zcopy_put(struct ubuf_info *uarg)
- 		uarg->callback(NULL, uarg, true);
- }
- 
-+static inline void skb_zcopy_put_abort(struct ubuf_info *uarg, bool have_uref)
-+{
-+	if (uarg) {
-+		if (uarg->callback == sock_zerocopy_callback)
-+			sock_zerocopy_put_abort(uarg, have_uref);
-+		else if (have_uref)
-+			skb_zcopy_put(uarg);
-+	}
-+}
-+
- /* Release a reference on a zerocopy structure */
- static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy_success)
- {
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 89130b21d9f0..5b9cd528d6a6 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1254,15 +1254,13 @@ EXPORT_SYMBOL_GPL(sock_zerocopy_callback);
- 
- void sock_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref)
- {
--	if (uarg) {
--		struct sock *sk = skb_from_uarg(uarg)->sk;
-+	struct sock *sk = skb_from_uarg(uarg)->sk;
- 
--		atomic_dec(&sk->sk_zckey);
--		uarg->len--;
-+	atomic_dec(&sk->sk_zckey);
-+	uarg->len--;
- 
--		if (have_uref)
--			skb_zcopy_put(uarg);
--	}
-+	if (have_uref)
-+		sock_zerocopy_callback(NULL, uarg, true);
- }
- EXPORT_SYMBOL_GPL(sock_zerocopy_put_abort);
- 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 879b76ae4435..65f2299fd682 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1230,8 +1230,7 @@ static int __ip_append_data(struct sock *sk,
- error_efault:
- 	err = -EFAULT;
- error:
--	if (uarg)
--		sock_zerocopy_put_abort(uarg, extra_uref);
-+	skb_zcopy_put_abort(uarg, extra_uref);
- 	cork->length -= length;
- 	IP_INC_STATS(sock_net(sk), IPSTATS_MIB_OUTDISCARDS);
- 	refcount_add(wmem_alloc_delta, &sk->sk_wmem_alloc);
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 298a1fae841c..fb58215972ba 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1440,7 +1440,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 	if (copied + copied_syn)
- 		goto out;
- out_err:
--	sock_zerocopy_put_abort(uarg, true);
-+	skb_zcopy_put_abort(uarg, true);
- 	err = sk_stream_error(sk, flags, err);
- 	/* make sure we wake any epoll edge trigger waiter */
- 	if (unlikely(tcp_rtx_and_write_queues_empty(sk) && err == -EAGAIN)) {
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 749ad72386b2..c8c87891533a 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1715,8 +1715,7 @@ static int __ip6_append_data(struct sock *sk,
- error_efault:
- 	err = -EFAULT;
- error:
--	if (uarg)
--		sock_zerocopy_put_abort(uarg, extra_uref);
-+	skb_zcopy_put_abort(uarg, extra_uref);
- 	cork->length -= length;
- 	IP6_INC_STATS(sock_net(sk), rt->rt6i_idev, IPSTATS_MIB_OUTDISCARDS);
- 	refcount_add(wmem_alloc_delta, &sk->sk_wmem_alloc);
 -- 
-2.24.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
