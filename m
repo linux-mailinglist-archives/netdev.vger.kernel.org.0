@@ -2,135 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B8F22E7C09
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 20:14:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C0442E7C1C
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 20:21:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgL3TNe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 30 Dec 2020 14:13:34 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:62802 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726573AbgL3TNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 14:13:32 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BUJ9dOE013854
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 11:12:52 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 35r7f1my0f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 11:12:52 -0800
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 30 Dec 2020 11:12:50 -0800
-Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
-        id 5D621610FBC8; Wed, 30 Dec 2020 11:12:44 -0800 (PST)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     <netdev@vger.kernel.org>, <willemdebruijn.kernel@gmail.com>,
-        <edumazet@google.com>, <dsahern@gmail.com>
-CC:     <kernel-team@fb.com>
-Subject: [RFC PATCH v3 12/12] tap/tun: add skb_zcopy_init() helper for initialization.
-Date:   Wed, 30 Dec 2020 11:12:44 -0800
-Message-ID: <20201230191244.610449-13-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201230191244.610449-1-jonathan.lemon@gmail.com>
-References: <20201230191244.610449-1-jonathan.lemon@gmail.com>
+        id S1726502AbgL3TTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 14:19:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726290AbgL3TTK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 14:19:10 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C664AC061573;
+        Wed, 30 Dec 2020 11:18:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=r/z1inj8FQdVisFvXnpwI9YCFx5TnOdX+x4O7YbttV0=; b=T227hwb8T/177T2Zid5Cdrydk
+        YmBY01dQwc2DVlR0qjcC7BySVrZAB9VZKIlJdCiCLLf6HRjy4Xx1W4eq+JtCym9gTawjRbkVnr3kM
+        /wbFgAr0RQQrFlVFZA6q/rEQvrjp7zOfigL5s1cZza79nrKKiJV9F1Nc1kA6x3VaQcJxMX2OlYjpn
+        qklQenkgM0ujaVrmGTmNR02VfsVF3rcS8fkiXvMPZr/XiAov5dNW3ivUAqonRp3oBqAqEyL0ookGa
+        +Lgt3akjuKmEs25JZhg8Olm2xiE3lS0YVZQ+umDRlqwcAtjZ9p8eUS/UY3xkiuxSE4o/w1TbTzXkA
+        kK4tMWUkg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44930)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kugzJ-0005tv-Ny; Wed, 30 Dec 2020 19:18:25 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kugzJ-0002RK-C5; Wed, 30 Dec 2020 19:18:25 +0000
+Date:   Wed, 30 Dec 2020 19:18:25 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] net: sfp: add workaround for Realtek RTL8672 and
+ RTL9601C chips
+Message-ID: <20201230191825.GY1551@shell.armlinux.org.uk>
+References: <20201230154755.14746-1-pali@kernel.org>
+ <20201230154755.14746-2-pali@kernel.org>
+ <20201230161036.GR1551@shell.armlinux.org.uk>
+ <20201230165634.c4ty3mw6djezuyq6@pali>
+ <20201230170546.GU1551@shell.armlinux.org.uk>
+ <20201230173152.7dlq6t5erhspwhvs@pali>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-30_12:2020-12-30,2020-12-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- malwarescore=0 impostorscore=0 suspectscore=0 phishscore=0 adultscore=0
- clxscore=1034 lowpriorityscore=0 priorityscore=1501 spamscore=0 mlxscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012300118
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201230173152.7dlq6t5erhspwhvs@pali>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <bsd@fb.com>
+On Wed, Dec 30, 2020 at 06:31:52PM +0100, Pali Rohár wrote:
+> On Wednesday 30 December 2020 17:05:46 Russell King - ARM Linux admin wrote:
+> > On Wed, Dec 30, 2020 at 05:56:34PM +0100, Pali Rohár wrote:
+> > > This change is really required for those Realtek chips. I thought that
+> > > it is obvious that from *both* addresses 0x50 and 0x51 can be read only
+> > > one byte at the same time. Reading 2 bytes (for be16 value) cannot be
+> > > really done by one i2 transfer, it must be done in two.
+> > 
+> > Then these modules are even more broken than first throught, and
+> > quite simply it is pointless supporting the diagnostics on them
+> > because we can never read the values in an atomic way.
+> 
+> They are broken in a way that neither holy water help them...
+> 
+> But from diagnostic 0x51 address we can read at least 8bit registers in
+> atomic way :-)
 
-Replace direct assignments with skb_zcopy_init() for zerocopy
-cases where a new skb is initialized, without changing the
-reference counts.
+... which doesn't fit the requirements.
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- drivers/net/tap.c      | 3 +--
- drivers/net/tun.c      | 3 +--
- drivers/vhost/net.c    | 1 +
- include/linux/skbuff.h | 9 +++++++--
- 4 files changed, 10 insertions(+), 6 deletions(-)
+> > It's also a violation of the SFF-8472 that _requires_ multi-byte reads
+> > to read these 16 byte values atomically. Reading them with individual
+> > byte reads results in a non-atomic read, and the 16-bit value can not
+> > be trusted to be correct.
+> > 
+> > That is really not optional, no matter what any manufacturer says - if
+> > they claim the SFP MSAs allows it, they're quite simply talking out of
+> > a donkey's backside and you should dispose of the module in biohazard
+> > packaging. :)
+> > 
+> > So no, I hadn't understood this from your emails, and as I say above,
+> > if this is the case, then we quite simply disable diagnostics on these
+> > modules since they are _highly_ noncompliant.
+> 
+> We have just two options:
+> 
+> Disable 2 (and more) bytes reads from 0x51 address and therefore disable
+> sfp_hwmon_read_sensor() function.
+> 
+> Or allow 2 bytes non-atomic reads and allow at least semi-correct values
+> for hwmon. I guess that upper 8bits would not change between two single
+> byte i2c transfers too much (when they are done immediately one by one).
 
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index f7a19d9b7c27..3c652c8ac5ba 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -722,8 +722,7 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
- 	tap = rcu_dereference(q->tap);
- 	/* copy skb_ubuf_info for callback when skb has no error */
- 	if (zerocopy) {
--		skb_shinfo(skb)->destructor_arg = msg_control;
--		skb_shinfo(skb)->flags |= SKBFL_ZEROCOPY_FRAG;
-+		skb_zcopy_init(skb, msg_control);
- 	} else if (msg_control) {
- 		struct ubuf_info *uarg = msg_control;
- 		uarg->callback(NULL, uarg, false);
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index dd9edbd72ae8..7414e0584729 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1814,8 +1814,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 
- 	/* copy skb_ubuf_info for callback when skb has no error */
- 	if (zerocopy) {
--		skb_shinfo(skb)->destructor_arg = msg_control;
--		skb_shinfo(skb)->flags |= SKBFL_ZEROCOPY_FRAG;
-+		skb_zcopy_init(skb, msg_control);
- 	} else if (msg_control) {
- 		struct ubuf_info *uarg = msg_control;
- 		uarg->callback(NULL, uarg, false);
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index bf28d0b75c1b..5c722c4179a9 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -904,6 +904,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
- 			ubuf->callback = vhost_zerocopy_callback;
- 			ubuf->ctx = nvq->ubufs;
- 			ubuf->desc = nvq->upend_idx;
-+			ubuf->flags = SKBFL_ZEROCOPY_FRAG;
- 			refcount_set(&ubuf->refcnt, 1);
- 			msg.msg_control = &ctl;
- 			ctl.type = TUN_MSG_UBUF;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 58010df9d183..3ec8b83aca3e 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1448,6 +1448,12 @@ static inline void skb_zcopy_get(struct ubuf_info *uarg)
- 	refcount_inc(&uarg->refcnt);
- }
- 
-+static inline void skb_zcopy_init(struct sk_buff *skb, struct ubuf_info *uarg)
-+{
-+	skb_shinfo(skb)->destructor_arg = uarg;
-+	skb_shinfo(skb)->flags |= uarg->flags;
-+}
-+
- static inline void skb_zcopy_set(struct sk_buff *skb, struct ubuf_info *uarg,
- 				 bool *have_ref)
- {
-@@ -1456,8 +1462,7 @@ static inline void skb_zcopy_set(struct sk_buff *skb, struct ubuf_info *uarg,
- 			*have_ref = false;
- 		else
- 			skb_zcopy_get(uarg);
--		skb_shinfo(skb)->destructor_arg = uarg;
--		skb_shinfo(skb)->flags |= uarg->flags;
-+		skb_zcopy_init(skb, uarg);
- 	}
- }
- 
+So when you read the temperature, and the MSB reads as the next higher
+value than the LSB, causing an error of 256, or vice versa causing an
+error of -256, which when scaled according to the factors causes a big
+error, that's acceptable.
+
+No, it isn't. If the data can't be read reliably, the data is useless.
+
+Consider a system that implements userspace monitoring for modules and
+checks the current values against pre-set thresholds - it suddenly gets
+a value that is outside of its alarm threshold due to this. It raises a
+false alarm. This is not good.
+
 -- 
-2.24.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
