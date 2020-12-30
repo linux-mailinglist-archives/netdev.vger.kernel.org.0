@@ -2,111 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2180A2E767C
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 07:26:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE502E7685
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 07:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726503AbgL3GYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 01:24:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43598 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726485AbgL3GYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 01:24:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609309399;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zMOHRQRlmmzuXmXJwYwsntjIgSSrZq/XW9h6GVg/eWI=;
-        b=C2YpLIUuFmK6KWn7zx+oHHhWTCL1e3hb7qQ6NnSKOBxLygA0/R8TvgZXFfRmfPos5PftRX
-        krNJC1J76DhoJ6f27gQdnUfRLUcoSze88Kcrolhqk03S9Sm0Lfq5s2SGay1B0v+em4++bJ
-        6FkLlopR0ZadX70p3rDwTsj6W5Gln9E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-489-EQtmwsDoOMSTdZvFTvX8SQ-1; Wed, 30 Dec 2020 01:23:15 -0500
-X-MC-Unique: EQtmwsDoOMSTdZvFTvX8SQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1CF0015720;
-        Wed, 30 Dec 2020 06:23:14 +0000 (UTC)
-Received: from [10.72.13.30] (ovpn-13-30.pek2.redhat.com [10.72.13.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 50A6271C8B;
-        Wed, 30 Dec 2020 06:23:03 +0000 (UTC)
-Subject: Re: [PATCH 11/21] vhost-vdpa: introduce asid based IOTLB
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, eperezma@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lulu@redhat.com, eli@mellanox.com,
-        lingshan.zhu@intel.com, rob.miller@broadcom.com,
-        stefanha@redhat.com, sgarzare@redhat.com
-References: <20201216064818.48239-1-jasowang@redhat.com>
- <20201216064818.48239-12-jasowang@redhat.com>
- <20201229114110.GC195479@mtl-vdi-166.wap.labs.mlnx>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <02c7a7ea-3765-3ff8-0742-0520d6cc4ca5@redhat.com>
-Date:   Wed, 30 Dec 2020 14:23:01 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726491AbgL3G31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 01:29:27 -0500
+Received: from smtprelay0057.hostedemail.com ([216.40.44.57]:40978 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726363AbgL3G30 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 01:29:26 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 592CB18029210;
+        Wed, 30 Dec 2020 06:28:45 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:968:973:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3868:3870:3871:4321:5007:7652:10004:10400:10471:10848:11026:11232:11473:11658:11783:11914:12043:12297:12438:12740:12895:13019:13069:13255:13311:13357:13439:13894:14659:14721:21080:21324:21451:21627:21939:21990:30012:30025:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: music26_4715adf274a2
+X-Filterd-Recvd-Size: 1768
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf16.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 30 Dec 2020 06:28:43 +0000 (UTC)
+Message-ID: <1863fac248a37a92d9bacc4992caafecdcdac0dc.camel@perches.com>
+Subject: Re: [PATCH] liquidio: style:  Identical condition and return
+ expression  'retval', return value is always 0.
+From:   Joe Perches <joe@perches.com>
+To:     YANG LI <abaci-bugfix@linux.alibaba.com>, davem@davemloft.net
+Cc:     kuba@kernel.org, dchickles@marvell.com, sburla@marvell.com,
+        fmanlunas@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 29 Dec 2020 22:28:42 -0800
+In-Reply-To: <1609308450-50695-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+References: <1609308450-50695-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-In-Reply-To: <20201229114110.GC195479@mtl-vdi-166.wap.labs.mlnx>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 2020-12-30 at 14:07 +0800, YANG LI wrote:
+> The warning was because of the following line in function
+> liquidio_set_fec():
+> 
+> retval = wait_for_sc_completion_timeout(oct, sc, 0);
+>     if (retval)
+> 	return (-EIO);
 
-On 2020/12/29 ä¸‹åˆ7:41, Eli Cohen wrote:
-> On Wed, Dec 16, 2020 at 02:48:08PM +0800, Jason Wang wrote:
->> This patch converts the vhost-vDPA device to support multiple IOTLBs
->> tagged via ASID via hlist. This will be used for supporting multiple
->> address spaces in the following patches.
->>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   drivers/vhost/vdpa.c | 106 ++++++++++++++++++++++++++++++++-----------
->>   1 file changed, 80 insertions(+), 26 deletions(-)
->>
->> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->> index feb6a58df22d..060d5b5b7e64 100644
->> --- a/drivers/vhost/vdpa.c
->> +++ b/drivers/vhost/vdpa.c
->> @@ -33,13 +33,21 @@ enum {
->>   
->>   #define VHOST_VDPA_DEV_MAX (1U << MINORBITS)
->>   
->> +#define VHOST_VDPA_IOTLB_BUCKETS 16
->> +
->> +struct vhost_vdpa_as {
->> +	struct hlist_node hash_link;
->> +	struct vhost_iotlb iotlb;
->> +	u32 id;
->> +};
->> +
->>   struct vhost_vdpa {
->>   	struct vhost_dev vdev;
->>   	struct iommu_domain *domain;
->>   	struct vhost_virtqueue *vqs;
->>   	struct completion completion;
->>   	struct vdpa_device *vdpa;
->> -	struct vhost_iotlb *iotlb;
->> +	struct hlist_head as[VHOST_VDPA_IOTLB_BUCKETS];
->>   	struct device dev;
->>   	struct cdev cdev;
->>   	atomic_t opened;
->> @@ -49,12 +57,64 @@ struct vhost_vdpa {
->>   	struct eventfd_ctx *config_ctx;
->>   	int in_batch;
->>   	struct vdpa_iova_range range;
->> +	int used_as;
-> This is not really used. Not in this patch and later removed.
+I presume abaci is a robot
 
+Perhaps also the robot could look for code immediately above this like:
 
-Right, will remove this.
+		oct->props[lio->ifidx].fec = var;
+		if (resp->fec_setting == SEAPI_CMD_FEC_SET_RS)
+			oct->props[lio->ifidx].fec = 1;
+		else
+			oct->props[lio->ifidx].fec = 0;
 
-Thanks
+where a location is immediately overwritten.
+
+so the line
+		oct->props[lio->ifidx].fec = var;
+could be highlighted and perhaps removed
+and also perhaps the second test and set block could be written
+
+		oct->props[lio->ifidx].fec = resp->fec_setting == SEAPI_CMD_FEC_SET_RS;
+
 
 
