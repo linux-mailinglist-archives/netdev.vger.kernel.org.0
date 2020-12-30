@@ -2,84 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EB012E77DC
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 11:51:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD01A2E77F0
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 12:04:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbgL3Kuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 05:50:51 -0500
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:54743 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726203AbgL3Kuv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 05:50:51 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 0D7F39AF;
-        Wed, 30 Dec 2020 05:49:44 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 30 Dec 2020 05:49:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=YDHFjg
-        vHwzkhjLyFLCWnqvCXL3fYINzbOxnJ/e3Y7Rw=; b=In2x+CzY/aIHD944haER51
-        lhkBkUECBEfj+fTfj1s9G+IFC2rD3DeTq/dOIJpobmS8sknfgjo1CVKMQOZCZ4PG
-        wFg3qgqirtnM9pmWlyHZbdtaFkEB4cpRRqhpCW8lQHG07SqhY5Isb2BfgESeFJZ0
-        yWHeaZPtdfwle9oiKCOYlAoZAM/2kamzYL3H2eOVFaqHEr4qVw4Nam4jGbpacuEd
-        qDsYTAtCrdZxCy3Y9UV7PcP9DEGHUfdL/xDMar/dY+YxGMiSrkovfHABwIA1DwR/
-        0mTqifwrxL1JPOkn4uC0KjM9aTgQXRRf4sOKcnmkFnHbZ/BNiKEmNQ0lL0sxKZzw
-        ==
-X-ME-Sender: <xms:R1vsX0OEW9PiJKzStrdkxhut-i0d7ciI5lGrsADxMuqEfZO1e3tjCQ>
-    <xme:R1vsX6-ehYaPvOED-ODQybmYKEQzrW9bc1rrTMcL9-L2etwuAncJVFUH0OmadV6jx
-    jnRvTW-bY3IiSk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvddvfedgvdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeffheeuvdehuefgvdethfeuveegveevieevieejvdeujefftedvleekueelledv
-    keenucffohhmrghinheplhhipheirdhfrhenucfkphepkeegrddvvdelrdduheefrdegge
-    enucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiugho
-    shgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:R1vsX7QiKlbUARMVNGFjwJv2TeeWrI9RLxUOnfljb2mCFmvAe96Hjw>
-    <xmx:R1vsX8vq8eUShw8i2mieQ8xnA4NMIHPkepHinptXBUfy_a5SrAp_OA>
-    <xmx:R1vsX8ceW_oNNM4LKYtj-9yw3bzqi-CI3tB1ScobL1zVr_0Q24Xq9g>
-    <xmx:SFvsX9qdaqY1dnKubhvJ3DXZ1TLVLHwWQ4lUZEg6aDGQRtl9f0kP6w>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 5400F24005B;
-        Wed, 30 Dec 2020 05:49:43 -0500 (EST)
-Date:   Wed, 30 Dec 2020 12:49:40 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next] net/mlxfw: Use kzalloc for allocating only one
- thing
-Message-ID: <20201230104940.GA386343@shredder.lan>
-References: <20201230081835.536-1-zhengyongjun3@huawei.com>
+        id S1726520AbgL3LEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 06:04:05 -0500
+Received: from mx2.suse.de ([195.135.220.15]:43832 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726323AbgL3LEF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Dec 2020 06:04:05 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1609326197; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/Bt7dbS6mGT2WvPHBpQzZZNmAJ13R+KxFpLjPqeLpuU=;
+        b=YA9+G2clSA99NaNK7E1+sZoXdUtGbeg2j3Sv/3hAJ23l9tr2oLu2Ctjx1MDAmGKQup4+Ol
+        I2eCdVYAq7n4j20llDEo94iIcN8H0x8Z/iAw8Y0mKFpbtk5yyI8uK+h7MOJKchz9hYsF/m
+        qGxLJLNMsUbWigKm2rfG5LcxMnSiKEA=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id D9CCCACBA;
+        Wed, 30 Dec 2020 11:03:16 +0000 (UTC)
+Message-ID: <12f345107c0832a00c43767ac6bb3aeda4241d4e.camel@suse.com>
+Subject: Re: [PATCH] CDC-NCM: remove "connected" log message
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Roland Dreier <roland@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Date:   Wed, 30 Dec 2020 12:03:13 +0100
+In-Reply-To: <CAG4TOxOc2OJnzJg9mwd2h+k0mj250S6NdNQmhK7BbHhT4_KdVA@mail.gmail.com>
+References: <20201222184926.35382198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <20201224032116.2453938-1-roland@kernel.org> <X+RJEI+1AR5E0z3z@kroah.com>
+         <20201228133036.3a2e9fb5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <CAG4TOxNM8du=xadLeVwNU5Zq=MW7Kj74-1d9ThZ0q2OrXHE5qQ@mail.gmail.com>
+         <24c6faa2a4f91c721d9a7f14bb7b641b89ae987d.camel@neukum.org>
+         <CAG4TOxOc2OJnzJg9mwd2h+k0mj250S6NdNQmhK7BbHhT4_KdVA@mail.gmail.com>
+Content-Type: multipart/mixed; boundary="=-/DMFcXsUz/jfYC3DROkO"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201230081835.536-1-zhengyongjun3@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 30, 2020 at 04:18:35PM +0800, Zheng Yongjun wrote:
-> Use kzalloc rather than kcalloc(1,...)
-> 
-> The semantic patch that makes this change is as follows:
-> (http://coccinelle.lip6.fr/)
-> 
-> // <smpl>
-> @@
-> @@
-> 
-> - kcalloc(1,
-> + kzalloc(
->           ...)
-> // </smpl>
-> 
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+--=-/DMFcXsUz/jfYC3DROkO
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-Thanks
+Am Dienstag, den 29.12.2020, 11:50 -0800 schrieb Roland Dreier:
+> > I looked at them again and found that there is a way to get
+> > the same effect that will make maintenance easier in the long run.
+> > Could I send them to you later this week for testing?
+> 
+> Yes, please.  I have a good test setup now so I can easily try out patches.
+
+Thank you,
+
+here we go.
+
+	Regards
+		Oliver
+
+
+--=-/DMFcXsUz/jfYC3DROkO
+Content-Disposition: attachment;
+	filename="0001-usbnet-add-method-for-reporting-speed-without-MDIO.patch"
+Content-Type: text/x-patch;
+	name="0001-usbnet-add-method-for-reporting-speed-without-MDIO.patch";
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+RnJvbSA3ZGZiNWYzNTkzM2ViYmUxMjA3NmU0MTYwNmIxNzhmYTdkOGQyZTdiIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBPbGl2ZXIgTmV1a3VtIDxvbmV1a3VtQHN1c2UuY29tPgpEYXRl
+OiBUdWUsIDEgRGVjIDIwMjAgMTE6MzE6MTUgKzAxMDAKU3ViamVjdDogW1BBVENIIDEvMl0gdXNi
+bmV0OiBhZGQgbWV0aG9kIGZvciByZXBvcnRpbmcgc3BlZWQgd2l0aG91dCBNRElPCgpUaGUgb2xk
+IG1ldGhvZCBmb3IgcmVwb3J0aW5nIG5ldHdvcmsgc3BlZWQgdXB3YXJkcwphc3N1bWVkIHRoYXQg
+YSBkZXZpY2UgdXNlcyBNRElPIGFuZCB1c2VzIHRoZSBnZW5lcmljIHBoeQpmdW5jdGlvbnMgYmFz
+ZWQgb24gdGhhdC4KQWRkIGEgYSBwcmltaXRpdmUgaW50ZXJuYWwgdmVyc2lvbiBub3QgbWFraW5n
+IHRoZSBhc3N1bXB0aW9uCnJlcG9ydGluZyBiYWNrIGRpcmVjdGx5IHdoYXQgdGhlIHN0YXR1cyBv
+cGVyYXRpb25zIHJlY29yZC4KClNpZ25lZC1vZmYtYnk6IE9saXZlciBOZXVrdW0gPG9uZXVrdW1A
+c3VzZS5jb20+Ci0tLQogZHJpdmVycy9uZXQvdXNiL3VzYm5ldC5jICAgfCAzMCArKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKy0KIGluY2x1ZGUvbGludXgvdXNiL3VzYm5ldC5oIHwgIDcgKysr
+KysrLQogMiBmaWxlcyBjaGFuZ2VkLCAzNSBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQoK
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3VzYi91c2JuZXQuYyBiL2RyaXZlcnMvbmV0L3VzYi91
+c2JuZXQuYwppbmRleCAxNDQ3ZGExZDU3MjkuLmJjZDE3ZjZkNmRlNiAxMDA2NDQKLS0tIGEvZHJp
+dmVycy9uZXQvdXNiL3VzYm5ldC5jCisrKyBiL2RyaXZlcnMvbmV0L3VzYi91c2JuZXQuYwpAQCAt
+OTQ0LDcgKzk0NCw3IEBAIEVYUE9SVF9TWU1CT0xfR1BMKHVzYm5ldF9vcGVuKTsKICAqIHRoZXkn
+bGwgcHJvYmFibHkgd2FudCB0byB1c2UgdGhpcyBiYXNlIHNldC4KICAqLwogCi1pbnQgdXNibmV0
+X2dldF9saW5rX2tzZXR0aW5ncyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0LAoraW50IHVzYm5ldF9n
+ZXRfbGlua19rc2V0dGluZ3NfbWRpbyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0LAogCQkJICAgICAg
+c3RydWN0IGV0aHRvb2xfbGlua19rc2V0dGluZ3MgKmNtZCkKIHsKIAlzdHJ1Y3QgdXNibmV0ICpk
+ZXYgPSBuZXRkZXZfcHJpdihuZXQpOwpAQCAtOTU2LDYgKzk1NiwzMiBAQCBpbnQgdXNibmV0X2dl
+dF9saW5rX2tzZXR0aW5ncyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0LAogCiAJcmV0dXJuIDA7CiB9
+CitFWFBPUlRfU1lNQk9MX0dQTCh1c2JuZXRfZ2V0X2xpbmtfa3NldHRpbmdzX21kaW8pOworCitp
+bnQgdXNibmV0X2dldF9saW5rX2tzZXR0aW5ncyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0LAorCQkJ
+CQlzdHJ1Y3QgZXRodG9vbF9saW5rX2tzZXR0aW5ncyAqY21kKQoreworCXN0cnVjdCB1c2JuZXQg
+KmRldiA9IG5ldGRldl9wcml2KG5ldCk7CisKKwkvKiB0aGUgYXNzdW1wdGlvbiB0aGF0IHNwZWVk
+IGlzIGVxdWFsIG9uIHR4IGFuZCByeAorCSAqIGlzIGRlZXBseSBlbmdyYWluZWQgaW50byB0aGUg
+bmV0d29ya2luZyBsYXllci4KKwkgKiBGb3Igd2lyZWxlc3Mgc3R1ZmYgaXQgaXMgbm90IHRydWUu
+CisJICogV2UgYXNzdW1lIHRoYXQgcnhzcGVlZCBtYXR0ZXJzIG1vcmUuCisJICovCisJaWYgKGRl
+di0+cnhzcGVlZCAhPSBTUEVFRF9VTktOT1dOKQorCQljbWQtPmJhc2Uuc3BlZWQgPSBkZXYtPnJ4
+c3BlZWQgLyAxMDAwMDAwOworCWVsc2UgaWYgKGRldi0+dHhzcGVlZCAhPSBTUEVFRF9VTktOT1dO
+KQorCQljbWQtPmJhc2Uuc3BlZWQgPSBkZXYtPnR4c3BlZWQgLyAxMDAwMDAwOworCS8qIGlmIGEg
+bWluaWRyaXZlciBkb2VzIG5vdCByZWNvcmQgc3BlZWQgd2UgdHJ5IHRvCisJICogZmFsbCBiYWNr
+IG9uIE1ESU8KKwkgKi8KKwllbHNlIGlmICghZGV2LT5taWkubWRpb19yZWFkKQorCQljbWQtPmJh
+c2Uuc3BlZWQgPSBTUEVFRF9VTktOT1dOOworCWVsc2UKKwkJbWlpX2V0aHRvb2xfZ2V0X2xpbmtf
+a3NldHRpbmdzKCZkZXYtPm1paSwgY21kKTsKKworCXJldHVybiAwOworfQogRVhQT1JUX1NZTUJP
+TF9HUEwodXNibmV0X2dldF9saW5rX2tzZXR0aW5ncyk7CiAKIGludCB1c2JuZXRfc2V0X2xpbmtf
+a3NldHRpbmdzKHN0cnVjdCBuZXRfZGV2aWNlICpuZXQsCkBAIC0xNjYxLDYgKzE2ODcsOCBAQCB1
+c2JuZXRfcHJvYmUgKHN0cnVjdCB1c2JfaW50ZXJmYWNlICp1ZGV2LCBjb25zdCBzdHJ1Y3QgdXNi
+X2RldmljZV9pZCAqcHJvZCkKIAlkZXYtPmludGYgPSB1ZGV2OwogCWRldi0+ZHJpdmVyX2luZm8g
+PSBpbmZvOwogCWRldi0+ZHJpdmVyX25hbWUgPSBuYW1lOworCWRldi0+cnhzcGVlZCA9IC0xOyAv
+KiB1bmtub3duIG9yIGhhbmRsZWQgYnkgTUlJICovCisJZGV2LT50eHNwZWVkID0gLTE7CiAKIAlu
+ZXQtPnRzdGF0cyA9IG5ldGRldl9hbGxvY19wY3B1X3N0YXRzKHN0cnVjdCBwY3B1X3N3X25ldHN0
+YXRzKTsKIAlpZiAoIW5ldC0+dHN0YXRzKQpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC91c2Iv
+dXNibmV0LmggYi9pbmNsdWRlL2xpbnV4L3VzYi91c2JuZXQuaAppbmRleCA4OGE3NjczODk0ZDUu
+LmY3NDhjNzU4ZjgyYSAxMDA2NDQKLS0tIGEvaW5jbHVkZS9saW51eC91c2IvdXNibmV0LmgKKysr
+IGIvaW5jbHVkZS9saW51eC91c2IvdXNibmV0LmgKQEAgLTUzLDYgKzUzLDggQEAgc3RydWN0IHVz
+Ym5ldCB7CiAJdTMyCQkJaGFyZF9tdHU7CS8qIGNvdW50IGFueSBleHRyYSBmcmFtaW5nICovCiAJ
+c2l6ZV90CQkJcnhfdXJiX3NpemU7CS8qIHNpemUgZm9yIHJ4IHVyYnMgKi8KIAlzdHJ1Y3QgbWlp
+X2lmX2luZm8JbWlpOworCWludAkJCXJ4c3BlZWQ7CS8qIGlmIE1JSSBpcyBub3QgdXNlZCAqLwor
+CWludAkJCXR4c3BlZWQ7CS8qIGlmIE1JSSBpcyBub3QgdXNlZCAqLwogCiAJLyogdmFyaW91cyBr
+aW5kcyBvZiBwZW5kaW5nIGRyaXZlciB3b3JrICovCiAJc3RydWN0IHNrX2J1ZmZfaGVhZAlyeHE7
+CkBAIC0yNjcsOCArMjY5LDExIEBAIGV4dGVybiB2b2lkIHVzYm5ldF9wdXJnZV9wYXVzZWRfcnhx
+KHN0cnVjdCB1c2JuZXQgKik7CiAKIGV4dGVybiBpbnQgdXNibmV0X2dldF9saW5rX2tzZXR0aW5n
+cyhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0LAogCQkJCSAgICAgc3RydWN0IGV0aHRvb2xfbGlua19r
+c2V0dGluZ3MgKmNtZCk7Ci1leHRlcm4gaW50IHVzYm5ldF9zZXRfbGlua19rc2V0dGluZ3Moc3Ry
+dWN0IG5ldF9kZXZpY2UgKm5ldCwKK2V4dGVybiBpbnQgdXNibmV0X3NldF9saW5rX2tzZXR0aW5n
+c19tZGlvKHN0cnVjdCBuZXRfZGV2aWNlICpuZXQsCiAJCQkJICAgICBjb25zdCBzdHJ1Y3QgZXRo
+dG9vbF9saW5rX2tzZXR0aW5ncyAqY21kKTsKKy8qIExlZ2FjeSAtIHRvIGJlIHVzZWQgaWYgeW91
+IHJlYWxseSBuZWVkIGFuIGVycm9yIHRvIGJlIHJldHVybmVkICovCitleHRlcm4gaW50IHVzYm5l
+dF9zZXRfbGlua19rc2V0dGluZ3Moc3RydWN0IG5ldF9kZXZpY2UgKm5ldCwKKwkJCQkJY29uc3Qg
+c3RydWN0IGV0aHRvb2xfbGlua19rc2V0dGluZ3MgKmNtZCk7CiBleHRlcm4gdTMyIHVzYm5ldF9n
+ZXRfbGluayhzdHJ1Y3QgbmV0X2RldmljZSAqbmV0KTsKIGV4dGVybiB1MzIgdXNibmV0X2dldF9t
+c2dsZXZlbChzdHJ1Y3QgbmV0X2RldmljZSAqKTsKIGV4dGVybiB2b2lkIHVzYm5ldF9zZXRfbXNn
+bGV2ZWwoc3RydWN0IG5ldF9kZXZpY2UgKiwgdTMyKTsKLS0gCjIuMjYuMgoK
+
+
+--=-/DMFcXsUz/jfYC3DROkO
+Content-Disposition: attachment; filename="0002-CDC-NCM-record-speed-in-status-method.patch"
+Content-Type: text/x-patch; name="0002-CDC-NCM-record-speed-in-status-method.patch";
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+RnJvbSA0NDc4NTBjMGU5MGFlZjVhOGJiNTY5ZDM4ODhjNzYwMzJhODJjN2M3IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBPbGl2ZXIgTmV1a3VtIDxvbmV1a3VtQHN1c2UuY29tPgpEYXRl
+OiBUdWUsIDEgRGVjIDIwMjAgMTE6MzM6MzggKzAxMDAKU3ViamVjdDogW1BBVENIIDIvMl0gQ0RD
+LU5DTTogcmVjb3JkIHNwZWVkIGluIHN0YXR1cyBtZXRob2QKClRoZSBkcml2ZXIgaGFzIGEgc3Rh
+dHVzIG1ldGhvZCBmb3IgcmVjZWl2aW5nIHNwZWVkIHVwZGF0ZXMuClRoZSBmcmFtZXdvcmssIGhv
+d2V2ZXIsIGhhZCBzdXBwb3J0IGZ1bmN0aW9ucyBvbmx5IGZvciBkZXZpY2VzCnRoYXQgcmVwb3J0
+ZWQgdGhlaXIgc3BlZWQgdXBvbiBhbiBleHBsaWNpdCBxdWVyeSBvdmVyIGEgTURJTwppbnRlcmZh
+Y2UuCkNEQ19OQ00gaG93ZXZlciBnZXRzIGRpcmVjdCBub3RpZmljYXRpb25zIGZyb20gdGhlIGRl
+dmljZS4KQXMgbmV3IHN1cHBvcnQgZnVuY3Rpb25zIGhhdmUgYmVjb21lIGF2YWlsYWJsZSwgd2Ug
+c2hhbGwgbm93CnJlY29yZCBzdWNoIG5vdGlmaWNhdGlvbnMgYW5kIHRlbGwgdGhlIHVzYm5ldCBm
+cmFtZXdvcmsKdG8gbWFrZSBkaXJlY3QgdXNlIG9mIHRoZW0gd2l0aG91dCBnb2luZyB0aHJvdWdo
+IHRoZSBQSFkgbGF5ZXIuCgpTaWduZWQtb2ZmLWJ5OiBPbGl2ZXIgTmV1a3VtIDxvbmV1a3VtQHN1
+c2UuY29tPgotLS0KIGRyaXZlcnMvbmV0L3VzYi9jZGNfbmNtLmMgfCAxNyArKy0tLS0tLS0tLS0t
+LS0tLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMTUgZGVsZXRpb25zKC0pCgpk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvdXNiL2NkY19uY20uYyBiL2RyaXZlcnMvbmV0L3VzYi9j
+ZGNfbmNtLmMKaW5kZXggMmJhYzU3ZDVlOGQ1Li43OGNiM2RhOGRlMGIgMTAwNjQ0Ci0tLSBhL2Ry
+aXZlcnMvbmV0L3VzYi9jZGNfbmNtLmMKKysrIGIvZHJpdmVycy9uZXQvdXNiL2NkY19uY20uYwpA
+QCAtMTgyMywyMSArMTgyMyw4IEBAIGNkY19uY21fc3BlZWRfY2hhbmdlKHN0cnVjdCB1c2JuZXQg
+KmRldiwKIAl1aW50MzJfdCByeF9zcGVlZCA9IGxlMzJfdG9fY3B1KGRhdGEtPkRMQml0UlJhdGUp
+OwogCXVpbnQzMl90IHR4X3NwZWVkID0gbGUzMl90b19jcHUoZGF0YS0+VUxCaXRSYXRlKTsKIAot
+CS8qCi0JICogQ3VycmVudGx5IHRoZSBVU0ItTkVUIEFQSSBkb2VzIG5vdCBzdXBwb3J0IHJlcG9y
+dGluZyB0aGUgYWN0dWFsCi0JICogZGV2aWNlIHNwZWVkLiBEbyBwcmludCBpdCBpbnN0ZWFkLgot
+CSAqLwotCWlmICgodHhfc3BlZWQgPiAxMDAwMDAwKSAmJiAocnhfc3BlZWQgPiAxMDAwMDAwKSkg
+ewotCQluZXRpZl9pbmZvKGRldiwgbGluaywgZGV2LT5uZXQsCi0JCQkgICAiJXUgbWJpdC9zIGRv
+d25saW5rICV1IG1iaXQvcyB1cGxpbmtcbiIsCi0JCQkgICAodW5zaWduZWQgaW50KShyeF9zcGVl
+ZCAvIDEwMDAwMDBVKSwKLQkJCSAgICh1bnNpZ25lZCBpbnQpKHR4X3NwZWVkIC8gMTAwMDAwMFUp
+KTsKLQl9IGVsc2UgewotCQluZXRpZl9pbmZvKGRldiwgbGluaywgZGV2LT5uZXQsCi0JCQkgICAi
+JXUga2JpdC9zIGRvd25saW5rICV1IGtiaXQvcyB1cGxpbmtcbiIsCi0JCQkgICAodW5zaWduZWQg
+aW50KShyeF9zcGVlZCAvIDEwMDBVKSwKLQkJCSAgICh1bnNpZ25lZCBpbnQpKHR4X3NwZWVkIC8g
+MTAwMFUpKTsKLQl9CisJZGV2LT5yeHNwZWVkID0gcnhfc3BlZWQ7CisJZGV2LT50eHNwZWVkID0g
+dHhfc3BlZWQ7CiB9CiAKIHN0YXRpYyB2b2lkIGNkY19uY21fc3RhdHVzKHN0cnVjdCB1c2JuZXQg
+KmRldiwgc3RydWN0IHVyYiAqdXJiKQotLSAKMi4yNi4yCgo=
+
+
+--=-/DMFcXsUz/jfYC3DROkO--
+
