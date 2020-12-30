@@ -2,63 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D6CF2E77D3
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 11:45:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EB012E77DC
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 11:51:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726558AbgL3KjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 05:39:13 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:10012 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbgL3KjM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 05:39:12 -0500
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4D5SR908sGzj1G8;
-        Wed, 30 Dec 2020 18:37:41 +0800 (CST)
-Received: from localhost (10.174.243.127) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.498.0; Wed, 30 Dec 2020
- 18:38:20 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <jerry.lilijun@huawei.com>, <xudingke@huawei.com>,
-        Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net] macvlan: fix null pointer dereference in macvlan_changelink_sources()
-Date:   Wed, 30 Dec 2020 18:38:15 +0800
-Message-ID: <1609324695-1516-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+        id S1726365AbgL3Kuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 05:50:51 -0500
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:54743 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726203AbgL3Kuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Dec 2020 05:50:51 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 0D7F39AF;
+        Wed, 30 Dec 2020 05:49:44 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 30 Dec 2020 05:49:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=YDHFjg
+        vHwzkhjLyFLCWnqvCXL3fYINzbOxnJ/e3Y7Rw=; b=In2x+CzY/aIHD944haER51
+        lhkBkUECBEfj+fTfj1s9G+IFC2rD3DeTq/dOIJpobmS8sknfgjo1CVKMQOZCZ4PG
+        wFg3qgqirtnM9pmWlyHZbdtaFkEB4cpRRqhpCW8lQHG07SqhY5Isb2BfgESeFJZ0
+        yWHeaZPtdfwle9oiKCOYlAoZAM/2kamzYL3H2eOVFaqHEr4qVw4Nam4jGbpacuEd
+        qDsYTAtCrdZxCy3Y9UV7PcP9DEGHUfdL/xDMar/dY+YxGMiSrkovfHABwIA1DwR/
+        0mTqifwrxL1JPOkn4uC0KjM9aTgQXRRf4sOKcnmkFnHbZ/BNiKEmNQ0lL0sxKZzw
+        ==
+X-ME-Sender: <xms:R1vsX0OEW9PiJKzStrdkxhut-i0d7ciI5lGrsADxMuqEfZO1e3tjCQ>
+    <xme:R1vsX6-ehYaPvOED-ODQybmYKEQzrW9bc1rrTMcL9-L2etwuAncJVFUH0OmadV6jx
+    jnRvTW-bY3IiSk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvddvfedgvdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeffheeuvdehuefgvdethfeuveegveevieevieejvdeujefftedvleekueelledv
+    keenucffohhmrghinheplhhipheirdhfrhenucfkphepkeegrddvvdelrdduheefrdegge
+    enucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiugho
+    shgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:R1vsX7QiKlbUARMVNGFjwJv2TeeWrI9RLxUOnfljb2mCFmvAe96Hjw>
+    <xmx:R1vsX8vq8eUShw8i2mieQ8xnA4NMIHPkepHinptXBUfy_a5SrAp_OA>
+    <xmx:R1vsX8ceW_oNNM4LKYtj-9yw3bzqi-CI3tB1ScobL1zVr_0Q24Xq9g>
+    <xmx:SFvsX9qdaqY1dnKubhvJ3DXZ1TLVLHwWQ4lUZEg6aDGQRtl9f0kP6w>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5400F24005B;
+        Wed, 30 Dec 2020 05:49:43 -0500 (EST)
+Date:   Wed, 30 Dec 2020 12:49:40 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next] net/mlxfw: Use kzalloc for allocating only one
+ thing
+Message-ID: <20201230104940.GA386343@shredder.lan>
+References: <20201230081835.536-1-zhengyongjun3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.243.127]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201230081835.536-1-zhengyongjun3@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+On Wed, Dec 30, 2020 at 04:18:35PM +0800, Zheng Yongjun wrote:
+> Use kzalloc rather than kcalloc(1,...)
+> 
+> The semantic patch that makes this change is as follows:
+> (http://coccinelle.lip6.fr/)
+> 
+> // <smpl>
+> @@
+> @@
+> 
+> - kcalloc(1,
+> + kzalloc(
+>           ...)
+> // </smpl>
+> 
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-Currently pointer data is dereferenced when declaring addr before
-pointer data is null checked. This could lead to a null pointer
-dereference. Fix this by checking if pointer data is null first.
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
-Fixes: 79cf79abce71 ("macvlan: add source mode")
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/net/macvlan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index fb51329f8964..e412fd6b6798 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -1356,7 +1356,7 @@ static int macvlan_changelink_sources(struct macvlan_dev *vlan, u32 mode,
- 	struct nlattr *nla, *head;
- 	struct macvlan_source_entry *entry;
- 
--	if (data[IFLA_MACVLAN_MACADDR])
-+	if (data && data[IFLA_MACVLAN_MACADDR])
- 		addr = nla_data(data[IFLA_MACVLAN_MACADDR]);
- 
- 	if (mode == MACVLAN_MACADDR_ADD) {
--- 
-2.23.0
-
+Thanks
