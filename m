@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A57A32E7AA8
-	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 16:49:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 940BD2E7AAA
+	for <lists+netdev@lfdr.de>; Wed, 30 Dec 2020 16:49:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726759AbgL3PtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 10:49:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46698 "EHLO mail.kernel.org"
+        id S1726821AbgL3PtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 10:49:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46724 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726230AbgL3PtC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Dec 2020 10:49:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8DD8822242;
-        Wed, 30 Dec 2020 15:48:21 +0000 (UTC)
+        id S1726524AbgL3PtE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Dec 2020 10:49:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7601C2222A;
+        Wed, 30 Dec 2020 15:48:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609343301;
-        bh=xnHEVZDk0ZJjtLvsuNl+eC760CQNHfhFxMLs1isYStA=;
+        s=k20201202; t=1609343303;
+        bh=51TxImHoFdm3uhA3pW7rBRVDyN3fYTyOjG61hHz5NvE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L2cDiROy3YnSsBiAv3HhjBbtYwRtKUn4Ogyeo5T4BhVSHEkGOXNh6sR4WuMx3CMdx
-         1S2H49Lp5og5b6E50QOwp4RoaqUDs3g+F1t9iPvSIssQiu7PrjAdo33qTB/xemmlCY
-         u3o8mdPh+1EPNgM0B84zP2InapfwKGUy/I38sRb4L6JsevVrYybFabDBSvK6yK5L+b
-         ASoyFa4OTdtVWCq/LxVpAkutCh0nMeFiKYB/uj2M/q/39bxs3kV77zNeGggniMqj0a
-         WbNM6WjIkyZ7/Kmtkk/8sIxhFSmA8Uywof+BnW4bSvDweQ6qxg7QAk9hCrA1oijLIr
-         mkqfFA3F73lJA==
+        b=m1kG1pBkyHYhwdOHDt2jGDmdPvBBsN3oGEy62hT08RsuqRE7vAuQwNQ7qHINtJKKl
+         w9LzsascTx5o/ZxBalScvCdHiQUEJI3V41P+n8W0B2MLCWs9vCvBjqZJgHt/EI4tXV
+         u8tal0xm9n0rWwZlmEKCbJItfiPZ/dOSHMrx7Wg1vWyT/X/ZTmbODvz9CAW0yt2Wbp
+         pnk6dFQGdJKYCu+OXeH00wy+Dr34ReWe3kJGgSXYuWyF2Ix2AogYXOJioUS7kLtTRq
+         wAbjWedJvfNoQg9+VXmJhK2mOV33yTZWvYOM/a7qqnDRQLbNs4K17QFFdgU6c2Bo5i
+         ld2+kMc4JlQOQ==
 Received: by pali.im (Postfix)
-        id EC92D9F8; Wed, 30 Dec 2020 16:48:19 +0100 (CET)
+        id BA6AB125D; Wed, 30 Dec 2020 16:48:21 +0100 (CET)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -32,9 +32,9 @@ To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] net: sfp: allow to use also SFP modules which are detected as SFF
-Date:   Wed, 30 Dec 2020 16:47:53 +0100
-Message-Id: <20201230154755.14746-3-pali@kernel.org>
+Subject: [PATCH 3/4] net: sfp: assume that LOS is not implemented if both LOS normal and inverted is set
+Date:   Wed, 30 Dec 2020 16:47:54 +0100
+Message-Id: <20201230154755.14746-4-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201230154755.14746-1-pali@kernel.org>
 References: <20201230154755.14746-1-pali@kernel.org>
@@ -45,33 +45,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some GPON SFP modules (e.g. Ubiquiti U-Fiber Instant) have set SFF phys_id
-in their EEPROM. Kernel SFP subsystem currently does not allow to use
-modules detected as SFF.
+Some GPON SFP modules (e.g. Ubiquiti U-Fiber Instant) have set both
+SFP_OPTIONS_LOS_INVERTED and SFP_OPTIONS_LOS_NORMAL bits in their EEPROM.
 
-This change extends check for SFP modules so also those with SFF phys_id
-are allowed. With this change also GPON SFP module Ubiquiti U-Fiber Instant
-is recognized.
+Such combination of bits is meaningless so assume that LOS signal is not
+implemented.
 
+This patch fixes link carrier for GPON SFP module Ubiquiti U-Fiber Instant.
+
+Co-developed-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Pali Rohár <pali@kernel.org>
 ---
- drivers/net/phy/sfp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/phy/sfp.c | 36 ++++++++++++++++++++++--------------
+ 1 file changed, 22 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 490e78a72dd6..73f3ecf15260 100644
+index 73f3ecf15260..d47485ed239c 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -273,7 +273,8 @@ static const struct sff_data sff_data = {
+@@ -1475,15 +1475,19 @@ static void sfp_sm_link_down(struct sfp *sfp)
  
- static bool sfp_module_supported(const struct sfp_eeprom_id *id)
+ static void sfp_sm_link_check_los(struct sfp *sfp)
  {
--	return id->base.phys_id == SFF8024_ID_SFP &&
-+	return (id->base.phys_id == SFF8024_ID_SFP ||
-+		id->base.phys_id == SFF8024_ID_SFF_8472) &&
- 	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
+-	unsigned int los = sfp->state & SFP_F_LOS;
++	const __be16 los_inverted = cpu_to_be16(SFP_OPTIONS_LOS_INVERTED);
++	const __be16 los_normal = cpu_to_be16(SFP_OPTIONS_LOS_NORMAL);
++	__be16 los_options = sfp->id.ext.options & (los_inverted | los_normal);
++	bool los = false;
+ 
+ 	/* If neither SFP_OPTIONS_LOS_INVERTED nor SFP_OPTIONS_LOS_NORMAL
+-	 * are set, we assume that no LOS signal is available.
++	 * are set, we assume that no LOS signal is available. If both are
++	 * set, we assume LOS is not implemented (and is meaningless.)
+ 	 */
+-	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_INVERTED))
+-		los ^= SFP_F_LOS;
+-	else if (!(sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_NORMAL)))
+-		los = 0;
++	if (los_options == los_inverted)
++		los = !(sfp->state & SFP_F_LOS);
++	else if (los_options == los_normal)
++		los = !!(sfp->state & SFP_F_LOS);
+ 
+ 	if (los)
+ 		sfp_sm_next(sfp, SFP_S_WAIT_LOS, 0);
+@@ -1493,18 +1497,22 @@ static void sfp_sm_link_check_los(struct sfp *sfp)
+ 
+ static bool sfp_los_event_active(struct sfp *sfp, unsigned int event)
+ {
+-	return (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_INVERTED) &&
+-		event == SFP_E_LOS_LOW) ||
+-	       (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_NORMAL) &&
+-		event == SFP_E_LOS_HIGH);
++	const __be16 los_inverted = cpu_to_be16(SFP_OPTIONS_LOS_INVERTED);
++	const __be16 los_normal = cpu_to_be16(SFP_OPTIONS_LOS_NORMAL);
++	__be16 los_options = sfp->id.ext.options & (los_inverted | los_normal);
++
++	return (los_options == los_inverted && event == SFP_E_LOS_LOW) ||
++	       (los_options == los_normal && event == SFP_E_LOS_HIGH);
  }
  
+ static bool sfp_los_event_inactive(struct sfp *sfp, unsigned int event)
+ {
+-	return (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_INVERTED) &&
+-		event == SFP_E_LOS_HIGH) ||
+-	       (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_NORMAL) &&
+-		event == SFP_E_LOS_LOW);
++	const __be16 los_inverted = cpu_to_be16(SFP_OPTIONS_LOS_INVERTED);
++	const __be16 los_normal = cpu_to_be16(SFP_OPTIONS_LOS_NORMAL);
++	__be16 los_options = sfp->id.ext.options & (los_inverted | los_normal);
++
++	return (los_options == los_inverted && event == SFP_E_LOS_HIGH) ||
++	       (los_options == los_normal && event == SFP_E_LOS_LOW);
+ }
+ 
+ static void sfp_sm_fault(struct sfp *sfp, unsigned int next_state, bool warn)
 -- 
 2.20.1
 
