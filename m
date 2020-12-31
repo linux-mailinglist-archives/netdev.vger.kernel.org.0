@@ -2,201 +2,644 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F7362E7EA7
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 09:01:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E0F2E7EDB
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 10:07:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726317AbgLaIBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 03:01:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726289AbgLaIBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 03:01:31 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55CBDC06179B
-        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 00:00:51 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id g20so24622149ejb.1
-        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 00:00:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=4vZcplAIb41k4LaB6dKNbkRj1W5i0zw8fIZIC7vJy8k=;
-        b=og+5JY4E3K4UPnN5TiFOOScjvaN/w5yE7Bg5E5Nk1ufD8N77pqk1f+zRfF9L1FVUkp
-         hSBs8/203UT342aufzMtkzaIRltYNmRxuNHFXA6Ydd78Tm+ZTCQ8hseCdHG/H5raSS1j
-         RsoMKMpG431hTuvucAo8IC7DYC1qQUyD9NfQDHp9kFHduTTsb65AIoIrSjzWbqgfHk32
-         FhvjmZpgYZfv/B03Z2qSK4AG7nsUT99nKz3q8fjSbN05oc+Q7kexg+cejWKyV8PjggCA
-         LWC2nofzjR51hoXhTpMqu95zJg9mOz5HjNL8obkBcR6NXOs3e+jtE1ejS1At3Am3N/6k
-         5Z2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4vZcplAIb41k4LaB6dKNbkRj1W5i0zw8fIZIC7vJy8k=;
-        b=VJEq6vprBY+duFmZcPVFSWC26UIGQNWTWdxTt/YyeNkFwk09wx2OutWCFEsv0bpfN4
-         TiS39qfDb32rBA0yYutB6oyGRIQ1qLy4FqiNn+Tbkm3t0yLGEN6uNuBsDah4LOvbdl/a
-         Tk8thQjkyDpLaf9U+/nxjHOAUZIUqgc2gUOUS+xwPvsxYdy+d3Erus9tAtDwm6+/dJH6
-         5JesAEbmlWIIWAfV6dIknHzXSGOw8nvewWI9rpWEhfrNGLkRQIOrZXvgwgaANTc8iC7l
-         cnVcS9fRrXl229rqRpLf45MnblvodvkYl1llrjvb7PI2Uo1Q5aBBvTql/gAc7eAJJs/d
-         gixg==
-X-Gm-Message-State: AOAM531QBZPzKLrgFSPSobEtbUVadi+uZJ3JgkIAlaYc5+jrH5+3UO/U
-        fLr7IR1PKtZGqdxcpoXZTHGDOw0vl2Dsm2ZxMFNJ
-X-Google-Smtp-Source: ABdhPJzUYyZKN/oWREBg8SGLRKnYI6sZMmeS65RWsW2GrEDgzsI9LiI+njvKlfqjdSPeAoYGVse9La7+ch/x1AsJ/IQ=
-X-Received: by 2002:a17:906:edc8:: with SMTP id sb8mr52668753ejb.247.1609401648958;
- Thu, 31 Dec 2020 00:00:48 -0800 (PST)
+        id S1726485AbgLaJGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 04:06:16 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:9708 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726230AbgLaJGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 04:06:15 -0500
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4D62K26ws8zkydn;
+        Thu, 31 Dec 2020 17:04:22 +0800 (CST)
+Received: from localhost.localdomain (10.67.165.24) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 31 Dec 2020 17:05:20 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <lipeng321@huawei.com>,
+        <salil.mehta@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH RFC net-next] net: hns3: debugfs add dump tm info of nodes, priority and qset
+Date:   Thu, 31 Dec 2020 17:03:16 +0800
+Message-ID: <1609405396-39071-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-References: <20201222145221.711-1-xieyongji@bytedance.com> <CACycT3uwXBYvRbKDWdN3oCekv+o6_Lc=-KTrxejD=fr-zgibGw@mail.gmail.com>
- <2b24398c-e6d9-14ec-2c0d-c303d528e377@redhat.com> <CACycT3uDV43ecScrMh1QVpStuwDETHykJzzY=pkmZjP2Dd2kvg@mail.gmail.com>
- <e77c97c5-6bdc-cdd0-62c0-6ff75f6dbdff@redhat.com> <CACycT3soQoX5avZiFBLEGBuJpdni6-UxdhAPGpWHBWVf+dEySg@mail.gmail.com>
- <1356137727.40748805.1609233068675.JavaMail.zimbra@redhat.com>
- <CACycT3sg61yRdupnD+jQEkWKsVEvMWfhkJ=5z_bYZLxCibDiHw@mail.gmail.com>
- <b1aef426-29c7-7244-5fc9-56d52e86abb4@redhat.com> <CACycT3vZ7V5WWhCFLBK6FuvVNmPmMj_yc=COOB4cjjC13yHUwg@mail.gmail.com>
- <3fc6a132-9fc2-c4e2-7fb1-b5a8bfb771fa@redhat.com> <CACycT3tD3zyvV6Zy5NT4x=02hBgrRGq35xeTsRXXx-_wPGJXpQ@mail.gmail.com>
- <e0e693c3-1871-a410-c3d5-964518ec939a@redhat.com> <CACycT3vwMU5R7N8dZFBYX4-bxe2YT7EfK_M_jEkH8wzfH_GkBw@mail.gmail.com>
- <0885385c-ae46-158d-eabf-433ef8ecf27f@redhat.com> <CACycT3tc2P63k6J9ZkWTpPvHk_H8zUq0_Q6WOqYX_dSigUAnzA@mail.gmail.com>
- <79741d5d-0c35-ad1c-951a-41d8ab3b36a0@redhat.com>
-In-Reply-To: <79741d5d-0c35-ad1c-951a-41d8ab3b36a0@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 31 Dec 2020 16:00:38 +0800
-Message-ID: <CACycT3td8uSZOANdteP89y5NFY6KbaNPdyen3QRX4UP2xKTWnA@mail.gmail.com>
-Subject: Re: Re: [RFC v2 09/13] vduse: Add support for processing vhost iotlb message
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 31, 2020 at 3:12 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2020/12/31 =E4=B8=8B=E5=8D=882:52, Yongji Xie wrote:
-> > On Thu, Dec 31, 2020 at 1:50 PM Jason Wang <jasowang@redhat.com> wrote:
-> >>
-> >> On 2020/12/31 =E4=B8=8B=E5=8D=881:15, Yongji Xie wrote:
-> >>> On Thu, Dec 31, 2020 at 10:49 AM Jason Wang <jasowang@redhat.com> wro=
-te:
-> >>>> On 2020/12/30 =E4=B8=8B=E5=8D=886:12, Yongji Xie wrote:
-> >>>>> On Wed, Dec 30, 2020 at 4:41 PM Jason Wang <jasowang@redhat.com> wr=
-ote:
-> >>>>>> On 2020/12/30 =E4=B8=8B=E5=8D=883:09, Yongji Xie wrote:
-> >>>>>>> On Wed, Dec 30, 2020 at 2:11 PM Jason Wang <jasowang@redhat.com> =
-wrote:
-> >>>>>>>> On 2020/12/29 =E4=B8=8B=E5=8D=886:26, Yongji Xie wrote:
-> >>>>>>>>> On Tue, Dec 29, 2020 at 5:11 PM Jason Wang <jasowang@redhat.com=
-> wrote:
-> >>>>>>>>>> ----- Original Message -----
-> >>>>>>>>>>> On Mon, Dec 28, 2020 at 4:43 PM Jason Wang <jasowang@redhat.c=
-om> wrote:
-> >>>>>>>>>>>> On 2020/12/28 =E4=B8=8B=E5=8D=884:14, Yongji Xie wrote:
-> >>>>>>>>>>>>>> I see. So all the above two questions are because VHOST_IO=
-TLB_INVALIDATE
-> >>>>>>>>>>>>>> is expected to be synchronous. This need to be solved by t=
-weaking the
-> >>>>>>>>>>>>>> current VDUSE API or we can re-visit to go with descriptor=
-s relaying
-> >>>>>>>>>>>>>> first.
-> >>>>>>>>>>>>>>
-> >>>>>>>>>>>>> Actually all vdpa related operations are synchronous in cur=
-rent
-> >>>>>>>>>>>>> implementation. The ops.set_map/dma_map/dma_unmap should no=
-t return
-> >>>>>>>>>>>>> until the VDUSE_UPDATE_IOTLB/VDUSE_INVALIDATE_IOTLB message=
- is replied
-> >>>>>>>>>>>>> by userspace. Could it solve this problem?
-> >>>>>>>>>>>>        I was thinking whether or not we need to generate IOT=
-LB_INVALIDATE
-> >>>>>>>>>>>> message to VDUSE during dma_unmap (vduse_dev_unmap_page).
-> >>>>>>>>>>>>
-> >>>>>>>>>>>> If we don't, we're probably fine.
-> >>>>>>>>>>>>
-> >>>>>>>>>>> It seems not feasible. This message will be also used in the
-> >>>>>>>>>>> virtio-vdpa case to notify userspace to unmap some pages duri=
-ng
-> >>>>>>>>>>> consistent dma unmapping. Maybe we can document it to make su=
-re the
-> >>>>>>>>>>> users can handle the message correctly.
-> >>>>>>>>>> Just to make sure I understand your point.
-> >>>>>>>>>>
-> >>>>>>>>>> Do you mean you plan to notify the unmap of 1) streaming DMA o=
-r 2)
-> >>>>>>>>>> coherent DMA?
-> >>>>>>>>>>
-> >>>>>>>>>> For 1) you probably need a workqueue to do that since dma unma=
-p can
-> >>>>>>>>>> be done in irq or bh context. And if usrspace does't do the un=
-map, it
-> >>>>>>>>>> can still access the bounce buffer (if you don't zap pte)?
-> >>>>>>>>>>
-> >>>>>>>>> I plan to do it in the coherent DMA case.
-> >>>>>>>> Any reason for treating coherent DMA differently?
-> >>>>>>>>
-> >>>>>>> Now the memory of the bounce buffer is allocated page by page in =
-the
-> >>>>>>> page fault handler. So it can't be used in coherent DMA mapping c=
-ase
-> >>>>>>> which needs some memory with contiguous virtual addresses. I can =
-use
-> >>>>>>> vmalloc() to do allocation for the bounce buffer instead. But it =
-might
-> >>>>>>> cause some memory waste. Any suggestion?
-> >>>>>> I may miss something. But I don't see a relationship between the
-> >>>>>> IOTLB_UNMAP and vmalloc().
-> >>>>>>
-> >>>>> In the vmalloc() case, the coherent DMA page will be taken from the
-> >>>>> memory allocated by vmalloc(). So IOTLB_UNMAP is not needed anymore
-> >>>>> during coherent DMA unmapping because those vmalloc'ed memory which
-> >>>>> has been mapped into userspace address space during initialization =
-can
-> >>>>> be reused. And userspace should not unmap the region until we destr=
-oy
-> >>>>> the device.
-> >>>> Just to make sure I understand. My understanding is that IOTLB_UNMAP=
- is
-> >>>> only needed when there's a change the mapping from IOVA to page.
-> >>>>
-> >>> Yes, that's true.
-> >>>
-> >>>> So if we stick to the mapping, e.g during dma_unmap, we just put IOV=
-A to
-> >>>> free list to be used by the next IOVA allocating. IOTLB_UNMAP could =
-be
-> >>>> avoided.
-> >>>>
-> >>>> So we are not limited by how the pages are actually allocated?
-> >>>>
-> >>> In coherent DMA cases, we need to return some memory with contiguous
-> >>> kernel virtual addresses. That is the reason why we need vmalloc()
-> >>> here. If we allocate the memory page by page, the corresponding kerne=
-l
-> >>> virtual addresses in a contiguous IOVA range might not be contiguous.
-> >>
-> >> Yes, but we can do that as what has been done in the series
-> >> (alloc_pages_exact()). Or do you mean it would be a little bit hard to
-> >> recycle IOVA/pages here?
-> >>
-> > Yes, it might be hard to reuse the memory. For example, we firstly
-> > allocate 1 IOVA/page during dma_map, then the IOVA is freed during
-> > dma_unmap. Actually we can't reuse this single page if we need a
-> > two-pages area in the next IOVA allocating. So the best way is using
-> > IOTLB_UNMAP to free this single page during dma_unmap too.
-> >
-> > Thanks,
-> > Yongji
->
->
-> I get you now. Then I agree that let's go with IOTLB_UNMAP.
->
+To increase methods to dump more tm info, adds three debugfs commands
+to dump tm info of nodes, priority and qset. And a new tm file of debugfs
+is created for only dumping tm info.
 
-Fine, will do it.
+Unlike previous debugfs commands, to dump each tm information, user needs
+to enter two commands now. The first command writes parameters to tm and
+the second command reads info from tm. For examples, to dump tm info of
+priority 0, user needs to enter follow two commands:
+1. echo dump priority 0 > tm
+2. cat tm
 
-Thanks,
-Yongji
+The reason for adding new tm file is because we accepted Jakub Kicinski's
+opinion as link https://lkml.org/lkml/2020/9/29/2101. And in order to
+avoid generating too many files, we implement write ops to allow user to
+input parameters.
+
+However, If there are two or more users concurrently write parameters to
+tm, parameters of the latest command will overwrite previous commands, 
+this concurrency problem will confuse users, but now there is no good
+method to fix it.
+
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   9 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 117 ++++++++++
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   6 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |   1 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 250 +++++++++++++++++++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |   1 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   2 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h  |  26 +++
+ 8 files changed, 412 insertions(+)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 912c51e..08a30de 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -243,6 +243,10 @@ struct hnae3_vector_info {
+ 	int vector;
+ };
+ 
++enum hnae3_dbg_module_type {
++	HNAE3_DBG_MODULE_TYPE_TM,
++};
++
+ #define HNAE3_RING_TYPE_B 0
+ #define HNAE3_RING_TYPE_TX 0
+ #define HNAE3_RING_TYPE_RX 1
+@@ -454,6 +458,8 @@ struct hnae3_ae_dev {
+  *   Configure the default MAC for specified VF
+  * get_module_eeprom
+  *   Get the optical module eeprom info.
++ * dbg_read_cmd
++ *   Execute debugfs read command.
+  */
+ struct hnae3_ae_ops {
+ 	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
+@@ -609,6 +615,8 @@ struct hnae3_ae_ops {
+ 	int (*add_arfs_entry)(struct hnae3_handle *handle, u16 queue_id,
+ 			      u16 flow_id, struct flow_keys *fkeys);
+ 	int (*dbg_run_cmd)(struct hnae3_handle *handle, const char *cmd_buf);
++	int (*dbg_read_cmd)(struct hnae3_handle *handle, const char *cmd_buf,
++			    char *buf, int len);
+ 	pci_ers_result_t (*handle_hw_ras_error)(struct hnae3_ae_dev *ae_dev);
+ 	bool (*get_hw_reset_stat)(struct hnae3_handle *handle);
+ 	bool (*ae_dev_resetting)(struct hnae3_handle *handle);
+@@ -734,6 +742,7 @@ struct hnae3_handle {
+ 
+ 	u8 netdev_flags;
+ 	struct dentry *hnae3_dbgfs;
++	int dbgfs_type;
+ 
+ 	/* Network interface message level enabled bits */
+ 	u32 msg_enable;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+index dc9a857..bdca7d4 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+@@ -12,6 +12,10 @@
+ 
+ static struct dentry *hns3_dbgfs_root;
+ 
++#define HNS3_HELP_INFO "help"
++
++#define HNS3_DBG_MODULE_NAME_TM		"tm"
++
+ static int hns3_dbg_queue_info(struct hnae3_handle *h,
+ 			       const char *cmd_buf)
+ {
+@@ -305,6 +309,22 @@ static void hns3_dbg_help(struct hnae3_handle *h)
+ 	dev_info(&h->pdev->dev, "%s", printf_buf);
+ }
+ 
++static void hns3_dbg_tm_help(struct hnae3_handle *h, char *buf, int len)
++{
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(h->pdev);
++	int pos;
++
++	pos = scnprintf(buf, len, "available commands:\n");
++
++	if (!hns3_is_phys_func(h->pdev))
++		return;
++
++	if (ae_dev->dev_version > HNAE3_DEVICE_VERSION_V2)
++		pos += scnprintf(buf + pos, len - pos, "dump nodes\n");
++	pos += scnprintf(buf + pos, len - pos, "dump priority <pri id>\n");
++	pos += scnprintf(buf + pos, len - pos, "dump qset <qset id>\n");
++}
++
+ static void hns3_dbg_dev_caps(struct hnae3_handle *h)
+ {
+ 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(h->pdev);
+@@ -444,6 +464,93 @@ static ssize_t hns3_dbg_cmd_write(struct file *filp, const char __user *buffer,
+ 	return count;
+ }
+ 
++static ssize_t hns3_dbg_tm_read(struct file *filp, char __user *buffer,
++				size_t count, loff_t *ppos)
++{
++	struct hnae3_handle *handle = filp->private_data;
++	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
++	struct hns3_nic_priv *priv  = handle->priv;
++	char *cmd_buf, *read_buf;
++	ssize_t size = 0;
++	int ret = 0;
++
++	if (strncmp(filp->f_path.dentry->d_iname, HNS3_DBG_MODULE_NAME_TM,
++		    strlen(HNS3_DBG_MODULE_NAME_TM)) != 0)
++		return -EINVAL;
++
++	if (!priv->dbg_in_msg.tm)
++		return -EINVAL;
++
++	read_buf = kzalloc(HNS3_DBG_READ_LEN, GFP_KERNEL);
++	if (!read_buf)
++		return -ENOMEM;
++
++	cmd_buf = priv->dbg_in_msg.tm;
++	handle->dbgfs_type = HNAE3_DBG_MODULE_TYPE_TM;
++
++	if (strncmp(cmd_buf, HNS3_HELP_INFO, strlen(HNS3_HELP_INFO)) == 0)
++		hns3_dbg_tm_help(handle, read_buf, HNS3_DBG_READ_LEN);
++	else if (ops->dbg_read_cmd)
++		ret = ops->dbg_read_cmd(handle, cmd_buf, read_buf,
++					HNS3_DBG_READ_LEN);
++
++	if (ret) {
++		dev_info(priv->dev, "unknown command\n");
++		goto out;
++	}
++
++	size = simple_read_from_buffer(buffer, count, ppos, read_buf,
++				       strlen(read_buf));
++out:
++	kfree(read_buf);
++	return size;
++}
++
++static ssize_t hns3_dbg_tm_write(struct file *filp, const char __user *buffer,
++				 size_t count, loff_t *ppos)
++{
++	struct hnae3_handle *handle = filp->private_data;
++	struct hns3_nic_priv *priv  = handle->priv;
++	char *cmd_buf, *cmd_buf_tmp;
++	int uncopied_bytes;
++
++	if (*ppos != 0)
++		return 0;
++
++	/* Judge if the instance is being reset. */
++	if (!test_bit(HNS3_NIC_STATE_INITED, &priv->state) ||
++	    test_bit(HNS3_NIC_STATE_RESETTING, &priv->state))
++		return 0;
++
++	if (count > HNS3_DBG_WRITE_LEN)
++		return -ENOSPC;
++
++	kfree(priv->dbg_in_msg.tm);
++	priv->dbg_in_msg.tm = NULL;
++
++	cmd_buf = kzalloc(count + 1, GFP_KERNEL);
++	if (!cmd_buf)
++		return count;
++
++	uncopied_bytes = copy_from_user(cmd_buf, buffer, count);
++	if (uncopied_bytes) {
++		kfree(cmd_buf);
++		return -EFAULT;
++	}
++
++	cmd_buf[count] = '\0';
++
++	cmd_buf_tmp = strchr(cmd_buf, '\n');
++	if (cmd_buf_tmp) {
++		*cmd_buf_tmp = '\0';
++		count = cmd_buf_tmp - cmd_buf + 1;
++	}
++
++	priv->dbg_in_msg.tm = cmd_buf;
++
++	return count;
++}
++
+ static const struct file_operations hns3_dbg_cmd_fops = {
+ 	.owner = THIS_MODULE,
+ 	.open  = simple_open,
+@@ -451,6 +558,13 @@ static const struct file_operations hns3_dbg_cmd_fops = {
+ 	.write = hns3_dbg_cmd_write,
+ };
+ 
++static const struct file_operations hns3_dbg_tm_fops = {
++	.owner = THIS_MODULE,
++	.open  = simple_open,
++	.read  = hns3_dbg_tm_read,
++	.write = hns3_dbg_tm_write,
++};
++
+ void hns3_dbg_init(struct hnae3_handle *handle)
+ {
+ 	const char *name = pci_name(handle->pdev);
+@@ -459,6 +573,9 @@ void hns3_dbg_init(struct hnae3_handle *handle)
+ 
+ 	debugfs_create_file("cmd", 0600, handle->hnae3_dbgfs, handle,
+ 			    &hns3_dbg_cmd_fops);
++
++	debugfs_create_file(HNS3_DBG_MODULE_NAME_TM, 0600, handle->hnae3_dbgfs,
++			    handle, &hns3_dbg_tm_fops);
+ }
+ 
+ void hns3_dbg_uninit(struct hnae3_handle *handle)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+index 1c81dea..b52f0e6 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+@@ -464,6 +464,10 @@ struct hns3_enet_tqp_vector {
+ 	unsigned long last_jiffies;
+ } ____cacheline_internodealigned_in_smp;
+ 
++struct hns3_dbg_input_msg {
++	char *tm;
++};
++
+ struct hns3_nic_priv {
+ 	struct hnae3_handle *ae_handle;
+ 	struct net_device *netdev;
+@@ -484,6 +488,8 @@ struct hns3_nic_priv {
+ 
+ 	struct hns3_enet_coalesce tx_coal;
+ 	struct hns3_enet_coalesce rx_coal;
++
++	struct hns3_dbg_input_msg dbg_in_msg;
+ };
+ 
+ union l3_hdr_info {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index 096e26a..f47437c 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -160,6 +160,7 @@ enum hclge_opcode_type {
+ 	HCLGE_OPC_TM_PRI_SCH_MODE_CFG   = 0x0813,
+ 	HCLGE_OPC_TM_QS_SCH_MODE_CFG    = 0x0814,
+ 	HCLGE_OPC_TM_BP_TO_QSET_MAPPING = 0x0815,
++	HCLGE_OPC_TM_NODES		= 0x0816,
+ 	HCLGE_OPC_ETS_TC_WEIGHT		= 0x0843,
+ 	HCLGE_OPC_QSET_DFX_STS		= 0x0844,
+ 	HCLGE_OPC_PRI_DFX_STS		= 0x0845,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index 16df050..7a893e5 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -766,6 +766,223 @@ static void hclge_dbg_dump_tm_map(struct hclge_dev *hdev,
+ 		cmd, ret);
+ }
+ 
++static void hclge_dbg_dump_tm_nodes(struct hclge_dev *hdev, char *buf, int len)
++{
++	struct hclge_tm_nodes_cmd *nodes;
++	struct hclge_desc desc;
++	int pos = 0;
++	int ret;
++
++	if (hdev->ae_dev->dev_version <= HNAE3_DEVICE_VERSION_V2) {
++		dev_err(&hdev->pdev->dev, "unsupported command!\n");
++		return;
++	}
++
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_TM_NODES, true);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret) {
++		dev_err(&hdev->pdev->dev,
++			"failed to dump tm nodes, ret = %d\n", ret);
++		return;
++	}
++
++	nodes = (struct hclge_tm_nodes_cmd *)desc.data;
++
++	pos += scnprintf(buf + pos, len - pos, "PG base_id: %u\n",
++			 nodes->pg_base_id);
++	pos += scnprintf(buf + pos, len - pos, "PG number: %u\n",
++			 nodes->pg_num);
++	pos += scnprintf(buf + pos, len - pos, "PRI base_id: %u\n",
++			 nodes->pri_base_id);
++	pos += scnprintf(buf + pos, len - pos, "PRI number: %u\n",
++			 nodes->pri_num);
++	pos += scnprintf(buf + pos, len - pos, "QSET base_id: %u\n",
++			 le16_to_cpu(nodes->qset_base_id));
++	pos += scnprintf(buf + pos, len - pos, "QSET number: %u\n",
++			 le16_to_cpu(nodes->qset_num));
++	pos += scnprintf(buf + pos, len - pos, "QUEUE base_id: %u\n",
++			 le16_to_cpu(nodes->queue_base_id));
++	pos += scnprintf(buf + pos, len - pos, "QUEUE number: %u\n",
++			 le16_to_cpu(nodes->queue_num));
++}
++
++static int hclge_dbg_dump_tm_pri_sch(struct hclge_dev *hdev, u8 pri_id,
++				     char *buf, int len)
++{
++	struct hclge_priority_weight_cmd *priority_weight;
++	struct hclge_pri_sch_mode_cfg_cmd *pri_sch_mode;
++	enum hclge_opcode_type cmd;
++	struct hclge_desc desc;
++	int pos = 0;
++	int ret;
++
++	cmd = HCLGE_OPC_TM_PRI_SCH_MODE_CFG;
++	hclge_cmd_setup_basic_desc(&desc, cmd, true);
++	pri_sch_mode = (struct hclge_pri_sch_mode_cfg_cmd *)desc.data;
++	pri_sch_mode->pri_id = pri_id;
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret)
++		goto err_tm_pri_sch_cmd_send;
++
++	pos += scnprintf(buf + pos, len - pos, "PRI schedule mode: %s\n",
++			 (pri_sch_mode->sch_mode & HCLGE_TM_TX_SCHD_DWRR_MSK) ?
++			 "dwrr" : "sp");
++
++	cmd = HCLGE_OPC_TM_PRI_WEIGHT;
++	hclge_cmd_setup_basic_desc(&desc, cmd, true);
++	priority_weight = (struct hclge_priority_weight_cmd *)desc.data;
++	priority_weight->pri_id = pri_id;
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret)
++		goto err_tm_pri_sch_cmd_send;
++
++	pos += scnprintf(buf + pos, len - pos, "PRI dwrr: %u\n",
++			 priority_weight->dwrr);
++
++	return pos;
++
++err_tm_pri_sch_cmd_send:
++	dev_err(&hdev->pdev->dev,
++		"dump tm priority fail(0x%x), ret=%d\n", cmd, ret);
++	return pos;
++}
++
++static void hclge_dbg_dump_tm_pri_shaping(struct hclge_dev *hdev, u8 pri_id,
++					  char *buf, int len)
++{
++	struct hclge_pri_shapping_cmd *shap_cfg_cmd;
++	u8 ir_u, ir_b, ir_s, bs_b, bs_s;
++	enum hclge_opcode_type cmd;
++	struct hclge_desc desc;
++	u32 shapping_para;
++	int pos = 0;
++	int ret;
++
++	cmd = HCLGE_OPC_TM_PRI_C_SHAPPING;
++	hclge_cmd_setup_basic_desc(&desc, cmd, true);
++	shap_cfg_cmd = (struct hclge_pri_shapping_cmd *)desc.data;
++	shap_cfg_cmd->pri_id = pri_id;
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret)
++		goto err_tm_pri_shaping_cmd_send;
++
++	shapping_para = le32_to_cpu(shap_cfg_cmd->pri_shapping_para);
++	ir_b = hclge_tm_get_field(shapping_para, IR_B);
++	ir_u = hclge_tm_get_field(shapping_para, IR_U);
++	ir_s = hclge_tm_get_field(shapping_para, IR_S);
++	bs_b = hclge_tm_get_field(shapping_para, BS_B);
++	bs_s = hclge_tm_get_field(shapping_para, BS_S);
++	pos += scnprintf(buf + pos, len - pos,
++			 "PRI_C ir_b:%u ir_u:%u ir_s:%u bs_b:%u bs_s:%u\n",
++			 ir_b, ir_u, ir_s, bs_b, bs_s);
++	pos += scnprintf(buf + pos, len - pos, "PRI_C flag: %#x\n",
++			 shap_cfg_cmd->flag);
++	pos += scnprintf(buf + pos, len - pos, "PRI_C pri_rate: %u(Mbps)\n",
++			 le32_to_cpu(shap_cfg_cmd->pri_rate));
++
++	cmd = HCLGE_OPC_TM_PRI_P_SHAPPING;
++	hclge_cmd_setup_basic_desc(&desc, cmd, true);
++	shap_cfg_cmd = (struct hclge_pri_shapping_cmd *)desc.data;
++	shap_cfg_cmd->pri_id = pri_id;
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret)
++		goto err_tm_pri_shaping_cmd_send;
++
++	shapping_para = le32_to_cpu(shap_cfg_cmd->pri_shapping_para);
++	ir_b = hclge_tm_get_field(shapping_para, IR_B);
++	ir_u = hclge_tm_get_field(shapping_para, IR_U);
++	ir_s = hclge_tm_get_field(shapping_para, IR_S);
++	bs_b = hclge_tm_get_field(shapping_para, BS_B);
++	bs_s = hclge_tm_get_field(shapping_para, BS_S);
++	pos += scnprintf(buf + pos, len - pos,
++			 "PRI_P ir_b:%u ir_u:%u ir_s:%u bs_b:%u bs_s:%u\n",
++			 ir_b, ir_u, ir_s, bs_b, bs_s);
++	pos += scnprintf(buf + pos, len - pos, "PRI_P flag: %#x\n",
++			 shap_cfg_cmd->flag);
++	pos += scnprintf(buf + pos, len - pos, "PRI_P pri_rate: %u(Mbps)\n",
++			 le32_to_cpu(shap_cfg_cmd->pri_rate));
++
++	return;
++
++err_tm_pri_shaping_cmd_send:
++	dev_err(&hdev->pdev->dev,
++		"dump tm priority fail(0x%x), ret=%d\n", cmd, ret);
++}
++
++static void hclge_dbg_dump_tm_pri(struct hclge_dev *hdev, const char *cmd_buf,
++				  char *buf, int len)
++{
++	int ret, pos;
++	u8 pri_id;
++
++	ret = kstrtou8(cmd_buf, 0, &pri_id);
++	pri_id = (ret != 0) ? 0 : pri_id;
++
++	pos = scnprintf(buf, len, "priority id: %u\n", pri_id);
++
++	pos += hclge_dbg_dump_tm_pri_sch(hdev, pri_id, buf + pos, len - pos);
++	hclge_dbg_dump_tm_pri_shaping(hdev, pri_id, buf + pos, len - pos);
++}
++
++static void hclge_dbg_dump_tm_qset(struct hclge_dev *hdev, const char *cmd_buf,
++				   char *buf, int len)
++{
++	struct hclge_qs_sch_mode_cfg_cmd *qs_sch_mode;
++	struct hclge_qs_weight_cmd *qs_weight;
++	struct hclge_qs_to_pri_link_cmd *map;
++	enum hclge_opcode_type cmd;
++	struct hclge_desc desc;
++	int ret, pos;
++	u16 qset_id;
++
++	ret = kstrtou16(cmd_buf, 0, &qset_id);
++	qset_id = (ret != 0) ? 0 : qset_id;
++
++	pos = scnprintf(buf, len, "qset id: %u\n", qset_id);
++
++	cmd = HCLGE_OPC_TM_QS_TO_PRI_LINK;
++	map = (struct hclge_qs_to_pri_link_cmd *)desc.data;
++	hclge_cmd_setup_basic_desc(&desc, cmd, true);
++	map->qs_id = cpu_to_le16(qset_id);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret)
++		goto err_tm_qset_cmd_send;
++
++	pos += scnprintf(buf + pos, len - pos, "QS map pri id: %u\n",
++			 map->priority);
++	pos += scnprintf(buf + pos, len - pos, "QS map link_vld: %u\n",
++			 map->link_vld);
++
++	cmd = HCLGE_OPC_TM_QS_SCH_MODE_CFG;
++	hclge_cmd_setup_basic_desc(&desc, cmd, true);
++	qs_sch_mode = (struct hclge_qs_sch_mode_cfg_cmd *)desc.data;
++	qs_sch_mode->qs_id = qset_id;
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret)
++		goto err_tm_qset_cmd_send;
++
++	pos += scnprintf(buf + pos, len - pos, "QS schedule mode: %s\n",
++			 (qs_sch_mode->sch_mode & HCLGE_TM_TX_SCHD_DWRR_MSK) ?
++			 "dwrr" : "sp");
++
++	cmd = HCLGE_OPC_TM_QS_WEIGHT;
++	hclge_cmd_setup_basic_desc(&desc, cmd, true);
++	qs_weight = (struct hclge_qs_weight_cmd *)desc.data;
++	qs_weight->qs_id = cpu_to_le16(qset_id);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret)
++		goto err_tm_qset_cmd_send;
++
++	pos += scnprintf(buf + pos, len - pos, "QS dwrr: %u\n",
++			 qs_weight->dwrr);
++
++	return;
++
++err_tm_qset_cmd_send:
++	dev_err(&hdev->pdev->dev, "dump tm qset fail(0x%x), ret=%d\n",
++		cmd, ret);
++}
++
+ static void hclge_dbg_dump_qos_pause_cfg(struct hclge_dev *hdev)
+ {
+ 	struct hclge_cfg_pause_param_cmd *pause_param;
+@@ -1555,3 +1772,36 @@ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf)
+ 
+ 	return 0;
+ }
++
++int hclge_dbg_read_cmd_tm(struct hnae3_handle *handle, const char *cmd_buf,
++			  char *buf, int len)
++{
++#define DUMP_TM_NODE	"dump nodes"
++#define DUMP_TM_PRI	"dump priority"
++#define DUMP_TM_QSET	"dump qset"
++
++	struct hclge_vport *vport = hclge_get_vport(handle);
++	struct hclge_dev *hdev = vport->back;
++
++	if (strncmp(cmd_buf, DUMP_TM_NODE, strlen(DUMP_TM_NODE)) == 0)
++		hclge_dbg_dump_tm_nodes(hdev, buf, len);
++	else if (strncmp(cmd_buf, DUMP_TM_PRI, strlen(DUMP_TM_PRI)) == 0)
++		hclge_dbg_dump_tm_pri(hdev, &cmd_buf[sizeof(DUMP_TM_PRI)],
++				      buf, len);
++	else if (strncmp(cmd_buf, DUMP_TM_QSET, strlen(DUMP_TM_QSET)) == 0)
++		hclge_dbg_dump_tm_qset(hdev, &cmd_buf[sizeof(DUMP_TM_QSET)],
++				       buf, len);
++	else
++		return -EINVAL;
++
++	return 0;
++}
++
++int hclge_dbg_read_cmd(struct hnae3_handle *handle, const char *cmd_buf,
++		       char *buf, int len)
++{
++	if (handle->dbgfs_type == HNAE3_DBG_MODULE_TYPE_TM)
++		return hclge_dbg_read_cmd_tm(handle, cmd_buf, buf, len);
++
++	return -EINVAL;
++}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 1f02640..4b273e4 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -11408,6 +11408,7 @@ static const struct hnae3_ae_ops hclge_ops = {
+ 	.enable_fd = hclge_enable_fd,
+ 	.add_arfs_entry = hclge_add_fd_entry_by_arfs,
+ 	.dbg_run_cmd = hclge_dbg_run_cmd,
++	.dbg_read_cmd = hclge_dbg_read_cmd,
+ 	.handle_hw_ras_error = hclge_handle_hw_ras_error,
+ 	.get_hw_reset_stat = hclge_get_hw_reset_stat,
+ 	.ae_dev_resetting = hclge_ae_dev_resetting,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 64e6afd..fc7ab27 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -985,6 +985,8 @@ int hclge_vport_start(struct hclge_vport *vport);
+ void hclge_vport_stop(struct hclge_vport *vport);
+ int hclge_set_vport_mtu(struct hclge_vport *vport, int new_mtu);
+ int hclge_dbg_run_cmd(struct hnae3_handle *handle, const char *cmd_buf);
++int hclge_dbg_read_cmd(struct hnae3_handle *handle, const char *cmd_buf,
++		       char *buf, int len);
+ u16 hclge_covert_handle_qid_global(struct hnae3_handle *handle, u16 queue_id);
+ int hclge_notify_client(struct hclge_dev *hdev,
+ 			enum hnae3_reset_notify_type type);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+index bb2a2d8..898aa14 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+@@ -59,6 +59,18 @@ struct hclge_priority_weight_cmd {
+ 	u8 dwrr;
+ };
+ 
++struct hclge_pri_sch_mode_cfg_cmd {
++	u8 pri_id;
++	u8 rev[3];
++	u8 sch_mode;
++};
++
++struct hclge_qs_sch_mode_cfg_cmd {
++	__le16 qs_id;
++	u8 rev[2];
++	u8 sch_mode;
++};
++
+ struct hclge_qs_weight_cmd {
+ 	__le16 qs_id;
+ 	u8 dwrr;
+@@ -90,6 +102,9 @@ struct hclge_pri_shapping_cmd {
+ 	u8 pri_id;
+ 	u8 rsvd[3];
+ 	__le32 pri_shapping_para;
++	u8 flag;
++	u8 rsvd1[3];
++	__le32 pri_rate;
+ };
+ 
+ struct hclge_pg_shapping_cmd {
+@@ -147,6 +162,17 @@ struct hclge_shaper_ir_para {
+ 	u8 ir_s; /* IR_S parameter of IR shaper */
+ };
+ 
++struct hclge_tm_nodes_cmd {
++	u8 pg_base_id;
++	u8 pri_base_id;
++	__le16 qset_base_id;
++	__le16 queue_base_id;
++	u8 pg_num;
++	u8 pri_num;
++	__le16 qset_num;
++	__le16 queue_num;
++};
++
+ #define hclge_tm_set_field(dest, string, val) \
+ 			   hnae3_set_field((dest), \
+ 			   (HCLGE_TM_SHAP_##string##_MSK), \
+-- 
+2.8.1
+
