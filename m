@@ -2,107 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 994CA2E8155
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 18:02:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43FBD2E815C
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 18:13:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727052AbgLaRBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 12:01:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46424 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726314AbgLaRBW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Dec 2020 12:01:22 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E3D120786;
-        Thu, 31 Dec 2020 17:00:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609434042;
-        bh=2Q5/jyDzLCoOHxjn8Vg8jD4DTmyCYtWu95co3RUHzSw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YBZAjw2BCycDoFvK5sF5nxlRKhMLgEp7rAonCNjbeyllByiPv7bdypip/8XC3rxJ/
-         5+nFJu+TVo9MtyR6vnr5zO0c5iAIb7bUliWZvZcKd0o0MV6IbhkQtr5qMprlYq3mZ2
-         xQPrMD7eJIe9hoUhtGXb6dIwJPshQlh3PTMor9K2ziRgy16fTOft0utAzUSZdEEEeO
-         o3ccxhMAk04H6qTXwptgCRkcvtAZa8laoW1HqZbqDVMIijleWQ08d1qbDa7nzRkRJr
-         HIEwcwHIa7w7Oc0He+polkS4PNgh017AkmJnPyep0K8GqCqBp4Szk0nvMz2v13GcZg
-         h6zuqcPny7SSw==
-Received: by pali.im (Postfix)
-        id C2D5EC35; Thu, 31 Dec 2020 18:00:39 +0100 (CET)
-Date:   Thu, 31 Dec 2020 18:00:39 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] net: sfp: add workaround for Realtek RTL8672 and
- RTL9601C chips
-Message-ID: <20201231170039.zkoa6mij3q3gt7c6@pali>
-References: <20201230154755.14746-1-pali@kernel.org>
- <20201230154755.14746-2-pali@kernel.org>
- <20201230161036.GR1551@shell.armlinux.org.uk>
- <20201230165634.c4ty3mw6djezuyq6@pali>
- <20201230170546.GU1551@shell.armlinux.org.uk>
- <X+y1K21tp01GpvMy@lunn.ch>
- <20201230174307.lvehswvj5q6c6vk3@pali>
- <20201230190958.GW1551@shell.armlinux.org.uk>
- <20201231121410.2xlxtyqjelrlysd2@pali>
- <X+3ume1+wz8HXHEf@lunn.ch>
+        id S1726896AbgLaRLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 12:11:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726314AbgLaRLq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 12:11:46 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA7DC061575
+        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 09:11:05 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id d189so22336666oig.11
+        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 09:11:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=ePcgNf33XFHWON220pJ1/+i4UhOlknm11ciZSbOXD/o=;
+        b=BIkFkinGKVFFYs1tUvA5mngC7aspkyr34YXvywRVOVz3AO4Pkfegnpy0B6ihczoWTQ
+         oHcD+A6N+r5Ym/8v8aORepmVnQeKZrmbphj9Bl4jyeJjMw4hiu1mOjlItdkzz4ow9X0S
+         4TlEQqE9hpT8cfa7nTQFXy7gAkmgxDY60B41J3AnLZfdBrcHCsdRws1IHA1ApvmLQJrG
+         qf1Sy28tKyoUOYdJMbzWiywgY56vFXXcWWou1sNiHoJForpFj66BQ7zb8079VR2yJ0n9
+         PyQ5KHvsA7Ynkcu4G4k6qtry/Hv8Z3NSsCo1qEtmMdddfyM6HC+vk+nielU3pdQREK5O
+         JKmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ePcgNf33XFHWON220pJ1/+i4UhOlknm11ciZSbOXD/o=;
+        b=jckimaAmfGa2HonJ2y0TCmskOog81DkahcAU9YXOmf/5tKJ6m8VyY7Z26FbpFeElOV
+         qGoAoMwH3yUR7iubqqLzPKGg0/Ki0+gk1ScqNjiv7G4GldyY/sDgGp3yEijYCPAf91JY
+         +j99OhJgj0oeojokKOOd76mw35gpc1QOSZvrzjAiFLj6ohPxmIOMvjC79/t0dZaRYRAA
+         R+ET58TIo2u/RH91+wS0PdM4HP7muBXjFoPPaT3rHN+W539FJakF5hLHF3U+jfk9bEvB
+         1yS2LUhaSaidhZUSyDegWiPnlIQSzIUNUvlyPi+CSdRl4pZk3HAm/+zQayedN3Vj7x+B
+         YCaA==
+X-Gm-Message-State: AOAM533nBLvMm7x14C4Jjoyskaa3Vfvdkuz5E0aWfCAnUQGvcSsLjRCv
+        jmjxQRPRa74xebsVdVCFxt0XYMwsPN4=
+X-Google-Smtp-Source: ABdhPJwbz4ayIuV7P0j6dmaNg9tBD4CVtbi7E9nr5Yt3KwUC6dvCNvk4tGoUx9aYHAH0nwMyZNYaRA==
+X-Received: by 2002:aca:3b03:: with SMTP id i3mr8491571oia.170.1609434665450;
+        Thu, 31 Dec 2020 09:11:05 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:98e1:c150:579a:a69c])
+        by smtp.googlemail.com with ESMTPSA id 186sm10560708ood.6.2020.12.31.09.11.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Dec 2020 09:11:04 -0800 (PST)
+Subject: Re: [PATCH iproute2-next 7/9] dcb: Support -n to suppress translation
+ to nice names
+To:     Petr Machata <me@pmachata.org>, netdev@vger.kernel.org,
+        stephen@networkplumber.org
+References: <cover.1608746691.git.me@pmachata.org>
+ <9a23b6698bd8f223f7789149e8196712d5d624ae.1608746691.git.me@pmachata.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <8ae5ec88-937e-2e05-b0f2-a99c72e74a06@gmail.com>
+Date:   Thu, 31 Dec 2020 10:11:03 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <9a23b6698bd8f223f7789149e8196712d5d624ae.1608746691.git.me@pmachata.org>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <X+3ume1+wz8HXHEf@lunn.ch>
-User-Agent: NeoMutt/20180716
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 31 December 2020 16:30:33 Andrew Lunn wrote:
-> On Thu, Dec 31, 2020 at 01:14:10PM +0100, Pali Rohár wrote:
-> > On Wednesday 30 December 2020 19:09:58 Russell King - ARM Linux admin wrote:
-> > > On Wed, Dec 30, 2020 at 06:43:07PM +0100, Pali Rohár wrote:
-> > > > On Wednesday 30 December 2020 18:13:15 Andrew Lunn wrote:
-> > > > > Hi Pali
-> > > > > 
-> > > > > I have to agree with Russell here. I would rather have no diagnostics
-> > > > > than untrustable diagnostics.
-> > > > 
-> > > > Ok!
-> > > > 
-> > > > So should we completely skip hwmon_device_register_with_info() call
-> > > > if (i2c_block_size < 2) ?
-> > > 
-> > > I don't think that alone is sufficient - there's also the matter of
-> > > ethtool -m which will dump that information as well, and we don't want
-> > > to offer it to userspace in an unreliable form.
-> > 
-> > Any idea/preference how to disable access to these registers?
-> 
-> Page A0, byte 92:
-> 
-> "Diagnostic Monitoring Type" is a 1 byte field with 8 single bit
-> indicators describing how diagnostic monitoring is implemented in the
-> particular transceiver.
-> 
-> Note that if bit 6, address 92 is set indicating that digital
-> diagnostic monitoring has been implemented, received power
-> monitoring, transmitted power monitoring, bias current monitoring,
-> supply voltage monitoring and temperature monitoring must all be
-> implemented. Additionally, alarm and warning thresholds must be
-> written as specified in this document at locations 00 to 55 on
-> two-wire serial address 1010001X (A2h) (see Table 8-5).
-> 
-> Unfortunately, we cannot simply set sfp->id.ext.diagmon to false,
-> because it can also be used to indicate power, software reading of
-> TX_DISABLE, LOS, etc. These are all single bytes, so could be returned
-> correctly, assuming they have been implemented according to the spec.
-> 
-> Looking at sfp_module_info(), adding a check for i2c_block_size < 2
-> when determining what length to return. ethtool should do the right
-> thing, know that the second page has not been returned to user space.
+On 12/23/20 11:25 AM, Petr Machata wrote:
+> diff --git a/dcb/dcb.c b/dcb/dcb.c
+> index a59b63ac9159..e6cda7337924 100644
+> --- a/dcb/dcb.c
+> +++ b/dcb/dcb.c
+> @@ -467,7 +467,8 @@ static void dcb_help(void)
+>  		"       dcb [ -f | --force ] { -b | --batch } filename [ -N | --Netns ] netnsname\n"
+>  		"where  OBJECT := { buffer | ets | maxrate | pfc }\n"
+>  		"       OPTIONS := [ -V | --Version | -i | --iec | -j | --json\n"
+> -		"                  | -p | --pretty | -s | --statistics | -v | --verbose]\n");
+> +		"                  | -n | --no-nice-names | -p | --pretty\n"
 
-But if we limit length of eeprom then userspace would not be able to
-access those TX_DISABLE, LOS and other bits from byte 110 at address A2.
 
-Problematic two-byte values are in byte range 96-109 at address A2.
-Therefore before byte 110.
+iproute2 commands really should have a consistent user interface.
+Unfortunately -N and -n are inconsistent with the newer commands like
+devlink. dcb has not been released yet so time to fix this.
+
+devlink is the only one using the horribly named 'no-nice-names', and we
+should avoid propagating that to dcb. At a minimum it should be
+'numeric' which is consistent with the others.
+
+My preference is also to have dcb follow ip and tc (vs ss) with '-n' to
+mean -netns and -N' to mean numeric.
+
