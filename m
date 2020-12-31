@@ -2,180 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A7F2E7E7D
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 07:52:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D0542E7E81
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 07:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726418AbgLaGvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 01:51:48 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:37826 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726037AbgLaGvs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 01:51:48 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 0BV6XrpA003262;
-        Wed, 30 Dec 2020 22:50:53 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=wzcYJYCjSqJ5c/NvdCwz1lrGB66U2mJZrRdOCUf1Q1g=;
- b=T9l18oToOPsdmO1I/4Z6RuuevEhkrCtZUYkEv5gptV0E1EQjYIH8pWKlWTR5qc+e1niY
- WziM2UaQ8hu4cOkZVq+06K7w+559AXQRvnQgie89Utpl6PrzQNHU+85G4ZHZ0fA7ow1P
- YYBG45XDT5d9gfFVYNPXaKQrWIP36OpLxT0= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 35p1qts2vs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 30 Dec 2020 22:50:53 -0800
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 30 Dec 2020 22:50:52 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ezsma3ZTBYYJKcEQno5JatZtqnTnAw2F2tYVai0FmKNH734tbzyHAeCKeYhCv9xTvF7bcfc/WoYqvpVrbzEi9Sa4uZCBt2QdMk8/SdXj71r1BluLbR27SVv7PKdsLsMHQe6hlWGQSXTLvTrvMxfMAjdXssZRs3jLhYNrL9wM2+Z2G6CnnwPsNE84zB8PIZNDQNlbuCQZThChAs2ae+ylNCZpSxdtFqgkPqaAH8XBLODMdJMfB1pLq07Tsu6qpytb+hk7uJ17nLmphUMzD/TBOOQ1WW+BT8gntE7EaV+/J7/s18AYOGpnUvBaG9plImOc47h641rUQa/fab/h15yyXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wzcYJYCjSqJ5c/NvdCwz1lrGB66U2mJZrRdOCUf1Q1g=;
- b=F+gGyUZ28DV6FKP9JdtwzlYXGGcef99Kflalj04lGsRTukZz+CgWvDzrQ9+RdBTB8JhiOju/cMb+p5WyjDZ+BtBNZQu+q8BEkzDGnJ0BGKp79pKE05DVGHYeGM6L5y8IRXQ5tLdFA+j+ALyaI6Krqi+tWu/nCQNYf+3evTuVDlDWQRhdMR8DQKFFBDlqNzo0xzUg4wtQsVCfGphIQ15YEtYMSU8t2bJnHpMoDGXOFKq5in9ExifvIFpGopIpc8QisRHYm5rPAsBSfv8QUcpQ9V2k6ZWXfy9SCBL+oLJCoZ/7sqzN1UlnjdZaAWZeTRXpV6s4MqG05jKI3wlcK+xX1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wzcYJYCjSqJ5c/NvdCwz1lrGB66U2mJZrRdOCUf1Q1g=;
- b=LjPbdWJD88/VNQ8ZzsGNRk8rsO0eIklj1wpUIqcb+L0TXxwR7WZEblzNy3SuipyDoa68VZ39JpFVFPVd8P2Wo7bxn2COTCj8xGAxwxBVTIEorIlyznRwYncrntNZvH1jWBE8QiFtr7gd9MEZ1hlTXELqMupQnEkiGoZx6r1WaQc=
-Authentication-Results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2488.namprd15.prod.outlook.com (2603:10b6:a02:90::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3700.27; Thu, 31 Dec
- 2020 06:50:50 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::217e:885b:1cef:e1f7]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::217e:885b:1cef:e1f7%7]) with mapi id 15.20.3721.021; Thu, 31 Dec 2020
- 06:50:50 +0000
-Date:   Wed, 30 Dec 2020 22:50:44 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <sdf@google.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next 1/2] bpf: try to avoid kzalloc in
- cgroup/{s,g}etsockopt
-Message-ID: <20201231065038.k637ewwyqclq2nxh@kafai-mbp.dhcp.thefacebook.com>
-References: <20201217172324.2121488-1-sdf@google.com>
- <20201217172324.2121488-2-sdf@google.com>
- <20201222191107.bbg6yafayxp4jx5i@kafai-mbp.dhcp.thefacebook.com>
- <X+K07Rh+2qECwxJp@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X+K07Rh+2qECwxJp@google.com>
-X-Originating-IP: [2620:10d:c090:400::5:d5ef]
-X-ClientProxiedBy: CO2PR04CA0179.namprd04.prod.outlook.com
- (2603:10b6:104:4::33) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        id S1726261AbgLaGxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 01:53:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726155AbgLaGxA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 01:53:00 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC13AC061573
+        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 22:52:19 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id u19so17444610edx.2
+        for <netdev@vger.kernel.org>; Wed, 30 Dec 2020 22:52:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sznl824M0Nw944kUYPe3flzJfHkuN/dATIsqpEJOt8U=;
+        b=fAtjFSBT2iNAerjoMyuQzTVXAOAqIfrGUGDUV7KfRgtycTsGQY6YCDK+HBxbKlKaS8
+         a4eY72W/fsNko+SzxN5Y3nkLdj+3Zqcb4aQtYUHnHpmVSksNlG6+TqddBy+szOBEsLyU
+         XRDkue12HliuHSjfXs9R92c+8FLGgJFOFOSd8TTO08AWPkjAT1jOKpMFIpRZ1lOHzfVS
+         Kz6tYAbl01rno/ojdtCjoI4S4gSX7pCIRIl85fxRJXgLmFWzzKX7KMrn2y7Gi3X32Z7r
+         WypKo6V1g2qeiWiqoEGMunOWRPhez6ZhcOIhijsgsfiGj/BxFmWMC8qHX5CH6VtYaFEn
+         Jwyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sznl824M0Nw944kUYPe3flzJfHkuN/dATIsqpEJOt8U=;
+        b=Smk9nFtcmgR6BtuRGilRTNq+v/W/SU106JDIU1i79yGB+61whf1/J6Qg6qN3jlYTaZ
+         vKbPUtnSKZxX1CaXkLdFNnGgJtq8Srs6Q3Xdhq8noOZTUT2odPawV3aYzV0uWp++gVah
+         qrrMeJnmfZ1GRpuCBZPE7qkBOiNGZPotNQiMsxOErhYrnnNK2X9I3T1JIdN6Of7GKZSJ
+         jzyLmzIQT9yIEcqTte5O8wz/6clzP7Wxz93f1KsA9r3EMGCAx2IEg2yXC8ySVGn2gKY4
+         9AqG7BXZU6u8pbCY5Tj/Iqpoyhe/CvoiuBi+Lts69zLy1YSaWrIpe5MLh+LL8op7nAeC
+         qVUg==
+X-Gm-Message-State: AOAM533DCDrLAv5ATZ07fYA32M4QQ19yongp7mFXFOw592aNtEQ/XpQ5
+        BZoQ4nixJ9y12+GZLj5NBPppOQaUwPxE8dTleRR0
+X-Google-Smtp-Source: ABdhPJyxyzPhSMno3pdSEfff92sRiyV1A3LMNVnusj8BACRM6YWwv2wiuMeIm+NU0ippz3o1f7VPfNkwwBMzkvAXZro=
+X-Received: by 2002:a05:6402:407:: with SMTP id q7mr53770192edv.312.1609397538325;
+ Wed, 30 Dec 2020 22:52:18 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:d5ef) by CO2PR04CA0179.namprd04.prod.outlook.com (2603:10b6:104:4::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.20 via Frontend Transport; Thu, 31 Dec 2020 06:50:49 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4c54ab3a-77b6-42be-887c-08d8ad586924
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2488:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB24887AE4559B0384F39D3A57D5D60@BYAPR15MB2488.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dVrFc/mc2lLRFKFi88HT6dgMe8Dm46Xpq6Vj8E/cSt+pyGx+byTbG/woAfnQXXnewRfUq3Wkmjy4lzKsv43O0FBeY9Xr3NHWAcGBYbxGq4uOLRVsjYUFL5bokeA1zhF/vl9V7BnJowanQ6y1pis6K6xazllpv6tZ6q/WSPQFXXrutMfjVrD+N0xs2RB/HjpTnI3rp2aqbWkfnmY549STYJgLkgk4z37n2+YvK8cCd2E0/G6RZAoNbunQO4x0pLQtuEW7zti5nU4Mf1/M5Yb1pcmL7wekjj4yFJJA4lKSVwVSKGsWSZN7l6WyaIkDPdpJogtdz9BnY7VMM4Md1NZ5YrKEUErnE8IvaNREqS9+65dY64QqN2IRBvhEbVfh9q+wd2iP7fXTnmkL00V1I4d+Gg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(396003)(136003)(346002)(39860400002)(86362001)(66476007)(2906002)(4326008)(8676002)(66946007)(55016002)(8936002)(6916009)(5660300002)(1076003)(316002)(6506007)(6666004)(7696005)(478600001)(9686003)(83380400001)(66556008)(52116002)(16526019)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?3qJ23X4q7MHds6/h25qeeYsM+by6mJxbMf7vSfmSb/ELaeif8RLt88LWmK1J?=
- =?us-ascii?Q?IqsZCFZjJ3dzEdLquy4m4ZTv70C6dGyBgCZ29pzV6QNNZr5NT788/ecfDRC8?=
- =?us-ascii?Q?etwhpBGLTgYNe7eyS2E8jw4xbgSMXN/khTVoE//6zBqM/WzOcMJU/hQnDlay?=
- =?us-ascii?Q?T2ZtNKMgoyZVktaaYnERyNJAu26P4CccYIjjwRRTRgkVofQYbLEirGuHk2jF?=
- =?us-ascii?Q?8qgnqleVp2KYusOAjvoLeEzDrCL3hTfLxXW741O+mDiH3BOAMWjZ4w5J+I2D?=
- =?us-ascii?Q?tElw+CDDYqjigcGBsRPnymev680EUIMQI6dIPONnURlgGtlgFcgntELoOMaN?=
- =?us-ascii?Q?pS0CXr5nRfDcP1VQMKunp/IuT0cYxTUhH7XM7Bx1xBph7v3ZNL1VCqpM4+0/?=
- =?us-ascii?Q?K3M93O10bZ1IzJFeDMQMMN2LunFvMRXv1fDMj7dDpvAifnKIpesSRtoxu5m8?=
- =?us-ascii?Q?8Tc/3PKUzvam7DndbtgsPS7IuazHHZhHFzf0echTW+m4tUtv48xLgJx8WEkV?=
- =?us-ascii?Q?+UOIH9mG8wTpEt6QB5DmvVHFE2G2xkOGttf0DBaLZTvG0HzlQLjcv/IwmTY8?=
- =?us-ascii?Q?d9ZeRGd9EmCzEx2EP3IA35bBlWTATc59+JjqGHmWZ+TITL3n0Uh30h6i94hp?=
- =?us-ascii?Q?9FcSaFmPfIWcpU41xBda62IOvKbzRo3kL/MRq0JkResTDQVGrMuVALDO3PEB?=
- =?us-ascii?Q?UdxLA+wS19v57hco9p7fG4KJdGbja50xbOm027toPZsm/oM6L/C7yvKEXJqR?=
- =?us-ascii?Q?ykyy5NLSKgRq/2kkQKOeZUTpbD9bIAb2y1mhe3XrkjYFq86VjJ2Wnw1zCIYN?=
- =?us-ascii?Q?9WcmOeDlyommwRyd64kMnU67Ez5W2CYoDAgzY5bOU8tRiKysjYuwfXXrQSA8?=
- =?us-ascii?Q?ikDgwCSe435Hh+9yDYZK5GNTGhlkDw4YyM+z162Sw38b956jkI4Nc4Cc7X+l?=
- =?us-ascii?Q?jLQBtTzVBVm7qOJ1VeKVGtig6lfDB8X+Q9/CcYqqbktbvCtg3qcvAlgREXSM?=
- =?us-ascii?Q?AwpNbIAmK3gpT9mwUkwEBg6CaQ=3D=3D?=
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Dec 2020 06:50:50.4485
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c54ab3a-77b6-42be-887c-08d8ad586924
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7XXP4JgcmB7K/Gjo42LzofxNQAYimVaoGd8BL3q/XhHhFmkSF8DIMQeNN8Bmqej6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2488
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-31_02:2020-12-30,2020-12-31 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
- mlxlogscore=999 adultscore=0 malwarescore=0 impostorscore=0 suspectscore=0
- spamscore=0 clxscore=1015 priorityscore=1501 lowpriorityscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012310036
-X-FB-Internal: deliver
+References: <20201222145221.711-1-xieyongji@bytedance.com> <CACycT3s=m=PQb5WFoMGhz8TNGme4+=rmbbBTtrugF9ZmNnWxEw@mail.gmail.com>
+ <0e6faf9c-117a-e23c-8d6d-488d0ec37412@redhat.com> <CACycT3uwXBYvRbKDWdN3oCekv+o6_Lc=-KTrxejD=fr-zgibGw@mail.gmail.com>
+ <2b24398c-e6d9-14ec-2c0d-c303d528e377@redhat.com> <CACycT3uDV43ecScrMh1QVpStuwDETHykJzzY=pkmZjP2Dd2kvg@mail.gmail.com>
+ <e77c97c5-6bdc-cdd0-62c0-6ff75f6dbdff@redhat.com> <CACycT3soQoX5avZiFBLEGBuJpdni6-UxdhAPGpWHBWVf+dEySg@mail.gmail.com>
+ <1356137727.40748805.1609233068675.JavaMail.zimbra@redhat.com>
+ <CACycT3sg61yRdupnD+jQEkWKsVEvMWfhkJ=5z_bYZLxCibDiHw@mail.gmail.com>
+ <b1aef426-29c7-7244-5fc9-56d52e86abb4@redhat.com> <CACycT3vZ7V5WWhCFLBK6FuvVNmPmMj_yc=COOB4cjjC13yHUwg@mail.gmail.com>
+ <3fc6a132-9fc2-c4e2-7fb1-b5a8bfb771fa@redhat.com> <CACycT3tD3zyvV6Zy5NT4x=02hBgrRGq35xeTsRXXx-_wPGJXpQ@mail.gmail.com>
+ <e0e693c3-1871-a410-c3d5-964518ec939a@redhat.com> <CACycT3vwMU5R7N8dZFBYX4-bxe2YT7EfK_M_jEkH8wzfH_GkBw@mail.gmail.com>
+ <0885385c-ae46-158d-eabf-433ef8ecf27f@redhat.com>
+In-Reply-To: <0885385c-ae46-158d-eabf-433ef8ecf27f@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 31 Dec 2020 14:52:07 +0800
+Message-ID: <CACycT3tc2P63k6J9ZkWTpPvHk_H8zUq0_Q6WOqYX_dSigUAnzA@mail.gmail.com>
+Subject: Re: Re: [RFC v2 09/13] vduse: Add support for processing vhost iotlb message
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
+        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 22, 2020 at 07:09:33PM -0800, sdf@google.com wrote:
-> On 12/22, Martin KaFai Lau wrote:
-> > On Thu, Dec 17, 2020 at 09:23:23AM -0800, Stanislav Fomichev wrote:
-> > > When we attach a bpf program to cgroup/getsockopt any other getsockopt()
-> > > syscall starts incurring kzalloc/kfree cost. While, in general, it's
-> > > not an issue, sometimes it is, like in the case of TCP_ZEROCOPY_RECEIVE.
-> > > TCP_ZEROCOPY_RECEIVE (ab)uses getsockopt system call to implement
-> > > fastpath for incoming TCP, we don't want to have extra allocations in
-> > > there.
-> > >
-> > > Let add a small buffer on the stack and use it for small (majority)
-> > > {s,g}etsockopt values. I've started with 128 bytes to cover
-> > > the options we care about (TCP_ZEROCOPY_RECEIVE which is 32 bytes
-> > > currently, with some planned extension to 64 + some headroom
-> > > for the future).
-> > >
-> > > It seems natural to do the same for setsockopt, but it's a bit more
-> > > involved when the BPF program modifies the data (where we have to
-> > > kmalloc). The assumption is that for the majority of setsockopt
-> > > calls (which are doing pure BPF options or apply policy) this
-> > > will bring some benefit as well.
-> > >
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  include/linux/filter.h |  3 +++
-> > >  kernel/bpf/cgroup.c    | 41 +++++++++++++++++++++++++++++++++++++++--
-> > >  2 files changed, 42 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/include/linux/filter.h b/include/linux/filter.h
-> > > index 29c27656165b..362eb0d7af5d 100644
-> > > --- a/include/linux/filter.h
-> > > +++ b/include/linux/filter.h
-> > > @@ -1281,6 +1281,8 @@ struct bpf_sysctl_kern {
-> > >  	u64 tmp_reg;
-> > >  };
-> > >
-> > > +#define BPF_SOCKOPT_KERN_BUF_SIZE	128
-> > Since these 128 bytes (which then needs to be zero-ed) is modeled after
-> > the TCP_ZEROCOPY_RECEIVE use case, it will be useful to explain
-> > a use case on how the bpf prog will interact with
-> > getsockopt(TCP_ZEROCOPY_RECEIVE).
-> The only thing I would expect BPF program can do is to return EPERM
-> to cause application to fallback to non-zerocopy path (and, mostly,
-> bypass). I don't think BPF can meaningfully mangle the data in struct
-> tcp_zerocopy_receive.
-> 
-> Does it address your concern? Or do you want me to add a comment or
-> something?
-I was asking because, while 128 byte may work best for TCP_ZEROCOPY_RECEIVCE,
-it is many unnecessary byte-zeroings for most options though.
-Hence, I am interested to see if there is a practical bpf
-use case for TCP_ZEROCOPY_RECEIVE.
+On Thu, Dec 31, 2020 at 1:50 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2020/12/31 =E4=B8=8B=E5=8D=881:15, Yongji Xie wrote:
+> > On Thu, Dec 31, 2020 at 10:49 AM Jason Wang <jasowang@redhat.com> wrote=
+:
+> >>
+> >> On 2020/12/30 =E4=B8=8B=E5=8D=886:12, Yongji Xie wrote:
+> >>> On Wed, Dec 30, 2020 at 4:41 PM Jason Wang <jasowang@redhat.com> wrot=
+e:
+> >>>> On 2020/12/30 =E4=B8=8B=E5=8D=883:09, Yongji Xie wrote:
+> >>>>> On Wed, Dec 30, 2020 at 2:11 PM Jason Wang <jasowang@redhat.com> wr=
+ote:
+> >>>>>> On 2020/12/29 =E4=B8=8B=E5=8D=886:26, Yongji Xie wrote:
+> >>>>>>> On Tue, Dec 29, 2020 at 5:11 PM Jason Wang <jasowang@redhat.com> =
+wrote:
+> >>>>>>>> ----- Original Message -----
+> >>>>>>>>> On Mon, Dec 28, 2020 at 4:43 PM Jason Wang <jasowang@redhat.com=
+> wrote:
+> >>>>>>>>>> On 2020/12/28 =E4=B8=8B=E5=8D=884:14, Yongji Xie wrote:
+> >>>>>>>>>>>> I see. So all the above two questions are because VHOST_IOTL=
+B_INVALIDATE
+> >>>>>>>>>>>> is expected to be synchronous. This need to be solved by twe=
+aking the
+> >>>>>>>>>>>> current VDUSE API or we can re-visit to go with descriptors =
+relaying
+> >>>>>>>>>>>> first.
+> >>>>>>>>>>>>
+> >>>>>>>>>>> Actually all vdpa related operations are synchronous in curre=
+nt
+> >>>>>>>>>>> implementation. The ops.set_map/dma_map/dma_unmap should not =
+return
+> >>>>>>>>>>> until the VDUSE_UPDATE_IOTLB/VDUSE_INVALIDATE_IOTLB message i=
+s replied
+> >>>>>>>>>>> by userspace. Could it solve this problem?
+> >>>>>>>>>>       I was thinking whether or not we need to generate IOTLB_=
+INVALIDATE
+> >>>>>>>>>> message to VDUSE during dma_unmap (vduse_dev_unmap_page).
+> >>>>>>>>>>
+> >>>>>>>>>> If we don't, we're probably fine.
+> >>>>>>>>>>
+> >>>>>>>>> It seems not feasible. This message will be also used in the
+> >>>>>>>>> virtio-vdpa case to notify userspace to unmap some pages during
+> >>>>>>>>> consistent dma unmapping. Maybe we can document it to make sure=
+ the
+> >>>>>>>>> users can handle the message correctly.
+> >>>>>>>> Just to make sure I understand your point.
+> >>>>>>>>
+> >>>>>>>> Do you mean you plan to notify the unmap of 1) streaming DMA or =
+2)
+> >>>>>>>> coherent DMA?
+> >>>>>>>>
+> >>>>>>>> For 1) you probably need a workqueue to do that since dma unmap =
+can
+> >>>>>>>> be done in irq or bh context. And if usrspace does't do the unma=
+p, it
+> >>>>>>>> can still access the bounce buffer (if you don't zap pte)?
+> >>>>>>>>
+> >>>>>>> I plan to do it in the coherent DMA case.
+> >>>>>> Any reason for treating coherent DMA differently?
+> >>>>>>
+> >>>>> Now the memory of the bounce buffer is allocated page by page in th=
+e
+> >>>>> page fault handler. So it can't be used in coherent DMA mapping cas=
+e
+> >>>>> which needs some memory with contiguous virtual addresses. I can us=
+e
+> >>>>> vmalloc() to do allocation for the bounce buffer instead. But it mi=
+ght
+> >>>>> cause some memory waste. Any suggestion?
+> >>>> I may miss something. But I don't see a relationship between the
+> >>>> IOTLB_UNMAP and vmalloc().
+> >>>>
+> >>> In the vmalloc() case, the coherent DMA page will be taken from the
+> >>> memory allocated by vmalloc(). So IOTLB_UNMAP is not needed anymore
+> >>> during coherent DMA unmapping because those vmalloc'ed memory which
+> >>> has been mapped into userspace address space during initialization ca=
+n
+> >>> be reused. And userspace should not unmap the region until we destroy
+> >>> the device.
+> >>
+> >> Just to make sure I understand. My understanding is that IOTLB_UNMAP i=
+s
+> >> only needed when there's a change the mapping from IOVA to page.
+> >>
+> > Yes, that's true.
+> >
+> >> So if we stick to the mapping, e.g during dma_unmap, we just put IOVA =
+to
+> >> free list to be used by the next IOVA allocating. IOTLB_UNMAP could be
+> >> avoided.
+> >>
+> >> So we are not limited by how the pages are actually allocated?
+> >>
+> > In coherent DMA cases, we need to return some memory with contiguous
+> > kernel virtual addresses. That is the reason why we need vmalloc()
+> > here. If we allocate the memory page by page, the corresponding kernel
+> > virtual addresses in a contiguous IOVA range might not be contiguous.
+>
+>
+> Yes, but we can do that as what has been done in the series
+> (alloc_pages_exact()). Or do you mean it would be a little bit hard to
+> recycle IOVA/pages here?
+>
+
+Yes, it might be hard to reuse the memory. For example, we firstly
+allocate 1 IOVA/page during dma_map, then the IOVA is freed during
+dma_unmap. Actually we can't reuse this single page if we need a
+two-pages area in the next IOVA allocating. So the best way is using
+IOTLB_UNMAP to free this single page during dma_unmap too.
+
+Thanks,
+Yongji
