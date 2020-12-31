@@ -2,179 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59FFE2E7F38
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 11:10:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 598912E7FD4
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 13:17:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbgLaKJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 05:09:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51486 "EHLO mail.kernel.org"
+        id S1726540AbgLaMOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 07:14:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60744 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726155AbgLaKJs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Dec 2020 05:09:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 58F4A207A3;
-        Thu, 31 Dec 2020 10:09:07 +0000 (UTC)
+        id S1726071AbgLaMOy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Dec 2020 07:14:54 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0BE93223DB;
+        Thu, 31 Dec 2020 12:14:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609409347;
-        bh=d7t6jUuuirI4aZvjNFGRK+ftezBCarKE5fHOLdqpTcI=;
+        s=k20201202; t=1609416853;
+        bh=RtWoLeGbWbintP+acf+80IAQXZOGQZCtPB+lC1usOpg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q5lnce7m3LK9x6Tbzp3a3PzmmpN9FUxvSNv7PYPQVCUtHqvVkP+GEgxdiNyVE3zWI
-         fRILM57WCz9PBAcabFcvUaWmHul0ksNf+3rmhVd0xFbJkc/pvzXxtJCdkmSOdVCvL7
-         xQUHgCtuA1ew2D/nPk78WOmwez7Se0o+RAZiycdSHTFn47XpolP76ybRjnbV0OWLCd
-         n3uwugb4cGy/Et4JsCmARIP3x3YH8lqDyLbu2wBfY1yAcz4Pm3iNnlFUowFZVtnzPO
-         eDJFzKYYDowvO9P8IGQwtZwaTBAgso3cx4V1Nes/K14FrfvOHZT0Zz2cB2OKbyoGSV
-         yLOd60RWO/9dA==
-Date:   Thu, 31 Dec 2020 11:09:18 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] mt76: Fix queue ID variable types after mcu queue split
-Message-ID: <20201231100918.GA1819773@computer-5.station>
-References: <20201229211548.1348077-1-natechancellor@gmail.com>
+        b=Vwo1zm26XZukJb37NnoTPdx8DpC/QKyZn6CzWUSMmvLk+5vrMlv+3SCLs0rsm+fWE
+         q+NbBpb1E4+dUtMK1C6ubN/768Lr4QMqOdbc5LAp6c41x10BD4GYodoKjLQkfFFD1g
+         8J3UYk6gggX7DyuFNnFhTr/2nc+ELLGqSomRntEPr3CNciOBi1jDfOUkPea+ett+7n
+         cKQ1293E8ejISNuum9wHvPxqB1pEQxcLAIR68GeJnBCY2uDLVc571YkyYCmlIdujIY
+         hObytOHQnCeHyMqLiz37CzwFuM7EKC2eckwY28cIN474+kij78WpYaVh2JdUopljAd
+         qF/QV6KggnAMA==
+Received: by pali.im (Postfix)
+        id 722A8C35; Thu, 31 Dec 2020 13:14:10 +0100 (CET)
+Date:   Thu, 31 Dec 2020 13:14:10 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] net: sfp: add workaround for Realtek RTL8672 and
+ RTL9601C chips
+Message-ID: <20201231121410.2xlxtyqjelrlysd2@pali>
+References: <20201230154755.14746-1-pali@kernel.org>
+ <20201230154755.14746-2-pali@kernel.org>
+ <20201230161036.GR1551@shell.armlinux.org.uk>
+ <20201230165634.c4ty3mw6djezuyq6@pali>
+ <20201230170546.GU1551@shell.armlinux.org.uk>
+ <X+y1K21tp01GpvMy@lunn.ch>
+ <20201230174307.lvehswvj5q6c6vk3@pali>
+ <20201230190958.GW1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="mYCpIKhGyMATD0i+"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20201229211548.1348077-1-natechancellor@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201230190958.GW1551@shell.armlinux.org.uk>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wednesday 30 December 2020 19:09:58 Russell King - ARM Linux admin wrote:
+> On Wed, Dec 30, 2020 at 06:43:07PM +0100, Pali Rohár wrote:
+> > On Wednesday 30 December 2020 18:13:15 Andrew Lunn wrote:
+> > > Hi Pali
+> > > 
+> > > I have to agree with Russell here. I would rather have no diagnostics
+> > > than untrustable diagnostics.
+> > 
+> > Ok!
+> > 
+> > So should we completely skip hwmon_device_register_with_info() call
+> > if (i2c_block_size < 2) ?
+> 
+> I don't think that alone is sufficient - there's also the matter of
+> ethtool -m which will dump that information as well, and we don't want
+> to offer it to userspace in an unreliable form.
 
---mYCpIKhGyMATD0i+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Any idea/preference how to disable access to these registers?
 
-> Clang warns in both mt7615 and mt7915:
->=20
-> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:271:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 txq =3D MT_MCUQ_FWDL;
->                     ~ ^~~~~~~~~~~~
-> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:278:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 txq =3D MT_MCUQ_WA;
->                     ~ ^~~~~~~~~~
-> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:282:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 txq =3D MT_MCUQ_WM;
->                     ~ ^~~~~~~~~~
-> 3 warnings generated.
->=20
-> drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:238:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 qid =3D MT_MCUQ_WM;
->                     ~ ^~~~~~~~~~
-> drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:240:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 qid =3D MT_MCUQ_FWDL;
->                     ~ ^~~~~~~~~~~~
-> 2 warnings generated.
->=20
-> Use the proper type for the queue ID variables to fix these warnings.
-> Additionally, rename the txq variable in mt7915_mcu_send_message to be
-> more neutral like mt7615_mcu_send_message.
->=20
-> Fixes: e637763b606b ("mt76: move mcu queues to mt76_dev q_mcu array")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1229
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> For reference, here is what SFF-8472 which defines the diagnostics, says
+> about this:
+> 
+>   To guarantee coherency of the diagnostic monitoring data, the host is
+>   required to retrieve any multi-byte fields from the diagnostic
+>   monitoring data structure (IE: Rx Power MSB - byte 104 in A2h, Rx Power
+>   LSB - byte 105 in A2h) by the use of a single two-byte read sequence
+>   across the two-wire interface interface.
+> 
+>   The transceiver is required to ensure that any multi-byte fields which
+>   are updated with diagnostic monitoring data (e.g. Rx Power MSB - byte
+>   104 in A2h, Rx Power LSB - byte 105 in A2h) must have this update done
+>   in a fashion which guarantees coherency and consistency of the data. In
+>   other words, the update of a multi-byte field by the transceiver must
+>   not occur such that a partially updated multi-byte field can be
+>   transferred to the host. Also, the transceiver shall not update a
+>   multi-byte field within the structure during the transfer of that
+>   multi-byte field to the host, such that partially updated data would be
+>   transferred to the host.
+> 
+> The first paragraph is extremely definitive in how these fields shall
+> be read atomically - by a _single_ two-byte read sequence. From what
+> you are telling us, these modules do not support that. Therefore, by
+> definition, they do *not* support proper and reliable reporting of
+> diagnostic data, and are non-conformant with the SFP MSAs.
+> 
+> So, they are basically broken, and the diagnostics can't be used to
+> retrieve data that can be said to be useful.
 
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+I agree they are broken. We really should disable access to those 16bit
+registers.
 
-> ---
->  drivers/net/wireless/mediatek/mt76/mt7615/mcu.c |  2 +-
->  drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 10 +++++-----
->  2 files changed, 6 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/ne=
-t/wireless/mediatek/mt76/mt7615/mcu.c
-> index a44b7766dec6..c13547841a4e 100644
-> --- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-> +++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-> @@ -231,7 +231,7 @@ mt7615_mcu_send_message(struct mt76_dev *mdev, struct=
- sk_buff *skb,
->  			int cmd, int *seq)
->  {
->  	struct mt7615_dev *dev =3D container_of(mdev, struct mt7615_dev, mt76);
-> -	enum mt76_txq_id qid;
-> +	enum mt76_mcuq_id qid;
-> =20
->  	mt7615_mcu_fill_msg(dev, skb, cmd, seq);
->  	if (test_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state))
-> diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/ne=
-t/wireless/mediatek/mt76/mt7915/mcu.c
-> index 5fdd1a6d32ee..e211a2bd4d3c 100644
-> --- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-> +++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-> @@ -256,7 +256,7 @@ mt7915_mcu_send_message(struct mt76_dev *mdev, struct=
- sk_buff *skb,
->  	struct mt7915_dev *dev =3D container_of(mdev, struct mt7915_dev, mt76);
->  	struct mt7915_mcu_txd *mcu_txd;
->  	u8 seq, pkt_fmt, qidx;
-> -	enum mt76_txq_id txq;
-> +	enum mt76_mcuq_id qid;
->  	__le32 *txd;
->  	u32 val;
-> =20
-> @@ -268,18 +268,18 @@ mt7915_mcu_send_message(struct mt76_dev *mdev, stru=
-ct sk_buff *skb,
->  		seq =3D ++dev->mt76.mcu.msg_seq & 0xf;
-> =20
->  	if (cmd =3D=3D -MCU_CMD_FW_SCATTER) {
-> -		txq =3D MT_MCUQ_FWDL;
-> +		qid =3D MT_MCUQ_FWDL;
->  		goto exit;
->  	}
-> =20
->  	mcu_txd =3D (struct mt7915_mcu_txd *)skb_push(skb, sizeof(*mcu_txd));
-> =20
->  	if (test_bit(MT76_STATE_MCU_RUNNING, &dev->mphy.state)) {
-> -		txq =3D MT_MCUQ_WA;
-> +		qid =3D MT_MCUQ_WA;
->  		qidx =3D MT_TX_MCU_PORT_RX_Q0;
->  		pkt_fmt =3D MT_TX_TYPE_CMD;
->  	} else {
-> -		txq =3D MT_MCUQ_WM;
-> +		qid =3D MT_MCUQ_WM;
->  		qidx =3D MT_TX_MCU_PORT_RX_Q0;
->  		pkt_fmt =3D MT_TX_TYPE_CMD;
->  	}
-> @@ -326,7 +326,7 @@ mt7915_mcu_send_message(struct mt76_dev *mdev, struct=
- sk_buff *skb,
->  	if (wait_seq)
->  		*wait_seq =3D seq;
-> =20
-> -	return mt76_tx_queue_skb_raw(dev, mdev->q_mcu[txq], skb, 0);
-> +	return mt76_tx_queue_skb_raw(dev, mdev->q_mcu[qid], skb, 0);
->  }
-> =20
->  static void
->=20
-> base-commit: 5c8fe583cce542aa0b84adc939ce85293de36e5e
-> --=20
-> 2.30.0
->=20
+Anyway here is "datasheet" to some CarlitoxxPro SFP:
+https://www.docdroid.net/hRsJ560/cpgos03-0490v2-datasheet-10-pdf
 
---mYCpIKhGyMATD0i+
-Content-Type: application/pgp-signature; name="signature.asc"
+And on page 10 is written:
 
------BEGIN PGP SIGNATURE-----
+    The I2C system can support the mode of random address / single
+    byteread which conform to SFF-8431.
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX+2jTAAKCRA6cBh0uS2t
-rAxYAP0f0XgVE5eJY2f4tP7MT5fX7WJ8MmFaiXKtkd+0UVZsLQD+JJVnlAsbv2g0
-9j+j5nl0uK4wtbnOauzQykFDergmVAY=
-=7ZmF
------END PGP SIGNATURE-----
+Which seems to be wrong.
 
---mYCpIKhGyMATD0i+--
+> > I do not think that manufacture says something. I think that they even
+> > do not know that their Realtek chips are completely broken.
+> 
+> Oh, they do know. I had a response from CarlitoxxPro passed to me, which
+> was:
+
+Could you give me contact address?
+
+Anyway, we would rather should contact Realtek chip division, real
+manufacture. Not CarlitoxxPro rebrander which can just "buy product"
+from Realtek reseller and put its logo on stick (and maybe configuration
+like sn, mac address, password and enable/disable bit for web/telnet).
+
+>   That is a behavior related on how your router/switch try to read the
+>   EEPROM, as described in the datasheet of the GPON ONU SFP, the EEPROM
+>   can be read in Sequential Single-Byte mode, not in Multi-byte mode as
+>   you router do, basically, your router is trying to read the full a0h
+>   table in a single call, and retrieve a null response. that is normal
+>   and not affect the operations of the GPON ONU SFP, because these
+>   values are informational only. so the Software for your router should
+>   be able to read in Single-Byte mode to read the content of the EEPROM
+>   in concordance to SFF-8431
+> 
+> which totally misses the point that it is /not/ up to the module to
+> choose whether multi-byte reads are supported or not. If they bothered
+> to gain a proper understanding of the MSAs, they would have noticed that
+> the device on 0xA0 is required to behave as an Atmel AT24Cxx EEPROM.
+> The following from INF-8074i, which is the very first definition of the
+> SFP form factor modules:
+> 
+>   The SFP serial ID provides access to sophisticated identification
+>   information that describes the transceiver's capabilities, standard
+>   interfaces, manufacturer, and other information. The serial interface
+>   uses the 2-wire serial CMOS E2PROM protocol defined for the ATMEL
+>   AT24C01A/02/04 family of components.
+> 
+> As they took less than one working day to provide the above response, I
+> suspect they know full well that there's a problem - and it likely
+> affects other "routers" as well.
+
+As this issue is with all those Realtek chips I really think this issue
+is in underlying Realtek chip and not in CarlitoxxPro rebranding. Seems
+that they know about this issue and because it affects all GPON Realtek
+SFPs with that chip that cannot do anything with it, so just wrote it
+into "datasheet" and trying to find arguments "why behavior is correct"
+even it is not truth.
+
+> They're also confused about their SFF specifications. SFF-8431 is: "SFP+
+> 10 Gb/s and Low Speed Electrical Interface" which is not the correct
+> specification for a 1Gbps module.
+
+Looks like "trying to find arguments why it is correct".
+
+> > I can imagine that vendor just says: it is working in our branded boxes
+> > with SFP cages and if it does not work in your kernel then problem is
+> > with your custom kernel and we do not care about 3rd parties.
+> 
+> Which shows why it's pointless producing an EEPROM validation tool that
+> runs under Linux (as has been your suggestion). They won't use it,
+> since their testing only goes as far as "does it work in our product?"
+
+At least users could do their own validation and for rewritable EEPROMs
+they could be able to fix its content.
+
+Anyway, if there is such tool then users could start creating database
+of working and non-working SFPs where can be put result of this tool.
+
+It could help people to decide which SFP they should buy and which not.
+Sending page/database to manufactures with showing "do not buy this your
+SFP, does not work and is broken" maybe change their state and start
+doing validation if people stop buying their products or manufacture
+name would be on unsupported black list.
