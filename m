@@ -2,168 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8512E7E4F
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 06:52:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38F2E2E7E7A
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 07:48:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbgLaFvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 00:51:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38104 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726218AbgLaFvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 00:51:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609393820;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=58HwBb3M7PAiscWQmllnEdkUdFZgFa03LEx+BxIEido=;
-        b=dJNN0cFfg4uPEVhku1FBXL9KWMoD2SvHOMRx6Onb5JDAbTl+vjnvc6MBj8FTRouTF0LA0l
-        XrFce/CUA7UnWChaXOUJTxFoMrElTP4hZggYnGzrE4IE81QPE/v3kYQkziE7N6hqLohth+
-        ao1eHAc3BphQAWWYLbvXvgE5yuTlLCc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-238-cVm3mfXEO0u76e2pupugXw-1; Thu, 31 Dec 2020 00:50:18 -0500
-X-MC-Unique: cVm3mfXEO0u76e2pupugXw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4EF05180A097;
-        Thu, 31 Dec 2020 05:50:16 +0000 (UTC)
-Received: from [10.72.12.236] (ovpn-12-236.pek2.redhat.com [10.72.12.236])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A0DC46F7F4;
-        Thu, 31 Dec 2020 05:50:00 +0000 (UTC)
-Subject: Re: [RFC v2 09/13] vduse: Add support for processing vhost iotlb
- message
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-References: <20201222145221.711-1-xieyongji@bytedance.com>
- <CACycT3s=m=PQb5WFoMGhz8TNGme4+=rmbbBTtrugF9ZmNnWxEw@mail.gmail.com>
- <0e6faf9c-117a-e23c-8d6d-488d0ec37412@redhat.com>
- <CACycT3uwXBYvRbKDWdN3oCekv+o6_Lc=-KTrxejD=fr-zgibGw@mail.gmail.com>
- <2b24398c-e6d9-14ec-2c0d-c303d528e377@redhat.com>
- <CACycT3uDV43ecScrMh1QVpStuwDETHykJzzY=pkmZjP2Dd2kvg@mail.gmail.com>
- <e77c97c5-6bdc-cdd0-62c0-6ff75f6dbdff@redhat.com>
- <CACycT3soQoX5avZiFBLEGBuJpdni6-UxdhAPGpWHBWVf+dEySg@mail.gmail.com>
- <1356137727.40748805.1609233068675.JavaMail.zimbra@redhat.com>
- <CACycT3sg61yRdupnD+jQEkWKsVEvMWfhkJ=5z_bYZLxCibDiHw@mail.gmail.com>
- <b1aef426-29c7-7244-5fc9-56d52e86abb4@redhat.com>
- <CACycT3vZ7V5WWhCFLBK6FuvVNmPmMj_yc=COOB4cjjC13yHUwg@mail.gmail.com>
- <3fc6a132-9fc2-c4e2-7fb1-b5a8bfb771fa@redhat.com>
- <CACycT3tD3zyvV6Zy5NT4x=02hBgrRGq35xeTsRXXx-_wPGJXpQ@mail.gmail.com>
- <e0e693c3-1871-a410-c3d5-964518ec939a@redhat.com>
- <CACycT3vwMU5R7N8dZFBYX4-bxe2YT7EfK_M_jEkH8wzfH_GkBw@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <0885385c-ae46-158d-eabf-433ef8ecf27f@redhat.com>
-Date:   Thu, 31 Dec 2020 13:49:59 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726293AbgLaGsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 01:48:38 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31370 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726037AbgLaGsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 01:48:37 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0BV6cRVx027172;
+        Wed, 30 Dec 2020 22:47:40 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=1HvpFNXqLP37SVVi5hk/s/hXhSGuT7t7waUyClil5Ys=;
+ b=eDDni5tEbf+rdHOlWbk3LjvNmFirzmWr5/OTHENym4PwPdK4gBVemC6kDNiONBP2WR2F
+ eHm5z5jZOYymGIOoPMqWV8SwwD0p1aZp/FBs+LWHHsplMCyp4fN+lFJU7kzn2jVPBctj
+ wOI8osiNR9J3SNwryT18hw1NCkU/XLeT3u0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 35qyks05gf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 30 Dec 2020 22:47:40 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 30 Dec 2020 22:47:39 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HQmS4wAApjDnU4JvBi+YfFChHnudiIVBFJJIdGLK3Qcm9C+K9ecFbhReNIm4VxlXVZEqcKtuVSqyNLbTVKDj9Ree63tDaqLX5RGm24JSEKdfP+mk7S9JtAP9lcsCLIIz0nQ2QX7OtoTJlpFCxBxyMUGDlKr1JVs3bUXFFgqOQzoRkwgZn5Fky/oQLiciNY6lBtJolbRugH6BDiD1Ch3u2DCm5fulJXVKN09Y5muFb9HlUI4Dw3NwuwoQvAJqEQbYj/s6p0IXMyMaUNQ8USbc5UVsyphgJSvC6qUckO8wRdUWjCRazfjHsLHKUW1KqQlL2CXrogCyjUxmZLLKJQOc5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1HvpFNXqLP37SVVi5hk/s/hXhSGuT7t7waUyClil5Ys=;
+ b=oAYcWEJLfiYXi/C7YsEUCtPWk1fXsK17x49rZm8dxDGi8mNb+xEsx0Dq1Made/ED5Yo7rqMGdy8D6I/+wP5xWXO0J4fmC+Uv5cg7p1yIrFs0RmupShJc6hFwVnCrRcNJgXXDpyJ6is1cECQK6TfiE7UbPVf97Oi467JOu5mlS7NLcoRt4jHNuMfrqN//xieI7cC5TRQhS/zXU5F1sKal5Eabpg5D0K6nNEjHUQjC12t4dfhP4fzE9JksvuEq5clCHH3cD4PihZ3YcdUUvtJSdVwX0zADZ8Q0VM+TOC+A+kab0rVyiOvrvv6EfjMPILnUI+G2fiXg/HMpL5hngqaGqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1HvpFNXqLP37SVVi5hk/s/hXhSGuT7t7waUyClil5Ys=;
+ b=Kkh+DYsFacXD/W+9Nasrc1UM6j8R/0eKMT8hP9g7PXV89FA6Pkjhqqz2pSzeUKydGjmuw/1qeCgbS/EMfZwAmn0SFWhkhRyZToXgqBHgla9nDPE5O0rEEOKiTqDOdiNnhgtxD4ZxAFrlPRRha4k48ZzQWj1DXdj29jnEe/oTThE=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB4118.namprd15.prod.outlook.com (2603:10b6:a02:bf::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3700.27; Thu, 31 Dec
+ 2020 06:47:36 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7%7]) with mapi id 15.20.3721.021; Thu, 31 Dec 2020
+ 06:47:36 +0000
+Date:   Wed, 30 Dec 2020 22:47:28 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Song Liu <song@kernel.org>
+CC:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next 1/2] bpf: try to avoid kzalloc in
+ cgroup/{s,g}etsockopt
+Message-ID: <20201231064728.x7vywfzxxn3sqq7e@kafai-mbp.dhcp.thefacebook.com>
+References: <20201217172324.2121488-1-sdf@google.com>
+ <20201217172324.2121488-2-sdf@google.com>
+ <CAPhsuW52eTurJ4pPAgZtv0giw2C+7r6aMacZXx8XkwUxBGARAQ@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW52eTurJ4pPAgZtv0giw2C+7r6aMacZXx8XkwUxBGARAQ@mail.gmail.com>
+X-Originating-IP: [2620:10d:c090:400::5:d5ef]
+X-ClientProxiedBy: MW4PR03CA0266.namprd03.prod.outlook.com
+ (2603:10b6:303:b4::31) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-In-Reply-To: <CACycT3vwMU5R7N8dZFBYX4-bxe2YT7EfK_M_jEkH8wzfH_GkBw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:d5ef) by MW4PR03CA0266.namprd03.prod.outlook.com (2603:10b6:303:b4::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.19 via Frontend Transport; Thu, 31 Dec 2020 06:47:35 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1726e709-25e4-4f1d-c16e-08d8ad57f553
+X-MS-TrafficTypeDiagnostic: BYAPR15MB4118:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB4118CB12E2BAA1D4CF68AA3AD5D60@BYAPR15MB4118.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YMc8kRSM6M4mtT+Wyi4OZpgYmBrQmIHRm5fzMLFbmiUQvLDaAX/icoXrIFVpg4leridZ+j6QtRKGVbvPNinjqq7fU0Ffgp/IXb9ljMA+iTWvXzpd3SJ8Yms7LgFNsHxiFx7mTwD32X0lPOzqoH/Gt6KsIjoTMYpmTnD74tYrCYMiVyGPbCWJ+uwBleu3QbLad5jhtoD9fW0b8k4A/QaJodkHdCSqwRzb5zmZmXKDfyCjxvW2GGtrXf07gHxyK2DM0XllxLR/B+z1AOe8G+/adMqfIY/kqXel4FGDKXxgKKiD79oWLgAyZs0XQ3l6vs6v1FkbOkEDPBie75GnfiWWT4qDgt9f4EbyZQBlrQmr3teyUH34iODn+NiAq/5pLPpDd1suzy0VlFjX4+VtTOZgyg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(39860400002)(346002)(376002)(136003)(4326008)(2906002)(52116002)(6506007)(8676002)(6916009)(86362001)(1076003)(7696005)(5660300002)(478600001)(9686003)(186003)(16526019)(8936002)(6666004)(66556008)(66946007)(54906003)(53546011)(66476007)(55016002)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?5W/SoqdJD0zCKsgm6M9PjBvwrf72bJBd+udhlNnsTKYxCIJZZq+5NlPR29cn?=
+ =?us-ascii?Q?rb+FWGxoF3bwmPt//uqB46MZmETLWyri08QK3GfzautDCbbTxQlnK6giVImJ?=
+ =?us-ascii?Q?ZdT6djPePpE1sGYFZDtvZyb3ExPxPiVX1FkZmO1axk1qmIt7YUAxTt6PrIQW?=
+ =?us-ascii?Q?nAtaD6NFQ9QdSxf+aVqmP+M1BaUsBtq7CNTM+SnzYunFgJ8jk/1Zn1mtC/1U?=
+ =?us-ascii?Q?04661mQUE1HKe4BeuQoJZfhSLM2xZtuHQiM/XsGFmpJcz82YtEPKYu7TN1e+?=
+ =?us-ascii?Q?1wq/i3HbvldzfcGJDQ6eEGdXU88o2zQD0LNRXlzWUYjwbag26AaA3n7qE0rz?=
+ =?us-ascii?Q?/FVKqLHzupy5ebpu6vuRrOV/vdO7CCQIYYjXTqbto1nYGoY3jA0kcxHPFw0d?=
+ =?us-ascii?Q?5DaJmC6e7VpquTHsWbenANGWDK20DSMWbiSnhvbWBowXDYS/P9g1FAsugfxa?=
+ =?us-ascii?Q?3qJxM5MB4z/y3hx+YRq8x61Fc5psT3uo4teCepjXUZGcKL/sRkpQ5jyqLxG1?=
+ =?us-ascii?Q?b9ulCrZG813sTNX/6sG9629PjuTeAkwoP08gaNunA9QOX6pIQuTE0Uy7f+3n?=
+ =?us-ascii?Q?ePB4YSLK5CgjYiNvaxTW4OrrtExxz8qiRN+Bw06GZkPp6n+FQlkZBBcmNd4h?=
+ =?us-ascii?Q?hUGm2nU3MXllinlABIUFrrzpsmIuyjBVGyhcoXYO7PMwtyBdiEAV4Kmd3N74?=
+ =?us-ascii?Q?NXrCg0LfJMBXTk9sOwGzQNov3YcqWSOzdPOG0eF+qjv4CTDL3UHMBQjTterB?=
+ =?us-ascii?Q?M0nRc/EcdU7vK+UI8pDgSA3HL/rGD/MU5RgFBIkY6zKYa1Gw5br2juIoYbJN?=
+ =?us-ascii?Q?SPFE730PFEsSmSeNAjq1TjUvopPgiSix8u2Gdns6x7P5he3vcNhpGGWbbBZl?=
+ =?us-ascii?Q?BYV8VCsNaRa+Co2d1rdWveQG8cAXduJXRxygJk48BDro1i5bgbtRmXyWN5fi?=
+ =?us-ascii?Q?/E1hNtqb+KI89wECvzZE9V353oIB+/8PzWRqrBfhGGIOwlv4qti/EIJnsp6K?=
+ =?us-ascii?Q?1+s6BBThx3DDDpNof+iuRV/ExA=3D=3D?=
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Dec 2020 06:47:36.0853
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1726e709-25e4-4f1d-c16e-08d8ad57f553
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hArWWwiVn5PPqtDpodNbc5AhGj50GKjSkYT5PRiirNUbeWjWstAEQADWOJEGjdou
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB4118
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-31_01:2020-12-30,2020-12-31 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ priorityscore=1501 adultscore=0 malwarescore=0 impostorscore=0
+ suspectscore=0 clxscore=1011 mlxlogscore=999 lowpriorityscore=0
+ phishscore=0 spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2012310036
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Dec 21, 2020 at 02:22:41PM -0800, Song Liu wrote:
+> On Thu, Dec 17, 2020 at 9:24 AM Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > When we attach a bpf program to cgroup/getsockopt any other getsockopt()
+> > syscall starts incurring kzalloc/kfree cost. While, in general, it's
+> > not an issue, sometimes it is, like in the case of TCP_ZEROCOPY_RECEIVE.
+> > TCP_ZEROCOPY_RECEIVE (ab)uses getsockopt system call to implement
+> > fastpath for incoming TCP, we don't want to have extra allocations in
+> > there.
+> >
+> > Let add a small buffer on the stack and use it for small (majority)
+> > {s,g}etsockopt values. I've started with 128 bytes to cover
+> > the options we care about (TCP_ZEROCOPY_RECEIVE which is 32 bytes
+> > currently, with some planned extension to 64 + some headroom
+> > for the future).
+> 
+> I don't really know the rule of thumb, but 128 bytes on stack feels too big to
+> me. I would like to hear others' opinions on this. Can we solve the problem
+> with some other mechanisms, e.g. a mempool?
+It seems the do_tcp_getsockopt() is also having "struct tcp_zerocopy_receive"
+in the stack.  I think the buf here is also mimicking
+"struct tcp_zerocopy_receive", so should not cause any
+new problem.
 
-On 2020/12/31 下午1:15, Yongji Xie wrote:
-> On Thu, Dec 31, 2020 at 10:49 AM Jason Wang <jasowang@redhat.com> wrote:
->>
->> On 2020/12/30 下午6:12, Yongji Xie wrote:
->>> On Wed, Dec 30, 2020 at 4:41 PM Jason Wang <jasowang@redhat.com> wrote:
->>>> On 2020/12/30 下午3:09, Yongji Xie wrote:
->>>>> On Wed, Dec 30, 2020 at 2:11 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>> On 2020/12/29 下午6:26, Yongji Xie wrote:
->>>>>>> On Tue, Dec 29, 2020 at 5:11 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>> ----- Original Message -----
->>>>>>>>> On Mon, Dec 28, 2020 at 4:43 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>>>>> On 2020/12/28 下午4:14, Yongji Xie wrote:
->>>>>>>>>>>> I see. So all the above two questions are because VHOST_IOTLB_INVALIDATE
->>>>>>>>>>>> is expected to be synchronous. This need to be solved by tweaking the
->>>>>>>>>>>> current VDUSE API or we can re-visit to go with descriptors relaying
->>>>>>>>>>>> first.
->>>>>>>>>>>>
->>>>>>>>>>> Actually all vdpa related operations are synchronous in current
->>>>>>>>>>> implementation. The ops.set_map/dma_map/dma_unmap should not return
->>>>>>>>>>> until the VDUSE_UPDATE_IOTLB/VDUSE_INVALIDATE_IOTLB message is replied
->>>>>>>>>>> by userspace. Could it solve this problem?
->>>>>>>>>>       I was thinking whether or not we need to generate IOTLB_INVALIDATE
->>>>>>>>>> message to VDUSE during dma_unmap (vduse_dev_unmap_page).
->>>>>>>>>>
->>>>>>>>>> If we don't, we're probably fine.
->>>>>>>>>>
->>>>>>>>> It seems not feasible. This message will be also used in the
->>>>>>>>> virtio-vdpa case to notify userspace to unmap some pages during
->>>>>>>>> consistent dma unmapping. Maybe we can document it to make sure the
->>>>>>>>> users can handle the message correctly.
->>>>>>>> Just to make sure I understand your point.
->>>>>>>>
->>>>>>>> Do you mean you plan to notify the unmap of 1) streaming DMA or 2)
->>>>>>>> coherent DMA?
->>>>>>>>
->>>>>>>> For 1) you probably need a workqueue to do that since dma unmap can
->>>>>>>> be done in irq or bh context. And if usrspace does't do the unmap, it
->>>>>>>> can still access the bounce buffer (if you don't zap pte)?
->>>>>>>>
->>>>>>> I plan to do it in the coherent DMA case.
->>>>>> Any reason for treating coherent DMA differently?
->>>>>>
->>>>> Now the memory of the bounce buffer is allocated page by page in the
->>>>> page fault handler. So it can't be used in coherent DMA mapping case
->>>>> which needs some memory with contiguous virtual addresses. I can use
->>>>> vmalloc() to do allocation for the bounce buffer instead. But it might
->>>>> cause some memory waste. Any suggestion?
->>>> I may miss something. But I don't see a relationship between the
->>>> IOTLB_UNMAP and vmalloc().
->>>>
->>> In the vmalloc() case, the coherent DMA page will be taken from the
->>> memory allocated by vmalloc(). So IOTLB_UNMAP is not needed anymore
->>> during coherent DMA unmapping because those vmalloc'ed memory which
->>> has been mapped into userspace address space during initialization can
->>> be reused. And userspace should not unmap the region until we destroy
->>> the device.
->>
->> Just to make sure I understand. My understanding is that IOTLB_UNMAP is
->> only needed when there's a change the mapping from IOVA to page.
->>
-> Yes, that's true.
->
->> So if we stick to the mapping, e.g during dma_unmap, we just put IOVA to
->> free list to be used by the next IOVA allocating. IOTLB_UNMAP could be
->> avoided.
->>
->> So we are not limited by how the pages are actually allocated?
->>
-> In coherent DMA cases, we need to return some memory with contiguous
-> kernel virtual addresses. That is the reason why we need vmalloc()
-> here. If we allocate the memory page by page, the corresponding kernel
-> virtual addresses in a contiguous IOVA range might not be contiguous.
-
-
-Yes, but we can do that as what has been done in the series 
-(alloc_pages_exact()). Or do you mean it would be a little bit hard to 
-recycle IOVA/pages here?
-
-Thanks
-
-
-> And in streaming DMA cases, there is no limit. So another choice is
-> using vmalloc'ed memory only for coherent DMA cases.
->
-> Not sure if this is clear for you.
->
-> Thanks,
-> Yongji
->
-
+However, "struct tcp_zerocopy_receive" is only 40 bytes now.  I think it
+is better to have a smaller buf for now and increase it later when the
+the future needs in "struct tcp_zerocopy_receive" is also upstreamed.
