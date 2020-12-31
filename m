@@ -2,101 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AFE52E8137
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 17:19:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE2272E813C
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 17:31:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727347AbgLaQTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 11:19:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
+        id S1727397AbgLaQ3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 11:29:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726071AbgLaQTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 11:19:35 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3E8C061573;
-        Thu, 31 Dec 2020 08:18:54 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id q25so18317232otn.10;
-        Thu, 31 Dec 2020 08:18:54 -0800 (PST)
+        with ESMTP id S1726642AbgLaQ3y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 11:29:54 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4099C061573;
+        Thu, 31 Dec 2020 08:29:13 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id f132so22220234oib.12;
+        Thu, 31 Dec 2020 08:29:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KJaEUkkAN82+qp8E3MGa7L6IXpBsU6/JywsUxir+y0g=;
-        b=R47AD1qukruthdXPdekyQCq5vZSwTbFQieQiipzBCrSSjC61ua7t2pInAJo8ijcdWz
-         4ylriCQPFCWp4PUzOwYBMexsGxttKrN88TD8LvQc5RdQlhy/WHZwc4Cb76zMQYQjkQHp
-         tuc3RVnhPy+i/l0Sx46aBp8Wd0GLnTYDdDXen5nLwqcrsOMIreAHiok8DKNlEQPsiGIS
-         A8rY1HmidsmxxZ/cpw2lfXSqIo9TB5cr/kIuydLY0tTx/dk5m5I9ybkLDvfeUGybN0iC
-         cc1bjcE9eynYqnQnWQZhh+G7oAnfWoAwRt0EobHe1N5WBh3Nsg/XObdHHvAn6Cu9/vdp
-         X6zA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Vn+j/WNjIhIUuxZEWw5e5TKYZNMJfqI1mbpEqq5yOpc=;
+        b=Lca1oWR8tl2XHHisLTpXhvuv+Ls10CS/+osfKC33Rx20E6kwWRnyinO44PwVvlhvnc
+         V+Qozk4haEM5fRG8i7cEloJsfTFgRipSMEF1/4Rew1KQklmIRZBnOmAcmzb8PaIsoBko
+         jemzG1S6Xv5hkShir32jvxcT5hFfgDhOrJK4zhR5xqJRKG1KvE+eNtIgC1knLtgU7teI
+         Vh7haWxi14nYWxeawQQ6QwJXmJKpxuJsQWhQHlPM6aI2HOvssYoWCoxf3LdinmcDN6iv
+         3E8ca2zDcByYZBW9VhKQvuTuG931EMm6g9PLi2B6CwzPnLEq6o9zsVf48tCSQOHQcCzE
+         LxBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KJaEUkkAN82+qp8E3MGa7L6IXpBsU6/JywsUxir+y0g=;
-        b=NbzSgXPdjTyQe7zdutB6qsuZF3IC45MwQxaZ12fat595xWjBXsSuW0tcEK+503SW7X
-         F8aw9ZnA5Dnq5dF1fDQR6KVBRP5aXfDlsOYYfKWu38nJe53KVr/uSSnsg0b81ArW152y
-         Q5d+mH/lUw+Ns/DtOZaEK+sGDg9C1p3k91bsK6d5sw7soLYQ6YbcAsSrdeyWpOtcPTfI
-         iO/z7CmIPsTDrtGW8YGGz4Kt/sfPrfzyNfBEEkx/OsQRPqxhq61tvhD0k6AYfgy5AdDO
-         8fyQwtPMwxMhjsXS3Pijt/v9bdyA17oxaT+HGjQ+EIKi/Pc0nzUBPf9ZR3CM5qE9vXsV
-         k1xA==
-X-Gm-Message-State: AOAM533MoRLMivcFkxEviRDOgYK+IZk6YUp5raKa2m/nMcrnO/jgAPki
-        9JTWK0nG4S9776GqxB2zA1o5tDrGTKU=
-X-Google-Smtp-Source: ABdhPJzuBm3GVpHoqAChnXq4M1lVKgjAgjx61YYN6tgeYQgciK/6m1oHsL/qJcpOWjWMVaNAXPF5BQ==
-X-Received: by 2002:a05:6830:1aec:: with SMTP id c12mr41328504otd.342.1609431534224;
-        Thu, 31 Dec 2020 08:18:54 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:98e1:c150:579a:a69c])
-        by smtp.googlemail.com with ESMTPSA id f25sm11094369oou.39.2020.12.31.08.18.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Dec 2020 08:18:53 -0800 (PST)
-Subject: Re: [PATCH iproute2-next] rdma: Add support for the netlink extack
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Patrisious Haddad <phaddad@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-References: <20201231054217.372274-1-leon@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8d59994a-0c08-8c62-d23d-da3f74f57af5@gmail.com>
-Date:   Thu, 31 Dec 2020 09:18:52 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.0
-MIME-Version: 1.0
-In-Reply-To: <20201231054217.372274-1-leon@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Vn+j/WNjIhIUuxZEWw5e5TKYZNMJfqI1mbpEqq5yOpc=;
+        b=e+pv9q35sDCMLdyF+LABFrXtGLDtqnk6DfMi5LcFusAN1VnKv282TRXvyHaaC/WbZm
+         savmmtTdQCH51TFHYRn/YauEJPjiLZ+rBGIrTe8PCvdSR34kU1wUuD850GdestIgOm3V
+         zrYERVQ5pDggcKvC+6oLB1Xai7GOdrryDkZFb8X0cJzdZ4y/27TCzoxFQkwTvj23UpwI
+         QnVjiNrYTPRRcyC/DHsSVi5yit2wCQ17dEjPwzSCGdBmb+ijMmDbL+vVA2QzD7OnH+NR
+         6Ny1FttZxqjgNQlPyfjOWgEa6sYPnbP5URPCRhPWbujbmNfAoRYr4hlcG8h1CBqdo2CD
+         GZjg==
+X-Gm-Message-State: AOAM530xDZabUNjhC8RBVxj7ldc7uZwrd6dMZN/IdGdDn/4z4lCyKxNp
+        ak1c1Yhh7/2l4ObwEcpfFVE=
+X-Google-Smtp-Source: ABdhPJwPHc9yRDYcP8A75erYXDsjLxi3zJHLATqhDNoBmgWT6m6ovj1aNE/EuuNF8pSA7GaKBELYmg==
+X-Received: by 2002:aca:474b:: with SMTP id u72mr8706432oia.114.1609432153315;
+        Thu, 31 Dec 2020 08:29:13 -0800 (PST)
+Received: from localhost ([184.21.204.5])
+        by smtp.gmail.com with ESMTPSA id c204sm10955890oob.44.2020.12.31.08.29.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Dec 2020 08:29:12 -0800 (PST)
+Date:   Thu, 31 Dec 2020 08:29:04 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, magnus.karlsson@intel.com
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "(open list:XDP SOCKETS \\(AF_XDP\\))" <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org (open list:XDP SOCKETS \(AF_XDP\)),
+        "(open list:XDP SOCKETS \\(AF_XDP\\) open list)" 
+        <linux-kernel@vger.kernel.org>
+Message-ID: <5fedfc50493de_4b796208cb@john-XPS-13-9370.notmuch>
+In-Reply-To: <9830fcef7159a47bae361fc213c589449f6a77d3.1608713585.git.xuanzhuo@linux.alibaba.com>
+References: <9830fcef7159a47bae361fc213c589449f6a77d3.1608713585.git.xuanzhuo@linux.alibaba.com>
+Subject: RE: [PATCH bpf-next] xsk: build skb by page
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/30/20 10:42 PM, Leon Romanovsky wrote:
-> diff --git a/rdma/utils.c b/rdma/utils.c
-> index 2a201aa4..927e2107 100644
-> --- a/rdma/utils.c
-> +++ b/rdma/utils.c
-> @@ -664,7 +664,7 @@ void rd_prepare_msg(struct rd *rd, uint32_t cmd, uint32_t *seq, uint16_t flags)
+Xuan Zhuo wrote:
+> This patch is used to construct skb based on page to save memory copy
+> overhead.
 > 
->  int rd_send_msg(struct rd *rd)
->  {
-> -	int ret;
-> +	int ret, one;
+> Taking into account the problem of addr unaligned, and the
+> possibility of frame size greater than page in the future.
 > 
->  	rd->nl = mnl_socket_open(NETLINK_RDMA);
->  	if (!rd->nl) {
-> @@ -672,6 +672,12 @@ int rd_send_msg(struct rd *rd)
->  		return -ENODEV;
->  	}
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  net/xdp/xsk.c | 68 ++++++++++++++++++++++++++++++++++++++++++++---------------
+>  1 file changed, 51 insertions(+), 17 deletions(-)
 > 
-> +	ret = mnl_socket_setsockopt(rd->nl, NETLINK_EXT_ACK, &one, sizeof(one));
-> +	if (ret < 0) {
-> +		pr_err("Failed to set socket option with err %d\n", ret);
-> +		goto err;
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index ac4a317..7cab40f 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -430,6 +430,55 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+>  	sock_wfree(skb);
+>  }
+>  
+> +static struct sk_buff *xsk_build_skb_bypage(struct xdp_sock *xs, struct xdp_desc *desc)
+> +{
+> +	char *buffer;
+> +	u64 addr;
+> +	u32 len, offset, copy, copied;
+> +	int err, i;
+> +	struct page *page;
+> +	struct sk_buff *skb;
+> +
+> +	skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+
+Because this is just grabbing an skb did you consider build_skb?
+
+> +	if (unlikely(!skb))
+> +		return NULL;
+
+I think it would be best to push err back to caller here with ERR_PTR().
+
+> +
+> +	addr = desc->addr;
+> +	len = desc->len;
+> +
+> +	buffer = xsk_buff_raw_get_data(xs->pool, addr);
+> +	offset = offset_in_page(buffer);
+> +	addr = buffer - (char *)xs->pool->addrs;
+> +
+> +	for (copied = 0, i = 0; copied < len; ++i) {
+> +		page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
+> +
+> +		get_page(page);
+
+Is it obvious why this get_page() is needed? Maybe a small comment would
+be nice. Something like, "we need to inc refcnt on page to ensure skb
+does not release page from pool".
+
+> +
+> +		copy = min((u32)(PAGE_SIZE - offset), len - copied);
+> +
+
+nit: take it or leave it, seems like a lot of new lines imo. I would
+just put all these together. Not really important though.
+
+> +		skb_fill_page_desc(skb, i, page, offset, copy);
+> +
+> +		copied += copy;
+> +		addr += copy;
+> +		offset = 0;
 > +	}
 > +
->  	ret = mnl_socket_bind(rd->nl, 0, MNL_SOCKET_AUTOPID);
->  	if (ret < 0) {
->  		pr_err("Failed to bind socket with err %d\n", ret);
+> +	skb->len += len;
+> +	skb->data_len += len;
+> +	skb->truesize += len;
+> +
+> +	refcount_add(len, &xs->sk.sk_wmem_alloc);
+> +
+> +	skb->dev = xs->dev;
+> +	skb->priority = xs->sk.sk_priority;
+> +	skb->mark = xs->sk.sk_mark;
+> +	skb_shinfo(skb)->destructor_arg = (void *)(long)addr;
+> +	skb->destructor = xsk_destruct_skb;
+> +
+> +	return skb;
+> +}
+> +
+>  static int xsk_generic_xmit(struct sock *sk)
+>  {
+>  	struct xdp_sock *xs = xdp_sk(sk);
+> @@ -445,40 +494,25 @@ static int xsk_generic_xmit(struct sock *sk)
+>  		goto out;
+>  
+>  	while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+> -		char *buffer;
+> -		u64 addr;
+> -		u32 len;
+> -
+>  		if (max_batch-- == 0) {
+>  			err = -EAGAIN;
+>  			goto out;
+>  		}
+>  
+> -		len = desc.len;
+> -		skb = sock_alloc_send_skb(sk, len, 1, &err);
+> +		skb = xsk_build_skb_bypage(xs, &desc);
+>  		if (unlikely(!skb))
 
-you should be able to use mnlu_socket_open in ./lib/mnl_utils.c
+Is err set here? Either way if skb is an ERR_PTR we can use that
+here for better error handling.
 
+>  			goto out;
+>  
+> -		skb_put(skb, len);
+> -		addr = desc.addr;
+> -		buffer = xsk_buff_raw_get_data(xs->pool, addr);
+> -		err = skb_store_bits(skb, 0, buffer, len);
+>  		/* This is the backpressure mechanism for the Tx path.
+>  		 * Reserve space in the completion queue and only proceed
+>  		 * if there is space in it. This avoids having to implement
+>  		 * any buffering in the Tx path.
+>  		 */
+> -		if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> +		if (xskq_prod_reserve(xs->pool->cq)) {
+>  			kfree_skb(skb);
+
+Same here, do we need to set err now that its not explicit above in
+err = skb_store_bits...
+
+>  			goto out;
+>  		}
+>  
+> -		skb->dev = xs->dev;
+> -		skb->priority = sk->sk_priority;
+> -		skb->mark = sk->sk_mark;
+> -		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
+> -		skb->destructor = xsk_destruct_skb;
+> -
+>  		err = __dev_direct_xmit(skb, xs->queue_id);
+>  		if  (err == NETDEV_TX_BUSY) {
+>  			/* Tell user-space to retry the send */
+> -- 
+> 1.8.3.1
+> 
