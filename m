@@ -2,102 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9422E81AC
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 19:54:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 617C62E81E7
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 21:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726606AbgLaSyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 13:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
+        id S1726550AbgLaUO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 15:14:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgLaSyv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 13:54:51 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379A0C061573
-        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 10:54:11 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id h186so11612366pfe.0
-        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 10:54:11 -0800 (PST)
+        with ESMTP id S1726210AbgLaUO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 15:14:56 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5417BC061573
+        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 12:14:16 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id o8so19846717ybq.22
+        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 12:14:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RgSE22mCVB1+vgCTSPbUhDE3dmIVJevB/UHHwcyDHuw=;
-        b=NrIw0usU3z0DFRLWSgg9FNE+EQ7XR4vvbP7s7c2X1vK7klFbpWH1A95812d7gzU6Bh
-         3jmTrOH4SH+BucXqjtyOGbho6ENH18JtX8mt5RINuS21tnFD1Jtn4i12pcEqr8sixoYK
-         Z9H63wTIHrLBp6KjKYuAYt9tD6lb9oXutV4oL9RdHwRmyej+63L8VKM3B9gEE27izZdF
-         OLFMuFzmaaGVhzizYTVcz9oYJ5YLCG3mnOuijWtJzi4lbQhWjouPdykMVmCGV0v7Gpj1
-         f6c+aPYfboLAKq/6k4kJAGLeV80WJr/ByRbb931h3TvMrZ176RmBqm3/Qv0C/lJAgb3/
-         Rz+A==
+        d=google.com; s=20161025;
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=I8HcRE9PQpGzhtd57DtZYJVZUrGRfD/rQqXsgrN7czY=;
+        b=TkZCSGqVVCfqJ9RZYyFppUa9sTp/R3bTHPDiP7o6WSXgD/VmlCbh6B+YgEpejah6xP
+         OcfUNT4fmzH54LUpsMKjjuTCbZ70b64VZbVgPEz8fY0vFBlRVe3YNrXpShNFqRonePV5
+         stkoVE5Y6/Ekv1CXUgo8M6jwBGvxmNqu0retmm5qquyp+ik4eM5QG4lDfqcoEieECOW/
+         Z2Ap/QbkawrOdlEUBTlFsVVT7ZhBAXlu9n3poZC6YQbKa7UCFD+0rQaqoEF2s8rRRUqU
+         rbJFPt+5YHh156b4WILT0JG7m/ojHMgruOcGn637aQjJqZtwF3f5m828IkLuw0cU2FLz
+         eraw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RgSE22mCVB1+vgCTSPbUhDE3dmIVJevB/UHHwcyDHuw=;
-        b=bRSNDJTnvbGoRwb0no82ORaS/SGR0xPSOZjoP/CZzM9x2XPCA9q+sBQ9YkVuZ9Pksu
-         TeBkGN39ImRmZQtTeFEot6qJhuCSrSt+tZh7VV2z9lBDHPl7r7Fau+UXz4eQC384YvgA
-         Jba/UVC7ZhfRWLQ4ale/gUP3X1YjBf2BxH/kA6yW4lMthkKVpi0DhBnHl1CGu/XTo+hW
-         ebOkY4zVIn2kn63Rz2iy9NHwn9pvpSUTkx9lQsbBryjpRcZmt/2EdyUQk5Uimaeddhec
-         Jk6pP89YX8YsLphti2oA9kHgZaAfngE7IjLxZhxtfyLwFZX4HrKxvS7ISMGNORrSc9gZ
-         L+Hg==
-X-Gm-Message-State: AOAM533OAaSDchahn1zFjv635tDTe9iamZ8RnfdWHRgsCjIjx/cghaqB
-        np0wFhNleEAYV/dh1TfWy9xjsesIYGm+lohSnCOi0hFdPR4=
-X-Google-Smtp-Source: ABdhPJxvk8Kavs9NySK/mjwsSnFLJWUFBLTOsGEh3eNSlwKKSM/HSdjqMIEigB3IBsoNmuyfJJlKrxPk4rOmYrWnAEU=
-X-Received: by 2002:a05:6a00:88b:b029:19c:780e:1cd with SMTP id
- q11-20020a056a00088bb029019c780e01cdmr53298097pfj.64.1609440850580; Thu, 31
- Dec 2020 10:54:10 -0800 (PST)
-MIME-Version: 1.0
-References: <20201229160447.GA3156@chinagar-linux.qualcomm.com>
-In-Reply-To: <20201229160447.GA3156@chinagar-linux.qualcomm.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 31 Dec 2020 10:53:59 -0800
-Message-ID: <CAM_iQpUFCnmu36L0hwrK+xv9gBWKtcq44nOVGNEyR=o9QDx7Pg@mail.gmail.com>
-Subject: Re: Race Condition Observed in ARP Processing.
-To:     Chinmay Agarwal <chinagar@codeaurora.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        sharathv@codeaurora.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=I8HcRE9PQpGzhtd57DtZYJVZUrGRfD/rQqXsgrN7czY=;
+        b=b3AP/uD6nWEUd0dlafN3nu8p53lwGwv+6VtruKjIBnBnY7p5SlOUK22UUH9diua824
+         5GIHv5THkzfbIsKzVGBHkL5ysl+plfwEet4F4VRaCpOK0reYKmrJQSAsI1U1bzHyvhJG
+         h6LDvkIRncZcYZJTYUbMRE+1zEKb270E/ZixQub4ERU3rEmdW6oBxDWs2SDy4339lNmg
+         OuAPSEg/CetfzpoHo1iMiGd+v2//1YhYnybOJW8U88StMvGPFqRzp3Ldj4NN464v5TMu
+         Gbp3ofzgfkquEzy+eWVL1BEnRRQeNs5ixjEUVNaX7GB+9CPer2bBZmxRk/7irrlb1K6Z
+         hl9w==
+X-Gm-Message-State: AOAM532TgR9yWUqL0l8L9Lr1CttEUAiOZu7lYxNU4DDMBpWUacWYONZl
+        U/n+0O7rDgSHwpMNIhZTUyoBrRA=
+X-Google-Smtp-Source: ABdhPJx9sDLKcYEG0apaN1ZIPfGcIH3WRf5WyvwwvKMPAkQkn/MpCySxagYobXHwNa6hqS8k3bTdXjo=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a25:ea09:: with SMTP id p9mr44588429ybd.109.1609445655377;
+ Thu, 31 Dec 2020 12:14:15 -0800 (PST)
+Date:   Thu, 31 Dec 2020 12:14:13 -0800
+In-Reply-To: <20201231064728.x7vywfzxxn3sqq7e@kafai-mbp.dhcp.thefacebook.com>
+Message-Id: <X+4xFUuYHUIufeJ1@google.com>
+Mime-Version: 1.0
+References: <20201217172324.2121488-1-sdf@google.com> <20201217172324.2121488-2-sdf@google.com>
+ <CAPhsuW52eTurJ4pPAgZtv0giw2C+7r6aMacZXx8XkwUxBGARAQ@mail.gmail.com> <20201231064728.x7vywfzxxn3sqq7e@kafai-mbp.dhcp.thefacebook.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: try to avoid kzalloc in cgroup/{s,g}etsockopt
+From:   sdf@google.com
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 29, 2020 at 8:06 AM Chinmay Agarwal <chinagar@codeaurora.org> wrote:
->
-> Hi All,
->
-> We found a crash while performing some automated stress tests on a 5.4 kernel based device.
->
-> We found out that it there is a freed neighbour address which was still part of the gc_list and was leading to crash.
-> Upon adding some debugs and checking neigh_put/neigh_hold/neigh_destroy calls stacks, looks like there is a possibility of a Race condition happening in the code.
-[...]
-> The crash may have been due to out of order ARP replies.
-> As neighbour is marked dead should we go ahead with updating our ARP Tables?
+On 12/30, Martin KaFai Lau wrote:
+> On Mon, Dec 21, 2020 at 02:22:41PM -0800, Song Liu wrote:
+> > On Thu, Dec 17, 2020 at 9:24 AM Stanislav Fomichev <sdf@google.com>  
+> wrote:
+> > >
+> > > When we attach a bpf program to cgroup/getsockopt any other  
+> getsockopt()
+> > > syscall starts incurring kzalloc/kfree cost. While, in general, it's
+> > > not an issue, sometimes it is, like in the case of  
+> TCP_ZEROCOPY_RECEIVE.
+> > > TCP_ZEROCOPY_RECEIVE (ab)uses getsockopt system call to implement
+> > > fastpath for incoming TCP, we don't want to have extra allocations in
+> > > there.
+> > >
+> > > Let add a small buffer on the stack and use it for small (majority)
+> > > {s,g}etsockopt values. I've started with 128 bytes to cover
+> > > the options we care about (TCP_ZEROCOPY_RECEIVE which is 32 bytes
+> > > currently, with some planned extension to 64 + some headroom
+> > > for the future).
+> >
+> > I don't really know the rule of thumb, but 128 bytes on stack feels too  
+> big to
+> > me. I would like to hear others' opinions on this. Can we solve the  
+> problem
+> > with some other mechanisms, e.g. a mempool?
+> It seems the do_tcp_getsockopt() is also having "struct  
+> tcp_zerocopy_receive"
+> in the stack.  I think the buf here is also mimicking
+> "struct tcp_zerocopy_receive", so should not cause any
+> new problem.
+Good point!
 
-I think you are probably right, we should just do unlock and return
-in __neigh_update() when hitting if (neigh->dead) branch. Something
-like below:
+> However, "struct tcp_zerocopy_receive" is only 40 bytes now.  I think it
+> is better to have a smaller buf for now and increase it later when the
+> the future needs in "struct tcp_zerocopy_receive" is also upstreamed.
+I can lower it to 64. Or even 40?
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 9500d28a43b0..0ce592f585c8 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1250,6 +1250,7 @@ static int __neigh_update(struct neighbour
-*neigh, const u8 *lladdr,
-                goto out;
-        if (neigh->dead) {
-                NL_SET_ERR_MSG(extack, "Neighbor entry is now dead");
-+               new = old;
-                goto out;
-        }
-
-But given the old state probably contains NUD_PERMANENT, I guess
-you hit the following branch instead:
-
-        if (!(flags & NEIGH_UPDATE_F_ADMIN) &&
-            (old & (NUD_NOARP | NUD_PERMANENT)))
-                goto out;
-
-So we may have to check ->dead before this. Please double check.
-
-This bug is probably introduced by commit 9c29a2f55ec05cc8b525ee.
-Can you make a patch and send it out formally after testing?
-
-Thanks!
+I can also try to add something like BUILD_BUG_ON(sizeof(struct
+tcp_zerocopy_receive) < BPF_SOCKOPT_KERN_BUF_SIZE) to make sure this
+buffer gets adjusted whenever we touch tcp_zerocopy_receive.
