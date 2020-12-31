@@ -2,128 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E96882E81EA
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 21:19:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C852E8217
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 22:12:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbgLaUT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 15:19:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbgLaUT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 15:19:26 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D23BC061573
-        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 12:18:45 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id b123so35137092ybh.17
-        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 12:18:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=LzgfXQnATqRtYelRGlHRH58XptD8Of2PDPLNvG/AR60=;
-        b=XdaFEgHJ0EWdvsIBqTPR2VA6SxjVcYpUv5Qe9zgBUdmzghmLeLCQguh7j385TH7Few
-         1BbC9pqpSNYeSybjmyPlPqRkyZ5VvhFjKyK7v9F+daUSOL+Be7t6tgAjnRvZzGF9pjGK
-         DBUh2YfQGZckHHuqySF+PoTIS1HXLo5/jzvKZbu6OZKZnt1EJ0bmwLV2V+mTZS/nirGN
-         LQGAZ68aZIJOXSFXFoi1RDWO/UBjGCXqBZeD1dCSQiNeN1uAZImuLqu+kFJUT2X3YAty
-         v/LFahXVeigH4+4/CornOobcY2wfxeBFRiKJBs0xiT0Er3+RIcoHVfrCXijkjYY9nJLe
-         K2DQ==
+        id S1726875AbgLaVJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 16:09:57 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:41927 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726540AbgLaVJ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 16:09:57 -0500
+Received: by mail-il1-f197.google.com with SMTP id f19so18599384ilk.8
+        for <netdev@vger.kernel.org>; Thu, 31 Dec 2020 13:09:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=LzgfXQnATqRtYelRGlHRH58XptD8Of2PDPLNvG/AR60=;
-        b=LRd1Eq2c9Kzm6XZpgLQiZr0MzNFsifBNQh2ohBzGh0CuQeQHcrcH/fIvyC9STVm7yq
-         kT9meEL8k2srNsW8xu6mtYg8HePG6WFr+NPUP52z/B3AhBWOIqXW8v33+qTHnUTLgGqn
-         9Er3MEbvxynVmK0iW8qtnwoe+GomoSPFtynRrjskZR04lKOxYo/Qbb0sjm9wj3gNJHZd
-         IcWIpgn37yMzJTVEvq7bp4dwnaVfMOJ9HINNG/tQllrNszUfoy8PE4caN5qUdgT+2x5a
-         t+MvRCMOxEy4lXDR1QeueC9XgUGBROSmieqZC4sXtQWEdmqdU11rj7+otnxf2wUlQFlO
-         wdHQ==
-X-Gm-Message-State: AOAM532l35Tajgo973OwpHXOF1QTIqHYc7dP2cwxnY/m5b87On48MyfA
-        C2pnz0XRgH0WU2q6fOD97T7ksTM=
-X-Google-Smtp-Source: ABdhPJyRIQo3+iBwF7nGv66MMMXOkbLFxzibr3JNAwigWy1nOJduBviUbN03guoor7QJKDFNMXyiUaM=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a25:cf12:: with SMTP id f18mr84837187ybg.18.1609445924922;
- Thu, 31 Dec 2020 12:18:44 -0800 (PST)
-Date:   Thu, 31 Dec 2020 12:18:43 -0800
-In-Reply-To: <20201231065038.k637ewwyqclq2nxh@kafai-mbp.dhcp.thefacebook.com>
-Message-Id: <X+4yIzNsb3X52T9s@google.com>
-Mime-Version: 1.0
-References: <20201217172324.2121488-1-sdf@google.com> <20201217172324.2121488-2-sdf@google.com>
- <20201222191107.bbg6yafayxp4jx5i@kafai-mbp.dhcp.thefacebook.com>
- <X+K07Rh+2qECwxJp@google.com> <20201231065038.k637ewwyqclq2nxh@kafai-mbp.dhcp.thefacebook.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: try to avoid kzalloc in cgroup/{s,g}etsockopt
-From:   sdf@google.com
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ImUavmO9HuvNyGGDB8IPh6YqAjU+wI3gTPYJmrthYXU=;
+        b=DAT3mdjcEZ4MSXt9IdRju+U1gVeYhnjcv4b2EC1KtH57aogTjYh2A39tnFTHrRztrF
+         pOQKUgPahYPEz5fjYur5wzEOUqLL6fgexxuU8gTroFo9uu52cR8qtglM36zfzC8lV9a1
+         dRDxbsY9sVsbNxXoesgltz6dG2uNFPDHKVWTSpdFMi7aEH6UveLni4gnBR6bNDdqIszs
+         SyokorwqkJchUKQpRMazWrAAgrVujgFXLTN9mJh/yziBjZFE/C4mlwmkgFZR98m0HrUW
+         5nP9M2neZqiyUOiM4JKzhCoK0icWt29UY0hqkjnlg+99QCIcSNA02z/ZQQxLUfjsmvls
+         vtHQ==
+X-Gm-Message-State: AOAM533YlIzoO2A/6ILcq4p6Tk3kwl6cqKBVgT1mncjC3/sDDNhpaN2O
+        SheQ11HxpR6Z1Kdfq2QnjZ/ufnSiDbyXlMXDhB8TIuMEhN6y
+X-Google-Smtp-Source: ABdhPJx1u4Mvpeq4U3rJyyiMGjuuW5woFFx+b/iIzO2y+OdVVxvV6d665xsfUnub9vDZ7kuyebI1yrMoIa9ieCL84RJ0T9+u9zrp
+MIME-Version: 1.0
+X-Received: by 2002:a02:7650:: with SMTP id z77mr50509422jab.134.1609448956306;
+ Thu, 31 Dec 2020 13:09:16 -0800 (PST)
+Date:   Thu, 31 Dec 2020 13:09:16 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000532e0205b7c90942@google.com>
+Subject: UBSAN: shift-out-of-bounds in gred_change
+From:   syzbot <syzbot+1819b70451246ed8cf57@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/30, Martin KaFai Lau wrote:
-> On Tue, Dec 22, 2020 at 07:09:33PM -0800, sdf@google.com wrote:
-> > On 12/22, Martin KaFai Lau wrote:
-> > > On Thu, Dec 17, 2020 at 09:23:23AM -0800, Stanislav Fomichev wrote:
-> > > > When we attach a bpf program to cgroup/getsockopt any other  
-> getsockopt()
-> > > > syscall starts incurring kzalloc/kfree cost. While, in general, it's
-> > > > not an issue, sometimes it is, like in the case of  
-> TCP_ZEROCOPY_RECEIVE.
-> > > > TCP_ZEROCOPY_RECEIVE (ab)uses getsockopt system call to implement
-> > > > fastpath for incoming TCP, we don't want to have extra allocations  
-> in
-> > > > there.
-> > > >
-> > > > Let add a small buffer on the stack and use it for small (majority)
-> > > > {s,g}etsockopt values. I've started with 128 bytes to cover
-> > > > the options we care about (TCP_ZEROCOPY_RECEIVE which is 32 bytes
-> > > > currently, with some planned extension to 64 + some headroom
-> > > > for the future).
-> > > >
-> > > > It seems natural to do the same for setsockopt, but it's a bit more
-> > > > involved when the BPF program modifies the data (where we have to
-> > > > kmalloc). The assumption is that for the majority of setsockopt
-> > > > calls (which are doing pure BPF options or apply policy) this
-> > > > will bring some benefit as well.
-> > > >
-> > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > > ---
-> > > >  include/linux/filter.h |  3 +++
-> > > >  kernel/bpf/cgroup.c    | 41  
-> +++++++++++++++++++++++++++++++++++++++--
-> > > >  2 files changed, 42 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/include/linux/filter.h b/include/linux/filter.h
-> > > > index 29c27656165b..362eb0d7af5d 100644
-> > > > --- a/include/linux/filter.h
-> > > > +++ b/include/linux/filter.h
-> > > > @@ -1281,6 +1281,8 @@ struct bpf_sysctl_kern {
-> > > >  	u64 tmp_reg;
-> > > >  };
-> > > >
-> > > > +#define BPF_SOCKOPT_KERN_BUF_SIZE	128
-> > > Since these 128 bytes (which then needs to be zero-ed) is modeled  
-> after
-> > > the TCP_ZEROCOPY_RECEIVE use case, it will be useful to explain
-> > > a use case on how the bpf prog will interact with
-> > > getsockopt(TCP_ZEROCOPY_RECEIVE).
-> > The only thing I would expect BPF program can do is to return EPERM
-> > to cause application to fallback to non-zerocopy path (and, mostly,
-> > bypass). I don't think BPF can meaningfully mangle the data in struct
-> > tcp_zerocopy_receive.
-> >
-> > Does it address your concern? Or do you want me to add a comment or
-> > something?
-> I was asking because, while 128 byte may work best for  
-> TCP_ZEROCOPY_RECEIVCE,
-> it is many unnecessary byte-zeroings for most options though.
-> Hence, I am interested to see if there is a practical bpf
-> use case for TCP_ZEROCOPY_RECEIVE.
-I don't see any practical use-case for TCP_ZEROCOPY_RECEIVE right now
-(but you never know, maybe somebody would like to count the number
-of ZQ calls? inspect the arguments? idk).
+Hello,
 
-Ideally, we should bypass BPF if (optname == TCP_ZEROCOPY_RECEIVE),
-but then it's not 'generic' anymore :-/
+syzbot found the following issue on:
+
+HEAD commit:    3db1a3fa Merge tag 'staging-5.11-rc1' of git://git.kernel...
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=155708db500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2ae878fbf640b72b
+dashboard link: https://syzkaller.appspot.com/bug?extid=1819b70451246ed8cf57
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=176b78c0d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12993797500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+1819b70451246ed8cf57@syzkaller.appspotmail.com
+
+IPVS: ftp: loaded support on port[0] = 21
+================================================================================
+UBSAN: shift-out-of-bounds in ./include/net/red.h:252:22
+shift exponent 255 is too large for 32-bit type 'int'
+CPU: 0 PID: 8465 Comm: syz-executor194 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+ __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
+ red_set_parms include/net/red.h:252 [inline]
+ gred_change_vq net/sched/sch_gred.c:506 [inline]
+ gred_change.cold+0xce/0xe2 net/sched/sch_gred.c:702
+ qdisc_change net/sched/sch_api.c:1331 [inline]
+ tc_modify_qdisc+0xd4e/0x1a30 net/sched/sch_api.c:1633
+ rtnetlink_rcv_msg+0x493/0xb40 net/core/rtnetlink.c:5564
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x907/0xe10 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xd3/0x130 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2336
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2390
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2423
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x440e69
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 0b 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff634be6d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004a2730 RCX: 0000000000440e69
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 00007fff634be6e0 R08: 0000000120080522 R09: 0000000120080522
+R10: 0000000120080522 R11: 0000000000000246 R12: 00000000004a2730
+R13: 0000000000402390 R14: 0000000000000000 R15: 0000000000000000
+================================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
