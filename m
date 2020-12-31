@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6461A2E80CC
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 16:12:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 432802E80EF
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 16:31:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726737AbgLaPKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 10:10:15 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:45452 "EHLO vps0.lunn.ch"
+        id S1726762AbgLaPbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 10:31:19 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:45480 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726314AbgLaPKO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Dec 2020 10:10:14 -0500
+        id S1726080AbgLaPbT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Dec 2020 10:31:19 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kuzZt-00FFaw-Bj; Thu, 31 Dec 2020 16:09:25 +0100
-Date:   Thu, 31 Dec 2020 16:09:25 +0100
+        id 1kuzuL-00FFji-Bs; Thu, 31 Dec 2020 16:30:33 +0100
+Date:   Thu, 31 Dec 2020 16:30:33 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
 Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
@@ -25,7 +25,7 @@ Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 1/4] net: sfp: add workaround for Realtek RTL8672 and
  RTL9601C chips
-Message-ID: <X+3ppQhbjCGFzs6P@lunn.ch>
+Message-ID: <X+3ume1+wz8HXHEf@lunn.ch>
 References: <20201230154755.14746-1-pali@kernel.org>
  <20201230154755.14746-2-pali@kernel.org>
  <20201230161036.GR1551@shell.armlinux.org.uk>
@@ -63,64 +63,28 @@ On Thu, Dec 31, 2020 at 01:14:10PM +0100, Pali Rohár wrote:
 > > to offer it to userspace in an unreliable form.
 > 
 > Any idea/preference how to disable access to these registers?
-> 
-> > For reference, here is what SFF-8472 which defines the diagnostics, says
-> > about this:
-> > 
-> >   To guarantee coherency of the diagnostic monitoring data, the host is
-> >   required to retrieve any multi-byte fields from the diagnostic
-> >   monitoring data structure (IE: Rx Power MSB - byte 104 in A2h, Rx Power
-> >   LSB - byte 105 in A2h) by the use of a single two-byte read sequence
-> >   across the two-wire interface interface.
-> > 
-> >   The transceiver is required to ensure that any multi-byte fields which
-> >   are updated with diagnostic monitoring data (e.g. Rx Power MSB - byte
-> >   104 in A2h, Rx Power LSB - byte 105 in A2h) must have this update done
-> >   in a fashion which guarantees coherency and consistency of the data. In
-> >   other words, the update of a multi-byte field by the transceiver must
-> >   not occur such that a partially updated multi-byte field can be
-> >   transferred to the host. Also, the transceiver shall not update a
-> >   multi-byte field within the structure during the transfer of that
-> >   multi-byte field to the host, such that partially updated data would be
-> >   transferred to the host.
-> > 
-> > The first paragraph is extremely definitive in how these fields shall
-> > be read atomically - by a _single_ two-byte read sequence. From what
-> > you are telling us, these modules do not support that. Therefore, by
-> > definition, they do *not* support proper and reliable reporting of
-> > diagnostic data, and are non-conformant with the SFP MSAs.
-> > 
-> > So, they are basically broken, and the diagnostics can't be used to
-> > retrieve data that can be said to be useful.
-> 
-> I agree they are broken. We really should disable access to those 16bit
-> registers.
-> 
-> Anyway here is "datasheet" to some CarlitoxxPro SFP:
-> https://www.docdroid.net/hRsJ560/cpgos03-0490v2-datasheet-10-pdf
-> 
-> And on page 10 is written:
-> 
->     The I2C system can support the mode of random address / single
->     byteread which conform to SFF-8431.
-> 
-> Which seems to be wrong.
 
-Searching around, i found:
+Page A0, byte 92:
 
-http://read.pudn.com/downloads776/doc/3073304/RTL9601B-CG_Datasheet.pdf
+"Diagnostic Monitoring Type" is a 1 byte field with 8 single bit
+indicators describing how diagnostic monitoring is implemented in the
+particular transceiver.
 
-It has two i2c busses, a master and a slave. The master bus can do
-multi-byte transfers. The slave bus description says nothing in words
-about multi-byte transfers, but the diagram shows only single byte
-transfers.
+Note that if bit 6, address 92 is set indicating that digital
+diagnostic monitoring has been implemented, received power
+monitoring, transmitted power monitoring, bias current monitoring,
+supply voltage monitoring and temperature monitoring must all be
+implemented. Additionally, alarm and warning thresholds must be
+written as specified in this document at locations 00 to 55 on
+two-wire serial address 1010001X (A2h) (see Table 8-5).
 
-So any SFP based around this device is broken.
+Unfortunately, we cannot simply set sfp->id.ext.diagmon to false,
+because it can also be used to indicate power, software reading of
+TX_DISABLE, LOS, etc. These are all single bytes, so could be returned
+correctly, assuming they have been implemented according to the spec.
 
-The silly thing is, it is reading/writing from a shadow SRAM. The CPU
-is not directly involved in an I2C transaction. So it could easily
-read multiple bytes from the SRAM and return them. But it would still
-need a synchronisation method to handle writes from the CPU to the
-SRAM, in order to make these word values safe.
+Looking at sfp_module_info(), adding a check for i2c_block_size < 2
+when determining what length to return. ethtool should do the right
+thing, know that the second page has not been returned to user space.
 
-      Andrew
+	Andrew
