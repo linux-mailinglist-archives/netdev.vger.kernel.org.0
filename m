@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 404402E7DE1
+	by mail.lfdr.de (Postfix) with ESMTP id AD3912E7DE2
 	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 04:42:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726423AbgLaDiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Dec 2020 22:38:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34286 "EHLO mail.kernel.org"
+        id S1726531AbgLaDlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Dec 2020 22:41:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34722 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726322AbgLaDiq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Dec 2020 22:38:46 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 035A620773;
-        Thu, 31 Dec 2020 03:38:05 +0000 (UTC)
+        id S1726322AbgLaDlN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Dec 2020 22:41:13 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0E99820773;
+        Thu, 31 Dec 2020 03:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609385886;
-        bh=QfIZ8JnGTyGSR+hlQdQBq7pVP1OwhGOQE1IqT93K/qc=;
+        s=k20201202; t=1609386033;
+        bh=rgLBSFOZ1V8q8FCtNhvufsd7KyiqZ5p5BhvOa5LjUqY=;
         h=From:To:Cc:Subject:Date:From;
-        b=YyLgk2Wdr2InR8mEPMZ5Bg4oIGFEsPtlaN6y/NZ74n/lL4KJdox93fY/vvsIAAE7x
-         A8AD6dJ0+mJ4opu1W6COgVYTqkcpSXk0Wyjn3GFm0B9kcEcoZOgbVBsGajCZH4weGF
-         MOzHWjNfMhoQthrrMWdTrobugPecNd/fpkp+qPTW8fznHNm29c0skXFK2XsQHh5Z4n
-         NdqfSy/0gL8dCzsnD7PaxkDyo+D87VTuhFQM1j9bYESc8cQtaGn+sUwvHi7dsbj0Ln
-         hhEIfqIlt+pSN+H7jaoPvzMWjVCtGRNrRLxIw56TUcFG3DOEDri3hwZBhu+8QMzend
-         +5JJ52Qmh/6SA==
+        b=I8D4zLuq8ympERpQxZPccy/0KWALwBQq4GK8IKcD+BmWuuO0V6qKyzE0or0QoJ/YQ
+         X6ig7EylpqXTQRD3J1dW2lRmIIa2oi9x30n1pGI9em79Q5u7R3jn1H6j1LYyxtnFkG
+         KvLeeoEUEhcIMSd0eQ0kpEVESD9DEviQwrD898B376gGASU0am+vyI4h7zt0ujen+X
+         287+5FihAdYHkHWWjFF7edrPUi3vn+/QEe75n9ishYfTpvyqnjVYjjJvHw/tTOcFDe
+         HNZgdxxBMidp44gJovq4A4S3YLXHOJyCJa+LAYQn3mttD3rU6OXR12QU8/s0dTtEFm
+         yR3R1ZlqWnffQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] net: suggest L2 discards be counted towards rx_dropped
-Date:   Wed, 30 Dec 2020 19:37:53 -0800
-Message-Id: <20201231033753.1568393-1-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com,
+        jouni.hogander@unikie.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] net: vlan: avoid leaks on register_vlan_dev() failures
+Date:   Wed, 30 Dec 2020 19:40:27 -0800
+Message-Id: <20201231034027.1570026-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -36,31 +37,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From the existing definitions it's unclear which stat to
-use to report filtering based on L2 dst addr in old
-broadcast-medium Ethernet.
+VLAN checks for NETREG_UNINITIALIZED to distinguish between
+registration failure and unregistration in progress.
 
+Since commit cb626bf566eb ("net-sysfs: Fix reference count leak")
+registration failure may, however, result in NETREG_UNREGISTERED
+as well as NETREG_UNINITIALIZED.
+
+This fix is similer to cebb69754f37 ("rtnetlink: Fix
+memory(net_device) leak when ->newlink fails")
+
+Fixes: cb626bf566eb ("net-sysfs: Fix reference count leak")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/uapi/linux/if_link.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Found by code inspection and compile-tested only.
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 874cc12a34d9..82708c6db432 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -75,8 +75,9 @@ struct rtnl_link_stats {
-  *
-  * @rx_dropped: Number of packets received but not processed,
-  *   e.g. due to lack of resources or unsupported protocol.
-- *   For hardware interfaces this counter should not include packets
-- *   dropped by the device which are counted separately in
-+ *   For hardware interfaces this counter may include packets discarded
-+ *   due to L2 address filtering but should not include packets dropped
-+ *   by the device due to buffer exhaustion which are counted separately in
-  *   @rx_missed_errors (since procfs folds those two counters together).
-  *
-  * @tx_dropped: Number of packets dropped on their way to transmission,
+ net/8021q/vlan.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
+index f292e0267bb9..15bbfaf943fd 100644
+--- a/net/8021q/vlan.c
++++ b/net/8021q/vlan.c
+@@ -284,7 +284,8 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
+ 	return 0;
+ 
+ out_free_newdev:
+-	if (new_dev->reg_state == NETREG_UNINITIALIZED)
++	if (new_dev->reg_state == NETREG_UNINITIALIZED ||
++	    new_dev->reg_state == NETREG_UNREGISTERED)
+ 		free_netdev(new_dev);
+ 	return err;
+ }
 -- 
 2.26.2
 
