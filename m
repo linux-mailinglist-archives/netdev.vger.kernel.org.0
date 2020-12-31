@@ -2,220 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE2272E813C
-	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 17:31:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 994CA2E8155
+	for <lists+netdev@lfdr.de>; Thu, 31 Dec 2020 18:02:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727397AbgLaQ3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Dec 2020 11:29:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726642AbgLaQ3y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Dec 2020 11:29:54 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4099C061573;
-        Thu, 31 Dec 2020 08:29:13 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id f132so22220234oib.12;
-        Thu, 31 Dec 2020 08:29:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Vn+j/WNjIhIUuxZEWw5e5TKYZNMJfqI1mbpEqq5yOpc=;
-        b=Lca1oWR8tl2XHHisLTpXhvuv+Ls10CS/+osfKC33Rx20E6kwWRnyinO44PwVvlhvnc
-         V+Qozk4haEM5fRG8i7cEloJsfTFgRipSMEF1/4Rew1KQklmIRZBnOmAcmzb8PaIsoBko
-         jemzG1S6Xv5hkShir32jvxcT5hFfgDhOrJK4zhR5xqJRKG1KvE+eNtIgC1knLtgU7teI
-         Vh7haWxi14nYWxeawQQ6QwJXmJKpxuJsQWhQHlPM6aI2HOvssYoWCoxf3LdinmcDN6iv
-         3E8ca2zDcByYZBW9VhKQvuTuG931EMm6g9PLi2B6CwzPnLEq6o9zsVf48tCSQOHQcCzE
-         LxBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Vn+j/WNjIhIUuxZEWw5e5TKYZNMJfqI1mbpEqq5yOpc=;
-        b=e+pv9q35sDCMLdyF+LABFrXtGLDtqnk6DfMi5LcFusAN1VnKv282TRXvyHaaC/WbZm
-         savmmtTdQCH51TFHYRn/YauEJPjiLZ+rBGIrTe8PCvdSR34kU1wUuD850GdestIgOm3V
-         zrYERVQ5pDggcKvC+6oLB1Xai7GOdrryDkZFb8X0cJzdZ4y/27TCzoxFQkwTvj23UpwI
-         QnVjiNrYTPRRcyC/DHsSVi5yit2wCQ17dEjPwzSCGdBmb+ijMmDbL+vVA2QzD7OnH+NR
-         6Ny1FttZxqjgNQlPyfjOWgEa6sYPnbP5URPCRhPWbujbmNfAoRYr4hlcG8h1CBqdo2CD
-         GZjg==
-X-Gm-Message-State: AOAM530xDZabUNjhC8RBVxj7ldc7uZwrd6dMZN/IdGdDn/4z4lCyKxNp
-        ak1c1Yhh7/2l4ObwEcpfFVE=
-X-Google-Smtp-Source: ABdhPJwPHc9yRDYcP8A75erYXDsjLxi3zJHLATqhDNoBmgWT6m6ovj1aNE/EuuNF8pSA7GaKBELYmg==
-X-Received: by 2002:aca:474b:: with SMTP id u72mr8706432oia.114.1609432153315;
-        Thu, 31 Dec 2020 08:29:13 -0800 (PST)
-Received: from localhost ([184.21.204.5])
-        by smtp.gmail.com with ESMTPSA id c204sm10955890oob.44.2020.12.31.08.29.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Dec 2020 08:29:12 -0800 (PST)
-Date:   Thu, 31 Dec 2020 08:29:04 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, magnus.karlsson@intel.com
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        id S1727052AbgLaRBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Dec 2020 12:01:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46424 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726314AbgLaRBW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Dec 2020 12:01:22 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E3D120786;
+        Thu, 31 Dec 2020 17:00:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609434042;
+        bh=2Q5/jyDzLCoOHxjn8Vg8jD4DTmyCYtWu95co3RUHzSw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YBZAjw2BCycDoFvK5sF5nxlRKhMLgEp7rAonCNjbeyllByiPv7bdypip/8XC3rxJ/
+         5+nFJu+TVo9MtyR6vnr5zO0c5iAIb7bUliWZvZcKd0o0MV6IbhkQtr5qMprlYq3mZ2
+         xQPrMD7eJIe9hoUhtGXb6dIwJPshQlh3PTMor9K2ziRgy16fTOft0utAzUSZdEEEeO
+         o3ccxhMAk04H6qTXwptgCRkcvtAZa8laoW1HqZbqDVMIijleWQ08d1qbDa7nzRkRJr
+         HIEwcwHIa7w7Oc0He+polkS4PNgh017AkmJnPyep0K8GqCqBp4Szk0nvMz2v13GcZg
+         h6zuqcPny7SSw==
+Received: by pali.im (Postfix)
+        id C2D5EC35; Thu, 31 Dec 2020 18:00:39 +0100 (CET)
+Date:   Thu, 31 Dec 2020 18:00:39 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "(open list:XDP SOCKETS \\(AF_XDP\\))" <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org (open list:XDP SOCKETS \(AF_XDP\)),
-        "(open list:XDP SOCKETS \\(AF_XDP\\) open list)" 
-        <linux-kernel@vger.kernel.org>
-Message-ID: <5fedfc50493de_4b796208cb@john-XPS-13-9370.notmuch>
-In-Reply-To: <9830fcef7159a47bae361fc213c589449f6a77d3.1608713585.git.xuanzhuo@linux.alibaba.com>
-References: <9830fcef7159a47bae361fc213c589449f6a77d3.1608713585.git.xuanzhuo@linux.alibaba.com>
-Subject: RE: [PATCH bpf-next] xsk: build skb by page
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] net: sfp: add workaround for Realtek RTL8672 and
+ RTL9601C chips
+Message-ID: <20201231170039.zkoa6mij3q3gt7c6@pali>
+References: <20201230154755.14746-1-pali@kernel.org>
+ <20201230154755.14746-2-pali@kernel.org>
+ <20201230161036.GR1551@shell.armlinux.org.uk>
+ <20201230165634.c4ty3mw6djezuyq6@pali>
+ <20201230170546.GU1551@shell.armlinux.org.uk>
+ <X+y1K21tp01GpvMy@lunn.ch>
+ <20201230174307.lvehswvj5q6c6vk3@pali>
+ <20201230190958.GW1551@shell.armlinux.org.uk>
+ <20201231121410.2xlxtyqjelrlysd2@pali>
+ <X+3ume1+wz8HXHEf@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <X+3ume1+wz8HXHEf@lunn.ch>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xuan Zhuo wrote:
-> This patch is used to construct skb based on page to save memory copy
-> overhead.
+On Thursday 31 December 2020 16:30:33 Andrew Lunn wrote:
+> On Thu, Dec 31, 2020 at 01:14:10PM +0100, Pali Rohár wrote:
+> > On Wednesday 30 December 2020 19:09:58 Russell King - ARM Linux admin wrote:
+> > > On Wed, Dec 30, 2020 at 06:43:07PM +0100, Pali Rohár wrote:
+> > > > On Wednesday 30 December 2020 18:13:15 Andrew Lunn wrote:
+> > > > > Hi Pali
+> > > > > 
+> > > > > I have to agree with Russell here. I would rather have no diagnostics
+> > > > > than untrustable diagnostics.
+> > > > 
+> > > > Ok!
+> > > > 
+> > > > So should we completely skip hwmon_device_register_with_info() call
+> > > > if (i2c_block_size < 2) ?
+> > > 
+> > > I don't think that alone is sufficient - there's also the matter of
+> > > ethtool -m which will dump that information as well, and we don't want
+> > > to offer it to userspace in an unreliable form.
+> > 
+> > Any idea/preference how to disable access to these registers?
 > 
-> Taking into account the problem of addr unaligned, and the
-> possibility of frame size greater than page in the future.
+> Page A0, byte 92:
 > 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
->  net/xdp/xsk.c | 68 ++++++++++++++++++++++++++++++++++++++++++++---------------
->  1 file changed, 51 insertions(+), 17 deletions(-)
+> "Diagnostic Monitoring Type" is a 1 byte field with 8 single bit
+> indicators describing how diagnostic monitoring is implemented in the
+> particular transceiver.
 > 
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index ac4a317..7cab40f 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -430,6 +430,55 @@ static void xsk_destruct_skb(struct sk_buff *skb)
->  	sock_wfree(skb);
->  }
->  
-> +static struct sk_buff *xsk_build_skb_bypage(struct xdp_sock *xs, struct xdp_desc *desc)
-> +{
-> +	char *buffer;
-> +	u64 addr;
-> +	u32 len, offset, copy, copied;
-> +	int err, i;
-> +	struct page *page;
-> +	struct sk_buff *skb;
-> +
-> +	skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-
-Because this is just grabbing an skb did you consider build_skb?
-
-> +	if (unlikely(!skb))
-> +		return NULL;
-
-I think it would be best to push err back to caller here with ERR_PTR().
-
-> +
-> +	addr = desc->addr;
-> +	len = desc->len;
-> +
-> +	buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> +	offset = offset_in_page(buffer);
-> +	addr = buffer - (char *)xs->pool->addrs;
-> +
-> +	for (copied = 0, i = 0; copied < len; ++i) {
-> +		page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> +
-> +		get_page(page);
-
-Is it obvious why this get_page() is needed? Maybe a small comment would
-be nice. Something like, "we need to inc refcnt on page to ensure skb
-does not release page from pool".
-
-> +
-> +		copy = min((u32)(PAGE_SIZE - offset), len - copied);
-> +
-
-nit: take it or leave it, seems like a lot of new lines imo. I would
-just put all these together. Not really important though.
-
-> +		skb_fill_page_desc(skb, i, page, offset, copy);
-> +
-> +		copied += copy;
-> +		addr += copy;
-> +		offset = 0;
-> +	}
-> +
-> +	skb->len += len;
-> +	skb->data_len += len;
-> +	skb->truesize += len;
-> +
-> +	refcount_add(len, &xs->sk.sk_wmem_alloc);
-> +
-> +	skb->dev = xs->dev;
-> +	skb->priority = xs->sk.sk_priority;
-> +	skb->mark = xs->sk.sk_mark;
-> +	skb_shinfo(skb)->destructor_arg = (void *)(long)addr;
-> +	skb->destructor = xsk_destruct_skb;
-> +
-> +	return skb;
-> +}
-> +
->  static int xsk_generic_xmit(struct sock *sk)
->  {
->  	struct xdp_sock *xs = xdp_sk(sk);
-> @@ -445,40 +494,25 @@ static int xsk_generic_xmit(struct sock *sk)
->  		goto out;
->  
->  	while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
-> -		char *buffer;
-> -		u64 addr;
-> -		u32 len;
-> -
->  		if (max_batch-- == 0) {
->  			err = -EAGAIN;
->  			goto out;
->  		}
->  
-> -		len = desc.len;
-> -		skb = sock_alloc_send_skb(sk, len, 1, &err);
-> +		skb = xsk_build_skb_bypage(xs, &desc);
->  		if (unlikely(!skb))
-
-Is err set here? Either way if skb is an ERR_PTR we can use that
-here for better error handling.
-
->  			goto out;
->  
-> -		skb_put(skb, len);
-> -		addr = desc.addr;
-> -		buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> -		err = skb_store_bits(skb, 0, buffer, len);
->  		/* This is the backpressure mechanism for the Tx path.
->  		 * Reserve space in the completion queue and only proceed
->  		 * if there is space in it. This avoids having to implement
->  		 * any buffering in the Tx path.
->  		 */
-> -		if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-> +		if (xskq_prod_reserve(xs->pool->cq)) {
->  			kfree_skb(skb);
-
-Same here, do we need to set err now that its not explicit above in
-err = skb_store_bits...
-
->  			goto out;
->  		}
->  
-> -		skb->dev = xs->dev;
-> -		skb->priority = sk->sk_priority;
-> -		skb->mark = sk->sk_mark;
-> -		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
-> -		skb->destructor = xsk_destruct_skb;
-> -
->  		err = __dev_direct_xmit(skb, xs->queue_id);
->  		if  (err == NETDEV_TX_BUSY) {
->  			/* Tell user-space to retry the send */
-> -- 
-> 1.8.3.1
+> Note that if bit 6, address 92 is set indicating that digital
+> diagnostic monitoring has been implemented, received power
+> monitoring, transmitted power monitoring, bias current monitoring,
+> supply voltage monitoring and temperature monitoring must all be
+> implemented. Additionally, alarm and warning thresholds must be
+> written as specified in this document at locations 00 to 55 on
+> two-wire serial address 1010001X (A2h) (see Table 8-5).
 > 
+> Unfortunately, we cannot simply set sfp->id.ext.diagmon to false,
+> because it can also be used to indicate power, software reading of
+> TX_DISABLE, LOS, etc. These are all single bytes, so could be returned
+> correctly, assuming they have been implemented according to the spec.
+> 
+> Looking at sfp_module_info(), adding a check for i2c_block_size < 2
+> when determining what length to return. ethtool should do the right
+> thing, know that the second page has not been returned to user space.
+
+But if we limit length of eeprom then userspace would not be able to
+access those TX_DISABLE, LOS and other bits from byte 110 at address A2.
+
+Problematic two-byte values are in byte range 96-109 at address A2.
+Therefore before byte 110.
