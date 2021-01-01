@@ -2,168 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 026A32E8522
-	for <lists+netdev@lfdr.de>; Fri,  1 Jan 2021 18:09:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E4222E8541
+	for <lists+netdev@lfdr.de>; Fri,  1 Jan 2021 19:11:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727207AbhAARIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jan 2021 12:08:09 -0500
-Received: from mail-eopbgr1320129.outbound.protection.outlook.com ([40.107.132.129]:1165
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726798AbhAARII (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Jan 2021 12:08:08 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ndx+cLfqbbaZHJ1Q/YsUDeXAHkVgpl4DxINd6ij2UJ4jEoGROmGgM2KtW5TvJm18yQbnuUT+cViInXpLGVkgWFOqiLEr5dRzctywle4VObejXm30SG1h8vzk1RRaCxgIpuVu84d3EK5yjbDtB3AgZQCMQRjzISDK/xRPDS9kSi17dDtVUwBUa1ap+SFyPylEFXwwlRkPVgGlytAtv2U7aTrAmvHcPhiYS3vtnTjpv0JSDmyK71IaKpODNl0vYD56Oy8mePWHMwig0UoXW3VGQX8l7Lc+GhXzR5VSFPBGYxwAftXC+PNH6/29khtNRQVHsSonPe47doU7CdDrqycvHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ESfxjYpbH2c7T6lifwuv4kKyKlbJoJW0sa+Il9m6qdk=;
- b=Yqzumrrw1iqkKXstNsjQVPDeamXXeb8cPlkAwWFALLDhL4HmuJsRIXVEUWMNe72GFHC9KrmMfEmSBTaRqUuOMvy6XNa5OvtFzgJTW5HNXgn1QRh4w57LR5CGGBPAZ4hLmgeX7iyomERU10tL7l+4x5zPsroqs4W8V3kB15m9mvfMZvvzJ/fu2WM3SGNV03IKw9nw0vKwjuDrR1wKikiS10WfRFj2jRG+ugOezHWGepCAJK1glVrHwBzWCgVyTi9HNbx7wPUbJX8EZ4F16fUHNNPKyomVQoo02S7AOvUvHUJm4RqaFyhp/MdgBKFsJzdhbKxLuIBVmoO1UMUgjA9LPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ESfxjYpbH2c7T6lifwuv4kKyKlbJoJW0sa+Il9m6qdk=;
- b=XQjrk/hH8Nlj/a7BudauFn7J75Jg9qmuLtrR5ReZiEcom0tpDoa5VzvHE5N2bZgPFR1aEQ73mFVqOcMx3DqD9RTDQKW+yX2n+MJv2STItgzB7LtrB5jr3bk6MhIupXz53JV6TgGIusmwTZZbBU5G8CveXF6FDOq5VSACorgXmCw=
-Received: from TYBPR01MB5309.jpnprd01.prod.outlook.com
- (2603:1096:404:8025::15) by TY2PR01MB2811.jpnprd01.prod.outlook.com
- (2603:1096:404:6f::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.20; Fri, 1 Jan
- 2021 17:06:31 +0000
-Received: from TYBPR01MB5309.jpnprd01.prod.outlook.com
- ([fe80::5d23:de2f:4a70:97db]) by TYBPR01MB5309.jpnprd01.prod.outlook.com
- ([fe80::5d23:de2f:4a70:97db%3]) with mapi id 15.20.3700.032; Fri, 1 Jan 2021
- 17:06:31 +0000
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-CC:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: RE: [PATCH] can: rcar: Update help description for CAN_RCAR config
-Thread-Topic: [PATCH] can: rcar: Update help description for CAN_RCAR config
-Thread-Index: AQHW345uMo6jwbPTE021zsa0BOwzqKoTATIw
-Date:   Fri, 1 Jan 2021 17:06:30 +0000
-Message-ID: <TYBPR01MB530929B7507AFED04F4BADAF86D50@TYBPR01MB5309.jpnprd01.prod.outlook.com>
-References: <20201231155957.31165-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20201231155957.31165-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20201231155957.31165-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: bp.renesas.com; dkim=none (message not signed)
- header.d=none;bp.renesas.com; dmarc=none action=none
- header.from=bp.renesas.com;
-x-originating-ip: [81.135.30.249]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 8038862d-87e1-4027-b833-08d8ae7795ef
-x-ms-traffictypediagnostic: TY2PR01MB2811:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <TY2PR01MB28113E408A99B3A47AA52DA886D50@TY2PR01MB2811.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Miv+pZqBPQrXehip23588+GB6sSrNik9WfIZb7r0NQmPztEIbzKq3NxXHCSyd6hyobRcfmc+ehz/VnY4sYZLe0KlazARKVtTygQXNQjFyeYShQYHcoR+gvj5LI9/+FuwusBU1vbf8o7M2/YECiZ1R+xa39sEvgf2orHTs8d6t+J+4IymfrujQxuknbotUO3IYyQGkIgu2rIkjtr4HwB0uyu2B7rjBiWueWoXu4aFNbzTtrkDkqJaVCHo9AOkH3MYQF0Q9ZXAIoSsmsZ2m7uTFPDFS9Qj0bXfaroTQj2Hj7vIc4HDwZViSIGwnpkf/A+WiT8oDE2AqcHV+ZK2bYZ4BL5uXqsAUBuj+MngNCuX6ZDOo1r6fdcMPN7KfvhSowT0Pefk35KY6Lh44DOkIK7Pzw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5309.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(66446008)(66946007)(107886003)(76116006)(66476007)(55016002)(4326008)(52536014)(478600001)(5660300002)(9686003)(66556008)(83380400001)(64756008)(54906003)(26005)(186003)(7696005)(7416002)(316002)(33656002)(53546011)(86362001)(110136005)(6506007)(8936002)(2906002)(71200400001)(8676002)(15650500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?yZiF4dDVHtbST0snQUWWR69S6/ec02qfhMryAeW7Pvqd1AV9o3uafp2TT5D3?=
- =?us-ascii?Q?Oi5ltOHjHbK4okWTzOZa96SZQcNqzkAW24iB0XS1tJ3ikdRhYwvdp3hRg+E+?=
- =?us-ascii?Q?yNIcAzYccanFemiWKCSNvarhNtGQJbfWP9KkeEoI20tJBN9jyWBESOpxSsJ3?=
- =?us-ascii?Q?u5Y0ZFalmYOyFhZDprwtctYlvaeBAjDvmA4aNARbCYsmfXv7KAp2scBcy2UI?=
- =?us-ascii?Q?ZHchvwH8WpVNO/o/nI5vy87FAIdhSMBfBxf/6vAmRUrbOdrxUU6aofv+u1NJ?=
- =?us-ascii?Q?VciawiouRGsm6WiXYExu5ijTcL2SKJy7AX0Pgv0NH35iNfmlXzeZjEglrlZ5?=
- =?us-ascii?Q?S+l+GG0wYRxAQWcU2YDnsOsfZqnFsfCjuT1hXaiVrwqS9WFPiNQ0yWrSnI+8?=
- =?us-ascii?Q?Gbp+eiYC2ciCv3JSREQxPuLgsSijtnLF8NqlqZv6MhAhXfX0q8HfaLIspCGh?=
- =?us-ascii?Q?ju+oOV4tyehCznyBtz9UV1kARx3Dm1pq47OH2SJxzyrhM5lmgZHeOrnyYVIA?=
- =?us-ascii?Q?15CZd2pWDGhWa+rU5fnqgDdG7GNOGOAG7OksOne2uG/CctG/urPjJGtcEn+L?=
- =?us-ascii?Q?zcP9+dHHjh0AQxR/HpDZxwlvdRey5NeRZLNkmwSeMs0gprGAou194/Szr098?=
- =?us-ascii?Q?TqhiPAw5kIVmcYAYKL0rSFP/jFawAxq28cxpa0AZUOoGUyHEbz+EISemRyvA?=
- =?us-ascii?Q?8N9Rr7zhWLH6+7A9TlTOuEy6yqn8LzUoH3m9UPvVPiXdJsNP68cCY0qlQV34?=
- =?us-ascii?Q?w6tM7CtDWwl9blOf/N6BUs8mIutaKG5FMSdEkx15IIIVGbkmyqqyJSeMmBDf?=
- =?us-ascii?Q?ePmj8vVJ43dSdXoeOHX36Q/OneqQT1lDdSgvwNxM6NImkVgD+HU2LUqKlK0U?=
- =?us-ascii?Q?NVN8uz82gBcAUUwDrrnm2deGQYazr3Rny9b7yv/0TtoLqd1EO2EY3qc2fi/v?=
- =?us-ascii?Q?Z32hvvxMoB/hRfvVWtuN4wr64H4RdtsxN/Ql7yXCAjk=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727199AbhAASLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jan 2021 13:11:18 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:24359 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727093AbhAASLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jan 2021 13:11:18 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1609524653; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Cc: To: From: Date: Sender;
+ bh=yyyMB/WS7c/a7ThU2IK9RmFurJaiAwC+fwP/BuHmIOc=; b=YqrqRkJCjW9A8241eINGOMDy6qzXQuT2IAgHI43hax0ysnRON6xbzCEkmqWccvrhXv+QtbJv
+ 0nkFD/CDvllM4jPdRvWzRZRAT7l0Wj3CBFNPNonrIauLDAEfE7CN3pFzO4JSCUZOqtcyu6NP
+ wS3b8lijubOh9IdNusUWeZIRTrY=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 5fef658fcf8ceaa9eed1aaf0 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 01 Jan 2021 18:10:23
+ GMT
+Sender: chinagar=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D167EC433CA; Fri,  1 Jan 2021 18:10:22 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from chinagar-linux.qualcomm.com (unknown [202.46.22.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: chinagar)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 56330C433C6;
+        Fri,  1 Jan 2021 18:10:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 56330C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=chinagar@codeaurora.org
+Date:   Fri, 1 Jan 2021 23:40:10 +0530
+From:   Chinmay Agarwal <chinagar@codeaurora.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Race Condition Observed in ARP Processing.
+Message-ID: <20210101181009.GA17374@chinagar-linux.qualcomm.com>
+References: <20201229160447.GA3156@chinagar-linux.qualcomm.com>
+ <CAM_iQpUFCnmu36L0hwrK+xv9gBWKtcq44nOVGNEyR=o9QDx7Pg@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5309.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8038862d-87e1-4027-b833-08d8ae7795ef
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jan 2021 17:06:31.1397
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: P52WWsjztdBg/trwyZUJs0M06HnqRJpXIJLUawhQirJc2+KsLgbovjOpqo3XQOo5wRLl7dFDlDPILDgBQlkDST1b0yVXBrDNfPIpNCqGzbc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB2811
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpUFCnmu36L0hwrK+xv9gBWKtcq44nOVGNEyR=o9QDx7Pg@mail.gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Prabhakar,
+Sure, will raise a patch post testing.
 
-Thanks for the patch.
-
-> -----Original Message-----
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Sent: 31 December 2020 16:00
-> To: Geert Uytterhoeven <geert+renesas@glider.be>; Wolfgang Grandegger
-> <wg@grandegger.com>; Marc Kleine-Budde <mkl@pengutronix.de>; David S.
-> Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Masahiro
-> Yamada <masahiroy@kernel.org>
-> Cc: linux-can@vger.kernel.org; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; linux-renesas-soc@vger.kernel.org; Prabhakar
-> <prabhakar.csengg@gmail.com>; Prabhakar Mahadev Lad <prabhakar.mahadev-
-> lad.rj@bp.renesas.com>
-> Subject: [PATCH] can: rcar: Update help description for CAN_RCAR config
->=20
-> The rcar_can driver supports R-Car Gen{1,2,3} and RZ/G{1,2} SoC's, update
-> the description to reflect this.
-
-Not sure we need to make it generic like dropping {1,2,3}/{1,2} and  instea=
-d use R-Car and RZ/G SoC's??
-
-Cheers,
-Biju
-
-
->=20
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  drivers/net/can/rcar/Kconfig | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/can/rcar/Kconfig b/drivers/net/can/rcar/Kconfig
-> index 8d36101b78e3..6bb0e7c052ad 100644
-> --- a/drivers/net/can/rcar/Kconfig
-> +++ b/drivers/net/can/rcar/Kconfig
-> @@ -1,10 +1,10 @@
->  # SPDX-License-Identifier: GPL-2.0
->  config CAN_RCAR
-> -	tristate "Renesas R-Car CAN controller"
-> +	tristate "Renesas R-Car Gen{1,2,3} and RZ/G{1,2} CAN controller"
->  	depends on ARCH_RENESAS || ARM
->  	help
->  	  Say Y here if you want to use CAN controller found on Renesas R-
-> Car
-> -	  SoCs.
-> +	  Gen{1,2,3} and RZ/G{1,2} SoCs.
->=20
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called rcar_can.
-> --
-> 2.17.1
-
+On Thu, Dec 31, 2020 at 10:53:59AM -0800, Cong Wang wrote:
+> On Tue, Dec 29, 2020 at 8:06 AM Chinmay Agarwal <chinagar@codeaurora.org> wrote:
+> >
+> > Hi All,
+> >
+> > We found a crash while performing some automated stress tests on a 5.4 kernel based device.
+> >
+> > We found out that it there is a freed neighbour address which was still part of the gc_list and was leading to crash.
+> > Upon adding some debugs and checking neigh_put/neigh_hold/neigh_destroy calls stacks, looks like there is a possibility of a Race condition happening in the code.
+> [...]
+> > The crash may have been due to out of order ARP replies.
+> > As neighbour is marked dead should we go ahead with updating our ARP Tables?
+> 
+> I think you are probably right, we should just do unlock and return
+> in __neigh_update() when hitting if (neigh->dead) branch. Something
+> like below:
+> 
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index 9500d28a43b0..0ce592f585c8 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -1250,6 +1250,7 @@ static int __neigh_update(struct neighbour
+> *neigh, const u8 *lladdr,
+>                 goto out;
+>         if (neigh->dead) {
+>                 NL_SET_ERR_MSG(extack, "Neighbor entry is now dead");
+> +               new = old;
+>                 goto out;
+>         }
+> 
+> But given the old state probably contains NUD_PERMANENT, I guess
+> you hit the following branch instead:
+> 
+>         if (!(flags & NEIGH_UPDATE_F_ADMIN) &&
+>             (old & (NUD_NOARP | NUD_PERMANENT)))
+>                 goto out;
+> 
+> So we may have to check ->dead before this. Please double check.
+> 
+> This bug is probably introduced by commit 9c29a2f55ec05cc8b525ee.
+> Can you make a patch and send it out formally after testing?
+> 
+> Thanks!
