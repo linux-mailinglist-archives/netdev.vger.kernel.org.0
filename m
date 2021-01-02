@@ -2,104 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 058912E88B4
-	for <lists+netdev@lfdr.de>; Sat,  2 Jan 2021 22:42:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA812E88F8
+	for <lists+netdev@lfdr.de>; Sat,  2 Jan 2021 23:26:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbhABVk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Jan 2021 16:40:27 -0500
-Received: from mout.gmx.net ([212.227.17.20]:35967 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726667AbhABVk0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 Jan 2021 16:40:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1609623524;
-        bh=65567gUH7pUHimFSswoUGu6z3nW5+V9kc46kQAId9N4=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=ej5yzO6CH8gNBebs9HfL9+8YE+7Q13c+sMeyoLDY3kgcXCDYN6zkKxcCTpvm79/OU
-         3fk4PrjWItjybUQYuV+vF8atqWXoCOs7X78qBM1T3V+3bNqYSfTCmDq2E38H44fuU8
-         f5HhzpYar4pbwCPRQg/5ER45XHMo1E85EYycQVhY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from MockUp.fritz.box ([77.10.124.214]) by mail.gmx.com (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MVN6t-1kXEN12R0B-00SRzQ; Sat, 02
- Jan 2021 22:38:44 +0100
-From:   John-Eric Kamps <johnny86@gmx.de>
-To:     johnny86@gmx.de
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vasily Khoruzhick <anarsoul@gmail.com>,
-        Alistair Francis <alistair@alistair23.me>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: net: bluetooth: Add rtl8723ds-bluetooth
-Date:   Sat,  2 Jan 2021 22:38:03 +0100
-Message-Id: <20210102213803.1097624-1-johnny86@gmx.de>
-X-Mailer: git-send-email 2.25.1
+        id S1726846AbhABW02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jan 2021 17:26:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58240 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726673AbhABW01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jan 2021 17:26:27 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FCFC061573;
+        Sat,  2 Jan 2021 14:25:46 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id k4so22443172ybp.6;
+        Sat, 02 Jan 2021 14:25:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=avY5RmPLcCE/9xmKkt4hTetpHwa/Sr/9+j/k/Vxitbs=;
+        b=XJmL+uVD29D7YsU+lWThZtABQ2VtHFN/Sa938Vu0nu4Kg/7NM1FRy6vgAJXbh+ejV3
+         r/XGPs79+xmb70vjHL8fahTEDGwwIDRLnrLGAXKQqgP56gZBjj9Z1OGFsnEFPWd8Dmcu
+         HUME9foRghbKrGKnwT+9G1+Wt42xT4zyhsEoqF375STn+atcdXJsIznHKGe+JXFDetei
+         XNjBMoE78TRbop0iSLhltprrksH9P7J+uYsowO055qPE+vMBJ3RENmvwYSwCzS2wJG9Z
+         WF/S27WllKPv/EnhTPo0y6Q+GsNNJpyn2EjUbXZZY9Kng7lY/W4Q+SoQel4i5guSNdMn
+         wpmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=avY5RmPLcCE/9xmKkt4hTetpHwa/Sr/9+j/k/Vxitbs=;
+        b=prPsCGSGxDKz7lZqj3Nf9GX2jrCUWEu1pXvgheQQ/X3XkhLhqncYeVZe3qQWx8s6LK
+         R9AGfWt7d+IzbJWss+pdzUlfoQcPhbgVxf/bV7qNPRLyIY+ZJjUCJ9wwYbKja3FlRXvp
+         PfPE1uRPR0idDdNv7tYmrnOJHsYc1+KQQKu7WQpV6agOqPzAwQH7exEEXpdxOYKay7wO
+         43XKs+ar25MXI6oqou7ki61AfPKAviEqwQRbNrbbv5ZSFKHvedCSxxiUoad8Qb0r0kcB
+         akLGQpPflT4hkVIJIlnVmUWle228t5F5EshIr7uNMpAMX27tYkT+xG+pg7e7LK3OeeIt
+         jdOA==
+X-Gm-Message-State: AOAM531yMNgE4IcKvFVosmc+0gEPx/OD05OKsDK3Uy3u66OSFBMv3gsT
+        52//rm5qWkeNZYIyT/hcLNIuTblY0Od1T9tzrDWARL/8
+X-Google-Smtp-Source: ABdhPJx4pHQUmCj+6LEz4sWjx2M9wvyQIeaoqjOXvtKyUofxXbVVF17sNnfHJ3eiHe4I6NAt3f3TvjffSOaXfpdk3nw=
+X-Received: by 2002:a25:d6d0:: with SMTP id n199mr91883751ybg.27.1609626345652;
+ Sat, 02 Jan 2021 14:25:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:LWF8OuNmTyzpbAEXamaZ+sJkA01ya1CV9Q4Dc7m/k3CO62xeWg9
- clVbhNxjRwqnO3cjcxpjR+3GRmNycTZaY6dpM7x9WRaSdRnCQERww/UVKddFEWJI/nrCVqo
- CX0E09lW5VFqa+udcwTara9RK/JT07YX6WknNTqfqBcDgFTV06vH1HLdIkWbokQ2jIG0P66
- l4Jgc9YAkABdkhFj8IHRw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ngujCwQuwgI=:4780t0qPnaeuBqssShDwcD
- apIGkLwc4AXQY9p1cmRMigZ4cOogrYX7kj/CxNTUFDma7hqROlvSw5ufOQBWZGuJnI1KA39vA
- n91VbylS6bsRmSJvvxyj4+ojE+J9Ao/OV+hZqpxDxjXe0sGqkJca/ACcp89Dj0R3pKNNgvcu4
- 1+wjVDGwAoWC8NJGfEVSBobALYsqio/HAq5YVKcbC6x6AZ4/vmlw1/gIXkbx2eUNMlY8WqjF6
- D1DdE8IoQHfvnYhQMkYf1skrpAG/U6S5DRMbtjypEQjqNF/hW2AQNzKHG85iCiSG4U9MOOyNW
- 0dwPiI8mfU7F2amFN9FX86Hb60Ve5HJPCkLhUX1+jQOymQ2BMLRYs6US4flh9kGF2osPTIoAN
- li362gbge+6kI23Wx70YYqbhsxAz77Ulsxf6K5OSduOZLcBKe2waCqi9S+TPD9mLGkkiK0sYz
- MHYRVavLU518CB+S8t2U4Jm1g0HcjLQMiQd1ZBFU1q9JtgLi3DXKJnAOoHugvpXr48g8gzHkg
- j8AnOk/1STeVbrPlz17duLbKP42+gwGNLFYdhlSxF6MuJauyGDIKlgOE1BI2fgw1OhhmY6SIb
- x3x21u8A30Z0Hg9kD9Em7w4tAVB1ESyQ2dBpEu6jclsYtNZ4Uy9Yv8Q4zLaboEgw42XrXbG5g
- 7CiOkRPT4j30YBQBpsOgSFg7B+MmmDEiSUnj3b0tIwY/rtbWt4AM2Ywwq8ix6aBS7jKf6jJry
- Q8k5t54OVE/LRN7lVxqBAESml+ERl8w/20sy7J72uA+POSMX8UdHX2BuugYtEB/LmprSxgRAk
- poGn59W0wp7wHZ1yZz4oulncmvm3UeG9c6p9oYy7rLs/5Mp/o13haq36U1PI53KDj1heyx7RS
- 1QC51pCvIvLef1S09XXA==
+References: <20201229151352.6hzmjvu3qh6p2qgg@e107158-lin> <20201229173401.GH450923@krava>
+ <20201229232835.cbyfmja3bu3lx7we@e107158-lin> <20201230090333.GA577428@krava> <20201230132759.GB577428@krava>
+In-Reply-To: <20201230132759.GB577428@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 2 Jan 2021 14:25:34 -0800
+Message-ID: <CAEf4BzYbeQqzK2n9oz6wqysVj35k+VZC7DZrXFEtjUM6eiyvOA@mail.gmail.com>
+Subject: Re: BTFIDS: FAILED unresolved symbol udp6_sock
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Qais Yousef <qais.yousef@arm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add binding documentation for bluetooth part of RTL8723DS
+On Wed, Dec 30, 2020 at 5:28 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Wed, Dec 30, 2020 at 10:03:37AM +0100, Jiri Olsa wrote:
+> > On Tue, Dec 29, 2020 at 11:28:35PM +0000, Qais Yousef wrote:
+> > > Hi Jiri
+> > >
+> > > On 12/29/20 18:34, Jiri Olsa wrote:
+> > > > On Tue, Dec 29, 2020 at 03:13:52PM +0000, Qais Yousef wrote:
+> > > > > Hi
+> > > > >
+> > > > > When I enable CONFIG_DEBUG_INFO_BTF I get the following error in the BTFIDS
+> > > > > stage
+> > > > >
+> > > > >         FAILED unresolved symbol udp6_sock
+> > > > >
+> > > > > I cross compile for arm64. My .config is attached.
+> > > > >
+> > > > > I managed to reproduce the problem on v5.9 and v5.10. Plus 5.11-rc1.
+> > > > >
+> > > > > Have you seen this before? I couldn't find a specific report about this
+> > > > > problem.
+> > > > >
+> > > > > Let me know if you need more info.
+> > > >
+> > > > hi,
+> > > > this looks like symptom of the gcc DWARF bug we were
+> > > > dealing with recently:
+> > > >
+> > > >   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97060
+> > > >   https://lore.kernel.org/lkml/CAE1WUT75gu9G62Q9uAALGN6vLX=o7vZ9uhqtVWnbUV81DgmFPw@mail.gmail.com/#r
+> > > >
+> > > > what pahole/gcc version are you using?
+> > >
+> > > I'm on gcc 9.3.0
+> > >
+> > >     aarch64-linux-gnu-gcc (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
+> > >
+> > > I was on pahole v1.17. I moved to v1.19 but I still see the same problem.
+> >
+> > I can reproduce with your .config, but make 'defconfig' works,
+> > so I guess it's some config option issue, I'll check later today
+>
+> so your .config has
+>   CONFIG_CRYPTO_DEV_BCM_SPU=y
+>
+> and that defines 'struct device_private' which
+> clashes with the same struct defined in drivers/base/base.h
+>
+> so several networking structs will be doubled, like net_device:
+>
+>         $ bpftool btf dump file ../vmlinux.config | grep net_device\' | grep STRUCT
+>         [2731] STRUCT 'net_device' size=2240 vlen=133
+>         [113981] STRUCT 'net_device' size=2240 vlen=133
+>
+> each is using different 'struct device_private' when it's unwinded
+>
+> and that will confuse BTFIDS logic, becase we have multiple structs
+> with the same name, and we can't be sure which one to pick
+>
+> perhaps we should check on this in pahole and warn earlier with
+> better error message.. I'll check, but I'm not sure if pahole can
+> survive another hastab ;-)
+>
+> Andrii, any ideas on this? ;-)
 
-Signed-off-by: John-Eric Kamps <johnny86@gmx.de>
-=2D--
- Documentation/devicetree/bindings/net/realtek-bluetooth.yaml | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+It's both unavoidable and correct from the C type system's
+perspective, so there is nothing for pahole to warn about. We used to
+have (for a long time) a similar clash with two completely different
+ring_buffer structs. Eventually they just got renamed to avoid
+duplication of related structs (task_struct and tons of other). But
+both BTF dedup and CO-RE relocation algorithms are designed to handle
+this correctly, so perhaps BTFIDS should be able to handle this as
+well?
 
-diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml =
-b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-index 4f485df69ac3..3cc21dc056e0 100644
-=2D-- a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-+++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-@@ -4,14 +4,14 @@
- $id: http://devicetree.org/schemas/net/realtek-bluetooth.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+>
+> easy fix is the patch below that renames the bcm's structs,
+> it makes the kernel to compile.. but of course the new name
+> is probably wrong and we should push this through that code
+> authors
 
--title: RTL8723BS/RTL8723CS/RTL8822CS Bluetooth Device Tree Bindings
-+title: RTL8723BS/RTL8723CS/RTL8723DS/RTL8822CS Bluetooth Device Tree Bind=
-ings
+In this case, I think renaming generic device_private name is a good
+thing regardless.
 
- maintainers:
-   - Vasily Khoruzhick <anarsoul@gmail.com>
-   - Alistair Francis <alistair@alistair23.me>
+>
+> jirka
+>
+>
+> ---
 
- description:
--  RTL8723CS/RTL8723CS/RTL8822CS is WiFi + BT chip. WiFi part is connected=
- over
-+  RTL8723CS/RTL8723CS/RTL8723DS/RTL8822CS is WiFi + BT chip. WiFi part is=
- connected over
-   SDIO, while BT is connected over serial. It speaks H5 protocol with few
-   extra commands to upload firmware and change module speed.
-
-@@ -20,6 +20,7 @@ properties:
-     oneOf:
-       - const: "realtek,rtl8723bs-bt"
-       - const: "realtek,rtl8723cs-bt"
-+      - const: "realtek,rtl8723ds-bt"
-       - const: "realtek,rtl8822cs-bt"
-
-   device-wake-gpios:
-=2D-
-2.25.1
-
+[...]
