@@ -2,76 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B542E860A
-	for <lists+netdev@lfdr.de>; Sat,  2 Jan 2021 02:58:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 621322E868E
+	for <lists+netdev@lfdr.de>; Sat,  2 Jan 2021 07:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727354AbhABBuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jan 2021 20:50:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57520 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727058AbhABBuj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Jan 2021 20:50:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 90BF522241;
-        Sat,  2 Jan 2021 01:49:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609552198;
-        bh=ftpLdvsvDf6Op/7guRWkU1GTp+LUtuRhZif20iq/5j4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hBpHeX+ylHfhXASU+u0XDWdnQDzosOaZ8yY2oW5P7GJm+i2clh+8urMVbfa/FbyQy
-         2+92fzN0ESMhfqT+K56fKm3qSLgtXMvQi2bY+eNxmv9lvLwEOVwuQlBVisVlu9DFuw
-         ZMSTV6D4JNlXUNq/PaYR7oxjrWc1y5LH397Su7KGoTuJJx0mfTFTUxs7RMpU9wwm8h
-         CZmGrD7PvE65VOlBTL7ePVBGfTCUnYHZp3oUCHAEI0aNczIe80z8rUe7EjkAfixSi6
-         wZY4fXcsKDOFlatZJLdW8DTiDi8Dr0FTouI3mivPap2TItPrUXtCpEeM7gwV7k4gK0
-         FzzoPuXCdWPFA==
-Received: by pali.im (Postfix)
-        id D53C59DC; Sat,  2 Jan 2021 02:49:55 +0100 (CET)
-Date:   Sat, 2 Jan 2021 02:49:55 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Thomas Schreiber <tschreibe@gmail.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] net: sfp: add workaround for Realtek RTL8672 and
- RTL9601C chips
-Message-ID: <20210102014955.2xv27xla65eeqyzz@pali>
-References: <20201230161036.GR1551@shell.armlinux.org.uk>
- <20201230165634.c4ty3mw6djezuyq6@pali>
- <20201230170546.GU1551@shell.armlinux.org.uk>
- <X+y1K21tp01GpvMy@lunn.ch>
- <20201230174307.lvehswvj5q6c6vk3@pali>
- <20201230190958.GW1551@shell.armlinux.org.uk>
- <20201231121410.2xlxtyqjelrlysd2@pali>
- <X+3ume1+wz8HXHEf@lunn.ch>
- <20201231170039.zkoa6mij3q3gt7c6@pali>
- <X+4GwpFnJ0Asq/Yj@lunn.ch>
+        id S1727354AbhABGF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Jan 2021 01:05:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727219AbhABGFZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Jan 2021 01:05:25 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E629C0613C1
+        for <netdev@vger.kernel.org>; Fri,  1 Jan 2021 22:04:45 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id y19so51822022lfa.13
+        for <netdev@vger.kernel.org>; Fri, 01 Jan 2021 22:04:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=07wP4+HPBVC2VHbUnFYsgWGMeRKZwcznPDaqHki/QJQ=;
+        b=AwvEUT04dRZRxQb/2mz5Sa4Wndo/K1CL1umdComqMZUZlXVWSJQB7lcofjIcuC+ze6
+         2alNCnxiPCMJPDiYt1yQ+KX0t1o1D4fbK34NcrIInky9lgUccS8ZCOHVJCVjsdOgk2rc
+         V2OE/vo+XOF+2RNidBlnvzHq8G9xlV5R9h1SlVuRPoWSfJS/J4cLMAZQwzkamgi/oU0N
+         8GfrtrxIsh/KuLLhPYul+wfUEXTNysSTB1RGEFIbj4BY61t+AwRmMIg/PrbOXDEWLTb2
+         zLEX0d0HvAJ81vDBUOn/a4C6gYrNYwYZLfJ+g943MOR9enck0Kdy17h6xbVMDpWT8keu
+         pv+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=07wP4+HPBVC2VHbUnFYsgWGMeRKZwcznPDaqHki/QJQ=;
+        b=qh3MTf9gPhhJGdm0mmxFUkiR7anoJ9ahLidpIMReqxnVmQEP1ZC5HtOzlGt6Cq58oO
+         ZAexkcaD1/WDfMqLhd1E45HfxIHaUTp3SQ2rMZj/PNPcjjyIFRVVIg9JeEcHiw6T75Hk
+         fg+DoBhhNtRHIyHEjdouYjPIkQHZYfaVKRm44vSAbqj2EgvdvkVvblY9uIVsCrVaSzox
+         axy1QxrDyKSluVvd7g57oCn971cBTaKLQn1oFNEk4uPpc1VUUwMVd+0Ty4LGsuA81p4C
+         cDit1wr2WBvLhSnglRR8FFbBf/EmILFucLyQ7eAAVJ2ZBHBMemkpAl2fp3vwz9acfY9Q
+         NxTQ==
+X-Gm-Message-State: AOAM531biM7hg60UQPS6GB7+cq5k/kCFijv9Y9O/bL+UJHzeRyajpH6n
+        U4+2S4UXnHEx0ZSsaSmDm3y2PglT8aotArye7gk=
+X-Google-Smtp-Source: ABdhPJyv5+JjtiVK0j4T9nRqiANhDYU3/AjVCG+MhVVzT0KTsgGX9L+naGOo7ypYgP8i7Y8uQAGnjTRQFzJeJWShygY=
+X-Received: by 2002:a2e:9246:: with SMTP id v6mr7657089ljg.221.1609567482716;
+ Fri, 01 Jan 2021 22:04:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X+4GwpFnJ0Asq/Yj@lunn.ch>
-User-Agent: NeoMutt/20180716
+Received: by 2002:a19:6550:0:0:0:0:0 with HTTP; Fri, 1 Jan 2021 22:04:41 -0800 (PST)
+Reply-To: grace.graceobia@gmail.com
+From:   Grace Obia <kath.rafael2030@gmail.com>
+Date:   Sat, 2 Jan 2021 06:04:41 +0000
+Message-ID: <CADP0Tkc4zsTvGOR87UFbCtG0=7=DQyM=JTEBeeB9BzCQrL_XXA@mail.gmail.com>
+Subject: Dearest in Mind,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 31 December 2020 18:13:38 Andrew Lunn wrote:
-> > > Looking at sfp_module_info(), adding a check for i2c_block_size < 2
-> > > when determining what length to return. ethtool should do the right
-> > > thing, know that the second page has not been returned to user space.
-> > 
-> > But if we limit length of eeprom then userspace would not be able to
-> > access those TX_DISABLE, LOS and other bits from byte 110 at address A2.
-> 
-> Have you tested these bits to see if they actually work? If they don't
-> work...
+-- 
 
-On Ubiquiti module that LOS bit does not work.
+Dearest in Mind,
 
-I think that on CarlitoxxPro module LOS bit worked. But I cannot test it
-right now as I do not have access to testing OLT unit.
+My name is Mrs. Katherine Rafael, a business woman an Ivorian Citizen
+and born in 1961. I have a mission for you worth $3 500, 000,00 (Three
+Million Five Hundred Thousand United State Dollars) which I intend
+using for CHARITY.
 
-Adding Thomas to loop. Can you check if CarlitoxxPro GPON ONT module
-supports LOS or other bits at byte offset 110 at address A2?
+I am a breast cancer woman and have told by doctor that I will die in
+no distance future, now and want to donate this money for charity
+through you by transferring this money to your account, to enable
+people in your area benefit from it.
+
+Could you be the one I will use in this noble transaction before I
+will go for my surgery?
+
+
+Mrs.Katherine Rafael
