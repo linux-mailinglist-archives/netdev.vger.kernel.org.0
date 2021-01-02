@@ -2,115 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A8D62E85F2
-	for <lists+netdev@lfdr.de>; Sat,  2 Jan 2021 01:08:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC91C2E85F7
+	for <lists+netdev@lfdr.de>; Sat,  2 Jan 2021 01:08:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727133AbhABAEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Jan 2021 19:04:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
+        id S1727373AbhABAFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Jan 2021 19:05:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726991AbhABAEw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jan 2021 19:04:52 -0500
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B82C061573
-        for <netdev@vger.kernel.org>; Fri,  1 Jan 2021 16:04:11 -0800 (PST)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        with ESMTP id S1727032AbhABAFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Jan 2021 19:05:32 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8723CC06179F
+        for <netdev@vger.kernel.org>; Fri,  1 Jan 2021 16:04:40 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4D72Dn34KLzQjkp;
-        Sat,  2 Jan 2021 01:04:09 +0100 (CET)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4D72Ds2MyQzQl91;
+        Sat,  2 Jan 2021 01:04:13 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1609545847;
+        s=MBO0001; t=1609545849;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=SpTMGK7sXdnm6mVy68zQ4xX5xYn2SUH/oewZ8M1QtlI=;
-        b=SqUdhAiV9gVXmAERXT+DA/EJgy8hIGZ0fY2ztCp206GYUdGFvxz6FhTs1yNYMgef8SQBVa
-        QRoKOKD4SYTt7Jo4VrkKVkxkK2begAvaS7HcVPzXuixUgp7bHKYJhEzAFrcT/RUQUPAzz/
-        C/WamQncYpSpSnyZ+pj1z/ivFsnzsGbHUBE3sFPbDBjfILDlYUPgPYRpbBbsthsVhHVDjg
-        9/v5fcbmhTk+S/bg5Ubrn72a8YfOp4OzWCVv4OD2piknROr/EyU7pJsr27uPWTgRTXaupo
-        VZO4HRjrPkJNXfSDPokWd0/nHTtbVhOUEkESFwUgnZoIsjzFkdi2Q7GbPn78jg==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZVyvI2kFbjj0FFkDsZa9rU+xYsNQrUsWQDdph2Hlnhw=;
+        b=ZTbppG2DWhQcWuMpuQmYXhgHu5PP/dJ9WF16BtSBi1lkbuLlxaegJCKGHVWTODNhh4ScPi
+        2lc13j3zK0gEH5usARJTK+1/uQyDLk/u8NtbrmEBMKh5eYM7H9E6YypvUVMltPmNJIaoVd
+        YwmapBwAboxT2nNMagVc2BHj5hcBvXcvJmR81hCZKxMYnDc09itwYa4sMULftxwd3lLOwL
+        7Gbap1MIgJxeMIle5IL5CI8iZrP3JD9bLdgZ/Ij6sPHboamU9G+UPhTNzUdUuyqrZVjXIJ
+        4MIf8vte+nd7OHt0y06rGJ/s920WWWzjIxXT8DhxabeiZXCndBkdFY4OheQkRw==
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
-        with ESMTP id Zf2yM8vJnttB; Sat,  2 Jan 2021 01:04:06 +0100 (CET)
+        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
+        with ESMTP id tysVx5ZqZgDp; Sat,  2 Jan 2021 01:04:07 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next v2 0/7] dcb: Support APP, DCBX objects
-Date:   Sat,  2 Jan 2021 01:03:34 +0100
-Message-Id: <cover.1609544200.git.me@pmachata.org>
+Subject: [PATCH iproute2-next v2 1/7] lib: rt_names: Add rtnl_dsfield_get_name()
+Date:   Sat,  2 Jan 2021 01:03:35 +0100
+Message-Id: <8f7f7d7266a60bb980d829fbebad36ff70ce2139.1609544200.git.me@pmachata.org>
+In-Reply-To: <cover.1609544200.git.me@pmachata.org>
+References: <cover.1609544200.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: **
-X-Rspamd-Score: 1.98 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 6E3401718
-X-Rspamd-UID: cf5692
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -0.07 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 08FF31726
+X-Rspamd-UID: d0ea65
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support to the dcb tool for the following two DCB objects:
+For formatting DSCP (not full dsfield), it would be handy to be able to
+just get the name from the name table, and not get any of the remaining
+cruft related to formatting. Add a new entry point to just fetch the
+name table string uninterpreted. Use it from rtnl_dsfield_n2a().
 
-- APP, which allows configuration of traffic prioritization rules based on
-  several possible packet headers.
+Signed-off-by: Petr Machata <me@pmachata.org>
+---
+ include/rt_names.h |  1 +
+ lib/rt_names.c     | 20 ++++++++++++++++----
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-- DCBX, which is a 1-byte bitfield of flags that configure whether the DCBX
-  protocol is implemented in the device or in the host, and which version
-  of the protocol should be used.
-
-Patch #1 adds a new helper for finding a name of a given dsfield value.
-This is useful for APP DSCP-to-priority rules, which can use human-readable
-DSCP names.
-
-Patches #2, #3 and #4 extend existing interfaces for, respectively, parsing
-of the X:Y mappings, for setting a DCB object, and for getting a DCB
-object.
-
-In patch #5, support for the command line argument -N / --Numeric is
-added. The APP tool later uses it to decide whether to format DSCP values
-as human-readable strings or as plain numbers.
-
-Patches #6 and #7 add the subtools themselves and their man pages.
-
-v2:
-- Two patches dropped and sent to iproute2 branch as "dcb: Fixes".
-  This patch set now depends on that one.
-- Patch #5:
-    - Make it -N / --Numeric instead of -n / --no-nice-names
-    - Rename the flag from no_nice_names to numeric as well
-- Patch #6:
-    - Adjust to s/no_nice_names/numeric/ from another patch.
-
-Petr Machata (7):
-  lib: rt_names: Add rtnl_dsfield_get_name()
-  lib: Generalize parse_mapping()
-  dcb: Generalize dcb_set_attribute()
-  dcb: Generalize dcb_get_attribute()
-  dcb: Support -N to suppress translation to human-readable names
-  dcb: Add a subtool for the DCB APP object
-  dcb: Add a subtool for the DCBX object
-
- dcb/Makefile        |   8 +-
- dcb/dcb.c           | 193 +++++++++--
- dcb/dcb.h           |  20 ++
- dcb/dcb_app.c       | 796 ++++++++++++++++++++++++++++++++++++++++++++
- dcb/dcb_dcbx.c      | 192 +++++++++++
- include/rt_names.h  |   1 +
- include/utils.h     |   5 +
- lib/rt_names.c      |  20 +-
- lib/utils.c         |  37 +-
- man/man8/dcb-app.8  | 237 +++++++++++++
- man/man8/dcb-dcbx.8 | 108 ++++++
- man/man8/dcb.8      |  12 +-
- 12 files changed, 1591 insertions(+), 38 deletions(-)
- create mode 100644 dcb/dcb_app.c
- create mode 100644 dcb/dcb_dcbx.c
- create mode 100644 man/man8/dcb-app.8
- create mode 100644 man/man8/dcb-dcbx.8
-
+diff --git a/include/rt_names.h b/include/rt_names.h
+index 990ed7f22e69..1835f3be2bed 100644
+--- a/include/rt_names.h
++++ b/include/rt_names.h
+@@ -9,6 +9,7 @@ const char *rtnl_rtscope_n2a(int id, char *buf, int len);
+ const char *rtnl_rttable_n2a(__u32 id, char *buf, int len);
+ const char *rtnl_rtrealm_n2a(int id, char *buf, int len);
+ const char *rtnl_dsfield_n2a(int id, char *buf, int len);
++const char *rtnl_dsfield_get_name(int id);
+ const char *rtnl_group_n2a(int id, char *buf, int len);
+ 
+ int rtnl_rtprot_a2n(__u32 *id, const char *arg);
+diff --git a/lib/rt_names.c b/lib/rt_names.c
+index ca0680a12150..b976471d7979 100644
+--- a/lib/rt_names.c
++++ b/lib/rt_names.c
+@@ -479,18 +479,30 @@ static void rtnl_rtdsfield_initialize(void)
+ 
+ const char *rtnl_dsfield_n2a(int id, char *buf, int len)
+ {
++	const char *name;
++
+ 	if (id < 0 || id >= 256) {
+ 		snprintf(buf, len, "%d", id);
+ 		return buf;
+ 	}
++	if (!numeric) {
++		name = rtnl_dsfield_get_name(id);
++		if (name != NULL)
++			return name;
++	}
++	snprintf(buf, len, "0x%02x", id);
++	return buf;
++}
++
++const char *rtnl_dsfield_get_name(int id)
++{
++	if (id < 0 || id >= 256)
++		return NULL;
+ 	if (!rtnl_rtdsfield_tab[id]) {
+ 		if (!rtnl_rtdsfield_init)
+ 			rtnl_rtdsfield_initialize();
+ 	}
+-	if (!numeric && rtnl_rtdsfield_tab[id])
+-		return rtnl_rtdsfield_tab[id];
+-	snprintf(buf, len, "0x%02x", id);
+-	return buf;
++	return rtnl_rtdsfield_tab[id];
+ }
+ 
+ 
 -- 
 2.26.2
 
