@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A2A92E8E74
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 22:39:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 114B02E8E76
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 22:39:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727708AbhACVha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 16:37:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36850 "EHLO mail.kernel.org"
+        id S1727738AbhACVhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 16:37:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36860 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726924AbhACVh3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 3 Jan 2021 16:37:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E83B020780;
-        Sun,  3 Jan 2021 21:36:47 +0000 (UTC)
+        id S1726924AbhACVhx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Jan 2021 16:37:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6161B2078D;
+        Sun,  3 Jan 2021 21:37:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609709809;
-        bh=qVglGCnEzhllmV9UmCv6wplmqZDMihZ1DsBawNGAj1Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=t97m8l/wX34nha4xhO5OFUsTyxNjRL+k6TA+/SHdqduWF2umxVbiScd40qxIuT6ut
-         RtKZjzmHLLy4X0SRkFTBtgcqUoiZG8J+Mu8jioOSsJ5YMbHJOlAQ/+A/kp+i7t23ca
-         jSw68Ypp1vU41B9uiRuQShBCi9Z4p0+0OS85O5JBzwLQeZg5E5vUExAGyymWPAPlCJ
-         K7ZJZadhaMuCLHHiofhLtOc9nSdLITaeP2fGwJN50tPM5Jrki+K8/wOJsJibIJZcp4
-         dwW9kXQvBb50pGntV+bjk/0yCTuzP53GPZUp752OcGHOa85TCgZvjHol9bATjw2ThA
-         TJQCLdhswNlag==
+        s=k20201202; t=1609709832;
+        bh=cPFobVnyBxf2yC8kLS4j/2ZwleDDSVRsDiNdqpQzXw8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=chBLVJeOYjkPZiQuR0khSIo19JAQSB0yxrdVAS2K+SzzIFWiBWdyrLFmMBWD+htB7
+         f1ADN/z0j6pom7vZm7C/6W2IsBTb4lZSjlV3zjBNOnVZEt2xzHT4YNcUQxD5MLdKSw
+         jm5BBZ1TvZl7PMpzcIBEjRJmtUgjeXp49diMdK/I7hbtVHnTqZ/QJEerhGh9CxNTY1
+         koLAI3TAoqhLIsGrWwFOE0pWisX+6FHLr/hXsiGqtJz1wwQOTTh1d+b0esIwrhRwqH
+         A9XYkVzaRWmaGBEpYPU1VnucEM3dw4G2ux8e0d01dh/3j+AvO4B312jsbJR+T32uNi
+         NTJwx2pEwKw0A==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Mintz, Yuval" <Yuval.Mintz@cavium.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+To:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        =?UTF-8?q?Stefan=20S=C3=B8rensen?= 
+        <stefan.sorensen@spectralink.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/7] qed: select CONFIG_CRC32
-Date:   Sun,  3 Jan 2021 22:36:17 +0100
-Message-Id: <20210103213645.1994783-1-arnd@kernel.org>
+Subject: [PATCH 2/7] phy: dp83640: select CONFIG_CRC32
+Date:   Sun,  3 Jan 2021 22:36:18 +0100
+Message-Id: <20210103213645.1994783-2-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210103213645.1994783-1-arnd@kernel.org>
+References: <20210103213645.1994783-1-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -41,37 +44,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-Without this, the driver fails to link:
+Without crc32, this driver fails to link:
 
-lpc_eth.c:(.text+0x1934): undefined reference to `crc32_le'
-arm-linux-gnueabi-ld: drivers/net/ethernet/qlogic/qed/qed_debug.o: in function `qed_grc_dump':
-qed_debug.c:(.text+0x4068): undefined reference to `crc32_le'
-arm-linux-gnueabi-ld: drivers/net/ethernet/qlogic/qed/qed_debug.o: in function `qed_idle_chk_dump':
-qed_debug.c:(.text+0x51fc): undefined reference to `crc32_le'
-arm-linux-gnueabi-ld: drivers/net/ethernet/qlogic/qed/qed_debug.o: in function `qed_mcp_trace_dump':
-qed_debug.c:(.text+0x6000): undefined reference to `crc32_le'
-arm-linux-gnueabi-ld: drivers/net/ethernet/qlogic/qed/qed_debug.o: in function `qed_dbg_reg_fifo_dump':
-qed_debug.c:(.text+0x66cc): undefined reference to `crc32_le'
-arm-linux-gnueabi-ld: drivers/net/ethernet/qlogic/qed/qed_debug.o:qed_debug.c:(.text+0x6aa4): more undefined references to `crc32_le' follow
+arm-linux-gnueabi-ld: drivers/net/phy/dp83640.o: in function `match':
+dp83640.c:(.text+0x476c): undefined reference to `crc32_le'
 
-Fixes: 7a4b21b7d1f0 ("qed: Add nvram selftest")
+Fixes: 539e44d26855 ("dp83640: Include hash in timestamp/packet matching")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/qlogic/Kconfig | 1 +
+ drivers/ptp/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/Kconfig b/drivers/net/ethernet/qlogic/Kconfig
-index 4366c7a8de95..6b5ddb07ee83 100644
---- a/drivers/net/ethernet/qlogic/Kconfig
-+++ b/drivers/net/ethernet/qlogic/Kconfig
-@@ -78,6 +78,7 @@ config QED
- 	depends on PCI
- 	select ZLIB_INFLATE
- 	select CRC8
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index 476d7c7fe70a..d2bf05ccbbe2 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -64,6 +64,7 @@ config DP83640_PHY
+ 	depends on NETWORK_PHY_TIMESTAMPING
+ 	depends on PHYLIB
+ 	depends on PTP_1588_CLOCK
 +	select CRC32
- 	select NET_DEVLINK
  	help
- 	  This enables the support for Marvell FastLinQ adapters family.
+ 	  Supports the DP83640 PHYTER with IEEE 1588 features.
+ 
 -- 
 2.29.2
 
