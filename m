@@ -2,106 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A40C2E8B6F
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 09:42:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 178102E8B9B
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 11:08:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726345AbhACIlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 03:41:44 -0500
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:38179 "EHLO mx1.molgen.mpg.de"
+        id S1726680AbhACKEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 05:04:55 -0500
+Received: from spam.zju.edu.cn ([61.164.42.155]:26130 "EHLO zju.edu.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725829AbhACIlo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 3 Jan 2021 03:41:44 -0500
-Received: from [192.168.0.6] (ip5f5aeaad.dynamic.kabel-deutschland.de [95.90.234.173])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id CEF6B20647B6A;
-        Sun,  3 Jan 2021 09:41:00 +0100 (CET)
-Subject: Re: [Intel-wired-lan] [PATCH] net: ixgbe: Fix memleak in
- ixgbe_configure_clsu32
-To:     Dinghao Liu <dinghao.liu@zju.edu.cn>
-References: <20210103080843.25914-1-dinghao.liu@zju.edu.cn>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
+        id S1725889AbhACKEy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Jan 2021 05:04:54 -0500
+Received: by ajax-webmail-mail-app2 (Coremail) ; Sun, 3 Jan 2021 18:03:47
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.192.85.18]
+Date:   Sun, 3 Jan 2021 18:03:47 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   dinghao.liu@zju.edu.cn
+To:     "Paul Menzel" <pmenzel@molgen.mpg.de>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org,
+        "Jakub Kicinski" <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, kjlu@umn.edu
-Message-ID: <aefe9de0-83b4-81b8-5d5b-674cb8ea97e8@molgen.mpg.de>
-Date:   Sun, 3 Jan 2021 09:41:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+Subject: Re: Re: [Intel-wired-lan] [PATCH] net: ixgbe: Fix memleak in
+ ixgbe_configure_clsu32
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20200917(3e19599d)
+ Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
+In-Reply-To: <aefe9de0-83b4-81b8-5d5b-674cb8ea97e8@molgen.mpg.de>
+References: <20210103080843.25914-1-dinghao.liu@zju.edu.cn>
+ <aefe9de0-83b4-81b8-5d5b-674cb8ea97e8@molgen.mpg.de>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-In-Reply-To: <20210103080843.25914-1-dinghao.liu@zju.edu.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Message-ID: <6d39129d.17f75.176c7b3f11b.Coremail.dinghao.liu@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: by_KCgCHj+uDlvFfXhRSAA--.13514W
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgQOBlZdtRzi2AAAsW
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Dinghao,
-
-
-Am 03.01.21 um 09:08 schrieb Dinghao Liu:
-> When ixgbe_fdir_write_perfect_filter_82599() fails,
-> input allocated by kzalloc() has not been freed,
-> which leads to memleak.
-
-Nice find. Thank you for your patches. Out of curiosity, do you use an 
-analysis tool to find these issues?
-
-> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
-> ---
->   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index 393d1c2cd853..e9c2d28efc81 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -9582,8 +9582,10 @@ static int ixgbe_configure_clsu32(struct ixgbe_adapter *adapter,
->   	ixgbe_atr_compute_perfect_hash_82599(&input->filter, mask);
->   	err = ixgbe_fdir_write_perfect_filter_82599(hw, &input->filter,
->   						    input->sw_idx, queue);
-> -	if (!err)
-> -		ixgbe_update_ethtool_fdir_entry(adapter, input, input->sw_idx);
-> +	if (err)
-> +		goto err_out_w_lock;
-> +
-> +	ixgbe_update_ethtool_fdir_entry(adapter, input, input->sw_idx);
->   	spin_unlock(&adapter->fdir_perfect_lock);
->   
->   	if ((uhtid != 0x800) && (adapter->jump_tables[uhtid]))
-
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-
-I wonder, in the non-error case, how `input` and `jump` are freed.
-
-Old code:
-
->         if (!err)
->                 ixgbe_update_ethtool_fdir_entry(adapter, input, input->sw_idx);
->         spin_unlock(&adapter->fdir_perfect_lock);
-> 
->         if ((uhtid != 0x800) && (adapter->jump_tables[uhtid]))
->                 set_bit(loc - 1, (adapter->jump_tables[uhtid])->child_loc_map);
-> 
->         kfree(mask);
->         return err;
-
-Should these two lines be replaced with `goto err_out`? (Though the name 
-is confusing then, as it’s the non-error case.)
-
-> err_out_w_lock:
->         spin_unlock(&adapter->fdir_perfect_lock);
-> err_out:
->         kfree(mask);
-> free_input:
->         kfree(input);
-> free_jump:
->         kfree(jump);
->         return err;
-> }
-
-Kind regards,
-
-Paul
+PiBEZWFyIERpbmdoYW8sCj4gCj4gCj4gQW0gMDMuMDEuMjEgdW0gMDk6MDggc2NocmllYiBEaW5n
+aGFvIExpdToKPiA+IFdoZW4gaXhnYmVfZmRpcl93cml0ZV9wZXJmZWN0X2ZpbHRlcl84MjU5OSgp
+IGZhaWxzLAo+ID4gaW5wdXQgYWxsb2NhdGVkIGJ5IGt6YWxsb2MoKSBoYXMgbm90IGJlZW4gZnJl
+ZWQsCj4gPiB3aGljaCBsZWFkcyB0byBtZW1sZWFrLgo+IAo+IE5pY2UgZmluZC4gVGhhbmsgeW91
+IGZvciB5b3VyIHBhdGNoZXMuIE91dCBvZiBjdXJpb3NpdHksIGRvIHlvdSB1c2UgYW4gCj4gYW5h
+bHlzaXMgdG9vbCB0byBmaW5kIHRoZXNlIGlzc3Vlcz8KPiAKClllcywgdGhlc2UgYnVncyBhcmUg
+c3VnZ2VzdGVkIGJ5IG15IHN0YXRpYyBhbmFseXNpcyB0b29sLiAKCj4gPiBTaWduZWQtb2ZmLWJ5
+OiBEaW5naGFvIExpdSA8ZGluZ2hhby5saXVAemp1LmVkdS5jbj4KPiA+IC0tLQo+ID4gICBkcml2
+ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV9tYWluLmMgfCA2ICsrKystLQo+ID4g
+ICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+ID4gCj4g
+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFp
+bi5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFpbi5jCj4gPiBp
+bmRleCAzOTNkMWMyY2Q4NTMuLmU5YzJkMjhlZmM4MSAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMv
+bmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX21haW4uYwo+ID4gKysrIGIvZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFpbi5jCj4gPiBAQCAtOTU4Miw4ICs5NTgy
+LDEwIEBAIHN0YXRpYyBpbnQgaXhnYmVfY29uZmlndXJlX2Nsc3UzMihzdHJ1Y3QgaXhnYmVfYWRh
+cHRlciAqYWRhcHRlciwKPiA+ICAgCWl4Z2JlX2F0cl9jb21wdXRlX3BlcmZlY3RfaGFzaF84MjU5
+OSgmaW5wdXQtPmZpbHRlciwgbWFzayk7Cj4gPiAgIAllcnIgPSBpeGdiZV9mZGlyX3dyaXRlX3Bl
+cmZlY3RfZmlsdGVyXzgyNTk5KGh3LCAmaW5wdXQtPmZpbHRlciwKPiA+ICAgCQkJCQkJICAgIGlu
+cHV0LT5zd19pZHgsIHF1ZXVlKTsKPiA+IC0JaWYgKCFlcnIpCj4gPiAtCQlpeGdiZV91cGRhdGVf
+ZXRodG9vbF9mZGlyX2VudHJ5KGFkYXB0ZXIsIGlucHV0LCBpbnB1dC0+c3dfaWR4KTsKPiA+ICsJ
+aWYgKGVycikKPiA+ICsJCWdvdG8gZXJyX291dF93X2xvY2s7Cj4gPiArCj4gPiArCWl4Z2JlX3Vw
+ZGF0ZV9ldGh0b29sX2ZkaXJfZW50cnkoYWRhcHRlciwgaW5wdXQsIGlucHV0LT5zd19pZHgpOwo+
+ID4gICAJc3Bpbl91bmxvY2soJmFkYXB0ZXItPmZkaXJfcGVyZmVjdF9sb2NrKTsKPiA+ICAgCj4g
+PiAgIAlpZiAoKHVodGlkICE9IDB4ODAwKSAmJiAoYWRhcHRlci0+anVtcF90YWJsZXNbdWh0aWRd
+KSkKPiAKPiBSZXZpZXdlZC1ieTogUGF1bCBNZW56ZWwgPHBtZW56ZWxAbW9sZ2VuLm1wZy5kZT4K
+PiAKPiBJIHdvbmRlciwgaW4gdGhlIG5vbi1lcnJvciBjYXNlLCBob3cgYGlucHV0YCBhbmQgYGp1
+bXBgIGFyZSBmcmVlZC4KPiAKCkknbSBub3Qgc3VyZSBpZiBrZnJlZShqdW1wKSB3aWxsIGludHJv
+ZHVjZSBidWcuIGp1bXAgaXMgYWxsb2NhdGVkIGluIGEgZm9yIApsb29wIGFuZCBoYXMgYmVlbiBw
+YXNzZWQgdG8gYWRhcHRlci0+anVtcF90YWJsZXMuIGlucHV0IGFuZCBtYXNrIGhhdmUgbmV3CmRl
+ZmluaXRpb25zIChremFsbG9jKSBhZnRlciB0aGlzIGxvb3AsIGl0J3MgcmVhc29uYWJsZSB0byBm
+cmVlIHRoZW0gb24gZmFpbHVyZS4KQnV0IGp1bXAgaXMgZGlmZmVyZW50LiBNYXliZSB3ZSBzaG91
+bGQgbm90IGZyZWUganVtcCBhZnRlciB0aGUgbG9vcD8KCj4gT2xkIGNvZGU6Cj4gCj4gPiAgICAg
+ICAgIGlmICghZXJyKQo+ID4gICAgICAgICAgICAgICAgIGl4Z2JlX3VwZGF0ZV9ldGh0b29sX2Zk
+aXJfZW50cnkoYWRhcHRlciwgaW5wdXQsIGlucHV0LT5zd19pZHgpOwo+ID4gICAgICAgICBzcGlu
+X3VubG9jaygmYWRhcHRlci0+ZmRpcl9wZXJmZWN0X2xvY2spOwo+ID4gCj4gPiAgICAgICAgIGlm
+ICgodWh0aWQgIT0gMHg4MDApICYmIChhZGFwdGVyLT5qdW1wX3RhYmxlc1t1aHRpZF0pKQo+ID4g
+ICAgICAgICAgICAgICAgIHNldF9iaXQobG9jIC0gMSwgKGFkYXB0ZXItPmp1bXBfdGFibGVzW3Vo
+dGlkXSktPmNoaWxkX2xvY19tYXApOwo+ID4gCj4gPiAgICAgICAgIGtmcmVlKG1hc2spOwo+ID4g
+ICAgICAgICByZXR1cm4gZXJyOwo+IAo+IFNob3VsZCB0aGVzZSB0d28gbGluZXMgYmUgcmVwbGFj
+ZWQgd2l0aCBgZ290byBlcnJfb3V0YD8gKFRob3VnaCB0aGUgbmFtZSAKPiBpcyBjb25mdXNpbmcg
+dGhlbiwgYXMgaXTigJlzIHRoZSBub24tZXJyb3IgY2FzZS4pCj4gCgpUaGlzIGFsc28gbWFrZXMg
+bWUgY29uZnVzZWQuIEl0IHNlZW1zIHRoYXQgdGhlIGNoZWNrIGFnYWluc3QgdW50aWVkIGlzIG5v
+dCBlcnJvcgpoYW5kbGluZyBjb2RlLCBidXQgdGhlcmUgaXMgYSBrZnJlZShtYXNrKSBhZnRlciBp
+dC4gRnJlZWluZyBhbGxvY2F0ZWQgZGF0YSBvbgpzdWNjZXNzIGlzIG5vdCByZWFzb25hYmxlLiAK
+ClJlZ2FyZHMsCkRpbmdoYW8KCj4gPiBlcnJfb3V0X3dfbG9jazoKPiA+ICAgICAgICAgc3Bpbl91
+bmxvY2soJmFkYXB0ZXItPmZkaXJfcGVyZmVjdF9sb2NrKTsKPiA+IGVycl9vdXQ6Cj4gPiAgICAg
+ICAgIGtmcmVlKG1hc2spOwo+ID4gZnJlZV9pbnB1dDoKPiA+ICAgICAgICAga2ZyZWUoaW5wdXQp
+Owo+ID4gZnJlZV9qdW1wOgo+ID4gICAgICAgICBrZnJlZShqdW1wKTsKPiA+ICAgICAgICAgcmV0
+dXJuIGVycjsKPiA+IH0KPiAKPiBLaW5kIHJlZ2FyZHMsCj4gCj4gUGF1bAo=
