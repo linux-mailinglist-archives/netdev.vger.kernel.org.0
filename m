@@ -2,167 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B96B2E8DE8
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 20:31:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C19C2E8DF3
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 20:57:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727721AbhACTaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 14:30:15 -0500
-Received: from correo.us.es ([193.147.175.20]:40824 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727524AbhACTaL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 3 Jan 2021 14:30:11 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id A785D11772E
-        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 20:28:53 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 99937DA844
-        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 20:28:53 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 8DCD5DA730; Sun,  3 Jan 2021 20:28:53 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5AFCBDA73F;
-        Sun,  3 Jan 2021 20:28:51 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 03 Jan 2021 20:28:51 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 29720426CC84;
-        Sun,  3 Jan 2021 20:28:51 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/3] netfilter: nftables: add set expression flags
-Date:   Sun,  3 Jan 2021 20:29:20 +0100
-Message-Id: <20210103192920.18639-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210103192920.18639-1-pablo@netfilter.org>
-References: <20210103192920.18639-1-pablo@netfilter.org>
+        id S1727682AbhACT4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 14:56:17 -0500
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:13324 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725889AbhACT4Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 14:56:16 -0500
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 5C1E55212AD;
+        Sun,  3 Jan 2021 22:55:32 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail; t=1609703732;
+        bh=wyaj2NkC6p89cfaO82BPGLPhVCBSFLTGN/jpX6R+zpg=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=V0WcAnczQgR9yZKK31UhIk2E3bW772wX3clSHrrX9u92EJBdbcx25CfV9bvkbZO3e
+         dj3RhTtgaHnQGs0jcoKJX3G5bGQpH8DmZ5t3Bs1iH8hfqWrIxuE2970I26+6Y+dPYy
+         89ihfYjQqbqQ2/fy/BZQcHAOHV0mP8Pmm0u6sJ5g=
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 91E695212A2;
+        Sun,  3 Jan 2021 22:55:31 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Sun, 3 Jan
+ 2021 22:55:30 +0300
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.king@canonical.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Arseniy Krasnov <oxffffaa@gmail.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stsp2@yandex.ru>, <arseny.krasnov@kaspersky.com>
+Subject: [PATCH 0/5] virtio/vsock: introduce SOCK_SEQPACKET support.
+Date:   Sun, 3 Jan 2021 22:54:52 +0300
+Message-ID: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 01/03/2021 19:44:23
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 10
+X-KSE-AntiSpam-Info: Lua profiles 160977 [Jan 03 2021]
+X-KSE-AntiSpam-Info: LuaCore: 419 419 70b0c720f8ddd656e5f4eb4a4449cf8ce400df94
+X-KSE-AntiSpam-Info: Version: 5.9.16.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
+X-KSE-AntiSpam-Info: {Tracking_date, dbl_space}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;arseniy-pc.avp.ru:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 10
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 01/03/2021 19:46:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 03.01.2021 17:14:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/01/03 18:58:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/01/03 18:13:00 #16005632
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The set flag NFT_SET_EXPR provides a hint to the kernel that userspace
-supports for multiple expressions per set element. In the same
-direction, NFT_DYNSET_F_EXPR specifies that dynset expression defines
-multiple expressions per set element.
+	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+do it, new packet operation was added: it marks start of record (with
+record length in header). To send record, packet with start marker is
+sent first, then all data is transmitted as 'RW' packets. On receiver's
+side, length of record is known from packet with start record marker.
+Now as  packets of one socket are not reordered neither on vsock nor on
+vhost transport layers, these marker allows to restore original record
+on receiver's side. When each 'RW' packet is inserted to rx queue of
+receiver, user is woken up, data is copied to user's buffer and credit
+update message is sent. If there is no user waiting for data, credit
+won't be updated and sender will wait. Also,  if user's buffer is full,
+and record is bigger, all unneeded data will be dropped (with sending of
+credit update message).
+	'MSG_EOR' flag is implemented with special value of 'flags' field
+in packet header. When record is received with such flags, 'MSG_EOR' is
+set in 'recvmsg()' flags. 'MSG_TRUNC' flag is also supported.
+	In this implementation maximum length of datagram is not limited
+as in stream socket.
 
-This allows new userspace software with old kernels to bail out with
-EOPNOTSUPP. This update is similar to ef516e8625dd ("netfilter:
-nf_tables: reintroduce the NFT_SET_CONCAT flag"). The NFT_SET_EXPR flag
-needs to be set on when the NFTA_SET_EXPRESSIONS attribute is specified.
-The NFT_SET_EXPR flag is not set on with NFTA_SET_EXPR to retain
-backward compatibility in old userspace binaries.
+ drivers/vhost/vsock.c                   |   6 +-
+ include/linux/virtio_vsock.h            |   7 +
+ include/net/af_vsock.h                  |   4 +
+ include/uapi/linux/virtio_vsock.h       |   9 +
+ net/vmw_vsock/af_vsock.c                | 457 +++++++++++++++++++-----
+ net/vmw_vsock/virtio_transport.c        |   3 +
+ net/vmw_vsock/virtio_transport_common.c | 323 ++++++++++++++---
+ 7 files changed, 673 insertions(+), 136 deletions(-)
 
-Fixes: 48b0ae046ee9 ("netfilter: nftables: netlink support for several set element expressions")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/uapi/linux/netfilter/nf_tables.h | 3 +++
- net/netfilter/nf_tables_api.c            | 6 +++++-
- net/netfilter/nft_dynset.c               | 9 +++++++--
- 3 files changed, 15 insertions(+), 3 deletions(-)
-
-diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
-index 28b6ee53305f..b1633e7ba529 100644
---- a/include/uapi/linux/netfilter/nf_tables.h
-+++ b/include/uapi/linux/netfilter/nf_tables.h
-@@ -293,6 +293,7 @@ enum nft_rule_compat_attributes {
-  * @NFT_SET_EVAL: set can be updated from the evaluation path
-  * @NFT_SET_OBJECT: set contains stateful objects
-  * @NFT_SET_CONCAT: set contains a concatenation
-+ * @NFT_SET_EXPR: set contains expressions
-  */
- enum nft_set_flags {
- 	NFT_SET_ANONYMOUS		= 0x1,
-@@ -303,6 +304,7 @@ enum nft_set_flags {
- 	NFT_SET_EVAL			= 0x20,
- 	NFT_SET_OBJECT			= 0x40,
- 	NFT_SET_CONCAT			= 0x80,
-+	NFT_SET_EXPR			= 0x100,
- };
- 
- /**
-@@ -706,6 +708,7 @@ enum nft_dynset_ops {
- 
- enum nft_dynset_flags {
- 	NFT_DYNSET_F_INV	= (1 << 0),
-+	NFT_DYNSET_F_EXPR	= (1 << 1),
- };
- 
- /**
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 4186b1e52d58..15c467f1a9dd 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -4162,7 +4162,7 @@ static int nf_tables_newset(struct net *net, struct sock *nlsk,
- 		if (flags & ~(NFT_SET_ANONYMOUS | NFT_SET_CONSTANT |
- 			      NFT_SET_INTERVAL | NFT_SET_TIMEOUT |
- 			      NFT_SET_MAP | NFT_SET_EVAL |
--			      NFT_SET_OBJECT | NFT_SET_CONCAT))
-+			      NFT_SET_OBJECT | NFT_SET_CONCAT | NFT_SET_EXPR))
- 			return -EOPNOTSUPP;
- 		/* Only one of these operations is supported */
- 		if ((flags & (NFT_SET_MAP | NFT_SET_OBJECT)) ==
-@@ -4304,6 +4304,10 @@ static int nf_tables_newset(struct net *net, struct sock *nlsk,
- 		struct nlattr *tmp;
- 		int left;
- 
-+		if (!(flags & NFT_SET_EXPR)) {
-+			err = -EINVAL;
-+			goto err_set_alloc_name;
-+		}
- 		i = 0;
- 		nla_for_each_nested(tmp, nla[NFTA_SET_EXPRESSIONS], left) {
- 			if (i == NFT_SET_EXPR_MAX) {
-diff --git a/net/netfilter/nft_dynset.c b/net/netfilter/nft_dynset.c
-index f35df221a633..0b053f75cd60 100644
---- a/net/netfilter/nft_dynset.c
-+++ b/net/netfilter/nft_dynset.c
-@@ -19,6 +19,7 @@ struct nft_dynset {
- 	enum nft_registers		sreg_key:8;
- 	enum nft_registers		sreg_data:8;
- 	bool				invert;
-+	bool				expr;
- 	u8				num_exprs;
- 	u64				timeout;
- 	struct nft_expr			*expr_array[NFT_SET_EXPR_MAX];
-@@ -175,11 +176,12 @@ static int nft_dynset_init(const struct nft_ctx *ctx,
- 
- 	if (tb[NFTA_DYNSET_FLAGS]) {
- 		u32 flags = ntohl(nla_get_be32(tb[NFTA_DYNSET_FLAGS]));
--
--		if (flags & ~NFT_DYNSET_F_INV)
-+		if (flags & ~(NFT_DYNSET_F_INV | NFT_DYNSET_F_EXPR))
- 			return -EOPNOTSUPP;
- 		if (flags & NFT_DYNSET_F_INV)
- 			priv->invert = true;
-+		if (flags & NFT_DYNSET_F_EXPR)
-+			priv->expr = true;
- 	}
- 
- 	set = nft_set_lookup_global(ctx->net, ctx->table,
-@@ -261,6 +263,9 @@ static int nft_dynset_init(const struct nft_ctx *ctx,
- 		struct nlattr *tmp;
- 		int left;
- 
-+		if (!priv->expr)
-+			return -EINVAL;
-+
- 		i = 0;
- 		nla_for_each_nested(tmp, tb[NFTA_DYNSET_EXPRESSIONS], left) {
- 			if (i == NFT_SET_EXPR_MAX) {
 -- 
-2.20.1
+2.25.1
 
