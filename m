@@ -2,151 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D7D2E8DBC
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 19:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04C8B2E8DBF
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 19:24:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727292AbhACSVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 13:21:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
+        id S1727785AbhACSXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 13:23:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbhACSVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 13:21:01 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEDD2C061573
-        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 10:20:20 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id s15so13199567plr.9
-        for <netdev@vger.kernel.org>; Sun, 03 Jan 2021 10:20:20 -0800 (PST)
+        with ESMTP id S1726759AbhACSXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 13:23:41 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029BDC061573
+        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 10:23:01 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id 15so17307607pgx.7
+        for <netdev@vger.kernel.org>; Sun, 03 Jan 2021 10:23:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=apUPhe8XGFmm+Bi43EU6C/xYFjQp2KMTqbnzxE/Prgo=;
-        b=Hx7USmsWC6rsYBwFOAOs3KB4jnSIdXfa1hxNJgxQnIRTiKPsNOQ20ub3xbGhGtvFFe
-         z4CAxghIGF+Dyi+skjVLYGw5M0fFf/ZuTfVHrBUQ8QWPXBZOfrsxUPXGLutzXg0y1yr7
-         AV/0FK2Kd2eRm/wjnygRqY+I8zTGl/FfBf+z+4osxlnEXR5j7jTrNCoz7MIkcblT1hm0
-         t5nszwGrARVOMQfo3yyZEKytwP56uVdLirCgrS4YfYEBd4IbMpTZIOBXAs5oKFoZUmkd
-         iVOhAjMd5ZXVvrrYWDwi8ygUfGz5jrhS2y+ilw/9Ij8t2Qy2mJKOo2xwypqdr/plcI/y
-         Sh8A==
+        bh=by47pALq1923sWp/Woa91R8G7twyCZwWW7wDqZ2tMYs=;
+        b=RcLhcG/MsbAeRI/Dsz1x94Z51R9wTKHxWN/f/p3w72ipC2fgx7pwhU882ZLaX2jCS4
+         tolPh0ym/MPN0xTnIUe5udw9sx1ox14pxPKnE88JfPNnJsQz3ua6OUSq2o0KzNkWVY5L
+         1iZGyv3CVXIrlMqT7jTslJOWyh1V2zjT72MZ/afosnZ7ZpVB8CcYlKDd3S8BkNlqVP11
+         5K8IYKq3N9UUdvGrvSusJykCTepkryDKHxKs1W17/xPW1iuoNkiBn8aQ2ebOlDDN/ikS
+         Lbx96anbCPB2N6ONTx1aPVLyJR0OixfYsAMYM03u3Kcjv6phkACFzf5gzAERksnQQuAs
+         0Hag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=apUPhe8XGFmm+Bi43EU6C/xYFjQp2KMTqbnzxE/Prgo=;
-        b=RYWGnXn9zFBTiYo/N4QUoo36v3TCwSNWJeqO2yaBj9JkchvSF9jEyL0ZpL5Y1MF8qL
-         H6Z+Br1gllpAMnhoEcjcQ0STqTHqjO3gPzldfwwXJsLqcMsdUpf4O+hSyHrXKyPm0jmE
-         vedFgHVMB1FE3PDTdk2esjh/hhR2sMdjcc98nwyizDuVn74ZjPfYUkyl4AiOZGt0oSK2
-         OGh0Y+Kw+bMGqGTINlG7NCn4HMftszX4Tp5wRU8ye3JVl71GjTqHsDIWnlg7l0rlsiiU
-         zWGVfAih5UoutwxSChsyfuf7jfZTjC+XMXZxaMGqF+JoCMIS2JBH3PMBtxCt5ke5rgFe
-         joJA==
-X-Gm-Message-State: AOAM530ORE/gFAwuNq+IlQvOfQ2kZNGQ93usfg3veAoErZxhbPZW+0bT
-        pr1eJE4UUhBc4ytKmk/J6Ci8Ng==
-X-Google-Smtp-Source: ABdhPJwXW4yEo4w8egwTb3K4A3pdigp+VHONUW2bOiDCwEGCqE724OK97nQ+XP6vrLf2zgic7GYmug==
-X-Received: by 2002:a17:90a:d790:: with SMTP id z16mr26805961pju.88.1609698020326;
-        Sun, 03 Jan 2021 10:20:20 -0800 (PST)
+        bh=by47pALq1923sWp/Woa91R8G7twyCZwWW7wDqZ2tMYs=;
+        b=CAPTcJfQ6ppjKSr3fYXDIJlU/zGEubERW0mB+3lNEaw76HZ6bBgrN9b7CLQYbFNN8H
+         O59VppcxSYJNccNZJDYXZyBrIc0/BzzYuuQ7SKq61nWLAHJTkVGO4QVUA+WG73eXJ8qy
+         AUDqinQbeGZOfUvH7OEGGMBuCf2kv/P0Y8/dHGxFRHe4KGhJB3bpKw3lfSExpNa4qot4
+         +UBMQCXwPYqQ4JwIv+2/zaMvw3ayq1EqNF0EawafArxOOZQhAI4U64QUAMhLghRQASJQ
+         Kh3+ceI3W4Buq01M+sY5amCYwinOmJ2Xi+9mZBQIdc9h/SanOSQW0kPmT5q1b6yYhlfd
+         jfDA==
+X-Gm-Message-State: AOAM533M2Uw0C6gkbKlMIcaTmXQjsn+YF1ao3yTC/Mb1Gi3d4PFKruiP
+        n10fdF/TSHSHlyzE7DnYGUjC8w==
+X-Google-Smtp-Source: ABdhPJzDKbKAPYlU7HglRWdvmyWellCXzzbuUJHaF6RNfHqKIqaG3dWuW4HoRIx5fPDTxqYMfWYFtg==
+X-Received: by 2002:a65:688a:: with SMTP id e10mr68169205pgt.347.1609698180604;
+        Sun, 03 Jan 2021 10:23:00 -0800 (PST)
 Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id f64sm55342846pfb.146.2021.01.03.10.20.19
+        by smtp.gmail.com with ESMTPSA id jz20sm18549852pjb.4.2021.01.03.10.22.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Jan 2021 10:20:19 -0800 (PST)
-Date:   Sun, 3 Jan 2021 10:20:11 -0800
+        Sun, 03 Jan 2021 10:23:00 -0800 (PST)
+Date:   Sun, 3 Jan 2021 10:22:57 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Valdis =?UTF-8?B?S2zEk3RuaWVrcw==?= <valdis.kletnieks@vt.edu>,
-        Michal Marek <michal.lkml@markovi.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Kconfig, DEFAULT_NETSCH, and shooting yourself in the foot..
-Message-ID: <20210103102011.444ecaa4@hermes.local>
-In-Reply-To: <CAK7LNAQU61eccDfh_jX_cnZHnyxfbfgBGu1845QM8XbBTJPnsw@mail.gmail.com>
-References: <16871.1609618487@turing-police>
-        <CAK7LNAQU61eccDfh_jX_cnZHnyxfbfgBGu1845QM8XbBTJPnsw@mail.gmail.com>
+To:     Petr Machata <me@pmachata.org>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com
+Subject: Re: [PATCH iproute2 1/3] dcb: Set values with RTM_SETDCB type
+Message-ID: <20210103102257.7978520d@hermes.local>
+In-Reply-To: <87h7nywb3h.fsf@nvidia.com>
+References: <cover.1609543363.git.me@pmachata.org>
+        <61a95beac0ea7f2979ffd5ba5f4a08f000cc091a.1609543363.git.me@pmachata.org>
+        <20210102093423.2033de6a@hermes.local>
+        <87h7nywb3h.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 3 Jan 2021 15:30:30 +0900
-Masahiro Yamada <masahiroy@kernel.org> wrote:
+On Sun, 03 Jan 2021 11:47:46 +0100
+Petr Machata <me@pmachata.org> wrote:
 
-> On Sun, Jan 3, 2021 at 5:14 AM Valdis Kl=C4=93tnieks <valdis.kletnieks@vt=
-.edu> wrote:
+> Stephen Hemminger <stephen@networkplumber.org> writes:
+> 
+> > On Sat,  2 Jan 2021 00:25:50 +0100
+> > Petr Machata <me@pmachata.org> wrote:
+> >  
+> >> dcb currently sends all netlink messages with a type RTM_GETDCB, even the
+> >> set ones. Change to the appropriate type.
+> >> 
+> >> Signed-off-by: Petr Machata <me@pmachata.org>
+> >> ---
+> >>  dcb/dcb.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >> 
+> >> diff --git a/dcb/dcb.c b/dcb/dcb.c
+> >> index adec57476e1d..f5c62790e27e 100644
+> >> --- a/dcb/dcb.c
+> >> +++ b/dcb/dcb.c
+> >> @@ -177,7 +177,7 @@ int dcb_set_attribute(struct dcb *dcb, const char *dev, int attr, const void *da
+> >>  	struct nlattr *nest;
+> >>  	int ret;
+> >>  
+> >> -	nlh = dcb_prepare(dcb, dev, RTM_GETDCB, DCB_CMD_IEEE_SET);
+> >> +	nlh = dcb_prepare(dcb, dev, RTM_SETDCB, DCB_CMD_IEEE_SET);
+> >>  
+> >>  	nest = mnl_attr_nest_start(nlh, DCB_ATTR_IEEE);
+> >>  	mnl_attr_put(nlh, attr, data_len, data);  
 > >
-> > Consider the following own goal I just discovered I scored:
-> >
-> > [~] zgrep -i fq_codel /proc/config.gz
-> > CONFIG_NET_SCH_FQ_CODEL=3Dm
-> > CONFIG_DEFAULT_FQ_CODEL=3Dy
-> > CONFIG_DEFAULT_NET_SCH=3D"fq_codel"
-> >
-> > Obviously, fq_codel didn't get set as the default, because that happens
-> > before the module gets loaded (which may never happen if the sysadmin
-> > thinks the DEFAULT_NET_SCH already made it happen)
-> >
-> > Whoops. My bad, probably - but....
-> >
-> > The deeper question, part 1:
-> >
-> > There's this chunk in net/sched/Kconfig:
-> >
-> > config DEFAULT_NET_SCH
-> >         string
-> >         default "pfifo_fast" if DEFAULT_PFIFO_FAST
-> >         default "fq" if DEFAULT_FQ
-> >         default "fq_codel" if DEFAULT_FQ_CODEL
-> >         default "fq_pie" if DEFAULT_FQ_PIE
-> >         default "sfq" if DEFAULT_SFQ
-> >         default "pfifo_fast"
-> > endif
-> >
-> > (And a similar chunk right above it with a similar issue)
-> >
-> > Should those be "if (foo=3Dy)" so =3Dm can't be chosen? (I'll be
-> > happy to write the patch if that's what we want)
-> >
-> > Deeper question, part 2:
-> >
-> > Should there be a way in the Kconfig language to ensure that
-> > these two chunks can't accidentally get out of sync?  There's other
-> > places in the kernel where similar issues arise - a few days ago I was
-> > chasing a CPU governor issue where it looked like it was possible
-> > to set a default that was a module and thus possibly not actually loade=
-d.
-> > =20
->=20
->=20
-> If there is a restriction where a modular discipline cannot be the defaul=
-t,
-> I think you can add 'depends on FOO =3D y'.
->=20
->=20
->=20
-> For example,
->=20
->=20
-> choice
->            prompt "Default"
->=20
->            config DEFAULT_FOO
->                   bool "Use foo for default"
->                   depends on FOO =3D y
->=20
->            config DEFAULT_BAR
->                   bool "Use bar for default"
->                   depends on BAR =3D y
->=20
->            config DEFAULT_FALLBACK
->                   bool "fallback when nothing else is builtin"
->=20
-> endchoice
->=20
->=20
->=20
->=20
->=20
+> > Should I add fixes tag to this?  
+> 
+> Ha, I forgot that Fixes: tags are a thing in iproute2. Sorry about that,
+> I'll resend.
 
-You can use a qdisc that is a module, it just has to be available when devi=
-ce
-is loaded. Typically that means putting it in initramfs.
+Thanks, Fixes are mainly to help out distribution maintainers who want
+to backport to older versions.
