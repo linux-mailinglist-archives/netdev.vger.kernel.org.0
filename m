@@ -2,95 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 178102E8B9B
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 11:08:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C57142E8BBF
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 11:53:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbhACKEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 05:04:55 -0500
-Received: from spam.zju.edu.cn ([61.164.42.155]:26130 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725889AbhACKEy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 3 Jan 2021 05:04:54 -0500
-Received: by ajax-webmail-mail-app2 (Coremail) ; Sun, 3 Jan 2021 18:03:47
- +0800 (GMT+08:00)
-X-Originating-IP: [10.192.85.18]
-Date:   Sun, 3 Jan 2021 18:03:47 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   dinghao.liu@zju.edu.cn
-To:     "Paul Menzel" <pmenzel@molgen.mpg.de>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, kjlu@umn.edu
-Subject: Re: Re: [Intel-wired-lan] [PATCH] net: ixgbe: Fix memleak in
- ixgbe_configure_clsu32
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20200917(3e19599d)
- Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
-In-Reply-To: <aefe9de0-83b4-81b8-5d5b-674cb8ea97e8@molgen.mpg.de>
-References: <20210103080843.25914-1-dinghao.liu@zju.edu.cn>
- <aefe9de0-83b4-81b8-5d5b-674cb8ea97e8@molgen.mpg.de>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        id S1726352AbhACKtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 05:49:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbhACKtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 05:49:02 -0500
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814C9C061573
+        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 02:48:21 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4D7wT34ztXzQkm6;
+        Sun,  3 Jan 2021 11:47:51 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+        s=MBO0001; t=1609670870;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M6soEWJDbmDU3LmoKtlSYOyt8Rwc7c70eCwv+BMXWVg=;
+        b=jV89QKRjS7Urelwcf89WtTQEfj7hdnZdRANgTcn6O97y3JhadmsUaKBM9IeeRLSGZL2dxZ
+        jTXUg9GIYjEnQhXXWrzdQDpotzaK7bC98H/1QattYWV8EfXrnQeLZvJycbfO4QQ0LBx91e
+        bwqtVFevTGocaBjrUfnsLJkHykhhZhblAWy20MQESC81RKFA/c7LMxwxn8xzBLEXz6+29x
+        mhBWxw49Ng6k9o8DpoNcE3j+QkiJB5wKdy9nqXz9JKMD59druYa0NK7a0AFodvw8OGRybr
+        D3ooT+6CXh+Aa5J+WJiMJ6F4U6yXjn4Cj+kA7rQUJOP6ZiE/DY7RhynwDHkoEA==
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
+        with ESMTP id v-yqqcVZZbYp; Sun,  3 Jan 2021 11:47:48 +0100 (CET)
+References: <cover.1609543363.git.me@pmachata.org>
+ <61a95beac0ea7f2979ffd5ba5f4a08f000cc091a.1609543363.git.me@pmachata.org>
+ <20210102093423.2033de6a@hermes.local>
+From:   Petr Machata <me@pmachata.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com
+Subject: Re: [PATCH iproute2 1/3] dcb: Set values with RTM_SETDCB type
+In-reply-to: <20210102093423.2033de6a@hermes.local>
+Date:   Sun, 03 Jan 2021 11:47:46 +0100
+Message-ID: <87h7nywb3h.fsf@nvidia.com>
 MIME-Version: 1.0
-Message-ID: <6d39129d.17f75.176c7b3f11b.Coremail.dinghao.liu@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: by_KCgCHj+uDlvFfXhRSAA--.13514W
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgQOBlZdtRzi2AAAsW
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -5.07 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 9DC721848
+X-Rspamd-UID: d023ad
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBEZWFyIERpbmdoYW8sCj4gCj4gCj4gQW0gMDMuMDEuMjEgdW0gMDk6MDggc2NocmllYiBEaW5n
-aGFvIExpdToKPiA+IFdoZW4gaXhnYmVfZmRpcl93cml0ZV9wZXJmZWN0X2ZpbHRlcl84MjU5OSgp
-IGZhaWxzLAo+ID4gaW5wdXQgYWxsb2NhdGVkIGJ5IGt6YWxsb2MoKSBoYXMgbm90IGJlZW4gZnJl
-ZWQsCj4gPiB3aGljaCBsZWFkcyB0byBtZW1sZWFrLgo+IAo+IE5pY2UgZmluZC4gVGhhbmsgeW91
-IGZvciB5b3VyIHBhdGNoZXMuIE91dCBvZiBjdXJpb3NpdHksIGRvIHlvdSB1c2UgYW4gCj4gYW5h
-bHlzaXMgdG9vbCB0byBmaW5kIHRoZXNlIGlzc3Vlcz8KPiAKClllcywgdGhlc2UgYnVncyBhcmUg
-c3VnZ2VzdGVkIGJ5IG15IHN0YXRpYyBhbmFseXNpcyB0b29sLiAKCj4gPiBTaWduZWQtb2ZmLWJ5
-OiBEaW5naGFvIExpdSA8ZGluZ2hhby5saXVAemp1LmVkdS5jbj4KPiA+IC0tLQo+ID4gICBkcml2
-ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV9tYWluLmMgfCA2ICsrKystLQo+ID4g
-ICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+ID4gCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFp
-bi5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFpbi5jCj4gPiBp
-bmRleCAzOTNkMWMyY2Q4NTMuLmU5YzJkMjhlZmM4MSAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX21haW4uYwo+ID4gKysrIGIvZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFpbi5jCj4gPiBAQCAtOTU4Miw4ICs5NTgy
-LDEwIEBAIHN0YXRpYyBpbnQgaXhnYmVfY29uZmlndXJlX2Nsc3UzMihzdHJ1Y3QgaXhnYmVfYWRh
-cHRlciAqYWRhcHRlciwKPiA+ICAgCWl4Z2JlX2F0cl9jb21wdXRlX3BlcmZlY3RfaGFzaF84MjU5
-OSgmaW5wdXQtPmZpbHRlciwgbWFzayk7Cj4gPiAgIAllcnIgPSBpeGdiZV9mZGlyX3dyaXRlX3Bl
-cmZlY3RfZmlsdGVyXzgyNTk5KGh3LCAmaW5wdXQtPmZpbHRlciwKPiA+ICAgCQkJCQkJICAgIGlu
-cHV0LT5zd19pZHgsIHF1ZXVlKTsKPiA+IC0JaWYgKCFlcnIpCj4gPiAtCQlpeGdiZV91cGRhdGVf
-ZXRodG9vbF9mZGlyX2VudHJ5KGFkYXB0ZXIsIGlucHV0LCBpbnB1dC0+c3dfaWR4KTsKPiA+ICsJ
-aWYgKGVycikKPiA+ICsJCWdvdG8gZXJyX291dF93X2xvY2s7Cj4gPiArCj4gPiArCWl4Z2JlX3Vw
-ZGF0ZV9ldGh0b29sX2ZkaXJfZW50cnkoYWRhcHRlciwgaW5wdXQsIGlucHV0LT5zd19pZHgpOwo+
-ID4gICAJc3Bpbl91bmxvY2soJmFkYXB0ZXItPmZkaXJfcGVyZmVjdF9sb2NrKTsKPiA+ICAgCj4g
-PiAgIAlpZiAoKHVodGlkICE9IDB4ODAwKSAmJiAoYWRhcHRlci0+anVtcF90YWJsZXNbdWh0aWRd
-KSkKPiAKPiBSZXZpZXdlZC1ieTogUGF1bCBNZW56ZWwgPHBtZW56ZWxAbW9sZ2VuLm1wZy5kZT4K
-PiAKPiBJIHdvbmRlciwgaW4gdGhlIG5vbi1lcnJvciBjYXNlLCBob3cgYGlucHV0YCBhbmQgYGp1
-bXBgIGFyZSBmcmVlZC4KPiAKCkknbSBub3Qgc3VyZSBpZiBrZnJlZShqdW1wKSB3aWxsIGludHJv
-ZHVjZSBidWcuIGp1bXAgaXMgYWxsb2NhdGVkIGluIGEgZm9yIApsb29wIGFuZCBoYXMgYmVlbiBw
-YXNzZWQgdG8gYWRhcHRlci0+anVtcF90YWJsZXMuIGlucHV0IGFuZCBtYXNrIGhhdmUgbmV3CmRl
-ZmluaXRpb25zIChremFsbG9jKSBhZnRlciB0aGlzIGxvb3AsIGl0J3MgcmVhc29uYWJsZSB0byBm
-cmVlIHRoZW0gb24gZmFpbHVyZS4KQnV0IGp1bXAgaXMgZGlmZmVyZW50LiBNYXliZSB3ZSBzaG91
-bGQgbm90IGZyZWUganVtcCBhZnRlciB0aGUgbG9vcD8KCj4gT2xkIGNvZGU6Cj4gCj4gPiAgICAg
-ICAgIGlmICghZXJyKQo+ID4gICAgICAgICAgICAgICAgIGl4Z2JlX3VwZGF0ZV9ldGh0b29sX2Zk
-aXJfZW50cnkoYWRhcHRlciwgaW5wdXQsIGlucHV0LT5zd19pZHgpOwo+ID4gICAgICAgICBzcGlu
-X3VubG9jaygmYWRhcHRlci0+ZmRpcl9wZXJmZWN0X2xvY2spOwo+ID4gCj4gPiAgICAgICAgIGlm
-ICgodWh0aWQgIT0gMHg4MDApICYmIChhZGFwdGVyLT5qdW1wX3RhYmxlc1t1aHRpZF0pKQo+ID4g
-ICAgICAgICAgICAgICAgIHNldF9iaXQobG9jIC0gMSwgKGFkYXB0ZXItPmp1bXBfdGFibGVzW3Vo
-dGlkXSktPmNoaWxkX2xvY19tYXApOwo+ID4gCj4gPiAgICAgICAgIGtmcmVlKG1hc2spOwo+ID4g
-ICAgICAgICByZXR1cm4gZXJyOwo+IAo+IFNob3VsZCB0aGVzZSB0d28gbGluZXMgYmUgcmVwbGFj
-ZWQgd2l0aCBgZ290byBlcnJfb3V0YD8gKFRob3VnaCB0aGUgbmFtZSAKPiBpcyBjb25mdXNpbmcg
-dGhlbiwgYXMgaXTigJlzIHRoZSBub24tZXJyb3IgY2FzZS4pCj4gCgpUaGlzIGFsc28gbWFrZXMg
-bWUgY29uZnVzZWQuIEl0IHNlZW1zIHRoYXQgdGhlIGNoZWNrIGFnYWluc3QgdW50aWVkIGlzIG5v
-dCBlcnJvcgpoYW5kbGluZyBjb2RlLCBidXQgdGhlcmUgaXMgYSBrZnJlZShtYXNrKSBhZnRlciBp
-dC4gRnJlZWluZyBhbGxvY2F0ZWQgZGF0YSBvbgpzdWNjZXNzIGlzIG5vdCByZWFzb25hYmxlLiAK
-ClJlZ2FyZHMsCkRpbmdoYW8KCj4gPiBlcnJfb3V0X3dfbG9jazoKPiA+ICAgICAgICAgc3Bpbl91
-bmxvY2soJmFkYXB0ZXItPmZkaXJfcGVyZmVjdF9sb2NrKTsKPiA+IGVycl9vdXQ6Cj4gPiAgICAg
-ICAgIGtmcmVlKG1hc2spOwo+ID4gZnJlZV9pbnB1dDoKPiA+ICAgICAgICAga2ZyZWUoaW5wdXQp
-Owo+ID4gZnJlZV9qdW1wOgo+ID4gICAgICAgICBrZnJlZShqdW1wKTsKPiA+ICAgICAgICAgcmV0
-dXJuIGVycjsKPiA+IH0KPiAKPiBLaW5kIHJlZ2FyZHMsCj4gCj4gUGF1bAo=
+
+Stephen Hemminger <stephen@networkplumber.org> writes:
+
+> On Sat,  2 Jan 2021 00:25:50 +0100
+> Petr Machata <me@pmachata.org> wrote:
+>
+>> dcb currently sends all netlink messages with a type RTM_GETDCB, even the
+>> set ones. Change to the appropriate type.
+>> 
+>> Signed-off-by: Petr Machata <me@pmachata.org>
+>> ---
+>>  dcb/dcb.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/dcb/dcb.c b/dcb/dcb.c
+>> index adec57476e1d..f5c62790e27e 100644
+>> --- a/dcb/dcb.c
+>> +++ b/dcb/dcb.c
+>> @@ -177,7 +177,7 @@ int dcb_set_attribute(struct dcb *dcb, const char *dev, int attr, const void *da
+>>  	struct nlattr *nest;
+>>  	int ret;
+>>  
+>> -	nlh = dcb_prepare(dcb, dev, RTM_GETDCB, DCB_CMD_IEEE_SET);
+>> +	nlh = dcb_prepare(dcb, dev, RTM_SETDCB, DCB_CMD_IEEE_SET);
+>>  
+>>  	nest = mnl_attr_nest_start(nlh, DCB_ATTR_IEEE);
+>>  	mnl_attr_put(nlh, attr, data_len, data);
+>
+> Should I add fixes tag to this?
+
+Ha, I forgot that Fixes: tags are a thing in iproute2. Sorry about that,
+I'll resend.
