@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D04C62E8BE5
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 12:20:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB0AD2E8BE3
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 12:20:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbhACLSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 06:18:51 -0500
-Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:42775 "EHLO
+        id S1726605AbhACLSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 06:18:38 -0500
+Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:38097 "EHLO
         wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726129AbhACLSe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 06:18:34 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.west.internal (Postfix) with ESMTP id 8B72C54C;
-        Sun,  3 Jan 2021 06:17:47 -0500 (EST)
+        by vger.kernel.org with ESMTP id S1726160AbhACLSf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 06:18:35 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.west.internal (Postfix) with ESMTP id 8129E554;
+        Sun,  3 Jan 2021 06:17:48 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Sun, 03 Jan 2021 06:17:48 -0500
+  by compute4.internal (MEProxy); Sun, 03 Jan 2021 06:17:49 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=fm1; bh=ibJPRastM2tZF
-        l4PHv5z3y6HPBJia8I5WAdzsVC1pIM=; b=Khru31dHo9to3XXdrz234ZUcdoa6W
-        gDgZp8c37DMqNCV3j0IEhNaKLzFrNsHfBMaTxwI2MUH3SkLNiD5Zwf0mtP+DgtCo
-        dkxaenozszjXWMPfql3ISVRUxkyRDbMRR5t3S/P9e9Xx+EDFr3CpsZCWJgsWW6AS
-        +kw5ZFbM1D9xgM4PVzVgrHcNxyvMnykbJjwOU3F45KSc7GM2Y5uhG6MnfOTHL84Y
-        O9rMw5mqDm5PiP1zsaMDuqYhcvUPQs3d2B7TwALPOWQTdY5OlWYNS/gToWXWm8Jf
-        QhzpUwl5G4gjKdv1UIW3KfRtBE5T7NWVaq+Nul0PJ7rq+nE6GSCnG58mw==
+        :mime-version:content-transfer-encoding; s=fm1; bh=0iZ+8I2vhcGKG
+        OS3MTEj028/bvfO5WdjDUade1mx8mM=; b=SCxPQeXteWOqWKOQL26Jc54vLalZc
+        Wi6vYAQxSaMZUJhelkTg/Bd5okVlbs76hqj/bbPfWuSKOZLlnRFFyp7dwNe4wCO8
+        ACDvWZENXNjQFql/uqOI3oPAToLVUA6VtYePuY5OwAH36/xpaSTylnjnQHkqs3bA
+        81IOOvBXExAXswJAjcqzdCEoDoxalEvA5l2QbNdMZES3F1UVVBMMPNtLfo7Z0WWk
+        6led8Ub0+FtyqiEn2hi3sBNJaGpYJkl5/r/t66Xnitwua8ifG4aIHF7Njea9KM/2
+        GQc/mOJAyki2QwvxgW98orr96jmrqNz/tEXfTwox/xevh1VzbO38tgC8A==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=ibJPRastM2tZFl4PHv5z3y6HPBJia8I5WAdzsVC1pIM=; b=a96UhqkK
-        68WO64AcmtI932sQXO5JrtkdyVlP6IHfpaG0O5AcjxkYT3QbtRsuiQp1ApcrFF0p
-        ZOne0bEDFPLXUeo17La83H04oxqEWyFSHf5gPwplszM1x0TIFNEdzs/mICW8NT/J
-        s4CCQxPAjKhgULt/4PsfMJleOV13PjY6Rn5XPMwVnSUJUrgMm+cwFTj0i7pPq9MJ
-        a2GoRQqL9c0tVJRwomg1KqxYyogZhnrMkV+8ddfr1fHitJe5xt7Ik78Nfh1vJ0Av
-        ZySHOKAhD6N2IcQ9Gkqka3mPr9q2msyrPWG5aYw0y76fJiH0685dyFy9iaMRAf4R
-        x5oZGvlRaThldg==
-X-ME-Sender: <xms:2qfxX_eCGmxc9eqe7vII1LPm-c5Rx6McC3gSQQjHAXNE0wTiMNOn5A>
-    <xme:2qfxX1PJnQ4zDJIxBKWhmlYT4EPXWAlJQKin7yVW_zhJTzLVasHP77UR-Hia7F0uH
-    l3eNAhMwlcEt99UoQ>
+        fm1; bh=0iZ+8I2vhcGKGOS3MTEj028/bvfO5WdjDUade1mx8mM=; b=aILljLwS
+        Zx4KBH3CcHQG1ZGbDwWiPlXMDgg3ksA1Ss5T30+2OH2vVJJ7XVmk9l1U60oewPHt
+        ZNL5VXqtMiETHSApdC6npl+0oxF/YxaIlx+U9eEQtDyR4DNYQNOvJ49iGckbsA+V
+        sVhoQ/9zLlquX+LLyg3XvLwsj+tUHPyEOUmIk2EF1OLMrL6Zs95ZCUN5oF4V3ptE
+        MxF3M5f9/79BJalUMMg8EU9CcgjJYVOd1wcBoqNS8e9o1Cn2qGpVgAm7Zg99qgnV
+        CpphtGRLi1Hn7Bnt/4dJusgY4ZqVZILXtd4kUAWsY9pTaHc850rO3Lgs4V5qazr9
+        +f/JlXNwARv9VQ==
+X-ME-Sender: <xms:26fxX4K54hMZKoFolbZudGPvjnBQGG0-loiDuhDeET7pqJ5lnwmWIQ>
+    <xme:26fxX8ezo4dC6T2P3vcI7_JSddBuZzotB6tsNldXJm50niprfphRRNBr6Zyu8IzBR
+    lA9NOxrq_vu8aM5_g>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdefuddgvdeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
@@ -46,14 +46,14 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdefuddgvdeiucetufdoteggod
     lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
     frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
     gfejheeuieenucfkphepjedtrddufeehrddugeekrdduhedunecuvehluhhsthgvrhfuih
-    iivgepudenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
     ugdrohhrgh
-X-ME-Proxy: <xmx:26fxX4ii84Xi1_8ncJXIFGjXEXv3OxjZ1PEJY6aH9ljQP7dAxkyV0g>
-    <xmx:26fxXw_QBffSZ5aoC7wtskmpRQSkKi_aRHPdF9xC_oBAGzWoJypDSg>
-    <xmx:26fxX7vUfnKzreWqB0D5GGoQZhzx-BSW20yIKNa_F-t_gZouLAS62A>
-    <xmx:26fxX0FqoedwLBn6tt95nJrjSl8FLx8cYoGQQIHP_DybKRlAdD2AxcPwbOA>
+X-ME-Proxy: <xmx:26fxX30IQf0DVUcMJbfEB3kYQLcqXo8ZT62soeYXjxE7SeJzKd8Aog>
+    <xmx:26fxX9jiXi0FdmXn4nNrGexMktZw6qu1-AOzr0YKkfMqIyn4MtkZOQ>
+    <xmx:26fxX1Su0jS_aAfbeGXglAU-GlZ4c_GXBeC9AtmasGGpMMKMKoN3sQ>
+    <xmx:3KfxX8ApuIxUhz7C0RrRl1qnhgnvIgsA0mNMSDkJcxGlbDLrBIm9Y1YzN2M>
 Received: from titanium.stl.sholland.net (70-135-148-151.lightspeed.stlsmo.sbcglobal.net [70.135.148.151])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 68B0D1080063;
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0111E108005C;
         Sun,  3 Jan 2021 06:17:46 -0500 (EST)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -68,9 +68,9 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
 Cc:     Ondrej Jirman <megous@megous.com>, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@googlegroups.com, Samuel Holland <samuel@sholland.org>
-Subject: [PATCH net 3/4] net: stmmac: dwmac-sun8i: Balance internal PHY power
-Date:   Sun,  3 Jan 2021 05:17:43 -0600
-Message-Id: <20210103111744.34989-4-samuel@sholland.org>
+Subject: [PATCH net 4/4] net: stmmac: dwmac-sun8i: Balance syscon (de)initialization
+Date:   Sun,  3 Jan 2021 05:17:44 -0600
+Message-Id: <20210103111744.34989-5-samuel@sholland.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210103111744.34989-1-samuel@sholland.org>
 References: <20210103111744.34989-1-samuel@sholland.org>
@@ -80,111 +80,207 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sun8i_dwmac_exit calls sun8i_dwmac_unpower_internal_phy, but
-sun8i_dwmac_init did not call sun8i_dwmac_power_internal_phy. This
-caused PHY power to remain off after a suspend/resume cycle. Fix this by
-recording if PHY power should be restored, and if so, restoring it.
+Previously, sun8i_dwmac_set_syscon was called from a chain of functions
+in several different files:
+    sun8i_dwmac_probe
+      stmmac_dvr_probe
+        stmmac_hw_init
+          stmmac_hwif_init
+            sun8i_dwmac_setup
+              sun8i_dwmac_set_syscon
+which made the lifetime of the syscon values hard to reason about. Part
+of the problem is that there is no similar platform driver callback from
+stmmac_dvr_remove. As a result, the driver unset the syscon value in
+sun8i_dwmac_exit, but this leaves it uninitialized after a suspend/
+resume cycle. It was also unset a second time (outside sun8i_dwmac_exit)
+in the probe error path.
 
+Move the init to the earliest available place in sun8i_dwmac_probe
+(after stmmac_probe_config_dt, which initializes plat_dat), and the
+deinit to the corresponding position in the cleanup order.
+
+Since priv is not filled in until stmmac_dvr_probe, this requires
+changing the sun8i_dwmac_set_syscon parameters to priv's two relevant
+members.
+
+Fixes: 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i")
 Fixes: 634db83b8265 ("net: stmmac: dwmac-sun8i: Handle integrated/external MDIOs")
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 31 ++++++++++++++-----
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 50 +++++++++----------
+ 1 file changed, 25 insertions(+), 25 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index a05dee5d4584..e2c25c1c702a 100644
+index e2c25c1c702a..a5e0eff4a387 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -64,6 +64,7 @@ struct emac_variant {
-  * @variant:	reference to the current board variant
-  * @regmap:	regmap for using the syscon
-  * @internal_phy_powered: Does the internal PHY is enabled
-+ * @use_internal_phy: Is the internal PHY selected for use
-  * @mux_handle:	Internal pointer used by mdio-mux lib
-  */
- struct sunxi_priv_data {
-@@ -74,6 +75,7 @@ struct sunxi_priv_data {
- 	const struct emac_variant *variant;
- 	struct regmap_field *regmap_field;
- 	bool internal_phy_powered;
-+	bool use_internal_phy;
- 	void *mux_handle;
- };
- 
-@@ -539,8 +541,11 @@ static const struct stmmac_dma_ops sun8i_dwmac_dma_ops = {
- 	.dma_interrupt = sun8i_dwmac_dma_interrupt,
- };
- 
-+static int sun8i_dwmac_power_internal_phy(struct stmmac_priv *priv);
-+
- static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
- {
-+	struct net_device *ndev = platform_get_drvdata(pdev);
- 	struct sunxi_priv_data *gmac = priv;
- 	int ret;
- 
-@@ -554,13 +559,25 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
- 
- 	ret = clk_prepare_enable(gmac->tx_clk);
- 	if (ret) {
--		if (gmac->regulator)
--			regulator_disable(gmac->regulator);
- 		dev_err(&pdev->dev, "Could not enable AHB clock\n");
--		return ret;
-+		goto err_disable_regulator;
-+	}
-+
-+	if (gmac->use_internal_phy) {
-+		ret = sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
-+		if (ret)
-+			goto err_disable_clk;
- 	}
- 
- 	return 0;
-+
-+err_disable_clk:
-+	clk_disable_unprepare(gmac->tx_clk);
-+err_disable_regulator:
-+	if (gmac->regulator)
-+		regulator_disable(gmac->regulator);
-+
-+	return ret;
+@@ -898,22 +898,23 @@ static int sun8i_dwmac_register_mdio_mux(struct stmmac_priv *priv)
+ 	return ret;
  }
  
- static void sun8i_dwmac_core_init(struct mac_device_info *hw,
-@@ -831,7 +848,6 @@ static int mdio_mux_syscon_switch_fn(int current_child, int desired_child,
- 	struct sunxi_priv_data *gmac = priv->plat->bsp_priv;
+-static int sun8i_dwmac_set_syscon(struct stmmac_priv *priv)
++static int sun8i_dwmac_set_syscon(struct device *dev,
++				  struct plat_stmmacenet_data *plat)
+ {
+-	struct sunxi_priv_data *gmac = priv->plat->bsp_priv;
+-	struct device_node *node = priv->device->of_node;
++	struct sunxi_priv_data *gmac = plat->bsp_priv;
++	struct device_node *node = dev->of_node;
+ 	int ret;
  	u32 reg, val;
- 	int ret = 0;
--	bool need_power_ephy = false;
  
- 	if (current_child ^ desired_child) {
- 		regmap_field_read(gmac->regmap_field, &reg);
-@@ -839,13 +855,12 @@ static int mdio_mux_syscon_switch_fn(int current_child, int desired_child,
- 		case DWMAC_SUN8I_MDIO_MUX_INTERNAL_ID:
- 			dev_info(priv->device, "Switch mux to internal PHY");
- 			val = (reg & ~H3_EPHY_MUX_MASK) | H3_EPHY_SELECT;
--
--			need_power_ephy = true;
-+			gmac->use_internal_phy = true;
- 			break;
- 		case DWMAC_SUN8I_MDIO_MUX_EXTERNAL_ID:
- 			dev_info(priv->device, "Switch mux to external PHY");
- 			val = (reg & ~H3_EPHY_MUX_MASK) | H3_EPHY_SHUTDOWN;
--			need_power_ephy = false;
-+			gmac->use_internal_phy = false;
- 			break;
- 		default:
- 			dev_err(priv->device, "Invalid child ID %x\n",
-@@ -853,7 +868,7 @@ static int mdio_mux_syscon_switch_fn(int current_child, int desired_child,
+ 	ret = regmap_field_read(gmac->regmap_field, &val);
+ 	if (ret) {
+-		dev_err(priv->device, "Fail to read from regmap field.\n");
++		dev_err(dev, "Fail to read from regmap field.\n");
+ 		return ret;
+ 	}
+ 
+ 	reg = gmac->variant->default_syscon_value;
+ 	if (reg != val)
+-		dev_warn(priv->device,
++		dev_warn(dev,
+ 			 "Current syscon value is not the default %x (expect %x)\n",
+ 			 val, reg);
+ 
+@@ -926,9 +927,9 @@ static int sun8i_dwmac_set_syscon(struct stmmac_priv *priv)
+ 		/* Force EPHY xtal frequency to 24MHz. */
+ 		reg |= H3_EPHY_CLK_SEL;
+ 
+-		ret = of_mdio_parse_addr(priv->device, priv->plat->phy_node);
++		ret = of_mdio_parse_addr(dev, plat->phy_node);
+ 		if (ret < 0) {
+-			dev_err(priv->device, "Could not parse MDIO addr\n");
++			dev_err(dev, "Could not parse MDIO addr\n");
+ 			return ret;
+ 		}
+ 		/* of_mdio_parse_addr returns a valid (0 ~ 31) PHY
+@@ -944,17 +945,17 @@ static int sun8i_dwmac_set_syscon(struct stmmac_priv *priv)
+ 
+ 	if (!of_property_read_u32(node, "allwinner,tx-delay-ps", &val)) {
+ 		if (val % 100) {
+-			dev_err(priv->device, "tx-delay must be a multiple of 100\n");
++			dev_err(dev, "tx-delay must be a multiple of 100\n");
  			return -EINVAL;
  		}
- 		regmap_field_write(gmac->regmap_field, val);
--		if (need_power_ephy) {
-+		if (gmac->use_internal_phy) {
- 			ret = sun8i_dwmac_power_internal_phy(priv);
- 			if (ret)
- 				return ret;
+ 		val /= 100;
+-		dev_dbg(priv->device, "set tx-delay to %x\n", val);
++		dev_dbg(dev, "set tx-delay to %x\n", val);
+ 		if (val <= gmac->variant->tx_delay_max) {
+ 			reg &= ~(gmac->variant->tx_delay_max <<
+ 				 SYSCON_ETXDC_SHIFT);
+ 			reg |= (val << SYSCON_ETXDC_SHIFT);
+ 		} else {
+-			dev_err(priv->device, "Invalid TX clock delay: %d\n",
++			dev_err(dev, "Invalid TX clock delay: %d\n",
+ 				val);
+ 			return -EINVAL;
+ 		}
+@@ -962,17 +963,17 @@ static int sun8i_dwmac_set_syscon(struct stmmac_priv *priv)
+ 
+ 	if (!of_property_read_u32(node, "allwinner,rx-delay-ps", &val)) {
+ 		if (val % 100) {
+-			dev_err(priv->device, "rx-delay must be a multiple of 100\n");
++			dev_err(dev, "rx-delay must be a multiple of 100\n");
+ 			return -EINVAL;
+ 		}
+ 		val /= 100;
+-		dev_dbg(priv->device, "set rx-delay to %x\n", val);
++		dev_dbg(dev, "set rx-delay to %x\n", val);
+ 		if (val <= gmac->variant->rx_delay_max) {
+ 			reg &= ~(gmac->variant->rx_delay_max <<
+ 				 SYSCON_ERXDC_SHIFT);
+ 			reg |= (val << SYSCON_ERXDC_SHIFT);
+ 		} else {
+-			dev_err(priv->device, "Invalid RX clock delay: %d\n",
++			dev_err(dev, "Invalid RX clock delay: %d\n",
+ 				val);
+ 			return -EINVAL;
+ 		}
+@@ -983,7 +984,7 @@ static int sun8i_dwmac_set_syscon(struct stmmac_priv *priv)
+ 	if (gmac->variant->support_rmii)
+ 		reg &= ~SYSCON_RMII_EN;
+ 
+-	switch (priv->plat->interface) {
++	switch (plat->interface) {
+ 	case PHY_INTERFACE_MODE_MII:
+ 		/* default */
+ 		break;
+@@ -997,8 +998,8 @@ static int sun8i_dwmac_set_syscon(struct stmmac_priv *priv)
+ 		reg |= SYSCON_RMII_EN | SYSCON_ETCS_EXT_GMII;
+ 		break;
+ 	default:
+-		dev_err(priv->device, "Unsupported interface mode: %s",
+-			phy_modes(priv->plat->interface));
++		dev_err(dev, "Unsupported interface mode: %s",
++			phy_modes(plat->interface));
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1023,8 +1024,6 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+ 			sun8i_dwmac_unpower_internal_phy(gmac);
+ 	}
+ 
+-	sun8i_dwmac_unset_syscon(gmac);
+-
+ 	clk_disable_unprepare(gmac->tx_clk);
+ 
+ 	if (gmac->regulator)
+@@ -1059,16 +1058,11 @@ static struct mac_device_info *sun8i_dwmac_setup(void *ppriv)
+ {
+ 	struct mac_device_info *mac;
+ 	struct stmmac_priv *priv = ppriv;
+-	int ret;
+ 
+ 	mac = devm_kzalloc(priv->device, sizeof(*mac), GFP_KERNEL);
+ 	if (!mac)
+ 		return NULL;
+ 
+-	ret = sun8i_dwmac_set_syscon(priv);
+-	if (ret)
+-		return NULL;
+-
+ 	mac->pcsr = priv->ioaddr;
+ 	mac->mac = &sun8i_dwmac_ops;
+ 	mac->dma = &sun8i_dwmac_dma_ops;
+@@ -1224,10 +1218,14 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 	plat_dat->exit = sun8i_dwmac_exit;
+ 	plat_dat->setup = sun8i_dwmac_setup;
+ 
+-	ret = sun8i_dwmac_init(pdev, plat_dat->bsp_priv);
++	ret = sun8i_dwmac_set_syscon(&pdev->dev, plat_dat);
+ 	if (ret)
+ 		goto dwmac_deconfig;
+ 
++	ret = sun8i_dwmac_init(pdev, plat_dat->bsp_priv);
++	if (ret)
++		goto dwmac_syscon;
++
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (ret)
+ 		goto dwmac_exit;
+@@ -1256,11 +1254,12 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ dwmac_mux:
+ 	reset_control_put(gmac->rst_ephy);
+ 	clk_put(gmac->ephy_clk);
+-	sun8i_dwmac_unset_syscon(gmac);
+ dwmac_remove:
+ 	stmmac_dvr_remove(&pdev->dev);
+ dwmac_exit:
+ 	sun8i_dwmac_exit(pdev, gmac);
++dwmac_syscon:
++	sun8i_dwmac_unset_syscon(gmac);
+ dwmac_deconfig:
+ 	stmmac_remove_config_dt(pdev, plat_dat);
+ 
+@@ -1281,6 +1280,7 @@ static int sun8i_dwmac_remove(struct platform_device *pdev)
+ 	}
+ 
+ 	stmmac_pltfr_remove(pdev);
++	sun8i_dwmac_unset_syscon(gmac);
+ 
+ 	return 0;
+ }
 -- 
 2.26.2
 
