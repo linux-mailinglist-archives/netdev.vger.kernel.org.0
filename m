@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC5002E8E05
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 21:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1586B2E8E08
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 21:05:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727479AbhACUFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 15:05:19 -0500
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:24497 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726504AbhACUFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 15:05:18 -0500
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id A040778151;
-        Sun,  3 Jan 2021 23:04:31 +0300 (MSK)
+        id S1727822AbhACUFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 15:05:30 -0500
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:15473 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726504AbhACUF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 15:05:29 -0500
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 0C13F520CB3;
+        Sun,  3 Jan 2021 23:04:45 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1609704271;
-        bh=hK0zlKgeOLKBDnPqTxIvriA1lZqbvBVRXUqYJkFxq1k=;
+        s=mail; t=1609704285;
+        bh=qY+P85jixO4G3d+S1dw8yRB+I/VZZ2qm5kIhaDnRWzI=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=TDjpLPx1YZCnJZev3CX8wIDozqN5VUxsAGrprSMoSzBzt4b32r7Z0jZuVrm8eyRY+
-         FF1iaeF692djQ1JuePLmbKf9DH5YfSmiIHOJGLZtXQOLVnhbOXXvckHHmmcBm3upsM
-         V8OsacAx9smJDB2xaQh4F2GRS8WCDmk8yaAGrBOY=
+        b=ZHO8fVV7Pnh4ozcVoFmrJUeqTdi9NPcbaneYxfTg9wVKY0R3Y4uPMYwIN127VnlcS
+         Bwea1zeVRhZc/ToYOmk9zmG8+v6BKtYwYjgJJtPVgmq2x+aWwSXQof+cSxjt3EpEZ8
+         rsXz2Dauj2HWH81UOTMHDodjusc35HFDNcoJ/XKY=
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 6888C759DC;
-        Sun,  3 Jan 2021 23:04:31 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id B5EC35211FB;
+        Sun,  3 Jan 2021 23:04:44 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Sun, 3 Jan
- 2021 23:04:30 +0300
+ 2021 23:04:44 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -37,25 +37,25 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
         Jorgen Hansen <jhansen@vmware.com>,
         Arseniy Krasnov <oxffffaa@gmail.com>,
-        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
         Jeff Vander Stoep <jeffv@google.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <arseny.krasnov@kaspersky.com>
-Subject: [PATCH 4/5] af_vsock: add socket ops for SOCK_SEQPACKET.
-Date:   Sun, 3 Jan 2021 23:04:19 +0300
-Message-ID: <20210103200421.1956545-1-arseny.krasnov@kaspersky.com>
+Subject: [PATCH 5/5] af_vsock: update comments for stream sockets.
+Date:   Sun, 3 Jan 2021 23:04:36 +0300
+Message-ID: <20210103200438.1956663-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
 References: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -99,248 +99,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arseniy Krasnov <oxffffaa@gmail.com>
 
+	Replace 'stream' to 'connect oriented' as SOCK_SEQPACKET
+support is also connect oriented.
 ---
- net/vmw_vsock/af_vsock.c | 107 +++++++++++++++++++++++++++++++++------
- 1 file changed, 91 insertions(+), 16 deletions(-)
+ net/vmw_vsock/af_vsock.c | 31 +++++++++++++++++--------------
+ 1 file changed, 17 insertions(+), 14 deletions(-)
 
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 7ff00449a9a2..30caad9815f7 100644
+index 30caad9815f7..063d428e9ec2 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -452,6 +452,7 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
- 		new_transport = transport_dgram;
- 		break;
- 	case SOCK_STREAM:
-+	case SOCK_SEQPACKET:
- 		if (vsock_use_local_transport(remote_cid))
- 			new_transport = transport_local;
- 		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g ||
-@@ -459,6 +460,12 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
- 			new_transport = transport_g2h;
- 		else
- 			new_transport = transport_h2g;
-+
-+		if (sk->sk_type == SOCK_SEQPACKET) {
-+			if (!new_transport->seqpacket_seq_send_len ||
-+			    !new_transport->seqpacket_seq_get_len)
-+				return -ENODEV;
-+		}
- 		break;
- 	default:
- 		return -ESOCKTNOSUPPORT;
-@@ -604,8 +611,8 @@ static void vsock_pending_work(struct work_struct *work)
+@@ -415,8 +415,8 @@ static void vsock_deassign_transport(struct vsock_sock *vsk)
  
- /**** SOCKET OPERATIONS ****/
+ /* Assign a transport to a socket and call the .init transport callback.
+  *
+- * Note: for stream socket this must be called when vsk->remote_addr is set
+- * (e.g. during the connect() or when a connection request on a listener
++ * Note: for connect oriented socket this must be called when vsk->remote_addr
++ * is set (e.g. during the connect() or when a connection request on a listener
+  * socket is received).
+  * The vsk->remote_addr is used to decide which transport to use:
+  *  - remote CID == VMADDR_CID_LOCAL or g2h->local_cid or VMADDR_CID_HOST if
+@@ -476,10 +476,10 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 			return 0;
  
--static int __vsock_bind_stream(struct vsock_sock *vsk,
--			       struct sockaddr_vm *addr)
-+static int __vsock_bind_connectible(struct vsock_sock *vsk,
-+				    struct sockaddr_vm *addr)
- {
- 	static u32 port;
- 	struct sockaddr_vm new_addr;
-@@ -684,8 +691,9 @@ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
+ 		/* transport->release() must be called with sock lock acquired.
+-		 * This path can only be taken during vsock_stream_connect(),
+-		 * where we have already held the sock lock.
+-		 * In the other cases, this function is called on a new socket
+-		 * which is not assigned to any transport.
++		 * This path can only be taken during vsock_connect(), where we
++		 * have already held the sock lock. In the other cases, this
++		 * function is called on a new socket which is not assigned to
++		 * any transport.
+ 		 */
+ 		vsk->transport->release(vsk);
+ 		vsock_deassign_transport(vsk);
+@@ -656,9 +656,10 @@ static int __vsock_bind_connectible(struct vsock_sock *vsk,
  
- 	switch (sk->sk_socket->type) {
- 	case SOCK_STREAM:
-+	case SOCK_SEQPACKET:
- 		spin_lock_bh(&vsock_table_lock);
--		retval = __vsock_bind_stream(vsk, addr);
-+		retval = __vsock_bind_connectible(vsk, addr);
- 		spin_unlock_bh(&vsock_table_lock);
- 		break;
+ 	vsock_addr_init(&vsk->local_addr, new_addr.svm_cid, new_addr.svm_port);
  
-@@ -767,6 +775,11 @@ static struct sock *__vsock_create(struct net *net,
- 	return sk;
- }
+-	/* Remove stream sockets from the unbound list and add them to the hash
+-	 * table for easy lookup by its address.  The unbound list is simply an
+-	 * extra entry at the end of the hash table, a trick used by AF_UNIX.
++	/* Remove connect oriented sockets from the unbound list and add them
++	 * to the hash table for easy lookup by its address.  The unbound list
++	 * is simply an extra entry at the end of the hash table, a trick used
++	 * by AF_UNIX.
+ 	 */
+ 	__vsock_remove_bound(vsk);
+ 	__vsock_insert_bound(vsock_bound_sockets(&vsk->local_addr), vsk);
+@@ -949,10 +950,10 @@ static int vsock_shutdown(struct socket *sock, int mode)
+ 	if ((mode & ~SHUTDOWN_MASK) || !mode)
+ 		return -EINVAL;
  
-+static bool sock_type_connectible(u16 type)
-+{
-+	return (type == SOCK_STREAM || type == SOCK_SEQPACKET);
-+}
-+
- static void __vsock_release(struct sock *sk, int level)
- {
- 	if (sk) {
-@@ -785,7 +798,7 @@ static void __vsock_release(struct sock *sk, int level)
+-	/* If this is a STREAM socket and it is not connected then bail out
+-	 * immediately.  If it is a DGRAM socket then we must first kick the
+-	 * socket so that it wakes up from any sleeping calls, for example
+-	 * recv(), and then afterwards return the error.
++	/* If this is a connect oriented socket and it is not connected then
++	 * bail out immediately.  If it is a DGRAM socket then we must first
++	 * kick the socket so that it wakes up from any sleeping calls, for
++	 * example recv(), and then afterwards return the error.
+ 	 */
  
- 		if (vsk->transport)
- 			vsk->transport->release(vsk);
--		else if (sk->sk_type == SOCK_STREAM)
-+		else if (sock_type_connectible(sk->sk_type))
- 			vsock_remove_sock(vsk);
- 
- 		sock_orphan(sk);
-@@ -945,7 +958,7 @@ static int vsock_shutdown(struct socket *sock, int mode)
  	sk = sock->sk;
- 	if (sock->state == SS_UNCONNECTED) {
- 		err = -ENOTCONN;
--		if (sk->sk_type == SOCK_STREAM)
-+		if (sock_type_connectible(sk->sk_type))
- 			return err;
- 	} else {
- 		sock->state = SS_DISCONNECTING;
-@@ -960,7 +973,7 @@ static int vsock_shutdown(struct socket *sock, int mode)
- 		sk->sk_state_change(sk);
- 		release_sock(sk);
- 
--		if (sk->sk_type == SOCK_STREAM) {
-+		if (sock_type_connectible(sk->sk_type)) {
- 			sock_reset_flag(sk, SOCK_DONE);
- 			vsock_send_shutdown(sk, mode);
- 		}
-@@ -1013,7 +1026,7 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
- 		if (!(sk->sk_shutdown & SEND_SHUTDOWN))
- 			mask |= EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
- 
--	} else if (sock->type == SOCK_STREAM) {
-+	} else if (sock_type_connectible(sk->sk_type)) {
- 		const struct vsock_transport *transport = vsk->transport;
- 		lock_sock(sk);
- 
-@@ -1259,8 +1272,8 @@ static void vsock_connect_timeout(struct work_struct *work)
- 	sock_put(sk);
- }
- 
--static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
--				int addr_len, int flags)
-+static int vsock_connect(struct socket *sock, struct sockaddr *addr,
-+			 int addr_len, int flags)
- {
- 	int err;
- 	struct sock *sk;
-@@ -1410,7 +1423,7 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags,
- 
- 	lock_sock(listener);
- 
--	if (sock->type != SOCK_STREAM) {
-+	if (!sock_type_connectible(sock->type)) {
- 		err = -EOPNOTSUPP;
- 		goto out;
- 	}
-@@ -1477,6 +1490,18 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags,
- 	return err;
- }
- 
-+static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
-+				int addr_len, int flags)
-+{
-+	return vsock_connect(sock, addr, addr_len, flags);
-+}
-+
-+static int vsock_seqpacket_connect(struct socket *sock, struct sockaddr *addr,
-+				   int addr_len, int flags)
-+{
-+	return vsock_connect(sock, addr, addr_len, flags);
-+}
-+
- static int vsock_listen(struct socket *sock, int backlog)
- {
- 	int err;
-@@ -1487,7 +1512,7 @@ static int vsock_listen(struct socket *sock, int backlog)
+@@ -1757,7 +1758,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
  
  	lock_sock(sk);
  
--	if (sock->type != SOCK_STREAM) {
-+	if (!sock_type_connectible(sk->sk_type)) {
- 		err = -EOPNOTSUPP;
+-	/* Callers should not provide a destination with stream sockets. */
++	/* Callers should not provide a destination with connect oriented
++	 * sockets.
++	 */
+ 	if (msg->msg_namelen) {
+ 		err = sk->sk_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
  		goto out;
- 	}
-@@ -1531,11 +1556,11 @@ static void vsock_update_buffer_size(struct vsock_sock *vsk,
- 	vsk->buffer_size = val;
- }
- 
--static int vsock_stream_setsockopt(struct socket *sock,
--				   int level,
--				   int optname,
--				   sockptr_t optval,
--				   unsigned int optlen)
-+static int vsock_setsockopt(struct socket *sock,
-+			    int level,
-+			    int optname,
-+			    sockptr_t optval,
-+			    unsigned int optlen)
- {
- 	int err;
- 	struct sock *sk;
-@@ -1612,6 +1637,24 @@ static int vsock_stream_setsockopt(struct socket *sock,
- 	return err;
- }
- 
-+static int vsock_seqpacket_setsockopt(struct socket *sock,
-+				      int level,
-+				      int optname,
-+				      sockptr_t optval,
-+				      unsigned int optlen)
-+{
-+	return vsock_setsockopt(sock, level, optname, optval, optlen);
-+}
-+
-+static int vsock_stream_setsockopt(struct socket *sock,
-+				   int level,
-+				   int optname,
-+				   sockptr_t optval,
-+				   unsigned int optlen)
-+{
-+	return vsock_setsockopt(sock, level, optname, optval, optlen);
-+}
-+
- static int vsock_stream_getsockopt(struct socket *sock,
- 				   int level, int optname,
- 				   char __user *optval,
-@@ -1683,6 +1726,14 @@ static int vsock_stream_getsockopt(struct socket *sock,
- 	return 0;
- }
- 
-+static int vsock_seqpacket_getsockopt(struct socket *sock,
-+				      int level, int optname,
-+				      char __user *optval,
-+				      int __user *optlen)
-+{
-+	return vsock_stream_getsockopt(sock, level, optname, optval, optlen);
-+}
-+
- static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
- 				     size_t len)
- {
-@@ -2209,6 +2260,27 @@ static const struct proto_ops vsock_stream_ops = {
- 	.sendpage = sock_no_sendpage,
- };
- 
-+static const struct proto_ops vsock_seqpacket_ops = {
-+	.family = PF_VSOCK,
-+	.owner = THIS_MODULE,
-+	.release = vsock_release,
-+	.bind = vsock_bind,
-+	.connect = vsock_seqpacket_connect,
-+	.socketpair = sock_no_socketpair,
-+	.accept = vsock_accept,
-+	.getname = vsock_getname,
-+	.poll = vsock_poll,
-+	.ioctl = sock_no_ioctl,
-+	.listen = vsock_listen,
-+	.shutdown = vsock_shutdown,
-+	.setsockopt = vsock_seqpacket_setsockopt,
-+	.getsockopt = vsock_seqpacket_getsockopt,
-+	.sendmsg = vsock_seqpacket_sendmsg,
-+	.recvmsg = vsock_seqpacket_recvmsg,
-+	.mmap = sock_no_mmap,
-+	.sendpage = sock_no_sendpage,
-+};
-+
- static int vsock_create(struct net *net, struct socket *sock,
- 			int protocol, int kern)
- {
-@@ -2229,6 +2301,9 @@ static int vsock_create(struct net *net, struct socket *sock,
- 	case SOCK_STREAM:
- 		sock->ops = &vsock_stream_ops;
- 		break;
-+	case SOCK_SEQPACKET:
-+		sock->ops = &vsock_seqpacket_ops;
-+		break;
- 	default:
- 		return -ESOCKTNOSUPPORT;
- 	}
 -- 
 2.25.1
 
