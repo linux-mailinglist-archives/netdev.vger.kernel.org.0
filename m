@@ -2,132 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE2C82E8BD1
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 11:59:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B0B2E8BE7
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 12:20:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbhACK7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 05:59:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726015AbhACK7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 05:59:07 -0500
-Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BCFC0613D3
-        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 02:58:26 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4D7whl5fXHzQlMX;
-        Sun,  3 Jan 2021 11:57:59 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1609671478;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f/RDR7PYKviXfSPtd0FG0sDUnFJf0Nkgl6dRp3Xk8Nc=;
-        b=wLbbpCk32elrkKTwC5Ad58MQ5lDX05Z++Ak0Q4PhT3dLx25bzye6DELHudRJPIMNWDJ3gR
-        SJRQboZBZrsf8rVhheRDn8sjf/B8XgKbc9Dhnch6zjsJ6+xfv6ymDgHOeTxvVNZAFtEbeD
-        D0bZ8nPHX08Pvz0DIvQtrQ/3NrmV+5+X2vvlv3zd44hN5H4te25WFVNS9DJrpk2YlVkV++
-        qdKE5sGAJdBUL84ewoH4+T+k2D3wANrX5S6H1/yIbwknq1mv3jqR2oxoyRe/XOO8dACMqG
-        khGK7dif3tE+sntpwzTuveCYaE1WNkgH6dMFOF+LqOgYyy3BrwzfftuYKbKkHA==
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter02.heinlein-hosting.de (spamfilter02.heinlein-hosting.de [80.241.56.116]) (amavisd-new, port 10030)
-        with ESMTP id lgI6SNGOzuNq; Sun,  3 Jan 2021 11:57:57 +0100 (CET)
-From:   Petr Machata <me@pmachata.org>
-To:     netdev@vger.kernel.org, dsahern@gmail.com,
-        stephen@networkplumber.org
-Cc:     Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2 v2 3/3] dcb: Change --Netns/-N to --netns/-n
-Date:   Sun,  3 Jan 2021 11:57:24 +0100
-Message-Id: <3fd48002172b185a34cc80cdd79de44fc31ea8fa.1609671168.git.me@pmachata.org>
-In-Reply-To: <cover.1609671168.git.me@pmachata.org>
-References: <cover.1609671168.git.me@pmachata.org>
+        id S1726811AbhACLS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 06:18:56 -0500
+Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:56983 "EHLO
+        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726713AbhACLSy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 06:18:54 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.west.internal (Postfix) with ESMTP id 7D156546;
+        Sun,  3 Jan 2021 06:17:47 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Sun, 03 Jan 2021 06:17:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=fm1; bh=mHnSeKRCkdCYl8YY3wS1zcBquB
+        u1Bad4dFa8jggcJow=; b=tj1lxCIVDnGQpGvxoElQBX6voWmfKKIX4WWOgSlGLs
+        bj/aCfkMTudtRiGwHxoTl8F5khv+ZeLKX55/dyxV10N4E5o6x08yM3y8zL4MLuXw
+        piJbpWAWxGeoA/seAs99YrwGbcFZOFu9dDSOZWpem31iu2g5IUVtkd40BkLDafA/
+        9pMinlUm8bA3Xz11FqLPXgT5E8g5nbP7CxlfkEO/u+6Ss4IiMUKAVpX1QDfAcF/2
+        mYDLUoRPthE9oSxrbY+WmXfrqWmykD4v/85Efbme8svWGbDIDW9HqwotXu14kOzQ
+        oKMO0mahPfFvPPG4kaMgpHZD/OJif5lQE9FdeVZ1VTeQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=mHnSeKRCkdCYl8YY3
+        wS1zcBquBu1Bad4dFa8jggcJow=; b=UJx6ZdX+agEsfHVO7BeuOiQjEhFPBZV76
+        EtFHoDkR4uScHwI8C2DpLGFE/GQyJzhjDQNByt15ICmcjuHc1PRI38d3bV0Z8xBB
+        thNTMj+3xS02XVTZPdNTCghiDf5FRBQhdVV18tss/K7hQ3NV68NeOnIMoAJHN/HY
+        0AFN87ksgeL+D6o3YkLLA+2K3v0fVyfC/CXgZbK7JS8E4s8qR5wrwbiZrP9aMgym
+        TNVvx4hcfDFS0XxJ8J/7hU7TcfKvgGlt4iz3P2DuXuxnsq1/stcCJlyiJxj53kDW
+        cd+DqwRiZr+1DQhj2n8M1aSGPppSlvSpuXj2mYypO7CZoxay+tExA==
+X-ME-Sender: <xms:2afxX1TMgEUGSzigdO1OTBOywUjWsVTcClldkRXT8e1exj0skK-y1A>
+    <xme:2afxX-yT0MzhAhW2HrqEMJPutGB3Yx89zlWdZ_aioUHMoCrRumfpGlZ2Lnzjqcx4p
+    AOxPUfVGPTaUDQUjA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdefuddgvdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
+    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
+    htthgvrhhnpeeiteekhfehuddugfeltddufeejjeefgeevheekueffhffhjeekheeiffdt
+    vedtveenucfkphepjedtrddufeehrddugeekrdduhedunecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghnugdr
+    ohhrgh
+X-ME-Proxy: <xmx:2afxX61bpZb4sbJ49GLIOVJlm8HXByUmcIvk7f6bEGzFLGe3FmxJ1w>
+    <xmx:2afxX9DiJIPz2mKW6V_TCt9dNVybHKPvzPKoWwtNCyujBdlwrEmW2Q>
+    <xmx:2afxX-g2f67BhyJGnaWeFK4-s-LLuBiVWegdgBB2_Un4Tk1_UbTpNw>
+    <xmx:26fxX_b3Eb1Op35qgwopsCMVnsuv6r0btJ-tS5qqDWmtbV9Wra0ViGty9Gs>
+Received: from titanium.stl.sholland.net (70-135-148-151.lightspeed.stlsmo.sbcglobal.net [70.135.148.151])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 9B1CD108005B;
+        Sun,  3 Jan 2021 06:17:44 -0500 (EST)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Corentin Labbe <clabbe@baylibre.com>
+Cc:     Ondrej Jirman <megous@megous.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@googlegroups.com, Samuel Holland <samuel@sholland.org>
+Subject: [PATCH net 0/4] Fixes for dwmac-sun8i suspend/resume
+Date:   Sun,  3 Jan 2021 05:17:40 -0600
+Message-Id: <20210103111744.34989-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: *
-X-Rspamd-Score: 0.46 / 15.00 / 15.00
-X-Rspamd-Queue-Id: D6271184F
-X-Rspamd-UID: 60142d
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This to keep compatible with the major tools, ip and tc. Also
-document the option in the man page, which was neglected.
+This series fixes issues preventing dwmac-sun8i from working after a
+suspend/resume cycle. Those issues include the PHY being left powered
+off, the MAC syscon configuration being reset, and the reference to the
+reset controller being improperly dropped. They also fix related issues
+in probe error handling and driver removal.
 
-Fixes: 67033d1c1c8a ("Add skeleton of a new tool, dcb")
-Signed-off-by: Petr Machata <me@pmachata.org>
----
+Samuel Holland (4):
+  net: stmmac: dwmac-sun8i: Fix probe error handling
+  net: stmmac: dwmac-sun8i: Balance internal PHY resource references
+  net: stmmac: dwmac-sun8i: Balance internal PHY power
+  net: stmmac: dwmac-sun8i: Balance syscon (de)initialization
 
-Notes:
-    v2:
-    - Add Fixes: tag.
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 129 +++++++++++-------
+ 1 file changed, 82 insertions(+), 47 deletions(-)
 
- dcb/dcb.c      | 8 ++++----
- man/man8/dcb.8 | 7 +++++++
- 2 files changed, 11 insertions(+), 4 deletions(-)
-
-diff --git a/dcb/dcb.c b/dcb/dcb.c
-index 0e3c87484f2a..6640deef5688 100644
---- a/dcb/dcb.c
-+++ b/dcb/dcb.c
-@@ -332,7 +332,7 @@ static void dcb_help(void)
- {
- 	fprintf(stderr,
- 		"Usage: dcb [ OPTIONS ] OBJECT { COMMAND | help }\n"
--		"       dcb [ -f | --force ] { -b | --batch } filename [ -N | --Netns ] netnsname\n"
-+		"       dcb [ -f | --force ] { -b | --batch } filename [ -n | --netns ] netnsname\n"
- 		"where  OBJECT := { buffer | ets | maxrate | pfc }\n"
- 		"       OPTIONS := [ -V | --Version | -i | --iec | -j | --json\n"
- 		"                  | -p | --pretty | -s | --statistics | -v | --verbose]\n");
-@@ -379,7 +379,7 @@ int main(int argc, char **argv)
- 		{ "json",		no_argument,		NULL, 'j' },
- 		{ "pretty",		no_argument,		NULL, 'p' },
- 		{ "statistics",		no_argument,		NULL, 's' },
--		{ "Netns",		required_argument,	NULL, 'N' },
-+		{ "netns",		required_argument,	NULL, 'n' },
- 		{ "help",		no_argument,		NULL, 'h' },
- 		{ NULL, 0, NULL, 0 }
- 	};
-@@ -396,7 +396,7 @@ int main(int argc, char **argv)
- 		return EXIT_FAILURE;
- 	}
- 
--	while ((opt = getopt_long(argc, argv, "b:fhijpsvN:V",
-+	while ((opt = getopt_long(argc, argv, "b:fhijn:psvV",
- 				  long_options, NULL)) >= 0) {
- 
- 		switch (opt) {
-@@ -419,7 +419,7 @@ int main(int argc, char **argv)
- 		case 's':
- 			dcb->stats = true;
- 			break;
--		case 'N':
-+		case 'n':
- 			if (netns_switch(optarg)) {
- 				ret = EXIT_FAILURE;
- 				goto dcb_free;
-diff --git a/man/man8/dcb.8 b/man/man8/dcb.8
-index 5964f25d386d..7293bb303577 100644
---- a/man/man8/dcb.8
-+++ b/man/man8/dcb.8
-@@ -27,6 +27,13 @@ dcb \- show / manipulate DCB (Data Center Bridging) settings
- 
- .SH OPTIONS
- 
-+.TP
-+.BR "\-n" , " \--netns " <NETNS>
-+switches
-+.B dcb
-+to the specified network namespace
-+.IR NETNS .
-+
- .TP
- .BR "\-V" , " --Version"
- Print the version of the
 -- 
 2.26.2
 
