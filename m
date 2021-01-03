@@ -2,75 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F34B2E8DD2
-	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 19:46:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3612E8DE4
+	for <lists+netdev@lfdr.de>; Sun,  3 Jan 2021 20:31:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726602AbhACSpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Jan 2021 13:45:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726019AbhACSpS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Jan 2021 13:45:18 -0500
-Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969BFC061573
-        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 10:44:37 -0800 (PST)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4D87372c4Qz1rvxn;
-        Sun,  3 Jan 2021 19:44:35 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4D873726Kfz1qr4s;
-        Sun,  3 Jan 2021 19:44:35 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id chLJFtsjM8nY; Sun,  3 Jan 2021 19:44:34 +0100 (CET)
-X-Auth-Info: yRdU3rU1/XqCcu7FXHiIYyP/Sx/3xWABOyjaUi+OBZo=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727485AbhACTaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Jan 2021 14:30:09 -0500
+Received: from correo.us.es ([193.147.175.20]:40754 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725840AbhACTaI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Jan 2021 14:30:08 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 89DBCDA737
+        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 20:28:51 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7C039DA704
+        for <netdev@vger.kernel.org>; Sun,  3 Jan 2021 20:28:51 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 71AD6DA84B; Sun,  3 Jan 2021 20:28:51 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4609DDA722;
+        Sun,  3 Jan 2021 20:28:49 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 03 Jan 2021 20:28:49 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Sun,  3 Jan 2021 19:44:34 +0100 (CET)
-Subject: Re: [PATCH 1/2] net: phy: micrel: Add KS8851 PHY support
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>
-References: <20201230125358.1023502-1-marex@denx.de>
- <X+ygLXjVd3rr8Vbf@lunn.ch> <19fac48e-dd17-26d8-0ebc-c08b51876861@denx.de>
- <X/H3H1hr66tU0g7V@lunn.ch>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <252db93a-f52d-a5d4-505a-bf4a82328981@denx.de>
-Date:   Sun, 3 Jan 2021 19:44:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id 15981426CC84;
+        Sun,  3 Jan 2021 20:28:49 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/3] Netfilter fixes for net
+Date:   Sun,  3 Jan 2021 20:29:17 +0100
+Message-Id: <20210103192920.18639-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <X/H3H1hr66tU0g7V@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/3/21 5:55 PM, Andrew Lunn wrote:
-> On Sun, Jan 03, 2021 at 01:55:22PM +0100, Marek Vasut wrote:
->> On 12/30/20 4:43 PM, Andrew Lunn wrote:
->>> On Wed, Dec 30, 2020 at 01:53:57PM +0100, Marek Vasut wrote:
->>>> The KS8851 has a reduced internal PHY, which is accessible through its
->>>> registers at offset 0xe4. The PHY is compatible with KS886x PHY present
->>>> in Micrel switches, except the PHY ID Low/High registers are swapped.
->>>
->>> Can you intercept the reads in the KS8851 driver and swap them back
->>> again? The mv88e6xxx driver does something similar. The mv88e6393
->>> family of switches have PHYs with the Marvell OUI but no device ID. So
->>> the code traps these reads and provides an ID.
->>
->> I would prefer to keep this as-is, since then the PHY driver can match on
->> these swapped IDs and discern the PHY from PHY present in the KS886x switch.
-> 
-> The problem is, this ID contains an OUI. Well, part of an OUI, the top
-> two bits of the OUI are removed, leaving 22 bits of a 24 bit
-> OUI. These OUIs are assigned to companies, well organisations. If you
-> look at the reversed PHY ID, what are the 4 possible OUIs? Who are
-> they assigned to? Are they ever likely to manufacture a PHY?
+Hi Jakub, David,
 
-Are these OUIs used for anything else than identifying the PHY though ?
+The following patchset contains Netfilter fixes for net:
+
+1) Missing sanitization of rateest userspace string, bug has been
+   triggered by syzbot, patch from Florian Westphal.
+
+2) Report EOPNOTSUPP on missing set features in nft_dynset, otherwise
+   error reporting to userspace via EINVAL is misleading since this is
+   reserved for malformed netlink requests.
+
+3) New binaries with old kernels might silently accept several set
+   element expressions. New binaries set on the NFT_SET_EXPR and
+   NFT_DYNSET_F_EXPR flags to request for several expressions per
+   element, hence old kernels which do not support for this bail out
+   with EOPNOTSUPP.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks!
+
+P.S: Best wishes for 2021.
+
+----------------------------------------------------------------
+
+The following changes since commit 1f45dc22066797479072978feeada0852502e180:
+
+  ibmvnic: continue fatal error reset after passive init (2020-12-23 12:56:10 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to b4e70d8dd9ea6bd5d5fb3122586f652326ca09cd:
+
+  netfilter: nftables: add set expression flags (2020-12-28 10:50:26 +0100)
+
+----------------------------------------------------------------
+Florian Westphal (1):
+      netfilter: xt_RATEEST: reject non-null terminated string from userspace
+
+Pablo Neira Ayuso (2):
+      netfilter: nft_dynset: report EOPNOTSUPP on missing set feature
+      netfilter: nftables: add set expression flags
+
+ include/uapi/linux/netfilter/nf_tables.h |  3 +++
+ net/netfilter/nf_tables_api.c            |  6 +++++-
+ net/netfilter/nft_dynset.c               | 15 ++++++++++-----
+ net/netfilter/xt_RATEEST.c               |  3 +++
+ 4 files changed, 21 insertions(+), 6 deletions(-)
