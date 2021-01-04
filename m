@@ -2,109 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27BA32E937D
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 11:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B84E2E9381
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 11:43:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbhADKiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 05:38:55 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:35962 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726308AbhADKiy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 05:38:54 -0500
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 104AWLln003664;
-        Mon, 4 Jan 2021 04:38:05 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type;
- s=PODMain02222019; bh=Uk9lYMm9ey65BqE/Wih2VZhcmr4l+5ucfmFMpGEBb/E=;
- b=QPeQZqx6qc9a4sZwoeSI2nQaLuCT6WnUD7nqd8dNjuhZJtDxrefFqWFpmB0Ye7cb+nWQ
- IUPYeUBSh2Wtg4UMdJ9xYiOKGQ9DyjBwr9Bgj7O6/DvYTcEifmxLueJnkp89vxdUla57
- sNROnd0T0O0qBZu7OjhQQk+zLkFmyEtZg6U2OVqoKLgjsZLlqcx6yqp2DPoCbDA2JKGa
- uST3kvHilv44wLY63yHzt3CCVHG5XAMQjUAK/vAfztAKGyYoY4KOw01eeLdLQunZTdST
- 9qhBURCZAN+zYIx8eW7X8XHA+XHAFJbsSeFgUhZ/yZev0wfDM4UJlI2gnOrdQTo13vgD pA== 
-Received: from ediex01.ad.cirrus.com ([87.246.76.36])
-        by mx0a-001ae601.pphosted.com with ESMTP id 35tq479aq7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 04 Jan 2021 04:38:05 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Mon, 4 Jan 2021
- 10:38:03 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.1913.5 via Frontend
- Transport; Mon, 4 Jan 2021 10:38:03 +0000
-Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 06F052AB;
-        Mon,  4 Jan 2021 10:38:03 +0000 (UTC)
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v3] net: macb: Correct usage of MACB_CAPS_CLK_HW_CHG flag
-Date:   Mon, 4 Jan 2021 10:38:02 +0000
-Message-ID: <20210104103802.13091-1-ckeepax@opensource.cirrus.com>
-X-Mailer: git-send-email 2.11.0
+        id S1726670AbhADKm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 05:42:28 -0500
+Received: from mail-ot1-f46.google.com ([209.85.210.46]:43825 "EHLO
+        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726599AbhADKm2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 05:42:28 -0500
+Received: by mail-ot1-f46.google.com with SMTP id q25so25563716otn.10;
+        Mon, 04 Jan 2021 02:42:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S4IVbE7LzJfQ0v8UqgW0RPFmuPLfdoUzAgSWkg+Ttc8=;
+        b=Udy122TOZsFa9aMxoS0cL6qJe/LofBB9z9trxJNRsd5TjlXzQQtwwL1n+BQFb1+Riy
+         k4Y4Plb2YZ4THD7u/0wP9WSIBiwU+M60hjAAvC8+Lsi7f1000LzG1w+CBshtxjqOgaVe
+         rCdgzWSDE55yycLQ+nfnF68Qs5r6Lsvv7DOBgfxCHsLJDwzwqCEk5ZCWFAgwMvGv2K97
+         ZSBkiuHag9ftj1BSmB0lEhbbDD0LPw/p7sqW+NOyN8zealQ7y84e5CM384lHeOsCg5qn
+         hv9+C53OO8QKEjKS5ViFJuXm9bdB/XxPubtxljmJf3ckhNeXpCGUkRJHCDh3zYnfUCHt
+         kSyw==
+X-Gm-Message-State: AOAM5322hQv4PeabErA6jNdGRCcw6jiUH/YJBlk5LI2ibMsngkn0kY7U
+        PP49m8ge+oCLjWrQw6kEKd5Eco+dr5gqCT9nmg4=
+X-Google-Smtp-Source: ABdhPJzpTyOsYqkffItlUkWN/wndvtYGxzzu7wXZ1SHmN7oyEIsTQAbA7mSKZymIYePJf+62beQfMfvBDnjDxkPFQjM=
+X-Received: by 2002:a05:6830:210a:: with SMTP id i10mr52172686otc.145.1609756907197;
+ Mon, 04 Jan 2021 02:41:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0 bulkscore=0
- impostorscore=0 priorityscore=1501 lowpriorityscore=0 clxscore=1015
- mlxscore=0 spamscore=0 suspectscore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101040069
+References: <20201228213121.2331449-1-aford173@gmail.com> <20201228213121.2331449-4-aford173@gmail.com>
+In-Reply-To: <20201228213121.2331449-4-aford173@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 4 Jan 2021 11:41:36 +0100
+Message-ID: <CAMuHMdUCsAGYGS8oygT2xySRSm3Op4cJJmcnEK9BC732ZvN6JA@mail.gmail.com>
+Subject: Re: [PATCH 4/4] net: ethernet: ravb: Name the AVB functional clock fck
+To:     Adam Ford <aford173@gmail.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A new flag MACB_CAPS_CLK_HW_CHG was added and all callers of
-macb_set_tx_clk were gated on the presence of this flag.
+Hi Adam,
 
--   if (!clk)
-+ if (!bp->tx_clk || !(bp->caps & MACB_CAPS_CLK_HW_CHG))
+On Mon, Dec 28, 2020 at 10:32 PM Adam Ford <aford173@gmail.com> wrote:
+> The bindings have been updated to support two clocks, but the
+> original clock now requires the name fck to distinguish it
+> from the other.
+>
+> Signed-off-by: Adam Ford <aford173@gmail.com>
 
-However the flag was not added to anything other than the new
-sama7g5_gem, turning that function call into a no op for all other
-systems. This breaks the networking on Zynq.
+Thanks for your patch!
 
-The commit message adding this states: a new capability so that
-macb_set_tx_clock() to not be called for IPs having this
-capability
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> @@ -2142,7 +2142,7 @@ static int ravb_probe(struct platform_device *pdev)
+>
+>         priv->chip_id = chip_id;
+>
+> -       priv->clk = devm_clk_get(&pdev->dev, NULL);
+> +       priv->clk = devm_clk_get(&pdev->dev, "fck");
 
-This strongly implies that present of the flag was intended to skip
-the function not absence of the flag. Update the if statement to
-this effect, which repairs the existing users.
+This change is not backwards compatible, as existing DTB files do not
+have the "fck" clock.  So the driver has to keep on assuming the first
+clock is the functional clock, and this patch is thus not needed nor
+desired.
 
-Fixes: daafa1d33cc9 ("net: macb: add capability to not set the clock rate")
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
----
+>         if (IS_ERR(priv->clk)) {
+>                 error = PTR_ERR(priv->clk);
+>                 goto out_release;
 
-Changes since v1:
- - Updated flag semantics to skip function, as appears to have been
-   intended by the initial commit.
+Gr{oetje,eeting}s,
 
-Changes since v2:
- - Adding "net" to the subject line
+                        Geert
 
-Thanks,
-Charles
-
- drivers/net/ethernet/cadence/macb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index d5d910916c2e8..814a5b10141d1 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -467,7 +467,7 @@ static void macb_set_tx_clk(struct macb *bp, int speed)
- {
- 	long ferr, rate, rate_rounded;
- 
--	if (!bp->tx_clk || !(bp->caps & MACB_CAPS_CLK_HW_CHG))
-+	if (!bp->tx_clk || (bp->caps & MACB_CAPS_CLK_HW_CHG))
- 		return;
- 
- 	switch (speed) {
 -- 
-2.11.0
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
