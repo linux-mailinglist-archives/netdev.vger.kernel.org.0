@@ -2,91 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93BC2E9384
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 11:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD1312E93B7
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 11:52:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbhADKnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 05:43:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726504AbhADKnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 05:43:10 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835C1C061574
-        for <netdev@vger.kernel.org>; Mon,  4 Jan 2021 02:42:30 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id h16so26802834edt.7
-        for <netdev@vger.kernel.org>; Mon, 04 Jan 2021 02:42:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=swYiWLLSTUuXWBs2sSYS3F86y+5L9fo0OCnz4xL65Wc=;
-        b=FiqRamNMLz4o10lOcdwIEjgiDu7u+B6zyCiJEu1Nq+4vPriEdI1wlVy/le4t5aD8SQ
-         /6tFmtgYRe6LHKgzK/3HxZxvj+lGuVePBUi0+5qVUL2Bj55gKrGf5f7QlhtM6RJIrif2
-         My+LDeCF0Z61y/4n7+o9/cyRZd15XYbkEfJvS0IVhZNh7lw1cv/EJOe9vmw9HAQwM6HN
-         gz8y9TJpvFP8S++Fr18P9zGcWJmYGjigenItLAaOde5//rHUZvkThtsCYn2yCBBA8HN6
-         e0hhGdi0Up0gCSstoyBSCZkm8S9vrhjgMn2PUU7KtRit+gKvzRXSIhNBXOHi+WRuUgR/
-         uqXA==
+        id S1726636AbhADKwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 05:52:23 -0500
+Received: from mail-oo1-f45.google.com ([209.85.161.45]:34674 "EHLO
+        mail-oo1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726129AbhADKwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 05:52:23 -0500
+Received: by mail-oo1-f45.google.com with SMTP id x23so6181519oop.1;
+        Mon, 04 Jan 2021 02:52:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=swYiWLLSTUuXWBs2sSYS3F86y+5L9fo0OCnz4xL65Wc=;
-        b=J43c4+0vpbTg/6jYWETGpOJEqlBnmuSTP/VkwCUMfCFAOoESV/EgWrD7M1M9pIk+ua
-         oBElc0L2O+xTuTUAbp1GEAsTHwIslowBUom31r3UW/J9z3coJJltwJWIiGjxSzTn0iDD
-         q/OzgWFQme3VSI54tg7RetrukgPDuoOK+mb5wL5ZdBJ9fWHOAuxFxxOoL2MxHwfCNhbK
-         8jwpnxuvnDSc7nYMy40uwMJdtNieiheVwRLSrO1u3nvvV8+1w2oHpxx3JD6q5QKJl/FI
-         Vc2dzjSgKtAOifgW4Sb9W7ZVc1YjP9OhJLCqV1osBvUlth2rvpKtK7v6Jgmops30TB5K
-         JpYg==
-X-Gm-Message-State: AOAM530CDE5PyceWgv/DSFcjZhi4oXh/6Ji0XGBux88Y+HVzubbXR6lH
-        1vOkzBIW9Lm1ryrefPrBzhU=
-X-Google-Smtp-Source: ABdhPJykSBIkTtUPJPKCo0LkXl3mNlkqMaFAWYQroGY05Q9WoElZoL/JWYdPqNb/97WcTunQGTyNsw==
-X-Received: by 2002:aa7:d154:: with SMTP id r20mr72676992edo.258.1609756949318;
-        Mon, 04 Jan 2021 02:42:29 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id h12sm23283887eja.113.2021.01.04.02.42.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jan 2021 02:42:28 -0800 (PST)
-Date:   Mon, 4 Jan 2021 12:42:27 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net] docs: net: fix documentation on .ndo_get_stats
-Message-ID: <20210104104227.oqx6xt76k5snmhs6@skbuf>
-References: <20201231034524.1570729-1-kuba@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q0c1Y3LPa+ARd4G//BxkyHoz21dY5cJnRVsgk53Tbn0=;
+        b=W2qolnfRpSNOO2OPET4j501GZ6Fbc3ix9/s35u7f2ncBvczG8Kuep0IsneSeOvRgbM
+         LHJe1xNLSIF+3rPwk37OCQKnanEsCckhOJHRdFhCPgrOLruGpfZRBK9+GvxM/hkdmCfz
+         DkiIM1qGywXwkhOxgUzQgNZGJDHyoHsdlLjq4UYUNEcTmQCODczWIus72CpYNdOOO7vu
+         zFMEp0Juq80U/0fdPv7qtEN8yBLuRt0HlcDc6h8u5KiAtctNbqsQ9+3YEE6Ny/v/sSWt
+         uX8TC+ZW0nwJOVOrDkYKw5MT5mDYa7+aLW5O+JZX7cX7RrsisHeZhIzytloZvyaL8pj4
+         EPfw==
+X-Gm-Message-State: AOAM530a99uL6vF7UTuXVr4D0qYlWN2ocgbfSUT97D54nKcDX4MJ+C3k
+        aGzFRMG5vMAFmevVG2picUnPZR5K6MT+iXsLQkk=
+X-Google-Smtp-Source: ABdhPJzvxPnIglxjOoytlJMwE5oDPJlVBKkIU/bFGP9uDfDV7fCPuik4jToHwv9sqFHZKPyvpQob0nH+8q9/7XJ4cV4=
+X-Received: by 2002:a4a:ca14:: with SMTP id w20mr48712009ooq.11.1609757502401;
+ Mon, 04 Jan 2021 02:51:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201231034524.1570729-1-kuba@kernel.org>
+References: <20201231155957.31165-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20201231155957.31165-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 4 Jan 2021 11:51:31 +0100
+Message-ID: <CAMuHMdX2ruikh4voRrHPmi=ti+eHVxXh6N05s1XH6+r5MeeqQw@mail.gmail.com>
+Subject: Re: [PATCH] can: rcar: Update help description for CAN_RCAR_CANFD config
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 30, 2020 at 07:45:24PM -0800, Jakub Kicinski wrote:
-> Fix calling context.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  Documentation/networking/netdevices.rst | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/networking/netdevices.rst b/Documentation/networking/netdevices.rst
-> index 5a85fcc80c76..a80676f5477d 100644
-> --- a/Documentation/networking/netdevices.rst
-> +++ b/Documentation/networking/netdevices.rst
-> @@ -64,8 +64,8 @@ struct net_device synchronization rules
->  	Context: process
->  
->  ndo_get_stats:
-> -	Synchronization: dev_base_lock rwlock.
-> -	Context: nominally process, but don't sleep inside an rwlock
-> +	Synchronization: rtnl_lock() semaphore, or RCU.
-> +	Context: atomic
->  
->  ndo_start_xmit:
->  	Synchronization: __netif_tx_lock spinlock.
-> -- 
-> 2.26.2
-> 
+Hi Prabhakar,
 
-And what happened to dev_base_lock? Did it suddenly go away?
+On Thu, Dec 31, 2020 at 5:00 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> The rcar_canfd driver supports R-Car Gen3 and RZ/G2 SoC's, update the
+> description to reflect this.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+> --- a/drivers/net/can/rcar/Kconfig
+> +++ b/drivers/net/can/rcar/Kconfig
+> @@ -10,13 +10,13 @@ config CAN_RCAR
+>           be called rcar_can.
+>
+>  config CAN_RCAR_CANFD
+> -       tristate "Renesas R-Car CAN FD controller"
+> +       tristate "Renesas R-Car Gen3 and RZ/G2 CAN FD controller"
+>         depends on ARCH_RENESAS || ARM
+
+Not introduced by this patch, but the "|| ARM" looks strange to me.
+Is this meant for compile-testing? Doesn't the driver compile on all
+platforms (it does on m68k), so "|| COMPILE_TEST" is not appropriate?
+Is the CAN FD controller present on some Renesas arm32 SoCs (but
+not yet supported by this driver)?
+
+>         help
+>           Say Y here if you want to use CAN FD controller found on
+> -         Renesas R-Car SoCs. The driver puts the controller in CAN FD only
+> -         mode, which can interoperate with CAN2.0 nodes but does not support
+> -         dedicated CAN 2.0 mode.
+> +         Renesas R-Car Gen3 and RZ/G2 SoCs. The driver puts the
+> +         controller in CAN FD only mode, which can interoperate with
+> +         CAN2.0 nodes but does not support dedicated CAN 2.0 mode.
+>
+>           To compile this driver as a module, choose M here: the module will
+>           be called rcar_canfd.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
