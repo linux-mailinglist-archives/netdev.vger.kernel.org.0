@@ -2,76 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE0FE2E9550
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 13:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B7142E9587
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 14:05:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726694AbhADMwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 07:52:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56147 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726608AbhADMwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 07:52:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609764652;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=D7cdYIjLB2TJwkBcPMV987oTnRn/FEmni88uTGzxuGA=;
-        b=YPwAv0r48FaWO0w/54j2/qJNz9lr6YTlOOmQLhfhEWa5rFJpVdOqyB4jIa5s0Zifa/1470
-        7VYxXupjw61RFKyk7+8yGmpxAK5xziPAhg/X3R7fYVp8qAtMzq+8BWGoLdG7IQFSd6Av2+
-        kcoqf/VldhIPSa5lXSTG2JYKoK3ANv4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-173-mAxJZbDYPF-TPxibUqBH0w-1; Mon, 04 Jan 2021 07:50:51 -0500
-X-MC-Unique: mAxJZbDYPF-TPxibUqBH0w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 750D1107ACE3;
-        Mon,  4 Jan 2021 12:50:49 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-112-8.rdu2.redhat.com [10.10.112.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 98D526F920;
-        Mon,  4 Jan 2021 12:50:47 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20201229173916.1459499-1-trix@redhat.com>
-References: <20201229173916.1459499-1-trix@redhat.com>
-To:     trix@redhat.com
-Cc:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com,
-        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] rxrpc: fix handling of an unsupported token type in rxrpc_read()
+        id S1726962AbhADNEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 08:04:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbhADNEP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 08:04:15 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7109CC061796;
+        Mon,  4 Jan 2021 05:03:35 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id b8so14522524plx.0;
+        Mon, 04 Jan 2021 05:03:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=862T7hic/OMu7f7cJEh2FFoF3v3gS9+yRL0pxtDB4jE=;
+        b=cMEel9TKtloSoTHFocd8vnyoZ7T1Xx9Px4pFcxbVCIM2HhoA7hULRb8yJw9N7rQXnJ
+         Ro/USm9rd6j0D9D9CJa4dLd4hEKn+z0ouZCrNyCjDxiIKMTUmrt0MEisxBqCoIjhkFWW
+         tvxFR41Oky8F0+gkagdf2pJpifzQARDsIfIsVjKm3uGVZ2YXrIbX1T4vQ485dz99X9f3
+         ZoS4ZV1tjG+mJqA1TU57VEppZnc2rJi68VW2sRoA+XADE7dddM12Jv+QFOuEFxWYttnC
+         aSehdhuyVCLri8BzP3iBGQtmqtGv7KcWCk3GI5AZ8hirjJLH/cHqDCmRnDAK9okZbA7N
+         nhRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=862T7hic/OMu7f7cJEh2FFoF3v3gS9+yRL0pxtDB4jE=;
+        b=VJwo51+q0jjmGLJZRFEZb5kbckmVh+eYjYybsAjCFR6VgGfsyhniqXevjVdGl9+CHH
+         kANulYiUZNnEVZmE8d9n7I0Qi5cIKL72n+FBDgtjaCdWTwgzVIX9l2UXuk5TVM9aC2Tm
+         w8vz9CP3lrbW089eQ2M6wanvKNowkalNkx6fl3vVfZ4giQgwRwXnKsykq2LwiJQu8f29
+         CDG5WXbY++kZVSjcptLMy1Xkb3L80EEkAK1v65g0uDOsTVu5d2fIbaQtCKPgTv0HKJKI
+         DLYQaLNRPU8I8BXxuaIQ9L+KI1uf02y60mrDeMhBpjSWgApxa7RfoNDH7QkNmA3GO3Tt
+         ja5A==
+X-Gm-Message-State: AOAM532oy2cFUHpTjV+nk9nvlFaxHowotfjMW2bzvziE/Zw2qpUlwGm9
+        hesNYn7RFJvnCpdjdkuXkuG2TUa4IHo=
+X-Google-Smtp-Source: ABdhPJwe6TAxYKj3OChvtjsroGWbbF9IJd+DVOmcwIhnsQgjoLWhE5exnorFAbFY+MV0PVAKhNLmAQ==
+X-Received: by 2002:a17:902:59dc:b029:da:84c7:f175 with SMTP id d28-20020a17090259dcb02900da84c7f175mr49386727plj.75.1609765415000;
+        Mon, 04 Jan 2021 05:03:35 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id x23sm46993760pgk.14.2021.01.04.05.03.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Jan 2021 05:03:34 -0800 (PST)
+Date:   Mon, 4 Jan 2021 05:03:31 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Stefan =?iso-8859-1?Q?S=F8rensen?= 
+        <stefan.sorensen@spectralink.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/7] phy: dp83640: select CONFIG_CRC32
+Message-ID: <20210104130331.GA27715@hoboy.vegasvil.org>
+References: <20210103213645.1994783-1-arnd@kernel.org>
+ <20210103213645.1994783-2-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <259548.1609764646.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Mon, 04 Jan 2021 12:50:46 +0000
-Message-ID: <259549.1609764646@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210103213645.1994783-2-arnd@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-trix@redhat.com wrote:
+On Sun, Jan 03, 2021 at 10:36:18PM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> Without crc32, this driver fails to link:
+> 
+> arm-linux-gnueabi-ld: drivers/net/phy/dp83640.o: in function `match':
+> dp83640.c:(.text+0x476c): undefined reference to `crc32_le'
+> 
+> Fixes: 539e44d26855 ("dp83640: Include hash in timestamp/packet matching")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-> -		switch (token->security_index) {
-> -		case RXRPC_SECURITY_RXKAD:
-> ...
-> -		switch (token->security_index) {
-> -		case RXRPC_SECURITY_RXKAD:
-
-These switches need to be kept.  There's another security type on the way.
-See:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/=
-?h=3Drxrpc-rxgk
-
-for example.  I'll have a look later.
-
-David
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
