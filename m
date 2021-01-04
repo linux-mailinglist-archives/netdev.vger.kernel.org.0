@@ -2,132 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E2102E945D
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 12:53:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42B272E9461
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 12:55:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbhADLxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 06:53:07 -0500
-Received: from mail-vi1eur05on2097.outbound.protection.outlook.com ([40.107.21.97]:14305
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726026AbhADLxG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Jan 2021 06:53:06 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d/C34LiYcl33gZe6DN3QgINt/+y4QQtquX4cCSipXgOy4aNhBZmAeR8XiWOW3BHhkV5k3KvMsplzM30eFqsxkweyJIM5p/Maj2vae4ya6OnjreYB67+qb0mHADdQSW/P668YJ0tcwYVbabGUQXkMYWsGSce/lsh+Ok0AVx+MZWupiOk59QQYYWILVr5AUCZ/Fa4PLYoLEpyULfySMzi2HDFDIfbYJn1/pDYxA4L/6Y/w+NvMQlABWwQ12rv0AYyW26mXAVR4/pWYZTZjuYLW1tw/qob8F0LNSqYUzttqHJYcQhXC8kOxx7EA5UCJy1hDzVuDxLuh+bQvhIZkIRlgow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ojXxGxngabUdmSAPJdfqC355CI4Mmdzr+l8xvcpJMA=;
- b=fkxaTXU081cB/jlYZD4IO8X50fXYv0FYZhbYc+ObG+QPtAcyupjfJdmI/suUaOWReal4qvBfZz/cyy+dFmXuYZ9UUav9gOXScxotCHwXuai9nuTQqkccK241/9h8277vuS7NuPZrnkLPRIZPavp+ZnNoaQjwcob3yBGRQ3lxT2LMxPJX1YhMgc5/Whdc0MoaMXlUNv70q8F5vjY6vleWaz1lAXVx3dGjG2timgKXg21pyOg10pQlH8BTMlfkgSpb6JgdDXuk0qrjJmIFy5TLmz+OLjqh4QtgDvPwqek3dsY7IcN8TWuOt88OG988irkBpt4kfjKDIrQU+MIBtsRTXQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silicom.dk; dmarc=pass action=none header.from=silicom.dk;
- dkim=pass header.d=silicom.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=SILICOMLTD.onmicrosoft.com; s=selector2-SILICOMLTD-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ojXxGxngabUdmSAPJdfqC355CI4Mmdzr+l8xvcpJMA=;
- b=o4UDbRL4/f7DtCAXkrSwsyqm5+QGKaWYBvGkrjTF9z7gFs9DeBSCrnkrdSwnPd9ynoZTa9HmQKX63nkFRoNS8xRLctuSFxaeO1DnnbfmXKWJ8XMNHNc4Xwo+rY4yjGl1ZdfvhLk/KLILf4/65EGebINopzOtRAJRaQyM6DizvjY=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=silicom.dk;
-Received: from AM0PR0402MB3426.eurprd04.prod.outlook.com
- (2603:10a6:208:22::15) by AM0PR04MB6820.eurprd04.prod.outlook.com
- (2603:10a6:208:188::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.19; Mon, 4 Jan
- 2021 11:52:17 +0000
-Received: from AM0PR0402MB3426.eurprd04.prod.outlook.com
- ([fe80::58c9:a2cd:46c5:912e]) by AM0PR0402MB3426.eurprd04.prod.outlook.com
- ([fe80::58c9:a2cd:46c5:912e%5]) with mapi id 15.20.3721.024; Mon, 4 Jan 2021
- 11:52:17 +0000
-Subject: Re: Reporting SFP presence status
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <5db3cbd8-ec1c-a156-bcb9-50fb3b8391b0@silicom.dk>
- <20201221152205.GG3026679@lunn.ch>
- <24cb0fa7-13fc-4463-bb3e-fcd1d13b3fcc@silicom.dk>
- <20201222142251.GJ3107610@lunn.ch>
-From:   =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <mhu@silicom.dk>
-Message-ID: <6d7cc782-ee35-838b-d4f8-990e374ed6b0@silicom.dk>
-Date:   Mon, 4 Jan 2021 12:52:16 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-In-Reply-To: <20201222142251.GJ3107610@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [85.184.138.169]
-X-ClientProxiedBy: AM6P193CA0126.EURP193.PROD.OUTLOOK.COM
- (2603:10a6:209:85::31) To AM0PR0402MB3426.eurprd04.prod.outlook.com
- (2603:10a6:208:22::15)
+        id S1726246AbhADLyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 06:54:40 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:19236 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725830AbhADLyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 06:54:40 -0500
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 104BVHa6054087;
+        Mon, 4 Jan 2021 06:53:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=4IQnPu2d9QGTflVdDqWTyx4SaeztywUda5hp0W5Dhj4=;
+ b=YlNVqI7JULaYMR1Jueb4ylEiGzVYj3G3qRmfFgoGDzL8qiUzcUQ0D415FanSCEWL/wBm
+ OzpcY5/Upo0RaPWO3W1AOoEbIU9HgzLnwwjMxDKh8Db7Dqp5lhfSuPrkkh6HfjB7JMW5
+ aAwVVPYKz3iXdlYunK6C4C4MI0iS4oPmq3DhK2PHKnwIWKaSkOoAiJSUkStty1addxXi
+ SPyG/tiKr+7JJS7rE2oDZ9DmmMCdH+X8uFoI3/VQjlkKQXMo63WeUCvkebei0X+sBSiH
+ 0zFvIp7TS4Ok/XSMyTXo2dlOUi3My1zeRWHH9VOEXXMJz54Ts8a/SAT+od72EXKkNhJd RA== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 35v16at1my-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jan 2021 06:53:53 -0500
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 104BlLtn027620;
+        Mon, 4 Jan 2021 11:53:52 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 35u3pmh6xa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Jan 2021 11:53:52 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 104BrknC31916382
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 4 Jan 2021 11:53:46 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E2F124C040;
+        Mon,  4 Jan 2021 11:53:49 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8F57E4C046;
+        Mon,  4 Jan 2021 11:53:49 +0000 (GMT)
+Received: from [9.171.91.54] (unknown [9.171.91.54])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  4 Jan 2021 11:53:49 +0000 (GMT)
+Subject: Re: [PATCH net] smc: fix out of bound access in smc_nl_get_sys_info()
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     guvenc@linux.ibm.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org,
+        syzbot+f4708c391121cfc58396@syzkaller.appspotmail.com
+References: <20201230004841.1472141-1-kuba@kernel.org>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+Message-ID: <4ca9487e-2834-1c45-68eb-a6be8be671d3@linux.ibm.com>
+Date:   Mon, 4 Jan 2021 12:53:49 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.3
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.8.20] (85.184.138.169) by AM6P193CA0126.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:85::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.20 via Frontend Transport; Mon, 4 Jan 2021 11:52:16 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 57f932a0-d7c0-4183-8f1b-08d8b0a72f27
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6820:
-X-Microsoft-Antispam-PRVS: <AM0PR04MB68203326EA78D0118AB725CDD5D20@AM0PR04MB6820.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2449;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: O3UM3vIWmoeWE+and8yF5U17KhXWLwEwRcFD2qhUgXSFNKyQtDdldUtxpj89i23jiZ98MuCoTKr5A/ipO0kN/V15YJRhE/Zc9fIVZtyzEgL4VU5lN4+usXBbyLDK+nPXIziyfImQNfMeJToVh8PlrdmkLfDdOhd2ATXtjx8ICNtgvrnf31oWzqx4YXEKOvEDD2hkJ9ufYgcbrBMxOsnXh2YBNZDws7pK8RRE9nJzQNtdodbpaZSB/SSftNqQrP9PJro+PArJuMJx8Ntm7lQ9G5q6JT+/fd4UTL1zj1jFZRQdv++mCQKWFbnZZOFauueAlxw/sQrMVeSX2omwVmiS3MoLtJzzK44j+Fphtez9Fl2ax2IvTtyDQnKCtL7OiTVTaH0TcjZhjmyqKA7dqxyAZmGxCHWNN/rZLY2Lpua61MSiQz5jaD30d/3WtpVtc73Tq/ie8lcGH+q7dBTqymvc1bZrBVCcFoov4UqhM92ol0E=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR0402MB3426.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(396003)(39850400004)(376002)(346002)(66556008)(66476007)(66946007)(83380400001)(5660300002)(3480700007)(31696002)(956004)(36756003)(2616005)(31686004)(2906002)(86362001)(6486002)(478600001)(4326008)(26005)(16526019)(186003)(8936002)(52116002)(8976002)(316002)(16576012)(8676002)(4744005)(6916009)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?VGtVU3ZzSjF2Y2hvMDhJUTZlU3lPempZcXhEV1RVakdraDc0N0ZOMlFjSG5O?=
- =?utf-8?B?cW52SVpZMm4rekJpMGo4Vk0xSnYyM1J6TXdzZUZEOS9OWmxYbkw2ZTN1V3l5?=
- =?utf-8?B?dzJVWC9ab3FmL2s2aHNIdWs5aWU3U21jTFlmMDZYMW1vWlFWamlZZGltTUNm?=
- =?utf-8?B?eHBYY2V4SlNnZEQrdGNZOVl5Yy8rR3lTWVpBWEI4amRiQ0FIN0dTWHJEMm9r?=
- =?utf-8?B?eHFnczJkNDV3anBVVm1mTVU2VUxDQmZXbHppOXFqRXNKSGs1YzFwTTBVT3hl?=
- =?utf-8?B?RHA1anFwQ3lCdUV4ZmRKUENFQzFlZnlVd3R6cGJZY2JnR25ZN3ViRHpiMy8v?=
- =?utf-8?B?NkpmQUEvRjM3TjVFcCtoWW0vTVc5cmxmMnNtUUU3M2F2Ylk4dTZ2Wm8xZDRm?=
- =?utf-8?B?UGRQQzdOcERRREVmemprWkdVYmdpL3NxK2xONFlmb2ZuREV3SGkyZHUzY0Nz?=
- =?utf-8?B?NndSaGZEVVN0S1psclpwcm43eU5WZTVwZmZWcC9tbXJrRnJnN0dUbVR1b3pT?=
- =?utf-8?B?Q2FlbjdBWmdmOGgzUzRDenlJRE44UDZYZmh1S2Y0OTNDUUIzc1h0b3Q0UjIw?=
- =?utf-8?B?bmt4VWN6V1YrdUQxa3k1MENtQTFhMkY3UWcrSk5zSFdXbXI0S0RoMWtUM1hj?=
- =?utf-8?B?eitOeXNSR0Yyb1lpZGVzODBrNVp5aHRKMGJWa3pWREs2MU5adEZrU00xeXlQ?=
- =?utf-8?B?ZjZsNHlraE9veFJZbHFGc0xxaUlDTU5VWngwbUg3b1lNTmJjeE5GbFh4OHBv?=
- =?utf-8?B?ZzlIWTBtVjJBWVJIcWdkNkdsUi9ZV0NMdEwvMU1hc3dHNU9kSlAwbU1BQ1I5?=
- =?utf-8?B?SU5UN2F4NGtXcFpESVpZRW5xbTVacVFJeWxUaDhIeWUxWEV3RE9FcTBNcitL?=
- =?utf-8?B?T1VCT2o3MGVtQVBMRUdmczZ2aitmdVBxNjNibkhzNGFudGs0ZXhXMmo0L1lO?=
- =?utf-8?B?bkRVa25WTUxiTVJsUnF5Q05qK2dZSkxNZkkxa3hMVWhCekIvaEVPRzhFWkpn?=
- =?utf-8?B?WWxLUkV2UDlwdjZoNGJEODZnYllOWUwzSjJZWnB6R0RJME9PRE5ZRFM5aCtE?=
- =?utf-8?B?dXVYN0FST1ZOM2FPaWI0N1VkdnA1Q1ZjSHp4elRiUDlJaytUV2ttZmtES1Vo?=
- =?utf-8?B?TTdpT2JWVTQ4Nk91YjQ0ckJCS1lnU3dRYTBFazdpbjAzMW81cHdMVTZUUmJY?=
- =?utf-8?B?aWxCczQwaWZrT0hkUlNjT3l3OHBKVWtSN0V3ckVGazRyYkRnWnZkbkNLRDhn?=
- =?utf-8?B?NUNXSk1hSU1ReFcxMEhGRm9URWFUQVJUYnRTdCtLd0YrSTkzZmZPeThNVitD?=
- =?utf-8?Q?FShMUZNYv0rUSvLwTZqiFDgdZRPetIuiCx?=
-X-OriginatorOrg: silicom.dk
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR0402MB3426.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2021 11:52:16.9444
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: c9e326d8-ce47-4930-8612-cc99d3c87ad1
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57f932a0-d7c0-4183-8f1b-08d8b0a72f27
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: u81Vi+anx0MK43EwtIJSa1R5WdQchDUIQlnyQl+1ZnExhLJ3RCr3H0VFdwQkGXWa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6820
+In-Reply-To: <20201230004841.1472141-1-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-04_07:2021-01-04,2021-01-04 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ mlxlogscore=999 priorityscore=1501 impostorscore=0 malwarescore=0
+ spamscore=0 clxscore=1011 adultscore=0 mlxscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101040073
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Thank you Jakub,
 
-On 22/12/2020 15.22, Andrew Lunn wrote:
->> You're right; a notification isn't what I need. But a way to query the
->> current state of the module would be nice, i.e. using ethtool.
-> What do you mean by state? ethtool -m gives you some state
-> information. ENODEV gives you an idea that there is no module
-> inserted. Lots of data suggests there is a module. You can decode the
-> data to get a lot of information.
+this patch solves the out of bounds access due to snprintf() copying size bytes first
+and overwriting the last byte with null afterwards.
+We will include your patch in our next series for the net tree soon.
 
-Using ENODEV would be enough, thanks.
+Reviewed-by: Karsten Graul <kgraul@linux.ibm.com>
 
-> There was also a patchset from Russell King a few weeks ago exposing
-> some information in debugfs. But since it is debugfs, you cannot rely
-> on it.
+On 30/12/2020 01:48, Jakub Kicinski wrote:
+> smc_clc_get_hostname() sets the host pointer to a buffer
+> which is not NULL-terminated (see smc_clc_init()).
 > 
-> Back to, what is you real use cases here?
+> Reported-by: syzbot+f4708c391121cfc58396@syzkaller.appspotmail.com
+> Fixes: 099b990bd11a ("net/smc: Add support for obtaining system information")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/smc/smc_core.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> index 59342b519e34..8d866b4ed8f6 100644
+> --- a/net/smc/smc_core.c
+> +++ b/net/smc/smc_core.c
+> @@ -246,7 +246,8 @@ int smc_nl_get_sys_info(struct sk_buff *skb, struct netlink_callback *cb)
+>  		goto errattr;
+>  	smc_clc_get_hostname(&host);
+>  	if (host) {
+> -		snprintf(hostname, sizeof(hostname), "%s", host);
+> +		memcpy(hostname, host, SMC_MAX_HOSTNAME_LEN);
+> +		hostname[SMC_MAX_HOSTNAME_LEN] = 0;
+>  		if (nla_put_string(skb, SMC_NLA_SYS_LOCAL_HOST, hostname))
+>  			goto errattr;
+>  	}
+> 
 
-Similar to the NO-CARRIER / LOWER_UP flags from network interfaces, a 
-NO_SFP flag can aid when maintaining remote systems. So it's definitely 
-nice-to-have.
+-- 
+Karsten
 
-// Martin
+(I'm a dude)
