@@ -2,405 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB6632EA091
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 00:15:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3852A2EA054
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 00:03:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbhADXPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 18:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726163AbhADXPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 18:15:10 -0500
-Received: from mail-ua1-x94a.google.com (mail-ua1-x94a.google.com [IPv6:2607:f8b0:4864:20::94a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64223C061574
-        for <netdev@vger.kernel.org>; Mon,  4 Jan 2021 15:14:30 -0800 (PST)
-Received: by mail-ua1-x94a.google.com with SMTP id q10so14657352uam.14
-        for <netdev@vger.kernel.org>; Mon, 04 Jan 2021 15:14:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=qTFy4EaAwn4EgUzJPExVSKk4Chf7dzkx8N/kaPr9Lr4=;
-        b=booLc3YqbyoMnXqJhLcOVeHd1NuhuNuPpUJfcQgk61HQ56/wAzvhJTP6P710hkEzjL
-         Y8d83riuY5qSsVQd8dVHT9Ua+LtwaY83gb5OYgud0ccthHv9UPnki6iFLnHEkVV4YmJo
-         SHvSoX6wbi7QwoOz1MJjUF0qibY+IkkisX/PYf3f0gY459wMUHY/zPNIun9TuiqNt/vW
-         bdHui2b3KgVj0j+EMtzPZM1XHKQBk5pOztiF5E6mBpQp5xd8J8KhWn+1P4LZNdnrMlzS
-         Ci7mPKMdDtfWM/opNl8f9w16LNDwLTo0M0ztcJgWui3MWNFbavmFxt+d1JITVdyasR9X
-         Ip/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=qTFy4EaAwn4EgUzJPExVSKk4Chf7dzkx8N/kaPr9Lr4=;
-        b=OQtF/NKmmMgtS31dOMNpjGf9sPvns0WVKM7l1MItFU9lawSU1oH9q4+X93twQaTWhO
-         hOVsklVDD2D+f/0a+F58GpSDD+hNp39DRU/kxezYtjDXrR6zm3gDMhMkZEYWAm1cT/aQ
-         wche7liWsvxIs3M1cOynA6hlFdoe2TvY2oG8/SWSVhyBBhfzprBSFyPN6L1hs0kSVj8W
-         3RyEWn9n3XOStH4oTQydUu7vcCiOsqH5kvT6rNBv9R9SCFQ1dFwKlHUR7HJNZYNRPqa8
-         1NVs9HoJXtFSwBYZ31BTOqchwnz1l8ZHRqqwQMpBuh6ogqOOSAU05OAGrBVazpvtPCSk
-         VwZQ==
-X-Gm-Message-State: AOAM533m6gGR2IUsbc45xeYD1hm5+Oo1mDylohUb44P/6KL/j2YUD2JT
-        E9YhxI6A3WQFAePBwVsGFiHr5cE1Brg5631i5k5QAVVmSJsc3klJ5CVpUt0YUJY5OiHJbAhPtbG
-        8eXDm8aCGGG/5ViL2IWAj3DeuYrSE2QlDCBqUIu2muwPKsnUk95mhjQ==
-X-Google-Smtp-Source: ABdhPJxbjs2vtdmRsdcJil8BQSH58ieqvJVYPD50tHdpK4W5pFhqGjwYDMbdO8i54KBv5dcKmyCXXR8=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a05:6214:28f:: with SMTP id
- l15mr77905339qvv.38.1609798500465; Mon, 04 Jan 2021 14:15:00 -0800 (PST)
-Date:   Mon,  4 Jan 2021 14:14:54 -0800
-In-Reply-To: <20210104221454.2204239-1-sdf@google.com>
-Message-Id: <20210104221454.2204239-3-sdf@google.com>
-Mime-Version: 1.0
-References: <20210104221454.2204239-1-sdf@google.com>
-X-Mailer: git-send-email 2.29.2.729.g45daf8777d-goog
-Subject: [PATCH bpf-next v2 2/2] bpf: split cgroup_bpf_enabled per attach type
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Song Liu <songliubraving@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726925AbhADXDg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 4 Jan 2021 18:03:36 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:33746 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726163AbhADXDf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 18:03:35 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-263-ag-iRlqQOuKeaV89XUEPMQ-1; Mon, 04 Jan 2021 18:02:42 -0500
+X-MC-Unique: ag-iRlqQOuKeaV89XUEPMQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DAF07180A092;
+        Mon,  4 Jan 2021 23:02:40 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.192.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CD0B45D9C6;
+        Mon,  4 Jan 2021 23:02:38 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-crypto@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Biggers <ebiggers@google.com>
+Subject: [PATCH] crypto: Rename struct device_private to bcm_device_private
+Date:   Tue,  5 Jan 2021 00:02:37 +0100
+Message-Id: <20210104230237.916064-1-jolsa@kernel.org>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we attach any cgroup hook, the rest (even if unused/unattached) start
-to contribute small overhead. In particular, the one we want to avoid is
-__cgroup_bpf_run_filter_skb which does two redirections to get to
-the cgroup and pushes/pulls skb.
+Renaming 'struct device_private' to 'struct bcm_device_private',
+because it clashes with 'struct device_private' from
+'drivers/base/base.h'.
 
-Let's split cgroup_bpf_enabled to be per-attach to make sure
-only used attach types trigger.
+While it's not a functional problem, it's causing two distinct
+type hierarchies in BTF data. It also breaks build with options:
+  CONFIG_DEBUG_INFO_BTF=y
+  CONFIG_CRYPTO_DEV_BCM_SPU=y
 
-I've dropped some existing high-level cgroup_bpf_enabled in some
-places because BPF_PROG_CGROUP_XXX_RUN macros usually have another
-cgroup_bpf_enabled check.
+as reported by Qais Yousef [1].
 
-I also had to copy-paste BPF_CGROUP_RUN_SA_PROG_LOCK for
-GETPEERNAME/GETSOCKNAME because type for cgroup_bpf_enabled[type]
-has to be constant and known at compile time.
-
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
-Acked-by: Song Liu <songliubraving@fb.com>
+[1] https://lore.kernel.org/lkml/20201229151352.6hzmjvu3qh6p2qgg@e107158-lin/
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/bpf-cgroup.h | 36 +++++++++++++++++++-----------------
- kernel/bpf/cgroup.c        | 14 ++++++--------
- net/ipv4/af_inet.c         |  9 +++++----
- net/ipv4/udp.c             |  7 +++----
- net/ipv6/af_inet6.c        |  9 +++++----
- net/ipv6/udp.c             |  7 +++----
- 6 files changed, 41 insertions(+), 41 deletions(-)
+ drivers/crypto/bcm/cipher.c | 2 +-
+ drivers/crypto/bcm/cipher.h | 4 ++--
+ drivers/crypto/bcm/util.c   | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index 72e69a0e1e8c..dd4b8e300746 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -23,8 +23,8 @@ struct ctl_table_header;
+diff --git a/drivers/crypto/bcm/cipher.c b/drivers/crypto/bcm/cipher.c
+index 30390a7324b2..0e5537838ef3 100644
+--- a/drivers/crypto/bcm/cipher.c
++++ b/drivers/crypto/bcm/cipher.c
+@@ -42,7 +42,7 @@
  
- #ifdef CONFIG_CGROUP_BPF
+ /* ================= Device Structure ================== */
  
--extern struct static_key_false cgroup_bpf_enabled_key;
--#define cgroup_bpf_enabled static_branch_unlikely(&cgroup_bpf_enabled_key)
-+extern struct static_key_false cgroup_bpf_enabled_key[MAX_BPF_ATTACH_TYPE];
-+#define cgroup_bpf_enabled(type) static_branch_unlikely(&cgroup_bpf_enabled_key[type])
+-struct device_private iproc_priv;
++struct bcm_device_private iproc_priv;
  
- DECLARE_PER_CPU(struct bpf_cgroup_storage*,
- 		bpf_cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE]);
-@@ -185,7 +185,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk, skb)			      \
- ({									      \
- 	int __ret = 0;							      \
--	if (cgroup_bpf_enabled)						      \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_INET_INGRESS))		      \
- 		__ret = __cgroup_bpf_run_filter_skb(sk, skb,		      \
- 						    BPF_CGROUP_INET_INGRESS); \
- 									      \
-@@ -195,7 +195,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_INET_EGRESS(sk, skb)			       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled && sk && sk == skb->sk) {		       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_INET_EGRESS) && sk && sk == skb->sk) { \
- 		typeof(sk) __sk = sk_to_full_sk(sk);			       \
- 		if (sk_fullsock(__sk))					       \
- 			__ret = __cgroup_bpf_run_filter_skb(__sk, skb,	       \
-@@ -207,7 +207,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_SK_PROG(sk, type)				       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled) {					       \
-+	if (cgroup_bpf_enabled(type)) {					       \
- 		__ret = __cgroup_bpf_run_filter_sk(sk, type);		       \
- 	}								       \
- 	__ret;								       \
-@@ -228,7 +228,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_SA_PROG(sk, uaddr, type)				       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(type))					       \
- 		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
- 							  NULL);	       \
- 	__ret;								       \
-@@ -237,7 +237,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, type, t_ctx)		       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)	{					       \
-+	if (cgroup_bpf_enabled(type))	{				       \
- 		lock_sock(sk);						       \
- 		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
- 							  t_ctx);	       \
-@@ -252,8 +252,10 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr)			       \
- 	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET6_BIND, NULL)
+ /* ==================== Parameters ===================== */
  
--#define BPF_CGROUP_PRE_CONNECT_ENABLED(sk) (cgroup_bpf_enabled && \
--					    sk->sk_prot->pre_connect)
-+#define BPF_CGROUP_PRE_CONNECT_ENABLED(sk)				       \
-+	((cgroup_bpf_enabled(BPF_CGROUP_INET4_CONNECT) ||		       \
-+	  cgroup_bpf_enabled(BPF_CGROUP_INET6_CONNECT)) &&		       \
-+	 (sk)->sk_prot->pre_connect)
+diff --git a/drivers/crypto/bcm/cipher.h b/drivers/crypto/bcm/cipher.h
+index 0ad5892b445d..71281a3bdbdc 100644
+--- a/drivers/crypto/bcm/cipher.h
++++ b/drivers/crypto/bcm/cipher.h
+@@ -420,7 +420,7 @@ struct spu_hw {
+ 	u32 num_chan;
+ };
  
- #define BPF_CGROUP_RUN_PROG_INET4_CONNECT(sk, uaddr)			       \
- 	BPF_CGROUP_RUN_SA_PROG(sk, uaddr, BPF_CGROUP_INET4_CONNECT)
-@@ -297,7 +299,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_SOCK_OPS_SK(sock_ops, sk)			\
- ({									\
- 	int __ret = 0;							\
--	if (cgroup_bpf_enabled)						\
-+	if (cgroup_bpf_enabled(BPF_CGROUP_SOCK_OPS))			\
- 		__ret = __cgroup_bpf_run_filter_sock_ops(sk,		\
- 							 sock_ops,	\
- 							 BPF_CGROUP_SOCK_OPS); \
-@@ -307,7 +309,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_SOCK_OPS(sock_ops)				       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled && (sock_ops)->sk) {	       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_SOCK_OPS) && (sock_ops)->sk) {       \
- 		typeof(sk) __sk = sk_to_full_sk((sock_ops)->sk);	       \
- 		if (__sk && sk_fullsock(__sk))				       \
- 			__ret = __cgroup_bpf_run_filter_sock_ops(__sk,	       \
-@@ -320,7 +322,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_DEVICE_CGROUP(type, major, minor, access)	      \
- ({									      \
- 	int __ret = 0;							      \
--	if (cgroup_bpf_enabled)						      \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_DEVICE))			      \
- 		__ret = __cgroup_bpf_check_dev_permission(type, major, minor, \
- 							  access,	      \
- 							  BPF_CGROUP_DEVICE); \
-@@ -332,7 +334,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_SYSCTL(head, table, write, buf, count, pos)  \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_SYSCTL))			       \
- 		__ret = __cgroup_bpf_run_filter_sysctl(head, table, write,     \
- 						       buf, count, pos,        \
- 						       BPF_CGROUP_SYSCTL);     \
-@@ -343,7 +345,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- 				       kernel_optval)			       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_SETSOCKOPT))			       \
- 		__ret = __cgroup_bpf_run_filter_setsockopt(sock, level,	       \
- 							   optname, optval,    \
- 							   optlen,	       \
-@@ -354,7 +356,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_GETSOCKOPT_MAX_OPTLEN(optlen)			       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_GETSOCKOPT))			       \
- 		get_user(__ret, optlen);				       \
- 	__ret;								       \
- })
-@@ -363,7 +365,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- 				       max_optlen, retval)		       \
- ({									       \
- 	int __ret = retval;						       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_GETSOCKOPT))			       \
- 		__ret = __cgroup_bpf_run_filter_getsockopt(sock, level,	       \
- 							   optname, optval,    \
- 							   optlen, max_optlen, \
-@@ -427,7 +429,7 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
- 	return 0;
- }
+-struct device_private {
++struct bcm_device_private {
+ 	struct platform_device *pdev;
  
--#define cgroup_bpf_enabled (0)
-+#define cgroup_bpf_enabled(type) (0)
- #define BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, type, t_ctx) ({ 0; })
- #define BPF_CGROUP_PRE_CONNECT_ENABLED(sk) (0)
- #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk,skb) ({ 0; })
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index e6a5c7aec1ec..9f15c33a883c 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -20,7 +20,7 @@
+ 	struct spu_hw spu;
+@@ -467,6 +467,6 @@ struct device_private {
+ 	struct mbox_chan **mbox;
+ };
  
- #include "../cgroup/cgroup-internal.h"
+-extern struct device_private iproc_priv;
++extern struct bcm_device_private iproc_priv;
  
--DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
-+DEFINE_STATIC_KEY_ARRAY_FALSE(cgroup_bpf_enabled_key, MAX_BPF_ATTACH_TYPE);
- EXPORT_SYMBOL(cgroup_bpf_enabled_key);
- 
- void cgroup_bpf_offline(struct cgroup *cgrp)
-@@ -129,7 +129,7 @@ static void cgroup_bpf_release(struct work_struct *work)
- 			if (pl->link)
- 				bpf_cgroup_link_auto_detach(pl->link);
- 			kfree(pl);
--			static_branch_dec(&cgroup_bpf_enabled_key);
-+			static_branch_dec(&cgroup_bpf_enabled_key[type]);
- 		}
- 		old_array = rcu_dereference_protected(
- 				cgrp->bpf.effective[type],
-@@ -500,7 +500,7 @@ int __cgroup_bpf_attach(struct cgroup *cgrp,
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
- 	else
--		static_branch_inc(&cgroup_bpf_enabled_key);
-+		static_branch_inc(&cgroup_bpf_enabled_key[type]);
- 	bpf_cgroup_storages_link(new_storage, cgrp, type);
- 	return 0;
- 
-@@ -699,7 +699,7 @@ int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 		cgrp->bpf.flags[type] = 0;
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
--	static_branch_dec(&cgroup_bpf_enabled_key);
-+	static_branch_dec(&cgroup_bpf_enabled_key[type]);
- 	return 0;
- 
- cleanup:
-@@ -1361,8 +1361,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
- 	 * attached to the hook so we don't waste time allocating
- 	 * memory and locking the socket.
- 	 */
--	if (!cgroup_bpf_enabled ||
--	    __cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_SETSOCKOPT))
-+	if (__cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_SETSOCKOPT))
- 		return 0;
- 
- 	/* Allocate a bit more than the initial user buffer for
-@@ -1456,8 +1455,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
- 	 * attached to the hook so we don't waste time allocating
- 	 * memory and locking the socket.
- 	 */
--	if (!cgroup_bpf_enabled ||
--	    __cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_GETSOCKOPT))
-+	if (__cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_GETSOCKOPT))
- 		return retval;
- 
- 	ctx.optlen = max_optlen;
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index b94fa8eb831b..6ba2930ff49b 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -777,18 +777,19 @@ int inet_getname(struct socket *sock, struct sockaddr *uaddr,
- 			return -ENOTCONN;
- 		sin->sin_port = inet->inet_dport;
- 		sin->sin_addr.s_addr = inet->inet_daddr;
-+		BPF_CGROUP_RUN_SA_PROG_LOCK(sk, (struct sockaddr *)sin,
-+					    BPF_CGROUP_INET4_GETPEERNAME,
-+					    NULL);
- 	} else {
- 		__be32 addr = inet->inet_rcv_saddr;
- 		if (!addr)
- 			addr = inet->inet_saddr;
- 		sin->sin_port = inet->inet_sport;
- 		sin->sin_addr.s_addr = addr;
--	}
--	if (cgroup_bpf_enabled)
- 		BPF_CGROUP_RUN_SA_PROG_LOCK(sk, (struct sockaddr *)sin,
--					    peer ? BPF_CGROUP_INET4_GETPEERNAME :
--						   BPF_CGROUP_INET4_GETSOCKNAME,
-+					    BPF_CGROUP_INET4_GETSOCKNAME,
- 					    NULL);
-+	}
- 	memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
- 	return sizeof(*sin);
- }
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index dece195f212c..fc3c2e75e400 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1124,7 +1124,7 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		rcu_read_unlock();
- 	}
- 
--	if (cgroup_bpf_enabled && !connected) {
-+	if (cgroup_bpf_enabled(BPF_CGROUP_UDP4_SENDMSG) && !connected) {
- 		err = BPF_CGROUP_RUN_PROG_UDP4_SENDMSG_LOCK(sk,
- 					    (struct sockaddr *)usin, &ipc.addr);
- 		if (err)
-@@ -1858,9 +1858,8 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
- 		*addr_len = sizeof(*sin);
- 
--		if (cgroup_bpf_enabled)
--			BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
--							(struct sockaddr *)sin);
-+		BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
-+						      (struct sockaddr *)sin);
- 	}
- 
- 	if (udp_sk(sk)->gro_enabled)
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index a7e3d170af51..fc985658dc91 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -527,18 +527,19 @@ int inet6_getname(struct socket *sock, struct sockaddr *uaddr,
- 		sin->sin6_addr = sk->sk_v6_daddr;
- 		if (np->sndflow)
- 			sin->sin6_flowinfo = np->flow_label;
-+		BPF_CGROUP_RUN_SA_PROG_LOCK(sk, (struct sockaddr *)sin,
-+					    BPF_CGROUP_INET6_GETPEERNAME,
-+					    NULL);
- 	} else {
- 		if (ipv6_addr_any(&sk->sk_v6_rcv_saddr))
- 			sin->sin6_addr = np->saddr;
- 		else
- 			sin->sin6_addr = sk->sk_v6_rcv_saddr;
- 		sin->sin6_port = inet->inet_sport;
--	}
--	if (cgroup_bpf_enabled)
- 		BPF_CGROUP_RUN_SA_PROG_LOCK(sk, (struct sockaddr *)sin,
--					    peer ? BPF_CGROUP_INET6_GETPEERNAME :
--						   BPF_CGROUP_INET6_GETSOCKNAME,
-+					    BPF_CGROUP_INET6_GETSOCKNAME,
- 					    NULL);
-+	}
- 	sin->sin6_scope_id = ipv6_iface_scope_id(&sin->sin6_addr,
- 						 sk->sk_bound_dev_if);
- 	return sizeof(*sin);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 9008f5796ad4..50611bd63647 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -409,9 +409,8 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		}
- 		*addr_len = sizeof(*sin6);
- 
--		if (cgroup_bpf_enabled)
--			BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk,
--						(struct sockaddr *)sin6);
-+		BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk,
-+						      (struct sockaddr *)sin6);
- 	}
- 
- 	if (udp_sk(sk)->gro_enabled)
-@@ -1462,7 +1461,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		fl6.saddr = np->saddr;
- 	fl6.fl6_sport = inet->inet_sport;
- 
--	if (cgroup_bpf_enabled && !connected) {
-+	if (cgroup_bpf_enabled(BPF_CGROUP_UDP6_SENDMSG) && !connected) {
- 		err = BPF_CGROUP_RUN_PROG_UDP6_SENDMSG_LOCK(sk,
- 					   (struct sockaddr *)sin6, &fl6.saddr);
- 		if (err)
+ #endif
+diff --git a/drivers/crypto/bcm/util.c b/drivers/crypto/bcm/util.c
+index 2b304fc78059..77aeedb84055 100644
+--- a/drivers/crypto/bcm/util.c
++++ b/drivers/crypto/bcm/util.c
+@@ -348,7 +348,7 @@ char *spu_alg_name(enum spu_cipher_alg alg, enum spu_cipher_mode mode)
+ static ssize_t spu_debugfs_read(struct file *filp, char __user *ubuf,
+ 				size_t count, loff_t *offp)
+ {
+-	struct device_private *ipriv;
++	struct bcm_device_private *ipriv;
+ 	char *buf;
+ 	ssize_t ret, out_offset, out_count;
+ 	int i;
 -- 
-2.29.2.729.g45daf8777d-goog
+2.26.2
 
