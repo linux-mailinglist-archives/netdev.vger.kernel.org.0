@@ -2,69 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA882E9F88
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 22:31:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C6002E9F9A
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 22:36:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726969AbhADVat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 16:30:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40454 "EHLO mail.kernel.org"
+        id S1726469AbhADVf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 16:35:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40990 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726246AbhADVat (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Jan 2021 16:30:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9CCA322273;
-        Mon,  4 Jan 2021 21:30:08 +0000 (UTC)
+        id S1726098AbhADVf6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Jan 2021 16:35:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 290A221D93;
+        Mon,  4 Jan 2021 21:35:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609795808;
-        bh=HzvYBOK98PlTaEbm96qGzSSodUIIZDjE9+ZnZmW3E6E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QQY2lObHW005IFFecga2L7lZ4LxzE+7ML3UsldqcE7g+TUDkN1RbQwYamgl0vO67V
-         7Dc/arqoW1LBO3M/m8javoYlohFqbs6xvN9GyS1RYdpWcWL5B9iGMDndRX7aHD6vqK
-         kvmRI+o0aWROsJh+OTlZhcJ+nmQREpgKWSXNsMOLujZAFwHghkGAGZc3UaP8fhnTdp
-         qINi/LjjEL3B4Eh1pKfj1M3jplYehrbOF7HZqrwhN6eNIz6z9XutFMgK5+xJliGDDE
-         mvQ01DjX+u4Q4sq9K1jkXPHi9PmXrn0C0IjoAsHz4RUrpTg40l1N9jPFIh3kLINBMd
-         1bqMT4IhVat6w==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 8FF06604FC;
-        Mon,  4 Jan 2021 21:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1609796118;
+        bh=1ZDHjfHVTfzbffgIH/tkyM9JxDwwS4v3iCeQUKeg9Dg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Bh3RxC0nY9zR4TCjjqdrqVZ3SNFS3IcneKMWt0OC+Ho2efgCAz/o5vkcykqSKIzAy
+         gEFm4fGt5whppdP9qJL0ZpADH06M2Fl4JIw+VHSuGPzMED4b0vGT8Dh5kbjyKgjVA1
+         81f9+CezjVHvvFvZaEe7qDLJwPdH7BX5QbOATOGjjE1772vyht/O2ahD13PibwDjj0
+         6Ek2bPcBoJp9jRTSjMMxs73F/EGPPr8r8kQDUdhltBGsFAT+pX8ho/KcMjIzF4zu3f
+         YhYKuXOFj7stQY8ABpK6suMZhuaJ9Ff3HjHfWqlnq8PI3MVyNnbjKm/oF6maQ9zKh/
+         cqOx+pxgjot6g==
+Date:   Mon, 4 Jan 2021 13:35:17 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     wangyunjian <wangyunjian@huawei.com>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <jerry.lilijun@huawei.com>, <xudingke@huawei.com>
+Subject: Re: [PATCH net] macvlan: fix null pointer dereference in
+ macvlan_changelink_sources()
+Message-ID: <20210104133517.68198ccd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1609324695-1516-1-git-send-email-wangyunjian@huawei.com>
+References: <1609324695-1516-1-git-send-email-wangyunjian@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 1/2] docs: networking: packet_mmap: fix formatting for C
- macros
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160979580858.407.15734291422142555141.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Jan 2021 21:30:08 +0000
-References: <5cb47005e7a59b64299e038827e295822193384c.1609232919.git.baruch@tkos.co.il>
-In-Reply-To: <5cb47005e7a59b64299e038827e295822193384c.1609232919.git.baruch@tkos.co.il>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        uaca@alumni.uv.es, willemdebruijn.kernel@gmail.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Tue, 29 Dec 2020 11:08:38 +0200 you wrote:
-> The citation of macro definitions should appear in a code block.
+On Wed, 30 Dec 2020 18:38:15 +0800 wangyunjian wrote:
+> From: Yunjian Wang <wangyunjian@huawei.com>
 > 
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
->  Documentation/networking/packet_mmap.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Currently pointer data is dereferenced when declaring addr before
+> pointer data is null checked. This could lead to a null pointer
+> dereference. Fix this by checking if pointer data is null first.
+> 
+> Fixes: 79cf79abce71 ("macvlan: add source mode")
+> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
 
-Here is the summary with links:
-  - [v2,1/2] docs: networking: packet_mmap: fix formatting for C macros
-    https://git.kernel.org/netdev/net/c/17e94567c57d
-  - [v2,2/2] docs: networking: packet_mmap: fix old config reference
-    https://git.kernel.org/netdev/net/c/e4da63cda51f
+I don't see it. All calls to macvlan_changelink_sources() are under 
+if (data) { ... } so data is never NULL. Looks like we should rather
+clean up macvlan_changelink_sources() to not check data for
+MACVLAN_MACADDR_SET. 
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+WDYT?
