@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A03BA2E9FA2
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 22:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 003072E9FA7
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 22:53:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726313AbhADVut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 16:50:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42232 "EHLO mail.kernel.org"
+        id S1726672AbhADVxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 16:53:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42448 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726074AbhADVut (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Jan 2021 16:50:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id BBA71221F8;
-        Mon,  4 Jan 2021 21:50:08 +0000 (UTC)
+        id S1726026AbhADVxU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Jan 2021 16:53:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 28FD62225E;
+        Mon,  4 Jan 2021 21:52:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609797008;
-        bh=sEjZsIY7NIjVcoXVyaImQyJSox3VgCIlR0SohfJnZxM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aiuk5sXyq84BdqdXD22k8IixLKOpp1VtBmb8CYbzYI0Lj4x57saHsfev/UxaJ6OXr
-         LhVpeE+pC3bCMygruxFcP+IET62nrXz9Q90EkmpTPhOQTnUzRr5AogXeKyt73ezqIZ
-         IohYfVfyD1lyKGVE68mD/qS/Z6kHXMB1YWNjamxUOePpnzbnF88udaBecmCDkcl+Ni
-         qZQ55uEAQZh1UVaYG4vl82Hm6t10YAkwlxZy8vHsjDlFHB2tyUPmKieg4SNxa8rjhe
-         bPMhXEqPfMff5NsfbF7AOHRN1H/RHoos7TCakGNt3zwW5LELqaZ/EUiDsK8XkISDs0
-         +DmclHiqoTe/A==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id B1041604FC;
-        Mon,  4 Jan 2021 21:50:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1609797159;
+        bh=tWf1KjhleDkzxXSyHtxWS2EXTln3fgr2x+m1gRLWB5I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N1aCTHZQS/IBR21UsrjIFxWAqWOgj889QZcW2uuO5qsYHD+2HihbiQRqYhXxYszf2
+         eaN67cf9Szmz7glG380QQk8+otTh4mUcDvZnIIhWi1OkOv8jeLheZjyusavIe2cxiX
+         flHTR0JS/OUtOOsTLJiZiir/KC/fq4I+ACnwHUtN1Kw3jLNAQ71YyKBnCA/PpomQo7
+         +f7jFR3kUQvK+0ajcc1ZuF2cvm/DULCNdC+ILInvdr0USSwHX4otZFN11dXjWxZgGZ
+         h0RjkU3yi8z5AfHpllaKHPFrp4TinT81sGvkMBlZRvL4S7k1zhdDMOMP71DvaQC48I
+         +t7/xxSMuyBNw==
+Date:   Mon, 4 Jan 2021 13:52:37 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Hauke Mehrtens <hauke@hauke-m.de>,
+        netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/2] net: dsa: lantiq_gswip: Enable GSWIP_MII_CFG_EN
+ also for internal PHYs
+Message-ID: <20210104135237.064fba8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAFBinCD7cOPZf8NpkhpRG2PiuMcjtqwxu7vQQoXULpCBbTCAoA@mail.gmail.com>
+References: <20210103012544.3259029-1-martin.blumenstingl@googlemail.com>
+        <20210103012544.3259029-2-martin.blumenstingl@googlemail.com>
+        <X/EnSv8gyprpOWRr@lunn.ch>
+        <CAFBinCD7cOPZf8NpkhpRG2PiuMcjtqwxu7vQQoXULpCBbTCAoA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] r8169: work around power-saving bug on some chip versions
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160979700872.8172.10618458139955948898.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Jan 2021 21:50:08 +0000
-References: <a1c39460-d533-7f9e-fa9d-2b8990b02426@gmail.com>
-In-Reply-To: <a1c39460-d533-7f9e-fa9d-2b8990b02426@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, nic_swsd@realtek.com,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Wed, 30 Dec 2020 19:33:34 +0100 you wrote:
-> A user reported failing network with RTL8168dp (a quite rare chip
-> version). Realtek confirmed that few chip versions suffer from a PLL
-> power-down hw bug.
+On Sun, 3 Jan 2021 03:12:21 +0100 Martin Blumenstingl wrote:
+> Hi Andrew,
 > 
-> Fixes: 07df5bd874f0 ("r8169: power down chip in probe")
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> 
-> [...]
+> On Sun, Jan 3, 2021 at 3:09 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > On Sun, Jan 03, 2021 at 02:25:43AM +0100, Martin Blumenstingl wrote:  
+> > > Enable GSWIP_MII_CFG_EN also for internal PHYs to make traffic flow.
+> > > Without this the PHY link is detected properly and ethtool statistics
+> > > for TX are increasing but there's no RX traffic coming in.
+> > >
+> > > Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+> > > Cc: stable@vger.kernel.org  
+> >
+> > Hi Martin
+> >
+> > No need to Cc: stable. David or Jakub will handle the backport to
+> > stable.  You should however set the subject to [PATCH net 1/2] and
+> > base the patches on the net tree, not net-next.  
+> do you recommend re-sending these patches and changing the subject?
+> the lantiq_gswip.c driver is identical in -net and -net-next and so
+> the patch will apply fine in both cases
 
-Here is the summary with links:
-  - [net] r8169: work around power-saving bug on some chip versions
-    https://git.kernel.org/netdev/net/c/e80bd76fbf56
+Resend is pretty much always a safe bet. But since as you said trees 
+are identical at the moment I made an exception applied as is :)
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks everyone!
