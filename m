@@ -2,81 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B7142E9587
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 14:05:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 783B52E95B5
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 14:19:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbhADNEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 08:04:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbhADNEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 08:04:15 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7109CC061796;
-        Mon,  4 Jan 2021 05:03:35 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id b8so14522524plx.0;
-        Mon, 04 Jan 2021 05:03:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=862T7hic/OMu7f7cJEh2FFoF3v3gS9+yRL0pxtDB4jE=;
-        b=cMEel9TKtloSoTHFocd8vnyoZ7T1Xx9Px4pFcxbVCIM2HhoA7hULRb8yJw9N7rQXnJ
-         Ro/USm9rd6j0D9D9CJa4dLd4hEKn+z0ouZCrNyCjDxiIKMTUmrt0MEisxBqCoIjhkFWW
-         tvxFR41Oky8F0+gkagdf2pJpifzQARDsIfIsVjKm3uGVZ2YXrIbX1T4vQ485dz99X9f3
-         ZoS4ZV1tjG+mJqA1TU57VEppZnc2rJi68VW2sRoA+XADE7dddM12Jv+QFOuEFxWYttnC
-         aSehdhuyVCLri8BzP3iBGQtmqtGv7KcWCk3GI5AZ8hirjJLH/cHqDCmRnDAK9okZbA7N
-         nhRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=862T7hic/OMu7f7cJEh2FFoF3v3gS9+yRL0pxtDB4jE=;
-        b=VJwo51+q0jjmGLJZRFEZb5kbckmVh+eYjYybsAjCFR6VgGfsyhniqXevjVdGl9+CHH
-         kANulYiUZNnEVZmE8d9n7I0Qi5cIKL72n+FBDgtjaCdWTwgzVIX9l2UXuk5TVM9aC2Tm
-         w8vz9CP3lrbW089eQ2M6wanvKNowkalNkx6fl3vVfZ4giQgwRwXnKsykq2LwiJQu8f29
-         CDG5WXbY++kZVSjcptLMy1Xkb3L80EEkAK1v65g0uDOsTVu5d2fIbaQtCKPgTv0HKJKI
-         DLYQaLNRPU8I8BXxuaIQ9L+KI1uf02y60mrDeMhBpjSWgApxa7RfoNDH7QkNmA3GO3Tt
-         ja5A==
-X-Gm-Message-State: AOAM532oy2cFUHpTjV+nk9nvlFaxHowotfjMW2bzvziE/Zw2qpUlwGm9
-        hesNYn7RFJvnCpdjdkuXkuG2TUa4IHo=
-X-Google-Smtp-Source: ABdhPJwe6TAxYKj3OChvtjsroGWbbF9IJd+DVOmcwIhnsQgjoLWhE5exnorFAbFY+MV0PVAKhNLmAQ==
-X-Received: by 2002:a17:902:59dc:b029:da:84c7:f175 with SMTP id d28-20020a17090259dcb02900da84c7f175mr49386727plj.75.1609765415000;
-        Mon, 04 Jan 2021 05:03:35 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id x23sm46993760pgk.14.2021.01.04.05.03.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jan 2021 05:03:34 -0800 (PST)
-Date:   Mon, 4 Jan 2021 05:03:31 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Stefan =?iso-8859-1?Q?S=F8rensen?= 
-        <stefan.sorensen@spectralink.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/7] phy: dp83640: select CONFIG_CRC32
-Message-ID: <20210104130331.GA27715@hoboy.vegasvil.org>
-References: <20210103213645.1994783-1-arnd@kernel.org>
- <20210103213645.1994783-2-arnd@kernel.org>
+        id S1726673AbhADNR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 08:17:58 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:35840 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbhADNR6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 08:17:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1609766278; x=1641302278;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lNzNAdTOYx2pjuGsUTzIN9MNbB9H3ZibeHIbH3hq/Ks=;
+  b=MAs7mP9iqWK7kS7xECwOqXGapoz6amu8ngHegMX4XmEy971OlN1UT6Tw
+   esTFKLu0OCgKtw9Fdzd66TA9ZlJzAjthWTYrPzXrvuDFlks53iMlwqRX+
+   AqDzyuwn2Lwq8WFCjd0sMktJh2jpZsdBJWOLDmg2LMjan1OceXQIxn2UH
+   IB0Uf0veRU3eKGaommgpFfL0ulFBVPPN63jYmjD4DEpxOwWkk8Xy/SLeJ
+   f19Qj56ybyIiA4asjhuhV5eayG0fh77qSj3rvOwTSLbT83mchY3sTTT5F
+   vRrLn3oGqjVclCXJ1JnNiBztAVI9xBRXstk41H/TpD4zcyVSRecWJB0Cv
+   Q==;
+IronPort-SDR: i6V5r2H9h4gkVbFlnAER8oRXNV9bi9wIa8upERa+cj0ltYQfPJ6SwllsBWLyyLrr1ClxBwavsI
+ HsC/E6wy4UVTeidQzdEv7R4lInu35grPiygmM+Xo+NZUf3K5ezxEpH1g/X7WnEOxhavLfppOyT
+ gEFlBnaJgblJRsFYaJX7FahWoHqEHLetjNFLcnvyXkQz617XyKurEPbKByHUFQtNbvrhF3ZNzT
+ 96+5iwN6BU/w2rrG27bVET73WsZhe6fmQe0NFTpjE2gOd1ACrGVOHYKUyPpJtjcwZrODIHOdFg
+ LkM=
+X-IronPort-AV: E=Sophos;i="5.78,474,1599548400"; 
+   d="scan'208";a="104168103"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jan 2021 06:16:42 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 4 Jan 2021 06:16:41 -0700
+Received: from tyr.hegelund-hansen.dk (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Mon, 4 Jan 2021 06:16:39 -0700
+Message-ID: <5e5332e026af5d3716cf9bb0aa404783b53f9e02.camel@microchip.com>
+Subject: Re: [PATCH v11 3/4] phy: Add Sparx5 ethernet serdes PHY driver
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Date:   Mon, 4 Jan 2021 14:16:38 +0100
+In-Reply-To: <20210104121502.GK31158@unreal>
+References: <20210104082218.1389450-1-steen.hegelund@microchip.com>
+         <20210104082218.1389450-4-steen.hegelund@microchip.com>
+         <20210104121502.GK31158@unreal>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210103213645.1994783-2-arnd@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 03, 2021 at 10:36:18PM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> Without crc32, this driver fails to link:
-> 
-> arm-linux-gnueabi-ld: drivers/net/phy/dp83640.o: in function `match':
-> dp83640.c:(.text+0x476c): undefined reference to `crc32_le'
-> 
-> Fixes: 539e44d26855 ("dp83640: Include hash in timestamp/packet matching")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Hi Leon,
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+
+On Mon, 2021-01-04 at 14:15 +0200, Leon Romanovsky wrote:
+> 
+> <...>
+> 
+> > +struct sparx5_sd10g28_args {
+> > +     bool                 skip_cmu_cfg; /* Enable/disable CMU cfg
+> > */
+> > +     bool                 no_pwrcycle;  /* Omit initial power-
+> > cycle */
+> > +     bool                 txinvert;     /* Enable inversion of
+> > output data */
+> > +     bool                 rxinvert;     /* Enable inversion of
+> > input data */
+> > +     bool                 txmargin;     /* Set output level to 
+> > half/full */
+> > +     u16                  txswing;      /* Set output level */
+> > +     bool                 mute;         /* Mute Output Buffer */
+> > +     bool                 is_6g;
+> > +     bool                 reg_rst;
+> > +};
+> 
+> All those bools in structs can be squeezed into one u8, just use
+> bitfields, e.g. "u8 a:1;".
+
+Got you.
+
+> 
+> Also I strongly advise do not do vertical alignment, it will cause to
+> too many churn later when this code will be updated.
+
+So just a single space between the type and the name and the comment is
+preferable?
+
+> 
+> > +
+> 
+> <...>
+> 
+> > +static inline void __iomem *sdx5_addr(void __iomem *base[],
+> > +                                   int id, int tinst, int tcnt,
+> > +                                   int gbase, int ginst,
+> > +                                   int gcnt, int gwidth,
+> > +                                   int raddr, int rinst,
+> > +                                   int rcnt, int rwidth)
+> > +{
+> > +#if defined(CONFIG_DEBUG_KERNEL)
+> > +     WARN_ON((tinst) >= tcnt);
+> > +     WARN_ON((ginst) >= gcnt);
+> > +     WARN_ON((rinst) >= rcnt);
+> > +#endif
+> 
+> Please don't put "#if defined(CONFIG_DEBUG_KERNEL)", print WARN_ON().
+
+OK, I will drop the #if and keep the WARN_ON...
+
+> 
+> Thanks
+
+Thank you for your comments.
+
+BR
+Steen
+
