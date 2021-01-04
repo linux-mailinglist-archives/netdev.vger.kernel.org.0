@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2FC52E9F8C
+	by mail.lfdr.de (Postfix) with ESMTP id 6C9F52E9F8A
 	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 22:31:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727132AbhADVau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727155AbhADVau (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 4 Jan 2021 16:30:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40464 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:40478 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726671AbhADVat (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726672AbhADVat (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 4 Jan 2021 16:30:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id A87FE2245C;
+Received: by mail.kernel.org (Postfix) with ESMTPS id B71D2224F9;
         Mon,  4 Jan 2021 21:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1609795808;
-        bh=bA0K2CBfSSWpMVi9OLaKRVAiOrryjHf9VDU09Xr3MuY=;
+        bh=+VIp1fbOslRnEXjmav/oSNMgrzek7YuC7KXDOGeIgvY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Kot+PZi7UKsRL0dHm1p52XXqiMjnHjPKaCbT1qQV5ctHxQjn7gY3D28hpZA/P9MsO
-         bESnFpe3HZ8c+RJ5mWnhyZqwa4ZkArvyHy+C/XEM/w/PscXUHOVi1x4rwsO8t2BlOh
-         MYNWfevvxiCX14dOKoiJBayRDscpTw9EikDq+sfWDyFyl7Bj97YCGpa5Kuz6kAz9jY
-         qFzSAaATS1REeB+PE+9vxei0C4HpMXaJ4+ac6v0BPbEHaavzkmYxmcEAjBbl0VfIz9
-         dNZ+ZcN/eHb+xYyJq2UkgJhbBNTEi6in846RDCnqZC1sPvNpr8fLOewgfRrAKBNfaf
-         Nf1XQ4L1URp2g==
+        b=k+JzBVwdepZQVgi2qtp4pO4mRtkbC85HHzefaSm3bVgVdzoucfBrFhavNCFbsNU4e
+         lGhkeEHQVG3r3W5VZm1c2wAUjQQ74VpVQaXkNeHE/Gan60/GykIldLRemE4geTmcF8
+         DJLl7sTv8OlEuzc8SY1+sW6QU85J4TzeCuwWdotj7S+MnvK1YiQbjiOV/bWpbxByNc
+         Wo7C3QPnS90DiIFzZ2ETgN3A6siZPH8YW/sYxMcZp9bswCV6X7XLv/75xhMYkXFvwQ
+         bMUD9VtVDI94q3jZy2KDkfB90MsDVhfTgse5pc/g0j+A440DKCnDMe34+G04meBQJt
+         jJycRxRyU18xg==
 Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 9C415603F8;
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id A96A460591;
         Mon,  4 Jan 2021 21:30:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v6] vhost_net: fix ubuf refcount incorrectly when sendmsg
- fails
+Subject: Re: [PATCH] ibmvnic: fix: NULL pointer dereference.
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160979580863.407.3102826648114498407.git-patchwork-notify@kernel.org>
+Message-Id: <160979580868.407.15154718207027980381.git-patchwork-notify@kernel.org>
 Date:   Mon, 04 Jan 2021 21:30:08 +0000
-References: <1609207308-20544-1-git-send-email-wangyunjian@huawei.com>
-In-Reply-To: <1609207308-20544-1-git-send-email-wangyunjian@huawei.com>
-To:     wangyunjian <wangyunjian@huawei.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mst@redhat.com, jasowang@redhat.com,
-        willemdebruijn.kernel@gmail.com,
-        virtualization@lists.linux-foundation.org,
-        jerry.lilijun@huawei.com, chenchanghu@huawei.com,
-        xudingke@huawei.com, brian.huangbin@huawei.com
+References: <1609312994-121032-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+In-Reply-To: <1609312994-121032-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+To:     YANG LI <abaci-bugfix@linux.alibaba.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, drt@linux.ibm.com,
+        ljp@linux.ibm.com, sukadev@linux.ibm.com, mpe@ellerman.id.au,
+        benh@kernel.crashing.org, paulus@samba.org, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,20 +48,22 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 29 Dec 2020 10:01:48 +0800 you wrote:
-> From: Yunjian Wang <wangyunjian@huawei.com>
+On Wed, 30 Dec 2020 15:23:14 +0800 you wrote:
+> The error is due to dereference a null pointer in function
+> reset_one_sub_crq_queue():
 > 
-> Currently the vhost_zerocopy_callback() maybe be called to decrease
-> the refcount when sendmsg fails in tun. The error handling in vhost
-> handle_tx_zerocopy() will try to decrease the same refcount again.
-> This is wrong. To fix this issue, we only call vhost_net_ubuf_put()
-> when vq->heads[nvq->desc].len == VHOST_DMA_IN_PROGRESS.
+> if (!scrq) {
+>     netdev_dbg(adapter->netdev,
+>                "Invalid scrq reset. irq (%d) or msgs(%p).\n",
+> 		scrq->irq, scrq->msgs);
+> 		return -EINVAL;
+> }
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v6] vhost_net: fix ubuf refcount incorrectly when sendmsg fails
-    https://git.kernel.org/netdev/net/c/01e31bea7e62
+  - ibmvnic: fix: NULL pointer dereference.
+    https://git.kernel.org/netdev/net/c/862aecbd9569
 
 You are awesome, thank you!
 --
