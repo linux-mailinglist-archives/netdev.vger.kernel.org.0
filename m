@@ -2,71 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8AC72E9C5F
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 18:51:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CE772E9C61
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 18:51:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727745AbhADRuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 12:50:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38394 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727705AbhADRuT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Jan 2021 12:50:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ABAB220700;
-        Mon,  4 Jan 2021 17:49:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609782578;
-        bh=kcC2aLb/ydX3DXhUhdQu9GtQt3MXFKclngl0J6ZWr+M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=l+h+ExBCp5rH++ji0sfQxXe09hRHGj/L96JaFdGDkpx1bwBSwYeHjhFZB+Zx8FWBS
-         KDsTHrt3d2bub7avUjZeoQ2dtnkaVVa4za6D/hf93A5H7ircv9curo4mnOBzvWNm97
-         bYm2tTb6is+9bjZq0t4Hs2dlh1GwIaHE/5QfFyswOul/4LT7nRw+peKRKzz5aZks0K
-         0wyi8UpoYkAjpbRu6hKRMbRV+/R8j1IPZ2Ti0g0yfqgn4p6/tBRaPV5OH3meuyBvcV
-         4nAEeeWDTa7Blq/kYolLjRLCPXJL3eLza3hUZ/ij+qrER/8nq85wmrj6Q+5mfCxmji
-         +WdHqDgb5kHkg==
-Date:   Mon, 4 Jan 2021 09:49:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        martin.varghese@nokia.com, Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net] net: bareudp: add missing error handling for
- bareudp_link_config()
-Message-ID: <20210104094936.79247c33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAM_iQpW1ZMyb33j4uLNMXXW+vQSS6FB1-BhxSQ7ZShi9dT2ZoQ@mail.gmail.com>
-References: <20201231034417.1570553-1-kuba@kernel.org>
-        <CAM_iQpW1ZMyb33j4uLNMXXW+vQSS6FB1-BhxSQ7ZShi9dT2ZoQ@mail.gmail.com>
+        id S1727755AbhADRvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 12:51:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725921AbhADRvl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 12:51:41 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98B8C061794
+        for <netdev@vger.kernel.org>; Mon,  4 Jan 2021 09:51:01 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id r9so25756090ioo.7
+        for <netdev@vger.kernel.org>; Mon, 04 Jan 2021 09:51:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8yJ/rj6PqsYMOo0MoZO0uP7k3vo4VqrOAAA7Yfj2SrM=;
+        b=PnYpgomnbf4mErWFaG51JHsFFY0QD3JKdmAzzZW/O7Zc+Gm4gJtjur4KVBv8BMo1Wy
+         52CTOpUcxfSjuVyflvz9yPvBBTsse9PxYbBc2BTgh7KKjoqxVKWM8ugnQXiZrWcNMiPA
+         X/CTuvFeqaJ1OmwpxJLTsW02HBnpO3jKD0HfYV5mwkDtuO1X1SkwatxLeOrw9gewT1F+
+         mwBMA421ylfJ2pqMrV5ySMCTZTdQiHoU0Y53d/U4O1RNj7vRC6wxog9vYuuwCl3clKVN
+         mIcK+YB3X8puQKnSiZSsq65qD16pGMILIi2/mAdiNp4vZ4chJeH8pU029IAmWlrTu9qQ
+         MQFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8yJ/rj6PqsYMOo0MoZO0uP7k3vo4VqrOAAA7Yfj2SrM=;
+        b=dGFKfodmTCOGvxOnyMztUGX1otMl1ztj8WDRxRR1i8ZT6LtuzyGcj4kkbYGlUyLBZs
+         XkoNkpZfy+IjnKxRV+y7G9adUlD0K9yS5g6rSKuh4v80e9elZY/3pEcFu2jyTmWJ/wQ4
+         PgQM8gVTHiZSEa414PdY/LtppCr+QBOui71pjd0FpTwbjw1jmHAMoY1fiDsduN9GMhfS
+         UAezcqhL2vylOINxJ0aiE0mY116LA0wejbmyPsCqn5kKwjtWDTBaGBgMY4AE60X5X+kC
+         DtN8VdyP4EzV9aF6Hghw1P9+9q4MRd5MiKEK7wmn/1vYtYin4XO9k1AlQEMa/peUutcy
+         0aDw==
+X-Gm-Message-State: AOAM531qIBCXPfWkPcOtjp9tHcwRi9xqa0IOA0ZlTfM4pYv0Z6U340Yd
+        2+JWKOzix2axqZ/S3N8Sd+/T6u6GT5g1l9RhgBA=
+X-Google-Smtp-Source: ABdhPJxf9Pgn4ov3xk43GxXtJ8eZUiL+ObyrUYTa3QAQyVlxsSTk/qPq/rzc6ugWPfnG8568bBe8429PCjl3yfker5c=
+X-Received: by 2002:a02:cf30:: with SMTP id s16mr62460852jar.144.1609782661106;
+ Mon, 04 Jan 2021 09:51:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201223071538.3573783-1-eyal.birger@gmail.com> <20210104084436.GE3576117@gauss3.secunet.de>
+In-Reply-To: <20210104084436.GE3576117@gauss3.secunet.de>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Mon, 4 Jan 2021 19:50:49 +0200
+Message-ID: <CAHsH6Gu+jCWud1VTh_jJmg0Z-nb4e0ayzTpitrz6inuiEfcWtA@mail.gmail.com>
+Subject: Re: [RFC ipsec-next] xfrm: interface: enable TSO on xfrm interfaces
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     herbert@gondor.apana.org.au, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2 Jan 2021 15:49:54 -0800 Cong Wang wrote:
-> On Wed, Dec 30, 2020 at 7:46 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > @@ -661,9 +662,14 @@ static int bareudp_newlink(struct net *net, struct net_device *dev,
+Hi Steffen,
+
+On Mon, Jan 4, 2021 at 10:44 AM Steffen Klassert
+<steffen.klassert@secunet.com> wrote:
+>
+> On Wed, Dec 23, 2020 at 09:15:38AM +0200, Eyal Birger wrote:
+> > Underlying xfrm output supports gso packets.
+> > Declare support in hw_features and adapt the xmit MTU check to pass GSO
+> > packets.
 > >
-> >         err = bareudp_link_config(dev, tb);
-> >         if (err)
-> > -               return err;
-> > +               goto err_unconfig;
-> >
-> >         return 0;
-> > +
-> > +err_unconfig:  
-> 
-> I think we can save this goto.
+> > Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+>
+> Looks ok to me.
 
-I personally prefer more idiomatic code flow to saving a single LoC.
+Great, Thanks for the review.
 
-> > +       list_del(&bareudp->next);
-> > +       unregister_netdevice(dev);  
-> 
-> Which is bareudp_dellink(dev, NULL). ;)
+ Should I submit a non-rfc patch once the merge window opens?
 
-I know, but calling full dellink when only parts of newlink fails felt
-weird. And it's not lower LoC, unless called with NULL as second arg,
-which again could be surprising to a person changing dellink. 
-
-
-But I can change both if you feel strongly.
+Eyal.
