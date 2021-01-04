@@ -2,73 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3097E2E940F
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 12:25:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36FC72E93EE
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 12:08:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbhADLZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 06:25:21 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:51137 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726124AbhADLZV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 06:25:21 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R811e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0UKhJwum_1609759479;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UKhJwum_1609759479)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 04 Jan 2021 19:24:39 +0800
+        id S1726657AbhADLHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 06:07:21 -0500
+Received: from mail-ot1-f54.google.com ([209.85.210.54]:42021 "EHLO
+        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726176AbhADLHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 06:07:21 -0500
+Received: by mail-ot1-f54.google.com with SMTP id 11so25600794oty.9;
+        Mon, 04 Jan 2021 03:07:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ejBhJdxe+Ypz4pmFM6jtZykDsE8NXE7rALy/vOL6RA8=;
+        b=LlgyAPmzvjj92TKk7eaNa3gY+oYlfKzfUJV4jyDXnoeNXuNfR2FeAnCBk0osqov6Pq
+         SH/dsiIOfU8VgWTJD/lXsMtW7+klxnHbi4U8LWy3/kPKnJ6IF7/ABWgk7VcXzqekkGdW
+         59yqQm5VbGajh2sptpaPmkekQ3d0QRjAdvZn41glD9RJ4mKoGFzZWVv0zkBThC9fxDnN
+         Rl9fUY8kmo3USkpmoCLsqh367lNZxkwMvkuNZHVYsTcRir2cFgzufbuvjD41NCZEUOq4
+         Q2NkxX8rWGqYqHGDhISWkiRvACHtgLNF5ydAGrgKoRUfB3wb4PgG80PT7fwmDk4gICwd
+         YX8g==
+X-Gm-Message-State: AOAM532ZnxpDT5Flegw1nbFMUz25UMIYLMEdaqGWPFDCnQkQA8OgF7ag
+        nSnwO62A9QP9Ebfii4zeCC5ZSJc6L9PsVyyZ0Y8=
+X-Google-Smtp-Source: ABdhPJzw+PyrV+DkseEjjlzu9EgbZAc0gIpJeAxhpZElv1XC5IgqsQmeOJAOJHPj8fdx0f+V1VKbKYt5sGBHKGj1m5I=
+X-Received: by 2002:a9d:c01:: with SMTP id 1mr37173062otr.107.1609758400285;
+ Mon, 04 Jan 2021 03:06:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 04 Jan 2021 18:59:58 +0800
-Message-Id: <1609757998.875103-1-xuanzhuo@linux.alibaba.com>
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: mlx5 error when the skb linear space is empty
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>
+References: <20210104090327.6547-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20210104090327.6547-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 4 Jan 2021 12:06:29 +0100
+Message-ID: <CAMuHMdWmy85b4Tu=RxKRDeXVVj_d4AXFjQxgm=OS-aFXjrTgwg@mail.gmail.com>
+Subject: Re: [PATCH v2] can: rcar: Update help description for CAN_RCAR config
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi
+On Mon, Jan 4, 2021 at 10:03 AM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> The rcar_can driver also supports RZ/G SoC's, update the description to
+> reflect this.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-In the process of developing xdp socket, we tried to directly use page to
-construct skb directly, to avoid data copy. And the MAC information is also in
-the page, which caused the linear space of skb to be empty. In this case, I
-encountered a problem :
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
-00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
-WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
-00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
-00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
-00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
+Gr{oetje,eeting}s,
 
+                        Geert
 
-And when I try to copy only the mac address into the linear space of skb, the
-other parts are still placed in the page. When constructing skb in this way, I
-found that although the data can be sent successfully, the sending performance
-is relatively poor!!
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-I would like to ask, is there any way to solve this problem?
-
-dev info:
-    driver: mlx5_core
-    version: 5.10.0+
-    firmware-version: 14.21.2328 (MT_2470112034)
-    expansion-rom-version:
-    bus-info: 0000:3b:00.0
-    supports-statistics: yes
-    supports-test: yes
-    supports-eeprom-access: no
-    supports-register-dump: no
-    supports-priv-flags: yes
-
-
-
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
