@@ -2,117 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BC472E9925
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 16:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 542842E9A47
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 17:12:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727380AbhADPtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 10:49:18 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48778 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725921AbhADPtR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Jan 2021 10:49:17 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kwS5t-00Fz01-18; Mon, 04 Jan 2021 16:48:29 +0100
-Date:   Mon, 4 Jan 2021 16:48:29 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladyslav Tarasiuk <vladyslavt@nvidia.com>
-Cc:     Moshe Shemesh <moshe@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Adrian Pop <pop.adrian61@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: Re: [PATCH net-next v2 0/2] Add support for DSFP transceiver type
-Message-ID: <X/M4zXd9a/EGK2UD@lunn.ch>
-References: <20201125141822.GI2075216@lunn.ch>
- <a9835ab6-70a1-5a15-194e-977ff9c859ec@nvidia.com>
- <20201126152113.GM2073444@lunn.ch>
- <6a9bbcb0-c0c4-92fe-f3c1-581408d1e7da@nvidia.com>
- <20201127155637.GS2073444@lunn.ch>
- <0f021f89-35d4-4d99-b0b1-451f09636e58@nvidia.com>
- <X+tYamjmow0MfFxz@lunn.ch>
- <45a1b5c6-d348-cc62-681d-b2f257b578f9@nvidia.com>
- <X+yehiw/6DYUyPzy@lunn.ch>
- <3c4a5b4f-86bd-19df-c40c-db1452ac43b2@nvidia.com>
+        id S1729368AbhADQHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 11:07:51 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:6748 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729359AbhADQHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 11:07:49 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5ff33d2d0000>; Mon, 04 Jan 2021 08:07:09 -0800
+Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 4 Jan 2021 16:07:07
+ +0000
+References: <1609355503-7981-1-git-send-email-roid@nvidia.com>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Roi Dayan <roid@nvidia.com>
+CC:     <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
+        Petr Machata <me@pmachata.org>
+Subject: Re: [PATCH iproute2] build: Fix link errors on some systems
+In-Reply-To: <1609355503-7981-1-git-send-email-roid@nvidia.com>
+Date:   Mon, 4 Jan 2021 17:07:03 +0100
+Message-ID: <875z4cwus8.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3c4a5b4f-86bd-19df-c40c-db1452ac43b2@nvidia.com>
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1609776429; bh=kae85lVJRzjkG8joHmgdz6IDau65H4UdESovU0IeXZo=;
+        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
+         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=OqbrZGFwrb81HDpqJ74P8oiTnP2Onr09OYqbyl4rIw6jURRkAZxNvLnMMj+c1yu1z
+         BOMdgWxeyUKJQzpc8dUNtmnCFBKXv68br/3JII+BdLZtQS45vajG+bc/g3ZADB8ap9
+         crzcRh9QTau5DNzZNK9st/c1Y7eDB64gpjCVlb8371Tx8zJ+O8V7w71dBdz1+H5Hht
+         UNvBeQlVoDHYyVS3WODBspm1xd5aMKz7GnFbM13j3nfdkpQTIgCV3EmOBEoUZkIf80
+         ltCeYeQ9L0kusc9UixQeeytJU15qwajuRvHwIxlSdPKjStNDmak0D7AmBb+xMX6au6
+         9IhlRH6zQuxxg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 04, 2021 at 05:24:11PM +0200, Vladyslav Tarasiuk wrote:
-> 
-> On 30-Dec-20 17:36, Andrew Lunn wrote:
-> > On Wed, Dec 30, 2020 at 03:55:02PM +0200, Vladyslav Tarasiuk wrote:
-> > > On 29-Dec-20 18:25, Andrew Lunn wrote:
-> > > > > Hi Andrew,
-> > > > > 
-> > > > > Following this conversation, I wrote some pseudocode checking if I'm on
-> > > > > right path here.
-> > > > > Please review:
-> > > > > 
-> > > > > struct eeprom_page {
-> > > > >           u8 page_number;
-> > > > >           u8 bank_number;
-> > > > >           u16 offset;
-> > > > >           u16 data_length;
-> > > > >           u8 *data;
-> > > > > }
-> > > > I'm wondering about offset and data_length, in this context. I would
-> > > > expect you always ask the kernel for the full page, not part of
-> > > > it. Even when user space asks for just part of a page. That keeps you
-> > > > cache management simpler.
-> > > As far as I know, there may be bytes, which may change on read.
-> > > For example, clear on read values in CMIS 4.0.
-> > Ah, i did not know there were such bits. I will go read the spec. But
-> > it should not really matter. If the SFP driver is interested in these
-> > bits, it will have to intercept the read and act on the values.
-> 
-> But in case user requests a few bytes from a page with clear-on-read
-> values, reading full page will clear all such bytesfrom user perspective
-> even if they were not requested. Driver may intercept the read, but for
-> user it will look like those bytes were not set.
 
-Yes, O.K. Reading individual words does make sense.
+Roi Dayan <roid@nvidia.com> writes:
 
-> Without command line argument user will not be able to request a single
-> A2h page, for example. He will see it only in some kind of general dump -
-> with human-readable decoder usage or multiple page dump.
-> 
-> And same goes forpages on other i2c addresses. How to know what to dump,
-> if user does not provide i2c address and there is no way to know what to
-> request from proprietary SFPs?
+> Since moving get_rate() and get_size() from tc to lib, on some
+> systems we fail to link because of missing the math lib.
+> Move the link flag from tc makefile to the main makefile.
 
-So we should look at this from the perspective of use cases. Currently
-we have:
+Hmm, yeah, it gets optimized out on x86-64. The issue is reproducible
+on any platform with -O0.
 
-ethtool -m|--dump-module-eeprom|--module-info devname [raw on|off] [hex on|off] [offset N] [length N]
+> ../lib/libutil.a(utils.o): In function `get_rate':
+> utils.c:(.text+0x10dc): undefined reference to `floor'
+> ../lib/libutil.a(utils.o): In function `get_size':
+> utils.c:(.text+0x1394): undefined reference to `floor'
+> ../lib/libutil.a(json_print.o): In function `sprint_size':
+> json_print.c:(.text+0x14c0): undefined reference to `rint'
+> json_print.c:(.text+0x14f4): undefined reference to `rint'
+> json_print.c:(.text+0x157c): undefined reference to `rint'
+>
+> Fixes: f3be0e6366ac ("lib: Move get_rate(), get_rate64() from tc here")
+> Fixes: 44396bdfcc0a ("lib: Move get_size() from tc here")
+> Fixes: adbe5de96662 ("lib: Move sprint_size() from tc here, add print_size()")
+> Signed-off-by: Roi Dayan <roid@nvidia.com>
+> ---
+>  Makefile    | 1 +
+>  tc/Makefile | 2 +-
+>  2 files changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/Makefile b/Makefile
+> index e64c65992585..2a604ec58905 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -59,6 +59,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man
+>  
+>  LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
+>  LDLIBS += $(LIBNETLINK)
+> +LDFLAGS += -lm
+>  
+>  all: config.mk
+>  	@set -e; \
+> diff --git a/tc/Makefile b/tc/Makefile
+> index 5a517af20b7c..8d91900716c1 100644
+> --- a/tc/Makefile
+> +++ b/tc/Makefile
+> @@ -110,7 +110,7 @@ ifneq ($(TC_CONFIG_NO_XT),y)
+>  endif
+>  
+>  TCOBJ += $(TCMODULES)
+> -LDLIBS += -L. -lm
+> +LDLIBS += -L.
+>  
+>  ifeq ($(SHARED_LIBS),y)
+>  LDLIBS += -ldl
 
-If you use it without any of [raw on|off] [hex on|off] [offset N]
-[length N] it decodes what it finds. As soon as you pass any of these
-options, the decoding is disabled and is just dumps values, either raw
-or hex.
+This will work, but it will give a libm dependency to all the tools.
+util.c currently tries not to do that:
 
-I would say, i2c address as a parameter can be added, but again,
-passing it disables decoding, is just dumps raw or hex.
+	/* emulate ceil() without having to bring-in -lm and always be >= 1 */
+	*val = t;
+	if (*val < t)
+		*val += 1;
 
-When not passed, and decoding is enabled, the decoder should decide if
-A2 is available based on what is finds in page 0, and ask for it.
+I think that just adding an unnecessary -lm is more of a tidiness issue
+than anything else. One way to avoid it is to split the -lm deps out
+from util.c / json_print.c to like util_math.c / json_print_math.c. That
+way they will be in an .o of their own, and won't be linked in unless
+the binary in question needs the code. Then the binaries that do call it
+can keep on linking in -lm like they did so far.
 
-We also need to clearly define what offset and length means in this
-context. It has to be within a specific page if page, bank or i2c
-address has been passed, unlike what it currently means which is
-offset into the current blob returned by the kernel.
-
-I also took a look at CMIS. It has interesting semantics for address
-wrap around when doing multiple byte reads. A read which reaches 127
-wraps around to 0. A read which reached 255 wraps around to 128. So
-for the kernel API, we probably do not want to allow offset/length to
-cause a wrap around. You can only read within the low 128 bytes, or
-the upper 128 bytes.
-
-   Andrew
+Thoughts?
