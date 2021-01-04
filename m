@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FD0A2E9F9C
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 22:41:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 905882E9FA4
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 22:51:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726246AbhADVkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 16:40:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41754 "EHLO mail.kernel.org"
+        id S1726536AbhADVuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 16:50:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42236 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726074AbhADVks (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Jan 2021 16:40:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 35235221F8;
-        Mon,  4 Jan 2021 21:40:08 +0000 (UTC)
+        id S1726021AbhADVut (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Jan 2021 16:50:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id CF7082225E;
+        Mon,  4 Jan 2021 21:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609796408;
-        bh=Wjm4tr4h4TNwlnqkpWRhVKi0NFdz+bsH9cf9tgSBseI=;
+        s=k20201202; t=1609797008;
+        bh=ktLasPF5LL+xB2S/z9EYKk/ANhzEOT2Nf8DBtMLtWA0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z8PMwoxkOsh1B0yxNbzlwDpIrv90sSiI1GrpOzNCW+QIIjpIAt2sa1wcFiI9wqYef
-         4hNNsBhjrAu1152bi7FPLTdspE0oOEx/XDrhh6M9bWzHLcZbYF5HSr28f82Mc7l0Ku
-         eGyn/3JfsIG5HTpD94UFdmsHg+OgZ03ETZ4CilGCREVREBFtiogxPLLF0fsmnHIDlG
-         t035r9g1pg2myIUUrklt/C/lRyDF3IsF/jI5o1xa9LRKGP3eYV4MneoFsY7957KsF9
-         qGtt66NJ2LA736mlvH4uQTaAfYPKydLqvlqrLDKyoOU2BMOUgzTXMKJNEPmTx2yF4v
-         ZWtZkoPFFMr5w==
+        b=X9rjNaXl/h3uKSt29dhMvZkMqdzS3nv51t1zei1JuoJmQXCBewd7lSZy7WpT7x1Qa
+         x9A8V6MzNS9Cn2jMKVUeEgqot/ei1XrAFbC8tjOewsRb1ui+1f5t60pSFLl1ZIVAJi
+         pvu3L2M2+WDUpuN6UdUcEVbCBpFJ3SN2FTGchD/o9x1y+Ud83kq8Zy8o6pHDgW2aEL
+         5jjtQvRHIYPsGAfN+ZRwBKo12CIsvYcJW/D/K8lJOFMHf02B04GEHELd+9di6J0AYV
+         /XPkAlM6sq4fffMvKT8O+E7Tvmnaaezh3AjbdOcECc26FVpl0TXJ1KgvNMPRFTPBHr
+         jggjMLEOO7EXQ==
 Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 25C84604FC;
-        Mon,  4 Jan 2021 21:40:08 +0000 (UTC)
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id BCD7C600F6;
+        Mon,  4 Jan 2021 21:50:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] selftests: mlxsw: Set headroom size of correct port
+Subject: Re: [PATCH net] net: lapb: Decrease the refcount of "struct lapb_cb" in
+ lapb_device_event
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160979640814.4432.9378065121775652965.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Jan 2021 21:40:08 +0000
-References: <20201230114251.394009-1-idosch@idosch.org>
-In-Reply-To: <20201230114251.394009-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, mlxsw@nvidia.com, idosch@nvidia.com
+Message-Id: <160979700876.8172.3140864000017286214.git-patchwork-notify@kernel.org>
+Date:   Mon, 04 Jan 2021 21:50:08 +0000
+References: <20201231174331.64539-1-xie.he.0141@gmail.com>
+In-Reply-To: <20201231174331.64539-1-xie.he.0141@gmail.com>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, ms@dev.tdt.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,20 +47,22 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Wed, 30 Dec 2020 13:42:51 +0200 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Thu, 31 Dec 2020 09:43:31 -0800 you wrote:
+> In lapb_device_event, lapb_devtostruct is called to get a reference to
+> an object of "struct lapb_cb". lapb_devtostruct increases the refcount
+> of the object and returns a pointer to it. However, we didn't decrease
+> the refcount after we finished using the pointer. This patch fixes this
+> problem.
 > 
-> The test was setting the headroom size of the wrong port. This was not
-> visible because of a firmware bug that canceled this bug.
-> 
-> Set the headroom size of the correct port, so that the test will pass
-> with both old and new firmware versions.
+> Fixes: a4989fa91110 ("net/lapb: support netdev events")
+> Cc: Martin Schiller <ms@dev.tdt.de>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] selftests: mlxsw: Set headroom size of correct port
-    https://git.kernel.org/netdev/net/c/2ff2c7e27439
+  - [net] net: lapb: Decrease the refcount of "struct lapb_cb" in lapb_device_event
+    https://git.kernel.org/netdev/net/c/b40f97b91a3b
 
 You are awesome, thank you!
 --
