@@ -2,136 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23CD52E9332
-	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 11:22:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27BA32E937D
+	for <lists+netdev@lfdr.de>; Mon,  4 Jan 2021 11:40:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726691AbhADKUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 05:20:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726026AbhADKUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 05:20:36 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2978C061793;
-        Mon,  4 Jan 2021 02:19:55 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id y23so18788035wmi.1;
-        Mon, 04 Jan 2021 02:19:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cshuBm7yB0Z3cSiR7jcnuEYzCYnzDpnl22WbZG/ju9A=;
-        b=M3Ngc5/MMNzyhU8I5x5YBEM7KEyJ85Y0XLmLQEYrJWsFHN5N8VXe8Z5MPFYwnuMrMi
-         Hx/9Mpra2YpHPrZqELXd73hWlIY1XRevN88LOhXt/adUP5lVVlBhj5VnV87P+RePmuu3
-         /TxKZ1oCnspXNA+t3jR/wrELwh2BuSY7bWFn2E/79tRNqFoewT5tm7XidnRDq7zPg7Q2
-         khd0qeLDq3dGyBhVMs4alfzPYBZOOpeshQQ1oolYQHB4q8SS84uIKrKeG5sjd96cYb9M
-         3166FELfa+cTzCd1qV4jEU6jT4zvv7+XkmPr/gbsNiRm2SPSO8V58fKTXkJR8anaqW2Q
-         W6TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cshuBm7yB0Z3cSiR7jcnuEYzCYnzDpnl22WbZG/ju9A=;
-        b=j3+93wUe0snB+zLeb2wmZzy2h95ySsP17I62uZJbppXRRFkzD++bvPrwMvx59+j7i3
-         1WBa8oTy6FiFiu2j1Dl2VFq1w6LfTZNV9g8LbqWY5z1kADHNhSgGxa07wxKPW5Di2MLa
-         AroobeCy1yZfp4ihO9QRQ1wRKgaSEhE4acyfTTOFQ+j9Phti4bQHm4tfT2rGQT7lmgAU
-         SmtDcPiz85uOP2nPgd+4hhZe9pw7X3Qa2DM2oePPsaXGAWRr7uzFrerRgNGpPDY3FDxo
-         xGMfwrnqfWR3C6U34W5YX5UdBVay+Do6fehvw3m70s5CQ+aYNa6zUrLavqFZw2c809vG
-         15IA==
-X-Gm-Message-State: AOAM532rUC+qn8fcGwXFApt6OPfQHyqN4OpC7tFct46Y6cYieuK3PJik
-        NOJZZJMIjnKNKacRHJQxwkA=
-X-Google-Smtp-Source: ABdhPJwOuLImjmAuXi0UyWjGYMZg6gZNFDNyltiw/uCmka2l2gwaY0RUZ3EWHJG5F8u9t7/5Zt9cRw==
-X-Received: by 2002:a1c:e246:: with SMTP id z67mr26166545wmg.166.1609755594674;
-        Mon, 04 Jan 2021 02:19:54 -0800 (PST)
-Received: from localhost ([51.15.41.238])
-        by smtp.gmail.com with ESMTPSA id b9sm35686661wmd.32.2021.01.04.02.19.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jan 2021 02:19:53 -0800 (PST)
-Date:   Mon, 4 Jan 2021 10:19:52 +0000
-From:   Stefan Hajnoczi <stefanha@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH v2] vhost/vsock: add IOTLB API support
-Message-ID: <20210104101952.GA344891@stefanha-x1.localdomain>
-References: <20201223143638.123417-1-sgarzare@redhat.com>
+        id S1726810AbhADKiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 05:38:55 -0500
+Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:35962 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726308AbhADKiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 05:38:54 -0500
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 104AWLln003664;
+        Mon, 4 Jan 2021 04:38:05 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type;
+ s=PODMain02222019; bh=Uk9lYMm9ey65BqE/Wih2VZhcmr4l+5ucfmFMpGEBb/E=;
+ b=QPeQZqx6qc9a4sZwoeSI2nQaLuCT6WnUD7nqd8dNjuhZJtDxrefFqWFpmB0Ye7cb+nWQ
+ IUPYeUBSh2Wtg4UMdJ9xYiOKGQ9DyjBwr9Bgj7O6/DvYTcEifmxLueJnkp89vxdUla57
+ sNROnd0T0O0qBZu7OjhQQk+zLkFmyEtZg6U2OVqoKLgjsZLlqcx6yqp2DPoCbDA2JKGa
+ uST3kvHilv44wLY63yHzt3CCVHG5XAMQjUAK/vAfztAKGyYoY4KOw01eeLdLQunZTdST
+ 9qhBURCZAN+zYIx8eW7X8XHA+XHAFJbsSeFgUhZ/yZev0wfDM4UJlI2gnOrdQTo13vgD pA== 
+Received: from ediex01.ad.cirrus.com ([87.246.76.36])
+        by mx0a-001ae601.pphosted.com with ESMTP id 35tq479aq7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 04 Jan 2021 04:38:05 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Mon, 4 Jan 2021
+ 10:38:03 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.1913.5 via Frontend
+ Transport; Mon, 4 Jan 2021 10:38:03 +0000
+Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 06F052AB;
+        Mon,  4 Jan 2021 10:38:03 +0000 (UTC)
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net v3] net: macb: Correct usage of MACB_CAPS_CLK_HW_CHG flag
+Date:   Mon, 4 Jan 2021 10:38:02 +0000
+Message-ID: <20210104103802.13091-1-ckeepax@opensource.cirrus.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
-Content-Disposition: inline
-In-Reply-To: <20201223143638.123417-1-sgarzare@redhat.com>
+Content-Type: text/plain
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0 bulkscore=0
+ impostorscore=0 priorityscore=1501 lowpriorityscore=0 clxscore=1015
+ mlxscore=0 spamscore=0 suspectscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101040069
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+A new flag MACB_CAPS_CLK_HW_CHG was added and all callers of
+macb_set_tx_clk were gated on the presence of this flag.
 
---Q68bSM7Ycu6FN28Q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+-   if (!clk)
++ if (!bp->tx_clk || !(bp->caps & MACB_CAPS_CLK_HW_CHG))
 
-On Wed, Dec 23, 2020 at 03:36:38PM +0100, Stefano Garzarella wrote:
-> This patch enables the IOTLB API support for vhost-vsock devices,
-> allowing the userspace to emulate an IOMMU for the guest.
->=20
-> These changes were made following vhost-net, in details this patch:
-> - exposes VIRTIO_F_ACCESS_PLATFORM feature and inits the iotlb
->   device if the feature is acked
-> - implements VHOST_GET_BACKEND_FEATURES and
->   VHOST_SET_BACKEND_FEATURES ioctls
-> - calls vq_meta_prefetch() before vq processing to prefetch vq
->   metadata address in IOTLB
-> - provides .read_iter, .write_iter, and .poll callbacks for the
->   chardev; they are used by the userspace to exchange IOTLB messages
->=20
-> This patch was tested specifying "intel_iommu=3Dstrict" in the guest
-> kernel command line. I used QEMU with a patch applied [1] to fix a
-> simple issue (that patch was merged in QEMU v5.2.0):
->     $ qemu -M q35,accel=3Dkvm,kernel-irqchip=3Dsplit \
->            -drive file=3Dfedora.qcow2,format=3Dqcow2,if=3Dvirtio \
->            -device intel-iommu,intremap=3Don,device-iotlb=3Don \
->            -device vhost-vsock-pci,guest-cid=3D3,iommu_platform=3Don,ats=
-=3Don
->=20
-> [1] https://lists.gnu.org/archive/html/qemu-devel/2020-10/msg09077.html
->=20
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->=20
-> The patch is the same of v1, but I re-tested it with:
-> - QEMU v5.2.0-551-ga05f8ecd88
-> - Linux 5.9.15 (host)
-> - Linux 5.9.15 and 5.10.0 (guest)
-> Now, enabling 'ats' it works well, there are just a few simple changes.
->=20
-> v1: https://www.spinics.net/lists/kernel/msg3716022.html
-> v2:
-> - updated commit message about QEMU version and string used to test
-> - rebased on mst/vhost branch
->=20
-> Thanks,
-> Stefano
-> ---
->  drivers/vhost/vsock.c | 68 +++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 65 insertions(+), 3 deletions(-)
+However the flag was not added to anything other than the new
+sama7g5_gem, turning that function call into a no op for all other
+systems. This breaks the networking on Zynq.
 
-Acked-by: Stefan Hajnoczi <stefanha@redhat.com>
+The commit message adding this states: a new capability so that
+macb_set_tx_clock() to not be called for IPs having this
+capability
 
---Q68bSM7Ycu6FN28Q
-Content-Type: application/pgp-signature; name="signature.asc"
+This strongly implies that present of the flag was intended to skip
+the function not absence of the flag. Update the if statement to
+this effect, which repairs the existing users.
 
------BEGIN PGP SIGNATURE-----
+Fixes: daafa1d33cc9 ("net: macb: add capability to not set the clock rate")
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+---
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl/y68gACgkQnKSrs4Gr
-c8jFlggAxynl8f/xErtZe/4q3P7uG8fRfOuje/XSlmzcxtlgQOv+t7r/vKjWzGwb
-ZJ52k6PN1dlbuQHyBf1TDre9nNqW17YteqL+em0hfvynsHV6WREOpJPLnVcbOWkF
-/vMadG9PxDkagfVN7ZOEzeLewJM4ZxAjYaZe9ADM2aq6MoxhiC4oCICmOK2UBbu3
-t/bVIhCL/cZs0nMO5cGfpz8u0ZenAiVPsXmbEiynMhhFd1pNWu1XsB6BGqJgZ4oJ
-1BvYrA3RWKmvq/EK15JIKzHJrNuP5mh0bGrWKXOj4ubUTRYnjVMWfwtfDpjKUlGB
-W77zh8Sm5xfKTDndtPmChInD+yd2iQ==
-=9iMg
------END PGP SIGNATURE-----
+Changes since v1:
+ - Updated flag semantics to skip function, as appears to have been
+   intended by the initial commit.
 
---Q68bSM7Ycu6FN28Q--
+Changes since v2:
+ - Adding "net" to the subject line
+
+Thanks,
+Charles
+
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d5d910916c2e8..814a5b10141d1 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -467,7 +467,7 @@ static void macb_set_tx_clk(struct macb *bp, int speed)
+ {
+ 	long ferr, rate, rate_rounded;
+ 
+-	if (!bp->tx_clk || !(bp->caps & MACB_CAPS_CLK_HW_CHG))
++	if (!bp->tx_clk || (bp->caps & MACB_CAPS_CLK_HW_CHG))
+ 		return;
+ 
+ 	switch (speed) {
+-- 
+2.11.0
+
