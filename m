@@ -2,85 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD052EAD24
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:10:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 204CB2EAD2A
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:12:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730735AbhAEOH3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Jan 2021 09:07:29 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:44687 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728264AbhAEOH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 09:07:27 -0500
-X-Originating-IP: 90.89.98.255
-Received: from xps13 (lfbn-tou-1-1535-bdcst.w90-89.abo.wanadoo.fr [90.89.98.255])
-        (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 4F0391C000F;
-        Tue,  5 Jan 2021 14:06:37 +0000 (UTC)
-Date:   Tue, 5 Jan 2021 15:06:36 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
+        id S1728694AbhAEOLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 09:11:09 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50172 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726961AbhAEOLI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Jan 2021 09:11:08 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kwn2L-00GAxa-O1; Tue, 05 Jan 2021 15:10:13 +0100
+Date:   Tue, 5 Jan 2021 15:10:13 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 06/10] mtd: Remove drivers used by TX49xx
-Message-ID: <20210105150636.175598fc@xps13>
-In-Reply-To: <20210105140305.141401-7-tsbogend@alpha.franken.de>
-References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
-        <20210105140305.141401-7-tsbogend@alpha.franken.de>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Russell King <linux@armlinux.org.uk>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] [RFC] net: phy: Fix reboot crash if CONFIG_IP_PNP is not
+ set
+Message-ID: <X/RzRd0zXHzAqLDl@lunn.ch>
+References: <20210104122415.1263541-1-geert+renesas@glider.be>
+ <20210104145331.tlwjwbzey5i4vgvp@skbuf>
+ <CAMuHMdUVsSuAur1wWkjs7FW5N-36XV9iXA6wmvst59eKoUFDHQ@mail.gmail.com>
+ <20210104170112.hn6t3kojhifyuaf6@skbuf>
+ <X/NNS3FUeSNxbqwo@lunn.ch>
+ <X/NQ2fYdBygm3CYc@lunn.ch>
+ <20210104184341.szvnl24wnfnxg4k7@skbuf>
+ <alpine.DEB.2.22.394.2101051038550.302140@ramsan.of.borg>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2101051038550.302140@ramsan.of.borg>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Thomas,
-
-Thomas Bogendoerfer <tsbogend@alpha.franken.de> wrote on Tue,  5 Jan
-2021 15:02:51 +0100:
-
-> CPU support for TX49xx is getting removed, so remove MTD support for it.
+> I added a statically-linked ethtool binary to my initramfs, and can
+> confirm that retrieving the PHY statistics does not access the PHY
+> registers when the device is suspended:
 > 
-> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+>     # ethtool --phy-statistics eth0
+>     no stats available
+>     # ifconfig eth0 up
+>     # ethtool --phy-statistics eth0
+>     PHY statistics:
+> 	 phy_receive_errors: 0
+> 	 phy_idle_errors: 0
+>     #
+> 
+> In the past, we've gone to great lengths to avoid accessing the PHY
+> registers when the device is suspended, usually in the statistics
+> handling (see e.g. [1][2]).
 
-If the removal happens, you may take this patch through the mips tree.
+I would argue that is the wrong approach. The PHY device is a
+device. It has its own lifetime. You would not suspend a PCI bus
+controller without first suspending all PCI devices on the bus etc.
 
-Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> +static int sh_mdiobb_read(struct mii_bus *bus, int phy, int reg)
+> +{
+> +	struct bb_info *bb = container_of(bus->priv, struct bb_info, ctrl);
 
-One less driver to convert to ->exec_op() :-)
+mii_bus->parent should give you dev, so there is no need to add it to
+bb_info.
 
-> ---
->  drivers/mtd/maps/Kconfig                 |   6 -
->  drivers/mtd/maps/Makefile                |   1 -
->  drivers/mtd/maps/rbtx4939-flash.c        | 133 -------
->  drivers/mtd/nand/raw/Kconfig             |   7 -
->  drivers/mtd/nand/raw/Makefile            |   1 -
->  drivers/mtd/nand/raw/txx9ndfmc.c         | 423 -----------------------
->  include/linux/platform_data/txx9/ndfmc.h |  28 --
->  7 files changed, 599 deletions(-)
->  delete mode 100644 drivers/mtd/maps/rbtx4939-flash.c
->  delete mode 100644 drivers/mtd/nand/raw/txx9ndfmc.c
->  delete mode 100644 include/linux/platform_data/txx9/ndfmc.h
+> +	/* Wrap accessors with Runtime PM-aware ops */
+> +	bitbang->read = mdp->mii_bus->read;
+> +	bitbang->write = mdp->mii_bus->write;
+> +	mdp->mii_bus->read = sh_mdiobb_read;
+> +	mdp->mii_bus->write = sh_mdiobb_write;
 
-Thanks,
-Miquèl
+I did wonder about just exporting the two functions so you can
+directly call them.
+
+Otherwise, this looks good.
+
+	   Andrew
