@@ -2,107 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BB872EA7CE
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:45:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A362EA7D0
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:45:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727890AbhAEJov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 04:44:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725831AbhAEJot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:44:49 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4212DC061794;
-        Tue,  5 Jan 2021 01:44:09 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id i24so30366706edj.8;
-        Tue, 05 Jan 2021 01:44:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XmXaHO6XtlhHHB5hr+caHztCDCfS/3Yl6IO2xbPe16k=;
-        b=gfbZAVluaUqAozdn9jK6zB3yBcuBHNf9CLjz8QKiIYMnz8pEGY+0EylU2s12/mZULU
-         ZAcU1oz+XARDrvcRCl0amZP+GPZV2buPTWzMrgUu3UsrDtwCL3ACyGLKdu3Gz1ByvcA3
-         nc6E7IQhwmkGPNEK5OiTnOzMXiXj1N4IyMlorzj1X2kg7vG0anr+eCrRVxX5ZxYIPdiV
-         HjQUYDT3RyNMZm/gtcy8XkWe69eZQ++EI7o/g9RIKaidM2OJ4JoZizJIZWrvd1zdBCYe
-         n4Br++yELMy6Mq6TrDWLOoNQsOLh/3VYOh49CrYf64KQa/F3DC//s27wqCsqbtu9ryne
-         mu8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XmXaHO6XtlhHHB5hr+caHztCDCfS/3Yl6IO2xbPe16k=;
-        b=DjQQ38Dt3rYdCmNEOYbTcD3da8nB6YUJfKaMZRFkSj+p0ShGHvcevUL++Yqgy0DXYQ
-         zb8+V8unkk5bncdS1bi2N343cFVIdVpjG7maGtkdhFM7lC5/vPD7MPRkBu2aD/JKBXkR
-         PVcv+ypqYC27wxQp6uCWO0OEzDQpuBpt/R0Lgv+Im2Q+cfJuMokjSMTxwgvwcFtM5YIf
-         gsIicCmmCJ5nijW7MXOtz7HYK8KukDxL+/yPP9KTbmGjg2WDc7FwGr4epap4LEWPolK5
-         kGbRveeYBdoAyUXCjgM2RLdAhK6RsZcUf6mRu4Qu/7ls7julHuGZnauhU9EoGJGxuXFQ
-         o8gg==
-X-Gm-Message-State: AOAM533gJQolefIf5knhiYcr+C8M2eD0FRjuFrqt9k7ZwyNx2RK2LK6c
-        GK4SqxFQEaLKArYiS6PtIC2m+6aXjP8=
-X-Google-Smtp-Source: ABdhPJwRYM03xT7yONzoDkBZsabwRjqq8Mork0bii5H2CPRKf8zDK8nIEhGoIt4NVJNNRwLlIt0DwA==
-X-Received: by 2002:aa7:c444:: with SMTP id n4mr73120970edr.226.1609839847685;
-        Tue, 05 Jan 2021 01:44:07 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:5ee:6bfd:b6c9:8fa1? (p200300ea8f06550005ee6bfdb6c98fa1.dip0.t-ipconnect.de. [2003:ea:8f06:5500:5ee:6bfd:b6c9:8fa1])
-        by smtp.googlemail.com with ESMTPSA id e25sm22382832edq.24.2021.01.05.01.44.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jan 2021 01:44:07 -0800 (PST)
-Subject: [PATCH 2/3] ARM: iop32x: improve N2100 PCI broken parity quirk
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <a6f09e1b-4076-59d1-a4e3-05c5955bfff2@gmail.com>
-Message-ID: <d53b6377-ff2a-3bba-612f-d052ffa81d09@gmail.com>
-Date:   Tue, 5 Jan 2021 10:42:31 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S1728083AbhAEJow (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 04:44:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29881 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727686AbhAEJov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:44:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609839805;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u/pf3MEGHy4BVUnm30O0L31xAu34MGBgOtsz0A/Rhcg=;
+        b=I9S5rONjo+1VTw6Kvhh4Vno1wNTtUlY1Ms9mWpyPagzILVwJ7BA+/eR7QThkZaQhmmNj+E
+        QuedpZsMQUyGGzuTxOROLowlDZWE724GqPbTFqldqa+MyuyhkHg8SgDqvdChsE/5fG9Iy1
+        JszKO6CfJQrY3ub/Vz0DuReLRB0o8pA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-98-eV-NK1QRM5yLiP4y727A1Q-1; Tue, 05 Jan 2021 04:43:23 -0500
+X-MC-Unique: eV-NK1QRM5yLiP4y727A1Q-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CA59310054FF;
+        Tue,  5 Jan 2021 09:43:21 +0000 (UTC)
+Received: from yiche-home.usersys.redhat.com (ovpn-12-69.pek2.redhat.com [10.72.12.69])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C307E62463;
+        Tue,  5 Jan 2021 09:43:18 +0000 (UTC)
+From:   Yi Chen <yiche@redhat.com>
+To:     Chen Yi <yiche@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Leo <liuhangbin@gmail.com>
+Subject: [PATCHv2 net] selftests: netfilter: Pass the family parameter to conntrack tool
+Date:   Tue,  5 Jan 2021 17:43:16 +0800
+Message-Id: <20210105094316.23683-1-yiche@redhat.com>
+In-Reply-To: <20210104110723.43564-1-yiche@redhat.com>
+References: <20210104110723.43564-1-yiche@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <a6f09e1b-4076-59d1-a4e3-05c5955bfff2@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the quirk by using new PCI core function
-pci_quirk_broken_parity(). In addition make the quirk
-more specific, use device id 0x8169 instead of PCI_ANY_ID.
+From: yiche <yiche@redhat.com>
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Fixes: 619ae8e0697a6 ("selftests: netfilter: add test case for conntrack helper assignment")
+
+Fix nft_conntrack_helper.sh fake fail:
+conntrack tool need "-f ipv6" parameter to show out ipv6 traffic items.
+sleep 1 second after background nc send packet, to make sure check
+is after this statement executed.
+
+Signed-off-by: yiche <yiche@redhat.com>
 ---
- arch/arm/mach-iop32x/n2100.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ .../selftests/netfilter/nft_conntrack_helper.sh      | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/mach-iop32x/n2100.c b/arch/arm/mach-iop32x/n2100.c
-index 78b9a5ee4..24c3eec46 100644
---- a/arch/arm/mach-iop32x/n2100.c
-+++ b/arch/arm/mach-iop32x/n2100.c
-@@ -122,12 +122,10 @@ static struct hw_pci n2100_pci __initdata = {
-  */
- static void n2100_fixup_r8169(struct pci_dev *dev)
- {
--	if (dev->bus->number == 0 &&
--	    (dev->devfn == PCI_DEVFN(1, 0) ||
--	     dev->devfn == PCI_DEVFN(2, 0)))
--		dev->broken_parity_status = 1;
-+	if (machine_is_n2100())
-+		pci_quirk_broken_parity(dev);
- }
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_REALTEK, PCI_ANY_ID, n2100_fixup_r8169);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_REALTEK, 0x8169, n2100_fixup_r8169);
+diff --git a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
+index edf0a48da6bf..bf6b9626c7dd 100755
+--- a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
++++ b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
+@@ -94,7 +94,13 @@ check_for_helper()
+ 	local message=$2
+ 	local port=$3
  
- static int __init n2100_pci_init(void)
- {
+-	ip netns exec ${netns} conntrack -L -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
++	if echo $message |grep -q 'ipv6';then
++		local family="ipv6"
++	else
++		local family="ipv4"
++	fi
++
++	ip netns exec ${netns} conntrack -L -f $family -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
+ 	if [ $? -ne 0 ] ; then
+ 		echo "FAIL: ${netns} did not show attached helper $message" 1>&2
+ 		ret=1
+@@ -111,8 +117,8 @@ test_helper()
+ 
+ 	sleep 3 | ip netns exec ${ns2} nc -w 2 -l -p $port > /dev/null &
+ 
+-	sleep 1
+ 	sleep 1 | ip netns exec ${ns1} nc -w 2 10.0.1.2 $port > /dev/null &
++	sleep 1
+ 
+ 	check_for_helper "$ns1" "ip $msg" $port
+ 	check_for_helper "$ns2" "ip $msg" $port
+@@ -128,8 +134,8 @@ test_helper()
+ 
+ 	sleep 3 | ip netns exec ${ns2} nc -w 2 -6 -l -p $port > /dev/null &
+ 
+-	sleep 1
+ 	sleep 1 | ip netns exec ${ns1} nc -w 2 -6 dead:1::2 $port > /dev/null &
++	sleep 1
+ 
+ 	check_for_helper "$ns1" "ipv6 $msg" $port
+ 	check_for_helper "$ns2" "ipv6 $msg" $port
 -- 
-2.30.0
-
+2.26.2
 
