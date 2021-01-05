@@ -2,119 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF9A2EA407
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 04:47:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6DCD2EA440
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 05:08:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728252AbhAEDr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 22:47:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726168AbhAEDr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 22:47:28 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18107C061574;
-        Mon,  4 Jan 2021 19:46:48 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id g3so15666380plp.2;
-        Mon, 04 Jan 2021 19:46:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Xw079aVtf3EzdSxCTSDwZELuzk/6XV5HOEsKoSHdxns=;
-        b=dhHdhlvsnjrAw3FlNo4uDrqrDQ72YSrREuoJ31hb6oJ7hfIzLUkHI7r0o2TEwgb88O
-         VVIPbqPcT9Qn37/7DJdMZlwpqFU8BNt2tiqOoUlePTR5B55Mra8msCtv1IjBhUe4C5j6
-         snFged3mJXdQbyr9MOFP8GBS46pgZcHMOHTYjdD7tyEbMazHAdhWsZYaKFNLBnJj//i9
-         0jOFQpeQxmFF9PU6ptqv2Q1jOmcg+Kfvxi2FjiTQJ+f/iS8vJ5CPe25rzFAkcti9UqEY
-         ON1oNHNM+LkHIMO5fKshVZ6qDsJfyRSvNC5JsZ/8gSFUj8lifhBzctu14i5D5jeqfCOT
-         0Wmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Xw079aVtf3EzdSxCTSDwZELuzk/6XV5HOEsKoSHdxns=;
-        b=icVm6KB8OwWWZW8dv+Wjo1t53cobA05eHQalesu6EA9wp/+vj7wfM4MO23iALh33gw
-         +QUy9kyw99Q/dw/LbKzx4LdOUR6G3qVNZW/RxZqWBBN34tEKn+Evm8V41Y2hunJ/m4fR
-         XWlhqnOILHjz+ea0rt7f1k4JC+9nTEKawyTCU1ZSxXmz/DOPdOwtseI/CEwWR3fBMd5M
-         ldZHl563gSGv6LcaivIMIJ11Y6QgaKo54emmP/Pl1f4Ilap4DFOTJMfmbKgF+LSmN6li
-         9e5Y+RIMS/NNou6DvRVUW0W3AbSH5K6GJj17o5cRrtdbxzyReL7i5diFQC2RR9sdAIZw
-         OWNg==
-X-Gm-Message-State: AOAM530CBsdt67Q36YSKhobxSbXDk2A0TkjNcQUPsk/m6gpY7EAEWmXO
-        fBEW4Hhe94xpEcnOtBBlF3o=
-X-Google-Smtp-Source: ABdhPJxtbju1WICmOy2V2LXgo0YAURvnZKvFXsXn4lin0jX1zwgB++GcyMn6wLEMZxcCJW+owzvp2g==
-X-Received: by 2002:a17:90b:1213:: with SMTP id gl19mr2141932pjb.232.1609818407592;
-        Mon, 04 Jan 2021 19:46:47 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:429b])
-        by smtp.gmail.com with ESMTPSA id x127sm53996638pfb.74.2021.01.04.19.46.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jan 2021 19:46:46 -0800 (PST)
-Date:   Mon, 4 Jan 2021 19:46:44 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: add tests for user- and
- non-CO-RE BPF_CORE_READ() variants
-Message-ID: <20210105034644.5thpans6alifiq65@ast-mbp>
-References: <20201218235614.2284956-1-andrii@kernel.org>
- <20201218235614.2284956-4-andrii@kernel.org>
+        id S1728116AbhAEEHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 23:07:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30624 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726571AbhAEEHn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 23:07:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609819577;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FknucuoRBtp08a5KMu1lf/hlB/0GtImhroWC39pwzVI=;
+        b=S8r3hXaDVGGcFiCWzmXfP6TybGOqtr1nTC1zF74hRoJHJBr60NTvNMGb31zulRh3HmXDWa
+        3jPI/etOZw/uDVwf7Yebb6XhxgHKSi1fwFTAgwA9L8fnebMbR9lU7ySYJ9MkotADk1u1Vs
+        uPZv2OgJ/su82TaRnscDkwO1F+0k3WE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-353-38jVJWLiNc6Ysmr-ZHgCvg-1; Mon, 04 Jan 2021 23:06:16 -0500
+X-MC-Unique: 38jVJWLiNc6Ysmr-ZHgCvg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7BE44192D785;
+        Tue,  5 Jan 2021 04:06:13 +0000 (UTC)
+Received: from [10.72.13.192] (ovpn-13-192.pek2.redhat.com [10.72.13.192])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A7E295D9C6;
+        Tue,  5 Jan 2021 04:06:08 +0000 (UTC)
+Subject: Re: [PATCH linux-next v2 7/7] vdpa_sim_net: Add support for user
+ supported devices
+To:     Parav Pandit <parav@nvidia.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>
+Cc:     "mst@redhat.com" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20201112064005.349268-1-parav@nvidia.com>
+ <20210104033141.105876-1-parav@nvidia.com>
+ <20210104033141.105876-8-parav@nvidia.com>
+ <ea07c16e-6bc5-0371-4b53-4bf4c75d5af8@redhat.com>
+ <BY5PR12MB43227F9431227959051B90B1DCD20@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <2e052c52-44e2-a066-3872-0e20805760f2@redhat.com>
+Date:   Tue, 5 Jan 2021 12:06:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201218235614.2284956-4-andrii@kernel.org>
+In-Reply-To: <BY5PR12MB43227F9431227959051B90B1DCD20@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 03:56:14PM -0800, Andrii Nakryiko wrote:
-> +
-> +/* shuffled layout for relocatable (CO-RE) reads */
-> +struct callback_head___shuffled {
-> +	void (*func)(struct callback_head___shuffled *head);
-> +	struct callback_head___shuffled *next;
-> +};
-> +
-> +struct callback_head k_probe_in = {};
-> +struct callback_head___shuffled k_core_in = {};
-> +
-> +struct callback_head *u_probe_in = 0;
-> +struct callback_head___shuffled *u_core_in = 0;
-> +
-> +long k_probe_out = 0;
-> +long u_probe_out = 0;
-> +
-> +long k_core_out = 0;
-> +long u_core_out = 0;
-> +
-> +int my_pid = 0;
-> +
-> +SEC("raw_tracepoint/sys_enter")
-> +int handler(void *ctx)
-> +{
-> +	int pid = bpf_get_current_pid_tgid() >> 32;
-> +
-> +	if (my_pid != pid)
-> +		return 0;
-> +
-> +	/* next pointers for kernel address space have to be initialized from
-> +	 * BPF side, user-space mmaped addresses are stil user-space addresses
-> +	 */
-> +	k_probe_in.next = &k_probe_in;
-> +	__builtin_preserve_access_index(({k_core_in.next = &k_core_in;}));
-> +
-> +	k_probe_out = (long)BPF_PROBE_READ(&k_probe_in, next, next, func);
-> +	k_core_out = (long)BPF_CORE_READ(&k_core_in, next, next, func);
-> +	u_probe_out = (long)BPF_PROBE_READ_USER(u_probe_in, next, next, func);
-> +	u_core_out = (long)BPF_CORE_READ_USER(u_core_in, next, next, func);
 
-I don't understand what the test suppose to demonstrate.
-co-re relocs work for kernel btf only.
-Are you saying that 'struct callback_head' happened to be used by user space
-process that allocated it in user memory. And that is the same struct as
-being used by the kernel? So co-re relocs that apply against the kernel
-will sort-of work against the data of user space process because
-the user space is using the same struct? That sounds convoluted.
-I struggle to see the point of patch 1:
-+#define bpf_core_read_user(dst, sz, src)                                   \
-+       bpf_probe_read_user(dst, sz, (const void *)__builtin_preserve_access_index(src))
+On 2021/1/4 下午3:21, Parav Pandit wrote:
+>
+>> From: Jason Wang <jasowang@redhat.com>
+>> Sent: Monday, January 4, 2021 12:35 PM
+>>
+>> On 2021/1/4 上午11:31, Parav Pandit wrote:
+>>>    static int __init vdpasim_net_init(void)
+>>>    {
+>>>    	int ret = 0;
+>>> @@ -176,6 +264,8 @@ static int __init vdpasim_net_init(void)
+>>>
+>>>    	if (default_device)
+>>>    		ret = vdpasim_net_default_dev_register();
+>>> +	else
+>>> +		ret = vdpasim_net_mgmtdev_init();
+>>>    	return ret;
+>>>    }
+>>>
+>>> @@ -183,6 +273,8 @@ static void __exit vdpasim_net_exit(void)
+>>>    {
+>>>    	if (default_device)
+>>>    		vdpasim_net_default_dev_unregister();
+>>> +	else
+>>> +		vdpasim_net_mgmtdev_cleanup();
+>>>    }
+>>>
+>>>    module_init(vdpasim_net_init);
+>>> -- 2.26.2
+>>
+>> I wonder what's the value of keeping the default device that is out of the
+>> control of management API.
+> I think we can remove it like how I did in the v1 version. And actual vendor drivers like mlx5_vdpa will likely should do only user created devices.
+> I added only for backward compatibility purpose, but we can remove the default simulated vdpa net device.
+> What do you recommend?
 
-co-re for user structs? Aren't they uapi? No reloc is needed.
+
+I think we'd better mandate this management API. This can avoid vendor 
+specific configuration that may complex management layer.
+
+Thanks
+
+
