@@ -2,114 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A7002EA2FD
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 02:47:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 129F32EA312
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 02:54:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbhAEBrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 20:47:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51602 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725921AbhAEBrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 20:47:09 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB30C061574;
-        Mon,  4 Jan 2021 17:46:29 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id y8so15507697plp.8;
-        Mon, 04 Jan 2021 17:46:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6rJHKD1k8iLoBVJmfTVtFUbHaU4YAJTAH6eGwvb2u3I=;
-        b=AdTk4JrjQDBKRIFoPKJwvdnCi9Zo+wGhggWuM4Pm7MxcaVsD5M/ypIoOBbjxF2EAKX
-         KVpcvNbspbJYX/vF36xIz5XWHNjvIDXXkwBbUmPA0bBlxXOBeAUOEVBGptjtBVzqdoxA
-         RdHLiSOR7XBT9qAg2sysOSPfYQtrb85+kx6AlVxyF6EnAPHdAtF/QXrs2S37WaHzetkR
-         QBGVKpoqTwirnzPe+coSl1VY6Q35CkYbeP2MdOKJB8k5oWRGzUrBICtgVRd9U3FpxOQ1
-         blC1YS71SqNsfybyKSAGeLc18qsEMcfB5EVwU85kHzSvAnj0mao2UJk5ikUqbAdH7QMK
-         YrPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6rJHKD1k8iLoBVJmfTVtFUbHaU4YAJTAH6eGwvb2u3I=;
-        b=GLc8R0bOwEv7tSvHM/yJKEVKoRGe5IxVQP8+2kRRb4pLOA0pxIAJJaifpCzPIN49k5
-         TE1DI+YEaQCLGGjXLonNEbX2yD6Ok0xKGz8A4gAypLYiXCVxR37UQxmPj7NNpNgLJsYt
-         K0q+iq9SXH9as2OXWXFkm2TqC1fvSVjgVWyPYxnlEkauZ02pbs97vKtEf6f3jZfd+wdi
-         l4sPZVnuU3WPLZdfjA1iI4nNJPvObruPV94kTaU4bSyqFeUTNZ2DViP/F9oyKRBleSLm
-         piyoqtpZNLMgoQzRPUH+vRJ7eyiN/6Glw8pK//tV1ms5ASyG+FdYREtJiTujwvkXn+my
-         Ts5A==
-X-Gm-Message-State: AOAM533dUd+jaVkiNA3q6qyMQgi0VfMwIF2ThHM4OBk4ougz+l/QRRKi
-        lUuHuClAkmzHAovrDOM9y4LiR06KBoCPRg==
-X-Google-Smtp-Source: ABdhPJyGMQwnusRfLP8VLG4DJ5A+ClXTxS87R559BsbMEPvFt2PBNgMgtY6lIoqinkBcnW22YJHKFQ==
-X-Received: by 2002:a17:902:d351:b029:db:e003:3b88 with SMTP id l17-20020a170902d351b02900dbe0033b88mr73812053plk.70.1609811188906;
-        Mon, 04 Jan 2021 17:46:28 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:429b])
-        by smtp.gmail.com with ESMTPSA id v10sm545118pjr.47.2021.01.04.17.46.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Jan 2021 17:46:28 -0800 (PST)
-Date:   Mon, 4 Jan 2021 17:46:25 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Yonghong Song <yhs@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@chromium.org" <kpsingh@chromium.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: introduce task_vma bpf_iter
-Message-ID: <20210105014625.krtz3uzqtfu4y7m5@ast-mbp>
-References: <20201215233702.3301881-1-songliubraving@fb.com>
- <20201215233702.3301881-2-songliubraving@fb.com>
- <20201217190308.insbsxpf6ujapbs3@ast-mbp>
- <C4D9D25A-C3DD-4081-9EAD-B7A5B6B74F45@fb.com>
- <20201218023444.i6hmdi3bp5vgxou2@ast-mbp>
- <D964C66B-2C25-4C3D-AFDE-E600364A721C@fb.com>
- <CAADnVQJyTVgnsDx6bJ1t-Diib9r+fiph9Ax-d97qSMvU3iKcRw@mail.gmail.com>
- <231d0521-62a7-427b-5351-359092e73dde@fb.com>
- <09DA43B9-0F6F-45C1-A60D-12E61493C71F@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S1727748AbhAEByC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 20:54:02 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:7170 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726974AbhAEByC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 20:54:02 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5ff3c6910000>; Mon, 04 Jan 2021 17:53:21 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 5 Jan
+ 2021 01:53:19 +0000
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.45) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Tue, 5 Jan 2021 01:53:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RFVVEinAHqq577P/12aU3sIQZriWUwmlURHfnMv9xUJjOFLioKshh+5kaS8xmE6BulCa2ZYlx8ggMzlSIeiCoev81/O06mhuAwBSSZp93IQeCYOJhbsCT5tpnyB1VH5y3I/brzMX3UD13zNNeHTtbpbOCgFRNSl6ifwtdJfvpAPcUOn7Z01P54JV1WLx9kHyQ9wsGY3I4UsV+Mf3IImiOS1yaEJvtQFsUYM+hlC+BzepUEcNhQQiOzexD1/VF5BAZi6nlpI5S9keH9l65gEv/ijS3FSqsSoRBGPFfWITcUbtUV2ChyWx1LzEYPYyF2s0EWjH+9V9kKnQu7FnbW24DQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3NSVHr65QSe5/misEmnitZ3kyjdEHvvwH86gYiinZ3I=;
+ b=UtCppMUiX+VAwIpf8g0pDklLhOE6prxun0REyEXNMKBea1f5MZr4qRwHXI9j2rWUDkz7xSJaYbwFaufy9PwP6BsrCb1qIIcKOhbhEyeqMtcmwY9QIVFVFDZJzPALuHAkpPHzdkcpSxk3pcNxPbqGtEnCCo1ORwOVQyQJFjr/GjMNUnAYmYdm1WzGVrurd54sbFTqPoEZijx2iRkWA6Xd8xGPlgA085Thjsh4JM3k/4IYcNpEPP8/TNEKkV+ANFJZ1bSLE+lx8fSxzo1hkYkksVm2NvSLEYU7A0f3PbIGaWLo33VtHw7seDvlmAYxQPwMT3FXY9CwEwdCsOxVnQ/KrQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB1338.namprd12.prod.outlook.com (2603:10b6:3:71::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.19; Tue, 5 Jan
+ 2021 01:53:16 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3721.024; Tue, 5 Jan 2021
+ 01:53:16 +0000
+Date:   Mon, 4 Jan 2021 21:53:14 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+CC:     Mark Brown <broonie@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        <alsa-devel@alsa-project.org>,
+        "Kiran Patil" <kiran.patil@intel.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "Ranjani Sridharan" <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@mellanox.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Message-ID: <20210105015314.GM552508@nvidia.com>
+References: <20201218162817.GX552508@nvidia.com>
+ <20201218180310.GD5333@sirena.org.uk> <20201218184150.GY552508@nvidia.com>
+ <20201218203211.GE5333@sirena.org.uk> <20201218205856.GZ552508@nvidia.com>
+ <20201221185140.GD4521@sirena.org.uk> <20210104180831.GD552508@nvidia.com>
+ <20210104211930.GI5645@sirena.org.uk> <20210105001341.GL552508@nvidia.com>
+ <CAPcyv4gxprMo1LwGTqGDyN-z2TrXLcAvJ3AN9-fbUs6y-LwXeA@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <09DA43B9-0F6F-45C1-A60D-12E61493C71F@fb.com>
+In-Reply-To: <CAPcyv4gxprMo1LwGTqGDyN-z2TrXLcAvJ3AN9-fbUs6y-LwXeA@mail.gmail.com>
+X-ClientProxiedBy: YT1PR01CA0143.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2f::22) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (206.223.160.26) by YT1PR01CA0143.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2f::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.19 via Frontend Transport; Tue, 5 Jan 2021 01:53:16 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kwbX8-002742-Jj; Mon, 04 Jan 2021 21:53:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1609811602; bh=3NSVHr65QSe5/misEmnitZ3kyjdEHvvwH86gYiinZ3I=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=H91eoS3PdysjX/7eMQ2XKD6CcuQX5uxy2tM1O1IN4Rrs9yMOHRLLJw8WrMWtR1EW8
+         eJ3n4YGvCr8wCgVCnm/GMd9WLZJDX19JNhJy4tuO9qs749XCZ8gUa4jGDumAGxpNuN
+         1mA84KF21n9xIGMWAMd3sCZYM4Asw8S1+z0fpzOs5pO8WjIrFZFLXcELIkvbgrPp0+
+         e7hsPDPDlWwaZHuvchco2KD++e1VNmlhKm+/+tdAtUmdQToBQxK+1NGnLG/uh+b2ma
+         jDfWDs9Tc4mBXyq3D+MMCaids7kfKF/2NK/ZxyfizDuwGpCkMidR3TzMW+D/Et0TO/
+         SfEoBpoFztT3A==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 05:23:25PM +0000, Song Liu wrote:
+On Mon, Jan 04, 2021 at 04:51:51PM -0800, Dan Williams wrote:
+> On Mon, Jan 4, 2021 at 4:14 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >
+> > On Mon, Jan 04, 2021 at 09:19:30PM +0000, Mark Brown wrote:
+> >
+> >
+> > > > Regardless of the shortcut to make everything a struct
+> > > > platform_device, I think it was a mistake to put OF devices on
+> > > > platform_bus. Those should have remained on some of_bus even if they
+> > >
+> > > Like I keep saying the same thing applies to all non-enumerable buses -
+> > > exactly the same considerations exist for all the other buses like I2C
+> > > (including the ACPI naming issue you mention below), and for that matter
+> > > with enumerable buses which can have firmware info.
+> >
+> > And most busses do already have their own bus type. ACPI, I2C, PCI,
+> > etc. It is just a few that have been squished into platform, notably
+> > OF.
+> >
 > 
+> I'll note that ACPI is an outlier that places devices on 2 buses,
+> where new acpi_driver instances are discouraged [1] in favor of
+> platform_drivers. ACPI scan handlers are awkwardly integrated into the
+> Linux device model.
 > 
-> > On Dec 18, 2020, at 8:38 AM, Yonghong Song <yhs@fb.com> wrote:
-> > 
-> > 
-> > 
-> > On 12/17/20 9:23 PM, Alexei Starovoitov wrote:
-> >> On Thu, Dec 17, 2020 at 8:33 PM Song Liu <songliubraving@fb.com> wrote:
-> >>>> 
-> >>>> ahh. I missed that. Makes sense.
-> >>>> vm_file needs to be accurate, but vm_area_struct should be accessed as ptr_to_btf_id.
-> >>> 
-> >>> Passing pointer of vm_area_struct into BPF will be tricky. For example, shall we
-> >>> allow the user to access vma->vm_file? IIUC, with ptr_to_btf_id the verifier will
-> >>> allow access of vma->vm_file as a valid pointer to struct file. However, since the
-> >>> vma might be freed, vma->vm_file could point to random data.
-> >> I don't think so. The proposed patch will do get_file() on it.
-> >> There is actually no need to assign it into a different variable.
-> >> Accessing it via vma->vm_file is safe and cleaner.
-> > 
-> > I did not check the code but do you have scenarios where vma is freed but old vma->vm_file is not freed due to reference counting, but
-> > freed vma area is reused so vma->vm_file could be garbage?
+> So while I agree with sentiment that an "ACPI bus" should
+> theoretically stand on its own there is legacy to unwind.
 > 
-> AFAIK, once we unlock mmap_sem, the vma could be freed and reused. I guess ptr_to_btf_id
-> or probe_read would not help with this?
+> I only bring that up to keep the focus on how to organize drivers
+> going forward, because trying to map some of these arguments backwards
+> runs into difficulties.
+> 
+> [1]: http://lore.kernel.org/r/CAJZ5v0j_ReK3AGDdw7fLvmw_7knECCg2U_huKgJzQeLCy8smug@mail.gmail.com
 
-Theoretically we can hack the verifier to treat some ptr_to_btf_id as "less
-valid" than the other ptr_to_btf_id, but the user experience will not be great.
-Reading such bpf prog will not be obvious. I think it's better to run bpf prog
-in mmap_lock then and let it access vma->vm_file. After prog finishes the iter
-bit can do if (mmap_lock_is_contended()) before iterating. That will deliver
-better performance too. Instead of task_vma_seq_get_next() doing
-mmap_lock/unlock at every vma. No need for get_file() either. And no
-__vm_area_struct exposure.
+Well, this is the exact kind of thing I think we are talking about
+here..
+
+> > It should be split up based on the unique naming scheme and any bus
+> > specific API elements - like raw access to ACPI or OF data or what
+> > have you for other FW bus types.
+> 
+> I agree that the pendulum may have swung too far towards "reuse
+> existing bus_type", and auxiliary-bus unwinds some of that, but does
+> the bus_type really want to be an indirection for driver apis outside
+> of bus-specific operations?
+
+If the bus is the "enumeration entity" and we define that things like
+name, resources, gpio's, regulators, etc are a generic part of what is
+enumerated, then it makes sense that the bus would have methods
+to handle those things too.
+
+In other words, the only way to learn what GPIO 'resource' is to ask
+the enumeration mechnism that is providing the bus. If the enumeration
+and bus are 1:1 then you can use a function pointer on the bus type
+instead of open coding a dispatch based on an indirect indication.
+
+Jason
