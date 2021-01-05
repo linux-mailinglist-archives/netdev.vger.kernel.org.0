@@ -2,98 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E352EB424
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 21:25:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E723C2EB427
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 21:28:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731203AbhAEUYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 15:24:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49998 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725996AbhAEUYK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Jan 2021 15:24:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 242C722D5A;
-        Tue,  5 Jan 2021 20:23:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609878209;
-        bh=qcVdtiVwLvxEkrc6bUZLiqOskvrds0MWzOJ4DpyhiP8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=E8a5+c6Sn3+/ng1p+TTRJ7VnJusftedtknvyiOp8+2Ip9g0YkCDlTl4vQIzjp5HLZ
-         WF7oKUZHsEdwduXSz1hwJAR2bMvbH8c7e0a2S5i7F5jcZgb/FIn+kRlBnpMvaiZy/f
-         ksTSndMNELI8s5C8+kUxeClpjj/sv6xpdis84KpRV2VI4l66UFhFHtiHBD8ia/nllb
-         7rrLn6U2kNNsGy2m5PacWVpnUlnKVajFalrv9HY7BIghTMXSUDmhJQTCaoGjkwcyyr
-         /PLW2npiGQOexh6/JyyJ2DzcZyxJZEjkkh5UnzkNbILkpLv2FYDSS+uME1/Q8QQ3Tx
-         IcujnTICPrdDg==
-Date:   Tue, 5 Jan 2021 12:23:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: Missed schedule_napi()?
-Message-ID: <20210105122328.3e5569a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <475bdc3b-d57f-eeef-3cdf-88c7b883d423@linaro.org>
-References: <475bdc3b-d57f-eeef-3cdf-88c7b883d423@linaro.org>
+        id S1729974AbhAEU2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 15:28:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56806 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725710AbhAEU2L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 15:28:11 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6E4C061574;
+        Tue,  5 Jan 2021 12:27:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=KHPqyi/j67gzDXuYNn1fZrznHEOtYW1e4fRSuwpHiz4=; b=qQbAAkdylTZ9yi8iIaGhUZGP0N
+        Ju9bESNVdh/1KvUjLE89xyAnHwVnJ3MeIl6He4w4WBgjuDzLk7y1VW2aB3oiyF356NJWH28NFV7eK
+        eOo9SH9Q+/PcXrXUHI/0xol61M2NK+vuMFeBaIzP/BrY7OvPEeMpIh9CcAqiYNtdiGhj1Jm715/HL
+        /L1Z86giLTic3PQTQqa0pj4jLQZIp0pMjaFqs2MPfJYrL8B0Ra5wMLV4d0IosVnu2kQ0CF8xIVrZi
+        nXuTQ/9jfB8xTREYPcOXHn1ir8XpnpHcBIf8/cKjDwkr44LatMfnCMjx2nKM9P0/HX5H90GqOV7C3
+        ZxgmqyWg==;
+Received: from [2601:1c0:6280:3f0::64ea]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kwsvQ-0005DT-CQ; Tue, 05 Jan 2021 20:27:28 +0000
+Subject: Re: [PATCH] docs: octeontx2: tune rst markup
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        George Cherian <george.cherian@marvell.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha Sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210105093553.31879-1-lukas.bulwahn@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <0eb77133-947b-39c8-ee58-13b502c5ee71@infradead.org>
+Date:   Tue, 5 Jan 2021 12:27:21 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210105093553.31879-1-lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 Jan 2021 10:46:09 -0600 Alex Elder wrote:
-> I have a question about whether it's possible to effectively
-> miss a schedule_napi() call when a disable_napi() is underway.
-> 
-> I'm going to try to represent the code in question here
-> in an interleaved way to explain the scenario; I hope
-> it's clear.
-> 
-> Suppose the SCHED flag is clear.  And suppose two
-> concurrent threads do things in the sequence below.
-> 
-> Disabling thread	| Scheduling thread
-> ------------------------+----------------------
-> void napi_disable(struct napi_struct *n)
-> {			| bool napi_schedule_prep(struct napi_struct *n)
->    might_sleep();	| {
->                          |   unsigned long val, new;
->                          |
->                          |   do {
->    set_bit(NAPI_STATE_DISABLE, &n->state);
->                          |     val = READ_ONCE(n->state);
->                          |     if (unlikely(val & NAPIF_STATE_DISABLE))
->                          |       return false;
-> 			|	. . .
->    while (test_and_set_bit(NAPI_STATE_SCHED, &n->state))
->       msleep(1);		|
->         . . .		|
-> 
-> We start with the SCHED bit clear.  The disabling thread
-> sets the DISABLE bit as it begins.  The scheduling thread
-> checks the state and finds that it is disabled, so it
-> simply returns false, and the napi_schedule() caller will
-> *not* call __napi_schedule().
-> 
-> But even though NAPI is getting disabled, the scheduling thread
-> wants it recorded that a NAPI poll should be scheduled, even
-> if it happens later.  In other words, it seems like this
-> case is essentially a MISSED schedule.
-> 
-> The disabling thread sets the SCHED bit, having found it was
-> not set previously, and thereby disables NAPI processing until
-> it is re-enabled.
-> 
-> Later, napi_enable() will clear the SCHED bit, allowing NAPI
-> processing to continue, but there is no record that the
-> scheduling thread indicated that a poll was needed,
-> 
-> Am I misunderstanding this?  If so, can someone please explain?
-> It seems to me that the napi_schedule() call is "lost".
+Hi Lukas,
 
-AFAICT your analysis is correct. At the same time the NAPI API does 
-not (to the best of my knowledge) give any guarantees about NAPI
-invocations matching the number of __napi_schedule() calls.
+On 1/5/21 1:35 AM, Lukas Bulwahn wrote:
+> Commit 80b9414832a1 ("docs: octeontx2: Add Documentation for NPA health
+> reporters") added new documentation with improper formatting for rst, and
+> caused a few new warnings for make htmldocs in octeontx2.rst:169--202.
+> 
+> Tune markup and formatting for better presentation in the HTML view.
+> 
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> ---
+> applies cleanly on current master (v5.11-rc2) and next-20201205
+> 
+> George, please ack.
+> Jonathan, please pick this minor formatting clean-up patch.
+> 
+>  .../ethernet/marvell/octeontx2.rst            | 59 +++++++++++--------
+>  1 file changed, 34 insertions(+), 25 deletions(-)
+> 
+> diff --git a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+> index d3fcf536d14e..00bdc10fe2b8 100644
+> --- a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+> @@ -165,45 +165,54 @@ Devlink health reporters
+>  NPA Reporters
+>  -------------
+>  The NPA reporters are responsible for reporting and recovering the following group of errors
 
-The expectation is that the communication channel will be "reset" 
-after the napi_disable() call, processing or dropping all the events
-which were outstanding after napi_disable().
+Can we get a period or colon at the end of that line above, please.
+
+> +
+>  1. GENERAL events
+> +
+>     - Error due to operation of unmapped PF.
+>     - Error due to disabled alloc/free for other HW blocks (NIX, SSO, TIM, DPI and AURA).
+> +
+>  2. ERROR events
+> +
+>     - Fault due to NPA_AQ_INST_S read or NPA_AQ_RES_S write.
+>     - AQ Doorbell Error.
+> +
+>  3. RAS events
+> +
+>     - RAS Error Reporting for NPA_AQ_INST_S/NPA_AQ_RES_S.
+> +
+>  4. RVU events
+> +
+>     - Error due to unmapped slot.
+>  
+> -Sample Output
+> --------------
+> -~# devlink health
+> -pci/0002:01:00.0:
+> -  reporter hw_npa_intr
+> -      state healthy error 2872 recover 2872 last_dump_date 2020-12-10 last_dump_time 09:39:09 grace_period 0 auto_recover true auto_dump true
+> -  reporter hw_npa_gen
+> -      state healthy error 2872 recover 2872 last_dump_date 2020-12-11 last_dump_time 04:43:04 grace_period 0 auto_recover true auto_dump true
+> -  reporter hw_npa_err
+> -      state healthy error 2871 recover 2871 last_dump_date 2020-12-10 last_dump_time 09:39:17 grace_period 0 auto_recover true auto_dump true
+> -   reporter hw_npa_ras
+> -      state healthy error 0 recover 0 last_dump_date 2020-12-10 last_dump_time 09:32:40 grace_period 0 auto_recover true auto_dump true
+> +Sample Output::
+> +
+> +	~# devlink health
+> +	pci/0002:01:00.0:
+> +	  reporter hw_npa_intr
+> +	      state healthy error 2872 recover 2872 last_dump_date 2020-12-10 last_dump_time 09:39:09 grace_period 0 auto_recover true auto_dump true
+> +	  reporter hw_npa_gen
+> +	      state healthy error 2872 recover 2872 last_dump_date 2020-12-11 last_dump_time 04:43:04 grace_period 0 auto_recover true auto_dump true
+> +	  reporter hw_npa_err
+> +	      state healthy error 2871 recover 2871 last_dump_date 2020-12-10 last_dump_time 09:39:17 grace_period 0 auto_recover true auto_dump true
+> +	   reporter hw_npa_ras
+> +	      state healthy error 0 recover 0 last_dump_date 2020-12-10 last_dump_time 09:32:40 grace_period 0 auto_recover true auto_dump true
+>  
+>  Each reporter dumps the
+>   - Error Type
+>   - Error Register value
+>   - Reason in words
+>  
+> -For eg:
+> -~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_gen
+> - NPA_AF_GENERAL:
+> -         NPA General Interrupt Reg : 1
+> -         NIX0: free disabled RX
+> -~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_intr
+> - NPA_AF_RVU:
+> -         NPA RVU Interrupt Reg : 1
+> -         Unmap Slot Error
+> -~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_err
+> - NPA_AF_ERR:
+> -        NPA Error Interrupt Reg : 4096
+> -        AQ Doorbell Error
+> +For eg::
+
+   For example::
+or
+   E.g.::
+
+> +
+> +	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_gen
+> +	 NPA_AF_GENERAL:
+> +	         NPA General Interrupt Reg : 1
+> +	         NIX0: free disabled RX
+> +	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_intr
+> +	 NPA_AF_RVU:
+> +	         NPA RVU Interrupt Reg : 1
+> +	         Unmap Slot Error
+> +	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_err
+> +	 NPA_AF_ERR:
+> +	        NPA Error Interrupt Reg : 4096
+> +	        AQ Doorbell Error
+> 
+
+
+thanks.
+-- 
+~Randy
+
