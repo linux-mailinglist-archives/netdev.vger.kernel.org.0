@@ -2,128 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B321B2EAA5E
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 13:05:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D6B2EAA7A
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 13:13:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729952AbhAEMDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 07:03:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbhAEMDi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 07:03:38 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181FEC061574;
-        Tue,  5 Jan 2021 04:02:58 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id 4so16256942plk.5;
-        Tue, 05 Jan 2021 04:02:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7sOeq1igRILZ3qkNgIHGHcqhKNb2sI9PRb1QCDOORNQ=;
-        b=rIE2bAGQhyd/DbcKpJ7JunAFtkVDOTykjRUNhyPFB7FCRwFRpdNchEY4pWEmLR1hI6
-         AccU8b/Vw3OoXRjkb8ChFKjlcy3J80xaJGzkY7ADI2Xv/zFvLBf/OPV7o0h9nJW92a/g
-         U5Lz2AwmpU/uSrkjy4O73nTFD1cfyWraoos4jwLSwCYerXm3PXuHYq7cmwG7D8/8Qez2
-         8BQXby6B/lD21sBLQ73WclonD0idpvoo8vzi8pIJ9jh/O9s9IQLxLyPwyVc6YSzkwf4u
-         +9Rm1lRTS1QvED7wQOluIQx4ExYm3987VL/DbDAj9HgZ712LkBg/xv64S9nBEOC+CeBX
-         /Q6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7sOeq1igRILZ3qkNgIHGHcqhKNb2sI9PRb1QCDOORNQ=;
-        b=E63aQXwR67u5NEXArux4nIPrmUcXSvIj4CN7v70LUe6Z5iddCFxYRoSW9XkxlnWtgR
-         FTn20jATM5ZQ/DyFKpJohlgSVhGrOOOK8zgR7pd1nY5O3ABaHgqO6+qXQY3WuLQ28rBA
-         rgj+sX8ri+BtRAJO0VHQqua6VNlXvTrCBRhdEzbi+DADBWOccQkKGSaPWUcKFzTlecN3
-         x4jLFiiOlKIkfHjCBEeqt6yCHRZkhl/yKLagwlZSqKeCgGN3dopBQk7UYpj0malwQZ5X
-         FT4hYOZ9077HM+ruz/UxMdHaG087iiQac4gqfNoikAgC2+J+fKOjz8T9emAevDpGxb2c
-         GAZw==
-X-Gm-Message-State: AOAM531G+3svj+Z0a+aOqm2X2D/VllVS1MPAIpqHWJbNGf97HVeDXi6o
-        p5/2yGAo6V/tlz1WrIITM/TfR2P3AK7J2g==
-X-Google-Smtp-Source: ABdhPJwuVzI9pIl1CAC8MAVP8OuT7EwqOLwKDOOZAFiwBG8RXG0G1IGGKfDiABJ291CRQimA95ogQg==
-X-Received: by 2002:a17:90a:fd08:: with SMTP id cv8mr3663921pjb.29.1609848177451;
-        Tue, 05 Jan 2021 04:02:57 -0800 (PST)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u126sm13917515pfu.113.2021.01.05.04.02.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jan 2021 04:02:57 -0800 (PST)
-Date:   Tue, 5 Jan 2021 20:02:45 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Yi Chen <yiche@redhat.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCHv2 net] selftests: netfilter: Pass the family parameter to
- conntrack tool
-Message-ID: <20210105120245.GB1421720@Leo-laptop-t470s>
-References: <20210104110723.43564-1-yiche@redhat.com>
- <20210105094316.23683-1-yiche@redhat.com>
+        id S1727293AbhAEMMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 07:12:53 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:50860 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726231AbhAEMMw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Jan 2021 07:12:52 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 5CF8D20270;
+        Tue,  5 Jan 2021 13:12:10 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id jcNV_5h6Se3m; Tue,  5 Jan 2021 13:12:09 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id C4EA920068;
+        Tue,  5 Jan 2021 13:12:09 +0100 (CET)
+Received: from mbx-essen-02.secunet.de (10.53.40.198) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 5 Jan 2021 13:12:09 +0100
+Received: from cell (10.182.7.209) by mbx-essen-02.secunet.de (10.53.40.198)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Tue, 5 Jan 2021
+ 13:12:09 +0100
+Received: (nullmailer pid 12349 invoked by uid 1000);
+        Tue, 05 Jan 2021 12:12:08 -0000
+Date:   Tue, 5 Jan 2021 13:12:08 +0100
+From:   Christian Perle <christian.perle@secunet.com>
+To:     <netfilter@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <steffen.klassert@secunet.com>
+Subject: BUG: IPv4 conntrack reassembles forwarded packets
+Message-ID: <20210105121208.GA11593@cell>
+Reply-To: <christian.perle@secunet.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-In-Reply-To: <20210105094316.23683-1-yiche@redhat.com>
+Content-Transfer-Encoding: 8bit
+Organization: secunet
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-02.secunet.de (10.53.40.198)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 05:43:16PM +0800, Yi Chen wrote:
-> From: yiche <yiche@redhat.com>
-> 
-> Fixes: 619ae8e0697a6 ("selftests: netfilter: add test case for conntrack helper assignment")
-> 
-> Fix nft_conntrack_helper.sh fake fail:
-> conntrack tool need "-f ipv6" parameter to show out ipv6 traffic items.
-> sleep 1 second after background nc send packet, to make sure check
-> is after this statement executed.
+Hello,
 
-The Fixes tag should be above your signoff tag
+During testing several tunnel scenarios, I noticed a problematic
+behaviour of IPV4 conntrack.
 
-Fixes: 619ae8e0697a6 ("selftests: netfilter: add test case for conntrack helper assignment")
-> Signed-off-by: yiche <yiche@redhat.com>
-> ---
->  .../selftests/netfilter/nft_conntrack_helper.sh      | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-> index edf0a48da6bf..bf6b9626c7dd 100755
-> --- a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-> +++ b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-> @@ -94,7 +94,13 @@ check_for_helper()
->  	local message=$2
->  	local port=$3
->  
-> -	ip netns exec ${netns} conntrack -L -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
-> +	if echo $message |grep -q 'ipv6';then
-> +		local family="ipv6"
-> +	else
-> +		local family="ipv4"
-> +	fi
-> +
-> +	ip netns exec ${netns} conntrack -L -f $family -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
->  	if [ $? -ne 0 ] ; then
->  		echo "FAIL: ${netns} did not show attached helper $message" 1>&2
->  		ret=1
-> @@ -111,8 +117,8 @@ test_helper()
->  
->  	sleep 3 | ip netns exec ${ns2} nc -w 2 -l -p $port > /dev/null &
->  
-> -	sleep 1
->  	sleep 1 | ip netns exec ${ns1} nc -w 2 10.0.1.2 $port > /dev/null &
-> +	sleep 1
->  
->  	check_for_helper "$ns1" "ip $msg" $port
->  	check_for_helper "$ns2" "ip $msg" $port
-> @@ -128,8 +134,8 @@ test_helper()
->  
->  	sleep 3 | ip netns exec ${ns2} nc -w 2 -6 -l -p $port > /dev/null &
->  
-> -	sleep 1
->  	sleep 1 | ip netns exec ${ns1} nc -w 2 -6 dead:1::2 $port > /dev/null &
-> +	sleep 1
->  
->  	check_for_helper "$ns1" "ipv6 $msg" $port
->  	check_for_helper "$ns2" "ipv6 $msg" $port
-> -- 
-> 2.26.2
-> 
+
+BUG: IPv4 conntrack reassembles forwarded packets
+=================================================
+
+Conntrack needs to reassemble fragments in order to have complete
+packets for rule matching. However the IPv4 stack should not change
+forwarded packets if not explicitely told to do so.
+Unwanted reassembly can even lead to packet loss.
+
+Consider the following setup:
+
+            +--------+       +---------+       +--------+
+            |Router A|-------|Wanrouter|-------|Router B|
+            |        |.IPIP..|         |..IPIP.|        |
+            +--------+       +---------+       +--------+
+           /                  mtu 1400                   \
+          /                                               \
++--------+                                                 +--------+
+|Client A|                                                 |Client B|
+|        |                                                 |        |
++--------+                                                 +--------+
+
+Router A and Router B use IPIP tunnel interfaces to tunnel traffic
+between Client A and Client B over WAN. Wanrouter has MTU 1400 set
+on its interfaces.
+
+Detailed setup for Router A
+---------------------------
+Interfaces:
+eth0: 10.2.2.1/24
+eth1: 192.168.10.1/24
+ipip0: No IP address, local 10.2.2.1 remote 10.4.4.1
+Routes:
+192.168.20.0/24 dev ipip0    (192.168.20.0/24 is subnet of Client B)
+10.4.4.1 via 10.2.2.254      (Router B via Wanrouter)
+No iptables rules at all.
+
+Detailed setup for Router B
+---------------------------
+Interfaces:
+eth0: 10.4.4.1/24
+eth1: 192.168.20.1/24
+ipip0: No IP address, local 10.4.4.1 remote 10.2.2.1
+Routes:
+192.168.10.0/24 dev ipip0    (192.168.10.0/24 is subnet of Client A)
+10.2.2.1 via 10.4.4.254      (Router A via Wanrouter)
+No iptables rules at all.
+
+Path MTU discovery
+------------------
+Running tracepath from Client A to Client B shows PMTU discovery is working
+as expected:
+
+clienta:~# tracepath 192.168.20.2
+ 1?: [LOCALHOST]                      pmtu 1500
+ 1:  192.168.10.1                                          0.867ms
+ 1:  192.168.10.1                                          0.302ms
+ 2:  192.168.10.1                                          0.312ms pmtu 1480
+ 2:  no reply
+ 3:  192.168.10.1                                          0.510ms pmtu 1380
+ 3:  192.168.20.2                                          2.320ms reached
+     Resume: pmtu 1380 hops 3 back 3
+
+Router A has learned PMTU (1400) to Router B from Wanrouter.
+Client A has learned PMTU (1400 - IPIP overhead = 1380) to Client B
+from Router A.
+
+Send large UDP packet
+---------------------
+Now we send a 1400 bytes UDP packet from Client A to Client B:
+
+clienta:~# head -c1400 /dev/zero | tr "\000" "a" | nc -u 192.168.20.2 5000
+
+The IPv4 stack on Client A already knows the PMTU to Client B, so the
+UDP packet is sent as two fragments (1380 + 20). Router A forwards the
+fragments between eth1 and ipip0. The fragments fit into the tunnel and
+reach their destination.
+
+Adding conntrack iptables rule ==> packet loss
+----------------------------------------------
+Now on Router A the following iptables rule is added:
+
+routera:~# iptables -t mangle -A PREROUTING -m state \
+  --state ESTABLISHED -j ACCEPT
+
+When sending the large UDP packet again, Router A now reassembles the
+fragments before routing the packet over ipip0. The resulting IPIP
+packet is too big (1400) for the tunnel PMTU (1380) to Router B, it is
+dropped on Router A before sending.
+
+Client A cannot do anything to fix this, because it already respects the
+PMTU (1380) to Client B and sends fragments fitting into it.
+
+The problem also happens when using IPSec tunnels with XFRM interfaces
+(this is the actual use case, the setup above just uses IPIP for
+simplicity).
+
+IPv6 does it right
+------------------
+When testing a similar setup with IPv6 and ip6tnl interfaces, the
+conntrack ip6tables rule does not affect the forwarded UDP fragments.
+Though reassembly takes place for conntrack, the reassembled packet is
+not forwarded.
+
+So the solution would be making IPv4 behaving like IPv6, using reassembly
+for conntrack reasons *only* and not forwarding the reassembly result
+but the original fragments.
+
+
+Regards,
+  Christian Perle
+-- 
+Christian Perle
+Senior Berater / Senior Consultant
+Netzwerk- und Client-Sicherheit / Network & Client Security
+Öffentliche Auftraggeber / Public Authorities
+secunet Security Networks AG
+
+Tel.: +49 201 54 54-3533, Fax: +49 201 54 54-1323
+E-Mail: christian.perle@secunet.com
+Ammonstraße 74, 01067 Dresden, Deutschland
+www.secunet.com
+
+secunet Security Networks AG
+Sitz: Kurfürstenstraße 58, 45138 Essen, Deutschland
+Amtsgericht Essen HRB 13615
+Vorstand: Axel Deininger (Vors.), Torsten Henn, Dr. Kai Martius, Thomas Pleines
+Aufsichtsratsvorsitzender: Ralf Wintergerst
