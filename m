@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C19A2EACD2
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:05:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B07A2EACEA
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:05:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730598AbhAEOFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 09:05:12 -0500
-Received: from mx2.suse.de ([195.135.220.15]:57720 "EHLO mx2.suse.de"
+        id S1730659AbhAEOFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 09:05:45 -0500
+Received: from mx2.suse.de ([195.135.220.15]:57716 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729090AbhAEOFJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728968AbhAEOFJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 5 Jan 2021 09:05:09 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 6582BAF0D;
-        Tue,  5 Jan 2021 14:03:46 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id A4388AEFE;
+        Tue,  5 Jan 2021 14:03:47 +0000 (UTC)
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     Matt Mackall <mpm@selenic.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
@@ -38,9 +38,9 @@ To:     Matt Mackall <mpm@selenic.com>,
         linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
         linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
         linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: [PATCH 09/10] ide: tx4938ide: Remove driver
-Date:   Tue,  5 Jan 2021 15:02:54 +0100
-Message-Id: <20210105140305.141401-10-tsbogend@alpha.franken.de>
+Subject: [PATCH 10/10] ASoC: txx9: Remove driver
+Date:   Tue,  5 Jan 2021 15:02:55 +0100
+Message-Id: <20210105140305.141401-11-tsbogend@alpha.franken.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210105140305.141401-1-tsbogend@alpha.franken.de>
 References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
@@ -50,899 +50,939 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CPU support for TX49xx is getting removed, so remove IDE support for it.
+CPU support for TX49xx is getting removed, so remove sound support for it.
 
 Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 ---
- drivers/ide/Kconfig     |  10 -
- drivers/ide/Makefile    |   3 -
- drivers/ide/tx4938ide.c | 209 -------------
- drivers/ide/tx4939ide.c | 628 ----------------------------------------
- 4 files changed, 850 deletions(-)
- delete mode 100644 drivers/ide/tx4938ide.c
- delete mode 100644 drivers/ide/tx4939ide.c
+ sound/soc/Kconfig                 |   1 -
+ sound/soc/Makefile                |   1 -
+ sound/soc/txx9/Kconfig            |  30 ---
+ sound/soc/txx9/Makefile           |  12 -
+ sound/soc/txx9/txx9aclc-ac97.c    | 230 ----------------
+ sound/soc/txx9/txx9aclc-generic.c |  88 -------
+ sound/soc/txx9/txx9aclc.c         | 422 ------------------------------
+ sound/soc/txx9/txx9aclc.h         |  71 -----
+ 8 files changed, 855 deletions(-)
+ delete mode 100644 sound/soc/txx9/Kconfig
+ delete mode 100644 sound/soc/txx9/Makefile
+ delete mode 100644 sound/soc/txx9/txx9aclc-ac97.c
+ delete mode 100644 sound/soc/txx9/txx9aclc-generic.c
+ delete mode 100644 sound/soc/txx9/txx9aclc.c
+ delete mode 100644 sound/soc/txx9/txx9aclc.h
 
-diff --git a/drivers/ide/Kconfig b/drivers/ide/Kconfig
-index 19abf11c84c8..03303af8c96f 100644
---- a/drivers/ide/Kconfig
-+++ b/drivers/ide/Kconfig
-@@ -662,16 +662,6 @@ config BLK_DEV_IDE_PMAC_ATA100FIRST
- 	  CD-ROM on hda. This option changes this to more natural hda for
- 	  hard disk and hdc for CD-ROM.
- 
--config BLK_DEV_IDE_TX4938
--	tristate "TX4938 internal IDE support"
--	depends on SOC_TX4938
--	select IDE_TIMINGS
--
--config BLK_DEV_IDE_TX4939
--	tristate "TX4939 internal IDE support"
--	depends on SOC_TX4939
--	select BLK_DEV_IDEDMA_SFF
--
- config BLK_DEV_IDE_ICSIDE
- 	tristate "ICS IDE interface support"
- 	depends on ARM && ARCH_ACORN
-diff --git a/drivers/ide/Makefile b/drivers/ide/Makefile
-index 2605b3cdaf47..4d6655160a4a 100644
---- a/drivers/ide/Makefile
-+++ b/drivers/ide/Makefile
-@@ -106,6 +106,3 @@ obj-$(CONFIG_BLK_DEV_PLATFORM)		+= ide_platform.o
- obj-$(CONFIG_BLK_DEV_IDE_ICSIDE)	+= icside.o
- obj-$(CONFIG_BLK_DEV_IDE_RAPIDE)	+= rapide.o
- obj-$(CONFIG_BLK_DEV_PALMCHIP_BK3710)	+= palm_bk3710.o
--
--obj-$(CONFIG_BLK_DEV_IDE_TX4938)	+= tx4938ide.o
--obj-$(CONFIG_BLK_DEV_IDE_TX4939)	+= tx4939ide.o
-diff --git a/drivers/ide/tx4938ide.c b/drivers/ide/tx4938ide.c
+diff --git a/sound/soc/Kconfig b/sound/soc/Kconfig
+index 71a6fe87d1a1..47da9ce17693 100644
+--- a/sound/soc/Kconfig
++++ b/sound/soc/Kconfig
+@@ -71,7 +71,6 @@ source "sound/soc/stm/Kconfig"
+ source "sound/soc/sunxi/Kconfig"
+ source "sound/soc/tegra/Kconfig"
+ source "sound/soc/ti/Kconfig"
+-source "sound/soc/txx9/Kconfig"
+ source "sound/soc/uniphier/Kconfig"
+ source "sound/soc/ux500/Kconfig"
+ source "sound/soc/xilinx/Kconfig"
+diff --git a/sound/soc/Makefile b/sound/soc/Makefile
+index ddbac3a2169f..508dbaa1814e 100644
+--- a/sound/soc/Makefile
++++ b/sound/soc/Makefile
+@@ -54,7 +54,6 @@ obj-$(CONFIG_SND_SOC)	+= stm/
+ obj-$(CONFIG_SND_SOC)	+= sunxi/
+ obj-$(CONFIG_SND_SOC)	+= tegra/
+ obj-$(CONFIG_SND_SOC)	+= ti/
+-obj-$(CONFIG_SND_SOC)	+= txx9/
+ obj-$(CONFIG_SND_SOC)	+= uniphier/
+ obj-$(CONFIG_SND_SOC)	+= ux500/
+ obj-$(CONFIG_SND_SOC)	+= xilinx/
+diff --git a/sound/soc/txx9/Kconfig b/sound/soc/txx9/Kconfig
 deleted file mode 100644
-index 962eb92501b5..000000000000
---- a/drivers/ide/tx4938ide.c
+index d928edf9f5a9..000000000000
+--- a/sound/soc/txx9/Kconfig
 +++ /dev/null
-@@ -1,209 +0,0 @@
+@@ -1,30 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-##
+-## TXx9 ACLC
+-##
+-config SND_SOC_TXX9ACLC
+-	tristate "SoC Audio for TXx9"
+-	depends on HAS_TXX9_ACLC && TXX9_DMAC
+-	help
+-	  This option enables support for the AC Link Controllers in TXx9 SoC.
+-
+-config HAS_TXX9_ACLC
+-	bool
+-
+-config SND_SOC_TXX9ACLC_AC97
+-	tristate
+-	select AC97_BUS
+-	select SND_AC97_CODEC
+-	select SND_SOC_AC97_BUS
+-
+-
+-##
+-## Boards
+-##
+-config SND_SOC_TXX9ACLC_GENERIC
+-	tristate "Generic TXx9 ACLC sound machine"
+-	depends on SND_SOC_TXX9ACLC
+-	select SND_SOC_TXX9ACLC_AC97
+-	select SND_SOC_AC97_CODEC
+-	help
+-	  This is a generic AC97 sound machine for use in TXx9 based systems.
+diff --git a/sound/soc/txx9/Makefile b/sound/soc/txx9/Makefile
+deleted file mode 100644
+index 37ad833eb329..000000000000
+--- a/sound/soc/txx9/Makefile
++++ /dev/null
+@@ -1,12 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-# Platform
+-snd-soc-txx9aclc-objs := txx9aclc.o
+-snd-soc-txx9aclc-ac97-objs := txx9aclc-ac97.o
+-
+-obj-$(CONFIG_SND_SOC_TXX9ACLC) += snd-soc-txx9aclc.o
+-obj-$(CONFIG_SND_SOC_TXX9ACLC_AC97) += snd-soc-txx9aclc-ac97.o
+-
+-# Machine
+-snd-soc-txx9aclc-generic-objs := txx9aclc-generic.o
+-
+-obj-$(CONFIG_SND_SOC_TXX9ACLC_GENERIC) += snd-soc-txx9aclc-generic.o
+diff --git a/sound/soc/txx9/txx9aclc-ac97.c b/sound/soc/txx9/txx9aclc-ac97.c
+deleted file mode 100644
+index d9e348444bd0..000000000000
+--- a/sound/soc/txx9/txx9aclc-ac97.c
++++ /dev/null
+@@ -1,230 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
 -/*
-- * TX4938 internal IDE driver
-- * Based on tx4939ide.c.
+- * TXx9 ACLC AC97 driver
 - *
-- * This file is subject to the terms and conditions of the GNU General Public
-- * License.  See the file "COPYING" in the main directory of this archive
-- * for more details.
+- * Copyright (C) 2009 Atsushi Nemoto
 - *
-- * (C) Copyright TOSHIBA CORPORATION 2005-2007
+- * Based on RBTX49xx patch from CELF patch archive.
+- * (C) Copyright TOSHIBA CORPORATION 2004-2006
 - */
 -
--#include <linux/module.h>
--#include <linux/types.h>
--#include <linux/ide.h>
 -#include <linux/init.h>
--#include <linux/platform_device.h>
+-#include <linux/module.h>
+-#include <linux/delay.h>
+-#include <linux/interrupt.h>
 -#include <linux/io.h>
+-#include <linux/gfp.h>
+-#include <asm/mach-tx39xx/ioremap.h> /* for TXX9_DIRECTMAP_BASE */
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/soc.h>
+-#include "txx9aclc.h"
 -
--#include <asm/ide.h>
--#include <asm/txx9/tx4938.h>
+-#define AC97_DIR	\
+-	(SND_SOC_DAIDIR_PLAYBACK | SND_SOC_DAIDIR_CAPTURE)
 -
--static void tx4938ide_tune_ebusc(unsigned int ebus_ch,
--				 unsigned int gbus_clock,
--				 u8 pio)
--{
--	struct ide_timing *t = ide_timing_find_mode(XFER_PIO_0 + pio);
--	u64 cr = __raw_readq(&tx4938_ebuscptr->cr[ebus_ch]);
--	unsigned int sp = (cr >> 4) & 3;
--	unsigned int clock = gbus_clock / (4 - sp);
--	unsigned int cycle = 1000000000 / clock;
--	unsigned int shwt;
--	int wt;
--
--	/* Minimum DIOx- active time */
--	wt = DIV_ROUND_UP(t->act8b, cycle) - 2;
--	/* IORDY setup time: 35ns */
--	wt = max_t(int, wt, DIV_ROUND_UP(35, cycle));
--	/* actual wait-cycle is max(wt & ~1, 1) */
--	if (wt > 2 && (wt & 1))
--		wt++;
--	wt &= ~1;
--	/* Address-valid to DIOR/DIOW setup */
--	shwt = DIV_ROUND_UP(t->setup, cycle);
--
--	/* -DIOx recovery time (SHWT * 4) and cycle time requirement */
--	while ((shwt * 4 + wt + (wt ? 2 : 3)) * cycle < t->cycle)
--		shwt++;
--	if (shwt > 7) {
--		pr_warn("tx4938ide: SHWT violation (%d)\n", shwt);
--		shwt = 7;
--	}
--	pr_debug("tx4938ide: ebus %d, bus cycle %dns, WT %d, SHWT %d\n",
--		 ebus_ch, cycle, wt, shwt);
--
--	__raw_writeq((cr & ~0x3f007ull) | (wt << 12) | shwt,
--		     &tx4938_ebuscptr->cr[ebus_ch]);
--}
--
--static void tx4938ide_set_pio_mode(ide_hwif_t *hwif, ide_drive_t *drive)
--{
--	struct tx4938ide_platform_info *pdata = dev_get_platdata(hwif->dev);
--	u8 safe = drive->pio_mode - XFER_PIO_0;
--	ide_drive_t *pair;
--
--	pair = ide_get_pair_dev(drive);
--	if (pair)
--		safe = min_t(u8, safe, pair->pio_mode - XFER_PIO_0);
--	tx4938ide_tune_ebusc(pdata->ebus_ch, pdata->gbus_clock, safe);
--}
+-#define AC97_RATES	\
+-	SNDRV_PCM_RATE_8000_48000
 -
 -#ifdef __BIG_ENDIAN
--
--/* custom iops (independent from SWAP_IO_SPACE) */
--static void tx4938ide_input_data_swap(ide_drive_t *drive, struct ide_cmd *cmd,
--				void *buf, unsigned int len)
--{
--	unsigned long port = drive->hwif->io_ports.data_addr;
--	unsigned short *ptr = buf;
--	unsigned int count = (len + 1) / 2;
--
--	while (count--)
--		*ptr++ = cpu_to_le16(__raw_readw((void __iomem *)port));
--	__ide_flush_dcache_range((unsigned long)buf, roundup(len, 2));
--}
--
--static void tx4938ide_output_data_swap(ide_drive_t *drive, struct ide_cmd *cmd,
--				void *buf, unsigned int len)
--{
--	unsigned long port = drive->hwif->io_ports.data_addr;
--	unsigned short *ptr = buf;
--	unsigned int count = (len + 1) / 2;
--
--	while (count--) {
--		__raw_writew(le16_to_cpu(*ptr), (void __iomem *)port);
--		ptr++;
--	}
--	__ide_flush_dcache_range((unsigned long)buf, roundup(len, 2));
--}
--
--static const struct ide_tp_ops tx4938ide_tp_ops = {
--	.exec_command		= ide_exec_command,
--	.read_status		= ide_read_status,
--	.read_altstatus		= ide_read_altstatus,
--	.write_devctl		= ide_write_devctl,
--
--	.dev_select		= ide_dev_select,
--	.tf_load		= ide_tf_load,
--	.tf_read		= ide_tf_read,
--
--	.input_data		= tx4938ide_input_data_swap,
--	.output_data		= tx4938ide_output_data_swap,
--};
--
--#endif	/* __BIG_ENDIAN */
--
--static const struct ide_port_ops tx4938ide_port_ops = {
--	.set_pio_mode		= tx4938ide_set_pio_mode,
--};
--
--static const struct ide_port_info tx4938ide_port_info __initconst = {
--	.port_ops		= &tx4938ide_port_ops,
--#ifdef __BIG_ENDIAN
--	.tp_ops			= &tx4938ide_tp_ops,
+-#define AC97_FMTS	SNDRV_PCM_FMTBIT_S16_BE
+-#else
+-#define AC97_FMTS	SNDRV_PCM_FMTBIT_S16_LE
 -#endif
--	.host_flags		= IDE_HFLAG_MMIO | IDE_HFLAG_NO_DMA,
--	.pio_mask		= ATA_PIO5,
--	.chipset		= ide_generic,
+-
+-static DECLARE_WAIT_QUEUE_HEAD(ac97_waitq);
+-
+-/* REVISIT: How to find txx9aclc_drvdata from snd_ac97? */
+-static struct txx9aclc_plat_drvdata *txx9aclc_drvdata;
+-
+-static int txx9aclc_regready(struct txx9aclc_plat_drvdata *drvdata)
+-{
+-	return __raw_readl(drvdata->base + ACINTSTS) & ACINT_REGACCRDY;
+-}
+-
+-/* AC97 controller reads codec register */
+-static unsigned short txx9aclc_ac97_read(struct snd_ac97 *ac97,
+-					 unsigned short reg)
+-{
+-	struct txx9aclc_plat_drvdata *drvdata = txx9aclc_drvdata;
+-	void __iomem *base = drvdata->base;
+-	u32 dat;
+-
+-	if (!(__raw_readl(base + ACINTSTS) & ACINT_CODECRDY(ac97->num)))
+-		return 0xffff;
+-	reg |= ac97->num << 7;
+-	dat = (reg << ACREGACC_REG_SHIFT) | ACREGACC_READ;
+-	__raw_writel(dat, base + ACREGACC);
+-	__raw_writel(ACINT_REGACCRDY, base + ACINTEN);
+-	if (!wait_event_timeout(ac97_waitq, txx9aclc_regready(txx9aclc_drvdata), HZ)) {
+-		__raw_writel(ACINT_REGACCRDY, base + ACINTDIS);
+-		printk(KERN_ERR "ac97 read timeout (reg %#x)\n", reg);
+-		dat = 0xffff;
+-		goto done;
+-	}
+-	dat = __raw_readl(base + ACREGACC);
+-	if (((dat >> ACREGACC_REG_SHIFT) & 0xff) != reg) {
+-		printk(KERN_ERR "reg mismatch %x with %x\n",
+-			dat, reg);
+-		dat = 0xffff;
+-		goto done;
+-	}
+-	dat = (dat >> ACREGACC_DAT_SHIFT) & 0xffff;
+-done:
+-	__raw_writel(ACINT_REGACCRDY, base + ACINTDIS);
+-	return dat;
+-}
+-
+-/* AC97 controller writes to codec register */
+-static void txx9aclc_ac97_write(struct snd_ac97 *ac97, unsigned short reg,
+-				unsigned short val)
+-{
+-	struct txx9aclc_plat_drvdata *drvdata = txx9aclc_drvdata;
+-	void __iomem *base = drvdata->base;
+-
+-	__raw_writel(((reg | (ac97->num << 7)) << ACREGACC_REG_SHIFT) |
+-		     (val << ACREGACC_DAT_SHIFT),
+-		     base + ACREGACC);
+-	__raw_writel(ACINT_REGACCRDY, base + ACINTEN);
+-	if (!wait_event_timeout(ac97_waitq, txx9aclc_regready(txx9aclc_drvdata), HZ)) {
+-		printk(KERN_ERR
+-			"ac97 write timeout (reg %#x)\n", reg);
+-	}
+-	__raw_writel(ACINT_REGACCRDY, base + ACINTDIS);
+-}
+-
+-static void txx9aclc_ac97_cold_reset(struct snd_ac97 *ac97)
+-{
+-	struct txx9aclc_plat_drvdata *drvdata = txx9aclc_drvdata;
+-	void __iomem *base = drvdata->base;
+-	u32 ready = ACINT_CODECRDY(ac97->num) | ACINT_REGACCRDY;
+-
+-	__raw_writel(ACCTL_ENLINK, base + ACCTLDIS);
+-	udelay(1);
+-	__raw_writel(ACCTL_ENLINK, base + ACCTLEN);
+-	/* wait for primary codec ready status */
+-	__raw_writel(ready, base + ACINTEN);
+-	if (!wait_event_timeout(ac97_waitq,
+-				(__raw_readl(base + ACINTSTS) & ready) == ready,
+-				HZ)) {
+-		dev_err(&ac97->dev, "primary codec is not ready "
+-			"(status %#x)\n",
+-			__raw_readl(base + ACINTSTS));
+-	}
+-	__raw_writel(ACINT_REGACCRDY, base + ACINTSTS);
+-	__raw_writel(ready, base + ACINTDIS);
+-}
+-
+-/* AC97 controller operations */
+-static struct snd_ac97_bus_ops txx9aclc_ac97_ops = {
+-	.read		= txx9aclc_ac97_read,
+-	.write		= txx9aclc_ac97_write,
+-	.reset		= txx9aclc_ac97_cold_reset,
 -};
 -
--static int __init tx4938ide_probe(struct platform_device *pdev)
+-static irqreturn_t txx9aclc_ac97_irq(int irq, void *dev_id)
 -{
--	struct ide_hw hw, *hws[] = { &hw };
--	struct ide_host *host;
--	struct resource *res;
--	struct tx4938ide_platform_info *pdata = dev_get_platdata(&pdev->dev);
--	int irq, ret, i;
--	unsigned long mapbase, mapctl;
--	struct ide_port_info d = tx4938ide_port_info;
+-	struct txx9aclc_plat_drvdata *drvdata = dev_id;
+-	void __iomem *base = drvdata->base;
+-
+-	__raw_writel(__raw_readl(base + ACINTMSTS), base + ACINTDIS);
+-	wake_up(&ac97_waitq);
+-	return IRQ_HANDLED;
+-}
+-
+-static int txx9aclc_ac97_probe(struct snd_soc_dai *dai)
+-{
+-	txx9aclc_drvdata = snd_soc_dai_get_drvdata(dai);
+-	return 0;
+-}
+-
+-static int txx9aclc_ac97_remove(struct snd_soc_dai *dai)
+-{
+-	struct txx9aclc_plat_drvdata *drvdata = snd_soc_dai_get_drvdata(dai);
+-
+-	/* disable AC-link */
+-	__raw_writel(ACCTL_ENLINK, drvdata->base + ACCTLDIS);
+-	txx9aclc_drvdata = NULL;
+-	return 0;
+-}
+-
+-static struct snd_soc_dai_driver txx9aclc_ac97_dai = {
+-	.probe			= txx9aclc_ac97_probe,
+-	.remove			= txx9aclc_ac97_remove,
+-	.playback = {
+-		.rates		= AC97_RATES,
+-		.formats	= AC97_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 2,
+-	},
+-	.capture = {
+-		.rates		= AC97_RATES,
+-		.formats	= AC97_FMTS,
+-		.channels_min	= 2,
+-		.channels_max	= 2,
+-	},
+-};
+-
+-static const struct snd_soc_component_driver txx9aclc_ac97_component = {
+-	.name		= "txx9aclc-ac97",
+-};
+-
+-static int txx9aclc_ac97_dev_probe(struct platform_device *pdev)
+-{
+-	struct txx9aclc_plat_drvdata *drvdata;
+-	struct resource *r;
+-	int err;
+-	int irq;
 -
 -	irq = platform_get_irq(pdev, 0);
 -	if (irq < 0)
--		return -ENODEV;
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res)
--		return -ENODEV;
+-		return irq;
 -
--	if (!devm_request_mem_region(&pdev->dev, res->start,
--				     resource_size(res), "tx4938ide"))
--		return -EBUSY;
--	mapbase = (unsigned long)devm_ioremap(&pdev->dev, res->start,
--					      8 << pdata->ioport_shift);
--	mapctl = (unsigned long)devm_ioremap(&pdev->dev,
--					     res->start + 0x10000 +
--					     (6 << pdata->ioport_shift),
--					     1 << pdata->ioport_shift);
--	if (!mapbase || !mapctl)
--		return -EBUSY;
+-	drvdata = devm_kzalloc(&pdev->dev, sizeof(*drvdata), GFP_KERNEL);
+-	if (!drvdata)
+-		return -ENOMEM;
 -
--	memset(&hw, 0, sizeof(hw));
--	if (pdata->ioport_shift) {
--		unsigned long port = mapbase;
--		unsigned long ctl = mapctl;
+-	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	drvdata->base = devm_ioremap_resource(&pdev->dev, r);
+-	if (IS_ERR(drvdata->base))
+-		return PTR_ERR(drvdata->base);
 -
--		hw.io_ports_array[0] = port;
--#ifdef __BIG_ENDIAN
--		port++;
--		ctl++;
--#endif
--		for (i = 1; i <= 7; i++)
--			hw.io_ports_array[i] =
--				port + (i << pdata->ioport_shift);
--		hw.io_ports.ctl_addr = ctl;
--	} else
--		ide_std_init_ports(&hw, mapbase, mapctl);
--	hw.irq = irq;
--	hw.dev = &pdev->dev;
+-	platform_set_drvdata(pdev, drvdata);
+-	drvdata->physbase = r->start;
+-	if (sizeof(drvdata->physbase) > sizeof(r->start) &&
+-	    r->start >= TXX9_DIRECTMAP_BASE &&
+-	    r->start < TXX9_DIRECTMAP_BASE + 0x400000)
+-		drvdata->physbase |= 0xf00000000ull;
+-	err = devm_request_irq(&pdev->dev, irq, txx9aclc_ac97_irq,
+-			       0, dev_name(&pdev->dev), drvdata);
+-	if (err < 0)
+-		return err;
 -
--	pr_info("TX4938 IDE interface (base %#lx, ctl %#lx, irq %d)\n",
--		mapbase, mapctl, hw.irq);
--	if (pdata->gbus_clock)
--		tx4938ide_tune_ebusc(pdata->ebus_ch, pdata->gbus_clock, 0);
--	else
--		d.port_ops = NULL;
--	ret = ide_host_add(&d, hws, 1, &host);
--	if (!ret)
--		platform_set_drvdata(pdev, host);
+-	err = snd_soc_set_ac97_ops(&txx9aclc_ac97_ops);
+-	if (err < 0)
+-		return err;
+-
+-	return devm_snd_soc_register_component(&pdev->dev, &txx9aclc_ac97_component,
+-					  &txx9aclc_ac97_dai, 1);
+-}
+-
+-static int txx9aclc_ac97_dev_remove(struct platform_device *pdev)
+-{
+-	snd_soc_set_ac97_ops(NULL);
+-	return 0;
+-}
+-
+-static struct platform_driver txx9aclc_ac97_driver = {
+-	.probe		= txx9aclc_ac97_dev_probe,
+-	.remove		= txx9aclc_ac97_dev_remove,
+-	.driver		= {
+-		.name	= "txx9aclc-ac97",
+-	},
+-};
+-
+-module_platform_driver(txx9aclc_ac97_driver);
+-
+-MODULE_AUTHOR("Atsushi Nemoto <anemo@mba.ocn.ne.jp>");
+-MODULE_DESCRIPTION("TXx9 ACLC AC97 driver");
+-MODULE_LICENSE("GPL");
+-MODULE_ALIAS("platform:txx9aclc-ac97");
+diff --git a/sound/soc/txx9/txx9aclc-generic.c b/sound/soc/txx9/txx9aclc-generic.c
+deleted file mode 100644
+index d6893721ba1d..000000000000
+--- a/sound/soc/txx9/txx9aclc-generic.c
++++ /dev/null
+@@ -1,88 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*
+- * Generic TXx9 ACLC machine driver
+- *
+- * Copyright (C) 2009 Atsushi Nemoto
+- *
+- * Based on RBTX49xx patch from CELF patch archive.
+- * (C) Copyright TOSHIBA CORPORATION 2004-2006
+- *
+- * This is a very generic AC97 sound machine driver for boards which
+- * have (AC97) audio at ACLC (e.g. RBTX49XX boards).
+- */
+-
+-#include <linux/module.h>
+-#include <linux/platform_device.h>
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/soc.h>
+-#include "txx9aclc.h"
+-
+-SND_SOC_DAILINK_DEFS(hifi,
+-	DAILINK_COMP_ARRAY(COMP_CPU("txx9aclc-ac97")),
+-	DAILINK_COMP_ARRAY(COMP_CODEC("ac97-codec", "ac97-hifi")),
+-	DAILINK_COMP_ARRAY(COMP_PLATFORM("txx9aclc-pcm-audio")));
+-
+-static struct snd_soc_dai_link txx9aclc_generic_dai = {
+-	.name = "AC97",
+-	.stream_name = "AC97 HiFi",
+-	SND_SOC_DAILINK_REG(hifi),
+-};
+-
+-static struct snd_soc_card txx9aclc_generic_card = {
+-	.name		= "Generic TXx9 ACLC Audio",
+-	.owner		= THIS_MODULE,
+-	.dai_link	= &txx9aclc_generic_dai,
+-	.num_links	= 1,
+-};
+-
+-static struct platform_device *soc_pdev;
+-
+-static int __init txx9aclc_generic_probe(struct platform_device *pdev)
+-{
+-	int ret;
+-
+-	soc_pdev = platform_device_alloc("soc-audio", -1);
+-	if (!soc_pdev)
+-		return -ENOMEM;
+-	platform_set_drvdata(soc_pdev, &txx9aclc_generic_card);
+-	ret = platform_device_add(soc_pdev);
+-	if (ret) {
+-		platform_device_put(soc_pdev);
+-		return ret;
+-	}
+-
+-	return 0;
+-}
+-
+-static int __exit txx9aclc_generic_remove(struct platform_device *pdev)
+-{
+-	platform_device_unregister(soc_pdev);
+-	return 0;
+-}
+-
+-static struct platform_driver txx9aclc_generic_driver = {
+-	.remove = __exit_p(txx9aclc_generic_remove),
+-	.driver = {
+-		.name = "txx9aclc-generic",
+-	},
+-};
+-
+-static int __init txx9aclc_generic_init(void)
+-{
+-	return platform_driver_probe(&txx9aclc_generic_driver,
+-				     txx9aclc_generic_probe);
+-}
+-
+-static void __exit txx9aclc_generic_exit(void)
+-{
+-	platform_driver_unregister(&txx9aclc_generic_driver);
+-}
+-
+-module_init(txx9aclc_generic_init);
+-module_exit(txx9aclc_generic_exit);
+-
+-MODULE_AUTHOR("Atsushi Nemoto <anemo@mba.ocn.ne.jp>");
+-MODULE_DESCRIPTION("Generic TXx9 ACLC ALSA SoC audio driver");
+-MODULE_LICENSE("GPL");
+-MODULE_ALIAS("platform:txx9aclc-generic");
+diff --git a/sound/soc/txx9/txx9aclc.c b/sound/soc/txx9/txx9aclc.c
+deleted file mode 100644
+index 1d2d0d9b57b0..000000000000
+--- a/sound/soc/txx9/txx9aclc.c
++++ /dev/null
+@@ -1,422 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*
+- * Generic TXx9 ACLC platform driver
+- *
+- * Copyright (C) 2009 Atsushi Nemoto
+- *
+- * Based on RBTX49xx patch from CELF patch archive.
+- * (C) Copyright TOSHIBA CORPORATION 2004-2006
+- */
+-
+-#include <linux/module.h>
+-#include <linux/init.h>
+-#include <linux/platform_device.h>
+-#include <linux/scatterlist.h>
+-#include <linux/slab.h>
+-#include <linux/dmaengine.h>
+-#include <sound/core.h>
+-#include <sound/pcm.h>
+-#include <sound/pcm_params.h>
+-#include <sound/soc.h>
+-#include "txx9aclc.h"
+-
+-#define DRV_NAME "txx9aclc"
+-
+-static struct txx9aclc_soc_device {
+-	struct txx9aclc_dmadata dmadata[2];
+-} txx9aclc_soc_device;
+-
+-/* REVISIT: How to find txx9aclc_drvdata from snd_ac97? */
+-static struct txx9aclc_plat_drvdata *txx9aclc_drvdata;
+-
+-static int txx9aclc_dma_init(struct txx9aclc_soc_device *dev,
+-			     struct txx9aclc_dmadata *dmadata);
+-
+-static const struct snd_pcm_hardware txx9aclc_pcm_hardware = {
+-	/*
+-	 * REVISIT: SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID
+-	 * needs more works for noncoherent MIPS.
+-	 */
+-	.info		  = SNDRV_PCM_INFO_INTERLEAVED |
+-			    SNDRV_PCM_INFO_BATCH |
+-			    SNDRV_PCM_INFO_PAUSE,
+-	.period_bytes_min = 1024,
+-	.period_bytes_max = 8 * 1024,
+-	.periods_min	  = 2,
+-	.periods_max	  = 4096,
+-	.buffer_bytes_max = 32 * 1024,
+-};
+-
+-static int txx9aclc_pcm_hw_params(struct snd_soc_component *component,
+-				  struct snd_pcm_substream *substream,
+-				  struct snd_pcm_hw_params *params)
+-{
+-	struct snd_pcm_runtime *runtime = substream->runtime;
+-	struct txx9aclc_dmadata *dmadata = runtime->private_data;
+-
+-	dev_dbg(component->dev,
+-		"runtime->dma_area = %#lx dma_addr = %#lx dma_bytes = %zd "
+-		"runtime->min_align %ld\n",
+-		(unsigned long)runtime->dma_area,
+-		(unsigned long)runtime->dma_addr, runtime->dma_bytes,
+-		runtime->min_align);
+-	dev_dbg(component->dev,
+-		"periods %d period_bytes %d stream %d\n",
+-		params_periods(params), params_period_bytes(params),
+-		substream->stream);
+-
+-	dmadata->substream = substream;
+-	dmadata->pos = 0;
+-	return 0;
+-}
+-
+-static int txx9aclc_pcm_prepare(struct snd_soc_component *component,
+-				struct snd_pcm_substream *substream)
+-{
+-	struct snd_pcm_runtime *runtime = substream->runtime;
+-	struct txx9aclc_dmadata *dmadata = runtime->private_data;
+-
+-	dmadata->dma_addr = runtime->dma_addr;
+-	dmadata->buffer_bytes = snd_pcm_lib_buffer_bytes(substream);
+-	dmadata->period_bytes = snd_pcm_lib_period_bytes(substream);
+-
+-	if (dmadata->buffer_bytes == dmadata->period_bytes) {
+-		dmadata->frag_bytes = dmadata->period_bytes >> 1;
+-		dmadata->frags = 2;
+-	} else {
+-		dmadata->frag_bytes = dmadata->period_bytes;
+-		dmadata->frags = dmadata->buffer_bytes / dmadata->period_bytes;
+-	}
+-	dmadata->frag_count = 0;
+-	dmadata->pos = 0;
+-	return 0;
+-}
+-
+-static void txx9aclc_dma_complete(void *arg)
+-{
+-	struct txx9aclc_dmadata *dmadata = arg;
+-	unsigned long flags;
+-
+-	/* dma completion handler cannot submit new operations */
+-	spin_lock_irqsave(&dmadata->dma_lock, flags);
+-	if (dmadata->frag_count >= 0) {
+-		dmadata->dmacount--;
+-		if (!WARN_ON(dmadata->dmacount < 0))
+-			queue_work(system_highpri_wq, &dmadata->work);
+-	}
+-	spin_unlock_irqrestore(&dmadata->dma_lock, flags);
+-}
+-
+-static struct dma_async_tx_descriptor *
+-txx9aclc_dma_submit(struct txx9aclc_dmadata *dmadata, dma_addr_t buf_dma_addr)
+-{
+-	struct dma_chan *chan = dmadata->dma_chan;
+-	struct dma_async_tx_descriptor *desc;
+-	struct scatterlist sg;
+-
+-	sg_init_table(&sg, 1);
+-	sg_set_page(&sg, pfn_to_page(PFN_DOWN(buf_dma_addr)),
+-		    dmadata->frag_bytes, buf_dma_addr & (PAGE_SIZE - 1));
+-	sg_dma_address(&sg) = buf_dma_addr;
+-	desc = dmaengine_prep_slave_sg(chan, &sg, 1,
+-		dmadata->substream->stream == SNDRV_PCM_STREAM_PLAYBACK ?
+-		DMA_MEM_TO_DEV : DMA_DEV_TO_MEM,
+-		DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+-	if (!desc) {
+-		dev_err(&chan->dev->device, "cannot prepare slave dma\n");
+-		return NULL;
+-	}
+-	desc->callback = txx9aclc_dma_complete;
+-	desc->callback_param = dmadata;
+-	dmaengine_submit(desc);
+-	return desc;
+-}
+-
+-#define NR_DMA_CHAIN		2
+-
+-static void txx9aclc_dma_work(struct work_struct *work)
+-{
+-	struct txx9aclc_dmadata *dmadata =
+-		container_of(work, struct txx9aclc_dmadata, work);
+-	struct dma_chan *chan = dmadata->dma_chan;
+-	struct dma_async_tx_descriptor *desc;
+-	struct snd_pcm_substream *substream = dmadata->substream;
+-	u32 ctlbit = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ?
+-		ACCTL_AUDODMA : ACCTL_AUDIDMA;
+-	int i;
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&dmadata->dma_lock, flags);
+-	if (dmadata->frag_count < 0) {
+-		struct txx9aclc_plat_drvdata *drvdata = txx9aclc_drvdata;
+-		void __iomem *base = drvdata->base;
+-
+-		spin_unlock_irqrestore(&dmadata->dma_lock, flags);
+-		dmaengine_terminate_all(chan);
+-		/* first time */
+-		for (i = 0; i < NR_DMA_CHAIN; i++) {
+-			desc = txx9aclc_dma_submit(dmadata,
+-				dmadata->dma_addr + i * dmadata->frag_bytes);
+-			if (!desc)
+-				return;
+-		}
+-		dmadata->dmacount = NR_DMA_CHAIN;
+-		dma_async_issue_pending(chan);
+-		spin_lock_irqsave(&dmadata->dma_lock, flags);
+-		__raw_writel(ctlbit, base + ACCTLEN);
+-		dmadata->frag_count = NR_DMA_CHAIN % dmadata->frags;
+-		spin_unlock_irqrestore(&dmadata->dma_lock, flags);
+-		return;
+-	}
+-	if (WARN_ON(dmadata->dmacount >= NR_DMA_CHAIN)) {
+-		spin_unlock_irqrestore(&dmadata->dma_lock, flags);
+-		return;
+-	}
+-	while (dmadata->dmacount < NR_DMA_CHAIN) {
+-		dmadata->dmacount++;
+-		spin_unlock_irqrestore(&dmadata->dma_lock, flags);
+-		desc = txx9aclc_dma_submit(dmadata,
+-			dmadata->dma_addr +
+-			dmadata->frag_count * dmadata->frag_bytes);
+-		if (!desc)
+-			return;
+-		dma_async_issue_pending(chan);
+-
+-		spin_lock_irqsave(&dmadata->dma_lock, flags);
+-		dmadata->frag_count++;
+-		dmadata->frag_count %= dmadata->frags;
+-		dmadata->pos += dmadata->frag_bytes;
+-		dmadata->pos %= dmadata->buffer_bytes;
+-		if ((dmadata->frag_count * dmadata->frag_bytes) %
+-		    dmadata->period_bytes == 0)
+-			snd_pcm_period_elapsed(substream);
+-	}
+-	spin_unlock_irqrestore(&dmadata->dma_lock, flags);
+-}
+-
+-static int txx9aclc_pcm_trigger(struct snd_soc_component *component,
+-				struct snd_pcm_substream *substream, int cmd)
+-{
+-	struct txx9aclc_dmadata *dmadata = substream->runtime->private_data;
+-	struct txx9aclc_plat_drvdata *drvdata = txx9aclc_drvdata;
+-	void __iomem *base = drvdata->base;
+-	unsigned long flags;
+-	int ret = 0;
+-	u32 ctlbit = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ?
+-		ACCTL_AUDODMA : ACCTL_AUDIDMA;
+-
+-	spin_lock_irqsave(&dmadata->dma_lock, flags);
+-	switch (cmd) {
+-	case SNDRV_PCM_TRIGGER_START:
+-		dmadata->frag_count = -1;
+-		queue_work(system_highpri_wq, &dmadata->work);
+-		break;
+-	case SNDRV_PCM_TRIGGER_STOP:
+-	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+-	case SNDRV_PCM_TRIGGER_SUSPEND:
+-		__raw_writel(ctlbit, base + ACCTLDIS);
+-		break;
+-	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+-	case SNDRV_PCM_TRIGGER_RESUME:
+-		__raw_writel(ctlbit, base + ACCTLEN);
+-		break;
+-	default:
+-		ret = -EINVAL;
+-	}
+-	spin_unlock_irqrestore(&dmadata->dma_lock, flags);
 -	return ret;
 -}
 -
--static int __exit tx4938ide_remove(struct platform_device *pdev)
+-static snd_pcm_uframes_t
+-txx9aclc_pcm_pointer(struct snd_soc_component *component,
+-		     struct snd_pcm_substream *substream)
 -{
--	struct ide_host *host = platform_get_drvdata(pdev);
+-	struct txx9aclc_dmadata *dmadata = substream->runtime->private_data;
 -
--	ide_host_remove(host);
+-	return bytes_to_frames(substream->runtime, dmadata->pos);
+-}
+-
+-static int txx9aclc_pcm_open(struct snd_soc_component *component,
+-			     struct snd_pcm_substream *substream)
+-{
+-	struct txx9aclc_soc_device *dev = &txx9aclc_soc_device;
+-	struct txx9aclc_dmadata *dmadata = &dev->dmadata[substream->stream];
+-	int ret;
+-
+-	ret = snd_soc_set_runtime_hwparams(substream, &txx9aclc_pcm_hardware);
+-	if (ret)
+-		return ret;
+-	/* ensure that buffer size is a multiple of period size */
+-	ret = snd_pcm_hw_constraint_integer(substream->runtime,
+-					    SNDRV_PCM_HW_PARAM_PERIODS);
+-	if (ret < 0)
+-		return ret;
+-	substream->runtime->private_data = dmadata;
 -	return 0;
 -}
 -
--static struct platform_driver tx4938ide_driver = {
--	.driver		= {
--		.name	= "tx4938ide",
--	},
--	.remove = __exit_p(tx4938ide_remove),
--};
--
--module_platform_driver_probe(tx4938ide_driver, tx4938ide_probe);
--
--MODULE_DESCRIPTION("TX4938 internal IDE driver");
--MODULE_LICENSE("GPL");
--MODULE_ALIAS("platform:tx4938ide");
-diff --git a/drivers/ide/tx4939ide.c b/drivers/ide/tx4939ide.c
-deleted file mode 100644
-index b1bbf807bb3d..000000000000
---- a/drivers/ide/tx4939ide.c
-+++ /dev/null
-@@ -1,628 +0,0 @@
--/*
-- * TX4939 internal IDE driver
-- * Based on RBTX49xx patch from CELF patch archive.
-- *
-- * This file is subject to the terms and conditions of the GNU General Public
-- * License.  See the file "COPYING" in the main directory of this archive
-- * for more details.
-- *
-- * (C) Copyright TOSHIBA CORPORATION 2005-2007
-- */
--
--#include <linux/module.h>
--#include <linux/types.h>
--#include <linux/ide.h>
--#include <linux/init.h>
--#include <linux/delay.h>
--#include <linux/platform_device.h>
--#include <linux/io.h>
--#include <linux/scatterlist.h>
--
--#include <asm/ide.h>
--
--#define MODNAME	"tx4939ide"
--
--/* ATA Shadow Registers (8-bit except for Data which is 16-bit) */
--#define TX4939IDE_Data			0x000
--#define TX4939IDE_Error_Feature		0x001
--#define TX4939IDE_Sec			0x002
--#define TX4939IDE_LBA0			0x003
--#define TX4939IDE_LBA1			0x004
--#define TX4939IDE_LBA2			0x005
--#define TX4939IDE_DevHead		0x006
--#define TX4939IDE_Stat_Cmd		0x007
--#define TX4939IDE_AltStat_DevCtl	0x402
--/* H/W DMA Registers  */
--#define TX4939IDE_DMA_Cmd	0x800	/* 8-bit */
--#define TX4939IDE_DMA_Stat	0x802	/* 8-bit */
--#define TX4939IDE_PRD_Ptr	0x804	/* 32-bit */
--/* ATA100 CORE Registers (16-bit) */
--#define TX4939IDE_Sys_Ctl	0xc00
--#define TX4939IDE_Xfer_Cnt_1	0xc08
--#define TX4939IDE_Xfer_Cnt_2	0xc0a
--#define TX4939IDE_Sec_Cnt	0xc10
--#define TX4939IDE_Start_Lo_Addr	0xc18
--#define TX4939IDE_Start_Up_Addr	0xc20
--#define TX4939IDE_Add_Ctl	0xc28
--#define TX4939IDE_Lo_Burst_Cnt	0xc30
--#define TX4939IDE_Up_Burst_Cnt	0xc38
--#define TX4939IDE_PIO_Addr	0xc88
--#define TX4939IDE_H_Rst_Tim	0xc90
--#define TX4939IDE_Int_Ctl	0xc98
--#define TX4939IDE_Pkt_Cmd	0xcb8
--#define TX4939IDE_Bxfer_Cnt_Hi	0xcc0
--#define TX4939IDE_Bxfer_Cnt_Lo	0xcc8
--#define TX4939IDE_Dev_TErr	0xcd0
--#define TX4939IDE_Pkt_Xfer_Ctl	0xcd8
--#define TX4939IDE_Start_TAddr	0xce0
--
--/* bits for Int_Ctl */
--#define TX4939IDE_INT_ADDRERR	0x80
--#define TX4939IDE_INT_REACHMUL	0x40
--#define TX4939IDE_INT_DEVTIMING	0x20
--#define TX4939IDE_INT_UDMATERM	0x10
--#define TX4939IDE_INT_TIMER	0x08
--#define TX4939IDE_INT_BUSERR	0x04
--#define TX4939IDE_INT_XFEREND	0x02
--#define TX4939IDE_INT_HOST	0x01
--
--#define TX4939IDE_IGNORE_INTS	\
--	(TX4939IDE_INT_ADDRERR | TX4939IDE_INT_REACHMUL | \
--	 TX4939IDE_INT_DEVTIMING | TX4939IDE_INT_UDMATERM | \
--	 TX4939IDE_INT_TIMER | TX4939IDE_INT_XFEREND)
--
--#ifdef __BIG_ENDIAN
--#define tx4939ide_swizzlel(a)	((a) ^ 4)
--#define tx4939ide_swizzlew(a)	((a) ^ 6)
--#define tx4939ide_swizzleb(a)	((a) ^ 7)
--#else
--#define tx4939ide_swizzlel(a)	(a)
--#define tx4939ide_swizzlew(a)	(a)
--#define tx4939ide_swizzleb(a)	(a)
--#endif
--
--static u16 tx4939ide_readw(void __iomem *base, u32 reg)
+-static int txx9aclc_pcm_close(struct snd_soc_component *component,
+-			      struct snd_pcm_substream *substream)
 -{
--	return __raw_readw(base + tx4939ide_swizzlew(reg));
--}
--static u8 tx4939ide_readb(void __iomem *base, u32 reg)
--{
--	return __raw_readb(base + tx4939ide_swizzleb(reg));
--}
--static void tx4939ide_writel(u32 val, void __iomem *base, u32 reg)
--{
--	__raw_writel(val, base + tx4939ide_swizzlel(reg));
--}
--static void tx4939ide_writew(u16 val, void __iomem *base, u32 reg)
--{
--	__raw_writew(val, base + tx4939ide_swizzlew(reg));
--}
--static void tx4939ide_writeb(u8 val, void __iomem *base, u32 reg)
--{
--	__raw_writeb(val, base + tx4939ide_swizzleb(reg));
+-	struct txx9aclc_dmadata *dmadata = substream->runtime->private_data;
+-	struct dma_chan *chan = dmadata->dma_chan;
+-
+-	dmadata->frag_count = -1;
+-	dmaengine_terminate_all(chan);
+-	return 0;
 -}
 -
--#define TX4939IDE_BASE(hwif)	((void __iomem *)(hwif)->extra_base)
--
--static void tx4939ide_set_pio_mode(ide_hwif_t *hwif, ide_drive_t *drive)
+-static int txx9aclc_pcm_new(struct snd_soc_component *component,
+-			    struct snd_soc_pcm_runtime *rtd)
 -{
--	int is_slave = drive->dn;
--	u32 mask, val;
--	const u8 pio = drive->pio_mode - XFER_PIO_0;
--	u8 safe = pio;
--	ide_drive_t *pair;
--
--	pair = ide_get_pair_dev(drive);
--	if (pair)
--		safe = min_t(u8, safe, pair->pio_mode - XFER_PIO_0);
--	/*
--	 * Update Command Transfer Mode for master/slave and Data
--	 * Transfer Mode for this drive.
--	 */
--	mask = is_slave ? 0x07f00000 : 0x000007f0;
--	val = ((safe << 8) | (pio << 4)) << (is_slave ? 16 : 0);
--	hwif->select_data = (hwif->select_data & ~mask) | val;
--	/* tx4939ide_tf_load_fixup() will set the Sys_Ctl register */
--}
--
--static void tx4939ide_set_dma_mode(ide_hwif_t *hwif, ide_drive_t *drive)
--{
--	u32 mask, val;
--	const u8 mode = drive->dma_mode;
--
--	/* Update Data Transfer Mode for this drive. */
--	if (mode >= XFER_UDMA_0)
--		val = mode - XFER_UDMA_0 + 8;
--	else
--		val = mode - XFER_MW_DMA_0 + 5;
--	if (drive->dn) {
--		mask = 0x00f00000;
--		val <<= 20;
--	} else {
--		mask = 0x000000f0;
--		val <<= 4;
--	}
--	hwif->select_data = (hwif->select_data & ~mask) | val;
--	/* tx4939ide_tf_load_fixup() will set the Sys_Ctl register */
--}
--
--static u16 tx4939ide_check_error_ints(ide_hwif_t *hwif)
--{
--	void __iomem *base = TX4939IDE_BASE(hwif);
--	u16 ctl = tx4939ide_readw(base, TX4939IDE_Int_Ctl);
--
--	if (ctl & TX4939IDE_INT_BUSERR) {
--		/* reset FIFO */
--		u16 sysctl = tx4939ide_readw(base, TX4939IDE_Sys_Ctl);
--
--		tx4939ide_writew(sysctl | 0x4000, base, TX4939IDE_Sys_Ctl);
--		/* wait 12GBUSCLK (typ. 60ns @ GBUS200MHz, max 270ns) */
--		ndelay(270);
--		tx4939ide_writew(sysctl, base, TX4939IDE_Sys_Ctl);
--	}
--	if (ctl & (TX4939IDE_INT_ADDRERR |
--		   TX4939IDE_INT_DEVTIMING | TX4939IDE_INT_BUSERR))
--		pr_err("%s: Error interrupt %#x (%s%s%s )\n",
--		       hwif->name, ctl,
--		       ctl & TX4939IDE_INT_ADDRERR ? " Address-Error" : "",
--		       ctl & TX4939IDE_INT_DEVTIMING ? " DEV-Timing" : "",
--		       ctl & TX4939IDE_INT_BUSERR ? " Bus-Error" : "");
--	return ctl;
--}
--
--static void tx4939ide_clear_irq(ide_drive_t *drive)
--{
--	ide_hwif_t *hwif;
--	void __iomem *base;
--	u16 ctl;
--
--	/*
--	 * tx4939ide_dma_test_irq() and tx4939ide_dma_end() do all job
--	 * for DMA case.
--	 */
--	if (drive->waiting_for_dma)
--		return;
--	hwif = drive->hwif;
--	base = TX4939IDE_BASE(hwif);
--	ctl = tx4939ide_check_error_ints(hwif);
--	tx4939ide_writew(ctl, base, TX4939IDE_Int_Ctl);
--}
--
--static u8 tx4939ide_cable_detect(ide_hwif_t *hwif)
--{
--	void __iomem *base = TX4939IDE_BASE(hwif);
--
--	return tx4939ide_readw(base, TX4939IDE_Sys_Ctl) & 0x2000 ?
--		ATA_CBL_PATA40 : ATA_CBL_PATA80;
--}
--
--#ifdef __BIG_ENDIAN
--static void tx4939ide_dma_host_set(ide_drive_t *drive, int on)
--{
--	ide_hwif_t *hwif = drive->hwif;
--	u8 unit = drive->dn;
--	void __iomem *base = TX4939IDE_BASE(hwif);
--	u8 dma_stat = tx4939ide_readb(base, TX4939IDE_DMA_Stat);
--
--	if (on)
--		dma_stat |= (1 << (5 + unit));
--	else
--		dma_stat &= ~(1 << (5 + unit));
--
--	tx4939ide_writeb(dma_stat, base, TX4939IDE_DMA_Stat);
--}
--#else
--#define tx4939ide_dma_host_set	ide_dma_host_set
--#endif
--
--static u8 tx4939ide_clear_dma_status(void __iomem *base)
--{
--	u8 dma_stat;
--
--	/* read DMA status for INTR & ERROR flags */
--	dma_stat = tx4939ide_readb(base, TX4939IDE_DMA_Stat);
--	/* clear INTR & ERROR flags */
--	tx4939ide_writeb(dma_stat | ATA_DMA_INTR | ATA_DMA_ERR, base,
--			 TX4939IDE_DMA_Stat);
--	/* recover intmask cleared by writing to bit2 of DMA_Stat */
--	tx4939ide_writew(TX4939IDE_IGNORE_INTS << 8, base, TX4939IDE_Int_Ctl);
--	return dma_stat;
--}
--
--#ifdef __BIG_ENDIAN
--/* custom ide_build_dmatable to handle swapped layout */
--static int tx4939ide_build_dmatable(ide_drive_t *drive, struct ide_cmd *cmd)
--{
--	ide_hwif_t *hwif = drive->hwif;
--	u32 *table = (u32 *)hwif->dmatable_cpu;
--	unsigned int count = 0;
+-	struct snd_card *card = rtd->card->snd_card;
+-	struct snd_soc_dai *dai = asoc_rtd_to_cpu(rtd, 0);
+-	struct snd_pcm *pcm = rtd->pcm;
+-	struct platform_device *pdev = to_platform_device(component->dev);
+-	struct txx9aclc_soc_device *dev;
+-	struct resource *r;
 -	int i;
--	struct scatterlist *sg;
+-	int ret;
 -
--	for_each_sg(hwif->sg_table, sg, cmd->sg_nents, i) {
--		u32 cur_addr, cur_len, bcount;
+-	/* at this point onwards the AC97 component has probed and this will be valid */
+-	dev = snd_soc_dai_get_drvdata(dai);
 -
--		cur_addr = sg_dma_address(sg);
--		cur_len = sg_dma_len(sg);
--
--		/*
--		 * Fill in the DMA table, without crossing any 64kB boundaries.
--		 */
--
--		while (cur_len) {
--			if (count++ >= PRD_ENTRIES)
--				goto use_pio_instead;
--
--			bcount = 0x10000 - (cur_addr & 0xffff);
--			if (bcount > cur_len)
--				bcount = cur_len;
--			/*
--			 * This workaround for zero count seems required.
--			 * (standard ide_build_dmatable does it too)
--			 */
--			if (bcount == 0x10000)
--				bcount = 0x8000;
--			*table++ = bcount & 0xffff;
--			*table++ = cur_addr;
--			cur_addr += bcount;
--			cur_len -= bcount;
+-	dev->dmadata[0].stream = SNDRV_PCM_STREAM_PLAYBACK;
+-	dev->dmadata[1].stream = SNDRV_PCM_STREAM_CAPTURE;
+-	for (i = 0; i < 2; i++) {
+-		r = platform_get_resource(pdev, IORESOURCE_DMA, i);
+-		if (!r) {
+-			ret = -EBUSY;
+-			goto exit;
 -		}
+-		dev->dmadata[i].dma_res = r;
+-		ret = txx9aclc_dma_init(dev, &dev->dmadata[i]);
+-		if (ret)
+-			goto exit;
 -	}
 -
--	if (count) {
--		*(table - 2) |= 0x80000000;
--		return count;
--	}
--
--use_pio_instead:
--	printk(KERN_ERR "%s: %s\n", drive->name,
--		count ? "DMA table too small" : "empty DMA table?");
--
--	return 0; /* revert to PIO for this request */
--}
--#else
--#define tx4939ide_build_dmatable	ide_build_dmatable
--#endif
--
--static int tx4939ide_dma_setup(ide_drive_t *drive, struct ide_cmd *cmd)
--{
--	ide_hwif_t *hwif = drive->hwif;
--	void __iomem *base = TX4939IDE_BASE(hwif);
--	u8 rw = (cmd->tf_flags & IDE_TFLAG_WRITE) ? 0 : ATA_DMA_WR;
--
--	/* fall back to PIO! */
--	if (tx4939ide_build_dmatable(drive, cmd) == 0)
--		return 1;
--
--	/* PRD table */
--	tx4939ide_writel(hwif->dmatable_dma, base, TX4939IDE_PRD_Ptr);
--
--	/* specify r/w */
--	tx4939ide_writeb(rw, base, TX4939IDE_DMA_Cmd);
--
--	/* clear INTR & ERROR flags */
--	tx4939ide_clear_dma_status(base);
--
--	tx4939ide_writew(SECTOR_SIZE / 2, base, drive->dn ?
--			 TX4939IDE_Xfer_Cnt_2 : TX4939IDE_Xfer_Cnt_1);
--
--	tx4939ide_writew(blk_rq_sectors(cmd->rq), base, TX4939IDE_Sec_Cnt);
--
+-	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+-		card->dev, 64 * 1024, 4 * 1024 * 1024);
 -	return 0;
--}
 -
--static int tx4939ide_dma_end(ide_drive_t *drive)
--{
--	ide_hwif_t *hwif = drive->hwif;
--	u8 dma_stat, dma_cmd;
--	void __iomem *base = TX4939IDE_BASE(hwif);
--	u16 ctl = tx4939ide_readw(base, TX4939IDE_Int_Ctl);
--
--	/* get DMA command mode */
--	dma_cmd = tx4939ide_readb(base, TX4939IDE_DMA_Cmd);
--	/* stop DMA */
--	tx4939ide_writeb(dma_cmd & ~ATA_DMA_START, base, TX4939IDE_DMA_Cmd);
--
--	/* read and clear the INTR & ERROR bits */
--	dma_stat = tx4939ide_clear_dma_status(base);
--
--#define CHECK_DMA_MASK (ATA_DMA_ACTIVE | ATA_DMA_ERR | ATA_DMA_INTR)
--
--	/* verify good DMA status */
--	if ((dma_stat & CHECK_DMA_MASK) == 0 &&
--	    (ctl & (TX4939IDE_INT_XFEREND | TX4939IDE_INT_HOST)) ==
--	    (TX4939IDE_INT_XFEREND | TX4939IDE_INT_HOST))
--		/* INT_IDE lost... bug? */
--		return 0;
--	return ((dma_stat & CHECK_DMA_MASK) !=
--		ATA_DMA_INTR) ? 0x10 | dma_stat : 0;
--}
--
--/* returns 1 if DMA IRQ issued, 0 otherwise */
--static int tx4939ide_dma_test_irq(ide_drive_t *drive)
--{
--	ide_hwif_t *hwif = drive->hwif;
--	void __iomem *base = TX4939IDE_BASE(hwif);
--	u16 ctl, ide_int;
--	u8 dma_stat, stat;
--	int found = 0;
--
--	ctl = tx4939ide_check_error_ints(hwif);
--	ide_int = ctl & (TX4939IDE_INT_XFEREND | TX4939IDE_INT_HOST);
--	switch (ide_int) {
--	case TX4939IDE_INT_HOST:
--		/* On error, XFEREND might not be asserted. */
--		stat = tx4939ide_readb(base, TX4939IDE_AltStat_DevCtl);
--		if ((stat & (ATA_BUSY | ATA_DRQ | ATA_ERR)) == ATA_ERR)
--			found = 1;
--		else
--			/* Wait for XFEREND (Mask HOST and unmask XFEREND) */
--			ctl &= ~TX4939IDE_INT_XFEREND << 8;
--		ctl |= ide_int << 8;
--		break;
--	case TX4939IDE_INT_HOST | TX4939IDE_INT_XFEREND:
--		dma_stat = tx4939ide_readb(base, TX4939IDE_DMA_Stat);
--		if (!(dma_stat & ATA_DMA_INTR))
--			pr_warn("%s: weird interrupt status. "
--				"DMA_Stat %#02x int_ctl %#04x\n",
--				hwif->name, dma_stat, ctl);
--		found = 1;
--		break;
+-exit:
+-	for (i = 0; i < 2; i++) {
+-		if (dev->dmadata[i].dma_chan)
+-			dma_release_channel(dev->dmadata[i].dma_chan);
+-		dev->dmadata[i].dma_chan = NULL;
 -	}
--	/*
--	 * Do not clear XFEREND, HOST now.  They will be cleared by
--	 * clearing bit2 of DMA_Stat.
--	 */
--	ctl &= ~ide_int;
--	tx4939ide_writew(ctl, base, TX4939IDE_Int_Ctl);
+-	return ret;
+-}
+-
+-static bool filter(struct dma_chan *chan, void *param)
+-{
+-	struct txx9aclc_dmadata *dmadata = param;
+-	char *devname;
+-	bool found = false;
+-
+-	devname = kasprintf(GFP_KERNEL, "%s.%d", dmadata->dma_res->name,
+-		(int)dmadata->dma_res->start);
+-	if (strcmp(dev_name(chan->device->dev), devname) == 0) {
+-		chan->private = &dmadata->dma_slave;
+-		found = true;
+-	}
+-	kfree(devname);
 -	return found;
 -}
 -
--#ifdef __BIG_ENDIAN
--static u8 tx4939ide_dma_sff_read_status(ide_hwif_t *hwif)
+-static int txx9aclc_dma_init(struct txx9aclc_soc_device *dev,
+-			     struct txx9aclc_dmadata *dmadata)
 -{
--	void __iomem *base = TX4939IDE_BASE(hwif);
+-	struct txx9aclc_plat_drvdata *drvdata = txx9aclc_drvdata;
+-	struct txx9dmac_slave *ds = &dmadata->dma_slave;
+-	dma_cap_mask_t mask;
 -
--	return tx4939ide_readb(base, TX4939IDE_DMA_Stat);
--}
--#else
--#define tx4939ide_dma_sff_read_status ide_dma_sff_read_status
--#endif
+-	spin_lock_init(&dmadata->dma_lock);
 -
--static void tx4939ide_init_hwif(ide_hwif_t *hwif)
--{
--	void __iomem *base = TX4939IDE_BASE(hwif);
--
--	/* Soft Reset */
--	tx4939ide_writew(0x8000, base, TX4939IDE_Sys_Ctl);
--	/* at least 20 GBUSCLK (typ. 100ns @ GBUS200MHz, max 450ns) */
--	ndelay(450);
--	tx4939ide_writew(0x0000, base, TX4939IDE_Sys_Ctl);
--	/* mask some interrupts and clear all interrupts */
--	tx4939ide_writew((TX4939IDE_IGNORE_INTS << 8) | 0xff, base,
--			 TX4939IDE_Int_Ctl);
--
--	tx4939ide_writew(0x0008, base, TX4939IDE_Lo_Burst_Cnt);
--	tx4939ide_writew(0, base, TX4939IDE_Up_Burst_Cnt);
--}
--
--static int tx4939ide_init_dma(ide_hwif_t *hwif, const struct ide_port_info *d)
--{
--	hwif->dma_base =
--		hwif->extra_base + tx4939ide_swizzleb(TX4939IDE_DMA_Cmd);
--	/*
--	 * Note that we cannot use ATA_DMA_TABLE_OFS, ATA_DMA_STATUS
--	 * for big endian.
--	 */
--	return ide_allocate_dma_engine(hwif);
--}
--
--static void tx4939ide_tf_load_fixup(ide_drive_t *drive)
--{
--	ide_hwif_t *hwif = drive->hwif;
--	void __iomem *base = TX4939IDE_BASE(hwif);
--	u16 sysctl = hwif->select_data >> (drive->dn ? 16 : 0);
--
--	/*
--	 * Fix ATA100 CORE System Control Register. (The write to the
--	 * Device/Head register may write wrong data to the System
--	 * Control Register)
--	 * While Sys_Ctl is written here, dev_select() is not needed.
--	 */
--	tx4939ide_writew(sysctl, base, TX4939IDE_Sys_Ctl);
--}
--
--static void tx4939ide_tf_load(ide_drive_t *drive, struct ide_taskfile *tf,
--			      u8 valid)
--{
--	ide_tf_load(drive, tf, valid);
--
--	if (valid & IDE_VALID_DEVICE)
--		tx4939ide_tf_load_fixup(drive);
--}
--
--#ifdef __BIG_ENDIAN
--
--/* custom iops (independent from SWAP_IO_SPACE) */
--static void tx4939ide_input_data_swap(ide_drive_t *drive, struct ide_cmd *cmd,
--				void *buf, unsigned int len)
--{
--	unsigned long port = drive->hwif->io_ports.data_addr;
--	unsigned short *ptr = buf;
--	unsigned int count = (len + 1) / 2;
--
--	while (count--)
--		*ptr++ = cpu_to_le16(__raw_readw((void __iomem *)port));
--	__ide_flush_dcache_range((unsigned long)buf, roundup(len, 2));
--}
--
--static void tx4939ide_output_data_swap(ide_drive_t *drive, struct ide_cmd *cmd,
--				void *buf, unsigned int len)
--{
--	unsigned long port = drive->hwif->io_ports.data_addr;
--	unsigned short *ptr = buf;
--	unsigned int count = (len + 1) / 2;
--
--	while (count--) {
--		__raw_writew(le16_to_cpu(*ptr), (void __iomem *)port);
--		ptr++;
+-	ds->reg_width = sizeof(u32);
+-	if (dmadata->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+-		ds->tx_reg = drvdata->physbase + ACAUDODAT;
+-		ds->rx_reg = 0;
+-	} else {
+-		ds->tx_reg = 0;
+-		ds->rx_reg = drvdata->physbase + ACAUDIDAT;
 -	}
--	__ide_flush_dcache_range((unsigned long)buf, roundup(len, 2));
--}
 -
--static const struct ide_tp_ops tx4939ide_tp_ops = {
--	.exec_command		= ide_exec_command,
--	.read_status		= ide_read_status,
--	.read_altstatus		= ide_read_altstatus,
--	.write_devctl		= ide_write_devctl,
--
--	.dev_select		= ide_dev_select,
--	.tf_load		= tx4939ide_tf_load,
--	.tf_read		= ide_tf_read,
--
--	.input_data		= tx4939ide_input_data_swap,
--	.output_data		= tx4939ide_output_data_swap,
--};
--
--#else	/* __LITTLE_ENDIAN */
--
--static const struct ide_tp_ops tx4939ide_tp_ops = {
--	.exec_command		= ide_exec_command,
--	.read_status		= ide_read_status,
--	.read_altstatus		= ide_read_altstatus,
--	.write_devctl		= ide_write_devctl,
--
--	.dev_select		= ide_dev_select,
--	.tf_load		= tx4939ide_tf_load,
--	.tf_read		= ide_tf_read,
--
--	.input_data		= ide_input_data,
--	.output_data		= ide_output_data,
--};
--
--#endif	/* __LITTLE_ENDIAN */
--
--static const struct ide_port_ops tx4939ide_port_ops = {
--	.set_pio_mode		= tx4939ide_set_pio_mode,
--	.set_dma_mode		= tx4939ide_set_dma_mode,
--	.clear_irq		= tx4939ide_clear_irq,
--	.cable_detect		= tx4939ide_cable_detect,
--};
--
--static const struct ide_dma_ops tx4939ide_dma_ops = {
--	.dma_host_set		= tx4939ide_dma_host_set,
--	.dma_setup		= tx4939ide_dma_setup,
--	.dma_start		= ide_dma_start,
--	.dma_end		= tx4939ide_dma_end,
--	.dma_test_irq		= tx4939ide_dma_test_irq,
--	.dma_lost_irq		= ide_dma_lost_irq,
--	.dma_timer_expiry	= ide_dma_sff_timer_expiry,
--	.dma_sff_read_status	= tx4939ide_dma_sff_read_status,
--};
--
--static const struct ide_port_info tx4939ide_port_info __initconst = {
--	.init_hwif		= tx4939ide_init_hwif,
--	.init_dma		= tx4939ide_init_dma,
--	.port_ops		= &tx4939ide_port_ops,
--	.dma_ops		= &tx4939ide_dma_ops,
--	.tp_ops			= &tx4939ide_tp_ops,
--	.host_flags		= IDE_HFLAG_MMIO,
--	.pio_mask		= ATA_PIO4,
--	.mwdma_mask		= ATA_MWDMA2,
--	.udma_mask		= ATA_UDMA5,
--	.chipset		= ide_generic,
--};
--
--static int __init tx4939ide_probe(struct platform_device *pdev)
--{
--	struct ide_hw hw, *hws[] = { &hw };
--	struct ide_host *host;
--	struct resource *res;
--	int irq, ret;
--	unsigned long mapbase;
--
--	irq = platform_get_irq(pdev, 0);
--	if (irq < 0)
--		return -ENODEV;
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res)
--		return -ENODEV;
--
--	if (!devm_request_mem_region(&pdev->dev, res->start,
--				     resource_size(res), MODNAME))
+-	/* Try to grab a DMA channel */
+-	dma_cap_zero(mask);
+-	dma_cap_set(DMA_SLAVE, mask);
+-	dmadata->dma_chan = dma_request_channel(mask, filter, dmadata);
+-	if (!dmadata->dma_chan) {
+-		printk(KERN_ERR
+-			"DMA channel for %s is not available\n",
+-			dmadata->stream == SNDRV_PCM_STREAM_PLAYBACK ?
+-			"playback" : "capture");
 -		return -EBUSY;
--	mapbase = (unsigned long)devm_ioremap(&pdev->dev, res->start,
--					      resource_size(res));
--	if (!mapbase)
--		return -EBUSY;
--	memset(&hw, 0, sizeof(hw));
--	hw.io_ports.data_addr =
--		mapbase + tx4939ide_swizzlew(TX4939IDE_Data);
--	hw.io_ports.error_addr =
--		mapbase + tx4939ide_swizzleb(TX4939IDE_Error_Feature);
--	hw.io_ports.nsect_addr =
--		mapbase + tx4939ide_swizzleb(TX4939IDE_Sec);
--	hw.io_ports.lbal_addr =
--		mapbase + tx4939ide_swizzleb(TX4939IDE_LBA0);
--	hw.io_ports.lbam_addr =
--		mapbase + tx4939ide_swizzleb(TX4939IDE_LBA1);
--	hw.io_ports.lbah_addr =
--		mapbase + tx4939ide_swizzleb(TX4939IDE_LBA2);
--	hw.io_ports.device_addr =
--		mapbase + tx4939ide_swizzleb(TX4939IDE_DevHead);
--	hw.io_ports.command_addr =
--		mapbase + tx4939ide_swizzleb(TX4939IDE_Stat_Cmd);
--	hw.io_ports.ctl_addr =
--		mapbase + tx4939ide_swizzleb(TX4939IDE_AltStat_DevCtl);
--	hw.irq = irq;
--	hw.dev = &pdev->dev;
--
--	pr_info("TX4939 IDE interface (base %#lx, irq %d)\n", mapbase, irq);
--	host = ide_host_alloc(&tx4939ide_port_info, hws, 1);
--	if (!host)
--		return -ENOMEM;
--	/* use extra_base for base address of the all registers */
--	host->ports[0]->extra_base = mapbase;
--	ret = ide_host_register(host, &tx4939ide_port_info, hws);
--	if (ret) {
--		ide_host_free(host);
--		return ret;
 -	}
--	platform_set_drvdata(pdev, host);
+-	INIT_WORK(&dmadata->work, txx9aclc_dma_work);
 -	return 0;
 -}
 -
--static int __exit tx4939ide_remove(struct platform_device *pdev)
+-static int txx9aclc_pcm_probe(struct snd_soc_component *component)
 -{
--	struct ide_host *host = platform_get_drvdata(pdev);
--
--	ide_host_remove(host);
+-	snd_soc_component_set_drvdata(component, &txx9aclc_soc_device);
 -	return 0;
 -}
 -
--#ifdef CONFIG_PM
--static int tx4939ide_resume(struct platform_device *dev)
+-static void txx9aclc_pcm_remove(struct snd_soc_component *component)
 -{
--	struct ide_host *host = platform_get_drvdata(dev);
--	ide_hwif_t *hwif = host->ports[0];
+-	struct txx9aclc_soc_device *dev = snd_soc_component_get_drvdata(component);
+-	struct txx9aclc_plat_drvdata *drvdata = txx9aclc_drvdata;
+-	void __iomem *base = drvdata->base;
+-	int i;
 -
--	tx4939ide_init_hwif(hwif);
--	return 0;
+-	/* disable all FIFO DMAs */
+-	__raw_writel(ACCTL_AUDODMA | ACCTL_AUDIDMA, base + ACCTLDIS);
+-	/* dummy R/W to clear pending DMAREQ if any */
+-	__raw_writel(__raw_readl(base + ACAUDIDAT), base + ACAUDODAT);
+-
+-	for (i = 0; i < 2; i++) {
+-		struct txx9aclc_dmadata *dmadata = &dev->dmadata[i];
+-		struct dma_chan *chan = dmadata->dma_chan;
+-
+-		if (chan) {
+-			dmadata->frag_count = -1;
+-			dmaengine_terminate_all(chan);
+-			dma_release_channel(chan);
+-		}
+-		dev->dmadata[i].dma_chan = NULL;
+-	}
 -}
--#else
--#define tx4939ide_resume	NULL
--#endif
 -
--static struct platform_driver tx4939ide_driver = {
+-static const struct snd_soc_component_driver txx9aclc_soc_component = {
+-	.name		= DRV_NAME,
+-	.probe		= txx9aclc_pcm_probe,
+-	.remove		= txx9aclc_pcm_remove,
+-	.open		= txx9aclc_pcm_open,
+-	.close		= txx9aclc_pcm_close,
+-	.hw_params	= txx9aclc_pcm_hw_params,
+-	.prepare	= txx9aclc_pcm_prepare,
+-	.trigger	= txx9aclc_pcm_trigger,
+-	.pointer	= txx9aclc_pcm_pointer,
+-	.pcm_construct	= txx9aclc_pcm_new,
+-};
+-
+-static int txx9aclc_soc_platform_probe(struct platform_device *pdev)
+-{
+-	return devm_snd_soc_register_component(&pdev->dev,
+-					&txx9aclc_soc_component, NULL, 0);
+-}
+-
+-static struct platform_driver txx9aclc_pcm_driver = {
 -	.driver = {
--		.name = MODNAME,
+-			.name = "txx9aclc-pcm-audio",
 -	},
--	.remove = __exit_p(tx4939ide_remove),
--	.resume = tx4939ide_resume,
+-
+-	.probe = txx9aclc_soc_platform_probe,
 -};
 -
--module_platform_driver_probe(tx4939ide_driver, tx4939ide_probe);
+-module_platform_driver(txx9aclc_pcm_driver);
 -
--MODULE_DESCRIPTION("TX4939 internal IDE driver");
+-MODULE_AUTHOR("Atsushi Nemoto <anemo@mba.ocn.ne.jp>");
+-MODULE_DESCRIPTION("TXx9 ACLC Audio DMA driver");
 -MODULE_LICENSE("GPL");
--MODULE_ALIAS("platform:tx4939ide");
+diff --git a/sound/soc/txx9/txx9aclc.h b/sound/soc/txx9/txx9aclc.h
+deleted file mode 100644
+index 37c691ba56ed..000000000000
+--- a/sound/soc/txx9/txx9aclc.h
++++ /dev/null
+@@ -1,71 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/*
+- * TXx9 SoC AC Link Controller
+- */
+-
+-#ifndef __TXX9ACLC_H
+-#define __TXX9ACLC_H
+-
+-#include <linux/interrupt.h>
+-#include <asm/txx9/dmac.h>
+-
+-#define ACCTLEN			0x00	/* control enable */
+-#define ACCTLDIS		0x04	/* control disable */
+-#define   ACCTL_ENLINK		0x00000001	/* enable/disable AC-link */
+-#define   ACCTL_AUDODMA		0x00000100	/* AUDODMA enable/disable */
+-#define   ACCTL_AUDIDMA		0x00001000	/* AUDIDMA enable/disable */
+-#define   ACCTL_AUDOEHLT	0x00010000	/* AUDO error halt
+-						   enable/disable */
+-#define   ACCTL_AUDIEHLT	0x00100000	/* AUDI error halt
+-						   enable/disable */
+-#define ACREGACC		0x08	/* codec register access */
+-#define   ACREGACC_DAT_SHIFT	0	/* data field */
+-#define   ACREGACC_REG_SHIFT	16	/* address field */
+-#define   ACREGACC_CODECID_SHIFT	24	/* CODEC ID field */
+-#define   ACREGACC_READ		0x80000000	/* CODEC read */
+-#define   ACREGACC_WRITE	0x00000000	/* CODEC write */
+-#define ACINTSTS		0x10	/* interrupt status */
+-#define ACINTMSTS		0x14	/* interrupt masked status */
+-#define ACINTEN			0x18	/* interrupt enable */
+-#define ACINTDIS		0x1c	/* interrupt disable */
+-#define   ACINT_CODECRDY(n)	(0x00000001 << (n))	/* CODECn ready */
+-#define   ACINT_REGACCRDY	0x00000010	/* ACREGACC ready */
+-#define   ACINT_AUDOERR		0x00000100	/* AUDO underrun error */
+-#define   ACINT_AUDIERR		0x00001000	/* AUDI overrun error */
+-#define ACDMASTS		0x80	/* DMA request status */
+-#define   ACDMA_AUDO		0x00000001	/* AUDODMA pending */
+-#define   ACDMA_AUDI		0x00000010	/* AUDIDMA pending */
+-#define ACAUDODAT		0xa0	/* audio out data */
+-#define ACAUDIDAT		0xb0	/* audio in data */
+-#define ACREVID			0xfc	/* revision ID */
+-
+-struct txx9aclc_dmadata {
+-	struct resource *dma_res;
+-	struct txx9dmac_slave dma_slave;
+-	struct dma_chan *dma_chan;
+-	struct work_struct work;
+-	spinlock_t dma_lock;
+-	int stream; /* SNDRV_PCM_STREAM_PLAYBACK or SNDRV_PCM_STREAM_CAPTURE */
+-	struct snd_pcm_substream *substream;
+-	unsigned long pos;
+-	dma_addr_t dma_addr;
+-	unsigned long buffer_bytes;
+-	unsigned long period_bytes;
+-	unsigned long frag_bytes;
+-	int frags;
+-	int frag_count;
+-	int dmacount;
+-};
+-
+-struct txx9aclc_plat_drvdata {
+-	void __iomem *base;
+-	u64 physbase;
+-};
+-
+-static inline struct txx9aclc_plat_drvdata *txx9aclc_get_plat_drvdata(
+-	struct snd_soc_dai *dai)
+-{
+-	return dev_get_drvdata(dai->dev);
+-}
+-
+-#endif /* __TXX9ACLC_H */
 -- 
 2.29.2
 
