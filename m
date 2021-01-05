@@ -2,147 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1E8D2EA50D
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 06:54:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6BA2EA562
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 07:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726064AbhAEFwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 00:52:39 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:10383 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbhAEFwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 00:52:39 -0500
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4D91nf36prz7Q31;
-        Tue,  5 Jan 2021 13:51:02 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 5 Jan 2021 13:51:49 +0800
-From:   Qinglang Miao <miaoqinglang@huawei.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S1728384AbhAEGUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 01:20:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725298AbhAEGUi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 01:20:38 -0500
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219FEC061574;
+        Mon,  4 Jan 2021 22:19:58 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4D92Qx1twMz9sWT;
+        Tue,  5 Jan 2021 17:19:52 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1609827594;
+        bh=nDCX2HW9Z7M29EWUeQPgoiP8gTCsHWtWuXpbap0SK9I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N9IPCLaPV1y3i+yViI2X+WdKVSifdIEn8xES3D6e7W5UHDR/WllJNmEAjfQykuuoh
+         guWDRDClDE3gWKfhXx1/La1bZBl4lUb/8O467sifYDOCjeRltmPUHyM24PeySk41B6
+         nKDvloHSpQUsxt/nnNaJ/m+qzvyI1HXQfrX8e+/6gUzxmb0VDhChtumSbrzWX5HTIx
+         gEPXQFKlv8FBi41nHRdPAF3CCPfG4lvrxryuP82o5od7up6WE2JsivDA7Y/Nn6ye6d
+         rf4yIEmKBhm74B4TIGVjyJEx1wOlIAtgMlYu3WW7zlFzsl+oBFba+2H/VIA7In9y/P
+         5+GZUrFTrgzXQ==
+Date:   Tue, 5 Jan 2021 17:19:51 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Carl Huang <cjhuang@codeaurora.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Abhishek Kumar <kuabhs@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Qinglang Miao <miaoqinglang@huawei.com>
-Subject: [PATCH v2] net: qrtr: fix null-ptr-deref in qrtr_ns_remove
-Date:   Tue, 5 Jan 2021 13:57:54 +0800
-Message-ID: <20210105055754.16486-1-miaoqinglang@huawei.com>
-X-Mailer: git-send-email 2.20.1
+Subject: Re: linux-next: build warnings after merge of the net-next tree
+Message-ID: <20210105171951.0216f0f3@canb.auug.org.au>
+In-Reply-To: <20201221122839.72d29127@canb.auug.org.au>
+References: <20201214201025.60cee658@canb.auug.org.au>
+        <20201221122839.72d29127@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/5y73/z05TAB2IUywJlzhiGn";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A null-ptr-deref bug is reported by Hulk Robot like this:
---------------
-KASAN: null-ptr-deref in range [0x0000000000000128-0x000000000000012f]
-Call Trace:
-qrtr_ns_remove+0x22/0x40 [ns]
-qrtr_proto_fini+0xa/0x31 [qrtr]
-__x64_sys_delete_module+0x337/0x4e0
-do_syscall_64+0x34/0x80
-entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x468ded
---------------
+--Sig_/5y73/z05TAB2IUywJlzhiGn
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-When qrtr_ns_init fails in qrtr_proto_init, qrtr_ns_remove which would
-be called later on would raise a null-ptr-deref because qrtr_ns.workqueue
-has been destroyed.
+Hi all,
 
-Fix it by making qrtr_ns_init have a return value and adding a check in
-qrtr_proto_init.
+On Mon, 21 Dec 2020 12:28:39 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> On Mon, 14 Dec 2020 20:10:25 +1100 Stephen Rothwell <sfr@canb.auug.org.au=
+> wrote:
+> >
+> > After merging the net-next tree, today's linux-next build (htmldocs)
+> > produced these warnings:
+> >=20
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
+0211_sar_chan_ranges - sar frequency ranges
+> >  on line 1759 - I thought it was a doc line
+> > include/net/cfg80211.h:5073: warning: Function parameter or member 'sar=
+_capa' not described in 'wiphy'
+> >=20
+> > Introduced by commit
+> >=20
+> >   6bdb68cef7bf ("nl80211: add common API to configure SAR power limitat=
+ions") =20
+>=20
+> I am now getting these warnings from Linus' tree.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
----
-v1->v2: remove redundant braces for single statement blocks.
+I am still getting these warnings ...
 
- net/qrtr/ns.c   |  7 ++++---
- net/qrtr/qrtr.c | 16 +++++++++++-----
- net/qrtr/qrtr.h |  2 +-
- 3 files changed, 16 insertions(+), 9 deletions(-)
+--=20
+Cheers,
+Stephen Rothwell
 
-diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
-index 56aaf8cb6..8d00dfe81 100644
---- a/net/qrtr/ns.c
-+++ b/net/qrtr/ns.c
-@@ -755,7 +755,7 @@ static void qrtr_ns_data_ready(struct sock *sk)
- 	queue_work(qrtr_ns.workqueue, &qrtr_ns.work);
- }
- 
--void qrtr_ns_init(void)
-+int qrtr_ns_init(void)
- {
- 	struct sockaddr_qrtr sq;
- 	int ret;
-@@ -766,7 +766,7 @@ void qrtr_ns_init(void)
- 	ret = sock_create_kern(&init_net, AF_QIPCRTR, SOCK_DGRAM,
- 			       PF_QIPCRTR, &qrtr_ns.sock);
- 	if (ret < 0)
--		return;
-+		return ret;
- 
- 	ret = kernel_getsockname(qrtr_ns.sock, (struct sockaddr *)&sq);
- 	if (ret < 0) {
-@@ -797,12 +797,13 @@ void qrtr_ns_init(void)
- 	if (ret < 0)
- 		goto err_wq;
- 
--	return;
-+	return 0;
- 
- err_wq:
- 	destroy_workqueue(qrtr_ns.workqueue);
- err_sock:
- 	sock_release(qrtr_ns.sock);
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(qrtr_ns_init);
- 
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index f4ab3ca6d..b34358282 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -1287,13 +1287,19 @@ static int __init qrtr_proto_init(void)
- 		return rc;
- 
- 	rc = sock_register(&qrtr_family);
--	if (rc) {
--		proto_unregister(&qrtr_proto);
--		return rc;
--	}
-+	if (rc)
-+		goto err_proto;
- 
--	qrtr_ns_init();
-+	rc = qrtr_ns_init();
-+	if (rc)
-+		goto err_sock;
- 
-+	return 0;
-+
-+err_sock:
-+	sock_unregister(qrtr_family.family);
-+err_proto:
-+	proto_unregister(&qrtr_proto);
- 	return rc;
- }
- postcore_initcall(qrtr_proto_init);
-diff --git a/net/qrtr/qrtr.h b/net/qrtr/qrtr.h
-index dc2b67f17..3f2d28696 100644
---- a/net/qrtr/qrtr.h
-+++ b/net/qrtr/qrtr.h
-@@ -29,7 +29,7 @@ void qrtr_endpoint_unregister(struct qrtr_endpoint *ep);
- 
- int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len);
- 
--void qrtr_ns_init(void);
-+int qrtr_ns_init(void);
- 
- void qrtr_ns_remove(void);
- 
--- 
-2.23.0
+--Sig_/5y73/z05TAB2IUywJlzhiGn
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/0BQcACgkQAVBC80lX
+0GxmvQf/eRQx/UG7oUz0cLzIPEX8ae8XnL/S2TLLoOXerz24VtzCXD97IbnELaeM
+RY2PgLNXxSpvle9eH+i7JygaXnEwABsfwR3cMRAL4DJ2Nsua+aDkqhX4fHggTs6U
+uNGFDrU1VFUCwmJ1oUUgKfVuyd1ea6ficp65OMkMjl2+DhdHiFH6+dau/rR897rW
+POdpBDdD/k1RZVNLZG+jiAY2bFdb3Wjd71tX7ububqYkXLg4Ti7ALCEFTnhpaXTO
+AKIUm1FqZiLRau/SaQyw0QIz+RJxdfboqmDAKNlpO5O2+sbB+kdMhbr6vX4C2Ssk
+GS0e0Cc8H2QtsNuoXIoliXRfc1iEvQ==
+=L2Du
+-----END PGP SIGNATURE-----
+
+--Sig_/5y73/z05TAB2IUywJlzhiGn--
