@@ -2,120 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 225D42EB5F8
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 00:12:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8FA52EB5F9
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 00:14:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbhAEXLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 18:11:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54218 "EHLO
+        id S1728737AbhAEXM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 18:12:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726264AbhAEXLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 18:11:52 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8ABDC061793
-        for <netdev@vger.kernel.org>; Tue,  5 Jan 2021 15:11:11 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id t6so584799plq.1
-        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 15:11:11 -0800 (PST)
+        with ESMTP id S1728556AbhAEXM7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 18:12:59 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99282C061574
+        for <netdev@vger.kernel.org>; Tue,  5 Jan 2021 15:11:25 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id 6so2730751ejz.5
+        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 15:11:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AwYWlyWg2FePFvqyqnZw/zYVJVpqCZqnQ8T4hPM4CE8=;
-        b=bQaFYaAWTNgtofOT7zL7ifQVW4rRSVgVdvZ1NkMVD8rao525LPEbBiRdCLJKuJuEpM
-         O2L+op/ivJPjq8Qi0eok8jqWnIB6G6XAvUjUMcziBE0HW4ic07qPCkpSogkVpm+T3FkT
-         8G0pzuz41rv8Ab82G2KVNwrSls4PVAVpdArdIHhxkvFByEZazCxa1Js4TFHUdhAkP9B0
-         ieP60yiAtjh2NNmTjOQSX3rNxbVhECo3b8bKpyovys6NvvqwOjCgefJUXX+DGte0/ozr
-         2mMxpuJUq98d7UfDjsDT4sDkxa5AAwg5dPbEmWJMb/lrD9U6KdMLhk9rj3hWmbtPGkrK
-         wQfA==
+        bh=Q7ywXkeJS9+NSy3KiTd8kIayGWN/LQ+tGHbFpLFfxzU=;
+        b=kEzp/VUV/UHQyqHyVDMO2LLiaHd4Fx4biAGXpy7QgNDermjAOw5nfsT8kvUqMFXxM9
+         XBqTRW5jIGqUOv4u3kgfqOexN5fNmJz6E4LmlVSVBVYMB5nT9TZ09JdoXQyO6foGGlXA
+         NcKAnEFdesaaHFOWthPO9qoDS6Shy+h/l7SM5KVm/Qy3OVc87klPbvMJN19jLVJpgRyQ
+         wuVlNJU+HVL0rJR2wsY+22gHj/y7vOiNRPHQQfMquJAWZRK0pBHlIZyJU0sqoKBpoc23
+         hUjr3M5hOSXzueH+7qYohkg8N201qGyJ6uFSEosmb5Co1VAgA3ib5jbhZ8BgRW5jh8Cw
+         UXig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=AwYWlyWg2FePFvqyqnZw/zYVJVpqCZqnQ8T4hPM4CE8=;
-        b=UwBqkLurJ90q4PisbYpfiIHmz1TAPbfgcjgMyfqp4VEinCSQKr9HjUB2OGR4/0qxNG
-         BmlMf7UFD6lUI90pqAZ8aPPqoED+WKL03Ki+lhIu/nHkxFe06Se97KBr/V7N/lFhcUOZ
-         d0aMj/etCAfXBHB66MI/Afd1lKFEayH0cRrQ3M4I0LbvAFURwDaGhDHWD9+33pKhya5C
-         xyfXifK9bX/qjfIRZ/IQE0L1JXoe4NVeBC737U2cv982wWt7x6IEPlhE7igm3TQQEf60
-         WVxvey6R5k82mG0kVmI09GLM7duCGzkrBUVBoYlVGTpXI+UEthbAmpyIaiTQWy07J3r5
-         5MSw==
-X-Gm-Message-State: AOAM532IUqXufeBg/wjr5GrUvjjT0DOw4CQbjn0JMUEySYu/4QyRSdUj
-        RAjAJbb/7tZWj7HVI/QUtU0=
-X-Google-Smtp-Source: ABdhPJxD0bJm9ziv/BjavwQlpThetfvMJLID2h3HFyjiYFYAnOpticGmkouZYJDcGjwIwkoPGPwSLA==
-X-Received: by 2002:a17:902:c583:b029:da:b32c:cf9f with SMTP id p3-20020a170902c583b02900dab32ccf9fmr1728250plx.44.1609888271347;
-        Tue, 05 Jan 2021 15:11:11 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id ay21sm272852pjb.1.2021.01.05.15.11.07
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Q7ywXkeJS9+NSy3KiTd8kIayGWN/LQ+tGHbFpLFfxzU=;
+        b=FQ0eBBlKqQcaW+i+RyaXxVgSxRBsJHSw568k7AO4pYoKXcKsLThfY8nM2pk4jndxTK
+         G7L14SlFy6/aFesir1aJCH5O7Sfjy024NRMmGADn/q5Wqn5dymuCxKBz5vHLNliG8aHn
+         fJ52AphByOepvjqv84XVtN6h9abGZmH2HaKLKkCOuEdctZsKZEfV83nGydLkhwElQBXu
+         wC0YhMXzCuYpuHulbr6mQ7rW9KaVz53RvnRkgqZaZchj5FhR1jhWuT4dM0ZUKmf4Ya4H
+         FzI7kweH2jNU6OJQn4C3/fAHm+E1anNFBRV5BVD2cf0+ZDavjB6bCUUPqCU7FIvQYgZ8
+         3Bzw==
+X-Gm-Message-State: AOAM530gX4ZZEnGPMrOzQKMriFSCk80XyNtw9ObyhNUiYerKpBTUG5ad
+        +7o4Jk98G2L/uNwKgzuG5xA+FSCS96Y=
+X-Google-Smtp-Source: ABdhPJx2EVis6LFCzLAwouKP1fSeuwvr7yRwjOWwOTqkvFkzMcXmPQa1sEO4nvyhLVIh84JTl5uCTA==
+X-Received: by 2002:a17:906:2681:: with SMTP id t1mr1130678ejc.29.1609888284421;
+        Tue, 05 Jan 2021 15:11:24 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:303d:91bf:ac5c:51a1? (p200300ea8f065500303d91bfac5c51a1.dip0.t-ipconnect.de. [2003:ea:8f06:5500:303d:91bf:ac5c:51a1])
+        by smtp.googlemail.com with ESMTPSA id h12sm219026eja.113.2021.01.05.15.11.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Jan 2021 15:11:10 -0800 (PST)
-Subject: Re: [PATCH net-next v1 00/13] Generic zcopy_* functions
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        willemdebruijn.kernel@gmail.com, edumazet@google.com,
-        dsahern@gmail.com
-Cc:     kernel-team@fb.com
-References: <20210105220706.998374-1-jonathan.lemon@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <c7d877d9-d3ea-fedc-6492-9954cfded3eb@gmail.com>
-Date:   Tue, 5 Jan 2021 15:11:03 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 05 Jan 2021 15:11:23 -0800 (PST)
+Subject: Re: [PATCH] net: phy: Trigger link_change_notify on PHY_HALTED
+To:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20210105161136.250631-1-marex@denx.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <275fa9f2-cc87-0bb0-93c2-96027c9b86db@gmail.com>
+Date:   Wed, 6 Jan 2021 00:11:15 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20210105220706.998374-1-jonathan.lemon@gmail.com>
+In-Reply-To: <20210105161136.250631-1-marex@denx.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,21 +67,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/5/21 2:06 PM, Jonathan Lemon wrote:
-> From: Jonathan Lemon <bsd@fb.com>
+On 05.01.2021 17:11, Marek Vasut wrote:
+> In case the PHY transitions to PHY_HALTED state in phy_stop(), the
+> link_change_notify callback is not triggered. That's because the
+> phydev->state = PHY_HALTED in phy_stop() is assigned first, and
+> phy_state_machine() is called afterward. For phy_state_machine(),
+> no state transition happens, because old_state = PHY_HALTED and
+> phy_dev->state = PHY_HALTED.
 > 
-> This is set of cleanup patches for zerocopy which are intended
-> to allow a introduction of a different zerocopy implementation.
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/phy/phy.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> The top level API will use the skb_zcopy_*() functions, while
-> the current TCP specific zerocopy ends up using msg_zerocopy_*()
-> calls.
+> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> index 45f75533c47c..fca8c3eebc5d 100644
+> --- a/drivers/net/phy/phy.c
+> +++ b/drivers/net/phy/phy.c
+> @@ -1004,6 +1004,7 @@ EXPORT_SYMBOL(phy_free_interrupt);
+>  void phy_stop(struct phy_device *phydev)
+>  {
+>  	struct net_device *dev = phydev->attached_dev;
+> +	enum phy_state old_state;
+>  
+>  	if (!phy_is_started(phydev) && phydev->state != PHY_DOWN) {
+>  		WARN(1, "called from state %s\n",
+> @@ -1021,8 +1022,17 @@ void phy_stop(struct phy_device *phydev)
+>  	if (phydev->sfp_bus)
+>  		sfp_upstream_stop(phydev->sfp_bus);
+>  
+> +	old_state = phydev->state;
+>  	phydev->state = PHY_HALTED;
+>  
+> +	if (old_state != phydev->state) {
+> +		phydev_err(phydev, "PHY state change %s -> %s\n",
+> +			   phy_state_to_str(old_state),
+> +			   phy_state_to_str(phydev->state));
+> +		if (phydev->drv && phydev->drv->link_change_notify)
+> +			phydev->drv->link_change_notify(phydev);
+> +	}
+> +
+>  	mutex_unlock(&phydev->lock);
+>  
+>  	phy_state_machine(&phydev->state_queue.work);
 > 
-> There should be no functional changes from these patches.
 
-Your From and Signed-off-by tags are not matching and this is likely
-going to be flagged as an issue by Jakub and/or linux-next if/when this
-lands. You would want to get that fixed in your v2 along with the other
-feedback you may get.
+Following is RFC as an additional idea. When requesting a new state
+from outside the state machine, we could simply provide the old
+state to the state machine in a new phy_device member.
+Then we shouldn't have to touch phy_stop(), and maybe phy_error().
+And it looks cleaner to me than duplicating code from the state
+machine to functions like phy_stop().
+
+---
+ drivers/net/phy/phy.c        | 10 +++++++++-
+ drivers/net/phy/phy_device.c |  1 +
+ include/linux/phy.h          |  3 +++
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 45f75533c..347e42d90 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -45,6 +45,7 @@ static const char *phy_state_to_str(enum phy_state st)
+ {
+ 	switch (st) {
+ 	PHY_STATE_STR(DOWN)
++	PHY_STATE_STR(INVALID)
+ 	PHY_STATE_STR(READY)
+ 	PHY_STATE_STR(UP)
+ 	PHY_STATE_STR(RUNNING)
+@@ -1021,6 +1022,7 @@ void phy_stop(struct phy_device *phydev)
+ 	if (phydev->sfp_bus)
+ 		sfp_upstream_stop(phydev->sfp_bus);
+ 
++	phydev->old_state = phydev->state;
+ 	phydev->state = PHY_HALTED;
+ 
+ 	mutex_unlock(&phydev->lock);
+@@ -1086,7 +1088,13 @@ void phy_state_machine(struct work_struct *work)
+ 
+ 	mutex_lock(&phydev->lock);
+ 
+-	old_state = phydev->state;
++	/* set if a new state is requested from outside the state machine */
++	if (phydev->old_state != PHY_INVALID) {
++		old_state = phydev->old_state;
++		phydev->old_state = PHY_INVALID;
++	} else {
++		old_state = phydev->state;
++	}
+ 
+ 	switch (phydev->state) {
+ 	case PHY_DOWN:
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 80c2e646c..9f8d9f68b 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -620,6 +620,7 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
+ 	device_initialize(&mdiodev->dev);
+ 
+ 	dev->state = PHY_DOWN;
++	dev->old_state = PHY_INVALID;
+ 
+ 	mutex_init(&dev->lock);
+ 	INIT_DELAYED_WORK(&dev->state_queue, phy_state_machine);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 9effb511a..df48ea88c 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -442,6 +442,7 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr);
+  */
+ enum phy_state {
+ 	PHY_DOWN = 0,
++	PHY_INVALID,
+ 	PHY_READY,
+ 	PHY_HALTED,
+ 	PHY_UP,
+@@ -566,6 +567,8 @@ struct phy_device {
+ 	unsigned interrupts:1;
+ 
+ 	enum phy_state state;
++	/* if a new state is requested from outside the state machine */
++	enum phy_state old_state;
+ 
+ 	u32 dev_flags;
+ 
 -- 
-Florian
+2.30.0
+
