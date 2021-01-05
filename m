@@ -2,170 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CCB2EA7BB
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:39:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 860C62EA7C8
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:41:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728602AbhAEJgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 04:36:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39356 "EHLO
+        id S1728314AbhAEJlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 04:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727260AbhAEJgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:36:44 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3EBC061574;
-        Tue,  5 Jan 2021 01:36:03 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id c5so35454581wrp.6;
-        Tue, 05 Jan 2021 01:36:03 -0800 (PST)
+        with ESMTP id S1728143AbhAEJlL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:41:11 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDCDC061574;
+        Tue,  5 Jan 2021 01:40:30 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id ga15so8268456ejb.4;
+        Tue, 05 Jan 2021 01:40:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=CBEgq3lGKdv8uL6EZCtDkPUPdtOI/LvqjfEie+xNIH4=;
-        b=HJiFrO0cyFUE3EdhkZ9ieByRFQCmu2tX+0L8OoIw4Wob2ig1rJoDxLCjxIQnyLdkES
-         SioIrCKKqRUCdIYJRnHHT7DH2PlW/UdIRpSfWuZwCmLdKhc/OUZpvSuRfBlbneWGJyz7
-         ZpTpMHZr6MH21FebXJKTorOtdY/31zxbsf5Oig5Tf7niL6jH0Jca7W5tA9EZaHf7eFrf
-         s8GfCy82KvLI/Z3W+VmSKjwi6MWD0zldc+X9455cJLoiLVNFmAuolk+7rC2oCndiGKB2
-         dSf4ivxSDbGtUAPA+FpgOuqJARYz4fUdzftUMx+JZT7jv1z3acWwet08NEa4KajaJGVY
-         ua/g==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=7JpfgvEf5Dv3hNrt+948clbIZ+Oxxj5OAi+iacxd46I=;
+        b=F5BNa7wPD+WAkUgPQ8GPBm+v8CNXST1S8WDbl+7abPKUDu1TEyE14kYCrqCDaIHwAR
+         L97vYSj6jZ/MUI/lZNyRmoEktlpCmwOlGxFe4fsN4y6rrunqVfDDxpca2RA7Avoq5ooa
+         j1rSTu19y4kcieJNFB07zAHaGMkFaITraLBzK4ixQEoPDnNM2h/1ElPbGFsRAvmH5qoT
+         W8UqfoUHHdPZM6z8z7XCE+5iDuoCtwyIK/iX5lHQ5MZMIPcCA0I8sxks011M3smpIHSv
+         XHL1BxUnQaM+KWnvOgciZHqoUu9+I534ag6vfe9vn6a7yyhzdFVVBL0ZjyyzXJhQkqZT
+         k2Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=CBEgq3lGKdv8uL6EZCtDkPUPdtOI/LvqjfEie+xNIH4=;
-        b=WIpM7WD9q9hXlBAPvdZY4Ye7JhmXUtjBbt/LSz+jpJseNDF/33i/zLe4q6c8Y8fJXO
-         +xQnSi/xBAhPKVe+JZaWOdCgoNlzpmJ9IukvUcKI4/YhyenUBtr6shgh8VwC29Eww12X
-         a2i3daHDaUFRW+Xtu9mZyYuuuk5PlkLITumYNyb/WYfdoVu0FWy5T2RLKJ1WO5XZ/axI
-         2kj5DwrOhuW7LliaLNLfKwoM86LDk23pmuXFIRlPz7FH6zOTBTjA1PQ5cnEKMb0lS+nS
-         CQ67WytgHHwDAMxIO0W58UKVSUlyWPqrUm2HI5efh8JAwmoJBpeQ3rz+NeXTbmlqfa0P
-         heaw==
-X-Gm-Message-State: AOAM533ki9cTmSRAdSw4rMEBDwz9c/GWU6E1ukAi52QxSoiQnfzyXK/A
-        5OiwhUJiAGl9NaRPf5CU0c0=
-X-Google-Smtp-Source: ABdhPJzbwhnvkmHNN5DP1N2v4XP1Us0fHF241cvauNZBE+WGFQnXleX6Na2ODfxxGTIz0yr5/IiMsg==
-X-Received: by 2002:adf:e512:: with SMTP id j18mr83068277wrm.52.1609839361280;
-        Tue, 05 Jan 2021 01:36:01 -0800 (PST)
-Received: from felia.fritz.box ([2001:16b8:2d99:1a00:4199:29a0:95cf:5dfe])
-        by smtp.gmail.com with ESMTPSA id j10sm3532540wmj.7.2021.01.05.01.36.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jan 2021 01:36:00 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     George Cherian <george.cherian@marvell.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha Sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] docs: octeontx2: tune rst markup
-Date:   Tue,  5 Jan 2021 10:35:53 +0100
-Message-Id: <20210105093553.31879-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=7JpfgvEf5Dv3hNrt+948clbIZ+Oxxj5OAi+iacxd46I=;
+        b=Jucqk8M0PcL1/fVo0RDqf/Xh1jM3sXUszB7UIUHHIoEC0J2QdTPQO+XsIbL3eDF2gS
+         L8cYwNMLMU4SF3fujaKW+XSFrkevA4nG74zNtuooteKM0m3J349l0doNcnG6nxgY/BVR
+         CXyiphDZl585R/qYhgjbROCm/E5JpXPfjiCSXqnzTssF2SPJfP6WLLv3l7b6/gSDMW5y
+         1RMprnxpYn4vx2HusweOEBxVTrS2DWF9hSw21ItcG/bJ5WT/6oDDiSSS8iRZZPzjktJ/
+         p4De8VTeAkJUeSWDkeFm/1TvqeCxjdu/KD2ckSntp0C6iSXk/wbUK9/EHVaiLQjWoIpc
+         P/Dg==
+X-Gm-Message-State: AOAM531P8Uv7XVeOAPRpDss1cXZ0A6+l6Of1YZZ19NLZFL96Ag/sd5Uz
+        XgYoypv1SxMxSI2RHLsi9EYnh/DgPbI=
+X-Google-Smtp-Source: ABdhPJzwjFwZ3FNbcLiYV2rf1ENgTEumATCWtzmL/Jp4/zr4BlbeUHFvSg5W0QGCmcAz979GWhwMKQ==
+X-Received: by 2002:a17:906:a29a:: with SMTP id i26mr69055933ejz.45.1609839629342;
+        Tue, 05 Jan 2021 01:40:29 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:5ee:6bfd:b6c9:8fa1? (p200300ea8f06550005ee6bfdb6c98fa1.dip0.t-ipconnect.de. [2003:ea:8f06:5500:5ee:6bfd:b6c9:8fa1])
+        by smtp.googlemail.com with ESMTPSA id x16sm24389880ejb.38.2021.01.05.01.40.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jan 2021 01:40:28 -0800 (PST)
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH 0/3] PCI: Disable parity checking if broken_parity is set
+Message-ID: <a6f09e1b-4076-59d1-a4e3-05c5955bfff2@gmail.com>
+Date:   Tue, 5 Jan 2021 10:40:22 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 80b9414832a1 ("docs: octeontx2: Add Documentation for NPA health
-reporters") added new documentation with improper formatting for rst, and
-caused a few new warnings for make htmldocs in octeontx2.rst:169--202.
+If we know that a device has broken parity checking, then disable it.
+This avoids quirks like in r8169 where on the first parity error
+interrupt parity checking will be disabled if broken_parity_status
+is set. Make pci_quirk_broken_parity() public so that it can be used
+by platform code, e.g. for Thecus N2100.
 
-Tune markup and formatting for better presentation in the HTML view.
+Heiner Kallweit (3):
+  PCI: Disable parity checking if broken_parity_status is set
+  ARM: iop32x: improve N2100 PCI broken parity quirk
+  r8169: simplify broken parity handling now that PCI core takes care
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-applies cleanly on current master (v5.11-rc2) and next-20201205
+ arch/arm/mach-iop32x/n2100.c              |  8 +++-----
+ drivers/net/ethernet/realtek/r8169_main.c | 14 --------------
+ drivers/pci/quirks.c                      | 17 +++++++++++------
+ include/linux/pci.h                       |  2 ++
+ 4 files changed, 16 insertions(+), 25 deletions(-)
 
-George, please ack.
-Jonathan, please pick this minor formatting clean-up patch.
-
- .../ethernet/marvell/octeontx2.rst            | 59 +++++++++++--------
- 1 file changed, 34 insertions(+), 25 deletions(-)
-
-diff --git a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
-index d3fcf536d14e..00bdc10fe2b8 100644
---- a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
-+++ b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
-@@ -165,45 +165,54 @@ Devlink health reporters
- NPA Reporters
- -------------
- The NPA reporters are responsible for reporting and recovering the following group of errors
-+
- 1. GENERAL events
-+
-    - Error due to operation of unmapped PF.
-    - Error due to disabled alloc/free for other HW blocks (NIX, SSO, TIM, DPI and AURA).
-+
- 2. ERROR events
-+
-    - Fault due to NPA_AQ_INST_S read or NPA_AQ_RES_S write.
-    - AQ Doorbell Error.
-+
- 3. RAS events
-+
-    - RAS Error Reporting for NPA_AQ_INST_S/NPA_AQ_RES_S.
-+
- 4. RVU events
-+
-    - Error due to unmapped slot.
- 
--Sample Output
---------------
--~# devlink health
--pci/0002:01:00.0:
--  reporter hw_npa_intr
--      state healthy error 2872 recover 2872 last_dump_date 2020-12-10 last_dump_time 09:39:09 grace_period 0 auto_recover true auto_dump true
--  reporter hw_npa_gen
--      state healthy error 2872 recover 2872 last_dump_date 2020-12-11 last_dump_time 04:43:04 grace_period 0 auto_recover true auto_dump true
--  reporter hw_npa_err
--      state healthy error 2871 recover 2871 last_dump_date 2020-12-10 last_dump_time 09:39:17 grace_period 0 auto_recover true auto_dump true
--   reporter hw_npa_ras
--      state healthy error 0 recover 0 last_dump_date 2020-12-10 last_dump_time 09:32:40 grace_period 0 auto_recover true auto_dump true
-+Sample Output::
-+
-+	~# devlink health
-+	pci/0002:01:00.0:
-+	  reporter hw_npa_intr
-+	      state healthy error 2872 recover 2872 last_dump_date 2020-12-10 last_dump_time 09:39:09 grace_period 0 auto_recover true auto_dump true
-+	  reporter hw_npa_gen
-+	      state healthy error 2872 recover 2872 last_dump_date 2020-12-11 last_dump_time 04:43:04 grace_period 0 auto_recover true auto_dump true
-+	  reporter hw_npa_err
-+	      state healthy error 2871 recover 2871 last_dump_date 2020-12-10 last_dump_time 09:39:17 grace_period 0 auto_recover true auto_dump true
-+	   reporter hw_npa_ras
-+	      state healthy error 0 recover 0 last_dump_date 2020-12-10 last_dump_time 09:32:40 grace_period 0 auto_recover true auto_dump true
- 
- Each reporter dumps the
-  - Error Type
-  - Error Register value
-  - Reason in words
- 
--For eg:
--~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_gen
-- NPA_AF_GENERAL:
--         NPA General Interrupt Reg : 1
--         NIX0: free disabled RX
--~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_intr
-- NPA_AF_RVU:
--         NPA RVU Interrupt Reg : 1
--         Unmap Slot Error
--~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_err
-- NPA_AF_ERR:
--        NPA Error Interrupt Reg : 4096
--        AQ Doorbell Error
-+For eg::
-+
-+	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_gen
-+	 NPA_AF_GENERAL:
-+	         NPA General Interrupt Reg : 1
-+	         NIX0: free disabled RX
-+	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_intr
-+	 NPA_AF_RVU:
-+	         NPA RVU Interrupt Reg : 1
-+	         Unmap Slot Error
-+	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_err
-+	 NPA_AF_ERR:
-+	        NPA Error Interrupt Reg : 4096
-+	        AQ Doorbell Error
 -- 
-2.17.1
+2.30.0
 
