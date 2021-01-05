@@ -2,108 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51A362EA7D0
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:45:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3701D2EA7D2
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:45:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728083AbhAEJow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 04:44:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29881 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727686AbhAEJov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:44:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609839805;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u/pf3MEGHy4BVUnm30O0L31xAu34MGBgOtsz0A/Rhcg=;
-        b=I9S5rONjo+1VTw6Kvhh4Vno1wNTtUlY1Ms9mWpyPagzILVwJ7BA+/eR7QThkZaQhmmNj+E
-        QuedpZsMQUyGGzuTxOROLowlDZWE724GqPbTFqldqa+MyuyhkHg8SgDqvdChsE/5fG9Iy1
-        JszKO6CfJQrY3ub/Vz0DuReLRB0o8pA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-98-eV-NK1QRM5yLiP4y727A1Q-1; Tue, 05 Jan 2021 04:43:23 -0500
-X-MC-Unique: eV-NK1QRM5yLiP4y727A1Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CA59310054FF;
-        Tue,  5 Jan 2021 09:43:21 +0000 (UTC)
-Received: from yiche-home.usersys.redhat.com (ovpn-12-69.pek2.redhat.com [10.72.12.69])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C307E62463;
-        Tue,  5 Jan 2021 09:43:18 +0000 (UTC)
-From:   Yi Chen <yiche@redhat.com>
-To:     Chen Yi <yiche@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Leo <liuhangbin@gmail.com>
-Subject: [PATCHv2 net] selftests: netfilter: Pass the family parameter to conntrack tool
-Date:   Tue,  5 Jan 2021 17:43:16 +0800
-Message-Id: <20210105094316.23683-1-yiche@redhat.com>
-In-Reply-To: <20210104110723.43564-1-yiche@redhat.com>
-References: <20210104110723.43564-1-yiche@redhat.com>
+        id S1728156AbhAEJpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 04:45:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727682AbhAEJou (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:44:50 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B2EC061795;
+        Tue,  5 Jan 2021 01:44:10 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id i24so30366757edj.8;
+        Tue, 05 Jan 2021 01:44:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zpRBjTwwbttmw1T4jYOjshcbes1jvp4oKN+HYKTlNQQ=;
+        b=F817bh2h/kwTTJY838KD3QDVXnYpZakUnx0VvrVUNsKtvIe0fwdKIVXVXcIo5tqZDm
+         MYTa7PP0iDHkedCRo2UJ/VdX1E3OoBVmbDUivU8sm+T3v0/78hq0A1a7JiJWzBvAGcN+
+         pkWE5t95lLBFoFT6XN2qiW5XDDkCjyq3sTVFJjnNcfTi0kbq7PPXMG7uyvl2SfCbeJxL
+         9rk2WBpc64ElEkPUmTSccBNsSYT//2tGliPejz0D0dmFk8kHX0laCMepY/u2JSG9o1Ia
+         HQNIyKFaSUmG5JcVIsBaHDwxYCf+Rr43+psMUa2GGRjWLnv30Y54oPDx44it6u6vobNz
+         Z0Tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zpRBjTwwbttmw1T4jYOjshcbes1jvp4oKN+HYKTlNQQ=;
+        b=QU17W4LkBFZfSPw4PTswHmwiYgCxYYsWCHFlggmXmflQlKBcbe5sRa5NzIaKqNGvmr
+         UC3rzkqhzoA5GaN9kepyKVQ4N7EpYawuPmJHHM+EA8TSXuzwo9zwWNKwscuj3OnctIv+
+         UUStFVXyxiyjc85iTKY6q3jQkiN/AUyqt8CXFib52DaPserlxPms/gbkKQsi2RXN44Sa
+         TBTdQO5VdVI8Ib6kf5+gmWPZcmswK9sD68GXU/mMnC45xCoa5I714PbNwsWhPZS3vZLG
+         /O7NTTCftHuEBKc6MX+oDdxnDrkv+MXi8b8mvLYCZUOUpFCCJy3yKlQdUZrmr+jGT21E
+         cGSw==
+X-Gm-Message-State: AOAM533Q5B8//Vud4fGGRey5QF1wUAEz1o9W8ZVNLM4BT8/dpsElvOJN
+        G7XCnrMt9C1mFthvFQL/vkJPZrG+PFg=
+X-Google-Smtp-Source: ABdhPJz8/t2oP8zuzYTHR+26DncWBAiGdOujOw9lfva2XU/CVQllvloNkBjbzcR14HhiOPedOj7V+g==
+X-Received: by 2002:a05:6402:3546:: with SMTP id f6mr50292986edd.242.1609839848892;
+        Tue, 05 Jan 2021 01:44:08 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:5ee:6bfd:b6c9:8fa1? (p200300ea8f06550005ee6bfdb6c98fa1.dip0.t-ipconnect.de. [2003:ea:8f06:5500:5ee:6bfd:b6c9:8fa1])
+        by smtp.googlemail.com with ESMTPSA id f8sm44959266eds.19.2021.01.05.01.44.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Jan 2021 01:44:08 -0800 (PST)
+Subject: [PATCH 3/3] r8169: simplify broken parity handling now that PCI core
+ takes care
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <a6f09e1b-4076-59d1-a4e3-05c5955bfff2@gmail.com>
+Message-ID: <0357b4f8-ca14-766c-ba0d-3cd83bdda578@gmail.com>
+Date:   Tue, 5 Jan 2021 10:44:00 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <a6f09e1b-4076-59d1-a4e3-05c5955bfff2@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: yiche <yiche@redhat.com>
+Meanwhile the PCI core disables parity checking for a device that has
+broken_parity_status set. Therefore we don't need the quirk any longer
+to disable parity checking on the first parity error interrupt.
 
-Fixes: 619ae8e0697a6 ("selftests: netfilter: add test case for conntrack helper assignment")
-
-Fix nft_conntrack_helper.sh fake fail:
-conntrack tool need "-f ipv6" parameter to show out ipv6 traffic items.
-sleep 1 second after background nc send packet, to make sure check
-is after this statement executed.
-
-Signed-off-by: yiche <yiche@redhat.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- .../selftests/netfilter/nft_conntrack_helper.sh      | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-index edf0a48da6bf..bf6b9626c7dd 100755
---- a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-+++ b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
-@@ -94,7 +94,13 @@ check_for_helper()
- 	local message=$2
- 	local port=$3
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index a8284feb4..1e26b47f5 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4329,20 +4329,6 @@ static void rtl8169_pcierr_interrupt(struct net_device *dev)
+ 	if (net_ratelimit())
+ 		netdev_err(dev, "PCI error (cmd = 0x%04x, status_errs = 0x%04x)\n",
+ 			   pci_cmd, pci_status_errs);
+-	/*
+-	 * The recovery sequence below admits a very elaborated explanation:
+-	 * - it seems to work;
+-	 * - I did not see what else could be done;
+-	 * - it makes iop3xx happy.
+-	 *
+-	 * Feel free to adjust to your needs.
+-	 */
+-	if (pdev->broken_parity_status)
+-		pci_cmd &= ~PCI_COMMAND_PARITY;
+-	else
+-		pci_cmd |= PCI_COMMAND_SERR | PCI_COMMAND_PARITY;
+-
+-	pci_write_config_word(pdev, PCI_COMMAND, pci_cmd);
  
--	ip netns exec ${netns} conntrack -L -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
-+	if echo $message |grep -q 'ipv6';then
-+		local family="ipv6"
-+	else
-+		local family="ipv4"
-+	fi
-+
-+	ip netns exec ${netns} conntrack -L -f $family -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
- 	if [ $? -ne 0 ] ; then
- 		echo "FAIL: ${netns} did not show attached helper $message" 1>&2
- 		ret=1
-@@ -111,8 +117,8 @@ test_helper()
- 
- 	sleep 3 | ip netns exec ${ns2} nc -w 2 -l -p $port > /dev/null &
- 
--	sleep 1
- 	sleep 1 | ip netns exec ${ns1} nc -w 2 10.0.1.2 $port > /dev/null &
-+	sleep 1
- 
- 	check_for_helper "$ns1" "ip $msg" $port
- 	check_for_helper "$ns2" "ip $msg" $port
-@@ -128,8 +134,8 @@ test_helper()
- 
- 	sleep 3 | ip netns exec ${ns2} nc -w 2 -6 -l -p $port > /dev/null &
- 
--	sleep 1
- 	sleep 1 | ip netns exec ${ns1} nc -w 2 -6 dead:1::2 $port > /dev/null &
-+	sleep 1
- 
- 	check_for_helper "$ns1" "ipv6 $msg" $port
- 	check_for_helper "$ns2" "ipv6 $msg" $port
+ 	rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
+ }
 -- 
-2.26.2
+2.30.0
+
 
