@@ -2,149 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A56E2EA927
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 11:49:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B1602EA92F
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 11:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729266AbhAEKtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 05:49:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727764AbhAEKtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 05:49:03 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C9CC061794;
-        Tue,  5 Jan 2021 02:48:23 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id t8so27769681iov.8;
-        Tue, 05 Jan 2021 02:48:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f7IHiDEWjSHm9FI3W8jx+UQ9X1MEsxwuqh4KdUyRC2w=;
-        b=H8WcjQs0Qs0BLnlHEB4QdW5YniI+JWJkjRE+GguZFV5zQ5b2vUzoMnqCuiLQzb7XRw
-         1aoogupqG9sq8j8mc3PqDp2dd3qtUsU449LTaN1jNHOpami80u06GcHysJu+3xAQ43X5
-         H5KTn5aCZfxXEoB4Aw1IzCbPBF/I0H5bExfUPGOSwmzYw6S4qCTDiujgcbCD7Ac/VrA0
-         dG45rtjQHjcaezxB1cZmJNViagqC+BUay7Jt6DUDd+HgKkeqx2DxWyfzwAQX604/Kbik
-         dyFpBKfKXIhf+5oSSp84capojB9Z+CYpF0awqu43eUxZg4F/0h20XbJCugOUCuN2c4Kk
-         8X+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=f7IHiDEWjSHm9FI3W8jx+UQ9X1MEsxwuqh4KdUyRC2w=;
-        b=EUS7o7WBR6TWJ/N6ptUSYGerxJXsrCUiB0IuYh6Da81bmsVoGelyyXqdL7XhGGW7ud
-         lXE52ZiIGrZH4zQ9OZWbvwRQtatARzKstkXObByqvA/sufwiXs9h/Poy+9qP8rRn7nmn
-         dScU59iBTJzVUN8ywOMmpUBZ8pVceIHz7NHv7z1G/hn0OQICRtlAuz/1onNx4coioKuR
-         NIOy4j6rB3jMHN8pGp8DnlzmmC/d4AI7TwoMxjkqN766eosbo4dEJov5nFcK/vPdGOBa
-         WvulD5bpqz0ChM4Unt7JvJgjZzFD/Sl7XUBqY750MYaeisw3Hy/EJCbs/nLae5Xha2aN
-         qeNg==
-X-Gm-Message-State: AOAM531lKNlNfUFmVddxisFefMvAefddB04DpepY322DjfBFQ5Ht61h8
-        P5u7E8odKlMbhmbaBa2q5ps=
-X-Google-Smtp-Source: ABdhPJwchgv/SEHmnGLoaLlm5nHLvtL7vVMU6w3sJOuAV6wVin9zM+GAfRb8qs3CDw/AavgLb+c+MQ==
-X-Received: by 2002:a6b:1451:: with SMTP id 78mr63096028iou.102.1609843702489;
-        Tue, 05 Jan 2021 02:48:22 -0800 (PST)
-Received: from Gentoo ([156.146.37.136])
-        by smtp.gmail.com with ESMTPSA id r3sm42612152ilt.76.2021.01.05.02.48.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jan 2021 02:48:21 -0800 (PST)
-Date:   Tue, 5 Jan 2021 16:18:30 +0530
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     Julian Calaby <julian.calaby@gmail.com>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        zhengbin13@huawei.com, baijiaju1990@gmail.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] drivers: net: wireless: realtek: Fix the word
- association defautly de-faulty
-Message-ID: <X/RD/pll4UoRJG0w@Gentoo>
-Mail-Followup-To: Bhaskar Chowdhury <unixbhaskar@gmail.com>,
-        Julian Calaby <julian.calaby@gmail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>, zhengbin13@huawei.com,
-        baijiaju1990@gmail.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20210105101738.13072-1-unixbhaskar@gmail.com>
- <CAGRGNgX-JSPW8LSmAUbm=2jkx+K4EYdntCq6P2i8td0TUk7Nww@mail.gmail.com>
+        id S1729382AbhAEKuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 05:50:08 -0500
+Received: from foss.arm.com ([217.140.110.172]:52536 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729103AbhAEKuI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Jan 2021 05:50:08 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 39E871FB;
+        Tue,  5 Jan 2021 02:49:22 -0800 (PST)
+Received: from e107158-lin (unknown [10.1.194.78])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1F50B3F70D;
+        Tue,  5 Jan 2021 02:49:21 -0800 (PST)
+Date:   Tue, 5 Jan 2021 10:49:18 +0000
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Biggers <ebiggers@google.com>
+Subject: Re: [PATCH] crypto: Rename struct device_private to
+ bcm_device_private
+Message-ID: <20210105104918.h774oukd23ve5m3v@e107158-lin>
+References: <20210104230237.916064-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="mxo3TOh/lWoLSvis"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAGRGNgX-JSPW8LSmAUbm=2jkx+K4EYdntCq6P2i8td0TUk7Nww@mail.gmail.com>
+In-Reply-To: <20210104230237.916064-1-jolsa@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 01/05/21 00:02, Jiri Olsa wrote:
+> Renaming 'struct device_private' to 'struct bcm_device_private',
+> because it clashes with 'struct device_private' from
+> 'drivers/base/base.h'.
+> 
+> While it's not a functional problem, it's causing two distinct
+> type hierarchies in BTF data. It also breaks build with options:
+>   CONFIG_DEBUG_INFO_BTF=y
+>   CONFIG_CRYPTO_DEV_BCM_SPU=y
+> 
+> as reported by Qais Yousef [1].
+> 
+> [1] https://lore.kernel.org/lkml/20201229151352.6hzmjvu3qh6p2qgg@e107158-lin/
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  drivers/crypto/bcm/cipher.c | 2 +-
+>  drivers/crypto/bcm/cipher.h | 4 ++--
+>  drivers/crypto/bcm/util.c   | 2 +-
+>  3 files changed, 4 insertions(+), 4 deletions(-)
 
---mxo3TOh/lWoLSvis
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
+FWIW, I did reproduce this on v5.9 and v5.10 kernels too, worth adding a fixes
+tag for stable to pick it up? v5.8 built fine when I tried.
 
-On 21:33 Tue 05 Jan 2021, Julian Calaby wrote:
->Hi Bhaskar,
->
->On Tue, Jan 5, 2021 at 9:19 PM Bhaskar Chowdhury <unixbhaskar@gmail.com> wrote:
->>
->> s/defautly/de-faulty/p
->>
->>
->> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
->> ---
->>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
->> index c948dafa0c80..7d02d8abb4eb 100644
->> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
->> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
->> @@ -814,7 +814,7 @@ bool rtl88ee_is_tx_desc_closed(struct ieee80211_hw *hw, u8 hw_queue, u16 index)
->>         u8 own = (u8)rtl88ee_get_desc(hw, entry, true, HW_DESC_OWN);
->>
->>         /*beacon packet will only use the first
->> -        *descriptor defautly,and the own may not
->> +        *descriptor de-faulty,and the own may not
->
->Really? "de-faultly" isn't any better than "defaultly" and in fact
->it's even worse as it breaks up the word "default".
->
-hey, it was written as "defautly" ...and that was simple spelling mistake ..
-so,corrected it.
+Anyway, the patch looks good to me, thanks for the fix!
 
->This change doesn't make sense and the comment really needs to be
->completely re-written by someone who understands what's going on here
->as it barely makes sense.
->
->Thanks,
->
->--
->Julian Calaby
->
->Email: julian.calaby@gmail.com
->Profile: http://www.google.com/profiles/julian.calaby/
+Tested-by: Qais Yousef <qais.yousef@arm.com>
 
---mxo3TOh/lWoLSvis
-Content-Type: application/pgp-signature; name="signature.asc"
+Cheers
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEnwF+nWawchZUPOuwsjqdtxFLKRUFAl/0Q/sACgkQsjqdtxFL
-KRVnggf+LI5YVDBgYgJa2h+GqRVOCTfIbH6pFoe8xBfO0OMeDyHWxcOMxuk5L4Zo
-7+Ty8UBg4wbCApOe/7afVYIxB9IRbdhMZlQX/qxIZu3Q31uOBWh5XcsPMSaZKwAx
-OiO2E8sKE0watERCUgMh12vxdcdIq8wJQvGrbo1Q1s1p/eAIRyixAtlS4/zD1XeT
-XvqO5S5AhyixkLOb9QoLzMX6pBYZOKPWPiCWdiNJBqIv2/uCTHY97Q0ioMXbTpTT
-do0KU4ftKqGAfv8I5V4vC2xk5IS/KIHHFW5P6FnduI025jOFJCzYT6JupCR/ZXCh
-y9angUSSckQ9mBnrgIc4XSFfQaAbBA==
-=LLZj
------END PGP SIGNATURE-----
-
---mxo3TOh/lWoLSvis--
+--
+Qais Yousef
