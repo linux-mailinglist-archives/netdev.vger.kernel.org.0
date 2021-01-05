@@ -2,177 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF0B72EB534
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 23:08:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7EA2EB575
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 23:39:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731682AbhAEWH6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Jan 2021 17:07:58 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62072 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731616AbhAEWHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 17:07:55 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 105LmBrP007796
-        for <netdev@vger.kernel.org>; Tue, 5 Jan 2021 14:07:14 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 35tncue3pt-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 14:07:14 -0800
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 5 Jan 2021 14:07:12 -0800
-Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
-        id 4F1926489D30; Tue,  5 Jan 2021 14:07:06 -0800 (PST)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <willemdebruijn.kernel@gmail.com>, <edumazet@google.com>,
-        <dsahern@gmail.com>
-CC:     <kernel-team@fb.com>
-Subject: [PATCH net-next v1 13/13] skbuff: Rename skb_zcopy_{get|put} to net_zcopy_{get|put}
-Date:   Tue, 5 Jan 2021 14:07:06 -0800
-Message-ID: <20210105220706.998374-14-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20210105220706.998374-1-jonathan.lemon@gmail.com>
-References: <20210105220706.998374-1-jonathan.lemon@gmail.com>
+        id S1730855AbhAEWjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 17:39:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50174 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728893AbhAEWjy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Jan 2021 17:39:54 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E4E722D6E;
+        Tue,  5 Jan 2021 22:39:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609886353;
+        bh=pFezBDqFKZ7qO60emB27Effrm4QyjXMcAEfwl+2zMX8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lDqQ/z+oCQ5mnuV3jL9YuPn2SM7YIwPNDGcdmotiI5AjKCy1N2vkvyVjNenfDrqFu
+         EvRQexdEKl5Kk54q2GSmdk2LwkbueOM4Zkn2BywYzedX3KVQKtF6BFpmOIun1Ks93V
+         mehWQL5hpqAUqL7Juaiw3cohwn4pvnrN2b+bxS1vR43AtSWC9khLX9omqS7CgFyJ3n
+         NHK0XFnu1kO3IQZbia2CqjY6YFRDeblpq+02sZLJcfuK59EN33ATG8R5lI/VS1TvUt
+         CJDwE/rOSO6rnxTUzxirgq+Z5+wRIYfRo/Az4gmlmKekalAG8s7x2tKWA7QS5Uc7ts
+         +DhZI9Ek7zuIg==
+Date:   Tue, 5 Jan 2021 14:39:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        martin.varghese@nokia.com, Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH net v2] net: bareudp: add missing error handling for
+ bareudp_link_config()
+Message-ID: <20210105143912.34e71377@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAM_iQpVMBjoSFH34cunM+e+E6Qu+eWVfoduo5LvyupRHq1OG1w@mail.gmail.com>
+References: <20210105190725.1736246-1-kuba@kernel.org>
+        <CAM_iQpVMBjoSFH34cunM+e+E6Qu+eWVfoduo5LvyupRHq1OG1w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-05_07:2021-01-05,2021-01-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0 mlxscore=0
- adultscore=0 mlxlogscore=326 priorityscore=1501 clxscore=1034
- lowpriorityscore=0 spamscore=0 malwarescore=0 bulkscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101050126
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <bsd@fb.com>
+On Tue, 5 Jan 2021 12:38:54 -0800 Cong Wang wrote:
+> On Tue, Jan 5, 2021 at 11:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > +static void bareudp_dellink(struct net_device *dev, struct list_head *head)
+> > +{
+> > +       struct bareudp_dev *bareudp = netdev_priv(dev);
+> > +
+> > +       list_del(&bareudp->next);
+> > +       unregister_netdevice_queue(dev, head);
+> > +}
+> > +
+> >  static int bareudp_newlink(struct net *net, struct net_device *dev,
+> >                            struct nlattr *tb[], struct nlattr *data[],
+> >                            struct netlink_ext_ack *extack)
+> >  {
+> >         struct bareudp_conf conf;
+> > +       LIST_HEAD(list_kill);
+> >         int err;
+> >
+> >         err = bareudp2info(data, &conf, extack);
+> > @@ -662,17 +671,14 @@ static int bareudp_newlink(struct net *net, struct net_device *dev,
+> >
+> >         err = bareudp_link_config(dev, tb);
+> >         if (err)
+> > -               return err;
+> > +               goto err_unconfig;
+> >
+> >         return 0;
+> > -}
+> > -
+> > -static void bareudp_dellink(struct net_device *dev, struct list_head *head)
+> > -{
+> > -       struct bareudp_dev *bareudp = netdev_priv(dev);
+> >
+> > -       list_del(&bareudp->next);
+> > -       unregister_netdevice_queue(dev, head);
+> > +err_unconfig:
+> > +       bareudp_dellink(dev, &list_kill);
+> > +       unregister_netdevice_many(&list_kill);  
+> 
+> Why do we need unregister_netdevice_many() here? I think
+> bareudp_dellink(dev, NULL) is sufficient as we always have
+> one instance to unregister?
+> 
+> (For the same reason, bareudp_dev_create() does not need it
+> either.)
 
-Unlike the rest of the skb_zcopy_ functions, these routines
-operate on a 'struct ubuf', not a skb.  Remove the 'skb_'
-prefix from the naming to make things clearer.
+Ack, I'm following how bareudp_dev_create() is written. 
 
-Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- include/linux/skbuff.h | 10 +++++-----
- net/core/skbuff.c      |  2 +-
- net/ipv4/ip_output.c   |  2 +-
- net/ipv4/tcp.c         |  4 ++--
- net/ipv6/ip6_output.c  |  2 +-
- 5 files changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 3ec8b83aca3e..961908a22d0e 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1443,7 +1443,7 @@ static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
- 	return is_zcopy ? skb_uarg(skb) : NULL;
- }
- 
--static inline void skb_zcopy_get(struct ubuf_info *uarg)
-+static inline void net_zcopy_get(struct ubuf_info *uarg)
- {
- 	refcount_inc(&uarg->refcnt);
- }
-@@ -1461,7 +1461,7 @@ static inline void skb_zcopy_set(struct sk_buff *skb, struct ubuf_info *uarg,
- 		if (unlikely(have_ref && *have_ref))
- 			*have_ref = false;
- 		else
--			skb_zcopy_get(uarg);
-+			net_zcopy_get(uarg);
- 		skb_zcopy_init(skb, uarg);
- 	}
- }
-@@ -1482,19 +1482,19 @@ static inline void *skb_zcopy_get_nouarg(struct sk_buff *skb)
- 	return (void *)((uintptr_t) skb_shinfo(skb)->destructor_arg & ~0x1UL);
- }
- 
--static inline void skb_zcopy_put(struct ubuf_info *uarg)
-+static inline void net_zcopy_put(struct ubuf_info *uarg)
- {
- 	if (uarg)
- 		uarg->callback(NULL, uarg, true);
- }
- 
--static inline void skb_zcopy_put_abort(struct ubuf_info *uarg, bool have_uref)
-+static inline void net_zcopy_put_abort(struct ubuf_info *uarg, bool have_uref)
- {
- 	if (uarg) {
- 		if (uarg->callback == msg_zerocopy_callback)
- 			msg_zerocopy_put_abort(uarg, have_uref);
- 		else if (have_uref)
--			skb_zcopy_put(uarg);
-+			net_zcopy_put(uarg);
- 	}
- }
- 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index ee288af095f0..45d60c5286fe 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1165,7 +1165,7 @@ struct ubuf_info *msg_zerocopy_realloc(struct sock *sk, size_t size,
- 
- 			/* no extra ref when appending to datagram (MSG_MORE) */
- 			if (sk->sk_type == SOCK_STREAM)
--				skb_zcopy_get(uarg);
-+				net_zcopy_get(uarg);
- 
- 			return uarg;
- 		}
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index d8eb8b827794..2e2657e15279 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1230,7 +1230,7 @@ static int __ip_append_data(struct sock *sk,
- error_efault:
- 	err = -EFAULT;
- error:
--	skb_zcopy_put_abort(uarg, extra_uref);
-+	net_zcopy_put_abort(uarg, extra_uref);
- 	cork->length -= length;
- 	IP_INC_STATS(sock_net(sk), IPSTATS_MIB_OUTDISCARDS);
- 	refcount_add(wmem_alloc_delta, &sk->sk_wmem_alloc);
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 1954190b33c7..2267d21c73a6 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1429,7 +1429,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 		tcp_push(sk, flags, mss_now, tp->nonagle, size_goal);
- 	}
- out_nopush:
--	skb_zcopy_put(uarg);
-+	net_zcopy_put(uarg);
- 	return copied + copied_syn;
- 
- do_error:
-@@ -1440,7 +1440,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 	if (copied + copied_syn)
- 		goto out;
- out_err:
--	skb_zcopy_put_abort(uarg, true);
-+	net_zcopy_put_abort(uarg, true);
- 	err = sk_stream_error(sk, flags, err);
- 	/* make sure we wake any epoll edge trigger waiter */
- 	if (unlikely(tcp_rtx_and_write_queues_empty(sk) && err == -EAGAIN)) {
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index f59cfa39686a..072ce9678616 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1715,7 +1715,7 @@ static int __ip6_append_data(struct sock *sk,
- error_efault:
- 	err = -EFAULT;
- error:
--	skb_zcopy_put_abort(uarg, extra_uref);
-+	net_zcopy_put_abort(uarg, extra_uref);
- 	cork->length -= length;
- 	IP6_INC_STATS(sock_net(sk), rt->rt6i_idev, IPSTATS_MIB_OUTDISCARDS);
- 	refcount_add(wmem_alloc_delta, &sk->sk_wmem_alloc);
--- 
-2.24.1
-
+I can follow up in net-next and change both, sounds good?
