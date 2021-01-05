@@ -2,100 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4822EAAAA
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 13:28:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A9F2EAAB3
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 13:28:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729368AbhAEM0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 07:26:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729183AbhAEM0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 07:26:05 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981BAC0617B9
-        for <netdev@vger.kernel.org>; Tue,  5 Jan 2021 04:24:41 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id q18so36043197wrn.1
-        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 04:24:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vUG4KrkwS/48VCqb3gPEYEavBv7WJyPV6SrQz/KaLAM=;
-        b=JguxiQSaUv6GGwqarkI4f+dXsBJW3n0KkyJDT3BnbU1VaRJXjiAGj0JuAujNpX7oJp
-         4+1wushqPCLsluacp/kpfkNPv0w1FjcYLdcO9VFhA0A04eKqBcNKVgjJRbAMw0v0ac1r
-         7VpQqn/J1idqy6nzVKnjdQyJn89kLUBslkXVS6NZtFBkz86LQi1Fp8u6dw+GW35RLzBs
-         uhy9Fktpf7b/oXCfl2vEqDcKR2gmxfyVngJgf6WU3F0uFyKOn0pYpNnZ8reEhaeVXuB+
-         wQ8YJRPOu6Lv4BWQ+LVyl7fBWbVJQU7f7qe5NwHyza9IBEb7CmWpD+Y3Yy4VbUgQryBy
-         FK/Q==
+        id S1730092AbhAEM0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 07:26:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53637 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729831AbhAEM0q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 07:26:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609849519;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=C6qUNvQUkXdw/sySXAScAycZjE4SmiBEPqohhGFSYUA=;
+        b=hj2RiKF9sAIdfTVEIp9aaAiXskUbJDTNcqE4x/UQ8B5klDk5kDJ/qL/faBMHr9diA2u4rT
+        6+CFlABWq+L6RygMKh99TVk0ZdjI/PEZGCJaPC+1A/CFhmkR1OhMmNYbynBmZO1xGh3rsl
+        gem87WIJDq6mc2ZGykohBEHD2hhH7Lw=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-315-YWDQ12KWP5m8wQ5D6ljcHw-1; Tue, 05 Jan 2021 07:25:18 -0500
+X-MC-Unique: YWDQ12KWP5m8wQ5D6ljcHw-1
+Received: by mail-wr1-f70.google.com with SMTP id b8so14715764wrv.14
+        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 04:25:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=vUG4KrkwS/48VCqb3gPEYEavBv7WJyPV6SrQz/KaLAM=;
-        b=XA2VQ53WYCHINywnMnwPAwZDGoJNhzl5qoPg9f2rxUoU5gdCpOusV0s1WJVkG2ULqr
-         etGV+rHqgymHyEynL71AqBwG3Azi6gtpT8rLWkf9YqLaPOguzbN8+0UeYck9a+WPl5QB
-         W52oh/rnJ9hPdLKf8ZWcpQo2J1/KgcI3dqHZr5M5qXS5cSe4CblggO638ymXvsrdhINX
-         TSTd9ueyXGIoZ30kwNhCFuDsyEXIopCUORysgkO00ROh+Q+8/gWbRKRzronHMoa3XVpF
-         77r7BREHgbJWBwY1ssuT2rM4b9QbwltfsXxPSStDXX84POEb7GxXfYfQzehMOhS0gx7w
-         bjzg==
-X-Gm-Message-State: AOAM530/uPgCNuJW0C66ZMx6SFToCttXbaOP6SSTQd6x2vZVpvrlDZ3J
-        Z52GcYJEYjx5fQt084sdztAjgQ==
-X-Google-Smtp-Source: ABdhPJxyHqkDMckR34D6J0/zEz5z+4AYLnYjJYaIBFFxajHjIK8UpmQDSJm/1GZJWoM1KCiS6UmSig==
-X-Received: by 2002:adf:b519:: with SMTP id a25mr72616195wrd.263.1609849480376;
-        Tue, 05 Jan 2021 04:24:40 -0800 (PST)
-Received: from f2.redhat.com (bzq-79-183-72-147.red.bezeqint.net. [79.183.72.147])
-        by smtp.gmail.com with ESMTPSA id 138sm4242281wma.41.2021.01.05.04.24.39
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 05 Jan 2021 04:24:39 -0800 (PST)
-From:   Yuri Benditovich <yuri.benditovich@daynix.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     yan@daynix.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 7/7] tun: report new tun feature IFF_HASH
-Date:   Tue,  5 Jan 2021 14:24:16 +0200
-Message-Id: <20210105122416.16492-8-yuri.benditovich@daynix.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210105122416.16492-1-yuri.benditovich@daynix.com>
-References: <20210105122416.16492-1-yuri.benditovich@daynix.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=C6qUNvQUkXdw/sySXAScAycZjE4SmiBEPqohhGFSYUA=;
+        b=BZxMS0VHeq5r79sonJ4AaVUC+fAVqUHPW/8h5VKZiE+DXS39lqPrfnxMdH/I779sYr
+         eT+yCNQMMp1RDrd9h6nW/YtCkg0mBIoi080hVYXSO8+BxvuMqgHMsTTxsqv8MFjAscHV
+         7McBowG1c/ZzAcjIzec3XQPQjjG/SArOMZ/bGFO713tuKMKqBqF5/Y9SPO/17C37xEw7
+         NmNw6BESVohwKgXg7Eu+dYWT1t6rYqSwK+AHHg62dRTrXmMWAn9qMD/ynBBdXh+kci9X
+         46CTiGOJgPXYYWkMxev76wWzQFhbLivr61ypCLRfgiP7qRYrVvOlvv4NoG5cmT416ghx
+         mI/A==
+X-Gm-Message-State: AOAM53303f8g0I61dX+ho9h5mOCvTC1m5dprRHvGfP2QOI44G7J33HDD
+        44fuAPITgTIZ/rTAbbpjzoN/enr1lTXQD890gxZex/qMNpSM+1WnBz3RCp6z8i7/4bJ1kN4GVqO
+        yCdAPTcdRJV6RELbt
+X-Received: by 2002:a7b:c052:: with SMTP id u18mr3219906wmc.139.1609849517012;
+        Tue, 05 Jan 2021 04:25:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz2goxvm/vsk8E0XbHSlB3QZqCWkZVDQXKjwx5I6g+NamkUIWMgQNyLV5/lPhj5fdUxvUxiqQ==
+X-Received: by 2002:a7b:c052:: with SMTP id u18mr3219882wmc.139.1609849516880;
+        Tue, 05 Jan 2021 04:25:16 -0800 (PST)
+Received: from redhat.com (bzq-79-178-32-166.red.bezeqint.net. [79.178.32.166])
+        by smtp.gmail.com with ESMTPSA id o83sm4030933wme.21.2021.01.05.04.25.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jan 2021 04:25:16 -0800 (PST)
+Date:   Tue, 5 Jan 2021 07:25:11 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, dust.li@linux.alibaba.com,
+        tonylu@linux.alibaba.com, Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:VIRTIO CORE AND NET DRIVERS" 
+        <virtualization@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:XDP SOCKETS (AF_XDP)" <bpf@vger.kernel.org>
+Subject: Re: [PATCH netdev 0/5] virtio-net support xdp socket zero copy xmit
+Message-ID: <20210105072316-mutt-send-email-mst@kernel.org>
+References: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IFF_HASH feature indicates that the tun supports
-TUNSETHASHPOPULATION ioctl and can propagate the hash
-data to the virtio-net packet.
+On Tue, Jan 05, 2021 at 05:11:38PM +0800, Xuan Zhuo wrote:
+> The first patch made some adjustments to xsk.
+> 
+> The second patch itself can be used as an independent patch to solve the problem
+> that XDP may fail to load when the number of queues is insufficient.
+> 
+> The third to last patch implements support for xsk in virtio-net.
+> 
+> A practical problem with virtio is that tx interrupts are not very reliable.
+> There will always be some missing or delayed tx interrupts.
 
-Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
----
- drivers/net/tun.c           | 2 +-
- include/uapi/linux/if_tun.h | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+Would appreciate a bit more data on this one. Is this a host bug? Device bug?
+Can we limit the work around somehow?
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 214feb0b16fb..b46aa8941a9d 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -88,7 +88,7 @@ static void tun_default_link_ksettings(struct net_device *dev,
- #define TUN_VNET_LE     0x80000000
- #define TUN_VNET_BE     0x40000000
- 
--#define TUN_FEATURES (IFF_NO_PI | IFF_ONE_QUEUE | IFF_VNET_HDR | \
-+#define TUN_FEATURES (IFF_NO_PI | IFF_ONE_QUEUE | IFF_VNET_HDR | IFF_HASH |\
- 		      IFF_MULTI_QUEUE | IFF_NAPI | IFF_NAPI_FRAGS)
- 
- #define GOODCOPY_LEN 128
-diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tun.h
-index 0fd43533da26..116b84ede3a0 100644
---- a/include/uapi/linux/if_tun.h
-+++ b/include/uapi/linux/if_tun.h
-@@ -73,6 +73,7 @@
- #define IFF_ONE_QUEUE	0x2000
- #define IFF_VNET_HDR	0x4000
- #define IFF_TUN_EXCL	0x8000
-+#define IFF_HASH	0x0080
- #define IFF_MULTI_QUEUE 0x0100
- #define IFF_ATTACH_QUEUE 0x0200
- #define IFF_DETACH_QUEUE 0x0400
--- 
-2.17.1
+> So I specially added
+> a point timer to solve this problem. Of course, considering performance issues,
+> The timer only triggers when the ring of the network card is full.
+> 
+> Regarding the issue of virtio-net supporting xsk's zero copy rx, I am also
+> developing it, but I found that the modification may be relatively large, so I
+> consider this patch set to be separated from the code related to xsk zero copy
+> rx.
+> 
+> Xuan Zhuo (5):
+>   xsk: support get page for drv
+>   virtio-net: support XDP_TX when not more queues
+>   virtio-net, xsk: distinguish XDP_TX and XSK XMIT ctx
+>   xsk, virtio-net: prepare for support xsk
+>   virtio-net, xsk: virtio-net support xsk zero copy tx
+> 
+>  drivers/net/virtio_net.c    | 643 +++++++++++++++++++++++++++++++++++++++-----
+>  include/linux/netdevice.h   |   1 +
+>  include/net/xdp_sock_drv.h  |  10 +
+>  include/net/xsk_buff_pool.h |   1 +
+>  net/xdp/xsk_buff_pool.c     |  10 +-
+>  5 files changed, 597 insertions(+), 68 deletions(-)
+> 
+> --
+> 1.8.3.1
 
