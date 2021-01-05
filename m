@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE78A2EADAF
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:46:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C1F2EADAB
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:46:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728568AbhAEOqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 09:46:47 -0500
-Received: from gofer.mess.org ([88.97.38.141]:34493 "EHLO gofer.mess.org"
+        id S1728217AbhAEOqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 09:46:21 -0500
+Received: from gofer.mess.org ([88.97.38.141]:46111 "EHLO gofer.mess.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726827AbhAEOqS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Jan 2021 09:46:18 -0500
+        id S1728023AbhAEOqT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Jan 2021 09:46:19 -0500
 Received: by gofer.mess.org (Postfix, from userid 1000)
-        id CA9C5C639B; Tue,  5 Jan 2021 14:45:34 +0000 (GMT)
+        id 01ED6C63A5; Tue,  5 Jan 2021 14:45:34 +0000 (GMT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mess.org; s=2020;
-        t=1609857934; bh=vNMC+XjILBx6ybTc4yZLUSBL7ZhoWqLqlWehk6Wem00=;
+        t=1609857935; bh=g86agJ+LPCw8ZkNJiHIjn0DJBtQq5JIr7Xq67deH28w=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=QNy4B2Y1H5sUO2bx8i2G2OrKcF4OQHcTYQ/hz1qhHJUfjMHnxlev1dvWPw4rCJVpX
-         ZPJN8Xxv8EqEKxXzggLeW5+PfqpZP8AiGBIwugqi/8rVU1df5el1azskZ5sRkBIuWk
-         G1lKr+1lp70HUT4jQEXVYmqt8VLwOypufaANYaTWse7gQH3NpZCsMsGAl0psRXN0xe
-         pDUq1y85AANV4++JIfzRHtoT7eOJDOpoPPTHox4LMMNp7ghkYnEgP8lrbl1BopDnrR
-         0TbZgFOYSb08SUwsVQV1Wf1cjn0ZJXw4FbPCTA4lyBRs9oEfinqwXMCEvtqT5utvYw
-         8Gkrslnd/Njxw==
+        b=XHOybA/r4qqH1zaC2uKTFdjC2EijfmJkW3d1TIyxp0nrJ3ZBi+LQthgf5jiCUFEb5
+         zR+ZMU3J3k6BCc0FOnZuBWL5oVjbdlhIJpd7Hp7Mp5j1Sc4bF/vY84Kbfcc011OUpC
+         LZLRppiXbiEV5ko1jHT4gPGaBJ2LbDbhTxkbHl0aouRai2FM98PG13HatJzHYbJX0C
+         6YRHdrobCpiPQwTp0K+OaV8gOwSNmuhhV97jW77PufdLz3CILYqcJduwwjsxKqtTl4
+         7gu5rHs/siDqlhWC+aa2QhOrIClNp8CagKEOoQiKJZcCTDh76JRPYUcJ0vryfv/N+P
+         E4tn0ykEpX8gw==
 From:   Sean Young <sean@mess.org>
 To:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -37,9 +37,9 @@ To:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
         linux-doc@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         clang-built-linux@googlegroups.com
-Subject: [PATCH v3 2/4] libbpf: add support for ints larger than 128 bits
-Date:   Tue,  5 Jan 2021 14:45:32 +0000
-Message-Id: <3d3f8d4cc59b61d42e05d5f66d7b29fc7eb20cfa.1609855479.git.sean@mess.org>
+Subject: [PATCH v3 3/4] bpftool: add support for ints larger than 128 bits
+Date:   Tue,  5 Jan 2021 14:45:33 +0000
+Message-Id: <67ffe6998af5cf88bdda6eaa1e6b085db1e093ed.1609855479.git.sean@mess.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <cover.1609855479.git.sean@mess.org>
 References: <cover.1609855479.git.sean@mess.org>
@@ -60,22 +60,67 @@ Link: https://reviews.llvm.org/D93103
 
 Signed-off-by: Sean Young <sean@mess.org>
 ---
- tools/lib/bpf/btf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/bpf/bpftool/btf_dumper.c | 40 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 3c3f2bc6c652..a676373f052b 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -1722,7 +1722,7 @@ int btf__add_int(struct btf *btf, const char *name, size_t byte_sz, int encoding
- 	if (!name || !name[0])
- 		return -EINVAL;
- 	/* byte_sz must be power of 2 */
--	if (!byte_sz || (byte_sz & (byte_sz - 1)) || byte_sz > 16)
-+	if (!byte_sz || (byte_sz & (byte_sz - 1)) || byte_sz > 64)
- 		return -EINVAL;
- 	if (encoding & ~(BTF_INT_SIGNED | BTF_INT_CHAR | BTF_INT_BOOL))
- 		return -EINVAL;
+diff --git a/tools/bpf/bpftool/btf_dumper.c b/tools/bpf/bpftool/btf_dumper.c
+index 0e9310727281..8b5318ec5c26 100644
+--- a/tools/bpf/bpftool/btf_dumper.c
++++ b/tools/bpf/bpftool/btf_dumper.c
+@@ -271,6 +271,41 @@ static void btf_int128_print(json_writer_t *jw, const void *data,
+ 	}
+ }
+ 
++static void btf_bigint_print(json_writer_t *jw, const void *data, int nr_bits,
++			     bool is_plain_text)
++{
++	char buf[nr_bits / 4 + 1];
++	int last_u64 = nr_bits / 64 - 1;
++	bool seen_nonzero = false;
++	int i;
++
++	for (i = 0; i <= last_u64; i++) {
++#ifdef __BIG_ENDIAN_BITFIELD
++		__u64 v = ((__u64 *)data)[i];
++#else
++		__u64 v = ((__u64 *)data)[last_u64 - i];
++#endif
++
++		if (!seen_nonzero) {
++			if (!v && i != last_u64)
++				continue;
++
++			snprintf(buf, sizeof(buf), "%llx", v);
++
++			seen_nonzero = true;
++		} else {
++			size_t off = strlen(buf);
++
++			snprintf(buf + off, sizeof(buf) - off, "%016llx", v);
++		}
++	}
++
++	if (is_plain_text)
++		jsonw_printf(jw, "0x%s", buf);
++	else
++		jsonw_printf(jw, "\"0x%s\"", buf);
++}
++
+ static void btf_int128_shift(__u64 *print_num, __u16 left_shift_bits,
+ 			     __u16 right_shift_bits)
+ {
+@@ -373,6 +408,11 @@ static int btf_dumper_int(const struct btf_type *t, __u8 bit_offset,
+ 		return 0;
+ 	}
+ 
++	if (nr_bits > 128) {
++		btf_bigint_print(jw, data, nr_bits, is_plain_text);
++		return 0;
++	}
++
+ 	if (nr_bits == 128) {
+ 		btf_int128_print(jw, data, is_plain_text);
+ 		return 0;
 -- 
 2.29.2
 
