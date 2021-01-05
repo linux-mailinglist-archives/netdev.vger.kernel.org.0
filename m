@@ -2,143 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3339A2EA933
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 11:52:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 654892EA977
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 12:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729412AbhAEKuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 05:50:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728963AbhAEKue (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 05:50:34 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CC6C061574;
-        Tue,  5 Jan 2021 02:49:54 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id m23so27848629ioy.2;
-        Tue, 05 Jan 2021 02:49:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SZtcMCWcM95xhz6VJ/T22tr2CGPc3L3+n4XwdXE0LY0=;
-        b=s2v2ZMxzMup1cuYJnmn0CA0lOVqCXNl5BAWRg2eT9bwWHKBr1btQQt1BA0e8EH+V1H
-         Da4RTLOYxI71cGkPbJf9ak12/ByKw2hC7AQ3Q0XjU/v5i5cvz2w4ca9T7L26ykbqrSGA
-         f8JfSm7xPHxGW8ZZzCRvNRoacUxZfUG10ZjYz+4cvrW4ZSyS6fOIsYhLGF0LKgmVRrbu
-         TLdr2sbLOM5Db6p9xDKgOaPdwXOVQyhnnG3gqJDic6HHqbpTnm3+oVqEkHsfgWd+/ahl
-         S3IyKLInDaM5V+CiO+MsNBvdDRXvf3q7cTCp7TIF4grmkOlqqaDYb+3sC9bqh0U3xdPk
-         YjYQ==
+        id S1729518AbhAELED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 06:04:03 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:35473 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729363AbhAELEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 06:04:02 -0500
+Received: by mail-il1-f197.google.com with SMTP id p6so30296681ilb.2
+        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 03:03:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=SZtcMCWcM95xhz6VJ/T22tr2CGPc3L3+n4XwdXE0LY0=;
-        b=CryLWh7HLMayPPN62zSxWzSCm0U32VW/knO0VOkBGO9Fmmi9sHCjaJ1FCuwoTKimnb
-         c6IF6PWESKRbY5jYEbrMAIZ1J4wkPFxpTRUQ18wDCQ8EF78NfgzLAtB5L+MKlM9tAH++
-         AhVMfF+0WSlyD3QlO9OrD+wspzDy7geHJoKCiGOUZUVR5/ltDzv+XKSEvUGDFjoTWDsr
-         7SBna2XM6Ci6kEX3SEnu7zMWVUq5zA9v38T+/vx/+C8YwTvd+fbX1XA5NkKqSrbTTNbO
-         YsKoa5jf4sEhlSHCyKmTHI11KKxAt/xnA8W2Mk+nrYbQk020sGJjynq8ZEovGFLORTnn
-         Q6/Q==
-X-Gm-Message-State: AOAM530UHcaeb2uBrL0xfgYgCQS7hwGrCs3T3Sgw6/xi79bODQGHiV+S
-        iAfY1PJvtEuDEyg3koYgJn4=
-X-Google-Smtp-Source: ABdhPJz5gLH+sxI4EXIVR4ivcK9M3BTj6+lM/tQw2CYLMrYCzUZRRdZpPauS9BFs0ZktrXUGkgshAw==
-X-Received: by 2002:a5e:820c:: with SMTP id l12mr61678828iom.50.1609843793884;
-        Tue, 05 Jan 2021 02:49:53 -0800 (PST)
-Received: from Gentoo ([156.146.37.136])
-        by smtp.gmail.com with ESMTPSA id a7sm43634349iln.0.2021.01.05.02.49.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jan 2021 02:49:53 -0800 (PST)
-Date:   Tue, 5 Jan 2021 16:20:02 +0530
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     Julian Calaby <julian.calaby@gmail.com>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        baijiaju1990@gmail.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] drivers: wireless: rtlwifi: rtl8192ce: Fix construction
- of word rtl8192ce/trx.c
-Message-ID: <X/REWkSdWaoXdLxA@Gentoo>
-Mail-Followup-To: Bhaskar Chowdhury <unixbhaskar@gmail.com>,
-        Julian Calaby <julian.calaby@gmail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Larry Finger <Larry.Finger@lwfinger.net>, baijiaju1990@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20210105102751.21237-1-unixbhaskar@gmail.com>
- <CAGRGNgWfHb=5jS_Dg0pKw7q_K9mkd8S2o70OCBEnWmaJY+5V9w@mail.gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=L3uN6pisff8aaO4cxH6i9R3Ew7bD6TQmaDC9RmrPw9E=;
+        b=oZk3QgXgkW/avK00n2lfLWb1hE6ucVT2d8DMimeXTMSzmfD1gaDEgNTA1TsK27Apm5
+         HQv6Cs8U77E0K2fi6UdasZmUxf6UnHHfH8cbfwyzWc8f8oUyq9KkNEw+BNzBjFZiPvKu
+         jU9p9sIZAIB9pbPofxB5IktO15RTzozPldIr1tS0ePJ53jdzz8NyNmoiF4Lp68LBhL0K
+         lqo5sUB6yplGFXuIAdHv2v2M9ynvi3P/kcSo+w3upGrN/8y9VCFZxzESamNEL0x21/4a
+         Pr3k8kgzJUTSnVgZCrmTRM5bZESLx+2+Dup33KvW+Rr/RbEKAxPCzxwENOwKr3mmNQvI
+         K0vA==
+X-Gm-Message-State: AOAM531wA3v8+r2oHqSZ8cyX9irYtVsOWqey9E2KRH0eVQmJfHBaAove
+        xjV00IbiftCArVqb2gQPYCBqlVeq4qNvpOTekGPea3B8s6Kc
+X-Google-Smtp-Source: ABdhPJxzSl5Zqr+paPHN/saRVltHDzUUF3FrwKSVQzTlt4Pg93UUoeDRkmMBXDIlOKyGASnogv/6VkOppWlos5gW8638Lv5sL2/j
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="EbciqnUOLbvDbSPl"
-Content-Disposition: inline
-In-Reply-To: <CAGRGNgWfHb=5jS_Dg0pKw7q_K9mkd8S2o70OCBEnWmaJY+5V9w@mail.gmail.com>
+X-Received: by 2002:a05:6e02:1605:: with SMTP id t5mr46211487ilu.232.1609844601146;
+ Tue, 05 Jan 2021 03:03:21 -0800 (PST)
+Date:   Tue, 05 Jan 2021 03:03:21 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000098536705b8252721@google.com>
+Subject: WARNING: locking bug in l2cap_sock_teardown_cb
+From:   syzbot <syzbot+9cde9e1af823debba3b2@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
---EbciqnUOLbvDbSPl
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
+syzbot found the following issue on:
 
-On 21:34 Tue 05 Jan 2021, Julian Calaby wrote:
->Hi Bhaskar,
->
->On Tue, Jan 5, 2021 at 9:32 PM Bhaskar Chowdhury <unixbhaskar@gmail.com> wrote:
->>
->> s/defautly/de-faulty/p
->>
->> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
->> ---
->>  drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
->> index 4165175cf5c0..d53397e7eb2e 100644
->> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
->> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
->> @@ -671,7 +671,7 @@ bool rtl92ce_is_tx_desc_closed(struct ieee80211_hw *hw,
->>         u8 own = (u8)rtl92ce_get_desc(hw, entry, true, HW_DESC_OWN);
->>
->>         /*beacon packet will only use the first
->> -        *descriptor defautly,and the own may not
->> +        *descriptor de-faulty,and the own may not
->
->Same comments here as the previous patch:
->
->"de-faultly" makes less sense than "defaultly". This comment needs to
->be re-written by someone who knows what's going on here.
->
-Again, it was written "defautly" ..which is a wrong spelling , it has got
-nothing do with other thing.
->Thanks,
->
->--
->Julian Calaby
->
->Email: julian.calaby@gmail.com
->Profile: http://www.google.com/profiles/julian.calaby/
+HEAD commit:    139711f0 Merge branch 'akpm' (patches from Andrew)
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17a6d077500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=97ec68097e292826
+dashboard link: https://syzkaller.appspot.com/bug?extid=9cde9e1af823debba3b2
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
---EbciqnUOLbvDbSPl
-Content-Type: application/pgp-signature; name="signature.asc"
+Unfortunately, I don't have any reproducer for this issue yet.
 
------BEGIN PGP SIGNATURE-----
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9cde9e1af823debba3b2@syzkaller.appspotmail.com
 
-iQEzBAABCAAdFiEEnwF+nWawchZUPOuwsjqdtxFLKRUFAl/0RFoACgkQsjqdtxFL
-KRWrSAf7BOkYm/u93t//q7LmVGhbtZLS54NjoHN9u7mwJ7a41kKRkbJiWhHEFOwm
-CaAgAV2sBGFDsFUi8EAxpBks8XclVqpMBvG6Kf5D/CjESQUCEJoJj2Mh2ct/h8I6
-58z/7EamuuNo5A6se75m4d3KQ8wcQbaQMYZeTqcht46IvBK6SiUrrWAau1DFYWkZ
-RplWJvnSGTwBVxgoJ9ORPVB0iE8bSUbFw6K7UtMy+BOfXq9fBtEB9bJBdcdvZ8iH
-N9drl855n0NpwBeTZ2WMHo7CPYjOuulB+oBKLxEh3Th9cuqxzleGuCmnBbMG1G5n
-YTBPSz7m9NcHZMwYdI9Wn6nXFHbY0A==
-=znz5
------END PGP SIGNATURE-----
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(1)
+WARNING: CPU: 1 PID: 69 at kernel/locking/lockdep.c:202 hlock_class kernel/locking/lockdep.c:202 [inline]
+WARNING: CPU: 1 PID: 69 at kernel/locking/lockdep.c:202 hlock_class kernel/locking/lockdep.c:191 [inline]
+WARNING: CPU: 1 PID: 69 at kernel/locking/lockdep.c:202 check_wait_context kernel/locking/lockdep.c:4506 [inline]
+WARNING: CPU: 1 PID: 69 at kernel/locking/lockdep.c:202 __lock_acquire+0x165e/0x5500 kernel/locking/lockdep.c:4782
+Modules linked in:
+CPU: 1 PID: 69 Comm: kworker/1:1 Not tainted 5.11.0-rc1-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+Workqueue: events l2cap_chan_timeout
+RIP: 0010:hlock_class kernel/locking/lockdep.c:202 [inline]
+RIP: 0010:hlock_class kernel/locking/lockdep.c:191 [inline]
+RIP: 0010:check_wait_context kernel/locking/lockdep.c:4506 [inline]
+RIP: 0010:__lock_acquire+0x165e/0x5500 kernel/locking/lockdep.c:4782
+Code: 08 84 d2 0f 85 1c 2c 00 00 8b 15 95 67 97 0b 85 d2 0f 85 5f fa ff ff 48 c7 c6 a0 a7 4b 89 48 c7 c7 c0 9d 4b 89 e8 89 7f 5b 07 <0f> 0b e9 45 fa ff ff c7 44 24 60 fe ff ff ff 41 bf 01 00 00 00 c7
+RSP: 0018:ffffc900007b7900 EFLAGS: 00010082
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: ffff88801115d280 RSI: ffffffff815b2ae5 RDI: fffff520000f6f12
+RBP: ffff88801115d280 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815abc8e R11: 0000000000000000 R12: ffff88801115dca8
+R13: 00000000000013db R14: ffff888020f740a0 R15: 0000000000040000
+FS:  0000000000000000(0000) GS:ffff88802cb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd559fd13c CR3: 000000005a46e000 CR4: 0000000000350ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ lock_acquire kernel/locking/lockdep.c:5437 [inline]
+ lock_acquire+0x29d/0x740 kernel/locking/lockdep.c:5402
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+ _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+ spin_lock_bh include/linux/spinlock.h:359 [inline]
+ lock_sock_nested+0x3b/0x110 net/core/sock.c:3049
+ l2cap_sock_teardown_cb+0xa1/0x660 net/bluetooth/l2cap_sock.c:1520
+ l2cap_chan_del+0xbc/0xa80 net/bluetooth/l2cap_core.c:618
+ l2cap_chan_close+0x1bc/0xaf0 net/bluetooth/l2cap_core.c:823
+ l2cap_chan_timeout+0x17e/0x2f0 net/bluetooth/l2cap_core.c:436
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
 
---EbciqnUOLbvDbSPl--
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
