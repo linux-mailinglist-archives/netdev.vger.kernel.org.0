@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 437072EA70E
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:13:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5661E2EA70C
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727762AbhAEJMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727800AbhAEJMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 5 Jan 2021 04:12:35 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:54094 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726677AbhAEJMd (ORCPT
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:42207 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727657AbhAEJMd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:12:33 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0UKog-tc_1609837907;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UKog-tc_1609837907)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0UKoYpdO_1609837908;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UKoYpdO_1609837908)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 05 Jan 2021 17:11:47 +0800
+          Tue, 05 Jan 2021 17:11:49 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     netdev@vger.kernel.org
 Cc:     dust.li@linux.alibaba.com, tonylu@linux.alibaba.com,
@@ -36,9 +36,9 @@ Cc:     dust.li@linux.alibaba.com, tonylu@linux.alibaba.com,
         virtualization@lists.linux-foundation.org (open list:VIRTIO CORE AND
         NET DRIVERS), linux-kernel@vger.kernel.org (open list),
         bpf@vger.kernel.org (open list:XDP SOCKETS (AF_XDP))
-Subject: [PATCH netdev 3/5] virtio-net, xsk: distinguish XDP_TX and XSK XMIT ctx
-Date:   Tue,  5 Jan 2021 17:11:41 +0800
-Message-Id: <a345bc1ae0ffba4110892a2323df333d314a9075.1609837120.git.xuanzhuo@linux.alibaba.com>
+Subject: [PATCH netdev 4/5] xsk, virtio-net: prepare for support xsk
+Date:   Tue,  5 Jan 2021 17:11:42 +0800
+Message-Id: <4c424e0980420dfff194a9d1c8e66609b2fa6cba.1609837120.git.xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
 References: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
@@ -48,177 +48,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If support xsk, a new ptr will be recovered during the
-process of freeing the old ptr. In order to distinguish between ctx sent
-by XDP_TX and ctx sent by xsk, a struct is added here to distinguish
-between these two situations. virtnet_xdp_type.type It is used to
-distinguish different ctx, and virtnet_xdp_type.offset is used to record
-the offset between "true ctx" and virtnet_xdp_type.
+Split function free_old_xmit_skbs, add sub-function __free_old_xmit_ptr,
+which is convenient to call with other statistical information, and
+supports the parameter 'xsk_wakeup' required for processing xsk.
 
-The newly added virtnet_xsk_hdr will be used for xsk.
+Use netif stop check as a function virtnet_sq_stop_check, which will be
+used when adding xsk support.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/net/virtio_net.c | 77 ++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 62 insertions(+), 15 deletions(-)
+ drivers/net/virtio_net.c | 95 ++++++++++++++++++++++++++----------------------
+ 1 file changed, 52 insertions(+), 43 deletions(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index f2349b8..df38a9f 100644
+index df38a9f..e744dce 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -94,6 +94,22 @@ struct virtnet_rq_stats {
- 	u64 kicks;
+@@ -263,6 +263,11 @@ struct padded_vnet_hdr {
+ 	char padding[4];
  };
  
-+enum {
-+	XDP_TYPE_XSK,
-+	XDP_TYPE_TX,
-+};
++static void __free_old_xmit_ptr(struct send_queue *sq, bool in_napi,
++				bool xsk_wakeup,
++				unsigned int *_packets, unsigned int *_bytes);
++static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi);
 +
-+struct virtnet_xdp_type {
-+	int offset:24;
-+	unsigned type:8;
-+};
-+
-+struct virtnet_xsk_hdr {
-+	struct virtnet_xdp_type type;
-+	struct virtio_net_hdr_mrg_rxbuf hdr;
-+	u32 len;
-+};
-+
- #define VIRTNET_SQ_STAT(m)	offsetof(struct virtnet_sq_stats, m)
- #define VIRTNET_RQ_STAT(m)	offsetof(struct virtnet_rq_stats, m)
- 
-@@ -252,14 +268,19 @@ static bool is_xdp_frame(void *ptr)
+ static bool is_xdp_frame(void *ptr)
+ {
  	return (unsigned long)ptr & VIRTIO_XDP_FLAG;
+@@ -376,6 +381,37 @@ static void skb_xmit_done(struct virtqueue *vq)
+ 		netif_wake_subqueue(vi->dev, vq2txq(vq));
  }
  
--static void *xdp_to_ptr(struct xdp_frame *ptr)
-+static void *xdp_to_ptr(struct virtnet_xdp_type *ptr)
- {
- 	return (void *)((unsigned long)ptr | VIRTIO_XDP_FLAG);
- }
- 
--static struct xdp_frame *ptr_to_xdp(void *ptr)
-+static struct virtnet_xdp_type *ptr_to_xtype(void *ptr)
- {
--	return (struct xdp_frame *)((unsigned long)ptr & ~VIRTIO_XDP_FLAG);
-+	return (struct virtnet_xdp_type *)((unsigned long)ptr & ~VIRTIO_XDP_FLAG);
++static void virtnet_sq_stop_check(struct send_queue *sq, bool in_napi)
++{
++	struct virtnet_info *vi = sq->vq->vdev->priv;
++	struct net_device *dev = vi->dev;
++	int qnum = sq - vi->sq;
++
++	/* If running out of space, stop queue to avoid getting packets that we
++	 * are then unable to transmit.
++	 * An alternative would be to force queuing layer to requeue the skb by
++	 * returning NETDEV_TX_BUSY. However, NETDEV_TX_BUSY should not be
++	 * returned in a normal path of operation: it means that driver is not
++	 * maintaining the TX queue stop/start state properly, and causes
++	 * the stack to do a non-trivial amount of useless work.
++	 * Since most packets only take 1 or 2 ring slots, stopping the queue
++	 * early means 16 slots are typically wasted.
++	 */
++
++	if (sq->vq->num_free < 2 + MAX_SKB_FRAGS) {
++		netif_stop_subqueue(dev, qnum);
++		if (!sq->napi.weight &&
++		    unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
++			/* More just got used, free them then recheck. */
++			free_old_xmit_skbs(sq, in_napi);
++			if (sq->vq->num_free >= 2 + MAX_SKB_FRAGS) {
++				netif_start_subqueue(dev, qnum);
++				virtqueue_disable_cb(sq->vq);
++			}
++		}
++	}
 +}
 +
-+static void *xtype_got_ptr(struct virtnet_xdp_type *xdptype)
-+{
-+	return (char *)xdptype + xdptype->offset;
- }
- 
- /* Converting between virtqueue no. and kernel tx/rx queue no.
-@@ -460,11 +481,16 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
- 				   struct xdp_frame *xdpf)
- {
- 	struct virtio_net_hdr_mrg_rxbuf *hdr;
-+	struct virtnet_xdp_type *xdptype;
- 	int err;
- 
--	if (unlikely(xdpf->headroom < vi->hdr_len))
-+	if (unlikely(xdpf->headroom < vi->hdr_len + sizeof(*xdptype)))
- 		return -EOVERFLOW;
- 
-+	xdptype = (struct virtnet_xdp_type *)(xdpf + 1);
-+	xdptype->offset = (char *)xdpf - (char *)xdptype;
-+	xdptype->type = XDP_TYPE_TX;
-+
- 	/* Make room for virtqueue hdr (also change xdpf->headroom?) */
- 	xdpf->data -= vi->hdr_len;
- 	/* Zero header and leave csum up to XDP layers */
-@@ -474,7 +500,7 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
- 
- 	sg_init_one(sq->sg, xdpf->data, xdpf->len);
- 
--	err = virtqueue_add_outbuf(sq->vq, sq->sg, 1, xdp_to_ptr(xdpf),
-+	err = virtqueue_add_outbuf(sq->vq, sq->sg, 1, xdp_to_ptr(xdptype),
- 				   GFP_ATOMIC);
- 	if (unlikely(err))
- 		return -ENOSPC; /* Caller handle free/refcnt */
-@@ -544,8 +570,11 @@ static int virtnet_xdp_xmit(struct net_device *dev,
- 	/* Free up any pending old buffers before queueing new ones. */
- 	while ((ptr = virtqueue_get_buf(sq->vq, &len)) != NULL) {
- 		if (likely(is_xdp_frame(ptr))) {
--			struct xdp_frame *frame = ptr_to_xdp(ptr);
-+			struct virtnet_xdp_type *xtype;
-+			struct xdp_frame *frame;
- 
-+			xtype = ptr_to_xtype(ptr);
-+			frame = xtype_got_ptr(xtype);
- 			bytes += frame->len;
- 			xdp_return_frame(frame);
- 		} else {
-@@ -1395,24 +1424,34 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
- 
- static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
- {
+ #define MRG_CTX_HEADER_SHIFT 22
+ static void *mergeable_len_to_ctx(unsigned int truesize,
+ 				  unsigned int headroom)
+@@ -543,13 +579,11 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+ 	struct receive_queue *rq = vi->rq;
+ 	struct bpf_prog *xdp_prog;
+ 	struct send_queue *sq;
 -	unsigned int len;
- 	unsigned int packets = 0;
- 	unsigned int bytes = 0;
+ 	int packets = 0;
+ 	int bytes = 0;
+ 	int drops = 0;
+ 	int kicks = 0;
+ 	int ret, err;
 -	void *ptr;
-+	unsigned int len;
-+	struct virtnet_xdp_type *xtype;
-+	struct xdp_frame        *frame;
-+	struct virtnet_xsk_hdr  *xskhdr;
-+	struct sk_buff          *skb;
-+	void                    *ptr;
+ 	int i;
  
- 	while ((ptr = virtqueue_get_buf(sq->vq, &len)) != NULL) {
- 		if (likely(!is_xdp_frame(ptr))) {
--			struct sk_buff *skb = ptr;
-+			skb = ptr;
+ 	/* Only allow ndo_xdp_xmit if XDP is loaded on dev, as this
+@@ -567,24 +601,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+ 		goto out;
+ 	}
  
- 			pr_debug("Sent skb %p\n", skb);
- 
- 			bytes += skb->len;
- 			napi_consume_skb(skb, in_napi);
- 		} else {
--			struct xdp_frame *frame = ptr_to_xdp(ptr);
-+			xtype = ptr_to_xtype(ptr);
- 
+-	/* Free up any pending old buffers before queueing new ones. */
+-	while ((ptr = virtqueue_get_buf(sq->vq, &len)) != NULL) {
+-		if (likely(is_xdp_frame(ptr))) {
+-			struct virtnet_xdp_type *xtype;
+-			struct xdp_frame *frame;
+-
+-			xtype = ptr_to_xtype(ptr);
+-			frame = xtype_got_ptr(xtype);
 -			bytes += frame->len;
 -			xdp_return_frame(frame);
-+			if (xtype->type == XDP_TYPE_XSK) {
-+				xskhdr = (struct virtnet_xsk_hdr *)xtype;
-+				bytes += xskhdr->len;
-+			} else {
-+				frame = xtype_got_ptr(xtype);
-+				xdp_return_frame(frame);
-+				bytes += frame->len;
-+			}
- 		}
+-		} else {
+-			struct sk_buff *skb = ptr;
+-
+-			bytes += skb->len;
+-			napi_consume_skb(skb, false);
+-		}
+-		packets++;
+-	}
++	__free_old_xmit_ptr(sq, false, true, &packets, &bytes);
+ 
+ 	for (i = 0; i < n; i++) {
+ 		struct xdp_frame *xdpf = frames[i];
+@@ -1422,7 +1439,9 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+ 	return stats.packets;
+ }
+ 
+-static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
++static void __free_old_xmit_ptr(struct send_queue *sq, bool in_napi,
++				bool xsk_wakeup,
++				unsigned int *_packets, unsigned int *_bytes)
+ {
+ 	unsigned int packets = 0;
+ 	unsigned int bytes = 0;
+@@ -1456,6 +1475,17 @@ static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
  		packets++;
  	}
-@@ -2675,14 +2714,22 @@ static void free_unused_bufs(struct virtnet_info *vi)
- {
- 	void *buf;
- 	int i;
-+	struct send_queue *sq;
  
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
- 		struct virtqueue *vq = vi->sq[i].vq;
-+		sq = vi->sq + i;
- 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL) {
--			if (!is_xdp_frame(buf))
-+			if (!is_xdp_frame(buf)) {
- 				dev_kfree_skb(buf);
--			else
--				xdp_return_frame(ptr_to_xdp(buf));
-+			} else {
-+				struct virtnet_xdp_type *xtype;
++	*_packets = packets;
++	*_bytes = bytes;
++}
 +
-+				xtype = ptr_to_xtype(buf);
++static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
++{
++	unsigned int packets = 0;
++	unsigned int bytes = 0;
 +
-+				if (xtype->type != XDP_TYPE_XSK)
-+					xdp_return_frame(xtype_got_ptr(xtype));
-+			}
- 		}
++	__free_old_xmit_ptr(sq, in_napi, true, &packets, &bytes);
++
+ 	/* Avoid overhead when no packets have been processed
+ 	 * happens when called speculatively from start_xmit.
+ 	 */
+@@ -1672,28 +1702,7 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		nf_reset_ct(skb);
  	}
  
+-	/* If running out of space, stop queue to avoid getting packets that we
+-	 * are then unable to transmit.
+-	 * An alternative would be to force queuing layer to requeue the skb by
+-	 * returning NETDEV_TX_BUSY. However, NETDEV_TX_BUSY should not be
+-	 * returned in a normal path of operation: it means that driver is not
+-	 * maintaining the TX queue stop/start state properly, and causes
+-	 * the stack to do a non-trivial amount of useless work.
+-	 * Since most packets only take 1 or 2 ring slots, stopping the queue
+-	 * early means 16 slots are typically wasted.
+-	 */
+-	if (sq->vq->num_free < 2+MAX_SKB_FRAGS) {
+-		netif_stop_subqueue(dev, qnum);
+-		if (!use_napi &&
+-		    unlikely(!virtqueue_enable_cb_delayed(sq->vq))) {
+-			/* More just got used, free them then recheck. */
+-			free_old_xmit_skbs(sq, false);
+-			if (sq->vq->num_free >= 2+MAX_SKB_FRAGS) {
+-				netif_start_subqueue(dev, qnum);
+-				virtqueue_disable_cb(sq->vq);
+-			}
+-		}
+-	}
++	virtnet_sq_stop_check(sq, false);
+ 
+ 	if (kick || netif_xmit_stopped(txq)) {
+ 		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
 -- 
 1.8.3.1
 
