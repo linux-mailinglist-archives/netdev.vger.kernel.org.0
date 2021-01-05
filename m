@@ -2,180 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 998FE2EA161
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 01:15:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221AD2EA16A
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 01:20:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727730AbhAEAOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 19:14:32 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:13656 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726258AbhAEAOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 19:14:32 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ff3af3e0002>; Mon, 04 Jan 2021 16:13:50 -0800
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 5 Jan
- 2021 00:13:47 +0000
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.57) by
- HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 5 Jan 2021 00:13:47 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GFK+FndG/cFiE3fxW/2iKBiUSK06fiuto1bMhKb1SnY3Ow6Pzp4sMp0afneZwshtZYDgXTcxsJ4vB3WXMDe4L4BrSbCK5vfgpIUgE/EccfnwkYWMdxrhTwMM/llBYq/VRIgJGeMaStWeq3XwQjAdP7tWHdLtttsHj4TFNfHC2S+xkanup04qZMw4uxsSo3PjjJAkNodQoIosfUQQwnqCTh7l6TfT1QxGiyR+R81dh5k9XGKEN5nSqgqH2aHgsRtpvOYcHKxLTJFJds6RuxBvHOnGgrJhBK3EYY05A3KgPbxFwGCXkLEkiC+6G/OzlYmSUIYK7GLBueZ2cmCSp5XNDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ouPoyixJhHTpwOQtyr0SENnRQLXTJ/B4V1AQwbdoQ+E=;
- b=LnwF3zFeGuDvJnOlUrzhDTXbUpIzYYq8LCCZMNwh675n58vYhgQHc+5blg+ISx7HGieYHgRRzilCxAc0H4ZGEqezulE8x/9CKB1LME2Cl9nMR9SXk3qeUb8XY4EG09bz6jWRp0GtLoJEjSYjdRMdKNY94m+Swc0G4Qk2bMSsojOMULMrVFib1dryCt8ZxnsB8DNfmuZPwcXxzBjBIBH4JVv1pETay2+gYDjvOJmMqNO0RSjPPAq3pa4hK3jmIyI+52RcWVFvbKPD9rjuNWflqWF3gfXSbhRI9aA1ckImr0pLVfOt2y4kLiV489aHFdHwsFk7dLT3we+TLvIbPTlOKQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3212.namprd12.prod.outlook.com (2603:10b6:5:186::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.20; Tue, 5 Jan
- 2021 00:13:44 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3721.024; Tue, 5 Jan 2021
- 00:13:44 +0000
-Date:   Mon, 4 Jan 2021 20:13:41 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Greg KH <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        <alsa-devel@alsa-project.org>, Kiran Patil <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        "Dave Ertman" <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>, <lee.jones@linaro.org>
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20210105001341.GL552508@nvidia.com>
-References: <20201218140854.GW552508@nvidia.com>
- <20201218155204.GC5333@sirena.org.uk> <20201218162817.GX552508@nvidia.com>
- <20201218180310.GD5333@sirena.org.uk> <20201218184150.GY552508@nvidia.com>
- <20201218203211.GE5333@sirena.org.uk> <20201218205856.GZ552508@nvidia.com>
- <20201221185140.GD4521@sirena.org.uk> <20210104180831.GD552508@nvidia.com>
- <20210104211930.GI5645@sirena.org.uk>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210104211930.GI5645@sirena.org.uk>
-X-ClientProxiedBy: MN2PR16CA0032.namprd16.prod.outlook.com
- (2603:10b6:208:134::45) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1726930AbhAEAT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 19:19:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726681AbhAEAT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 19:19:56 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141D7C061793
+        for <netdev@vger.kernel.org>; Mon,  4 Jan 2021 16:19:13 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id n142so25173859qkn.2
+        for <netdev@vger.kernel.org>; Mon, 04 Jan 2021 16:19:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cdIK62Nsb2mBU96tPb+7Rj1tHQmb2N/TLttudMXPCv0=;
+        b=WyyUC2ZQj2ywWBrojf5u7YaM1sTw312Kl48LMWPOEWR0RYeDhcBifxxglLPj3ePqsI
+         q9uKePa1gDw5HwKDCQF9Hi5nmZhzix6BxWEi+yPZ7h1Bluj36RuxNr/Nn++pCPyfCU1x
+         BEKwXbO0an3wtSDdRn+BgB/OLISe4Am2ZbrGknUcQY8nmt5BvLrD4QekWFXMgAUfX0kX
+         2JEbBu+acLpucWBwTRtA0yCRGgbsCWq8YlyGUoZ9UhH7e0B8K4SKodcpEF6RNFasQ6jL
+         paUn5cHA1blC9lgE/BTELjtUicYUObgTm8BqdfL3jU0eFq1xbzg7wfaFiBXtVCMDzhSP
+         gk2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cdIK62Nsb2mBU96tPb+7Rj1tHQmb2N/TLttudMXPCv0=;
+        b=qoKrCeph7v+C3fYag+bK92YtwPOuL0st7uNgza7E4rJR80v92RDqSwD5Vvth1JnyWa
+         ocvNPxO2qmuLt2dVlcYSjdV0B73uU1TvV6wQ5KsQNr/u7ftkyZKhBkRm844/iEHACk5w
+         r/Qz0t4Cm85pFyyjJ+6OmzggDVEobORyhKJ23FLWOco34BYlCE+yKAqFjryCLrE0n1gW
+         0HTsMdiUs6pt5sP5jzeJ0u+MO8HIlorQMnnc4fsOdRDSJ+gGeOMflUHKMN+JWjUlnu9f
+         RWibFVm75gLIgRnotMKXesD1FM5LNX68fHb4zG/x9KG//dVRFAzt6JMyCyKrtTXlADVW
+         GG5g==
+X-Gm-Message-State: AOAM5305rfM3nDme70WnC8RNrBkCyHMxVQDLFskNUauo81ewxg3+vy3b
+        fNmWTTnMTVJbSkHEEal2O0AIVsnsX7UDUljItMGyph2FXEiLNg==
+X-Google-Smtp-Source: ABdhPJzzr+fx8H6sSsnk5rd15OiQTqt8RS54F/HzPflW7OF/cGKwuokpad61A4bLRPuGZx4DhPKQ3nkXOcPhBez+MSM=
+X-Received: by 2002:a37:6245:: with SMTP id w66mr73464348qkb.422.1609805951850;
+ Mon, 04 Jan 2021 16:19:11 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by MN2PR16CA0032.namprd16.prod.outlook.com (2603:10b6:208:134::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.19 via Frontend Transport; Tue, 5 Jan 2021 00:13:43 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kwZyn-0025iE-PI; Mon, 04 Jan 2021 20:13:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1609805630; bh=ouPoyixJhHTpwOQtyr0SENnRQLXTJ/B4V1AQwbdoQ+E=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=qxfuyl5g/kR9w+ajGwau+5FZEwAJtDvC3UMqi3WiBOPaC04QfVmiQzMDPbFJ+m9JB
-         dNii3ODMcuvXXz4jviuLyd6c3fi9BCdKLZpY5NkbNUlri4//6j3YbH2OW2I1nSjOi3
-         lwdRBqAyMSYnam0aBtD6Q28oSIClTZPqMc9v48sUe7jLtfbkBOOvRT3BMi9nomWXgV
-         Wh4dgL3DSJgliOtg7M8G8uieBzIUdhFDoBMzALvfyaW8DHBcAHJbwLCcqZxZlA0tq5
-         Yi8R8Gld3MeYkdl8TIaFTDI80CDVu7eAissXPabehYbkHDaWlHNaCACDa1aEfaOTTQ
-         40/FjwjJ31LMQ==
+References: <20210104221454.2204239-1-sdf@google.com> <20210104221454.2204239-2-sdf@google.com>
+ <20210105000329.augyugyaucykt35r@kafai-mbp>
+In-Reply-To: <20210105000329.augyugyaucykt35r@kafai-mbp>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Mon, 4 Jan 2021 16:19:01 -0800
+Message-ID: <CAKH8qBueX4vFbFs0O4sAzbpFjf_G98eVGu6dG-APWV7cVrdWEw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/2] bpf: try to avoid kzalloc in cgroup/{s,g}etsockopt
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 04, 2021 at 09:19:30PM +0000, Mark Brown wrote:
+On Mon, Jan 4, 2021 at 4:03 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Mon, Jan 04, 2021 at 02:14:53PM -0800, Stanislav Fomichev wrote:
+> > When we attach a bpf program to cgroup/getsockopt any other getsockopt()
+> > syscall starts incurring kzalloc/kfree cost. While, in general, it's
+> > not an issue, sometimes it is, like in the case of TCP_ZEROCOPY_RECEIVE.
+> > TCP_ZEROCOPY_RECEIVE (ab)uses getsockopt system call to implement
+> > fastpath for incoming TCP, we don't want to have extra allocations in
+> > there.
+> >
+> > Let add a small buffer on the stack and use it for small (majority)
+> > {s,g}etsockopt values. I've started with 128 bytes to cover
+> > the options we care about (TCP_ZEROCOPY_RECEIVE which is 32 bytes
+> > currently, with some planned extension to 64).
+> >
+> > It seems natural to do the same for setsockopt, but it's a bit more
+> > involved when the BPF program modifies the data (where we have to
+> > kmalloc). The assumption is that for the majority of setsockopt
+> > calls (which are doing pure BPF options or apply policy) this
+> > will bring some benefit as well.
+> >
+> > Collected some performance numbers using (on a 65k MTU localhost in a VM):
+> > $ perf record -g -- ./tcp_mmap -s -z
+> > $ ./tcp_mmap -H ::1 -z
+> > $ ...
+> > $ perf report --symbol-filter=__cgroup_bpf_run_filter_getsockopt
+> >
+> > Without this patch:
+> >      4.81%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_>
+> >             |
+> >              --4.74%--__cgroup_bpf_run_filter_getsockopt
+> >                        |
+> >                        |--1.06%--__kmalloc
+> >                        |
+> >                        |--0.71%--lock_sock_nested
+> >                        |
+> >                        |--0.62%--__might_fault
+> >                        |
+> >                         --0.52%--release_sock
+> >
+> > With the patch applied:
+> >      3.29%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
+> >             |
+> >              --3.22%--__cgroup_bpf_run_filter_getsockopt
+> >                        |
+> >                        |--0.66%--lock_sock_nested
+> >                        |
+> >                        |--0.57%--__might_fault
+> >                        |
+> >                         --0.56%--release_sock
+> >
+> > So it saves about 1% of the system call. Unfortunately, we still get
+> > 2-3% of overhead due to another socket lock/unlock :-(
+> That could be a future exercise to optimize the fast path sockopts. ;)
+Yeah, I couldn't think about anything simple so far. The only idea I have
+is to allow custom implementation for tcp/udp (where we do lock_sock)
+and then have existing BPF_CGROUP_RUN_PROG_{S,G}ETSOCKOPT
+in net/socket.c as a fallback. Need to experiment more with it.
 
+> > --- a/kernel/bpf/cgroup.c
+> > +++ b/kernel/bpf/cgroup.c
+> > @@ -16,6 +16,7 @@
+> >  #include <linux/bpf-cgroup.h>
+> >  #include <net/sock.h>
+> >  #include <net/bpf_sk_storage.h>
+> > +#include <net/tcp.h> /* sizeof(struct tcp_zerocopy_receive) */
+> To be more specific, it should be <uapi/linux/tcp.h>.
+Sure, let's do that. I went with net/tcp.h because
+most of the code under net/* doesn't include uapi directly.
 
-> > Regardless of the shortcut to make everything a struct
-> > platform_device, I think it was a mistake to put OF devices on
-> > platform_bus. Those should have remained on some of_bus even if they
-> 
-> Like I keep saying the same thing applies to all non-enumerable buses -
-> exactly the same considerations exist for all the other buses like I2C
-> (including the ACPI naming issue you mention below), and for that matter
-> with enumerable buses which can have firmware info.
+> >
+> >  #include "../cgroup/cgroup-internal.h"
+> >
+> > @@ -1298,6 +1299,7 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+> >       return empty;
+> >  }
+> >
+> > +
+> Extra newline.
+Oops, thanks, will fix.
 
-And most busses do already have their own bus type. ACPI, I2C, PCI,
-etc. It is just a few that have been squished into platform, notably
-OF.
- 
-> > are represented by struct platform_device and fiddling in the core
-> > done to make that work OK.
-> 
-> What exactly is the fiddling in the core here, I'm a bit unclear?
+> >  static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+> >  {
+> >       if (unlikely(max_optlen < 0))
+> > @@ -1310,6 +1312,18 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+> >               max_optlen = PAGE_SIZE;
+> >       }
+> >
+> > +     if (max_optlen <= sizeof(ctx->buf)) {
+> > +             /* When the optval fits into BPF_SOCKOPT_KERN_BUF_SIZE
+> > +              * bytes avoid the cost of kzalloc.
+> > +              */
+> If it needs to respin, it will be good to have a few words here on why
+> it only BUILD_BUG checks for "struct tcp_zerocopy_receive".
+Sounds good, will add. I'll wait a day to let others comment and will respin.
 
-I'm not sure, but I bet there is a small fall out to making bus_type
-not 1:1 with the struct device type.. Would have to attempt it to see
-
-> > This feels like a good conference topic someday..
-> 
-> We should have this discussion *before* we get too far along with trying
-> to implement things, we should at least have some idea where we want to
-> head there.
-
-Well, auxillary bus is clearly following the original bus model
-intention with a dedicated bus type with a controlled naming
-scheme. The debate here seems to be "what about platform bus" and
-"what to do with mfd"?
-
-> Those APIs all take a struct device for lookup so it's the same call for
-> looking things up regardless of the bus the device is on or what
-> firmware the system is using - where there are firmware specific lookup
-> functions they're generally historical and shouldn't be used for new
-> code.  It's generally something in the form
-> 
-> 	api_type *api_get(struct device *dev, const char *name);
-
-Well, that is a nice improvement since a few years back when I last
-worked on this stuff.
-
-But now it begs the question, why not push harder to make 'struct
-device' the generic universal access point and add some resource_get()
-API along these lines so even a platform_device * isn't needed?
-
-Then the path seems much clearer, add a multi-bus-type device_driver
-that has a probe(struct device *) and uses the 'universal api_get()'
-style interface to find the generic 'resources'.
-
-The actual bus types and bus structs can then be split properly
-without the boilerplate that caused them all to be merged to platform,
-even PCI could be substantially merged like this.
-
-Bonus points to replace the open coded method disptach:
-
-int gpiod_count(struct device *dev, const char *con_id)
-{
-	int count = -ENOENT;
-
-	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
-		count = of_gpio_get_count(dev, con_id);
-	else if (IS_ENABLED(CONFIG_ACPI) && dev && ACPI_HANDLE(dev))
-		count = acpi_gpio_count(dev, con_id);
-
-	if (count < 0)
-		count = platform_gpio_count(dev, con_id);
-
-With an actual bus specific virtual function:
-
-    return dev->bus->gpio_count(dev);
-
-> ...and then do the same thing for every other bus with firmware
-> bindings.  If it's about the firmware interfaces it really isn't a
-> platform bus specific thing.  It's not clear to me if that's what it is
-> though or if this is just some tangent.
-
-It should be split up based on the unique naming scheme and any bus
-specific API elements - like raw access to ACPI or OF data or what
-have you for other FW bus types.
-
-Jason
+> > +             BUILD_BUG_ON(sizeof(struct tcp_zerocopy_receive) >
+> > +                          BPF_SOCKOPT_KERN_BUF_SIZE);
+> > +
+> > +             ctx->optval = ctx->buf;
+> > +             ctx->optval_end = ctx->optval + max_optlen;
+> > +             return max_optlen;
+> > +     }
+> > +
