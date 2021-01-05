@@ -2,120 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD5F52EAE32
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 16:27:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9834C2EAE9F
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 16:36:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727276AbhAEP0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 10:26:05 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:51260 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726328AbhAEP0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 10:26:05 -0500
-Received: by mail-il1-f200.google.com with SMTP id 1so93805ilg.18
-        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 07:25:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=wrmsr5GggqH+TghkirLZ6pImT91cR6dCRqhWUi9enro=;
-        b=QMiILGrZoDMb+6YvM65K3sIKcXGoiWTYdtyHPXP/rHeoyGds6yDlzr+yukxw2wWbb/
-         tXwRmGcOZgZ9C+dE/EmQ00+yO7V4oVnMgMvPCyl3NZDxGs/JUeYdeGNVB7fUBKZZDJML
-         EyKZMjbNtVBfb4NrIO8nfcWY1ufUtHN1VBVSmRORx+t1xAUOyqQqSwSIWKEKCM827wCy
-         OTSQXkArUW3Fi3JiY5HBYgQs98++zZNP6SICWp1D8nPFh0Wmwmz8wEG/mpr2gDiRLpOm
-         rXPKpBAyOy4niwRMhK5yv9xTbSHF5bEOYls2/+E0qePMcMr9ij1P43A5tSUqxBi3ck3F
-         iahA==
-X-Gm-Message-State: AOAM532w0Fg7fIvayzJB7ajJyKtJ+5wGbbrHDRFBywHjvJSkPOdvShTk
-        IyKjPXXXcLYVu4GuElTHH8QhSk1V4xref6ZJS/u/wMCQBKcT
-X-Google-Smtp-Source: ABdhPJycdNpl2toyalfRRsA2ioEtmD60eKrxNPmp14lkwxLLj19KViYyOvtMc4CIb25Hhc1CQgTPCYRl5DBRzpPE3bROyvg67Crl
+        id S1727935AbhAEPfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 10:35:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35361 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727660AbhAEPfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 10:35:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609860838;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=pDzAcq2nT/KXhp+AqF/2GVIqAYTMHTBHiO9DQwkg9VA=;
+        b=BwsoOXFa3LM9hMWqy41RuL6lDr8nfsWHMna76YPbsD3gMnszRpCInMsrsJtpFhUMIVuRKL
+        OA+Vq1RSxEu39eZ9HVtTchlezOjctDp5uwgn8YLXPlLMktMfvIn7zdnU/VM93LD7CUaHVM
+        4Obi32xRYuDraCWMnLy9OZkycTeq6qE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-2-1JPyH1czPxurlL3jUNITaw-1; Tue, 05 Jan 2021 10:31:27 -0500
+X-MC-Unique: 1JPyH1czPxurlL3jUNITaw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4A03F8030A3;
+        Tue,  5 Jan 2021 15:31:26 +0000 (UTC)
+Received: from yiche-home.usersys.redhat.com (ovpn-12-69.pek2.redhat.com [10.72.12.69])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F9E6271BF;
+        Tue,  5 Jan 2021 15:31:22 +0000 (UTC)
+From:   Chen Yi <yiche@redhat.com>
+To:     Chen Yi <yiche@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Leo <liuhangbin@gmail.com>
+Subject: [PATCH] selftests: netfilter: Pass family parameter "-f" to conntrack tool
+Date:   Tue,  5 Jan 2021 23:31:20 +0800
+Message-Id: <20210105153120.42710-1-yiche@redhat.com>
+Reply-To: 20210104110723.43564-1-yiche@redhat.com
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:250e:: with SMTP id v14mr201090jat.41.1609860324579;
- Tue, 05 Jan 2021 07:25:24 -0800 (PST)
-Date:   Tue, 05 Jan 2021 07:25:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c8dd4a05b828d04c@google.com>
-Subject: KASAN: vmalloc-out-of-bounds Read in bpf_trace_run7
-From:   syzbot <syzbot+fad5d91c7158ce568634@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, rostedt@goodmis.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Fix nft_conntrack_helper.sh false fail report:
 
-syzbot found the following issue on:
+1) Conntrack tool need "-f ipv6" parameter to show out ipv6 traffic items.
 
-HEAD commit:    00a279e4 selftests/bpf: Add tests for user- and non-CO-RE ..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11b1fc1f500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2eb8bc0ec06304ce
-dashboard link: https://syzkaller.appspot.com/bug?extid=fad5d91c7158ce568634
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+2) Sleep 1 second after background nc send packet, to make sure check
+is after this statement executed.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+False report:
+FAIL: ns1-lkjUemYw did not show attached helper ip set via ruleset
+PASS: ns1-lkjUemYw connection on port 2121 has ftp helper attached
+...
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+fad5d91c7158ce568634@syzkaller.appspotmail.com
+After fix:
+PASS: ns1-2hUniwU2 connection on port 2121 has ftp helper attached
+PASS: ns2-2hUniwU2 connection on port 2121 has ftp helper attached
+...
 
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in __bpf_trace_run kernel/trace/bpf_trace.c:2088 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in bpf_trace_run7+0x48f/0x4a0 kernel/trace/bpf_trace.c:2130
-Read of size 8 at addr ffffc90000ca0030 by task syz-executor.2/10711
-
-CPU: 0 PID: 10711 Comm: syz-executor.2 Not tainted 5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- print_address_description.constprop.0.cold+0x5/0x4c8 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- __bpf_trace_run kernel/trace/bpf_trace.c:2088 [inline]
- bpf_trace_run7+0x48f/0x4a0 kernel/trace/bpf_trace.c:2130
- __bpf_trace_percpu_alloc_percpu+0x1dc/0x220 include/trace/events/percpu.h:10
- trace_percpu_alloc_percpu include/trace/events/percpu.h:10 [inline]
- pcpu_alloc+0xbc4/0x17e0 mm/percpu.c:1844
- perf_trace_event_reg kernel/trace/trace_event_perf.c:107 [inline]
- perf_trace_event_init+0x35f/0xb20 kernel/trace/trace_event_perf.c:204
- perf_trace_init+0x176/0x240 kernel/trace/trace_event_perf.c:228
- perf_tp_event_init+0xa2/0x120 kernel/events/core.c:9563
- perf_try_init_event+0x12a/0x570 kernel/events/core.c:11031
- perf_init_event kernel/events/core.c:11083 [inline]
- perf_event_alloc.part.0+0xe5b/0x3a40 kernel/events/core.c:11361
- perf_event_alloc kernel/events/core.c:11740 [inline]
- __do_sys_perf_event_open+0x647/0x2f30 kernel/events/core.c:11838
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45e299
-Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f1784968c68 EFLAGS: 00000246
- ORIG_RAX: 000000000000012a
-RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 000000000045e299
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000020000180
-RBP: 000000000119bfd0 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffffffffffff R11: 0000000000000246 R12: 000000000119bf8c
-R13: 00007ffe18fb31bf R14: 00007f17849699c0 R15: 000000000119bf8c
-
-
-Memory state around the buggy address:
- ffffc90000c9ff00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- ffffc90000c9ff80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->ffffc90000ca0000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-                                     ^
- ffffc90000ca0080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- ffffc90000ca0100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-==================================================================
-
-
+Fixes: 619ae8e0697a6 ("selftests: netfilter: add test case for conntrack helper assignment")
+Signed-off-by: Chen Yi <yiche@redhat.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ .../selftests/netfilter/nft_conntrack_helper.sh      | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
+index edf0a48da6bf..bf6b9626c7dd 100755
+--- a/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
++++ b/tools/testing/selftests/netfilter/nft_conntrack_helper.sh
+@@ -94,7 +94,13 @@ check_for_helper()
+ 	local message=$2
+ 	local port=$3
+ 
+-	ip netns exec ${netns} conntrack -L -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
++	if echo $message |grep -q 'ipv6';then
++		local family="ipv6"
++	else
++		local family="ipv4"
++	fi
++
++	ip netns exec ${netns} conntrack -L -f $family -p tcp --dport $port 2> /dev/null |grep -q 'helper=ftp'
+ 	if [ $? -ne 0 ] ; then
+ 		echo "FAIL: ${netns} did not show attached helper $message" 1>&2
+ 		ret=1
+@@ -111,8 +117,8 @@ test_helper()
+ 
+ 	sleep 3 | ip netns exec ${ns2} nc -w 2 -l -p $port > /dev/null &
+ 
+-	sleep 1
+ 	sleep 1 | ip netns exec ${ns1} nc -w 2 10.0.1.2 $port > /dev/null &
++	sleep 1
+ 
+ 	check_for_helper "$ns1" "ip $msg" $port
+ 	check_for_helper "$ns2" "ip $msg" $port
+@@ -128,8 +134,8 @@ test_helper()
+ 
+ 	sleep 3 | ip netns exec ${ns2} nc -w 2 -6 -l -p $port > /dev/null &
+ 
+-	sleep 1
+ 	sleep 1 | ip netns exec ${ns1} nc -w 2 -6 dead:1::2 $port > /dev/null &
++	sleep 1
+ 
+ 	check_for_helper "$ns1" "ipv6 $msg" $port
+ 	check_for_helper "$ns2" "ipv6 $msg" $port
+-- 
+2.26.2
+
