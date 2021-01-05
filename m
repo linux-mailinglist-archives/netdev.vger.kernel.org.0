@@ -2,152 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6BA2EA562
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 07:22:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 923FC2EA564
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 07:23:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728384AbhAEGUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 01:20:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
+        id S1727850AbhAEGW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 01:22:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725298AbhAEGUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 01:20:38 -0500
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219FEC061574;
-        Mon,  4 Jan 2021 22:19:58 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4D92Qx1twMz9sWT;
-        Tue,  5 Jan 2021 17:19:52 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1609827594;
-        bh=nDCX2HW9Z7M29EWUeQPgoiP8gTCsHWtWuXpbap0SK9I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N9IPCLaPV1y3i+yViI2X+WdKVSifdIEn8xES3D6e7W5UHDR/WllJNmEAjfQykuuoh
-         guWDRDClDE3gWKfhXx1/La1bZBl4lUb/8O467sifYDOCjeRltmPUHyM24PeySk41B6
-         nKDvloHSpQUsxt/nnNaJ/m+qzvyI1HXQfrX8e+/6gUzxmb0VDhChtumSbrzWX5HTIx
-         gEPXQFKlv8FBi41nHRdPAF3CCPfG4lvrxryuP82o5od7up6WE2JsivDA7Y/Nn6ye6d
-         rf4yIEmKBhm74B4TIGVjyJEx1wOlIAtgMlYu3WW7zlFzsl+oBFba+2H/VIA7In9y/P
-         5+GZUrFTrgzXQ==
-Date:   Tue, 5 Jan 2021 17:19:51 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Carl Huang <cjhuang@codeaurora.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Abhishek Kumar <kuabhs@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: linux-next: build warnings after merge of the net-next tree
-Message-ID: <20210105171951.0216f0f3@canb.auug.org.au>
-In-Reply-To: <20201221122839.72d29127@canb.auug.org.au>
-References: <20201214201025.60cee658@canb.auug.org.au>
-        <20201221122839.72d29127@canb.auug.org.au>
+        with ESMTP id S1726097AbhAEGW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 01:22:57 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C73C061574
+        for <netdev@vger.kernel.org>; Mon,  4 Jan 2021 22:22:17 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id n10so20618398pgl.10
+        for <netdev@vger.kernel.org>; Mon, 04 Jan 2021 22:22:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q6EzBo32QB9tKiHgZ2I3OZJNAx7CcQrFXfF1AeQ6b1Y=;
+        b=qyxmsh1sHTEKh4J2JlD3yY3Ly9xPb6ATNFesIX39woX+Jv4Clmy/He4Ba4niPusDlm
+         eZr9W+SgU66CGjgrCDjop7d15VPlbZJm29LEqOhA1DO4xGnuV35omByUgnHRPyNqWHTn
+         7XlagLfadd584/gYGHFnCyaKXUoTde7MdL8DpthxZebuded3S3Ai6rJUsDTMC02wmjSd
+         zO8IUJVhZVkd77RjVuVRZTWgKGr0ORoCzgH8f0a/kznHRZpxt4FOhLJb/uXDGcjheiKI
+         VLTc8cArY3yndgbh517tc7eOfCoJMNBogLCoySVjf/uC/tqqIyXYh/qL9VwWf8hix1/R
+         4dWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q6EzBo32QB9tKiHgZ2I3OZJNAx7CcQrFXfF1AeQ6b1Y=;
+        b=fG493cjyC5yKXNdNIXStzgXoyTMj3SA46PZxaSAN0WS0v+6hn3j4Kr+T9R7rgKI4vC
+         6v8gDJLS+se/KPeTmuZRTZR0Ogo1nMnCaekj7kd5NTJsHyB3YT+8tiWBM+SzYM2jWoRB
+         0JQY3EieX0gBW86znoOSUAu+b9QV+iUwqpxiCh9BcMCg5VH94mhRsYBmZpw0VTv+EJb3
+         5FDhOWezgwtHA5FPpjfZGj0Dqmfd6qDcZiwd7m6SAmvs1dH1Ywhf0LyPc3a7yBkGD81C
+         VS71XyClnEwslItPnZkGMOdounArbQIPpvZEplC+3ZSxcVIe4/x3gbdIDBDjVcj99SdA
+         ugqQ==
+X-Gm-Message-State: AOAM5326pV5oZPNf40h1j6t7YS6hkgX/9EEPX6rFWBLSngyPyLCWsLYg
+        QGwGHVm0eIOr/4p0fiJ/PvRyNqnV2fFJZnyjhrQ=
+X-Google-Smtp-Source: ABdhPJw/EJsfTKOQJI/HihyVQyqe9V2Md+BwMue+/rjmmLYnHuzaQm4jJhV6HLc970dVA4AH5MRQjk459JznkrpJ9pI=
+X-Received: by 2002:a63:1707:: with SMTP id x7mr41171696pgl.266.1609827736591;
+ Mon, 04 Jan 2021 22:22:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/5y73/z05TAB2IUywJlzhiGn";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20201231034417.1570553-1-kuba@kernel.org> <CAM_iQpW1ZMyb33j4uLNMXXW+vQSS6FB1-BhxSQ7ZShi9dT2ZoQ@mail.gmail.com>
+ <20210104094936.79247c33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210104094936.79247c33@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 4 Jan 2021 22:22:05 -0800
+Message-ID: <CAM_iQpUTZ9ZOAgfWjBP83Q9J3UFpVKbueboAs7uQFFuieyDfug@mail.gmail.com>
+Subject: Re: [PATCH net] net: bareudp: add missing error handling for bareudp_link_config()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        martin.varghese@nokia.com, Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/5y73/z05TAB2IUywJlzhiGn
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi all,
-
-On Mon, 21 Dec 2020 12:28:39 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
+On Mon, Jan 4, 2021 at 9:49 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Mon, 14 Dec 2020 20:10:25 +1100 Stephen Rothwell <sfr@canb.auug.org.au=
-> wrote:
+> On Sat, 2 Jan 2021 15:49:54 -0800 Cong Wang wrote:
+> > On Wed, Dec 30, 2020 at 7:46 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > @@ -661,9 +662,14 @@ static int bareudp_newlink(struct net *net, struct net_device *dev,
+> > >
+> > >         err = bareudp_link_config(dev, tb);
+> > >         if (err)
+> > > -               return err;
+> > > +               goto err_unconfig;
+> > >
+> > >         return 0;
+> > > +
+> > > +err_unconfig:
 > >
-> > After merging the net-next tree, today's linux-next build (htmldocs)
-> > produced these warnings:
-> >=20
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:1759: warning: Cannot understand  * @struct cfg8=
-0211_sar_chan_ranges - sar frequency ranges
-> >  on line 1759 - I thought it was a doc line
-> > include/net/cfg80211.h:5073: warning: Function parameter or member 'sar=
-_capa' not described in 'wiphy'
-> >=20
-> > Introduced by commit
-> >=20
-> >   6bdb68cef7bf ("nl80211: add common API to configure SAR power limitat=
-ions") =20
->=20
-> I am now getting these warnings from Linus' tree.
+> > I think we can save this goto.
+>
+> I personally prefer more idiomatic code flow to saving a single LoC.
+>
+> > > +       list_del(&bareudp->next);
+> > > +       unregister_netdevice(dev);
+> >
+> > Which is bareudp_dellink(dev, NULL). ;)
+>
+> I know, but calling full dellink when only parts of newlink fails felt
+> weird. And it's not lower LoC, unless called with NULL as second arg,
+> which again could be surprising to a person changing dellink.
 
-I am still getting these warnings ...
+I think calling a function with "bareudp_" prefix is more readable
+than interpreting list_del()+unregister_netdevice(). I mean
 
---=20
-Cheers,
-Stephen Rothwell
+if (bareudp_*())
+  goto err;
+...
+err:
+bareudp_*();
 
---Sig_/5y73/z05TAB2IUywJlzhiGn
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+this looks cleaner, right?
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/0BQcACgkQAVBC80lX
-0GxmvQf/eRQx/UG7oUz0cLzIPEX8ae8XnL/S2TLLoOXerz24VtzCXD97IbnELaeM
-RY2PgLNXxSpvle9eH+i7JygaXnEwABsfwR3cMRAL4DJ2Nsua+aDkqhX4fHggTs6U
-uNGFDrU1VFUCwmJ1oUUgKfVuyd1ea6ficp65OMkMjl2+DhdHiFH6+dau/rR897rW
-POdpBDdD/k1RZVNLZG+jiAY2bFdb3Wjd71tX7ububqYkXLg4Ti7ALCEFTnhpaXTO
-AKIUm1FqZiLRau/SaQyw0QIz+RJxdfboqmDAKNlpO5O2+sbB+kdMhbr6vX4C2Ssk
-GS0e0Cc8H2QtsNuoXIoliXRfc1iEvQ==
-=L2Du
------END PGP SIGNATURE-----
-
---Sig_/5y73/z05TAB2IUywJlzhiGn--
+Thanks.
