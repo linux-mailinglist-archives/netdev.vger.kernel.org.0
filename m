@@ -2,114 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69C352EAB40
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 13:54:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADAAC2EAB5E
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 14:04:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729593AbhAEMyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 07:54:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728006AbhAEMyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 07:54:06 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EBDC061574;
-        Tue,  5 Jan 2021 04:53:26 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id q137so28044171iod.9;
-        Tue, 05 Jan 2021 04:53:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K79eXZC/Zmmt2A7zkyWNbssvWSflnyrmEKHoezkqZ24=;
-        b=TjRq6EUrmxaMZI2yT57rLdCc+HPWMANWnsF5tA119UKg8fel0rlvaXSK/62AOFRUo/
-         gNqA/oPjVsKYaubGPBNVzMUBZT7RWnkPGn97v/SDVqJ2mDjVQcj2O12j9CHsDIJRRKO6
-         cdvKm3JzMIACMJbraIqGfqI1jhDwohAGZu49HFeOaBZUslnz7G1BmwCp0IasQL3AjLB0
-         vQrkQ2VXJFjk1ZyZVumXvEOJC7lVC8Y8Mkk7OPsw3qDqs7M5UuRke/etX1m2jkidDX9j
-         eeyp345mB6gQYeBaMF1WdVzp9UMfgeGd81vPE5CMsC21GxQ8IzoprFlhAJAXsWPnKJi3
-         DNYg==
+        id S1730149AbhAENB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 08:01:58 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:42002 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727148AbhAENB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 08:01:58 -0500
+Received: by mail-io1-f69.google.com with SMTP id m9so13882781ioa.9
+        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 05:01:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K79eXZC/Zmmt2A7zkyWNbssvWSflnyrmEKHoezkqZ24=;
-        b=DTl6C9N7C/mM3DT6k7GltFQEpkL4vF0+c5k2nFiJ/dTfsIbSM606Ylb5o6lwuAzZGd
-         ojxuWHO5qFWTl5c0kyw7zX3kiaOvEq8iH93FdLRysWmm0g8HiGna6Fs3U8XSnUSt2BKd
-         6uXWQhQ0XzyiwISQrL88xDmMc5rar9Gj4274MbuegzYw1Q3Gf3rB7ynHNnbDzaGnRlBN
-         SoBAohJ+eGTH1bc4YKAF1nxZJkdZJ6cgSM1P9JLFD+9ADVUXdVoK+ri7vM7MwrG7B9HK
-         /J0EHZiLhRny+Ma0HfTR4x5BIW+o8MOQx38/7jD6ApuR3FN82Zy9YmjM+/1jPALh4GBJ
-         JrxA==
-X-Gm-Message-State: AOAM533mp7YFM2zkJs7QVgT43T8EcLRj4A9vKdMp6S5sf6dMCtNNFCpB
-        l3x0Kzgm/Ef51hlOOm1YRukylWFZddYAy3bChleUHzOZ
-X-Google-Smtp-Source: ABdhPJy+xl2oI1UvjCXfcYUlgNcKNWFiiu+kttdPrBY+8CZh9AgWwQVAab76cv4Cr9pEdsJXPPQxdYrYweYeS9NTNjs=
-X-Received: by 2002:a5d:9a8e:: with SMTP id c14mr63963527iom.178.1609851205863;
- Tue, 05 Jan 2021 04:53:25 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ru5bjWzHIyRK6ZRwLgZl3qBHXsr7G9Z+i9Dvu4uenWc=;
+        b=pA5EKCua3yKr+T2y487N3vezrnW0amQPRSz77q2ouD8uS3l8LTGLljpcOgx/9KlW/K
+         JuJnKcpVNKZDVYZvzhxDwr5vOWt0Utrsd+5ALjB4h9I4zHO8BnTcVwvgT4FyPfLqdLk3
+         LCYuESoib8ZNH8SUGgdLvFIOi6ZyChLtddLEzl+XK2AFMsGNubD3I7Vf5WPdw0ikinc5
+         G4gIBodpUqGWSayetsW6vfaTyoEl77zm8xbeKlFNa2VkofBPmal6KptL3yOwiboe3lLA
+         UMhJvjwcetSdF8fqCEM7gCIJA7zdSHBmb2z1P/22I4ws3rfU4YY8MoMssS/s6W5+i77a
+         uEOA==
+X-Gm-Message-State: AOAM531smvBO9hRkMkqbWB9jWOnxUnxVWf6LhZG55W2O0IcqrkO7e5uh
+        hKB/vu4QrM2SeJopWXzVxqeL/5Fi3jS4+bnmvaxEKfUVAyKb
+X-Google-Smtp-Source: ABdhPJyofSzreOMWmIpdQM3UdYWqIn4pvNONeOx8NKjjsHQTu404iL2qhxZHzn1yjb+vIpXIB1phN2pTmte+ML7V93JcD0QySR7J
 MIME-Version: 1.0
-References: <20201228213121.2331449-1-aford173@gmail.com> <20201228213121.2331449-4-aford173@gmail.com>
- <CAMuHMdUCsAGYGS8oygT2xySRSm3Op4cJJmcnEK9BC732ZvN6JA@mail.gmail.com>
-In-Reply-To: <CAMuHMdUCsAGYGS8oygT2xySRSm3Op4cJJmcnEK9BC732ZvN6JA@mail.gmail.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Tue, 5 Jan 2021 06:53:14 -0600
-Message-ID: <CAHCN7xJmNU_1XS-hqP1VdaO9j3phepG4eF-S7EiNEzOUyZKX-w@mail.gmail.com>
-Subject: Re: [PATCH 4/4] net: ethernet: ravb: Name the AVB functional clock fck
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+X-Received: by 2002:a92:cec3:: with SMTP id z3mr73680933ilq.256.1609851677209;
+ Tue, 05 Jan 2021 05:01:17 -0800 (PST)
+Date:   Tue, 05 Jan 2021 05:01:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005c7c1005b826cd7f@google.com>
+Subject: UBSAN: division-overflow in netem_enqueue
+From:   syzbot <syzbot+c32f013ef7b11871dba6@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, stephen@networkplumber.org,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 4, 2021 at 4:41 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Adam,
->
-> On Mon, Dec 28, 2020 at 10:32 PM Adam Ford <aford173@gmail.com> wrote:
-> > The bindings have been updated to support two clocks, but the
-> > original clock now requires the name fck to distinguish it
-> > from the other.
-> >
-> > Signed-off-by: Adam Ford <aford173@gmail.com>
->
-> Thanks for your patch!
->
-> > --- a/drivers/net/ethernet/renesas/ravb_main.c
-> > +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> > @@ -2142,7 +2142,7 @@ static int ravb_probe(struct platform_device *pdev)
-> >
-> >         priv->chip_id = chip_id;
-> >
-> > -       priv->clk = devm_clk_get(&pdev->dev, NULL);
-> > +       priv->clk = devm_clk_get(&pdev->dev, "fck");
->
-> This change is not backwards compatible, as existing DTB files do not
-> have the "fck" clock.  So the driver has to keep on assuming the first
-> clock is the functional clock, and this patch is thus not needed nor
-> desired.
+Hello,
 
-Should I post a V2 with this removed, or can this patch just be excluded?
+syzbot found the following issue on:
 
-adam
->
-> >         if (IS_ERR(priv->clk)) {
-> >                 error = PTR_ERR(priv->clk);
-> >                 goto out_release;
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+HEAD commit:    3db1a3fa Merge tag 'staging-5.11-rc1' of git://git.kernel...
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1213cf60d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a6e6725884106332
+dashboard link: https://syzkaller.appspot.com/bug?extid=c32f013ef7b11871dba6
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c32f013ef7b11871dba6@syzkaller.appspotmail.com
+
+================================================================================
+UBSAN: division-overflow in net/sched/sch_netem.c:516:27
+division by zero
+CPU: 0 PID: 12279 Comm: syz-executor.4 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+ __ubsan_handle_divrem_overflow.cold+0x7c/0xd0 lib/ubsan.c:252
+ netem_enqueue.cold+0x17/0xbc net/sched/sch_netem.c:516
+ netem_enqueue+0x2095/0x34e0 net/sched/sch_netem.c:483
+ __dev_xmit_skb net/core/dev.c:3789 [inline]
+ __dev_queue_xmit+0x19ec/0x2ef0 net/core/dev.c:4101
+ __netlink_deliver_tap_skb net/netlink/af_netlink.c:295 [inline]
+ __netlink_deliver_tap net/netlink/af_netlink.c:313 [inline]
+ netlink_deliver_tap+0x9cb/0xc00 net/netlink/af_netlink.c:326
+ netlink_deliver_tap_kernel net/netlink/af_netlink.c:335 [inline]
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x5e5/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x907/0xe10 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xd3/0x130 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2336
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2390
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2423
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45e219
+Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f735a38fc68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045e219
+RDX: 0000000020000000 RSI: 0000000020000200 RDI: 0000000000000003
+RBP: 000000000119bfc0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119bf8c
+R13: 00007ffecded56ef R14: 00007f735a3909c0 R15: 000000000119bf8c
+================================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
