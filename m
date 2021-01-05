@@ -2,145 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6FF22EAD6C
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 435312EAD88
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726418AbhAEOhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 09:37:17 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2065 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725817AbhAEOhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 09:37:17 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ff479740000>; Tue, 05 Jan 2021 06:36:36 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 5 Jan
- 2021 14:36:32 +0000
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.55) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 5 Jan 2021 14:36:32 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m41B1rp2qw3CGWjLE4HUj1kQIhulMVfj9wNR8TdK6Ew+PPi6T4t7dGWV7rCkdohsPwff3/QY6aKdTEZIY/na1rgYtPZ9YUU8KR4WpXHX7U/S5fCb0XEBQZzw4sxyQUEE2JmxVGgJG4yiYNsYjRxoQXo0vhXj665aswnsDpVbetzZfFDJ1NQ8kF97FKG26nTVkt3yhvybyOwS7NDgMweNc6YPcRCdPb/lQfJqTjy4rsSu+9cL+im4OojHJNmkXmN+gMKdUziFd2MAViFtFcRYbfa7c1fF+cc1yDCaWKUzsmSsq7nSRZ8X6U67l3vkimwbrMP6jDDWq4og3FR/7IO0KQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PAwrKySJQvQFPuf6e10AMprqTOhIvV+daRoILtUq4QM=;
- b=V+pmMd775DjQhFXf2SydKhowmJUav5ntBDIt2xnOZmqJRMCowTbTYPotex4urT12HmZL0gSIxMkR5XgNt7kZ4A6JNhe/A42VkSDRs8HqGDD+nLBthCqxB9uV74hYqFZAS6JU65Y9X3aRXaUFmrDigPHrzAEQ+kp5gPRTU/5tmAQXCdXhrcCkiv7WNfj1zopT9NDDXY0HE0cAtxHpJg246XCPiXoRc0LUTrv8heyly2b2BFxPn87R+iVP5apmUw115LZ6SfbaNlZ9YEem1WdktyW1H2ulbSiByuuE3oqR7hm2bYmKs3ucLwaWQLVrsblALaW/3XfcmJLCfnibFYioPQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR12MB2440.namprd12.prod.outlook.com (2603:10b6:4:b6::39) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Tue, 5 Jan
- 2021 14:36:29 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3721.024; Tue, 5 Jan 2021
- 14:36:29 +0000
-Date:   Tue, 5 Jan 2021 10:36:27 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Greg KH <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        <alsa-devel@alsa-project.org>, Kiran Patil <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        "Dave Ertman" <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>, <lee.jones@linaro.org>
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20210105143627.GT552508@nvidia.com>
-References: <20201218162817.GX552508@nvidia.com>
- <20201218180310.GD5333@sirena.org.uk> <20201218184150.GY552508@nvidia.com>
- <20201218203211.GE5333@sirena.org.uk> <20201218205856.GZ552508@nvidia.com>
- <20201221185140.GD4521@sirena.org.uk> <20210104180831.GD552508@nvidia.com>
- <20210104211930.GI5645@sirena.org.uk> <20210105001341.GL552508@nvidia.com>
- <20210105134256.GA4487@sirena.org.uk>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210105134256.GA4487@sirena.org.uk>
-X-ClientProxiedBy: BL1PR13CA0140.namprd13.prod.outlook.com
- (2603:10b6:208:2bb::25) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1728034AbhAEOlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 09:41:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727119AbhAEOlQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 09:41:16 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51FBEC061795;
+        Tue,  5 Jan 2021 06:40:36 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id 4so16465351plk.5;
+        Tue, 05 Jan 2021 06:40:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HbJW3NsKoqX4vBU/QIX81wQelNyQKvEabn44iqJjckA=;
+        b=CG8lZ13Uk9aywsPfihuJ20nIDYsGGfGMvqKlG7y8QcpjkMwjMTtwPyQrknx2QQ21UU
+         yUQ/nz9t1//fGezhqkSi3NKoOF1CByNVEGOMaMo2fnE00v4soTAQQZNsY1PJkUOiRehw
+         NUHmA3VQdRXiTkwgrqZPy6+noaAwoVoraHX5gSJVwXhr0kbekL3IdNdm2u6T6QoAA83H
+         YaSdeTePFS9yz3VURK450x/WXiKsaXxYDJ9958wP7Vlf8C/1nSJSxczIqLXcttbfEPuZ
+         h4yok8EAFViY/Nw0NtVqM+ZOo/5o5Ns4kyK2IVZfPbcJ6zT2JXiI7gQl6HKJsV0kDqZb
+         VmJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HbJW3NsKoqX4vBU/QIX81wQelNyQKvEabn44iqJjckA=;
+        b=hyXpJDIFqOsBWX1fCnxw6jA16i1X8bHcP4/XQ2WifPpPJJVZBjr39Dri+9KRllmSy3
+         4ZW3rRAczBrLxY7FtbSSpuEfYZRc6HylBmv/rPhq4oAIu+2JsncX6HuotUr1WNYUrMpI
+         6qFyShopY5ZRZqExvhrDvoL1QzRJkwPFpD3upc+YuThvyxTnb8hvs0ZrgDpQbl50nDXX
+         2Aud6Tt7yCIZRAr2uDBi9Q7B3NeYfW480eAsxUJwRlzbwngM2m6vHNBPggCjxoYIgsOR
+         Syf8ofDxbkaf7nxcgePMlXz4/mfWKybrOlTabezKckGSqGGRfMZxC+pGrSDjEykG1f3U
+         Evzw==
+X-Gm-Message-State: AOAM532RWRI+lWE/WeVSA6oRUGuLODOExgRXUDNTD1+eEtNDty4m94kN
+        eF+ekK0v87GBreDlMioINgU=
+X-Google-Smtp-Source: ABdhPJyLd/QmTIDSYCxw1lc0fezaujusZC9WG5QcEJEOIr1M9QK7ZjzYYIUqhPQaduoFP/Jm3EK/UQ==
+X-Received: by 2002:a17:902:8f8d:b029:dc:8ac6:98a7 with SMTP id z13-20020a1709028f8db02900dc8ac698a7mr27606plo.13.1609857635819;
+        Tue, 05 Jan 2021 06:40:35 -0800 (PST)
+Received: from masabert (oki-109-236-4-100.jptransit.net. [109.236.4.100])
+        by smtp.gmail.com with ESMTPSA id bg20sm2986982pjb.6.2021.01.05.06.40.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jan 2021 06:40:35 -0800 (PST)
+Received: by masabert (Postfix, from userid 1000)
+        id E057A236040C; Tue,  5 Jan 2021 23:40:31 +0900 (JST)
+From:   Masanari Iida <standby24x7@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Masanari Iida <standby24x7@gmail.com>
+Subject: [PATCH] net-next: docs: Fix typos in snmp_counter.rst
+Date:   Tue,  5 Jan 2021 23:40:29 +0900
+Message-Id: <20210105144029.219910-1-standby24x7@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by BL1PR13CA0140.namprd13.prod.outlook.com (2603:10b6:208:2bb::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.4 via Frontend Transport; Tue, 5 Jan 2021 14:36:29 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kwnRj-002I0M-Hy; Tue, 05 Jan 2021 10:36:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1609857397; bh=PAwrKySJQvQFPuf6e10AMprqTOhIvV+daRoILtUq4QM=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=CQa8SH9GIYMJA6nt71T+rpipSFvqRsSJhRmvYTKsGLjtFkpVJpee92z8jmi6+loVJ
-         qGYMM4abqJpYhpnynIZkqmwsl58T86E8dl2ONysMl8uBUsPc0haiUOhErMM40/kWd5
-         X5ScPjNlwA1sjqDAPJ0s61OCH4UtzNl2wXkdiNJQ9BCfRlhQMji6WgCBXOpLWZjR/a
-         bk403GxmonQ/QdEWS6KGmQicXEDL7QRJjthswRZ7dl5d5aBD18b6OJSluqw+3yBqTp
-         KY+fTysxhVoSGKyJ/II7IK7GPpuuDqOOJry7RyPHoSx29JLUegwMPFD31x/QubCQMg
-         7SwK2TAxk1lGQ==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 01:42:56PM +0000, Mark Brown wrote:
-> On Mon, Jan 04, 2021 at 08:13:41PM -0400, Jason Gunthorpe wrote:
-> > On Mon, Jan 04, 2021 at 09:19:30PM +0000, Mark Brown wrote:
-> 
-> > > Like I keep saying the same thing applies to all non-enumerable buses -
-> > > exactly the same considerations exist for all the other buses like I2C
-> > > (including the ACPI naming issue you mention below), and for that matter
-> > > with enumerable buses which can have firmware info.
-> 
-> > And most busses do already have their own bus type. ACPI, I2C, PCI,
-> > etc. It is just a few that have been squished into platform, notably
-> > OF.
-> 
-> You're missing the point there.  I2C is enumerated by firmware in
-> exactly the same way as the platform bus is, it's not discoverable from
-> the hardware (and similarly for a bunch of other buses).  If we were to
-> say that we need separate device types for platform devices enumerated
-> using firmware then by analogy we should do the same for devices on
-> these other buses that happen to be enumerated by firmware.
+This patch fixes some spelling typos in snmp_counter.rst
 
-No, I understand how I2C works and I think it is fine as is because
-the enumeration outcome is all standard. You always end up with a
-stable I2C device address (the name) and you always end up with the
-I2C programming API. So it doesn't matter how I2C gets enumerated, it
-is always an I2C device.
+Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+---
+ Documentation/networking/snmp_counter.rst | 28 +++++++++++------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-PCI does this too, pci_device gets crossed over to the DT data, but it
-is still a pci_device.
+diff --git a/Documentation/networking/snmp_counter.rst b/Documentation/networking/snmp_counter.rst
+index 4edd0d38779e..423d138b5ff3 100644
+--- a/Documentation/networking/snmp_counter.rst
++++ b/Documentation/networking/snmp_counter.rst
+@@ -314,7 +314,7 @@ https://lwn.net/Articles/576263/
+ * TcpExtTCPOrigDataSent
+ 
+ This counter is explained by `kernel commit f19c29e3e391`_, I pasted the
+-explaination below::
++explanation below::
+ 
+   TCPOrigDataSent: number of outgoing packets with original data (excluding
+   retransmission but including data-in-SYN). This counter is different from
+@@ -324,7 +324,7 @@ explaination below::
+ * TCPSynRetrans
+ 
+ This counter is explained by `kernel commit f19c29e3e391`_, I pasted the
+-explaination below::
++explanation below::
+ 
+   TCPSynRetrans: number of SYN and SYN/ACK retransmits to break down
+   retransmissions into SYN, fast-retransmits, timeout retransmits, etc.
+@@ -332,7 +332,7 @@ explaination below::
+ * TCPFastOpenActiveFail
+ 
+ This counter is explained by `kernel commit f19c29e3e391`_, I pasted the
+-explaination below::
++explanation below::
+ 
+   TCPFastOpenActiveFail: Fast Open attempts (SYN/data) failed because
+   the remote does not accept it or the attempts timed out.
+@@ -382,7 +382,7 @@ Defined in `RFC1213 tcpAttemptFails`_.
+ 
+ Defined in `RFC1213 tcpOutRsts`_. The RFC says this counter indicates
+ the 'segments sent containing the RST flag', but in linux kernel, this
+-couner indicates the segments kerenl tried to send. The sending
++counter indicates the segments kernel tried to send. The sending
+ process might be failed due to some errors (e.g. memory alloc failed).
+ 
+ .. _RFC1213 tcpOutRsts: https://tools.ietf.org/html/rfc1213#page-52
+@@ -700,7 +700,7 @@ SACK option could have up to 4 blocks, they are checked
+ individually. E.g., if 3 blocks of a SACk is invalid, the
+ corresponding counter would be updated 3 times. The comment of the
+ `Add counters for discarded SACK blocks`_ patch has additional
+-explaination:
++explanation:
+ 
+ .. _Add counters for discarded SACK blocks: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=18f02545a9a16c9a89778b91a162ad16d510bb32
+ 
+@@ -829,7 +829,7 @@ PAWS check fails or the received sequence number is out of window.
+ 
+ * TcpExtTCPACKSkippedTimeWait
+ 
+-Tha ACK is skipped in Time-Wait status, the reason would be either
++The ACK is skipped in Time-Wait status, the reason would be either
+ PAWS check failed or the received sequence number is out of window.
+ 
+ * TcpExtTCPACKSkippedChallenge
+@@ -984,7 +984,7 @@ TcpExtSyncookiesRecv counter wont be updated.
+ 
+ Challenge ACK
+ =============
+-For details of challenge ACK, please refer the explaination of
++For details of challenge ACK, please refer the explanation of
+ TcpExtTCPACKSkippedChallenge.
+ 
+ * TcpExtTCPChallengeACK
+@@ -1002,7 +1002,7 @@ prune
+ =====
+ When a socket is under memory pressure, the TCP stack will try to
+ reclaim memory from the receiving queue and out of order queue. One of
+-the reclaiming method is 'collapse', which means allocate a big sbk,
++the reclaiming method is 'collapse', which means allocate a big skb,
+ copy the contiguous skbs to the single big skb, and free these
+ contiguous skbs.
+ 
+@@ -1163,7 +1163,7 @@ The server side nstat output::
+   IpExtOutOctets                  52                 0.0
+   IpExtInNoECTPkts                1                  0.0
+ 
+-Input a string in nc client side again ('world' in our exmaple)::
++Input a string in nc client side again ('world' in our example)::
+ 
+   nstatuser@nstat-a:~$ nc -v nstat-b 9000
+   Connection to nstat-b 9000 port [tcp/*] succeeded!
+@@ -1211,7 +1211,7 @@ replied an ACK. But kernel handled them in different ways. When the
+ TCP window scale option is not used, kernel will try to enable fast
+ path immediately when the connection comes into the established state,
+ but if the TCP window scale option is used, kernel will disable the
+-fast path at first, and try to enable it after kerenl receives
++fast path at first, and try to enable it after kernel receives
+ packets. We could use the 'ss' command to verify whether the window
+ scale option is used. e.g. run below command on either server or
+ client::
+@@ -1343,7 +1343,7 @@ Check TcpExtTCPAbortOnMemory on client::
+   nstatuser@nstat-a:~$ nstat | grep -i abort
+   TcpExtTCPAbortOnMemory          54                 0.0
+ 
+-Check orphane socket count on client::
++Check orphaned socket count on client::
+ 
+   nstatuser@nstat-a:~$ ss -s
+   Total: 131 (kernel 0)
+@@ -1685,7 +1685,7 @@ Send 3 SYN repeatly to nstat-b::
+ 
+   nstatuser@nstat-a:~$ for i in {1..3}; do sudo tcpreplay -i ens3 /tmp/syn_fixcsum.pcap; done
+ 
+-Check snmp cunter on nstat-b::
++Check snmp counter on nstat-b::
+ 
+   nstatuser@nstat-b:~$ nstat | grep -i skip
+   TcpExtTCPACKSkippedSynRecv      1                  0.0
+@@ -1770,7 +1770,7 @@ string 'foo' in our example::
+   Connection from nstat-a 42132 received!
+   foo
+ 
+-On nstat-a, the tcpdump should have caputred the ACK. We should check
++On nstat-a, the tcpdump should have captured the ACK. We should check
+ the source port numbers of the two nc clients::
+ 
+   nstatuser@nstat-a:~$ ss -ta '( dport = :9000 || dport = :9001 )' | tee
+@@ -1778,7 +1778,7 @@ the source port numbers of the two nc clients::
+   ESTAB  0        0            192.168.122.250:50208       192.168.122.251:9000
+   ESTAB  0        0            192.168.122.250:42132       192.168.122.251:9001
+ 
+-Run tcprewrite, change port 9001 to port 9000, chagne port 42132 to
++Run tcprewrite, change port 9001 to port 9000, change port 42132 to
+ port 50208::
+ 
+   nstatuser@nstat-a:~$ tcprewrite --infile /tmp/seq_pre.pcap --outfile /tmp/seq.pcap -r 9001:9000 -r 42132:50208 --fixcsum
+-- 
+2.25.0
 
-I see a big difference between attaching FW data to an existing
-subsystem's HW centric bus (and possibly guiding enumeration of a HW
-bus from FW data) and directly creating struct devices based on FW
-data unconnected to any existing subsystem.
-
-The latter case is where the enumerating FW should stay on its own
-bus_type because there is no standardized subsystem bus providing an
-API or naming rules, so the FW type should provide those rules
-instead.
-
-> > With an actual bus specific virtual function:
-> 
-> >     return dev->bus->gpio_count(dev);
-> 
-> That won't work, you might have a mix of enumeration types for a given
-> bus type in a single system so you'd need to do this per device. 
-
-I'm being very general here, probably what we want is a little more
-formal 'fw_type' concept, so a device is on a bus and also has a FW
-attachment which can provide this other data.
-
-Jason
