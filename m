@@ -2,120 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E2D92EA494
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 05:58:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F07392EA4A9
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 06:09:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727697AbhAEE6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 23:58:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52872 "EHLO
+        id S1725835AbhAEFJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 00:09:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726064AbhAEE6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 23:58:44 -0500
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8C9C061793
-        for <netdev@vger.kernel.org>; Mon,  4 Jan 2021 20:58:03 -0800 (PST)
-Received: by mail-oi1-x232.google.com with SMTP id f132so34716535oib.12
-        for <netdev@vger.kernel.org>; Mon, 04 Jan 2021 20:58:03 -0800 (PST)
+        with ESMTP id S1725287AbhAEFJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 00:09:12 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F02C061574;
+        Mon,  4 Jan 2021 21:08:32 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id d37so28149883ybi.4;
+        Mon, 04 Jan 2021 21:08:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AlUH6PSCxbCX+fmSSUYKDVglU6JQzxbNY5f2fpy1cbM=;
-        b=T2OGZ/n3GepPqxvvkGHNM94fmKezqBiUXRp5VUeyVW6hQ1LlmLvQ+xmtyIzEfpMOr8
-         aaMqN178oXgXyzyaOWm0f1lJ0o6j4nBQb6OCGvgrEOaBMXt8WbyUaoJKovWkquXdJTi5
-         swWSWQpTzbKCOrviI7RVphu/Wa0ZpKAwufAGGnj65l/yTs6adK0+5WT0U/X8VDeLQiRS
-         iIIfA9xY+Cb1m+xItXi9aGjtbBKAoy1Hbo6+w33HXHSFQY35milG4ZztoKQud7au3y0J
-         L48hrRgEFcFonQAXzV+r+E1A4spE0wtbpBHQ2ePujjwro7pXBZ5ZKeqxqDi+NSw7OTs8
-         Ucdw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T6mM3BxitTzzXQ9DkEXjG2bjFmDN5NUBc6wDjeyrbkk=;
+        b=mJAXQODAANHFVKIEmCZCRQn5yJPkhtEg+1G/Wny2IEKXhwf81APvRC5rzntbzpQ+Z7
+         Dk8ONRlj/R+6DFCjxcQsSpA2ljFgAGDwPutHJDaXGD6B4WHqi/LEy1QEsbGmWWy0JTMi
+         ZrWIzWYWzf1AZQrWm/QaM9ruR510S9blrgM4MRqWh73ehx4rpXGkxtaowBHcma4SdVjV
+         f1c6SyfniUh7MNwzcY00wQly2OasmaN6PdbcX9gCuxly6nLp1sv7yjcgIwA0csPWNYfV
+         RfI6cC513Z0w0RcnuXILfONA95OsKYsYktZ6Fs4cgnXYc5DQkLbU1cApxP1opRnaShlI
+         zm2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AlUH6PSCxbCX+fmSSUYKDVglU6JQzxbNY5f2fpy1cbM=;
-        b=RVXR8ptDclnQ/+E/LwASfOCD+SFNU6OiXrNRoJW6zAIaieBtCT6lJ1loQ2MTGBQpjm
-         T8LC0E7VtfJINUW2tMVHUGhvRRZ/KgAHfUHBUMWVHLItA52b53KzeS2wD5RMCybc9jvM
-         SG0381LC6Q840YCMyMKZ/KDI/paIAbEg0Eowag5mHs3nQb+oRiixXJDrIITQiBuF3Qj8
-         cfuE7G5FJc5JySP4UpxMKiuX0WxjXUiq+l+/e+fREiferiE+Af73n7pDKSV/JFfSLpan
-         Ea5KSMf69iAwPqsWlW7FQO8Jk7gSuwe2O9tzuEByY1S2GWZlQOQRUvjg/PYcca3E8AsX
-         MHGw==
-X-Gm-Message-State: AOAM533ShmFF35GKiI0MdIWU/obTYKmZCeN5q3goIYWyS5FCV3cVAxBE
-        3hP8MDj4u30mUZn8ZuXC438=
-X-Google-Smtp-Source: ABdhPJyNeDhm6ICwBGjAP4fQkiqsoi7Gji+me7fip5nNEwpMbAyko7FD78BvUCBGKqbAv5mUlblifg==
-X-Received: by 2002:a05:6808:199:: with SMTP id w25mr1520535oic.151.1609822683442;
-        Mon, 04 Jan 2021 20:58:03 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:e074:7fa1:391b:b88d])
-        by smtp.googlemail.com with ESMTPSA id w5sm13267032oow.7.2021.01.04.20.58.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jan 2021 20:58:02 -0800 (PST)
-Subject: Re: Refcount mismatch when unregistering netdevice from kernel
-To:     stranche@codeaurora.org
-Cc:     Wei Wang <weiwan@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-References: <ca64de092db5a2ac80d22eaa9d662520@codeaurora.org>
- <56e72b72-685f-925d-db2d-d245c1557987@gmail.com>
- <CAEA6p_D+diS7jnpoGk6cncWL8qiAGod2EAp=Vcnc-zWNPg04Jg@mail.gmail.com>
- <307c2de1a2ddbdcd0a346c57da88b394@codeaurora.org>
- <CAEA6p_ArQdNp=hQCjrsnAo-Xy22d44b=2KdLp7zO7E7XDA4Fog@mail.gmail.com>
- <f10c733a-09f8-2c72-c333-41f9d53e1498@gmail.com>
- <6a314f7da0f41c899926d9e7ba996337@codeaurora.org>
- <839f0ad6-83c1-1df6-c34d-b844c52ba771@gmail.com>
- <9f25d75823a73c6f0f556f0905f931d1@codeaurora.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5905440c-163a-d13e-933e-c9273445a6ed@gmail.com>
-Date:   Mon, 4 Jan 2021 21:58:01 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T6mM3BxitTzzXQ9DkEXjG2bjFmDN5NUBc6wDjeyrbkk=;
+        b=tv0l4YTF+1B3LCUdv3qip16re6A4iVx7RqpCpQ/CTpN3EBrdjsysTaU3jvESXTOuaX
+         +/kuJnOz1yFwvysQAB4drliOghWbUbHAtz3zyNpZ3IZGlTlD0tC2Nt4KVUgkgGcrF/8E
+         xOPBx486T92K12eQ4D1BANkbZmK3CwX2tofL9iEcQbtwrmsNsEDXZy9uN916qwyQNhwz
+         7ILrwEnID1PRhG3G5CNAZ6yz0NG2qiTbiyaLjITY77EZPvPI+6OAej2eabyb9PrZf2Yn
+         1tE9pqcHrqbwVrvVhU6AGWcu1559KP5xzAJpc2d/UYeJRgZ926D5NH1o1ugVve6IG9u+
+         5qkw==
+X-Gm-Message-State: AOAM533XO8N4KgtEoR8zflZ0Xtm1qz3Ug/k+QReibo4k57zRarcwAq4D
+        e48S+H5hGu6RbhlB89JRG+cHopTJ7fTHkjcQnMk=
+X-Google-Smtp-Source: ABdhPJwU68yxqAHdB9WF8Z9yzUyKjAY56UwcCKyYneWgMNUavs+g7FeNeHPsRTtoYe7vVothW5EWovcoigtmG2JSUnY=
+X-Received: by 2002:a25:2c4c:: with SMTP id s73mr90532492ybs.230.1609823311741;
+ Mon, 04 Jan 2021 21:08:31 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <9f25d75823a73c6f0f556f0905f931d1@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20201218235614.2284956-1-andrii@kernel.org> <20201218235614.2284956-4-andrii@kernel.org>
+ <20210105034644.5thpans6alifiq65@ast-mbp>
+In-Reply-To: <20210105034644.5thpans6alifiq65@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 4 Jan 2021 21:08:21 -0800
+Message-ID: <CAEf4BzY4qXW_xV+0pcWPQp+Tda6BY69xgJnaA3RFxKc255rP2g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: add tests for user- and
+ non-CO-RE BPF_CORE_READ() variants
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Gilad Reti <gilad.reti@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/4/21 8:05 PM, stranche@codeaurora.org wrote:
-> 
-> We're able to reproduce the refcount mismatch after some experimentation
-> as well.
-> Essentially, it consists of
-> 1) adding a default route (ip -6 route add dev XXX default)
-> 2) forcing the creation of an exception route via manually injecting an
-> ICMPv6
-> Packet Too Big into the device.
-> 3) Replace the default route (ip -6 route change dev XXX default)
-> 4) Delete the device. (ip link del XXX)
-> 
-> After adding a call to flush out the exception cache for the route, the
-> mismatch
-> is no longer seen:
-> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-> index 7a0c877..95e4310 100644
-> --- a/net/ipv6/ip6_fib.c
-> +++ b/net/ipv6/ip6_fib.c
-> @@ -1215,6 +1215,7 @@ static int fib6_add_rt2node(struct fib6_node *fn,
-> struct fib6_info *rt,
->                 }
->                 nsiblings = iter->fib6_nsiblings;
->                 iter->fib6_node = NULL;
-> +               rt6_flush_exceptions(iter);
->                 fib6_purge_rt(iter, fn, info->nl_net);
->                 if (rcu_access_pointer(fn->rr_ptr) == iter)
->                         fn->rr_ptr = NULL;
+On Mon, Jan 4, 2021 at 7:46 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Dec 18, 2020 at 03:56:14PM -0800, Andrii Nakryiko wrote:
+> > +
+> > +/* shuffled layout for relocatable (CO-RE) reads */
+> > +struct callback_head___shuffled {
+> > +     void (*func)(struct callback_head___shuffled *head);
+> > +     struct callback_head___shuffled *next;
+> > +};
+> > +
+> > +struct callback_head k_probe_in = {};
+> > +struct callback_head___shuffled k_core_in = {};
+> > +
+> > +struct callback_head *u_probe_in = 0;
+> > +struct callback_head___shuffled *u_core_in = 0;
+> > +
+> > +long k_probe_out = 0;
+> > +long u_probe_out = 0;
+> > +
+> > +long k_core_out = 0;
+> > +long u_core_out = 0;
+> > +
+> > +int my_pid = 0;
+> > +
+> > +SEC("raw_tracepoint/sys_enter")
+> > +int handler(void *ctx)
+> > +{
+> > +     int pid = bpf_get_current_pid_tgid() >> 32;
+> > +
+> > +     if (my_pid != pid)
+> > +             return 0;
+> > +
+> > +     /* next pointers for kernel address space have to be initialized from
+> > +      * BPF side, user-space mmaped addresses are stil user-space addresses
+> > +      */
+> > +     k_probe_in.next = &k_probe_in;
+> > +     __builtin_preserve_access_index(({k_core_in.next = &k_core_in;}));
+> > +
+> > +     k_probe_out = (long)BPF_PROBE_READ(&k_probe_in, next, next, func);
+> > +     k_core_out = (long)BPF_CORE_READ(&k_core_in, next, next, func);
+> > +     u_probe_out = (long)BPF_PROBE_READ_USER(u_probe_in, next, next, func);
+> > +     u_core_out = (long)BPF_CORE_READ_USER(u_core_in, next, next, func);
+>
+> I don't understand what the test suppose to demonstrate.
+> co-re relocs work for kernel btf only.
+> Are you saying that 'struct callback_head' happened to be used by user space
+> process that allocated it in user memory. And that is the same struct as
+> being used by the kernel? So co-re relocs that apply against the kernel
+> will sort-of work against the data of user space process because
+> the user space is using the same struct? That sounds convoluted.
 
-Ah, I see now. rt6_flush_exceptions is called by fib6_del_route, but
-that won't handle replace.
+The test itself just tests that bpf_probe_read_user() is executed, not
+bpf_probe_read_kernel(). But yes, the use case is to read kernel data
+structures from the user memory address space. See [0] for the last
+time this was requested and justifications. It's not the first time
+someone asked about the user-space variant of BPF_CORE_READ(), though
+I won't be able to find the reference at this time.
 
-If you look at fib6_purge_rt it already has a call to remove pcpu
-entries. This call to flush exceptions should go there and the existing
-one in fib6_del_route can be removed.
+  [0] https://lore.kernel.org/bpf/CANaYP3GetBKUPDfo6PqWnm3xuGs2GZjLF8Ed51Q1=Emv2J-dKg@mail.gmail.com/
 
-Also, can you add the reproducer as another test case to
-tools/testing/selftests/net/pmtu.sh? We definitely need one for this
-sequence (route, exceptions, replace route).
+> I struggle to see the point of patch 1:
+> +#define bpf_core_read_user(dst, sz, src)                                   \
+> +       bpf_probe_read_user(dst, sz, (const void *)__builtin_preserve_access_index(src))
+>
+> co-re for user structs? Aren't they uapi? No reloc is needed.
+
+The use case in [0] above is for reading UAPI structs, passed as input
+arguments to syscall. It's a pretty niche use case, but there are at
+least two more-or-less valid benefits to use CO-RE with "stable" UAPI
+structs:
+
+  - handling 32-bit vs 64-bit UAPI structs uniformly;
+  - handling UAPI fields that were added in later kernels, but are
+missing on the earlier ones.
+
+For the former, you'd need to compile two variants of the BPF program
+(or do convoluted and inconvenient 32-bit UAPI struct re-definition
+for 64-bit BPF target). For the latter... I guess you can do if/else
+dance based on the kernel version. Which sucks and is inconvenient
+(and kernel version checks are discouraged, it's more reliable to
+detect availability of specific types and fields).
+
+So all in all, while pretty rare and niche, seemed like a valid use
+case. And easy to support while reusing all the macro logic almost
+without any changes.
