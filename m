@@ -2,124 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A59622EB4CA
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 22:19:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21DCC2EB4EF
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 22:39:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731414AbhAEVS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 16:18:28 -0500
-Received: from mail.katalix.com ([3.9.82.81]:35392 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725879AbhAEVS2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Jan 2021 16:18:28 -0500
-Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 8CBC97D533;
-        Tue,  5 Jan 2021 21:17:46 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1609881466; bh=L5DgvzoaChhKRPQ/BcHR0cjVGKcZ5Fa2JdUS6eRWkLE=;
-        h=From:To:Cc:Subject:Date:Message-Id:From;
-        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
-         rnel.org|Cc:=20gnault@redhat.com,=0D=0A=09jchapman@katalix.com,=0D
-         =0A=09Tom=20Parkin=20<tparkin@katalix.com>|Subject:=20[PATCH]=20pp
-         p:=20fix=20refcount=20underflow=20on=20channel=20unbridge|Date:=20
-         Tue,=20=205=20Jan=202021=2021:17:43=20+0000|Message-Id:=20<2021010
-         5211743.8404-1-tparkin@katalix.com>;
-        b=o3GiYoYCQqBWnpDp+tHapvEqfsMyRnk8FIw9jI6PqaCHyDl5hEOuhbByuzaNx86wa
-         LolsbdLcHRZWEayle+OULk9py+7OpK1n/QAJS5Tq+Vt/QGV4lpyey80rSwM9nPGPwp
-         BfqlH/gdIyCtumGsFj1IymcOk+ZgxeMKBRIRgwjY/p3UL7d68FUdctuuU9cfPO/eBA
-         AeOBI5jOkiB8yWnr8Dx29Ef8ffOd0EMrvnGLS+M//Ilv2FFPTRhtuNJhZuAdKNDEnc
-         7R21CvvsdNAUvBnIv1nwdlXUYLjOaqkrnH/JUWsNg53Snpmt9bQMV//h+cWqYGfZhl
-         XXZw0H1rPb2zQ==
-From:   Tom Parkin <tparkin@katalix.com>
-To:     netdev@vger.kernel.org
-Cc:     gnault@redhat.com, jchapman@katalix.com,
-        Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH] ppp: fix refcount underflow on channel unbridge
-Date:   Tue,  5 Jan 2021 21:17:43 +0000
-Message-Id: <20210105211743.8404-1-tparkin@katalix.com>
-X-Mailer: git-send-email 2.17.1
+        id S1731517AbhAEVjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 16:39:32 -0500
+Received: from mail-out.m-online.net ([212.18.0.10]:34318 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728156AbhAEVjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 16:39:32 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4D9Qpk2Hdbz1rs00;
+        Tue,  5 Jan 2021 22:38:19 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4D9Qpg1j2Dz1sFWW;
+        Tue,  5 Jan 2021 22:38:19 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id 8X9r4GPMdp6d; Tue,  5 Jan 2021 22:38:17 +0100 (CET)
+X-Auth-Info: pccrso3so87LMFpKnJSz8LETnzvl5Y2+EcsGDLK/klM=
+Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue,  5 Jan 2021 22:38:17 +0100 (CET)
+Subject: Re: [PATCH] [RFC] net: phy: smsc: Add magnetics VIO regulator support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20210105161533.250865-1-marex@denx.de> <X/SkAOV6s9vbSYh1@lunn.ch>
+ <75b9c711-54af-8d21-f7aa-dc4662ed2234@denx.de> <X/S4D5wWcON1UMzQ@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <97b729e7-6467-c072-4de7-c8a78bdab9f1@denx.de>
+Date:   Tue, 5 Jan 2021 22:38:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <X/S4D5wWcON1UMzQ@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When setting up a channel bridge, ppp_bridge_channels sets the
-pch->bridge field before taking the associated reference on the bridge
-file instance.
+On 1/5/21 8:03 PM, Andrew Lunn wrote:
+> On Tue, Jan 05, 2021 at 06:53:48PM +0100, Marek Vasut wrote:
+>> On 1/5/21 6:38 PM, Andrew Lunn wrote:
+>>>> +static void smsc_link_change_notify(struct phy_device *phydev)
+>>>> +{
+>>>> +	struct smsc_phy_priv *priv = phydev->priv;
+>>>> +
+>>>> +	if (!priv->vddio)
+>>>> +		return;
+>>>> +
+>>>> +	if (phydev->state == PHY_HALTED)
+>>>> +		regulator_disable(priv->vddio);
+>>>> +
+>>>> +	if (phydev->state == PHY_NOLINK)
+>>>> +		regulator_enable(priv->vddio);
+>>>
+>>> NOLINK is an interesting choice. Could you explain that please.
+>>
+>> It's the first state after interface is up.
+> 
+> No, not really. phy_start() actually sets it to PHY_UP. When the state
+> machine runs, it kicks off auto-neg and immediately reads the link
+> state. If the link is down, it transitions to PHY_NOLINK, at which
+> point this code will enable the regulator.
+> 
+>>> I fear this is not going to be very robust to state machine
+>>> changes. And since it is hidden away in a driver, it is going to be
+>>> forgotten about. You might want to think about making it more robust.
+>>
+>> I marked the patch as RFC because I would like input on how to implement
+>> this properly. Note that since the regulator supplies the magnetics, which
+>> might be shared between multiple ports with different PHYs, I don't think
+>> this code should even be in the PHY driver, but somewhere else -- but I
+>> don't know where.
+> 
+> Being shared should not be a problem. The regulator API does reference
+> counting. Any one driver turning the regulator on will enable it. But
+> it will not be turned off until all the drivers disable it after
+> enabling it. But that also means you need to balance the calls to
+> regulator_enable() and regulator_disable().
+> 
+> If for whatever reason this function is called for PHY_HALTED more
+> times than for PHY_NOLINK, the counter can go negative, and bad things
+> would happen. So i would actually had a bool to smsc_phy_priv
+> indicating if the regulator has been enabled. And for each
+> phydev->state, decide if the regulator should be enabled, check if it
+> is enabled according to the bool, and enable it is not. Same with
+> states which indicate it should be disabled. The code is then not
+> dependent on specific transitions, but on actual states. That should
+> be more robust to changes.
+> 
+> You also need to think about this regulator being shared. Say some
+> other PHY has enabled the regulator. phy_start() might be able to skip
+> PHY_NOLINK state and so this PHY never calls regulator_enable(). If
+> that other PHY is then configured down, it will disable the regulator,
+> and this PHY looses link. That probably is enough for this PHY to
+> re-enable the regulator, but it is not ideal.
 
-This opens up a refcount underflow bug if ppp_bridge_channels called
-via. iotcl runs concurrently with ppp_unbridge_channels executing via.
-file release.
-
-The bug is triggered by ppp_bridge_channels taking the error path
-through the 'err_unset' label.  In this scenario, pch->bridge is set,
-but the reference on the bridged channel will not be taken because
-the function errors out.  If ppp_unbridge_channels observes pch->bridge
-before it is unset by the error path, it will erroneously drop the
-reference on the bridged channel and cause a refcount underflow.
-
-To avoid this, ensure that ppp_bridge_channels holds a reference on
-each channel in advance of setting the bridge pointers.
----
-v2:
- * rework ppp_bridge_channels code to avoid the race condition in
-   preference to holding ppp_mutex while calling ppp_unbridge_channels
----
- drivers/net/ppp/ppp_generic.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index 09c27f7773f9..d019fa40b494 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -617,12 +617,15 @@ static struct bpf_prog *compat_ppp_get_filter(struct sock_fprog32 __user *p)
-  */
- static int ppp_bridge_channels(struct channel *pch, struct channel *pchb)
- {
-+	bool drop_ref = false;
-+
- 	write_lock_bh(&pch->upl);
- 	if (pch->ppp ||
- 	    rcu_dereference_protected(pch->bridge, lockdep_is_held(&pch->upl))) {
- 		write_unlock_bh(&pch->upl);
- 		return -EALREADY;
- 	}
-+	refcount_inc(&pchb->file.refcnt);
- 	rcu_assign_pointer(pch->bridge, pchb);
- 	write_unlock_bh(&pch->upl);
- 
-@@ -632,19 +635,28 @@ static int ppp_bridge_channels(struct channel *pch, struct channel *pchb)
- 		write_unlock_bh(&pchb->upl);
- 		goto err_unset;
- 	}
-+	refcount_inc(&pch->file.refcnt);
- 	rcu_assign_pointer(pchb->bridge, pch);
- 	write_unlock_bh(&pchb->upl);
- 
--	refcount_inc(&pch->file.refcnt);
--	refcount_inc(&pchb->file.refcnt);
--
- 	return 0;
- 
- err_unset:
- 	write_lock_bh(&pch->upl);
--	RCU_INIT_POINTER(pch->bridge, NULL);
-+	/* Re-check pch->bridge with upl held since a racing unbridge might already
-+	 * have cleared it and dropped the reference on pch->bridge.
-+	 */
-+	if (rcu_dereference_protected(pch->bridge, lockdep_is_held(&pch->upl))) {
-+		RCU_INIT_POINTER(pch->bridge, NULL);
-+		drop_ref = true;
-+	}
- 	write_unlock_bh(&pch->upl);
- 	synchronize_rcu();
-+
-+	if (drop_ref)
-+		if (refcount_dec_and_test(&pchb->file.refcnt))
-+			ppp_destroy_channel(pchb);
-+
- 	return -EALREADY;
- }
- 
--- 
-2.17.1
-
+I think you are completely missing the point, the regulator is just an 
+implementation detail. I am more interested in the implementation 
+itself, which I suspect should not even be in the PHY driver, but rather 
+somewhere closer to the core (where?), because the supply to magnetics 
+is not part of the PHY, any PHY can be used with magnetics which need a 
+regulator.
