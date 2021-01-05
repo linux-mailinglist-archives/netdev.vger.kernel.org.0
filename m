@@ -2,96 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D74452EA455
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 05:15:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 044502EA46E
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 05:26:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728258AbhAEEPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 23:15:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32822 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727024AbhAEEPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 23:15:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609820026;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YNwfaLROqYRPmfvgvxa6nI7hiNfX/WzqZuvzfVKuUUY=;
-        b=X7stQoxYPpRYvUucFqkuhGo0wOaDqvza8Jac1WrZneynwrUCyPHP1krN4PLFNs2IzWoAaF
-        gRCz+DOQgf9dW1YEQDdhxGnYVzP9Ux3O9I6mmhI1qzgSfKzW8ysFT5t4U+oYNZ6RAmkbN2
-        ahjtDuK4PukR/8XitD+cWaoCz711nh0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-79-quVrtjhsOZmNy5g7PEYh9g-1; Mon, 04 Jan 2021 23:13:42 -0500
-X-MC-Unique: quVrtjhsOZmNy5g7PEYh9g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 380C9107ACE3;
-        Tue,  5 Jan 2021 04:13:41 +0000 (UTC)
-Received: from [10.72.13.192] (ovpn-13-192.pek2.redhat.com [10.72.13.192])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E55165D9C6;
-        Tue,  5 Jan 2021 04:13:28 +0000 (UTC)
-Subject: Re: [PATCH 06/21] vdpa: introduce virtqueue groups
-To:     Stefan Hajnoczi <stefanha@gmail.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org, lulu@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, eperezma@redhat.com,
-        stefanha@redhat.com, eli@mellanox.com, lingshan.zhu@intel.com,
-        rob.miller@broadcom.com
-References: <20201216064818.48239-1-jasowang@redhat.com>
- <20201216064818.48239-7-jasowang@redhat.com>
- <20210104100458.GC342399@stefanha-x1.localdomain>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <bf7e6f2e-eeb8-38b3-94f0-8b4a3ce9ff9f@redhat.com>
-Date:   Tue, 5 Jan 2021 12:13:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728139AbhAEEZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 23:25:06 -0500
+Received: from smtp.emailarray.com ([69.28.212.198]:57584 "EHLO
+        smtp2.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726749AbhAEEZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 23:25:06 -0500
+X-Greylist: delayed 399 seconds by postgrey-1.27 at vger.kernel.org; Mon, 04 Jan 2021 23:25:06 EST
+Received: (qmail 29817 invoked by uid 89); 5 Jan 2021 04:17:09 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
+  by smtp2.emailarray.com with SMTP; 5 Jan 2021 04:17:09 -0000
+Date:   Mon, 4 Jan 2021 20:17:07 -0800
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [RFC PATCH v3 00/12] Generic zcopy_* functions
+Message-ID: <20210105041707.m574sk4ivjsxvtxi@bsd-mbp.dhcp.thefacebook.com>
+References: <20201230191244.610449-1-jonathan.lemon@gmail.com>
+ <CAF=yD-Jb-tkxYPHrnAk3x641RY6tnrGOJB0UkrBWrXmvuRiM9w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210104100458.GC342399@stefanha-x1.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAF=yD-Jb-tkxYPHrnAk3x641RY6tnrGOJB0UkrBWrXmvuRiM9w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jan 04, 2021 at 12:39:35PM -0500, Willem de Bruijn wrote:
+> On Wed, Dec 30, 2020 at 2:12 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+> >
+> > From: Jonathan Lemon <bsd@fb.com>
+> >
+> > This is set of cleanup patches for zerocopy which are intended
+> > to allow a introduction of a different zerocopy implementation.
+> >
+> > The top level API will use the skb_zcopy_*() functions, while
+> > the current TCP specific zerocopy ends up using msg_zerocopy_*()
+> > calls.
+> >
+> > There should be no functional changes from these patches.
+> >
+> > v2->v3:
+> >  Rename zc_flags to 'flags'.  Use SKBFL_xxx naming, similar
+> >  to the SKBTX_xx naming.  Leave zerocopy_success naming alone.
+> >  Reorder patches.
+> >
+> > v1->v2:
+> >  Break changes to skb_zcopy_put into 3 patches, in order to
+> >  make it easier to follow the changes.  Add Willem's suggestion
+> >  about renaming sock_zerocopy_
+> 
+> Overall, this latest version looks fine to me.
+> 
+> The big question is how this fits in with the broader rx direct
+> placement feature. But it makes sense to me to checkpoint as is at
+> this point.
+> 
+> One small comment: skb_zcopy_* is a logical prefix for functions that
+> act on sk_buffs, Such as skb_zcopy_set, which associates a uarg with
+> an skb. Less for functions that operate directly on the uarg, and do
+> not even take an skb as argument: skb_zcopy_get and skb_zcopy_put.
+> Perhaps net_zcopy_get/net_zcopy_put?
 
-On 2021/1/4 下午6:04, Stefan Hajnoczi wrote:
-> On Wed, Dec 16, 2020 at 02:48:03PM +0800, Jason Wang wrote:
->> This patch introduces virtqueue groups to vDPA device. The virtqueue
->> group is the minimal set of virtqueues that must share an address
->> space. And the adddress space identifier could only be attached to
->> a specific virtqueue group.
->>
->> A new mandated bus operation is introduced to get the virtqueue group
->> ID for a specific virtqueue.
->>
->> All the vDPA device drivers were converted to simply support a single
->> virtqueue group.
->>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   drivers/vdpa/ifcvf/ifcvf_main.c   |  9 ++++++++-
->>   drivers/vdpa/mlx5/net/mlx5_vnet.c |  8 +++++++-
->>   drivers/vdpa/vdpa.c               |  4 +++-
->>   drivers/vdpa/vdpa_sim/vdpa_sim.c  | 11 ++++++++++-
->>   include/linux/vdpa.h              | 12 +++++++++---
->>   5 files changed, 37 insertions(+), 7 deletions(-)
-> Maybe consider calling it iotlb_group or iommu_group so the purpose of
-> the group is clear?
-
-
-I'm not sure. The reason that I choose virtqueue group is because:
-
-1) Virtqueue is the only entity that tries to issues DMA
-2) For IOMMU group, it may cause confusion to the existing IOMMU group 
-who group devices
-3) IOTLB is the concept in vhost, we don't have such definition in the 
-virtio spec
-
-Thanks
-
-
+Or even just zcopy_get / zcopy_put ?
+-- 
+Jonathan
