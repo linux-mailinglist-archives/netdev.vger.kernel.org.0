@@ -2,92 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A7EA2EB575
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 23:39:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D24FA2EB582
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 23:45:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730855AbhAEWjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 17:39:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50174 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728893AbhAEWjy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Jan 2021 17:39:54 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E4E722D6E;
-        Tue,  5 Jan 2021 22:39:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609886353;
-        bh=pFezBDqFKZ7qO60emB27Effrm4QyjXMcAEfwl+2zMX8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lDqQ/z+oCQ5mnuV3jL9YuPn2SM7YIwPNDGcdmotiI5AjKCy1N2vkvyVjNenfDrqFu
-         EvRQexdEKl5Kk54q2GSmdk2LwkbueOM4Zkn2BywYzedX3KVQKtF6BFpmOIun1Ks93V
-         mehWQL5hpqAUqL7Juaiw3cohwn4pvnrN2b+bxS1vR43AtSWC9khLX9omqS7CgFyJ3n
-         NHK0XFnu1kO3IQZbia2CqjY6YFRDeblpq+02sZLJcfuK59EN33ATG8R5lI/VS1TvUt
-         CJDwE/rOSO6rnxTUzxirgq+Z5+wRIYfRo/Az4gmlmKekalAG8s7x2tKWA7QS5Uc7ts
-         +DhZI9Ek7zuIg==
-Date:   Tue, 5 Jan 2021 14:39:12 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
+        id S1729131AbhAEWpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 17:45:41 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:47320 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728058AbhAEWpk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 17:45:40 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 105MOr0A022106;
+        Tue, 5 Jan 2021 22:44:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2020-01-29;
+ bh=EVuLtaEoqyVF8xI9Fk+aPgVK+nQKGqBw67gRTMEOd70=;
+ b=0dlbbXl6u7/DpS6PcTRxA+F2SUcyX7kazCvwbWmflGJLlP4XOrhp/pkCNu579jTxJ3DF
+ FbWthhLCqItmTvZQvOMYsKfPwlVnF///LgLEHHQaGYDzuFMaCdTuQRTsHm2y1PL702Yl
+ cJTEsx2ynmpC9v4lWp4VUu5W4O+xffmwWPkT64PPUCN1/zR1aeOSz61jwBJ+y03TKoEa
+ UBwYMQIdLuNGe4F1muPmQrQMGQcH+f+12HjN+zg3MNP9KE1vXWHrWLbkMqAmxtizYQ89
+ Y/fHK1fbjVZsjurlCdgY4My5jmcLVBdXxMo6znt186TXFEwR5pVTcZwlIoc5pkhM/wxa ew== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 35tgsku31g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 05 Jan 2021 22:44:41 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 105MPLL7186292;
+        Tue, 5 Jan 2021 22:44:40 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 35vct6funb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 05 Jan 2021 22:44:40 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 105Micqj022028;
+        Tue, 5 Jan 2021 22:44:39 GMT
+Received: from dhcp-10-175-187-168.vpn.oracle.com (/10.175.187.168)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 05 Jan 2021 22:44:38 +0000
+Date:   Tue, 5 Jan 2021 22:44:29 +0000 (GMT)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@localhost
 To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
+cc:     Alan Maguire <alan.maguire@oracle.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, andrii@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, yhs@fb.com,
+        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        =?ISO-8859-15?Q?Toke_H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        jean-philippe@linaro.org, bpf <bpf@vger.kernel.org>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        martin.varghese@nokia.com, Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net v2] net: bareudp: add missing error handling for
- bareudp_link_config()
-Message-ID: <20210105143912.34e71377@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAM_iQpVMBjoSFH34cunM+e+E6Qu+eWVfoduo5LvyupRHq1OG1w@mail.gmail.com>
-References: <20210105190725.1736246-1-kuba@kernel.org>
-        <CAM_iQpVMBjoSFH34cunM+e+E6Qu+eWVfoduo5LvyupRHq1OG1w@mail.gmail.com>
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH bpf-next] ksnoop: kernel argument/return value
+ tracing/display using BTF
+In-Reply-To: <CAM_iQpW5ajiTTW7HBZiK+n_F1MhGyzzD+OWExns1YbejHRsy5A@mail.gmail.com>
+Message-ID: <alpine.LRH.2.23.451.2101052209360.30305@localhost>
+References: <1609773991-10509-1-git-send-email-alan.maguire@oracle.com> <CAM_iQpW5ajiTTW7HBZiK+n_F1MhGyzzD+OWExns1YbejHRsy5A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9855 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101050129
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9855 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 malwarescore=0
+ phishscore=0 impostorscore=0 bulkscore=0 clxscore=1011 priorityscore=1501
+ lowpriorityscore=0 adultscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101050129
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Jan 2021 12:38:54 -0800 Cong Wang wrote:
-> On Tue, Jan 5, 2021 at 11:07 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > +static void bareudp_dellink(struct net_device *dev, struct list_head *head)
-> > +{
-> > +       struct bareudp_dev *bareudp = netdev_priv(dev);
-> > +
-> > +       list_del(&bareudp->next);
-> > +       unregister_netdevice_queue(dev, head);
-> > +}
-> > +
-> >  static int bareudp_newlink(struct net *net, struct net_device *dev,
-> >                            struct nlattr *tb[], struct nlattr *data[],
-> >                            struct netlink_ext_ack *extack)
-> >  {
-> >         struct bareudp_conf conf;
-> > +       LIST_HEAD(list_kill);
-> >         int err;
-> >
-> >         err = bareudp2info(data, &conf, extack);
-> > @@ -662,17 +671,14 @@ static int bareudp_newlink(struct net *net, struct net_device *dev,
-> >
-> >         err = bareudp_link_config(dev, tb);
-> >         if (err)
-> > -               return err;
-> > +               goto err_unconfig;
-> >
-> >         return 0;
-> > -}
-> > -
-> > -static void bareudp_dellink(struct net_device *dev, struct list_head *head)
-> > -{
-> > -       struct bareudp_dev *bareudp = netdev_priv(dev);
-> >
-> > -       list_del(&bareudp->next);
-> > -       unregister_netdevice_queue(dev, head);
-> > +err_unconfig:
-> > +       bareudp_dellink(dev, &list_kill);
-> > +       unregister_netdevice_many(&list_kill);  
-> 
-> Why do we need unregister_netdevice_many() here? I think
-> bareudp_dellink(dev, NULL) is sufficient as we always have
-> one instance to unregister?
-> 
-> (For the same reason, bareudp_dev_create() does not need it
-> either.)
 
-Ack, I'm following how bareudp_dev_create() is written. 
 
-I can follow up in net-next and change both, sounds good?
+On Tue, 5 Jan 2021, Cong Wang wrote:
+
+> On Mon, Jan 4, 2021 at 7:29 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+> >
+> > BPF Type Format (BTF) provides a description of kernel data structures
+> > and of the types kernel functions utilize as arguments and return values.
+> >
+> > A helper was recently added - bpf_snprintf_btf() - that uses that
+> > description to create a string representation of the data provided,
+> > using the BTF id of its type.  For example to create a string
+> > representation of a "struct sk_buff", the pointer to the skb
+> > is provided along with the type id of "struct sk_buff".
+> >
+> > Here that functionality is utilized to support tracing kernel
+> > function entry and return using k[ret]probes.  The "struct pt_regs"
+> > context can be used to derive arguments and return values, and
+> > when the user supplies a function name we
+> >
+> > - look it up in /proc/kallsyms to find its address/module
+> > - look it up in the BTF kernel data to get types of arguments
+> >   and return value
+> > - store a map representation of the trace information, keyed by
+> >   instruction pointer
+> > - on function entry/return we look up the map to retrieve the BTF
+> >   ids of the arguments/return values and can call bpf_snprintf_btf()
+> >   with these argument/return values along with the type ids to store
+> >   a string representation in the map.
+> > - this is then sent via perf event to userspace where it can be
+> >   displayed.
+> >
+> > ksnoop can be used to show function signatures; for example:
+> 
+> This is definitely quite useful!
+> 
+> Is it possible to integrate this with bpftrace? That would save people
+> from learning yet another tool. ;)
+> 
+
+I'd imagine (and hope!) other tracing tools will do this, but right 
+now the aim is to make the task of tracing kernel data structures simpler, 
+so having a tool dedicated to just that can hopefully help those 
+discussions.  There's a bit more work to be done to simplify that task, for
+example  implementing Alexei's suggestion to support pretty-printing of 
+data structures using BTF in libbpf.
+
+My hope is that we can evolve this tool - or something like it - to the 
+point where we can solve that one problem easily, and that other more 
+general tracers can then make use of that solution.  I probably should
+have made all of this clearer in the patch submission, sorry about that.
+
+Alan
