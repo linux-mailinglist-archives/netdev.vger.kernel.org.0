@@ -2,88 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 204CB2EAD2A
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:12:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 548F72EAD2F
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 15:14:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728694AbhAEOLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 09:11:09 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50172 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726961AbhAEOLI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Jan 2021 09:11:08 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kwn2L-00GAxa-O1; Tue, 05 Jan 2021 15:10:13 +0100
-Date:   Tue, 5 Jan 2021 15:10:13 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        id S1727421AbhAEON6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 09:13:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726352AbhAEON6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 09:13:58 -0500
+Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5AFC061574
+        for <netdev@vger.kernel.org>; Tue,  5 Jan 2021 06:13:17 -0800 (PST)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4D9Dvr3zzcz1rwDY;
+        Tue,  5 Jan 2021 15:12:08 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4D9Dvr3XRPz1sFWt;
+        Tue,  5 Jan 2021 15:12:08 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id QsDp1RNpwVZL; Tue,  5 Jan 2021 15:12:06 +0100 (CET)
+X-Auth-Info: yLoGFlxC+BBzxtoHHp4cVsoGG9NNP6zqRjz0qom0ZEE=
+Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue,  5 Jan 2021 15:12:06 +0100 (CET)
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] [RFC] net: phy: Fix reboot crash if CONFIG_IP_PNP is not
- set
-Message-ID: <X/RzRd0zXHzAqLDl@lunn.ch>
-References: <20210104122415.1263541-1-geert+renesas@glider.be>
- <20210104145331.tlwjwbzey5i4vgvp@skbuf>
- <CAMuHMdUVsSuAur1wWkjs7FW5N-36XV9iXA6wmvst59eKoUFDHQ@mail.gmail.com>
- <20210104170112.hn6t3kojhifyuaf6@skbuf>
- <X/NNS3FUeSNxbqwo@lunn.ch>
- <X/NQ2fYdBygm3CYc@lunn.ch>
- <20210104184341.szvnl24wnfnxg4k7@skbuf>
- <alpine.DEB.2.22.394.2101051038550.302140@ramsan.of.borg>
+        Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH net-next V3 0/2] net: ks8851: Add KS8851 PHY support
+Date:   Tue,  5 Jan 2021 15:11:49 +0100
+Message-Id: <20210105141151.122922-1-marex@denx.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2101051038550.302140@ramsan.of.borg>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I added a statically-linked ethtool binary to my initramfs, and can
-> confirm that retrieving the PHY statistics does not access the PHY
-> registers when the device is suspended:
-> 
->     # ethtool --phy-statistics eth0
->     no stats available
->     # ifconfig eth0 up
->     # ethtool --phy-statistics eth0
->     PHY statistics:
-> 	 phy_receive_errors: 0
-> 	 phy_idle_errors: 0
->     #
-> 
-> In the past, we've gone to great lengths to avoid accessing the PHY
-> registers when the device is suspended, usually in the statistics
-> handling (see e.g. [1][2]).
+The KS8851 has a reduced internal PHY, which is accessible through its
+registers at offset 0xe4. The PHY is compatible with KS886x PHY present
+in Micrel switches, including the PHY ID Low/High registers swap, which
+is present both in the MAC and the switch.
 
-I would argue that is the wrong approach. The PHY device is a
-device. It has its own lifetime. You would not suspend a PCI bus
-controller without first suspending all PCI devices on the bus etc.
+Marek Vasut (2):
+  net: phy: micrel: Add KS8851 PHY support
+  net: ks8851: Register MDIO bus and the internal PHY
 
-> +static int sh_mdiobb_read(struct mii_bus *bus, int phy, int reg)
-> +{
-> +	struct bb_info *bb = container_of(bus->priv, struct bb_info, ctrl);
+ drivers/net/ethernet/micrel/ks8851.h        |   2 +
+ drivers/net/ethernet/micrel/ks8851_common.c | 112 +++++++++++++++++---
+ drivers/net/phy/micrel.c                    |   2 +-
+ 3 files changed, 99 insertions(+), 17 deletions(-)
 
-mii_bus->parent should give you dev, so there is no need to add it to
-bb_info.
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Lukas Wunner <lukas@wunner.de>
 
-> +	/* Wrap accessors with Runtime PM-aware ops */
-> +	bitbang->read = mdp->mii_bus->read;
-> +	bitbang->write = mdp->mii_bus->write;
-> +	mdp->mii_bus->read = sh_mdiobb_read;
-> +	mdp->mii_bus->write = sh_mdiobb_write;
+-- 
+2.29.2
 
-I did wonder about just exporting the two functions so you can
-directly call them.
-
-Otherwise, this looks good.
-
-	   Andrew
