@@ -2,116 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85F282EA9AC
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 12:19:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBBB92EA9D7
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 12:27:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729435AbhAELS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 06:18:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40634 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729196AbhAELSy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Jan 2021 06:18:54 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 736B5229C5;
-        Tue,  5 Jan 2021 11:18:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609845492;
-        bh=GDmYQRHGn/AcnFt3hdxGi1mf2d4j0SgudD/3lB6HiLU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MGoc1AfjFEcjnH2LG9n6lBEYoM6Ri+jtRDQ3pMETkgkS4xWatgY5WzBCv7tGFTTX4
-         9deGZUIgeLAhm1VPGBdYES++ZORJDj29LOoOSG8tACOto7uS1nWJwFUZ5fw3Q/9+7t
-         9Rnjcz0F86y/qp986vAfUr6GinSVP0XwPgyXu3vSEN7cNL4OxE10chjJdGA85/nxVF
-         lPpoMqPvAHjIz+Tazlv2fQtQtSQARqHG/OYlCfxgVMRWyanIC2bLCSGkFIWiXyTy98
-         QR/IH6Kj4pkkDkHe387Q3RpA+JZkCdNIme8yoaM7itWnaNn71YrIoqeYgceFoOyLsB
-         SI0+F1HbHOM4g==
-Received: by earth.universe (Postfix, from userid 1000)
-        id 4BD5B3C0C94; Tue,  5 Jan 2021 12:18:10 +0100 (CET)
-Date:   Tue, 5 Jan 2021 12:18:10 +0100
-From:   Sebastian Reichel <sre@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>, Stephen Boyd <sboyd@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        id S1729592AbhAEL0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 06:26:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729318AbhAELZy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 06:25:54 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBE7C0617A0;
+        Tue,  5 Jan 2021 03:24:46 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id o19so71804616lfo.1;
+        Tue, 05 Jan 2021 03:24:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=d4x4cvcMmgFsYUGoF/1+2lvoQxmLVCLHQ/4xBidGdsM=;
+        b=s8plLUX0b1QAEl7yX2FujREg4nf3efVcgX2KaUa5RfSFArQL2X5xo9M4He1knpXyS3
+         BiwTQdKUaYvGVtem/nVvkQ4eXatNxB7G43aRo6WC2lXa36/zE2UYMpKgDPD9elEgmv+P
+         apwz7dbiRKb6ANajJE8PtBBNRZZeN2ppDea2p2dJwEtZ+ETOA+WAXLBEIkcgG45rk9Nk
+         oIHDCtUWiqkoDuAKcbzxnLLrj01n4a7RyGFo4eGVBLmkzSbEKnHZAU7CTVN77Ss1hldg
+         1mu9zHE3ngL2G4P6D0Pd7Yv4axOsRnLmD7TPN3CmhL8icokJQneHZs8Z/BX3dvCSDZH+
+         scQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=d4x4cvcMmgFsYUGoF/1+2lvoQxmLVCLHQ/4xBidGdsM=;
+        b=FVaNkaIYSokKAfvd0rNyYbXXLABoN5oyRROXtVsInzJKcZ51MQtcR0GNlI+c1pKbBh
+         3GksdB1okEzEo0wGkxMzZrva01B6lMeKtDUW5Eo6/gTQc0T8ZUs4xYVt/tqJN0d27QQj
+         4wjqqFJhsFKyNe3ARBRF1lo+fSi/X10mN4N2GYj78OE3k5QX2EHusZh/GHbQh1g/yE5h
+         LQxKVaLwTSMZc7Fy4GeeFyQ3jdYcatunjbkDDNMRzUHzwWrI7JqOLeepwb2q1vE1fKWd
+         vyA6sWAYq9oAbFwPh3jnhGdjUa59JlmeCkUnYPyzSPUwKyTHnWkR6IhtqgGDjU0MwSts
+         jskw==
+X-Gm-Message-State: AOAM5334SRK2p4z9Vf81zBHVuPGp8MLcZ0zmFaiRT7ucN+tZ0RyoJEsr
+        N1MYNnvfhLOmxq4Mcp+DfBaZSPEHXS6gDfjZs4Q=
+X-Google-Smtp-Source: ABdhPJzk5ZjwofTobePg/2X4lwegr74UEMdarc1pgxyms8aCO1/VljAkPrb4AMb8BnsxbmrWTdB/9qlmxwaw755Zjpw=
+X-Received: by 2002:a05:651c:1102:: with SMTP id d2mr35861266ljo.398.1609845884842;
+ Tue, 05 Jan 2021 03:24:44 -0800 (PST)
+MIME-Version: 1.0
+References: <20210105101738.13072-1-unixbhaskar@gmail.com> <CAGRGNgX-JSPW8LSmAUbm=2jkx+K4EYdntCq6P2i8td0TUk7Nww@mail.gmail.com>
+ <X/RD/pll4UoRJG0w@Gentoo>
+In-Reply-To: <X/RD/pll4UoRJG0w@Gentoo>
+From:   Julian Calaby <julian.calaby@gmail.com>
+Date:   Tue, 5 Jan 2021 22:24:32 +1100
+Message-ID: <CAGRGNgVHcOjt4at+tzgrPxn=04_Y3b16pihDw6xucg4Eh1GFSA@mail.gmail.com>
+Subject: Re: [PATCH] drivers: net: wireless: realtek: Fix the word association
+ defautly de-faulty
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Julian Calaby <julian.calaby@gmail.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-kernel@lists.infradead.org, linux-ide@vger.kernel.org,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Add missing array size constraints
-Message-ID: <20210105111810.5sdfmjga5in5wgvx@earth.universe>
-References: <20210104230253.2805217-1-robh@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vyuzhxvp4ms2cjlb"
-Content-Disposition: inline
-In-Reply-To: <20210104230253.2805217-1-robh@kernel.org>
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        zhengbin13@huawei.com, baijiaju1990@gmail.com,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Bhaskar,
 
---vyuzhxvp4ms2cjlb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Jan 5, 2021 at 9:48 PM Bhaskar Chowdhury <unixbhaskar@gmail.com> wrote:
+>
+> On 21:33 Tue 05 Jan 2021, Julian Calaby wrote:
+> >Hi Bhaskar,
+> >
+> >On Tue, Jan 5, 2021 at 9:19 PM Bhaskar Chowdhury <unixbhaskar@gmail.com> wrote:
+> >>
+> >> s/defautly/de-faulty/p
+> >>
+> >>
+> >> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> >> ---
+> >>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+> >> index c948dafa0c80..7d02d8abb4eb 100644
+> >> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+> >> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+> >> @@ -814,7 +814,7 @@ bool rtl88ee_is_tx_desc_closed(struct ieee80211_hw *hw, u8 hw_queue, u16 index)
+> >>         u8 own = (u8)rtl88ee_get_desc(hw, entry, true, HW_DESC_OWN);
+> >>
+> >>         /*beacon packet will only use the first
+> >> -        *descriptor defautly,and the own may not
+> >> +        *descriptor de-faulty,and the own may not
+> >
+> >Really? "de-faultly" isn't any better than "defaultly" and in fact
+> >it's even worse as it breaks up the word "default".
+> >
+> hey, it was written as "defautly" ...and that was simple spelling mistake ..
+> so,corrected it.
 
-Hi Rob,
+Er, no, that isn't the correct replacement. They're using "default" as
+a verb and mean "by default".
 
-On Mon, Jan 04, 2021 at 04:02:53PM -0700, Rob Herring wrote:
-> DT properties which can have multiple entries need to specify what the
-> entries are and define how many entries there can be. In the case of
-> only a single entry, just 'maxItems: 1' is sufficient.
->=20
-> Add the missing entry constraints. These were found with a modified
-> meta-schema. Unfortunately, there are a few cases where the size
-> constraints are not defined such as common bindings, so the meta-schema
-> can't be part of the normal checks.
->=20
-> [...]
->  .../bindings/power/supply/bq25980.yaml        |  1 +
-> [...]
+The sentence makes no sense with "de-faulty" there instead.
 
-Acked-by: Sebastian Reichel <sre@kernel.org>
+Ultimately though the entire comment barely makes sense, so the best
+way to fix this spelling mistake is to re-write the entire comment so
+it does. I would have suggested a new wording for it, but I don't know
+enough about what's going on here to parse the rest of it.
 
--- Sebastian
+So therefore someone who knows what's going on here needs to fix this
+and your change is just making this comment worse.
 
---vyuzhxvp4ms2cjlb
-Content-Type: application/pgp-signature; name="signature.asc"
+Thanks,
 
------BEGIN PGP SIGNATURE-----
+-- 
+Julian Calaby
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAl/0SucACgkQ2O7X88g7
-+ppIAQ/8CwCUtes2Mr7K09stdBuNtR3gBayMxcQnnIM6AQvBexKzq6gM2xpDIPB8
-YVpTjaGQkOcwS3BMu7BsRT4t2s3KXy9lVS5jkChykskjyAyr9a7QPsK7MVZVRh2Q
-U896qS+zI2nsNdeX6+kT10+29b7PcoEvTJRtEPEFlsq4UoFbMAsdJhtHBo9v1oUP
-cJMT7NSkqtcHM9HeSPZFCTLyAsoGFPYMTneKdN9ZVlPHoQRkCH0k3vyHMmKKPWAQ
-uafDLlP+nvs9Ug/FSsFsoaLcixHHAI+GkVj48muZL7EVAygGTbrRA27r0txduvfj
-DOxfT7BdNOMkmDge0RR2vk29V/2WYsEg4vwi3uyP2BDQsdXEYpwTn00IJ5IJgcqE
-EAjq7hWsSo7zd8VkMc/CLN1a1W+PEpIJ0CGfS4cLtAMwRLNLdPA+FS4UaBCAoS4k
-T9AZGFXABwtQQHyOAHD8/Hjs5vexDnWdvcRyCuDqgt6YeUX6Lu8pRTWx5lkWPkLy
-GZf/jppVAnP/gtnsOOJnPL37jxbOpelu+4UopYZ/j9YLJb+M7P2xYhsYuRlnKn0r
-aAgoNpEXu3TNpex2apw+Cm70EiidWAGcWqvrOCWhdqWBulGJ+O4v1DYe536LLoZN
-rdX4Hbkx7kBMNJ1ZZVIA3x9YzLwGKo/1nnV2q7fUdTzUEobcJWQ=
-=gWL0
------END PGP SIGNATURE-----
-
---vyuzhxvp4ms2cjlb--
+Email: julian.calaby@gmail.com
+Profile: http://www.google.com/profiles/julian.calaby/
