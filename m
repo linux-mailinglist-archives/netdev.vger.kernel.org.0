@@ -2,110 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFD82EAB35
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 13:51:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69C352EAB40
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 13:54:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729436AbhAEMus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 07:50:48 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1458 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbhAEMus (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 07:50:48 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ff4607f0001>; Tue, 05 Jan 2021 04:50:07 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 5 Jan
- 2021 12:50:02 +0000
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
- by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 5 Jan 2021 12:50:02 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aLNyKrNB8aAD5y9mWTlUrUwRIxWin6qtP2nc87xh2wdkCVteSYHmMlYZKRI8wZ1oNBnLxla5FlwzUK23uM3wu7Il0MQ/Pm6S769jipDXYWftkD3o320A5Yi+7idpuShSj07bQ0wBY8M0qIykZgECAyFfJ1gzdlg3TGRn+t4nSVt8KyOzmwWDuLok2KtCqF3Jr4TTZm0jtB6lQ64qOOlry3LSnAKedsY2bVln5LH2FAGZa1ZRSR98KdhrSCV22rEDdZMLDmKKiJxJFJZ5bttgU7tdg0fHIBmc0BUR0iYwjuGB6sVWFPLuBKExWzDwc27hBwGMsaiWF5Kiwz+yjCYpFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PpTeUg5BKXmtSQakm3V7AA3QLUAcO6LRjzNTprAUsws=;
- b=YmxBAeZgE87MzsPJh76MZSPRviJjSuhvWql+7z+irkL8hWywD36sfPIYaq7r5IE5PmPLh8ArYLdCaI02IxBrjeil11ndI5FROa/J6sdrvZLQ7TnTJt4F00nf8+2SF7+h56yfAzLbEknardZ2h1xjDNchqRzt0ymRJvHK13srcScOi6thp8p9GYN0W2mOHYUHsCGKhWwRRPrBC7A6hNd9OkpoAdy7W6QOLxGvgSXQFBL96qE2Kz1jmclbIaTvBIvWc3vjd2s3h4p/VrGDkRA5CqoVFK7RzaASEImlVwukXfpIvfIknyyRTqGoc7MfiiWC5UgPrVVGxWNgf8dILvuJgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4250.namprd12.prod.outlook.com (2603:10b6:5:21a::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.20; Tue, 5 Jan
- 2021 12:49:59 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3721.024; Tue, 5 Jan 2021
- 12:49:59 +0000
-Date:   Tue, 5 Jan 2021 08:49:56 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-CC:     Mark Brown <broonie@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        <alsa-devel@alsa-project.org>,
-        "Kiran Patil" <kiran.patil@intel.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        "Ranjani Sridharan" <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        David Miller <davem@davemloft.net>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@mellanox.com>,
-        "Lee Jones" <lee.jones@linaro.org>
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20210105124956.GN552508@nvidia.com>
-References: <20201218184150.GY552508@nvidia.com>
- <20201218203211.GE5333@sirena.org.uk> <20201218205856.GZ552508@nvidia.com>
- <20201221185140.GD4521@sirena.org.uk> <20210104180831.GD552508@nvidia.com>
- <20210104211930.GI5645@sirena.org.uk> <20210105001341.GL552508@nvidia.com>
- <CAPcyv4gxprMo1LwGTqGDyN-z2TrXLcAvJ3AN9-fbUs6y-LwXeA@mail.gmail.com>
- <20210105015314.GM552508@nvidia.com>
- <CAPcyv4jAAC01rktNadUPv9jDRCOcDEO22uAOHXobpJ7TqAbp1w@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAPcyv4jAAC01rktNadUPv9jDRCOcDEO22uAOHXobpJ7TqAbp1w@mail.gmail.com>
-X-ClientProxiedBy: YT1PR01CA0133.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2f::12) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1729593AbhAEMyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 07:54:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728006AbhAEMyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 07:54:06 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EBDC061574;
+        Tue,  5 Jan 2021 04:53:26 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id q137so28044171iod.9;
+        Tue, 05 Jan 2021 04:53:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K79eXZC/Zmmt2A7zkyWNbssvWSflnyrmEKHoezkqZ24=;
+        b=TjRq6EUrmxaMZI2yT57rLdCc+HPWMANWnsF5tA119UKg8fel0rlvaXSK/62AOFRUo/
+         gNqA/oPjVsKYaubGPBNVzMUBZT7RWnkPGn97v/SDVqJ2mDjVQcj2O12j9CHsDIJRRKO6
+         cdvKm3JzMIACMJbraIqGfqI1jhDwohAGZu49HFeOaBZUslnz7G1BmwCp0IasQL3AjLB0
+         vQrkQ2VXJFjk1ZyZVumXvEOJC7lVC8Y8Mkk7OPsw3qDqs7M5UuRke/etX1m2jkidDX9j
+         eeyp345mB6gQYeBaMF1WdVzp9UMfgeGd81vPE5CMsC21GxQ8IzoprFlhAJAXsWPnKJi3
+         DNYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K79eXZC/Zmmt2A7zkyWNbssvWSflnyrmEKHoezkqZ24=;
+        b=DTl6C9N7C/mM3DT6k7GltFQEpkL4vF0+c5k2nFiJ/dTfsIbSM606Ylb5o6lwuAzZGd
+         ojxuWHO5qFWTl5c0kyw7zX3kiaOvEq8iH93FdLRysWmm0g8HiGna6Fs3U8XSnUSt2BKd
+         6uXWQhQ0XzyiwISQrL88xDmMc5rar9Gj4274MbuegzYw1Q3Gf3rB7ynHNnbDzaGnRlBN
+         SoBAohJ+eGTH1bc4YKAF1nxZJkdZJ6cgSM1P9JLFD+9ADVUXdVoK+ri7vM7MwrG7B9HK
+         /J0EHZiLhRny+Ma0HfTR4x5BIW+o8MOQx38/7jD6ApuR3FN82Zy9YmjM+/1jPALh4GBJ
+         JrxA==
+X-Gm-Message-State: AOAM533mp7YFM2zkJs7QVgT43T8EcLRj4A9vKdMp6S5sf6dMCtNNFCpB
+        l3x0Kzgm/Ef51hlOOm1YRukylWFZddYAy3bChleUHzOZ
+X-Google-Smtp-Source: ABdhPJy+xl2oI1UvjCXfcYUlgNcKNWFiiu+kttdPrBY+8CZh9AgWwQVAab76cv4Cr9pEdsJXPPQxdYrYweYeS9NTNjs=
+X-Received: by 2002:a5d:9a8e:: with SMTP id c14mr63963527iom.178.1609851205863;
+ Tue, 05 Jan 2021 04:53:25 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by YT1PR01CA0133.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2f::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.19 via Frontend Transport; Tue, 5 Jan 2021 12:49:58 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kwlme-002FUc-8U; Tue, 05 Jan 2021 08:49:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1609851007; bh=PpTeUg5BKXmtSQakm3V7AA3QLUAcO6LRjzNTprAUsws=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=p40RqElF/LZfDBbX75UPdffKlqCuNT006h6I1yRP5vQ/ird8gl2jezK72+ZdtM0XQ
-         06cIfzAQSfACrpRkuvtKbR2gvsPX763xwipl62r3u+iQ4XVoMxKN54SLxlX9DN7Gj+
-         DmLH3wM7ztGNoi11sh6bnCiIn+r1msJI+ZkGiShhYaCXXZTTf6Hn00xNmNVk3YoH2i
-         7mr9qfBtaMW1mlI793FLt82IgGSq+eFTKZr4tbODeszgVqSoIY8ihPPeOBwxD54O2N
-         Aw4C8MtmPUG7yk7CJwMYH3Li87DwcpNIa8jWSdEM/DDv7vGQEK+I4m/BPnN4kEW+ZB
-         dXj3PbEJOzAiA==
+References: <20201228213121.2331449-1-aford173@gmail.com> <20201228213121.2331449-4-aford173@gmail.com>
+ <CAMuHMdUCsAGYGS8oygT2xySRSm3Op4cJJmcnEK9BC732ZvN6JA@mail.gmail.com>
+In-Reply-To: <CAMuHMdUCsAGYGS8oygT2xySRSm3Op4cJJmcnEK9BC732ZvN6JA@mail.gmail.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Tue, 5 Jan 2021 06:53:14 -0600
+Message-ID: <CAHCN7xJmNU_1XS-hqP1VdaO9j3phepG4eF-S7EiNEzOUyZKX-w@mail.gmail.com>
+Subject: Re: [PATCH 4/4] net: ethernet: ravb: Name the AVB functional clock fck
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 04, 2021 at 07:12:47PM -0800, Dan Williams wrote:
+On Mon, Jan 4, 2021 at 4:41 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Adam,
+>
+> On Mon, Dec 28, 2020 at 10:32 PM Adam Ford <aford173@gmail.com> wrote:
+> > The bindings have been updated to support two clocks, but the
+> > original clock now requires the name fck to distinguish it
+> > from the other.
+> >
+> > Signed-off-by: Adam Ford <aford173@gmail.com>
+>
+> Thanks for your patch!
+>
+> > --- a/drivers/net/ethernet/renesas/ravb_main.c
+> > +++ b/drivers/net/ethernet/renesas/ravb_main.c
+> > @@ -2142,7 +2142,7 @@ static int ravb_probe(struct platform_device *pdev)
+> >
+> >         priv->chip_id = chip_id;
+> >
+> > -       priv->clk = devm_clk_get(&pdev->dev, NULL);
+> > +       priv->clk = devm_clk_get(&pdev->dev, "fck");
+>
+> This change is not backwards compatible, as existing DTB files do not
+> have the "fck" clock.  So the driver has to keep on assuming the first
+> clock is the functional clock, and this patch is thus not needed nor
+> desired.
 
-> I get that, but I'm fearing a gigantic bus_ops structure that has
-> narrow helpers like ->gpio_count() that mean nothing to the many other
-> clients of the bus. Maybe I'm overestimating the pressure there will
-> be to widen the ops structure at the bus level.
+Should I post a V2 with this removed, or can this patch just be excluded?
 
-If we want a 'universal device' then that stuff must live
-someplace.. Open coding the dispatch as is today is also not the end
-of the world, just seeing that is just usually a sign something is not
-ideal with the object model.
-
-Jason
+adam
+>
+> >         if (IS_ERR(priv->clk)) {
+> >                 error = PTR_ERR(priv->clk);
+> >                 goto out_release;
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
