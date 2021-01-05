@@ -2,141 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31ACA2EA79D
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:36:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54CCB2EA7BB
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 10:39:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728158AbhAEJeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 04:34:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42262 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728086AbhAEJeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:34:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609839158;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KDRR0z0TUONmOgv9BLItAtpsqP3CgvwXGzYeT1dfz/4=;
-        b=bf1xH8KvDnGykQu0C/o3Wa+gXdSmeQFcYlcaHsy7UKFZ3wWKsW8NVIrqmfnthskML+4Pej
-        sNg6DlL6L8H9EUHFg1N580QDdsh8XSGcoNJo/j256T2L1c75hmH+DEvALfiCDZN4WZfbaK
-        sauM4zdsIybNmTvMS1doiw7j+0Sv1JM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-411-X9SbBh3RMIqosxb8yBjmxw-1; Tue, 05 Jan 2021 04:32:34 -0500
-X-MC-Unique: X9SbBh3RMIqosxb8yBjmxw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0CD97801A9E;
-        Tue,  5 Jan 2021 09:32:31 +0000 (UTC)
-Received: from [10.72.13.192] (ovpn-13-192.pek2.redhat.com [10.72.13.192])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EFA7C60873;
-        Tue,  5 Jan 2021 09:32:20 +0000 (UTC)
-Subject: Re: [PATCH netdev 0/5] virtio-net support xdp socket zero copy xmit
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
-Cc:     dust.li@linux.alibaba.com, tonylu@linux.alibaba.com,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1728602AbhAEJgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 04:36:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727260AbhAEJgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 04:36:44 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3EBC061574;
+        Tue,  5 Jan 2021 01:36:03 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id c5so35454581wrp.6;
+        Tue, 05 Jan 2021 01:36:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=CBEgq3lGKdv8uL6EZCtDkPUPdtOI/LvqjfEie+xNIH4=;
+        b=HJiFrO0cyFUE3EdhkZ9ieByRFQCmu2tX+0L8OoIw4Wob2ig1rJoDxLCjxIQnyLdkES
+         SioIrCKKqRUCdIYJRnHHT7DH2PlW/UdIRpSfWuZwCmLdKhc/OUZpvSuRfBlbneWGJyz7
+         ZpTpMHZr6MH21FebXJKTorOtdY/31zxbsf5Oig5Tf7niL6jH0Jca7W5tA9EZaHf7eFrf
+         s8GfCy82KvLI/Z3W+VmSKjwi6MWD0zldc+X9455cJLoiLVNFmAuolk+7rC2oCndiGKB2
+         dSf4ivxSDbGtUAPA+FpgOuqJARYz4fUdzftUMx+JZT7jv1z3acWwet08NEa4KajaJGVY
+         ua/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=CBEgq3lGKdv8uL6EZCtDkPUPdtOI/LvqjfEie+xNIH4=;
+        b=WIpM7WD9q9hXlBAPvdZY4Ye7JhmXUtjBbt/LSz+jpJseNDF/33i/zLe4q6c8Y8fJXO
+         +xQnSi/xBAhPKVe+JZaWOdCgoNlzpmJ9IukvUcKI4/YhyenUBtr6shgh8VwC29Eww12X
+         a2i3daHDaUFRW+Xtu9mZyYuuuk5PlkLITumYNyb/WYfdoVu0FWy5T2RLKJ1WO5XZ/axI
+         2kj5DwrOhuW7LliaLNLfKwoM86LDk23pmuXFIRlPz7FH6zOTBTjA1PQ5cnEKMb0lS+nS
+         CQ67WytgHHwDAMxIO0W58UKVSUlyWPqrUm2HI5efh8JAwmoJBpeQ3rz+NeXTbmlqfa0P
+         heaw==
+X-Gm-Message-State: AOAM533ki9cTmSRAdSw4rMEBDwz9c/GWU6E1ukAi52QxSoiQnfzyXK/A
+        5OiwhUJiAGl9NaRPf5CU0c0=
+X-Google-Smtp-Source: ABdhPJzbwhnvkmHNN5DP1N2v4XP1Us0fHF241cvauNZBE+WGFQnXleX6Na2ODfxxGTIz0yr5/IiMsg==
+X-Received: by 2002:adf:e512:: with SMTP id j18mr83068277wrm.52.1609839361280;
+        Tue, 05 Jan 2021 01:36:01 -0800 (PST)
+Received: from felia.fritz.box ([2001:16b8:2d99:1a00:4199:29a0:95cf:5dfe])
+        by smtp.gmail.com with ESMTPSA id j10sm3532540wmj.7.2021.01.05.01.36.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jan 2021 01:36:00 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     George Cherian <george.cherian@marvell.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha Sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:VIRTIO CORE AND NET DRIVERS" 
-        <virtualization@lists.linux-foundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:XDP SOCKETS (AF_XDP)" <bpf@vger.kernel.org>
-References: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <a67e00af-47fb-4d92-8342-27dc93c8aab9@redhat.com>
-Date:   Tue, 5 Jan 2021 17:32:19 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] docs: octeontx2: tune rst markup
+Date:   Tue,  5 Jan 2021 10:35:53 +0100
+Message-Id: <20210105093553.31879-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit 80b9414832a1 ("docs: octeontx2: Add Documentation for NPA health
+reporters") added new documentation with improper formatting for rst, and
+caused a few new warnings for make htmldocs in octeontx2.rst:169--202.
 
-On 2021/1/5 下午5:11, Xuan Zhuo wrote:
-> The first patch made some adjustments to xsk.
+Tune markup and formatting for better presentation in the HTML view.
 
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+applies cleanly on current master (v5.11-rc2) and next-20201205
 
-Thanks a lot for the work. It's rather interesting.
+George, please ack.
+Jonathan, please pick this minor formatting clean-up patch.
 
+ .../ethernet/marvell/octeontx2.rst            | 59 +++++++++++--------
+ 1 file changed, 34 insertions(+), 25 deletions(-)
 
->
-> The second patch itself can be used as an independent patch to solve the problem
-> that XDP may fail to load when the number of queues is insufficient.
-
-
-It would be better to send this as a separated patch. Several people 
-asked for this before.
-
-
->
-> The third to last patch implements support for xsk in virtio-net.
->
-> A practical problem with virtio is that tx interrupts are not very reliable.
-> There will always be some missing or delayed tx interrupts. So I specially added
-> a point timer to solve this problem. Of course, considering performance issues,
-> The timer only triggers when the ring of the network card is full.
-
-
-This is sub-optimal. We need figure out the root cause. We don't meet 
-such issue before.
-
-Several questions:
-
-- is tx interrupt enabled?
-- can you still see the issue if you disable event index?
-- what's backend did you use? qemu or vhost(user)?
-
-
->
-> Regarding the issue of virtio-net supporting xsk's zero copy rx, I am also
-> developing it, but I found that the modification may be relatively large, so I
-> consider this patch set to be separated from the code related to xsk zero copy
-> rx.
-
-
-That's fine, but a question here.
-
-How is the multieuque being handled here. I'm asking since there's no 
-programmable filters/directors support in virtio spec now.
-
-Thanks
-
-
->
-> Xuan Zhuo (5):
->    xsk: support get page for drv
->    virtio-net: support XDP_TX when not more queues
->    virtio-net, xsk: distinguish XDP_TX and XSK XMIT ctx
->    xsk, virtio-net: prepare for support xsk
->    virtio-net, xsk: virtio-net support xsk zero copy tx
->
->   drivers/net/virtio_net.c    | 643 +++++++++++++++++++++++++++++++++++++++-----
->   include/linux/netdevice.h   |   1 +
->   include/net/xdp_sock_drv.h  |  10 +
->   include/net/xsk_buff_pool.h |   1 +
->   net/xdp/xsk_buff_pool.c     |  10 +-
->   5 files changed, 597 insertions(+), 68 deletions(-)
->
-> --
-> 1.8.3.1
->
+diff --git a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+index d3fcf536d14e..00bdc10fe2b8 100644
+--- a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
++++ b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+@@ -165,45 +165,54 @@ Devlink health reporters
+ NPA Reporters
+ -------------
+ The NPA reporters are responsible for reporting and recovering the following group of errors
++
+ 1. GENERAL events
++
+    - Error due to operation of unmapped PF.
+    - Error due to disabled alloc/free for other HW blocks (NIX, SSO, TIM, DPI and AURA).
++
+ 2. ERROR events
++
+    - Fault due to NPA_AQ_INST_S read or NPA_AQ_RES_S write.
+    - AQ Doorbell Error.
++
+ 3. RAS events
++
+    - RAS Error Reporting for NPA_AQ_INST_S/NPA_AQ_RES_S.
++
+ 4. RVU events
++
+    - Error due to unmapped slot.
+ 
+-Sample Output
+--------------
+-~# devlink health
+-pci/0002:01:00.0:
+-  reporter hw_npa_intr
+-      state healthy error 2872 recover 2872 last_dump_date 2020-12-10 last_dump_time 09:39:09 grace_period 0 auto_recover true auto_dump true
+-  reporter hw_npa_gen
+-      state healthy error 2872 recover 2872 last_dump_date 2020-12-11 last_dump_time 04:43:04 grace_period 0 auto_recover true auto_dump true
+-  reporter hw_npa_err
+-      state healthy error 2871 recover 2871 last_dump_date 2020-12-10 last_dump_time 09:39:17 grace_period 0 auto_recover true auto_dump true
+-   reporter hw_npa_ras
+-      state healthy error 0 recover 0 last_dump_date 2020-12-10 last_dump_time 09:32:40 grace_period 0 auto_recover true auto_dump true
++Sample Output::
++
++	~# devlink health
++	pci/0002:01:00.0:
++	  reporter hw_npa_intr
++	      state healthy error 2872 recover 2872 last_dump_date 2020-12-10 last_dump_time 09:39:09 grace_period 0 auto_recover true auto_dump true
++	  reporter hw_npa_gen
++	      state healthy error 2872 recover 2872 last_dump_date 2020-12-11 last_dump_time 04:43:04 grace_period 0 auto_recover true auto_dump true
++	  reporter hw_npa_err
++	      state healthy error 2871 recover 2871 last_dump_date 2020-12-10 last_dump_time 09:39:17 grace_period 0 auto_recover true auto_dump true
++	   reporter hw_npa_ras
++	      state healthy error 0 recover 0 last_dump_date 2020-12-10 last_dump_time 09:32:40 grace_period 0 auto_recover true auto_dump true
+ 
+ Each reporter dumps the
+  - Error Type
+  - Error Register value
+  - Reason in words
+ 
+-For eg:
+-~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_gen
+- NPA_AF_GENERAL:
+-         NPA General Interrupt Reg : 1
+-         NIX0: free disabled RX
+-~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_intr
+- NPA_AF_RVU:
+-         NPA RVU Interrupt Reg : 1
+-         Unmap Slot Error
+-~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_err
+- NPA_AF_ERR:
+-        NPA Error Interrupt Reg : 4096
+-        AQ Doorbell Error
++For eg::
++
++	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_gen
++	 NPA_AF_GENERAL:
++	         NPA General Interrupt Reg : 1
++	         NIX0: free disabled RX
++	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_intr
++	 NPA_AF_RVU:
++	         NPA RVU Interrupt Reg : 1
++	         Unmap Slot Error
++	~# devlink health dump show  pci/0002:01:00.0 reporter hw_npa_err
++	 NPA_AF_ERR:
++	        NPA Error Interrupt Reg : 4096
++	        AQ Doorbell Error
+-- 
+2.17.1
 
