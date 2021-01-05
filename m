@@ -2,183 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF8A82EA165
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 01:15:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BF782EA142
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 01:05:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727994AbhAEAPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Jan 2021 19:15:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727485AbhAEAPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 19:15:16 -0500
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD81C061794;
-        Mon,  4 Jan 2021 16:14:35 -0800 (PST)
-Received: by mail-vs1-xe2d.google.com with SMTP id p7so15482002vsf.8;
-        Mon, 04 Jan 2021 16:14:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BgewbUM3GRqDpERbLmrU3lkYrgTXY5oKYfuJ+Lx8LmE=;
-        b=Vc33EU0hTkL6BTRi1heoUSVc8jlZ0TyRViHPzRmsyfjop/soXm16AsuvO4PVFD34v0
-         GZ6/9wXtwgkTbn61JbIDFkFQQZzliddjLIq3RVyJs4rLGdTDDFBvnQ2pHu3wHBM50eVh
-         7mzs/XpSZbMWBX7gmaB926ey+fz3XQfCct50z/dyQXy+HGRxK0ANEe4G3C79PKmcst6j
-         Yj0MRSsyqZmGmtSU+ySxdWXoXGPAh+mfoMYBNpMZ3v2R+xkmMdodVy46KU05a6BiwtfE
-         4EOrjPYZhTwsRmEzHDydujs5qq1XL1ECsFR+8XGSS4BG7qkWTqfTIb+9oXUWaV2VaBFs
-         KWlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=BgewbUM3GRqDpERbLmrU3lkYrgTXY5oKYfuJ+Lx8LmE=;
-        b=hbq3tSEGJ/W7IlEix1LUuNGpWOlM6rGJ/OB0vLPxolMm/sAyMZpQvZw8p0eVFwX+3G
-         +RBzcJxD6XErHy+yVvM1FsDthbJ51fiwVr127AObDP2Upp8HkttW7jHoCQek+dOi8nym
-         Ovlgbjjo/qeIuiEz6fhfAEChhx4YBcs2KYSaACELFOjmivMchPwHRbXaVMlqaPYJFmFs
-         p0C8F1f3hd6vKtxa4xJ9sJThbzeD2u/db+gztSao4sQp/Dvdhahfbpyq1/5LVA7sX4Yf
-         dlwqhNKI9hxA8JLEMguYU9m9D+nfD3/ZdNTN2Mo58W8/Yf2ocWf1adD7b7+1MtV4xiGY
-         qmiQ==
-X-Gm-Message-State: AOAM530v47A53iaF3HPMtfVqoLkqM/7z6/eZJor6bg9Oih9kLM0+2UrU
-        ex1Ww1l3j9jIp2OZNuPEUyCdMWfOyBc=
-X-Google-Smtp-Source: ABdhPJzrwsTjp1iD2OhlaS/HvwA+zDne82nziXmtHmngblZTxRmgZp7bkZJ2JMgN6BYcN7Ms3wP66w==
-X-Received: by 2002:a62:8895:0:b029:19e:92ec:6886 with SMTP id l143-20020a6288950000b029019e92ec6886mr39193910pfd.12.1609795839029;
-        Mon, 04 Jan 2021 13:30:39 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 3sm56501461pfv.92.2021.01.04.13.30.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Jan 2021 13:30:38 -0800 (PST)
-Subject: Re: [PATCH] [RFC] net: phy: Fix reboot crash if CONFIG_IP_PNP is not
- set
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20210104122415.1263541-1-geert+renesas@glider.be>
- <20210104145331.tlwjwbzey5i4vgvp@skbuf>
- <CAMuHMdUVsSuAur1wWkjs7FW5N-36XV9iXA6wmvst59eKoUFDHQ@mail.gmail.com>
- <20210104170112.hn6t3kojhifyuaf6@skbuf> <X/NNS3FUeSNxbqwo@lunn.ch>
- <X/NQ2fYdBygm3CYc@lunn.ch> <20210104184341.szvnl24wnfnxg4k7@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <de7dc885-86dd-934e-610d-a66695141af6@gmail.com>
-Date:   Mon, 4 Jan 2021 13:30:36 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726475AbhAEAEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Jan 2021 19:04:36 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:14894 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726163AbhAEAEg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Jan 2021 19:04:36 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 104No4SW030562;
+        Mon, 4 Jan 2021 16:03:38 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=1ppAzx0EHMWU0ox8dBh/N5HpB1sElmxTNJ+lQVpXBLc=;
+ b=IwfVDLv2hpylCA++wyxIKzjVG+4Fbf6R0zKdJ9Z/AZlto2acYztnbl1oh9osC35Oci5p
+ pTAb4PhL7lF1cfl1PxSfICm/chzQ3RyJISzguL9d7UHefEi5vg/WC+w3HKBdVEFDNoMK
+ rUWIlTBVOxTCLeXbHX/+Csjt0Fe583hpwxM= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 35u9rupphq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 04 Jan 2021 16:03:38 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 4 Jan 2021 16:03:37 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Cscex11YYtCTy8nRmS3mB0egqDc2Qp1FudwcUVYmIAtAl5MBRiKOaSflReEsnSyQ+ojwgirBCUg5eEKlA1BbwudAYl0jWwcraTea/U+ce/XCW3wEXpyx2mE5i51b4OxvvZ6mvjP7xzoCwOCskfc6OHl6dUIO9MIQ1DxV0K8Itoq0AsLiCHmKumJ0/nbnf4AVeGQq97JuE6QFl98/qIfaVMoKh6CtZ4ufc3narIMap0SK4q0fmcMg7hOIR0z2mbMbjlWbZCI4bMfJhQ2Qm6aHgJIOTFE52RHTmmiPT4QJfHkm/Wr2bQjehb83HHvuRzMQdLPB8Y3+H4TcIiGg2Ey7IQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1ppAzx0EHMWU0ox8dBh/N5HpB1sElmxTNJ+lQVpXBLc=;
+ b=KBpJ1WOLAUvdUNlKtk8uCivbkSSZEv48PDFk5+MEuGkqfpDWrfB46iymvxS/kY4jahT/GyctqF2cI2Ply4ctnUEdOi0t3QTGoz7Jt/oKOOOH8WXFdP+cGe/MlX/pisGDF1kzX7GHbU7ZWT+dA3zg+2QHyCKkRP0VyOd0B9s71NALlG9/Gfud99pSGtk4duDR4HYYYcueoouWO9I0Raxp1nHf0ZErysVyxk/Z3oEDYUgMpusIC8KiJiB2WHiHQCGn97wCcWCXT5w/Uwrw4cdzcoNQBief4hMq5qZipCzDe6ky8QFhUzBPacuQsSEk0Z6vvErMBeRRVgGT7RiQ2B+TkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1ppAzx0EHMWU0ox8dBh/N5HpB1sElmxTNJ+lQVpXBLc=;
+ b=ZRZpoI0vTkT14klydZQvUqehSxYsJriEAb1nOjXgwKJB7WezxH9+NojCr8NfdtK5p2Wk57JMliQEwevJdIipQuKiYy8oprZDPgKthnTsat7CQ+loJuIi/NVyU0ei8tYQobOjm0aYbJrJRolPExm8sw6ukOV5wVy2DcnahQRN7WE=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2774.namprd15.prod.outlook.com (2603:10b6:a03:15d::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.24; Tue, 5 Jan
+ 2021 00:03:36 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7%7]) with mapi id 15.20.3721.024; Tue, 5 Jan 2021
+ 00:03:36 +0000
+Date:   Mon, 4 Jan 2021 16:03:29 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next v2 1/2] bpf: try to avoid kzalloc in
+ cgroup/{s,g}etsockopt
+Message-ID: <20210105000329.augyugyaucykt35r@kafai-mbp>
+References: <20210104221454.2204239-1-sdf@google.com>
+ <20210104221454.2204239-2-sdf@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210104221454.2204239-2-sdf@google.com>
+X-Originating-IP: [2620:10d:c090:400::5:eac]
+X-ClientProxiedBy: MW2PR2101CA0014.namprd21.prod.outlook.com
+ (2603:10b6:302:1::27) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-In-Reply-To: <20210104184341.szvnl24wnfnxg4k7@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:eac) by MW2PR2101CA0014.namprd21.prod.outlook.com (2603:10b6:302:1::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.0 via Frontend Transport; Tue, 5 Jan 2021 00:03:36 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5852c9e2-d9b6-417c-94e9-08d8b10d59a5
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2774:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2774CE0D633CD2EFFDC6DEECD5D10@BYAPR15MB2774.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5jwDeW4Xm5ANinSucIHpczDzAJPKyvt7ObILAF3O5sp9fmapGWq/T2hwkt+Lx3S3IJGG1aLdhCklMB+CC3P8nC0aJUGsvRueR08CKgx8jwQznj3QC1UdGAUlol1c4udYjGrPYLfZC+/F/in8fN9S+Ky/7RmpLNEdIcLI7x9xTgoizPyBe9L/UQtTniMtYeXgUpvW6MNuMrfIoFeI4rrQeQv2lcrfRzIEq2Ijpae9z9nVfhRNHUTg24bnUSMkYe4JWJ7VvC2RByE3g9pdQ8uqOxZQK0upX7k+OwUSiOGRTjVJgvmz0d/72cRQVdgxjOVEGUVjfOXppj/En0klpeKaGk373YK7TaNU4Aw07dvwvO3Xa3dS+nSc3JixGIVygccyHch4JS7YAvqP0YhkLFtWfg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(136003)(376002)(366004)(346002)(8676002)(316002)(2906002)(16526019)(186003)(66946007)(478600001)(86362001)(33716001)(66556008)(66476007)(52116002)(6496006)(8936002)(83380400001)(5660300002)(6916009)(1076003)(55016002)(4326008)(9686003)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?vKYSccwA8mCn9dgcMmdDVs5Wp66EePZW3BrpEOVlyZOWlF7/34sY+JizVECo?=
+ =?us-ascii?Q?MCScxMVvJP9xLOaTo/q9/5nXpJJlUMV+TeM+EaclOtsmEeNwU3DxyK4UxDJY?=
+ =?us-ascii?Q?sqRY+t0OCtWUA+rBGlG/dSD4KxaLOfEnRE99x6cr/VuRpOdkTN7GbV2h9vae?=
+ =?us-ascii?Q?Qn5P1JtWxAi/SPiPZHX6IPkDL5rNJL2KlOEI/F5M4jHEYd8m5aVCnaFcGmmW?=
+ =?us-ascii?Q?5Mg+3of4Axa4R2BSKYftPDDbIXzZgkfOGy803N4xTN79UVGGkaiLJ83myGTH?=
+ =?us-ascii?Q?ZMBmaDCrexWdldO0bfQDoc4jPQ18SMRcbdfF46N6lEOpr6NjEZ1uwd4Bkfsc?=
+ =?us-ascii?Q?clMX05o8MFNSii27dGVdAL88iSoLIw5SxQpHqO1V9JzPBEQ/Ro3z1U7oD5qE?=
+ =?us-ascii?Q?53o0hF74iAwnj0eakvfKEAnBS+bodQSsMM0KzTW7DP0LvPF18hNjK8X8D3P/?=
+ =?us-ascii?Q?1QHLlQz88scXg+6aomWSH4IN21I28oMnqS0KM0wOifEr3OTRRU9yqNkKbs6C?=
+ =?us-ascii?Q?StHkBgCODGwX1Rm3At/1bYWeOfQIKx1ddNYWPVRl1O42SPreSdCc5z+BhOXc?=
+ =?us-ascii?Q?Lya+jrGsiZufJ7zSjwQ4d2UXSodF7p2b2H0mO28rJNOIto51sZD8ONcLMACD?=
+ =?us-ascii?Q?dK+D8G1pNVbRMGO9O1DV1YOBr+55MZm8lczdCapBmXhmVU6BneU7x8A1f2wv?=
+ =?us-ascii?Q?lzJZqHDqO7/crmNakMgq9tOOtdedawXIaxH7imcvDVFYVRT77m3IFZK/3Ycj?=
+ =?us-ascii?Q?qOgvBJQdwS2sWNjMXufNp7gRnD3zLqCL1ac6Biw4XqdLE5aFRejk9WdfdQyx?=
+ =?us-ascii?Q?W/7MY5eF7SiHHhuAGGrW9fgtzeTd+LZdZwJkRCOA98Ce9wl1XBRPR58qbUAM?=
+ =?us-ascii?Q?+enAlvAuH2L7uFxPvkbmRNoIssYwA5JE5QEYkWYw7jtL5BAdD4QLuO/4Rl28?=
+ =?us-ascii?Q?tZceLYazYXuk8vncdNnrMkRaXYxf1PF2Qsqw7IceH5FiUNaBdn9+HF0F6Ym2?=
+ =?us-ascii?Q?N3omzDCyJ4l0KSlfs+zzaA+yag=3D=3D?=
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2021 00:03:36.8880
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5852c9e2-d9b6-417c-94e9-08d8b10d59a5
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: b8V9P0OPXBlAKUksjPdgEfNXXC7Dey4XfZRU8bD1IhCMNl6jVCfwpYEtP8FqpzkX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2774
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-04_16:2021-01-04,2021-01-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ lowpriorityscore=0 bulkscore=0 malwarescore=0 suspectscore=0 adultscore=0
+ clxscore=1015 impostorscore=0 priorityscore=1501 phishscore=0
+ mlxlogscore=999 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101040145
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/4/21 10:43 AM, Ioana Ciornei wrote:
-> On Mon, Jan 04, 2021 at 06:31:05PM +0100, Andrew Lunn wrote:
->>> The basic rules here should be, if the MDIO bus is registered, it is
->>> usable. There are things like PHY statistics, HWMON temperature
->>> sensors, etc, DSA switches, all which have a life cycle separate to
->>> the interface being up.
->>
->> [Goes and looks at the code]
->>
->> Yes, this is runtime PM which is broken.
->>
->> sh_mdio_init() needs to wrap the mdp->mii_bus->read and
->> mdp->mii_bus->write calls with calls to
->>
->> pm_runtime_get_sync(&mdp->pdev->dev);
->>
->> and
->>
->> pm_runtime_put_sync(&mdp->pdev->dev);
->>
+On Mon, Jan 04, 2021 at 02:14:53PM -0800, Stanislav Fomichev wrote:
+> When we attach a bpf program to cgroup/getsockopt any other getsockopt()
+> syscall starts incurring kzalloc/kfree cost. While, in general, it's
+> not an issue, sometimes it is, like in the case of TCP_ZEROCOPY_RECEIVE.
+> TCP_ZEROCOPY_RECEIVE (ab)uses getsockopt system call to implement
+> fastpath for incoming TCP, we don't want to have extra allocations in
+> there.
 > 
-> Agree. Thanks for actually looking into it.. I'm not really well versed
-> in runtime PM.
+> Let add a small buffer on the stack and use it for small (majority)
+> {s,g}etsockopt values. I've started with 128 bytes to cover
+> the options we care about (TCP_ZEROCOPY_RECEIVE which is 32 bytes
+> currently, with some planned extension to 64).
 > 
->> The KSZ8041RNLI supports statistics, which ethtool --phy-stats can
->> read, and these will also going to cause problems.
->>
+> It seems natural to do the same for setsockopt, but it's a bit more
+> involved when the BPF program modifies the data (where we have to
+> kmalloc). The assumption is that for the majority of setsockopt
+> calls (which are doing pure BPF options or apply policy) this
+> will bring some benefit as well.
 > 
-> Not really, this driver connects to the PHY on .ndo_open(), thus any
-> try to actually dump the PHY statistics before an ifconfig up would get
-> an -EOPNOTSUPP since the dev->phydev is not yet populated.
+> Collected some performance numbers using (on a 65k MTU localhost in a VM):
+> $ perf record -g -- ./tcp_mmap -s -z
+> $ ./tcp_mmap -H ::1 -z
+> $ ...
+> $ perf report --symbol-filter=__cgroup_bpf_run_filter_getsockopt
 > 
-> This is exactly why I do not understand why some drivers insist on
-> calling of_phy_connect() and its variants on .ndo_open() and not while
-> probing the device - you can access the debug stats only if the
-> interface was started.
+> Without this patch:
+>      4.81%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_>
+>             |
+>              --4.74%--__cgroup_bpf_run_filter_getsockopt
+>                        |
+>                        |--1.06%--__kmalloc
+>                        |
+>                        |--0.71%--lock_sock_nested
+>                        |
+>                        |--0.62%--__might_fault
+>                        |
+>                         --0.52%--release_sock
+> 
+> With the patch applied:
+>      3.29%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
+>             |
+>              --3.22%--__cgroup_bpf_run_filter_getsockopt
+>                        |
+>                        |--0.66%--lock_sock_nested
+>                        |
+>                        |--0.57%--__might_fault
+>                        |
+>                         --0.56%--release_sock
+> 
+> So it saves about 1% of the system call. Unfortunately, we still get
+> 2-3% of overhead due to another socket lock/unlock :-(
+That could be a future exercise to optimize the fast path sockopts. ;)
 
-Doing the connect in ndo_open() allows you to keep the PHY in whatever
-the state it was prior to the kernel managing it, which if everything is
-correctly designed means in a low power state.
+[ ... ]
 
-Your Ethernet driver's probe function may be called on boot and you may
-never use the network device at all, so it is a waste of energy to power
-on the PHY, have it potentially link with its link partner while you
-still have no chance of doing any configuration to it because you have
-not brought up the network interface.
--- 
-Florian
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -16,6 +16,7 @@
+>  #include <linux/bpf-cgroup.h>
+>  #include <net/sock.h>
+>  #include <net/bpf_sk_storage.h>
+> +#include <net/tcp.h> /* sizeof(struct tcp_zerocopy_receive) */
+To be more specific, it should be <uapi/linux/tcp.h>.
+
+>  
+>  #include "../cgroup/cgroup-internal.h"
+>  
+> @@ -1298,6 +1299,7 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+>  	return empty;
+>  }
+>  
+> +
+Extra newline.
+
+>  static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+>  {
+>  	if (unlikely(max_optlen < 0))
+> @@ -1310,6 +1312,18 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+>  		max_optlen = PAGE_SIZE;
+>  	}
+>  
+> +	if (max_optlen <= sizeof(ctx->buf)) {
+> +		/* When the optval fits into BPF_SOCKOPT_KERN_BUF_SIZE
+> +		 * bytes avoid the cost of kzalloc.
+> +		 */
+If it needs to respin, it will be good to have a few words here on why
+it only BUILD_BUG checks for "struct tcp_zerocopy_receive".
+
+> +		BUILD_BUG_ON(sizeof(struct tcp_zerocopy_receive) >
+> +			     BPF_SOCKOPT_KERN_BUF_SIZE);
+> +
+> +		ctx->optval = ctx->buf;
+> +		ctx->optval_end = ctx->optval + max_optlen;
+> +		return max_optlen;
+> +	}
+> +
