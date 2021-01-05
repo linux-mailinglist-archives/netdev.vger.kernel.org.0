@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F8262EB330
-	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 20:07:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B55B22EB326
+	for <lists+netdev@lfdr.de>; Tue,  5 Jan 2021 20:06:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730844AbhAETC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 14:02:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43272 "EHLO
+        id S1730822AbhAETCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 14:02:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725838AbhAETCH (ORCPT
+        with ESMTP id S1730731AbhAETCH (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 14:02:07 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E13C0617A2;
-        Tue,  5 Jan 2021 11:00:53 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id w1so1758613ejf.11;
-        Tue, 05 Jan 2021 11:00:53 -0800 (PST)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC9EC0617A3;
+        Tue,  5 Jan 2021 11:00:55 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id u19so1925350edx.2;
+        Tue, 05 Jan 2021 11:00:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VqKUbghIDfYrfb3O7qIi6ZxV/2bVKA7+VXpaNALoN60=;
-        b=o72EV0y5XH6HchkYJqkf18+T0vm0Uz19QPiFec6UrE0bJV5bAouj5tUFThd+IbUeaH
-         yUe448KhNG1blJQxDZTQOSx3bw/rjUuPJafSLUnhGcVcmX+vwhSeVoHv6FFJBmfUSV+u
-         a+CFVILyASpZpXFmOVMNnfqc28/9V6Dagm/1/RVHEVBz9ZLAMbGJ2DgFzJCl+FaHemvK
-         1GjY//UjxbnawtELZ84EsOXDBNfazICZGH71XgnOA+CXCFm1CTMHQfQ9UV70yrAuXfPB
-         oS/PFIl8l1oqOkgmzlk+HI19tTlFGLDsv257e3gWMIM1kgKEOxMeY7CZjnCo1NcYYmKo
-         gsYw==
+        bh=GLvxCKLmR2t5WVjRUZehiWKIjudvryuha5j5MLp+E+U=;
+        b=qumLfxH/uosKGVeB1d+uK3MGmbPBDq3Tefsa6LeB4yOaqE4sDVmjq8n88J3Af9SWID
+         zE/OzdCWUBmYqSDveMUrnjfExUwlKcXIKocVP4DRlKfB8X7dPGqH22aeXXE/q6RuD9Zb
+         LQwfxmfEdGl3TbU+0kKPfiVdt/xC2UzgwNEoAb2tjMddMwrS4DBZLCzfkVXqKzIo0zW3
+         CP9CZwsQphbG9aViNf0hnIKUqOBDi3ElTHZlnmNm2VBSM393jCAQK5YMPuys8IGY0V7X
+         +dfIzPdUu6R7MiLk9T5blM730FvW/A6il2bYDlUbIgzJ1vBpdu7ow9UXKeZzSiAcXlmL
+         98eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VqKUbghIDfYrfb3O7qIi6ZxV/2bVKA7+VXpaNALoN60=;
-        b=M1hutG4tPrb4hRVKgwJ0Eg1RUHkNyiR0cC4WrgZI4iiC7Swpc7K1yq8N5SifqP1ZLu
-         hqiO1N+HWterCDoTORwQ3FCeHH2y5RvBz9KZxbhbD8bsV0urLW5RtKpGDszsYFsd7z5K
-         kfw6zsx5MxJRqCIPzPnVZCI4GAyXxl7itZ79+snsCX2aiw2Du8ryKcVn7BDt7uEsQESg
-         9V2pIvLcrkMUyRed6IIc6pCQWeyv0TAC0rptoraJZJjYiyw2WQuoGbekEcH48AQQtGWa
-         oD1vM9vuhziETvh7C6AmYmH7jpTgX/1yuVp+i5fbv8az0V5zMTjH/4YfCpvgOlHn2yuB
-         roJg==
-X-Gm-Message-State: AOAM531RutI4t0UBg4w1Xo31Gt+X70Mhk2pFxwDCIyMnGftIZ5/6JPeB
-        SCtV2mABQMJQtisH1TP5JQQ=
-X-Google-Smtp-Source: ABdhPJz1wURDbCR0bNBYRS2W9HuLCgl2tOQ8FkzBLbjCThN+VIxGm1iq/S2lOXku8roTHNgJI/WFnQ==
-X-Received: by 2002:a17:906:f0cc:: with SMTP id dk12mr488324ejb.480.1609873251916;
-        Tue, 05 Jan 2021 11:00:51 -0800 (PST)
+        bh=GLvxCKLmR2t5WVjRUZehiWKIjudvryuha5j5MLp+E+U=;
+        b=MWtGXN+NbRv2wHJEFBYPCFMQ/iOrrzCIDIwwFJBynsegB+rB1cVCx6g23V+vDBPX48
+         VD62MXH8CNrzBJgD6OuzXN1DM0dMACtmwgm83vouBqKWeYCin0VwPtfp7o/CT4xcD5I1
+         Cz1Y+Wyu+V5/n4UU6zo9K23VTbkBWjhZnI1xjt/qXiTTR+3ovmTGE875l0tewMQTbjR3
+         M4ib0aFzwPpVyOJ9Yf1uBsYkWOR7qnCpGwvGP9VZD7ybDvVU28lU1pJOt62HpNblPDr3
+         OIhCnR/UBA2hmvesJdxSm29O2Q3N9ea0bCO5V2zHkfPaYPYO6YwHLlY/4CcfbcNWw5NL
+         jZVA==
+X-Gm-Message-State: AOAM530FSiRNQCUfVs8q+SpBGQcoXhY/dpSqcTBCtMJgB2G0KS3kM6sd
+        XXXtNjHUwk7OHrozhADcA2k=
+X-Google-Smtp-Source: ABdhPJy8kPqxEk8FQReSydm1oqxA729aS1Dqn6n2NIipxNBNdXArGt1146Pufkl9aVpc3ocJnHwq7g==
+X-Received: by 2002:a05:6402:3546:: with SMTP id f6mr1184932edd.242.1609873253835;
+        Tue, 05 Jan 2021 11:00:53 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id z13sm205084edq.48.2021.01.05.11.00.50
+        by smtp.gmail.com with ESMTPSA id z13sm205084edq.48.2021.01.05.11.00.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jan 2021 11:00:51 -0800 (PST)
+        Tue, 05 Jan 2021 11:00:53 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -77,9 +77,9 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         intel-wired-lan@lists.osuosl.org, linux-parisc@vger.kernel.org,
         linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
         dev@openvswitch.org
-Subject: [RFC PATCH v2 net-next 04/12] net: sysfs: don't hold dev_base_lock while retrieving device statistics
-Date:   Tue,  5 Jan 2021 20:58:54 +0200
-Message-Id: <20210105185902.3922928-5-olteanv@gmail.com>
+Subject: [RFC PATCH v2 net-next 05/12] s390/appldata_net_sum: hold the netdev lists lock when retrieving device statistics
+Date:   Tue,  5 Jan 2021 20:58:55 +0200
+Message-Id: <20210105185902.3922928-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210105185902.3922928-1-olteanv@gmail.com>
 References: <20210105185902.3922928-1-olteanv@gmail.com>
@@ -94,46 +94,51 @@ From: Vladimir Oltean <vladimir.oltean@nxp.com>
 In the effort of making .ndo_get_stats64 be able to sleep, we need to
 ensure the callers of dev_get_stats do not use atomic context.
 
-I need to preface this by saying that I have no idea why netstat_show
-takes the dev_base_lock rwlock. Two things can be observed:
-(a) it does not appear to be due to dev_isalive requiring it for some
-    reason, because broadcast_show() also calls dev_isalive() and has
-    had no problem existing since the beginning of git.
-(b) the dev_get_stats function definitely does not need dev_base_lock
-    protection either. In fact, holding the dev_base_lock is the entire
-    problem here, because we want to make dev_get_stats sleepable, and
-    holding a rwlock gives us atomic context.
+In the case of the appldata driver, an RCU read-side critical section is
+used to ensure the integrity of the list of network interfaces, because
+the driver iterates through all net devices in the netns to aggregate
+statistics. We still need some protection against an interface
+registering or deregistering, and the writer-side lock, the netns's
+mutex, is fine for that, because it offers sleepable context.
 
-So since no protection seems to be necessary, just run unlocked while
-retrieving the /sys/class/net/eth0/statistics/* values.
+The ops->callback function is called from under appldata_ops_mutex
+protection, so this is proof that the context is sleepable and holding
+a mutex is therefore fine.
 
-Cc: Christian Brauner <christian.brauner@ubuntu.com>
-Cc: Eric Dumazet <edumazet@google.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: linux-s390@vger.kernel.org
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/core/net-sysfs.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/s390/appldata/appldata_net_sum.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 999b70c59761..0782a476b424 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -585,14 +585,13 @@ static ssize_t netstat_show(const struct device *d,
- 	WARN_ON(offset > sizeof(struct rtnl_link_stats64) ||
- 		offset % sizeof(u64) != 0);
+diff --git a/arch/s390/appldata/appldata_net_sum.c b/arch/s390/appldata/appldata_net_sum.c
+index 59c282ca002f..4db886980cba 100644
+--- a/arch/s390/appldata/appldata_net_sum.c
++++ b/arch/s390/appldata/appldata_net_sum.c
+@@ -78,8 +78,9 @@ static void appldata_get_net_sum_data(void *data)
+ 	tx_dropped = 0;
+ 	collisions = 0;
  
--	read_lock(&dev_base_lock);
- 	if (dev_isalive(dev)) {
- 		struct rtnl_link_stats64 temp;
- 		const struct rtnl_link_stats64 *stats = dev_get_stats(dev, &temp);
- 
- 		ret = sprintf(buf, fmt_u64, *(u64 *)(((u8 *)stats) + offset));
- 	}
--	read_unlock(&dev_base_lock);
+-	rcu_read_lock();
+-	for_each_netdev_rcu(&init_net, dev) {
++	netif_lists_lock(&init_net);
 +
- 	return ret;
- }
++	for_each_netdev(&init_net, dev) {
+ 		const struct rtnl_link_stats64 *stats;
+ 		struct rtnl_link_stats64 temp;
  
+@@ -95,7 +96,8 @@ static void appldata_get_net_sum_data(void *data)
+ 		collisions += stats->collisions;
+ 		i++;
+ 	}
+-	rcu_read_unlock();
++
++	netif_lists_unlock(&init_net);
+ 
+ 	net_data->nr_interfaces = i;
+ 	net_data->rx_packets = rx_packets;
 -- 
 2.25.1
 
