@@ -2,143 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 775372EC583
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 973182EC589
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:12:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727753AbhAFVHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 16:07:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59410 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726234AbhAFVHx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 16:07:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BAF5B2332A;
-        Wed,  6 Jan 2021 21:07:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609967232;
-        bh=nf+3+I4jrYU1dTuxYoUkfqFHJxWhhbGt1Dw58iuwwhM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JL+3zITJQeoSvyv6Vgt+AbbrRjJg7sm7T91igpG4Us2DFhupfRaZrrFWXw8ADb4r6
-         WUArk3N3+AhZFcURIPiRqTukuadU5+vuJ8+ATU7BFXXL0Ur0IX5zRUfnl69OQ/uRUS
-         0Fb8yzJzh9hjtVW0/zSyaHqojWMAjC18n1Nx1isnd00VS6wfEwMOYR7tq+ZdyqMuLa
-         0WwqzBadBsLKAxy4R0p0LfEfD0DSSLC3Ox9pyRiOm+IY9lrNr7j4O88x1QsE9A0Nsl
-         M6JNOHvQtJGaV8Kn0+CNg8nWNV4Lqmhd/VUT++L7whn3bS65BBTbRS2Y/D9sHT7hvG
-         e0CN3xcWvezdw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, thomas.lendacky@amd.com,
-        aelior@marvell.com, GR-everest-linux-l2@marvell.com,
-        michael.chan@broadcom.com, rajur@chelsio.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        tariqt@nvidia.com, saeedm@nvidia.com, GR-Linux-NIC-Dev@marvell.com,
-        ecree.xilinx@gmail.com, simon.horman@netronome.com,
-        alexander.duyck@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 4/4] udp_tunnel: reshuffle NETIF_F_RX_UDP_TUNNEL_PORT checks
-Date:   Wed,  6 Jan 2021 13:06:37 -0800
-Message-Id: <20210106210637.1839662-5-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210106210637.1839662-1-kuba@kernel.org>
-References: <20210106210637.1839662-1-kuba@kernel.org>
+        id S1726311AbhAFVLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 16:11:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58465 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726195AbhAFVLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 16:11:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609967374;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VKVUOawYF30jYDz4k0cRErL4TxXYOHoXtZs0psgjgU8=;
+        b=ZS8fJKzL38l6YXTFzM1MNTmHRmFQtHG/inY3kH4yqs9qDT6BhuhVMZYOtRv1GKe3kzmGwI
+        4Gt6uiq+IOT2vNtmcOoQ54JsYJOV3UObHlEKuFr7W4Oe9pWD/R92QAJaNJW8TSDjci6AfU
+        pcw18WKWF19X9IbRN+hY9Jqo0OZnrpc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-187--sLbtU6GPVWn4laxrJ3vSQ-1; Wed, 06 Jan 2021 16:09:33 -0500
+X-MC-Unique: -sLbtU6GPVWn4laxrJ3vSQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 286DA195D560;
+        Wed,  6 Jan 2021 21:09:31 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-8.rdu2.redhat.com [10.10.112.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4CA6A5C26D;
+        Wed,  6 Jan 2021 21:09:29 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <07564e3e-35d4-c5d4-fc1a-8a0e8659604e@redhat.com>
+References: <07564e3e-35d4-c5d4-fc1a-8a0e8659604e@redhat.com> <f02bdada-355c-97cd-bc32-f84516ddd93f@redhat.com> <548097.1609952225@warthog.procyon.org.uk> <c2cc898d-171a-25da-c565-48f57d407777@redhat.com> <20201229173916.1459499-1-trix@redhat.com> <259549.1609764646@warthog.procyon.org.uk> <675150.1609954812@warthog.procyon.org.uk> <697467.1609962267@warthog.procyon.org.uk>
+To:     Tom Rix <trix@redhat.com>
+Cc:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        natechancellor@gmail.com, ndesaulniers@google.com,
+        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] rxrpc: fix handling of an unsupported token type in rxrpc_read()
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <706520.1609967368.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 06 Jan 2021 21:09:28 +0000
+Message-ID: <706521.1609967368@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move the NETIF_F_RX_UDP_TUNNEL_PORT feature check into
-udp_tunnel_nic_*_port() helpers, since they're always
-done right before the call.
+Tom Rix <trix@redhat.com> wrote:
 
-Add similar checks before calling the notifier.
-udp_tunnel_nic invokes the notifier without checking
-features which could result in some wasted cycles.
+> On 1/6/21 11:44 AM, David Howells wrote:
+> > Tom Rix <trix@redhat.com> wrote:
+> >
+> >> These two loops iterate over the same data, i believe returning here =
+is all
+> >> that is needed.
+> > But if the first loop is made to support a new type, but the second lo=
+op is
+> > missed, it will then likely oops.  Besides, the compiler should optimi=
+se both
+> > paths together.
+> =
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/net/udp_tunnel.h   |  8 ++++++++
- net/ipv4/udp_tunnel_core.c | 10 ----------
- 2 files changed, 8 insertions(+), 10 deletions(-)
+> You are right, I was only considering the existing cases.
 
-diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
-index 2ea453dac876..282d10ee60e1 100644
---- a/include/net/udp_tunnel.h
-+++ b/include/net/udp_tunnel.h
-@@ -129,12 +129,16 @@ void udp_tunnel_notify_del_rx_port(struct socket *sock, unsigned short type);
- static inline void udp_tunnel_get_rx_info(struct net_device *dev)
- {
- 	ASSERT_RTNL();
-+	if (!(dev->features & NETIF_F_RX_UDP_TUNNEL_PORT))
-+		return;
- 	call_netdevice_notifiers(NETDEV_UDP_TUNNEL_PUSH_INFO, dev);
- }
- 
- static inline void udp_tunnel_drop_rx_info(struct net_device *dev)
- {
- 	ASSERT_RTNL();
-+	if (!(dev->features & NETIF_F_RX_UDP_TUNNEL_PORT))
-+		return;
- 	call_netdevice_notifiers(NETDEV_UDP_TUNNEL_DROP_INFO, dev);
- }
- 
-@@ -323,6 +327,8 @@ udp_tunnel_nic_set_port_priv(struct net_device *dev, unsigned int table,
- static inline void
- udp_tunnel_nic_add_port(struct net_device *dev, struct udp_tunnel_info *ti)
- {
-+	if (!(dev->features & NETIF_F_RX_UDP_TUNNEL_PORT))
-+		return;
- 	if (udp_tunnel_nic_ops)
- 		udp_tunnel_nic_ops->add_port(dev, ti);
- }
-@@ -330,6 +336,8 @@ udp_tunnel_nic_add_port(struct net_device *dev, struct udp_tunnel_info *ti)
- static inline void
- udp_tunnel_nic_del_port(struct net_device *dev, struct udp_tunnel_info *ti)
- {
-+	if (!(dev->features & NETIF_F_RX_UDP_TUNNEL_PORT))
-+		return;
- 	if (udp_tunnel_nic_ops)
- 		udp_tunnel_nic_ops->del_port(dev, ti);
- }
-diff --git a/net/ipv4/udp_tunnel_core.c b/net/ipv4/udp_tunnel_core.c
-index 376a085be7ed..b97e3635acf5 100644
---- a/net/ipv4/udp_tunnel_core.c
-+++ b/net/ipv4/udp_tunnel_core.c
-@@ -90,9 +90,6 @@ void udp_tunnel_push_rx_port(struct net_device *dev, struct socket *sock,
- 	struct sock *sk = sock->sk;
- 	struct udp_tunnel_info ti;
- 
--	if (!(dev->features & NETIF_F_RX_UDP_TUNNEL_PORT))
--		return;
--
- 	ti.type = type;
- 	ti.sa_family = sk->sk_family;
- 	ti.port = inet_sk(sk)->inet_sport;
-@@ -107,9 +104,6 @@ void udp_tunnel_drop_rx_port(struct net_device *dev, struct socket *sock,
- 	struct sock *sk = sock->sk;
- 	struct udp_tunnel_info ti;
- 
--	if (!(dev->features & NETIF_F_RX_UDP_TUNNEL_PORT))
--		return;
--
- 	ti.type = type;
- 	ti.sa_family = sk->sk_family;
- 	ti.port = inet_sk(sk)->inet_sport;
-@@ -132,8 +126,6 @@ void udp_tunnel_notify_add_rx_port(struct socket *sock, unsigned short type)
- 
- 	rcu_read_lock();
- 	for_each_netdev_rcu(net, dev) {
--		if (!(dev->features & NETIF_F_RX_UDP_TUNNEL_PORT))
--			continue;
- 		udp_tunnel_nic_add_port(dev, &ti);
- 	}
- 	rcu_read_unlock();
-@@ -154,8 +146,6 @@ void udp_tunnel_notify_del_rx_port(struct socket *sock, unsigned short type)
- 
- 	rcu_read_lock();
- 	for_each_netdev_rcu(net, dev) {
--		if (!(dev->features & NETIF_F_RX_UDP_TUNNEL_PORT))
--			continue;
- 		udp_tunnel_nic_del_port(dev, &ti);
- 	}
- 	rcu_read_unlock();
--- 
-2.26.2
+Thanks.  Can I put that down as a Reviewed-by?
+
+David
 
