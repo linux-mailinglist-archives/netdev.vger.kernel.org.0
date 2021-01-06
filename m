@@ -2,82 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A69BC2EC5E8
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B47D2EC5ED
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:56:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbhAFVyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 16:54:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbhAFVye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 16:54:34 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C44C061575
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 13:53:54 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id d9so4167798iob.6
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 13:53:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YSXUYL/hcpw8psXz1Uun+cU8ues50U1mSdo3BeXPwSU=;
-        b=Mh4w6mwwXiOohtM9I0r3Sip/eJuRm9pcs2olbc3+DS0lVCBl1/ja02d2RstJRSGC1i
-         AmZKQOPm8Hurf6ysIHpnWgzvAKwiUBZarRtO87u2eoWOSkGG59AY3Atw87zZF5P+GT8B
-         4WIZ39qjrI9/q6tFFYszrJWyFbR6fC6kZEeWi8+YaMMPDRmCqWdBvPCzPitUNoCzbHoS
-         AicxDsJUblwjEJWiyFyQvnEmIhZB1pBOWZ2LT2bmGw6WpCSmWhu0l3qLxtdxm7C9K3sr
-         OgmaIM81HoAl2j2EAMebdkaNbMiI+t1tqtM4xlnrXRa0KR4rr494RegilAFLfWTUuF6T
-         lYAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YSXUYL/hcpw8psXz1Uun+cU8ues50U1mSdo3BeXPwSU=;
-        b=ERqGK7LVGmAesxteqbwiUe8V0oRzlqBscQXaAGzbthX+Pkf3X3PX/WLsNYMHpc+5mb
-         YOFgxZstFlsLa3p0UCV3Zu3kvMBAZQbHQb03GpKIZy1RH8YAYIbr25diIxP42PSV9SRD
-         St237QuJhvIDt1yFtF51xrpGfN1MF2YIF3M7eOgTDR5ocJllQIlmJEeJ4pEtBVZf3rvW
-         pjTm7l7PxHkA3x9fsbTkTsAyDU2UJPdHDvS1DcsaV3wMoAmntYkld6CheaLSrx+2vIX4
-         RIIGSSAU6FIdUqQfBZ4JOyqriQIQR3K5zikkxZudiNXqYgaQkhDBB+ZpdrzWOGXAZdVG
-         5POg==
-X-Gm-Message-State: AOAM533sxwvyobzhWCywnGkFAH7MU443kREfD26GOV/ny0SIR4CHs/bC
-        s+mXvc7YJ+pGsV8CaeaulEykyJWwEzCgKlcRDA8=
-X-Google-Smtp-Source: ABdhPJz9oQ46hg9UVne6/dCDUrjHKnlncc8q2lofFpNGZIhrPI9HQBtrTH5uuhfdprarxbe2WLE4Wl8IJ2FLXSTurZ4=
-X-Received: by 2002:a6b:8e41:: with SMTP id q62mr4399576iod.5.1609970033525;
- Wed, 06 Jan 2021 13:53:53 -0800 (PST)
+        id S1726700AbhAFV4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 16:56:55 -0500
+Received: from mga07.intel.com ([134.134.136.100]:52550 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726102AbhAFV4z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 16:56:55 -0500
+IronPort-SDR: b1yTFxgOWCHjL9Sw4rl08DliLKEZdUlzdz2JsM4/JcxEiowyTCIUwnhTAt33FpWeZavLk5i03l
+ xfXrg0fKWbsg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9856"; a="241418415"
+X-IronPort-AV: E=Sophos;i="5.79,328,1602572400"; 
+   d="scan'208";a="241418415"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2021 13:55:59 -0800
+IronPort-SDR: MkjkvqFNLTzefuxgE5OzvQaWvOA4DK1MvR2O8nQB8PzlzWsbCGZHq2S55FphjgURuqcqji6NX1
+ MAtU96ToGvWA==
+X-IronPort-AV: E=Sophos;i="5.79,328,1602572400"; 
+   d="scan'208";a="361734668"
+Received: from jbrandeb-saw1.jf.intel.com ([10.166.28.56])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2021 13:55:58 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        intel-wired-lan@lists.osuosl.org
+Subject: [PATCH net-next v1 0/2] GRO drop accounting
+Date:   Wed,  6 Jan 2021 13:55:37 -0800
+Message-Id: <20210106215539.2103688-1-jesse.brandeburg@intel.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-References: <20210106210637.1839662-1-kuba@kernel.org>
-In-Reply-To: <20210106210637.1839662-1-kuba@kernel.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 6 Jan 2021 13:53:42 -0800
-Message-ID: <CAKgT0Uf4eP=_rs66_=kx3z2Pmc8JB7McSUMv6DjZXbjboH0ptw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/4] udp_tunnel_nic: post conversion cleanup
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com,
-        Michael Chan <michael.chan@broadcom.com>, rajur@chelsio.com,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, tariqt@nvidia.com,
-        saeedm@nvidia.com, GR-Linux-NIC-Dev@marvell.com,
-        ecree.xilinx@gmail.com, Simon Horman <simon.horman@netronome.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 6, 2021 at 1:07 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> It has been two releases since we added the common infra for UDP
-> tunnel port offload, and we have not heard of any major issues.
-> Remove the old direct driver NDOs completely, and perform minor
-> simplifications in the tunnel drivers.
->
-> Jakub Kicinski (4):
->   udp_tunnel: hard-wire NDOs to udp_tunnel_nic_*_port() helpers
->   udp_tunnel: remove REGISTER/UNREGISTER handling from tunnel drivers
->   net: remove ndo_udp_tunnel_* callbacks
->   udp_tunnel: reshuffle NETIF_F_RX_UDP_TUNNEL_PORT checks
+Add some accounting for when the stack drops a packet
+that a driver tried to indicate with a gro* call. This
+helps users track where packets might have disappeared
+to and will show up in the netdevice stats that already
+exist.
 
-The patch set looks good to me.
+After that, remove the driver specific workaround
+that was added to do the same, just scoped too small.
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Jesse Brandeburg (2):
+  net: core: count drops from GRO
+  ice: remove GRO drop accounting
+
+ drivers/net/ethernet/intel/ice/ice.h          | 1 -
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 1 -
+ drivers/net/ethernet/intel/ice/ice_main.c     | 4 +---
+ drivers/net/ethernet/intel/ice/ice_txrx.h     | 1 -
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 2 --
+ net/core/dev.c                                | 2 ++
+ 6 files changed, 3 insertions(+), 8 deletions(-)
+
+-- 
+2.29.2
+
