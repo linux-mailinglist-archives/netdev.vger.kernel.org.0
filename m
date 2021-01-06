@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D866A2EBE53
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:11:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 046462EBE55
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:11:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726945AbhAFNLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 08:11:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44794 "EHLO
+        id S1726973AbhAFNLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 08:11:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726439AbhAFNLl (ORCPT
+        with ESMTP id S1726894AbhAFNLl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 08:11:41 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3123C06134C
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 05:10:32 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id x16so4931356ejj.7
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 05:10:32 -0800 (PST)
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6690DC061360
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 05:10:34 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id 6so4955391ejz.5
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 05:10:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UTyh/LUpjc5DuhFL63BwzfWt1XDDL5SmYqx73OT6iV8=;
-        b=K2/DnsaonXBwKW7T9Wrbx2Q03+N8nRq2QSFibI6gMVNUmxpm4KyeCjdwhy3emI3heT
-         SCTQbqWLzjVMLQrkyCqxOgN1y3sqSZtSYj8miX0pnj6coxhE4GyH68Qd4vObjunS2FGD
-         o7AT8I1dZHiantW+OJzcY2dDkset0/SUTPEVnAcCp8AGWN0TESlxY2aR3AbbYlSfukou
-         fXiKJpL2BbyzoTevdZAhMSyrFzUTtlsz5KJSTibfMjqGOp0PAy1ajff4h5tfgAy0O5dt
-         JlycIaPNGxJ6E8sxW1diXx1cv36M3FXqsRsC6onnyoskgzK9XFhxOdq3RCHLKZDe5YnP
-         FU0A==
+        bh=+tj1XEo4ryLaIi8vmIkKVGmlQ877BVhUerN4i9UMtWk=;
+        b=qJXWpJ5Y+TU/l9EO0/IoL3VGL70PynRv5LmXjnfAMcglCfc5t9Wq4d4/zsAZ169qIi
+         3gAyD8Hj4+AUrDK3SYm3pq5X0sA2BStuHTnsS7n58cnLBKvsZyyzchs1xdFobM+AY3MT
+         5wNe96OcuqK1gbqSZhyfCYCRxL6QS4rvbDcPCM2Evop2XFuuny12dQkH0ui/EMnamvCH
+         JTilrc/uwZiOu4XxsVIk1hC93raTm7TACVdP1Bf6qwY/B0bpry3ZP0AuKnHK8OTb/iNz
+         z8+B5Zy4DQUZhpRH8R2Hgu0Vfi+GCHKNJ9HHmrLo8hSZ7kK4LSUMDGtbFR4bCbAOXxq8
+         /hMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UTyh/LUpjc5DuhFL63BwzfWt1XDDL5SmYqx73OT6iV8=;
-        b=SMXXCC0M9KG61j22RAuskpC62qCaOA97LNoKxji/4t1WCDZnrN9PtmWVeVpO57Xg07
-         euOmQsHmMBWfb+id5Ab0G7gkr4JGozo6n+WDZWt890/A4z7Md3pX/Mmh6hV2akB/Uwew
-         FeyAR51X0KHEfyEsA68ZKXndVfeKRus3JztoY33RYq2NAQJvwB+fHW/eYI+fRC0hz6gD
-         lE9fyd+ZeHAzGN8iO7U+LZIgI5CfxYEGKSQfjeISDkj2W/Bo4YtzRT2dnK/Ey2+2/g//
-         VKdt1+FoOs6E2mVYdVfvkko00LZyfzFdOmDU67H+oqqAYgDCrF8Rl30JYiQApQSSWrtu
-         6zLg==
-X-Gm-Message-State: AOAM530dX7dT8U/QPUand6XH6rD8P9Oe74KId7Bl/V7I/BmqKFVvuqwj
-        gCRA9sJZyhvps4ZwkpV1LqY=
-X-Google-Smtp-Source: ABdhPJwPD6KGbyZCgnHvisB/OJq5nWmn/tgKM2NK71V3O2tVJ3qC0xDJDHlJzacwH5B84fSbBg071Q==
-X-Received: by 2002:a17:907:435c:: with SMTP id oc20mr2945194ejb.286.1609938631607;
-        Wed, 06 Jan 2021 05:10:31 -0800 (PST)
+        bh=+tj1XEo4ryLaIi8vmIkKVGmlQ877BVhUerN4i9UMtWk=;
+        b=rnj7Vkxg8Tvv2d3X+QoNiyrVnf4wBccVyEsytT9gjgs5a9dHjT/HFJvQ1fWR2LjAFq
+         Id0gSpRf1H0kIXibzn5R2S9qALNRBLOIv3nFULOfD44dGDOjIJE/FiqvafgMoYAWD621
+         vP58X8s/vIn68aij4a6USOuGM/3/IbDVs7thejgfq/11+qTm7P+l7Her06TpDr8/zCBG
+         acLthaCwfPRt8560uh/Zdz4KsiJkiRr3XPP9WdzDlbaEzkGbnv/WpUald+ahD8YXZQXm
+         fd5f0P+baEvMusKXJLrhBUiQda0OetW1pZOFzrJYjRQP95YZcqw3kdvCL1y3mTF6Q31q
+         TcLA==
+X-Gm-Message-State: AOAM5336yBPONUjkta76L3Cz3Nu+Uw9MhNZq8VJgIrfrr4DEna7h6umQ
+        5x21tgxbRLPd0TjSGfeSd+o=
+X-Google-Smtp-Source: ABdhPJz85LSF2R/7GRW8O2dE5HFoycwy+VXp4/myxqjgUJicg5KRNNb+53veIbHdsu8noUkbgqXWQg==
+X-Received: by 2002:a17:906:9605:: with SMTP id s5mr2850851ejx.179.1609938633191;
+        Wed, 06 Jan 2021 05:10:33 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id p22sm1241858ejx.59.2021.01.06.05.10.30
+        by smtp.gmail.com with ESMTPSA id p22sm1241858ejx.59.2021.01.06.05.10.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 05:10:31 -0800 (PST)
+        Wed, 06 Jan 2021 05:10:32 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -69,9 +69,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v2 net-next 09/10] mlxsw: spectrum_switchdev: remove transactional logic for VLAN objects
-Date:   Wed,  6 Jan 2021 15:10:05 +0200
-Message-Id: <20210106131006.577312-10-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 10/10] net: switchdev: delete the transaction object
+Date:   Wed,  6 Jan 2021 15:10:06 +0200
+Message-Id: <20210106131006.577312-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210106131006.577312-1-olteanv@gmail.com>
 References: <20210106131006.577312-1-olteanv@gmail.com>
@@ -83,129 +83,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-As of commit 457e20d65924 ("mlxsw: spectrum_switchdev: Avoid returning
-errors in commit phase"), the mlxsw driver performs the VLAN object
-offloading during the prepare phase. So conversion just seems to be a
-matter of removing the code that was running in the commit phase.
+Now that all users of struct switchdev_trans have been modified to do
+without it, we can remove this structure and the two helpers to determine
+the phase.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Acked-by: Linus Walleij <linus.walleij@linaro.org>
 Acked-by: Jiri Pirko <jiri@nvidia.com>
 ---
 Changes in v2:
-Rebased on top of VLAN ranges removal.
+None.
 
- .../mellanox/mlxsw/spectrum_switchdev.c       | 38 +++----------------
- 1 file changed, 5 insertions(+), 33 deletions(-)
+ include/net/switchdev.h | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 003c4a4fc8db..35b6743c569c 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -1196,7 +1196,6 @@ mlxsw_sp_br_ban_rif_pvid_change(struct mlxsw_sp *mlxsw_sp,
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index f873e2c5e125..88fcac140966 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -16,20 +16,6 @@
+ #define SWITCHDEV_F_SKIP_EOPNOTSUPP	BIT(1)
+ #define SWITCHDEV_F_DEFER		BIT(2)
  
- static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
- 				   const struct switchdev_obj_port_vlan *vlan,
--				   struct switchdev_trans *trans,
- 				   struct netlink_ext_ack *extack)
- {
- 	bool flag_untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-@@ -1209,8 +1208,7 @@ static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
- 		int err = 0;
- 
- 		if ((vlan->flags & BRIDGE_VLAN_INFO_BRENTRY) &&
--		    br_vlan_enabled(orig_dev) &&
--		    switchdev_trans_ph_prepare(trans))
-+		    br_vlan_enabled(orig_dev))
- 			err = mlxsw_sp_br_ban_rif_pvid_change(mlxsw_sp,
- 							      orig_dev, vlan);
- 		if (!err)
-@@ -1218,9 +1216,6 @@ static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
- 		return err;
- 	}
- 
--	if (switchdev_trans_ph_commit(trans))
--		return 0;
+-struct switchdev_trans {
+-	bool ph_prepare;
+-};
 -
- 	bridge_port = mlxsw_sp_bridge_port_find(mlxsw_sp->bridge, orig_dev);
- 	if (WARN_ON(!bridge_port))
- 		return -EINVAL;
-@@ -1764,29 +1759,20 @@ static int mlxsw_sp_port_obj_add(struct net_device *dev,
- {
- 	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
- 	const struct switchdev_obj_port_vlan *vlan;
--	struct switchdev_trans trans;
- 	int err = 0;
- 
- 	switch (obj->id) {
- 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
- 		vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
- 
--		trans.ph_prepare = true;
--		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, &trans,
--					      extack);
-+		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, extack);
- 		if (err)
- 			break;
- 
--		/* The event is emitted before the changes are actually
--		 * applied to the bridge. Therefore schedule the respin
--		 * call for later, so that the respin logic sees the
-+		/* Schedule the respin call, so that the respin logic sees the
- 		 * updated bridge state.
- 		 */
- 		mlxsw_sp_span_respin(mlxsw_sp_port->mlxsw_sp);
+-static inline bool switchdev_trans_ph_prepare(struct switchdev_trans *trans)
+-{
+-	return trans && trans->ph_prepare;
+-}
 -
--		trans.ph_prepare = false;
--		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, &trans,
--					      extack);
- 		break;
- 	case SWITCHDEV_OBJ_ID_PORT_MDB:
- 		err = mlxsw_sp_port_mdb_add(mlxsw_sp_port,
-@@ -3350,8 +3336,7 @@ mlxsw_sp_switchdev_vxlan_vlan_del(struct mlxsw_sp *mlxsw_sp,
- static int
- mlxsw_sp_switchdev_vxlan_vlans_add(struct net_device *vxlan_dev,
- 				   struct switchdev_notifier_port_obj_info *
--				   port_obj_info,
--				   struct switchdev_trans *trans)
-+				   port_obj_info)
- {
- 	struct switchdev_obj_port_vlan *vlan =
- 		SWITCHDEV_OBJ_PORT_VLAN(port_obj_info->obj);
-@@ -3373,9 +3358,6 @@ mlxsw_sp_switchdev_vxlan_vlans_add(struct net_device *vxlan_dev,
- 
- 	port_obj_info->handled = true;
- 
--	if (switchdev_trans_ph_commit(trans))
--		return 0;
+-static inline bool switchdev_trans_ph_commit(struct switchdev_trans *trans)
+-{
+-	return trans && !trans->ph_prepare;
+-}
 -
- 	bridge_device = mlxsw_sp_bridge_device_find(mlxsw_sp->bridge, br_dev);
- 	if (!bridge_device)
- 		return -EINVAL;
-@@ -3426,22 +3408,12 @@ mlxsw_sp_switchdev_handle_vxlan_obj_add(struct net_device *vxlan_dev,
- 					struct switchdev_notifier_port_obj_info *
- 					port_obj_info)
- {
--	struct switchdev_trans trans;
- 	int err = 0;
- 
- 	switch (port_obj_info->obj->id) {
- 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
--		trans.ph_prepare = true;
--		err = mlxsw_sp_switchdev_vxlan_vlans_add(vxlan_dev,
--							 port_obj_info,
--							 &trans);
--		if (err)
--			break;
--
--		trans.ph_prepare = false;
- 		err = mlxsw_sp_switchdev_vxlan_vlans_add(vxlan_dev,
--							 port_obj_info,
--							 &trans);
-+							 port_obj_info);
- 		break;
- 	default:
- 		break;
+ enum switchdev_attr_id {
+ 	SWITCHDEV_ATTR_ID_UNDEFINED,
+ 	SWITCHDEV_ATTR_ID_PORT_STP_STATE,
 -- 
 2.25.1
 
