@@ -2,72 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 311002EB746
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 02:01:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF9B2EB772
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 02:07:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726692AbhAFBAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 20:00:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56752 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726551AbhAFBAt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Jan 2021 20:00:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 69B85229EF;
-        Wed,  6 Jan 2021 01:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609894808;
-        bh=sYYPTmzA415ubGj4VX/B1hFMXo+AKCAIKo7GhA4hO3s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kqxHTKxOWxE9zs1mf3uEUl6hNuN5iHPa0O8Q2vnae/OWVumyIVHR9e4Gq7fvOTJBY
-         sZVfMd7/taWji4ZoBi6GFPzcRfYsnjjml8JizMOB+Bxwm8fZu9ea9Yv5YfGXxYbLYI
-         4XEsAV98m6bHRpbklrPPR3tzOENbgBiBVE/XEwPhWNA3tv0OlXaOfbHCraztH0CASx
-         sx5RaYrBGuy+j+UTi0HBk/RGOWAVG5PxKBMphrbYY6P/aixy8jot9ZG3eHz+mmRLge
-         ksX0Kik9uMGMh77LCMU9TxxsA3DlocbjS+DqM80NokE1wTX9p1TgNYLpAEPnQldzn7
-         O87r7naA58Tng==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 5778A604FC;
-        Wed,  6 Jan 2021 01:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests: fix the return value for UDP GRO test
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160989480835.15297.3332305981136366306.git-patchwork-notify@kernel.org>
-Date:   Wed, 06 Jan 2021 01:00:08 +0000
-References: <20210105101740.11816-1-po-hsu.lin@canonical.com>
-In-Reply-To: <20210105101740.11816-1-po-hsu.lin@canonical.com>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
+        id S1726109AbhAFBHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 20:07:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725922AbhAFBHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 20:07:14 -0500
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF8BC061574
+        for <netdev@vger.kernel.org>; Tue,  5 Jan 2021 17:06:34 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 9ED184CBCE1FB;
+        Tue,  5 Jan 2021 17:06:33 -0800 (PST)
+Date:   Tue, 05 Jan 2021 17:06:33 -0800 (PST)
+Message-Id: <20210105.170633.704503794047767589.davem@davemloft.net>
+To:     marex@denx.de
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        lukas@wunner.de
+Subject: Re: [PATCH net-next V3 0/2] net: ks8851: Add KS8851 PHY support
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210105141151.122922-1-marex@denx.de>
+References: <20210105141151.122922-1-marex@denx.de>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 05 Jan 2021 17:06:33 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Marek Vasut <marex@denx.de>
+Date: Tue,  5 Jan 2021 15:11:49 +0100
 
-This patch was applied to netdev/net.git (refs/heads/master):
+> The KS8851 has a reduced internal PHY, which is accessible through its
+> registers at offset 0xe4. The PHY is compatible with KS886x PHY present
+> in Micrel switches, including the PHY ID Low/High registers swap, which
+> is present both in the MAC and the switch.
 
-On Tue,  5 Jan 2021 18:17:40 +0800 you wrote:
-> The udpgro.sh will always return 0 (unless the bpf selftest was not
-> build first) even if there are some failed sub test-cases.
-> 
-> Therefore the kselftest framework will report this case is OK.
-> 
-> Check and return the exit status of each test to make it easier to
-> spot real failures.
-> 
-> [...]
-
-Here is the summary with links:
-  - selftests: fix the return value for UDP GRO test
-    https://git.kernel.org/netdev/net/c/3503ee6c0bec
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Series applied, thanks.
