@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 222392EC6C2
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 00:19:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C94F2EC6C4
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 00:19:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727912AbhAFXTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727905AbhAFXTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 6 Jan 2021 18:19:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55144 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727877AbhAFXTL (ORCPT
+        with ESMTP id S1727878AbhAFXTL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 18:19:11 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F5CC06135A
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 15:18:02 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id p22so5894236edu.11
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 15:18:02 -0800 (PST)
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372FEC06135B
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 15:18:05 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id q22so7367733eja.2
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 15:18:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=y4su5mRJeL7lcVdGeCkPLkZrBkKn3R8c9JM0amouMgI=;
-        b=ZbTvy4Kti5LPSpUCLvxw2hoSy19aDWxANKc2wJetlptsxHeosbidQws7WaoI40QCQG
-         71CO24+Go2/rNCo3mwme9COaDkZiGEHLXTg8rhQ+8+sWD04b33FXzXtuIp4IDowq3AlT
-         5ALXjLyQ6FQnInowxw6jsnSra+eZqo8uGQT7jIVvsvUv/pn9p7L2gtQhkHJfstuRD9Fx
-         NtPpaU54QGbRYSNvldlyK9iEqPLWo1McF4zxlQzujWN7PC69Q6l0kwzUE/536WnpKv0n
-         b8aHzWUYGIpl3ozX8xCyDo//b+dHEIkC5Cf6smmD+eJZUDyriKHYGjhXyFute4XIaEPO
-         eNSQ==
+        bh=zRUgN6h11Fruj8QZN9ZX8W0q8/MQWVUot1iJdv2ebks=;
+        b=R5qomqyx5ywaY8kTRnv0MCl56afJpaJ2ziz2IVl1BVLs/ex2vS8YXDLuTb5vBaIREE
+         EHmyGxQdwbfgSLLd7n2BE/J+PCedUdRBrMYeh2g4PNreVLi8Ea2AYouD/DLf8MCLiYHy
+         S5cGiLzKfjMMkIp7zO1wpuzXtCHTfkatAZV5gsjCykiA5PGDj5f8kPR55fT7ZfiWZoDr
+         r0RTqckGHnTuOMbfryEYiiEnH69Zgd8Yi+ZLm6r/PPN0HtCaRZ3tksZwrXmnfvTrNxUI
+         qzHKMdQSOA7LGM01fQmM3NG8k25kIjVdF/JFz99npnSCtqbX+x5TB2qXmyD2pLHt2dC+
+         wc2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=y4su5mRJeL7lcVdGeCkPLkZrBkKn3R8c9JM0amouMgI=;
-        b=YDTiguT5zHQL03W8sm215xd9egkzsVNZx50dNAjc4laVjVjlLEQj9iVJUKjGpWK13f
-         DBovUepdAoJxpmBFgTpB+/5DDJcKGdvWxorO9EYepCGKHxO6gVSFNhuERLxPqyqn71F9
-         DD/SuHcjUmSu6kO6FbmkfQNANMR3RYG4fGNmHfhm2ymLmKPqyYtcjyrayrBidv3lHPCo
-         kbgrnqnsMotx3frd6qkZ77KG54ZRSVGnZjWhdpvLfPKghxmfOHUk3RTx+6ASWH84tkIE
-         vkrCHM+ggZVKnoh/0XAk7liHVHJ7hkSIG14/iiM9tDPFAPMHQxdJntSniP7dseMxsURf
-         PcmA==
-X-Gm-Message-State: AOAM532mYeUBwZaQJ2Is/HLK3BqwpigOttnbXZmxViRmEUCyT45WABBY
-        ucAv5jw3PRjf0dd2gB0H5Z8=
-X-Google-Smtp-Source: ABdhPJxty743CmbAS73U2FlE40Vd7quB5PjtwrrSV9t/t7NjNcPCAp2S5AcKyfkrN/CJ8AyqpPr2cg==
-X-Received: by 2002:a05:6402:1a2f:: with SMTP id be15mr5558544edb.209.1609975081647;
-        Wed, 06 Jan 2021 15:18:01 -0800 (PST)
+        bh=zRUgN6h11Fruj8QZN9ZX8W0q8/MQWVUot1iJdv2ebks=;
+        b=joS6jUw8YE/rdh9eZJpdbWhc+dKueWg09ub/2FHKYmRBw8a4tXAk5Jucfy6wIwfq5k
+         DMAx1lDK3/OzGsVb/GU34kiKwo4iKAz9o18uUYIGw+BsA639PiOggrYNo5CTAbqKblgN
+         hE3eDdQDmKvcHopxZanUx5BeZ8f9nG2+uXxHLvxt2UyOt1rJDO3N1qwlBU5B6YL+3vdl
+         /5ZoDJtW1zicLyWZr0XMjy10rIvuruFw4hrdXXmFd+xq7XU4XpVZBRnlD9PWodbxKQTl
+         2kWJIPeUxPNjsi/dKcqhPPb0PJLx6nyMdiNNzTGc8tb1olGlMZDlFdCaD9TCdH7UGemC
+         F2Qg==
+X-Gm-Message-State: AOAM5306HqbWLWbdSEPEULoffW8XGp1lIQ/uGpHOAdgOhwWMVtsk5V6j
+        5ed3R+Y7y3PysGw6WGortHA=
+X-Google-Smtp-Source: ABdhPJzQxZwD5Ls08HEHLq+zoNF3sXmtwZq2ko+X2rOMJb5u4ZsgFQJQ7ANmhtMiKQOwtY8TdH/e9w==
+X-Received: by 2002:a17:906:4c55:: with SMTP id d21mr4465344ejw.116.1609975083926;
+        Wed, 06 Jan 2021 15:18:03 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id a6sm1958263edv.74.2021.01.06.15.18.00
+        by smtp.gmail.com with ESMTPSA id a6sm1958263edv.74.2021.01.06.15.18.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 15:18:01 -0800 (PST)
+        Wed, 06 Jan 2021 15:18:02 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -69,9 +69,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v3 net-next 09/11] net: dsa: remove obsolete comments about switchdev transactions
-Date:   Thu,  7 Jan 2021 01:17:26 +0200
-Message-Id: <20210106231728.1363126-10-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 10/11] mlxsw: spectrum_switchdev: remove transactional logic for VLAN objects
+Date:   Thu,  7 Jan 2021 01:17:27 +0200
+Message-Id: <20210106231728.1363126-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210106231728.1363126-1-olteanv@gmail.com>
 References: <20210106231728.1363126-1-olteanv@gmail.com>
@@ -83,55 +83,130 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Now that all port object notifiers were converted to be non-transactional,
-we can remove the comments that say otherwise.
+As of commit 457e20d65924 ("mlxsw: spectrum_switchdev: Avoid returning
+errors in commit phase"), the mlxsw driver performs the VLAN object
+offloading during the prepare phase. So conversion just seems to be a
+matter of removing the code that was running in the commit phase.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Acked-by: Linus Walleij <linus.walleij@linaro.org>
 Acked-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
 Changes in v3:
-None.
+Restored the comment to its original state.
 
 Changes in v2:
-None.
+Rebased on top of VLAN ranges removal.
 
- net/dsa/slave.c  | 5 -----
- net/dsa/switch.c | 4 ----
- 2 files changed, 9 deletions(-)
+ .../mellanox/mlxsw/spectrum_switchdev.c       | 34 +++----------------
+ 1 file changed, 4 insertions(+), 30 deletions(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 4f0aae1192e5..963607547ab3 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -373,11 +373,6 @@ static int dsa_slave_port_obj_add(struct net_device *dev,
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+index 003c4a4fc8db..34a622506d36 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+@@ -1196,7 +1196,6 @@ mlxsw_sp_br_ban_rif_pvid_change(struct mlxsw_sp *mlxsw_sp,
  
--	/* For the prepare phase, ensure the full set of changes is feasable in
--	 * one go in order to signal a failure properly. If an operation is not
--	 * supported, return -EOPNOTSUPP.
--	 */
--
- 	switch (obj->id) {
- 	case SWITCHDEV_OBJ_ID_PORT_MDB:
- 		if (obj->orig_dev != dev)
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index f92eaacb17cf..21d2f842d068 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -298,10 +298,6 @@ static int dsa_switch_event(struct notifier_block *nb,
- 		break;
+ static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				   const struct switchdev_obj_port_vlan *vlan,
+-				   struct switchdev_trans *trans,
+ 				   struct netlink_ext_ack *extack)
+ {
+ 	bool flag_untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+@@ -1209,8 +1208,7 @@ static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		int err = 0;
+ 
+ 		if ((vlan->flags & BRIDGE_VLAN_INFO_BRENTRY) &&
+-		    br_vlan_enabled(orig_dev) &&
+-		    switchdev_trans_ph_prepare(trans))
++		    br_vlan_enabled(orig_dev))
+ 			err = mlxsw_sp_br_ban_rif_pvid_change(mlxsw_sp,
+ 							      orig_dev, vlan);
+ 		if (!err)
+@@ -1218,9 +1216,6 @@ static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		return err;
  	}
  
--	/* Non-switchdev operations cannot be rolled back. If a DSA driver
--	 * returns an error during the chained call, switch chips may be in an
--	 * inconsistent state.
--	 */
- 	if (err)
- 		dev_dbg(ds->dev, "breaking chain for DSA event %lu (%d)\n",
- 			event, err);
+-	if (switchdev_trans_ph_commit(trans))
+-		return 0;
+-
+ 	bridge_port = mlxsw_sp_bridge_port_find(mlxsw_sp->bridge, orig_dev);
+ 	if (WARN_ON(!bridge_port))
+ 		return -EINVAL;
+@@ -1764,16 +1759,13 @@ static int mlxsw_sp_port_obj_add(struct net_device *dev,
+ {
+ 	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
+ 	const struct switchdev_obj_port_vlan *vlan;
+-	struct switchdev_trans trans;
+ 	int err = 0;
+ 
+ 	switch (obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
+ 
+-		trans.ph_prepare = true;
+-		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, &trans,
+-					      extack);
++		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, extack);
+ 		if (err)
+ 			break;
+ 
+@@ -1783,10 +1775,6 @@ static int mlxsw_sp_port_obj_add(struct net_device *dev,
+ 		 * updated bridge state.
+ 		 */
+ 		mlxsw_sp_span_respin(mlxsw_sp_port->mlxsw_sp);
+-
+-		trans.ph_prepare = false;
+-		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, &trans,
+-					      extack);
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_MDB:
+ 		err = mlxsw_sp_port_mdb_add(mlxsw_sp_port,
+@@ -3350,8 +3338,7 @@ mlxsw_sp_switchdev_vxlan_vlan_del(struct mlxsw_sp *mlxsw_sp,
+ static int
+ mlxsw_sp_switchdev_vxlan_vlans_add(struct net_device *vxlan_dev,
+ 				   struct switchdev_notifier_port_obj_info *
+-				   port_obj_info,
+-				   struct switchdev_trans *trans)
++				   port_obj_info)
+ {
+ 	struct switchdev_obj_port_vlan *vlan =
+ 		SWITCHDEV_OBJ_PORT_VLAN(port_obj_info->obj);
+@@ -3373,9 +3360,6 @@ mlxsw_sp_switchdev_vxlan_vlans_add(struct net_device *vxlan_dev,
+ 
+ 	port_obj_info->handled = true;
+ 
+-	if (switchdev_trans_ph_commit(trans))
+-		return 0;
+-
+ 	bridge_device = mlxsw_sp_bridge_device_find(mlxsw_sp->bridge, br_dev);
+ 	if (!bridge_device)
+ 		return -EINVAL;
+@@ -3426,22 +3410,12 @@ mlxsw_sp_switchdev_handle_vxlan_obj_add(struct net_device *vxlan_dev,
+ 					struct switchdev_notifier_port_obj_info *
+ 					port_obj_info)
+ {
+-	struct switchdev_trans trans;
+ 	int err = 0;
+ 
+ 	switch (port_obj_info->obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+-		trans.ph_prepare = true;
+-		err = mlxsw_sp_switchdev_vxlan_vlans_add(vxlan_dev,
+-							 port_obj_info,
+-							 &trans);
+-		if (err)
+-			break;
+-
+-		trans.ph_prepare = false;
+ 		err = mlxsw_sp_switchdev_vxlan_vlans_add(vxlan_dev,
+-							 port_obj_info,
+-							 &trans);
++							 port_obj_info);
+ 		break;
+ 	default:
+ 		break;
 -- 
 2.25.1
 
