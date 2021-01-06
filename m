@@ -2,150 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B23942EC401
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:36:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFE0D2EC3FB
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:36:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727209AbhAFTfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 14:35:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54645 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727124AbhAFTft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:35:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609961663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Of+syXHD3qkkkFpUiohxwPsHN2cOLpKYdOBIorA+8sU=;
-        b=S4P9ZuGqjs2+QivHOrhE9a81LEhx2WBlBzvGrqzZZZ7CNLrBcQ66dpD9oRp1wvGScjiG6P
-        /hn4dWpL7vAuHaDylFd8sPnNujuCK0g9Z0uFSMgaKlw5EaeV2bTer5ffEku4M+Rptn5RDF
-        sYMpAeWCO7iVtwWt5HnCsaOK0Y5PdsE=
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
- [209.85.214.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-119-Xp3WxDSuP2CC86HvNvQNvA-1; Wed, 06 Jan 2021 14:34:21 -0500
-X-MC-Unique: Xp3WxDSuP2CC86HvNvQNvA-1
-Received: by mail-pl1-f200.google.com with SMTP id m9so2266472plt.5
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 11:34:21 -0800 (PST)
+        id S1727146AbhAFTfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:35:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726948AbhAFTfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:35:04 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A041CC06134C;
+        Wed,  6 Jan 2021 11:34:23 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id d2so2292721pfq.5;
+        Wed, 06 Jan 2021 11:34:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0wA4WwSF4KQFp0kGCsvSxTZYHbqZVVTge4NyoiQeyKY=;
+        b=DehmWqqR4wvkdwq//hy+OzyPgxwbeFVOtq3wcpn5jqafqjbKkT+FkOlPYNL8Zi6gua
+         1m4z/qYgIDl9C398nK+EGVTnYsmbHYDdd3OnzzTrVOWzsdpBWHa9r8nKI/2es/SoSVrJ
+         w6dqxCTMpUauWQwWJN8/BgLZRVJxQSzGoINCGkCY3IIVeBOd13OryH8gICfBAw8k+QSn
+         idXbW+m0KfQ6PcSEDM/Bfbof19WxmvjIMIKcgPM3BRyqhIfOVb/4buwkhXjzqAN7MlcF
+         TijJCX83/gMC9gzdT0iFOVMG3XyBKcQA3rRWssT9YNdBRec1DLWYTj+RjXUQay+O+aDn
+         c8SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Of+syXHD3qkkkFpUiohxwPsHN2cOLpKYdOBIorA+8sU=;
-        b=DY8TONdoZaaEuHb0qy1pVWOlJZdR3FhN2qmLUIZF74k36BH5Vdp8R+ARCAmup/tR3n
-         lccku7gy0BbiwdRYDV7/VSmdGvEQJJN3mZaFzYo2YeLC29rmVkHwUblvUroOSXq7B8Pg
-         6Jq9cnm/+73iZyiTAxoU4/vK+X6nmYOnjh/6oNGuN7lTy81R+0qTFjsfUVfAznlYqQDU
-         Q5UlAxfFaVKLIkatGylEG9NUj1X2csxqznHQnp36m8tzizQwHTY9w1iiGwzX7r4TQ29q
-         JfmPModjA6Tc617U4Zgv/AI28GD6OazLagegfhG+Mkmyx9vaRRJXYHZFlQ3ekwCLkh9C
-         tB2w==
-X-Gm-Message-State: AOAM530/GadySUSS3CxM2SuhfPJ6dFxXJ2epDKC0ReTL+MjtCpDAgq6V
-        NXo2XFRNen6W5f/2iLZ6REXjP2V7ryUDah50M4CpNgu/KAda+iXl04kB/bdTd3OhWDpFV10zn5m
-        INc5lk7trb6xku8P3
-X-Received: by 2002:a63:cc05:: with SMTP id x5mr6086078pgf.254.1609961660348;
-        Wed, 06 Jan 2021 11:34:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwiWChMXqMyXSYSOzNqmwVrTxQW2CYsxpolR5McobjhIzVaIHQEPKhQ/mVUU9ebadAYqzEQpg==
-X-Received: by 2002:a63:cc05:: with SMTP id x5mr6086058pgf.254.1609961660080;
-        Wed, 06 Jan 2021 11:34:20 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id y16sm3422874pfb.83.2021.01.06.11.34.18
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=0wA4WwSF4KQFp0kGCsvSxTZYHbqZVVTge4NyoiQeyKY=;
+        b=UiwmFT+RMXwq8T6Z2aImFwBiU/OG3NOU0ASdCm5VRyRoGvH1rzl591vCBTVxMH0QMy
+         Ottpy7b2Yp5G6evMtkPzI0g6xcK/k37rpkdycHDlvPIAeYPES3hdhu+vUizYud67osQq
+         /eSds0Okt0piGXrO9Ep/q0PBdZ0MBEcTJUzu/dSd0CwsGWSbbbDcVgpPyHrfWWCYuSSR
+         XSxvSz7x0tR4FQpqfnBEj5UQDUIiZP7Fk/02vOGubExA+0u6U3XCrAq/zDKKXg56WRGp
+         ayFCYbmOOyiS3zaRkXcudbQPlcjb/EXHukYhN1yqUhuDgK9wG+tiwuwYrndaFDPC/Bs8
+         cvEg==
+X-Gm-Message-State: AOAM533l1i/l4T/6Zz5/17zTzqReCZaUC0M2a/aF5Ri4dE4xXdQk251P
+        I3LTa17DJJmwwl7I3SzkZ2k=
+X-Google-Smtp-Source: ABdhPJybrpLtOTjH9vvjUpRK3GyCTDr2XW3rLhfOoa4pebBdbOPjq1e1CTO/otlzaR4EAsPIl+MEEg==
+X-Received: by 2002:a63:480f:: with SMTP id v15mr6016433pga.341.1609961663201;
+        Wed, 06 Jan 2021 11:34:23 -0800 (PST)
+Received: from [10.67.48.230] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d4sm2811444pjz.28.2021.01.06.11.34.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 11:34:19 -0800 (PST)
-Subject: Re: [PATCH] rxrpc: fix handling of an unsupported token type in
- rxrpc_read()
-To:     David Howells <dhowells@redhat.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, natechancellor@gmail.com,
-        ndesaulniers@google.com, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-References: <548097.1609952225@warthog.procyon.org.uk>
- <c2cc898d-171a-25da-c565-48f57d407777@redhat.com>
- <20201229173916.1459499-1-trix@redhat.com>
- <259549.1609764646@warthog.procyon.org.uk>
- <675150.1609954812@warthog.procyon.org.uk>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <f02bdada-355c-97cd-bc32-f84516ddd93f@redhat.com>
-Date:   Wed, 6 Jan 2021 11:34:17 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        Wed, 06 Jan 2021 11:34:22 -0800 (PST)
+Subject: Re: [PATCH net-next 3/3] net: dsa: bcm_sf2: support BCM4908's
+ integrated switch
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20210106120711.630-1-zajec5@gmail.com>
+ <20210106120711.630-3-zajec5@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <ecc574e1-a7d1-7a60-abe1-4b408b958a45@gmail.com>
+Date:   Wed, 6 Jan 2021 11:34:18 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <675150.1609954812@warthog.procyon.org.uk>
+In-Reply-To: <20210106120711.630-3-zajec5@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 1/6/21 4:07 AM, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> BCM4908 family SoCs come with integrated Starfighter 2 switch. Its
+> registers layout it a mix of BCM7278 and BCM7445. It has 5 integrated
+> PHYs and 8 ports. It also supports RGMII and SerDes.
+> 
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 
-On 1/6/21 9:40 AM, David Howells wrote:
-> David Howells <dhowells@redhat.com> wrote:
->
->> How about this?
->> ...
->>     Fix the second loop so that it doesn't encode the size and type of an
->>     unsupported token, but rather just ignore it as does the first loop.
-> Actually, a better way is probably just to error out in this case.  This
-> should only happen if a new token type is incompletely implemented.
->
-> David
-> ---
-> commit e68ef16f59aa57564761b21e5ecb2ebbd72d1c57
-> Author: David Howells <dhowells@redhat.com>
-> Date:   Wed Jan 6 16:21:40 2021 +0000
->
->     rxrpc: Fix handling of an unsupported token type in rxrpc_read()
->     
->     Clang static analysis reports the following:
->     
->     net/rxrpc/key.c:657:11: warning: Assigned value is garbage or undefined
->                     toksize = toksizes[tok++];
->                             ^ ~~~~~~~~~~~~~~~
->     
->     rxrpc_read() contains two consecutive loops.  The first loop calculates the
->     token sizes and stores the results in toksizes[] and the second one uses
->     the array.  When there is an error in identifying the token in the first
->     loop, the token is skipped, no change is made to the toksizes[] array.
->     When the same error happens in the second loop, the token is not skipped.
->     This will cause the toksizes[] array to be out of step and will overrun
->     past the calculated sizes.
->     
->     Fix this by making both loops log a message and return an error in this
->     case.  This should only happen if a new token type is incompletely
->     implemented, so it should normally be impossible to trigger this.
->     
->     Fixes: 9a059cd5ca7d ("rxrpc: Downgrade the BUG() for unsupported token type in rxrpc_read()")
->     Reported-by: Tom Rix <trix@redhat.com>
->     Signed-off-by: David Howells <dhowells@redhat.com>
->
-> diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
-> index 9631aa8543b5..8d2073e0e3da 100644
-> --- a/net/rxrpc/key.c
-> +++ b/net/rxrpc/key.c
-> @@ -598,7 +598,7 @@ static long rxrpc_read(const struct key *key,
->  		default: /* we have a ticket we can't encode */
->  			pr_err("Unsupported key token type (%u)\n",
->  			       token->security_index);
-> -			continue;
-> +			return -ENOPKG;
->  		}
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 
-These two loops iterate over the same data, i believe returning here is all that is needed.
-
-Tom
-
->  
->  		_debug("token[%u]: toksize=%u", ntoks, toksize);
-> @@ -674,7 +674,9 @@ static long rxrpc_read(const struct key *key,
->  			break;
->  
->  		default:
-> -			break;
-> +			pr_err("Unsupported key token type (%u)\n",
-> +			       token->security_index);
-> +			return -ENOPKG;
->  		}
->  
->  		ASSERTCMP((unsigned long)xdr - (unsigned long)oldxdr, ==,
->
-
+I cannot find right now how many CFP entries does this switch have, you
+probably won't make use of them so sticking with 0 is fine.
+-- 
+Florian
