@@ -2,84 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FCED2EC20F
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACE722EC1A7
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:02:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbhAFRYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 12:24:55 -0500
-Received: from mrdf004.ocn.ad.jp ([125.206.160.152]:38233 "EHLO
-        mrdf004.ocn.ad.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725789AbhAFRYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:24:54 -0500
-X-Greylist: delayed 4742 seconds by postgrey-1.27 at vger.kernel.org; Wed, 06 Jan 2021 12:24:52 EST
-Received: from mogw6101.ocn.ad.jp (mogw6101.ocn.ad.jp [210.163.236.2])
-        by mrdf004.ocn.ad.jp (Postfix) with ESMTP id 639463801B0;
-        Thu,  7 Jan 2021 01:04:34 +0900 (JST)
-Received: from mf-smf-unw009c1.ocn.ad.jp (mf-smf-unw009c1.ocn.ad.jp [153.138.219.105])
-        by mogw6101.ocn.ad.jp (Postfix) with ESMTP id 8CCA81E002A;
-        Thu,  7 Jan 2021 01:03:15 +0900 (JST)
-Received: from ocn-vc-mts-202c1.ocn.ad.jp ([153.138.219.215])
-        by mf-smf-unw009c1.ocn.ad.jp with ESMTP
-        id xBBQkW5DGUrLKxBHHke1vh; Thu, 07 Jan 2021 01:03:15 +0900
-Received: from smtp.ocn.ne.jp ([153.149.227.167])
-        by ocn-vc-mts-202c1.ocn.ad.jp with ESMTP
-        id xBHGk2ikJIfvlxBHGkV6m2; Thu, 07 Jan 2021 01:03:15 +0900
-Received: from localhost (p1601136-ipoe.ipoe.ocn.ne.jp [114.172.254.135])
-        by smtp.ocn.ne.jp (Postfix) with ESMTPA;
-        Thu,  7 Jan 2021 01:03:14 +0900 (JST)
-Date:   Thu, 07 Jan 2021 01:03:14 +0900 (JST)
-Message-Id: <20210107.010314.1817045693815939591.anemo@mba.ocn.ne.jp>
-To:     geert@linux-m68k.org
-Cc:     tsbogend@alpha.franken.de, mpm@selenic.com,
-        herbert@gondor.apana.org.au, dan.j.williams@intel.com,
-        vkoul@kernel.org, davem@davemloft.net, miquel.raynal@bootlin.com,
-        richard@nod.at, vigneshr@ti.com, kuba@kernel.org,
-        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
-        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 00/10] Remove support for TX49xx
-From:   Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-In-Reply-To: <CAMuHMdX=trGqj8RzV7r1iTneqDjWOc4e1T-X+R_B34rxxhJpbg@mail.gmail.com>
-References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
-        <CAMuHMdX=trGqj8RzV7r1iTneqDjWOc4e1T-X+R_B34rxxhJpbg@mail.gmail.com>
-X-Mailer: Mew version 6.7 on Emacs 24.5 / Mule 6.0 (HANACHIRUSATO)
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727825AbhAFRB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 12:01:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727804AbhAFRB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 12:01:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8923F23132;
+        Wed,  6 Jan 2021 17:01:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609952473;
+        bh=Z2KRyDfJPSLu/00pFs7dpyH4JX/cDDDyqtla9ACYJ+I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oTB6IyStibaIcTssg8nT78WaHLImp5vGGcRP6virCQURXnqJkJEJDYGhd9hmtbf0U
+         6Rk6dzVq9eEg/ovMoF7cx+c0Rr74QrCrx/6hGYR/dd2oW4G0oM9QABM3exNrq3Zars
+         /qaUguXHkFr2MGEo3tCQ/4gW2epW7POguoOQX3oFlQHn+7TdF0EFXY/7KRbubaMHel
+         RwoA+Yw/tdrKMM8P+78PXV9f2o6OgQz4vItuIDYQN4rbwimi2ZpTtvgBLJOwtU8EYc
+         oDJ2ad3M791aG+MZWJTDJ1zktR27F8GTXcZXYQgyUFgZBzcT2ayI3/U6KBdcpDywMP
+         zrc5xNR9+7dtQ==
+Date:   Wed, 6 Jan 2021 09:01:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: Re: [PATCH net-next] nfc: Add a virtual nci device driver
+Message-ID: <20210106090112.04ebf38f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CACwDmQCTj1T+25XBx8=3z=NmCtBSeHxHbUykA6r9_MwNJmJOQQ@mail.gmail.com>
+References: <20201228094507.32141-1-bongsu.jeon@samsung.com>
+        <20201228131657.562606a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CACwDmQCVkxa6u0ZuS4Zn=9JvOXoOE8-v1ZSESO-TaS9yHc7A8A@mail.gmail.com>
+        <20210104114842.2eccef83@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CACwDmQCTj1T+25XBx8=3z=NmCtBSeHxHbUykA6r9_MwNJmJOQQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert!
-
-On Wed, 6 Jan 2021 09:37:11 +0100, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> Hi Thomas,
+On Wed, 6 Jan 2021 08:16:47 +0900 Bongsu Jeon wrote:
+> On Tue, Jan 5, 2021 at 4:48 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > thank you for your answer.
+> > > I think that neard(NFC deamon) is necessary to test the NCI subsystem
+> > > meaningfully.
+> > > The NCI virtual device in user space can communicate with neard
+> > > through this driver.
+> > > Is it enough to make NCI virtual device at tools/nfc for some test?  
+> >
+> > I'm not sure if I understand. Are you asking if it's okay for the test
+> > or have a dependency on neard?  
 > 
-> CC Nemoto-san (de-facto TX49XX maintainer)
-> 
-> On Tue, Jan 5, 2021 at 3:03 PM Thomas Bogendoerfer
-> <tsbogend@alpha.franken.de> wrote:
->> I couldn't find any buyable product other than reference boards using
->> TX49xx CPUs. And since nobody showed interest in keeping support for
->> it, it's time to remove it.
-> 
-> I have an RBTX4927 development board in my board farm, boot-test every
-> bi-weekly renesas-drivers release on it, and fix kernel issues when they
-> appear.
-> 
-> Is that sufficient to keep it?
+> Sorry for confusing you.
+> There is no dependency between neard and a NCI virtual device.
+> But, To test the NCI module, it is necessary to make an application like neard.
+> Is it okay to just make a NCI virtual device as a tool at tools/nfc
+> without the application?
 
-It have been about 10 years since last time I see any TX49 board :-)
+Meaning the device will be created but there will be no test cases in
+the tree?
 
-AFAIK Geert is the last user of TX49 SoC.
-I'm OK with whole TX49xx (and TX39xx) removal if Geert (or any other
-users) agreed.
+What we'd like to see is some form of a test which would exercise the
+NFC-related kernel code on such a device and can signal success /
+failure. It doesn't have to be very complex.
 
----
-Atsushi Nemoto
+You can build a more complex user space applications and tests
+separately.
