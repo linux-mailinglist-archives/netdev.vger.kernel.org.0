@@ -2,53 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 970FF2EC2D0
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:55:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FB32EC2F1
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 19:05:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbhAFRy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 12:54:28 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:24846 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbhAFRy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:54:28 -0500
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 106HrSU1026716;
-        Wed, 6 Jan 2021 09:53:29 -0800
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
-Cc:     secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [net] net: feature check mandating HW_CSUM is wrong
-Date:   Wed,  6 Jan 2021 23:23:27 +0530
-Message-Id: <20210106175327.5606-1-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
+        id S1726195AbhAFSFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 13:05:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57398 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726074AbhAFSFL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 13:05:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B841216C4;
+        Wed,  6 Jan 2021 18:04:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609956271;
+        bh=QyzlEeyzOKBJYplkZEm1KjD0/rovQ4zA0UbRSdI2Bzk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=B6ryxblwWHy8tuyYKGRPEau54jY0cRCa3PcfMLwy7vgwYdCeQXtGCutBXfgl6ny1V
+         WPvLu2p/qB9eStReXtHpnutEV213JmmY8hRvnA1VZY25OiGtrgjd7bG53i1shQIo6e
+         GSfYYbfS+ecIGRBJj+H0GE8L4JWSCvJ9OJNlYsjMYKb8AdYKXNm9X1fqiU2TAoKw8k
+         xoz/Irk4L+mb0389HK/zcdMm13LVEWgUaucf6YnkaMYRWG8OtmFRfetoi0Apyr60dv
+         pHhhLnsRw0oGZfKnJdoSz6+rBLvKSfPqa+5xZ3J8f3Ntt0b9qjEKsllkj3+Drqhubu
+         7wZAuYgn/q0nA==
+From:   Antoine Tenart <atenart@kernel.org>
+To:     davem@davemloft.net, kuba@kernel.org, alexander.duyck@gmail.com
+Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net 0/3] net-sysfs: move the xps cpus/rxqs retrieval in a common function
+Date:   Wed,  6 Jan 2021 19:04:25 +0100
+Message-Id: <20210106180428.722521-1-atenart@kernel.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mandating NETIF_F_HW_CSUM to enable TLS offload feature is wrong.
-And it broke tls offload feature for the drivers, which are still
-using NETIF_F_IP_CSUM or NETIF_F_IPV6_CSUM. We should use
-NETIF_F_CSUM_MASK instead.
+Hello,
 
-Fixes: ae0b04b238e2 ("net: Disable NETIF_F_HW_TLS_TX when HW_CSUM is disabled")
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+In net-sysfs, the xps_cpus_show and xps_rxqs_show functions share the
+same logic. To improve readability and maintenance, as discussed
+here[1], this series moves their common logic to a new function.
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a46334906c94..b1f99287f280 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9643,7 +9643,7 @@ static netdev_features_t netdev_fix_features(struct net_device *dev,
- 		}
- 	}
- 
--	if ((features & NETIF_F_HW_TLS_TX) && !(features & NETIF_F_HW_CSUM)) {
-+	if ((features & NETIF_F_HW_TLS_TX) && !(features & NETIF_F_CSUM_MASK)) {
- 		netdev_dbg(dev, "Dropping TLS TX HW offload feature since no CSUM feature.\n");
- 		features &= ~NETIF_F_HW_TLS_TX;
- 	}
+Patches 1/3 and 2/3 are prerequisites for the factorization to happen,
+so that patch 3/3 looks better and is easier to review.
+
+Thanks!
+Antoine
+
+[1] https://lore.kernel.org/netdev/160875219353.1783433.8066935261216141538@kwain.local/
+
+Antoine Tenart (3):
+  net-sysfs: convert xps_cpus_show to bitmap_zalloc
+  net-sysfs: store the return of get_netdev_queue_index in an unsigned
+    int
+  net-sysfs: move the xps cpus/rxqs retrieval in a common function
+
+ net/core/net-sysfs.c | 179 +++++++++++++++++++++----------------------
+ 1 file changed, 86 insertions(+), 93 deletions(-)
+
 -- 
-2.18.1
+2.29.2
 
