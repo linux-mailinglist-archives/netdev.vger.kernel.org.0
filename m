@@ -2,213 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C40D32EC5C1
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:33:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF352EC5CB
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:35:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbhAFVc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 16:32:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbhAFVc5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 16:32:57 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E9AC061786;
-        Wed,  6 Jan 2021 13:32:17 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id a12so9877296lfl.6;
-        Wed, 06 Jan 2021 13:32:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cUyPtv9RelnVLv7TBLtDBEn/rAq48kBEL0GnWIKlkM4=;
-        b=Megf+SofWs4/3tHyDAJ7NaGU5pf2BZHWocacvgOyzvG6nc+fCBMPDm6iHXAUGuxJIg
-         JoOWZfzmSdLd9pjzyp2UeHb2F0tlvOtB5V1N54Bgd9FlxUILzIzPLH1pTBvE1u+ptR1D
-         F5+2p2RnBjTvvMnNUQjfgmoG1ygGrroMrHznuKEK373173XtDrIF0IRjMnFF7kltaPK7
-         JRCCPDM67guO/ioxfK0J/xqHLH8IsmuxLN6MdyK9Wq03f9Jp9+Tl2AZhI+TNQCEiEG3X
-         +12EEh4o0ieJ6K96+yoWWXqYumtUF+PW/bCSlt4MXr4sXM2yfan5qRWXUbUp66P5U43X
-         B52w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cUyPtv9RelnVLv7TBLtDBEn/rAq48kBEL0GnWIKlkM4=;
-        b=g2+MLvKtiLL0/KYaG+VxzRBD0JtHZEFiQ1l3Z9XXLy3R8i1622MWbUFEhd/rQVBUMN
-         6zCW4jFewAdyMdCh+qO50va85OKH9Uf7lDe/andJRhXccBnLE79f1H8o0cSzagUcS7bM
-         4hz+4z977L7iEVutscm6DGqayXkihSYGUPQqAjNvBTVWrC6wu1paj7GLPK9QVuwry8JN
-         cnXNOG7MSn6icj2ufiYbmkOmYKBohSk84AtMf04jGq8c1u7Yw2OcsbGvCit1s3Jr5MA0
-         1XXlLrFQ+3LIx+ThiRqrQTop67nN+K+/si71arxaKfR52Yzi2arOUBvfZzCJlz+S3MQc
-         BZYw==
-X-Gm-Message-State: AOAM531TC2yejA82qsJgi3LUWXU8Mww8Qyc/qQWSeX0QUkFW0jX8WIhR
-        lJtx8UGDct9k7Y2l8dhFOdA=
-X-Google-Smtp-Source: ABdhPJzjo37PGpbqgtYNq6mH1pj7ag/MAMONTjPW7dZdUW1/IwQpo+BuXGlJleLDg7/vmPU2HInUog==
-X-Received: by 2002:a2e:8714:: with SMTP id m20mr2603362lji.320.1609968735694;
-        Wed, 06 Jan 2021 13:32:15 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id d21sm623436lfe.19.2021.01.06.13.32.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 13:32:15 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH V2 net-next 3/3] net: dsa: bcm_sf2: support BCM4908's integrated switch
-Date:   Wed,  6 Jan 2021 22:32:02 +0100
-Message-Id: <20210106213202.17459-3-zajec5@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210106213202.17459-1-zajec5@gmail.com>
-References: <20210106213202.17459-1-zajec5@gmail.com>
+        id S1726330AbhAFVf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 16:35:57 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:63476 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726056AbhAFVf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 16:35:57 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 106LWjMY163600
+        for <netdev@vger.kernel.org>; Wed, 6 Jan 2021 16:35:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=Ppj8S+uxb1b1heyp3pD6eIxgHU3SGqMRm+/cU4jWm9k=;
+ b=F7LmV5yLqZ9f+imyJJtDvYBvvuqFrmN7qut5azQ2vYhBWVTpAS1D6akK5krxRaIxo3M7
+ BzwnHPy5Xh4mqEuMv1Wm99QN6fYkN4vqaItPv9n9nZu1NaKjCFWu9Jafjh9S6/6ErOA0
+ AsFeCdCFHZahI/Bt+vWGAro10X1zaLfw2weFyQKXkNdRz3r+cKagjMfV2FwqJ5JZo8XS
+ Br6wfff2z/5tMbQOG/OvV+YpZ5HwCZ9fMojVakwboXQahlRHjc21nW5U/L61nyPuoNfE
+ 6gYFc8rQQQPKGJ4ZcKB0BiIGfnQK47onxR5Ec/M+1H7WQD7jS19byIUdO8ZvUs0XQ725 SQ== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 35wn1mg9ep-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 16:35:16 -0500
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 106LMF2e007510
+        for <netdev@vger.kernel.org>; Wed, 6 Jan 2021 21:35:15 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma04dal.us.ibm.com with ESMTP id 35tgf9yw0b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 21:35:15 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 106LZF9q29950214
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 6 Jan 2021 21:35:15 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 13D72AE062;
+        Wed,  6 Jan 2021 21:35:15 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C9C57AE066;
+        Wed,  6 Jan 2021 21:35:14 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.199.21])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  6 Jan 2021 21:35:14 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net-next] ibmvnic: merge do_change_param_reset into do_reset
+Date:   Wed,  6 Jan 2021 15:35:14 -0600
+Message-Id: <20210106213514.76027-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-06_12:2021-01-06,2021-01-06 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 clxscore=1015 priorityscore=1501 bulkscore=0
+ impostorscore=0 lowpriorityscore=0 suspectscore=0 adultscore=0 spamscore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101060121
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+Commit b27507bb59ed ("net/ibmvnic: unlock rtnl_lock in reset so
+linkwatch_event can run") introduced do_change_param_reset function to
+solve the rtnl lock issue. Majority of the code in do_change_param_reset
+duplicates do_reset. Also, we can handle the rtnl lock issue in do_reset
+itself. Hence merge do_change_param_reset back into do_reset to clean up
+the code.
 
-BCM4908 family SoCs come with integrated Starfighter 2 switch. Its
-registers layout it a mix of BCM7278 and BCM7445. It has 5 integrated
-PHYs and 8 ports. It also supports RGMII and SerDes.
-
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
 ---
- drivers/net/dsa/b53/b53_common.c | 14 +++++++++++++
- drivers/net/dsa/b53/b53_priv.h   |  1 +
- drivers/net/dsa/bcm_sf2.c        | 36 +++++++++++++++++++++++++++++---
- drivers/net/dsa/bcm_sf2_regs.h   |  1 +
- 4 files changed, 49 insertions(+), 3 deletions(-)
+This patch was accepted into net-next as 16b5f5ce351f but was reverted
+in 9f32c27eb4fc to yield to other under-testing patches. Since those
+bug fix patches are already accepted, resubmit this one.
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 288b5a5c3e0d..85dddd87bcfc 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2459,6 +2459,20 @@ static const struct b53_chip_data b53_switch_chips[] = {
- 		.jumbo_pm_reg = B53_JUMBO_PORT_MASK,
- 		.jumbo_size_reg = B53_JUMBO_MAX_SIZE,
- 	},
-+	/* Starfighter 2 */
-+	{
-+		.chip_id = BCM4908_DEVICE_ID,
-+		.dev_name = "BCM4908",
-+		.vlans = 4096,
-+		.enabled_ports = 0x1bf,
-+		.arl_bins = 4,
-+		.arl_buckets = 256,
-+		.cpu_port = 8, /* TODO: ports 4, 5, 8 */
-+		.vta_regs = B53_VTA_REGS,
-+		.duplex_reg = B53_DUPLEX_STAT_GE,
-+		.jumbo_pm_reg = B53_JUMBO_PORT_MASK,
-+		.jumbo_size_reg = B53_JUMBO_MAX_SIZE,
-+	},
- 	{
- 		.chip_id = BCM7445_DEVICE_ID,
- 		.dev_name = "BCM7445",
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index 7c67409bb186..6d0c724763c7 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -64,6 +64,7 @@ struct b53_io_ops {
- #define B53_INVALID_LANE	0xff
+ drivers/net/ethernet/ibm/ibmvnic.c | 154 +++++++++--------------------
+ 1 file changed, 44 insertions(+), 110 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index f302504faa8a..f6d3b20a5361 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1924,92 +1924,6 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
+ 	return rc;
+ }
  
- enum {
-+	BCM4908_DEVICE_ID = 0x4908,
- 	BCM5325_DEVICE_ID = 0x25,
- 	BCM5365_DEVICE_ID = 0x65,
- 	BCM5389_DEVICE_ID = 0x89,
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 1e9a0adda2d6..65c8a044f222 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -105,7 +105,8 @@ static void bcm_sf2_imp_setup(struct dsa_switch *ds, int port)
- 	b53_brcm_hdr_setup(ds, port);
+-/**
+- * do_change_param_reset returns zero if we are able to keep processing reset
+- * events, or non-zero if we hit a fatal error and must halt.
+- */
+-static int do_change_param_reset(struct ibmvnic_adapter *adapter,
+-				 struct ibmvnic_rwi *rwi,
+-				 u32 reset_state)
+-{
+-	struct net_device *netdev = adapter->netdev;
+-	int i, rc;
+-
+-	netdev_dbg(adapter->netdev, "Change param resetting driver (%d)\n",
+-		   rwi->reset_reason);
+-
+-	netif_carrier_off(netdev);
+-	adapter->reset_reason = rwi->reset_reason;
+-
+-	ibmvnic_cleanup(netdev);
+-
+-	if (reset_state == VNIC_OPEN) {
+-		rc = __ibmvnic_close(netdev);
+-		if (rc)
+-			goto out;
+-	}
+-
+-	release_resources(adapter);
+-	release_sub_crqs(adapter, 1);
+-	release_crq_queue(adapter);
+-
+-	adapter->state = VNIC_PROBED;
+-
+-	rc = init_crq_queue(adapter);
+-
+-	if (rc) {
+-		netdev_err(adapter->netdev,
+-			   "Couldn't initialize crq. rc=%d\n", rc);
+-		return rc;
+-	}
+-
+-	rc = ibmvnic_reset_init(adapter, true);
+-	if (rc) {
+-		rc = IBMVNIC_INIT_FAILED;
+-		goto out;
+-	}
+-
+-	/* If the adapter was in PROBE state prior to the reset,
+-	 * exit here.
+-	 */
+-	if (reset_state == VNIC_PROBED)
+-		goto out;
+-
+-	rc = ibmvnic_login(netdev);
+-	if (rc) {
+-		goto out;
+-	}
+-
+-	rc = init_resources(adapter);
+-	if (rc)
+-		goto out;
+-
+-	ibmvnic_disable_irqs(adapter);
+-
+-	adapter->state = VNIC_CLOSED;
+-
+-	if (reset_state == VNIC_CLOSED)
+-		return 0;
+-
+-	rc = __ibmvnic_open(netdev);
+-	if (rc) {
+-		rc = IBMVNIC_OPEN_FAILED;
+-		goto out;
+-	}
+-
+-	/* refresh device's multicast list */
+-	ibmvnic_set_multi(netdev);
+-
+-	/* kick napi */
+-	for (i = 0; i < adapter->req_rx_queues; i++)
+-		napi_schedule(&adapter->napi[i]);
+-
+-out:
+-	if (rc)
+-		adapter->state = reset_state;
+-	return rc;
+-}
+-
+ /**
+  * do_reset returns zero if we are able to keep processing reset events, or
+  * non-zero if we hit a fatal error and must halt.
+@@ -2027,7 +1941,11 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		   adapter->state, adapter->failover_pending,
+ 		   rwi->reset_reason, reset_state);
  
- 	if (port == 8) {
--		if (priv->type == BCM7445_DEVICE_ID)
-+		if (priv->type == BCM4908_DEVICE_ID ||
-+		    priv->type == BCM7445_DEVICE_ID)
- 			offset = CORE_STS_OVERRIDE_IMP;
- 		else
- 			offset = CORE_STS_OVERRIDE_IMP2;
-@@ -715,7 +716,8 @@ static void bcm_sf2_sw_mac_link_down(struct dsa_switch *ds, int port,
- 	u32 reg, offset;
- 
- 	if (port != core_readl(priv, CORE_IMP0_PRT_ID)) {
--		if (priv->type == BCM7445_DEVICE_ID)
-+		if (priv->type == BCM4908_DEVICE_ID ||
-+		    priv->type == BCM7445_DEVICE_ID)
- 			offset = CORE_STS_OVERRIDE_GMIIP_PORT(port);
- 		else
- 			offset = CORE_STS_OVERRIDE_GMIIP2_PORT(port);
-@@ -742,7 +744,8 @@ static void bcm_sf2_sw_mac_link_up(struct dsa_switch *ds, int port,
- 	bcm_sf2_sw_mac_link_set(ds, port, interface, true);
- 
- 	if (port != core_readl(priv, CORE_IMP0_PRT_ID)) {
--		if (priv->type == BCM7445_DEVICE_ID)
-+		if (priv->type == BCM4908_DEVICE_ID ||
-+		    priv->type == BCM7445_DEVICE_ID)
- 			offset = CORE_STS_OVERRIDE_GMIIP_PORT(port);
- 		else
- 			offset = CORE_STS_OVERRIDE_GMIIP2_PORT(port);
-@@ -1135,6 +1138,30 @@ struct bcm_sf2_of_data {
- 	unsigned int num_cfp_rules;
- };
- 
-+static const u16 bcm_sf2_4908_reg_offsets[] = {
-+	[REG_SWITCH_CNTRL]	= 0x00,
-+	[REG_SWITCH_STATUS]	= 0x04,
-+	[REG_DIR_DATA_WRITE]	= 0x08,
-+	[REG_DIR_DATA_READ]	= 0x0c,
-+	[REG_SWITCH_REVISION]	= 0x10,
-+	[REG_PHY_REVISION]	= 0x14,
-+	[REG_SPHY_CNTRL]	= 0x24,
-+	[REG_CROSSBAR]		= 0xc8,
-+	[REG_RGMII_0_CNTRL]	= 0xe0,
-+	[REG_RGMII_1_CNTRL]	= 0xec,
-+	[REG_RGMII_2_CNTRL]	= 0xf8,
-+	[REG_LED_0_CNTRL]	= 0x40,
-+	[REG_LED_1_CNTRL]	= 0x4c,
-+	[REG_LED_2_CNTRL]	= 0x58,
-+};
+-	rtnl_lock();
++	adapter->reset_reason = rwi->reset_reason;
++	/* requestor of VNIC_RESET_CHANGE_PARAM already has the rtnl lock */
++	if (!(adapter->reset_reason == VNIC_RESET_CHANGE_PARAM))
++		rtnl_lock();
 +
-+static const struct bcm_sf2_of_data bcm_sf2_4908_data = {
-+	.type		= BCM4908_DEVICE_ID,
-+	.core_reg_align	= 0,
-+	.reg_offsets	= bcm_sf2_4908_reg_offsets,
-+	.num_cfp_rules	= 0, /* FIXME */
-+};
-+
- /* Register offsets for the SWITCH_REG_* block */
- static const u16 bcm_sf2_7445_reg_offsets[] = {
- 	[REG_SWITCH_CNTRL]	= 0x00,
-@@ -1183,6 +1210,9 @@ static const struct bcm_sf2_of_data bcm_sf2_7278_data = {
- };
+ 	/*
+ 	 * Now that we have the rtnl lock, clear any pending failover.
+ 	 * This will ensure ibmvnic_open() has either completed or will
+@@ -2037,7 +1955,6 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		adapter->failover_pending = false;
  
- static const struct of_device_id bcm_sf2_of_match[] = {
-+	{ .compatible = "brcm,bcm4908-switch",
-+	  .data = &bcm_sf2_4908_data
-+	},
- 	{ .compatible = "brcm,bcm7445-switch-v4.0",
- 	  .data = &bcm_sf2_7445_data
- 	},
-diff --git a/drivers/net/dsa/bcm_sf2_regs.h b/drivers/net/dsa/bcm_sf2_regs.h
-index d8a5e6269c0e..1d2d55c9f8aa 100644
---- a/drivers/net/dsa/bcm_sf2_regs.h
-+++ b/drivers/net/dsa/bcm_sf2_regs.h
-@@ -17,6 +17,7 @@ enum bcm_sf2_reg_offs {
- 	REG_SWITCH_REVISION,
- 	REG_PHY_REVISION,
- 	REG_SPHY_CNTRL,
-+	REG_CROSSBAR,
- 	REG_RGMII_0_CNTRL,
- 	REG_RGMII_1_CNTRL,
- 	REG_RGMII_2_CNTRL,
+ 	netif_carrier_off(netdev);
+-	adapter->reset_reason = rwi->reset_reason;
+ 
+ 	old_num_rx_queues = adapter->req_rx_queues;
+ 	old_num_tx_queues = adapter->req_tx_queues;
+@@ -2049,25 +1966,37 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	if (reset_state == VNIC_OPEN &&
+ 	    adapter->reset_reason != VNIC_RESET_MOBILITY &&
+ 	    adapter->reset_reason != VNIC_RESET_FAILOVER) {
+-		adapter->state = VNIC_CLOSING;
++		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++			rc = __ibmvnic_close(netdev);
++			if (rc)
++				goto out;
++		} else {
++			adapter->state = VNIC_CLOSING;
+ 
+-		/* Release the RTNL lock before link state change and
+-		 * re-acquire after the link state change to allow
+-		 * linkwatch_event to grab the RTNL lock and run during
+-		 * a reset.
+-		 */
+-		rtnl_unlock();
+-		rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
+-		rtnl_lock();
+-		if (rc)
+-			goto out;
++			/* Release the RTNL lock before link state change and
++			 * re-acquire after the link state change to allow
++			 * linkwatch_event to grab the RTNL lock and run during
++			 * a reset.
++			 */
++			rtnl_unlock();
++			rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
++			rtnl_lock();
++			if (rc)
++				goto out;
+ 
+-		if (adapter->state != VNIC_CLOSING) {
+-			rc = -1;
+-			goto out;
++			if (adapter->state != VNIC_CLOSING) {
++				rc = -1;
++				goto out;
++			}
++
++			adapter->state = VNIC_CLOSED;
+ 		}
++	}
+ 
+-		adapter->state = VNIC_CLOSED;
++	if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++		release_resources(adapter);
++		release_sub_crqs(adapter, 1);
++		release_crq_queue(adapter);
+ 	}
+ 
+ 	if (adapter->reset_reason != VNIC_RESET_NON_FATAL) {
+@@ -2076,7 +2005,9 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		 */
+ 		adapter->state = VNIC_PROBED;
+ 
+-		if (adapter->reset_reason == VNIC_RESET_MOBILITY) {
++		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++			rc = init_crq_queue(adapter);
++		} else if (adapter->reset_reason == VNIC_RESET_MOBILITY) {
+ 			rc = ibmvnic_reenable_crq_queue(adapter);
+ 			release_sub_crqs(adapter, 1);
+ 		} else {
+@@ -2115,7 +2046,11 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 			goto out;
+ 		}
+ 
+-		if (adapter->req_rx_queues != old_num_rx_queues ||
++		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
++			rc = init_resources(adapter);
++			if (rc)
++				goto out;
++		} else if (adapter->req_rx_queues != old_num_rx_queues ||
+ 		    adapter->req_tx_queues != old_num_tx_queues ||
+ 		    adapter->req_rx_add_entries_per_subcrq !=
+ 		    old_num_rx_slots ||
+@@ -2180,7 +2115,9 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	/* restore the adapter state if reset failed */
+ 	if (rc)
+ 		adapter->state = reset_state;
+-	rtnl_unlock();
++	/* requestor of VNIC_RESET_CHANGE_PARAM should still hold the rtnl lock */
++	if (!(adapter->reset_reason == VNIC_RESET_CHANGE_PARAM))
++		rtnl_unlock();
+ 
+ 	netdev_dbg(adapter->netdev, "[S:%d FOP:%d] Reset done, rc %d\n",
+ 		   adapter->state, adapter->failover_pending, rc);
+@@ -2311,10 +2248,7 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 		}
+ 		spin_unlock_irqrestore(&adapter->state_lock, flags);
+ 
+-		if (rwi->reset_reason == VNIC_RESET_CHANGE_PARAM) {
+-			/* CHANGE_PARAM requestor holds rtnl_lock */
+-			rc = do_change_param_reset(adapter, rwi, reset_state);
+-		} else if (adapter->force_reset_recovery) {
++		if (adapter->force_reset_recovery) {
+ 			/*
+ 			 * Since we are doing a hard reset now, clear the
+ 			 * failover_pending flag so we don't ignore any
 -- 
-2.26.2
+2.23.0
 
