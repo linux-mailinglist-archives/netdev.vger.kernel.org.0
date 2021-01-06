@@ -2,144 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBA7B2EC087
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 16:40:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF64E2EC0C4
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 17:03:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727220AbhAFPja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 10:39:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41924 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726165AbhAFPj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 10:39:27 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9A43F23121;
-        Wed,  6 Jan 2021 15:38:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609947526;
-        bh=17tJUBRoR9N7Dis3fpYvNsowe4Tvb8Y31WB2QigVwX4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sae8kcBYdz5xHk5oYcoSeIjsRjHA8Y26R+y8w66wJ+TqFvOABh1Yq/bdNojzyrek3
-         kSNv5fb2CiwyjOpHxNw0tqlRdUaA4AAiVmn+fxVbqoHd9ruj5a4sdJzE4jVLpcyCQ7
-         NBOH/yCZB0GVN/HbhmvYqeuD8W1HwTMJLTTUUK5DQbAPn7+q0QRzyq1lhOUEmCNsW1
-         2PiFbH2U7MwYz8VqPab3Xbe4viB1N5KVFCg32m6elk7SZmj6kBkRuXfYVlHnpLcspN
-         RgvnkEs9nBkA/XX10AqaDblke4WP0WOqxCgVfd3dipm2nRZPy2Rh1LmtYVUJMH5Gvv
-         rClYmJ35Uddjw==
-Received: by pali.im (Postfix)
-        id E50FB44E; Wed,  6 Jan 2021 16:38:44 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Thomas Schreiber <tschreibe@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] net: sfp: add mode quirk for GPON module Ubiquiti U-Fiber Instant
-Date:   Wed,  6 Jan 2021 16:37:49 +0100
-Message-Id: <20210106153749.6748-4-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210106153749.6748-1-pali@kernel.org>
-References: <20201230154755.14746-1-pali@kernel.org>
- <20210106153749.6748-1-pali@kernel.org>
+        id S1727031AbhAFQCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 11:02:13 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:54890 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725925AbhAFQCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 11:02:12 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 106FtftW089467;
+        Wed, 6 Jan 2021 15:59:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=corp-2020-01-29;
+ bh=e280thpeH4MDj+q41MOrlKwQhwr0+ZqgSZTW/ewQcjs=;
+ b=uIjNH2JKtab15z7hmqijke50pN59OsA9mCfXgSYKnP+BVSpOY99S1dFzULkEt8DTmxgm
+ kyW11yuqL5W4R2CFhbEGUmZR3MofR66qamrCL4+bwtB8fhWCuus87VLeDNNFcyh5E6Ci
+ u/PMxhJjfdBUY+nQ4wPR7X2WGEUUE2jbRLzi/CtE4zuNqQkoWTlurLwyf2lxNBsMJ+4e
+ z8heDckYwbXjOT7CD4Z1FIX7HHZVhnu8Km7ldoTQsLaZJMCTvEq+epkWn9x01r4tdW09
+ EX8ovXxkcHGJjaTNtCefu3UF9eTLFoh8dSzVkIWykrM82CGxnRt56m7Oliarp2GfVVm4 3A== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 35wftx856u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 06 Jan 2021 15:59:37 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 106FtOwo154567;
+        Wed, 6 Jan 2021 15:59:37 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 35w3g17tm9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Jan 2021 15:59:37 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 106FxXO2027087;
+        Wed, 6 Jan 2021 15:59:33 GMT
+Received: from localhost.uk.oracle.com (/10.175.165.159)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 06 Jan 2021 15:59:33 +0000
+From:   Alan Maguire <alan.maguire@oracle.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, toke@redhat.com,
+        wanghai38@huawei.com, quentin@isovalent.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCH bpf] bpftool: fix compilation failure for net.o with older glibc
+Date:   Wed,  6 Jan 2021 15:59:06 +0000
+Message-Id: <1609948746-15369-1-git-send-email-alan.maguire@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9855 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 adultscore=0
+ phishscore=0 spamscore=0 mlxlogscore=939 suspectscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101060098
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9855 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0 mlxscore=0
+ bulkscore=0 priorityscore=1501 impostorscore=0 clxscore=1011
+ lowpriorityscore=0 mlxlogscore=942 malwarescore=0 spamscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101060098
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored nonsense
-information. It claims that support all transceiver types including 10G
-Ethernet which is not truth. So clear all claimed modes and set only one
-mode which module supports: 1000baseX_Full.
+For older glibc ~2.17, #include'ing both linux/if.h and net/if.h
+fails due to complaints about redefinition of interface flags:
 
-Also this module have set SFF phys_id in its EEPROM. Kernel SFP subsustem
-currently does not allow to use SFP modules detected as SFF. Therefore add
-and exception for this module so it can be detected as supported.
+  CC       net.o
+In file included from net.c:13:0:
+/usr/include/linux/if.h:71:2: error: redeclaration of enumerator ‘IFF_UP’
+  IFF_UP    = 1<<0,  /* sysfs */
+  ^
+/usr/include/net/if.h:44:5: note: previous definition of ‘IFF_UP’ was here
+     IFF_UP = 0x1,  /* Interface is up.  */
 
-This change finally allows to detect and use SFP GPON module Ubiquiti
-U-Fiber Instant on Linux system.
+The issue was fixed in kernel headers in [1], but since compilation
+of net.c picks up system headers the problem can recur.
 
-EEPROM content of this SFP module is (where XX is serial number):
+Dropping #include <linux/if.h> resolves the issue and it is
+not needed for compilation anyhow.
 
-00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
-10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
-20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
-30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
-40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
-50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
+[1] https://lore.kernel.org/netdev/1461512707-23058-1-git-send-email-mikko.rapeli__34748.27880641$1462831734$gmane$org@iki.fi/
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
-
+Fixes: f6f3bac08ff9 ("tools/bpf: bpftool: add net support")
+Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 ---
-Changes in v2:
-* add this module also into sfp_module_supported() function
----
- drivers/net/phy/sfp-bus.c | 15 +++++++++++++++
- drivers/net/phy/sfp.c     | 17 +++++++++++++++--
- 2 files changed, 30 insertions(+), 2 deletions(-)
+ tools/bpf/bpftool/net.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index 20b91f5dfc6e..4cf874fb5c5b 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -44,6 +44,17 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
- 	phylink_set(modes, 2500baseX_Full);
- }
- 
-+static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
-+				      unsigned long *modes)
-+{
-+	/* Ubiquiti U-Fiber Instant module claims that support all transceiver
-+	 * types including 10G Ethernet which is not truth. So clear all claimed
-+	 * modes and set only one mode which module supports: 1000baseX_Full.
-+	 */
-+	phylink_zero(modes);
-+	phylink_set(modes, 1000baseX_Full);
-+}
-+
- static const struct sfp_quirk sfp_quirks[] = {
- 	{
- 		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
-@@ -63,6 +74,10 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		.vendor = "UBNT",
-+		.part = "UF-INSTANT",
-+		.modes = sfp_quirk_ubnt_uf_instant,
- 	},
- };
- 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 15fb8f7dfe5b..c3a0dcc737fd 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -273,8 +273,21 @@ static const struct sff_data sff_data = {
- 
- static bool sfp_module_supported(const struct sfp_eeprom_id *id)
- {
--	return id->base.phys_id == SFF8024_ID_SFP &&
--	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
-+	if (id->base.phys_id == SFF8024_ID_SFP &&
-+	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP)
-+		return true;
-+
-+	/* SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored
-+	 * phys id SFF instead of SFP. Therefore mark this module explicitly
-+	 * as supported based on vendor name and pn match.
-+	 */
-+	if (id->base.phys_id == SFF8024_ID_SFF_8472 &&
-+	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP &&
-+	    !memcmp(id->base.vendor_name, "UBNT            ", 16) &&
-+	    !memcmp(id->base.vendor_pn, "UF-INSTANT      ", 16))
-+		return true;
-+
-+	return false;
- }
- 
- static const struct sff_data sfp_data = {
+diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+index 3fae61e..ff3aa0c 100644
+--- a/tools/bpf/bpftool/net.c
++++ b/tools/bpf/bpftool/net.c
+@@ -11,7 +11,6 @@
+ #include <bpf/bpf.h>
+ #include <bpf/libbpf.h>
+ #include <net/if.h>
+-#include <linux/if.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/socket.h>
+ #include <linux/tc_act/tc_bpf.h>
 -- 
-2.20.1
+1.8.3.1
 
