@@ -2,127 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5342EBB36
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 09:44:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FA222EBB51
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 09:51:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726608AbhAFIna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 03:43:30 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2625 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726433AbhAFIna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 03:43:30 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ff5780a0000>; Wed, 06 Jan 2021 00:42:50 -0800
-Received: from [172.27.0.41] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 6 Jan
- 2021 08:42:48 +0000
-Subject: Re: [PATCH iproute2] build: Fix link errors on some systems
-To:     Petr Machata <petrm@nvidia.com>
-CC:     <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
-        Petr Machata <me@pmachata.org>
-References: <1609355503-7981-1-git-send-email-roid@nvidia.com>
- <875z4cwus8.fsf@nvidia.com>
-From:   Roi Dayan <roid@nvidia.com>
-Message-ID: <405e8cce-e2dd-891a-dc8a-7c8b0c77f4c6@nvidia.com>
-Date:   Wed, 6 Jan 2021 10:42:35 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S1726543AbhAFIvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 03:51:00 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:56152 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbhAFIvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 03:51:00 -0500
+Received: by mail-il1-f198.google.com with SMTP id c13so2051065ilg.22
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 00:50:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=FsvQnsUURhV2OmdsEUEnsDCv+OlmKNzEOUKXr4QWTqA=;
+        b=N6//EtlJXOzcX8KbA/e8gWziEWM6bab+CTS72EJ9Mg5uMvakBQmEOVEk4+qhROKQdQ
+         Ax3LrciBdKMUrtpgdD5Me+UQRy494ccizB0p+Yg9BHI7KiLozIfRipbXysrYCcv67Jtx
+         p8SABAmM+wf2FtYLF7nxYnxD+HfRqeaO0O+Epn8BgFSUAa6eN5jpp4dliP7QLpi/ogxE
+         +eYY/CE78gUh8vTKThYOy74r1A8BiU3+t+yUImTHn0IasN6l46XgXeGRC9kxMPUGk+0o
+         ZMb3kSMBvcvA8p/B/jPaydYjYqlFUanjCy0LzRzmtpRf6BhXROTq8C4munO5L6SO5FOE
+         up6Q==
+X-Gm-Message-State: AOAM533wM/NNSgLbctIpT0l2Yph/so7rG0hH1AAayFzuBlOVsK1PwvMj
+        TTiXfVboNN/YUM2V2RoqnSgUPflW7tIaGh4gGeLSbp57Pq4Z
+X-Google-Smtp-Source: ABdhPJxC6iwpniVCevtAsbkQZmeqHoCOk5aS8CU+gRoT5hxw0rXkOnyvPOVKjfrFWyt/lhjeB3T76UnmKUcLbhj/lNwNQHd7Q8F7
 MIME-Version: 1.0
-In-Reply-To: <875z4cwus8.fsf@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1609922570; bh=6w6+3cHIReLsc+Y6XCDVZp7JQtFRlFh85dC2ADvLWoc=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=D0jRAhH6DRWv/Ivx4nJ+E581vb6dQ9JOGWjNzx5U/5GO4CQLDLjaRPuGp4DC0awpk
-         qfGAvZN9mokMspgBAPpsIurEDN3Lt63z80JVEP8fnprtRVPJc34/4cwauC7xYQl2Dl
-         NHKGJCJtAgN/HG/U1LvRKHd47uLUDM3h5Vafra5sYA9CvXYKCpOuuAb7e5wzmAQi0O
-         550op2TyzIp5q2kIjVjKYVFVVR+/XNiMMTi+0QSils+E/SO1CKEoVBzg0oQc7J5sky
-         e5HV2HJtCBLoXEKJlPhs1/W3LrDwC+RPbTaX2FB9CusjRvkykLMh8QjKLbzQgM5PoU
-         YMinIRraZ67hg==
+X-Received: by 2002:a05:6e02:104a:: with SMTP id p10mr3152877ilj.247.1609923018986;
+ Wed, 06 Jan 2021 00:50:18 -0800 (PST)
+Date:   Wed, 06 Jan 2021 00:50:18 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a99c7105b83769d7@google.com>
+Subject: UBSAN: array-index-out-of-bounds in qfq_update_agg
+From:   syzbot <syzbot+7c315a573dd9374a3220@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    3db1a3fa Merge tag 'staging-5.11-rc1' of git://git.kernel...
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1286be67500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a6e6725884106332
+dashboard link: https://syzkaller.appspot.com/bug?extid=7c315a573dd9374a3220
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7c315a573dd9374a3220@syzkaller.appspotmail.com
+
+================================================================================
+UBSAN: array-index-out-of-bounds in net/sched/sch_qfq.c:300:24
+index 29 is out of range for type 'qfq_group [25]'
+CPU: 0 PID: 20516 Comm: syz-executor.3 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:356
+ qfq_update_agg+0x7b8/0x7d0 net/sched/sch_qfq.c:300
+ qfq_add_to_agg+0x75/0x500 net/sched/sch_qfq.c:317
+ qfq_change_class+0x5da/0x18f0 net/sched/sch_qfq.c:510
+ tc_ctl_tclass+0x526/0xc70 net/sched/sch_api.c:2111
+ rtnetlink_rcv_msg+0x493/0xb40 net/core/rtnetlink.c:5564
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x907/0xe10 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xd3/0x130 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2336
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2390
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2423
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45e219
+Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fe1c8c30c68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045e219
+RDX: 0000000000000000 RSI: 0000000020000540 RDI: 0000000000000003
+RBP: 000000000119c068 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119c034
+R13: 00007ffc62cfe08f R14: 00007fe1c8c319c0 R15: 000000000119c034
+================================================================================
 
 
-On 2021-01-04 6:07 PM, Petr Machata wrote:
-> 
-> Roi Dayan <roid@nvidia.com> writes:
-> 
->> Since moving get_rate() and get_size() from tc to lib, on some
->> systems we fail to link because of missing the math lib.
->> Move the link flag from tc makefile to the main makefile.
-> 
-> Hmm, yeah, it gets optimized out on x86-64. The issue is reproducible
-> on any platform with -O0.
-> 
->> ../lib/libutil.a(utils.o): In function `get_rate':
->> utils.c:(.text+0x10dc): undefined reference to `floor'
->> ../lib/libutil.a(utils.o): In function `get_size':
->> utils.c:(.text+0x1394): undefined reference to `floor'
->> ../lib/libutil.a(json_print.o): In function `sprint_size':
->> json_print.c:(.text+0x14c0): undefined reference to `rint'
->> json_print.c:(.text+0x14f4): undefined reference to `rint'
->> json_print.c:(.text+0x157c): undefined reference to `rint'
->>
->> Fixes: f3be0e6366ac ("lib: Move get_rate(), get_rate64() from tc here")
->> Fixes: 44396bdfcc0a ("lib: Move get_size() from tc here")
->> Fixes: adbe5de96662 ("lib: Move sprint_size() from tc here, add print_size()")
->> Signed-off-by: Roi Dayan <roid@nvidia.com>
->> ---
->>   Makefile    | 1 +
->>   tc/Makefile | 2 +-
->>   2 files changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/Makefile b/Makefile
->> index e64c65992585..2a604ec58905 100644
->> --- a/Makefile
->> +++ b/Makefile
->> @@ -59,6 +59,7 @@ SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man
->>   
->>   LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
->>   LDLIBS += $(LIBNETLINK)
->> +LDFLAGS += -lm
->>   
->>   all: config.mk
->>   	@set -e; \
->> diff --git a/tc/Makefile b/tc/Makefile
->> index 5a517af20b7c..8d91900716c1 100644
->> --- a/tc/Makefile
->> +++ b/tc/Makefile
->> @@ -110,7 +110,7 @@ ifneq ($(TC_CONFIG_NO_XT),y)
->>   endif
->>   
->>   TCOBJ += $(TCMODULES)
->> -LDLIBS += -L. -lm
->> +LDLIBS += -L.
->>   
->>   ifeq ($(SHARED_LIBS),y)
->>   LDLIBS += -ldl
-> 
-> This will work, but it will give a libm dependency to all the tools.
-> util.c currently tries not to do that:
-> 
-> 	/* emulate ceil() without having to bring-in -lm and always be >= 1 */
-> 	*val = t;
-> 	if (*val < t)
-> 		*val += 1;
-> 
-> I think that just adding an unnecessary -lm is more of a tidiness issue
-> than anything else. One way to avoid it is to split the -lm deps out
-> from util.c / json_print.c to like util_math.c / json_print_math.c. That
-> way they will be in an .o of their own, and won't be linked in unless
-> the binary in question needs the code. Then the binaries that do call it
-> can keep on linking in -lm like they did so far.
-> 
-> Thoughts?
-> 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-ok fine by me.
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
