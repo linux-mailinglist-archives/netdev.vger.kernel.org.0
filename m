@@ -2,101 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 779052EBFC3
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 15:44:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4335F2EBFCF
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 15:48:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbhAFOoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 09:44:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
+        id S1727307AbhAFOrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 09:47:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726527AbhAFOob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 09:44:31 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6234CC06134D;
-        Wed,  6 Jan 2021 06:43:27 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id m6so1824706pfm.6;
-        Wed, 06 Jan 2021 06:43:27 -0800 (PST)
+        with ESMTP id S1726780AbhAFOrU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 09:47:20 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B2BC06134C;
+        Wed,  6 Jan 2021 06:46:40 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id 30so2367442pgr.6;
+        Wed, 06 Jan 2021 06:46:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vZbmDTb0LxwuuPGyUB5ba2z6ziLQcYOI0K/25hO2Dx0=;
-        b=TMMOJGKDAEV2jGJkqOX+5Rt1Zi+fJkf/XKL7dYcMgkDy9ZFH+5JoGHKmqdej30REEv
-         7gcogGi33Cq2mYRFJowHB2lNDtzi6AbyPuvdWr1I8ToBfZ2Pu0hmbMMt123YY1l1tSGe
-         d6P7HCiYRXtQx2NJ4YBsElIxTGMgAWe/aXwNx8+723/XJMjiIyFcoZzl/bkEamqugp8O
-         P1h+bK2g5uujntQpHMjdBDI/wC+u9mAdgGRo5gscPbxnscfQp/3esjDmoOtbqRvBuO4b
-         R+zmoIqKH5oeqZbXx0F3cfM4lIlGQfmh28HoZnArDWrGIupKwQCPeaAa25e1UtLnbWtO
-         8zwQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8RtYlRfwSJShEtBkKPbMykBunRB098Pg/K11epxtPxI=;
+        b=egbitT1INxyeLUr11UWjnSvF8BO5JDX3uwAHGYuayo2WKCdYKyqsbJKi3RxNAuAr49
+         1GV376HCoB/tMwz7tbtzSzx0eCBxZiLvzCUfSik9b7fwDIR+nkgjeBxvimQxmqyVtOHg
+         keX26FZ/Vbvsp+ODDw/GMDDCePrsCpmEB+JLmLsTI9gIyLF9P0uv2vWnC44W3nytPrCN
+         0ns7h0pKyNH9vdgBmesS3eBuVQoj4m7FOJAOc4LEz5iQtBa67e7VXq6B3pL6yd9ylAHM
+         dasbVBcM0JggxFKiokizl+IzXfHfLFMGVybjZqIKSQd/8CJxAPwRvDJLWdPijl3GBQOe
+         ULxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=vZbmDTb0LxwuuPGyUB5ba2z6ziLQcYOI0K/25hO2Dx0=;
-        b=iaX8ja7WDaDsloWqNFb+5dMyUENnMUUfv62UhUUhiI+SNrqia5HOhgipA1HdXkC/Gz
-         dIwn1LMUitSwaQa92Yr0qb19rhLZBX6y5cdo3xEwBmq467ElO1TWqGeZN5b+WIiXNDrQ
-         fB24uU5AMuV72ocibTVt9q8+EQCNEATlyRH/+oDpDOkPA40T05Kt8DSg8IjxgKNokkmf
-         NwXtqSIw2FDbRYihIW48asutFvyABuXQD16qafyDFtopIsbMqbJhh59eTY5U8PKBWB6F
-         pviXwtJ8scQcdd5m1Hi+Z8Zsa3RCkap+YzbHA7n17CpU4EuzYKnCWZuP0AeTCe+9ivFk
-         5FQQ==
-X-Gm-Message-State: AOAM530xKKo6BSCrAcIDvXXxpspoFdiCA/wg/3BX8IiyLxOt2gZDBOL8
-        pT5woPJtGmQVIbQo4PVtZMM7bXMVzOk=
-X-Google-Smtp-Source: ABdhPJxEchh+BCJzCpA0Qbvipmo23B3PLsu7S5X1UJRT/vlffhz3vdgqLGZKUJwZAIotOpcUp1qfgw==
-X-Received: by 2002:aa7:81d6:0:b029:19e:2987:7465 with SMTP id c22-20020aa781d60000b029019e29877465mr4204058pfn.29.1609944206977;
-        Wed, 06 Jan 2021 06:43:26 -0800 (PST)
-Received: from DESKTOP-8REGVGF.localdomain ([124.13.157.5])
-        by smtp.gmail.com with ESMTPSA id h8sm3076774pjc.2.2021.01.06.06.43.24
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8RtYlRfwSJShEtBkKPbMykBunRB098Pg/K11epxtPxI=;
+        b=qhU3xGRYTZPHYso0BNRZlYUVGRjPBoU5hZ5GYr57bb8mKbpPBhjZnzzxoL+1w0HKZ5
+         AMqXFgpNjbnn8uPsxp01PxNsLwLEwFsasYrVKDCUPCGIkISbhAAGx65hbjjNXivKYhG5
+         +dGQRvLpNtnaDh0pWB7dNO7kktTviBAwLw7AyI5grMIC1EMBVBAwevXgtGv/q6uBOq5S
+         KUR6FcTC/1EpmfmKlrE2K8cGquLqMwzsSUDpNlNF6gkhX0h7JN9fVy/khTlAwy9okhyk
+         rddz17Gkmixptux0/C2aLIAB0Q7VDUe9Nuazu/+3WnKOI2NL2W6FPGtaPJE4wZ9U31ZH
+         44vA==
+X-Gm-Message-State: AOAM533Dx49CWM4AuI1PA6T+Letb37NgV3vb8X7WejO8kYn7G9jm/w0y
+        zDXzOO5ViHtJzLE8clDUnLc=
+X-Google-Smtp-Source: ABdhPJyFqDZnj+I7FglNtd+4tePEgR3ckAW9tRvGDoyFDBxKOlhvMZrxJMCN2niIWSR/0fpQa47b5w==
+X-Received: by 2002:a63:fe05:: with SMTP id p5mr4864089pgh.161.1609944399759;
+        Wed, 06 Jan 2021 06:46:39 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id q23sm2867001pfg.192.2021.01.06.06.46.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 06:43:26 -0800 (PST)
-From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        Sieng Piaw Liew <liew.s.piaw@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 7/7] bcm63xx_enet: improve rx loop
-Date:   Wed,  6 Jan 2021 22:42:08 +0800
-Message-Id: <20210106144208.1935-8-liew.s.piaw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210106144208.1935-1-liew.s.piaw@gmail.com>
-References: <20210106144208.1935-1-liew.s.piaw@gmail.com>
+        Wed, 06 Jan 2021 06:46:39 -0800 (PST)
+Date:   Wed, 6 Jan 2021 06:46:36 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] ptp: ptp_ines: prevent build when HAS_IOMEM is not set
+Message-ID: <20210106144636.GB10150@hoboy.vegasvil.org>
+References: <20210106042531.1351-1-rdunlap@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210106042531.1351-1-rdunlap@infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use existing rx processed count to track against budget, thereby making
-budget decrement operation redundant.
+On Tue, Jan 05, 2021 at 08:25:31PM -0800, Randy Dunlap wrote:
+> ptp_ines.c uses devm_platform_ioremap_resource(), which is only
+> built/available when CONFIG_HAS_IOMEM is enabled.
+> CONFIG_HAS_IOMEM is not enabled for arch/s390/, so builds on S390
+> have a build error:
+> 
+> s390-linux-ld: drivers/ptp/ptp_ines.o: in function `ines_ptp_ctrl_probe':
+> ptp_ines.c:(.text+0x17e6): undefined reference to `devm_platform_ioremap_resource'
+> 
+> Prevent builds of ptp_ines.c when HAS_IOMEM is not set.
 
-rx_desc_count can be calculated outside the rx loop, making the loop a
-bit smaller.
-
-Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
----
- drivers/net/ethernet/broadcom/bcm63xx_enet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-index c11491429ed2..fd8767213165 100644
---- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-@@ -339,7 +339,6 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
- 		priv->rx_curr_desc++;
- 		if (priv->rx_curr_desc == priv->rx_ring_size)
- 			priv->rx_curr_desc = 0;
--		priv->rx_desc_count--;
- 
- 		/* if the packet does not have start of packet _and_
- 		 * end of packet flag set, then just recycle it */
-@@ -404,9 +403,10 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
- 		dev->stats.rx_bytes += len;
- 		list_add_tail(&skb->list, &rx_list);
- 
--	} while (--budget > 0);
-+	} while (processed < budget);
- 
- 	netif_receive_skb_list(&rx_list);
-+	priv->rx_desc_count -= processed;
- 
- 	if (processed || !priv->rx_desc_count) {
- 		bcm_enet_refill_rx(dev, true);
--- 
-2.17.1
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
