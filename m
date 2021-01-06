@@ -2,100 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64E2F2EC6CE
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 00:21:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D6852EC6D4
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 00:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727975AbhAFXUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 18:20:51 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:60601 "EHLO ozlabs.org"
+        id S1727243AbhAFXX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 18:23:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49644 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727957AbhAFXUu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 18:20:50 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DB51g2BkMz9sVm;
-        Thu,  7 Jan 2021 10:20:07 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1609975208;
-        bh=DJN3TBR7HBX0MH3urn36IhtdNpfrvjW2AVcJoxG+GQU=;
+        id S1726645AbhAFXX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 18:23:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9FC13204EF;
+        Wed,  6 Jan 2021 23:23:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609975398;
+        bh=/LcpqlnfvIZlkRV+32fsks1D3kDMqFQj+/v0jQ9Ia+Y=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sfpONZczjK1FwAm8LXekG3+aiG4gMcswTMseN/DrttN3l8Hb0XIqoXkuybhfLF5PV
-         bJ0i1qMEm0I6uBLLeCnoalEcJEKDBxhapRtWI3IOGlAIj1nyTn1wCkjHZmimqatA5I
-         iVV1YdzqBbPPBV9CR4MWPd5ebXINE3qwhX7YP/ls9qqhY9rGq3ZTCbYjHy3JS93yCz
-         m9Jg7oumVJSeQGjOmX+YlpVb84ifKXbx2uznvC9iHSY1EZzsXKkvlW0/xMamfXR3kP
-         an+lgoz8GKPfyJUwCxeFNZ9D81TvmVoBSjM2DSkVdD7IRb9U5EXvnSQxJNPYrruC5l
-         77HjuMGDadcQQ==
-Date:   Thu, 7 Jan 2021 10:20:06 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless@vger.kernel.org,
-        Carl Huang <cjhuang@codeaurora.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the origin tree
-Message-ID: <20210107102006.2fd2460c@canb.auug.org.au>
-In-Reply-To: <5d8482756d40df615f908d7f24decdbb9ccb0ac3.camel@sipsolutions.net>
-References: <20210107090550.725f9dc9@canb.auug.org.au>
-        <220ccdfe5f7fad6483816cf470a506d250277a1a.camel@sipsolutions.net>
-        <20210107094414.607e884e@canb.auug.org.au>
-        <5d8482756d40df615f908d7f24decdbb9ccb0ac3.camel@sipsolutions.net>
+        b=tZAFa29mUG6D6SkUQeUekw2Yu0yU+oVGN7K8Y0a73HJb9lm0vQshOi1cFi6Ome/pY
+         dyEzYr0k6DBZ80VLkCRVfQ1OfHs7VdFpd2WOt4J8A7Xh+RtM4BPepL1stkloIDYEPc
+         4sLosk2Qx4nno6x7uE34SxXkzFtMMLvlTSQpkioSr8kqxjzFf1eFWUfvvyIsFJlFYJ
+         py6wCeXvttYhv0IIih3Lx9mXymZPIW/owp51wFym9TT4MZ72/6bFFXE2RzpMuNuM+2
+         /GyOG7f1nL5OXqejdYvgIGvPMWUCeh+dDyEknZAzv+84M8mnSwAYp3ZCjLEez+jhOb
+         J/bfxCa+ad+1A==
+Date:   Wed, 6 Jan 2021 15:23:17 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Zhi Han <z.han@gmx.net>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] Incorrect filename in drivers/net/phy/Makefile
+Message-ID: <20210106152317.096f5ba8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210106101712.6360-1-z.han@gmx.net>
+References: <20210106101712.6360-1-z.han@gmx.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/5TKbKUEcHup3XUNhed6rmVS";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/5TKbKUEcHup3XUNhed6rmVS
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed,  6 Jan 2021 11:17:12 +0100 Zhi Han wrote:
+> It should be a typing error ('-' instead of '_'), as no mdio-bus.c but
+> just mdio_bus.c exists.
+> 
+> Just find it when inspecting these code. Tried to compile to test, but
+> failed to construct an applicable .config file for that. Maybe someone
+> can do that more skillfully, glad to know how.
+> 
+> Signed-off-by: Zhi Han <z.han@gmx.net>
 
-Hi Johannes,
+Thanks for the patch, please fix the subject like this and repost:
 
-On Wed, 06 Jan 2021 23:46:45 +0100 Johannes Berg <johannes@sipsolutions.net=
-> wrote:
->
-> > > Right, thanks. I believe I also fixed it in the patch I sent a few da=
-ys
-> > > ago that fixed the other documentation warning related to SAR that you
-> > > reported. =20
-> >=20
-> > I don't think so :-(  I did a htmldocs build with your patch ([PATCH
-> > v2] cfg80211/mac80211: fix kernel-doc for SAR APIs) on top of Linus'
-> > tree and still got this warning.  That patch did not touch
-> > include/net/mac80211.h ... =20
->=20
-> Umm, I don't know what to say. I even added "cfg80211/mac80211" to the
-> subject, but somehow lost the change to mac80211.h. Sorry about that :(
+[PATCH] net: phy: Correct filename in the Makefile
 
-No worries.
-
-> I'll get a v3 out.
-
-Thanks.
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/5TKbKUEcHup3XUNhed6rmVS
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/2RaYACgkQAVBC80lX
-0GzDXAf+LHyWITaVHMe0IY514xDxQKXdZnVdJ3aTNxqxOqq8RzUnnJJMCZWOeO0f
-YKD3X+Sll1Aw5i1DpESzlnNqz5u852c1z0bldJns+L1O63RG0lg3SNAz7/bIRxdy
-I3GwBSm1AmX/ko/RmCKwfOBoJpkq2jpe8BTtRl1z/UuZgADQ8mSwgJa7BJuVvoQ8
-O12yX3HJUBuAQnUAZwnE/izE/Mf2UQuwyk0rlSDGAD62ioKp48mNCBS9pavivV26
-PP5rVbOJxGdd2L/LgOFb2pNaXrbYBrhYGLU7c+VFH43qtN0Zsa+hsDQPfjgLiVIH
-UbYIWbrHKyhrQhlQtmrMtc2AGhLnUg==
-=Q9GU
------END PGP SIGNATURE-----
-
---Sig_/5TKbKUEcHup3XUNhed6rmVS--
+When you repost please make sure to CC on your appropriate maintainers
+(get_maintainers.pl is your friend).
