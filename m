@@ -2,223 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADA092EBFE6
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 15:57:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ABDA2EBFF8
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 16:00:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbhAFO4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 09:56:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34496 "EHLO mail.kernel.org"
+        id S1726862AbhAFO7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 09:59:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35098 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726211AbhAFO4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 09:56:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A55E123106;
-        Wed,  6 Jan 2021 14:55:35 +0000 (UTC)
+        id S1726326AbhAFO7W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 09:59:22 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E5D8723110;
+        Wed,  6 Jan 2021 14:58:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609944936;
-        bh=u7WvQbeJBDsarxFXXj430rrW8wY6RIqlsFAd/OoZR4o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=a1qTz4rTy0TOO+DMWIiERnmrFiAZmMVhdmCN2rn0U6fvxO9sMXNp/JMWQ8AA5vtZS
-         3Vo/xmMBqbH58Qle+DeySRGd89w5D7HDxCXNfbdL46M4npUvGlLoFy0GVPZhnt6FFA
-         mgq2b8f2hlE+qj/fFIhEJ8gbRyfmQV1BCZ3oGlThkOg70Q0O2Dmm+aW7GtNJmMUcX/
-         a46qd2VtNdEulkm7huqf/o8ZdBpEAiStmONT7iAieUtHBs8ifKu2AhLHfeLnxT8ivH
-         0Ww/aSDM3qVMKn79/nmElv9p78UL4yYlQVf4euKVbhZvO1KlRMZv708qpw+7GoJfJz
-         jmsQO14PvLZXw==
-Received: by pali.im (Postfix)
-        id CA8B644E; Wed,  6 Jan 2021 15:55:32 +0100 (CET)
-Date:   Wed, 6 Jan 2021 15:55:32 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Thomas Schreiber <tschreibe@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        s=k20201202; t=1609945121;
+        bh=fs4tnAAHZc6P9CcCZmtXnqhshJdz+3INo0fDCULFaD8=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=grRap1qACe13qOi+OZcRSFbPBF+dIr/ws3L/0hIw9hJfGzIKvP7l6ogZ4IDw43yGy
+         2LHdh5/KkLIX5OZy0HUphNkwfKucd730v8Tp6LLuzacbNiujVv7S8AcFgKaat4EO7E
+         y+/PvinZw7ISykZaboaWt60Ak3aP6L6FH/2ur96+2LlVa2dRoeg/GHIVTXjbL9m+/N
+         lmUrNwQGiW3vl9pfoybJQC9JwzVTaaO03pya7nRF3kZVYLga8QDzM2brjULMEAV5En
+         tz4bM66daxGgVwHYO/b7ctz5giI8LEijCXhmI8MPhXeH67zs/Q6iAskX79k3QrpAy9
+         gww2PkLy1Faag==
+From:   Mark Brown <broonie@kernel.org>
+To:     Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org, Guenter Roeck <linux@roeck-us.net>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        linux-rtc@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-spi@vger.kernel.org, linux-ide@vger.kernel.org,
+        Jaroslav Kysela <perex@perex.cz>, linux-crypto@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        Richard Weinberger <richard@nod.at>, dmaengine@vger.kernel.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] net: sfp: add workaround for Realtek RTL8672 and
- RTL9601C chips
-Message-ID: <20210106145532.xynhoufpfyzmurd5@pali>
-References: <X+y1K21tp01GpvMy@lunn.ch>
- <20201230174307.lvehswvj5q6c6vk3@pali>
- <20201230190958.GW1551@shell.armlinux.org.uk>
- <20201231121410.2xlxtyqjelrlysd2@pali>
- <X+3ume1+wz8HXHEf@lunn.ch>
- <20201231170039.zkoa6mij3q3gt7c6@pali>
- <X+4GwpFnJ0Asq/Yj@lunn.ch>
- <20210102014955.2xv27xla65eeqyzz@pali>
- <CALQZrspktLr3SfVRhBrVK2zhjFzJMm9tQjWXU_07zjwJytk7Cg@mail.gmail.com>
- <20210103024132.fpvjumilazrxiuzj@pali>
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Matt Mackall <mpm@selenic.com>, alsa-devel@alsa-project.org,
+        linux-mips@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>
+In-Reply-To: <20210105140305.141401-1-tsbogend@alpha.franken.de>
+References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
+Subject: Re: (subset) [PATCH 00/10] Remove support for TX49xx
+Message-Id: <160994509314.52132.9683741232298303961.b4-ty@kernel.org>
+Date:   Wed, 06 Jan 2021 14:58:13 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210103024132.fpvjumilazrxiuzj@pali>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sunday 03 January 2021 03:41:32 Pali Rohár wrote:
-> Hello!
+On Tue, 5 Jan 2021 15:02:45 +0100, Thomas Bogendoerfer wrote:
+> I couldn't find any buyable product other than reference boards using
+> TX49xx CPUs. And since nobody showed interest in keeping support for
+> it, it's time to remove it.
 > 
-> On Sunday 03 January 2021 03:25:23 Thomas Schreiber wrote:
-> > Hi Pali,
-> > I have a CarlitoxxPro module and I reported an issue about RX_LOS pin
-> > to the manufacturer.
-> > It looks to me that the module asserts "inverted LOS" through EEPROM
-> > but does not implement it.
+> I've split up the removal into seperate parts for different maintainers.
+> So if the patch fits your needs, please take it via your tree or
+> give me an ack so I can apply them  the mips-next tree.
 > 
-> So, it is broken :-( But I'm not surprised.
-> 
-> Anyway, I think you could be interested in this discussion about my
-> patch series, but I forgot to CC you on the first patch/cover letter.
-> You can read whole discussion on public archive available at:
-> 
-> https://lore.kernel.org/netdev/20201230154755.14746-1-pali@kernel.org/t/#u
-> 
-> If you have any comments, let me know so I can fix it for V2.
-> 
-> Those RTL8672/RTL9601C SFP are extremely broken and I do not think that
-> "rebrander" CarlitoxxPro would do anything with it.
-> 
-> > Consequently, the SFP state machine of my
-> > host router stays in check los state and link is not set up for the
-> > host interface.
-> 
-> So link does not work at all?
-> 
-> > Below is a dump of the module's EEPROM:
-> > 
-> > [root@clearfog-gt-8k ~]# ethtool -m eth0
-> > Identifier                                : 0x03 (SFP)
-> > Extended identifier                       : 0x04 (GBIC/SFP defined by
-> > 2-wire interface ID)
-> > Connector                                 : 0x01 (SC)
-> > Transceiver codes                         : 0x00 0x00 0x00 0x00 0x00
-> > 0x00 0x00 0x00 0x00
-> > Encoding                                  : 0x03 (NRZ)
-> > BR, Nominal                               : 1200MBd
-> > Rate identifier                           : 0x00 (unspecified)
-> > Length (SMF,km)                           : 20km
-> > Length (SMF)                              : 20000m
-> > Length (50um)                             : 0m
-> > Length (62.5um)                           : 0m
-> > Length (Copper)                           : 0m
-> > Length (OM3)                              : 0m
-> > Laser wavelength                          : 1310nm
-> > Vendor name                               : VSOL
-> > Vendor OUI                                : 00:00:00
-> > Vendor PN                                 : V2801F
-> > Vendor rev                                : 1.0
-> > Option values                             : 0x00 0x1c
-> > Option                                    : RX_LOS implemented, inverted
-> > Option                                    : TX_FAULT implemented
-> > Option                                    : TX_DISABLE implemented
-> > BR margin, max                            : 0%
-> > BR margin, min                            : 0%
-> > Vendor SN                                 : CP202003180377
-> > Date code                                 : 200408
-> > Optical diagnostics support               : Yes
-> > Laser bias current                        : 0.000 mA
-> > Laser output power                        : 0.0000 mW / -inf dBm
-> > Receiver signal average optical power     : 0.0000 mW / -inf dBm
-> > Module temperature                        : 31.00 degrees C / 87.80 degrees F
-> > Module voltage                            : 0.0000 V
-> > Alarm/warning flags implemented           : Yes
-> > Laser bias current high alarm             : Off
-> > Laser bias current low alarm              : On
-> > Laser bias current high warning           : Off
-> > Laser bias current low warning            : Off
-> > Laser output power high alarm             : Off
-> > Laser output power low alarm              : On
-> > Laser output power high warning           : Off
-> > Laser output power low warning            : Off
-> > Module temperature high alarm             : Off
-> > Module temperature low alarm              : Off
-> > Module temperature high warning           : Off
-> > Module temperature low warning            : Off
-> > Module voltage high alarm                 : Off
-> > Module voltage low alarm                  : Off
-> > Module voltage high warning               : Off
-> > Module voltage low warning                : Off
-> > Laser rx power high alarm                 : Off
-> > Laser rx power low alarm                  : Off
-> > Laser rx power high warning               : Off
-> > Laser rx power low warning                : Off
-> > Laser bias current high alarm threshold   : 74.752 mA
-> > Laser bias current low alarm threshold    : 0.000 mA
-> > Laser bias current high warning threshold : 0.000 mA
-> > Laser bias current low warning threshold  : 0.000 mA
-> > Laser output power high alarm threshold   : 0.0000 mW / -inf dBm
-> > Laser output power low alarm threshold    : 0.0000 mW / -inf dBm
-> > Laser output power high warning threshold : 0.0000 mW / -inf dBm
-> > Laser output power low warning threshold  : 0.0000 mW / -inf dBm
-> > Module temperature high alarm threshold   : 90.00 degrees C / 194.00 degrees F
-> > Module temperature low alarm threshold    : 0.00 degrees C / 32.00 degrees F
-> > Module temperature high warning threshold : 0.00 degrees C / 32.00 degrees F
-> > Module temperature low warning threshold  : 0.00 degrees C / 32.00 degrees F
-> > Module voltage high alarm threshold       : 0.0000 V
-> > Module voltage low alarm threshold        : 0.0000 V
-> > Module voltage high warning threshold     : 0.0000 V
-> > Module voltage low warning threshold      : 0.0000 V
-> > Laser rx power high alarm threshold       : 0.1536 mW / -8.14 dBm
-> > Laser rx power low alarm threshold        : 0.0000 mW / -inf dBm
-> > Laser rx power high warning threshold     : 0.0000 mW / -inf dBm
-> > Laser rx power low warning threshold      : 0.0000 mW / -inf dBm
-> > 
-> > 
-> > Le sam. 2 janv. 2021 à 02:49, Pali Rohár <pali@kernel.org> a écrit :
-> > >
-> > > On Thursday 31 December 2020 18:13:38 Andrew Lunn wrote:
-> > > > > > Looking at sfp_module_info(), adding a check for i2c_block_size < 2
-> > > > > > when determining what length to return. ethtool should do the right
-> > > > > > thing, know that the second page has not been returned to user space.
-> > > > >
-> > > > > But if we limit length of eeprom then userspace would not be able to
-> > > > > access those TX_DISABLE, LOS and other bits from byte 110 at address A2.
-> > > >
-> > > > Have you tested these bits to see if they actually work? If they don't
-> > > > work...
-> > >
-> > > On Ubiquiti module that LOS bit does not work.
-> > >
-> > > I think that on CarlitoxxPro module LOS bit worked. But I cannot test it
-> > > right now as I do not have access to testing OLT unit.
+> [...]
 
-On my tested CarlitoxxPro module is:
+Applied to
 
-        Option values                             : 0x00 0x1c
-        Option                                    : RX_LOS implemented, inverted
-        Option                                    : TX_FAULT implemented
-        Option                                    : TX_DISABLE implemented
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-When cable is disconnected then in EEPROM at position 0x16e is value
-0x82. If I call 'ip link set eth1 up' then value changes to 0x02, module
-itself has a link and I can connect to its internal telnet/webserver to
-configure it.
+Thanks!
 
-When cable is connected but connection is not established by OLT then
-this value is 0x80. If I call 'ip link set eth1 up' then value changes
-to 0x00 and kernel does not see a link (no carrier).
+[10/10] ASoC: txx9: Remove driver
+        commit: a8644292ea46064f990e4a3c4585bdb294c0d89a
 
-So it seems that RX_LOS (bit 1 of 0x16e EEPROM) and also TX_DISABLE (bit
-7 of 0x16e EEPROM) is implemented and working properly.
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-And therefore we should allow access to these bits.
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
-I also tested UBNT module and result is:
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
-        Option values                             : 0x00 0x06
-        Option                                    : RX_LOS implemented
-        Option                                    : RX_LOS implemented, inverted
-
-Which means that those bits are not implemented.
-
-Anyway I check position 0x16e and value on its value is randomly either
-0x79 or 0xff independently of the state of the GPON module.
-
-So it is really not implemented on UBNT.
-
-> > > Adding Thomas to loop. Can you check if CarlitoxxPro GPON ONT module
-> > > supports LOS or other bits at byte offset 110 at address A2?
+Thanks,
+Mark
