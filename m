@@ -2,113 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 859B52EC172
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 17:50:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 078292EC188
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 17:56:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727236AbhAFQt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 11:49:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59759 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725800AbhAFQt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 11:49:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609951711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HwlZfpT5mZHefTaSAm2gk61cZxN7ZFymYA2HQi89GZA=;
-        b=Pkz+V/KTe5oUUtaRCEhPxRkZkOKTJgxY7RUKiJvjy12wk5tMNymUifF8DtkDlz02a48D9r
-        Bir/RIrtL86mAPrrOwLnsZLYGJczUHVNQ7znGH6thzu2FAF88B0hp9edmEJsw05WxdQmeu
-        TMXiZWvSlgCKYJyFrzEQ0gEVylTDv14=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-159-ovjw37mRMYaLIOvn1C5lCg-1; Wed, 06 Jan 2021 11:48:29 -0500
-X-MC-Unique: ovjw37mRMYaLIOvn1C5lCg-1
-Received: by mail-wm1-f70.google.com with SMTP id g82so1490232wmg.6
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 08:48:29 -0800 (PST)
+        id S1727558AbhAFQzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 11:55:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727273AbhAFQzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 11:55:52 -0500
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17630C06134D
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 08:55:12 -0800 (PST)
+Received: by mail-ot1-x32e.google.com with SMTP id b24so3621255otj.0
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 08:55:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=B0MrxKRy2LHEvQ3Uofmz63gSLowsTGCYhzfAX1ZL7iQ=;
+        b=fj21VGbfucIDNLeyIqLzC1KexGreqvU51hJeryPlNe2Ad6Cp4ZJhiI54dPMl2wxax3
+         Q3aF30YvY4/jxnj4kq0KUrbSRi5ORC548RGLKreHc28Vrx1pOijWkckS+fDtK0zGGPwU
+         LMNHk3ADjaRP0vMoBfHIiAezr7TLtm9vmvQfLpUkuC2SbBYpB8JfK4zApFLI4MzSrP37
+         PZVx8vS+pgqMwbERICYF31b/3vxZPJjjn0dOit3C9xOC0rl6CfHkzn/y5UJmzq6D2C+k
+         LqhB/dhg94FZ3S7a+y6JXhBqhbR7aXbE2iD+daseKxT5LROMyyz5T5kV/Xw1B6D7zXSx
+         dViA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HwlZfpT5mZHefTaSAm2gk61cZxN7ZFymYA2HQi89GZA=;
-        b=C2adNX8MH72YNmligXmOzuzLe0RylQbuTkxeW0MwZarLvs8a3AME2ZeV/JgI9RxRn9
-         9w3k6zwY/1Y5W618klV25/ku2JfsqCnoM6cOhl/mIS+RkgcEqZTcH/wj+CRusUIvWbXX
-         N178lQua9D/5Vh8RukkPI9GSKIiUKY+Xsl43RlBCnoQSNX2uUcqrFkWNxPjWLBFC4XqN
-         nL878XyGQdEbA229BG5xPOCUVOxrMPVqmVBi681EXgRb3FJi6vJOsQ1v9JRWoL+69lLa
-         cAZVBZ7RR3SuU8H067QyZdFTRSbCNFgsqPYU2j8tjTJhjrOWrtbJ+V3MzVd5S3ykstsL
-         OxPw==
-X-Gm-Message-State: AOAM533LbedYvF4ebguoxYXRB9ReORMj3Mfz09/r7TddTXdDhEtxCvsg
-        prEIJid1GWP+mZhlJzQZSmWuQwksD102uHhx1xDy4ue5cU81fAzWVkUaIvc0mMbQlUABfpndiGM
-        B2ZrCt9I/zLcEur0X
-X-Received: by 2002:a05:6000:11c1:: with SMTP id i1mr5201902wrx.16.1609951708008;
-        Wed, 06 Jan 2021 08:48:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwhwWV97SZK6rpgjEZk+tVArUfCaglYhe9hA2yMVELZHaM151HlxIQfF9sO2dDg8CVpe1l6Sg==
-X-Received: by 2002:a05:6000:11c1:: with SMTP id i1mr5201887wrx.16.1609951707829;
-        Wed, 06 Jan 2021 08:48:27 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id h14sm3867141wrx.37.2021.01.06.08.48.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 08:48:27 -0800 (PST)
-Date:   Wed, 6 Jan 2021 17:48:25 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     netdev@vger.kernel.org, jchapman@katalix.com
-Subject: Re: [PATCH] ppp: fix refcount underflow on channel unbridge
-Message-ID: <20210106164825.GA7058@linux.home>
-References: <20210105211743.8404-1-tparkin@katalix.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=B0MrxKRy2LHEvQ3Uofmz63gSLowsTGCYhzfAX1ZL7iQ=;
+        b=mwrQxv1h/acXGPsPaA8oZnsArn+KKxuO1cm/9nr3/3kXipZyB+J9dKD4rMlwJT9jyl
+         OahAvOPuI8csjVp67+ldFTQwCwfsn/ORruF9ICrdSut7qBLo1vrXkK0z2Lrjz3SkKbyb
+         fsYFqrQ0NJpRVTW0mK1iqeknFUVTomx7/eokAxHL2l0y4eu+nhA7nq6llGabSNoeiebT
+         Esg3YxEISYRYnGOrQ377ITQNu3tkNZm+MtngnqFaXIniOTgVba0qS1hWyAcBUERWUBn2
+         mdgRtV3HikJjX/DXyWD5+VIkmsJxYC7Ur14urPP8bC2grxTV3GWZYz9qZwpqUyjRNy9B
+         G10A==
+X-Gm-Message-State: AOAM532dlueE2sqTjxjY+QGtHj4xncUF7AMCpkbC7yRxXBZUN6fR+zEd
+        GnlEwMQTHModtjJz1JkADeFAAjZpzF4=
+X-Google-Smtp-Source: ABdhPJwPJVbIKTxfpWkN6WIOrgApUWoBk+fTHenDWXUcC3WazPiKc1iogDYAzit8Zvin/l4607sJxA==
+X-Received: by 2002:a05:6830:1bc6:: with SMTP id v6mr3838861ota.135.1609952111501;
+        Wed, 06 Jan 2021 08:55:11 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:e074:7fa1:391b:b88d])
+        by smtp.googlemail.com with ESMTPSA id z38sm601015ooi.34.2021.01.06.08.55.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jan 2021 08:55:10 -0800 (PST)
+Subject: Re: [net PATCH 1/2] net: ipv6: fib: flush exceptions when purging
+ route
+To:     Sean Tranchetti <stranche@quicinc.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
+Cc:     subashab@codearurora.org,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Wei Wang <weiwan@google.com>
+References: <1609892546-11389-1-git-send-email-stranche@quicinc.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9290e64d-7e07-53c7-5b3a-4e24498c65be@gmail.com>
+Date:   Wed, 6 Jan 2021 09:55:09 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210105211743.8404-1-tparkin@katalix.com>
+In-Reply-To: <1609892546-11389-1-git-send-email-stranche@quicinc.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 09:17:43PM +0000, Tom Parkin wrote:
->  err_unset:
->  	write_lock_bh(&pch->upl);
-> -	RCU_INIT_POINTER(pch->bridge, NULL);
-> +	/* Re-check pch->bridge with upl held since a racing unbridge might already
-> +	 * have cleared it and dropped the reference on pch->bridge.
-> +	 */
-> +	if (rcu_dereference_protected(pch->bridge, lockdep_is_held(&pch->upl))) {
-> +		RCU_INIT_POINTER(pch->bridge, NULL);
-> +		drop_ref = true;
-> +	}
->  	write_unlock_bh(&pch->upl);
->  	synchronize_rcu();
-> +
-> +	if (drop_ref)
-> +		if (refcount_dec_and_test(&pchb->file.refcnt))
-> +			ppp_destroy_channel(pchb);
-> +
+On 1/5/21 5:22 PM, Sean Tranchetti wrote:
+> From: Sean Tranchetti <stranche@codeaurora.org>
+> 
+> Route removal is handled by two code paths. The main removal path is via
+> fib6_del_route() which will handle purging any PMTU exceptions from the
+> cache, removing all per-cpu copies of the DST entry used by the route, and
+> releasing the fib6_info struct.
+> 
+> The second removal location is during fib6_add_rt2node() during a route
+> replacement operation. This path also calls fib6_purge_rt() to handle
+> cleaning up the per-cpu copies of the DST entries and releasing the
+> fib6_info associated with the older route, but it does not flush any PMTU
+> exceptions that the older route had. Since the older route is removed from
+> the tree during the replacement, we lose any way of accessing it again.
+> 
+> As these lingering DSTs and the fib6_info struct are holding references to
+> the underlying netdevice struct as well, unregistering that device from the
+> kernel can never complete.
+> 
 
-I think this works because ppp_mutex prevents pch->bridge from being
-reassigned to another channel. However, this isn't obvious when reading
-the code, and well, I prefer to not introduce new dependencies on
-ppp_mutex (otherwise we'd better go with your original patch).
+I think the right fixes tag is:
 
-I think we could just save pch->bridge while we're under ->upl
-protection, and then drop the reference of that channel (if non-NULL):
+Fixes: 2b760fcf5cfb3 ("ipv6: hook up exception table to store dst cache")
 
- err_unset:
- 	write_lock_bh(&pch->upl);
-+	/* Re-read pch->bridge in case it was modified concurrently */
-+	pchb = rcu_dereference_protected(pch->bridge,
-+					 lockdep_is_held(&pch->upl));
-+	RCU_INIT_POINTER(pch->bridge, NULL);
- 	write_unlock_bh(&pch->upl);
- 	synchronize_rcu();
-+
-+	if (pchb)
-+		if (refcount_dec_and_test(&pchb->file.refcnt))
-+			ppp_destroy_channel(pchb);
-+
+cc'ed author of that patch.
 
- 	return -EALREADY;
- }
+> Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
+> ---
+>  net/ipv6/ip6_fib.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+> index 605cdd3..f43e275 100644
+> --- a/net/ipv6/ip6_fib.c
+> +++ b/net/ipv6/ip6_fib.c
+> @@ -1025,6 +1025,8 @@ static void fib6_purge_rt(struct fib6_info *rt, struct fib6_node *fn,
+>  {
+>  	struct fib6_table *table = rt->fib6_table;
+>  
+> +	/* Flush all cached dst in exception table */
+> +	rt6_flush_exceptions(rt);
+>  	fib6_drop_pcpu_from(rt, table);
+>  
+>  	if (rt->nh && !list_empty(&rt->nh_list))
+> @@ -1927,9 +1929,6 @@ static void fib6_del_route(struct fib6_table *table, struct fib6_node *fn,
+>  	net->ipv6.rt6_stats->fib_rt_entries--;
+>  	net->ipv6.rt6_stats->fib_discarded_routes++;
+>  
+> -	/* Flush all cached dst in exception table */
+> -	rt6_flush_exceptions(rt);
+> -
+>  	/* Reset round-robin state, if necessary */
+>  	if (rcu_access_pointer(fn->rr_ptr) == rt)
+>  		fn->rr_ptr = NULL;
+> 
 
-This way we know that pchb is the channel we were pointing to when we
-cleared pch->bridge. And this is also a bit simpler than using an extra
-boolean.
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
 
