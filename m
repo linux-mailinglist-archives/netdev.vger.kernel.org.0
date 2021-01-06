@@ -2,341 +2,416 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E44492EBB02
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 09:19:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 247112EBB15
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 09:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbhAFISM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 03:18:12 -0500
-Received: from mga11.intel.com ([192.55.52.93]:27224 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725903AbhAFISM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 03:18:12 -0500
-IronPort-SDR: C7dtjpo2Sh9bDqtyDCIebZ6VxgnDIE39wl4NMKvhuATjgD4pQ/6NohA+O/e5mp0VIP3LQa+mVy
- AO76Pd46Dtsw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9855"; a="173738285"
-X-IronPort-AV: E=Sophos;i="5.78,479,1599548400"; 
-   d="gz'50?scan'50,208,50";a="173738285"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2021 00:17:30 -0800
-IronPort-SDR: ewJ1+L85CVLSTvwUyxa/42OL4Y2xQf96Re8MmXe5WU87DHXnUoB7WUmHCBZQGePj2qqpxeKYgu
- UtjQUReWtd0g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,479,1599548400"; 
-   d="gz'50?scan'50,208,50";a="361479889"
-Received: from lkp-server02.sh.intel.com (HELO 4242b19f17ef) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 06 Jan 2021 00:17:26 -0800
-Received: from kbuild by 4242b19f17ef with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1kx40S-0008of-Hd; Wed, 06 Jan 2021 08:17:24 +0000
-Date:   Wed, 6 Jan 2021 16:16:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     kbuild-all@lists.01.org, andrii@kernel.org, kernel-team@fb.com,
-        Hao Luo <haoluo@google.com>
-Subject: Re: [PATCH bpf-next  2/4] bpf: support BPF ksym variables in kernel
- modules
-Message-ID: <202101061625.D0C0F3ZJ-lkp@intel.com>
-References: <20210106064048.2554276-3-andrii@kernel.org>
+        id S1726426AbhAFIaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 03:30:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725788AbhAFIai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 03:30:38 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on0609.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::609])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E25C06134C;
+        Wed,  6 Jan 2021 00:29:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=psXdjHB/DZDTqtEI6AFEhmzvZUMftX7ar2OCCxKHNMw=;
+ b=79SnQhnMcEquypku/ZvoX18NKk5VTBF4ukJiM2YUf8GJPejqnULuY/9rkCDj7WrJZ0mlG//5rphMA/9ScAkHVMykNyupU6he+e3GWykDXeqnPeKnmro+YWINuAGDqGWXUyUHwnvW0b1IKhhLTlsuvHSrEOOFhov3on9ZHskvPiw=
+Received: from AM6PR0202CA0047.eurprd02.prod.outlook.com
+ (2603:10a6:20b:3a::24) by VE1PR08MB5021.eurprd08.prod.outlook.com
+ (2603:10a6:803:108::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Wed, 6 Jan
+ 2021 08:29:34 +0000
+Received: from VE1EUR03FT039.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:20b:3a:cafe::1d) by AM6PR0202CA0047.outlook.office365.com
+ (2603:10a6:20b:3a::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6 via Frontend
+ Transport; Wed, 6 Jan 2021 08:29:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
+ smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
+ header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=pass action=none
+ header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
+ client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
+Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
+ VE1EUR03FT039.mail.protection.outlook.com (10.152.19.196) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3742.6 via Frontend Transport; Wed, 6 Jan 2021 08:29:33 +0000
+Received: ("Tessian outbound eeda57fffe7b:v71"); Wed, 06 Jan 2021 08:29:33 +0000
+X-CR-MTA-TID: 64aa7808
+Received: from dfb496bc38f0.3
+        by 64aa7808-outbound-1.mta.getcheckrecipient.com id 33E96408-893A-47C5-B127-F33A9762CAF7.1;
+        Wed, 06 Jan 2021 08:29:28 +0000
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com
+    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id dfb496bc38f0.3
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
+    Wed, 06 Jan 2021 08:29:28 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MHUMqnelxZm4sTCWLMiYnOV+3RpE2ZF1LZIVSAamGFdEOiQygcoD/qu1+X7qFQnjHMfRbqVcFbOIQDWinAO6mzrP8xYWhIanC1VPKVi/WufxvgNG+9FYhqhSD/5fO1gDjxdocFN+CayZuiL9L0LB1wDPKCcdv/8WA3xROslAC8dOdkCyUW4KjTwIyC5B07UoDN2lVQs8FS3fx95rgIW8popmPJSDFCijtbPsIBWf3P7QTvvABKKRanKW726vN07HN+ZaszxqqXQ9kKC5VTIGTp6viOMcbBed9okmftIx4BhwM3peb8/Lhxgtttd1eAAs3DyL7lveCyJn2uC2YMkcsQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=psXdjHB/DZDTqtEI6AFEhmzvZUMftX7ar2OCCxKHNMw=;
+ b=ZUkCYtt5rDMZWzFHgzCMTJ+97HlX6uHn4qHyT8yE0LhoBgQTrqrFzAfUpzwti2sMMPh2Y4uEihDxGM1kaE3sEV/Cwgs7rG0NmxYoqXkl2fXt8Z/VjqgWBUebV/HB7LW5gmJzCIF9xIJx2ocGTHEzxEHDAQuzAR5gtNoqbEojX908ZrCPmoMviyPAmhaGtGIx0ningJYKv6iiIcHuGXfLGydTwPNR1dWIDQLesm9fJ646FhkaU02p2pZ+lrRK7GuvV09BTCU5OGy30kvJpOmmIg95HtoX/zqpw4CIXoSv9OUZvreawmwbZmmU7vfWm+nIqnyG7HsZzQRPMWV+K0JvSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=psXdjHB/DZDTqtEI6AFEhmzvZUMftX7ar2OCCxKHNMw=;
+ b=79SnQhnMcEquypku/ZvoX18NKk5VTBF4ukJiM2YUf8GJPejqnULuY/9rkCDj7WrJZ0mlG//5rphMA/9ScAkHVMykNyupU6he+e3GWykDXeqnPeKnmro+YWINuAGDqGWXUyUHwnvW0b1IKhhLTlsuvHSrEOOFhov3on9ZHskvPiw=
+Received: from VE1PR08MB4766.eurprd08.prod.outlook.com (2603:10a6:802:a9::18)
+ by VI1PR08MB3645.eurprd08.prod.outlook.com (2603:10a6:803:84::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.19; Wed, 6 Jan
+ 2021 08:29:25 +0000
+Received: from VE1PR08MB4766.eurprd08.prod.outlook.com
+ ([fe80::9cb0:dfc6:9464:a3d8]) by VE1PR08MB4766.eurprd08.prod.outlook.com
+ ([fe80::9cb0:dfc6:9464:a3d8%2]) with mapi id 15.20.3721.024; Wed, 6 Jan 2021
+ 08:29:25 +0000
+From:   Jianyong Wu <Jianyong.Wu@arm.com>
+To:     Jianyong Wu <Jianyong.Wu@arm.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Andre Przywara <Andre.Przywara@arm.com>,
+        Steven Price <Steven.Price@arm.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        Justin He <Justin.He@arm.com>, nd <nd@arm.com>
+Subject: RE: [PATCH v16 0/9] Enable ptp_kvm for arm/arm64
+Thread-Topic: [PATCH v16 0/9] Enable ptp_kvm for arm/arm64
+Thread-Index: AQHWzfH314IeOXkaQU2t29Ihl+nLg6oab/hQ
+Date:   Wed, 6 Jan 2021 08:29:25 +0000
+Message-ID: <VE1PR08MB4766B2024A5ADA9D6AE9F4E9F4D00@VE1PR08MB4766.eurprd08.prod.outlook.com>
+References: <20201209060932.212364-1-jianyong.wu@arm.com>
+In-Reply-To: <20201209060932.212364-1-jianyong.wu@arm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ts-tracking-id: 9C14E3ADFB61D14F869E89FCF4950781.0
+x-checkrecipientchecked: true
+Authentication-Results-Original: arm.com; dkim=none (message not signed)
+ header.d=none;arm.com; dmarc=none action=none header.from=arm.com;
+x-originating-ip: [203.126.0.112]
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8399b127-4413-4bcb-cca6-08d8b21d3236
+x-ms-traffictypediagnostic: VI1PR08MB3645:|VE1PR08MB5021:
+x-ms-exchange-transport-forked: True
+X-Microsoft-Antispam-PRVS: <VE1PR08MB5021B16F3D6292A163D7B01BF4D00@VE1PR08MB5021.eurprd08.prod.outlook.com>
+x-checkrecipientrouted: true
+nodisclaimer: true
+x-ms-oob-tlc-oobclassifiers: OLM:6108;OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: T8telqQDbZ0RvphIgWiCN8Wp/tjYFRptVxBEGOGWZQ+TyXWtJ4AaD+Adk6DXO9eAfJ/A/aH3lVw4/KvasP7nKreC04Q5EL/+ehOzuw14TGhO9RKImoGJqqAXEEXJLKemacDjj3mx3gXFhurv+ssYvq9u2HcvU4lrflU3S9hXSBscBExitjPSkIeZhQoa6G17Hn5/73Zm6ieE3b3qG6dP/Xi4VAhHUScErpXdT2D5Q7T+MmolHRp+uRfJtX8R/tMPb9xCdx9JXsdsEHUhYplSQy+WHtVZAeFaNH0jC7Te6sbwPlyoeIPhMbXfl0Tso9IDGWhr/g4H7rh2CiFrM/XE2K0FCz1nVvPFwOJc01FEoJ1ZhDvHnjX0XvTrVxDl6kIV6nXTtQv8G7p5hEyW0zi1sGv+YUEuWRzceXyYxwCeriRAPfdu0PK+vHpKY3CnToPKJkVRd+F+RQRd2Laona1KVwNxXv7crqEP8HAcMGaxTRbNJGfbRexuG9KxEFt/ZmlI
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR08MB4766.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(346002)(366004)(136003)(39860400002)(26005)(5660300002)(186003)(2906002)(66946007)(66556008)(71200400001)(64756008)(921005)(83380400001)(4326008)(966005)(52536014)(478600001)(66476007)(6636002)(7416002)(33656002)(9686003)(8676002)(76116006)(66446008)(316002)(7696005)(86362001)(6506007)(8936002)(53546011)(55016002)(110136005)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?wD2KmWNFiQlpqgdr6+iA00MDO/OsPS0rIJJUtWcCrrlRB+PLZsT40GMBsKWx?=
+ =?us-ascii?Q?jmm46GnplZquZRngAm6eXf5pzlOefJEiSfxM5iM9VOVEy9uNCahDHjVR2xqn?=
+ =?us-ascii?Q?3mmuWwPtRK0HPs3KOGeRAjuROipIhlG0ygtXHFz7lZYrq9wuhcVE0xYpb9Li?=
+ =?us-ascii?Q?qBILyPNRAxxcbm0VKYlEf93gdtiUfiOAdX+stkhMKv7aTMTpeweKNRRMyH0x?=
+ =?us-ascii?Q?JZ1UjKjjVvSmaY7/yk2jy0F1W16RHO13xlDR6lYKQw3LKT/eph0uqciiehK0?=
+ =?us-ascii?Q?KUtVHrq+zFh3q/PvgRZwkwjlYWL9YMKRLrewLYjuJMg0en7FHKGqsH9GVVmv?=
+ =?us-ascii?Q?OHuPsnKOjh8n8D2M7Yw32xv3yjCMRqNUQtZHqCWfWJuEDLh2Ja8LT18eO+hR?=
+ =?us-ascii?Q?dQuZXuJsHUev6bDYKH6NYmyi1CPUtEvgmEAJq77AklXvhqCqD5arzP0CV3O6?=
+ =?us-ascii?Q?3jSw7RbdBJSi41/oqv+RRgRCm4Uupod95Mo1c+gchKODdZDuWz6RIDxXIpz+?=
+ =?us-ascii?Q?U81XvDgGB+oVH/NWuixGMoh9RB0BM56+4naU67zY9rqx8WTNuUHKM0PlkiaI?=
+ =?us-ascii?Q?2Eo0CpPO/oRpd/WmVpKn0xBHWGVzyey7OIRPm8pRmQFau4uecPPSRV8/lBz1?=
+ =?us-ascii?Q?1ioqMF89OwmqGsA8HOURKORolzix6h2QQXR0whqen4BVj5BSRndCZ4HenDNu?=
+ =?us-ascii?Q?xU3t+4878PuVPmr53qbNkfCBz4EwvPfpN6ZmGjhs4zwn3qupbd1nPbUHaBaa?=
+ =?us-ascii?Q?JftrtUWiYuJRmnAZdBO8D6F6gZ7ZAZ5JMR5jdZf2La2veHV2r+5zsfTdKcib?=
+ =?us-ascii?Q?Sb3qjRD6ahUAv00k0J9l1Na4ChcwhBGAd9hJ7jAf22ItDW91eUDPUdA35a1t?=
+ =?us-ascii?Q?ph/vrvjU2qEdO+8SGBsuH1mQBPtC/6mpUngl4Pkm8qf1jRanhRpTYbnyzn45?=
+ =?us-ascii?Q?JRz3p7lqC0tSmIr8Vd8q4FwtV+waBtk3xZ4P5dk3058=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="n8g4imXOkfNTN/H1"
-Content-Disposition: inline
-In-Reply-To: <20210106064048.2554276-3-andrii@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB3645
+Original-Authentication-Results: arm.com; dkim=none (message not signed)
+ header.d=none;arm.com; dmarc=none action=none header.from=arm.com;
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: VE1EUR03FT039.eop-EUR03.prod.protection.outlook.com
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 6c9036fc-5621-44f0-5873-08d8b21d2d45
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: STz6cCxehLz81uzhuJklYaTyHS0cL2brSjMbsy+OpC15xdIAGNe7tfhtnLzNZGUdVsdXiDLnPkxijt3V1cXeP+jJWQI4MLYsBypRQzyVUJDX/5/w0KOEXTrFkPIwllctZWUreXySoh/MMPA/Ztbe+H1prWQ6hoG5rZQbRrx2kzBtnBcd1HaovO2OEk+bvWOOTDwzRLooevHVF1a5Ss3Ac3m+t8leSao+H9tDxiynHrHhINrSNT1fQS7W43caoSMLeMhhCrCuUSZui+CHb7teUB2HwBEG12i0Fwq2fyj/Hb5nSvifKMR/FVxE1gE9cCs6QbrdGXzV8Tw5HvvLaUnUdkYkQYIweVcfxzXgSSte7Lzwh/epFW1cNYNTu43re/hZTfBbpag7CxIq1OTAzS6bx9kIF1OtBg0FjdfB3zlD1vINOIKkRLS9g2xBiZDRS8oIQIon3XBGB0Tz5F517bpX9Re2mkftZgzSMLnx3mt5sxhRuN7Luahb2h5nrrW+Vl7jPSQCJg1PKV5Lc6QmpTRU1H7ey5R3mpHv2QBbQT3jKTno019nRAA7eRp3QM6MkESSieMBvHcWE2Ws5DjRfjutVQ==
+X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(136003)(346002)(396003)(46966006)(33656002)(450100002)(316002)(34070700002)(70586007)(8676002)(2906002)(7696005)(921005)(478600001)(8936002)(6636002)(54906003)(966005)(83380400001)(110136005)(86362001)(47076005)(55016002)(356005)(82310400003)(52536014)(186003)(4326008)(26005)(82740400003)(336012)(6506007)(70206006)(81166007)(53546011)(9686003)(5660300002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2021 08:29:33.6634
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8399b127-4413-4bcb-cca6-08d8b21d3236
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR03FT039.eop-EUR03.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR08MB5021
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Ping...
+Any comments? Thanks!
 
---n8g4imXOkfNTN/H1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> -----Original Message-----
+> From: Jianyong Wu <jianyong.wu@arm.com>
+> Sent: Wednesday, December 9, 2020 2:09 PM
+> To: netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
+> tglx@linutronix.de; pbonzini@redhat.com; sean.j.christopherson@intel.com;
+> maz@kernel.org; richardcochran@gmail.com; Mark Rutland
+> <Mark.Rutland@arm.com>; will@kernel.org; Suzuki Poulose
+> <Suzuki.Poulose@arm.com>; Andre Przywara <Andre.Przywara@arm.com>;
+> Steven Price <Steven.Price@arm.com>
+> Cc: linux-kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
+> kvmarm@lists.cs.columbia.edu; kvm@vger.kernel.org; Steve Capper
+> <Steve.Capper@arm.com>; Justin He <Justin.He@arm.com>; Jianyong Wu
+> <Jianyong.Wu@arm.com>; nd <nd@arm.com>
+> Subject: [PATCH v16 0/9] Enable ptp_kvm for arm/arm64
+>=20
+> Currently, we offen use ntp (sync time with remote network clock) to sync
+> time in VM. But the precision of ntp is subject to network delay so it's =
+difficult
+> to sync time in a high precision.
+>=20
+> kvm virtual ptp clock (ptp_kvm) offers another way to sync time in VM, as
+> the remote clock locates in the host instead of remote network clock.
+> It targets to sync time between guest and host in virtualization environm=
+ent
+> and in this way, we can keep the time of all the VMs running in the same =
+host
+> in sync. In general, the delay of communication between host and guest is
+> quiet small, so ptp_kvm can offer time sync precision up to in order of
+> nanosecond. Please keep in mind that ptp_kvm just limits itself to be a
+> channel which transmit the remote clock from host to guest and leaves the
+> time sync jobs to an application, eg. chrony, in usersapce in VM.
+>=20
+> How ptp_kvm works:
+> After ptp_kvm initialized, there will be a new device node under /dev cal=
+led
+> ptp%d. A guest userspace service, like chrony, can use this device to get=
+ host
+> walltime, sometimes also counter cycle, which depends on the service it c=
+alls.
+> Then this guest userspace service can use those data to do the time sync =
+for
+> guest.
+> here is a rough sketch to show how kvm ptp clock works.
+>=20
+> |----------------------------|              |--------------------------|
+> |       guest userspace      |              |          host            |
+> |ioctl -> /dev/ptp%d         |              |                          |
+> |       ^   |                |              |                          |
+> |----------------------------|              |                          |
+> |       |   | guest kernel   |              |                          |
+> |       |   V      (get host walltime/counter cycle)                   |
+> |      ptp_kvm -> hypercall - - - - - - - - - - ->hypercall service    |
+> |                         <- - - - - - - - - - - -                     |
+> |----------------------------|              |--------------------------|
+>=20
+> 1. time sync service in guest userspace call ptp device through /dev/ptp%=
+d.
+> 2. ptp_kvm module in guest receives this request then invoke hypercall to
+> route into host kernel to request host walltime/counter cycle.
+> 3. ptp_kvm hypercall service in host response to the request and send dat=
+a
+> back.
+> 4. ptp (not ptp_kvm) in guest copy the data to userspace.
+>=20
+> This ptp_kvm implementation focuses itself to step 2 and 3 and step 2 wor=
+ks
+> in guest comparing step 3 works in host kernel.
+>=20
+> change log:
+>=20
+> from v15 to v16:
+>         (1) remove ARM_PTP_NONE_COUNTER suggested by Marc.
+>         (2) add more detail for ptp_kvm doc.
+>         (3) fix ci issues reported by test robot.
+>=20
+> from v14 to v15:
+>         (1) enable ptp_kvm on arm32 guest, also ptp_kvm has been tested o=
+n
+> both arm64 and arm32 guest running on arm64 kvm host.
+>         (2) move arch-agnostic part of ptp_kvm.rst into timekeeping.rst.
+>         (3) rename KVM_CAP_ARM_PTP_KVM to KVM_CAP_PTP_KVM as it
+> should be arch agnostic.
+>         (4) add description for KVM_CAP_PTP_KVM in
+> Documentation/virt/kvm/api.rst.
+>         (5) adjust dependency in Kconfig for ptp_kvm.
+>         (6) refine multi-arch process in driver/ptp/Makefile.
+>         (7) fix make pdfdocs htmldocs issue for ptp_kvm doc.
+>         (8) address other issues from comments in v14.
+>         (9) fold hypercall service of ptp_kvm as a function.
+>         (10) rebase to 5.10-rc3.
+>=20
+> from v13 to v14
+>         (1) rebase code on 5.9-rc3.
+>         (2) add a document to introduce implementation of PTP_KVM on arm6=
+4.
+>         (3) fix comments issue in hypercall.c.
+>         (4) export arm_smccc_1_1_get_conduit using EXPORT_SYMBOL_GPL.
+>         (5) fix make issue on x86 reported by kernel test robot.
+>=20
+> from v12 to v13:
+>         (1) rebase code on 5.8-rc1.
+>         (2) this patch set base on 2 patches of 1/8 and 2/8 from Will Dec=
+on.
+>         (3) remove the change to ptp device code of extend getcrosststamp=
+.
+>         (4) remove the mechanism of letting user choose the counter type =
+in
+> ptp_kvm for arm64.
+>         (5) add virtual counter option in ptp_kvm service to let user cho=
+ose the
+> specific counter explicitly.
+>=20
+> from v11 to v12:
+>         (1) rebase code on 5.7-rc6 and rebase 2 patches from Will Decon
+> including 1/11 and 2/11. as these patches introduce discover mechanism of
+> vendor smccc service.
+>         (2) rebase ptp_kvm hypercall service from standard smccc to vendo=
+r
+> smccc and add ptp_kvm to vendor smccc service discover mechanism.
+>         (3) add detail of why we need ptp_kvm and how ptp_kvm works in co=
+ver
+> letter.
+>=20
+> from v10 to v11:
+>         (1) rebase code on 5.7-rc2.
+>         (2) remove support for arm32, as kvm support for arm32 will be re=
+moved
+> [1]
+>         (3) add error report in ptp_kvm initialization.
+>=20
+> from v9 to v10:
+>         (1) change code base to v5.5.
+>         (2) enable ptp_kvm both for arm32 and arm64.
+>         (3) let user choose which of virtual counter or physical counter =
+should
+> return when using crosstimestamp mode of ptp_kvm for arm/arm64.
+>         (4) extend input argument for getcrosstimestamp API.
+>=20
+> from v8 to v9:
+>         (1) move ptp_kvm.h to driver/ptp/
+>         (2) replace license declaration of ptp_kvm.h the same with other =
+header
+> files in the same directory.
+>=20
+> from v7 to v8:
+>         (1) separate adding clocksource id for arm_arch_counter as a sing=
+le patch.
+>         (2) update commit message for patch 4/8.
+>         (3) refine patch 7/8 and patch 8/8 to make them more independent.
+>=20
+> from v5 to v6:
+>         (1) apply Mark's patch[4] to get SMCCC conduit.
+>         (2) add mechanism to recognize current clocksource by add
+> clocksouce_id value into struct clocksource instead of method in patch-v5=
+.
+>         (3) rename kvm_arch_ptp_get_clock_fn into
+> kvm_arch_ptp_get_crosststamp.
+>=20
+> from v4 to v5:
+>         (1) remove hvc delay compensasion as it should leave to userspace=
+.
+>         (2) check current clocksource in hvc call service.
+>         (3) expose current clocksource by adding it to system_time_snapsh=
+ot.
+>         (4) add helper to check if clocksource is arm_arch_counter.
+>         (5) rename kvm_ptp.c to ptp_kvm_common.c
+>=20
+> from v3 to v4:
+>         (1) fix clocksource of ptp_kvm to arch_sys_counter.
+>         (2) move kvm_arch_ptp_get_clock_fn into arm_arch_timer.c
+>         (3) subtract cntvoff before return cycles from host.
+>         (4) use ktime_get_snapshot instead of getnstimeofday and
+> get_current_counterval to return time and counter value.
+>         (5) split ktime and counter into two 32-bit block respectively to=
+ avoid
+> Y2038-safe issue.
+>         (6) set time compensation to device time as half of the delay of =
+hvc call.
+>         (7) add ARM_ARCH_TIMER as dependency of ptp_kvm for arm64.
+>=20
+> from v2 to v3:
+>         (1) fix some issues in commit log.
+>         (2) add some receivers in send list.
+>=20
+> from v1 to v2:
+>         (1) move arch-specific code from arch/ to driver/ptp/
+>         (2) offer mechanism to inform userspace if ptp_kvm service is ava=
+ilable.
+>         (3) separate ptp_kvm code for arm64 into hypervisor part and gues=
+t part.
+>         (4) add API to expose monotonic clock and counter value.
+>         (5) refine code: remove no necessary part and reconsitution.
+>=20
+> [1] https://patchwork.kernel.org/cover/11373351/
+>=20
+>=20
+> Jianyong Wu (6):
+>   ptp: Reorganize ptp_kvm module to make it arch-independent.
+>   clocksource: Add clocksource id for arm arch counter
+>   arm64/kvm: Add hypercall service for kvm ptp.
+>   ptp: arm/arm64: Enable ptp_kvm for arm/arm64
+>   doc: add ptp_kvm introduction for arm64 support
+>   arm64: Add kvm capability check extension for ptp_kvm
+>=20
+> Thomas Gleixner (1):
+>   time: Add mechanism to recognize clocksource in time_get_snapshot
+>=20
+> Will Deacon (2):
+>   arm64: Probe for the presence of KVM hypervisor
+>   arm/arm64: KVM: Advertise KVM UID to guests via SMCCC
+>=20
+>  Documentation/virt/kvm/api.rst              |  9 ++
+>  Documentation/virt/kvm/arm/index.rst        |  1 +
+>  Documentation/virt/kvm/arm/ptp_kvm.rst      | 31 +++++++
+>  Documentation/virt/kvm/timekeeping.rst      | 35 ++++++++
+>  arch/arm/kernel/setup.c                     |  5 ++
+>  arch/arm64/kernel/setup.c                   |  1 +
+>  arch/arm64/kvm/arm.c                        |  1 +
+>  arch/arm64/kvm/hypercalls.c                 | 86 ++++++++++++++++--
+>  drivers/clocksource/arm_arch_timer.c        | 31 +++++++
+>  drivers/firmware/smccc/smccc.c              | 37 ++++++++
+>  drivers/ptp/Kconfig                         |  2 +-
+>  drivers/ptp/Makefile                        |  2 +
+>  drivers/ptp/ptp_kvm_arm.c                   | 45 ++++++++++
+>  drivers/ptp/{ptp_kvm.c =3D> ptp_kvm_common.c} | 84 +++++-------------
+>  drivers/ptp/ptp_kvm_x86.c                   | 96 +++++++++++++++++++++
+>  include/linux/arm-smccc.h                   | 59 +++++++++++++
+>  include/linux/clocksource.h                 |  6 ++
+>  include/linux/clocksource_ids.h             | 12 +++
+>  include/linux/ptp_kvm.h                     | 16 ++++
+>  include/linux/timekeeping.h                 | 12 +--
+>  include/uapi/linux/kvm.h                    |  1 +
+>  kernel/time/clocksource.c                   |  2 +
+>  kernel/time/timekeeping.c                   |  1 +
+>  23 files changed, 498 insertions(+), 77 deletions(-)  create mode 100644
+> Documentation/virt/kvm/arm/ptp_kvm.rst
+>  create mode 100644 drivers/ptp/ptp_kvm_arm.c  rename
+> drivers/ptp/{ptp_kvm.c =3D> ptp_kvm_common.c} (60%)  create mode 100644
+> drivers/ptp/ptp_kvm_x86.c  create mode 100644
+> include/linux/clocksource_ids.h  create mode 100644
+> include/linux/ptp_kvm.h
+>=20
+> --
+> 2.17.1
 
-Hi Andrii,
-
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on bpf-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/Andrii-Nakryiko/Support-kernel-module-ksym-variables/20210106-144531
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: nds32-defconfig (attached as .config)
-compiler: nds32le-linux-gcc (GCC) 9.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/1dde2eabb1a7670d0e764e46dae1ef0a9abf0466
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Andrii-Nakryiko/Support-kernel-module-ksym-variables/20210106-144531
-        git checkout 1dde2eabb1a7670d0e764e46dae1ef0a9abf0466
-        # save the attached .config to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=nds32 
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   kernel/bpf/core.c:1350:12: warning: no previous prototype for 'bpf_probe_read_kernel' [-Wmissing-prototypes]
-    1350 | u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
-         |            ^~~~~~~~~~~~~~~~~~~~~
-   In file included from kernel/bpf/core.c:21:
-   kernel/bpf/core.c: In function '___bpf_prog_run':
-   include/linux/filter.h:888:3: warning: cast between incompatible function types from 'u64 (*)(u64,  u64,  u64,  u64,  u64)' {aka 'long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int)'} to 'u64 (*)(u64,  u64,  u64,  u64,  u64,  const struct bpf_insn *)' {aka 'long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  const struct bpf_insn *)'} [-Wcast-function-type]
-     888 |  ((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
-         |   ^
-   kernel/bpf/core.c:1518:13: note: in expansion of macro '__bpf_call_base_args'
-    1518 |   BPF_R0 = (__bpf_call_base_args + insn->imm)(BPF_R1, BPF_R2,
-         |             ^~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/core.c: At top level:
-   kernel/bpf/core.c:1704:6: warning: no previous prototype for 'bpf_patch_call_args' [-Wmissing-prototypes]
-    1704 | void bpf_patch_call_args(struct bpf_insn *insn, u32 stack_depth)
-         |      ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/bpf/core.c:21:
-   kernel/bpf/core.c: In function 'bpf_patch_call_args':
-   include/linux/filter.h:888:3: warning: cast between incompatible function types from 'u64 (*)(u64,  u64,  u64,  u64,  u64)' {aka 'long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int)'} to 'u64 (*)(u64,  u64,  u64,  u64,  u64,  const struct bpf_insn *)' {aka 'long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  const struct bpf_insn *)'} [-Wcast-function-type]
-     888 |  ((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
-         |   ^
-   kernel/bpf/core.c:1709:3: note: in expansion of macro '__bpf_call_base_args'
-    1709 |   __bpf_call_base_args;
-         |   ^~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/core.c: At top level:
-   kernel/bpf/core.c:2102:6: warning: no previous prototype for '__bpf_free_used_maps' [-Wmissing-prototypes]
-    2102 | void __bpf_free_used_maps(struct bpf_prog_aux *aux,
-         |      ^~~~~~~~~~~~~~~~~~~~
->> kernel/bpf/core.c:2122:6: warning: no previous prototype for '__bpf_free_used_btfs' [-Wmissing-prototypes]
-    2122 | void __bpf_free_used_btfs(struct bpf_prog_aux *aux,
-         |      ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +/__bpf_free_used_btfs +2122 kernel/bpf/core.c
-
-  2121	
-> 2122	void __bpf_free_used_btfs(struct bpf_prog_aux *aux,
-  2123				  struct btf_mod_pair *used_btfs, u32 len)
-  2124	{
-  2125	#ifdef CONFIG_BPF_SYSCALL
-  2126		struct btf_mod_pair *btf_mod;
-  2127		u32 i;
-  2128	
-  2129		for (i = 0; i < len; i++) {
-  2130			btf_mod = &used_btfs[i];
-  2131			if (btf_mod->module)
-  2132				module_put(btf_mod->module);
-  2133			btf_put(btf_mod->btf);
-  2134		}
-  2135	#endif
-  2136	}
-  2137	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
---n8g4imXOkfNTN/H1
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
-
-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
-
---n8g4imXOkfNTN/H1--
