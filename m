@@ -2,164 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF2F92EC40F
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:38:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7346E2EC41A
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:44:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727321AbhAFThX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 14:37:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
+        id S1726698AbhAFToQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:44:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726791AbhAFThW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:37:22 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BC9C06134C;
-        Wed,  6 Jan 2021 11:36:42 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id c22so2906298pgg.13;
-        Wed, 06 Jan 2021 11:36:42 -0800 (PST)
+        with ESMTP id S1725822AbhAFToQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:44:16 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086C6C061575
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 11:43:36 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id u26so3854776iof.3
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 11:43:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HCNqGWHzb9YKF5GubTd4Hv0V/nLOte28IE/94cHQF6I=;
-        b=VK9vpIACV8QZsD9qWM+EvsruCUjPx3Sdsr81p79k4cMeMYJss01TZmdhnkm93hJOmI
-         otzeiJ4gAR2xEII73NJ05/QV8i/RXcmA/Cy1GA/Nhzqdxzi27cbxuAiTsiKMRSpiq/LJ
-         6DMKgVTwd+2Y3C1c+rjmqqf0TaZ+cnRp3+OkG9cLNIUvflgYJq6GG67jhr7szU51OaZO
-         w/cy2ikhM2VM/uOtoBUO5HWJu/jgKZD3tciojJBkein1E7Om9R9PnCyxoyLOfrJPk+Z3
-         gFbRIdUrG/Dok8GiYmkAZoMnmi/C47Cu0vSzZLVygb16lqwi0YLxnDR27KJ778wzG4v3
-         CDfg==
+        bh=524gIBiBelpD0qVg3o3Q7JLZEZj0p1hawMdE5gf7waw=;
+        b=eP8b0H3VGQgO/CbJSqyjNpvLjYHWsGT0OgHv8bwe0QWInLdZWPy+zGTmpaFNrW9NK/
+         WlrFdhbOXdL9mLcBqg7+bZuvRlRWmpMD4wrBPyqpAdjcdEITT0sHWov7Vidc481cCzu1
+         Yg7JJYMCa0/ViEed1YgqR/9lGEg150XH8PKQhVdUGUyPm9Ox4LUKRu4AJTDqgf55jWKy
+         p5dsWmkIYMKgbfFpZRiUhHIbgYoin0qPYeZikb+QZAH5Ir9ZjOFPYNeE2L3BTp6JRDDw
+         7tFHfboyli2aeRSNeAjQOD6oSzxXa+TG6RXeBGvGOyztWkpb0ZXjf1j5oR5nd8mJh7Ox
+         3T0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=HCNqGWHzb9YKF5GubTd4Hv0V/nLOte28IE/94cHQF6I=;
-        b=KxbOhNfRy7dO3MVSVOVfmw/u4ka6HqdwR4S8f2hrS+Xq/g5qSd+/Ott1LyfeJQ0RsW
-         PnwIZ+8zYibWS4LnNf1qZ2OnB4gp2U1SOlMi0/Lz6h2xmhQD5kc9s31vLAJRqMXI6qTM
-         CDRoHDbJhs2RnrVSLj//quRU5VFyhqJyOaldr0pDKKGf4k4Clge4BRnhM+sA6EmnmF1z
-         8TavoIwBUrJQFqy3zuA4MtU16PdjMS+ORmGAtIWAw2S8+oHZHwmr8q6iB/uCtT59nW1C
-         QRjDTxncAR/F4/5iUWtPDVyn+WHhg53Y60lFur/XpdY23BVAItg55LBAjxI2TealgLNW
-         qHAg==
-X-Gm-Message-State: AOAM530L1YQ3EnDC3SYwgkTAbxD3rmZNR+Txpg7Kul5WfEuwnS48oMfn
-        aYH6AFUc3ljQOe7TKg0dG84=
-X-Google-Smtp-Source: ABdhPJxwsyw+/XasOC14IhMIaj1l0Flwu1ecWWBT7t+QWCHMYQ3j5dsEfXmx31TzAwIWNGWUoi9uDA==
-X-Received: by 2002:a63:4301:: with SMTP id q1mr6034496pga.430.1609961802284;
-        Wed, 06 Jan 2021 11:36:42 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y5sm3438997pgs.90.2021.01.06.11.36.40
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=524gIBiBelpD0qVg3o3Q7JLZEZj0p1hawMdE5gf7waw=;
+        b=Wl+yu6hk77r9WhHnCk0J+RBQJnvJ73bgJAl+S1KIPDIpJ8KnX2TnQ1pjQycYA/nzft
+         GMEsPvox2BqgnjxPDRt0DOCBCP9/CBzDox4q9qQnYK5ZG2QX6duvfqk+v+8hWIZe+niG
+         wPhALpeXYLjR6zkbRqEYEMk/wYgjo+Qfb7M74b/+gsG1bfwx4LbaJQ8T4knflbNz61dE
+         9raX1rfh/PYrDmTFgTrPZkDtymrTSDxkHY2DZcTzVmHIq8M4GaKavL4Henk8UDFFzkmu
+         iKYsyKqIAbn+f6agPv7beDLNTFUltqQzvMeqL3Q061fe+TEIXaEuJr3CDnfCN0IfiE93
+         i5Yw==
+X-Gm-Message-State: AOAM531Wdw77+eTO9HkJAe5bSOt2+onDG95TWeaGWnUvMXfoLvkDLmNO
+        TrYiQUEY01yDahQg51m9YYzafg==
+X-Google-Smtp-Source: ABdhPJytrFAlmLACDe11EIEFbqIGPudN3OKMfauAq8qSvwF16irVTIPHrkJQgKKkl+56cEaJDRyIew==
+X-Received: by 2002:a05:6602:13c5:: with SMTP id o5mr4053115iov.46.1609962215326;
+        Wed, 06 Jan 2021 11:43:35 -0800 (PST)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id 8sm2286400ill.13.2021.01.06.11.43.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 11:36:41 -0800 (PST)
-Subject: Re: [PATCH net-next 1/3] dt-bindings: net: convert Broadcom
- Starfighter 2 binding to the json-schema
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20210106120711.630-1-zajec5@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <2f4c93fe-4d51-c76a-c671-39d8eaad0e01@gmail.com>
-Date:   Wed, 6 Jan 2021 11:36:37 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Wed, 06 Jan 2021 11:43:34 -0800 (PST)
+Subject: Re: [PATCH net-next 3/3] net: ipa: support COMPILE_TEST
+To:     kernel test robot <lkp@intel.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, bjorn.andersson@linaro.org,
+        agross@kernel.org, ohad@wizery.com, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org
+References: <20210106023812.2542-4-elder@linaro.org>
+ <202101061555.DTUUlbsx-lkp@intel.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <d2f55352-b774-8ce2-0693-3d7eb39ac43c@linaro.org>
+Date:   Wed, 6 Jan 2021 13:43:33 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <20210106120711.630-1-zajec5@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <202101061555.DTUUlbsx-lkp@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/6/21 4:07 AM, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
+On 1/6/21 1:34 AM, kernel test robot wrote:
+> Hi Alex,
 > 
-> This helps validating DTS files. Only the current (not deprecated one)
-> binding was converted.
+> I love your patch! Perhaps something to improve:
 > 
-> Minor changes:
-> 1. Dropped dsa/dsa.txt references
-> 2. Updated node name to match dsa.yaml requirement
-> 3. Fixed 2 typos in examples
+> [auto build test WARNING on net-next/master]
+
+I think I just need to define at the top of "gsi_trans.h":
+    struct page;
+
+I'll submit v2 of this series, with this one change
+(assuming it's the correct fix).  I will incorporate
+Bjorn's review tags on the first two patches.
+
+					-Alex
+
+> url:    https://github.com/0day-ci/linux/commits/Alex-Elder/net-ipa-support-COMPILE_TEST/20210106-104149
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 3db1a3fa98808aa90f95ec3e0fa2fc7abf28f5c9
+> config: alpha-allyesconfig (attached as .config)
+> compiler: alpha-linux-gcc (GCC) 9.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/7ab1759d9336e95f4de013bb171246b66f94e2f4
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Alex-Elder/net-ipa-support-COMPILE_TEST/20210106-104149
+>         git checkout 7ab1759d9336e95f4de013bb171246b66f94e2f4
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=alpha 
 > 
-> The new binding was validated using the dt_binding_check.
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 > 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> All warnings (new ones prefixed by >>):
+> 
+>    In file included from drivers/net/ipa/ipa_gsi.c:10:
+>>> drivers/net/ipa/gsi_trans.h:170:56: warning: 'struct page' declared inside parameter list will not be visible outside of this definition or declaration
+>      170 | int gsi_trans_page_add(struct gsi_trans *trans, struct page *page, u32 size,
+>          |                                                        ^~~~
+> 
+> 
+> vim +170 drivers/net/ipa/gsi_trans.h
+> 
+> 9dd441e4ed5755c Alex Elder 2020-03-05  149  
+> 9dd441e4ed5755c Alex Elder 2020-03-05  150  /**
+> 9dd441e4ed5755c Alex Elder 2020-03-05  151   * gsi_trans_cmd_add() - Add an immediate command to a transaction
+> 9dd441e4ed5755c Alex Elder 2020-03-05  152   * @trans:	Transaction
+> 9dd441e4ed5755c Alex Elder 2020-03-05  153   * @buf:	Buffer pointer for command payload
+> 9dd441e4ed5755c Alex Elder 2020-03-05  154   * @size:	Number of bytes in buffer
+> 9dd441e4ed5755c Alex Elder 2020-03-05  155   * @addr:	DMA address for payload
+> 9dd441e4ed5755c Alex Elder 2020-03-05  156   * @direction:	Direction of DMA transfer (or DMA_NONE if none required)
+> 9dd441e4ed5755c Alex Elder 2020-03-05  157   * @opcode:	IPA immediate command opcode
+> 9dd441e4ed5755c Alex Elder 2020-03-05  158   */
+> 9dd441e4ed5755c Alex Elder 2020-03-05  159  void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
+> 9dd441e4ed5755c Alex Elder 2020-03-05  160  		       dma_addr_t addr, enum dma_data_direction direction,
+> 9dd441e4ed5755c Alex Elder 2020-03-05  161  		       enum ipa_cmd_opcode opcode);
+> 9dd441e4ed5755c Alex Elder 2020-03-05  162  
+> 9dd441e4ed5755c Alex Elder 2020-03-05  163  /**
+> 9dd441e4ed5755c Alex Elder 2020-03-05  164   * gsi_trans_page_add() - Add a page transfer to a transaction
+> 9dd441e4ed5755c Alex Elder 2020-03-05  165   * @trans:	Transaction
+> 9dd441e4ed5755c Alex Elder 2020-03-05  166   * @page:	Page pointer
+> 9dd441e4ed5755c Alex Elder 2020-03-05  167   * @size:	Number of bytes (starting at offset) to transfer
+> 9dd441e4ed5755c Alex Elder 2020-03-05  168   * @offset:	Offset within page for start of transfer
+> 9dd441e4ed5755c Alex Elder 2020-03-05  169   */
+> 9dd441e4ed5755c Alex Elder 2020-03-05 @170  int gsi_trans_page_add(struct gsi_trans *trans, struct page *page, u32 size,
+> 9dd441e4ed5755c Alex Elder 2020-03-05  171  		       u32 offset);
+> 9dd441e4ed5755c Alex Elder 2020-03-05  172  
+> 
 > ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
 
-This looks good to me, but we would want Rob to review this binding
-obviously. Just one comment below.
-
-[snip]
-
-> +
-> +  reset-names:
-> +    const: switch
-> +
-> +  clocks:
-> +    items:
-> +      - description: switch's main clock (valid for both BCM7445 and BCM7278)
-> +      - description: only applicable to BCM7445 and is to support dividing the switch core clock.
-
-Since this is a YAML binding we could adjust the number of min/max clock
-items here based on the compatible string.
--- 
-Florian
