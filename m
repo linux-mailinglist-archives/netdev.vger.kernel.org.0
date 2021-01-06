@@ -2,127 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE0D2EC3FB
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:36:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7BD82EC3FD
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:36:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727146AbhAFTfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 14:35:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
+        id S1727176AbhAFTfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:35:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726948AbhAFTfE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:35:04 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A041CC06134C;
-        Wed,  6 Jan 2021 11:34:23 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id d2so2292721pfq.5;
-        Wed, 06 Jan 2021 11:34:23 -0800 (PST)
+        with ESMTP id S1727036AbhAFTfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:35:09 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51640C06134D;
+        Wed,  6 Jan 2021 11:34:29 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id a12so3432475wrv.8;
+        Wed, 06 Jan 2021 11:34:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+        h=to:cc:references:from:subject:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0wA4WwSF4KQFp0kGCsvSxTZYHbqZVVTge4NyoiQeyKY=;
-        b=DehmWqqR4wvkdwq//hy+OzyPgxwbeFVOtq3wcpn5jqafqjbKkT+FkOlPYNL8Zi6gua
-         1m4z/qYgIDl9C398nK+EGVTnYsmbHYDdd3OnzzTrVOWzsdpBWHa9r8nKI/2es/SoSVrJ
-         w6dqxCTMpUauWQwWJN8/BgLZRVJxQSzGoINCGkCY3IIVeBOd13OryH8gICfBAw8k+QSn
-         idXbW+m0KfQ6PcSEDM/Bfbof19WxmvjIMIKcgPM3BRyqhIfOVb/4buwkhXjzqAN7MlcF
-         TijJCX83/gMC9gzdT0iFOVMG3XyBKcQA3rRWssT9YNdBRec1DLWYTj+RjXUQay+O+aDn
-         c8SQ==
+        bh=j/tPa+TosF4s6ZeUcfX5xJrxDDEIBvCx2esSOFMWJPA=;
+        b=kOhlrN3fzZP4EarkM5nObQu4al+WTx+UiL1xrbrx7/1xiNxyF+qDN+khSBv8s9icg0
+         fI/KhHZur15sGBNvSExuj2u2z3/6bZEkasKt+4UjSvXx7Bbh0BNzq/XdbM/72anjs4UL
+         84dhK2Gs7v4wN+iAfwISVQUihD0Q/ack4MPGiDs5QHLdvCxBXtzBx4Oyo9qi0xSV72TP
+         RHHt27mef5qb6UXx8iTFhQotn8I5qaGtAliy4hGHm/OwStWBjZjxlc6qhcWSGw1TqjEY
+         vluJJXPcdws9/QBOqDyjkKuZ568kvCCa6qlOuSigDEgvZ7L0NQntrA0XbPdOHqKjHBTu
+         iStw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=0wA4WwSF4KQFp0kGCsvSxTZYHbqZVVTge4NyoiQeyKY=;
-        b=UiwmFT+RMXwq8T6Z2aImFwBiU/OG3NOU0ASdCm5VRyRoGvH1rzl591vCBTVxMH0QMy
-         Ottpy7b2Yp5G6evMtkPzI0g6xcK/k37rpkdycHDlvPIAeYPES3hdhu+vUizYud67osQq
-         /eSds0Okt0piGXrO9Ep/q0PBdZ0MBEcTJUzu/dSd0CwsGWSbbbDcVgpPyHrfWWCYuSSR
-         XSxvSz7x0tR4FQpqfnBEj5UQDUIiZP7Fk/02vOGubExA+0u6U3XCrAq/zDKKXg56WRGp
-         ayFCYbmOOyiS3zaRkXcudbQPlcjb/EXHukYhN1yqUhuDgK9wG+tiwuwYrndaFDPC/Bs8
-         cvEg==
-X-Gm-Message-State: AOAM533l1i/l4T/6Zz5/17zTzqReCZaUC0M2a/aF5Ri4dE4xXdQk251P
-        I3LTa17DJJmwwl7I3SzkZ2k=
-X-Google-Smtp-Source: ABdhPJybrpLtOTjH9vvjUpRK3GyCTDr2XW3rLhfOoa4pebBdbOPjq1e1CTO/otlzaR4EAsPIl+MEEg==
-X-Received: by 2002:a63:480f:: with SMTP id v15mr6016433pga.341.1609961663201;
-        Wed, 06 Jan 2021 11:34:23 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id d4sm2811444pjz.28.2021.01.06.11.34.20
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=j/tPa+TosF4s6ZeUcfX5xJrxDDEIBvCx2esSOFMWJPA=;
+        b=RNkpepe8bPkrUuH+2d6Syc4D7Rvi/4V4LL4oQiP7gZDbMVRNr7DixzBrfi00bpNiu3
+         0j1TiaPqvH0df/HbNK/k0Rq+lCo6awCjKoHzPMWZ6AwUULzAVcgdp2GeqzvToCDlfRmu
+         s7ntZZHdg6VoZNJzB8kERpoIIscm5QOy8f92cTqMD+Wx6m00rZOO3MF2s6IbgO9ElJdJ
+         V8c40yV+aA6U/MfsqMlxH7WQC2/oe+IAd+cv9jl/W0jjACrqVH6wEMehiKXx/ljM7nvp
+         bhe+rW7EIoYnQkPwbKC3FDXkyOQLe8UrxenUkZ2OLfjaZXKWBTLeYcuJ1EXelN54oCau
+         9DFw==
+X-Gm-Message-State: AOAM533m9oewzPnOItbixkuJTKeuamUJUEbXeOd10Da1Us4sZNW6EUEW
+        tp02aagdtsm38m/Xo2TGh3vcaw8bcb4=
+X-Google-Smtp-Source: ABdhPJyAzCNiTuU1Yx4cF42lFYMKljtIPeDqI2NtDSj1UO4tBbTJIw9rIm8uvHroLFRpnaBN4vFOfg==
+X-Received: by 2002:a5d:610d:: with SMTP id v13mr5696020wrt.425.1609961667725;
+        Wed, 06 Jan 2021 11:34:27 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:e1db:b990:7e09:f1cf? (p200300ea8f065500e1dbb9907e09f1cf.dip0.t-ipconnect.de. [2003:ea:8f06:5500:e1db:b990:7e09:f1cf])
+        by smtp.googlemail.com with ESMTPSA id 125sm4359403wmc.27.2021.01.06.11.34.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 11:34:22 -0800 (PST)
-Subject: Re: [PATCH net-next 3/3] net: dsa: bcm_sf2: support BCM4908's
- integrated switch
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        Wed, 06 Jan 2021 11:34:27 -0800 (PST)
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Lennert Buytenhek <kernel@wantstofly.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20210106120711.630-1-zajec5@gmail.com>
- <20210106120711.630-3-zajec5@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <ecc574e1-a7d1-7a60-abe1-4b408b958a45@gmail.com>
-Date:   Wed, 6 Jan 2021 11:34:18 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20210106192233.GA1329080@bjorn-Precision-5520>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v3 1/3] PCI: Disable parity checking if broken_parity is
+ set
+Message-ID: <768d90a3-93ea-1f4e-f4e0-e039933bc17b@gmail.com>
+Date:   Wed, 6 Jan 2021 20:34:23 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20210106120711.630-3-zajec5@gmail.com>
+In-Reply-To: <20210106192233.GA1329080@bjorn-Precision-5520>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -130,18 +76,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/6/21 4:07 AM, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
+On 06.01.2021 20:22, Bjorn Helgaas wrote:
+> On Wed, Jan 06, 2021 at 06:50:22PM +0100, Heiner Kallweit wrote:
+>> If we know that a device has broken parity checking, then disable it.
+>> This avoids quirks like in r8169 where on the first parity error
+>> interrupt parity checking will be disabled if broken_parity_status
+>> is set. Make pci_quirk_broken_parity() public so that it can be used
+>> by platform code, e.g. for Thecus N2100.
+>>
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 > 
-> BCM4908 family SoCs come with integrated Starfighter 2 switch. Its
-> registers layout it a mix of BCM7278 and BCM7445. It has 5 integrated
-> PHYs and 8 ports. It also supports RGMII and SerDes.
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 > 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> This series should all go together.  Let me know if you want me to do
+> anything more (would require acks for arm and r8169, of course).
+> 
+Right. For r8169 I'm the maintainer myself and agreed with Jakub that
+the r8169 patch will go through the PCI tree.
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Regarding the arm/iop32x part:
+MAINTAINERS file lists Lennert as maintainer, let me add him.
+Strange thing is that the MAINTAINERS entry for arm/iop32x has no
+F entry, therefore the get_maintainers scripts will never list him
+as addressee. The script lists Russell as "odd fixer".
+@Lennert: Please provide a patch to add the missing F entry.
 
-I cannot find right now how many CFP entries does this switch have, you
-probably won't make use of them so sticking with 0 is fine.
--- 
-Florian
+ARM/INTEL IOP32X ARM ARCHITECTURE
+M:	Lennert Buytenhek <kernel@wantstofly.org>
+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+S:	Maintained
+
+
+>> ---
+>>  drivers/pci/quirks.c | 17 +++++++++++------
+>>  include/linux/pci.h  |  2 ++
+>>  2 files changed, 13 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+>> index 653660e3b..ab54e26b8 100644
+>> --- a/drivers/pci/quirks.c
+>> +++ b/drivers/pci/quirks.c
+>> @@ -205,17 +205,22 @@ static void quirk_mmio_always_on(struct pci_dev *dev)
+>>  DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_ANY_ID, PCI_ANY_ID,
+>>  				PCI_CLASS_BRIDGE_HOST, 8, quirk_mmio_always_on);
+>>  
+>> +void pci_quirk_broken_parity(struct pci_dev *dev)
+>> +{
+>> +	u16 cmd;
+>> +
+>> +	dev->broken_parity_status = 1;	/* This device gives false positives */
+>> +	pci_read_config_word(dev, PCI_COMMAND, &cmd);
+>> +	pci_write_config_word(dev, PCI_COMMAND, cmd & ~PCI_COMMAND_PARITY);
+>> +}
+>> +
+>>  /*
+>>   * The Mellanox Tavor device gives false positive parity errors.  Mark this
+>>   * device with a broken_parity_status to allow PCI scanning code to "skip"
+>>   * this now blacklisted device.
+>>   */
+>> -static void quirk_mellanox_tavor(struct pci_dev *dev)
+>> -{
+>> -	dev->broken_parity_status = 1;	/* This device gives false positives */
+>> -}
+>> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, quirk_mellanox_tavor);
+>> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, quirk_mellanox_tavor);
+>> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, pci_quirk_broken_parity);
+>> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, pci_quirk_broken_parity);
+>>  
+>>  /*
+>>   * Deal with broken BIOSes that neglect to enable passive release,
+>> diff --git a/include/linux/pci.h b/include/linux/pci.h
+>> index b32126d26..161dcc474 100644
+>> --- a/include/linux/pci.h
+>> +++ b/include/linux/pci.h
+>> @@ -1916,6 +1916,8 @@ enum pci_fixup_pass {
+>>  	pci_fixup_suspend_late,	/* pci_device_suspend_late() */
+>>  };
+>>  
+>> +void pci_quirk_broken_parity(struct pci_dev *dev);
+>> +
+>>  #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
+>>  #define __DECLARE_PCI_FIXUP_SECTION(sec, name, vendor, device, class,	\
+>>  				    class_shift, hook)			\
+>> -- 
+>> 2.30.0
+>>
+>>
+>>
+
