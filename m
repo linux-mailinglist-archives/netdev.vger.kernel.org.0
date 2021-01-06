@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A20752EC1B7
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:07:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C4B2EC1BC
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:08:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727793AbhAFRGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 12:06:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
+        id S1727849AbhAFRHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 12:07:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726810AbhAFRGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:06:35 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBB0C06134C;
-        Wed,  6 Jan 2021 09:05:54 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id e2so1827998plt.12;
-        Wed, 06 Jan 2021 09:05:54 -0800 (PST)
+        with ESMTP id S1727688AbhAFRHE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:07:04 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43954C06134D;
+        Wed,  6 Jan 2021 09:06:24 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id b8so1864700plx.0;
+        Wed, 06 Jan 2021 09:06:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cFOxQDo3g+kh6YaOcK28UCE0palic8LDP4oEDnK/5MQ=;
-        b=Ih0lb72diqm50lL89HzqcMxMMBCtTBxV2jPshutjbGaEdidzDgRog4DvapkZ24B1JD
-         Ov2zIzBIbT4S71mNoIHP+Tx9/nIJz/xDr58IgshjZ6MOE3omQi/jBGMe/SBi3qlTnYN4
-         KMglfLatYYt2EsphdDjtqGQaEU5cSrNuZcDehXbLepHkbT2naUIZ0Iz+/LXNkQ2Gnbge
-         hihwluq1yfreJhG1YF9kZ6ZT5+CoCaTjx8IVPicuyQLf+V4KGKrqVPn8lTEjVKyCfdVd
-         PsZOyuJTPSEfanxORSisbWnYwIz4EikXLAJU+PD2UAtNdRf+bsRbuio9EpfsVLcVdrCn
-         Oryw==
+        bh=DuPu6egekd4ihLhXZi2Rf1jUAZdE9sRJzf7RTgHfkPw=;
+        b=fbJAGWBUVrefiC1UFoL2fjURxBAZd/RgGIMvzeETHnx4qBaJorAUEs6U+J/aEDsSYT
+         lB8dM3ZBI4Vt2bxKXj0sniT2PTilBS2aKcWgj/SdaYT/hIOI4UgOivQACVBIiUi9Wf6i
+         yJOVV8G8uEoAI+sG+Yj6T7xfwFaEi7KHjwdzNAfhsUfm3vz/UDU1nEwXb5GQZk6ynYIj
+         pAqZDMR8bFpgAIkUrbGHu8pUh0vqSoN3TubRpj7TI957p6qxxstV/zFuxQKZmY08OMoI
+         UbgVCveB3e0oy/I3LxWTCPMwaQgNDSng7KxwuNgWVCojJFkFsvlVuGmpK38hFqQzYE/a
+         qyFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=cFOxQDo3g+kh6YaOcK28UCE0palic8LDP4oEDnK/5MQ=;
-        b=l+Hbd8Y8/nhMCO9Y/uc9finwLvCGeF2q3viRuUyvQ53HWXMb2yG90WOFjFEwf4Djwx
-         KwiFs20uiN8rH8cCescvP+kFCRecAUF5d3lEjB6z5iyz07zTBfWA/bhlZvFwBErlpL++
-         ZlZPLNw8sl1hs/caZD6YrSbl9sh7OvrN0+uVg4jLBwTj5bzKfs50ojt/K5F7G6aulfh1
-         hYoZuG2D/bhRX8ctnTkpVELArSKY7RXuo7SC9Xqs6k6mmRJm8QRy3Aq9Xh5tz/wX52HP
-         HW5UdYSMvinxNIUuBGn0gubwS9lVygc9xD6MlvjUWPc3m0gUdBj5Qu5hjxN5qe3dwyDz
-         26cw==
-X-Gm-Message-State: AOAM530DuxSsIp+7ahLujJdj7TWS4F8WcsO6muaNnczg/L61YEHPEbwa
-        FTx+cO/fceeg2w3RKuJmzXcRkF5OUCU=
-X-Google-Smtp-Source: ABdhPJxpkyyI8h9xIFcMgROf0Spe2G4to7N4EbZhYnfhgTawFiRrAyhKUWP5NhvC/vtvDgI3FjdO9g==
-X-Received: by 2002:a17:90a:72c6:: with SMTP id l6mr5069347pjk.233.1609952753939;
-        Wed, 06 Jan 2021 09:05:53 -0800 (PST)
+        bh=DuPu6egekd4ihLhXZi2Rf1jUAZdE9sRJzf7RTgHfkPw=;
+        b=tAZOolhCav5dHhDuFMphRkFL7wys9NIdy4qbigotmahgKcpFmFE3ygmSgDiQCATpVx
+         ltnsHM0i5XBBKYgmNXd5iOMfYNt0rTSojNoKNlIjO1J+wc9gppkJu1OMWECb6vvW1T3J
+         gNCm0+gqYYfkCunkVQTy/z2nvKHcQJHQTDH2LFNm8l19ortnKoseUPWQFvZCLKqs9h07
+         9X7Ez/jF/U33sudJO34Tvfg2aS7v/aeyFkmQAIbhTbhOAgSYf6EqlfuEDZ+A6JZDJIec
+         hXgLKMnHwzE8JfMsDUx0ZcCqu4WwQa2XkCIGMTxZNsSoLTLILmcs7jAFf6GAYZrU4UbY
+         70uA==
+X-Gm-Message-State: AOAM5306hvIt1pCgOje8XZ6jR0MSQCy4+H/dL8uuaamO8okJAgvQbz0D
+        SF3QJ2nKQUEDfSxSm0teoiFXTvFHnSk=
+X-Google-Smtp-Source: ABdhPJysXi0aWnaxtV0I7+PfR070zjWNKpR0gjfGsI3KXL75GNAWqzbNtLruPO5Pb+GuUunaP2w1wA==
+X-Received: by 2002:a17:90a:6f01:: with SMTP id d1mr5215581pjk.155.1609952776094;
+        Wed, 06 Jan 2021 09:06:16 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id e35sm3366443pgm.4.2021.01.06.09.05.52
+        by smtp.googlemail.com with ESMTPSA id z13sm2692480pjz.42.2021.01.06.09.06.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 09:05:53 -0800 (PST)
-Subject: Re: [PATCH net-next v3 3/7] bcm63xx_enet: add xmit_more support
+        Wed, 06 Jan 2021 09:06:15 -0800 (PST)
+Subject: Re: [PATCH net-next v3 4/7] bcm63xx_enet: alloc rx skb with
+ NET_IP_ALIGN
 To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20210106144208.1935-1-liew.s.piaw@gmail.com>
- <20210106144208.1935-4-liew.s.piaw@gmail.com>
+ <20210106144208.1935-5-liew.s.piaw@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -109,12 +110,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <cbdef84e-58b5-9020-8fe7-4ffb6ffcca53@gmail.com>
-Date:   Wed, 6 Jan 2021 09:05:51 -0800
+Message-ID: <4f429da8-dca7-ca31-9938-24bfc0a4be04@gmail.com>
+Date:   Wed, 6 Jan 2021 09:06:13 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210106144208.1935-4-liew.s.piaw@gmail.com>
+In-Reply-To: <20210106144208.1935-5-liew.s.piaw@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,7 +124,24 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 1/6/21 6:42 AM, Sieng Piaw Liew wrote:
-> Support bulking hardware TX queue by using netdev_xmit_more().
+> Use netdev_alloc_skb_ip_align on newer SoCs with integrated switch
+> (enetsw) when refilling RX. Increases packet processing performance
+> by 30% (with netif_receive_skb_list).
+> 
+> Non-enetsw SoCs cannot function with the extra pad so continue to use
+> the regular netdev_alloc_skb.
+> 
+> Tested on BCM6328 320 MHz and iperf3 -M 512 to measure packet/sec
+> performance.
+> 
+> Before:
+> [ ID] Interval Transfer Bandwidth Retr
+> [ 4] 0.00-30.00 sec 120 MBytes 33.7 Mbits/sec 277 sender
+> [ 4] 0.00-30.00 sec 120 MBytes 33.5 Mbits/sec receiver
+> 
+> After (+netif_receive_skb_list):
+> [ 4] 0.00-30.00 sec 155 MBytes 43.3 Mbits/sec 354 sender
+> [ 4] 0.00-30.00 sec 154 MBytes 43.1 Mbits/sec receiver
 > 
 > Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
 
