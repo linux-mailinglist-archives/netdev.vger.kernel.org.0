@@ -2,87 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E1252EBCA5
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 11:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D8EE2EBCB1
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 11:51:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725951AbhAFKpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 05:45:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
+        id S1726359AbhAFKuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 05:50:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbhAFKpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 05:45:43 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25C5C06134C
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 02:45:02 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id k10so2053913wmi.3
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 02:45:02 -0800 (PST)
+        with ESMTP id S1725925AbhAFKuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 05:50:39 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC9EC06134C
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 02:49:59 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id g185so2229630wmf.3
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 02:49:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=CFa9IIBCcCV1TWWcbkI0g56e3WbaZgQhuUzvzGj/9ds=;
-        b=SFg10qa75Lsox/usexee8Y29+MICLSOmspXLYMNmmh6yI4+fcHmvOBu/enRaFGtzYm
-         BgZc/Vz3saPdK8eCi+Y43EcTCOs1FRr1hqLY8wPKPfs3YSwHh7KGXK5wSEDcGnDtx7eH
-         J+NFzj/1YC/sVSkaM0vPLGe/JoTlRqH/NOPNwFk4u/SsKJG8xhBJyBHyFR2FsdKGwToa
-         HeZ3e40jiqvPVNrNCoeyyTFbOiBw5JPmVYWbfQpRQuTZ9h4DXUYQ1yFrUUa7dQNP4XRu
-         anWyN8Gvl1mVbpGyU1hCcWY3sUaE50FtNSDEF/yxPR/mfalTAfIJZl90tOCqC6zf7u7X
-         GRcg==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sv8+etW+yK2uhdrudJJQBqucmERfPpVDUieqOwNOibc=;
+        b=iaD6IW6J+80GrIbKbJ1yJ9XAQ0mNArIsnYcq/uQoION6zsGCrx1dt4iJqmJdVs/9T0
+         BmWsW35Kxm6JZjw4/8fQUa75CTqEm3wXBmflmIm2MO9MYKJxG7wkmt7kV1bcfZSEOeDJ
+         QutWqhJ/bPb082g03SLi5Qhn1Z7x08sL3RhgZCq27hvr25BDiti5C3aCIOq5i9rAO+ct
+         Q+Pc7kWfd6mvI23O7E5Tu2aACYjwCj5khqjgUJGIBrxFOh038HledO33A5V7UDy0EVOa
+         OMDLmqKMAaNRYL4qB+KZDdjpSXRzyP/iXdhoHggfIFD2UC2Qeq5kEXDskGykRBeX7NOJ
+         7OOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=CFa9IIBCcCV1TWWcbkI0g56e3WbaZgQhuUzvzGj/9ds=;
-        b=MDYRh6XfLRjSkg1n/+5Sx63aivoh2BUYUpFoERGvStd75zUY2kOuPdgZ0vV4fnUaOP
-         4xrZ39dcdVcUqwbdwaOSr1YHSkIHsJeu3UHcdbLNkrERi7WDAL4ki1hAdwY5+ZroE1hx
-         RsB9XCmMorzO4xEd17PoU3YHx0P8DjcK3uIZj4pNUP7OSQupvs24e7qI4nHBt5JBfovZ
-         +Hx17YqcRuwUIXlzxTQPuNBCGK6oj3pHuA0V2PlsqW/ubrEND5kbTgcCFdwNDrHf59mP
-         v66XIgqtz14IWaOGN1wg0Ju1+34u1F/eDcYfjWJ2gT2/21lOS43edilpDlWqwnaF75i2
-         UoPQ==
-X-Gm-Message-State: AOAM533UOk6rZvzgkN+E5CKCUd8SnwD/ryx5Xm5sYUH7t/7Y4Sfi0D+A
-        mcl3/gTfUuhUV4Fx/WPCX3Eou7hVX6s=
-X-Google-Smtp-Source: ABdhPJw2aaUdQURvnZ35oIjZsFfaUmKnAMAGtorRIiUHVSEbEgzhum2+UeLY+PQqCHWBewjGq2E8Qg==
-X-Received: by 2002:a1c:790f:: with SMTP id l15mr3151169wme.188.1609929901189;
-        Wed, 06 Jan 2021 02:45:01 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sv8+etW+yK2uhdrudJJQBqucmERfPpVDUieqOwNOibc=;
+        b=MB5d4I29fqdJ5J4KXz3t9vNvMM8uBG6JrT0xWLs0vqBxX+witmmoLXWmYwqXDSyKKa
+         7nXqlCqN7MQDbOxiA0qaNmgYaHAaNBxldmg/G1g2NE6yXlaZQh98a9XMOboZ1pvSkMNG
+         J13nNCqQv2EnS2wWQJWbBSaldGWYanKLCBWY8Yh9hwFePWFNvoY6dkHDqouvi2ViRBvH
+         Q3c4g1ORQvPGscK3cpAnnmwg1VMnp0gW1TMgJbvTGbmmtSSMFR6fDD4lOIMu+XQZ8vGR
+         uUvIGGV30Lmwf5R2HYRAvIuo+4iG2xzT46cOTS719WzgtqIO43kOR3kwN1ShiMl71TyI
+         0Tpg==
+X-Gm-Message-State: AOAM531MezsBxIbrsEuZ/C4FXclL8O6j28Yt57JnbLzY7aWkrpUeYJD5
+        GG0ud4ZHLjvA8tNCbRb0rBvNiK+Viz8=
+X-Google-Smtp-Source: ABdhPJyobVlQRKc77fS+h+njEdK+xXYYu3ZHkPGeVollLVu1s3wcRYeuy5mTusIU1oaC9Dlp03Kzeg==
+X-Received: by 2002:a7b:cb9a:: with SMTP id m26mr3130244wmi.130.1609930197724;
+        Wed, 06 Jan 2021 02:49:57 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f06:5500:e1db:b990:7e09:f1cf? (p200300ea8f065500e1dbb9907e09f1cf.dip0.t-ipconnect.de. [2003:ea:8f06:5500:e1db:b990:7e09:f1cf])
-        by smtp.googlemail.com with ESMTPSA id j10sm2700563wmj.7.2021.01.06.02.45.00
+        by smtp.googlemail.com with ESMTPSA id l20sm2685912wrh.82.2021.01.06.02.49.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 02:45:00 -0800 (PST)
+        Wed, 06 Jan 2021 02:49:57 -0800 (PST)
+Subject: [PATCH net-next 1/2] r8169: move ERI access functions to avoid
+ forward declaration
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next 0/2] r8169: improve RTL8168g PHY suspend quirk
-Message-ID: <9303c2cf-c521-beea-c09f-63b5dfa91b9c@gmail.com>
-Date:   Wed, 6 Jan 2021 11:44:53 +0100
+References: <9303c2cf-c521-beea-c09f-63b5dfa91b9c@gmail.com>
+Message-ID: <ba36dff0-b20c-1987-d417-99a0c2fcc901@gmail.com>
+Date:   Wed, 6 Jan 2021 11:47:08 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <9303c2cf-c521-beea-c09f-63b5dfa91b9c@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to Realtek the ERI register 0x1a8 quirk is needed to work
-around a hw issue with the PHY on RTL8168g. The register needs to be
-changed before powering down the PHY. Currently we don't meet this
-requirement, however I'm not aware of any problems caused by this.
-Therefore I see the change as an improvement.
+No functional change here. We just move a code block to avoid a
+function forward declaration in a subsequent change.
 
-The PHY driver has no means to access the chip ERI registers,
-therefore we have to intercept MDIO writes to the BMCR register.
-If the BMCR_PDOWN bit is going to be set, then let's apply the
-quirk before actually powering down the PHY.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 128 +++++++++++-----------
+ 1 file changed, 64 insertions(+), 64 deletions(-)
 
-Heiner Kallweit (2):
-  r8169: move ERI access functions to avoid forward declaration
-  r8169: improve RTL8168g PHY suspend quirk
-
- drivers/net/ethernet/realtek/r8169_main.c | 180 +++++++++++-----------
- 1 file changed, 90 insertions(+), 90 deletions(-)
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index a569abe7f..dd56f33b2 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -746,6 +746,70 @@ static const struct rtl_cond name = {			\
+ 							\
+ static bool name ## _check(struct rtl8169_private *tp)
+ 
++static void r8168fp_adjust_ocp_cmd(struct rtl8169_private *tp, u32 *cmd, int type)
++{
++	/* based on RTL8168FP_OOBMAC_BASE in vendor driver */
++	if (tp->mac_version == RTL_GIGA_MAC_VER_52 && type == ERIAR_OOB)
++		*cmd |= 0x7f0 << 18;
++}
++
++DECLARE_RTL_COND(rtl_eriar_cond)
++{
++	return RTL_R32(tp, ERIAR) & ERIAR_FLAG;
++}
++
++static void _rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
++			   u32 val, int type)
++{
++	u32 cmd = ERIAR_WRITE_CMD | type | mask | addr;
++
++	BUG_ON((addr & 3) || (mask == 0));
++	RTL_W32(tp, ERIDR, val);
++	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
++	RTL_W32(tp, ERIAR, cmd);
++
++	rtl_loop_wait_low(tp, &rtl_eriar_cond, 100, 100);
++}
++
++static void rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
++			  u32 val)
++{
++	_rtl_eri_write(tp, addr, mask, val, ERIAR_EXGMAC);
++}
++
++static u32 _rtl_eri_read(struct rtl8169_private *tp, int addr, int type)
++{
++	u32 cmd = ERIAR_READ_CMD | type | ERIAR_MASK_1111 | addr;
++
++	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
++	RTL_W32(tp, ERIAR, cmd);
++
++	return rtl_loop_wait_high(tp, &rtl_eriar_cond, 100, 100) ?
++		RTL_R32(tp, ERIDR) : ~0;
++}
++
++static u32 rtl_eri_read(struct rtl8169_private *tp, int addr)
++{
++	return _rtl_eri_read(tp, addr, ERIAR_EXGMAC);
++}
++
++static void rtl_w0w1_eri(struct rtl8169_private *tp, int addr, u32 p, u32 m)
++{
++	u32 val = rtl_eri_read(tp, addr);
++
++	rtl_eri_write(tp, addr, ERIAR_MASK_1111, (val & ~m) | p);
++}
++
++static void rtl_eri_set_bits(struct rtl8169_private *tp, int addr, u32 p)
++{
++	rtl_w0w1_eri(tp, addr, p, 0);
++}
++
++static void rtl_eri_clear_bits(struct rtl8169_private *tp, int addr, u32 m)
++{
++	rtl_w0w1_eri(tp, addr, 0, m);
++}
++
+ static bool rtl_ocp_reg_failure(struct rtl8169_private *tp, u32 reg)
+ {
+ 	if (reg & 0xffff0001) {
+@@ -1009,70 +1073,6 @@ static u16 rtl_ephy_read(struct rtl8169_private *tp, int reg_addr)
+ 		RTL_R32(tp, EPHYAR) & EPHYAR_DATA_MASK : ~0;
+ }
+ 
+-static void r8168fp_adjust_ocp_cmd(struct rtl8169_private *tp, u32 *cmd, int type)
+-{
+-	/* based on RTL8168FP_OOBMAC_BASE in vendor driver */
+-	if (tp->mac_version == RTL_GIGA_MAC_VER_52 && type == ERIAR_OOB)
+-		*cmd |= 0x7f0 << 18;
+-}
+-
+-DECLARE_RTL_COND(rtl_eriar_cond)
+-{
+-	return RTL_R32(tp, ERIAR) & ERIAR_FLAG;
+-}
+-
+-static void _rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
+-			   u32 val, int type)
+-{
+-	u32 cmd = ERIAR_WRITE_CMD | type | mask | addr;
+-
+-	BUG_ON((addr & 3) || (mask == 0));
+-	RTL_W32(tp, ERIDR, val);
+-	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
+-	RTL_W32(tp, ERIAR, cmd);
+-
+-	rtl_loop_wait_low(tp, &rtl_eriar_cond, 100, 100);
+-}
+-
+-static void rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
+-			  u32 val)
+-{
+-	_rtl_eri_write(tp, addr, mask, val, ERIAR_EXGMAC);
+-}
+-
+-static u32 _rtl_eri_read(struct rtl8169_private *tp, int addr, int type)
+-{
+-	u32 cmd = ERIAR_READ_CMD | type | ERIAR_MASK_1111 | addr;
+-
+-	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
+-	RTL_W32(tp, ERIAR, cmd);
+-
+-	return rtl_loop_wait_high(tp, &rtl_eriar_cond, 100, 100) ?
+-		RTL_R32(tp, ERIDR) : ~0;
+-}
+-
+-static u32 rtl_eri_read(struct rtl8169_private *tp, int addr)
+-{
+-	return _rtl_eri_read(tp, addr, ERIAR_EXGMAC);
+-}
+-
+-static void rtl_w0w1_eri(struct rtl8169_private *tp, int addr, u32 p, u32 m)
+-{
+-	u32 val = rtl_eri_read(tp, addr);
+-
+-	rtl_eri_write(tp, addr, ERIAR_MASK_1111, (val & ~m) | p);
+-}
+-
+-static void rtl_eri_set_bits(struct rtl8169_private *tp, int addr, u32 p)
+-{
+-	rtl_w0w1_eri(tp, addr, p, 0);
+-}
+-
+-static void rtl_eri_clear_bits(struct rtl8169_private *tp, int addr, u32 m)
+-{
+-	rtl_w0w1_eri(tp, addr, 0, m);
+-}
+-
+ static u32 r8168dp_ocp_read(struct rtl8169_private *tp, u16 reg)
+ {
+ 	RTL_W32(tp, OCPAR, 0x0fu << 12 | (reg & 0x0fff));
 -- 
 2.30.0
+
 
