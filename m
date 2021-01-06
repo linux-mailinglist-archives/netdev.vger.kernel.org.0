@@ -2,108 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C9322EB826
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 03:40:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC062EB83E
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 03:49:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbhAFCj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 21:39:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbhAFCj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 21:39:27 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A33C061349
-        for <netdev@vger.kernel.org>; Tue,  5 Jan 2021 18:38:19 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id r9so1398800ioo.7
-        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 18:38:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Jp4jA5VOpxCAdanHFN3bi6TajwKIp0Iz6erEpMOg0cE=;
-        b=rFAwaVSdLbBQiw6Kmmz1bVo0cshRtSGy6SrHqayvtCZ+SAXxc/2kt7Xfij6fwvj0gy
-         K1Gr2dRFvZ7ninidIi5m/zsInBqSCo7kQ0Zi7jdm0QbQJYhxmYbXymccCcOErNHnljuW
-         XcqAOBH4rsuph9FFqxpNXoTm3uA4Kp1ip6X+Q7Ah9i/bBiPt4kZJnXyBneulaYYNJ132
-         qLPOnkeg6AkaaG+3Nsk9szYSjZMevnmTEzr3XgfMoEwI0AiQqsylTAM4rcCcg04ucv6f
-         Mu9fvxDc5fY2ynK7PlnamlnMqt6utThhUPMrc/ymd71zuj49yee+0Bhodx2Ro2yMes0Y
-         KDKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Jp4jA5VOpxCAdanHFN3bi6TajwKIp0Iz6erEpMOg0cE=;
-        b=a4Vk92Qm9hUhnxOPSxm0IcheHx0yfpTAMOpeQop0Uz6ELe63OUPZddO0LvBKUbJF9Y
-         aivhKIaTkLOcY+xh9S2HISHcbiK68DuMnwpbVUbVUvO8IkwZQqBx/rP2NNqP6gr8LYKI
-         TTO1deKkcdJln0K23GeeI2+ZI7i8TxL75IpusN/caIDRswMEzuG8EHsr0EB+yPMhCLp4
-         IU0CLvVNyGPr16RH+Ia1Z9SEy204po+dJcYrePlak0eFzi4SAitv1qJ56h1rfkTkG2/o
-         RGoJa8bYc0jO4x1rVris/Vwcp2HRdssLlqfiil3/SE0ozz7FN0ImEHtz+o3pIme3BLui
-         8pWw==
-X-Gm-Message-State: AOAM532yG+ENujYWVn3Ki/8mujQaXr/4V7g/Z2iSXCtvDSXislbo3kDV
-        xhQqjAGS5LO1jPxeojIEG11C9A==
-X-Google-Smtp-Source: ABdhPJzSLxMjstBlx99fWxDr2h+/Ajt+Uj5J8I3vGJRM4+L5cn3Sijho6Y2AgshvvWdkscHBeCCyWg==
-X-Received: by 2002:a6b:5f0e:: with SMTP id t14mr1556852iob.80.1609900699177;
-        Tue, 05 Jan 2021 18:38:19 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id x2sm631755ior.42.2021.01.05.18.38.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Jan 2021 18:38:18 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, agross@kernel.org, ohad@wizery.com,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/3] net: ipa: support COMPILE_TEST
-Date:   Tue,  5 Jan 2021 20:38:12 -0600
-Message-Id: <20210106023812.2542-4-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210106023812.2542-1-elder@linaro.org>
-References: <20210106023812.2542-1-elder@linaro.org>
+        id S1726518AbhAFCsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 21:48:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28626 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726363AbhAFCsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 21:48:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609901229;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aGSEn9q3RMopoKalaky8zmG8K4EWEIZy2nW74+H0arI=;
+        b=bQPIMXD8uZVK0QqMX1pjleMixVTWfrdSOqAhZtNyNx6HxKWoOYu6PbgY0jnX1UlcI9K+AN
+        8eXfuz0UK3EMlOt9ueoKBr0ryeSnTKsvImSRSzDmn6BRSqYUPbeKPV5HtALfyOAzVELqgw
+        tnsL0mzOkjq74lIZpxKawNRIJKXhY+4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-452-bHkpLFKCPGuhlqwUfh6t8Q-1; Tue, 05 Jan 2021 21:47:05 -0500
+X-MC-Unique: bHkpLFKCPGuhlqwUfh6t8Q-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C2C21800D62;
+        Wed,  6 Jan 2021 02:47:02 +0000 (UTC)
+Received: from [10.72.13.221] (ovpn-13-221.pek2.redhat.com [10.72.13.221])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 640BB50DD5;
+        Wed,  6 Jan 2021 02:46:51 +0000 (UTC)
+Subject: Re: [PATCH netdev 0/5] virtio-net support xdp socket zero copy xmit
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     dust.li@linux.alibaba.com, tonylu@linux.alibaba.com,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        VIRTIO CORE AND NET DRIVERS 
+        <virtualization@lists.linux-foundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "XDP SOCKETS (AF_XDP)" <bpf@vger.kernel.org>,
+        netdev@vger.kernel.org
+References: <1609850555.8687568-1-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b1895acf-9366-ba9a-4265-7e871b351872@redhat.com>
+Date:   Wed, 6 Jan 2021 10:46:43 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <1609850555.8687568-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arrange for the IPA driver to be built when COMPILE_TEST is enabled.
 
-Update the help text to reflect that we support two Qualcomm SoCs.
+On 2021/1/5 下午8:42, Xuan Zhuo wrote:
+> On Tue, 5 Jan 2021 17:32:19 +0800, Jason Wang <jasowang@redhat.com> wrote:
+>> On 2021/1/5 下午5:11, Xuan Zhuo wrote:
+>>> The first patch made some adjustments to xsk.
+>>
+>> Thanks a lot for the work. It's rather interesting.
+>>
+>>
+>>> The second patch itself can be used as an independent patch to solve the problem
+>>> that XDP may fail to load when the number of queues is insufficient.
+>>
+>> It would be better to send this as a separated patch. Several people
+>> asked for this before.
+>>
+>>
+>>> The third to last patch implements support for xsk in virtio-net.
+>>>
+>>> A practical problem with virtio is that tx interrupts are not very reliable.
+>>> There will always be some missing or delayed tx interrupts. So I specially added
+>>> a point timer to solve this problem. Of course, considering performance issues,
+>>> The timer only triggers when the ring of the network card is full.
+>>
+>> This is sub-optimal. We need figure out the root cause. We don't meet
+>> such issue before.
+>>
+>> Several questions:
+>>
+>> - is tx interrupt enabled?
+>> - can you still see the issue if you disable event index?
+>> - what's backend did you use? qemu or vhost(user)?
+> Sorry, it may just be a problem with the backend I used here. I just tested the
+> latest qemu and it did not have this problem. I think I should delete the
+> timer-related code?
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/Kconfig | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
-index 9f0d2a93379c5..10a0e041ee775 100644
---- a/drivers/net/ipa/Kconfig
-+++ b/drivers/net/ipa/Kconfig
-@@ -1,9 +1,10 @@
- config QCOM_IPA
- 	tristate "Qualcomm IPA support"
--	depends on ARCH_QCOM && 64BIT && NET
--	depends on QCOM_Q6V5_MSS
-+	depends on 64BIT && NET
-+	depends on ARCH_QCOM || COMPILE_TEST
-+	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
-+	select QCOM_MDT_LOADER if ARCH_QCOM
- 	select QCOM_QMI_HELPERS
--	select QCOM_MDT_LOADER
- 	help
- 	  Choose Y or M here to include support for the Qualcomm
- 	  IP Accelerator (IPA), a hardware block present in some
-@@ -11,7 +12,8 @@ config QCOM_IPA
- 	  that is capable of generic hardware handling of IP packets,
- 	  including routing, filtering, and NAT.  Currently the IPA
- 	  driver supports only basic transport of network traffic
--	  between the AP and modem, on the Qualcomm SDM845 SoC.
-+	  between the AP and modem, on the Qualcomm SDM845 and SC7180
-+	  SoCs.
- 
- 	  Note that if selected, the selection type must match that
- 	  of QCOM_Q6V5_COMMON (Y or M).
--- 
-2.20.1
+Yes, please.
+
+
+>
+>>
+>>> Regarding the issue of virtio-net supporting xsk's zero copy rx, I am also
+>>> developing it, but I found that the modification may be relatively large, so I
+>>> consider this patch set to be separated from the code related to xsk zero copy
+>>> rx.
+>>
+>> That's fine, but a question here.
+>>
+>> How is the multieuque being handled here. I'm asking since there's no
+>> programmable filters/directors support in virtio spec now.
+>>
+>> Thanks
+> I don't really understand what you mean. In the case of multiple queues,
+> there is no problem.
+
+
+So consider we bind xsk to queue 4, how can you make sure the traffic to 
+be directed queue 4? One possible solution is to use filters as what 
+suggested in af_xdp.rst:
+
+       ethtool -N p3p2 rx-flow-hash udp4 fn
+       ethtool -N p3p2 flow-type udp4 src-port 4242 dst-port 4242 \
+           action 16
+...
+
+But virtio-net doesn't have any filters that could be programmed from 
+the driver.
+
+Anything I missed here?
+
+Thanks
+
+
+>
+>>
+>>> Xuan Zhuo (5):
+>>>     xsk: support get page for drv
+>>>     virtio-net: support XDP_TX when not more queues
+>>>     virtio-net, xsk: distinguish XDP_TX and XSK XMIT ctx
+>>>     xsk, virtio-net: prepare for support xsk
+>>>     virtio-net, xsk: virtio-net support xsk zero copy tx
+>>>
+>>>    drivers/net/virtio_net.c    | 643 +++++++++++++++++++++++++++++++++++++++-----
+>>>    include/linux/netdevice.h   |   1 +
+>>>    include/net/xdp_sock_drv.h  |  10 +
+>>>    include/net/xsk_buff_pool.h |   1 +
+>>>    net/xdp/xsk_buff_pool.c     |  10 +-
+>>>    5 files changed, 597 insertions(+), 68 deletions(-)
+>>>
+>>> --
+>>> 1.8.3.1
+>>>
 
