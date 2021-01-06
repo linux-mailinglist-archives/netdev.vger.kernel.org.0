@@ -2,136 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 527D42EBDDF
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 13:52:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35D2E2EBE33
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbhAFMv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 07:51:58 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:17626 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbhAFMv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 07:51:58 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ff5b2450000>; Wed, 06 Jan 2021 04:51:17 -0800
-Received: from [172.27.0.41] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 6 Jan
- 2021 12:51:15 +0000
-Subject: Re: [PATCH iproute2] build: Fix link errors on some systems
-From:   Roi Dayan <roid@nvidia.com>
-To:     Petr Machata <petrm@nvidia.com>
-CC:     <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
-        Petr Machata <me@pmachata.org>
-References: <1609355503-7981-1-git-send-email-roid@nvidia.com>
- <875z4cwus8.fsf@nvidia.com> <405e8cce-e2dd-891a-dc8a-7c8b0c77f4c6@nvidia.com>
-Message-ID: <4a07fbc9-8e1c-ecd6-ee9e-31d1a952ba42@nvidia.com>
-Date:   Wed, 6 Jan 2021 14:51:12 +0200
+        id S1726062AbhAFNE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 08:04:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725800AbhAFNE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 08:04:27 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4B5C06134C
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 05:03:47 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id r4so2551770wmh.5
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 05:03:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=9jRjlY6Qgokkv+f6zbgcXHg0t369M9dCUMUcQDm0n+0=;
+        b=lvjgJ+0C1b2TBY0JnMnl+TetpQt8z+VxUWHg5HM/VjiVhaBTXq1kmvKSmxx1Rm4Xpv
+         pm5Tm7vzWQkR+2u7Ds1wYoHRmUP9QiUnXSz/CYyCOJKtnSGlE3hj3BFED3LzPKlJaeoi
+         jpcQsjORm2s1l45Mbx8nqLpPJNyzIQAPwBBB9P7E9GM7dmZ6BzzP6WJMRbZRHPq8D+M3
+         xuc+rMqejAQDkyRJMo04EgjrXEAC+XUGkRKZ8tF23g/ybXojO7izqN6EBiYNLqlQXfXI
+         lJ+ixoZFbe5kfJk7fRrQACzAqcL19aNCd2KtyjLJwX7uMQBFXbefmKpdKQVgoaYxzFY0
+         PnLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=9jRjlY6Qgokkv+f6zbgcXHg0t369M9dCUMUcQDm0n+0=;
+        b=sI0+xKWvC0k8F4AdyxX/Hst+s7j5bm0MAoquLnjqi3KtxDChn1FPnaVI8gme+vl8ls
+         AfMiXU0fmKGh1RW9fj4TF1gQcOVagFRsoancVzcJ6hfcT2pfWZduTzz1wec4F8AMacbQ
+         rZYI7JSn3efOtckoTWppH6B5/5bhbb1f8Woq3ceL0LuYO2BTxSuj0yMwbnq0qquh4oGC
+         8+3YMx+MG76GWEMc23NTqxvYS/TkYGz0TF4XSgAbCUcZ0Vt7t6XaLJVP7ej1YXX9+kDW
+         ZreUl+Q7cguyAexqF9R8wIAiZMMY0ct0wnP25/K0cfcaXSe45NWrPS9iGhFbRrVHd6pB
+         r28g==
+X-Gm-Message-State: AOAM5304msi1uHWqJo8ZVYFs9wto2sY//WawmZtEVSNKbaPy2fsHb2BP
+        qKKDeYCfWLlEeA8XMxgMuLp2aBhNsO8=
+X-Google-Smtp-Source: ABdhPJzzqQLtX+tTUTNl/yLJWAqjD6Ym6HncfEHnZRcqi8r0sbkAy4AgXNqWbjlm88/4g5hW0OsvxQ==
+X-Received: by 2002:a1c:6446:: with SMTP id y67mr3609401wmb.144.1609938225219;
+        Wed, 06 Jan 2021 05:03:45 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:e1db:b990:7e09:f1cf? (p200300ea8f065500e1dbb9907e09f1cf.dip0.t-ipconnect.de. [2003:ea:8f06:5500:e1db:b990:7e09:f1cf])
+        by smtp.googlemail.com with ESMTPSA id s13sm3199672wra.53.2021.01.06.05.03.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jan 2021 05:03:44 -0800 (PST)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] net: phy: replace mutex_is_locked with
+ lockdep_assert_held in phylib
+Message-ID: <ccc40b9d-8ee0-43a1-5009-2cc95ca79c85@gmail.com>
+Date:   Wed, 6 Jan 2021 14:03:40 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <405e8cce-e2dd-891a-dc8a-7c8b0c77f4c6@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1609937477; bh=7H98C4AZd+1bajsjHvQiIazI8uzfYagm8xbWH+7/61w=;
-        h=Subject:From:To:CC:References:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=P8tqyi+j/LjUcTWGikptTTeJkl+HpmvPu8JqKrTr8guBAGWz15yGyKMDWUYMjJyts
-         eENQZoHyXuirWEsFunMxqDxb5zb3KK9U9e01PMxk0iQ4IDGAUaFHnkM58q6hW+NzYz
-         8UCmazlEw5/IquLDCtJpEJ8op4DhC7xxOZOwbUIV/eamMdVxIYwPTpcZiltln+VklW
-         5tWpyAB/2lziK3Obkm0JNBzLBzhC57+9hAegWL3jwWanCJNJapmwcfkG6/5ne8Sikj
-         OWmNwMPYiizKAKx5p9hVtzLzcZPm3qz/A7KmKnhRt/QE5RpakYV1wgZ7l4GgEFE7LT
-         Pew+xCOnrsjUg==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Switch to lockdep_assert_held(_once), similar to what is being done
+in other subsystems. One advantage is that there's zero runtime
+overhead if lockdep support isn't enabled.
 
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/mdio_bus.c   | 4 ++--
+ drivers/net/phy/phy.c        | 2 +-
+ drivers/net/phy/phy_device.c | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-On 2021-01-06 10:42 AM, Roi Dayan wrote:
->=20
->=20
-> On 2021-01-04 6:07 PM, Petr Machata wrote:
->>
->> Roi Dayan <roid@nvidia.com> writes:
->>
->>> Since moving get_rate() and get_size() from tc to lib, on some
->>> systems we fail to link because of missing the math lib.
->>> Move the link flag from tc makefile to the main makefile.
->>
->> Hmm, yeah, it gets optimized out on x86-64. The issue is reproducible
->> on any platform with -O0.
->>
->>> ../lib/libutil.a(utils.o): In function `get_rate':
->>> utils.c:(.text+0x10dc): undefined reference to `floor'
->>> ../lib/libutil.a(utils.o): In function `get_size':
->>> utils.c:(.text+0x1394): undefined reference to `floor'
->>> ../lib/libutil.a(json_print.o): In function `sprint_size':
->>> json_print.c:(.text+0x14c0): undefined reference to `rint'
->>> json_print.c:(.text+0x14f4): undefined reference to `rint'
->>> json_print.c:(.text+0x157c): undefined reference to `rint'
->>>
->>> Fixes: f3be0e6366ac ("lib: Move get_rate(), get_rate64() from tc here")
->>> Fixes: 44396bdfcc0a ("lib: Move get_size() from tc here")
->>> Fixes: adbe5de96662 ("lib: Move sprint_size() from tc here, add=20
->>> print_size()")
->>> Signed-off-by: Roi Dayan <roid@nvidia.com>
->>> ---
->>> =C2=A0 Makefile=C2=A0=C2=A0=C2=A0 | 1 +
->>> =C2=A0 tc/Makefile | 2 +-
->>> =C2=A0 2 files changed, 2 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/Makefile b/Makefile
->>> index e64c65992585..2a604ec58905 100644
->>> --- a/Makefile
->>> +++ b/Makefile
->>> @@ -59,6 +59,7 @@ SUBDIRS=3Dlib ip tc bridge misc netem genl tipc=20
->>> devlink rdma dcb man
->>> =C2=A0 LIBNETLINK=3D../lib/libutil.a ../lib/libnetlink.a
->>> =C2=A0 LDLIBS +=3D $(LIBNETLINK)
->>> +LDFLAGS +=3D -lm
->>> =C2=A0 all: config.mk
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 @set -e; \
->>> diff --git a/tc/Makefile b/tc/Makefile
->>> index 5a517af20b7c..8d91900716c1 100644
->>> --- a/tc/Makefile
->>> +++ b/tc/Makefile
->>> @@ -110,7 +110,7 @@ ifneq ($(TC_CONFIG_NO_XT),y)
->>> =C2=A0 endif
->>> =C2=A0 TCOBJ +=3D $(TCMODULES)
->>> -LDLIBS +=3D -L. -lm
->>> +LDLIBS +=3D -L.
->>> =C2=A0 ifeq ($(SHARED_LIBS),y)
->>> =C2=A0 LDLIBS +=3D -ldl
->>
->> This will work, but it will give a libm dependency to all the tools.
->> util.c currently tries not to do that:
->>
->> =C2=A0=C2=A0=C2=A0=C2=A0/* emulate ceil() without having to bring-in -lm=
- and always be >=3D=20
->> 1 */
->> =C2=A0=C2=A0=C2=A0=C2=A0*val =3D t;
->> =C2=A0=C2=A0=C2=A0=C2=A0if (*val < t)
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *val +=3D 1;
->>
->> I think that just adding an unnecessary -lm is more of a tidiness issue
->> than anything else. One way to avoid it is to split the -lm deps out
->> from util.c / json_print.c to like util_math.c / json_print_math.c. That
->> way they will be in an .o of their own, and won't be linked in unless
->> the binary in question needs the code. Then the binaries that do call it
->> can keep on linking in -lm like they did so far.
->>
->> Thoughts?
->>
->=20
-> ok fine by me.
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 2b42e4606..040509b81 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -740,7 +740,7 @@ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
+ {
+ 	int retval;
+ 
+-	WARN_ON_ONCE(!mutex_is_locked(&bus->mdio_lock));
++	lockdep_assert_held_once(&bus->mdio_lock);
+ 
+ 	retval = bus->read(bus, addr, regnum);
+ 
+@@ -766,7 +766,7 @@ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ {
+ 	int err;
+ 
+-	WARN_ON_ONCE(!mutex_is_locked(&bus->mdio_lock));
++	lockdep_assert_held_once(&bus->mdio_lock);
+ 
+ 	err = bus->write(bus, addr, regnum, val);
+ 
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 45f75533c..9cb7e4dbf 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -724,7 +724,7 @@ static int phy_check_link_status(struct phy_device *phydev)
+ {
+ 	int err;
+ 
+-	WARN_ON(!mutex_is_locked(&phydev->lock));
++	lockdep_assert_held(&phydev->lock);
+ 
+ 	/* Keep previous state if loopback is enabled because some PHYs
+ 	 * report that Link is Down when loopback is enabled.
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 80c2e646c..8447e56ba 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1740,7 +1740,7 @@ int __phy_resume(struct phy_device *phydev)
+ 	struct phy_driver *phydrv = phydev->drv;
+ 	int ret;
+ 
+-	WARN_ON(!mutex_is_locked(&phydev->lock));
++	lockdep_assert_held(&phydev->lock);
+ 
+ 	if (!phydrv || !phydrv->resume)
+ 		return 0;
+-- 
+2.30.0
 
-I looked at this and for get_size()/rate/.. it went smooth.
-but for print_color_size() there is an issue that it uses
-_IS_JSON_CONTEXT and statuic *_jw which are defined in json_print.c
-Is it ok to expose those in json_print.h now so json_print_math.c
-could use?
