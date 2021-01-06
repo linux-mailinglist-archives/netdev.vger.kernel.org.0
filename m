@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E59012EC1B2
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:05:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F9EF2EC1B4
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:07:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727694AbhAFREn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 12:04:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
+        id S1727758AbhAFRFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 12:05:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727489AbhAFREn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:04:43 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8C00C06134C;
-        Wed,  6 Jan 2021 09:04:02 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id x18so1842443pln.6;
-        Wed, 06 Jan 2021 09:04:02 -0800 (PST)
+        with ESMTP id S1727720AbhAFRFr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:05:47 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3617BC06134C;
+        Wed,  6 Jan 2021 09:05:07 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id c12so2034247pfo.10;
+        Wed, 06 Jan 2021 09:05:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=P5ltwiBjH28r0jIe3RTXu96i/TZVPBsk9UAhBAI1A3o=;
-        b=lK0qPMv9lwivUhOgND9u2O+HWSGd14jxdmAOxS7TlilstO2ydP8/XF3glY7tIXl+PJ
-         2BuXXFNp/Atl0fCXvQRLhpwTSi5xzAyKjE5brOmQ6Thoy9brkXlSnk/VFrqqQSXl9tB7
-         HVJ8Kvh9LPhk0/9MSchH3a4k4J9yfeRfBZaCGbhXT8TdTvdwV+6wPiEQ+cbowHOjem7w
-         0FYQ5eBxf3sJE6zyNI9B9cx9XyKgpYH6BsSJkCdkkly83MkR2D9upSCknFckjRAPNaQB
-         D6/lGL6W3McXo0kjiPAxt24ItOLK4N4KSCiiofLQn9QdPSSTU0O0QFkjtZbiXPR9gk6x
-         4IJA==
+        bh=HiZt4Lx0m9ZnvRCQ4m2I7wdDHcAd3swdqWIALxc2G54=;
+        b=RyNPujps2MAAWMrtp95Gm0uWQ7QoIv9p/eXWhoy9+9yfHCiskpuwkm5FwdiFdrE+t5
+         s6OxDsEQRIZ6RpP298h6t1fFs2uDwJs/zzPqCDBo2KOspHqAZy9gOrlpq7twZW1YPgcZ
+         Aj7cFFIQjpzIi2xC+xWrHPBQMVoSn2p9f5aK/09FYOokID/EcUWN/no5BgMbjCv+Zi7E
+         XXk7cdaKKrBUmTrPrClC1v6HKBZ9qTLNkh1AKeqxG5FoWisTY0cW4K2+2GXra/JL+pac
+         1OkvRi4eIEbxwmwVtcOzfoiqMx5ef38ssCaTE8JR846kDWL/G0O7wt73Vc4xgkJ8wubr
+         9HaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=P5ltwiBjH28r0jIe3RTXu96i/TZVPBsk9UAhBAI1A3o=;
-        b=cjQyrcC2ZLRQ35uqknJop82jC+/cw33bmpyDzHCGi3zOA8DbCSWB0HvllFXw9qyA4h
-         zdMev2mIn8oqpTgc+U8lE4p4VEmFE0xxeWNt6ERpX4UEhb0Q7eYtGUKchd8OlltsN1v6
-         LZ+3puEsJMyTD1z2xop/F+VeNo6uNpsn7E4IWZnAVCoGsMnyS1AVC1jPDUbBFJSkoWWQ
-         ZpNNzLn5/t6mHQyTtpzyLxkcLmND60b+tuP4t6bhDXms8t1IuB28/oR7wqtT2V2gxjBF
-         87HNKyZZ8jIrlYHPFzTLBN2d2aw+yJcsPUwcX7HOBv5CqSE5rsYfMXrh7lrMKZTKvUEW
-         bwPQ==
-X-Gm-Message-State: AOAM532zJVElNf0OTy5UUARyFMpEYigNxm4hmvKX7z25GZycMamFFFsq
-        oVizH9FKSUxaheZBjEySuJ+ZASZCSsU=
-X-Google-Smtp-Source: ABdhPJypn0DRiHHO2qmVxVomG6+KnYSBrhGVtDVDBTPOCNFOi95Guqdxu6Wz1WkX8HANprtj9CFzRw==
-X-Received: by 2002:a17:90b:1a86:: with SMTP id ng6mr5210124pjb.12.1609952641954;
-        Wed, 06 Jan 2021 09:04:01 -0800 (PST)
+        bh=HiZt4Lx0m9ZnvRCQ4m2I7wdDHcAd3swdqWIALxc2G54=;
+        b=VDCwhf3WcOhxw0Gk3C3OJXDR2GFVfuwTbVCTyL8XvadjwEuHZmSdvxkx7ceG5n7mX3
+         mCVL+4OJbBa2JYKvktbp74usYSTUGTkZDyWsTn/KTr+ufxDhhee0h9SaoUeg3604UkF+
+         zaR1aJAgC1rROpdo4balrxapX27/NSqTg+QQ5c/XnwexFdNz7YbT2Wiv+Me/5RqGQ2VL
+         aef40T12uGsjRqoe7CoWJ8Rf+FcdMeadTfpjIE0MXsICz10njzSXOOPMK8cSh+bl2WLx
+         8FPZ0la0ihRG8O997N9rKcbGmVoZlqy9jWnfoKNsT1ieVMAZ2HCYotyHN3AvbmR4Ag/w
+         KxQw==
+X-Gm-Message-State: AOAM531YimpM4sq9SElzenX6dnYceeJVLz0yxi3WeMnBVBA6QE2YfMwS
+        GKBCHAIMr3YWINPXBW4VW4F+feMpy+U=
+X-Google-Smtp-Source: ABdhPJxAOKs5iZNu0Of5h2KtCoEMvD7nSXYoaOsLIEatuFlMUewE9nzhWjQNChGLNkG7dvzx9p9yiQ==
+X-Received: by 2002:a63:a12:: with SMTP id 18mr5422326pgk.140.1609952706350;
+        Wed, 06 Jan 2021 09:05:06 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f126sm3040455pfa.58.2021.01.06.09.03.55
+        by smtp.googlemail.com with ESMTPSA id v3sm2934803pjn.7.2021.01.06.09.05.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 09:04:00 -0800 (PST)
-Subject: Re: [PATCH net-next v3 0/7] bcm63xx_enet: major makeover of driver
+        Wed, 06 Jan 2021 09:05:05 -0800 (PST)
+Subject: Re: [PATCH net-next v3 1/7] bcm63xx_enet: batch process rx path
 To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20210106144208.1935-1-liew.s.piaw@gmail.com>
+ <20210106144208.1935-2-liew.s.piaw@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <b21c8769-c7e3-d186-752d-a7563e1a3009@gmail.com>
-Date:   Wed, 6 Jan 2021 09:03:47 -0800
+Message-ID: <14dbca66-06e6-fa21-1686-502fe5dae17e@gmail.com>
+Date:   Wed, 6 Jan 2021 09:04:59 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210106144208.1935-1-liew.s.piaw@gmail.com>
+In-Reply-To: <20210106144208.1935-2-liew.s.piaw@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,29 +123,22 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 1/6/21 6:42 AM, Sieng Piaw Liew wrote:
-> This patch series aim to improve the bcm63xx_enet driver by integrating the
-> latest networking features, i.e. batched rx processing, BQL, build_skb,
-> etc.
+> Use netif_receive_skb_list to batch process rx skb.
+> Tested on BCM6328 320 MHz using iperf3 -M 512, increasing performance
+> by 12.5%.
 > 
-> The newer enetsw SoCs are found to be able to do unaligned rx DMA by adding
-> NET_IP_ALIGN padding which, combined with these patches, improved packet
-> processing performance by ~50% on BCM6328.
+> Before:
+> [ ID] Interval           Transfer     Bandwidth       Retr
+> [  4]   0.00-30.00  sec   120 MBytes  33.7 Mbits/sec  277         sender
+> [  4]   0.00-30.00  sec   120 MBytes  33.5 Mbits/sec            receiver
 > 
-> Older non-enetsw SoCs still benefit mainly from rx batching. Performance
-> improvement of ~30% is observed on BCM6333.
+> After:
+> [ ID] Interval           Transfer     Bandwidth       Retr
+> [  4]   0.00-30.00  sec   136 MBytes  37.9 Mbits/sec  203         sender
+> [  4]   0.00-30.00  sec   135 MBytes  37.7 Mbits/sec            receiver
 > 
-> The BCM63xx SoCs are designed for routers. As such, having BQL is
-> beneficial as well as trivial to add.
-> 
-> v3:
-> * Simplify xmit_more patch by not moving around the code needlessly.
-> * Fix indentation in xmit_more patch.
-> * Fix indentation in build_skb patch.
-> * Split rx ring cleanup patch from build_skb patch and precede build_skb
->   patch for better understanding, as suggested by Florian Fainelli.
+> Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
 
-Thanks for addressing the feedback given, for patches that have not
-changed, please carry forward any tag you have been given (Reviewed-by,
-Acked-by, etc.) such that we don't have to reply to those patches again.
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
