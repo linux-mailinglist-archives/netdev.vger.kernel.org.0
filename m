@@ -2,219 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 357D62EBEFC
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:45:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9924E2EBEC5
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:37:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727357AbhAFNo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 08:44:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
+        id S1726651AbhAFNhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 08:37:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727250AbhAFNo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 08:44:57 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF4BC06134C;
-        Wed,  6 Jan 2021 05:44:16 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id 91so2478906wrj.7;
-        Wed, 06 Jan 2021 05:44:16 -0800 (PST)
+        with ESMTP id S1726500AbhAFNhD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 08:37:03 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E556C06135C
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 05:36:11 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id n16so3155232wmc.0
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 05:36:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Bj9QR4GcsVI7/BBA1Gy1qvVAIyCNaZb8bS0S8Rhtv/4=;
-        b=c/W/MLP22cFw5ohBhb4ymuDkHXfLECsyGsr//56SCIM7ZzDQmRO7uf9Xxndn44P1p2
-         YurWz3sptqksqOf7yxSFm/FuJP7DoepaWyKgbXWz/N6OBLjVg7vsbMNcyte6/gN9txcS
-         uwDjEw2lFUSS7V0XOMt9rH4tNQppGPEQDMMAlqVilc18SsBjsu0rpPhrAjiM7UyMwNin
-         lD1yud2uUPt5SsMeASyUx01HTEyyU2/lnhAtHg0/0el0m8hFjIDVe+Zgj2OHO1MqI+ou
-         /L/uR+A9aGvRePf5S7UkpeM49XGQfoty4N0iN0DFKFQeBOI3PUlnMIGGhMuurX87matF
-         UqAw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=OK96pus8qdQrBS5M0oL3AvAxP5CiljhlnQLMNRvrKmw=;
+        b=ME2v7jsF54uVq1epB2enC1dNOwAROFfIoEXp3fHa9h9z87VUluLEh9TLIZEJD7zkCz
+         r1zyeo3teckysoQ5Gz4vWE5Fmw17nZQYJC1Rw0kijr0D25IWtL1+JqBWNocbkn8o+I0z
+         XmXHN0HUVASCJ7qXgEwDQh9Hmb5ZO8HXpGzobB8ly0FL1hN3y+mIzmTrcx8lQa9AgJ0D
+         EjsnYSxe5EBnjYX7ltM4pA42B0VP6Lnp7H6b/CbyF+9wAqx/YkRkF0tq28zFze5VLS0G
+         I69DJWXu/SX2Mv4hvnxPXFDh8hMdiMVFXTiFOGD4vXXQC/K23Tw0Ty3+EyQeNNqZVj7J
+         JE1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Bj9QR4GcsVI7/BBA1Gy1qvVAIyCNaZb8bS0S8Rhtv/4=;
-        b=W++8jp0snl5PlcM3Ou7MXWGdvBrdbLKgD1vrHNypMsatYnLQWwOazs/taSh/24PcNL
-         ojMDcyAzmIZpUByx9sZU5jyCV+H9QUMKQSrlNsJ0Jt5M+dWERIIoMhD4MEK5G28yQ6Zd
-         TzzGrOtmplJwdkdudbLWe6PMzgaZ9DeyYGaG7Lfp4y13uoJghBPQjIXaGHi4/pGlir6+
-         VSnP367+xePub4JcHTkEBsWTSeA5rUbjkqKBWsD6bAyOORSFIB1VGCUGEg84926fHd2s
-         JZaEzU583YlO3pXNIZajRIpMva3RlKHUcahDvgMeVY/0PgSwtCegZg4Owk6sFms7eHN6
-         PGSg==
-X-Gm-Message-State: AOAM533chcZEq/VaVEZbZjxEch0ti0qxtv82vJRuzhHU9AGec0UnbFl7
-        r9mpHoGEYAFJeJs1fcJpZnk=
-X-Google-Smtp-Source: ABdhPJwrzRV0FdmMjI5mkXJwFhegdW00g1wQZPfHMRaXu9w5AOxrQZt2a3ct88SU7Ng6ZEW8fPVJaQ==
-X-Received: by 2002:a5d:540f:: with SMTP id g15mr4354055wrv.397.1609940655212;
-        Wed, 06 Jan 2021 05:44:15 -0800 (PST)
-Received: from localhost.localdomain (p200300f13711ec00428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:3711:ec00:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id f14sm3085351wme.14.2021.01.06.05.44.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 05:44:14 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com, jianxin.pan@amlogic.com,
-        narmstrong@baylibre.com, khilman@baylibre.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        jbrunet@baylibre.com,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v4 5/5] net: stmmac: dwmac-meson8b: add support for the RGMII RX delay on G12A
-Date:   Wed,  6 Jan 2021 14:42:51 +0100
-Message-Id: <20210106134251.45264-6-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210106134251.45264-1-martin.blumenstingl@googlemail.com>
-References: <20210106134251.45264-1-martin.blumenstingl@googlemail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=OK96pus8qdQrBS5M0oL3AvAxP5CiljhlnQLMNRvrKmw=;
+        b=P4JAL5bylEl2/SZ0xNqjuPB6cOtyAJMmA4flgHybuxthEAnS1CJHE9xmAayOaFTaBu
+         2LfgR4o8KMyL9L0C/q1xZZ5PNjwXBcwQPF+51lhNmQPMiZZpf8adgKOELGRCgC2nhOkY
+         62An5buucYxupoMxUaHB/K5Br9qwatDjb4WuZuu3AFk/zhoGJwk2yw4RXb6dt/si5yTx
+         hL5IFBa5RF3TdIBBV9WZRbV9vMWDkbKit2E9d7npXjjXLcjIwogRmyOwEH3+D7wd3iOb
+         x7TttosUbbKITBrKDfF3Wh9zrpC//l9+BYnitfNRZBDSbtE9AlOGnPwdVlOCvE7+k3ac
+         AibA==
+X-Gm-Message-State: AOAM5301d+12fDlOD88uwAtvtuONT6oq/I/RDLDonL0QErQjzHFO+Zh2
+        qqvFTQ5IXdkk+sL18ExWtQyOgw==
+X-Google-Smtp-Source: ABdhPJySeYJ9qFzqYlDz9hQ/oh6EiKZDfOpBYHZQ8TNC37LfHRCxPSg1KyOfaLHpEpPJbtJQYaIVCw==
+X-Received: by 2002:a1c:1c1:: with SMTP id 184mr3724909wmb.112.1609940170132;
+        Wed, 06 Jan 2021 05:36:10 -0800 (PST)
+Received: from localhost.localdomain ([2a01:e0a:490:8730:32c9:a713:9d05:bd74])
+        by smtp.gmail.com with ESMTPSA id r82sm3183618wma.18.2021.01.06.05.36.09
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Jan 2021 05:36:09 -0800 (PST)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     manivannan.sadhasivam@linaro.org, hemantk@codeaurora.org
+Cc:     linux-arm-msm@vger.kernel.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH] bus: mhi: Add inbound buffers allocation flag
+Date:   Wed,  6 Jan 2021 14:43:43 +0100
+Message-Id: <1609940623-8864-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Amlogic Meson G12A (and newer: G12B, SM1) SoCs have a more advanced RX
-delay logic. Instead of fine-tuning the delay in the nanoseconds range
-it now allows tuning in 200 picosecond steps. This support comes with
-new bits in the PRG_ETH1[19:16] register.
+Currently, the MHI controller driver defines which channels should
+have their inbound buffers allocated and queued. But ideally, this is
+something that should be decided by the MHI device driver instead,
+which actually deals with that buffers.
 
-Add support for validating the RGMII RX delay as well as configuring the
-register accordingly on these platforms.
+Add a flag parameter to mhi_prepare_for_transfer allowing to specify
+if buffers have to be allocated and queued by the MHI stack.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Keep auto_queue flag for now, but should be removed at some point.
+
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 ---
- .../ethernet/stmicro/stmmac/dwmac-meson8b.c   | 61 +++++++++++++++----
- 1 file changed, 48 insertions(+), 13 deletions(-)
+ drivers/bus/mhi/core/internal.h |  2 +-
+ drivers/bus/mhi/core/main.c     | 11 ++++++++---
+ drivers/net/mhi_net.c           |  2 +-
+ include/linux/mhi.h             | 12 +++++++++++-
+ net/qrtr/mhi.c                  |  2 +-
+ 5 files changed, 22 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index 4937432ac70d..55152d7ba99a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -68,10 +68,21 @@
-  */
- #define PRG_ETH0_ADJ_SKEW		GENMASK(24, 20)
- 
-+#define PRG_ETH1			0x4
-+
-+/* Defined for adding a delay to the input RX_CLK for better timing.
-+ * Each step is 200ps. These bits are used with external RGMII PHYs
-+ * because RGMII RX only has the small window. cfg_rxclk_dly can
-+ * adjust the window between RX_CLK and RX_DATA and improve the stability
-+ * of "rx data valid".
-+ */
-+#define PRG_ETH1_CFG_RXCLK_DLY		GENMASK(19, 16)
-+
- struct meson8b_dwmac;
- 
- struct meson8b_dwmac_data {
- 	int (*set_phy_mode)(struct meson8b_dwmac *dwmac);
-+	bool has_prg_eth1_rgmii_rx_delay;
- };
- 
- struct meson8b_dwmac {
-@@ -270,30 +281,35 @@ static int meson8b_devm_clk_prepare_enable(struct meson8b_dwmac *dwmac,
- 
- static int meson8b_init_rgmii_delays(struct meson8b_dwmac *dwmac)
- {
--	u32 tx_dly_config, rx_dly_config, delay_config;
-+	u32 tx_dly_config, rx_adj_config, cfg_rxclk_dly, delay_config;
- 	int ret;
- 
-+	rx_adj_config = 0;
-+	cfg_rxclk_dly = 0;
- 	tx_dly_config = FIELD_PREP(PRG_ETH0_TXDLY_MASK,
- 				   dwmac->tx_delay_ns >> 1);
- 
--	if (dwmac->rx_delay_ps == 2000)
--		rx_dly_config = PRG_ETH0_ADJ_ENABLE | PRG_ETH0_ADJ_SETUP;
--	else
--		rx_dly_config = 0;
-+	if (dwmac->data->has_prg_eth1_rgmii_rx_delay)
-+		cfg_rxclk_dly = FIELD_PREP(PRG_ETH1_CFG_RXCLK_DLY,
-+					   dwmac->rx_delay_ps / 200);
-+	else if (dwmac->rx_delay_ps == 2000)
-+		rx_adj_config = PRG_ETH0_ADJ_ENABLE | PRG_ETH0_ADJ_SETUP;
- 
- 	switch (dwmac->phy_mode) {
- 	case PHY_INTERFACE_MODE_RGMII:
--		delay_config = tx_dly_config | rx_dly_config;
-+		delay_config = tx_dly_config | rx_adj_config;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
- 		delay_config = tx_dly_config;
-+		cfg_rxclk_dly = 0;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_TXID:
--		delay_config = rx_dly_config;
-+		delay_config = rx_adj_config;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII_ID:
- 	case PHY_INTERFACE_MODE_RMII:
- 		delay_config = 0;
-+		cfg_rxclk_dly = 0;
- 		break;
- 	default:
- 		dev_err(dwmac->dev, "unsupported phy-mode %s\n",
-@@ -323,6 +339,9 @@ static int meson8b_init_rgmii_delays(struct meson8b_dwmac *dwmac)
- 				PRG_ETH0_ADJ_DELAY | PRG_ETH0_ADJ_SKEW,
- 				delay_config);
- 
-+	meson8b_dwmac_mask_bits(dwmac, PRG_ETH1, PRG_ETH1_CFG_RXCLK_DLY,
-+				cfg_rxclk_dly);
-+
- 	return 0;
+diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
+index 6f80ec3..7512602 100644
+--- a/drivers/bus/mhi/core/internal.h
++++ b/drivers/bus/mhi/core/internal.h
+@@ -664,7 +664,7 @@ void mhi_rddm_prepare(struct mhi_controller *mhi_cntrl,
+ 		      struct image_info *img_info);
+ void mhi_fw_load_handler(struct mhi_controller *mhi_cntrl);
+ int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
+-			struct mhi_chan *mhi_chan);
++			struct mhi_chan *mhi_chan, enum mhi_chan_flags flags);
+ int mhi_init_chan_ctxt(struct mhi_controller *mhi_cntrl,
+ 		       struct mhi_chan *mhi_chan);
+ void mhi_deinit_chan_ctxt(struct mhi_controller *mhi_cntrl,
+diff --git a/drivers/bus/mhi/core/main.c b/drivers/bus/mhi/core/main.c
+index 9b42540..6b6ad6b 100644
+--- a/drivers/bus/mhi/core/main.c
++++ b/drivers/bus/mhi/core/main.c
+@@ -1292,7 +1292,8 @@ static void __mhi_unprepare_channel(struct mhi_controller *mhi_cntrl,
  }
  
-@@ -423,11 +442,20 @@ static int meson8b_dwmac_probe(struct platform_device *pdev)
- 			dwmac->rx_delay_ps *= 1000;
+ int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
+-			struct mhi_chan *mhi_chan)
++			struct mhi_chan *mhi_chan,
++			enum mhi_chan_flags flags)
+ {
+ 	int ret = 0;
+ 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+@@ -1352,6 +1353,9 @@ int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
+ 	mhi_chan->ch_state = MHI_CH_STATE_ENABLED;
+ 	write_unlock_irq(&mhi_chan->lock);
+ 
++	if (mhi_chan->dir == DMA_FROM_DEVICE)
++		mhi_chan->pre_alloc = !!(flags & MHI_CH_INBOUND_ALLOC_BUFS);
++
+ 	/* Pre-allocate buffer for xfer ring */
+ 	if (mhi_chan->pre_alloc) {
+ 		int nr_el = get_nr_avail_ring_elements(mhi_cntrl,
+@@ -1498,7 +1502,8 @@ void mhi_reset_chan(struct mhi_controller *mhi_cntrl, struct mhi_chan *mhi_chan)
+ }
+ 
+ /* Move channel to start state */
+-int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
++int mhi_prepare_for_transfer(struct mhi_device *mhi_dev,
++			     enum mhi_chan_flags flags)
+ {
+ 	int ret, dir;
+ 	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
+@@ -1509,7 +1514,7 @@ int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
+ 		if (!mhi_chan)
+ 			continue;
+ 
+-		ret = mhi_prepare_channel(mhi_cntrl, mhi_chan);
++		ret = mhi_prepare_channel(mhi_cntrl, mhi_chan, flags);
+ 		if (ret)
+ 			goto error_open_chan;
  	}
+diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+index fa41d8c..b7f7f2e 100644
+--- a/drivers/net/mhi_net.c
++++ b/drivers/net/mhi_net.c
+@@ -265,7 +265,7 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 	u64_stats_init(&mhi_netdev->stats.tx_syncp);
  
--	if (dwmac->rx_delay_ps != 0 && dwmac->rx_delay_ps != 2000) {
--		dev_err(&pdev->dev,
--			"The only allowed RX delays values are: 0ps, 2000ps");
--		ret = -EINVAL;
--		goto err_remove_config_dt;
-+	if (dwmac->data->has_prg_eth1_rgmii_rx_delay) {
-+		if (dwmac->rx_delay_ps != 0 && dwmac->rx_delay_ps != 2000) {
-+			dev_err(dwmac->dev,
-+				"The only allowed RGMII RX delays values are: 0ps, 2000ps");
-+			ret = -EINVAL;
-+			goto err_remove_config_dt;
-+		}
-+	} else {
-+		if (dwmac->rx_delay_ps > 3000 || dwmac->rx_delay_ps % 200) {
-+			dev_err(dwmac->dev,
-+				"The RGMII RX delay range is 0..3000ps in 200ps steps");
-+			ret = -EINVAL;
-+			goto err_remove_config_dt;
-+		}
- 	}
+ 	/* Start MHI channels */
+-	err = mhi_prepare_for_transfer(mhi_dev);
++	err = mhi_prepare_for_transfer(mhi_dev, 0);
+ 	if (err)
+ 		goto out_err;
  
- 	dwmac->timing_adj_clk = devm_clk_get_optional(dwmac->dev,
-@@ -469,10 +497,17 @@ static int meson8b_dwmac_probe(struct platform_device *pdev)
- 
- static const struct meson8b_dwmac_data meson8b_dwmac_data = {
- 	.set_phy_mode = meson8b_set_phy_mode,
-+	.has_prg_eth1_rgmii_rx_delay = false,
+diff --git a/include/linux/mhi.h b/include/linux/mhi.h
+index 209b335..6723339 100644
+--- a/include/linux/mhi.h
++++ b/include/linux/mhi.h
+@@ -60,6 +60,14 @@ enum mhi_flags {
  };
  
- static const struct meson8b_dwmac_data meson_axg_dwmac_data = {
- 	.set_phy_mode = meson_axg_set_phy_mode,
-+	.has_prg_eth1_rgmii_rx_delay = false,
+ /**
++ * enum mhi_chan_flags - MHI channel flags
++ * @MHI_CH_INBOUND_ALLOC_BUFS: Automatically allocate and queue inbound buffers
++ */
++enum mhi_chan_flags {
++	MHI_CH_INBOUND_ALLOC_BUFS = BIT(0),
 +};
 +
-+static const struct meson8b_dwmac_data meson_g12a_dwmac_data = {
-+	.set_phy_mode = meson_axg_set_phy_mode,
-+	.has_prg_eth1_rgmii_rx_delay = true,
- };
++/**
+  * enum mhi_device_type - Device types
+  * @MHI_DEVICE_XFER: Handles data transfer
+  * @MHI_DEVICE_CONTROLLER: Control device
+@@ -705,8 +713,10 @@ void mhi_device_put(struct mhi_device *mhi_dev);
+ /**
+  * mhi_prepare_for_transfer - Setup channel for data transfer
+  * @mhi_dev: Device associated with the channels
++ * @flags: MHI channel flags
+  */
+-int mhi_prepare_for_transfer(struct mhi_device *mhi_dev);
++int mhi_prepare_for_transfer(struct mhi_device *mhi_dev,
++			     enum mhi_chan_flags flags);
  
- static const struct of_device_id meson8b_dwmac_match[] = {
-@@ -494,7 +529,7 @@ static const struct of_device_id meson8b_dwmac_match[] = {
- 	},
- 	{
- 		.compatible = "amlogic,meson-g12a-dwmac",
--		.data = &meson_axg_dwmac_data,
-+		.data = &meson_g12a_dwmac_data,
- 	},
- 	{ }
- };
+ /**
+  * mhi_unprepare_from_transfer - Unprepare the channels
+diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+index 2bf2b19..47afded 100644
+--- a/net/qrtr/mhi.c
++++ b/net/qrtr/mhi.c
+@@ -77,7 +77,7 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
+ 	int rc;
+ 
+ 	/* start channels */
+-	rc = mhi_prepare_for_transfer(mhi_dev);
++	rc = mhi_prepare_for_transfer(mhi_dev, MHI_CH_INBOUND_ALLOC_BUFS);
+ 	if (rc)
+ 		return rc;
+ 
 -- 
-2.30.0
+2.7.4
 
