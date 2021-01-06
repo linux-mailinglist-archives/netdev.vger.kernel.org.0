@@ -2,175 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6205A2EC61D
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 23:19:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDF72EC627
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 23:21:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727743AbhAFWTa convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 6 Jan 2021 17:19:30 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15828 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727705AbhAFWTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 17:19:30 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 106MFdjO016568
-        for <netdev@vger.kernel.org>; Wed, 6 Jan 2021 14:18:49 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 35w24knbmm-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 14:18:48 -0800
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 6 Jan 2021 14:18:47 -0800
-Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
-        id 0A3AB6556F49; Wed,  6 Jan 2021 14:18:42 -0800 (PST)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <willemdebruijn.kernel@gmail.com>, <edumazet@google.com>,
-        <dsahern@gmail.com>
-CC:     <kernel-team@fb.com>
-Subject: [RESEND PATCH net-next v1 13/13] skbuff: Rename skb_zcopy_{get|put} to net_zcopy_{get|put}
-Date:   Wed, 6 Jan 2021 14:18:41 -0800
-Message-ID: <20210106221841.1880536-14-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20210106221841.1880536-1-jonathan.lemon@gmail.com>
-References: <20210106221841.1880536-1-jonathan.lemon@gmail.com>
+        id S1727363AbhAFWTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 17:19:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727823AbhAFWTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 17:19:46 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397B4C061575
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 14:19:06 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id i18so4257746ioa.1
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 14:19:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j2XKwVvWZpv6kGVZxppTk9w07WPHo+vmrzQDBk+kdJE=;
+        b=lPYsdgEmMR86DUpGuouOXKRBFKN3ZKVxBLPNSlJ8OucYgdjfN7UdIdKZqbhi5omQQN
+         x4ZWMgn8RH8KOTv24yhEgdJmbp+i5orbLI6NE9Ii/Jpol/oRMi5vuxnw/3mDOEZpvN0L
+         yMcBXO/d5aHwVcfe8GkruUejh0CWXrdYjTzzMd2z7e8+fP+xBc2CJ09Z8v+hZh1GduUG
+         hKamx2hCaDDLWx4geFRbo0UP1zkwK4p+KxViyoMWILjSejxZePF09EsUA3ZkZIfRUahj
+         mGPm+rz4SVwXfBjtiRDM5UUsilbGERgnMPsqYshi76g4Ec1znYLOkt/Vwhb4Y4zDXU/0
+         OiRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j2XKwVvWZpv6kGVZxppTk9w07WPHo+vmrzQDBk+kdJE=;
+        b=haHPn5IWSu+yNgQ2FJyXwfYae78M7Oaq3Sg5o9CvBMYNbeUtod76XIdBRakrDv6H1S
+         KKWt1ex+dzv2oE2mvFndasMAVKZKV7DzHwOzr7bMNeFPEbZVmjAqZ0VBHstuA5RkG64g
+         L/RR0ydd8POyI31cxLf+f/LsBIFqUswxJefadQiPfWOqzuwia0b+TajwJctP8qAYojh9
+         3L/qmxuFx2XMdCnXuLkPG4XBIykdYxpLULV9MfBUScOb/h1UL560Q1hh4EY8Hm9rTs1f
+         Avt9xVIi7xUCTJ6jKRcej+FKGjPeTgHgV5N+w4Tlby+ImJbao9yHey5WBIq7gNnhuOeA
+         LUIA==
+X-Gm-Message-State: AOAM531GlE0N5O3Q4/A2HG4Zr5QLgJTJ2j29WzxKXyqPEV9qQ+wFbTe9
+        yab6BLjABcPwA2v2dgncRRfSgsYIjSMEulZVe/o=
+X-Google-Smtp-Source: ABdhPJwI3l0rXUUHTXDU3kXGCGA6UckodPeqw5N52Lyy4xSRREAACFn44KIZmGBL9JbNEFlZ5tmkIKI0xv1nNXbA3zw=
+X-Received: by 2002:a6b:8e41:: with SMTP id q62mr4454752iod.5.1609971545139;
+ Wed, 06 Jan 2021 14:19:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-06_12:2021-01-06,2021-01-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
- mlxlogscore=351 adultscore=0 malwarescore=0 mlxscore=0 clxscore=1034
- priorityscore=1501 lowpriorityscore=0 suspectscore=0 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101060125
-X-FB-Internal: deliver
+References: <f89bf2f3-5324-b635-4253-8a8be316c15b@gmail.com> <619e6cc2-9253-fd1e-564a-eec944ee31e1@gmail.com>
+In-Reply-To: <619e6cc2-9253-fd1e-564a-eec944ee31e1@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 6 Jan 2021 14:18:54 -0800
+Message-ID: <CAKgT0UcbDT_ccC0M=hC121YZ3pVC1ht2uv9-vPDjMFtM5mKDWw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] r8169: replace BUG_ON with WARN in _rtl_eri_write
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unlike the rest of the skb_zcopy_ functions, these routines
-operate on a 'struct ubuf', not a skb.  Remove the 'skb_'
-prefix from the naming to make things clearer.
+On Wed, Jan 6, 2021 at 5:32 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> Use WARN here to avoid stopping the system. In addition print the addr
+> and mask values that triggered the warning.
+>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 024042f37..9af048ad0 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -763,7 +763,7 @@ static void _rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
+>  {
+>         u32 cmd = ERIAR_WRITE_CMD | type | mask | addr;
+>
+> -       BUG_ON((addr & 3) || (mask == 0));
+> +       WARN(addr & 3 || !mask, "addr: 0x%x, mask: 0x%08x\n", addr, mask);
+>         RTL_W32(tp, ERIDR, val);
+>         r8168fp_adjust_ocp_cmd(tp, &cmd, type);
+>         RTL_W32(tp, ERIAR, cmd);
 
-Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- include/linux/skbuff.h | 10 +++++-----
- net/core/skbuff.c      |  2 +-
- net/ipv4/ip_output.c   |  2 +-
- net/ipv4/tcp.c         |  4 ++--
- net/ipv6/ip6_output.c  |  2 +-
- 5 files changed, 10 insertions(+), 10 deletions(-)
+Would it make more sense to perhaps just catch the case via an if
+statement, display the warning, and then return instead of proceeding
+with the write with the bad values?
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 3ec8b83aca3e..961908a22d0e 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1443,7 +1443,7 @@ static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
- 	return is_zcopy ? skb_uarg(skb) : NULL;
- }
- 
--static inline void skb_zcopy_get(struct ubuf_info *uarg)
-+static inline void net_zcopy_get(struct ubuf_info *uarg)
- {
- 	refcount_inc(&uarg->refcnt);
- }
-@@ -1461,7 +1461,7 @@ static inline void skb_zcopy_set(struct sk_buff *skb, struct ubuf_info *uarg,
- 		if (unlikely(have_ref && *have_ref))
- 			*have_ref = false;
- 		else
--			skb_zcopy_get(uarg);
-+			net_zcopy_get(uarg);
- 		skb_zcopy_init(skb, uarg);
- 	}
- }
-@@ -1482,19 +1482,19 @@ static inline void *skb_zcopy_get_nouarg(struct sk_buff *skb)
- 	return (void *)((uintptr_t) skb_shinfo(skb)->destructor_arg & ~0x1UL);
- }
- 
--static inline void skb_zcopy_put(struct ubuf_info *uarg)
-+static inline void net_zcopy_put(struct ubuf_info *uarg)
- {
- 	if (uarg)
- 		uarg->callback(NULL, uarg, true);
- }
- 
--static inline void skb_zcopy_put_abort(struct ubuf_info *uarg, bool have_uref)
-+static inline void net_zcopy_put_abort(struct ubuf_info *uarg, bool have_uref)
- {
- 	if (uarg) {
- 		if (uarg->callback == msg_zerocopy_callback)
- 			msg_zerocopy_put_abort(uarg, have_uref);
- 		else if (have_uref)
--			skb_zcopy_put(uarg);
-+			net_zcopy_put(uarg);
- 	}
- }
- 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index ee288af095f0..45d60c5286fe 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1165,7 +1165,7 @@ struct ubuf_info *msg_zerocopy_realloc(struct sock *sk, size_t size,
- 
- 			/* no extra ref when appending to datagram (MSG_MORE) */
- 			if (sk->sk_type == SOCK_STREAM)
--				skb_zcopy_get(uarg);
-+				net_zcopy_get(uarg);
- 
- 			return uarg;
- 		}
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index ffee03729285..102b1998ba3c 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1230,7 +1230,7 @@ static int __ip_append_data(struct sock *sk,
- error_efault:
- 	err = -EFAULT;
- error:
--	skb_zcopy_put_abort(uarg, extra_uref);
-+	net_zcopy_put_abort(uarg, extra_uref);
- 	cork->length -= length;
- 	IP_INC_STATS(sock_net(sk), IPSTATS_MIB_OUTDISCARDS);
- 	refcount_add(wmem_alloc_delta, &sk->sk_wmem_alloc);
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 1954190b33c7..2267d21c73a6 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1429,7 +1429,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 		tcp_push(sk, flags, mss_now, tp->nonagle, size_goal);
- 	}
- out_nopush:
--	skb_zcopy_put(uarg);
-+	net_zcopy_put(uarg);
- 	return copied + copied_syn;
- 
- do_error:
-@@ -1440,7 +1440,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 	if (copied + copied_syn)
- 		goto out;
- out_err:
--	skb_zcopy_put_abort(uarg, true);
-+	net_zcopy_put_abort(uarg, true);
- 	err = sk_stream_error(sk, flags, err);
- 	/* make sure we wake any epoll edge trigger waiter */
- 	if (unlikely(tcp_rtx_and_write_queues_empty(sk) && err == -EAGAIN)) {
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index f59cfa39686a..072ce9678616 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1715,7 +1715,7 @@ static int __ip6_append_data(struct sock *sk,
- error_efault:
- 	err = -EFAULT;
- error:
--	skb_zcopy_put_abort(uarg, extra_uref);
-+	net_zcopy_put_abort(uarg, extra_uref);
- 	cork->length -= length;
- 	IP6_INC_STATS(sock_net(sk), rt->rt6i_idev, IPSTATS_MIB_OUTDISCARDS);
- 	refcount_add(wmem_alloc_delta, &sk->sk_wmem_alloc);
--- 
-2.24.1
-
+I'm just wondering if this could make things worse by putting the
+device in a bad state in some way resulting in either a timeout
+waiting for a response or a hang.
