@@ -2,225 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E98102EC427
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:49:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 541172EC446
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:55:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727085AbhAFTtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 14:49:05 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13564 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726612AbhAFTtE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:49:04 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 106JitVN026832;
-        Wed, 6 Jan 2021 11:48:07 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=V5rfnqUwxgbMjKAX+Xx8rCTMMVrmZztBu76kaPD7rQs=;
- b=YpghjUgRCwGlti2/XA28ifBd8b1u4fl2YdWfqhKAx537K5ry0cAn30EPiOoALVHKncNi
- 7QYVbqDuEcdVuURNYyY5kEdlLjetFoVbmep9OVVz/F7STGbmUbb/v5K6p55OI7IoowNC
- 71h8VfbtQUs9fAUH+jko6rlAVm36+LiXvK0= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 35w5dvv0pv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 06 Jan 2021 11:48:06 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 6 Jan 2021 11:48:05 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kg3GvFoub8FSfM5NZQ17lyyNO1b0WgUGeRBeKdv4BN+9gpC6ioDH4xYnuWqjxm2741t2a8ArGYkd4vOmBWYnbf8fQuDR09/kzbnox8o+p6GwHc2UhxnAPu3rIiyOcZKAayAI/r6Xnu/NWw2HCLd9rjrxuCUoVKqCsbGWoD1Q+xUnZGWfPSEu0V7+8tyLhb5MZA2PyyJdOXctxxp/V0X1rC6tzLJFiEq8pwn1+9ZBKX6q2AaFXSuNgtQmfj+84xG2yTL7jqNnqDz8cdXQ+qbEL8ZrQVv524axAQ4U40JkmAE8gD2RIUOeb9CAHFwE6JvpFB1xmnO+og5xKy5qclUjLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V5rfnqUwxgbMjKAX+Xx8rCTMMVrmZztBu76kaPD7rQs=;
- b=dmOffCThg1h/lFbCxyEZMJJS1tBXUPPLtuCzflG1SqQZnsMy8/2zuywpnwmzYrzMCo1ZPVVA7XhpoeFErQS2rgZCpfabkZSLz+9YrXQf4el1DR5Sbm6BFDzeFxWdPA/iQbJ1+gk2i6Bm7EkF4f5Xb//EuNJIkNDnKulTbazcR0WO2skuJ2HyMAARf9ZoB9q3xH7eyhpPygm6uXnt9O95NTJQicA/UkZ/nNsCLcuYBAEyHTKk72B5JUTCjb/48gZPGqDo45Kmbj034kkg48h6Lsbj+7eq9pq923Y8v+xffh3rSHkjqBS+BBkhO2nXHFVu1ZDaJ9sozFTPIaZGyimBOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V5rfnqUwxgbMjKAX+Xx8rCTMMVrmZztBu76kaPD7rQs=;
- b=Ko5rN0FdLrv6jhfG+iGRpFhfX2ysGC9DMA40GwSQGZn4LmvIvGqBT6YRENaCQP3O+BwmXzEl8YLvkS+K/YpxapSr+FbQivrZsm/UKUa08DTw93Dxr1cUHfcPyXFjtNHR0l5UowmPmxOcUC2H4EN4UChFwikEa7lJBDRLDnN5iyo=
-Authentication-Results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2696.namprd15.prod.outlook.com (2603:10b6:a03:156::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.20; Wed, 6 Jan
- 2021 19:48:03 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::217e:885b:1cef:e1f7]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::217e:885b:1cef:e1f7%7]) with mapi id 15.20.3721.024; Wed, 6 Jan 2021
- 19:48:03 +0000
-Date:   Wed, 6 Jan 2021 11:47:56 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Stanislav Fomichev <sdf@google.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, Song Liu <songliubraving@fb.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH bpf-next v3 3/3] bpf: remove extra lock_sock for
- TCP_ZEROCOPY_RECEIVE
-Message-ID: <20210106194756.vjkulozifc4bfuut@kafai-mbp.dhcp.thefacebook.com>
-References: <20210105214350.138053-1-sdf@google.com>
- <20210105214350.138053-4-sdf@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210105214350.138053-4-sdf@google.com>
-X-Originating-IP: [2620:10d:c090:400::5:8a1b]
-X-ClientProxiedBy: CO2PR04CA0168.namprd04.prod.outlook.com
- (2603:10b6:104:4::22) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        id S1726464AbhAFTzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:55:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbhAFTzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:55:03 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55796C06134C
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 11:54:23 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id m23so3905365ioy.2
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 11:54:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yqxD5DGmQzql6e/bYmAXmjGDIRjOO1l2zM2klhlTIlA=;
+        b=q/omerwQ8qY79ZBRsYjuQSBZoN+oeS0RKW0Z3Y1YoqMn+pt5FLGixhv3WWXSjdYVwA
+         zz1epxZM5T32pOmk06M0f6xC9XVhNR9uzdtbbQSAoOXCtmjftHF/xzL/4q33ZotOofuU
+         MTTtYNSIsdnG4FfyTEPDA46F/O9G4o5r0HedVG5fUkhSNkdkDD/3cIN4cmhTnd1soPzf
+         5zWVE+6G/af/zEHLeLcFmvcJEqDqLCKZylH4c/GakEJEnvZN4R9Kdyzf1bAW1TVCF0GY
+         OF1xf0FD8Z5ZgPaRvWv/ULYn7Z6tpypCqTCTi4SgvY70H1rlfmmejKi+8cXmdcCKtMpy
+         uBJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yqxD5DGmQzql6e/bYmAXmjGDIRjOO1l2zM2klhlTIlA=;
+        b=Jk1Ci5Izw/Nqs+4t1qPDa7Q6ol1cHMMi0qwXzfjuupuW1Uo1/HOzU62BnhqnUgRsfr
+         AfYxiHfJeIV+EKcmud+V3oHfGashHLw8ec3qWf4sIKcadtnNo6zbyRF9h0vNHqfFBcF8
+         a7hnLdRwWFPkFtC046jSeUFXE+gJMZIRHszJ8Idlg+rRVFOibYz3y8rHF8Olp67T3G5/
+         qpDIv65cjB2/CLbZla5rD0b2njg8bIkmPqiKmMl/TBtlC/mkN0lPGf96WVkQ7Ra2nlUH
+         hPVS84ul6yLLljr7nvnSeg5yr99YNg8AzYpX4T+Juq4jpyN/yXwCxX1SEl1oq78p2yce
+         AwxA==
+X-Gm-Message-State: AOAM532AeH01qUs67IF2ns80K8nJR+qXs21sGONRFpX4R8FR52xKY7jZ
+        boqSN148S0Bltx4pB5sKocBdlvcftFM+7MEu/tB66Opi8qA=
+X-Google-Smtp-Source: ABdhPJxlhVMKIm9/Tlsv/Wq2uXiFPn9OJO1GL10+wWbotyrgXROMBHGUosuUK/TUjMza+TkJiIBFuG2BJMlwVUo336Q=
+X-Received: by 2002:a02:b011:: with SMTP id p17mr5104932jah.114.1609962862532;
+ Wed, 06 Jan 2021 11:54:22 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:8a1b) by CO2PR04CA0168.namprd04.prod.outlook.com (2603:10b6:104:4::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6 via Frontend Transport; Wed, 6 Jan 2021 19:48:02 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2788e164-9d89-4961-0949-08d8b27bfb32
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2696:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB269627535A73A289E4DA5730D5D00@BYAPR15MB2696.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HIaBi1hTCT4n1uqA0+V6XeCq3gxyXqypRQN28WpXqVMHRN6foOcj5wWsNWEMjQqt2/o2JL6O45SGX9rbvrDXmhEbeXtBLqnejjl1fGFb0jbZkXpo4+tbi5llVdZuX4lReJ8X+lZDmR/B6XLxS8QCq1TY+GkS7BxBL6wK6CfEUtJsIAfIoKf15WGUckHopIx6Yhf00lSI4Akw6UuiVuSo6MyjpmfxBZdlYiviLO92d+qEPJMa1otM7NQbravMCbl9v9a576HOlQb4DZpFsFgEMKxr0zEUsJErrWQXpmDbhoulSj0B0fkOkuraoiGuDCxPgNBwN/8YSmDchN1rLaK86yXxo+hCnsPNlolsFun6Pa3vSV68OJaTMmcYjQojA5DbHkrxAUGZ9NwBnJSqb1CA6A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(396003)(39860400002)(346002)(366004)(7696005)(86362001)(8936002)(83380400001)(2906002)(8676002)(6666004)(54906003)(478600001)(4326008)(186003)(16526019)(66946007)(6916009)(52116002)(316002)(5660300002)(1076003)(66476007)(66556008)(55016002)(6506007)(9686003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?/de09YXOQvAQvR2FNkxZtB0G5kwR2IjtdxY4lfzvnoueAWyyDAoFe/wr4DTY?=
- =?us-ascii?Q?SpwKD0oRIxUJfkkMCQIyLu36pvz/PtNlqC6RtcUmZFPVjJnTlZxxSCfjl5Lj?=
- =?us-ascii?Q?IW7xMpME0ErR7IkkeQgelGQuSaAWMT093YtmQHqU5huISYrvvX0I0M3PJRXN?=
- =?us-ascii?Q?3dtW7EBi6BQkckQlKc36aAxQzd9yh1VJ+NrRWwnec7FnoIbjKy94tjFVGfhN?=
- =?us-ascii?Q?iRkQqP6sEHNTaM0LcJjAR4eg4CeEdSvFzJ7uqugLn93DLnTr39ndiY8tPFSi?=
- =?us-ascii?Q?uVZiW14jMhgSazrj6+pfxF5EnhmgzdiSg7gny66odaj0QEZHOER9Qq3PZ+7j?=
- =?us-ascii?Q?fJywvL7OkthmwTQO5wG+lIwhlMex9ffHNvRlcnp3SuueYc/Qx13X8XrsRA7C?=
- =?us-ascii?Q?nXJBrs4ofaPu2QZ0cPTKDwizyon3x+wJv2bqm/yWi3y/uJnGvFaEPFTdDz1p?=
- =?us-ascii?Q?y04GbZeULHHAWGz/YL4IJ0FknSH+rdfUKSaAysoFXKXsJ1ZmGKd27gJegv/S?=
- =?us-ascii?Q?JTmnTQnjUr+bU9ELI7sUQT7Mgh7WttHPhhkvpz1AEYnp6N+zzAQHAdeCMltL?=
- =?us-ascii?Q?NjWr1+ML7rOP3ihHdzFVCLSrB92EDPdW1ijZC/vCGeD3Vb/RI6xHmJ3d80OA?=
- =?us-ascii?Q?Ty+C71t9qeS4sEA4I+eHS+oRy8a1Uk3WWp0z2gjlOcl7+l1LySXmmyas7Igw?=
- =?us-ascii?Q?I+qIO7bgOREbdmYp7+59KoRO6H8JW9xXfyDZ4VjzeOQXDCknRvtuGWJk1e/N?=
- =?us-ascii?Q?UGDBMdlb7UT+xsvpz8K9x8LTjGvdUskzTRRnqme8PlJUEhkr7vVjJ+uaklpK?=
- =?us-ascii?Q?JNJnlxLEjZmwsSy9mbEqgf/A8/jhw1qBrWcE9cgmcc4RdpF36mysN7CpEzkF?=
- =?us-ascii?Q?1aA9WOsLtNQQzMn9fef4WsfTAKTDrHtJWgUJnbFvUSw0cT+2oSXGcXhho052?=
- =?us-ascii?Q?yf8iKIX6xXmkAHhZiVRr0Wu0MFjq/jQcgs0ZlJYTypyzX4mWfmLLs6cEh02A?=
- =?us-ascii?Q?fVvRgTepXBqaL4iLcsNaIRmlWA=3D=3D?=
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2021 19:48:03.6957
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2788e164-9d89-4961-0949-08d8b27bfb32
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /uhgnnoPdQjZX7Gm/1/FgZLS7EX3uktT5UTZaxjof5FusWroGU2XNC4GMlaG3uJ7
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2696
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-06_11:2021-01-06,2021-01-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
- mlxlogscore=754 spamscore=0 clxscore=1015 lowpriorityscore=0 phishscore=0
- bulkscore=0 priorityscore=1501 impostorscore=0 adultscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101060111
-X-FB-Internal: deliver
+References: <20210106180428.722521-1-atenart@kernel.org> <20210106180428.722521-4-atenart@kernel.org>
+In-Reply-To: <20210106180428.722521-4-atenart@kernel.org>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 6 Jan 2021 11:54:11 -0800
+Message-ID: <CAKgT0UdZs7ER84PmeM5EV6rAKWiqu-5Ma47bh8qf-68fjsfbAw@mail.gmail.com>
+Subject: Re: [PATCH net 3/3] net-sysfs: move the xps cpus/rxqs retrieval in a
+ common function
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 01:43:50PM -0800, Stanislav Fomichev wrote:
-> Add custom implementation of getsockopt hook for TCP_ZEROCOPY_RECEIVE.
-> We skip generic hooks for TCP_ZEROCOPY_RECEIVE and have a custom
-> call in do_tcp_getsockopt using the on-stack data. This removes
-> 3% overhead for locking/unlocking the socket.
-> 
-> Also:
-> - Removed BUILD_BUG_ON (zerocopy doesn't depend on the buf size anymore)
-> - Separated on-stack buffer into bpf_sockopt_buf and downsized to 32 bytes
->   (let's keep it to help with the other options)
-> 
-> (I can probably split this patch into two: add new features and rework
->  bpf_sockopt_buf; can follow up if the approach in general sounds
->  good).
-> 
-> Without this patch:
->      3.29%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
->             |
->              --3.22%--__cgroup_bpf_run_filter_getsockopt
->                        |
->                        |--0.66%--lock_sock_nested
-A general question for sockopt prog, why the BPF_CGROUP_(GET|SET)SOCKOPT prog
-has to run under lock_sock()?
+On Wed, Jan 6, 2021 at 10:04 AM Antoine Tenart <atenart@kernel.org> wrote:
+>
+> Most of the xps_cpus_show and xps_rxqs_show functions share the same
+> logic. Having it in two different functions does not help maintenance
+> and we can already see small implementation differences. This should not
+> be the case and this patch moves their common logic into a new function,
+> xps_queue_show, to improve maintenance.
+>
+> While the rtnl lock could be held in the new xps_queue_show, it is still
+> held in xps_cpus_show and xps_rxqs_show as this is an important
+> information when looking at those two functions. This does not add
+> complexity.
+>
+> Signed-off-by: Antoine Tenart <atenart@kernel.org>
+> ---
+>  net/core/net-sysfs.c | 168 ++++++++++++++++++++-----------------------
+>  1 file changed, 79 insertions(+), 89 deletions(-)
+>
+> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+> index 5a39e9b38e5f..6e6bc05181f6 100644
+> --- a/net/core/net-sysfs.c
+> +++ b/net/core/net-sysfs.c
+> @@ -1314,77 +1314,98 @@ static const struct attribute_group dql_group = {
+>  #endif /* CONFIG_BQL */
+>
+>  #ifdef CONFIG_XPS
+> -static ssize_t xps_cpus_show(struct netdev_queue *queue,
+> -                            char *buf)
+> +/* Should be called with the rtnl lock held. */
+> +static int xps_queue_show(struct net_device *dev, unsigned long **mask,
+> +                         unsigned int index, bool is_rxqs_map)
 
->                        |
->                        |--0.57%--__might_fault
->                        |
->                         --0.56%--release_sock
-> 
-> With the patch applied:
->      0.42%     0.10%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt_kern
->      0.02%     0.02%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
-> 
-[ ... ]
+Why pass dev and index instead of just the queue which already
+contains both? I think it would make more sense to just stick to
+passing the queue through along with a pointer to the xps_dev_maps
+value that we need to read.
 
-> @@ -1445,15 +1442,29 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
->  				       int __user *optlen, int max_optlen,
->  				       int retval)
 >  {
-> -	struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> -	struct bpf_sockopt_kern ctx = {
-> -		.sk = sk,
-> -		.level = level,
-> -		.optname = optname,
-> -		.retval = retval,
-> -	};
-> +	struct bpf_sockopt_kern ctx;
-> +	struct bpf_sockopt_buf buf;
-> +	struct cgroup *cgrp;
->  	int ret;
->  
-> +#ifdef CONFIG_INET
-> +	/* TCP do_tcp_getsockopt has optimized getsockopt implementation
-> +	 * to avoid extra socket lock for TCP_ZEROCOPY_RECEIVE.
-> +	 */
-> +	if (sk->sk_prot->getsockopt == tcp_getsockopt &&
-> +	    level == SOL_TCP && optname == TCP_ZEROCOPY_RECEIVE)
-> +		return retval;
-> +#endif
-That seems too much protocol details and not very scalable.
-It is not very related to kernel/bpf/cgroup.c which has very little idea
-whether a specific protocol has optimized things in some ways (e.g. by
-directly calling cgroup's bpf prog at some strategic places in this patch).
-Lets see if it can be done better.
+> -       int cpu, len, ret, num_tc = 1, tc = 0;
+> -       struct net_device *dev = queue->dev;
+> +       const unsigned long *possible_mask = NULL;
+> +       int j, num_tc = 0, tc = 0, ret = 0;
+>         struct xps_dev_maps *dev_maps;
+> -       unsigned long *mask;
+> -       unsigned int index;
+> -
+> -       if (!netif_is_multiqueue(dev))
+> -               return -ENOENT;
+> -
+> -       index = get_netdev_queue_index(queue);
+> -
+> -       if (!rtnl_trylock())
+> -               return restart_syscall();
+> +       unsigned int nr_ids;
+>
+>         if (dev->num_tc) {
+>                 /* Do not allow XPS on subordinate device directly */
+>                 num_tc = dev->num_tc;
+> -               if (num_tc < 0) {
+> -                       ret = -EINVAL;
+> -                       goto err_rtnl_unlock;
+> -               }
+> +               if (num_tc < 0)
+> +                       return -EINVAL;
+>
+>                 /* If queue belongs to subordinate dev use its map */
+>                 dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
+>
+>                 tc = netdev_txq_to_tc(dev, index);
+> -               if (tc < 0) {
+> -                       ret = -EINVAL;
+> -                       goto err_rtnl_unlock;
+> -               }
+> +               if (tc < 0)
+> +                       return -EINVAL;
+>         }
+>
 
-At least, these protocol checks belong to the net's socket.c
-more than the bpf's cgroup.c here.  If it also looks like layering
-breakage in socket.c, may be adding a signal in sk_prot (for example)
-to tell if the sk_prot->getsockopt has already called the cgroup's bpf
-prog?  (e.g. tcp_getsockopt() can directly call the cgroup's bpf for all
-optname instead of only TCP_ZEROCOPY_RECEIVE).
+So if we store the num_tc and nr_ids in the dev_maps structure then we
+could simplify this a bit by pulling the num_tc info out of the
+dev_map and only asking the Tx queue for the tc in that case and
+validating it against (tc <0 || num_tc <= tc) and returning an error
+if either are true.
 
-For example:
+This would also allow us to address the fact that the rxqs feature
+doesn't support the subordinate devices as you could pull out the bit
+above related to the sb_dev and instead call that prior to calling
+xps_queue_show so that you are operating on the correct device map.
 
-int __sys_getsockopt(...)
-{
-	/* ... */
-
-	if (!sk_prot->bpf_getsockopt_handled)
-		BPF_CGROUP_RUN_PROG_GETSOCKOPT(...);
-}
-
-Thoughts?
-
+> -       mask = bitmap_zalloc(nr_cpu_ids, GFP_KERNEL);
+> -       if (!mask) {
+> -               ret = -ENOMEM;
+> -               goto err_rtnl_unlock;
+> +       rcu_read_lock();
 > +
-> +	memset(&buf, 0, sizeof(buf));
-> +	memset(&ctx, 0, sizeof(ctx));
+> +       if (is_rxqs_map) {
+> +               dev_maps = rcu_dereference(dev->xps_rxqs_map);
+> +               nr_ids = dev->num_rx_queues;
+> +       } else {
+> +               dev_maps = rcu_dereference(dev->xps_cpus_map);
+> +               nr_ids = nr_cpu_ids;
+> +               if (num_possible_cpus() > 1)
+> +                       possible_mask = cpumask_bits(cpu_possible_mask);
+>         }
+
+I think Jakub had mentioned earlier the idea of possibly moving some
+fields into the xps_cpus_map and xps_rxqs_map in order to reduce the
+complexity of this so that certain values would be protected by the
+RCU lock.
+
+This might be a good time to look at encoding things like the number
+of IDs and the number of TCs there in order to avoid a bunch of this
+duplication. Then you could just pass a pointer to the map you want to
+display and the code should be able to just dump the values.:
+
+> +       if (!dev_maps)
+> +               goto rcu_unlock;
+>
+> -       rcu_read_lock();
+> -       dev_maps = rcu_dereference(dev->xps_cpus_map);
+> -       if (dev_maps) {
+> -               for_each_possible_cpu(cpu) {
+> -                       int i, tci = cpu * num_tc + tc;
+> -                       struct xps_map *map;
+> -
+> -                       map = rcu_dereference(dev_maps->attr_map[tci]);
+> -                       if (!map)
+> -                               continue;
+> -
+> -                       for (i = map->len; i--;) {
+> -                               if (map->queues[i] == index) {
+> -                                       set_bit(cpu, mask);
+> -                                       break;
+> -                               }
+> +       for (j = -1; j = netif_attrmask_next(j, possible_mask, nr_ids),
+> +            j < nr_ids;) {
+> +               int i, tci = j * num_tc + tc;
+> +               struct xps_map *map;
 > +
-> +	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> +	ctx.sk = sk;
-> +	ctx.level = level;
-> +	ctx.optname = optname;
-> +	ctx.retval = retval;
+> +               map = rcu_dereference(dev_maps->attr_map[tci]);
+> +               if (!map)
+> +                       continue;
 > +
->  	/* Opportunistic check to see whether we have any BPF program
->  	 * attached to the hook so we don't waste time allocating
->  	 * memory and locking the socket.
+> +               for (i = map->len; i--;) {
+> +                       if (map->queues[i] == index) {
+> +                               set_bit(j, *mask);
+> +                               break;
+>                         }
+>                 }
+>         }
+> +
+> +rcu_unlock:
+>         rcu_read_unlock();
+>
+> +       return ret;
+> +}
+> +
+> +static ssize_t xps_cpus_show(struct netdev_queue *queue, char *buf)
+> +{
+> +       struct net_device *dev = queue->dev;
+> +       unsigned long *mask;
+> +       unsigned int index;
+> +       int len, ret;
+> +
+> +       if (!netif_is_multiqueue(dev))
+> +               return -ENOENT;
+> +
+> +       index = get_netdev_queue_index(queue);
+> +
+> +       mask = bitmap_zalloc(nr_cpu_ids, GFP_KERNEL);
+> +       if (!mask)
+> +               return -ENOMEM;
+> +
+> +       if (!rtnl_trylock()) {
+> +               bitmap_free(mask);
+> +               return restart_syscall();
+> +       }
+> +
+> +       ret = xps_queue_show(dev, &mask, index, false);
+>         rtnl_unlock();
+>
+> +       if (ret) {
+> +               bitmap_free(mask);
+> +               return ret;
+> +       }
+> +
+>         len = bitmap_print_to_pagebuf(false, buf, mask, nr_cpu_ids);
+>         bitmap_free(mask);
+>         return len < PAGE_SIZE ? len : -EINVAL;
+> -
+> -err_rtnl_unlock:
+> -       rtnl_unlock();
+> -       return ret;
+>  }
+>
+>  static ssize_t xps_cpus_store(struct netdev_queue *queue,
+> @@ -1430,65 +1451,34 @@ static struct netdev_queue_attribute xps_cpus_attribute __ro_after_init
+>
+>  static ssize_t xps_rxqs_show(struct netdev_queue *queue, char *buf)
+>  {
+> -       int j, len, ret, num_tc = 1, tc = 0;
+>         struct net_device *dev = queue->dev;
+> -       struct xps_dev_maps *dev_maps;
+>         unsigned long *mask;
+>         unsigned int index;
+> +       int len, ret;
+>
+>         index = get_netdev_queue_index(queue);
+>
+> -       if (!rtnl_trylock())
+> -               return restart_syscall();
+> -
+> -       if (dev->num_tc) {
+> -               num_tc = dev->num_tc;
+> -               tc = netdev_txq_to_tc(dev, index);
+> -               if (tc < 0) {
+> -                       ret = -EINVAL;
+> -                       goto err_rtnl_unlock;
+> -               }
+> -       }
+>         mask = bitmap_zalloc(dev->num_rx_queues, GFP_KERNEL);
+> -       if (!mask) {
+> -               ret = -ENOMEM;
+> -               goto err_rtnl_unlock;
+> -       }
+> -
+> -       rcu_read_lock();
+> -       dev_maps = rcu_dereference(dev->xps_rxqs_map);
+> -       if (!dev_maps)
+> -               goto out_no_maps;
+> -
+> -       for (j = -1; j = netif_attrmask_next(j, NULL, dev->num_rx_queues),
+> -            j < dev->num_rx_queues;) {
+> -               int i, tci = j * num_tc + tc;
+> -               struct xps_map *map;
+> -
+> -               map = rcu_dereference(dev_maps->attr_map[tci]);
+> -               if (!map)
+> -                       continue;
+> +       if (!mask)
+> +               return -ENOMEM;
+>
+> -               for (i = map->len; i--;) {
+> -                       if (map->queues[i] == index) {
+> -                               set_bit(j, mask);
+> -                               break;
+> -                       }
+> -               }
+> +       if (!rtnl_trylock()) {
+> +               bitmap_free(mask);
+> +               return restart_syscall();
+>         }
+> -out_no_maps:
+> -       rcu_read_unlock();
+>
+> +       ret = xps_queue_show(dev, &mask, index, true);
+>         rtnl_unlock();
+>
+> +       if (ret) {
+> +               bitmap_free(mask);
+> +               return ret;
+> +       }
+> +
+>         len = bitmap_print_to_pagebuf(false, buf, mask, dev->num_rx_queues);
+>         bitmap_free(mask);
+>
+>         return len < PAGE_SIZE ? len : -EINVAL;
+> -
+> -err_rtnl_unlock:
+> -       rtnl_unlock();
+> -       return ret;
+>  }
+>
+>  static ssize_t xps_rxqs_store(struct netdev_queue *queue, const char *buf,
+> --
+> 2.29.2
+>
