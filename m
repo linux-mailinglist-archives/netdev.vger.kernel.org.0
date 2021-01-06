@@ -2,134 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 313EE2EB71B
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 01:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 562442EB720
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 01:53:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbhAFAv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 19:51:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726244AbhAFAv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 19:51:58 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12693C061574;
-        Tue,  5 Jan 2021 16:51:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=2VuGgG2Y0oR6VaHF+A2Tlk5qtM6i8jJ0JeuAdLPEIVg=; b=YtyM+2Ss06xrA0JR7dBINeoXw
-        4jdKkyHo49FRvf/FV/c3qm5xE4AyVEtItlodEp1L2+RNlD1SeuFL2mWp3wLydV/ULsYxTgYAzHXxG
-        EAJhIpgHroWFEyvqN+YGlnsYm1O3ER2MNM/6RVqxmy0hsz8+oZ7s344+yfEgfLE7cbL/h084Xr+B9
-        g7gAMS+C6zIBs+i0eRXW1jMAMi3sgRZf3QAwztWXuo4F7eF3FhoQAF0ofEl0sBZF828Xs/grfWXLV
-        RFRiuDI7T+xrYg2m4Mz1gqb0lfw3xVPkGdFy3KLZmtosxjq61B/rXHHJI3bLqS1JbceneNZlPU6E2
-        ff046hNcA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45162)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kwx2N-0001D4-K8; Wed, 06 Jan 2021 00:50:55 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kwx2L-0008Az-I1; Wed, 06 Jan 2021 00:50:53 +0000
-Date:   Wed, 6 Jan 2021 00:50:53 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/3] ARM: iop32x: improve N2100 PCI broken parity quirk
-Message-ID: <20210106005053.GG1551@shell.armlinux.org.uk>
-References: <d53b6377-ff2a-3bba-612f-d052ffa81d09@gmail.com>
- <20210106002833.GA1286114@bjorn-Precision-5520>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210106002833.GA1286114@bjorn-Precision-5520>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        id S1726711AbhAFAx2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Jan 2021 19:53:28 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:56964 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726038AbhAFAx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 19:53:28 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id A281B4CBCE120;
+        Tue,  5 Jan 2021 16:52:47 -0800 (PST)
+Date:   Tue, 05 Jan 2021 16:52:47 -0800 (PST)
+Message-Id: <20210105.165247.1975563309057158543.davem@davemloft.net>
+To:     jks@iki.fi
+Cc:     bjorn@mork.no, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, lkp@intel.com, mrkiko.rs@gmail.com,
+        netdev@vger.kernel.org, oliver@neukum.org
+Subject: Re: [PATCH net,stable v3] net: cdc_ncm: correct overhead in
+ delayed_ndp_size
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210105045249.5590-1-jks@iki.fi>
+References: <20210103202309.1201-1-jks@iki.fi>
+        <20210105045249.5590-1-jks@iki.fi>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 05 Jan 2021 16:52:48 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 06:28:33PM -0600, Bjorn Helgaas wrote:
-> On Tue, Jan 05, 2021 at 10:42:31AM +0100, Heiner Kallweit wrote:
-> >  {
-> > -	if (dev->bus->number == 0 &&
-> > -	    (dev->devfn == PCI_DEVFN(1, 0) ||
-> > -	     dev->devfn == PCI_DEVFN(2, 0)))
-> > -		dev->broken_parity_status = 1;
-> > +	if (machine_is_n2100())
-> > +		pci_quirk_broken_parity(dev);
+From: Jouni Seppänen <jks@iki.fi>
+Date: Tue,  5 Jan 2021 06:52:49 +0200
+
+> From: Jouni K. Seppänen <jks@iki.fi>
 > 
-> Whatever "machine_is_n2100()" is (I can't find the definition), it is
-> surely not equivalent to "00:01.0 || 00:02.0".  That change probably
-> should be a separate patch with some explanation.
-
-It isn't equivalent. It says "if this machine is N2100" which is a
-completely different thing from matching the bus/devfn numbers.
-
-You won't find a definition for machine_is_n2100() in the kernel;
-it is generated from the machine table by scripts, along with lots
-of similar definitions for each machine type:
-
-/* The type of machine we're running on */
-extern unsigned int __machine_arch_type;
-
-#ifdef CONFIG_MACH_N2100
-# ifdef machine_arch_type
-#  undef machine_arch_type
-#  define machine_arch_type     __machine_arch_type
-# else
-#  define machine_arch_type     MACH_TYPE_N2100
-# endif
-# define machine_is_n2100()     (machine_arch_type == MACH_TYPE_N2100)
-#else
-# define machine_is_n2100()     (0)
-#endif
-
-The upshot of the above is that machine_is_n2100() is constant zero
-if the platform is not configured (thereby allowing the compiler to
-eliminate the code.) If it is the _only_ platform selected, then it
-evaluates to an always-true expression. Otherwise, it becomes a
-run-time evaluated conditional.
-
-We may have better ways to do this in modern kernels, but this was
-invented decades ago, and works with zero runtime overhead.
-
-> If this makes the quirk safe to use in a generic kernel, that sounds
-> like a good thing.
+> Aligning to tx_ndp_modulus is not sufficient because the next align
+> call can be cdc_ncm_align_tail, which can add up to ctx->tx_modulus +
+> ctx->tx_remainder - 1 bytes. This used to lead to occasional crashes
+> on a Huawei 909s-120 LTE module as follows:
 > 
-> I guess a parity problem could be the result of a defect in either the
-> device (e.g., 0x8169), which would be an issue in *all* platforms, or
-> a platform-specific issue in the way it's wired up.  I assume it's the
-> latter because the quirk is not in drivers/pci/quirks.c.
+> - the condition marked /* if there is a remaining skb [...] */ is true
+>   so the swaps happen
+> - skb_out is set from ctx->tx_curr_skb
+> - skb_out->len is exactly 0x3f52
+> - ctx->tx_curr_size is 0x4000 and delayed_ndp_size is 0xac
+>   (note that the sum of skb_out->len and delayed_ndp_size is 0x3ffe)
+> - the for loop over n is executed once
+> - the cdc_ncm_align_tail call marked /* align beginning of next frame */
+>   increases skb_out->len to 0x3f56 (the sum is now 0x4002)
+> - the condition marked /* check if we had enough room left [...] */ is
+>   false so we break out of the loop
+> - the condition marked /* If requested, put NDP at end of frame. */ is
+>   true so the NDP is written into skb_out
+> - now skb_out->len is 0x4002, so padding_count is minus two interpreted
+>   as an unsigned number, which is used as the length argument to memset,
+>   leading to a crash with various symptoms but usually including
 > 
-> Why is it safe to restrict this to device ID 0x8169?  If this is
-> platform issue, it might affect any device in the slot.
+>> Call Trace:
+>>  <IRQ>
+>>  cdc_ncm_fill_tx_frame+0x83a/0x970 [cdc_ncm]
+>>  cdc_mbim_tx_fixup+0x1d9/0x240 [cdc_mbim]
+>>  usbnet_start_xmit+0x5d/0x720 [usbnet]
+> 
+> The cdc_ncm_align_tail call first aligns on a ctx->tx_modulus
+> boundary (adding at most ctx->tx_modulus-1 bytes), then adds
+> ctx->tx_remainder bytes. Alternatively, the next alignment call can
+> occur in cdc_ncm_ndp16 or cdc_ncm_ndp32, in which case at most
+> ctx->tx_ndp_modulus-1 bytes are added.
+> 
+> A similar problem has occurred before, and the code is nontrivial to
+> reason about, so add a guard before the crashing call. By that time it
+> is too late to prevent any memory corruption (we'll have written past
+> the end of the buffer already) but we can at least try to get a warning
+> written into an on-disk log by avoiding the hard crash caused by padding
+> past the buffer with a huge number of zeros.
+> 
+> Signed-off-by: Jouni K. Seppänen <jks@iki.fi>
+> Fixes: 4a0e3e989d66 ("cdc_ncm: Add support for moving NDP to end of NCM frame")
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=209407
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reviewed-by: Bjørn Mork <bjorn@mork.no>
 
-You assume the platform has multiple PCI slots - it doesn't. It's an
-embedded platform (it's sold as a NAS) and it has a single mini-PCI
-slot for a WiFi card. Without that populated, lspci -n looks like
-this:
-
-00:01.0 0200: 10ec:8169 (rev 10)
-00:02.0 0200: 10ec:8169 (rev 10)
-00:03.0 0180: 1095:3512 (rev 01)
-00:04.0 0c03: 1106:3038 (rev 61)
-00:04.1 0c03: 1106:3038 (rev 61)
-00:04.2 0c03: 1106:3104 (rev 63)
-
-Where all those devices are soldered to the board.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Applied and queued up for -stable, thanks.
