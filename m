@@ -2,144 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C1A12EBC72
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 11:36:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1252EBCA5
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 11:46:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726254AbhAFKfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 05:35:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45297 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726009AbhAFKfb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 05:35:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609929244;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s5T2eBVj732TZ2Xo37ZUASGYTwxSlB0RoMomiGIXTq4=;
-        b=CE4sD5tQDO48IJwqSwTI+SL1rJJ4Gvv2kuQGxrEvTQYmD7pKwk03mhlFpJfRQYHuLX7IaU
-        /LFV52FKk4ASQF31ItNr365KLVJRdBbHSHlmtKlY6Z1Kyty/1Lak0g5xBEIV/7noILiT8T
-        GnBe8/gpqj/vlrXpwt5Sf0wmYN73TTI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-238-tYfjcLvmPpODyWSGTZrYWQ-1; Wed, 06 Jan 2021 05:34:00 -0500
-X-MC-Unique: tYfjcLvmPpODyWSGTZrYWQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BAAE9801B1B;
-        Wed,  6 Jan 2021 10:33:58 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1F0FD722C0;
-        Wed,  6 Jan 2021 10:33:52 +0000 (UTC)
-Date:   Wed, 6 Jan 2021 11:33:50 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     brouer@redhat.com, Sven Auhagen <sven.auhagen@voleatech.de>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH net-next] net: mvpp2: increase MTU limit when XDP
- enabled
-Message-ID: <20210106113350.46d0c659@carbon>
-In-Reply-To: <20210105184308.1d2b7253@kernel.org>
-References: <20210105171921.8022-1-kabel@kernel.org>
-        <20210105172437.5bd2wypkfw775a4v@svensmacbookair.sven.lan>
-        <20210105184308.1d2b7253@kernel.org>
+        id S1725951AbhAFKpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 05:45:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725828AbhAFKpn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 05:45:43 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25C5C06134C
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 02:45:02 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id k10so2053913wmi.3
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 02:45:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=CFa9IIBCcCV1TWWcbkI0g56e3WbaZgQhuUzvzGj/9ds=;
+        b=SFg10qa75Lsox/usexee8Y29+MICLSOmspXLYMNmmh6yI4+fcHmvOBu/enRaFGtzYm
+         BgZc/Vz3saPdK8eCi+Y43EcTCOs1FRr1hqLY8wPKPfs3YSwHh7KGXK5wSEDcGnDtx7eH
+         J+NFzj/1YC/sVSkaM0vPLGe/JoTlRqH/NOPNwFk4u/SsKJG8xhBJyBHyFR2FsdKGwToa
+         HeZ3e40jiqvPVNrNCoeyyTFbOiBw5JPmVYWbfQpRQuTZ9h4DXUYQ1yFrUUa7dQNP4XRu
+         anWyN8Gvl1mVbpGyU1hCcWY3sUaE50FtNSDEF/yxPR/mfalTAfIJZl90tOCqC6zf7u7X
+         GRcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=CFa9IIBCcCV1TWWcbkI0g56e3WbaZgQhuUzvzGj/9ds=;
+        b=MDYRh6XfLRjSkg1n/+5Sx63aivoh2BUYUpFoERGvStd75zUY2kOuPdgZ0vV4fnUaOP
+         4xrZ39dcdVcUqwbdwaOSr1YHSkIHsJeu3UHcdbLNkrERi7WDAL4ki1hAdwY5+ZroE1hx
+         RsB9XCmMorzO4xEd17PoU3YHx0P8DjcK3uIZj4pNUP7OSQupvs24e7qI4nHBt5JBfovZ
+         +Hx17YqcRuwUIXlzxTQPuNBCGK6oj3pHuA0V2PlsqW/ubrEND5kbTgcCFdwNDrHf59mP
+         v66XIgqtz14IWaOGN1wg0Ju1+34u1F/eDcYfjWJ2gT2/21lOS43edilpDlWqwnaF75i2
+         UoPQ==
+X-Gm-Message-State: AOAM533UOk6rZvzgkN+E5CKCUd8SnwD/ryx5Xm5sYUH7t/7Y4Sfi0D+A
+        mcl3/gTfUuhUV4Fx/WPCX3Eou7hVX6s=
+X-Google-Smtp-Source: ABdhPJw2aaUdQURvnZ35oIjZsFfaUmKnAMAGtorRIiUHVSEbEgzhum2+UeLY+PQqCHWBewjGq2E8Qg==
+X-Received: by 2002:a1c:790f:: with SMTP id l15mr3151169wme.188.1609929901189;
+        Wed, 06 Jan 2021 02:45:01 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:e1db:b990:7e09:f1cf? (p200300ea8f065500e1dbb9907e09f1cf.dip0.t-ipconnect.de. [2003:ea:8f06:5500:e1db:b990:7e09:f1cf])
+        by smtp.googlemail.com with ESMTPSA id j10sm2700563wmj.7.2021.01.06.02.45.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jan 2021 02:45:00 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net-next 0/2] r8169: improve RTL8168g PHY suspend quirk
+Message-ID: <9303c2cf-c521-beea-c09f-63b5dfa91b9c@gmail.com>
+Date:   Wed, 6 Jan 2021 11:44:53 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Jan 2021 18:43:08 +0100
-Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+According to Realtek the ERI register 0x1a8 quirk is needed to work
+around a hw issue with the PHY on RTL8168g. The register needs to be
+changed before powering down the PHY. Currently we don't meet this
+requirement, however I'm not aware of any problems caused by this.
+Therefore I see the change as an improvement.
 
-> On Tue, 5 Jan 2021 18:24:37 +0100
-> Sven Auhagen <sven.auhagen@voleatech.de> wrote:
->=20
-> > On Tue, Jan 05, 2021 at 06:19:21PM +0100, Marek Beh=C3=BAn wrote: =20
-> > > Currently mvpp2_xdp_setup won't allow attaching XDP program if
-> > >   mtu > ETH_DATA_LEN (1500).
-> > >=20
-> > > The mvpp2_change_mtu on the other hand checks whether
-> > >   MVPP2_RX_PKT_SIZE(mtu) > MVPP2_BM_LONG_PKT_SIZE.
-> > >=20
-> > > These two checks are semantically different.
-> > >=20
-> > > Moreover this limit can be increased to MVPP2_MAX_RX_BUF_SIZE, since =
-in
-> > > mvpp2_rx we have
-> > >   xdp.data =3D data + MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM;
-> > >   xdp.frame_sz =3D PAGE_SIZE;
-> > >=20
-> > > Change the checks to check whether
-> > >   mtu > MVPP2_MAX_RX_BUF_SIZE   =20
-> >=20
-> > Hello Marek,
-> >=20
-> > in general, XDP is based on the model, that packets are not bigger
-> > than 1500.
+The PHY driver has no means to access the chip ERI registers,
+therefore we have to intercept MDIO writes to the BMCR register.
+If the BMCR_PDOWN bit is going to be set, then let's apply the
+quirk before actually powering down the PHY.
 
-This is WRONG.
+Heiner Kallweit (2):
+  r8169: move ERI access functions to avoid forward declaration
+  r8169: improve RTL8168g PHY suspend quirk
 
-The XDP design/model (with PAGE_SIZE 4096) allows MTU to be 3506 bytes.
+ drivers/net/ethernet/realtek/r8169_main.c | 180 +++++++++++-----------
+ 1 file changed, 90 insertions(+), 90 deletions(-)
 
-This comes from:
- * 4096 =3D frame_sz =3D PAGE_SIZE
- * -256 =3D reserved XDP_PACKET_HEADROOM
- * -320 =3D reserved tailroom with sizeof(skb_shared_info)
- * - 14 =3D Ethernet header size as MTU value is L3
-
-4096-256-320-14 =3D 3506 bytes
-
-Depending on driver memory layout choices this can (of-cause) be lower.
-
-> > I am not sure if that has changed, I don't believe Jumbo Frames are
-> > upstreamed yet.
-
-This is unrelated to this patch, but Lorenzo and Eelco is assigned to
-work on this.
-
-> > You are correct that the MVPP2 driver can handle bigger packets
-> > without a problem but if you do XDP redirect that won't work with
-> > other drivers and your packets will disappear. =20
->=20
-
-This statement is too harsh.  The XDP layer will not do (IP-level)
-fragmentation for you.  Thus, if you redirect/transmit frames out
-another interface with lower MTU than the frame packet size then the
-packet will of-cause be dropped (the drop counter is unfortunately not
-well defined).  This is pretty standard behavior.
-
-This is why I'm proposing the BPF-helper bpf_check_mtu().  To allow the
-BPF-prog to check the MTU before doing the redirect.
-
-
-> At least 1508 is required when I want to use XDP with a Marvell DSA
-> switch: the DSA header is 4 or 8 bytes long there.
->=20
-> The DSA driver increases MTU on CPU switch interface by this length
-> (on my switches to 1504).
->=20
-> So without this I cannot use XDP with mvpp2 with a Marvell switch with
-> default settings, which I think is not OK.
->=20
-> Since with the mvneta driver it works (mvneta checks for
-> MVNETA_MAX_RX_BUF_SIZE rather than ETH_DATA_LEN), I think it should also =
-work
-> with mvpp2.
-
-I think you patch makes perfect sense.
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+-- 
+2.30.0
 
