@@ -2,142 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 800482EC549
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 21:42:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D232EC584
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727408AbhAFUmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 15:42:18 -0500
-Received: from mail-ot1-f47.google.com ([209.85.210.47]:39292 "EHLO
-        mail-ot1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726807AbhAFUmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 15:42:17 -0500
-Received: by mail-ot1-f47.google.com with SMTP id d8so4281674otq.6;
-        Wed, 06 Jan 2021 12:42:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+nn1mS9duynrGzRRIiFhGe9v+GbfGVRWJu+NZK2hPWU=;
-        b=UDuCsxFJodQ7UtSUWcHcnQKi4acOn3zHTLZODVkQGgcICl8piK2c+ydqsyeyPV4AaM
-         mxCXQxvApj4NHYjswZkKusri1CS+/6E+Ee3Lh7L4gw2lBVVxbRujJWVRSUb//RlKtJig
-         Dh6N7d+x3vclv5zXDmtzv64XLPv7807aoIRs5OjdxJmMjy4bFjklAvBaiXh1DDyj7KoG
-         ibNKXV0CilBaHhan0UQrraOWIQBoxejggaLBlONa8Qp26xD6I69G4UYZkASsCJAG/ZA5
-         p7T769/o0BqRLQi/+SMlQ7q8NZCRkhHcAYANTI/pKdGJ2GDZgARWuftLq2QQ7xS/4hAh
-         y1Mw==
-X-Gm-Message-State: AOAM531MvxeRBdRjaSvpWTDMq2b3idI2cZs6V5V8CIb8K1pipGZtfKZI
-        cxEe/FQlojeigUdOWKj5lulfExQf8dh/JF3rWzs=
-X-Google-Smtp-Source: ABdhPJzU2VNqomItTpW9N5EsZUcSxwbWydRvzmZvuW0h6PN+1EDrO5WVGcImI85plCOq8i6uJPLffPJf+e8BxB/lkhA=
-X-Received: by 2002:a05:6830:1f5a:: with SMTP id u26mr4549619oth.250.1609965695506;
- Wed, 06 Jan 2021 12:41:35 -0800 (PST)
+        id S1727718AbhAFVHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 16:07:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59306 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726518AbhAFVHt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 16:07:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E20052313B;
+        Wed,  6 Jan 2021 21:07:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609967228;
+        bh=DXrGwIQQ1Rz83DCz1vivzkPcZVwDgHaOaNpdxL8nX80=;
+        h=From:To:Cc:Subject:Date:From;
+        b=f2VRCXYBsEd2otlnKh65Uiex2BEaVU9w/391sc1lWoQAJ7qxPCYayIjw/aury/vIK
+         JbYAwtj4O7I2QH1f5kSANgi2W07GCjtFgz99/okI99OGZg5/X6WT1XDwXaycdIK9VM
+         WYSHQxG8qYTIUg6n1euUVCUP9itZN2WFoDm4TVDbfzCTMbhRQ9MlMzhg5W55YR3BGT
+         HhRHfeC3Zj5T816KWnWOjji1vqFy2DVWzsXA52arP2PMPWQk7oFM4l7KxFQ/p7hHqJ
+         AZBSAHszZGgP70sKK1QwQxZq68qOQcDqXp5HoFqzYZaXB8GmZkmziAib3o/nOp0d2G
+         D7neagMHtFTHw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, thomas.lendacky@amd.com,
+        aelior@marvell.com, GR-everest-linux-l2@marvell.com,
+        michael.chan@broadcom.com, rajur@chelsio.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        tariqt@nvidia.com, saeedm@nvidia.com, GR-Linux-NIC-Dev@marvell.com,
+        ecree.xilinx@gmail.com, simon.horman@netronome.com,
+        alexander.duyck@gmail.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/4] udp_tunnel_nic: post conversion cleanup
+Date:   Wed,  6 Jan 2021 13:06:33 -0800
+Message-Id: <20210106210637.1839662-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
- <CAMuHMdX=trGqj8RzV7r1iTneqDjWOc4e1T-X+R_B34rxxhJpbg@mail.gmail.com> <20210106184839.GA7773@alpha.franken.de>
-In-Reply-To: <20210106184839.GA7773@alpha.franken.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 6 Jan 2021 21:41:24 +0100
-Message-ID: <CAMuHMdV86BES7dmWr-7j1jbtoSy0bH1J0e5W41p8evagi0Nqcw@mail.gmail.com>
-Subject: Re: [PATCH 00/10] Remove support for TX49xx
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>, linux-ide@vger.kernel.org,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>, linux-rtc@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Thomas,
+It has been two releases since we added the common infra for UDP
+tunnel port offload, and we have not heard of any major issues.
+Remove the old direct driver NDOs completely, and perform minor
+simplifications in the tunnel drivers.
 
-On Wed, Jan 6, 2021 at 7:49 PM Thomas Bogendoerfer
-<tsbogend@alpha.franken.de> wrote:
-> On Wed, Jan 06, 2021 at 09:37:11AM +0100, Geert Uytterhoeven wrote:
-> > On Tue, Jan 5, 2021 at 3:03 PM Thomas Bogendoerfer
-> > <tsbogend@alpha.franken.de> wrote:
-> > > I couldn't find any buyable product other than reference boards using
-> > > TX49xx CPUs. And since nobody showed interest in keeping support for
-> > > it, it's time to remove it.
-> >
-> > I have an RBTX4927 development board in my board farm, boot-test every
-> > bi-weekly renesas-drivers release on it, and fix kernel issues when they
-> > appear.
-> >
-> > Is that sufficient to keep it?
->
-> for me it is. But now we probaly need some reverts then...
+Jakub Kicinski (4):
+  udp_tunnel: hard-wire NDOs to udp_tunnel_nic_*_port() helpers
+  udp_tunnel: remove REGISTER/UNREGISTER handling from tunnel drivers
+  net: remove ndo_udp_tunnel_* callbacks
+  udp_tunnel: reshuffle NETIF_F_RX_UDP_TUNNEL_PORT checks
 
-Indeed. Fortunately not all of it, as some removals were TX4938-only.
-
-> I wonder whether you have seen my mail about the removal
->
-> https://lore.kernel.org/linux-mips/20201207105627.GA15866@alpha.franken.de
->
-> and my call for people owning MIPS machines
->
-> https://lore.kernel.org/linux-mips/20200227144910.GA25011@alpha.franken.de/
-
-Sorry, I'm not following the linux-mips list that closely, so I hadn't
-seen them.  It's always a good idea to CC linux-kernel, and perhaps the
-few people who last touched the affected files.
-
-> Still "unclaimed" machines are
->
-> IMG Pistachio SoC based boards (MACH_PISTACHIO(
-> Toshiba TX39 series based machines (MACH_TX39XX)
-> NEC VR4100 series based machines (MACH_VR41XX)
-> Netlogic XLR/XLS based systems (NLM_XLR_BOARD)
-> Netlogic XLP based systems (NLM_XLP_BOARD)
-> Sibyte BCM91120C-CRhine (SIBYTE_CRHINE)
-> Sibyte BCM91120x-Carmel (SIBYTE_CARMEL)
-> Sibyte BCM91125C-CRhone (SIBYTE_CRHONE)
-> Sibyte BCM91125E-Rhone (SIBYTE_RHONE)
-> Sibyte BCM91250C2-LittleSur (SIBYTE_LITTLESUR)
-> Sibyte BCM91250E-Sentosa (SIBYTE_SENTOSA)
->
-> Is there something on this list you also regulary use ?
-
-No, I don't have anything from the list above.
-The RBTX4927 is basically my last MIPS-based system I do boot
-current kernels on.
-
-In active use, not for development:
-  - Ubiquiti EdgeRouter-X (Ralink-based).
-
-Stored in my attic:
-  - NetGear WNDR4300 (AtherOS-based),
-  - MikroTik Routerboard 150 (ADMtek-based, no (longer?) supported upstream),
-  - NEC DDB VRC-5476 (upstream support removed 15 years ago ;-)
-
-Gr{oetje,eeting}s,
-
-                        Geert
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c      |  2 --
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  |  2 --
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  2 --
+ .../net/ethernet/cavium/liquidio/lio_main.c   |  2 --
+ .../ethernet/cavium/liquidio/lio_vf_main.c    |  2 --
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  2 --
+ drivers/net/ethernet/cisco/enic/enic_main.c   |  4 ----
+ drivers/net/ethernet/emulex/benet/be_main.c   |  2 --
+ .../net/ethernet/intel/fm10k/fm10k_netdev.c   |  2 --
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  2 --
+ drivers/net/ethernet/intel/ice/ice_main.c     |  2 --
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  2 --
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  4 ----
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  2 --
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  2 --
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  2 --
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  6 -----
+ .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  |  2 --
+ drivers/net/ethernet/sfc/efx.c                |  2 --
+ drivers/net/geneve.c                          | 14 ++++-------
+ drivers/net/netdevsim/netdev.c                |  2 --
+ drivers/net/vxlan.c                           | 15 ++++--------
+ include/linux/netdevice.h                     | 17 -------------
+ include/net/udp_tunnel.h                      |  8 +++++++
+ net/core/dev.c                                |  2 +-
+ net/ipv4/udp_tunnel_core.c                    | 24 ++++---------------
+ 26 files changed, 22 insertions(+), 106 deletions(-)
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.26.2
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
