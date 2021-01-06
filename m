@@ -2,79 +2,401 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 973182EC589
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:12:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 498232EC5C3
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:33:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbhAFVLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 16:11:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58465 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726195AbhAFVLB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 16:11:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609967374;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VKVUOawYF30jYDz4k0cRErL4TxXYOHoXtZs0psgjgU8=;
-        b=ZS8fJKzL38l6YXTFzM1MNTmHRmFQtHG/inY3kH4yqs9qDT6BhuhVMZYOtRv1GKe3kzmGwI
-        4Gt6uiq+IOT2vNtmcOoQ54JsYJOV3UObHlEKuFr7W4Oe9pWD/R92QAJaNJW8TSDjci6AfU
-        pcw18WKWF19X9IbRN+hY9Jqo0OZnrpc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-187--sLbtU6GPVWn4laxrJ3vSQ-1; Wed, 06 Jan 2021 16:09:33 -0500
-X-MC-Unique: -sLbtU6GPVWn4laxrJ3vSQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 286DA195D560;
-        Wed,  6 Jan 2021 21:09:31 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-112-8.rdu2.redhat.com [10.10.112.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4CA6A5C26D;
-        Wed,  6 Jan 2021 21:09:29 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <07564e3e-35d4-c5d4-fc1a-8a0e8659604e@redhat.com>
-References: <07564e3e-35d4-c5d4-fc1a-8a0e8659604e@redhat.com> <f02bdada-355c-97cd-bc32-f84516ddd93f@redhat.com> <548097.1609952225@warthog.procyon.org.uk> <c2cc898d-171a-25da-c565-48f57d407777@redhat.com> <20201229173916.1459499-1-trix@redhat.com> <259549.1609764646@warthog.procyon.org.uk> <675150.1609954812@warthog.procyon.org.uk> <697467.1609962267@warthog.procyon.org.uk>
-To:     Tom Rix <trix@redhat.com>
-Cc:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com,
-        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] rxrpc: fix handling of an unsupported token type in rxrpc_read()
+        id S1726460AbhAFVcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 16:32:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726064AbhAFVcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 16:32:53 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5992DC061575;
+        Wed,  6 Jan 2021 13:32:13 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id y19so9746516lfa.13;
+        Wed, 06 Jan 2021 13:32:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=swjzxgNgdFwMaW1XS6NoCIl7n4hzVMa78pM5N63kujo=;
+        b=d9nXQ7cwe0rN31o6hBKHcOHt6N+RlUdysFXNTAcH5jzZhb5vimJOjJ4ZqqWJiuoeo8
+         xIP49r4cl9lk0aBdfbeVKXM7jvilZu91vHf2U8+BHSu5eeXLHPV3e9mX9XjM2snaZGtB
+         BKkBIzTC56fQRHN71n9Uf/Ierp3QVp9lsD70PVZcXyPB3yYjcxBfoFFjs6FNuU6Xt6EI
+         7rMMYcx+0ojhmCkt2zTjiVNy4axs+ofB/GTRdeHwOm1RJmEZOrxjyPIVVQ0NEWQeUlDn
+         LCsYxp6W39W884RT+q4jfi0wblyvAWi+suOBHw65YNvo3VTyFcslTrCRwFQwUbXJh7v5
+         A5ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=swjzxgNgdFwMaW1XS6NoCIl7n4hzVMa78pM5N63kujo=;
+        b=RKrD3529hAuw32nMqakfEEm9Hg/+3di1L9GWf9M2zT44ei886r4H7uH0JUeoAd40d+
+         +lehsv7oZ2W/NH0ZeEpSs7HWzB9hV5eALylJk7f8ghmAlZ7aJP0iWrnvWEk96gJG4owv
+         /+OS5GAxb/O3UoM8w6dHXJXSpSBa5jLnlEV0VSuewQYyaD7+T3xBC+LlnR2l22EBWEaw
+         ZFjVqWf1v3PAqs/11L2RQ9qPQM0Z9lx74hrKO4TUW1GunltqrhT5Qw7gao/29JKjcNfB
+         GEkc3pC3kEhqTNIV5oVxtRCGl6PM8Cwvb7a1AcAlK7S8mScgS77M9Y2ZDLmV2tJH9lac
+         sfsw==
+X-Gm-Message-State: AOAM531gayscnTItPi9GsPL0KY6995KqOA4I1Ny+ZcoyX2KjP5XH5Ge+
+        ybXf6UcA3AOSPkqjFOqLceI=
+X-Google-Smtp-Source: ABdhPJxEdUvb47WxwP6dptf6PJ+Rgo4TJm5/70lNY5xAsvTKwieFuDW0cwL5DcRd6p0HOoVKJR3xGg==
+X-Received: by 2002:a2e:92d6:: with SMTP id k22mr2645127ljh.219.1609968731773;
+        Wed, 06 Jan 2021 13:32:11 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id d21sm623436lfe.19.2021.01.06.13.32.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jan 2021 13:32:11 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH V2 net-next 1/3] dt-bindings: net: convert Broadcom Starfighter 2 binding to the json-schema
+Date:   Wed,  6 Jan 2021 22:32:00 +0100
+Message-Id: <20210106213202.17459-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <706520.1609967368.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 06 Jan 2021 21:09:28 +0000
-Message-ID: <706521.1609967368@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tom Rix <trix@redhat.com> wrote:
+From: Rafał Miłecki <rafal@milecki.pl>
 
-> On 1/6/21 11:44 AM, David Howells wrote:
-> > Tom Rix <trix@redhat.com> wrote:
-> >
-> >> These two loops iterate over the same data, i believe returning here =
-is all
-> >> that is needed.
-> > But if the first loop is made to support a new type, but the second lo=
-op is
-> > missed, it will then likely oops.  Besides, the compiler should optimi=
-se both
-> > paths together.
-> =
+This helps validating DTS files. Only the current (not deprecated one)
+binding was converted.
 
-> You are right, I was only considering the existing cases.
+Minor changes:
+1. Dropped dsa/dsa.txt references
+2. Updated node name to match dsa.yaml requirement
+3. Fixed 2 typos in examples
 
-Thanks.  Can I put that down as a Reviewed-by?
+The new binding was validated using the dt_binding_check.
 
-David
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+V2: "compatible" based "clocks" and "clock-names" validation
+    Include "clocks" and "clock-names" in the example
+
+NOTE:
+This patch purposefully doesn't add *global* "clocks" and "clock-names"
+requirement. It's to prepare YAML for the next patch that follows (the
+one adding "brcm,bcm4908-switch").
+---
+ .../bindings/net/brcm,bcm7445-switch-v4.0.txt | 101 +---------
+ .../devicetree/bindings/net/dsa/brcm,sf2.yaml | 172 ++++++++++++++++++
+ 2 files changed, 175 insertions(+), 98 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml
+
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt b/Documentation/devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt
+index 97ca62b0e14d..d0935d2afef8 100644
+--- a/Documentation/devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt
++++ b/Documentation/devicetree/bindings/net/brcm,bcm7445-switch-v4.0.txt
+@@ -1,108 +1,13 @@
+ * Broadcom Starfighter 2 integrated swich
+ 
+-Required properties:
++See dsa/brcm,bcm7445-switch-v4.0.yaml for the documentation.
+ 
+-- compatible: should be one of
+-	"brcm,bcm7445-switch-v4.0"
+-	"brcm,bcm7278-switch-v4.0"
+-	"brcm,bcm7278-switch-v4.8"
+-- reg: addresses and length of the register sets for the device, must be 6
+-  pairs of register addresses and lengths
+-- interrupts: interrupts for the devices, must be two interrupts
+-- #address-cells: must be 1, see dsa/dsa.txt
+-- #size-cells: must be 0, see dsa/dsa.txt
+-
+-Deprecated binding required properties:
++*Deprecated* binding required properties:
+ 
+ - dsa,mii-bus: phandle to the MDIO bus controller, see dsa/dsa.txt
+ - dsa,ethernet: phandle to the CPU network interface controller, see dsa/dsa.txt
+ - #address-cells: must be 2, see dsa/dsa.txt
+ 
+-Subnodes:
+-
+-The integrated switch subnode should be specified according to the binding
+-described in dsa/dsa.txt.
+-
+-Optional properties:
+-
+-- reg-names: litteral names for the device base register addresses, when present
+-  must be: "core", "reg", "intrl2_0", "intrl2_1", "fcb", "acb"
+-
+-- interrupt-names: litternal names for the device interrupt lines, when present
+-  must be: "switch_0" and "switch_1"
+-
+-- brcm,num-gphy: specify the maximum number of integrated gigabit PHYs in the
+-  switch
+-
+-- brcm,num-rgmii-ports: specify the maximum number of RGMII interfaces supported
+-  by the switch
+-
+-- brcm,fcb-pause-override: boolean property, if present indicates that the switch
+-  supports Failover Control Block pause override capability
+-
+-- brcm,acb-packets-inflight: boolean property, if present indicates that the switch
+-  Admission Control Block supports reporting the number of packets in-flight in a
+-  switch queue
+-
+-- resets: a single phandle and reset identifier pair. See
+-  Documentation/devicetree/bindings/reset/reset.txt for details.
+-
+-- reset-names: If the "reset" property is specified, this property should have
+-  the value "switch" to denote the switch reset line.
+-
+-- clocks: when provided, the first phandle is to the switch's main clock and
+-  is valid for both BCM7445 and BCM7278. The second phandle is only applicable
+-  to BCM7445 and is to support dividing the switch core clock.
+-
+-- clock-names: when provided, the first phandle must be "sw_switch", and the
+-  second must be named "sw_switch_mdiv".
+-
+-Port subnodes:
+-
+-Optional properties:
+-
+-- brcm,use-bcm-hdr: boolean property, if present, indicates that the switch
+-  port has Broadcom tags enabled (per-packet metadata)
+-
+-Example:
+-
+-switch_top@f0b00000 {
+-	compatible = "simple-bus";
+-	#size-cells = <1>;
+-	#address-cells = <1>;
+-	ranges = <0 0xf0b00000 0x40804>;
+-
+-	ethernet_switch@0 {
+-		compatible = "brcm,bcm7445-switch-v4.0";
+-		#size-cells = <0>;
+-		#address-cells = <1>;
+-		reg = <0x0 0x40000
+-			0x40000 0x110
+-			0x40340 0x30
+-			0x40380 0x30
+-			0x40400 0x34
+-			0x40600 0x208>;
+-		reg-names = "core", "reg", intrl2_0", "intrl2_1",
+-			    "fcb, "acb";
+-		interrupts = <0 0x18 0
+-				0 0x19 0>;
+-		brcm,num-gphy = <1>;
+-		brcm,num-rgmii-ports = <2>;
+-		brcm,fcb-pause-override;
+-		brcm,acb-packets-inflight;
+-
+-		ports {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-
+-			port@0 {
+-				label = "gphy";
+-				reg = <0>;
+-			};
+-		};
+-	};
+-};
+-
+ Example using the old DSA DeviceTree binding:
+ 
+ switch_top@f0b00000 {
+@@ -132,7 +37,7 @@ switch_top@f0b00000 {
+ 		switch@0 {
+ 			reg = <0 0>;
+ 			#size-cells = <0>;
+-			#address-cells <1>;
++			#address-cells = <1>;
+ 
+ 			port@0 {
+ 				label = "gphy";
+diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml
+new file mode 100644
+index 000000000000..9de69243cf79
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml
+@@ -0,0 +1,172 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/dsa/brcm,sf2.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom Starfighter 2 integrated swich
++
++maintainers:
++  - Florian Fainelli <f.fainelli@gmail.com>
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - brcm,bcm7278-switch-v4.0
++          - brcm,bcm7278-switch-v4.8
++          - brcm,bcm7445-switch-v4.0
++
++  reg:
++    minItems: 6
++    maxItems: 6
++
++  reg-names:
++    items:
++      - const: core
++      - const: reg
++      - const: intrl2_0
++      - const: intrl2_1
++      - const: fcb
++      - const: acb
++
++  interrupts:
++    minItems: 2
++    maxItems: 2
++
++  interrupt-names:
++    items:
++      - const: switch_0
++      - const: switch_1
++
++  resets:
++    maxItems: 1
++
++  reset-names:
++    const: switch
++
++  clocks:
++    minItems: 1
++    maxItems: 2
++    items:
++      - description: switch's main clock
++      - description: dividing of the switch core clock
++
++  clock-names:
++    minItems: 1
++    maxItems: 2
++    items:
++      - const: sw_switch
++      - const: sw_switch_mdiv
++
++  brcm,num-gphy:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: maximum number of integrated gigabit PHYs in the switch
++
++  brcm,num-rgmii-ports:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: maximum number of RGMII interfaces supported by the switch
++
++  brcm,fcb-pause-override:
++    description: if present indicates that the switch supports Failover Control
++      Block pause override capability
++    type: boolean
++
++  brcm,acb-packets-inflight:
++    description: if present indicates that the switch Admission Control Block
++      supports reporting the number of packets in-flight in a switch queue
++    type: boolean
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  ports:
++    type: object
++
++    properties:
++      brcm,use-bcm-hdr:
++        description: if present, indicates that the switch port has Broadcom
++          tags enabled (per-packet metadata)
++        type: boolean
++
++required:
++  - reg
++  - interrupts
++  - "#address-cells"
++  - "#size-cells"
++
++allOf:
++  - $ref: "dsa.yaml#"
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - brcm,bcm7278-switch-v4.0
++              - brcm,bcm7278-switch-v4.8
++    then:
++      properties:
++        clocks:
++          minItems: 1
++          maxItems: 1
++        clock-names:
++          minItems: 1
++          maxItems: 1
++      required:
++        - clocks
++        - clock-names
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: brcm,bcm7445-switch-v4.0
++    then:
++      properties:
++        clocks:
++          minItems: 2
++          maxItems: 2
++        clock-names:
++          minItems: 2
++          maxItems: 2
++      required:
++        - clocks
++        - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    switch@f0b00000 {
++            compatible = "brcm,bcm7445-switch-v4.0";
++            #address-cells = <1>;
++            #size-cells = <0>;
++            reg = <0xf0b00000 0x40000>,
++                  <0xf0b40000 0x110>,
++                  <0xf0b40340 0x30>,
++                  <0xf0b40380 0x30>,
++                  <0xf0b40400 0x34>,
++                  <0xf0b40600 0x208>;
++            reg-names = "core", "reg", "intrl2_0", "intrl2_1",
++                        "fcb", "acb";
++            interrupts = <0 0x18 0>,
++                         <0 0x19 0>;
++            clocks = <&sw_switch>, <&sw_switch_mdiv>;
++            clock-names = "sw_switch", "sw_switch_mdiv";
++            brcm,num-gphy = <1>;
++            brcm,num-rgmii-ports = <2>;
++            brcm,fcb-pause-override;
++            brcm,acb-packets-inflight;
++
++            ports {
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++
++                    port@0 {
++                            label = "gphy";
++                            reg = <0>;
++                    };
++            };
++    };
+-- 
+2.26.2
 
