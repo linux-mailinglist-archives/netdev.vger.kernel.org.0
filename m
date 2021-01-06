@@ -2,131 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A41CB2EC6C5
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 00:19:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 705982EC6C9
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 00:19:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727897AbhAFXTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 18:19:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
+        id S1727438AbhAFXTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 18:19:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727880AbhAFXTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 18:19:11 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1439C06135C
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 15:18:06 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id qw4so7215729ejb.12
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 15:18:06 -0800 (PST)
+        with ESMTP id S1726293AbhAFXTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 18:19:36 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483A7C061799
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 15:18:51 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id w5so3834808wrm.11
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 15:18:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=M2VqyHG2HX9apOvyYcN1fNwb6SDnXCbaKG0Lb94i9BU=;
-        b=qPFC4Fd88p0lJ8qSJWPwy03M8rZNicZ0ZHsgHS1btlUfzVy5Ci3olfKX5CKeajwIDJ
-         /0A8IAv6SLQgLFHlA/1H+yJRvFlDfEAIMSWou7Ugohhj1dz5gPEvZ+o2Kq3/rIOc/8Av
-         bI3aFrnAmpkRBNvBF5f9Si3dQeVHbw1UDDFi/f5ssJ8tbo1i74Afh5RnCnHNKpXz89EZ
-         ayz7Bfw24YGZK/zGlHVr7Pvw5psbn3/ia5lg2xgYF+uvfPq6lNuSM6z7A7ZH94P+GPIv
-         MN7wrXEcpMeTRiAyQwr1Si7lXdc8KpN7qW6h7xuQYXf/8Pk5AErXs2NL3dqy8ScPfYxA
-         wzrQ==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=smuNpjn1omety5y1ZI25Wf6WWShNtH6K3hRtcH4ZOPQ=;
+        b=MrzYOhEFc6rvdvyZ94kZink/rMoUmlqM0045xIB5kuBdcK+bOYFqn4JZyrKio+e1x8
+         kvyDeS3t7uqDtFUWQ4VwV9oJEIJsDstYGpM/A50F9tJ1mUYbKN9suHRQWZT7Stcq0Edy
+         VnFmicnhOXwAPoaaHIZhxhPiUYTX8MwnCKETU5tAwHG0bpfOVnEKHV8Mn4p07vfYDrXK
+         AzqLb+/7Nx17Z4VxVyhz6twFZnq+UNASWe9aS1dt3oOLPm0bIgLDAWq8Za2GFF+p7TYn
+         cmdD5GaBnKbzRpgI376l8JrYCqE+XqsDM3RpDrA5lASJ+okFB6s31ayWIiRhtVdueTvd
+         NRGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=M2VqyHG2HX9apOvyYcN1fNwb6SDnXCbaKG0Lb94i9BU=;
-        b=QYlm1ZnFF4p2cLLwZ8DrBSrSt3dpKNNigG/6iWgJtXYG1cexrLAXfXaUvvR0Su87VG
-         Vsk3Fq/rSMhC8r6ocAcXekGTJq3od88Bvw8zAne1NURA472EIkbdKU/xDLNweRVeD9NY
-         PKYboBw3ymJPp8mz6/QmM/Ez5kLhkTAWPfUHhVuqdPT66gegqPLW9ZcRlvVB3vJKjFhE
-         SB6Ufu2FDN2TxiZeN1wPtNAVJTK2EkSE706jqaxMpAzVP7ySdeFFiSHHr16n1q6HG0Pw
-         JKwlX0JFl2Rq9LO7Nrz/rUE4JsCFvL9qC3qwLVX4RV4UegYe8469qB62ZlwGYtygg0PY
-         VMbw==
-X-Gm-Message-State: AOAM5324RZy7+zhw3PsfsBUAFmXw6GuLolw37FwjM1ah/Z5qEgWBYhBp
-        UKGDUMcfHOIGRQe3l14wVq4=
-X-Google-Smtp-Source: ABdhPJwAuKrpWhW0ZiAc/1SqSWeJjpsfpz2y1MP7P+qBEs46BQQTTPYA88N62KaI6NmkVU25WI8Rfw==
-X-Received: by 2002:a17:906:26d7:: with SMTP id u23mr4353061ejc.210.1609975085662;
-        Wed, 06 Jan 2021 15:18:05 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id a6sm1958263edv.74.2021.01.06.15.18.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 15:18:05 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v3 net-next 11/11] net: switchdev: delete the transaction object
-Date:   Thu,  7 Jan 2021 01:17:28 +0200
-Message-Id: <20210106231728.1363126-12-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210106231728.1363126-1-olteanv@gmail.com>
-References: <20210106231728.1363126-1-olteanv@gmail.com>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=smuNpjn1omety5y1ZI25Wf6WWShNtH6K3hRtcH4ZOPQ=;
+        b=GfAGjPYP0uICpqWfbjXLKJxMHmBTP03VJAdTUZ1j5NMZQn5hh2CvvNUJx23bxxNNKc
+         va1pMhxbklJjTg1ioc2jZ5Cy/ywcNC9SiHxw1blQPkrtunrFZ6rv3BLMIklCZWL6+Db1
+         FUSl+MipXWsdcqgbs+H505r+m58VExK0YyXZS7XjQQ948jWUiVTKVSwjdxUEqx5XsrSA
+         4np4fGEZCIFaues3lehL0dvVpSekw6m8W+BbcuGZ6afUxRLbQgVJyLGSGF5JvKfn+VC3
+         F32Gv+PgagLNm8HcTRge55yLM+Z3Wyn1gICCxhHrS7KkmqvzzpJsj0TkIksnETZJDmbr
+         Zakg==
+X-Gm-Message-State: AOAM532/FCqlzgRMOs07kXrINV7N/0v4gRqu09K4zgdiCjDUVmbWmtVf
+        SpRtij1C54JaPaKADcUmNuU2jG+LDPM=
+X-Google-Smtp-Source: ABdhPJyka5DS4b1l0iQkXTlF2Y3w7YfZX1CP2fIB1rHJeRnzQo/3WxTpSADZQXH61X5PSMUBnUTpeQ==
+X-Received: by 2002:a5d:42d0:: with SMTP id t16mr6269684wrr.230.1609975129776;
+        Wed, 06 Jan 2021 15:18:49 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:e1db:b990:7e09:f1cf? (p200300ea8f065500e1dbb9907e09f1cf.dip0.t-ipconnect.de. [2003:ea:8f06:5500:e1db:b990:7e09:f1cf])
+        by smtp.googlemail.com with ESMTPSA id c4sm5549899wrw.72.2021.01.06.15.18.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jan 2021 15:18:49 -0800 (PST)
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <ccc40b9d-8ee0-43a1-5009-2cc95ca79c85@gmail.com>
+ <X/Y8D2TgQDBumfvO@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next] net: phy: replace mutex_is_locked with
+ lockdep_assert_held in phylib
+Message-ID: <17717d40-ff36-dd59-bfaf-0abb513bab06@gmail.com>
+Date:   Thu, 7 Jan 2021 00:18:41 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <X/Y8D2TgQDBumfvO@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 06.01.2021 23:39, Andrew Lunn wrote:
+> On Wed, Jan 06, 2021 at 02:03:40PM +0100, Heiner Kallweit wrote:
+>> Switch to lockdep_assert_held(_once), similar to what is being done
+>> in other subsystems. One advantage is that there's zero runtime
+>> overhead if lockdep support isn't enabled.
+> 
+> Hi Heiner
+> 
+Hi Andrew,
 
-Now that all users of struct switchdev_trans have been modified to do
-without it, we can remove this structure and the two helpers to determine
-the phase.
+> I'm not sure we are bothered about performance here. MDIO operations
+> are slow, a mutex check is fast relative to that.
+> 
+Right, the performance gain is neglectible here.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Jiri Pirko <jiri@nvidia.com>
----
-Changes in v3:
-None.
+What I see is that more and more similar checks (e.g. in_softirq,
+in_irq) are migrated to the lockdep framework. And as stated in the
+commit message I've seen a number of equivalent patches in other
+subsystems.
 
-Changes in v2:
-None.
+> I wonder how many do development work with lockdep enabled? I think i
+> prefer catching hard to find locking bugs earlier, verses a tiny
+> performance overhead.
+> 
+Well, I always develop with lockdep enabled and like the fact that it
+provides a multitude of checks with minimal overhead. Would be
+interesting to know the ratio of kernel developers counting on lockdep.
 
- include/net/switchdev.h | 14 --------------
- 1 file changed, 14 deletions(-)
-
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index f873e2c5e125..88fcac140966 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -16,20 +16,6 @@
- #define SWITCHDEV_F_SKIP_EOPNOTSUPP	BIT(1)
- #define SWITCHDEV_F_DEFER		BIT(2)
- 
--struct switchdev_trans {
--	bool ph_prepare;
--};
--
--static inline bool switchdev_trans_ph_prepare(struct switchdev_trans *trans)
--{
--	return trans && trans->ph_prepare;
--}
--
--static inline bool switchdev_trans_ph_commit(struct switchdev_trans *trans)
--{
--	return trans && !trans->ph_prepare;
--}
--
- enum switchdev_attr_id {
- 	SWITCHDEV_ATTR_ID_UNDEFINED,
- 	SWITCHDEV_ATTR_ID_PORT_STP_STATE,
--- 
-2.25.1
-
+>        Andrew
+> 
+Heiner
