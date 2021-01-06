@@ -2,212 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 889FE2EB97C
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 06:28:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E49B2EB9A7
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 06:52:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725860AbhAFF1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 00:27:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725562AbhAFF1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 00:27:17 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF1EC06134C;
-        Tue,  5 Jan 2021 21:26:37 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id y128so1741960ybf.10;
-        Tue, 05 Jan 2021 21:26:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UknX9QmHip+tndRmYcnv02sGjXL/6i8uFjVy4S3Vt/Q=;
-        b=UCqx7khl9md1WnUTUb7YlN78GS0MsCd0mzo/BVqnUQtr2UsI9ZRjYRzBgoehkg22R9
-         /IWD53nu5L+j/BqZNXkU22MBN5k+DU2EpmPBnxoD5tlHG6+ckRYp+blgGNktePOHVRJz
-         7DTUVb+2iLoKxijxEqSDi6RldMhKyOJH6hM/rkJgGbQ7OPHbdaVWd5ibNdxFA7BMQf5M
-         bd3svGVmYFunWx727frVHFI2tf7u65hxMMgrNaoMxYsU3mn5ntsZbjv34HdL8CXM0qwl
-         1lTLfQomb36JqhKEdmboQWozdEFvL5gJI973hMmbbrwHZRzSpeg8o2qRk0QX6NNMPzVy
-         iV4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UknX9QmHip+tndRmYcnv02sGjXL/6i8uFjVy4S3Vt/Q=;
-        b=H4cadZUfSa4/2IxNKqHK5nnCJeG6q0SukL3LEymijZD+2opScbL5ITbeRF/NjSRY0l
-         k1jo7HzzSbdeuY9lidwx7oBzyeQb/ycRFqql5u6+S2bOL579xIrtE6CLKE7fpE4XfNu9
-         kbW7VheGw8sMN3Rg4P3e0OLM5WuwjkkRBUruM6JBvtX4lwjEViQGRB6p2hkGEXUIjkhr
-         qRtrVp+sBKR5zPcIVz1/HDYLfBXVwYtSCJS6IsexxteKfg5P9KFik7LPPNPZ+7U7qbjS
-         Ye4IYpEt1jA6fdMqJU2BiHW/pPu10SuxHmCPXLjFoY0ZEA4+VylvZOWlSrOElPXT0J8v
-         TCLw==
-X-Gm-Message-State: AOAM532G7/B4XJaRIrMVuoU5XaztrSkHQr2jIFuVr19XVafyOnIav7Dq
-        aVc4FG9bCa8bXcH1pVO23AtRbayIB+S96mKCGMA=
-X-Google-Smtp-Source: ABdhPJzwaP4vbBtfhgJ0/2XhRCDqHdkub1FRWUHNWILKxZRFis779cP0s0aUseN5F4krORUSrTDk5/+Vl/6naN0a6AE=
-X-Received: by 2002:a25:aea8:: with SMTP id b40mr4044517ybj.347.1609910796865;
- Tue, 05 Jan 2021 21:26:36 -0800 (PST)
+        id S1726367AbhAFFvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 00:51:35 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9646 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725800AbhAFFve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 00:51:34 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5ff54fbe0000>; Tue, 05 Jan 2021 21:50:54 -0800
+Received: from localhost (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 6 Jan
+ 2021 05:50:53 +0000
+Date:   Wed, 6 Jan 2021 07:50:50 +0200
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+CC:     Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH mlx5-next 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210106055050.GT31158@unreal>
+References: <20210103082440.34994-1-leon@kernel.org>
 MIME-Version: 1.0
-References: <cover.1609855479.git.sean@mess.org> <a9334d4ecb66d58d326c19b78e18b44a180967d1.1609855479.git.sean@mess.org>
-In-Reply-To: <a9334d4ecb66d58d326c19b78e18b44a180967d1.1609855479.git.sean@mess.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 Jan 2021 21:26:26 -0800
-Message-ID: <CAEf4BzY2nDzT4FjfARiPJdu=G-0uwhxrUHpNrdAEB9NRxu4RqQ@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] bpf: add tests for ints larger than 128 bits
-To:     Sean Young <sean@mess.org>
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        linux-doc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210103082440.34994-1-leon@kernel.org>
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1609912254; bh=TQxUJmNNZ4DZ0KVJcQg/uVvfTat5TCPZxfDgC+i/lZE=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=MKldL8+iQQ2zj0glQVTLNJF+1dE/Da4jt9qtvvKCrwET6jWs9oWSbwbgzwdqVc6j2
+         nEZ4juVJVAgH0Z22bdw+57J5kmNAP8ra249UWU5lgpUZHxech/w4DR2w3dN0uq/vbH
+         56KGkFuKWoNC4sZPRbXqpA6tAqevleqxcqTtiTpkjI+7TGQSBOgt3fR+6OV2j8uEy9
+         y8LK7jvf9evlXmw7slfgAhR/+/aM4T84X1Gmf4f7pdp+DFXTGvAZ8QKDZAPBcCpkLa
+         BrHa9c4XWt3X2x3vJqLmQEKkjH7BQaAVjuEuWNuksi3WaOSh0KAgWZhjNgHhtHuuxl
+         guUfOlXvXZqHw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 5, 2021 at 6:45 AM Sean Young <sean@mess.org> wrote:
+On Sun, Jan 03, 2021 at 10:24:36AM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 >
-> clang supports arbitrary length ints using the _ExtInt extension. This
-> can be useful to hold very large values, e.g. 256 bit or 512 bit types.
+> Hi,
 >
-> Larger types (e.g. 1024 bits) are possible but I am unaware of a use
-> case for these.
+> The number of MSI-X vectors is PCI property visible through lspci, that
+> field is read-only and configured by the device.
 >
-> This requires the _ExtInt extension enabled in clang, which is under
-> review.
+> The static assignment of an amount of MSI-X vectors doesn't allow utilize
+> the newly created VF because it is not known to the device the future load
+> and configuration where that VF will be used.
 >
-> Link: https://clang.llvm.org/docs/LanguageExtensions.html#extended-integer-types
-> Link: https://reviews.llvm.org/D93103
+> The VFs are created on the hypervisor and forwarded to the VMs that have
+> different properties (for example number of CPUs).
 >
-> Signed-off-by: Sean Young <sean@mess.org>
-> ---
->  tools/testing/selftests/bpf/Makefile          |   3 +-
->  tools/testing/selftests/bpf/prog_tests/btf.c  |   3 +-
->  .../selftests/bpf/progs/test_btf_extint.c     |  50 ++
->  tools/testing/selftests/bpf/test_extint.py    | 535 ++++++++++++++++++
->  4 files changed, 589 insertions(+), 2 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/test_btf_extint.c
->  create mode 100755 tools/testing/selftests/bpf/test_extint.py
+> To overcome the inefficiency in the spread of such MSI-X vectors, we
+> allow the kernel to instruct the device with the needed number of such
+> vectors, before VF is initialized and bounded to the driver.
 >
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 8c33e999319a..436ad1aed3d9 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -70,7 +70,8 @@ TEST_PROGS := test_kmod.sh \
->         test_bpftool_build.sh \
->         test_bpftool.sh \
->         test_bpftool_metadata.sh \
-> -       test_xsk.sh
-> +       test_xsk.sh \
-> +       test_extint.py
+> Before this series:
+> [root@server ~]# lspci -vs 0000:08:00.2
+> 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+> ....
+> 	Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
 >
->  TEST_PROGS_EXTENDED := with_addr.sh \
->         with_tunnels.sh \
-> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
-> index 8ae97e2a4b9d..96a93502cf27 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
-> @@ -4073,6 +4073,7 @@ struct btf_file_test {
->  static struct btf_file_test file_tests[] = {
->         { .file = "test_btf_haskv.o", },
->         { .file = "test_btf_newkv.o", },
-> +       { .file = "test_btf_extint.o", },
->         { .file = "test_btf_nokv.o", .btf_kv_notfound = true, },
->  };
+> Configuration script:
+> 1. Start fresh
+> echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+> modprobe -q -r mlx5_ib mlx5_core
+> 2. Ensure that driver doesn't run and it is safe to change MSI-X
+> echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_drivers_autoprobe
+> 3. Load driver for the PF
+> modprobe mlx5_core
+> 4. Configure one of the VFs with new number
+> echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+> echo 21 > /sys/bus/pci/devices/0000\:08\:00.2/vf_msix_vec
 >
-> @@ -4414,7 +4415,7 @@ static struct btf_raw_test pprint_test_template[] = {
->          * will have both int and enum types.
->          */
->         .raw_types = {
-> -               /* unsighed char */                     /* [1] */
-> +               /* unsigned char */                     /* [1] */
+> After this series:
+> [root@server ~]# lspci -vs 0000:08:00.2
+> 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+> ....
+> 	Capabilities: [9c] MSI-X: Enable- Count=21 Masked-
+>
+>
+> Thanks
+>
+> Leon Romanovsky (4):
+>   PCI: Configure number of MSI-X vectors for SR-IOV VFs
+>   net/mlx5: Add dynamic MSI-X capabilities bits
+>   net/mlx5: Dynamically assign MSI-X vectors count
+>   net/mlx5: Allow to the users to configure number of MSI-X vectors
 
-unintentional whitespaces change?
+Hi Bjorn,
 
->                 BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 8, 1),
->                 /* unsigned short */                    /* [2] */
->                 BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 16, 2),
-> diff --git a/tools/testing/selftests/bpf/progs/test_btf_extint.c b/tools/testing/selftests/bpf/progs/test_btf_extint.c
-> new file mode 100644
-> index 000000000000..b0fa9f130dda
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_btf_extint.c
-> @@ -0,0 +1,50 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +#include "bpf_legacy.h"
-> +
-> +struct extint {
-> +       _ExtInt(256) v256;
-> +       _ExtInt(512) v512;
-> +};
-> +
-> +struct bpf_map_def SEC("maps") btf_map = {
-> +       .type = BPF_MAP_TYPE_ARRAY,
-> +       .key_size = sizeof(int),
-> +       .value_size = sizeof(struct extint),
-> +       .max_entries = 1,
-> +};
-> +
-> +BPF_ANNOTATE_KV_PAIR(btf_map, int, struct extint);
+I would like to route the PCI patch through mlx5-next tree which will
+be taken to the netdev and rdma trees.
 
-this is deprecated, don't add new tests using it. Please use BTF-based
-map definition instead (see any other selftests).
+This is needed to avoid any possible merge conflicts between three
+subsystems PCI, netdev and RDMA.
 
-> +
-> +__attribute__((noinline))
-> +int test_long_fname_2(void)
-> +{
-> +       struct extint *bi;
-> +       int key = 0;
-> +
-> +       bi = bpf_map_lookup_elem(&btf_map, &key);
-> +       if (!bi)
-> +               return 0;
-> +
-> +       bi->v256 <<= 64;
-> +       bi->v256 += (_ExtInt(256))0xcafedead;
-> +       bi->v512 <<= 128;
-> +       bi->v512 += (_ExtInt(512))0xff00ff00ff00ffull;
-> +
-> +       return 0;
-> +}
-> +
-> +__attribute__((noinline))
-> +int test_long_fname_1(void)
-> +{
-> +       return test_long_fname_2();
-> +}
-> +
-> +SEC("dummy_tracepoint")
-> +int _dummy_tracepoint(void *arg)
-> +{
-> +       return test_long_fname_1();
-> +}
+Is it acceptable by you?
 
-why the chain of test_long_fname functions? Please minimize the test
-to only test the essential logic - _ExtInt handling.
-
-> +
-> +char _license[] SEC("license") = "GPL";
-> diff --git a/tools/testing/selftests/bpf/test_extint.py b/tools/testing/selftests/bpf/test_extint.py
-> new file mode 100755
-> index 000000000000..86af815a0cf6
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/test_extint.py
-
-this looks like a total overkill (with a lot of unrelated code) for a
-pretty simple test you need to perform. you can run bpftool and get
-its output from test_progs with popen().
-
-> @@ -0,0 +1,535 @@
-> +#!/usr/bin/python3
-
-[...]
+Thanks
