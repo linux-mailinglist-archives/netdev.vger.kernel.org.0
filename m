@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ED042EC642
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 23:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 070C82EC64B
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 23:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727303AbhAFWdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 17:33:55 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53926 "EHLO vps0.lunn.ch"
+        id S1727276AbhAFWj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 17:39:57 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:53942 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726379AbhAFWdy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 17:33:54 -0500
+        id S1727034AbhAFWj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 17:39:57 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kxHMZ-00GXBo-BU; Wed, 06 Jan 2021 23:33:07 +0100
-Date:   Wed, 6 Jan 2021 23:33:07 +0100
+        id 1kxHSR-00GXFC-MK; Wed, 06 Jan 2021 23:39:11 +0100
+Date:   Wed, 6 Jan 2021 23:39:11 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH next] net: dsa: print error on invalid port index
-Message-ID: <X/Y6o5SJBAeyBPHx@lunn.ch>
-References: <20210106090915.21439-1-zajec5@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: phy: replace mutex_is_locked with
+ lockdep_assert_held in phylib
+Message-ID: <X/Y8D2TgQDBumfvO@lunn.ch>
+References: <ccc40b9d-8ee0-43a1-5009-2cc95ca79c85@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210106090915.21439-1-zajec5@gmail.com>
+In-Reply-To: <ccc40b9d-8ee0-43a1-5009-2cc95ca79c85@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 06, 2021 at 10:09:15AM +0100, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> Looking for an -EINVAL all over the dsa code could take hours for
-> inexperienced DSA users.
+On Wed, Jan 06, 2021 at 02:03:40PM +0100, Heiner Kallweit wrote:
+> Switch to lockdep_assert_held(_once), similar to what is being done
+> in other subsystems. One advantage is that there's zero runtime
+> overhead if lockdep support isn't enabled.
 
-Following this argument, you should add dev_err() by every -EINVAL.
+Hi Heiner
 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+I'm not sure we are bothered about performance here. MDIO operations
+are slow, a mutex check is fast relative to that.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+I wonder how many do development work with lockdep enabled? I think i
+prefer catching hard to find locking bugs earlier, verses a tiny
+performance overhead.
 
-    Andrew
+       Andrew
