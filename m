@@ -2,96 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5EB02EBF1B
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:50:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3694E2EBF4A
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 15:06:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727566AbhAFNqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 08:46:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727270AbhAFNqA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 08:46:00 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A57C06134C;
-        Wed,  6 Jan 2021 05:45:20 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id g20so5167292ejb.1;
-        Wed, 06 Jan 2021 05:45:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FeJdQ/c5c3Yk5ETXkZRfgUT36HQYoNuNNY5hhZyt1Zw=;
-        b=hSC55QP6a+jYHRxCa+TgeWcHTDjcrHo0Y56fHl+KSs4kIqESl4MXCSckZ+YoDGe1N0
-         /ucn8xl1M5eSFXXgKAf04Kdczt/jlyFXX6QL+vDWgU0YMY88lU7ODUlncMy+A0k7Wb6V
-         gVY7Bc4nzPmw/XGlLPm0coTTox5ZeDmqtbdHN8b860ei4H2rqMTSuhrdd0rcInFouw/R
-         cyZPXO5ttKNNn14k60uqEsiwL/JKgt0wSxikJkAXAQY6yzhVxNF5Qz43HSCti7/04Ll0
-         m7cWPj+mnCMh+dijqzjx0K0KRLo/a9/g5MhNQaIIRCFDWqsLT1u/5cNwY0E+1g59Xx54
-         Nf5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FeJdQ/c5c3Yk5ETXkZRfgUT36HQYoNuNNY5hhZyt1Zw=;
-        b=BnV2oVCrMlTC89OoErCOxl0yjy4UjswSXm285rp9ZZJp0tUu3RtSL/kX1xX3RYBj3O
-         fUeh/7i8zVNsRxc/6CwSGKxZvMUWmN3+hdxnmh80t7xXUtjwWb015TH+jgAtbDYUzN1h
-         4exVuYeOXbtc3YByCL9w3fVHNxyAqPeTllrOlR8DYymbyEEfsX2US+J6MIKAj95f9JRw
-         uaw/DJ5uy5nQf/ZZ9Hovy4LqPTapmPcP3mDCuoFiBHuNtvaOcwKC+2JaEjqGUE94Vw9A
-         dHXUv5DYjZwRKqXOMw6bOT8ATczRtVmldUu8JVqFdqxRnPWlEfWNMaVQGoKiBdvUWmJj
-         YUZg==
-X-Gm-Message-State: AOAM533YEtyqcBjYWWV7yemnnHvukJcw5NLRk2uw4W+68qivpOG2p7Vs
-        15tyVy1v5z5u/ezyV7FjqGQ=
-X-Google-Smtp-Source: ABdhPJy+1yovqw8J45ec7rwvhTOy5Zsk9UBBbrIpibmzvsCCOp1GbbwivAw4eZio5ckmV8dO4hgrRQ==
-X-Received: by 2002:a17:906:2984:: with SMTP id x4mr2962425eje.239.1609940718823;
-        Wed, 06 Jan 2021 05:45:18 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id z26sm1470222edl.71.2021.01.06.05.45.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 05:45:18 -0800 (PST)
-Date:   Wed, 6 Jan 2021 15:45:16 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
+        id S1726449AbhAFOGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 09:06:08 -0500
+Received: from smtp-out.xnet.cz ([178.217.244.18]:34645 "EHLO smtp-out.xnet.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725803AbhAFOGI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 09:06:08 -0500
+X-Greylist: delayed 436 seconds by postgrey-1.27 at vger.kernel.org; Wed, 06 Jan 2021 09:06:03 EST
+Received: from meh.true.cz (meh.true.cz [108.61.167.218])
+        (Authenticated sender: petr@true.cz)
+        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 0812A18C68;
+        Wed,  6 Jan 2021 14:58:04 +0100 (CET)
+Received: by meh.true.cz (OpenSMTPD) with ESMTP id 0dfe3687;
+        Wed, 6 Jan 2021 14:57:46 +0100 (CET)
+Date:   Wed, 6 Jan 2021 14:58:01 +0100
+From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
         Arnd Bergmann <arnd@arndb.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Florian Westphal <fw@strlen.de>, linux-s390@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, linux-parisc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
-        dev@openvswitch.org
-Subject: Re: [RFC PATCH v2 net-next 00/12] Make .ndo_get_stats64 sleepable
-Message-ID: <20210106134516.jnh2b5p5oww4cghz@skbuf>
-References: <20210105185902.3922928-1-olteanv@gmail.com>
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Yiwei Chung <yiwei.chung@mediatek.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mt76: mt7915: fix misplaced #ifdef
+Message-ID: <20210106135801.GA27377@meh.true.cz>
+Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+References: <20210103135811.3749775-1-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210105185902.3922928-1-olteanv@gmail.com>
+In-Reply-To: <20210103135811.3749775-1-arnd@kernel.org>
+X-PGP-Key: https://gist.githubusercontent.com/ynezz/477f6d7a1623a591b0806699f9fc8a27/raw/a0878b8ed17e56f36ebf9e06a6b888a2cd66281b/pgp-key.pub
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 08:58:50PM +0200, Vladimir Oltean wrote:
-> This is marked as Request For Comments for a reason.
+Arnd Bergmann <arnd@kernel.org> [2021-01-03 14:57:55]:
 
-If nobody has any objections, I will remove the memory leaks I
-introduced to check if anybody is paying attention, and I will resubmit
-this as a non-RFC series.
+Hi,
+
+just a small nitpick,
+
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The lone '|' at the end of a line causes a build failure:
+> 
+> drivers/net/wireless/mediatek/mt76/mt7915/init.c:47:2: error: expected expression before '}' token
+> 
+> Replace the #ifdef with an equivalent IS_ENABLED() check.
+> 
+> Fixes: af901eb4ab80 ("mt76: mt7915: get rid of dbdc debugfs knob")
+
+I think, that the correct fixes tag is following:
+
+ Fixes: 8aa2c6f4714e ("mt76: mt7915: support 32 station interfaces")
+
+I've used the af901eb4ab80 as well first in
+https://github.com/openwrt/mt76/pull/490 but then looked at it once more and
+actually found the probably correct 8aa2c6f4714e.
+
+Cheers,
+
+Petr
