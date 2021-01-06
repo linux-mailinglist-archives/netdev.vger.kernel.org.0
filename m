@@ -2,89 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 562442EB720
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 01:53:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73CD22EB723
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 01:55:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726711AbhAFAx2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Jan 2021 19:53:28 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:56964 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726038AbhAFAx2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 19:53:28 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id A281B4CBCE120;
-        Tue,  5 Jan 2021 16:52:47 -0800 (PST)
-Date:   Tue, 05 Jan 2021 16:52:47 -0800 (PST)
-Message-Id: <20210105.165247.1975563309057158543.davem@davemloft.net>
-To:     jks@iki.fi
-Cc:     bjorn@mork.no, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, lkp@intel.com, mrkiko.rs@gmail.com,
-        netdev@vger.kernel.org, oliver@neukum.org
-Subject: Re: [PATCH net,stable v3] net: cdc_ncm: correct overhead in
- delayed_ndp_size
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20210105045249.5590-1-jks@iki.fi>
-References: <20210103202309.1201-1-jks@iki.fi>
-        <20210105045249.5590-1-jks@iki.fi>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 05 Jan 2021 16:52:48 -0800 (PST)
+        id S1726834AbhAFAxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 19:53:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbhAFAxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 19:53:42 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5BDC061574;
+        Tue,  5 Jan 2021 16:53:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=KTdPw3GgA3/kea2wx5IKyFy0zwnHln1sWyX9MNUh0ls=; b=LuqBNmo6fno5boW6IJGneuHRV
+        +ePC50sNz5VPd5ou5vRp7o1FZc4lfMY1UyhZBTR5BcC9sbuTI5olXvmSsfdyS+Pg+XNw55qsRY7XU
+        ozPt7dvxGymJ3KDNglEoAKjjyhpsOq7KcZrx/cAqI0n7pbcoKItbiqBw366wOKxtP/OsjTxUCVHtu
+        e7C39EFv1cB6919SoPI2EsmkCPzDozj972pBVZdNqFK2yzwfjrnuM8Yjj/t+RdCxD3hlEFjiPJI8K
+        XNuag1fMjbsugZUayKbTdSKPZENZFJGyKstdH3Vl237ZoeKut9pkUqKMXkrX3WZS1g+YECcc3iX61
+        xWf2E2Wyg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45164)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kwx4M-0001DS-FX; Wed, 06 Jan 2021 00:52:58 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kwx4M-0008B7-1M; Wed, 06 Jan 2021 00:52:58 +0000
+Date:   Wed, 6 Jan 2021 00:52:58 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/3] ARM: iop32x: improve N2100 PCI broken parity quirk
+Message-ID: <20210106005257.GH1551@shell.armlinux.org.uk>
+References: <20210106002833.GA1286114@bjorn-Precision-5520>
+ <9d2d3d61-8866-f7d3-09e9-a43b05128689@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9d2d3d61-8866-f7d3-09e9-a43b05128689@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jouni Seppänen <jks@iki.fi>
-Date: Tue,  5 Jan 2021 06:52:49 +0200
+On Wed, Jan 06, 2021 at 01:44:03AM +0100, Heiner Kallweit wrote:
+> The machine type check is there to protect from (theoretical) cases
+> where the n2100 code (incl. the RTL8169 quirk) may be compiled in,
+> but the kernel is used on another machine.
 
-> From: Jouni K. Seppänen <jks@iki.fi>
-> 
-> Aligning to tx_ndp_modulus is not sufficient because the next align
-> call can be cdc_ncm_align_tail, which can add up to ctx->tx_modulus +
-> ctx->tx_remainder - 1 bytes. This used to lead to occasional crashes
-> on a Huawei 909s-120 LTE module as follows:
-> 
-> - the condition marked /* if there is a remaining skb [...] */ is true
->   so the swaps happen
-> - skb_out is set from ctx->tx_curr_skb
-> - skb_out->len is exactly 0x3f52
-> - ctx->tx_curr_size is 0x4000 and delayed_ndp_size is 0xac
->   (note that the sum of skb_out->len and delayed_ndp_size is 0x3ffe)
-> - the for loop over n is executed once
-> - the cdc_ncm_align_tail call marked /* align beginning of next frame */
->   increases skb_out->len to 0x3f56 (the sum is now 0x4002)
-> - the condition marked /* check if we had enough room left [...] */ is
->   false so we break out of the loop
-> - the condition marked /* If requested, put NDP at end of frame. */ is
->   true so the NDP is written into skb_out
-> - now skb_out->len is 0x4002, so padding_count is minus two interpreted
->   as an unsigned number, which is used as the length argument to memset,
->   leading to a crash with various symptoms but usually including
-> 
->> Call Trace:
->>  <IRQ>
->>  cdc_ncm_fill_tx_frame+0x83a/0x970 [cdc_ncm]
->>  cdc_mbim_tx_fixup+0x1d9/0x240 [cdc_mbim]
->>  usbnet_start_xmit+0x5d/0x720 [usbnet]
-> 
-> The cdc_ncm_align_tail call first aligns on a ctx->tx_modulus
-> boundary (adding at most ctx->tx_modulus-1 bytes), then adds
-> ctx->tx_remainder bytes. Alternatively, the next alignment call can
-> occur in cdc_ncm_ndp16 or cdc_ncm_ndp32, in which case at most
-> ctx->tx_ndp_modulus-1 bytes are added.
-> 
-> A similar problem has occurred before, and the code is nontrivial to
-> reason about, so add a guard before the crashing call. By that time it
-> is too late to prevent any memory corruption (we'll have written past
-> the end of the buffer already) but we can at least try to get a warning
-> written into an on-disk log by avoiding the hard crash caused by padding
-> past the buffer with a huge number of zeros.
-> 
-> Signed-off-by: Jouni K. Seppänen <jks@iki.fi>
-> Fixes: 4a0e3e989d66 ("cdc_ncm: Add support for moving NDP to end of NCM frame")
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=209407
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reviewed-by: Bjørn Mork <bjorn@mork.no>
+That is far from a theoretical case. The ARM port has always supported
+multiple machines in a single kernel. They just had to be "compatible"
+in other words, the same SoC. All the platforms supported by
+arch/arm/mach-iop32x can be built as a single kernel image and run on
+any of those platforms.
 
-Applied and queued up for -stable, thanks.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
