@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 493862EC2C8
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:53:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 828832EC2CD
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:53:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727471AbhAFRxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 12:53:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
+        id S1727561AbhAFRxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 12:53:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726143AbhAFRxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:53:18 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E621C061575;
-        Wed,  6 Jan 2021 09:52:38 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id b73so5098546edf.13;
-        Wed, 06 Jan 2021 09:52:37 -0800 (PST)
+        with ESMTP id S1727484AbhAFRxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:53:19 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC22C061357;
+        Wed,  6 Jan 2021 09:52:39 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id b2so5222989edm.3;
+        Wed, 06 Jan 2021 09:52:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4ghlzx0ngHPmtJ8Qunegeez7cCjaR86UkMnCfsZmtjo=;
-        b=VEP6JOKXTfSSSHt54dhX2M0EY3gZKRFIfgHhhiI7Og8tqz6x6nymRwbS1aX8rmcKAH
-         WxJKi38i7YCYgCfw5Pli4ICQ/9NQ9Mddm2PYLvAQRWduqJvJaiKJ0CJtGYLVF1L2eFGp
-         UVp4irLbrVHxqAKOuZGzonCXZucKPtfeWEei5rHiLFHldVCaRhykWymVN/nQv4kNiJyr
-         Wp0gWPj9FpnRtl4LTtmM41V6eGNQXrIG4pt+PTPPnNWJ8+GV2r62MD0vAL/tGV9VzMpu
-         U22YdMWGQeokTLJVak8/fdcXrPsYNLtITro2Lthv0vwbWZVQLEVYZvHf2DeMFqnhVUtm
-         T/GQ==
+        bh=zo4puXWJu0y1i/wQ/38qDQeCk416sEyKVYwIE550Uso=;
+        b=k4aMCi9BM2ZvNUO37aKxnOf2oDq3WvPS0tHkyDmv3alZSTPp0k3FOH+jRP5RrYLfQt
+         G4KSjMuvC85EQPxsZINaWvapPDwcGtY8TVP4n/SjCLxsby1h5Q2yZoDc0FlCR2uTBW2e
+         ObJS0Jjha0As/HLZUCNbkPM4J6kWl9OGhoVimLK11Kzkg2i6PzRBWtE9mPU6hsR1oAdS
+         J1lXtcoSqGsEYub64TGDSA/L9I502uTs0BaMJFQb41FJj9VU2vRREGBk9n//2d0Q5X/2
+         +mHF8BsVZJmehmTFxKT2EWQx9gKWvh1xXHFmUoubP2pMl/1fn8B1Hkdk6AtKKr61XSFG
+         gQOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=4ghlzx0ngHPmtJ8Qunegeez7cCjaR86UkMnCfsZmtjo=;
-        b=N1PXXJnBC67/t2ua1W6iCtfJqnYZgTw/HJNEsD9I5N0eC+NRM9bPpmq+Fj2LjGdJ4t
-         flCVVQ34GVr9m5mbKX9mVX4FRgbOJaItmYjVUAULi0MQwUh0gCcAdDMZbShjyIxNxYcc
-         UfAJWb8tNSbKdRGn+hAr9ioh6BRkjiTfUDl+AS+QZ3lWPYgVtZKqrMDAV6IXa9AhF4Wg
-         23f3QB4jwheveJx32Ykg/S+CHOkk3FBiJXzTmWy0Vy8+E41e+OsguLOtE4aRuVNkvoca
-         Xkg2CE9E5+SP0o3YMTXRvPt8q6SzXKVv3y9ucfkIWo8CzYjNbS9hHjq0lIsDZJyapmr0
-         JXBg==
-X-Gm-Message-State: AOAM530DMRa1DwFJvjcg8Q6OiRiMxDKxyaaVj4H+xntQjfb/hjQxnpxH
-        xiKkHpXY25uNbB7Impej07c4XiiIGAs=
-X-Google-Smtp-Source: ABdhPJxBXK4SYZHFJDf9fLt/cH+7SWdNrNdo4NDmnLPKwGuS+QgJHO8xx/Rdky/fMVKBPVYl0v4pTA==
-X-Received: by 2002:aa7:c886:: with SMTP id p6mr4686827eds.207.1609955556398;
-        Wed, 06 Jan 2021 09:52:36 -0800 (PST)
+        bh=zo4puXWJu0y1i/wQ/38qDQeCk416sEyKVYwIE550Uso=;
+        b=OhfF+mkEEzl+M2LX0o0lP/Hd5ysgOzM5bJyYmsRJY/D9RpsZzU2JhkvLGoyNEUp1rU
+         3Q6sbyqWjYib7F0nNnOeNd80pOgKylHZ9PQk0OPkHS8pkeGRLiCV7+lqJnM6/+6/JJIG
+         WofuvuLoEftvTfVEBvgqFDVDvwikcp8AYQgMijhTk9pgWlVb9oHdIr4IIrll1CSo1sMC
+         W+QSKbgMdrlOIS3RImH9zwqFx+zPRD/23PZ9NAz91qbKD5elLpvAOfzaVs5qUu68oyN8
+         gjpMvmHuN5Z4tIdhOlvg4t4a6wad39PFprqrLvcfUfwLs0nA7YhM38VqDs8yIO6IgLg5
+         xHxQ==
+X-Gm-Message-State: AOAM530/4CNx3Jo8VoVEZ1LbmF0EcFM+/Siojf58p45dDEfSn57HbhfV
+        ROecD4a7rr2yv4E2oEwEwg0lELuAQPw=
+X-Google-Smtp-Source: ABdhPJxKbl+eDJVjJz8AQaORCoddjTDiCIciOrwhOqu7vlt69dpwQRjyQfvUh8rFreDMbGLx05W5FQ==
+X-Received: by 2002:aa7:c5d6:: with SMTP id h22mr4659789eds.82.1609955557752;
+        Wed, 06 Jan 2021 09:52:37 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f06:5500:e1db:b990:7e09:f1cf? (p200300ea8f065500e1dbb9907e09f1cf.dip0.t-ipconnect.de. [2003:ea:8f06:5500:e1db:b990:7e09:f1cf])
-        by smtp.googlemail.com with ESMTPSA id hb18sm1533707ejb.86.2021.01.06.09.52.35
+        by smtp.googlemail.com with ESMTPSA id t19sm1532069ejc.62.2021.01.06.09.52.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 09:52:35 -0800 (PST)
-Subject: [PATCH v3 1/3] PCI: Disable parity checking if broken_parity is set
+        Wed, 06 Jan 2021 09:52:37 -0800 (PST)
+Subject: [PATCH v3 2/3] ARM: iop32x: improve N2100 PCI broken parity quirk
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Russell King - ARM Linux <linux@armlinux.org.uk>,
@@ -60,8 +60,8 @@ Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <992c800e-2e12-16b0-4845-6311b295d932@gmail.com>
-Message-ID: <d375987c-ea4f-dd98-4ef8-99b2fbfe7c33@gmail.com>
-Date:   Wed, 6 Jan 2021 18:50:22 +0100
+Message-ID: <0c0dcbf2-5f1e-954c-ebd7-e6ccfae5c60e@gmail.com>
+Date:   Wed, 6 Jan 2021 18:51:43 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.0
 MIME-Version: 1.0
@@ -73,65 +73,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we know that a device has broken parity checking, then disable it.
-This avoids quirks like in r8169 where on the first parity error
-interrupt parity checking will be disabled if broken_parity_status
-is set. Make pci_quirk_broken_parity() public so that it can be used
-by platform code, e.g. for Thecus N2100.
+Use new PCI core function pci_quirk_broken_parity() to disable
+parity checking.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/pci/quirks.c | 17 +++++++++++------
- include/linux/pci.h  |  2 ++
- 2 files changed, 13 insertions(+), 6 deletions(-)
+v2:
+- remove additional changes from this patch
+v3:
+- improve commit message
+---
+ arch/arm/mach-iop32x/n2100.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 653660e3b..ab54e26b8 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -205,17 +205,22 @@ static void quirk_mmio_always_on(struct pci_dev *dev)
- DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_ANY_ID, PCI_ANY_ID,
- 				PCI_CLASS_BRIDGE_HOST, 8, quirk_mmio_always_on);
+diff --git a/arch/arm/mach-iop32x/n2100.c b/arch/arm/mach-iop32x/n2100.c
+index 78b9a5ee4..9f2aae3cd 100644
+--- a/arch/arm/mach-iop32x/n2100.c
++++ b/arch/arm/mach-iop32x/n2100.c
+@@ -125,7 +125,7 @@ static void n2100_fixup_r8169(struct pci_dev *dev)
+ 	if (dev->bus->number == 0 &&
+ 	    (dev->devfn == PCI_DEVFN(1, 0) ||
+ 	     dev->devfn == PCI_DEVFN(2, 0)))
+-		dev->broken_parity_status = 1;
++		pci_quirk_broken_parity(dev);
+ }
+ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_REALTEK, PCI_ANY_ID, n2100_fixup_r8169);
  
-+void pci_quirk_broken_parity(struct pci_dev *dev)
-+{
-+	u16 cmd;
-+
-+	dev->broken_parity_status = 1;	/* This device gives false positives */
-+	pci_read_config_word(dev, PCI_COMMAND, &cmd);
-+	pci_write_config_word(dev, PCI_COMMAND, cmd & ~PCI_COMMAND_PARITY);
-+}
-+
- /*
-  * The Mellanox Tavor device gives false positive parity errors.  Mark this
-  * device with a broken_parity_status to allow PCI scanning code to "skip"
-  * this now blacklisted device.
-  */
--static void quirk_mellanox_tavor(struct pci_dev *dev)
--{
--	dev->broken_parity_status = 1;	/* This device gives false positives */
--}
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, quirk_mellanox_tavor);
--DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, quirk_mellanox_tavor);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, pci_quirk_broken_parity);
-+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, pci_quirk_broken_parity);
- 
- /*
-  * Deal with broken BIOSes that neglect to enable passive release,
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index b32126d26..161dcc474 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1916,6 +1916,8 @@ enum pci_fixup_pass {
- 	pci_fixup_suspend_late,	/* pci_device_suspend_late() */
- };
- 
-+void pci_quirk_broken_parity(struct pci_dev *dev);
-+
- #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
- #define __DECLARE_PCI_FIXUP_SECTION(sec, name, vendor, device, class,	\
- 				    class_shift, hook)			\
 -- 
 2.30.0
 
