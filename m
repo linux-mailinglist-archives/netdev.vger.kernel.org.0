@@ -2,140 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D27EC2EBE59
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:16:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D866A2EBE53
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:11:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbhAFNMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 08:12:08 -0500
-Received: from mail-am6eur05on2048.outbound.protection.outlook.com ([40.107.22.48]:48736
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727021AbhAFNMH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 08:12:07 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T1SjZEcn66/ojufPv6iAHRPE/VlCYRtHZnCemJT+Cs3q6NV7HFuDOne6SSJdzsR/n6JXDJil2Dw6DU4NF4xgQHlY7+ADjYHrSgx0FQbWngQlfrgT0n20x4E7PQ27B3CztaYKwNXkIxBfV5e5ROkEj3HxZliPfrET6il+ACSJGdcqaA54dSG9ccgyFFetJ5A05SQQorbhZ+DkFsdOZEuV2at0tQbP+VxtaOkdy7TNnEHJqNcGyPJauc8KTFZyJ8lbhAc9H9QzWulbg3+y4t2hTc7iTcSkxEeDKnK5/fsguKJ6jLHFf1lJ3dxzIITxmwABrBFx+FizSMCBglFDy+p1zw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dPIZ+gK2HhX0CnY/Wbars+Enryzwai+AM2LXSnSlQ9c=;
- b=F2g92dS0mMWtp9+frLIAmzSvFaJc8a2i3QjO6ZL5to+d2hPsgjUm5rOW+UVKMTsIHRUhJMGO/OfcnwZplVQRVOaxmRKHFDzXXRsbQWMyoaK+hgJDrjACWiMUO7kOCSNiHKWhv0yWCCQ4h0xtPm/wnmA+O7z7XCNSE5xOmfeJd3tZBvQwkPHzsLJJ/xriYhzCWwOwrhnsQgKCBGSpi0vd/pVp3Z8exuSAdbU5c3hK+ePf8lzMg3E928TI8OcAPhJ+/lKY/DldzYW+IZrW7d0A8yCdERgsmbGTTRO178RHPAGCn4LHkrFRbi6g+SfwFGzYGZpDt/8GhXy8E7qr9TlPmg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dPIZ+gK2HhX0CnY/Wbars+Enryzwai+AM2LXSnSlQ9c=;
- b=pJzzg9b/PiVnDRH/Kd9cgQfU9iQfwMhWQ657VIHBD2uiuuV2OraSAhB80pog1l9DS48HPGIJGvdhdpWjAt1ykNq2XLJuq1tgFKCsEEPRR+2gSQpsXKHnxf325/BFCtUcvBpxpMFHIo9e6AezlRsuCoTSkVCccvf1fuz0IeKc25s=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=mellanox.com;
-Received: from AM0PR05MB5010.eurprd05.prod.outlook.com (2603:10a6:208:cd::23)
- by AM0PR05MB6418.eurprd05.prod.outlook.com (2603:10a6:208:13e::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Wed, 6 Jan
- 2021 13:10:26 +0000
-Received: from AM0PR05MB5010.eurprd05.prod.outlook.com
- ([fe80::f463:9a6:abe8:afec]) by AM0PR05MB5010.eurprd05.prod.outlook.com
- ([fe80::f463:9a6:abe8:afec%5]) with mapi id 15.20.3742.006; Wed, 6 Jan 2021
- 13:10:26 +0000
-From:   Danielle Ratson <danieller@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     mkubecek@suse.cz, f.fainelli@gmail.com, kuba@kernel.org,
-        andrew@lunn.ch, mlxsw@nvidia.com,
-        Danielle Ratson <danieller@mellanox.com>
-Subject: [PATCH ethtool 4/5] shell-completion: Add completion for lanes
+        id S1726945AbhAFNLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 08:11:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726439AbhAFNLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 08:11:41 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3123C06134C
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 05:10:32 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id x16so4931356ejj.7
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 05:10:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UTyh/LUpjc5DuhFL63BwzfWt1XDDL5SmYqx73OT6iV8=;
+        b=K2/DnsaonXBwKW7T9Wrbx2Q03+N8nRq2QSFibI6gMVNUmxpm4KyeCjdwhy3emI3heT
+         SCTQbqWLzjVMLQrkyCqxOgN1y3sqSZtSYj8miX0pnj6coxhE4GyH68Qd4vObjunS2FGD
+         o7AT8I1dZHiantW+OJzcY2dDkset0/SUTPEVnAcCp8AGWN0TESlxY2aR3AbbYlSfukou
+         fXiKJpL2BbyzoTevdZAhMSyrFzUTtlsz5KJSTibfMjqGOp0PAy1ajff4h5tfgAy0O5dt
+         JlycIaPNGxJ6E8sxW1diXx1cv36M3FXqsRsC6onnyoskgzK9XFhxOdq3RCHLKZDe5YnP
+         FU0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UTyh/LUpjc5DuhFL63BwzfWt1XDDL5SmYqx73OT6iV8=;
+        b=SMXXCC0M9KG61j22RAuskpC62qCaOA97LNoKxji/4t1WCDZnrN9PtmWVeVpO57Xg07
+         euOmQsHmMBWfb+id5Ab0G7gkr4JGozo6n+WDZWt890/A4z7Md3pX/Mmh6hV2akB/Uwew
+         FeyAR51X0KHEfyEsA68ZKXndVfeKRus3JztoY33RYq2NAQJvwB+fHW/eYI+fRC0hz6gD
+         lE9fyd+ZeHAzGN8iO7U+LZIgI5CfxYEGKSQfjeISDkj2W/Bo4YtzRT2dnK/Ey2+2/g//
+         VKdt1+FoOs6E2mVYdVfvkko00LZyfzFdOmDU67H+oqqAYgDCrF8Rl30JYiQApQSSWrtu
+         6zLg==
+X-Gm-Message-State: AOAM530dX7dT8U/QPUand6XH6rD8P9Oe74KId7Bl/V7I/BmqKFVvuqwj
+        gCRA9sJZyhvps4ZwkpV1LqY=
+X-Google-Smtp-Source: ABdhPJwPD6KGbyZCgnHvisB/OJq5nWmn/tgKM2NK71V3O2tVJ3qC0xDJDHlJzacwH5B84fSbBg071Q==
+X-Received: by 2002:a17:907:435c:: with SMTP id oc20mr2945194ejb.286.1609938631607;
+        Wed, 06 Jan 2021 05:10:31 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id p22sm1241858ejx.59.2021.01.06.05.10.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jan 2021 05:10:31 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>
+Subject: [PATCH v2 net-next 09/10] mlxsw: spectrum_switchdev: remove transactional logic for VLAN objects
 Date:   Wed,  6 Jan 2021 15:10:05 +0200
-Message-Id: <20210106131006.2110613-5-danieller@mellanox.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210106131006.2110613-1-danieller@mellanox.com>
-References: <20210106131006.2110613-1-danieller@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [37.142.13.130]
-X-ClientProxiedBy: VI1PR06CA0138.eurprd06.prod.outlook.com
- (2603:10a6:803:a0::31) To AM0PR05MB5010.eurprd05.prod.outlook.com
- (2603:10a6:208:cd::23)
+Message-Id: <20210106131006.577312-10-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210106131006.577312-1-olteanv@gmail.com>
+References: <20210106131006.577312-1-olteanv@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by VI1PR06CA0138.eurprd06.prod.outlook.com (2603:10a6:803:a0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6 via Frontend Transport; Wed, 6 Jan 2021 13:10:25 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: f66ff544-8409-4271-e6ad-08d8b2446f5d
-X-MS-TrafficTypeDiagnostic: AM0PR05MB6418:
-X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr,ExtFwd
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB641879EF8E7CB81C57B04692D5D00@AM0PR05MB6418.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:619;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: P2vNsZOMTIlXNFILkqRMwZ7JrnqAI6iw2BJ0vFa/s+JmRHDTTenv8rfScNKkfGPkWoVuSo4kbtb5suYYlBQGyegOzzvJ/Ct68MYD5hOaE1oHtl34n4ECMwLI+CKBfY6b9Nx7j32Uw4FUhpSew0YV5ATOS7ETj/mj0hCSWiyvoiSF+RloMZvwz0gfe710gJQeT7CRlwJV5TKo58LPCy8JIEQQKq01VghDDDAIs2vLtsIzVtTBvwqjex6GteV/yz1N7zKkfXu4VPL6fXlZ/cXcWosDLECXXn2Bki9R+aKS4mIFjPZt4ycRz7HRvVKTUjv9PmcFvahbBABBrU4+vAI6OeEN5rqNe79z0/d6wIYbkOHJgWbTXWQu5I4K3uImmax+rpQG1jjtLCXQ1G4p4PzMOA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB5010.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(396003)(39860400002)(136003)(366004)(4744005)(26005)(8936002)(16526019)(186003)(107886003)(6486002)(6512007)(316002)(6916009)(5660300002)(6666004)(4326008)(2906002)(6506007)(956004)(2616005)(86362001)(1076003)(8676002)(66946007)(478600001)(66556008)(66476007)(36756003)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Cb65zsABIXwsvMB7QPerYkSUUw0Ws0SFHLGkB+ZI79WBjydBCDLASYMCbdZ+?=
- =?us-ascii?Q?jroIwlG0i0B9TQkSCu6z5yZWtrmpL1EcH71ophpSX5OnP8DUI8juCPFGk7Y8?=
- =?us-ascii?Q?zB6XspNli0xVGnK4T0nUFdKfuVB+V53WKOtjsyv0kIRxlUBNDqBJOotr1xXi?=
- =?us-ascii?Q?s3LIJJjz10g53li0UXCHMpltaW6is9peLzcqWpZjae8kV0hJH2SIcq41JK7I?=
- =?us-ascii?Q?rhJ4dxvqiPA1R2Tz8HzBA1dRXJU5N3WkH+zxbqqAKHbBQfC9xHW3S5zP3bKY?=
- =?us-ascii?Q?l4FtVuA5QtS7ERxRG1yOKaOUCqCb+9SIcbygIEWyGJR9v9SSHE727S/GurBz?=
- =?us-ascii?Q?NXjMeRM3Ee65QqzOPUXza1Kk2AGSbOEHAbx99JAdu9cmxI7COmeN0TWJlkJA?=
- =?us-ascii?Q?cFDINZ1HD0SnsunirUY9UGmNAsBFv+PrbNrpxDmAYrtVfaT5hC9EgbQ4kW0T?=
- =?us-ascii?Q?QixSUKT243Ahn8O92vNaq8t0hRHAtuTGMkhzsUffDCgWjOiGCVrVJuzXavOG?=
- =?us-ascii?Q?GSSUsj2ibU83KWJef9pm8TJPPiQum8bEmRil77hmifml2jlQgYyRxOFzpOdo?=
- =?us-ascii?Q?nicH/3xHREx819Kj0AQoWj3/NngrJe0mxe6HQpvGbwiUDB+oPSU9DLJPbecy?=
- =?us-ascii?Q?GpykUzriopQgi5oU8LtSN3hQrVXyG8HzvFbT5bXP/atMMuBes0FKOmCPa0+w?=
- =?us-ascii?Q?MmUt6gez9dEpLzfMvNLVMwgaMq1ZVC720+3iiMm4qN/outkta9iqd5Oua2Fg?=
- =?us-ascii?Q?zcTdCR0qkZqSBsdrm2vIuenYEGN5l7MDhg+lZKOeBj2eQigeaTpVcgimeZN8?=
- =?us-ascii?Q?0jreGLqbdW0pQKv97x7zm/B+E+RcdFYmMO9UHcGmFtxO4DkmY1CXBm/r8XKk?=
- =?us-ascii?Q?ZBYn9pMSrpdOEKxjO81x15hlhfhpwWgZW3pRTA1QZ3m/KFEmTzSabKHpO6LU?=
- =?us-ascii?Q?sUnI+jY7VvBqC/gvVQAyik8U9rsDkZK500AsWuhjTUI0AAcUoZPbgZ2KYiHh?=
- =?us-ascii?Q?LHmR?=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB5010.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2021 13:10:26.8630
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-Network-Message-Id: f66ff544-8409-4271-e6ad-08d8b2446f5d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 48HQhft4Ejy/5s3rKIodd5rM1qQNjvFlyL5FSVrjwRYq7c2WX3ikknqNxviNFPvep9QONu+omTXkCQy9YoFPbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6418
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lanes was added as a new link mode setting in ethtool.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Support completion for lanes when setting parameters.
+As of commit 457e20d65924 ("mlxsw: spectrum_switchdev: Avoid returning
+errors in commit phase"), the mlxsw driver performs the VLAN object
+offloading during the prepare phase. So conversion just seems to be a
+matter of removing the code that was running in the commit phase.
 
-Signed-off-by: Danielle Ratson <danieller@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Acked-by: Jiri Pirko <jiri@nvidia.com>
 ---
- shell-completion/bash/ethtool | 4 ++++
- 1 file changed, 4 insertions(+)
+Changes in v2:
+Rebased on top of VLAN ranges removal.
 
-diff --git a/shell-completion/bash/ethtool b/shell-completion/bash/ethtool
-index 5305559..4557341 100644
---- a/shell-completion/bash/ethtool
-+++ b/shell-completion/bash/ethtool
-@@ -97,6 +97,7 @@ _ethtool_change()
- 		[speed]=notseen
- 		[wol]=notseen
- 		[xcvr]=notseen
-+		[lanes]=notseen
- 	)
+ .../mellanox/mlxsw/spectrum_switchdev.c       | 38 +++----------------
+ 1 file changed, 5 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+index 003c4a4fc8db..35b6743c569c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+@@ -1196,7 +1196,6 @@ mlxsw_sp_br_ban_rif_pvid_change(struct mlxsw_sp *mlxsw_sp,
  
- 	local -A msgtypes=(
-@@ -175,6 +176,9 @@ _ethtool_change()
- 		xcvr)
- 			COMPREPLY=( $( compgen -W 'internal external' -- "$cur" ) )
- 			return ;;
-+		lanes)
-+			# Number
-+			return ;;
- 	esac
+ static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				   const struct switchdev_obj_port_vlan *vlan,
+-				   struct switchdev_trans *trans,
+ 				   struct netlink_ext_ack *extack)
+ {
+ 	bool flag_untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+@@ -1209,8 +1208,7 @@ static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		int err = 0;
  
- 	local -a comp_words=()
+ 		if ((vlan->flags & BRIDGE_VLAN_INFO_BRENTRY) &&
+-		    br_vlan_enabled(orig_dev) &&
+-		    switchdev_trans_ph_prepare(trans))
++		    br_vlan_enabled(orig_dev))
+ 			err = mlxsw_sp_br_ban_rif_pvid_change(mlxsw_sp,
+ 							      orig_dev, vlan);
+ 		if (!err)
+@@ -1218,9 +1216,6 @@ static int mlxsw_sp_port_vlans_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		return err;
+ 	}
+ 
+-	if (switchdev_trans_ph_commit(trans))
+-		return 0;
+-
+ 	bridge_port = mlxsw_sp_bridge_port_find(mlxsw_sp->bridge, orig_dev);
+ 	if (WARN_ON(!bridge_port))
+ 		return -EINVAL;
+@@ -1764,29 +1759,20 @@ static int mlxsw_sp_port_obj_add(struct net_device *dev,
+ {
+ 	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
+ 	const struct switchdev_obj_port_vlan *vlan;
+-	struct switchdev_trans trans;
+ 	int err = 0;
+ 
+ 	switch (obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
+ 
+-		trans.ph_prepare = true;
+-		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, &trans,
+-					      extack);
++		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, extack);
+ 		if (err)
+ 			break;
+ 
+-		/* The event is emitted before the changes are actually
+-		 * applied to the bridge. Therefore schedule the respin
+-		 * call for later, so that the respin logic sees the
++		/* Schedule the respin call, so that the respin logic sees the
+ 		 * updated bridge state.
+ 		 */
+ 		mlxsw_sp_span_respin(mlxsw_sp_port->mlxsw_sp);
+-
+-		trans.ph_prepare = false;
+-		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, &trans,
+-					      extack);
+ 		break;
+ 	case SWITCHDEV_OBJ_ID_PORT_MDB:
+ 		err = mlxsw_sp_port_mdb_add(mlxsw_sp_port,
+@@ -3350,8 +3336,7 @@ mlxsw_sp_switchdev_vxlan_vlan_del(struct mlxsw_sp *mlxsw_sp,
+ static int
+ mlxsw_sp_switchdev_vxlan_vlans_add(struct net_device *vxlan_dev,
+ 				   struct switchdev_notifier_port_obj_info *
+-				   port_obj_info,
+-				   struct switchdev_trans *trans)
++				   port_obj_info)
+ {
+ 	struct switchdev_obj_port_vlan *vlan =
+ 		SWITCHDEV_OBJ_PORT_VLAN(port_obj_info->obj);
+@@ -3373,9 +3358,6 @@ mlxsw_sp_switchdev_vxlan_vlans_add(struct net_device *vxlan_dev,
+ 
+ 	port_obj_info->handled = true;
+ 
+-	if (switchdev_trans_ph_commit(trans))
+-		return 0;
+-
+ 	bridge_device = mlxsw_sp_bridge_device_find(mlxsw_sp->bridge, br_dev);
+ 	if (!bridge_device)
+ 		return -EINVAL;
+@@ -3426,22 +3408,12 @@ mlxsw_sp_switchdev_handle_vxlan_obj_add(struct net_device *vxlan_dev,
+ 					struct switchdev_notifier_port_obj_info *
+ 					port_obj_info)
+ {
+-	struct switchdev_trans trans;
+ 	int err = 0;
+ 
+ 	switch (port_obj_info->obj->id) {
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+-		trans.ph_prepare = true;
+-		err = mlxsw_sp_switchdev_vxlan_vlans_add(vxlan_dev,
+-							 port_obj_info,
+-							 &trans);
+-		if (err)
+-			break;
+-
+-		trans.ph_prepare = false;
+ 		err = mlxsw_sp_switchdev_vxlan_vlans_add(vxlan_dev,
+-							 port_obj_info,
+-							 &trans);
++							 port_obj_info);
+ 		break;
+ 	default:
+ 		break;
 -- 
-2.26.2
+2.25.1
 
