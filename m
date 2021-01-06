@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C0AE2EC6C0
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 00:19:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F7322EC6C3
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 00:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727873AbhAFXTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 18:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55130 "EHLO
+        id S1727925AbhAFXTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 18:19:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727855AbhAFXTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 18:19:08 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D42C061358
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 15:17:59 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id cw27so5965321edb.5
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 15:17:59 -0800 (PST)
+        with ESMTP id S1727876AbhAFXTL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 18:19:11 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BAEBC061359
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 15:18:01 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id g24so5923850edw.9
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 15:18:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tRal1g/VgJAzNaJgMB+W4qTGAGhdIzdkTkjKxacO5Do=;
-        b=hO8zoGnsPL1OEDDNXKKHuaJUn2E6YmR72Gzch33kY5eq1/ekDAOlJDd46ZLuDH7S8C
-         hg8g8Oj+ZyuvD8Ywc84yEeeRKLKx+lvWI9qFQEhbeQpF5jiEZo9mmvTHP5uySXYYmZAO
-         DQdqpFQt87hI41a618nEGZAfbUon1QYL4xTPk29SHnkXunfjTrhL6/4aXm9SKVY+bxgN
-         vxAfwHF1HDkVlU5JYz1MbiFpt/Hgx/MsSb+XYeN2qUPhZF6piPIWVrOUij0e4pkjjUHy
-         o2Urj9pm9OZvW59/SR8G3lnvub29Uj56lg6pb7K9GnqhZBbnlpECIOIhUmnkv5obWmJV
-         jyPg==
+        bh=ez+9/yAdn3ONxwGswryAHiNfCOqUAFuzCYxbG6sh9Is=;
+        b=EzieLxELsPVFUuDej76LguIFO/6kDBxeLV+/YXZl+23UOxudGfRNlxZH3v4VNDlblf
+         x21+wA7ll2cyQGqhm1lKWKzCql+F8zI6IMR4w6/adG/IQtQ1IzQrzUKBuHT6/LwcyddS
+         aOnRxmtWzSjtlDoVhULldq2HlFGSOaKvBP3HHiRNYibbynZl7ykbB32ybppC3UTnodQ3
+         8DJisnFiYUY0V28ELEkc5sBjEU7G0mi3bUZhiUpRFSR7VCafA7tiM5johUc4Jf0sqBAi
+         HwS+rtgB9Xq/0WXgT2/60Va7LV4TtNMTLncjVDJhAB3PlbWfh2zF6YaPAqBh/B1jU+1T
+         ih4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tRal1g/VgJAzNaJgMB+W4qTGAGhdIzdkTkjKxacO5Do=;
-        b=hZCd/syXovmqL5w8zR2u6wosS9b3cmhKd+ArPdHjrCTFxbjz5pigpoc9viCqdkVaJh
-         tQKS4TrebkME9T+1geFi8BHx4wQNMs2H6BuoBVs+2zDKqToGf30OgzjS/I7E3J9sAlKd
-         5FTP5QDd577xMObDLvWyq5ek+zPM2vdqUWAi1ZeJx6I/VvSYXTzWaVkCaCduQGpZdpLP
-         0zVyWgIdVg19aCGFOCTXSxKE/tMNuU3Rw3dNw5xT/7AYVeo3hparVgBdIQ1Y8TwqXThu
-         zGY57pO9xaEvw5qLoTwaM7xW6YjSqKOXZqVr/MB0IgGd3O/FUiS5+Nb1g3fg8jiuzt+R
-         7XNA==
-X-Gm-Message-State: AOAM531be0bAGskchf/6mrspwLRO8Zr6ZAKdg0/2KfaX0RPRd4vkkUHd
-        Rp2i9zMt8n3ozHRXGkt1vEk=
-X-Google-Smtp-Source: ABdhPJzRh0xQliP8LRrmSgjZ+uZsLIfI8EdrRNCsk6DcwlezNlO+2VaWSwqPWhO0Bk31oayc3Dhiwg==
-X-Received: by 2002:a50:d646:: with SMTP id c6mr5445476edj.177.1609975078137;
-        Wed, 06 Jan 2021 15:17:58 -0800 (PST)
+        bh=ez+9/yAdn3ONxwGswryAHiNfCOqUAFuzCYxbG6sh9Is=;
+        b=rENt+lCp7O7Zu92wV/fhFcd09GQMSTbjsyimqwWXKvdDZ6PqRv0BeezBDYAvCj7DR/
+         Y3U1dZMTTQDgQR2y6k3t7m0bb9oa1+JI3ktcfNYmvaH8M3lwoO+05ApJQknpeOi2e4gL
+         B84d1rF4ZK1Mxqu9ZW6UCYueJtbTFncANfuIptaZuwVrkgZP3dI+A3gMu2nAo916jLpZ
+         mrQuRhfY0jukX31zSHc8OCn0fxk4f8/tDd2ddNy/CyjH5PMYbEGcJfC4xrJ0F+E5+/o4
+         DyA4km4O3buikVZCcUcb2XZ1/HpBjwcLDIjyPNhdhkNU1FzF/lUSldW2mvcxg/ic5cDT
+         Tzsg==
+X-Gm-Message-State: AOAM530n93ygY1aMkkUbBg5K2Y3mq9d2w0FbMuVDHUbNlCrRZAlUWUla
+        Pn5+ZdZ2S2NwNqgLe2QuRcs=
+X-Google-Smtp-Source: ABdhPJxzG/QZCTQHFFwQuTP2izGn05In9Ve5Dz5EcjmxDY0SkECRCPWSkf4kwV62sPnqwOXP6fDUgQ==
+X-Received: by 2002:a50:becf:: with SMTP id e15mr5748240edk.138.1609975079945;
+        Wed, 06 Jan 2021 15:17:59 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id a6sm1958263edv.74.2021.01.06.15.17.56
+        by smtp.gmail.com with ESMTPSA id a6sm1958263edv.74.2021.01.06.15.17.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 15:17:57 -0800 (PST)
+        Wed, 06 Jan 2021 15:17:59 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -69,9 +69,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH v3 net-next 07/11] net: dsa: remove the transactional logic from MDB entries
-Date:   Thu,  7 Jan 2021 01:17:24 +0200
-Message-Id: <20210106231728.1363126-8-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 08/11] net: dsa: remove the transactional logic from VLAN objects
+Date:   Thu,  7 Jan 2021 01:17:25 +0200
+Message-Id: <20210106231728.1363126-9-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210106231728.1363126-1-olteanv@gmail.com>
 References: <20210106231728.1363126-1-olteanv@gmail.com>
@@ -83,447 +83,885 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-For many drivers, the .port_mdb_prepare callback was not a good opportunity
-to avoid any error condition, and they would suppress errors found during
-the actual commit phase.
+It should be the driver's business to logically separate its VLAN
+offloading into a preparation and a commit phase, and some drivers don't
+need / can't do this.
 
-Where a logical separation between the prepare and the commit phase
-existed, the function that used to implement the .port_mdb_prepare
-callback still exists, but now it is called directly from .port_mdb_add,
-which was modified to return an int code.
+So remove the transactional shim from DSA and let drivers propagate
+errors directly from the .port_vlan_add callback.
+
+It would appear that the code has worse error handling now than it had
+before. DSA is the only in-kernel user of switchdev that offloads one
+switchdev object to more than one port: for every VLAN object offloaded
+to a user port, that VLAN is also offloaded to the CPU port. So the
+"prepare for user port -> check for errors -> prepare for CPU port ->
+check for errors -> commit for user port -> commit for CPU port"
+sequence appears to make more sense than the one we are using now:
+"offload to user port -> check for errors -> offload to CPU port ->
+check for errors", but it is really a compromise. In the new way, we can
+catch errors from the commit phase that we previously had to ignore.
+But we have our hands tied and cannot do any rollback now: if we add a
+VLAN on the CPU port and it fails, we can't do the rollback by simply
+deleting it from the user port, because the switchdev API is not so nice
+with us: it could have simply been there already, even with the same
+flags. So we don't even attempt to rollback anything on addition error,
+just leave whatever VLANs managed to get offloaded right where they are.
+This should not be a problem at all in practice.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Acked-by: Linus Walleij <linus.walleij@linaro.org>
 Acked-by: Jiri Pirko <jiri@nvidia.com>
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de> # hellcreek
-Reviewed-by: Linus Wallei <linus.walleij@linaro.org> # RTL8366
 ---
 Changes in v3:
 None.
 
 Changes in v2:
-Propagating errors better now.
+- Rebased on top of the VLAN ranges removal.
+- Propagating errors better now.
 
- drivers/net/dsa/b53/b53_common.c       | 19 +++----------------
- drivers/net/dsa/b53/b53_priv.h         |  6 ++----
+ drivers/net/dsa/b53/b53_common.c       | 17 ++++++----
+ drivers/net/dsa/b53/b53_priv.h         |  6 ++--
  drivers/net/dsa/bcm_sf2.c              |  1 -
- drivers/net/dsa/lan9303-core.c         | 12 ++++++++----
- drivers/net/dsa/microchip/ksz8795.c    |  1 -
- drivers/net/dsa/microchip/ksz9477.c    | 14 +++++++++-----
- drivers/net/dsa/microchip/ksz_common.c | 16 +++++-----------
- drivers/net/dsa/microchip/ksz_common.h |  6 ++----
- drivers/net/dsa/mv88e6xxx/chip.c       | 24 +++++++-----------------
- drivers/net/dsa/ocelot/felix.c         | 14 +++-----------
- drivers/net/dsa/sja1105/sja1105_main.c | 14 +++-----------
- include/net/dsa.h                      |  4 +---
- net/dsa/switch.c                       | 15 ++++++---------
- 13 files changed, 49 insertions(+), 97 deletions(-)
+ drivers/net/dsa/bcm_sf2_cfp.c          |  7 ++--
+ drivers/net/dsa/dsa_loop.c             | 28 ++++------------
+ drivers/net/dsa/hirschmann/hellcreek.c | 12 +++++--
+ drivers/net/dsa/lantiq_gswip.c         | 15 ++++++---
+ drivers/net/dsa/microchip/ksz8795.c    |  7 ++--
+ drivers/net/dsa/microchip/ksz9477.c    | 18 +++++++----
+ drivers/net/dsa/microchip/ksz_common.c |  9 ------
+ drivers/net/dsa/microchip/ksz_common.h |  2 --
+ drivers/net/dsa/mt7530.c               | 14 ++------
+ drivers/net/dsa/mv88e6xxx/chip.c       | 34 ++++++++++++--------
+ drivers/net/dsa/ocelot/felix.c         | 16 ++++++----
+ drivers/net/dsa/qca8k.c                | 14 +++-----
+ drivers/net/dsa/realtek-smi-core.h     |  6 ++--
+ drivers/net/dsa/rtl8366.c              | 44 +++++++++++---------------
+ drivers/net/dsa/rtl8366rb.c            |  1 -
+ drivers/net/dsa/sja1105/sja1105_main.c | 43 +++++++++----------------
+ include/net/dsa.h                      |  4 +--
+ net/dsa/switch.c                       |  8 ++---
+ 21 files changed, 133 insertions(+), 173 deletions(-)
 
 diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 99c9b528884e..122636eb362e 100644
+index 122636eb362e..26693b684bde 100644
 --- a/drivers/net/dsa/b53/b53_common.c
 +++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1741,8 +1741,8 @@ int b53_fdb_dump(struct dsa_switch *ds, int port,
+@@ -1384,8 +1384,8 @@ int b53_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
  }
- EXPORT_SYMBOL(b53_fdb_dump);
+ EXPORT_SYMBOL(b53_vlan_filtering);
  
--int b53_mdb_prepare(struct dsa_switch *ds, int port,
--		    const struct switchdev_obj_port_mdb *mdb)
-+int b53_mdb_add(struct dsa_switch *ds, int port,
-+		const struct switchdev_obj_port_mdb *mdb)
+-int b53_vlan_prepare(struct dsa_switch *ds, int port,
+-		     const struct switchdev_obj_port_vlan *vlan)
++static int b53_vlan_prepare(struct dsa_switch *ds, int port,
++			    const struct switchdev_obj_port_vlan *vlan)
  {
- 	struct b53_device *priv = ds->priv;
+ 	struct b53_device *dev = ds->priv;
  
-@@ -1752,19 +1752,7 @@ int b53_mdb_prepare(struct dsa_switch *ds, int port,
- 	if (is5325(priv) || is5365(priv))
- 		return -EOPNOTSUPP;
+@@ -1407,15 +1407,19 @@ int b53_vlan_prepare(struct dsa_switch *ds, int port,
  
--	return 0;
--}
--EXPORT_SYMBOL(b53_mdb_prepare);
--
--void b53_mdb_add(struct dsa_switch *ds, int port,
--		 const struct switchdev_obj_port_mdb *mdb)
--{
--	struct b53_device *priv = ds->priv;
--	int ret;
--
--	ret = b53_arl_op(priv, 0, port, mdb->addr, mdb->vid, true);
--	if (ret)
--		dev_err(ds->dev, "failed to add MDB entry\n");
-+	return b53_arl_op(priv, 0, port, mdb->addr, mdb->vid, true);
- }
- EXPORT_SYMBOL(b53_mdb_add);
- 
-@@ -2205,7 +2193,6 @@ static const struct dsa_switch_ops b53_switch_ops = {
- 	.port_fdb_del		= b53_fdb_del,
- 	.port_mirror_add	= b53_mirror_add,
- 	.port_mirror_del	= b53_mirror_del,
--	.port_mdb_prepare	= b53_mdb_prepare,
- 	.port_mdb_add		= b53_mdb_add,
- 	.port_mdb_del		= b53_mdb_del,
- 	.port_max_mtu		= b53_get_max_mtu,
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index 24893b592216..224423ab0682 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -360,10 +360,8 @@ int b53_fdb_del(struct dsa_switch *ds, int port,
- 		const unsigned char *addr, u16 vid);
- int b53_fdb_dump(struct dsa_switch *ds, int port,
- 		 dsa_fdb_dump_cb_t *cb, void *data);
--int b53_mdb_prepare(struct dsa_switch *ds, int port,
--		    const struct switchdev_obj_port_mdb *mdb);
--void b53_mdb_add(struct dsa_switch *ds, int port,
--		 const struct switchdev_obj_port_mdb *mdb);
-+int b53_mdb_add(struct dsa_switch *ds, int port,
-+		const struct switchdev_obj_port_mdb *mdb);
- int b53_mdb_del(struct dsa_switch *ds, int port,
- 		const struct switchdev_obj_port_mdb *mdb);
- int b53_mirror_add(struct dsa_switch *ds, int port,
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 1e9a0adda2d6..4c493bb47d30 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -1123,7 +1123,6 @@ static const struct dsa_switch_ops bcm_sf2_ops = {
- 	.set_rxnfc		= bcm_sf2_set_rxnfc,
- 	.port_mirror_add	= b53_mirror_add,
- 	.port_mirror_del	= b53_mirror_del,
--	.port_mdb_prepare	= b53_mdb_prepare,
- 	.port_mdb_add		= b53_mdb_add,
- 	.port_mdb_del		= b53_mdb_del,
- };
-diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index aa1142d6a9f5..344374025426 100644
---- a/drivers/net/dsa/lan9303-core.c
-+++ b/drivers/net/dsa/lan9303-core.c
-@@ -1232,14 +1232,19 @@ static int lan9303_port_mdb_prepare(struct dsa_switch *ds, int port,
  	return 0;
  }
+-EXPORT_SYMBOL(b53_vlan_prepare);
  
--static void lan9303_port_mdb_add(struct dsa_switch *ds, int port,
--				 const struct switchdev_obj_port_mdb *mdb)
-+static int lan9303_port_mdb_add(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_mdb *mdb)
+-void b53_vlan_add(struct dsa_switch *ds, int port,
+-		  const struct switchdev_obj_port_vlan *vlan)
++int b53_vlan_add(struct dsa_switch *ds, int port,
++		 const struct switchdev_obj_port_vlan *vlan)
  {
- 	struct lan9303 *chip = ds->priv;
+ 	struct b53_device *dev = ds->priv;
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+ 	struct b53_vlan *vl;
 +	int err;
 +
-+	err = lan9303_port_mdb_prepare(ds, port, mdb);
++	err = b53_vlan_prepare(ds, port, vlan);
 +	if (err)
 +		return err;
  
- 	dev_dbg(chip->dev, "%s(%d, %pM, %d)\n", __func__, port, mdb->addr,
- 		mdb->vid);
--	lan9303_alr_add_port(chip, mdb->addr, port, false);
-+	return lan9303_alr_add_port(chip, mdb->addr, port, false);
- }
+ 	vl = &dev->vlans[vlan->vid];
  
- static int lan9303_port_mdb_del(struct dsa_switch *ds, int port,
-@@ -1274,7 +1279,6 @@ static const struct dsa_switch_ops lan9303_switch_ops = {
- 	.port_fdb_add           = lan9303_port_fdb_add,
- 	.port_fdb_del           = lan9303_port_fdb_del,
- 	.port_fdb_dump          = lan9303_port_fdb_dump,
--	.port_mdb_prepare       = lan9303_port_mdb_prepare,
- 	.port_mdb_add           = lan9303_port_mdb_add,
- 	.port_mdb_del           = lan9303_port_mdb_del,
- };
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 6a9ec8a0f92f..89e1c01cf5b8 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1114,7 +1114,6 @@ static const struct dsa_switch_ops ksz8795_switch_ops = {
- 	.port_vlan_add		= ksz8795_port_vlan_add,
- 	.port_vlan_del		= ksz8795_port_vlan_del,
- 	.port_fdb_dump		= ksz_port_fdb_dump,
--	.port_mdb_prepare       = ksz_port_mdb_prepare,
- 	.port_mdb_add           = ksz_port_mdb_add,
- 	.port_mdb_del           = ksz_port_mdb_del,
- 	.port_mirror_add	= ksz8795_port_mirror_add,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 446c088ce5c5..08bf54eb9f5f 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -774,14 +774,15 @@ static int ksz9477_port_fdb_dump(struct dsa_switch *ds, int port,
- 	return ret;
- }
- 
--static void ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
--				 const struct switchdev_obj_port_mdb *mdb)
-+static int ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_mdb *mdb)
- {
- 	struct ksz_device *dev = ds->priv;
- 	u32 static_table[4];
- 	u32 data;
- 	int index;
- 	u32 mac_hi, mac_lo;
-+	int err = 0;
- 
- 	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
- 	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
-@@ -796,7 +797,8 @@ static void ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
- 		ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
- 
- 		/* wait to be finished */
--		if (ksz9477_wait_alu_sta_ready(dev)) {
-+		err = ksz9477_wait_alu_sta_ready(dev);
-+		if (err) {
- 			dev_dbg(dev->dev, "Failed to read ALU STATIC\n");
- 			goto exit;
- 		}
-@@ -819,8 +821,10 @@ static void ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
+@@ -1438,6 +1442,8 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
+ 			    vlan->vid);
+ 		b53_fast_age_vlan(dev, vlan->vid);
  	}
- 
- 	/* no available entry */
--	if (index == dev->num_statics)
-+	if (index == dev->num_statics) {
-+		err = -ENOSPC;
- 		goto exit;
-+	}
- 
- 	/* add entry */
- 	static_table[0] = ALU_V_STATIC_VALID;
-@@ -842,6 +846,7 @@ static void ksz9477_port_mdb_add(struct dsa_switch *ds, int port,
- 
- exit:
- 	mutex_unlock(&dev->alu_mutex);
-+	return err;
- }
- 
- static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
-@@ -1395,7 +1400,6 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_fdb_dump		= ksz9477_port_fdb_dump,
- 	.port_fdb_add		= ksz9477_port_fdb_add,
- 	.port_fdb_del		= ksz9477_port_fdb_del,
--	.port_mdb_prepare       = ksz_port_mdb_prepare,
- 	.port_mdb_add           = ksz9477_port_mdb_add,
- 	.port_mdb_del           = ksz9477_port_mdb_del,
- 	.port_mirror_add	= ksz9477_port_mirror_add,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index cf743133b0b9..f2c9ff3ea4be 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -253,16 +253,8 @@ int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
- }
- EXPORT_SYMBOL_GPL(ksz_port_fdb_dump);
- 
--int ksz_port_mdb_prepare(struct dsa_switch *ds, int port,
--			 const struct switchdev_obj_port_mdb *mdb)
--{
--	/* nothing to do */
--	return 0;
--}
--EXPORT_SYMBOL_GPL(ksz_port_mdb_prepare);
--
--void ksz_port_mdb_add(struct dsa_switch *ds, int port,
--		      const struct switchdev_obj_port_mdb *mdb)
-+int ksz_port_mdb_add(struct dsa_switch *ds, int port,
-+		     const struct switchdev_obj_port_mdb *mdb)
- {
- 	struct ksz_device *dev = ds->priv;
- 	struct alu_struct alu;
-@@ -284,7 +276,7 @@ void ksz_port_mdb_add(struct dsa_switch *ds, int port,
- 
- 	/* no available entry */
- 	if (index == dev->num_statics && !empty)
--		return;
-+		return -ENOSPC;
- 
- 	/* add entry */
- 	if (index == dev->num_statics) {
-@@ -301,6 +293,8 @@ void ksz_port_mdb_add(struct dsa_switch *ds, int port,
- 		alu.fid = mdb->vid;
- 	}
- 	dev->dev_ops->w_sta_mac_table(dev, index, &alu);
 +
 +	return 0;
  }
- EXPORT_SYMBOL_GPL(ksz_port_mdb_add);
+ EXPORT_SYMBOL(b53_vlan_add);
  
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 720f22275c84..a1f0929d45a0 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -165,10 +165,8 @@ int ksz_port_vlan_prepare(struct dsa_switch *ds, int port,
- 			  const struct switchdev_obj_port_vlan *vlan);
- int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
- 		      void *data);
--int ksz_port_mdb_prepare(struct dsa_switch *ds, int port,
--			 const struct switchdev_obj_port_mdb *mdb);
--void ksz_port_mdb_add(struct dsa_switch *ds, int port,
--		      const struct switchdev_obj_port_mdb *mdb);
-+int ksz_port_mdb_add(struct dsa_switch *ds, int port,
-+		     const struct switchdev_obj_port_mdb *mdb);
- int ksz_port_mdb_del(struct dsa_switch *ds, int port,
- 		     const struct switchdev_obj_port_mdb *mdb);
- int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy);
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index bbf1a71ce55c..e9c517c0f89c 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -5238,27 +5238,18 @@ static enum dsa_tag_protocol mv88e6xxx_get_tag_protocol(struct dsa_switch *ds,
- 	return chip->info->tag_protocol;
+@@ -2185,7 +2191,6 @@ static const struct dsa_switch_ops b53_switch_ops = {
+ 	.port_fast_age		= b53_br_fast_age,
+ 	.port_egress_floods	= b53_br_egress_floods,
+ 	.port_vlan_filtering	= b53_vlan_filtering,
+-	.port_vlan_prepare	= b53_vlan_prepare,
+ 	.port_vlan_add		= b53_vlan_add,
+ 	.port_vlan_del		= b53_vlan_del,
+ 	.port_fdb_dump		= b53_fdb_dump,
+diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
+index 224423ab0682..7cdf36755a2b 100644
+--- a/drivers/net/dsa/b53/b53_priv.h
++++ b/drivers/net/dsa/b53/b53_priv.h
+@@ -348,10 +348,8 @@ void b53_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ 			     int speed, int duplex,
+ 			     bool tx_pause, bool rx_pause);
+ int b53_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering);
+-int b53_vlan_prepare(struct dsa_switch *ds, int port,
+-		     const struct switchdev_obj_port_vlan *vlan);
+-void b53_vlan_add(struct dsa_switch *ds, int port,
+-		  const struct switchdev_obj_port_vlan *vlan);
++int b53_vlan_add(struct dsa_switch *ds, int port,
++		 const struct switchdev_obj_port_vlan *vlan);
+ int b53_vlan_del(struct dsa_switch *ds, int port,
+ 		 const struct switchdev_obj_port_vlan *vlan);
+ int b53_fdb_add(struct dsa_switch *ds, int port,
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 4c493bb47d30..e377ab142e41 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -1113,7 +1113,6 @@ static const struct dsa_switch_ops bcm_sf2_ops = {
+ 	.port_stp_state_set	= b53_br_set_stp_state,
+ 	.port_fast_age		= b53_br_fast_age,
+ 	.port_vlan_filtering	= b53_vlan_filtering,
+-	.port_vlan_prepare	= b53_vlan_prepare,
+ 	.port_vlan_add		= b53_vlan_add,
+ 	.port_vlan_del		= b53_vlan_del,
+ 	.port_fdb_dump		= b53_fdb_dump,
+diff --git a/drivers/net/dsa/bcm_sf2_cfp.c b/drivers/net/dsa/bcm_sf2_cfp.c
+index 59d799ac1b60..ed45d16250e1 100644
+--- a/drivers/net/dsa/bcm_sf2_cfp.c
++++ b/drivers/net/dsa/bcm_sf2_cfp.c
+@@ -891,11 +891,9 @@ static int bcm_sf2_cfp_rule_insert(struct dsa_switch *ds, int port,
+ 		else
+ 			vlan.flags = 0;
+ 
+-		ret = ds->ops->port_vlan_prepare(ds, port_num, &vlan);
++		ret = ds->ops->port_vlan_add(ds, port_num, &vlan);
+ 		if (ret)
+ 			return ret;
+-
+-		ds->ops->port_vlan_add(ds, port_num, &vlan);
+ 	}
+ 
+ 	/*
+@@ -941,8 +939,7 @@ static int bcm_sf2_cfp_rule_set(struct dsa_switch *ds, int port,
+ 		return -EINVAL;
+ 
+ 	if ((fs->flow_type & FLOW_EXT) &&
+-	    !(ds->ops->port_vlan_prepare || ds->ops->port_vlan_add ||
+-	      ds->ops->port_vlan_del))
++	    !(ds->ops->port_vlan_add || ds->ops->port_vlan_del))
+ 		return -EOPNOTSUPP;
+ 
+ 	if (fs->location != RX_CLS_LOC_ANY &&
+diff --git a/drivers/net/dsa/dsa_loop.c b/drivers/net/dsa/dsa_loop.c
+index 881f52c93d3d..0b3ca84ee629 100644
+--- a/drivers/net/dsa/dsa_loop.c
++++ b/drivers/net/dsa/dsa_loop.c
+@@ -198,26 +198,8 @@ static int dsa_loop_port_vlan_filtering(struct dsa_switch *ds, int port,
+ 	return 0;
  }
  
--static int mv88e6xxx_port_mdb_prepare(struct dsa_switch *ds, int port,
--				      const struct switchdev_obj_port_mdb *mdb)
+-static int
+-dsa_loop_port_vlan_prepare(struct dsa_switch *ds, int port,
+-			   const struct switchdev_obj_port_vlan *vlan)
 -{
--	/* We don't need any dynamic resource from the kernel (yet),
--	 * so skip the prepare phase.
--	 */
+-	struct dsa_loop_priv *ps = ds->priv;
+-	struct mii_bus *bus = ps->bus;
+-
+-	dev_dbg(ds->dev, "%s: port: %d, vlan: %d", __func__, port, vlan->vid);
+-
+-	/* Just do a sleeping operation to make lockdep checks effective */
+-	mdiobus_read(bus, ps->port_base + port, MII_BMSR);
+-
+-	if (vlan->vid_end > ARRAY_SIZE(ps->vlans))
+-		return -ERANGE;
 -
 -	return 0;
 -}
 -
--static void mv88e6xxx_port_mdb_add(struct dsa_switch *ds, int port,
--				   const struct switchdev_obj_port_mdb *mdb)
-+static int mv88e6xxx_port_mdb_add(struct dsa_switch *ds, int port,
-+				  const struct switchdev_obj_port_mdb *mdb)
+-static void dsa_loop_port_vlan_add(struct dsa_switch *ds, int port,
+-				   const struct switchdev_obj_port_vlan *vlan)
++static int dsa_loop_port_vlan_add(struct dsa_switch *ds, int port,
++				  const struct switchdev_obj_port_vlan *vlan)
  {
- 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+@@ -226,6 +208,9 @@ static void dsa_loop_port_vlan_add(struct dsa_switch *ds, int port,
+ 	struct dsa_loop_vlan *vl;
+ 	u16 vid;
+ 
++	if (vlan->vid_end > ARRAY_SIZE(ps->vlans))
++		return -ERANGE;
++
+ 	/* Just do a sleeping operation to make lockdep checks effective */
+ 	mdiobus_read(bus, ps->port_base + port, MII_BMSR);
+ 
+@@ -242,6 +227,8 @@ static void dsa_loop_port_vlan_add(struct dsa_switch *ds, int port,
+ 
+ 	if (pvid)
+ 		ps->ports[port].pvid = vid;
++
++	return 0;
+ }
+ 
+ static int dsa_loop_port_vlan_del(struct dsa_switch *ds, int port,
+@@ -301,7 +288,6 @@ static const struct dsa_switch_ops dsa_loop_driver = {
+ 	.port_bridge_leave	= dsa_loop_port_bridge_leave,
+ 	.port_stp_state_set	= dsa_loop_port_stp_state_set,
+ 	.port_vlan_filtering	= dsa_loop_port_vlan_filtering,
+-	.port_vlan_prepare	= dsa_loop_port_vlan_prepare,
+ 	.port_vlan_add		= dsa_loop_port_vlan_add,
+ 	.port_vlan_del		= dsa_loop_port_vlan_del,
+ 	.port_change_mtu	= dsa_loop_port_change_mtu,
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index 9ff596344170..2dc8fbf998b3 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -439,18 +439,25 @@ static void hellcreek_unapply_vlan(struct hellcreek *hellcreek, int port,
+ 	mutex_unlock(&hellcreek->reg_lock);
+ }
+ 
+-static void hellcreek_vlan_add(struct dsa_switch *ds, int port,
+-			       const struct switchdev_obj_port_vlan *vlan)
++static int hellcreek_vlan_add(struct dsa_switch *ds, int port,
++			      const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+ 	struct hellcreek *hellcreek = ds->priv;
++	int err;
++
++	err = hellcreek_vlan_prepare(ds, port, vlan);
++	if (err)
++		return err;
+ 
+ 	dev_dbg(hellcreek->dev, "Add VLAN %d on port %d, %s, %s\n",
+ 		vlan->vid, port, untagged ? "untagged" : "tagged",
+ 		pvid ? "PVID" : "no PVID");
+ 
+ 	hellcreek_apply_vlan(hellcreek, port, vlan->vid, pvid, untagged);
++
++	return 0;
+ }
+ 
+ static int hellcreek_vlan_del(struct dsa_switch *ds, int port,
+@@ -1147,7 +1154,6 @@ static const struct dsa_switch_ops hellcreek_ds_ops = {
+ 	.port_vlan_add	     = hellcreek_vlan_add,
+ 	.port_vlan_del	     = hellcreek_vlan_del,
+ 	.port_vlan_filtering = hellcreek_vlan_filtering,
+-	.port_vlan_prepare   = hellcreek_vlan_prepare,
+ 	.setup		     = hellcreek_setup,
+ };
+ 
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 805421f354eb..cc0b448d998e 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -1167,13 +1167,18 @@ static int gswip_port_vlan_prepare(struct dsa_switch *ds, int port,
+ 	return 0;
+ }
+ 
+-static void gswip_port_vlan_add(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_vlan *vlan)
++static int gswip_port_vlan_add(struct dsa_switch *ds, int port,
++			       const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	struct gswip_priv *priv = ds->priv;
+ 	struct net_device *bridge = dsa_to_port(ds, port)->bridge_dev;
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
++	int err;
++
++	err = gswip_port_vlan_prepare(ds, port, vlan);
++	if (err)
++		return err;
+ 
+ 	/* We have to receive all packets on the CPU port and should not
+ 	 * do any VLAN filtering here. This is also called with bridge
+@@ -1181,9 +1186,10 @@ static void gswip_port_vlan_add(struct dsa_switch *ds, int port,
+ 	 * this.
+ 	 */
+ 	if (dsa_is_cpu_port(ds, port))
+-		return;
++		return 0;
+ 
+-	gswip_vlan_add_aware(priv, bridge, port, vlan->vid, untagged, pvid);
++	return gswip_vlan_add_aware(priv, bridge, port, vlan->vid,
++				    untagged, pvid);
+ }
+ 
+ static int gswip_port_vlan_del(struct dsa_switch *ds, int port,
+@@ -1579,7 +1585,6 @@ static const struct dsa_switch_ops gswip_switch_ops = {
+ 	.port_bridge_leave	= gswip_port_bridge_leave,
+ 	.port_fast_age		= gswip_port_fast_age,
+ 	.port_vlan_filtering	= gswip_port_vlan_filtering,
+-	.port_vlan_prepare	= gswip_port_vlan_prepare,
+ 	.port_vlan_add		= gswip_port_vlan_add,
+ 	.port_vlan_del		= gswip_port_vlan_del,
+ 	.port_stp_state_set	= gswip_port_stp_state_set,
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index 89e1c01cf5b8..d639f9476bd9 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -792,8 +792,8 @@ static int ksz8795_port_vlan_filtering(struct dsa_switch *ds, int port,
+ 	return 0;
+ }
+ 
+-static void ksz8795_port_vlan_add(struct dsa_switch *ds, int port,
+-				  const struct switchdev_obj_port_vlan *vlan)
++static int ksz8795_port_vlan_add(struct dsa_switch *ds, int port,
++				 const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	struct ksz_device *dev = ds->priv;
+@@ -828,6 +828,8 @@ static void ksz8795_port_vlan_add(struct dsa_switch *ds, int port,
+ 		vid |= new_pvid;
+ 		ksz_pwrite16(dev, port, REG_PORT_CTRL_VID, vid);
+ 	}
++
++	return 0;
+ }
+ 
+ static int ksz8795_port_vlan_del(struct dsa_switch *ds, int port,
+@@ -1110,7 +1112,6 @@ static const struct dsa_switch_ops ksz8795_switch_ops = {
+ 	.port_stp_state_set	= ksz8795_port_stp_state_set,
+ 	.port_fast_age		= ksz_port_fast_age,
+ 	.port_vlan_filtering	= ksz8795_port_vlan_filtering,
+-	.port_vlan_prepare	= ksz_port_vlan_prepare,
+ 	.port_vlan_add		= ksz8795_port_vlan_add,
+ 	.port_vlan_del		= ksz8795_port_vlan_del,
+ 	.port_fdb_dump		= ksz_port_fdb_dump,
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 08bf54eb9f5f..71cf24f20252 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -510,16 +510,18 @@ static int ksz9477_port_vlan_filtering(struct dsa_switch *ds, int port,
+ 	return 0;
+ }
+ 
+-static void ksz9477_port_vlan_add(struct dsa_switch *ds, int port,
+-				  const struct switchdev_obj_port_vlan *vlan)
++static int ksz9477_port_vlan_add(struct dsa_switch *ds, int port,
++				 const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 	u32 vlan_table[3];
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
 +	int err;
  
+-	if (ksz9477_get_vlan_table(dev, vlan->vid, vlan_table)) {
++	err = ksz9477_get_vlan_table(dev, vlan->vid, vlan_table);
++	if (err) {
+ 		dev_dbg(dev->dev, "Failed to get vlan table\n");
+-		return;
++		return err;
+ 	}
+ 
+ 	vlan_table[0] = VLAN_VALID | (vlan->vid & VLAN_FID_M);
+@@ -531,14 +533,17 @@ static void ksz9477_port_vlan_add(struct dsa_switch *ds, int port,
+ 
+ 	vlan_table[2] |= BIT(port) | BIT(dev->cpu_port);
+ 
+-	if (ksz9477_set_vlan_table(dev, vlan->vid, vlan_table)) {
++	err = ksz9477_set_vlan_table(dev, vlan->vid, vlan_table);
++	if (err) {
+ 		dev_dbg(dev->dev, "Failed to set vlan table\n");
+-		return;
++		return err;
+ 	}
+ 
+ 	/* change PVID */
+ 	if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
+ 		ksz_pwrite16(dev, port, REG_PORT_DEFAULT_VID, vlan->vid);
++
++	return 0;
+ }
+ 
+ static int ksz9477_port_vlan_del(struct dsa_switch *ds, int port,
+@@ -1394,7 +1399,6 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.port_stp_state_set	= ksz9477_port_stp_state_set,
+ 	.port_fast_age		= ksz_port_fast_age,
+ 	.port_vlan_filtering	= ksz9477_port_vlan_filtering,
+-	.port_vlan_prepare	= ksz_port_vlan_prepare,
+ 	.port_vlan_add		= ksz9477_port_vlan_add,
+ 	.port_vlan_del		= ksz9477_port_vlan_del,
+ 	.port_fdb_dump		= ksz9477_port_fdb_dump,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index f2c9ff3ea4be..4e0619c66573 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -213,15 +213,6 @@ void ksz_port_fast_age(struct dsa_switch *ds, int port)
+ }
+ EXPORT_SYMBOL_GPL(ksz_port_fast_age);
+ 
+-int ksz_port_vlan_prepare(struct dsa_switch *ds, int port,
+-			  const struct switchdev_obj_port_vlan *vlan)
+-{
+-	/* nothing needed */
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(ksz_port_vlan_prepare);
+-
+ int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
+ 		      void *data)
+ {
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index a1f0929d45a0..f212775372ce 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -161,8 +161,6 @@ int ksz_port_bridge_join(struct dsa_switch *ds, int port,
+ void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
+ 			   struct net_device *br);
+ void ksz_port_fast_age(struct dsa_switch *ds, int port);
+-int ksz_port_vlan_prepare(struct dsa_switch *ds, int port,
+-			  const struct switchdev_obj_port_vlan *vlan);
+ int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
+ 		      void *data);
+ int ksz_port_mdb_add(struct dsa_switch *ds, int port,
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index fcaddc9c9370..199a135125b2 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1393,15 +1393,6 @@ mt7530_port_vlan_filtering(struct dsa_switch *ds, int port,
+ 	return 0;
+ }
+ 
+-static int
+-mt7530_port_vlan_prepare(struct dsa_switch *ds, int port,
+-			 const struct switchdev_obj_port_vlan *vlan)
+-{
+-	/* nothing needed */
+-
+-	return 0;
+-}
+-
+ static void
+ mt7530_hw_vlan_add(struct mt7530_priv *priv,
+ 		   struct mt7530_hw_vlan_entry *entry)
+@@ -1489,7 +1480,7 @@ mt7530_hw_vlan_update(struct mt7530_priv *priv, u16 vid,
+ 	mt7530_vlan_cmd(priv, MT7530_VTCR_WR_VID, vid);
+ }
+ 
+-static void
++static int
+ mt7530_port_vlan_add(struct dsa_switch *ds, int port,
+ 		     const struct switchdev_obj_port_vlan *vlan)
+ {
+@@ -1510,6 +1501,8 @@ mt7530_port_vlan_add(struct dsa_switch *ds, int port,
+ 	}
+ 
+ 	mutex_unlock(&priv->reg_mutex);
++
++	return 0;
+ }
+ 
+ static int
+@@ -2608,7 +2601,6 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
+ 	.port_fdb_del		= mt7530_port_fdb_del,
+ 	.port_fdb_dump		= mt7530_port_fdb_dump,
+ 	.port_vlan_filtering	= mt7530_port_vlan_filtering,
+-	.port_vlan_prepare	= mt7530_port_vlan_prepare,
+ 	.port_vlan_add		= mt7530_port_vlan_add,
+ 	.port_vlan_del		= mt7530_port_vlan_del,
+ 	.port_mirror_add	= mt753x_port_mirror_add,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index e9c517c0f89c..4aa7d0a8f197 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1617,9 +1617,6 @@ mv88e6xxx_port_vlan_prepare(struct dsa_switch *ds, int port,
+ 	err = mv88e6xxx_port_check_hw_vlan(ds, port, vlan->vid);
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+-	/* We don't need any dynamic resource from the kernel (yet),
+-	 * so skip the prepare phase.
+-	 */
+ 	return err;
+ }
+ 
+@@ -1963,17 +1960,19 @@ static int mv88e6xxx_port_vlan_join(struct mv88e6xxx_chip *chip, int port,
+ 	return 0;
+ }
+ 
+-static void mv88e6xxx_port_vlan_add(struct dsa_switch *ds, int port,
+-				    const struct switchdev_obj_port_vlan *vlan)
++static int mv88e6xxx_port_vlan_add(struct dsa_switch *ds, int port,
++				   const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+ 	bool warn;
+ 	u8 member;
++	int err;
+ 
+-	if (!mv88e6xxx_max_vid(chip))
+-		return;
++	err = mv88e6xxx_port_vlan_prepare(ds, port, vlan);
++	if (err)
++		return err;
+ 
+ 	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
+ 		member = MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_UNMODIFIED;
+@@ -1989,15 +1988,25 @@ static void mv88e6xxx_port_vlan_add(struct dsa_switch *ds, int port,
+ 
  	mv88e6xxx_reg_lock(chip);
--	if (mv88e6xxx_port_db_load_purge(chip, port, mdb->addr, mdb->vid,
--					 MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC))
--		dev_err(ds->dev, "p%d: failed to load multicast MAC address\n",
--			port);
-+	err = mv88e6xxx_port_db_load_purge(chip, port, mdb->addr, mdb->vid,
-+					   MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC);
+ 
+-	if (mv88e6xxx_port_vlan_join(chip, port, vlan->vid, member, warn))
++	err = mv88e6xxx_port_vlan_join(chip, port, vlan->vid, member, warn);
++	if (err) {
+ 		dev_err(ds->dev, "p%d: failed to add VLAN %d%c\n", port,
+ 			vlan->vid, untagged ? 'u' : 't');
++		goto out;
++	}
+ 
+-	if (pvid && mv88e6xxx_port_set_pvid(chip, port, vlan->vid))
+-		dev_err(ds->dev, "p%d: failed to set PVID %d\n", port,
+-			vlan->vid);
+-
++	if (pvid) {
++		err = mv88e6xxx_port_set_pvid(chip, port, vlan->vid);
++		if (err) {
++			dev_err(ds->dev, "p%d: failed to set PVID %d\n",
++				port, vlan->vid);
++			goto out;
++		}
++	}
++out:
  	mv88e6xxx_reg_unlock(chip);
 +
 +	return err;
  }
  
- static int mv88e6xxx_port_mdb_del(struct dsa_switch *ds, int port,
-@@ -5403,7 +5394,6 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ static int mv88e6xxx_port_vlan_leave(struct mv88e6xxx_chip *chip,
+@@ -5388,7 +5397,6 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.port_stp_state_set	= mv88e6xxx_port_stp_state_set,
+ 	.port_fast_age		= mv88e6xxx_port_fast_age,
+ 	.port_vlan_filtering	= mv88e6xxx_port_vlan_filtering,
+-	.port_vlan_prepare	= mv88e6xxx_port_vlan_prepare,
+ 	.port_vlan_add		= mv88e6xxx_port_vlan_add,
+ 	.port_vlan_del		= mv88e6xxx_port_vlan_del,
  	.port_fdb_add           = mv88e6xxx_port_fdb_add,
- 	.port_fdb_del           = mv88e6xxx_port_fdb_del,
- 	.port_fdb_dump          = mv88e6xxx_port_fdb_dump,
--	.port_mdb_prepare       = mv88e6xxx_port_mdb_prepare,
- 	.port_mdb_add           = mv88e6xxx_port_mdb_add,
- 	.port_mdb_del           = mv88e6xxx_port_mdb_del,
- 	.port_mirror_add	= mv88e6xxx_port_mirror_add,
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 7c36cdd01e27..d3a954ba7e1b 100644
+index d3a954ba7e1b..a0ed2be68d2f 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -65,19 +65,12 @@ static int felix_fdb_del(struct dsa_switch *ds, int port,
- 	return ocelot_fdb_del(ocelot, port, addr, vid);
+@@ -134,15 +134,20 @@ static int felix_vlan_filtering(struct dsa_switch *ds, int port, bool enabled)
+ 	return ocelot_port_vlan_filtering(ocelot, port, enabled);
  }
  
--/* This callback needs to be present */
--static int felix_mdb_prepare(struct dsa_switch *ds, int port,
--			     const struct switchdev_obj_port_mdb *mdb)
+-static void felix_vlan_add(struct dsa_switch *ds, int port,
+-			   const struct switchdev_obj_port_vlan *vlan)
++static int felix_vlan_add(struct dsa_switch *ds, int port,
++			  const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 	u16 flags = vlan->flags;
++	int err;
++
++	err = felix_vlan_prepare(ds, port, vlan);
++	if (err)
++		return err;
+ 
+-	ocelot_vlan_add(ocelot, port, vlan->vid,
+-			flags & BRIDGE_VLAN_INFO_PVID,
+-			flags & BRIDGE_VLAN_INFO_UNTAGGED);
++	return ocelot_vlan_add(ocelot, port, vlan->vid,
++			       flags & BRIDGE_VLAN_INFO_PVID,
++			       flags & BRIDGE_VLAN_INFO_UNTAGGED);
+ }
+ 
+ static int felix_vlan_del(struct dsa_switch *ds, int port,
+@@ -769,7 +774,6 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.port_bridge_join	= felix_bridge_join,
+ 	.port_bridge_leave	= felix_bridge_leave,
+ 	.port_stp_state_set	= felix_bridge_stp_state_set,
+-	.port_vlan_prepare	= felix_vlan_prepare,
+ 	.port_vlan_filtering	= felix_vlan_filtering,
+ 	.port_vlan_add		= felix_vlan_add,
+ 	.port_vlan_del		= felix_vlan_del,
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 1de6473b221b..f54e8b6c8621 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -1312,13 +1312,6 @@ qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
+ }
+ 
+ static int
+-qca8k_port_vlan_prepare(struct dsa_switch *ds, int port,
+-			const struct switchdev_obj_port_vlan *vlan)
 -{
 -	return 0;
 -}
 -
--static void felix_mdb_add(struct dsa_switch *ds, int port,
--			  const struct switchdev_obj_port_mdb *mdb)
-+static int felix_mdb_add(struct dsa_switch *ds, int port,
-+			 const struct switchdev_obj_port_mdb *mdb)
+-static void
+ qca8k_port_vlan_add(struct dsa_switch *ds, int port,
+ 		    const struct switchdev_obj_port_vlan *vlan)
  {
- 	struct ocelot *ocelot = ds->priv;
+@@ -1328,8 +1321,10 @@ qca8k_port_vlan_add(struct dsa_switch *ds, int port,
+ 	int ret = 0;
  
--	ocelot_port_mdb_add(ocelot, port, mdb);
-+	return ocelot_port_mdb_add(ocelot, port, mdb);
+ 	ret = qca8k_vlan_add(priv, port, vlan->vid, untagged);
+-	if (ret)
++	if (ret) {
+ 		dev_err(priv->dev, "Failed to add VLAN to port %d (%d)", port, ret);
++		return ret;
++	}
+ 
+ 	if (pvid) {
+ 		int shift = 16 * (port % 2);
+@@ -1340,6 +1335,8 @@ qca8k_port_vlan_add(struct dsa_switch *ds, int port,
+ 			    QCA8K_PORT_VLAN_CVID(vlan->vid) |
+ 			    QCA8K_PORT_VLAN_SVID(vlan->vid));
+ 	}
++
++	return 0;
  }
  
- static int felix_mdb_del(struct dsa_switch *ds, int port,
-@@ -771,7 +764,6 @@ const struct dsa_switch_ops felix_switch_ops = {
- 	.port_fdb_dump		= felix_fdb_dump,
- 	.port_fdb_add		= felix_fdb_add,
- 	.port_fdb_del		= felix_fdb_del,
--	.port_mdb_prepare	= felix_mdb_prepare,
- 	.port_mdb_add		= felix_mdb_add,
- 	.port_mdb_del		= felix_mdb_del,
- 	.port_bridge_join	= felix_bridge_join,
+ static int
+@@ -1382,7 +1379,6 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+ 	.port_fdb_del		= qca8k_port_fdb_del,
+ 	.port_fdb_dump		= qca8k_port_fdb_dump,
+ 	.port_vlan_filtering	= qca8k_port_vlan_filtering,
+-	.port_vlan_prepare	= qca8k_port_vlan_prepare,
+ 	.port_vlan_add		= qca8k_port_vlan_add,
+ 	.port_vlan_del		= qca8k_port_vlan_del,
+ 	.phylink_validate	= qca8k_phylink_validate,
+diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek-smi-core.h
+index bc7bd47fb037..26376b052594 100644
+--- a/drivers/net/dsa/realtek-smi-core.h
++++ b/drivers/net/dsa/realtek-smi-core.h
+@@ -132,10 +132,8 @@ int rtl8366_reset_vlan(struct realtek_smi *smi);
+ int rtl8366_init_vlan(struct realtek_smi *smi);
+ int rtl8366_vlan_filtering(struct dsa_switch *ds, int port,
+ 			   bool vlan_filtering);
+-int rtl8366_vlan_prepare(struct dsa_switch *ds, int port,
+-			 const struct switchdev_obj_port_vlan *vlan);
+-void rtl8366_vlan_add(struct dsa_switch *ds, int port,
+-		      const struct switchdev_obj_port_vlan *vlan);
++int rtl8366_vlan_add(struct dsa_switch *ds, int port,
++		     const struct switchdev_obj_port_vlan *vlan);
+ int rtl8366_vlan_del(struct dsa_switch *ds, int port,
+ 		     const struct switchdev_obj_port_vlan *vlan);
+ void rtl8366_get_strings(struct dsa_switch *ds, int port, u32 stringset,
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
+index 27f429aa89a6..3b24f2e13200 100644
+--- a/drivers/net/dsa/rtl8366.c
++++ b/drivers/net/dsa/rtl8366.c
+@@ -374,36 +374,26 @@ int rtl8366_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
+ }
+ EXPORT_SYMBOL_GPL(rtl8366_vlan_filtering);
+ 
+-int rtl8366_vlan_prepare(struct dsa_switch *ds, int port,
+-			 const struct switchdev_obj_port_vlan *vlan)
++int rtl8366_vlan_add(struct dsa_switch *ds, int port,
++		     const struct switchdev_obj_port_vlan *vlan)
+ {
++	bool untagged = !!(vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED);
++	bool pvid = !!(vlan->flags & BRIDGE_VLAN_INFO_PVID);
+ 	struct realtek_smi *smi = ds->priv;
++	u32 member = 0;
++	u32 untag = 0;
++	int ret;
+ 
+ 	if (!smi->ops->is_vlan_valid(smi, vlan->vid))
+ 		return -EINVAL;
+ 
+-	dev_info(smi->dev, "prepare VLAN %04x\n", vlan->vid);
+-
+ 	/* Enable VLAN in the hardware
+ 	 * FIXME: what's with this 4k business?
+ 	 * Just rtl8366_enable_vlan() seems inconclusive.
+ 	 */
+-	return rtl8366_enable_vlan4k(smi, true);
+-}
+-EXPORT_SYMBOL_GPL(rtl8366_vlan_prepare);
+-
+-void rtl8366_vlan_add(struct dsa_switch *ds, int port,
+-		      const struct switchdev_obj_port_vlan *vlan)
+-{
+-	bool untagged = !!(vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED);
+-	bool pvid = !!(vlan->flags & BRIDGE_VLAN_INFO_PVID);
+-	struct realtek_smi *smi = ds->priv;
+-	u32 member = 0;
+-	u32 untag = 0;
+-	int ret;
+-
+-	if (!smi->ops->is_vlan_valid(smi, vlan->vid))
+-		return;
++	ret = rtl8366_enable_vlan4k(smi, true);
++	if (ret)
++		return ret;
+ 
+ 	dev_info(smi->dev, "add VLAN %d on port %d, %s, %s\n",
+ 		 vlan->vid, port, untagged ? "untagged" : "tagged",
+@@ -418,20 +408,22 @@ void rtl8366_vlan_add(struct dsa_switch *ds, int port,
+ 		untag |= BIT(port);
+ 
+ 	ret = rtl8366_set_vlan(smi, vlan->vid, member, untag, 0);
+-	if (ret)
++	if (ret) {
+ 		dev_err(smi->dev, "failed to set up VLAN %04x", vlan->vid);
++		return ret;
++	}
+ 
+ 	if (!pvid)
+-		return;
++		return 0;
+ 
+ 	ret = rtl8366_set_pvid(smi, port, vlan->vid);
+-	if (ret)
++	if (ret) {
+ 		dev_err(smi->dev, "failed to set PVID on port %d to VLAN %04x",
+ 			port, vlan->vid);
++		return ret;
++	}
+ 
+-	if (!ret)
+-		dev_dbg(smi->dev, "VLAN add: added VLAN %d with PVID on port %d\n",
+-			vlan->vid, port);
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(rtl8366_vlan_add);
+ 
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index cfe56960f44b..896978568716 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -1504,7 +1504,6 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
+ 	.get_ethtool_stats = rtl8366_get_ethtool_stats,
+ 	.get_sset_count = rtl8366_get_sset_count,
+ 	.port_vlan_filtering = rtl8366_vlan_filtering,
+-	.port_vlan_prepare = rtl8366_vlan_prepare,
+ 	.port_vlan_add = rtl8366_vlan_add,
+ 	.port_vlan_del = rtl8366_vlan_del,
+ 	.port_enable = rtl8366rb_port_enable,
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 1a3456e52b90..5afb3d44f9d5 100644
+index 5afb3d44f9d5..82979394d5b3 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1524,17 +1524,10 @@ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
+@@ -2600,26 +2600,6 @@ static int sja1105_build_vlan_table(struct sja1105_private *priv, bool notify)
+ 	return rc;
+ }
+ 
+-static int sja1105_vlan_prepare(struct dsa_switch *ds, int port,
+-				const struct switchdev_obj_port_vlan *vlan)
+-{
+-	struct sja1105_private *priv = ds->priv;
+-
+-	if (priv->vlan_state == SJA1105_VLAN_FILTERING_FULL)
+-		return 0;
+-
+-	/* If the user wants best-effort VLAN filtering (aka vlan_filtering
+-	 * bridge plus tagging), be sure to at least deny alterations to the
+-	 * configuration done by dsa_8021q.
+-	 */
+-	if (vid_is_dsa_8021q(vlan->vid)) {
+-		dev_err(ds->dev, "Range 1024-3071 reserved for dsa_8021q operation\n");
+-		return -EBUSY;
+-	}
+-
+-	return 0;
+-}
+-
+ /* The TPID setting belongs to the General Parameters table,
+  * which can only be partially reconfigured at runtime (and not the TPID).
+  * So a switch reset is required.
+@@ -2779,26 +2759,34 @@ static int sja1105_vlan_del_one(struct dsa_switch *ds, int port, u16 vid,
  	return 0;
  }
  
--/* This callback needs to be present */
--static int sja1105_mdb_prepare(struct dsa_switch *ds, int port,
--			       const struct switchdev_obj_port_mdb *mdb)
--{
--	return 0;
--}
--
--static void sja1105_mdb_add(struct dsa_switch *ds, int port,
--			    const struct switchdev_obj_port_mdb *mdb)
-+static int sja1105_mdb_add(struct dsa_switch *ds, int port,
-+			   const struct switchdev_obj_port_mdb *mdb)
+-static void sja1105_vlan_add(struct dsa_switch *ds, int port,
+-			     const struct switchdev_obj_port_vlan *vlan)
++static int sja1105_vlan_add(struct dsa_switch *ds, int port,
++			    const struct switchdev_obj_port_vlan *vlan)
  {
--	sja1105_fdb_add(ds, port, mdb->addr, mdb->vid);
-+	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid);
+ 	struct sja1105_private *priv = ds->priv;
+ 	bool vlan_table_changed = false;
+ 	int rc;
+ 
++	/* If the user wants best-effort VLAN filtering (aka vlan_filtering
++	 * bridge plus tagging), be sure to at least deny alterations to the
++	 * configuration done by dsa_8021q.
++	 */
++	if (priv->vlan_state != SJA1105_VLAN_FILTERING_FULL &&
++	    vid_is_dsa_8021q(vlan->vid)) {
++		dev_err(ds->dev, "Range 1024-3071 reserved for dsa_8021q operation\n");
++		return -EBUSY;
++	}
++
+ 	rc = sja1105_vlan_add_one(ds, port, vlan->vid, vlan->flags,
+ 				  &priv->bridge_vlans);
+ 	if (rc < 0)
+-		return;
++		return rc;
+ 	if (rc > 0)
+ 		vlan_table_changed = true;
+ 
+ 	if (!vlan_table_changed)
+-		return;
++		return 0;
+ 
+-	rc = sja1105_build_vlan_table(priv, true);
+-	if (rc)
+-		dev_err(ds->dev, "Failed to build VLAN table: %d\n", rc);
++	return sja1105_build_vlan_table(priv, true);
  }
  
- static int sja1105_mdb_del(struct dsa_switch *ds, int port,
-@@ -3288,7 +3281,6 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ static int sja1105_vlan_del(struct dsa_switch *ds, int port,
+@@ -3277,7 +3265,6 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.port_bridge_join	= sja1105_bridge_join,
+ 	.port_bridge_leave	= sja1105_bridge_leave,
+ 	.port_stp_state_set	= sja1105_bridge_stp_state_set,
+-	.port_vlan_prepare	= sja1105_vlan_prepare,
  	.port_vlan_filtering	= sja1105_vlan_filtering,
  	.port_vlan_add		= sja1105_vlan_add,
  	.port_vlan_del		= sja1105_vlan_del,
--	.port_mdb_prepare	= sja1105_mdb_prepare,
- 	.port_mdb_add		= sja1105_mdb_add,
- 	.port_mdb_del		= sja1105_mdb_del,
- 	.port_hwtstamp_get	= sja1105_hwtstamp_get,
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 7727b56a4eee..2d715b0502e3 100644
+index 2d715b0502e3..b5d04adc09b0 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -580,10 +580,8 @@ struct dsa_switch_ops {
- 	/*
- 	 * Multicast database
+@@ -561,10 +561,8 @@ struct dsa_switch_ops {
  	 */
--	int (*port_mdb_prepare)(struct dsa_switch *ds, int port,
-+	int	(*port_mdb_add)(struct dsa_switch *ds, int port,
- 				const struct switchdev_obj_port_mdb *mdb);
--	void (*port_mdb_add)(struct dsa_switch *ds, int port,
--			     const struct switchdev_obj_port_mdb *mdb);
- 	int	(*port_mdb_del)(struct dsa_switch *ds, int port,
- 				const struct switchdev_obj_port_mdb *mdb);
+ 	int	(*port_vlan_filtering)(struct dsa_switch *ds, int port,
+ 				       bool vlan_filtering);
+-	int (*port_vlan_prepare)(struct dsa_switch *ds, int port,
++	int	(*port_vlan_add)(struct dsa_switch *ds, int port,
+ 				 const struct switchdev_obj_port_vlan *vlan);
+-	void (*port_vlan_add)(struct dsa_switch *ds, int port,
+-			      const struct switchdev_obj_port_vlan *vlan);
+ 	int	(*port_vlan_del)(struct dsa_switch *ds, int port,
+ 				 const struct switchdev_obj_port_vlan *vlan);
  	/*
 diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index c6b3ac93bcc7..5f5e19c5e43a 100644
+index 5f5e19c5e43a..f92eaacb17cf 100644
 --- a/net/dsa/switch.c
 +++ b/net/dsa/switch.c
-@@ -181,24 +181,21 @@ static bool dsa_switch_mdb_match(struct dsa_switch *ds, int port,
- static int dsa_switch_mdb_add(struct dsa_switch *ds,
- 			      struct dsa_notifier_mdb_info *info)
+@@ -227,21 +227,17 @@ static int dsa_switch_vlan_add(struct dsa_switch *ds,
  {
--	int port, err;
-+	int err = 0;
-+	int port;
+ 	int port, err;
  
--	if (!ds->ops->port_mdb_prepare || !ds->ops->port_mdb_add)
-+	if (!ds->ops->port_mdb_add)
+-	if (!ds->ops->port_vlan_prepare || !ds->ops->port_vlan_add)
++	if (!ds->ops->port_vlan_add)
  		return -EOPNOTSUPP;
  
  	for (port = 0; port < ds->num_ports; port++) {
- 		if (dsa_switch_mdb_match(ds, port, info)) {
--			err = ds->ops->port_mdb_prepare(ds, port, info->mdb);
-+			err = ds->ops->port_mdb_add(ds, port, info->mdb);
+ 		if (dsa_switch_vlan_match(ds, port, info)) {
+-			err = ds->ops->port_vlan_prepare(ds, port, info->vlan);
++			err = ds->ops->port_vlan_add(ds, port, info->vlan);
  			if (err)
--				return err;
-+				break;
+ 				return err;
  		}
  	}
  
 -	for (port = 0; port < ds->num_ports; port++)
--		if (dsa_switch_mdb_match(ds, port, info))
--			ds->ops->port_mdb_add(ds, port, info->mdb);
+-		if (dsa_switch_vlan_match(ds, port, info))
+-			ds->ops->port_vlan_add(ds, port, info->vlan);
 -
--	return 0;
-+	return err;
+ 	return 0;
  }
  
- static int dsa_switch_mdb_del(struct dsa_switch *ds,
 -- 
 2.25.1
 
