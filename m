@@ -2,138 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EA692EC5EF
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 22:57:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C77622EC5FE
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 23:07:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726794AbhAFV5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 16:57:11 -0500
-Received: from mga07.intel.com ([134.134.136.100]:52550 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726102AbhAFV5L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 16:57:11 -0500
-IronPort-SDR: NBMPY8wny4MoeQSGPDweLn+b2+L5M/WtZxf7SZStoSGDcxrHpLW0DtMLmUGP82sl5HskXe41zR
- U0beqoWVKVuw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9856"; a="241418416"
-X-IronPort-AV: E=Sophos;i="5.79,328,1602572400"; 
-   d="scan'208";a="241418416"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2021 13:55:59 -0800
-IronPort-SDR: Ymdv9XnxJATABmVYbLSI4LPH5+6dqp6Wwz8evSohRej8WJ9ur5b1VwBYgDwxa8L6kp9bNOOK6E
- bmwRDFIizo7Q==
-X-IronPort-AV: E=Sophos;i="5.79,328,1602572400"; 
-   d="scan'208";a="361734670"
-Received: from jbrandeb-saw1.jf.intel.com ([10.166.28.56])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2021 13:55:58 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next v1 2/2] ice: remove GRO drop accounting
-Date:   Wed,  6 Jan 2021 13:55:39 -0800
-Message-Id: <20210106215539.2103688-3-jesse.brandeburg@intel.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210106215539.2103688-1-jesse.brandeburg@intel.com>
-References: <20210106215539.2103688-1-jesse.brandeburg@intel.com>
+        id S1727450AbhAFWGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 17:06:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726102AbhAFWGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 17:06:35 -0500
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D5BC061575;
+        Wed,  6 Jan 2021 14:05:55 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DB3Mz23TNz9sSs;
+        Thu,  7 Jan 2021 09:05:51 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1609970752;
+        bh=vUUzf81NNkRzeMSJOm3zRfcOUmv4NcIoF/8trZU4cFM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=FB9Vld3I+FyjDwEYa6U2Ocl2IeqIf/BHrDzFV7T6lgkECtXzuDic2qPm/3iYtSuv1
+         7EyKahPIPfvQxEmSFXoIJFY3j4KBTTapm/pMBLLbzfXRBnxikneMsDU/zDWHKUTSYd
+         V3p75rUtM7IuYVRlZUqwsqohflRnS8bYg1TEEEv/omsnR2w5xh79bi1iOPCxzIzouD
+         Hb/7ELUTNfny+WOp8HvGLUWPFa8SBRZmlaCVQK5AXwSwt4IIJNnZ1jG34ETPxWfkzP
+         FmrIKDdaouL0ZHJxUs/++Pw92VtlKNiNt/0EOkS0ac1Tq4V9GqZQMpb7FppaoZz2nq
+         1vC/lfHwC4j2Q==
+Date:   Thu, 7 Jan 2021 09:05:50 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org
+Cc:     Carl Huang <cjhuang@codeaurora.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the origin tree
+Message-ID: <20210107090550.725f9dc9@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/hKUzPdJDCGxA0lI_vQUunC0";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver was counting GRO drops but now that the stack
-does it with the previous patch, the driver can drop
-all the logic.  The driver keeps the dev_dbg message in order
-to do optional detailed tracing.
+--Sig_/hKUzPdJDCGxA0lI_vQUunC0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This mostly undoes commit a8fffd7ae9a5 ("ice: add useful statistics").
+Hi all,
 
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
----
- drivers/net/ethernet/intel/ice/ice.h          | 1 -
- drivers/net/ethernet/intel/ice/ice_ethtool.c  | 1 -
- drivers/net/ethernet/intel/ice/ice_main.c     | 4 +---
- drivers/net/ethernet/intel/ice/ice_txrx.h     | 1 -
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 2 --
- 5 files changed, 1 insertion(+), 8 deletions(-)
+Building Linus' tree, today's linux-next build (htmldocs) produced
+this warning:
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 56725356a17b..dde850045e7e 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -256,7 +256,6 @@ struct ice_vsi {
- 	u32 tx_busy;
- 	u32 rx_buf_failed;
- 	u32 rx_page_failed;
--	u32 rx_gro_dropped;
- 	u16 num_q_vectors;
- 	u16 base_vector;		/* IRQ base for OS reserved vectors */
- 	enum ice_vsi_type type;
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 9e8e9531cd87..025c0a13e724 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -59,7 +59,6 @@ static const struct ice_stats ice_gstrings_vsi_stats[] = {
- 	ICE_VSI_STAT("rx_unknown_protocol", eth_stats.rx_unknown_protocol),
- 	ICE_VSI_STAT("rx_alloc_fail", rx_buf_failed),
- 	ICE_VSI_STAT("rx_pg_alloc_fail", rx_page_failed),
--	ICE_VSI_STAT("rx_gro_dropped", rx_gro_dropped),
- 	ICE_VSI_STAT("tx_errors", eth_stats.tx_errors),
- 	ICE_VSI_STAT("tx_linearize", tx_linearize),
- 	ICE_VSI_STAT("tx_busy", tx_busy),
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index c52b9bb0e3ab..e157a2b4fcb9 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5314,7 +5314,6 @@ static void ice_update_vsi_ring_stats(struct ice_vsi *vsi)
- 	vsi->tx_linearize = 0;
- 	vsi->rx_buf_failed = 0;
- 	vsi->rx_page_failed = 0;
--	vsi->rx_gro_dropped = 0;
- 
- 	rcu_read_lock();
- 
-@@ -5329,7 +5328,6 @@ static void ice_update_vsi_ring_stats(struct ice_vsi *vsi)
- 		vsi_stats->rx_bytes += bytes;
- 		vsi->rx_buf_failed += ring->rx_stats.alloc_buf_failed;
- 		vsi->rx_page_failed += ring->rx_stats.alloc_page_failed;
--		vsi->rx_gro_dropped += ring->rx_stats.gro_dropped;
- 	}
- 
- 	/* update XDP Tx rings counters */
-@@ -5361,7 +5359,7 @@ void ice_update_vsi_stats(struct ice_vsi *vsi)
- 	ice_update_eth_stats(vsi);
- 
- 	cur_ns->tx_errors = cur_es->tx_errors;
--	cur_ns->rx_dropped = cur_es->rx_discards + vsi->rx_gro_dropped;
-+	cur_ns->rx_dropped = cur_es->rx_discards;
- 	cur_ns->tx_dropped = cur_es->tx_discards;
- 	cur_ns->multicast = cur_es->rx_multicast;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index ff1a1cbd078e..6ce2046fc349 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -193,7 +193,6 @@ struct ice_rxq_stats {
- 	u64 non_eop_descs;
- 	u64 alloc_page_failed;
- 	u64 alloc_buf_failed;
--	u64 gro_dropped; /* GRO returned dropped */
- };
- 
- /* this enum matches hardware bits and is meant to be used by DYN_CTLN
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-index bc2f4390b51d..3601b7d8abe5 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-@@ -192,8 +192,6 @@ ice_receive_skb(struct ice_ring *rx_ring, struct sk_buff *skb, u16 vlan_tag)
- 	    (vlan_tag & VLAN_VID_MASK))
- 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tag);
- 	if (napi_gro_receive(&rx_ring->q_vector->napi, skb) == GRO_DROP) {
--		/* this is tracked separately to help us debug stack drops */
--		rx_ring->rx_stats.gro_dropped++;
- 		netdev_dbg(rx_ring->netdev, "Receive Queue %d: Dropped packet from GRO\n",
- 			   rx_ring->q_index);
- 	}
--- 
-2.29.2
+include/net/mac80211.h:4200: warning: Function parameter or member 'set_sar=
+_specs' not described in 'ieee80211_ops'
 
+Introduced by commit
+
+  c534e093d865 ("mac80211: add ieee80211_set_sar_specs")
+
+Sorry, I missed this earlier.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/hKUzPdJDCGxA0lI_vQUunC0
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/2ND4ACgkQAVBC80lX
+0GwlQwgAknn42f+D0DSILrFEmsLexZLYVggo50TMgNqZFSesMUi1RZ3inq60/WpS
+lpB2DB3Jnv45hv2TujSQZ/UJn26nt1syuE/TiWaDW3NVdGp9dvBZbLTEhQiTXUYm
+4M0a8e2lFACWfJtP9Y9G+f4NJOqMd+GeFEiVJnwPrWvfbg+LGO9rvjMRfWfuV9TR
+IzRfLYKIjCsoB/1gPF7lLBlLB4UyrltneNzY9io3Dbrl4OhSRz0iQVoyuSC0hmUt
+xq3aWXcV64y8A1O8j7OXWCRFsHl1aDQfnLN67rfWCPDELlFCECA7VJcFGSCXtgM7
+TkFalj2HyaVBkyhMI7etS/k6cXLy/g==
+=7l6C
+-----END PGP SIGNATURE-----
+
+--Sig_/hKUzPdJDCGxA0lI_vQUunC0--
