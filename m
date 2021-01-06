@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E822EC2F2
+	by mail.lfdr.de (Postfix) with ESMTP id 7895F2EC2F3
 	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 19:05:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726592AbhAFSFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 13:05:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57420 "EHLO mail.kernel.org"
+        id S1726794AbhAFSFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 13:05:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57446 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726244AbhAFSFO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 13:05:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 56DE32312A;
-        Wed,  6 Jan 2021 18:04:33 +0000 (UTC)
+        id S1726244AbhAFSFS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 13:05:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7072E2312C;
+        Wed,  6 Jan 2021 18:04:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609956273;
-        bh=2arO9EYEEjPZwb3AGMNnI3tjt5dOsCgVOQaz+CdTdUk=;
+        s=k20201202; t=1609956278;
+        bh=51ZhoMUTg79iyFfvNiHV8sojQPSnhzYx6O57vmjqBNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ry458P6FN+WTxgDfIbQwVjAELCi+hVe4SfapL8eqyg5aOMsbIIeI0BAwId0eCbONM
-         5DAqMnuSkH/Dhpkb2eDGVB06bb0LWW6JGfcxGQmF8Mgzj0Ke5fy5LKyiHAY2khXDZl
-         O2Y7mHPsGs3HW94jMg7dcUJipcwr0ks8npitJok9nRHURBEHGnkFrRXKa+XXfq7S39
-         Pz5p4ZpJPK2DIbGKNfKCk8e4AW3kzUHaPWQee0Enpf2gcBHnoYPFYwhsB1Gj8g4O3S
-         WNiav2AULOsd1WwrINCuj4lWFh5yEKB8VAjd6H6+PQOpaz2+Tdtuu3f9hNpzG/xmg7
-         UPl+c5nQr+cMA==
+        b=HG4w1aFwGuXfMWwX0LkM3yNk8UwcRaSsk8QNACz+fDS3tzysXDqG5JZbitEWNF5Tf
+         KeD7beOhK8tWzs1cExI4ivkUtVa4OlIs05qJpURs3jFoUNtzwwagkbw1EIZnMN+gW9
+         Knbx/PKBhxBqZQF6CPHyvTk2/85EAdbBrllt+cu4A+TS053RxPD7aw/D6vF29lJyoy
+         YtilkwuI8Xz/JGrsOkFlLbEX1ywVbugd7yLZYFqdyi1msxxR5hMyXbWQySoTp05Dnp
+         PL/FN4mQ/Ij3j2egDeCjvD0PRrycHDMHdaDBA3IJdm7VGJd3d4jv2N1M1RcQJHDQhe
+         aFdrjG+SbkSxA==
 From:   Antoine Tenart <atenart@kernel.org>
 To:     davem@davemloft.net, kuba@kernel.org, alexander.duyck@gmail.com
 Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net 1/3] net-sysfs: convert xps_cpus_show to bitmap_zalloc
-Date:   Wed,  6 Jan 2021 19:04:26 +0100
-Message-Id: <20210106180428.722521-2-atenart@kernel.org>
+Subject: [PATCH net 2/3] net-sysfs: store the return of get_netdev_queue_index in an unsigned int
+Date:   Wed,  6 Jan 2021 19:04:27 +0100
+Message-Id: <20210106180428.722521-3-atenart@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210106180428.722521-1-atenart@kernel.org>
 References: <20210106180428.722521-1-atenart@kernel.org>
@@ -38,59 +38,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use bitmap_zalloc instead if zalloc_cpumask_var in xps_cpus_show to
-align with xps_rxqs_show. This will improve maintenance and allow us to
-factorize the two functions. The function should behave the same.
+In net-sysfs, get_netdev_queue_index returns an unsigned int. Some of
+its callers use an unsigned long to store the returned value. Update the
+code to be consistent, this should only be cosmetic.
 
 Signed-off-by: Antoine Tenart <atenart@kernel.org>
 ---
- net/core/net-sysfs.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ net/core/net-sysfs.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index daf502c13d6d..e052fc5f7e94 100644
+index e052fc5f7e94..5a39e9b38e5f 100644
 --- a/net/core/net-sysfs.c
 +++ b/net/core/net-sysfs.c
-@@ -1320,8 +1320,7 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
+@@ -1320,7 +1320,8 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
  	int cpu, len, ret, num_tc = 1, tc = 0;
  	struct net_device *dev = queue->dev;
  	struct xps_dev_maps *dev_maps;
--	cpumask_var_t mask;
--	unsigned long index;
-+	unsigned long *mask, index;
+-	unsigned long *mask, index;
++	unsigned long *mask;
++	unsigned int index;
  
  	if (!netif_is_multiqueue(dev))
  		return -ENOENT;
-@@ -1349,7 +1348,8 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
- 		}
- 	}
+@@ -1390,7 +1391,7 @@ static ssize_t xps_cpus_store(struct netdev_queue *queue,
+ 			      const char *buf, size_t len)
+ {
+ 	struct net_device *dev = queue->dev;
+-	unsigned long index;
++	unsigned int index;
+ 	cpumask_var_t mask;
+ 	int err;
  
--	if (!zalloc_cpumask_var(&mask, GFP_KERNEL)) {
-+	mask = bitmap_zalloc(nr_cpu_ids, GFP_KERNEL);
-+	if (!mask) {
- 		ret = -ENOMEM;
- 		goto err_rtnl_unlock;
- 	}
-@@ -1367,7 +1367,7 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
+@@ -1432,7 +1433,8 @@ static ssize_t xps_rxqs_show(struct netdev_queue *queue, char *buf)
+ 	int j, len, ret, num_tc = 1, tc = 0;
+ 	struct net_device *dev = queue->dev;
+ 	struct xps_dev_maps *dev_maps;
+-	unsigned long *mask, index;
++	unsigned long *mask;
++	unsigned int index;
  
- 			for (i = map->len; i--;) {
- 				if (map->queues[i] == index) {
--					cpumask_set_cpu(cpu, mask);
-+					set_bit(cpu, mask);
- 					break;
- 				}
- 			}
-@@ -1377,8 +1377,8 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
+ 	index = get_netdev_queue_index(queue);
  
- 	rtnl_unlock();
+@@ -1494,7 +1496,8 @@ static ssize_t xps_rxqs_store(struct netdev_queue *queue, const char *buf,
+ {
+ 	struct net_device *dev = queue->dev;
+ 	struct net *net = dev_net(dev);
+-	unsigned long *mask, index;
++	unsigned long *mask;
++	unsigned int index;
+ 	int err;
  
--	len = snprintf(buf, PAGE_SIZE, "%*pb\n", cpumask_pr_args(mask));
--	free_cpumask_var(mask);
-+	len = bitmap_print_to_pagebuf(false, buf, mask, nr_cpu_ids);
-+	bitmap_free(mask);
- 	return len < PAGE_SIZE ? len : -EINVAL;
- 
- err_rtnl_unlock:
+ 	if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 -- 
 2.29.2
 
