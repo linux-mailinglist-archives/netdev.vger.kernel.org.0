@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFD622EC3FF
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF2F92EC40F
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:38:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbhAFTfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 14:35:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48494 "EHLO
+        id S1727321AbhAFThX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:37:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726712AbhAFTfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:35:17 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A48C061357;
-        Wed,  6 Jan 2021 11:34:37 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id n10so2915350pgl.10;
-        Wed, 06 Jan 2021 11:34:37 -0800 (PST)
+        with ESMTP id S1726791AbhAFThW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:37:22 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BC9C06134C;
+        Wed,  6 Jan 2021 11:36:42 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id c22so2906298pgg.13;
+        Wed, 06 Jan 2021 11:36:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+Jq9nFpw6pxIeMIxCgp07/JG5gJb/sXZYEtSvxe7S8E=;
-        b=SDkkkbYNi5PYWZT3dXERMeWN8749sq+E7mKRiPf7yJB4TWPr2um3XFVXGVR5GLAFk2
-         4mbCFKyTJ/0xvShYs8YajUWG5MLKmLYM3ViquTEgUfq2KHBIz7xy8AXJj54oesApHlv/
-         Pof64rhxSnFU0kbgKbZ6A8+wAhlqIX7gCQ4seYFs9xuClOdb81XZKfCmgJjCAdraIg06
-         QVGzp9C7ZMre9AyKMl3Nylb0J0/mg+sWKQMqVV9l9jKdv4D3BulTciQxl7o1WDto3DL7
-         QnGtFcJI6vZAFcKvrrra7ayEuzL26FFGxtXKXMHaqovZ40JHjK93bEfAVERRSv1k8ewG
-         mlww==
+        bh=HCNqGWHzb9YKF5GubTd4Hv0V/nLOte28IE/94cHQF6I=;
+        b=VK9vpIACV8QZsD9qWM+EvsruCUjPx3Sdsr81p79k4cMeMYJss01TZmdhnkm93hJOmI
+         otzeiJ4gAR2xEII73NJ05/QV8i/RXcmA/Cy1GA/Nhzqdxzi27cbxuAiTsiKMRSpiq/LJ
+         6DMKgVTwd+2Y3C1c+rjmqqf0TaZ+cnRp3+OkG9cLNIUvflgYJq6GG67jhr7szU51OaZO
+         w/cy2ikhM2VM/uOtoBUO5HWJu/jgKZD3tciojJBkein1E7Om9R9PnCyxoyLOfrJPk+Z3
+         gFbRIdUrG/Dok8GiYmkAZoMnmi/C47Cu0vSzZLVygb16lqwi0YLxnDR27KJ778wzG4v3
+         CDfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=+Jq9nFpw6pxIeMIxCgp07/JG5gJb/sXZYEtSvxe7S8E=;
-        b=lYY2SKyNMeYP5OzbloUkRnmNTRKXBske0Klxaq2od54JcNKh5HC4D55IYjMG/TBmge
-         GsAvEJ5WR4rgtN9PuEwUasUqRDGG33mmuJozVRsW65/GmBkTaUrkPxfK3hzS7QXAESF3
-         7Zl/gftb/42Q6/2rgbvFDLXfclKBR3Zyu94TirmiwA94juYBhdgnof5UHaeCEyTZYC/c
-         DauWeCUtaS5b9Z09Dv2esG2McF2CCnM8OZODOrOQ4/+ULQCn9S/slX3fnBOzZyQKjxSS
-         OlEMZzOFmCnnwI834OdVqPrt/9U5Lez39yZeFym4d4n00++bpFJbFJuWE7vlDREbSzNs
-         kZBQ==
-X-Gm-Message-State: AOAM532ZOPW5cgnJflTRZ73m6/D3yzFOpu8UHg9TAWCCYw1V8pnWcNHv
-        vsYvHaA6r5V6/jI0rPytJlg=
-X-Google-Smtp-Source: ABdhPJxdzzLk12IoayRY+Dd731md7OdetqOghEBnwWlBMcK1h90d9LpMqIpSpb2S8gCtIlDyZYj7Pg==
-X-Received: by 2002:a63:e1b:: with SMTP id d27mr6091076pgl.441.1609961676922;
-        Wed, 06 Jan 2021 11:34:36 -0800 (PST)
+        bh=HCNqGWHzb9YKF5GubTd4Hv0V/nLOte28IE/94cHQF6I=;
+        b=KxbOhNfRy7dO3MVSVOVfmw/u4ka6HqdwR4S8f2hrS+Xq/g5qSd+/Ott1LyfeJQ0RsW
+         PnwIZ+8zYibWS4LnNf1qZ2OnB4gp2U1SOlMi0/Lz6h2xmhQD5kc9s31vLAJRqMXI6qTM
+         CDRoHDbJhs2RnrVSLj//quRU5VFyhqJyOaldr0pDKKGf4k4Clge4BRnhM+sA6EmnmF1z
+         8TavoIwBUrJQFqy3zuA4MtU16PdjMS+ORmGAtIWAw2S8+oHZHwmr8q6iB/uCtT59nW1C
+         QRjDTxncAR/F4/5iUWtPDVyn+WHhg53Y60lFur/XpdY23BVAItg55LBAjxI2TealgLNW
+         qHAg==
+X-Gm-Message-State: AOAM530L1YQ3EnDC3SYwgkTAbxD3rmZNR+Txpg7Kul5WfEuwnS48oMfn
+        aYH6AFUc3ljQOe7TKg0dG84=
+X-Google-Smtp-Source: ABdhPJxwsyw+/XasOC14IhMIaj1l0Flwu1ecWWBT7t+QWCHMYQ3j5dsEfXmx31TzAwIWNGWUoi9uDA==
+X-Received: by 2002:a63:4301:: with SMTP id q1mr6034496pga.430.1609961802284;
+        Wed, 06 Jan 2021 11:36:42 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id v15sm3293372pfn.217.2021.01.06.11.34.35
+        by smtp.googlemail.com with ESMTPSA id y5sm3438997pgs.90.2021.01.06.11.36.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 11:34:36 -0800 (PST)
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: dsa: sf2: add BCM4908
- switch binding
+        Wed, 06 Jan 2021 11:36:41 -0800 (PST)
+Subject: Re: [PATCH net-next 1/3] dt-bindings: net: convert Broadcom
+ Starfighter 2 binding to the json-schema
 To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -61,7 +61,6 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
         =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
 References: <20210106120711.630-1-zajec5@gmail.com>
- <20210106120711.630-2-zajec5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -117,12 +116,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <9091613f-bf4e-0660-91a8-1c52d4d69156@gmail.com>
-Date:   Wed, 6 Jan 2021 11:34:34 -0800
+Message-ID: <2f4c93fe-4d51-c76a-c671-39d8eaad0e01@gmail.com>
+Date:   Wed, 6 Jan 2021 11:36:37 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210106120711.630-2-zajec5@gmail.com>
+In-Reply-To: <20210106120711.630-1-zajec5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -133,10 +132,34 @@ X-Mailing-List: netdev@vger.kernel.org
 On 1/6/21 4:07 AM, Rafał Miłecki wrote:
 > From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> BCM4908 family SoCs have integrated Starfighter 2 switch.
+> This helps validating DTS files. Only the current (not deprecated one)
+> binding was converted.
+> 
+> Minor changes:
+> 1. Dropped dsa/dsa.txt references
+> 2. Updated node name to match dsa.yaml requirement
+> 3. Fixed 2 typos in examples
+> 
+> The new binding was validated using the dt_binding_check.
 > 
 > Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> ---
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+This looks good to me, but we would want Rob to review this binding
+obviously. Just one comment below.
+
+[snip]
+
+> +
+> +  reset-names:
+> +    const: switch
+> +
+> +  clocks:
+> +    items:
+> +      - description: switch's main clock (valid for both BCM7445 and BCM7278)
+> +      - description: only applicable to BCM7445 and is to support dividing the switch core clock.
+
+Since this is a YAML binding we could adjust the number of min/max clock
+items here based on the compatible string.
 -- 
 Florian
