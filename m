@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00AC32EBBE7
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 10:54:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD9472EBBE5
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 10:53:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726711AbhAFJww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 04:52:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
+        id S1726771AbhAFJwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 04:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726464AbhAFJwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 04:52:49 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA0AC061358;
-        Wed,  6 Jan 2021 01:52:08 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id r5so3772610eda.12;
-        Wed, 06 Jan 2021 01:52:08 -0800 (PST)
+        with ESMTP id S1726624AbhAFJwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 04:52:50 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B66C061359;
+        Wed,  6 Jan 2021 01:52:10 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id lt17so4279998ejb.3;
+        Wed, 06 Jan 2021 01:52:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=16gvd7BfAcfkRnjtzWfjSCGdsSy14Us38+FznvZBJ7k=;
-        b=PxNd/HwEcNRSVMr99MKoK3FzawQD6GjQmrNvZWYlyPKEozceeJEV7Feiql1pcoI7Rb
-         wg9Zt1LmDZR/Etlg/TPais3DvwGsK0kA52gXrvdz3x5V7arW4lg0meHUobfoFNutshdR
-         akA0NLol+kdv0LD0cnBx+X86WYao9mr97lZvRBN8UarkgQ6jGGLg41oqfkxAYRGlgq83
-         xjqgJv1WgXdxqNTWGb/Wtmt+UsDmvfAHhBBjbAdPm6MY9i+jwiHvcnvunQqgV0sxSyh0
-         EoghLxnZiY4BA9dIxr00RSdF0YWbcama5fTUCt6cnwd3n4r0u9PUIiq2H5TDULTe20Ck
-         s88Q==
+        bh=Oyqqq/X9qdu3xx65zVGG4PWH/PNLT4F1km7kqg9CwhU=;
+        b=gzddoHJOCVay1ZtwAg6gpZYehIhSRqUIQSdK4JUH+wPjfbt4c780257hgbJRUZZ0ZC
+         i9KHrBmIsFtgQvFjDsTf2XoSa4rJGVoyx/WKywr3FvG1ot0/gXU9nB+lWK6l+aFqxR0R
+         LvcGmC+ZWUIbjKMYyuMmV6a7Ur40nOQSw/CVGIrtgjg778xGuFveUJfmadVczelFyf0W
+         M/0XtJ4D4x2wgj7yI+dTV5HRtqEtO410+bkvou21VP4UP767x4tRzG2mSrouCS+UN7Ic
+         7yhz8MtN27k2KQwgU83zQiyXSq13jEdR2prrmCrKgp+BkOJML+CaYOOFNa/sWxQJ5igr
+         0HvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=16gvd7BfAcfkRnjtzWfjSCGdsSy14Us38+FznvZBJ7k=;
-        b=OHckbzX7QDrtBpoM0j4en5N8o5339ads/CCHe54OKMLDQlmUFUvt2I0Xo0jvLgGe8U
-         7Vq0WlfCNHq2dTzeMkhZ6PKLvOunxw/fqWvK1jjXvTPnufB6NsiqV5u4FfR3jP32iAyq
-         aZVwymiSSxorI0SJhXgHymF/d+asRDeA4OtFa8k71mx0VTSgRGRIh16+8EeVSI96PCQs
-         RY6KKc7MsdfH9w92BIi2GWJUlcs9Xfbp6Zf7jbE7dW+zOiBtqQSWDck3LtUAGUPAwz9j
-         gaN6rvxhx2h1tExW6eS56+jEvqMbHXHNAdZstLNJwVAaihtENhWc1xbIS0/3wDqgmQNd
-         5FFw==
-X-Gm-Message-State: AOAM532zgucgKUNW81NgmhOYlGxrH8YhuQD0IPmAqHhOvA0RYzEh3jtX
-        9RGFT6vjgFxCtDPojbcJh8U=
-X-Google-Smtp-Source: ABdhPJxktxJJg1wSJT44rdSR3ZWY7rdryDbFA1fGYDagD8Dp2gOqmN4tYEBT3tL4kBc/+HG/SGWznQ==
-X-Received: by 2002:aa7:c886:: with SMTP id p6mr3566884eds.352.1609926727634;
-        Wed, 06 Jan 2021 01:52:07 -0800 (PST)
+        bh=Oyqqq/X9qdu3xx65zVGG4PWH/PNLT4F1km7kqg9CwhU=;
+        b=K/s8h7TXHjbnBNbOzkq24YfU2iunsLSRrB6KOXlz7hy5rYSQ6c3PTu4Ix4OwXUGTxw
+         eTcWK7bYOW3/ScGhPSGp/nV3RgyycyYqMtaxip7Uuw9uaeHV/ON+zEstsi816ZnQsd5+
+         oBnsIjsDEmhcq53jZIJ4YIET0tO+jXbO+J8U4HyAJ4CNzHpm6MKm38giySURFwlkURtc
+         R7l3pN2jscphi2xfzNYXtGmjsM4pWb2a4oNbJGI9Vtm7wGD8Ff4fopNwoDd3svMPPFRI
+         E+ESb7T7dI0TqWSTN8k3NC7T3acMWe0PAz86FGhvqwibo/8ynTWitJoVcnAhEd5OV4vE
+         3OUQ==
+X-Gm-Message-State: AOAM5326clLf2/cumM3lROizvqkdf4cGtTjwQ8x5+JMGSQmg+SpGTgyd
+        h/v93sUaRSelgBvlcQryf7k=
+X-Google-Smtp-Source: ABdhPJzq0FCe5EV/63tubiMzkQ44Wkkk+QVgy3AIICkXzaUOGz8TCuIvKt45D+hHVgZ5EO/NiUKvjg==
+X-Received: by 2002:a17:906:118c:: with SMTP id n12mr2377284eja.167.1609926729109;
+        Wed, 06 Jan 2021 01:52:09 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id n8sm1019587eju.33.2021.01.06.01.52.06
+        by smtp.gmail.com with ESMTPSA id n8sm1019587eju.33.2021.01.06.01.52.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jan 2021 01:52:07 -0800 (PST)
+        Wed, 06 Jan 2021 01:52:08 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -65,9 +65,9 @@ Cc:     DENG Qingfang <dqfext@gmail.com>,
         Ido Schimmel <idosch@idosch.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v4 net-next 1/7] net: bridge: notify switchdev of disappearance of old FDB entry upon migration
-Date:   Wed,  6 Jan 2021 11:51:30 +0200
-Message-Id: <20210106095136.224739-2-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 2/7] net: dsa: be louder when a non-legacy FDB operation fails
+Date:   Wed,  6 Jan 2021 11:51:31 +0200
+Message-Id: <20210106095136.224739-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210106095136.224739-1-olteanv@gmail.com>
 References: <20210106095136.224739-1-olteanv@gmail.com>
@@ -79,135 +79,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Currently the bridge emits atomic switchdev notifications for
-dynamically learnt FDB entries. Monitoring these notifications works
-wonders for switchdev drivers that want to keep their hardware FDB in
-sync with the bridge's FDB.
+The dev_close() call was added in commit c9eb3e0f8701 ("net: dsa: Add
+support for learning FDB through notification") "to indicate inconsistent
+situation" when we could not delete an FDB entry from the port.
 
-For example station A wants to talk to station B in the diagram below,
-and we are concerned with the behavior of the bridge on the DUT device:
+bridge fdb del d8:58:d7:00:ca:6d dev swp0 self master
 
-                   DUT
- +-------------------------------------+
- |                 br0                 |
- | +------+ +------+ +------+ +------+ |
- | |      | |      | |      | |      | |
- | | swp0 | | swp1 | | swp2 | | eth0 | |
- +-------------------------------------+
-      |        |                  |
-  Station A    |                  |
-               |                  |
-         +--+------+--+    +--+------+--+
-         |  |      |  |    |  |      |  |
-         |  | swp0 |  |    |  | swp0 |  |
- Another |  +------+  |    |  +------+  | Another
-  switch |     br0    |    |     br0    | switch
-         |  +------+  |    |  +------+  |
-         |  |      |  |    |  |      |  |
-         |  | swp1 |  |    |  | swp1 |  |
-         +--+------+--+    +--+------+--+
-                                  |
-                              Station B
+It is a bit drastic and at the same time not helpful if the above fails
+to only print with netdev_dbg log level, but on the other hand to bring
+the interface down.
 
-Interfaces swp0, swp1, swp2 are handled by a switchdev driver that has
-the following property: frames injected from its control interface bypass
-the internal address analyzer logic, and therefore, this hardware does
-not learn from the source address of packets transmitted by the network
-stack through it. So, since bridging between eth0 (where Station B is
-attached) and swp0 (where Station A is attached) is done in software,
-the switchdev hardware will never learn the source address of Station B.
-So the traffic towards that destination will be treated as unknown, i.e.
-flooded.
-
-This is where the bridge notifications come in handy. When br0 on the
-DUT sees frames with Station B's MAC address on eth0, the switchdev
-driver gets these notifications and can install a rule to send frames
-towards Station B's address that are incoming from swp0, swp1, swp2,
-only towards the control interface. This is all switchdev driver private
-business, which the notification makes possible.
-
-All is fine until someone unplugs Station B's cable and moves it to the
-other switch:
-
-                   DUT
- +-------------------------------------+
- |                 br0                 |
- | +------+ +------+ +------+ +------+ |
- | |      | |      | |      | |      | |
- | | swp0 | | swp1 | | swp2 | | eth0 | |
- +-------------------------------------+
-      |        |                  |
-  Station A    |                  |
-               |                  |
-         +--+------+--+    +--+------+--+
-         |  |      |  |    |  |      |  |
-         |  | swp0 |  |    |  | swp0 |  |
- Another |  +------+  |    |  +------+  | Another
-  switch |     br0    |    |     br0    | switch
-         |  +------+  |    |  +------+  |
-         |  |      |  |    |  |      |  |
-         |  | swp1 |  |    |  | swp1 |  |
-         +--+------+--+    +--+------+--+
-               |
-           Station B
-
-Luckily for the use cases we care about, Station B is noisy enough that
-the DUT hears it (on swp1 this time). swp1 receives the frames and
-delivers them to the bridge, who enters the unlikely path in br_fdb_update
-of updating an existing entry. It moves the entry in the software bridge
-to swp1 and emits an addition notification towards that.
-
-As far as the switchdev driver is concerned, all that it needs to ensure
-is that traffic between Station A and Station B is not forever broken.
-If it does nothing, then the stale rule to send frames for Station B
-towards the control interface remains in place. But Station B is no
-longer reachable via the control interface, but via a port that can
-offload the bridge port learning attribute. It's just that the port is
-prevented from learning this address, since the rule overrides FDB
-updates. So the rule needs to go. The question is via what mechanism.
-
-It sure would be possible for this switchdev driver to keep track of all
-addresses which are sent to the control interface, and then also listen
-for bridge notifier events on its own ports, searching for the ones that
-have a MAC address which was previously sent to the control interface.
-But this is cumbersome and inefficient. Instead, with one small change,
-the bridge could notify of the address deletion from the old port, in a
-symmetrical manner with how it did for the insertion. Then the switchdev
-driver would not be required to monitor learn/forget events for its own
-ports. It could just delete the rule towards the control interface upon
-bridge entry migration. This would make hardware address learning be
-possible again. Then it would take a few more packets until the hardware
-and software FDB would be in sync again.
+So increase the verbosity of the error message, and drop dev_close().
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
 Changes in v4:
 None.
 
 Changes in v3:
-None.
-
-Changes in v2:
 Patch is new.
 
- net/bridge/br_fdb.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/dsa/slave.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 32ac8343b0ba..b7490237f3fc 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -602,6 +602,7 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
- 			/* fastpath: update of existing entry */
- 			if (unlikely(source != fdb->dst &&
- 				     !test_bit(BR_FDB_STICKY, &fdb->flags))) {
-+				br_switchdev_fdb_notify(fdb, RTM_DELNEIGH);
- 				fdb->dst = source;
- 				fdb_modified = true;
- 				/* Take over HW learned entry */
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 4a0498bf6c65..d5d389300124 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2072,7 +2072,9 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 
+ 		err = dsa_port_fdb_add(dp, fdb_info->addr, fdb_info->vid);
+ 		if (err) {
+-			netdev_dbg(dev, "fdb add failed err=%d\n", err);
++			netdev_err(dev,
++				   "failed to add %pM vid %d to fdb: %d\n",
++				   fdb_info->addr, fdb_info->vid, err);
+ 			break;
+ 		}
+ 		fdb_info->offloaded = true;
+@@ -2087,9 +2089,11 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 
+ 		err = dsa_port_fdb_del(dp, fdb_info->addr, fdb_info->vid);
+ 		if (err) {
+-			netdev_dbg(dev, "fdb del failed err=%d\n", err);
+-			dev_close(dev);
++			netdev_err(dev,
++				   "failed to delete %pM vid %d from fdb: %d\n",
++				   fdb_info->addr, fdb_info->vid, err);
+ 		}
++
+ 		break;
+ 	}
+ 	rtnl_unlock();
 -- 
 2.25.1
 
