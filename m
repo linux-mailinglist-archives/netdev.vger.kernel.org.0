@@ -2,138 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A51682EBB8B
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 10:08:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 847612EBB90
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 10:10:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbhAFJGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 04:06:46 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:12249 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725877AbhAFJGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 04:06:44 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ff57d7b0001>; Wed, 06 Jan 2021 01:06:03 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 6 Jan 2021 09:06:01 +0000
-Date:   Wed, 6 Jan 2021 11:05:57 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <lulu@redhat.com>, <elic@nvidia.com>
-Subject: [PATCH] vdpa/mlx5: Fix memory key MTT population
-Message-ID: <20210106090557.GA170338@mtl-vdi-166.wap.labs.mlnx>
+        id S1726720AbhAFJKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 04:10:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726346AbhAFJKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 04:10:15 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF0AC06134D
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 01:09:35 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id x20so4909984lfe.12
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 01:09:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WXb8ZbXP3cgf2Fgkbx8Pw1yOIWIB+RyqLEJVZ8Z4lLk=;
+        b=YH26p+llWbMpPx65LLEgAZSsNMgyxAadr7BxxTCZsHJysAAM7cPe81cw1JeKnD4gLg
+         rqr/H0OBfNKP/23BsgLeaHM2DLdxx43dB9L6GcfhdZKY2qYtpc1nLmzfv8Iia8ZyfY3a
+         NxacykOBa7moG7nUI6Hn7x0RVZ2Vxz/HbeoA6o8uJgKll9B525L6EvweBzpHD2/onxmD
+         7BMYttC7UON8pu3rzyNbgsqN+L4OUprS8vGMZMN/nqZdrFfroNyNhB0J0moUSbfNnmip
+         sDVW0OuErGIuyV36m7tL9nGO58XgnOWObyj0JghJ8H/GhJSb5F1GCb4y4lsSpGz4cY6X
+         YdOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WXb8ZbXP3cgf2Fgkbx8Pw1yOIWIB+RyqLEJVZ8Z4lLk=;
+        b=dgc7Q3ia+gUGQiGo53Ma752K5c3ixj6AbeCwEyfrpI73VKznIzQ2pK6N7KsbiHXm+B
+         YLlj1199Kb015yDJAIPwkAj6WlmBDFhbXSrs8ve8/KaimfmtHvtyZXaeVq73bLbXOF0X
+         1wCjsf2uPuDWhj7YTbjlbjm3U4z1TgQoLXPxOfG/uPA7Bmu89yogoLEBK1bgrY1SMHxB
+         QBYk9B2JFtpaLacSm1KGi5oWz7voa9Be/T4OUpzW+fCcoFNwRLzDmsfVo6ZPeuFApDq8
+         p/ln2jWBI2ZmArCDKP3bNtT9fMXHiqZz+iGYvYwf0sqFPClFJJ6TFE5ucV3ZglIRwTpa
+         oxlw==
+X-Gm-Message-State: AOAM530kD7D53jgOCqPwVH937Y6eDbBfgBeFeKpfr53efZPdvd7jLQBC
+        sUlKUd0ASUyCmaRazLVlHCtk/IjoSYs1VQ==
+X-Google-Smtp-Source: ABdhPJw0F0w5yIsIF02ScYBJMua0rt9nhNGD2v7UavFZcbJGH596yZORLolVkmv6X9FzAmNXKxliKA==
+X-Received: by 2002:a2e:a407:: with SMTP id p7mr1651300ljn.78.1609924173796;
+        Wed, 06 Jan 2021 01:09:33 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id r201sm222335lff.268.2021.01.06.01.09.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jan 2021 01:09:33 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH next] net: dsa: print error on invalid port index
+Date:   Wed,  6 Jan 2021 10:09:15 +0100
+Message-Id: <20210106090915.21439-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1609923964; bh=/6zQ5JVLCnlALckA+soCkshFtscBTwWdM/kojj3UBbc=;
-        h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-         Content-Disposition:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=ZOHgEzkNwAxbNyOW0BuLSEj2lUITltuumCcArPpUc+abiYkuK5c31dUP9QRu3TT+d
-         FkjdRAqv4d9+DHC9xOUTjulTj2HL+m3c2y45txzQk1EzJ3d4YK0GlL+csKwCUsTqIb
-         Blv8Amtgfc1NWozC8lorZxcjxrds5a3mR5kb3AKQjuKLGu9597DL/4yIu+bEgaEKZ3
-         r2BfUfP1BhCwxjOZ5YDdpux+9S9m2Cq5qI+8gHon2Enb+7IV4BfslGAq9YmWI1NXwc
-         oHzvqcF31nu/LbIpVPcavIWgQ5fMmwOyAc++fE2yeQKT9+0WPIyq3L45yLtLpikj/X
-         yu9cpyK9ySWtA==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-map_direct_mr() assumed that the number of scatter/gather entries
-returned by dma_map_sg_attrs() was equal to the number of segments in
-the sgl list. This led to wrong population of the mkey object. Fix this
-by properly referring to the returned value.
+From: Rafał Miłecki <rafal@milecki.pl>
 
-In addition, get rid of fill_sg() whjich effect is overwritten bu
-populate_mtts().
+Looking for an -EINVAL all over the dsa code could take hours for
+inexperienced DSA users.
 
-Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
-Signed-off-by: Eli Cohen <elic@nvidia.com>
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- drivers/vdpa/mlx5/core/mlx5_vdpa.h |  1 +
- drivers/vdpa/mlx5/core/mr.c        | 28 ++++++++++++----------------
- 2 files changed, 13 insertions(+), 16 deletions(-)
+ net/dsa/dsa2.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-index 5c92a576edae..08f742fd2409 100644
---- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-+++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-@@ -15,6 +15,7 @@ struct mlx5_vdpa_direct_mr {
- 	struct sg_table sg_head;
- 	int log_size;
- 	int nsg;
-+	int nent;
- 	struct list_head list;
- 	u64 offset;
- };
-diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
-index 4b6195666c58..d300f799efcd 100644
---- a/drivers/vdpa/mlx5/core/mr.c
-+++ b/drivers/vdpa/mlx5/core/mr.c
-@@ -25,17 +25,6 @@ static int get_octo_len(u64 len, int page_shift)
- 	return (npages + 1) / 2;
- }
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 183003e45762..01f21b0b379a 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -783,6 +783,8 @@ static int dsa_switch_parse_ports_of(struct dsa_switch *ds,
+ 			goto out_put_node;
  
--static void fill_sg(struct mlx5_vdpa_direct_mr *mr, void *in)
--{
--	struct scatterlist *sg;
--	__be64 *pas;
--	int i;
--
--	pas = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
--	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
--		(*pas) = cpu_to_be64(sg_dma_address(sg));
--}
--
- static void mlx5_set_access_mode(void *mkc, int mode)
- {
- 	MLX5_SET(mkc, mkc, access_mode_1_0, mode & 0x3);
-@@ -45,10 +34,18 @@ static void mlx5_set_access_mode(void *mkc, int mode)
- static void populate_mtts(struct mlx5_vdpa_direct_mr *mr, __be64 *mtt)
- {
- 	struct scatterlist *sg;
-+	int nsg = mr->nsg;
-+	u64 dma_addr;
-+	u64 dma_len;
-+	int j = 0;
- 	int i;
- 
--	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
--		mtt[i] = cpu_to_be64(sg_dma_address(sg));
-+	for_each_sg(mr->sg_head.sgl, sg, mr->nent, i) {
-+		for (dma_addr = sg_dma_address(sg), dma_len = sg_dma_len(sg);
-+		     nsg && dma_len;
-+		     nsg--, dma_addr += BIT(mr->log_size), dma_len -= BIT(mr->log_size))
-+			mtt[j++] = cpu_to_be64(dma_addr);
-+	}
- }
- 
- static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr *mr)
-@@ -64,7 +61,6 @@ static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct
- 		return -ENOMEM;
- 
- 	MLX5_SET(create_mkey_in, in, uid, mvdev->res.uid);
--	fill_sg(mr, in);
- 	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
- 	MLX5_SET(mkc, mkc, lw, !!(mr->perm & VHOST_MAP_WO));
- 	MLX5_SET(mkc, mkc, lr, !!(mr->perm & VHOST_MAP_RO));
-@@ -276,8 +272,8 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr
- done:
- 	mr->log_size = log_entity_size;
- 	mr->nsg = nsg;
--	err = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
--	if (!err)
-+	mr->nent = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
-+	if (!mr->nent)
- 		goto err_map;
- 
- 	err = create_direct_mr(mvdev, mr);
+ 		if (reg >= ds->num_ports) {
++			dev_err(ds->dev, "port %pOF index %u exceeds num_ports (%zu)\n",
++				port, reg, ds->num_ports);
+ 			err = -EINVAL;
+ 			goto out_put_node;
+ 		}
 -- 
-2.28.0
+2.26.2
 
