@@ -2,85 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 172222EBE6C
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:18:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 529D52EBE7C
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 14:23:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726525AbhAFNRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 08:17:34 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14075 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726456AbhAFNRd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 08:17:33 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ff5b8450000>; Wed, 06 Jan 2021 05:16:53 -0800
-Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 6 Jan 2021 13:16:51
- +0000
-References: <1609355503-7981-1-git-send-email-roid@nvidia.com>
- <875z4cwus8.fsf@nvidia.com>
- <405e8cce-e2dd-891a-dc8a-7c8b0c77f4c6@nvidia.com>
- <4a07fbc9-8e1c-ecd6-ee9e-31d1a952ba42@nvidia.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Roi Dayan <roid@nvidia.com>
-CC:     <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
-        Petr Machata <me@pmachata.org>
-Subject: Re: [PATCH iproute2] build: Fix link errors on some systems
-In-Reply-To: <4a07fbc9-8e1c-ecd6-ee9e-31d1a952ba42@nvidia.com>
-Message-ID: <87y2h6urwe.fsf@nvidia.com>
-Date:   Wed, 6 Jan 2021 14:16:49 +0100
+        id S1727188AbhAFNTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 08:19:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45944 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727150AbhAFNTO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 08:19:14 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2D0C06134C;
+        Wed,  6 Jan 2021 05:18:34 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id q137so2663117iod.9;
+        Wed, 06 Jan 2021 05:18:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5VBmwWJQ/Z8tEn7n5E3cHqf7DPvH3rWmDH//OQeLdX0=;
+        b=KrcepEFMLoeHwbNrtoewRgL6lbhBjoI4lg+128lq6+SClTgfnL1BMinNk5FeVthz4G
+         W4tWS+b+7EbcN/xNi2MJEXAWJ36syIgiev+Ylm3WqC+hiK6RaodLIc1dkwSpgfTXFXFo
+         0rfmr78DEbkWkDp4ctnTn6xj5ah9S6QbfXFLS5G+uPvrcoNDNhWtChI7YXCkfAaJ9L9J
+         QaLlm0RscewfFK1lNNf5cydDFDFQaXoJAtlQ42tV/YFwcVxlqt2OzDBuAKBV0m6w119j
+         VKr53rrRzhqQvej2pTjg8zcv/5iXNWJdJwLyx0t0Fltl9Iztaw8RRaR760ZKVGc8bqPw
+         53oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=5VBmwWJQ/Z8tEn7n5E3cHqf7DPvH3rWmDH//OQeLdX0=;
+        b=BKfYiHoYYL5o2hQaQmmExu6U/movRnA3b/EGnNCwK+ijRPQOfsDv0HHbwAuOCguSUZ
+         UiDCA4P4rZsZSiSK5RrnUojqdV0GrZBdJ2+4yBybC3uphg4Lkac6sXYHS6JuI5xIYOVF
+         6/23q/7ehrHWqiQIg49+MNrGXRuBbx4DU7YVqWPZqghj5R8kIyrIUxxDPo8DQQNabRLz
+         QLj38V5oEOAniZZjSE0b3JjG+x3lCU42P8RKqH/peoLnP8yeHZc7Y/wcrQKeU0KA0CDM
+         tWxYrRve+LZqeh4633oRlRBoXl/gnsVhyklVmRdsPTz+ej2AzXrnFW1OaXPEIlW+8NNl
+         VHNg==
+X-Gm-Message-State: AOAM533RHcXUc1Tgx0OELUBwnjGnLckSni9xzLvPs93isSgIIsbIgiuF
+        8gCF9UrfIa0o4bfCNgSAvv8GkZdO0aW5aFBY
+X-Google-Smtp-Source: ABdhPJyEVln6ocpKLV7/aNPE8PKWtpkZ+ZISWLMEhbXM1kVzGNbsD+VCSWmp1KgixfB2ukDThe966w==
+X-Received: by 2002:a5e:a614:: with SMTP id q20mr2823318ioi.198.1609939113786;
+        Wed, 06 Jan 2021 05:18:33 -0800 (PST)
+Received: from Gentoo ([143.244.44.193])
+        by smtp.gmail.com with ESMTPSA id n11sm1382104ioh.37.2021.01.06.05.18.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jan 2021 05:18:32 -0800 (PST)
+Date:   Wed, 6 Jan 2021 18:48:39 +0530
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, Larry.Finger@lwfinger.net, zhengbin13@huawei.com,
+        baijiaju1990@gmail.com, christophe.jaillet@wanadoo.fr,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers: net: wireless: realtek: Fix the word
+ association defautly de-faulty
+Message-ID: <X/W4r1rmMCnKQAQZ@Gentoo>
+Mail-Followup-To: Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>, pkshih@realtek.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        Larry.Finger@lwfinger.net, zhengbin13@huawei.com,
+        baijiaju1990@gmail.com, christophe.jaillet@wanadoo.fr,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210105101738.13072-1-unixbhaskar@gmail.com>
+ <35a634c1-3672-b757-101e-9b8f3c0163a7@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1609939013; bh=UoX2I/ghC8sG6a+Abt5Y0UdVRPcbibVy+MMKPU7cP3o=;
-        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Message-ID:
-         Date:MIME-Version:Content-Type:X-Originating-IP:X-ClientProxiedBy;
-        b=Hh3mOHH42LSRRnhSYa+7rJ8kV7iKigParptKj3ZHylcMmgOuGGU94RRWTYNO58NVO
-         rCKgV5jFLLHS9IVpBg+QpWSqSu4sB/gif1XRMEna969vtzZEt22t9gqtQWu7+jTh2w
-         Za7n7QRPX4crWK6BKjXxlaktzEH/89pLRGAaDxKgboEaso+CNPAXQBWz3Bo3M1TAhI
-         1+132ubeEnNFGoZi5ufB6ZHKs11nMDfFz0+kzplF28QEBwJ/IewMBIG6cgYvNSKxuP
-         NpbLGAmkYQNhTp6B8o3j0LN/24iYFT/6qkAcGPRAGCZPhyjakCncRb30vvRixvRosv
-         Tfep+5ohdVb8w==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="8oi4LiPskI3t3s5l"
+Content-Disposition: inline
+In-Reply-To: <35a634c1-3672-b757-101e-9b8f3c0163a7@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Roi Dayan <roid@nvidia.com> writes:
+--8oi4LiPskI3t3s5l
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
 
-> On 2021-01-06 10:42 AM, Roi Dayan wrote:
->> 
->> On 2021-01-04 6:07 PM, Petr Machata wrote:
->>>
->>> I think that just adding an unnecessary -lm is more of a tidiness issue
->>> than anything else. One way to avoid it is to split the -lm deps out
->>> from util.c / json_print.c to like util_math.c / json_print_math.c. That
->>> way they will be in an .o of their own, and won't be linked in unless
->>> the binary in question needs the code. Then the binaries that do call it
->>> can keep on linking in -lm like they did so far.
->>>
->>> Thoughts?
->>>
->> ok fine by me.
+On 09:02 Tue 05 Jan 2021, Randy Dunlap wrote:
+>On 1/5/21 2:17 AM, Bhaskar Chowdhury wrote:
+>> s/defautly/de-faulty/p
+>>
+>>
+>> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+>> ---
+>>  drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+>> index c948dafa0c80..7d02d8abb4eb 100644
+>> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+>> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+>> @@ -814,7 +814,7 @@ bool rtl88ee_is_tx_desc_closed(struct ieee80211_hw *hw, u8 hw_queue, u16 index)
+>>  	u8 own = (u8)rtl88ee_get_desc(hw, entry, true, HW_DESC_OWN);
+>>
+>>  	/*beacon packet will only use the first
+>> -	 *descriptor defautly,and the own may not
+>> +	 *descriptor de-faulty,and the own may not
+>>  	 *be cleared by the hardware
+>>  	 */
+>>  	if (own)
+>> --
 >
-> I looked at this and for get_size()/rate/.. it went smooth.
-> but for print_color_size() there is an issue that it uses
-> _IS_JSON_CONTEXT and statuic *_jw which are defined in json_print.c
-> Is it ok to expose those in json_print.h now so json_print_math.c
-> could use?
+>Yes, I agree with "by default". I don't know what "the own"
+>means.
+>
+>Also, there should be a space after each beginning "*.
+>
+>I saw another patch where the comment block began with /**,
+>which should mean "begin kernel-doc comment block", but it's
+>not kernel-doc, so that /** should be changed to just "/*".
+>
+>
+Good point Randy, there were several driver file witch have "defautly" in it
+and I tried to correct that.Only that spell made it a "de-faulty" as dic
+suggested . But I think it should be "by default" as you said.
 
-You don't need json_print_math.h IMHO, it can all be backed by the same
-header, just different implementation modules. From the API point of
-view, I don't think the user should really care which of the symbols use
-math (though of course they will have to know whether to link in -lm).
+The comment beginning part , let me hunt down that and fix it as you mentioned
+the way it should be.
 
-Regarding the publishing, the _jw reference can be changed to a call to
-is_json_context(), which does the same thing. Then _jw can stay private
-in json_print.c.
+Thanks Randy.
+>--
+>~Randy
+>
 
-Exposing an _IS_JSON_CONTEXT / _IS_FP_CONTEXT might be odd on account of
-the initial underscore, but since it's only used in implementations,
-maybe it's OK?
+--8oi4LiPskI3t3s5l
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEnwF+nWawchZUPOuwsjqdtxFLKRUFAl/1uKwACgkQsjqdtxFL
+KRUbSwgAqAHzxh4ctvWHliXHP4VxS9gkvFP8OO7rIqgcWx3ct6KtuoOIz0Ohs1VR
+1V8prG5Ij7FFjEjbUsE1EOFrCdycIEHkCtsHKCnGC/Kxq8GI05nfYQjuqg3S+Kb0
+7siy+xtkazGnccGPIVxI9lYU7mrsNom5+ojj0d+oLKiE1ndG+VTgye47koiEiSG5
+SzQ1TcqPGBp5Y/rMSjLlhGz/K29I5dixNc0ixe5XIPwVBN4Fa/JdIHiZzITnjelc
+AY+waGdO/DtPUUcien86TEO8izRH8E9YUFTHBOt8HbO0TW5zn4uErLmRvDmR4diP
+W2Lk94eVBZwkzfVVDE+yYJWLdB/kpg==
+=jlOy
+-----END PGP SIGNATURE-----
+
+--8oi4LiPskI3t3s5l--
