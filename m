@@ -2,88 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 643EB2EC277
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:39:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C7E2EC290
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:43:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727943AbhAFRiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 12:38:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53332 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727926AbhAFRiI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 12:38:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 227E020657;
-        Wed,  6 Jan 2021 17:37:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609954647;
-        bh=wvCVgOmz5rBzTWJyX2HIEq3vemRTXSP5tILnLdbiAZw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=XgqHOe0d7ap68Z6006lUxnkcWOBj/0K2UTyaLuPru5ONzSPJZfXL+q0+fTFqrIgyD
-         QQsSDapc5Qg7l0wd35+8zkewKTj+A4JosJ5vBgW6ggWUHtWJPk9YnB8mMiAbmX5/wo
-         smIlQotSwH+mwEbEwER/4UayfFNHYcUSTtRZSAeZEZxmgRbdoumoUd6MGe5BvYNhzd
-         ZrcRjKrTRX4845TkN6QU50e/CsHpKXVki3STuroxXWAbVdADv5oRSlHviQFAWMXIXO
-         iFriYHv6EQmG1cteXacXLRID4PyaIqay15NDttgMMEKcLbtwncfjnlQ7ExvaOKO95C
-         RNnU4KwwFhM2w==
-Date:   Wed, 6 Jan 2021 11:37:25 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 2/3] ARM: iop32x: improve N2100 PCI broken parity
- quirk'
-Message-ID: <20210106173725.GA1316633@bjorn-Precision-5520>
+        id S1727830AbhAFRlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 12:41:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31635 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727372AbhAFRlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:41:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609954820;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q1MVJV23rzhHmpdk2zEeUSOCj3KMipI7dPGLT5s4mXo=;
+        b=CzE6hsZ4wop+2pfPjl6hzm8dWoe4TpiqGN1mUHWwm6yBJvjsrQPv6E8I5w6dATJYYY4Ao7
+        8xFoM6WzgGzCYw0fjMFYf0Wz5hCyFPkrWBSla8zISHpSBO42eOroLSGA82HY9f2QXlDAJ7
+        b691ykCJhrlOUhBEDghJT8e3IoZ48WA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-593-b_I-VHIKMvyWMuReIdF9gg-1; Wed, 06 Jan 2021 12:40:17 -0500
+X-MC-Unique: b_I-VHIKMvyWMuReIdF9gg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5E2BD18C8C00;
+        Wed,  6 Jan 2021 17:40:15 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-8.rdu2.redhat.com [10.10.112.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8FE5A5B6A2;
+        Wed,  6 Jan 2021 17:40:13 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <548097.1609952225@warthog.procyon.org.uk>
+References: <548097.1609952225@warthog.procyon.org.uk> <c2cc898d-171a-25da-c565-48f57d407777@redhat.com> <20201229173916.1459499-1-trix@redhat.com> <259549.1609764646@warthog.procyon.org.uk>
+To:     Tom Rix <trix@redhat.com>
+Cc:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        natechancellor@gmail.com, ndesaulniers@google.com,
+        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] rxrpc: fix handling of an unsupported token type in rxrpc_read()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5b100322-7a53-8f5e-32f9-a67c3cd2beeb@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <675149.1609954812.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 06 Jan 2021 17:40:12 +0000
+Message-ID: <675150.1609954812@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 06, 2021 at 12:05:41PM +0100, Heiner Kallweit wrote:
-> Use new PCI core function pci_quirk_broken_parity(), in addition to
-> setting broken_parity_status is disables parity checking.
+David Howells <dhowells@redhat.com> wrote:
 
-That sentence has a typo or something so it doesn't read quite right.
-Maybe:
+> How about this?
+> ...
+>     Fix the second loop so that it doesn't encode the size and type of a=
+n
+>     unsupported token, but rather just ignore it as does the first loop.
 
-  Use new PCI core function pci_quirk_broken_parity() to disable
-  parity checking.
+Actually, a better way is probably just to error out in this case.  This
+should only happen if a new token type is incompletely implemented.
 
-"broken_parity_status" is basically internal to the PCI core and
-doesn't really seem relevant here.  The only uses are the sysfs
-store/show functions and edac.
+David
+---
+commit e68ef16f59aa57564761b21e5ecb2ebbd72d1c57
+Author: David Howells <dhowells@redhat.com>
+Date:   Wed Jan 6 16:21:40 2021 +0000
 
-> This allows us to remove a quirk in r8169 driver.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
-> v2:
-> - remove additional changes from this patch
-> ---
->  arch/arm/mach-iop32x/n2100.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm/mach-iop32x/n2100.c b/arch/arm/mach-iop32x/n2100.c
-> index 78b9a5ee4..9f2aae3cd 100644
-> --- a/arch/arm/mach-iop32x/n2100.c
-> +++ b/arch/arm/mach-iop32x/n2100.c
-> @@ -125,7 +125,7 @@ static void n2100_fixup_r8169(struct pci_dev *dev)
->  	if (dev->bus->number == 0 &&
->  	    (dev->devfn == PCI_DEVFN(1, 0) ||
->  	     dev->devfn == PCI_DEVFN(2, 0)))
-> -		dev->broken_parity_status = 1;
-> +		pci_quirk_broken_parity(dev);
->  }
->  DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_REALTEK, PCI_ANY_ID, n2100_fixup_r8169);
->  
-> -- 
-> 2.30.0
-> 
-> 
+    rxrpc: Fix handling of an unsupported token type in rxrpc_read()
+    =
+
+    Clang static analysis reports the following:
+    =
+
+    net/rxrpc/key.c:657:11: warning: Assigned value is garbage or undefine=
+d
+                    toksize =3D toksizes[tok++];
+                            ^ ~~~~~~~~~~~~~~~
+    =
+
+    rxrpc_read() contains two consecutive loops.  The first loop calculate=
+s the
+    token sizes and stores the results in toksizes[] and the second one us=
+es
+    the array.  When there is an error in identifying the token in the fir=
+st
+    loop, the token is skipped, no change is made to the toksizes[] array.
+    When the same error happens in the second loop, the token is not skipp=
+ed.
+    This will cause the toksizes[] array to be out of step and will overru=
+n
+    past the calculated sizes.
+    =
+
+    Fix this by making both loops log a message and return an error in thi=
+s
+    case.  This should only happen if a new token type is incompletely
+    implemented, so it should normally be impossible to trigger this.
+    =
+
+    Fixes: 9a059cd5ca7d ("rxrpc: Downgrade the BUG() for unsupported token=
+ type in rxrpc_read()")
+    Reported-by: Tom Rix <trix@redhat.com>
+    Signed-off-by: David Howells <dhowells@redhat.com>
+
+diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
+index 9631aa8543b5..8d2073e0e3da 100644
+--- a/net/rxrpc/key.c
++++ b/net/rxrpc/key.c
+@@ -598,7 +598,7 @@ static long rxrpc_read(const struct key *key,
+ 		default: /* we have a ticket we can't encode */
+ 			pr_err("Unsupported key token type (%u)\n",
+ 			       token->security_index);
+-			continue;
++			return -ENOPKG;
+ 		}
+ =
+
+ 		_debug("token[%u]: toksize=3D%u", ntoks, toksize);
+@@ -674,7 +674,9 @@ static long rxrpc_read(const struct key *key,
+ 			break;
+ =
+
+ 		default:
+-			break;
++			pr_err("Unsupported key token type (%u)\n",
++			       token->security_index);
++			return -ENOPKG;
+ 		}
+ =
+
+ 		ASSERTCMP((unsigned long)xdr - (unsigned long)oldxdr, =3D=3D,
+
