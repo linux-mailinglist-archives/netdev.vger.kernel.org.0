@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 355052EC1B6
+	by mail.lfdr.de (Postfix) with ESMTP id A20752EC1B7
 	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 18:07:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727679AbhAFRGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 12:06:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
+        id S1727793AbhAFRGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 12:06:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727428AbhAFRGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:06:07 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B19C06134D;
-        Wed,  6 Jan 2021 09:05:27 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id t22so2056181pfl.3;
-        Wed, 06 Jan 2021 09:05:27 -0800 (PST)
+        with ESMTP id S1726810AbhAFRGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 12:06:35 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBB0C06134C;
+        Wed,  6 Jan 2021 09:05:54 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id e2so1827998plt.12;
+        Wed, 06 Jan 2021 09:05:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZABA2gp/H+O20C+/pukWzDxW0o0qdFbX0FOFpWRWI8Y=;
-        b=TartYCgqFpcdyAPDxyRMBAGky9NpVDkU1es2aDDJGiWvoDUvwfSPLFpLtzB5nlg/K6
-         h/PFngjK1Q5+UcmYr+lB4CrqQDL+46aRZEDeO+C3zlttSP1k6dnYKr+6+HOn38P7IXLx
-         Lwpy+e/YCBvGNiekIxd0AHNhsON0BJJEHXCJQXL3VkeTsoSzpCBTH6iNPInlt3Yzd2fw
-         oO4syJep3XTfTBiuzN/BSrpg10PgGOPWligCWKzVYnYQk5vo7c1kSY36FYVnuS0KVT+9
-         7qYgoR4fHshz82DBDI0UiidzPKdcTMWAWlXpRifoE/upbAp4WYWtYkKDXH+J/v8GzuAM
-         ootw==
+        bh=cFOxQDo3g+kh6YaOcK28UCE0palic8LDP4oEDnK/5MQ=;
+        b=Ih0lb72diqm50lL89HzqcMxMMBCtTBxV2jPshutjbGaEdidzDgRog4DvapkZ24B1JD
+         Ov2zIzBIbT4S71mNoIHP+Tx9/nIJz/xDr58IgshjZ6MOE3omQi/jBGMe/SBi3qlTnYN4
+         KMglfLatYYt2EsphdDjtqGQaEU5cSrNuZcDehXbLepHkbT2naUIZ0Iz+/LXNkQ2Gnbge
+         hihwluq1yfreJhG1YF9kZ6ZT5+CoCaTjx8IVPicuyQLf+V4KGKrqVPn8lTEjVKyCfdVd
+         PsZOyuJTPSEfanxORSisbWnYwIz4EikXLAJU+PD2UAtNdRf+bsRbuio9EpfsVLcVdrCn
+         Oryw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=ZABA2gp/H+O20C+/pukWzDxW0o0qdFbX0FOFpWRWI8Y=;
-        b=qLnUCq+hiGzD7pROTHvvxEaGy8Aa81c6yMQE+AaWvW8AB1tmxjsyuFH97Kwc5y6tBj
-         Gdcv04aVTRKgQvDAE962g2D3Y8ZfhA2tJNyY215rNu/qnuZJQ1lH+OB/gqEUS6/9S9Dz
-         V/z6pr3iOR8bo76yJytpxMJMTsD33YmgQxZgMD2O1pb6pCDAQdJSEnvoCY7sEkbltrub
-         HUDs1q1r/8WLJ+PuSsCheSEEkv2cEj7QCD4Atk/VcqEPy1EFU2BQYtOqRnwcZTCV+dty
-         GZnCzQmD0MHRKV+4vcKJyu3I7V+BHKAWqIMCG75C5ybPG2CwtzqDOI7EEGgIreqrOzSv
-         Fz6A==
-X-Gm-Message-State: AOAM532qKcUQHCMhwgUfhsL2k5Bg6gD0n/XfhBklrXoKjk+p8MrxRq52
-        9f8+trXkl2uPTxkMB0Qnt0bYFHQjIvI=
-X-Google-Smtp-Source: ABdhPJyc7qotTqT0JrjaE+fY9zyumK75cki/2cW+OmXbtK4oZqpO8GYredwyZe8swKwacHAWg69xQg==
-X-Received: by 2002:a05:6a00:13a3:b029:18b:d5d2:196 with SMTP id t35-20020a056a0013a3b029018bd5d20196mr4757190pfg.62.1609952726516;
-        Wed, 06 Jan 2021 09:05:26 -0800 (PST)
+        bh=cFOxQDo3g+kh6YaOcK28UCE0palic8LDP4oEDnK/5MQ=;
+        b=l+Hbd8Y8/nhMCO9Y/uc9finwLvCGeF2q3viRuUyvQ53HWXMb2yG90WOFjFEwf4Djwx
+         KwiFs20uiN8rH8cCescvP+kFCRecAUF5d3lEjB6z5iyz07zTBfWA/bhlZvFwBErlpL++
+         ZlZPLNw8sl1hs/caZD6YrSbl9sh7OvrN0+uVg4jLBwTj5bzKfs50ojt/K5F7G6aulfh1
+         hYoZuG2D/bhRX8ctnTkpVELArSKY7RXuo7SC9Xqs6k6mmRJm8QRy3Aq9Xh5tz/wX52HP
+         HW5UdYSMvinxNIUuBGn0gubwS9lVygc9xD6MlvjUWPc3m0gUdBj5Qu5hjxN5qe3dwyDz
+         26cw==
+X-Gm-Message-State: AOAM530DuxSsIp+7ahLujJdj7TWS4F8WcsO6muaNnczg/L61YEHPEbwa
+        FTx+cO/fceeg2w3RKuJmzXcRkF5OUCU=
+X-Google-Smtp-Source: ABdhPJxpkyyI8h9xIFcMgROf0Spe2G4to7N4EbZhYnfhgTawFiRrAyhKUWP5NhvC/vtvDgI3FjdO9g==
+X-Received: by 2002:a17:90a:72c6:: with SMTP id l6mr5069347pjk.233.1609952753939;
+        Wed, 06 Jan 2021 09:05:53 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id k21sm2854788pfu.77.2021.01.06.09.05.25
+        by smtp.googlemail.com with ESMTPSA id e35sm3366443pgm.4.2021.01.06.09.05.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 09:05:25 -0800 (PST)
-Subject: Re: [PATCH net-next v3 2/7] bcm63xx_enet: add BQL support
+        Wed, 06 Jan 2021 09:05:53 -0800 (PST)
+Subject: Re: [PATCH net-next v3 3/7] bcm63xx_enet: add xmit_more support
 To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20210106144208.1935-1-liew.s.piaw@gmail.com>
- <20210106144208.1935-3-liew.s.piaw@gmail.com>
+ <20210106144208.1935-4-liew.s.piaw@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -109,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <c2ed0c21-1de8-513d-f12e-5b0d25ec07b4@gmail.com>
-Date:   Wed, 6 Jan 2021 09:05:22 -0800
+Message-ID: <cbdef84e-58b5-9020-8fe7-4ffb6ffcca53@gmail.com>
+Date:   Wed, 6 Jan 2021 09:05:51 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210106144208.1935-3-liew.s.piaw@gmail.com>
+In-Reply-To: <20210106144208.1935-4-liew.s.piaw@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,8 +123,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 1/6/21 6:42 AM, Sieng Piaw Liew wrote:
-> Add Byte Queue Limits support to reduce/remove bufferbloat in
-> bcm63xx_enet.
+> Support bulking hardware TX queue by using netdev_xmit_more().
 > 
 > Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
 
