@@ -2,223 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50EC42EC421
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:47:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E98102EC427
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:49:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbhAFTqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 14:46:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbhAFTqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:46:18 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA65BC06134C
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 11:45:37 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id u4so451081pjn.4
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 11:45:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Z2Fi6LidA33ASCb45f7449drMiT8KVxdzlES06YUhWI=;
-        b=SlUxpYszQ7RUJ6l8KQKi5IC0e3r3Sp7pQfzEPTcACGC1qaS/E6OIHCg4qqwQz8kOZ9
-         lFuFkXkYPzFGZ6bY9oA9N+3RtiM00I81eEeRCgfKcBnaU2p3ZepNWWWoeIBOJLv+Rt+l
-         ZiyuWK5BeezmZTatbgWY/G+TVBls72YqNFqF1lCeaEwxYoqTycVPucmo3hTC2EoVk+fb
-         kVVSQMtq51zFdNUZEhzCU6icDx3WwN2GafeDp49AMMxLlv2NcJA6WglLyjorVYoi0m1A
-         7fHaYDzw2e4gHGcUaNsVHBkgfP2c0EvnV6JAKh3VJYYohZZzJ03meK9L2Sa8ii0KQIqg
-         mL0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Z2Fi6LidA33ASCb45f7449drMiT8KVxdzlES06YUhWI=;
-        b=MGjOF8rT8p7Tnv1+/qUarfWic1Z3LDvb5P5xKDA5xLgehFDqOr8ywHx6iiug0eHmEm
-         8DJlXnXSWOC7vn0vSqwaCl3HFGeCPszUXcS0u1WlD46PA6m00+AxJVmC3jOh8nbnqf6A
-         nYynKWKUN+Kao8wkJWaPjLYAEZlVkMSgD5Dzb53glsftOLKZRq2CJa01OP5x6EhNcCln
-         WSWO3fhV+uXqAiijsXCb06PRQCfE2XSKF9XhckgGn6oC8uvUaGO0XHAxkrZ9lgkqydPH
-         sQ3wUrk6fjgas4ptmYE03CmlPFPId4TJm68u1r3RGp0M9aty/HcBT7xHo3s5kTsZYO7M
-         E1Tg==
-X-Gm-Message-State: AOAM530Ura9SLBccYsMqZts8tk5OjlN4L3nJxhRaofP1ChDvY7TY8axs
-        fRcI+cu/7164zes94kH6wuA=
-X-Google-Smtp-Source: ABdhPJw11rzTfPIHISYmvf4Jr/6iSEqFtUHYsygqNAALZ9w81mtPG9wW2oCUHxI5lado9l2KhySXdQ==
-X-Received: by 2002:a17:90a:1b29:: with SMTP id q38mr5662305pjq.223.1609962337207;
-        Wed, 06 Jan 2021 11:45:37 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 3sm3365215pfv.92.2021.01.06.11.45.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Jan 2021 11:45:36 -0800 (PST)
-Subject: Re: [PATCH net-next 2/2] net: broadcom: share header defining UniMAC
- registers
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Doug Berger <opendmb@gmail.com>, Ray Jui <ray.jui@broadcom.com>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Murali Krishna Policharla <murali.policharla@broadcom.com>,
-        Timur Tabi <timur@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20210106073245.32597-1-zajec5@gmail.com>
- <20210106073245.32597-2-zajec5@gmail.com>
- <284cc000-edf1-e943-2531-8c23e9470de1@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <b03b0817-8d22-0c95-651d-7d14300a4124@gmail.com>
-Date:   Wed, 6 Jan 2021 11:45:32 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727085AbhAFTtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:49:05 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13564 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726612AbhAFTtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:49:04 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 106JitVN026832;
+        Wed, 6 Jan 2021 11:48:07 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=V5rfnqUwxgbMjKAX+Xx8rCTMMVrmZztBu76kaPD7rQs=;
+ b=YpghjUgRCwGlti2/XA28ifBd8b1u4fl2YdWfqhKAx537K5ry0cAn30EPiOoALVHKncNi
+ 7QYVbqDuEcdVuURNYyY5kEdlLjetFoVbmep9OVVz/F7STGbmUbb/v5K6p55OI7IoowNC
+ 71h8VfbtQUs9fAUH+jko6rlAVm36+LiXvK0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 35w5dvv0pv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 06 Jan 2021 11:48:06 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 6 Jan 2021 11:48:05 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kg3GvFoub8FSfM5NZQ17lyyNO1b0WgUGeRBeKdv4BN+9gpC6ioDH4xYnuWqjxm2741t2a8ArGYkd4vOmBWYnbf8fQuDR09/kzbnox8o+p6GwHc2UhxnAPu3rIiyOcZKAayAI/r6Xnu/NWw2HCLd9rjrxuCUoVKqCsbGWoD1Q+xUnZGWfPSEu0V7+8tyLhb5MZA2PyyJdOXctxxp/V0X1rC6tzLJFiEq8pwn1+9ZBKX6q2AaFXSuNgtQmfj+84xG2yTL7jqNnqDz8cdXQ+qbEL8ZrQVv524axAQ4U40JkmAE8gD2RIUOeb9CAHFwE6JvpFB1xmnO+og5xKy5qclUjLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V5rfnqUwxgbMjKAX+Xx8rCTMMVrmZztBu76kaPD7rQs=;
+ b=dmOffCThg1h/lFbCxyEZMJJS1tBXUPPLtuCzflG1SqQZnsMy8/2zuywpnwmzYrzMCo1ZPVVA7XhpoeFErQS2rgZCpfabkZSLz+9YrXQf4el1DR5Sbm6BFDzeFxWdPA/iQbJ1+gk2i6Bm7EkF4f5Xb//EuNJIkNDnKulTbazcR0WO2skuJ2HyMAARf9ZoB9q3xH7eyhpPygm6uXnt9O95NTJQicA/UkZ/nNsCLcuYBAEyHTKk72B5JUTCjb/48gZPGqDo45Kmbj034kkg48h6Lsbj+7eq9pq923Y8v+xffh3rSHkjqBS+BBkhO2nXHFVu1ZDaJ9sozFTPIaZGyimBOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V5rfnqUwxgbMjKAX+Xx8rCTMMVrmZztBu76kaPD7rQs=;
+ b=Ko5rN0FdLrv6jhfG+iGRpFhfX2ysGC9DMA40GwSQGZn4LmvIvGqBT6YRENaCQP3O+BwmXzEl8YLvkS+K/YpxapSr+FbQivrZsm/UKUa08DTw93Dxr1cUHfcPyXFjtNHR0l5UowmPmxOcUC2H4EN4UChFwikEa7lJBDRLDnN5iyo=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2696.namprd15.prod.outlook.com (2603:10b6:a03:156::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.20; Wed, 6 Jan
+ 2021 19:48:03 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7%7]) with mapi id 15.20.3721.024; Wed, 6 Jan 2021
+ 19:48:03 +0000
+Date:   Wed, 6 Jan 2021 11:47:56 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, Song Liu <songliubraving@fb.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH bpf-next v3 3/3] bpf: remove extra lock_sock for
+ TCP_ZEROCOPY_RECEIVE
+Message-ID: <20210106194756.vjkulozifc4bfuut@kafai-mbp.dhcp.thefacebook.com>
+References: <20210105214350.138053-1-sdf@google.com>
+ <20210105214350.138053-4-sdf@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210105214350.138053-4-sdf@google.com>
+X-Originating-IP: [2620:10d:c090:400::5:8a1b]
+X-ClientProxiedBy: CO2PR04CA0168.namprd04.prod.outlook.com
+ (2603:10b6:104:4::22) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-In-Reply-To: <284cc000-edf1-e943-2531-8c23e9470de1@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:8a1b) by CO2PR04CA0168.namprd04.prod.outlook.com (2603:10b6:104:4::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6 via Frontend Transport; Wed, 6 Jan 2021 19:48:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2788e164-9d89-4961-0949-08d8b27bfb32
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2696:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB269627535A73A289E4DA5730D5D00@BYAPR15MB2696.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HIaBi1hTCT4n1uqA0+V6XeCq3gxyXqypRQN28WpXqVMHRN6foOcj5wWsNWEMjQqt2/o2JL6O45SGX9rbvrDXmhEbeXtBLqnejjl1fGFb0jbZkXpo4+tbi5llVdZuX4lReJ8X+lZDmR/B6XLxS8QCq1TY+GkS7BxBL6wK6CfEUtJsIAfIoKf15WGUckHopIx6Yhf00lSI4Akw6UuiVuSo6MyjpmfxBZdlYiviLO92d+qEPJMa1otM7NQbravMCbl9v9a576HOlQb4DZpFsFgEMKxr0zEUsJErrWQXpmDbhoulSj0B0fkOkuraoiGuDCxPgNBwN/8YSmDchN1rLaK86yXxo+hCnsPNlolsFun6Pa3vSV68OJaTMmcYjQojA5DbHkrxAUGZ9NwBnJSqb1CA6A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(396003)(39860400002)(346002)(366004)(7696005)(86362001)(8936002)(83380400001)(2906002)(8676002)(6666004)(54906003)(478600001)(4326008)(186003)(16526019)(66946007)(6916009)(52116002)(316002)(5660300002)(1076003)(66476007)(66556008)(55016002)(6506007)(9686003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?/de09YXOQvAQvR2FNkxZtB0G5kwR2IjtdxY4lfzvnoueAWyyDAoFe/wr4DTY?=
+ =?us-ascii?Q?SpwKD0oRIxUJfkkMCQIyLu36pvz/PtNlqC6RtcUmZFPVjJnTlZxxSCfjl5Lj?=
+ =?us-ascii?Q?IW7xMpME0ErR7IkkeQgelGQuSaAWMT093YtmQHqU5huISYrvvX0I0M3PJRXN?=
+ =?us-ascii?Q?3dtW7EBi6BQkckQlKc36aAxQzd9yh1VJ+NrRWwnec7FnoIbjKy94tjFVGfhN?=
+ =?us-ascii?Q?iRkQqP6sEHNTaM0LcJjAR4eg4CeEdSvFzJ7uqugLn93DLnTr39ndiY8tPFSi?=
+ =?us-ascii?Q?uVZiW14jMhgSazrj6+pfxF5EnhmgzdiSg7gny66odaj0QEZHOER9Qq3PZ+7j?=
+ =?us-ascii?Q?fJywvL7OkthmwTQO5wG+lIwhlMex9ffHNvRlcnp3SuueYc/Qx13X8XrsRA7C?=
+ =?us-ascii?Q?nXJBrs4ofaPu2QZ0cPTKDwizyon3x+wJv2bqm/yWi3y/uJnGvFaEPFTdDz1p?=
+ =?us-ascii?Q?y04GbZeULHHAWGz/YL4IJ0FknSH+rdfUKSaAysoFXKXsJ1ZmGKd27gJegv/S?=
+ =?us-ascii?Q?JTmnTQnjUr+bU9ELI7sUQT7Mgh7WttHPhhkvpz1AEYnp6N+zzAQHAdeCMltL?=
+ =?us-ascii?Q?NjWr1+ML7rOP3ihHdzFVCLSrB92EDPdW1ijZC/vCGeD3Vb/RI6xHmJ3d80OA?=
+ =?us-ascii?Q?Ty+C71t9qeS4sEA4I+eHS+oRy8a1Uk3WWp0z2gjlOcl7+l1LySXmmyas7Igw?=
+ =?us-ascii?Q?I+qIO7bgOREbdmYp7+59KoRO6H8JW9xXfyDZ4VjzeOQXDCknRvtuGWJk1e/N?=
+ =?us-ascii?Q?UGDBMdlb7UT+xsvpz8K9x8LTjGvdUskzTRRnqme8PlJUEhkr7vVjJ+uaklpK?=
+ =?us-ascii?Q?JNJnlxLEjZmwsSy9mbEqgf/A8/jhw1qBrWcE9cgmcc4RdpF36mysN7CpEzkF?=
+ =?us-ascii?Q?1aA9WOsLtNQQzMn9fef4WsfTAKTDrHtJWgUJnbFvUSw0cT+2oSXGcXhho052?=
+ =?us-ascii?Q?yf8iKIX6xXmkAHhZiVRr0Wu0MFjq/jQcgs0ZlJYTypyzX4mWfmLLs6cEh02A?=
+ =?us-ascii?Q?fVvRgTepXBqaL4iLcsNaIRmlWA=3D=3D?=
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2021 19:48:03.6957
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2788e164-9d89-4961-0949-08d8b27bfb32
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /uhgnnoPdQjZX7Gm/1/FgZLS7EX3uktT5UTZaxjof5FusWroGU2XNC4GMlaG3uJ7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2696
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-06_11:2021-01-06,2021-01-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
+ mlxlogscore=754 spamscore=0 clxscore=1015 lowpriorityscore=0 phishscore=0
+ bulkscore=0 priorityscore=1501 impostorscore=0 adultscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101060111
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/6/21 11:26 AM, Florian Fainelli wrote:
-> On 1/5/21 11:32 PM, Rafał Miłecki wrote:
->> From: Rafał Miłecki <rafal@milecki.pl>
->>
->> UniMAC is integrated into multiple Broadcom's Ethernet controllers so
->> use a shared header file for it and avoid some code duplication.
->>
->> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
->> ---
->>  MAINTAINERS                                   |  2 +
+On Tue, Jan 05, 2021 at 01:43:50PM -0800, Stanislav Fomichev wrote:
+> Add custom implementation of getsockopt hook for TCP_ZEROCOPY_RECEIVE.
+> We skip generic hooks for TCP_ZEROCOPY_RECEIVE and have a custom
+> call in do_tcp_getsockopt using the on-stack data. This removes
+> 3% overhead for locking/unlocking the socket.
 > 
-> Don't you need to update the BGMAC section to also list unimac.h since
-> it is a shared header now? This looks good to me, the conversion does
-> produce the following warnings on x86-64 (and probably arm64, too):
+> Also:
+> - Removed BUILD_BUG_ON (zerocopy doesn't depend on the buf size anymore)
+> - Separated on-stack buffer into bpf_sockopt_buf and downsized to 32 bytes
+>   (let's keep it to help with the other options)
 > 
-> drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_set_rx_mode':
-> drivers/net/ethernet/broadcom/bgmac.c:788:33: warning: conversion from
-> 'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
-> '18446744073709551599' to '4294967279' [-Woverflow]
->   788 |   bgmac_umac_cmd_maskset(bgmac, ~CMD_PROMISC, 0, true);
-> drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_mac_speed':
-> drivers/net/ethernet/broadcom/bgmac.c:828:13: warning: conversion from
-> 'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
-> '18446744073709550579' to '4294966259' [-Woverflow]
->   828 |  u32 mask = ~(CMD_SPEED_MASK << CMD_SPEED_SHIFT | CMD_HD_EN);
->       |             ^
-> drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_chip_reset':
-> drivers/net/ethernet/broadcom/bgmac.c:999:11: warning: conversion from
-> 'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
-> '18446744073197811804' to '3783227484' [-Woverflow]
->   999 |           ~(CMD_TX_EN |
->       |           ^~~~~~~~~~~~~
->  1000 |      CMD_RX_EN |
->       |      ~~~~~~~~~~~
->  1001 |      CMD_RX_PAUSE_IGNORE |
->       |      ~~~~~~~~~~~~~~~~~~~~~
->  1002 |      CMD_TX_ADDR_INS |
->       |      ~~~~~~~~~~~~~~~~~
->  1003 |      CMD_HD_EN |
->       |      ~~~~~~~~~~~
->  1004 |      CMD_LCL_LOOP_EN |
->       |      ~~~~~~~~~~~~~~~~~
->  1005 |      CMD_CNTL_FRM_EN |
->       |      ~~~~~~~~~~~~~~~~~
->  1006 |      CMD_RMT_LOOP_EN |
->       |      ~~~~~~~~~~~~~~~~~
->  1007 |      CMD_RX_ERR_DISC |
->       |      ~~~~~~~~~~~~~~~~~
->  1008 |      CMD_PRBL_EN |
->       |      ~~~~~~~~~~~~~
->  1009 |      CMD_TX_PAUSE_IGNORE |
->       |      ~~~~~~~~~~~~~~~~~~~~~
->  1010 |      CMD_PAD_EN |
->       |      ~~~~~~~~~~~~
->  1011 |      CMD_PAUSE_FWD),
->       |      ~~~~~~~~~~~~~~
-> drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_enable':
-> drivers/net/ethernet/broadcom/bgmac.c:1057:32: warning: conversion from
-> 'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
-> '18446744073709551612' to '4294967292' [-Woverflow]
->  1057 |  bgmac_umac_cmd_maskset(bgmac, ~(CMD_TX_EN | CMD_RX_EN),
->       |                                ^~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_chip_init':
-> drivers/net/ethernet/broadcom/bgmac.c:1108:32: warning: conversion from
-> 'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
-> '18446744073709551359' to '4294967039' [-Woverflow]
->  1108 |  bgmac_umac_cmd_maskset(bgmac, ~CMD_RX_PAUSE_IGNORE, 0, true);
-> drivers/net/ethernet/broadcom/bgmac.c:1117:33: warning: conversion from
-> 'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
-> '18446744073709518847' to '4294934527' [-Woverflow]
->  1117 |   bgmac_umac_cmd_maskset(bgmac, ~CMD_LCL_LOOP_EN, 0, false);
+> (I can probably split this patch into two: add new features and rework
+>  bpf_sockopt_buf; can follow up if the approach in general sounds
+>  good).
 > 
-> 
-> I did verify that the md5sum of the objects does not change before and
-> after changes (except bgmac.o, which is expected due to the warning
-> above0, so that gives me good confidence that the changes are correct :)
-> 
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> Thanks for doing this.
+> Without this patch:
+>      3.29%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
+>             |
+>              --3.22%--__cgroup_bpf_run_filter_getsockopt
+>                        |
+>                        |--0.66%--lock_sock_nested
+A general question for sockopt prog, why the BPF_CGROUP_(GET|SET)SOCKOPT prog
+has to run under lock_sock()?
 
-For GENET and SYSTEMPORT you should be able to share the MIB counters as
-well, and in premise we could even get a step further and share the
-ethtool stats array between drivers since they are the exact same. You
-don't have to include that as part of your series though, we can address
-it later. We have a third driver coming up which is also using an UniMAC
-and could benefit from not replicating these headers.
--- 
-Florian
+>                        |
+>                        |--0.57%--__might_fault
+>                        |
+>                         --0.56%--release_sock
+> 
+> With the patch applied:
+>      0.42%     0.10%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt_kern
+>      0.02%     0.02%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
+> 
+[ ... ]
+
+> @@ -1445,15 +1442,29 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+>  				       int __user *optlen, int max_optlen,
+>  				       int retval)
+>  {
+> -	struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> -	struct bpf_sockopt_kern ctx = {
+> -		.sk = sk,
+> -		.level = level,
+> -		.optname = optname,
+> -		.retval = retval,
+> -	};
+> +	struct bpf_sockopt_kern ctx;
+> +	struct bpf_sockopt_buf buf;
+> +	struct cgroup *cgrp;
+>  	int ret;
+>  
+> +#ifdef CONFIG_INET
+> +	/* TCP do_tcp_getsockopt has optimized getsockopt implementation
+> +	 * to avoid extra socket lock for TCP_ZEROCOPY_RECEIVE.
+> +	 */
+> +	if (sk->sk_prot->getsockopt == tcp_getsockopt &&
+> +	    level == SOL_TCP && optname == TCP_ZEROCOPY_RECEIVE)
+> +		return retval;
+> +#endif
+That seems too much protocol details and not very scalable.
+It is not very related to kernel/bpf/cgroup.c which has very little idea
+whether a specific protocol has optimized things in some ways (e.g. by
+directly calling cgroup's bpf prog at some strategic places in this patch).
+Lets see if it can be done better.
+
+At least, these protocol checks belong to the net's socket.c
+more than the bpf's cgroup.c here.  If it also looks like layering
+breakage in socket.c, may be adding a signal in sk_prot (for example)
+to tell if the sk_prot->getsockopt has already called the cgroup's bpf
+prog?  (e.g. tcp_getsockopt() can directly call the cgroup's bpf for all
+optname instead of only TCP_ZEROCOPY_RECEIVE).
+
+For example:
+
+int __sys_getsockopt(...)
+{
+	/* ... */
+
+	if (!sk_prot->bpf_getsockopt_handled)
+		BPF_CGROUP_RUN_PROG_GETSOCKOPT(...);
+}
+
+Thoughts?
+
+> +
+> +	memset(&buf, 0, sizeof(buf));
+> +	memset(&ctx, 0, sizeof(ctx));
+> +
+> +	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> +	ctx.sk = sk;
+> +	ctx.level = level;
+> +	ctx.optname = optname;
+> +	ctx.retval = retval;
+> +
+>  	/* Opportunistic check to see whether we have any BPF program
+>  	 * attached to the hook so we don't waste time allocating
+>  	 * memory and locking the socket.
