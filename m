@@ -2,67 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A6042EB9EE
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 07:19:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE472EBA1B
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 07:41:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726119AbhAFGS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 01:18:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47556 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725562AbhAFGSz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 01:18:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AA573207AB;
-        Wed,  6 Jan 2021 06:18:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609913894;
-        bh=5lp+13jiD6sIpu3g6HHgflH2MeBd+glQhPUXzn5sEb0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CakvhJq/S0InR70KIkE0nT8f4OsK8tazYsMYaSFjfmUD+Huax/XAoFChfqSwh2Ko3
-         O2Yr5kMJTtRg84SKasb5ZjVbjiriRmjXC//Mp6svMTkOguihXcYD8Y7jrNAu5hhU9s
-         NdGVzXNjj+s9GjbUJWIyH+IHiUgF6TmPNadTJjfPC+mngpvbFg7c/5UFpGfay3esh2
-         cYJ3MG2vwyVhJDX/j+RFuMWxX9ZlY7uvVKpUVyQmSjwgaHtsGBtJTIpjBfFO76T5xG
-         lQPLPifs3+qF6HuckWFMEKtmfxytThn8qOgCOh6FZpFqy+bNi0rc5xLf/Si1eeEIi4
-         d5j4VPRJ+OyIg==
-Date:   Wed, 6 Jan 2021 11:48:10 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 05/10] dma: tx49 removal
-Message-ID: <20210106061810.GO2771@vkoul-mobl>
-References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
- <20210105140305.141401-6-tsbogend@alpha.franken.de>
+        id S1726092AbhAFGlf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 6 Jan 2021 01:41:35 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51202 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725837AbhAFGlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 01:41:35 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1066OF2t021290
+        for <netdev@vger.kernel.org>; Tue, 5 Jan 2021 22:40:54 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 35u9rcngqj-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 05 Jan 2021 22:40:54 -0800
+Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 5 Jan 2021 22:40:52 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id BA4B42ECCF1C; Tue,  5 Jan 2021 22:40:49 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Hao Luo <haoluo@google.com>
+Subject: [PATCH bpf-next  0/4] Support kernel module ksym variables
+Date:   Tue, 5 Jan 2021 22:40:43 -0800
+Message-ID: <20210106064048.2554276-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210105140305.141401-6-tsbogend@alpha.franken.de>
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-06_04:2021-01-06,2021-01-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ impostorscore=0 adultscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0
+ phishscore=0 mlxscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0
+ clxscore=1034 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101060038
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05-01-21, 15:02, Thomas Bogendoerfer wrote:
-> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Add support for using kernel module global variables (__ksym externs in BPF
+program). BPF verifier will now support ldimm64 with src_reg=BPF_PSEUDO_BTF_ID
+and non-zero insn[1].imm field, specifying module BTF's FD. In such case,
+module BTF object, similarly to BPF maps referenced from ldimm64 with
+src_reg=BPF_PSEUDO_MAP_FD, will be recorded in bpf_progran's auxiliary data
+and refcnt will be increased for both BTF object itself and its kernel module.
+This makes sure kernel module won't be unloaded from under active attached BPF
+program. These refcounts will be dropped when BPF program is unloaded.
 
-Applied after fixing subsystem name, thanks
+New selftest validates all this is working as intended. bpf_testmod.ko is
+extended with per-CPU variable. Selftests expects the latest pahole changes
+(soon to be released as v1.20) to generate per-CPU variable BTF info for
+kernel module.
+
+rfc->v1:
+  - use sys_membarrier(MEMBARRIER_CMD_GLOBAL) (Alexei).
+
+Cc: Hao Luo <haoluo@google.com>
+
+Andrii Nakryiko (4):
+  selftests/bpf: sync RCU before unloading bpf_testmod
+  bpf: support BPF ksym variables in kernel modules
+  libbpf: support kernel module ksym externs
+  selftests/bpf: test kernel module ksym externs
+
+ include/linux/bpf.h                           |   9 ++
+ include/linux/bpf_verifier.h                  |   3 +
+ include/linux/btf.h                           |   3 +
+ kernel/bpf/btf.c                              |  31 +++-
+ kernel/bpf/core.c                             |  23 +++
+ kernel/bpf/verifier.c                         | 149 ++++++++++++++----
+ tools/lib/bpf/libbpf.c                        |  47 ++++--
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |   3 +
+ .../selftests/bpf/prog_tests/btf_map_in_map.c |  33 ----
+ .../selftests/bpf/prog_tests/ksyms_module.c   |  33 ++++
+ .../selftests/bpf/progs/test_ksyms_module.c   |  26 +++
+ tools/testing/selftests/bpf/test_progs.c      |  11 ++
+ tools/testing/selftests/bpf/test_progs.h      |   1 +
+ 13 files changed, 292 insertions(+), 80 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module.c
 
 -- 
-~Vinod
+2.24.1
+
