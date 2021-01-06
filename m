@@ -2,124 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB79E2EC3DF
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:26:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC1982EC3E3
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:27:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726999AbhAFTZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 14:25:12 -0500
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:26641 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726662AbhAFTZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:25:09 -0500
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 4A38178B57;
-        Wed,  6 Jan 2021 22:24:25 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1609961065;
-        bh=x595Db5O/MSS4l4gdpgq+prE4rsfDZ9RcSXgGF9ARMw=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=VQlHRhwvG0A30MkGI7svObnYYwkslmXrzvV1cUJIPEwwSAIWMyzsMhOf/58ky17rP
-         G8o8rqojo+SLHj45kE/GfIdVTGVvIqdCrFUqLKeU+KysftO82sTsAG+f+asZcMmBrF
-         zvUOJZOjlX1IV2w0twLfAdJ2GsNeGhTVcHYTJhSI=
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 7906F78B45;
-        Wed,  6 Jan 2021 22:24:24 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Wed, 6 Jan
- 2021 22:24:23 +0300
-Subject: Re: [PATCH 1/5] vsock/virtio: support for SOCK_SEQPACKET socket.
-To:     stsp <stsp2@yandex.ru>, Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Arseniy Krasnov <oxffffaa@gmail.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>
-CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
- <20210103195752.1954958-1-arseny.krasnov@kaspersky.com>
- <4ef8fa37-df76-e3bc-3f5c-ed4392f509ad@yandex.ru>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <bd1bf1b0-e014-3e58-fbb2-8ada854dd2c1@kaspersky.com>
-Date:   Wed, 6 Jan 2021 22:24:23 +0300
+        id S1726416AbhAFT1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:27:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbhAFT1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:27:06 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C00C06134C
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 11:26:26 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id m6so2280782pfm.6
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 11:26:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ppkVi+fHIexPfQVTi7a6/0BJcwHFhlESrE95fq+ictI=;
+        b=kqJKogk54RrmkhotdpCp4LjXIZL0Be16f6VuvYar1qrp9e64AfvIruUjRZKjOJEZFn
+         Th0wxNrf4xW5zXbyTttDgLavoganCO5OvgY+BmuaOQ72PfhbRx93o3PCEGKvP7NFn0P/
+         ga2r9N5ZQWVucY1rAkBWdUCGFBtZlQnRXZw9y+WyKDzLCcQZLdPlw7cz8Db5kp6SLT9l
+         GGlr9BCidS2VICiedg1MIOmICy9DhoSvo2APHlZwaxZ52MDrEGUfDT+yYFAiJN1Yr21O
+         P5AY8Jb5ciTaZonE1RIB+YzrKjjOsf7CZQjMik60jJFSE3EKuYCVoaI5zPniOoNo98S3
+         1WnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ppkVi+fHIexPfQVTi7a6/0BJcwHFhlESrE95fq+ictI=;
+        b=b/OpppnXDjzfBw1IuEkTgxR2th6Fn9ibjd5YBSFYDdVDzLonmXdGEf9t9jyqdmatE6
+         Tl+Dm5+NACw97RR+OYB3QrqnRvuzFNVG1vnMqKCQOHAfysXoaHlybhaa9zIieq7yZ1Oh
+         gJZySCv3irLAbDEGjiibHUbJH4Yfq3319WvaFoM9scpkrZSVLiXylaetrTtZ48Iu7Y3+
+         SzW1BoItBUQO73o6jvwpND5i0Fj/vMOsgm8hgsWDCKeXPPLU/59b0frGRHRapv6c3QX/
+         qjMppQ7m1NR0Dy5PV/gXwHUSOE7pHJHZQna7+YeW5jGCUbhDn+HFAv/nkPLzPnFCIf1b
+         NuGA==
+X-Gm-Message-State: AOAM530rPCzzlbaiTVXiq68RDOFugjURiTddaJPGDTzA/RDw6lRE4PiV
+        RtNdc4u/cilFizVa6lNPkDo=
+X-Google-Smtp-Source: ABdhPJw3hIBBjiAvTWrnAGC9K8NDjPP8iqZ/nVBPFmVLAiJbVphH+/E3pQalOWd5nzFcr1/V2lsq1Q==
+X-Received: by 2002:a63:181e:: with SMTP id y30mr5963697pgl.324.1609961185551;
+        Wed, 06 Jan 2021 11:26:25 -0800 (PST)
+Received: from [10.67.48.230] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id z16sm3651819pgj.51.2021.01.06.11.26.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jan 2021 11:26:24 -0800 (PST)
+Subject: Re: [PATCH net-next 2/2] net: broadcom: share header defining UniMAC
+ registers
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Ray Jui <ray.jui@broadcom.com>,
+        Arun Parameswaran <arun.parameswaran@broadcom.com>,
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Timur Tabi <timur@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20210106073245.32597-1-zajec5@gmail.com>
+ <20210106073245.32597-2-zajec5@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <284cc000-edf1-e943-2531-8c23e9470de1@gmail.com>
+Date:   Wed, 6 Jan 2021 11:26:23 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <4ef8fa37-df76-e3bc-3f5c-ed4392f509ad@yandex.ru>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210106073245.32597-2-zajec5@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 01/06/2021 19:07:02
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 160996 [Jan 06 2021]
-X-KSE-AntiSpam-Info: LuaCore: 419 419 70b0c720f8ddd656e5f4eb4a4449cf8ce400df94
-X-KSE-AntiSpam-Info: Version: 5.9.16.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
-X-KSE-AntiSpam-Info: {Tracking_date, moscow}
-X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;kaspersky.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 01/06/2021 19:10:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 06.01.2021 15:19:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/01/06 17:58:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/01/06 15:19:00 #16022888
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> IMHO you can avoid this special-casing
-> by introducing yet another outer loop just
-> for draining the extra data from buffer.
-> Admittedly that may also require an extra
-> transport op.
+On 1/5/21 11:32 PM, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> UniMAC is integrated into multiple Broadcom's Ethernet controllers so
+> use a shared header file for it and avoid some code duplication.
+> 
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> ---
+>  MAINTAINERS                                   |  2 +
 
-I'm not sure that extra tranport op is needed, may be i'll
-try to put drain code inside copy loop, because only
-difference is that copy length is 0.
+Don't you need to update the BGMAC section to also list unimac.h since
+it is a shared header now? This looks good to me, the conversion does
+produce the following warnings on x86-64 (and probably arm64, too):
 
-> Why do you need this change?
-> (maybe its ok, just wondering)
+drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_set_rx_mode':
+drivers/net/ethernet/broadcom/bgmac.c:788:33: warning: conversion from
+'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
+'18446744073709551599' to '4294967279' [-Woverflow]
+  788 |   bgmac_umac_cmd_maskset(bgmac, ~CMD_PROMISC, 0, true);
+drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_mac_speed':
+drivers/net/ethernet/broadcom/bgmac.c:828:13: warning: conversion from
+'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
+'18446744073709550579' to '4294966259' [-Woverflow]
+  828 |  u32 mask = ~(CMD_SPEED_MASK << CMD_SPEED_SHIFT | CMD_HD_EN);
+      |             ^
+drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_chip_reset':
+drivers/net/ethernet/broadcom/bgmac.c:999:11: warning: conversion from
+'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
+'18446744073197811804' to '3783227484' [-Woverflow]
+  999 |           ~(CMD_TX_EN |
+      |           ^~~~~~~~~~~~~
+ 1000 |      CMD_RX_EN |
+      |      ~~~~~~~~~~~
+ 1001 |      CMD_RX_PAUSE_IGNORE |
+      |      ~~~~~~~~~~~~~~~~~~~~~
+ 1002 |      CMD_TX_ADDR_INS |
+      |      ~~~~~~~~~~~~~~~~~
+ 1003 |      CMD_HD_EN |
+      |      ~~~~~~~~~~~
+ 1004 |      CMD_LCL_LOOP_EN |
+      |      ~~~~~~~~~~~~~~~~~
+ 1005 |      CMD_CNTL_FRM_EN |
+      |      ~~~~~~~~~~~~~~~~~
+ 1006 |      CMD_RMT_LOOP_EN |
+      |      ~~~~~~~~~~~~~~~~~
+ 1007 |      CMD_RX_ERR_DISC |
+      |      ~~~~~~~~~~~~~~~~~
+ 1008 |      CMD_PRBL_EN |
+      |      ~~~~~~~~~~~~~
+ 1009 |      CMD_TX_PAUSE_IGNORE |
+      |      ~~~~~~~~~~~~~~~~~~~~~
+ 1010 |      CMD_PAD_EN |
+      |      ~~~~~~~~~~~~
+ 1011 |      CMD_PAUSE_FWD),
+      |      ~~~~~~~~~~~~~~
+drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_enable':
+drivers/net/ethernet/broadcom/bgmac.c:1057:32: warning: conversion from
+'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
+'18446744073709551612' to '4294967292' [-Woverflow]
+ 1057 |  bgmac_umac_cmd_maskset(bgmac, ~(CMD_TX_EN | CMD_RX_EN),
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/broadcom/bgmac.c: In function 'bgmac_chip_init':
+drivers/net/ethernet/broadcom/bgmac.c:1108:32: warning: conversion from
+'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
+'18446744073709551359' to '4294967039' [-Woverflow]
+ 1108 |  bgmac_umac_cmd_maskset(bgmac, ~CMD_RX_PAUSE_IGNORE, 0, true);
+drivers/net/ethernet/broadcom/bgmac.c:1117:33: warning: conversion from
+'long unsigned int' to 'u32' {aka 'unsigned int'} changes value from
+'18446744073709518847' to '4294934527' [-Woverflow]
+ 1117 |   bgmac_umac_cmd_maskset(bgmac, ~CMD_LCL_LOOP_EN, 0, false);
 
-> No need to reset here, like a few lines
-> above in a seemingly similar condition?
 
+I did verify that the md5sum of the objects does not change before and
+after changes (except bgmac.o, which is expected due to the warning
+above0, so that gives me good confidence that the changes are correct :)
 
-Yes, i think you are right. 
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 
+Thanks for doing this.
+-- 
+Florian
