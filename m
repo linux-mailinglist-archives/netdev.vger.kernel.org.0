@@ -2,64 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4C1C2EBD99
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 13:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEC522EBDA3
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 13:25:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbhAFMWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 07:22:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58544 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725800AbhAFMWA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 07:22:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B13ED2311D;
-        Wed,  6 Jan 2021 12:21:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609935679;
-        bh=WAm/RhnYSKI7FNej0EIyJcFG4Mw69Zq4xvi2vdKUvKY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EFqt/4YEevvHaPLx967fpBTZcI/+548l6LR6bBN/0B0bBWvU0bYq2N+5fblMroJL8
-         xb0u579zUG7NzKcnQQ+MKF3jaSy2g6XFIFCcvPeEj8diZK5Jw1Y5/FqQGmM4fTpIn+
-         PsheQjel/dq1hoFK5S0Cx7gcaWRRj4/qT0u/SNcSaEclNRZVU9uyACTmNPOg8WNZ7d
-         QtO7QspxuWHzd0WatLIWX9d674NKThw0WDKJX/pt372KXxGMz+2sup7FB3VMjhhds3
-         5bV0cxoJ0Egv3k3UFgFFBHXGNibprJTHCC7UK8jrSWwnjgdA1582lmM4oduTgjblRH
-         A21687mqHVHRA==
-Date:   Wed, 6 Jan 2021 13:20:50 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Pavana Sharma <pavana.sharma@digi.com>
-Cc:     andrew@lunn.ch, ashkan.boldaji@digi.com,
-        clang-built-linux@googlegroups.com, davem@davemloft.net,
-        devicetree@vger.kernel.org, f.fainelli@gmail.com,
-        gregkh@linuxfoundation.org, kbuild-all@lists.01.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org, lkp@intel.com,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        vivien.didelot@gmail.com
-Subject: Re: [net-next PATCH v12 4/4] net: dsa: mv88e6xxx: Add support for
- mv88e6393x  family of Marvell
-Message-ID: <20210106132050.4f0875c7@kernel.org>
-In-Reply-To: <20210106004530.22197-1-pavana.sharma@digi.com>
-References: <20210105131343.4d0fff05@nic.cz>
-        <20210106004530.22197-1-pavana.sharma@digi.com>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726433AbhAFMYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 07:24:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbhAFMYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 07:24:47 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9320DC06134C
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 04:24:06 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id a12so6087277lfl.6
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 04:24:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ADeSGOTFgYQq708CfDZlmoQoQzMLbuH24kuiT1lc0fE=;
+        b=QYi8xYr94jnZxo8zB9id8L5X9/1yVVXNxngKxOoco+wsuO93K7V1mRnIZ14O+HAdV0
+         ghB8SajLMAt6MwKxKhyE276dBRB/+JnDx/eFi0VtxRwp9lFx4mhwPy3bMpsu62CbH4OJ
+         OGeIai/ajlnwubnH6KpRIITW1XeAlyREPomdTxJPPOCaIjrXO5YAJ7je1WimRSOF9yQ+
+         ALyGc85w5v1/K3OWv44k7YNmGy8Ej+PIGFLa+9redEfj7VJJstT0f52K+Q83SXZk6U4g
+         QKGv/Zy2aoiVqighwxDTAIGKw6SWDO1EkNqvppvh/uN8evDqvS5zwYlPTO3BBI3oG6wq
+         JPNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ADeSGOTFgYQq708CfDZlmoQoQzMLbuH24kuiT1lc0fE=;
+        b=sw/l5XhozsmAF9x4wyFdkP+kmUCBtgPfUrwGSk0zUxhP6vGjW4uljoaHWvExoXzOOW
+         8xQcex+v4uQdDh9KMGXyOGzmLTEbuYjxzrwqafBRF3Itkx3uj/W89Y3l1Us2URHCy426
+         ME/9w46MWKe6UHQlWpeG9KSNO1Jv2GjvzYb+FcAvSDQTo+iF1TJPH161402VNMWHVwwx
+         1j+Iewif59BmcIkLM1r9FqMW2GGoe8xDU0a1ntQPXvb38j6i1cqI8Bq02J+500YjLiSX
+         /TfqKOEJVPi5fSXm4WqCvGq1MO8Uf6MWQct93bj8PnSwgmRDFr3CroNTm+YnsabEIPcQ
+         n61w==
+X-Gm-Message-State: AOAM531dy9WKZnFshNr3nFZkrcfqJkqNsPJfn6iaP4WsHVRfq9lUVzCb
+        7Cc27tXbprQZuzGnG2kpeO9jJd950f0=
+X-Google-Smtp-Source: ABdhPJy1srAag+Ff5SPHuig8xh6D3r2I8qBo8zGOCXdgqZld5zuoHo7ksbPGkw5g2GKiWlHWGE6Xew==
+X-Received: by 2002:ac2:5145:: with SMTP id q5mr1695491lfd.626.1609935845129;
+        Wed, 06 Jan 2021 04:24:05 -0800 (PST)
+Received: from kristrev-XPS-15-9570.lan ([193.213.155.210])
+        by smtp.gmail.com with ESMTPSA id g4sm324205lfc.85.2021.01.06.04.24.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jan 2021 04:24:04 -0800 (PST)
+From:   Kristian Evensen <kristian.evensen@gmail.com>
+To:     netdev@vger.kernel.org, bjorn@mork.no
+Cc:     Kristian Evensen <kristian.evensen@gmail.com>
+Subject: [PATCH net-next] qmi_wwan: Increase headroom for QMAP SKBs
+Date:   Wed,  6 Jan 2021 13:24:03 +0100
+Message-Id: <20210106122403.1321180-1-kristian.evensen@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  6 Jan 2021 10:45:30 +1000
-Pavana Sharma <pavana.sharma@digi.com> wrote:
+When measuring the throughput (iperf3 + TCP) while routing on a
+not-so-powerful device (Mediatek MT7621, 880MHz CPU), I noticed that I
+achieved significantly lower speeds with QMI-based modems than for
+example a USB LAN dongle. The CPU was saturated in all of my tests.
 
-> Thanks Marek for catching this.
-> 
-> I will have a closer look and update the patchset.
+With the dongle I got ~300 Mbit/s, while I only measured ~200 Mbit/s
+with the modems. All offloads, etc.  were switched off for the dongle,
+and I configured the modems to use QMAP (16k aggregation). The tests
+with the dongle were performed in my local (gigabit) network, while the
+LTE network the modems were connected to delivers 700-800 Mbit/s.
 
-I also sent a reply patch with subject
-  "patch fixing mv88e6393x SERDES IRQ for Pavana's series"
+Profiling the kernel revealed the cause of the performance difference.
+In qmimux_rx_fixup(), an SKB is allocated for each packet contained in
+the URB. This SKB has too little headroom, causing the check in
+skb_cow() (called from ip_forward()) to fail. pskb_expand_head() is then
+called and the SKB is reallocated. In the output from perf, I see that a
+significant amount of time is spent in pskb_expand_head() + support
+functions.
 
-it contains the changes necessary to your series. Please look at that.
-You can apply it to your commit via
-  patch -p1 <patch_from_marek.patch
-  git commit --amend drivers/net/dsa/mv88e6xxx/{chip.c,serdes.c,serdes.h}
+In order to ensure that the SKB has enough headroom, this commit
+increases the amount of memory allocated in qmimux_rx_fixup() by
+LL_MAX_HEADER. The reason for using LL_MAX_HEADER and not a more
+accurate value, is that we do not know the type of the outgoing network
+interface. After making this change, I achieve the same throughput with
+the modems as with the dongle.
 
-Marek
+Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
+---
+ drivers/net/usb/qmi_wwan.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index af19513a9..7ea113f51 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -186,7 +186,7 @@ static int qmimux_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		net = qmimux_find_dev(dev, hdr->mux_id);
+ 		if (!net)
+ 			goto skip;
+-		skbn = netdev_alloc_skb(net, pkt_len);
++		skbn = netdev_alloc_skb(net, pkt_len + LL_MAX_HEADER);
+ 		if (!skbn)
+ 			return 0;
+ 		skbn->dev = net;
+@@ -203,6 +203,7 @@ static int qmimux_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 			goto skip;
+ 		}
+ 
++		skb_reserve(skbn, LL_MAX_HEADER);
+ 		skb_put_data(skbn, skb->data + offset + qmimux_hdr_sz, pkt_len);
+ 		if (netif_rx(skbn) != NET_RX_SUCCESS) {
+ 			net->stats.rx_errors++;
+-- 
+2.25.1
+
