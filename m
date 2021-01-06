@@ -2,24 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F19822EC384
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 19:50:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC3D02EC3BB
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbhAFStq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 13:49:46 -0500
-Received: from elvis.franken.de ([193.175.24.41]:33363 "EHLO elvis.franken.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726249AbhAFSto (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 13:49:44 -0500
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1kxDra-0005fm-00; Wed, 06 Jan 2021 19:48:54 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 4B798C0808; Wed,  6 Jan 2021 19:48:39 +0100 (CET)
-Date:   Wed, 6 Jan 2021 19:48:39 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Matt Mackall <mpm@selenic.com>,
+        id S1726509AbhAFTL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:11:27 -0500
+Received: from smtprelay0107.hostedemail.com ([216.40.44.107]:59416 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725822AbhAFTLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:11:25 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id BB2925C0;
+        Wed,  6 Jan 2021 19:10:43 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:973:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1381:1437:1515:1516:1518:1534:1538:1568:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3872:3876:4321:5007:6737:6738:7652:10004:10400:10848:11026:11232:11473:11658:11783:11914:12048:12297:12438:12740:12895:13069:13311:13357:13439:13894:14181:14659:14721:21080:21451:21611:21627:21939:21990:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:56,LUA_SUMMARY:none
+X-HE-Tag: push15_3e110e4274e4
+X-Filterd-Recvd-Size: 2304
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf11.hostedemail.com (Postfix) with ESMTPA;
+        Wed,  6 Jan 2021 19:10:39 +0000 (UTC)
+Message-ID: <b84dadc2e98b1986dc800c5f6f202880ed905b38.camel@perches.com>
+Subject: Re: [PATCH 05/10] dma: tx49 removal
+From:   Joe Perches <joe@perches.com>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Matt Mackall <mpm@selenic.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Dan Williams <dan.j.williams@intel.com>,
         Vinod Koul <vkoul@kernel.org>,
@@ -35,75 +42,44 @@ Cc:     Matt Mackall <mpm@selenic.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>, linux-ide@vger.kernel.org,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>, linux-rtc@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-Subject: Re: [PATCH 00/10] Remove support for TX49xx
-Message-ID: <20210106184839.GA7773@alpha.franken.de>
+        Takashi Iwai <tiwai@suse.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
+Date:   Wed, 06 Jan 2021 11:10:38 -0800
+In-Reply-To: <20210105140305.141401-6-tsbogend@alpha.franken.de>
 References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
- <CAMuHMdX=trGqj8RzV7r1iTneqDjWOc4e1T-X+R_B34rxxhJpbg@mail.gmail.com>
+         <20210105140305.141401-6-tsbogend@alpha.franken.de>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdX=trGqj8RzV7r1iTneqDjWOc4e1T-X+R_B34rxxhJpbg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 06, 2021 at 09:37:11AM +0100, Geert Uytterhoeven wrote:
-> Hi Thomas,
+On Tue, 2021-01-05 at 15:02 +0100, Thomas Bogendoerfer wrote:
+> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+[]
+> diff --git a/drivers/dma/txx9dmac.h b/drivers/dma/txx9dmac.h
+[]
+> @@ -26,11 +26,6 @@
+>   * DMA channel.
+>   */
+>  
 > 
-> CC Nemoto-san (de-facto TX49XX maintainer)
-> 
-> On Tue, Jan 5, 2021 at 3:03 PM Thomas Bogendoerfer
-> <tsbogend@alpha.franken.de> wrote:
-> > I couldn't find any buyable product other than reference boards using
-> > TX49xx CPUs. And since nobody showed interest in keeping support for
-> > it, it's time to remove it.
-> 
-> I have an RBTX4927 development board in my board farm, boot-test every
-> bi-weekly renesas-drivers release on it, and fix kernel issues when they
-> appear.
-> 
-> Is that sufficient to keep it?
+> -#ifdef CONFIG_MACH_TX49XX
+> -static inline bool txx9_dma_have_SMPCHN(void)
+> -{
+> -	return true;
+> -}
+>  #define TXX9_DMA_USE_SIMPLE_CHAIN
+>  #else
+>  static inline bool txx9_dma_have_SMPCHN(void)
 
-for me it is. But now we probaly need some reverts then...
+This doesn't look like it compiles as there's now an #else
+without an #if
 
-I wonder whether you have seen my mail about the removal
 
-https://lore.kernel.org/linux-mips/20201207105627.GA15866@alpha.franken.de
-
-and my call for people owning MIPS machines
-
-https://lore.kernel.org/linux-mips/20200227144910.GA25011@alpha.franken.de/
-
-Still "unclaimed" machines are
-
-IMG Pistachio SoC based boards (MACH_PISTACHIO(
-Toshiba TX39 series based machines (MACH_TX39XX)
-NEC VR4100 series based machines (MACH_VR41XX)
-Netlogic XLR/XLS based systems (NLM_XLR_BOARD)
-Netlogic XLP based systems (NLM_XLP_BOARD)
-Sibyte BCM91120C-CRhine (SIBYTE_CRHINE)
-Sibyte BCM91120x-Carmel (SIBYTE_CARMEL)
-Sibyte BCM91125C-CRhone (SIBYTE_CRHONE)
-Sibyte BCM91125E-Rhone (SIBYTE_RHONE)
-Sibyte BCM91250C2-LittleSur (SIBYTE_LITTLESUR)
-Sibyte BCM91250E-Sentosa (SIBYTE_SENTOSA)
-
-Is there something on this list you also regulary use ?
-
-Thomas.
-
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
