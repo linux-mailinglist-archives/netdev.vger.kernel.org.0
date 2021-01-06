@@ -2,118 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 809732EC3DA
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:23:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB79E2EC3DF
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 20:26:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727102AbhAFTXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 14:23:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39396 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727085AbhAFTXQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 14:23:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1201C2311B;
-        Wed,  6 Jan 2021 19:22:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609960955;
-        bh=RXHsLQtWdosGRs1gseCy3y7sgHRpinIQi/zgMsifvFU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Vl2LOzH8x0qYlMyLbJ0l++GdU/D8nW3gLhL03xYpjX0RewIERSygJpcK+X2Z+JLQK
-         oJnxuQnQxWrp8irH1HISVj/tlZDS6obZ1KGLwN1mB2LyLGAODFI1OxV8t1dtI7E9N8
-         z/04+t6tTqqiNfriq6OtRs3hWydrCyXGlZnPrwz8tu8eFEUDD+jYoHRCs3/EmFE99g
-         DH8PnI2XNL9f0pNj9ifWlqYpVOdONJXcrK75zs97JPowp9ChR7Julndq+7sbvIykFK
-         S/zpTvjK/bB3rxZ2D9nUkNmBKA/AetCPyKSNGtmkFpYL3pAL3wY6/iO6ESWkxDeOnS
-         bHAvP0pUtjiKA==
-Date:   Wed, 6 Jan 2021 13:22:33 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
+        id S1726999AbhAFTZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 14:25:12 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:26641 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726662AbhAFTZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 14:25:09 -0500
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 4A38178B57;
+        Wed,  6 Jan 2021 22:24:25 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail; t=1609961065;
+        bh=x595Db5O/MSS4l4gdpgq+prE4rsfDZ9RcSXgGF9ARMw=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=VQlHRhwvG0A30MkGI7svObnYYwkslmXrzvV1cUJIPEwwSAIWMyzsMhOf/58ky17rP
+         G8o8rqojo+SLHj45kE/GfIdVTGVvIqdCrFUqLKeU+KysftO82sTsAG+f+asZcMmBrF
+         zvUOJZOjlX1IV2w0twLfAdJ2GsNeGhTVcHYTJhSI=
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 7906F78B45;
+        Wed,  6 Jan 2021 22:24:24 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Wed, 6 Jan
+ 2021 22:24:23 +0300
+Subject: Re: [PATCH 1/5] vsock/virtio: support for SOCK_SEQPACKET socket.
+To:     stsp <stsp2@yandex.ru>, Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 1/3] PCI: Disable parity checking if broken_parity is
- set
-Message-ID: <20210106192233.GA1329080@bjorn-Precision-5520>
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Arseniy Krasnov <oxffffaa@gmail.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>
+CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
+ <20210103195752.1954958-1-arseny.krasnov@kaspersky.com>
+ <4ef8fa37-df76-e3bc-3f5c-ed4392f509ad@yandex.ru>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <bd1bf1b0-e014-3e58-fbb2-8ada854dd2c1@kaspersky.com>
+Date:   Wed, 6 Jan 2021 22:24:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d375987c-ea4f-dd98-4ef8-99b2fbfe7c33@gmail.com>
+In-Reply-To: <4ef8fa37-df76-e3bc-3f5c-ed4392f509ad@yandex.ru>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 01/06/2021 19:07:02
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 160996 [Jan 06 2021]
+X-KSE-AntiSpam-Info: LuaCore: 419 419 70b0c720f8ddd656e5f4eb4a4449cf8ce400df94
+X-KSE-AntiSpam-Info: Version: 5.9.16.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
+X-KSE-AntiSpam-Info: {Tracking_date, moscow}
+X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;kaspersky.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 01/06/2021 19:10:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 06.01.2021 15:19:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/01/06 17:58:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/01/06 15:19:00 #16022888
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 06, 2021 at 06:50:22PM +0100, Heiner Kallweit wrote:
-> If we know that a device has broken parity checking, then disable it.
-> This avoids quirks like in r8169 where on the first parity error
-> interrupt parity checking will be disabled if broken_parity_status
-> is set. Make pci_quirk_broken_parity() public so that it can be used
-> by platform code, e.g. for Thecus N2100.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+> IMHO you can avoid this special-casing
+> by introducing yet another outer loop just
+> for draining the extra data from buffer.
+> Admittedly that may also require an extra
+> transport op.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+I'm not sure that extra tranport op is needed, may be i'll
+try to put drain code inside copy loop, because only
+difference is that copy length is 0.
 
-This series should all go together.  Let me know if you want me to do
-anything more (would require acks for arm and r8169, of course).
+> Why do you need this change?
+> (maybe its ok, just wondering)
 
-> ---
->  drivers/pci/quirks.c | 17 +++++++++++------
->  include/linux/pci.h  |  2 ++
->  2 files changed, 13 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index 653660e3b..ab54e26b8 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -205,17 +205,22 @@ static void quirk_mmio_always_on(struct pci_dev *dev)
->  DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_ANY_ID, PCI_ANY_ID,
->  				PCI_CLASS_BRIDGE_HOST, 8, quirk_mmio_always_on);
->  
-> +void pci_quirk_broken_parity(struct pci_dev *dev)
-> +{
-> +	u16 cmd;
-> +
-> +	dev->broken_parity_status = 1;	/* This device gives false positives */
-> +	pci_read_config_word(dev, PCI_COMMAND, &cmd);
-> +	pci_write_config_word(dev, PCI_COMMAND, cmd & ~PCI_COMMAND_PARITY);
-> +}
-> +
->  /*
->   * The Mellanox Tavor device gives false positive parity errors.  Mark this
->   * device with a broken_parity_status to allow PCI scanning code to "skip"
->   * this now blacklisted device.
->   */
-> -static void quirk_mellanox_tavor(struct pci_dev *dev)
-> -{
-> -	dev->broken_parity_status = 1;	/* This device gives false positives */
-> -}
-> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, quirk_mellanox_tavor);
-> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, quirk_mellanox_tavor);
-> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, pci_quirk_broken_parity);
-> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, pci_quirk_broken_parity);
->  
->  /*
->   * Deal with broken BIOSes that neglect to enable passive release,
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index b32126d26..161dcc474 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1916,6 +1916,8 @@ enum pci_fixup_pass {
->  	pci_fixup_suspend_late,	/* pci_device_suspend_late() */
->  };
->  
-> +void pci_quirk_broken_parity(struct pci_dev *dev);
-> +
->  #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
->  #define __DECLARE_PCI_FIXUP_SECTION(sec, name, vendor, device, class,	\
->  				    class_shift, hook)			\
-> -- 
-> 2.30.0
-> 
-> 
-> 
+> No need to reset here, like a few lines
+> above in a seemingly similar condition?
+
+
+Yes, i think you are right. 
+
