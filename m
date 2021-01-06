@@ -2,117 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFA32EBD39
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 12:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA9A52EBD5E
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 12:57:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbhAFLjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 06:39:02 -0500
-Received: from aserp2130.oracle.com ([141.146.126.79]:58884 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbhAFLjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 06:39:02 -0500
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 106BSlhE075887;
-        Wed, 6 Jan 2021 11:38:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=corp-2020-01-29;
- bh=Lwz5KjHL/lzDDL+gepiJSdF1gvmm6AZCK+JE+g9inn4=;
- b=DE9fzP71wvNMgpO0WnNKN2iMpvOf/LUz/7Oin00Ev0vmHCaYChoAnvpjaTHGZJmtyd+W
- u62ETOm8yH98ADBpCG+S+Zj57HQmq7glAZy8sVgA1z9hm5g7jhvjSaCjo04dvpHlDeG9
- fsIgd1lx3EBraTd5/vbILhoKXcVrqX2hicr1G0hZyaJjxAyWoKpmxBXQsAfh+HhqqFcC
- 9+vtntf4oEUaMUDLQUh14nyhDbsa7uZ0fsrGyYWRbJS82dOmxT0YO0Vlic3DcdW0X1BV
- LhciR97ecd4tBOdyaApIKlH5DyKNLRuFhxXhap7221IHLCMybFHEt3ffMO0JCSXNIugU 7Q== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2130.oracle.com with ESMTP id 35wc96r1b7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 06 Jan 2021 11:38:08 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 106BZn3b156963;
-        Wed, 6 Jan 2021 11:36:08 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 35v1f9sype-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 06 Jan 2021 11:36:07 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 106BZX9V017595;
-        Wed, 6 Jan 2021 11:35:33 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 06 Jan 2021 03:35:32 -0800
-Date:   Wed, 6 Jan 2021 14:35:24 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Qinglang Miao <miaoqinglang@huawei.com>
-Cc:     Markus Elfring <Markus.Elfring@web.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        hulkci@huawei.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [v2] net: qrtr: fix null pointer dereference in qrtr_ns_remove
-Message-ID: <20210106113524.GI2809@kadam>
-References: <20210105055754.16486-1-miaoqinglang@huawei.com>
- <4596fb37-5e74-5bf6-60e5-ded6fbb83969@web.de>
- <fdea7394-3e4a-0afe-6b22-7e3a258f5607@huawei.com>
- <b70726b8-0965-1fb9-2af1-2e05609905ea@web.de>
- <1a736322-42ce-e803-f91c-dc7595acffdd@huawei.com>
+        id S1726328AbhAFL5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 06:57:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55310 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726212AbhAFL5S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 06:57:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A840823117;
+        Wed,  6 Jan 2021 11:56:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1609934197;
+        bh=rFfL+XSU9J75HjhfdCxVnZNvEcVjNZtY5TneG90oZ+U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bglL2FQ7SsqwoukEQpNtRrJcf/wARTvsRoD5THNW27ziqNMTqaSkKRiXYkO4JVdLq
+         4SDTh3QQNd7AThVfyPwxfO5KcuNrM4JQcxjVgLMHvEVP59PjQ4zmB7bYJeBvo3BN+m
+         Yd8vARFNxinENTXEHg261BS1cKgT7nv/xPAKI31sdBAVdjGOCGmcqG6QpvQ/4HQo2l
+         UMqOte1ZErXlbex5ceRf1ndSq/PuKTgf/0KhTa/DXtXw7gRGPgqJH67QiimmoLxm1Q
+         rv3oALfegfHDqB/xpMeMN7lARkSE72bNK9bzqLVeprQUJ39jNmdO5AtAodLLhErGHc
+         HwEVx8vGU7OUQ==
+Date:   Wed, 6 Jan 2021 12:56:08 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sven Auhagen <sven.auhagen@voleatech.de>, netdev@vger.kernel.org,
+        davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Subject: Re: [PATCH net-next] net: mvpp2: increase MTU limit when XDP
+ enabled
+Message-ID: <20210106125608.5f6fab6f@kernel.org>
+In-Reply-To: <X/TKNlir5Cyimjn3@lunn.ch>
+References: <20210105171921.8022-1-kabel@kernel.org>
+        <20210105172437.5bd2wypkfw775a4v@svensmacbookair.sven.lan>
+        <20210105184308.1d2b7253@kernel.org>
+        <X/TKNlir5Cyimjn3@lunn.ch>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1a736322-42ce-e803-f91c-dc7595acffdd@huawei.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9855 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 phishscore=0
- suspectscore=0 spamscore=0 bulkscore=0 adultscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101060071
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9855 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=999
- priorityscore=1501 clxscore=1011 mlxscore=0 malwarescore=0 suspectscore=0
- spamscore=0 bulkscore=0 impostorscore=0 adultscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101060071
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 06, 2021 at 05:46:22PM +0800, Qinglang Miao wrote:
-> 
-> 
-> 在 2021/1/6 16:09, Markus Elfring 写道:
-> > > > > A null-ptr-deref bug is reported by Hulk Robot like this:
-> > > > 
-> > > > Can it be clearer to use the term “null pointer dereference” for the final commit message?
-> > > This advice is too detailed for 'null-ptr-deref' is known as a general phrase
-> > 
-> > This key word was provided already by the referenced KASAN report.
-> > 
-> Yep, you're right. 'null-ptr-deref' is not really proper here.
-> > 
-> > > like 'use-after-free' for kernel developer, I think.
-> > I suggest to reconsider the use of abbreviations at some places.
-> >  >
-> > > > > Fix it by making …
-> > > > 
-> > > > Would you like to replace this wording by the tag “Fixes”?
-> > > Sorry, I didn't get your words.
-> > > 
-> > > 'Fix it by' follows the solution
-> > 
-> > I propose to specify the desired adjustments without such a prefix
-> > in the change description.
-> Sorry, I can understand what you means, but I still disagree with this one,
-> for:
-> 
-> 1. 'Fix it by' is everywhere in kernel commit message.
-> 2. I think adding it or not makes no change for understanding.
-> 3. I'm not sure this is an official proposal.
-> 
+On Tue, 5 Jan 2021 21:21:10 +0100
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-Feel free to ignore Markus...  :/  We have asked him over and over to
-stop sending these sort of advice but he refused and eventually he was
-banned from the mailing lists.  The rest of us can't see his messages to
-you unless we're included personally in the CC list.
+> On Tue, Jan 05, 2021 at 06:43:08PM +0100, Marek Beh=C3=BAn wrote:
+> > On Tue, 5 Jan 2021 18:24:37 +0100
+> > Sven Auhagen <sven.auhagen@voleatech.de> wrote:
+> >  =20
+> > > On Tue, Jan 05, 2021 at 06:19:21PM +0100, Marek Beh=C3=BAn wrote: =20
+> > > > Currently mvpp2_xdp_setup won't allow attaching XDP program if
+> > > >   mtu > ETH_DATA_LEN (1500).
+> > > >=20
+> > > > The mvpp2_change_mtu on the other hand checks whether
+> > > >   MVPP2_RX_PKT_SIZE(mtu) > MVPP2_BM_LONG_PKT_SIZE.
+> > > >=20
+> > > > These two checks are semantically different.
+> > > >=20
+> > > > Moreover this limit can be increased to MVPP2_MAX_RX_BUF_SIZE, sinc=
+e in
+> > > > mvpp2_rx we have
+> > > >   xdp.data =3D data + MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM;
+> > > >   xdp.frame_sz =3D PAGE_SIZE;
+> > > >=20
+> > > > Change the checks to check whether
+> > > >   mtu > MVPP2_MAX_RX_BUF_SIZE   =20
+> > >=20
+> > > Hello Marek,
+> > >=20
+> > > in general, XDP is based on the model, that packets are not bigger th=
+an 1500.
+> > > I am not sure if that has changed, I don't believe Jumbo Frames are u=
+pstreamed yet.
+> > > You are correct that the MVPP2 driver can handle bigger packets witho=
+ut a problem but
+> > > if you do XDP redirect that won't work with other drivers and your pa=
+ckets will disappear. =20
+> >=20
+> > At least 1508 is required when I want to use XDP with a Marvell DSA
+> > switch: the DSA header is 4 or 8 bytes long there.
+> >=20
+> > The DSA driver increases MTU on CPU switch interface by this length
+> > (on my switches to 1504).
+> >=20
+> > So without this I cannot use XDP with mvpp2 with a Marvell switch with
+> > default settings, which I think is not OK. =20
+>=20
+> Hi Marek
+>=20
+> You are running XDP programs on the master interface? So you still
+> have the DSA tag? What sort of programs are you running? I guess DOS
+> protection could work, once the program understands the DSA tag. To
+> forward the frame out another interface you would have to remove the
+> tag. Or i suppose you could modify the tag and send it back to the
+> switch? Does XDP support that sort of hairpin operation?
+>=20
+> 	Andrew
 
-regards,
-dan carpenter
+Andrew,
 
+I am using bpf_fib_lookup to route the packets between switch
+interfaces.
+Here's the program for Marvell CN9130 CRB
+https://blackhole.sk/~kabel/src/xdp_mvswitch_route.c
+(This is just to experiment with XDP, so please excuse code quality.)
+
+I found out that on Turris MOX I am able to route 2.5gbps (at MTU 1500)
+with XDP. But when not using XDP, when the packets go via kernel's
+stack, MOX is able to route less than 1gbps (cca 800mbps, at MTU
+1500, and the CPU is at 100%).
+
+I also to write a simple NAT masquerading program. I think XDP can
+increase NAT throughput to 2.5gbps as well.
+
+> Or i suppose you could modify the tag and send it back to the
+> switch? Does XDP support that sort of hairpin operation?
+
+You can modify the packet, prepend it with another headers (up to 256
+bytes in some drivers, in mvpp2 only 224), append trailers... Look at
+my program above, I am popping vlan tag, for example.
+
+Marek
