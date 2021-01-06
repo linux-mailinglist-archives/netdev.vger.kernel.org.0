@@ -2,76 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 400712EB807
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 03:20:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C4A2EB80A
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 03:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725965AbhAFCTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Jan 2021 21:19:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55896 "EHLO
+        id S1726293AbhAFCWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Jan 2021 21:22:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbhAFCTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 21:19:21 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2528C061387;
-        Tue,  5 Jan 2021 18:18:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=LIaWes6GL5/coUIDfM1TqdIbbzbCTmUwH4VD0Q/gdoE=; b=LI5OpgDBafj/vEhcm8ebq9I1zd
-        wX+ikXiec+Q7WQKbnbvd9EzVvxVZI49mL1gDwS7FU7NJbkYd1V/j+NpBaTjI9/zEufqenxYYsacpk
-        f1CIZVECMVDBRC1rRO4F1+xDGk23AxqP5d6XrNYHidj8fW0SzsAzS4QiyA/dsSv/fjHBEj2/A18Qs
-        F/XjF+Y2fpOZ8J5Pj7pYt/UWp0JrzwJUFji4evPIyEDK7lkjImeBaAxG0YsdE/9g6e+e2dS5hrKIP
-        y0iOtcVcUUTxtPxkBR7hra3qcRv2y7AS1DMWT3CiYIvVI1Ztn20h/X3/ivK2wnhWnR4Tx5IkWNYuR
-        3gpB1atw==;
-Received: from [2601:1c0:6280:3f0::64ea] (helo=smtpauth.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1kwyOz-001uSQ-9h; Wed, 06 Jan 2021 02:18:25 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] net: dsa: fix led_classdev build errors
-Date:   Tue,  5 Jan 2021 18:18:15 -0800
-Message-Id: <20210106021815.31796-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.26.2
+        with ESMTP id S1725917AbhAFCWO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Jan 2021 21:22:14 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC36C061388;
+        Tue,  5 Jan 2021 18:21:33 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id 23so3174771lfg.10;
+        Tue, 05 Jan 2021 18:21:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rf2LmiBJeICZtEhUFiqzhFAR41rj9LXb37Bn/RGx8tA=;
+        b=Uo2HG634dyKTpsbAatK0DjeX1R1O8EmBBV+UykmwV0BmLJXTpj5NGEIwL7o03oEUMU
+         Vkn4BDDFUVTI4C4A1dOogdtmNaPLN5Yrw/W1FLy4rn9FsCUbWdE2V1ou5PJjUdMBtxV7
+         3dP/GS8+lkrZd/RMobNlISwyzZzQnbGPmMBfGsCTdmMi0Og68fSrxWGA+VbNLmOodgku
+         Wa6XmivpAw0jMu/FVtrDKAUSD+BePS9v7TrEUi+zLbEMSIrOP4DWLKvF1kFbpZaTMuGe
+         D8T75V9oMRH48LUYmT3XJFETS8a/V8IfEwmNPwxn23APw3HfnmRIlUZcuxbhc8940z9O
+         zKTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rf2LmiBJeICZtEhUFiqzhFAR41rj9LXb37Bn/RGx8tA=;
+        b=NF6JBND395F4rzHA0oQ2IuRG5a6SKULHwEZWb2iERJfL9SJzCX+NZjnzgt2y8W0QyU
+         PhWSxfnDWDqx0HyIKMfT3HWD9PPrbisg4rQNC/yra+V3CVYVUYoTfEVjTeeErG79E/XF
+         VbtY78MlORrQrAk7nAHasZAjQRICwevhGOFftn73dlkhwZshrvk+0FEm/T99eY0GgHkc
+         gUBA7+dpC98z0cmu5RzJWr05U7baXlMXk63xump0XecjmXemF0h0guN+78ofZKpYgjmk
+         qaiNc/sFkoMcN7rO/1SQkUq/Owql0g0DGW1s9Iz+S74YZfYJQT/JxUdHGtf0QPOYk6pV
+         5EMg==
+X-Gm-Message-State: AOAM532m72c9NeJASgZ0fDlAxnnNzZ+yOX5tm39DpyZyJNGyrd/qYrXO
+        SkNZ2y4pZeXu/hRsTCvxrf1wN3IJYYr5CfpWSsLkvYJAT/k=
+X-Google-Smtp-Source: ABdhPJxFR10VK6gfjfYdHAAzyKvSsDmMYf8Dx24SWWpYbmU93Z8w9wFh4nDROeRkMh+6x+bWXxuoSy0X/NJB5m5VQYQ=
+X-Received: by 2002:a2e:b889:: with SMTP id r9mr993921ljp.44.1609899692313;
+ Tue, 05 Jan 2021 18:21:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210105234219.970039-1-jolsa@kernel.org>
+In-Reply-To: <20210105234219.970039-1-jolsa@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 5 Jan 2021 18:21:21 -0800
+Message-ID: <CAADnVQ+PvG+aiKyhtf3Q7U6=6w_uehQ436k+K8fLvf4DD6VLnw@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next] tools/resolve_btfids: Warn when having
+ multiple IDs for single type
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Qais Yousef <qais.yousef@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix build errors when LEDS_CLASS=m and NET_DSA_HIRSCHMANN_HELLCREEK=y.
-This limits the latter to =m when LEDS_CLASS=m.
+On Tue, Jan 5, 2021 at 3:42 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> The kernel image can contain multiple types (structs/unions)
+> with the same name. This causes distinct type hierarchies in
+> BTF data and makes resolve_btfids fail with error like:
+>
+>   BTFIDS  vmlinux
+> FAILED unresolved symbol udp6_sock
+>
+> as reported by Qais Yousef [1].
+>
+> This change adds warning when multiple types of the same name
+> are detected:
+>
+>   BTFIDS  vmlinux
+> WARN: multiple IDs found for 'file': 526, 113351 - using 526
+> WARN: multiple IDs found for 'sk_buff': 2744, 113958 - using 2744
+>
+> We keep the lower ID for the given type instance and let the
+> build continue.
+>
+> Also changing the 'nr' variable name to 'nr_types' to avoid confusion.
+>
+> [1] https://lore.kernel.org/lkml/20201229151352.6hzmjvu3qh6p2qgg@e107158-lin/
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+> v2 changes:
+>   - changed the warning message [Alexei]
+>   - renamed 'nr' to 'nr_types' [Andrii]
 
-microblaze-linux-ld: drivers/net/dsa/hirschmann/hellcreek_ptp.o: in function `hellcreek_ptp_setup':
-(.text+0xf80): undefined reference to `led_classdev_register_ext'
-microblaze-linux-ld: (.text+0xf94): undefined reference to `led_classdev_register_ext'
-microblaze-linux-ld: drivers/net/dsa/hirschmann/hellcreek_ptp.o: in function `hellcreek_ptp_free':
-(.text+0x1018): undefined reference to `led_classdev_unregister'
-microblaze-linux-ld: (.text+0x1024): undefined reference to `led_classdev_unregister'
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: lore.kernel.org/r/202101060655.iUvMJqS2-lkp@intel.com
-Cc: Kurt Kanzenbach <kurt@linutronix.de>
-Cc: netdev@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/dsa/hirschmann/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
-
---- lnx-511-rc2.orig/drivers/net/dsa/hirschmann/Kconfig
-+++ lnx-511-rc2/drivers/net/dsa/hirschmann/Kconfig
-@@ -4,6 +4,7 @@ config NET_DSA_HIRSCHMANN_HELLCREEK
- 	depends on HAS_IOMEM
- 	depends on NET_DSA
- 	depends on PTP_1588_CLOCK
-+	depends on LEDS_CLASS
- 	select NET_DSA_TAG_HELLCREEK
- 	help
- 	  This driver adds support for Hirschmann Hellcreek TSN switches.
+Applied to bpf tree. I think it's more appropriate there.
