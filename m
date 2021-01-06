@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3B362EC085
-	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 16:39:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA7B2EC087
+	for <lists+netdev@lfdr.de>; Wed,  6 Jan 2021 16:40:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbhAFPj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 10:39:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41898 "EHLO mail.kernel.org"
+        id S1727220AbhAFPja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 10:39:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41924 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726165AbhAFPjY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 10:39:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C8FEE23120;
-        Wed,  6 Jan 2021 15:38:43 +0000 (UTC)
+        id S1726165AbhAFPj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Jan 2021 10:39:27 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9A43F23121;
+        Wed,  6 Jan 2021 15:38:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609947523;
-        bh=ULOW1MbfEc92miB+HDwds4nm4ZJaMXzTrInSe+HvzKY=;
+        s=k20201202; t=1609947526;
+        bh=17tJUBRoR9N7Dis3fpYvNsowe4Tvb8Y31WB2QigVwX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CAs0zfHQS07/sykdHjoDmwuenSHb4Mnpegxhgh+jstmG7kUdThulfvo5t/V/oXHA8
-         0N5/6+UlLtHYRwVt+eHuQO2NzMe+T2bvAxDDTgfqZlMnniL3+1EFqVRXG8/FW0wwbW
-         LvVbM8jLUMvWOhUxasjbzMDsezn4zbacWcz9GN+b35kCRAnmNR7BJnUUgbcMPVjetH
-         1SxEUThBhpvYIAU+/8SDctSdTGR1V5sC8XJTG9w7WgqeUmzOHEYWSXPqUO8h/Cg2Ce
-         iupE+oyiZdTIttjmvhW2qtP8LDSeJ5+2ilGWLAWwAfKhzQaiNep5CNK63OI+XjJeD/
-         Z9DwZZVJYzOog==
+        b=sae8kcBYdz5xHk5oYcoSeIjsRjHA8Y26R+y8w66wJ+TqFvOABh1Yq/bdNojzyrek3
+         kSNv5fb2CiwyjOpHxNw0tqlRdUaA4AAiVmn+fxVbqoHd9ruj5a4sdJzE4jVLpcyCQ7
+         NBOH/yCZB0GVN/HbhmvYqeuD8W1HwTMJLTTUUK5DQbAPn7+q0QRzyq1lhOUEmCNsW1
+         2PiFbH2U7MwYz8VqPab3Xbe4viB1N5KVFCg32m6elk7SZmj6kBkRuXfYVlHnpLcspN
+         RgvnkEs9nBkA/XX10AqaDblke4WP0WOqxCgVfd3dipm2nRZPy2Rh1LmtYVUJMH5Gvv
+         rClYmJ35Uddjw==
 Received: by pali.im (Postfix)
-        id 112D944E; Wed,  6 Jan 2021 16:38:42 +0100 (CET)
+        id E50FB44E; Wed,  6 Jan 2021 16:38:44 +0100 (CET)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -34,9 +34,9 @@ Cc:     Thomas Schreiber <tschreibe@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/3] net: sfp: assume that LOS is not implemented if both LOS normal and inverted is set
-Date:   Wed,  6 Jan 2021 16:37:48 +0100
-Message-Id: <20210106153749.6748-3-pali@kernel.org>
+Subject: [PATCH v2 3/3] net: sfp: add mode quirk for GPON module Ubiquiti U-Fiber Instant
+Date:   Wed,  6 Jan 2021 16:37:49 +0100
+Message-Id: <20210106153749.6748-4-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210106153749.6748-1-pali@kernel.org>
 References: <20201230154755.14746-1-pali@kernel.org>
@@ -48,87 +48,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King <rmk+kernel@armlinux.org.uk>
+SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored nonsense
+information. It claims that support all transceiver types including 10G
+Ethernet which is not truth. So clear all claimed modes and set only one
+mode which module supports: 1000baseX_Full.
 
-Some GPON SFP modules (e.g. Ubiquiti U-Fiber Instant) have set both
-SFP_OPTIONS_LOS_INVERTED and SFP_OPTIONS_LOS_NORMAL bits in their EEPROM.
+Also this module have set SFF phys_id in its EEPROM. Kernel SFP subsustem
+currently does not allow to use SFP modules detected as SFF. Therefore add
+and exception for this module so it can be detected as supported.
 
-Such combination of bits is meaningless so assume that LOS signal is not
-implemented.
+This change finally allows to detect and use SFP GPON module Ubiquiti
+U-Fiber Instant on Linux system.
 
-This patch fixes link carrier for GPON SFP module Ubiquiti U-Fiber Instant.
+EEPROM content of this SFP module is (where XX is serial number):
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
+10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
+20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
+30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
+40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
+50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
+
 Signed-off-by: Pali Rohár <pali@kernel.org>
 
 ---
 Changes in v2:
-* Fix author/signed-off-by lines
+* add this module also into sfp_module_supported() function
 ---
- drivers/net/phy/sfp.c | 36 ++++++++++++++++++++++--------------
- 1 file changed, 22 insertions(+), 14 deletions(-)
+ drivers/net/phy/sfp-bus.c | 15 +++++++++++++++
+ drivers/net/phy/sfp.c     | 17 +++++++++++++++--
+ 2 files changed, 30 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 20b91f5dfc6e..4cf874fb5c5b 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -44,6 +44,17 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
+ 	phylink_set(modes, 2500baseX_Full);
+ }
+ 
++static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
++				      unsigned long *modes)
++{
++	/* Ubiquiti U-Fiber Instant module claims that support all transceiver
++	 * types including 10G Ethernet which is not truth. So clear all claimed
++	 * modes and set only one mode which module supports: 1000baseX_Full.
++	 */
++	phylink_zero(modes);
++	phylink_set(modes, 1000baseX_Full);
++}
++
+ static const struct sfp_quirk sfp_quirks[] = {
+ 	{
+ 		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
+@@ -63,6 +74,10 @@ static const struct sfp_quirk sfp_quirks[] = {
+ 		.vendor = "HUAWEI",
+ 		.part = "MA5671A",
+ 		.modes = sfp_quirk_2500basex,
++	}, {
++		.vendor = "UBNT",
++		.part = "UF-INSTANT",
++		.modes = sfp_quirk_ubnt_uf_instant,
+ 	},
+ };
+ 
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index c0a891cdcd73..15fb8f7dfe5b 100644
+index 15fb8f7dfe5b..c3a0dcc737fd 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -1488,15 +1488,19 @@ static void sfp_sm_link_down(struct sfp *sfp)
+@@ -273,8 +273,21 @@ static const struct sff_data sff_data = {
  
- static void sfp_sm_link_check_los(struct sfp *sfp)
+ static bool sfp_module_supported(const struct sfp_eeprom_id *id)
  {
--	unsigned int los = sfp->state & SFP_F_LOS;
-+	const __be16 los_inverted = cpu_to_be16(SFP_OPTIONS_LOS_INVERTED);
-+	const __be16 los_normal = cpu_to_be16(SFP_OPTIONS_LOS_NORMAL);
-+	__be16 los_options = sfp->id.ext.options & (los_inverted | los_normal);
-+	bool los = false;
- 
- 	/* If neither SFP_OPTIONS_LOS_INVERTED nor SFP_OPTIONS_LOS_NORMAL
--	 * are set, we assume that no LOS signal is available.
-+	 * are set, we assume that no LOS signal is available. If both are
-+	 * set, we assume LOS is not implemented (and is meaningless.)
- 	 */
--	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_INVERTED))
--		los ^= SFP_F_LOS;
--	else if (!(sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_NORMAL)))
--		los = 0;
-+	if (los_options == los_inverted)
-+		los = !(sfp->state & SFP_F_LOS);
-+	else if (los_options == los_normal)
-+		los = !!(sfp->state & SFP_F_LOS);
- 
- 	if (los)
- 		sfp_sm_next(sfp, SFP_S_WAIT_LOS, 0);
-@@ -1506,18 +1510,22 @@ static void sfp_sm_link_check_los(struct sfp *sfp)
- 
- static bool sfp_los_event_active(struct sfp *sfp, unsigned int event)
- {
--	return (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_INVERTED) &&
--		event == SFP_E_LOS_LOW) ||
--	       (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_NORMAL) &&
--		event == SFP_E_LOS_HIGH);
-+	const __be16 los_inverted = cpu_to_be16(SFP_OPTIONS_LOS_INVERTED);
-+	const __be16 los_normal = cpu_to_be16(SFP_OPTIONS_LOS_NORMAL);
-+	__be16 los_options = sfp->id.ext.options & (los_inverted | los_normal);
+-	return id->base.phys_id == SFF8024_ID_SFP &&
+-	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
++	if (id->base.phys_id == SFF8024_ID_SFP &&
++	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP)
++		return true;
 +
-+	return (los_options == los_inverted && event == SFP_E_LOS_LOW) ||
-+	       (los_options == los_normal && event == SFP_E_LOS_HIGH);
++	/* SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored
++	 * phys id SFF instead of SFP. Therefore mark this module explicitly
++	 * as supported based on vendor name and pn match.
++	 */
++	if (id->base.phys_id == SFF8024_ID_SFF_8472 &&
++	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP &&
++	    !memcmp(id->base.vendor_name, "UBNT            ", 16) &&
++	    !memcmp(id->base.vendor_pn, "UF-INSTANT      ", 16))
++		return true;
++
++	return false;
  }
  
- static bool sfp_los_event_inactive(struct sfp *sfp, unsigned int event)
- {
--	return (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_INVERTED) &&
--		event == SFP_E_LOS_HIGH) ||
--	       (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_LOS_NORMAL) &&
--		event == SFP_E_LOS_LOW);
-+	const __be16 los_inverted = cpu_to_be16(SFP_OPTIONS_LOS_INVERTED);
-+	const __be16 los_normal = cpu_to_be16(SFP_OPTIONS_LOS_NORMAL);
-+	__be16 los_options = sfp->id.ext.options & (los_inverted | los_normal);
-+
-+	return (los_options == los_inverted && event == SFP_E_LOS_HIGH) ||
-+	       (los_options == los_normal && event == SFP_E_LOS_LOW);
- }
- 
- static void sfp_sm_fault(struct sfp *sfp, unsigned int next_state, bool warn)
+ static const struct sff_data sfp_data = {
 -- 
 2.20.1
 
