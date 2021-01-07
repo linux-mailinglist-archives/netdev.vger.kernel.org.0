@@ -2,92 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CDC02ECFFE
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 13:42:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD7812ED03B
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 13:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728362AbhAGMkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 07:40:03 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:39838 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726436AbhAGMkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 07:40:01 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1kxUZQ-0003On-Fm; Thu, 07 Jan 2021 12:39:16 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nithya Mani <nmani@marvell.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] octeontx2-af: fix memory leak of lmac and lmac->name
-Date:   Thu,  7 Jan 2021 12:39:16 +0000
-Message-Id: <20210107123916.189748-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.29.2
+        id S1727736AbhAGMum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 07:50:42 -0500
+Received: from www62.your-server.de ([213.133.104.62]:53320 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727327AbhAGMum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 07:50:42 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kxUjX-00039w-Ce; Thu, 07 Jan 2021 13:49:43 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kxUjX-000SrG-1I; Thu, 07 Jan 2021 13:49:43 +0100
+Subject: Re: [PATCH net v2] net: fix use-after-free when UDP GRO with shared
+ fraglist
+To:     Dongseok Yi <dseok.yi@samsung.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        'Willem de Bruijn' <willemb@google.com>
+Cc:     'Jakub Kicinski' <kuba@kernel.org>,
+        'Miaohe Lin' <linmiaohe@huawei.com>,
+        'Paolo Abeni' <pabeni@redhat.com>,
+        'Florian Westphal' <fw@strlen.de>,
+        'Al Viro' <viro@zeniv.linux.org.uk>,
+        'Guillaume Nault' <gnault@redhat.com>,
+        'Yunsheng Lin' <linyunsheng@huawei.com>,
+        'Steffen Klassert' <steffen.klassert@secunet.com>,
+        'Yadu Kishore' <kyk.segfault@gmail.com>,
+        'Marco Elver' <elver@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, namkyu78.kim@samsung.com
+References: <1609750005-115609-1-git-send-email-dseok.yi@samsung.com>
+ <CGME20210107005028epcas2p35dfa745fd92e31400024874f54243556@epcas2p3.samsung.com>
+ <1609979953-181868-1-git-send-email-dseok.yi@samsung.com>
+ <83a2b288-c0b2-ed98-9479-61e1cbe25519@iogearbox.net>
+ <028b01d6e4e9$ddd5fd70$9981f850$@samsung.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c051bc98-6af2-f6ec-76d1-7feaa9da2436@iogearbox.net>
+Date:   Thu, 7 Jan 2021 13:49:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <028b01d6e4e9$ddd5fd70$9981f850$@samsung.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26041/Wed Jan  6 13:36:32 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On 1/7/21 12:40 PM, Dongseok Yi wrote:
+> On 2021-01-07 20:05, Daniel Borkmann wrote:
+>> On 1/7/21 1:39 AM, Dongseok Yi wrote:
+>>> skbs in fraglist could be shared by a BPF filter loaded at TC. It
+>>> triggers skb_ensure_writable -> pskb_expand_head ->
+>>> skb_clone_fraglist -> skb_get on each skb in the fraglist.
+>>>
+>>> While tcpdump, sk_receive_queue of PF_PACKET has the original fraglist.
+>>> But the same fraglist is queued to PF_INET (or PF_INET6) as the fraglist
+>>> chain made by skb_segment_list.
+>>>
+>>> If the new skb (not fraglist) is queued to one of the sk_receive_queue,
+>>> multiple ptypes can see this. The skb could be released by ptypes and
+>>> it causes use-after-free.
+>>>
+>>> [ 4443.426215] ------------[ cut here ]------------
+>>> [ 4443.426222] refcount_t: underflow; use-after-free.
+>>> [ 4443.426291] WARNING: CPU: 7 PID: 28161 at lib/refcount.c:190
+>>> refcount_dec_and_test_checked+0xa4/0xc8
+>>> [ 4443.426726] pstate: 60400005 (nZCv daif +PAN -UAO)
+>>> [ 4443.426732] pc : refcount_dec_and_test_checked+0xa4/0xc8
+>>> [ 4443.426737] lr : refcount_dec_and_test_checked+0xa0/0xc8
+>>> [ 4443.426808] Call trace:
+>>> [ 4443.426813]  refcount_dec_and_test_checked+0xa4/0xc8
+>>> [ 4443.426823]  skb_release_data+0x144/0x264
+>>> [ 4443.426828]  kfree_skb+0x58/0xc4
+>>> [ 4443.426832]  skb_queue_purge+0x64/0x9c
+>>> [ 4443.426844]  packet_set_ring+0x5f0/0x820
+>>> [ 4443.426849]  packet_setsockopt+0x5a4/0xcd0
+>>> [ 4443.426853]  __sys_setsockopt+0x188/0x278
+>>> [ 4443.426858]  __arm64_sys_setsockopt+0x28/0x38
+>>> [ 4443.426869]  el0_svc_common+0xf0/0x1d0
+>>> [ 4443.426873]  el0_svc_handler+0x74/0x98
+>>> [ 4443.426880]  el0_svc+0x8/0xc
+>>>
+>>> Fixes: 3a1296a38d0c (net: Support GRO/GSO fraglist chaining.)
+>>> Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+>>> Acked-by: Willem de Bruijn <willemb@google.com>
+>>> ---
+>>>    net/core/skbuff.c | 20 +++++++++++++++++++-
+>>>    1 file changed, 19 insertions(+), 1 deletion(-)
+>>>
+>>> v2: Expand the commit message to clarify a BPF filter loaded
+>>>
+>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>>> index f62cae3..1dcbda8 100644
+>>> --- a/net/core/skbuff.c
+>>> +++ b/net/core/skbuff.c
+>>> @@ -3655,7 +3655,8 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+>>>    	unsigned int delta_truesize = 0;
+>>>    	unsigned int delta_len = 0;
+>>>    	struct sk_buff *tail = NULL;
+>>> -	struct sk_buff *nskb;
+>>> +	struct sk_buff *nskb, *tmp;
+>>> +	int err;
+>>>
+>>>    	skb_push(skb, -skb_network_offset(skb) + offset);
+>>>
+>>> @@ -3665,11 +3666,28 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+>>>    		nskb = list_skb;
+>>>    		list_skb = list_skb->next;
+>>>
+>>> +		err = 0;
+>>> +		if (skb_shared(nskb)) {
+>>> +			tmp = skb_clone(nskb, GFP_ATOMIC);
+>>> +			if (tmp) {
+>>> +				kfree_skb(nskb);
+>>
+>> Should use consume_skb() to not trigger skb:kfree_skb tracepoint when looking
+>> for drops in the stack.
+> 
+> I will use to consume_skb() on the next version.
+> 
+>>> +				nskb = tmp;
+>>> +				err = skb_unclone(nskb, GFP_ATOMIC);
+>>
+>> Could you elaborate why you also need to unclone? This looks odd here. tc layer
+>> (independent of BPF) from ingress & egress side generally assumes unshared skb,
+>> so above clone + dropping ref of nskb looks okay to make the main skb struct private
+>> for mangling attributes (e.g. mark) & should suffice. What is the exact purpose of
+>> the additional skb_unclone() in this context?
+> 
+> Willem de Bruijn said:
+> udp_rcv_segment later converts the udp-gro-list skb to a list of
+> regular packets to pass these one-by-one to udp_queue_rcv_one_skb.
+> Now all the frags are fully fledged packets, with headers pushed
+> before the payload.
 
-Currently the error return paths don't kfree lmac and lmac->name
-leading to some memory leaks.  Fix this by adding two error return
-paths that kfree these objects
+Yes.
 
-Addresses-Coverity: ("Resource leak")
-Fixes: 1463f382f58d ("octeontx2-af: Add support for CGX link management")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+> PF_PACKET handles untouched fraglist. To modify the payload only
+> for udp_rcv_segment, skb_unclone is necessary.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 1156c61f2e02..aa5da9691a1c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -871,8 +871,10 @@ static int cgx_lmac_init(struct cgx *cgx)
- 		if (!lmac)
- 			return -ENOMEM;
- 		lmac->name = kcalloc(1, sizeof("cgx_fwi_xxx_yyy"), GFP_KERNEL);
--		if (!lmac->name)
--			return -ENOMEM;
-+		if (!lmac->name) {
-+			err = -ENOMEM;
-+			goto err_lmac_free;
-+		}
- 		sprintf(lmac->name, "cgx_fwi_%d_%d", cgx->cgx_id, i);
- 		lmac->lmac_id = i;
- 		lmac->cgx = cgx;
-@@ -883,7 +885,7 @@ static int cgx_lmac_init(struct cgx *cgx)
- 						 CGX_LMAC_FWI + i * 9),
- 				   cgx_fwi_event_handler, 0, lmac->name, lmac);
- 		if (err)
--			return err;
-+			goto err_irq;
- 
- 		/* Enable interrupt */
- 		cgx_write(cgx, lmac->lmac_id, CGXX_CMRX_INT_ENA_W1S,
-@@ -895,6 +897,12 @@ static int cgx_lmac_init(struct cgx *cgx)
- 	}
- 
- 	return cgx_lmac_verify_fwi_version(cgx);
-+
-+err_irq:
-+	kfree(lmac->name);
-+err_lmac_free:
-+	kfree(lmac);
-+	return err;
- }
- 
- static int cgx_lmac_exit(struct cgx *cgx)
--- 
-2.29.2
+I don't parse this last sentence here, please elaborate in more detail on why
+it is necessary.
+
+For example, if tc layer would modify mark on the skb, then __copy_skb_header()
+in skb_segment_list() will propagate it. If tc layer would modify payload, the
+skb_ensure_writable() will take care of that internally and if needed pull in
+parts from fraglist into linear section to make it private. The purpose of the
+skb_clone() above iff shared is to make the struct itself private (to safely
+modify its struct members). What am I missing?
+
+>>> +			} else {
+>>> +				err = -ENOMEM;
+>>> +			}
+>>> +		}
+>>> +
+>>>    		if (!tail)
+>>>    			skb->next = nskb;
+>>>    		else
+>>>    			tail->next = nskb;
+>>>
+>>> +		if (unlikely(err)) {
+>>> +			nskb->next = list_skb;
+>>> +			goto err_linearize;
+>>> +		}
+>>> +
+>>>    		tail = nskb;
+>>>
+>>>    		delta_len += nskb->len;
+>>>
+> 
+> 
 
