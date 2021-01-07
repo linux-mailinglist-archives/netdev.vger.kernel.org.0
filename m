@@ -2,240 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 807362ECADD
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 08:21:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DAD22ECAE0
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 08:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbhAGHSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 02:18:14 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:41848 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726917AbhAGHSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 02:18:14 -0500
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1610003850;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NO/owETE9ke64ibKw0sBtpG04KlHqajs6a53Nr5F2J0=;
-        b=wBinJM+MdFLMZJazOfiswbYZVsm2jRHq2QyEssoILqsOuVpbJjFU7ZXzlLPgUH0qknVokB
-        MpfdX2LDE28tzyIg6BZr+466pKlj5bqHRyGEz8fqE4TClX+0y188KVxa19mKQN8sNwuVY9
-        BcOd2+cNTxT5PPZoO4yRQOWZmXVuHvF/wZPKpCgLpqcjtf+398OQ+m0dnfNOPbukot0Kip
-        E6XB3QJKkufPjMQbVADW1Z30AympqYFcNolcMqP00Oj1eLs4SSX27WM5LkfaPVHEmHobyG
-        ETMAM8K6J6tiR3hJ/LVBjag0waN3SxAMdz2vl0erdMl2CU1hKLIsFvJs1a8DNg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1610003850;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NO/owETE9ke64ibKw0sBtpG04KlHqajs6a53Nr5F2J0=;
-        b=3J7S94+0N6csm8XZERgnO3BPIcb3EkFEjYSTrcL4jgMLMQ2TkAX5MtCWtiX5M6IzqYKlpJ
-        vdmSAP1BGOkKn4CA==
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>
-Subject: Re: [PATCH v3 net-next 01/11] net: switchdev: remove vid_begin -> vid_end range from VLAN objects
-In-Reply-To: <20210106231728.1363126-2-olteanv@gmail.com>
-References: <20210106231728.1363126-1-olteanv@gmail.com> <20210106231728.1363126-2-olteanv@gmail.com>
-Date:   Thu, 07 Jan 2021 08:17:14 +0100
-Message-ID: <87h7ntw70l.fsf@kurt>
+        id S1726706AbhAGHTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 02:19:32 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:4082 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726013AbhAGHTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 02:19:32 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5ff6b5db0002>; Wed, 06 Jan 2021 23:18:51 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Thu, 7 Jan 2021 07:18:49 +0000
+Date:   Thu, 7 Jan 2021 09:18:45 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     <mst@redhat.com>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <lulu@redhat.com>, <elic@nvidia.com>
+Subject: [PATCH v1] vdpa/mlx5: Fix memory key MTT population
+Message-ID: <20210107071845.GA224876@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1610003931; bh=NcydAXraYOykiJbtHv9bmDl70gtSvpqSHEMl3kNpZO8=;
+        h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
+         Content-Disposition:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=EFXLbCIvQe13kA7AHEjQ9n0tm19Rd4J4Rb75BI47Vy4roYv1K7pAfpmoFhuhsLqQJ
+         uCuqETEMA169PIo8YwAIZ1kpcnhSzWdueW4b1oH/2D6W11JZqcCjh6Og8Ijz5iy1Pp
+         yQ8esk5Vv0x+VSz+E/GR6eRNPamLt24yvobdKNpwUpnKHWGrov8HMpb0VmbJ980aH1
+         dcgQyfQLdUr5zBk46PMix8m1U3/wtQ0eC4Pi3lG9xUwdGA5fTcAAHFlyXfPdx+qLXZ
+         RZ3izX28oPfb0ax2Yt7mNxdcetxedVtYUcBeO1E64W5+eTxxHXxNYz4i1M2H/NLgmW
+         qbRPcV5/vEKOQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+map_direct_mr() assumed that the number of scatter/gather entries
+returned by dma_map_sg_attrs() was equal to the number of segments in
+the sgl list. This led to wrong population of the mkey object. Fix this
+by properly referring to the returned value.
 
-On Thu Jan 07 2021, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
-> The call path of a switchdev VLAN addition to the bridge looks something
-> like this today:
->
->         nbp_vlan_init
->         |  __br_vlan_set_default_pvid
->         |  |                       |
->         |  |    br_afspec          |
->         |  |        |              |
->         |  |        v              |
->         |  | br_process_vlan_info  |
->         |  |        |              |
->         |  |        v              |
->         |  |   br_vlan_info        |
->         |  |       / \            /
->         |  |      /   \          /
->         |  |     /     \        /
->         |  |    /       \      /
->         v  v   v         v    v
->       nbp_vlan_add   br_vlan_add ------+
->        |              ^      ^ |       |
->        |             /       | |       |
->        |            /       /  /       |
->        \ br_vlan_get_master/  /        v
->         \        ^        /  /  br_vlan_add_existing
->          \       |       /  /          |
->           \      |      /  /          /
->            \     |     /  /          /
->             \    |    /  /          /
->              \   |   /  /          /
->               v  |   | v          /
->               __vlan_add         /
->                  / |            /
->                 /  |           /
->                v   |          /
->    __vlan_vid_add  |         /
->                \   |        /
->                 v  v        v
->       br_switchdev_port_vlan_add
->
-> The ranges UAPI was introduced to the bridge in commit bdced7ef7838
-> ("bridge: support for multiple vlans and vlan ranges in setlink and
-> dellink requests") (Jan 10 2015). But the VLAN ranges (parsed in br_afspe=
-c)
-> have always been passed one by one, through struct bridge_vlan_info
-> tmp_vinfo, to br_vlan_info. So the range never went too far in depth.
->
-> Then Scott Feldman introduced the switchdev_port_bridge_setlink function
-> in commit 47f8328bb1a4 ("switchdev: add new switchdev bridge setlink").
-> That marked the introduction of the SWITCHDEV_OBJ_PORT_VLAN, which made
-> full use of the range. But switchdev_port_bridge_setlink was called like
-> this:
->
-> br_setlink
-> -> br_afspec
-> -> switchdev_port_bridge_setlink
->
-> Basically, the switchdev and the bridge code were not tightly integrated.
-> Then commit 41c498b9359e ("bridge: restore br_setlink back to original")
-> came, and switchdev drivers were required to implement
-> .ndo_bridge_setlink =3D switchdev_port_bridge_setlink for a while.
->
-> In the meantime, commits such as 0944d6b5a2fa ("bridge: try switchdev op
-> first in __vlan_vid_add/del") finally made switchdev penetrate the
-> br_vlan_info() barrier and start to develop the call path we have today.
-> But remember, br_vlan_info() still receives VLANs one by one.
->
-> Then Arkadi Sharshevsky refactored the switchdev API in 2017 in commit
-> 29ab586c3d83 ("net: switchdev: Remove bridge bypass support from
-> switchdev") so that drivers would not implement .ndo_bridge_setlink any
-> longer. The switchdev_port_bridge_setlink also got deleted.
-> This refactoring removed the parallel bridge_setlink implementation from
-> switchdev, and left the only switchdev VLAN objects to be the ones
-> offloaded from __vlan_vid_add (basically RX filtering) and  __vlan_add
-> (the latter coming from commit 9c86ce2c1ae3 ("net: bridge: Notify about
-> bridge VLANs")).
->
-> That is to say, today the switchdev VLAN object ranges are not used in
-> the kernel. Refactoring the above call path is a bit complicated, when
-> the bridge VLAN call path is already a bit complicated.
->
-> Let's go off and finish the job of commit 29ab586c3d83 by deleting the
-> bogus iteration through the VLAN ranges from the drivers. Some aspects
-> of this feature never made too much sense in the first place. For
-> example, what is a range of VLANs all having the BRIDGE_VLAN_INFO_PVID
-> flag supposed to mean, when a port can obviously have a single pvid?
-> This particular configuration _is_ denied as of commit 6623c60dc28e
-> ("bridge: vlan: enforce no pvid flag in vlan ranges"), but from an API
-> perspective, the driver still has to play pretend, and only offload the
-> vlan->vid_end as pvid. And the addition of a switchdev VLAN object can
-> modify the flags of another, completely unrelated, switchdev VLAN
-> object! (a VLAN that is PVID will invalidate the PVID flag from whatever
-> other VLAN had previously been offloaded with switchdev and had that
-> flag. Yet switchdev never notifies about that change, drivers are
-> supposed to guess).
->
-> Nonetheless, having a VLAN range in the API makes error handling look
-> scarier than it really is - unwinding on errors and all of that.
-> When in reality, no one really calls this API with more than one VLAN.
-> It is all unnecessary complexity.
->
-> And despite appearing pretentious (two-phase transactional model and
-> all), the switchdev API is really sloppy because the VLAN addition and
-> removal operations are not paired with one another (you can add a VLAN
-> 100 times and delete it just once). The bridge notifies through
-> switchdev of a VLAN addition not only when the flags of an existing VLAN
-> change, but also when nothing changes. There are switchdev drivers out
-> there who don't like adding a VLAN that has already been added, and
-> those checks don't really belong at driver level. But the fact that the
-> API contains ranges is yet another factor that prevents this from being
-> addressed in the future.
->
-> Of the existing switchdev pieces of hardware, it appears that only
-> Mellanox Spectrum supports offloading more than one VLAN at a time,
-> through mlxsw_sp_port_vlan_set. I have kept that code internal to the
-> driver, because there is some more bookkeeping that makes use of it, but
-> I deleted it from the switchdev API. But since the switchdev support for
-> ranges has already been de facto deleted by a Mellanox employee and
-> nobody noticed for 4 years, I'm going to assume it's not a biggie.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com> # switchdev and mlxsw
+The hardware expects each MTT entry to contain the DMA address of a
+contiguous block of memory of size (1 << mr->log_size) bytes.
+dma_map_sg_attrs() can coalesce several sg entries into a single
+scatter/gather entry of contiguous DMA range so we need to scan the list
+and refer to the size of each s/g entry.
 
-[snip]
+In addition, get rid of fill_sg() which effect is overwritten by
+populate_mtts().
 
-> --- a/drivers/net/dsa/hirschmann/hellcreek.c
-> +++ b/drivers/net/dsa/hirschmann/hellcreek.c
-> @@ -353,9 +353,8 @@ static int hellcreek_vlan_prepare(struct dsa_switch *=
-ds, int port,
->  		if (!dsa_is_user_port(ds, i))
->  			continue;
->=20=20
-> -		for (vid =3D vlan->vid_begin; vid <=3D vlan->vid_end; ++vid)
-> -			if (vid =3D=3D restricted_vid)
-> -				return -EBUSY;
-> +		if (vlan->vid =3D=3D restricted_vid)
-> +			return -EBUSY;
+Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+---
+V0->V1:
+1. Fix typos
+2. Improve changelog 
 
-`u16 vid' is not used anymore:
 
-drivers/net/dsa/hirschmann/hellcreek.c: In function =E2=80=98hellcreek_vlan=
-_prepare=E2=80=99:
-drivers/net/dsa/hirschmann/hellcreek.c:359:7: warning: unused variable =E2=
-=80=98vid=E2=80=99 [-Wunused-variable]
-   u16 vid;
-       ^~~
-Thanks,
-Kurt
+ drivers/vdpa/mlx5/core/mlx5_vdpa.h |  1 +
+ drivers/vdpa/mlx5/core/mr.c        | 28 ++++++++++++----------------
+ 2 files changed, 13 insertions(+), 16 deletions(-)
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+index 5c92a576edae..08f742fd2409 100644
+--- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
++++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+@@ -15,6 +15,7 @@ struct mlx5_vdpa_direct_mr {
+ 	struct sg_table sg_head;
+ 	int log_size;
+ 	int nsg;
++	int nent;
+ 	struct list_head list;
+ 	u64 offset;
+ };
+diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
+index 4b6195666c58..d300f799efcd 100644
+--- a/drivers/vdpa/mlx5/core/mr.c
++++ b/drivers/vdpa/mlx5/core/mr.c
+@@ -25,17 +25,6 @@ static int get_octo_len(u64 len, int page_shift)
+ 	return (npages + 1) / 2;
+ }
+ 
+-static void fill_sg(struct mlx5_vdpa_direct_mr *mr, void *in)
+-{
+-	struct scatterlist *sg;
+-	__be64 *pas;
+-	int i;
+-
+-	pas = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
+-	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
+-		(*pas) = cpu_to_be64(sg_dma_address(sg));
+-}
+-
+ static void mlx5_set_access_mode(void *mkc, int mode)
+ {
+ 	MLX5_SET(mkc, mkc, access_mode_1_0, mode & 0x3);
+@@ -45,10 +34,18 @@ static void mlx5_set_access_mode(void *mkc, int mode)
+ static void populate_mtts(struct mlx5_vdpa_direct_mr *mr, __be64 *mtt)
+ {
+ 	struct scatterlist *sg;
++	int nsg = mr->nsg;
++	u64 dma_addr;
++	u64 dma_len;
++	int j = 0;
+ 	int i;
+ 
+-	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
+-		mtt[i] = cpu_to_be64(sg_dma_address(sg));
++	for_each_sg(mr->sg_head.sgl, sg, mr->nent, i) {
++		for (dma_addr = sg_dma_address(sg), dma_len = sg_dma_len(sg);
++		     nsg && dma_len;
++		     nsg--, dma_addr += BIT(mr->log_size), dma_len -= BIT(mr->log_size))
++			mtt[j++] = cpu_to_be64(dma_addr);
++	}
+ }
+ 
+ static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr *mr)
+@@ -64,7 +61,6 @@ static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct
+ 		return -ENOMEM;
+ 
+ 	MLX5_SET(create_mkey_in, in, uid, mvdev->res.uid);
+-	fill_sg(mr, in);
+ 	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
+ 	MLX5_SET(mkc, mkc, lw, !!(mr->perm & VHOST_MAP_WO));
+ 	MLX5_SET(mkc, mkc, lr, !!(mr->perm & VHOST_MAP_RO));
+@@ -276,8 +272,8 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr
+ done:
+ 	mr->log_size = log_entity_size;
+ 	mr->nsg = nsg;
+-	err = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
+-	if (!err)
++	mr->nent = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
++	if (!mr->nent)
+ 		goto err_map;
+ 
+ 	err = create_direct_mr(mvdev, mr);
+-- 
+2.28.0
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl/2tXoACgkQeSpbgcuY
-8KZUSxAAubPex0Tsu6ZJS0bawc3qUjIrKIUGnh91CpBBC6bWfe9BjPNPvjYc8RTP
-A7sdi109T2qPWZie+jlvCUc7qU4Wkwxg+HjUvKhJj/09wzVjdJb/gMHQ48Yf7nJA
-oS3Zz/O/BfOaQ+CFgidV4YG476ns3d7mmkmCe4YrQd5PekZLdn8gM37ZCNlPYQJW
-BQoh9vTe0OJJKXfDffnojGs2urUim5ECeiG9HeF37LE0CpFOnOofgxkK8Q7fqCsC
-QVw/y2SsnlZBoxZXZfJUUK9TnrjRVVp8SLA58ngbSkZyviU0/sHnut94UUogw63s
-4JXVhdSkOyiWwVAFylRfjJ5FuICmVQRsyydaNY2KeZTHE2/oRE3Tq8polMSR11Tv
-kTrCFPvIdKLhhMzwM7buQmbYTfTmISMoWbKq6jPe1g2yVSl7EXjHF+2ixD6U3qTb
-cUu8eqy9v70pMH0ft0+KhXjjsofqzWuV5XpJ+cdbpuCc6MapU0TM3KkfGJpe04t4
-oiTwEOrpIrE3GmBiMKB7iQp6W0kEv9OD2JV6NgaEi1rJxruA38EXqc43fGSMnAHv
-yn0eeLgYRU3i/fDTHRxcwovc6JK9vEIGMGa0ZElOFz13yb+43AhiT+UaMV4gwxK8
-th98eK45/wir6YnXMsVNodlfswCtLxS5floUaOFLse5KmREOjuw=
-=mWKJ
------END PGP SIGNATURE-----
---=-=-=--
