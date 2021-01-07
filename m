@@ -2,108 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE5612ED4F3
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:03:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3AC82ED4F1
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:03:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728828AbhAGRC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 12:02:26 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:11978 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726650AbhAGRCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 12:02:25 -0500
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 107H1dHT125554;
-        Thu, 7 Jan 2021 12:01:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=g/07yt6F6iI0Q4WiX8eb4mDvryw79jBaT6FXa8eHMws=;
- b=gAjCbjlYdTTq0XaGaKimgU/Nz9+1MrvpWVpsx7F+pVxKonNHA/wWnfXCUHGACjssubXi
- awU0KfP85g9Wu65uhRbU6DItw/MgxHt4/lxS/xLGBsdHVmVaGlAS8Doiz2KSdxX1paMQ
- Zpf5Lx4tARAtIyv9yso3Fvdoh536gtO95oUZ8wz8hc0Uv15RFXFLHLRQpvp/9Y9GK6b+
- MD6kGhWh3j3a4FMfEQuCYZwAlOb26VjJKh6EbBZsu2lMBgjMuQ6LYHE2k/B1jitaK5GG
- 0aa+qaUM2JrcWw1mLMUBMnycujB4l/RWrqH8RzgDyNVnzgITSEP56+jtDEyB2hZJ1fGU Tw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 35x5dxa20r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jan 2021 12:01:40 -0500
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 107H1bOp125453;
-        Thu, 7 Jan 2021 12:01:40 -0500
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 35x5dxa1ve-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jan 2021 12:01:40 -0500
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 107GcNek024585;
-        Thu, 7 Jan 2021 17:01:22 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma05fra.de.ibm.com with ESMTP id 35tgf8amx7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Jan 2021 17:01:22 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 107H1KVQ22872364
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 7 Jan 2021 17:01:20 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6377F11C054;
-        Thu,  7 Jan 2021 17:01:20 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1F70C11C04C;
-        Thu,  7 Jan 2021 17:01:20 +0000 (GMT)
-Received: from [9.145.66.183] (unknown [9.145.66.183])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  7 Jan 2021 17:01:20 +0000 (GMT)
-Subject: Re: UBSAN: object-size-mismatch in wg_xmit
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Cc:     Kees Cook <keescook@google.com>, Netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <000000000000e13e2905b6e830bb@google.com>
- <CAHmME9qwbB7kbD=1sg_81=82vO07XMV7GyqBcCoC=zwM-v47HQ@mail.gmail.com>
- <CACT4Y+ac8oFk1Sink0a6VLUiCENTOXgzqmkuHgQLcS2HhJeq=g@mail.gmail.com>
- <CAHmME9q0HMz+nERjoT-TQ8_6bcAFUNVHDEeXQAennUrrifKESw@mail.gmail.com>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-Message-ID: <68452c93-de95-aaa6-3cac-d868a202ea6f@linux.ibm.com>
-Date:   Thu, 7 Jan 2021 18:01:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1728766AbhAGRCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 12:02:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726436AbhAGRCY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 12:02:24 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21706C0612F8;
+        Thu,  7 Jan 2021 09:01:44 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id b2so8460264edm.3;
+        Thu, 07 Jan 2021 09:01:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e6QzQXBlWfecJhgtXdVXCWBkESw5K/fN23w2JVJbfkQ=;
+        b=I/I8LHm/F9D2H9UNGPQ/ArnEaifDJkI5QyPBuyZo9G1t2BdinCsFbQBvRYaamRRMii
+         ayz7yIPZzgUgp0fOdcWtBC73Si8E4ky3c1dytTvzziyxJnIG0Vw2DRK0XRgN3mf9tVqf
+         6wc8L/QiQeHBeOeEB+wsQdIXGLrOkTHu6lFwXqpnol3WLckROsFaMc9jMDYFW32T1qiU
+         LD2OS0vs7HYIQCszVqhbnOHW35HR3fdAqcUoXXNU+X3pP0yfH4atVGje2cU++PSsQWY4
+         CdOA9+DzAJlN+j8rs/oEVQ4wezZjrNYsXTOpPVExhyqcMJLMlxd9wDZF10S4dUxf+KcB
+         FA5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e6QzQXBlWfecJhgtXdVXCWBkESw5K/fN23w2JVJbfkQ=;
+        b=aiC5EVv4hoSxLeX/sBtHeBajySio0IojIFcr3cOEuBOiLuDC5Lmpq8hrUydOwzPQe2
+         NY9T43i1wOcyc2i2CylkTj20sRSUcBFtTeEqkjBrBh+661KHpLvpCxEmvCr3s2L0xjZu
+         PHWtnOkDZxDQDZ49dc+a1bLUWjihgDDrjH+0lPb/26+L7SDd+mbJqjSC0PsrmyNzly8+
+         NUGmDNzcJjdq1HYu/LcEpGTAmEGNJPgOsRMlDHeUujnKbXdodgj3vMwfYEEKNXiBOQMU
+         4osijlgA46dkfQjYolMotMSeIjrlpZp5CAYxMzKIQZpjKYzzgYZBLDIaQ4Knktjs167k
+         KjWg==
+X-Gm-Message-State: AOAM533AkLgZifPk+J/0B5oOCVRWihe9T7Cf42Rnm7TM/iWWW4m5Ea2B
+        HZc9iWoFqu8u1d3x/WNIMvyM66Kw5lMFZrNRqAI=
+X-Google-Smtp-Source: ABdhPJwuAC5wMYKkyhGUW9GlV/rS6710r8LDpwxU8ycrOTK0Jkk98gHnOuZ2G3Tvv7ARvij9uNvc+yrTjpu5j3VfbH8=
+X-Received: by 2002:aa7:ce94:: with SMTP id y20mr2305433edv.361.1610038902892;
+ Thu, 07 Jan 2021 09:01:42 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAHmME9q0HMz+nERjoT-TQ8_6bcAFUNVHDEeXQAennUrrifKESw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-07_07:2021-01-07,2021-01-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
- mlxlogscore=999 spamscore=0 mlxscore=0 lowpriorityscore=0 bulkscore=0
- priorityscore=1501 adultscore=0 suspectscore=0 clxscore=1011
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101070098
+References: <20210107123916.189748-1-colin.king@canonical.com>
+In-Reply-To: <20210107123916.189748-1-colin.king@canonical.com>
+From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Date:   Thu, 7 Jan 2021 22:31:30 +0530
+Message-ID: <CA+sq2CcPRuQijfOFA74KrNF9E5tj-QqH_0nNC21fT=rqkuuCcw@mail.gmail.com>
+Subject: Re: [PATCH] octeontx2-af: fix memory leak of lmac and lmac->name
+To:     Colin King <colin.king@canonical.com>
+Cc:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nithya Mani <nmani@marvell.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.12.20 12:23, Jason A. Donenfeld wrote:
-> Hi Dmitry,
-> 
+On Thu, Jan 7, 2021 at 6:11 PM Colin King <colin.king@canonical.com> wrote:
+>
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> Currently the error return paths don't kfree lmac and lmac->name
+> leading to some memory leaks.  Fix this by adding two error return
+> paths that kfree these objects
+>
+> Addresses-Coverity: ("Resource leak")
+> Fixes: 1463f382f58d ("octeontx2-af: Add support for CGX link management")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
 
-...
+Thanks for the fix, looks good to me.
 
-> fall on the border of a mapping? Is UBSAN non-deterministic as an
-> optimization? Or is there actually some mysterious UaF happening with
-> my usage of skbs that I shouldn't overlook?
-> 
-
-One oddity is that wg_xmit() returns negative errnos, rather than a
-netdev_tx_t (ie. NETDEV_TX_OK or NETDEV_TX_BUSY).
-
-Any chance that the stack mis-interprets one of those custom errnos
-as NETDEV_TX_BUSY, and thus believes that it still owns the skb?
-
-> Jason
-> 
-
+Sunil.
