@@ -2,105 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E5212ED5CB
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:39:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEDB2ED5D2
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:41:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728319AbhAGRjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 12:39:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
+        id S1728761AbhAGRlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 12:41:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727058AbhAGRjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 12:39:46 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C611C0612F4
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 09:39:06 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id q25so8201933oij.10
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 09:39:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jLmM96kg2VBYgesrpJCh2pt16H8McmMCogSZFU4j/UM=;
-        b=erehM9vigMAUWAJdkwO/c81hE2j5J6kjKqdojBO8KQfL6msHmHA71ToV5h/XytKHRp
-         t4mktXY3C/x6HdakMDGgYkmQ3RZm5h6AeHXm/6QMDCd1y2VOxBhp4xyAweKDXHWjPtkW
-         xQopR4xRPHqKl+LIt/nYiv1Pe/wYY/RWxM7nRBmcFSaioUgUsETIqNHnVTkBRp7fu6iE
-         RF8QYm7swEKHFBwAsEjU6lYwvDuO9+g/yfHzDY0y3KY+Ej3Np6hj4OZ7Iri1sEa1HpVd
-         E1GPxHP8oQgWVONwutheRLKnMHUwEZZE+88JeJoNTEbFTBIBhsRiF3zOLWKnpgWnDZJ9
-         Caig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jLmM96kg2VBYgesrpJCh2pt16H8McmMCogSZFU4j/UM=;
-        b=ZKlrMnSizKm/x9yx9MJXGvnnD930mBNzP+HRZTK1v/Hvui6Z0T8IldFXkEFpZN78h+
-         26mBvgk2Xhla82BGmrGlk4vO1SHGi2meYmJAwWLOYfpteaoy8sayrTzlovUXXHrgVDZg
-         lWYajoqX7vO1+kPiePKmARA8E82QcN6J70EYHrvtQUcQZwTy6n6Xj1g/fBV/ADV+NI1e
-         FxtGq6a9Nq2IeIyt8kS3PJfHp8jX6Ij2l92/w1du7rUV1MCB4MfvDe15IArhizloM8xt
-         VwlE3o913yjcw4+zHjX0RPL+hAnZTJTz/6/Jc8Sd7gvDjGdS3J/1KQc6q2aWtarU+M6W
-         9XIg==
-X-Gm-Message-State: AOAM532/l28bGdCFhyJ6WmQ8cpijHio+pK0cgDzz7lhR0ydgYTPsLG2R
-        NxqcjEGOMiGyp+1Zv5ZnHIEz7R8MT/o=
-X-Google-Smtp-Source: ABdhPJzfeClHWwPcQpgV/e780ce+rQJUSreNvQL0zHx2SbZGeFyxvxNPRr2n4rA53xPlVbzQXdB5yg==
-X-Received: by 2002:aca:c5c8:: with SMTP id v191mr7035887oif.67.1610041145297;
-        Thu, 07 Jan 2021 09:39:05 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:800d:24b4:c97:e28d])
-        by smtp.googlemail.com with ESMTPSA id r8sm1253442oth.20.2021.01.07.09.39.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jan 2021 09:39:04 -0800 (PST)
-Subject: Re: [PATCH iproute2] tc: flower: fix json output with mpls lse
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Guillaume Nault <gnault@redhat.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-References: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
- <20210107164856.GC17363@linux.home>
- <20210107091352.610abd6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <31cfb1dc-1e93-e3ed-12f4-f8c44adfd535@gmail.com>
-Date:   Thu, 7 Jan 2021 10:39:03 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.0
+        with ESMTP id S1726650AbhAGRlW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 12:41:22 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B8EC0612F5;
+        Thu,  7 Jan 2021 09:40:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=9/FA1Vc65rJkX++HoTWkn04xPZplzcmSL7GCL5yHdp8=; b=DblXo6XkaSr0w42aUgYaBbLse
+        NslapEgxD+pCG4jV014h+QO88wEc4D1moBjCTS7Q0VGrhkVouVhb+d1fYNtp6Q5xtvdOfcnZJOkaG
+        oYybdBdvKYwP6hMrxv96T1ZExEkeaygBJtQWDLToF+ULiMlqEAEmi4tELy3b3KDes5D53GZFliYIa
+        wba2EHbF7CARTGr/OfkA9XMm4y9xc2kvK5wCvZarQYMyIvw+K0j2pON7lnCRDHbYAWrAH2LQsOuby
+        9Eqw1OzVb3Mj1AEsfZOU738xzFfrZRYsMzKYnTnws/dALIZxd4H6FPJ4/uqfZQW19+qp3IWFH46WS
+        tzwaNhWcQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45232)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kxZGa-000353-6L; Thu, 07 Jan 2021 17:40:08 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kxZGY-0001M8-Q3; Thu, 07 Jan 2021 17:40:06 +0000
+Date:   Thu, 7 Jan 2021 17:40:06 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Schreiber <tschreibe@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] net: sfp: add workaround for Realtek RTL8672 and
+ RTL9601C chips
+Message-ID: <20210107174006.GQ1551@shell.armlinux.org.uk>
+References: <20201230154755.14746-1-pali@kernel.org>
+ <20210106153749.6748-1-pali@kernel.org>
+ <20210106153749.6748-2-pali@kernel.org>
+ <X/dCm1fK9jcjs4XT@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20210107091352.610abd6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <X/dCm1fK9jcjs4XT@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/21 10:13 AM, Jakub Kicinski wrote:
-> On Thu, 7 Jan 2021 17:48:56 +0100 Guillaume Nault wrote:
->> On Fri, Dec 18, 2020 at 11:25:32PM +0100, Guillaume Nault wrote:
->>> The json output of the TCA_FLOWER_KEY_MPLS_OPTS attribute was invalid.
->>>
->>> Example:
->>>
->>>   $ tc filter add dev eth0 ingress protocol mpls_uc flower mpls \
->>>       lse depth 1 label 100                                     \
->>>       lse depth 2 label 200
->>>
->>>   $ tc -json filter show dev eth0 ingress
->>>     ...{"eth_type":"8847",
->>>         "  mpls":["    lse":["depth":1,"label":100],
->>>                   "    lse":["depth":2,"label":200]]}...  
->>
->> Is there any problem with this patch?
->> It's archived in patchwork, but still in state "new". Therefore I guess
->> it was dropped before being considered for review.
+On Thu, Jan 07, 2021 at 06:19:23PM +0100, Andrew Lunn wrote:
+> Did we loose the comment:
 > 
-> Erm, that's weird. I think Alexei mentioned that auto-archiving is
-> turned on in the new netdevbpf patchwork instance. My guess is it got
-> auto archived :S
+> /* Some modules (Nokia 3FE46541AA) lock up if byte 0x51 is read as a
+>  * single read. Switch back to reading 16 byte blocks ...
 > 
-> Here is the list of all patches that are Archived as New:
-> 
-> https://patchwork.kernel.org/project/netdevbpf/list/?state=1&archive=true
-> 
-> Should any of these have been reviewed?
-> 
+> That explains why 16 is used. Given how broken stuff is and the number
+> of workaround we need, we should try to document as much as we cam, so
+> we don't break stuff when adding more workarounds.
 
+It is _not_ why 16 is used at all.
 
-Interesting. I thought some patches had magically disappeared - and some
-of those are in that list.
+We used to read the whole lot in one go. However, some modules could
+not cope with a full read - also some Linux I2C drivers struggled with
+it.
+
+So, we reduced it down to 16 bytes. See commit 28e74a7cfd64 ("net: sfp:
+read eeprom in maximum 16 byte increments"). That had nothing to do
+with the 3FE46541AA, which came along later. It has been discovered
+that 3FE46541AA reacts badly to a single byte read to address 0x51 -
+it locks the I2C bus. Hence why we can't just go to single byte reads
+for every module.
+
+So, the comment needs to be kept to explain why we are unable to go
+to single byte reads for all modules.  The choice of 16 remains
+relatively arbitary.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
