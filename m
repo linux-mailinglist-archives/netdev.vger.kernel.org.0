@@ -2,113 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAD082EE83A
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 23:17:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F742EE86D
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 23:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727652AbhAGWQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 17:16:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725944AbhAGWQi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 17:16:38 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706BCC0612F4;
-        Thu,  7 Jan 2021 14:15:58 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id z21so6258599pgj.4;
-        Thu, 07 Jan 2021 14:15:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=muzyCqDxWf6iO5Bp1ag6MnvxdkXGbtsHtI5XImWpXvw=;
-        b=kuai81gEb6RnogRPCRRvdzDjh59GS/D4PwOhSkxxGEwhw12asKoM4tiKSAHTubMND3
-         tU44f660mytNDasF6gpUOiPNkvptm1yjHkcRkSaNQ4Jl93Te5tfTYRlKAJiq88sc4aHh
-         ncsjZUlkoigtI4/OWW8jKLRUUqIGI/ROJqrGBUwB+hfSZvyS21S3PgiFpxELa8enWc8a
-         EGma300/55mtMaqIf+AgTIDjGOpu1IsKgSgYriHWNxl2uqTOk4IgiflqKafGfr3RqzSL
-         mlfeDUIKOYvj0ajxGn+ae7/mYwbLW6VGLXJXYFi02DpB02xG8W2NILnC+zyM63x4TIyn
-         jHGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=muzyCqDxWf6iO5Bp1ag6MnvxdkXGbtsHtI5XImWpXvw=;
-        b=dwlRQs7xFMocbmFtRmiS9QH0UTYfKuqPNJ1Z8Ybruuy/Yy1bxGCteW0xcMkpdXhty2
-         HmMmxqD3nkymYAeyBfuqfxyXr9smIZAwLbqRM1oboQUhV4DUFHSb1jjB5kyHGsxTj29t
-         t6AxSuBCVumkAmfDmdb2JMv1WBi4G7USqJM2yS8LDKMxbeU51Msf8qDp+JcF9noM5MdN
-         5RaN7nVL6rpAX7rWigY9ggQNhAJ1MQzaSgb8EN43ZTtLLC2j/fPLeLW12TvQ2Szdkfhy
-         7oNDNRPdf8lgKQs+cfCIH6rOY1XxBomuW8MNdy4hG/myUnaiJQC4Amckr28hLYtGtKUf
-         rdCQ==
-X-Gm-Message-State: AOAM532eqE6/BArDe9Eh4tlsqypWG72YJBPpkGurvhxEJy+0xVgbBZAp
-        JBSQLh+qmOnutt1r3dnxq80=
-X-Google-Smtp-Source: ABdhPJyv4fVdhfAEAbZd2g2ElnVa0yf845XFFhuh0gmEbzniy9x6MGcVl64fF4DuI3gtmDmcYJ1fhQ==
-X-Received: by 2002:a63:5a01:: with SMTP id o1mr3896536pgb.407.1610057758004;
-        Thu, 07 Jan 2021 14:15:58 -0800 (PST)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id x23sm7282093pgk.14.2021.01.07.14.15.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 07 Jan 2021 14:15:57 -0800 (PST)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, kuba@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: pull-request: bpf 2021-01-07
-Date:   Thu,  7 Jan 2021 14:15:55 -0800
-Message-Id: <20210107221555.64959-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        id S1728331AbhAGWYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 17:24:41 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55902 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728287AbhAGWYl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 17:24:41 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kxdhG-00GlDY-HM; Thu, 07 Jan 2021 23:23:58 +0100
+Date:   Thu, 7 Jan 2021 23:23:58 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        johannes@sipsolutions.net, krishna.c.sudi@intel.com
+Subject: Re: [PATCH 17/18] net: iosm: readme file
+Message-ID: <X/eJ/rl4U6edWr3i@lunn.ch>
+References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
+ <20210107170523.26531-18-m.chetan.kumar@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210107170523.26531-18-m.chetan.kumar@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+> diff --git a/drivers/net/wwan/iosm/README b/drivers/net/wwan/iosm/README
 
-The following pull-request contains BPF updates for your *net* tree.
+Please convert this to rst, and put it somewhere under Documentation.
 
-We've added 4 non-merge commits during the last 10 day(s) which contain
-a total of 4 files changed, 14 insertions(+), 7 deletions(-).
+> +Multiplexed IP sessions (IPS)
+> +-----------------------------
+> +IOSM driver allows multiplexing of several IP sessions over the single network
+> +device of type wwan0. IOSM driver models such IP sessions as 802.1q VLAN
+> +subdevices of the master wwanY device, mapping MBIM IP session M to VLAN ID M
+> +for all values of M greater than 0.
+> +
+> +The userspace management application is responsible for adding new VLAN links
+> +prior to establishing MBIM IP sessions where the SessionId is greater than 0.
+> +These links can be added by using the normal VLAN kernel interfaces.
+> +
+> +For example, adding a link for a MBIM IP session with SessionId 5:
+> +
+> +  ip link add link wwan0 name wwan0.<name> type vlan id 5
 
-The main changes are:
+So, this is what all the Ethernet nonsense is all about. You have a
+session ID you need to somehow represent to user space. And you
+decided to use VLANs. But to use VLANs, you need an Ethernet
+header. So you added a bogus Ethernet header.
 
-1) Fix task_iter bug caused by the merge conflict resolution, from Yonghong.
+Is any of this VLAN stuff required by MBIM?
 
-2) Fix resolve_btfids for multiple type hierarchies, from Jiri.
+I suggest you throw away the pretence this is an Ethernet device. It
+is not.
 
-Please consider pulling these changes from:
+Linux allows you to dynamically create/destroy network
+interfaces. So you want to do something like
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+ip link add link wwan0 name wwan42 type mbim id 42
 
-Thanks a lot!
+Which will create a new mbim netdev interface using session id 42 on
+top of the device which provides wwan0. I don't actually like this
+last bit, but you somehow need to indicate on which MBIM transport you
+want to create the new session, since you could have multiple bits of
+hardware providing MBIM services.
 
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, John Fastabend, Martin KaFai Lau, Song Liu
-
-----------------------------------------------------------------
-
-The following changes since commit 4bfc4714849d005e6835bcffa3c29ebd6e5ee35d:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2020-12-28 15:26:11 -0800)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 6f02b540d7597f357bc6ee711346761045d4e108:
-
-  bpftool: Fix compilation failure for net.o with older glibc (2021-01-06 15:27:38 -0800)
-
-----------------------------------------------------------------
-Alan Maguire (1):
-      bpftool: Fix compilation failure for net.o with older glibc
-
-Jiang Wang (1):
-      selftests/bpf: Fix a compile error for BPF_F_BPRM_SECUREEXEC
-
-Jiri Olsa (1):
-      tools/resolve_btfids: Warn when having multiple IDs for single type
-
-Yonghong Song (1):
-      bpf: Fix a task_iter bug caused by a merge conflict resolution
-
- kernel/bpf/task_iter.c                        |  1 +
- tools/bpf/bpftool/net.c                       |  1 -
- tools/bpf/resolve_btfids/main.c               | 17 ++++++++++++-----
- tools/testing/selftests/bpf/progs/bprm_opts.c |  2 +-
- 4 files changed, 14 insertions(+), 7 deletions(-)
+	 Andrew
