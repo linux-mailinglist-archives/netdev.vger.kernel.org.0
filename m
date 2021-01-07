@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D65C2EE78D
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 22:18:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D3B2EE793
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 22:20:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727713AbhAGVSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 16:18:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35684 "EHLO
+        id S1727107AbhAGVUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 16:20:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727677AbhAGVSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 16:18:09 -0500
+        with ESMTP id S1726720AbhAGVUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 16:20:10 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E375C0612F6
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 13:17:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B843C0612F6
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 13:19:53 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kxcen-0001v0-MY; Thu, 07 Jan 2021 22:17:21 +0100
+        id 1kxch7-000295-4S; Thu, 07 Jan 2021 22:19:45 +0100
 Received: from [IPv6:2a03:f580:87bc:d400:9ff9:96a6:9da4:146f] (unknown [IPv6:2a03:f580:87bc:d400:9ff9:96a6:9da4:146f])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 08FC65BC288;
-        Thu,  7 Jan 2021 21:17:18 +0000 (UTC)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 04D335BC291;
+        Thu,  7 Jan 2021 21:19:43 +0000 (UTC)
+Subject: Re: [net-next 15/19] can: tcan4x5x: rework SPI access
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net,
         linux-can@vger.kernel.org, kernel@pengutronix.de,
@@ -34,7 +35,6 @@ Cc:     netdev@vger.kernel.org, davem@davemloft.net,
 References: <20210107094900.173046-1-mkl@pengutronix.de>
  <20210107094900.173046-16-mkl@pengutronix.de>
  <20210107110035.42a6bb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210107110656.7e49772b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -96,16 +96,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Subject: Re: [net-next 15/19] can: tcan4x5x: rework SPI access
-Message-ID: <c98003bf-e62a-ab6a-a526-1f3ed0bb1ab7@pengutronix.de>
-Date:   Thu, 7 Jan 2021 22:17:15 +0100
+Message-ID: <60cc440e-a292-0b59-16d7-79f4e25c13ee@pengutronix.de>
+Date:   Thu, 7 Jan 2021 22:19:40 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210107110656.7e49772b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210107110035.42a6bb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="e0cpz0DTTROmEggTpGzo8aR5OuGAnuBAc"
+ boundary="oNh7FW29sl7tEnqBEikJa7aOseAl9KrIR"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -115,63 +114,43 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---e0cpz0DTTROmEggTpGzo8aR5OuGAnuBAc
-Content-Type: multipart/mixed; boundary="znREEZ60WvgLhEdVS67Dw5Nx8ZTqz7H7u";
+--oNh7FW29sl7tEnqBEikJa7aOseAl9KrIR
+Content-Type: multipart/mixed; boundary="LEwlJu7TbTVIhG9BUVvXodhGxsTTnLNzH";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Jakub Kicinski <kuba@kernel.org>
 Cc: netdev@vger.kernel.org, davem@davemloft.net, linux-can@vger.kernel.org,
  kernel@pengutronix.de, Dan Murphy <dmurphy@ti.com>,
  Sean Nyekjaer <sean@geanix.com>
-Message-ID: <c98003bf-e62a-ab6a-a526-1f3ed0bb1ab7@pengutronix.de>
+Message-ID: <60cc440e-a292-0b59-16d7-79f4e25c13ee@pengutronix.de>
 Subject: Re: [net-next 15/19] can: tcan4x5x: rework SPI access
 References: <20210107094900.173046-1-mkl@pengutronix.de>
  <20210107094900.173046-16-mkl@pengutronix.de>
  <20210107110035.42a6bb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210107110656.7e49772b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210107110656.7e49772b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210107110035.42a6bb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 
---znREEZ60WvgLhEdVS67Dw5Nx8ZTqz7H7u
+--LEwlJu7TbTVIhG9BUVvXodhGxsTTnLNzH
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: en-GB
 Content-Transfer-Encoding: quoted-printable
 
-On 1/7/21 8:06 PM, Jakub Kicinski wrote:
-> On Thu, 7 Jan 2021 11:00:35 -0800 Jakub Kicinski wrote:
->> On Thu,  7 Jan 2021 10:48:56 +0100 Marc Kleine-Budde wrote:
->>> +struct __packed tcan4x5x_map_buf {
->>> +	struct tcan4x5x_buf_cmd cmd;
->>> +	u8 data[256 * sizeof(u32)];
->>> +} ____cacheline_aligned; =20
->>
->> Interesting attribute combo, I must say.
+On 1/7/21 8:00 PM, Jakub Kicinski wrote:
+> On Thu,  7 Jan 2021 10:48:56 +0100 Marc Kleine-Budde wrote:
+>> +struct __packed tcan4x5x_map_buf {
+>> +	struct tcan4x5x_buf_cmd cmd;
+>> +	u8 data[256 * sizeof(u32)];
+>> +} ____cacheline_aligned;
 >=20
-> Looking at the rest of the patch I don't really see a reason for
-> __packed.  Perhaps it can be dropped?
+> Interesting attribute combo, I must say.
 
-It's the stream of bytes send via SPI to the chip. Here are both structs =
-for
-reference:
+__packed as it's the byte stream send to the chip via SPI.
 
-> +struct __packed tcan4x5x_buf_cmd {=20
-> +	u8 cmd;=20
-> +	__be16 addr;=20
-> +	u8 len;=20
-> +};=20
+____cacheline_aligned, as it might be subject to DMA mapping in the SPI h=
+ost
+driver. An alternative would be to allocate these with separate kmalloc()=
+=2E
 
-This has to be packed, as I assume the compiler would add some space afte=
-r the
-"u8 cmd" to align the __be16 naturally.
-
-> +struct __packed tcan4x5x_map_buf {=20
-> +	struct tcan4x5x_buf_cmd cmd;=20
-> +	u8 data[256 * sizeof(u32)];=20
-> +} ____cacheline_aligned;=20
-
-Due to the packing of the struct tcan4x5x_buf_cmd it should have a length=
- of 4
-bytes. Without __packed, will the "u8 data" come directly after the cmd?
-
+regards,
 Marc
 
 --=20
@@ -181,23 +160,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---znREEZ60WvgLhEdVS67Dw5Nx8ZTqz7H7u--
+--LEwlJu7TbTVIhG9BUVvXodhGxsTTnLNzH--
 
---e0cpz0DTTROmEggTpGzo8aR5OuGAnuBAc
+--oNh7FW29sl7tEnqBEikJa7aOseAl9KrIR
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/3elsACgkQqclaivrt
-76na9Qf/eHksuJfYqzDVq4fGoiRcy7wfHjEupOaCEkYfxypYZr5oJZwalYIFO0w+
-Za5YE1DcuTR5Z9WclGKyNJMRs5ul2ULfwYrwiv8ojo+AtFOuhkelEX7WJn9oATyx
-c0QEGGG1KDA5y3IQsOw/ZRCKXPkL5EXKd6adkTEuku6zdOv+xBj80uS6QGKq9nHR
-yMPNUkJr0xSVbR1EXx+tENNTmBt9vzNZkc0ypioqIDsucIlXXbueuwMHTPQ+LpdL
-FYqkGLps6oAY/bi5kyGzyY0V3g8WAyeL2sid36vN9OK5TViOBJL/RRf2Odt5oOBd
-ZmavsZJr1rcOIlVj4YKZsUdzYrMgQA==
-=lk5o
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/3euwACgkQqclaivrt
+76kMnwf/T0YOmD63Mz3xJV/KfRXZ9FckbuBBtG4xReS3fN3evdrSRyB45DsQBLTo
+XTQ41gkctdLUbv17UUv8eECWlKP/TTpsKxz328wdeoPZCo3wGi3WRRrFr/HAnziq
+dQDWUqQEPMat+1sMKsP8DAIZn5YYxpKODJ0hjdivPekk1mF4QebvcRV5D/GkzVCm
+KIs2YXkN99z0mz0AOHN3t0BxOtXFh9hx6B+1bf94WRy32kJFO46bxf3N1FjFs9Dh
+gcWjixKqkrbPx2ZAZztOYMnY/s8ine7TqIluXvfKkzwEDbC0ZDGs48IeQsg1jjOE
+1T9ZIThoHHs85VH3uCPv8Zeq8VZFpQ==
+=P33L
 -----END PGP SIGNATURE-----
 
---e0cpz0DTTROmEggTpGzo8aR5OuGAnuBAc--
+--oNh7FW29sl7tEnqBEikJa7aOseAl9KrIR--
