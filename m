@@ -2,87 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D2F32EE9B6
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 00:26:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F3072EE9CA
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 00:35:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728693AbhAGXYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 18:24:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55652 "EHLO
+        id S1728736AbhAGXet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 18:34:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728053AbhAGXYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 18:24:54 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7758EC0612F5
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 15:24:14 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id 75so8413121ilv.13
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 15:24:14 -0800 (PST)
+        with ESMTP id S1727722AbhAGXes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 18:34:48 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618EAC0612F5
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 15:34:08 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id y13so513831ilm.12
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 15:34:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PiSijOtmq7Fn1TZJUAOjXBB0Hw0GXfQ+cgnoCKjq1LI=;
-        b=EVd2r52hGp36SqOuUDdBV4FO6Fjg+dtxluJlEI9Zyzcg39XWa7749O9yPYADNxcHor
-         vReQeO1oEzet73egsboWRoB+dpdMDxorigEjdLaE2sJkfW2HQ0G9Rh+9P5avdvHx/4ll
-         UZO396Jh9swzNV/gXziBifV0+Y3htqHNy68FT6JLjB8ZzXyJomib2I822VOlNIOYDSb8
-         g/f6DG3DzpOPGcRm9aauKU/UDEif8YMsPwKx4LaLkuZYG8OmUX8THewaLaLSUhn4TMwV
-         BWy796j4gTsgEHNsOQ6fafHfSPth7ujs+eCWmfd7QXWinjBbqvtionlULWWLNTYFQJs+
-         THsA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HiZ/f0eHV5aQFZa+Y8E8w0anBR8YlRAd0P5p11hd21Q=;
+        b=bi3iyF594n09MDCSVSCiyjO+ne3h666WZxMh8k5ozUoKAFfkzQSlJO+FVULBXEhnKQ
+         DWrLKTOF8SpB5jFeJRr1gJYpfh+wE4Azs8o3phz8oVAdLPK4Gvg5gf+olk6iEuygy2MQ
+         KPS4JWhZ/2doj1g3CJTmD7x8mBZcHw+0ifkGbe/wyrPWZLKPsgQsH/BmjrXC7JVaCSle
+         vIwey3oJzIBVDPDWZKxRpBrqjtfEgAAG7oIV1lWSd7s9Q/TeNnurLrIDUqRfFTXLlMRK
+         8k/qGboO8sFuWJUfst1Vhxt2ZZQWcbgILUjaBWlXyo8a38IRRaVFBxr56dGmyr2LDdVj
+         XqVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PiSijOtmq7Fn1TZJUAOjXBB0Hw0GXfQ+cgnoCKjq1LI=;
-        b=Mb8k4yh6uP9Xor/MLyPBen4a9Zxj06lIcOHA9AKzEnC2cQAt8Nss6ND2MX15FaT+Wk
-         ihYNf9samHc0q4mzKmfoHhX4n8EkcXJLwARGhtk63R1wT6hSDKgb8WQmWtlBhx1UjYBR
-         t9xsnm25CBPXviqVZtYBf57bLIAqFMSO9T9j4sD3nn+BYtIYAGiIClcJdiKzGaH+2g++
-         Oz3y6p2em2H0uXdudWd+DRwC1xtzYtk9CIQF5k2AJL3JTa24jHy82fi49X4TLG6qfgds
-         mqh9W3mRyHhzKKurH8AYzszgODPXS88GkzpqhGmCHhthjEPNd/75ZI9tlBRPSVNDj9TI
-         JAhg==
-X-Gm-Message-State: AOAM5338UoGaa3bnIS81MwnE6/FhrLGHkp4aSP63uvm+W8kTJpTuV5Ip
-        GsPPEzPVF+YCL3QByi1P4pASXlEdVqZa0g9mqDs=
-X-Google-Smtp-Source: ABdhPJyk1hxRvG/gEbmayDsa/ARYwqMTbX1TFS0pUVcmEauoIlOZScofKAK9nR7u6MZ5chw5qA0xtOwv5W3Z3NElYM0=
-X-Received: by 2002:a05:6e02:154c:: with SMTP id j12mr1213101ilu.33.1610061853870;
- Thu, 07 Jan 2021 15:24:13 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HiZ/f0eHV5aQFZa+Y8E8w0anBR8YlRAd0P5p11hd21Q=;
+        b=EF5lgMgnWVvRXG/p0QtsBlDUG6Q8rzzpYxROs/1gFvMU7fc3G1bgZZqqUqQbuI7C6O
+         /yrwWZh0SzQC7eZR8m9l8ZCgoYNINOummgb/fZRdsx3B9yHWNNqFXWsLIjGbEqFrqxv7
+         4MxJlm5+SYMRggoe0mL1uh64jkYUQw132CGGbNKlRJJ951g1zD6WTNKq98soLdwwq28L
+         cM9W+RISQk4Q0Tjiey48kTFXlL2pCC9873NfOTt/kfsb7MrNkoLKUT7kT5l8THRryqsZ
+         UBnpHR/OtfLeluL8PE45Raink4uLADRwC+bT9HpJwYlqyA52P0r2N+troZT/vJGpDf7a
+         +mmA==
+X-Gm-Message-State: AOAM530aC9oYefAjLzWxZ8wpNhrrvhoEgauSE6is8z3RhpwHf91mxlgP
+        M4PnfZ+MPfuy1jukCrpC3sY+UQ==
+X-Google-Smtp-Source: ABdhPJxn7aD4n6NGnZR2YanSnANfePYBUaScug0tpdv9ckw4F2oMe0QIzJmRZiToQH06QxVoMbaKow==
+X-Received: by 2002:a92:6403:: with SMTP id y3mr1248404ilb.72.1610062447746;
+        Thu, 07 Jan 2021 15:34:07 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id o195sm5648521ila.38.2021.01.07.15.34.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jan 2021 15:34:07 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        agross@kernel.org, ohad@wizery.com
+Cc:     evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] net: ipa: support COMPILE_TEST
+Date:   Thu,  7 Jan 2021 17:34:00 -0600
+Message-Id: <20210107233404.17030-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20210107051434.12395-1-baptiste.lepers@gmail.com> <773322.1610017548@warthog.procyon.org.uk>
-In-Reply-To: <773322.1610017548@warthog.procyon.org.uk>
-From:   Baptiste Lepers <baptiste.lepers@gmail.com>
-Date:   Fri, 8 Jan 2021 10:23:41 +1100
-Message-ID: <CABdVr8TTtj+sK8EuhNc6FS+mthmx5jZyDAnqh9AMa68=rEywoQ@mail.gmail.com>
-Subject: Re: [PATCH] rxrpc: Call state should be read with READ_ONCE() under
- some circumstances
-To:     David Howells <dhowells@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-afs@lists.infradead.org,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yes, that's fine with me. Thanks for the clarification of the commit message.
-(Sorry for the double send, I forgot to enable plain text on my
-previous answer.)
+This series adds the IPA driver as a possible target when
+the COMPILE_TEST configuration is enabled.  Two small changes to
+dependent subsystems needed to be made for this to work.
 
-Baptiste.
+Version 2 of this series adds one more patch, which adds the
+declation of struct page to "gsi_trans.h".  The Intel kernel test
+robot reported that this was a problem for the alpha build.
 
-On Thu, Jan 7, 2021 at 10:05 PM David Howells <dhowells@redhat.com> wrote:
->
-> Baptiste Lepers <baptiste.lepers@gmail.com> wrote:
->
-> > The call state may be changed at any time by the data-ready routine in
-> > response to received packets, so if the call state is to be read and acted
-> > upon several times in a function, READ_ONCE() must be used unless the call
-> > state lock is held.
->
-> I'm going to add:
->
->     As it happens, we used READ_ONCE() to read the state a few lines above the
->     unmarked read in rxrpc_input_data(), so use that value rather than
->     re-reading it.
->
-> to the commit message, if that's okay by you.
->
-> David
->
+David/Jakub, please take all four of these patches through the
+net-next tree if you find them acceptable.
+
+Thanks.
+
+					-Alex
+
+Alex Elder (4):
+  remoteproc: qcom: expose types for COMPILE_TEST
+  soc: qcom: mdt_loader: define stubs for COMPILE_TEST
+  net: ipa: declare the page pointer type in "gsi_trans.h"
+  net: ipa: support COMPILE_TEST
+
+ drivers/net/ipa/Kconfig               | 10 +++++---
+ drivers/net/ipa/gsi_trans.h           |  1 +
+ include/linux/remoteproc/qcom_rproc.h |  4 +--
+ include/linux/soc/qcom/mdt_loader.h   | 35 +++++++++++++++++++++++++++
+ 4 files changed, 44 insertions(+), 6 deletions(-)
+
+-- 
+2.20.1
+
