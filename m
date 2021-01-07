@@ -2,184 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD7812ED03B
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 13:52:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D192ED045
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 13:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbhAGMum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 07:50:42 -0500
-Received: from www62.your-server.de ([213.133.104.62]:53320 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727327AbhAGMum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 07:50:42 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kxUjX-00039w-Ce; Thu, 07 Jan 2021 13:49:43 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        id S1728114AbhAGM5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 07:57:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42042 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727850AbhAGM5V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 07:57:21 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75B8C0612FB
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 04:56:22 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kxUjX-000SrG-1I; Thu, 07 Jan 2021 13:49:43 +0100
-Subject: Re: [PATCH net v2] net: fix use-after-free when UDP GRO with shared
- fraglist
-To:     Dongseok Yi <dseok.yi@samsung.com>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        'Willem de Bruijn' <willemb@google.com>
-Cc:     'Jakub Kicinski' <kuba@kernel.org>,
-        'Miaohe Lin' <linmiaohe@huawei.com>,
-        'Paolo Abeni' <pabeni@redhat.com>,
-        'Florian Westphal' <fw@strlen.de>,
-        'Al Viro' <viro@zeniv.linux.org.uk>,
-        'Guillaume Nault' <gnault@redhat.com>,
-        'Yunsheng Lin' <linyunsheng@huawei.com>,
-        'Steffen Klassert' <steffen.klassert@secunet.com>,
-        'Yadu Kishore' <kyk.segfault@gmail.com>,
-        'Marco Elver' <elver@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, namkyu78.kim@samsung.com
-References: <1609750005-115609-1-git-send-email-dseok.yi@samsung.com>
- <CGME20210107005028epcas2p35dfa745fd92e31400024874f54243556@epcas2p3.samsung.com>
- <1609979953-181868-1-git-send-email-dseok.yi@samsung.com>
- <83a2b288-c0b2-ed98-9479-61e1cbe25519@iogearbox.net>
- <028b01d6e4e9$ddd5fd70$9981f850$@samsung.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c051bc98-6af2-f6ec-76d1-7feaa9da2436@iogearbox.net>
-Date:   Thu, 7 Jan 2021 13:49:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        (envelope-from <ore@pengutronix.de>)
+        id 1kxUpt-0001uy-A0; Thu, 07 Jan 2021 13:56:17 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kxUpr-0004zT-0E; Thu, 07 Jan 2021 13:56:15 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: [PATCH v7 net-next 0/2] net: dsa: add stats64 support 
+Date:   Thu,  7 Jan 2021 13:56:11 +0100
+Message-Id: <20210107125613.19046-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-In-Reply-To: <028b01d6e4e9$ddd5fd70$9981f850$@samsung.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26041/Wed Jan  6 13:36:32 2021)
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/21 12:40 PM, Dongseok Yi wrote:
-> On 2021-01-07 20:05, Daniel Borkmann wrote:
->> On 1/7/21 1:39 AM, Dongseok Yi wrote:
->>> skbs in fraglist could be shared by a BPF filter loaded at TC. It
->>> triggers skb_ensure_writable -> pskb_expand_head ->
->>> skb_clone_fraglist -> skb_get on each skb in the fraglist.
->>>
->>> While tcpdump, sk_receive_queue of PF_PACKET has the original fraglist.
->>> But the same fraglist is queued to PF_INET (or PF_INET6) as the fraglist
->>> chain made by skb_segment_list.
->>>
->>> If the new skb (not fraglist) is queued to one of the sk_receive_queue,
->>> multiple ptypes can see this. The skb could be released by ptypes and
->>> it causes use-after-free.
->>>
->>> [ 4443.426215] ------------[ cut here ]------------
->>> [ 4443.426222] refcount_t: underflow; use-after-free.
->>> [ 4443.426291] WARNING: CPU: 7 PID: 28161 at lib/refcount.c:190
->>> refcount_dec_and_test_checked+0xa4/0xc8
->>> [ 4443.426726] pstate: 60400005 (nZCv daif +PAN -UAO)
->>> [ 4443.426732] pc : refcount_dec_and_test_checked+0xa4/0xc8
->>> [ 4443.426737] lr : refcount_dec_and_test_checked+0xa0/0xc8
->>> [ 4443.426808] Call trace:
->>> [ 4443.426813]  refcount_dec_and_test_checked+0xa4/0xc8
->>> [ 4443.426823]  skb_release_data+0x144/0x264
->>> [ 4443.426828]  kfree_skb+0x58/0xc4
->>> [ 4443.426832]  skb_queue_purge+0x64/0x9c
->>> [ 4443.426844]  packet_set_ring+0x5f0/0x820
->>> [ 4443.426849]  packet_setsockopt+0x5a4/0xcd0
->>> [ 4443.426853]  __sys_setsockopt+0x188/0x278
->>> [ 4443.426858]  __arm64_sys_setsockopt+0x28/0x38
->>> [ 4443.426869]  el0_svc_common+0xf0/0x1d0
->>> [ 4443.426873]  el0_svc_handler+0x74/0x98
->>> [ 4443.426880]  el0_svc+0x8/0xc
->>>
->>> Fixes: 3a1296a38d0c (net: Support GRO/GSO fraglist chaining.)
->>> Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
->>> Acked-by: Willem de Bruijn <willemb@google.com>
->>> ---
->>>    net/core/skbuff.c | 20 +++++++++++++++++++-
->>>    1 file changed, 19 insertions(+), 1 deletion(-)
->>>
->>> v2: Expand the commit message to clarify a BPF filter loaded
->>>
->>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>> index f62cae3..1dcbda8 100644
->>> --- a/net/core/skbuff.c
->>> +++ b/net/core/skbuff.c
->>> @@ -3655,7 +3655,8 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->>>    	unsigned int delta_truesize = 0;
->>>    	unsigned int delta_len = 0;
->>>    	struct sk_buff *tail = NULL;
->>> -	struct sk_buff *nskb;
->>> +	struct sk_buff *nskb, *tmp;
->>> +	int err;
->>>
->>>    	skb_push(skb, -skb_network_offset(skb) + offset);
->>>
->>> @@ -3665,11 +3666,28 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->>>    		nskb = list_skb;
->>>    		list_skb = list_skb->next;
->>>
->>> +		err = 0;
->>> +		if (skb_shared(nskb)) {
->>> +			tmp = skb_clone(nskb, GFP_ATOMIC);
->>> +			if (tmp) {
->>> +				kfree_skb(nskb);
->>
->> Should use consume_skb() to not trigger skb:kfree_skb tracepoint when looking
->> for drops in the stack.
-> 
-> I will use to consume_skb() on the next version.
-> 
->>> +				nskb = tmp;
->>> +				err = skb_unclone(nskb, GFP_ATOMIC);
->>
->> Could you elaborate why you also need to unclone? This looks odd here. tc layer
->> (independent of BPF) from ingress & egress side generally assumes unshared skb,
->> so above clone + dropping ref of nskb looks okay to make the main skb struct private
->> for mangling attributes (e.g. mark) & should suffice. What is the exact purpose of
->> the additional skb_unclone() in this context?
-> 
-> Willem de Bruijn said:
-> udp_rcv_segment later converts the udp-gro-list skb to a list of
-> regular packets to pass these one-by-one to udp_queue_rcv_one_skb.
-> Now all the frags are fully fledged packets, with headers pushed
-> before the payload.
+changes v7:
+- move raw.filtered from rx_errors to rx_dropped counter 
 
-Yes.
+changes v6:
+- move stats64 callback to ethtool section
+- ar9331: diff. fixes
+- ar9331: move stats calculation to the worker
+- ar9331: extend rx/tx error counters
+- use spin lock instead of u64_stats*
 
-> PF_PACKET handles untouched fraglist. To modify the payload only
-> for udp_rcv_segment, skb_unclone is necessary.
+changes v5:
+- read all stats in one regmap_bulk_read() request
+- protect stats with u64_stats* helpers.
 
-I don't parse this last sentence here, please elaborate in more detail on why
-it is necessary.
+changes v4:
+- do no read MIBs withing stats64 call
+- change polling frequency to 0.3Hz
 
-For example, if tc layer would modify mark on the skb, then __copy_skb_header()
-in skb_segment_list() will propagate it. If tc layer would modify payload, the
-skb_ensure_writable() will take care of that internally and if needed pull in
-parts from fraglist into linear section to make it private. The purpose of the
-skb_clone() above iff shared is to make the struct itself private (to safely
-modify its struct members). What am I missing?
+changes v3:
+- fix wrong multiplication
+- cancel port workers on remove
 
->>> +			} else {
->>> +				err = -ENOMEM;
->>> +			}
->>> +		}
->>> +
->>>    		if (!tail)
->>>    			skb->next = nskb;
->>>    		else
->>>    			tail->next = nskb;
->>>
->>> +		if (unlikely(err)) {
->>> +			nskb->next = list_skb;
->>> +			goto err_linearize;
->>> +		}
->>> +
->>>    		tail = nskb;
->>>
->>>    		delta_len += nskb->len;
->>>
-> 
-> 
+changes v2:
+- use stats64 instead of get_ethtool_stats
+- add worked to poll for the stats
+
+Oleksij Rempel (2):
+  net: dsa: add optional stats64 support
+  net: dsa: qca: ar9331: export stats64
+
+ drivers/net/dsa/qca/ar9331.c | 163 ++++++++++++++++++++++++++++++++++-
+ include/net/dsa.h            |   4 +-
+ net/dsa/slave.c              |  14 ++-
+ 3 files changed, 178 insertions(+), 3 deletions(-)
+
+-- 
+2.30.0
 
