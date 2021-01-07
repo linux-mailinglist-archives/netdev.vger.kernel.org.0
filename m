@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF4182EE9DA
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4002EE9D8
 	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 00:38:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729353AbhAGXfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 18:35:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
+        id S1728950AbhAGXfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 18:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729071AbhAGXfo (ORCPT
+        with ESMTP id S1729352AbhAGXfo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 18:35:44 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF00C0612A1
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 15:34:12 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id z5so7886734iob.11
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 15:34:12 -0800 (PST)
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C679C0612A5
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 15:34:13 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id q5so8443940ilc.10
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 15:34:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PXvh8jYOYWtdC8QC3OBzUsPQ0KcpblQhbm1OQDC0Ass=;
-        b=hLK246czR6y41dWnJ6Ykv8dKD3cB3MKIt1vxoKGRLQ/bwq8kBn6gf4SpnQu+kt7cMS
-         GiWFB68A7v+bYEY03QRvwTctkQRPf8OgL2pUkcFhWJ5aYG0ZJfVAvmPwIy/yf4uyOqLz
-         S3Jo/Usapg5IfpOar/YJFys0OfIDH4pnHtm+7215amwMkvhwPVL8+NVAQyChpeF5bNkz
-         0nFyavqBsnytWpnH3OtL2NqLji1SZ0d5tT/RIUOAcUYrxxY4zygh7Db4KwsKMGzGaU0a
-         2lhe/nX/rePRZ7E42VA+Zlt/AyCah2l8rudzPBmTdaSl41ZZEQvg2E1hirPbd1iEC1iT
-         JrJg==
+        bh=Jp4jA5VOpxCAdanHFN3bi6TajwKIp0Iz6erEpMOg0cE=;
+        b=G7cxNq+GNEp76ltapeUdfzfbwkmXQwvIBuF7CJ5zql10JvmpHwE9AA9/xxGXRqAWi3
+         9QkFg+MiWsOG/IoQqpkKsSn+Kfb+dyEFbpOuqV1MmnwoC1U2cdiLzZftDmx6e11ienxK
+         vbJkvQ4qhHeEGHfEfXxWmahSmAVXPTcbw1cDHSkt4jrEo8jiht8U5JaBcgVQNEAUCWs7
+         f0+NwVlTdxO8uEfRDe5zRtVbY30d72Tz37ebFxkZvpKejibIrpKrwvsYkNRoD0fRRi2r
+         EsLygg1b6i+tD1nNQ85Nw7yP9ssMOqIgNdg/cJ6xYa6T6ZrML2qsCdouizqpwsRMOLN5
+         xhbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PXvh8jYOYWtdC8QC3OBzUsPQ0KcpblQhbm1OQDC0Ass=;
-        b=CH/ZbEOPUhHFmfHo7ZELwjdBQsuznebldikSKx3TGgQhEZRKaE7xIf5S/1W4qb7GBQ
-         U0UzEFoAN74iWiLpmy2+ugNhZ+L6N0xqs21/Ls1gz5KVHZTgvl1aJEvhcA4X8n7KyD3D
-         g/2XEKmWJL/V0h6fm7VuU9ygyQFep/CULkuJcmI6CtRYXuCvmhuylLHsJMDZJlh0g9zI
-         VPas3uqlOlo8TPFUNdGJIaV4G8zv8VxvowQb+hYX7TYJ8ldJqOg48ftrcpVbMqddd3a2
-         yEfc4YYCpsOZ0LMIgBFa1R41muGphJ5NO7YldH9hIwLVw7bnQ4lv9yGymv0hQ7BINqUK
-         ++tQ==
-X-Gm-Message-State: AOAM5314fq9Lo4766VdqKwCDqyS1ZnXuo88OAwDMo/OXBlsjfoWpg8G6
-        Z7QFnzEPFZckEJ3XUl0N9ipwXg==
-X-Google-Smtp-Source: ABdhPJxJSgiPtz+sh9VkfGJzoQQQOw3sDE8aSzL2A8Ep/tM98HlIWU98VvYmIVawQg32aW2ffIfStg==
-X-Received: by 2002:a6b:6f09:: with SMTP id k9mr3230986ioc.30.1610062451444;
-        Thu, 07 Jan 2021 15:34:11 -0800 (PST)
+        bh=Jp4jA5VOpxCAdanHFN3bi6TajwKIp0Iz6erEpMOg0cE=;
+        b=k0ziVUChEflkhdPfiHD4nzg8iDkWpKFpxnLxgnQ4Z7chQTbH7IhViUG03Zxb+LGfAv
+         FymbuXlWkTMgQvk2YqJL+sORaCxTT+bncPgzRW+uXASxQqDtRG8JX0/bIHzd+jmLmVRt
+         fMRgncsU80ZeAuCbSuUFaSzkVd3Pt4JRD6oq2AtShmhqecogdHPtuQiHR4USOsnmDv8+
+         r8DrNFtDXP4saLb9Pa3JRQx3T8N2FdYW82UXQz3p3o+DxU4z8mEuH24T97pmGxEABVHm
+         7IZC9KfeDAs+Rr5jd8UY2rEc4Q0IvYZSiHxQNJ3LE0UsmTyTq3vSAsontys2siWUOOhV
+         f6dw==
+X-Gm-Message-State: AOAM530+t6NUuVDl6sFeGQuE9mic+1F65FlGB1XfAT8VGjC1I67AzErf
+        BSIqDKjwQn4jM/t7AFUUog5Ziw==
+X-Google-Smtp-Source: ABdhPJwG3GNNIK3srbianIUC1W25DLdDH9iWzkTwJGbge+Xv/NoW4qdFKPzz0woU+/1kXEkxBu3FlQ==
+X-Received: by 2002:a92:9e1d:: with SMTP id q29mr1192638ili.289.1610062452573;
+        Thu, 07 Jan 2021 15:34:12 -0800 (PST)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id o195sm5648521ila.38.2021.01.07.15.34.10
+        by smtp.gmail.com with ESMTPSA id o195sm5648521ila.38.2021.01.07.15.34.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 15:34:10 -0800 (PST)
+        Thu, 07 Jan 2021 15:34:12 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, agross@kernel.org, ohad@wizery.com,
         evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, lkp@intel.com, netdev@vger.kernel.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/4] net: ipa: declare the page pointer type in "gsi_trans.h"
-Date:   Thu,  7 Jan 2021 17:34:03 -0600
-Message-Id: <20210107233404.17030-4-elder@linaro.org>
+Subject: [PATCH net-next 4/4] net: ipa: support COMPILE_TEST
+Date:   Thu,  7 Jan 2021 17:34:04 -0600
+Message-Id: <20210107233404.17030-5-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210107233404.17030-1-elder@linaro.org>
 References: <20210107233404.17030-1-elder@linaro.org>
@@ -66,32 +66,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The second argument to gsi_trans_page_add() is a page pointer.
-That declaration is found in header files used by "gsi_trans.h" for
-(at least) arm64 and x86 builds, but apparently not for alpha
-builds.
+Arrange for the IPA driver to be built when COMPILE_TEST is enabled.
 
-Fix this by adding a declaration of struct page to the top of
-"gsi_trans.h".
+Update the help text to reflect that we support two Qualcomm SoCs.
 
-Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi_trans.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ipa/Kconfig | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ipa/gsi_trans.h b/drivers/net/ipa/gsi_trans.h
-index 4d4606b5fa951..3a4ab8a94d827 100644
---- a/drivers/net/ipa/gsi_trans.h
-+++ b/drivers/net/ipa/gsi_trans.h
-@@ -13,6 +13,7 @@
+diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
+index 9f0d2a93379c5..10a0e041ee775 100644
+--- a/drivers/net/ipa/Kconfig
++++ b/drivers/net/ipa/Kconfig
+@@ -1,9 +1,10 @@
+ config QCOM_IPA
+ 	tristate "Qualcomm IPA support"
+-	depends on ARCH_QCOM && 64BIT && NET
+-	depends on QCOM_Q6V5_MSS
++	depends on 64BIT && NET
++	depends on ARCH_QCOM || COMPILE_TEST
++	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
++	select QCOM_MDT_LOADER if ARCH_QCOM
+ 	select QCOM_QMI_HELPERS
+-	select QCOM_MDT_LOADER
+ 	help
+ 	  Choose Y or M here to include support for the Qualcomm
+ 	  IP Accelerator (IPA), a hardware block present in some
+@@ -11,7 +12,8 @@ config QCOM_IPA
+ 	  that is capable of generic hardware handling of IP packets,
+ 	  including routing, filtering, and NAT.  Currently the IPA
+ 	  driver supports only basic transport of network traffic
+-	  between the AP and modem, on the Qualcomm SDM845 SoC.
++	  between the AP and modem, on the Qualcomm SDM845 and SC7180
++	  SoCs.
  
- #include "ipa_cmd.h"
- 
-+struct page;
- struct scatterlist;
- struct device;
- struct sk_buff;
+ 	  Note that if selected, the selection type must match that
+ 	  of QCOM_Q6V5_COMMON (Y or M).
 -- 
 2.20.1
 
