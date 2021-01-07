@@ -2,148 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DAD22ECAE0
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 08:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F1F2ECAE6
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 08:21:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbhAGHTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 02:19:32 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:4082 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726013AbhAGHTc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 02:19:32 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ff6b5db0002>; Wed, 06 Jan 2021 23:18:51 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Thu, 7 Jan 2021 07:18:49 +0000
-Date:   Thu, 7 Jan 2021 09:18:45 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <lulu@redhat.com>, <elic@nvidia.com>
-Subject: [PATCH v1] vdpa/mlx5: Fix memory key MTT population
-Message-ID: <20210107071845.GA224876@mtl-vdi-166.wap.labs.mlnx>
+        id S1726906AbhAGHVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 02:21:13 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:41892 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725763AbhAGHVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 02:21:12 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1610004030;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vNRhTOy8vmR7v1GX8zAuyJROMeXWSYY/BOB1XonfImQ=;
+        b=Qt6skmY8WjX0mXwWlGbEs489joXmaZQnNIf1W47KGMJq1WQxzcaq67mtmnldxkqIWjHyjZ
+        IeFu1lOyv+NtwjDOlQTRbB13D1Us2KjuhFWF5VlNwo5GjdAlcWzjZP9zRTAnem/aSqrwD6
+        sH7W9Jyb3iz28QGnG0LmzSjxB1ZoZSb3O48sFAg2ucfYIu7zfE1Hw/IBivg9piktO+oIHB
+        Gq7CG/c4fdHiNCHOW9h/7YyBz/UWW53XpwZhkJCn6fDXLrpV8xcIbwU2P+4GvYjClfgN8Y
+        n1wZpEg2ojnNGdasdBJbnIkUGt0vd5pbiOrORaLEgegBnIW7bhRZ3CgpemlOsw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1610004030;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vNRhTOy8vmR7v1GX8zAuyJROMeXWSYY/BOB1XonfImQ=;
+        b=sf7TSXnRR1xRogjhbhWbPFszIec1AdWCrJ9ND0FFVu+9lgnOEIRLyJ7L4jfozOhNcjSYbc
+        BSN7vP2X7VHvxDDg==
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] net: dsa: fix led_classdev build errors
+In-Reply-To: <20210106021815.31796-1-rdunlap@infradead.org>
+References: <20210106021815.31796-1-rdunlap@infradead.org>
+Date:   Thu, 07 Jan 2021 08:20:29 +0100
+Message-ID: <87eeixw6v6.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1610003931; bh=NcydAXraYOykiJbtHv9bmDl70gtSvpqSHEMl3kNpZO8=;
-        h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-         Content-Disposition:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=EFXLbCIvQe13kA7AHEjQ9n0tm19Rd4J4Rb75BI47Vy4roYv1K7pAfpmoFhuhsLqQJ
-         uCuqETEMA169PIo8YwAIZ1kpcnhSzWdueW4b1oH/2D6W11JZqcCjh6Og8Ijz5iy1Pp
-         yQ8esk5Vv0x+VSz+E/GR6eRNPamLt24yvobdKNpwUpnKHWGrov8HMpb0VmbJ980aH1
-         dcgQyfQLdUr5zBk46PMix8m1U3/wtQ0eC4Pi3lG9xUwdGA5fTcAAHFlyXfPdx+qLXZ
-         RZ3izX28oPfb0ax2Yt7mNxdcetxedVtYUcBeO1E64W5+eTxxHXxNYz4i1M2H/NLgmW
-         qbRPcV5/vEKOQ==
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-map_direct_mr() assumed that the number of scatter/gather entries
-returned by dma_map_sg_attrs() was equal to the number of segments in
-the sgl list. This led to wrong population of the mkey object. Fix this
-by properly referring to the returned value.
+--=-=-=
+Content-Type: text/plain
 
-The hardware expects each MTT entry to contain the DMA address of a
-contiguous block of memory of size (1 << mr->log_size) bytes.
-dma_map_sg_attrs() can coalesce several sg entries into a single
-scatter/gather entry of contiguous DMA range so we need to scan the list
-and refer to the size of each s/g entry.
+On Tue Jan 05 2021, Randy Dunlap wrote:
+> Fix build errors when LEDS_CLASS=m and NET_DSA_HIRSCHMANN_HELLCREEK=y.
+> This limits the latter to =m when LEDS_CLASS=m.
+>
+> microblaze-linux-ld: drivers/net/dsa/hirschmann/hellcreek_ptp.o: in function `hellcreek_ptp_setup':
+> (.text+0xf80): undefined reference to `led_classdev_register_ext'
+> microblaze-linux-ld: (.text+0xf94): undefined reference to `led_classdev_register_ext'
+> microblaze-linux-ld: drivers/net/dsa/hirschmann/hellcreek_ptp.o: in function `hellcreek_ptp_free':
+> (.text+0x1018): undefined reference to `led_classdev_unregister'
+> microblaze-linux-ld: (.text+0x1024): undefined reference to `led_classdev_unregister'
+>
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Link: lore.kernel.org/r/202101060655.iUvMJqS2-lkp@intel.com
+> Cc: Kurt Kanzenbach <kurt@linutronix.de>
+> Cc: netdev@vger.kernel.org
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
 
-In addition, get rid of fill_sg() which effect is overwritten by
-populate_mtts().
+Fixes: 7d9ee2e8ff15 ("net: dsa: hellcreek: Add PTP status LEDs")
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
-V0->V1:
-1. Fix typos
-2. Improve changelog 
+Thanks,
+Kurt
 
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
- drivers/vdpa/mlx5/core/mlx5_vdpa.h |  1 +
- drivers/vdpa/mlx5/core/mr.c        | 28 ++++++++++++----------------
- 2 files changed, 13 insertions(+), 16 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-index 5c92a576edae..08f742fd2409 100644
---- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-+++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-@@ -15,6 +15,7 @@ struct mlx5_vdpa_direct_mr {
- 	struct sg_table sg_head;
- 	int log_size;
- 	int nsg;
-+	int nent;
- 	struct list_head list;
- 	u64 offset;
- };
-diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
-index 4b6195666c58..d300f799efcd 100644
---- a/drivers/vdpa/mlx5/core/mr.c
-+++ b/drivers/vdpa/mlx5/core/mr.c
-@@ -25,17 +25,6 @@ static int get_octo_len(u64 len, int page_shift)
- 	return (npages + 1) / 2;
- }
- 
--static void fill_sg(struct mlx5_vdpa_direct_mr *mr, void *in)
--{
--	struct scatterlist *sg;
--	__be64 *pas;
--	int i;
--
--	pas = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
--	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
--		(*pas) = cpu_to_be64(sg_dma_address(sg));
--}
--
- static void mlx5_set_access_mode(void *mkc, int mode)
- {
- 	MLX5_SET(mkc, mkc, access_mode_1_0, mode & 0x3);
-@@ -45,10 +34,18 @@ static void mlx5_set_access_mode(void *mkc, int mode)
- static void populate_mtts(struct mlx5_vdpa_direct_mr *mr, __be64 *mtt)
- {
- 	struct scatterlist *sg;
-+	int nsg = mr->nsg;
-+	u64 dma_addr;
-+	u64 dma_len;
-+	int j = 0;
- 	int i;
- 
--	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
--		mtt[i] = cpu_to_be64(sg_dma_address(sg));
-+	for_each_sg(mr->sg_head.sgl, sg, mr->nent, i) {
-+		for (dma_addr = sg_dma_address(sg), dma_len = sg_dma_len(sg);
-+		     nsg && dma_len;
-+		     nsg--, dma_addr += BIT(mr->log_size), dma_len -= BIT(mr->log_size))
-+			mtt[j++] = cpu_to_be64(dma_addr);
-+	}
- }
- 
- static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr *mr)
-@@ -64,7 +61,6 @@ static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct
- 		return -ENOMEM;
- 
- 	MLX5_SET(create_mkey_in, in, uid, mvdev->res.uid);
--	fill_sg(mr, in);
- 	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
- 	MLX5_SET(mkc, mkc, lw, !!(mr->perm & VHOST_MAP_WO));
- 	MLX5_SET(mkc, mkc, lr, !!(mr->perm & VHOST_MAP_RO));
-@@ -276,8 +272,8 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr
- done:
- 	mr->log_size = log_entity_size;
- 	mr->nsg = nsg;
--	err = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
--	if (!err)
-+	mr->nent = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
-+	if (!mr->nent)
- 		goto err_map;
- 
- 	err = create_direct_mr(mvdev, mr);
--- 
-2.28.0
-
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl/2tj0ACgkQeSpbgcuY
+8KblaA//QjU9XsxK9jcAIaljLq1gvl4dFlPEKfTXK7EqERQj49A+skHkRYO9BDR3
+ijPMgm6wt2cmMXWPx4tApaf+iwEps+ZRTuZ6AU5EKyGB/+FhYif5c9jmCI2FZ4OG
+YlI04Ic+AV4JwuO8Ta95yepyqmkFtUcc9F0FKKzi8Z1uJRXcMq1B3IQUOZm8UsMN
+YXdNMLFYHYVjFdFqnXG9SQmboCecD4VJ5qOlucYu3YdQtgoGkjsrqCe7Jhw/Ye16
+B8YZlxDiqKA/AHbMg/LpQulri1WiDjec/7GrAbLF0aa4mizGLag2kURcz39dL7wN
+/AGRyzTwS4obtpuVcjOUB6z4J4vbhi0GhebhPo40RNhVeiMwwMvyXdlBgQn14Qpr
+GAgvNRzffRDa2V2CBwODqs/4WFPZJjs63PXpnz6fDjFhoXMnjsU3hDIDHiwHIxah
+2Rzw1ZJoDkujSKJQpasG6HTXmFSa1xgUyoK2arONDaXwg+iwQLSdqkRMudp9x467
+pmlQ53T/6a6TFRbkyYBqnf1vHt3mteucKJpG/N4R+03yFS7+PWJHhBIQc0yVIEP9
+K/rImGFsSBxo8ybfw9XWvN24NA1DGcuVUvrtwp95YE60mjqH2k/5LhQfElP4xmJ0
+U5cEb64fVzzP+0/QiPdrxQyTsz4x1KmieFYgvli5w7SPPVad0e0=
+=I9yy
+-----END PGP SIGNATURE-----
+--=-=-=--
