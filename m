@@ -2,100 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3212ED558
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:21:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 771B82ED56A
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728821AbhAGRUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 12:20:09 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55468 "EHLO vps0.lunn.ch"
+        id S1728783AbhAGRVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 12:21:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727959AbhAGRUI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 12:20:08 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kxYwV-00GiTn-Iu; Thu, 07 Jan 2021 18:19:23 +0100
-Date:   Thu, 7 Jan 2021 18:19:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Schreiber <tschreibe@gmail.com>,
+        id S1727673AbhAGRVs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 12:21:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DD3F222C9F;
+        Thu,  7 Jan 2021 17:21:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610040068;
+        bh=U3BrOqsRFBQkm0dtMKf9zcqCsXLNHe/WlIE5FaVmUQU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=azYC9bwqvi4NGWd7GDsUUT2HSkwXsej1S+VSAC4A1koUMIJXbZSFtrKxUERfnuQ8Y
+         etlco3iF2k29MSD7oyCb06hkBYMSivhyB97dsT0sEqZvZjwO6l0eRXZl9sON+uid1I
+         WqccUa6fGQDwvxioOUcwKen90Cva3W1rL4yGEeIowBdDA+PQWoFU73gOquz0Jy0Ykj
+         CEL5HvlaAcnW5RZVEsMGbh0RlNCBvAq6QVnXzpCNtvRhlfd72/RDD+eHj8GLzacQW4
+         ijnGZUeNNF2zvH9SJ3TlfPeBAdgG8LhZQEBywrA4TCpbTD1P23ukkEvSkhwCdxb8iv
+         QqjpMNi2YpRvw==
+Date:   Thu, 7 Jan 2021 09:21:06 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Doug Berger <opendmb@gmail.com>,
+        Ray Jui <ray.jui@broadcom.com>,
+        Arun Parameswaran <arun.parameswaran@broadcom.com>,
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Timur Tabi <timur@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] net: sfp: add workaround for Realtek RTL8672 and
- RTL9601C chips
-Message-ID: <X/dCm1fK9jcjs4XT@lunn.ch>
-References: <20201230154755.14746-1-pali@kernel.org>
- <20210106153749.6748-1-pali@kernel.org>
- <20210106153749.6748-2-pali@kernel.org>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH net-next 2/2] net: broadcom: share header defining
+ UniMAC registers
+Message-ID: <20210107092106.012e6721@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <362ccb19-8f58-6bb6-a49b-c9eea93a5366@gmail.com>
+References: <20210106073245.32597-1-zajec5@gmail.com>
+        <20210106073245.32597-2-zajec5@gmail.com>
+        <284cc000-edf1-e943-2531-8c23e9470de1@gmail.com>
+        <ed92d6bd-0d07-afbb-6b53-23180a5abae9@gmail.com>
+        <362ccb19-8f58-6bb6-a49b-c9eea93a5366@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210106153749.6748-2-pali@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +	if (sfp->i2c_block_size < 2) {
-> +		dev_info(sfp->dev, "skipping hwmon device registration "
-> +				   "due to broken EEPROM\n");
-> +		dev_info(sfp->dev, "diagnostic EEPROM area cannot be read "
-> +				   "atomically to guarantee data coherency\n");
+On Thu, 7 Jan 2021 09:14:17 -0800 Florian Fainelli wrote:
+> > I can reproduce that after switching from mips to arm64. Before this
+> > change bgmac.h was not using BIT() macro. Now it does and that macro
+> > forces UL (unsigned long).
+> > 
+> > Is there any cleaner solution than below one?  
+> 
+> Don't use BIT(), if the constants are 32-bit unsigned integer, maybe
+> open coding them as (1 << x) is acceptable for that purpose.
 
-Strings like this are the exception to the 80 character rule. People
-grep for them, and when they are split, they are harder to find.
-
-> -static int sfp_quirk_i2c_block_size(const struct sfp_eeprom_base *base)
-> +static bool sfp_id_needs_byte_io(struct sfp *sfp, void *buf, size_t len)
->  {
-> -	if (!memcmp(base->vendor_name, "VSOL            ", 16))
-> -		return 1;
-> -	if (!memcmp(base->vendor_name, "OEM             ", 16) &&
-> -	    !memcmp(base->vendor_pn,   "V2801F          ", 16))
-> -		return 1;
-> +	size_t i, block_size = sfp->i2c_block_size;
->  
-> -	/* Some modules can't cope with long reads */
-> -	return 16;
-> -}
-> +	/* Already using byte IO */
-> +	if (block_size == 1)
-> +		return false;
-
-This seems counter intuitive. We don't need byte IO because we are
-doing btye IO? Can we return True here?
-
->  
-> -static void sfp_quirks_base(struct sfp *sfp, const struct sfp_eeprom_base *base)
-> -{
-> -	sfp->i2c_block_size = sfp_quirk_i2c_block_size(base);
-> +	for (i = 1; i < len; i += block_size) {
-> +		if (memchr_inv(buf + i, '\0', block_size - 1))
-> +			return false;
-> +	}
-
-Is the loop needed?
-
-I also wonder if on the last iteration of the loop you go passed the
-end of buf? Don't you need a min(block_size -1, len - i) or
-similar?
-
-> -	/* Some modules (CarlitoxxPro CPGOS03-0490) do not support multibyte
-> -	 * reads from the EEPROM, so start by reading the base identifying
-> -	 * information one byte at a time.
-> -	 */
-> -	sfp->i2c_block_size = 1;
-> +	sfp->i2c_block_size = 16;
-
-Did we loose the comment:
-
-/* Some modules (Nokia 3FE46541AA) lock up if byte 0x51 is read as a
- * single read. Switch back to reading 16 byte blocks ...
-
-That explains why 16 is used. Given how broken stuff is and the number
-of workaround we need, we should try to document as much as we cam, so
-we don't break stuff when adding more workarounds.
-
-     Andrew
+No objections from my side, I think we already have a number of drivers
+open coding the shifts for that very reason already.
