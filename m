@@ -2,52 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3C352ED785
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 20:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CED12ED788
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 20:36:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729347AbhAGTeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 14:34:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47478 "EHLO mail.kernel.org"
+        id S1729384AbhAGTgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 14:36:25 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55696 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725835AbhAGTeT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 14:34:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4AACF23443;
-        Thu,  7 Jan 2021 19:33:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610048019;
-        bh=GN66QiRPOa75+1AtjSyFVpxBR0qQOTALpEqWT5UlGJA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VzeUpHt7tm2D8RBwwcPvo68RsAT1EcxMnIBD6xaajF/RQYEQEkmlkIk2cgVnlYu2Z
-         i3mZpQNrLX79VGESjdtOnpd/XzvS/qhOI93xG1qwEAq6Qq8djZQJYZnKEAsY/vgbNo
-         Fqsfgjp67OJEGCg5UN7yR2xBqr+Gk0UtQ3b92yBquyisbLIHClMjO2tE8+3zcAD0jG
-         UGlMcu2+NwqykPZOnO0CCNY3yaTtQWouuwuS4l9uynWsM+2eHr4SaoXhMr1xSwvgGS
-         l6eRLFt1E/xMD0sKG3f0RhecV7LvsSCPeKQ64Z0ZTW0QMgEaYuv91rpbYdJBxOWTRU
-         zSSg9w2EoKHyw==
-Date:   Thu, 7 Jan 2021 11:33:38 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eran Ben Elisha <eranbe@nvidia.com>
-Cc:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH net-next 0/2] Dissect PTP L2 packet header
-Message-ID: <20210107113338.4f142954@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1610023140-20256-1-git-send-email-eranbe@nvidia.com>
-References: <1610023140-20256-1-git-send-email-eranbe@nvidia.com>
+        id S1726386AbhAGTgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 14:36:25 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kxb4Q-00Gjcy-AB; Thu, 07 Jan 2021 20:35:42 +0100
+Date:   Thu, 7 Jan 2021 20:35:42 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        johannes@sipsolutions.net, krishna.c.sudi@intel.com
+Subject: Re: [PATCH 07/18] net: iosm: char device for FW flash & coredump
+Message-ID: <X/dijqVDmDJ6Pu1/@lunn.ch>
+References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
+ <20210107170523.26531-8-m.chetan.kumar@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210107170523.26531-8-m.chetan.kumar@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 Jan 2021 14:38:58 +0200 Eran Ben Elisha wrote:
-> Hi Jakub, Dave,
-> 
-> This series adds support for dissecting PTP L2 packet
-> header (EtherType 0x88F7).
-> 
-> For packet header dissecting, skb->protocol is needed. Add protocol
-> parsing operation to vlan ops, to guarantee skb->protocol is set,
-> as EtherType 0x88F7 occasionally follows a vlan header.
+On Thu, Jan 07, 2021 at 10:35:12PM +0530, M Chetan Kumar wrote:
+> Implements a char device for flashing Modem FW image while Device
+> is in boot rom phase and for collecting traces on modem crash.
 
-Please make an effort to add people who can give you reviews on CC 
-and repost.
+Since this is a network device, you might want to take a look at
+devlink support for flashing devices.
+
+https://www.kernel.org/doc/html/latest/networking/devlink/devlink-flash.html
+
+And for collecting crashes and other health information, consider
+devlink region and devlink health.
+
+It is much better to reuse existing infrastructure than do something
+proprietary with a char dev.
+
+	    Andrew
