@@ -2,145 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AA2B2ED12E
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 14:52:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E622ED186
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 15:15:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728410AbhAGNvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 08:51:53 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43893 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726854AbhAGNvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 08:51:53 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
-        with SMTP; 7 Jan 2021 15:50:58 +0200
-Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.234.210.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 107DowbB002543;
-        Thu, 7 Jan 2021 15:50:58 +0200
-Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id 107DowTB030489;
-        Thu, 7 Jan 2021 15:50:58 +0200
-Received: (from ayal@localhost)
-        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 107DogfQ030482;
-        Thu, 7 Jan 2021 15:50:42 +0200
-From:   Aya Levin <ayal@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Daniel Axtens <dja@axtens.net>, netdev@vger.kernel.org,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, jengelh@medozas.de,
-        kaber@trash.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        Aya Levin <ayal@nvidia.com>
-Subject: [PATCH net V3] net: ipv6: Validate GSO SKB before finish IPv6 processing
-Date:   Thu,  7 Jan 2021 15:50:18 +0200
-Message-Id: <1610027418-30438-1-git-send-email-ayal@nvidia.com>
-X-Mailer: git-send-email 1.8.4.3
+        id S1728396AbhAGOPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 09:15:02 -0500
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:34561 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727292AbhAGOPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 09:15:02 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 4A4A2581F07;
+        Thu,  7 Jan 2021 09:13:56 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 07 Jan 2021 09:13:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=hQ9UDP
+        jGkepfF6AmMvRBs0dOsCjK4yU+brVfc2VLT2s=; b=L+54am6xq/aRKCa6MFdQkf
+        Agohhj/p0fkjHEGO1wu4/sMyUv3y+ki0JwZQUx73vnFtdCO7BXhBIRPi9+UGJD0G
+        ejbzr9VcBLc71JH9auORSE1jO0PzgzwmTIiaz82QoX50VnvuEhevSoL/C9IFySNa
+        /zeMY2eP4ZF/acFqdflxIDDCSGaDLuTcvRzcSIaD0xCLHyiP3H5IeIEY8hymDI+Q
+        o1MrgrPNrc0zfwMKQGPiz4gHvztID+2TCprWeEviObAiZCYHxTOXW0UJm07lZoRS
+        mhNORQl9xspx2LGQwIm2nLowxL4kKZrFGJwpVTjbDRgKXpQ8imOHqtMdY32UTkzw
+        ==
+X-ME-Sender: <xms:IBf3X4mLFkOOKs39GgDBDHWFXltF7yCaowQhbQzIeWxTwZx1wMNs4Q>
+    <xme:IBf3X32bOIqXwgCtsRI72ve0zazOGUrlMBrx3__ttu8XtEy8WlFOR_TewKnYwHQTh
+    ZNfvsFCPVEO1Js>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdegvddgiedvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:IBf3X2raaGqN-G1XZrvX7ohupmm0ubu9TJiSNdj2uBH5nPeVFTBuBg>
+    <xmx:IBf3X0mnew38e4PeZCjzy66QRc5SzzN6_ZsYmXAHhna3t-sdGFBezQ>
+    <xmx:IBf3X22UgZe-30vCZeVEMd0cRbR0tgT887t1O8DKUJZQCRURW9-NCQ>
+    <xmx:JBf3XwULEzehimhLulbVVJEp_-SWrvSqzk44PvsLhf56FJu-c2HB-Q>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5179C108005B;
+        Thu,  7 Jan 2021 09:13:52 -0500 (EST)
+Date:   Thu, 7 Jan 2021 16:13:49 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     petrm@nvidia.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>
+Subject: Re: [PATCH v3 net-next 03/11] net: switchdev: remove the transaction
+ structure from port object notifiers
+Message-ID: <20210107141349.GA1130184@shredder.lan>
+References: <20210106231728.1363126-1-olteanv@gmail.com>
+ <20210106231728.1363126-4-olteanv@gmail.com>
+ <20210107103835.GA1102653@shredder.lan>
+ <20210107111822.icmzu4lvs5ygsuef@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210107111822.icmzu4lvs5ygsuef@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are cases where GSO segment's length exceeds the egress MTU:
- - Forwarding of a TCP GRO skb, when DF flag is not set.
- - Forwarding of an skb that arrived on a virtualisation interface
-   (virtio-net/vhost/tap) with TSO/GSO size set by other network
-   stack.
- - Local GSO skb transmitted on an NETIF_F_TSO tunnel stacked over an
-   interface with a smaller MTU.
- - Arriving GRO skb (or GSO skb in a virtualised environment) that is
-   bridged to a NETIF_F_TSO tunnel stacked over an interface with an
-   insufficient MTU.
+On Thu, Jan 07, 2021 at 01:18:22PM +0200, Vladimir Oltean wrote:
+> On Thu, Jan 07, 2021 at 12:38:35PM +0200, Ido Schimmel wrote:
+> > +Petr
+> > 
+> > On Thu, Jan 07, 2021 at 01:17:20AM +0200, Vladimir Oltean wrote:
+> > >  static int mlxsw_sp_port_obj_add(struct net_device *dev,
+> > >  				 const struct switchdev_obj *obj,
+> > > -				 struct switchdev_trans *trans,
+> > >  				 struct netlink_ext_ack *extack)
+> > >  {
+> > >  	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
+> > >  	const struct switchdev_obj_port_vlan *vlan;
+> > > +	struct switchdev_trans trans;
+> > >  	int err = 0;
+> > >  
+> > >  	switch (obj->id) {
+> > >  	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+> > >  		vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
+> > > -		err = mlxsw_sp_port_vlans_add(mlxsw_sp_port, vlan, trans,
+> > > +
+> > 
+> > Got the regression results. The call to mlxsw_sp_span_respin() should be
+> > placed here because it needs to be triggered regardless of the return
+> > value of mlxsw_sp_port_vlans_add().
+> 
+> So before, mlxsw_sp_span_respin() was called right in between the
+> prepare phase and the commit phase, regardless of the error value of
+> mlxsw_sp_port_vlans_add. How does that work, I assume that
+> mlxsw_sp_span_respin_work gets to run after the commit phase because it
+> serializes using rtnl_lock()? Then why did it matter enough to schedule
+> it between the prepare and commit phase in the first place?
+> And what is there to do in mlxsw_sp_span_respin_work when
+> mlxsw_sp_port_vlans_add returns -EOPNOTSUPP, -EBUSY, -EINVAL, -EEXIST or
+> -ENOMEM?
 
-If so:
- - Consume the SKB and its segments.
- - Issue an ICMP packet with 'Packet Too Big' message containing the
-   MTU, allowing the source host to reduce its Path MTU appropriately.
+The bridge driver will ignore -EOPNOTSUPP and actually add the VLAN on
+the bridge device. See commit 9c86ce2c1ae3 ("net: bridge: Notify about
+bridge VLANs") and commit ea4721751977 ("mlxsw: spectrum_switchdev:
+Ignore bridge VLAN events")
 
-Note: These cases are handled in the same manner in IPv4 output finish.
-This patch aligns the behavior of IPv6 and the one of IPv4.
-
-Fixes: 9e50849054a4 ("netfilter: ipv6: move POSTROUTING invocation before fragmentation")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
- net/ipv6/ip6_output.c | 41 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
-
-Hi,
-
-Please queue to -stable >= v2.6.35.
-
-Thanks,
-Aya
-
-v2:
-Addressed error: uninitialized symbol 'ret', reported by
-kernel test robot <lkp@intel.com> / Dan Carpenter <dan.carpenter@oracle.com>.
-
-v3:
-Per Jakub's request, added further details in commit message,
-and extended the CCed list.
-
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 749ad72386b2..077d43af8226 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -125,8 +125,43 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
- 	return -EINVAL;
- }
- 
-+static int
-+ip6_finish_output_gso_slowpath_drop(struct net *net, struct sock *sk,
-+				    struct sk_buff *skb, unsigned int mtu)
-+{
-+	struct sk_buff *segs, *nskb;
-+	netdev_features_t features;
-+	int ret = 0;
-+
-+	/* Please see corresponding comment in ip_finish_output_gso
-+	 * describing the cases where GSO segment length exceeds the
-+	 * egress MTU.
-+	 */
-+	features = netif_skb_features(skb);
-+	segs = skb_gso_segment(skb, features & ~NETIF_F_GSO_MASK);
-+	if (IS_ERR_OR_NULL(segs)) {
-+		kfree_skb(skb);
-+		return -ENOMEM;
-+	}
-+
-+	consume_skb(skb);
-+
-+	skb_list_walk_safe(segs, segs, nskb) {
-+		int err;
-+
-+		skb_mark_not_on_list(segs);
-+		err = ip6_fragment(net, sk, segs, ip6_finish_output2);
-+		if (err && ret == 0)
-+			ret = err;
-+	}
-+
-+	return ret;
-+}
-+
- static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *skb)
- {
-+	unsigned int mtu;
-+
- #if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
- 	/* Policy lookup after SNAT yielded a new policy */
- 	if (skb_dst(skb)->xfrm) {
-@@ -135,7 +170,11 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
- 	}
- #endif
- 
--	if ((skb->len > ip6_skb_dst_mtu(skb) && !skb_is_gso(skb)) ||
-+	mtu = ip6_skb_dst_mtu(skb);
-+	if (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))
-+		return ip6_finish_output_gso_slowpath_drop(net, sk, skb, mtu);
-+
-+	if ((skb->len > mtu && !skb_is_gso(skb)) ||
- 	    dst_allfrag(skb_dst(skb)) ||
- 	    (IP6CB(skb)->frag_max_size && skb->len > IP6CB(skb)->frag_max_size))
- 		return ip6_fragment(net, sk, skb, ip6_finish_output2);
--- 
-2.14.1
-
+Since the VLAN was successfully added on the bridge device,
+mlxsw_sp_span_respin_work() should be able to resolve the egress port
+for a packet that is mirrored to a gre tap and passes through the bridge
+device.
