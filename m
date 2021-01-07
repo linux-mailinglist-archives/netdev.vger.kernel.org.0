@@ -2,114 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B6652EE65A
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 20:48:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 970422EE65F
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 20:48:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729046AbhAGTqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 14:46:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49404 "EHLO
+        id S1729396AbhAGTsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 14:48:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbhAGTqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 14:46:52 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775CFC0612F4;
-        Thu,  7 Jan 2021 11:45:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=0VYbVRFaEHfXgTed8Qk8VILkIca2duBnZVrPZ6rhtgY=; b=QcfTC1dmOQtFnIDeaPka2FPCp
-        QeuOZZSsD29kSsTaEalm46h5tQbLAz8TnRTlMkD3C4iG58QGzV+i1n1rzuzOkKdjttuPmXU5uL05t
-        T6cyQnpuZ9AjDtnQV7qo7z9SlXYw5M47S1fB2zx3Daayb6TH9IDpj2bXssRrTOrRi57uX3LxId2tI
-        0QuzPMnUlmDO1Ia+LsKRaeObSg7X5SZqrbMFN0XOjXFYNGlsbZpsJpDn/lSdQv61vV3/zo3vPf8vY
-        ioXisI7rRBM62yKuNmjRlgfa3ObyihflutpmYC3U3VyFRmGOSIpdQg6PSSdTREnkDh/q9TmyQsW+M
-        VCn6yYheA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45238)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kxbEE-0003An-Vn; Thu, 07 Jan 2021 19:45:51 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kxbED-0001QM-EM; Thu, 07 Jan 2021 19:45:49 +0000
-Date:   Thu, 7 Jan 2021 19:45:49 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Schreiber <tschreibe@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] net: sfp: add workaround for Realtek RTL8672 and
- RTL9601C chips
-Message-ID: <20210107194549.GR1551@shell.armlinux.org.uk>
-References: <20201230154755.14746-1-pali@kernel.org>
- <20210106153749.6748-1-pali@kernel.org>
- <20210106153749.6748-2-pali@kernel.org>
- <X/dCm1fK9jcjs4XT@lunn.ch>
+        with ESMTP id S1729346AbhAGTsD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 14:48:03 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B22AC0612F6
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 11:47:23 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id s26so17349246lfc.8
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 11:47:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8ruY7+Hc6DwjfUtsIGmEMt3x9fL7QwNpww7Qmh8m5ao=;
+        b=FqnqVnVRhdZ06qPkVepbc2d6YqyFCx6doQkSftj/eLt2k4QnSPYtgEpD3IcxBsg6Sc
+         58CHR7Y5cSwWtGBBFbBHUOAu+DGUplKWy0JWSPQvWkeuwNRpNRO/Tp6sndPafmhBl9Wq
+         iOWAlxJfkbmFP6NX+zwC7HF8T1R8D9wozuP5Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8ruY7+Hc6DwjfUtsIGmEMt3x9fL7QwNpww7Qmh8m5ao=;
+        b=SdFIht3yW5+Ls1PV4facTavfRnDDdvbo54iZ7srGid+TrZmPMLLDBIJrBALMueHiDN
+         qyDx0Una/JXEYHwj5VqMxiEUu4KiEJhvuzVh5S+ilGCgPOU3Z1QvwmVQSVo39kpplhdJ
+         RARmeo/QHZfFM2IgvWcXW193+ZMowth9L3hN0FxFRwMRTPcCl99iQzlgESDXdhhII7Bc
+         P9tX6+L2xtEqFWwb89pSvbAetaerPDawmaGObkzgB2MUYOUc55Bw/6XKWVpPic0ppVkw
+         roLHJo6EMEjJk/GmmnG2O4gVYfdOkLLHb0ehjfyCLP8Pi8bxLyYOvpRI3qjCUqEwdcFI
+         030Q==
+X-Gm-Message-State: AOAM5301r2gWZt1tyje/b6X/H8R4qNju5YZJuxSaHL/4vh+7ohLnNU32
+        gH158vRYJ4JNdnHzuuW8MpvHbvTFs3ILgQ==
+X-Google-Smtp-Source: ABdhPJwH5JPcmX3WdZfPMETEdQApjLW4DqZzxU34/pNDoHNhDgX4NHE4dvvvzhsKn3Glh6HQxi/gIg==
+X-Received: by 2002:a2e:804a:: with SMTP id p10mr26076ljg.295.1610048841210;
+        Thu, 07 Jan 2021 11:47:21 -0800 (PST)
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
+        by smtp.gmail.com with ESMTPSA id m12sm1500745lji.110.2021.01.07.11.47.19
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jan 2021 11:47:20 -0800 (PST)
+Received: by mail-lf1-f41.google.com with SMTP id m25so17280480lfc.11
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 11:47:19 -0800 (PST)
+X-Received: by 2002:a2e:3211:: with SMTP id y17mr27794ljy.61.1610048838877;
+ Thu, 07 Jan 2021 11:47:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X/dCm1fK9jcjs4XT@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+References: <20201118194838.753436396@linutronix.de> <20201118204007.169209557@linutronix.de>
+ <20210106180132.41dc249d@gandalf.local.home> <CAHk-=wh2895wXEXYtb70CTgW+UR7jfh6VFhJB_bOrF0L7UKoEg@mail.gmail.com>
+ <20210106174917.3f8ad0d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CA+FuTSevLSxZkNLdJPHqRRksxZmnPc1qFBYJeBx26WsA4A1M7A@mail.gmail.com> <CA+FuTScQ9afdnQ3E1mqdeyJ-sOq=2Dm9c1XDN8mnzbEig8iMXA@mail.gmail.com>
+In-Reply-To: <CA+FuTScQ9afdnQ3E1mqdeyJ-sOq=2Dm9c1XDN8mnzbEig8iMXA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 7 Jan 2021 11:47:02 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wh+KfbJ4Wrz4A+hFRRj7ZYWysz9L8s-BosC3bhV6vN-nQ@mail.gmail.com>
+Message-ID: <CAHk-=wh+KfbJ4Wrz4A+hFRRj7ZYWysz9L8s-BosC3bhV6vN-nQ@mail.gmail.com>
+Subject: Re: [BUG] from x86: Support kmap_local() forced debugging
+To:     Willem de Bruijn <willemb@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 07, 2021 at 06:19:23PM +0100, Andrew Lunn wrote:
-> > -static int sfp_quirk_i2c_block_size(const struct sfp_eeprom_base *base)
-> > +static bool sfp_id_needs_byte_io(struct sfp *sfp, void *buf, size_t len)
-> >  {
-> > -	if (!memcmp(base->vendor_name, "VSOL            ", 16))
-> > -		return 1;
-> > -	if (!memcmp(base->vendor_name, "OEM             ", 16) &&
-> > -	    !memcmp(base->vendor_pn,   "V2801F          ", 16))
-> > -		return 1;
-> > +	size_t i, block_size = sfp->i2c_block_size;
-> >  
-> > -	/* Some modules can't cope with long reads */
-> > -	return 16;
-> > -}
-> > +	/* Already using byte IO */
-> > +	if (block_size == 1)
-> > +		return false;
-> 
-> This seems counter intuitive. We don't need byte IO because we are
-> doing btye IO? Can we return True here?
+On Wed, Jan 6, 2021 at 8:45 PM Willem de Bruijn <willemb@google.com> wrote:
+>
+> But there are three other kmap_atomic callers under net/ that do not
+> loop at all, so assume non-compound pages. In esp_output_head,
+> esp6_output_head and skb_seq_read. The first two directly use
+> skb_page_frag_refill, which can allocate compound (but not
+> __GFP_HIGHMEM) pages, and the third can be inserted with
+> netfilter xt_string in the path of tcp transmit skbs, which can also
+> have compound pages. I think that these could similarly access
+> data beyond the end of the kmap_atomic mapped page. I'll take
+> a closer look.
 
-It is counter-intuitive, but as this is indicating whether we need to
-switch to byte IO, if we're already doing byte IO, then we don't need
-to switch.
+Thanks.
 
-> > -static void sfp_quirks_base(struct sfp *sfp, const struct sfp_eeprom_base *base)
-> > -{
-> > -	sfp->i2c_block_size = sfp_quirk_i2c_block_size(base);
-> > +	for (i = 1; i < len; i += block_size) {
-> > +		if (memchr_inv(buf + i, '\0', block_size - 1))
-> > +			return false;
-> > +	}
-> 
-> Is the loop needed?
+Note that I have flushed my random one-liner patch from my system, and
+expect to get a proper fix through the normal networking pulls.
 
-I think you're not reading the code very well. It checks for bytes at
-offset 1..blocksize-1, blocksize+1..2*blocksize-1, etc are zero. It
-does _not_ check that byte 0 or the byte at N*blocksize is zero - these
-bytes are skipped. In other words, the first byte of each transfer can
-be any value. The other bytes of the _entire_ ID must be zero.
+And _if_ the networking people feel that my one-liner was the proper
+fix, you can use it and add my sign-off if you want to, but it really
+was more of a "this is the quick ugly fix for testing" rather than
+anything else.
 
-> I also wonder if on the last iteration of the loop you go passed the
-> end of buf? Don't you need a min(block_size -1, len - i) or
-> similar?
-
-The ID is 64 bytes long, and is fixed. block_size could be a non-power
-of two, but that is highly unlikely. block_size will never be larger
-than 16 either.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+          Linus
