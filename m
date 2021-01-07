@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9DA82ED527
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:08:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F2E12ED529
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:08:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729117AbhAGRHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 12:07:44 -0500
-Received: from mga14.intel.com ([192.55.52.115]:53939 "EHLO mga14.intel.com"
+        id S1729132AbhAGRHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 12:07:45 -0500
+Received: from mga14.intel.com ([192.55.52.115]:53942 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728862AbhAGRHm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 12:07:42 -0500
-IronPort-SDR: JWo4zKrF2Y7wvEDVo8IGbVT2R4myxZmdXM+IZwZIXcCNmNErCvk8IjxFRXwtlKqoRRwO3qu6R1
- 1Q+LADBeKtbA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9857"; a="176681060"
+        id S1729112AbhAGRHo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 12:07:44 -0500
+IronPort-SDR: IbWEym8M/FnsD64gbWZGTT+U3alwRHXSo8Xf/ukKjUHTNfWqIPscNr3+ShO53FcEdLw7dYd7Rf
+ fXoYByhFsj5A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9857"; a="176681071"
 X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; 
-   d="scan'208";a="176681060"
+   d="scan'208";a="176681071"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2021 09:06:42 -0800
-IronPort-SDR: 7Jad5hW6im1ZUwplWTTvUMtTvwuRslQXglSHNU+kmYQuJui77y8m/br+7ZCCqm0Xw+BVCaPTdt
- V5L+9iEv7hMg==
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2021 09:06:46 -0800
+IronPort-SDR: L2ur8Bhuu3cRDDf5rd1ii5sDlDZSU+PCvNRakg8Rplovnt1q+KCEvbV9cpf0vubKvGY+aTnG9V
+ yWIIa5Xld4mA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; 
-   d="scan'208";a="422644115"
+   d="scan'208";a="422644139"
 Received: from bgsxx0031.iind.intel.com ([10.106.222.40])
-  by orsmga001.jf.intel.com with ESMTP; 07 Jan 2021 09:06:40 -0800
+  by orsmga001.jf.intel.com with ESMTP; 07 Jan 2021 09:06:44 -0800
 From:   M Chetan Kumar <m.chetan.kumar@intel.com>
 To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Cc:     johannes@sipsolutions.net, krishna.c.sudi@intel.com,
         m.chetan.kumar@intel.com
-Subject: [PATCH 17/18] net: iosm: readme file
-Date:   Thu,  7 Jan 2021 22:35:22 +0530
-Message-Id: <20210107170523.26531-18-m.chetan.kumar@intel.com>
+Subject: [PATCH 18/18] net: iosm: infrastructure
+Date:   Thu,  7 Jan 2021 22:35:23 +0530
+Message-Id: <20210107170523.26531-19-m.chetan.kumar@intel.com>
 X-Mailer: git-send-email 2.12.3
 In-Reply-To: <20210107170523.26531-1-m.chetan.kumar@intel.com>
 References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
@@ -39,147 +39,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Documents IOSM Driver interface usage.
+1) Kconfig & Makefile changes for IOSM Driver compilation.
+2) Modified driver/net Kconfig & Makefile for driver inclusion.
+3) Modified MAINTAINER file for IOSM Driver addition.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
 ---
- drivers/net/wwan/iosm/README | 126 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 126 insertions(+)
- create mode 100644 drivers/net/wwan/iosm/README
+ MAINTAINERS                    |  7 +++++++
+ drivers/net/Kconfig            |  1 +
+ drivers/net/Makefile           |  1 +
+ drivers/net/wwan/Kconfig       | 13 +++++++++++++
+ drivers/net/wwan/Makefile      |  5 +++++
+ drivers/net/wwan/iosm/Kconfig  | 10 ++++++++++
+ drivers/net/wwan/iosm/Makefile | 27 +++++++++++++++++++++++++++
+ 7 files changed, 64 insertions(+)
+ create mode 100644 drivers/net/wwan/Kconfig
+ create mode 100644 drivers/net/wwan/Makefile
+ create mode 100644 drivers/net/wwan/iosm/Kconfig
+ create mode 100644 drivers/net/wwan/iosm/Makefile
 
-diff --git a/drivers/net/wwan/iosm/README b/drivers/net/wwan/iosm/README
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7c1e45c416b1..43a1237ca1cf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9209,6 +9209,13 @@ M:	Mario Limonciello <mario.limonciello@dell.com>
+ S:	Maintained
+ F:	drivers/platform/x86/intel-wmi-thunderbolt.c
+ 
++INTEL WWAN IOSM DRIVER
++M:      M Chetan Kumar <m.chetan.kumar@intel.com>
++M:      Intel Corporation <linuxwwan@intel.com>
++L:      netdev@vger.kernel.org
++S:      Maintained
++F:      drivers/net/wwan/iosm/
++
+ INTEL(R) TRACE HUB
+ M:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
+ S:	Supported
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 260f9f46668b..8e29aff7aedb 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -598,4 +598,5 @@ config NET_FAILOVER
+ 	  a VM with direct attached VF by failing over to the paravirtual
+ 	  datapath when the VF is unplugged.
+ 
++source "drivers/net/wwan/Kconfig"
+ endif # NETDEVICES
+diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+index 36e2e41ed2aa..db5fea0a4d18 100644
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -84,3 +84,4 @@ thunderbolt-net-y += thunderbolt.o
+ obj-$(CONFIG_USB4_NET) += thunderbolt-net.o
+ obj-$(CONFIG_NETDEVSIM) += netdevsim/
+ obj-$(CONFIG_NET_FAILOVER) += net_failover.o
++obj-$(CONFIG_WWAN)+= wwan/
+diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
 new file mode 100644
-index 000000000000..4a489177ad96
+index 000000000000..715dfd0598f9
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/README
-@@ -0,0 +1,126 @@
-+IOSM Driver for PCIe based Intel M.2 Modems
-+================================================
-+The IOSM (IPC over Shared Memory) driver is a PCIe host driver implemented
-+for linux or chrome platform for data exchange over PCIe interface between
-+Host platform & Intel M.2 Modem. The driver exposes interface conforming to the
-+MBIM protocol [1]. Any front end application ( eg: Modem Manager) could easily
-+manage the MBIM interface to enable data communication towards WWAN.
++++ b/drivers/net/wwan/Kconfig
+@@ -0,0 +1,13 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Wireless WAN device configuration
++#
 +
-+Basic usage
-+===========
-+MBIM functions are inactive when unmanaged. The IOSM driver only
-+provides a userspace interface of a character device representing
-+MBIM control channel and does not play any role in managing the
-+functionality. It is the job of a userspace application to enumerate
-+the port appropriately and enable MBIM functionality.
++menuconfig WWAN
++	bool "Wireless WAN"
++	help
++	  This section contains all Wireless WAN driver configurations.
 +
-+Examples of few such userspace application are:
-+ - mbimcli (included with the libmbim [2] library), and
-+ - ModemManager [3]
++if WWAN
++source "drivers/net/wwan/iosm/Kconfig"
++endif # WWAN
+diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
+new file mode 100644
+index 000000000000..a81ff28e6cd9
+--- /dev/null
++++ b/drivers/net/wwan/Makefile
+@@ -0,0 +1,5 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Makefile for the Linux WWAN Device Drivers.
++#
++obj-$(CONFIG_IOSM)+= iosm/
+diff --git a/drivers/net/wwan/iosm/Kconfig b/drivers/net/wwan/iosm/Kconfig
+new file mode 100644
+index 000000000000..fed382fc9cd7
+--- /dev/null
++++ b/drivers/net/wwan/iosm/Kconfig
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: (GPL-2.0-only)
++#
++# IOSM Driver configuration
++#
 +
-+For establishing an MBIM IP session at least these actions are required by the
-+management application:
-+ - open the control channel
-+ - configure network connection settings
-+ - connect to network
-+ - configure IP interface
++config IOSM
++	tristate "IOSM Driver"
++	depends on INTEL_IOMMU
++	help
++	  This driver enables Intel M.2 WWAN Device communication.
+diff --git a/drivers/net/wwan/iosm/Makefile b/drivers/net/wwan/iosm/Makefile
+new file mode 100644
+index 000000000000..8b8a310967bd
+--- /dev/null
++++ b/drivers/net/wwan/iosm/Makefile
+@@ -0,0 +1,27 @@
++# SPDX-License-Identifier: (GPL-2.0-only)
++#
++# Copyright (C) 2020 Intel Corporation.
++#
 +
-+Management application development
-+----------------------------------
-+The driver and userspace interfaces are described below. The MBIM
-+control channel protocol is described in [1].
++iosm-y = \
++	iosm_ipc_task_queue.o	\
++	iosm_ipc_imem.o			\
++	iosm_ipc_imem_ops.o		\
++	iosm_ipc_mmio.o			\
++	iosm_ipc_sio.o			\
++	iosm_ipc_mbim.o			\
++	iosm_ipc_wwan.o			\
++	iosm_ipc_uevent.o		\
++	iosm_ipc_pm.o			\
++	iosm_ipc_pcie.o			\
++	iosm_ipc_irq.o			\
++	iosm_ipc_chnl_cfg.o		\
++	iosm_ipc_protocol.o		\
++	iosm_ipc_protocol_ops.o	\
++	iosm_ipc_mux.o			\
++	iosm_ipc_mux_codec.o
 +
-+MBIM control channel userspace ABI
-+==================================
++obj-$(CONFIG_IOSM) := iosm.o
 +
-+/dev/wwanctrl character device
-+------------------------------
-+The driver exposes an interface to the MBIM function control channel using char
-+driver as a subdriver. The userspace end of the control channel pipe is a
-+/dev/wwanctrl character device.
-+
-+The /dev/wwanctrl device is created as a subordinate character device under
-+IOSM driver. The character device associated with a specific MBIM function
-+can be looked up using sysfs with matching the above device name.
-+
-+Control channel configuration
-+-----------------------------
-+The wMaxControlMessage field of the MBIM functional descriptor
-+limits the maximum control message size. The management application needs to
-+negotiate the control message size as per the requirements.
-+See also the ioctl documentation below.
-+
-+Fragmentation
-+-------------
-+The userspace application is responsible for all control message
-+fragmentation and defragmentation as per MBIM.
-+
-+/dev/wwanctrl write()
-+---------------------
-+The MBIM control messages from the management application must not
-+exceed the negotiated control message size.
-+
-+/dev/wwanctrl read()
-+--------------------
-+The management application must accept control messages of up the
-+negotiated control message size.
-+
-+/dev/wwanctrl ioctl()
-+--------------------
-+IOCTL_WDM_MAX_COMMAND: Get Maximum Command Size
-+This IOCTL command could be used by applications to fetch the Maximum Command
-+buffer length supported by the driver which is restricted to 4096 bytes.
-+
-+	#include <stdio.h>
-+	#include <fcntl.h>
-+	#include <sys/ioctl.h>
-+	#include <linux/types.h>
-+	int main()
-+	{
-+		__u16 max;
-+		int fd = open("/dev/wwanctrl", O_RDWR);
-+		if (!ioctl(fd, IOCTL_WDM_MAX_COMMAND, &max))
-+			printf("wMaxControlMessage is %d\n", max);
-+	}
-+
-+MBIM data channel userspace ABI
-+===============================
-+
-+wwanY network device
-+--------------------
-+The IOSM driver represents the MBIM data channel as a single
-+network device of the "wwan0" type. This network device is initially
-+mapped to MBIM IP session 0.
-+
-+Multiplexed IP sessions (IPS)
-+-----------------------------
-+IOSM driver allows multiplexing of several IP sessions over the single network
-+device of type wwan0. IOSM driver models such IP sessions as 802.1q VLAN
-+subdevices of the master wwanY device, mapping MBIM IP session M to VLAN ID M
-+for all values of M greater than 0.
-+
-+The userspace management application is responsible for adding new VLAN links
-+prior to establishing MBIM IP sessions where the SessionId is greater than 0.
-+These links can be added by using the normal VLAN kernel interfaces.
-+
-+For example, adding a link for a MBIM IP session with SessionId 5:
-+
-+  ip link add link wwan0 name wwan0.<name> type vlan id 5
-+
-+The driver will automatically map the "wwan0.<name>" network device to MBIM
-+IP session 5.
-+
-+References
-+==========
-+
-+[1] "MBIM (Mobile Broadband Interface Model) Registry"
-+       - http://compliance.usb.org/mbim/
-+
-+[2] libmbim - "a glib-based library for talking to WWAN modems and
-+      devices which speak the Mobile Interface Broadband Model (MBIM)
-+      protocol"
-+      - http://www.freedesktop.org/wiki/Software/libmbim/
-+
-+[3] ModemManager - "a DBus-activated daemon which controls mobile
-+      broadband (2G/3G/4G) devices and connections"
-+      - http://www.freedesktop.org/wiki/Software/ModemManager/
-\ No newline at end of file
++# compilation flags
++ccflags-y += -DDEBUG
 -- 
 2.12.3
 
