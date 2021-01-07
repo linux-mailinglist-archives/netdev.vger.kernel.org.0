@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C220D2ECD40
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 10:53:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E36A82ECD58
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 10:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbhAGJvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 04:51:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
+        id S1728023AbhAGJwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 04:52:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727322AbhAGJvm (ORCPT
+        with ESMTP id S1727329AbhAGJvm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 04:51:42 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CFEC0612F5
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 01:51:03 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id qw4so8758563ejb.12
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 01:51:03 -0800 (PST)
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CE3C0612F6
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 01:51:05 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id lt17so8899239ejb.3
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 01:51:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rVj4CmclfeGkdtlXppPTJxGuA2LguLsjMH5QlJ5c/ck=;
-        b=Hxmkn+U9w530KGSGNhBz3ey+o8LSA540y+LWrKE57HUYporEeGK8XFSFNfc1odosoW
-         TsJxKRoXKBbrhaAJMOh7BnM6Sgt5rOEB2FxAt/hbzSnsgRmTaioZ0iDNYjWDrXe5+uZI
-         WGyz/GWa6UpXuU7SiOCgnBA15O7avDJEVCDbDiTrWCX0FBQorHqlath+L7QYvq/1qvQn
-         Hw/hNgehZBsB0pK99GwkRN9NZvPwyVegWp6J3pmLbV0lSFUj97PpS9cEmzg+eKBM/Ev9
-         jmQlRUUXUTz5q3YCuBIJia11WwptBETTm/yIezyvo/2elE/mRxxLq+WuL/NT4qgp19Yw
-         ya8Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UPJmR7uMHRCatZTn33/yNFiM8glq727qCmvqZpOn3zs=;
+        b=Az/V5u34trbHgkuL5m9yqK6UvJTVOcQBxq9rdw1WLdtZG971Tc/9Wa6WTSTQQlRRet
+         TPxzWENy8dTLr3wfSKG6FPLGTBI6TvNmDt+NMSOuybDd3RQBj9YLMfaLi2x3H+6Fr+mn
+         hPuptCUx0901e7ryCNh95uf1J6JLHSn7fdMA19SIhZVD85HxYtmLM7Ay9C/2p+MfKWrh
+         jlRiAhe+qd0F+vJ4Zm/B/xdUa2OGAxA8srbaDirOLFxenJ+zWsVd5yfup8ZO07YrSG1K
+         2vAx7USUgEeEAd7hfynLMs5dbUiXcUvca62GwlsW6GFJcYTqAV9X1VZ5iaqCaYyFlvk/
+         RJiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rVj4CmclfeGkdtlXppPTJxGuA2LguLsjMH5QlJ5c/ck=;
-        b=GrbRGBg6XlrrJRI9L70t9IKrxmgpctjgcUKYFbillKxLN5b5DU5Pem0XLQ4v+sE9UP
-         FinAskfbFfRumARxYkv/oSkEt54qz43PzaifWTIUTZEjmbIPT7BPik32Dg2rk4YjM06g
-         bqWJC7zpL+aXLzzRFjnr1VevdF1LJoGxis/wjSBtOB0fVDDFXT8GE9kD68f12d53iWZW
-         FvLgyFZZmD1naGC/9dFR8QvdyJ0waW8uPneqt3RbBtL6fkpMY/D/ZL82rQmCHXyoPQYO
-         lz568O5VFArD2zlIpyGp7okQOZ4YQgEkuiaewkfff0bZGIxxAzAXdbPgWQG/DwRVZkQG
-         yCLg==
-X-Gm-Message-State: AOAM5333jX5Ezax81VTDS2rEQEQLqrisXdsbboq2QUTzRAfU5MAlSsJs
-        97kQw8MdAAzQQ5hPa+/dLfQ=
-X-Google-Smtp-Source: ABdhPJy18+QQdp3rXwQbRJLeMiIZh2+ltF3mBF1PR4oSH1vGRnFtP1gNo2LEoBTnZmhHjkZhHyd+/g==
-X-Received: by 2002:a17:906:90d6:: with SMTP id v22mr5800936ejw.88.1610013062682;
-        Thu, 07 Jan 2021 01:51:02 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UPJmR7uMHRCatZTn33/yNFiM8glq727qCmvqZpOn3zs=;
+        b=FW+kgIkqP+fZYT9AeS1Zbc7FzcKcpP/su3Ds9pUV5S6cBNcD/nBgUnCDjedwyNERsJ
+         RsyEyer0qA9P4FrZH/NB3eWxpz9X/wXULglnqaYayQyzph0pLwSL4F4PWV1ciJmwN8tp
+         dzgs03jU2PXbNjnn7hwHirxtjeh8o0k54X9t3FxIvha98OciQk0M6zV/TpEPcHrTObNF
+         /txHLJxtXLSeu7Jq/RAILSwyxEQF4lFTvIN1O2nPzR2FLachbICWOBxFrE1bJ3DIhcnD
+         pAONV+tWLq4Aw3a5g4kBq/smqYpvv57BXtrlrdSZDKkp7BkXqX/SygtAQZipGMzGBQUU
+         TD/Q==
+X-Gm-Message-State: AOAM533uHG1rR1iTd1Cbot6pLMVPGyXbv1ANWl6lkldKAUgc+GhQalr9
+        umdGAG+rVyaWt/VD6kB7+gE=
+X-Google-Smtp-Source: ABdhPJxSPlTcYnCi5P73Yz7hHDCLMIZN3hTILn9yPM6gkLkhbQFqmnzj78mNEG/sXiWVF3PsJZDzVg==
+X-Received: by 2002:a17:906:451:: with SMTP id e17mr5559149eja.228.1610013064166;
+        Thu, 07 Jan 2021 01:51:04 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k15sm2251571ejc.79.2021.01.07.01.51.01
+        by smtp.gmail.com with ESMTPSA id k15sm2251571ejc.79.2021.01.07.01.51.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 01:51:02 -0800 (PST)
+        Thu, 07 Jan 2021 01:51:03 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -62,10 +62,12 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Andy Gospodarek <andy@greyhouse.net>,
         Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
         Jiri Pirko <jiri@mellanox.com>, Florian Westphal <fw@strlen.de>
-Subject: [PATCH v3 net-next 00/12] Make .ndo_get_stats64 sleepable
-Date:   Thu,  7 Jan 2021 11:49:39 +0200
-Message-Id: <20210107094951.1772183-1-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 01/12] net: mark dev_base_lock for deprecation
+Date:   Thu,  7 Jan 2021 11:49:40 +0200
+Message-Id: <20210107094951.1772183-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210107094951.1772183-1-olteanv@gmail.com>
+References: <20210107094951.1772183-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -74,72 +76,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+There is a movement to eliminate the usage of dev_base_lock, which
+exists since as far as I could track the kernel history down (the
+"7a2deb329241 Import changeset" commit from the bitkeeper branch).
+
+The dev_base_lock approach has multiple issues:
+- It is global and not per netns.
+- Its meaning has mutated over the years and the vast majority of
+  current users is using it to protect against changes of network device
+  state, as opposed to changes of the interface list.
+- It is overlapping with other protection mechanisms introduced in the
+  meantime, which have higher performance for readers, like RCU
+  introduced in 2009 by Eric Dumazet for kernel 2.6.
+
+The old comment that I just deleted made this distinction: writers
+protect only against readers by holding dev_base_lock, whereas they need
+to protect against other writers by holding the RTNL mutex. This is
+slightly confusing/incorrect, since a rwlock_t cannot have more than one
+concurrently running writer, so that explanation does not justify why
+the RTNL mutex would be necessary.
+
+Instead, Stephen Hemminger makes this clarification here:
+https://lore.kernel.org/netdev/20201129211230.4d704931@hermes.local/T/#u
+
+| There are really two different domains being covered by locks here.
+|
+| The first area is change of state of network devices. This has traditionally
+| been covered by RTNL because there are places that depend on coordinating
+| state between multiple devices. RTNL is too big and held too long but getting
+| rid of it is hard because there are corner cases (like state changes from userspace
+| for VPN devices).
+|
+| The other area is code that wants to do read access to look at list of devices.
+| These pure readers can/should be converted to RCU by now. Writers should hold RTNL.
+
+This patch edits the comment for dev_base_lock, minimizing its role in
+the protection of network interface lists, and clarifies that it is has
+other purposes as well.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
 Changes in v3:
-- Resolved some memory leak issues in the bonding patch 10/12.
+None.
 
 Changes in v2:
-- Addressed the recursion issues in .ndo_get_stats64 from bonding and
-  net_failover.
-- Renamed netdev_lists_lock to netif_lists_lock
-- Stopped taking netif_lists_lock from drivers as much as possible.
+None.
 
-This series converts all callers of dev_get_stats() to be in sleepable
-context, so that we can do more work in the .ndo_get_stats64 method.
+ net/core/dev.c | 33 ++++++++++++++++-----------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
 
-The situation today is that if we have hardware that needs to be
-accessed through a slow bus like SPI, or through a firmware, we cannot
-do that directly in .ndo_get_stats64, so we have to poll counters
-periodically and return a cached (not up to date) copy in the atomic NDO
-callback. This is undesirable on both ends: more work than strictly
-needed is being done, and the end result is also worse (not guaranteed
-to be up to date). So converting the code paths to be compatible with
-sleeping seems to make more sense.
-
-Vladimir Oltean (12):
-  net: mark dev_base_lock for deprecation
-  net: introduce a mutex for the netns interface lists
-  net: procfs: hold netif_lists_lock when retrieving device statistics
-  net: sysfs: don't hold dev_base_lock while retrieving device
-    statistics
-  s390/appldata_net_sum: hold the netdev lists lock when retrieving
-    device statistics
-  parisc/led: reindent the code that gathers device statistics
-  parisc/led: hold the netdev lists lock when retrieving device
-    statistics
-  net: make dev_get_stats return void
-  net: net_failover: ensure .ndo_get_stats64 can sleep
-  net: bonding: ensure .ndo_get_stats64 can sleep
-  net: mark ndo_get_stats64 as being able to sleep
-  net: remove obsolete comments about ndo_get_stats64 context from eth
-    drivers
-
- Documentation/networking/netdevices.rst       |   8 +-
- Documentation/networking/statistics.rst       |   9 +-
- arch/s390/appldata/appldata_net_sum.c         |  33 ++---
- drivers/leds/trigger/ledtrig-netdev.c         |   9 +-
- drivers/net/bonding/bond_main.c               | 119 +++++++++---------
- drivers/net/ethernet/cisco/enic/enic_main.c   |   1 -
- .../net/ethernet/hisilicon/hns/hns_ethtool.c  |  51 ++++----
- .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |   7 +-
- drivers/net/ethernet/intel/ixgbevf/ethtool.c  |   7 +-
- drivers/net/ethernet/nvidia/forcedeth.c       |   2 -
- drivers/net/ethernet/sfc/efx_common.c         |   1 -
- drivers/net/ethernet/sfc/falcon/efx.c         |   1 -
- drivers/net/net_failover.c                    |  63 +++++++---
- drivers/parisc/led.c                          |  37 +++---
- drivers/scsi/fcoe/fcoe_transport.c            |   6 +-
- drivers/usb/gadget/function/rndis.c           |  45 +++----
- include/linux/netdevice.h                     |  13 +-
- include/net/bonding.h                         |  49 +++++++-
- include/net/net_failover.h                    |   9 +-
- include/net/net_namespace.h                   |   6 +
- net/8021q/vlanproc.c                          |  15 ++-
- net/core/dev.c                                |  69 ++++++----
- net/core/net-procfs.c                         |  48 +++----
- net/core/net-sysfs.c                          |  10 +-
- net/openvswitch/vport.c                       |  25 ++--
- 25 files changed, 367 insertions(+), 276 deletions(-)
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8fa739259041..67d912745e5c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -169,23 +169,22 @@ static int call_netdevice_notifiers_extack(unsigned long val,
+ static struct napi_struct *napi_by_id(unsigned int napi_id);
+ 
+ /*
+- * The @dev_base_head list is protected by @dev_base_lock and the rtnl
+- * semaphore.
+- *
+- * Pure readers hold dev_base_lock for reading, or rcu_read_lock()
+- *
+- * Writers must hold the rtnl semaphore while they loop through the
+- * dev_base_head list, and hold dev_base_lock for writing when they do the
+- * actual updates.  This allows pure readers to access the list even
+- * while a writer is preparing to update it.
+- *
+- * To put it another way, dev_base_lock is held for writing only to
+- * protect against pure readers; the rtnl semaphore provides the
+- * protection against other writers.
+- *
+- * See, for example usages, register_netdevice() and
+- * unregister_netdevice(), which must be called with the rtnl
+- * semaphore held.
++ * The network interface list of a netns (@net->dev_base_head) and the hash
++ * tables per ifindex (@net->dev_index_head) and per name (@net->dev_name_head)
++ * are protected using the following rules:
++ *
++ * Pure readers should hold rcu_read_lock() which should protect them against
++ * concurrent changes to the interface lists made by the writers. Pure writers
++ * must serialize by holding the RTNL mutex while they loop through the list
++ * and make changes to it.
++ *
++ * It is also possible to hold the global rwlock_t @dev_base_lock for
++ * protection (holding its read side as an alternative to rcu_read_lock, and
++ * its write side as an alternative to the RTNL mutex), however this should not
++ * be done in new code, since it is deprecated and pending removal.
++ *
++ * One other role of @dev_base_lock is to protect against changes in the
++ * operational state of a network interface.
+  */
+ DEFINE_RWLOCK(dev_base_lock);
+ EXPORT_SYMBOL(dev_base_lock);
 -- 
 2.25.1
 
