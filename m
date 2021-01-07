@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 608032ED73A
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 20:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E39B42ED74C
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 20:12:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729346AbhAGTHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 14:07:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41778 "EHLO mail.kernel.org"
+        id S1729182AbhAGTMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 14:12:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42382 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727453AbhAGTHv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 14:07:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E7A3423441;
-        Thu,  7 Jan 2021 19:07:10 +0000 (UTC)
+        id S1725835AbhAGTMa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 14:12:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F3C6623432;
+        Thu,  7 Jan 2021 19:11:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610046431;
-        bh=34tTqDstxGrqOnfLbPZFlyGkFwjXYT2wN4M31yVbb1Y=;
+        s=k20201202; t=1610046710;
+        bh=uDzZTnqOoXkH2ikd0ySS6VgfbG7/Ib6y+i3yHuvIVxw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bx09jY9HNxQmkkMPY7PfHlhapox4o/tC6UAEQeAmory6x8kPLG+YhWR+AEqCoeLWG
-         Hng3mZMUAtGZf2bSQkDB58i0HoMME3g/ENOil22BjufCARhNLQ8Z0/1trNtTgHdd2a
-         2IFp64RX0j6EO6PKyoCeNi3fmbEci+YGPw4OEImC++uTOKTtwwplGJE3+HTys/LwLy
-         6VHZTSDz//Gfw7YMXTnUGk9Xdk9wZq9VFCSES6AHJaSCKQgcW3UhlgpJdlRiNFBBEF
-         G2PvLfXA3kwLCpN+FnWyp4hEWo/1uSyGiFRug+m17RtuJBRrq3zBHblHdgyhuOLwq/
-         IJPZB6s79qcmw==
-Date:   Thu, 7 Jan 2021 11:07:10 -0800
+        b=ZLXJvMnHKdCiKM8XZZ2RFNwKZZftYn8hhG5BnfDm0kd8s9f1L4K0ytiOM1h7syc1B
+         OQTYjhmggO/W9nRD1uaHm4l2PMdt8/iS7t860XkW/iLz1Lb6j3Gx2gFwkbsTb9Zkfh
+         XJr3EjWHSt9G0n/mhQVXb0PUWumn3e/TxMY8IHDTTFiYVQthsqsDQDGjAYwFtwB12H
+         Q2JpdKOhQhZ6km6COdjFmPkOs9sda83EuO2pEDke6iqphObs16a24Zd/ygcSBrD9la
+         iDAuIes3MbWQSwDDisoWjUp9LLaM4vbKNgAxiP899X97qIpZTXFIQ0mprUEqFoToB9
+         NHhshrDoF55WQ==
+Date:   Thu, 7 Jan 2021 11:11:49 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net,
         linux-can@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: pull-request: can-next 2021-01-06
-Message-ID: <20210107110710.0ea1b12b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210107094900.173046-1-mkl@pengutronix.de>
-References: <20210107094900.173046-1-mkl@pengutronix.de>
+Subject: Re: pull-request: can 2021-01-07
+Message-ID: <20210107111149.0c79570e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210107103451.183477-1-mkl@pengutronix.de>
+References: <20210107103451.183477-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,23 +39,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Jan 2021 10:48:41 +0100 Marc Kleine-Budde wrote:
+On Thu,  7 Jan 2021 11:34:45 +0100 Marc Kleine-Budde wrote:
 > Hello Jakub, hello David,
 > 
-> this is a pull request of 19 patches for net-next/master.
+> this is a pull request of 6 patches for net/master.
 > 
-> The first 16 patches are by me and target the tcan4x5x SPI glue driver for the
-> m_can CAN driver. First there are a several cleanup commits, then the SPI
-> regmap part is converted to 8 bits per word, to make it possible to use that
-> driver on SPI controllers that only support the 8 bit per word mode (such as
-> the SPI cores on the raspberry pi).
+> The first patch is by me for the m_can driver and removes an erroneous
+> m_can_clk_stop() from the driver's unregister function.
 > 
-> Oliver Hartkopp contributes a patch for the CAN_RAW protocol. The getsockopt()
-> for CAN_RAW_FILTER is changed to return -ERANGE if the filterset does not fit
-> into the provided user space buffer.
+> The second patch targets the tcan4x5x driver, is by me, and fixes the bit
+> timing constant parameters.
 > 
-> The last two patches are by Joakim Zhang and add wakeup support to the flexcan
-> driver for the i.MX8QM SoC. The dt-bindings docs are extended to describe the
-> added property.
+> The next two patches are by me, target the mcp251xfd driver, and fix a race
+> condition in the optimized TEF path (which was added in net-next for v5.11).
+> The similar code in the RX path is changed to look the same, although it
+> doesn't suffer from the race condition.
+> 
+> A patch by Lad Prabhakar updates the description and help text for the rcar CAN
+> driver to reflect all supported SoCs.
+> 
+> In the last patch Sriram Dash transfers the maintainership of the m_can driver
+> to Pankaj Sharma.
+
 
 Pulled, thanks!
