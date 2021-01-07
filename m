@@ -2,73 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 869C72EC7A1
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 02:18:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A18932EC7A6
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 02:20:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726370AbhAGBRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 20:17:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60230 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726086AbhAGBRa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Jan 2021 20:17:30 -0500
-Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F2862311E;
-        Thu,  7 Jan 2021 01:16:47 +0000 (UTC)
-Date:   Wed, 6 Jan 2021 20:16:45 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [BUG] from x86: Support kmap_local() forced debugging
-Message-ID: <20210106201645.72f57a47@oasis.local.home>
-In-Reply-To: <CAHk-=wh2895wXEXYtb70CTgW+UR7jfh6VFhJB_bOrF0L7UKoEg@mail.gmail.com>
-References: <20201118194838.753436396@linutronix.de>
-        <20201118204007.169209557@linutronix.de>
-        <20210106180132.41dc249d@gandalf.local.home>
-        <CAHk-=wh2895wXEXYtb70CTgW+UR7jfh6VFhJB_bOrF0L7UKoEg@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1726706AbhAGBUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 20:20:10 -0500
+Received: from mrdf0111.ocn.ad.jp ([125.206.160.167]:47912 "EHLO
+        mrdf0111.ocn.ad.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726301AbhAGBUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 20:20:09 -0500
+Received: from mogw5208.ocn.ad.jp (mogw5208.ocn.ad.jp [125.206.161.9])
+        by mrdf0111.ocn.ad.jp (Postfix) with ESMTP id D2B0C3E02EF;
+        Thu,  7 Jan 2021 10:18:51 +0900 (JST)
+Received: from mf-smf-unw005c1.ocn.ad.jp (mf-smf-unw005c1.ocn.ad.jp [153.138.219.78])
+        by mogw5208.ocn.ad.jp (Postfix) with ESMTP id 132CD2A041E;
+        Thu,  7 Jan 2021 10:17:34 +0900 (JST)
+Received: from ocn-vc-mts-201c1.ocn.ad.jp ([153.138.219.212])
+        by mf-smf-unw005c1.ocn.ad.jp with ESMTP
+        id xJu3kE3BKaeryxJvikLBIg; Thu, 07 Jan 2021 10:17:34 +0900
+Received: from smtp.ocn.ne.jp ([153.149.227.165])
+        by ocn-vc-mts-201c1.ocn.ad.jp with ESMTP
+        id xJvhkfc3Tf1TbxJvhkXnKU; Thu, 07 Jan 2021 10:17:34 +0900
+Received: from localhost (p1601136-ipoe.ipoe.ocn.ne.jp [114.172.254.135])
+        by smtp.ocn.ne.jp (Postfix) with ESMTPA;
+        Thu,  7 Jan 2021 10:17:33 +0900 (JST)
+Date:   Thu, 07 Jan 2021 10:17:29 +0900 (JST)
+Message-Id: <20210107.101729.1936921832901251107.anemo@mba.ocn.ne.jp>
+To:     geert@linux-m68k.org
+Cc:     tsbogend@alpha.franken.de, mpm@selenic.com,
+        herbert@gondor.apana.org.au, dan.j.williams@intel.com,
+        vkoul@kernel.org, davem@davemloft.net, miquel.raynal@bootlin.com,
+        richard@nod.at, vigneshr@ti.com, kuba@kernel.org,
+        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
+        broonie@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 00/10] Remove support for TX49xx
+From:   Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+In-Reply-To: <CAMuHMdV86BES7dmWr-7j1jbtoSy0bH1J0e5W41p8evagi0Nqcw@mail.gmail.com>
+References: <CAMuHMdX=trGqj8RzV7r1iTneqDjWOc4e1T-X+R_B34rxxhJpbg@mail.gmail.com>
+        <20210106184839.GA7773@alpha.franken.de>
+        <CAMuHMdV86BES7dmWr-7j1jbtoSy0bH1J0e5W41p8evagi0Nqcw@mail.gmail.com>
+X-Mailer: Mew version 6.7 on Emacs 24.5 / Mule 6.0 (HANACHIRUSATO)
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 6 Jan 2021 17:03:48 -0800
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+On Wed, 6 Jan 2021 21:41:24 +0100, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>> > Is that sufficient to keep it?
+>>
+>> for me it is. But now we probaly need some reverts then...
+> 
+> Indeed. Fortunately not all of it, as some removals were TX4938-only.
 
-> (although I wonder how/why the heck you've enabled
-> CC_OPTIMIZE_FOR_SIZE=y, which is what causes "memcpy()" to be done as
-> that "rep movsb". I thought we disabled it because it's so bad on most
-> cpus).
+These patches should not break RBTX4927:
 
-Why?
+  net: tc35815: Drop support for TX49XX boards
+  spi: txx9: Remove driver
+  mtd: Remove drivers used by TX49xx
+  char: hw_random: Remove tx4939 driver
+  rtc: tx4939: Remove driver
+  ide: tx4938ide: Remove driver
 
-Because to test x86_32, I have a Fedora Core 13 (yes 13!) partition
-(baremetal) that I use. And the .config I use for it hasn't changed
-since that time ;-) (except to add new features that I want to test on
-x86_32).
+And these patches just break audio-support only.
 
-Anyway, I'll test out your patch. Thanks for investigating this.
+  dma: tx49 removal
+  ASoC: txx9: Remove driver
 
--- Steve
+I think dma and ASoC drivers are hard to maintain now, and can be
+dropped for basic support for RBTX4927.
+(TX39 boards does not have audio-support, so dma txx9 driver can be
+dropped too)
+
+---
+Atsushi Nemoto
