@@ -2,96 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5AD2EC937
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 04:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 797432EC958
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 05:18:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbhAGDyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 22:54:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726414AbhAGDyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 22:54:09 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51B2C0612F1
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 19:53:28 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id b10so3477744ilr.4
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 19:53:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=XyHpdjFK5KCcsW0NSpl9XnpAqw+ZRpYJG1t42ebeRWo=;
-        b=SPWYmIY9vsS1JyXcShgnrzBhLy8k6kYriNR4QjGS/pWGakxs7YeIfJyaMCQP4BFMma
-         fbvFhMdptYQ9X3pFL4r3Z27hWnpqT8AdgDfNuOf7NunJMVRS6YYvu9wvPS6sxQY8xhWA
-         euHDsvZTZvmvNR/9RcFNPlf7hMFUFPYCkDwMaE3dGpCJX74lAY/jPjgszF02ZzVQhJE9
-         8ySGAgCjtx3cjxRk6hjTcRNeuvcDSfb0YsWQAlyEF79ITC6qejv85ga8ntFAUiCDSPKq
-         ZhEJFnWOg1yK9FwiJvaN2L4iyO9GVaHmGBhZPC8xpHqn7caacAiYg6W8NHEP35RGL3Nd
-         Dixw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=XyHpdjFK5KCcsW0NSpl9XnpAqw+ZRpYJG1t42ebeRWo=;
-        b=nAQjaLsLnGC7wxvaFkf/gq9wZsCM9yDlBTKLGUE1atj/Ykr7YnivDhUi5iYyfv3Ntt
-         7v+BpmItintBhFmA8uw1pQWlsUKOBxw4gFoTdJt3iRoYTKwjwftdmVVtsdYwqcgpdFRy
-         hzipUuw2RNOJrK6r19y2/0POtCLxhnX0Oc/LIDLzr2+ZfTPy91o15qWxcmnlYujCBPm8
-         Ip1HR05o225sn/o4owE21WA5wWfRCYI1dHQxT2iTTg0TtR6if5TvianScoShuis0se7z
-         667GSM4uLWsu/2/8bVRs1mCq++4dihBnTEkhQvLYFiJdB9K70Sso2LyAYHGCg+Wu4vdU
-         2BKg==
-X-Gm-Message-State: AOAM5317Rkym6/MXR0hdqJsCzhqSbpuF3Pv+Y0CvA55RSlrV7Dnn73ow
-        lyH1o6Nupih3Qbz/6FClp/8PXmQRUk8cBKAy/Us=
-X-Google-Smtp-Source: ABdhPJyL5H1u173j8+/k5sNclHrMPvc2YioITm+uJGRziIFFldhZjbQuxhgSjT2TeVdtl+MKB876S+yjgqraD/iLJbY=
-X-Received: by 2002:a05:6e02:154c:: with SMTP id j12mr7324771ilu.33.1609991606821;
- Wed, 06 Jan 2021 19:53:26 -0800 (PST)
+        id S1726883AbhAGERe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 23:17:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30843 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726812AbhAGERe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 23:17:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1609992967;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Dos1Q591nOCwG8WlJAPmJhU7Mm8ZerxmXOCBcJyNvs4=;
+        b=GUsGs1IUaCXsCHsPM5wa81unwFjqKWOM6yh7Y67ir56utZ22chwDTseE2hwZXAVu2V3t0t
+        wfmS6YFK5Odz0+AqCYCgEecAhWj2kwqbgbcemiIWKCF8qz0fbYx8dGX8xab9xDgekFN0DM
+        DruK3cCgLyIUBoXv3Qqayrdhw45TArw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-510-jcuqMUzmPi2B4NMTwRptXg-1; Wed, 06 Jan 2021 23:16:04 -0500
+X-MC-Unique: jcuqMUzmPi2B4NMTwRptXg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ABA8C10054FF;
+        Thu,  7 Jan 2021 04:16:02 +0000 (UTC)
+Received: from [10.72.13.171] (ovpn-13-171.pek2.redhat.com [10.72.13.171])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B3C55C1D1;
+        Thu,  7 Jan 2021 04:15:54 +0000 (UTC)
+Subject: Re: [PATCH] vdpa/mlx5: Fix memory key MTT population
+To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     lulu@redhat.com
+References: <20210106090557.GA170338@mtl-vdi-166.wap.labs.mlnx>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <2d16b2af-f25a-d786-7d24-da45c0dcefaa@redhat.com>
+Date:   Thu, 7 Jan 2021 12:15:53 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-From:   Baptiste Lepers <baptiste.lepers@gmail.com>
-Date:   Thu, 7 Jan 2021 14:53:16 +1100
-Message-ID: <CABdVr8RVXj3dg-by_W99=fPSjdfB7fYXFRBW9sropQpYKD1xOQ@mail.gmail.com>
-Subject: Possible read of uninitialized array values in reuseport_select_sock?
-To:     davem@davemloft.net, kuba@kernel.org, willemb@google.com,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210106090557.GA170338@mtl-vdi-166.wap.labs.mlnx>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-While reading the code of net/core/sock_reuseport.c, I think I found a
-possible race in reuseport_select_sock. The current code has the
-following pattern:
-
-   socks = READ_ONCE(reuse->num_socks);
-   smp_rmb(); // paired with reuseport_add_sock to make sure
-reuse->socks[i < num_socks] are initialized
-   while (reuse->socks[i]->sk_state == TCP_ESTABLISHED) {
-        if (i >= reuse->num_socks) // should be "socks" and not
-"reuse->num_socks"?
-
-The barrier seems to be here to make sure that all items of
-reuse->socks are initialized before being read, but the barrier only
-protects indexes < socks, not indexes < reuse->num_socks.
-
-I have a patch ready to fix this issue, but I wanted to confirm that
-the current code is indeed incorrect (if the code is correct for a
-non-obvious reason, I'd be happy to add some comments to document the
-behavior).
+On 2021/1/6 下午5:05, Eli Cohen wrote:
+> map_direct_mr() assumed that the number of scatter/gather entries
+> returned by dma_map_sg_attrs() was equal to the number of segments in
+> the sgl list. This led to wrong population of the mkey object. Fix this
+> by properly referring to the returned value.
+>
+> In addition, get rid of fill_sg() whjich effect is overwritten bu
+> populate_mtts().
 
 
-Here is the diff of the patch I was planning to submit:
-
-diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-index bbdd3c7b6cb5..b065f0a103ed 100644
---- a/net/core/sock_reuseport.c
-+++ b/net/core/sock_reuseport.c
-@@ -293,7 +293,7 @@ struct sock *reuseport_select_sock(struct sock *sk,
-             i = j = reciprocal_scale(hash, socks);
-             while (reuse->socks[i]->sk_state == TCP_ESTABLISHED) {
-                 i++;
--                if (i >= reuse->num_socks)
-+                if (i >= socks)
-                     i = 0;
-                 if (i == j)
-                     goto out;
+Typo.
 
 
-Thanks,
-Baptiste.
+>
+> Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
+> ---
+>   drivers/vdpa/mlx5/core/mlx5_vdpa.h |  1 +
+>   drivers/vdpa/mlx5/core/mr.c        | 28 ++++++++++++----------------
+>   2 files changed, 13 insertions(+), 16 deletions(-)
+>
+> diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> index 5c92a576edae..08f742fd2409 100644
+> --- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> +++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> @@ -15,6 +15,7 @@ struct mlx5_vdpa_direct_mr {
+>   	struct sg_table sg_head;
+>   	int log_size;
+>   	int nsg;
+> +	int nent;
+>   	struct list_head list;
+>   	u64 offset;
+>   };
+> diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
+> index 4b6195666c58..d300f799efcd 100644
+> --- a/drivers/vdpa/mlx5/core/mr.c
+> +++ b/drivers/vdpa/mlx5/core/mr.c
+> @@ -25,17 +25,6 @@ static int get_octo_len(u64 len, int page_shift)
+>   	return (npages + 1) / 2;
+>   }
+>   
+> -static void fill_sg(struct mlx5_vdpa_direct_mr *mr, void *in)
+> -{
+> -	struct scatterlist *sg;
+> -	__be64 *pas;
+> -	int i;
+> -
+> -	pas = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
+> -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
+> -		(*pas) = cpu_to_be64(sg_dma_address(sg));
+> -}
+> -
+>   static void mlx5_set_access_mode(void *mkc, int mode)
+>   {
+>   	MLX5_SET(mkc, mkc, access_mode_1_0, mode & 0x3);
+> @@ -45,10 +34,18 @@ static void mlx5_set_access_mode(void *mkc, int mode)
+>   static void populate_mtts(struct mlx5_vdpa_direct_mr *mr, __be64 *mtt)
+>   {
+>   	struct scatterlist *sg;
+> +	int nsg = mr->nsg;
+> +	u64 dma_addr;
+> +	u64 dma_len;
+> +	int j = 0;
+>   	int i;
+>   
+> -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
+> -		mtt[i] = cpu_to_be64(sg_dma_address(sg));
+> +	for_each_sg(mr->sg_head.sgl, sg, mr->nent, i) {
+> +		for (dma_addr = sg_dma_address(sg), dma_len = sg_dma_len(sg);
+> +		     nsg && dma_len;
+> +		     nsg--, dma_addr += BIT(mr->log_size), dma_len -= BIT(mr->log_size))
+> +			mtt[j++] = cpu_to_be64(dma_addr);
+
+
+It looks to me the mtt entry is also limited by log_size. It's better to 
+explain this a little bit in the commit log.
+
+Thanks
+
+
+> +	}
+>   }
+>   
+>   static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr *mr)
+> @@ -64,7 +61,6 @@ static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct
+>   		return -ENOMEM;
+>   
+>   	MLX5_SET(create_mkey_in, in, uid, mvdev->res.uid);
+> -	fill_sg(mr, in);
+>   	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
+>   	MLX5_SET(mkc, mkc, lw, !!(mr->perm & VHOST_MAP_WO));
+>   	MLX5_SET(mkc, mkc, lr, !!(mr->perm & VHOST_MAP_RO));
+> @@ -276,8 +272,8 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr
+>   done:
+>   	mr->log_size = log_entity_size;
+>   	mr->nsg = nsg;
+> -	err = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
+> -	if (!err)
+> +	mr->nent = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
+> +	if (!mr->nent)
+>   		goto err_map;
+>   
+>   	err = create_direct_mr(mvdev, mr);
+
