@@ -2,121 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7322ED673
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 19:14:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F29CB2ED6AE
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 19:26:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727058AbhAGSOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 13:14:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726386AbhAGSOD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 13:14:03 -0500
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBB12C0612F5
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 10:13:22 -0800 (PST)
-Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 7FDE97D55C;
-        Thu,  7 Jan 2021 18:13:21 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1610043201; bh=qHSpP77ivYRppJQ1QcmD9+jcu+Wq/FHiproLOhDTVMA=;
-        h=From:To:Cc:Subject:Date:Message-Id:From;
-        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
-         rnel.org|Cc:=20gnault@redhat.com,=0D=0A=09jchapman@katalix.com,=0D
-         =0A=09Tom=20Parkin=20<tparkin@katalix.com>|Subject:=20[PATCH=20net
-         =20v3]=20ppp:=20fix=20refcount=20underflow=20on=20channel=20unbrid
-         ge|Date:=20Thu,=20=207=20Jan=202021=2018:13:15=20+0000|Message-Id:
-         =20<20210107181315.3128-1-tparkin@katalix.com>;
-        b=bbsziuZ+PiY4PR68nkdv0DTuFGxVBpR82yE7d+DSWEi/f55+EHQLEtiC5lwPaaJfi
-         mfqS6qtc0D1q5id3PmxD8n5Tk6vg3YYvkjWke+fFJOzRIFaAp3lE/sbLfdhFVs/hQz
-         41ZABAJr5hUMU2iQ+Qt4Oi8tXLxCjpTqOH8XtWH04vYxXgZdTFJo004e6tahYMpcq1
-         5WDkifAseOrCLar3UQdJRKmuPFUdHLpnCGpbqNQ71l9zjYJKl8oeVLQqrQSkS+lykS
-         hnz9WyC97xw/s5uorqEksVmupLDPYeTScHQEFMXISpuNRSvUHyLpOHitGMwPoLYfjh
-         X6q4frAUOtNVA==
-From:   Tom Parkin <tparkin@katalix.com>
-To:     netdev@vger.kernel.org
-Cc:     gnault@redhat.com, jchapman@katalix.com,
-        Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH net v3] ppp: fix refcount underflow on channel unbridge
-Date:   Thu,  7 Jan 2021 18:13:15 +0000
-Message-Id: <20210107181315.3128-1-tparkin@katalix.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726780AbhAGSZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 13:25:44 -0500
+Received: from mail.nic.cz ([217.31.204.67]:47812 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726064AbhAGSZo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 13:25:44 -0500
+Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
+        by mail.nic.cz (Postfix) with ESMTPSA id AAA971420C4;
+        Thu,  7 Jan 2021 19:25:00 +0100 (CET)
+Date:   Thu, 7 Jan 2021 19:25:00 +0100
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Wolfram Sang <wsa@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        linux-i2c@vger.kernel.org
+Subject: question about i2c_transfer() function (regarding mdio-i2c on
+ RollBall SFPs)
+Message-ID: <20210107192500.54d2d0f0@nic.cz>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When setting up a channel bridge, ppp_bridge_channels sets the
-pch->bridge field before taking the associated reference on the bridge
-file instance.
+Hi Wolfram and Russell,
 
-This opens up a refcount underflow bug if ppp_bridge_channels called
-via. iotcl runs concurrently with ppp_unbridge_channels executing via.
-file release.
+I have a question regarding whether the struct i2c_msg array passed to
+the i2c_transfer() function can have multiple messages refer to the
+same buffers.
 
-The bug is triggered by ppp_bridge_channels taking the error path
-through the 'err_unset' label.  In this scenario, pch->bridge is set,
-but the reference on the bridged channel will not be taken because
-the function errors out.  If ppp_unbridge_channels observes pch->bridge
-before it is unset by the error path, it will erroneously drop the
-reference on the bridged channel and cause a refcount underflow.
+Previously Russell raised a point on my patch series adding support
+for RollBall SFPs regarding the I2C MDIO access, which is done on I2C
+address 0x51 on the upper 128 bytes when SFP page is set to 3.
 
-To avoid this, ensure that ppp_bridge_channels holds a reference on
-each channel in advance of setting the bridge pointers.
+https://lore.kernel.org/netdev/20201030152033.GC1551@shell.armlinux.org.uk/
 
-Signed-off-by: Tom Parkin <tparkin@katalix.com>
-Fixes: 4cf476ced45d ("ppp: add PPPIOCBRIDGECHAN and PPPIOCUNBRIDGECHAN ioctls")
----
-v3:
- * remove bool tracking variable in ppp_bridge_channels and re-read
-   pch->bridge instead
- * add missing tags
-v2:
- * rework ppp_bridge_channels code to avoid the race condition in
-   preference to holding ppp_mutex while calling ppp_unbridge_channels
----
- drivers/net/ppp/ppp_generic.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Russell wrote
+  "Also, shouldn't we ensure that we are on page 1 before attempting
+   any access?"
+  "I think this needs to be done in the MDIO driver - if we have
+   userspace or otherwise expand what we're doing, relying on page 3
+   remaining selected will be very fragile."
 
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index 09c27f7773f9..d445ecb1d0c7 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -623,6 +623,7 @@ static int ppp_bridge_channels(struct channel *pch, struct channel *pchb)
- 		write_unlock_bh(&pch->upl);
- 		return -EALREADY;
- 	}
-+	refcount_inc(&pchb->file.refcnt);
- 	rcu_assign_pointer(pch->bridge, pchb);
- 	write_unlock_bh(&pch->upl);
- 
-@@ -632,19 +633,24 @@ static int ppp_bridge_channels(struct channel *pch, struct channel *pchb)
- 		write_unlock_bh(&pchb->upl);
- 		goto err_unset;
- 	}
-+	refcount_inc(&pch->file.refcnt);
- 	rcu_assign_pointer(pchb->bridge, pch);
- 	write_unlock_bh(&pchb->upl);
- 
--	refcount_inc(&pch->file.refcnt);
--	refcount_inc(&pchb->file.refcnt);
--
- 	return 0;
- 
- err_unset:
- 	write_lock_bh(&pch->upl);
-+	/* Re-read pch->bridge with upl held in case it was modified concurrently */
-+	pchb = rcu_dereference_protected(pch->bridge, lockdep_is_held(&pch->upl));
- 	RCU_INIT_POINTER(pch->bridge, NULL);
- 	write_unlock_bh(&pch->upl);
- 	synchronize_rcu();
-+
-+	if (pchb)
-+		if (refcount_dec_and_test(&pchb->file.refcnt))
-+			ppp_destroy_channel(pchb);
-+
- 	return -EALREADY;
- }
- 
--- 
-2.17.1
+I have been thinking about this, and I think it is possible to switch
+SFP_PAGE to a needed value, do some reads and writes on that page, and
+restore the page to original value, all in one call to i2c_transfer.
+This would have the advantage to be atomic (unless something breaks int
+he I2C driver).
 
+My question is whether this is allowed, whether the msgs array passed
+to the i2c_transfer() function can have multiple msgs pointing to the
+same buffer (the one into which the original page is first stored
+with first i2c_msg and then restored from it in the last i2c_msg).
+
+I looked into I2C drivers i2c-mv64xxx and i2c-pxa, and it looks that at
+least for these two drivers, it should work.
+
+What do you think?
+
+It could look like this:
+
+  struct i2c_msg msgs[10], *ptr;
+  u8 saved_page[2], new_page[2];
+
+  saved_page[0] = SFP_PAGE;
+  new_page[0] = SFP_PAGE;
+  new_page[1] = 3; /* RollBall MDIO access page */
+
+  ptr = msgs;
+  ptr = fill_read_msg(ptr, 0x51, &saved_page[0], 1, &saved_page[1], 1);
+  ptr = fill_write_msg(ptr, 0x51, new_page, 2);
+
+  /* here some more commands can be added */
+  ...
+
+  /* and this should restore the original page */
+  ptr = fill_write_msg(ptr, 0x51, saved_page, 2);
+
+  return i2c_transfer(i2c, msgs, ptr - msgs);
+
+--
+With fill_read_msg and fill_write_msg defined as such
+
+  static inline struct i2c_msg *
+  fill_read_msg(struct i2c_msg *msg, int addr,
+		void *wbuf, size_t wlen,
+		void *rbuf, size_t rlen)
+  {
+	msg->addr = addr;
+	msg->flags = 0;
+	msg->len = wlen;
+	msg->buf = wbuf;
+	++msg;
+	msg->addr = addr;
+	msg->flags = I2C_M_RD;
+	msg->len = rlen;
+	msg->buf = rbuf;
+	++msg;
+
+	return msg;
+  }
+
+  static inline struct i2c_msg *
+  fill_write_msg(struct i2c_msg *msg, int addr, void *buf, size_t len)
+  {
+	msg->addr = addr;
+	msg->flags = 0;
+	msg->len = len;
+	msg->buf = buf;	
+	++msg;
+
+	return msg;
+  }
