@@ -2,54 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8049F2EC850
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 03:50:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 599502EC8E1
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 04:13:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726862AbhAGCsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 21:48:37 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:58308 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726293AbhAGCsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 21:48:37 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=abaci-bugfix@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UKy5PJl_1609987657;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:abaci-bugfix@linux.alibaba.com fp:SMTPD_---0UKy5PJl_1609987657)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 07 Jan 2021 10:47:54 +0800
-From:   Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
-Subject: [PATCH] net/ipv6: warning: %u in format string (no. 2) requires 'unsigned int' but the argument type is 'signed int'.
-Date:   Thu,  7 Jan 2021 10:47:34 +0800
-Message-Id: <1609987654-11647-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726272AbhAGDKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 22:10:33 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.223]:47901 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726171AbhAGDKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 22:10:32 -0500
+HMM_SOURCE_IP: 172.18.0.218:47170.392515856
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-36.111.140.26?logid-6e8cca70383f472e94a819c95e027fc3 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 6794D280079;
+        Thu,  7 Jan 2021 11:08:19 +0800 (CST)
+X-189-SAVE-TO-SEND: liyonglong@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by App0025 with ESMTP id 6e8cca70383f472e94a819c95e027fc3 for fw@strlen.de;
+        Thu Jan  7 11:08:26 2021
+X-Transaction-ID: 6e8cca70383f472e94a819c95e027fc3
+X-filter-score:  filter<0>
+X-Real-From: liyonglong@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: liyonglong@chinatelecom.cn
+Subject: Re: [PATCH] tcp: remove obsolete paramter sysctl_tcp_low_latency
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, fw@strlen.de
+References: <1608271876-120934-1-git-send-email-liyonglong@chinatelecom.cn>
+ <20201218164647.1bcc6cb9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   lll <liyonglong@chinatelecom.cn>
+Message-ID: <b3cb1c57-d992-72c1-dd24-5d594ff38561@chinatelecom.cn>
+Date:   Thu, 7 Jan 2021 11:08:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <20201218164647.1bcc6cb9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=gbk
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The print format of this parameter does not match, because it is defined
-as int type, so modify the matching format of this parameter to %d format.
 
-Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
-Reported-by: Abaci <abaci@linux.alibaba.com>
----
- net/ipv6/proc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv6/proc.c b/net/ipv6/proc.c
-index d6306aa..26c702b 100644
---- a/net/ipv6/proc.c
-+++ b/net/ipv6/proc.c
-@@ -169,7 +169,7 @@ static void snmp6_seq_show_icmpv6msg(struct seq_file *seq, atomic_long_t *smib)
- 		val = atomic_long_read(smib + i);
- 		if (!val)
- 			continue;
--		snprintf(name, sizeof(name), "Icmp6%sType%u",
-+		snprintf(name, sizeof(name), "Icmp6%sType%d",
- 			i & 0x100 ?  "Out" : "In", i & 0xff);
- 		seq_printf(seq, "%-32s\t%lu\n", name, val);
- 	}
--- 
-1.8.3.1
-
+ÔÚ 2020/12/19 8:46, Jakub Kicinski Ð´µÀ:
+> On Fri, 18 Dec 2020 14:11:16 +0800 lyl wrote:
+>> Remove tcp_low_latency, since it is not functional After commit
+>> e7942d0633c4 (tcp: remove prequeue support)
+>>
+>> Signed-off-by: lyl <liyonglong@chinatelecom.cn>
+> 
+> I don't think we can remove sysctls, even if they no longer control 
+> the behavior of the kernel. The existence of the file itself is uAPI.
+> 
+Got it. But a question: why tcp_tw_recycle can be removed totally?  it is also part of uAPI
