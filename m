@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1C552EE6E5
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 21:31:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F01E2EE719
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 21:42:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbhAGUaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 15:30:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55678 "EHLO mail.kernel.org"
+        id S1727344AbhAGUmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 15:42:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57178 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727555AbhAGUaX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 15:30:23 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 764E8235FD;
-        Thu,  7 Jan 2021 20:29:17 +0000 (UTC)
+        id S1726073AbhAGUmK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 15:42:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C70023443;
+        Thu,  7 Jan 2021 20:41:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610051359;
-        bh=hYKT8tkty72MS2xvthtLHbiWc1iwnGpYn4TnBsn+c9k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eCtMWHHhbtrqcoeEto0xvRW9TPE1mwcIW9Hsk2a4cEIHnzs55Eof+XYdr8r/m0BHX
-         kiJBQ3ArvyTdd1aJRtuwu2koyYe1thIoDBcNP8ZI1GdIWGpI+Rx9dY0pOf/iM2asA6
-         Rg3iIGY9UzBQYejGmzLnZgqvdndiY5gwpdD0Nf87cehng8HAL9eTtWYTthJVdnQy/8
-         +xu1hRz9crcVtk/QlSjOjSpMS6IxxGCU7yRG3SSEL9bhIXKN/VnSyzFsGUFbNkFqxD
-         M/xAXe1AeAzwnxQ4ECBVcgVA7LHTukaH19f/3tS+KORkEXDCM0VooBpyoYVBkLRbo8
-         y9ohIE6gdl9UQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 11/11] net/mlx5e: Fix memleak in mlx5e_create_l2_table_groups
-Date:   Thu,  7 Jan 2021 12:28:45 -0800
-Message-Id: <20210107202845.470205-12-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210107202845.470205-1-saeed@kernel.org>
-References: <20210107202845.470205-1-saeed@kernel.org>
+        s=k20201202; t=1610052089;
+        bh=a6CUG8PRsVym6Q5Cgj1W5JcGRb/ssqxZKkE6n5tl+t0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WQx4nJrW5FOPbpnb7BjCYYsUnOJlB5LAsbwi6vHWWf2P6+vbaAJSIaf6ttkHcqEfJ
+         yu7oXaeI/HoPfhAdSrqD6juYi2l4dlb7rCs4oRjhMl23UNKDhMEzQLzSsnf++SH56g
+         rRLYOuGtSnCtIGX05v7D6rsbmZKAOMoSQnwfXXACXuPn859ddWShzujjRDzJ3Zq4mH
+         UJ8mqjeBNdY9qIxHJFHIDmuvaY3FSKUf5ynNG+z4y5dtilScU7PoQIU1WwReM7PwGh
+         HCnyRO8HP1nXxxhyqhcNTLzxR53uBqEU13B2dhR1foLsweXZ+59VEpZuX5NzjCDQTL
+         vXgmXDFe+pdKA==
+Date:   Thu, 7 Jan 2021 12:41:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 0/7] bcm63xx_enet: major makeover of driver
+Message-ID: <20210107124128.3d989c45@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210106144208.1935-1-liew.s.piaw@gmail.com>
+References: <20210106144208.1935-1-liew.s.piaw@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dinghao Liu <dinghao.liu@zju.edu.cn>
+On Wed,  6 Jan 2021 22:42:01 +0800 Sieng Piaw Liew wrote:
+> This patch series aim to improve the bcm63xx_enet driver by integrating the
+> latest networking features, i.e. batched rx processing, BQL, build_skb,
+> etc.
+> 
+> The newer enetsw SoCs are found to be able to do unaligned rx DMA by adding
+> NET_IP_ALIGN padding which, combined with these patches, improved packet
+> processing performance by ~50% on BCM6328.
+> 
+> Older non-enetsw SoCs still benefit mainly from rx batching. Performance
+> improvement of ~30% is observed on BCM6333.
+> 
+> The BCM63xx SoCs are designed for routers. As such, having BQL is
+> beneficial as well as trivial to add.
+> 
+> v3:
+> * Simplify xmit_more patch by not moving around the code needlessly.
+> * Fix indentation in xmit_more patch.
+> * Fix indentation in build_skb patch.
+> * Split rx ring cleanup patch from build_skb patch and precede build_skb
+>   patch for better understanding, as suggested by Florian Fainelli.
+> 
+> v2:
+> * Add xmit_more support and rx loop improvisation patches.
+> * Moved BQL netdev_reset_queue() to bcm_enet_stop()/bcm_enetsw_stop()
+>   functions as suggested by Florian Fainelli.
+> * Improved commit messages.
 
-When mlx5_create_flow_group() fails, ft->g should be
-freed just like when kvzalloc() fails. The caller of
-mlx5e_create_l2_table_groups() does not catch this
-issue on failure, which leads to memleak.
-
-Fixes: 33cfaaa8f36f ("net/mlx5e: Split the main flow steering table")
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-index 44a2dfbc3853..e02e5895703d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-@@ -1392,6 +1392,7 @@ static int mlx5e_create_l2_table_groups(struct mlx5e_l2_table *l2_table)
- 	ft->g[ft->num_groups] = NULL;
- 	mlx5e_destroy_groups(ft);
- 	kvfree(in);
-+	kfree(ft->g);
- 
- 	return err;
- }
--- 
-2.26.2
-
+Applied, thanks!
