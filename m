@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EAD32ED30C
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 15:51:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEEDC2ED309
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 15:51:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728842AbhAGOuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 09:50:13 -0500
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:51833 "EHLO
+        id S1728429AbhAGOtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 09:49:55 -0500
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:38847 "EHLO
         wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727327AbhAGOuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 09:50:12 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 3923B1847;
-        Thu,  7 Jan 2021 09:49:06 -0500 (EST)
+        by vger.kernel.org with ESMTP id S1727753AbhAGOtz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 09:49:55 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id BC59C1850;
+        Thu,  7 Jan 2021 09:49:08 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Thu, 07 Jan 2021 09:49:06 -0500
+  by compute1.internal (MEProxy); Thu, 07 Jan 2021 09:49:09 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=FdIOkSGy3Q32J64k4
-        wf1rEB8FQzvb72uodaVN4t5/FA=; b=XmxbSqq0OVwNymfH4VfSU+F1bit0co3a7
-        I2XVLzjERh25Iv9JYHobrkBsvcbeheTDGr+qTwBCcGJ1JYndM4gsAxuWfnSP632K
-        upo0nm5BttlNVWvkWl1paKv2tOQfum8kIffuz0jTfCH0v4nf2XL0I3ydvfi3OSY9
-        GKsF6ZRqYoUP+6Mh8kQqxmuPHj64QHJCY6qvHH6D7kcj6lAHDnR4xMf6ttHvwdL4
-        RM8yrB4cw/RLMIWmFteQRZV6Ash2i0VJDPrrGA956pf6qq9QVTUxK5iyBXVDPMaV
-        kdOUiDYEereHMhFZI4025nuyvAkle6jImfRHVezKzrxWIW2JIeFnQ==
-X-ME-Sender: <xms:YR_3X1phBS_XscgeuerS2m316TRGIbVQNK84lxr51658rnz7gl42fA>
-    <xme:YR_3X786UUNBVkNQGkJL4_pPS2_vUMZRltjLtJw5lwrjYs3qFo-QG7L5wtsUuKKp2
-    jmdHzL9xGcOJ-Y>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=G3k0Af7NmpKDN68SDhDcQ4gAWdNN8kOpme1/dP8Y2Og=; b=BcWqYacY
+        tnjeNremnWaNxwhqEkCUbThFlvDv3ay+PL9hMmopaYtUKmAlvFJOueSqA7+iRDPR
+        LA0SMb+jhI7vhKi2Dy2P5e7MTs+dALcbzfU6NWb4/0nwiuDg5suoTo/rEeE1Nnsz
+        V47BEfE+0sPMCEFu9H3crx1MgW4i0jfSPEN7ADrkK49LIQD3xP3eqmDc5hm8nWs/
+        LlpExwzre8Zvle7l893IX6jlv9QOrj4Ah8RPkodtTCscXf4WaSVYRgKF/MC/HlEC
+        8rP7fuzDrxfkZuLu1JoCK8In+QMlCVh6UHcPnrWnd8UzNxOE3c37djX4HbmVRgq9
+        icB/wt17VeYLhg==
+X-ME-Sender: <xms:ZB_3X7yXw1FSDMoXKZ9J9gMSVkDkNlGEA7A1hrx4tEjmpoW_JrAvcg>
+    <xme:ZB_3X8MAsV1rdep3t7IHXTYEtXb0EjL8f7PN5fXjvuT3VPFVTbo8D3csqnJITVQaf
+    aC5Djlf9E8jpg0>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdegvddgieelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:YR_3XxVQBkriswiVu1_RA2cAbl1hdUJm2BeInnp_kGahVrmAw_FGZA>
-    <xmx:YR_3X5Du0OsLDOmHiVr-caYSv78wkbSuqc1m_VVhGkw_v0YyDuKzCg>
-    <xmx:YR_3X6z7iB9F2wdpoadCyqAJ66_j1FnDeDfyXhb1lRqGovkK05YS-Q>
-    <xmx:YR_3X858_CWQs5TeS_lZP3M-tm2ucx8hm2JKa_qJRt_2iefh5n90fQ>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:ZB_3X3RwaFakNgZhseXgAcjlfkT8KBlZ8hlx-PJ-L_0lW6gQ31n_uw>
+    <xmx:ZB_3XybMBL5-Xa95yO50-eTOTiYNIDrn3ISkUxoDajiQDYjmVIV87g>
+    <xmx:ZB_3X80HTxC3tioJAa1_l_J2XofQaZcSgrnl7krR69p4MwF-7KR36Q>
+    <xmx:ZB_3X1n7r4Y0OboUh0LNLXWisDWSzUV6xlPMqJtQL336ONeP-ZnUTQ>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6EB821080063;
-        Thu,  7 Jan 2021 09:49:03 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id DE2E1108005C;
+        Thu,  7 Jan 2021 09:49:05 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
         dsahern@gmail.com, roopa@nvidia.com, nikolay@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 0/4] nexthop: Various fixes
-Date:   Thu,  7 Jan 2021 16:48:20 +0200
-Message-Id: <20210107144824.1135691-1-idosch@idosch.org>
+Subject: [PATCH net 1/4] nexthop: Fix off-by-one error in error path
+Date:   Thu,  7 Jan 2021 16:48:21 +0200
+Message-Id: <20210107144824.1135691-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210107144824.1135691-1-idosch@idosch.org>
+References: <20210107144824.1135691-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -61,30 +64,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-This series contains various fixes for the nexthop code. The bugs were
-uncovered during the development of resilient nexthop groups.
+A reference was not taken for the current nexthop entry, so do not try
+to put it in the error path.
 
-Patches #1-#2 fix the error path of nexthop_create_group(). I was not
-able to trigger these bugs with current code, but it is possible with
-the upcoming resilient nexthop groups code which adds a user
-controllable memory allocation further in the function.
+Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+---
+ net/ipv4/nexthop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patch #3 fixes wrong validation of netlink attributes.
-
-Patch #4 fixes wrong invocation of mausezahn in a selftest.
-
-Ido Schimmel (3):
-  nexthop: Fix off-by-one error in error path
-  nexthop: Unlink nexthop group entry in error path
-  selftests: fib_nexthops: Fix wrong mausezahn invocation
-
-Petr Machata (1):
-  nexthop: Bounce NHA_GATEWAY in FDB nexthop groups
-
- net/ipv4/nexthop.c                          | 6 ++++--
- tools/testing/selftests/net/fib_nexthops.sh | 2 +-
- 2 files changed, 5 insertions(+), 3 deletions(-)
-
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 5e1b22d4f939..f8035cfa9c20 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -1459,7 +1459,7 @@ static struct nexthop *nexthop_create_group(struct net *net,
+ 	return nh;
+ 
+ out_no_nh:
+-	for (; i >= 0; --i)
++	for (i--; i >= 0; --i)
+ 		nexthop_put(nhg->nh_entries[i].nh);
+ 
+ 	kfree(nhg->spare);
 -- 
 2.29.2
 
