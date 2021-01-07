@@ -2,116 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1ECB2EC9D9
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 06:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86FC92EC9DF
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 06:13:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbhAGFIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 00:08:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53406 "EHLO
+        id S1726467AbhAGFMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 00:12:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbhAGFIb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 00:08:31 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9741C0612F0
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 21:07:50 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id q1so5592515ilt.6
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 21:07:50 -0800 (PST)
+        with ESMTP id S1725821AbhAGFMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 00:12:08 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E030C0612F1
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 21:11:28 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id v3so2869162plz.13
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 21:11:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yZJjW69EaraumHukb3idOmjK2XSWpy7LIZcq7hPMseA=;
-        b=FwLZ1c7M1U3iji1liTY4NmWHu0RuTrCv12rdvUM/qnq5BCNDb2Mtya4GcfND/hCEo/
-         swhj/jjZ7FVnoFpL7D7vcvBElKHbMPDRSq8T2NP1KsSXL7FtBscOrI+tmJKO2KwcT07i
-         T1drYfod1BCHp0b3Xl/w2wiBLQDlg4dYeLmNKGpH0ztniTdpSjUHUUmqjqecdtYFzPcb
-         z0Q4okpzI7j0TerBnbbPW6wihKdWfECJNVocvuaqE1r+UyvziJKdsJUj/N1l1U+HdbiG
-         p4I4b6erBwzFRVjCEbUU7i3qdFBK7PG6Q+pzCxpaHeka51iedr2XN9JdrQBAoO6RDQBR
-         IYWA==
+        h=from:to:cc:subject:date:message-id;
+        bh=ekDmBCw0Ka3p56Nn52+5Qv41+dOfGLCxA/iFP0nf5vE=;
+        b=tZzOgkHxL0B4a4TNyPpfGFL3148zpSU1nNAnTUIDQfKOvxPin/BT1j2iSXiZwXUeRe
+         t5xtHuH41rdloWgZpyHyalxsFizY7/Fd9XgV13NSm3mQcoIer7T+v2U8w7V8O86D8vpO
+         AkOC1emNqaSc42FqSShVB+xM8UlN4J1knq90NkRyeAmpkUXCfAOc42jmfRPf5S7pIdT2
+         J8M/yAfGrfH1DuemYtzBW5IObeD0XF7kyStGD28IZuj1K7Qn+6arzljG6qhWcLjh2FJs
+         OsJAoo8HCQllgeBiptyXW3DtbjQG1Hx9kw9Mwfo9s9RZ692YmQiUmJrRUETr2vfHAIkS
+         JFTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yZJjW69EaraumHukb3idOmjK2XSWpy7LIZcq7hPMseA=;
-        b=IG3a3nvOHR5J66TPGMm9zwb5xg8qIlkfapa9DJTMXvpmV3Ab/ACqe1s3Tpg5+X0bIz
-         36Eiyw/NFQMIm3EVqLNA36GJ+o7QeU2ztp/9yABrih7zqCk4GOtU1ybGzDZ9275NtNMO
-         hcF+/osyTzlnnSUXExnrvqsvgDbq4rxs+VoeAi2sWV+LxUu9Y1OmzJshyC7agXlNI8MM
-         nHZNtOtuuZ7inu/es9dXplLRNKNGN8m7LbMiujUIEIFIHG9gCBsM9iHWMUk1sfsGZAlm
-         8bdVSuVVZpHcg1oFPhVQyGTvrbC88p2BPo0x1NP6fi3Vp/jmbDF3hKAPq+A4E7ginvm7
-         gMpQ==
-X-Gm-Message-State: AOAM530wtnI47Jdl3ZFgsLK+gYSVSgD5dyTcHA4DbmhXmN6phCe8/R+3
-        2Ci+E6uq+0MVhVE66av2Av2uAzki35RqKAoKpd0=
-X-Google-Smtp-Source: ABdhPJwpchOzxaq7yDiBHVauYT7gSL6oBy9r42VARfrL3DI1adnO5NfVWUzVWPm5vTgXaPc8kHFlUZTP6ol0RNPMi44=
-X-Received: by 2002:a05:6e02:8e5:: with SMTP id n5mr7568288ilt.151.1609996070225;
- Wed, 06 Jan 2021 21:07:50 -0800 (PST)
-MIME-Version: 1.0
-References: <CABdVr8RVXj3dg-by_W99=fPSjdfB7fYXFRBW9sropQpYKD1xOQ@mail.gmail.com>
- <CAF=yD-+0m5Md8bjyv458Tszr_Ti-o=zDnS0TJs4cspjS2n8RLg@mail.gmail.com>
-In-Reply-To: <CAF=yD-+0m5Md8bjyv458Tszr_Ti-o=zDnS0TJs4cspjS2n8RLg@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ekDmBCw0Ka3p56Nn52+5Qv41+dOfGLCxA/iFP0nf5vE=;
+        b=syYi0/y1m9jny/fMDGLK2AMOTe0+tvw8/uLxQka7lemeYEAREzRgFFu/zt+2O/1oyN
+         JnDPslwgWHTQHuO21uBeRi9cNE/QZi0QM+zdjcGUOTfvRH54TIb2W9/4CA4wx0H6D+Gf
+         3E0pbiLIM2vX8BleSF8noC5D7vOwjFQl+UX1plsBbrP4LNocnz+shEJ0iiruv8qEb0C2
+         vgHyuTkV7ysu/KOmHp6MgBQKLR/9jmOWR1KRL6yKopP3f7aoCPND256rQdushFegBYQL
+         0sZUdljeYffI6rvc5UB3ig2Xl3ks7iW2c+63yIAsx5EqbuBW1BtqgOzTyCcvaorMGFy4
+         kTHA==
+X-Gm-Message-State: AOAM531Cjd2TWoRbdbRELyutQQo6S71qMhzuX5pUzOvsDjxanJpdP4D2
+        Yi0rGHjMVmWaF94rQ/8jZFwjJrbhuXeD6Q==
+X-Google-Smtp-Source: ABdhPJx61yj1XP10jSsXMYO7RWfIz8uAt+aj0rGLWSrXMvdbaONkGDFeyYT4knjXQZCXWL4BbNoivQ==
+X-Received: by 2002:a17:902:8bcc:b029:dc:45d9:f8b2 with SMTP id r12-20020a1709028bccb02900dc45d9f8b2mr7741623plo.62.1609996287688;
+        Wed, 06 Jan 2021 21:11:27 -0800 (PST)
+Received: from localhost (natp-s01-129-78-56-229.gw.usyd.edu.au. [129.78.56.229])
+        by smtp.gmail.com with ESMTPSA id l190sm4043590pfl.205.2021.01.06.21.11.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Jan 2021 21:11:27 -0800 (PST)
 From:   Baptiste Lepers <baptiste.lepers@gmail.com>
-Date:   Thu, 7 Jan 2021 16:07:39 +1100
-Message-ID: <CABdVr8Q4BrCPSD0JfCSAVdzup5wUTWxqV2F5Esd5RQ_MVn53DA@mail.gmail.com>
-Subject: Re: Possible read of uninitialized array values in reuseport_select_sock?
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     davem@davemloft.net, kuba@kernel.org, willemb@google.com,
+        netdev@vger.kernel.org, baptiste.lepers@gmail.com
+Subject: [PATCH] udp: Prevent reuseport_select_sock from reading uninitialized socks
+Date:   Thu,  7 Jan 2021 16:11:10 +1100
+Message-Id: <20210107051110.12247-1-baptiste.lepers@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks. I will submit a patch.
+reuse->socks[] is modified concurrently by reuseport_add_sock. To
+prevent reading values that have not been fully initialized, only read
+the array up until the last known safe index instead of incorrectly
+re-reading the last index of the array.
 
-Baptiste.
+Fixes: acdcecc61285f ("udp: correct reuseport selection with connected
+sockets")
+Signed-off-by: Baptiste Lepers <baptiste.lepers@gmail.com>
+---
+ net/core/sock_reuseport.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Thu, Jan 7, 2021 at 3:57 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Wed, Jan 6, 2021 at 10:54 PM Baptiste Lepers
-> <baptiste.lepers@gmail.com> wrote:
-> >
-> > Hello,
-> >
-> > While reading the code of net/core/sock_reuseport.c, I think I found a
-> > possible race in reuseport_select_sock. The current code has the
-> > following pattern:
-> >
-> >    socks = READ_ONCE(reuse->num_socks);
-> >    smp_rmb(); // paired with reuseport_add_sock to make sure
-> > reuse->socks[i < num_socks] are initialized
-> >    while (reuse->socks[i]->sk_state == TCP_ESTABLISHED) {
-> >         if (i >= reuse->num_socks) // should be "socks" and not
-> > "reuse->num_socks"?
-> >
-> > The barrier seems to be here to make sure that all items of
-> > reuse->socks are initialized before being read, but the barrier only
-> > protects indexes < socks, not indexes < reuse->num_socks.
-> >
-> > I have a patch ready to fix this issue, but I wanted to confirm that
-> > the current code is indeed incorrect (if the code is correct for a
-> > non-obvious reason, I'd be happy to add some comments to document the
-> > behavior).
-> >
-> >
-> > Here is the diff of the patch I was planning to submit:
-> >
-> > diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-> > index bbdd3c7b6cb5..b065f0a103ed 100644
-> > --- a/net/core/sock_reuseport.c
-> > +++ b/net/core/sock_reuseport.c
-> > @@ -293,7 +293,7 @@ struct sock *reuseport_select_sock(struct sock *sk,
-> >              i = j = reciprocal_scale(hash, socks);
-> >              while (reuse->socks[i]->sk_state == TCP_ESTABLISHED) {
-> >                  i++;
-> > -                if (i >= reuse->num_socks)
-> > +                if (i >= socks)
-> >                      i = 0;
-> >                  if (i == j)
-> >                      goto out;
-> >
-> >
-> > Thanks,
-> > Baptiste.
->
-> Thanks for the clear description. Yes, I believe you're correct.
+diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+index bbdd3c7b6cb5..b065f0a103ed 100644
+--- a/net/core/sock_reuseport.c
++++ b/net/core/sock_reuseport.c
+@@ -293,7 +293,7 @@ struct sock *reuseport_select_sock(struct sock *sk,
+ 			i = j = reciprocal_scale(hash, socks);
+ 			while (reuse->socks[i]->sk_state == TCP_ESTABLISHED) {
+ 				i++;
+-				if (i >= reuse->num_socks)
++				if (i >= socks)
+ 					i = 0;
+ 				if (i == j)
+ 					goto out;
+-- 
+2.17.1
+
