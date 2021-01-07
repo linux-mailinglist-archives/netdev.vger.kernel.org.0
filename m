@@ -2,117 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC0472ECB6B
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 09:06:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A251A2ECC14
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 09:55:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726844AbhAGIFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 03:05:36 -0500
-Received: from mail-ot1-f41.google.com ([209.85.210.41]:37857 "EHLO
-        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725763AbhAGIFf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 03:05:35 -0500
-Received: by mail-ot1-f41.google.com with SMTP id o11so5559124ote.4;
-        Thu, 07 Jan 2021 00:05:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0TPseVwGCXsOzziJOFXy0csIKxTAA1WaNx2ZI4idEKY=;
-        b=qYDm+V2g02amIBsejIlly/kxYZMeLMqAAWMKA2EUK5gv1L7jnv2NLfzICoHEdxUnP1
-         r2WOSvBfObTNpVann5meU4MrT14hGOru7v7n8piZWymfFYs22t2ibczE5g+JFwGnUdbP
-         5DdqseVimErO1P9Uv1Sh/EiDxVEMc0sewoLephTM465UtNZK+l5JTgsyK8TK8PZxVsNB
-         dBYpjLA2CRfJzvCEeswplZPcO7EwuZMbOi6jfHaMkpVLi/mJ1owEz0vly0C6vaL1uKzQ
-         29lgEfZPlIA1++r5fyuMfztUKA/BLpAYKkje993mcrMUTl0WD+jRImySMYxaJAz31Rb2
-         gMrw==
-X-Gm-Message-State: AOAM5333ii966ffPw5pRYuEBflSltJ4dtnAZIgRo9B4CoiQelLxc+dpi
-        J5T4y9B0rc8VrA02km+5hxviglCYU0gLa9flWQZ3K5io
-X-Google-Smtp-Source: ABdhPJzVAPf8/NQQQzT3zzrkoDzUv+P+SG+XgCFUWTKsU/u1ByX8ezoz8GuB2nVGz7LNk3BFgEKDp8LcWHb42uaO/Sc=
-X-Received: by 2002:a05:6830:1f5a:: with SMTP id u26mr5905584oth.250.1610006693990;
- Thu, 07 Jan 2021 00:04:53 -0800 (PST)
+        id S1727149AbhAGIzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 03:55:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39624 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726366AbhAGIzF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 03:55:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 47A532313B;
+        Thu,  7 Jan 2021 08:54:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610009665;
+        bh=FtqVSUgdaxf6+JYUvu+inUHS11JLGFu2ssQmVg0Z45U=;
+        h=In-Reply-To:References:To:Cc:From:Subject:Date:From;
+        b=iV7Db2+RGMqV2TqsgWxNWDvchbAapULFxpR+rmi8M+/jHiZcDjQFN+dr/f8yf/yPt
+         KIBuuEbvhk2Vz+ygDAIp9qB5HocxM97pRjNg53N8rPwVJ4LY2+Ezirp03Sw/aq2i+k
+         x8uk5qcophL1C5c4951lEyMes9q4rsMvg4gjLVT0S90xdSb7oh+p2/7liqfNXXh0qQ
+         swX2u7Bht3WA4e3WalQdrFyHvMtQnvoDCQ020Gsb52Yz8MKD35ijdvDKZPwZXyWxar
+         96R7bRVURknRl3nixjYwghzFAqWDk6eQ964FTgEaUmYdqIAl/Y+ylJx0QnMlXZERdG
+         vl1RTxCCD9rcg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <CAMuHMdX=trGqj8RzV7r1iTneqDjWOc4e1T-X+R_B34rxxhJpbg@mail.gmail.com>
- <20210106184839.GA7773@alpha.franken.de> <CAMuHMdV86BES7dmWr-7j1jbtoSy0bH1J0e5W41p8evagi0Nqcw@mail.gmail.com>
- <20210107.101729.1936921832901251107.anemo@mba.ocn.ne.jp>
-In-Reply-To: <20210107.101729.1936921832901251107.anemo@mba.ocn.ne.jp>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 7 Jan 2021 09:04:43 +0100
-Message-ID: <CAMuHMdX6ptaO3r=b55zqwrrK8ADfSRWdunwHA5DYD08PMCAPaA@mail.gmail.com>
-Subject: Re: [PATCH 00/10] Remove support for TX49xx
-To:     Atsushi Nemoto <anemo@mba.ocn.ne.jp>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "R, Vignesh" <vigneshr@ti.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.com>, linux-ide@vger.kernel.org,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-spi <linux-spi@vger.kernel.org>, linux-rtc@vger.kernel.org,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Richard Weinberger <richard@nod.at>,
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAKgT0UdZs7ER84PmeM5EV6rAKWiqu-5Ma47bh8qf-68fjsfbAw@mail.gmail.com>
+References: <20210106180428.722521-1-atenart@kernel.org> <20210106180428.722521-4-atenart@kernel.org> <CAKgT0UdZs7ER84PmeM5EV6rAKWiqu-5Ma47bh8qf-68fjsfbAw@mail.gmail.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Matt Mackall <mpm@selenic.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vinod <vkoul@kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Netdev <netdev@vger.kernel.org>
+From:   Antoine Tenart <atenart@kernel.org>
+Subject: Re: [PATCH net 3/3] net-sysfs: move the xps cpus/rxqs retrieval in a common function
+Message-ID: <161000966161.3275.12891261917424414122@kwain.local>
+Date:   Thu, 07 Jan 2021 09:54:21 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nemoto-san,
+Quoting Alexander Duyck (2021-01-06 20:54:11)
+> On Wed, Jan 6, 2021 at 10:04 AM Antoine Tenart <atenart@kernel.org> wrote:
+> > +/* Should be called with the rtnl lock held. */
+> > +static int xps_queue_show(struct net_device *dev, unsigned long **mask,
+> > +                         unsigned int index, bool is_rxqs_map)
+>=20
+> Why pass dev and index instead of just the queue which already
+> contains both?
 
-On Thu, Jan 7, 2021 at 2:18 AM Atsushi Nemoto <anemo@mba.ocn.ne.jp> wrote:
-> On Wed, 6 Jan 2021 21:41:24 +0100, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> >> > Is that sufficient to keep it?
-> >>
-> >> for me it is. But now we probaly need some reverts then...
+Right, I can do that.
+
+> I think it would make more sense to just stick to passing the queue
+> through along with a pointer to the xps_dev_maps value that we need to
+> read.
+
+That would require to hold rcu_read_lock in the caller and I'd like to
+keep it in that function.
+
+> >         if (dev->num_tc) {
+> >                 /* Do not allow XPS on subordinate device directly */
+> >                 num_tc =3D dev->num_tc;
+> > -               if (num_tc < 0) {
+> > -                       ret =3D -EINVAL;
+> > -                       goto err_rtnl_unlock;
+> > -               }
+> > +               if (num_tc < 0)
+> > +                       return -EINVAL;
 > >
-> > Indeed. Fortunately not all of it, as some removals were TX4938-only.
->
-> These patches should not break RBTX4927:
->
->   net: tc35815: Drop support for TX49XX boards
->   spi: txx9: Remove driver
->   mtd: Remove drivers used by TX49xx
->   char: hw_random: Remove tx4939 driver
->   rtc: tx4939: Remove driver
->   ide: tx4938ide: Remove driver
+> >                 /* If queue belongs to subordinate dev use its map */
+> >                 dev =3D netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
+> >
+> >                 tc =3D netdev_txq_to_tc(dev, index);
+> > -               if (tc < 0) {
+> > -                       ret =3D -EINVAL;
+> > -                       goto err_rtnl_unlock;
+> > -               }
+> > +               if (tc < 0)
+> > +                       return -EINVAL;
+> >         }
+> >
+>=20
+> So if we store the num_tc and nr_ids in the dev_maps structure then we
+> could simplify this a bit by pulling the num_tc info out of the
+> dev_map and only asking the Tx queue for the tc in that case and
+> validating it against (tc <0 || num_tc <=3D tc) and returning an error
+> if either are true.
+>=20
+> This would also allow us to address the fact that the rxqs feature
+> doesn't support the subordinate devices as you could pull out the bit
+> above related to the sb_dev and instead call that prior to calling
+> xps_queue_show so that you are operating on the correct device map.
+>=20
+> > -       mask =3D bitmap_zalloc(nr_cpu_ids, GFP_KERNEL);
+> > -       if (!mask) {
+> > -               ret =3D -ENOMEM;
+> > -               goto err_rtnl_unlock;
+> > +       rcu_read_lock();
+> > +
+> > +       if (is_rxqs_map) {
+> > +               dev_maps =3D rcu_dereference(dev->xps_rxqs_map);
+> > +               nr_ids =3D dev->num_rx_queues;
+> > +       } else {
+> > +               dev_maps =3D rcu_dereference(dev->xps_cpus_map);
+> > +               nr_ids =3D nr_cpu_ids;
+> > +               if (num_possible_cpus() > 1)
+> > +                       possible_mask =3D cpumask_bits(cpu_possible_mas=
+k);
+> >         }
+>=20
+> I think Jakub had mentioned earlier the idea of possibly moving some
+> fields into the xps_cpus_map and xps_rxqs_map in order to reduce the
+> complexity of this so that certain values would be protected by the
+> RCU lock.
+>=20
+> This might be a good time to look at encoding things like the number
+> of IDs and the number of TCs there in order to avoid a bunch of this
+> duplication. Then you could just pass a pointer to the map you want to
+> display and the code should be able to just dump the values.:
 
-Indeed.
+100% agree to all the above. That would also prevent from making out of
+bound accesses when dev->num_tc is increased after dev_maps is
+allocated. I do have a series ready to be send storing num_tc into the
+maps, and reworking code to use it instead of dev->num_tc. The series
+also adds checks to ensure the map is valid when we access it (such as
+making sure dev->num_tc =3D=3D map->num_tc). I however did not move nr_ids
+into the map yet, but I'll look into it.
 
-> And these patches just break audio-support only.
->
->   dma: tx49 removal
->   ASoC: txx9: Remove driver
->
-> I think dma and ASoC drivers are hard to maintain now, and can be
-> dropped for basic support for RBTX4927.
-> (TX39 boards does not have audio-support, so dma txx9 driver can be
-> dropped too)
+The idea is to send it as a follow up series, as this one is only moving
+code around to improve maintenance and readability. Even if all the
+patches were in the same series that would be a prerequisite.
 
-Agreed, I don't test audio anyway, but I know it used to work (I had
-intended to use the board as an MPD media server, but never got beyond
-the prototyping phase).
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks!
+Antoine
