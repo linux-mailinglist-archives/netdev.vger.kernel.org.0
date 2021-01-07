@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 610982ECA64
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 07:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 468EA2ECA66
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 07:15:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbhAGGM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 01:12:27 -0500
-Received: from mga05.intel.com ([192.55.52.43]:34343 "EHLO mga05.intel.com"
+        id S1726698AbhAGGMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 01:12:30 -0500
+Received: from mga05.intel.com ([192.55.52.43]:34347 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725900AbhAGGM1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 01:12:27 -0500
-IronPort-SDR: +Agtplak3Jo8BgOSjmdWKg4MQXjI6J2LkrsXKZncUeXa7VBDmWgcCQRJk3MRW2T/SMbJcrPc0B
- F0LF0TArJRQg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9856"; a="262152096"
+        id S1725900AbhAGGM3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 01:12:29 -0500
+IronPort-SDR: t66r1lp2ykV+d1atMbAvk682IFeog/SJS++WDcdLYzok3eqoR7pGyC8boTdGbdocVcm20Hu2x6
+ 0Uq+KQpi1uvg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9856"; a="262152099"
 X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; 
-   d="scan'208";a="262152096"
+   d="scan'208";a="262152099"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2021 22:12:00 -0800
-IronPort-SDR: 0ST6VFwYx4fKIReO4Gz8b6HB1E6wyxCtdLwaB6Zg01qJb7YYA3LhPr5EJDx56FnH90aCIV15eU
- KRURRJaybmlA==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2021 22:12:04 -0800
+IronPort-SDR: QrqdGTZ8HC2309dBRob1WqwA6cOawP4RyUXIpHnBxbDwXcfiH1AHKju+a+B6c1d6ocraD4lfJe
+ 9D2IG6HkaWfw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; 
-   d="scan'208";a="462932407"
+   d="scan'208";a="462932422"
 Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.141])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Jan 2021 22:11:57 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 06 Jan 2021 22:12:01 -0800
 From:   Xu Yilun <yilun.xu@intel.com>
 To:     andrew@lunn.ch, arnd@arndb.de, lee.jones@linaro.org,
         gregkh@linuxfoundation.org
@@ -32,86 +32,83 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
         hao.wu@intel.com, matthew.gerlach@intel.com,
         russell.h.weight@intel.com
-Subject: [RESEND PATCH 0/2] Add retimer interfaces support for Intel MAX 10 BMC
-Date:   Thu,  7 Jan 2021 14:07:06 +0800
-Message-Id: <1609999628-12748-1-git-send-email-yilun.xu@intel.com>
+Subject: [RESEND PATCH 1/2] mfd: intel-m10-bmc: specify the retimer sub devices
+Date:   Thu,  7 Jan 2021 14:07:07 +0800
+Message-Id: <1609999628-12748-2-git-send-email-yilun.xu@intel.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1609999628-12748-1-git-send-email-yilun.xu@intel.com>
+References: <1609999628-12748-1-git-send-email-yilun.xu@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I resend this patchset to loop in networking developers for comments. This
-is the previous thread. I'll fix other comments when I have a v2.
+The patch specifies the 2 retimer sub devices and their resources in the
+parent driver's mfd_cell. It also adds the register definition of the
+retimer sub devices.
 
-https://lore.kernel.org/lkml/X%2FV9hvXYlUOT9U2n@kroah.com/
+There are 2 ethernet retimer chips (C827) connected to the Intel MAX 10
+BMC. They are managed by the BMC firmware, and host could query them via
+retimer interfaces (shared registers) on the BMC. The 2 retimers have
+identical register interfaces in different register addresses or fields,
+so it is better we define 2 retimer devices and handle them with the same
+driver.
 
+Signed-off-by: Xu Yilun <yilun.xu@intel.com>
+---
+ drivers/mfd/intel-m10-bmc.c       | 19 ++++++++++++++++++-
+ include/linux/mfd/intel-m10-bmc.h |  7 +++++++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
-The patchset is for the retimers connected to Intel MAX 10 BMC on Intel
-PAC (Programmable Acceleration Card) N3000 Card. The network part of the
-N3000 card is like the following:
-
-                       +----------------------------------------+
-                       |                  FPGA                  |
-  +----+   +-------+   +-----------+  +----------+  +-----------+   +----------+
-  |QSFP|---|retimer|---|Line Side  |--|User logic|--|Host Side  |---|XL710     |
-  +----+   +-------+   |Ether Group|  |          |  |Ether Group|   |Ethernet  |
-                       |(PHY + MAC)|  |wiring &  |  |(MAC + PHY)|   |Controller|
-                       +-----------+  |offloading|  +-----------+   +----------+
-                       |              +----------+              |
-                       |                                        |
-                       +----------------------------------------+
-
-I had sent some RFC patches to expose the Line Side Ether Group + retimer +
-QSFP as a netdev, and got some comments from netdev Maintainers.
-
-https://lore.kernel.org/netdev/1603442745-13085-2-git-send-email-yilun.xu@intel.com/
-
-The blocking issues I have is that physically the QSFP & retimer is
-managed by the BMC and host could only get the retimer link states. This
-is not enough to support some necessary netdev ops.  E.g. host cannot
-realize the type/speed of the SFP by "ethtool -m", then users could not
-configure the various layers accordingly.
-
-This means the existing net tool can not work with it, so this patch just
-expose the link states as custom sysfs attrs.
-
-
-This patchset supports the ethernet retimers (C827) for the Intel PAC
-(Programmable Acceleration Card) N3000, which is a FPGA based Smart NIC.
-
-The 2 retimer chips connect to the Intel MAX 10 BMC on the card. They are
-managed by the BMC firmware. Host could query their link states and
-firmware version information via retimer interfaces (Shared registers) on
-the BMC. The driver creates sysfs interfaces for users to query these
-information.
-
-The Intel OPAE (Open Programmable Acceleration Engine) lib provides tools
-to read these attributes.
-
-This is the source of the OPAE lib.
-
-https://github.com/OPAE/opae-sdk/
-
-Generally it facilitate the development on all the DFL (Device Feature
-List) based FPGA Cards, including the management of static region &
-dynamic region reprogramming, accelerators accessing and the board
-specific peripherals.
-
-
-Xu Yilun (2):
-  mfd: intel-m10-bmc: specify the retimer sub devices
-  misc: add support for retimers interfaces on Intel MAX 10 BMC
-
- .../ABI/testing/sysfs-driver-intel-m10-bmc-retimer |  32 +++++
- drivers/mfd/intel-m10-bmc.c                        |  19 ++-
- drivers/misc/Kconfig                               |  10 ++
- drivers/misc/Makefile                              |   1 +
- drivers/misc/intel-m10-bmc-retimer.c               | 158 +++++++++++++++++++++
- include/linux/mfd/intel-m10-bmc.h                  |   7 +
- 6 files changed, 226 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-retimer
- create mode 100644 drivers/misc/intel-m10-bmc-retimer.c
-
+diff --git a/drivers/mfd/intel-m10-bmc.c b/drivers/mfd/intel-m10-bmc.c
+index b84579b..e0a99a0 100644
+--- a/drivers/mfd/intel-m10-bmc.c
++++ b/drivers/mfd/intel-m10-bmc.c
+@@ -17,9 +17,26 @@ enum m10bmc_type {
+ 	M10_N3000,
+ };
+ 
++static struct resource retimer0_resources[] = {
++	{M10BMC_PKVL_A_VER, M10BMC_PKVL_A_VER, "version", IORESOURCE_REG, },
++};
++
++static struct resource retimer1_resources[] = {
++	{M10BMC_PKVL_B_VER, M10BMC_PKVL_B_VER, "version", IORESOURCE_REG, },
++};
++
+ static struct mfd_cell m10bmc_pacn3000_subdevs[] = {
+ 	{ .name = "n3000bmc-hwmon" },
+-	{ .name = "n3000bmc-retimer" },
++	{
++		.name = "n3000bmc-retimer",
++		.num_resources = ARRAY_SIZE(retimer0_resources),
++		.resources = retimer0_resources,
++	},
++	{
++		.name = "n3000bmc-retimer",
++		.num_resources = ARRAY_SIZE(retimer1_resources),
++		.resources = retimer1_resources,
++	},
+ 	{ .name = "n3000bmc-secure" },
+ };
+ 
+diff --git a/include/linux/mfd/intel-m10-bmc.h b/include/linux/mfd/intel-m10-bmc.h
+index c8ef2f1..d6216f9 100644
+--- a/include/linux/mfd/intel-m10-bmc.h
++++ b/include/linux/mfd/intel-m10-bmc.h
+@@ -21,6 +21,13 @@
+ #define M10BMC_VER_PCB_INFO_MSK		GENMASK(31, 24)
+ #define M10BMC_VER_LEGACY_INVALID	0xffffffff
+ 
++/* Retimer related registers, in system register region */
++#define M10BMC_PKVL_LSTATUS		0x164
++#define M10BMC_PKVL_A_VER		0x254
++#define M10BMC_PKVL_B_VER		0x258
++#define M10BMC_PKVL_SERDES_VER		GENMASK(15, 0)
++#define M10BMC_PKVL_SBUS_VER		GENMASK(31, 16)
++
+ /**
+  * struct intel_m10bmc - Intel MAX 10 BMC parent driver data structure
+  * @dev: this device
 -- 
 2.7.4
 
