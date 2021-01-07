@@ -2,95 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECF52ECC9C
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 10:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6126F2ECCAC
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 10:26:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727686AbhAGJVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 04:21:00 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:7742 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726541AbhAGJU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 04:20:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1610011258; x=1641547258;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=J5rFT38u51E8wge0MWRYiUNwuAT8ed/TsqmvLNI7Yzc=;
-  b=HJ071Uaq/wiKKEhCz2cPoi3y5RqTtvzmMHU3ehvjNUCv5+OhZmnMi4jo
-   bKjpVoPfbDVWff4NPiGTbPE3Bg0uj1vs9U9ZtG0BlI3XDQNG+QBuxRfII
-   K23p1f51RlvTZ2O7fhJF/TmBMh9paogJU+LzIPnn0NzKITxdxgIImEkhn
-   kp49TpPSquz/HmUO3zqdcnY5JuXSS8bGotRPXiO4h96lNl041R1RE90fR
-   dYE1RmfspRK+WI2PKIzBaYjhy48ueXR2xrm7pFuLRwIEI1ZPsmAafP+zr
-   NafidOqSnQmqdfoE6VVQDkTmI81GEsloXU+TglV4c1Al0qbz6dwDmw2WB
-   g==;
-IronPort-SDR: /+l1+ZXUw64BxIU+sOXnTHuiJAJ3rkV5HYwY4YyGCmQu4A+WUQp29rVe48DfZ+309UjoXDt+ly
- PnL0yXHSW+KVIC+buV20U95U+pnOFle5fVPrfSOGuEVwRqDbTFpX/HoHoiEa6m5rhSNd7L0dar
- eRzdqpE3RduTB/9DIFszGbt4FLcaAaHtmge6y/nHeS+Zghg1oVu8preJLYIOanLt4PmYtffQo9
- 1ZgPUSiYgZzbNGH+BLf2v0YLe0i7nCv+QweTvm8XC8YGM1PkMGJ/bDD7EvBKoLVcmcE2S41u8l
- /ww=
-X-IronPort-AV: E=Sophos;i="5.79,329,1602572400"; 
-   d="scan'208";a="105102765"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Jan 2021 02:19:41 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 7 Jan 2021 02:19:41 -0700
-Received: from mchp-dev-shegelun.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Thu, 7 Jan 2021 02:19:39 -0700
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
-CC:     Steen Hegelund <steen.hegelund@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v12 4/4] arm64: dts: sparx5: Add Sparx5 serdes driver node
-Date:   Thu, 7 Jan 2021 10:19:24 +0100
-Message-ID: <20210107091924.1569575-5-steen.hegelund@microchip.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210107091924.1569575-1-steen.hegelund@microchip.com>
-References: <20210107091924.1569575-1-steen.hegelund@microchip.com>
+        id S1727153AbhAGJZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 04:25:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45472 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726793AbhAGJZc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 04:25:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9798323333;
+        Thu,  7 Jan 2021 09:24:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1610011492;
+        bh=fxwmuL/Qs6SNY83+/gRu2pNV3MxZ86kZSjNwXWJ74FM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G3Yg1ETV4XfGyMZzQyLllMyfHX/3AoVFknDJvN9dJlWXdVfcE+EjYxxm7d5VmytOc
+         EKlMxR81ioNfI5AOdItG6iKNmzU/Z6Hm5N0OkMr59FKYaiWzECOmXhgCqUKRXk2gD4
+         QSwxGuaAfykbTTwut+i4zEvYTeZ1Lm2JFZ9dXjc0=
+Date:   Thu, 7 Jan 2021 10:26:12 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Xu Yilun <yilun.xu@intel.com>
+Cc:     andrew@lunn.ch, arnd@arndb.de, lee.jones@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com,
+        matthew.gerlach@intel.com, russell.h.weight@intel.com
+Subject: Re: [RESEND PATCH 2/2] misc: add support for retimers interfaces on
+ Intel MAX 10 BMC
+Message-ID: <X/bTtBUevX5IBPUl@kroah.com>
+References: <1609999628-12748-1-git-send-email-yilun.xu@intel.com>
+ <1609999628-12748-3-git-send-email-yilun.xu@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1609999628-12748-3-git-send-email-yilun.xu@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Sparx5 serdes driver node, and enable it generally for all
-reference boards.
+On Thu, Jan 07, 2021 at 02:07:08PM +0800, Xu Yilun wrote:
+> This driver supports the ethernet retimers (C827) for the Intel PAC
+> (Programmable Acceleration Card) N3000, which is a FPGA based Smart NIC.
+> 
+> C827 is an Intel(R) Ethernet serdes transceiver chip that supports
+> up to 100G transfer. On Intel PAC N3000 there are 2 C827 chips
+> managed by the Intel MAX 10 BMC firmware. They are configured in 4 ports
+> 10G/25G retimer mode. Host could query their link states and firmware
+> version information via retimer interfaces (Shared registers) on Intel
+> MAX 10 BMC. The driver creates sysfs interfaces for users to query these
+> information.
 
-Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- arch/arm64/boot/dts/microchip/sparx5.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Networking people, please look at this sysfs file:
 
-diff --git a/arch/arm64/boot/dts/microchip/sparx5.dtsi b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-index 380281f312d8..29c606194bc7 100644
---- a/arch/arm64/boot/dts/microchip/sparx5.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-@@ -383,5 +383,13 @@ tmon0: tmon@610508110 {
- 			#thermal-sensor-cells = <0>;
- 			clocks = <&ahb_clk>;
- 		};
-+
-+		serdes: serdes@10808000 {
-+			compatible = "microchip,sparx5-serdes";
-+			#phy-cells = <1>;
-+			clocks = <&sys_clk>;
-+			reg = <0x6 0x10808000 0x5d0000>;
-+		};
-+
- 	};
- };
--- 
-2.29.2
+> +What:		/sys/bus/platform/devices/n3000bmc-retimer.*.auto/link_statusX
+> +Date:		Jan 2021
+> +KernelVersion:	5.12
+> +Contact:	Xu Yilun <yilun.xu@intel.com>
+> +Description:	Read only. Returns the status of each line side link. "1" for
+> +		link up, "0" for link down.
+> +		Format: "%u".
 
+as I need your approval to add it because it is not the "normal" way for
+link status to be exported to userspace.
+
+One code issue:
+
+> +#define to_link_attr(dev_attr) \
+> +	container_of(dev_attr, struct link_attr, attr)
+> +
+> +static ssize_t
+> +link_status_show(struct device *dev, struct device_attribute *attr, char *buf)
+> +{
+> +	struct m10bmc_retimer *retimer = dev_get_drvdata(dev);
+> +	struct link_attr *lattr = to_link_attr(attr);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	ret = m10bmc_sys_read(retimer->m10bmc, M10BMC_PKVL_LSTATUS, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return sysfs_emit(buf, "%u\n",
+> +			  !!(val & BIT((retimer->id << 2) + lattr->index)));
+> +}
+> +
+> +#define link_status_attr(_index)				\
+> +	static struct link_attr link_attr_status##_index =	\
+> +		{ .attr = __ATTR(link_status##_index, 0444,	\
+> +				 link_status_show, NULL),	\
+> +		  .index = (_index) }
+
+Why is this a "raw" attribute and not a device attribute?
+
+Please just use a normal DEVICE_ATTR_RO() macro to make it simpler and
+easier to understand over time, what you are doing here.  I can't
+determine what is happening with this code now...
+
+thanks,
+
+greg k-h
