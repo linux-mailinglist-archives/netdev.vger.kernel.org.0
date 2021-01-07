@@ -2,155 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA3DE2ECE6A
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 12:07:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 921142ECE6C
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 12:08:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727333AbhAGLGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 06:06:41 -0500
-Received: from www62.your-server.de ([213.133.104.62]:43364 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726151AbhAGLGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 06:06:40 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kxT6o-0009mh-Vb; Thu, 07 Jan 2021 12:05:39 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kxT6o-000QhI-Ia; Thu, 07 Jan 2021 12:05:38 +0100
-Subject: Re: [PATCH net v2] net: fix use-after-free when UDP GRO with shared
- fraglist
-To:     Dongseok Yi <dseok.yi@samsung.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Westphal <fw@strlen.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Marco Elver <elver@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, namkyu78.kim@samsung.com
-References: <1609750005-115609-1-git-send-email-dseok.yi@samsung.com>
- <CGME20210107005028epcas2p35dfa745fd92e31400024874f54243556@epcas2p3.samsung.com>
- <1609979953-181868-1-git-send-email-dseok.yi@samsung.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <83a2b288-c0b2-ed98-9479-61e1cbe25519@iogearbox.net>
-Date:   Thu, 7 Jan 2021 12:05:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727711AbhAGLHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 06:07:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34492 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725974AbhAGLHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 06:07:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610017555;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ja4lCqAp9N8i8WMvPXY5Cq4BQKvkC5CsZ086gZcQxCo=;
+        b=dhoM8Y0tOAViONsDX0amY89PbILECC8AGsP3YV/M/e23H0vDU1A4VgFdW6EMBKzV3iRTUZ
+        36tMIuSZNz/PCz4HNPbsN/VoZNItekNKHpASz1NE6h8V6/vVg6VdfqDbJ/31zlcmC1Yush
+        fUWL/6csIYiV6Kba9Y/04OySAEsQ63A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-253-4RZSmP4NNIGWOUMAbhobqw-1; Thu, 07 Jan 2021 06:05:51 -0500
+X-MC-Unique: 4RZSmP4NNIGWOUMAbhobqw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 31880107ACE8;
+        Thu,  7 Jan 2021 11:05:50 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-8.rdu2.redhat.com [10.10.112.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 055095D9D7;
+        Thu,  7 Jan 2021 11:05:48 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20210107051434.12395-1-baptiste.lepers@gmail.com>
+References: <20210107051434.12395-1-baptiste.lepers@gmail.com>
+To:     Baptiste Lepers <baptiste.lepers@gmail.com>
+Cc:     dhowells@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        linux-afs@lists.infradead.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] rxrpc: Call state should be read with READ_ONCE() under some circumstances
 MIME-Version: 1.0
-In-Reply-To: <1609979953-181868-1-git-send-email-dseok.yi@samsung.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26041/Wed Jan  6 13:36:32 2021)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <773321.1610017548.1@warthog.procyon.org.uk>
+Date:   Thu, 07 Jan 2021 11:05:48 +0000
+Message-ID: <773322.1610017548@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/21 1:39 AM, Dongseok Yi wrote:
-> skbs in fraglist could be shared by a BPF filter loaded at TC. It
-> triggers skb_ensure_writable -> pskb_expand_head ->
-> skb_clone_fraglist -> skb_get on each skb in the fraglist.
-> 
-> While tcpdump, sk_receive_queue of PF_PACKET has the original fraglist.
-> But the same fraglist is queued to PF_INET (or PF_INET6) as the fraglist
-> chain made by skb_segment_list.
-> 
-> If the new skb (not fraglist) is queued to one of the sk_receive_queue,
-> multiple ptypes can see this. The skb could be released by ptypes and
-> it causes use-after-free.
-> 
-> [ 4443.426215] ------------[ cut here ]------------
-> [ 4443.426222] refcount_t: underflow; use-after-free.
-> [ 4443.426291] WARNING: CPU: 7 PID: 28161 at lib/refcount.c:190
-> refcount_dec_and_test_checked+0xa4/0xc8
-> [ 4443.426726] pstate: 60400005 (nZCv daif +PAN -UAO)
-> [ 4443.426732] pc : refcount_dec_and_test_checked+0xa4/0xc8
-> [ 4443.426737] lr : refcount_dec_and_test_checked+0xa0/0xc8
-> [ 4443.426808] Call trace:
-> [ 4443.426813]  refcount_dec_and_test_checked+0xa4/0xc8
-> [ 4443.426823]  skb_release_data+0x144/0x264
-> [ 4443.426828]  kfree_skb+0x58/0xc4
-> [ 4443.426832]  skb_queue_purge+0x64/0x9c
-> [ 4443.426844]  packet_set_ring+0x5f0/0x820
-> [ 4443.426849]  packet_setsockopt+0x5a4/0xcd0
-> [ 4443.426853]  __sys_setsockopt+0x188/0x278
-> [ 4443.426858]  __arm64_sys_setsockopt+0x28/0x38
-> [ 4443.426869]  el0_svc_common+0xf0/0x1d0
-> [ 4443.426873]  el0_svc_handler+0x74/0x98
-> [ 4443.426880]  el0_svc+0x8/0xc
-> 
-> Fixes: 3a1296a38d0c (net: Support GRO/GSO fraglist chaining.)
-> Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
-> Acked-by: Willem de Bruijn <willemb@google.com>
-> ---
->   net/core/skbuff.c | 20 +++++++++++++++++++-
->   1 file changed, 19 insertions(+), 1 deletion(-)
-> 
-> v2: Expand the commit message to clarify a BPF filter loaded
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index f62cae3..1dcbda8 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -3655,7 +3655,8 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->   	unsigned int delta_truesize = 0;
->   	unsigned int delta_len = 0;
->   	struct sk_buff *tail = NULL;
-> -	struct sk_buff *nskb;
-> +	struct sk_buff *nskb, *tmp;
-> +	int err;
->   
->   	skb_push(skb, -skb_network_offset(skb) + offset);
->   
-> @@ -3665,11 +3666,28 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->   		nskb = list_skb;
->   		list_skb = list_skb->next;
->   
-> +		err = 0;
-> +		if (skb_shared(nskb)) {
-> +			tmp = skb_clone(nskb, GFP_ATOMIC);
-> +			if (tmp) {
-> +				kfree_skb(nskb);
+Baptiste Lepers <baptiste.lepers@gmail.com> wrote:
 
-Should use consume_skb() to not trigger skb:kfree_skb tracepoint when looking
-for drops in the stack.
+> The call state may be changed at any time by the data-ready routine in
+> response to received packets, so if the call state is to be read and acted
+> upon several times in a function, READ_ONCE() must be used unless the call
+> state lock is held.
 
-> +				nskb = tmp;
-> +				err = skb_unclone(nskb, GFP_ATOMIC);
+I'm going to add:
 
-Could you elaborate why you also need to unclone? This looks odd here. tc layer
-(independent of BPF) from ingress & egress side generally assumes unshared skb,
-so above clone + dropping ref of nskb looks okay to make the main skb struct private
-for mangling attributes (e.g. mark) & should suffice. What is the exact purpose of
-the additional skb_unclone() in this context?
+    As it happens, we used READ_ONCE() to read the state a few lines above the
+    unmarked read in rxrpc_input_data(), so use that value rather than
+    re-reading it.
 
-> +			} else {
-> +				err = -ENOMEM;
-> +			}
-> +		}
-> +
->   		if (!tail)
->   			skb->next = nskb;
->   		else
->   			tail->next = nskb;
->   
-> +		if (unlikely(err)) {
-> +			nskb->next = list_skb;
-> +			goto err_linearize;
-> +		}
-> +
->   		tail = nskb;
->   
->   		delta_len += nskb->len;
-> 
+to the commit message, if that's okay by you.
+
+David
 
