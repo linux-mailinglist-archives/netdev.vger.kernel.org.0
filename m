@@ -2,1111 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ABE02ED59A
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:29:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A6082ED5C3
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727959AbhAGR3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 12:29:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
+        id S1728282AbhAGRhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 12:37:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729151AbhAGR3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 12:29:00 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 320FDC0612FF
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 09:27:50 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id x16so10764202ejj.7
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 09:27:50 -0800 (PST)
+        with ESMTP id S1726427AbhAGRhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 12:37:22 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D4FC0612F4
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 09:36:41 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id o19so16530268lfo.1
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 09:36:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=spN6lGc18uZzV4i/H4LxJFYMBGGPgY3AkeKmQWgasIY=;
-        b=GfHjBx7tXOc6gInG3abAzVy8AmrbPV6wUDazWsmCZTCzOfzjd5xkdZMrn14ZAuEpn6
-         hfxdKP92JXqAooZajzjkuAS4Cyt6lYary6IZUdUz9uUKO1Rn03O264fl1u5BYoa4jhTo
-         K1LZdiu13AADJMr9Mmp69Q9JZGjDTlwpV5dt3N+xLcrD2VOBj0RzCyj5kcIrn5jvZTyA
-         //+m6h4AfbVJKSCVp0m/e6Z5Z9cLLCrN91aiZdEg1GNBNGPebgPMYRmDQonGoaYXmqnP
-         7+6g13rORtX8BIbgoiwlKMuF+teti/2ExC6lq9BJ8GtE2shcytDEDEIB5W1gvzCFcoFZ
-         Qhwg==
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ah9ynpU8lE2uzSQ/GtjoWiQutCWeW27rf8zMnpLcnFc=;
+        b=PMnqchlQTfnmu5VlaWWFzzbPXXSui2n3DGLhye4rqwRnly4NGNS/XhTaWCaYHdG5oY
+         EV7gh6bfYcGcv5ifFapH3vA6BgkqIOl4Oeo3a8vEryvZDsgnn3DF2v5MrtE9qiEOAwmQ
+         14iKWjaCPyEOWSXkK/Rful3RJwurBcKUgPZE8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=spN6lGc18uZzV4i/H4LxJFYMBGGPgY3AkeKmQWgasIY=;
-        b=dtcnKy/Nh5jY57I+xAooVolOC+efFXtdO9wdVOoHCP9p2WkuFifxTY3UBUme83Xij3
-         ivQjf8mKSk5dPX6s0d9Ti+2nA2ILHzJdwhuapEWdkLyoMwlaN/oDfBEji+SX9mzUUNji
-         yp/toD0lZYgLIFFxnT2QYyvOnQq19836g4wPhAbbW5xKdqqgFJM+syTJGbk/Zk88hIm8
-         Soc5PIicivRQbyuaykmAmB4x+3eUW9GDud1rKaDwW3c1XHzM7c2PUEhBjxYkAWYwA0T4
-         EX0HQAaohyIlU6jGXJCXnbXJ5oJMyB8fcNiudVIRt1Ow7AXCaaJPLJUSdufV2Ue7Vypd
-         +UMg==
-X-Gm-Message-State: AOAM5308rJvj1El4hGtBV5B3sZO/LkfQMm8YYlURWOqD3U0uezBZbjf7
-        eWBFmKX97reMcn2Ems1/g773yWLBRsc=
-X-Google-Smtp-Source: ABdhPJwKvTYG5hoBWj9eeiCnAM9Am8p6OZkIaXuyICH9WMicRWeUROFmwSPw98NI0bDWFlkt1zzA0g==
-X-Received: by 2002:a17:906:6b88:: with SMTP id l8mr7125908ejr.482.1610040468310;
-        Thu, 07 Jan 2021 09:27:48 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id y14sm2643351eju.115.2021.01.07.09.27.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 09:27:47 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, kuba@kernel.org,
-        jiri@resnulli.us, idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: [PATCH v2 net-next 10/10] net: mscc: ocelot: configure watermarks using devlink-sb
-Date:   Thu,  7 Jan 2021 19:27:26 +0200
-Message-Id: <20210107172726.2420292-11-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210107172726.2420292-1-olteanv@gmail.com>
-References: <20210107172726.2420292-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ah9ynpU8lE2uzSQ/GtjoWiQutCWeW27rf8zMnpLcnFc=;
+        b=S/uIZbUa0kN0Vvmd/vor7p6/3Yr8BzQYPN1vvwWoA6/Ks8QgP0UxHgCpOnpu4P0iQd
+         rlIPD6HrXK2/oN4MvHUn59eYIMnruOcXYePfwYOoJ73CzjN0jay6vHpv2msRj+jXLxc/
+         NI91wZ7ImvcEc/C32c4aFBYPGaS8RhrdRgTOxqq1kuyZq8ic1cLd7BIosrn7DBqb3Cr7
+         6eQ9lvqd+8WMnnI/UMQjKVhRBfh46aVr9rfP2zv0/eTXeveZrO18I3GQfUHhGwAbPjqJ
+         lvtHmpdnY3eBShgWkhgy0o3Dz2K7p3gTPheaVaolYsK87gnQ7aCH7o8dJxScwsY4clQF
+         AFdA==
+X-Gm-Message-State: AOAM530WyEy6HZNoIi4Lpnd01LVevh7MgPIR/KCXq8C4bA/j/SeJ27DD
+        FocAq3sRWzPzexR5Lm4Wc968wt3/vBtBRiiZSIFY9PQskj8=
+X-Google-Smtp-Source: ABdhPJy8AnfciM4V/1bZWmun012CEgrcZY17W9ZtjnJFmPpU3Ntz8yNndCGAUksH/6zwpGuPFCt7bz+Rns4lJ1eXne0=
+X-Received: by 2002:a2e:89d9:: with SMTP id c25mr5012266ljk.410.1610040999609;
+ Thu, 07 Jan 2021 09:36:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210106130622.2110387-1-danieller@mellanox.com>
+In-Reply-To: <20210106130622.2110387-1-danieller@mellanox.com>
+From:   Edwin Peer <edwin.peer@broadcom.com>
+Date:   Thu, 7 Jan 2021 09:36:03 -0800
+Message-ID: <CAKOOJTx=Cz1yCDxCC3AmroQUd=zHmw0NH1eCGVNd6u4PfBjR_Q@mail.gmail.com>
+Subject: Re: [PATCH net-next repost v2 0/7] Support setting lanes via ethtool
+To:     Danielle Ratson <danieller@mellanox.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, f.fainelli@gmail.com,
+        Michal Kubecek <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Danielle Ratson <danieller@nvidia.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000e0e16c05b852e1a0"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+--000000000000e0e16c05b852e1a0
+Content-Type: text/plain; charset="UTF-8"
 
-Using devlink-sb, we can configure 12/16 (the important 75%) of the
-switch's controlling watermarks for congestion drops, and we can monitor
-50% of the watermark occupancies (we can monitor the reservation
-watermarks, but not the sharing watermarks, which are exposed as pool
-sizes).
+I still don't think it is appropriate for the UAPI to be defined in
+terms of lanes. I would prefer to see it defined in terms of signal
+modulation (for which multiple could conceivably exist for a given
+lane configuration, even though no such ambiguity exists for today's
+defined modes). Better still would be to define the UAPI in terms of
+the absolute link mode enum index (with the modes that are not
+compatible with the presently installed media type being rejected).
 
-The following definitions can be made:
+Regards,
+Edwin Peer
 
-SB_BUF=0 # The devlink-sb for frame buffers
-SB_REF=1 # The devlink-sb for frame references
-POOL_ING=0 # The pool for ingress traffic. Both devlink-sb instances
-           # have one of these.
-POOL_EGR=1 # The pool for egress traffic. Both devlink-sb instances
-           # have one of these.
+On Wed, Jan 6, 2021 at 5:08 AM Danielle Ratson <danieller@mellanox.com> wrote:
+>
+> From: Danielle Ratson <danieller@nvidia.com>
+>
+> Some speeds can be achieved with different number of lanes. For example,
+> 100Gbps can be achieved using two lanes of 50Gbps or four lanes of
+> 25Gbps. This patch set adds a new selector that allows ethtool to
+> advertise link modes according to their number of lanes and also force a
+> specific number of lanes when autonegotiation is off.
+>
+> Advertising all link modes with a speed of 100Gbps that use two lanes:
+>
+> $ ethtool -s swp1 speed 100000 lanes 2 autoneg on
+>
+> Forcing a speed of 100Gbps using four lanes:
+>
+> $ ethtool -s swp1 speed 100000 lanes 4 autoneg off
+>
+> Patch set overview:
+>
+> Patch #1 allows user space to configure the desired number of lanes.
+>
+> Patch #2-#3 adjusts ethtool to dump to user space the number of lanes
+> currently in use.
+>
+> Patches #4-#6 add support for lanes configuration in mlxsw.
+>
+> Patch #7 adds a selftest.
+>
+> v2:
+>         * Patch #1: Remove ETHTOOL_LANES defines and simply use a number
+>           instead.
+>         * Patches #2,#6: Pass link mode from driver to ethtool instead
+>         * of the parameters themselves.
+>         * Patch #5: Add an actual width field for spectrum-2 link modes
+>           in order to set the suitable link mode when lanes parameter is
+>           passed.
+>         * Patch #6: Changed lanes to be unsigned in
+>           'struct link_mode_info'.
+>         * Patch #7: Remove the test for recieving max_width when lanes
+>         * is not set by user. When not setting lanes, we don't promise
+>           anything regarding what number of lanes will be chosen.
+>
+> Danielle Ratson (7):
+>   ethtool: Extend link modes settings uAPI with lanes
+>   ethtool: Get link mode in use instead of speed and duplex parameters
+>   ethtool: Expose the number of lanes in use
+>   mlxsw: ethtool: Remove max lanes filtering
+>   mlxsw: ethtool: Add support for setting lanes when autoneg is off
+>   mlxsw: ethtool: Pass link mode in use to ethtool
+>   net: selftests: Add lanes setting test
+>
+>  Documentation/networking/ethtool-netlink.rst  |  12 +-
+>  .../net/ethernet/mellanox/mlxsw/spectrum.h    |  13 +-
+>  .../mellanox/mlxsw/spectrum_ethtool.c         | 168 +++++----
+>  include/linux/ethtool.h                       |   5 +
+>  include/uapi/linux/ethtool.h                  |   4 +
+>  include/uapi/linux/ethtool_netlink.h          |   1 +
+>  net/ethtool/linkmodes.c                       | 321 +++++++++++-------
+>  net/ethtool/netlink.h                         |   2 +-
+>  .../selftests/net/forwarding/ethtool_lanes.sh | 186 ++++++++++
+>  .../selftests/net/forwarding/ethtool_lib.sh   |  34 ++
+>  tools/testing/selftests/net/forwarding/lib.sh |  28 ++
+>  11 files changed, 570 insertions(+), 204 deletions(-)
+>  create mode 100755 tools/testing/selftests/net/forwarding/ethtool_lanes.sh
+>
+> --
+> 2.26.2
+>
 
-Editing the hardware watermarks is done in the following way:
-BUF_xxxx_I is accessed when sb=$SB_BUF and pool=$POOL_ING
-REF_xxxx_I is accessed when sb=$SB_REF and pool=$POOL_ING
-BUF_xxxx_E is accessed when sb=$SB_BUF and pool=$POOL_EGR
-REF_xxxx_E is accessed when sb=$SB_REF and pool=$POOL_EGR
+--000000000000e0e16c05b852e1a0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-Configuring the sharing watermarks for COL_SHR(dp=0) is done implicitly
-by modifying the corresponding pool size. By default, the pool size has
-maximum size, so this can be skipped.
-
-devlink sb pool set pci/0000:00:00.5 sb $SB_BUF pool $POOL_ING \
-	size 103872 thtype static
-
-Since by default there is no buffer reservation, the above command has
-maxed out BUF_COL_SHR_I(dp=0).
-
-Configuring the per-port reservation watermark (P_RSRV) is done in the
-following way:
-
-devlink sb port pool set pci/0000:00:00.5/0 sb $SB_BUF \
-	pool $POOL_ING th 1000
-
-The above command sets BUF_P_RSRV_I(port 0) to 1000 bytes. After this
-command, the sharing watermarks are internally reconfigured with 1000
-bytes less, i.e. from 103872 bytes to 102872 bytes.
-
-Configuring the per-port-tc reservation watermarks (Q_RSRV) is done in
-the following way:
-
-for tc in {0..7}; do
-	devlink sb tc bind set pci/0000:00:00.5/0 sb 0 tc $tc \
-		type ingress pool $POOL_ING \
-		th 3000
-done
-
-The above command sets BUF_Q_RSRV_I(port 0, tc 0..7) to 3000 bytes.
-The sharing watermarks are again reconfigured with 24000 bytes less.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v2:
-- Calling ocelot_watermark_init from ocelot_devlink_sb_register, since
-  there was a bug in v1 where ocelot_watermark_init would use an
-  uninitialized value from ocelot->pool_size, so we need to ensure that
-  ocelot_watermark_init is called after ocelot_devlink_sb_register
-  actually initializes the pool sizes.
-- Deleted the "detected N bytes and M frame references" message since
-  that information is now available through devlink-sb.
-
- drivers/net/dsa/ocelot/felix.c             | 118 ++++++
- drivers/net/ethernet/mscc/ocelot.c         |   5 -
- drivers/net/ethernet/mscc/ocelot.h         |   1 -
- drivers/net/ethernet/mscc/ocelot_devlink.c | 453 ++++++++++++++++++++-
- drivers/net/ethernet/mscc/ocelot_net.c     | 143 +++++++
- drivers/net/ethernet/mscc/ocelot_vsc7514.c |  27 +-
- include/soc/mscc/ocelot.h                  |  47 +++
- 7 files changed, 781 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index ba710259ae6a..51f5d28fa7c0 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -456,6 +456,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 	ocelot->ops		= felix->info->ops;
- 	ocelot->inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
- 	ocelot->xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
-+	ocelot->devlink		= felix->ds->devlink;
- 
- 	port_phy_modes = kcalloc(num_phys_ports, sizeof(phy_interface_t),
- 				 GFP_KERNEL);
-@@ -617,6 +618,10 @@ static int felix_setup(struct dsa_switch *ds)
- 		felix_port_qos_map_init(ocelot, port);
- 	}
- 
-+	err = ocelot_devlink_sb_register(ocelot);
-+	if (err)
-+		return err;
-+
- 	/* Include the CPU port module in the forwarding mask for unknown
- 	 * unicast - the hardware default value for ANA_FLOODING_FLD_UNICAST
- 	 * excludes BIT(ocelot->num_phys_ports), and so does ocelot_init, since
-@@ -638,6 +643,7 @@ static void felix_teardown(struct dsa_switch *ds)
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	int port;
- 
-+	ocelot_devlink_sb_unregister(ocelot);
- 	if (ocelot->ptp)
- 		ocelot_deinit_timestamp(ocelot);
- 	ocelot_deinit(ocelot);
-@@ -778,6 +784,108 @@ static int felix_port_setup_tc(struct dsa_switch *ds, int port,
- 		return -EOPNOTSUPP;
- }
- 
-+static int felix_sb_pool_get(struct dsa_switch *ds, unsigned int sb_index,
-+			     u16 pool_index,
-+			     struct devlink_sb_pool_info *pool_info)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_pool_get(ocelot, sb_index, pool_index, pool_info);
-+}
-+
-+static int felix_sb_pool_set(struct dsa_switch *ds, unsigned int sb_index,
-+			     u16 pool_index, u32 size,
-+			     enum devlink_sb_threshold_type threshold_type,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_pool_set(ocelot, sb_index, pool_index, size,
-+				  threshold_type, extack);
-+}
-+
-+static int felix_sb_port_pool_get(struct dsa_switch *ds, int port,
-+				  unsigned int sb_index, u16 pool_index,
-+				  u32 *p_threshold)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_port_pool_get(ocelot, port, sb_index, pool_index,
-+				       p_threshold);
-+}
-+
-+static int felix_sb_port_pool_set(struct dsa_switch *ds, int port,
-+				  unsigned int sb_index, u16 pool_index,
-+				  u32 threshold, struct netlink_ext_ack *extack)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_port_pool_set(ocelot, port, sb_index, pool_index,
-+				       threshold, extack);
-+}
-+
-+static int felix_sb_tc_pool_bind_get(struct dsa_switch *ds, int port,
-+				     unsigned int sb_index, u16 tc_index,
-+				     enum devlink_sb_pool_type pool_type,
-+				     u16 *p_pool_index, u32 *p_threshold)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_tc_pool_bind_get(ocelot, port, sb_index, tc_index,
-+					  pool_type, p_pool_index,
-+					  p_threshold);
-+}
-+
-+static int felix_sb_tc_pool_bind_set(struct dsa_switch *ds, int port,
-+				     unsigned int sb_index, u16 tc_index,
-+				     enum devlink_sb_pool_type pool_type,
-+				     u16 pool_index, u32 threshold,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_tc_pool_bind_set(ocelot, port, sb_index, tc_index,
-+					  pool_type, pool_index, threshold,
-+					  extack);
-+}
-+
-+static int felix_sb_occ_snapshot(struct dsa_switch *ds,
-+				 unsigned int sb_index)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_occ_snapshot(ocelot, sb_index);
-+}
-+
-+static int felix_sb_occ_max_clear(struct dsa_switch *ds,
-+				  unsigned int sb_index)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_occ_max_clear(ocelot, sb_index);
-+}
-+
-+static int felix_sb_occ_port_pool_get(struct dsa_switch *ds, int port,
-+				      unsigned int sb_index, u16 pool_index,
-+				      u32 *p_cur, u32 *p_max)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_occ_port_pool_get(ocelot, port, sb_index, pool_index,
-+					   p_cur, p_max);
-+}
-+
-+static int felix_sb_occ_tc_port_bind_get(struct dsa_switch *ds, int port,
-+					 unsigned int sb_index, u16 tc_index,
-+					 enum devlink_sb_pool_type pool_type,
-+					 u32 *p_cur, u32 *p_max)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	return ocelot_sb_occ_tc_port_bind_get(ocelot, port, sb_index, tc_index,
-+					      pool_type, p_cur, p_max);
-+}
-+
- const struct dsa_switch_ops felix_switch_ops = {
- 	.get_tag_protocol		= felix_get_tag_protocol,
- 	.setup				= felix_setup,
-@@ -818,6 +926,16 @@ const struct dsa_switch_ops felix_switch_ops = {
- 	.cls_flower_del			= felix_cls_flower_del,
- 	.cls_flower_stats		= felix_cls_flower_stats,
- 	.port_setup_tc			= felix_port_setup_tc,
-+	.devlink_sb_pool_get		= felix_sb_pool_get,
-+	.devlink_sb_pool_set		= felix_sb_pool_set,
-+	.devlink_sb_port_pool_get	= felix_sb_port_pool_get,
-+	.devlink_sb_port_pool_set	= felix_sb_port_pool_set,
-+	.devlink_sb_tc_pool_bind_get	= felix_sb_tc_pool_bind_get,
-+	.devlink_sb_tc_pool_bind_set	= felix_sb_tc_pool_bind_set,
-+	.devlink_sb_occ_snapshot	= felix_sb_occ_snapshot,
-+	.devlink_sb_occ_max_clear	= felix_sb_occ_max_clear,
-+	.devlink_sb_occ_port_pool_get	= felix_sb_occ_port_pool_get,
-+	.devlink_sb_occ_tc_port_bind_get= felix_sb_occ_tc_port_bind_get,
- };
- 
- struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index f547728c6718..02fa86c72eb5 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1492,10 +1492,6 @@ static void ocelot_detect_features(struct ocelot *ocelot)
- 
- 	eq_ctrl = ocelot_read(ocelot, QSYS_EQ_CTRL);
- 	ocelot->num_frame_refs = QSYS_MMGT_EQ_CTRL_FP_FREE_CNT(eq_ctrl);
--
--	dev_info(ocelot->dev,
--		 "Detected %d bytes of packet buffer and %d frame references\n",
--		 ocelot->packet_buffer_size, ocelot->num_frame_refs);
- }
- 
- int ocelot_init(struct ocelot *ocelot)
-@@ -1636,7 +1632,6 @@ int ocelot_init(struct ocelot *ocelot)
- 	INIT_DELAYED_WORK(&ocelot->stats_work, ocelot_check_stats_work);
- 	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
- 			   OCELOT_STATS_CHECK_DELAY);
--	ocelot_watermark_init(ocelot);
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index a9d60ef30344..2e9a3c4697c8 100644
---- a/drivers/net/ethernet/mscc/ocelot.h
-+++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -125,7 +125,6 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
- 		      struct phy_device *phy);
- int ocelot_devlink_init(struct ocelot *ocelot);
- void ocelot_devlink_teardown(struct ocelot *ocelot);
--void ocelot_watermark_init(struct ocelot *ocelot);
- 
- extern struct notifier_block ocelot_netdevice_nb;
- extern struct notifier_block ocelot_switchdev_nb;
-diff --git a/drivers/net/ethernet/mscc/ocelot_devlink.c b/drivers/net/ethernet/mscc/ocelot_devlink.c
-index c96309cde82d..d441ab8dcfb8 100644
---- a/drivers/net/ethernet/mscc/ocelot_devlink.c
-+++ b/drivers/net/ethernet/mscc/ocelot_devlink.c
-@@ -232,6 +232,14 @@ static void ocelot_wm_write(struct ocelot *ocelot, int index, u32 val)
- 	ocelot_write_gix(ocelot, wm, QSYS_RES_CFG, index);
- }
- 
-+static void ocelot_wm_status(struct ocelot *ocelot, int index, u32 *inuse,
-+			     u32 *maxuse)
-+{
-+	int res_stat = ocelot_read_gix(ocelot, QSYS_RES_STAT, index);
-+
-+	return ocelot->ops->wm_stat(res_stat, inuse, maxuse);
-+}
-+
- /* The hardware comes out of reset with strange defaults: the sum of all
-  * reservations for frame memory is larger than the total buffer size.
-  * One has to wonder how can the reservation watermarks still guarantee
-@@ -348,10 +356,14 @@ static void ocelot_setup_sharing_watermarks(struct ocelot *ocelot)
- 	ocelot_get_buf_rsrv(ocelot, &buf_rsrv_i, &buf_rsrv_e);
- 	ocelot_get_ref_rsrv(ocelot, &ref_rsrv_i, &ref_rsrv_e);
- 
--	buf_shr_i = ocelot->packet_buffer_size - buf_rsrv_i;
--	buf_shr_e = ocelot->packet_buffer_size - buf_rsrv_e;
--	ref_shr_i = ocelot->num_frame_refs - ref_rsrv_i;
--	ref_shr_e = ocelot->num_frame_refs - ref_rsrv_e;
-+	buf_shr_i = ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_ING] -
-+		    buf_rsrv_i;
-+	buf_shr_e = ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_EGR] -
-+		    buf_rsrv_e;
-+	ref_shr_i = ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_ING] -
-+		    ref_rsrv_i;
-+	ref_shr_e = ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_EGR] -
-+		    ref_rsrv_e;
- 
- 	buf_shr_i /= OCELOT_BUFFER_CELL_SZ;
- 	buf_shr_e /= OCELOT_BUFFER_CELL_SZ;
-@@ -366,6 +378,40 @@ static void ocelot_setup_sharing_watermarks(struct ocelot *ocelot)
- 	ocelot_wm_write(ocelot, REF_COL_SHR_I(1), 0);
- }
- 
-+/* Ensure that all reservations can be enforced */
-+static int ocelot_watermark_validate(struct ocelot *ocelot,
-+				     struct netlink_ext_ack *extack)
-+{
-+	u32 buf_rsrv_i, buf_rsrv_e;
-+	u32 ref_rsrv_i, ref_rsrv_e;
-+
-+	ocelot_get_buf_rsrv(ocelot, &buf_rsrv_i, &buf_rsrv_e);
-+	ocelot_get_ref_rsrv(ocelot, &ref_rsrv_i, &ref_rsrv_e);
-+
-+	if (buf_rsrv_i > ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_ING]) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Ingress frame reservations exceed pool size");
-+		return -ERANGE;
-+	}
-+	if (buf_rsrv_e > ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_EGR]) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Egress frame reservations exceed pool size");
-+		return -ERANGE;
-+	}
-+	if (ref_rsrv_i > ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_ING]) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Ingress reference reservations exceed pool size");
-+		return -ERANGE;
-+	}
-+	if (ref_rsrv_e > ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_EGR]) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Egress reference reservations exceed pool size");
-+		return -ERANGE;
-+	}
-+
-+	return 0;
-+}
-+
- /* The hardware works like this:
-  *
-  *                         Frame forwarding decision taken
-@@ -427,7 +473,7 @@ static void ocelot_setup_sharing_watermarks(struct ocelot *ocelot)
-  * reservations by default, let sharing use all resources) and disables the
-  * unused watermarks.
-  */
--void ocelot_watermark_init(struct ocelot *ocelot)
-+static void ocelot_watermark_init(struct ocelot *ocelot)
- {
- 	int all_tcs = GENMASK(OCELOT_NUM_TC - 1, 0);
- 	int port;
-@@ -440,3 +486,400 @@ void ocelot_watermark_init(struct ocelot *ocelot)
- 	ocelot_disable_tc_sharing_watermarks(ocelot);
- 	ocelot_setup_sharing_watermarks(ocelot);
- }
-+
-+/* Pool size and type are fixed up at runtime. Keeping this structure to
-+ * look up the cell size multipliers.
-+ */
-+static const struct devlink_sb_pool_info ocelot_sb_pool[] = {
-+	[OCELOT_SB_BUF] = {
-+		.cell_size = OCELOT_BUFFER_CELL_SZ,
-+		.threshold_type = DEVLINK_SB_THRESHOLD_TYPE_STATIC,
-+	},
-+	[OCELOT_SB_REF] = {
-+		.cell_size = 1,
-+		.threshold_type = DEVLINK_SB_THRESHOLD_TYPE_STATIC,
-+	},
-+};
-+
-+/* Returns the pool size configured through ocelot_sb_pool_set */
-+int ocelot_sb_pool_get(struct ocelot *ocelot, unsigned int sb_index,
-+		       u16 pool_index,
-+		       struct devlink_sb_pool_info *pool_info)
-+{
-+	if (sb_index >= OCELOT_SB_NUM)
-+		return -ENODEV;
-+	if (pool_index >= OCELOT_SB_POOL_NUM)
-+		return -ENODEV;
-+
-+	*pool_info = ocelot_sb_pool[sb_index];
-+	pool_info->size = ocelot->pool_size[sb_index][pool_index];
-+	if (pool_index)
-+		pool_info->pool_type = DEVLINK_SB_POOL_TYPE_INGRESS;
-+	else
-+		pool_info->pool_type = DEVLINK_SB_POOL_TYPE_EGRESS;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_pool_get);
-+
-+/* The pool size received here configures the total amount of resources used on
-+ * ingress (or on egress, depending upon the pool index). The pool size, minus
-+ * the values for the port and port-tc reservations, is written into the
-+ * COL_SHR(dp=0) sharing watermark.
-+ */
-+int ocelot_sb_pool_set(struct ocelot *ocelot, unsigned int sb_index,
-+		       u16 pool_index, u32 size,
-+		       enum devlink_sb_threshold_type threshold_type,
-+		       struct netlink_ext_ack *extack)
-+{
-+	u32 old_pool_size;
-+	int err;
-+
-+	if (sb_index >= OCELOT_SB_NUM) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Invalid sb, use 0 for buffers and 1 for frame references");
-+		return -ENODEV;
-+	}
-+	if (pool_index >= OCELOT_SB_POOL_NUM) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Invalid pool, use 0 for ingress and 1 for egress");
-+		return -ENODEV;
-+	}
-+	if (threshold_type != DEVLINK_SB_THRESHOLD_TYPE_STATIC) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Only static threshold supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	old_pool_size = ocelot->pool_size[sb_index][pool_index];
-+	ocelot->pool_size[sb_index][pool_index] = size;
-+
-+	err = ocelot_watermark_validate(ocelot, extack);
-+	if (err) {
-+		ocelot->pool_size[sb_index][pool_index] = old_pool_size;
-+		return err;
-+	}
-+
-+	ocelot_setup_sharing_watermarks(ocelot);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_pool_set);
-+
-+/* This retrieves the configuration made with ocelot_sb_port_pool_set */
-+int ocelot_sb_port_pool_get(struct ocelot *ocelot, int port,
-+			    unsigned int sb_index, u16 pool_index,
-+			    u32 *p_threshold)
-+{
-+	int wm_index;
-+
-+	switch (sb_index) {
-+	case OCELOT_SB_BUF:
-+		if (pool_index == OCELOT_SB_POOL_ING)
-+			wm_index = BUF_P_RSRV_I(port);
-+		else
-+			wm_index = BUF_P_RSRV_E(port);
-+		break;
-+	case OCELOT_SB_REF:
-+		if (pool_index == OCELOT_SB_POOL_ING)
-+			wm_index = REF_P_RSRV_I(port);
-+		else
-+			wm_index = REF_P_RSRV_E(port);
-+		break;
-+	default:
-+		return -ENODEV;
-+	}
-+
-+	*p_threshold = ocelot_wm_read(ocelot, wm_index);
-+	*p_threshold *= ocelot_sb_pool[sb_index].cell_size;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_port_pool_get);
-+
-+/* This configures the P_RSRV per-port reserved resource watermark */
-+int ocelot_sb_port_pool_set(struct ocelot *ocelot, int port,
-+			    unsigned int sb_index, u16 pool_index,
-+			    u32 threshold, struct netlink_ext_ack *extack)
-+{
-+	int wm_index, err;
-+	u32 old_thr;
-+
-+	switch (sb_index) {
-+	case OCELOT_SB_BUF:
-+		if (pool_index == OCELOT_SB_POOL_ING)
-+			wm_index = BUF_P_RSRV_I(port);
-+		else
-+			wm_index = BUF_P_RSRV_E(port);
-+		break;
-+	case OCELOT_SB_REF:
-+		if (pool_index == OCELOT_SB_POOL_ING)
-+			wm_index = REF_P_RSRV_I(port);
-+		else
-+			wm_index = REF_P_RSRV_E(port);
-+		break;
-+	default:
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid shared buffer");
-+		return -ENODEV;
-+	}
-+
-+	threshold /= ocelot_sb_pool[sb_index].cell_size;
-+
-+	old_thr = ocelot_wm_read(ocelot, wm_index);
-+	ocelot_wm_write(ocelot, wm_index, threshold);
-+
-+	err = ocelot_watermark_validate(ocelot, extack);
-+	if (err) {
-+		ocelot_wm_write(ocelot, wm_index, old_thr);
-+		return err;
-+	}
-+
-+	ocelot_setup_sharing_watermarks(ocelot);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_port_pool_set);
-+
-+/* This retrieves the configuration done by ocelot_sb_tc_pool_bind_set */
-+int ocelot_sb_tc_pool_bind_get(struct ocelot *ocelot, int port,
-+			       unsigned int sb_index, u16 tc_index,
-+			       enum devlink_sb_pool_type pool_type,
-+			       u16 *p_pool_index, u32 *p_threshold)
-+{
-+	int wm_index;
-+
-+	switch (sb_index) {
-+	case OCELOT_SB_BUF:
-+		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
-+			wm_index = BUF_Q_RSRV_I(port, tc_index);
-+		else
-+			wm_index = BUF_Q_RSRV_E(port, tc_index);
-+		break;
-+	case OCELOT_SB_REF:
-+		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
-+			wm_index = REF_Q_RSRV_I(port, tc_index);
-+		else
-+			wm_index = REF_Q_RSRV_E(port, tc_index);
-+		break;
-+	default:
-+		return -ENODEV;
-+	}
-+
-+	*p_threshold = ocelot_wm_read(ocelot, wm_index);
-+	*p_threshold *= ocelot_sb_pool[sb_index].cell_size;
-+
-+	if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
-+		*p_pool_index = 0;
-+	else
-+		*p_pool_index = 1;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_tc_pool_bind_get);
-+
-+/* This configures the Q_RSRV per-port-tc reserved resource watermark */
-+int ocelot_sb_tc_pool_bind_set(struct ocelot *ocelot, int port,
-+			       unsigned int sb_index, u16 tc_index,
-+			       enum devlink_sb_pool_type pool_type,
-+			       u16 pool_index, u32 threshold,
-+			       struct netlink_ext_ack *extack)
-+{
-+	int wm_index, err;
-+	u32 old_thr;
-+
-+	/* Paranoid check? */
-+	if (pool_index == OCELOT_SB_POOL_ING &&
-+	    pool_type != DEVLINK_SB_POOL_TYPE_INGRESS)
-+		return -EINVAL;
-+	if (pool_index == OCELOT_SB_POOL_EGR &&
-+	    pool_type != DEVLINK_SB_POOL_TYPE_EGRESS)
-+		return -EINVAL;
-+
-+	switch (sb_index) {
-+	case OCELOT_SB_BUF:
-+		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
-+			wm_index = BUF_Q_RSRV_I(port, tc_index);
-+		else
-+			wm_index = BUF_Q_RSRV_E(port, tc_index);
-+		break;
-+	case OCELOT_SB_REF:
-+		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
-+			wm_index = REF_Q_RSRV_I(port, tc_index);
-+		else
-+			wm_index = REF_Q_RSRV_E(port, tc_index);
-+		break;
-+	default:
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid shared buffer");
-+		return -ENODEV;
-+	}
-+
-+	threshold /= ocelot_sb_pool[sb_index].cell_size;
-+
-+	old_thr = ocelot_wm_read(ocelot, wm_index);
-+	ocelot_wm_write(ocelot, wm_index, threshold);
-+	err = ocelot_watermark_validate(ocelot, extack);
-+	if (err) {
-+		ocelot_wm_write(ocelot, wm_index, old_thr);
-+		return err;
-+	}
-+
-+	ocelot_setup_sharing_watermarks(ocelot);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_tc_pool_bind_set);
-+
-+/* The hardware does not support atomic snapshots, we'll read out the
-+ * occupancy registers individually and have this as just a stub.
-+ */
-+int ocelot_sb_occ_snapshot(struct ocelot *ocelot, unsigned int sb_index)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_occ_snapshot);
-+
-+/* The watermark occupancy registers are cleared upon read,
-+ * so let's read them.
-+ */
-+int ocelot_sb_occ_max_clear(struct ocelot *ocelot, unsigned int sb_index)
-+{
-+	u32 inuse, maxuse;
-+	int port, prio;
-+
-+	switch (sb_index) {
-+	case OCELOT_SB_BUF:
-+		for (port = 0; port <= ocelot->num_phys_ports; port++) {
-+			for (prio = 0; prio < OCELOT_NUM_TC; prio++) {
-+				ocelot_wm_status(ocelot, BUF_Q_RSRV_I(port, prio),
-+						 &inuse, &maxuse);
-+				ocelot_wm_status(ocelot, BUF_Q_RSRV_E(port, prio),
-+						 &inuse, &maxuse);
-+			}
-+			ocelot_wm_status(ocelot, BUF_P_RSRV_I(port),
-+					 &inuse, &maxuse);
-+			ocelot_wm_status(ocelot, BUF_P_RSRV_E(port),
-+					 &inuse, &maxuse);
-+		}
-+		break;
-+	case OCELOT_SB_REF:
-+		for (port = 0; port <= ocelot->num_phys_ports; port++) {
-+			for (prio = 0; prio < OCELOT_NUM_TC; prio++) {
-+				ocelot_wm_status(ocelot, REF_Q_RSRV_I(port, prio),
-+						 &inuse, &maxuse);
-+				ocelot_wm_status(ocelot, REF_Q_RSRV_E(port, prio),
-+						 &inuse, &maxuse);
-+			}
-+			ocelot_wm_status(ocelot, REF_P_RSRV_I(port),
-+					 &inuse, &maxuse);
-+			ocelot_wm_status(ocelot, REF_P_RSRV_E(port),
-+					 &inuse, &maxuse);
-+		}
-+		break;
-+	default:
-+		return -ENODEV;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_occ_max_clear);
-+
-+/* This retrieves the watermark occupancy for per-port P_RSRV watermarks */
-+int ocelot_sb_occ_port_pool_get(struct ocelot *ocelot, int port,
-+				unsigned int sb_index, u16 pool_index,
-+				u32 *p_cur, u32 *p_max)
-+{
-+	int wm_index;
-+
-+	switch (sb_index) {
-+	case OCELOT_SB_BUF:
-+		if (pool_index == OCELOT_SB_POOL_ING)
-+			wm_index = BUF_P_RSRV_I(port);
-+		else
-+			wm_index = BUF_P_RSRV_E(port);
-+		break;
-+	case OCELOT_SB_REF:
-+		if (pool_index == OCELOT_SB_POOL_ING)
-+			wm_index = REF_P_RSRV_I(port);
-+		else
-+			wm_index = REF_P_RSRV_E(port);
-+		break;
-+	default:
-+		return -ENODEV;
-+	}
-+
-+	ocelot_wm_status(ocelot, wm_index, p_cur, p_max);
-+	*p_cur *= ocelot_sb_pool[sb_index].cell_size;
-+	*p_max *= ocelot_sb_pool[sb_index].cell_size;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_occ_port_pool_get);
-+
-+/* This retrieves the watermark occupancy for per-port-tc Q_RSRV watermarks */
-+int ocelot_sb_occ_tc_port_bind_get(struct ocelot *ocelot, int port,
-+				   unsigned int sb_index, u16 tc_index,
-+				   enum devlink_sb_pool_type pool_type,
-+				   u32 *p_cur, u32 *p_max)
-+{
-+	int wm_index;
-+
-+	switch (sb_index) {
-+	case OCELOT_SB_BUF:
-+		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
-+			wm_index = BUF_Q_RSRV_I(port, tc_index);
-+		else
-+			wm_index = BUF_Q_RSRV_E(port, tc_index);
-+		break;
-+	case OCELOT_SB_REF:
-+		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
-+			wm_index = REF_Q_RSRV_I(port, tc_index);
-+		else
-+			wm_index = REF_Q_RSRV_E(port, tc_index);
-+		break;
-+	default:
-+		return -ENODEV;
-+	}
-+
-+	ocelot_wm_status(ocelot, wm_index, p_cur, p_max);
-+	*p_cur *= ocelot_sb_pool[sb_index].cell_size;
-+	*p_max *= ocelot_sb_pool[sb_index].cell_size;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_sb_occ_tc_port_bind_get);
-+
-+int ocelot_devlink_sb_register(struct ocelot *ocelot)
-+{
-+	int err;
-+
-+	err = devlink_sb_register(ocelot->devlink, OCELOT_SB_BUF,
-+				  ocelot->packet_buffer_size, 1, 1,
-+				  OCELOT_NUM_TC, OCELOT_NUM_TC);
-+	if (err)
-+		return err;
-+
-+	err = devlink_sb_register(ocelot->devlink, OCELOT_SB_REF,
-+				  ocelot->num_frame_refs, 1, 1,
-+				  OCELOT_NUM_TC, OCELOT_NUM_TC);
-+	if (err) {
-+		devlink_sb_unregister(ocelot->devlink, OCELOT_SB_BUF);
-+		return err;
-+	}
-+
-+	ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_ING] = ocelot->packet_buffer_size;
-+	ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_EGR] = ocelot->packet_buffer_size;
-+	ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_ING] = ocelot->num_frame_refs;
-+	ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_EGR] = ocelot->num_frame_refs;
-+
-+	ocelot_watermark_init(ocelot);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ocelot_devlink_sb_register);
-+
-+void ocelot_devlink_sb_unregister(struct ocelot *ocelot)
-+{
-+	devlink_sb_unregister(ocelot->devlink, OCELOT_SB_BUF);
-+	devlink_sb_unregister(ocelot->devlink, OCELOT_SB_REF);
-+}
-+EXPORT_SYMBOL(ocelot_devlink_sb_unregister);
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index d0d98c6adea8..ae1f9d6cf7f2 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -1,7 +1,11 @@
- // SPDX-License-Identifier: (GPL-2.0 OR MIT)
- /* Microsemi Ocelot Switch driver
-+ *
-+ * This contains glue logic between the switchdev driver operations and the
-+ * mscc_ocelot_switch_lib.
-  *
-  * Copyright (c) 2017, 2019 Microsemi Corporation
-+ * Copyright 2020 NXP Semiconductors
-  */
- 
- #include <linux/if_bridge.h>
-@@ -12,7 +16,146 @@ struct ocelot_devlink_private {
- 	struct ocelot *ocelot;
- };
- 
-+static struct ocelot_port_private *
-+devlink_to_ocelot_port_priv(struct devlink_port *dlp)
-+{
-+	return container_of(dlp, struct ocelot_port_private, devlink_port);
-+}
-+
-+static int ocelot_devlink_sb_pool_get(struct devlink *dl,
-+				      unsigned int sb_index, u16 pool_index,
-+				      struct devlink_sb_pool_info *pool_info)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dl);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_pool_get(ocelot, sb_index, pool_index, pool_info);
-+}
-+
-+static int ocelot_devlink_sb_pool_set(struct devlink *dl, unsigned int sb_index,
-+				      u16 pool_index, u32 size,
-+				      enum devlink_sb_threshold_type threshold_type,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dl);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_pool_set(ocelot, sb_index, pool_index, size,
-+				  threshold_type, extack);
-+}
-+
-+static int ocelot_devlink_sb_port_pool_get(struct devlink_port *dlp,
-+					   unsigned int sb_index, u16 pool_index,
-+					   u32 *p_threshold)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
-+	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_port_pool_get(ocelot, priv->chip_port, sb_index,
-+				       pool_index, p_threshold);
-+}
-+
-+static int ocelot_devlink_sb_port_pool_set(struct devlink_port *dlp,
-+					   unsigned int sb_index, u16 pool_index,
-+					   u32 threshold,
-+					   struct netlink_ext_ack *extack)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
-+	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_port_pool_set(ocelot, priv->chip_port, sb_index,
-+				       pool_index, threshold, extack);
-+}
-+
-+static int
-+ocelot_devlink_sb_tc_pool_bind_get(struct devlink_port *dlp,
-+				   unsigned int sb_index, u16 tc_index,
-+				   enum devlink_sb_pool_type pool_type,
-+				   u16 *p_pool_index, u32 *p_threshold)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
-+	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_tc_pool_bind_get(ocelot, priv->chip_port, sb_index,
-+					  tc_index, pool_type, p_pool_index,
-+					  p_threshold);
-+}
-+
-+static int
-+ocelot_devlink_sb_tc_pool_bind_set(struct devlink_port *dlp,
-+				   unsigned int sb_index, u16 tc_index,
-+				   enum devlink_sb_pool_type pool_type,
-+				   u16 pool_index, u32 threshold,
-+				   struct netlink_ext_ack *extack)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
-+	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_tc_pool_bind_set(ocelot, priv->chip_port, sb_index,
-+					  tc_index, pool_type, pool_index,
-+					  threshold, extack);
-+}
-+
-+static int ocelot_devlink_sb_occ_snapshot(struct devlink *dl,
-+					  unsigned int sb_index)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dl);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_occ_snapshot(ocelot, sb_index);
-+}
-+
-+static int ocelot_devlink_sb_occ_max_clear(struct devlink *dl,
-+					   unsigned int sb_index)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dl);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_occ_max_clear(ocelot, sb_index);
-+}
-+
-+static int ocelot_devlink_sb_occ_port_pool_get(struct devlink_port *dlp,
-+					       unsigned int sb_index,
-+					       u16 pool_index, u32 *p_cur,
-+					       u32 *p_max)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
-+	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_occ_port_pool_get(ocelot, priv->chip_port, sb_index,
-+						     pool_index, p_cur, p_max);
-+}
-+
-+static int
-+ocelot_devlink_sb_occ_tc_port_bind_get(struct devlink_port *dlp,
-+				       unsigned int sb_index, u16 tc_index,
-+				       enum devlink_sb_pool_type pool_type,
-+				       u32 *p_cur, u32 *p_max)
-+{
-+	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
-+	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
-+	struct ocelot *ocelot = dl_priv->ocelot;
-+
-+	return ocelot_sb_occ_tc_port_bind_get(ocelot, priv->chip_port, sb_index,
-+					      tc_index, pool_type, p_cur, p_max);
-+}
-+
- static const struct devlink_ops ocelot_devlink_ops = {
-+	.sb_pool_get			= ocelot_devlink_sb_pool_get,
-+	.sb_pool_set			= ocelot_devlink_sb_pool_set,
-+	.sb_port_pool_get		= ocelot_devlink_sb_port_pool_get,
-+	.sb_port_pool_set		= ocelot_devlink_sb_port_pool_set,
-+	.sb_tc_pool_bind_get		= ocelot_devlink_sb_tc_pool_bind_get,
-+	.sb_tc_pool_bind_set		= ocelot_devlink_sb_tc_pool_bind_set,
-+	.sb_occ_snapshot		= ocelot_devlink_sb_occ_snapshot,
-+	.sb_occ_max_clear		= ocelot_devlink_sb_occ_max_clear,
-+	.sb_occ_port_pool_get		= ocelot_devlink_sb_occ_port_pool_get,
-+	.sb_occ_tc_port_bind_get	= ocelot_devlink_sb_occ_tc_port_bind_get,
- };
- 
- static int ocelot_port_devlink_init(struct ocelot *ocelot, int port)
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 80fdf971d573..7bb80144dd1d 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -1173,6 +1173,29 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
- 	return 0;
- }
- 
-+static int mscc_ocelot_devlink_setup(struct ocelot *ocelot)
-+{
-+	int err;
-+
-+	err = ocelot_devlink_init(ocelot);
-+	if (err)
-+		return err;
-+
-+	err = ocelot_devlink_sb_register(ocelot);
-+	if (err) {
-+		ocelot_devlink_teardown(ocelot);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static void mscc_ocelot_devlink_cleanup(struct ocelot *ocelot)
-+{
-+	ocelot_devlink_sb_unregister(ocelot);
-+	ocelot_devlink_teardown(ocelot);
-+}
-+
- static int mscc_ocelot_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
-@@ -1293,7 +1316,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	err = ocelot_devlink_init(ocelot);
-+	err = mscc_ocelot_devlink_setup(ocelot);
- 	if (err) {
- 		mscc_ocelot_release_ports(ocelot);
- 		goto out_ocelot_deinit;
-@@ -1320,7 +1343,7 @@ static int mscc_ocelot_remove(struct platform_device *pdev)
- {
- 	struct ocelot *ocelot = platform_get_drvdata(pdev);
- 
--	ocelot_devlink_teardown(ocelot);
-+	mscc_ocelot_devlink_cleanup(ocelot);
- 	ocelot_deinit_timestamp(ocelot);
- 	mscc_ocelot_release_ports(ocelot);
- 	ocelot_deinit(ocelot);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 75cd457b99b9..762b827784b8 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -579,6 +579,18 @@ struct ocelot_vlan {
- 	u16 vid;
- };
- 
-+enum ocelot_sb {
-+	OCELOT_SB_BUF,
-+	OCELOT_SB_REF,
-+	OCELOT_SB_NUM,
-+};
-+
-+enum ocelot_sb_pool {
-+	OCELOT_SB_POOL_ING,
-+	OCELOT_SB_POOL_EGR,
-+	OCELOT_SB_POOL_NUM,
-+};
-+
- struct ocelot_port {
- 	struct ocelot			*ocelot;
- 
-@@ -611,6 +623,7 @@ struct ocelot {
- 	const struct ocelot_stat_layout	*stats_layout;
- 	unsigned int			num_stats;
- 
-+	u32				pool_size[OCELOT_SB_NUM][OCELOT_SB_POOL_NUM];
- 	int				packet_buffer_size;
- 	int				num_frame_refs;
- 	int				num_mact_rows;
-@@ -783,4 +796,38 @@ int ocelot_port_mdb_add(struct ocelot *ocelot, int port,
- int ocelot_port_mdb_del(struct ocelot *ocelot, int port,
- 			const struct switchdev_obj_port_mdb *mdb);
- 
-+int ocelot_devlink_sb_register(struct ocelot *ocelot);
-+void ocelot_devlink_sb_unregister(struct ocelot *ocelot);
-+int ocelot_sb_pool_get(struct ocelot *ocelot, unsigned int sb_index,
-+		       u16 pool_index,
-+		       struct devlink_sb_pool_info *pool_info);
-+int ocelot_sb_pool_set(struct ocelot *ocelot, unsigned int sb_index,
-+		       u16 pool_index, u32 size,
-+		       enum devlink_sb_threshold_type threshold_type,
-+		       struct netlink_ext_ack *extack);
-+int ocelot_sb_port_pool_get(struct ocelot *ocelot, int port,
-+			    unsigned int sb_index, u16 pool_index,
-+			    u32 *p_threshold);
-+int ocelot_sb_port_pool_set(struct ocelot *ocelot, int port,
-+			    unsigned int sb_index, u16 pool_index,
-+			    u32 threshold, struct netlink_ext_ack *extack);
-+int ocelot_sb_tc_pool_bind_get(struct ocelot *ocelot, int port,
-+			       unsigned int sb_index, u16 tc_index,
-+			       enum devlink_sb_pool_type pool_type,
-+			       u16 *p_pool_index, u32 *p_threshold);
-+int ocelot_sb_tc_pool_bind_set(struct ocelot *ocelot, int port,
-+			       unsigned int sb_index, u16 tc_index,
-+			       enum devlink_sb_pool_type pool_type,
-+			       u16 pool_index, u32 threshold,
-+			       struct netlink_ext_ack *extack);
-+int ocelot_sb_occ_snapshot(struct ocelot *ocelot, unsigned int sb_index);
-+int ocelot_sb_occ_max_clear(struct ocelot *ocelot, unsigned int sb_index);
-+int ocelot_sb_occ_port_pool_get(struct ocelot *ocelot, int port,
-+				unsigned int sb_index, u16 pool_index,
-+				u32 *p_cur, u32 *p_max);
-+int ocelot_sb_occ_tc_port_bind_get(struct ocelot *ocelot, int port,
-+				   unsigned int sb_index, u16 tc_index,
-+				   enum devlink_sb_pool_type pool_type,
-+				   u32 *p_cur, u32 *p_max);
-+
- #endif
--- 
-2.25.1
-
+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
+mbo++PCnVfHaIk6rK1M0CPodEV0uUttmi6Mp/Ha7XmNgWQeQE3qkFIwAlb/kPNmJAMECAwEAAaOC
+Ac4wggHKMA4GA1UdDwEB/wQEAwIFoDCBngYIKwYBBQUHAQEEgZEwgY4wTQYIKwYBBQUHMAKGQWh0
+dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5jb20vY2FjZXJ0L2dzcGVyc29uYWxzaWduMnNoYTJnM29j
+c3AuY3J0MD0GCCsGAQUFBzABhjFodHRwOi8vb2NzcDIuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25h
+bHNpZ24yc2hhMmczME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRw
+czovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEQGA1UdHwQ9MDsw
+OaA3oDWGM2h0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25hbHNpZ24yc2hhMmczLmNy
+bDAiBgNVHREEGzAZgRdlZHdpbi5wZWVyQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcD
+BDAfBgNVHSMEGDAWgBRpcoJiMWeVRIV3kYDEBDZJnXsLYTAdBgNVHQ4EFgQU9IOrXBkaTFAmOmjl
+0nu9X2Lzo+0wDQYJKoZIhvcNAQELBQADggEBADL+5FenxoguXoMm8ZG+bsMvN0LibFO75wee8cJI
+3K8dcJ8y6rPc6yvMRqI7CNwjWV5kBT3aQPZCdqOlNLl/HnKJxBt3WJRWGePcE1s/ljK4Kg1rUQAo
+e3Fx6cKh9/q3gqElSPU5pBOsCEy8cbi6UGA+IVifQ2Mrm5tsvYqWSaZ1mKTGz8/z8vxG2kGJZI6W
+wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
+BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
+ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
+MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
+YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg+QkCfBiLITCphym3EnCW
+5NG9F33M6C71OefKlv+O3dkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMjEwMTA3MTczNjM5WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
+YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAB18AKhlji5KDTQr5YEA6TsJ4K9WRPc1MhuTo8+S
+ri/81KJzGqUmD5OdmC8kRZw7dK2CKT6vEpfK3tR+1fbhXf8HGktEoM88CatX46QXcRbbGqMMSS1i
+ZaaVcKRQTv0sSBtKQPpIPmcPqDjAniUQs5do8I7j6BbC9prvOTWfGdEX/9r+JG7uxalRTI0o31ph
+0ixDR97DF+HKHaB6fh/Hb5J71zf9L2qujrYhUStguABDob0n5WotLOkOeAWuqxcd+NZK24IPAn1p
+8cUYRkAaN/k7DgzJnfOIPg4Tr4xnhTqJcsovsQ2w/gW+U70sPboxW7vMA0JixCBzCQjtA8E0D3Y=
+--000000000000e0e16c05b852e1a0--
