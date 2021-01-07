@@ -2,92 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9EF2ED4C1
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 17:50:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 732392ED4CC
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 17:53:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728563AbhAGQu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 11:50:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25088 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727413AbhAGQu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 11:50:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610038141;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NEWzDghVmoiWFPFqZnl2qZ7dTRKfMUgExc8FdbxchX0=;
-        b=aqT/bi2kSPu/BjSFIIyRNww19W3hhVNvv4V+kLZxYnI5NFloWx3dOc7+kDXdmCSL8HYlLj
-        L2aM/cedXz7xlDdG5EgKW93s44w+u7QAjHcV7lQOa5cQhqB0AGq/tsF8pLLbn8qkv1ge4j
-        uXFtWoLOUvtoYzbKv3B9in5P+l/Tfso=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-406-bhawvM7iOyyBVNBrLc8e1g-1; Thu, 07 Jan 2021 11:49:00 -0500
-X-MC-Unique: bhawvM7iOyyBVNBrLc8e1g-1
-Received: by mail-wr1-f69.google.com with SMTP id 4so2883035wrb.16
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 08:48:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NEWzDghVmoiWFPFqZnl2qZ7dTRKfMUgExc8FdbxchX0=;
-        b=pNmp8niJ0W9YZY15m7cU1ykbVTH1aW7hxc21zpGm0n1bGDx4hxVNkLIPA9+zmP3s/g
-         g/kCTZ8SC0m5ab4+d0ZVlpDJrZIUupeEebYRIz80vNrfbv1gE1xf6WMZg9V5+ESsRWtd
-         uQEl6HE8b7ZnW8B208I5vUGE6XKt4cKlS7SqXUWO1VMuo7VR/jhP8hJ7hqHtDRnHDFgx
-         HpHUhhlDgz/ORjj67rKwbG6urEtRcvRMNfKf73k336rIqWe3/a3t51maQLmtEg9CTKOh
-         gVMcEzx6MyWdus/q/rsKcalSetOyjxtJOcfSVl8ZDvNCj5c0grCyTJ8boGFkArOTY8qb
-         dGQg==
-X-Gm-Message-State: AOAM533XIOqJ2zIpIwF0ktSM7ohohZQttDptNKGPLKmDiBoeL5McN9kq
-        T+68xmso9t14/qzpTJRG/PVLLF3FDTpM/2ls1z73+Pgno2uMTZcFWWTdnQ7wQadzrozRwxhp83L
-        IGilyTcJfhHm5LsHv
-X-Received: by 2002:adf:fdce:: with SMTP id i14mr9903472wrs.58.1610038138668;
-        Thu, 07 Jan 2021 08:48:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwQkK5dPSPu0mqLRwtQIAeSrjNjD0TKgFgOuR5vtEdvR++3XUZ2QhSuFMF6RY7tidmGSInRgw==
-X-Received: by 2002:adf:fdce:: with SMTP id i14mr9903464wrs.58.1610038138539;
-        Thu, 07 Jan 2021 08:48:58 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id z6sm9337725wrw.58.2021.01.07.08.48.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 08:48:57 -0800 (PST)
-Date:   Thu, 7 Jan 2021 17:48:56 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] tc: flower: fix json output with mpls lse
-Message-ID: <20210107164856.GC17363@linux.home>
-References: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
+        id S1728292AbhAGQwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 11:52:17 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55394 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726326AbhAGQwR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 11:52:17 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kxYVW-00GiDa-Ot; Thu, 07 Jan 2021 17:51:30 +0100
+Date:   Thu, 7 Jan 2021 17:51:30 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Schreiber <tschreibe@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] net: sfp: add mode quirk for GPON module Ubiquiti
+ U-Fiber Instant
+Message-ID: <X/c8EoDjpj3PgSkI@lunn.ch>
+References: <20201230154755.14746-1-pali@kernel.org>
+ <20210106153749.6748-1-pali@kernel.org>
+ <20210106153749.6748-4-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210106153749.6748-4-pali@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 18, 2020 at 11:25:32PM +0100, Guillaume Nault wrote:
-> The json output of the TCA_FLOWER_KEY_MPLS_OPTS attribute was invalid.
+On Wed, Jan 06, 2021 at 04:37:49PM +0100, Pali Rohár wrote:
+> SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored nonsense
+> information. It claims that support all transceiver types including 10G
+> Ethernet which is not truth. So clear all claimed modes and set only one
+> mode which module supports: 1000baseX_Full.
 > 
-> Example:
+> Also this module have set SFF phys_id in its EEPROM. Kernel SFP subsustem
+> currently does not allow to use SFP modules detected as SFF. Therefore add
+> and exception for this module so it can be detected as supported.
 > 
->   $ tc filter add dev eth0 ingress protocol mpls_uc flower mpls \
->       lse depth 1 label 100                                     \
->       lse depth 2 label 200
+> This change finally allows to detect and use SFP GPON module Ubiquiti
+> U-Fiber Instant on Linux system.
 > 
->   $ tc -json filter show dev eth0 ingress
->     ...{"eth_type":"8847",
->         "  mpls":["    lse":["depth":1,"label":100],
->                   "    lse":["depth":2,"label":200]]}...
+> EEPROM content of this SFP module is (where XX is serial number):
+> 
+> 00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
+> 10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
+> 20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
+> 30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
+> 40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
+> 50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
 
-Is there any problem with this patch?
-It's archived in patchwork, but still in state "new". Therefore I guess
-it was dropped before being considered for review.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-This problem precludes the implementation of a kernel selftest for
-TCA_FLOWER_KEY_MPLS_OPTS.
-
-Just let me know if I should respin.
-
-Thanks,
-
-William
-
+    Andrew
