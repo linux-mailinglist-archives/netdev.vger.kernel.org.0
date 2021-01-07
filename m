@@ -2,74 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F32C2ED440
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 17:27:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7EB2ED46E
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 17:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728726AbhAGQ05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 11:26:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46324 "EHLO
+        id S1726436AbhAGQkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 11:40:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727983AbhAGQ05 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 11:26:57 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94FBC0612F6
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 08:26:16 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id c22so5235917pgg.13
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 08:26:16 -0800 (PST)
+        with ESMTP id S1725835AbhAGQkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 11:40:08 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893AFC0612F4
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 08:38:47 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id m23so6767594ioy.2
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 08:38:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/1yjBNoxhvE6n74m14AHUACMEo/1fjphFvHRgWhy57E=;
-        b=XvRSs/o3TNLU5pLudfMAyFVf8PZ/LjkcfAOkJHCaZj6c3E2Hj/Qny/TDDkp3/iT7FC
-         Oo/XVG6ckLA8RtU0Uiu6EIgFdStwJXXB2V9Kzwli0wM14Iii8qvlZV2bMWsiJpi/r35y
-         tJbGz/+oxV1sVGo1x7AiDaea0ssmGWWQLmwPXUsz3EEb8uzwQvBgQPM+oDRxaT8HukZE
-         CeqhFjwl/B3PUBLLYmHHZZ2XUGvUzWFaSZenv87ToYBirlvGvkOHp24fb0BZpD3TLKL0
-         SuwW08n3j5XjQNb9DDrMcI57frgYD8lPJZwGKPSRQUYw0nXlvp++kmN4chablkvYgAqE
-         qtjA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kKJbZQUZ1Fp4dhYLyCuk1zbCb7S7W1G1Z0bPxsRMlo4=;
+        b=ZV0ET89MrT30I+SCr7lO5atTLcaOSBOaCaxIPEoB9v2hZEknfv+XjOoVV2HFdpl1e1
+         X6DSzb30o0Lx4UTa8lBiZTclq3dZiPA6ilIaN0vL7M9FsF5ZHb7aKLEi0m5t8fsTXEFN
+         +Ag2JtvFrfYlAMgmsMeXzvVrOmYp3rYMm7QyFtiCx6vtTBft3u8RC7SlX4pGymqBRRa2
+         omyYc3M884obBfaeGDJ1pTazWRklKIOKxYo7c8WKpqZiO6M3b+dwGzzUKGU5wlgt6Cmu
+         XTT7BKbsf35fEjqTy2V0uHbv/eKS7tcMldW6HX2GFkyOf/KZBSScXqb2eAwiEc/l1fAJ
+         zLXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/1yjBNoxhvE6n74m14AHUACMEo/1fjphFvHRgWhy57E=;
-        b=rFbyuvFVvGMhKP0Dk/+whkLnfPDg8SNsEnWl0OoqJxKu3/1+SpnsOTUkLQyVdZer4L
-         gvFNAt6xN7ERAHTQtZMA7jD4FUcNpO9t33wgg0mMALZ4xJHzoXx6+Z5oiRqAqsfCh0Fd
-         0P7ghYCMK1wFZQ4sbINWMwfhwfi95vhEfJgc2GHUvQjS8P3nw2a04GNYI2a/HDZSs4sq
-         ECr3y7ZTrgTSOtNqZOIQesY7T5jX8z7E6Jg4iG88JmnNTnmcnvwHa1VqmnszhUQ8JEp4
-         I5foUdpr5ztEEDII4Kqw8/iHfPdfhmAAPPPJlgWymhZxyhINcF9R5xKnWJs5YqHd3fmQ
-         jFaw==
-X-Gm-Message-State: AOAM530MFAD5PJU8zcePSIn9IVAkRBEd8Gz1KtWrg81PabQXtOl77tN3
-        qHHTeoYenrmfoM/+blgNEgTtTg==
-X-Google-Smtp-Source: ABdhPJyIhLme3lhSkK6RGVEM4NYI6y3jVpRgv6m9d6GeF8mtSGHD4WI82reFdNVIMJpV3X+zpWNT1A==
-X-Received: by 2002:a63:c04b:: with SMTP id z11mr2623949pgi.74.1610036776592;
-        Thu, 07 Jan 2021 08:26:16 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id i25sm6108567pfo.137.2021.01.07.08.26.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 08:26:16 -0800 (PST)
-Date:   Thu, 7 Jan 2021 08:26:04 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Roi Dayan <roid@nvidia.com>
-Cc:     netdev@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH iproute2 v2 1/1] build: Fix link errors on some systems
-Message-ID: <20210107082604.5bf57184@hermes.local>
-In-Reply-To: <20210107071334.473916-1-roid@nvidia.com>
-References: <20210107071334.473916-1-roid@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kKJbZQUZ1Fp4dhYLyCuk1zbCb7S7W1G1Z0bPxsRMlo4=;
+        b=g+nYL8uuAyJCbCI0/mg1Y0bjaPIK0urblkmttG4ysWxTJ0sPqhsrnsHEF1CKPlUJ0Y
+         BxEb5SvlnT5iuc4J7jM+9IZbMfyXxXGOEZjOGN7xOvOEkA25amBAJ621yQwPvKKWMrKC
+         Ulq/YeFAPJCJ0fWOTEinmliyrGmz6XnjJt9IWnUt1BIG5Sbn8nZiQb4R7qSoOSMJrhDX
+         l046+RroMfeIk2Kz5MFqd4Cyt4Id0dR/L4J/XfED5ZGiYFzK1I6/dx3j8UuAtIZa43UH
+         DjvirRW369GYiJLhB2uX0nQHDrhojDUeq3ypgfJJZeJ4CzPHMMp4dRX7GbNavjdqKpYy
+         vAdA==
+X-Gm-Message-State: AOAM531vmyxGvycQo+12tFOEHcOdhNGIhfCyhzuoXPLN3XI5wJv/0RpZ
+        zDPOIjmD/foKs/oaqHESqKDB0+GTHE1MbKY2s00=
+X-Google-Smtp-Source: ABdhPJwnpJsbCe3c9MqN8OCfS7Ylj/io5OI2xqhQmx9mKgsjXl4D2JXhiV4LNlxBlqQtrft8KJkVCrB74+cSx2IXJUQ=
+X-Received: by 2002:a6b:d007:: with SMTP id x7mr1948481ioa.88.1610037526706;
+ Thu, 07 Jan 2021 08:38:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210106180428.722521-1-atenart@kernel.org> <20210106180428.722521-4-atenart@kernel.org>
+ <CAKgT0UdZs7ER84PmeM5EV6rAKWiqu-5Ma47bh8qf-68fjsfbAw@mail.gmail.com> <161000966161.3275.12891261917424414122@kwain.local>
+In-Reply-To: <161000966161.3275.12891261917424414122@kwain.local>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 7 Jan 2021 08:38:35 -0800
+Message-ID: <CAKgT0UcFu7pgy96uMhraT7B_JKEwXtVziouXLmZ4rdXPHn91Jg@mail.gmail.com>
+Subject: Re: [PATCH net 3/3] net-sysfs: move the xps cpus/rxqs retrieval in a
+ common function
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Jan 2021 09:13:34 +0200
-Roi Dayan <roid@nvidia.com> wrote:
+On Thu, Jan 7, 2021 at 12:54 AM Antoine Tenart <atenart@kernel.org> wrote:
+>
+> Quoting Alexander Duyck (2021-01-06 20:54:11)
+> > On Wed, Jan 6, 2021 at 10:04 AM Antoine Tenart <atenart@kernel.org> wrote:
+> > > +/* Should be called with the rtnl lock held. */
+> > > +static int xps_queue_show(struct net_device *dev, unsigned long **mask,
+> > > +                         unsigned int index, bool is_rxqs_map)
+> >
+> > Why pass dev and index instead of just the queue which already
+> > contains both?
+>
+> Right, I can do that.
 
-> +#define _IS_JSON_CONTEXT(type) ((type & PRINT_JSON || type & PRINT_ANY) && is_json_context())
-> +#define _IS_FP_CONTEXT(type) (!is_json_context() && (type & PRINT_FP || type & PRINT_ANY))
+Actually I have to backtrack on that a bit. More on that below.
 
-You could fold the comparisons? and why are the two options doing comparison in different order?
+> > I think it would make more sense to just stick to passing the queue
+> > through along with a pointer to the xps_dev_maps value that we need to
+> > read.
+>
+> That would require to hold rcu_read_lock in the caller and I'd like to
+> keep it in that function.
 
-#define _IS_JSON_CONTEXT(type) (is_json_context() && (type & (PRINT_JSON | PRINT_ANY))
-#define _IS_FP_CONTEXT(type)   (!is_json_context() && (type & (PRINT_FP || PRINT_ANY))
+Actually you could probably make it work if you were to pass a pointer
+to the RCU pointer.
+
+> > >         if (dev->num_tc) {
+> > >                 /* Do not allow XPS on subordinate device directly */
+> > >                 num_tc = dev->num_tc;
+> > > -               if (num_tc < 0) {
+> > > -                       ret = -EINVAL;
+> > > -                       goto err_rtnl_unlock;
+> > > -               }
+> > > +               if (num_tc < 0)
+> > > +                       return -EINVAL;
+> > >
+> > >                 /* If queue belongs to subordinate dev use its map */
+> > >                 dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
+> > >
+> > >                 tc = netdev_txq_to_tc(dev, index);
+> > > -               if (tc < 0) {
+> > > -                       ret = -EINVAL;
+> > > -                       goto err_rtnl_unlock;
+> > > -               }
+> > > +               if (tc < 0)
+> > > +                       return -EINVAL;
+> > >         }
+> > >
+> >
+> > So if we store the num_tc and nr_ids in the dev_maps structure then we
+> > could simplify this a bit by pulling the num_tc info out of the
+> > dev_map and only asking the Tx queue for the tc in that case and
+> > validating it against (tc <0 || num_tc <= tc) and returning an error
+> > if either are true.
+> >
+> > This would also allow us to address the fact that the rxqs feature
+> > doesn't support the subordinate devices as you could pull out the bit
+> > above related to the sb_dev and instead call that prior to calling
+> > xps_queue_show so that you are operating on the correct device map.
+
+It probably would be necessary to pass dev and index if we pull the
+netdev_get_tx_queue()->sb_dev bit out and performed that before we
+called the xps_queue_show function. Specifically as the subordinate
+device wouldn't match up with the queue device so we would be better
+off pulling it out first.
+
+> >
+> > > -       mask = bitmap_zalloc(nr_cpu_ids, GFP_KERNEL);
+> > > -       if (!mask) {
+> > > -               ret = -ENOMEM;
+> > > -               goto err_rtnl_unlock;
+> > > +       rcu_read_lock();
+> > > +
+> > > +       if (is_rxqs_map) {
+> > > +               dev_maps = rcu_dereference(dev->xps_rxqs_map);
+> > > +               nr_ids = dev->num_rx_queues;
+> > > +       } else {
+> > > +               dev_maps = rcu_dereference(dev->xps_cpus_map);
+> > > +               nr_ids = nr_cpu_ids;
+> > > +               if (num_possible_cpus() > 1)
+> > > +                       possible_mask = cpumask_bits(cpu_possible_mask);
+> > >         }
+> >
+
+I don't think we need the possible_mask check. That is mostly just an
+optimization that was making use of an existing "for_each" loop macro.
+If we are going to go through 0 through nr_ids then there is no need
+for the possible_mask as we can just brute force our way through and
+will not find CPU that aren't there since we couldn't have added them
+to the map anyway.
+
+> > I think Jakub had mentioned earlier the idea of possibly moving some
+> > fields into the xps_cpus_map and xps_rxqs_map in order to reduce the
+> > complexity of this so that certain values would be protected by the
+> > RCU lock.
+> >
+> > This might be a good time to look at encoding things like the number
+> > of IDs and the number of TCs there in order to avoid a bunch of this
+> > duplication. Then you could just pass a pointer to the map you want to
+> > display and the code should be able to just dump the values.:
+>
+> 100% agree to all the above. That would also prevent from making out of
+> bound accesses when dev->num_tc is increased after dev_maps is
+> allocated. I do have a series ready to be send storing num_tc into the
+> maps, and reworking code to use it instead of dev->num_tc. The series
+> also adds checks to ensure the map is valid when we access it (such as
+> making sure dev->num_tc == map->num_tc). I however did not move nr_ids
+> into the map yet, but I'll look into it.
+>
+> The idea is to send it as a follow up series, as this one is only moving
+> code around to improve maintenance and readability. Even if all the
+> patches were in the same series that would be a prerequisite.
+>
+> Thanks!
+> Antoine
+
+Okay, so if we are going to do it as a follow-up that is fine I
+suppose, but one of the reasons I brought it up is that it would help
+this patch set in terms of readability/maintainability. An additional
+change we could look at making would be to create an xps_map pointer
+array instead of having individual pointers. Then you could simply be
+passing an index into the array to indicate if we are accessing the
+CPUs or the RXQs map.
