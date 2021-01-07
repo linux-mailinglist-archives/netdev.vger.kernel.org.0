@@ -2,94 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CE182ED484
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 17:42:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9EF2ED4C1
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 17:50:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728735AbhAGQmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 11:42:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728674AbhAGQmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 11:42:05 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE49C0612F5
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 08:41:24 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id x13so8009580oic.5
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 08:41:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WrZY2i5eprT/l7uYOILT1Kp1DRj8jQxObOyc0stKlc8=;
-        b=0bw5xcOdZE0vbd9GiiqSpi/gFIJEd0OY4mWA6FwBrkTy1VgY1zGFzEPxobH3/JvBjb
-         5JfekHzTHOnSszs6aBn01BwwvhbkMdTDPGPu74leawcCOPdioLxMFBHsfSMMQjE6ab1V
-         7AHCm9fYksiQJyoe5gXHFhwUsJdM4ud1foc9Xmyo4ZCWWLog5VOX8BQWeLkrr1/wWsw2
-         esNX1kuMSePuqNP1rcMbA4GX2/2Df2Xa/pY2zEHM9rJfFPyaTEo1X/en3pVHOx6sYclg
-         01e+uVxU+Ty3J4+fXaqGoBcOP72YrW4J6g8VBdTav2wRT+MBAIRJPPiAW3h1ySInZOit
-         22tQ==
+        id S1728563AbhAGQu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 11:50:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25088 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727413AbhAGQu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 11:50:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610038141;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NEWzDghVmoiWFPFqZnl2qZ7dTRKfMUgExc8FdbxchX0=;
+        b=aqT/bi2kSPu/BjSFIIyRNww19W3hhVNvv4V+kLZxYnI5NFloWx3dOc7+kDXdmCSL8HYlLj
+        L2aM/cedXz7xlDdG5EgKW93s44w+u7QAjHcV7lQOa5cQhqB0AGq/tsF8pLLbn8qkv1ge4j
+        uXFtWoLOUvtoYzbKv3B9in5P+l/Tfso=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-406-bhawvM7iOyyBVNBrLc8e1g-1; Thu, 07 Jan 2021 11:49:00 -0500
+X-MC-Unique: bhawvM7iOyyBVNBrLc8e1g-1
+Received: by mail-wr1-f69.google.com with SMTP id 4so2883035wrb.16
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 08:48:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WrZY2i5eprT/l7uYOILT1Kp1DRj8jQxObOyc0stKlc8=;
-        b=CL66pVgH26fccZQ5bxSYtdrp8qTJ4qWO/shgW0hLYMhXGyTJ4NICTEkP8Zdier1FHQ
-         WH2kclis0UEE08qxFVY5MrO5t8f/7RIyDROk7PUONGKggHRorvJh7kCrtaXuPd/GAOeO
-         BrqZf7GXr8DYBavmeSokrQKU8dh3E9ovcsBq2DUoy1vYk0k7GfLL1b6etS80X5DnhfTx
-         T5mZ4L/A/obV6uOMYrSTsjbAsbyKsc5Cl9P6WNNOG5PsRay+V+cPMqNJ9GSct0CusRWX
-         sudYMYAwkty4CZScSwjzpmu6IzLO9S4p24tDOekvRzQuwGAaA2Hwp4XanzzHdqyVaqwT
-         LeeA==
-X-Gm-Message-State: AOAM532dSTMH1bCYmsRpI0O6XYqG/01XtcfcU7VxeFF08FJeKHgr278W
-        9DfjCLLy3z39KScTPkYKroYVPoxDb2guY9MrG4KiRw==
-X-Google-Smtp-Source: ABdhPJzDAD7OVTCmfBWUzfFbwQjy72Rk9G5o+HeIHj4rrQ0cFWLDQUyDirTYKDwkAMV2a06UoriG4O30B59w0jyygJE=
-X-Received: by 2002:aca:75cc:: with SMTP id q195mr7112914oic.173.1610037684209;
- Thu, 07 Jan 2021 08:41:24 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NEWzDghVmoiWFPFqZnl2qZ7dTRKfMUgExc8FdbxchX0=;
+        b=pNmp8niJ0W9YZY15m7cU1ykbVTH1aW7hxc21zpGm0n1bGDx4hxVNkLIPA9+zmP3s/g
+         g/kCTZ8SC0m5ab4+d0ZVlpDJrZIUupeEebYRIz80vNrfbv1gE1xf6WMZg9V5+ESsRWtd
+         uQEl6HE8b7ZnW8B208I5vUGE6XKt4cKlS7SqXUWO1VMuo7VR/jhP8hJ7hqHtDRnHDFgx
+         HpHUhhlDgz/ORjj67rKwbG6urEtRcvRMNfKf73k336rIqWe3/a3t51maQLmtEg9CTKOh
+         gVMcEzx6MyWdus/q/rsKcalSetOyjxtJOcfSVl8ZDvNCj5c0grCyTJ8boGFkArOTY8qb
+         dGQg==
+X-Gm-Message-State: AOAM533XIOqJ2zIpIwF0ktSM7ohohZQttDptNKGPLKmDiBoeL5McN9kq
+        T+68xmso9t14/qzpTJRG/PVLLF3FDTpM/2ls1z73+Pgno2uMTZcFWWTdnQ7wQadzrozRwxhp83L
+        IGilyTcJfhHm5LsHv
+X-Received: by 2002:adf:fdce:: with SMTP id i14mr9903472wrs.58.1610038138668;
+        Thu, 07 Jan 2021 08:48:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwQkK5dPSPu0mqLRwtQIAeSrjNjD0TKgFgOuR5vtEdvR++3XUZ2QhSuFMF6RY7tidmGSInRgw==
+X-Received: by 2002:adf:fdce:: with SMTP id i14mr9903464wrs.58.1610038138539;
+        Thu, 07 Jan 2021 08:48:58 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id z6sm9337725wrw.58.2021.01.07.08.48.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jan 2021 08:48:57 -0800 (PST)
+Date:   Thu, 7 Jan 2021 17:48:56 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] tc: flower: fix json output with mpls lse
+Message-ID: <20210107164856.GC17363@linux.home>
+References: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
 MIME-Version: 1.0
-References: <20201222222637.3204929-1-robert.marko@sartura.hr>
- <20201222222637.3204929-3-robert.marko@sartura.hr> <20201223005633.GR3107610@lunn.ch>
- <20210103164613.GA4012977@robh.at.kernel.org> <X/H4C1eBNHdDS4vO@lunn.ch>
-In-Reply-To: <X/H4C1eBNHdDS4vO@lunn.ch>
-From:   Robert Marko <robert.marko@sartura.hr>
-Date:   Thu, 7 Jan 2021 17:41:13 +0100
-Message-ID: <CA+HBbNHJRuuFDRb_hMSSPvNHoz27y+dt8kzNF3WF+aaaNytEgw@mail.gmail.com>
-Subject: Re: [PATCH 2/4] dt-bindings: net: Add bindings for Qualcomm QCA807x
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Rob Herring <robh@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-kernel@vger.kernel.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        devicetree@vger.kernel.org, David Miller <davem@davemloft.net>,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Luka Perkov <luka.perkov@sartura.hr>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 3, 2021 at 6:00 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > > > +  qcom,tx-driver-strength:
-> > > > +    description: PSGMII/QSGMII TX driver strength control.
-> > > > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > > > +    enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-> > >
-> > > Please use the actual values here, and have the driver convert to the
-> > > value poked into the register. So the property would be
-> > > qcom,tx-driver-strength-mv and it would have the value 220 for
-> > > example.
-> >
-> > The LED binding has properties for specifying the current already. And
-> > it's max current which is the h/w property where as anything less is
-> > just software configuration (IOW, doesn't belong in DT).
->
-> Hi Rob
->
-> My understanding of this is it is the drive strength of the SERDES
-> line. Nothing to do with LEDs. The description needs improving.
+On Fri, Dec 18, 2020 at 11:25:32PM +0100, Guillaume Nault wrote:
+> The json output of the TCA_FLOWER_KEY_MPLS_OPTS attribute was invalid.
+> 
+> Example:
+> 
+>   $ tc filter add dev eth0 ingress protocol mpls_uc flower mpls \
+>       lse depth 1 label 100                                     \
+>       lse depth 2 label 200
+> 
+>   $ tc -json filter show dev eth0 ingress
+>     ...{"eth_type":"8847",
+>         "  mpls":["    lse":["depth":1,"label":100],
+>                   "    lse":["depth":2,"label":200]]}...
 
-Yes, this is used to set the PSGMII/QSMII SerDes TX driver strength.
-It has nothing to do with LEDs.
-I agree that the description is a bit confusing, I will try to make it
-a bit clearer.
->
->       Andrew
+Is there any problem with this patch?
+It's archived in patchwork, but still in state "new". Therefore I guess
+it was dropped before being considered for review.
+
+This problem precludes the implementation of a kernel selftest for
+TCA_FLOWER_KEY_MPLS_OPTS.
+
+Just let me know if I should respin.
+
+Thanks,
+
+William
+
