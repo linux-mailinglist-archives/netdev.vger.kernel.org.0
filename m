@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B62692ED51E
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:08:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A69472ED53E
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 18:14:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729042AbhAGRHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 12:07:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51178 "EHLO mail.kernel.org"
+        id S1728105AbhAGROe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 12:14:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729030AbhAGRHR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 12:07:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4AE46233CE;
-        Thu,  7 Jan 2021 17:06:36 +0000 (UTC)
+        id S1727673AbhAGROd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 12:14:33 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 371D222C9F;
+        Thu,  7 Jan 2021 17:13:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610039197;
-        bh=kdpnak+VNvEOSjXNTuPWKOuRIn3wRbo6L9cOQwy23YU=;
+        s=k20201202; t=1610039633;
+        bh=ZVeD39col6jONCCqdvgtIVCmR0m41a3iw2QJUE5Geso=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SvE8TrY7rvGIWNVM13q406gFdCAJpeUSE83QwMh4q1FZhjQlKRhaa56MvmzaHmdte
-         7LZNQBNXg1l4QMFVxGCQw3bcAJgPnNG8/RhaJTxMeQxJCYPyVC161jXLc1LdRPwavy
-         6CJcjwZ8pyKsR3d/rFEm9232pSXTbdKx2K2sQ7Ivt4MDWZHSPn7O479tOsoFOkEMLy
-         4eEdlDfQ8DaOOmKIX/US+t9btzV4mFr7uO4SusHcUiUANpYSPuobLW2sdWEWKGlZGK
-         ODMkOxjyVW7j7isuegVDvvbyjcN4pNYVrPECbSU4uWGV2h028urIeJXag2QKdurUJg
-         BgSCueQJycKnA==
-Date:   Thu, 7 Jan 2021 09:06:35 -0800
+        b=P3EsmxxZDZh+F/f5tlaofaJqMd5SBB6Zzx4Df/sO7K6IHNHmcW8nV6biybCNuPije
+         phTg+dzw1zVcV5q/coL0nQTMcPoiAqBamR8K80XNlXKtYVPLkDsCki0KvVKrv2JcUw
+         vV2G0R5N/lHvKIqiJdB8otQbbpRiDK8uOXnGtZ5I/1P1iPsUoZMxJqUpUjJ+IsUEtP
+         iCGswzpdvUle21jW7H1NM1sJEf2egDy7U67pJfRlnRmgrkumx93nobtiruHy9g4QMx
+         Lu5cn2+Yr8MO7qpOXgRe82PONDK1FmXrIQLxsv9+OLdkAyCbrXamQ5tzAfBTh3bHIh
+         Wna+832kPIoSQ==
+Date:   Thu, 7 Jan 2021 09:13:52 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     lll <liyonglong@chinatelecom.cn>
-Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, fw@strlen.de, soheil@google.com,
-        ncardwell@google.com, ycheng@google.com
-Subject: Re: [PATCH] tcp: remove obsolete paramter sysctl_tcp_low_latency
-Message-ID: <20210107090635.440b1fc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <b3cb1c57-d992-72c1-dd24-5d594ff38561@chinatelecom.cn>
-References: <1608271876-120934-1-git-send-email-liyonglong@chinatelecom.cn>
-        <20201218164647.1bcc6cb9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <b3cb1c57-d992-72c1-dd24-5d594ff38561@chinatelecom.cn>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH iproute2] tc: flower: fix json output with mpls lse
+Message-ID: <20210107091352.610abd6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210107164856.GC17363@linux.home>
+References: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
+        <20210107164856.GC17363@linux.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 Jan 2021 11:08:16 +0800 lll wrote:
-> =E5=9C=A8 2020/12/19 8:46, Jakub Kicinski =E5=86=99=E9=81=93:
-> > On Fri, 18 Dec 2020 14:11:16 +0800 lyl wrote: =20
-> >> Remove tcp_low_latency, since it is not functional After commit
-> >> e7942d0633c4 (tcp: remove prequeue support)
-> >>
-> >> Signed-off-by: lyl <liyonglong@chinatelecom.cn> =20
-> >=20
-> > I don't think we can remove sysctls, even if they no longer control=20
-> > the behavior of the kernel. The existence of the file itself is uAPI.
->
-> Got it. But a question: why tcp_tw_recycle can be removed totally?
-> it is also part of uAPI
+On Thu, 7 Jan 2021 17:48:56 +0100 Guillaume Nault wrote:
+> On Fri, Dec 18, 2020 at 11:25:32PM +0100, Guillaume Nault wrote:
+> > The json output of the TCA_FLOWER_KEY_MPLS_OPTS attribute was invalid.
+> > 
+> > Example:
+> > 
+> >   $ tc filter add dev eth0 ingress protocol mpls_uc flower mpls \
+> >       lse depth 1 label 100                                     \
+> >       lse depth 2 label 200
+> > 
+> >   $ tc -json filter show dev eth0 ingress
+> >     ...{"eth_type":"8847",
+> >         "  mpls":["    lse":["depth":1,"label":100],
+> >                   "    lse":["depth":2,"label":200]]}...  
+> 
+> Is there any problem with this patch?
+> It's archived in patchwork, but still in state "new". Therefore I guess
+> it was dropped before being considered for review.
 
-Good question, perhaps with tcp_tw_recycle we wanted to make sure users
-who depended on it notice removal, since the feature was broken by
-design?=20
+Erm, that's weird. I think Alexei mentioned that auto-archiving is
+turned on in the new netdevbpf patchwork instance. My guess is it got
+auto archived :S
 
-tcp_low_latency is an optimization, not functionality which users may
-depend on.
+Here is the list of all patches that are Archived as New:
 
-But I may be wrong so CCing authors.
+https://patchwork.kernel.org/project/netdevbpf/list/?state=1&archive=true
+
+Should any of these have been reviewed?
+
