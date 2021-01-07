@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1433B2ED39F
+	by mail.lfdr.de (Postfix) with ESMTP id 8233F2ED3A0
 	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 16:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbhAGPiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 10:38:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38788 "EHLO
+        id S1728219AbhAGPiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 10:38:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbhAGPiV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 10:38:21 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A49C0612F5
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 07:37:41 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id g20so10356362ejb.1
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 07:37:41 -0800 (PST)
+        with ESMTP id S1725894AbhAGPiW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 10:38:22 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A690C0612F6
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 07:37:42 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id ga15so10304861ejb.4
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 07:37:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kB7duZbRSwG7nlifEfJU+rxNpJU6RNFYOSLbU84pff4=;
-        b=TBKIrdDfsn4EPkSXMx5dYrkLaoyTZ77KRtsXGAJM1BFoTpUqcEj7sLO7latm36/onL
-         PuCwe1byZEGDMDL8BYBo4RfAui9v/m4vnmxGynha4+yfwBgI8wv4tfibu8U5ctQGLkEB
-         0beyuxmkMUhA6/DsRWEZGaqg2chDdUO7xJEWCYx+esyDAGityWzVOY7FMOhK3cy5ADgQ
-         Ioj+XkSSH4vjKzeNFk8HjfkBlzPAljcd8aKCkz/+wEPrrnLbQYQv3ufl7SY7DxVnteVz
-         K1FygjGlWkWJNtZh2sG8W55mziCIk1zd+5eQ8rjdYsArnB2iimcZyKaidNGjqK8yEf1c
-         fb9w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LCWZmcqRmC8Gz6Tjh/la+59tBRkXsSvxjFWfB9CbUDs=;
+        b=Yqp/X2UBbKpOnWhPBhs4Exm9rHocqwXqmWAXm9iuKK0DX95bsPQDFNYIqVkoS9w7lI
+         PJ5ZZG79kRENJqQPzDK4ydDFCrz8wVOJgiAoVR0wySCJWwtmrrcCZFLmbH3zgIIQuTP2
+         lcx2Dyv1NGG6fg4yOFe+aUqq7MwdGo1eVcUGjlmoO1yVrXI4thHnVgb3VdZ+H8vSYft6
+         lohxx2I+kWsCk/Rh+gJNPpkD335MUbWYLCjKWGo0GilDdY8+7lVv5QNQmN6cUT112ckV
+         Rfnb3qbCzGjvSevBaudvZASR50H91CS4HRa497K8W0lnipiz6WSeLLJbRqzXrB0GrB4a
+         TEyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kB7duZbRSwG7nlifEfJU+rxNpJU6RNFYOSLbU84pff4=;
-        b=V1vt4eruFyvGkVunT2PYLIhNs8+S4kK2uqC0x18P/QoUedVgrCjvcTF+Yl86rhL/xj
-         zoDywBZUr1WArvTScYDPWTjDwHl8B8+bFHLy+Dys9AIFj+ImGpwTC2460j9wXirTTAge
-         p4skadbmlu4O1AtHZprKJypoSTxaIDHPrL+ttu9z7+HdZ+24q8AGz78XQi5+ldgD8FeM
-         wBHaYiaOZmuAQJthbnVqF0I/pyoEAWXYBECh9etLNm9DCPaG7eKU6g07MWKSghAAbS4Q
-         u6ZoJpogCphwXaIvIRIvPlvhJd4xr5ZwS1XugmMP9XlaSiFGDqUpGQoRKM/6nqBi7Z3g
-         p/1g==
-X-Gm-Message-State: AOAM532KJp5F8DgX8+vBw9vH3Jqre3U5Rcvha18BTz2O7j9Jfg5ob/Gb
-        aspDFnA7jztroGmqQQE47yM=
-X-Google-Smtp-Source: ABdhPJwMKJQP3A/PUTm/wqyFKCCUJgsthfg5l/Tv8rbm3VSzoNLgbxlCuBwQCdUgiDvtU2vz3UWwGQ==
-X-Received: by 2002:a17:906:edc2:: with SMTP id sb2mr6417698ejb.159.1610033859988;
-        Thu, 07 Jan 2021 07:37:39 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LCWZmcqRmC8Gz6Tjh/la+59tBRkXsSvxjFWfB9CbUDs=;
+        b=o/OD1KpAaxSgW8mkL2aT3Pn4DKOD7c8RrEYGZ0/OJM5OVajmdOb1YG3ugKeaJAnB0z
+         wdko8DPSeKEtHuSRuYAbzFC59ubPcVRdzkwV26iQnXB6C1EKKgwNmZdy1c0bspWMzsZi
+         gdeIPX/PSJ2ZWKL2HgqPcXUGb4xoqxY/tw/xWNsdNAO6h1b+1KJg9vZbwyyqmqnNPCWj
+         e0CaQF+ysuNNL1p52Fty7IW9pa/s42qaaUh8nWav5kFgyV9iRELb/lngSUeaUzOL8yt3
+         UuuRSUFWtwCW9MtDQousulqN3ctsFkzuF3/B13RxhY3qlMS2nyaRlXahxIgp5IqdNVEA
+         JuHQ==
+X-Gm-Message-State: AOAM531nE9xBzS31JdKAChvB/pDVtx0ApT2qX8lBI6czcSD9dAekbxtd
+        +SUmKIost7jwOvvWcJyFnT0=
+X-Google-Smtp-Source: ABdhPJzaKLrnPjNF4hlAToRtSr+akjpuufgGnYEeIX+Y00ybQsAUl4D59YIfkBg5NMV75+N9HF+zGA==
+X-Received: by 2002:a17:906:229a:: with SMTP id p26mr6778516eja.291.1610033861127;
+        Thu, 07 Jan 2021 07:37:41 -0800 (PST)
 Received: from yoga-910.localhost (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id z9sm2574898eju.123.2021.01.07.07.37.38
+        by smtp.gmail.com with ESMTPSA id z9sm2574898eju.123.2021.01.07.07.37.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 07:37:39 -0800 (PST)
+        Thu, 07 Jan 2021 07:37:40 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     laurentiu.tudor@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH 0/6] dpaa2-mac: various updates
-Date:   Thu,  7 Jan 2021 17:36:32 +0200
-Message-Id: <20210107153638.753942-1-ciorneiioana@gmail.com>
+Subject: [PATCH 1/6] dpaa2-mac: split up initializing the MAC object from connecting to it
+Date:   Thu,  7 Jan 2021 17:36:33 +0200
+Message-Id: <20210107153638.753942-2-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210107153638.753942-1-ciorneiioana@gmail.com>
+References: <20210107153638.753942-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -62,36 +64,191 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-The first two patches of this series extends the MAC statistics support
-to also work for network interfaces which have their link status handled
-by firmware (TYPE_FIXED).
+Split up the initialization phase of the dpmac object from actually
+configuring the phylink instance, connecting to it and configuring the
+MAC. This is done so that even though the dpni object is connected to a
+dpmac which has link management handled by the firmware we are still
+able to export the MAC counters.
 
-The next two patches are fixing a sporadic problem which happens when
-the connected DPMAC object is not yet discovered by the fsl-mc bus, thus
-the dpaa2-eth is not able to get a reference to it. A referred probe
-will be requested in this case.
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 14 +++-
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 68 +++++++++++--------
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |  5 ++
+ 3 files changed, 58 insertions(+), 29 deletions(-)
 
-Finally, the last two patches make some cosmetic changes, mostly
-removing comments and unnecessary checks.
-
-
-Ioana Ciornei (6):
-  dpaa2-mac: split up initializing the MAC object from connecting to it
-  dpaa2-mac: export MAC counters even when in TYPE_FIXED
-  bus: fsl-mc: return -EPROBE_DEFER when a device is not yet discovered
-  dpaa2-eth: retry the probe when the MAC is not yet discovered on the
-    bus
-  dpaa2-mac: remove an unnecessary check
-  dpaa2-mac: remove a comment regarding pause settings
-
- drivers/bus/fsl-mc/fsl-mc-bus.c               |   9 ++
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  53 ++++---
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  13 ++
- .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  |  16 +--
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 134 ++++++++----------
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |   5 +
- 6 files changed, 125 insertions(+), 105 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index fb0bcd18ec0c..61385894e8c7 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -4056,15 +4056,24 @@ static int dpaa2_eth_connect_mac(struct dpaa2_eth_priv *priv)
+ 	mac->mc_io = priv->mc_io;
+ 	mac->net_dev = priv->net_dev;
+ 
++	err = dpaa2_mac_open(mac);
++	if (err)
++		goto err_free_mac;
++
+ 	err = dpaa2_mac_connect(mac);
+ 	if (err) {
+ 		netdev_err(priv->net_dev, "Error connecting to the MAC endpoint\n");
+-		kfree(mac);
+-		return err;
++		goto err_close_mac;
+ 	}
+ 	priv->mac = mac;
+ 
+ 	return 0;
++
++err_close_mac:
++	dpaa2_mac_close(mac);
++err_free_mac:
++	kfree(mac);
++	return err;
+ }
+ 
+ static void dpaa2_eth_disconnect_mac(struct dpaa2_eth_priv *priv)
+@@ -4073,6 +4082,7 @@ static void dpaa2_eth_disconnect_mac(struct dpaa2_eth_priv *priv)
+ 		return;
+ 
+ 	dpaa2_mac_disconnect(priv->mac);
++	dpaa2_mac_close(priv->mac);
+ 	kfree(priv->mac);
+ 	priv->mac = NULL;
+ }
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index 828c177df03d..b97a219878c0 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -302,36 +302,20 @@ static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
+ 
+ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ {
+-	struct fsl_mc_device *dpmac_dev = mac->mc_dev;
+ 	struct net_device *net_dev = mac->net_dev;
+ 	struct device_node *dpmac_node;
+ 	struct phylink *phylink;
+-	struct dpmac_attr attr;
+ 	int err;
+ 
+-	err = dpmac_open(mac->mc_io, 0, dpmac_dev->obj_desc.id,
+-			 &dpmac_dev->mc_handle);
+-	if (err || !dpmac_dev->mc_handle) {
+-		netdev_err(net_dev, "dpmac_open() = %d\n", err);
+-		return -ENODEV;
+-	}
+-
+-	err = dpmac_get_attributes(mac->mc_io, 0, dpmac_dev->mc_handle, &attr);
+-	if (err) {
+-		netdev_err(net_dev, "dpmac_get_attributes() = %d\n", err);
+-		goto err_close_dpmac;
+-	}
+-
+-	mac->if_link_type = attr.link_type;
++	mac->if_link_type = mac->attr.link_type;
+ 
+-	dpmac_node = dpaa2_mac_get_node(attr.id);
++	dpmac_node = dpaa2_mac_get_node(mac->attr.id);
+ 	if (!dpmac_node) {
+-		netdev_err(net_dev, "No dpmac@%d node found.\n", attr.id);
+-		err = -ENODEV;
+-		goto err_close_dpmac;
++		netdev_err(net_dev, "No dpmac@%d node found.\n", mac->attr.id);
++		return -ENODEV;
+ 	}
+ 
+-	err = dpaa2_mac_get_if_mode(dpmac_node, attr);
++	err = dpaa2_mac_get_if_mode(dpmac_node, mac->attr);
+ 	if (err < 0) {
+ 		err = -EINVAL;
+ 		goto err_put_node;
+@@ -351,9 +335,9 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ 		goto err_put_node;
+ 	}
+ 
+-	if (attr.link_type == DPMAC_LINK_TYPE_PHY &&
+-	    attr.eth_if != DPMAC_ETH_IF_RGMII) {
+-		err = dpaa2_pcs_create(mac, dpmac_node, attr.id);
++	if (mac->attr.link_type == DPMAC_LINK_TYPE_PHY &&
++	    mac->attr.eth_if != DPMAC_ETH_IF_RGMII) {
++		err = dpaa2_pcs_create(mac, dpmac_node, mac->attr.id);
+ 		if (err)
+ 			goto err_put_node;
+ 	}
+@@ -389,8 +373,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ 	dpaa2_pcs_destroy(mac);
+ err_put_node:
+ 	of_node_put(dpmac_node);
+-err_close_dpmac:
+-	dpmac_close(mac->mc_io, 0, dpmac_dev->mc_handle);
++
+ 	return err;
+ }
+ 
+@@ -402,8 +385,39 @@ void dpaa2_mac_disconnect(struct dpaa2_mac *mac)
+ 	phylink_disconnect_phy(mac->phylink);
+ 	phylink_destroy(mac->phylink);
+ 	dpaa2_pcs_destroy(mac);
++}
++
++int dpaa2_mac_open(struct dpaa2_mac *mac)
++{
++	struct fsl_mc_device *dpmac_dev = mac->mc_dev;
++	struct net_device *net_dev = mac->net_dev;
++	int err;
++
++	err = dpmac_open(mac->mc_io, 0, dpmac_dev->obj_desc.id,
++			 &dpmac_dev->mc_handle);
++	if (err || !dpmac_dev->mc_handle) {
++		netdev_err(net_dev, "dpmac_open() = %d\n", err);
++		return -ENODEV;
++	}
++
++	err = dpmac_get_attributes(mac->mc_io, 0, dpmac_dev->mc_handle, &mac->attr);
++	if (err) {
++		netdev_err(net_dev, "dpmac_get_attributes() = %d\n", err);
++		goto err_close_dpmac;
++	}
++
++	return 0;
++
++err_close_dpmac:
++	dpmac_close(mac->mc_io, 0, dpmac_dev->mc_handle);
++	return err;
++}
++
++void dpaa2_mac_close(struct dpaa2_mac *mac)
++{
++	struct fsl_mc_device *dpmac_dev = mac->mc_dev;
+ 
+-	dpmac_close(mac->mc_io, 0, mac->mc_dev->mc_handle);
++	dpmac_close(mac->mc_io, 0, dpmac_dev->mc_handle);
+ }
+ 
+ static char dpaa2_mac_ethtool_stats[][ETH_GSTRING_LEN] = {
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
+index 955a52856210..13d42dd58ec9 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
+@@ -17,6 +17,7 @@ struct dpaa2_mac {
+ 	struct dpmac_link_state state;
+ 	struct net_device *net_dev;
+ 	struct fsl_mc_io *mc_io;
++	struct dpmac_attr attr;
+ 
+ 	struct phylink_config phylink_config;
+ 	struct phylink *phylink;
+@@ -28,6 +29,10 @@ struct dpaa2_mac {
+ bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,
+ 			     struct fsl_mc_io *mc_io);
+ 
++int dpaa2_mac_open(struct dpaa2_mac *mac);
++
++void dpaa2_mac_close(struct dpaa2_mac *mac);
++
+ int dpaa2_mac_connect(struct dpaa2_mac *mac);
+ 
+ void dpaa2_mac_disconnect(struct dpaa2_mac *mac);
 -- 
 2.29.2
 
