@@ -2,55 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B0442ED2C2
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 15:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 870692ED2EA
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 15:43:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729775AbhAGOhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 09:37:35 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55172 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729309AbhAGOhd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 09:37:33 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kxWP7-00GgZg-IT; Thu, 07 Jan 2021 15:36:45 +0100
-Date:   Thu, 7 Jan 2021 15:36:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v7 net-next 2/2] net: dsa: qca: ar9331: export stats64
-Message-ID: <X/ccfY+9a8R6wcJX@lunn.ch>
-References: <20210107125613.19046-1-o.rempel@pengutronix.de>
- <20210107125613.19046-3-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210107125613.19046-3-o.rempel@pengutronix.de>
+        id S1728576AbhAGOkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 09:40:49 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:42430 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728119AbhAGOks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 09:40:48 -0500
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 107ET59E178622;
+        Thu, 7 Jan 2021 09:40:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=xOCPKU0dEnjuNr06NzWAMCukYaa5YvoGKM1Gsr3VTEA=;
+ b=gNCZcDDa+2pKMD2Py1BmBCAaDOSGs0aDXNH5KcufyY3zFJZM/574d/59r4YKkLqkpTBL
+ 4pgS7ilniSwpKOaQhGXr5qLHkACm2JGkQNdaPKrzrsKhf6qRacGKOzxudpj4uHu7Xsd9
+ U5IIC1GwjMx1qvlguw8jnyu1XwHmKpIYcaXt/ykIZ/gSBnJ/GjaMxsX2hPzdaOJI47Ji
+ DRg7BdIGWiekED+SvdhdC7kdO9ZhLCRbluezgAYBDjzN7bshMDZl/nufpEQsK7E6Qa57
+ dzbSzqHZgkim3yU9j6YJsSDb6B9uBrWdkuWKw1vG8G55uBPSUkkOA1TdkbK0pl27EAXQ gw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 35x43ggdy1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jan 2021 09:40:06 -0500
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 107EU7wI185174;
+        Thu, 7 Jan 2021 09:40:06 -0500
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 35x43ggdwb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jan 2021 09:40:05 -0500
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 107Eclxh011043;
+        Thu, 7 Jan 2021 14:40:03 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 35tgf8cxbh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Jan 2021 14:40:03 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 107Ee13l37290326
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 7 Jan 2021 14:40:01 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 53829A405E;
+        Thu,  7 Jan 2021 14:40:01 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2449BA4059;
+        Thu,  7 Jan 2021 14:40:01 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  7 Jan 2021 14:40:01 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Dmitry Kozlov <xeb@mail.ru>
+Subject: [PATCH net-next] ppp: clean up endianness conversions
+Date:   Thu,  7 Jan 2021 15:39:56 +0100
+Message-Id: <20210107143956.25549-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-07_06:2021-01-07,2021-01-07 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
+ lowpriorityscore=0 adultscore=0 mlxscore=0 spamscore=0 suspectscore=0
+ mlxlogscore=938 phishscore=0 priorityscore=1501 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101070088
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static void ar9331_get_stats64(struct dsa_switch *ds, int port,
-> +			       struct rtnl_link_stats64 *s)
-> +{
-> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-> +	struct ar9331_sw_port *p = &priv->port[port];
-> +
-> +	spin_lock(&p->stats_lock);
-> +	memcpy(s, &p->stats, sizeof(*s));
-> +	spin_unlock(&p->stats_lock);
-> +}
+sparse complains about some harmless endianness issues:
 
-This should probably wait until Vladimir's changes for stat64 are
-merged, so this call can sleep. You can then return up to date
-statistics.
+> drivers/net/ppp/pptp.c:281:21: warning: incorrect type in assignment (different base types)
+> drivers/net/ppp/pptp.c:281:21:    expected unsigned int [usertype] ack
+> drivers/net/ppp/pptp.c:281:21:    got restricted __be32
+> drivers/net/ppp/pptp.c:283:23: warning: cast to restricted __be32
 
-	Andrew
+Here 'ack' is assigned a value in network-order, and then also the
+byte-swapped value in host-order. Clean this up by doing the byte-swap
+as part of the assignment.
+
+> drivers/net/ppp/pptp.c:358:26: warning: cast from restricted __be16
+> drivers/net/ppp/pptp.c:358:26: warning: incorrect type in argument 1 (different base types)
+> drivers/net/ppp/pptp.c:358:26:    expected unsigned short [usertype] call_id
+> drivers/net/ppp/pptp.c:358:26:    got restricted __be16 [usertype]
+
+Here we use the wrong flavour of byte-swap. Use ntohs(), which of course
+gives the same result.
+
+Cc: Dmitry Kozlov <xeb@mail.ru>
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+---
+ drivers/net/ppp/pptp.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ppp/pptp.c b/drivers/net/ppp/pptp.c
+index ee5058445d06..0fe78826c8fa 100644
+--- a/drivers/net/ppp/pptp.c
++++ b/drivers/net/ppp/pptp.c
+@@ -278,10 +278,8 @@ static int pptp_rcv_core(struct sock *sk, struct sk_buff *skb)
+ 		header = (struct pptp_gre_header *)(skb->data);
+ 
+ 		/* ack in different place if S = 0 */
+-		ack = GRE_IS_SEQ(header->gre_hd.flags) ? header->ack : header->seq;
+-
+-		ack = ntohl(ack);
+-
++		ack = GRE_IS_SEQ(header->gre_hd.flags) ? ntohl(header->ack) :
++							 ntohl(header->seq);
+ 		if (ack > opt->ack_recv)
+ 			opt->ack_recv = ack;
+ 		/* also handle sequence number wrap-around  */
+@@ -355,7 +353,7 @@ static int pptp_rcv(struct sk_buff *skb)
+ 		/* if invalid, discard this packet */
+ 		goto drop;
+ 
+-	po = lookup_chan(htons(header->call_id), iph->saddr);
++	po = lookup_chan(ntohs(header->call_id), iph->saddr);
+ 	if (po) {
+ 		skb_dst_drop(skb);
+ 		nf_reset_ct(skb);
+-- 
+2.17.1
+
