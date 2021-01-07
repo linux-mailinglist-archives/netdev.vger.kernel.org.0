@@ -2,115 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C57DD2ED37A
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 16:27:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1433B2ED39F
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 16:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728111AbhAGPZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 10:25:06 -0500
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:50721 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727912AbhAGPZF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 10:25:05 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id DFCC415E0;
-        Thu,  7 Jan 2021 10:23:58 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 07 Jan 2021 10:23:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=2/ZuYU7mv7wM+SDXOjdBeDem2k6bStbMYKThaNATVRc=; b=jFZ5WUZ9
-        qVh7b1xU2uFqxkppYSH+TqwgWHTamPLRBFo0RkL62aGMOxIaxqJzu56w6IHVJQbx
-        hVA/fwyGaDX/E2P21Rr8CuoPUIplfOJRXBzhpzKDdh7W/BYgoWRwhmYWvR0/axkj
-        wRMho5IG3rBX4qnUOwChkxyZMhkra7JrFur5Tl89am5+wXf/gPwluvSg0lRnXRuj
-        oHjvQoyJV8gdUJUPL+EKJoJ0JJdUKu+YFzn+l2mEAKGQ9ckA6FhPnNpCg312cTd+
-        A1r14Nu7m0So+rDqX3I5m+l+c/cgpd1oLfbL8i0dlldgRYZCOVACsl5FWWSj/YQ3
-        7azFqSYqeJMcRw==
-X-ME-Sender: <xms:jif3X-5YglnvqserSwmrqg6pGP6c-PuSzdWUY1RySkGsuL5CDxcIVQ>
-    <xme:jif3X37Nw9_79vk6dub-xlStaDcPWmCshACezGo8dPR19lNOARORhDeX_VdzklWXu
-    97A5Expqa9lS5I>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdegvddgjeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:jif3X9cKhtwYvbCuy3_IFpdfaxsa3nZUuSsc-gfcGZX7flxahfl17A>
-    <xmx:jif3X7Iz5weBAzJ5Uu7nRiL1SNL0yUZ4UNbgzmlXJj4Q7ClAumKGtg>
-    <xmx:jif3XyKzPlYWa5CZkUw7mllX3FF4L9TP-sO4lr-FrqWaL12o7lsORw>
-    <xmx:jif3X5VCDM7VfH4yvcEKe0cW4ZkS32Gh7IBQ5z-6VVG3m5ISBHnKnA>
-Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E4978240066;
-        Thu,  7 Jan 2021 10:23:56 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, petrm@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH iproute2 2/2] ipmonitor: Mention "nexthop" object in help and man page
-Date:   Thu,  7 Jan 2021 17:23:27 +0200
-Message-Id: <20210107152327.1141060-3-idosch@idosch.org>
+        id S1726441AbhAGPiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 10:38:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725894AbhAGPiV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 10:38:21 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A49C0612F5
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 07:37:41 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id g20so10356362ejb.1
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 07:37:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kB7duZbRSwG7nlifEfJU+rxNpJU6RNFYOSLbU84pff4=;
+        b=TBKIrdDfsn4EPkSXMx5dYrkLaoyTZ77KRtsXGAJM1BFoTpUqcEj7sLO7latm36/onL
+         PuCwe1byZEGDMDL8BYBo4RfAui9v/m4vnmxGynha4+yfwBgI8wv4tfibu8U5ctQGLkEB
+         0beyuxmkMUhA6/DsRWEZGaqg2chDdUO7xJEWCYx+esyDAGityWzVOY7FMOhK3cy5ADgQ
+         Ioj+XkSSH4vjKzeNFk8HjfkBlzPAljcd8aKCkz/+wEPrrnLbQYQv3ufl7SY7DxVnteVz
+         K1FygjGlWkWJNtZh2sG8W55mziCIk1zd+5eQ8rjdYsArnB2iimcZyKaidNGjqK8yEf1c
+         fb9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kB7duZbRSwG7nlifEfJU+rxNpJU6RNFYOSLbU84pff4=;
+        b=V1vt4eruFyvGkVunT2PYLIhNs8+S4kK2uqC0x18P/QoUedVgrCjvcTF+Yl86rhL/xj
+         zoDywBZUr1WArvTScYDPWTjDwHl8B8+bFHLy+Dys9AIFj+ImGpwTC2460j9wXirTTAge
+         p4skadbmlu4O1AtHZprKJypoSTxaIDHPrL+ttu9z7+HdZ+24q8AGz78XQi5+ldgD8FeM
+         wBHaYiaOZmuAQJthbnVqF0I/pyoEAWXYBECh9etLNm9DCPaG7eKU6g07MWKSghAAbS4Q
+         u6ZoJpogCphwXaIvIRIvPlvhJd4xr5ZwS1XugmMP9XlaSiFGDqUpGQoRKM/6nqBi7Z3g
+         p/1g==
+X-Gm-Message-State: AOAM532KJp5F8DgX8+vBw9vH3Jqre3U5Rcvha18BTz2O7j9Jfg5ob/Gb
+        aspDFnA7jztroGmqQQE47yM=
+X-Google-Smtp-Source: ABdhPJwMKJQP3A/PUTm/wqyFKCCUJgsthfg5l/Tv8rbm3VSzoNLgbxlCuBwQCdUgiDvtU2vz3UWwGQ==
+X-Received: by 2002:a17:906:edc2:: with SMTP id sb2mr6417698ejb.159.1610033859988;
+        Thu, 07 Jan 2021 07:37:39 -0800 (PST)
+Received: from yoga-910.localhost (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id z9sm2574898eju.123.2021.01.07.07.37.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jan 2021 07:37:39 -0800 (PST)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     laurentiu.tudor@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH 0/6] dpaa2-mac: various updates
+Date:   Thu,  7 Jan 2021 17:36:32 +0200
+Message-Id: <20210107153638.753942-1-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210107152327.1141060-1-idosch@idosch.org>
-References: <20210107152327.1141060-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Before:
+The first two patches of this series extends the MAC statistics support
+to also work for network interfaces which have their link status handled
+by firmware (TYPE_FIXED).
 
- # ip monitor help
- Usage: ip monitor [ all | LISTofOBJECTS ] [ FILE ] [ label ] [all-nsid] [dev DEVICE]
- LISTofOBJECTS := link | address | route | mroute | prefix |
-                  neigh | netconf | rule | nsid
- FILE := file FILENAME
+The next two patches are fixing a sporadic problem which happens when
+the connected DPMAC object is not yet discovered by the fsl-mc bus, thus
+the dpaa2-eth is not able to get a reference to it. A referred probe
+will be requested in this case.
 
-After:
+Finally, the last two patches make some cosmetic changes, mostly
+removing comments and unnecessary checks.
 
- # ip monitor help
- Usage: ip monitor [ all | LISTofOBJECTS ] [ FILE ] [ label ] [all-nsid] [dev DEVICE]
- LISTofOBJECTS := link | address | route | mroute | prefix |
-                  neigh | netconf | rule | nsid | nexthop
- FILE := file FILENAME
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- ip/ipmonitor.c        | 2 +-
- man/man8/ip-monitor.8 | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Ioana Ciornei (6):
+  dpaa2-mac: split up initializing the MAC object from connecting to it
+  dpaa2-mac: export MAC counters even when in TYPE_FIXED
+  bus: fsl-mc: return -EPROBE_DEFER when a device is not yet discovered
+  dpaa2-eth: retry the probe when the MAC is not yet discovered on the
+    bus
+  dpaa2-mac: remove an unnecessary check
+  dpaa2-mac: remove a comment regarding pause settings
 
-diff --git a/ip/ipmonitor.c b/ip/ipmonitor.c
-index 685be52cfe64..99f5fda8ba1f 100644
---- a/ip/ipmonitor.c
-+++ b/ip/ipmonitor.c
-@@ -32,7 +32,7 @@ static void usage(void)
- 	fprintf(stderr,
- 		"Usage: ip monitor [ all | LISTofOBJECTS ] [ FILE ] [ label ] [all-nsid] [dev DEVICE]\n"
- 		"LISTofOBJECTS := link | address | route | mroute | prefix |\n"
--		"		 neigh | netconf | rule | nsid\n"
-+		"		 neigh | netconf | rule | nsid | nexthop\n"
- 		"FILE := file FILENAME\n");
- 	exit(-1);
- }
-diff --git a/man/man8/ip-monitor.8 b/man/man8/ip-monitor.8
-index 86f8f9885fef..f886d31b8013 100644
---- a/man/man8/ip-monitor.8
-+++ b/man/man8/ip-monitor.8
-@@ -55,7 +55,7 @@ command is the first in the command line and then the object list follows:
- is the list of object types that we want to monitor.
- It may contain
- .BR link ", " address ", " route ", " mroute ", " prefix ", "
--.BR neigh ", " netconf ", "  rule " and " nsid "."
-+.BR neigh ", " netconf ", "  rule ", " nsid " and " nexthop "."
- If no
- .B file
- argument is given,
+ drivers/bus/fsl-mc/fsl-mc-bus.c               |   9 ++
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  53 ++++---
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  13 ++
+ .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  |  16 +--
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 134 ++++++++----------
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |   5 +
+ 6 files changed, 125 insertions(+), 105 deletions(-)
+
 -- 
 2.29.2
 
