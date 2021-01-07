@@ -2,102 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6126F2ECCAC
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 10:26:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E7DD2ECCED
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 10:38:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727153AbhAGJZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 04:25:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45472 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726793AbhAGJZc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 04:25:32 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9798323333;
-        Thu,  7 Jan 2021 09:24:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1610011492;
-        bh=fxwmuL/Qs6SNY83+/gRu2pNV3MxZ86kZSjNwXWJ74FM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G3Yg1ETV4XfGyMZzQyLllMyfHX/3AoVFknDJvN9dJlWXdVfcE+EjYxxm7d5VmytOc
-         EKlMxR81ioNfI5AOdItG6iKNmzU/Z6Hm5N0OkMr59FKYaiWzECOmXhgCqUKRXk2gD4
-         QSwxGuaAfykbTTwut+i4zEvYTeZ1Lm2JFZ9dXjc0=
-Date:   Thu, 7 Jan 2021 10:26:12 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Xu Yilun <yilun.xu@intel.com>
-Cc:     andrew@lunn.ch, arnd@arndb.de, lee.jones@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com,
-        matthew.gerlach@intel.com, russell.h.weight@intel.com
-Subject: Re: [RESEND PATCH 2/2] misc: add support for retimers interfaces on
- Intel MAX 10 BMC
-Message-ID: <X/bTtBUevX5IBPUl@kroah.com>
-References: <1609999628-12748-1-git-send-email-yilun.xu@intel.com>
- <1609999628-12748-3-git-send-email-yilun.xu@intel.com>
+        id S1726666AbhAGJiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 04:38:09 -0500
+Received: from mail-oi1-f178.google.com ([209.85.167.178]:35704 "EHLO
+        mail-oi1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726110AbhAGJiI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 04:38:08 -0500
+Received: by mail-oi1-f178.google.com with SMTP id s2so6775448oij.2;
+        Thu, 07 Jan 2021 01:37:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZUt2K+i9npBs7pxvZRnyzlReljyirAW0eiTdXkBmOF0=;
+        b=iSgehNTbB5kJG+9HGaAGNP1m48DrYoqmZR4OvbNcBuWZ893we3DCwpGYk7lt4VwHh3
+         jKHs1eJWH0ap05MZk62YYdd9/zWmx8NfLL9C0Vo3qgHCVpX8E81lpT9Utwv4zbSf6Xd0
+         tXFN3tWy5gXCs+HjfLmojN7OmR8snubDx0uIyReQri8nwrx7JqNN820aOgdno4ao0QQ1
+         1Cxxmn3kdk7V0AbJwEHTuRnzaSVwZihZkAVOHY3e+yL8ARIPJBxxikLb/QU9q2ZRRgr3
+         LPJhGqUPonuwnbRlzNloG4m4QqKp2TnFxTXwhuZpwZ1dLRkzwcoTuuDzgJvpRTaCE3sh
+         wM+w==
+X-Gm-Message-State: AOAM533hJ731l2KgAaj+OdNBqYQamTfvDVnQciwLDl6lDebhtvDgUKuT
+        v3UBlM9t1VeEKSQyIZxCtjhHD7RDsumWNVfi6cE=
+X-Google-Smtp-Source: ABdhPJz3gr6tNxEeqOMrdHZW1gusfeToP8WCP418yx8Q3h2UyAd3IH950M4fyAWsd4yXzzNtZDMI5yUXU2/xIT5zDEM=
+X-Received: by 2002:aca:4b16:: with SMTP id y22mr5903379oia.148.1610012247463;
+ Thu, 07 Jan 2021 01:37:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1609999628-12748-3-git-send-email-yilun.xu@intel.com>
+References: <6aef8856-4bf5-1512-2ad4-62af05f00cc6@omprussia.ru> <e1345e35-35d1-aea0-c9c8-775b28cd9f8b@omprussia.ru>
+In-Reply-To: <e1345e35-35d1-aea0-c9c8-775b28cd9f8b@omprussia.ru>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 7 Jan 2021 10:37:16 +0100
+Message-ID: <CAMuHMdXqUXH1_0j5H6dPL=jnUVi8zwqHk-zpOpGQcT7x8_dUJw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] ravb: remove APSR_DM
+To:     Sergey Shtylyov <s.shtylyov@omprussia.ru>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 07, 2021 at 02:07:08PM +0800, Xu Yilun wrote:
-> This driver supports the ethernet retimers (C827) for the Intel PAC
-> (Programmable Acceleration Card) N3000, which is a FPGA based Smart NIC.
-> 
-> C827 is an Intel(R) Ethernet serdes transceiver chip that supports
-> up to 100G transfer. On Intel PAC N3000 there are 2 C827 chips
-> managed by the Intel MAX 10 BMC firmware. They are configured in 4 ports
-> 10G/25G retimer mode. Host could query their link states and firmware
-> version information via retimer interfaces (Shared registers) on Intel
-> MAX 10 BMC. The driver creates sysfs interfaces for users to query these
-> information.
+On Wed, Jan 6, 2021 at 9:43 PM Sergey Shtylyov <s.shtylyov@omprussia.ru> wrote:
+> According to the R-Car Series, 3rd Generation User's Manual: Hardware,
+> Rev. 1.50, there's no APSR.DM field, instead therea are 2 independent
 
-Networking people, please look at this sysfs file:
+there
 
-> +What:		/sys/bus/platform/devices/n3000bmc-retimer.*.auto/link_statusX
-> +Date:		Jan 2021
-> +KernelVersion:	5.12
-> +Contact:	Xu Yilun <yilun.xu@intel.com>
-> +Description:	Read only. Returns the status of each line side link. "1" for
-> +		link up, "0" for link down.
-> +		Format: "%u".
+> RX/TX clock internal delay bits.  Follow the suit: remove #define APSR_DM
+> and rename #define's APSR_DM_{R|T}DM to APSR_{R|T}DM.
+>
+> While at it, do several more things to the declaration of *enum* APSR_BIT:
+> - remove superfluous indentation;
+> - annotate APSR_MEMS as undocumented;
+> - annotate APSR as R-Car Gen3 only.
+>
+> Fixes: 61fccb2d6274 ("ravb: Add tx and rx clock internal delays mode of APSR")
+> Signed-off-by: Sergey Shtylyov <s.shtylyov@omprussia.ru>
 
-as I need your approval to add it because it is not the "normal" way for
-link status to be exported to userspace.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-One code issue:
+Gr{oetje,eeting}s,
 
-> +#define to_link_attr(dev_attr) \
-> +	container_of(dev_attr, struct link_attr, attr)
-> +
-> +static ssize_t
-> +link_status_show(struct device *dev, struct device_attribute *attr, char *buf)
-> +{
-> +	struct m10bmc_retimer *retimer = dev_get_drvdata(dev);
-> +	struct link_attr *lattr = to_link_attr(attr);
-> +	unsigned int val;
-> +	int ret;
-> +
-> +	ret = m10bmc_sys_read(retimer->m10bmc, M10BMC_PKVL_LSTATUS, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return sysfs_emit(buf, "%u\n",
-> +			  !!(val & BIT((retimer->id << 2) + lattr->index)));
-> +}
-> +
-> +#define link_status_attr(_index)				\
-> +	static struct link_attr link_attr_status##_index =	\
-> +		{ .attr = __ATTR(link_status##_index, 0444,	\
-> +				 link_status_show, NULL),	\
-> +		  .index = (_index) }
+                        Geert
 
-Why is this a "raw" attribute and not a device attribute?
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Please just use a normal DEVICE_ATTR_RO() macro to make it simpler and
-easier to understand over time, what you are doing here.  I can't
-determine what is happening with this code now...
-
-thanks,
-
-greg k-h
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
