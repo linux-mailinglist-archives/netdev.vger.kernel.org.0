@@ -2,160 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 797432EC958
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 05:18:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB36A2EC997
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 05:47:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbhAGERe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 23:17:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30843 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726812AbhAGERe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 23:17:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1609992967;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dos1Q591nOCwG8WlJAPmJhU7Mm8ZerxmXOCBcJyNvs4=;
-        b=GUsGs1IUaCXsCHsPM5wa81unwFjqKWOM6yh7Y67ir56utZ22chwDTseE2hwZXAVu2V3t0t
-        wfmS6YFK5Odz0+AqCYCgEecAhWj2kwqbgbcemiIWKCF8qz0fbYx8dGX8xab9xDgekFN0DM
-        DruK3cCgLyIUBoXv3Qqayrdhw45TArw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-510-jcuqMUzmPi2B4NMTwRptXg-1; Wed, 06 Jan 2021 23:16:04 -0500
-X-MC-Unique: jcuqMUzmPi2B4NMTwRptXg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ABA8C10054FF;
-        Thu,  7 Jan 2021 04:16:02 +0000 (UTC)
-Received: from [10.72.13.171] (ovpn-13-171.pek2.redhat.com [10.72.13.171])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B3C55C1D1;
-        Thu,  7 Jan 2021 04:15:54 +0000 (UTC)
-Subject: Re: [PATCH] vdpa/mlx5: Fix memory key MTT population
-To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     lulu@redhat.com
-References: <20210106090557.GA170338@mtl-vdi-166.wap.labs.mlnx>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <2d16b2af-f25a-d786-7d24-da45c0dcefaa@redhat.com>
-Date:   Thu, 7 Jan 2021 12:15:53 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727451AbhAGEqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 23:46:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727429AbhAGEqM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 23:46:12 -0500
+Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBC2C0612F3
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 20:45:32 -0800 (PST)
+Received: by mail-ua1-x936.google.com with SMTP id s23so1848971uaq.10
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 20:45:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0FqBU0DzyxHE7rFaChTOl0+T3ooasosngTw/QRkuqug=;
+        b=CZXxilFUsoVBDX44Kjfrzt9xXAty5ZhWzDyCfu4kVQ1Qo7a3UIOFlzJNPFs95RNjS0
+         ZN10TTyBRYb1pGd42ZVV5Ye/gKqpiI1F1/ZYRe4zpZCRwURUzeK/vVrMEj3gTkBcL6UG
+         X8k18HXjmGb6OQ8yhG0ja6Jihr8cO+X/QbbJ0GHHnz01kf020ABkEMGfVWK4uYwWeqg9
+         S7jayEzgXB0rMOb4Zp1b+MDVvEVnFQSS6EWBjOqwPcp3GGDOxvZ2lVleaeKv0/UwwZSs
+         tNS0H6biAIo1Z8ias28x1iHdU4MjG9lBmQ6jUuAqTA38xOKplbSbO4nFVyA9eamm66or
+         hE7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0FqBU0DzyxHE7rFaChTOl0+T3ooasosngTw/QRkuqug=;
+        b=gPCgb88F57FlZSIrdF4D5phEkJZaVlwvbPGu8uHpgWVHAFGHSo3DSnyNoootuqryJK
+         cFI0MGPFMb/xz1Y/d9bDTuXJyC0Dyi1HVfhnb35lUJ8yScRTQ5CKOZjeTepeY0hcpnuI
+         k26Bk5c1LpQe+G8dL8bkbFPmDtNCZN0rYBpOgzw9b+DG403hkV7RgfWm0Bx0SpbQEYn5
+         9gClN1NAxdoAqLFKsGJFavYrgh8LIcQEaLvAp74XoIKlDTOHGJVhXVqBJDVY/JnQHqXS
+         HwJzfKJwy39htUaCPy1tilLITnPpaYMXKFBXJ7+HQp/53L8TACwv8hxlby5jwC90hJr+
+         949Q==
+X-Gm-Message-State: AOAM531ja9FHCZT132JXjFBn8C+n474Sruc0B2CroHyrKj6VsQU3qNBY
+        rxGgoHbxHBhNfbXNjEbrc3fTgXsL/VZ/tc1rETpwdw==
+X-Google-Smtp-Source: ABdhPJyDMe9TseuG/qIjyrE/SGPXVQo4rz/hxHrw+SPyifPGylrTHwJJ73DrnQGq6u9/vLT5zVMzVyS5VSmNBVCTiGk=
+X-Received: by 2002:ab0:7386:: with SMTP id l6mr6184246uap.141.1609994731526;
+ Wed, 06 Jan 2021 20:45:31 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210106090557.GA170338@mtl-vdi-166.wap.labs.mlnx>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20201118194838.753436396@linutronix.de> <20201118204007.169209557@linutronix.de>
+ <20210106180132.41dc249d@gandalf.local.home> <CAHk-=wh2895wXEXYtb70CTgW+UR7jfh6VFhJB_bOrF0L7UKoEg@mail.gmail.com>
+ <20210106174917.3f8ad0d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CA+FuTSevLSxZkNLdJPHqRRksxZmnPc1qFBYJeBx26WsA4A1M7A@mail.gmail.com>
+In-Reply-To: <CA+FuTSevLSxZkNLdJPHqRRksxZmnPc1qFBYJeBx26WsA4A1M7A@mail.gmail.com>
+From:   Willem de Bruijn <willemb@google.com>
+Date:   Wed, 6 Jan 2021 23:44:54 -0500
+Message-ID: <CA+FuTScQ9afdnQ3E1mqdeyJ-sOq=2Dm9c1XDN8mnzbEig8iMXA@mail.gmail.com>
+Subject: Re: [BUG] from x86: Support kmap_local() forced debugging
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2021/1/6 下午5:05, Eli Cohen wrote:
-> map_direct_mr() assumed that the number of scatter/gather entries
-> returned by dma_map_sg_attrs() was equal to the number of segments in
-> the sgl list. This led to wrong population of the mkey object. Fix this
-> by properly referring to the returned value.
+On Wed, Jan 6, 2021 at 9:11 PM Willem de Bruijn <willemb@google.com> wrote:
 >
-> In addition, get rid of fill_sg() whjich effect is overwritten bu
-> populate_mtts().
+> On Wed, Jan 6, 2021 at 8:49 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Wed, 6 Jan 2021 17:03:48 -0800 Linus Torvalds wrote:
+> > > I wonder whether there is other code that "knows" about kmap() only
+> > > affecting PageHighmem() pages thing that is no longer true.
+> > >
+> > > Looking at some other code, skb_gro_reset_offset() looks suspiciously
+> > > like it also thinks highmem pages are special.
+> > >
+> > > Adding the networking people involved in this area to the cc too.
 
-
-Typo.
-
-
->
-> Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
-> Signed-off-by: Eli Cohen <elic@nvidia.com>
-> ---
->   drivers/vdpa/mlx5/core/mlx5_vdpa.h |  1 +
->   drivers/vdpa/mlx5/core/mr.c        | 28 ++++++++++++----------------
->   2 files changed, 13 insertions(+), 16 deletions(-)
->
-> diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-> index 5c92a576edae..08f742fd2409 100644
-> --- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-> +++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-> @@ -15,6 +15,7 @@ struct mlx5_vdpa_direct_mr {
->   	struct sg_table sg_head;
->   	int log_size;
->   	int nsg;
-> +	int nent;
->   	struct list_head list;
->   	u64 offset;
->   };
-> diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
-> index 4b6195666c58..d300f799efcd 100644
-> --- a/drivers/vdpa/mlx5/core/mr.c
-> +++ b/drivers/vdpa/mlx5/core/mr.c
-> @@ -25,17 +25,6 @@ static int get_octo_len(u64 len, int page_shift)
->   	return (npages + 1) / 2;
->   }
->   
-> -static void fill_sg(struct mlx5_vdpa_direct_mr *mr, void *in)
-> -{
-> -	struct scatterlist *sg;
-> -	__be64 *pas;
-> -	int i;
-> -
-> -	pas = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
-> -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
-> -		(*pas) = cpu_to_be64(sg_dma_address(sg));
-> -}
-> -
->   static void mlx5_set_access_mode(void *mkc, int mode)
->   {
->   	MLX5_SET(mkc, mkc, access_mode_1_0, mode & 0x3);
-> @@ -45,10 +34,18 @@ static void mlx5_set_access_mode(void *mkc, int mode)
->   static void populate_mtts(struct mlx5_vdpa_direct_mr *mr, __be64 *mtt)
->   {
->   	struct scatterlist *sg;
-> +	int nsg = mr->nsg;
-> +	u64 dma_addr;
-> +	u64 dma_len;
-> +	int j = 0;
->   	int i;
->   
-> -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
-> -		mtt[i] = cpu_to_be64(sg_dma_address(sg));
-> +	for_each_sg(mr->sg_head.sgl, sg, mr->nent, i) {
-> +		for (dma_addr = sg_dma_address(sg), dma_len = sg_dma_len(sg);
-> +		     nsg && dma_len;
-> +		     nsg--, dma_addr += BIT(mr->log_size), dma_len -= BIT(mr->log_size))
-> +			mtt[j++] = cpu_to_be64(dma_addr);
-
-
-It looks to me the mtt entry is also limited by log_size. It's better to 
-explain this a little bit in the commit log.
-
-Thanks
-
-
-> +	}
->   }
->   
->   static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr *mr)
-> @@ -64,7 +61,6 @@ static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct
->   		return -ENOMEM;
->   
->   	MLX5_SET(create_mkey_in, in, uid, mvdev->res.uid);
-> -	fill_sg(mr, in);
->   	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
->   	MLX5_SET(mkc, mkc, lw, !!(mr->perm & VHOST_MAP_WO));
->   	MLX5_SET(mkc, mkc, lr, !!(mr->perm & VHOST_MAP_RO));
-> @@ -276,8 +272,8 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr
->   done:
->   	mr->log_size = log_entity_size;
->   	mr->nsg = nsg;
-> -	err = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
-> -	if (!err)
-> +	mr->nent = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
-> +	if (!mr->nent)
->   		goto err_map;
->   
->   	err = create_direct_mr(mvdev, mr);
-
+But there are three other kmap_atomic callers under net/ that do not
+loop at all, so assume non-compound pages. In esp_output_head,
+esp6_output_head and skb_seq_read. The first two directly use
+skb_page_frag_refill, which can allocate compound (but not
+__GFP_HIGHMEM) pages, and the third can be inserted with
+netfilter xt_string in the path of tcp transmit skbs, which can also
+have compound pages. I think that these could similarly access
+data beyond the end of the kmap_atomic mapped page. I'll take
+a closer look.
