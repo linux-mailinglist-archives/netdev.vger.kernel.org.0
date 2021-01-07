@@ -2,101 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB36A2EC997
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 05:47:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E2F2EC9B8
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 05:59:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727451AbhAGEqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Jan 2021 23:46:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
+        id S1726829AbhAGE6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Jan 2021 23:58:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727429AbhAGEqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 23:46:12 -0500
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBC2C0612F3
-        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 20:45:32 -0800 (PST)
-Received: by mail-ua1-x936.google.com with SMTP id s23so1848971uaq.10
-        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 20:45:32 -0800 (PST)
+        with ESMTP id S1726326AbhAGE6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Jan 2021 23:58:17 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE067C0612F0
+        for <netdev@vger.kernel.org>; Wed,  6 Jan 2021 20:57:36 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id c7so6507717edv.6
+        for <netdev@vger.kernel.org>; Wed, 06 Jan 2021 20:57:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=0FqBU0DzyxHE7rFaChTOl0+T3ooasosngTw/QRkuqug=;
-        b=CZXxilFUsoVBDX44Kjfrzt9xXAty5ZhWzDyCfu4kVQ1Qo7a3UIOFlzJNPFs95RNjS0
-         ZN10TTyBRYb1pGd42ZVV5Ye/gKqpiI1F1/ZYRe4zpZCRwURUzeK/vVrMEj3gTkBcL6UG
-         X8k18HXjmGb6OQ8yhG0ja6Jihr8cO+X/QbbJ0GHHnz01kf020ABkEMGfVWK4uYwWeqg9
-         S7jayEzgXB0rMOb4Zp1b+MDVvEVnFQSS6EWBjOqwPcp3GGDOxvZ2lVleaeKv0/UwwZSs
-         tNS0H6biAIo1Z8ias28x1iHdU4MjG9lBmQ6jUuAqTA38xOKplbSbO4nFVyA9eamm66or
-         hE7Q==
+        bh=+/4R/9Cm7I8I2En+TkipAk58/u2aYOmrDIO8hzYxplI=;
+        b=KeqhYc9C1h2i0wqvCdllQcIHaJnIadkG2wgFsisR35jtMIVe6MK6lxEzcn/Ixbo68E
+         S2EyF4v4JHnsJLH7UCxd872CFTxhzxJnRBtqtoGJJEHGdtyiG3JEgDwTvyDtiPDiiJgA
+         hENSdTFkqZIdXLLcVfgs5yyF0tNjIU1zDWBOOZuTSwrLUFhkQ4Z5suBt9EhDLQWZApw9
+         dTc3TxDimsiwqrbAMIQelXhrF4NtadgcgCN6gy4pAZ4HW9h2Eyj9psB9iUDq4qQdfB//
+         xr+FXY0CPxdBUmnBlD0qHWyV3vOuPlsSTYDFrTDTXpDGv6rOX6WY+e5e87Ngtv4+U2Rl
+         +mLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=0FqBU0DzyxHE7rFaChTOl0+T3ooasosngTw/QRkuqug=;
-        b=gPCgb88F57FlZSIrdF4D5phEkJZaVlwvbPGu8uHpgWVHAFGHSo3DSnyNoootuqryJK
-         cFI0MGPFMb/xz1Y/d9bDTuXJyC0Dyi1HVfhnb35lUJ8yScRTQ5CKOZjeTepeY0hcpnuI
-         k26Bk5c1LpQe+G8dL8bkbFPmDtNCZN0rYBpOgzw9b+DG403hkV7RgfWm0Bx0SpbQEYn5
-         9gClN1NAxdoAqLFKsGJFavYrgh8LIcQEaLvAp74XoIKlDTOHGJVhXVqBJDVY/JnQHqXS
-         HwJzfKJwy39htUaCPy1tilLITnPpaYMXKFBXJ7+HQp/53L8TACwv8hxlby5jwC90hJr+
-         949Q==
-X-Gm-Message-State: AOAM531ja9FHCZT132JXjFBn8C+n474Sruc0B2CroHyrKj6VsQU3qNBY
-        rxGgoHbxHBhNfbXNjEbrc3fTgXsL/VZ/tc1rETpwdw==
-X-Google-Smtp-Source: ABdhPJyDMe9TseuG/qIjyrE/SGPXVQo4rz/hxHrw+SPyifPGylrTHwJJ73DrnQGq6u9/vLT5zVMzVyS5VSmNBVCTiGk=
-X-Received: by 2002:ab0:7386:: with SMTP id l6mr6184246uap.141.1609994731526;
- Wed, 06 Jan 2021 20:45:31 -0800 (PST)
+        bh=+/4R/9Cm7I8I2En+TkipAk58/u2aYOmrDIO8hzYxplI=;
+        b=ropnMmclJBS16Bv2+4Q47iENi0fmM1/mzrJAINU1m67w44NCQNJ2VyoVYrqtDWt3Yb
+         r/aZbd4Bqs46PseJb+Ckf8/6pJoArrX98oZput1jTMUsp/8SGKnxzQHxrnME3c8lV2Lr
+         66u4lI00BmElRH/cSVqJVKT5EFuFJXG49htb0t7lYdpg4FZr74Nfl8dGZw9d1AVrzj8J
+         DOLE4ZmCU8/+Y3C7STK2nBwT/2LLPsyEIHI9JwnrQjczoIIbQseuifVU0gYKPXNot4lM
+         Pd+4JOAKbPew33004Odj0DuNIKzzc2+DtS7UGoXEOYXYW6R4pUi3F1eeKzQedPayTmsO
+         /rcA==
+X-Gm-Message-State: AOAM530FCLRmaRqnpUCOShhQxSvO81lUWtJ+/kCJ0SIBWFtJ7IMkjLTj
+        HiHK8zXdnYhlFuVYbCrOaAQxHF8rFa8IJajHjF0=
+X-Google-Smtp-Source: ABdhPJwYuefC0+djFDiCmiJMFYZLh3Np0o/yWL9c0IXF8Rpm+KTT+Qe/iyLHTZ6j0ie6hfZtkz7eJcZtYiHR67ggrk0=
+X-Received: by 2002:a50:9f4a:: with SMTP id b68mr309779edf.296.1609995455460;
+ Wed, 06 Jan 2021 20:57:35 -0800 (PST)
 MIME-Version: 1.0
-References: <20201118194838.753436396@linutronix.de> <20201118204007.169209557@linutronix.de>
- <20210106180132.41dc249d@gandalf.local.home> <CAHk-=wh2895wXEXYtb70CTgW+UR7jfh6VFhJB_bOrF0L7UKoEg@mail.gmail.com>
- <20210106174917.3f8ad0d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CA+FuTSevLSxZkNLdJPHqRRksxZmnPc1qFBYJeBx26WsA4A1M7A@mail.gmail.com>
-In-Reply-To: <CA+FuTSevLSxZkNLdJPHqRRksxZmnPc1qFBYJeBx26WsA4A1M7A@mail.gmail.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Wed, 6 Jan 2021 23:44:54 -0500
-Message-ID: <CA+FuTScQ9afdnQ3E1mqdeyJ-sOq=2Dm9c1XDN8mnzbEig8iMXA@mail.gmail.com>
-Subject: Re: [BUG] from x86: Support kmap_local() forced debugging
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Netdev <netdev@vger.kernel.org>
+References: <CABdVr8RVXj3dg-by_W99=fPSjdfB7fYXFRBW9sropQpYKD1xOQ@mail.gmail.com>
+In-Reply-To: <CABdVr8RVXj3dg-by_W99=fPSjdfB7fYXFRBW9sropQpYKD1xOQ@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 6 Jan 2021 23:56:59 -0500
+Message-ID: <CAF=yD-+0m5Md8bjyv458Tszr_Ti-o=zDnS0TJs4cspjS2n8RLg@mail.gmail.com>
+Subject: Re: Possible read of uninitialized array values in reuseport_select_sock?
+To:     Baptiste Lepers <baptiste.lepers@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 6, 2021 at 9:11 PM Willem de Bruijn <willemb@google.com> wrote:
+On Wed, Jan 6, 2021 at 10:54 PM Baptiste Lepers
+<baptiste.lepers@gmail.com> wrote:
 >
-> On Wed, Jan 6, 2021 at 8:49 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Wed, 6 Jan 2021 17:03:48 -0800 Linus Torvalds wrote:
-> > > I wonder whether there is other code that "knows" about kmap() only
-> > > affecting PageHighmem() pages thing that is no longer true.
-> > >
-> > > Looking at some other code, skb_gro_reset_offset() looks suspiciously
-> > > like it also thinks highmem pages are special.
-> > >
-> > > Adding the networking people involved in this area to the cc too.
+> Hello,
+>
+> While reading the code of net/core/sock_reuseport.c, I think I found a
+> possible race in reuseport_select_sock. The current code has the
+> following pattern:
+>
+>    socks = READ_ONCE(reuse->num_socks);
+>    smp_rmb(); // paired with reuseport_add_sock to make sure
+> reuse->socks[i < num_socks] are initialized
+>    while (reuse->socks[i]->sk_state == TCP_ESTABLISHED) {
+>         if (i >= reuse->num_socks) // should be "socks" and not
+> "reuse->num_socks"?
+>
+> The barrier seems to be here to make sure that all items of
+> reuse->socks are initialized before being read, but the barrier only
+> protects indexes < socks, not indexes < reuse->num_socks.
+>
+> I have a patch ready to fix this issue, but I wanted to confirm that
+> the current code is indeed incorrect (if the code is correct for a
+> non-obvious reason, I'd be happy to add some comments to document the
+> behavior).
+>
+>
+> Here is the diff of the patch I was planning to submit:
+>
+> diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+> index bbdd3c7b6cb5..b065f0a103ed 100644
+> --- a/net/core/sock_reuseport.c
+> +++ b/net/core/sock_reuseport.c
+> @@ -293,7 +293,7 @@ struct sock *reuseport_select_sock(struct sock *sk,
+>              i = j = reciprocal_scale(hash, socks);
+>              while (reuse->socks[i]->sk_state == TCP_ESTABLISHED) {
+>                  i++;
+> -                if (i >= reuse->num_socks)
+> +                if (i >= socks)
+>                      i = 0;
+>                  if (i == j)
+>                      goto out;
+>
+>
+> Thanks,
+> Baptiste.
 
-But there are three other kmap_atomic callers under net/ that do not
-loop at all, so assume non-compound pages. In esp_output_head,
-esp6_output_head and skb_seq_read. The first two directly use
-skb_page_frag_refill, which can allocate compound (but not
-__GFP_HIGHMEM) pages, and the third can be inserted with
-netfilter xt_string in the path of tcp transmit skbs, which can also
-have compound pages. I think that these could similarly access
-data beyond the end of the kmap_atomic mapped page. I'll take
-a closer look.
+Thanks for the clear description. Yes, I believe you're correct.
