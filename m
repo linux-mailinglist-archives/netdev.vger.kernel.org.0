@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38F512ECD4C
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 10:53:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BBB52ECD22
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 10:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727954AbhAGJvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 04:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41156 "EHLO
+        id S1727337AbhAGJud (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 04:50:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727906AbhAGJvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 04:51:53 -0500
+        with ESMTP id S1727209AbhAGJuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 04:50:32 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F44EC0612F4
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 01:50:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EE1C0612F8
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 01:49:51 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kxRvg-0001PC-J0
-        for netdev@vger.kernel.org; Thu, 07 Jan 2021 10:50:04 +0100
+        id 1kxRvS-00013f-FX
+        for netdev@vger.kernel.org; Thu, 07 Jan 2021 10:49:50 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id DC8D35BBAF3
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 09:49:09 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 0E0AD5BBAF5
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 09:49:10 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 313165BBA3C;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 70EC75BBA41;
         Thu,  7 Jan 2021 09:49:04 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id eae9bd0f;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id dc8f988f;
         Thu, 7 Jan 2021 09:49:01 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Dan Murphy <dmurphy@ti.com>, Sean Nyekjaer <sean@geanix.com>
-Subject: [net-next 16/19] can: tcan4x5x: add support for half-duplex controllers
-Date:   Thu,  7 Jan 2021 10:48:57 +0100
-Message-Id: <20210107094900.173046-17-mkl@pengutronix.de>
+        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Phillip Schichtel <phillip@schich.tel>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [net-next 17/19] can: raw: return -ERANGE when filterset does not fit into user space buffer
+Date:   Thu,  7 Jan 2021 10:48:58 +0100
+Message-Id: <20210107094900.173046-18-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210107094900.173046-1-mkl@pengutronix.de>
 References: <20210107094900.173046-1-mkl@pengutronix.de>
@@ -53,62 +54,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds back support for half-duplex controllers, which was removed in
-the last patch.
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-Reviewed-by: Dan Murphy <dmurphy@ti.com>
-Tested-by: Sean Nyekjaer <sean@geanix.com>
-Link: https://lore.kernel.org/r/20201215231746.1132907-17-mkl@pengutronix.de
+Multiple filters (struct can_filter) can be set with the setsockopt()
+function, which was originally intended as a write-only operation.
+
+As getsockopt() also provides a CAN_RAW_FILTER option to read back the
+given filters, the caller has to provide an appropriate user space buffer.
+In the case this buffer is too small the getsockopt() silently truncates
+the filter information and gives no information about the needed space.
+This is safe but not convenient for the programmer.
+
+In net/core/sock.c the SO_PEERGROUPS sockopt had a similar requirement
+and solved it by returning -ERANGE in the case that the provided data
+does not fit into the given user space buffer and fills the required size
+into optlen, so that the caller can retry with a matching buffer length.
+
+This patch adopts this approach for CAN_RAW_FILTER getsockopt().
+
+Reported-by: Phillip Schichtel <phillip@schich.tel>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Tested-By: Phillip Schichtel <phillip@schich.tel>
+Link: https://lore.kernel.org/r/20201216174928.21663-1-socketcan@hartkopp.net
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/tcan4x5x-regmap.c | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ net/can/raw.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/can/m_can/tcan4x5x-regmap.c b/drivers/net/can/m_can/tcan4x5x-regmap.c
-index 660e9d87dffb..ca80dbaf7a3f 100644
---- a/drivers/net/can/m_can/tcan4x5x-regmap.c
-+++ b/drivers/net/can/m_can/tcan4x5x-regmap.c
-@@ -51,7 +51,7 @@ static int tcan4x5x_regmap_read(void *context,
- 	struct tcan4x5x_priv *priv = spi_get_drvdata(spi);
- 	struct tcan4x5x_map_buf *buf_rx = &priv->map_buf_rx;
- 	struct tcan4x5x_map_buf *buf_tx = &priv->map_buf_tx;
--	struct spi_transfer xfer[] = {
-+	struct spi_transfer xfer[2] = {
- 		{
- 			.tx_buf = buf_tx,
+diff --git a/net/can/raw.c b/net/can/raw.c
+index 6ec8aa1d0da4..37b47a39a3ed 100644
+--- a/net/can/raw.c
++++ b/net/can/raw.c
+@@ -665,10 +665,18 @@ static int raw_getsockopt(struct socket *sock, int level, int optname,
+ 		if (ro->count > 0) {
+ 			int fsize = ro->count * sizeof(struct can_filter);
+ 
+-			if (len > fsize)
+-				len = fsize;
+-			if (copy_to_user(optval, ro->filter, len))
+-				err = -EFAULT;
++			/* user space buffer to small for filter list? */
++			if (len < fsize) {
++				/* return -ERANGE and needed space in optlen */
++				err = -ERANGE;
++				if (put_user(fsize, optlen))
++					err = -EFAULT;
++			} else {
++				if (len > fsize)
++					len = fsize;
++				if (copy_to_user(optval, ro->filter, len))
++					err = -EFAULT;
++			}
+ 		} else {
+ 			len = 0;
  		}
-@@ -66,17 +66,26 @@ static int tcan4x5x_regmap_read(void *context,
- 	       sizeof(buf_tx->cmd.addr));
- 	tcan4x5x_spi_cmd_set_len(&buf_tx->cmd, val_len);
- 
--	xfer[0].rx_buf = buf_rx;
--	xfer[0].len = sizeof(buf_tx->cmd) + val_len;
-+	if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX) {
-+		xfer[0].len = sizeof(buf_tx->cmd);
-+
-+		xfer[1].rx_buf = val_buf;
-+		xfer[1].len = val_len;
-+		spi_message_add_tail(&xfer[1], &msg);
-+	} else {
-+		xfer[0].rx_buf = buf_rx;
-+		xfer[0].len = sizeof(buf_tx->cmd) + val_len;
- 
--	if (TCAN4X5X_SANITIZE_SPI)
--		memset(buf_tx->data, 0x0, val_len);
-+		if (TCAN4X5X_SANITIZE_SPI)
-+			memset(buf_tx->data, 0x0, val_len);
-+	}
- 
- 	err = spi_sync(spi, &msg);
- 	if (err)
- 		return err;
- 
--	memcpy(val_buf, buf_rx->data, val_len);
-+	if (!(spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX))
-+		memcpy(val_buf, buf_rx->data, val_len);
- 
- 	return 0;
- }
 -- 
 2.29.2
 
