@@ -2,120 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D57F2EE6D9
+	by mail.lfdr.de (Postfix) with ESMTP id C9D622EE6DA
 	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 21:29:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbhAGU3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 15:29:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55438 "EHLO mail.kernel.org"
+        id S1726989AbhAGU3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 15:29:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726410AbhAGU3g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 15:29:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BB1B323435;
-        Thu,  7 Jan 2021 20:28:54 +0000 (UTC)
+        id S1726410AbhAGU3i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 15:29:38 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DCB0D2343B;
+        Thu,  7 Jan 2021 20:28:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610051335;
-        bh=ASNyZ182XVIgoeUKOaYb/k266Im2fza0TtyXgIWPCvI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QvK7jawJnt6EDBgA8Oeox6JZQ8ZbvpRakdDgZ8cYICfLfzG4ueKZfpshGR8cs2LAp
-         nGC6cVlkSX41gAYm60H/kghgjENKNnBd7f67Tfaqk+I6FkPBB8Py904LPBZMoKNAsV
-         U/nElWXL3TeumJdKUKtMyA09M33OPO4TBJwj6PCsfm8xttqDTrnmA5Uq1j9XEswP9j
-         QobvPHRc3YLpWOv8XUu7KKc9cBpxwToT7/PktApvUPFG59QiWfhm/+6YiY1wJxCdpE
-         uKt2FAktSad2dIIBb07iQnRR4Fb3Zw7fKPpdZMknIGWoPV/vvu3x82LsDe3FJityiA
-         vQlohssQFEm2Q==
+        s=k20201202; t=1610051337;
+        bh=GQh//ftlpxvXu0laJDthJMVmew3EVKQ5Of/x7zyZid4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BEW1kcbrPXiEiXp2GkT6gCKDg/MxJ0/W3v9wp3EmQL9hISdTHYU9P4vS6nmocYPrP
+         MNu+dQ0Q9Yk0ZRwmBRdw43BODchVcgn7JRpTLnwpmUIHWXFGzZPKag20utwo30p2Sf
+         FO5akb5t1EOwh9KIKv10z5o2ZRkDyaWhxGwm4y7d2Lmu76V6FvFsc0QN8DMd+uoEZg
+         rI2auR9+uGmDPcRWcmg94L0KxhBpCNPlKOpxfB1t0qUepcP8JR5fBJUia+eaJ1E0Uo
+         ze5Pf0qU1AKe9rUSwyf5F63U3rnySPR+/32XPaED9+DLEFPmir7rj/07o77IcfOvVa
+         7PTOSC6tmH1iw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net 00/11] mlx5 fixes 2021-01-07
-Date:   Thu,  7 Jan 2021 12:28:34 -0800
-Message-Id: <20210107202845.470205-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Mark Zhang <markzhang@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 01/11] net/mlx5: Check if lag is supported before creating one
+Date:   Thu,  7 Jan 2021 12:28:35 -0800
+Message-Id: <20210107202845.470205-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210107202845.470205-1-saeed@kernel.org>
+References: <20210107202845.470205-1-saeed@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Mark Zhang <markzhang@nvidia.com>
 
-Hi Dave, Jakub,
+This patch fixes a memleak issue by preventing to create a lag and
+add PFs if lag is not supported.
 
-This series provides some fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
+comm “python3”, pid 349349, jiffies 4296985507 (age 1446.976s)
+hex dump (first 32 bytes):
+  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  …………….
+  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  …………….
+ backtrace:
+  [<000000005b216ae7>] mlx5_lag_add+0x1d5/0×3f0 [mlx5_core]
+  [<000000000445aa55>] mlx5e_nic_enable+0x66/0×1b0 [mlx5_core]
+  [<00000000c56734c3>] mlx5e_attach_netdev+0x16e/0×200 [mlx5_core]
+  [<0000000030439d1f>] mlx5e_attach+0x5c/0×90 [mlx5_core]
+  [<0000000018fd8615>] mlx5e_add+0x1a4/0×410 [mlx5_core]
+  [<0000000068bc504b>] mlx5_add_device+0x72/0×120 [mlx5_core]
+  [<000000009fce51f9>] mlx5_register_device+0x77/0xb0 [mlx5_core]
+  [<00000000d0d81ff3>] mlx5_load_one+0xc58/0×1eb0 [mlx5_core]
+  [<0000000045077adc>] init_one+0x3ea/0×920 [mlx5_core]
+  [<0000000043287674>] pci_device_probe+0xcd/0×150
+  [<00000000dafd3279>] really_probe+0x1c9/0×4b0
+  [<00000000f06bdd84>] driver_probe_device+0x5d/0×140
+  [<00000000e3d508b6>] device_driver_attach+0x4f/0×60
+  [<0000000084fba0f0>] bind_store+0xbf/0×120
+  [<00000000bf6622b3>] kernfs_fop_write+0x114/0×1b0
 
-
-For -stable v5.2
- ('net/mlx5: Use port_num 1 instead of 0 when delete a RoCE address')
-
-For -stable v5.5
- ('net/mlx5e: ethtool, Fix restriction of autoneg with 56G')
-
-For -stable v5.8
- ('net/mlx5e: In skb build skip setting mark in switchdev mode')
-
-For -stable v5.10
- ('net/mlx5: Check if lag is supported before creating one')
- ('net/mlx5e: Fix SWP offsets when vlan inserted by driver')
-
-Thanks,
-Saeed.
-
+Fixes: 9b412cc35f00 ("net/mlx5e: Add LAG warning if bond slave is not lag master")
+Signed-off-by: Mark Zhang <markzhang@nvidia.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit 5316a7c0130acf09bfc8bb0092407006010fcccc:
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-  tools: selftests: add test for changing routes with PTMU exceptions (2021-01-07 12:03:36 -0800)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+index f3d45ef082cd..83a05371e2aa 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+@@ -564,7 +564,9 @@ void mlx5_lag_add(struct mlx5_core_dev *dev, struct net_device *netdev)
+ 	struct mlx5_core_dev *tmp_dev;
+ 	int i, err;
+ 
+-	if (!MLX5_CAP_GEN(dev, vport_group_manager))
++	if (!MLX5_CAP_GEN(dev, vport_group_manager) ||
++	    !MLX5_CAP_GEN(dev, lag_master) ||
++	    MLX5_CAP_GEN(dev, num_lag_ports) != MLX5_MAX_PORTS)
+ 		return;
+ 
+ 	tmp_dev = mlx5_get_next_phys_dev(dev);
+@@ -582,12 +584,9 @@ void mlx5_lag_add(struct mlx5_core_dev *dev, struct net_device *netdev)
+ 	if (mlx5_lag_dev_add_pf(ldev, dev, netdev) < 0)
+ 		return;
+ 
+-	for (i = 0; i < MLX5_MAX_PORTS; i++) {
+-		tmp_dev = ldev->pf[i].dev;
+-		if (!tmp_dev || !MLX5_CAP_GEN(tmp_dev, lag_master) ||
+-		    MLX5_CAP_GEN(tmp_dev, num_lag_ports) != MLX5_MAX_PORTS)
++	for (i = 0; i < MLX5_MAX_PORTS; i++)
++		if (!ldev->pf[i].dev)
+ 			break;
+-	}
+ 
+ 	if (i >= MLX5_MAX_PORTS)
+ 		ldev->flags |= MLX5_LAG_FLAG_READY;
+-- 
+2.26.2
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2021-01-07
-
-for you to fetch changes up to 5b0bb12c58ac7d22e05b5bfdaa30a116c8c32e32:
-
-  net/mlx5e: Fix memleak in mlx5e_create_l2_table_groups (2021-01-07 12:22:51 -0800)
-
-----------------------------------------------------------------
-mlx5-fixes-2021-01-07
-
-----------------------------------------------------------------
-Alaa Hleihel (1):
-      net/mlx5: E-Switch, fix changing vf VLANID
-
-Aya Levin (2):
-      net/mlx5e: Add missing capability check for uplink follow
-      net/mlx5e: ethtool, Fix restriction of autoneg with 56G
-
-Dinghao Liu (2):
-      net/mlx5e: Fix two double free cases
-      net/mlx5e: Fix memleak in mlx5e_create_l2_table_groups
-
-Leon Romanovsky (1):
-      net/mlx5: Release devlink object if adev fails
-
-Maor Dickman (1):
-      net/mlx5e: In skb build skip setting mark in switchdev mode
-
-Mark Zhang (2):
-      net/mlx5: Check if lag is supported before creating one
-      net/mlx5: Use port_num 1 instead of 0 when delete a RoCE address
-
-Moshe Shemesh (1):
-      net/mlx5e: Fix SWP offsets when vlan inserted by driver
-
-Oz Shlomo (1):
-      net/mlx5e: CT: Use per flow counter when CT flow accounting is enabled
-
- .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |  5 ++
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 77 ++++++++++++++--------
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  9 +++
- .../mellanox/mlx5/core/en_accel/en_accel.h         |  8 ++-
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   | 24 +++++--
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  3 +
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  3 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  9 +--
- .../mellanox/mlx5/core/esw/acl/egress_lgcy.c       | 27 ++++----
- drivers/net/ethernet/mellanox/mlx5/core/lag.c      | 11 ++--
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  7 +-
- drivers/net/ethernet/mellanox/mlx5/core/rdma.c     |  2 +-
- include/linux/mlx5/mlx5_ifc.h                      |  3 +-
- 13 files changed, 122 insertions(+), 66 deletions(-)
