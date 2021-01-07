@@ -2,106 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 765D42ED646
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 19:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE7322ED673
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 19:14:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729119AbhAGSBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 13:01:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
+        id S1727058AbhAGSOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 13:14:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726406AbhAGSBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 13:01:52 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B21C0612F8
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 10:01:11 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id x20so16558427lfe.12
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 10:01:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iniSHMwz5ezyvqR1cNjv8cElQ7Ohce9OqSkDTsr2fC4=;
-        b=NVaDusuqmrXY4tKTfxBuT4gum6V9i1oxM/MgU22HhZZJWSEGoV5WkIqi/2W+AmBGoP
-         fudFb8ipKwQM53aDlC7aNdvUjqwmT96H4i2I63Xp8qEH6XTMM6+CUZRT4te4gNc7Lv+5
-         NEsu0+sFxCgDsEFncnuI5DkMqzjdSV+eLeEqrCSV6NbLZGmYZRM5wJU9YKjnyN/k+Rhs
-         2I961IH1IRo5j5YkmujJ5X1Txh6XAmLLg8jm09XAHVO4wxOXx8APRERczkxHAld/QUzf
-         +zMIcg9Y6sqVKlM5utS7/TPs4z0om/sQgEmueLdAUSwJuf/qIXiDxU2TVGCszq+tlSgD
-         Lmyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iniSHMwz5ezyvqR1cNjv8cElQ7Ohce9OqSkDTsr2fC4=;
-        b=fPCST1i15F9r/99cZDDKnTd4VAdtqJlZtr3rq35+qWYaDqH4UZS/ooo4xUHR28pd0K
-         oEPzIPhvmbomraHyhcX9h/hB9XK5UiHMwcS7CU+BjKTQOft7Wbs3rHuLXsEiGMCna6re
-         3phyv6rzPjHa90demSZGXwbHDDu1FORuGZOhQSSWtcSPFj5vfCWVXhkYNtzDTMiz4wLn
-         Szmlq6WpViEFP9y7Ni5+SrPy92l4VZ1A6oWHpC0IGr0NXX+WNLSk2aZLsArcFrUVE2Z7
-         BNkcYk4M3hRe/0FLV+/mJsc5fw+rSOGnqd9GnpdtWsgcpzGXK/0utqdMbr1Kr5LGtxrt
-         1Ytw==
-X-Gm-Message-State: AOAM533zbjRDv0thIr4fjgKMCYqRrZrBYsRgb4xAv8GM6StGlWp7nT+W
-        0Ehxw9pHG9p8LlEuUOs0FBo=
-X-Google-Smtp-Source: ABdhPJw6P5Ljj8aE1MxWQ4LVE5pKyMgSNfURsVoI/JsbzO4fWXZnRPWVASKNFquSCVynlw7Gq9nIXA==
-X-Received: by 2002:a19:797:: with SMTP id 145mr4248760lfh.651.1610042469973;
-        Thu, 07 Jan 2021 10:01:09 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id c198sm1299065lfg.265.2021.01.07.10.01.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 10:01:09 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Murali Krishna Policharla <murali.policharla@broadcom.com>,
-        Timur Tabi <timur@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH V2 net-next 3/3] MAINTAINERS: add bgmac section entry
-Date:   Thu,  7 Jan 2021 19:00:51 +0100
-Message-Id: <20210107180051.1542-3-zajec5@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210107180051.1542-1-zajec5@gmail.com>
-References: <20210107180051.1542-1-zajec5@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S1726386AbhAGSOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 13:14:03 -0500
+Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBB12C0612F5
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 10:13:22 -0800 (PST)
+Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 7FDE97D55C;
+        Thu,  7 Jan 2021 18:13:21 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1610043201; bh=qHSpP77ivYRppJQ1QcmD9+jcu+Wq/FHiproLOhDTVMA=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
+         rnel.org|Cc:=20gnault@redhat.com,=0D=0A=09jchapman@katalix.com,=0D
+         =0A=09Tom=20Parkin=20<tparkin@katalix.com>|Subject:=20[PATCH=20net
+         =20v3]=20ppp:=20fix=20refcount=20underflow=20on=20channel=20unbrid
+         ge|Date:=20Thu,=20=207=20Jan=202021=2018:13:15=20+0000|Message-Id:
+         =20<20210107181315.3128-1-tparkin@katalix.com>;
+        b=bbsziuZ+PiY4PR68nkdv0DTuFGxVBpR82yE7d+DSWEi/f55+EHQLEtiC5lwPaaJfi
+         mfqS6qtc0D1q5id3PmxD8n5Tk6vg3YYvkjWke+fFJOzRIFaAp3lE/sbLfdhFVs/hQz
+         41ZABAJr5hUMU2iQ+Qt4Oi8tXLxCjpTqOH8XtWH04vYxXgZdTFJo004e6tahYMpcq1
+         5WDkifAseOrCLar3UQdJRKmuPFUdHLpnCGpbqNQ71l9zjYJKl8oeVLQqrQSkS+lykS
+         hnz9WyC97xw/s5uorqEksVmupLDPYeTScHQEFMXISpuNRSvUHyLpOHitGMwPoLYfjh
+         X6q4frAUOtNVA==
+From:   Tom Parkin <tparkin@katalix.com>
+To:     netdev@vger.kernel.org
+Cc:     gnault@redhat.com, jchapman@katalix.com,
+        Tom Parkin <tparkin@katalix.com>
+Subject: [PATCH net v3] ppp: fix refcount underflow on channel unbridge
+Date:   Thu,  7 Jan 2021 18:13:15 +0000
+Message-Id: <20210107181315.3128-1-tparkin@katalix.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+When setting up a channel bridge, ppp_bridge_channels sets the
+pch->bridge field before taking the associated reference on the bridge
+file instance.
 
-This driver exists for years but was missing its MAINTAINERS entry.
+This opens up a refcount underflow bug if ppp_bridge_channels called
+via. iotcl runs concurrently with ppp_unbridge_channels executing via.
+file release.
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+The bug is triggered by ppp_bridge_channels taking the error path
+through the 'err_unset' label.  In this scenario, pch->bridge is set,
+but the reference on the bridged channel will not be taken because
+the function errors out.  If ppp_unbridge_channels observes pch->bridge
+before it is unset by the error path, it will erroneously drop the
+reference on the bridged channel and cause a refcount underflow.
+
+To avoid this, ensure that ppp_bridge_channels holds a reference on
+each channel in advance of setting the bridge pointers.
+
+Signed-off-by: Tom Parkin <tparkin@katalix.com>
+Fixes: 4cf476ced45d ("ppp: add PPPIOCBRIDGECHAN and PPPIOCUNBRIDGECHAN ioctls")
 ---
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+v3:
+ * remove bool tracking variable in ppp_bridge_channels and re-read
+   pch->bridge instead
+ * add missing tags
+v2:
+ * rework ppp_bridge_channels code to avoid the race condition in
+   preference to holding ppp_mutex while calling ppp_unbridge_channels
+---
+ drivers/net/ppp/ppp_generic.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3de86229b17c..00fc1d5a9f18 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3659,6 +3659,15 @@ N:	bcm88312
- N:	hr2
- N:	stingray
+diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+index 09c27f7773f9..d445ecb1d0c7 100644
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
+@@ -623,6 +623,7 @@ static int ppp_bridge_channels(struct channel *pch, struct channel *pchb)
+ 		write_unlock_bh(&pch->upl);
+ 		return -EALREADY;
+ 	}
++	refcount_inc(&pchb->file.refcnt);
+ 	rcu_assign_pointer(pch->bridge, pchb);
+ 	write_unlock_bh(&pch->upl);
  
-+BROADCOM IPROC GBIT ETHERNET DRIVER
-+M:	Rafał Miłecki <rafal@milecki.pl>
-+M:	bcm-kernel-feedback-list@broadcom.com
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/net/brcm,amac.txt
-+F:	drivers/net/ethernet/broadcom/bgmac*
-+F:	drivers/net/ethernet/broadcom/unimac.h
+@@ -632,19 +633,24 @@ static int ppp_bridge_channels(struct channel *pch, struct channel *pchb)
+ 		write_unlock_bh(&pchb->upl);
+ 		goto err_unset;
+ 	}
++	refcount_inc(&pch->file.refcnt);
+ 	rcu_assign_pointer(pchb->bridge, pch);
+ 	write_unlock_bh(&pchb->upl);
+ 
+-	refcount_inc(&pch->file.refcnt);
+-	refcount_inc(&pchb->file.refcnt);
+-
+ 	return 0;
+ 
+ err_unset:
+ 	write_lock_bh(&pch->upl);
++	/* Re-read pch->bridge with upl held in case it was modified concurrently */
++	pchb = rcu_dereference_protected(pch->bridge, lockdep_is_held(&pch->upl));
+ 	RCU_INIT_POINTER(pch->bridge, NULL);
+ 	write_unlock_bh(&pch->upl);
+ 	synchronize_rcu();
 +
- BROADCOM KONA GPIO DRIVER
- M:	Ray Jui <rjui@broadcom.com>
- L:	bcm-kernel-feedback-list@broadcom.com
++	if (pchb)
++		if (refcount_dec_and_test(&pchb->file.refcnt))
++			ppp_destroy_channel(pchb);
++
+ 	return -EALREADY;
+ }
+ 
 -- 
-2.26.2
+2.17.1
 
