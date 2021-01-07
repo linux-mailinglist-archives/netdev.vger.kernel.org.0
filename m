@@ -2,97 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1F1F2ECAE6
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 08:21:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA782ECB35
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 08:55:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbhAGHVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 02:21:13 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:41892 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725763AbhAGHVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 02:21:12 -0500
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1610004030;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vNRhTOy8vmR7v1GX8zAuyJROMeXWSYY/BOB1XonfImQ=;
-        b=Qt6skmY8WjX0mXwWlGbEs489joXmaZQnNIf1W47KGMJq1WQxzcaq67mtmnldxkqIWjHyjZ
-        IeFu1lOyv+NtwjDOlQTRbB13D1Us2KjuhFWF5VlNwo5GjdAlcWzjZP9zRTAnem/aSqrwD6
-        sH7W9Jyb3iz28QGnG0LmzSjxB1ZoZSb3O48sFAg2ucfYIu7zfE1Hw/IBivg9piktO+oIHB
-        Gq7CG/c4fdHiNCHOW9h/7YyBz/UWW53XpwZhkJCn6fDXLrpV8xcIbwU2P+4GvYjClfgN8Y
-        n1wZpEg2ojnNGdasdBJbnIkUGt0vd5pbiOrORaLEgegBnIW7bhRZ3CgpemlOsw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1610004030;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vNRhTOy8vmR7v1GX8zAuyJROMeXWSYY/BOB1XonfImQ=;
-        b=sf7TSXnRR1xRogjhbhWbPFszIec1AdWCrJ9ND0FFVu+9lgnOEIRLyJ7L4jfozOhNcjSYbc
-        BSN7vP2X7VHvxDDg==
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] net: dsa: fix led_classdev build errors
-In-Reply-To: <20210106021815.31796-1-rdunlap@infradead.org>
-References: <20210106021815.31796-1-rdunlap@infradead.org>
-Date:   Thu, 07 Jan 2021 08:20:29 +0100
-Message-ID: <87eeixw6v6.fsf@kurt>
+        id S1727360AbhAGHxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 02:53:40 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:54566 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727335AbhAGHxj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 02:53:39 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id C64E320573;
+        Thu,  7 Jan 2021 08:52:56 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 0StHjRa6RPI0; Thu,  7 Jan 2021 08:52:56 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 531E620571;
+        Thu,  7 Jan 2021 08:52:56 +0100 (CET)
+Received: from mbx-essen-02.secunet.de (10.53.40.198) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 7 Jan 2021 08:52:51 +0100
+Received: from cell (10.182.7.209) by mbx-essen-02.secunet.de (10.53.40.198)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Thu, 7 Jan 2021
+ 08:52:50 +0100
+Received: (nullmailer pid 16045 invoked by uid 1000);
+        Thu, 07 Jan 2021 07:52:50 -0000
+Date:   Thu, 7 Jan 2021 08:52:50 +0100
+From:   Christian Perle <christian.perle@secunet.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     <netdev@vger.kernel.org>, <steffen.klassert@secunet.com>,
+        <netfilter-devel@vger.kernel.org>
+Subject: Re: [PATCH net 3/3] net: ip: always refragment ip defragmented
+ packets
+Message-ID: <20210107075250.GA16010@cell>
+Reply-To: <christian.perle@secunet.com>
+References: <20210105121208.GA11593@cell>
+ <20210105231523.622-1-fw@strlen.de>
+ <20210105231523.622-4-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210105231523.622-4-fw@strlen.de>
+Organization: secunet
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-02.secunet.de (10.53.40.198)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+Hello Florian,
 
-On Tue Jan 05 2021, Randy Dunlap wrote:
-> Fix build errors when LEDS_CLASS=m and NET_DSA_HIRSCHMANN_HELLCREEK=y.
-> This limits the latter to =m when LEDS_CLASS=m.
->
-> microblaze-linux-ld: drivers/net/dsa/hirschmann/hellcreek_ptp.o: in function `hellcreek_ptp_setup':
-> (.text+0xf80): undefined reference to `led_classdev_register_ext'
-> microblaze-linux-ld: (.text+0xf94): undefined reference to `led_classdev_register_ext'
-> microblaze-linux-ld: drivers/net/dsa/hirschmann/hellcreek_ptp.o: in function `hellcreek_ptp_free':
-> (.text+0x1018): undefined reference to `led_classdev_unregister'
-> microblaze-linux-ld: (.text+0x1024): undefined reference to `led_classdev_unregister'
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Link: lore.kernel.org/r/202101060655.iUvMJqS2-lkp@intel.com
-> Cc: Kurt Kanzenbach <kurt@linutronix.de>
-> Cc: netdev@vger.kernel.org
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
+On Wed, Jan 06, 2021 at 00:15:23 +0100, Florian Westphal wrote:
 
-Fixes: 7d9ee2e8ff15 ("net: dsa: hellcreek: Add PTP status LEDs")
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Force refragmentation as per original sizes unconditionally so ip tunnel
+> will encapsulate the fragments instead.
+[...]
+> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> index 89fff5f59eea..2ed0b01f72f0 100644
+> --- a/net/ipv4/ip_output.c
+> +++ b/net/ipv4/ip_output.c
+> @@ -302,7 +302,7 @@ static int __ip_finish_output(struct net *net, struct sock *sk, struct sk_buff *
+>  	if (skb_is_gso(skb))
+>  		return ip_finish_output_gso(net, sk, skb, mtu);
+>  
+> -	if (skb->len > mtu || (IPCB(skb)->flags & IPSKB_FRAG_PMTU))
+> +	if (skb->len > mtu || IPCB(skb)->frag_max_size)
+>  		return ip_fragment(net, sk, skb, mtu, ip_finish_output2);
+>  
+>  	return ip_finish_output2(net, sk, skb);
+> -- 
+> 2.26.2
 
-Thanks,
-Kurt
+Did some tests yesterday and I can confirm that this patch fixes the
+problem for both IPIP tunnel and XFRM tunnel interfaces.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Thanks for the fix!
+  Christian Perle
+-- 
+Christian Perle
+Senior Berater / Senior Consultant
+Netzwerk- und Client-Sicherheit / Network & Client Security
+Öffentliche Auftraggeber / Public Authorities
+secunet Security Networks AG
 
------BEGIN PGP SIGNATURE-----
+Tel.: +49 201 54 54-3533, Fax: +49 201 54 54-1323
+E-Mail: christian.perle@secunet.com
+Ammonstraße 74, 01067 Dresden, Deutschland
+www.secunet.com
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl/2tj0ACgkQeSpbgcuY
-8KblaA//QjU9XsxK9jcAIaljLq1gvl4dFlPEKfTXK7EqERQj49A+skHkRYO9BDR3
-ijPMgm6wt2cmMXWPx4tApaf+iwEps+ZRTuZ6AU5EKyGB/+FhYif5c9jmCI2FZ4OG
-YlI04Ic+AV4JwuO8Ta95yepyqmkFtUcc9F0FKKzi8Z1uJRXcMq1B3IQUOZm8UsMN
-YXdNMLFYHYVjFdFqnXG9SQmboCecD4VJ5qOlucYu3YdQtgoGkjsrqCe7Jhw/Ye16
-B8YZlxDiqKA/AHbMg/LpQulri1WiDjec/7GrAbLF0aa4mizGLag2kURcz39dL7wN
-/AGRyzTwS4obtpuVcjOUB6z4J4vbhi0GhebhPo40RNhVeiMwwMvyXdlBgQn14Qpr
-GAgvNRzffRDa2V2CBwODqs/4WFPZJjs63PXpnz6fDjFhoXMnjsU3hDIDHiwHIxah
-2Rzw1ZJoDkujSKJQpasG6HTXmFSa1xgUyoK2arONDaXwg+iwQLSdqkRMudp9x467
-pmlQ53T/6a6TFRbkyYBqnf1vHt3mteucKJpG/N4R+03yFS7+PWJHhBIQc0yVIEP9
-K/rImGFsSBxo8ybfw9XWvN24NA1DGcuVUvrtwp95YE60mjqH2k/5LhQfElP4xmJ0
-U5cEb64fVzzP+0/QiPdrxQyTsz4x1KmieFYgvli5w7SPPVad0e0=
-=I9yy
------END PGP SIGNATURE-----
---=-=-=--
+secunet Security Networks AG
+Sitz: Kurfürstenstraße 58, 45138 Essen, Deutschland
+Amtsgericht Essen HRB 13615
+Vorstand: Axel Deininger (Vors.), Torsten Henn, Dr. Kai Martius, Thomas Pleines
+Aufsichtsratsvorsitzender: Ralf Wintergerst
