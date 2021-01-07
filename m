@@ -2,108 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0460B2ED11E
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 14:47:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AA2B2ED12E
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 14:52:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728472AbhAGNrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 08:47:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44869 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728026AbhAGNrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 08:47:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610027135;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=G6uWpqlwSVKh90kRGilN8ra4QedFEQSfInlrRXbuegk=;
-        b=GTaKgLpFzml9X+zkgpKz+1CUgsaqta7GjaSFh9FeSCuiXc+d+eKqGLsR/9C2bAeaNrbJbM
-        bru7yueG0Y9eIu4jikmWjug2GL8KpoAs30Aq3QjQ8/WC1m3qZlG1m3bpUScDLWYSLsdy55
-        dJ7NYoOCNf13gh45I9LQHuX0e2w821U=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-296-exIDBZjiNAipGzkSgPwCZw-1; Thu, 07 Jan 2021 08:45:32 -0500
-X-MC-Unique: exIDBZjiNAipGzkSgPwCZw-1
-Received: by mail-wr1-f71.google.com with SMTP id v7so2662006wra.3
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 05:45:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=G6uWpqlwSVKh90kRGilN8ra4QedFEQSfInlrRXbuegk=;
-        b=PCibniOqcTocb6nj/OHNBw3UgeK5HPdj4y01sGaDz4bAMqrRWgM8wDcU3jzyoUYKRo
-         hcMwO/1gsO6VgUdiLDF5Y5ChdEgx+rKVnS0GCPIKL02/shDEMXqcCxDRLYjsGQcdw5R7
-         CuGeo5djbvhe//OeiInpNwUyrZqKU7YCgyVFY54fwibS1RyRDxX54852DkBnGZJhcXvy
-         XbORRzHxX9icO/FBD9xbrlyIyHswl1G5mtMAl5fIOda9kQkATo8VENb75DWiK0GEgKDu
-         YdELLkWFVbXE4x5TLghNmxsZWqo8f2H87iGEBfcUPjZ/jwUA0D3ZhyZ5vEiey96vRpTa
-         +ToQ==
-X-Gm-Message-State: AOAM530wLs8+A9Qzy89NvPqZo5CMOzTpDSjBL2lEh2d/im/EmTHIgE39
-        XVzDK+uQcI7wX56gVCM5InLwDRYAHJreSuAIrFnGFwb+V+/NHkatzt6ZAbxTHl6PthWlcVHt2YK
-        1vRFAo2Kn6ZCHeRgy
-X-Received: by 2002:a5d:674c:: with SMTP id l12mr8926396wrw.399.1610027131332;
-        Thu, 07 Jan 2021 05:45:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyA2UrtrIHsH2Ay8M5rV/B/Zag5MzLoAwcRGNIv5Kptx1Fsqxqz6UWeR//a5TyGmHyZ+dnixA==
-X-Received: by 2002:a5d:674c:: with SMTP id l12mr8926389wrw.399.1610027131153;
-        Thu, 07 Jan 2021 05:45:31 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id v1sm7998471wrr.48.2021.01.07.05.45.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 05:45:30 -0800 (PST)
-Date:   Thu, 7 Jan 2021 14:45:28 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        elic@nvidia.com, mst@redhat.com
-Subject: Re: [PATCH linux-next v3 1/6] vdpa_sim_net: Make mac address array
- static
-Message-ID: <20210107134528.uw72mstpdorhcyvg@steredhat>
-References: <20201112064005.349268-1-parav@nvidia.com>
- <20210105103203.82508-1-parav@nvidia.com>
- <20210105103203.82508-2-parav@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210105103203.82508-2-parav@nvidia.com>
+        id S1728410AbhAGNvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 08:51:53 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43893 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726854AbhAGNvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 08:51:53 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
+        with SMTP; 7 Jan 2021 15:50:58 +0200
+Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.234.210.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 107DowbB002543;
+        Thu, 7 Jan 2021 15:50:58 +0200
+Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id 107DowTB030489;
+        Thu, 7 Jan 2021 15:50:58 +0200
+Received: (from ayal@localhost)
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 107DogfQ030482;
+        Thu, 7 Jan 2021 15:50:42 +0200
+From:   Aya Levin <ayal@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Daniel Axtens <dja@axtens.net>, netdev@vger.kernel.org,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, jengelh@medozas.de,
+        kaber@trash.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        Aya Levin <ayal@nvidia.com>
+Subject: [PATCH net V3] net: ipv6: Validate GSO SKB before finish IPv6 processing
+Date:   Thu,  7 Jan 2021 15:50:18 +0200
+Message-Id: <1610027418-30438-1-git-send-email-ayal@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 12:31:58PM +0200, Parav Pandit wrote:
->MAC address array is used only in vdpa_sim_net.c.
->Hence, keep it static.
->
->Signed-off-by: Parav Pandit <parav@nvidia.com>
->Acked-by: Jason Wang <jasowang@redhat.com>
->---
->Changelog:
->v1->v2:
-> - new patch
->---
-> drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
+There are cases where GSO segment's length exceeds the egress MTU:
+ - Forwarding of a TCP GRO skb, when DF flag is not set.
+ - Forwarding of an skb that arrived on a virtualisation interface
+   (virtio-net/vhost/tap) with TSO/GSO size set by other network
+   stack.
+ - Local GSO skb transmitted on an NETIF_F_TSO tunnel stacked over an
+   interface with a smaller MTU.
+ - Arriving GRO skb (or GSO skb in a virtualised environment) that is
+   bridged to a NETIF_F_TSO tunnel stacked over an interface with an
+   insufficient MTU.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+If so:
+ - Consume the SKB and its segments.
+ - Issue an ICMP packet with 'Packet Too Big' message containing the
+   MTU, allowing the source host to reduce its Path MTU appropriately.
 
->
->diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
->index c10b6981fdab..f0482427186b 100644
->--- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
->+++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
->@@ -33,7 +33,7 @@ static char *macaddr;
-> module_param(macaddr, charp, 0);
-> MODULE_PARM_DESC(macaddr, "Ethernet MAC address");
->
->-u8 macaddr_buf[ETH_ALEN];
->+static u8 macaddr_buf[ETH_ALEN];
->
-> static struct vdpasim *vdpasim_net_dev;
->
->-- 
->2.26.2
->
->_______________________________________________
->Virtualization mailing list
->Virtualization@lists.linux-foundation.org
->https://lists.linuxfoundation.org/mailman/listinfo/virtualization
->
+Note: These cases are handled in the same manner in IPv4 output finish.
+This patch aligns the behavior of IPv6 and the one of IPv4.
+
+Fixes: 9e50849054a4 ("netfilter: ipv6: move POSTROUTING invocation before fragmentation")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+---
+ net/ipv6/ip6_output.c | 41 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
+
+Hi,
+
+Please queue to -stable >= v2.6.35.
+
+Thanks,
+Aya
+
+v2:
+Addressed error: uninitialized symbol 'ret', reported by
+kernel test robot <lkp@intel.com> / Dan Carpenter <dan.carpenter@oracle.com>.
+
+v3:
+Per Jakub's request, added further details in commit message,
+and extended the CCed list.
+
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 749ad72386b2..077d43af8226 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -125,8 +125,43 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ 	return -EINVAL;
+ }
+ 
++static int
++ip6_finish_output_gso_slowpath_drop(struct net *net, struct sock *sk,
++				    struct sk_buff *skb, unsigned int mtu)
++{
++	struct sk_buff *segs, *nskb;
++	netdev_features_t features;
++	int ret = 0;
++
++	/* Please see corresponding comment in ip_finish_output_gso
++	 * describing the cases where GSO segment length exceeds the
++	 * egress MTU.
++	 */
++	features = netif_skb_features(skb);
++	segs = skb_gso_segment(skb, features & ~NETIF_F_GSO_MASK);
++	if (IS_ERR_OR_NULL(segs)) {
++		kfree_skb(skb);
++		return -ENOMEM;
++	}
++
++	consume_skb(skb);
++
++	skb_list_walk_safe(segs, segs, nskb) {
++		int err;
++
++		skb_mark_not_on_list(segs);
++		err = ip6_fragment(net, sk, segs, ip6_finish_output2);
++		if (err && ret == 0)
++			ret = err;
++	}
++
++	return ret;
++}
++
+ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
++	unsigned int mtu;
++
+ #if defined(CONFIG_NETFILTER) && defined(CONFIG_XFRM)
+ 	/* Policy lookup after SNAT yielded a new policy */
+ 	if (skb_dst(skb)->xfrm) {
+@@ -135,7 +170,11 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
+ 	}
+ #endif
+ 
+-	if ((skb->len > ip6_skb_dst_mtu(skb) && !skb_is_gso(skb)) ||
++	mtu = ip6_skb_dst_mtu(skb);
++	if (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))
++		return ip6_finish_output_gso_slowpath_drop(net, sk, skb, mtu);
++
++	if ((skb->len > mtu && !skb_is_gso(skb)) ||
+ 	    dst_allfrag(skb_dst(skb)) ||
+ 	    (IP6CB(skb)->frag_max_size && skb->len > IP6CB(skb)->frag_max_size))
+ 		return ip6_fragment(net, sk, skb, ip6_finish_output2);
+-- 
+2.14.1
 
