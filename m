@@ -2,145 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D30FA2EE695
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 21:10:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 886762EE696
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 21:12:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726805AbhAGUKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 15:10:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725974AbhAGUKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 15:10:10 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD642C0612FD
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 12:09:01 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id r4so4127401pls.11
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 12:09:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4MgwiKGeUw9C2qMJ1LUj4Q1yLBrwpHo+mZrZfLP58AI=;
-        b=IjBTqlKKvd85lDOmDTT1evGJDPvevZQbXCABmsdZHFoI+QjurRJrcumFkZKFUenbl9
-         IUOzcpxPVmF/GaB2uYHMeqo4+Rt2hO2FAxsu5bQP3T+opYfgMx9I7c3CxWYbNLtsGeQo
-         7fc1n5GHqlloYJfCwvMUtIoKXdjgBYvZzqfW1Wn0HQQBJpr937pJaycQTdd/OtyxJIXo
-         /4zjU40/yoMm8aOuPZevAyoOKZagU9VjTtG0uzi6dYdm7g1YdtYGdlb4hVm4O3GEbHn2
-         OZNpK2H5CBka8SkPElWQTPnDbhzZ9l7hZ7XYYX8OS+8wilSFjLcXJJCKRGluvtu61G+z
-         aZtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=4MgwiKGeUw9C2qMJ1LUj4Q1yLBrwpHo+mZrZfLP58AI=;
-        b=axeuUXJdKVsmBGDAlEn3OOcjxNDxZbikiS/tWFHB2AemiMfTCHgs9RSF/ko7QDNgDw
-         SUnQ6bDejOA1uQ8MXHpVHVCS+dU8DwoLXLBwTPRP2M68eEDK94mZuzv9e84jBpjoMXdc
-         gK13TobcVv22mDYM4Cfn2C1E5kVxWCrbxaN0xjJAaPqOHOnLB0YWpHPWOZfcAgpxGNKw
-         TMwsdWJahL1g1W7Mto+EFuP4kurlwqTiVlbDGyt766C8a/en/6959JvKqlNFIilc+G9i
-         dLmNobY32oSPUyC+osU6Kmd6yIt/xLx51QvngTlr56FujpLMk8+jM1mlf4NogsPvLTZk
-         yB7g==
-X-Gm-Message-State: AOAM530B31gCdgH5XvI3XYRyrNMQrqVnX8xQd11ftKrcI4wMLbxX3/0X
-        rk8GRh/Eoi2JlVYZYtOo7jhngdVUjPo=
-X-Google-Smtp-Source: ABdhPJy+zhAsoDYaX8tUlhtvd7ketvbaWl2zaIofilRyq4G7KVyBQCplrxv4LVmgmeSIAUch3XU+7Q==
-X-Received: by 2002:a17:90b:68b:: with SMTP id m11mr157138pjz.208.1610050141156;
-        Thu, 07 Jan 2021 12:09:01 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y5sm7120032pgs.90.2021.01.07.12.08.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jan 2021 12:09:00 -0800 (PST)
-Subject: Re: [PATCH V2 net-next 3/3] MAINTAINERS: add bgmac section entry
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Murali Krishna Policharla <murali.policharla@broadcom.com>,
-        Timur Tabi <timur@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20210107180051.1542-1-zajec5@gmail.com>
- <20210107180051.1542-3-zajec5@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <1a80cea6-6a53-4399-8cf0-ada4e0714b20@gmail.com>
-Date:   Thu, 7 Jan 2021 12:08:58 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727024AbhAGUMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 15:12:05 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55736 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726864AbhAGUMF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 15:12:05 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kxbcv-00Gjvd-G3; Thu, 07 Jan 2021 21:11:21 +0100
+Date:   Thu, 7 Jan 2021 21:11:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        johannes@sipsolutions.net, krishna.c.sudi@intel.com
+Subject: Re: [PATCH 16/18] net: iosm: net driver
+Message-ID: <X/dq6WFBBEbp6xkq@lunn.ch>
+References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
+ <20210107170523.26531-17-m.chetan.kumar@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20210107180051.1542-3-zajec5@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210107170523.26531-17-m.chetan.kumar@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/21 10:00 AM, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> This driver exists for years but was missing its MAINTAINERS entry.
-> 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> +static int ipc_wwan_add_vlan(struct iosm_wwan *ipc_wwan, u16 vid)
+> +{
+> +	if (vid >= 512 || !ipc_wwan->vlan_devs)
+> +		return -EINVAL;
+> +
+> +	if (vid == WWAN_ROOT_VLAN_TAG)
+> +		return 0;
+> +
+> +	mutex_lock(&ipc_wwan->if_mutex);
+> +
+> +	/* get channel id */
+> +	ipc_wwan->vlan_devs[ipc_wwan->vlan_devs_nr].ch_id =
+> +		imem_sys_wwan_open(ipc_wwan->ops_instance, vid);
+> +
+> +	if (ipc_wwan->vlan_devs[ipc_wwan->vlan_devs_nr].ch_id < 0) {
+> +		dev_err(ipc_wwan->dev,
+> +			"cannot connect wwan0 & id %d to the IPC mem layer",
+> +			vid);
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Since this is a network interface, you should be using netdev_err(),
+netdev_dbg() etc.
 
-Thanks!
--- 
-Florian
+> +static int ipc_wwan_open(struct net_device *netdev)
+> +{
+> +	/* Octets in one ethernet addr */
+> +	if (netdev->addr_len < ETH_ALEN) {
+> +		pr_err("cannot build the Ethernet address for \"%s\"",
+> +		       netdev->name);
+
+checkpatch should of warned about pr_err().
+
+Also, it seems odd you have got as far as open() without a MAC
+address. You normally sort this out in probe().
+
+> +int ipc_wwan_receive(struct iosm_wwan *ipc_wwan, struct sk_buff *skb_arg,
+> +		     bool dss)
+> +{
+> +	struct sk_buff *skb = skb_arg;
+> +	struct ethhdr *eth = (struct ethhdr *)skb->data;
+> +	u16 tag;
+
+Reverse christmas tree.
+
+> +
+> +	if (unlikely(!eth)) {
+> +		dev_err(ipc_wwan->dev, "ethernet header info error");
+> +		dev_kfree_skb(skb);
+> +		return -1;
+> +	}
+> +
+> +	ether_addr_copy(eth->h_dest, ipc_wwan->netdev->dev_addr);
+> +	ether_addr_copy(eth->h_source, ipc_wwan->netdev->dev_addr);
+> +	eth->h_source[ETH_ALEN - 1] ^= 0x01; /* src is us xor 1 */
+
+You are receiving frames without a valid Ethernet header?
+
+> +	/* set the ethernet payload type: ipv4 or ipv6 or Dummy type
+> +	 * for 802.3 frames
+> +	 */
+> +	eth->h_proto = htons(ETH_P_802_3);
+
+And without a valid ether type?
+
+> +	if (!dss) {
+> +		if ((skb->data[ETH_HLEN] & 0xF0) == 0x40)
+> +			eth->h_proto = htons(ETH_P_IP);
+> +		else if ((skb->data[ETH_HLEN] & 0xF0) == 0x60)
+> +			eth->h_proto = htons(ETH_P_IPV6);
+> +	}
+
+Is this really looking at the first byte after the Ethernet header? If
+it finds a 4 it must be IPv4 and a 6 means IPv6?
+
+> +/* Transmit a packet (called by the kernel) */
+> +static int ipc_wwan_transmit(struct sk_buff *skb, struct net_device *netdev)
+> +{
+> +	struct iosm_wwan *ipc_wwan = netdev_priv(netdev);
+> +	bool is_ip = false;
+> +	int ret = -EINVAL;
+> +	int header_size;
+> +	int idx = 0;
+> +	u16 tag = 0;
+> +
+> +	vlan_get_tag(skb, &tag);
+> +
+> +	/* If the SKB is of WWAN root device then don't send it to device.
+> +	 * Free the SKB and then return.
+> +	 */
+> +	if (unlikely(tag == WWAN_ROOT_VLAN_TAG))
+> +		goto exit;
+> +
+> +	/* Discard the Ethernet header or VLAN Ethernet header depending
+> +	 * on the protocol.
+> +	 */
+
+O.K. I have to ask. If this thing does not use an Ethernet header, why
+are you writing an Ethernet driver? I assume you also don't use ARP?
+
+It seems a driver more like slip, plip, hdlc, etc would be more
+appropriate.
+
+> +static int ipc_wwan_change_mtu(struct net_device *dev, int new_mtu)
+> +{
+> +	struct iosm_wwan *ipc_wwan = netdev_priv(dev);
+> +	unsigned long flags = 0;
+> +
+> +	if (unlikely(new_mtu < IPC_MEM_MIN_MTU_SIZE ||
+> +		     new_mtu > IPC_MEM_MAX_MTU_SIZE)) {
+
+If you set netdev->min_mtu and max_mtu, the core will do this for you.
+
+> +		dev_err(ipc_wwan->dev, "mtu %d out of range %d..%d", new_mtu,
+> +			IPC_MEM_MIN_MTU_SIZE, IPC_MEM_MAX_MTU_SIZE);
+> +		return -EINVAL;
+> +	}
+> +
+> +	spin_lock_irqsave(&ipc_wwan->lock, flags);
+> +	dev->mtu = new_mtu;
+> +	spin_unlock_irqrestore(&ipc_wwan->lock, flags);
+> +	return 0;
+> +}
+> +
+> +static int ipc_wwan_change_mac_addr(struct net_device *dev, void *sock_addr)
+> +{
+> +	struct iosm_wwan *ipc_wwan = netdev_priv(dev);
+> +	struct sockaddr *addr = sock_addr;
+> +	unsigned long flags = 0;
+> +	int result = 0;
+> +	u8 *sock_data;
+> +
+> +	sock_data = (u8 *)addr->sa_data;
+> +
+> +	spin_lock_irqsave(&ipc_wwan->lock, flags);
+> +
+> +	if (is_zero_ether_addr(sock_data)) {
+> +		dev->addr_len = 1;
+> +		memset(dev->dev_addr, 0, 6);
+> +		goto exit;
+> +	}
+
+It appears you don't have an Ethernet header on the frames. So why do
+you need a MAC address?
+
+> +static int ipc_wwan_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+> +{
+> +	if (cmd != SIOCSIFHWADDR ||
+> +	    !access_ok((void __user *)ifr, sizeof(struct ifreq)) ||
+> +	    dev->addr_len > sizeof(struct sockaddr))
+> +		return -EINVAL;
+> +
+> +	return ipc_wwan_change_mac_addr(dev, &ifr->ifr_hwaddr);
+> +}
+
+Why not use ndo_set_mac_address() and let the core handle this ioctl?
+
+    Andrew
