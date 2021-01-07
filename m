@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D64F2ECDF4
-	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 11:37:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 307BA2ECDF1
+	for <lists+netdev@lfdr.de>; Thu,  7 Jan 2021 11:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727666AbhAGKgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 05:36:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48160 "EHLO
+        id S1727444AbhAGKfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 05:35:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727514AbhAGKgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 05:36:17 -0500
+        with ESMTP id S1726371AbhAGKfl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 05:35:41 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBCBC0612FA
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2167BC0612F8
         for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 02:35:01 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kxSdA-0008QL-2Y
-        for netdev@vger.kernel.org; Thu, 07 Jan 2021 11:35:00 +0100
+        id 1kxSd9-0008Q1-KI
+        for netdev@vger.kernel.org; Thu, 07 Jan 2021 11:34:59 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 29D815BBCA3
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 10:34:57 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id E01725BBC9D
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 10:34:55 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 3DAE25BBC7D;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 6538A5BBC80;
         Thu,  7 Jan 2021 10:34:53 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 2f04b679;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ef69317f;
         Thu, 7 Jan 2021 10:34:52 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Dan Murphy <dmurphy@ti.com>, Sean Nyekjaer <sean@geanix.com>
-Subject: [net 2/6] can: tcan4x5x: fix bittiming const, use common bittiming from m_can driver
-Date:   Thu,  7 Jan 2021 11:34:47 +0100
-Message-Id: <20210107103451.183477-3-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [net 3/6] can: mcp251xfd: mcp251xfd_handle_tefif(): fix TEF vs. TX race condition
+Date:   Thu,  7 Jan 2021 11:34:48 +0100
+Message-Id: <20210107103451.183477-4-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210107103451.183477-1-mkl@pengutronix.de>
 References: <20210107103451.183477-1-mkl@pengutronix.de>
@@ -53,66 +52,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to the TCAN4550 datasheet "SLLSF91 - DECEMBER 2018" the tcan4x5x has
-the same bittiming constants as a m_can revision 3.2.x/3.3.0.
+The mcp251xfd driver uses a TX FIFO for sending CAN frames and a TX Event FIFO
+(TEF) for completed TX-requests.
 
-The tcan4x5x chip I'm using identifies itself as m_can revision 3.2.1, so
-remove the tcan4x5x specific bittiming values and rely on the values in the
-m_can driver, which are selected according to core revision.
+The TEF event handling in the mcp251xfd_handle_tefif() function has a race
+condition. It first increments the tx-ring's tail counter to signal that
+there's room in the TX and TEF FIFO, then it increments the TEF FIFO in
+hardware.
 
-Fixes: 5443c226ba91 ("can: tcan4x5x: Add tcan4x5x driver to the kernel")
-Cc: Dan Murphy <dmurphy@ti.com>
-Reviewed-by: Sean Nyekjaer <sean@geanix.com>
-Link: https://lore.kernel.org/r/20201215103238.524029-3-mkl@pengutronix.de
+A running mcp251xfd_start_xmit() on a different CPU might not stop the txqueue
+(as the tx-ring still shows free space). The next mcp251xfd_start_xmit() will
+push a message into the chip and the TX complete event might overflow the TEF
+FIFO.
+
+This patch changes the order to fix the problem.
+
+Fixes: 68c0c1c7f966 ("can: mcp251xfd: tef-path: reduce number of SPI core requests to set UINC bit")
+Link: https://lore.kernel.org/r/20210105214138.3150886-2-mkl@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/tcan4x5x.c | 26 --------------------------
- 1 file changed, 26 deletions(-)
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/can/m_can/tcan4x5x.c b/drivers/net/can/m_can/tcan4x5x.c
-index 24c737c4fc44..970f0e9d19bf 100644
---- a/drivers/net/can/m_can/tcan4x5x.c
-+++ b/drivers/net/can/m_can/tcan4x5x.c
-@@ -131,30 +131,6 @@ static inline struct tcan4x5x_priv *cdev_to_priv(struct m_can_classdev *cdev)
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+index 77129d5f410b..85a1a8b7c0e7 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+@@ -1368,13 +1368,10 @@ static int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
+ 		struct mcp251xfd_tx_ring *tx_ring = priv->tx;
+ 		struct spi_transfer *last_xfer;
  
- }
- 
--static struct can_bittiming_const tcan4x5x_bittiming_const = {
--	.name = DEVICE_NAME,
--	.tseg1_min = 2,
--	.tseg1_max = 31,
--	.tseg2_min = 2,
--	.tseg2_max = 16,
--	.sjw_max = 16,
--	.brp_min = 1,
--	.brp_max = 32,
--	.brp_inc = 1,
--};
+-		tx_ring->tail += len;
 -
--static struct can_bittiming_const tcan4x5x_data_bittiming_const = {
--	.name = DEVICE_NAME,
--	.tseg1_min = 1,
--	.tseg1_max = 32,
--	.tseg2_min = 1,
--	.tseg2_max = 16,
--	.sjw_max = 16,
--	.brp_min = 1,
--	.brp_max = 32,
--	.brp_inc = 1,
--};
+ 		/* Increment the TEF FIFO tail pointer 'len' times in
+ 		 * a single SPI message.
+-		 */
 -
- static void tcan4x5x_check_wake(struct tcan4x5x_priv *priv)
- {
- 	int wake_state = 0;
-@@ -469,8 +445,6 @@ static int tcan4x5x_can_probe(struct spi_device *spi)
- 	mcan_class->dev = &spi->dev;
- 	mcan_class->ops = &tcan4x5x_ops;
- 	mcan_class->is_peripheral = true;
--	mcan_class->bit_timing = &tcan4x5x_bittiming_const;
--	mcan_class->data_timing = &tcan4x5x_data_bittiming_const;
- 	mcan_class->net->irq = spi->irq;
+-		/* Note:
++		 *
++		 * Note:
+ 		 *
+ 		 * "cs_change == 1" on the last transfer results in an
+ 		 * active chip select after the complete SPI
+@@ -1391,6 +1388,8 @@ static int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
+ 		if (err)
+ 			return err;
  
- 	spi_set_drvdata(spi, priv);
++		tx_ring->tail += len;
++
+ 		err = mcp251xfd_check_tef_tail(priv);
+ 		if (err)
+ 			return err;
 -- 
 2.29.2
 
