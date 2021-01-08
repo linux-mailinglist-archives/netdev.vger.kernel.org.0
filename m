@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AB932EEF22
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 10:09:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82CC52EEF24
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 10:09:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728029AbhAHJIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 04:08:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33228 "EHLO
+        id S1727918AbhAHJI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 04:08:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728014AbhAHJIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 04:08:21 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F133BC0612F9
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 01:07:40 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id b9so13686878ejy.0
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 01:07:40 -0800 (PST)
+        with ESMTP id S1727885AbhAHJI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 04:08:57 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3977C0612FA
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 01:07:41 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id ga15so13610807ejb.4
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 01:07:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Z5d4Wq24eFSaaginkRNTjN0txnMxYO4bJxyMlTjODSA=;
-        b=HEdHUPC2kQpJGQ0oYz5P+m2vPJx8FfDFps3HLZ80SaXbiupUm5XG11lwttdgfKKAV0
-         1w2DPNhEeTornca95ODdVIgqlYCs3Kwo4eWQu3bq0LeE2KHm1EioGI5N703wjdFcryrc
-         jQTHs/4hh8zbQ3F46c/G4WAeD8MKVgYmQJB4Rish1i6gFmMMVDRc3u6xePibMfTUCSne
-         01GfD8aMncjfVOTfS42NYwRFePa/4D9FQfKdR/ty13RyAcvids+Rg/e0bDD4FCEbmzmu
-         WHhAP5mb5vYIarPWIzASzuS/RSLNJewl6UZzmixIcyCkM0YAKUPkNqLIjh+4BghMTanP
-         bLQg==
+        bh=hR6oOKRaEb4xU9lNIaadoNIwqR0Ic8ORY/DFIm1kfxI=;
+        b=dBSDn9DcrhL4zzx1oPMe8HqJHNEBiVoHHA+DDM1D5rukRiH00zLOYLgjHwAFUtmcxB
+         iFPc/ksHQYOaTOi+Q9OJvYNepfqkRFCdDSydkFKIRGbFd32M11e7zfjgyroVVIDkphfL
+         QCY6psec3j3BDr/E4N+ZYHjZfc3F1AWKs8Bhb9gtV6+8QWLHJUCjzRALGkaU9av37CEg
+         Qn9VlMRTLiPHM6Gnys6rAuNCthiSxFOQ/rrx20f5ZfXX2mV5UwRC+xiiTHvGBiQtKozY
+         SGvC/N2g2o7fGzlaYJ2jf3Exd9HnEDLl1sVf1KeXY/bWdyA3nfAPbpk38U4WLciV37QU
+         R/NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Z5d4Wq24eFSaaginkRNTjN0txnMxYO4bJxyMlTjODSA=;
-        b=H7qUEC6herizmFxIqJLuzhnG3cxAwMaZuZIQ2pcpc3YOBLnfdSAWEkYFl36lpmn/oX
-         f/6GcPijz/2PS0zMlbr2GPetC9pwecxO86u8BCzAHvsrb1X87P1iFXIPGXDXLNtQwuzT
-         bHFEZ2rOmolHQGAqGfB0cFEfV54/N4JpP01G4/QlgQ+pUcW1xDRi8I3k78uR0bqsG9dD
-         OW05n7rwQGlUDkgCWUAh50dZcf/xYPdC6tDGvJpkf7egUXbfrV2HbovzT74d9VvbgjlL
-         lFUWCPzAns6rSVE8ShRsVSvkp69ocYKqopDuP23JmPYXnmDMFWkyT4mqAX8w5CTLjNhY
-         A5BA==
-X-Gm-Message-State: AOAM531SPwxesM2NjtKBOKh7EZyAKHo7H5UoggQLUrH1mi1POqn1tXxe
-        VSQfogdMFDp2LGzvStCJqUU=
-X-Google-Smtp-Source: ABdhPJytTItuIDHASTqWfaysKULFaAqgJSw2+7+OleYMh5yf/Z78K8L5dOfMb3muDBTKfakdcRtnzg==
-X-Received: by 2002:a17:907:435c:: with SMTP id oc20mr2130001ejb.286.1610096859700;
-        Fri, 08 Jan 2021 01:07:39 -0800 (PST)
+        bh=hR6oOKRaEb4xU9lNIaadoNIwqR0Ic8ORY/DFIm1kfxI=;
+        b=jv67ph0wW3P/M756UxP7Xcz3GAzVAzSOuR1L29H37TfKSaf6ntTyNwJjcsjkvQ95CI
+         OCn5nnPeEGru99g0stO5OW/sx6x65ZyWoGVGWIk3/dm710GJxfUFks8LINIGGdwMd6kN
+         mrFQdTZvd/FNo0DmSMwwVkAeQfINXJijG07eugKYp5BlN7F1c4lfZt4xdjw4wHwBJ3SY
+         t7bTU0MDvvIzr8d42YVeT8a8lklDIV5CUhOO/1P0jQjpAG92NLcRf/WDT8UlXSgbRXGe
+         0c9nO7mLnerI5U/nj8e+TcPENjWXyU90BzjG+wmJvEUzc36SAys9rn1mF8mtFx2qwNy5
+         b7RA==
+X-Gm-Message-State: AOAM532BGiAn1NZereU0qRHgaqypAngepiH3MNn9gwvqtaklptMC9RXD
+        7tT+2HsXaEn5PSJud5DV/nU=
+X-Google-Smtp-Source: ABdhPJyIBC7obYhylvbAd56r42e9SZzLFLW2/McZelmFBbTmsQs07L56vpZpsvNMC7urSrvlfQx2tQ==
+X-Received: by 2002:a17:907:961d:: with SMTP id gb29mr2072781ejc.460.1610096860674;
+        Fri, 08 Jan 2021 01:07:40 -0800 (PST)
 Received: from yoga-910.localhost (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k16sm3307132ejd.78.2021.01.08.01.07.38
+        by smtp.gmail.com with ESMTPSA id k16sm3307132ejd.78.2021.01.08.01.07.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 01:07:39 -0800 (PST)
+        Fri, 08 Jan 2021 01:07:40 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     laurentiu.tudor@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 4/6] dpaa2-eth: retry the probe when the MAC is not yet discovered on the bus
-Date:   Fri,  8 Jan 2021 11:07:25 +0200
-Message-Id: <20210108090727.866283-5-ciorneiioana@gmail.com>
+Subject: [PATCH net-next v2 5/6] dpaa2-mac: remove an unnecessary check
+Date:   Fri,  8 Jan 2021 11:07:26 +0200
+Message-Id: <20210108090727.866283-6-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210108090727.866283-1-ciorneiioana@gmail.com>
 References: <20210108090727.866283-1-ciorneiioana@gmail.com>
@@ -64,36 +64,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-The fsl_mc_get_endpoint() function now returns -EPROBE_DEFER when the
-dpmac device was not yet discovered by the fsl-mc bus. When this
-happens, pass the error code up so that we can retry the probe at a
-later time.
+The dpaa2-eth driver has phylink integration only if the connected dpmac
+object is in TYPE_PHY (aka the PCS/PHY etc link status is managed by
+Linux instead of the firmware). The check is thus unnecessary because
+the code path that reaches the .mac_link_up() callback is only with
+TYPE_PHY dpmac objects.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v2:
- - replaced IS_ERR_OR_NULL() by IS_ERR()
+ - none
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 43 ++++++++-----------
+ 1 file changed, 19 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index f3f53e36aa00..a8c98869e484 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -4042,7 +4042,11 @@ static int dpaa2_eth_connect_mac(struct dpaa2_eth_priv *priv)
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index 81b2822a7dc9..3869c38f3979 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -174,30 +174,25 @@ static void dpaa2_mac_link_up(struct phylink_config *config,
  
- 	dpni_dev = to_fsl_mc_device(priv->net_dev->dev.parent);
- 	dpmac_dev = fsl_mc_get_endpoint(dpni_dev);
--	if (IS_ERR_OR_NULL(dpmac_dev) || dpmac_dev->dev.type != &fsl_mc_bus_dpmac_type)
-+
-+	if (PTR_ERR(dpmac_dev) == -EPROBE_DEFER)
-+		return PTR_ERR(dpmac_dev);
-+
-+	if (IS_ERR(dpmac_dev) || dpmac_dev->dev.type != &fsl_mc_bus_dpmac_type)
- 		return 0;
+ 	dpmac_state->up = 1;
  
- 	mac = kzalloc(sizeof(struct dpaa2_mac), GFP_KERNEL);
+-	if (mac->if_link_type == DPMAC_LINK_TYPE_PHY) {
+-		/* If the DPMAC is configured for PHY mode, we need
+-		 * to pass the link parameters to the MC firmware.
+-		 */
+-		dpmac_state->rate = speed;
+-
+-		if (duplex == DUPLEX_HALF)
+-			dpmac_state->options |= DPMAC_LINK_OPT_HALF_DUPLEX;
+-		else if (duplex == DUPLEX_FULL)
+-			dpmac_state->options &= ~DPMAC_LINK_OPT_HALF_DUPLEX;
+-
+-		/* This is lossy; the firmware really should take the pause
+-		 * enablement status rather than pause/asym pause status.
+-		 */
+-		if (rx_pause)
+-			dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
+-		else
+-			dpmac_state->options &= ~DPMAC_LINK_OPT_PAUSE;
+-
+-		if (rx_pause ^ tx_pause)
+-			dpmac_state->options |= DPMAC_LINK_OPT_ASYM_PAUSE;
+-		else
+-			dpmac_state->options &= ~DPMAC_LINK_OPT_ASYM_PAUSE;
+-	}
++	dpmac_state->rate = speed;
++
++	if (duplex == DUPLEX_HALF)
++		dpmac_state->options |= DPMAC_LINK_OPT_HALF_DUPLEX;
++	else if (duplex == DUPLEX_FULL)
++		dpmac_state->options &= ~DPMAC_LINK_OPT_HALF_DUPLEX;
++
++	/* This is lossy; the firmware really should take the pause
++	 * enablement status rather than pause/asym pause status.
++	 */
++	if (rx_pause)
++		dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
++	else
++		dpmac_state->options &= ~DPMAC_LINK_OPT_PAUSE;
++
++	if (rx_pause ^ tx_pause)
++		dpmac_state->options |= DPMAC_LINK_OPT_ASYM_PAUSE;
++	else
++		dpmac_state->options &= ~DPMAC_LINK_OPT_ASYM_PAUSE;
+ 
+ 	err = dpmac_set_link_state(mac->mc_io, 0,
+ 				   mac->mc_dev->mc_handle, dpmac_state);
 -- 
 2.29.2
 
