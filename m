@@ -2,173 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 206372EEBA2
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 04:06:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E33B2EEBA4
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 04:06:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbhAHDGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 22:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726113AbhAHDGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 22:06:04 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3497CC0612F5
-        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 19:05:24 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id y8so4930006plp.8
-        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 19:05:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Uft2otr4Ur4ZFETvfR7iVdl2uA4G6h5Cajepz/SrFeU=;
-        b=KSiKpMjjPvB5WanmCQy4MOBOZ4/nDlSauH/lysz68ujVwETopXhlI+TdyZH6HlPHIu
-         MCweoV34upgM0GAZMy5/xvpSzSi34ZG2IAxBQAQpYV/26j5LlhjmqSJW48uT7ERuBSEc
-         8VEG+dyClkfec6UdZovk0/pKVqLqRSrx2KazMpsxgdrnc+FB+hVLuJr3odjgJ3gxTZPp
-         qaeyecmRiVTki770mz3hpdhPCJNS8Qh69XaCP18eWkPcqBzaZqzkYgMNuYNFx/9LLKc0
-         EATc3U4PQA2tSFInf5n4xe9do4kdRcincwTqAns8I5v05yM1ceMMtG3GSY1LbOih0PJT
-         a7pA==
+        id S1727266AbhAHDGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 22:06:08 -0500
+Received: from mail-il1-f181.google.com ([209.85.166.181]:47055 "EHLO
+        mail-il1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726992AbhAHDGH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 22:06:07 -0500
+Received: by mail-il1-f181.google.com with SMTP id 75so8891404ilv.13;
+        Thu, 07 Jan 2021 19:05:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Uft2otr4Ur4ZFETvfR7iVdl2uA4G6h5Cajepz/SrFeU=;
-        b=sBkbY9G9PHR7+PVsJK2Z3Xfnr59lK4S8Mutw5vY/1L6uLLIpoimkRB5pAJcDtrYZH1
-         5BJM2w4YcWYLJChfqwleEJGSrTZdjslr1SOj5dmPQFL13h7OLBDCVm651xDAcF7XNU62
-         WAiK7z7MNkvdGJtL+n/MKIzDMzXIbpSoWj9p6Rs55wJ+RmelImXOFx64sWY0WICTSuSN
-         N51sYURSR3dCHq4bk0WBB21PBsJvAnrVr7HvwEeRl+fzbnHO7GFvKn6waQc0SktV1JAn
-         +46cBxcOft2HRzwjA4AHWYouT2Xn+Z6YmTef4laBnIXZ2BR3DZ4tvDiC+qvp//Xq5FJL
-         jvyQ==
-X-Gm-Message-State: AOAM530S0nSYSQPrnwNxTnCCcSTaCJH2LktZ5FsWnOeo+VJMnpWVu93F
-        TNq6rnar/528bXAteQ+w8qq5vtY6heQ=
-X-Google-Smtp-Source: ABdhPJyRiuHw0PX4VbcpCP8hAUomEsNyk1pZrAhHdHq/E/x9nU7yfDfDNprx6eNbH5TtLInSAIBz5A==
-X-Received: by 2002:a17:902:7085:b029:dc:c69:e981 with SMTP id z5-20020a1709027085b02900dc0c69e981mr1759743plk.37.1610075123656;
-        Thu, 07 Jan 2021 19:05:23 -0800 (PST)
-Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k25sm6852450pfi.10.2021.01.07.19.05.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Jan 2021 19:05:22 -0800 (PST)
-Subject: Re: MDIO over I2C driver driver probe dependency issue
-To:     Brian Silverman <silvermanbri@gmail.com>, netdev@vger.kernel.org,
-        andrew@lunn.ch
-References: <CAJKO-jaewzeB2X-hZ4EiZiyvaKqH=B0CrhvC_buqfMTcns-b-w@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <4606bd55-55a6-1e81-a23b-f06230ffdb52@gmail.com>
-Date:   Thu, 7 Jan 2021 19:05:21 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=arkq3vtpRQtU5z3eGsmG2DhJUAWYG7qKz2FVaRgjOOo=;
+        b=lLHPf8YcbBb+SlT+D3j1W+nvtR2qGNL2wi0jr+2NdkwcdJ+BOjSA7C2WbvhYepmQjQ
+         Q3/s7T+3dBkdLIOxKn0PMsKEOjbIont4K3mlkx1SURuJ854Gn0mcowOWACxJ3q5B7mhN
+         0UI1W+27oJA0mUl1FBIVO8WrfpVGtv5rXgT9Mv3bgh+dSv9QMw3kA9U5QaKbXIJc0K1p
+         8+d3Eu9BZIoJ1o1Mu8+O6teK7Q6IjZwmm4mfS5DBsU7ATleaJBX+2NUTBfGz47n8XsUa
+         WcTxAx8CRZlKd1rri1oZBRH2FYLCr5p/FkLSnWVhOdXfCZi50TowYE2BL0Du4iYNZOoS
+         x+/w==
+X-Gm-Message-State: AOAM5306n+TLaqthPrz7JZYPYT/gFuKMh3+brh3SuSCmzKM5Lw+JBGdf
+        2dwzJEFDelnUSQRe2eL0Dg==
+X-Google-Smtp-Source: ABdhPJyKWrLxcGC66HT5wGIZ8PKEuzgHS2mskcXZJtvK358qOBYcpO8cr50U2hVSdiPnd8PJiw10gA==
+X-Received: by 2002:a92:cdac:: with SMTP id g12mr1885522ild.145.1610075126513;
+        Thu, 07 Jan 2021 19:05:26 -0800 (PST)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id o195sm6066850ila.38.2021.01.07.19.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Jan 2021 19:05:25 -0800 (PST)
+Received: (nullmailer pid 1800216 invoked by uid 1000);
+        Fri, 08 Jan 2021 03:05:23 -0000
+Date:   Thu, 7 Jan 2021 20:05:23 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc:     dri-devel@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, Min Guo <min.guo@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>
+Subject: Re: [PATCH v5 01/11] dt-bindings: usb: convert usb-device.txt to
+ YAML schema
+Message-ID: <20210108030523.GA1800134@robh.at.kernel.org>
+References: <20201225075258.33352-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJKO-jaewzeB2X-hZ4EiZiyvaKqH=B0CrhvC_buqfMTcns-b-w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201225075258.33352-1-chunfeng.yun@mediatek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/7/2021 6:22 PM, Brian Silverman wrote:
-> I've written a very small generic MDIO driver that uses the existing
-> mdio-i2c.c library in drivers/net/phy.  The driver allows
-> communication to the PHY's MDIO interface as using I2C, as supported by
-> PHYs like the BCM54616S.  This is working on my hardware.  
+On Fri, 25 Dec 2020 15:52:48 +0800, Chunfeng Yun wrote:
+> Convert usb-device.txt to YAML schema usb-device.yaml
 > 
-> The one issue I have is that I2C is not up and available (i.e. probed)
-> at the time that the MDIO interface comes up.  To fix this, I've changed
-> the device order in drivers/Makefile to put "obj-y += i2c/"
-> before "obj-y += net/".
-> 
-> While that works, I prefer not to have to keep that difference from
-> mainline Linux.  Also, I don't understand why i2c drivers occur
-> arbitrarily late in the Makefile - surely there are other devices
-> drivers that need i2c to be enabled when they are probed?
-> 
-> Is there a way to do this that doesn't change probe order?  Or is there
-> a way to change probe order without patching mainline Linux?
-
-Linux supports probe deferral so when a consumer of a resource finds
-that said resource's provider is not available, it should return
--EPROBE_DEFER which puts the driver's probe routine onto a list of
-driver's probe function to retry at a later time.
-
-In your case the GEM Ethernet driver should get an -EPROBE_DEFER while
-the Ethernet PHY device tree node is looked up via
-phylink_of_phy_connect() because the mdio-i2c-gen i2c client has not had
-a chance to register the MDIO bus yet. Have you figured out the call
-path that does not work for you?
-
-Which version of the kernel are you using? What I am referring to is
-assuming mainline, but maybe this is not your case?
-
-> 
-> 
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
 > ---
+> v5: changes suggested by Rob:
+>   1. limit the pattern length
+>   2. remove properties description for hard wired USB devices in usb-hcd.yaml
 > 
-> For reference, here's the driver (excluding headers and footers):
+>     depends on series:
+>     https://patchwork.kernel.org/project/linux-usb/list/?series=399561
+>     [v6,00/19] dt-bindings: usb: Add generic USB HCD, xHCI, DWC USB3 DT schema
 > 
-> static int mdio_i2c_gen_probe(struct i2c_client *client,
->     const struct i2c_device_id *id)
-> {
-> struct mii_bus *bus;
+> v4: no changes, update dependent series:
+>     https://patchwork.kernel.org/project/linux-usb/list/?series=399561
+>     [v6,00/19] dt-bindings: usb: Add generic USB HCD, xHCI, DWC USB3 DT schema
 > 
-> bus = mdio_i2c_alloc(&client->dev, client->adapter);
-> if (IS_ERR(bus)){
-> return PTR_ERR(bus);
-> }
-> bus->name = "Generic MDIO bus over I2C";
-> bus->parent = &client->dev;
+> v3:
+>   1. remove $nodenmae and items key word for compatilbe;
+>   2. add additionalProperties;
 > 
-> return of_mdiobus_register(bus, client->dev.of_node);
-> }
+>   The followings are suggested by Rob:
+>   3. merge the following patch
+>     [v2,1/4] dt-bindings: usb: convert usb-device.txt to YAML schema
+>     [v2,2/4] dt-bindings: usb: add properties for hard wired devices
+>   4. define the unit-address for hard-wired device in usb-hcd.yaml,
+>      also define its 'reg' and 'compatible';
+>   5. This series is base on Serge's series:
+>     https://patchwork.kernel.org/project/linux-usb/cover/20201111090853.14112-1-Sergey.Semin@baikalelectronics.ru/
+>     [v4,00/18] dt-bindings: usb: Add generic USB HCD, xHCI, DWC USB3 DT schema
 > 
-> static int mdio_i2c_gen_remove(struct i2c_client *client)
-> {
-> return 0;
-> }
-> 
-> static const struct of_device_id mdio_i2c_gen_of_match[] = {
-> { .compatible = "mdio-i2c-gen", },
-> { }
-> };
-> MODULE_DEVICE_TABLE(of, mdio_i2c_gen_of_match);
-> 
-> static struct i2c_driver mdio_i2c_gen_driver = {
-> .driver = {
-> .name= "mdio-i2c-gen",
-> .of_match_table = of_match_ptr(mdio_i2c_gen_of_match),
-> },
-> .probe= mdio_i2c_gen_probe,
-> .remove= mdio_i2c_gen_remove,
-> };
-> 
-> module_i2c_driver(mdio_i2c_gen_driver);
-> 
-> 
+> v2 changes suggested by Rob:
+>   1. modify pattern to support any USB class
+>   2. convert usb-device.txt into usb-device.yaml
 > ---
-> 
-> And here's a device-tree snippet:
-> 
-> &gem3 {
->     status = "okay";
->     phy-handle =  <&phy0>;
-> };
-> 
-> &i2c0 {
->     mdio@40 {
->         compatible = "mdio-i2c-gen";
->         reg = <0x40>;
->         #address-cells = <1>;
->         #size-cells = <0>;
-> 
->         phy0: phy@0 {
->             reg = <0>;
->         };
->     };
-> };
-> 
-> 
+>  .../devicetree/bindings/usb/usb-device.txt    | 102 --------------
+>  .../devicetree/bindings/usb/usb-device.yaml   | 124 ++++++++++++++++++
+>  .../devicetree/bindings/usb/usb-hcd.yaml      |  19 +++
+>  3 files changed, 143 insertions(+), 102 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/usb/usb-device.txt
+>  create mode 100644 Documentation/devicetree/bindings/usb/usb-device.yaml
 > 
 
--- 
-Florian
+Reviewed-by: Rob Herring <robh@kernel.org>
