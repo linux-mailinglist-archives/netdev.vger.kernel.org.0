@@ -2,99 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C56682EEBAF
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 04:10:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E2192EEBB0
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 04:10:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727175AbhAHDHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 22:07:44 -0500
-Received: from mail-io1-f46.google.com ([209.85.166.46]:44348 "EHLO
-        mail-io1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726099AbhAHDHn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 22:07:43 -0500
-Received: by mail-io1-f46.google.com with SMTP id z5so8363127iob.11;
-        Thu, 07 Jan 2021 19:07:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8KcxnzAs3ni/01L1eWgKza5Z0B+3uDNHSn0G445YVHg=;
-        b=e7lJrlcX4xVkQoGVesqM0RGAcmD22bcmvVi2vOW7YU+yZG7PpnCynNiogB08yahZAS
-         NJklLLudiTXhUm6+UUuA9dk4KJ/HxUFg7DmmKdhmPzgNrlVdoyVJO1cvBqmzbj+/OLHc
-         02hN5Mouv9wQ4ggB1Dk+6jOu3cQVuXQMT6r125mmw9k3ghqAvKW65GYrl7I2wbJghXyq
-         YjpOwPGEt9LgffA24obYVimPlGTgt52N5Q77+agScRxFgE9f/pvSI2QTtHPuTHzugj++
-         5PcAjB5T6qcYLBDHByLOtZ6skcJ3lk0eoPW3+xurdEaDCjO4sYIFZo49E7hpepM5SDsq
-         Dytw==
-X-Gm-Message-State: AOAM5319w5QXYXsmclbE1XupwrknP6KUojZRTR0OI756KTx57aE6u1yb
-        TGrHRSDdJ6wcK8Z4uBtFqA==
-X-Google-Smtp-Source: ABdhPJxfKaoaAn2T5WBaPEv5PLxKzEgHV8iS3F793MOnICO4dRtjruSucVwbpui6WwUnMMVGHMmVLw==
-X-Received: by 2002:a5d:9c91:: with SMTP id p17mr3801573iop.36.1610075222485;
-        Thu, 07 Jan 2021 19:07:02 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id x5sm5939782ilm.22.2021.01.07.19.06.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jan 2021 19:07:01 -0800 (PST)
-Received: (nullmailer pid 1802363 invoked by uid 1000);
-        Fri, 08 Jan 2021 03:06:57 -0000
-Date:   Thu, 7 Jan 2021 20:06:57 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
-Cc:     Vinod Koul <vkoul@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Min Guo <min.guo@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        linux-usb@vger.kernel.org, David Airlie <airlied@linux.ie>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v5 09/11] dt-bindings: usb: convert mediatek,
- mtk-xhci.txt to YAML schema
-Message-ID: <20210108030657.GA1802097@robh.at.kernel.org>
-References: <20201225075258.33352-1-chunfeng.yun@mediatek.com>
- <20201225075258.33352-9-chunfeng.yun@mediatek.com>
+        id S1727372AbhAHDHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 22:07:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47372 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726099AbhAHDHt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 22:07:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 893F82368A;
+        Fri,  8 Jan 2021 03:07:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610075228;
+        bh=nrMCl51A3Af3kjVw3IPmSs2Jss0zuzC6nChzWAzhAdg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PRxyQSbQ/GPzzCUjMcOdaisSZ9JCV60KajYC8mPwqDtplkp/cvDiZhwPzCQl5p34M
+         0mhn9F4uBre5pfuPSkJDR+OImA5COkZBq65PMCLitv1ZtyhNLunZVaOJKdg9BXg9kT
+         oj0CdkONRjkM4vQK5OMX3C5pURTzc3gC9FirYTQ3FbTGoKJ+nQv/VpSmWC035N3EXh
+         b9VYRY6FU7GPRbrmgXhciqVeDx1HHmEudy15rI8AAwSgv/MGUglVKalWKD0839NpVU
+         5pVZRRlpsVvJpafClUa9AphKQNOfbF6ml2+xXzTc/4Od/VAS1C/Na+RUtHpR7l7/I5
+         z8i4wYqAmHy2g==
+Date:   Thu, 7 Jan 2021 19:07:07 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Oz Shlomo <ozsh@nvidia.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Roi Dayan <roid@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net 04/11] net/mlx5e: CT: Use per flow counter when CT flow
+ accounting is enabled
+Message-ID: <20210107190707.6279d0ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210107202845.470205-5-saeed@kernel.org>
+References: <20210107202845.470205-1-saeed@kernel.org>
+        <20210107202845.470205-5-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201225075258.33352-9-chunfeng.yun@mediatek.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Dec 2020 15:52:56 +0800, Chunfeng Yun wrote:
-> Convert mediatek,mtk-xhci.txt to YAML schema mediatek,mtk-xhci.yaml
-> 
-> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-> ---
-> v5: changes suggested by Rob
->   1. refer to usb-xhci.yaml instead of usb-hcd.yaml
->   2. remove unnecessary maxItems
->   3. add items for all phys may be supported
->   4. change pattern, and limit pattern length of patternProperties
-> 
-> v4: update it according to Rob's suggestion
->   1. modify dictionary of phys
->   2. fix endentation in "mediatek,syscon-wakeup" items
->   3. remove reference to usb-hcd.yaml
-> 
-> v3:
->   1. fix yamllint warning
->   2. remove pinctrl* properties supported by default suggested by Rob
->   3. drop unused labels
->   4. modify description of mediatek,syscon-wakeup
->   5. remove type of imod-interval-ns
-> 
-> v2: new patch
-> ---
->  .../bindings/usb/mediatek,mtk-xhci.txt        | 121 ------------
->  .../bindings/usb/mediatek,mtk-xhci.yaml       | 178 ++++++++++++++++++
->  2 files changed, 178 insertions(+), 121 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.txt
->  create mode 100644 Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-> 
+On Thu,  7 Jan 2021 12:28:38 -0800 Saeed Mahameed wrote:
+> +	int ret;
+> +
+> +	counter = kzalloc(sizeof(*counter), GFP_KERNEL);
+> +	if (!counter)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	counter->is_shared = false;
+> +	counter->counter = mlx5_fc_create(ct_priv->dev, true);
+> +	if (IS_ERR(counter->counter)) {
+> +		ct_dbg("Failed to create counter for ct entry");
+> +		ret = PTR_ERR(counter->counter);
+> +		kfree(counter);
+> +		return ERR_PTR(ret);
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+The err ptr -> ret -> err ptr conversion seems entirely pointless, no?
