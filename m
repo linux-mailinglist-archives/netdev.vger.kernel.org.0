@@ -2,72 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B5092EF750
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:28:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 139EE2EF751
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:28:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728652AbhAHS1M convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 8 Jan 2021 13:27:12 -0500
-Received: from mga12.intel.com ([192.55.52.136]:27396 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728357AbhAHS1L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 13:27:11 -0500
-IronPort-SDR: Gk1gLUY6DHU3A9p4JX+K2BvvVJHkEHveGnx3IsyXMQqOk3ihDY/Cd4B9MaghXHaWAFUTE6XiQ6
- Q/oWcahLo66A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9858"; a="156823468"
-X-IronPort-AV: E=Sophos;i="5.79,332,1602572400"; 
-   d="scan'208";a="156823468"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2021 10:26:30 -0800
-IronPort-SDR: bnp1s7+11gFdcXaxj5lq/veRhfyI2zhVB/lG3e0cFQ6vBSp+IeCPDPc1Ga51Tz0hIxs/um/GVW
- eJyJMyei0+RQ==
-X-IronPort-AV: E=Sophos;i="5.79,332,1602572400"; 
-   d="scan'208";a="399061275"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.209.68.23])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2021 10:26:30 -0800
-Date:   Fri, 8 Jan 2021 10:26:30 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Re: [PATCH net-next v1 1/2] net: core: count drops from GRO
-Message-ID: <20210108102630.00004202@intel.com>
-In-Reply-To: <1e4ee1cf-c2b7-8ba3-7cb1-5c5cb3ff1e84@pensando.io>
-References: <20210106215539.2103688-1-jesse.brandeburg@intel.com>
-        <20210106215539.2103688-2-jesse.brandeburg@intel.com>
-        <1e4ee1cf-c2b7-8ba3-7cb1-5c5cb3ff1e84@pensando.io>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1728672AbhAHS1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 13:27:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728357AbhAHS1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:27:32 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B63C061380
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:26:52 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id d14so9238095qkc.13
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:26:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RhodXJ2Tzggqg1iwXnQ8qWubkJW7CK1VhA1r788tzrY=;
+        b=W3m3xiliKeceK1q6ziHe/t0vuB0ezE1CtD9M5jKhPpTjmagOcjl6tLDHTMDBcmMSJk
+         2RCf/1dC0IkUIPp5bFvJlAKOOaaBS3FCKYvkX2i5X0/HG8nNssILdJxXxBnDbVA73JxE
+         Bd3+gcV6BXQzVG1K45oJ8iemDm4iRiOFwlN0smMY2nNbswNDDliT0bseRiuox/Fp4Rx9
+         H5aSJeyoFsof9DUw0qIlR56FBs06F3yhyIGUWzFKcC8Xl/m8XxV0yosQI1rXFHVrvkhD
+         jQvcnC3yA04+MZsmEPHAhl9AQY79A2ueiWer1+Pw/Felyd8G1V7VmoUYzK5LXeAId5ug
+         3G4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RhodXJ2Tzggqg1iwXnQ8qWubkJW7CK1VhA1r788tzrY=;
+        b=SwbquwJQRFRZxQm9fzu/z+fjrsX8OBsPYlzWVRTUMK0y9WouiMYScfsCf01ClR+AxX
+         b360RpxlTU5oG25p1ulhZ6UPoTWrfac5ITYukmyjJoQMjB/W9E3KdpG+n6n/OIzvsJZH
+         zX8tiyQ/DtDd/Dr0zExT1fn56wvKcF6JpW1/HxYyQZtWlolXOMUWqpPTFEWXnaZsUx9R
+         6cjVpxnkMLMGOhZ01b3u+ifeUNJE16+bEtDSp5vegtj2ZDGgEUaQWkGebTrMlwCsSYuU
+         T4GGmjc8s1Kx5fqNCcLiHwE2xmTLIDd31g5ykVjGNtXwlJCE4QGmB1/XKu6rS0BuTY8d
+         ogTw==
+X-Gm-Message-State: AOAM532uPO5DtosLsGzhx2UgrkIfLlDl79fCB3V4HbyAr+w+lPDJzOyX
+        w3w746nt5fNH2koJfY/GWW9HO9EhpKQMJjh/A7pSBQ==
+X-Google-Smtp-Source: ABdhPJxLs8Lwrszh07st7GVzpvmLxoDPn1PQcrYPWBACQitdJ6MtWwRbmvrphhgyK40cyTkywz8baS9ox14P3NzNV3w=
+X-Received: by 2002:a37:a80a:: with SMTP id r10mr5306897qke.448.1610130411431;
+ Fri, 08 Jan 2021 10:26:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+References: <20210108180333.180906-1-sdf@google.com> <20210108180333.180906-2-sdf@google.com>
+ <CANn89i+GvEUmoapF+C0Mf1qw+AuWhU5_MMPz-jy8fND0HmUJ=Q@mail.gmail.com>
+In-Reply-To: <CANn89i+GvEUmoapF+C0Mf1qw+AuWhU5_MMPz-jy8fND0HmUJ=Q@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 8 Jan 2021 10:26:40 -0800
+Message-ID: <CAKH8qBsWsKVxAyvhEYqXytTFMGEN=C3ZMKBPLs2RKcEpM4hXXQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 1/3] bpf: remove extra lock_sock for TCP_ZEROCOPY_RECEIVE
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shannon Nelson wrote:
-
-> On 1/6/21 1:55 PM, Jesse Brandeburg wrote:
-> > When drivers call the various receive upcalls to receive an skb
-> > to the stack, sometimes that stack can drop the packet. The good
-> > news is that the return code is given to all the drivers of
-> > NET_RX_DROP or GRO_DROP. The bad news is that no drivers except
-> > the one "ice" driver that I changed, check the stat and increment
-> 
-> If the stack is dropping the packet, isn't it up to the stack to track 
-> that, perhaps with something that shows up in netstat -s?  We don't 
-> really want to make the driver responsible for any drops that happen 
-> above its head, do we?
-
-I totally agree!
-
-In patch 2/2 I revert the driver-specific changes I had made in an
-earlier patch, and this patch *was* my effort to make the stack show the
-drops.
-
-Maybe I wasn't clear. I'm seeing packets disappear during TCP
-workloads, and this GRO_DROP code was the source of the drops (I see it
-returning infrequently but regularly)
-
-The driver processes the packet but the stack never sees it, and there
-were no drop counters anywhere tracking it.
-
+On Fri, Jan 8, 2021 at 10:10 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Fri, Jan 8, 2021 at 7:03 PM Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > Add custom implementation of getsockopt hook for TCP_ZEROCOPY_RECEIVE.
+> > We skip generic hooks for TCP_ZEROCOPY_RECEIVE and have a custom
+> > call in do_tcp_getsockopt using the on-stack data. This removes
+> > 3% overhead for locking/unlocking the socket.
+> >
+> > Without this patch:
+> >      3.38%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
+> >             |
+> >              --3.30%--__cgroup_bpf_run_filter_getsockopt
+> >                        |
+> >                         --0.81%--__kmalloc
+> >
+> > With the patch applied:
+> >      0.52%     0.12%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt_kern
+> >
+>
+>
+> OK but we are adding yet another indirect call.
+>
+> Can you add a patch on top of it adding INDIRECT_CALL_INET() avoidance ?
+Sure, but do you think it will bring any benefit?
+We don't have any indirect avoidance in __sys_getsockopt for the
+sock->ops->getsockopt() call.
+If we add it for this new bpf_bypass_getsockopt, we might as well add
+it for sock->ops->getsockopt?
+And we need some new INDIRECT_CALL_INET2 such that f2 doesn't get
+disabled when ipv6 is disabled :-/
