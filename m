@@ -2,90 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB04C2EF504
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 16:42:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1182EF519
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 16:47:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbhAHPmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 10:42:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725806AbhAHPmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 10:42:36 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7556DC061380
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 07:41:56 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id t8so10172972iov.8
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 07:41:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rdl53e5YzvjsgygPzGGIDR0O1KR91W7yRWB38HTDx3k=;
-        b=Z0/LwqhozGvF1FFkwbE8FqMXl3ZWBW9m4WfcVSanU1/g++rHYB2lAhd4sKnQtw66G7
-         KrZJu6cr0vAIqgz+mTzcUcere91I1Gd3si3F8zMhViIQ0tvm9WX+WG2y3w66PWNvMfg2
-         1kgl20sKWrKdByvwWIDA7GLg2RR/SPcRaRuywFRnd852lBg73gy3+nUgLBmdG09GqW8/
-         hnX1HURBC8QQJm6N8eehAzZH7fAzruocgEaLxHcqEqJ08DYWff6f3lsLSzXOZAD8KWun
-         dVg926QFFTfkCy/qxKfxunomAvHzOOTNOoPkIBW1GPfrH2xxGFB1lSrkfbU2XwmylgjO
-         2bkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rdl53e5YzvjsgygPzGGIDR0O1KR91W7yRWB38HTDx3k=;
-        b=bD3qEY6A+OQMMkVe+W7jGCcWXAnYbAtp/mSEXZ9XKmxRQt4eF7F1X9NQOKbkxYJcnI
-         kvt75SKViIj9pHqTO5DffTgyeinvgLTdfbOKk3bHd47rTshPgkewErMW4CS7x+slPIll
-         7/+SCsFxJRjOSfTRjTkIrdkwHSNgRF+NgGyt/QpomJBxMqx2bjYKpWXI3ftKzqh2eGO2
-         NX3DTRtXBOdNy4jaNIM2E3AiATYjBBJiwbGWF2U1wSNFyoFfo189KFD6R6S4FHiRhhWs
-         LjVZCH+bR+Rk6WExtVsPedxqc9UbBaaYe7deEjuCfBk6UtrYqitFyPjACN+MfQgpoK69
-         ijSQ==
-X-Gm-Message-State: AOAM530oN8Lzj1v9UcPg7frj/0DUWr05m29fy+txrPpziP3mz1hBbJMT
-        HIiUcVP2GG7rWETvtojfVjOTY4tQwa0Va6rJtAUC6g==
-X-Google-Smtp-Source: ABdhPJxVULPHUrFgRLuWldg8LXgkifw9LjiXADsTCbFcbUm946tQ+FUloBnbR2mWL4ER2zCWcY64R4wjLJgOkOyaRZs=
-X-Received: by 2002:a6b:918a:: with SMTP id t132mr5966388iod.157.1610120515642;
- Fri, 08 Jan 2021 07:41:55 -0800 (PST)
+        id S1727836AbhAHPr0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 10:47:26 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:56915 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726189AbhAHPrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 10:47:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1610120845; x=1641656845;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=XOI7VV02G7ptnuV6kT+z9p2Fm7tajWtOqD2dPoXaQfI=;
+  b=sWiDekv7af9rQmu7AY4um1eU39mr2i6gXOJmlDNpGvE5Es16wvKLs2j8
+   yxV+CgmV8VfrWgTBo63rxLiGMTd7xvHuAZt/bmUgCvVOMZeaUllEIL8xt
+   QUqrSNCGlhVjDKv4Si+kI0npMJ0tJBWWE/z/1YgR8QqzNU3ebjIXyFc9D
+   YBlLpm63rtyzj4b55TusoZdbgE4lahIpbvEte1CbH8niGOADP1+dhvMAF
+   F3G6QB9+mphbkUPEA4HpHO8QKJAj/c5ROCYEAszWQVz2wjoif/Wjf3Gey
+   f794w2zVTfdqmSCwD7jSkbcU3UJbdOXzgtTI0yfJ7n/4ExW1yw+V+81ON
+   A==;
+IronPort-SDR: x+GsfsY9hpmce2LmnnJ5i2tm9yDIrkrik/KxEl3zi4XDcln4GQFx1rBt05OrR0MhUrcspQvjjv
+ 6/UjZS42Ojuq3ghwsuDbfKrmPxO56Rq4IzVd67IJTUMY1crlrAHeajUgnyWg6Rs4JmsRZaCDZ9
+ qUfMVuVZ2xbbuCEXe9Mc9W83Wfr5ZeeUsTwn3BTZ2ZtoPcfO/7Y7vFD58YV+aCiX4cpq43c0Ni
+ xAV8gA7y6YimlUvMPG8mmtaJ2XwwF1DvjGMZF8u3ZLkirH2SSRw45IUEDtPzgOmU3VSBWOmdri
+ iuA=
+X-IronPort-AV: E=Sophos;i="5.79,331,1602572400"; 
+   d="scan'208";a="110314330"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jan 2021 08:46:09 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 8 Jan 2021 08:46:09 -0700
+Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Fri, 8 Jan 2021 08:46:05 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH] net: phy: micrel: reconfigure the phy on resume
+Date:   Fri, 8 Jan 2021 17:45:54 +0200
+Message-ID: <1610120754-14331-1-git-send-email-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <CA+icZUXzW3RTyr5M_r-YYBB_k7Yw_JnurwPV5o0xGNpn7QPgRw@mail.gmail.com>
- <6d9a041f-858e-2426-67a9-4e15acd06a95@gmail.com> <CA+icZUW+v5ZHq4FGt7JPyGOL7y7wUrw1N9BHtiuE-EmwqQrcQw@mail.gmail.com>
- <CANn89iJvw55jeWDVzyfNewr-=pXiEwCkG=c5eu6j8EeiD=PN4g@mail.gmail.com>
- <CA+icZUXixAGnFYXn9NC2+QgU+gYdwVQv=pkndaBnbz8V0LBKiw@mail.gmail.com> <CA+icZUW5B4X-SMFCDfOdRQJ7bFsZXwL4QhDdtKQXA3iO8LjpgA@mail.gmail.com>
-In-Reply-To: <CA+icZUW5B4X-SMFCDfOdRQJ7bFsZXwL4QhDdtKQXA3iO8LjpgA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 8 Jan 2021 16:41:43 +0100
-Message-ID: <CANn89i+GF1KuWLwKWxxafWrfQMfFMJdtS2rb=SzgAn9pERKg0g@mail.gmail.com>
-Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 8, 2021 at 2:51 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
->
-> On Fri, Jan 8, 2021 at 2:08 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >
-> > On Wed, Aug 12, 2020 at 6:25 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > > > Also, I tried the diff for tcp_conn_request...
-> > > > With removing the call to prandom_u32() not useful for
-> > > > prandom_u32/tracing via perf.
-> > >
-> > > I am planning to send the TCP patch once net-next is open. (probably next week)
-> >
-> > Ping.
-> >
-> > What is the status of this?
-> >
->
-> I am attaching the updated diff against latest Linus Git.
->
-> - Sedat -
+KSZ9131 is used in setups with SAMA7G5. SAMA7G5 supports a special
+power saving mode (backup mode) that cuts the power for almost all
+parts of the SoC. The rail powering the ethernet PHY is also cut off.
+When resuming, in case the PHY has been configured on probe with
+slew rate or DLL settings these needs to be restored thus call
+driver's config_init() on resume.
 
-I have decided to not pursue this.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/net/phy/micrel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-skb->hash might be populated by non random data if fed from a
-problematic source/driver.
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 3fe552675dd2..52d3a0480158 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1077,7 +1077,7 @@ static int kszphy_resume(struct phy_device *phydev)
+ 	 */
+ 	usleep_range(1000, 2000);
+ 
+-	ret = kszphy_config_reset(phydev);
++	ret = phydev->drv->config_init(phydev);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+2.7.4
 
-Better to leave current code in place, there is no convincing argument
-to change this.
