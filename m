@@ -2,116 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAFA72EF65B
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 18:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA1EF2EF666
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 18:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728369AbhAHRSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 12:18:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52910 "EHLO
+        id S1728373AbhAHRXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 12:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728117AbhAHRSY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 12:18:24 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34377C061380
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 09:17:44 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id b5so6521366pjk.2
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 09:17:44 -0800 (PST)
+        with ESMTP id S1726749AbhAHRXO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 12:23:14 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9579C061381
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 09:22:33 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id h16so11929481edt.7
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 09:22:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=9Z2rtNZhY/SrFZpHAhurQZ5dyMNiQC+cFKUu5glqxnA=;
-        b=SxuqNp/ED8cc5S9kS/FCnisgrI20WsXiVIL10moeuGKSkGITuTLyG/NfT9WcB0Ke/W
-         0yZNrh+7qw68S3uIDeyIj95dh6ynAJY6VwqKnizr9/fb7zWv14qNs1LkB6pwSQJKBIZh
-         Hq+0qX4PH9rHGReN1sbl5xX5viMvGxylfBLeH8z17EpZkoUSzfd2VfoNElD8SQXsCCI+
-         pmEA3k7Ww1T9Esdv13C2bsqOZSfm5ZLTyOSrqzqdo9ThpZ9mAVChJh4QOxMSJPINWs04
-         hZXpDchOJizqcyqw7+iyKMRB+Dh8WbFml0uiYxfraS58/Um7Abbg9Xk5fI0ozreMMDtk
-         5FSA==
+        bh=4M2IJKB1sqsuwfqhG1D6BK3FBvalSW700ezXUI9Ah1o=;
+        b=Sdr3LwBmJ3gTurx0lCWf2QlLM0bHb8zWF+bgz8HUGxto13dVcvLZYbEHbqNQlSf2bk
+         OCjRJlotVZRrHKkZ/a1m/rlp6e73aDBcYvSFEEDm+39m0L2PBvhxgvXMIv2mPRfnPSkG
+         Rk2gtyVvTQZnr165C8RMKYxBjSpWL6yN0lY497QeiyybSZz1R/Gj55CzGyI4mTYFi+Sc
+         YjMIWXb9BMbNxKDkPPGvVw2wVqAp9drCuRANYvrO5/PwpZg5s9oVU3KQVUb3Ly7qDgXC
+         8O17sZD5SRTNA7ZHWggf7ousL0NA/cKw3+8PsaNFjMVP8Xg2ZQsDOOW12xBG+qAgkH1I
+         0xrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=9Z2rtNZhY/SrFZpHAhurQZ5dyMNiQC+cFKUu5glqxnA=;
-        b=HO18JjvLiTATiPzuT2GWQ3auLvEPc+JMzigAghYmAEs5pyuWMFnF15A2ncIgBDlH4W
-         wwYYjLPatTiaQ5XkiEEDAHt4BpPuGDNL/20d8kA1EWh3FFxbZm1xWdpAZ77FUa/EAf5z
-         OIPX+JNSVK+UNbl8Dz/6FXN0uS5gAQhWQd0mlrH/wSOH3CLFiu8uBoSsI7FU9woBsTZg
-         PVap3qLNmaHVjr/f03Hz4FtoCmQUqDGTCNlzWRlgU35AmWJdyXDqnYPIc1UqwfbhtuJP
-         ce0up3SPzo697xBID6dj0dOut/vxt2fBp/vQT20qfKW6p3pzNIYijUf3pxiiS4XE44xI
-         3VzA==
-X-Gm-Message-State: AOAM531o+1L7uXCCyhdHwKVbHoS6iD5n1wgw7f0wg6MwEvVmM7G0V/1Z
-        gDk2e4nfj3pF7c31CuQ5mJHK
-X-Google-Smtp-Source: ABdhPJxs7B6ZkaN884vLL3LSQoriw5QmwVZUfXcMuoWf8XSIk3U0P+e7T2EdVDryCSCJP30CX27XZQ==
-X-Received: by 2002:a17:90a:9e5:: with SMTP id 92mr4793065pjo.176.1610126263663;
-        Fri, 08 Jan 2021 09:17:43 -0800 (PST)
-Received: from thinkpad ([103.77.37.188])
-        by smtp.gmail.com with ESMTPSA id 11sm9903775pgz.22.2021.01.08.09.17.40
+        bh=4M2IJKB1sqsuwfqhG1D6BK3FBvalSW700ezXUI9Ah1o=;
+        b=HRAWhx3EfmxASZGWRXTv5ybtnZ0AU21hYgVsq9Rmub0ZByjh0XEwXxu5EUl2pYA7Ig
+         JBlK7lkUbrc3C4iI4A/SlZetjHaqY1kzW7IFwx+NZN9LlT2PyAe36NaUdMfUScRxAWUN
+         srzbLvYFQchNwusTS6cZUt7wo+9ha9+k8yhYPuS/cV3B2gcifGs2ZctqCwDzyePJuIvH
+         tyzDYouKIqbPDwYfPrgS7Bk6PwKmClVyquPUG/sulariWn7gpW+bE+IBjfduseVfRcmo
+         nvTUTacAmCftJ0z/qzRVLxe3BanmhvbFZd1HqmvtlWQOeECly7DfGKGCvH/awVYn/4hf
+         HeYA==
+X-Gm-Message-State: AOAM533ajFcTy8veXV+rhpXrEOZDXcEp1ceW5iRDEsz48CTiXuZpdM8q
+        2gqywj8GC/hITsGEhVldJFs=
+X-Google-Smtp-Source: ABdhPJzE1GHi+MWsoBw70MW41vrcTkFIFivUDFUBk0UvN2ufy3W5SBJo96J204ijwVTcynvswdeStg==
+X-Received: by 2002:aa7:c652:: with SMTP id z18mr5677105edr.60.1610126552471;
+        Fri, 08 Jan 2021 09:22:32 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id bn21sm3746389ejb.47.2021.01.08.09.22.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 09:17:42 -0800 (PST)
-Date:   Fri, 8 Jan 2021 22:47:37 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Hemant Kumar <hemantk@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH] bus: mhi: Add inbound buffers allocation flag
-Message-ID: <20210108171737.GD74017@thinkpad>
-References: <1609940623-8864-1-git-send-email-loic.poulain@linaro.org>
- <20210108134425.GA32678@work>
- <CAMZdPi9tUUzf0hLwLUBqB=+eGQS-eNP8NtnMF-iS1ZqUfautuw@mail.gmail.com>
- <20210108153032.GC32678@work>
- <CAMZdPi_+wHo4q1BQScXALRaTAqNh0zxsgLsri364NvTP1h+6WQ@mail.gmail.com>
+        Fri, 08 Jan 2021 09:22:31 -0800 (PST)
+Date:   Fri, 8 Jan 2021 19:22:29 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Eric Dumazet <edumazet@google.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH v5 net-next 11/16] net: propagate errors from
+ dev_get_stats
+Message-ID: <20210108172229.yxcwp7t2ipacajhs@skbuf>
+References: <20210108163159.358043-1-olteanv@gmail.com>
+ <20210108163159.358043-12-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMZdPi_+wHo4q1BQScXALRaTAqNh0zxsgLsri364NvTP1h+6WQ@mail.gmail.com>
+In-Reply-To: <20210108163159.358043-12-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 04:46:49PM +0100, Loic Poulain wrote:
-> Hi Mani,
+On Fri, Jan 08, 2021 at 06:31:54PM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> On Fri, 8 Jan 2021 at 16:30, Manivannan Sadhasivam <
-> manivannan.sadhasivam@linaro.org> wrote:
+> dev_get_stats can now return error codes. Take the remaining call sites
+> where those errors can be propagated, which are all trivial, and convert
+> them to look at that error code and stop processing.
 > 
-> > > > >       /* start channels */
-> > > > > -     rc = mhi_prepare_for_transfer(mhi_dev);
-> > > > > +     rc = mhi_prepare_for_transfer(mhi_dev,
-> > MHI_CH_INBOUND_ALLOC_BUFS);
-> > > >
-> > > > Are you sure it requires auto queued channel?
-> > > >
-> > >
-> > > This is how mhi-qrtr has been implemented, yes.
-> > >
-> >
-> > skb is allocated in qrtr_endpoint_post(). Then how the host can pre
-> > allocate the buffer here? Am I missing something?
-> >
+> The effects of simulating a kernel error (returning -ENOMEM) upon
+> existing programs or kernel interfaces:
 > 
-> The initial MHI buffer is pre-allocated by the MHI core, so that mhi-qrtr
-> only has to register a dl_callback without having to allocate and queue its
-> own buffers. On dl_callback mhi-qrtr calls qrtr_endpoint_post(data) which
-> allocates an skb and copy the MHI buffer (data) into that skb. When
-> mhi-qrtr dl_callback finishes, the MHI buffer is re-queued automatically by
-> the MHI core.
+> - cat /proc/net/dev prints up until the interface that failed, and there
+>   it returns:
+> cat: read error: Cannot allocate memory
 > 
+> - ifstat simply returns this and prints nothing:
+> Error: Buffer too small for object.
+> Dump terminated
+> 
+> - ip -s -s link show behaves the same as ifstat.
 
-Oops... My bad! There is the "auto_queue" for dl chan. Sorry for the noise.
+Note that at first I did not understand why ifstat and "ip -s -s link
+show" return this message. But in the meantime I figured that it was due
+to rtnetlink still returning -EMSGSIZE. That is fixed in this patch
+series, but I forgot to update the commit message to reflect it. The
+current output from these two commands is:
 
-Thanks,
-Mani
+$ ifstat
+RTNETLINK answers: Cannot allocate memory
+Dump terminated
+$ ip -s -s link show
+RTNETLINK answers: Cannot allocate memory
+Dump terminated
 
-> Regards,
-> Loic
 > 
+> - ifconfig prints only the info for the interfaces whose statistics did
+>   not fail.
 > 
-> >
-> > Thanks,
-> > Mani
-> >
-> > > Regards,
-> > > Loic
-> >
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> Changes in v5:
+> - Actually propagate errors from bonding and net_failover from within
+>   this patch.
+> - Properly propagating the dev_get_stats() error code from
+>   rtnl_fill_stats now, and not -EMSGSIZE.
+> 
+> Changes in v4:
+> Patch is new (Eric's suggestion).
