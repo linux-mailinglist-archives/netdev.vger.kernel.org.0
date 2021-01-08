@@ -2,70 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D79632EF39E
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 15:03:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC71D2EF3C4
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 15:13:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726902AbhAHODA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 09:03:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42844 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726754AbhAHOC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 09:02:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 360C523A00;
-        Fri,  8 Jan 2021 14:02:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610114539;
-        bh=boSholyu6yw+m5FPSR6Y0IZo0VRcvZXO4/sn0BuGLLU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Kskhh9mKLB8IxiYT2qlpPUH4QFaFLtBE34+cFwBxgPBKo8bH9CMaMSjxGNyUFRl8t
-         nA/nmG2oU6PEfWxuwt8QAcFkDXz7oh25wlqdgvJamyrMNcqCQJEmQOIit5TNRZtlTu
-         Km72/6vKHMPI6Mx3oRI7nVIPVBIxqXRZiSnn3Uyg8QYS0I1rf7MkCScfPLlV7LppJM
-         20/y6UhxaQIPB/ZCJWuqhFaAvJ1Jy8bfG98V8xc3gpgfoRjO1/DPJfLtjXazVtmtgx
-         XvAZYXKH40b+B5OT43nhna5A+hYDCFMmk4NdpTFcdGDBXYsryggXAJnjn7xw8SF9mF
-         raWEzDTBFac4Q==
-Date:   Fri, 8 Jan 2021 15:02:14 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Pavana Sharma <pavana.sharma@digi.com>
-Cc:     andrew@lunn.ch, ashkan.boldaji@digi.com, davem@davemloft.net,
-        f.fainelli@gmail.com, kuba@kernel.org, lkp@intel.com,
-        netdev@vger.kernel.org, vivien.didelot@gmail.com
-Subject: Re: [net-next PATCH v13 4/4] net: dsa: mv88e6xxx: Add support for
- mv88e6393x family of Marvell
-Message-ID: <20210108150214.3f821204@kernel.org>
-In-Reply-To: <0044dda2a5d1d03494ff753ee14ed4268f653e9c.1610071984.git.pavana.sharma@digi.com>
-References: <cover.1610071984.git.pavana.sharma@digi.com>
-        <0044dda2a5d1d03494ff753ee14ed4268f653e9c.1610071984.git.pavana.sharma@digi.com>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727347AbhAHOMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 09:12:53 -0500
+Received: from mail-oi1-f177.google.com ([209.85.167.177]:38848 "EHLO
+        mail-oi1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbhAHOMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 09:12:52 -0500
+Received: by mail-oi1-f177.google.com with SMTP id x13so11442412oic.5;
+        Fri, 08 Jan 2021 06:12:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wIuJZZvb0gzZkSS4B0eLCyXExMgaXIe5iJbAbqQLb5w=;
+        b=limr+0RxlP/aCLqANfhJnqKMwyLk3aMgSnz1M1NoyxsaW0O/GuHmsN4ZOuLFGCDdwv
+         AIVS8vyR85MrnwdWEbbnBnqd4lVjmdSI7Ho7YacVn45YZmc/ZF9NH4o6MMs1uUsogZd8
+         LIBxLusquv1CPMfVDtRPSUV/+JUR5t4nQchKFX8Zh+nkweIdGwg1wWLjFXrMzgAmfGGD
+         sPUerNat2P4OZwqmijmBqosC3hMMBbZQe5CkImuiKMEnCqyTXzUkpIlaDCiQOhonRCJx
+         +Lk7TpxNQheJuSRj7IHJLyUqF2sudFE8p9fU5YUkrUkWiKiMrFEv/pDA3CR8jtsgZjPq
+         DwDw==
+X-Gm-Message-State: AOAM533oxhmRYoAg3H/tHPF3sQuJOMno1GfnAK5n6fkSW2pF3LgNCtJ1
+        3XSiFya4acueZGi9AVxKAhQAGGp3ffsyC4/tWjY=
+X-Google-Smtp-Source: ABdhPJyemCjOC5dvpA4+jMsIA0V0xTUIe/Wk8kgEjN4sB5bYCpAmxwjdD7IQ/WgXE542apoi59gaN+8T5vt4YF4Ccig=
+X-Received: by 2002:aca:3cc5:: with SMTP id j188mr2459213oia.54.1610115130954;
+ Fri, 08 Jan 2021 06:12:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201228213121.2331449-1-aford173@gmail.com>
+In-Reply-To: <20201228213121.2331449-1-aford173@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 8 Jan 2021 15:11:59 +0100
+Message-ID: <CAMuHMdWE7FS-BLjT0sXupPX+V7XOTjN8ZKnRmShNEOx0i9DCGQ@mail.gmail.com>
+Subject: Re: [PATCH 1/4] dt-bindings: net: renesas,etheravb: Add additional clocks
+To:     Adam Ford <aford173@gmail.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  8 Jan 2021 19:50:56 +1000
-Pavana Sharma <pavana.sharma@digi.com> wrote:
+On Mon, Dec 28, 2020 at 10:32 PM Adam Ford <aford173@gmail.com> wrote:
+> The AVB driver assumes there is an external clock, but it could
+> be driven by an external clock.  In order to enable a programmable
+> clock, it needs to be added to the clocks list and enabled in the
+> driver.  Since there currently only one clock, there is no
+> clock-names list either.
+>
+> Update bindings to add the additional optional clock, and explicitly
+> name both of them.
+>
+> Signed-off-by: Adam Ford <aford173@gmail.com>
 
-> +int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
-> +		    bool on)
-> +{
-> +	u8 cmode;
-> +
-> +	if (port != 0 && port != 9 && port != 10)
-> +		return -EOPNOTSUPP;
-> +
-> +	cmode = chip->ports[port].cmode;
-> +
-> +	mv88e6393x_serdes_port_config(chip, lane, on);
-> +
-> +	switch (cmode) {
-> +	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
-> +	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
-> +		return mv88e6390_serdes_power_sgmii(chip, lane, on);
-> +	case MV88E6XXX_PORT_STS_CMODE_10GBASER:
-> +		return mv88e6390_serdes_power_10g(chip, lane, on);
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Shoudln't mv88e6390_serdes_power_10g() be called even for 5GBASER ?
-Have you tested 5GBASER at all?
+Gr{oetje,eeting}s,
 
-Marek
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
