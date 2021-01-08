@@ -2,196 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59ED02EF4DB
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 16:32:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 894362EF4E2
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 16:33:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727683AbhAHPbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 10:31:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
+        id S1727877AbhAHPdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 10:33:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725817AbhAHPbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 10:31:17 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8346C061380
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 07:30:37 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id q7so5943378pgm.5
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 07:30:37 -0800 (PST)
+        with ESMTP id S1725806AbhAHPdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 10:33:01 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7ACC061380;
+        Fri,  8 Jan 2021 07:32:21 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id q4so5827807plr.7;
+        Fri, 08 Jan 2021 07:32:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=pcg+os/0yOWjldKVf73QhxWFDRz+4DGy+42r9RW0+WI=;
-        b=uTH6OgcwMLNKvUsZyvbs+lgzQjAGx9EVs+pn5bwWRhBiyS8jUw0lUzvZKLepfNYors
-         8IJYYukSc9u4Lpqm/OrM9KIh4elVXvV+r1+Oi8KaZKgUI2yo6+PXx02g5DRcyDK20S6X
-         RzFQEDHef/czmlQUPkarNQicOZT9Zil1l9ChNsVFE7+fgaq5CAVsmwER1JsmTkwW2btn
-         iHh5tCmr5KgzQPye2rbmG6eZU0DcbdFCRLbgcFUhkQoRgDgY6zBsBRAXh0VjnCp3zHTc
-         PLBUQvLGdaI1iTGZi5lgM6T+EiY8YVJCR/6wObnqvcrXHucDf4jqo0jLzvhmkL33kVPf
-         ae+A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=spFCEPnVm9qff+fH1Wbln13XJIpHbyb+5Fw9GfNHu/4=;
+        b=VgPpzcQ4hoBpx9OQaVDkhRHyJEBfJl53Ds4R/whOhJ/ugwxFoHOTMA3N0WLtrzLMMi
+         YSyAQuVCi2eW2AXNc2LtH0oqWiJ8a95tcXZnoaMwQwhVPrlh1PXK8mmC55n68gUWIfax
+         /28Ji49xo14MuuVldvwl3FjuGR5WkDxmkJ+m/NYaccaJvaVcgACLIDRMx5QpHXkrPzRm
+         xOhoP4IisH7kF5qJZ1Aa/EyiGSmKN7pKvVU5Kjkx4Z+I7TCqnuiuPd9ZPgelc20t1WRO
+         z3IKIm4TE4q5YWds8dWz9tm9pkHHMSKI9x4Q6l9Whw/SxMQoalXqiffNoU4ESEuOM0EK
+         CG9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=pcg+os/0yOWjldKVf73QhxWFDRz+4DGy+42r9RW0+WI=;
-        b=A0ziNwYnCCeflENDQJHf6L8ygftSKGEpFI5zcFqdCKGQrQebcJp3zc/dzHLalvR7rm
-         D75wRzYG6QMjBou7c7mDuYH8zCfGUK8EB9BDDvrKlOVPk0jaGQgtYRw11Q14c/W2ZPXO
-         RB1/DrdMrkyQAyoOdUao+2ohP8uVtjWJRkqIRsJ6e7FblQqzt8JaeQmBQEpKE+N/n4ko
-         tPVi05phEU46Tdnr+HP1P90BcOh191lRpmS4HjaucEQBlBAiKlVwuhO2+u5OftueDKWl
-         dJovKqrvwLG2p/6wCXwsa8cbml99Ipdmm8ZlhYgzZV84hM7heHTEWZRJTYdjNdDhc45I
-         AQrQ==
-X-Gm-Message-State: AOAM531kgj6nSnUuOGv+RANcW4QleFxH924kRVZ11QuZiyE9+Rmz6vQ0
-        kbXWAWaeX+aot+k1j+X7066X
-X-Google-Smtp-Source: ABdhPJzR+qzldELt5Cc+Y9Y6HqLOJ7nCdnuwWtx5uzPnQDbxv2TXKpxOJ9BIUTSRUgCF/zN1Lpoh7A==
-X-Received: by 2002:a63:dc53:: with SMTP id f19mr7450745pgj.443.1610119836817;
-        Fri, 08 Jan 2021 07:30:36 -0800 (PST)
-Received: from work ([103.77.37.188])
-        by smtp.gmail.com with ESMTPSA id c14sm9603840pfp.167.2021.01.08.07.30.34
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 08 Jan 2021 07:30:35 -0800 (PST)
-Date:   Fri, 8 Jan 2021 21:00:32 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Hemant Kumar <hemantk@codeaurora.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH] bus: mhi: Add inbound buffers allocation flag
-Message-ID: <20210108153032.GC32678@work>
-References: <1609940623-8864-1-git-send-email-loic.poulain@linaro.org>
- <20210108134425.GA32678@work>
- <CAMZdPi9tUUzf0hLwLUBqB=+eGQS-eNP8NtnMF-iS1ZqUfautuw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMZdPi9tUUzf0hLwLUBqB=+eGQS-eNP8NtnMF-iS1ZqUfautuw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=spFCEPnVm9qff+fH1Wbln13XJIpHbyb+5Fw9GfNHu/4=;
+        b=l7bmP5CJwTTaMbUEpUjqCQKYqVsjt9dXWO/BGxLUZFoX6KI0xK49ImSdCfAo7eChkJ
+         JyfGaQq03X11lo/AU9Pv/l9F/BYmyqnRNDTXJ7GRFElUT0mPI8NHwpQ9VzOOYaocUvd4
+         tkPYDHill4AUWQvlnVOvdWsKs0DvfM/S42BoiNdOhV7nRbLG1ANDvXCWnWavTzpFZ8Om
+         PSDz4pRInPJeuzgyzdcLMq1OoYzE3LJLFWMG0R+8ff3FjtN0EjoRKn7sP2g1xA9FhhLI
+         djhRurS+JZrqZlVZD14g1VwZ8QNyMOzuKaHbgh+D1i5oLmGtso4kvcxiwen0q4J9ngFm
+         hMKg==
+X-Gm-Message-State: AOAM532mnm0YmWf9Vx/gjITydiwtf92aTh25kDh066uiyYWTKVIdHABL
+        kuQ5Wm+9+wMwOGN/u/eAwc2X7KQcr77EjlvF
+X-Google-Smtp-Source: ABdhPJwC2wTfVVR8u5R/Lw33ammfmy4vuPocjr63UnBeehn8Nq4AYnbFGi9IriLCRavN4e/4FcNbvA==
+X-Received: by 2002:a17:90a:c592:: with SMTP id l18mr4400319pjt.212.1610119940149;
+        Fri, 08 Jan 2021 07:32:20 -0800 (PST)
+Received: from localhost.localdomain ([2405:201:600d:a089:9d25:60e2:6f4:74f8])
+        by smtp.googlemail.com with ESMTPSA id 129sm9048265pfw.86.2021.01.08.07.32.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jan 2021 07:32:19 -0800 (PST)
+From:   Aditya Srivastava <yashsri421@gmail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        lukas.bulwahn@gmail.com, yashsri421@gmail.com
+Subject: [PATCH] drivers: net: wireless: rtlwifi: fix bool comparison in expressions
+Date:   Fri,  8 Jan 2021 21:02:08 +0530
+Message-Id: <20210108153208.24065-1-yashsri421@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 03:01:59PM +0100, Loic Poulain wrote:
-> Hi Mani,
-> 
-> On Fri, 8 Jan 2021 at 14:44, Manivannan Sadhasivam <
-> manivannan.sadhasivam@linaro.org> wrote:
-> 
-> > On Wed, Jan 06, 2021 at 02:43:43PM +0100, Loic Poulain wrote:
-> > > Currently, the MHI controller driver defines which channels should
-> > > have their inbound buffers allocated and queued. But ideally, this is
-> > > something that should be decided by the MHI device driver instead,
-> >
-> > We call them, "MHI client drivers"
-> >
-> 
-> I'll fix that.
-> 
-> 
-> > > which actually deals with that buffers.
-> > >
-> > > Add a flag parameter to mhi_prepare_for_transfer allowing to specify
-> > > if buffers have to be allocated and queued by the MHI stack.
-> > >
-> > > Keep auto_queue flag for now, but should be removed at some point.
-> > >
-> > > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> > > ---
-> > >  drivers/bus/mhi/core/internal.h |  2 +-
-> > >  drivers/bus/mhi/core/main.c     | 11 ++++++++---
-> > >  drivers/net/mhi_net.c           |  2 +-
-> > >  include/linux/mhi.h             | 12 +++++++++++-
-> > >  net/qrtr/mhi.c                  |  2 +-
-> > >  5 files changed, 22 insertions(+), 7 deletions(-)
-> > >
-> >
-> > [...]
-> >
-> > > diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
-> > > index fa41d8c..b7f7f2e 100644
-> > > --- a/drivers/net/mhi_net.c
-> > > +++ b/drivers/net/mhi_net.c
-> > > @@ -265,7 +265,7 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
-> > >       u64_stats_init(&mhi_netdev->stats.tx_syncp);
-> > >
-> > >       /* Start MHI channels */
-> > > -     err = mhi_prepare_for_transfer(mhi_dev);
-> > > +     err = mhi_prepare_for_transfer(mhi_dev, 0);
-> >
-> > Eventhough I'd like Hemant to comment on this patch, AFAIU this looks to
-> > me a controller dependent behaviour. The controller should have the
-> > information whether a particular channel can auto queue or not then the
-> > client driver can be agnostic.
-> >
-> 
-> The client driver can not be agnostic if this information is defined on the
-> controller side. In one case client driver needs to allocate (and queue)
-> its own buffers and in the other case it uses the pre-allocated ones.
-> Moreover, that will break compatibility if we have one controller (e.g. a
-> Wifi MHI controller) that e.g. defines IPCR channels as pre-allocated and
-> another one that defines IPCR channels as non-pre-allocated. Having
-> pre-allocated channels is not something related to the MHI device but to
-> how the host (client driver) wants to manage buffers. It would then make
-> sense to let this choice to the client driver.
-> 
-> 
-> >
-> > >       if (err)
-> > >               goto out_err;
-> > >
-> > > diff --git a/include/linux/mhi.h b/include/linux/mhi.h
-> > > index 209b335..6723339 100644
-> > > --- a/include/linux/mhi.h
-> > > +++ b/include/linux/mhi.h
-> > > @@ -60,6 +60,14 @@ enum mhi_flags {
-> > >  };
-> > >
-> > >  /**
-> > > + * enum mhi_chan_flags - MHI channel flags
-> > > + * @MHI_CH_INBOUND_ALLOC_BUFS: Automatically allocate and queue inbound
-> > buffers
-> > > + */
-> > > +enum mhi_chan_flags {
-> > > +     MHI_CH_INBOUND_ALLOC_BUFS = BIT(0),
-> > > +};
-> > > +
-> > > +/**
-> > >   * enum mhi_device_type - Device types
-> > >   * @MHI_DEVICE_XFER: Handles data transfer
-> > >   * @MHI_DEVICE_CONTROLLER: Control device
-> > > @@ -705,8 +713,10 @@ void mhi_device_put(struct mhi_device *mhi_dev);
-> > >  /**
-> > >   * mhi_prepare_for_transfer - Setup channel for data transfer
-> > >   * @mhi_dev: Device associated with the channels
-> > > + * @flags: MHI channel flags
-> > >   */
-> > > -int mhi_prepare_for_transfer(struct mhi_device *mhi_dev);
-> > > +int mhi_prepare_for_transfer(struct mhi_device *mhi_dev,
-> > > +                          enum mhi_chan_flags flags);
-> > >
-> > >  /**
-> > >   * mhi_unprepare_from_transfer - Unprepare the channels
-> > > diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-> > > index 2bf2b19..47afded 100644
-> > > --- a/net/qrtr/mhi.c
-> > > +++ b/net/qrtr/mhi.c
-> > > @@ -77,7 +77,7 @@ static int qcom_mhi_qrtr_probe(struct mhi_device
-> > *mhi_dev,
-> > >       int rc;
-> > >
-> > >       /* start channels */
-> > > -     rc = mhi_prepare_for_transfer(mhi_dev);
-> > > +     rc = mhi_prepare_for_transfer(mhi_dev, MHI_CH_INBOUND_ALLOC_BUFS);
-> >
-> > Are you sure it requires auto queued channel?
-> >
-> 
-> This is how mhi-qrtr has been implemented, yes.
-> 
+There are certain conditional expressions in rtlwifi, where a boolean
+variable is compared with true/false, in forms such as (foo == true) or
+(false != bar), which does not comply with checkpatch.pl (CHECK:
+BOOL_COMPARISON), according to which boolean variables should be
+themselves used in the condition, rather than comparing with true/false
 
-skb is allocated in qrtr_endpoint_post(). Then how the host can pre
-allocate the buffer here? Am I missing something?
+E.g., in drivers/net/wireless/realtek/rtlwifi/ps.c,
+"if (find_p2p_ie == true)" can be replaced with "if (find_p2p_ie)"
 
-Thanks,
-Mani
+Replace all such expressions with the bool variables appropriately
 
-> Regards,
-> Loic
+Signed-off-by: Aditya Srivastava <yashsri421@gmail.com>
+---
+- The changes made are compile tested
+- Applies perfecly on next-20210108
+
+ drivers/net/wireless/realtek/rtlwifi/ps.c                 | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c       | 8 ++++----
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c       | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c       | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c      | 8 ++++----
+ 6 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/ps.c b/drivers/net/wireless/realtek/rtlwifi/ps.c
+index f99882255d48..629c03271bde 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/ps.c
++++ b/drivers/net/wireless/realtek/rtlwifi/ps.c
+@@ -798,9 +798,9 @@ static void rtl_p2p_noa_ie(struct ieee80211_hw *hw, void *data,
+ 		ie += 3 + noa_len;
+ 	}
+ 
+-	if (find_p2p_ie == true) {
++	if (find_p2p_ie) {
+ 		if ((p2pinfo->p2p_ps_mode > P2P_PS_NONE) &&
+-		    (find_p2p_ps_ie == false))
++		    (!find_p2p_ps_ie))
+ 			rtl_p2p_ps_cmd(hw, P2P_PS_DISABLE);
+ 	}
+ }
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
+index d10c14c694da..6f61d6a10627 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
+@@ -474,11 +474,11 @@ static void rtl88e_dm_dig(struct ieee80211_hw *hw)
+ 	u8 dm_dig_max, dm_dig_min;
+ 	u8 current_igi = dm_dig->cur_igvalue;
+ 
+-	if (rtlpriv->dm.dm_initialgain_enable == false)
++	if (!rtlpriv->dm.dm_initialgain_enable)
+ 		return;
+-	if (dm_dig->dig_enable_flag == false)
++	if (!dm_dig->dig_enable_flag)
+ 		return;
+-	if (mac->act_scanning == true)
++	if (mac->act_scanning)
+ 		return;
+ 
+ 	if (mac->link_state >= MAC80211_LINKED)
+@@ -1637,7 +1637,7 @@ static void rtl88e_dm_fast_ant_training(struct ieee80211_hw *hw)
+ 			}
+ 		}
+ 
+-		if (bpkt_filter_match == false) {
++		if (!bpkt_filter_match) {
+ 			rtl_set_bbreg(hw, DM_REG_TXAGC_A_1_MCS32_11N,
+ 				      BIT(16), 0);
+ 			rtl_set_bbreg(hw, DM_REG_IGI_A_11N, BIT(7), 0);
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
+index bd9160b166c5..861cc663ca93 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
+@@ -1269,12 +1269,12 @@ void rtl88ee_set_check_bssid(struct ieee80211_hw *hw, bool check_bssid)
+ 	if (rtlpriv->psc.rfpwr_state != ERFON)
+ 		return;
+ 
+-	if (check_bssid == true) {
++	if (check_bssid) {
+ 		reg_rcr |= (RCR_CBSSID_DATA | RCR_CBSSID_BCN);
+ 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_RCR,
+ 					      (u8 *)(&reg_rcr));
+ 		_rtl88ee_set_bcn_ctrl_reg(hw, 0, BIT(4));
+-	} else if (check_bssid == false) {
++	} else if (!check_bssid) {
+ 		reg_rcr &= (~(RCR_CBSSID_DATA | RCR_CBSSID_BCN));
+ 		_rtl88ee_set_bcn_ctrl_reg(hw, BIT(4), 0);
+ 		rtlpriv->cfg->ops->set_hw_reg(hw,
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c
+index 265a1a336304..0b6a15c2e5cc 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c
+@@ -380,7 +380,7 @@ static void rtl92c_dm_initial_gain_multi_sta(struct ieee80211_hw *hw)
+ 		initialized = false;
+ 		dm_digtable->dig_ext_port_stage = DIG_EXT_PORT_STAGE_MAX;
+ 		return;
+-	} else if (initialized == false) {
++	} else if (!initialized) {
+ 		initialized = true;
+ 		dm_digtable->dig_ext_port_stage = DIG_EXT_PORT_STAGE_0;
+ 		dm_digtable->cur_igvalue = 0x20;
+@@ -509,7 +509,7 @@ static void rtl92c_dm_dig(struct ieee80211_hw *hw)
+ {
+ 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+ 
+-	if (rtlpriv->dm.dm_initialgain_enable == false)
++	if (!rtlpriv->dm.dm_initialgain_enable)
+ 		return;
+ 	if (!(rtlpriv->dm.dm_flag & DYNAMIC_FUNC_DIG))
+ 		return;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+index 47fabce5c235..73a5d8a068fc 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+@@ -458,7 +458,7 @@ static u8 _rtl92se_halset_sysclk(struct ieee80211_hw *hw, u8 data)
+ 	tmpvalue = rtl_read_byte(rtlpriv, SYS_CLKR + 1);
+ 	bresult = ((tmpvalue & BIT(7)) == (data & BIT(7)));
+ 
+-	if ((data & (BIT(6) | BIT(7))) == false) {
++	if (!(data & (BIT(6) | BIT(7)))) {
+ 		waitcount = 100;
+ 		tmpvalue = 0;
+ 
+@@ -1268,7 +1268,7 @@ static u8 _rtl92s_set_sysclk(struct ieee80211_hw *hw, u8 data)
+ 	tmp = rtl_read_byte(rtlpriv, SYS_CLKR + 1);
+ 	result = ((tmp & BIT(7)) == (data & BIT(7)));
+ 
+-	if ((data & (BIT(6) | BIT(7))) == false) {
++	if (!(data & (BIT(6) | BIT(7)))) {
+ 		waitcnt = 100;
+ 		tmp = 0;
+ 
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+index 372d6f8caf06..e214b9062cc1 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c
+@@ -1812,7 +1812,7 @@ static bool _rtl8821ae_phy_bb8821a_config_parafile(struct ieee80211_hw *hw)
+ 		return false;
+ 	}
+ 	_rtl8821ae_phy_init_tx_power_by_rate(hw);
+-	if (rtlefuse->autoload_failflag == false) {
++	if (!rtlefuse->autoload_failflag) {
+ 		rtstatus = _rtl8821ae_phy_config_bb_with_pgheaderfile(hw,
+ 						    BASEBAND_CONFIG_PHY_REG);
+ 	}
+@@ -3980,7 +3980,7 @@ static void _rtl8821ae_iqk_tx(struct ieee80211_hw *hw, enum radio_path path)
+ 				}
+ 			}
+ 
+-			if (tx0iqkok == false)
++			if (!tx0iqkok)
+ 				break;				/* TXK fail, Don't do RXK */
+ 
+ 			if (vdf_enable == 1) {
+@@ -4090,7 +4090,7 @@ static void _rtl8821ae_iqk_tx(struct ieee80211_hw *hw, enum radio_path path)
+ 						}
+ 					}
+ 
+-					if (tx0iqkok == false) {   /* If RX mode TXK fail, then take TXK Result */
++					if (!tx0iqkok) {   /* If RX mode TXK fail, then take TXK Result */
+ 						tx_x0_rxk[cal] = tx_x0[cal];
+ 						tx_y0_rxk[cal] = tx_y0[cal];
+ 						tx0iqkok = true;
+@@ -4249,7 +4249,7 @@ static void _rtl8821ae_iqk_tx(struct ieee80211_hw *hw, enum radio_path path)
+ 					}
+ 				}
+ 
+-				if (tx0iqkok == false) {   /* If RX mode TXK fail, then take TXK Result */
++				if (!tx0iqkok) {   /* If RX mode TXK fail, then take TXK Result */
+ 					tx_x0_rxk[cal] = tx_x0[cal];
+ 					tx_y0_rxk[cal] = tx_y0[cal];
+ 					tx0iqkok = true;
+-- 
+2.17.1
+
