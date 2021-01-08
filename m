@@ -2,217 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DDAF2EF6E0
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:00:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5304E2EF6E6
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:03:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728395AbhAHSA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 13:00:26 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:24936 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726011AbhAHSA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:00:26 -0500
-Received: from heptagon.blr.asicdesigners.com (heptagon.blr.asicdesigners.com [10.193.186.108])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 108HxWAO008146;
-        Fri, 8 Jan 2021 09:59:33 -0800
-From:   Ayush Sawal <ayush.sawal@chelsio.com>
-To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
-Cc:     secdev@chelsio.com, Ayush Sawal <ayush.sawal@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [PATCH net] cxgb4/chtls: Fix tid stuck due to wrong update of qid
-Date:   Fri,  8 Jan 2021 23:29:14 +0530
-Message-Id: <20210108175914.18876-1-ayush.sawal@chelsio.com>
-X-Mailer: git-send-email 2.28.0.rc1.6.gae46588
+        id S1728525AbhAHSDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 13:03:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728502AbhAHSDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:03:13 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEB1C061380
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:02:33 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id jx16so15615492ejb.10
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:02:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OAdmCHdS2mn5aVyPYX47j0H9AGuWTMSaF+6ffAnnZ1E=;
+        b=S8TKRgl8g1wKjytb0q++el8auuuYsT9f88CcPpbW7Fj8qPZhgKN5GH3mhqVifBvER5
+         6Y1B4csug4kLpokf2krap9zFvmyf2O+Nl9cuCJyXn2RK+EGxBLKnFavgeySJ34Sq714C
+         8tRmvQPC9sg9oYcVjUlGPxS1d8BGbE5rC72YNw6AUe1XUKzmQynYBiqy5rcgOa8FVnsX
+         CU9qgTy+hm6CVlVQf4WqH9/6bSxchwhq3XAq0ZHz45e4T/WLzPy66Mp9vERWor8vpa/+
+         QqJi+ghMLNMoH/Cd22I+fj7dywLlZBpM/65+J+ixCftbyhco8a0++M3x5b0UgO/wpjFo
+         Kz+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OAdmCHdS2mn5aVyPYX47j0H9AGuWTMSaF+6ffAnnZ1E=;
+        b=S5rdNq8gRa/jxRmBUFaA4H2sX3SjcZZ8uvTuyIyZZTuBbUG+1IMKyjXQ3i12QTCF7r
+         Oq/jgQ2KmoRxu9CkGvWMprcgST+29wJ8f5ZDRNs9CnPLjta/O0NdNsJA8PL66Y/IvF4c
+         Q8cJImnwulHfu/LwCxcfB6raZHWhlEnv0q6KOdX5ryKn3PZuRoe1dwOWEaxS5gOfN5UD
+         Wrg+Y8TdGfSdKhNvcS3B4E4SJvO0aB1bs1zPLIlX38emxp8WZRK7zYPLM8HwQrb77JmS
+         pZFwOesQOKAOtQAk5Qb9VpEWdhRx0Ey9iz1abBTkJn/6Q/DF8M7Ehifeq62LuyzX7IGl
+         TmEA==
+X-Gm-Message-State: AOAM5333fAMc7SQxCHNsjlnCf6bx8YVytgcin0e1OcYn89/JK5m6fwNz
+        8mqEbzyK9J1Zg9CWOq+TYlM3OFGjxRM=
+X-Google-Smtp-Source: ABdhPJxQjr23rygpQ3vTxhP1ck/YiNy0CP21qCbrIK3gdsci6NI6PaRppDbnDsBXfTiS1PnNEUwwKw==
+X-Received: by 2002:a17:906:fc3:: with SMTP id c3mr3574738ejk.474.1610128949968;
+        Fri, 08 Jan 2021 10:02:29 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id b19sm4059713edx.47.2021.01.08.10.02.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jan 2021 10:02:29 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, kuba@kernel.org,
+        jiri@resnulli.us, idosch@idosch.org, UNGLinuxDriver@microchip.com
+Subject: [PATCH v3 net-next 00/10] Configuring congestion watermarks on ocelot switch using devlink-sb
+Date:   Fri,  8 Jan 2021 19:59:40 +0200
+Message-Id: <20210108175950.484854-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TID stuck is seen when there is a race in
-CPL_PASS_ACCEPT_RPL/CPL_ABORT_REQ and abort is arriving
-before the accept reply, which sets the queue number.
-In this case HW ends up sending CPL_ABORT_RPL_RSS to an
-incorrect ingress queue.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Fixes: cc35c88ae4db ("crypto : chtls - CPL handler definition")
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
-Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h   |  7 ++++
- .../chelsio/inline_crypto/chtls/chtls.h       |  4 ++
- .../chelsio/inline_crypto/chtls/chtls_cm.c    | 35 ++++++++++++++--
- .../chelsio/inline_crypto/chtls/chtls_hw.c    | 42 +++++++++++++++++++
- 4 files changed, 85 insertions(+), 3 deletions(-)
+In some applications, it is important to create resource reservations in
+the Ethernet switches, to prevent background traffic, or deliberate
+attacks, from inducing denial of service into the high-priority traffic.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
-index 92473dda55d9..22a0220123ad 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
-@@ -40,6 +40,13 @@
- #define TCB_L2T_IX_M		0xfffULL
- #define TCB_L2T_IX_V(x)		((x) << TCB_L2T_IX_S)
- 
-+#define TCB_T_FLAGS_W           1
-+#define TCB_T_FLAGS_S           0
-+#define TCB_T_FLAGS_M           0xffffffffffffffffULL
-+#define TCB_T_FLAGS_V(x)        ((__u64)(x) << TCB_T_FLAGS_S)
-+
-+#define TCB_FIELD_COOKIE_TFLAG	1
-+
- #define TCB_SMAC_SEL_W		0
- #define TCB_SMAC_SEL_S		24
- #define TCB_SMAC_SEL_M		0xffULL
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-index 72bb123d53db..9e2378013642 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
-@@ -575,7 +575,11 @@ int send_tx_flowc_wr(struct sock *sk, int compl,
- void chtls_tcp_push(struct sock *sk, int flags);
- int chtls_push_frames(struct chtls_sock *csk, int comp);
- int chtls_set_tcb_tflag(struct sock *sk, unsigned int bit_pos, int val);
-+void chtls_set_tcb_field_rpl_skb(struct sock *sk, u16 word,
-+				 u64 mask, u64 val, u8 cookie,
-+				 int through_l2t);
- int chtls_setkey(struct chtls_sock *csk, u32 keylen, u32 mode, int cipher_type);
-+void chtls_set_quiesce_ctrl(struct sock *sk, int val);
- void skb_entail(struct sock *sk, struct sk_buff *skb, int flags);
- unsigned int keyid_to_addr(int start_addr, int keyid);
- void free_tls_keyid(struct sock *sk);
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-index 51dd030b3b36..0818d7fa484d 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-@@ -32,6 +32,7 @@
- #include "chtls.h"
- #include "chtls_cm.h"
- #include "clip_tbl.h"
-+#include "t4_tcb.h"
- 
- /*
-  * State transitions and actions for close.  Note that if we are in SYN_SENT
-@@ -267,11 +268,14 @@ static void chtls_send_reset(struct sock *sk, int mode, struct sk_buff *skb)
- 	if (sk->sk_state != TCP_SYN_RECV)
- 		chtls_send_abort(sk, mode, skb);
- 	else
--		goto out;
-+		chtls_set_tcb_field_rpl_skb(sk, TCB_T_FLAGS_W,
-+					    TCB_T_FLAGS_V(TCB_T_FLAGS_M), 0,
-+					    TCB_FIELD_COOKIE_TFLAG, 1);
- 
- 	return;
- out:
--	kfree_skb(skb);
-+	if (skb)
-+		kfree_skb(skb);
- }
- 
- static void release_tcp_port(struct sock *sk)
-@@ -1949,6 +1953,8 @@ static void chtls_close_con_rpl(struct sock *sk, struct sk_buff *skb)
- 		else if (tcp_sk(sk)->linger2 < 0 &&
- 			 !csk_flag_nochk(csk, CSK_ABORT_SHUTDOWN))
- 			chtls_abort_conn(sk, skb);
-+		else if (csk_flag_nochk(csk, CSK_TX_DATA_SENT))
-+			chtls_set_quiesce_ctrl(sk, 0);
- 		break;
- 	default:
- 		pr_info("close_con_rpl in bad state %d\n", sk->sk_state);
-@@ -2292,6 +2298,28 @@ static int chtls_wr_ack(struct chtls_dev *cdev, struct sk_buff *skb)
- 	return 0;
- }
- 
-+static int chtls_set_tcb_rpl(struct chtls_dev *cdev, struct sk_buff *skb)
-+{
-+	struct cpl_set_tcb_rpl *rpl = cplhdr(skb) + RSS_HDR;
-+	unsigned int hwtid = GET_TID(rpl);
-+	struct sock *sk;
-+
-+	sk = lookup_tid(cdev->tids, hwtid);
-+
-+	/* return EINVAL if socket doesn't exist */
-+	if (!sk)
-+		return -EINVAL;
-+
-+	/* Reusing the skb as size of cpl_set_tcb_field structure
-+	 * is greater than cpl_abort_req
-+	 */
-+	if (TCB_COOKIE_G(rpl->cookie) == TCB_FIELD_COOKIE_TFLAG)
-+		chtls_send_abort(sk, CPL_ABORT_SEND_RST, NULL);
-+
-+	kfree_skb(skb);
-+	return 0;
-+}
-+
- chtls_handler_func chtls_handlers[NUM_CPL_CMDS] = {
- 	[CPL_PASS_OPEN_RPL]     = chtls_pass_open_rpl,
- 	[CPL_CLOSE_LISTSRV_RPL] = chtls_close_listsrv_rpl,
-@@ -2304,5 +2332,6 @@ chtls_handler_func chtls_handlers[NUM_CPL_CMDS] = {
- 	[CPL_CLOSE_CON_RPL]     = chtls_conn_cpl,
- 	[CPL_ABORT_REQ_RSS]     = chtls_conn_cpl,
- 	[CPL_ABORT_RPL_RSS]     = chtls_conn_cpl,
--	[CPL_FW4_ACK]           = chtls_wr_ack,
-+	[CPL_FW4_ACK]		= chtls_wr_ack,
-+	[CPL_SET_TCB_RPL]	= chtls_set_tcb_rpl,
- };
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
-index a4fb463af22a..9f1c50c9c41b 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
-@@ -88,6 +88,24 @@ static int chtls_set_tcb_field(struct sock *sk, u16 word, u64 mask, u64 val)
- 	return ret < 0 ? ret : 0;
- }
- 
-+void chtls_set_tcb_field_rpl_skb(struct sock *sk, u16 word,
-+				 u64 mask, u64 val, u8 cookie,
-+				 int through_l2t)
-+{
-+	struct sk_buff *skb;
-+	unsigned int wrlen;
-+
-+	wrlen = sizeof(struct cpl_set_tcb_field) + sizeof(struct ulptx_idata);
-+	wrlen = roundup(wrlen, 16);
-+
-+	skb = alloc_skb(wrlen, GFP_KERNEL | __GFP_NOFAIL);
-+	if (!skb)
-+		return;
-+
-+	__set_tcb_field(sk, skb, word, mask, val, cookie, 0);
-+	send_or_defer(sk, tcp_sk(sk), skb, through_l2t);
-+}
-+
- /*
-  * Set one of the t_flags bits in the TCB.
-  */
-@@ -113,6 +131,30 @@ static int chtls_set_tcb_quiesce(struct sock *sk, int val)
- 				   TF_RX_QUIESCE_V(val));
- }
- 
-+void chtls_set_quiesce_ctrl(struct sock *sk, int val)
-+{
-+	struct chtls_sock *csk;
-+	struct sk_buff *skb;
-+	unsigned int wrlen;
-+	unsigned int len;
-+	int ret;
-+
-+	wrlen = sizeof(struct cpl_set_tcb_field) + sizeof(struct ulptx_idata);
-+	wrlen = roundup(wrlen, 16);
-+
-+	skb = alloc_skb(wrlen, GFP_ATOMIC);
-+	if (!skb)
-+		return;
-+
-+	csk = rcu_dereference_sk_user_data(sk);
-+
-+	__set_tcb_field(sk, skb, 1, TF_RX_QUIESCE_V(1), 0, 0, 1);
-+	set_wr_txq(skb, CPL_PRIORITY_CONTROL, csk->port_id);
-+	ret = cxgb4_ofld_send(csk->egress_dev, skb);
-+	if (ret < 0)
-+		kfree_skb(skb);
-+}
-+
- /* TLS Key bitmap processing */
- int chtls_init_kmap(struct chtls_dev *cdev, struct cxgb4_lld_info *lldi)
- {
+These patches give the user some knobs to turn. The ocelot switches
+support per-port and per-port-tc reservations, on ingress and on egress.
+The resources that are monitored are packet buffers (in cells of 60
+bytes each) and frame references.
+
+The frames that exceed the reservations can optionally consume from
+sharing watermarks which are not per-port but global across the switch.
+There are 10 sharing watermarks, 8 of them are per traffic class and 2
+are per drop priority.
+
+I am configuring the hardware using the best of my knowledge, and mostly
+through trial and error. Same goes for devlink-sb integration. Feedback
+is welcome.
+
+Vladimir Oltean (10):
+  net: mscc: ocelot: auto-detect packet buffer size and number of frame
+    references
+  net: mscc: ocelot: add ops for decoding watermark threshold and
+    occupancy
+  net: dsa: add ops for devlink-sb
+  net: dsa: felix: reindent struct dsa_switch_ops
+  net: dsa: felix: perform teardown in reverse order of setup
+  net: mscc: ocelot: export NUM_TC constant from felix to common switch
+    lib
+  net: mscc: ocelot: delete unused ocelot_set_cpu_port prototype
+  net: mscc: ocelot: register devlink ports
+  net: mscc: ocelot: initialize watermarks to sane defaults
+  net: mscc: ocelot: configure watermarks using devlink-sb
+
+ drivers/net/dsa/ocelot/felix.c             | 210 +++--
+ drivers/net/dsa/ocelot/felix.h             |   2 -
+ drivers/net/dsa/ocelot/felix_vsc9959.c     |  23 +-
+ drivers/net/dsa/ocelot/seville_vsc9953.c   |  20 +-
+ drivers/net/ethernet/mscc/Makefile         |   3 +-
+ drivers/net/ethernet/mscc/ocelot.c         |  18 +-
+ drivers/net/ethernet/mscc/ocelot.h         |   8 +-
+ drivers/net/ethernet/mscc/ocelot_devlink.c | 885 +++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_net.c     | 282 ++++++-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |  47 +-
+ include/net/dsa.h                          |  34 +
+ include/soc/mscc/ocelot.h                  |  54 +-
+ include/soc/mscc/ocelot_qsys.h             |   7 +-
+ net/dsa/dsa2.c                             | 159 +++-
+ 14 files changed, 1657 insertions(+), 95 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_devlink.c
+
 -- 
-2.28.0.rc1.6.gae46588
+2.25.1
 
