@@ -2,123 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF6C2EEDF9
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 08:48:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E92222EEE94
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 09:29:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727300AbhAHHrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 02:47:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50656 "EHLO mail.kernel.org"
+        id S1727649AbhAHI2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 03:28:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59414 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726027AbhAHHrr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 02:47:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 890D2233EE;
-        Fri,  8 Jan 2021 07:47:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1610092026;
-        bh=aht0WdMXCPlAoFq0DlnM+/6kealmxDfX0uEiia9bmxs=;
+        id S1727418AbhAHI2k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 03:28:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0CC7A23435;
+        Fri,  8 Jan 2021 08:27:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610094479;
+        bh=SAoDiXJG+49pPIJcmLEdT3YdpudMLb3tXzuV+M1ddMg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vWX6roBwrJrKKoRl6iEtW14ixgMgYXomRcg1ExcRPNyoKh4jaMUzdTmnVkv3twW4R
-         K4tZI0562rr6LGrnJsDAbETE6A3KH/48g+5EQE5YIbtnFSlc2SKf0h23QN9lr9REIj
-         ufYwT6idwpnSKYBaT4VySvKkVo8f05E3UOJPueCc=
-Date:   Fri, 8 Jan 2021 08:47:02 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Xu Yilun <yilun.xu@intel.com>
-Cc:     andrew@lunn.ch, arnd@arndb.de, lee.jones@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com,
-        matthew.gerlach@intel.com, russell.h.weight@intel.com
-Subject: Re: [RESEND PATCH 2/2] misc: add support for retimers interfaces on
- Intel MAX 10 BMC
-Message-ID: <X/gN9godW5uiBtB7@kroah.com>
-References: <1609999628-12748-1-git-send-email-yilun.xu@intel.com>
- <1609999628-12748-3-git-send-email-yilun.xu@intel.com>
- <X/bTtBUevX5IBPUl@kroah.com>
- <20210108020526.GB13860@yilunxu-OptiPlex-7050>
+        b=EnEKOJIN+WnD4u6lFgo77faKCj54N+d/pFKhcGzW/Y3/Ccl68siuEONd2+MQVmWwA
+         g8i5J1Jp9PRFqP+bjh1UVHmW6ZNZoM79Em/nHN5DHOG6ps9hEvQuax6LdoYTVQba6R
+         W0M3rPvSPrbm/vYAaPU9CsppYeuXAhSoIAN8UGVK69VCDMDjU1FlkyeISfeCHTf0Cp
+         UrPLrlJpGz0S4tUYkZu+D7Yp8uZm4/13PvNs53jDnTG1yuR/TZx3S6Q2A5kjWrfu5R
+         w1MefWO2hD7veYyvb2xtc7eB2pAO3ZpInFWl5OgE2Cy2VRAsn/olPyc/xhF+bAgyze
+         9qY+rCVqge15w==
+Date:   Fri, 8 Jan 2021 13:57:54 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Joe Perches <joe@perches.com>, Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Mark Brown <broonie@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
+Subject: Re: [PATCH 05/10] dma: tx49 removal
+Message-ID: <20210108082754.GW2771@vkoul-mobl>
+References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
+ <20210105140305.141401-6-tsbogend@alpha.franken.de>
+ <b84dadc2e98b1986dc800c5f6f202880ed905b38.camel@perches.com>
+ <20210107164015.GA12533@alpha.franken.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210108020526.GB13860@yilunxu-OptiPlex-7050>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210107164015.GA12533@alpha.franken.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 10:05:26AM +0800, Xu Yilun wrote:
-> On Thu, Jan 07, 2021 at 10:26:12AM +0100, Greg KH wrote:
-> > On Thu, Jan 07, 2021 at 02:07:08PM +0800, Xu Yilun wrote:
-> > > This driver supports the ethernet retimers (C827) for the Intel PAC
-> > > (Programmable Acceleration Card) N3000, which is a FPGA based Smart NIC.
+On 07-01-21, 17:40, Thomas Bogendoerfer wrote:
+> On Wed, Jan 06, 2021 at 11:10:38AM -0800, Joe Perches wrote:
+> > On Tue, 2021-01-05 at 15:02 +0100, Thomas Bogendoerfer wrote:
+> > > Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> > []
+> > > diff --git a/drivers/dma/txx9dmac.h b/drivers/dma/txx9dmac.h
+> > []
+> > > @@ -26,11 +26,6 @@
+> > >   * DMA channel.
+> > >   */
+> > >  
 > > > 
-> > > C827 is an Intel(R) Ethernet serdes transceiver chip that supports
-> > > up to 100G transfer. On Intel PAC N3000 there are 2 C827 chips
-> > > managed by the Intel MAX 10 BMC firmware. They are configured in 4 ports
-> > > 10G/25G retimer mode. Host could query their link states and firmware
-> > > version information via retimer interfaces (Shared registers) on Intel
-> > > MAX 10 BMC. The driver creates sysfs interfaces for users to query these
-> > > information.
+> > > -#ifdef CONFIG_MACH_TX49XX
+> > > -static inline bool txx9_dma_have_SMPCHN(void)
+> > > -{
+> > > -	return true;
+> > > -}
+> > >  #define TXX9_DMA_USE_SIMPLE_CHAIN
+> > >  #else
+> > >  static inline bool txx9_dma_have_SMPCHN(void)
 > > 
-> > Networking people, please look at this sysfs file:
-> > 
-> > > +What:		/sys/bus/platform/devices/n3000bmc-retimer.*.auto/link_statusX
-> > > +Date:		Jan 2021
-> > > +KernelVersion:	5.12
-> > > +Contact:	Xu Yilun <yilun.xu@intel.com>
-> > > +Description:	Read only. Returns the status of each line side link. "1" for
-> > > +		link up, "0" for link down.
-> > > +		Format: "%u".
-> > 
-> > as I need your approval to add it because it is not the "normal" way for
-> > link status to be exported to userspace.
-> > 
-> > One code issue:
-> > 
-> > > +#define to_link_attr(dev_attr) \
-> > > +	container_of(dev_attr, struct link_attr, attr)
-> > > +
-> > > +static ssize_t
-> > > +link_status_show(struct device *dev, struct device_attribute *attr, char *buf)
-> > > +{
-> > > +	struct m10bmc_retimer *retimer = dev_get_drvdata(dev);
-> > > +	struct link_attr *lattr = to_link_attr(attr);
-> > > +	unsigned int val;
-> > > +	int ret;
-> > > +
-> > > +	ret = m10bmc_sys_read(retimer->m10bmc, M10BMC_PKVL_LSTATUS, &val);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	return sysfs_emit(buf, "%u\n",
-> > > +			  !!(val & BIT((retimer->id << 2) + lattr->index)));
-> > > +}
-> > > +
-> > > +#define link_status_attr(_index)				\
-> > > +	static struct link_attr link_attr_status##_index =	\
-> > > +		{ .attr = __ATTR(link_status##_index, 0444,	\
-> > > +				 link_status_show, NULL),	\
-> > > +		  .index = (_index) }
-> > 
-> > Why is this a "raw" attribute and not a device attribute?
+> > This doesn't look like it compiles as there's now an #else
+> > without an #if
 > 
-> It is actually a device_attribute. The device_attribute is embedded in
-> link_attr, like:
+> you are right, no idea what I had in mind while doing that.
 > 
->   struct link_attr {
-> 	struct device_attribute attr;
-> 	u32 index;
->   };
+> Vinod,
 > 
-> An index for the link is appended along with the device_attribute, so we
-> could identify which link is being queried on link_status_show(). There
-> are 4 links and this is to avoid duplicated code like
-> link_status_1_show(), link_status_2_show() ...
+> as this patch series found a still active user of the platform,
+> could you drop the patch from your tree, or do you want a revert
+> from me ?
 
-Duplicated code is better to read than complex code :)
+Dropped now
 
-> > Please just use a normal DEVICE_ATTR_RO() macro to make it simpler and
-> 
-> DEVICE_ATTR_RO() is to define a standalone device_attribute variable, but
-> here we are initializing a field in struct link_attr.
-
-Then use the correct initialization macro that is given to you for that,
-do not roll your own.
-
-greg k-h
+-- 
+~Vinod
