@@ -2,45 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB8282EEB72
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 03:46:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 516022EEB76
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 03:48:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbhAHCnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 21:43:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44592 "EHLO mail.kernel.org"
+        id S1726808AbhAHCrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 21:47:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726566AbhAHCnU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 21:43:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 77D3D23603;
-        Fri,  8 Jan 2021 02:42:39 +0000 (UTC)
+        id S1726410AbhAHCrF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 21:47:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5559D235FF;
+        Fri,  8 Jan 2021 02:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610073759;
-        bh=mAzFsBnALbRAw8MytA8IqEYz8JwOkyAkdFv/I7JONzE=;
+        s=k20201202; t=1610073984;
+        bh=3RaZpfkytPE7ruxLsbXw7CzXUGBF2D93MgTgnLLXcJk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A7EMmbKmC826NcUu3pME4GN8RmQ0wH2YssQfkcBt0Z6xrDC7E2JGmqjVNOAqKzt8B
-         cXe0KdWlOgcBYe9pNIrJcolVu0w5hSV6JSfXKQeJxL6WV1OpL4PsHOISXBExVIS8/k
-         RWWUzHRZnVTEWLcjIznyPAl5raOMWWDtYDjFTiz5IuAOCvk66iwXj+PonU2ahL8SQn
-         9TM9GMQhWJgtN2vb/zMQOUU9YEmZXVHMoGUHvTxPXAdRRc+EZRKtD+nJPIi8je1OTb
-         6gBMTyRIStB9cIY5BnySOsL21ZhIkoPkNfE7kYVD0BuJPknrcnI3LXdivTJ9GAdtTO
-         lI8IQF9GxDSLw==
-Date:   Thu, 7 Jan 2021 18:42:38 -0800
+        b=XquMGtJnfBMyL2uvMR4sLntoX1NTr9c8c1+bmKn/EQdBrspsGO7OF6VBo9dMnKLFK
+         89LoClvfWhv0eyDPOlbbarR10Q2dLwRM1lNr2k9vFn2+M1R4wFEp1XUkGunEHHYQBF
+         bSUuVE8ir/9t+kSac9dgzJmjjQBl0Ky+bitGVfjhnvxncrIO4FlEqoO0BGVUh3PNT2
+         ckL0oJoEWOUQS/ubhkzdptvDVwnOCN02qsiqK9D1hLXHfonkxV2BWG1qkvicj9u9a2
+         7/7z10hor7NXfFBsrTR/5jt1uPlWmdkVZRvV8i2GinXlWbmz6zlLsF/TQ4w+xeIerX
+         STcMWL/uV9wvA==
+Date:   Thu, 7 Jan 2021 18:46:23 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     Colin King <colin.king@canonical.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Nithya Mani <nmani@marvell.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] octeontx2-af: fix memory leak of lmac and lmac->name
-Message-ID: <20210107184238.36841971@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CA+sq2CcPRuQijfOFA74KrNF9E5tj-QqH_0nNC21fT=rqkuuCcw@mail.gmail.com>
-References: <20210107123916.189748-1-colin.king@canonical.com>
-        <CA+sq2CcPRuQijfOFA74KrNF9E5tj-QqH_0nNC21fT=rqkuuCcw@mail.gmail.com>
+To:     Stephan Gerhold <stephan@gerhold.net>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        aleksander@aleksander.es, andrewlassalle@chromium.org,
+        Alex Elder <elder@kernel.org>
+Subject: Re: [PATCH net] net: ipa: modem: add missing SET_NETDEV_DEV() for
+ proper sysfs links
+Message-ID: <20210107184623.297798ea@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210106100755.56800-1-stephan@gerhold.net>
+References: <20210106100755.56800-1-stephan@gerhold.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,22 +41,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 Jan 2021 22:31:30 +0530 Sunil Kovvuri wrote:
-> On Thu, Jan 7, 2021 at 6:11 PM Colin King <colin.king@canonical.com> wrote:
-> >
-> > From: Colin Ian King <colin.king@canonical.com>
-> >
-> > Currently the error return paths don't kfree lmac and lmac->name
-> > leading to some memory leaks.  Fix this by adding two error return
-> > paths that kfree these objects
-> >
-> > Addresses-Coverity: ("Resource leak")
-> > Fixes: 1463f382f58d ("octeontx2-af: Add support for CGX link management")
-> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
+On Wed,  6 Jan 2021 11:07:55 +0100 Stephan Gerhold wrote:
+> At the moment it is quite hard to identify the network interface
+> provided by IPA in userspace components: The network interface is
+> created as virtual device, without any link to the IPA device.
+> The interface name ("rmnet_ipa%d") is the only indication that the
+> network interface belongs to IPA, but this is not very reliable.
 > 
-> Thanks for the fix, looks good to me.
+> Add SET_NETDEV_DEV() to associate the network interface with the
+> IPA parent device. This allows userspace services like ModemManager
+> to properly identify that this network interface is provided by IPA
+> and belongs to the modem.
+> 
+> Cc: Alex Elder <elder@kernel.org>
+> Fixes: a646d6ec9098 ("soc: qcom: ipa: modem and microcontroller")
+> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 
-Consider venturing an Acked-by tag in the future so it can be recorded 
-in git.
-
-Applied, thanks!
+Alex, can we get an ack?
