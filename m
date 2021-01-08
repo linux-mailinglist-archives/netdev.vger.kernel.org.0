@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44F222EF5D8
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 17:35:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B06AA2EF5DB
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 17:35:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbhAHQdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 11:33:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
+        id S1728419AbhAHQdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 11:33:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728156AbhAHQdm (ORCPT
+        with ESMTP id S1728159AbhAHQdm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 11:33:42 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45CCC0612A8
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 08:32:41 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id w1so15190596ejf.11
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 08:32:41 -0800 (PST)
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C2CC0612A9
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 08:32:43 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id r5so11716108eda.12
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 08:32:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/Wtdvg0EU8CbIz7qyhphZGYCfzOo7O5XFwV++uubOBY=;
-        b=MTrXXeQ9imQFEz1KFqxOeeW4Mdb7hfaTHz4rMkkEayqBu6f28DSPaDaQf9UoUY1WcG
-         S5x5OzIdiO0R7NL35MO40IiVpYkvTDfuI5mlvIvkHOJWKkVQ4YNPB8CdiTo83RfLpUDY
-         EIDRvNzwMkT84hynIeXngOACyQrTg6pENECgM13ZGGgMkEmc+Se6OawaXOzy1Vea0OBN
-         2pz9svZLjXjbTZoBIqdotEJUfJ6IcjaYfMzQFDT1qwbOiKG7DCwyEU4sVHEYHTI5lvQ+
-         tF11+pfIlJFlNtPxGjpcELJHaMbaiEL/WmSbD7MWV2oqZdg+Ocp2LZydjwmp68RkgJU1
-         A5yw==
+        bh=EVQ47sUTr3Nf37oLO+DwJ+2X4bic3yriEBwcATozdCo=;
+        b=cEDVH074ycomsGj2MdosFFUR6Ux7e8rwj534+3gAUqOmkEHR03ZqCehyzmADVApbYO
+         u0tSpnT6Ml2fj+g0tMwWe6UA15v39nuf2X1M76pSJWqkayIp056XIVIHrwRBNeqnYpA6
+         uxv+c4dlPpnBzzfRR0DQUlnOuLr+4oVWcU7ynLtcioX55Q9uj+i1VlhRFBTZTMP0dYhn
+         eOatAMZSJCf9uY8fGKqUHTWs3mRuqgOpOg6ncTZUjbVVQYD1AsPnnTH9ow4OD1b3DrCO
+         YfDKNwx9Y0OjzoJAuJRnUDbbBVHOkHtTvitqDfRR8Vdwc/H80ncsiQc1MJs3ZCo+B0UT
+         0r4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/Wtdvg0EU8CbIz7qyhphZGYCfzOo7O5XFwV++uubOBY=;
-        b=WH5C090LPgy0UrjY/9paZ7Lq9+esQyT6A0D2KBFJx0RNJYZe9DjKgOzZHGo57F+C4K
-         pi7afiukUBWvdTxyUoCG5FqMCBnxaMvboA10QX2S0yzH2NtcbMw2/NJIu6wv+u7iGiy5
-         ytGY73jssL645HsTohD59jwBvW9jrbzK/jjmSHMjdG4aZf9SVPSdImWuN873tboMGGIN
-         h4KpDmQX0FXK4vUoxtDQiULkFJameslHuhTN7Yf8XZ1dbsEXe8Au3ONmMPQh4CLbovOD
-         ruakzzREKEqmv8TKpvXawbFWOEqDeAGV952O1GXRsQJ6BTA1wrj0FaHrZVgSSB+Chv55
-         Xp8g==
-X-Gm-Message-State: AOAM530dM53B0XYmv10RCHvEpBENqjj3+vLRO1HnQ7aMUeXKSNNdB3T7
-        MqTyu3nEMrs/CfV5GTGos+8=
-X-Google-Smtp-Source: ABdhPJzoPZoGmR61nb6T72kxXmFdBOjw50nr+7fDAjJOJR/KOlR39RRQNFsZei2EDXJbJsPm9j1PZQ==
-X-Received: by 2002:a17:906:fa12:: with SMTP id lo18mr3292593ejb.354.1610123560572;
-        Fri, 08 Jan 2021 08:32:40 -0800 (PST)
+        bh=EVQ47sUTr3Nf37oLO+DwJ+2X4bic3yriEBwcATozdCo=;
+        b=Da6DX3THx1pu34Eh8mOps7S1ecE684MOKfM78f8nLeYfD2NYMF9XDN6nxpmTJHxxl5
+         NypJdEO7jipkRge96WQWUn3HEbe5Bs06A/swb3BDlElSEHei9jI1lEEAGFQxWogEu3L1
+         FPJanaII71GqO8moWyad/6PYZSWzuks6nIzqK9GJn0Z0wmyiXhAw7d9yUbW2je4G1ElE
+         ALdHYWeC4e3bUFglj/7acPLluZQ4zaRTiL6nZFq8dNIQwkSDiZs8ersBBJ65wcoUfCrd
+         VOOxPNJg7aD2XY+3dho1FKW0Gv+esA8DZlbPlDSMIRp0vuamdd/G3i191HV088+Etyhr
+         kOIA==
+X-Gm-Message-State: AOAM531NY4zBd9+BaDSZVGFZ6u7t3zArEDdwdnQWP0fJhShdVjltaajZ
+        SUgHpEWGDWWEQFEjztzB2Oo=
+X-Google-Smtp-Source: ABdhPJz9YEIrG7ShpfNCnbi2wZcAfx32RoCHDMtT5f157PVAjeP3kCJMkSa43IUGJH+4ziIjr9mVHw==
+X-Received: by 2002:a05:6402:17a3:: with SMTP id j3mr5741321edy.333.1610123562131;
+        Fri, 08 Jan 2021 08:32:42 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id x6sm3957737edl.67.2021.01.08.08.32.39
+        by smtp.gmail.com with ESMTPSA id x6sm3957737edl.67.2021.01.08.08.32.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 08:32:40 -0800 (PST)
+        Fri, 08 Jan 2021 08:32:41 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -66,9 +66,9 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Pravin B Shelar <pshelar@ovn.org>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH v5 net-next 14/16] net: net_failover: ensure .ndo_get_stats64 can sleep
-Date:   Fri,  8 Jan 2021 18:31:57 +0200
-Message-Id: <20210108163159.358043-15-olteanv@gmail.com>
+Subject: [PATCH v5 net-next 15/16] net: bonding: ensure .ndo_get_stats64 can sleep
+Date:   Fri,  8 Jan 2021 18:31:58 +0200
+Message-Id: <20210108163159.358043-16-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210108163159.358043-1-olteanv@gmail.com>
 References: <20210108163159.358043-1-olteanv@gmail.com>
@@ -80,155 +80,313 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The failover framework sets up a virtio_net interface [ when it has the
-VIRTIO_NET_F_STANDBY feature ] and a VF interface, having the same MAC
-address, in a standby/active relationship. When the active VF is
-unplugged, the standby virtio_net temporarily kicks in.
-
-The failover framework registers a common upper for the active and the
-standby interface, which is what the application layer uses. This is
-similar to bonding/team. The statistics of the upper interface are the
-sum of the statistics of the active and of the standby interface.
-
 There is an effort to convert .ndo_get_stats64 to sleepable context, and
 for that to work, we need to prevent callers of dev_get_stats from using
-atomic locking. The failover driver needs protection via an RCU
-read-side critical section to access the standby and the active
-interface. This has two features:
-- It is atomic: this needs to change.
-- It is reentrant: this is ok, because generally speaking, dev_get_stats
-  is recursive, and taking global locks is a bad thing from a recursive
-  context.
+atomic locking.
 
-The existing logic can be rehashed just a little bit such that the
-recursive dev_get_stats call will not be under any lock. We can achieve
-that by "cheating" a little bit and use dev_hold() to take a reference
-on the active and backup interfaces, and netdev_wait_allrefs() will just
-have to wait until dev_get_stats() finishes.
+The bonding driver retrieves its statistics recursively from its lower
+interfaces, with additional care to only count packets sent/received
+while those lowers were actually enslaved to the bond - see commit
+5f0c5f73e5ef ("bonding: make global bonding stats more reliable").
+
+Since commit 87163ef9cda7 ("bonding: remove last users of bond->lock and
+bond->lock itself"), the bonding driver uses the following protection
+for its array of slaves: RCU for readers and rtnl_mutex for updaters.
+This is not great because there is another movement [ somehow
+simultaneous with the one to make .ndo_get_stats64 sleepable ] to reduce
+driver usage of rtnl_mutex. This makes sense, because the rtnl_mutex has
+become a very contended resource.
+
+The aforementioned commit removed an interesting comment:
+
+	/* [...] we can't hold bond->lock [...] because we'll
+	 * deadlock. The only solution is to rely on the fact
+	 * that we're under rtnl_lock here, and the slaves
+	 * list won't change. This doesn't solve the problem
+	 * of setting the slave's MTU while it is
+	 * transmitting, but the assumption is that the base
+	 * driver can handle that.
+	 *
+	 * TODO: figure out a way to safely iterate the slaves
+	 * list, but without holding a lock around the actual
+	 * call to the base driver.
+	 */
+
+The above summarizes pretty well the challenges we have with nested
+bonding interfaces (bond over bond over bond over...), which need to be
+addressed by a better locking scheme that also not relies on the bloated
+rtnl_mutex for the update side of the slaves array. That issue is not
+addressed here, but there is a way around it.
+
+To solve the nesting problem, the simple way is to not hold any locks
+when recursing into the slave netdev operation. We can "cheat" and use
+dev_hold to take a reference on the slave net_device, which is enough to
+ensure that netdev_wait_allrefs() waits until we finish, and the kernel
+won't fault.
+
+However, the slave structure might no longer be valid, just its
+associated net_device. So we need to do some more work to ensure that
+the slave exists after we took the statistics, and if it still does,
+reapply the logic from Andy's commit 5f0c5f73e5ef.
+
+Tested using the following two scripts running in parallel:
+
+	#!/bin/bash
+
+	while :; do
+		ip link del bond0
+		ip link del bond1
+		ip link add bond0 type bond mode 802.3ad
+		ip link add bond1 type bond mode 802.3ad
+		ip link set sw0p1 down && ip link set sw0p1 master bond0 && ip link set sw0p1 up
+		ip link set sw0p2 down && ip link set sw0p2 master bond0 && ip link set sw0p2 up
+		ip link set sw0p3 down && ip link set sw0p3 master bond0 && ip link set sw0p3 up
+		ip link set bond0 down && ip link set bond0 master bond1 && ip link set bond0 up
+		ip link set sw1p1 down && ip link set sw1p1 master bond1 && ip link set sw1p1 up
+		ip link set bond1 up
+		ip -s -s link show
+		cat /sys/class/net/bond1/statistics/*
+	done
+
+	#!/bin/bash
+
+	while :; do
+		echo spi2.0 > /sys/bus/spi/drivers/sja1105/unbind
+		echo spi2.0 > /sys/bus/spi/drivers/sja1105/bind
+		sleep 30
+	done
+
+where the sja1105 driver was explicitly modified for the purpose of this
+test to have a msleep(500) in its .ndo_get_stats64 method, to catch some
+more potential races.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v5:
-Use rcu_read_lock() and do not change the locking architecture of the
-driver.
+- Use rcu_read_lock() and do not change the locking architecture of
+  the driver.
+- Gave some details on my testing procedure.
 
 Changes in v4:
 Now there is code to propagate errors.
 
 Changes in v3:
-None.
+- Added kfree(dev_stats);
+- Removed the now useless stats_lock (bond->bond_stats and
+  slave->slave_stats are now protected by bond->slaves_lock)
 
 Changes in v2:
 Switched to the new scheme of holding just a refcnt to the slave
 interfaces while recursing with dev_get_stats.
 
- drivers/net/net_failover.c | 64 ++++++++++++++++++++++++++++----------
- 1 file changed, 47 insertions(+), 17 deletions(-)
+ drivers/net/bonding/bond_main.c | 113 +++++++++++++++-----------------
+ include/net/bonding.h           |  54 +++++++++++++++
+ 2 files changed, 108 insertions(+), 59 deletions(-)
 
-diff --git a/drivers/net/net_failover.c b/drivers/net/net_failover.c
-index 7f70555e68d1..3e8a4046c748 100644
---- a/drivers/net/net_failover.c
-+++ b/drivers/net/net_failover.c
-@@ -183,38 +183,64 @@ static int net_failover_get_stats(struct net_device *dev,
- 				  struct rtnl_link_stats64 *stats)
- {
- 	struct net_failover_info *nfo_info = netdev_priv(dev);
--	struct rtnl_link_stats64 temp;
--	struct net_device *slave_dev;
-+	struct rtnl_link_stats64 primary_stats;
-+	struct rtnl_link_stats64 standby_stats;
-+	struct net_device *primary_dev;
-+	struct net_device *standby_dev;
- 	int err = 0;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 2352ef64486b..77c3a40adbf4 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -3705,80 +3705,75 @@ static void bond_fold_stats(struct rtnl_link_stats64 *_res,
+ 	}
+ }
  
--	spin_lock(&nfo_info->stats_lock);
--	memcpy(stats, &nfo_info->failover_stats, sizeof(*stats));
+-#ifdef CONFIG_LOCKDEP
+-static int bond_get_lowest_level_rcu(struct net_device *dev)
+-{
+-	struct net_device *ldev, *next, *now, *dev_stack[MAX_NEST_DEV + 1];
+-	struct list_head *niter, *iter, *iter_stack[MAX_NEST_DEV + 1];
+-	int cur = 0, max = 0;
 -
- 	rcu_read_lock();
+-	now = dev;
+-	iter = &dev->adj_list.lower;
+-
+-	while (1) {
+-		next = NULL;
+-		while (1) {
+-			ldev = netdev_next_lower_dev_rcu(now, &iter);
+-			if (!ldev)
+-				break;
+-
+-			next = ldev;
+-			niter = &ldev->adj_list.lower;
+-			dev_stack[cur] = now;
+-			iter_stack[cur++] = iter;
+-			if (max <= cur)
+-				max = cur;
+-			break;
+-		}
+-
+-		if (!next) {
+-			if (!cur)
+-				return max;
+-			next = dev_stack[--cur];
+-			niter = iter_stack[cur];
+-		}
+-
+-		now = next;
+-		iter = niter;
+-	}
+-
+-	return max;
+-}
+-#endif
+-
+ static int bond_get_stats(struct net_device *bond_dev,
+ 			  struct rtnl_link_stats64 *stats)
+ {
+ 	struct bonding *bond = netdev_priv(bond_dev);
+-	struct rtnl_link_stats64 temp;
+-	struct list_head *iter;
+-	struct slave *slave;
+-	int nest_level = 0;
+-	int res = 0;
++	struct rtnl_link_stats64 *dev_stats;
++	struct bonding_slave_dev *s;
++	struct list_head slaves;
++	int res, num_slaves;
++	int i = 0;
  
--	slave_dev = rcu_dereference(nfo_info->primary_dev);
--	if (slave_dev) {
--		err = dev_get_stats(slave_dev, &temp);
-+	primary_dev = rcu_dereference(nfo_info->primary_dev);
-+	if (primary_dev)
-+		dev_hold(primary_dev);
+-	rcu_read_lock();
+-#ifdef CONFIG_LOCKDEP
+-	nest_level = bond_get_lowest_level_rcu(bond_dev);
+-#endif
++	res = bond_get_slaves(bond, &slaves, &num_slaves);
++	if (res)
++		return res;
+ 
+-	spin_lock_nested(&bond->stats_lock, nest_level);
+-	memcpy(stats, &bond->bond_stats, sizeof(*stats));
++	dev_stats = kcalloc(num_slaves, sizeof(*dev_stats), GFP_KERNEL);
++	if (!dev_stats) {
++		bond_put_slaves(&slaves);
++		return -ENOMEM;
++	}
+ 
+-	bond_for_each_slave_rcu(bond, slave, iter) {
+-		res = dev_get_stats(slave->dev, &temp);
++	/* Recurse with no locks taken */
++	list_for_each_entry(s, &slaves, list) {
++		res = dev_get_stats(s->ndev, &dev_stats[i]);
+ 		if (res)
+ 			goto out;
++		i++;
++	}
 +
-+	standby_dev = rcu_dereference(nfo_info->standby_dev);
-+	if (standby_dev)
-+		dev_hold(standby_dev);
++	spin_lock(&bond->stats_lock);
++
++	memcpy(stats, &bond->bond_stats, sizeof(*stats));
++
++	/* Because we released the RCU lock in bond_get_slaves, the new slave
++	 * array might be different from the original one, so we need to take
++	 * it again and only update the stats of the slaves that still exist.
++	 */
++	rcu_read_lock();
++
++	i = 0;
++
++	list_for_each_entry(s, &slaves, list) {
++		struct list_head *iter;
++		struct slave *slave;
+ 
+-		bond_fold_stats(stats, &temp, &slave->slave_stats);
++		bond_for_each_slave_rcu(bond, slave, iter) {
++			if (slave->dev != s->ndev)
++				continue;
+ 
+-		/* save off the slave stats for the next run */
+-		memcpy(&slave->slave_stats, &temp, sizeof(temp));
++			bond_fold_stats(stats, &dev_stats[i],
++					&slave->slave_stats);
++
++			/* save off the slave stats for the next run */
++			memcpy(&slave->slave_stats, &dev_stats[i],
++			       sizeof(dev_stats[i]));
++			break;
++		}
++
++		i++;
+ 	}
+ 
++	rcu_read_unlock();
++
+ 	memcpy(&bond->bond_stats, stats, sizeof(*stats));
+-out:
++
+ 	spin_unlock(&bond->stats_lock);
+-	rcu_read_unlock();
++
++out:
++	kfree(dev_stats);
++	bond_put_slaves(&slaves);
+ 
+ 	return res;
+ }
+diff --git a/include/net/bonding.h b/include/net/bonding.h
+index adc3da776970..149d445f935f 100644
+--- a/include/net/bonding.h
++++ b/include/net/bonding.h
+@@ -449,6 +449,60 @@ static inline void bond_hw_addr_copy(u8 *dst, const u8 *src, unsigned int len)
+ 	memcpy(dst, src, len);
+ }
+ 
++/* Helpers for reference counting the struct net_device behind the bond slaves.
++ * These can be used to propagate the net_device_ops from the bond to the
++ * slaves while not holding rcu_read_lock() or the rtnl_mutex.
++ */
++struct bonding_slave_dev {
++	struct net_device *ndev;
++	struct list_head list;
++};
++
++static inline void bond_put_slaves(struct list_head *slaves)
++{
++	struct bonding_slave_dev *s, *tmp;
++
++	list_for_each_entry_safe(s, tmp, slaves, list) {
++		dev_put(s->ndev);
++		list_del(&s->list);
++		kfree(s);
++	}
++}
++
++static inline int bond_get_slaves(struct bonding *bond,
++				  struct list_head *slaves,
++				  int *num_slaves)
++{
++	struct list_head *iter;
++	struct slave *slave;
++	int err = 0;
++
++	INIT_LIST_HEAD(slaves);
++	*num_slaves = 0;
++
++	rcu_read_lock();
++
++	bond_for_each_slave_rcu(bond, slave, iter) {
++		struct bonding_slave_dev *s;
++
++		s = kzalloc(sizeof(*s), GFP_ATOMIC);
++		if (!s) {
++			rcu_read_unlock();
++			bond_put_slaves(slaves);
++			break;
++		}
++
++		s->ndev = slave->dev;
++		dev_hold(s->ndev);
++		list_add_tail(&s->list, slaves);
++		(*num_slaves)++;
++	}
 +
 +	rcu_read_unlock();
 +
-+	/* Don't hold rcu_read_lock while calling dev_get_stats, just a
-+	 * reference to ensure they won't get unregistered.
-+	 */
-+	if (primary_dev) {
-+		err = dev_get_stats(primary_dev, &primary_stats);
- 		if (err)
- 			goto out;
--		net_failover_fold_stats(stats, &temp, &nfo_info->primary_stats);
--		memcpy(&nfo_info->primary_stats, &temp, sizeof(temp));
- 	}
- 
--	slave_dev = rcu_dereference(nfo_info->standby_dev);
--	if (slave_dev) {
--		err = dev_get_stats(slave_dev, &temp);
-+	if (standby_dev) {
-+		err = dev_get_stats(standby_dev, &standby_stats);
- 		if (err)
- 			goto out;
--		net_failover_fold_stats(stats, &temp, &nfo_info->standby_stats);
--		memcpy(&nfo_info->standby_stats, &temp, sizeof(temp));
- 	}
- 
--out:
--	rcu_read_unlock();
-+	spin_lock(&nfo_info->stats_lock);
++	return err;
++}
 +
-+	memcpy(stats, &nfo_info->failover_stats, sizeof(*stats));
-+
-+	if (primary_dev) {
-+		net_failover_fold_stats(stats, &primary_stats,
-+					&nfo_info->primary_stats);
-+		memcpy(&nfo_info->primary_stats, &primary_stats,
-+		       sizeof(primary_stats));
-+	}
-+	if (standby_dev) {
-+		net_failover_fold_stats(stats, &standby_stats,
-+					&nfo_info->standby_stats);
-+		memcpy(&nfo_info->standby_stats, &standby_stats,
-+		       sizeof(standby_stats));
-+	}
- 
- 	memcpy(&nfo_info->failover_stats, stats, sizeof(*stats));
-+
- 	spin_unlock(&nfo_info->stats_lock);
-+out:
-+	if (primary_dev)
-+		dev_put(primary_dev);
-+	if (standby_dev)
-+		dev_put(standby_dev);
- 
- 	return err;
- }
-@@ -728,6 +754,7 @@ static struct failover_ops net_failover_ops = {
- struct failover *net_failover_create(struct net_device *standby_dev)
- {
- 	struct device *dev = standby_dev->dev.parent;
-+	struct net_failover_info *nfo_info;
- 	struct net_device *failover_dev;
- 	struct failover *failover;
- 	int err;
-@@ -772,6 +799,9 @@ struct failover *net_failover_create(struct net_device *standby_dev)
- 	failover_dev->min_mtu = standby_dev->min_mtu;
- 	failover_dev->max_mtu = standby_dev->max_mtu;
- 
-+	nfo_info = netdev_priv(failover_dev);
-+	spin_lock_init(&nfo_info->stats_lock);
-+
- 	err = register_netdev(failover_dev);
- 	if (err) {
- 		dev_err(dev, "Unable to register failover_dev!\n");
+ #define BOND_PRI_RESELECT_ALWAYS	0
+ #define BOND_PRI_RESELECT_BETTER	1
+ #define BOND_PRI_RESELECT_FAILURE	2
 -- 
 2.25.1
 
