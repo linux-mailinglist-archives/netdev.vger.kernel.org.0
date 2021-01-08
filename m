@@ -2,80 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02FBB2EEA28
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 01:11:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 582102EEA42
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 01:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729432AbhAHAKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 19:10:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59058 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728416AbhAHAKu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 19:10:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 489F02368A;
-        Fri,  8 Jan 2021 00:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610064609;
-        bh=/bl+dbUQLW5CaBdvmpIzjWmsxh0p83ugF1Vo+dLtI4U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uWzA7PeycjLb4035QydEmCtOyAkyifDY/SsgqIUFsomS6J7UBqdsVuhT7C3Ddj5tR
-         yY4gKO/61/At/fOU2qBQh5pD8nFZm4ERxwL54dFGACjsk2oRISOpXicVvVAPImBEvc
-         H71k+VFK4S4nG8LnFBvf9yt1gV+byg5WD/iiCZfRjsRAY8aI5Ge4AAL007OIqsO05A
-         ApUt982gsAZYSALR6kYs/ov7Etpc3uzON+g8PGbt+ZrDnTBKSYOfNIsqzoOJ9HGphp
-         0VH8jrPkOttw9p+a7+eLmRW8Xl0uEOpG7rsWMikL6yZeiLz2hZAidvMKwfoCIMm4BL
-         6vF0kUunGfpOg==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 3807E605AC;
-        Fri,  8 Jan 2021 00:10:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1729500AbhAHATg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 19:19:36 -0500
+Received: from mail2.candelatech.com ([208.74.158.173]:50014 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727858AbhAHATg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 19:19:36 -0500
+Received: from [192.168.254.6] (unknown [50.46.152.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 1AD8F13C2B3
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 16:17:11 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 1AD8F13C2B3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1610065047;
+        bh=o3joCyfnDrTllgvYDMVRMjj/62to+RMWTMPZbkUZ9rY=;
+        h=To:From:Subject:Date:From;
+        b=bDiEDBouFmxgEhBlrT6P8PFrys2JQUEWoPKQK9KBoxeLA31nILUnO6jHRq4pzGchL
+         Eex/q4m3QWvl8i1q1ld8em50LpHXzc5hN5oMRfawIs6eqYbB7AGm9A4Z4TDt+ie9FT
+         aw9EImrc09dF6XoBc1uTFex6ZojiIa9XqDWz4kY8=
+To:     netdev <netdev@vger.kernel.org>
+From:   Ben Greear <greearb@candelatech.com>
+Subject: 5.10.4+ hang with 'rmmod nf_conntrack'
+Organization: Candela Technologies
+Message-ID: <41dbfc93-0d57-6d78-f6fa-529dd5e0685c@candelatech.com>
+Date:   Thu, 7 Jan 2021 16:17:10 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 0/5] dwmac-meson8b: picosecond precision RX delay support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161006460922.17100.14707302007622685350.git-patchwork-notify@kernel.org>
-Date:   Fri, 08 Jan 2021 00:10:09 +0000
-References: <20210106134251.45264-1-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20210106134251.45264-1-martin.blumenstingl@googlemail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        jianxin.pan@amlogic.com, narmstrong@baylibre.com,
-        khilman@baylibre.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, jbrunet@baylibre.com
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+I noticed my system has a hung process trying to 'rmmod nf_conntrack'.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+I've generally been doing the script that calls rmmod forever,
+but only extensively tested on 5.4 kernel and earlier.
 
-On Wed,  6 Jan 2021 14:42:46 +0100 you wrote:
-> Hello,
-> 
-> with the help of Jianxin Pan (many thanks!) the meaning of the "new"
-> PRG_ETH1[19:16] register bits on Amlogic Meson G12A, G12B and SM1 SoCs
-> are finally known. These SoCs allow fine-tuning the RGMII RX delay in
-> 200ps steps (contrary to what I have thought in the past [0] these are
-> not some "calibration" values).
-> 
-> [...]
+If anyone has any ideas, please let me know.  This is from 'sysrq t'.  I don't see
+any hung-task splats in dmesg.  I'll see if it is reproducible and if so will try
+with lockdep enabled...
 
-Here is the summary with links:
-  - [v4,1/5] dt-bindings: net: dwmac-meson: use picoseconds for the RGMII RX delay
-    https://git.kernel.org/netdev/net-next/c/6b5903f58df4
-  - [v4,2/5] net: stmmac: dwmac-meson8b: fix enabling the timing-adjustment clock
-    https://git.kernel.org/netdev/net-next/c/025822884a4f
-  - [v4,3/5] net: stmmac: dwmac-meson8b: use picoseconds for the RGMII RX delay
-    https://git.kernel.org/netdev/net-next/c/140ddf0633df
-  - [v4,4/5] net: stmmac: dwmac-meson8b: move RGMII delays into a separate function
-    https://git.kernel.org/netdev/net-next/c/7985244d10ea
-  - [v4,5/5] net: stmmac: dwmac-meson8b: add support for the RGMII RX delay on G12A
-    https://git.kernel.org/netdev/net-next/c/de94fc104d58
+21497 Jan 07 16:12:05 TR-398 kernel: task:rmmod           state:R  running task     stack:    0 pid: 4107 ppid:  4054 flags:0x00004084
+21498 Jan 07 16:12:05 TR-398 kernel: Call Trace:
+21499 Jan 07 16:12:05 TR-398 kernel:  ? do_softirq_own_stack+0x32/0x40
+21500 Jan 07 16:12:05 TR-398 kernel:  ? irq_exit_rcu+0x39/0x90
+21501 Jan 07 16:12:05 TR-398 kernel:  ? sysvec_apic_timer_interrupt+0x34/0x80
+21502 Jan 07 16:12:05 TR-398 kernel:  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
+21503 Jan 07 16:12:05 TR-398 kernel:  ? nf_conntrack_attach+0x30/0x30 [nf_conntrack]
+21504 Jan 07 16:12:05 TR-398 kernel:  ? _raw_spin_lock+0x12/0x20
+21505 Jan 07 16:12:05 TR-398 kernel:  ? do_softirq_own_stack+0x32/0x40
+21506 Jan 07 16:12:05 TR-398 kernel:  ? nf_conntrack_lock+0x9/0x40 [nf_conntrack]
+21507 Jan 07 16:12:05 TR-398 kernel:  ? nf_ct_iterate_cleanup+0x88/0x140 [nf_conntrack]
+21508 Jan 07 16:12:05 TR-398 kernel:  ? nf_conntrack_cleanup_net_list+0x36/0xc0 [nf_conntrack]
+21509 Jan 07 16:12:05 TR-398 kernel:  ? unregister_pernet_operations+0xcc/0x130
+21510 Jan 07 16:12:05 TR-398 kernel:  ? unregister_pernet_subsys+0x18/0x30
+21511 Jan 07 16:12:05 TR-398 kernel:  ? nf_conntrack_standalone_fini+0x11/0x425 [nf_conntrack]
+21512 Jan 07 16:12:05 TR-398 kernel:  ? __x64_sys_delete_module+0x131/0x270
+21513 Jan 07 16:12:05 TR-398 kernel:  ? syscall_trace_enter.isra.21+0xf9/0x190
+21514 Jan 07 16:12:05 TR-398 kernel:  ? do_syscall_64+0x2d/0x70
+21515 Jan 07 16:12:05 TR-398 kernel:  ? entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks,
+Ben
 
-
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
