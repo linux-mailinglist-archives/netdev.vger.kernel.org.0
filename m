@@ -2,94 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 139EE2EF751
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:28:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA3A2EF75B
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:31:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728672AbhAHS1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 13:27:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
+        id S1728387AbhAHSaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 13:30:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728357AbhAHS1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:27:32 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B63C061380
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:26:52 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id d14so9238095qkc.13
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:26:52 -0800 (PST)
+        with ESMTP id S1727648AbhAHSap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:30:45 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714CAC061381
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:30:05 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id p18so8124939pgm.11
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:30:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RhodXJ2Tzggqg1iwXnQ8qWubkJW7CK1VhA1r788tzrY=;
-        b=W3m3xiliKeceK1q6ziHe/t0vuB0ezE1CtD9M5jKhPpTjmagOcjl6tLDHTMDBcmMSJk
-         2RCf/1dC0IkUIPp5bFvJlAKOOaaBS3FCKYvkX2i5X0/HG8nNssILdJxXxBnDbVA73JxE
-         Bd3+gcV6BXQzVG1K45oJ8iemDm4iRiOFwlN0smMY2nNbswNDDliT0bseRiuox/Fp4Rx9
-         H5aSJeyoFsof9DUw0qIlR56FBs06F3yhyIGUWzFKcC8Xl/m8XxV0yosQI1rXFHVrvkhD
-         jQvcnC3yA04+MZsmEPHAhl9AQY79A2ueiWer1+Pw/Felyd8G1V7VmoUYzK5LXeAId5ug
-         3G4Q==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Y9B1CUTxJPxHuqv7eXG4LFFxxWuUGMqoAm5SJGMN/s0=;
+        b=BjxKtbc2zvJR5kR5tM/Opmc0OsNFRVoHi+JaeTDWX1X0EPP6+iGLhm6s4gz9AkQu6u
+         Jz/u8dJwlMSsrgBoce7SwGBcG5Ncvv4Y9EEjOST0jpVuPKFHTaOofK1CnsTIgvpahcSs
+         x6Wn96+x08rui102Rfed3HLq5Xxp/YSbMhCor9qvX7mgb+56gryYlnTT4Uu5IYrGdh5g
+         mjua3UEGDaW/TrBPg1/I7lb5Rkt/SZcO2y/Ak+rV75oQdb1Z89Jomjt4OHHfupM0Tiip
+         xAUWncKtHbR41j98JZPsBM9jAweTnsYzORUBUH/rKoQGsWdkw+L9mUHnhWQZ1qnoobee
+         CJlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RhodXJ2Tzggqg1iwXnQ8qWubkJW7CK1VhA1r788tzrY=;
-        b=SwbquwJQRFRZxQm9fzu/z+fjrsX8OBsPYlzWVRTUMK0y9WouiMYScfsCf01ClR+AxX
-         b360RpxlTU5oG25p1ulhZ6UPoTWrfac5ITYukmyjJoQMjB/W9E3KdpG+n6n/OIzvsJZH
-         zX8tiyQ/DtDd/Dr0zExT1fn56wvKcF6JpW1/HxYyQZtWlolXOMUWqpPTFEWXnaZsUx9R
-         6cjVpxnkMLMGOhZ01b3u+ifeUNJE16+bEtDSp5vegtj2ZDGgEUaQWkGebTrMlwCsSYuU
-         T4GGmjc8s1Kx5fqNCcLiHwE2xmTLIDd31g5ykVjGNtXwlJCE4QGmB1/XKu6rS0BuTY8d
-         ogTw==
-X-Gm-Message-State: AOAM532uPO5DtosLsGzhx2UgrkIfLlDl79fCB3V4HbyAr+w+lPDJzOyX
-        w3w746nt5fNH2koJfY/GWW9HO9EhpKQMJjh/A7pSBQ==
-X-Google-Smtp-Source: ABdhPJxLs8Lwrszh07st7GVzpvmLxoDPn1PQcrYPWBACQitdJ6MtWwRbmvrphhgyK40cyTkywz8baS9ox14P3NzNV3w=
-X-Received: by 2002:a37:a80a:: with SMTP id r10mr5306897qke.448.1610130411431;
- Fri, 08 Jan 2021 10:26:51 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Y9B1CUTxJPxHuqv7eXG4LFFxxWuUGMqoAm5SJGMN/s0=;
+        b=IVKpdiX7//iXZrvt+RDrkR56LUcJlAHzOKtuEPkfxhIfC63yMkJ66qXiAvqeAxUjPi
+         JsfFWN+qehDZK1cLjWvxw/5vODRnCmJA/dBi6bCDHwNHTSBR2xp6EcrN8V5txgiWIbuB
+         AMEvv6FT4NKFF8JBxNp65bjbRuU1/KWgkdx76GFZdVZCwwC/6yd1lJGKdfpnZOYOLic9
+         AH3CEcV84OqLzIuWxe8L0r98aduReFOSrvF7HZX6ODjWXO4BsTtGBoVgS1X456OU3g2c
+         phT0NX2bdNeH0b5R2dw5csLIUTzK8r58BFCnpNMmwENChOSjIWiZT/OZuUTW2z7aUCWo
+         oC8A==
+X-Gm-Message-State: AOAM5333t4KDuKb1Ggn7gTu9PCm1CHrDT/7N+A3Aa+Au0j/8lufxq/LV
+        1nt1DieBFQuFlqhUExbTWiA=
+X-Google-Smtp-Source: ABdhPJxfGZJnTQfoBMtuCZFpoCFDHWxRsSH4u7bEJ1hhIF5lTys0B6XETaEbcx+3NgF4LLbZS0L7oQ==
+X-Received: by 2002:a63:5a01:: with SMTP id o1mr8311323pgb.407.1610130604914;
+        Fri, 08 Jan 2021 10:30:04 -0800 (PST)
+Received: from [10.230.29.29] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m26sm9191431pfo.123.2021.01.08.10.30.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jan 2021 10:30:04 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 01/10] net: mscc: ocelot: auto-detect packet
+ buffer size and number of frame references
+To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
+Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, alexandru.marginean@nxp.com,
+        claudiu.manoil@nxp.com, xiaoliang.yang_1@nxp.com,
+        hongbo.wang@nxp.com, kuba@kernel.org, jiri@resnulli.us,
+        idosch@idosch.org, UNGLinuxDriver@microchip.com
+References: <20210108175950.484854-1-olteanv@gmail.com>
+ <20210108175950.484854-2-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <63ec3721-467f-dc21-03db-09f8d796f924@gmail.com>
+Date:   Fri, 8 Jan 2021 10:30:00 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
-References: <20210108180333.180906-1-sdf@google.com> <20210108180333.180906-2-sdf@google.com>
- <CANn89i+GvEUmoapF+C0Mf1qw+AuWhU5_MMPz-jy8fND0HmUJ=Q@mail.gmail.com>
-In-Reply-To: <CANn89i+GvEUmoapF+C0Mf1qw+AuWhU5_MMPz-jy8fND0HmUJ=Q@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 8 Jan 2021 10:26:40 -0800
-Message-ID: <CAKH8qBsWsKVxAyvhEYqXytTFMGEN=C3ZMKBPLs2RKcEpM4hXXQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 1/3] bpf: remove extra lock_sock for TCP_ZEROCOPY_RECEIVE
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210108175950.484854-2-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 8, 2021 at 10:10 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Jan 8, 2021 at 7:03 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > Add custom implementation of getsockopt hook for TCP_ZEROCOPY_RECEIVE.
-> > We skip generic hooks for TCP_ZEROCOPY_RECEIVE and have a custom
-> > call in do_tcp_getsockopt using the on-stack data. This removes
-> > 3% overhead for locking/unlocking the socket.
-> >
-> > Without this patch:
-> >      3.38%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
-> >             |
-> >              --3.30%--__cgroup_bpf_run_filter_getsockopt
-> >                        |
-> >                         --0.81%--__kmalloc
-> >
-> > With the patch applied:
-> >      0.52%     0.12%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt_kern
-> >
->
->
-> OK but we are adding yet another indirect call.
->
-> Can you add a patch on top of it adding INDIRECT_CALL_INET() avoidance ?
-Sure, but do you think it will bring any benefit?
-We don't have any indirect avoidance in __sys_getsockopt for the
-sock->ops->getsockopt() call.
-If we add it for this new bpf_bypass_getsockopt, we might as well add
-it for sock->ops->getsockopt?
-And we need some new INDIRECT_CALL_INET2 such that f2 doesn't get
-disabled when ipv6 is disabled :-/
+
+
+On 1/8/2021 9:59 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Instead of reading these values from the reference manual and writing
+> them down into the driver, it appears that the hardware gives us the
+> option of detecting them dynamically.
+> 
+> The number of frame references corresponds to what the reference manual
+> notes, however it seems that the frame buffers are reported as slightly
+> less than the books would indicate. On VSC9959 (Felix), the books say it
+> should have 128KB of packet buffer, but the registers indicate only
+> 129840 bytes (126.79 KB). Also, the unit of measurement for FREECNT from
+> the documentation of all these devices is incorrect (taken from an older
+> generation). This was confirmed by Younes Leroul from Microchip support.
+> 
+> Not having anything better to do with these values at the moment* (this
+> will change soon), let's just print them.
+> 
+> *The frame buffer size is, in fact, used to calculate the tail dropping
+> watermarks.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
