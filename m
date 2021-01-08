@@ -2,344 +2,372 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8D8E2EEAA2
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 01:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62E4D2EEAB8
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 02:12:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729753AbhAHA6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 19:58:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35404 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727634AbhAHA6E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 19:58:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2388E23731;
-        Fri,  8 Jan 2021 00:57:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610067443;
-        bh=l5q1r62X0KTV/fGKQgwEiB+79JiRcXwrMc65RhIfXig=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=OxJoKncTIHTE4edrSdXncpDR0NufuBj7UdEI/3i7y6cC/7K7E4WCzwFtfbCNcc7js
-         LzlE1NuRSjtnegpm92Cl0NdBV5hZEzvZcop7sMW4h7BpOYvBsMd/kKg9vtV/eTF+S7
-         tITsczeb1M553eWhHN22kfvgGwzYUv7lYspN5Hk+AktzvudHg+WIBG8q64J4J1A1VL
-         +dRmtaxlXaSbSUfReUetQR+HkkB0ePz1Dm+xMVkn75GQPAK7dStwHT2reyg75yyGpJ
-         v69zn5TLloAV/bpSSSPXEVDgr1CAh4sAjXuce4K3GGrvI3EqgI4I+182Rl+EtnFXDd
-         eS09WjT2fOcoA==
-Date:   Thu, 7 Jan 2021 18:57:21 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>
-Subject: Re: [PATCH mlx5-next 1/4] PCI: Configure number of MSI-X vectors for
- SR-IOV VFs
-Message-ID: <20210108005721.GA1403391@bjorn-Precision-5520>
-MIME-Version: 1.0
+        id S1729671AbhAHBKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 20:10:23 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:11504 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727634AbhAHBKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 20:10:22 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10819J2n012549;
+        Thu, 7 Jan 2021 17:09:24 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=nlSxjakrvkftB36oZcT62gTfMLsP7s6VZEr/tTat104=;
+ b=JAsVCzQjMpwLJuSf6wGfHc7aqYq7JVAKYkLDkvhiBvXUKRuCibaCZor/fxDLtAlqlL3J
+ wo5SkY3kQfvw9rOUoij6V0OpcDCqfL1MRXnINS006Sb6WXdCNZkSjZI0GbhjBxH/tjkx
+ ZId+AS2wDabGxJOif8+0wvZGdrlyYdZcMT8= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 35wpuv5wr2-8
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 07 Jan 2021 17:09:24 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 7 Jan 2021 17:08:49 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JwPJ5fVOODC9ziOA+z6LDSIksIUU0cDubgLuoHItqz14pxvEuy9C9vohYjpiQluDbKY4lq8MU3giV08pt2Z9pxSdwHYHltIpDZWysTHcyqkeFMZ4LVoX/e++/gb2qMhXkja7XfBVQTk8k16XZcxNTGcYYP4SBDL35dc2kk+IyG/goK3aqqEPc+8qhz6l6XP/cu1IAMSBkQgj76oZbzqFvOuXlO8dvE9t5kOK9+o1GOUYt8ZhU5daOzkD071kyPUncVUxMwiXQA0Vtk9CKeZ2XNKJvdeiNnXRVrLsOQr5Y6jPfbbMP9d5Ay9pQ5JvORPnhJVOfL/R1Zhf4OHarJpwdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nlSxjakrvkftB36oZcT62gTfMLsP7s6VZEr/tTat104=;
+ b=bRbayYOjglU7PfIb/TyZkID9Mah8gQPcoh3F04V6819BX29yc1XC3/D7lzlumbwrezZ10DvpoGKq6Nxs9Cpb3lE5yrumyive7x+At7TXkKwoDMO2QTznyRUi6U47h0Qo/uFJv9UKv/HmjK3o6MpMQ7ZQk5u6nf0ORR688lyE/1HP/jqaDd1hlSPTWOqhozKGul1AyxkWQR4ZClr5BXNvBTDBNc7tHZGax7Hd4DV+mUst/ogkwGgUURWR7L50/eOH4wY/UecXhMmMwoA36TVRy9YeqAG8Yzlriyo6MmV9CYYITg11njSY0wsm1rpVIHz/2lFgoCcZD16IEIKKJTt7vw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nlSxjakrvkftB36oZcT62gTfMLsP7s6VZEr/tTat104=;
+ b=BLdR/9ktUYkd57r98Bu0sYW83zfLVt14tX7liom0S+km1PtPxgszGSabzMxTPVygQ8bv+n+tQ+RzFa9nS9V59ckIWUDHJJyor7japGpjMAsJf1DdFQMilwZXlKbxInETrmj9MisKIlvX4ILydxH1mZcvzL3Q/zN6HwdtHmXrGfE=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB3256.namprd15.prod.outlook.com (2603:10b6:a03:10f::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.22; Fri, 8 Jan
+ 2021 01:08:48 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7%7]) with mapi id 15.20.3721.024; Fri, 8 Jan 2021
+ 01:08:48 +0000
+Date:   Thu, 7 Jan 2021 17:08:39 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, Song Liu <songliubraving@fb.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH bpf-next v4 3/3] bpf: remove extra lock_sock for
+ TCP_ZEROCOPY_RECEIVE
+Message-ID: <20210108010658.eglr2ev77knejkua@kafai-mbp.dhcp.thefacebook.com>
+References: <20210107184305.444635-1-sdf@google.com>
+ <20210107184305.444635-4-sdf@google.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210103082440.34994-2-leon@kernel.org>
+In-Reply-To: <20210107184305.444635-4-sdf@google.com>
+X-Originating-IP: [2620:10d:c090:400::5:b7d0]
+X-ClientProxiedBy: MW4PR03CA0027.namprd03.prod.outlook.com
+ (2603:10b6:303:8f::32) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:b7d0) by MW4PR03CA0027.namprd03.prod.outlook.com (2603:10b6:303:8f::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3721.23 via Frontend Transport; Fri, 8 Jan 2021 01:08:47 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 94848c0c-7249-4e95-10b3-08d8b371f443
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3256:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3256DB96186F6C506FEA0CDFD5AE0@BYAPR15MB3256.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HG/aEMjloVgCW5DQCllLR25b01HxRgfuEQWsi7hOL1QRZO9crPQdA3EbT8ZOLhu0WVy0HzENvWLb0n8nUfpJhEwWkysvyorxAU7tvL0bKI/Ksez/3/c7oyaQ6WIuh4xiNNQL9f6FdJ5RvcfxruiYL+IxEEeoHuH/q/4yXpIZRentvgaIhpQ4dmFNVKux9SaK63fEnDLDhrRtqf88S6JM2/Mii4mH1hqt70jwjWeo7rmoIBxfsI6vnyUx0NSccufuXZoU+tD4V6Saml8tEP0himBbMzcG5/pUSJdzJhcsMxHlFM7KmCTx+zR6t1GCr7Ygjmq2O+dg91P17IJBgVZXs/5vcefKeMaXsAqqVEfNLX91uyKHG45c6rkKK5qlwZxBrsowSi8PZwqXzMwPNTeaWw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(376002)(39860400002)(366004)(396003)(55016002)(8676002)(1076003)(16526019)(186003)(6666004)(6506007)(66946007)(66476007)(8936002)(86362001)(5660300002)(316002)(54906003)(9686003)(4326008)(83380400001)(6916009)(2906002)(52116002)(478600001)(7696005)(66556008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?RZMLg1iKDk8BXqMu3Er1av7LviL4Npq4zHEeoxP5I2Elr9ioctz2rV2jQtzY?=
+ =?us-ascii?Q?4Y9in8Pm8ORdzfm0MFhz90vYUnALQ8o4zGMh269AAiW5TFn+/gAgIouSgILA?=
+ =?us-ascii?Q?81uB+g4OTUMIkSYVGNzywA0ymw1SYKsYZSkFRkveKsMVF5aKUGUUcbCVNB9V?=
+ =?us-ascii?Q?6CsGCKe+kePYtoZ2Fq9XEmY/J8m4+zMc0Z2RcOCxf7AVzCpLr4/es0Y40OTQ?=
+ =?us-ascii?Q?XX+sJCHcTL/1Yw9KVYpUf6NfsHgLsncp1a/DW1PcywST+bRfrOishTRaTJHN?=
+ =?us-ascii?Q?PSqn0h8VWMtS+3qqFeHX1JosPiRlNnQAZBTz5nYH0g3aSOS1SatKjlylhGxj?=
+ =?us-ascii?Q?RRQ4pnpiomkVQRQ4UjwH28VANNp4LHMFOOZKMpqkof7XuNTh5dYxFGzGavhz?=
+ =?us-ascii?Q?e6z+yR7VHK6rm70sSIEgzHeuDV7p/BDbxVu2r0tUtfC2Qakwip3YQGzAHZSd?=
+ =?us-ascii?Q?+3sO4MoX04ghcYIeh2XvjuNsBwXPnvc3asIern0+vLoiCFUfduqZ6C85yFgX?=
+ =?us-ascii?Q?F/ki6Cw5c1gCiV1wsaqjpy/Osm2f6Zdc6wS2veRdHaqz06g+D0WgJeMzmljp?=
+ =?us-ascii?Q?iyvptLswMLVZVJgrKMAPMhnu0pwHHsdjd8L+IU9/aTGa47vz4RjRTJi7N93k?=
+ =?us-ascii?Q?lJZLVFNHKuuuwx1YxIdb2Jnphm27yK2DwZygEWHB/zdQluvNzsf1y4PRRVkS?=
+ =?us-ascii?Q?K+HAOnTz/huvnzd6GHfL1azI5hDjyzo95N+VJ+vmZ3js0AK4DYLffPDoL2o3?=
+ =?us-ascii?Q?uuyCNlHzebB2nigGuWJH5aZiW5t5LfSMj+fTZFuBr1j1PG3/F60TEJbXetHG?=
+ =?us-ascii?Q?eWfYT43xy2Pa+HKqiHLpsT5zVeinr1mmNm7cDR8XlsmdxBXnWNv0p888gbW8?=
+ =?us-ascii?Q?Ui/btRk+tNf83YBA4gYngMcJi6KYQYOxnNci5UyJWlJBZO2cI0BDdNE+VFsv?=
+ =?us-ascii?Q?g2+Ul1SC83gStVqLIFcF64mVqwSUJdWURZakQRqR2jHMUEKt82QNXfw7Fxyf?=
+ =?us-ascii?Q?yn0Kw9Vpy//VVP0M5bAGkFuvZA=3D=3D?=
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jan 2021 01:08:48.2877
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 94848c0c-7249-4e95-10b3-08d8b371f443
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hx+QCB5cQxYL9xNp6H5zsamoNn5YYQEOgv3Gg3yjy+YZrCw3rJZYAGmtrXz4PRLL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3256
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-07_11:2021-01-07,2021-01-07 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ malwarescore=0 adultscore=0 bulkscore=0 phishscore=0 suspectscore=0
+ spamscore=0 mlxlogscore=999 impostorscore=0 clxscore=1015 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101080003
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+cc Alex, Don]
-
-This patch does not actually *configure* the number of vectors, so the
-subject is not quite accurate.  IIUC, this patch adds a sysfs file
-that can be used to configure the number of vectors.  The subject
-should mention the sysfs connection.
-
-On Sun, Jan 03, 2021 at 10:24:37AM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Thu, Jan 07, 2021 at 10:43:05AM -0800, Stanislav Fomichev wrote:
+> Add custom implementation of getsockopt hook for TCP_ZEROCOPY_RECEIVE.
+> We skip generic hooks for TCP_ZEROCOPY_RECEIVE and have a custom
+> call in do_tcp_getsockopt using the on-stack data. This removes
+> 2% overhead for locking/unlocking the socket.
 > 
-> This function is applicable for SR-IOV VFs because such devices allocate
-> their MSI-X table before they will run on the targeted hardware and they
-> can't guess the right amount of vectors.
-
-This sentence doesn't quite have enough context to make sense to me.
-Per PCIe r5.0, sec 9.5.1.2, I think PFs and VFs have independent MSI-X
-Capabilities.  What is the connection between the PF MSI-X and the VF
-MSI-X?
-
-The MSI-X table sizes should be determined by the Table Size in the
-Message Control register.  Apparently we write a VF's Table Size
-before a driver is bound to the VF?  Where does that happen?
-
-"Before they run on the targeted hardware" -- do you mean before the
-VF is passed through to a guest virtual machine?  You mention "target
-VM" below, which makes more sense to me.  VFs don't "run"; they're not
-software.  I apologize for not being an expert in the use of VFs.
-
-Please mention the sysfs path in the commit log.
-
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Also:
+> - Removed BUILD_BUG_ON (zerocopy doesn't depend on the buf size anymore)
+> - Separated on-stack buffer into bpf_sockopt_buf and downsized to 32 bytes
+>   (let's keep it to help with the other options)
+> 
+> (I can probably split this patch into two: add new features and rework
+>  bpf_sockopt_buf; can follow up if the approach in general sounds
+>  good).
+> 
+> Without this patch:
+>      1.87%     0.06%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
+> 
+> With the patch applied:
+>      0.52%     0.12%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt_kern
+> 
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Eric Dumazet <edumazet@google.com>
 > ---
->  Documentation/ABI/testing/sysfs-bus-pci | 16 +++++++
->  drivers/pci/iov.c                       | 57 +++++++++++++++++++++++++
->  drivers/pci/msi.c                       | 30 +++++++++++++
->  drivers/pci/pci-sysfs.c                 |  1 +
->  drivers/pci/pci.h                       |  1 +
->  include/linux/pci.h                     |  8 ++++
->  6 files changed, 113 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> index 25c9c39770c6..30720a9e1386 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-pci
-> +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> @@ -375,3 +375,19 @@ Description:
->  		The value comes from the PCI kernel device state and can be one
->  		of: "unknown", "error", "D0", D1", "D2", "D3hot", "D3cold".
->  		The file is read only.
-> +
-> +What:		/sys/bus/pci/devices/.../vf_msix_vec
-> +Date:		December 2020
-> +Contact:	Leon Romanovsky <leonro@nvidia.com>
-> +Description:
-> +		This file is associated with the SR-IOV VFs. It allows overwrite
-> +		the amount of MSI-X vectors for that VF. This is needed to optimize
-> +		performance of newly bounded devices by allocating the number of
-> +		vectors based on the internal knowledge of targeted VM.
+>  include/linux/bpf-cgroup.h                    | 25 ++++-
+>  include/linux/filter.h                        |  6 +-
+>  include/net/sock.h                            |  2 +
+>  include/net/tcp.h                             |  1 +
+>  kernel/bpf/cgroup.c                           | 93 +++++++++++++------
+>  net/ipv4/tcp.c                                | 14 +++
+>  net/ipv4/tcp_ipv4.c                           |  1 +
+>  net/ipv6/tcp_ipv6.c                           |  1 +
+>  .../selftests/bpf/prog_tests/sockopt_sk.c     | 22 +++++
+>  .../testing/selftests/bpf/progs/sockopt_sk.c  | 15 +++
+>  10 files changed, 147 insertions(+), 33 deletions(-)
+>
 
-s/allows overwrite/allows configuration of/
-s/for that/for the/
-s/amount of/number of/
-s/bounded/bound/
+[ ... ]
 
-What "internal knowledge" is this?  AFAICT this would have to be some
-user-space administration knowledge, not anything internal to the
-kernel.
-
-> +		The values accepted are:
-> +		 * > 0 - this will be number reported by the PCI VF's PCIe MSI-X capability.
-
-s/PCI// (it's obvious we're talking about PCI here)
-s/PCIe// (MSI-X is not PCIe-specific, and there's no need to mention
-it at all)
-
-> +		 * < 0 - not valid
-> +		 * = 0 - will reset to the device default value
-> +
-> +		The file is writable if no driver is bounded.
-
-From the code, it looks more like this:
-
-  The file is writable if the PF is bound to a driver that supports
-  the ->sriov_set_msix_vec_count() callback and there is no driver
-  bound to the VF.
-
-Please wrap all of this to fit in 80 columns like the rest of the file.
-
-> diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-> index 4afd4ee4f7f0..0f8c570361fc 100644
-> --- a/drivers/pci/iov.c
-> +++ b/drivers/pci/iov.c
-> @@ -31,6 +31,7 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id)
->  	return (dev->devfn + dev->sriov->offset +
->  		dev->sriov->stride * vf_id) & 0xff;
->  }
-> +EXPORT_SYMBOL(pci_iov_virtfn_devfn);
-> 
->  /*
->   * Per SR-IOV spec sec 3.3.10 and 3.3.11, First VF Offset and VF Stride may
-> @@ -426,6 +427,62 @@ const struct attribute_group sriov_dev_attr_group = {
->  	.is_visible = sriov_attrs_are_visible,
+> @@ -454,6 +469,8 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
+>  #define BPF_CGROUP_GETSOCKOPT_MAX_OPTLEN(optlen) ({ 0; })
+>  #define BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock, level, optname, optval, \
+>  				       optlen, max_optlen, retval) ({ retval; })
+> +#define BPF_CGROUP_RUN_PROG_GETSOCKOPT_KERN(sock, level, optname, optval, \
+> +					    optlen, retval) ({ retval; })
+>  #define BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock, level, optname, optval, optlen, \
+>  				       kernel_optval) ({ 0; })
+>  
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 54a4225f36d8..8739f1d4cac4 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -1281,7 +1281,10 @@ struct bpf_sysctl_kern {
+>  	u64 tmp_reg;
 >  };
-> 
-> +#ifdef CONFIG_PCI_MSI
-> +static ssize_t vf_msix_vec_show(struct device *dev,
-> +				struct device_attribute *attr, char *buf)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	int numb = pci_msix_vec_count(pdev);
-> +
-> +	if (numb < 0)
-> +		return numb;
-> +
-> +	return sprintf(buf, "%d\n", numb);
-> +}
-> +
-> +static ssize_t vf_msix_vec_store(struct device *dev,
-> +				 struct device_attribute *attr, const char *buf,
-> +				 size_t count)
-> +{
-> +	struct pci_dev *vf_dev = to_pci_dev(dev);
-> +	int val, ret;
-> +
-> +	ret = kstrtoint(buf, 0, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = pci_set_msix_vec_count(vf_dev, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return count;
-> +}
-> +static DEVICE_ATTR_RW(vf_msix_vec);
-> +#endif
-> +
-> +static struct attribute *sriov_vf_dev_attrs[] = {
-> +#ifdef CONFIG_PCI_MSI
-> +	&dev_attr_vf_msix_vec.attr,
-> +#endif
-> +	NULL,
+>  
+> -#define BPF_SOCKOPT_KERN_BUF_SIZE	64
+> +#define BPF_SOCKOPT_KERN_BUF_SIZE	32
+It is reduced from patch 1 because there is no
+need to use the buf (and copy from/to buf) in TCP_ZEROCOPY_RECEIVE?
+
+Patch 1 is still desired (and kept in this set) because it may still
+benefit other optname?
+
+> +struct bpf_sockopt_buf {
+> +	u8		data[BPF_SOCKOPT_KERN_BUF_SIZE];
 > +};
-> +
-> +static umode_t sriov_vf_attrs_are_visible(struct kobject *kobj,
-> +					  struct attribute *a, int n)
-> +{
-> +	struct device *dev = kobj_to_dev(kobj);
-> +
-> +	if (dev_is_pf(dev))
-> +		return 0;
-> +
-> +	return a->mode;
-> +}
-> +
-> +const struct attribute_group sriov_vf_dev_attr_group = {
-> +	.attrs = sriov_vf_dev_attrs,
-> +	.is_visible = sriov_vf_attrs_are_visible,
-> +};
-> +
->  int __weak pcibios_sriov_enable(struct pci_dev *pdev, u16 num_vfs)
->  {
->  	return 0;
-> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-> index 3162f88fe940..0bcd705487d9 100644
-> --- a/drivers/pci/msi.c
-> +++ b/drivers/pci/msi.c
-> @@ -991,6 +991,36 @@ int pci_msix_vec_count(struct pci_dev *dev)
+>  
+>  struct bpf_sockopt_kern {
+>  	struct sock	*sk;
+> @@ -1291,7 +1294,6 @@ struct bpf_sockopt_kern {
+>  	s32		optname;
+>  	s32		optlen;
+>  	s32		retval;
+> -	u8		buf[BPF_SOCKOPT_KERN_BUF_SIZE];
+It is better to pick one way to do thing to avoid code
+churn like this within the same series.
+
+>  };
+>  
+>  int copy_bpf_fprog_from_user(struct sock_fprog *dst, sockptr_t src, int len);
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index bdc4323ce53c..ebf44d724845 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -1174,6 +1174,8 @@ struct proto {
+>  
+>  	int			(*backlog_rcv) (struct sock *sk,
+>  						struct sk_buff *skb);
+> +	bool			(*bpf_bypass_getsockopt)(int level,
+> +							 int optname);
+>  
+>  	void		(*release_cb)(struct sock *sk);
+>  
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 78d13c88720f..4bb42fb19711 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -403,6 +403,7 @@ __poll_t tcp_poll(struct file *file, struct socket *sock,
+>  		      struct poll_table_struct *wait);
+>  int tcp_getsockopt(struct sock *sk, int level, int optname,
+>  		   char __user *optval, int __user *optlen);
+> +bool tcp_bpf_bypass_getsockopt(int level, int optname);
+>  int tcp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+>  		   unsigned int optlen);
+>  void tcp_set_keepalive(struct sock *sk, int val);
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index adbecdcaa370..e82df63aedc7 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -16,7 +16,6 @@
+>  #include <linux/bpf-cgroup.h>
+>  #include <net/sock.h>
+>  #include <net/bpf_sk_storage.h>
+> -#include <uapi/linux/tcp.h> /* sizeof(struct tcp_zerocopy_receive) */
+Can the patches be re-ordered a little to avoid code churn like this
+in the same series?
+
+It feels like this patch 3 should be the first patch instead.
+The current patch 1 should be the second patch
+but it can still use the tcp_mmap to show potential
+benefit for other optnames.
+
+>  
+>  #include "../cgroup/cgroup-internal.h"
+>  
+> @@ -1299,7 +1298,8 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+>  	return empty;
 >  }
->  EXPORT_SYMBOL(pci_msix_vec_count);
-> 
-> +/**
-> + * pci_set_msix_vec_count - change the reported number of MSI-X vectors.
-
-Drop period at end, as other kernel doc in this file does.
-
-> + * This function is applicable for SR-IOV VFs because such devices allocate
-> + * their MSI-X table before they will run on the targeted hardware and they
-> + * can't guess the right amount of vectors.
-> + * @dev: VF device that is going to be changed.
-> + * @numb: amount of MSI-X vectors.
-
-Rewrite the "such devices allocate..." part based on the questions in
-the commit log.  Same with "targeted hardware."
-
-s/amount of/number of/
-Drop periods at end of parameter descriptions.
-
-> + **/
-> +int pci_set_msix_vec_count(struct pci_dev *dev, int numb)
-> +{
-> +	struct pci_dev *pdev = pci_physfn(dev);
-> +
-> +	if (!dev->msix_cap || !pdev->msix_cap)
-> +		return -EINVAL;
-> +
-> +	if (dev->driver || !pdev->driver ||
-> +	    !pdev->driver->sriov_set_msix_vec_count)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (numb < 0)
-> +		/*
-> +		 * We don't support negative numbers for now,
-> +		 * but maybe in the future it will make sense.
-> +		 */
-> +		return -EINVAL;
-> +
-> +	return pdev->driver->sriov_set_msix_vec_count(dev, numb);
-
-So we write to a VF sysfs file, get here and look up the PF, call a PF
-driver callback with the VF as an argument, the callback (at least for
-mlx5) looks up the PF from the VF, then does some mlx5-specific magic
-to the PF that influences the VF somehow?
-
-Help me connect the dots here.  Is this required because of something
-peculiar to mlx5, or is something like this required for all SR-IOV
-devices because of the way the PCIe spec is written?
-
-> +}
-> +EXPORT_SYMBOL(pci_set_msix_vec_count);
-> +
->  static int __pci_enable_msix(struct pci_dev *dev, struct msix_entry *entries,
->  			     int nvec, struct irq_affinity *affd, int flags)
+>  
+> -static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+> +static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen,
+> +			     struct bpf_sockopt_buf *buf)
 >  {
-> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> index fb072f4b3176..0af2222643c2 100644
-> --- a/drivers/pci/pci-sysfs.c
-> +++ b/drivers/pci/pci-sysfs.c
-> @@ -1557,6 +1557,7 @@ static const struct attribute_group *pci_dev_attr_groups[] = {
->  	&pci_dev_hp_attr_group,
->  #ifdef CONFIG_PCI_IOV
->  	&sriov_dev_attr_group,
-> +	&sriov_vf_dev_attr_group,
->  #endif
->  	&pci_bridge_attr_group,
->  	&pcie_dev_attr_group,
-> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> index 5c59365092fa..46396a5da2d9 100644
-> --- a/drivers/pci/pci.h
-> +++ b/drivers/pci/pci.h
-> @@ -502,6 +502,7 @@ resource_size_t pci_sriov_resource_alignment(struct pci_dev *dev, int resno);
->  void pci_restore_iov_state(struct pci_dev *dev);
->  int pci_iov_bus_range(struct pci_bus *bus);
->  extern const struct attribute_group sriov_dev_attr_group;
-> +extern const struct attribute_group sriov_vf_dev_attr_group;
->  #else
->  static inline int pci_iov_init(struct pci_dev *dev)
+>  	if (unlikely(max_optlen < 0))
+>  		return -EINVAL;
+> @@ -1311,18 +1311,11 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+>  		max_optlen = PAGE_SIZE;
+>  	}
+>  
+> -	if (max_optlen <= sizeof(ctx->buf)) {
+> +	if (max_optlen <= sizeof(buf->data)) {
+>  		/* When the optval fits into BPF_SOCKOPT_KERN_BUF_SIZE
+>  		 * bytes avoid the cost of kzalloc.
+> -		 *
+> -		 * In order to remove extra allocations from the TCP
+> -		 * fast zero-copy path ensure that buffer covers
+> -		 * the size of struct tcp_zerocopy_receive.
+>  		 */
+> -		BUILD_BUG_ON(sizeof(struct tcp_zerocopy_receive) >
+> -			     BPF_SOCKOPT_KERN_BUF_SIZE);
+> -
+> -		ctx->optval = ctx->buf;
+> +		ctx->optval = buf->data;
+>  		ctx->optval_end = ctx->optval + max_optlen;
+>  		return max_optlen;
+>  	}
+> @@ -1336,16 +1329,18 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+>  	return max_optlen;
+>  }
+>  
+> -static void sockopt_free_buf(struct bpf_sockopt_kern *ctx)
+> +static void sockopt_free_buf(struct bpf_sockopt_kern *ctx,
+> +			     struct bpf_sockopt_buf *buf)
 >  {
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index b32126d26997..1acba40a1b1b 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -856,6 +856,8 @@ struct module;
->   *		e.g. drivers/net/e100.c.
->   * @sriov_configure: Optional driver callback to allow configuration of
->   *		number of VFs to enable via sysfs "sriov_numvfs" file.
-> + * @sriov_set_msix_vec_count: Driver callback to change number of MSI-X vectors
-> + *              exposed by the sysfs "vf_msix_vec" entry.
->   * @err_handler: See Documentation/PCI/pci-error-recovery.rst
->   * @groups:	Sysfs attribute groups.
->   * @driver:	Driver model structure.
-> @@ -871,6 +873,7 @@ struct pci_driver {
->  	int  (*resume)(struct pci_dev *dev);	/* Device woken up */
->  	void (*shutdown)(struct pci_dev *dev);
->  	int  (*sriov_configure)(struct pci_dev *dev, int num_vfs); /* On PF */
-> +	int  (*sriov_set_msix_vec_count)(struct pci_dev *vf, int msix_vec_count); /* On PF */
->  	const struct pci_error_handlers *err_handler;
->  	const struct attribute_group **groups;
->  	struct device_driver	driver;
-> @@ -1464,6 +1467,7 @@ struct msix_entry {
->  int pci_msi_vec_count(struct pci_dev *dev);
->  void pci_disable_msi(struct pci_dev *dev);
->  int pci_msix_vec_count(struct pci_dev *dev);
-> +int pci_set_msix_vec_count(struct pci_dev *dev, int numb);
+> -	if (ctx->optval == ctx->buf)
+> +	if (ctx->optval == buf->data)
+>  		return;
+>  	kfree(ctx->optval);
+>  }
+>  
+> -static bool sockopt_buf_allocated(struct bpf_sockopt_kern *ctx)
+> +static bool sockopt_buf_allocated(struct bpf_sockopt_kern *ctx,
+> +				  struct bpf_sockopt_buf *buf)
+>  {
+> -	return ctx->optval != ctx->buf;
+> +	return ctx->optval != buf->data;
+>  }
+>  
+>  int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+> @@ -1353,6 +1348,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+>  				       int *optlen, char **kernel_optval)
+>  {
+>  	struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> +	struct bpf_sockopt_buf buf = {};
+>  	struct bpf_sockopt_kern ctx = {
+>  		.sk = sk,
+>  		.level = *level,
+> @@ -1373,7 +1369,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+>  	 */
+>  	max_optlen = max_t(int, 16, *optlen);
+>  
+> -	max_optlen = sockopt_alloc_buf(&ctx, max_optlen);
+> +	max_optlen = sockopt_alloc_buf(&ctx, max_optlen, &buf);
+>  	if (max_optlen < 0)
+>  		return max_optlen;
+>  
+> @@ -1419,7 +1415,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+>  			 * No way to export on-stack buf, have to allocate a
+>  			 * new buffer.
+>  			 */
+> -			if (!sockopt_buf_allocated(&ctx)) {
+> +			if (!sockopt_buf_allocated(&ctx, &buf)) {
+>  				void *p = kzalloc(ctx.optlen, GFP_USER);
+>  
+>  				if (!p) {
+> @@ -1436,7 +1432,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+>  
+>  out:
+>  	if (ret)
+> -		sockopt_free_buf(&ctx);
+> +		sockopt_free_buf(&ctx, &buf);
+>  	return ret;
+>  }
+>  
+> @@ -1445,15 +1441,20 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+>  				       int __user *optlen, int max_optlen,
+>  				       int retval)
+>  {
+> -	struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> -	struct bpf_sockopt_kern ctx = {
+> -		.sk = sk,
+> -		.level = level,
+> -		.optname = optname,
+> -		.retval = retval,
+> -	};
+This change looks unnecessary?
 
-This patch adds the pci_set_msix_vec_count() definition in pci/msi.c
-and a call in pci/iov.c.  It doesn't need to be declared in
-include/linux/pci.h or exported.  It can be declared in
-drivers/pci/pci.h.
-
->  void pci_disable_msix(struct pci_dev *dev);
->  void pci_restore_msi_state(struct pci_dev *dev);
->  int pci_msi_enabled(void);
-> @@ -2402,6 +2406,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
->  void pci_uevent_ers(struct pci_dev *pdev, enum  pci_ers_result err_type);
->  #endif
-> 
-> +#ifdef CONFIG_PCI_IOV
-> +int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id);
-> +#endif
-
-pci_iov_virtfn_devfn() is already declared in this file.
-
->  /* Provide the legacy pci_dma_* API */
->  #include <linux/pci-dma-compat.h>
-> 
-> --
-> 2.29.2
-> 
+> +	struct bpf_sockopt_kern ctx;
+> +	struct bpf_sockopt_buf buf;
+> +	struct cgroup *cgrp;
+>  	int ret;
+>  
+> +	memset(&buf, 0, sizeof(buf));
+> +	memset(&ctx, 0, sizeof(ctx));
+> +
+> +	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> +	ctx.sk = sk;
+> +	ctx.level = level;
+> +	ctx.optname = optname;
+> +	ctx.retval = retval;
+> +
