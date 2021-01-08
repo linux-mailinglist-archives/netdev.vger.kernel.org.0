@@ -2,91 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 205912EED17
+	by mail.lfdr.de (Postfix) with ESMTP id 8C7F12EED18
 	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 06:33:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727850AbhAHFce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 00:32:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35860 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727835AbhAHFcd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 00:32:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3EC5923435;
-        Fri,  8 Jan 2021 05:31:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610083863;
-        bh=xfJYrAsNZVw0yeAgwqXIgmL8mQA4xtx+Jcljb4OuLxI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cfTAOnl8Uex8/5RNaTEmmaiyz28atRtcqitv7J0XXwp8+Dh6fiix4nDA/nK+5cPgD
-         3OrUhOnqk4bKusOmOQiPsRicZJ6d9oNt+Hy4hOCe3f+BoB4x4xhB2+m2Q0n0oCbNuy
-         mycoDYZDCDJUqpYpcybxGBpRyF9EByav0Ii6gbhBJZ9SbF43nUBGWrzbUK2suZfkr0
-         +FYCC/Py5H2EpLjzSoEc6fCsB0SkH4RyT9GZFUm60T2WaN6XrvCxlwAnqM14ZHiaQn
-         5mHk2QbNSaQItFiFNwD+30Ul+wNj9HjA7qKHi19PQEGTWadY+m1FVALLvJkY9cw/LL
-         T3lBnM/AFSWFQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Huy Nguyen <huyn@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 15/15] net/mlx5e: IPsec, Remove unnecessary config flag usage
-Date:   Thu,  7 Jan 2021 21:30:54 -0800
-Message-Id: <20210108053054.660499-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210108053054.660499-1-saeed@kernel.org>
-References: <20210108053054.660499-1-saeed@kernel.org>
+        id S1727868AbhAHFdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 00:33:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725942AbhAHFdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 00:33:22 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BCAC0612F4
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 21:32:41 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kxkNy-0000mT-UF; Fri, 08 Jan 2021 06:32:30 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kxkNw-0001i3-BJ; Fri, 08 Jan 2021 06:32:28 +0100
+Date:   Fri, 8 Jan 2021 06:32:28 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v7 net-next 2/2] net: dsa: qca: ar9331: export stats64
+Message-ID: <20210108053228.2efctejqxbqijm6l@pengutronix.de>
+References: <20210107125613.19046-1-o.rempel@pengutronix.de>
+ <20210107125613.19046-3-o.rempel@pengutronix.de>
+ <X/ccfY+9a8R6wcJX@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <X/ccfY+9a8R6wcJX@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 06:29:50 up 36 days, 19:36, 16 users,  load average: 0.02, 0.05,
+ 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+On Thu, Jan 07, 2021 at 03:36:45PM +0100, Andrew Lunn wrote:
+> > +static void ar9331_get_stats64(struct dsa_switch *ds, int port,
+> > +			       struct rtnl_link_stats64 *s)
+> > +{
+> > +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> > +	struct ar9331_sw_port *p = &priv->port[port];
+> > +
+> > +	spin_lock(&p->stats_lock);
+> > +	memcpy(s, &p->stats, sizeof(*s));
+> > +	spin_unlock(&p->stats_lock);
+> > +}
+> 
+> This should probably wait until Vladimir's changes for stat64 are
+> merged, so this call can sleep. You can then return up to date
+> statistics.
 
-MLX5_IPSEC_DEV() is always defined, no need to protect it under config
-flag CONFIG_MLX5_EN_IPSEC, especially in slow path.
+Ack, no problem. Beside, i forgot to collect all the Reviewed-by tags.
+Will resend all needed changes after Vladimirs patches are accepted.
+May be the "net: dsa: add optional stats64 support" can already be
+taken?
 
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Reviewed-by: Huy Nguyen <huyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   | 2 --
- 2 files changed, 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index c00eef14ee6c..5309bc9f3197 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2068,10 +2068,8 @@ static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 	u32 buf_size = 0;
- 	int i;
- 
--#ifdef CONFIG_MLX5_EN_IPSEC
- 	if (MLX5_IPSEC_DEV(mdev))
- 		byte_count += MLX5E_METADATA_ETHER_LEN;
--#endif
- 
- 	if (mlx5e_rx_is_linear_skb(params, xsk)) {
- 		int frag_stride;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 7f5851c61218..cb8e3d2b4750 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1786,12 +1786,10 @@ int mlx5e_rq_set_handlers(struct mlx5e_rq *rq, struct mlx5e_params *params, bool
- 		rq->dealloc_wqe = mlx5e_dealloc_rx_mpwqe;
- 
- 		rq->handle_rx_cqe = priv->profile->rx_handlers->handle_rx_cqe_mpwqe;
--#ifdef CONFIG_MLX5_EN_IPSEC
- 		if (MLX5_IPSEC_DEV(mdev)) {
- 			netdev_err(netdev, "MPWQE RQ with IPSec offload not supported\n");
- 			return -EINVAL;
- 		}
--#endif
- 		if (!rq->handle_rx_cqe) {
- 			netdev_err(netdev, "RX handler of MPWQE RQ is not set\n");
- 			return -EINVAL;
+Regards,
+Oleksij
 -- 
-2.26.2
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
