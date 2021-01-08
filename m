@@ -2,113 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3F8F2EF0BB
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 11:36:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A44502EF0C8
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 11:40:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727822AbhAHKf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 05:35:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34544 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727090AbhAHKf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 05:35:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610102042;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9jaCobpp/gjZ1BrAW63KVqKbg+WZam2J/wlrqVXlE/U=;
-        b=GjZRGu/5tFOLIAoaDM2OL0XDemAkaNO9u+E19hViCIt2GCEh0rp7rH98IZ8QGhM057bjC6
-        KxdNtWFuyOLd4BwqbhP0i9BLFU5JMTpqtuZK0py/d3C6YXNfxe1vr/hsQFGMR5l3MD0/JJ
-        bJmFOCT5ZdQBFE3/VUr0tf3zA8P39J0=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-509-URWed_8mMIuGNgQ4cl6yQQ-1; Fri, 08 Jan 2021 05:34:00 -0500
-X-MC-Unique: URWed_8mMIuGNgQ4cl6yQQ-1
-Received: by mail-wr1-f70.google.com with SMTP id v7so3928213wra.3
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 02:34:00 -0800 (PST)
+        id S1727364AbhAHKkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 05:40:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726752AbhAHKkD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 05:40:03 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6A1C0612F5
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 02:38:51 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id i18so9314454ioa.1
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 02:38:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ujXBAxK5O29Cl25/PjMn53d/2EdarcwXgxZBP6ltQtE=;
+        b=vwKgxTY2zg2KIYXB4GZSxlp9cVvZXdpMpyy39Qd6OVRdtN3xrEFuuIZaVC9NQX/Naf
+         eYtqEHFYQytjYs0V0/tuO27oE5DOQcTEucUS5TFSYF3fW+RM/rNMm1OMmIyogUZ/NZPQ
+         9fx1bZQxManXWl9VHI5beHmHjNu3EJuAxUFxCJjPDHxn1hop+CG1XG9zhVRB6M0uPFzY
+         qgTW5WRVajk1C3En944536Z9ldNex9eRig7wxAHYjVmmzvS/RTqHkLMsTvx5oI2CxpD2
+         lBGSsYDEJV0T2S6SmX2CK/ZdW+/u2kcC8WA9M9I+PYieLivQ0WsFVsl6b1FE7udIwPrL
+         cmjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9jaCobpp/gjZ1BrAW63KVqKbg+WZam2J/wlrqVXlE/U=;
-        b=hwVw08z8RDv3Zh92nplZDLJHEnf7u4GA2PVLJQWtLvqtqtqjO5tEsU1JBmWdWi3pvX
-         mwBkeYk1KWH7Fsr3E8im5PtKoNIK7oqgdpR/X7ao8qGlV9RjN/zSrCsMCG4r57A2j7bU
-         cp4rnZWngHxoKqpJwcGQbNThpjlVlO2woIhs7VSMYPNXrXmY2iAwdL513wMhF7L/xG1a
-         eXYrM8rkQork/h7lhdmfEisz4JkanUIIMTUeqJZAl4TWL9y9Td+9VSeuKLnVaoJVZvir
-         a+ezGKpmuQ/muZQSnO8L3rKyMwZ34pjzWZqAUk52kSiMc0BAfn3bZT2ZSqWwvVP1VeVO
-         5e5A==
-X-Gm-Message-State: AOAM533g/mhzV9jhtNFZSooY4XsFgmeSe7W5KCy/mJB6k5NEiyoU2OZO
-        WfaI5M9PnT1q+npO4Bdpebr6p/X3kMx59pdAtn/eB/f77k1mghbcuwqwzRCnOmzHN+66kAspF/V
-        xTs1zx+toR0Emz9os
-X-Received: by 2002:a5d:4f8a:: with SMTP id d10mr2905573wru.219.1610102039579;
-        Fri, 08 Jan 2021 02:33:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx/cYGRiEYoK1vucKO1euIdsck18nMG94piouLVJf/5RHsxZEuyqqUoFQjJC0gMXLBgDrQOUQ==
-X-Received: by 2002:a5d:4f8a:: with SMTP id d10mr2905551wru.219.1610102039359;
-        Fri, 08 Jan 2021 02:33:59 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id s25sm13327280wrs.49.2021.01.08.02.33.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 02:33:58 -0800 (PST)
-Date:   Fri, 8 Jan 2021 11:33:35 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Arseniy Krasnov <oxffffaa@gmail.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru
-Subject: Re: [PATCH 0/5] virtio/vsock: introduce SOCK_SEQPACKET support.
-Message-ID: <20210108103335.iabhzk4r6fpsiopt@steredhat>
-References: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ujXBAxK5O29Cl25/PjMn53d/2EdarcwXgxZBP6ltQtE=;
+        b=GdqJSVNp2NqOhz0h3n+nmd2Rf7/W0pH0W60zxsekrKeUm3CHbKFO/t4ysHMUTxyMlz
+         UL6gCVo1EG+7kJG7SprwSMjQVajLl8AU1LG4lFRsR4lBfhmThJwpULd9b9emXLsfCP/i
+         Exz/c5TyAdwc1+ZFmxAq4p1vI+jsprx7TC8at4fOlnkjeLSK13OutSHg33tuMPqw6YEt
+         iN+2a8fRpPOpmx8GzAjS2tuB/WCLoDAuCtt0eB2FgINIvu069V+81OWSIzoswRokNG3N
+         d8DocB2UlmAAKnsjuiyFLIOF7auZNWo5jTZSUF9Qr9f8mrrIJoQtj13t1gii8adZq6hw
+         +BXQ==
+X-Gm-Message-State: AOAM532Yk5InPOscvtNwYo4KxlW0YBcqvOtUaJdaLLnZ0RHfRkdtvYM2
+        LFlfV8fXNbf8cavTtTcUDibx7iWFCBMtWm9wBd1VJw==
+X-Google-Smtp-Source: ABdhPJyIdleXGa+a5aHQaWChMdZZc2iOpBtAE/zFl7RakV+QN66X8mSFH1vDiBoqL6s3m3YSCk8TO0/1Ph6Iwj8LdL8=
+X-Received: by 2002:a02:7f41:: with SMTP id r62mr2815728jac.17.1610102330392;
+ Fri, 08 Jan 2021 02:38:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
+References: <20210108002005.3429956-1-olteanv@gmail.com> <20210108002005.3429956-9-olteanv@gmail.com>
+ <CANn89iJNTgXsRv0Wgp4V=TUws-d4Mc4FwR4kUBy+r8+UxWC06Q@mail.gmail.com> <20210108103135.pxtsivlpf5xkmt5w@skbuf>
+In-Reply-To: <20210108103135.pxtsivlpf5xkmt5w@skbuf>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 8 Jan 2021 11:38:38 +0100
+Message-ID: <CANn89i+Wir=Di8yo+KPOWSTuaGMYLT7QpX=eKruL3kn-iuxP1Q@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next 08/18] net: make dev_get_stats return void
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        George McCollister <george.mccollister@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, Florian Westphal <fw@strlen.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arseny,
+On Fri, Jan 8, 2021 at 11:31 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Fri, Jan 08, 2021 at 11:14:50AM +0100, Eric Dumazet wrote:
+> > On Fri, Jan 8, 2021 at 1:20 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > >
+> > > After commit 28172739f0a2 ("net: fix 64 bit counters on 32 bit arches"),
+> > > dev_get_stats got an additional argument for storage of statistics. At
+> > > this point, dev_get_stats could return either the passed "storage"
+> > > argument, or the output of .ndo_get_stats64.
+> > >
+> > > Then commit caf586e5f23c ("net: add a core netdev->rx_dropped counter")
+> > > came, and the output of .ndo_get_stats64 (still returning a pointer to
+> > > struct rtnl_link_stats64) started being ignored.
+> > >
+> > > Then came commit bc1f44709cf2 ("net: make ndo_get_stats64 a void
+> > > function") which made .ndo_get_stats64 stop returning anything.
+> > >
+> > > So now, dev_get_stats always reports the "storage" pointer received as
+> > > argument. This is useless. Some drivers are dealing with unnecessary
+> > > complexity due to this, so refactor them to ignore the return value
+> > > completely.
+> > >
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > ---
+> > >
+> >
+> > This seems like a lot of code churn.
+>
+> Not sure there's something I can do to avoid that.
+>
+> > Ultimately we need this function to return an error code, so why keep
+> > this patch with a void return ?
+> >
+> > Please squash your patches a bit, to avoid having 18 patches to review.
+>
+> Because the "make dev_get_stats return void" patch changes the callers
+> to poke through their stack-supplied struct rtnl_link_stats64 instead of
+> through the returned pointer. So all changes within this patch are of
+> the same type: replace a pointer dereference with a plain structure
+> field access. Whereas the "allow ndo_get_stats64 to return an int error
+> code" touches a completely unrelated portion: the ndo_get_stats64
+> callback. Again, that patch does one thing and one thing only. Then
+> there's the error checking, which is split in 3 patches:
+> - Special cases with non-trivial work to do: FCoE, OVS
+> - Propagation of errors from dev_get_stats
+> - Termination of errors from dev_get_stats
+>
+> So you would like me to squash what exactly? I know there's a lot of
+> patches, but if I go ahead and combine them, it'll be even more
+> difficult to review, due to the mix of types of changes being applied.
+>
+> > Additionally I would suggest a __must_check attribute on
+> > dev_get_stats() to make sure we converted all callers.
+>
+> Ok, but that will mean even more patches (since the error checking is
+> done in 3 stages, the __must_check must be put at the end). And remember,
+> the inflation of this series from 12 to 18 patches came from your
+> suggestion to propagate the errors now.
 
-On Sun, Jan 03, 2021 at 10:54:52PM +0300, Arseny Krasnov wrote:
->	As SOCK_SEQPACKET guarantees to save record boundaries, so to
->do it, new packet operation was added: it marks start of record (with
->record length in header). To send record, packet with start marker is
->sent first, then all data is transmitted as 'RW' packets. On receiver's
->side, length of record is known from packet with start record marker.
->Now as  packets of one socket are not reordered neither on vsock nor on
->vhost transport layers, these marker allows to restore original record
->on receiver's side. When each 'RW' packet is inserted to rx queue of
->receiver, user is woken up, data is copied to user's buffer and credit
->update message is sent. If there is no user waiting for data, credit
->won't be updated and sender will wait. Also,  if user's buffer is full,
->and record is bigger, all unneeded data will be dropped (with sending of
->credit update message).
->	'MSG_EOR' flag is implemented with special value of 'flags' field
->in packet header. When record is received with such flags, 'MSG_EOR' is
->set in 'recvmsg()' flags. 'MSG_TRUNC' flag is also supported.
->	In this implementation maximum length of datagram is not limited
->as in stream socket.
+I did not suggest adding more patches. where have you seen this exactly ?
 
-I did a a quick review. I like the idea of adding SOCK_SEQPACKET, but 
-the series needs more work.
-Some patches miss the SoB, the commit messages are very minimal.
-Anyway I like that you shared your patches, but please use RFC tag if 
-they are not ready to be merged.
+>
+> > I can not convince myself that after your patches, bonding does the
+> > right thing...
+>
+> Why?
 
-Another suggestion is to move the patches that modify the core 
-(af_vsock.c) before the transport modifications to make the review 
-easier.
+Because of this ?
 
-I'd also like to see new tests in tools/testing/vsock/vsock_test.c
++
++       /* Recurse with no locks taken */
++       for (i = 0; i < num_slaves; i++)
++               dev_get_stats(slaves[i], &dev_stats[i]);
 
-Thanks,
-Stefano
+Look, it seems you rely on us testing your patches, and spending more
+time on review than you .
 
+Please sit back, and test a bit more before sending a new series.
+
+I think I will not spend more time on this, because it is obvious to
+me that you consider that I _have_ to accept whatever solution you
+came up,
+because you think it is the optimal one.
