@@ -2,137 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B5862EEC14
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 05:00:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D59962EEC1A
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 05:05:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726684AbhAHEAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 23:00:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53466 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726113AbhAHEAU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 23:00:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D3BA523601;
-        Fri,  8 Jan 2021 03:59:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610078379;
-        bh=AjBm+wiy6Poaq9RWrgoy84NTKsQuWmPFOw9gMV7J24c=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=f2K7GWj/0lt7zuCuBlfwWRXpYyoNGjR22EDONvzbH65KYy/zByIvxGGzz76puTcP9
-         PaRTMwpXejbczw1lPDxOXURVt0eb5b+g51IXPatajvJsokqRxxlTydrECcILqNk5DO
-         IDlnhlMUVxBtao4aK//zh3VRgcgJ7E+WApxkyDtYKCDmWb689ly3CW/c/1QcG4Ymgf
-         l87e0vdoABTQxc9+wZe+PVdO9IFriOdtbtlcdcGHmPZrqYAfSwI4A7uYBHBdVSOEW3
-         QaL77SxVReZTHMAsQG1JXQZpIhD8drutxcHLhznehsV29iutRMndx6YrZQG7/Bxr29
-         QZ8OCyMdHYkTw==
-Message-ID: <ac66e1838894f96d2bb460b7969b6c9b903fee6a.camel@kernel.org>
-Subject: Re: [PATCH v3 net-next 10/12] net: bonding: ensure .ndo_get_stats64
- can sleep
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, Florian Westphal <fw@strlen.de>
-Date:   Thu, 07 Jan 2021 19:59:37 -0800
-In-Reply-To: <CANn89iJ_qbo6dP3YqXCeDPfopjBFZ8h6JxbpufVBGUpsG=D7+Q@mail.gmail.com>
-References: <20210107094951.1772183-1-olteanv@gmail.com>
-         <20210107094951.1772183-11-olteanv@gmail.com>
-         <CANn89i+NfBw7ZpL-DTDA3QGBK=neT2R7qKYn_pcvDmRAOkaUsQ@mail.gmail.com>
-         <20210107113313.q4e42cj6jigmdmbs@skbuf>
-         <CANn89iJ_qbo6dP3YqXCeDPfopjBFZ8h6JxbpufVBGUpsG=D7+Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S1726858AbhAHEEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 23:04:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbhAHEEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 23:04:46 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EE5C0612F5;
+        Thu,  7 Jan 2021 20:04:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=yIAE2JvjrEcvgRGTFdqvtdjqYhZLL3+YzzRkNV3NO7s=; b=TD4OnrYAcyOrinAUpDgkqivEnC
+        Tjw8sn1KpLn4OwZ6I+xx2M0TxDOxhiNC5VFdCflj0J519FmhYDuAagUw1EtRvtb482Cfb2KQRMdo7
+        YrkT5vHkkmGGVmm/sMvnmk4hoqfPQbFkJqEtuxG/XMG1T+X09oNYgccGej1m4HTyMSBooxfbT8Y1a
+        QaAlPUWys937eBMtXTenrFQCkvqpqX9YA5HEKe0fh6ye8E1in4Rva/MjOgCMPI1X+MdriUxnOcDd3
+        NtPIH9Vyv/vZWyoyvoYHyFc/dsxhNAnk3dKToFsdC9dkicXfLqaaJua/+/sx8ANJZ42heaNaDznMu
+        UvLFLiyQ==;
+Received: from [2601:1c0:6280:3f0::79df]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kxj0I-00078D-AZ; Fri, 08 Jan 2021 04:03:58 +0000
+Subject: Re: [PATCH net-next] net/bridge: fix misspellings using codespell
+ tool
+To:     menglong8.dong@gmail.com, roopa@nvidia.com
+Cc:     nikolay@nvidia.com, davem@davemloft.net, kuba@kernel.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Menglong Dong <dong.menglong@zte.com.cn>
+References: <20210108025332.52480-1-dong.menglong@zte.com.cn>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <295b1d84-a49c-cdaa-e7fa-bbe492aa1496@infradead.org>
+Date:   Thu, 7 Jan 2021 20:03:49 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
+In-Reply-To: <20210108025332.52480-1-dong.menglong@zte.com.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-01-07 at 13:58 +0100, Eric Dumazet wrote:
-> On Thu, Jan 7, 2021 at 12:33 PM Vladimir Oltean <olteanv@gmail.com>
-> wrote:
-> > On Thu, Jan 07, 2021 at 12:18:28PM +0100, Eric Dumazet wrote:
-> > > What a mess really.
-> > 
-> > Thanks, that's at least _some_ feedback :)
+On 1/7/21 6:53 PM, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <dong.menglong@zte.com.cn>
 > 
-> Yeah, I was on PTO for the last two weeks.
+> Some typos are found out by codespell tool:
 > 
-> > > You chose to keep the assumption that ndo_get_stats() would not
-> > > fail,
-> > > since we were providing the needed storage from callers.
-> > > 
-> > > If ndo_get_stats() are now allowed to sleep, and presumably
-> > > allocate
-> > > memory, we need to make sure
-> > > we report potential errors back to the user.
-> > > 
-> > > I think your patch series is mostly good, but I would prefer not
-> > > hiding errors and always report them to user space.
-> > > And no, netdev_err() is not appropriate, we do not want tools to
-> > > look
-> > > at syslog to guess something went wrong.
-> > 
-> > Well, there are only 22 dev_get_stats callers in the kernel, so I
-> > assume
-> > that after the conversion to return void, I can do another
-> > conversion to
-> > return int, and then I can convert the ndo_get_stats64 method to
-> > return
-> > int too. I will keep the plain ndo_get_stats still void (no reason
-> > not
-> > to).
-> > 
-> > > Last point about drivers having to go to slow path, talking to
-> > > firmware : Make sure that malicious/innocent users
-> > > reading /proc/net/dev from many threads in parallel wont brick
-> > > these devices.
-> > > 
-> > > Maybe they implicitly _relied_ on the fact that firmware was
-> > > gently
-> > > read every second and results were cached from a work queue or
-> > > something.
-> > 
-> > How? I don't understand how I can make sure of that.
+> $ codespell ./net/bridge/
+> ./net/bridge/br_stp.c:604: permanant  ==> permanent
+> ./net/bridge/br_stp.c:605: persistance  ==> persistence
+> ./net/bridge/br.c:125: underlaying  ==> underlying
+> ./net/bridge/br_input.c:43: modue  ==> mode
+> ./net/bridge/br_mrp.c:828: Determin  ==> Determine
+> ./net/bridge/br_mrp.c:848: Determin  ==> Determine
+> ./net/bridge/br_mrp.c:897: Determin  ==> Determine
 > 
-> Your patches do not attempt to change these drivers, but I guess your
-> cover letter might send to driver maintainers incentive to get rid of
-> their
-> logic, that is all.
+> Fix typos found by codespell.
 > 
-> We might simply warn maintainers and ask them to test their future
-> changes
-> with tests using 1000 concurrent theads reading /proc/net/dev
+> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+
+LGTM. Thanks.
+
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+
+> ---
+>  net/bridge/br.c       | 2 +-
+>  net/bridge/br_input.c | 2 +-
+>  net/bridge/br_mrp.c   | 6 +++---
+>  net/bridge/br_stp.c   | 4 ++--
+>  4 files changed, 7 insertions(+), 7 deletions(-)
 > 
-> > There is an effort initiated by Jakub to standardize the ethtool
-> > statistics. My objection was that you can't expect that to happen
-> > unless
-> > dev_get_stats is sleepable just like ethtool -S is. So I think the
-> > same
-> > reasoning should apply to ethtool -S too, really.
-> 
-> I think we all agree on the principles, once we make sure to not
-> add more pressure on RTNL. It seems you addressed our feedback, all
-> is fine.
+> diff --git a/net/bridge/br.c b/net/bridge/br.c
+> index 1b169f8e7491..ef743f94254d 100644
+> --- a/net/bridge/br.c
+> +++ b/net/bridge/br.c
+> @@ -122,7 +122,7 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
+>  		break;
+>  
+>  	case NETDEV_PRE_TYPE_CHANGE:
+> -		/* Forbid underlaying device to change its type. */
+> +		/* Forbid underlying device to change its type. */
+>  		return NOTIFY_BAD;
+>  
+>  	case NETDEV_RESEND_IGMP:
+> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> index 8ca1f1bc6d12..222285d9dae2 100644
+> --- a/net/bridge/br_input.c
+> +++ b/net/bridge/br_input.c
+> @@ -40,7 +40,7 @@ static int br_pass_frame_up(struct sk_buff *skb)
+>  
+>  	vg = br_vlan_group_rcu(br);
+>  	/* Bridge is just like any other port.  Make sure the
+> -	 * packet is allowed except in promisc modue when someone
+> +	 * packet is allowed except in promisc mode when someone
+>  	 * may be running packet capture.
+>  	 */
+>  	if (!(brdev->flags & IFF_PROMISC) &&
+> diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
+> index cec2c4e4561d..fc0a98874bfc 100644
+> --- a/net/bridge/br_mrp.c
+> +++ b/net/bridge/br_mrp.c
+> @@ -825,7 +825,7 @@ int br_mrp_start_in_test(struct net_bridge *br,
+>  	return 0;
+>  }
+>  
+> -/* Determin if the frame type is a ring frame */
+> +/* Determine if the frame type is a ring frame */
+>  static bool br_mrp_ring_frame(struct sk_buff *skb)
+>  {
+>  	const struct br_mrp_tlv_hdr *hdr;
+> @@ -845,7 +845,7 @@ static bool br_mrp_ring_frame(struct sk_buff *skb)
+>  	return false;
+>  }
+>  
+> -/* Determin if the frame type is an interconnect frame */
+> +/* Determine if the frame type is an interconnect frame */
+>  static bool br_mrp_in_frame(struct sk_buff *skb)
+>  {
+>  	const struct br_mrp_tlv_hdr *hdr;
+> @@ -894,7 +894,7 @@ static void br_mrp_mrm_process(struct br_mrp *mrp, struct net_bridge_port *port,
+>  		br_mrp_ring_port_open(port->dev, false);
+>  }
+>  
+> -/* Determin if the test hdr has a better priority than the node */
+> +/* Determine if the test hdr has a better priority than the node */
+>  static bool br_mrp_test_better_than_own(struct br_mrp *mrp,
+>  					struct net_bridge *br,
+>  					const struct br_mrp_ring_test_hdr *hdr)
+> diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
+> index 3e88be7aa269..a3a5745660dd 100644
+> --- a/net/bridge/br_stp.c
+> +++ b/net/bridge/br_stp.c
+> @@ -601,8 +601,8 @@ int __set_ageing_time(struct net_device *dev, unsigned long t)
+>  /* Set time interval that dynamic forwarding entries live
+>   * For pure software bridge, allow values outside the 802.1
+>   * standard specification for special cases:
+> - *  0 - entry never ages (all permanant)
+> - *  1 - entry disappears (no persistance)
+> + *  0 - entry never ages (all permanent)
+> + *  1 - entry disappears (no persistence)
+>   *
+>   * Offloaded switch entries maybe more restrictive
+>   */
 > 
 
-Eric, about two years ago you were totally against sleeping in
-ndo_get_stats, what happened ? :) 
-https://lore.kernel.org/netdev/4cc44e85-cb5e-502c-30f3-c6ea564fe9ac@gmail.com/
 
-My approach to solve this was much simpler and didn't require  a new
-mutex nor RTNL lock, all i did is to reduce the rcu critical section to
-not include the call to the driver by simply holding the netdev via
-dev_hold()
-
-
-
+-- 
+~Randy
+https://people.kernel.org/tglx/notes-about-netiquette
+https://www.kernel.org/doc/html/latest/process/submit-checklist.html
