@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF08A2EF5D9
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 17:35:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B312EF5DD
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 17:35:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728404AbhAHQdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 11:33:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
+        id S1728464AbhAHQdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 11:33:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728004AbhAHQdk (ORCPT
+        with ESMTP id S1728092AbhAHQdk (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 11:33:40 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2339DC0612A4
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 08:32:34 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id b2so11821204edm.3
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 08:32:34 -0800 (PST)
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7756C0612A5
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 08:32:35 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id d17so15258686ejy.9
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 08:32:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GH9gv6pTMkTE9mhPswpSQp2Heu44uVPpot5nMAmR7P0=;
-        b=hf237byPxJemxTx+qUcMiGiJ/nAL/NYA+RHj55v5JIwHza2Cuj8hmwrQEPlpYKAkol
-         fIxvL4QZOnw/8Nr2NP6t2H7xlrTiUOL+iF5VSfd3Xy5kymSW6ay2A+tE9GZK/bhQRlDk
-         0HiBUvYwYF/Vhyp9XeRFLG3+gRq6XaEsTsn+fTzkmi2lhWTeGnDJXWP76Kx6GjlQtqnX
-         DOUeo6Gly/sHqODjaliIXNINEuP4AHSgG/v6RM/HSvgcBDx0u6iTwFkINX+V9BvuKdJs
-         hBMIcxDsSCn3gAJdWH6EeewioTwJJ814CHiR4rY3uR6litC57Z7uvIzePvMLKxHgVQFX
-         SaMQ==
+        bh=ZD9IDARfyDQAfyn8rtiOrhgy3CFrtxmODytn6yLlrbk=;
+        b=KN216R5AczqiSIVIBS2LKw93x5U+0mjmySlOiqpwFX9SVu2mnKRnmF2NJpOrli7fcF
+         4iMrATULZsh+LTJFLmX6DOVifGnn7DOb38g70Tqaxbw7hgemEbKieV4LAnOlOtJGxhNo
+         RoznfjKPP4pAUgBlrDXEwKNhKcfrJ5yJEGZT78S8EfzdwUz2r10KRo3JDxDxb4xXnGMX
+         FEMQloFy5c/aEkm2YwPKowZZjrX2X9iyiDWpn/wHhMxya7b8iCziIvVwhhIn0woLnCiZ
+         8/Q5GWBawXDo2xryIKcl/TK+82bdQsR15GDvhmua/8Tx/1kA1rBci83/opC1e4CjNvmV
+         Eekg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GH9gv6pTMkTE9mhPswpSQp2Heu44uVPpot5nMAmR7P0=;
-        b=umNl773kxx+3GqjAkilr6ugfso94begnPltcJO0/Nhv4LI77zx+Bth9K8lBcdCGXEy
-         xUnB9G0Knr81mdRXneIaIftcOtzpown/08Ps/3ilDpOYzUIumkMDCvqQ0L4RMhwys8xv
-         rr1Bqf2uptysGIeN9/I7wt/vxwvLitzlXcg2M7lzLEhVRAHGtMMMx6uaTgIK5bSIZFCd
-         Eipu/NkXcQ8NpEmnr8soQqlLqtZiWo+HQh3CxqsHgLf3BzpVL9dtY7KB2ivZI/MpR9Df
-         Uhmm06YuJARDJ4XBv0Eh2jnnIMgq+1p0qDUoe3tIMYHF1jDP3GjhHokZdBi38+kpVVO7
-         TjGA==
-X-Gm-Message-State: AOAM533SmuZnycsq96HrbCYNSppy0DMC2w4ceChJfCC+n/vdkjOcmaOo
-        2WgtxpMcKAKLCpbVgCuvz7k=
-X-Google-Smtp-Source: ABdhPJz9+sP8888Z24A3rhxykJEiaSo9T0ig7QSsSh8qIuKywvxcpoXKfRN472oFxvrcUF8LCifEIw==
-X-Received: by 2002:aa7:cf85:: with SMTP id z5mr5829379edx.274.1610123552862;
-        Fri, 08 Jan 2021 08:32:32 -0800 (PST)
+        bh=ZD9IDARfyDQAfyn8rtiOrhgy3CFrtxmODytn6yLlrbk=;
+        b=tIKqMG2i6vbHqAcL4LEAqNBDC8L96lSB91rN16p4QlX2/vYn6Oo7qfU9zD1Wp3pG7v
+         GOaHTC00AGT+D1LAdDgal2Bgnrc11NCmdBM4x4QiHZcgAVVyeJZlt0TmlpVu6dM4VeHA
+         UvWqmJ1XkOaqzXoXtmubwRq6SC0ulXu/6t0oBv3yMb4oHHA3qU4bLLZtnWgc5ZtZKVH9
+         OO6UoL/fAnkuAUFMs9EsdEMFzrT1bjgkoLfX/uE/Dh1QwX+eaQA6Gkd+UFA2UMDYbReu
+         v0N3VOPLzD4VA721WNunwJgEVQHw03SKiqN6jaMuIA8SFc2ixY6dt8dOLoiygwINTrN9
+         gSog==
+X-Gm-Message-State: AOAM533hBBH2Vy/14Fto8Zevc2BCv8yDuSLaVDlZG8oBGTQG2+2Xv4pX
+        XGixUVhs0y2p/PsVYq1b0wU=
+X-Google-Smtp-Source: ABdhPJxIP9nkmlXPaZ23g8dkFkpmBG3t8QKvWdSr7wd+IrIPthBdY+Qq5nwZfHqxJWDXbS2+25jkKw==
+X-Received: by 2002:a17:906:1f8e:: with SMTP id t14mr3232503ejr.350.1610123554359;
+        Fri, 08 Jan 2021 08:32:34 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id x6sm3957737edl.67.2021.01.08.08.32.31
+        by smtp.gmail.com with ESMTPSA id x6sm3957737edl.67.2021.01.08.08.32.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 08:32:31 -0800 (PST)
+        Fri, 08 Jan 2021 08:32:33 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -66,9 +66,9 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Pravin B Shelar <pshelar@ovn.org>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH v5 net-next 09/16] scsi: fcoe: propagate errors from dev_get_stats
-Date:   Fri,  8 Jan 2021 18:31:52 +0200
-Message-Id: <20210108163159.358043-10-olteanv@gmail.com>
+Subject: [PATCH v5 net-next 10/16] net: openvswitch: propagate errors from dev_get_stats
+Date:   Fri,  8 Jan 2021 18:31:53 +0200
+Message-Id: <20210108163159.358043-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210108163159.358043-1-olteanv@gmail.com>
 References: <20210108163159.358043-1-olteanv@gmail.com>
@@ -80,199 +80,150 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The FCoE callback for the Link Error Status Block retrieves the FCS
-error count using dev_get_stats. This function can now return errors.
-Propagate these all the way to the sysfs device attributes.
+The dev_get_stats function can now return an error code, so the code
+that retrieves vport statistics and sends them through netlink needs to
+propagate that error code.
+
+Modify the drastic BUG_ON checks to operate only on the -EMSGSIZE error
+code (the only error code previously possible), and not crash the kernel
+in case dev_get_stats fails. This is in line with what rtnetlink.c does.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v5:
-None.
+Still keeping the BUG_ON condition except for the output of
+ovs_vport_get_stats.
 
 Changes in v4:
 Patch is new (Eric's suggestion).
 
- drivers/scsi/fcoe/fcoe_sysfs.c     |  9 +++++++--
- drivers/scsi/fcoe/fcoe_transport.c | 24 +++++++++++++++---------
- drivers/scsi/libfc/fc_rport.c      |  5 ++++-
- include/scsi/fcoe_sysfs.h          | 12 ++++++------
- include/scsi/libfc.h               |  2 +-
- include/scsi/libfcoe.h             |  8 ++++----
- 6 files changed, 37 insertions(+), 23 deletions(-)
+ net/openvswitch/datapath.c | 25 +++++++++++++++++++------
+ net/openvswitch/vport.c    | 10 ++++++++--
+ net/openvswitch/vport.h    |  2 +-
+ 3 files changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/scsi/fcoe/fcoe_sysfs.c b/drivers/scsi/fcoe/fcoe_sysfs.c
-index af658aa38fed..a197e66ffa8a 100644
---- a/drivers/scsi/fcoe/fcoe_sysfs.c
-+++ b/drivers/scsi/fcoe/fcoe_sysfs.c
-@@ -139,8 +139,13 @@ static ssize_t show_fcoe_ctlr_device_##field(struct device *dev, \
- 					    char *buf)			\
- {									\
- 	struct fcoe_ctlr_device *ctlr = dev_to_ctlr(dev);		\
--	if (ctlr->f->get_fcoe_ctlr_##field)				\
--		ctlr->f->get_fcoe_ctlr_##field(ctlr);			\
-+	int err;							\
-+									\
-+	if (ctlr->f->get_fcoe_ctlr_##field) {				\
-+		err = ctlr->f->get_fcoe_ctlr_##field(ctlr);		\
-+		if (err)						\
-+			return err;					\
-+	}								\
- 	return snprintf(buf, sz, format_string,				\
- 			cast fcoe_ctlr_##field(ctlr));			\
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 9d6ef6cb9b26..160b8dc453da 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -1987,7 +1987,10 @@ static int ovs_vport_cmd_fill_info(struct vport *vport, struct sk_buff *skb,
+ 			goto nla_put_failure;
+ 	}
+ 
+-	ovs_vport_get_stats(vport, &vport_stats);
++	err = ovs_vport_get_stats(vport, &vport_stats);
++	if (err)
++		goto error;
++
+ 	if (nla_put_64bit(skb, OVS_VPORT_ATTR_STATS,
+ 			  sizeof(struct ovs_vport_stats), &vport_stats,
+ 			  OVS_VPORT_ATTR_PAD))
+@@ -2028,7 +2031,9 @@ struct sk_buff *ovs_vport_cmd_build_info(struct vport *vport, struct net *net,
+ 
+ 	retval = ovs_vport_cmd_fill_info(vport, skb, net, portid, seq, 0, cmd,
+ 					 GFP_KERNEL);
+-	BUG_ON(retval < 0);
++	BUG_ON(retval == -EMSGSIZE);
++	if (retval)
++		return ERR_PTR(retval);
+ 
+ 	return skb;
  }
-diff --git a/drivers/scsi/fcoe/fcoe_transport.c b/drivers/scsi/fcoe/fcoe_transport.c
-index 213ee9efb044..5d19650e9bc1 100644
---- a/drivers/scsi/fcoe/fcoe_transport.c
-+++ b/drivers/scsi/fcoe/fcoe_transport.c
-@@ -166,15 +166,16 @@ EXPORT_SYMBOL_GPL(fcoe_link_speed_update);
-  * Note, the Link Error Status Block (LESB) for FCoE is defined in FC-BB-6
-  * Clause 7.11 in v1.04.
+@@ -2173,6 +2178,9 @@ static int ovs_vport_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
+ 				      info->snd_portid, info->snd_seq, 0,
+ 				      OVS_VPORT_CMD_NEW, GFP_KERNEL);
++	BUG_ON(err == -EMSGSIZE);
++	if (err)
++		goto exit_unlock_free;
+ 
+ 	new_headroom = netdev_get_fwd_headroom(vport->dev);
+ 
+@@ -2181,7 +2189,6 @@ static int ovs_vport_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	else
+ 		netdev_set_rx_headroom(vport->dev, dp->max_headroom);
+ 
+-	BUG_ON(err < 0);
+ 	ovs_unlock();
+ 
+ 	ovs_notify(&dp_vport_genl_family, reply, info);
+@@ -2234,7 +2241,9 @@ static int ovs_vport_cmd_set(struct sk_buff *skb, struct genl_info *info)
+ 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
+ 				      info->snd_portid, info->snd_seq, 0,
+ 				      OVS_VPORT_CMD_SET, GFP_KERNEL);
+-	BUG_ON(err < 0);
++	BUG_ON(err == -EMSGSIZE);
++	if (err)
++		goto exit_unlock_free;
+ 
+ 	ovs_unlock();
+ 	ovs_notify(&dp_vport_genl_family, reply, info);
+@@ -2274,7 +2283,9 @@ static int ovs_vport_cmd_del(struct sk_buff *skb, struct genl_info *info)
+ 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
+ 				      info->snd_portid, info->snd_seq, 0,
+ 				      OVS_VPORT_CMD_DEL, GFP_KERNEL);
+-	BUG_ON(err < 0);
++	BUG_ON(err == -EMSGSIZE);
++	if (err)
++		goto exit_unlock_free;
+ 
+ 	/* the vport deletion may trigger dp headroom update */
+ 	dp = vport->dp;
+@@ -2321,7 +2332,9 @@ static int ovs_vport_cmd_get(struct sk_buff *skb, struct genl_info *info)
+ 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
+ 				      info->snd_portid, info->snd_seq, 0,
+ 				      OVS_VPORT_CMD_GET, GFP_ATOMIC);
+-	BUG_ON(err < 0);
++	BUG_ON(err == -EMSGSIZE);
++	if (err)
++		goto exit_unlock_free;
+ 	rcu_read_unlock();
+ 
+ 	return genlmsg_reply(reply, info);
+diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
+index 215a818bf9ce..e66c949fd97a 100644
+--- a/net/openvswitch/vport.c
++++ b/net/openvswitch/vport.c
+@@ -267,11 +267,15 @@ void ovs_vport_del(struct vport *vport)
+  *
+  * Must be called with ovs_mutex or rcu_read_lock.
   */
--void __fcoe_get_lesb(struct fc_lport *lport,
--		     struct fc_els_lesb *fc_lesb,
--		     struct net_device *netdev)
-+int __fcoe_get_lesb(struct fc_lport *lport,
-+		    struct fc_els_lesb *fc_lesb,
-+		    struct net_device *netdev)
+-void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
++int ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
  {
  	struct rtnl_link_stats64 dev_stats;
- 	unsigned int cpu;
- 	u32 lfc, vlfc, mdac;
- 	struct fc_stats *stats;
- 	struct fcoe_fc_els_lesb *lesb;
 +	int err;
- 
- 	lfc = 0;
- 	vlfc = 0;
-@@ -190,8 +191,14 @@ void __fcoe_get_lesb(struct fc_lport *lport,
- 	lesb->lesb_link_fail = htonl(lfc);
- 	lesb->lesb_vlink_fail = htonl(vlfc);
- 	lesb->lesb_miss_fka = htonl(mdac);
--	dev_get_stats(netdev, &dev_stats);
 +
-+	err = dev_get_stats(netdev, &dev_stats);
++	err = dev_get_stats(vport->dev, &dev_stats);
 +	if (err)
 +		return err;
-+
- 	lesb->lesb_fcs_error = htonl(dev_stats.rx_crc_errors);
+ 
+-	dev_get_stats(vport->dev, &dev_stats);
+ 	stats->rx_errors  = dev_stats.rx_errors;
+ 	stats->tx_errors  = dev_stats.tx_errors;
+ 	stats->tx_dropped = dev_stats.tx_dropped;
+@@ -281,6 +285,8 @@ void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
+ 	stats->rx_packets = dev_stats.rx_packets;
+ 	stats->tx_bytes	  = dev_stats.tx_bytes;
+ 	stats->tx_packets = dev_stats.tx_packets;
 +
 +	return 0;
  }
- EXPORT_SYMBOL_GPL(__fcoe_get_lesb);
- 
-@@ -200,12 +207,11 @@ EXPORT_SYMBOL_GPL(__fcoe_get_lesb);
-  * @lport: the local port
-  * @fc_lesb: the link error status block
-  */
--void fcoe_get_lesb(struct fc_lport *lport,
--			 struct fc_els_lesb *fc_lesb)
-+int fcoe_get_lesb(struct fc_lport *lport, struct fc_els_lesb *fc_lesb)
- {
- 	struct net_device *netdev = fcoe_get_netdev(lport);
- 
--	__fcoe_get_lesb(lport, fc_lesb, netdev);
-+	return __fcoe_get_lesb(lport, fc_lesb, netdev);
- }
- EXPORT_SYMBOL_GPL(fcoe_get_lesb);
- 
-@@ -215,14 +221,14 @@ EXPORT_SYMBOL_GPL(fcoe_get_lesb);
-  * @ctlr_dev: The given fcoe controller device
-  *
-  */
--void fcoe_ctlr_get_lesb(struct fcoe_ctlr_device *ctlr_dev)
-+int fcoe_ctlr_get_lesb(struct fcoe_ctlr_device *ctlr_dev)
- {
- 	struct fcoe_ctlr *fip = fcoe_ctlr_device_priv(ctlr_dev);
- 	struct net_device *netdev = fcoe_get_netdev(fip->lp);
- 	struct fc_els_lesb *fc_lesb;
- 
- 	fc_lesb = (struct fc_els_lesb *)(&ctlr_dev->lesb);
--	__fcoe_get_lesb(fip->lp, fc_lesb, netdev);
-+	return __fcoe_get_lesb(fip->lp, fc_lesb, netdev);
- }
- EXPORT_SYMBOL_GPL(fcoe_ctlr_get_lesb);
- 
-diff --git a/drivers/scsi/libfc/fc_rport.c b/drivers/scsi/libfc/fc_rport.c
-index 56003208d2e7..cb299fef7a78 100644
---- a/drivers/scsi/libfc/fc_rport.c
-+++ b/drivers/scsi/libfc/fc_rport.c
-@@ -1633,6 +1633,7 @@ static void fc_rport_recv_rls_req(struct fc_rport_priv *rdata,
- 	struct fc_els_lesb *lesb;
- 	struct fc_seq_els_data rjt_data;
- 	struct fc_host_statistics *hst;
-+	int err;
- 
- 	lockdep_assert_held(&rdata->rp_mutex);
- 
-@@ -1659,7 +1660,9 @@ static void fc_rport_recv_rls_req(struct fc_rport_priv *rdata,
- 	lesb = &rsp->rls_lesb;
- 	if (lport->tt.get_lesb) {
- 		/* get LESB from LLD if it supports it */
--		lport->tt.get_lesb(lport, lesb);
-+		err = lport->tt.get_lesb(lport, lesb);
-+		if (err)
-+			goto out_rjt;
- 	} else {
- 		fc_get_host_stats(lport->host);
- 		hst = &lport->host_stats;
-diff --git a/include/scsi/fcoe_sysfs.h b/include/scsi/fcoe_sysfs.h
-index 4b1216de3f22..076b593f2625 100644
---- a/include/scsi/fcoe_sysfs.h
-+++ b/include/scsi/fcoe_sysfs.h
-@@ -16,12 +16,12 @@ struct fcoe_ctlr_device;
- struct fcoe_fcf_device;
- 
- struct fcoe_sysfs_function_template {
--	void (*get_fcoe_ctlr_link_fail)(struct fcoe_ctlr_device *);
--	void (*get_fcoe_ctlr_vlink_fail)(struct fcoe_ctlr_device *);
--	void (*get_fcoe_ctlr_miss_fka)(struct fcoe_ctlr_device *);
--	void (*get_fcoe_ctlr_symb_err)(struct fcoe_ctlr_device *);
--	void (*get_fcoe_ctlr_err_block)(struct fcoe_ctlr_device *);
--	void (*get_fcoe_ctlr_fcs_error)(struct fcoe_ctlr_device *);
-+	int  (*get_fcoe_ctlr_link_fail)(struct fcoe_ctlr_device *);
-+	int  (*get_fcoe_ctlr_vlink_fail)(struct fcoe_ctlr_device *);
-+	int  (*get_fcoe_ctlr_miss_fka)(struct fcoe_ctlr_device *);
-+	int  (*get_fcoe_ctlr_symb_err)(struct fcoe_ctlr_device *);
-+	int  (*get_fcoe_ctlr_err_block)(struct fcoe_ctlr_device *);
-+	int  (*get_fcoe_ctlr_fcs_error)(struct fcoe_ctlr_device *);
- 	void (*set_fcoe_ctlr_mode)(struct fcoe_ctlr_device *);
- 	int  (*set_fcoe_ctlr_enabled)(struct fcoe_ctlr_device *);
- 	void (*get_fcoe_fcf_selected)(struct fcoe_fcf_device *);
-diff --git a/include/scsi/libfc.h b/include/scsi/libfc.h
-index 9b87e1a1c646..510654796db5 100644
---- a/include/scsi/libfc.h
-+++ b/include/scsi/libfc.h
-@@ -501,7 +501,7 @@ struct libfc_function_template {
- 	 *
- 	 * STATUS: OPTIONAL
- 	 */
--	void (*get_lesb)(struct fc_lport *, struct fc_els_lesb *lesb);
-+	int (*get_lesb)(struct fc_lport *, struct fc_els_lesb *lesb);
- 
- 	/*
- 	 * Reset an exchange manager, completing all sequences and exchanges.
-diff --git a/include/scsi/libfcoe.h b/include/scsi/libfcoe.h
-index 2568cb0627ec..a42cbe847ce6 100644
---- a/include/scsi/libfcoe.h
-+++ b/include/scsi/libfcoe.h
-@@ -255,13 +255,13 @@ int fcoe_libfc_config(struct fc_lport *, struct fcoe_ctlr *,
- u32 fcoe_fc_crc(struct fc_frame *fp);
- int fcoe_start_io(struct sk_buff *skb);
- int fcoe_get_wwn(struct net_device *netdev, u64 *wwn, int type);
--void __fcoe_get_lesb(struct fc_lport *lport, struct fc_els_lesb *fc_lesb,
--		     struct net_device *netdev);
-+int __fcoe_get_lesb(struct fc_lport *lport, struct fc_els_lesb *fc_lesb,
-+		    struct net_device *netdev);
- void fcoe_wwn_to_str(u64 wwn, char *buf, int len);
- int fcoe_validate_vport_create(struct fc_vport *vport);
- int fcoe_link_speed_update(struct fc_lport *);
--void fcoe_get_lesb(struct fc_lport *, struct fc_els_lesb *);
--void fcoe_ctlr_get_lesb(struct fcoe_ctlr_device *ctlr_dev);
-+int fcoe_get_lesb(struct fc_lport *, struct fc_els_lesb *);
-+int fcoe_ctlr_get_lesb(struct fcoe_ctlr_device *ctlr_dev);
  
  /**
-  * is_fip_mode() - returns true if FIP mode selected.
+diff --git a/net/openvswitch/vport.h b/net/openvswitch/vport.h
+index 1eb7495ac5b4..8927ba5c491b 100644
+--- a/net/openvswitch/vport.h
++++ b/net/openvswitch/vport.h
+@@ -30,7 +30,7 @@ void ovs_vport_del(struct vport *);
+ 
+ struct vport *ovs_vport_locate(const struct net *net, const char *name);
+ 
+-void ovs_vport_get_stats(struct vport *, struct ovs_vport_stats *);
++int ovs_vport_get_stats(struct vport *, struct ovs_vport_stats *);
+ 
+ int ovs_vport_set_options(struct vport *, struct nlattr *options);
+ int ovs_vport_get_options(const struct vport *, struct sk_buff *);
 -- 
 2.25.1
 
