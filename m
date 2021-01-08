@@ -2,93 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A4DC2EF8FC
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 21:22:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC04B2EF92E
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 21:28:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729431AbhAHUU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 15:20:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729300AbhAHUUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 15:20:53 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C56C061380
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 12:20:12 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id h16so12430598edt.7
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 12:20:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7554PS+RmXDqISK7YiVD4ljXC+qv4l8E6s66DaLLIi8=;
-        b=qJiKMBbFOciQz7glh8cURPbS4Pn0v5tENVxouLjT2E9vzs8eOqTDO+Ctr2aP6r86DA
-         rjf/nu3AmIJx4HtjZFc96XcyyUvlwQGxM2cR/8CkkjZN7p/nA7YeWA2ckoI+rwJh9equ
-         4DMlbrV0aOEEe+walDhHuBQUZ2RHbVoP4AbSAPTatzVq9C6bM2+CO78w8Q7ojHvNpdWq
-         oYpr2uXWwJDlxOVPm/u2uTEhi6UV3YbzrUBU2vvMhYc6R7q0e5mYTwT4tjyIdKon/lqE
-         +Ge2HUbFYTI8ay2wXrZPHWRzD3ja/LpZpk4skfLHRVLNBDnYPWkYPj1Y8ie6oRzjaefw
-         YuNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7554PS+RmXDqISK7YiVD4ljXC+qv4l8E6s66DaLLIi8=;
-        b=sNEPHHPC8RxLjC/r7XaUdP7nlpotSgMzyFdTBAenT3q5qaXFHuAwM5CNXS5hTLzGmg
-         JAfp0nCBL1cJ14I3TLjrx73I82d/Yr69FqgpCVkyix+jTXRxtyDfyaokIuq9BZWPy/UI
-         KsCw4HClapzzDgArKae4FkIZd+c7Uqf4s1GZL79PTspOEzAottaqI28qjtUMA0VIIrkd
-         v4QKhdTflZPApajUksz1LksuwEywqXFXJwHELyGDuclVPbvye9KV32IvfljZVwnGqJg/
-         DvpsJb8a38iLG+AzCXFdC5j7hE8bQ/Gd2M85EMyaq0r7sPCqRLTauRv/30W1Xwj/V2gg
-         QL/w==
-X-Gm-Message-State: AOAM530UXTCy9ZYo22N5Jxy5tPfSmhyLe7f107C5ESVYymrkX9oqVsnj
-        aV4zFPV7UYTIca/Qmh2R7O4=
-X-Google-Smtp-Source: ABdhPJwKwNySk0c8LDtLc3qZTQHHyL7D2lRtQQ5T++RpPFnYrbXTtMz8ujt52pq1eKqpki7JVwXBbQ==
-X-Received: by 2002:a50:d5c1:: with SMTP id g1mr6751658edj.299.1610137211371;
-        Fri, 08 Jan 2021 12:20:11 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id t19sm3844034ejc.62.2021.01.08.12.20.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 12:20:10 -0800 (PST)
-Date:   Fri, 8 Jan 2021 22:20:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, Florian Westphal <fw@strlen.de>
-Subject: Re: [PATCH v3 net-next 10/12] net: bonding: ensure .ndo_get_stats64
- can sleep
-Message-ID: <20210108202009.vdb3ulr4ckgj5ns7@skbuf>
-References: <20210107094951.1772183-1-olteanv@gmail.com>
- <20210107094951.1772183-11-olteanv@gmail.com>
- <CANn89i+NfBw7ZpL-DTDA3QGBK=neT2R7qKYn_pcvDmRAOkaUsQ@mail.gmail.com>
- <20210107113313.q4e42cj6jigmdmbs@skbuf>
- <CANn89iJ_qbo6dP3YqXCeDPfopjBFZ8h6JxbpufVBGUpsG=D7+Q@mail.gmail.com>
- <ac66e1838894f96d2bb460b7969b6c9b903fee6a.camel@kernel.org>
- <CANn89iLm7nwckUVjoHsH-gYwQwEsscK+D2brG+NgndLZaUy_5g@mail.gmail.com>
- <20210108092125.adwhc3afwaaleoef@skbuf>
- <CANn89i+1KEyGDm-9RXpK4H6aWtn5Zmo3rgj_+zWYwFXhxm8bvg@mail.gmail.com>
- <0c2b5e3ee14addfb86f023f2108bacc4e5c5652b.camel@kernel.org>
+        id S1729173AbhAHU1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 15:27:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47058 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727443AbhAHU1n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 15:27:43 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5E5FD2399C;
+        Fri,  8 Jan 2021 20:27:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610137622;
+        bh=uKMf/YCjz4GqBLQ8uH3F7hRE4xdACHWcOKV7E2KR6rY=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=dKsTN3UP4YZ8SoW6w2vdMEJYgnLRQemcYBHXJcsSXKaGU2t5k1SzZBBNti6cgaKhx
+         iPZc5RaymVwhHNU7yNdJJ2LK+VLL279DNY5P4e0SbUzsWKktvPKaZ1fQb1PC3GnGgm
+         OXFizs8ZK0k8/UxMBFfs9Ikb35+oa9nIYPWWenh7ekZoowIZ+VcHGxiBJ2OxgksQKH
+         I+nX/Lme6FMg8C6QHoaEzEH7mE47mrqitE29wzHNp1YovCeY+EgOgsTOp/OZRjPSOd
+         LXNOLCt+TC5jDh+C4uhoZBJ6LF86GyNC2S2Tg4eqxW3NQnKQgG7yPXsm8vxqAf8iF0
+         o5Lt2XpBmZIhQ==
+Message-ID: <0e06ff3234b78b5bde6bf77d192a42c3f8ab5319.camel@kernel.org>
+Subject: Re: [PATCH net-next v1 1/2] net: core: count drops from GRO
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Shannon Nelson <snelson@pensando.io>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Fri, 08 Jan 2021 12:26:58 -0800
+In-Reply-To: <c11bb25a-f73d-3ae9-b1fd-7eb96bc79cc7@pensando.io>
+References: <20210106215539.2103688-1-jesse.brandeburg@intel.com>
+         <20210106215539.2103688-2-jesse.brandeburg@intel.com>
+         <1e4ee1cf-c2b7-8ba3-7cb1-5c5cb3ff1e84@pensando.io>
+         <20210108102630.00004202@intel.com>
+         <c11bb25a-f73d-3ae9-b1fd-7eb96bc79cc7@pensando.io>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0c2b5e3ee14addfb86f023f2108bacc4e5c5652b.camel@kernel.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 11:38:57AM -0800, Saeed Mahameed wrote:
-> Let me take a look at the current series, and if I see that the
-> rcu/dev_hold approach is more lightweight then i will suggest it to
-> Vladimir and he can make the final decision.
+On Fri, 2021-01-08 at 11:21 -0800, Shannon Nelson wrote:
+> On 1/8/21 10:26 AM, Jesse Brandeburg wrote:
+> > Shannon Nelson wrote:
+> > 
+> > > On 1/6/21 1:55 PM, Jesse Brandeburg wrote:
+> > > > When drivers call the various receive upcalls to receive an skb
+> > > > to the stack, sometimes that stack can drop the packet. The
+> > > > good
+> > > > news is that the return code is given to all the drivers of
+> > > > NET_RX_DROP or GRO_DROP. The bad news is that no drivers except
+> > > > the one "ice" driver that I changed, check the stat and
+> > > > increment
+> > > If the stack is dropping the packet, isn't it up to the stack to
+> > > track
+> > > that, perhaps with something that shows up in netstat -s?  We
+> > > don't
+> > > really want to make the driver responsible for any drops that
+> > > happen
+> > > above its head, do we?
+> > I totally agree!
+> > 
+> > In patch 2/2 I revert the driver-specific changes I had made in an
+> > earlier patch, and this patch *was* my effort to make the stack
+> > show the
+> > drops.
+> > 
+> > Maybe I wasn't clear. I'm seeing packets disappear during TCP
+> > workloads, and this GRO_DROP code was the source of the drops (I
+> > see it
+> > returning infrequently but regularly)
+> > 
+> > The driver processes the packet but the stack never sees it, and
+> > there
+> > were no drop counters anywhere tracking it.
+> > 
+> 
+> My point is that the patch increments a netdev counter, which to my
+> mind 
+> immediately implicates the driver and hardware, rather than the
+> stack.  
+> As a driver maintainer, I don't want to be chasing driver packet
+> drop 
+> reports that are a stack problem.  I'd rather see a new counter in 
+> netstat -s that reflects the stack decision and can better imply
+> what 
+> went wrong.  I don't have a good suggestion for a counter name at
+> the 
+> moment.
+> 
+> I guess part of the issue is that this is right on the boundary of 
+> driver-stack.  But if we follow Eric's suggestions, maybe the
+> problem 
+> magically goes away :-) .
+> 
+> sln
+> 
 
-The last version does use temporary RCU protection. I decided to not
-change anything about the locking architecture of the drivers.
+I think there is still some merit in this patchset even with Eric's
+removal of GRO_DROP from gro_receive(). As Eric explained, it is still
+possible to silently drop for the same reason when drivers
+call napi_get_frags or even alloc_skb() apis, many drivers do not
+account for such packet drops, and maybe it is the right thing to do to
+inline the packet drop accounting into the skb alloc APIs ? the
+question is, is it the job of those APIs to update netdev->stats ?
+
+
+
+
+
