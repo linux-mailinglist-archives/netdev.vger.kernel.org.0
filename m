@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82CC52EEF24
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 10:09:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0584D2EEF25
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 10:09:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727918AbhAHJI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 04:08:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33316 "EHLO
+        id S1727948AbhAHJI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 04:08:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727885AbhAHJI5 (ORCPT
+        with ESMTP id S1727895AbhAHJI5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 04:08:57 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3977C0612FA
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 01:07:41 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id ga15so13610807ejb.4
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 01:07:41 -0800 (PST)
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251F1C0612FB
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 01:07:43 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id d17so13542486ejy.9
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 01:07:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hR6oOKRaEb4xU9lNIaadoNIwqR0Ic8ORY/DFIm1kfxI=;
-        b=dBSDn9DcrhL4zzx1oPMe8HqJHNEBiVoHHA+DDM1D5rukRiH00zLOYLgjHwAFUtmcxB
-         iFPc/ksHQYOaTOi+Q9OJvYNepfqkRFCdDSydkFKIRGbFd32M11e7zfjgyroVVIDkphfL
-         QCY6psec3j3BDr/E4N+ZYHjZfc3F1AWKs8Bhb9gtV6+8QWLHJUCjzRALGkaU9av37CEg
-         Qn9VlMRTLiPHM6Gnys6rAuNCthiSxFOQ/rrx20f5ZfXX2mV5UwRC+xiiTHvGBiQtKozY
-         SGvC/N2g2o7fGzlaYJ2jf3Exd9HnEDLl1sVf1KeXY/bWdyA3nfAPbpk38U4WLciV37QU
-         R/NQ==
+        bh=OehcWf/fqpAy2S0ELS38TYxWj45yJVZV6WoKp4s+Or0=;
+        b=jSDoGoJccePoHjoAtZZZF1UWp57GGYFLbNDO1NAUYlopIs4lZV7z2gMojkSLAjsV7Z
+         NRvxZObFQExNDWzVaQjVALBxvan4XnAf3AYWULy/9KphOt2saoWUXS5R3RiP9ybQ1Vyw
+         wjYBvkf0tM5oZpcWQ11KdJZOiEKxiTpCbKoopJuxubnKDfaBjCJq39AjSklyWG+TVDUM
+         IISR9zGlRnithYS2N7+Q91tnOfWbUApxO/Ps7l5+JSbtxeaMpHezgJ4wNRJz+9TNIXVI
+         EW0oFmfLze0R7sC1JTAcK9aluBWtejbpp+Md0V/EKJCETRXZ0Q3mB1xZEN8WfhBpdAl3
+         R4vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hR6oOKRaEb4xU9lNIaadoNIwqR0Ic8ORY/DFIm1kfxI=;
-        b=jv67ph0wW3P/M756UxP7Xcz3GAzVAzSOuR1L29H37TfKSaf6ntTyNwJjcsjkvQ95CI
-         OCn5nnPeEGru99g0stO5OW/sx6x65ZyWoGVGWIk3/dm710GJxfUFks8LINIGGdwMd6kN
-         mrFQdTZvd/FNo0DmSMwwVkAeQfINXJijG07eugKYp5BlN7F1c4lfZt4xdjw4wHwBJ3SY
-         t7bTU0MDvvIzr8d42YVeT8a8lklDIV5CUhOO/1P0jQjpAG92NLcRf/WDT8UlXSgbRXGe
-         0c9nO7mLnerI5U/nj8e+TcPENjWXyU90BzjG+wmJvEUzc36SAys9rn1mF8mtFx2qwNy5
-         b7RA==
-X-Gm-Message-State: AOAM532BGiAn1NZereU0qRHgaqypAngepiH3MNn9gwvqtaklptMC9RXD
-        7tT+2HsXaEn5PSJud5DV/nU=
-X-Google-Smtp-Source: ABdhPJyIBC7obYhylvbAd56r42e9SZzLFLW2/McZelmFBbTmsQs07L56vpZpsvNMC7urSrvlfQx2tQ==
-X-Received: by 2002:a17:907:961d:: with SMTP id gb29mr2072781ejc.460.1610096860674;
-        Fri, 08 Jan 2021 01:07:40 -0800 (PST)
+        bh=OehcWf/fqpAy2S0ELS38TYxWj45yJVZV6WoKp4s+Or0=;
+        b=U8hs2tDSuqNls0aYDGvsLqW5HYva2ofKPNDNlZdR/ckMTNxXf5WDpaqKo0Bw7Kp5qK
+         ONgqh8YkE0Ej4EfEdryB65wYGk7XyJ1vJrkdID3SJmcq0u1kXAwdiE5JJKPWZ36p+bEj
+         yPNpLGuPFHJn9CpYrsqaZW/TI4FYrpqXSY1Zy7GfLTHIdDwtM4tGn5KiGIFgaxhrWjy4
+         x0Ehwwdes2/ytRBQwxBY67Oz1kghA81shVlnb+TYTgRJvVjQ5KZq8hW5oa8a1e2NLfYK
+         443fiI6S98ROG587coMDX8sj7Vi9w6Faa09UwmbWZhiyBfvVGoxnze3SNznq4sxhuujM
+         KRDA==
+X-Gm-Message-State: AOAM532Da+tjlJi7ugziV3Y/D/MkmWiJXIs9dtI5kqzW1kFwxw9p6pVG
+        NhIOM91w8foZwhB6wTCfnxg=
+X-Google-Smtp-Source: ABdhPJwGBfxQBm08VyOiTpKrb9Gr8FZWzf95bhaslDVYEFN9juxip5HdnmpmVNjwvH/KE1T/+vyQqA==
+X-Received: by 2002:a17:907:98ec:: with SMTP id ke12mr1962549ejc.554.1610096861854;
+        Fri, 08 Jan 2021 01:07:41 -0800 (PST)
 Received: from yoga-910.localhost (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k16sm3307132ejd.78.2021.01.08.01.07.39
+        by smtp.gmail.com with ESMTPSA id k16sm3307132ejd.78.2021.01.08.01.07.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 01:07:40 -0800 (PST)
+        Fri, 08 Jan 2021 01:07:41 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     laurentiu.tudor@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 5/6] dpaa2-mac: remove an unnecessary check
-Date:   Fri,  8 Jan 2021 11:07:26 +0200
-Message-Id: <20210108090727.866283-6-ciorneiioana@gmail.com>
+Subject: [PATCH net-next v2 6/6] dpaa2-mac: remove a comment regarding pause settings
+Date:   Fri,  8 Jan 2021 11:07:27 +0200
+Message-Id: <20210108090727.866283-7-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210108090727.866283-1-ciorneiioana@gmail.com>
 References: <20210108090727.866283-1-ciorneiioana@gmail.com>
@@ -64,74 +64,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-The dpaa2-eth driver has phylink integration only if the connected dpmac
-object is in TYPE_PHY (aka the PCS/PHY etc link status is managed by
-Linux instead of the firmware). The check is thus unnecessary because
-the code path that reaches the .mac_link_up() callback is only with
-TYPE_PHY dpmac objects.
+The MC firmware takes these PAUSE/ASYM_PAUSE flags provided by the
+driver, transforms them back into rx/tx pause enablement status and
+applies them to hardware. We are not losing information by this
+transformation, thus remove the comment.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v2:
- - none
+ - reworded the commit message
 
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 43 ++++++++-----------
- 1 file changed, 19 insertions(+), 24 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 81b2822a7dc9..3869c38f3979 100644
+index 3869c38f3979..69ad869446cf 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -174,30 +174,25 @@ static void dpaa2_mac_link_up(struct phylink_config *config,
+@@ -181,9 +181,6 @@ static void dpaa2_mac_link_up(struct phylink_config *config,
+ 	else if (duplex == DUPLEX_FULL)
+ 		dpmac_state->options &= ~DPMAC_LINK_OPT_HALF_DUPLEX;
  
- 	dpmac_state->up = 1;
- 
--	if (mac->if_link_type == DPMAC_LINK_TYPE_PHY) {
--		/* If the DPMAC is configured for PHY mode, we need
--		 * to pass the link parameters to the MC firmware.
--		 */
--		dpmac_state->rate = speed;
--
--		if (duplex == DUPLEX_HALF)
--			dpmac_state->options |= DPMAC_LINK_OPT_HALF_DUPLEX;
--		else if (duplex == DUPLEX_FULL)
--			dpmac_state->options &= ~DPMAC_LINK_OPT_HALF_DUPLEX;
--
--		/* This is lossy; the firmware really should take the pause
--		 * enablement status rather than pause/asym pause status.
--		 */
--		if (rx_pause)
--			dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
--		else
--			dpmac_state->options &= ~DPMAC_LINK_OPT_PAUSE;
--
--		if (rx_pause ^ tx_pause)
--			dpmac_state->options |= DPMAC_LINK_OPT_ASYM_PAUSE;
--		else
--			dpmac_state->options &= ~DPMAC_LINK_OPT_ASYM_PAUSE;
--	}
-+	dpmac_state->rate = speed;
-+
-+	if (duplex == DUPLEX_HALF)
-+		dpmac_state->options |= DPMAC_LINK_OPT_HALF_DUPLEX;
-+	else if (duplex == DUPLEX_FULL)
-+		dpmac_state->options &= ~DPMAC_LINK_OPT_HALF_DUPLEX;
-+
-+	/* This is lossy; the firmware really should take the pause
-+	 * enablement status rather than pause/asym pause status.
-+	 */
-+	if (rx_pause)
-+		dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
-+	else
-+		dpmac_state->options &= ~DPMAC_LINK_OPT_PAUSE;
-+
-+	if (rx_pause ^ tx_pause)
-+		dpmac_state->options |= DPMAC_LINK_OPT_ASYM_PAUSE;
-+	else
-+		dpmac_state->options &= ~DPMAC_LINK_OPT_ASYM_PAUSE;
- 
- 	err = dpmac_set_link_state(mac->mc_io, 0,
- 				   mac->mc_dev->mc_handle, dpmac_state);
+-	/* This is lossy; the firmware really should take the pause
+-	 * enablement status rather than pause/asym pause status.
+-	 */
+ 	if (rx_pause)
+ 		dpmac_state->options |= DPMAC_LINK_OPT_PAUSE;
+ 	else
 -- 
 2.29.2
 
