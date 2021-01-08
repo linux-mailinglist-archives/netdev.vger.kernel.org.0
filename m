@@ -2,98 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60B6F2EFAC6
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 22:53:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 844B02EFAC7
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 22:56:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbhAHVs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 16:48:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbhAHVs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 16:48:57 -0500
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE90FC061574
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 13:48:16 -0800 (PST)
-Received: by mail-qk1-x72e.google.com with SMTP id w79so9864936qkb.5
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 13:48:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZdyOJU/afRjOU/cKKectEALaNNEvp0ji0Tq2uxsOc7I=;
-        b=Vdz6K0gwK52+95eibkxGmwQk3k+qUaI54C6uNsEJsRk+9wEJ2eAmFkaHedmAVcrhpr
-         p4ag6tn56ccKUmUQXIH/xnyfRmVYXzhngQGkKB9lJQD7Y+s0YpMrWHEPRRGCKfvlb3mb
-         ekFU6sRU/fDQ2npjTsirvSLrfJ2tBFr1tRDiA6crlUlSFaGJHaGBE7t2IHNBiHkbYR1E
-         07bxGTYjx3n7a3GmoCs3Dp9w7G6sUhKXnpiZ0FEaoUM3EiWL9RwC1ilvqq0qV/93xHHo
-         i1ntvtNY24ajoPcsUfjEafOevXVHOlC4bipiZgDWSQM9jZUPBkUPIbuE6uSpOdODjTxz
-         cYjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZdyOJU/afRjOU/cKKectEALaNNEvp0ji0Tq2uxsOc7I=;
-        b=V+BmpoNoEtIPZSNQwNKlTeJl4ESyrg7XtwjpXqlImiwZpu76yZilQrwBhXwDeSlvCm
-         j1mp5C3QPnbPWwqFCOmQQRrlFHwVSFU89E7YUdDcyfjCCCq/0MV2wPWtoIyirXtbl4uy
-         2y0X33lYGslmlotcu1ECrd35GiV7LYIizD3z/2TqrJRrvYI8OyvxthfV0UF2UK8PfVWy
-         HVofGUd0yLogwUN7vy49WVle2qUmupDuezgCtd5rDAdPwAYRoWPjRt/SYHDM/U5vDvXV
-         T0RkR/bghNssrJbL1JEo0a7J+0DFeZ2pnWPtuAQ4JjgBT2zVetX1gretwLg1Ak14rfEQ
-         bo6g==
-X-Gm-Message-State: AOAM533jmHadc7rQBAiagPB1vsbKt+xvCN6qZh6wv2tCQHELAQxFbllw
-        /R8fkNNHBvvTNuHkVu1KVlU=
-X-Google-Smtp-Source: ABdhPJzloCznyEb62AMWAsnX4+7hyBDemmPHi+Cfkc6Er/qVYLzvY4dWP83qK3UzIPpqkSTI1JzMKQ==
-X-Received: by 2002:a37:584:: with SMTP id 126mr5947068qkf.332.1610142495927;
-        Fri, 08 Jan 2021 13:48:15 -0800 (PST)
-Received: from horizon.localdomain ([177.220.174.157])
-        by smtp.gmail.com with ESMTPSA id j142sm5616534qke.117.2021.01.08.13.48.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 13:48:15 -0800 (PST)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 5A936C0095; Fri,  8 Jan 2021 18:48:12 -0300 (-03)
-Date:   Fri, 8 Jan 2021 18:48:12 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Roi Dayan <roid@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next 08/15] net/mlx5e: CT: Preparation for offloading
- +trk+new ct rules
-Message-ID: <20210108214812.GB3678@horizon.localdomain>
-References: <20210108053054.660499-1-saeed@kernel.org>
- <20210108053054.660499-9-saeed@kernel.org>
+        id S1726189AbhAHVyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 16:54:44 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:55914 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725875AbhAHVyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 16:54:44 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-107-KCHJeWJCOGedzO2ULSD1-w-1; Fri, 08 Jan 2021 21:53:05 +0000
+X-MC-Unique: KCHJeWJCOGedzO2ULSD1-w-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 8 Jan 2021 21:53:04 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 8 Jan 2021 21:53:04 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marc Kleine-Budde' <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Dan Murphy <dmurphy@ti.com>, Sean Nyekjaer <sean@geanix.com>
+Subject: RE: [net-next 15/19] can: tcan4x5x: rework SPI access
+Thread-Topic: [net-next 15/19] can: tcan4x5x: rework SPI access
+Thread-Index: AQHW5TrYjuofN1D1dkq5+Uq0gmhgrKoeRRkg
+Date:   Fri, 8 Jan 2021 21:53:04 +0000
+Message-ID: <2aab5f57ffc2485e99cf04dee6441328@AcuMS.aculab.com>
+References: <20210107094900.173046-1-mkl@pengutronix.de>
+ <20210107094900.173046-16-mkl@pengutronix.de>
+ <20210107110035.42a6bb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210107110656.7e49772b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c98003bf-e62a-ab6a-a526-1f3ed0bb1ab7@pengutronix.de>
+In-Reply-To: <c98003bf-e62a-ab6a-a526-1f3ed0bb1ab7@pengutronix.de>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210108053054.660499-9-saeed@kernel.org>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+RnJvbTogTWFyYyBLbGVpbmUtQnVkZGUNCj4gU2VudDogMDcgSmFudWFyeSAyMDIxIDIxOjE3DQo+
+IA0KPiBPbiAxLzcvMjEgODowNiBQTSwgSmFrdWIgS2ljaW5za2kgd3JvdGU6DQo+ID4gT24gVGh1
+LCA3IEphbiAyMDIxIDExOjAwOjM1IC0wODAwIEpha3ViIEtpY2luc2tpIHdyb3RlOg0KPiA+PiBP
+biBUaHUsICA3IEphbiAyMDIxIDEwOjQ4OjU2ICswMTAwIE1hcmMgS2xlaW5lLUJ1ZGRlIHdyb3Rl
+Og0KPiA+Pj4gK3N0cnVjdCBfX3BhY2tlZCB0Y2FuNHg1eF9tYXBfYnVmIHsNCj4gPj4+ICsJc3Ry
+dWN0IHRjYW40eDV4X2J1Zl9jbWQgY21kOw0KPiA+Pj4gKwl1OCBkYXRhWzI1NiAqIHNpemVvZih1
+MzIpXTsNCj4gPj4+ICt9IF9fX19jYWNoZWxpbmVfYWxpZ25lZDsNCj4gPj4NCj4gPj4gSW50ZXJl
+c3RpbmcgYXR0cmlidXRlIGNvbWJvLCBJIG11c3Qgc2F5Lg0KPiA+DQo+ID4gTG9va2luZyBhdCB0
+aGUgcmVzdCBvZiB0aGUgcGF0Y2ggSSBkb24ndCByZWFsbHkgc2VlIGEgcmVhc29uIGZvcg0KPiA+
+IF9fcGFja2VkLiAgUGVyaGFwcyBpdCBjYW4gYmUgZHJvcHBlZD8NCj4gDQo+IEl0J3MgdGhlIHN0
+cmVhbSBvZiBieXRlcyBzZW5kIHZpYSBTUEkgdG8gdGhlIGNoaXAuIEhlcmUgYXJlIGJvdGggc3Ry
+dWN0cyBmb3INCj4gcmVmZXJlbmNlOg0KPiANCj4gPiArc3RydWN0IF9fcGFja2VkIHRjYW40eDV4
+X2J1Zl9jbWQgew0KPiA+ICsJdTggY21kOw0KPiA+ICsJX19iZTE2IGFkZHI7DQo+ID4gKwl1OCBs
+ZW47DQo+ID4gK307DQo+IA0KPiBUaGlzIGhhcyB0byBiZSBwYWNrZWQsIGFzIEkgYXNzdW1lIHRo
+ZSBjb21waWxlciB3b3VsZCBhZGQgc29tZSBzcGFjZSBhZnRlciB0aGUNCj4gInU4IGNtZCIgdG8g
+YWxpZ24gdGhlIF9fYmUxNiBuYXR1cmFsbHkuDQoNCldoeSBub3QgZ2VuZXJhdGUgYSBzZXJpZXMg
+b2YgMzJiaXQgd29yZHMgdG8gYmUgc2VudCBvdmVyIHRoZSBTUEkgYnVzLg0KU2xpZ2h0bHkgbGVz
+cyBmYWZmaW5nIGluIHRoZSBjb2RlLg0KVGhlbiBoYXZlIGEgI2RlZmluZSAob3IgaW5saW5lIGZ1
+bmN0aW9uKSB0byBtZXJnZSB0aGUgY21kK2FkZHIrbGVuDQppbnRvIGEgc2luZ2xlIDMyYml0IHdv
+cmQuDQoNCkFsc28gaWYgdGhlIGxlbmd0aCBpcyBpbiAzMmJpdCB1bml0cywgdGhlbiB0aGUgZGF0
+YVtdIGZpZWxkDQpvdWdodCB0byBiZSB1MzJbXS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQg
+QWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVz
+LCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-On Thu, Jan 07, 2021 at 09:30:47PM -0800, Saeed Mahameed wrote:
-> From: Roi Dayan <roid@nvidia.com>
-> 
-> Connection tracking associates the connection state per packet. The
-> first packet of a connection is assigned with the +trk+new state. The
-> connection enters the established state once a packet is seen on the
-> other direction.
-> 
-> Currently we offload only the established flows. However, UDP traffic
-> using source port entropy (e.g. vxlan, RoCE) will never enter the
-> established state. Such protocols do not require stateful processing,
-> and therefore could be offloaded.
-
-If it doesn't require stateful processing, please enlight me on why
-conntrack is being used in the first place. What's the use case here?
-
-> 
-> The change in the model is that a miss on the CT table will be forwarded
-> to a new +trk+new ct table and a miss there will be forwarded to the slow
-> path table.
-
-AFAICU this new +trk+new ct table is a wildcard match on sport with
-specific dports. Also AFAICU, such entries will not be visible to the
-userspace then. Is this right?
-
-  Marcelo
