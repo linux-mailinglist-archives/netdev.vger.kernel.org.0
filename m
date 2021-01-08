@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32B752EF763
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:33:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 742D02EF768
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:33:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728696AbhAHSbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 13:31:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
+        id S1728760AbhAHScf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 13:32:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728619AbhAHSbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:31:34 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05515C061381
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:30:54 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id 11so6772299pfu.4
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:30:54 -0800 (PST)
+        with ESMTP id S1727686AbhAHSce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:32:34 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CF0C061381
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:31:54 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id b8so6121798plx.0
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:31:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5KGmEXqUxHrUb31g9/ZOQ397ige7zLD/Oab0v0FKitE=;
-        b=XweYSvcBb94UMmhrnQoW8W0hrfvo1xr/sJo5ITz7lwzcYcQz9B7CpxuizeYUwR1jC+
-         5f2OAeBEOWcqZiitg0xIJ71Y0eTPl1RXDMrk0A8GuJLUcDloWuWEIJelsOAL4WtzjnKQ
-         Xjcs9joNuLtPIdY5+TZsVm5FZRMpDxHmN59Vhw5DPGxbWCrCMiOXbgUpbCNsbU73hxjb
-         ThqjYmM0ioiWPhyDBRDLOEJAt0pzF5N8bAruK9lbFStgcKHnGG1q2Yo2bly6qdj2COUC
-         wvgmejs687CU4bqMylUXSQQ0OZeHkMzGZCRhaVTeMuKxpDDVnAga7ee38oasBx5BfSgR
-         tGjA==
+        bh=MHha8esqBvN69/8JH8dAoEXVd97RlxgY9vW/1xU6L9c=;
+        b=aqjB5j8TTSudG7fEkA7vQN4ZF1/14xftQi8/Jullpr6a9qbyksPloia+o35JHK7q0q
+         e+IbxFqxK7qf5/vkm1ukE1xJ9VPbTg6jXzTAt80c852Q+WBRN1Z0sfyzsGoc1GRzn9Ii
+         17oo/PN/OAMThpwIc0Y8fs5UnreKIeY5N212+e0oSpqFR8YVoX9cl9QPsiEij1PDfsN9
+         YADwHvLDUuwsSSuMcragdQY7dODi28jKkgxlnEK72eOzo5tmfwYTnjO6BZw2VRpBMBbw
+         +uGzkJXJswqDJ2qGhizWctzd5LH2lTvB4V95rWTsk1Y7SE4kT56egNTXbetwgC3xZHV+
+         vFDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=5KGmEXqUxHrUb31g9/ZOQ397ige7zLD/Oab0v0FKitE=;
-        b=ODd4YErs4b4PCsFSBeRGvhGnsSI8i98VLNBx1swVUyAKV23vYjJCC08CdUz6/swi/m
-         /fLvlndmZh+keApALN98JBOtHTwAShMGeW/Vyb7VkzBP20KFx0jX9JheDSugSOEwzEYx
-         w01gB2y+FscTHzh8Mz4MdcDg7aoajm+DWErwnuFUqvlKopmNZDp/fQgKvb1jUsSL6IDu
-         ZeDzKP/7qofsvK1KQEtdObt2MpWk2/Gbey75r6UN7w94zrSd8yV7jQYaQnRTmxfmql2h
-         0L9OD9GLr4S6YN+6DQDV+YkI21KlFT3FaRi68fkefbmkrhNNALI4Cul6V7HeukjgWq0R
-         oCbA==
-X-Gm-Message-State: AOAM531hWosSjPQ3d3Inhb1XlQGqQRMIyAbuQ5WCDHIR88PIYKx7rLSh
-        /XH15jXnfNFkOVdz3HvRefM=
-X-Google-Smtp-Source: ABdhPJzvTeNv9j6WKOloQE8hwJMEqey0vUJgmWruO5kN9jVaPJT3sQjvTi26FQdY91JrLMD6Bd6gmw==
-X-Received: by 2002:a63:ce42:: with SMTP id r2mr8377924pgi.8.1610130653445;
-        Fri, 08 Jan 2021 10:30:53 -0800 (PST)
+        bh=MHha8esqBvN69/8JH8dAoEXVd97RlxgY9vW/1xU6L9c=;
+        b=hEEVmVyoDi6MvbewamAH8s9wvehd9QoGx5YctfZGbu+kblbvr3nPrVLC7Ko86lM4Kb
+         LuQ9FStaIOIYoWayzF1RJAQjDA5uJLqIbDt9779cLISCMcCCTGmVDWXny36bQjlUNUHN
+         ME+TTuUfwq0Aw1AJILdAVxCUIbqG+vHTRUtPoM8sYoOqEQaUgw4ZiDRMjQzA9uE06Cc4
+         8u50sMT+I1SoGQAVH1T0Lc/e0YhnLSkKbmAFr9RwxhzZKDGH6ccJ1u/G8HhypJMJr9Sl
+         Q9HKVorXAQ227gUQIynzZEjmMRzlYJyUPOzUZombVvqLHSxOc/Craw9PD4vfh6TgpYUE
+         O4qw==
+X-Gm-Message-State: AOAM533tx6yYNof5/vmMvTDCu65oseOaOObYxxuTH8K7GTyjd41Lf8+G
+        IRxE7wowozhF/j46QQE7j/8=
+X-Google-Smtp-Source: ABdhPJwgu5/H+RfxB+ILk07/i6Q/TETlmkfr4XdjcjpKqW7etYU5J+mJRFAKO5HmKg41xWrLyDfzzQ==
+X-Received: by 2002:a17:902:9f88:b029:dc:292d:37c5 with SMTP id g8-20020a1709029f88b02900dc292d37c5mr5066111plq.26.1610130714048;
+        Fri, 08 Jan 2021 10:31:54 -0800 (PST)
 Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d4sm5546661pjz.28.2021.01.08.10.30.51
+        by smtp.gmail.com with ESMTPSA id b189sm9225164pfb.194.2021.01.08.10.31.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jan 2021 10:30:52 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 02/10] net: mscc: ocelot: add ops for decoding
- watermark threshold and occupancy
+        Fri, 08 Jan 2021 10:31:53 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 03/10] net: dsa: add ops for devlink-sb
 To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
 Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, alexandru.marginean@nxp.com,
@@ -57,14 +56,14 @@ Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
         hongbo.wang@nxp.com, kuba@kernel.org, jiri@resnulli.us,
         idosch@idosch.org, UNGLinuxDriver@microchip.com
 References: <20210108175950.484854-1-olteanv@gmail.com>
- <20210108175950.484854-3-olteanv@gmail.com>
+ <20210108175950.484854-4-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <2fcd8772-b664-d1ed-0206-3a8b51f6e03a@gmail.com>
-Date:   Fri, 8 Jan 2021 10:30:49 -0800
+Message-ID: <7e36b837-3e0f-df60-14c0-6c028b8bbf9c@gmail.com>
+Date:   Fri, 8 Jan 2021 10:31:51 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20210108175950.484854-3-olteanv@gmail.com>
+In-Reply-To: <20210108175950.484854-4-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,17 +76,18 @@ X-Mailing-List: netdev@vger.kernel.org
 On 1/8/2021 9:59 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> We'll need to read back the watermark thresholds and occupancy from
-> hardware (for devlink-sb integration), not only to write them as we did
-> so far in ocelot_port_set_maxlen. So introduce 2 new functions in struct
-> ocelot_ops, similar to wm_enc, and implement them for the 3 supported
-> mscc_ocelot switches.
+> Switches that care about QoS might have hardware support for reserving
+> buffer pools for individual ports or traffic classes, and configuring
+> their sizes and thresholds. Through devlink-sb (shared buffers), this is
+> all configurable, as well as their occupancy being viewable.
 > 
-> Remove the INUSE and MAXUSE unpacking helpers for the QSYS_RES_STAT
-> register, because that doesn't scale with the number of switches that
-> mscc_ocelot supports now. They have different bit widths for the
-> watermarks, and we need function pointers to abstract that difference
-> away.
+> Add the plumbing in DSA for these operations.
+> 
+> Individual drivers still need to call devlink_sb_register() with the
+> shared buffers they want to expose. A helper was not created in DSA for
+> this purpose (unlike, say, dsa_devlink_params_register), since in my
+> opinion it does not bring any benefit over plainly calling
+> devlink_sb_register() directly.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
