@@ -2,83 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F732EEA8B
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 01:50:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A572EEA91
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 01:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729640AbhAHAuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 19:50:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34122 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727695AbhAHAuK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Jan 2021 19:50:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8428E23447;
-        Fri,  8 Jan 2021 00:49:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610066969;
-        bh=S+brV20O/Ncak/QxhHlEcqydPjggfGUBM/oMewgZuiY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=heJA5rUGZZ8Stu4gU4lQ7ce+PBTsPq1CJAo964dxV0y/lEtwtH3Yo6y+MEm1TvzHr
-         8qVpcovPDwNS0j1iVuUO3X/MrVmLL+E7w7YpFYuOr6uV8FuADmTGB1CnfSj9K5c83y
-         /DHfsMJ4YJuZm1EEniAqJzCC6CygD1D4Gq1rhWH8RDMsKn0NrBrkzlcLy8qomWeEaF
-         60D00VFXDi4Gi1Py6U8gTbtaKW04C7DtDz3+93ULP56EMRY+hl/nEUIkrn8FtZwEi4
-         5Y6ra+L0NI/QgrwjYWMeKp1yWHCkacON/o0feXQL5P7cf877DnVbzSp+mT01WirZnG
-         aKRrx7JmaTJ7w==
-Received: by pali.im (Postfix)
-        id 34E9AAF1; Fri,  8 Jan 2021 01:49:27 +0100 (CET)
-Date:   Fri, 8 Jan 2021 01:49:27 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Schreiber <tschreibe@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] net: sfp: add workaround for Realtek RTL8672 and
- RTL9601C chips
-Message-ID: <20210108004927.jr5tclbi7tzjpk6x@pali>
-References: <20201230154755.14746-1-pali@kernel.org>
- <20210106153749.6748-1-pali@kernel.org>
- <20210106153749.6748-2-pali@kernel.org>
- <X/dCm1fK9jcjs4XT@lunn.ch>
- <20210107194549.GR1551@shell.armlinux.org.uk>
- <20210107212116.44a2baea@kernel.org>
+        id S1729674AbhAHAux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 19:50:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729663AbhAHAux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 19:50:53 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D7AC0612F5
+        for <netdev@vger.kernel.org>; Thu,  7 Jan 2021 16:50:13 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id p18so6507531pgm.11
+        for <netdev@vger.kernel.org>; Thu, 07 Jan 2021 16:50:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=aV7cj3PKcKgrjSt+F3CvxyD76lss2wpxKzg35jttMAI=;
+        b=EOOt6Cjs3cCuAWvRElNB+slmQDg52pnQaK/X+dYj/G7qmVhNvCpqijuWJIX85tvrP8
+         m1IiQS2cg55TEwlDHwLmKhGn9uVR0K9qs7FsCYJa39bkFeIOfhmc+7cru+HCTjaivV/R
+         wGjnBBPL8mllB+U9ExinWYhJ5CotfykPCpgdHgMo5H1rsbHBRlG0RnEtOEg/9BIXF9mW
+         ekvSEHYUAz5wdKQNQdy+QnyJbJML99p3eXgKDd+5H57zANVu8EKwNhbGUPo5GmR/4mAl
+         vBka8rTggqp+xhpi2sohgHvgNJH0+nyhnxgdBkTt9susH6sLWlr/fLsTH1QOlmkReB7m
+         t7Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=aV7cj3PKcKgrjSt+F3CvxyD76lss2wpxKzg35jttMAI=;
+        b=foRwgL1Xoipz98CwAhIU4kztFG0b8ldzH2Kr9/9ixa5k1GE8Dm6a4d9qBswGqqxw/h
+         2DCjWs9PHPlrtVpyp5RBoqOfQvdeGl8oAaeMRlsXYgOZjWS3k2aO4A9aEsEMnoATpAvd
+         4OdkYBjrsigkfM2qhUwuqb0dAWVdGRtGUZXJ7lESqlH1VNPMEbbCT9U3GcaSN0JNP45S
+         /ua62+EPym2PUL4xpY5sgfW7iw5iHnqRqXEJzGfSUM8ozQwUc7vcMeneXZiKOjMywTEN
+         0U9llkHnXYGguqaga6NR8iDj3r3sjkq1+wTHjbAGzEgezyZPXue92bGynBak0pYnxXT0
+         PyyQ==
+X-Gm-Message-State: AOAM530QySstZLcHWJlm4UbMyuSDCyYdGt3Vph56uqWW3gvpJUNWVfY0
+        Phv9BpxBuwyUV6vG+OqvZp9txw==
+X-Google-Smtp-Source: ABdhPJzbgULcbMqjtezmp4QPNzeiCFrUd4tZIYgSjeGxqkrnx9ia+RBpNxlF1ND0wXz1Vrn8L9vIYQ==
+X-Received: by 2002:a62:1c16:0:b029:1a6:8b06:68e9 with SMTP id c22-20020a621c160000b02901a68b0668e9mr1131328pfc.45.1610067012682;
+        Thu, 07 Jan 2021 16:50:12 -0800 (PST)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id i6sm7771634pgc.58.2021.01.07.16.50.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Jan 2021 16:50:12 -0800 (PST)
+Subject: Re: [PATCH net-next v1 1/2] net: core: count drops from GRO
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+References: <20210106215539.2103688-1-jesse.brandeburg@intel.com>
+ <20210106215539.2103688-2-jesse.brandeburg@intel.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <1e4ee1cf-c2b7-8ba3-7cb1-5c5cb3ff1e84@pensando.io>
+Date:   Thu, 7 Jan 2021 16:50:10 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <20210106215539.2103688-2-jesse.brandeburg@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210107212116.44a2baea@kernel.org>
-User-Agent: NeoMutt/20180716
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 07 January 2021 21:21:16 Marek Behún wrote:
-> On Thu, 7 Jan 2021 19:45:49 +0000
-> Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> 
-> > I think you're not reading the code very well. It checks for bytes at
-> > offset 1..blocksize-1, blocksize+1..2*blocksize-1, etc are zero. It
-> > does _not_ check that byte 0 or the byte at N*blocksize is zero - these
-> > bytes are skipped. In other words, the first byte of each transfer can
-> > be any value. The other bytes of the _entire_ ID must be zero.
-> 
-> Wouldn't it be better, instead of checking if 1..blocksize-1 are zero,
-> to check whether reading byte by byte returns the same as reading 16
-> bytes whole?
+On 1/6/21 1:55 PM, Jesse Brandeburg wrote:
+> When drivers call the various receive upcalls to receive an skb
+> to the stack, sometimes that stack can drop the packet. The good
+> news is that the return code is given to all the drivers of
+> NET_RX_DROP or GRO_DROP. The bad news is that no drivers except
+> the one "ice" driver that I changed, check the stat and increment
 
-It would means to read EEPROM two times unconditionally for every SFP.
-With current solution we read EEPROM two times only for these buggy
-RTL-based SFP modules. For all other SFPs EEPROM content is read only
-one time. I like current solution because we do not change the way how
-are other (non-broken) SFPs detected. It is better to not touch things
-which are not broken.
+If the stack is dropping the packet, isn't it up to the stack to track 
+that, perhaps with something that shows up in netstat -s?  We don't 
+really want to make the driver responsible for any drops that happen 
+above its head, do we?
 
-And as we know that these zeros are expected behavior on these broken
-RTL-based SFPs I think such test is fine.
+sln
 
-Moreover there are Nokia SFPs which do not like one byte read and locks
-i2c bus. Yes, it happens only for EEPROM content on second address
-(therefore ID part for this test is not affected) but who knows how
-broken would be any other SFPs in future.
+> the dropped count. This is currently leading to packets that
+> arrive at the edge interface and are fully handled by the driver
+> and then mysteriously disappear.
+>
+> Rather than fix all drivers to increment the drop stat when
+> handling the return code, emulate the already existing statistic
+> update for NET_RX_DROP events for the two GRO_DROP locations, and
+> increment the dev->rx_dropped associated with the skb.
+>
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> ---
+>   net/core/dev.c | 2 ++
+>   1 file changed, 2 insertions(+)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 8fa739259041..ef34043a9550 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6071,6 +6071,7 @@ static gro_result_t napi_skb_finish(struct napi_struct *napi,
+>   		break;
+>   
+>   	case GRO_DROP:
+> +		atomic_long_inc(&skb->dev->rx_dropped);
+>   		kfree_skb(skb);
+>   		break;
+>   
+> @@ -6159,6 +6160,7 @@ static gro_result_t napi_frags_finish(struct napi_struct *napi,
+>   		break;
+>   
+>   	case GRO_DROP:
+> +		atomic_long_inc(&skb->dev->rx_dropped);
+>   		napi_reuse_skb(napi, skb);
+>   		break;
+>   
+
