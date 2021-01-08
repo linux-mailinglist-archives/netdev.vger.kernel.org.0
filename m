@@ -2,88 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2221D2EF9B9
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 22:01:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 971EA2EF9DA
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 22:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729296AbhAHU7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 15:59:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55011 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727003AbhAHU7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 15:59:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610139476;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tI3f/CbjeFp6lzbYuyiGtjhIQKeMvRX5xXCzzer+hYE=;
-        b=MdAYES8KZDsuf4R0+Djh1cKGNEqMZbsFkpTKvOQ6rveoiDWo1V2TqsLfS1pzzWtcxK+xta
-        jfdERzAZMpD+5Gk2XnPfGccipqid4NhDwauZvkO9FWbGbzeM6IYptKUty1V1Bde3uDcooN
-        TgebuqENXxHJD/z+ATY7BokukEdFZpg=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-323-Eq3_6LGHOw67Ji10Rk9iYg-1; Fri, 08 Jan 2021 15:57:54 -0500
-X-MC-Unique: Eq3_6LGHOw67Ji10Rk9iYg-1
-Received: by mail-wr1-f70.google.com with SMTP id q2so4622822wrp.4
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 12:57:54 -0800 (PST)
+        id S1729548AbhAHVDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 16:03:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729522AbhAHVDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 16:03:06 -0500
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C62C061786
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 13:02:26 -0800 (PST)
+Received: by mail-qt1-x84a.google.com with SMTP id b24so4272579qtt.22
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 13:02:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=kdX+hsqYU8mLAc9/cZ91DQUtrf0mogVuzeFKIjUzm60=;
+        b=sWvtUQVI5ueh7kfYW0SNi4IptnyLFbREdkUhAyICTnA7eDDX0PC543EAX/OmP0b+Lk
+         cZuDaRZXDOKJXnbobCm7yVK+TA2xWW3i+rma6rjVEwlZb/pd2Qx0F2GPHJpzlyuzLWSy
+         n3xOZ8aACYcWlmNimaSpu/ago0GFzDwt2Lknow43ZSyHZNgxqEouaPikNrnuvS4uqeur
+         KAPwhwd7Gr+/YVq1tQ7r5hAaQ3dWucl2T3u2kvEBXYJZ5OhLgeVXeEgHxtvIvqxmRrUS
+         WWgyan8R4+vqhRhrZdyO3k8zBqlrXd9oVyqlQdDgEKlyPTy5YbxYrhSOjF7w94zZ3qY5
+         EIYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tI3f/CbjeFp6lzbYuyiGtjhIQKeMvRX5xXCzzer+hYE=;
-        b=pzdbERFaNSmv8+HPR8qyJAycwUfj8RhT12ymHa4QxVgiQ5jN8DY4KK5i/ZpRSxPa13
-         fGVBu0nDQ/P3GPbRb/PYJ5NPWsCMnu/kOry8a7OcZ6fBf0PezwTrE3oVHGjZHAsJVPqU
-         cEHYWOtI1OCYNpwK8k1Lz95fBLm2gG0KJN1EPdSrCNnxe/rQXbTmCQwMjmtMA6FxXv4V
-         HAA1nwMq5NzAudKb/wObnXI0miqE2L4lzN+xb+KAqVjB1m5Pzb10c4H60Kw/lWF+uXiE
-         OUXQxiqlkzgqtipsnKodrZ3tUnm5aVckYovV1KaJS7SCUBfzMdbwUg7pDHi1Dfs6IwZC
-         Vbqw==
-X-Gm-Message-State: AOAM530DrMfffslTpHJayhktEpx/NjDz79hNAli0RjJCvwz2sE2f3KKp
-        ql7sW7sD00bGhkuGQvmGPVxvko8Cg/CIqWwO39TakdyHYjhQNXAROlbHKhEeUYKioAzq2yPZHGs
-        9CcQa/e5O3Foxkgat
-X-Received: by 2002:a1c:bb07:: with SMTP id l7mr4681443wmf.9.1610139473018;
-        Fri, 08 Jan 2021 12:57:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzCEc/BM8oDVIBb3Mx8Rh/5NDPSu0D8nBj7Sjj8borAGM06cCibwqpk0czBdGBodaknijOpjw==
-X-Received: by 2002:a1c:bb07:: with SMTP id l7mr4681429wmf.9.1610139472834;
-        Fri, 08 Jan 2021 12:57:52 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id a62sm15345452wmh.40.2021.01.08.12.57.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 12:57:52 -0800 (PST)
-Date:   Fri, 8 Jan 2021 21:57:50 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     netdev@vger.kernel.org, jchapman@katalix.com
-Subject: Re: [PATCH net v3] ppp: fix refcount underflow on channel unbridge
-Message-ID: <20210108205750.GA14215@linux.home>
-References: <20210107181315.3128-1-tparkin@katalix.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210107181315.3128-1-tparkin@katalix.com>
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=kdX+hsqYU8mLAc9/cZ91DQUtrf0mogVuzeFKIjUzm60=;
+        b=SfhkAqSQOPPLIiDHGpRtpF1b7+fdBOk8aDYrMp0sfcOhiZ6HO0K0rowFIBGM643Mdz
+         mzI/ApYqcWnCzqyqhWwkO1giwPm61JEjW7W87+ep0pEGPjqAuH645Ddlah83LMLmBx+m
+         r6ziZXFD/bQhVYguNqHFZzuvFizW7lIbUFb6nhYwDQbiVUbK0K0kumxtfflDA16HcwPd
+         K+zeplcJg2y/FQ5CdJ3szfm8yE4e09whv/ImtjpbgoXKjLybK1GhlDo5wbyTRRvgp7ya
+         F/qMnSLNpYrY/g+ETQm+3wb9TffenFT5pendvCHj5MI6+XCJQuT8QRYTbTfx1TVmbHaJ
+         MFxg==
+X-Gm-Message-State: AOAM531Hz6Nkde4Q6tK0OT+h3hGHbC6UbDou+uYf9oDN56NWx6dpsCxU
+        i62Z+SXnPN3IQW2P6h6N/hCef/s5FHSDsbN6mnBN4QBNHF85qzd7X31uScjIttqGZ9kjaZPOdyo
+        uSWb2ppRP7q24bNFSB6nIaiptdcIMZnT6DVNZLWyHwpHQVs7uYaYOuQ==
+X-Google-Smtp-Source: ABdhPJyAFyXv5KtwdxCrRxBywS1rqGGoJQkI9z8fndQuXMtvVu5iMCqWJOSQPdG4lKBeMam+DC9Dm7A=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a05:6214:1801:: with SMTP id
+ o1mr5406564qvw.26.1610139745452; Fri, 08 Jan 2021 13:02:25 -0800 (PST)
+Date:   Fri,  8 Jan 2021 13:02:20 -0800
+Message-Id: <20210108210223.972802-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
+Subject: [PATCH bpf-next v6 0/3] bpf: misc performance improvements for cgroup hooks
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 07, 2021 at 06:13:15PM +0000, Tom Parkin wrote:
-> When setting up a channel bridge, ppp_bridge_channels sets the
-> pch->bridge field before taking the associated reference on the bridge
-> file instance.
-> 
-> This opens up a refcount underflow bug if ppp_bridge_channels called
-> via. iotcl runs concurrently with ppp_unbridge_channels executing via.
-> file release.
-> 
-> The bug is triggered by ppp_bridge_channels taking the error path
-> through the 'err_unset' label.  In this scenario, pch->bridge is set,
-> but the reference on the bridged channel will not be taken because
-> the function errors out.  If ppp_unbridge_channels observes pch->bridge
-> before it is unset by the error path, it will erroneously drop the
-> reference on the bridged channel and cause a refcount underflow.
-> 
-> To avoid this, ensure that ppp_bridge_channels holds a reference on
-> each channel in advance of setting the bridge pointers.
+First patch adds custom getsockopt for TCP_ZEROCOPY_RECEIVE
+to remove kmalloc and lock_sock overhead from the dat path.
 
-Thanks for following up on this!
+Second patch removes kzalloc/kfree from getsockopt for the common cases.
 
-Acked-by: Guillaume Nault <gnault@redhat.com>
+Third patch switches cgroup_bpf_enabled to be per-attach to
+to add only overhead for the cgroup attach types used on the system.
+
+No visible user-side changes.
+
+v6:
+- avoid indirect cost for new bpf_bypass_getsockopt (Eric Dumazet)
+
+v5:
+- reorder patches to reduce the churn (Martin KaFai Lau)
+
+v4:
+- update performance numbers
+- bypass_bpf_getsockopt (Martin KaFai Lau)
+
+v3:
+- remove extra newline, add comment about sizeof tcp_zerocopy_receive
+  (Martin KaFai Lau)
+- add another patch to remove lock_sock overhead from
+  TCP_ZEROCOPY_RECEIVE; technically, this makes patch #1 obsolete,
+  but I'd still prefer to keep it to help with other socket
+  options
+
+v2:
+- perf numbers for getsockopt kmalloc reduction (Song Liu)
+- (sk) in BPF_CGROUP_PRE_CONNECT_ENABLED (Song Liu)
+- 128 -> 64 buffer size, BUILD_BUG_ON (Martin KaFai Lau)
+
+Stanislav Fomichev (3):
+  bpf: remove extra lock_sock for TCP_ZEROCOPY_RECEIVE
+  bpf: try to avoid kzalloc in cgroup/{s,g}etsockopt
+  bpf: split cgroup_bpf_enabled per attach type
+
+ include/linux/bpf-cgroup.h                    |  63 +++++++----
+ include/linux/filter.h                        |   5 +
+ include/linux/indirect_call_wrapper.h         |   6 +
+ include/net/sock.h                            |   2 +
+ include/net/tcp.h                             |   1 +
+ kernel/bpf/cgroup.c                           | 104 +++++++++++++++---
+ net/ipv4/af_inet.c                            |   9 +-
+ net/ipv4/tcp.c                                |  14 +++
+ net/ipv4/tcp_ipv4.c                           |   1 +
+ net/ipv4/udp.c                                |   7 +-
+ net/ipv6/af_inet6.c                           |   9 +-
+ net/ipv6/tcp_ipv6.c                           |   1 +
+ net/ipv6/udp.c                                |   7 +-
+ net/socket.c                                  |   3 +
+ .../selftests/bpf/prog_tests/sockopt_sk.c     |  22 ++++
+ .../testing/selftests/bpf/progs/sockopt_sk.c  |  15 +++
+ 16 files changed, 217 insertions(+), 52 deletions(-)
+
+-- 
+2.30.0.284.gd98b1dd5eaa7-goog
 
