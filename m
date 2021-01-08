@@ -2,71 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4FAF2EF8FA
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 21:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4DC2EF8FC
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 21:22:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729266AbhAHUUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 15:20:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45922 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729221AbhAHUUs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 15:20:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1622B23AC1;
-        Fri,  8 Jan 2021 20:20:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610137208;
-        bh=NJQuMYdOPMG9Puz+oozd9AmGt/GBfycz8IPDz57ise0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TQmDlTUHig2sgBDbPHcVY01yZ60yG1ZRHReBpy25NF+4w24D48IGF+jxteBPmEsC1
-         oKghQ5+0jEGMAeWuCWgMxL8FqllmgEoSuJkgeEhqu+5WLfYagdJ3/Iv6REZ/ZVzcQ3
-         b+Grnfjpz3tmfGyI0gCU8dkY1TldXcsTI+GKZ0Ml1CZ8XNFl/3SUqEjyaDptYVrWzz
-         xVnWEc7Wk2oj23vytxxDZFqPSxmBLIYUomSkQ+4WDfV422KoiM+pzuGo8TlgojSQJi
-         X9ugmFBPeF1s1H6Mty1kOFSoHZR+TVp3jitKueY184qS8f4H1Eo65KEuTEo8c/bNXg
-         tr8Oz+syERdMw==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 08089605AE;
-        Fri,  8 Jan 2021 20:20:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1729431AbhAHUU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 15:20:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729300AbhAHUUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 15:20:53 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C56C061380
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 12:20:12 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id h16so12430598edt.7
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 12:20:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7554PS+RmXDqISK7YiVD4ljXC+qv4l8E6s66DaLLIi8=;
+        b=qJiKMBbFOciQz7glh8cURPbS4Pn0v5tENVxouLjT2E9vzs8eOqTDO+Ctr2aP6r86DA
+         rjf/nu3AmIJx4HtjZFc96XcyyUvlwQGxM2cR/8CkkjZN7p/nA7YeWA2ckoI+rwJh9equ
+         4DMlbrV0aOEEe+walDhHuBQUZ2RHbVoP4AbSAPTatzVq9C6bM2+CO78w8Q7ojHvNpdWq
+         oYpr2uXWwJDlxOVPm/u2uTEhi6UV3YbzrUBU2vvMhYc6R7q0e5mYTwT4tjyIdKon/lqE
+         +Ge2HUbFYTI8ay2wXrZPHWRzD3ja/LpZpk4skfLHRVLNBDnYPWkYPj1Y8ie6oRzjaefw
+         YuNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7554PS+RmXDqISK7YiVD4ljXC+qv4l8E6s66DaLLIi8=;
+        b=sNEPHHPC8RxLjC/r7XaUdP7nlpotSgMzyFdTBAenT3q5qaXFHuAwM5CNXS5hTLzGmg
+         JAfp0nCBL1cJ14I3TLjrx73I82d/Yr69FqgpCVkyix+jTXRxtyDfyaokIuq9BZWPy/UI
+         KsCw4HClapzzDgArKae4FkIZd+c7Uqf4s1GZL79PTspOEzAottaqI28qjtUMA0VIIrkd
+         v4QKhdTflZPApajUksz1LksuwEywqXFXJwHELyGDuclVPbvye9KV32IvfljZVwnGqJg/
+         DvpsJb8a38iLG+AzCXFdC5j7hE8bQ/Gd2M85EMyaq0r7sPCqRLTauRv/30W1Xwj/V2gg
+         QL/w==
+X-Gm-Message-State: AOAM530UXTCy9ZYo22N5Jxy5tPfSmhyLe7f107C5ESVYymrkX9oqVsnj
+        aV4zFPV7UYTIca/Qmh2R7O4=
+X-Google-Smtp-Source: ABdhPJwKwNySk0c8LDtLc3qZTQHHyL7D2lRtQQ5T++RpPFnYrbXTtMz8ujt52pq1eKqpki7JVwXBbQ==
+X-Received: by 2002:a50:d5c1:: with SMTP id g1mr6751658edj.299.1610137211371;
+        Fri, 08 Jan 2021 12:20:11 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id t19sm3844034ejc.62.2021.01.08.12.20.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jan 2021 12:20:10 -0800 (PST)
+Date:   Fri, 8 Jan 2021 22:20:09 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        George McCollister <george.mccollister@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH v3 net-next 10/12] net: bonding: ensure .ndo_get_stats64
+ can sleep
+Message-ID: <20210108202009.vdb3ulr4ckgj5ns7@skbuf>
+References: <20210107094951.1772183-1-olteanv@gmail.com>
+ <20210107094951.1772183-11-olteanv@gmail.com>
+ <CANn89i+NfBw7ZpL-DTDA3QGBK=neT2R7qKYn_pcvDmRAOkaUsQ@mail.gmail.com>
+ <20210107113313.q4e42cj6jigmdmbs@skbuf>
+ <CANn89iJ_qbo6dP3YqXCeDPfopjBFZ8h6JxbpufVBGUpsG=D7+Q@mail.gmail.com>
+ <ac66e1838894f96d2bb460b7969b6c9b903fee6a.camel@kernel.org>
+ <CANn89iLm7nwckUVjoHsH-gYwQwEsscK+D2brG+NgndLZaUy_5g@mail.gmail.com>
+ <20210108092125.adwhc3afwaaleoef@skbuf>
+ <CANn89i+1KEyGDm-9RXpK4H6aWtn5Zmo3rgj_+zWYwFXhxm8bvg@mail.gmail.com>
+ <0c2b5e3ee14addfb86f023f2108bacc4e5c5652b.camel@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests/bpf: remove duplicate include in test_lsm
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161013720802.13974.7110278125613510508.git-patchwork-notify@kernel.org>
-Date:   Fri, 08 Jan 2021 20:20:08 +0000
-References: <20210105152047.6070-1-dong.menglong@zte.com.cn>
-In-Reply-To: <20210105152047.6070-1-dong.menglong@zte.com.cn>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        jamorris@linux.microsoft.com, dong.menglong@zte.com.cn,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0c2b5e3ee14addfb86f023f2108bacc4e5c5652b.camel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Jan 08, 2021 at 11:38:57AM -0800, Saeed Mahameed wrote:
+> Let me take a look at the current series, and if I see that the
+> rcu/dev_hold approach is more lightweight then i will suggest it to
+> Vladimir and he can make the final decision.
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Tue,  5 Jan 2021 07:20:47 -0800 you wrote:
-> From: Menglong Dong <dong.menglong@zte.com.cn>
-> 
-> 'unistd.h' included in 'selftests/bpf/prog_tests/test_lsm.c' is
-> duplicated.
-> 
-> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
-> 
-> [...]
-
-Here is the summary with links:
-  - selftests/bpf: remove duplicate include in test_lsm
-    https://git.kernel.org/bpf/bpf-next/c/17b75d3fe399
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+The last version does use temporary RCU protection. I decided to not
+change anything about the locking architecture of the drivers.
