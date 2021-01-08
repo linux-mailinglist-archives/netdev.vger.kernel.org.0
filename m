@@ -2,97 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 761AF2EF280
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 13:25:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6822E2EF293
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 13:34:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727697AbhAHMYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 07:24:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35412 "EHLO
+        id S1727016AbhAHMdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 07:33:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727227AbhAHMYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 07:24:39 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0C0C0612F5
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 04:24:23 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id g185so8255997wmf.3
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 04:24:23 -0800 (PST)
+        with ESMTP id S1726133AbhAHMdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 07:33:42 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D683DC0612F4
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 04:33:01 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id v14so7682529wml.1
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 04:33:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=OHXoOJSsJ8hDdk0tlgmUhHtjpiGBZ0sWHr1Xlz6qQs8=;
-        b=L77Yk4HRrjTOP8SzucKCYLILnwV7060l9/KGMpMgKzG4/d7iDZ83nhLcrUpYGvc37S
-         g5/5JL0+tVcJU+Fbr4kK4eF2I0U2e0Y4j1aZ+djAqmwLIzaiw4Mx+IOw1LQCIbzng6az
-         IO7KoedE9BAYPCCuTX4y1bIHI/zpXYyKcdn79lTro7CnKQI75/0vR1Bj4WsHhjVZ7eFa
-         or2KH8yj1P10TmyG1ZV3X6MuuKpVeeAeB+GhsnWx8L3COjp2rU5bsc6sUWg6O91nklsG
-         m5htO6MVhsMajZkEvp7q0sGOKUGKp0Y23WDG3T3U3ya//xT3wkGR5fMQkzqGwwiK+m69
-         JsRQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0DfxTDBws5F5Kj7gtapc66RegEcvin0l3tdCyyCUswo=;
+        b=mepmLmlzTfpooLgI8E5yigUdyXHcySb1ftfOemd1T1x5olulk6XFiPELGk7jAAsalW
+         pQjKlPywTSxkuhuUY+adiLHW/+hTYiEy3I1YWnhnHThwOnrBrzdWUcmrUNF0jv/7Zun4
+         d5Dq+ZQuLDhdhUWPes9uDzdgKlqT2JNXeTCht5vYoBqDihaSQTnx+BzWg0MlSZd78r8u
+         GKxJkiIkdVYy5fqUCgY1Dr3Xgi2t37LGUxPQZuJTkhvQuGuXwGwt9TnWo9IGuqTab5hS
+         z80v5KUFylUpWV9YhAaYM93+I0tsqLmy9CYr82dkOsgr6VjBmEcQ5pZVatWTz8GoXD+/
+         1brw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=OHXoOJSsJ8hDdk0tlgmUhHtjpiGBZ0sWHr1Xlz6qQs8=;
-        b=WRV4thzSQasIf8/7TJFe44NrSgnmUDYHOg6uZRzLx0xDTJHHvUz957id4CR9C6oYyv
-         7zuXF4bjCj4UP2qu+XuQPHF6vu5F+580UEjgsYP60DGK+asAIgx9q2jBqEAC2DXl5wUj
-         Yf3CRlsXqzBahXid7+38qvWCjyQlpPiKG5+isNI2w1OxuYh1vOPSEqroXm22tTvJv2m/
-         9EvyoekdnCfA80f0hBs7OQ/65q9fN9gdZDDfysXtW4orhxXKIKj766/hzjPBNLmPXiUq
-         H/lb2a/Nfy5x1JtaDjmAGHoYDKCGvHHYEtBMghVYsb+zwc6tFdVII687RoHRjt0iKRKd
-         2c7Q==
-X-Gm-Message-State: AOAM532NsROKZLnl32vG2bVOpc0tjRRmj4cMsRv8d0KxXmP31TOmct4A
-        cAPE9AurcqoRebmV6HRxNNcb7OS5AF8=
-X-Google-Smtp-Source: ABdhPJwYYNWrfRS7YXXVW4rQcnhXF/5VotEy/LfPYMhJ69vD+F2fOuwX/MhHnfk+CqBn41OFssxJ6w==
-X-Received: by 2002:a7b:c35a:: with SMTP id l26mr2745581wmj.182.1610108662112;
-        Fri, 08 Jan 2021 04:24:22 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:6dbb:aa76:4e1a:5cc4? (p200300ea8f0655006dbbaa764e1a5cc4.dip0.t-ipconnect.de. [2003:ea:8f06:5500:6dbb:aa76:4e1a:5cc4])
-        by smtp.googlemail.com with ESMTPSA id b83sm11988770wmd.48.2021.01.08.04.24.21
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0DfxTDBws5F5Kj7gtapc66RegEcvin0l3tdCyyCUswo=;
+        b=B4AMCyFwrWc8EyNVNG8Jb32VZhQuL2jovRHc4SURqiCsnuOC2+g3C4W0AyacAanjHg
+         PsMHbZm/BdDZFHPMx9gl3sqTSK/Dky8hucLKxBZbCzWvzdjxKLjKw2MzJklWr1hCCBeX
+         pSnocHia97s/005e3EVRgf3WOKgLwQSA2igJvbuCLMfQ7oToE/FykZiDXGClk+B1M1Bj
+         iQve1N3Y2WW8DI1J95cwwhHAr6Bv7Cawify/gNjCPNG2hf02D0+h6+yru0bGd2LvBE3A
+         2LpviAPknlo8vKyQqWOk0p0WeTtxeUDGspj3XakOg+aNRWwaNUZcdSFb5ruBbs9wQ8EV
+         tltA==
+X-Gm-Message-State: AOAM531LrrjBrIG/2wj5y9PVjkaSLH/Oma2dySGHD/xtbWbMuc+T80BQ
+        P0lcvg2U5NYX75NY4QGRq1A=
+X-Google-Smtp-Source: ABdhPJwLewbvVgznGpZD4OCNp/rwxCTHVyMqdg7pLVZ89GVC8bAa5hnRX0hZ4Op7j4fk4rpzmLFUNQ==
+X-Received: by 2002:a1c:bc88:: with SMTP id m130mr2946698wmf.82.1610109180634;
+        Fri, 08 Jan 2021 04:33:00 -0800 (PST)
+Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
+        by smtp.gmail.com with ESMTPSA id s63sm13546879wms.18.2021.01.08.04.32.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jan 2021 04:24:21 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next] r8169: deprecate support for RTL_GIGA_MAC_VER_27
-Message-ID: <fb6ff074-a9c3-94ce-0636-52276d8604f2@gmail.com>
-Date:   Fri, 8 Jan 2021 13:24:16 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Fri, 08 Jan 2021 04:33:00 -0800 (PST)
+Subject: Re: [PATCH net-next 2/2] net-gro: remove GRO_DROP
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+References: <20210108113903.3779510-1-eric.dumazet@gmail.com>
+ <20210108113903.3779510-3-eric.dumazet@gmail.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <92939962-8b08-a1fb-4ea5-4eeea6a3709f@gmail.com>
+Date:   Fri, 8 Jan 2021 12:32:59 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
+In-Reply-To: <20210108113903.3779510-3-eric.dumazet@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RTL8168dp is ancient anyway, and I haven't seen any trace of its early
-version 27 yet. This chip versions needs quite some special handling,
-therefore it would facilitate driver maintenance if support for it
-could be dropped. For now just disable detection of this chip version.
-If nobody complains we can remove support for it in the near future.
+On 08/01/2021 11:39, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> GRO_DROP can only be returned from napi_gro_frags()
+> if the skb has not been allocated by a prior napi_get_frags()
+> 
+> Since drivers must use napi_get_frags() and test its result
+> before populating the skb with metadata, we can safely remove
+> GRO_DROP since it offers no practical use.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index e72d8f3ae..f94965615 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1962,7 +1962,11 @@ static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
- 		{ 0x7c8, 0x280,	RTL_GIGA_MAC_VER_26 },
- 
- 		/* 8168DP family. */
--		{ 0x7cf, 0x288,	RTL_GIGA_MAC_VER_27 },
-+		/* It seems this early RTL8168dp version never made it to
-+		 * the wild. Let's see whether somebody complains, if not
-+		 * we'll remove support for this chip version completely.
-+		 * { 0x7cf, 0x288,      RTL_GIGA_MAC_VER_27 },
-+		 */
- 		{ 0x7cf, 0x28a,	RTL_GIGA_MAC_VER_28 },
- 		{ 0x7cf, 0x28b,	RTL_GIGA_MAC_VER_31 },
- 
--- 
-2.29.2
-
+Fwiw,
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
