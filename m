@@ -2,91 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F02472EEB58
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 03:39:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A47F2EEB5F
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 03:39:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbhAHCh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Jan 2021 21:37:29 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:61062 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726844AbhAHCh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Jan 2021 21:37:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1610073448; x=1641609448;
-  h=date:from:to:cc:message-id:references:mime-version:
-   content-transfer-encoding:in-reply-to:subject;
-  bh=my3Naolu1PChTdM9Bl0HiSg56oK/sbgUmZToPz64Yxo=;
-  b=f32WMGvbM46PPI7fyPA3XrD6uqbC7Ogsr8r34V4mOAebfJvoz3TDnwpF
-   JIGourGztRYd0utT/5baPnm0Kc7D5IL6AbMXiBlr7nmgnJVKtq9OYSqdG
-   kj3o7gz8GmOa6bC2GVwYXn5AS3HQBE7T73yLfCxeGrAAmDxf8w5oQ9bSu
-   k=;
-X-IronPort-AV: E=Sophos;i="5.79,330,1602547200"; 
-   d="scan'208";a="76128177"
-Subject: Re: [PATCH] neighbour: Disregard DEAD dst in neigh_update
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-98acfc19.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 08 Jan 2021 02:36:46 +0000
-Received: from EX13MTAUEE001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1d-98acfc19.us-east-1.amazon.com (Postfix) with ESMTPS id AD2E5A1F59;
-        Fri,  8 Jan 2021 02:36:44 +0000 (UTC)
-Received: from EX13D06UEA002.ant.amazon.com (10.43.61.198) by
- EX13MTAUEE001.ant.amazon.com (10.43.62.226) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 8 Jan 2021 02:36:42 +0000
-Received: from ucf43ac461c9a53.ant.amazon.com (10.43.161.68) by
- EX13D06UEA002.ant.amazon.com (10.43.61.198) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 8 Jan 2021 02:36:41 +0000
-Date:   Thu, 7 Jan 2021 21:36:37 -0500
-From:   Your Real Name <zhutong@amazon.com>
-To:     David Miller <davem@davemloft.net>
-CC:     <sashal@kernel.org>, <edumazet@google.com>, <vvs@virtuozzo.com>,
-        <netdev@vger.kernel.org>, <stable@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Message-ID: <20210108023637.GA31904@ucf43ac461c9a53.ant.amazon.com>
-References: <20201230225415.GA490@ucf43ac461c9a53.ant.amazon.com>
- <20210105.160521.1279064249478522010.davem@davemloft.net>
+        id S1727092AbhAHCip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Jan 2021 21:38:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44038 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726484AbhAHCip (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Jan 2021 21:38:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9446E23603;
+        Fri,  8 Jan 2021 02:38:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610073484;
+        bh=u9Meeu6HfvOew9S7LGtt5CbLSm911UHLZRnTJe36nYo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fKW91XnY1Q3ArV9gMHXdmojkE3Z1SlC6HNsajZ62H9TCOlx0jdSoXgrTRmMZnR9Br
+         WoSBZot/q72eHyxY2XDZwvctz0IXvKoHjhxA53exiT6D0Ytqyj8l745TwigVQ1CIkX
+         ihje/YzURewbIXq/jg3jp/foxbD7Oh16okIDfXO+BT9LaL9Wuajx1/booJpFWCsw8E
+         AiyIH/6VCcIVG1TALA0ejXcSO/sU68xJty6U5gfH8v21NQl5va/4nMm/0WLVd/cfWg
+         zZZoFJOD0QBrU25qAO/RAUQwnvpEr5c0MWcGCm4Pu5iJDt0Mr2Ao5EDfSZCW+Es4vl
+         vr5D/dBWG/bAg==
+Date:   Thu, 7 Jan 2021 18:38:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net: ipa: re-enable NAPI before enabling
+ interrupt
+Message-ID: <20210107183803.47308e23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210107214325.7077-3-elder@linaro.org>
+References: <20210107214325.7077-1-elder@linaro.org>
+        <20210107214325.7077-3-elder@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210105.160521.1279064249478522010.davem@davemloft.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [10.43.161.68]
-X-ClientProxiedBy: EX13D39UWA001.ant.amazon.com (10.43.160.54) To
- EX13D06UEA002.ant.amazon.com (10.43.61.198)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 05, 2021 at 04:05:21PM -0800, David Miller wrote: 
-> 
-> 
-> From: Tong Zhu <zhutong@amazon.com>
-> Date: Wed, 30 Dec 2020 17:54:23 -0500
-> 
-> > In 4.x kernel a dst in DST_OBSOLETE_DEAD state is associated
-> > with loopback net_device and leads to loopback neighbour. It
-> > leads to an ethernet header with all zero addresses.
-> >
-> > A very troubling case is working with mac80211 and ath9k.
-> > A packet with all zero source MAC address to mac80211 will
-> > eventually fail ieee80211_find_sta_by_ifaddr in ath9k (xmit.c).
-> > As result, ath9k flushes tx queue (ath_tx_complete_aggr) without
-> > updating baw (block ack window), damages baw logic and disables
-> > transmission.
-> >
-> > Signed-off-by: Tong Zhu <zhutong@amazon.com>
-> 
-> Please repost with an appropriate Fixes: tag.
-> 
-> Thanks.
+On Thu,  7 Jan 2021 15:43:25 -0600 Alex Elder wrote:
+> @@ -743,21 +743,21 @@ static void gsi_channel_freeze(struct gsi_channel *channel)
+>  	set_bit(GSI_CHANNEL_FLAG_STOPPING, channel->flags);
+>  	smp_mb__after_atomic();	/* Ensure gsi_channel_poll() sees new value */
+>  
+> -	napi_disable(&channel->napi);
+> -
+>  	gsi_irq_ieob_disable(channel->gsi, channel->evt_ring_id);
+> +
+> +	napi_disable(&channel->napi);
+>  }
 
-I had a second thought on this. This fix should go mainline too. This is a 
-case we are sending out queued packets when arp reply from the neighbour 
-comes in. With 5.x kernel, a dst in DST_OBSOLETE_DEAD state leads to dropping
-of this packet. It is not as bad as with 4.x kernel that may end up with an
-all-zero mac address packet out to ethernet or choking up ath9k when using 
-block ack. Dropping the packet is still wrong. I’ll repost as a fix to
-mainline and target backport to 4.x LTS releases.
+So patch 1 is entirely for the purpose of keeping the code symmetric
+here? I can't think of other reason why masking this IRQ couldn't be
+left after NAPI is disabled, and that should work as you expect.
 
-Best regards
-    
+>  /* Allow transactions to be used on the channel again. */
+>  static void gsi_channel_thaw(struct gsi_channel *channel)
+>  {
+> -	gsi_irq_ieob_enable(channel->gsi, channel->evt_ring_id);
+> -
+>  	/* Allow the NAPI poll loop to re-enable interrupts again */
+>  	clear_bit(GSI_CHANNEL_FLAG_STOPPING, channel->flags);
+>  	smp_mb__after_atomic();	/* Ensure gsi_channel_poll() sees new value */
+>  
+>  	napi_enable(&channel->napi);
+> +
+> +	gsi_irq_ieob_enable(channel->gsi, channel->evt_ring_id);
+>  }
