@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6612EF6EC
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:04:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 930882EF6ED
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:04:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728660AbhAHSD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728653AbhAHSD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 8 Jan 2021 13:03:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727885AbhAHSDz (ORCPT
+        with ESMTP id S1728634AbhAHSDz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:03:55 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDCDC06129F
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:02:44 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id n26so15665035eju.6
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:02:44 -0800 (PST)
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67175C0612A3
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:02:46 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id ce23so15652702ejb.8
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:02:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=evjj7RIpk1+dcqT2g+33cWjQdb/mtjyI36++VMXDIeM=;
-        b=Y5OjdG5WzlxyhOQo25z+5p+Tf3FtUz0Dlh0R72OYV7eQIpVCG0QG5Mp6i3Jeeczv0F
-         f9/f0nqSPIMPbW8KHwvqxhE0qXV8aAxWVEKXZQPMh3uDjR2KCqNxMyt7QSN56YZkCdGC
-         gNQVdNKmxNdpOWDs2r3SqrLD2clCIRGgQkxUS7mk/j+FjsRglpfEKc40NnV70Pd8PmKC
-         l78J2JFaX7BgcmiLemGRsZJyRU/ArnbgO2XDs7Yk2ky4Hj4wPAYt+wfEuVLpy/bWw4Mv
-         O9iRQzVBohXMhw7bOMWYJHx85V27O0PWbjtwuDpEHnmOFNHufR4FsHUt2+5ws1bGheyq
-         4T0A==
+        bh=4j+hhq2DkvEpvMHcfevEqaRPk34ivT94i3R2U1sj90c=;
+        b=oY6E5d/yK1lgua17Bi9r2il3w4CzGIXdxxXcWPJGflQFP84KGEFg0ffKEwK64MrR47
+         DB19GGQVj0KdkvYkSQ05Awl1EeZ6U8Bf+/Jezz41Ul6PXj/k8iY6zI5lYND7Vp73HOb3
+         uvw6oDvm71GrNUPPbMtYD+AQIWpINU8APZL7/UdBvKczXwDSnp17vAshcfDLHkiZlT6K
+         8V+yBxz21+FxpI9cNppfemPbEPjtRthL/Rig/kzjSKZbikjAEcnLdHb3a4ING4Gs+KK4
+         7HozH9CYVubqhFkp8tgN4/WkQDbVo/PluoEi3JONRZxOWroCAnncwP7+yVh4V2EIsPcT
+         CK+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=evjj7RIpk1+dcqT2g+33cWjQdb/mtjyI36++VMXDIeM=;
-        b=Lwdhrs2aQrbTaplsdOqupFXm2QS9oTQViS66aYRKzGc01PZz7zSkSIFYCDlOM0bQtX
-         QVCqwi7rOZr/B9EGwM6d5+TH7WVvOfQB1H3OqU0dQsPUEtZS2SOwHsF9KSaG5ReK9Cgx
-         z7WACdnltKCpv5bL7YGLlJZxMMtJBSnXrSgWzzdp7stuz1MDsoafi7StewzbZAa/+osd
-         4iZehjd454SLza2vcSumYfaCN4n1aWcjpKkyGHLYDX0LiGtfIm7EmsuiKRhQFARHTPxV
-         E9k1TPzaRpHpM6OPFImNxs8tTBDOTA4wbepp0Cg6LBX+Hh37kkQx6SV7Yu2C4+rZ0wW/
-         Uaaw==
-X-Gm-Message-State: AOAM5314A/uul1XUss+/2XDALCTXFlXXksuNX++6MKbl+qVSI4hVWJcx
-        lFxbNvP+sSJA0hCqwcVk76XzInCqV1o=
-X-Google-Smtp-Source: ABdhPJxC+VD299Z+gS0d8Jd6f5ueT3bBfllXOvDqiCw4BD3/qf39ofwVfvWVh2fKPjC/EfxQ51yeNg==
-X-Received: by 2002:a17:906:34ca:: with SMTP id h10mr3446415ejb.417.1610128962762;
-        Fri, 08 Jan 2021 10:02:42 -0800 (PST)
+        bh=4j+hhq2DkvEpvMHcfevEqaRPk34ivT94i3R2U1sj90c=;
+        b=lgdfLsev2WlB9g6gPB7xI80TQoyShagI8+1wuf/doxAmViUjQt3I5VKs5z6QtR3SKg
+         zkDkDNv90bbIrh6Kwv/VWBjzYZ4DtgcNAaM9Ui/D44gA816CWFkB4roYTNA2kAW4H20i
+         ZA8K1PHgYGgN6re/r+i7x83bLD+GmdAEYH9lxdqefYc1mD50LBB7ELyp3pSp12ZWM+4G
+         xtPU3lCAQfxcLhFO223rM2/xYnJq1gDS1D4/GypLKHUEl1FKbdUrWTjOfZxhNO9bgNW5
+         9s/AsehVBDsxsMn8rP38OOR93pYejWlqGokNAwyzp2jsQbXc6MBkMHLRrF7hWV0Ymdar
+         i6hQ==
+X-Gm-Message-State: AOAM533Eukq+3u8AwEz2V+Yfp/vLuL9bevCpjEJD1pchWtZReB70getY
+        0be14PB8bTQ4Prrceg8ZSM7D6CFlu40=
+X-Google-Smtp-Source: ABdhPJxhPhh0tSISJiQ3qIUgS2cjThNFuKO6B858VfMO4+nbpIPM7peiCpH49RajlWweWGnVO+HVaA==
+X-Received: by 2002:a17:906:4c55:: with SMTP id d21mr3440957ejw.116.1610128964351;
+        Fri, 08 Jan 2021 10:02:44 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id b19sm4059713edx.47.2021.01.08.10.02.41
+        by smtp.gmail.com with ESMTPSA id b19sm4059713edx.47.2021.01.08.10.02.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 10:02:42 -0800 (PST)
+        Fri, 08 Jan 2021 10:02:43 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
@@ -54,9 +54,9 @@ Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
         alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, kuba@kernel.org,
         jiri@resnulli.us, idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: [PATCH v3 net-next 09/10] net: mscc: ocelot: initialize watermarks to sane defaults
-Date:   Fri,  8 Jan 2021 19:59:49 +0200
-Message-Id: <20210108175950.484854-10-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 10/10] net: mscc: ocelot: configure watermarks using devlink-sb
+Date:   Fri,  8 Jan 2021 19:59:50 +0200
+Message-Id: <20210108175950.484854-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210108175950.484854-1-olteanv@gmail.com>
 References: <20210108175950.484854-1-olteanv@gmail.com>
@@ -68,46 +68,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This is meant to be a gentle introduction into the world of watermarks
-on ocelot. The code is placed in ocelot_devlink.c because it will be
-integrated with devlink, even if it isn't right now.
+Using devlink-sb, we can configure 12/16 (the important 75%) of the
+switch's controlling watermarks for congestion drops, and we can monitor
+50% of the watermark occupancies (we can monitor the reservation
+watermarks, but not the sharing watermarks, which are exposed as pool
+sizes).
 
-My first step was intended to be to replicate the default configuration
-of the congestion watermarks programatically, since they are now going
-to be tuned by the user.
+The following definitions can be made:
 
-But after studying and understanding through trial and error how they
-work, I now believe that the configuration used out of reset does not do
-justice to the word "reservation", since the sum of all reservations
-exceeds the total amount of resources (otherwise said, all reservations
-cannot be fulfilled at the same time, which means that, contrary to the
-reference manual, they don't guarantee anything).
+SB_BUF=0 # The devlink-sb for frame buffers
+SB_REF=1 # The devlink-sb for frame references
+POOL_ING=0 # The pool for ingress traffic. Both devlink-sb instances
+           # have one of these.
+POOL_EGR=1 # The pool for egress traffic. Both devlink-sb instances
+           # have one of these.
 
-As an example, here's a dump of the reservation watermarks for frame
-buffers, for port 0 (for brevity, the ports 1-6 were omitted, but they
-have the same configuration):
+Editing the hardware watermarks is done in the following way:
+BUF_xxxx_I is accessed when sb=$SB_BUF and pool=$POOL_ING
+REF_xxxx_I is accessed when sb=$SB_REF and pool=$POOL_ING
+BUF_xxxx_E is accessed when sb=$SB_BUF and pool=$POOL_EGR
+REF_xxxx_E is accessed when sb=$SB_REF and pool=$POOL_EGR
 
-BUF_Q_RSRV_I(port 0, prio 0) = max 3000 bytes
-BUF_Q_RSRV_I(port 0, prio 1) = max 3000 bytes
-BUF_Q_RSRV_I(port 0, prio 2) = max 3000 bytes
-BUF_Q_RSRV_I(port 0, prio 3) = max 3000 bytes
-BUF_Q_RSRV_I(port 0, prio 4) = max 3000 bytes
-BUF_Q_RSRV_I(port 0, prio 5) = max 3000 bytes
-BUF_Q_RSRV_I(port 0, prio 6) = max 3000 bytes
-BUF_Q_RSRV_I(port 0, prio 7) = max 3000 bytes
+Configuring the sharing watermarks for COL_SHR(dp=0) is done implicitly
+by modifying the corresponding pool size. By default, the pool size has
+maximum size, so this can be skipped.
 
-Otherwise said, every port-tc has an ingress reservation of 3000 bytes,
-and there are 7 ports in VSC9959 Felix (6 user ports and 1 CPU port).
-Concentrating only on the ingress reservations, there are, in total,
-8 [traffic classes] x 7 [ports] x 3000 [bytes] = 168,000 bytes of memory
-reserved on ingress.
-But, surprise, Felix only has 128 KB of packet buffer in total...
-A similar thing happens with Seville, which has a larger packet buffer,
-but also more ports, and the default configuration is also overcommitted.
+devlink sb pool set pci/0000:00:00.5 sb $SB_BUF pool $POOL_ING \
+	size 103872 thtype static
 
-This patch disables the (apparently) bogus reservations and moves all
-resources to the shared area. This way, real reservations can be set up
-by the user, using devlink-sb.
+Since by default there is no buffer reservation, the above command has
+maxed out BUF_COL_SHR_I(dp=0).
+
+Configuring the per-port reservation watermark (P_RSRV) is done in the
+following way:
+
+devlink sb port pool set pci/0000:00:00.5/0 sb $SB_BUF \
+	pool $POOL_ING th 1000
+
+The above command sets BUF_P_RSRV_I(port 0) to 1000 bytes. After this
+command, the sharing watermarks are internally reconfigured with 1000
+bytes less, i.e. from 103872 bytes to 102872 bytes.
+
+Configuring the per-port-tc reservation watermarks (Q_RSRV) is done in
+the following way:
+
+for tc in {0..7}; do
+	devlink sb tc bind set pci/0000:00:00.5/0 sb 0 tc $tc \
+		type ingress pool $POOL_ING \
+		th 3000
+done
+
+The above command sets BUF_Q_RSRV_I(port 0, tc 0..7) to 3000 bytes.
+The sharing watermarks are again reconfigured with 24000 bytes less.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
@@ -115,501 +127,989 @@ Changes in v3:
 None.
 
 Changes in v2:
-None.
+- Calling ocelot_watermark_init from ocelot_devlink_sb_register, since
+  there was a bug in v1 where ocelot_watermark_init would use an
+  uninitialized value from ocelot->pool_size, so we need to ensure that
+  ocelot_watermark_init is called after ocelot_devlink_sb_register
+  actually initializes the pool sizes.
+- Deleted the "detected N bytes and M frame references" message since
+  that information is now available through devlink-sb.
 
- drivers/net/ethernet/mscc/Makefile         |   3 +-
- drivers/net/ethernet/mscc/ocelot.c         |   1 +
- drivers/net/ethernet/mscc/ocelot.h         |   1 +
- drivers/net/ethernet/mscc/ocelot_devlink.c | 442 +++++++++++++++++++++
- 4 files changed, 446 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/mscc/ocelot_devlink.c
+ drivers/net/dsa/ocelot/felix.c             | 118 ++++++
+ drivers/net/ethernet/mscc/ocelot.c         |   5 -
+ drivers/net/ethernet/mscc/ocelot.h         |   1 -
+ drivers/net/ethernet/mscc/ocelot_devlink.c | 453 ++++++++++++++++++++-
+ drivers/net/ethernet/mscc/ocelot_net.c     | 143 +++++++
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |  27 +-
+ include/soc/mscc/ocelot.h                  |  47 +++
+ 7 files changed, 781 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/Makefile b/drivers/net/ethernet/mscc/Makefile
-index 58f94c3d80f9..346bba2730ad 100644
---- a/drivers/net/ethernet/mscc/Makefile
-+++ b/drivers/net/ethernet/mscc/Makefile
-@@ -6,7 +6,8 @@ mscc_ocelot_switch_lib-y := \
- 	ocelot_police.o \
- 	ocelot_vcap.o \
- 	ocelot_flower.o \
--	ocelot_ptp.o
-+	ocelot_ptp.o \
-+	ocelot_devlink.o
- obj-$(CONFIG_MSCC_OCELOT_SWITCH) += mscc_ocelot.o
- mscc_ocelot-y := \
- 	ocelot_vsc7514.o \
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index f41f3476ae06..8c421165213a 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -456,6 +456,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	ocelot->ops		= felix->info->ops;
+ 	ocelot->inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
+ 	ocelot->xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
++	ocelot->devlink		= felix->ds->devlink;
+ 
+ 	port_phy_modes = kcalloc(num_phys_ports, sizeof(phy_interface_t),
+ 				 GFP_KERNEL);
+@@ -617,6 +618,10 @@ static int felix_setup(struct dsa_switch *ds)
+ 		felix_port_qos_map_init(ocelot, port);
+ 	}
+ 
++	err = ocelot_devlink_sb_register(ocelot);
++	if (err)
++		return err;
++
+ 	/* Include the CPU port module in the forwarding mask for unknown
+ 	 * unicast - the hardware default value for ANA_FLOODING_FLD_UNICAST
+ 	 * excludes BIT(ocelot->num_phys_ports), and so does ocelot_init, since
+@@ -639,6 +644,7 @@ static void felix_teardown(struct dsa_switch *ds)
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	int port;
+ 
++	ocelot_devlink_sb_unregister(ocelot);
+ 	if (ocelot->ptp)
+ 		ocelot_deinit_timestamp(ocelot);
+ 	ocelot_deinit(ocelot);
+@@ -779,6 +785,108 @@ static int felix_port_setup_tc(struct dsa_switch *ds, int port,
+ 		return -EOPNOTSUPP;
+ }
+ 
++static int felix_sb_pool_get(struct dsa_switch *ds, unsigned int sb_index,
++			     u16 pool_index,
++			     struct devlink_sb_pool_info *pool_info)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_pool_get(ocelot, sb_index, pool_index, pool_info);
++}
++
++static int felix_sb_pool_set(struct dsa_switch *ds, unsigned int sb_index,
++			     u16 pool_index, u32 size,
++			     enum devlink_sb_threshold_type threshold_type,
++			     struct netlink_ext_ack *extack)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_pool_set(ocelot, sb_index, pool_index, size,
++				  threshold_type, extack);
++}
++
++static int felix_sb_port_pool_get(struct dsa_switch *ds, int port,
++				  unsigned int sb_index, u16 pool_index,
++				  u32 *p_threshold)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_port_pool_get(ocelot, port, sb_index, pool_index,
++				       p_threshold);
++}
++
++static int felix_sb_port_pool_set(struct dsa_switch *ds, int port,
++				  unsigned int sb_index, u16 pool_index,
++				  u32 threshold, struct netlink_ext_ack *extack)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_port_pool_set(ocelot, port, sb_index, pool_index,
++				       threshold, extack);
++}
++
++static int felix_sb_tc_pool_bind_get(struct dsa_switch *ds, int port,
++				     unsigned int sb_index, u16 tc_index,
++				     enum devlink_sb_pool_type pool_type,
++				     u16 *p_pool_index, u32 *p_threshold)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_tc_pool_bind_get(ocelot, port, sb_index, tc_index,
++					  pool_type, p_pool_index,
++					  p_threshold);
++}
++
++static int felix_sb_tc_pool_bind_set(struct dsa_switch *ds, int port,
++				     unsigned int sb_index, u16 tc_index,
++				     enum devlink_sb_pool_type pool_type,
++				     u16 pool_index, u32 threshold,
++				     struct netlink_ext_ack *extack)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_tc_pool_bind_set(ocelot, port, sb_index, tc_index,
++					  pool_type, pool_index, threshold,
++					  extack);
++}
++
++static int felix_sb_occ_snapshot(struct dsa_switch *ds,
++				 unsigned int sb_index)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_occ_snapshot(ocelot, sb_index);
++}
++
++static int felix_sb_occ_max_clear(struct dsa_switch *ds,
++				  unsigned int sb_index)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_occ_max_clear(ocelot, sb_index);
++}
++
++static int felix_sb_occ_port_pool_get(struct dsa_switch *ds, int port,
++				      unsigned int sb_index, u16 pool_index,
++				      u32 *p_cur, u32 *p_max)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_occ_port_pool_get(ocelot, port, sb_index, pool_index,
++					   p_cur, p_max);
++}
++
++static int felix_sb_occ_tc_port_bind_get(struct dsa_switch *ds, int port,
++					 unsigned int sb_index, u16 tc_index,
++					 enum devlink_sb_pool_type pool_type,
++					 u32 *p_cur, u32 *p_max)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_sb_occ_tc_port_bind_get(ocelot, port, sb_index, tc_index,
++					      pool_type, p_cur, p_max);
++}
++
+ const struct dsa_switch_ops felix_switch_ops = {
+ 	.get_tag_protocol		= felix_get_tag_protocol,
+ 	.setup				= felix_setup,
+@@ -819,6 +927,16 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.cls_flower_del			= felix_cls_flower_del,
+ 	.cls_flower_stats		= felix_cls_flower_stats,
+ 	.port_setup_tc			= felix_port_setup_tc,
++	.devlink_sb_pool_get		= felix_sb_pool_get,
++	.devlink_sb_pool_set		= felix_sb_pool_set,
++	.devlink_sb_port_pool_get	= felix_sb_port_pool_get,
++	.devlink_sb_port_pool_set	= felix_sb_port_pool_set,
++	.devlink_sb_tc_pool_bind_get	= felix_sb_tc_pool_bind_get,
++	.devlink_sb_tc_pool_bind_set	= felix_sb_tc_pool_bind_set,
++	.devlink_sb_occ_snapshot	= felix_sb_occ_snapshot,
++	.devlink_sb_occ_max_clear	= felix_sb_occ_max_clear,
++	.devlink_sb_occ_port_pool_get	= felix_sb_occ_port_pool_get,
++	.devlink_sb_occ_tc_port_bind_get= felix_sb_occ_tc_port_bind_get,
+ };
+ 
+ struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 876c03e51bdc..f547728c6718 100644
+index f547728c6718..02fa86c72eb5 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1636,6 +1636,7 @@ int ocelot_init(struct ocelot *ocelot)
+@@ -1492,10 +1492,6 @@ static void ocelot_detect_features(struct ocelot *ocelot)
+ 
+ 	eq_ctrl = ocelot_read(ocelot, QSYS_EQ_CTRL);
+ 	ocelot->num_frame_refs = QSYS_MMGT_EQ_CTRL_FP_FREE_CNT(eq_ctrl);
+-
+-	dev_info(ocelot->dev,
+-		 "Detected %d bytes of packet buffer and %d frame references\n",
+-		 ocelot->packet_buffer_size, ocelot->num_frame_refs);
+ }
+ 
+ int ocelot_init(struct ocelot *ocelot)
+@@ -1636,7 +1632,6 @@ int ocelot_init(struct ocelot *ocelot)
  	INIT_DELAYED_WORK(&ocelot->stats_work, ocelot_check_stats_work);
  	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
  			   OCELOT_STATS_CHECK_DELAY);
-+	ocelot_watermark_init(ocelot);
+-	ocelot_watermark_init(ocelot);
  
  	return 0;
  }
 diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index 2e9a3c4697c8..a9d60ef30344 100644
+index a9d60ef30344..2e9a3c4697c8 100644
 --- a/drivers/net/ethernet/mscc/ocelot.h
 +++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -125,6 +125,7 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
+@@ -125,7 +125,6 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
  		      struct phy_device *phy);
  int ocelot_devlink_init(struct ocelot *ocelot);
  void ocelot_devlink_teardown(struct ocelot *ocelot);
-+void ocelot_watermark_init(struct ocelot *ocelot);
+-void ocelot_watermark_init(struct ocelot *ocelot);
  
  extern struct notifier_block ocelot_netdevice_nb;
  extern struct notifier_block ocelot_switchdev_nb;
 diff --git a/drivers/net/ethernet/mscc/ocelot_devlink.c b/drivers/net/ethernet/mscc/ocelot_devlink.c
-new file mode 100644
-index 000000000000..c96309cde82d
---- /dev/null
+index c96309cde82d..d441ab8dcfb8 100644
+--- a/drivers/net/ethernet/mscc/ocelot_devlink.c
 +++ b/drivers/net/ethernet/mscc/ocelot_devlink.c
-@@ -0,0 +1,442 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Copyright 2020 NXP Semiconductors
-+ */
-+#include <net/devlink.h>
-+#include "ocelot.h"
-+
-+/* The queue system tracks four resource consumptions:
-+ * Resource 0: Memory tracked per source port
-+ * Resource 1: Frame references tracked per source port
-+ * Resource 2: Memory tracked per destination port
-+ * Resource 3: Frame references tracked per destination port
-+ */
-+#define OCELOT_RESOURCE_SZ		256
-+#define OCELOT_NUM_RESOURCES		4
-+
-+#define BUF_xxxx_I			(0 * OCELOT_RESOURCE_SZ)
-+#define REF_xxxx_I			(1 * OCELOT_RESOURCE_SZ)
-+#define BUF_xxxx_E			(2 * OCELOT_RESOURCE_SZ)
-+#define REF_xxxx_E			(3 * OCELOT_RESOURCE_SZ)
-+
-+/* For each resource type there are 4 types of watermarks:
-+ * Q_RSRV: reservation per QoS class per port
-+ * PRIO_SHR: sharing watermark per QoS class across all ports
-+ * P_RSRV: reservation per port
-+ * COL_SHR: sharing watermark per color (drop precedence) across all ports
-+ */
-+#define xxx_Q_RSRV_x			0
-+#define xxx_PRIO_SHR_x			216
-+#define xxx_P_RSRV_x			224
-+#define xxx_COL_SHR_x			254
-+
-+/* Reservation Watermarks
-+ * ----------------------
-+ *
-+ * For setting up the reserved areas, egress watermarks exist per port and per
-+ * QoS class for both ingress and egress.
-+ */
-+
-+/*  Amount of packet buffer
-+ *  |  per QoS class
-+ *  |  |  reserved
-+ *  |  |  |   per egress port
-+ *  |  |  |   |
-+ *  V  V  v   v
-+ * BUF_Q_RSRV_E
-+ */
-+#define BUF_Q_RSRV_E(port, prio) \
-+	(BUF_xxxx_E + xxx_Q_RSRV_x + OCELOT_NUM_TC * (port) + (prio))
-+
-+/*  Amount of packet buffer
-+ *  |  for all port's traffic classes
-+ *  |  |  reserved
-+ *  |  |  |   per egress port
-+ *  |  |  |   |
-+ *  V  V  v   v
-+ * BUF_P_RSRV_E
-+ */
-+#define BUF_P_RSRV_E(port) \
-+	(BUF_xxxx_E + xxx_P_RSRV_x + (port))
-+
-+/*  Amount of packet buffer
-+ *  |  per QoS class
-+ *  |  |  reserved
-+ *  |  |  |   per ingress port
-+ *  |  |  |   |
-+ *  V  V  v   v
-+ * BUF_Q_RSRV_I
-+ */
-+#define BUF_Q_RSRV_I(port, prio) \
-+	(BUF_xxxx_I + xxx_Q_RSRV_x + OCELOT_NUM_TC * (port) + (prio))
-+
-+/*  Amount of packet buffer
-+ *  |  for all port's traffic classes
-+ *  |  |  reserved
-+ *  |  |  |   per ingress port
-+ *  |  |  |   |
-+ *  V  V  v   v
-+ * BUF_P_RSRV_I
-+ */
-+#define BUF_P_RSRV_I(port) \
-+	(BUF_xxxx_I + xxx_P_RSRV_x + (port))
-+
-+/*  Amount of frame references
-+ *  |  per QoS class
-+ *  |  |  reserved
-+ *  |  |  |   per egress port
-+ *  |  |  |   |
-+ *  V  V  v   v
-+ * REF_Q_RSRV_E
-+ */
-+#define REF_Q_RSRV_E(port, prio) \
-+	(REF_xxxx_E + xxx_Q_RSRV_x + OCELOT_NUM_TC * (port) + (prio))
-+
-+/*  Amount of frame references
-+ *  |  for all port's traffic classes
-+ *  |  |  reserved
-+ *  |  |  |   per egress port
-+ *  |  |  |   |
-+ *  V  V  v   v
-+ * REF_P_RSRV_E
-+ */
-+#define REF_P_RSRV_E(port) \
-+	(REF_xxxx_E + xxx_P_RSRV_x + (port))
-+
-+/*  Amount of frame references
-+ *  |  per QoS class
-+ *  |  |  reserved
-+ *  |  |  |   per ingress port
-+ *  |  |  |   |
-+ *  V  V  v   v
-+ * REF_Q_RSRV_I
-+ */
-+#define REF_Q_RSRV_I(port, prio) \
-+	(REF_xxxx_I + xxx_Q_RSRV_x + OCELOT_NUM_TC * (port) + (prio))
-+
-+/*  Amount of frame references
-+ *  |  for all port's traffic classes
-+ *  |  |  reserved
-+ *  |  |  |   per ingress port
-+ *  |  |  |   |
-+ *  V  V  v   v
-+ * REF_P_RSRV_I
-+ */
-+#define REF_P_RSRV_I(port) \
-+	(REF_xxxx_I + xxx_P_RSRV_x + (port))
-+
-+/* Sharing Watermarks
-+ * ------------------
-+ *
-+ * The shared memory area is shared between all ports.
-+ */
-+
-+/* Amount of buffer
-+ *  |   per QoS class
-+ *  |   |    from the shared memory area
-+ *  |   |    |  for egress traffic
-+ *  |   |    |  |
-+ *  V   V    v  v
-+ * BUF_PRIO_SHR_E
-+ */
-+#define BUF_PRIO_SHR_E(prio) \
-+	(BUF_xxxx_E + xxx_PRIO_SHR_x + (prio))
-+
-+/* Amount of buffer
-+ *  |   per color (drop precedence level)
-+ *  |   |   from the shared memory area
-+ *  |   |   |  for egress traffic
-+ *  |   |   |  |
-+ *  V   V   v  v
-+ * BUF_COL_SHR_E
-+ */
-+#define BUF_COL_SHR_E(dp) \
-+	(BUF_xxxx_E + xxx_COL_SHR_x + (1 - (dp)))
-+
-+/* Amount of buffer
-+ *  |   per QoS class
-+ *  |   |    from the shared memory area
-+ *  |   |    |  for ingress traffic
-+ *  |   |    |  |
-+ *  V   V    v  v
-+ * BUF_PRIO_SHR_I
-+ */
-+#define BUF_PRIO_SHR_I(prio) \
-+	(BUF_xxxx_I + xxx_PRIO_SHR_x + (prio))
-+
-+/* Amount of buffer
-+ *  |   per color (drop precedence level)
-+ *  |   |   from the shared memory area
-+ *  |   |   |  for ingress traffic
-+ *  |   |   |  |
-+ *  V   V   v  v
-+ * BUF_COL_SHR_I
-+ */
-+#define BUF_COL_SHR_I(dp) \
-+	(BUF_xxxx_I + xxx_COL_SHR_x + (1 - (dp)))
-+
-+/* Amount of frame references
-+ *  |   per QoS class
-+ *  |   |    from the shared area
-+ *  |   |    |  for egress traffic
-+ *  |   |    |  |
-+ *  V   V    v  v
-+ * REF_PRIO_SHR_E
-+ */
-+#define REF_PRIO_SHR_E(prio) \
-+	(REF_xxxx_E + xxx_PRIO_SHR_x + (prio))
-+
-+/* Amount of frame references
-+ *  |   per color (drop precedence level)
-+ *  |   |   from the shared area
-+ *  |   |   |  for egress traffic
-+ *  |   |   |  |
-+ *  V   V   v  v
-+ * REF_COL_SHR_E
-+ */
-+#define REF_COL_SHR_E(dp) \
-+	(REF_xxxx_E + xxx_COL_SHR_x + (1 - (dp)))
-+
-+/* Amount of frame references
-+ *  |   per QoS class
-+ *  |   |    from the shared area
-+ *  |   |    |  for ingress traffic
-+ *  |   |    |  |
-+ *  V   V    v  v
-+ * REF_PRIO_SHR_I
-+ */
-+#define REF_PRIO_SHR_I(prio) \
-+	(REF_xxxx_I + xxx_PRIO_SHR_x + (prio))
-+
-+/* Amount of frame references
-+ *  |   per color (drop precedence level)
-+ *  |   |   from the shared area
-+ *  |   |   |  for ingress traffic
-+ *  |   |   |  |
-+ *  V   V   v  v
-+ * REF_COL_SHR_I
-+ */
-+#define REF_COL_SHR_I(dp) \
-+	(REF_xxxx_I + xxx_COL_SHR_x + (1 - (dp)))
-+
-+static u32 ocelot_wm_read(struct ocelot *ocelot, int index)
+@@ -232,6 +232,14 @@ static void ocelot_wm_write(struct ocelot *ocelot, int index, u32 val)
+ 	ocelot_write_gix(ocelot, wm, QSYS_RES_CFG, index);
+ }
+ 
++static void ocelot_wm_status(struct ocelot *ocelot, int index, u32 *inuse,
++			     u32 *maxuse)
 +{
-+	int wm = ocelot_read_gix(ocelot, QSYS_RES_CFG, index);
++	int res_stat = ocelot_read_gix(ocelot, QSYS_RES_STAT, index);
 +
-+	return ocelot->ops->wm_dec(wm);
++	return ocelot->ops->wm_stat(res_stat, inuse, maxuse);
 +}
 +
-+static void ocelot_wm_write(struct ocelot *ocelot, int index, u32 val)
-+{
-+	u32 wm = ocelot->ops->wm_enc(val);
-+
-+	ocelot_write_gix(ocelot, wm, QSYS_RES_CFG, index);
-+}
-+
-+/* The hardware comes out of reset with strange defaults: the sum of all
-+ * reservations for frame memory is larger than the total buffer size.
-+ * One has to wonder how can the reservation watermarks still guarantee
-+ * anything under congestion.
-+ * Bring some sense into the hardware by changing the defaults to disable all
-+ * reservations and rely only on the sharing watermark for frames with drop
-+ * precedence 0. The user can still explicitly request reservations per port
-+ * and per port-tc through devlink-sb.
-+ */
-+static void ocelot_disable_reservation_watermarks(struct ocelot *ocelot,
-+						  int port)
-+{
-+	int prio;
-+
-+	for (prio = 0; prio < OCELOT_NUM_TC; prio++) {
-+		ocelot_wm_write(ocelot, BUF_Q_RSRV_I(port, prio), 0);
-+		ocelot_wm_write(ocelot, BUF_Q_RSRV_E(port, prio), 0);
-+		ocelot_wm_write(ocelot, REF_Q_RSRV_I(port, prio), 0);
-+		ocelot_wm_write(ocelot, REF_Q_RSRV_E(port, prio), 0);
-+	}
-+
-+	ocelot_wm_write(ocelot, BUF_P_RSRV_I(port), 0);
-+	ocelot_wm_write(ocelot, BUF_P_RSRV_E(port), 0);
-+	ocelot_wm_write(ocelot, REF_P_RSRV_I(port), 0);
-+	ocelot_wm_write(ocelot, REF_P_RSRV_E(port), 0);
-+}
-+
-+/* We want the sharing watermarks to consume all nonreserved resources, for
-+ * efficient resource utilization (a single traffic flow should be able to use
-+ * up the entire buffer space and frame resources as long as there's no
-+ * interference).
-+ * The switch has 10 sharing watermarks per lookup: 8 per traffic class and 2
-+ * per color (drop precedence).
-+ * The trouble with configuring these sharing watermarks is that:
-+ * (1) There's a risk that we overcommit the resources if we configure
-+ *     (a) all 8 per-TC sharing watermarks to the max
-+ *     (b) all 2 per-color sharing watermarks to the max
-+ * (2) There's a risk that we undercommit the resources if we configure
-+ *     (a) all 8 per-TC sharing watermarks to "max / 8"
-+ *     (b) all 2 per-color sharing watermarks to "max / 2"
-+ * So for Linux, let's just disable the sharing watermarks per traffic class
-+ * (setting them to 0 will make them always exceeded), and rely only on the
-+ * sharing watermark for drop priority 0. So frames with drop priority set to 1
-+ * by QoS classification or policing will still be allowed, but only as long as
-+ * the port and port-TC reservations are not exceeded.
-+ */
-+static void ocelot_disable_tc_sharing_watermarks(struct ocelot *ocelot)
-+{
-+	int prio;
-+
-+	for (prio = 0; prio < OCELOT_NUM_TC; prio++) {
-+		ocelot_wm_write(ocelot, BUF_PRIO_SHR_I(prio), 0);
-+		ocelot_wm_write(ocelot, BUF_PRIO_SHR_E(prio), 0);
-+		ocelot_wm_write(ocelot, REF_PRIO_SHR_I(prio), 0);
-+		ocelot_wm_write(ocelot, REF_PRIO_SHR_E(prio), 0);
-+	}
-+}
-+
-+static void ocelot_get_buf_rsrv(struct ocelot *ocelot, u32 *buf_rsrv_i,
-+				u32 *buf_rsrv_e)
-+{
-+	int port, prio;
-+
-+	*buf_rsrv_i = 0;
-+	*buf_rsrv_e = 0;
-+
-+	for (port = 0; port <= ocelot->num_phys_ports; port++) {
-+		for (prio = 0; prio < OCELOT_NUM_TC; prio++) {
-+			*buf_rsrv_i += ocelot_wm_read(ocelot,
-+						      BUF_Q_RSRV_I(port, prio));
-+			*buf_rsrv_e += ocelot_wm_read(ocelot,
-+						      BUF_Q_RSRV_E(port, prio));
-+		}
-+
-+		*buf_rsrv_i += ocelot_wm_read(ocelot, BUF_P_RSRV_I(port));
-+		*buf_rsrv_e += ocelot_wm_read(ocelot, BUF_P_RSRV_E(port));
-+	}
-+
-+	*buf_rsrv_i *= OCELOT_BUFFER_CELL_SZ;
-+	*buf_rsrv_e *= OCELOT_BUFFER_CELL_SZ;
-+}
-+
-+static void ocelot_get_ref_rsrv(struct ocelot *ocelot, u32 *ref_rsrv_i,
-+				u32 *ref_rsrv_e)
-+{
-+	int port, prio;
-+
-+	*ref_rsrv_i = 0;
-+	*ref_rsrv_e = 0;
-+
-+	for (port = 0; port <= ocelot->num_phys_ports; port++) {
-+		for (prio = 0; prio < OCELOT_NUM_TC; prio++) {
-+			*ref_rsrv_i += ocelot_wm_read(ocelot,
-+						      REF_Q_RSRV_I(port, prio));
-+			*ref_rsrv_e += ocelot_wm_read(ocelot,
-+						      REF_Q_RSRV_E(port, prio));
-+		}
-+
-+		*ref_rsrv_i += ocelot_wm_read(ocelot, REF_P_RSRV_I(port));
-+		*ref_rsrv_e += ocelot_wm_read(ocelot, REF_P_RSRV_E(port));
-+	}
-+}
-+
-+/* Calculate all reservations, then set up the sharing watermark for DP=0 to
-+ * consume the remaining resources up to the pool's configured size.
-+ */
-+static void ocelot_setup_sharing_watermarks(struct ocelot *ocelot)
+ /* The hardware comes out of reset with strange defaults: the sum of all
+  * reservations for frame memory is larger than the total buffer size.
+  * One has to wonder how can the reservation watermarks still guarantee
+@@ -348,10 +356,14 @@ static void ocelot_setup_sharing_watermarks(struct ocelot *ocelot)
+ 	ocelot_get_buf_rsrv(ocelot, &buf_rsrv_i, &buf_rsrv_e);
+ 	ocelot_get_ref_rsrv(ocelot, &ref_rsrv_i, &ref_rsrv_e);
+ 
+-	buf_shr_i = ocelot->packet_buffer_size - buf_rsrv_i;
+-	buf_shr_e = ocelot->packet_buffer_size - buf_rsrv_e;
+-	ref_shr_i = ocelot->num_frame_refs - ref_rsrv_i;
+-	ref_shr_e = ocelot->num_frame_refs - ref_rsrv_e;
++	buf_shr_i = ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_ING] -
++		    buf_rsrv_i;
++	buf_shr_e = ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_EGR] -
++		    buf_rsrv_e;
++	ref_shr_i = ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_ING] -
++		    ref_rsrv_i;
++	ref_shr_e = ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_EGR] -
++		    ref_rsrv_e;
+ 
+ 	buf_shr_i /= OCELOT_BUFFER_CELL_SZ;
+ 	buf_shr_e /= OCELOT_BUFFER_CELL_SZ;
+@@ -366,6 +378,40 @@ static void ocelot_setup_sharing_watermarks(struct ocelot *ocelot)
+ 	ocelot_wm_write(ocelot, REF_COL_SHR_I(1), 0);
+ }
+ 
++/* Ensure that all reservations can be enforced */
++static int ocelot_watermark_validate(struct ocelot *ocelot,
++				     struct netlink_ext_ack *extack)
 +{
 +	u32 buf_rsrv_i, buf_rsrv_e;
 +	u32 ref_rsrv_i, ref_rsrv_e;
-+	u32 buf_shr_i, buf_shr_e;
-+	u32 ref_shr_i, ref_shr_e;
 +
 +	ocelot_get_buf_rsrv(ocelot, &buf_rsrv_i, &buf_rsrv_e);
 +	ocelot_get_ref_rsrv(ocelot, &ref_rsrv_i, &ref_rsrv_e);
 +
-+	buf_shr_i = ocelot->packet_buffer_size - buf_rsrv_i;
-+	buf_shr_e = ocelot->packet_buffer_size - buf_rsrv_e;
-+	ref_shr_i = ocelot->num_frame_refs - ref_rsrv_i;
-+	ref_shr_e = ocelot->num_frame_refs - ref_rsrv_e;
++	if (buf_rsrv_i > ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_ING]) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Ingress frame reservations exceed pool size");
++		return -ERANGE;
++	}
++	if (buf_rsrv_e > ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_EGR]) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Egress frame reservations exceed pool size");
++		return -ERANGE;
++	}
++	if (ref_rsrv_i > ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_ING]) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Ingress reference reservations exceed pool size");
++		return -ERANGE;
++	}
++	if (ref_rsrv_e > ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_EGR]) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Egress reference reservations exceed pool size");
++		return -ERANGE;
++	}
 +
-+	buf_shr_i /= OCELOT_BUFFER_CELL_SZ;
-+	buf_shr_e /= OCELOT_BUFFER_CELL_SZ;
-+
-+	ocelot_wm_write(ocelot, BUF_COL_SHR_I(0), buf_shr_i);
-+	ocelot_wm_write(ocelot, BUF_COL_SHR_E(0), buf_shr_e);
-+	ocelot_wm_write(ocelot, REF_COL_SHR_E(0), ref_shr_e);
-+	ocelot_wm_write(ocelot, REF_COL_SHR_I(0), ref_shr_i);
-+	ocelot_wm_write(ocelot, BUF_COL_SHR_I(1), 0);
-+	ocelot_wm_write(ocelot, BUF_COL_SHR_E(1), 0);
-+	ocelot_wm_write(ocelot, REF_COL_SHR_E(1), 0);
-+	ocelot_wm_write(ocelot, REF_COL_SHR_I(1), 0);
++	return 0;
 +}
 +
-+/* The hardware works like this:
-+ *
-+ *                         Frame forwarding decision taken
-+ *                                       |
-+ *                                       v
-+ *       +--------------------+--------------------+--------------------+
-+ *       |                    |                    |                    |
-+ *       v                    v                    v                    v
-+ * Ingress memory       Egress memory        Ingress frame        Egress frame
-+ *     check                check           reference check      reference check
-+ *       |                    |                    |                    |
-+ *       v                    v                    v                    v
-+ *  BUF_Q_RSRV_I   ok    BUF_Q_RSRV_E   ok    REF_Q_RSRV_I   ok     REF_Q_RSRV_E   ok
-+ *(src port, prio) -+  (dst port, prio) -+  (src port, prio) -+   (dst port, prio) -+
-+ *       |          |         |          |         |          |         |           |
-+ *       |exceeded  |         |exceeded  |         |exceeded  |         |exceeded   |
-+ *       v          |         v          |         v          |         v           |
-+ *  BUF_P_RSRV_I  ok|    BUF_P_RSRV_E  ok|    REF_P_RSRV_I  ok|    REF_P_RSRV_E   ok|
-+ *   (src port) ----+     (dst port) ----+     (src port) ----+     (dst port) -----+
-+ *       |          |         |          |         |          |         |           |
-+ *       |exceeded  |         |exceeded  |         |exceeded  |         |exceeded   |
-+ *       v          |         v          |         v          |         v           |
-+ * BUF_PRIO_SHR_I ok|   BUF_PRIO_SHR_E ok|   REF_PRIO_SHR_I ok|   REF_PRIO_SHR_E  ok|
-+ *     (prio) ------+       (prio) ------+       (prio) ------+       (prio) -------+
-+ *       |          |         |          |         |          |         |           |
-+ *       |exceeded  |         |exceeded  |         |exceeded  |         |exceeded   |
-+ *       v          |         v          |         v          |         v           |
-+ * BUF_COL_SHR_I  ok|   BUF_COL_SHR_E  ok|   REF_COL_SHR_I  ok|   REF_COL_SHR_E   ok|
-+ *      (dp) -------+        (dp) -------+        (dp) -------+        (dp) --------+
-+ *       |          |         |          |         |          |         |           |
-+ *       |exceeded  |         |exceeded  |         |exceeded  |         |exceeded   |
-+ *       v          v         v          v         v          v         v           v
-+ *      fail     success     fail     success     fail     success     fail      success
-+ *       |          |         |          |         |          |         |           |
-+ *       v          v         v          v         v          v         v           v
-+ *       +-----+----+         +-----+----+         +-----+----+         +-----+-----+
-+ *             |                    |                    |                    |
-+ *             +-------> OR <-------+                    +-------> OR <-------+
-+ *                        |                                        |
-+ *                        v                                        v
-+ *                        +----------------> AND <-----------------+
-+ *                                            |
-+ *                                            v
-+ *                                    FIFO drop / accept
-+ *
-+ * We are modeling each of the 4 parallel lookups as a devlink-sb pool.
-+ * At least one (ingress or egress) memory pool and one (ingress or egress)
-+ * frame reference pool need to have resources for frame acceptance to succeed.
-+ *
-+ * The following watermarks are controlled explicitly through devlink-sb:
-+ * BUF_Q_RSRV_I, BUF_Q_RSRV_E, REF_Q_RSRV_I, REF_Q_RSRV_E
-+ * BUF_P_RSRV_I, BUF_P_RSRV_E, REF_P_RSRV_I, REF_P_RSRV_E
-+ * The following watermarks are controlled implicitly through devlink-sb:
-+ * BUF_COL_SHR_I, BUF_COL_SHR_E, REF_COL_SHR_I, REF_COL_SHR_E
-+ * The following watermarks are unused and disabled:
-+ * BUF_PRIO_SHR_I, BUF_PRIO_SHR_E, REF_PRIO_SHR_I, REF_PRIO_SHR_E
-+ *
-+ * This function overrides the hardware defaults with more sane ones (no
-+ * reservations by default, let sharing use all resources) and disables the
-+ * unused watermarks.
+ /* The hardware works like this:
+  *
+  *                         Frame forwarding decision taken
+@@ -427,7 +473,7 @@ static void ocelot_setup_sharing_watermarks(struct ocelot *ocelot)
+  * reservations by default, let sharing use all resources) and disables the
+  * unused watermarks.
+  */
+-void ocelot_watermark_init(struct ocelot *ocelot)
++static void ocelot_watermark_init(struct ocelot *ocelot)
+ {
+ 	int all_tcs = GENMASK(OCELOT_NUM_TC - 1, 0);
+ 	int port;
+@@ -440,3 +486,400 @@ void ocelot_watermark_init(struct ocelot *ocelot)
+ 	ocelot_disable_tc_sharing_watermarks(ocelot);
+ 	ocelot_setup_sharing_watermarks(ocelot);
+ }
++
++/* Pool size and type are fixed up at runtime. Keeping this structure to
++ * look up the cell size multipliers.
 + */
-+void ocelot_watermark_init(struct ocelot *ocelot)
++static const struct devlink_sb_pool_info ocelot_sb_pool[] = {
++	[OCELOT_SB_BUF] = {
++		.cell_size = OCELOT_BUFFER_CELL_SZ,
++		.threshold_type = DEVLINK_SB_THRESHOLD_TYPE_STATIC,
++	},
++	[OCELOT_SB_REF] = {
++		.cell_size = 1,
++		.threshold_type = DEVLINK_SB_THRESHOLD_TYPE_STATIC,
++	},
++};
++
++/* Returns the pool size configured through ocelot_sb_pool_set */
++int ocelot_sb_pool_get(struct ocelot *ocelot, unsigned int sb_index,
++		       u16 pool_index,
++		       struct devlink_sb_pool_info *pool_info)
 +{
-+	int all_tcs = GENMASK(OCELOT_NUM_TC - 1, 0);
-+	int port;
++	if (sb_index >= OCELOT_SB_NUM)
++		return -ENODEV;
++	if (pool_index >= OCELOT_SB_POOL_NUM)
++		return -ENODEV;
 +
-+	ocelot_write(ocelot, all_tcs, QSYS_RES_QOS_MODE);
++	*pool_info = ocelot_sb_pool[sb_index];
++	pool_info->size = ocelot->pool_size[sb_index][pool_index];
++	if (pool_index)
++		pool_info->pool_type = DEVLINK_SB_POOL_TYPE_INGRESS;
++	else
++		pool_info->pool_type = DEVLINK_SB_POOL_TYPE_EGRESS;
 +
-+	for (port = 0; port <= ocelot->num_phys_ports; port++)
-+		ocelot_disable_reservation_watermarks(ocelot, port);
-+
-+	ocelot_disable_tc_sharing_watermarks(ocelot);
-+	ocelot_setup_sharing_watermarks(ocelot);
++	return 0;
 +}
++EXPORT_SYMBOL(ocelot_sb_pool_get);
++
++/* The pool size received here configures the total amount of resources used on
++ * ingress (or on egress, depending upon the pool index). The pool size, minus
++ * the values for the port and port-tc reservations, is written into the
++ * COL_SHR(dp=0) sharing watermark.
++ */
++int ocelot_sb_pool_set(struct ocelot *ocelot, unsigned int sb_index,
++		       u16 pool_index, u32 size,
++		       enum devlink_sb_threshold_type threshold_type,
++		       struct netlink_ext_ack *extack)
++{
++	u32 old_pool_size;
++	int err;
++
++	if (sb_index >= OCELOT_SB_NUM) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Invalid sb, use 0 for buffers and 1 for frame references");
++		return -ENODEV;
++	}
++	if (pool_index >= OCELOT_SB_POOL_NUM) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Invalid pool, use 0 for ingress and 1 for egress");
++		return -ENODEV;
++	}
++	if (threshold_type != DEVLINK_SB_THRESHOLD_TYPE_STATIC) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Only static threshold supported");
++		return -EOPNOTSUPP;
++	}
++
++	old_pool_size = ocelot->pool_size[sb_index][pool_index];
++	ocelot->pool_size[sb_index][pool_index] = size;
++
++	err = ocelot_watermark_validate(ocelot, extack);
++	if (err) {
++		ocelot->pool_size[sb_index][pool_index] = old_pool_size;
++		return err;
++	}
++
++	ocelot_setup_sharing_watermarks(ocelot);
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_pool_set);
++
++/* This retrieves the configuration made with ocelot_sb_port_pool_set */
++int ocelot_sb_port_pool_get(struct ocelot *ocelot, int port,
++			    unsigned int sb_index, u16 pool_index,
++			    u32 *p_threshold)
++{
++	int wm_index;
++
++	switch (sb_index) {
++	case OCELOT_SB_BUF:
++		if (pool_index == OCELOT_SB_POOL_ING)
++			wm_index = BUF_P_RSRV_I(port);
++		else
++			wm_index = BUF_P_RSRV_E(port);
++		break;
++	case OCELOT_SB_REF:
++		if (pool_index == OCELOT_SB_POOL_ING)
++			wm_index = REF_P_RSRV_I(port);
++		else
++			wm_index = REF_P_RSRV_E(port);
++		break;
++	default:
++		return -ENODEV;
++	}
++
++	*p_threshold = ocelot_wm_read(ocelot, wm_index);
++	*p_threshold *= ocelot_sb_pool[sb_index].cell_size;
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_port_pool_get);
++
++/* This configures the P_RSRV per-port reserved resource watermark */
++int ocelot_sb_port_pool_set(struct ocelot *ocelot, int port,
++			    unsigned int sb_index, u16 pool_index,
++			    u32 threshold, struct netlink_ext_ack *extack)
++{
++	int wm_index, err;
++	u32 old_thr;
++
++	switch (sb_index) {
++	case OCELOT_SB_BUF:
++		if (pool_index == OCELOT_SB_POOL_ING)
++			wm_index = BUF_P_RSRV_I(port);
++		else
++			wm_index = BUF_P_RSRV_E(port);
++		break;
++	case OCELOT_SB_REF:
++		if (pool_index == OCELOT_SB_POOL_ING)
++			wm_index = REF_P_RSRV_I(port);
++		else
++			wm_index = REF_P_RSRV_E(port);
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(extack, "Invalid shared buffer");
++		return -ENODEV;
++	}
++
++	threshold /= ocelot_sb_pool[sb_index].cell_size;
++
++	old_thr = ocelot_wm_read(ocelot, wm_index);
++	ocelot_wm_write(ocelot, wm_index, threshold);
++
++	err = ocelot_watermark_validate(ocelot, extack);
++	if (err) {
++		ocelot_wm_write(ocelot, wm_index, old_thr);
++		return err;
++	}
++
++	ocelot_setup_sharing_watermarks(ocelot);
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_port_pool_set);
++
++/* This retrieves the configuration done by ocelot_sb_tc_pool_bind_set */
++int ocelot_sb_tc_pool_bind_get(struct ocelot *ocelot, int port,
++			       unsigned int sb_index, u16 tc_index,
++			       enum devlink_sb_pool_type pool_type,
++			       u16 *p_pool_index, u32 *p_threshold)
++{
++	int wm_index;
++
++	switch (sb_index) {
++	case OCELOT_SB_BUF:
++		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
++			wm_index = BUF_Q_RSRV_I(port, tc_index);
++		else
++			wm_index = BUF_Q_RSRV_E(port, tc_index);
++		break;
++	case OCELOT_SB_REF:
++		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
++			wm_index = REF_Q_RSRV_I(port, tc_index);
++		else
++			wm_index = REF_Q_RSRV_E(port, tc_index);
++		break;
++	default:
++		return -ENODEV;
++	}
++
++	*p_threshold = ocelot_wm_read(ocelot, wm_index);
++	*p_threshold *= ocelot_sb_pool[sb_index].cell_size;
++
++	if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
++		*p_pool_index = 0;
++	else
++		*p_pool_index = 1;
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_tc_pool_bind_get);
++
++/* This configures the Q_RSRV per-port-tc reserved resource watermark */
++int ocelot_sb_tc_pool_bind_set(struct ocelot *ocelot, int port,
++			       unsigned int sb_index, u16 tc_index,
++			       enum devlink_sb_pool_type pool_type,
++			       u16 pool_index, u32 threshold,
++			       struct netlink_ext_ack *extack)
++{
++	int wm_index, err;
++	u32 old_thr;
++
++	/* Paranoid check? */
++	if (pool_index == OCELOT_SB_POOL_ING &&
++	    pool_type != DEVLINK_SB_POOL_TYPE_INGRESS)
++		return -EINVAL;
++	if (pool_index == OCELOT_SB_POOL_EGR &&
++	    pool_type != DEVLINK_SB_POOL_TYPE_EGRESS)
++		return -EINVAL;
++
++	switch (sb_index) {
++	case OCELOT_SB_BUF:
++		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
++			wm_index = BUF_Q_RSRV_I(port, tc_index);
++		else
++			wm_index = BUF_Q_RSRV_E(port, tc_index);
++		break;
++	case OCELOT_SB_REF:
++		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
++			wm_index = REF_Q_RSRV_I(port, tc_index);
++		else
++			wm_index = REF_Q_RSRV_E(port, tc_index);
++		break;
++	default:
++		NL_SET_ERR_MSG_MOD(extack, "Invalid shared buffer");
++		return -ENODEV;
++	}
++
++	threshold /= ocelot_sb_pool[sb_index].cell_size;
++
++	old_thr = ocelot_wm_read(ocelot, wm_index);
++	ocelot_wm_write(ocelot, wm_index, threshold);
++	err = ocelot_watermark_validate(ocelot, extack);
++	if (err) {
++		ocelot_wm_write(ocelot, wm_index, old_thr);
++		return err;
++	}
++
++	ocelot_setup_sharing_watermarks(ocelot);
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_tc_pool_bind_set);
++
++/* The hardware does not support atomic snapshots, we'll read out the
++ * occupancy registers individually and have this as just a stub.
++ */
++int ocelot_sb_occ_snapshot(struct ocelot *ocelot, unsigned int sb_index)
++{
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_occ_snapshot);
++
++/* The watermark occupancy registers are cleared upon read,
++ * so let's read them.
++ */
++int ocelot_sb_occ_max_clear(struct ocelot *ocelot, unsigned int sb_index)
++{
++	u32 inuse, maxuse;
++	int port, prio;
++
++	switch (sb_index) {
++	case OCELOT_SB_BUF:
++		for (port = 0; port <= ocelot->num_phys_ports; port++) {
++			for (prio = 0; prio < OCELOT_NUM_TC; prio++) {
++				ocelot_wm_status(ocelot, BUF_Q_RSRV_I(port, prio),
++						 &inuse, &maxuse);
++				ocelot_wm_status(ocelot, BUF_Q_RSRV_E(port, prio),
++						 &inuse, &maxuse);
++			}
++			ocelot_wm_status(ocelot, BUF_P_RSRV_I(port),
++					 &inuse, &maxuse);
++			ocelot_wm_status(ocelot, BUF_P_RSRV_E(port),
++					 &inuse, &maxuse);
++		}
++		break;
++	case OCELOT_SB_REF:
++		for (port = 0; port <= ocelot->num_phys_ports; port++) {
++			for (prio = 0; prio < OCELOT_NUM_TC; prio++) {
++				ocelot_wm_status(ocelot, REF_Q_RSRV_I(port, prio),
++						 &inuse, &maxuse);
++				ocelot_wm_status(ocelot, REF_Q_RSRV_E(port, prio),
++						 &inuse, &maxuse);
++			}
++			ocelot_wm_status(ocelot, REF_P_RSRV_I(port),
++					 &inuse, &maxuse);
++			ocelot_wm_status(ocelot, REF_P_RSRV_E(port),
++					 &inuse, &maxuse);
++		}
++		break;
++	default:
++		return -ENODEV;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_occ_max_clear);
++
++/* This retrieves the watermark occupancy for per-port P_RSRV watermarks */
++int ocelot_sb_occ_port_pool_get(struct ocelot *ocelot, int port,
++				unsigned int sb_index, u16 pool_index,
++				u32 *p_cur, u32 *p_max)
++{
++	int wm_index;
++
++	switch (sb_index) {
++	case OCELOT_SB_BUF:
++		if (pool_index == OCELOT_SB_POOL_ING)
++			wm_index = BUF_P_RSRV_I(port);
++		else
++			wm_index = BUF_P_RSRV_E(port);
++		break;
++	case OCELOT_SB_REF:
++		if (pool_index == OCELOT_SB_POOL_ING)
++			wm_index = REF_P_RSRV_I(port);
++		else
++			wm_index = REF_P_RSRV_E(port);
++		break;
++	default:
++		return -ENODEV;
++	}
++
++	ocelot_wm_status(ocelot, wm_index, p_cur, p_max);
++	*p_cur *= ocelot_sb_pool[sb_index].cell_size;
++	*p_max *= ocelot_sb_pool[sb_index].cell_size;
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_occ_port_pool_get);
++
++/* This retrieves the watermark occupancy for per-port-tc Q_RSRV watermarks */
++int ocelot_sb_occ_tc_port_bind_get(struct ocelot *ocelot, int port,
++				   unsigned int sb_index, u16 tc_index,
++				   enum devlink_sb_pool_type pool_type,
++				   u32 *p_cur, u32 *p_max)
++{
++	int wm_index;
++
++	switch (sb_index) {
++	case OCELOT_SB_BUF:
++		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
++			wm_index = BUF_Q_RSRV_I(port, tc_index);
++		else
++			wm_index = BUF_Q_RSRV_E(port, tc_index);
++		break;
++	case OCELOT_SB_REF:
++		if (pool_type == DEVLINK_SB_POOL_TYPE_INGRESS)
++			wm_index = REF_Q_RSRV_I(port, tc_index);
++		else
++			wm_index = REF_Q_RSRV_E(port, tc_index);
++		break;
++	default:
++		return -ENODEV;
++	}
++
++	ocelot_wm_status(ocelot, wm_index, p_cur, p_max);
++	*p_cur *= ocelot_sb_pool[sb_index].cell_size;
++	*p_max *= ocelot_sb_pool[sb_index].cell_size;
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_sb_occ_tc_port_bind_get);
++
++int ocelot_devlink_sb_register(struct ocelot *ocelot)
++{
++	int err;
++
++	err = devlink_sb_register(ocelot->devlink, OCELOT_SB_BUF,
++				  ocelot->packet_buffer_size, 1, 1,
++				  OCELOT_NUM_TC, OCELOT_NUM_TC);
++	if (err)
++		return err;
++
++	err = devlink_sb_register(ocelot->devlink, OCELOT_SB_REF,
++				  ocelot->num_frame_refs, 1, 1,
++				  OCELOT_NUM_TC, OCELOT_NUM_TC);
++	if (err) {
++		devlink_sb_unregister(ocelot->devlink, OCELOT_SB_BUF);
++		return err;
++	}
++
++	ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_ING] = ocelot->packet_buffer_size;
++	ocelot->pool_size[OCELOT_SB_BUF][OCELOT_SB_POOL_EGR] = ocelot->packet_buffer_size;
++	ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_ING] = ocelot->num_frame_refs;
++	ocelot->pool_size[OCELOT_SB_REF][OCELOT_SB_POOL_EGR] = ocelot->num_frame_refs;
++
++	ocelot_watermark_init(ocelot);
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_devlink_sb_register);
++
++void ocelot_devlink_sb_unregister(struct ocelot *ocelot)
++{
++	devlink_sb_unregister(ocelot->devlink, OCELOT_SB_BUF);
++	devlink_sb_unregister(ocelot->devlink, OCELOT_SB_REF);
++}
++EXPORT_SYMBOL(ocelot_devlink_sb_unregister);
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index d0d98c6adea8..ae1f9d6cf7f2 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -1,7 +1,11 @@
+ // SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ /* Microsemi Ocelot Switch driver
++ *
++ * This contains glue logic between the switchdev driver operations and the
++ * mscc_ocelot_switch_lib.
+  *
+  * Copyright (c) 2017, 2019 Microsemi Corporation
++ * Copyright 2020 NXP Semiconductors
+  */
+ 
+ #include <linux/if_bridge.h>
+@@ -12,7 +16,146 @@ struct ocelot_devlink_private {
+ 	struct ocelot *ocelot;
+ };
+ 
++static struct ocelot_port_private *
++devlink_to_ocelot_port_priv(struct devlink_port *dlp)
++{
++	return container_of(dlp, struct ocelot_port_private, devlink_port);
++}
++
++static int ocelot_devlink_sb_pool_get(struct devlink *dl,
++				      unsigned int sb_index, u16 pool_index,
++				      struct devlink_sb_pool_info *pool_info)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dl);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_pool_get(ocelot, sb_index, pool_index, pool_info);
++}
++
++static int ocelot_devlink_sb_pool_set(struct devlink *dl, unsigned int sb_index,
++				      u16 pool_index, u32 size,
++				      enum devlink_sb_threshold_type threshold_type,
++				      struct netlink_ext_ack *extack)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dl);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_pool_set(ocelot, sb_index, pool_index, size,
++				  threshold_type, extack);
++}
++
++static int ocelot_devlink_sb_port_pool_get(struct devlink_port *dlp,
++					   unsigned int sb_index, u16 pool_index,
++					   u32 *p_threshold)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
++	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_port_pool_get(ocelot, priv->chip_port, sb_index,
++				       pool_index, p_threshold);
++}
++
++static int ocelot_devlink_sb_port_pool_set(struct devlink_port *dlp,
++					   unsigned int sb_index, u16 pool_index,
++					   u32 threshold,
++					   struct netlink_ext_ack *extack)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
++	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_port_pool_set(ocelot, priv->chip_port, sb_index,
++				       pool_index, threshold, extack);
++}
++
++static int
++ocelot_devlink_sb_tc_pool_bind_get(struct devlink_port *dlp,
++				   unsigned int sb_index, u16 tc_index,
++				   enum devlink_sb_pool_type pool_type,
++				   u16 *p_pool_index, u32 *p_threshold)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
++	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_tc_pool_bind_get(ocelot, priv->chip_port, sb_index,
++					  tc_index, pool_type, p_pool_index,
++					  p_threshold);
++}
++
++static int
++ocelot_devlink_sb_tc_pool_bind_set(struct devlink_port *dlp,
++				   unsigned int sb_index, u16 tc_index,
++				   enum devlink_sb_pool_type pool_type,
++				   u16 pool_index, u32 threshold,
++				   struct netlink_ext_ack *extack)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
++	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_tc_pool_bind_set(ocelot, priv->chip_port, sb_index,
++					  tc_index, pool_type, pool_index,
++					  threshold, extack);
++}
++
++static int ocelot_devlink_sb_occ_snapshot(struct devlink *dl,
++					  unsigned int sb_index)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dl);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_occ_snapshot(ocelot, sb_index);
++}
++
++static int ocelot_devlink_sb_occ_max_clear(struct devlink *dl,
++					   unsigned int sb_index)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dl);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_occ_max_clear(ocelot, sb_index);
++}
++
++static int ocelot_devlink_sb_occ_port_pool_get(struct devlink_port *dlp,
++					       unsigned int sb_index,
++					       u16 pool_index, u32 *p_cur,
++					       u32 *p_max)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
++	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_occ_port_pool_get(ocelot, priv->chip_port, sb_index,
++						     pool_index, p_cur, p_max);
++}
++
++static int
++ocelot_devlink_sb_occ_tc_port_bind_get(struct devlink_port *dlp,
++				       unsigned int sb_index, u16 tc_index,
++				       enum devlink_sb_pool_type pool_type,
++				       u32 *p_cur, u32 *p_max)
++{
++	struct ocelot_devlink_private *dl_priv = devlink_priv(dlp->devlink);
++	struct ocelot_port_private *priv = devlink_to_ocelot_port_priv(dlp);
++	struct ocelot *ocelot = dl_priv->ocelot;
++
++	return ocelot_sb_occ_tc_port_bind_get(ocelot, priv->chip_port, sb_index,
++					      tc_index, pool_type, p_cur, p_max);
++}
++
+ static const struct devlink_ops ocelot_devlink_ops = {
++	.sb_pool_get			= ocelot_devlink_sb_pool_get,
++	.sb_pool_set			= ocelot_devlink_sb_pool_set,
++	.sb_port_pool_get		= ocelot_devlink_sb_port_pool_get,
++	.sb_port_pool_set		= ocelot_devlink_sb_port_pool_set,
++	.sb_tc_pool_bind_get		= ocelot_devlink_sb_tc_pool_bind_get,
++	.sb_tc_pool_bind_set		= ocelot_devlink_sb_tc_pool_bind_set,
++	.sb_occ_snapshot		= ocelot_devlink_sb_occ_snapshot,
++	.sb_occ_max_clear		= ocelot_devlink_sb_occ_max_clear,
++	.sb_occ_port_pool_get		= ocelot_devlink_sb_occ_port_pool_get,
++	.sb_occ_tc_port_bind_get	= ocelot_devlink_sb_occ_tc_port_bind_get,
+ };
+ 
+ static int ocelot_port_devlink_init(struct ocelot *ocelot, int port)
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index 80fdf971d573..7bb80144dd1d 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -1173,6 +1173,29 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 	return 0;
+ }
+ 
++static int mscc_ocelot_devlink_setup(struct ocelot *ocelot)
++{
++	int err;
++
++	err = ocelot_devlink_init(ocelot);
++	if (err)
++		return err;
++
++	err = ocelot_devlink_sb_register(ocelot);
++	if (err) {
++		ocelot_devlink_teardown(ocelot);
++		return err;
++	}
++
++	return 0;
++}
++
++static void mscc_ocelot_devlink_cleanup(struct ocelot *ocelot)
++{
++	ocelot_devlink_sb_unregister(ocelot);
++	ocelot_devlink_teardown(ocelot);
++}
++
+ static int mscc_ocelot_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+@@ -1293,7 +1316,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	err = ocelot_devlink_init(ocelot);
++	err = mscc_ocelot_devlink_setup(ocelot);
+ 	if (err) {
+ 		mscc_ocelot_release_ports(ocelot);
+ 		goto out_ocelot_deinit;
+@@ -1320,7 +1343,7 @@ static int mscc_ocelot_remove(struct platform_device *pdev)
+ {
+ 	struct ocelot *ocelot = platform_get_drvdata(pdev);
+ 
+-	ocelot_devlink_teardown(ocelot);
++	mscc_ocelot_devlink_cleanup(ocelot);
+ 	ocelot_deinit_timestamp(ocelot);
+ 	mscc_ocelot_release_ports(ocelot);
+ 	ocelot_deinit(ocelot);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 75cd457b99b9..762b827784b8 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -579,6 +579,18 @@ struct ocelot_vlan {
+ 	u16 vid;
+ };
+ 
++enum ocelot_sb {
++	OCELOT_SB_BUF,
++	OCELOT_SB_REF,
++	OCELOT_SB_NUM,
++};
++
++enum ocelot_sb_pool {
++	OCELOT_SB_POOL_ING,
++	OCELOT_SB_POOL_EGR,
++	OCELOT_SB_POOL_NUM,
++};
++
+ struct ocelot_port {
+ 	struct ocelot			*ocelot;
+ 
+@@ -611,6 +623,7 @@ struct ocelot {
+ 	const struct ocelot_stat_layout	*stats_layout;
+ 	unsigned int			num_stats;
+ 
++	u32				pool_size[OCELOT_SB_NUM][OCELOT_SB_POOL_NUM];
+ 	int				packet_buffer_size;
+ 	int				num_frame_refs;
+ 	int				num_mact_rows;
+@@ -783,4 +796,38 @@ int ocelot_port_mdb_add(struct ocelot *ocelot, int port,
+ int ocelot_port_mdb_del(struct ocelot *ocelot, int port,
+ 			const struct switchdev_obj_port_mdb *mdb);
+ 
++int ocelot_devlink_sb_register(struct ocelot *ocelot);
++void ocelot_devlink_sb_unregister(struct ocelot *ocelot);
++int ocelot_sb_pool_get(struct ocelot *ocelot, unsigned int sb_index,
++		       u16 pool_index,
++		       struct devlink_sb_pool_info *pool_info);
++int ocelot_sb_pool_set(struct ocelot *ocelot, unsigned int sb_index,
++		       u16 pool_index, u32 size,
++		       enum devlink_sb_threshold_type threshold_type,
++		       struct netlink_ext_ack *extack);
++int ocelot_sb_port_pool_get(struct ocelot *ocelot, int port,
++			    unsigned int sb_index, u16 pool_index,
++			    u32 *p_threshold);
++int ocelot_sb_port_pool_set(struct ocelot *ocelot, int port,
++			    unsigned int sb_index, u16 pool_index,
++			    u32 threshold, struct netlink_ext_ack *extack);
++int ocelot_sb_tc_pool_bind_get(struct ocelot *ocelot, int port,
++			       unsigned int sb_index, u16 tc_index,
++			       enum devlink_sb_pool_type pool_type,
++			       u16 *p_pool_index, u32 *p_threshold);
++int ocelot_sb_tc_pool_bind_set(struct ocelot *ocelot, int port,
++			       unsigned int sb_index, u16 tc_index,
++			       enum devlink_sb_pool_type pool_type,
++			       u16 pool_index, u32 threshold,
++			       struct netlink_ext_ack *extack);
++int ocelot_sb_occ_snapshot(struct ocelot *ocelot, unsigned int sb_index);
++int ocelot_sb_occ_max_clear(struct ocelot *ocelot, unsigned int sb_index);
++int ocelot_sb_occ_port_pool_get(struct ocelot *ocelot, int port,
++				unsigned int sb_index, u16 pool_index,
++				u32 *p_cur, u32 *p_max);
++int ocelot_sb_occ_tc_port_bind_get(struct ocelot *ocelot, int port,
++				   unsigned int sb_index, u16 tc_index,
++				   enum devlink_sb_pool_type pool_type,
++				   u32 *p_cur, u32 *p_max);
++
+ #endif
 -- 
 2.25.1
 
