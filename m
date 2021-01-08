@@ -2,99 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92222EEE94
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 09:29:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 357FF2EEEAF
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 09:41:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727649AbhAHI2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 03:28:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59414 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727418AbhAHI2k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 03:28:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0CC7A23435;
-        Fri,  8 Jan 2021 08:27:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610094479;
-        bh=SAoDiXJG+49pPIJcmLEdT3YdpudMLb3tXzuV+M1ddMg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EnEKOJIN+WnD4u6lFgo77faKCj54N+d/pFKhcGzW/Y3/Ccl68siuEONd2+MQVmWwA
-         g8i5J1Jp9PRFqP+bjh1UVHmW6ZNZoM79Em/nHN5DHOG6ps9hEvQuax6LdoYTVQba6R
-         W0M3rPvSPrbm/vYAaPU9CsppYeuXAhSoIAN8UGVK69VCDMDjU1FlkyeISfeCHTf0Cp
-         UrPLrlJpGz0S4tUYkZu+D7Yp8uZm4/13PvNs53jDnTG1yuR/TZx3S6Q2A5kjWrfu5R
-         w1MefWO2hD7veYyvb2xtc7eB2pAO3ZpInFWl5OgE2Cy2VRAsn/olPyc/xhF+bAgyze
-         9qY+rCVqge15w==
-Date:   Fri, 8 Jan 2021 13:57:54 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Joe Perches <joe@perches.com>, Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 05/10] dma: tx49 removal
-Message-ID: <20210108082754.GW2771@vkoul-mobl>
-References: <20210105140305.141401-1-tsbogend@alpha.franken.de>
- <20210105140305.141401-6-tsbogend@alpha.franken.de>
- <b84dadc2e98b1986dc800c5f6f202880ed905b38.camel@perches.com>
- <20210107164015.GA12533@alpha.franken.de>
+        id S1727445AbhAHIkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 03:40:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50143 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726120AbhAHIkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 03:40:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610095148;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=naJFZbBBW8Z/PipZop5jp7RZQislmTLGZO8Bd0Lmm8M=;
+        b=UrBg4gpa2kYnrrjcBDzwnn9dPE9MiMuDPuFTUe9TlgranjIePrnCVuv3ZhL5uAsgPqON3I
+        /20JNmIMiCUZlVVmz+3R4/Cj5d3+lAiPSn4LwyHc6ICBbc7q724+ZI1TNkzQt8UAWXx6KA
+        uMc264EMrt5j6N5H+A0e7vj3XeSO2XU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-556-sWW27GvwNcesngDnpIJc_A-1; Fri, 08 Jan 2021 03:39:06 -0500
+X-MC-Unique: sWW27GvwNcesngDnpIJc_A-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 55F8D1005504;
+        Fri,  8 Jan 2021 08:39:05 +0000 (UTC)
+Received: from [10.72.12.229] (ovpn-12-229.pek2.redhat.com [10.72.12.229])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 975E75B4BD;
+        Fri,  8 Jan 2021 08:38:59 +0000 (UTC)
+Subject: Re: [PATCH v1] vdpa/mlx5: Fix memory key MTT population
+To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     lulu@redhat.com
+References: <20210107071845.GA224876@mtl-vdi-166.wap.labs.mlnx>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <07d336a3-7fc2-5e4a-667a-495b5bb755da@redhat.com>
+Date:   Fri, 8 Jan 2021 16:38:55 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <20210107071845.GA224876@mtl-vdi-166.wap.labs.mlnx>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210107164015.GA12533@alpha.franken.de>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07-01-21, 17:40, Thomas Bogendoerfer wrote:
-> On Wed, Jan 06, 2021 at 11:10:38AM -0800, Joe Perches wrote:
-> > On Tue, 2021-01-05 at 15:02 +0100, Thomas Bogendoerfer wrote:
-> > > Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> > []
-> > > diff --git a/drivers/dma/txx9dmac.h b/drivers/dma/txx9dmac.h
-> > []
-> > > @@ -26,11 +26,6 @@
-> > >   * DMA channel.
-> > >   */
-> > >  
-> > > 
-> > > -#ifdef CONFIG_MACH_TX49XX
-> > > -static inline bool txx9_dma_have_SMPCHN(void)
-> > > -{
-> > > -	return true;
-> > > -}
-> > >  #define TXX9_DMA_USE_SIMPLE_CHAIN
-> > >  #else
-> > >  static inline bool txx9_dma_have_SMPCHN(void)
-> > 
-> > This doesn't look like it compiles as there's now an #else
-> > without an #if
-> 
-> you are right, no idea what I had in mind while doing that.
-> 
-> Vinod,
-> 
-> as this patch series found a still active user of the platform,
-> could you drop the patch from your tree, or do you want a revert
-> from me ?
 
-Dropped now
+On 2021/1/7 ä¸‹åˆ3:18, Eli Cohen wrote:
+> map_direct_mr() assumed that the number of scatter/gather entries
+> returned by dma_map_sg_attrs() was equal to the number of segments in
+> the sgl list. This led to wrong population of the mkey object. Fix this
+> by properly referring to the returned value.
+>
+> The hardware expects each MTT entry to contain the DMA address of a
+> contiguous block of memory of size (1 << mr->log_size) bytes.
+> dma_map_sg_attrs() can coalesce several sg entries into a single
+> scatter/gather entry of contiguous DMA range so we need to scan the list
+> and refer to the size of each s/g entry.
+>
+> In addition, get rid of fill_sg() which effect is overwritten by
+> populate_mtts().
+>
+> Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
+> ---
+> V0->V1:
+> 1. Fix typos
+> 2. Improve changelog
 
--- 
-~Vinod
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
+>
+>   drivers/vdpa/mlx5/core/mlx5_vdpa.h |  1 +
+>   drivers/vdpa/mlx5/core/mr.c        | 28 ++++++++++++----------------
+>   2 files changed, 13 insertions(+), 16 deletions(-)
+>
+> diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> index 5c92a576edae..08f742fd2409 100644
+> --- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> +++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> @@ -15,6 +15,7 @@ struct mlx5_vdpa_direct_mr {
+>   	struct sg_table sg_head;
+>   	int log_size;
+>   	int nsg;
+> +	int nent;
+>   	struct list_head list;
+>   	u64 offset;
+>   };
+> diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
+> index 4b6195666c58..d300f799efcd 100644
+> --- a/drivers/vdpa/mlx5/core/mr.c
+> +++ b/drivers/vdpa/mlx5/core/mr.c
+> @@ -25,17 +25,6 @@ static int get_octo_len(u64 len, int page_shift)
+>   	return (npages + 1) / 2;
+>   }
+>   
+> -static void fill_sg(struct mlx5_vdpa_direct_mr *mr, void *in)
+> -{
+> -	struct scatterlist *sg;
+> -	__be64 *pas;
+> -	int i;
+> -
+> -	pas = MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
+> -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
+> -		(*pas) = cpu_to_be64(sg_dma_address(sg));
+> -}
+> -
+>   static void mlx5_set_access_mode(void *mkc, int mode)
+>   {
+>   	MLX5_SET(mkc, mkc, access_mode_1_0, mode & 0x3);
+> @@ -45,10 +34,18 @@ static void mlx5_set_access_mode(void *mkc, int mode)
+>   static void populate_mtts(struct mlx5_vdpa_direct_mr *mr, __be64 *mtt)
+>   {
+>   	struct scatterlist *sg;
+> +	int nsg = mr->nsg;
+> +	u64 dma_addr;
+> +	u64 dma_len;
+> +	int j = 0;
+>   	int i;
+>   
+> -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
+> -		mtt[i] = cpu_to_be64(sg_dma_address(sg));
+> +	for_each_sg(mr->sg_head.sgl, sg, mr->nent, i) {
+> +		for (dma_addr = sg_dma_address(sg), dma_len = sg_dma_len(sg);
+> +		     nsg && dma_len;
+> +		     nsg--, dma_addr += BIT(mr->log_size), dma_len -= BIT(mr->log_size))
+> +			mtt[j++] = cpu_to_be64(dma_addr);
+> +	}
+>   }
+>   
+>   static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr *mr)
+> @@ -64,7 +61,6 @@ static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct
+>   		return -ENOMEM;
+>   
+>   	MLX5_SET(create_mkey_in, in, uid, mvdev->res.uid);
+> -	fill_sg(mr, in);
+>   	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
+>   	MLX5_SET(mkc, mkc, lw, !!(mr->perm & VHOST_MAP_WO));
+>   	MLX5_SET(mkc, mkc, lr, !!(mr->perm & VHOST_MAP_RO));
+> @@ -276,8 +272,8 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr
+>   done:
+>   	mr->log_size = log_entity_size;
+>   	mr->nsg = nsg;
+> -	err = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
+> -	if (!err)
+> +	mr->nent = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
+> +	if (!mr->nent)
+>   		goto err_map;
+>   
+>   	err = create_direct_mr(mvdev, mr);
+
