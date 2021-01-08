@@ -2,86 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 062662EF43D
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 15:54:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 220BD2EF43B
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 15:54:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727353AbhAHOyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 09:54:00 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:36999 "EHLO
+        id S1727113AbhAHOxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 09:53:42 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:48373 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727256AbhAHOyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 09:54:00 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id E8A5B5C02FA;
-        Fri,  8 Jan 2021 09:52:53 -0500 (EST)
+        by vger.kernel.org with ESMTP id S1725793AbhAHOxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 09:53:42 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 0E5E85C02C0;
+        Fri,  8 Jan 2021 09:52:56 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 08 Jan 2021 09:52:53 -0500
+  by compute4.internal (MEProxy); Fri, 08 Jan 2021 09:52:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=qKhNnu8Vlv9Gu9K5T
-        fqEAWeQ4VDZDtzj02izJBGNlzU=; b=J2VlQ4IG4hyGy4f7uc2sjAIcKrD1433Tv
-        BMeje+BGz4KU52S03pTxsWWoejf/NjfrTGiNPKP9oxTBPaiLMjNBuj9TH3oq62Jd
-        jIy2ZQSI8X4AP8D8vwKx20yhEILuVzxlhHWWeIRm8p6dXbJNkjzdU2ocIOoKkPLF
-        oyp0A/UteyCulNfv1wEkuDPPuugBHMaEt/UEZ38+KthYbDhFveyZ0N5nbbekiry0
-        2u47/drDruHHXyHkhUBsJilEXHFSGgmAYzNx0snDP2AIHDpaXnGJ4hhsBh8OW2eE
-        x63xwuVFreqPd+ExVngumeyyJKenXH7vaKPdM2vv6HvbDzj4vDgxQ==
-X-ME-Sender: <xms:xXH4X-ZupiDKvrcnrH5d-i4NSwgaEcTGkIdFAG4vKnFYwwyjjxKbkA>
-    <xme:xXH4Xw8bprwsWlgV_8bvhT4-87HiugxLFX87B-bBAIWCZrkheQ190xOd2Oqpqa_DQ
-    YRwJXvyjPDSNZ8>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=n7ZV//HxK19udrI8a5sOZAQ+DSCDuSzroWTDmGb2V80=; b=Q4AxLpP3
+        klFuPrs9E/XU0AhqUobScn7rakxw2OppVFKE+diQw+7JPUxS7MGxxYfKZm3bbOQn
+        pg4Aj3CgL/wUYx22lS6PibGuM/Jpuk9U3tQ+FmHezLfaJFA7H5Xu41B1qPzmXKQV
+        sVgjiPFzMlGrlQ/KPX7OWmo/Npp/U/4TufPZDr44h5zAprJbJsvEGQg9rZUdwVjT
+        FNTOFjUxflKUfQHbBHGx9bwK1wQR5hYoOGeqGNohtgRSFxVtpihhsGt8bYpZDwB/
+        xmT14ExN8X8SuAM6teAJ6jBn5ijnWzNbxNOHnK9eGNBW3M7KoGcSh4jceoF6E3N+
+        t3QFhgp3t2Q3KA==
+X-ME-Sender: <xms:x3H4X26h5D_RFK8Pa5F3ThWgWvHYQvHCMaTnZrg3CnAFzDMDH-nXnw>
+    <xme:x3H4X7HNyKKM8rWF2-Ee1QDqbeYY0sP1cRV84zxe_05Q_udfWKsjhVzJe9TYWZJfK
+    c8UK9tHPAq-CSQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdeghedgtdduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:xXH4X9SSWGUznWHDdbq62sWR1iOq86EabYhL5hqQQRcKpFWcNiH_0Q>
-    <xmx:xXH4XzJ88S4G-8jI4su88VfGOGDbWrgGR0ucEphfS4bOSxFkKn9Bvw>
-    <xmx:xXH4X3ReOg8S0_FOdPdByDGwisUZjELWXXdcExd7MB3dVOc280L35A>
-    <xmx:xXH4Xz4Cl5ZMceCj4WJWKsc27LrqqB7y4wl2TdcdIjDWK_db7sNlVQ>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:x3H4X5QYsRH2_1bJcJ-seoQOMIPUFOW63FaR8HDMKYKzyMe3oDMS_w>
+    <xmx:x3H4X9d0mYNp8eZl-htUVROTqbqeB7rgIQuyo_lvSZKebf0XmDGMgQ>
+    <xmx:x3H4X3izBb2ohBf2FWvudJY9mDm-lcYprp0EJZk0SS0YUwmbYk9g6Q>
+    <xmx:yHH4X-kEl05MOGf5o5y4gBlflT5J_5Ur-oKuqfez5G9Vybk73H9jkA>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8EAAE24005D;
-        Fri,  8 Jan 2021 09:52:51 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id B319124005C;
+        Fri,  8 Jan 2021 09:52:53 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, vadimp@nvidia.com,
         jiri@nvidia.com, mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 0/2] mlxsw: core: Thermal control fixes
-Date:   Fri,  8 Jan 2021 16:52:08 +0200
-Message-Id: <20210108145210.1229820-1-idosch@idosch.org>
+Subject: [PATCH net 1/2] mlxsw: core: Add validation of transceiver temperature thresholds
+Date:   Fri,  8 Jan 2021 16:52:09 +0200
+Message-Id: <20210108145210.1229820-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210108145210.1229820-1-idosch@idosch.org>
+References: <20210108145210.1229820-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-This series includes two fixes for thermal control in mlxsw.
+Validate thresholds to avoid a single failure due to some transceiver
+unreliability. Ignore the last readouts in case warning temperature is
+above alarm temperature, since it can cause unexpected thermal
+shutdown. Stay with the previous values and refresh threshold within
+the next iteration.
 
-Patch #1 validates that the alarm temperature threshold read from a
-transceiver is above the warning temperature threshold. If not, the
-current thresholds are maintained. It was observed that some transceiver
-might be unreliable and sometimes report a too low alarm temperature
-threshold which would result in thermal shutdown of the system.
+This is a rare scenario, but it was observed at a customer site.
 
-Patch #2 increases the temperature threshold above which thermal
-shutdown is triggered for the ASIC thermal zone. It is currently too low
-and might result in thermal shutdown under perfectly fine operational
-conditions.
+Fixes: 6a79507cfe94 ("mlxsw: core: Extend thermal module with per QSFP module thermal zones")
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Please consider both patches for stable.
-
-Vadim Pasternak (2):
-  mlxsw: core: Add validation of transceiver temperature thresholds
-  mlxsw: core: Increase critical threshold for ASIC thermal zone
-
- drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+index 8fa286ccdd6b..250a85049697 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+@@ -176,6 +176,12 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
+ 	if (err)
+ 		return err;
+ 
++	if (crit_temp > emerg_temp) {
++		dev_warn(dev, "%s : Critical threshold %d is above emergency threshold %d\n",
++			 tz->tzdev->type, crit_temp, emerg_temp);
++		return 0;
++	}
++
+ 	/* According to the system thermal requirements, the thermal zones are
+ 	 * defined with four trip points. The critical and emergency
+ 	 * temperature thresholds, provided by QSFP module are set as "active"
+@@ -190,11 +196,8 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
+ 		tz->trips[MLXSW_THERMAL_TEMP_TRIP_NORM].temp = crit_temp;
+ 	tz->trips[MLXSW_THERMAL_TEMP_TRIP_HIGH].temp = crit_temp;
+ 	tz->trips[MLXSW_THERMAL_TEMP_TRIP_HOT].temp = emerg_temp;
+-	if (emerg_temp > crit_temp)
+-		tz->trips[MLXSW_THERMAL_TEMP_TRIP_CRIT].temp = emerg_temp +
++	tz->trips[MLXSW_THERMAL_TEMP_TRIP_CRIT].temp = emerg_temp +
+ 					MLXSW_THERMAL_MODULE_TEMP_SHIFT;
+-	else
+-		tz->trips[MLXSW_THERMAL_TEMP_TRIP_CRIT].temp = emerg_temp;
+ 
+ 	return 0;
+ }
 -- 
 2.29.2
 
