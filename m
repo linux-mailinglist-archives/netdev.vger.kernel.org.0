@@ -2,101 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3FF2EF43C
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 15:54:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E1AB2EF495
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 16:13:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727246AbhAHOxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 09:53:44 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:34559 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725793AbhAHOxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 09:53:44 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id D724A5C02E3;
-        Fri,  8 Jan 2021 09:52:57 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 08 Jan 2021 09:52:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=fqlqPFT9FgUnhyI5sLeqwH906yHCiqH5VWEUeqUKZi8=; b=TSaglgC8
-        3Jcn1ibPwJ2batMun6JSrInNrY4OXvnhG3gdcDJTotPPL+EuHmkqeNhvZEESNUog
-        h6/PjXAGEaNiJhrGy/6ywBHdxI+ZH/EW54SnqlaHQarfAYxMMMoX0V78VShZL5FC
-        gW+ty5w2wVBLM6N+2B+oZdd47yTqfaKkrvZ+s0O0R7Ww9Vj7Bc/VvEsFNP79ddBY
-        cmi3M+57XP/8pv76dX8vdo2L89sH2yrid6ipJoKmA3e4Mz87DFHgiPtqTa9RTBc3
-        Jb/BwDrRSTTDmwzMKKFzs/DIFpaOfhjj3e4USKC23jJH+P5hw61ayT/SBfTbQ6Cb
-        q+7zlA6rD2O6uQ==
-X-ME-Sender: <xms:yXH4X8Kvc7K1ej673k7xR3qBZ7Y9BMD5Pq-2Bnlcd3dYV3_WemzGAg>
-    <xme:yXH4X3kzSy3nghSG9yWHcUU7vR0SRT5hroDUHndxGz-78ercczcWEwcy8gfLLhd0j
-    kqoKDU_n5dgqJ0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdeghedgtdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:yXH4X7bGwIqn8LQFCVEyiVG2A8toxAkqBvI3jy85di5SgsW_Nk6ZCw>
-    <xmx:yXH4X2hOBqOXlaId9IXxgAtDUaKulaiOz5MBxbgdM2PowkTuCBWCbA>
-    <xmx:yXH4X5weS7TmWqbzwmW46MJR-vzV4L2vKpcrMS6AvFvT2gE2Atn1EQ>
-    <xmx:yXH4X2t004_kT42ge3nF1hPwUVi4wG1RwCmPzRXNB4tBn6_co4pN0g>
-Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id F0AF924005D;
-        Fri,  8 Jan 2021 09:52:55 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, vadimp@nvidia.com,
-        jiri@nvidia.com, mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 2/2] mlxsw: core: Increase critical threshold for ASIC thermal zone
-Date:   Fri,  8 Jan 2021 16:52:10 +0200
-Message-Id: <20210108145210.1229820-3-idosch@idosch.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210108145210.1229820-1-idosch@idosch.org>
-References: <20210108145210.1229820-1-idosch@idosch.org>
+        id S1727710AbhAHPMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 10:12:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33296 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726880AbhAHPMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 10:12:20 -0500
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1074EC061380
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 07:11:40 -0800 (PST)
+Received: by mail-qt1-x842.google.com with SMTP id c14so6705641qtn.0
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 07:11:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=UuqeTAFF19LpPZf5VaDMDIfFp/0NnrXC9JhRMS3+W6I=;
+        b=ui1cB7iGYDKALB6251nk7tpvuvek+PqaPEtZ+Ltgd1i0dZvw+SvlcyeCGc6payMt+S
+         /Ez4Kdkjpnq8v7sHviP0WDQEkqTk4intDaVrXSPU9SuVWOEyb2LcpzXeG/O3lmMkhfBx
+         kIuEMp3ixNcOcviblT5WBEXNNVjB71+2OVVXT+JOgGDhelboHC5zwTbtYX/j9qBKGsL7
+         QiNQfJOWrTlDax4ZW5PoX0m48VZPLG6eL77v0GdxJJr7vz4DyrY5JocaoRIsve36L19C
+         3i01NXNj+ecWACWbeIaTJKtQK2msQJ3lLY1Vin1Y1V9/7Qw76lClOyxveZ68h88POjm4
+         MsRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=UuqeTAFF19LpPZf5VaDMDIfFp/0NnrXC9JhRMS3+W6I=;
+        b=MqlrHrKw01/+OsZYK6yC0TDHbsO3ISC9ijJ/aCDOQUMv2vPfv4GftatUT85E+L4PYU
+         2SaxfVjbdAcQg86OvaxxX5R2FkL5arXAnLiGuCePbqgIc4y5z+rPHGBUG0DXowehepwR
+         3WS7//x4aCFcNlKuU92ofuKHoxqh+hJO+hvPmttAVPZg3nwyFhtv9u2M0tjPayWP7kTi
+         ZPAPRI9p6LugmAy1P2pGeYvkz01rfeTqygOKwWmu0VocsqafcHwy4Cx2WGS19Z0yhddl
+         qKg6qokE3lpyUCfpVV2otEK5xQloZ4ByYwUMgu8t4gSH9gRSg1qeBRb/UyLSYPFDuByV
+         0eYA==
+X-Gm-Message-State: AOAM532MkVPUpxW75umKiuqTiuoJsQG7+TN2/Rx93SWj3ds5QFAJKdC/
+        8e4/kk5aNOa+y04dMBdy8eIREdmcJLFULNwVjGc=
+X-Google-Smtp-Source: ABdhPJzX7f2C5yWtOW2+D9fubgWtcK5kOeYqOkWI8xapzGHc6Z04E3W//wHNaUYnR87X4Gad+iq2o3T0m+BuTSVQTXo=
+X-Received: by 2002:ac8:44c2:: with SMTP id b2mr3796368qto.1.1610118699300;
+ Fri, 08 Jan 2021 07:11:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a0c:e149:0:0:0:0:0 with HTTP; Fri, 8 Jan 2021 07:11:38 -0800 (PST)
+Reply-To: owenr282@gmail.com
+From:   "mrs.Rosaline" <iykep60@gmail.com>
+Date:   Fri, 8 Jan 2021 16:11:38 +0100
+Message-ID: <CAOFKy8rUMq04SbpqGibbY50w7q6vSjxV78ws07z3R7rDBFxR+Q@mail.gmail.com>
+Subject: Very urgent
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@nvidia.com>
-
-Increase critical threshold for ASIC thermal zone from 110C to 140C
-according to the system hardware requirements. All the supported ASICs
-(Spectrum-1, Spectrum-2, Spectrum-3) could be still operational with ASIC
-temperature below 140C. With the old critical threshold value system
-can perform unjustified shutdown.
-
-All the systems equipped with the above ASICs implement thermal
-protection mechanism at firmware level and firmware could decide to
-perform system thermal shutdown in case the temperature is below 140C.
-So with the new threshold system will not meltdown, while thermal
-operating range will be aligned with hardware abilities.
-
-Fixes: 41e760841d26 ("mlxsw: core: Replace thermal temperature trips with defines")
-Fixes: a50c1e35650b ("mlxsw: core: Implement thermal zone")
-Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index 250a85049697..bf85ce9835d7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -19,7 +19,7 @@
- #define MLXSW_THERMAL_ASIC_TEMP_NORM	75000	/* 75C */
- #define MLXSW_THERMAL_ASIC_TEMP_HIGH	85000	/* 85C */
- #define MLXSW_THERMAL_ASIC_TEMP_HOT	105000	/* 105C */
--#define MLXSW_THERMAL_ASIC_TEMP_CRIT	110000	/* 110C */
-+#define MLXSW_THERMAL_ASIC_TEMP_CRIT	140000	/* 140C */
- #define MLXSW_THERMAL_HYSTERESIS_TEMP	5000	/* 5C */
- #define MLXSW_THERMAL_MODULE_TEMP_SHIFT	(MLXSW_THERMAL_HYSTERESIS_TEMP * 2)
- #define MLXSW_THERMAL_ZONE_MAX_NAME	16
 -- 
-2.29.2
+Hello,
 
+May the peace of the Lord be unto you and your household, Amen, I am
+Mrs. Rosaline Owens, I am writing you now from the Hospital due to my
+cancer sickness, I was diagnosed about Six years ago, after the Death
+of My LATE Husband and My Only Son in A CAR Accident.
+
+Please I have some fund I Inherited from My LATE Husband Mr. Gabriel
+Owens, The SUM of ($ 1,400,000.00 USD) and I want to Donate it in your
+name to use it and help the less Privilege, Widows and Motherless home
+in your country,
+
+Write through my email: (owenr282@gmail.com ) so that I will give you
+the complete details,
+
+Thanks and God bless you, Yours faithful Sister.
