@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DADBC2EF77F
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 528612EF780
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 19:37:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728748AbhAHSgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 13:36:19 -0500
-Received: from mga04.intel.com ([192.55.52.120]:15177 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728656AbhAHSgT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 13:36:19 -0500
-IronPort-SDR: IukN8uvVglOeesaNrO1u2Anndnd5cpN9bOnXon0YLjfhR+b8k5MiUheV1rr0fyMQ9ezrMVyRqd
- W9k6sZ4UYdgA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9858"; a="175061297"
-X-IronPort-AV: E=Sophos;i="5.79,332,1602572400"; 
-   d="scan'208";a="175061297"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2021 10:35:38 -0800
-IronPort-SDR: o8bS21OClYQAd0KB7U06eFITSFA+f0yhrO24xDbHK075rPQ4Oe9es/nOq8F8MinuDxkiX2v8YG
- Bh2TOiMG+UWQ==
-X-IronPort-AV: E=Sophos;i="5.79,332,1602572400"; 
-   d="scan'208";a="399064663"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.209.68.23])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2021 10:35:38 -0800
-Date:   Fri, 8 Jan 2021 10:35:37 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>, intel-wired-lan@lists.osuosl.org,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Re: [PATCH net-next v1 1/2] net: core: count drops from GRO
-Message-ID: <20210108103537.00005168@intel.com>
-In-Reply-To: <CANn89iLcRrmXW_MGjuMMnNxWS+kaEnY=Y79hCPuiwiDd_G9=EA@mail.gmail.com>
-References: <20210106215539.2103688-1-jesse.brandeburg@intel.com>
-        <20210106215539.2103688-2-jesse.brandeburg@intel.com>
-        <CANn89iLcRrmXW_MGjuMMnNxWS+kaEnY=Y79hCPuiwiDd_G9=EA@mail.gmail.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1728809AbhAHSgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 13:36:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728705AbhAHSgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 13:36:49 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC032C061380
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 10:36:09 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id c132so8163351pga.3
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 10:36:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vZU9q821wdfREKHll0t1j/YINkWfXjXQeRM8Bzswykg=;
+        b=iQZXkZFHKEabWXYk6TEwGjgWPN8iE+QowA7vHYwfaZVRkD5b+sUWab77mgTQrCtEdU
+         4I6VNdbMtaicZnlRFTSE2+WQrb41NF1Ernpa9M04ZUcvl8YJBoUxv8FWvyXfiDyg1QjF
+         /5wlBRFUhFpd0fXHTTnBrA1d5ebfRdgu86mwTtqHtfOWqXCOoEbLfW0VuqFXeNVt4uUC
+         tRgPJYy8Er8mBn5upCrBP1NArP/ixPkEccs8uRTrfwPeEtiPYfbn50qFhH2odhNmIJaJ
+         Ln3buZZfKlFPdwwyTGkP3HPIazmGW2+fSDUw8FKrc51+A84avkPh1JCkAM45hRvNhA83
+         BLig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vZU9q821wdfREKHll0t1j/YINkWfXjXQeRM8Bzswykg=;
+        b=Z5R020SZV4WFSaWvSKen+dO0FiF6IMHezoSqxEHq6S+jEovxqMadp8XzF8Zprsg/Ub
+         VQkzUQGUj7fs6i69aDmCf/Rw3xa7VU5zSZDVgrxqQQXcM4pVJ3tsQFLLmYWAju05POrS
+         /JVxtIHHDoEcQu/59q6gqU2sETR5lH9405bd6RPA/XAShPhh4l+kQ2T1lCqsMcRSOPxl
+         Fu1yKhNJ5gKi4Ffrob9jHHj83R/qhbiXQ2tOF3H1iTXLIW8Fq/c+E3xjADnV27vvIE4L
+         UFBCJyPH93qRY39+x1o+RNHBpKiXiD085e6TUAlTqcjqQn9JQROOoH+QKent0B6xckcJ
+         rd2Q==
+X-Gm-Message-State: AOAM532Shoc2aiuLPJUTOa2c9PZC8+n2A6v6oVtWa/WPLSggxAhJ2a2m
+        d1R+KTTCypAXZypuDHI+x0k=
+X-Google-Smtp-Source: ABdhPJyjzNkAUKoiwi01l/9ITFLnFAoAGAZOqf7ElXkZPBSpq28II0MBDmPgryfzw1d/fVTOvt2poQ==
+X-Received: by 2002:a63:74b:: with SMTP id 72mr8337169pgh.4.1610130969279;
+        Fri, 08 Jan 2021 10:36:09 -0800 (PST)
+Received: from [10.230.29.29] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m4sm9920062pgv.16.2021.01.08.10.36.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Jan 2021 10:36:08 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 08/10] net: mscc: ocelot: register devlink
+ ports
+To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
+Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, alexandru.marginean@nxp.com,
+        claudiu.manoil@nxp.com, xiaoliang.yang_1@nxp.com,
+        hongbo.wang@nxp.com, kuba@kernel.org, jiri@resnulli.us,
+        idosch@idosch.org, UNGLinuxDriver@microchip.com
+References: <20210108175950.484854-1-olteanv@gmail.com>
+ <20210108175950.484854-9-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <bd88e415-6f47-9fc8-d55f-dbb057e8610c@gmail.com>
+Date:   Fri, 8 Jan 2021 10:36:04 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210108175950.484854-9-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet wrote:
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -6071,6 +6071,7 @@ static gro_result_t napi_skb_finish(struct napi_struct *napi,
-> >                 break;
-> >
-> >         case GRO_DROP:
-> > +               atomic_long_inc(&skb->dev->rx_dropped);
-> >                 kfree_skb(skb);
-> >                 break;
-> >
-> > @@ -6159,6 +6160,7 @@ static gro_result_t napi_frags_finish(struct napi_struct *napi,
-> >                 break;
-> >
-> >         case GRO_DROP:
-> > +               atomic_long_inc(&skb->dev->rx_dropped);
-> >                 napi_reuse_skb(napi, skb);
-> >                 break;
-> >
+
+
+On 1/8/2021 9:59 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
+> Add devlink integration into the mscc_ocelot switchdev driver. Only the
+> probed interfaces are registered with devlink, because for convenience,
+> struct devlink_port was included into struct ocelot_port_private, which
+> is only initialized for the ports that are used.
 > 
-> This is not needed. I think we should clean up ice instead.
-
-My patch 2 already did that. I was trying to address the fact that I'm
-*actually seeing* GRO_DROP return codes coming back from stack.
-
-I'll try to reproduce that issue again that I saw. Maybe modern kernels
-don't have the problem as frequently or at all.
-
-> Drivers are supposed to have allocated the skb (using
-> napi_get_frags()) before calling napi_gro_frags()
-
-ice doesn't use napi_get_frags/napi_gro_frags, so I'm not sure how this
-is relevant. 
-
-> Only napi_gro_frags() would return GRO_DROP, but we supposedly could
-> crash at that point, since a driver is clearly buggy.
-
-seems unlikely since we don't call those functions.
- 
-> We probably can remove GRO_DROP completely, assuming lazy drivers are fixed.
-
-This might be ok, but doesn't explain why I was seeing this return
-code (which was the whole reason I was trying to count them), however I
-may have been running on a distro kernel from redhat/centos 8 when I
-was seeing these events. I haven't fully completed spelunking all the
-different sources, but might be able to follow down the rabbit hole
-further.
-
- 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 8fa739259041aaa03585b5a7b8ebce862f4b7d1d..c9460c9597f1de51957fdcfc7a64ca45bce5af7c
-> 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6223,9 +6223,6 @@ gro_result_t napi_gro_frags(struct napi_struct *napi)
->         gro_result_t ret;
->         struct sk_buff *skb = napi_frags_skb(napi);
+> Since we use devlink_port_type_eth_set to link the devlink port to the
+> net_device, we can as well remove the .ndo_get_phys_port_name and
+> .ndo_get_port_parent_id implementations, since devlink takes care of
+> retrieving the port name and number automatically, once
+> .ndo_get_devlink_port is implemented.
 > 
-> -       if (!skb)
-> -               return GRO_DROP;
-> -
->         trace_napi_gro_frags_entry(skb);
+> Note that the felix DSA driver is already integrated with devlink by
+> default, since that is a thing that the DSA core takes care of. This is
+> the reason why these devlink stubs were put in ocelot_net.c and not in
+> the common library.
 > 
->         ret = napi_frags_finish(napi, skb, dev_gro_receive(napi, skb));
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This change (noted from your other patches is fine), and a likely
-improvement, thanks for sending those!
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
