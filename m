@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 713BC2EF3DD
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 15:25:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6CE12EF3E2
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 15:27:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727278AbhAHOY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 09:24:56 -0500
-Received: from mail-ot1-f54.google.com ([209.85.210.54]:44232 "EHLO
-        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726476AbhAHOYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 09:24:55 -0500
-Received: by mail-ot1-f54.google.com with SMTP id r9so9725988otk.11;
-        Fri, 08 Jan 2021 06:24:39 -0800 (PST)
+        id S1727045AbhAHO0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 09:26:52 -0500
+Received: from mail-ot1-f44.google.com ([209.85.210.44]:44453 "EHLO
+        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725942AbhAHO0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 09:26:52 -0500
+Received: by mail-ot1-f44.google.com with SMTP id r9so9731777otk.11;
+        Fri, 08 Jan 2021 06:26:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KFwxo3qan4g6V4pQIK/kieZfz/hWqfOwQh2ghP5HzG4=;
-        b=RXHNwUlePxFPFEMSloIqi/vSTB3yKqZkNwYj09ZUDPKhiCdErCOmUVxMVY3YXgAKXX
-         oTCWkZ/V1xHndaELfrI+DYgJ4DKCp39nBV6lCeh/3UXtz1os6YGiqy1LxVI2/kj43Eik
-         4ZB2R0ZhCtz2KqchFa2qSaOcIS0tQrt/Sxo3LmexMEA9wUmUjIKPAP7AmaT0QSeyWdm3
-         Y+t3GdLOBZ+tH5JNJem/2NKhmg9zSvXz7hGaU9D1s3ymYnmW6dDWwbqjejMybII02s8e
-         AXEKWUh4F7fVwKbGyWVyjTtQEpVtso7qcoM1QCTO/6XMcXMzDwxJZVWHoZgTVO+UrnfL
-         9J0Q==
-X-Gm-Message-State: AOAM530Be+MYj2YmSWnztjG8fWERhVd+WFFTp6MsVfWSb4jQ7JUaSd+k
-        hbtCh7qFQX/2eHiw/do/gYmfeBczhRzPIc46IDc=
-X-Google-Smtp-Source: ABdhPJwADa70JQAXCy4lsWLORoYMqTTRclDjqMkPdMkC6riwZYTLFGBF9gF2TN2RjJx3Auu+cM59swiYqANmjFH1W20=
-X-Received: by 2002:a05:6830:210a:: with SMTP id i10mr2750225otc.145.1610115854549;
- Fri, 08 Jan 2021 06:24:14 -0800 (PST)
+        bh=Ck+PkyxpVc679nAlJE4ATOc3uxubhhqpwkHVwNf7E5s=;
+        b=skuaLrKgPHiOywiDUGWVHDWbKUl/+1a62E7n2eqiWo/0enJvydU7nIE018FuRY/4Z+
+         SJMGVHgNhi59tH+zBWnpAtU6rnzdp5jS3wp+9DXo4kEEg+3LLjdu8BxRit0aCoXq4jEN
+         eb+h+OZTFaRZkODcU+wVpN5upwDHMnyROH6uguKWTOEYLXtpvS4UmeF8J/bEulkMYzUs
+         rALMm2i6Qo97htrZzrrVS+U5L3yOHhGsvhV3Q6v6JTYWaZbuW3cVZqqyVOS0OP+tbjP9
+         hOZ6RY5EMVNriDYP0ieARcVinQ48odhDhh4djC+g9JQTxfpUGY4t8vwlzQDP1YZKIH42
+         Lr/g==
+X-Gm-Message-State: AOAM531zxmL8GA3y8Vs1OcOYomhckkK31ZgbbyF++58S52nQFV+TBfn6
+        UZNY/pRNquweoINhnik1G+vLwxQc2YhxR3sKjwc=
+X-Google-Smtp-Source: ABdhPJz5JHAfsxibVjT+oM8MWaLyRUS9HcK7lHJppKG9TqVJuJee5oTH5qD3EjKPGgBPw/oWteJ+VycrdZmptKHtaTM=
+X-Received: by 2002:a05:6830:1f5a:: with SMTP id u26mr2746312oth.250.1610115971373;
+ Fri, 08 Jan 2021 06:26:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20201228213121.2331449-1-aford173@gmail.com> <CAMuHMdWE7FS-BLjT0sXupPX+V7XOTjN8ZKnRmShNEOx0i9DCGQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdWE7FS-BLjT0sXupPX+V7XOTjN8ZKnRmShNEOx0i9DCGQ@mail.gmail.com>
+References: <20201228213121.2331449-1-aford173@gmail.com> <20201228213121.2331449-3-aford173@gmail.com>
+In-Reply-To: <20201228213121.2331449-3-aford173@gmail.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 8 Jan 2021 15:24:03 +0100
-Message-ID: <CAMuHMdUbkYy5chXfvyzC6L0HzDRbyzAKx2gzTMcCz=N-rdLoAg@mail.gmail.com>
-Subject: Re: [PATCH 1/4] dt-bindings: net: renesas,etheravb: Add additional clocks
+Date:   Fri, 8 Jan 2021 15:26:00 +0100
+Message-ID: <CAMuHMdWt2NxWEVeE9GkkqYUVTxTxN6yQzpOeJ5YWg4nBU5384g@mail.gmail.com>
+Subject: Re: [PATCH 3/4] arm64: dts: renesas: Add fck to etheravb-rcar-gen3
+ clock-names list
 To:     Adam Ford <aford173@gmail.com>
 Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
         Adam Ford-BE <aford@beaconembedded.com>,
@@ -53,48 +54,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Adam,
-
-On Fri, Jan 8, 2021 at 3:11 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Mon, Dec 28, 2020 at 10:32 PM Adam Ford <aford173@gmail.com> wrote:
-> > The AVB driver assumes there is an external clock, but it could
-> > be driven by an external clock.  In order to enable a programmable
-> > clock, it needs to be added to the clocks list and enabled in the
-> > driver.  Since there currently only one clock, there is no
-> > clock-names list either.
-> >
-> > Update bindings to add the additional optional clock, and explicitly
-> > name both of them.
-> >
-> > Signed-off-by: Adam Ford <aford173@gmail.com>
+On Mon, Dec 28, 2020 at 10:32 PM Adam Ford <aford173@gmail.com> wrote:
+> The bindings have been updated to support two clocks, but the
+> original clock now requires the name fck.  Add a clock-names
+> list in the device tree with fck in it.
 >
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Signed-off-by: Adam Ford <aford173@gmail.com>
 
-Upon second look...
-
->> --- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
->> +++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
->> @@ -49,7 +49,16 @@ properties:
->>    interrupt-names: true
->>
->>    clocks:
->> -    maxItems: 1
->> +    minItems: 1
->> +    maxItems: 2
->> +    items:
->> +      - description: AVB functional clock
->> +      - description: Optional TXC reference clock
->> +
->> +  clock-names:
->> +    items:
->> +      - const: fck
->> +      - const: txc_refclk
-
-On R-Car Gen3 and RZ/G2, RGMII is used, and this clock is called
-"txcrefclk", i.e. without underscore.
-On R-Car Gen2, GMII is used, and this clock is called "gtxrefclk".
-
-Perhaps it should just be called "refclk"?
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel once PATCH 1/4 has been accepted.
 
 Gr{oetje,eeting}s,
 
