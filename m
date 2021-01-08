@@ -2,87 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6822E2EF293
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 13:34:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 513B42EF2AA
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 13:52:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbhAHMdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 07:33:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
+        id S1726666AbhAHMwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 07:52:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbhAHMdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 07:33:42 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D683DC0612F4
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 04:33:01 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id v14so7682529wml.1
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 04:33:01 -0800 (PST)
+        with ESMTP id S1726205AbhAHMwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 07:52:12 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBBDC0612F5
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 04:51:31 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id h3so2416835ils.4
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 04:51:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0DfxTDBws5F5Kj7gtapc66RegEcvin0l3tdCyyCUswo=;
-        b=mepmLmlzTfpooLgI8E5yigUdyXHcySb1ftfOemd1T1x5olulk6XFiPELGk7jAAsalW
-         pQjKlPywTSxkuhuUY+adiLHW/+hTYiEy3I1YWnhnHThwOnrBrzdWUcmrUNF0jv/7Zun4
-         d5Dq+ZQuLDhdhUWPes9uDzdgKlqT2JNXeTCht5vYoBqDihaSQTnx+BzWg0MlSZd78r8u
-         GKxJkiIkdVYy5fqUCgY1Dr3Xgi2t37LGUxPQZuJTkhvQuGuXwGwt9TnWo9IGuqTab5hS
-         z80v5KUFylUpWV9YhAaYM93+I0tsqLmy9CYr82dkOsgr6VjBmEcQ5pZVatWTz8GoXD+/
-         1brw==
+        h=mime-version:sender:in-reply-to:references:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=ik6B+6lkNc+iFrIPLOlH6nyfA0JsJ4cRGzVhof+Ll8w=;
+        b=ZPLbAmDSdN9gytA2Mg6XzGXRjKOCL7kdkZJuvLt73/ZFLUiZoWRfI99EDF8Q7sM6Ms
+         /tY5gTSJF4yT9FXyr7c/aQDzeBzftlPxcw8bxDkKSZ/c3Oaqn3Nce1OMdn1GDnebCcWs
+         IaUbDeYlTz/T/CR18LhvY2dye8l01AXBrFehZEzeSjJHaLHTVsGroacoPUTDUs/2lEYO
+         oWxz4e6JbYiTBTjIAOUmEn/hKNkaBXbidJnr4kwYBSUUO6sgrNz3FDXBjpCatGgvxLWx
+         4cieEmdIvNxh5MUFmI+eCdq2Ug8ki6Cj0TxDMjWzAtc9YPZLEOVfYzcdzUU1AUd2p1Dw
+         6p/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0DfxTDBws5F5Kj7gtapc66RegEcvin0l3tdCyyCUswo=;
-        b=B4AMCyFwrWc8EyNVNG8Jb32VZhQuL2jovRHc4SURqiCsnuOC2+g3C4W0AyacAanjHg
-         PsMHbZm/BdDZFHPMx9gl3sqTSK/Dky8hucLKxBZbCzWvzdjxKLjKw2MzJklWr1hCCBeX
-         pSnocHia97s/005e3EVRgf3WOKgLwQSA2igJvbuCLMfQ7oToE/FykZiDXGClk+B1M1Bj
-         iQve1N3Y2WW8DI1J95cwwhHAr6Bv7Cawify/gNjCPNG2hf02D0+h6+yru0bGd2LvBE3A
-         2LpviAPknlo8vKyQqWOk0p0WeTtxeUDGspj3XakOg+aNRWwaNUZcdSFb5ruBbs9wQ8EV
-         tltA==
-X-Gm-Message-State: AOAM531LrrjBrIG/2wj5y9PVjkaSLH/Oma2dySGHD/xtbWbMuc+T80BQ
-        P0lcvg2U5NYX75NY4QGRq1A=
-X-Google-Smtp-Source: ABdhPJwLewbvVgznGpZD4OCNp/rwxCTHVyMqdg7pLVZ89GVC8bAa5hnRX0hZ4Op7j4fk4rpzmLFUNQ==
-X-Received: by 2002:a1c:bc88:: with SMTP id m130mr2946698wmf.82.1610109180634;
-        Fri, 08 Jan 2021 04:33:00 -0800 (PST)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id s63sm13546879wms.18.2021.01.08.04.32.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jan 2021 04:33:00 -0800 (PST)
-Subject: Re: [PATCH net-next 2/2] net-gro: remove GRO_DROP
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-References: <20210108113903.3779510-1-eric.dumazet@gmail.com>
- <20210108113903.3779510-3-eric.dumazet@gmail.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <92939962-8b08-a1fb-4ea5-4eeea6a3709f@gmail.com>
-Date:   Fri, 8 Jan 2021 12:32:59 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:sender:in-reply-to:references:from
+         :date:message-id:subject:to:content-transfer-encoding;
+        bh=ik6B+6lkNc+iFrIPLOlH6nyfA0JsJ4cRGzVhof+Ll8w=;
+        b=UwAQLqnMmlVrxDsWvk9ayFhVMQ4OfxP+NsXwkNp6ZdpX236x9wELRzFztMtGtNT/bi
+         Y0xmESYa9Agl0QUx1xkaIEif18Grf8E8RUrdQQzZ5xKqR18PKhNcm9J2Mm7DWoSVZZT6
+         X8pM5zun8stK6meQ9CfppY11xKMkagfMAD5Y8OntcrAZYejmg6tgbECXAZuoQGxzbODN
+         tSQNA+PXPYaAfk/r8OuNG2+7ErARMrWgNTw7Mni9nkK9C1/kbsuqebkGpgWkhKecRZka
+         dqndCq5tO8O9Dbb7bxxTxKswQLzpqTl++mjl+SGotoNDTuVgCFHc9p8zgClQptNvDl7p
+         bEvQ==
+X-Gm-Message-State: AOAM533C48Hlc68sJ8o7x2oS29YFMRt+Hi/0oWs2rVu9l7PBNZtxjvKx
+        7h/5gGISpbkq9TvpJzJgFlGvgz1Mf5z1kOWdbh4=
+X-Google-Smtp-Source: ABdhPJx/N4iyyJV0zD7MS8C300WZVFYYFWNQvubc+YwpY0mQnr5rNc5kRHP2xMBzbSlXfvqIYlPFA1YThr6TVymRgDY=
+X-Received: by 2002:a05:6e02:1a4d:: with SMTP id u13mr3819596ilv.244.1610110291272;
+ Fri, 08 Jan 2021 04:51:31 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210108113903.3779510-3-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Sender: batouziberth@gmail.com
+Received: by 2002:a4f:1b10:0:0:0:0:0 with HTTP; Fri, 8 Jan 2021 04:51:30 -0800 (PST)
+In-Reply-To: <CAMppdSy3w6-UfydAH798h1=Bod0wo0RVMaQphkoLSY0X4ik+Zw@mail.gmail.com>
+References: <CAMppdSy3w6-UfydAH798h1=Bod0wo0RVMaQphkoLSY0X4ik+Zw@mail.gmail.com>
+From:   camille <camillejackson021@gmail.com>
+Date:   Fri, 8 Jan 2021 12:51:30 +0000
+X-Google-Sender-Auth: VeKgZ2CPJ_wnkl20sIMj9io2koY
+Message-ID: <CAMppdSws020zMP19jxqNRRxawBfdq-53XXQCnLUgL3Mk5gc5Jw@mail.gmail.com>
+Subject: =?UTF-8?B?0JfQtNGA0LDQstGB0YLQstGD0LnRgtC1LA==?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/01/2021 11:39, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> GRO_DROP can only be returned from napi_gro_frags()
-> if the skb has not been allocated by a prior napi_get_frags()
-> 
-> Since drivers must use napi_get_frags() and test its result
-> before populating the skb with metadata, we can safely remove
-> GRO_DROP since it offers no practical use.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
-
-Fwiw,
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+0J/RgNC40LLQtdGC0YHRgtCy0YPRjiDRgtC10LHRjywg0LzQvtC5INC00YDRg9CzLCDQvdCw0LTQ
+tdGO0YHRjCwg0YLRiyDQsiDQv9C+0YDRj9C00LrQtSwg0L/QvtC20LDQu9GD0LnRgdGC0LAsINC+
+0YLQstC10YLRjCDQvNC90LUNCtCx0LvQsNCz0L7QtNCw0YDRjywNCg==
