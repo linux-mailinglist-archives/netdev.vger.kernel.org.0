@@ -2,108 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D01E02EF07E
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 11:15:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F44C2EF08D
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 11:20:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbhAHKPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 05:15:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726205AbhAHKPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 05:15:43 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A73AC0612F4
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 02:15:02 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id z5so9191080iob.11
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 02:15:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M8L+mie9YodxFyusmkOnVHf2G5LUkmbLsYSRkKh90/c=;
-        b=j0FPTQ3k0mLUwVczuY984QPNHNvr9ibneShlad7i1XNVTWVG7B0F4IHjEsxGGOK9KS
-         v2ite3BXoGYoPeeugYHKPw9YVDO+2S26zMqch3Gknf6XUfGbWUyvNgVQ0CkTPq42kd8W
-         j5ArQQI1iMVy82xhU8Q2wJokuMN4Iw2TQTdmxBqCXlHW3D4Tqg5QZU8kfS/XwuN3PP37
-         9m8bZBzZHMOXF1ME3dq7bSth7+7eKq3jKy1BFcGvPbDgQ88YkdkSpt6KPRn560qBO9eq
-         rTUttfiKUqzjZI2RB4WpQRJVt238qEDUc4MvLq0b9V+5yiHGx01nP9UgzZ2vCJMBCskl
-         2Gdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M8L+mie9YodxFyusmkOnVHf2G5LUkmbLsYSRkKh90/c=;
-        b=cIaqgrKjsCtoS7sRLyV/d9ZrcxVqQRyNML1GvUQLaXeHUa8hAcfOgtDwseV6TP4s7y
-         nnOPjoNGLUqp9jlDE2q8J6B2VZUPAwAwPRGUapx26jcqQI+Kxy+DJ80Exi6y8op1oZGf
-         ag/hen9+JjxkDZIf/VhRQR3SaAq0Y+lDwf8fEUB964jcJKoBe3Zfwzn7BV5uX9+Aoggv
-         lvKuLRDzuMU0FJN0lnEmkoXlS9/bz6iwDYXl3xetZlJ1rtvfc03QJvLypKnpLkimA+JE
-         KPSn0P0RzsdRGOsuYjjUNryh3VAiFgfwBaBh4OxEJ5TKORC+RMyVH/9sFUl4J3agHRUe
-         M9jw==
-X-Gm-Message-State: AOAM533K/YcaWVu3jNA1hJ6ZItB2ptmDRG3HX3h8VmP0JIehTsckAcbW
-        inrDIIkyO8R8wMzcrOwV8L2u5AUA5swM1kTcczkKFw==
-X-Google-Smtp-Source: ABdhPJyy3jebXM0G/zF7Q6xXQMA+FCSCmCouMUb9/1BOT/4ZV4iye+9PhxkXuszoHZRfTR88WqA+PTAgZxgV397k+N4=
-X-Received: by 2002:a6b:918a:: with SMTP id t132mr4932677iod.157.1610100901679;
- Fri, 08 Jan 2021 02:15:01 -0800 (PST)
+        id S1727067AbhAHKTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 05:19:42 -0500
+Received: from www62.your-server.de ([213.133.104.62]:33198 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725984AbhAHKTm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 05:19:42 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kxoqv-0004vR-1g; Fri, 08 Jan 2021 11:18:41 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kxoqu-0005en-NO; Fri, 08 Jan 2021 11:18:40 +0100
+Subject: Re: [PATCH net v3] net: fix use-after-free when UDP GRO with shared
+ fraglist
+To:     Dongseok Yi <dseok.yi@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Westphal <fw@strlen.de>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Guillaume Nault <gnault@redhat.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        Marco Elver <elver@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, namkyu78.kim@samsung.com
+References: <1609979953-181868-1-git-send-email-dseok.yi@samsung.com>
+ <CGME20210108024017epcas2p455fe96b8483880f9b7a654dbcf600b20@epcas2p4.samsung.com>
+ <1610072918-174177-1-git-send-email-dseok.yi@samsung.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9d8cccfe-21d1-4bd2-0cce-4e8af2dd6ef6@iogearbox.net>
+Date:   Fri, 8 Jan 2021 11:18:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20210108002005.3429956-1-olteanv@gmail.com> <20210108002005.3429956-9-olteanv@gmail.com>
-In-Reply-To: <20210108002005.3429956-9-olteanv@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 8 Jan 2021 11:14:50 +0100
-Message-ID: <CANn89iJNTgXsRv0Wgp4V=TUws-d4Mc4FwR4kUBy+r8+UxWC06Q@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 08/18] net: make dev_get_stats return void
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, Florian Westphal <fw@strlen.de>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1610072918-174177-1-git-send-email-dseok.yi@samsung.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26042/Thu Jan  7 13:37:55 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 8, 2021 at 1:20 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
-> After commit 28172739f0a2 ("net: fix 64 bit counters on 32 bit arches"),
-> dev_get_stats got an additional argument for storage of statistics. At
-> this point, dev_get_stats could return either the passed "storage"
-> argument, or the output of .ndo_get_stats64.
->
-> Then commit caf586e5f23c ("net: add a core netdev->rx_dropped counter")
-> came, and the output of .ndo_get_stats64 (still returning a pointer to
-> struct rtnl_link_stats64) started being ignored.
->
-> Then came commit bc1f44709cf2 ("net: make ndo_get_stats64 a void
-> function") which made .ndo_get_stats64 stop returning anything.
->
-> So now, dev_get_stats always reports the "storage" pointer received as
-> argument. This is useless. Some drivers are dealing with unnecessary
-> complexity due to this, so refactor them to ignore the return value
-> completely.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->
+On 1/8/21 3:28 AM, Dongseok Yi wrote:
+> skbs in fraglist could be shared by a BPF filter loaded at TC. If TC
+> writes, it will call skb_ensure_writable -> pskb_expand_head to create
+> a private linear section for the head_skb. And then call
+> skb_clone_fraglist -> skb_get on each skb in the fraglist.
+> 
+> skb_segment_list overwrites part of the skb linear section of each
+> fragment itself. Even after skb_clone, the frag_skbs share their
+> linear section with their clone in PF_PACKET.
+> 
+> Both sk_receive_queue of PF_PACKET and PF_INET (or PF_INET6) can have
+> a link for the same frag_skbs chain. If a new skb (not frags) is
+> queued to one of the sk_receive_queue, multiple ptypes can see and
+> release this. It causes use-after-free.
+> 
+> [ 4443.426215] ------------[ cut here ]------------
+> [ 4443.426222] refcount_t: underflow; use-after-free.
+> [ 4443.426291] WARNING: CPU: 7 PID: 28161 at lib/refcount.c:190
+> refcount_dec_and_test_checked+0xa4/0xc8
+> [ 4443.426726] pstate: 60400005 (nZCv daif +PAN -UAO)
+> [ 4443.426732] pc : refcount_dec_and_test_checked+0xa4/0xc8
+> [ 4443.426737] lr : refcount_dec_and_test_checked+0xa0/0xc8
+> [ 4443.426808] Call trace:
+> [ 4443.426813]  refcount_dec_and_test_checked+0xa4/0xc8
+> [ 4443.426823]  skb_release_data+0x144/0x264
+> [ 4443.426828]  kfree_skb+0x58/0xc4
+> [ 4443.426832]  skb_queue_purge+0x64/0x9c
+> [ 4443.426844]  packet_set_ring+0x5f0/0x820
+> [ 4443.426849]  packet_setsockopt+0x5a4/0xcd0
+> [ 4443.426853]  __sys_setsockopt+0x188/0x278
+> [ 4443.426858]  __arm64_sys_setsockopt+0x28/0x38
+> [ 4443.426869]  el0_svc_common+0xf0/0x1d0
+> [ 4443.426873]  el0_svc_handler+0x74/0x98
+> [ 4443.426880]  el0_svc+0x8/0xc
+> 
+> Fixes: 3a1296a38d0c (net: Support GRO/GSO fraglist chaining.)
+> Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+> Acked-by: Willem de Bruijn <willemb@google.com>
 
-This seems like a lot of code churn.
-
-Ultimately we need this function to return an error code, so why keep
-this patch with a void return ?
-
-Please squash your patches a bit, to avoid having 18 patches to review.
-
-Additionally I would suggest a __must_check attribute on
-dev_get_stats() to make sure we converted all callers.
-
- I can not convince myself that after your patches, bonding does the
-right thing...
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
