@@ -2,150 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A8C62EF64F
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 18:13:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAFA72EF65B
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 18:18:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728377AbhAHRMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 12:12:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52018 "EHLO
+        id S1728369AbhAHRSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 12:18:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727252AbhAHRMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 12:12:40 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C663BC0612FD
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 09:11:59 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id z3so6970769qtw.9
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 09:11:59 -0800 (PST)
+        with ESMTP id S1728117AbhAHRSY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 12:18:24 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34377C061380
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 09:17:44 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id b5so6521366pjk.2
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 09:17:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=w66f1ZKevlb8Uuzhhrx+rTk8V4QHn7SP2CQf7TQF9Oo=;
-        b=OLQKzZhbc8dBDAE91N2+hR3D310lXs0s6svgMaeHQLcO/ATZxlwzVDg+W0uxkp0ioP
-         fjwu5KrmMGOH//RVWcrulso+xlx3lxMQZ2rNUuqSOetu937SqVYhmVedBbWX5whAEpY4
-         FMEaB2fIGg4bwukLyM9gJcZM97OOUx1r8BT/3zVQ/sKTLbgpRWP0RDJE1ICu8iAJDFxB
-         hZcAWYvaxfT1sFMtOdxMUL6cjOOOxMtObu5xIyke3G+nVPv1GiCRoEbzgfnU1KUOhmXq
-         +8sxTuwGqLwWzWWg3r5ztLIY0hn2aVt2Lsu/LLLFjfxIDqn6WEpa7ga6tOeP05AQyjVY
-         OP6A==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9Z2rtNZhY/SrFZpHAhurQZ5dyMNiQC+cFKUu5glqxnA=;
+        b=SxuqNp/ED8cc5S9kS/FCnisgrI20WsXiVIL10moeuGKSkGITuTLyG/NfT9WcB0Ke/W
+         0yZNrh+7qw68S3uIDeyIj95dh6ynAJY6VwqKnizr9/fb7zWv14qNs1LkB6pwSQJKBIZh
+         Hq+0qX4PH9rHGReN1sbl5xX5viMvGxylfBLeH8z17EpZkoUSzfd2VfoNElD8SQXsCCI+
+         pmEA3k7Ww1T9Esdv13C2bsqOZSfm5ZLTyOSrqzqdo9ThpZ9mAVChJh4QOxMSJPINWs04
+         hZXpDchOJizqcyqw7+iyKMRB+Dh8WbFml0uiYxfraS58/Um7Abbg9Xk5fI0ozreMMDtk
+         5FSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=w66f1ZKevlb8Uuzhhrx+rTk8V4QHn7SP2CQf7TQF9Oo=;
-        b=R1WCJ3TWJ5P26zJdikJ/Tt+ESNAl5sI/HyAXMTfikhNJL3KWZ5b1TZcksF3zzWAlPy
-         r9wyD9kNOhNyBmDXHW56ruqZRxZIEzfWGEPxkS8LdyoOk+C3emB+I2sfpMIToLZGTkAO
-         Ybstp25XsNFBMesTM7Va6hiZnrFYVgsWBCP1sO10qqDH2G6Ip7b2vQNGHR165GZmU/sr
-         LDnJTa+Ngn1kxu/roz81yyBlHHA3HUpIZ48D/ke1Qmu9FXcRNqoYsrDI1N27gaJoLtPq
-         sSObe/ywT8Uct2vrtnBXw2beBGsghEdmqH18kV5QsrVWlRsJk0rD1OHzse3edLfs/Ses
-         lhHQ==
-X-Gm-Message-State: AOAM532MKZ6Q1s/bovLXT6UFYvGLrikdXfH7Pkzx953tk8poZOlKv+3J
-        Q0jtbrTmwMIJDyU9HcAwE5RpeSw67XM=
-X-Google-Smtp-Source: ABdhPJyhcSS+Cco1suepuC+PlCNOu0xn/VeI8ycAjLpBOvs5skd1u0VHwZ5pimVRCcfSfWesFGp/fA==
-X-Received: by 2002:a05:622a:208:: with SMTP id b8mr4549621qtx.124.1610125918609;
-        Fri, 08 Jan 2021 09:11:58 -0800 (PST)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:f693:9fff:fef4:3e8a])
-        by smtp.gmail.com with ESMTPSA id c2sm5081600qke.109.2021.01.08.09.11.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9Z2rtNZhY/SrFZpHAhurQZ5dyMNiQC+cFKUu5glqxnA=;
+        b=HO18JjvLiTATiPzuT2GWQ3auLvEPc+JMzigAghYmAEs5pyuWMFnF15A2ncIgBDlH4W
+         wwYYjLPatTiaQ5XkiEEDAHt4BpPuGDNL/20d8kA1EWh3FFxbZm1xWdpAZ77FUa/EAf5z
+         OIPX+JNSVK+UNbl8Dz/6FXN0uS5gAQhWQd0mlrH/wSOH3CLFiu8uBoSsI7FU9woBsTZg
+         PVap3qLNmaHVjr/f03Hz4FtoCmQUqDGTCNlzWRlgU35AmWJdyXDqnYPIc1UqwfbhtuJP
+         ce0up3SPzo697xBID6dj0dOut/vxt2fBp/vQT20qfKW6p3pzNIYijUf3pxiiS4XE44xI
+         3VzA==
+X-Gm-Message-State: AOAM531o+1L7uXCCyhdHwKVbHoS6iD5n1wgw7f0wg6MwEvVmM7G0V/1Z
+        gDk2e4nfj3pF7c31CuQ5mJHK
+X-Google-Smtp-Source: ABdhPJxs7B6ZkaN884vLL3LSQoriw5QmwVZUfXcMuoWf8XSIk3U0P+e7T2EdVDryCSCJP30CX27XZQ==
+X-Received: by 2002:a17:90a:9e5:: with SMTP id 92mr4793065pjo.176.1610126263663;
+        Fri, 08 Jan 2021 09:17:43 -0800 (PST)
+Received: from thinkpad ([103.77.37.188])
+        by smtp.gmail.com with ESMTPSA id 11sm9903775pgz.22.2021.01.08.09.17.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 09:11:57 -0800 (PST)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Willem de Bruijn <willemb@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH net 3/3] esp: avoid unneeded kmap_atomic call
-Date:   Fri,  8 Jan 2021 12:11:52 -0500
-Message-Id: <20210108171152.2961251-4-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
-In-Reply-To: <20210108171152.2961251-1-willemdebruijn.kernel@gmail.com>
-References: <20210108171152.2961251-1-willemdebruijn.kernel@gmail.com>
+        Fri, 08 Jan 2021 09:17:42 -0800 (PST)
+Date:   Fri, 8 Jan 2021 22:47:37 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     Hemant Kumar <hemantk@codeaurora.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH] bus: mhi: Add inbound buffers allocation flag
+Message-ID: <20210108171737.GD74017@thinkpad>
+References: <1609940623-8864-1-git-send-email-loic.poulain@linaro.org>
+ <20210108134425.GA32678@work>
+ <CAMZdPi9tUUzf0hLwLUBqB=+eGQS-eNP8NtnMF-iS1ZqUfautuw@mail.gmail.com>
+ <20210108153032.GC32678@work>
+ <CAMZdPi_+wHo4q1BQScXALRaTAqNh0zxsgLsri364NvTP1h+6WQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMZdPi_+wHo4q1BQScXALRaTAqNh0zxsgLsri364NvTP1h+6WQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Fri, Jan 08, 2021 at 04:46:49PM +0100, Loic Poulain wrote:
+> Hi Mani,
+> 
+> On Fri, 8 Jan 2021 at 16:30, Manivannan Sadhasivam <
+> manivannan.sadhasivam@linaro.org> wrote:
+> 
+> > > > >       /* start channels */
+> > > > > -     rc = mhi_prepare_for_transfer(mhi_dev);
+> > > > > +     rc = mhi_prepare_for_transfer(mhi_dev,
+> > MHI_CH_INBOUND_ALLOC_BUFS);
+> > > >
+> > > > Are you sure it requires auto queued channel?
+> > > >
+> > >
+> > > This is how mhi-qrtr has been implemented, yes.
+> > >
+> >
+> > skb is allocated in qrtr_endpoint_post(). Then how the host can pre
+> > allocate the buffer here? Am I missing something?
+> >
+> 
+> The initial MHI buffer is pre-allocated by the MHI core, so that mhi-qrtr
+> only has to register a dl_callback without having to allocate and queue its
+> own buffers. On dl_callback mhi-qrtr calls qrtr_endpoint_post(data) which
+> allocates an skb and copy the MHI buffer (data) into that skb. When
+> mhi-qrtr dl_callback finishes, the MHI buffer is re-queued automatically by
+> the MHI core.
+> 
 
-esp(6)_output_head uses skb_page_frag_refill to allocate a buffer for
-the esp trailer.
+Oops... My bad! There is the "auto_queue" for dl chan. Sorry for the noise.
 
-It accesses the page with kmap_atomic to handle highmem. But
-skb_page_frag_refill can return compound pages, of which
-kmap_atomic only maps the first underlying page.
+Thanks,
+Mani
 
-skb_page_frag_refill does not return highmem, because flag
-__GFP_HIGHMEM is not set. ESP uses it in the same manner as TCP.
-That also does not call kmap_atomic, but directly uses page_address,
-in skb_copy_to_page_nocache. Do the same for ESP.
-
-This issue has become easier to trigger with recent kmap local
-debugging feature CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP.
-
-Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
-Fixes: 03e2a30f6a27 ("esp6: Avoid skb_cow_data whenever possible")
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
----
- net/ipv4/esp4.c | 7 +------
- net/ipv6/esp6.c | 7 +------
- 2 files changed, 2 insertions(+), 12 deletions(-)
-
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 8b07f3a4f2db..a3271ec3e162 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -443,7 +443,6 @@ static int esp_output_encap(struct xfrm_state *x, struct sk_buff *skb,
- int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
- {
- 	u8 *tail;
--	u8 *vaddr;
- 	int nfrags;
- 	int esph_offset;
- 	struct page *page;
-@@ -485,14 +484,10 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 			page = pfrag->page;
- 			get_page(page);
- 
--			vaddr = kmap_atomic(page);
--
--			tail = vaddr + pfrag->offset;
-+			tail = page_address(page) + pfrag->offset;
- 
- 			esp_output_fill_trailer(tail, esp->tfclen, esp->plen, esp->proto);
- 
--			kunmap_atomic(vaddr);
--
- 			nfrags = skb_shinfo(skb)->nr_frags;
- 
- 			__skb_fill_page_desc(skb, nfrags, page, pfrag->offset,
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index 52c2f063529f..2b804fcebcc6 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -478,7 +478,6 @@ static int esp6_output_encap(struct xfrm_state *x, struct sk_buff *skb,
- int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
- {
- 	u8 *tail;
--	u8 *vaddr;
- 	int nfrags;
- 	int esph_offset;
- 	struct page *page;
-@@ -519,14 +518,10 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 			page = pfrag->page;
- 			get_page(page);
- 
--			vaddr = kmap_atomic(page);
--
--			tail = vaddr + pfrag->offset;
-+			tail = page_address(page) + pfrag->offset;
- 
- 			esp_output_fill_trailer(tail, esp->tfclen, esp->plen, esp->proto);
- 
--			kunmap_atomic(vaddr);
--
- 			nfrags = skb_shinfo(skb)->nr_frags;
- 
- 			__skb_fill_page_desc(skb, nfrags, page, pfrag->offset,
--- 
-2.30.0.284.gd98b1dd5eaa7-goog
-
+> Regards,
+> Loic
+> 
+> 
+> >
+> > Thanks,
+> > Mani
+> >
+> > > Regards,
+> > > Loic
+> >
