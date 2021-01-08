@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59FC52EFAE5
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 23:11:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E71E2EFAE7
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 23:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbhAHWKd convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 8 Jan 2021 17:10:33 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:40688 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726088AbhAHWKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 17:10:33 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 108M92gs027763
-        for <netdev@vger.kernel.org>; Fri, 8 Jan 2021 14:09:52 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 35xu1t1kmt-6
+        id S1726429AbhAHWKj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 8 Jan 2021 17:10:39 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:26218 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726380AbhAHWKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 17:10:38 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 108M94Kp021880
+        for <netdev@vger.kernel.org>; Fri, 8 Jan 2021 14:09:58 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 35wpuxas9w-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 14:09:52 -0800
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 14:09:58 -0800
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 8 Jan 2021 14:09:50 -0800
+ 15.1.1979.3; Fri, 8 Jan 2021 14:09:52 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 4059B2ECD237; Fri,  8 Jan 2021 14:09:44 -0800 (PST)
+        id 6C44F2ECD237; Fri,  8 Jan 2021 14:09:46 -0800 (PST)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
         Hao Luo <haoluo@google.com>
-Subject: [PATCH v2 bpf-next 6/7] libbpf: support kernel module ksym externs
-Date:   Fri, 8 Jan 2021 14:09:29 -0800
-Message-ID: <20210108220930.482456-7-andrii@kernel.org>
+Subject: [PATCH v2 bpf-next 7/7] selftests/bpf: test kernel module ksym externs
+Date:   Fri, 8 Jan 2021 14:09:30 -0800
+Message-ID: <20210108220930.482456-8-andrii@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20210108220930.482456-1-andrii@kernel.org>
 References: <20210108220930.482456-1-andrii@kernel.org>
@@ -41,127 +41,120 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
  definitions=2021-01-08_11:2021-01-07,2021-01-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- malwarescore=0 suspectscore=0 priorityscore=1501 mlxscore=0 clxscore=1015
- bulkscore=0 adultscore=0 spamscore=0 mlxlogscore=999 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ mlxlogscore=999 mlxscore=0 spamscore=0 malwarescore=0 clxscore=1034
+ priorityscore=1501 suspectscore=0 bulkscore=0 adultscore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2101080113
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for searching for ksym externs not just in vmlinux BTF, but across
-all module BTFs, similarly to how it's done for CO-RE relocations. Kernels
-that expose module BTFs through sysfs are assumed to support new ldimm64
-instruction extension with BTF FD provided in insn[1].imm field, so no extra
-feature detection is performed.
+Add per-CPU variable to bpf_testmod.ko and use those from new selftest to
+validate it works end-to-end.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 47 +++++++++++++++++++++++++++---------------
- 1 file changed, 30 insertions(+), 17 deletions(-)
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  3 ++
+ .../selftests/bpf/prog_tests/ksyms_module.c   | 33 +++++++++++++++++++
+ .../selftests/bpf/progs/test_ksyms_module.c   | 26 +++++++++++++++
+ 3 files changed, 62 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module.c
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 6ae748f6ea11..57559a71e4de 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -395,7 +395,8 @@ struct extern_desc {
- 			unsigned long long addr;
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+index 2df19d73ca49..0b991e115d1f 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+@@ -3,6 +3,7 @@
+ #include <linux/error-injection.h>
+ #include <linux/init.h>
+ #include <linux/module.h>
++#include <linux/percpu-defs.h>
+ #include <linux/sysfs.h>
+ #include <linux/tracepoint.h>
+ #include "bpf_testmod.h"
+@@ -10,6 +11,8 @@
+ #define CREATE_TRACE_POINTS
+ #include "bpf_testmod-events.h"
  
- 			/* target btf_id of the corresponding kernel var. */
--			int vmlinux_btf_id;
-+			int kernel_btf_obj_fd;
-+			int kernel_btf_id;
- 
- 			/* local btf_id of the ksym extern's type. */
- 			__u32 type_id;
-@@ -6162,7 +6163,8 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
- 			} else /* EXT_KSYM */ {
- 				if (ext->ksym.type_id) { /* typed ksyms */
- 					insn[0].src_reg = BPF_PSEUDO_BTF_ID;
--					insn[0].imm = ext->ksym.vmlinux_btf_id;
-+					insn[0].imm = ext->ksym.kernel_btf_id;
-+					insn[1].imm = ext->ksym.kernel_btf_obj_fd;
- 				} else { /* typeless ksyms */
- 					insn[0].imm = (__u32)ext->ksym.addr;
- 					insn[1].imm = ext->ksym.addr >> 32;
-@@ -7319,7 +7321,8 @@ static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
- static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
- {
- 	struct extern_desc *ext;
--	int i, id;
-+	struct btf *btf;
-+	int i, j, id, btf_fd, err;
- 
- 	for (i = 0; i < obj->nr_extern; i++) {
- 		const struct btf_type *targ_var, *targ_type;
-@@ -7331,8 +7334,22 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
- 		if (ext->type != EXT_KSYM || !ext->ksym.type_id)
- 			continue;
- 
--		id = btf__find_by_name_kind(obj->btf_vmlinux, ext->name,
--					    BTF_KIND_VAR);
-+		btf = obj->btf_vmlinux;
-+		btf_fd = 0;
-+		id = btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
-+		if (id == -ENOENT) {
-+			err = load_module_btfs(obj);
-+			if (err)
-+				return err;
++DEFINE_PER_CPU(int, bpf_testmod_ksym_percpu) = 123;
 +
-+			for (j = 0; j < obj->btf_module_cnt; j++) {
-+				btf = obj->btf_modules[j].btf;
-+				btf_fd = obj->btf_modules[j].fd;
-+				id = btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
-+				if (id != -ENOENT)
-+					break;
-+			}
-+		}
- 		if (id <= 0) {
- 			pr_warn("extern (ksym) '%s': failed to find BTF ID in vmlinux BTF.\n",
- 				ext->name);
-@@ -7343,24 +7360,19 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
- 		local_type_id = ext->ksym.type_id;
- 
- 		/* find target type_id */
--		targ_var = btf__type_by_id(obj->btf_vmlinux, id);
--		targ_var_name = btf__name_by_offset(obj->btf_vmlinux,
--						    targ_var->name_off);
--		targ_type = skip_mods_and_typedefs(obj->btf_vmlinux,
--						   targ_var->type,
--						   &targ_type_id);
-+		targ_var = btf__type_by_id(btf, id);
-+		targ_var_name = btf__name_by_offset(btf, targ_var->name_off);
-+		targ_type = skip_mods_and_typedefs(btf, targ_var->type, &targ_type_id);
- 
- 		ret = bpf_core_types_are_compat(obj->btf, local_type_id,
--						obj->btf_vmlinux, targ_type_id);
-+						btf, targ_type_id);
- 		if (ret <= 0) {
- 			const struct btf_type *local_type;
- 			const char *targ_name, *local_name;
- 
- 			local_type = btf__type_by_id(obj->btf, local_type_id);
--			local_name = btf__name_by_offset(obj->btf,
--							 local_type->name_off);
--			targ_name = btf__name_by_offset(obj->btf_vmlinux,
--							targ_type->name_off);
-+			local_name = btf__name_by_offset(obj->btf, local_type->name_off);
-+			targ_name = btf__name_by_offset(btf, targ_type->name_off);
- 
- 			pr_warn("extern (ksym) '%s': incompatible types, expected [%d] %s %s, but kernel has [%d] %s %s\n",
- 				ext->name, local_type_id,
-@@ -7370,7 +7382,8 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
- 		}
- 
- 		ext->is_set = true;
--		ext->ksym.vmlinux_btf_id = id;
-+		ext->ksym.kernel_btf_obj_fd = btf_fd;
-+		ext->ksym.kernel_btf_id = id;
- 		pr_debug("extern (ksym) '%s': resolved to [%d] %s %s\n",
- 			 ext->name, id, btf_kind_str(targ_var), targ_var_name);
- 	}
+ noinline ssize_t
+ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
+ 		      struct bin_attribute *bin_attr,
+diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+new file mode 100644
+index 000000000000..7fa3d8b6ca30
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Facebook */
++
++#include <test_progs.h>
++#include <bpf/libbpf.h>
++#include <bpf/btf.h>
++#include "test_ksyms_module.skel.h"
++
++static int duration;
++
++void test_ksyms_module(void)
++{
++	struct test_ksyms_module* skel;
++	struct test_ksyms_module__bss *bss;
++	int err;
++
++	skel = test_ksyms_module__open_and_load();
++	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
++		return;
++	bss = skel->bss;
++
++	err = test_ksyms_module__attach(skel);
++	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
++		goto cleanup;
++
++	usleep(1);
++
++	ASSERT_EQ(bss->triggered, true, "triggered");
++	ASSERT_EQ(bss->out_mod_ksym_global, 123, "global_ksym_val");
++
++cleanup:
++	test_ksyms_module__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_module.c b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
+new file mode 100644
+index 000000000000..d6a0b3086b90
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
+@@ -0,0 +1,26 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 Facebook */
++
++#include "vmlinux.h"
++
++#include <bpf/bpf_helpers.h>
++
++extern const int bpf_testmod_ksym_percpu __ksym;
++
++int out_mod_ksym_global = 0;
++bool triggered = false;
++
++SEC("raw_tp/sys_enter")
++int handler(const void *ctx)
++{
++	int *val;
++	__u32 cpu;
++
++	val = (int *)bpf_this_cpu_ptr(&bpf_testmod_ksym_percpu);
++	out_mod_ksym_global = *val;
++	triggered = true;
++
++	return 0;
++}
++
++char LICENSE[] SEC("license") = "GPL";
 -- 
 2.24.1
 
