@@ -2,82 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A42E2EF1B2
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 12:57:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBAF82EF1B7
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 13:01:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726829AbhAHL4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 06:56:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59308 "EHLO
+        id S1726545AbhAHMBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 07:01:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbhAHL4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 06:56:22 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E66BC0612F4
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 03:55:42 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id k10so7588733wmi.3
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 03:55:42 -0800 (PST)
+        with ESMTP id S1725791AbhAHMBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 07:01:06 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90D3C0612F4
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 04:00:25 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id e25so8222592wme.0
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 04:00:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=7EWxshdvzngKbBX5brO0Znd8cRcJoh0Yy5cTscWLjIA=;
-        b=O1Pv3s6nhLDOrSIQXH3wawNaVKPb5m+zOGiK5N6nFGqhoYQqr3VIKuKEFugSi7HY/5
-         P1qlOno/M1vgRr+BxOc18B5omSHTfDibQveZP3EUtx9l4d3W8AcVGVFnAKPY0w4emmN6
-         Du+3xQHNmAlsv+nUSxzGtLr7DmpYVMxM6s788mMbEPEahVcEQ4o7RcLE3JF0LngwX+IX
-         LKyC9VunV09ovw7xmjADXU+p2IxtAdxcgE0r0EwUIUNLQPrCjEmFCjA16MexI3AnfeXn
-         /Y/tgJZNeNjc1bUHfGUdkegpqADvxIDYLlUw4famQekf8Tb5OUyFvnj0z9VOG+UG9VR8
-         cQMQ==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jt3zw0dfENHCHUmf/u475QK+Rs4cwPdEOzlKvH1tBNE=;
+        b=QW7d0W+Q0PnUu+/Ku5fWnArt0/2OgwcB/A7Tk3xy8lG15HV7WinZYkjR7GOkshat6D
+         /+WOEnuG2UKiQ36zh7G7j/7fPdvqf756Fvl+SdJvGmabpS/WmOHRVMvC6cKLq/0fW1CZ
+         2hb5wH/cm/VLLfaYd74/D4IJ59xD85AauVSy29IPEMa3H7AvgnsSwxDdYfmJrz9cYica
+         giBelTGebnP8XYb40QRVQoBlAPm6b/8AdyYPoSQaIjmCcWMNWUCnuRpVOnRAFX6BLLhC
+         n1c8vMgRjzAWPuCet6pGAs0riE/FuJk8ezLbHlRLy61x8nj5DjNzPhshjPy5jCFqBZ3s
+         o+Ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=7EWxshdvzngKbBX5brO0Znd8cRcJoh0Yy5cTscWLjIA=;
-        b=X+jVJPPB9AHY5wf1g7m0b7eLBZZL5Ouv7Ziys5jCGdcw4g74IM4JqfLv0B3onpjD66
-         xk+JDPrHxn1J/6zSeHgRB+IMhSHbM3K2/4Y2mkLHQTcOZtJ/frhhwMQfM3UrrpwfQv3Q
-         lDy/ycqzKRdhp6T+bOtkKAvN7VL9qP90hclDJDI9pou4DIS+5tNg/XqjBE4R5KhSh+a9
-         vO/EdEiKRwsXO/BhVUk6U5xUlNLXsiVFfGdRpDhCN131SZyXms8y2d2fJqs+76s6/D6j
-         zmORnaaKLABO6wfzD6uc/GDVIgXrkOv+8BDakr4h2IHKlrZMjTP0izxLgJVtHSbSXzZJ
-         II8w==
-X-Gm-Message-State: AOAM530QLAFWZILefyGsxgfIwgZ1sWL+C3mCM53NAxQY23HnW8MRODSh
-        emPQPELbyh9gOuR5x7GzwpeTsQ5cb+0=
-X-Google-Smtp-Source: ABdhPJyj/OXn5OcKJNEr457AQqnXK5N4v6Cxf4V+YAjRYjpy6HKIlkWB3hBT3pbrklto9vlmbiGelg==
-X-Received: by 2002:a1c:4483:: with SMTP id r125mr2662787wma.80.1610106939281;
-        Fri, 08 Jan 2021 03:55:39 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jt3zw0dfENHCHUmf/u475QK+Rs4cwPdEOzlKvH1tBNE=;
+        b=WrdhCbmlM7EtlSTAMtiSyab9lFIxJc+abmG9frI2XBj7M325g+o5VzZtk7l6FMPznX
+         a2RoNKTc69yxEx7v+xtIjN9d3/ODRCUaBVyxqehtIKCXUm6XxFFl0n5tPfnoh/sQmVup
+         EUpf/fpEsMqtsaDW5p9LgvgxZxPiJ7yvhaIx10HB8jQh4nz6Ap45EO1T65n8pSMrdWYW
+         fwU9LUrbJpogBNgiaKciTopaOXC+LIp/LFAt1omu06V9a+gJobys68xXVcz/0pfM1kUt
+         pkzDr/raBTNnx5TrAKBWv7Wt59CLbyG7TIvMcHrqA/YHkMW8hXHO9psHrHhlrY+YBFjO
+         B0Hw==
+X-Gm-Message-State: AOAM533teSb7sSf5Vs/rH3/e1A5cCR82FTzp+wRFn7rH45caH/KquCPf
+        i4Edze6i/pTdKPhyM9WHPMZvmcMtSiw=
+X-Google-Smtp-Source: ABdhPJyRunovPtyLyzY17WzhUIK7WXIPLetyA0LkkB7rbLFdeewhDzKFNI2RoaNPPvo34n35NDcVjQ==
+X-Received: by 2002:a1c:220a:: with SMTP id i10mr2703715wmi.93.1610107223898;
+        Fri, 08 Jan 2021 04:00:23 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f06:5500:6dbb:aa76:4e1a:5cc4? (p200300ea8f0655006dbbaa764e1a5cc4.dip0.t-ipconnect.de. [2003:ea:8f06:5500:6dbb:aa76:4e1a:5cc4])
-        by smtp.googlemail.com with ESMTPSA id m8sm12531570wmc.27.2021.01.08.03.55.38
+        by smtp.googlemail.com with ESMTPSA id o8sm13095907wrm.17.2021.01.08.04.00.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jan 2021 03:55:38 -0800 (PST)
+        Fri, 08 Jan 2021 04:00:23 -0800 (PST)
+Subject: [PATCH net-next v2 1/3] r8169: replace BUG_ON with WARN in
+ _rtl_eri_write
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next v2 0/3] r8169: small improvements
-Message-ID: <938caef4-8a0b-bbbd-66aa-76f758ff877a@gmail.com>
-Date:   Fri, 8 Jan 2021 12:55:32 +0100
+References: <938caef4-8a0b-bbbd-66aa-76f758ff877a@gmail.com>
+Message-ID: <e3f1413c-04f5-b511-f2f8-5f9f26a71946@gmail.com>
+Date:   Fri, 8 Jan 2021 12:57:57 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <938caef4-8a0b-bbbd-66aa-76f758ff877a@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series includes a number of smaller improvements.
+Use WARN here to avoid stopping the system. In addition print the addr
+and mask values that triggered the warning.
 
 v2:
-- return on WARN in patch 1
+- return on WARN to avoid an invalid register write
 
-Heiner Kallweit (3):
-  r8169: replace BUG_ON with WARN in _rtl_eri_write
-  r8169: improve rtl_ocp_reg_failure
-  r8169: don't wakeup-enable device on shutdown if WOL is disabled
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- drivers/net/ethernet/realtek/r8169_main.c | 23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index c9abc7ccb..317b34723 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -763,7 +763,9 @@ static void _rtl_eri_write(struct rtl8169_private *tp, int addr, u32 mask,
+ {
+ 	u32 cmd = ERIAR_WRITE_CMD | type | mask | addr;
+ 
+-	BUG_ON((addr & 3) || (mask == 0));
++	if (WARN(addr & 3 || !mask, "addr: 0x%x, mask: 0x%08x\n", addr, mask))
++		return;
++
+ 	RTL_W32(tp, ERIDR, val);
+ 	r8168fp_adjust_ocp_cmd(tp, &cmd, type);
+ 	RTL_W32(tp, ERIAR, cmd);
 -- 
 2.30.0
+
 
