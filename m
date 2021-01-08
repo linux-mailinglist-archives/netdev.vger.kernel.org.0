@@ -2,280 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8600F2EFB58
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 23:48:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DED5F2EFBB2
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 00:32:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725906AbhAHWrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 17:47:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40532 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725792AbhAHWrR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 17:47:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C641B23A80;
-        Fri,  8 Jan 2021 22:46:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610145996;
-        bh=cs34ouDG3S7sI3dO30UtizidM6NZuXNslrjVsl9DLeI=;
-        h=In-Reply-To:References:Subject:To:From:Cc:Date:From;
-        b=uqwEWDjsq1L5Go5+mhAgLJNxmukQSVNZYo1Jjjz24EAS5fbEDnpB9H2p555Px6GZp
-         wBPR1uw9K1yXqCoqRhhvTkVjTCS24VMCwVhNNooJejRpqt+I4496pwnOAdphIB0pI1
-         r5QSKnVbAIPalCsfM+Cqyqu+spZnP5INNrAcclihj2dL5vRrMylW39ot+iZ+D8Iyte
-         idVCZD6tbeWpyjwi2J2jWiiyM/6Pq2hHZgC6vM8hciHPm4yYtdmBcwTHMcVUFR1hwd
-         3aQ3UK7JS2TGEaA+RzfDF53EeAPOYTCPw2gg7Bzs3bTHkZsjGhfUzZ7+lkyeODYmux
-         OGB+IVQWXKMSw==
-Content-Type: text/plain; charset="utf-8"
+        id S1725815AbhAHXby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 18:31:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54524 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725306AbhAHXby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 18:31:54 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C9AC061574
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 15:31:13 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id h16so12838849edt.7
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 15:31:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9tt/+49ZDniNyVD+cDVt4FBU84r5+dkoZQPa+VZpXmM=;
+        b=ZhmM+pKFQAOp/igVZfi4YfEFvZi4z4/0lDq56ZxTbcs4kYvSEC+tqI8URk29jqR/g9
+         2FDm3yP1A/qoZariKNlDIHsUIclNFcMMk6PgyHQI0TLXJ4jKZIue4iRcg/Qr5LE4CHZy
+         xJbrtQB7BVcgtpTHnRbuMQ56Uwoet7ICVs/J7P6A4K1QlK8kJ7zEY/50VWP7LXVUDdLB
+         a9hvnu3VJDiJAwPomNEQU2cy1WgMPqm37yjtnYXFNHuNeNjkWGfhnTJ3BzxhCyULiCSP
+         wZ8g4ic3/LJrXQfHBj/dl2dIglMjbC7KCBKZbijU4qpehzvluUJEKuj3RJSp3zVbGBDA
+         Zwfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9tt/+49ZDniNyVD+cDVt4FBU84r5+dkoZQPa+VZpXmM=;
+        b=JNGWD+OhXCZGbZ0to+cR4y1uN2KIEa8ZmOVSvy232QKFeitgl1tknS/wONBdFoy3+V
+         LjHvOYffYBwiAFPjekHVbNahfaBihG/kf7T6AFi7ZTvqQfso01gPxxGXf8iESHdSSVl8
+         Y6uECaQMjrWbWQAEYafi2x/l1S/wiVkeg9HJa588l4es0/b6oM3yNuMwVGqWQbUQuma9
+         uFtr4D+22lem2Igy9VQqeEfR+xpMKjtEyJWktkdu1XFTnaxa3x80iJ7sVO+pjy+YxBBM
+         ZgvUAW2hbK1OQ9fXv/kA3TI1Sunot0TyXWAyPYjzYK/kKhVB/GerKvQgPLFMxyxlkjaY
+         pyVw==
+X-Gm-Message-State: AOAM530lTd/bOP04KHP8lP8f6VpApKD2eK+blY2Nc4/nDQr9w2adH2LJ
+        s2ccTCufTgu1XWNLIs5s2zY=
+X-Google-Smtp-Source: ABdhPJzDV6e6EO2lVJGPRNU2zTbyRarJlgubNCQ7jBnQGr6XrYhyQGqytBqXBzNn3g5Tp7V7agFW5w==
+X-Received: by 2002:a50:d685:: with SMTP id r5mr7061363edi.248.1610148672338;
+        Fri, 08 Jan 2021 15:31:12 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id gl23sm4001577ejb.87.2021.01.08.15.31.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jan 2021 15:31:11 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: [PATCH net-next] net: dsa: dsa_legacy_fdb_{add,del} can be static
+Date:   Sat,  9 Jan 2021 01:30:54 +0200
+Message-Id: <20210108233054.1222278-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAKgT0Ud-BFGYZAZU_3CFQ+mqzZEKj4w6CCZSFHbo5SBBOSsxgg@mail.gmail.com>
-References: <20210106180428.722521-1-atenart@kernel.org> <20210106180428.722521-4-atenart@kernel.org> <CAKgT0UdZs7ER84PmeM5EV6rAKWiqu-5Ma47bh8qf-68fjsfbAw@mail.gmail.com> <161000966161.3275.12891261917424414122@kwain.local> <CAKgT0UcFu7pgy96uMhraT7B_JKEwXtVziouXLmZ4rdXPHn91Jg@mail.gmail.com> <161009687495.3394.14011897084392954560@kwain.local> <CAKgT0UdSiLpPXUEEOLRj4+7D0KcGBNBoW5cU=4DXW0kfOb=gEQ@mail.gmail.com> <161013228882.3394.7522492301815327352@kwain.local> <CAKgT0Ud-BFGYZAZU_3CFQ+mqzZEKj4w6CCZSFHbo5SBBOSsxgg@mail.gmail.com>
-Subject: Re: [PATCH net 3/3] net-sysfs: move the xps cpus/rxqs retrieval in a common function
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-From:   Antoine Tenart <atenart@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Message-ID: <161014599329.3394.12275123853451658325@localhost.localdomain>
-Date:   Fri, 08 Jan 2021 23:46:33 +0100
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Alexander Duyck (2021-01-08 23:04:57)
-> On Fri, Jan 8, 2021 at 10:58 AM Antoine Tenart <atenart@kernel.org> wrote:
-> >
-> > Quoting Alexander Duyck (2021-01-08 17:33:01)
-> > > On Fri, Jan 8, 2021 at 1:07 AM Antoine Tenart <atenart@kernel.org> wr=
-ote:
-> > > >
-> > > > Quoting Alexander Duyck (2021-01-07 17:38:35)
-> > > > > On Thu, Jan 7, 2021 at 12:54 AM Antoine Tenart <atenart@kernel.or=
-g> wrote:
-> > > > > >
-> > > > > > Quoting Alexander Duyck (2021-01-06 20:54:11)
-> > > > > > > On Wed, Jan 6, 2021 at 10:04 AM Antoine Tenart <atenart@kerne=
-l.org> wrote:
-> > > > > > > >         if (dev->num_tc) {
-> > > > > > > >                 /* Do not allow XPS on subordinate device d=
-irectly */
-> > > > > > > >                 num_tc =3D dev->num_tc;
-> > > > > > > > -               if (num_tc < 0) {
-> > > > > > > > -                       ret =3D -EINVAL;
-> > > > > > > > -                       goto err_rtnl_unlock;
-> > > > > > > > -               }
-> > > > > > > > +               if (num_tc < 0)
-> > > > > > > > +                       return -EINVAL;
-> > > > > > > >
-> > > > > > > >                 /* If queue belongs to subordinate dev use =
-its map */
-> > > > > > > >                 dev =3D netdev_get_tx_queue(dev, index)->sb=
-_dev ? : dev;
-> > > > > > > >
-> > > > > > > >                 tc =3D netdev_txq_to_tc(dev, index);
-> > > > > > > > -               if (tc < 0) {
-> > > > > > > > -                       ret =3D -EINVAL;
-> > > > > > > > -                       goto err_rtnl_unlock;
-> > > > > > > > -               }
-> > > > > > > > +               if (tc < 0)
-> > > > > > > > +                       return -EINVAL;
-> > > > > > > >         }
-> > > > > > > >
-> > > > > > >
-> > > > > > > So if we store the num_tc and nr_ids in the dev_maps structur=
-e then we
-> > > > > > > could simplify this a bit by pulling the num_tc info out of t=
-he
-> > > > > > > dev_map and only asking the Tx queue for the tc in that case =
-and
-> > > > > > > validating it against (tc <0 || num_tc <=3D tc) and returning=
- an error
-> > > > > > > if either are true.
-> > > > > > >
-> > > > > > > This would also allow us to address the fact that the rxqs fe=
-ature
-> > > > > > > doesn't support the subordinate devices as you could pull out=
- the bit
-> > > > > > > above related to the sb_dev and instead call that prior to ca=
-lling
-> > > > > > > xps_queue_show so that you are operating on the correct devic=
-e map.
-> > > > >
-> > > > > It probably would be necessary to pass dev and index if we pull t=
-he
-> > > > > netdev_get_tx_queue()->sb_dev bit out and performed that before we
-> > > > > called the xps_queue_show function. Specifically as the subordina=
-te
-> > > > > device wouldn't match up with the queue device so we would be bet=
-ter
-> > > > > off pulling it out first.
-> > > >
-> > > > While I agree moving the netdev_get_tx_queue()->sb_dev bit out of
-> > > > xps_queue_show seems like a good idea for consistency, I'm not sure
-> > > > it'll work: dev->num_tc is not only used to retrieve the number of =
-tc
-> > > > but also as a condition on not being 0. We have things like:
-> > > >
-> > > >   // Always done with the original dev.
-> > > >   if (dev->num_tc) {
-> > > >
-> > > >       [...]
-> > > >
-> > > >       // Can be a subordinate dev.
-> > > >       tc =3D netdev_txq_to_tc(dev, index);
-> > > >   }
-> > > >
-> > > > And after moving num_tc in the map, we'll have checks like:
-> > > >
-> > > >   if (dev_maps->num_tc !=3D dev->num_tc)
-> > > >       return -EINVAL;
-> > >
-> > > We shouldn't. That defeats the whole point and you will never be able
-> > > to rely on the num_tc in the device to remain constant. If we are
-> > > moving the value to an RCU accessible attribute we should just be
-> > > using that value. We can only use that check if we are in an rtnl_lock
-> > > anyway and we won't need that if we are just displaying the value.
-> > >
-> > > The checks should only be used to verify the tc of the queue is within
-> > > the bounds of the num_tc of the xps_map.
-> >
-> > Right. So that would mean we have to choose between:
-> >
-> > - Removing the rtnl lock but with the understanding that the value we
-> >   get when reading the maps might be invalid and not make sense with
-> >   the current dev->num_tc configuration.
-> >
-> > - Keeping the rtnl lock (which, I mean, I'd like to remove).
-> >
-> > My first goal for embedding num_tc in the maps was to prevent accessing
-> > the maps out-of-bound when dev->num_tc is updated after the maps are
-> > allocated. That's a possibility (I could produce such behaviour with
-> > KASAN enabled) even when taking the rtnl lock in the show/store helpers.
-> >
-> > We're now talking of also removing the rtnl lock, which is fine, I just
-> > want to make those two different goals explicit as they're not
-> > interdependent.
->=20
-> The problem is in the grand scheme of things the XPS map data is
-> already out of date by the time we look at it anyway regardless of the
-> locking mechanics. The problem is if we are doing both at the same
-> time we could already be looking at stale data as the num_tcs could
-> change after we dump the map and then it would still be invalid even
-> if we bothered with the RTNL lock or not.
->=20
-> In my mind we are better of with the RCU style behavior as we are just
-> using this to display the current setup anyway, and if we are updating
-> then we need the RTNL lock so that we can guarantee a consistent state
-> on the device while we are putting together the xps map.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-You're right, there's no way to ensure we're looking at the current
-setup. In that case let's use the embedded map values only.
+Introduced in commit 37b8da1a3c68 ("net: dsa: Move FDB add/del
+implementation inside DSA") in net/dsa/legacy.c, these functions were
+moved again to slave.c as part of commit 2a93c1a3651f ("net: dsa: Allow
+compiling out legacy support"), before actually deleting net/dsa/slave.c
+in 93e86b3bc842 ("net: dsa: Remove legacy probing support"). Along with
+that movement there should have been a deletion of the prototypes from
+dsa_priv.h, they are not useful.
 
-> One additional thought I had is that we may want to treat an
-> out-of-bounds reference the same as XPS not being enabled. So that we
-> would return a 0 mask instead of an error.  So instead of just
-> checking for "if (dev_maps)" we would check for "if (dev_maps && tc <
-> dev_maps->num_tc)".
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/dsa/dsa_priv.h |  9 ---------
+ net/dsa/slave.c    | 16 ++++++++--------
+ 2 files changed, 8 insertions(+), 17 deletions(-)
 
-Agreed, that would be good and less confusing for the user.
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 4f1bbaab72f2..3822520eeeae 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -110,15 +110,6 @@ void dsa_tag_driver_put(const struct dsa_device_ops *ops);
+ bool dsa_schedule_work(struct work_struct *work);
+ const char *dsa_tag_protocol_to_str(const struct dsa_device_ops *ops);
+ 
+-int dsa_legacy_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
+-		       struct net_device *dev,
+-		       const unsigned char *addr, u16 vid,
+-		       u16 flags,
+-		       struct netlink_ext_ack *extack);
+-int dsa_legacy_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
+-		       struct net_device *dev,
+-		       const unsigned char *addr, u16 vid);
+-
+ /* master.c */
+ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp);
+ void dsa_master_teardown(struct net_device *dev);
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index c8b842ac2600..f8b6a69b6873 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1575,20 +1575,20 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
+ };
+ 
+ /* legacy way, bypassing the bridge *****************************************/
+-int dsa_legacy_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
+-		       struct net_device *dev,
+-		       const unsigned char *addr, u16 vid,
+-		       u16 flags,
+-		       struct netlink_ext_ack *extack)
++static int dsa_legacy_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
++			      struct net_device *dev,
++			      const unsigned char *addr, u16 vid,
++			      u16 flags,
++			      struct netlink_ext_ack *extack)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 
+ 	return dsa_port_fdb_add(dp, addr, vid);
+ }
+ 
+-int dsa_legacy_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
+-		       struct net_device *dev,
+-		       const unsigned char *addr, u16 vid)
++static int dsa_legacy_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
++			      struct net_device *dev,
++			      const unsigned char *addr, u16 vid)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 
+-- 
+2.25.1
 
-> > > > > > > I think Jakub had mentioned earlier the idea of possibly movi=
-ng some
-> > > > > > > fields into the xps_cpus_map and xps_rxqs_map in order to red=
-uce the
-> > > > > > > complexity of this so that certain values would be protected =
-by the
-> > > > > > > RCU lock.
-> > > > > > >
-> > > > > > > This might be a good time to look at encoding things like the=
- number
-> > > > > > > of IDs and the number of TCs there in order to avoid a bunch =
-of this
-> > > > > > > duplication. Then you could just pass a pointer to the map yo=
-u want to
-> > > > > > > display and the code should be able to just dump the values.:
-> > > > > >
-> > > > > > 100% agree to all the above. That would also prevent from makin=
-g out of
-> > > > > > bound accesses when dev->num_tc is increased after dev_maps is
-> > > > > > allocated. I do have a series ready to be send storing num_tc i=
-nto the
-> > > > > > maps, and reworking code to use it instead of dev->num_tc. The =
-series
-> > > > > > also adds checks to ensure the map is valid when we access it (=
-such as
-> > > > > > making sure dev->num_tc =3D=3D map->num_tc). I however did not =
-move nr_ids
-> > > > > > into the map yet, but I'll look into it.
-> > > > > >
-> > > > > > The idea is to send it as a follow up series, as this one is on=
-ly moving
-> > > > > > code around to improve maintenance and readability. Even if all=
- the
-> > > > > > patches were in the same series that would be a prerequisite.
-> > > > >
-> > > > > Okay, so if we are going to do it as a follow-up that is fine I
-> > > > > suppose, but one of the reasons I brought it up is that it would =
-help
-> > > > > this patch set in terms of readability/maintainability. An additi=
-onal
-> > > > > change we could look at making would be to create an xps_map poin=
-ter
-> > > > > array instead of having individual pointers. Then you could simpl=
-y be
-> > > > > passing an index into the array to indicate if we are accessing t=
-he
-> > > > > CPUs or the RXQs map.
-> > > >
-> > > > Merging the two maps and embedding an offset in the struct? With the
-> > > > upcoming changes embedding information in the map themselves we sho=
-uld
-> > > > have a single check to know what map to use. Using a single array w=
-ith
-> > > > offsets would not improve that. Also maps maintenance when num_tc
-> > > > is updated would need to take care of both maps, having side effects
-> > > > such as removing the old rxqs map when allocating the cpus one (or =
-the
-> > > > opposite).
-> > >
-> > > Sorry, I didn't mean to merge the two maps. Just go from two pointers
-> > > to an array containing two pointers. Right now them sitting right next
-> > > to each other it becomes pretty easy to just convert them so that
-> > > instead of accessing them as:
-> > >
-> > > dev->xps_rxqs_map
-> > > dev->xps_cpus_map
-> > >
-> > > You could instead access them as:
-> > > dev->xps_map[XPS_RXQ];
-> > > dev->xps_map[XPS_CPU];
-> > >
-> > > Then instead of all the if/else logic we have in the code you just are
-> > > passing the index of the xps_map you want to access and we have the
-> > > nr_ids and num_tc all encoded in the map so the code itself. Then for
-> > > displaying we are just using the fields from the map to validate.
-> > >
-> > > We will still end up needing to take the rtnl_lock for the
-> > > __netif_set_xps_queue case, however that should be the only case where
-> > > we really need it as we have to re-read dev->num_tc and the
-> > > netdev_txq_to_tc and guarantee they don't change while we are
-> > > programming the map.
-> >
-> > Thanks for the detailed explanations. That indeed would be good.
->=20
-> It does simplify things quite a bit, at least for the display logic
-> since essentially all the secondary values that tell us the size and
-> shape of the XPS map would essentially be stored in the map itself
-> now.
->=20
-> Odds are we could probably consolidate __netif_set_xps_queues quite a
-> bit with this as well. From what I can tell it looks like we could
-> probably default nr_ids to dev->num_rx_queues and then if we are doing
-> a CPU based map then we overwrite nr_ids with nr_cpu_ids and populate
-> the online mask.
-
-Sure.
-
-All right, I'll cook up a v2 for this series and take the other comments
-and suggestions into account for the follow-up one.
-
-Thanks!
-Antoine
