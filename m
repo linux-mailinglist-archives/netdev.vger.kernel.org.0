@@ -2,67 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBDE52EFAE9
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 23:13:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71B482EFAEB
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 23:15:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725926AbhAHWMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 17:12:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
+        id S1725942AbhAHWOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 17:14:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725763AbhAHWMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 17:12:15 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C47C061574
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 14:11:35 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id q20so3832358pfu.8
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 14:11:35 -0800 (PST)
+        with ESMTP id S1725306AbhAHWOV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 17:14:21 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114ACC061574
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 14:13:41 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id t22so7124577pfl.3
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 14:13:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4I0tJAk+cUmn2wC4VdkdEug/HHsCWzDOcLJuPn0EcSY=;
-        b=qO3t7ZI38xq6gLK/NwYJnJuvRK8ReteAU/NZkrvi/fSXJqSD8J8sDASTY1moxfLejg
-         Q6wpR3hW406Lw9NzLTxOm0MKgWdbEN+B1SiwNJ8TO1CSyKbkgyxB2V+2rJeE76jGgq8X
-         +tRKDfhkczyERfx9LBygXOveBG+pGMFA9EVx4FU/lbH1kZrqjdZxw5DoKVuPDF1tIzEM
-         EmU8YNd9rDTMr/mOunZZiOs/j0FGwWopiKisEZqgM8q8FYCE04LOB0290jDTgPZPgP1C
-         ylc7YJSmDEASg51FsKB+Y4em0//RFcvechcZac0MXUr2JAr9Jr+HwzgMbsZXL6nhh+zp
-         PaEA==
+        bh=0NUec21W1ygwTqOHelx4G0cMpmBhgJ38Lw/xv71VqIk=;
+        b=rYNl6kKXFFvXAlOG5bZLV8w2f4IuvcgYBv7Qr924mZNdVTo+QrmMD/p34xNRXRHnq2
+         cOlTKW2SGtvRcsbeVNKl/KlVYAOJ1eDQtabtHvQriYJUqN2rB0XtPewPwQ3K7xe8xCG6
+         hjEO16GWKmoPo4RAfQ3H83KgTKA/YgtBRNnXj+4eCwJucXUEaKqytF4eWZanCyUgggET
+         abOO7cZtvowfB3HlSFniB/v8pZB8L4wbnnXAckSw5XOoRHqa/9lhwGfRWzImgfjCH/0+
+         xbzGGccZCdvfJoYfN/5MgJEyPT0/9TOBB79Drcg7B3Wlt4ciDj8xaFBQ04Dy6XxQKRBE
+         TaFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=4I0tJAk+cUmn2wC4VdkdEug/HHsCWzDOcLJuPn0EcSY=;
-        b=A5trjh0X2H8fUDjRoYlZDMFGtlP1wJzWn5E6U7CYFyc/3zjXDE0/BynZ415ZxzsAaO
-         2G20CjtTwQ0P6B8V5W2+cqkvq/BuWz2pOeRjul12WsuMxR6zkG2eHa5Rng+JTlPQyGfF
-         4N5RCnOHCVnY6/OdxJiHM3RqKWlOPyC5XXdPKqRjnEF0Io8P28SaiGPJFiwwxwb0LN0k
-         Xkt9nFnBH8DlO5TerDlABmVpt+Z2ojjIqRUeP7frlmRJGOJK7I9n8vlxD3gPIa8AzR38
-         cX+WPK0UEl2Fu3ONp0MXB8j0Sv820YIZ6RSmoD17NeX8cGHSD+51yAsJCtKryflRwCVE
-         XbJQ==
-X-Gm-Message-State: AOAM5326jnRHeSWWDVe4hqzaUxWXhLqyVQXboJcu18xKXz4qxop8OU8l
-        uLj28v/+Xrr28LmChZwcHCCEuanDCAg=
-X-Google-Smtp-Source: ABdhPJwi3x+YySoXci4S9BLNc6TRUrMzoZCg91AiSDyhSPYlrDhRnHQHBuenY3riqF73Mf+q5VcUDQ==
-X-Received: by 2002:a63:752:: with SMTP id 79mr8927990pgh.272.1610143894269;
-        Fri, 08 Jan 2021 14:11:34 -0800 (PST)
-Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d2sm5673926pjd.29.2021.01.08.14.11.32
+        bh=0NUec21W1ygwTqOHelx4G0cMpmBhgJ38Lw/xv71VqIk=;
+        b=Y1HxTHlhULQ4Z03rwYt/Gf875EzkVYa55VF8nr+AbOwADFyr0xBZ8x3AxmpwHoYidO
+         XTAYibVZUpUDi5XafI3CSS12LS6co+XI5cLjprTxFXNlAq6vRVpvwZvDt56wQ3906beV
+         tiejDB9tmJZFTaQTB42q73nH/id/56oCnkzqaSZ6oBNf36eldxUVd26+2vFoA9C8rtuT
+         VJZjyaPi1Jb3U15y4RQw7nVgVnmaI6ESPqEfz8+tojNfAMKMU7wKHNkXwzGSUQ1NoUn5
+         9/1f+Qbg5jSIuApLtfzT02yYrOl4ZVhoacuLBRDsrKhP27mC3TzF8lzPmdGkE8U0ADZQ
+         olLA==
+X-Gm-Message-State: AOAM532h/nQk8bN0v9jt1yJGE3JHT8yX/D/xS8pxgQ5btioD7Mq1wbLK
+        xillLHzHUQto8igCsxa1iMc=
+X-Google-Smtp-Source: ABdhPJwNTAmcHZd6PALGr21DcDwwasr/PYLPhJm66SUtFO2uVmFSdpW8mRAAdt8fdWl9BuZTUTeSrg==
+X-Received: by 2002:a05:6a00:885:b029:19b:9057:16f with SMTP id q5-20020a056a000885b029019b9057016fmr5567449pfj.80.1610144020410;
+        Fri, 08 Jan 2021 14:13:40 -0800 (PST)
+Received: from [10.230.191.242] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id v15sm9656658pfn.217.2021.01.08.14.13.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jan 2021 14:11:33 -0800 (PST)
-Subject: Re: MDIO over I2C driver driver probe dependency issue
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Brian Silverman <silvermanbri@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <CAJKO-jaewzeB2X-hZ4EiZiyvaKqH=B0CrhvC_buqfMTcns-b-w@mail.gmail.com>
- <4606bd55-55a6-1e81-a23b-f06230ffdb52@gmail.com> <X/hhT4Sz9FU4kiDe@lunn.ch>
- <CAJKO-jYwineOM5wc+FX=Nj3AOfKK06qK-iqQSP3uQufNRnuGWQ@mail.gmail.com>
- <X/jIx/brD6Aw+4sk@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <68bfbe38-5a3a-598c-25d7-dad33253ee9f@gmail.com>
-Date:   Fri, 8 Jan 2021 14:11:31 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.6.0
+        Fri, 08 Jan 2021 14:13:39 -0800 (PST)
+Subject: Re: [PATCH V2 net-next 2/3] net: broadcom: share header defining
+ UniMAC registers
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <ray.jui@broadcom.com>,
+        Arun Parameswaran <arun.parameswaran@broadcom.com>,
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Timur Tabi <timur@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20210107180051.1542-1-zajec5@gmail.com>
+ <20210107180051.1542-2-zajec5@gmail.com>
+From:   Doug Berger <opendmb@gmail.com>
+Message-ID: <f99a0105-c578-c957-8bda-78e7487edbc8@gmail.com>
+Date:   Fri, 8 Jan 2021 14:13:37 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-In-Reply-To: <X/jIx/brD6Aw+4sk@lunn.ch>
+In-Reply-To: <20210107180051.1542-2-zajec5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -70,39 +78,578 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/8/2021 1:04 PM, Andrew Lunn wrote:
-> On Fri, Jan 08, 2021 at 03:02:52PM -0500, Brian Silverman wrote:
->> Thanks for the responses - I now have a more clear picture of what's going on.
->>  (Note: I'm using Xilinx's 2019.2 kernel (based off 4.19).  I believe it would
->> be similar to latest kernels, but I could be wrong.)
+On 1/7/2021 10:00 AM, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> Hi Brian
+> UniMAC is integrated into multiple Broadcom's Ethernet controllers so
+> use a shared header file for it and avoid some code duplication.
 > 
-> macb_main has had a lot of changes with respect to PHYs. Please try
-> something modern, like 5.10.
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+> V2: Open code (n << 1) to avoid UL values. This way defines can be used with
+>     u32.
+> ---
+>  MAINTAINERS                                   |  2 +
+>  drivers/net/ethernet/broadcom/bcmsysport.h    | 35 +------
+>  drivers/net/ethernet/broadcom/bgmac.c         | 98 +++++++++----------
+>  drivers/net/ethernet/broadcom/bgmac.h         | 50 ++--------
+>  .../net/ethernet/broadcom/genet/bcmgenet.h    | 59 +----------
+>  drivers/net/ethernet/broadcom/genet/bcmmii.c  |  6 +-
+>  drivers/net/ethernet/broadcom/unimac.h        | 68 +++++++++++++
+>  7 files changed, 132 insertions(+), 186 deletions(-)
+>  create mode 100644 drivers/net/ethernet/broadcom/unimac.h
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 7c1e45c416b1..3de86229b17c 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3625,6 +3625,7 @@ S:	Supported
+>  F:	Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
+>  F:	Documentation/devicetree/bindings/net/brcm,unimac-mdio.txt
+>  F:	drivers/net/ethernet/broadcom/genet/
+> +F:	drivers/net/ethernet/broadcom/unimac.h
+>  F:	drivers/net/mdio/mdio-bcm-unimac.c
+>  F:	include/linux/platform_data/bcmgenet.h
+>  F:	include/linux/platform_data/mdio-bcm-unimac.h
+> @@ -3737,6 +3738,7 @@ L:	bcm-kernel-feedback-list@broadcom.com
+>  L:	netdev@vger.kernel.org
+>  S:	Supported
+>  F:	drivers/net/ethernet/broadcom/bcmsysport.*
+> +F:	drivers/net/ethernet/broadcom/unimac.h
+>  
+>  BROADCOM TG3 GIGABIT ETHERNET DRIVER
+>  M:	Siva Reddy Kallam <siva.kallam@broadcom.com>
+> diff --git a/drivers/net/ethernet/broadcom/bcmsysport.h b/drivers/net/ethernet/broadcom/bcmsysport.h
+> index 3a5cb6f128f5..a76c24c1af6d 100644
+> --- a/drivers/net/ethernet/broadcom/bcmsysport.h
+> +++ b/drivers/net/ethernet/broadcom/bcmsysport.h
+> @@ -13,6 +13,8 @@
+>  #include <linux/if_vlan.h>
+>  #include <linux/dim.h>
+>  
+> +#include "unimac.h"
+> +
+>  /* Receive/transmit descriptor format */
+>  #define DESC_ADDR_HI_STATUS_LEN	0x00
+>  #define  DESC_ADDR_HI_SHIFT	0
+> @@ -213,39 +215,6 @@ struct bcm_rsb {
+>  /* UniMAC offset and defines */
+>  #define SYS_PORT_UMAC_OFFSET		0x800
+>  
+> -#define UMAC_CMD			0x008
+> -#define  CMD_TX_EN			(1 << 0)
+> -#define  CMD_RX_EN			(1 << 1)
+> -#define  CMD_SPEED_SHIFT		2
+> -#define  CMD_SPEED_10			0
+> -#define  CMD_SPEED_100			1
+> -#define  CMD_SPEED_1000			2
+> -#define  CMD_SPEED_2500			3
+> -#define  CMD_SPEED_MASK			3
+> -#define  CMD_PROMISC			(1 << 4)
+> -#define  CMD_PAD_EN			(1 << 5)
+> -#define  CMD_CRC_FWD			(1 << 6)
+> -#define  CMD_PAUSE_FWD			(1 << 7)
+> -#define  CMD_RX_PAUSE_IGNORE		(1 << 8)
+> -#define  CMD_TX_ADDR_INS		(1 << 9)
+> -#define  CMD_HD_EN			(1 << 10)
+> -#define  CMD_SW_RESET			(1 << 13)
+> -#define  CMD_LCL_LOOP_EN		(1 << 15)
+> -#define  CMD_AUTO_CONFIG		(1 << 22)
+> -#define  CMD_CNTL_FRM_EN		(1 << 23)
+> -#define  CMD_NO_LEN_CHK			(1 << 24)
+> -#define  CMD_RMT_LOOP_EN		(1 << 25)
+> -#define  CMD_PRBL_EN			(1 << 27)
+> -#define  CMD_TX_PAUSE_IGNORE		(1 << 28)
+> -#define  CMD_TX_RX_EN			(1 << 29)
+> -#define  CMD_RUNT_FILTER_DIS		(1 << 30)
+> -
+> -#define UMAC_MAC0			0x00c
+> -#define UMAC_MAC1			0x010
+> -#define UMAC_MAX_FRAME_LEN		0x014
+> -
+> -#define UMAC_TX_FLUSH			0x334
+> -
+>  #define UMAC_MIB_START			0x400
+>  
+>  /* There is a 0xC gap between the end of RX and beginning of TX stats and then
+> diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
+> index b8b2538303ed..075f6e146b29 100644
+> --- a/drivers/net/ethernet/broadcom/bgmac.c
+> +++ b/drivers/net/ethernet/broadcom/bgmac.c
+> @@ -749,22 +749,22 @@ static int bgmac_dma_init(struct bgmac *bgmac)
+>  static void bgmac_umac_cmd_maskset(struct bgmac *bgmac, u32 mask, u32 set,
+>  				   bool force)
+>  {
+> -	u32 cmdcfg = bgmac_umac_read(bgmac, BGMAC_CMDCFG);
+> +	u32 cmdcfg = bgmac_umac_read(bgmac, UMAC_CMD);
+>  	u32 new_val = (cmdcfg & mask) | set;
+>  	u32 cmdcfg_sr;
+>  
+>  	if (bgmac->feature_flags & BGMAC_FEAT_CMDCFG_SR_REV4)
+> -		cmdcfg_sr = BGMAC_CMDCFG_SR_REV4;
+> +		cmdcfg_sr = CMD_SW_RESET;
+>  	else
+> -		cmdcfg_sr = BGMAC_CMDCFG_SR_REV0;
+> +		cmdcfg_sr = CMD_SW_RESET_OLD;
+>  
+> -	bgmac_umac_maskset(bgmac, BGMAC_CMDCFG, ~0, cmdcfg_sr);
+> +	bgmac_umac_maskset(bgmac, UMAC_CMD, ~0, cmdcfg_sr);
+>  	udelay(2);
+>  
+>  	if (new_val != cmdcfg || force)
+> -		bgmac_umac_write(bgmac, BGMAC_CMDCFG, new_val);
+> +		bgmac_umac_write(bgmac, UMAC_CMD, new_val);
+>  
+> -	bgmac_umac_maskset(bgmac, BGMAC_CMDCFG, ~cmdcfg_sr, 0);
+> +	bgmac_umac_maskset(bgmac, UMAC_CMD, ~cmdcfg_sr, 0);
+>  	udelay(2);
+>  }
+>  
+> @@ -773,9 +773,9 @@ static void bgmac_write_mac_address(struct bgmac *bgmac, u8 *addr)
+>  	u32 tmp;
+>  
+>  	tmp = (addr[0] << 24) | (addr[1] << 16) | (addr[2] << 8) | addr[3];
+> -	bgmac_umac_write(bgmac, BGMAC_MACADDR_HIGH, tmp);
+> +	bgmac_umac_write(bgmac, UMAC_MAC0, tmp);
+>  	tmp = (addr[4] << 8) | addr[5];
+> -	bgmac_umac_write(bgmac, BGMAC_MACADDR_LOW, tmp);
+> +	bgmac_umac_write(bgmac, UMAC_MAC1, tmp);
+>  }
+>  
+>  static void bgmac_set_rx_mode(struct net_device *net_dev)
+> @@ -783,9 +783,9 @@ static void bgmac_set_rx_mode(struct net_device *net_dev)
+>  	struct bgmac *bgmac = netdev_priv(net_dev);
+>  
+>  	if (net_dev->flags & IFF_PROMISC)
+> -		bgmac_umac_cmd_maskset(bgmac, ~0, BGMAC_CMDCFG_PROM, true);
+> +		bgmac_umac_cmd_maskset(bgmac, ~0, CMD_PROMISC, true);
+>  	else
+> -		bgmac_umac_cmd_maskset(bgmac, ~BGMAC_CMDCFG_PROM, 0, true);
+> +		bgmac_umac_cmd_maskset(bgmac, ~CMD_PROMISC, 0, true);
+>  }
+>  
+>  #if 0 /* We don't use that regs yet */
+> @@ -825,21 +825,21 @@ static void bgmac_clear_mib(struct bgmac *bgmac)
+>  /* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/gmac_speed */
+>  static void bgmac_mac_speed(struct bgmac *bgmac)
+>  {
+> -	u32 mask = ~(BGMAC_CMDCFG_ES_MASK | BGMAC_CMDCFG_HD);
+> +	u32 mask = ~(CMD_SPEED_MASK << CMD_SPEED_SHIFT | CMD_HD_EN);
+>  	u32 set = 0;
+>  
+>  	switch (bgmac->mac_speed) {
+>  	case SPEED_10:
+> -		set |= BGMAC_CMDCFG_ES_10;
+> +		set |= CMD_SPEED_10 << CMD_SPEED_SHIFT;
+>  		break;
+>  	case SPEED_100:
+> -		set |= BGMAC_CMDCFG_ES_100;
+> +		set |= CMD_SPEED_100 << CMD_SPEED_SHIFT;
+>  		break;
+>  	case SPEED_1000:
+> -		set |= BGMAC_CMDCFG_ES_1000;
+> +		set |= CMD_SPEED_1000 << CMD_SPEED_SHIFT;
+>  		break;
+>  	case SPEED_2500:
+> -		set |= BGMAC_CMDCFG_ES_2500;
+> +		set |= CMD_SPEED_2500 << CMD_SPEED_SHIFT;
+>  		break;
+>  	default:
+>  		dev_err(bgmac->dev, "Unsupported speed: %d\n",
+> @@ -847,7 +847,7 @@ static void bgmac_mac_speed(struct bgmac *bgmac)
+>  	}
+>  
+>  	if (bgmac->mac_duplex == DUPLEX_HALF)
+> -		set |= BGMAC_CMDCFG_HD;
+> +		set |= CMD_HD_EN;
+>  
+>  	bgmac_umac_cmd_maskset(bgmac, mask, set, true);
+>  }
+> @@ -917,7 +917,7 @@ static void bgmac_chip_reset(struct bgmac *bgmac)
+>  		for (i = 0; i < BGMAC_MAX_TX_RINGS; i++)
+>  			bgmac_dma_tx_reset(bgmac, &bgmac->tx_ring[i]);
+>  
+> -		bgmac_umac_cmd_maskset(bgmac, ~0, BGMAC_CMDCFG_ML, false);
+> +		bgmac_umac_cmd_maskset(bgmac, ~0, CMD_LCL_LOOP_EN, false);
+>  		udelay(1);
+>  
+>  		for (i = 0; i < BGMAC_MAX_RX_RINGS; i++)
+> @@ -986,32 +986,32 @@ static void bgmac_chip_reset(struct bgmac *bgmac)
+>  	}
+>  
+>  	/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/gmac_reset
+> -	 * Specs don't say about using BGMAC_CMDCFG_SR, but in this routine
+> -	 * BGMAC_CMDCFG is read _after_ putting chip in a reset. So it has to
+> +	 * Specs don't say about using UMAC_CMD_SR, but in this routine
+> +	 * UMAC_CMD is read _after_ putting chip in a reset. So it has to
+>  	 * be keps until taking MAC out of the reset.
+>  	 */
+>  	if (bgmac->feature_flags & BGMAC_FEAT_CMDCFG_SR_REV4)
+> -		cmdcfg_sr = BGMAC_CMDCFG_SR_REV4;
+> +		cmdcfg_sr = CMD_SW_RESET;
+>  	else
+> -		cmdcfg_sr = BGMAC_CMDCFG_SR_REV0;
+> +		cmdcfg_sr = CMD_SW_RESET_OLD;
+>  
+>  	bgmac_umac_cmd_maskset(bgmac,
+> -			       ~(BGMAC_CMDCFG_TE |
+> -				 BGMAC_CMDCFG_RE |
+> -				 BGMAC_CMDCFG_RPI |
+> -				 BGMAC_CMDCFG_TAI |
+> -				 BGMAC_CMDCFG_HD |
+> -				 BGMAC_CMDCFG_ML |
+> -				 BGMAC_CMDCFG_CFE |
+> -				 BGMAC_CMDCFG_RL |
+> -				 BGMAC_CMDCFG_RED |
+> -				 BGMAC_CMDCFG_PE |
+> -				 BGMAC_CMDCFG_TPI |
+> -				 BGMAC_CMDCFG_PAD_EN |
+> -				 BGMAC_CMDCFG_PF),
+> -			       BGMAC_CMDCFG_PROM |
+> -			       BGMAC_CMDCFG_NLC |
+> -			       BGMAC_CMDCFG_CFE |
+> +			       ~(CMD_TX_EN |
+> +				 CMD_RX_EN |
+> +				 CMD_RX_PAUSE_IGNORE |
+> +				 CMD_TX_ADDR_INS |
+> +				 CMD_HD_EN |
+> +				 CMD_LCL_LOOP_EN |
+> +				 CMD_CNTL_FRM_EN |
+> +				 CMD_RMT_LOOP_EN |
+> +				 CMD_RX_ERR_DISC |
+> +				 CMD_PRBL_EN |
+> +				 CMD_TX_PAUSE_IGNORE |
+> +				 CMD_PAD_EN |
+> +				 CMD_PAUSE_FWD),
+> +			       CMD_PROMISC |
+> +			       CMD_NO_LEN_CHK |
+> +			       CMD_CNTL_FRM_EN |
+>  			       cmdcfg_sr,
+>  			       false);
+>  	bgmac->mac_speed = SPEED_UNKNOWN;
+> @@ -1049,16 +1049,16 @@ static void bgmac_enable(struct bgmac *bgmac)
+>  	u32 mode;
+>  
+>  	if (bgmac->feature_flags & BGMAC_FEAT_CMDCFG_SR_REV4)
+> -		cmdcfg_sr = BGMAC_CMDCFG_SR_REV4;
+> +		cmdcfg_sr = CMD_SW_RESET;
+>  	else
+> -		cmdcfg_sr = BGMAC_CMDCFG_SR_REV0;
+> +		cmdcfg_sr = CMD_SW_RESET_OLD;
+>  
+> -	cmdcfg = bgmac_umac_read(bgmac, BGMAC_CMDCFG);
+> -	bgmac_umac_cmd_maskset(bgmac, ~(BGMAC_CMDCFG_TE | BGMAC_CMDCFG_RE),
+> +	cmdcfg = bgmac_umac_read(bgmac, UMAC_CMD);
+> +	bgmac_umac_cmd_maskset(bgmac, ~(CMD_TX_EN | CMD_RX_EN),
+>  			       cmdcfg_sr, true);
+>  	udelay(2);
+> -	cmdcfg |= BGMAC_CMDCFG_TE | BGMAC_CMDCFG_RE;
+> -	bgmac_umac_write(bgmac, BGMAC_CMDCFG, cmdcfg);
+> +	cmdcfg |= CMD_TX_EN | CMD_RX_EN;
+> +	bgmac_umac_write(bgmac, UMAC_CMD, cmdcfg);
+>  
+>  	mode = (bgmac_read(bgmac, BGMAC_DEV_STATUS) & BGMAC_DS_MM_MASK) >>
+>  		BGMAC_DS_MM_SHIFT;
+> @@ -1078,7 +1078,7 @@ static void bgmac_enable(struct bgmac *bgmac)
+>  			fl_ctl = 0x03cb04cb;
+>  
+>  		bgmac_write(bgmac, BGMAC_FLOW_CTL_THRESH, fl_ctl);
+> -		bgmac_umac_write(bgmac, BGMAC_PAUSE_CTL, 0x27fff);
+> +		bgmac_umac_write(bgmac, UMAC_PAUSE_CTRL, 0x27fff);
+>  	}
+>  
+>  	if (bgmac->feature_flags & BGMAC_FEAT_SET_RXQ_CLK) {
+> @@ -1105,18 +1105,18 @@ static void bgmac_chip_init(struct bgmac *bgmac)
+>  	bgmac_write(bgmac, BGMAC_INT_RECV_LAZY, 1 << BGMAC_IRL_FC_SHIFT);
+>  
+>  	/* Enable 802.3x tx flow control (honor received PAUSE frames) */
+> -	bgmac_umac_cmd_maskset(bgmac, ~BGMAC_CMDCFG_RPI, 0, true);
+> +	bgmac_umac_cmd_maskset(bgmac, ~CMD_RX_PAUSE_IGNORE, 0, true);
+>  
+>  	bgmac_set_rx_mode(bgmac->net_dev);
+>  
+>  	bgmac_write_mac_address(bgmac, bgmac->net_dev->dev_addr);
+>  
+>  	if (bgmac->loopback)
+> -		bgmac_umac_cmd_maskset(bgmac, ~0, BGMAC_CMDCFG_ML, false);
+> +		bgmac_umac_cmd_maskset(bgmac, ~0, CMD_LCL_LOOP_EN, false);
+>  	else
+> -		bgmac_umac_cmd_maskset(bgmac, ~BGMAC_CMDCFG_ML, 0, false);
+> +		bgmac_umac_cmd_maskset(bgmac, ~CMD_LCL_LOOP_EN, 0, false);
+>  
+> -	bgmac_umac_write(bgmac, BGMAC_RXMAX_LENGTH, 32 + ETHER_MAX_LEN);
+> +	bgmac_umac_write(bgmac, UMAC_MAX_FRAME_LEN, 32 + ETHER_MAX_LEN);
+>  
+>  	bgmac_chip_intrs_on(bgmac);
+>  
+> @@ -1252,7 +1252,7 @@ static int bgmac_change_mtu(struct net_device *net_dev, int mtu)
+>  {
+>  	struct bgmac *bgmac = netdev_priv(net_dev);
+>  
+> -	bgmac_umac_write(bgmac, BGMAC_RXMAX_LENGTH, 32 + mtu);
+> +	bgmac_umac_write(bgmac, UMAC_MAX_FRAME_LEN, 32 + mtu);
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/net/ethernet/broadcom/bgmac.h b/drivers/net/ethernet/broadcom/bgmac.h
+> index c069107d0d95..110088e662ea 100644
+> --- a/drivers/net/ethernet/broadcom/bgmac.h
+> +++ b/drivers/net/ethernet/broadcom/bgmac.h
+> @@ -4,6 +4,8 @@
+>  
+>  #include <linux/netdevice.h>
+>  
+> +#include "unimac.h"
+> +
+>  #define BGMAC_DEV_CTL				0x000
+>  #define  BGMAC_DC_TSM				0x00000002
+>  #define  BGMAC_DC_CFCO				0x00000004
+> @@ -169,47 +171,7 @@
+>  #define BGMAC_RX_NONPAUSE_PKTS			0x420
+>  #define BGMAC_RX_SACHANGES			0x424
+>  #define BGMAC_RX_UNI_PKTS			0x428
+> -#define BGMAC_UNIMAC_VERSION			0x800
+> -#define BGMAC_HDBKP_CTL				0x804
+> -#define BGMAC_CMDCFG				0x808		/* Configuration */
+> -#define  BGMAC_CMDCFG_TE			0x00000001	/* Set to activate TX */
+> -#define  BGMAC_CMDCFG_RE			0x00000002	/* Set to activate RX */
+> -#define  BGMAC_CMDCFG_ES_MASK			0x0000000c	/* Ethernet speed see gmac_speed */
+> -#define   BGMAC_CMDCFG_ES_10			0x00000000
+> -#define   BGMAC_CMDCFG_ES_100			0x00000004
+> -#define   BGMAC_CMDCFG_ES_1000			0x00000008
+> -#define   BGMAC_CMDCFG_ES_2500			0x0000000C
+> -#define  BGMAC_CMDCFG_PROM			0x00000010	/* Set to activate promiscuous mode */
+> -#define  BGMAC_CMDCFG_PAD_EN			0x00000020
+> -#define  BGMAC_CMDCFG_CF			0x00000040
+> -#define  BGMAC_CMDCFG_PF			0x00000080
+> -#define  BGMAC_CMDCFG_RPI			0x00000100	/* Unset to enable 802.3x tx flow control */
+> -#define  BGMAC_CMDCFG_TAI			0x00000200
+> -#define  BGMAC_CMDCFG_HD			0x00000400	/* Set if in half duplex mode */
+> -#define  BGMAC_CMDCFG_HD_SHIFT			10
+> -#define  BGMAC_CMDCFG_SR_REV0			0x00000800	/* Set to reset mode, for core rev 0-3 */
+> -#define  BGMAC_CMDCFG_SR_REV4			0x00002000	/* Set to reset mode, for core rev >= 4 */
+> -#define  BGMAC_CMDCFG_ML			0x00008000	/* Set to activate mac loopback mode */
+> -#define  BGMAC_CMDCFG_AE			0x00400000
+> -#define  BGMAC_CMDCFG_CFE			0x00800000
+> -#define  BGMAC_CMDCFG_NLC			0x01000000
+> -#define  BGMAC_CMDCFG_RL			0x02000000
+> -#define  BGMAC_CMDCFG_RED			0x04000000
+> -#define  BGMAC_CMDCFG_PE			0x08000000
+> -#define  BGMAC_CMDCFG_TPI			0x10000000
+> -#define  BGMAC_CMDCFG_AT			0x20000000
+> -#define BGMAC_MACADDR_HIGH			0x80c		/* High 4 octets of own mac address */
+> -#define BGMAC_MACADDR_LOW			0x810		/* Low 2 octets of own mac address */
+> -#define BGMAC_RXMAX_LENGTH			0x814		/* Max receive frame length with vlan tag */
+> -#define BGMAC_PAUSEQUANTA			0x818
+> -#define BGMAC_MAC_MODE				0x844
+> -#define BGMAC_OUTERTAG				0x848
+> -#define BGMAC_INNERTAG				0x84c
+> -#define BGMAC_TXIPG				0x85c
+> -#define BGMAC_PAUSE_CTL				0xb30
+> -#define BGMAC_TX_FLUSH				0xb34
+> -#define BGMAC_RX_STATUS				0xb38
+> -#define BGMAC_TX_STATUS				0xb3c
+> +#define BGMAC_UNIMAC				0x800
+>  
+>  /* BCMA GMAC core specific IO Control (BCMA_IOCTL) flags */
+>  #define BGMAC_BCMA_IOCTL_SW_CLKEN		0x00000004	/* PHY Clock Enable */
+> @@ -558,12 +520,12 @@ static inline void bgmac_write(struct bgmac *bgmac, u16 offset, u32 value)
+>  
+>  static inline u32 bgmac_umac_read(struct bgmac *bgmac, u16 offset)
+>  {
+> -	return bgmac_read(bgmac, offset);
+> +	return bgmac_read(bgmac, BGMAC_UNIMAC + offset);
+>  }
+>  
+>  static inline void bgmac_umac_write(struct bgmac *bgmac, u16 offset, u32 value)
+>  {
+> -	bgmac_write(bgmac, offset, value);
+> +	bgmac_write(bgmac, BGMAC_UNIMAC + offset, value);
+>  }
+>  
+>  static inline u32 bgmac_idm_read(struct bgmac *bgmac, u16 offset)
+> @@ -621,7 +583,7 @@ static inline void bgmac_set(struct bgmac *bgmac, u16 offset, u32 set)
+>  
+>  static inline void bgmac_umac_maskset(struct bgmac *bgmac, u16 offset, u32 mask, u32 set)
+>  {
+> -	bgmac_maskset(bgmac, offset, mask, set);
+> +	bgmac_maskset(bgmac, BGMAC_UNIMAC + offset, mask, set);
+>  }
+>  
+>  static inline int bgmac_phy_connect(struct bgmac *bgmac)
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+> index f6ca01da141d..0a6d91b0f0aa 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+> @@ -16,6 +16,8 @@
+>  #include <linux/dim.h>
+>  #include <linux/ethtool.h>
+>  
+> +#include "../unimac.h"
+> +
+>  /* total number of Buffer Descriptors, same for Rx/Tx */
+>  #define TOTAL_DESC				256
+>  
+> @@ -150,63 +152,6 @@ struct bcmgenet_mib_counters {
+>  	u32	tx_realloc_tsb_failed;
+>  };
+>  
+> -#define UMAC_HD_BKP_CTRL		0x004
+> -#define	 HD_FC_EN			(1 << 0)
+> -#define  HD_FC_BKOFF_OK			(1 << 1)
+> -#define  IPG_CONFIG_RX_SHIFT		2
+> -#define  IPG_CONFIG_RX_MASK		0x1F
+> -
+> -#define UMAC_CMD			0x008
+> -#define  CMD_TX_EN			(1 << 0)
+> -#define  CMD_RX_EN			(1 << 1)
+> -#define  UMAC_SPEED_10			0
+> -#define  UMAC_SPEED_100			1
+> -#define  UMAC_SPEED_1000		2
+> -#define  UMAC_SPEED_2500		3
+> -#define  CMD_SPEED_SHIFT		2
+> -#define  CMD_SPEED_MASK			3
+> -#define  CMD_PROMISC			(1 << 4)
+> -#define  CMD_PAD_EN			(1 << 5)
+> -#define  CMD_CRC_FWD			(1 << 6)
+> -#define  CMD_PAUSE_FWD			(1 << 7)
+> -#define  CMD_RX_PAUSE_IGNORE		(1 << 8)
+> -#define  CMD_TX_ADDR_INS		(1 << 9)
+> -#define  CMD_HD_EN			(1 << 10)
+> -#define  CMD_SW_RESET			(1 << 13)
+> -#define  CMD_LCL_LOOP_EN		(1 << 15)
+> -#define  CMD_AUTO_CONFIG		(1 << 22)
+> -#define  CMD_CNTL_FRM_EN		(1 << 23)
+> -#define  CMD_NO_LEN_CHK			(1 << 24)
+> -#define  CMD_RMT_LOOP_EN		(1 << 25)
+> -#define  CMD_PRBL_EN			(1 << 27)
+> -#define  CMD_TX_PAUSE_IGNORE		(1 << 28)
+> -#define  CMD_TX_RX_EN			(1 << 29)
+> -#define  CMD_RUNT_FILTER_DIS		(1 << 30)
+> -
+> -#define UMAC_MAC0			0x00C
+> -#define UMAC_MAC1			0x010
+> -#define UMAC_MAX_FRAME_LEN		0x014
+> -
+> -#define UMAC_MODE			0x44
+> -#define  MODE_LINK_STATUS		(1 << 5)
+> -
+> -#define UMAC_EEE_CTRL			0x064
+> -#define  EN_LPI_RX_PAUSE		(1 << 0)
+> -#define  EN_LPI_TX_PFC			(1 << 1)
+> -#define  EN_LPI_TX_PAUSE		(1 << 2)
+> -#define  EEE_EN				(1 << 3)
+> -#define  RX_FIFO_CHECK			(1 << 4)
+> -#define  EEE_TX_CLK_DIS			(1 << 5)
+> -#define  DIS_EEE_10M			(1 << 6)
+> -#define  LP_IDLE_PREDICTION_MODE	(1 << 7)
+> -
+> -#define UMAC_EEE_LPI_TIMER		0x068
+> -#define UMAC_EEE_WAKE_TIMER		0x06C
+> -#define UMAC_EEE_REF_COUNT		0x070
+> -#define  EEE_REFERENCE_COUNT_MASK	0xffff
+> -
+> -#define UMAC_TX_FLUSH			0x334
+> -
+>  #define UMAC_MIB_START			0x400
+>  
+>  #define UMAC_MDIO_CMD			0x614
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> index 6fb6c3556285..17f997ef950f 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+> @@ -63,11 +63,11 @@ void bcmgenet_mii_setup(struct net_device *dev)
+>  
+>  		/* speed */
+>  		if (phydev->speed == SPEED_1000)
+> -			cmd_bits = UMAC_SPEED_1000;
+> +			cmd_bits = CMD_SPEED_1000;
+>  		else if (phydev->speed == SPEED_100)
+> -			cmd_bits = UMAC_SPEED_100;
+> +			cmd_bits = CMD_SPEED_100;
+>  		else
+> -			cmd_bits = UMAC_SPEED_10;
+> +			cmd_bits = CMD_SPEED_10;
+>  		cmd_bits <<= CMD_SPEED_SHIFT;
+>  
+>  		/* duplex */
+> diff --git a/drivers/net/ethernet/broadcom/unimac.h b/drivers/net/ethernet/broadcom/unimac.h
+> new file mode 100644
+> index 000000000000..585a85286257
+> --- /dev/null
+> +++ b/drivers/net/ethernet/broadcom/unimac.h
+> @@ -0,0 +1,68 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +#ifndef __UNIMAC_H
+> +#define __UNIMAC_H
+> +
+> +#define UMAC_HD_BKP_CTRL		0x004
+> +#define  HD_FC_EN			(1 << 0)
+> +#define  HD_FC_BKOFF_OK			(1 << 1)
+> +#define  IPG_CONFIG_RX_SHIFT		2
+> +#define  IPG_CONFIG_RX_MASK		0x1F
+> +#define UMAC_CMD			0x008
+> +#define  CMD_TX_EN			(1 << 0)
+> +#define  CMD_RX_EN			(1 << 1)
+> +#define  CMD_SPEED_10			0
+> +#define  CMD_SPEED_100			1
+> +#define  CMD_SPEED_1000			2
+> +#define  CMD_SPEED_2500			3
+> +#define  CMD_SPEED_SHIFT		2
+> +#define  CMD_SPEED_MASK			3
+> +#define  CMD_PROMISC			(1 << 4)
+> +#define  CMD_PAD_EN			(1 << 5)
+> +#define  CMD_CRC_FWD			(1 << 6)
+> +#define  CMD_PAUSE_FWD			(1 << 7)
+> +#define  CMD_RX_PAUSE_IGNORE		(1 << 8)
+> +#define  CMD_TX_ADDR_INS		(1 << 9)
+> +#define  CMD_HD_EN			(1 << 10)
+> +#define  CMD_SW_RESET_OLD		(1 << 11)
+> +#define  CMD_SW_RESET			(1 << 13)
+> +#define  CMD_LCL_LOOP_EN		(1 << 15)
+> +#define  CMD_AUTO_CONFIG		(1 << 22)
+> +#define  CMD_CNTL_FRM_EN		(1 << 23)
+> +#define  CMD_NO_LEN_CHK			(1 << 24)
+> +#define  CMD_RMT_LOOP_EN		(1 << 25)
+> +#define  CMD_RX_ERR_DISC		(1 << 26)
+> +#define  CMD_PRBL_EN			(1 << 27)
+> +#define  CMD_TX_PAUSE_IGNORE		(1 << 28)
+> +#define  CMD_TX_RX_EN			(1 << 29)
+> +#define  CMD_RUNT_FILTER_DIS		(1 << 30)
+> +#define UMAC_MAC0			0x00c
+> +#define UMAC_MAC1			0x010
+> +#define UMAC_MAX_FRAME_LEN		0x014
+> +#define UMAC_PAUSE_QUANTA		0x018
+> +#define UMAC_MODE			0x044
+> +#define  MODE_LINK_STATUS		(1 << 5)
+> +#define UMAC_FRM_TAG0			0x048		/* outer tag */
+> +#define UMAC_FRM_TAG1			0x04c		/* inner tag */
+> +#define UMAC_TX_IPG_LEN			0x05c
+> +#define UMAC_EEE_CTRL			0x064
+> +#define  EN_LPI_RX_PAUSE		(1 << 0)
+> +#define  EN_LPI_TX_PFC			(1 << 1)
+> +#define  EN_LPI_TX_PAUSE		(1 << 2)
+> +#define  EEE_EN				(1 << 3)
+> +#define  RX_FIFO_CHECK			(1 << 4)
+> +#define  EEE_TX_CLK_DIS			(1 << 5)
+> +#define  DIS_EEE_10M			(1 << 6)
+> +#define  LP_IDLE_PREDICTION_MODE	(1 << 7)
+> +#define UMAC_EEE_LPI_TIMER		0x068
+> +#define UMAC_EEE_WAKE_TIMER		0x06C
+> +#define UMAC_EEE_REF_COUNT		0x070
+> +#define  EEE_REFERENCE_COUNT_MASK	0xffff
+> +#define UMAC_RX_IPG_INV			0x078
+> +#define UMAC_MACSEC_PROG_TX_CRC		0x310
+> +#define UMAC_MACSEC_CTRL		0x314
+> +#define UMAC_PAUSE_CTRL			0x330
+> +#define UMAC_TX_FLUSH			0x334
+> +#define UMAC_RX_FIFO_STATUS		0x338
+> +#define UMAC_TX_FIFO_STATUS		0x33c
+> +
+> +#endif
+> 
+Acked-by: Doug Berger <opendmb@gmail.com>
 
-It does not seem to me like 5.10 will be much better, because we have
-the following in PHYLINK:
-
-int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
-                             u32 flags)
-...
-          phy_dev = of_phy_find_device(phy_node);
-          /* We're done with the phy_node handle */
-          of_node_put(phy_node);
-          if (!phy_dev)
-                  return -ENODEV;
-
-Given Brian's configuration we should be returning -EPROBE_DEFER here,
-but doing that would likely break a number of systems that do expect
--ENODEV to be returned. However there may be hope with fw_devlink to
-create an appropriate graph of probing orders and solve the
-consumer/provider order generically.
-
-Up until now we did not really have a situation like this one where the
-MDIO/PHY subsystem depended upon an another one to be available. The
-problem does exist, however it is not clear to me yet how to best solve it.
--- 
-Florian
+Thanks!
+    Doug
