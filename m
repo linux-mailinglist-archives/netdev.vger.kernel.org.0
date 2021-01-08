@@ -2,97 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B18FD2EF2E6
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 14:13:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3F12EF2F3
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 14:22:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbhAHNNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 08:13:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726938AbhAHNNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 08:13:40 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80B8C0612F5
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 05:12:59 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id i24so11110414edj.8
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 05:12:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9umxs0z1CG9c3LHm6Wmk0CDSP9uDdkoc9g2I+fPg5mI=;
-        b=IkYgxW89vAoa4h2gFyJjCChzRstA+SSgaZw73Y7OuiKmux5PPZ+T5SUJSb1y8BbDnr
-         yKXd3cFJH703XQCGCWNwfqNAb3+3QroxBfkE7kNZdxMMOt0Smcsf/QfXoIuGN95TS+cf
-         hkpq90nmauCTnsGmRT/i1eAihpDwiMkFwaIc/lUknTu7T1ynRfPhtJZOD0ngYtJ0/wgG
-         1Di093q+t8X4w8TSq55FHQhtmc2K1yOp+g6NgdmBRpamskZdiLljVJH43h2UZL/3eUhH
-         +VPhSYh3df9ZXPxqpeDbe3Lt8r/1b4qeCJH4XtE7nZYdht6KXm7amBrUjp6wnmIQIYZH
-         7JIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9umxs0z1CG9c3LHm6Wmk0CDSP9uDdkoc9g2I+fPg5mI=;
-        b=tmo6DRrLO1xwKIOkKbNkxYg74p9DW+Po9uOt5Tc3B9uVLOq6WHU71pEBskQsRkAb1e
-         VJm7Rq1Sf+FbzM3kgabyEtpJniE/A9Hd0elisg8omKpBTBFENXSMjCvPidLzGpLfrFJK
-         E/rTnuwXh5s+1GgKb93pv0dyucCIaNsPHmpiuwTW/SDOxivyi+pjHd8+hJEJ+6KPdTSd
-         cNn/SYE31FsUbcAGVFkBgBnxDTGP6o3FSOY1aJ7nSGrScgIqEIqzJ1uqUK6lXT6r9Hj8
-         OY5ffxguf8Xp71aaj5F491V3h2+6QRXVNFauDpzv0ZFkOyS2AJd0vTjLDvx9MnCANI5r
-         ZL1Q==
-X-Gm-Message-State: AOAM533gyxbSS2ka304ylXMWykj6ntfoE/97BTUlB01YpimzNfchlgGi
-        wtxnwTcgB+u8d6yHu+L2akJG5Q==
-X-Google-Smtp-Source: ABdhPJxji9WZBQI5p1nYXpTJj5Ydv9otkPUCIfGHhAVHbuDh0z1ydork1JbeshH+AbeGMAhvOrWrUw==
-X-Received: by 2002:a05:6402:1a30:: with SMTP id be16mr5381083edb.124.1610111578400;
-        Fri, 08 Jan 2021 05:12:58 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id i13sm3764109edu.22.2021.01.08.05.12.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 05:12:57 -0800 (PST)
-Date:   Fri, 8 Jan 2021 14:12:56 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jarod Wilson <jarod@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net-next] bonding: add a vlan+srcmac tx hashing option
-Message-ID: <20210108131256.GG3565223@nanopsycho.orion>
-References: <20201218193033.6138-1-jarod@redhat.com>
- <20201228101145.GC3565223@nanopsycho.orion>
- <20210107235813.GB29828@redhat.com>
+        id S1726418AbhAHNWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 08:22:10 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:10423 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725791AbhAHNWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 08:22:09 -0500
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DC3d50QXrzj41q;
+        Fri,  8 Jan 2021 21:20:41 +0800 (CST)
+Received: from localhost (10.174.243.127) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.498.0; Fri, 8 Jan 2021
+ 21:21:17 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <jerry.lilijun@huawei.com>, <xudingke@huawei.com>,
+        Yunjian Wang <wangyunjian@huawei.com>
+Subject: [PATCH net-next] devlink: fix return of uninitialized variable err
+Date:   Fri, 8 Jan 2021 21:21:13 +0800
+Message-ID: <1610112073-23424-1-git-send-email-wangyunjian@huawei.com>
+X-Mailer: git-send-email 1.9.5.msysgit.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210107235813.GB29828@redhat.com>
+Content-Type: text/plain
+X-Originating-IP: [10.174.243.127]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 08, 2021 at 12:58:13AM CET, jarod@redhat.com wrote:
->On Mon, Dec 28, 2020 at 11:11:45AM +0100, Jiri Pirko wrote:
->> Fri, Dec 18, 2020 at 08:30:33PM CET, jarod@redhat.com wrote:
->> >This comes from an end-user request, where they're running multiple VMs on
->> >hosts with bonded interfaces connected to some interest switch topologies,
->> >where 802.3ad isn't an option. They're currently running a proprietary
->> >solution that effectively achieves load-balancing of VMs and bandwidth
->> >utilization improvements with a similar form of transmission algorithm.
->> >
->> >Basically, each VM has it's own vlan, so it always sends its traffic out
->> >the same interface, unless that interface fails. Traffic gets split
->> >between the interfaces, maintaining a consistent path, with failover still
->> >available if an interface goes down.
->> >
->> >This has been rudimetarily tested to provide similar results, suitable for
->> >them to use to move off their current proprietary solution.
->> >
->> >Still on the TODO list, if these even looks sane to begin with, is
->> >fleshing out Documentation/networking/bonding.rst.
->> 
->> Jarod, did you consider using team driver instead ? :)
->
->That's actually one of the things that was suggested, since team I believe
->already has support for this, but the user really wants to use bonding.
->We're finding that a lot of users really still prefer bonding over team.
+From: Yunjian Wang <wangyunjian@huawei.com>
 
-Do you know the reason, other than "nostalgia"?
+There is a potential execution path in which variable err is
+returned without being properly initialized previously. Fix
+this by initializing variable err to 0.
+
+Addresses-Coverity: ("Uninitialized scalar variable")
+Fixes: 1db64e8733f6 ("devlink: Add devlink formatted message (fmsg) API")
+Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+---
+ net/core/devlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index ee828e4b1007..470215cd60b5 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -5699,7 +5699,7 @@ devlink_fmsg_prepare_skb(struct devlink_fmsg *fmsg, struct sk_buff *skb,
+ 	struct devlink_fmsg_item *item;
+ 	struct nlattr *fmsg_nlattr;
+ 	int i = 0;
+-	int err;
++	int err = 0;
+ 
+ 	fmsg_nlattr = nla_nest_start_noflag(skb, DEVLINK_ATTR_FMSG);
+ 	if (!fmsg_nlattr)
+-- 
+2.23.0
+
