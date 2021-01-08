@@ -2,118 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC792EF0B8
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 11:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3F8F2EF0BB
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 11:36:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727571AbhAHKdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 05:33:22 -0500
-Received: from www62.your-server.de ([213.133.104.62]:49554 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727105AbhAHKdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 05:33:22 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kxp46-0005vi-Oe; Fri, 08 Jan 2021 11:32:18 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kxp46-000FM6-Dl; Fri, 08 Jan 2021 11:32:18 +0100
-Subject: Re: [PATCH net v2] net: fix use-after-free when UDP GRO with shared
- fraglist
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Dongseok Yi <dseok.yi@samsung.com>,
+        id S1727822AbhAHKf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 05:35:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34544 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727090AbhAHKf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 05:35:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610102042;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9jaCobpp/gjZ1BrAW63KVqKbg+WZam2J/wlrqVXlE/U=;
+        b=GjZRGu/5tFOLIAoaDM2OL0XDemAkaNO9u+E19hViCIt2GCEh0rp7rH98IZ8QGhM057bjC6
+        KxdNtWFuyOLd4BwqbhP0i9BLFU5JMTpqtuZK0py/d3C6YXNfxe1vr/hsQFGMR5l3MD0/JJ
+        bJmFOCT5ZdQBFE3/VUr0tf3zA8P39J0=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-509-URWed_8mMIuGNgQ4cl6yQQ-1; Fri, 08 Jan 2021 05:34:00 -0500
+X-MC-Unique: URWed_8mMIuGNgQ4cl6yQQ-1
+Received: by mail-wr1-f70.google.com with SMTP id v7so3928213wra.3
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 02:34:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9jaCobpp/gjZ1BrAW63KVqKbg+WZam2J/wlrqVXlE/U=;
+        b=hwVw08z8RDv3Zh92nplZDLJHEnf7u4GA2PVLJQWtLvqtqtqjO5tEsU1JBmWdWi3pvX
+         mwBkeYk1KWH7Fsr3E8im5PtKoNIK7oqgdpR/X7ao8qGlV9RjN/zSrCsMCG4r57A2j7bU
+         cp4rnZWngHxoKqpJwcGQbNThpjlVlO2woIhs7VSMYPNXrXmY2iAwdL513wMhF7L/xG1a
+         eXYrM8rkQork/h7lhdmfEisz4JkanUIIMTUeqJZAl4TWL9y9Td+9VSeuKLnVaoJVZvir
+         a+ezGKpmuQ/muZQSnO8L3rKyMwZ34pjzWZqAUk52kSiMc0BAfn3bZT2ZSqWwvVP1VeVO
+         5e5A==
+X-Gm-Message-State: AOAM533g/mhzV9jhtNFZSooY4XsFgmeSe7W5KCy/mJB6k5NEiyoU2OZO
+        WfaI5M9PnT1q+npO4Bdpebr6p/X3kMx59pdAtn/eB/f77k1mghbcuwqwzRCnOmzHN+66kAspF/V
+        xTs1zx+toR0Emz9os
+X-Received: by 2002:a5d:4f8a:: with SMTP id d10mr2905573wru.219.1610102039579;
+        Fri, 08 Jan 2021 02:33:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx/cYGRiEYoK1vucKO1euIdsck18nMG94piouLVJf/5RHsxZEuyqqUoFQjJC0gMXLBgDrQOUQ==
+X-Received: by 2002:a5d:4f8a:: with SMTP id d10mr2905551wru.219.1610102039359;
+        Fri, 08 Jan 2021 02:33:59 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id s25sm13327280wrs.49.2021.01.08.02.33.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Jan 2021 02:33:58 -0800 (PST)
+Date:   Fri, 8 Jan 2021 11:33:35 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Westphal <fw@strlen.de>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, namkyu78.kim@samsung.com
-References: <1609750005-115609-1-git-send-email-dseok.yi@samsung.com>
- <CGME20210107005028epcas2p35dfa745fd92e31400024874f54243556@epcas2p3.samsung.com>
- <1609979953-181868-1-git-send-email-dseok.yi@samsung.com>
- <83a2b288-c0b2-ed98-9479-61e1cbe25519@iogearbox.net>
- <028b01d6e4e9$ddd5fd70$9981f850$@samsung.com>
- <c051bc98-6af2-f6ec-76d1-7feaa9da2436@iogearbox.net>
- <CAF=yD-KWByrahURXuUPm1WgwWS8M3StKDSFj0JzjU0qke9dCAg@mail.gmail.com>
- <3cce8f51-5474-fb75-c182-d90c4a1b4394@iogearbox.net>
- <CAF=yD-+bqps5PQLzuVtPgVAPDrk6ZjA0sk+gyj8JTd9BPYozWw@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f03df7ae-cb1f-8775-2302-51785c0761c2@iogearbox.net>
-Date:   Fri, 8 Jan 2021 11:32:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Colin Ian King <colin.king@canonical.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Arseniy Krasnov <oxffffaa@gmail.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru
+Subject: Re: [PATCH 0/5] virtio/vsock: introduce SOCK_SEQPACKET support.
+Message-ID: <20210108103335.iabhzk4r6fpsiopt@steredhat>
+References: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-In-Reply-To: <CAF=yD-+bqps5PQLzuVtPgVAPDrk6ZjA0sk+gyj8JTd9BPYozWw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26042/Thu Jan  7 13:37:55 2021)
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/21 3:44 PM, Willem de Bruijn wrote:
-> On Thu, Jan 7, 2021 at 8:33 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 1/7/21 2:05 PM, Willem de Bruijn wrote:
->>> On Thu, Jan 7, 2021 at 7:52 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>>> On 1/7/21 12:40 PM, Dongseok Yi wrote:
->>>>> On 2021-01-07 20:05, Daniel Borkmann wrote:
->>>>>> On 1/7/21 1:39 AM, Dongseok Yi wrote:
-[...]
->>>>> PF_PACKET handles untouched fraglist. To modify the payload only
->>>>> for udp_rcv_segment, skb_unclone is necessary.
->>>>
->>>> I don't parse this last sentence here, please elaborate in more detail on why
->>>> it is necessary.
->>>>
->>>> For example, if tc layer would modify mark on the skb, then __copy_skb_header()
->>>> in skb_segment_list() will propagate it. If tc layer would modify payload, the
->>>> skb_ensure_writable() will take care of that internally and if needed pull in
->>>> parts from fraglist into linear section to make it private. The purpose of the
->>>> skb_clone() above iff shared is to make the struct itself private (to safely
->>>> modify its struct members). What am I missing?
->>>
->>> If tc writes, it will call skb_make_writable and thus pskb_expand_head
->>> to create a private linear section for the head_skb.
->>>
->>> skb_segment_list overwrites part of the skb linear section of each
->>> fragment itself. Even after skb_clone, the frag_skbs share their
->>> linear section with their clone in pf_packet, so we need a
->>> pskb_expand_head here, too.
->>
->> Ok, got it, thanks for the explanation. Would be great to have it in the v3 commit
->> log as well as that was more clear than the above. Too bad in that case (otoh
->> the pf_packet situation could be considered corner case ...); ether way, fix makes
->> sense then.
-> 
-> Thanks for double checking the tricky logic. Pf_packet + BPF is indeed
-> a peculiar corner case. But there are perhaps more, like raw sockets,
-> and other BPF hooks that can trigger an skb_make_writable.
-> 
-> Come to think of it, the no touching shared data rule is also violated
-> without a BPF program? Then there is nothing in the frag_skbs
-> themselves signifying that they are shared, but the head_skb is
-> cloned, so its data may still not be modified.
+Hi Arseny,
 
-The skb_ensure_writable() is used in plenty of places from bpf, ovs, netfilter
-to core stack (e.g. vlan, mpls, icmp), but either way there should be nothing
-wrong with that as it's making sure to pull the data into its linear section
-before modification. Uncareful use of skb_store_bits() with offset into skb_frags
-for example could defeat that, but I don't see any in-tree occurrence that would
-be problematic at this point..
+On Sun, Jan 03, 2021 at 10:54:52PM +0300, Arseny Krasnov wrote:
+>	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+>do it, new packet operation was added: it marks start of record (with
+>record length in header). To send record, packet with start marker is
+>sent first, then all data is transmitted as 'RW' packets. On receiver's
+>side, length of record is known from packet with start record marker.
+>Now as  packets of one socket are not reordered neither on vsock nor on
+>vhost transport layers, these marker allows to restore original record
+>on receiver's side. When each 'RW' packet is inserted to rx queue of
+>receiver, user is woken up, data is copied to user's buffer and credit
+>update message is sent. If there is no user waiting for data, credit
+>won't be updated and sender will wait. Also,  if user's buffer is full,
+>and record is bigger, all unneeded data will be dropped (with sending of
+>credit update message).
+>	'MSG_EOR' flag is implemented with special value of 'flags' field
+>in packet header. When record is received with such flags, 'MSG_EOR' is
+>set in 'recvmsg()' flags. 'MSG_TRUNC' flag is also supported.
+>	In this implementation maximum length of datagram is not limited
+>as in stream socket.
 
-> This modification happens to be safe in practice, as the pf_packet
-> clones don't access the bytes before skb->data where this path inserts
-> headers. But still.
+I did a a quick review. I like the idea of adding SOCK_SEQPACKET, but 
+the series needs more work.
+Some patches miss the SoB, the commit messages are very minimal.
+Anyway I like that you shared your patches, but please use RFC tag if 
+they are not ready to be merged.
+
+Another suggestion is to move the patches that modify the core 
+(af_vsock.c) before the transport modifications to make the review 
+easier.
+
+I'd also like to see new tests in tools/testing/vsock/vsock_test.c
+
+Thanks,
+Stefano
+
