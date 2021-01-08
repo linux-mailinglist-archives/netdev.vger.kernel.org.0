@@ -2,128 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA1EF2EF666
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 18:23:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAFBA2EF67E
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 18:35:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728373AbhAHRXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 12:23:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53660 "EHLO
+        id S1728446AbhAHRel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 12:34:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726749AbhAHRXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 12:23:14 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9579C061381
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 09:22:33 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id h16so11929481edt.7
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 09:22:33 -0800 (PST)
+        with ESMTP id S1728431AbhAHRek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 12:34:40 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D638C061381
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 09:34:00 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id q22so15621652eja.2
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 09:34:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=4M2IJKB1sqsuwfqhG1D6BK3FBvalSW700ezXUI9Ah1o=;
-        b=Sdr3LwBmJ3gTurx0lCWf2QlLM0bHb8zWF+bgz8HUGxto13dVcvLZYbEHbqNQlSf2bk
-         OCjRJlotVZRrHKkZ/a1m/rlp6e73aDBcYvSFEEDm+39m0L2PBvhxgvXMIv2mPRfnPSkG
-         Rk2gtyVvTQZnr165C8RMKYxBjSpWL6yN0lY497QeiyybSZz1R/Gj55CzGyI4mTYFi+Sc
-         YjMIWXb9BMbNxKDkPPGvVw2wVqAp9drCuRANYvrO5/PwpZg5s9oVU3KQVUb3Ly7qDgXC
-         8O17sZD5SRTNA7ZHWggf7ousL0NA/cKw3+8PsaNFjMVP8Xg2ZQsDOOW12xBG+qAgkH1I
-         0xrw==
+        bh=bKvVZlKvQjWwpvhAmcGVb6RYhS+JhopYBUuFSekPlvw=;
+        b=d+8rTGJSn5yxbw8+c6m1hPE1VgOahbE0bYbjmY1sWXGlNu2qav0rMYQ2B0F7EJTrjx
+         Ptz3Awp2IHlNNpn4mvxHsS4saoHIwSdnKdv/3ogSPrPrjFXc6to+FBuZjM4Bbp3ttB2z
+         wvE4LMC1jN6BdYuWrA6ShkmlAu7UYmo30CoHEGW7QGPLDtoAAPsjfKE4NGMOTtNZgYd5
+         lENk0NTrTg2LEv3zu/YgkXkA5413VaEewGtDxeDVNKiGN950pu9yA2ZgT0olQQa6rind
+         cbpO99KLS8+KEJ9DlYNIgYN5AXjOVQPUNw22B7o+LcObbaYDaPYzc/h0szzZzNwrle/l
+         BL1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=4M2IJKB1sqsuwfqhG1D6BK3FBvalSW700ezXUI9Ah1o=;
-        b=HRAWhx3EfmxASZGWRXTv5ybtnZ0AU21hYgVsq9Rmub0ZByjh0XEwXxu5EUl2pYA7Ig
-         JBlK7lkUbrc3C4iI4A/SlZetjHaqY1kzW7IFwx+NZN9LlT2PyAe36NaUdMfUScRxAWUN
-         srzbLvYFQchNwusTS6cZUt7wo+9ha9+k8yhYPuS/cV3B2gcifGs2ZctqCwDzyePJuIvH
-         tyzDYouKIqbPDwYfPrgS7Bk6PwKmClVyquPUG/sulariWn7gpW+bE+IBjfduseVfRcmo
-         nvTUTacAmCftJ0z/qzRVLxe3BanmhvbFZd1HqmvtlWQOeECly7DfGKGCvH/awVYn/4hf
-         HeYA==
-X-Gm-Message-State: AOAM533ajFcTy8veXV+rhpXrEOZDXcEp1ceW5iRDEsz48CTiXuZpdM8q
-        2gqywj8GC/hITsGEhVldJFs=
-X-Google-Smtp-Source: ABdhPJzE1GHi+MWsoBw70MW41vrcTkFIFivUDFUBk0UvN2ufy3W5SBJo96J204ijwVTcynvswdeStg==
-X-Received: by 2002:aa7:c652:: with SMTP id z18mr5677105edr.60.1610126552471;
-        Fri, 08 Jan 2021 09:22:32 -0800 (PST)
+        bh=bKvVZlKvQjWwpvhAmcGVb6RYhS+JhopYBUuFSekPlvw=;
+        b=BVb+D56MFHtd4FjEjPpSrM9QM/JGlR6ckcjnZuhWXemd89iTl9fOwxe0SzVlK338AK
+         p9SquJNXsokRr/1w1immrkYnu3zQKtJiXTbdC/p6M/TMpuHLle32mHzmqkm7QADhnla0
+         I/TNrFHx+yAVMhI4Ly5QsBGJsPQw86eETjDwBfxQ8yGlwEQ1je69zSI/dF+UxGS4sa+I
+         K+eXfvtZEeuarjwaqZIbG5NBuMKouPtkiUA+QMW5cAJwWn+ZonuvRMfNi6s3MMby4A7a
+         te9vqNJR2pyF7ibahRTfm++C8ha6XaT/MZqFa/KWIbn4crDIU4K8RT6j69Ph43s1asCo
+         9f6g==
+X-Gm-Message-State: AOAM532gZ0RRUq/5GtXeLKV2MtxSlNOc1cZ86YkRNoRbp9+kBgAMs1wy
+        4awcURci+DgOUMR3n+JjV4A=
+X-Google-Smtp-Source: ABdhPJyiAEkq/uEwt6axSSh/5Gjx1zu/R9XjGTgy/A+OJg7YUjoJSbt7sgyMSjT3dwFpRqzc8ghvcw==
+X-Received: by 2002:a17:906:94ca:: with SMTP id d10mr3195140ejy.62.1610127239081;
+        Fri, 08 Jan 2021 09:33:59 -0800 (PST)
 Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id bn21sm3746389ejb.47.2021.01.08.09.22.30
+        by smtp.gmail.com with ESMTPSA id j5sm4008900edl.42.2021.01.08.09.33.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 09:22:31 -0800 (PST)
-Date:   Fri, 8 Jan 2021 19:22:29 +0200
+        Fri, 08 Jan 2021 09:33:58 -0800 (PST)
+Date:   Fri, 8 Jan 2021 19:33:57 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH v5 net-next 11/16] net: propagate errors from
- dev_get_stats
-Message-ID: <20210108172229.yxcwp7t2ipacajhs@skbuf>
-References: <20210108163159.358043-1-olteanv@gmail.com>
- <20210108163159.358043-12-olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, kuba@kernel.org,
+        jiri@resnulli.us, idosch@idosch.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v2 net-next 03/10] net: dsa: add ops for devlink-sb
+Message-ID: <20210108173357.fhuvhnsg4hbdizkw@skbuf>
+References: <20210107172726.2420292-1-olteanv@gmail.com>
+ <20210107172726.2420292-4-olteanv@gmail.com>
+ <X/eauzr3d7es/YpH@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210108163159.358043-12-olteanv@gmail.com>
+In-Reply-To: <X/eauzr3d7es/YpH@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 06:31:54PM +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Fri, Jan 08, 2021 at 12:35:23AM +0100, Andrew Lunn wrote:
+> > +static struct dsa_port *devlink_to_dsa_port(struct devlink_port *dlp)
+> > +{
+> > +	return container_of(dlp, struct dsa_port, devlink_port);
+> > +}
 > 
-> dev_get_stats can now return error codes. Take the remaining call sites
-> where those errors can be propagated, which are all trivial, and convert
-> them to look at that error code and stop processing.
-> 
-> The effects of simulating a kernel error (returning -ENOMEM) upon
-> existing programs or kernel interfaces:
-> 
-> - cat /proc/net/dev prints up until the interface that failed, and there
->   it returns:
-> cat: read error: Cannot allocate memory
-> 
-> - ifstat simply returns this and prints nothing:
-> Error: Buffer too small for object.
-> Dump terminated
-> 
-> - ip -s -s link show behaves the same as ifstat.
+> I wonder if this should be moved to include/net/dsa.h next to the
+> other little helpers used to convert between devlink structures and
+> DSA structures?
 
-Note that at first I did not understand why ifstat and "ip -s -s link
-show" return this message. But in the meantime I figured that it was due
-to rtnetlink still returning -EMSGSIZE. That is fixed in this patch
-series, but I forgot to update the commit message to reflect it. The
-current output from these two commands is:
-
-$ ifstat
-RTNETLINK answers: Cannot allocate memory
-Dump terminated
-$ ip -s -s link show
-RTNETLINK answers: Cannot allocate memory
-Dump terminated
-
-> 
-> - ifconfig prints only the info for the interfaces whose statistics did
->   not fail.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> Changes in v5:
-> - Actually propagate errors from bonding and net_failover from within
->   this patch.
-> - Properly propagating the dev_get_stats() error code from
->   rtnl_fill_stats now, and not -EMSGSIZE.
-> 
-> Changes in v4:
-> Patch is new (Eric's suggestion).
+I wrote this before your series for devlink regions. The way I'm using
+devlink_to_dsa_port, I guess I can just replace it with your
+dsa_devlink_port_to_port function.
