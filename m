@@ -2,268 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAFDD2EFAD5
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 23:06:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B192EFAD8
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 23:11:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726386AbhAHWFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 17:05:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbhAHWFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 17:05:50 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB94FC061574
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 14:05:09 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id z5so11246771iob.11
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 14:05:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SAXHh8P6OfYfn7p4mocfkFhlaqWlxkQMJl1M7AlwsQE=;
-        b=gca1kIcwCrrlkU+P8Dbcb0yNaVKVzlGRiznP/fvrOztIvnqOt+nYs+OsjK9+OVx2gm
-         hVZ2zcV37PE/nmePED6JpCyPPDvtI4jVbv4kiXtUbC7fROY/TF/c/eTr85lfA7K3iDTL
-         EnnGqdTZTO15+10umWOQ/uTFOe2k8sbceHDrObRX3gYKV0fa2/HgGlgYgYXQQ0JvMHhx
-         jwHmx/2EbccP61wmcS3234tFTdRygIt/64fF9t3Zr9cHw9p8/Ro5mP9y7wpWE3XT/80b
-         /dqaSCxPbHrnxuyVUGYafAN7kjEOqYfP4PcGvY+PUA4GY6BOnHJ8R07ioBj3Bb7GGbt0
-         xefw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SAXHh8P6OfYfn7p4mocfkFhlaqWlxkQMJl1M7AlwsQE=;
-        b=CrHh+TDt5cFxlfI0pfw7nxjwKA8ETSFQBXiu7EFIUiqIa7X7n/XOxuTTygjYYx6DPr
-         7yyyXP9RDfNSoTpW1dLuZT6lwIvdn8bCOVteTpkVhbWYI3zHlWPLDuWuSyNBTgZafZi9
-         92pFE/jwtFOkcCd6QGoH5SHRWrH2wDUWZxHVNpkxfhrktPNveJINPmd5SBtRneafADVU
-         YKXTNzga1MT5Z9/RiEI4ywFHqEVSNQWWE7MrpvL8OlxVCPa0gP9rj6CvFbz+JvevzaM8
-         iolpYmxM2GarFF/r+/3BUrXU89SgWNoK7zNxVd26BW/HpSOV3siUV/jDJPIFg8TWObze
-         7V0Q==
-X-Gm-Message-State: AOAM533PAIY5s6rvVTM9CgMrCbcG0HDe2tlbgHF8ECVvPSELZLC3dBDX
-        VRr/+vLDrKCuuBpKl21hpmobsSq/c+H2mXqDseQ=
-X-Google-Smtp-Source: ABdhPJxB4O7lN+eb8axguqlbLHhxdYW+0d+aBV+en1g9g52nCtkMb1RCBXfJmHpB5florjB75//Vd1KZbnA3Mtklf34=
-X-Received: by 2002:a02:969a:: with SMTP id w26mr5220122jai.96.1610143508892;
- Fri, 08 Jan 2021 14:05:08 -0800 (PST)
+        id S1726011AbhAHWKN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 8 Jan 2021 17:10:13 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44706 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725844AbhAHWKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 17:10:13 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 108M92G3030132
+        for <netdev@vger.kernel.org>; Fri, 8 Jan 2021 14:09:32 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 35wt06j002-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 14:09:32 -0800
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 8 Jan 2021 14:09:31 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 30BDE2ECD237; Fri,  8 Jan 2021 14:09:31 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Hao Luo <haoluo@google.com>
+Subject: [PATCH v2 bpf-next 0/7] Support kernel module ksym variables
+Date:   Fri, 8 Jan 2021 14:09:23 -0800
+Message-ID: <20210108220930.482456-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20210106180428.722521-1-atenart@kernel.org> <20210106180428.722521-4-atenart@kernel.org>
- <CAKgT0UdZs7ER84PmeM5EV6rAKWiqu-5Ma47bh8qf-68fjsfbAw@mail.gmail.com>
- <161000966161.3275.12891261917424414122@kwain.local> <CAKgT0UcFu7pgy96uMhraT7B_JKEwXtVziouXLmZ4rdXPHn91Jg@mail.gmail.com>
- <161009687495.3394.14011897084392954560@kwain.local> <CAKgT0UdSiLpPXUEEOLRj4+7D0KcGBNBoW5cU=4DXW0kfOb=gEQ@mail.gmail.com>
- <161013228882.3394.7522492301815327352@kwain.local>
-In-Reply-To: <161013228882.3394.7522492301815327352@kwain.local>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 8 Jan 2021 14:04:57 -0800
-Message-ID: <CAKgT0Ud-BFGYZAZU_3CFQ+mqzZEKj4w6CCZSFHbo5SBBOSsxgg@mail.gmail.com>
-Subject: Re: [PATCH net 3/3] net-sysfs: move the xps cpus/rxqs retrieval in a
- common function
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-08_11:2021-01-07,2021-01-08 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ malwarescore=0 adultscore=0 bulkscore=0 spamscore=0 priorityscore=1501
+ phishscore=0 suspectscore=0 mlxlogscore=881 clxscore=1034 mlxscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101080113
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 8, 2021 at 10:58 AM Antoine Tenart <atenart@kernel.org> wrote:
->
-> Quoting Alexander Duyck (2021-01-08 17:33:01)
-> > On Fri, Jan 8, 2021 at 1:07 AM Antoine Tenart <atenart@kernel.org> wrote:
-> > >
-> > > Quoting Alexander Duyck (2021-01-07 17:38:35)
-> > > > On Thu, Jan 7, 2021 at 12:54 AM Antoine Tenart <atenart@kernel.org> wrote:
-> > > > >
-> > > > > Quoting Alexander Duyck (2021-01-06 20:54:11)
-> > > > > > On Wed, Jan 6, 2021 at 10:04 AM Antoine Tenart <atenart@kernel.org> wrote:
-> > > > >
-> > > > > That would require to hold rcu_read_lock in the caller and I'd like to
-> > > > > keep it in that function.
-> > > >
-> > > > Actually you could probably make it work if you were to pass a pointer
-> > > > to the RCU pointer.
-> > >
-> > > That should work but IMHO that could be easily breakable by future
-> > > changes as it's a bit tricky.
-> > >
-> > > > > > >         if (dev->num_tc) {
-> > > > > > >                 /* Do not allow XPS on subordinate device directly */
-> > > > > > >                 num_tc = dev->num_tc;
-> > > > > > > -               if (num_tc < 0) {
-> > > > > > > -                       ret = -EINVAL;
-> > > > > > > -                       goto err_rtnl_unlock;
-> > > > > > > -               }
-> > > > > > > +               if (num_tc < 0)
-> > > > > > > +                       return -EINVAL;
-> > > > > > >
-> > > > > > >                 /* If queue belongs to subordinate dev use its map */
-> > > > > > >                 dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
-> > > > > > >
-> > > > > > >                 tc = netdev_txq_to_tc(dev, index);
-> > > > > > > -               if (tc < 0) {
-> > > > > > > -                       ret = -EINVAL;
-> > > > > > > -                       goto err_rtnl_unlock;
-> > > > > > > -               }
-> > > > > > > +               if (tc < 0)
-> > > > > > > +                       return -EINVAL;
-> > > > > > >         }
-> > > > > > >
-> > > > > >
-> > > > > > So if we store the num_tc and nr_ids in the dev_maps structure then we
-> > > > > > could simplify this a bit by pulling the num_tc info out of the
-> > > > > > dev_map and only asking the Tx queue for the tc in that case and
-> > > > > > validating it against (tc <0 || num_tc <= tc) and returning an error
-> > > > > > if either are true.
-> > > > > >
-> > > > > > This would also allow us to address the fact that the rxqs feature
-> > > > > > doesn't support the subordinate devices as you could pull out the bit
-> > > > > > above related to the sb_dev and instead call that prior to calling
-> > > > > > xps_queue_show so that you are operating on the correct device map.
-> > > >
-> > > > It probably would be necessary to pass dev and index if we pull the
-> > > > netdev_get_tx_queue()->sb_dev bit out and performed that before we
-> > > > called the xps_queue_show function. Specifically as the subordinate
-> > > > device wouldn't match up with the queue device so we would be better
-> > > > off pulling it out first.
-> > >
-> > > While I agree moving the netdev_get_tx_queue()->sb_dev bit out of
-> > > xps_queue_show seems like a good idea for consistency, I'm not sure
-> > > it'll work: dev->num_tc is not only used to retrieve the number of tc
-> > > but also as a condition on not being 0. We have things like:
-> > >
-> > >   // Always done with the original dev.
-> > >   if (dev->num_tc) {
-> > >
-> > >       [...]
-> > >
-> > >       // Can be a subordinate dev.
-> > >       tc = netdev_txq_to_tc(dev, index);
-> > >   }
-> > >
-> > > And after moving num_tc in the map, we'll have checks like:
-> > >
-> > >   if (dev_maps->num_tc != dev->num_tc)
-> > >       return -EINVAL;
-> >
-> > We shouldn't. That defeats the whole point and you will never be able
-> > to rely on the num_tc in the device to remain constant. If we are
-> > moving the value to an RCU accessible attribute we should just be
-> > using that value. We can only use that check if we are in an rtnl_lock
-> > anyway and we won't need that if we are just displaying the value.
-> >
-> > The checks should only be used to verify the tc of the queue is within
-> > the bounds of the num_tc of the xps_map.
->
-> Right. So that would mean we have to choose between:
->
-> - Removing the rtnl lock but with the understanding that the value we
->   get when reading the maps might be invalid and not make sense with
->   the current dev->num_tc configuration.
->
-> - Keeping the rtnl lock (which, I mean, I'd like to remove).
->
-> My first goal for embedding num_tc in the maps was to prevent accessing
-> the maps out-of-bound when dev->num_tc is updated after the maps are
-> allocated. That's a possibility (I could produce such behaviour with
-> KASAN enabled) even when taking the rtnl lock in the show/store helpers.
->
-> We're now talking of also removing the rtnl lock, which is fine, I just
-> want to make those two different goals explicit as they're not
-> interdependent.
+Add support for using kernel module global variables (__ksym externs in BPF
+program). BPF verifier will now support ldimm64 with src_reg=BPF_PSEUDO_BTF_ID
+and non-zero insn[1].imm field, specifying module BTF's FD. In such case,
+module BTF object, similarly to BPF maps referenced from ldimm64 with
+src_reg=BPF_PSEUDO_MAP_FD, will be recorded in bpf_progran's auxiliary data
+and refcnt will be increased for both BTF object itself and its kernel module.
+This makes sure kernel module won't be unloaded from under active attached BPF
+program. These refcounts will be dropped when BPF program is unloaded.
 
-The problem is in the grand scheme of things the XPS map data is
-already out of date by the time we look at it anyway regardless of the
-locking mechanics. The problem is if we are doing both at the same
-time we could already be looking at stale data as the num_tcs could
-change after we dump the map and then it would still be invalid even
-if we bothered with the RTNL lock or not.
+New selftest validates all this is working as intended. bpf_testmod.ko is
+extended with per-CPU variable. Selftests expects the latest pahole changes
+(soon to be released as v1.20) to generate per-CPU variable BTF info for
+kernel module.
 
-In my mind we are better of with the RCU style behavior as we are just
-using this to display the current setup anyway, and if we are updating
-then we need the RTNL lock so that we can guarantee a consistent state
-on the device while we are putting together the xps map.
+v1->v2:
+  - fixed few compiler warnings, posted as separate pre-patches;
+rfc->v1:
+  - use sys_membarrier(MEMBARRIER_CMD_GLOBAL) (Alexei).
 
-One additional thought I had is that we may want to treat an
-out-of-bounds reference the same as XPS not being enabled. So that we
-would return a 0 mask instead of an error.  So instead of just
-checking for "if (dev_maps)" we would check for "if (dev_maps && tc <
-dev_maps->num_tc)".
+Cc: Hao Luo <haoluo@google.com>
+Andrii Nakryiko (7):
+  bpf: add bpf_patch_call_args prototype to include/linux/bpf.h
+  bpf: avoid warning when re-casting __bpf_call_base into
+    __bpf_call_base_args
+  bpf: declare __bpf_free_used_maps() unconditionally
+  selftests/bpf: sync RCU before unloading bpf_testmod
+  bpf: support BPF ksym variables in kernel modules
+  libbpf: support kernel module ksym externs
+  selftests/bpf: test kernel module ksym externs
 
-> > > > > > I think Jakub had mentioned earlier the idea of possibly moving some
-> > > > > > fields into the xps_cpus_map and xps_rxqs_map in order to reduce the
-> > > > > > complexity of this so that certain values would be protected by the
-> > > > > > RCU lock.
-> > > > > >
-> > > > > > This might be a good time to look at encoding things like the number
-> > > > > > of IDs and the number of TCs there in order to avoid a bunch of this
-> > > > > > duplication. Then you could just pass a pointer to the map you want to
-> > > > > > display and the code should be able to just dump the values.:
-> > > > >
-> > > > > 100% agree to all the above. That would also prevent from making out of
-> > > > > bound accesses when dev->num_tc is increased after dev_maps is
-> > > > > allocated. I do have a series ready to be send storing num_tc into the
-> > > > > maps, and reworking code to use it instead of dev->num_tc. The series
-> > > > > also adds checks to ensure the map is valid when we access it (such as
-> > > > > making sure dev->num_tc == map->num_tc). I however did not move nr_ids
-> > > > > into the map yet, but I'll look into it.
-> > > > >
-> > > > > The idea is to send it as a follow up series, as this one is only moving
-> > > > > code around to improve maintenance and readability. Even if all the
-> > > > > patches were in the same series that would be a prerequisite.
-> > > >
-> > > > Okay, so if we are going to do it as a follow-up that is fine I
-> > > > suppose, but one of the reasons I brought it up is that it would help
-> > > > this patch set in terms of readability/maintainability. An additional
-> > > > change we could look at making would be to create an xps_map pointer
-> > > > array instead of having individual pointers. Then you could simply be
-> > > > passing an index into the array to indicate if we are accessing the
-> > > > CPUs or the RXQs map.
-> > >
-> > > Merging the two maps and embedding an offset in the struct? With the
-> > > upcoming changes embedding information in the map themselves we should
-> > > have a single check to know what map to use. Using a single array with
-> > > offsets would not improve that. Also maps maintenance when num_tc
-> > > is updated would need to take care of both maps, having side effects
-> > > such as removing the old rxqs map when allocating the cpus one (or the
-> > > opposite).
-> >
-> > Sorry, I didn't mean to merge the two maps. Just go from two pointers
-> > to an array containing two pointers. Right now them sitting right next
-> > to each other it becomes pretty easy to just convert them so that
-> > instead of accessing them as:
-> >
-> > dev->xps_rxqs_map
-> > dev->xps_cpus_map
-> >
-> > You could instead access them as:
-> > dev->xps_map[XPS_RXQ];
-> > dev->xps_map[XPS_CPU];
-> >
-> > Then instead of all the if/else logic we have in the code you just are
-> > passing the index of the xps_map you want to access and we have the
-> > nr_ids and num_tc all encoded in the map so the code itself. Then for
-> > displaying we are just using the fields from the map to validate.
-> >
-> > We will still end up needing to take the rtnl_lock for the
-> > __netif_set_xps_queue case, however that should be the only case where
-> > we really need it as we have to re-read dev->num_tc and the
-> > netdev_txq_to_tc and guarantee they don't change while we are
-> > programming the map.
->
-> Thanks for the detailed explanations. That indeed would be good.
+ include/linux/bpf.h                           |  18 ++-
+ include/linux/bpf_verifier.h                  |   3 +
+ include/linux/btf.h                           |   3 +
+ include/linux/filter.h                        |   2 +-
+ kernel/bpf/btf.c                              |  31 +++-
+ kernel/bpf/core.c                             |  23 +++
+ kernel/bpf/verifier.c                         | 149 ++++++++++++++----
+ tools/lib/bpf/libbpf.c                        |  47 ++++--
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |   3 +
+ .../selftests/bpf/prog_tests/btf_map_in_map.c |  33 ----
+ .../selftests/bpf/prog_tests/ksyms_module.c   |  33 ++++
+ .../selftests/bpf/progs/test_ksyms_module.c   |  26 +++
+ tools/testing/selftests/bpf/test_progs.c      |  11 ++
+ tools/testing/selftests/bpf/test_progs.h      |   1 +
+ 14 files changed, 300 insertions(+), 83 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module.c
 
-It does simplify things quite a bit, at least for the display logic
-since essentially all the secondary values that tell us the size and
-shape of the XPS map would essentially be stored in the map itself
-now.
+-- 
+2.24.1
 
-Odds are we could probably consolidate __netif_set_xps_queues quite a
-bit with this as well. From what I can tell it looks like we could
-probably default nr_ids to dev->num_rx_queues and then if we are doing
-a CPU based map then we overwrite nr_ids with nr_cpu_ids and populate
-the online mask.
-
-> > That reminds me we may want to add an ASSERT_RTNL to the start of
-> > __netif_set_xps_queue and a comment indicating that we need to hold
-> > the rtnl lock to guarantee that num_tc and the Tx queue to TC mapping
-> > cannot change while we are programming the value into the map.
->
-> Good idea!
