@@ -2,105 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA762EF2DD
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 14:08:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4A22EF2DF
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 14:09:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726745AbhAHNH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 08:07:59 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:41386 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbhAHNH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 08:07:58 -0500
-Received: from [192.168.254.6] (unknown [50.46.152.101])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 26D3613C2B0;
-        Fri,  8 Jan 2021 05:07:16 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 26D3613C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1610111238;
-        bh=219cdLg/Ji0/571lkM/bMGIlP+NbKULrbbwakcntH9M=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=pfNQ3Dyk8BAZfPdhf7E7/AguVbbQcWXBfXbrGm+LDQGaEws4fLJAsXYlL3CtQjlwf
-         /yn9AMLzMVUB+g9Y9dnc8pQJAEmH6vvY3mGqC0nWBH01cZhtjSuE22zhUGLkEW6hkC
-         /5OEi9e/VotoxgGC8rfp340C+wG11gxfp0CgRc8I=
-Subject: Re: 5.10.4+ hang with 'rmmod nf_conntrack'
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <41dbfc93-0d57-6d78-f6fa-529dd5e0685c@candelatech.com>
- <20210108061653.GB19605@breakpoint.cc>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <0fa45356-7c63-bb01-19c8-9447cf2cad39@candelatech.com>
-Date:   Fri, 8 Jan 2021 05:07:12 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1727247AbhAHNJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 08:09:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726992AbhAHNJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 08:09:14 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EB2C0612F4
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 05:08:34 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id w18so9690147iot.0
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 05:08:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=tjQZ6ifU9y1rovJPVlI6hcEMM/rEFs+5hVhaueqyfAw=;
+        b=Ih49Bg0H4oYltejrkXTC54/lsZDMElUv1imT+QbSWzxkhDdkQ6Z4L1xaDB35lfWnhl
+         7pmkuLdtYVbHQOzhCE48V0dqlSVT39K98lmM8fxjrJYSGfihT0qUA8ENxiXSTbGsK3Nu
+         T+n8BTD7C9maALoRI7QHYL+y3pGIXs4xLK0c5CmpPUH2HEyY2kkW45CnPSNP0kJodWk8
+         rtKEtLVYCf26rouaVfSNLIPvsui2qiF4h8IEQhscTmtZJyVQdOB7tPsX9ueD93lBxtjm
+         6nehpqmrdEEiij6opZVFnSPLJZ+XuO9UFW/MLs6hpupPy2ofkEPVxuQC1ktL5pHRa6H8
+         3vag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=tjQZ6ifU9y1rovJPVlI6hcEMM/rEFs+5hVhaueqyfAw=;
+        b=ElXqBbwRqvmj8I9EuxIzbGfJuHMY6/3zbCMxNitPTkhBWOkF7yX1aLXmB4JA/gqEoI
+         XLdXIXKT+WAFCN4RKo/nVAtp9edeXavRORA9RpCFbNYpOyVUfuKpL4xO8kjzUnbMvLD4
+         8gvv90TzPJIQJ7HdDFFtPFjjRQV+cFeXliF9exl3ZqDTItj6n2ZIIXvc0o7+z+sArGlc
+         jzPDCHNNYRhLOMbPeb/JHN8tWJdgB7SgaFTjIyi27y9FVxnlJAZqWhG4XU7PEMp+G+Vf
+         0zW7YLQ+h6UG7Bw+OaorMPiXORMpViGwR5n7SaS+F+5rFWVkejw1fRKnzrbmD5iGhIJ2
+         T+7A==
+X-Gm-Message-State: AOAM532ncVQLfZJJaTblmwUOHO9RRSkectcBshzZVIZOc2QaprejTsa2
+        nrS2blgh1AP3/ys/sacnrnltnabqIOk1QWwTQ88=
+X-Google-Smtp-Source: ABdhPJxoVMPOSCSmR5RHdolQAtJ/EOti4hADXIUIz5mjEyvYgcaK4lJpHGCYDohAUIetqVH8khqlr7QNnn/MSK9WdL0=
+X-Received: by 2002:a02:2ace:: with SMTP id w197mr3333895jaw.132.1610111313749;
+ Fri, 08 Jan 2021 05:08:33 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210108061653.GB19605@breakpoint.cc>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+References: <CA+icZUXzW3RTyr5M_r-YYBB_k7Yw_JnurwPV5o0xGNpn7QPgRw@mail.gmail.com>
+ <6d9a041f-858e-2426-67a9-4e15acd06a95@gmail.com> <CA+icZUW+v5ZHq4FGt7JPyGOL7y7wUrw1N9BHtiuE-EmwqQrcQw@mail.gmail.com>
+ <CANn89iJvw55jeWDVzyfNewr-=pXiEwCkG=c5eu6j8EeiD=PN4g@mail.gmail.com>
+In-Reply-To: <CANn89iJvw55jeWDVzyfNewr-=pXiEwCkG=c5eu6j8EeiD=PN4g@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Fri, 8 Jan 2021 14:08:22 +0100
+Message-ID: <CA+icZUXixAGnFYXn9NC2+QgU+gYdwVQv=pkndaBnbz8V0LBKiw@mail.gmail.com>
+Subject: Re: Flaw in "random32: update the net random state on interrupt and activity"
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/21 10:16 PM, Florian Westphal wrote:
-> Ben Greear <greearb@candelatech.com> wrote:
->> I noticed my system has a hung process trying to 'rmmod nf_conntrack'.
->>
->> I've generally been doing the script that calls rmmod forever,
->> but only extensively tested on 5.4 kernel and earlier.
->>
->> If anyone has any ideas, please let me know.  This is from 'sysrq t'.  I don't see
->> any hung-task splats in dmesg.
-> 
-> rmmod on conntrack loops forever until the active conntrack object count reaches 0.
-> (plus a walk of the conntrack table to evict/put all entries).
-> 
->> I'll see if it is reproducible and if so will try
->> with lockdep enabled...
-> 
-> No idea, there was a regression in 5.6, but that was fixed by the time
-> 5.7 was released.
-> 
-> Can't reproduce hangs with a script that injects a few dummy entries
-> and then removes the module:
-> 
-> added=0
-> 
-> add_and_rmmod()
-> {
->          while [ $added -lt 1000 ]; do
->                  conntrack -I -s $(($RANDOM%256)).$(($RANDOM%256)).$(($RANDOM%256)).$(($RANDOM%255+1)) \
->                          -d $(($RANDOM%256)).$(($RANDOM%256)).$(($RANDOM%256)).$(($RANDOM%255+1)) \
->                           --protonum 6 --timeout $(((RANDOM%120) + 240)) --state ESTABLISHED --sport $RANDOM --dport $RANDOM 2> /dev/null || break
-> 
->                  added=$((added + 1))
->                  if [ $((added % 1000)) -eq 0 ];then
->                          echo $added
->                  fi
->          done
-> 
->          echo rmmod after adding $added entries
->          conntrack -C
->          rmmod nf_conntrack_netlink
->          rmmod nf_conntrack
-> }
-> 
-> add_and_rmmod
-> 
-> I don't see how it would make a difference, but do you have any special conntrack features enabled
-> at run time, e.g. reliable netlink events? (If you don't know what I mean the answer is no).
+On Wed, Aug 12, 2020 at 6:25 PM Eric Dumazet <edumazet@google.com> wrote:
 
-Not that I know of, but I am using lots of VRF devices, each with their own routing table, as well
-as some wifi stations and AP netdevs.
+> > Also, I tried the diff for tcp_conn_request...
+> > With removing the call to prandom_u32() not useful for
+> > prandom_u32/tracing via perf.
+>
+> I am planning to send the TCP patch once net-next is open. (probably next week)
 
-I'll let you know if I can reproduce it again..
+Ping.
 
-Thanks,
-Ben
+What is the status of this?
 
-
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+- Sedat -
