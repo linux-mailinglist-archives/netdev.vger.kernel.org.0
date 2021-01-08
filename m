@@ -2,45 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6EBA2EF9E3
-	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 22:05:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F7F52EF9F8
+	for <lists+netdev@lfdr.de>; Fri,  8 Jan 2021 22:10:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729663AbhAHVEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 16:04:50 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:58084 "EHLO vps0.lunn.ch"
+        id S1729350AbhAHVJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 16:09:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53166 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729181AbhAHVEt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 16:04:49 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kxyvX-00Gy7G-Sg; Fri, 08 Jan 2021 22:04:07 +0100
-Date:   Fri, 8 Jan 2021 22:04:07 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Brian Silverman <silvermanbri@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: MDIO over I2C driver driver probe dependency issue
-Message-ID: <X/jIx/brD6Aw+4sk@lunn.ch>
-References: <CAJKO-jaewzeB2X-hZ4EiZiyvaKqH=B0CrhvC_buqfMTcns-b-w@mail.gmail.com>
- <4606bd55-55a6-1e81-a23b-f06230ffdb52@gmail.com>
- <X/hhT4Sz9FU4kiDe@lunn.ch>
- <CAJKO-jYwineOM5wc+FX=Nj3AOfKK06qK-iqQSP3uQufNRnuGWQ@mail.gmail.com>
+        id S1726227AbhAHVJ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 16:09:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E2BF323A5A;
+        Fri,  8 Jan 2021 21:09:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610140155;
+        bh=ojGhrHfNQK2SNPN5lQcE7SdOhTZeRmvGT8stlz24KBw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=XF32wVwH5bNYvhjAlGQew+lq2auuThz+oZdR8Fve/mUqbPX+Eb0ky8r47r5b5Z1I1
+         C9ejggwguGrcbu2NSqidnRk+JgXliUao3uWFzZW5YKMaXaLgA9TLMbp8VDrNGlJ/g6
+         CtCwE2FW5fVJiGHJhTLGP7sUW8SZog6P2R0B2IGjdPDDIm4Q295kY5D+uFGsdiKFIr
+         AtovQODWm1CXFeLZ/BW2a0vFSHVKxonEJU0RmRefc39hYH1SobuxncylHqauy6/tr1
+         7haVglFMl7c0inigjJ8+B8NxoZ2nlXguallA6g8qMFqIy4knI54kocphsPbEmGUSxS
+         yBT2zkiPFg3Dg==
+Date:   Fri, 8 Jan 2021 15:09:13 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Don Dutile <ddutile@redhat.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH mlx5-next 1/4] PCI: Configure number of MSI-X vectors for
+ SR-IOV VFs
+Message-ID: <20210108210913.GA1471923@bjorn-Precision-5520>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJKO-jYwineOM5wc+FX=Nj3AOfKK06qK-iqQSP3uQufNRnuGWQ@mail.gmail.com>
+In-Reply-To: <ba1e7c38-2a21-40ba-787f-458b979b938f@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 03:02:52PM -0500, Brian Silverman wrote:
-> Thanks for the responses - I now have a more clear picture of what's going on.
->  (Note: I'm using Xilinx's 2019.2 kernel (based off 4.19).  I believe it would
-> be similar to latest kernels, but I could be wrong.)
+On Thu, Jan 07, 2021 at 10:54:38PM -0500, Don Dutile wrote:
+> On 1/7/21 7:57 PM, Bjorn Helgaas wrote:
+> > On Sun, Jan 03, 2021 at 10:24:37AM +0200, Leon Romanovsky wrote:
 
-Hi Brian
+> > > + **/
+> > > +int pci_set_msix_vec_count(struct pci_dev *dev, int numb)
+> > > +{
+> > > +	struct pci_dev *pdev = pci_physfn(dev);
+> > > +
+> > > +	if (!dev->msix_cap || !pdev->msix_cap)
+> > > +		return -EINVAL;
+> > > +
+> > > +	if (dev->driver || !pdev->driver ||
+> > > +	    !pdev->driver->sriov_set_msix_vec_count)
+> > > +		return -EOPNOTSUPP;
+> > > +
+> > > +	if (numb < 0)
+> > > +		/*
+> > > +		 * We don't support negative numbers for now,
+> > > +		 * but maybe in the future it will make sense.
+> > > +		 */
+> > > +		return -EINVAL;
+> > > +
+> > > +	return pdev->driver->sriov_set_msix_vec_count(dev, numb);
+> >
+> > So we write to a VF sysfs file, get here and look up the PF, call a PF
+> > driver callback with the VF as an argument, the callback (at least for
+> > mlx5) looks up the PF from the VF, then does some mlx5-specific magic
+> > to the PF that influences the VF somehow?
+>
+> There's no PF lookup above.... it's just checking if a pdev has a
+> driver with the desired msix-cap setting(reduction) feature.
 
-macb_main has had a lot of changes with respect to PHYs. Please try
-something modern, like 5.10.
+We started with the VF (the sysfs file is attached to the VF).  "pdev"
+is the corresponding PF; that's what I meant by "looking up the PF".
+Then we call the PF driver sriov_set_msix_vec_count() method.
 
-	  Andrew
+I asked because this raises questions of whether we need mutual
+exclusion or some other coordination between setting this for multiple
+VFs.
+
+Obviously it's great to answer all these in email, but at the end of
+the day, the rationale needs to be in the commit, either in code
+comments or the commit log.
