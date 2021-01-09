@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 001EF2EFD6A
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 04:24:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A6282EFD77
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 04:32:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726364AbhAIDXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 22:23:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46986 "EHLO mail.kernel.org"
+        id S1726352AbhAIDat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 22:30:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725996AbhAIDXo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 22:23:44 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C1972399C;
-        Sat,  9 Jan 2021 03:23:04 +0000 (UTC)
+        id S1725906AbhAIDat (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 22:30:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id E063923A1E;
+        Sat,  9 Jan 2021 03:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610162584;
-        bh=WplpMGnkahX6iTr8yPmLLqFf4dUfuLwHrquba5+P4HI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oYS4kIs3eEBXVt+wcTubr7SnpHU+yh5N71L5MtL+DhvD/o2dpb18v721u7q0vbAUt
-         LL4v/MScQBTPTBzvnv+fYZ0nydBoBP2FCxZUUStR5uhTfQbi9HbofL5ePTr6zRvEMk
-         enU9IaS2GGxFN+WC+0WP7wq2fi5IooViPMRQGSie6EXXnaJN+JljNjYwlQ3sqOpQh6
-         /SqQTcd7GekGORlCTerOD5QQge/APxi6k7WdyAQudCxORsNGXaTfn1iLhuqntvbVil
-         fdAaxP6U9c1cxJzXt1ThbpEGX6em3d7cHFc+6lczkxYvuJ2wlINvE2iUmpe4Fn6kbz
-         8mWc3bUtfsjIg==
-Date:   Fri, 8 Jan 2021 19:23:03 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Guillaume Nault <gnault@redhat.com>,
-        Tom Parkin <tparkin@katalix.com>
-Cc:     netdev@vger.kernel.org, jchapman@katalix.com
-Subject: Re: [PATCH net v3] ppp: fix refcount underflow on channel unbridge
-Message-ID: <20210108192303.6171c90c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210108205750.GA14215@linux.home>
-References: <20210107181315.3128-1-tparkin@katalix.com>
-        <20210108205750.GA14215@linux.home>
+        s=k20201202; t=1610163008;
+        bh=TXqyEM8oDGXwZcnl9+7r3z6pesYlQjJPspHps3s3DNc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=aWBeVAWLaLncbrxH19CXAR6X7iPOZSzqDYZVoGZVZl+jlRXsTvEAtuyhv/52gkM/y
+         RTO8zQ/G8J0dkWNvIZK3ZBE9j7g0V0kBynUVZJFpoWPAG5TQqCpjm5nZOzukX1GBw2
+         ehX1P284DOa6Al7sRO4Rrvnv+oekKeP/BkM37BImsRm8JPsbqD9THjhUnozfLqDXWW
+         ZQ41+NcNAnFyEM0MN4YsJCCqGRJw859QpqvA+9iHJTkCQElQ15hFD3xAtlGYHIGnRU
+         5+kuo+rvqojV0SFlBdqTeKcdMex348jDY1QKMy+KUqA3n3pjcNc/aFrk9z/Bb+JAvg
+         F+SNpy/LIVikg==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id CFAD0605AC;
+        Sat,  9 Jan 2021 03:30:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: ip_tunnel: clean up endianness conversions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161016300884.29520.17441189282427166681.git-patchwork-notify@kernel.org>
+Date:   Sat, 09 Jan 2021 03:30:08 +0000
+References: <20210107144008.25777-1-jwi@linux.ibm.com>
+In-Reply-To: <20210107144008.25777-1-jwi@linux.ibm.com>
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Jan 2021 21:57:50 +0100 Guillaume Nault wrote:
-> On Thu, Jan 07, 2021 at 06:13:15PM +0000, Tom Parkin wrote:
-> > When setting up a channel bridge, ppp_bridge_channels sets the
-> > pch->bridge field before taking the associated reference on the bridge
-> > file instance.
-> > 
-> > This opens up a refcount underflow bug if ppp_bridge_channels called
-> > via. iotcl runs concurrently with ppp_unbridge_channels executing via.
-> > file release.
-> > 
-> > The bug is triggered by ppp_bridge_channels taking the error path
-> > through the 'err_unset' label.  In this scenario, pch->bridge is set,
-> > but the reference on the bridged channel will not be taken because
-> > the function errors out.  If ppp_unbridge_channels observes pch->bridge
-> > before it is unset by the error path, it will erroneously drop the
-> > reference on the bridged channel and cause a refcount underflow.
-> > 
-> > To avoid this, ensure that ppp_bridge_channels holds a reference on
-> > each channel in advance of setting the bridge pointers.  
-> 
-> Thanks for following up on this!
-> 
-> Acked-by: Guillaume Nault <gnault@redhat.com>
+Hello:
 
-Applied, thanks!
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Thu,  7 Jan 2021 15:40:08 +0100 you wrote:
+> sparse complains about some harmless endianness issues:
+> 
+> > net/ipv4/ip_tunnel_core.c:225:43: warning: cast to restricted __be16
+> > net/ipv4/ip_tunnel_core.c:225:43: warning: incorrect type in initializer (different base types)
+> > net/ipv4/ip_tunnel_core.c:225:43:    expected restricted __be16 [usertype] mtu
+> > net/ipv4/ip_tunnel_core.c:225:43:    got unsigned short [usertype]
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net: ip_tunnel: clean up endianness conversions
+    https://git.kernel.org/netdev/net-next/c/fda4fde297f8
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
