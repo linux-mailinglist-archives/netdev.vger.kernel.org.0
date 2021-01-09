@@ -2,55 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E90C42F0303
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 20:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE80D2F031A
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 20:16:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726394AbhAITCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 14:02:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47634 "EHLO mail.kernel.org"
+        id S1726132AbhAITPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 14:15:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49504 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726154AbhAITCn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 14:02:43 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 26FBF2399C;
-        Sat,  9 Jan 2021 19:02:03 +0000 (UTC)
+        id S1725978AbhAITPc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 14:15:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E59D1206E9;
+        Sat,  9 Jan 2021 19:14:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610218923;
-        bh=bZGRDdH7/jewq0l1yf67uZRcEHNGJNp1M5Lsry0odno=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EdYMDGfwfJdhj65pzUNTTm29FAM/wC5iHVEYp/WL3bqKdf6UU7+sAmnlOMtGbwFWs
-         hy4qjKeQ5TYVkh6nhIcTPJtQNkpd/90GINwWiAgrLjdX51tZYiksHeY1P84mmJ4KZ/
-         usIGru9zI+WPhurdpwYfxtSHMn0Zyd6GwpUdrqZcywIxwpqTS8XZEOXd0FDepsVvMR
-         6VRW+r5treommZPJ226G9vi/jgQVPwRXJXOlyt4Hc7bUTpdYnEkg8ghfAX/qkapJNx
-         tm8tA3vr+SV0s3jjtfW0OifOiidTmA/bJ983J+LTR5lUso4hM3JJbor5bOdMTxTsYS
-         ArD66vRrRjqlA==
-Date:   Sat, 9 Jan 2021 11:02:02 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, schoen@loyalty.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 00/11] selftests: Updates to allow single instance of
- nettest for client and server
-Message-ID: <20210109110202.13d04aeb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <036b819f-57ad-972e-6728-b1ef87a31efe@gmail.com>
-References: <20210109185358.34616-1-dsahern@kernel.org>
-        <036b819f-57ad-972e-6728-b1ef87a31efe@gmail.com>
+        s=k20201202; t=1610219691;
+        bh=SmXXBg/PFAnVl4lD56Fg2Rze5qQDH/LIcfWit7B6gj0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VVjgQ/HmLei1LhTXGEgh0JNvoyCrACFM2Vc3OM+ABfDDK0XVb7vejOZ6hvNfZIBJn
+         YddthS46XgKURJbWntrtivYOv0G3WP9FjjX0RABnP3Ag+ZUhEU+zLQZR1PzPJeta4E
+         vzTs12y/igN2ZePwv7Hep4paZryhb9fMr+KfiMbV79e3CPSzUzXIPJ4tcHPnujREsQ
+         6qzxpoJT8bcvEkWT2/YnAL1xL2emvtRoCe600LcFcIB70K70YCmyk2988fOtcVs4Ke
+         W3cR/O7/x7+6eAYQ3+uOkileupEECXmrMH9eLzXAmX8re4369xkd5w3tmQZDiJYd13
+         M4U0nq0RL/sSg==
+Received: by pali.im (Postfix)
+        id CB2B277B; Sat,  9 Jan 2021 20:14:47 +0100 (CET)
+Date:   Sat, 9 Jan 2021 20:14:47 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Schreiber <tschreibe@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] net: sfp: assume that LOS is not implemented if
+ both LOS normal and inverted is set
+Message-ID: <20210109191447.hunwx4fc4d4lox5f@pali>
+References: <20201230154755.14746-1-pali@kernel.org>
+ <20210106153749.6748-1-pali@kernel.org>
+ <20210106153749.6748-3-pali@kernel.org>
+ <X/c8xJcwj8Y1t3u4@lunn.ch>
+ <20210109154601.GZ1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210109154601.GZ1551@shell.armlinux.org.uk>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 9 Jan 2021 11:55:39 -0700 David Ahern wrote:
-> On 1/9/21 11:53 AM, David Ahern wrote:
-> > Update nettest to handle namespace change internally to allow a
-> > single instance to run both client and server modes. Device validation
-> > needs to be moved after the namespace change and a few run time
-> > options need to be split to allow values for client and server.
+On Saturday 09 January 2021 15:46:01 Russell King - ARM Linux admin wrote:
+> On Thu, Jan 07, 2021 at 05:54:28PM +0100, Andrew Lunn wrote:
+> > On Wed, Jan 06, 2021 at 04:37:48PM +0100, Pali Rohár wrote:
+> > > From: Russell King <rmk+kernel@armlinux.org.uk>
+> > > 
+> > > Some GPON SFP modules (e.g. Ubiquiti U-Fiber Instant) have set both
+> > > SFP_OPTIONS_LOS_INVERTED and SFP_OPTIONS_LOS_NORMAL bits in their EEPROM.
+> > > 
+> > > Such combination of bits is meaningless so assume that LOS signal is not
+> > > implemented.
+> > > 
+> > > This patch fixes link carrier for GPON SFP module Ubiquiti U-Fiber Instant.
+> > > 
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > 
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > 
-> Ugh, I forgot to add net-next to the subject line. Let me know if I
-> should re-send.
+> I'd like to send this patch irrespective of discussion on the other
+> patches - I already have it committed in my repository with a different
+> description, but the patch content is the same.
+> 
+> Are you happy if I transfer Andrew's r-b tag, and convert yours to an
+> acked-by before I send it?
+> 
+> I'd also like to add a patch that allows 2.5G if no other modes are
+> found, but the bitrate specified by the module allows 2.5G speed - much
+> like we do for 1G speeds.
 
-We should be fine, the build bot will default to net-next if there are
-not Fixes tag, and you just told us you're targeting net-next so all
-clear.
+Russell, should I send a new version of patch series without this patch?
