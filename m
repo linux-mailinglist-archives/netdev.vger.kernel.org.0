@@ -2,91 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58CBC2EFC82
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 01:55:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F31A12EFCB7
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 02:27:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726720AbhAIAyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 19:54:46 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:41740 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725817AbhAIAyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 19:54:46 -0500
-Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id D4F8D20B6C42; Fri,  8 Jan 2021 16:54:05 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D4F8D20B6C42
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1610153645;
-        bh=a9mYqRWHBtW/4GhoIGv+qIDowOAzSYAjrMOFelGtva8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cwsd1IsSZqOe3XwG/mwVPmC5GeHuXrqadX+yHNOpLA3qSE5bdKKTOrIuQM8QJi5yT
-         YAzSRkXQ7jg65PIZgogPcSCNNNsL77XAHhz6xj8alQgSV8eUvc0g3plKotOuFkpekK
-         4NxIBAdFDgiXp596sUOsiYx2imNS1fAS4ARjsHpQ=
-From:   Long Li <longli@linuxonhyperv.com>
-To:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Long Li <longli@microsoft.com>
-Subject: [PATCH v2 3/3] hv_netvsc: Process NETDEV_GOING_DOWN on VF hot remove
-Date:   Fri,  8 Jan 2021 16:53:43 -0800
-Message-Id: <1610153623-17500-4-git-send-email-longli@linuxonhyperv.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1610153623-17500-1-git-send-email-longli@linuxonhyperv.com>
-References: <1610153623-17500-1-git-send-email-longli@linuxonhyperv.com>
+        id S1726120AbhAIB11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 20:27:27 -0500
+Received: from mga07.intel.com ([134.134.136.100]:50567 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725836AbhAIB11 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 20:27:27 -0500
+IronPort-SDR: SZZHvTH4jzrRzmk2V629i7ByuRAkLY8x6A36qhXCFu4SmRRSJEZKeuTYnILrnpibuDYLiIY9Qy
+ 2dTYF3/O9M8w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9858"; a="241751945"
+X-IronPort-AV: E=Sophos;i="5.79,333,1602572400"; 
+   d="scan'208";a="241751945"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2021 17:26:45 -0800
+IronPort-SDR: M5Tr2XvGFmxX+W4P8wLF02CuPB7ws/wk22au9Q44KKdH932StrzCfalObBHczxDvZ9P6SgNFNJ
+ KTEFGhp599sQ==
+X-IronPort-AV: E=Sophos;i="5.79,333,1602572400"; 
+   d="scan'208";a="399163877"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.196.132]) ([10.212.196.132])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2021 17:26:43 -0800
+Subject: Re: [RFC PATCH v2 net-next 00/12] Make .ndo_get_stats64 sleepable
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Eric Dumazet <edumazet@google.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Florian Westphal <fw@strlen.de>, linux-s390@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, linux-parisc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        dev@openvswitch.org
+References: <20210105185902.3922928-1-olteanv@gmail.com>
+ <20210106134516.jnh2b5p5oww4cghz@skbuf>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <e0edda65-5421-94aa-19c5-1bd88a602f92@intel.com>
+Date:   Fri, 8 Jan 2021 17:26:40 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <20210106134516.jnh2b5p5oww4cghz@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Long Li <longli@microsoft.com>
 
-On VF hot remove, NETDEV_GOING_DOWN is sent to notify the VF is about to
-go down. At this time, the VF is still sending/receiving traffic and we
-request the VSP to switch datapath.
 
-On completion, the datapath is switched to synthetic and we can proceed
-with VF hot remove.
+On 1/6/2021 5:45 AM, Vladimir Oltean wrote:
+> On Tue, Jan 05, 2021 at 08:58:50PM +0200, Vladimir Oltean wrote:
+>> This is marked as Request For Comments for a reason.
+> 
+> If nobody has any objections, I will remove the memory leaks I
+> introduced to check if anybody is paying attention, and I will resubmit
+> this as a non-RFC series.
+> 
 
-Signed-off-by: Long Li <longli@microsoft.com>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
----
- drivers/net/hyperv/netvsc_drv.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+I read through this, and it makes sense to me. I admit that I still
+don't grasp all the details of the locking involved.
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 64ae5f4e974e..75b4d6703cf1 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2382,12 +2382,15 @@ static int netvsc_register_vf(struct net_device *vf_netdev)
-  * During hibernation, if a VF NIC driver (e.g. mlx5) preserves the network
-  * interface, there is only the CHANGE event and no UP or DOWN event.
-  */
--static int netvsc_vf_changed(struct net_device *vf_netdev)
-+static int netvsc_vf_changed(struct net_device *vf_netdev, unsigned long event)
- {
- 	struct net_device_context *net_device_ctx;
- 	struct netvsc_device *netvsc_dev;
- 	struct net_device *ndev;
--	bool vf_is_up = netif_running(vf_netdev);
-+	bool vf_is_up = false;
-+
-+	if (event != NETDEV_GOING_DOWN)
-+		vf_is_up = netif_running(vf_netdev);
- 
- 	ndev = get_netvsc_byref(vf_netdev);
- 	if (!ndev)
-@@ -2716,7 +2719,8 @@ static int netvsc_netdev_event(struct notifier_block *this,
- 	case NETDEV_UP:
- 	case NETDEV_DOWN:
- 	case NETDEV_CHANGE:
--		return netvsc_vf_changed(event_dev);
-+	case NETDEV_GOING_DOWN:
-+		return netvsc_vf_changed(event_dev, event);
- 	default:
- 		return NOTIFY_DONE;
- 	}
--- 
-2.27.0
-
+Thanks,
+Jake
