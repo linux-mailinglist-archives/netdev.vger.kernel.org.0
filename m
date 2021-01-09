@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26BAE2F02F1
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 19:55:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56B852F02F5
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 19:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbhAISz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 13:55:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46790 "EHLO mail.kernel.org"
+        id S1726432AbhAISzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 13:55:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46794 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726336AbhAISzZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 13:55:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4F43B239FC;
-        Sat,  9 Jan 2021 18:54:12 +0000 (UTC)
+        id S1726336AbhAISz1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 13:55:27 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 451BD23998;
+        Sat,  9 Jan 2021 18:54:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1610218453;
-        bh=HJa9IxIP7Q035YSq3gk1tCBTIST4dvqtxPzRs77R/k4=;
+        bh=0Kj2ILQJB5DV+b+GY52gznWc5pIWAcDiqYJWW4E2EgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DbT3qJJktvvYxhrSFFFmpw+Ud7ZsFB9EOhIcX54FkrADjC021RNMCKHdDEmbyvy5l
-         faVRDROvKsGCZ4EJEGgjW5w5s4iQMKbSqqeewjKFxlU8VG5McU2hI9YwqeqIJePKkJ
-         6kzhxcpK1SHHWyoAoodBPB/e5eS6zIsrmACvNGRmB50MYKERKI3Mmm39lEQwxL3zc2
-         3Vf19y0D7++JLGaxXDEz6zR84awljBtIkkGWpp1yEqhD+JE0Dq/h8kC0AQZeTDa+dT
-         YVPHJPx7mG8vyGI2Un928ERClCglQY6SfLN+iuXva0XVsNsvVS25FkOwIlhn2v7ftY
-         AIAEbkiJ2GN1w==
+        b=AiyV8qVibnh1lH5gsQ4Hyey5WIQzuhNcuToi9tWmARS02tVgWV6HodfifrjwhaIu3
+         SYslVv1+81Ya/lSYzE0MXVgLmH05k3tzvWLu5yxJOiRO0M7nm4/LLuxtlgzQUW8P5S
+         TlBgnIjwBGwRw2Oyzw7hU2q/Gst+T+xwDpf2F5Xwae4I9UJ1RCi6tDH7pR+eiEY7lR
+         mMdEW2ixbv8vRZVT+YocZq7JxyYkaJF+LAD/0UoIBYzsGnmRg7Id1VMLWPoWCVVVve
+         k1G1HZemaiGP5hqiIo6Cx6P0rPZAkRWj0yF4QV28X9K5z+c/+anU0XuPsTMV5frnP+
+         U4nL5PJ8enBSA==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH 08/11] selftests: Make address validation apply only to client mode
-Date:   Sat,  9 Jan 2021 11:53:55 -0700
-Message-Id: <20210109185358.34616-9-dsahern@kernel.org>
+Subject: [PATCH 09/11] selftests: Consistently specify address for MD5 protection
+Date:   Sat,  9 Jan 2021 11:53:56 -0700
+Message-Id: <20210109185358.34616-10-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20210109185358.34616-1-dsahern@kernel.org>
 References: <20210109185358.34616-1-dsahern@kernel.org>
@@ -41,31 +41,257 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-When a single instance of nettest is used for client and server
-make sure address validation is only done for client mode.
+nettest started with -r as the remote address for MD5 passwords.
+The -m argument was added to use prefixes with a length when that
+feature was added to the kernel. Since -r is used to specify
+remote address for client mode, change nettest to only use -m
+for MD5 passwords and update fcnal-test script.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/nettest.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ tools/testing/selftests/net/fcnal-test.sh | 60 +++++++++++------------
+ tools/testing/selftests/net/nettest.c     |  6 +--
+ 2 files changed, 33 insertions(+), 33 deletions(-)
 
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 02b0b9ead40b..edd33f83f80e 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -801,7 +801,7 @@ ipv4_tcp_md5_novrf()
+ 
+ 	# basic use case
+ 	log_start
+-	run_cmd nettest -s -M ${MD5_PW} -r ${NSB_IP} &
++	run_cmd nettest -s -M ${MD5_PW} -m ${NSB_IP} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -r ${NSA_IP} -M ${MD5_PW}
+ 	log_test $? 0 "MD5: Single address config"
+@@ -817,7 +817,7 @@ ipv4_tcp_md5_novrf()
+ 	# wrong password
+ 	log_start
+ 	show_hint "Should timeout since client uses wrong password"
+-	run_cmd nettest -s -M ${MD5_PW} -r ${NSB_IP} &
++	run_cmd nettest -s -M ${MD5_PW} -m ${NSB_IP} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -r ${NSA_IP} -M ${MD5_WRONG_PW}
+ 	log_test $? 2 "MD5: Client uses wrong password"
+@@ -825,7 +825,7 @@ ipv4_tcp_md5_novrf()
+ 	# client from different address
+ 	log_start
+ 	show_hint "Should timeout due to MD5 mismatch"
+-	run_cmd nettest -s -M ${MD5_PW} -r ${NSB_LO_IP} &
++	run_cmd nettest -s -M ${MD5_PW} -m ${NSB_LO_IP} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -r ${NSA_IP} -M ${MD5_PW}
+ 	log_test $? 2 "MD5: Client address does not match address configured with password"
+@@ -869,7 +869,7 @@ ipv4_tcp_md5()
+ 
+ 	# basic use case
+ 	log_start
+-	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP} &
++	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -r ${NSA_IP} -M ${MD5_PW}
+ 	log_test $? 0 "MD5: VRF: Single address config"
+@@ -885,7 +885,7 @@ ipv4_tcp_md5()
+ 	# wrong password
+ 	log_start
+ 	show_hint "Should timeout since client uses wrong password"
+-	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP} &
++	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -r ${NSA_IP} -M ${MD5_WRONG_PW}
+ 	log_test $? 2 "MD5: VRF: Client uses wrong password"
+@@ -893,7 +893,7 @@ ipv4_tcp_md5()
+ 	# client from different address
+ 	log_start
+ 	show_hint "Should timeout since server config differs from client"
+-	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -r ${NSB_LO_IP} &
++	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -m ${NSB_LO_IP} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -r ${NSA_IP} -M ${MD5_PW}
+ 	log_test $? 2 "MD5: VRF: Client address does not match address configured with password"
+@@ -930,31 +930,31 @@ ipv4_tcp_md5()
+ 	#
+ 
+ 	log_start
+-	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP} &
+-	run_cmd nettest -s -M ${MD5_WRONG_PW} -r ${NSB_IP} &
++	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP} &
++	run_cmd nettest -s -M ${MD5_WRONG_PW} -m ${NSB_IP} &
+ 	sleep 1
+ 	run_cmd_nsb nettest  -r ${NSA_IP} -M ${MD5_PW}
+ 	log_test $? 0 "MD5: VRF: Single address config in default VRF and VRF, conn in VRF"
+ 
+ 	log_start
+-	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP} &
+-	run_cmd nettest -s -M ${MD5_WRONG_PW} -r ${NSB_IP} &
++	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP} &
++	run_cmd nettest -s -M ${MD5_WRONG_PW} -m ${NSB_IP} &
+ 	sleep 1
+ 	run_cmd_nsc nettest  -r ${NSA_IP} -M ${MD5_WRONG_PW}
+ 	log_test $? 0 "MD5: VRF: Single address config in default VRF and VRF, conn in default VRF"
+ 
+ 	log_start
+ 	show_hint "Should timeout since client in default VRF uses VRF password"
+-	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP} &
+-	run_cmd nettest -s -M ${MD5_WRONG_PW} -r ${NSB_IP} &
++	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP} &
++	run_cmd nettest -s -M ${MD5_WRONG_PW} -m ${NSB_IP} &
+ 	sleep 1
+ 	run_cmd_nsc nettest -r ${NSA_IP} -M ${MD5_PW}
+ 	log_test $? 2 "MD5: VRF: Single address config in default VRF and VRF, conn in default VRF with VRF pw"
+ 
+ 	log_start
+ 	show_hint "Should timeout since client in VRF uses default VRF password"
+-	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP} &
+-	run_cmd nettest -s -M ${MD5_WRONG_PW} -r ${NSB_IP} &
++	run_cmd nettest -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP} &
++	run_cmd nettest -s -M ${MD5_WRONG_PW} -m ${NSB_IP} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -r ${NSA_IP} -M ${MD5_WRONG_PW}
+ 	log_test $? 2 "MD5: VRF: Single address config in default VRF and VRF, conn in VRF with default VRF pw"
+@@ -993,7 +993,7 @@ ipv4_tcp_md5()
+ 	# negative tests
+ 	#
+ 	log_start
+-	run_cmd nettest -s -d ${NSA_DEV} -M ${MD5_PW} -r ${NSB_IP}
++	run_cmd nettest -s -d ${NSA_DEV} -M ${MD5_PW} -m ${NSB_IP}
+ 	log_test $? 1 "MD5: VRF: Device must be a VRF - single address"
+ 
+ 	log_start
+@@ -2265,7 +2265,7 @@ ipv6_tcp_md5_novrf()
+ 
+ 	# basic use case
+ 	log_start
+-	run_cmd nettest -6 -s -M ${MD5_PW} -r ${NSB_IP6} &
++	run_cmd nettest -6 -s -M ${MD5_PW} -m ${NSB_IP6} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -6 -r ${NSA_IP6} -M ${MD5_PW}
+ 	log_test $? 0 "MD5: Single address config"
+@@ -2281,7 +2281,7 @@ ipv6_tcp_md5_novrf()
+ 	# wrong password
+ 	log_start
+ 	show_hint "Should timeout since client uses wrong password"
+-	run_cmd nettest -6 -s -M ${MD5_PW} -r ${NSB_IP6} &
++	run_cmd nettest -6 -s -M ${MD5_PW} -m ${NSB_IP6} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -6 -r ${NSA_IP6} -M ${MD5_WRONG_PW}
+ 	log_test $? 2 "MD5: Client uses wrong password"
+@@ -2289,7 +2289,7 @@ ipv6_tcp_md5_novrf()
+ 	# client from different address
+ 	log_start
+ 	show_hint "Should timeout due to MD5 mismatch"
+-	run_cmd nettest -6 -s -M ${MD5_PW} -r ${NSB_LO_IP6} &
++	run_cmd nettest -6 -s -M ${MD5_PW} -m ${NSB_LO_IP6} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -6 -r ${NSA_IP6} -M ${MD5_PW}
+ 	log_test $? 2 "MD5: Client address does not match address configured with password"
+@@ -2333,7 +2333,7 @@ ipv6_tcp_md5()
+ 
+ 	# basic use case
+ 	log_start
+-	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP6} &
++	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP6} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -6 -r ${NSA_IP6} -M ${MD5_PW}
+ 	log_test $? 0 "MD5: VRF: Single address config"
+@@ -2349,7 +2349,7 @@ ipv6_tcp_md5()
+ 	# wrong password
+ 	log_start
+ 	show_hint "Should timeout since client uses wrong password"
+-	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP6} &
++	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP6} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -6 -r ${NSA_IP6} -M ${MD5_WRONG_PW}
+ 	log_test $? 2 "MD5: VRF: Client uses wrong password"
+@@ -2357,7 +2357,7 @@ ipv6_tcp_md5()
+ 	# client from different address
+ 	log_start
+ 	show_hint "Should timeout since server config differs from client"
+-	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -r ${NSB_LO_IP6} &
++	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -m ${NSB_LO_IP6} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -6 -r ${NSA_IP6} -M ${MD5_PW}
+ 	log_test $? 2 "MD5: VRF: Client address does not match address configured with password"
+@@ -2394,31 +2394,31 @@ ipv6_tcp_md5()
+ 	#
+ 
+ 	log_start
+-	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP6} &
+-	run_cmd nettest -6 -s -M ${MD5_WRONG_PW} -r ${NSB_IP6} &
++	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP6} &
++	run_cmd nettest -6 -s -M ${MD5_WRONG_PW} -m ${NSB_IP6} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -6  -r ${NSA_IP6} -M ${MD5_PW}
+ 	log_test $? 0 "MD5: VRF: Single address config in default VRF and VRF, conn in VRF"
+ 
+ 	log_start
+-	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP6} &
+-	run_cmd nettest -6 -s -M ${MD5_WRONG_PW} -r ${NSB_IP6} &
++	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP6} &
++	run_cmd nettest -6 -s -M ${MD5_WRONG_PW} -m ${NSB_IP6} &
+ 	sleep 1
+ 	run_cmd_nsc nettest -6  -r ${NSA_IP6} -M ${MD5_WRONG_PW}
+ 	log_test $? 0 "MD5: VRF: Single address config in default VRF and VRF, conn in default VRF"
+ 
+ 	log_start
+ 	show_hint "Should timeout since client in default VRF uses VRF password"
+-	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP6} &
+-	run_cmd nettest -6 -s -M ${MD5_WRONG_PW} -r ${NSB_IP6} &
++	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP6} &
++	run_cmd nettest -6 -s -M ${MD5_WRONG_PW} -m ${NSB_IP6} &
+ 	sleep 1
+ 	run_cmd_nsc nettest -6 -r ${NSA_IP6} -M ${MD5_PW}
+ 	log_test $? 2 "MD5: VRF: Single address config in default VRF and VRF, conn in default VRF with VRF pw"
+ 
+ 	log_start
+ 	show_hint "Should timeout since client in VRF uses default VRF password"
+-	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -r ${NSB_IP6} &
+-	run_cmd nettest -6 -s -M ${MD5_WRONG_PW} -r ${NSB_IP6} &
++	run_cmd nettest -6 -s -d ${VRF} -M ${MD5_PW} -m ${NSB_IP6} &
++	run_cmd nettest -6 -s -M ${MD5_WRONG_PW} -m ${NSB_IP6} &
+ 	sleep 1
+ 	run_cmd_nsb nettest -6 -r ${NSA_IP6} -M ${MD5_WRONG_PW}
+ 	log_test $? 2 "MD5: VRF: Single address config in default VRF and VRF, conn in VRF with default VRF pw"
+@@ -2457,7 +2457,7 @@ ipv6_tcp_md5()
+ 	# negative tests
+ 	#
+ 	log_start
+-	run_cmd nettest -6 -s -d ${NSA_DEV} -M ${MD5_PW} -r ${NSB_IP6}
++	run_cmd nettest -6 -s -d ${NSA_DEV} -M ${MD5_PW} -m ${NSB_IP6}
+ 	log_test $? 1 "MD5: VRF: Device must be a VRF - single address"
+ 
+ 	log_start
 diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-index b1d6874d69ee..ff64012ac586 100644
+index ff64012ac586..ef82766dac98 100644
 --- a/tools/testing/selftests/net/nettest.c
 +++ b/tools/testing/selftests/net/nettest.c
-@@ -1718,6 +1718,12 @@ static int ipc_child(int fd, struct sock_args *args)
- 
- 	server_mode = 1; /* to tell log_msg in case we are in both_mode */
- 
-+	/* when running in both mode, address validation applies
-+	 * solely to client side
-+	 */
-+	args->has_expected_laddr = 0;
-+	args->has_expected_raddr = 0;
-+
- 	rc = do_server(args, fd);
- 
- 	free(outbuf);
+@@ -291,13 +291,13 @@ static int tcp_md5_remote(int sd, struct sock_args *args)
+ 	switch (args->version) {
+ 	case AF_INET:
+ 		sin.sin_port = htons(args->port);
+-		sin.sin_addr = args->remote_addr.in;
++		sin.sin_addr = args->md5_prefix.v4.sin_addr;
+ 		addr = &sin;
+ 		alen = sizeof(sin);
+ 		break;
+ 	case AF_INET6:
+ 		sin6.sin6_port = htons(args->port);
+-		sin6.sin6_addr = args->remote_addr.in6;
++		sin6.sin6_addr = args->md5_prefix.v6.sin6_addr;
+ 		addr = &sin6;
+ 		alen = sizeof(sin6);
+ 		break;
+@@ -725,7 +725,7 @@ static int convert_addr(struct sock_args *args, const char *_str,
+ 				return 1;
+ 			}
+ 		} else {
+-			args->prefix_len = pfx_len_max;
++			args->prefix_len = 0;
+ 		}
+ 		break;
+ 	default:
 -- 
 2.24.3 (Apple Git-128)
 
