@@ -2,67 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8F32F0420
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 23:41:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 272CB2F0426
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 23:45:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726198AbhAIWkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 17:40:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43494 "EHLO mail.kernel.org"
+        id S1726414AbhAIWny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 17:43:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43708 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726068AbhAIWks (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 17:40:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 66D722388A;
-        Sat,  9 Jan 2021 22:40:08 +0000 (UTC)
+        id S1726223AbhAIWnx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 17:43:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A009823888;
+        Sat,  9 Jan 2021 22:43:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610232008;
-        bh=L1THga5bn+Mp5xzjJQt1ke6wC/abUslwlyjj5YxfVFw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LmG9ePkblryIFPQCvNvO2Wl/VoIPIFp0H1/uBcIxZV1IOS98xW2jrryQkbhuPgsSD
-         eQmMR/96FDumpEHnC/4PCHGM47Kvt6NAOR55MxYpK/3a/Oz7V14zzMyg0vH10bQjYn
-         iuT6+cDVkMiiw8G5DNEBkMNgyVqHilkfRhscnmyU6lHJrHxQFDTxmF22RXeOF49tHa
-         3FOo15WCUIWoeJu4AuMDRg+FdDP3D7i9jOGNTzzyHl6MuD/XDwm9+Co5t1wHg/19OE
-         2Y2I2cMoaZlJi9Sx04xsXB/P2VKT7V4FPJEWffwceCpR1hfYMUpPihenVb1zujzZwC
-         HyJNkHTG4JZKA==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 58215605AE;
-        Sat,  9 Jan 2021 22:40:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1610232192;
+        bh=k6kk6F01bGxYTyYPJrz+JYD1LJ/D00VjaUlcsERDN7s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mJaTtJSGwLwfAh64b8YhG+0VXdoFaFkZcHnZJ0uP/lzaYR7RbAuUauCujeY91wx1f
+         lwo3TVT/JNUcf2mJZwjaAmo2w+L5b95L3pVCikDw2k0aUcB6IpyXGWJ5I9aYxteIaA
+         qP0KmwcR16pJHNRLJT0/zZcS6R5plY7JX6RS5tB7eZ81Hzc71VtLaH0lHDelB2mEVq
+         ugC6W8gCeg/+Gzrn/L+aruNbhe4Aw6zn51mXyVUz3CHGTchy/5zHaSNh7uGge2mF3Y
+         btxGwst+qxjct623pc43ANWW0YY/GiYyla6anFvzcmrCXIXqnoTmCs0wyAURJQMJ5k
+         rwon9JdJt/lIA==
+Date:   Sat, 9 Jan 2021 14:43:11 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Schuermann <leon@is.currently.online>
+Cc:     oliver@neukum.org, davem@davemloft.net, hayeswang@realtek.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] r8152: Add Lenovo Powered USB-C Travel Hub
+Message-ID: <20210109144311.47760f7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87bldye9f4.fsf@is.currently.online>
+References: <20210108202727.11728-1-leon@is.currently.online>
+        <20210108202727.11728-2-leon@is.currently.online>
+        <20210108182030.77839d11@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87bldye9f4.fsf@is.currently.online>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net] selftests/tls: fix selftests after adding ChaCha20-Poly1305
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161023200835.10389.10058094748383571716.git-patchwork-notify@kernel.org>
-Date:   Sat, 09 Jan 2021 22:40:08 +0000
-References: <1610141865-7142-1-git-send-email-vfedorenko@novek.ru>
-In-Reply-To: <1610141865-7142-1-git-send-email-vfedorenko@novek.ru>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     kuba@kernel.org, borisp@nvidia.com, aviadye@nvidia.com,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Sat,  9 Jan 2021 00:37:45 +0300 you wrote:
-> TLS selftests where broken because of wrong variable types used.
-> Fix it by changing u16 -> uint16_t
+On Sat, 09 Jan 2021 10:39:27 +0100 Leon Schuermann wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> > On Fri,  8 Jan 2021 21:27:27 +0100 Leon Schuermann wrote:  
+> >> This USB-C Hub (17ef:721e) based on the Realtek RTL8153B chip used to
+> >> work with the cdc_ether driver.  
+> >
+> > When you say "used to work" do you mean there was a regression where
+> > the older kernels would work fine and newer don't? Or just "it works
+> > most of the time"?  
 > 
-> Fixes: 4f336e88a870 ("selftests/tls: add CHACHA20-POLY1305 to tls selftests")
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> Sorry, I should've clarified that. "Used to work" is supposed to say
+> "the device used the generic cdc_ether driver", as in
 > 
-> [...]
+> [  +0.000004] usb 4-1.1: Product: Lenovo Powered Hub
+> [  +0.000003] usb 4-1.1: Manufacturer: Lenovo
+> [  +0.000002] usb 4-1.1: SerialNumber: xxxxxxxxx
+> [  +0.024803] cdc_ether 4-1.1:2.0 eth0: register 'cdc_ether' at
+>               usb-0000:2f:00.0-1.1, CDC Ethernet Device,
+>               xx:xx:xx:xx:xx:xx
+> 
+> I guess it did technically work correctly, except for the reported issue
+> when the host system suspends, which is fixed by using the dedicated
+> Realtek driver. As far as I know this hasn't been fixed before, so it's
+> not a regression.
 
-Here is the summary with links:
-  - [net] selftests/tls: fix selftests after adding ChaCha20-Poly1305
-    https://git.kernel.org/netdev/net/c/3502bd9b5762
+I see. In the last release cycle there were patches for allowing
+cdc_ether to drive RTL8153 devices when r8152 is not available. 
+I wanted to double check with you that nothing changed here,
+that's to say that the cdc_ether is not used even if r8152 is 
+built after an upgrade to 5.11-rc.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Should I update the commit message accordingly? Thanks!
 
-
+Yes please, otherwise backporters may be confused about how 
+to classify this change.
