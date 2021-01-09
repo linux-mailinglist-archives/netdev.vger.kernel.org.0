@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF8452F02F0
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 19:55:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 923182F02F2
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 19:55:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726298AbhAISzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 13:55:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46784 "EHLO mail.kernel.org"
+        id S1726367AbhAISz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 13:55:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726267AbhAISzX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 13:55:23 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 857A4239E5;
-        Sat,  9 Jan 2021 18:54:09 +0000 (UTC)
+        id S1725978AbhAISzZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 13:55:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 44E05239EB;
+        Sat,  9 Jan 2021 18:54:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610218450;
-        bh=8zbVRxGf2M4Osm7pxjgzY7XF3L0l0RzuiM80vqBm6r0=;
+        s=k20201202; t=1610218452;
+        bh=+w6BT02pj2FkKynyrgV5mmoQCBwxx0cX64Ygv1uHuXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o6W5CsUjqTeHjUGlDC9nhz89uoZQIZD/IlO+hDfLfE3d8R2Yp7ASrhX/raitxvrO7
-         vtSS5nIuWFp0TMoYxp30nrTENBnYanRILKN4hW/P4W3e5z4heb8nga1UWk4VIxYOhy
-         gmgPrSsp6Lv9al9XwxgxBo+PSFw59WN20gtpImCPgPmwgKmwe4991cLkbYKXtEpVUd
-         mS6dCX1qmkFUMNlM5hjXb8KU62/ySJhBv7bzz0D6aC55d0U+WFQY+KN06VEPMkD4m1
-         FdHCe1eHYXUkpqNeeT7oYEDOaY0/PlL8FS5zrV07wdICRhVyuxqJOMnPOE35parsUa
-         j4mJJ4KVWRY6Q==
+        b=i3aF/uwVGfNsS67r5q2tfIcq4YFYlL2/SJ+1iOvM0oY11ivT/+uR7e2B86s84liTy
+         MxjTm64pNeE3REl0EixcAqzFoesQAZ6cCepiVq6D5ACjrWJ7Y43XtyKS3mbYCbVzeT
+         z2+6mNII6Uis9Yf8xbPFuY86ixlsP54V+dyzgImGxVXNCFFFJ2B0+O0EaGKMwyQKZu
+         7uK7DyD0PF9p8xu8WRNN9FKYBjnnQEricds1U4Z81PMajcM2xkemULJvjR7QCaOXC+
+         XMgWKUl4jGliWBr0XGknAUpP1KeuLSqJz2f15vfTD8yYG+aadUC6CSPwLZNH0HF0TF
+         e3jLM5n9cuK6w==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH 06/11] selftests: Use separate stdout and stderr buffers in nettest
-Date:   Sat,  9 Jan 2021 11:53:53 -0700
-Message-Id: <20210109185358.34616-7-dsahern@kernel.org>
+Subject: [PATCH 07/11] selftests: Add missing newline in nettest error messages
+Date:   Sat,  9 Jan 2021 11:53:54 -0700
+Message-Id: <20210109185358.34616-8-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20210109185358.34616-1-dsahern@kernel.org>
 References: <20210109185358.34616-1-dsahern@kernel.org>
@@ -41,49 +41,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-When a single instance of nettest is doing both client and
-server modes, stdout and stderr messages can get interlaced
-and become unreadable. Allocate a new set of buffers for the
-child process handling server mode.
+A few logging lines are missing the newline, or need it moved up for
+cleaner logging.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/nettest.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/nettest.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-index 176709eb8b16..ab3e268c12a9 100644
+index ab3e268c12a9..b1d6874d69ee 100644
 --- a/tools/testing/selftests/net/nettest.c
 +++ b/tools/testing/selftests/net/nettest.c
-@@ -1705,9 +1705,27 @@ static char *random_msg(int len)
+@@ -199,7 +199,7 @@ static void log_address(const char *desc, struct sockaddr *sa)
+ 	if (sa->sa_family == AF_INET) {
+ 		struct sockaddr_in *s = (struct sockaddr_in *) sa;
  
- static int ipc_child(int fd, struct sock_args *args)
- {
-+	char *outbuf, *errbuf;
-+	int rc;
-+
-+	outbuf = malloc(4096);
-+	errbuf = malloc(4096);
-+	if (!outbuf || !errbuf) {
-+		fprintf(stderr, "server: Failed to allocate buffers for stdout and stderr\n");
-+		return 1;
-+	}
-+
-+	setbuffer(stdout, outbuf, 4096);
-+	setbuffer(stderr, errbuf, 4096);
-+
- 	server_mode = 1; /* to tell log_msg in case we are in both_mode */
+-		log_msg("%s %s:%d",
++		log_msg("%s %s:%d\n",
+ 			desc,
+ 			inet_ntop(AF_INET, &s->sin_addr, addrstr,
+ 				  sizeof(addrstr)),
+@@ -208,15 +208,13 @@ static void log_address(const char *desc, struct sockaddr *sa)
+ 	} else if (sa->sa_family == AF_INET6) {
+ 		struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) sa;
  
--	return do_server(args, fd);
-+	rc = do_server(args, fd);
-+
-+	free(outbuf);
-+	free(errbuf);
-+
-+	return rc;
+-		log_msg("%s [%s]:%d",
++		log_msg("%s [%s]:%d\n",
+ 			desc,
+ 			inet_ntop(AF_INET6, &s6->sin6_addr, addrstr,
+ 				  sizeof(addrstr)),
+ 			ntohs(s6->sin6_port));
+ 	}
+ 
+-	printf("\n");
+-
+ 	fflush(stdout);
  }
  
- static int ipc_parent(int cpid, int fd, struct sock_args *args)
+@@ -594,7 +592,7 @@ static int expected_addr_match(struct sockaddr *sa, void *expected,
+ 		struct in_addr *exp_in = (struct in_addr *) expected;
+ 
+ 		if (s->sin_addr.s_addr != exp_in->s_addr) {
+-			log_error("%s address does not match expected %s",
++			log_error("%s address does not match expected %s\n",
+ 				  desc,
+ 				  inet_ntop(AF_INET, exp_in,
+ 					    addrstr, sizeof(addrstr)));
+@@ -605,14 +603,14 @@ static int expected_addr_match(struct sockaddr *sa, void *expected,
+ 		struct in6_addr *exp_in = (struct in6_addr *) expected;
+ 
+ 		if (memcmp(&s6->sin6_addr, exp_in, sizeof(*exp_in))) {
+-			log_error("%s address does not match expected %s",
++			log_error("%s address does not match expected %s\n",
+ 				  desc,
+ 				  inet_ntop(AF_INET6, exp_in,
+ 					    addrstr, sizeof(addrstr)));
+ 			rc = 1;
+ 		}
+ 	} else {
+-		log_error("%s address does not match expected - unknown family",
++		log_error("%s address does not match expected - unknown family\n",
+ 			  desc);
+ 		rc = 1;
+ 	}
+@@ -731,7 +729,7 @@ static int convert_addr(struct sock_args *args, const char *_str,
+ 		}
+ 		break;
+ 	default:
+-		log_error("unknown address type");
++		log_error("unknown address type\n");
+ 		exit(1);
+ 	}
+ 
 -- 
 2.24.3 (Apple Git-128)
 
