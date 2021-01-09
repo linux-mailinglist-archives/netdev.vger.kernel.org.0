@@ -2,68 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C123D2F03F1
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 22:56:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B419E2F03F6
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 22:59:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbhAIV43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 16:56:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39452 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726005AbhAIV43 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 16:56:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 917B123AC1;
-        Sat,  9 Jan 2021 21:55:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610229348;
-        bh=eSEVYKlJZDRbP94LcaI0ZvzUvpdyptXN2y65vMluhZ4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bnQ7NXe7kW3/nj3WGHGurkiEx1cGPKqlTUGIiPC8xNqY7T+UDyHChJvinc26NOAJc
-         TgjqavvIVc6pEo7dlTbvmeN27xgoBkPdEJUSEJJ3hR5wYhupx32H5AJgW/5U+y14/g
-         Sodyk6dFLk0PrtVp+cSOIHcwLKqiV/HebNGPPIk+3TTbiKa2bd/xCPBrlUjkQ9obNs
-         g4mX+8pvmgWwzaDMgc0K1wkC3+MHribIRDt69zJnEuRb42bVObK3zffE2vUqXvjpTJ
-         4pPxxPd3/f3xRI57kY9Nwcc4nhEqnkUS15/fY1imL8VW/h2KCXLeEhob+NZxDfevOp
-         rU2QK/qPdlfOg==
-Date:   Sat, 9 Jan 2021 13:55:47 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>, menglong8.dong@gmail.com
-Cc:     roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Menglong Dong <dong.menglong@zte.com.cn>
-Subject: Re: [PATCH net-next] net/bridge: fix misspellings using codespell
- tool
-Message-ID: <20210109135547.24ab25ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <295b1d84-a49c-cdaa-e7fa-bbe492aa1496@infradead.org>
-References: <20210108025332.52480-1-dong.menglong@zte.com.cn>
-        <295b1d84-a49c-cdaa-e7fa-bbe492aa1496@infradead.org>
+        id S1726251AbhAIV7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 16:59:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726195AbhAIV7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 16:59:54 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964F6C061786
+        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 13:59:14 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id 190so10601787wmz.0
+        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 13:59:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=GWoOeiJ4fexwN2D7mkvruM0f2nzxY7y+FqV+JIzzYik=;
+        b=eLChKcbS1DIPT0rCe6gext/mQRGmSFug/pWCcc4weHOxD5t+yfw7fy4cXzs68LjO4x
+         C+B9bMz18R+D1iOVErdB9P7HveP6nPrZSgBo23WN3mTZfAkkbnj+9ZzVhAlS6t5rvraT
+         zC1dc0Gefk+J8Xium9hoOtn26IZzGdXDbOtM3ypyk6ZlEqnd1wR6a7lNWW2YwYyZ0fYp
+         spPRA1WvrUgCVRmsSV2Ti198+yBM5KBWv9mVHzG8MxUHSSI09j/h7cjw7YhiGO9z1nzz
+         q+F/tY7EvclLIel/sFOSKVaDObJu2RctKsvZPNi+VD5ghAtxluNKr1caTy1FcoOGWjN4
+         DsEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=GWoOeiJ4fexwN2D7mkvruM0f2nzxY7y+FqV+JIzzYik=;
+        b=s13cmO53AKHWLHYP9m6mlAKfyIc+4xKQG6MrqX9XoukUL1x7wukRU63uuW66Wo6ugB
+         TTbu5oC5B8r4Xu9IMQ8E0+TFrSQE3e51qxKmjIeYakoypKBhc282Mp3T0f+xUV7hPfTG
+         oVi6UgEame4ql+ZQ/ViE6ZJAbICyZj2KVvBDcjazLKywLdtFxiKaAj245+XWVkDO3yyJ
+         wAsHH1lU/YzebB8zfAwPnzJMGT7m3ZcnZZ0T9CzGflAInTnrp0F/wkGWgXNF1BulS2rb
+         Pi8kUhyhJDM8WDaJmzSZ3LtLUJTUHQY73oSFpZZT4Xcw9t1l0umi15chF6azvDX+b5xo
+         6Sqw==
+X-Gm-Message-State: AOAM531dSOKNkJM1Vw13xcvVsovkAC53fxvifzX82LTMY/IW6qcKidNN
+        Lb7gF3M1lvfeR9qR3m98SJ8MYyipOHc=
+X-Google-Smtp-Source: ABdhPJw1o5ciDhn37hXgPh06SKAcZYKvPkz2oqFKGHku6waUonhn3WvK28RaxS5t0uU+jZnkLE3cxw==
+X-Received: by 2002:a1c:4156:: with SMTP id o83mr8528611wma.178.1610229553004;
+        Sat, 09 Jan 2021 13:59:13 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:a584:5efe:3c65:46c1? (p200300ea8f065500a5845efe3c6546c1.dip0.t-ipconnect.de. [2003:ea:8f06:5500:a584:5efe:3c65:46c1])
+        by smtp.googlemail.com with ESMTPSA id r15sm18612878wrq.1.2021.01.09.13.59.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 Jan 2021 13:59:12 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net-next 0/2] r8169: improve jumbo configuration
+Message-ID: <1dd337a0-ff5a-3fa0-91f5-45e86c0fce58@gmail.com>
+Date:   Sat, 9 Jan 2021 22:59:08 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 Jan 2021 20:03:49 -0800 Randy Dunlap wrote:
-> On 1/7/21 6:53 PM, menglong8.dong@gmail.com wrote:
-> > From: Menglong Dong <dong.menglong@zte.com.cn>
-> > 
-> > Some typos are found out by codespell tool:
-> > 
-> > $ codespell ./net/bridge/
-> > ./net/bridge/br_stp.c:604: permanant  ==> permanent
-> > ./net/bridge/br_stp.c:605: persistance  ==> persistence
-> > ./net/bridge/br.c:125: underlaying  ==> underlying
-> > ./net/bridge/br_input.c:43: modue  ==> mode
-> > ./net/bridge/br_mrp.c:828: Determin  ==> Determine
-> > ./net/bridge/br_mrp.c:848: Determin  ==> Determine
-> > ./net/bridge/br_mrp.c:897: Determin  ==> Determine
-> > 
-> > Fix typos found by codespell.
-> > 
-> > Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>  
-> 
-> LGTM. Thanks.
-> 
-> Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Small improvements to jumbo configuration.
 
-Applied, thanks!
+Heiner Kallweit (2):
+  r8169: align RTL8168e jumbo pcie read request size with vendor driver
+  r8169: tweak max read request size for newer chips also in jumbo mtu
+    mode
+
+ drivers/net/ethernet/realtek/r8169_main.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+-- 
+2.30.0
+
