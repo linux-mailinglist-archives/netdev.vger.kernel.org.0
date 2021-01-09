@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E322EFD31
+	by mail.lfdr.de (Postfix) with ESMTP id EFC1E2EFD33
 	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 03:52:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbhAICvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 21:51:04 -0500
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:37279 "EHLO
+        id S1726607AbhAICvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 21:51:25 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:46565 "EHLO
         wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725970AbhAICvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 21:51:04 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.west.internal (Postfix) with ESMTP id BF5EC1802;
-        Fri,  8 Jan 2021 21:50:17 -0500 (EST)
+        by vger.kernel.org with ESMTP id S1725970AbhAICvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 21:51:25 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 391591807;
+        Fri,  8 Jan 2021 21:50:19 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 08 Jan 2021 21:50:18 -0500
+  by compute3.internal (MEProxy); Fri, 08 Jan 2021 21:50:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=mYovwe9oInWI5Fw2i
-        cHkOgVtg7KrK8HUXyZ0QtWyLmg=; b=M93hzpellZeiGh5oLdGQszd332c6S/cBU
-        4KozUjTBIFh7nrbtDDVX2pstjzXZGPereg4NbRMXOZSYpph/LHlcPNqZ6sNHVJuH
-        eFBaQKmulGHa2PacANjKp9cx2+DSOS8wOxfzKo+rXMRJSG+agK55nbqJge8s0JJs
-        cMFnE6+PYQDokvR7Na82zbjfyQsz/TkDwZXgLxpFpNTfaDYhQm4ma6m7WOepX6VU
-        kBa2B6uWLv9YzaW+HLDZK0f7FiS2JiIpHbse58FTeZGoUTMdQgULcShpGIUzRdKQ
-        WglxicgfIibtmY95kkw5d1hpYKZvor01hftoKmBjyJQF7JmGpokGw==
-X-ME-Sender: <xms:6Bn5XxjlWeCXpkDgs__gHYt1xkR9-1Oy8xlk_e6wJvOvoQ48A6e-ng>
-    <xme:6Bn5X2A3MJSCZw3OiKwMs6A60va0-V5zJwJSSIYxNk-qCe5mUzhWOdh8SWCE43y1v
-    RQp-ReKkL2OgaCNog>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=TKxLOk0ITfiW1ObEdccDY/hqYVDKnZJrGqHUBvg9iyI=; b=MHf/AVhn
+        5dB90+rQojhg+v3QEKjTOuFwqQzknKgan2aEuH8UJ8rnhvjh/H+HrO3kYST/6Ftp
+        uajSUr29l8UHiTClxjXf6tkybp4AoQZPzRhBz7zUGMQELjULK+I3Eder+YMxbw4N
+        VNu01O9NM2oTGrIKuEJowma2uaVszu3qaa8U5SZr6Mbf4T0HfP1d2qgwuv14o+yY
+        hR5NhmhyM4P60b2JgmKLeImWkYF6N+OAYU5kZTgTqnhvBOHTLEzi5WfYXCq2Qsqx
+        OaD0QJkCJrB1F/3kSn3NUj+2UyBZXPHNN4HVXX7H8C37tCQCgbvXZjoLYFr/OMsj
+        rKH/LGdgGHSBbg==
+X-ME-Sender: <xms:6hn5XyBvhHxoa_ZDXCXNG6JAuLhAzF4Q1h3ylr19AcN3vphW0_jtow>
+    <xme:6hn5X8eRL5rQSSHKZybeqSDhMG5jn7YaLL2N9iYUOsyf7rBWnv3a1GWoh-qt_MkAC
+    vyMda_8HApGGwR7pw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdeghedgudegjecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
-    ertddtnecuhfhrohhmpeevhhgrrhhlihgvucfuohhmvghrvhhilhhlvgcuoegthhgrrhhl
-    ihgvsegthhgrrhhlihgvrdgsiieqnecuggftrfgrthhtvghrnhepleefffegveefffduke
-    dvgffgteevkefftedutedvhfelieehieefheefffetkedunecukfhppedvtddvrdduheef
-    rddvvddtrdejudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpegthhgrrhhlihgvsegthhgrrhhlihgvrdgsii
-X-ME-Proxy: <xmx:6Bn5XxEsKK6fYACQrRfYalMWVrTAu05px7WLUezRVKAVgCAJE9XDrA>
-    <xmx:6Bn5X2R1QeF5ARuTkCC9yJRSn35Sg16fEgm6P9Wxwmn330r8oySGUA>
-    <xmx:6Bn5X-yXyuQRwkBbX_K439KOSpbDP6C83gpuFO7O7YQ1Jh5dOR0tnw>
-    <xmx:6Rn5Xy8lnZ3_dPnWo1NnAUvthJC4a13kZEujALG6fsBvsuSOm-xvdw>
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
+    ertdertddtnecuhfhrohhmpeevhhgrrhhlihgvucfuohhmvghrvhhilhhlvgcuoegthhgr
+    rhhlihgvsegthhgrrhhlihgvrdgsiieqnecuggftrfgrthhtvghrnhepkedtleduudehhe
+    dvfeehvefgvdehffdvveeftdevhfejfffhteelffevueduteeunecukfhppedvtddvrddu
+    heefrddvvddtrdejudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpegthhgrrhhlihgvsegthhgrrhhlihgvrdgsii
+X-ME-Proxy: <xmx:6hn5XyfR0vnxYdn6BJjdfOD4iu1rFljO6uH-s2s-xXAaKCgHh8VS_Q>
+    <xmx:6hn5X4gESyoNgywx_mVWKO_eYq1GJj0PSPeVxG-C1rhwZmXVPSX_aQ>
+    <xmx:6hn5X2QnYpTbHyYHeETwzkENuHv-a5mSOos85vHUYqsunnpyUeEVXw>
+    <xmx:6hn5X0tLJSCZ6qtlqOwLvxbb1QRSS9n91GXOFjpnL0AHlPlln1z-LA>
 Received: from charlie-arch.home.charlie.bz (202-153-220-71.ca99dc.mel.static.aussiebb.net [202.153.220.71])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6F9AC24005B;
-        Fri,  8 Jan 2021 21:50:14 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id A5B31240057;
+        Fri,  8 Jan 2021 21:50:16 -0500 (EST)
 From:   Charlie Somerville <charlie@charlie.bz>
 To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
         jasowang@redhat.com
 Cc:     netdev@vger.kernel.org, Charlie Somerville <charlie@charlie.bz>
-Subject: [PATCH net-next 0/2] Introduce XDP_FLAGS_NO_TX flag
-Date:   Sat,  9 Jan 2021 13:49:48 +1100
-Message-Id: <20210109024950.4043819-1-charlie@charlie.bz>
+Subject: [PATCH net-next 1/2] xdp: Add XDP_FLAGS_NO_TX flag
+Date:   Sat,  9 Jan 2021 13:49:49 +1100
+Message-Id: <20210109024950.4043819-2-charlie@charlie.bz>
 X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210109024950.4043819-1-charlie@charlie.bz>
+References: <20210109024950.4043819-1-charlie@charlie.bz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series introduces a new flag XDP_FLAGS_NO_TX which prevents
-the allocation of additional send queues for XDP programs.
+Some network interfaces must allocate additional hardware resources to
+support XDP filters retransmitting packets with XDP_TX.
 
-Included in this patch series is an implementation of XDP_FLAGS_NO_TX
-for the virtio_net driver. This flag is intended to be advisory - not
-all drivers must implement support for it.
+However not all XDP filters do use XDP_TX, and there may not be any
+additional send queues available for use.
 
-Many virtualised environments only provide enough virtio_net send queues
-for the number of processors allocated to the VM:
+XDP filters can indicate that they will never transmit by setting the
+XDP_FLAGS_NO_TX flag in the IFLA_XDP_FLAGS attribute. This flag is
+only advisory - some network drivers may still allocate send queues.
 
-# nproc
-8
-# ethtool --show-channels ens3
-Channel parameters for ens3:
-Pre-set maximums:
-RX:     0
-TX:     0
-Other:      0
-Combined:   8
+Signed-off-by: Charlie Somerville <charlie@charlie.bz>
+---
+ include/uapi/linux/if_link.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-In this configuration XDP is unusable because the virtio_net driver
-always tries to allocate an extra send queue for each processor - even
-if the XDP the program never uses the XDP_TX functionality.
-
-While XDP_TX is still unavailable in these environments, this new flag
-expands the set of XDP programs that can be used.
-
-This is my first contribution to the kernel, so apologies if I've sent
-this to the wrong list. I have tried to cc relevant maintainers but
-it's possible I may have missed some people. I'm looking forward to
-receiving feedback on this change.
-
-Charlie Somerville (2):
-  xdp: Add XDP_FLAGS_NO_TX flag
-  virtio_net: Implement XDP_FLAGS_NO_TX support
-
- drivers/net/virtio_net.c     | 17 +++++++++++++----
- include/uapi/linux/if_link.h |  5 ++++-
- 2 files changed, 17 insertions(+), 5 deletions(-)
-
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 874cc12a34d9..b4ba4427cd98 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -1168,11 +1168,14 @@ enum {
+ #define XDP_FLAGS_DRV_MODE		(1U << 2)
+ #define XDP_FLAGS_HW_MODE		(1U << 3)
+ #define XDP_FLAGS_REPLACE		(1U << 4)
++#define XDP_FLAGS_NO_TX			(1U << 5)
+ #define XDP_FLAGS_MODES			(XDP_FLAGS_SKB_MODE | \
+ 					 XDP_FLAGS_DRV_MODE | \
+ 					 XDP_FLAGS_HW_MODE)
+ #define XDP_FLAGS_MASK			(XDP_FLAGS_UPDATE_IF_NOEXIST | \
+-					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE)
++					 XDP_FLAGS_MODES | \
++					 XDP_FLAGS_REPLACE | \
++					 XDP_FLAGS_NO_TX)
+ 
+ /* These are stored into IFLA_XDP_ATTACHED on dump. */
+ enum {
 -- 
 2.30.0
 
