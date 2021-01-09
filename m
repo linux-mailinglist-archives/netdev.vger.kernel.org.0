@@ -2,89 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6ABD2EFC17
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 01:24:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E28842EFC19
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 01:25:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726283AbhAIAW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 19:22:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbhAIAW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 19:22:27 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3BC7C061573;
-        Fri,  8 Jan 2021 16:21:46 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id h16so12919965edt.7;
-        Fri, 08 Jan 2021 16:21:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SVjrZHS1z9/LfAkQQVlQkPWbRRh+b9cjLLIJ+BUfI/o=;
-        b=ROe310CEXN5w5chetm/q09Ju86rDbg22e9wnb7057rGPXIv9vUBc9VNQFkWyRahK+1
-         OhMTrinNnLr/oI2bVV1dz5qmKB1V6a8XNOMH+YhaJV0z8YmD+75sfoNOnRJvsqgVjE15
-         9czlN0xhzyK/OpEhvL9Tf8EYNfEHyHHMhvQ6DMMI2pR3aKURFrdwxiBx2C8Ftm10L9QY
-         a5hKr50hnd6cg8kMdqZAkEtrGg/XkgrZNnh+a5qKpl6I9qBWVXyBUEZQgWMpFOrCAjlB
-         QpViGMfvL7aF96LF2BRjrB9GfCnSEX8HZOsNQrnrtJ4zkH/09DGDZhNrVB9aq1r/VRZC
-         jj1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SVjrZHS1z9/LfAkQQVlQkPWbRRh+b9cjLLIJ+BUfI/o=;
-        b=huQTBGqOoYTjTjror4zqcEvKlvJfovArUIiz1Fy7kSdfoKQPFhPOvIEq8rfPWcaaId
-         eSQzmMNC320JIc/M/c3WNS+88IcjtPuSVRRfsoPwyuUwdQiwN/Iv3SiyBUgsMzVqSvQR
-         YRvcyLZJNGSkWFNz3Bhr/fb1xFuVO3mOLf3/sFzEty4GBwGMRWXtl7DDh2X3F+T3ledo
-         gCNoWBzuhHLNhw9FYnCaFdVLItcT1pdYsY1WSHRejQ99sVscn6h8FJE/dvat8H3vZBvz
-         Yqg83ln/iSsOZOJLxTUEB1LLUIPW13Rk+WHUUT9SA2kzCtSFKJhLEi+brbuF3APRFISw
-         xInA==
-X-Gm-Message-State: AOAM533wsMM5ZHf1dKkssmO4z8DXB1cIan+Mg0OYECWlldsPptbthYAj
-        wwPkRydYOURrimF9WZTlhz0=
-X-Google-Smtp-Source: ABdhPJx7Tkr3/eQR3Sikolg6+F5j6qjGA0HG++ZdfTMDo7zdnYsts0o0HBYS9twc18lAHRNW53VExQ==
-X-Received: by 2002:a50:fd18:: with SMTP id i24mr7135813eds.146.1610151705460;
-        Fri, 08 Jan 2021 16:21:45 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id e27sm4061827ejm.60.2021.01.08.16.21.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 16:21:44 -0800 (PST)
-Date:   Sat, 9 Jan 2021 02:21:43 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v7 net-next 2/2] net: dsa: qca: ar9331: export stats64
-Message-ID: <20210109002143.r4aokvewrgwv3qqv@skbuf>
-References: <20210107125613.19046-1-o.rempel@pengutronix.de>
- <20210107125613.19046-3-o.rempel@pengutronix.de>
- <X/ccfY+9a8R6wcJX@lunn.ch>
- <20210108053228.2efctejqxbqijm6l@pengutronix.de>
+        id S1725906AbhAIAZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 19:25:15 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:58312 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725792AbhAIAZP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 19:25:15 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ky23V-00GzmL-IK; Sat, 09 Jan 2021 01:24:33 +0100
+Date:   Sat, 9 Jan 2021 01:24:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Brian Silverman <silvermanbri@gmail.com>, netdev@vger.kernel.org
+Subject: Re: MDIO over I2C driver driver probe dependency issue
+Message-ID: <X/j3wYAPpT/s8E/F@lunn.ch>
+References: <CAJKO-jaewzeB2X-hZ4EiZiyvaKqH=B0CrhvC_buqfMTcns-b-w@mail.gmail.com>
+ <4606bd55-55a6-1e81-a23b-f06230ffdb52@gmail.com>
+ <X/hhT4Sz9FU4kiDe@lunn.ch>
+ <CAJKO-jYwineOM5wc+FX=Nj3AOfKK06qK-iqQSP3uQufNRnuGWQ@mail.gmail.com>
+ <X/jIx/brD6Aw+4sk@lunn.ch>
+ <68bfbe38-5a3a-598c-25d7-dad33253ee9f@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210108053228.2efctejqxbqijm6l@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <68bfbe38-5a3a-598c-25d7-dad33253ee9f@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 06:32:28AM +0100, Oleksij Rempel wrote:
-> May be the "net: dsa: add optional stats64 support" can already be
-> taken?
+On Fri, Jan 08, 2021 at 02:11:31PM -0800, Florian Fainelli wrote:
+> 
+> 
+> On 1/8/2021 1:04 PM, Andrew Lunn wrote:
+> > On Fri, Jan 08, 2021 at 03:02:52PM -0500, Brian Silverman wrote:
+> >> Thanks for the responses - I now have a more clear picture of what's going on.
+> >>  (Note: I'm using Xilinx's 2019.2 kernel (based off 4.19).  I believe it would
+> >> be similar to latest kernels, but I could be wrong.)
+> > 
+> > Hi Brian
+> > 
+> > macb_main has had a lot of changes with respect to PHYs. Please try
+> > something modern, like 5.10.
+> 
+> It does not seem to me like 5.10 will be much better, because we have
+> the following in PHYLINK:
+> 
+> int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
+>                              u32 flags)
+> ...
+>           phy_dev = of_phy_find_device(phy_node);
+>           /* We're done with the phy_node handle */
+>           of_node_put(phy_node);
+>           if (!phy_dev)
+>                   return -ENODEV;
+> 
+> Given Brian's configuration we should be returning -EPROBE_DEFER here,
+> but doing that would likely break a number of systems that do expect
+> -ENODEV to be returned. However there may be hope with fw_devlink to
+> create an appropriate graph of probing orders and solve the
+> consumer/provider order generically.
+> 
+> Up until now we did not really have a situation like this one where the
+> MDIO/PHY subsystem depended upon an another one to be available. The
+> problem does exist, however it is not clear to me yet how to best solve it.
 
-I'm not sure that I see the point. David and Jakub won't cherry-pick
-partial series, and if you resend just patch 1/2, they won't accept new
-code that doesn't have any callers.
+Hi Florian
 
-You don't have to wait for my series if you don't want to. If you're
-going to conflict with it anyway (it changes the prototype of
-ndo_get_stats64), you might as well not wait. I don't know when, or if,
-it's going to be over with it. It is going to take at least one more
-respin since it now conflicts with net.git commit 9f9d41f03bb0 ("docs:
-net: fix documentation on .ndo_get_stats") merged a few hours ago into
-net-next. So just say which way it is that you prefer.
+But we do have situations where the MDIO bus driver is independent of
+the MAC driver. And mdio-i2c is not that different to mdio-gpio, where
+we need a GPIO driver to load before mdio-gpio is usable. Are all this
+also broken?
+
+     Andrew
