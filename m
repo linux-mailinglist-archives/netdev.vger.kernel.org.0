@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 402BC2F03ED
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 22:54:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C123D2F03F1
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 22:56:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbhAIVyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 16:54:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39090 "EHLO mail.kernel.org"
+        id S1726253AbhAIV43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 16:56:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726006AbhAIVyX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 16:54:23 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D75EA23AA8;
-        Sat,  9 Jan 2021 21:53:42 +0000 (UTC)
+        id S1726005AbhAIV43 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 16:56:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 917B123AC1;
+        Sat,  9 Jan 2021 21:55:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610229223;
-        bh=RChtS1oTh0rfOykn8XW4E88jDrYi8KI3RLL0HuRlA5s=;
+        s=k20201202; t=1610229348;
+        bh=eSEVYKlJZDRbP94LcaI0ZvzUvpdyptXN2y65vMluhZ4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UfYttTUKlCRyptGUtgM8mliNmRdz9VreRoXmYfgj3kG9RMMyha7Nem1jxN5KzTdTt
-         a39EQ4zEyFH7JsavKDTg6FJ/arJ3TTQFsJnX8JgZ9vvnvfeAOVwhuqbIDtcQzTcN3E
-         L0XcEPVUozxmhe7x552PJU5I1LLheEy+HoBuwpZlb+0WkoI60uQEd0xATbtjuVI7Hr
-         fddCfV6nBrF9EWmYTobZq6KJ2i8ufkRZfUFYdALDIisJo9GoOoMR7htrOAl0tzKNRx
-         rRw/PIwooulyxd9v9X+t398ryE+z/3MJb6WfA4BEAgq2k4F1lkeznBVM8YwPT342lx
-         v4klwYfjHmgdQ==
-Date:   Sat, 9 Jan 2021 13:53:42 -0800
+        b=bnQ7NXe7kW3/nj3WGHGurkiEx1cGPKqlTUGIiPC8xNqY7T+UDyHChJvinc26NOAJc
+         TgjqavvIVc6pEo7dlTbvmeN27xgoBkPdEJUSEJJ3hR5wYhupx32H5AJgW/5U+y14/g
+         Sodyk6dFLk0PrtVp+cSOIHcwLKqiV/HebNGPPIk+3TTbiKa2bd/xCPBrlUjkQ9obNs
+         g4mX+8pvmgWwzaDMgc0K1wkC3+MHribIRDt69zJnEuRb42bVObK3zffE2vUqXvjpTJ
+         4pPxxPd3/f3xRI57kY9Nwcc4nhEqnkUS15/fY1imL8VW/h2KCXLeEhob+NZxDfevOp
+         rU2QK/qPdlfOg==
+Date:   Sat, 9 Jan 2021 13:55:47 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, bjorn.andersson@linaro.org, agross@kernel.org,
-        ohad@wizery.com, evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/4] net: ipa: support COMPILE_TEST
-Message-ID: <20210109135342.2c31836d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210107233404.17030-1-elder@linaro.org>
-References: <20210107233404.17030-1-elder@linaro.org>
+To:     Randy Dunlap <rdunlap@infradead.org>, menglong8.dong@gmail.com
+Cc:     roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Menglong Dong <dong.menglong@zte.com.cn>
+Subject: Re: [PATCH net-next] net/bridge: fix misspellings using codespell
+ tool
+Message-ID: <20210109135547.24ab25ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <295b1d84-a49c-cdaa-e7fa-bbe492aa1496@infradead.org>
+References: <20210108025332.52480-1-dong.menglong@zte.com.cn>
+        <295b1d84-a49c-cdaa-e7fa-bbe492aa1496@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,16 +43,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Jan 2021 17:34:00 -0600 Alex Elder wrote:
-> This series adds the IPA driver as a possible target when
-> the COMPILE_TEST configuration is enabled.  Two small changes to
-> dependent subsystems needed to be made for this to work.
+On Thu, 7 Jan 2021 20:03:49 -0800 Randy Dunlap wrote:
+> On 1/7/21 6:53 PM, menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <dong.menglong@zte.com.cn>
+> > 
+> > Some typos are found out by codespell tool:
+> > 
+> > $ codespell ./net/bridge/
+> > ./net/bridge/br_stp.c:604: permanant  ==> permanent
+> > ./net/bridge/br_stp.c:605: persistance  ==> persistence
+> > ./net/bridge/br.c:125: underlaying  ==> underlying
+> > ./net/bridge/br_input.c:43: modue  ==> mode
+> > ./net/bridge/br_mrp.c:828: Determin  ==> Determine
+> > ./net/bridge/br_mrp.c:848: Determin  ==> Determine
+> > ./net/bridge/br_mrp.c:897: Determin  ==> Determine
+> > 
+> > Fix typos found by codespell.
+> > 
+> > Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>  
 > 
-> Version 2 of this series adds one more patch, which adds the
-> declation of struct page to "gsi_trans.h".  The Intel kernel test
-> robot reported that this was a problem for the alpha build.
+> LGTM. Thanks.
 > 
-> David/Jakub, please take all four of these patches through the
-> net-next tree if you find them acceptable.
+> Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-Applied, thanks a lot for doing this!
+Applied, thanks!
