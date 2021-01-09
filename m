@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4ED12F0234
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 18:29:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 764CA2F0235
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 18:29:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726001AbhAIR2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 12:28:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
+        id S1726108AbhAIR2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 12:28:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725926AbhAIR2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 12:28:02 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCA8C061786
-        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 09:27:21 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id q22so18900935eja.2
-        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 09:27:21 -0800 (PST)
+        with ESMTP id S1725926AbhAIR2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 12:28:05 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857E8C06179F
+        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 09:27:24 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id w1so18741509ejf.11
+        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 09:27:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j7VlAAIiu2fF/8RLmkctxKGGYKfaz9nh0Z8R4Tc0CTs=;
-        b=tA0lfO1tv7lMCBY2YJYb5+VnNAZQCq40wOGJ/IACb2kHCcN3GlnVyT+ZG4YFKZ90Ps
-         f/wH+Z0JJhKlC1b+yjXV1sbzar43b21sHNWimEfeBo7z6S2/X86QJJgF0SKDOSd6Pygd
-         /a9UZhDwPyMrrl/CGrXVkjqAKCi1I6MDIYOEaS+kd6+dlwhfeArGOvL9i/d7VPtWktEv
-         FGyeIdePcl8m1yuawXSvwZm55S8iDpj/NjDD8xJDAmLmKLLFOLH8MKgg6SkU7T+acKD4
-         FtuvQmCgcKhVR4rXV6fHODmUgIagiWaYfAqckPVqReGEf5vYCA60FZf/OQAI/EdkJqF0
-         9Frw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+YiBRM9YeSjdZIuUHkMx1oBKC5O7YxTJrot0Nozlrpw=;
+        b=S4Kq5mkR0TbQaVC6eVd/7Y/R1UP3HTA1B+CJeEaLzdrJZNWGYd41z7kbJjcXVkzLqJ
+         EX87lp0UtYQQxnVWsRNnTNBFC1wN9KsreIDmiioVYK44ghH+kAXmwC/z4lN4iQoyT6n7
+         bb/K4Mz8h/iU0aXUoF7kDVaF9nE1CcSVLcx3SXyv9PfWSWHIMjB7eeqNkmom3M4dfzeL
+         s7XKwoWpUTZmZgG3RIurDK8QJkgUUNNjlOP2LzSpVawnsbAEb3rJnYiRougC2Oq4NJRt
+         1KP1eMy40jz/zSNGjTUzE84Ny8sB7eK2KaK3fiMhM3w657TCjdld4/21b5RIekVdaVJP
+         1zdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j7VlAAIiu2fF/8RLmkctxKGGYKfaz9nh0Z8R4Tc0CTs=;
-        b=kCr98RdNN+var5m+fjD6MAtCAaVzv6eL/g7cFSCwULzHzsBEDzNxQ4f8b9CTp4etTC
-         5hRQ00IQF8f/VtQrEL02QWbkrFjd7BdE/l+dTo8PdWUaUyecL0mRiiZOjhf5vZBj58pq
-         s3Cef0BGUqEVYqnEYNwpX6YaRla1/xbSH1CZWvRX9M7R58JBnwKKkJomshDnwEueu4Jr
-         h27tOJGEg6WzYT1nY5oULcJG4kxjFWlQuFbb48JT5rGzVbBXH+Y3gJssu24mHkpk/hiC
-         NES44G4k7TMl9d1Cln7LYDCL6KGW6OR3fyE8HyXGmuaMv/luzhBHHAA56mkt8ERXIS/u
-         ABSw==
-X-Gm-Message-State: AOAM531sjpK8aPGMT7obyuS5Vf/BVCAu2fOqNIVu6oTcGMq1Y3XZZOSn
-        xMaFW++J0nFVzo8mPYTrrXY=
-X-Google-Smtp-Source: ABdhPJzRGjzkQbqwSPlhrcWdU4tWQRl9VGcyHTpY675g43yCOmMXPiNXo6UvCM5WZ2uL9iHOEV8hSA==
-X-Received: by 2002:a17:906:29c2:: with SMTP id y2mr6258235eje.518.1610213240477;
-        Sat, 09 Jan 2021 09:27:20 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+YiBRM9YeSjdZIuUHkMx1oBKC5O7YxTJrot0Nozlrpw=;
+        b=LZH9533qdLimZtkS/cvuNob3+wUvJXmoRawh0t4VwK4Eth2lzyEtyn+hJw9rumo4Uf
+         iFKRn+ZO+BQnjuEC8SeX8AnKcNua2hj1lDnNDu+YHcwnEVDuMRKmGZI87eka2wX9yIiF
+         MakNdgya+kjX1vnYRcA7uSy7bZCuvM37jhsMvwSrVsyxg8u+QMIpyxR4vJmGET7T9/Qm
+         m7Tabai/VGPOvSL+c6FJ+ymyAomDfSc1xt8Sv2KxLg94Gw3+5OTijmpOdsMaycQdItd5
+         QLYVIdkuNt8LuKnbsiz119KcZRVl2k1AWAWLS7j+H221zTl9F/pjFpF1PIPbHWvk+sgC
+         vO/w==
+X-Gm-Message-State: AOAM530UdPyeANWwIrAqYU/WaRyVh1TmmioiB218WahWU4m4DMGs/spq
+        LLPNtyaIoL9q7gnNmjfbk8E=
+X-Google-Smtp-Source: ABdhPJwIeaW6zpTURva3wkFRB8ZnFr+ZuhTVaa1I78P99zxofG7MCMyZhgARHPsUkfDt/fXEFgLp7w==
+X-Received: by 2002:a17:907:20a4:: with SMTP id pw4mr5907298ejb.499.1610213242151;
+        Sat, 09 Jan 2021 09:27:22 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id h16sm4776714eji.110.2021.01.09.09.27.18
+        by smtp.gmail.com with ESMTPSA id h16sm4776714eji.110.2021.01.09.09.27.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jan 2021 09:27:19 -0800 (PST)
+        Sat, 09 Jan 2021 09:27:21 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -66,10 +66,12 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Pravin B Shelar <pshelar@ovn.org>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH v6 net-next 00/15] Make .ndo_get_stats64 sleepable
-Date:   Sat,  9 Jan 2021 19:26:09 +0200
-Message-Id: <20210109172624.2028156-1-olteanv@gmail.com>
+Subject: [PATCH v6 net-next 01/15] net: mark dev_base_lock for deprecation
+Date:   Sat,  9 Jan 2021 19:26:10 +0200
+Message-Id: <20210109172624.2028156-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210109172624.2028156-1-olteanv@gmail.com>
+References: <20210109172624.2028156-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -78,223 +80,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-There is a desire to standardize the counters that have previously been
-reported through ethtool statistics into something that can be more
-uniformly queried from user space. The ndo_get_stats64 are a good
-candidate to keep standardized counters, as well as add new ones (like
-RMON MIBs) but unfortunately, as things stand, migration will not be
-smooth sailing if the ndo_get_stats64 does not offer the same calling
-context as ethtool does. Namely, currently ndo_get_stats64 assumes
-atomic context, and this series would like to change that.
+There is a movement to eliminate the usage of dev_base_lock, which
+exists since as far as I could track the kernel history down (the
+"7a2deb329241 Import changeset" commit from the bitkeeper branch).
 
-The reason why sleeping while retrieving counters would be desirable in
-the first place is that if we have hardware that needs to be accessed
-through a slow bus like SPI, or through a firmware. Today we cannot do
-that directly in .ndo_get_stats64, so we would have to poll counters
-periodically and return a cached (not up to date) copy in the atomic NDO
-callback. This is undesirable on both ends: more work than strictly
-needed is being done, and the end result is also worse (not guaranteed
-to be up to date). Also, retrieving counters from the hardware rather
-than software counters incremented by the driver is more compatible with
-the concept of interfaces with offload for L2 or L3 forwarding, where
-the CPU otherwise never has a chance to keep accurate counters for most
-of the traffic.
+The dev_base_lock approach has multiple issues:
+- It is global and not per netns.
+- Its meaning has mutated over the years and the vast majority of
+  current users is using it to protect against changes of network device
+  state, as opposed to changes of the interface list.
+- It is overlapping with other protection mechanisms introduced in the
+  meantime, which have higher performance for readers, like RCU
+  introduced in 2009 by Eric Dumazet for kernel 2.6.
 
+The old comment that I just deleted made this distinction: writers
+protect only against readers by holding dev_base_lock, whereas they need
+to protect against other writers by holding the RTNL mutex. This is
+slightly confusing/incorrect, since a rwlock_t cannot have more than one
+concurrently running writer, so that explanation does not justify why
+the RTNL mutex would be necessary.
+
+Instead, Stephen Hemminger makes this clarification here:
+https://lore.kernel.org/netdev/20201129211230.4d704931@hermes.local/T/#u
+
+| There are really two different domains being covered by locks here.
+|
+| The first area is change of state of network devices. This has traditionally
+| been covered by RTNL because there are places that depend on coordinating
+| state between multiple devices. RTNL is too big and held too long but getting
+| rid of it is hard because there are corner cases (like state changes from userspace
+| for VPN devices).
+|
+| The other area is code that wants to do read access to look at list of devices.
+| These pure readers can/should be converted to RCU by now. Writers should hold RTNL.
+
+This patch edits the comment for dev_base_lock, minimizing its role in
+the protection of network interface lists, and clarifies that it is has
+other purposes as well.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
 Changes in v6:
-- Rebase on top of Jakub's patch 9f9d41f03bb0 ("docs: net: fix
-  documentation on .ndo_get_stats").
-- s/break/return -ENOMEM/ in bond_get_slaves.
-- Fixed rtnetlink incorrectly returning 0 in rtnl_fill_ifinfo on
-  nla_put_failure and causing "ip a" to not show any interfaces.
-- Squashed the patch to propagate errors with the one to terminate them.
-- Removed the unused "int err" in __bond_release_one from patch 08 and
-  added it in the patch it belongs to.
+None.
 
 Changes in v5:
-- Changed bonding and net_failover to use rcu_read_lock().
-- Actually propagating errors from bond_get_stats now.
+None.
 
 Changes in v4:
-- Propagated errors from ndo_get_stats64.
+None.
 
 Changes in v3:
-- Resolved some memory leak issues in the bonding patch 10/12.
+None.
 
 Changes in v2:
-- Addressed the recursion issues in .ndo_get_stats64 from bonding and
-  net_failover.
-- Renamed netdev_lists_lock to netif_lists_lock
-- Stopped taking netif_lists_lock from drivers as much as possible.
-*** SUBJECT HERE ***
+None.
 
-*** BLURB HERE ***
+ net/core/dev.c | 33 ++++++++++++++++-----------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
 
-Vladimir Oltean (15):
-  net: mark dev_base_lock for deprecation
-  net: introduce a mutex for the netns interface lists
-  net: procfs: hold netif_lists_lock when retrieving device statistics
-  net: sysfs: don't hold dev_base_lock while retrieving device
-    statistics
-  s390/appldata_net_sum: hold the netdev lists lock when retrieving
-    device statistics
-  parisc/led: hold the netdev lists lock when retrieving device
-    statistics
-  net: remove return value from dev_get_stats
-  net: allow ndo_get_stats64 to return an int error code
-  scsi: fcoe: propagate errors from dev_get_stats
-  net: openvswitch: propagate errors from dev_get_stats
-  net: catch errors from dev_get_stats
-  net: openvswitch: ensure dev_get_stats can sleep
-  net: net_failover: ensure .ndo_get_stats64 can sleep
-  net: bonding: ensure .ndo_get_stats64 can sleep
-  net: mark ndo_get_stats64 as being able to sleep
-
- Documentation/networking/netdevices.rst       |   8 +-
- Documentation/networking/statistics.rst       |   9 +-
- arch/s390/appldata/appldata_net_sum.c         |  41 +++---
- drivers/infiniband/hw/hfi1/vnic_main.c        |   6 +-
- drivers/infiniband/ulp/ipoib/ipoib_main.c     |   9 +-
- .../infiniband/ulp/opa_vnic/opa_vnic_netdev.c |   9 +-
- drivers/leds/trigger/ledtrig-netdev.c         |  16 ++-
- drivers/net/bonding/bond_main.c               | 135 ++++++++++--------
- drivers/net/dummy.c                           |   6 +-
- drivers/net/ethernet/alacritech/slicoss.c     |   6 +-
- drivers/net/ethernet/amazon/ena/ena_netdev.c  |   8 +-
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c      |   6 +-
- drivers/net/ethernet/apm/xgene-v2/main.c      |   6 +-
- .../ethernet/apm/xgene/xgene_enet_ethtool.c   |   9 +-
- .../net/ethernet/apm/xgene/xgene_enet_main.c  |   7 +-
- drivers/net/ethernet/atheros/alx/main.c       |   6 +-
- drivers/net/ethernet/broadcom/b44.c           |   6 +-
- drivers/net/ethernet/broadcom/bcmsysport.c    |   6 +-
- drivers/net/ethernet/broadcom/bnx2.c          |   5 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   6 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c |   4 +-
- drivers/net/ethernet/broadcom/tg3.c           |   8 +-
- drivers/net/ethernet/brocade/bna/bnad.c       |   4 +-
- drivers/net/ethernet/calxeda/xgmac.c          |   4 +-
- .../net/ethernet/cavium/liquidio/lio_main.c   |   6 +-
- .../ethernet/cavium/liquidio/lio_vf_main.c    |   6 +-
- .../net/ethernet/cavium/liquidio/lio_vf_rep.c |   8 +-
- .../net/ethernet/cavium/thunder/nicvf_main.c  |   5 +-
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |   8 +-
- drivers/net/ethernet/cisco/enic/enic_main.c   |   8 +-
- drivers/net/ethernet/cortina/gemini.c         |   6 +-
- drivers/net/ethernet/ec_bhf.c                 |   4 +-
- drivers/net/ethernet/emulex/benet/be_main.c   |   6 +-
- .../net/ethernet/freescale/dpaa/dpaa_eth.c    |   6 +-
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   6 +-
- drivers/net/ethernet/google/gve/gve_main.c    |   4 +-
- drivers/net/ethernet/hisilicon/hns/hns_enet.c |   6 +-
- .../net/ethernet/hisilicon/hns/hns_ethtool.c  |  56 ++++----
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   |   8 +-
- .../net/ethernet/huawei/hinic/hinic_main.c    |   6 +-
- drivers/net/ethernet/ibm/ehea/ehea_main.c     |   6 +-
- drivers/net/ethernet/intel/e1000e/e1000.h     |   4 +-
- drivers/net/ethernet/intel/e1000e/ethtool.c   |   9 +-
- drivers/net/ethernet/intel/e1000e/netdev.c    |   6 +-
- .../net/ethernet/intel/fm10k/fm10k_netdev.c   |   6 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c   |  10 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |   6 +-
- drivers/net/ethernet/intel/igb/igb_main.c     |  10 +-
- drivers/net/ethernet/intel/igc/igc_main.c     |   6 +-
- .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |  14 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   6 +-
- drivers/net/ethernet/intel/ixgbevf/ethtool.c  |  14 +-
- .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   6 +-
- drivers/net/ethernet/marvell/mvneta.c         |   4 +-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   4 +-
- .../marvell/octeontx2/nic/otx2_common.c       |   6 +-
- .../marvell/octeontx2/nic/otx2_common.h       |   4 +-
- .../ethernet/marvell/prestera/prestera_main.c |   6 +-
- drivers/net/ethernet/marvell/sky2.c           |   6 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.c   |   6 +-
- drivers/net/ethernet/mediatek/mtk_star_emac.c |   6 +-
- .../net/ethernet/mellanox/mlx4/en_netdev.c    |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   4 +-
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  |   4 +-
- .../ethernet/mellanox/mlx5/core/ipoib/ipoib.c |   4 +-
- .../ethernet/mellanox/mlx5/core/ipoib/ipoib.h |   2 +-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |   4 +-
- .../net/ethernet/mellanox/mlxsw/switchx2.c    |   4 +-
- drivers/net/ethernet/microchip/lan743x_main.c |   6 +-
- drivers/net/ethernet/mscc/ocelot_net.c        |   6 +-
- .../net/ethernet/myricom/myri10ge/myri10ge.c  |  12 +-
- .../net/ethernet/neterion/vxge/vxge-main.c    |   4 +-
- .../ethernet/netronome/nfp/nfp_net_common.c   |   6 +-
- .../net/ethernet/netronome/nfp/nfp_net_repr.c |   6 +-
- drivers/net/ethernet/nvidia/forcedeth.c       |   4 +-
- .../net/ethernet/pensando/ionic/ionic_lif.c   |   6 +-
- .../net/ethernet/pensando/ionic/ionic_lif.h   |   4 +-
- .../ethernet/qlogic/netxen/netxen_nic_main.c  |  10 +-
- drivers/net/ethernet/qlogic/qede/qede_main.c  |   6 +-
- drivers/net/ethernet/qualcomm/emac/emac.c     |   6 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_vnd.c   |   8 +-
- drivers/net/ethernet/realtek/8139too.c        |   8 +-
- drivers/net/ethernet/realtek/r8169_main.c     |   4 +-
- .../net/ethernet/samsung/sxgbe/sxgbe_main.c   |   6 +-
- drivers/net/ethernet/sfc/efx_common.c         |   4 +-
- drivers/net/ethernet/sfc/efx_common.h         |   2 +-
- drivers/net/ethernet/sfc/falcon/efx.c         |   6 +-
- drivers/net/ethernet/socionext/sni_ave.c      |   6 +-
- drivers/net/ethernet/sun/niu.c                |   6 +-
- .../net/ethernet/synopsys/dwc-xlgmac-net.c    |   6 +-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c      |   6 +-
- drivers/net/ethernet/ti/netcp_core.c          |   4 +-
- drivers/net/ethernet/via/via-rhine.c          |   8 +-
- drivers/net/fjes/fjes_main.c                  |   6 +-
- drivers/net/hyperv/netvsc_drv.c               |   6 +-
- drivers/net/ifb.c                             |   5 +-
- drivers/net/ipvlan/ipvlan_main.c              |   6 +-
- drivers/net/loopback.c                        |   6 +-
- drivers/net/macsec.c                          |   8 +-
- drivers/net/macvlan.c                         |   6 +-
- drivers/net/mhi_net.c                         |   6 +-
- drivers/net/net_failover.c                    |  96 +++++++++----
- drivers/net/netdevsim/netdev.c                |   4 +-
- drivers/net/nlmon.c                           |   4 +-
- drivers/net/ppp/ppp_generic.c                 |   4 +-
- drivers/net/slip/slip.c                       |   4 +-
- drivers/net/team/team.c                       |   4 +-
- drivers/net/thunderbolt.c                     |   6 +-
- drivers/net/tun.c                             |   4 +-
- drivers/net/veth.c                            |   6 +-
- drivers/net/virtio_net.c                      |   6 +-
- drivers/net/vmxnet3/vmxnet3_ethtool.c         |   4 +-
- drivers/net/vmxnet3/vmxnet3_int.h             |   4 +-
- drivers/net/vrf.c                             |   6 +-
- drivers/net/vsockmon.c                        |   4 +-
- drivers/net/xen-netfront.c                    |   6 +-
- drivers/parisc/led.c                          |  42 +++---
- drivers/s390/net/qeth_core.h                  |   2 +-
- drivers/s390/net/qeth_core_main.c             |   4 +-
- drivers/scsi/fcoe/fcoe_sysfs.c                |   9 +-
- drivers/scsi/fcoe/fcoe_transport.c            |  28 ++--
- drivers/scsi/libfc/fc_rport.c                 |   5 +-
- drivers/staging/fsl-dpaa2/ethsw/ethsw.c       |   8 +-
- drivers/staging/netlogic/xlr_net.c            |   4 +-
- drivers/usb/gadget/function/rndis.c           |  47 +++---
- include/linux/netdevice.h                     |  22 ++-
- include/net/bonding.h                         |  53 +++++++
- include/net/net_namespace.h                   |   6 +
- include/scsi/fcoe_sysfs.h                     |  12 +-
- include/scsi/libfc.h                          |   2 +-
- include/scsi/libfcoe.h                        |   8 +-
- net/8021q/vlan_dev.c                          |   6 +-
- net/8021q/vlanproc.c                          |  20 +--
- net/core/dev.c                                |  79 ++++++----
- net/core/net-procfs.c                         |  62 ++++----
- net/core/net-sysfs.c                          |  12 +-
- net/core/rtnetlink.c                          |  23 ++-
- net/l2tp/l2tp_eth.c                           |   6 +-
- net/mac80211/iface.c                          |   4 +-
- net/openvswitch/datapath.c                    |  63 ++++----
- net/openvswitch/vport.c                       |  35 +++--
- net/openvswitch/vport.h                       |   2 +-
- net/sched/sch_teql.c                          |   6 +-
- 144 files changed, 1016 insertions(+), 567 deletions(-)
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7afbb642e203..8e02240bb11c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -169,23 +169,22 @@ static int call_netdevice_notifiers_extack(unsigned long val,
+ static struct napi_struct *napi_by_id(unsigned int napi_id);
+ 
+ /*
+- * The @dev_base_head list is protected by @dev_base_lock and the rtnl
+- * semaphore.
+- *
+- * Pure readers hold dev_base_lock for reading, or rcu_read_lock()
+- *
+- * Writers must hold the rtnl semaphore while they loop through the
+- * dev_base_head list, and hold dev_base_lock for writing when they do the
+- * actual updates.  This allows pure readers to access the list even
+- * while a writer is preparing to update it.
+- *
+- * To put it another way, dev_base_lock is held for writing only to
+- * protect against pure readers; the rtnl semaphore provides the
+- * protection against other writers.
+- *
+- * See, for example usages, register_netdevice() and
+- * unregister_netdevice(), which must be called with the rtnl
+- * semaphore held.
++ * The network interface list of a netns (@net->dev_base_head) and the hash
++ * tables per ifindex (@net->dev_index_head) and per name (@net->dev_name_head)
++ * are protected using the following rules:
++ *
++ * Pure readers should hold rcu_read_lock() which should protect them against
++ * concurrent changes to the interface lists made by the writers. Pure writers
++ * must serialize by holding the RTNL mutex while they loop through the list
++ * and make changes to it.
++ *
++ * It is also possible to hold the global rwlock_t @dev_base_lock for
++ * protection (holding its read side as an alternative to rcu_read_lock, and
++ * its write side as an alternative to the RTNL mutex), however this should not
++ * be done in new code, since it is deprecated and pending removal.
++ *
++ * One other role of @dev_base_lock is to protect against changes in the
++ * operational state of a network interface.
+  */
+ DEFINE_RWLOCK(dev_base_lock);
+ EXPORT_SYMBOL(dev_base_lock);
 -- 
 2.25.1
 
