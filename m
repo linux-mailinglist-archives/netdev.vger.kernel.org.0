@@ -2,140 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75E972EFCEA
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 02:55:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE4AB2EFCEF
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 02:57:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbhAIByo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 20:54:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725916AbhAIByo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 20:54:44 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D78AC061573
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 17:54:04 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id x126so7381499pfc.7
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 17:54:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dx4BOjBslD2NuvQxaY0KECGweFkuIWQqdcf7erqSIQs=;
-        b=FHmgA0QuodbJHxF+qMiBE9hm9xvZKljqxblHdwf/0bC6mwqIqqozJUbhf472rFTgv1
-         epuYAk4OHx9YHMiSSwtxWzE5bTogy49kcZWwynWJrcBCRuVL5MOw+x/5ejgbUBciMOHC
-         wPAGIWqPRg3vgczpikqU0YKqo5F7LSjiRi5esqYXvyXNjkpzkOqpeqW+Xh1n9BnxZE2Y
-         ats1J+5tw4VS4w59OpuKo19kn/3uglMBUJUcWo6DOWYdWl+w6eg8ivI1M3ycpEaT5X9B
-         Mbv7hf16YVkLNJjWji2zh9JfiHj3yHWrTgWcsy5Q/y4v4vSXAR+Zixum18aOK5swv++q
-         ZfMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dx4BOjBslD2NuvQxaY0KECGweFkuIWQqdcf7erqSIQs=;
-        b=dSTSDBDk57jaYh97h8h9A6/To4HBtKkNvhy3XtFNUSYpOxiHkM46uKjqMRgGVlR7MI
-         ZmEY/vZgGGJQUVNpgdYC2H2gS8bFY7Y+2lP3wygxs6fRLJT5nMCbPCaaEjOeDufsgNOz
-         DHiE3G8UdL4Lq+NUZ9COuHBS8okOJNkOuTPrAFmRz7db8Xc+3q42l/aWxtZOq4nyvVnk
-         MzwIAoTKz7/kxndLUukj+K0Pyx8q6eoeqvUQRkb3r/irYZ96vvXOSQUMHKpyWr6TaH28
-         ewuF6h0H9uEoOqdA1Ohf0E5d2wyoIDwG78YgWSH975WzG4qx2VSL3rd3VIyBdIE0mqcm
-         YaXQ==
-X-Gm-Message-State: AOAM532XmVefmoestcBKxsnJU77DQVgjqjunhrZhfVRMZx4GhrELya+z
-        agEnfxsZ6PrTM5W20Ijvsew=
-X-Google-Smtp-Source: ABdhPJxjqE1vfvDPNRUOvktuU+L2yJ8SbB8kDvJmZf2d01v7dVWQLHE7CqbZ9Qbmj4Wn0gWjs00gzQ==
-X-Received: by 2002:aa7:93cf:0:b029:19d:e287:b02b with SMTP id y15-20020aa793cf0000b029019de287b02bmr6475362pff.66.1610157243597;
-        Fri, 08 Jan 2021 17:54:03 -0800 (PST)
-Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o193sm10507393pfg.27.2021.01.08.17.53.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jan 2021 17:54:02 -0800 (PST)
-Subject: Re: [PATCH v4 net-next 05/11] net: switchdev: remove the transaction
- structure from port attributes
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Petr Machata <petrm@nvidia.com>
-References: <20210109000156.1246735-1-olteanv@gmail.com>
- <20210109000156.1246735-6-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a8943b5a-63d4-e4d4-a08c-f4b2fd955ffc@gmail.com>
-Date:   Fri, 8 Jan 2021 17:53:58 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.6.0
+        id S1726447AbhAIB5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 20:57:00 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:45546 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726418AbhAIB5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 20:57:00 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1091nn4a010134;
+        Fri, 8 Jan 2021 17:56:05 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=2pba+ppLU5cKaNKpCyL+e+AiP57PyvEhENQ+605u0RE=;
+ b=nisBXCzZ1DD6PDrrJjIVGSdT0eZz8gInWQAK7nb2CR4gAr87eTXd/8EY+z8aSe/6Amnu
+ JmNl7lJygKWFH5K9lhslINbl+EjdZuP7UkCpQL3RolJ+B7AbTXUYNrz0vcOcpRxM+YE4
+ k9pXtbM63FbW96AZC7ln6MXNI/+v2UlTG1A= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 35y0afgnpt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 08 Jan 2021 17:56:05 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 8 Jan 2021 17:56:04 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kk4IEMxfTccPs+bgZ9gCQxr4PKhzdmDzxYxwGYcaJ5aYkz1UkBqJ0GdMxrN5SqNSchJHjJWwN7ZN2zJXmyz0yzbcfUxREHGJeZ68qPuuSUxAdW5T/YvIJvIjf5QhzSEqhkN9ZyNV3tbf68v/vccXhMmwTi3ioK21QIjKdWTyPpoTXUVacq0ZzicP4bWgnWHMvA5HsiuJTDDMZXb/hPOWsDCTqMD2Ebmmjn5aWofPo49MJ0n7qXpc0PfZVT7vATO9MZzvBitf0ilQ3wrvR+c6ZdzxawEPn2CWLluD2DCzzAB6BFRGAIvnTS40DL8utd80Ske2uMnHt1xnIJ+Rx4bG4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2pba+ppLU5cKaNKpCyL+e+AiP57PyvEhENQ+605u0RE=;
+ b=hl1nqBZ9sMnhj3W6/No0WMD/vCdW8cTStsbsDWz7BIlMdIfjq7t2nOWEzd/wKVnuHp0As/sEWs/RZ/r3t4nx7VvekS7G4zdzPyEEA9g0+xE1GDJIvFcc34CYT1gV0xZDXRDvT5wePTBvK1GGogCLdynnlhV5HetWNqW+nDmFQ2sApocOKKYyE9m4QaXJbhMnIRmkvalo3x5VyUx/KMXsEXhq4oFKsmvAKaYuCh7UG2dP5z2PhXa6TnDm8sEZCuRC9v5nKSbGLVdbmXIxvaaIrmBqsGlkyMYUy0R2GNBupi98t0499C9kyhD5v+9Dl+skrImyCP90n9n2eq9sImzmqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2pba+ppLU5cKaNKpCyL+e+AiP57PyvEhENQ+605u0RE=;
+ b=SCIu6++s91UmtZXQA+TSEAb2gW5FTMQGW89ldZv8pZGbGcWdf418cRmwv6ajeYlSCHmBbOqf+n0OMp0Or9llqAzTlX2q4cWlkbfOjnoXqKdJRD4Rei/XksrI5HaYnF9kzUl44fXRf5uVmUJmK2SaL+19/PsFWL1uv8ZRTAXkAO0=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2456.namprd15.prod.outlook.com (2603:10b6:a02:82::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.9; Sat, 9 Jan
+ 2021 01:56:03 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::217e:885b:1cef:e1f7%7]) with mapi id 15.20.3721.024; Sat, 9 Jan 2021
+ 01:56:03 +0000
+Date:   Fri, 8 Jan 2021 17:55:56 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, Song Liu <songliubraving@fb.com>
+Subject: Re: [PATCH bpf-next v6 2/3] bpf: try to avoid kzalloc in
+ cgroup/{s,g}etsockopt
+Message-ID: <20210109015556.6sajviuria5qknf7@kafai-mbp.dhcp.thefacebook.com>
+References: <20210108210223.972802-1-sdf@google.com>
+ <20210108210223.972802-3-sdf@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210108210223.972802-3-sdf@google.com>
+X-Originating-IP: [2620:10d:c090:400::5:47b0]
+X-ClientProxiedBy: MWHPR10CA0061.namprd10.prod.outlook.com
+ (2603:10b6:300:2c::23) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-In-Reply-To: <20210109000156.1246735-6-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:47b0) by MWHPR10CA0061.namprd10.prod.outlook.com (2603:10b6:300:2c::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6 via Frontend Transport; Sat, 9 Jan 2021 01:56:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 45eedc68-2b1a-40d2-b408-08d8b441b861
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2456:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2456ACE8B9B69D1254A4AB51D5AD0@BYAPR15MB2456.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FfVXncWe1lm0MEg+JHXPoy72PWKa0dsL3ts0lhV8+xoL4i5GSzEPCnWC8bj6TwxGHMLss2qQgsRx0BNwmmPaLiLsmPtwNbZm4i+qGpymsQZ5riQAjdUwBzeTwpqqVTwf1/7EcfzQDVFuCID82fVVBi8lE9ODOaOYnuh1qpQYWPbBCAlySOmhb13vTNyBqQgbptinopS8soA37tx5RFD4kn92/QYyrzIoz16/J0CCJ7GEgvNwr1t7OFZSPrXj/7FCryzZ6h+7RvFsZj0Qks1CWv9V132lRFyqjqrN+qLMoNDgclkyYNSV7PJyd76y5s1yhXmPihJLvnYcKJQY7dJMLygY98GuSAYska5CWZ2ItMPeLNlOEk9Wd1xcdTKaFJ2ljf4+Fq/BFq7iW2D2NpaYTQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(346002)(366004)(39860400002)(376002)(5660300002)(316002)(83380400001)(4326008)(2906002)(66946007)(6506007)(66476007)(8676002)(7696005)(478600001)(52116002)(66556008)(186003)(6916009)(6666004)(1076003)(9686003)(86362001)(16526019)(55016002)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?oVineNd+V94YFMuX6elz+wBJ7zxG57x1H/R2IpSnLf9kev+ZNKO2tzCC424Q?=
+ =?us-ascii?Q?ZtQiUNWTfWZbRv9x5/CJP9JyFGqqzvwUSS1rBzwAINXgfvubz+qTGUGh1Rjg?=
+ =?us-ascii?Q?7sbodJGaWVa5+ApfYHUhUPaFvq0StmDT8H5yUDBpMgjvasS/DIbnQBiZBebu?=
+ =?us-ascii?Q?8SJbm9Xxv5ZFgvoyEXaH2Bg2/eWvI/9TS59evZeSepayCvkjtY/sM5IEN0E8?=
+ =?us-ascii?Q?hDmiO0e2xh2E8nrzej14CGA0O8qX3tumEEBUFD9qDjJA5kZ5CrBEyADmXZBx?=
+ =?us-ascii?Q?0NyNYgXnduBOAKmByf7yL1M9NoBrlAbO8191tUxfdN5dqghane0bOwUFqF7h?=
+ =?us-ascii?Q?5kDKWpQrSyPgTy6c9clfbXQ2H74pgyKJw5IF0D8aDuOIBjZ5KUqrxkQmU22E?=
+ =?us-ascii?Q?+jRvO92NPw94dt8Hg+OfdSI39y5LQmyBsr/qlZ98SHAkInrd0f0fHJwDfLW9?=
+ =?us-ascii?Q?w5FASo4TR/CmPoAdDA6TTEGOznrr5MW4ONpfxeYlgjDzR9ibBaOMrcMa1oEq?=
+ =?us-ascii?Q?TQmxN9AkT2EptyEsdihZXytDzm2FOB0QLItmeFmOg3ROOLHtKGBaSSrsVrsl?=
+ =?us-ascii?Q?qsxtup63krprZiAN+Rp8wHHaSDhTJB5OJtCk9B6qPYUrmV8/LFwNCVTbd1xd?=
+ =?us-ascii?Q?EqjL6OAf7wHUukZMdktlo2TOdcSkq9RHUK1EUtlrxQ+jQYnIbJqGsqFN7YRm?=
+ =?us-ascii?Q?94f+bMe+1oIALoEgN0M22w+qonRP4vwtUisPL0EG+Tv/0SnBbwXssGPEpS3P?=
+ =?us-ascii?Q?K6dEIlCdGQpfvlhhLDcQcPmR5fdxDilnGBqYhMgbsfyuBxGAkfY9iP1SZa+E?=
+ =?us-ascii?Q?LP+NC2Ojb0Oq6g9cLr8cPyhQ5hhujPTSLnJoacX6GsQ/eK+vhGcuQmMJ6Tzi?=
+ =?us-ascii?Q?a8kLfLcdsvf2QgTKaubmnlc+HWZ7DBzeFcr3XhzYrhvTchtHKOeFjHrK6914?=
+ =?us-ascii?Q?3BmWd/0h+OIihAv9pq/4UbZfGeO0XwWFGHhMAQkD3+K3/Y6Wk1bCWDyAQwXw?=
+ =?us-ascii?Q?SogO+PHSANF2v9iW8fN8XPnwLQ=3D=3D?=
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jan 2021 01:56:03.1430
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45eedc68-2b1a-40d2-b408-08d8b441b861
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6ZaHjJNxiz7IwzWdxKDU2n/MvU5UROd3gYLLg0ryiPYULcymPE13b67KFbrta5Z5
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2456
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-08_12:2021-01-07,2021-01-08 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ priorityscore=1501 impostorscore=0 spamscore=0 suspectscore=0 phishscore=0
+ malwarescore=0 clxscore=1015 adultscore=0 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101090010
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 08, 2021 at 01:02:22PM -0800, Stanislav Fomichev wrote:
+> When we attach a bpf program to cgroup/getsockopt any other getsockopt()
+> syscall starts incurring kzalloc/kfree cost.
+> 
+> Let add a small buffer on the stack and use it for small (majority)
+> {s,g}etsockopt values. The buffer is small enough to fit into
+> the cache line and cover the majority of simple options (most
+> of them are 4 byte ints).
+> 
+> It seems natural to do the same for setsockopt, but it's a bit more
+> involved when the BPF program modifies the data (where we have to
+> kmalloc). The assumption is that for the majority of setsockopt
+> calls (which are doing pure BPF options or apply policy) this
+> will bring some benefit as well.
+> 
+> Without this patch (we remove about 1% __kmalloc):
+>      3.38%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
+>             |
+>              --3.30%--__cgroup_bpf_run_filter_getsockopt
+>                        |
+>                         --0.81%--__kmalloc
+> 
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> ---
+>  include/linux/filter.h |  5 ++++
+>  kernel/bpf/cgroup.c    | 52 ++++++++++++++++++++++++++++++++++++------
+>  2 files changed, 50 insertions(+), 7 deletions(-)
+> 
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 29c27656165b..8739f1d4cac4 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -1281,6 +1281,11 @@ struct bpf_sysctl_kern {
+>  	u64 tmp_reg;
+>  };
+>  
+> +#define BPF_SOCKOPT_KERN_BUF_SIZE	32
+> +struct bpf_sockopt_buf {
+> +	u8		data[BPF_SOCKOPT_KERN_BUF_SIZE];
+> +};
+> +
+>  struct bpf_sockopt_kern {
+>  	struct sock	*sk;
+>  	u8		*optval;
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index c41bb2f34013..a9aad9c419e1 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -1298,7 +1298,8 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+>  	return empty;
+>  }
+>  
+> -static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+> +static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen,
+> +			     struct bpf_sockopt_buf *buf)
+>  {
+>  	if (unlikely(max_optlen < 0))
+>  		return -EINVAL;
+> @@ -1310,6 +1311,15 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+>  		max_optlen = PAGE_SIZE;
+>  	}
+>  
+> +	if (max_optlen <= sizeof(buf->data)) {
+> +		/* When the optval fits into BPF_SOCKOPT_KERN_BUF_SIZE
+> +		 * bytes avoid the cost of kzalloc.
+> +		 */
+> +		ctx->optval = buf->data;
+> +		ctx->optval_end = ctx->optval + max_optlen;
+> +		return max_optlen;
+> +	}
+> +
+>  	ctx->optval = kzalloc(max_optlen, GFP_USER);
+>  	if (!ctx->optval)
+>  		return -ENOMEM;
+> @@ -1319,16 +1329,26 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
+>  	return max_optlen;
+>  }
+>  
+> -static void sockopt_free_buf(struct bpf_sockopt_kern *ctx)
+> +static void sockopt_free_buf(struct bpf_sockopt_kern *ctx,
+> +			     struct bpf_sockopt_buf *buf)
+>  {
+> +	if (ctx->optval == buf->data)
+> +		return;
+>  	kfree(ctx->optval);
+>  }
+>  
+> +static bool sockopt_buf_allocated(struct bpf_sockopt_kern *ctx,
+> +				  struct bpf_sockopt_buf *buf)
+> +{
+> +	return ctx->optval != buf->data;
+> +}
+> +
+>  int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+>  				       int *optname, char __user *optval,
+>  				       int *optlen, char **kernel_optval)
+>  {
+>  	struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+> +	struct bpf_sockopt_buf buf = {};
+>  	struct bpf_sockopt_kern ctx = {
+>  		.sk = sk,
+>  		.level = *level,
+> @@ -1350,7 +1370,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+>  	 */
+>  	max_optlen = max_t(int, 16, *optlen);
+>  
+> -	max_optlen = sockopt_alloc_buf(&ctx, max_optlen);
+> +	max_optlen = sockopt_alloc_buf(&ctx, max_optlen, &buf);
+>  	if (max_optlen < 0)
+>  		return max_optlen;
+>  
+> @@ -1390,13 +1410,30 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
+>  		 */
+>  		if (ctx.optlen != 0) {
+When ctx.optlen == 0, is sockopt_free_buf() called?
+Did I miss something?
 
-
-On 1/8/2021 4:01 PM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Since the introduction of the switchdev API, port attributes were
-> transmitted to drivers for offloading using a two-step transactional
-> model, with a prepare phase that was supposed to catch all errors, and a
-> commit phase that was supposed to never fail.
-> 
-> Some classes of failures can never be avoided, like hardware access, or
-> memory allocation. In the latter case, merely attempting to move the
-> memory allocation to the preparation phase makes it impossible to avoid
-> memory leaks, since commit 91cf8eceffc1 ("switchdev: Remove unused
-> transaction item queue") which has removed the unused mechanism of
-> passing on the allocated memory between one phase and another.
-> 
-> It is time we admit that separating the preparation from the commit
-> phase is something that is best left for the driver to decide, and not
-> something that should be baked into the API, especially since there are
-> no switchdev callers that depend on this.
-> 
-> This patch removes the struct switchdev_trans member from switchdev port
-> attribute notifier structures, and converts drivers to not look at this
-> member.
-> 
-> In part, this patch contains a revert of my previous commit 2e554a7a5d8a
-> ("net: dsa: propagate switchdev vlan_filtering prepare phase to
-> drivers").
-> 
-> For the most part, the conversion was trivial except for:
-> - Rocker's world implementation based on Broadcom OF-DPA had an odd
->   implementation of ofdpa_port_attr_bridge_flags_set. The conversion was
->   done mechanically, by pasting the implementation twice, then only
->   keeping the code that would get executed during prepare phase on top,
->   then only keeping the code that gets executed during the commit phase
->   on bottom, then simplifying the resulting code until this was obtained.
-> - DSA's offloading of STP state, bridge flags, VLAN filtering and
->   multicast router could be converted right away. But the ageing time
->   could not, so a shim was introduced and this was left for a further
->   commit.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> Acked-by: Jiri Pirko <jiri@nvidia.com>
-> Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de> # hellcreek
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org> # RTL8366RB
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+>  			*optlen = ctx.optlen;
+> -			*kernel_optval = ctx.optval;
+> +			/* We've used bpf_sockopt_kern->buf as an intermediary
+> +			 * storage, but the BPF program indicates that we need
+> +			 * to pass this data to the kernel setsockopt handler.
+> +			 * No way to export on-stack buf, have to allocate a
+> +			 * new buffer.
+> +			 */
+> +			if (!sockopt_buf_allocated(&ctx, &buf)) {
+> +				void *p = kzalloc(ctx.optlen, GFP_USER);
+> +
+> +				if (!p) {
+> +					ret = -ENOMEM;
+> +					goto out;
+> +				}
+> +				memcpy(p, ctx.optval, ctx.optlen);
+> +				*kernel_optval = p;
+> +			} else {
+> +				*kernel_optval = ctx.optval;
+> +			}
+>  		}
+>  	}
+>  
+>  out:
+>  	if (ret)
+> -		sockopt_free_buf(&ctx);
+> +		sockopt_free_buf(&ctx, &buf);
+>  	return ret;
+>  }
+>  
