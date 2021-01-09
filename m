@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC2D42F0243
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 18:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 300422F023F
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 18:29:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbhAIR3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 12:29:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
+        id S1726449AbhAIR2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 12:28:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726385AbhAIR2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 12:28:48 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA77C0617B1
-        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 09:27:41 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id cm17so14483181edb.4
-        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 09:27:41 -0800 (PST)
+        with ESMTP id S1726364AbhAIR2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 12:28:49 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51329C0617B9
+        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 09:27:43 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id b2so14497350edm.3
+        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 09:27:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0reHTgeA6uUXSGgmhIjkpBPzkJXmAfi9+BfDtKYO0M0=;
-        b=T1l0K0tJXBAmg00fFgY/VbFQIxiu222QJYPwYx1oEQc3nYMBCGFKJDIShcgsxgDXyQ
-         WA1mE/dV1bpOBv7EVh1OsgDmaXXpa9T+cTIzvyBlBplaWgwF0ucVlEJ/NBjLzTRfIiBZ
-         iXwKaP564vyfPIn+fo1Dkgfx+DYQYnfIkZGBgsELjMe18laGltwld/u6CIWglyW0uNpE
-         OiAgHlVodc9tRpu9tJ3rvEywgARybDtog2wGAWml8ZmRIgHOv6UoDJmiloRB/juu94yK
-         NwS+c6v/vOyx5gyHD3f8csTepimoUHgcVm5h1jVjmQ8KxMKJw4/tBeYlxl5WLcL2YGj1
-         quIQ==
+        bh=qELohY8xdTwjVtkkFqS+BhQWIgNycVEsz2+Yrh+djOs=;
+        b=lATd2P56io+FTLKSvvGxLfXaW8q5/G0KjiA8Jlp7pzATPAoQjbY6/eC3hT76CnSDkT
+         5Ix2iOcMLBMs11OKaE3TNlTikEZso6GZJ07Hh7McyOd57/m8qfPfL47sDqMIGdig22cV
+         PXr0AJ3+a5XQtPjlILNYRae4ddR7Kt4dKn9kcugNxev/rz78O/nA0XrMBbwaEb0C3zpm
+         yi7tXiseO21VoPHDMKSgJU2QkXuHiqprf+ousmVs35/iwsUSUGIVJ0gOGzOWd0J/nD5a
+         IqHnCAyEpjEKVT6JAcq4rkEyau6e/avT/3w6K3Z8LPl/l47SY66Vm5mBIrb/Nw8pCS7L
+         dyOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0reHTgeA6uUXSGgmhIjkpBPzkJXmAfi9+BfDtKYO0M0=;
-        b=apUHgeXQRn/N7TrToXHYZORCRAz4o+8Gfpzaqm5Wnw78T6oWN1UtGpg1XfYVpv4C3x
-         o9HQJYkfmQgcOhpyN5O+CFhEwygnLW4zSxuhHPrau3LQ8A3XhMvwfqhQz5pXIJomGMrS
-         ZfQref+GPFCSf+6VXNw+0qSAJQ0+YsFxnmMXSywMZH7BbcPUgM3vszw/yrFlfOEkvkic
-         rtzitGxXxPaf8Hun9cg4TD5Mnt/gjN6lPJPryLKg5dHLVv0Nsh43DjMFadUL92Mk+MzZ
-         dz1o3YsMq2Pueg4/dYmeCYWLdAZuTTQ2r/khp0SRDsc58H02YqZwUFNCBS6roRj4XaX6
-         Bgbw==
-X-Gm-Message-State: AOAM530YzUmRZvSqa+XnXLzrTsf/hjRcNfJY6iq2f3zOzesAmhbiOsdZ
-        Qwu7UpwEOPNZNLWW5KCq3/M=
-X-Google-Smtp-Source: ABdhPJwnfzPOfr254LlsTqe0CwzKwJD4W7P44aKOu/bv7awPI5dn7L42zgiEn1rt9FGa4hYQjfZLcg==
-X-Received: by 2002:a50:b5c5:: with SMTP id a63mr9125638ede.227.1610213260387;
-        Sat, 09 Jan 2021 09:27:40 -0800 (PST)
+        bh=qELohY8xdTwjVtkkFqS+BhQWIgNycVEsz2+Yrh+djOs=;
+        b=qhk9jjUeLIMD+0/8+WpLpMNtuh2qz8Yh88ZXUv7tDMyV+Mo1O5u+Iph2I5vebXmAzC
+         NMN8Hp/ol6a1hbfeAdLCjeSCABSTPmql9C77Tme0kV7kRiktKh7wQK24iYoutVTD2CSU
+         /9KzTCpDPOeo0nu9R8FgD4FFL6OAYXWixWn+ol4z9MRDhMJAq1f4oJsVWpQ8W0b8ABai
+         5WhCBig6tGhhHHPm1OX4lPuIcxoq2lTYtK4EqCAB3QrFxBQSu05CB42rZkIP0orPmwJG
+         SbnpQhCh0VHbeclUuHuPTsSeUJKUq3MrOmA1y+zsdDYd33wePfE51c3+js/GV27QiTkZ
+         j9WA==
+X-Gm-Message-State: AOAM530Y8xOapDIYFVtvYPKDjRt+AUWiLp+fON8q4Kp8LQDWQ4SoPQ9N
+        iSOI9t9JeRawKIAUpPwrTb8=
+X-Google-Smtp-Source: ABdhPJwOFPD0YQ0aDSA8zjKg0mlC8b1m7ew7djA2gP9peFhkG0y2DghlfkcyOhtxikxowNKY3ktFmw==
+X-Received: by 2002:a50:f404:: with SMTP id r4mr9011723edm.62.1610213261995;
+        Sat, 09 Jan 2021 09:27:41 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id h16sm4776714eji.110.2021.01.09.09.27.38
+        by smtp.gmail.com with ESMTPSA id h16sm4776714eji.110.2021.01.09.09.27.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jan 2021 09:27:39 -0800 (PST)
+        Sat, 09 Jan 2021 09:27:41 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -66,9 +66,9 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Pravin B Shelar <pshelar@ovn.org>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH v6 net-next 12/15] net: openvswitch: ensure dev_get_stats can sleep
-Date:   Sat,  9 Jan 2021 19:26:21 +0200
-Message-Id: <20210109172624.2028156-13-olteanv@gmail.com>
+Subject: [PATCH v6 net-next 13/15] net: net_failover: ensure .ndo_get_stats64 can sleep
+Date:   Sat,  9 Jan 2021 19:26:22 +0200
+Message-Id: <20210109172624.2028156-14-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210109172624.2028156-1-olteanv@gmail.com>
 References: <20210109172624.2028156-1-olteanv@gmail.com>
@@ -80,193 +80,157 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+The failover framework sets up a virtio_net interface [ when it has the
+VIRTIO_NET_F_STANDBY feature ] and a VF interface, having the same MAC
+address, in a standby/active relationship. When the active VF is
+unplugged, the standby virtio_net temporarily kicks in.
+
+The failover framework registers a common upper for the active and the
+standby interface, which is what the application layer uses. This is
+similar to bonding/team. The statistics of the upper interface are the
+sum of the statistics of the active and of the standby interface.
+
 There is an effort to convert .ndo_get_stats64 to sleepable context, and
 for that to work, we need to prevent callers of dev_get_stats from using
-atomic locking.
+atomic locking. The failover driver needs protection via an RCU
+read-side critical section to access the standby and the active
+interface. This is ok because it is reentrant, and generally speaking,
+dev_get_stats is recursive. But it is also not ok, because holding
+rcu_read_lock() while calling dev_get_stats will incur atomic context
+upon it, and that needs to change.
 
-The OVS vport driver calls ovs_vport_get_stats from
-ovs_vport_cmd_fill_info, a function with 7 callers: 5 under ovs_lock() and
-2 under rcu_read_lock(). The RCU-protected callers are the doit and
-dumpit callbacks of the OVS_VPORT_CMD_GET genetlink event. Things have
-been this way ever since the OVS introduction in commit ccb1352e76cf
-("net: Add Open vSwitch kernel components."), probably so that
-OVS_PORT_CMD_GET doesn't have to serialize with all the others through
-ovs_mutex. Sadly, now they do have to, otherwise we don't have
-protection while accessing the datapath and vport structures.
-
-Convert all callers of ovs_vport_cmd_fill_info to assume ovs_mutex
-protection. This means that we can get rid of the gfp argument, since
-all callers are now sleepable, we can just use GFP_KERNEL for memory
-allocation.
+The existing logic can be rehashed just a little bit such that the
+recursive dev_get_stats call will not be under any lock. We can achieve
+that by "cheating" a little bit and use dev_hold() to take a reference
+on the active and backup interfaces, and netdev_wait_allrefs() will just
+have to wait until dev_get_stats() finishes.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v6:
-None.
+Slightly touch up the commit message.
 
 Changes in v5:
-None.
+Use rcu_read_lock() and do not change the locking architecture of the
+driver.
 
 Changes in v4:
-Patch is new.
+Now there is code to propagate errors.
 
- net/openvswitch/datapath.c | 38 ++++++++++++++++++--------------------
- net/openvswitch/vport.c    |  2 +-
- 2 files changed, 19 insertions(+), 21 deletions(-)
+Changes in v3:
+None.
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 160b8dc453da..318caa8f12c2 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -1957,10 +1957,10 @@ static struct genl_family dp_datapath_genl_family __ro_after_init = {
- 	.module = THIS_MODULE,
- };
- 
--/* Called with ovs_mutex or RCU read lock. */
-+/* Called with ovs_mutex */
- static int ovs_vport_cmd_fill_info(struct vport *vport, struct sk_buff *skb,
- 				   struct net *net, u32 portid, u32 seq,
--				   u32 flags, u8 cmd, gfp_t gfp)
-+				   u32 flags, u8 cmd)
+Changes in v2:
+Switched to the new scheme of holding just a refcnt to the slave
+interfaces while recursing with dev_get_stats.
+
+ drivers/net/net_failover.c | 64 ++++++++++++++++++++++++++++----------
+ 1 file changed, 47 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/net/net_failover.c b/drivers/net/net_failover.c
+index 2815228a34d5..8b7a6d1eab30 100644
+--- a/drivers/net/net_failover.c
++++ b/drivers/net/net_failover.c
+@@ -183,38 +183,64 @@ static int net_failover_get_stats(struct net_device *dev,
+ 				  struct rtnl_link_stats64 *stats)
  {
- 	struct ovs_header *ovs_header;
- 	struct ovs_vport_stats vport_stats;
-@@ -1981,7 +1981,7 @@ static int ovs_vport_cmd_fill_info(struct vport *vport, struct sk_buff *skb,
- 		goto nla_put_failure;
+ 	struct net_failover_info *nfo_info = netdev_priv(dev);
+-	struct rtnl_link_stats64 temp;
+-	struct net_device *slave_dev;
++	struct rtnl_link_stats64 primary_stats;
++	struct rtnl_link_stats64 standby_stats;
++	struct net_device *primary_dev;
++	struct net_device *standby_dev;
+ 	int err = 0;
  
- 	if (!net_eq(net, dev_net(vport->dev))) {
--		int id = peernet2id_alloc(net, dev_net(vport->dev), gfp);
-+		int id = peernet2id_alloc(net, dev_net(vport->dev), GFP_KERNEL);
+-	spin_lock(&nfo_info->stats_lock);
+-	memcpy(stats, &nfo_info->failover_stats, sizeof(*stats));
+-
+ 	rcu_read_lock();
  
- 		if (nla_put_s32(skb, OVS_VPORT_ATTR_NETNSID, id))
- 			goto nla_put_failure;
-@@ -2029,8 +2029,7 @@ struct sk_buff *ovs_vport_cmd_build_info(struct vport *vport, struct net *net,
- 	if (!skb)
- 		return ERR_PTR(-ENOMEM);
+-	slave_dev = rcu_dereference(nfo_info->primary_dev);
+-	if (slave_dev) {
+-		err = dev_get_stats(slave_dev, &temp);
++	primary_dev = rcu_dereference(nfo_info->primary_dev);
++	if (primary_dev)
++		dev_hold(primary_dev);
++
++	standby_dev = rcu_dereference(nfo_info->standby_dev);
++	if (standby_dev)
++		dev_hold(standby_dev);
++
++	rcu_read_unlock();
++
++	/* Don't hold rcu_read_lock while calling dev_get_stats, just a
++	 * reference to ensure they won't get unregistered.
++	 */
++	if (primary_dev) {
++		err = dev_get_stats(primary_dev, &primary_stats);
+ 		if (err)
+ 			goto out;
+-		net_failover_fold_stats(stats, &temp, &nfo_info->primary_stats);
+-		memcpy(&nfo_info->primary_stats, &temp, sizeof(temp));
+ 	}
  
--	retval = ovs_vport_cmd_fill_info(vport, skb, net, portid, seq, 0, cmd,
--					 GFP_KERNEL);
-+	retval = ovs_vport_cmd_fill_info(vport, skb, net, portid, seq, 0, cmd);
- 	BUG_ON(retval == -EMSGSIZE);
- 	if (retval)
- 		return ERR_PTR(retval);
-@@ -2038,7 +2037,7 @@ struct sk_buff *ovs_vport_cmd_build_info(struct vport *vport, struct net *net,
- 	return skb;
- }
+-	slave_dev = rcu_dereference(nfo_info->standby_dev);
+-	if (slave_dev) {
+-		err = dev_get_stats(slave_dev, &temp);
++	if (standby_dev) {
++		err = dev_get_stats(standby_dev, &standby_stats);
+ 		if (err)
+ 			goto out;
+-		net_failover_fold_stats(stats, &temp, &nfo_info->standby_stats);
+-		memcpy(&nfo_info->standby_stats, &temp, sizeof(temp));
+ 	}
  
--/* Called with ovs_mutex or RCU read lock. */
-+/* Called with ovs_mutex */
- static struct vport *lookup_vport(struct net *net,
- 				  const struct ovs_header *ovs_header,
- 				  struct nlattr *a[OVS_VPORT_ATTR_MAX + 1])
-@@ -2177,7 +2176,7 @@ static int ovs_vport_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 
- 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
- 				      info->snd_portid, info->snd_seq, 0,
--				      OVS_VPORT_CMD_NEW, GFP_KERNEL);
-+				      OVS_VPORT_CMD_NEW);
- 	BUG_ON(err == -EMSGSIZE);
- 	if (err)
- 		goto exit_unlock_free;
-@@ -2240,7 +2239,7 @@ static int ovs_vport_cmd_set(struct sk_buff *skb, struct genl_info *info)
- 
- 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
- 				      info->snd_portid, info->snd_seq, 0,
--				      OVS_VPORT_CMD_SET, GFP_KERNEL);
-+				      OVS_VPORT_CMD_SET);
- 	BUG_ON(err == -EMSGSIZE);
- 	if (err)
- 		goto exit_unlock_free;
-@@ -2282,7 +2281,7 @@ static int ovs_vport_cmd_del(struct sk_buff *skb, struct genl_info *info)
- 
- 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
- 				      info->snd_portid, info->snd_seq, 0,
--				      OVS_VPORT_CMD_DEL, GFP_KERNEL);
-+				      OVS_VPORT_CMD_DEL);
- 	BUG_ON(err == -EMSGSIZE);
- 	if (err)
- 		goto exit_unlock_free;
-@@ -2324,23 +2323,23 @@ static int ovs_vport_cmd_get(struct sk_buff *skb, struct genl_info *info)
- 	if (!reply)
- 		return -ENOMEM;
- 
--	rcu_read_lock();
-+	ovs_lock();
- 	vport = lookup_vport(sock_net(skb->sk), ovs_header, a);
- 	err = PTR_ERR(vport);
- 	if (IS_ERR(vport))
- 		goto exit_unlock_free;
- 	err = ovs_vport_cmd_fill_info(vport, reply, genl_info_net(info),
- 				      info->snd_portid, info->snd_seq, 0,
--				      OVS_VPORT_CMD_GET, GFP_ATOMIC);
-+				      OVS_VPORT_CMD_GET);
- 	BUG_ON(err == -EMSGSIZE);
- 	if (err)
- 		goto exit_unlock_free;
+-out:
 -	rcu_read_unlock();
-+	ovs_unlock();
++	spin_lock(&nfo_info->stats_lock);
++
++	memcpy(stats, &nfo_info->failover_stats, sizeof(*stats));
++
++	if (primary_dev) {
++		net_failover_fold_stats(stats, &primary_stats,
++					&nfo_info->primary_stats);
++		memcpy(&nfo_info->primary_stats, &primary_stats,
++		       sizeof(primary_stats));
++	}
++	if (standby_dev) {
++		net_failover_fold_stats(stats, &standby_stats,
++					&nfo_info->standby_stats);
++		memcpy(&nfo_info->standby_stats, &standby_stats,
++		       sizeof(standby_stats));
++	}
  
- 	return genlmsg_reply(reply, info);
+ 	memcpy(&nfo_info->failover_stats, stats, sizeof(*stats));
++
+ 	spin_unlock(&nfo_info->stats_lock);
++out:
++	if (primary_dev)
++		dev_put(primary_dev);
++	if (standby_dev)
++		dev_put(standby_dev);
  
- exit_unlock_free:
--	rcu_read_unlock();
-+	ovs_unlock();
- 	kfree_skb(reply);
  	return err;
  }
-@@ -2352,25 +2351,24 @@ static int ovs_vport_cmd_dump(struct sk_buff *skb, struct netlink_callback *cb)
- 	int bucket = cb->args[0], skip = cb->args[1];
- 	int i, j = 0;
- 
--	rcu_read_lock();
--	dp = get_dp_rcu(sock_net(skb->sk), ovs_header->dp_ifindex);
-+	ovs_lock();
-+	dp = get_dp(sock_net(skb->sk), ovs_header->dp_ifindex);
- 	if (!dp) {
--		rcu_read_unlock();
-+		ovs_unlock();
- 		return -ENODEV;
- 	}
- 	for (i = bucket; i < DP_VPORT_HASH_BUCKETS; i++) {
- 		struct vport *vport;
- 
- 		j = 0;
--		hlist_for_each_entry_rcu(vport, &dp->ports[i], dp_hash_node) {
-+		hlist_for_each_entry(vport, &dp->ports[i], dp_hash_node) {
- 			if (j >= skip &&
- 			    ovs_vport_cmd_fill_info(vport, skb,
- 						    sock_net(skb->sk),
- 						    NETLINK_CB(cb->skb).portid,
- 						    cb->nlh->nlmsg_seq,
- 						    NLM_F_MULTI,
--						    OVS_VPORT_CMD_GET,
--						    GFP_ATOMIC) < 0)
-+						    OVS_VPORT_CMD_GET) < 0)
- 				goto out;
- 
- 			j++;
-@@ -2378,7 +2376,7 @@ static int ovs_vport_cmd_dump(struct sk_buff *skb, struct netlink_callback *cb)
- 		skip = 0;
- 	}
- out:
--	rcu_read_unlock();
-+	ovs_unlock();
- 
- 	cb->args[0] = i;
- 	cb->args[1] = j;
-diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
-index e66c949fd97a..ba1a52addff2 100644
---- a/net/openvswitch/vport.c
-+++ b/net/openvswitch/vport.c
-@@ -265,7 +265,7 @@ void ovs_vport_del(struct vport *vport)
-  *
-  * Retrieves transmit, receive, and error stats for the given device.
-  *
-- * Must be called with ovs_mutex or rcu_read_lock.
-+ * Must be called with ovs_mutex.
-  */
- int ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
+@@ -728,6 +754,7 @@ static struct failover_ops net_failover_ops = {
+ struct failover *net_failover_create(struct net_device *standby_dev)
  {
+ 	struct device *dev = standby_dev->dev.parent;
++	struct net_failover_info *nfo_info;
+ 	struct net_device *failover_dev;
+ 	struct failover *failover;
+ 	int err;
+@@ -772,6 +799,9 @@ struct failover *net_failover_create(struct net_device *standby_dev)
+ 	failover_dev->min_mtu = standby_dev->min_mtu;
+ 	failover_dev->max_mtu = standby_dev->max_mtu;
+ 
++	nfo_info = netdev_priv(failover_dev);
++	spin_lock_init(&nfo_info->stats_lock);
++
+ 	err = register_netdev(failover_dev);
+ 	if (err) {
+ 		dev_err(dev, "Unable to register failover_dev!\n");
 -- 
 2.25.1
 
