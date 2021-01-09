@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C28182EFC76
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 01:52:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 973952EFC6F
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 01:52:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726490AbhAIAvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 19:51:23 -0500
-Received: from mga03.intel.com ([134.134.136.65]:32288 "EHLO mga03.intel.com"
+        id S1727009AbhAIAtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 19:49:46 -0500
+Received: from mga03.intel.com ([134.134.136.65]:32272 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726364AbhAIAvX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 19:51:23 -0500
-IronPort-SDR: ynXZ7LPwytI3FhRO3NHQ6vB9ZVZRvSQ+KfhQW2qexTVKDmrkcbT2Db/5GjP8M5NzyJfzYqUwE8
- q5ySN5/OfJHg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9858"; a="177771956"
+        id S1726939AbhAIAtj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 19:49:39 -0500
+IronPort-SDR: vpkqIU97gFY6cQvVRc6Mfu1w2m6wO+cedRhvCYxL20inRh9aeleqEuUBMyuYy9TIA/xFq/WfBA
+ rR63nK4GIUIw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9858"; a="177771957"
 X-IronPort-AV: E=Sophos;i="5.79,333,1602572400"; 
-   d="scan'208";a="177771956"
+   d="scan'208";a="177771957"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2021 16:48:09 -0800
-IronPort-SDR: Bk9Ib0IK/F7geuSPsu0/85R5NmCwLQVF3hAIeRAF28qPBAb+NEDjc4PgAgbbbtvUStYlUzXicP
- U2KBL8JOgaKw==
+IronPort-SDR: F1wvbQUhspGRYI7st+9azBcykq/2pPUUjfGqkUvGOfaaj/yrA/F9HmmnzFo1pJY71Bmck4B5zi
+ 3dUYgM8hEi1w==
 X-IronPort-AV: E=Sophos;i="5.79,333,1602572400"; 
-   d="scan'208";a="423124502"
+   d="scan'208";a="423124503"
 Received: from mjmartin-nuc02.amr.corp.intel.com ([10.251.4.171])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2021 16:48:09 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -29,9 +29,9 @@ To:     netdev@vger.kernel.org
 Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
         kuba@kernel.org, mptcp@lists.01.org,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 5/8] mptcp: add set_flags command in PM netlink
-Date:   Fri,  8 Jan 2021 16:47:59 -0800
-Message-Id: <20210109004802.341602-6-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 6/8] selftests: mptcp: add set_flags command in pm_nl_ctl
+Date:   Fri,  8 Jan 2021 16:48:00 -0800
+Message-Id: <20210109004802.341602-7-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210109004802.341602-1-mathew.j.martineau@linux.intel.com>
 References: <20210109004802.341602-1-mathew.j.martineau@linux.intel.com>
@@ -43,123 +43,134 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliangtang@gmail.com>
 
-This patch added a new command MPTCP_PM_CMD_SET_FLAGS in PM netlink:
+This patch added the set_flags command in pm_nl_ctl, currently we can only
+set two flags: backup and nobackup. The set_flags command can be used like
+this:
 
-In mptcp_nl_cmd_set_flags, parse the input address, get the backup value
-according to whether the address's FLAG_BACKUP flag is set from the
-user-space. Then check whether this address had been added in the local
-address list. If it had been, then call mptcp_nl_addr_backup to deal with
-this address.
-
-In mptcp_nl_addr_backup, traverse all the existing msk sockets to find
-the relevant sockets, and call mptcp_pm_nl_mp_prio_send_ack to send out
-a MP_PRIO ACK packet.
-
-Finally in mptcp_nl_cmd_set_flags, set or clear the address's FLAG_BACKUP
-flag.
+ # pm_nl_ctl set 10.0.0.1 flags backup
+ # pm_nl_ctl set 10.0.0.1 flags nobackup
 
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- include/uapi/linux/mptcp.h |  1 +
- net/mptcp/pm_netlink.c     | 65 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 66 insertions(+)
+ tools/testing/selftests/net/mptcp/pm_nl_ctl.c | 87 ++++++++++++++++++-
+ 1 file changed, 86 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
-index 9762660df741..3674a451a18c 100644
---- a/include/uapi/linux/mptcp.h
-+++ b/include/uapi/linux/mptcp.h
-@@ -82,6 +82,7 @@ enum {
- 	MPTCP_PM_CMD_FLUSH_ADDRS,
- 	MPTCP_PM_CMD_SET_LIMITS,
- 	MPTCP_PM_CMD_GET_LIMITS,
-+	MPTCP_PM_CMD_SET_FLAGS,
+diff --git a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
+index b24a2f17d415..abc269e96a07 100644
+--- a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
++++ b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
+@@ -24,10 +24,11 @@
  
- 	__MPTCP_PM_CMD_AFTER_LAST
- };
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index bf0d13c85a68..8f80099f1657 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -1164,6 +1164,66 @@ mptcp_nl_cmd_get_limits(struct sk_buff *skb, struct genl_info *info)
- 	return -EMSGSIZE;
+ static void syntax(char *argv[])
+ {
+-	fprintf(stderr, "%s add|get|del|flush|dump|accept [<args>]\n", argv[0]);
++	fprintf(stderr, "%s add|get|set|del|flush|dump|accept [<args>]\n", argv[0]);
+ 	fprintf(stderr, "\tadd [flags signal|subflow|backup] [id <nr>] [dev <name>] <ip>\n");
+ 	fprintf(stderr, "\tdel <id>\n");
+ 	fprintf(stderr, "\tget <id>\n");
++	fprintf(stderr, "\tset <ip> [flags backup|nobackup]\n");
+ 	fprintf(stderr, "\tflush\n");
+ 	fprintf(stderr, "\tdump\n");
+ 	fprintf(stderr, "\tlimits [<rcv addr max> <subflow max>]\n");
+@@ -584,6 +585,88 @@ int get_set_limits(int fd, int pm_family, int argc, char *argv[])
+ 	return 0;
  }
  
-+static int mptcp_nl_addr_backup(struct net *net,
-+				struct mptcp_addr_info *addr,
-+				u8 bkup)
++int set_flags(int fd, int pm_family, int argc, char *argv[])
 +{
-+	long s_slot = 0, s_num = 0;
-+	struct mptcp_sock *msk;
-+	int ret = -EINVAL;
++	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
++		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
++		  1024];
++	struct rtattr *rta, *nest;
++	struct nlmsghdr *nh;
++	u_int32_t flags = 0;
++	u_int16_t family;
++	int nest_start;
++	int off = 0;
++	int arg;
 +
-+	while ((msk = mptcp_token_iter_next(net, &s_slot, &s_num)) != NULL) {
-+		struct sock *sk = (struct sock *)msk;
++	memset(data, 0, sizeof(data));
++	nh = (void *)data;
++	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_SET_FLAGS,
++			    MPTCP_PM_VER);
 +
-+		if (list_empty(&msk->conn_list))
-+			goto next;
++	if (argc < 3)
++		syntax(argv);
 +
-+		lock_sock(sk);
-+		spin_lock_bh(&msk->pm.lock);
-+		ret = mptcp_pm_nl_mp_prio_send_ack(msk, addr, bkup);
-+		spin_unlock_bh(&msk->pm.lock);
-+		release_sock(sk);
++	nest_start = off;
++	nest = (void *)(data + off);
++	nest->rta_type = NLA_F_NESTED | MPTCP_PM_ATTR_ADDR;
++	nest->rta_len = RTA_LENGTH(0);
++	off += NLMSG_ALIGN(nest->rta_len);
 +
-+next:
-+		sock_put(sk);
-+		cond_resched();
++	/* addr data */
++	rta = (void *)(data + off);
++	if (inet_pton(AF_INET, argv[2], RTA_DATA(rta))) {
++		family = AF_INET;
++		rta->rta_type = MPTCP_PM_ADDR_ATTR_ADDR4;
++		rta->rta_len = RTA_LENGTH(4);
++	} else if (inet_pton(AF_INET6, argv[2], RTA_DATA(rta))) {
++		family = AF_INET6;
++		rta->rta_type = MPTCP_PM_ADDR_ATTR_ADDR6;
++		rta->rta_len = RTA_LENGTH(16);
++	} else {
++		error(1, errno, "can't parse ip %s", argv[2]);
 +	}
++	off += NLMSG_ALIGN(rta->rta_len);
 +
-+	return ret;
-+}
++	/* family */
++	rta = (void *)(data + off);
++	rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
++	rta->rta_len = RTA_LENGTH(2);
++	memcpy(RTA_DATA(rta), &family, 2);
++	off += NLMSG_ALIGN(rta->rta_len);
 +
-+static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct nlattr *attr = info->attrs[MPTCP_PM_ATTR_ADDR];
-+	struct pm_nl_pernet *pernet = genl_info_pm_nl(info);
-+	struct mptcp_pm_addr_entry addr, *entry;
-+	struct net *net = sock_net(skb->sk);
-+	u8 bkup = 0;
-+	int ret;
++	for (arg = 3; arg < argc; arg++) {
++		if (!strcmp(argv[arg], "flags")) {
++			char *tok, *str;
 +
-+	ret = mptcp_pm_parse_addr(attr, info, true, &addr);
-+	if (ret < 0)
-+		return ret;
++			/* flags */
++			if (++arg >= argc)
++				error(1, 0, " missing flags value");
 +
-+	if (addr.addr.flags & MPTCP_PM_ADDR_FLAG_BACKUP)
-+		bkup = 1;
++			/* do not support flag list yet */
++			for (str = argv[arg]; (tok = strtok(str, ","));
++			     str = NULL) {
++				if (!strcmp(tok, "backup"))
++					flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
++				else if (strcmp(tok, "nobackup"))
++					error(1, errno,
++					      "unknown flag %s", argv[arg]);
++			}
 +
-+	list_for_each_entry(entry, &pernet->local_addr_list, list) {
-+		if (addresses_equal(&entry->addr, &addr.addr, true)) {
-+			ret = mptcp_nl_addr_backup(net, &entry->addr, bkup);
-+			if (ret)
-+				return ret;
-+
-+			if (bkup)
-+				entry->addr.flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
-+			else
-+				entry->addr.flags &= ~MPTCP_PM_ADDR_FLAG_BACKUP;
++			rta = (void *)(data + off);
++			rta->rta_type = MPTCP_PM_ADDR_ATTR_FLAGS;
++			rta->rta_len = RTA_LENGTH(4);
++			memcpy(RTA_DATA(rta), &flags, 4);
++			off += NLMSG_ALIGN(rta->rta_len);
++		} else {
++			error(1, 0, "unknown keyword %s", argv[arg]);
 +		}
 +	}
++	nest->rta_len = off - nest_start;
 +
++	do_nl_req(fd, nh, off, 0);
 +	return 0;
 +}
 +
- static const struct genl_small_ops mptcp_pm_ops[] = {
- 	{
- 		.cmd    = MPTCP_PM_CMD_ADD_ADDR,
-@@ -1194,6 +1254,11 @@ static const struct genl_small_ops mptcp_pm_ops[] = {
- 		.cmd    = MPTCP_PM_CMD_GET_LIMITS,
- 		.doit   = mptcp_nl_cmd_get_limits,
- 	},
-+	{
-+		.cmd    = MPTCP_PM_CMD_SET_FLAGS,
-+		.doit   = mptcp_nl_cmd_set_flags,
-+		.flags  = GENL_ADMIN_PERM,
-+	},
- };
+ int main(int argc, char *argv[])
+ {
+ 	int fd, pm_family;
+@@ -609,6 +692,8 @@ int main(int argc, char *argv[])
+ 		return dump_addrs(fd, pm_family, argc, argv);
+ 	else if (!strcmp(argv[1], "limits"))
+ 		return get_set_limits(fd, pm_family, argc, argv);
++	else if (!strcmp(argv[1], "set"))
++		return set_flags(fd, pm_family, argc, argv);
  
- static struct genl_family mptcp_genl_family __ro_after_init = {
+ 	fprintf(stderr, "unknown sub-command: %s", argv[1]);
+ 	syntax(argv);
 -- 
 2.30.0
 
