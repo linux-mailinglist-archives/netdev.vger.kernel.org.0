@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E53632F0236
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 18:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA3D2F0237
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 18:29:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726254AbhAIR2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 12:28:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55132 "EHLO
+        id S1726270AbhAIR2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 12:28:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725926AbhAIR2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 12:28:05 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A68C0617A2
-        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 09:27:25 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id q22so18901045eja.2
-        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 09:27:25 -0800 (PST)
+        with ESMTP id S1725926AbhAIR2H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 12:28:07 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17A9C0617A3
+        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 09:27:26 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id j16so14528225edr.0
+        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 09:27:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/lWP95iyU9Sl+LT7D1Nh8pxkQcK19ngJ2NDvEv/R65E=;
-        b=bdNQhJszjNT9Jv1lbad6SROnAHd8dd8xA6X3PflVEgSBy4kJ7/1FRNnjjKUBA2K/TL
-         ORDzkacHn98nyc7vFH7VS6iWwJLSFiGVoIrJgX/EC+97FBIceRGQm/vHQZ5exs6M5Q96
-         yoVKXR8LbjWjO6+PyZ/SMfj50Hb/MjYIELpMX54FQTLWTOhF4WtJ8pEAtXhTG8QEPpch
-         Gn3wg/BL+fROEudUN6FIc8iUUvS50XvsXib5m2+Eyp8tvCjL6chi9k/Op9FprM7pEhtO
-         Gn1Je8lsUxyApAGaWG7kDRHuVqLiZ+0D8z6fF1GwR7bw8MC9TL746wZ8SqFOf1YxmLoH
-         CdSw==
+        bh=9m3oKGvCSeWHdPInnGbCMaa6M732P3ZHcFpaYA/9tjc=;
+        b=nZs1Sf5Ks5o97y3DH1rodjHLm8LbgfWAALJgwURcCeg1J1DTpZueNEmeJ6cnTy9Qcx
+         YNDqN6ovAhvpeJrJt4XdNwD7XRib/RqwQIcfx4durYqNsjxJQ6R3HPwpU76EeA5n3JFi
+         KT81ROsoVFL8jeDwPMKo29BDqblhwFP3HwkXP/VEOZA9m3h1SKyCZQ71FThlOM7weICy
+         Qi8d6lIr025cn65F0+sRdVhsr/No+zg0mtlfRaYmbR1FCDQXbe7yQEAUk3/hhgS2G1ht
+         vcv5+VGw9hCKEWEYSbuJ/E5Gpiu9oV22FIVISI7ezkNd6PN31yIg+550rjpJ19ZEeRSm
+         oxHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/lWP95iyU9Sl+LT7D1Nh8pxkQcK19ngJ2NDvEv/R65E=;
-        b=TW8gQq+DjZHjXop3KsNOjAQayQDLzIzFsE6lWtUfc1rc1DoGIENaywj9boWR+MiFwR
-         diee3/D8gBmYWYjae1qLtKoFbjT9y+my7UN8jgqob36Egsffs4uXhtyqAvpLnDYoUe5q
-         k9BNk55YlfZNz2MvoTapON7QkkkBaVBlJAnjd0ei89Wn31VhguYQTruwHkU1B2TIhhmv
-         sbKX2n9ln7QYqXlMlov1PD9/Hr8UriGCaIolUbMW10esXHOECRijCzFZjZ6D2TKY/8h8
-         Vfb5Am/r7vAbLySimgizhTrbnwcxjpg/yMJJo7PlbjM9f6uDnuwg5N4md8dta7MYT1RZ
-         yxbw==
-X-Gm-Message-State: AOAM532jbuBuNWWRd9+y2+E9fcjc6/QSyhjGHNS3VYleYcOB7s4RifoB
-        xnkwF4FiaYZ/mPY8oMi9Ukc=
-X-Google-Smtp-Source: ABdhPJypmDLzuxCOqlVi6pBqSjKyNovLFhE6UADQwSSJjfNQIHi+yzwdoIDXCVFUaHxjCQCQ3YJHtg==
-X-Received: by 2002:a17:906:168f:: with SMTP id s15mr6026963ejd.180.1610213243852;
-        Sat, 09 Jan 2021 09:27:23 -0800 (PST)
+        bh=9m3oKGvCSeWHdPInnGbCMaa6M732P3ZHcFpaYA/9tjc=;
+        b=rS7gBLvO8yrALCAR/s5eC9KKc+sYdWA32BWf6s4Xl71pK2dFgCpuAx50zFViPRm5aS
+         +A/k6HjUY3+OMe5zhPea6/eez9Pdz04GbqgFKKhTL8PDH7gXiLy9fnhogplfR0lICEWS
+         W1fmYXt8dYFCXjKJJZiux35UO8wIUMzea7XPBlkNjPI8dD6olRaJmpqYGhReqyBd8bfS
+         dlh9l787VII0yMGGGovE54lnn44MQFnN26boBfH58zJGsOjT1xRaa0PVYCpSdaYc/QU1
+         S20S+YeJ7FopUo6kbbetxzK62M71SMW7/e0geFZPUpCYJw043eFQ8lNRGFvY0gZF6UbE
+         CnKg==
+X-Gm-Message-State: AOAM530f6gWRUco6EOsZjuu6jVcB3Vq/2MPQIOOfpYgVKROj1wrRoLpk
+        49QpPGa0VSeCQDEGA8Mh0a4=
+X-Google-Smtp-Source: ABdhPJzTCI4g2QX+ye8xRp4yRL7H6IN+mf90dRw2oXticPElMVgeLA1k4C8W8t80xT9gtRcyChAHiA==
+X-Received: by 2002:a50:9dc9:: with SMTP id l9mr9051970edk.377.1610213245490;
+        Sat, 09 Jan 2021 09:27:25 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id h16sm4776714eji.110.2021.01.09.09.27.22
+        by smtp.gmail.com with ESMTPSA id h16sm4776714eji.110.2021.01.09.09.27.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jan 2021 09:27:23 -0800 (PST)
+        Sat, 09 Jan 2021 09:27:24 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -66,9 +66,9 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Pravin B Shelar <pshelar@ovn.org>,
         Sridhar Samudrala <sridhar.samudrala@intel.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH v6 net-next 02/15] net: introduce a mutex for the netns interface lists
-Date:   Sat,  9 Jan 2021 19:26:11 +0200
-Message-Id: <20210109172624.2028156-3-olteanv@gmail.com>
+Subject: [PATCH v6 net-next 03/15] net: procfs: hold netif_lists_lock when retrieving device statistics
+Date:   Sat,  9 Jan 2021 19:26:12 +0200
+Message-Id: <20210109172624.2028156-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210109172624.2028156-1-olteanv@gmail.com>
 References: <20210109172624.2028156-1-olteanv@gmail.com>
@@ -80,24 +80,19 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Currently, any writer that wants to alter the lists of network
-interfaces (either the plain list net->dev_base_head, or the hash tables
-net->dev_index_head and net->dev_name_head) can keep other writers at
-bay using the RTNL mutex.
+In the effort of making .ndo_get_stats64 be able to sleep, we need to
+ensure the callers of dev_get_stats do not use atomic context.
 
-However, the RTNL mutex has become a very contended resource over the
-years, so there is a movement to do finer grained locking.
+The /proc/net/dev file uses an RCU read-side critical section to ensure
+the integrity of the list of network interfaces, because it iterates
+through all net devices in the netns to show their statistics.
 
-This patch adds one more way for writers to the network interface lists
-to serialize themselves. We assume that all writers to the network
-interface lists are easily identifiable because the write side of
-dev_base_lock also needs to be held (note that some instances of that
-were deliberately skipped, since they only dealt with protecting the
-operational state of the netdev).
+To offer the equivalent protection against an interface registering or
+deregistering, while also remaining in sleepable context, we can use the
+netns mutex for the interface lists.
 
-Holding the RTNL mutex is now optional for new code that alters the
-lists, since all relevant writers were made to also hold the new lock.
-
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v6:
@@ -112,180 +107,52 @@ None.
 Changes in v3:
 None.
 
- include/linux/netdevice.h   | 10 +++++++++
- include/net/net_namespace.h |  6 +++++
- net/core/dev.c              | 44 +++++++++++++++++++++++++------------
- 3 files changed, 46 insertions(+), 14 deletions(-)
+Changes in v2:
+None.
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 1ec3ac5d5bbf..8aae2386bd37 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4376,6 +4376,16 @@ static inline void netif_addr_unlock_bh(struct net_device *dev)
- 	spin_unlock_bh(&dev->addr_list_lock);
- }
+ net/core/net-procfs.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
+index c714e6a9dad4..4784703c1e39 100644
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -21,7 +21,7 @@ static inline struct net_device *dev_from_same_bucket(struct seq_file *seq, loff
+ 	unsigned int count = 0, offset = get_offset(*pos);
  
-+static inline void netif_lists_lock(struct net *net)
-+{
-+	mutex_lock(&net->netif_lists_lock);
-+}
-+
-+static inline void netif_lists_unlock(struct net *net)
-+{
-+	mutex_unlock(&net->netif_lists_lock);
-+}
-+
- /*
-  * dev_addrs walker. Should be used only for read access. Call with
-  * rcu_read_lock held.
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 29567875f428..cac64c3c7ce0 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -183,6 +183,12 @@ struct net {
- 	struct sock		*crypto_nlsk;
- #endif
- 	struct sock		*diag_nlsk;
-+
-+	/* Serializes writers to @dev_base_head, @dev_name_head and
-+	 * @dev_index_head. It does _not_ protect the netif adjacency lists
-+	 * (struct net_device::adj_list).
-+	 */
-+	struct mutex		netif_lists_lock;
- } __randomize_layout;
- 
- #include <linux/seq_file_net.h>
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8e02240bb11c..53c12f92025c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -175,13 +175,16 @@ static struct napi_struct *napi_by_id(unsigned int napi_id);
-  *
-  * Pure readers should hold rcu_read_lock() which should protect them against
-  * concurrent changes to the interface lists made by the writers. Pure writers
-- * must serialize by holding the RTNL mutex while they loop through the list
-- * and make changes to it.
-+ * must serialize by holding the @net->netif_lists_lock mutex while they loop
-+ * through the list and make changes to it.
-+ *
-+ * It is possible to hold the RTNL mutex for serializing the writers too, but
-+ * this should be avoided in new code due to lock contention.
-  *
-  * It is also possible to hold the global rwlock_t @dev_base_lock for
-  * protection (holding its read side as an alternative to rcu_read_lock, and
-- * its write side as an alternative to the RTNL mutex), however this should not
-- * be done in new code, since it is deprecated and pending removal.
-+ * its write side as an alternative to @net->netif_lists_lock), however this
-+ * should not be done in new code, since it is deprecated and pending removal.
-  *
-  * One other role of @dev_base_lock is to protect against changes in the
-  * operational state of a network interface.
-@@ -360,12 +363,14 @@ static void list_netdevice(struct net_device *dev)
- 
- 	ASSERT_RTNL();
- 
-+	netif_lists_lock(net);
- 	write_lock_bh(&dev_base_lock);
- 	list_add_tail_rcu(&dev->dev_list, &net->dev_base_head);
- 	netdev_name_node_add(net, dev->name_node);
- 	hlist_add_head_rcu(&dev->index_hlist,
- 			   dev_index_hash(net, dev->ifindex));
- 	write_unlock_bh(&dev_base_lock);
-+	netif_lists_unlock(net);
- 
- 	dev_base_seq_inc(net);
- }
-@@ -375,16 +380,20 @@ static void list_netdevice(struct net_device *dev)
+ 	h = &net->dev_index_head[get_bucket(*pos)];
+-	hlist_for_each_entry_rcu(dev, h, index_hlist) {
++	hlist_for_each_entry(dev, h, index_hlist) {
+ 		if (++count == offset)
+ 			return dev;
+ 	}
+@@ -51,9 +51,11 @@ static inline struct net_device *dev_from_bucket(struct seq_file *seq, loff_t *p
+  *	in detail.
   */
- static void unlist_netdevice(struct net_device *dev)
+ static void *dev_seq_start(struct seq_file *seq, loff_t *pos)
+-	__acquires(RCU)
  {
-+	struct net *net = dev_net(dev);
+-	rcu_read_lock();
++	struct net *net = seq_file_net(seq);
 +
- 	ASSERT_RTNL();
- 
- 	/* Unlink dev from the device chain */
 +	netif_lists_lock(net);
- 	write_lock_bh(&dev_base_lock);
- 	list_del_rcu(&dev->dev_list);
- 	netdev_name_node_del(dev->name_node);
- 	hlist_del_rcu(&dev->index_hlist);
- 	write_unlock_bh(&dev_base_lock);
-+	netif_lists_unlock(net);
++
+ 	if (!*pos)
+ 		return SEQ_START_TOKEN;
  
--	dev_base_seq_inc(dev_net(dev));
-+	dev_base_seq_inc(net);
+@@ -70,9 +72,10 @@ static void *dev_seq_next(struct seq_file *seq, void *v, loff_t *pos)
  }
  
- /*
-@@ -850,11 +859,11 @@ EXPORT_SYMBOL_GPL(dev_fill_metadata_dst);
-  *	@net: the applicable net namespace
-  *	@name: name to find
-  *
-- *	Find an interface by name. Must be called under RTNL semaphore
-- *	or @dev_base_lock. If the name is found a pointer to the device
-- *	is returned. If the name is not found then %NULL is returned. The
-- *	reference counters are not incremented so the caller must be
-- *	careful with locks.
-+ *	Find an interface by name. Must be called under RTNL semaphore,
-+ *	@net->netif_lists_lock or @dev_base_lock. If the name is found,
-+ *	a pointer to the device is returned. If the name is not found then
-+ *	%NULL is returned. The reference counters are not incremented so the
-+ *	caller must be careful with locks.
-  */
- 
- struct net_device *__dev_get_by_name(struct net *net, const char *name)
-@@ -920,8 +929,8 @@ EXPORT_SYMBOL(dev_get_by_name);
-  *	Search for an interface by index. Returns %NULL if the device
-  *	is not found or a pointer to the device. The device has not
-  *	had its reference counter increased so the caller must be careful
-- *	about locking. The caller must hold either the RTNL semaphore
-- *	or @dev_base_lock.
-+ *	about locking. The caller must hold either the RTNL semaphore,
-+ *	@net->netif_lists_lock or @dev_base_lock.
-  */
- 
- struct net_device *__dev_get_by_index(struct net *net, int ifindex)
-@@ -1330,15 +1339,19 @@ int dev_change_name(struct net_device *dev, const char *newname)
- 
- 	netdev_adjacent_rename_links(dev, oldname);
- 
-+	netif_lists_lock(net);
- 	write_lock_bh(&dev_base_lock);
- 	netdev_name_node_del(dev->name_node);
- 	write_unlock_bh(&dev_base_lock);
-+	netif_lists_unlock(net);
- 
- 	synchronize_rcu();
- 
-+	netif_lists_lock(net);
- 	write_lock_bh(&dev_base_lock);
- 	netdev_name_node_add(net, dev->name_node);
- 	write_unlock_bh(&dev_base_lock);
-+	netif_lists_unlock(net);
- 
- 	ret = call_netdevice_notifiers(NETDEV_CHANGENAME, dev);
- 	ret = notifier_to_errno(ret);
-@@ -9415,8 +9428,9 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
-  *	@net: the applicable net namespace
-  *
-  *	Returns a suitable unique value for a new device interface
-- *	number.  The caller must hold the rtnl semaphore or the
-- *	dev_base_lock to be sure it remains unique.
-+ *	number.
-+ *	The caller must hold the rtnl semaphore, @net->netif_lists_lock or the
-+ *	@dev_base_lock to be sure it remains unique.
-  */
- static int dev_new_index(struct net *net)
+ static void dev_seq_stop(struct seq_file *seq, void *v)
+-	__releases(RCU)
  {
-@@ -10999,6 +11013,8 @@ static int __net_init netdev_init(struct net *net)
- 	if (net->dev_index_head == NULL)
- 		goto err_idx;
- 
-+	mutex_init(&net->netif_lists_lock);
+-	rcu_read_unlock();
++	struct net *net = seq_file_net(seq);
 +
- 	RAW_INIT_NOTIFIER_HEAD(&net->netdev_chain);
++	netif_lists_unlock(net);
+ }
  
- 	return 0;
+ static void dev_seq_printf_stats(struct seq_file *seq, struct net_device *dev)
 -- 
 2.25.1
 
