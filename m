@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 083282F03D8
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 22:33:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47FBE2F03E9
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 22:52:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbhAIVcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 16:32:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36128 "EHLO mail.kernel.org"
+        id S1726329AbhAIVwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 16:52:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38188 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726133AbhAIVcm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 16:32:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7256223A82;
-        Sat,  9 Jan 2021 21:31:59 +0000 (UTC)
+        id S1726238AbhAIVwB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 16:52:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ABCFE23AA8;
+        Sat,  9 Jan 2021 21:51:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610227922;
-        bh=vpjvYItxsvIXqCPEidl2x1OQy8+i1ksGrksjDTbV23s=;
+        s=k20201202; t=1610229080;
+        bh=LBZq9Yx4eHCvMOC11KXcVtvRsAKMhqSzj6gIcOHt2Gc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LDMrxcfBwJ55mjE6WPcFNNPRkrzv7mnl7zzCxZDqA1LWt8KQOmEX3Mldo2Ta/VH1a
-         30c/l+6gubC/t6Pb009dYFOzrww7BFSl67d49MVSTWkku0l4YgK4eEuui1bSRtvqaS
-         7+AgbkVNe9LCUf8h79DasRtRHqwg2+YAEb10EnTPx8tWCWhlJHf/Of3CkVrLcwJt86
-         7blCd1cF5dxw+KqYhzBGmV7SBQZEKXfy4pqhkEk6ET+9M6QfT2Dn9WQWih51dB8rgF
-         NqAaJqlR3sXaMTwRQsbwuQuzVcAGwqYxiL2XRT4ya64HP+lMf3K7lOtL2K4vPnhZkj
-         55K3YGBsu8n4A==
-Date:   Sat, 9 Jan 2021 22:31:53 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Pavana Sharma <pavana.sharma@digi.com>
-Cc:     andrew@lunn.ch, ashkan.boldaji@digi.com, davem@davemloft.net,
-        f.fainelli@gmail.com, kuba@kernel.org, lkp@intel.com,
-        netdev@vger.kernel.org, vivien.didelot@gmail.com
-Subject: Re: [PATCH] changes for Pavana
-Message-ID: <20210109223153.63ad91ee@kernel.org>
-In-Reply-To: <20210108143658.4176-1-kabel@kernel.org>
-References: <0044dda2a5d1d03494ff753ee14ed4268f653e9c.1610071984.git.pavana.sharma@digi.com>
-        <20210108143658.4176-1-kabel@kernel.org>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        b=hPft5sD983glw98y1heCz/DyEzMgSaUovuPSxxrVyh35ATT9PTzyczTZZEvipqZyG
+         jTxN4wrEKOCH+GHWHaOBgXMPzwYKXbJrS28Q8mbrHVu5xAv7GhphtsSgjtcyROPvdx
+         ng66zQkmpdJ6qJgHJLUfpr17R2cPnYeL3DRgD6tMvCH+ANTQ+8P0Hw4b98rXa1gEaK
+         nQpfEW4AwcpCgMIOou1MD+Yz6hlgVIqveXXW+4KcK4ihTv1nxgPS8HlkFgsQHb0X5e
+         XU88ACjsy3YNhkz2nhsSQvfPNzmDPvlbaFtpmSUoU5mTSThAd2kqJ6SpitQdJ6Zl0P
+         H0Y5W11FUCozg==
+Date:   Sat, 9 Jan 2021 13:51:19 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Manish Chopra <manishc@marvell.com>
+Cc:     <netdev@vger.kernel.org>, <stable@vger.kernel.org>,
+        <irusskikh@marvell.com>, <GR-Linux-NIC-Dev@marvell.com>
+Subject: Re: [PATCH net 1/1] netxen_nic: fix MSI/MSI-x interrupts
+Message-ID: <20210109135119.0ca043f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210107101520.6735-1-manishc@marvell.com>
+References: <20210107101520.6735-1-manishc@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,8 +39,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Still one more change needed for 5gabe-r to work.
-I am going to sent fix 5gbase-r and send this patches myself. I will
-leave Pavana as the author.
+On Thu, 7 Jan 2021 02:15:20 -0800 Manish Chopra wrote:
+> For all PCI functions on the netxen_nic adapter, interrupt
+> mode (INTx or MSI) configuration is dependent on what has
+> been configured by the PCI function zero in the shared
+> interrupt register, as these adapters do not support mixed
+> mode interrupts among the functions of a given adapter.
+> 
+> Logic for setting MSI/MSI-x interrupt mode in the shared interrupt
+> register based on PCI function id zero check is not appropriate for
+> all family of netxen adapters, as for some of the netxen family
+> adapters PCI function zero is not really meant to be probed/loaded
+> in the host but rather just act as a management function on the device,
+> which caused all the other PCI functions on the adapter to always use
+> legacy interrupt (INTx) mode instead of choosing MSI/MSI-x interrupt mode.
+> 
+> This patch replaces that check with port number so that for all
+> type of adapters driver attempts for MSI/MSI-x interrupt modes.
+> 
+> Fixes: b37eb210c076 ("netxen_nic: Avoid mixed mode interrupts")
+> Signed-off-by: Manish Chopra <manishc@marvell.com>
+> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 
-Marek
+Interesting that nobody noticed this for 7 years.
+
+Applied, thanks.
