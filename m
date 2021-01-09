@@ -2,79 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B419E2F03F6
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 22:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 732852F03F9
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 23:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbhAIV7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 16:59:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56698 "EHLO
+        id S1726253AbhAIWAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 17:00:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726195AbhAIV7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 16:59:54 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964F6C061786
-        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 13:59:14 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id 190so10601787wmz.0
-        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 13:59:14 -0800 (PST)
+        with ESMTP id S1726001AbhAIWAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 17:00:47 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAB8C061786
+        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 14:00:06 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id g185so11443314wmf.3
+        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 14:00:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=GWoOeiJ4fexwN2D7mkvruM0f2nzxY7y+FqV+JIzzYik=;
-        b=eLChKcbS1DIPT0rCe6gext/mQRGmSFug/pWCcc4weHOxD5t+yfw7fy4cXzs68LjO4x
-         C+B9bMz18R+D1iOVErdB9P7HveP6nPrZSgBo23WN3mTZfAkkbnj+9ZzVhAlS6t5rvraT
-         zC1dc0Gefk+J8Xium9hoOtn26IZzGdXDbOtM3ypyk6ZlEqnd1wR6a7lNWW2YwYyZ0fYp
-         spPRA1WvrUgCVRmsSV2Ti198+yBM5KBWv9mVHzG8MxUHSSI09j/h7cjw7YhiGO9z1nzz
-         q+F/tY7EvclLIel/sFOSKVaDObJu2RctKsvZPNi+VD5ghAtxluNKr1caTy1FcoOGWjN4
-         DsEg==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XnRBXE2Uk4fUuCY80HK3W9/qzTDABtTxWxYyxmg/WxU=;
+        b=qy4nqhfp4+67Mgqcb23YFSFCBgkr8xYJb2piP1lp0mQKiY0B7asu61FZY8oBHiY3Dk
+         N7aRBVD3lg2T2ZSGyCbuGSvTQQc+0a3MOKCyvz+APLoQtha9k7s2L99KSV9e/52FVZ35
+         FcftjRxBQn3+TWbsLXl1plgbwxqGNSwd72CRX1Hmr+Ngvy+7g1XZ9CG6j6pYZO4unYj9
+         LGYd9LNVPsOFOl+7XJdQ9kZpeYSEvAe/d0gRC1Oz2gWurk12cPgVnwumiFkOblFzaZm/
+         DRPRGtGSTqWM/xqD7SOj1cRRV3gv9X9YoTedBSBCm7VFCCi0Ws0uvayxC9ivxkuJs9s+
+         2kjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=GWoOeiJ4fexwN2D7mkvruM0f2nzxY7y+FqV+JIzzYik=;
-        b=s13cmO53AKHWLHYP9m6mlAKfyIc+4xKQG6MrqX9XoukUL1x7wukRU63uuW66Wo6ugB
-         TTbu5oC5B8r4Xu9IMQ8E0+TFrSQE3e51qxKmjIeYakoypKBhc282Mp3T0f+xUV7hPfTG
-         oVi6UgEame4ql+ZQ/ViE6ZJAbICyZj2KVvBDcjazLKywLdtFxiKaAj245+XWVkDO3yyJ
-         wAsHH1lU/YzebB8zfAwPnzJMGT7m3ZcnZZ0T9CzGflAInTnrp0F/wkGWgXNF1BulS2rb
-         Pi8kUhyhJDM8WDaJmzSZ3LtLUJTUHQY73oSFpZZT4Xcw9t1l0umi15chF6azvDX+b5xo
-         6Sqw==
-X-Gm-Message-State: AOAM531dSOKNkJM1Vw13xcvVsovkAC53fxvifzX82LTMY/IW6qcKidNN
-        Lb7gF3M1lvfeR9qR3m98SJ8MYyipOHc=
-X-Google-Smtp-Source: ABdhPJw1o5ciDhn37hXgPh06SKAcZYKvPkz2oqFKGHku6waUonhn3WvK28RaxS5t0uU+jZnkLE3cxw==
-X-Received: by 2002:a1c:4156:: with SMTP id o83mr8528611wma.178.1610229553004;
-        Sat, 09 Jan 2021 13:59:13 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XnRBXE2Uk4fUuCY80HK3W9/qzTDABtTxWxYyxmg/WxU=;
+        b=As2IaYybFsOFsiYLRQSuguY+z0JH8cH2EdAwZm/jX+tZYEzJ61J/OMyz9pUxPZfU4K
+         Tm1h4ABQpkhgASFD9Xpam1I/LS9x7jTWeAHgyG8p+L0RmbYQ/KyxclehvZ4IHNgDvVqF
+         2/g0cWK0Pzu8mKE/vl3jvpTBxtvrJTwYVshsS5dgA3G7Ic63H98HvvOrMSD9EfIPWPxG
+         zSTywWv8ryE2MLhDk3CdzbhibuArBKc7ZJnfGso+akYyuqA3ugLCbJ17m+mGKVAFFmae
+         Aqe12sKIWAaxA4sJxfDW9fhqw/OCB/jo1THjAYCoLO5rHyWa5cgdJAUDbSCmBicZPhIL
+         8xbQ==
+X-Gm-Message-State: AOAM533u2QVgcoJdNhZmcezJJI/OwKW05+So97P5W57UTKhsqTYYtaTE
+        GOU7ZExwnd6jYg9abzWCaRFEsgblmyo=
+X-Google-Smtp-Source: ABdhPJxvTtL2YvHVPupr69xhvmd5fD/Gg3zUmwUWA9L5jtKbhfF2aILtEXL2BxDpZc73EJ9gSSaKLA==
+X-Received: by 2002:a1c:9609:: with SMTP id y9mr8415509wmd.75.1610229605533;
+        Sat, 09 Jan 2021 14:00:05 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f06:5500:a584:5efe:3c65:46c1? (p200300ea8f065500a5845efe3c6546c1.dip0.t-ipconnect.de. [2003:ea:8f06:5500:a584:5efe:3c65:46c1])
-        by smtp.googlemail.com with ESMTPSA id r15sm18612878wrq.1.2021.01.09.13.59.12
+        by smtp.googlemail.com with ESMTPSA id x13sm19700096wrp.80.2021.01.09.14.00.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 Jan 2021 13:59:12 -0800 (PST)
+        Sat, 09 Jan 2021 14:00:04 -0800 (PST)
+Subject: [PATCH net-next 1/2] r8169: align RTL8168e jumbo pcie read request
+ size with vendor driver
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next 0/2] r8169: improve jumbo configuration
-Message-ID: <1dd337a0-ff5a-3fa0-91f5-45e86c0fce58@gmail.com>
-Date:   Sat, 9 Jan 2021 22:59:08 +0100
+References: <1dd337a0-ff5a-3fa0-91f5-45e86c0fce58@gmail.com>
+Message-ID: <fa68a8b5-ac7a-3f95-5e08-5bc7e4b76992@gmail.com>
+Date:   Sat, 9 Jan 2021 23:00:04 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <1dd337a0-ff5a-3fa0-91f5-45e86c0fce58@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Small improvements to jumbo configuration.
+Align behavior with r8168 vendor driver and don't reduce max read
+request size for RTL8168e in jumbo mode.
 
-Heiner Kallweit (2):
-  r8169: align RTL8168e jumbo pcie read request size with vendor driver
-  r8169: tweak max read request size for newer chips also in jumbo mtu
-    mode
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
- drivers/net/ethernet/realtek/r8169_main.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 74c8248ba..8336f1434 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2342,12 +2342,10 @@ static void rtl_jumbo_config(struct rtl8169_private *tp)
+ 			r8168dp_hw_jumbo_disable(tp);
+ 		break;
+ 	case RTL_GIGA_MAC_VER_31 ... RTL_GIGA_MAC_VER_33:
+-		if (jumbo) {
+-			pcie_set_readrq(tp->pci_dev, 512);
++		if (jumbo)
+ 			r8168e_hw_jumbo_enable(tp);
+-		} else {
++		else
+ 			r8168e_hw_jumbo_disable(tp);
+-		}
+ 		break;
+ 	default:
+ 		break;
 -- 
 2.30.0
+
 
