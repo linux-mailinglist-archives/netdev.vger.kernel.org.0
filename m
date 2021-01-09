@@ -2,62 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFCFC2EFD63
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 04:21:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 001EF2EFD6A
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 04:24:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbhAIDVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 22:21:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46888 "EHLO mail.kernel.org"
+        id S1726364AbhAIDXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 22:23:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46986 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726254AbhAIDVO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 22:21:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 369482399C;
-        Sat,  9 Jan 2021 03:20:33 +0000 (UTC)
+        id S1725996AbhAIDXo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 22:23:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C1972399C;
+        Sat,  9 Jan 2021 03:23:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610162433;
-        bh=9fgLqNDvl5FpQW1E7Dy2WwxfxEBwHyxXARfe/Pe3qqY=;
+        s=k20201202; t=1610162584;
+        bh=WplpMGnkahX6iTr8yPmLLqFf4dUfuLwHrquba5+P4HI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YQHRKzeyp174iwRhZpOYbgVUepnZKseZlBfBcVBBsiKHbuG8mwycXkxagMYzqEwi0
-         nveC0JRFOaMYKWbpoC83UO2Lq9bbO0KxTTJFYSjK4FbggcApzc6MLYubluTvdzvRo7
-         m37A1phxvZtuRSx79iuG3tOwh/A4HTW8gUg0zD8162h+2jd/sielDHxLtYYKS6FsUt
-         MpYx2s9S4XM8Npc4Qx5ttE+w1Cj0oqbrFqxo+UvpbPWzrcgsF0BFE4/J5Z5hL/5qLq
-         /ftAybDBZI3FY9fIOzUtOu9qDHZ34YATO6vBxJ5jLmQy1ubotZ9PW7ILCOUFmaSoW5
-         TTtHNSt2efr0w==
-Date:   Fri, 8 Jan 2021 19:20:32 -0800
+        b=oYS4kIs3eEBXVt+wcTubr7SnpHU+yh5N71L5MtL+DhvD/o2dpb18v721u7q0vbAUt
+         LL4v/MScQBTPTBzvnv+fYZ0nydBoBP2FCxZUUStR5uhTfQbi9HbofL5ePTr6zRvEMk
+         enU9IaS2GGxFN+WC+0WP7wq2fi5IooViPMRQGSie6EXXnaJN+JljNjYwlQ3sqOpQh6
+         /SqQTcd7GekGORlCTerOD5QQge/APxi6k7WdyAQudCxORsNGXaTfn1iLhuqntvbVil
+         fdAaxP6U9c1cxJzXt1ThbpEGX6em3d7cHFc+6lczkxYvuJ2wlINvE2iUmpe4Fn6kbz
+         8mWc3bUtfsjIg==
+Date:   Fri, 8 Jan 2021 19:23:03 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJl?= =?UTF-8?B?Y2tp?= <zajec5@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Doug Berger <opendmb@gmail.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Murali Krishna Policharla <murali.policharla@broadcom.com>,
-        Timur Tabi <timur@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Subject: Re: [PATCH V2 net-next 3/3] MAINTAINERS: add bgmac section entry
-Message-ID: <20210108192032.71d1610a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1a80cea6-6a53-4399-8cf0-ada4e0714b20@gmail.com>
-References: <20210107180051.1542-1-zajec5@gmail.com>
-        <20210107180051.1542-3-zajec5@gmail.com>
-        <1a80cea6-6a53-4399-8cf0-ada4e0714b20@gmail.com>
+To:     Guillaume Nault <gnault@redhat.com>,
+        Tom Parkin <tparkin@katalix.com>
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH net v3] ppp: fix refcount underflow on channel unbridge
+Message-ID: <20210108192303.6171c90c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210108205750.GA14215@linux.home>
+References: <20210107181315.3128-1-tparkin@katalix.com>
+        <20210108205750.GA14215@linux.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 Jan 2021 12:08:58 -0800 Florian Fainelli wrote:
-> On 1/7/21 10:00 AM, Rafa=C5=82 Mi=C5=82ecki wrote:
-> > From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-> >=20
-> > This driver exists for years but was missing its MAINTAINERS entry.
-> >=20
-> > Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl> =20
->=20
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+On Fri, 8 Jan 2021 21:57:50 +0100 Guillaume Nault wrote:
+> On Thu, Jan 07, 2021 at 06:13:15PM +0000, Tom Parkin wrote:
+> > When setting up a channel bridge, ppp_bridge_channels sets the
+> > pch->bridge field before taking the associated reference on the bridge
+> > file instance.
+> > 
+> > This opens up a refcount underflow bug if ppp_bridge_channels called
+> > via. iotcl runs concurrently with ppp_unbridge_channels executing via.
+> > file release.
+> > 
+> > The bug is triggered by ppp_bridge_channels taking the error path
+> > through the 'err_unset' label.  In this scenario, pch->bridge is set,
+> > but the reference on the bridged channel will not be taken because
+> > the function errors out.  If ppp_unbridge_channels observes pch->bridge
+> > before it is unset by the error path, it will erroneously drop the
+> > reference on the bridged channel and cause a refcount underflow.
+> > 
+> > To avoid this, ensure that ppp_bridge_channels holds a reference on
+> > each channel in advance of setting the bridge pointers.  
+> 
+> Thanks for following up on this!
+> 
+> Acked-by: Guillaume Nault <gnault@redhat.com>
 
 Applied, thanks!
