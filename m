@@ -2,218 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB38D2EFE4E
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 08:41:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F53C2EFEC1
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 10:19:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726321AbhAIHke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 02:40:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbhAIHkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 02:40:33 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73861C061573
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 23:39:53 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1610177990;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b3gxo7lxSMNITG/+1Q98pGXbdYAwfRJdDpwMFCCwnXc=;
-        b=2QhEw9B99+bNyRWptoeGV69rsOmRn3OoPsOyKqDQugJuBoc47x1tlZ487Grc6oDc+fEYh3
-        7ENh3qwit4hGPoxSt6EjUfZo/yEqQJx4RjYjeSOrzsHM2t1zS/0IfF7DR6/g/mmz6JqBRa
-        0jF6lNDa129zkj1v40Mh/mi0BuzNTZrgwfgQhHBgTdRPw9nEmDc8J6k4hOC5pFXPaNjG0B
-        yFnXnhmfI3vcfX9hiMT1jQBcQVaOAke05as6cE3DQkVy2VzOo1PvPKdF2ZuBHLXqmX6UfR
-        a3TYD7M04w8tIT/9ALAzSdDCj9aMO0iAD3fTwL5AJw5QKD39xNFiuuA3G4Vk0Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1610177990;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b3gxo7lxSMNITG/+1Q98pGXbdYAwfRJdDpwMFCCwnXc=;
-        b=3RSAHGujCbTc3Iz1azu6meab2LoaPWlOMZmdjFLiOmO1wV8PvQoNt2movAgFLk3lPA/piv
-        eRSjmFBmrqmPWOCQ==
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Petr Machata <petrm@nvidia.com>
-Subject: Re: [PATCH v4 net-next 01/11] net: switchdev: remove vid_begin -> vid_end range from VLAN objects
-In-Reply-To: <20210109000156.1246735-2-olteanv@gmail.com>
-References: <20210109000156.1246735-1-olteanv@gmail.com> <20210109000156.1246735-2-olteanv@gmail.com>
-Date:   Sat, 09 Jan 2021 08:39:40 +0100
-Message-ID: <871reumudf.fsf@kurt>
+        id S1726821AbhAIJTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 04:19:16 -0500
+Received: from mout.gmx.net ([212.227.15.15]:60539 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726744AbhAIJTP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 04:19:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1610183860;
+        bh=gKvG2+ALBkDOoHXulzfunmugQqhd8nKyqM1ol+u8ESQ=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=EaSN3h+vdzq4wiHHN7Re4/0SMoH6odLRTCCOk6U4PJ5hEWQqn3xSYlNKxcq8ueb2H
+         7kRmZ/C1ZRhFcVSjHnbMNflRqOeRsQnF2YiOpDk2vvvniDKolNXVz3LLMKXDXt7dTv
+         occ9Nar9m5I0i+3Ng070RcQhOea9wYobmmGijrJk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from E480.localdomain ([84.61.118.33]) by mail.gmx.com (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N3KPg-1jz9l82BBS-010OK0; Sat, 09
+ Jan 2021 10:17:40 +0100
+Date:   Sat, 9 Jan 2021 10:17:38 +0100
+From:   Zhi Han <z.han@gmx.net>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] Incorrect filename in drivers/net/phy/Makefile
+Message-ID: <20210109091738.GB25@E480.localdomain>
+References: <20210106101712.6360-1-z.han@gmx.net>
+ <0d9094e9-5562-8535-98c3-993161aea355@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0d9094e9-5562-8535-98c3-993161aea355@gmail.com>
+X-Provags-ID: V03:K1:73/ujKTpAvj98tLknscTCFGJW4DjJe9gqJMPeKSl0JwlevlW2pw
+ vyvJ8L3Ckebt+iXbAtuAYfaHFYTrFP0RiQdrPsrRky4FgRwZHoCyyxq81O1ExFZ7xQxzdWd
+ GJqNcHjbJRzbbHx+Tt6R+wmt0BVa70QzhUhj//Ruxg7rXtO9Z2wRZamnz0RotDmw6XzWgi7
+ E3OSL00LidC9us23AEXGg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IIAIzUE5P1A=:dCPU0jSxFSMPLjPidHcDeg
+ h/Zq+6UxjjRdWps3Yx2zDStmB+9pyDhH+sO52e1nbUp+PmlwKZ7N+/fZqPaznT/+ZiTIX7JVu
+ PPwyg9LHpHKj7vItCF+8Nlo6SKfYwvXOt6wTBimCzzonCq5VbDGoFkYW0c3Y/Ty8F3LaEw1kl
+ 71vF4IXgko7Em1dcg1JqmSD/uXEjzlAPgh4HdtgJ/V0XzJjswT544+l/dkoZU7iFWJ6aW2XCL
+ NDxLwlNKh+9/yFZ0eOVrtZnfpTnvnTh0TchcTS/1OFr1WNxhVNhGoj8v378VlCiO84SBlthGs
+ dj3GzvNHS/eQzvv6kbyzTaG0S9tUreLKRTjL5crL4ATiINM1MQz3w6phSFWlr+lwdbQgmfwrs
+ zUSZsRWUyWU8bSy+9gTkLx/0duJunpgsDf3V6r/h3GkRtCuXjP2O12AfEJO1Lr5i5XxVlyM7M
+ yrRVgD59A3vcpjlOU7Squx44Sfz492eAautVoKnThkY90x1EcH/BWgG+sLtRPPX28IOkJAzt0
+ SEIqEkkCykNgigoiB/97+QLnypl+Skf3QQ87yubpiAv2UiRQAYEhqInbveZanp5FvdRYtlpMz
+ Tjk18W2F3Jt0JT6v1Da9yP7Su6PTBcsVYs389nwI4dvbxrAsP1K6sNPcTmeycV+f/zOkdItRn
+ bX3uQdmIfFEG4OAkzxjZVtDJlOWXEXGxVhXLHkCxXcQDhP02Fz6WB9xagS3QTXzVyisqW6mHb
+ tkw30wOF+2qoUb2HEHLUc1KzIwpwL/9iMD9l7IqmSR/V93JXFV2k4dxVQFzX7iIVfHZ8r1vF2
+ xfjWIsT15fj1EM51S9FE/ud/z1vbAQKiwfOECLCaSEXRH7GpHwFtCi7XYXDfR1AnIn4IyTx+C
+ /daswWbOW2oaW5T2aKeA==
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+Thanks a lot for the .config file.
+I also tested it, with mdio-bus.o in the Makefile, glad to got that there =
+is
+no problem of that, although I don't know the reason/trick yet.
 
-On Sat Jan 09 2021, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, Jan 06, 2021 at 04:13:56PM -0800, Florian Fainelli wrote:
+> The change was done on purpose, and your patch does not build with the
+> attached .config which only enables CONFIG_MDIO_DEVICE but not
+> CONFIG_PHYLIB, it causes the following linking failure:
 >
-> The call path of a switchdev VLAN addition to the bridge looks something
-> like this today:
+>   MODPOST Module.symvers
+> ERROR: modpost: "mdio_device_free" [drivers/net/phy/mdio_bus.ko] undefin=
+ed!
+> ERROR: modpost: "mdio_device_reset" [drivers/net/phy/mdio_bus.ko] undefi=
+ned!
+> ERROR: modpost: "mdio_device_create" [drivers/net/phy/mdio_bus.ko]
+> undefined!
+> ERROR: modpost: "mdio_device_register" [drivers/net/phy/mdio_bus.ko]
+> undefined!
+> ERROR: modpost: "mdio_device_bus_match" [drivers/net/phy/mdio_bus.ko]
+> undefined!
+> make[1]: *** [scripts/Makefile.modpost:111: Module.symvers] Error 1
+> make[1]: *** Deleting file 'Module.symvers'
+> make: *** [Makefile:1396: modules] Error 2
+> zsh: exit 2     make modules -j33
 >
->         nbp_vlan_init
->         |  __br_vlan_set_default_pvid
->         |  |                       |
->         |  |    br_afspec          |
->         |  |        |              |
->         |  |        v              |
->         |  | br_process_vlan_info  |
->         |  |        |              |
->         |  |        v              |
->         |  |   br_vlan_info        |
->         |  |       / \            /
->         |  |      /   \          /
->         |  |     /     \        /
->         |  |    /       \      /
->         v  v   v         v    v
->       nbp_vlan_add   br_vlan_add ------+
->        |              ^      ^ |       |
->        |             /       | |       |
->        |            /       /  /       |
->        \ br_vlan_get_master/  /        v
->         \        ^        /  /  br_vlan_add_existing
->          \       |       /  /          |
->           \      |      /  /          /
->            \     |     /  /          /
->             \    |    /  /          /
->              \   |   /  /          /
->               v  |   | v          /
->               __vlan_add         /
->                  / |            /
->                 /  |           /
->                v   |          /
->    __vlan_vid_add  |         /
->                \   |        /
->                 v  v        v
->       br_switchdev_port_vlan_add
+> if you look at the build products you will that mdio_bus.c actually gets
+> built into mdio-bus.o:
 >
-> The ranges UAPI was introduced to the bridge in commit bdced7ef7838
-> ("bridge: support for multiple vlans and vlan ranges in setlink and
-> dellink requests") (Jan 10 2015). But the VLAN ranges (parsed in br_afspec)
-> have always been passed one by one, through struct bridge_vlan_info
-> tmp_vinfo, to br_vlan_info. So the range never went too far in depth.
+>  ls drivers/net/phy/mdio-bus.*
+> drivers/net/phy/mdio-bus.ko   drivers/net/phy/mdio-bus.mod.c
+> drivers/net/phy/mdio-bus.o
+> drivers/net/phy/mdio-bus.mod  drivers/net/phy/mdio-bus.mod.o
 >
-> Then Scott Feldman introduced the switchdev_port_bridge_setlink function
-> in commit 47f8328bb1a4 ("switchdev: add new switchdev bridge setlink").
-> That marked the introduction of the SWITCHDEV_OBJ_PORT_VLAN, which made
-> full use of the range. But switchdev_port_bridge_setlink was called like
-> this:
->
-> br_setlink
-> -> br_afspec
-> -> switchdev_port_bridge_setlink
->
-> Basically, the switchdev and the bridge code were not tightly integrated.
-> Then commit 41c498b9359e ("bridge: restore br_setlink back to original")
-> came, and switchdev drivers were required to implement
-> .ndo_bridge_setlink = switchdev_port_bridge_setlink for a while.
->
-> In the meantime, commits such as 0944d6b5a2fa ("bridge: try switchdev op
-> first in __vlan_vid_add/del") finally made switchdev penetrate the
-> br_vlan_info() barrier and start to develop the call path we have today.
-> But remember, br_vlan_info() still receives VLANs one by one.
->
-> Then Arkadi Sharshevsky refactored the switchdev API in 2017 in commit
-> 29ab586c3d83 ("net: switchdev: Remove bridge bypass support from
-> switchdev") so that drivers would not implement .ndo_bridge_setlink any
-> longer. The switchdev_port_bridge_setlink also got deleted.
-> This refactoring removed the parallel bridge_setlink implementation from
-> switchdev, and left the only switchdev VLAN objects to be the ones
-> offloaded from __vlan_vid_add (basically RX filtering) and  __vlan_add
-> (the latter coming from commit 9c86ce2c1ae3 ("net: bridge: Notify about
-> bridge VLANs")).
->
-> That is to say, today the switchdev VLAN object ranges are not used in
-> the kernel. Refactoring the above call path is a bit complicated, when
-> the bridge VLAN call path is already a bit complicated.
->
-> Let's go off and finish the job of commit 29ab586c3d83 by deleting the
-> bogus iteration through the VLAN ranges from the drivers. Some aspects
-> of this feature never made too much sense in the first place. For
-> example, what is a range of VLANs all having the BRIDGE_VLAN_INFO_PVID
-> flag supposed to mean, when a port can obviously have a single pvid?
-> This particular configuration _is_ denied as of commit 6623c60dc28e
-> ("bridge: vlan: enforce no pvid flag in vlan ranges"), but from an API
-> perspective, the driver still has to play pretend, and only offload the
-> vlan->vid_end as pvid. And the addition of a switchdev VLAN object can
-> modify the flags of another, completely unrelated, switchdev VLAN
-> object! (a VLAN that is PVID will invalidate the PVID flag from whatever
-> other VLAN had previously been offloaded with switchdev and had that
-> flag. Yet switchdev never notifies about that change, drivers are
-> supposed to guess).
->
-> Nonetheless, having a VLAN range in the API makes error handling look
-> scarier than it really is - unwinding on errors and all of that.
-> When in reality, no one really calls this API with more than one VLAN.
-> It is all unnecessary complexity.
->
-> And despite appearing pretentious (two-phase transactional model and
-> all), the switchdev API is really sloppy because the VLAN addition and
-> removal operations are not paired with one another (you can add a VLAN
-> 100 times and delete it just once). The bridge notifies through
-> switchdev of a VLAN addition not only when the flags of an existing VLAN
-> change, but also when nothing changes. There are switchdev drivers out
-> there who don't like adding a VLAN that has already been added, and
-> those checks don't really belong at driver level. But the fact that the
-> API contains ranges is yet another factor that prevents this from being
-> addressed in the future.
->
-> Of the existing switchdev pieces of hardware, it appears that only
-> Mellanox Spectrum supports offloading more than one VLAN at a time,
-> through mlxsw_sp_port_vlan_set. I have kept that code internal to the
-> driver, because there is some more bookkeeping that makes use of it, but
-> I deleted it from the switchdev API. But since the switchdev support for
-> ranges has already been de facto deleted by a Mellanox employee and
-> nobody noticed for 4 years, I'm going to assume it's not a biggie.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com> # switchdev and mlxsw
+> --
+> Florian
 
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de> # hellcreek
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl/5XbwACgkQeSpbgcuY
-8KbiMg//e+NGzEG4UJ+jzeI1fGko9jFg2sS5I42DvOCqvaHt+Nw9Ic4a4szL8MEd
-Pml0hpF7Jv0HeEmeP9w693fFiv7eV+hSljnrfHu6KNiBY+shybKpk0vKS0GzLyLJ
-dbzmd7k3KeDTzw7It6SLLR3nQuuw3E4BpNdPx6upLgaAv+2uiHGGr4T0neG/2RSj
-bWl0GrclMRE2opWor+DijdiXL/84IeAOwx4u5ylknJBwMsCWLp3e99nZOny/piir
-taLBikqTbaLc2KDGuwsTaL7xgv68alk/j0kKQytZemNo5Mh4XZDyQ52nmMknKP2k
-qRcNqVaod61819NrLdf4kHJatg+GKP289opFaquNznwF4ztNIs3DaG09Nf7n2Avz
-PS9FeCE+2/wA/S6whCzQkCYxXFayqM6G95Rk3W6IJMKtH8GIWj2zMwB+b2FY5L6h
-uyMkP/jeyPNQdOZ6oICBRd6vCSIOEqeOrvNZKUzIvxZ5bxTThxtuUocJ2ZgbE3Sj
-JSPkHUuQNq7SMEweSylMq3lfzaQRTVv9fWBQYooapPK9IVWp5VpDpK7LEBdrDMgi
-RKDBmxOYxniCYB2waF9PmjHKYcYcRHi7sTxu7cR+2bdIlC+gwE7f6EvTg/wY0exZ
-B58QTwqD9lOXDwyypU227TcfNlSTQYyJnZqA86Sl9Gra/yGP/Q0=
-=dl+1
------END PGP SIGNATURE-----
---=-=-=--
