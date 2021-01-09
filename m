@@ -2,59 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BD42F040F
+	by mail.lfdr.de (Postfix) with ESMTP id 74B792F0410
 	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 23:19:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726238AbhAIWTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 17:19:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60870 "EHLO
+        id S1726251AbhAIWT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 17:19:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726077AbhAIWTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 17:19:22 -0500
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98870C061786
-        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 14:18:42 -0800 (PST)
-Received: by mail-il1-x133.google.com with SMTP id e7so14274381ile.7
-        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 14:18:42 -0800 (PST)
+        with ESMTP id S1726068AbhAIWT0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 17:19:26 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912FFC06179F
+        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 14:18:46 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id u12so14272828ilv.3
+        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 14:18:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w2VIkQnMAZODbJW9hj2GE2ROmlZThb3D6eYLKoSqBBg=;
-        b=u2ab68iQoimV7ho7lmr8fHX+GmpFUP2GtXQXyn1D3PDshQtb7yIklfUnfCHnI5lBjg
-         kKw95EYL9bwkISziOi5tbUlJOwd4gj6i1cK463mRgr85ribmJYIUHHBgZdARYeYdJsjX
-         aj5t3klsX2OQfN6/HVZa7bRCJMDibYq69pICpspfsH6jzFalQ3tmGou+rLro5aIG9XOZ
-         m7n9LMGo+/dpqAnwoLlhH/5tcPyY7b5YJCvI3AaYpCWQrQwDqui0N07koZuh09N5ANBS
-         WEycTj8bigPGgEnz14tCO7UhOh870XQ/eZYAXB8+ddmKb1lPuUnE8igQ0xf7XBk4hss2
-         r6Mg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zX1KVOpyBappsSnNg0k+iRQDKdP/WgwvzGOnOf5giSM=;
+        b=BGeq7W03A8lmjZg8XncyX650Lto6RshxdOPe1f53P4/zfNFGSOlVKut6tCBo7dzDfm
+         TqFVS/snbOXB2xvRfKfb3KqrbKEPJD+1Weq4LVTbiYcYb2Y+1Vb6SfZ5O6ESa7+MOlcu
+         Hblo5P4w+67sJtPsmkiVpJlP/bdlWlJ0eC38u+abt0tRo3hwVUUbyFXzl3/qSmFlJKty
+         l/zBNO/1dRM7dB1nNqCsVjXFSUr1v1fzXkOrR/M8uexau4N4g4ajIoehvzcm+zPmWM4F
+         l+yHllR39ohGBMhkgvVQWESE9MYLt45CTl6miRBiS+jE4l98n+PnmzOYtFyngdGP3ROB
+         VV0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=w2VIkQnMAZODbJW9hj2GE2ROmlZThb3D6eYLKoSqBBg=;
-        b=IDV9e9AxD5CGGnSPhmgC4Ut2Lzu1lXX1fCDJ2QDwlhq4iRY0RksgmO9d9csqe1ILR0
-         8qWE0UgyObHYpOQOXVtbnoHavAvLcVg86Eag/n4HoFwiVamx/BBpIr1iQuuGAA2FHScj
-         cBAUcrVwFnz2PziumaWn5+bWUEY7KaC4u0e95LLdS/k0tGpDAux9ry0SZtJppfhktldR
-         TReA7qnQwfY/HaMyIy599QpDYLct1PDlfC0VFyPzbuKBuXiXR4hQ/05UlWBcuX7UbJL/
-         lbgt4BxRw0SbkXa+lhQ+SpG29RVPdGiT8vO0bsvW9YHrafLAJMIT3tNyvE6Ta/40F5WW
-         GJMQ==
-X-Gm-Message-State: AOAM53361hfSNJcrcXIeq3cgcHZNxf9zdo5TveRL1UPDUOFXn6QURm9W
-        q4CFv8OgsFnyyK7+8MbwuvPAQMMwe7c=
-X-Google-Smtp-Source: ABdhPJy/T9PLTTp51TWSRgmCV0S37GJAI+6RJrQcQ5Y/ZPhphF6pEy560ndUoU0odidB9IKvEmAwmg==
-X-Received: by 2002:a05:6e02:14cc:: with SMTP id o12mr9668867ilk.133.1610230721668;
-        Sat, 09 Jan 2021 14:18:41 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zX1KVOpyBappsSnNg0k+iRQDKdP/WgwvzGOnOf5giSM=;
+        b=YS3Vk98akiOAztpk5xyRrQLBM3CKiDXge4kNOhFIFgsI1FJDcK5DnFc/GdUYtXT3lX
+         hmET/zSfUtsprg8YDAVcyqTDFIuMPdfuEKF0EwYUD5dRbECu+PEhFJWh/3z0QLGtysEL
+         67X4QH7TSTCAh1SlFcDqn14Ikm3jPyEXSHZANheZe91QtKw6H9aOjzSfSKfxUwih4OHU
+         hgVTCyMfy6TdtSBFR8L7Gl1tpWPmNd9kvYCAwCn+CvTt4sHG+ondssZiGV5qSOQ2ZjKm
+         eDzYGdiN2WwadGlvjm1/Fl9AQnsOF8qlIXaUdHrzvQVDf55+LgG23lGhFpgea8eo49Z0
+         0CRQ==
+X-Gm-Message-State: AOAM530mVDQfruyJpCsS73oZi71LOQLi5UoImbCQtaaTjLnCirvQxsOw
+        P1+U4t+eCtSiGTjtRuZMhIrwX+JxfY4=
+X-Google-Smtp-Source: ABdhPJySX5220PoPVLXNVuNwllS29zPrjdv+r6BpQty3pvNzngqOVJs+3l//ekcsg1AnV0mdlhWiog==
+X-Received: by 2002:a05:6e02:18c9:: with SMTP id s9mr8357636ilu.265.1610230725722;
+        Sat, 09 Jan 2021 14:18:45 -0800 (PST)
 Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:f693:9fff:fef4:3e8a])
-        by smtp.gmail.com with ESMTPSA id i27sm11415849ill.45.2021.01.09.14.18.40
+        by smtp.gmail.com with ESMTPSA id i27sm11415849ill.45.2021.01.09.14.18.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jan 2021 14:18:40 -0800 (PST)
+        Sat, 09 Jan 2021 14:18:45 -0800 (PST)
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net v2 0/3] skb frag: kmap_atomic fixes
-Date:   Sat,  9 Jan 2021 17:18:31 -0500
-Message-Id: <20210109221834.3459768-1-willemdebruijn.kernel@gmail.com>
+        Willem de Bruijn <willemb@google.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH net v2 1/3] net: support kmap_local forced debugging in skb_frag_foreach
+Date:   Sat,  9 Jan 2021 17:18:32 -0500
+Message-Id: <20210109221834.3459768-2-willemdebruijn.kernel@gmail.com>
 X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
+In-Reply-To: <20210109221834.3459768-1-willemdebruijn.kernel@gmail.com>
+References: <20210109221834.3459768-1-willemdebruijn.kernel@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -63,29 +67,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Willem de Bruijn <willemb@google.com>
 
-skb frags may be backed by highmem and/or compound pages. Various
-code calls kmap_atomic to safely access highmem pages. But this
-needs additional care for compound pages. Fix a few issues:
+Skb frags may be backed by highmem and/or compound pages. Highmem
+pages need kmap_atomic mappings to access. But kmap_atomic maps a
+single page, not the entire compound page.
 
-patch 1 expect kmap mappings with CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP
-patch 2 fixes kmap_atomic + compound page support in skb_seq_read
-patch 3 fixes kmap_atomic + compound page support in esp
+skb_foreach_page iterates over an skb frag, in one step in the common
+case, page by page only if kmap_atomic must be called for each page.
+The decision logic is captured in skb_frag_must_loop.
 
-changes
-  v1->v2
-   - in patch 2, increase frag_off size from u16 to u32
+CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP extends kmap from highmem to all
+pages, to increase code coverage.
 
-Willem de Bruijn (3):
-  net: support kmap_local forced debugging in skb_frag_foreach
-  net: compound page support in skb_seq_read
-  esp: avoid unneeded kmap_atomic call
+Extend skb_frag_must_loop to this new condition.
 
- include/linux/skbuff.h |  3 ++-
- net/core/skbuff.c      | 28 +++++++++++++++++++++++-----
- net/ipv4/esp4.c        |  7 +------
- net/ipv6/esp6.c        |  7 +------
- 4 files changed, 27 insertions(+), 18 deletions(-)
+Link: https://lore.kernel.org/linux-mm/20210106180132.41dc249d@gandalf.local.home/
+Fixes: 0e91a0c6984c ("mm/highmem: Provide CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP")
+Reported-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Tested-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ include/linux/skbuff.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 333bcdc39635..c858adfb5a82 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -366,7 +366,7 @@ static inline void skb_frag_size_sub(skb_frag_t *frag, int delta)
+ static inline bool skb_frag_must_loop(struct page *p)
+ {
+ #if defined(CONFIG_HIGHMEM)
+-	if (PageHighMem(p))
++	if (IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP) || PageHighMem(p))
+ 		return true;
+ #endif
+ 	return false;
 -- 
 2.30.0.284.gd98b1dd5eaa7-goog
 
