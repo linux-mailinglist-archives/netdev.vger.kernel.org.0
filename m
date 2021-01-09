@@ -2,133 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCFB22EFDC6
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 05:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 833AD2EFDDA
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 06:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbhAIEiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 23:38:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
+        id S1725913AbhAIFHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 00:07:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726133AbhAIEiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 23:38:51 -0500
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D32C061573;
-        Fri,  8 Jan 2021 20:38:11 -0800 (PST)
-Received: by mail-ot1-x32e.google.com with SMTP id i6so11860802otr.2;
-        Fri, 08 Jan 2021 20:38:11 -0800 (PST)
+        with ESMTP id S1725300AbhAIFHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 00:07:08 -0500
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC5BC061573;
+        Fri,  8 Jan 2021 21:06:27 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id a109so11909117otc.1;
+        Fri, 08 Jan 2021 21:06:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=ZsFTTrJbetn2CnyONlnngrlzz9wtSmXI0rG1K4D4rPo=;
-        b=DT4seXADhunI5NZU2Tg6VYDsdyEOLa/LHxr4wBSTKEGcfFth1S710Lyf8BJk9/t09p
-         rh1O3DkP22MrNM96zWXaSATEQyCFgK8D5/WWc0OdwugBYYMjBje19MDQMUTsl8tVn09H
-         F2vWSOWJoz3E1xAJ2B+aBaEeIDdCoJf/pxxKorl+dKp7EyhV6kBAnq3WD5frGecu4x4+
-         mwyPoUKxkZuU+poMkEOZ7MDCyxBtZydlc01Rqe2xHt9F6KR754ZPnUMthRnMZkcfka4O
-         p3G0usfJ3YAdbwAWSav+0X6hg0Nid2aBCBqBJkmBsFxEt+9EiQrPsPVc+6MKI10Ws5MU
-         OffQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HLhDeEB86uGsF0AuIV10falkochVgXippMmbTrnpCyg=;
+        b=N0jVRtvYiEibP3xZ1/Q0RKATfhw88NJfb99SekIIuE8ayljs1HtSmWkhkcKDmSYHJR
+         AF7aUTkjkW3t59Ds5rkvDKwBxr2GoFGEDbIMYsn/35efBSIoyfY5jmox3C2QURCGNvqR
+         d/3zbjNb0fHFeqc9M3vZifn0nIihz30m9hgXNw5zX3c4j3u2P3R4GTbIHkbiJo504NJI
+         NoaJzsGdpnk9rsY0IgVP+xS1Uu6GYj6eQSlvhb+F0D7LHZwD9RIN6zqSIgmxnDcuZTG4
+         pjyr3H0XjSInJKvMyND7UVfRasenVFk0YkE6WeenjIei7rhF7jx0L4FKoZyY17TrRLA3
+         c30A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=ZsFTTrJbetn2CnyONlnngrlzz9wtSmXI0rG1K4D4rPo=;
-        b=PeOac68z6S5wPxtvgUWIGtBlar5dPbIJA1o2DCX18pdSipvzIKQofrrkvW6gZF2ZZn
-         MuzyQ75EeW+Zg3DsX5fJxDC8xTIFlFpAMvxTLx/XmQsVlR/KEUYKKeJifJZXrzfmk3sb
-         Q6H5C+bEEseTkyWRBYk3DlwN3+3PdSyF5UtWSRxyQtcItrb3wq20GFf0bl4uukIhmWN0
-         e/29nfvC5jIvRHmVLVeiMjEiztHgsMX3YFd/GJTAyROhBoSSDkrtk6iYAcDkFousBXFK
-         dmEtcdFzOLnOrEbrveh3EavdZG8i5eQlIoGJNJGD8mmubPBbvG82uF+TjydFfugkNik+
-         3H9w==
-X-Gm-Message-State: AOAM531W9InKpB2UaPEGo2HWpr89sfcWeasjtldiKqPNo+qdCkKffud9
-        Q3TuKnGIobABQsTVy6q9LjE=
-X-Google-Smtp-Source: ABdhPJx+XQxRy0Hr5Q5bTreVVN47gPlzSpf+RG+v87C4V0nUh56BGU7o6DS53FBWtMv9Y4IpxDkaiw==
-X-Received: by 2002:a9d:aca:: with SMTP id 68mr4832590otq.272.1610167090979;
-        Fri, 08 Jan 2021 20:38:10 -0800 (PST)
-Received: from localhost.localdomain (99-6-134-177.lightspeed.snmtca.sbcglobal.net. [99.6.134.177])
-        by smtp.gmail.com with ESMTPSA id y84sm2470454oig.36.2021.01.08.20.38.09
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HLhDeEB86uGsF0AuIV10falkochVgXippMmbTrnpCyg=;
+        b=kie7SMlE6AQtWAANFcSa0ZM3yeZPNg7kZEQEqnTwR+3XYMYDc52uFdqwymkW2ZxNhc
+         GPLVXj6j1fX/HZmgWQGhivqVbNiQwslZjRLF96F9xzR3gYXmEHs4Xjjsn5kS1UBNCeYH
+         MRDnjfhLVYMa0pBwLe3JakteOtPO04nCbs1gzgSN5gnJcZhQD71HkzxQViLYLM620Q9L
+         g6QuOKDkySf5G2H8yrzZrEdyRQdxSz/B3gIhTcrFGqJbuGJvhcuO0/rJjug1PE/Tijb4
+         LekU5NiqavhqvRk/zBlKTBotXXSsCH7Q6bFh8BYQ2/QnbqueDm/JB2j589jo3SxGYhUg
+         rhUA==
+X-Gm-Message-State: AOAM531j/wiejmSGXroRPLTuws77f4LbkLZRsZNd6Si/8LTkKyU8/KCl
+        qlWuKFprADTLtda9+MRKOCvC6uZ2szY=
+X-Google-Smtp-Source: ABdhPJxVy/wFlgWu7N1Ol2TxegQyV3CuHhfPwYx/JOmtwmNh299krr4Wr4ZfGqDHeJCLzBqgkhbUIg==
+X-Received: by 2002:a9d:c01:: with SMTP id 1mr4823172otr.107.1610168786518;
+        Fri, 08 Jan 2021 21:06:26 -0800 (PST)
+Received: from BENDER.localdomain (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
+        by smtp.gmail.com with ESMTPSA id m3sm2280045ots.72.2021.01.08.21.06.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jan 2021 20:38:10 -0800 (PST)
-Date:   Fri, 8 Jan 2021 20:38:08 -0800
-From:   Enke Chen <enkechen2020@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>,
+        Fri, 08 Jan 2021 21:06:25 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     olteanv@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Maxwell <jmaxwell37@gmail.com>,
-        William McCall <william.mccall@gmail.com>, enchen2020@gmail.com
-Subject: [PATCH] Revert "tcp: simplify window probe aborting on USER_TIMEOUT"
-Message-ID: <20210109043808.GA3694@localhost.localdomain>
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: marvell: prestera: Correct typo
+Date:   Fri,  8 Jan 2021 21:06:22 -0800
+Message-Id: <20210109050622.8081-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Enke Chen <enchen@paloaltonetworks.com>
+The function was incorrectly named with a trailing 'r' at the end of
+prestera.
 
-This reverts commit 9721e709fa68ef9b860c322b474cfbd1f8285b0f.
-
-With the commit 9721e709fa68 ("tcp: simplify window probe aborting
-on USER_TIMEOUT"), the TCP session does not terminate with
-TCP_USER_TIMEOUT when data remain untransmitted due to zero window.
-
-The number of unanswered zero-window probes (tcp_probes_out) is
-reset to zero with incoming acks irrespective of the window size,
-as described in tcp_probe_timer():
-
-    RFC 1122 4.2.2.17 requires the sender to stay open indefinitely
-    as long as the receiver continues to respond probes. We support
-    this by default and reset icsk_probes_out with incoming ACKs.
-
-This counter, however, is the wrong one to be used in calculating the
-duration that the window remains closed and data remain untransmitted.
-Thanks to Jonathan Maxwell <jmaxwell37@gmail.com> for diagnosing the
-actual issue.
-
-Cc: stable@vger.kernel.org
-Fixes: 9721e709fa68 ("tcp: simplify window probe aborting on USER_TIMEOUT")
-Reported-by: William McCall <william.mccall@gmail.com>
-Signed-off-by: Enke Chen <enchen@paloaltonetworks.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- net/ipv4/tcp_timer.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+Jakub, David,
 
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 6c62b9ea1320..ad98f2ea89f1 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -346,6 +346,7 @@ static void tcp_probe_timer(struct sock *sk)
- 	struct sk_buff *skb = tcp_send_head(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	int max_probes;
-+	u32 start_ts;
+This patch is on top of Vladimir's series: [PATCH v4 net-next 00/11] Get
+rid of the switchdev transactional model
+
+ .../net/ethernet/marvell/prestera/prestera_switchdev.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+index e2374a39e4f8..beb6447fbe40 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+@@ -652,9 +652,9 @@ static int prestera_port_bridge_vlan_stp_set(struct prestera_port *port,
+ 	return 0;
+ }
  
- 	if (tp->packets_out || !skb) {
- 		icsk->icsk_probes_out = 0;
-@@ -360,13 +361,12 @@ static void tcp_probe_timer(struct sock *sk)
- 	 * corresponding system limit. We also implement similar policy when
- 	 * we use RTO to probe window in tcp_retransmit_timer().
- 	 */
--	if (icsk->icsk_user_timeout) {
--		u32 elapsed = tcp_model_timeout(sk, icsk->icsk_probes_out,
--						tcp_probe0_base(sk));
--
--		if (elapsed >= icsk->icsk_user_timeout)
--			goto abort;
--	}
-+	start_ts = tcp_skb_timestamp(skb);
-+	if (!start_ts)
-+		skb->skb_mstamp_ns = tp->tcp_clock_cache;
-+	else if (icsk->icsk_user_timeout &&
-+		 (s32)(tcp_time_stamp(tp) - start_ts) > icsk->icsk_user_timeout)
-+		goto abort;
+-static int presterar_port_attr_stp_state_set(struct prestera_port *port,
+-					     struct net_device *dev,
+-					     u8 state)
++static int prestera_port_attr_stp_state_set(struct prestera_port *port,
++					    struct net_device *dev,
++					    u8 state)
+ {
+ 	struct prestera_bridge_port *br_port;
+ 	struct prestera_bridge_vlan *br_vlan;
+@@ -702,8 +702,8 @@ static int prestera_port_obj_attr_set(struct net_device *dev,
  
- 	max_probes = sock_net(sk)->ipv4.sysctl_tcp_retries2;
- 	if (sock_flag(sk, SOCK_DEAD)) {
+ 	switch (attr->id) {
+ 	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
+-		err = presterar_port_attr_stp_state_set(port, attr->orig_dev,
+-							attr->u.stp_state);
++		err = prestera_port_attr_stp_state_set(port, attr->orig_dev,
++						       attr->u.stp_state);
+ 		break;
+ 	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
+ 		if (attr->u.brport_flags &
 -- 
-2.29.2
+2.25.1
 
