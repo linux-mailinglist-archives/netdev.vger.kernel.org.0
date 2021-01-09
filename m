@@ -2,62 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76FD22EFECE
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 10:40:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB68F2EFED4
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 10:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726868AbhAIJkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 04:40:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
+        id S1726919AbhAIJq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 04:46:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726848AbhAIJkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 04:40:15 -0500
-Received: from ficht.host.rs.currently.online (ficht.host.rs.currently.online [IPv6:2a01:4f8:120:614b::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1A5C061786;
-        Sat,  9 Jan 2021 01:39:34 -0800 (PST)
-Received: from carbon.srv.schuermann.io (carbon.srv.schuermann.io [178.63.44.188])
-        by ficht.host.rs.currently.online (Postfix) with ESMTPS id 9D1521EA5C;
-        Sat,  9 Jan 2021 09:39:30 +0000 (UTC)
-From:   Leon Schuermann <leon@is.currently.online>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     oliver@neukum.org, davem@davemloft.net, hayeswang@realtek.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] r8152: Add Lenovo Powered USB-C Travel Hub
-In-Reply-To: <20210108182030.77839d11@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210108202727.11728-1-leon@is.currently.online>
- <20210108202727.11728-2-leon@is.currently.online>
- <20210108182030.77839d11@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Sat, 09 Jan 2021 10:39:27 +0100
-Message-ID: <87bldye9f4.fsf@is.currently.online>
+        with ESMTP id S1726196AbhAIJqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 04:46:55 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A68EC061786
+        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 01:46:15 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id d14so10677212qkc.13
+        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 01:46:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BxfLyaoG8n7LgAfN80/JUTuYNe1YK0q3UlOVy+dKJs0=;
+        b=cUgH7VMvAg4csiAdQlRI8XcGOswn2nEBD6OYXCql3bxoYEjRmOpkAxs2dqNzr4NVEV
+         XybmJWcjt0FaVoJYEcphoT6eW74krZIZSJreUePoA1zKze2GZVvn5BKtXYHC8gVJNX9b
+         vNWgnuT/O7GYLqTom+C7LIDPHNuXqkSL00UObi+TfYo4UGDKe7dNFwjLcuxxqTJZuzID
+         E29h63GQV3IWSHBTROmOGJSM0/jRr7rSONaeet4gWOIcTAwm9ars33FLzgqrW+Ssx0rz
+         JE4lZvDW9quMGy1JOJl/mmlNZWKoX1Qk+TDMfmYMFlz752/nHqbmRBSbeDsSDsefuyzA
+         PVhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BxfLyaoG8n7LgAfN80/JUTuYNe1YK0q3UlOVy+dKJs0=;
+        b=cE8JN877TpVyXQDWmRlxPf6V8/0UsFqv85dIbG8dRYFTs5LCxpB7OrYRlKpInJpGAx
+         GG4fjsbxfr1ydjJdoSd9gqnZqZRN6JFYt2u85HMtVB4WHgm5ruK166d4KPZ47oeRPGdX
+         oKyk2v4x/LlI+yI9ExfpvB1Ue7HfhqGpsEIxU9vSBM85oGrBkz3NWR+nD7BRM9bl55hM
+         ozYGHMMaGMtR3yr5c7/E8QyIppqxpk01nxNTTAoXTQBCAHZltY4eqK166hil9OwJnXhf
+         8ndZMnCDCEHyeMKmO883xPnilX+UvbnRHn1mLeSf8Gw216SRcO74GUCaUpyrspA/d0sP
+         Bnsw==
+X-Gm-Message-State: AOAM530XtbZI16hFCHrIs6LszK6sB2PfPMB2amUebcGzTbTZiYIobSnk
+        opfbtp/sJBU12pQtTQJAaUNYS5+DsHUJz56M93x12B+iDrxv1Q==
+X-Google-Smtp-Source: ABdhPJxWlhuHDx0ybxghLEdIT2ScqzVE7NANY6KKvM5s96VMrb0EneFU4B01o0uJZS5uM9BKHM5LRGIFyTKrRM4chOs=
+X-Received: by 2002:a37:e10c:: with SMTP id c12mr8138565qkm.265.1610185573960;
+ Sat, 09 Jan 2021 01:46:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <000000000000e13e2905b6e830bb@google.com> <CAHmME9qwbB7kbD=1sg_81=82vO07XMV7GyqBcCoC=zwM-v47HQ@mail.gmail.com>
+ <CACT4Y+ac8oFk1Sink0a6VLUiCENTOXgzqmkuHgQLcS2HhJeq=g@mail.gmail.com>
+ <CAHmME9q0HMz+nERjoT-TQ8_6bcAFUNVHDEeXQAennUrrifKESw@mail.gmail.com>
+ <CACT4Y+bKvf5paRS4X1QrcKZWfvtUi6ShP4i3y5NukRpQj0p1+Q@mail.gmail.com>
+ <CAHmME9oOeMLARNsxzW0dvNT7Qz-EieeBSJP6Me5BWvjheEVysw@mail.gmail.com>
+ <CACT4Y+Y9H4xB_4sS9Hu6e+u=tmYXcw6PFB0LY4FRuGQ6HCywrA@mail.gmail.com> <CAGXu5j+jzmkiU_AWoTVF6e263iYSSJYUHB=Kdqh-MCfEO-aNSg@mail.gmail.com>
+In-Reply-To: <CAGXu5j+jzmkiU_AWoTVF6e263iYSSJYUHB=Kdqh-MCfEO-aNSg@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Sat, 9 Jan 2021 10:46:02 +0100
+Message-ID: <CACT4Y+b1nmsQBx=dD=Q9_y_GZx1PpqTbzR6j=u5UecQ0JLyMFg@mail.gmail.com>
+Subject: Re: UBSAN: object-size-mismatch in wg_xmit
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
-> On Fri,  8 Jan 2021 21:27:27 +0100 Leon Schuermann wrote:
->> This USB-C Hub (17ef:721e) based on the Realtek RTL8153B chip used to
->> work with the cdc_ether driver.
+On Fri, Jan 8, 2021 at 9:26 PM Kees Cook <keescook@chromium.org> wrote:
+>> On Thu, Jan 7, 2021 at 8:00 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>> > > >
+>> > > > Hi Dmitry,
+>> > > >
+>> > > > On Mon, Dec 21, 2020 at 10:14 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+>> > > > > Hi Jason,
+>> > > > >
+>> > > > > Thanks for looking into this.
+>> > > > >
+>> > > > > Reading clang docs for ubsan:
+>> > > > >
+>> > > > > https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+>> > > > > -fsanitize=object-size: An attempt to potentially use bytes which the
+>> > > > > optimizer can determine are not part of the object being accessed.
+>> > > > > This will also detect some types of undefined behavior that may not
+>> > > > > directly access memory, but are provably incorrect given the size of
+>> > > > > the objects involved, such as invalid downcasts and calling methods on
+>> > > > > invalid pointers. These checks are made in terms of
+>> > > > > __builtin_object_size, and consequently may be able to detect more
+>> > > > > problems at higher optimization levels.
+>> > > > >
+>> > > > > From skimming though your description this seems to fall into
+>> > > > > "provably incorrect given the size of the objects involved".
+>> > > > > I guess it's one of these cases which trigger undefined behavior and
+>> > > > > compiler can e.g. remove all of this code assuming it will be never
+>> > > > > called at runtime and any branches leading to it will always branch in
+>> > > > > other directions, or something.
+>> > > >
+>> > > > Right that sort of makes sense, and I can imagine that in more general
+>> > > > cases the struct casting could lead to UB. But what has me scratching
+>> > > > my head is that syzbot couldn't reproduce. The cast happens every
+>> > > > time. What about that one time was special? Did the address happen to
+>> > > > fall on the border of a mapping? Is UBSAN non-deterministic as an
+>> > > > optimization? Or is there actually some mysterious UaF happening with
+>> > > > my usage of skbs that I shouldn't overlook?
+>> > >
+>> > > These UBSAN checks were just enabled recently.
+>> > > It's indeed super easy to trigger: 133083 VMs were crashed on this already:
+>> > > https://syzkaller.appspot.com/bug?extid=8f90d005ab2d22342b6d
+>> > > So it's one of the top crashers by now.
+>> >
+>> > Ahh, makes sense. So it is easily reproducible after all.
+>> >
+>> > You're still of the opinion that it's a false positive, right? I
+>> > shouldn't spend more cycles on this?
+>>
+>> No, I am not saying this is a false positive. I think it's an
+>> undefined behavior.
+>>
+>> Either way, we need to resolve this one way or another to unblock
+>> testing the rest of the kernel, if not with a fix to wg, then with a
+>> fix to ubsan, or disable this check for kernel if kernel community
+>> decides we want to use and keep this type of C undefined behavior in
+>> the code base intentionally.
+>> So far I see only 2 "UBSAN: object-size-mismatch" reports on the dashboard:
+>> https://syzkaller.appspot.com/upstream
+>> So cleaning them up looks doable. Is there a way to restructure the
+>> code to not invoke undefined behavior?
 >
-> When you say "used to work" do you mean there was a regression where
-> the older kernels would work fine and newer don't? Or just "it works
-> most of the time"?
+>
+> Right; that's my question as well.
+>
+>>
+>> Kees, do you have any suggestions on how to proceed? This seems to
+>> stop testing of the whole kernel at the moment.
+>
+>
+> If it's blocking other stuff and there isn't a path to fixing it soon, then I think we'll need to disable this check (and open an issue to track it).
 
-Sorry, I should've clarified that. "Used to work" is supposed to say
-"the device used the generic cdc_ether driver", as in
+Oh, I see, the code is actually in skbuff.h:
 
-[  +0.000004] usb 4-1.1: Product: Lenovo Powered Hub
-[  +0.000003] usb 4-1.1: Manufacturer: Lenovo
-[  +0.000002] usb 4-1.1: SerialNumber: xxxxxxxxx
-[  +0.024803] cdc_ether 4-1.1:2.0 eth0: register 'cdc_ether' at
-              usb-0000:2f:00.0-1.1, CDC Ethernet Device,
-              xx:xx:xx:xx:xx:xx
+static inline void __skb_queue_tail(struct sk_buff_head *list, struct
+sk_buff *newsk)
+{
+    __skb_queue_before(list, (struct sk_buff *)list, newsk);
+}
 
-I guess it did technically work correctly, except for the reported issue
-when the host system suspends, which is fixed by using the dedicated
-Realtek driver. As far as I know this hasn't been fixed before, so it's
-not a regression.
+It casts sk_buff_head to sk_buff relying on equal layout of some
+prefix of these structs.
+Is it really UB in C? UBSAN docs say:
+"An attempt to potentially use bytes which the optimizer can determine
+are not part of the object being accessed".
+But C has POD layout for structs, right? These next/prev fields are
+within sk_buff_head (otherwise things would explode).
+I can imagine this may be not valid in C++, can this UBSAN check be
+C++-specific? Or at least some subset of this check, I can imagine it
+can detect bad bugs in C as well where things go really wrong.
 
-Should I update the commit message accordingly? Thanks!
-
-Leon
+If there is no quick solution proposed, I tend to disable this check
+in syzbot for now. We need to clean at least common things like
+sk_buff first.
