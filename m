@@ -2,163 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 434E02F0241
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 18:29:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15A212F02CA
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 19:08:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726477AbhAIR3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 12:29:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725926AbhAIR26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 12:28:58 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B82C0617BB
-        for <netdev@vger.kernel.org>; Sat,  9 Jan 2021 09:27:46 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id y24so14428282edt.10
-        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 09:27:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cBwmz5d8GUI2FNc7KHAF5j5cVjW4gdn1TRK612wr8AI=;
-        b=labri+/79cDPiUJASVwqZ/WLYn9T/yfpoHFu0O5hP/wGQGh0YiArJc2mq6k6z7G5VP
-         FYtmFZhcMQ8HsfUjVMw6Q0H5oa8Of8kE6QHq28ftynODNWgHrbyG6PAFxBfWbAjz2Cpx
-         nxFqpNXP59FEA/34fGZxjGp3V3lV/OsEVt0dluX4c/UQyuBwji1k3Yr14lVyE5rW1Rml
-         MhRZnWBIuoZ6v87LYCr0WZUpH/Lp4t9kMnwV5r7VsqIA2FeRFo6dkzyqzRLgyVJOei6r
-         EctAkAvNmhtnDjiePB8Cwn+Fn4wc9d6ftIxOqGP9Llp07cOiY8T5m5OawURStxcp/dUc
-         phpA==
+        id S1727004AbhAISIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 13:08:01 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:43846 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726223AbhAISIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Jan 2021 13:08:01 -0500
+Received: by mail-io1-f69.google.com with SMTP id c7so10186315iob.10
+        for <netdev@vger.kernel.org>; Sat, 09 Jan 2021 10:07:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cBwmz5d8GUI2FNc7KHAF5j5cVjW4gdn1TRK612wr8AI=;
-        b=LTLNLnBN23V12dezKMJ3bJMIwN+6QW7y2/SpX0Y1YM7MbsVKzrzfLINoEFhkJqDMTE
-         PfMs6AON0d8oHQ8D4U/Mi74k2IrpiM0+AKxLrJcyB/b/50/3htX+Klz/bfGy0H2+QKLp
-         Xo//Qaj2JRw9vlZrm5cQTR+hB5VkYTqOoAZkuwj1TbOgeNeERxvWrHiiXHEFmbQ7Qfwb
-         ce3WrFvuOJJQNPAltx83IeyfTbCYOTqU/ryzKqqq0DeFv/cyGzDlU5asudth3grehSKN
-         v1g6QlKr64PWPYPZmYVJoSQLL0yuuVdV4fFnyjHzRY+oTi/1KMHDAKZe0BxpcYhaJ3/Y
-         ODhg==
-X-Gm-Message-State: AOAM5322l1LzpGoq2im6VB9LHl1csDAsaHJzG5Cgczg597xtXaq4LSuk
-        hIZDYrinCvIU5BjQUVfYuwI=
-X-Google-Smtp-Source: ABdhPJx+k2DHtnNsqOR4svf+i8WIxWI2MeRq+SGDEFf6yPnQT/FdNAYNoL9mJpdIyRayb9aogPxbaQ==
-X-Received: by 2002:a50:bacb:: with SMTP id x69mr8988498ede.39.1610213265232;
-        Sat, 09 Jan 2021 09:27:45 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id h16sm4776714eji.110.2021.01.09.09.27.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Jan 2021 09:27:44 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH v6 net-next 15/15] net: mark ndo_get_stats64 as being able to sleep
-Date:   Sat,  9 Jan 2021 19:26:24 +0200
-Message-Id: <20210109172624.2028156-16-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210109172624.2028156-1-olteanv@gmail.com>
-References: <20210109172624.2028156-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=BsWPSRLwA8RolMCenavGS+3Cc+3bFo32dZEP7iTFhQQ=;
+        b=EmCPi0rZuHNesRcv3LBIZuyESln7FoMNElekS38wDDeCFnnxEzFnDucr1g7J7j/KG7
+         W0JqsJnjuj9pqalaqRI6NzqXcaRYYP4Wl++BPHTlq/J4JpqYVU46zoxzvdEF8JuXkIQO
+         h2xbZuRUIgjENiRZLrPwzHg3cb7GOGbezsHcLKh6RY0s0DOKfMj69jaGrO7cZ6+gufkf
+         JSLiCX0smLY5vmkXm39ESz8ZGcLbw/YLJjrbWBqvAcwPXiF0E88z/IBqIBBO3qrYdT4L
+         eTxZOTO57nySab9OHGlVwrJCs2vLGDaLptUUxwJqz5hwo21g5LTE6PTrBWGto92nili8
+         sOFw==
+X-Gm-Message-State: AOAM5333OUih9dNAHN7OxXoIoiT5nTSKGcqLVD/ebTx7uM2NvPd2iy9Z
+        CVicTT/W9Y6kndCl88DFddj13K5bdy4UMmaq7DDOMQuSmbIx
+X-Google-Smtp-Source: ABdhPJz2Fo27W90BS/ZeLDfCQnG0/dKaG79rae//EhtT+TWJtJJIc7bDQPUyhQPc9JFX+zteVapA2LGjHFUzMWEmpReY/N/GWimy
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:c7d1:: with SMTP id s17mr8607663jao.142.1610215639684;
+ Sat, 09 Jan 2021 10:07:19 -0800 (PST)
+Date:   Sat, 09 Jan 2021 10:07:19 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000371e5a05b87b8bf9@google.com>
+Subject: memory leak in tcp_cdg_init
+From:   syzbot <syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hello,
 
-Now that all callers have been converted to not use atomic context when
-calling dev_get_stats, it is time to update the documentation and put a
-notice in the function that it expects process context.
+syzbot found the following issue on:
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+HEAD commit:    36bbbd0e Merge branch 'rcu/urgent' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16ef4dfb500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b991a69440391446
+dashboard link: https://syzkaller.appspot.com/bug?extid=f1e24a0594d4e3a895d3
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e1bb2b500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f1e24a0594d4e3a895d3@syzkaller.appspotmail.com
+
+2021/01/05 17:50:00 executed programs: 127
+2021/01/05 17:50:06 executed programs: 146
+2021/01/05 17:50:12 executed programs: 157
+2021/01/05 17:50:19 executed programs: 175
+BUG: memory leak
+unreferenced object 0xffff888125940080 (size 64):
+  comm "syz-executor.1", pid 11113, jiffies 4294986279 (age 14.750s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000bf291225>] kmalloc_array include/linux/slab.h:592 [inline]
+    [<00000000bf291225>] kcalloc include/linux/slab.h:621 [inline]
+    [<00000000bf291225>] tcp_cdg_init+0x37/0x60 net/ipv4/tcp_cdg.c:380
+    [<00000000f991e122>] tcp_init_congestion_control+0x31/0x160 net/ipv4/tcp_cong.c:183
+    [<000000009761f0eb>] tcp_reinit_congestion_control net/ipv4/tcp_cong.c:207 [inline]
+    [<000000009761f0eb>] tcp_set_congestion_control+0x35e/0x380 net/ipv4/tcp_cong.c:377
+    [<00000000825a01e7>] do_tcp_setsockopt net/ipv4/tcp.c:3319 [inline]
+    [<00000000825a01e7>] tcp_setsockopt+0x3fc/0x13f0 net/ipv4/tcp.c:3599
+    [<0000000009f41711>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2115
+    [<000000008873566c>] __do_sys_setsockopt net/socket.c:2126 [inline]
+    [<000000008873566c>] __se_sys_setsockopt net/socket.c:2123 [inline]
+    [<000000008873566c>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2123
+    [<0000000048fbe902>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<00000000b377d397>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+BUG: memory leak
+unreferenced object 0xffff888125940880 (size 64):
+  comm "syz-executor.4", pid 11115, jiffies 4294986279 (age 14.750s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000bf291225>] kmalloc_array include/linux/slab.h:592 [inline]
+    [<00000000bf291225>] kcalloc include/linux/slab.h:621 [inline]
+    [<00000000bf291225>] tcp_cdg_init+0x37/0x60 net/ipv4/tcp_cdg.c:380
+    [<00000000f991e122>] tcp_init_congestion_control+0x31/0x160 net/ipv4/tcp_cong.c:183
+    [<000000009761f0eb>] tcp_reinit_congestion_control net/ipv4/tcp_cong.c:207 [inline]
+    [<000000009761f0eb>] tcp_set_congestion_control+0x35e/0x380 net/ipv4/tcp_cong.c:377
+    [<00000000825a01e7>] do_tcp_setsockopt net/ipv4/tcp.c:3319 [inline]
+    [<00000000825a01e7>] tcp_setsockopt+0x3fc/0x13f0 net/ipv4/tcp.c:3599
+    [<0000000009f41711>] __sys_setsockopt+0x1b0/0x360 net/socket.c:2115
+    [<000000008873566c>] __do_sys_setsockopt net/socket.c:2126 [inline]
+    [<000000008873566c>] __se_sys_setsockopt net/socket.c:2123 [inline]
+    [<000000008873566c>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2123
+    [<0000000048fbe902>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<00000000b377d397>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+
+
 ---
-Changes in v6:
-Rebase on top of Jakub's patch 9f9d41f03bb0 ("docs: net: fix
-documentation on .ndo_get_stats").
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Changes in v5:
-None.
-
-Changes in v4:
-None.
-
-Changes in v3:
-None.
-
-Changes in v2:
-Updated the documentation.
-
- Documentation/networking/netdevices.rst | 8 ++++++--
- Documentation/networking/statistics.rst | 9 ++++-----
- net/core/dev.c                          | 2 ++
- 3 files changed, 12 insertions(+), 7 deletions(-)
-
-diff --git a/Documentation/networking/netdevices.rst b/Documentation/networking/netdevices.rst
-index e65665c5ab50..944599722c76 100644
---- a/Documentation/networking/netdevices.rst
-+++ b/Documentation/networking/netdevices.rst
-@@ -64,8 +64,12 @@ ndo_do_ioctl:
- 	Context: process
- 
- ndo_get_stats:
--	Synchronization: rtnl_lock() semaphore, dev_base_lock rwlock, or RCU.
--	Context: atomic (can't sleep under rwlock or RCU)
-+	Synchronization:
-+		none. netif_lists_lock(net) might be held, but not guaranteed.
-+		It is illegal to hold rtnl_lock() in this method, since it will
-+		cause a lock inversion with netif_lists_lock and a deadlock.
-+	Context:
-+		process
- 
- ndo_start_xmit:
- 	Synchronization: __netif_tx_lock spinlock.
-diff --git a/Documentation/networking/statistics.rst b/Documentation/networking/statistics.rst
-index 234abedc29b2..ad3e353df0dd 100644
---- a/Documentation/networking/statistics.rst
-+++ b/Documentation/networking/statistics.rst
-@@ -155,11 +155,10 @@ Drivers must ensure best possible compliance with
- Please note for example that detailed error statistics must be
- added into the general `rx_error` / `tx_error` counters.
- 
--The `.ndo_get_stats64` callback can not sleep because of accesses
--via `/proc/net/dev`. If driver may sleep when retrieving the statistics
--from the device it should do so periodically asynchronously and only return
--a recent copy from `.ndo_get_stats64`. Ethtool interrupt coalescing interface
--allows setting the frequency of refreshing statistics, if needed.
-+Drivers may sleep when retrieving the statistics from the device, or they might
-+read the counters periodically and only return in `.ndo_get_stats64` a recent
-+copy collected asynchronously. In the latter case, the ethtool interrupt
-+coalescing interface allows setting the frequency of refreshing statistics.
- 
- Retrieving ethtool statistics is a multi-syscall process, drivers are advised
- to keep the number of statistics constant to avoid race conditions with
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 30facac95d5e..afd0e226efd4 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10409,6 +10409,8 @@ int __must_check dev_get_stats(struct net_device *dev,
- 	const struct net_device_ops *ops = dev->netdev_ops;
- 	int err = 0;
- 
-+	might_sleep();
-+
- 	if (ops->ndo_get_stats64) {
- 		memset(storage, 0, sizeof(*storage));
- 		err = ops->ndo_get_stats64(dev, storage);
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
