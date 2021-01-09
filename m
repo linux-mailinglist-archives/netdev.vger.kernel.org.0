@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E232EFCDA
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 02:50:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75E972EFCEA
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 02:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726447AbhAIBtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 20:49:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
+        id S1726189AbhAIByo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 20:54:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725817AbhAIBtR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 20:49:17 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFDDC061573
-        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 17:48:37 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id j1so6621191pld.3
-        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 17:48:37 -0800 (PST)
+        with ESMTP id S1725916AbhAIByo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Jan 2021 20:54:44 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D78AC061573
+        for <netdev@vger.kernel.org>; Fri,  8 Jan 2021 17:54:04 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id x126so7381499pfc.7
+        for <netdev@vger.kernel.org>; Fri, 08 Jan 2021 17:54:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7p2sw27lGTp4F9pS1WI2ckYqNicAJkUNd6I1iAAq2rE=;
-        b=kMbatxPzTGeV1ikTScrlaB7tPEoOj+Y2CbVZg1awYcVJRtwx8KZKJTBbl0nAB5OYUB
-         JoKCXOoG9bD9bas+K87g2KH2QDVp9DssFwJ7u/vmZZDySxEJZTEwozHFseWEtz79H0pw
-         PL3OQE1y5Ku4HpMTj39/X0NnG0R5GTxW+xYal4fgwQjOXfg1Y3DtfHHohxd4X20ywK+c
-         x0f4HMpl7r8pmmtYUm5Tm13FqILTRsaZMDBrsRhb/QA08wpyvTnoSSbycFm2leaZ+n/G
-         a6qwn9ixJWlPiNq+VsluVINEFFfl0X4uGtSA2bkTV2pHkHBw8qwTRpVJCqaVprpsHKzd
-         tWlw==
+        bh=dx4BOjBslD2NuvQxaY0KECGweFkuIWQqdcf7erqSIQs=;
+        b=FHmgA0QuodbJHxF+qMiBE9hm9xvZKljqxblHdwf/0bC6mwqIqqozJUbhf472rFTgv1
+         epuYAk4OHx9YHMiSSwtxWzE5bTogy49kcZWwynWJrcBCRuVL5MOw+x/5ejgbUBciMOHC
+         wPAGIWqPRg3vgczpikqU0YKqo5F7LSjiRi5esqYXvyXNjkpzkOqpeqW+Xh1n9BnxZE2Y
+         ats1J+5tw4VS4w59OpuKo19kn/3uglMBUJUcWo6DOWYdWl+w6eg8ivI1M3ycpEaT5X9B
+         Mbv7hf16YVkLNJjWji2zh9JfiHj3yHWrTgWcsy5Q/y4v4vSXAR+Zixum18aOK5swv++q
+         ZfMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=7p2sw27lGTp4F9pS1WI2ckYqNicAJkUNd6I1iAAq2rE=;
-        b=KHs4Ghyr9pUDxBF6KsBUG9P7bC9jNxNf1blQhtTOSIQc4Fh0PgIQ74Q5sm1uq35fl0
-         KIle89C9FzKvLeJsQq9AvVld/KbodU4GPoxvQqk1TcdndR8Aabk4oXz1IpCx5H8HJt0I
-         AFsgny4FBQ6nBzv02llEUzPpUzc23QyWAic+mTU0sAKYSm4KOsklqAe8qKl2gk/uGX8p
-         tAPgPySqHiZZm6KuQbQ+CKkajIqnjwoLMXiJEj03ssXNJJZj+e4wjQcspdIS8+Iy2df3
-         xmPyqE3iY7FNglnX/dp1FYfP2MLL9H1TulFi7wjV3PBcJgUigSJFTrtA+wN/gX7VMreV
-         IvqQ==
-X-Gm-Message-State: AOAM532XuYTwxqO08ihqIMmGFgh4ZHs2J7/b9udwIW8O1vCDE91n9WW1
-        HBPWiNzfgfPyTFzfJZOudL4=
-X-Google-Smtp-Source: ABdhPJy6F05fmfkRq/XJtIVBlnH1Tg57oY4s1SAk4sgwZ1X6ZkUERYE9jZUfQ8+4lk1WSM/DVmKvwA==
-X-Received: by 2002:a17:902:8306:b029:da:d7f0:9e16 with SMTP id bd6-20020a1709028306b02900dad7f09e16mr6660670plb.53.1610156917171;
-        Fri, 08 Jan 2021 17:48:37 -0800 (PST)
+        bh=dx4BOjBslD2NuvQxaY0KECGweFkuIWQqdcf7erqSIQs=;
+        b=dSTSDBDk57jaYh97h8h9A6/To4HBtKkNvhy3XtFNUSYpOxiHkM46uKjqMRgGVlR7MI
+         ZmEY/vZgGGJQUVNpgdYC2H2gS8bFY7Y+2lP3wygxs6fRLJT5nMCbPCaaEjOeDufsgNOz
+         DHiE3G8UdL4Lq+NUZ9COuHBS8okOJNkOuTPrAFmRz7db8Xc+3q42l/aWxtZOq4nyvVnk
+         MzwIAoTKz7/kxndLUukj+K0Pyx8q6eoeqvUQRkb3r/irYZ96vvXOSQUMHKpyWr6TaH28
+         ewuF6h0H9uEoOqdA1Ohf0E5d2wyoIDwG78YgWSH975WzG4qx2VSL3rd3VIyBdIE0mqcm
+         YaXQ==
+X-Gm-Message-State: AOAM532XmVefmoestcBKxsnJU77DQVgjqjunhrZhfVRMZx4GhrELya+z
+        agEnfxsZ6PrTM5W20Ijvsew=
+X-Google-Smtp-Source: ABdhPJxjqE1vfvDPNRUOvktuU+L2yJ8SbB8kDvJmZf2d01v7dVWQLHE7CqbZ9Qbmj4Wn0gWjs00gzQ==
+X-Received: by 2002:aa7:93cf:0:b029:19d:e287:b02b with SMTP id y15-20020aa793cf0000b029019de287b02bmr6475362pff.66.1610157243597;
+        Fri, 08 Jan 2021 17:54:03 -0800 (PST)
 Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 77sm10314678pfv.16.2021.01.08.17.48.33
+        by smtp.gmail.com with ESMTPSA id o193sm10507393pfg.27.2021.01.08.17.53.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Jan 2021 17:48:36 -0800 (PST)
-Subject: Re: [PATCH v4 net-next 10/11] mlxsw: spectrum_switchdev: remove
- transactional logic for VLAN objects
+        Fri, 08 Jan 2021 17:54:02 -0800 (PST)
+Subject: Re: [PATCH v4 net-next 05/11] net: switchdev: remove the transaction
+ structure from port attributes
 To:     Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -72,14 +72,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Ivan Vecera <ivecera@redhat.com>,
         Petr Machata <petrm@nvidia.com>
 References: <20210109000156.1246735-1-olteanv@gmail.com>
- <20210109000156.1246735-11-olteanv@gmail.com>
+ <20210109000156.1246735-6-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <24c6ef2f-36a6-8531-c7aa-d1a654f198af@gmail.com>
-Date:   Fri, 8 Jan 2021 17:48:32 -0800
+Message-ID: <a8943b5a-63d4-e4d4-a08c-f4b2fd955ffc@gmail.com>
+Date:   Fri, 8 Jan 2021 17:53:58 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20210109000156.1246735-11-olteanv@gmail.com>
+In-Reply-To: <20210109000156.1246735-6-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -92,24 +92,48 @@ X-Mailing-List: netdev@vger.kernel.org
 On 1/8/2021 4:01 PM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> As of commit 457e20d65924 ("mlxsw: spectrum_switchdev: Avoid returning
-> errors in commit phase"), the mlxsw driver performs the VLAN object
-> offloading during the prepare phase. So conversion just seems to be a
-> matter of removing the code that was running in the commit phase.
+> Since the introduction of the switchdev API, port attributes were
+> transmitted to drivers for offloading using a two-step transactional
+> model, with a prepare phase that was supposed to catch all errors, and a
+> commit phase that was supposed to never fail.
 > 
-> Ido Schimmel explains that the reason why mlxsw_sp_span_respin is called
-> unconditionally is because the bridge driver will ignore -EOPNOTSUPP and
-> actually add the VLAN on the bridge device - see commit 9c86ce2c1ae3
-> ("net: bridge: Notify about bridge VLANs") and commit ea4721751977
-> ("mlxsw: spectrum_switchdev: Ignore bridge VLAN events"). Since the VLAN
-> was successfully added on the bridge device, mlxsw_sp_span_respin_work()
-> should be able to resolve the egress port for a packet that is mirrored
-> to a gre tap and passes through the bridge device. Therefore keep the
-> logic as it is.
+> Some classes of failures can never be avoided, like hardware access, or
+> memory allocation. In the latter case, merely attempting to move the
+> memory allocation to the preparation phase makes it impossible to avoid
+> memory leaks, since commit 91cf8eceffc1 ("switchdev: Remove unused
+> transaction item queue") which has removed the unused mechanism of
+> passing on the allocated memory between one phase and another.
+> 
+> It is time we admit that separating the preparation from the commit
+> phase is something that is best left for the driver to decide, and not
+> something that should be baked into the API, especially since there are
+> no switchdev callers that depend on this.
+> 
+> This patch removes the struct switchdev_trans member from switchdev port
+> attribute notifier structures, and converts drivers to not look at this
+> member.
+> 
+> In part, this patch contains a revert of my previous commit 2e554a7a5d8a
+> ("net: dsa: propagate switchdev vlan_filtering prepare phase to
+> drivers").
+> 
+> For the most part, the conversion was trivial except for:
+> - Rocker's world implementation based on Broadcom OF-DPA had an odd
+>   implementation of ofdpa_port_attr_bridge_flags_set. The conversion was
+>   done mechanically, by pasting the implementation twice, then only
+>   keeping the code that would get executed during prepare phase on top,
+>   then only keeping the code that gets executed during the commit phase
+>   on bottom, then simplifying the resulting code until this was obtained.
+> - DSA's offloading of STP state, bridge flags, VLAN filtering and
+>   multicast router could be converted right away. But the ageing time
+>   could not, so a shim was introduced and this was left for a further
+>   commit.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Acked-by: Linus Walleij <linus.walleij@linaro.org>
 > Acked-by: Jiri Pirko <jiri@nvidia.com>
+> Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de> # hellcreek
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org> # RTL8366RB
 > Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
