@@ -2,63 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 088C72EFD78
-	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 04:32:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ACE52EFD8A
+	for <lists+netdev@lfdr.de>; Sat,  9 Jan 2021 04:41:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726216AbhAIDat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Jan 2021 22:30:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47302 "EHLO mail.kernel.org"
+        id S1726189AbhAIDkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Jan 2021 22:40:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47810 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725872AbhAIDat (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Jan 2021 22:30:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id EBFEE23A23;
-        Sat,  9 Jan 2021 03:30:08 +0000 (UTC)
+        id S1725836AbhAIDkt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Jan 2021 22:40:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id C21AA23A23;
+        Sat,  9 Jan 2021 03:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610163009;
-        bh=IYGFO4MvnedkFA64oIZqSn4ZZZzbJMrWGvP/etkuUZA=;
+        s=k20201202; t=1610163608;
+        bh=xKRQlUPM6LZ1/K5pS7j2eyZvG9rVM8WXhPSoJS6JKfg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=b4+rOWYP2SzBj7Vzkn6kxoUrwJku3KuNaG2aeN/F5UshcgGYtvJlRlxGv3mSDuKn4
-         4Kzrnzd8k6x63h4nxhRS+HQv12rve15hh4iopMqBqzbO95sUp1qdtm7gKR5kNUozY4
-         FPJtNjyglI69IYUlXYdXVRKf6AJmoEVUyZKlCX7xJiUc4JsD8ZlHiJQjtrLc6dv7Jd
-         u9GdflDTUdzaCRLUmRSz+igU+W7JuLc6GpiRbQmhnQoK3AjDMcVKMX6EPgBOCRArgL
-         sXn3SnRczpOYat0Y6C89cJsjeqgUkfCH3KeyPQOc9vPpo7w2oBWFqSkgZVaR98roCm
-         B2ngyCFi5oxZQ==
+        b=O6W03qDVV/8YJKjA7t7SbbkCEguZLqZ0M6iCwWw/4/1oAFF6tvYs7k7mCOOcnpQzA
+         wp3q9KMWXPsCHvkvFxg+l8lEPTIU/zib4iXFmy3VSELTqGcfKFopzQ+RoatZDOiV/O
+         PH0nqioqdNCLwoiwtooDLjcF66PrQB/i87B7i/HgTlkNgYnUJG+kmOJyA0mxzBjd+j
+         RdZGE8zNy0H4FXmsTZeyFJqQQV6LeLi59cjVnN8Lf1q60S4sXKHHoqbP4nTaZ7R482
+         pLDrGTgUDevu5d0wTHFzQreHmZEDbGaA4eteV0a4gxSo3d7kEy382HSg/s5IGUuA25
+         WvpR7HyWiRIHw==
 Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id DCE7F60077;
-        Sat,  9 Jan 2021 03:30:08 +0000 (UTC)
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id B2B8160077;
+        Sat,  9 Jan 2021 03:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ppp: clean up endianness conversions
+Subject: Re: [PATCH net 0/3] net: fix issues around register_netdevice() failures
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161016300890.29520.2938029470091032165.git-patchwork-notify@kernel.org>
-Date:   Sat, 09 Jan 2021 03:30:08 +0000
-References: <20210107143956.25549-1-jwi@linux.ibm.com>
-In-Reply-To: <20210107143956.25549-1-jwi@linux.ibm.com>
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        xeb@mail.ru
+Message-Id: <161016360872.369.12946201469501614847.git-patchwork-notify@kernel.org>
+Date:   Sat, 09 Jan 2021 03:40:08 +0000
+References: <20210106184007.1821480-1-kuba@kernel.org>
+In-Reply-To: <20210106184007.1821480-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, f.fainelli@gmail.com,
+        xiyou.wangcong@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Thu,  7 Jan 2021 15:39:56 +0100 you wrote:
-> sparse complains about some harmless endianness issues:
+On Wed,  6 Jan 2021 10:40:04 -0800 you wrote:
+> This series attempts to clean up the life cycle of struct
+> net_device. Dave has added dev->needs_free_netdev in the
+> past to fix double frees, we can lean on that mechanism
+> a little more to fix remaining issues with register_netdevice().
 > 
-> > drivers/net/ppp/pptp.c:281:21: warning: incorrect type in assignment (different base types)
-> > drivers/net/ppp/pptp.c:281:21:    expected unsigned int [usertype] ack
-> > drivers/net/ppp/pptp.c:281:21:    got restricted __be32
-> > drivers/net/ppp/pptp.c:283:23: warning: cast to restricted __be32
+> This is the next chapter of the saga which already includes:
+> commit 0e0eee2465df ("net: correct error path in rtnl_newlink()")
+> commit e51fb152318e ("rtnetlink: fix a memory leak when ->newlink fails")
+> commit cf124db566e6 ("net: Fix inconsistent teardown and release of private netdev state.")
+> commit 93ee31f14f6f ("[NET]: Fix free_netdev on register_netdev failure.")
+> commit 814152a89ed5 ("net: fix memleak in register_netdevice()")
+> commit 10cc514f451a ("net: Fix null de-reference of device refcount")
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] ppp: clean up endianness conversions
-    https://git.kernel.org/netdev/net-next/c/09b5b5fb3902
+  - [net,1/3] docs: net: explain struct net_device lifetime
+    https://git.kernel.org/netdev/net/c/2b446e650b41
+  - [net,2/3] net: make free_netdev() more lenient with unregistering devices
+    https://git.kernel.org/netdev/net/c/c269a24ce057
+  - [net,3/3] net: make sure devices go through netdev_wait_all_refs
+    https://git.kernel.org/netdev/net/c/766b0515d5be
 
 You are awesome, thank you!
 --
