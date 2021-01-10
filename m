@@ -2,120 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C7C2F06F8
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 13:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1A32F0712
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 13:16:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbhAJL7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 06:59:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37416 "EHLO
+        id S1726475AbhAJMQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 07:16:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726281AbhAJL73 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 06:59:29 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D525EC061786
-        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 03:58:48 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id a12so13429578wrv.8
-        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 03:58:48 -0800 (PST)
+        with ESMTP id S1726250AbhAJMQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 07:16:15 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 483FAC0617A2;
+        Sun, 10 Jan 2021 04:15:35 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id t6so8056532plq.1;
+        Sun, 10 Jan 2021 04:15:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VOETL7gEzkQ/orNVR7vG9RCP5ZswGFgScTdaUs8p7Js=;
-        b=W9QpH/ygwsdRLt2Wo6FWcSNCUM5yAm9kTqpanlt0d3jcZLM49lTazaIHqbVrqcC0CO
-         CwHgolZoxtiR36W4n+znvX+zfr/h839gt38AQYTdOwoV5NjLMJfKyf2DiaZ3PD36JUCv
-         BsB/ro/0moCvSyHZyUgz3ytdQagc2Q+5aei5OznhXAS6tJpXRtuR51pMdQSSySavXhDj
-         2gKcgNGyyzyqg7QLuubVwHq6oDhvCuW5AGPpDUq65XdSkeJICyNZPBDLq7RGC5ANTluP
-         MVCttCq9Z7kkhQpgXFFP5k8OHtLf7hDxFkUq29Z70EGHE+ORzY+/iBrH/fk8XXOLXHg2
-         fW1w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=q8foebQUtGdCypSWJHLEUtXdb+11eXd3D5tTzSpdHi4=;
+        b=vNDO9XhNgi/jOXglfVW3ZDrJ5XjA2pAAJAQldBivQ6k/3l0t/ppYVQf1WyZRo7D+Hz
+         yTpy3C5ucWyI0VaCiJ3riJ2WkfebApRChkHJjaRXPdU5ke5SpEbHFCeXKy7HNxgQUShj
+         Nt+veaMh37f22kyJdF49JHLJSIdg/c4QOnhzLsiuIK+51luEOEtYZoJcXLUJE+K2ZsMC
+         o4aeb9hdQB7ROZMI/vD85fp5OQ6nfw8rerbgnKqrEYfxbSiU5CNIUAI75M7vsl9i+EPn
+         EdBeXtGNzID7aurrJFumDCc6Jd5xLhxXA5eVtcsbroX69D8EM3BcricRUP+a7ANu7Tvd
+         X58A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VOETL7gEzkQ/orNVR7vG9RCP5ZswGFgScTdaUs8p7Js=;
-        b=uUzLYV1ISffHCkUveJV8h/jnif13x5uK5UYBIydKCKN+5M4s9B9e1c62hwFF1UdGjx
-         bnQw0yHL4vRUXEn0Gd4yzNOrLNTRwk200XpVFCsKeXs8O6DLVWFef6Qnyc3qrFrnuN8x
-         RVDn9G/HuCJBjIrklcoIOH84qECQJrXHtTIbWq+GybUJtd95jdDI0nSnQk77G2kSkBTw
-         Gwslsjq9nh0omFKMXUBsW/4FH2bCx40Aay8j135y4AWxYhcykc6qZhozq3h0hj04athq
-         cXmqI3j3RoyA2TSufieM7rgTmuSZizU4NyXtcTOwPrOmnkrT5VKnf9f//T+9PAao6mh5
-         JqZw==
-X-Gm-Message-State: AOAM533pFmBQ1hdbSaeh2jcbt38Qc2v37Qpx9yL3WZFhPwpHw4IFK2BS
-        BKVM/AV6i6FitoX5RDVMleeeNTWgtkU=
-X-Google-Smtp-Source: ABdhPJzLF7emAnBWHw1l2qVKu8xu3Kr+f8mj6KQgVk0NzdgphRnJikk6IyMo0aIEp6mRwZu9kwwClw==
-X-Received: by 2002:a5d:6209:: with SMTP id y9mr11902445wru.197.1610279927415;
-        Sun, 10 Jan 2021 03:58:47 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:45c0:cdfd:d838:af6f? (p200300ea8f06550045c0cdfdd838af6f.dip0.t-ipconnect.de. [2003:ea:8f06:5500:45c0:cdfd:d838:af6f])
-        by smtp.googlemail.com with ESMTPSA id k128sm19107623wma.43.2021.01.10.03.58.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Jan 2021 03:58:46 -0800 (PST)
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <fb6ff074-a9c3-94ce-0636-52276d8604f2@gmail.com>
- <20210109181744.6b53c946@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next] r8169: deprecate support for RTL_GIGA_MAC_VER_27
-Message-ID: <facbe27f-3b5e-6dc2-8837-e3989b178847@gmail.com>
-Date:   Sun, 10 Jan 2021 12:58:40 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-MIME-Version: 1.0
-In-Reply-To: <20210109181744.6b53c946@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=q8foebQUtGdCypSWJHLEUtXdb+11eXd3D5tTzSpdHi4=;
+        b=Re4ZqaBEE4LIalq82ox0nRIKlgrHj6YPAYynaof5K1p2kR/i3hPbzzFI9immMQU7qV
+         BppnD6Zb88uXooSmHZbi3hoE/5MH4XyX1DxdfghK3k8jF+nnkJST4CcSDTTOgpGieLXi
+         CsH9Gc1wOgxz/b0dZfHGRNVZCCY5t/DIDUKvKXCJrOShTI7KFY6w82aD2M98thHFZD6B
+         C4zXvrsgoMzxFvhkTOfRNlH9QsbwGeLyvMcMrEgyXfJyspDClA85sDW0vS5wIFsXHzIf
+         3EcyjYX6xb7Wd166tMny8K9G/silLES4GEtcDCXJ2rMxmJ/wU3J5/TPflFAcPWE49x9M
+         S6YA==
+X-Gm-Message-State: AOAM533ZjUOrhr8960PsnwnpJL48tdLlcSq5IPUDM5KCy1jNpkz0xr+X
+        HX1BZ5lre2gGClBxyWYM4O8YnhcuURIAq5BP
+X-Google-Smtp-Source: ABdhPJy2YzfzC41j6G3vg4QRgtbHlF/H61TP8HB26CIho8E4kTDY1jTU3xlowlN1CWMlCMlTo96GgQ==
+X-Received: by 2002:a17:902:228:b029:da:6be8:ee22 with SMTP id 37-20020a1709020228b02900da6be8ee22mr12244804plc.44.1610280934403;
+        Sun, 10 Jan 2021 04:15:34 -0800 (PST)
+Received: from localhost.localdomain ([2405:201:600d:a089:381d:ba42:3c3c:81ce])
+        by smtp.googlemail.com with ESMTPSA id y5sm10959791pjt.42.2021.01.10.04.15.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Jan 2021 04:15:33 -0800 (PST)
+From:   Aditya Srivastava <yashsri421@gmail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        lukas.bulwahn@gmail.com, yashsri421@gmail.com
+Subject: [PATCH 0/5] rtlwifi: fix bool comparison in expressions
+Date:   Sun, 10 Jan 2021 17:45:20 +0530
+Message-Id: <20210110121525.2407-1-yashsri421@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <3c121981-1468-fc9d-7813-483246066cc4@lwfinger.net>
+References: <3c121981-1468-fc9d-7813-483246066cc4@lwfinger.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.01.2021 03:17, Jakub Kicinski wrote:
-> On Fri, 8 Jan 2021 13:24:16 +0100 Heiner Kallweit wrote:
->> RTL8168dp is ancient anyway, and I haven't seen any trace of its early
->> version 27 yet. This chip versions needs quite some special handling,
->> therefore it would facilitate driver maintenance if support for it
->> could be dropped. For now just disable detection of this chip version.
->> If nobody complains we can remove support for it in the near future.
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/ethernet/realtek/r8169_main.c | 6 +++++-
->>  1 file changed, 5 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
->> index e72d8f3ae..f94965615 100644
->> --- a/drivers/net/ethernet/realtek/r8169_main.c
->> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->> @@ -1962,7 +1962,11 @@ static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
->>  		{ 0x7c8, 0x280,	RTL_GIGA_MAC_VER_26 },
->>  
->>  		/* 8168DP family. */
->> -		{ 0x7cf, 0x288,	RTL_GIGA_MAC_VER_27 },
->> +		/* It seems this early RTL8168dp version never made it to
->> +		 * the wild. Let's see whether somebody complains, if not
->> +		 * we'll remove support for this chip version completely.
->> +		 * { 0x7cf, 0x288,      RTL_GIGA_MAC_VER_27 },
->> +		 */
->>  		{ 0x7cf, 0x28a,	RTL_GIGA_MAC_VER_28 },
->>  		{ 0x7cf, 0x28b,	RTL_GIGA_MAC_VER_31 },
->>  
-> 
-> No objection to deprecating the support (although quick grep does not
-> reveal the special handling you speak of), but would it make sense to
-> also print some message to save the potential user out there debug time?
+This patch series fixes the bool comparison in conditional expressions
+for all the drivers in rtlwifi.
 
-Version 27 has it's own way of handling MDIO access, we could get rid of
-r8168dp_1_mdio_access(), r8168dp_1_mdio_write(), r8168dp_1_mdio_read(),
-and also of the chip-specific PHY config rtl8168d_3_hw_phy_config().
+There are certain conditional expressions in rtlwifi drivers, where a
+boolean variable is compared with true/false, in forms such as
+(foo == true) or (false != bar), which does not comply with checkpatch.pl
+(CHECK: BOOL_COMPARISON), according to which boolean variables should be
+themselves used in the condition, rather than comparing with true/false
 
-> Something like:
-> 
-> 	dev_err(dev, "support for device has been removed please contact <email>");
-> 
-So far we'd emit the following error in dmesg: "unknown chip XID 288".
-I agree that we should add a hint to contact the maintainers, this may help
-also in case somebody has a system with a new, not yet supported chip version.
+E.g., in drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c,
+"if (mac->act_scanning == true)" can be replaced with
+"if (mac->act_scanning)"
 
-> ?
-> 
+Fix all such expressions with the bool variables appropriately for all
+the drivers in rtlwifi
+
+* The changes made are compile tested.
+* The patches apply perfectly on next-20210108
+
+Aditya Srivastava (5):
+  rtlwifi: rtl_pci: fix bool comparison in expressions
+  rtlwifi: rtl8192c-common: fix bool comparison in expressions
+  rtlwifi: rtl8188ee: fix bool comparison in expressions
+  rtlwifi: rtl8192se: fix bool comparison in expressions
+  rtlwifi: rtl8821ae: fix bool comparison in expressions
+
+ drivers/net/wireless/realtek/rtlwifi/ps.c                 | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c       | 8 ++++----
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c       | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c       | 4 ++--
+ drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c      | 8 ++++----
+ 6 files changed, 16 insertions(+), 16 deletions(-)
+
+-- 
+2.17.1
 
