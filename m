@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ABB62F0721
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 13:18:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6273D2F071D
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 13:16:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726699AbhAJMQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726735AbhAJMQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 10 Jan 2021 07:16:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726250AbhAJMQn (ORCPT
+        with ESMTP id S1726666AbhAJMQn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 07:16:43 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB6FC0617A5;
-        Sun, 10 Jan 2021 04:15:47 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id p12so6106037pju.5;
-        Sun, 10 Jan 2021 04:15:47 -0800 (PST)
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CA6C0617A6;
+        Sun, 10 Jan 2021 04:15:52 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id n7so10784863pgg.2;
+        Sun, 10 Jan 2021 04:15:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=pDEEvJ1raRHovODvVibZtDrKwCKJS8ji5cQnuEVu9AU=;
-        b=MBjX5Y9FARb2FMBMlNC5DaPzVJYt9sa0Habl/+AgRVKXnklO3mQ3Kd95BGdG0h4APM
-         Y+YhKW270hNPN+GAlVuc4n7KgSHwgA5WKEjy1BcdubFnuwKO8+dFnzebnz0KwgUB3Rd7
-         EeYcBgAIxt8GKk5zamNAft+QCWbaN83hW0eE/igQZUxbq6tQFRONrDFEhCKJJewbmbWj
-         XHdRg1Fo4UDU9iSoqqfJWkyTgNdgL+lovu2OlyB18snHusjCtYJ3EP7sFoindhpY5Dsv
-         oF1aH8pNj5jyHsnjgV7qj3Gpfa2gmE2lMkQbVgzoCKUPYWb9GuNGamnmhXq7ElclRLK8
-         4SWw==
+        bh=YTc1II9ACj1oYqqot33qA4ayP2h78MhFEqKnLEwd3cg=;
+        b=lXlNqKSB1WT/06xJmknbydbtn2KROIF2e+XrhojUPkwwXA95s5qNeAjiMvf6EFlNtU
+         doaXT8YzHMJ8VPtoN/VE2eTLvx3nqNfou5cnpvekM/BQlr9Ys6cLi6J5Jokqq3NL9lsd
+         uXhygadpsGlzxXbsOg23Rz8ygs5t9F+I9TBOaOxkRzV36M2qukJqtCYr3nF6sQg9x9Qn
+         ACVBKxuCoeEOdDkLF7yp4JRSNsr2w+Pc0M3ta2VehMbIcnu2b5duS7on/ReNn+qFmzuC
+         UtWX0Klp42c3t45FsFHCTI1yJtJusT5m3M57SIrPizFM2DzadEdnrNKFhPNWU3dBe5p9
+         OIzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=pDEEvJ1raRHovODvVibZtDrKwCKJS8ji5cQnuEVu9AU=;
-        b=jNgFCXVojVSY73yoBMfal0GXp05Lw1ETx5leC4hFdlCbu3ckb+/7wzIQ2K2qrHNwaY
-         Xa9NyRq8mQtNbYurc4ZfJGMuYD2qx6DOVl+VJAZzNhTiDFIT8tovKQoAOWeccr8gWTbN
-         xcBU46UIS5PquAwFhTbk/I6ISg163Sm70eA/iBt2+pE9NJupdL9swv4cidCRa2HDrKji
-         0MX9JLE3PoMTPWLxyEQ0NO4AUvDYoqop7JcBcghx0Bp+t6RHtpXGVKbk9s9m6asJ4cNQ
-         WPK+FpsWYjx/XRkI438dnjQax6ddn3fcPW6ZJD0NbQr6Whng9AfNsfHVeLZUr83MwcXp
-         fujw==
-X-Gm-Message-State: AOAM533AWwVBWlxONHh/j1OjvrHh4FVrRclxrhMReOFdZSfQ0VFGJVZ6
-        66XIVEH6+sqP0UW2V45BfvzXds960M1whA==
-X-Google-Smtp-Source: ABdhPJwmOW2gS/r2V+OiuIjnYnknqXowh5GM0aAdpna5+cM/rvaentF8D04RcnV2A9dHu71MAGaQ9Q==
-X-Received: by 2002:a17:90b:1945:: with SMTP id nk5mr12666347pjb.30.1610280947142;
-        Sun, 10 Jan 2021 04:15:47 -0800 (PST)
+        bh=YTc1II9ACj1oYqqot33qA4ayP2h78MhFEqKnLEwd3cg=;
+        b=W+zZGb2whO9gmcvH97aPWk4BYPeohdoslfW98n5dWum1DtZ9DAJoemjYk87MIgFpY9
+         cN7L1f/uP4DyEsEZZvimgzgzR3Wg4L/WnIpUtBs75rrXosDlqNo8KS4iExFegLkYPOfm
+         uwoZMC64cDiVzTC0kRkQx7MLNm+opgcLBqfXexgOsrsie/QEqJ/yib6RpaaO3DDLBAmb
+         newcr2WF+JPK2nIChVmVYl6XjDRxni54BtK8jbBFRjeyr82jyzbORm7YeunlkqYVqahl
+         zLJxtQErUBpV86LF9DzsyJYiwUFsXkzjUky38C58L7vuLgyez7H6VWFk3Sjy9goQ99vY
+         GK4w==
+X-Gm-Message-State: AOAM5328yMj0ckvUcqnuizfWgsvzLxOUx6Q3aZSSYqwoibV6lTJacSXZ
+        OdX6rsh4YfgS2t1zCOT74T1E3HJrjfTbsQ==
+X-Google-Smtp-Source: ABdhPJyweUMzxtoGdLkP4eQrEr3IkevhAfKwZ7liWN3FD2t4BNbzorjUd4KIR2CEX4FkHGgx4/b3dw==
+X-Received: by 2002:aa7:970f:0:b029:19e:758b:dab1 with SMTP id a15-20020aa7970f0000b029019e758bdab1mr15239229pfg.24.1610280951963;
+        Sun, 10 Jan 2021 04:15:51 -0800 (PST)
 Received: from localhost.localdomain ([2405:201:600d:a089:381d:ba42:3c3c:81ce])
-        by smtp.googlemail.com with ESMTPSA id y5sm10959791pjt.42.2021.01.10.04.15.43
+        by smtp.googlemail.com with ESMTPSA id y5sm10959791pjt.42.2021.01.10.04.15.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jan 2021 04:15:46 -0800 (PST)
+        Sun, 10 Jan 2021 04:15:51 -0800 (PST)
 From:   Aditya Srivastava <yashsri421@gmail.com>
 To:     linux-wireless@vger.kernel.org
 Cc:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
@@ -53,9 +53,9 @@ Cc:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
         linux-kernel@vger.kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         lukas.bulwahn@gmail.com, yashsri421@gmail.com
-Subject: [PATCH 3/5] rtlwifi: rtl8188ee: fix bool comparison in expressions
-Date:   Sun, 10 Jan 2021 17:45:23 +0530
-Message-Id: <20210110121525.2407-4-yashsri421@gmail.com>
+Subject: [PATCH 4/5] rtlwifi: rtl8192se: fix bool comparison in expressions
+Date:   Sun, 10 Jan 2021 17:45:24 +0530
+Message-Id: <20210110121525.2407-5-yashsri421@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210110121525.2407-1-yashsri421@gmail.com>
 References: <3c121981-1468-fc9d-7813-483246066cc4@lwfinger.net>
@@ -64,71 +64,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are certain conditional expressions in rtl8188ee, where a boolean
+There are certain conditional expressions in rtl8192se, where a boolean
 variable is compared with true/false, in forms such as (foo == true) or
 (false != bar), which does not comply with checkpatch.pl (CHECK:
 BOOL_COMPARISON), according to which boolean variables should be
 themselves used in the condition, rather than comparing with true/false
 
-E.g., in drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c,
-"if (mac->act_scanning == true)" can be replaced with
-"if (mac->act_scanning)"
-
 Replace all such expressions with the bool variables appropriately
 
 Signed-off-by: Aditya Srivastava <yashsri421@gmail.com>
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c | 8 ++++----
- drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c | 4 ++--
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
-index d10c14c694da..6f61d6a10627 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/dm.c
-@@ -474,11 +474,11 @@ static void rtl88e_dm_dig(struct ieee80211_hw *hw)
- 	u8 dm_dig_max, dm_dig_min;
- 	u8 current_igi = dm_dig->cur_igvalue;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+index 47fabce5c235..73a5d8a068fc 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+@@ -458,7 +458,7 @@ static u8 _rtl92se_halset_sysclk(struct ieee80211_hw *hw, u8 data)
+ 	tmpvalue = rtl_read_byte(rtlpriv, SYS_CLKR + 1);
+ 	bresult = ((tmpvalue & BIT(7)) == (data & BIT(7)));
  
--	if (rtlpriv->dm.dm_initialgain_enable == false)
-+	if (!rtlpriv->dm.dm_initialgain_enable)
- 		return;
--	if (dm_dig->dig_enable_flag == false)
-+	if (!dm_dig->dig_enable_flag)
- 		return;
--	if (mac->act_scanning == true)
-+	if (mac->act_scanning)
- 		return;
+-	if ((data & (BIT(6) | BIT(7))) == false) {
++	if (!(data & (BIT(6) | BIT(7)))) {
+ 		waitcount = 100;
+ 		tmpvalue = 0;
  
- 	if (mac->link_state >= MAC80211_LINKED)
-@@ -1637,7 +1637,7 @@ static void rtl88e_dm_fast_ant_training(struct ieee80211_hw *hw)
- 			}
- 		}
+@@ -1268,7 +1268,7 @@ static u8 _rtl92s_set_sysclk(struct ieee80211_hw *hw, u8 data)
+ 	tmp = rtl_read_byte(rtlpriv, SYS_CLKR + 1);
+ 	result = ((tmp & BIT(7)) == (data & BIT(7)));
  
--		if (bpkt_filter_match == false) {
-+		if (!bpkt_filter_match) {
- 			rtl_set_bbreg(hw, DM_REG_TXAGC_A_1_MCS32_11N,
- 				      BIT(16), 0);
- 			rtl_set_bbreg(hw, DM_REG_IGI_A_11N, BIT(7), 0);
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
-index bd9160b166c5..861cc663ca93 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
-@@ -1269,12 +1269,12 @@ void rtl88ee_set_check_bssid(struct ieee80211_hw *hw, bool check_bssid)
- 	if (rtlpriv->psc.rfpwr_state != ERFON)
- 		return;
+-	if ((data & (BIT(6) | BIT(7))) == false) {
++	if (!(data & (BIT(6) | BIT(7)))) {
+ 		waitcnt = 100;
+ 		tmp = 0;
  
--	if (check_bssid == true) {
-+	if (check_bssid) {
- 		reg_rcr |= (RCR_CBSSID_DATA | RCR_CBSSID_BCN);
- 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_RCR,
- 					      (u8 *)(&reg_rcr));
- 		_rtl88ee_set_bcn_ctrl_reg(hw, 0, BIT(4));
--	} else if (check_bssid == false) {
-+	} else if (!check_bssid) {
- 		reg_rcr &= (~(RCR_CBSSID_DATA | RCR_CBSSID_BCN));
- 		_rtl88ee_set_bcn_ctrl_reg(hw, BIT(4), 0);
- 		rtlpriv->cfg->ops->set_hw_reg(hw,
 -- 
 2.17.1
 
