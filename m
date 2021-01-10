@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E09D2F04E0
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 04:29:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3014E2F04E8
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 04:31:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726456AbhAJD1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 22:27:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33536 "EHLO mail.kernel.org"
+        id S1726468AbhAJDat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 22:30:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33752 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726132AbhAJD1o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 22:27:44 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C97C8229C4;
-        Sun, 10 Jan 2021 03:27:03 +0000 (UTC)
+        id S1726245AbhAJDat (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 22:30:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7C9B622A99;
+        Sun, 10 Jan 2021 03:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610249224;
-        bh=Uic+0LRNxWzv++QYnBmc9MDz8Rfd+71nxprZcQI82Js=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N+ypcv/a3t5zekJqpLmJlxSBIW39God7frh+I+qCWoGFwg6PjpBBAd/mYqM7m92Xy
-         wBNCGjMFca0AE5WLFjr49nP634gVRn68xMDmIlzXEFMLG7EMtV//l5k+tzpd7aHGrh
-         KOCdLXkL7Gt2zYGF4+08WRg03e/P9vTg++H27UNituVlrJZObX4N0WqMfzf+HviY+o
-         RUdGZ7UuL0N7lPYFPNsrOV4ayIpkoBd8WDLQ1Evb0/fcUuVvxs0Fb860xO+SzjxuBB
-         EGFBuZldJxRCkf0+R8DDm1ILWPv7rLPLFTCPXJfPi94cAbNzQRO54Oxd8e1KsDv0m9
-         2tNY0zd/VyX/g==
-Date:   Sat, 9 Jan 2021 19:27:02 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pravin B Shelar <pbshelar@fb.com>
-Cc:     <netdev@vger.kernel.org>, <pablo@netfilter.org>,
-        <laforge@gnumonks.org>, <jonas@norrbonn.se>, <pravin.ovn@gmail.com>
-Subject: Re: [PATCH net-next v4] GTP: add support for flow based tunneling
- API
-Message-ID: <20210109192702.1b88a25a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210106044505.47535-1-pbshelar@fb.com>
-References: <20210106044505.47535-1-pbshelar@fb.com>
+        s=k20201202; t=1610249408;
+        bh=3C7MHNz3pETE3F/EyTHofQk98d9pjJiQNYx17xWFBpk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pUJVxvKXmt60G4Igp7yF0e07xJn9talnM9trFXlsMAtCYFIfbe5OuV4SUhyfD5ueU
+         qpV1tdq/sv85PPSLslDIGqN2ija9cLfALt8/mZQ/+ePPK2r8L+X1kVJuZLb2nROPYk
+         LGQSA5qX0DUtYihkDdQ7isAc1F19TM3vOK5PfFAcxRkypPSOp2H/sIv4dLKI3wFoXZ
+         vlpLQuc//TwhCuJ3Oxp4P4pIH6gcBLh3RWkFVZv14D3Epx7NQz14nNzkIVP9mVy1Wo
+         m3Z+efT9wu2lk3hpk+nmIaTwA6AkivoL3kfJDvvxt8cY/FwaDdrA3eHul2A1EacS//
+         zCZZVbLxeIH5g==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 6D2B760387;
+        Sun, 10 Jan 2021 03:30:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V2 net-next 1/3] dt-bindings: net: convert Broadcom
+ Starfighter 2 binding to the json-schema
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161024940843.23531.2102406845233167916.git-patchwork-notify@kernel.org>
+Date:   Sun, 10 Jan 2021 03:30:08 +0000
+References: <20210106213202.17459-1-zajec5@gmail.com>
+In-Reply-To: <20210106213202.17459-1-zajec5@gmail.com>
+To:     =?utf-8?b?UmFmYcWCIE1pxYJlY2tpIDx6YWplYzVAZ21haWwuY29tPg==?=@ci.codeaurora.org
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        rafal@milecki.pl
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  5 Jan 2021 20:45:05 -0800 Pravin B Shelar wrote:
-> @@ -477,40 +572,99 @@ static int gtp_build_skb_ip4(struct sk_buff *skb, struct net_device *dev,
->  			     struct gtp_pktinfo *pktinfo)
->  {
->  	struct gtp_dev *gtp = netdev_priv(dev);
-> +	struct gtpu_metadata *opts = NULL;
->  	struct pdp_ctx *pctx;
->  	struct rtable *rt;
->  	struct flowi4 fl4;
-> -	struct iphdr *iph;
-> -	__be16 df;
-> +	struct sock *sk = NULL;
-> +	__be32 tun_id;
-> +	__be32 daddr;
-> +	__be32 saddr;
-> +	u8 gtp_version;
->  	int mtu;
-> +	__u8 tos;
-> +	__be16 df = 0;
+Hello:
 
-Please hold rev xmas tree.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-> @@ -706,6 +895,7 @@ static void gtp_dellink(struct net_device *dev, struct list_head *head)
->  			pdp_context_delete(pctx);
->  
->  	list_del_rcu(&gtp->list);
-> +
->  	unregister_netdevice_queue(dev, head);
->  }
->  
+On Wed,  6 Jan 2021 22:32:00 +0100 you wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> This helps validating DTS files. Only the current (not deprecated one)
+> binding was converted.
+> 
+> Minor changes:
+> 1. Dropped dsa/dsa.txt references
+> 2. Updated node name to match dsa.yaml requirement
+> 3. Fixed 2 typos in examples
+> 
+> [...]
 
-Unrelated whitespace change.
+Here is the summary with links:
+  - [V2,net-next,1/3] dt-bindings: net: convert Broadcom Starfighter 2 binding to the json-schema
+    https://git.kernel.org/netdev/net-next/c/c7ee3a40e76c
+  - [V2,net-next,2/3] dt-bindings: net: dsa: sf2: add BCM4908 switch binding
+    https://git.kernel.org/netdev/net-next/c/41bb4b087783
+  - [V2,net-next,3/3] net: dsa: bcm_sf2: support BCM4908's integrated switch
+    https://git.kernel.org/netdev/net-next/c/73b7a6047971
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
