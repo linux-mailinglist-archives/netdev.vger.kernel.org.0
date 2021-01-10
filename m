@@ -2,63 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 504812F0483
+	by mail.lfdr.de (Postfix) with ESMTP id BC3742F0484
 	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 01:22:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbhAJATg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 19:19:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52620 "EHLO mail.kernel.org"
+        id S1726315AbhAJATh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 19:19:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52636 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
         id S1726062AbhAJATg (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 9 Jan 2021 19:19:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 234BE2388A;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C964D2389B;
         Sun, 10 Jan 2021 00:18:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610237935;
-        bh=89IEbIv/zBauo1jPANVi6Sicq1KNOKL6cCPni7pVWtc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eNiKHzSHoeYHQ5KYcBXCL1ohgfL3j+0YbRW5eSYy11PJZKkBcCJiabgTibxziX7go
-         1ngfU6u7vBd23ynBz9Z7I2mFNv+o6l1+irUTt9wpbvbTgXZn8U9hW0mVtmKI4Xesl1
-         Cixg7Yo3AbFmDXAZXqrK9G9ZeeJFwVea8yYJ42qhYyZYKArWfVosd2CT+56gzMjO55
-         3aGQA889uK/suwVazCnZ7UkoFe/ol85ql6DYaocwDDJ8XWcByaYCvUAbBl/q2v6Ern
-         /058EKA7h+frD8GZAN/7stQoruuEdFuwS56v7j/qDpwXAnszZ0GzEgQ2pizWfOtO6P
-         OfIM1IKh/55tA==
+        s=k20201202; t=1610237936;
+        bh=AXL/SfAhp3iipMrDDhPgxZ5OeO7xe0IeTSwbThZ9jfU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VDptoICBnnljPOMxnjhzkCIg35f4ekGt1VuV2Ny0cXpgy0FTaNviDtHFzCTPDouee
+         ybMcdB3WqRdxNZYws7EY1oSHXnpxh21BZfS3H4ld221yYiwKkxhXF+8FlLLO5nhlAj
+         7XR5PtVljUWQti8WpUOg4Lj34s7ZAAySWYIBCaNCvzIQ7n4U8r24r7jrDouM3ICpCa
+         s3in82nZ01lFxEkCkOnWJN2SyM4KzOIDi1wlsBhwDwngSwn8LIS/yJQJfpMKMTaweQ
+         3zUtk0cyPCd68GevEEdLl05iwSicHuMnGwFdRiGmsZejOf4t63gvvXEV2Z7C2Ay9Uv
+         RtFvkwDJtx9fQ==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
-        David Ahern <dsahern@kernel.org>
-Subject: [PATCH net-next v2 00/11] selftests: Updates to allow single instance of nettest for client and server
-Date:   Sat,  9 Jan 2021 17:18:41 -0700
-Message-Id: <20210110001852.35653-1-dsahern@kernel.org>
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next v2 01/11] selftests: Move device validation in nettest
+Date:   Sat,  9 Jan 2021 17:18:42 -0700
+Message-Id: <20210110001852.35653-2-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+In-Reply-To: <20210110001852.35653-1-dsahern@kernel.org>
+References: <20210110001852.35653-1-dsahern@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update nettest to handle namespace change internally to allow a
-single instance to run both client and server modes. Device validation
-needs to be moved after the namespace change and a few run time
-options need to be split to allow values for client and server.
+From: David Ahern <dsahern@gmail.com>
 
-David Ahern (11):
-  selftests: Move device validation in nettest
-  selftests: Move convert_addr up in nettest
-  selftests: Move address validation in nettest
-  selftests: Add options to set network namespace to nettest
-  selftests: Add support to nettest to run both client and server
-  selftests: Use separate stdout and stderr buffers in nettest
-  selftests: Add missing newline in nettest error messages
-  selftests: Make address validation apply only to client mode
-  selftests: Consistently specify address for MD5 protection
-  selftests: Add new option for client-side passwords
-  selftests: Add separate options for server device bindings
+Later patch adds support for switching network namespaces before
+running client, server or both. Device validations need to be
+done after the network namespace switch, so add a helper to do it
+and invoke in server and client code versus inline with argument
+parsing. Move related argument checks as well.
 
- tools/testing/selftests/net/fcnal-test.sh | 398 +++++++--------
- tools/testing/selftests/net/nettest.c     | 576 +++++++++++++++-------
- 2 files changed, 595 insertions(+), 379 deletions(-)
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+ tools/testing/selftests/net/nettest.c | 64 ++++++++++++++++++---------
+ 1 file changed, 42 insertions(+), 22 deletions(-)
 
+diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
+index f75c53ce0a2d..2bb06a3e6880 100644
+--- a/tools/testing/selftests/net/nettest.c
++++ b/tools/testing/selftests/net/nettest.c
+@@ -84,6 +84,7 @@ struct sock_args {
+ 	unsigned int prefix_len;
+ 
+ 	/* expected addresses and device index for connection */
++	const char *expected_dev;
+ 	int expected_ifindex;
+ 
+ 	/* local address */
+@@ -522,6 +523,33 @@ static int str_to_uint(const char *str, int min, int max, unsigned int *value)
+ 	return -1;
+ }
+ 
++static int resolve_devices(struct sock_args *args)
++{
++	if (args->dev) {
++		args->ifindex = get_ifidx(args->dev);
++		if (args->ifindex < 0) {
++			log_error("Invalid device name\n");
++			return 1;
++		}
++	}
++
++	if (args->expected_dev) {
++		unsigned int tmp;
++
++		if (str_to_uint(args->expected_dev, 0, INT_MAX, &tmp) == 0) {
++			args->expected_ifindex = (int)tmp;
++		} else {
++			args->expected_ifindex = get_ifidx(args->expected_dev);
++			if (args->expected_ifindex < 0) {
++				fprintf(stderr, "Invalid expected device\n");
++				return 1;
++			}
++		}
++	}
++
++	return 0;
++}
++
+ static int expected_addr_match(struct sockaddr *sa, void *expected,
+ 			       const char *desc)
+ {
+@@ -1190,6 +1218,9 @@ static int do_server(struct sock_args *args)
+ 	fd_set rfds;
+ 	int rc;
+ 
++	if (resolve_devices(args))
++		return 1;
++
+ 	if (prog_timeout)
+ 		ptval = &timeout;
+ 
+@@ -1375,6 +1406,16 @@ static int do_client(struct sock_args *args)
+ 		return 1;
+ 	}
+ 
++	if (resolve_devices(args))
++		return 1;
++
++	if ((args->use_setsockopt || args->use_cmsg) && !args->ifindex) {
++		fprintf(stderr, "Device binding not specified\n");
++		return 1;
++	}
++	if (args->use_setsockopt || args->use_cmsg)
++		args->dev = NULL;
++
+ 	switch (args->version) {
+ 	case AF_INET:
+ 		sin.sin_port = htons(args->port);
+@@ -1703,11 +1744,6 @@ int main(int argc, char *argv[])
+ 			break;
+ 		case 'd':
+ 			args.dev = optarg;
+-			args.ifindex = get_ifidx(optarg);
+-			if (args.ifindex < 0) {
+-				fprintf(stderr, "Invalid device name\n");
+-				return 1;
+-			}
+ 			break;
+ 		case 'i':
+ 			interactive = 1;
+@@ -1738,16 +1774,7 @@ int main(int argc, char *argv[])
+ 
+ 			break;
+ 		case '2':
+-			if (str_to_uint(optarg, 0, INT_MAX, &tmp) == 0) {
+-				args.expected_ifindex = (int)tmp;
+-			} else {
+-				args.expected_ifindex = get_ifidx(optarg);
+-				if (args.expected_ifindex < 0) {
+-					fprintf(stderr,
+-						"Invalid expected device\n");
+-					return 1;
+-				}
+-			}
++			args.expected_dev = optarg;
+ 			break;
+ 		case 'q':
+ 			quiet = 1;
+@@ -1769,13 +1796,6 @@ int main(int argc, char *argv[])
+ 		return 1;
+ 	}
+ 
+-	if ((args.use_setsockopt || args.use_cmsg) && !args.ifindex) {
+-		fprintf(stderr, "Device binding not specified\n");
+-		return 1;
+-	}
+-	if (args.use_setsockopt || args.use_cmsg)
+-		args.dev = NULL;
+-
+ 	if (iter == 0) {
+ 		fprintf(stderr, "Invalid number of messages to send\n");
+ 		return 1;
 -- 
 2.24.3 (Apple Git-128)
 
