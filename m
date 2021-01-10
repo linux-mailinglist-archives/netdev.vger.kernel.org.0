@@ -2,87 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9619E2F0686
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 12:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6E52F068A
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 12:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726414AbhAJK7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 05:59:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
+        id S1726507AbhAJLAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 06:00:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726385AbhAJK7e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 05:59:34 -0500
+        with ESMTP id S1726490AbhAJLAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 06:00:03 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE908C06179F
-        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 02:58:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BA3C0617A3
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 02:59:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=c1hRthT9Qdvy627OWItLpImU4re/agKR/kznKDtpav8=; b=GI/EK5/Jp1u4uxwTl+HpJmt9Yv
-        nSEJfyX264Kh2givLQmKbxDGYoGDZhi/gh+AjoQpg8zPZhLnJgcs27FzN9O0GHrtWdrptickiPKRU
-        1uTVy6tTNxFZv3ueQbzCmDYAHhZcaJmYnneYu7fWkQmKCglitrVZXFCD3TgAGe9lhI9LtZ5ZlZvwv
-        xMPTTs9CDaJwnSlTUyVSwbMl8o7YW/bsoDZwr5/UKXNFzVPr54QRUVDyTnD2VRzUCYugP+2S0Td4U
-        1bxh5qufcY9Tunp0uJYIvqB2X6WyECFMQUzJ7/98VIfsdyCx4YQ/3Pk8HXRGhg5R74JeLx19WWZWt
-        +kq5MKtA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:52390 helo=rmk-PC.armlinux.org.uk)
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=byUmT7RpX9et6XWUN5HRGOng9DCQCSrMo2ayMfx02Yg=; b=1uBsrBRuvwHPHN6WJWv51Sf/k
+        HzKVN+zFTQ9RwuGbm8SSX2IkP3W97IwCfFFq/5K5jX07w6cK3cIsJXc8LFPd+z8INwd59ESFbTWme
+        X6AeanrkTnzanIxU1t4GUI5ph7ZZMpbYhYu9EdpzX/Drh2b7T20nddBawxmo1x0DNswh5fTyqhuSu
+        /ACeNXHBz7Z3RqLpq43XUgEcjqyYq4bZMy3Q9IzhAY3N72rXlTbHm5T+gqKp3IuUTgPNgXaNetxXI
+        Jm7eZcQOJBnUAts+bP7LtI+2Z00O3qZ5xYEfFFFomkN8ig9vUqaxmTuwDAzpxKClaA4+jU7BhZn3G
+        eoWjpPcuw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46118)
         by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1kyYQf-0005mN-Mp; Sun, 10 Jan 2021 10:58:37 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1kyYQf-0004iY-Gh; Sun, 10 Jan 2021 10:58:37 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kyYR8-0005mX-T5; Sun, 10 Jan 2021 10:59:07 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kyYR8-00048u-Ey; Sun, 10 Jan 2021 10:59:06 +0000
+Date:   Sun, 10 Jan 2021 10:59:06 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: sfp: extend bitrate-derived mode for 2500BASE-X
+Subject: Re: [PATCH RESEND] net: sfp: add debugfs support
+Message-ID: <20210110105906.GF1551@shell.armlinux.org.uk>
+References: <E1kyYPT-0004fo-W5@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1kyYQf-0004iY-Gh@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Sun, 10 Jan 2021 10:58:37 +0000
+In-Reply-To: <E1kyYPT-0004fo-W5@rmk-PC.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the bitrate-derived support to include 2500BASE-X for modules
-that report a bitrate of 2500Mbaud.
+Hi,
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp-bus.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+This should've had net-next in the subject line! I'll re-send.
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index 20b91f5dfc6e..cdfa0a190962 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -337,11 +337,16 @@ void sfp_parse_support(struct sfp_bus *bus, const struct sfp_eeprom_id *id,
- 	 * the bitrate to determine supported modes. Some BiDi modules (eg,
- 	 * 1310nm/1550nm) are not 1000BASE-BX compliant due to the differing
- 	 * wavelengths, so do not set any transceiver bits.
-+	 *
-+	 * Do the same for modules supporting 2500BASE-X. Note that some
-+	 * modules use 2500Mbaud rather than 3100 or 3200Mbaud for
-+	 * 2500BASE-X, so we allow some slack here.
- 	 */
--	if (bitmap_empty(modes, __ETHTOOL_LINK_MODE_MASK_NBITS)) {
--		/* If the bit rate allows 1000baseX */
--		if (br_nom && br_min <= 1300 && br_max >= 1200)
-+	if (bitmap_empty(modes, __ETHTOOL_LINK_MODE_MASK_NBITS) && br_nom) {
-+		if (br_min <= 1300 && br_max >= 1200)
- 			phylink_set(modes, 1000baseX_Full);
-+		if (br_min <= 3200 && br_max >= 2500)
-+			phylink_set(modes, 2500baseX_Full);
- 	}
- 
- 	if (bus->sfp_quirk)
+On Sun, Jan 10, 2021 at 10:57:23AM +0000, Russell King wrote:
+> Add debugfs support to SFP so that the internal state of the SFP state
+> machines and hardware signal state can be viewed from userspace, rather
+> than having to compile a debug kernel to view state state transitions
+> in the kernel log.  The 'state' output looks like:
+> 
+> Module state: empty
+> Module probe attempts: 0 0
+> Device state: up
+> Main state: down
+> Fault recovery remaining retries: 5
+> PHY probe remaining retries: 12
+> moddef0: 0
+> rx_los: 1
+> tx_fault: 1
+> tx_disable: 1
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/net/phy/sfp.c | 55 +++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
+> 
+> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+> index 91d74c1a920a..374351de2063 100644
+> --- a/drivers/net/phy/sfp.c
+> +++ b/drivers/net/phy/sfp.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  #include <linux/acpi.h>
+>  #include <linux/ctype.h>
+> +#include <linux/debugfs.h>
+>  #include <linux/delay.h>
+>  #include <linux/gpio/consumer.h>
+>  #include <linux/hwmon.h>
+> @@ -258,6 +259,9 @@ struct sfp {
+>  	char *hwmon_name;
+>  #endif
+>  
+> +#if IS_ENABLED(CONFIG_DEBUG_FS)
+> +	struct dentry *debugfs_dir;
+> +#endif
+>  };
+>  
+>  static bool sff_module_supported(const struct sfp_eeprom_id *id)
+> @@ -1390,6 +1394,54 @@ static void sfp_module_tx_enable(struct sfp *sfp)
+>  	sfp_set_state(sfp, sfp->state);
+>  }
+>  
+> +#if IS_ENABLED(CONFIG_DEBUG_FS)
+> +static int sfp_debug_state_show(struct seq_file *s, void *data)
+> +{
+> +	struct sfp *sfp = s->private;
+> +
+> +	seq_printf(s, "Module state: %s\n",
+> +		   mod_state_to_str(sfp->sm_mod_state));
+> +	seq_printf(s, "Module probe attempts: %d %d\n",
+> +		   R_PROBE_RETRY_INIT - sfp->sm_mod_tries_init,
+> +		   R_PROBE_RETRY_SLOW - sfp->sm_mod_tries);
+> +	seq_printf(s, "Device state: %s\n",
+> +		   dev_state_to_str(sfp->sm_dev_state));
+> +	seq_printf(s, "Main state: %s\n",
+> +		   sm_state_to_str(sfp->sm_state));
+> +	seq_printf(s, "Fault recovery remaining retries: %d\n",
+> +		   sfp->sm_fault_retries);
+> +	seq_printf(s, "PHY probe remaining retries: %d\n",
+> +		   sfp->sm_phy_retries);
+> +	seq_printf(s, "moddef0: %d\n", !!(sfp->state & SFP_F_PRESENT));
+> +	seq_printf(s, "rx_los: %d\n", !!(sfp->state & SFP_F_LOS));
+> +	seq_printf(s, "tx_fault: %d\n", !!(sfp->state & SFP_F_TX_FAULT));
+> +	seq_printf(s, "tx_disable: %d\n", !!(sfp->state & SFP_F_TX_DISABLE));
+> +	return 0;
+> +}
+> +DEFINE_SHOW_ATTRIBUTE(sfp_debug_state);
+> +
+> +static void sfp_debugfs_init(struct sfp *sfp)
+> +{
+> +	sfp->debugfs_dir = debugfs_create_dir(dev_name(sfp->dev), NULL);
+> +
+> +	debugfs_create_file("state", 0600, sfp->debugfs_dir, sfp,
+> +			    &sfp_debug_state_fops);
+> +}
+> +
+> +static void sfp_debugfs_exit(struct sfp *sfp)
+> +{
+> +	debugfs_remove_recursive(sfp->debugfs_dir);
+> +}
+> +#else
+> +static void sfp_debugfs_init(struct sfp *sfp)
+> +{
+> +}
+> +
+> +static void sfp_debugfs_exit(struct sfp *sfp)
+> +{
+> +}
+> +#endif
+> +
+>  static void sfp_module_tx_fault_reset(struct sfp *sfp)
+>  {
+>  	unsigned int state = sfp->state;
+> @@ -2483,6 +2535,8 @@ static int sfp_probe(struct platform_device *pdev)
+>  	if (!sfp->sfp_bus)
+>  		return -ENOMEM;
+>  
+> +	sfp_debugfs_init(sfp);
+> +
+>  	return 0;
+>  }
+>  
+> @@ -2490,6 +2544,7 @@ static int sfp_remove(struct platform_device *pdev)
+>  {
+>  	struct sfp *sfp = platform_get_drvdata(pdev);
+>  
+> +	sfp_debugfs_exit(sfp);
+>  	sfp_unregister_socket(sfp->sfp_bus);
+>  
+>  	rtnl_lock();
+> -- 
+> 2.20.1
+> 
+> 
+
 -- 
-2.20.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
