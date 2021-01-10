@@ -2,488 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E24A02F05D7
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 08:17:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE3B2F05DB
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 08:47:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726283AbhAJHRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 02:17:25 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:48862 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725782AbhAJHRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 02:17:24 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@nvidia.com)
-        with SMTP; 10 Jan 2021 09:16:33 +0200
-Received: from dev-r-vrt-138.mtr.labs.mlnx (dev-r-vrt-138.mtr.labs.mlnx [10.212.138.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10A7GXL7005743;
-        Sun, 10 Jan 2021 09:16:33 +0200
+        id S1726036AbhAJHq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 02:46:26 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7562 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725807AbhAJHq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 02:46:26 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5ffab0a90003>; Sat, 09 Jan 2021 23:45:45 -0800
+Received: from [172.27.13.71] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 10 Jan
+ 2021 07:45:43 +0000
+Subject: Re: [net-next 08/15] net/mlx5e: CT: Preparation for offloading
+ +trk+new ct rules
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        Paul Blakey <paulb@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>
+References: <20210108053054.660499-1-saeed@kernel.org>
+ <20210108053054.660499-9-saeed@kernel.org>
+ <20210108214812.GB3678@horizon.localdomain>
 From:   Roi Dayan <roid@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     Roi Dayan <roid@nvidia.com>, Petr Machata <petrm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 v3 1/1] build: Fix link errors on some systems
-Date:   Sun, 10 Jan 2021 09:16:22 +0200
-Message-Id: <20210110071622.608572-1-roid@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+Message-ID: <c11867d2-6fda-d77c-6b52-f4093c751379@nvidia.com>
+Date:   Sun, 10 Jan 2021 09:45:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210108214812.GB3678@horizon.localdomain>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1610264745; bh=l/ifkE+Mqr/GSwkcQbwTdOLdziUgSGOmoTCeLIxvrJw=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=Cs+ciHfkUt2mRiWlKi2N/LZ/tAH8yybotF5SMBPuW/D/0hBFmAYB+ymVm35pQum2e
+         5lNpjNf2XLndaDLdTkjy+On2ZSO7/fyGIPu/K6iv/+Nz8DHMT0h4vSckJlUDr5xpmT
+         SvM+1TjE13C/b5LMRDJvVg8o3fuU0VMYRSgsATXs7UpnV26Kxugz9qE/WAAJ/3FfyD
+         2Rrtt8eWbDlNo1tQQzmxx3ee1hZHuDLO3ti4qvJtvLzy7vB7pGzFTrPJQby2QSjSAU
+         iIl5ff68NWvuqdKle4kbQ0cLMoQOi1YTK9/rtpaynqthtMXU/ySecbZm3MjwSbGRpD
+         8G8+CUiFiTz4g==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since moving get_rate() and get_size() from tc to lib, on some
-systems we fail to link because of missing math lib.
-Move the functions that require math lib to their own c file
-and add -lm to dcb that now use those functions.
 
-../lib/libutil.a(utils.o): In function `get_rate':
-utils.c:(.text+0x10dc): undefined reference to `floor'
-../lib/libutil.a(utils.o): In function `get_size':
-utils.c:(.text+0x1394): undefined reference to `floor'
-../lib/libutil.a(json_print.o): In function `sprint_size':
-json_print.c:(.text+0x14c0): undefined reference to `rint'
-json_print.c:(.text+0x14f4): undefined reference to `rint'
-json_print.c:(.text+0x157c): undefined reference to `rint'
 
-Fixes: f3be0e6366ac ("lib: Move get_rate(), get_rate64() from tc here")
-Fixes: 44396bdfcc0a ("lib: Move get_size() from tc here")
-Fixes: adbe5de96662 ("lib: Move sprint_size() from tc here, add print_size()")
+On 2021-01-08 11:48 PM, Marcelo Ricardo Leitner wrote:
+> Hi,
+> 
+> On Thu, Jan 07, 2021 at 09:30:47PM -0800, Saeed Mahameed wrote:
+>> From: Roi Dayan <roid@nvidia.com>
+>>
+>> Connection tracking associates the connection state per packet. The
+>> first packet of a connection is assigned with the +trk+new state. The
+>> connection enters the established state once a packet is seen on the
+>> other direction.
+>>
+>> Currently we offload only the established flows. However, UDP traffic
+>> using source port entropy (e.g. vxlan, RoCE) will never enter the
+>> established state. Such protocols do not require stateful processing,
+>> and therefore could be offloaded.
+> 
+> If it doesn't require stateful processing, please enlight me on why
+> conntrack is being used in the first place. What's the use case here?
+> 
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
----
+The use case for example is when we have vxlan traffic but we do
+conntrack on the inner packet (rules on the physical port) so
+we never get established but on miss we can still offload as normal
+vxlan traffic.
 
-Notes:
-    v3
-    - Modify _IS_JSON_CONTEXT comparison order.
-    
-    v2
-    - As suggested by Petr.
-      Instead of adding -lm to all utils move the functions that
-      require math lib to seperate c files and add -lm to dcb that
-      use those functions.
+>>
+>> The change in the model is that a miss on the CT table will be forwarded
+>> to a new +trk+new ct table and a miss there will be forwarded to the slow
+>> path table.
+> 
+> AFAICU this new +trk+new ct table is a wildcard match on sport with
+> specific dports. Also AFAICU, such entries will not be visible to the
+> userspace then. Is this right?
+> 
+>    Marcelo
+> 
 
- dcb/Makefile          |   1 +
- include/json_print.h  |   3 +
- lib/Makefile          |   4 +-
- lib/json_print.c      |  33 -----------
- lib/json_print_math.c |  46 +++++++++++++++
- lib/utils.c           | 114 ------------------------------------
- lib/utils_math.c      | 133 ++++++++++++++++++++++++++++++++++++++++++
- 7 files changed, 185 insertions(+), 149 deletions(-)
- create mode 100644 lib/json_print_math.c
- create mode 100644 lib/utils_math.c
-
-diff --git a/dcb/Makefile b/dcb/Makefile
-index 4add954b4bba..7c09bb4f2e00 100644
---- a/dcb/Makefile
-+++ b/dcb/Makefile
-@@ -7,6 +7,7 @@ ifeq ($(HAVE_MNL),y)
- 
- DCBOBJ = dcb.o dcb_buffer.o dcb_ets.o dcb_maxrate.o dcb_pfc.o
- TARGETS += dcb
-+LDLIBS += -lm
- 
- endif
- 
-diff --git a/include/json_print.h b/include/json_print.h
-index 1a1ad5ffa552..6fcf9fd910ec 100644
---- a/include/json_print.h
-+++ b/include/json_print.h
-@@ -15,6 +15,9 @@
- #include "json_writer.h"
- #include "color.h"
- 
-+#define _IS_JSON_CONTEXT(type) (is_json_context() && (type & PRINT_JSON || type & PRINT_ANY))
-+#define _IS_FP_CONTEXT(type)   (!is_json_context() && (type & PRINT_FP || type & PRINT_ANY))
-+
- json_writer_t *get_json_writer(void);
- 
- /*
-diff --git a/lib/Makefile b/lib/Makefile
-index 764c9137d0ec..6c98f9a61fdb 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -3,8 +3,8 @@ include ../config.mk
- 
- CFLAGS += -fPIC
- 
--UTILOBJ = utils.o rt_names.o ll_map.o ll_types.o ll_proto.o ll_addr.o \
--	inet_proto.o namespace.o json_writer.o json_print.o \
-+UTILOBJ = utils.o utils_math.o rt_names.o ll_map.o ll_types.o ll_proto.o ll_addr.o \
-+	inet_proto.o namespace.o json_writer.o json_print.o json_print_math.o \
- 	names.o color.o bpf_legacy.o bpf_glue.o exec.o fs.o cg_map.o
- 
- ifeq ($(HAVE_ELF),y)
-diff --git a/lib/json_print.c b/lib/json_print.c
-index b086123ad1f4..994a2f8d6ae0 100644
---- a/lib/json_print.c
-+++ b/lib/json_print.c
-@@ -11,16 +11,12 @@
- 
- #include <stdarg.h>
- #include <stdio.h>
--#include <math.h>
- 
- #include "utils.h"
- #include "json_print.h"
- 
- static json_writer_t *_jw;
- 
--#define _IS_JSON_CONTEXT(type) ((type & PRINT_JSON || type & PRINT_ANY) && _jw)
--#define _IS_FP_CONTEXT(type) (!_jw && (type & PRINT_FP || type & PRINT_ANY))
--
- static void __new_json_obj(int json, bool have_array)
- {
- 	if (json) {
-@@ -342,32 +338,3 @@ int print_color_rate(bool use_iec, enum output_type type, enum color_attr color,
- 	free(buf);
- 	return rc;
- }
--
--char *sprint_size(__u32 sz, char *buf)
--{
--	long kilo = 1024;
--	long mega = kilo * kilo;
--	size_t len = SPRINT_BSIZE - 1;
--	double tmp = sz;
--
--	if (sz >= mega && fabs(mega * rint(tmp / mega) - sz) < 1024)
--		snprintf(buf, len, "%gMb", rint(tmp / mega));
--	else if (sz >= kilo && fabs(kilo * rint(tmp / kilo) - sz) < 16)
--		snprintf(buf, len, "%gKb", rint(tmp / kilo));
--	else
--		snprintf(buf, len, "%ub", sz);
--
--	return buf;
--}
--
--int print_color_size(enum output_type type, enum color_attr color,
--		     const char *key, const char *fmt, __u32 sz)
--{
--	SPRINT_BUF(buf);
--
--	if (_IS_JSON_CONTEXT(type))
--		return print_color_uint(type, color, key, "%u", sz);
--
--	sprint_size(sz, buf);
--	return print_color_string(type, color, key, fmt, buf);
--}
-diff --git a/lib/json_print_math.c b/lib/json_print_math.c
-new file mode 100644
-index 000000000000..3d560defcd3e
---- /dev/null
-+++ b/lib/json_print_math.c
-@@ -0,0 +1,46 @@
-+/*
-+ * json_print_math.c		"print regular or json output, based on json_writer".
-+ *
-+ *             This program is free software; you can redistribute it and/or
-+ *             modify it under the terms of the GNU General Public License
-+ *             as published by the Free Software Foundation; either version
-+ *             2 of the License, or (at your option) any later version.
-+ *
-+ * Authors:    Julien Fortin, <julien@cumulusnetworks.com>
-+ */
-+
-+#include <stdarg.h>
-+#include <stdio.h>
-+#include <math.h>
-+
-+#include "utils.h"
-+#include "json_print.h"
-+
-+char *sprint_size(__u32 sz, char *buf)
-+{
-+	long kilo = 1024;
-+	long mega = kilo * kilo;
-+	size_t len = SPRINT_BSIZE - 1;
-+	double tmp = sz;
-+
-+	if (sz >= mega && fabs(mega * rint(tmp / mega) - sz) < 1024)
-+		snprintf(buf, len, "%gMb", rint(tmp / mega));
-+	else if (sz >= kilo && fabs(kilo * rint(tmp / kilo) - sz) < 16)
-+		snprintf(buf, len, "%gKb", rint(tmp / kilo));
-+	else
-+		snprintf(buf, len, "%ub", sz);
-+
-+	return buf;
-+}
-+
-+int print_color_size(enum output_type type, enum color_attr color,
-+		     const char *key, const char *fmt, __u32 sz)
-+{
-+	SPRINT_BUF(buf);
-+
-+	if (_IS_JSON_CONTEXT(type))
-+		return print_color_uint(type, color, key, "%u", sz);
-+
-+	sprint_size(sz, buf);
-+	return print_color_string(type, color, key, fmt, buf);
-+}
-diff --git a/lib/utils.c b/lib/utils.c
-index de875639c608..a0ba5181160e 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -513,120 +513,6 @@ int get_addr64(__u64 *ap, const char *cp)
- 	return 1;
- }
- 
--/* See http://physics.nist.gov/cuu/Units/binary.html */
--static const struct rate_suffix {
--	const char *name;
--	double scale;
--} suffixes[] = {
--	{ "bit",	1. },
--	{ "Kibit",	1024. },
--	{ "kbit",	1000. },
--	{ "mibit",	1024.*1024. },
--	{ "mbit",	1000000. },
--	{ "gibit",	1024.*1024.*1024. },
--	{ "gbit",	1000000000. },
--	{ "tibit",	1024.*1024.*1024.*1024. },
--	{ "tbit",	1000000000000. },
--	{ "Bps",	8. },
--	{ "KiBps",	8.*1024. },
--	{ "KBps",	8000. },
--	{ "MiBps",	8.*1024*1024. },
--	{ "MBps",	8000000. },
--	{ "GiBps",	8.*1024.*1024.*1024. },
--	{ "GBps",	8000000000. },
--	{ "TiBps",	8.*1024.*1024.*1024.*1024. },
--	{ "TBps",	8000000000000. },
--	{ NULL }
--};
--
--int get_rate(unsigned int *rate, const char *str)
--{
--	char *p;
--	double bps = strtod(str, &p);
--	const struct rate_suffix *s;
--
--	if (p == str)
--		return -1;
--
--	for (s = suffixes; s->name; ++s) {
--		if (strcasecmp(s->name, p) == 0) {
--			bps *= s->scale;
--			p += strlen(p);
--			break;
--		}
--	}
--
--	if (*p)
--		return -1; /* unknown suffix */
--
--	bps /= 8; /* -> bytes per second */
--	*rate = bps;
--	/* detect if an overflow happened */
--	if (*rate != floor(bps))
--		return -1;
--	return 0;
--}
--
--int get_rate64(__u64 *rate, const char *str)
--{
--	char *p;
--	double bps = strtod(str, &p);
--	const struct rate_suffix *s;
--
--	if (p == str)
--		return -1;
--
--	for (s = suffixes; s->name; ++s) {
--		if (strcasecmp(s->name, p) == 0) {
--			bps *= s->scale;
--			p += strlen(p);
--			break;
--		}
--	}
--
--	if (*p)
--		return -1; /* unknown suffix */
--
--	bps /= 8; /* -> bytes per second */
--	*rate = bps;
--	return 0;
--}
--
--int get_size(unsigned int *size, const char *str)
--{
--	double sz;
--	char *p;
--
--	sz = strtod(str, &p);
--	if (p == str)
--		return -1;
--
--	if (*p) {
--		if (strcasecmp(p, "kb") == 0 || strcasecmp(p, "k") == 0)
--			sz *= 1024;
--		else if (strcasecmp(p, "gb") == 0 || strcasecmp(p, "g") == 0)
--			sz *= 1024*1024*1024;
--		else if (strcasecmp(p, "gbit") == 0)
--			sz *= 1024*1024*1024/8;
--		else if (strcasecmp(p, "mb") == 0 || strcasecmp(p, "m") == 0)
--			sz *= 1024*1024;
--		else if (strcasecmp(p, "mbit") == 0)
--			sz *= 1024*1024/8;
--		else if (strcasecmp(p, "kbit") == 0)
--			sz *= 1024/8;
--		else if (strcasecmp(p, "b") != 0)
--			return -1;
--	}
--
--	*size = sz;
--
--	/* detect if an overflow happened */
--	if (*size != floor(sz))
--		return -1;
--
--	return 0;
--}
--
- static void set_address_type(inet_prefix *addr)
- {
- 	switch (addr->family) {
-diff --git a/lib/utils_math.c b/lib/utils_math.c
-new file mode 100644
-index 000000000000..d67affeb16c2
---- /dev/null
-+++ b/lib/utils_math.c
-@@ -0,0 +1,133 @@
-+/*
-+ * utils.c
-+ *
-+ *		This program is free software; you can redistribute it and/or
-+ *		modify it under the terms of the GNU General Public License
-+ *		as published by the Free Software Foundation; either version
-+ *		2 of the License, or (at your option) any later version.
-+ *
-+ * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
-+ *
-+ */
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <math.h>
-+#include <asm/types.h>
-+
-+#include "utils.h"
-+
-+/* See http://physics.nist.gov/cuu/Units/binary.html */
-+static const struct rate_suffix {
-+	const char *name;
-+	double scale;
-+} suffixes[] = {
-+	{ "bit",	1. },
-+	{ "Kibit",	1024. },
-+	{ "kbit",	1000. },
-+	{ "mibit",	1024.*1024. },
-+	{ "mbit",	1000000. },
-+	{ "gibit",	1024.*1024.*1024. },
-+	{ "gbit",	1000000000. },
-+	{ "tibit",	1024.*1024.*1024.*1024. },
-+	{ "tbit",	1000000000000. },
-+	{ "Bps",	8. },
-+	{ "KiBps",	8.*1024. },
-+	{ "KBps",	8000. },
-+	{ "MiBps",	8.*1024*1024. },
-+	{ "MBps",	8000000. },
-+	{ "GiBps",	8.*1024.*1024.*1024. },
-+	{ "GBps",	8000000000. },
-+	{ "TiBps",	8.*1024.*1024.*1024.*1024. },
-+	{ "TBps",	8000000000000. },
-+	{ NULL }
-+};
-+
-+int get_rate(unsigned int *rate, const char *str)
-+{
-+	char *p;
-+	double bps = strtod(str, &p);
-+	const struct rate_suffix *s;
-+
-+	if (p == str)
-+		return -1;
-+
-+	for (s = suffixes; s->name; ++s) {
-+		if (strcasecmp(s->name, p) == 0) {
-+			bps *= s->scale;
-+			p += strlen(p);
-+			break;
-+		}
-+	}
-+
-+	if (*p)
-+		return -1; /* unknown suffix */
-+
-+	bps /= 8; /* -> bytes per second */
-+	*rate = bps;
-+	/* detect if an overflow happened */
-+	if (*rate != floor(bps))
-+		return -1;
-+	return 0;
-+}
-+
-+int get_rate64(__u64 *rate, const char *str)
-+{
-+	char *p;
-+	double bps = strtod(str, &p);
-+	const struct rate_suffix *s;
-+
-+	if (p == str)
-+		return -1;
-+
-+	for (s = suffixes; s->name; ++s) {
-+		if (strcasecmp(s->name, p) == 0) {
-+			bps *= s->scale;
-+			p += strlen(p);
-+			break;
-+		}
-+	}
-+
-+	if (*p)
-+		return -1; /* unknown suffix */
-+
-+	bps /= 8; /* -> bytes per second */
-+	*rate = bps;
-+	return 0;
-+}
-+
-+int get_size(unsigned int *size, const char *str)
-+{
-+	double sz;
-+	char *p;
-+
-+	sz = strtod(str, &p);
-+	if (p == str)
-+		return -1;
-+
-+	if (*p) {
-+		if (strcasecmp(p, "kb") == 0 || strcasecmp(p, "k") == 0)
-+			sz *= 1024;
-+		else if (strcasecmp(p, "gb") == 0 || strcasecmp(p, "g") == 0)
-+			sz *= 1024*1024*1024;
-+		else if (strcasecmp(p, "gbit") == 0)
-+			sz *= 1024*1024*1024/8;
-+		else if (strcasecmp(p, "mb") == 0 || strcasecmp(p, "m") == 0)
-+			sz *= 1024*1024;
-+		else if (strcasecmp(p, "mbit") == 0)
-+			sz *= 1024*1024/8;
-+		else if (strcasecmp(p, "kbit") == 0)
-+			sz *= 1024/8;
-+		else if (strcasecmp(p, "b") != 0)
-+			return -1;
-+	}
-+
-+	*size = sz;
-+
-+	/* detect if an overflow happened */
-+	if (*size != floor(sz))
-+		return -1;
-+
-+	return 0;
-+}
--- 
-2.26.2
-
+right.
