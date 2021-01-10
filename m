@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A92DB2F047F
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 01:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 504812F0483
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 01:22:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbhAJAKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Jan 2021 19:10:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52334 "EHLO mail.kernel.org"
+        id S1726263AbhAJATg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Jan 2021 19:19:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52620 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726062AbhAJAKt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Jan 2021 19:10:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id A22C82388A;
-        Sun, 10 Jan 2021 00:10:08 +0000 (UTC)
+        id S1726062AbhAJATg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Jan 2021 19:19:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 234BE2388A;
+        Sun, 10 Jan 2021 00:18:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610237408;
-        bh=rRGUA48gVjP0LhsXnNN0E1CWztFKmH6VxlSOlbqYgUU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AhFP9fODJuIHj/0nh16tKFvANxPdqxKFBITwdsSdPTQAazIvMQCVGTWUIxH/xrwTK
-         oXsB6p1fjXBkhqqkpCuBbuXngPHt3q8Hw9QhLk0vjFMzE/1IV7WqStVxEPw6wU3iqf
-         0xJvLzgBhJ0kT6g9HOcMtOUA0nrnqpvEgkYruDBwFVELpA+dnCGySru94CsaKxl4m1
-         5H5qv7Zg2AcfET34jCKZ2kS5VAOoTg1MqWrVaK9H+rdnYvEOi+2kjzYsJPw9jk3WXe
-         v7hc7+mJNptdw/v98xDwQDBqr3GWclOLcPOigFkEZxlW2l7Jppr7dqddhtXaKoW1Jx
-         fxf93At5+StrQ==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 91AE760188;
-        Sun, 10 Jan 2021 00:10:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1610237935;
+        bh=89IEbIv/zBauo1jPANVi6Sicq1KNOKL6cCPni7pVWtc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eNiKHzSHoeYHQ5KYcBXCL1ohgfL3j+0YbRW5eSYy11PJZKkBcCJiabgTibxziX7go
+         1ngfU6u7vBd23ynBz9Z7I2mFNv+o6l1+irUTt9wpbvbTgXZn8U9hW0mVtmKI4Xesl1
+         Cixg7Yo3AbFmDXAZXqrK9G9ZeeJFwVea8yYJ42qhYyZYKArWfVosd2CT+56gzMjO55
+         3aGQA889uK/suwVazCnZ7UkoFe/ol85ql6DYaocwDDJ8XWcByaYCvUAbBl/q2v6Ern
+         /058EKA7h+frD8GZAN/7stQoruuEdFuwS56v7j/qDpwXAnszZ0GzEgQ2pizWfOtO6P
+         OfIM1IKh/55tA==
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH net-next v2 00/11] selftests: Updates to allow single instance of nettest for client and server
+Date:   Sat,  9 Jan 2021 17:18:41 -0700
+Message-Id: <20210110001852.35653-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net-gro: GRO_DROP deprecation
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161023740859.12553.10714223338943728983.git-patchwork-notify@kernel.org>
-Date:   Sun, 10 Jan 2021 00:10:08 +0000
-References: <20210108113903.3779510-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210108113903.3779510-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, jesse.brandeburg@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Update nettest to handle namespace change internally to allow a
+single instance to run both client and server modes. Device validation
+needs to be moved after the namespace change and a few run time
+options need to be split to allow values for client and server.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+David Ahern (11):
+  selftests: Move device validation in nettest
+  selftests: Move convert_addr up in nettest
+  selftests: Move address validation in nettest
+  selftests: Add options to set network namespace to nettest
+  selftests: Add support to nettest to run both client and server
+  selftests: Use separate stdout and stderr buffers in nettest
+  selftests: Add missing newline in nettest error messages
+  selftests: Make address validation apply only to client mode
+  selftests: Consistently specify address for MD5 protection
+  selftests: Add new option for client-side passwords
+  selftests: Add separate options for server device bindings
 
-On Fri,  8 Jan 2021 03:39:01 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> GRO_DROP has no practical use and can be removed,
-> once ice driver is cleaned up.
-> 
-> This removes one useless conditionel test in napi_gro_frags()
-> 
-> [...]
+ tools/testing/selftests/net/fcnal-test.sh | 398 +++++++--------
+ tools/testing/selftests/net/nettest.c     | 576 +++++++++++++++-------
+ 2 files changed, 595 insertions(+), 379 deletions(-)
 
-Here is the summary with links:
-  - [net-next,1/2] ice: drop dead code in ice_receive_skb()
-    https://git.kernel.org/netdev/net-next/c/f73fc40327c0
-  - [net-next,2/2] net-gro: remove GRO_DROP
-    https://git.kernel.org/netdev/net-next/c/1d11fa696733
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+-- 
+2.24.3 (Apple Git-128)
 
