@@ -2,108 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D4D2F065E
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 11:21:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 663092F0668
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 11:25:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726228AbhAJKT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 05:19:58 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:53614 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725907AbhAJKT5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 05:19:57 -0500
-Received: by mail-io1-f72.google.com with SMTP id l20so10698969ioc.20
-        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 02:19:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Kt/0k0XvXpnX0NPbrn+9HwSwh7MXuiusmT0Wp7xQF0E=;
-        b=Au2vJtMZbERMxu2hVlGvWJFDoCz19oD2wvi5GsuB4XI5xWPNyka3iW8mgn0/3fkO2C
-         1MUXJuqSu5G7BJd7JYeluMUEyFWL1vR3adrDOU/fYmpWn1QiCd+/PpyFGYI5FA5T0Fca
-         i/R70SSbyBTXymwVGNp0C+nrzefEXIaGtJWmN6vT9e74CzTlZDhURHGW7hy8ZlHZulvA
-         XrtF5rW24HQFha+5Tmrr8mOHIzEFFgYJwAf/eqQeZj0AiFdgM1BqAKHGGwS2QJsvbLKW
-         CVfl/ED6oa7AbRrl1hDM24F3plJSCFKEu2YMO7sQKA0cVgQQ6MSN1GxHGcP+hAK3IOjt
-         hb6g==
-X-Gm-Message-State: AOAM5339cA9SQCQE2u+DmprrflCYJ33MYEkaQS08sxTLdmOyHrWtEPzs
-        7atJ8XyRqMHBVqeknIkjCZYCEiBeWcNr7SlCnZmZM1VLki30
-X-Google-Smtp-Source: ABdhPJwExw+STqccTHYPQ0FMo0FDuPSiOyAMKtDKx2WDvURFC+rBa/fsVPlT2S217NcqbXU52qF0Fd5ltv/rQ7++F+BJ2c3rs5c3
+        id S1726303AbhAJKYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 05:24:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726012AbhAJKYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 05:24:11 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C13C06179F
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 02:23:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=RPORXYCMnXB05Z00Pe39JVYqyf2W16awM9oGZ8APQ4s=; b=g1f1pFg+VaftJDdiYg7vOltgl
+        nI+cf+h4euqJfsH+9wtoAMvrblIIixyCAtplitf78wWVqonUHUGo7RNk37FNys2nPX8C5oUPfUw1m
+        J9sZI2SyxofDG7sPXH94J5wlO5Brw+Qz8WVxaUhPaQ7vRFPbZdaxd7/JF4XONImVnpO49aH33J4WJ
+        zTzWw5lIajMUlVyAfhQ3AV4bOsoH06oFZFuGq8tsdNyWErZXMCPvbWNTYtsIxf59M1f1sIOLTslYV
+        h2VyrRzS8KURiT6lXlu67ualmBQHu0CErGg9ztcodU9/e0SMZerLOzs6vHOrRdqmt5LWvpiD5qU7Z
+        li3mlJ3Aw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46106)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kyXsO-0005kV-5R; Sun, 10 Jan 2021 10:23:12 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kyXsM-00047V-Np; Sun, 10 Jan 2021 10:23:10 +0000
+Date:   Sun, 10 Jan 2021 10:23:10 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, torii.ken1@fujitsu.com
+Subject: Re: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
+Message-ID: <20210110102310.GD1551@shell.armlinux.org.uk>
+References: <20210110085221.5881-1-ashiduka@fujitsu.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:d350:: with SMTP id a16mr11456432ilh.262.1610273955351;
- Sun, 10 Jan 2021 02:19:15 -0800 (PST)
-Date:   Sun, 10 Jan 2021 02:19:15 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000019908405b8891f9d@google.com>
-Subject: KMSAN: kernel-infoleak in move_addr_to_user (4)
-From:   syzbot <syzbot+057884e2f453e8afebc8@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210110085221.5881-1-ashiduka@fujitsu.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Jan 10, 2021 at 05:52:21PM +0900, Yuusuke Ashizuka wrote:
+> RTL9000AA/AN as 100BASE-T1 is following:
+> - 100 Mbps
+> - Full duplex
+> - Link Status Change Interrupt
+> 
+> Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
+> Signed-off-by: Torii Kenichi <torii.ken1@fujitsu.com>
 
-syzbot found the following issue on:
+Not a review comment on your patch, but, we really need to do
+something with the way phylib handles configuration changes - we
+have the current situation where config_aneg() _will_ get called
+for PHYs like this that do not support autonegotiation if userspace
+attempts to enable autoneg - there is nothing in
+phy_ethtool_ksettings_set() that prevents this.
 
-HEAD commit:    73d62e81 kmsan: random: prevent boot-time reports in _mix_..
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=15c8b8c7500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2cdf4151c9653e32
-dashboard link: https://syzkaller.appspot.com/bug?extid=057884e2f453e8afebc8
-compiler:       clang version 11.0.0 (https://github.com/llvm/llvm-project.git ca2dcbd030eadbf0aa9b660efe864ff08af6e18b)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=101520c7500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=100b8f4f500000
+Returning an error from config_aneg() achieves nothing, and
+resetting the settings in config_init() also does nothing to avoid
+autonegotiation being enabled.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+057884e2f453e8afebc8@syzkaller.appspotmail.com
+I think we need phy_ethtool_ksettings_set() to check whether
+ETHTOOL_LINK_MODE_Autoneg_BIT is set in phydev->supported before
+allowing the AUTONEG_ENABLE case.
 
-=====================================================
-BUG: KMSAN: kernel-infoleak in kmsan_copy_to_user+0x9c/0xb0 mm/kmsan/kmsan_hooks.c:249
-CPU: 0 PID: 8245 Comm: syz-executor868 Not tainted 5.10.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
- kmsan_internal_check_memory+0x202/0x520 mm/kmsan/kmsan.c:402
- kmsan_copy_to_user+0x9c/0xb0 mm/kmsan/kmsan_hooks.c:249
- instrument_copy_to_user include/linux/instrumented.h:121 [inline]
- _copy_to_user+0x1af/0x270 lib/usercopy.c:33
- copy_to_user include/linux/uaccess.h:209 [inline]
- move_addr_to_user+0x3a2/0x640 net/socket.c:237
- __sys_getsockname+0x407/0x5d0 net/socket.c:1906
- __do_sys_getsockname net/socket.c:1917 [inline]
- __se_sys_getsockname+0x91/0xb0 net/socket.c:1914
- __x64_sys_getsockname+0x4a/0x70 net/socket.c:1914
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x441219
-Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffe3c24eaf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000033
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441219
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 0000000000000003
-RBP: 00000000006cb018 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000401fc0
-R13: 0000000000402050 R14: 0000000000000000 R15: 0000000000000000
-
-Local variable ----address@__sys_getsockname created at:
- __sys_getsockname+0x91/0x5d0 net/socket.c:1891
- __sys_getsockname+0x91/0x5d0 net/socket.c:1891
-
-Bytes 2-3 of 20 are uninitialized
-Memory access of size 20 starts at ffff888124bbbdf0
-Data copied to user address 0000000020000100
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
