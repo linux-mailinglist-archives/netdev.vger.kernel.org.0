@@ -2,149 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ACB52F0642
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 11:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7D4D2F065E
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 11:21:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbhAJKEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 05:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725907AbhAJKEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 05:04:46 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B445AC061786
-        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 02:04:04 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id lt17so20555592ejb.3
-        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 02:04:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ntHLah0q+SvwKSjeDWR+MVFLLttqY1N89uUPbqPMpiA=;
-        b=ZGwx+oiiGqvNDB+EaNh7KH6pXXDJEN6Q1ZH/kdatn05h3TURc1jdAQPJK2Hd1dt3y9
-         oX9qanMfO/pXUBOO5CoyFgf6lRFCoVfxQ3mFPJHZnlvUdkDjlt0GIj245r6osobCwOlt
-         rV7pJn8gsCpRiAAnmMLALjrtwokfqMai7FP927XnZ5UzVr16916CyigDjon5TNvYTytQ
-         cn9l6tUn9hlp6zO8JVbySRHAx75MxIw0hNpWAiOdFrdHTMSmNqGtIFyqUALoWPUJdkEf
-         eeYy6crslJzT0GNwXexlvaM5HjhSavw0e4FhTYttSXZE+kdUSJspWEvV5UqgUW+OpJNe
-         OdgA==
+        id S1726228AbhAJKT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 05:19:58 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:53614 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725907AbhAJKT5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 05:19:57 -0500
+Received: by mail-io1-f72.google.com with SMTP id l20so10698969ioc.20
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 02:19:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ntHLah0q+SvwKSjeDWR+MVFLLttqY1N89uUPbqPMpiA=;
-        b=MZDSSAZ/MDTaZvloNhbwwKEa6ecm3rur45PqJbtlrefaMMGR9dy1b4ce9dZl8ib1uG
-         cvbN9R/yPEz/STWHFtRJDt7J4U61M0hWtAfoIAMbkLrpl/oxkzJ5khPmaQF+3CEs2d1A
-         K82dSPNHPSPiyEbJGbDw9UGxEkTreC0NYKs70RsWmhn0x83aUDuMamQ4Y8Z8G9Tu7O+y
-         zhdhNJqdkh9Dq6xJRx9xOsd5vMxoYuzPBjDga6J40hG4Deps8KBthFnRx0k/bENGoZaE
-         gH5/TEJqCQBIl3YZPkXoXqDrJnT2wKqFwGVNenfQGkwI61JFrR7HGZIk7m7HDjNSQ+uN
-         Z7zg==
-X-Gm-Message-State: AOAM531gTplmjAMcGNnRZ6ec9JHj4vT02MSkTOPEEPMym8GEMUTUzMVQ
-        dwyw+sj1uy7poXo8HK+kxIAjTUxVWukV7tssSm91
-X-Google-Smtp-Source: ABdhPJxxW/yAqeYuRuPessHdacKwHtFahI0Eg6d90J6rPXonweRKhqtq6PPHcOf9f2M6pT+y8/HK7s5rhlXTDDVOoNY=
-X-Received: by 2002:a17:907:1629:: with SMTP id hb41mr7211587ejc.197.1610273043284;
- Sun, 10 Jan 2021 02:04:03 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Kt/0k0XvXpnX0NPbrn+9HwSwh7MXuiusmT0Wp7xQF0E=;
+        b=Au2vJtMZbERMxu2hVlGvWJFDoCz19oD2wvi5GsuB4XI5xWPNyka3iW8mgn0/3fkO2C
+         1MUXJuqSu5G7BJd7JYeluMUEyFWL1vR3adrDOU/fYmpWn1QiCd+/PpyFGYI5FA5T0Fca
+         i/R70SSbyBTXymwVGNp0C+nrzefEXIaGtJWmN6vT9e74CzTlZDhURHGW7hy8ZlHZulvA
+         XrtF5rW24HQFha+5Tmrr8mOHIzEFFgYJwAf/eqQeZj0AiFdgM1BqAKHGGwS2QJsvbLKW
+         CVfl/ED6oa7AbRrl1hDM24F3plJSCFKEu2YMO7sQKA0cVgQQ6MSN1GxHGcP+hAK3IOjt
+         hb6g==
+X-Gm-Message-State: AOAM5339cA9SQCQE2u+DmprrflCYJ33MYEkaQS08sxTLdmOyHrWtEPzs
+        7atJ8XyRqMHBVqeknIkjCZYCEiBeWcNr7SlCnZmZM1VLki30
+X-Google-Smtp-Source: ABdhPJwExw+STqccTHYPQ0FMo0FDuPSiOyAMKtDKx2WDvURFC+rBa/fsVPlT2S217NcqbXU52qF0Fd5ltv/rQ7++F+BJ2c3rs5c3
 MIME-Version: 1.0
-References: <20201222145221.711-1-xieyongji@bytedance.com> <20201222145221.711-7-xieyongji@bytedance.com>
- <f8dcb8d0-0024-1f78-d1a7-e487ca3deda7@oracle.com>
-In-Reply-To: <f8dcb8d0-0024-1f78-d1a7-e487ca3deda7@oracle.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Sun, 10 Jan 2021 18:03:52 +0800
-Message-ID: <CACycT3u859hX5ChcxVS2EMmF4-vu5H+io_CcNWSKaN8NFA9cXg@mail.gmail.com>
-Subject: Re: Re: [RFC v2 06/13] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Bob Liu <bob.liu@oracle.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, akpm@linux-foundation.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+X-Received: by 2002:a92:d350:: with SMTP id a16mr11456432ilh.262.1610273955351;
+ Sun, 10 Jan 2021 02:19:15 -0800 (PST)
+Date:   Sun, 10 Jan 2021 02:19:15 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000019908405b8891f9d@google.com>
+Subject: KMSAN: kernel-infoleak in move_addr_to_user (4)
+From:   syzbot <syzbot+057884e2f453e8afebc8@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 8, 2021 at 9:32 PM Bob Liu <bob.liu@oracle.com> wrote:
->
-> On 12/22/20 10:52 PM, Xie Yongji wrote:
-> > This VDUSE driver enables implementing vDPA devices in userspace.
-> > Both control path and data path of vDPA devices will be able to
-> > be handled in userspace.
-> >
-> > In the control path, the VDUSE driver will make use of message
-> > mechnism to forward the config operation from vdpa bus driver
-> > to userspace. Userspace can use read()/write() to receive/reply
-> > those control messages.
-> >
-> > In the data path, the VDUSE driver implements a MMU-based on-chip
-> > IOMMU driver which supports mapping the kernel dma buffer to a
-> > userspace iova region dynamically. Userspace can access those
-> > iova region via mmap(). Besides, the eventfd mechanism is used to
-> > trigger interrupt callbacks and receive virtqueue kicks in userspace
-> >
-> > Now we only support virtio-vdpa bus driver with this patch applied.
-> >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > ---
-> >  Documentation/driver-api/vduse.rst                 |   74 ++
-> >  Documentation/userspace-api/ioctl/ioctl-number.rst |    1 +
-> >  drivers/vdpa/Kconfig                               |    8 +
-> >  drivers/vdpa/Makefile                              |    1 +
-> >  drivers/vdpa/vdpa_user/Makefile                    |    5 +
-> >  drivers/vdpa/vdpa_user/eventfd.c                   |  221 ++++
-> >  drivers/vdpa/vdpa_user/eventfd.h                   |   48 +
-> >  drivers/vdpa/vdpa_user/iova_domain.c               |  442 ++++++++
-> >  drivers/vdpa/vdpa_user/iova_domain.h               |   93 ++
-> >  drivers/vdpa/vdpa_user/vduse.h                     |   59 ++
-> >  drivers/vdpa/vdpa_user/vduse_dev.c                 | 1121 ++++++++++++++++++++
-> >  include/uapi/linux/vdpa.h                          |    1 +
-> >  include/uapi/linux/vduse.h                         |   99 ++
-> >  13 files changed, 2173 insertions(+)
-> >  create mode 100644 Documentation/driver-api/vduse.rst
-> >  create mode 100644 drivers/vdpa/vdpa_user/Makefile
-> >  create mode 100644 drivers/vdpa/vdpa_user/eventfd.c
-> >  create mode 100644 drivers/vdpa/vdpa_user/eventfd.h
-> >  create mode 100644 drivers/vdpa/vdpa_user/iova_domain.c
-> >  create mode 100644 drivers/vdpa/vdpa_user/iova_domain.h
-> >  create mode 100644 drivers/vdpa/vdpa_user/vduse.h
-> >  create mode 100644 drivers/vdpa/vdpa_user/vduse_dev.c
-> >  create mode 100644 include/uapi/linux/vduse.h
-> >
-> > diff --git a/Documentation/driver-api/vduse.rst b/Documentation/driver-api/vduse.rst
-> > new file mode 100644
-> > index 000000000000..da9b3040f20a
-> > --- /dev/null
-> > +++ b/Documentation/driver-api/vduse.rst
-> > @@ -0,0 +1,74 @@
-> > +==================================
-> > +VDUSE - "vDPA Device in Userspace"
-> > +==================================
-> > +
-> > +vDPA (virtio data path acceleration) device is a device that uses a
-> > +datapath which complies with the virtio specifications with vendor
-> > +specific control path. vDPA devices can be both physically located on
-> > +the hardware or emulated by software. VDUSE is a framework that makes it
-> > +possible to implement software-emulated vDPA devices in userspace.
-> > +
->
-> Could you explain a bit more why need a VDUSE framework?
+Hello,
 
-This can be used to implement a userspace I/O (such as storage,
-network and so on) solution (virtio-based) for both container and VM.
+syzbot found the following issue on:
 
-> Software emulated vDPA devices is more likely used by debugging only when
-> don't have real hardware.
+HEAD commit:    73d62e81 kmsan: random: prevent boot-time reports in _mix_..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=15c8b8c7500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2cdf4151c9653e32
+dashboard link: https://syzkaller.appspot.com/bug?extid=057884e2f453e8afebc8
+compiler:       clang version 11.0.0 (https://github.com/llvm/llvm-project.git ca2dcbd030eadbf0aa9b660efe864ff08af6e18b)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=101520c7500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=100b8f4f500000
 
-I think software emulated vDPA devices should be also useful in other
-cases, just like FUSE does.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+057884e2f453e8afebc8@syzkaller.appspotmail.com
 
-> Do you think do the emulation in kernel space is not enough?
->
+=====================================================
+BUG: KMSAN: kernel-infoleak in kmsan_copy_to_user+0x9c/0xb0 mm/kmsan/kmsan_hooks.c:249
+CPU: 0 PID: 8245 Comm: syz-executor868 Not tainted 5.10.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x21c/0x280 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ kmsan_internal_check_memory+0x202/0x520 mm/kmsan/kmsan.c:402
+ kmsan_copy_to_user+0x9c/0xb0 mm/kmsan/kmsan_hooks.c:249
+ instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+ _copy_to_user+0x1af/0x270 lib/usercopy.c:33
+ copy_to_user include/linux/uaccess.h:209 [inline]
+ move_addr_to_user+0x3a2/0x640 net/socket.c:237
+ __sys_getsockname+0x407/0x5d0 net/socket.c:1906
+ __do_sys_getsockname net/socket.c:1917 [inline]
+ __se_sys_getsockname+0x91/0xb0 net/socket.c:1914
+ __x64_sys_getsockname+0x4a/0x70 net/socket.c:1914
+ do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x441219
+Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffe3c24eaf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000033
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441219
+RDX: 0000000020000000 RSI: 0000000020000100 RDI: 0000000000000003
+RBP: 00000000006cb018 R08: 00000000004002c8 R09: 00000000004002c8
+R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000401fc0
+R13: 0000000000402050 R14: 0000000000000000 R15: 0000000000000000
 
-Doing the emulation in userspace should be more flexible.
+Local variable ----address@__sys_getsockname created at:
+ __sys_getsockname+0x91/0x5d0 net/socket.c:1891
+ __sys_getsockname+0x91/0x5d0 net/socket.c:1891
 
-Thanks,
-Yongji
+Bytes 2-3 of 20 are uninitialized
+Memory access of size 20 starts at ffff888124bbbdf0
+Data copied to user address 0000000020000100
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
