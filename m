@@ -2,127 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DECC52F0610
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 09:48:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC8DF2F061D
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 10:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726671AbhAJIsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 03:48:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60530 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726142AbhAJIsU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 Jan 2021 03:48:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B31ED239EB;
-        Sun, 10 Jan 2021 08:47:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610268459;
-        bh=irKAhtaJtCZe7N6lWVZH9hxZFfZco7OZkLCmKDfdn88=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eAS/0EP5SqObKkIVZntlBA6V9qV71hEJ1cFHBihZ7qcN1biUc63pVcAbKioWPMj0a
-         79/x4ZxBMDd3rcA+f1fspyX3ayFf/MGSrAeG5xq4F64ZQsnmA9+nBhrgsJs2vsop2k
-         KEz80++RprQXuTHZThW2vLo+gaSuQtoVpXi4QcyK85O9gHuztKQosoB4ji4foSE5q9
-         tO4HprIXJCb9PQr8owxzgkBWF2vo86v+lOO2J0iboKIteAXXEKUzjShV+vZbifG/hE
-         ZvHS3QM3ih0TEIKT5Id3QfRtolvGajdm82mb+4irp8m+UK/ZZzFHj54oZyEJnJLqrG
-         kqd46rVmb81RQ==
-Date:   Sun, 10 Jan 2021 10:47:35 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Don Dutile <ddutile@redhat.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH mlx5-next 1/4] PCI: Configure number of MSI-X vectors for
- SR-IOV VFs
-Message-ID: <20210110084735.GH31158@unreal>
-References: <20210108005721.GA1403391@bjorn-Precision-5520>
- <ba1e7c38-2a21-40ba-787f-458b979b938f@redhat.com>
- <20210108072525.GB31158@unreal>
- <20210108092145.7c70ff74@omen.home>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210108092145.7c70ff74@omen.home>
+        id S1726504AbhAJJCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 04:02:36 -0500
+Received: from esa8.hc1455-7.c3s2.iphmx.com ([139.138.61.253]:43947 "EHLO
+        esa8.hc1455-7.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726142AbhAJJCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 04:02:36 -0500
+X-Greylist: delayed 455 seconds by postgrey-1.27 at vger.kernel.org; Sun, 10 Jan 2021 04:02:34 EST
+IronPort-SDR: Y0cDX8R5mVCsP4AqtL+ufDaMFSseijlChHTVsz9Uo2Gds7GsiDxWkN91/qPdmghx2hNloL3oBy
+ 8Nwz/RRmC9uhthcATLEBGM06aMDXZ+e7H6kbjXVDUeSHs8E+CYdieRJYVhyO5yl11nRdD42PlA
+ VwPnWAhdipO8G/5zD5j6Mty9oDa2fM1XueC04Wd1as+K8pFVWdXCAe5kBbY57WENRLO2O12KmC
+ hOVzXtpduYav+tCOJHdboMFGj36MM14vVS+ZX//VxGfWkH93yI172WGyU2snUXXGtM+34NKW0c
+ Qus=
+X-IronPort-AV: E=McAfee;i="6000,8403,9859"; a="2287011"
+X-IronPort-AV: E=Sophos;i="5.79,336,1602514800"; 
+   d="scan'208";a="2287011"
+Received: from unknown (HELO oym-r2.gw.nic.fujitsu.com) ([210.162.30.90])
+  by esa8.hc1455-7.c3s2.iphmx.com with ESMTP; 10 Jan 2021 17:52:42 +0900
+Received: from oym-m2.gw.nic.fujitsu.com (oym-nat-oym-m2.gw.nic.fujitsu.com [192.168.87.59])
+        by oym-r2.gw.nic.fujitsu.com (Postfix) with ESMTP id 7DF32E0369
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 17:52:41 +0900 (JST)
+Received: from durio.utsfd.cs.fujitsu.co.jp (durio.utsfd.cs.fujitsu.co.jp [10.24.20.112])
+        by oym-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id C684C6CBC6
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 17:52:40 +0900 (JST)
+Received: by durio.utsfd.cs.fujitsu.co.jp (Postfix, from userid 1006)
+        id 765001FF21B; Sun, 10 Jan 2021 17:52:40 +0900 (JST)
+From:   Yuusuke Ashizuka <ashiduka@fujitsu.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, ashiduka@fujitsu.com,
+        torii.ken1@fujitsu.com
+Subject: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
+Date:   Sun, 10 Jan 2021 17:52:21 +0900
+Message-Id: <20210110085221.5881-1-ashiduka@fujitsu.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 09:21:45AM -0700, Alex Williamson wrote:
-> On Fri, 8 Jan 2021 09:25:25 +0200
-> Leon Romanovsky <leon@kernel.org> wrote:
->
-> > On Thu, Jan 07, 2021 at 10:54:38PM -0500, Don Dutile wrote:
-> > > On 1/7/21 7:57 PM, Bjorn Helgaas wrote:
-> > > > [+cc Alex, Don]
-> >
-> > <...>
-> >
-> > > > Help me connect the dots here.  Is this required because of something
-> > > > peculiar to mlx5, or is something like this required for all SR-IOV
-> > > > devices because of the way the PCIe spec is written?
-> > > So, overall, I'm guessing the mlx5 device can have 1000's of MSIX -- say, one per send/receive/completion queue.
-> > > This device capability may exceed the max number MSIX a VM can have/support (depending on guestos).
-> > > So, a sysfs tunable is used to set the max MSIX available, and thus, the device puts >1 send/rcv/completion queue intr on a given MSIX.
-> > >
-> > > ok, time for Leon to better state what this patch does,
-> > > and why it's needed on mlx5 (and may be applicable to other/future high-MSIX devices assigned to VMs (NVME?)).
-> > > Hmmm, now that I said it, why is it SRIOV-centric and not pci-device centric (can pass a PF w/high number of MSIX to a VM).
-> >
-> > Thanks Don and Bjorn,
-> >
-> > I will answer on all comments a little bit later when I will return
-> > to the office (Sunday).
-> >
-> > However it is important for me to present the use case.
-> >
-> > Our mlx5 SR-IOV devices were always capable to drive many MSI-X (upto 2K,
-> > don't catch me on exact number), however when user created VFs, the FW has
-> > no knowledge of how those VFs will be used. So FW had no choice but statically
-> > and equally assign same amount of MSI-X to all VFs.
-> >
-> > After SR-IOV VF creation, user will bind those new VFs to the VMs, but
-> > the VMs have different number of CPUs and despite HW being able to deliver
-> > all needed number of vectors (in mlx5 netdev world, number of channels == number
-> > of CPUs == number of vectors), we will be limited by already set low number
-> > of vectors.
-> >
-> > So it is not for vector reduction, but more for vector re-partition.
-> >
-> > As an example, imagine mlx5 with two VFs. One VF is bounded to VM with 200 CPUs
-> > and another is bounded to VM with 1 CPU. They need different amount of MSI-X vectors.
-> >
-> > Hope that I succeeded to explain :).
->
-> The idea is not unreasonable imo, but without knowing the size of the
-> vector pool, range available per vf, or ultimately whether the vf
-> supports this feature before we try to configure it, I don't see how
-> userspace is expected to make use of this in the general case.  If the
-> configuration requires such specific vf vector usage and pf driver
-> specific knowledge, I'm not sure it's fit as a generic pci-sysfs
-> interface.  Thanks,
+RTL9000AA/AN as 100BASE-T1 is following:
+- 100 Mbps
+- Full duplex
+- Link Status Change Interrupt
 
-I didn't prohibit read of newly created sysfs file, but if I change
-the implementation to vf_msix_vec_show() to return -EOPNOTSUPP for
-not-supported device, the software will be able to distinguish
-supported/not-supported.
+Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
+Signed-off-by: Torii Kenichi <torii.ken1@fujitsu.com>
+---
+v2:
+- Remove the use of .ack_interrupt()
+- Implement .handle_interrupt() callback
+- Remove the slash from driver name
+---
+ drivers/net/phy/realtek.c | 81 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 81 insertions(+)
 
-SW will read this file:
-	-> success -> feature supported
-	-> failure -> feature not supported
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index 99ecd6c4c15a..1312e0eeecfa 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -60,6 +60,9 @@
+ #define RTL_LPADV_5000FULL			BIT(6)
+ #define RTL_LPADV_2500FULL			BIT(5)
+ 
++#define RTL9000A_GINMR				0x14
++#define RTL9000A_GINMR_LINK_STATUS		BIT(4)
++
+ #define RTLGEN_SPEED_MASK			0x0630
+ 
+ #define RTL_GENERIC_PHYID			0x001cc800
+@@ -655,6 +658,71 @@ static int rtlgen_resume(struct phy_device *phydev)
+ 	return ret;
+ }
+ 
++static int rtl9000a_config_init(struct phy_device *phydev)
++{
++	phydev->autoneg = AUTONEG_DISABLE;
++	phydev->speed = SPEED_100;
++	phydev->duplex = DUPLEX_FULL;
++
++	return 0;
++}
++
++static int rtl9000a_config_aneg(struct phy_device *phydev)
++{
++	return 0;
++}
++
++static int rtl9000a_ack_interrupt(struct phy_device *phydev)
++{
++	int err;
++
++	err = phy_read(phydev, RTL8211F_INSR);
++
++	return (err < 0) ? err : 0;
++}
++
++static int rtl9000a_config_intr(struct phy_device *phydev)
++{
++	u16 val;
++	int err;
++
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		err = rtl9000a_ack_interrupt(phydev);
++		if (err)
++			return err;
++
++		val = (u16)~RTL9000A_GINMR_LINK_STATUS;
++		err = phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
++	} else {
++		val = ~0;
++		err = phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
++		if (err)
++			return err;
++
++		err = rtl9000a_ack_interrupt(phydev);
++	}
++
++	return phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
++}
++
++static irqreturn_t rtl9000a_handle_interrupt(struct phy_device *phydev)
++{
++	int irq_status;
++
++	irq_status = phy_read(phydev, RTL8211F_INSR);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	if (!(irq_status & RTL8211F_INER_LINK_STATUS))
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
+ static struct phy_driver realtek_drvs[] = {
+ 	{
+ 		PHY_ID_MATCH_EXACT(0x00008201),
+@@ -823,6 +891,19 @@ static struct phy_driver realtek_drvs[] = {
+ 		.handle_interrupt = genphy_handle_interrupt_no_ack,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
++	}, {
++		PHY_ID_MATCH_EXACT(0x001ccb00),
++		.name		= "RTL9000AA_RTL9000AN Ethernet",
++		.features       = PHY_BASIC_T1_FEATURES,
++		.config_init	= rtl9000a_config_init,
++		.config_aneg	= rtl9000a_config_aneg,
++		.read_status	= genphy_update_link,
++		.config_intr	= rtl9000a_config_intr,
++		.handle_interrupt = rtl9000a_handle_interrupt,
++		.suspend	= genphy_suspend,
++		.resume		= genphy_resume,
++		.read_page	= rtl821x_read_page,
++		.write_page	= rtl821x_write_page,
+ 	},
+ };
+ 
+-- 
+2.29.2
 
-There is one extra sysfs file needed: vf_total_msix. That file will
-give total number of MSI-X vectors that is possible to configure.
-
-The same logic (supported/not-supported) can be applicable here as well.
-
-The feature itself will be used by orchestration software that will
-make decisions based on already configured values or future promises
-and the overall total number. The positive outcome of this scheme
-that driver stays lean.
-
-Thanks
-
->
-> Alex
->
