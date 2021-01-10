@@ -2,99 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 128D02F05FE
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 09:35:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 799BB2F0603
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 09:40:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbhAJIeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 03:34:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59112 "EHLO mail.kernel.org"
+        id S1726589AbhAJIja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 03:39:30 -0500
+Received: from correo.us.es ([193.147.175.20]:38736 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725820AbhAJIea (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 Jan 2021 03:34:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EEA6B22273;
-        Sun, 10 Jan 2021 08:33:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610267629;
-        bh=17YS8s3EjM6sWQuB97FEADF0NZ+04BjztX50LXKwNK4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=i94+pQwcWx12Nw/bfTA+ZsseA3RP+x6djXFvBOjdUUF2yiUX00QzTHU0XzwKTsvpM
-         qfV53/RAO44E9d6tyf0CYxmul9f3+pSaKDqiDRAo9Ob8Bt6w3mzuTaOGzrAhcGgDLl
-         SnL5ZTCwkAzxcTjwGxW5p3IRh92Qjolrr1+3nPguNWbIFJIpQWw8ef2Brha+o48h3S
-         9t1cU8z198y+7n9lH+Ub5a88MPcz+4ju52gSVG93QywvlRWY7nQC0cJe2HMAmQ4Ig+
-         qKjM+34D1vMFdjY56ERUcAVSL4tu3FHpkrMg8m4Nw4VeJiHfB1I6cgNn4LYnchHfjb
-         pSRnAxWqnzxrg==
-Date:   Sun, 10 Jan 2021 10:33:45 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Don Dutile <ddutile@redhat.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH mlx5-next 1/4] PCI: Configure number of MSI-X vectors for
- SR-IOV VFs
-Message-ID: <20210110083345.GG31158@unreal>
-References: <20210108210913.GA1471923@bjorn-Precision-5520>
- <96209762-64a8-c710-1b1e-c0cc5207df03@redhat.com>
+        id S1726142AbhAJIja (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 Jan 2021 03:39:30 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 0B3DDDA723
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 09:38:07 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id F1EC3DA792
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 09:38:06 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id E764FDA78D; Sun, 10 Jan 2021 09:38:06 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A38F6DA730;
+        Sun, 10 Jan 2021 09:38:04 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 10 Jan 2021 09:38:04 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 74006426CC84;
+        Sun, 10 Jan 2021 09:38:04 +0100 (CET)
+Date:   Sun, 10 Jan 2021 09:38:46 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     20210104110723.43564-1-yiche@redhat.com
+Cc:     Chen Yi <yiche@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Leo <liuhangbin@gmail.com>
+Subject: Re: [PATCH] selftests: netfilter: Pass family parameter "-f" to
+ conntrack tool
+Message-ID: <20210110083846.GA28611@salvia>
+References: <20210105153120.42710-1-yiche@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <96209762-64a8-c710-1b1e-c0cc5207df03@redhat.com>
+In-Reply-To: <20210105153120.42710-1-yiche@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 09:54:47PM -0500, Don Dutile wrote:
-> On 1/8/21 4:09 PM, Bjorn Helgaas wrote:
-> > On Thu, Jan 07, 2021 at 10:54:38PM -0500, Don Dutile wrote:
-> > > On 1/7/21 7:57 PM, Bjorn Helgaas wrote:
-> > > > On Sun, Jan 03, 2021 at 10:24:37AM +0200, Leon Romanovsky wrote:
-> > > > > + **/
-> > > > > +int pci_set_msix_vec_count(struct pci_dev *dev, int numb)
-> > > > > +{
-> > > > > +	struct pci_dev *pdev = pci_physfn(dev);
-> > > > > +
-> > > > > +	if (!dev->msix_cap || !pdev->msix_cap)
-> > > > > +		return -EINVAL;
-> > > > > +
-> > > > > +	if (dev->driver || !pdev->driver ||
-> > > > > +	    !pdev->driver->sriov_set_msix_vec_count)
-> > > > > +		return -EOPNOTSUPP;
-> > > > > +
-> > > > > +	if (numb < 0)
-> > > > > +		/*
-> > > > > +		 * We don't support negative numbers for now,
-> > > > > +		 * but maybe in the future it will make sense.
-> > > > > +		 */
-> > > > > +		return -EINVAL;
-> > > > > +
-> > > > > +	return pdev->driver->sriov_set_msix_vec_count(dev, numb);
-> > > > So we write to a VF sysfs file, get here and look up the PF, call a PF
-> > > > driver callback with the VF as an argument, the callback (at least for
-> > > > mlx5) looks up the PF from the VF, then does some mlx5-specific magic
-> > > > to the PF that influences the VF somehow?
-> > > There's no PF lookup above.... it's just checking if a pdev has a
-> > > driver with the desired msix-cap setting(reduction) feature.
-> > We started with the VF (the sysfs file is attached to the VF).  "pdev"
-> > is the corresponding PF; that's what I meant by "looking up the PF".
-> > Then we call the PF driver sriov_set_msix_vec_count() method.
-> ah, got how your statement relates to the files &/or pdev.
->
-> > I asked because this raises questions of whether we need mutual
-> > exclusion or some other coordination between setting this for multiple
-> > VFs.
-> >
-> > Obviously it's great to answer all these in email, but at the end of
-> > the day, the rationale needs to be in the commit, either in code
-> > comments or the commit log.
-> >
-> I'm still not getting why this is not per-(vf)pdev -- just b/c a device has N-number of MSIX capability doesn't mean it has to all be used/configured,
-> Setting max-MSIX for VFs in the PF's pdev means it is the same number for all VFs ... and I'm not sure that's the right solution either.
-> It should still be (v)pdev-based, IMO.
+On Tue, Jan 05, 2021 at 11:31:20PM +0800, Chen Yi wrote:
+> Fix nft_conntrack_helper.sh false fail report:
+> 
+> 1) Conntrack tool need "-f ipv6" parameter to show out ipv6 traffic items.
+> 
+> 2) Sleep 1 second after background nc send packet, to make sure check
+> is after this statement executed.
+> 
+> False report:
+> FAIL: ns1-lkjUemYw did not show attached helper ip set via ruleset
+> PASS: ns1-lkjUemYw connection on port 2121 has ftp helper attached
+> ...
+> 
+> After fix:
+> PASS: ns1-2hUniwU2 connection on port 2121 has ftp helper attached
+> PASS: ns2-2hUniwU2 connection on port 2121 has ftp helper attached
+> ...
 
-The proposed solution is per-VF, am I missing anything in this discussion?
-
-> --dd
->
+Applied.
