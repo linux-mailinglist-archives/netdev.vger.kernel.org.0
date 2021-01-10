@@ -2,72 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CE8F2F0891
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 18:14:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F9BA2F089A
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 18:19:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726644AbhAJRN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 12:13:57 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:59978 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726250AbhAJRN4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 Jan 2021 12:13:56 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kyeH9-00HLGm-RA; Sun, 10 Jan 2021 18:13:11 +0100
-Date:   Sun, 10 Jan 2021 18:13:11 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     stefanc@marvell.com
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org,
-        linux@armlinux.org.uk, mw@semihalf.com, rmk+kernel@armlinux.org.uk,
-        atenart@kernel.org
-Subject: Re: [PATCH RFC net-next  06/19] net: mvpp2: increase BM pool size to
- 2048 buffers
-Message-ID: <X/s1p+0xCOi+BYWO@lunn.ch>
-References: <1610292623-15564-1-git-send-email-stefanc@marvell.com>
- <1610292623-15564-7-git-send-email-stefanc@marvell.com>
+        id S1726518AbhAJRTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 12:19:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726394AbhAJRTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 12:19:00 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359CBC061786
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 09:18:20 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id s2so17724995oij.2
+        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 09:18:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rYIZCJ9+nK8p9m3nr9ziXwFG2BrKDGcbY92fFQPvlw8=;
+        b=kQ4su1FnMm2tQCelALOJ2fn+JXnl+mps3qtPl3EU+jhuDsfAvpL2DvKvKxtPqrjsTg
+         NsFAW1NEevoApENRZrOzQQGZawHTQpS9HwU6gDAh674vGbZvZQT1AZGUi+hCC15cIMPt
+         O04YXn2I1bRRs2RWkj4WHTzd86/ikYYFwarF386YzQKbc0mTJG7DyegbLvft/f+95aCQ
+         /bAdif0HgG2AU/1ZEU0TF9TKgumstVbkXQ+ypbeDlcQCHnrO6JFFryQWUbM9imqgU/C7
+         tIjDi+RB0Nsj8QMmEn8L2OrrT0y1YjJave2IF9oKsJVpmavKIqHexXqT6RfoR7CTzNmK
+         anEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rYIZCJ9+nK8p9m3nr9ziXwFG2BrKDGcbY92fFQPvlw8=;
+        b=ccQHOHbGh/qBiftWQlioWzvFusRTsjqcFybZndTrA0zmJJY1gijjVwdfX1md2J7ILL
+         twgOp6iTUouaYXSj26qCk4Zbei1vmQgqPzt2RypH1pT1zvtWjniKGzsxihXL9K3UsS7m
+         uB5lpbWwNo0mEaMd47YriaRQHGjAkgD1UWqsWXM5MURHdycJVoI/iAeoHgOAU0eEXINJ
+         XsAjkNqCC7L+7UzruyMUfPr+joqtJrGbyL4hDgyDkEgpBD0I2FL3RP6asFcXfNxK1OXq
+         7FaF/DPEOYOL67NN7IfBxrVrwRuNOaK0dQ6geSBul+ExUso3Dng6ff2z3tnKwD4RcSp6
+         xYTA==
+X-Gm-Message-State: AOAM532t2vSK1ucQ7T2v0IkixpSgcjrSMP1jG9P2sov8SH8+y1WEG58E
+        /iSXvufQAGD2vIKdkwDSXySs3cbzknc=
+X-Google-Smtp-Source: ABdhPJzDOQg05HqrhPFYnrAU9YdvcQTr79pbI0bojHHKGM5X29dZTMHPu0o36llO2h96iaiyy38fOA==
+X-Received: by 2002:aca:f5d3:: with SMTP id t202mr8337192oih.25.1610299099679;
+        Sun, 10 Jan 2021 09:18:19 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.51])
+        by smtp.googlemail.com with ESMTPSA id e1sm3442470oib.11.2021.01.10.09.18.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Jan 2021 09:18:18 -0800 (PST)
+Subject: Re: [PATCH iproute2 0/2] nexthop: Small usage improvements
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com, petrm@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+References: <20210107152327.1141060-1-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2aa899e4-3c79-59e4-adce-4d33bb822097@gmail.com>
+Date:   Sun, 10 Jan 2021 10:18:17 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1610292623-15564-7-git-send-email-stefanc@marvell.com>
+In-Reply-To: <20210107152327.1141060-1-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 10, 2021 at 05:30:10PM +0200, stefanc@marvell.com wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
+On 1/7/21 8:23 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> BM pool size increased to support Firmware Flow Control.
-> Minimum depletion thresholds to support FC is 1024 buffers.
-> BM pool size increased to 2048 to have some 1024 buffers
-> space between depletion thresholds and BM pool size.
+> Two small usage improvements in ip-nexthop and ip-monitor. Noticed while
+> adding support for resilient nexthop groups.
 > 
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
-> ---
->  drivers/net/ethernet/marvell/mvpp2/mvpp2.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Ido Schimmel (2):
+>   nexthop: Fix usage output
+>   ipmonitor: Mention "nexthop" object in help and man page
 > 
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> index 89b3ede..8dc669d 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> @@ -851,8 +851,8 @@ enum mvpp22_ptp_packet_format {
->  #define MVPP22_PTP_TIMESTAMPQUEUESELECT	BIT(18)
->  
->  /* BM constants */
-> -#define MVPP2_BM_JUMBO_BUF_NUM		512
-> -#define MVPP2_BM_LONG_BUF_NUM		1024
-> +#define MVPP2_BM_JUMBO_BUF_NUM		2048
-> +#define MVPP2_BM_LONG_BUF_NUM		2048
+>  ip/ipmonitor.c        | 2 +-
+>  ip/ipnexthop.c        | 6 +++---
+>  man/man8/ip-monitor.8 | 2 +-
+>  3 files changed, 5 insertions(+), 5 deletions(-)
+> 
 
-Hi Stefan
-
-Jumbo used to be 1/2 of regular. Do you know why?
-
-It would be nice to have a comment in the commit message about why it
-is O.K. to change the ratio of jumbo to regular frames, and what if
-anything this does for memory requirements.
-
-	 Andrew
- 
+applied to iproute2-next. Thanks
