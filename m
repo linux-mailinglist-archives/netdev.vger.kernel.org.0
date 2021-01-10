@@ -2,80 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 663092F0668
-	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 11:25:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29A6D2F067A
+	for <lists+netdev@lfdr.de>; Sun, 10 Jan 2021 11:38:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbhAJKYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 05:24:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726012AbhAJKYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 05:24:11 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C13C06179F
-        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 02:23:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=RPORXYCMnXB05Z00Pe39JVYqyf2W16awM9oGZ8APQ4s=; b=g1f1pFg+VaftJDdiYg7vOltgl
-        nI+cf+h4euqJfsH+9wtoAMvrblIIixyCAtplitf78wWVqonUHUGo7RNk37FNys2nPX8C5oUPfUw1m
-        J9sZI2SyxofDG7sPXH94J5wlO5Brw+Qz8WVxaUhPaQ7vRFPbZdaxd7/JF4XONImVnpO49aH33J4WJ
-        zTzWw5lIajMUlVyAfhQ3AV4bOsoH06oFZFuGq8tsdNyWErZXMCPvbWNTYtsIxf59M1f1sIOLTslYV
-        h2VyrRzS8KURiT6lXlu67ualmBQHu0CErGg9ztcodU9/e0SMZerLOzs6vHOrRdqmt5LWvpiD5qU7Z
-        li3mlJ3Aw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46106)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kyXsO-0005kV-5R; Sun, 10 Jan 2021 10:23:12 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kyXsM-00047V-Np; Sun, 10 Jan 2021 10:23:10 +0000
-Date:   Sun, 10 Jan 2021 10:23:10 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, torii.ken1@fujitsu.com
-Subject: Re: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
-Message-ID: <20210110102310.GD1551@shell.armlinux.org.uk>
-References: <20210110085221.5881-1-ashiduka@fujitsu.com>
+        id S1726387AbhAJKiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Jan 2021 05:38:25 -0500
+Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:53563 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726142AbhAJKiZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 05:38:25 -0500
+Received: from localhost.localdomain ([153.202.107.157])
+        by mwinf5d52 with ME
+        id EycA2400E3PnFJp03ycdtu; Sun, 10 Jan 2021 11:36:41 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 10 Jan 2021 11:36:41 +0100
+X-ME-IP: 153.202.107.157
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 0/1] Add software TX timestamps to the CAN devices
+Date:   Sun, 10 Jan 2021 19:35:25 +0900
+Message-Id: <20210110103526.61047-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210110085221.5881-1-ashiduka@fujitsu.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 10, 2021 at 05:52:21PM +0900, Yuusuke Ashizuka wrote:
-> RTL9000AA/AN as 100BASE-T1 is following:
-> - 100 Mbps
-> - Full duplex
-> - Link Status Change Interrupt
-> 
-> Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
-> Signed-off-by: Torii Kenichi <torii.ken1@fujitsu.com>
+With the ongoing work to add BQL to Socket CAN, I figured out that it
+would be nice to have an easy way to mesure the latency.
 
-Not a review comment on your patch, but, we really need to do
-something with the way phylib handles configuration changes - we
-have the current situation where config_aneg() _will_ get called
-for PHYs like this that do not support autonegotiation if userspace
-attempts to enable autoneg - there is nothing in
-phy_ethtool_ksettings_set() that prevents this.
+And one easy way to do so it to check the round trip time of the
+packet by doing the difference between the software rx timestamp and
+the software tx timestamp.
 
-Returning an error from config_aneg() achieves nothing, and
-resetting the settings in config_init() also does nothing to avoid
-autonegotiation being enabled.
+rx timestamps are already available. This patch gives the missing
+piece: add a tx software timestamp feature to the CAN devices.
 
-I think we need phy_ethtool_ksettings_set() to check whether
-ETHTOOL_LINK_MODE_Autoneg_BIT is set in phydev->supported before
-allowing the AUTONEG_ENABLE case.
+Of course, the tx software timestamp might also be used for other
+purposes such as performance measurements of the different queuing
+disciplines (e.g. by checking the difference between the kernel tx
+software timestamp and the userland tx software timestamp).
+
+Vincent Mailhol (1):
+  can: dev: add software tx timestamps
+
+ drivers/net/can/dev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.26.2
+
