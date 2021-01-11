@@ -2,97 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB3992F16AE
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:56:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5FA32F1786
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 15:07:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388007AbhAKN4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 08:56:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728969AbhAKN4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 08:56:04 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A21DC061786;
-        Mon, 11 Jan 2021 05:55:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=4EFw0oAHCpZpwVi8T4aoUbYDN24+hywjYSLIVVld9J8=; b=1tDsVBAhI42EDyWVShCkITD09
-        5gsmbTgQIYURjcVuc1Isfmu68ZdyDspCYKlGDC5fDQWsyGNE/gCiHjpJ5Dcant/EvaOMcKpu9DjRG
-        2bAhhvy9q82+Of3Plq46F0ZUZMYK8aKjc/59aMgueg+FX4lc6QiBRUVZ5yvy725VQGQVwsI16OHtI
-        rsusLQLXigiKXDEqIIwnK6pDhrwG06Uh7wSE47s6Dx1Ct5FE85TSq6EAX9JdiZ6AtN0gFPl2rKv3y
-        zAk3/yZva5xb/yMSWWCMz+6g080Vc/w9dUq4vC6Fybu48pULyvHfEuEWqotb7JJCE+x1Wwm0qRBK9
-        wsykURg5A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46612)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kyxf7-00076T-Or; Mon, 11 Jan 2021 13:55:13 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kyxf3-0005Hw-AD; Mon, 11 Jan 2021 13:55:09 +0000
-Date:   Mon, 11 Jan 2021 13:55:09 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S1730029AbhAKNDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 08:03:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50192 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729959AbhAKNDo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 08:03:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CD358225AC;
+        Mon, 11 Jan 2021 13:03:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1610370203;
+        bh=34Aj2L0RvDFMS4ZKzTodq8xu8rAEnK9IVYiI0+RiQsA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jwibylOPm9OBNZWsa/H0b+pQGwxY4LnOd6vLBku69yH7CiT1ihESQ5NXLHNIdxOiA
+         vHyqDS2j7jg0x+FyLu9atE9Ij39G81/QxJk6MZonqv1T1pOJpTngjgo3nGttFBqjaE
+         YyVP5toEl2ln4Cy/rD+gcDhABvb7vA4zyi9R+xp4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com,
+        Nogah Frankel <nogahf@mellanox.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>, linux-kernel@vger.kernel.org,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [PATCH net-next 2/2] drivers: net: dsa: mt7530: MT7530 optional
- GPIO support
-Message-ID: <20210111135509.GT1551@shell.armlinux.org.uk>
-References: <20210111054428.3273-1-dqfext@gmail.com>
- <20210111054428.3273-3-dqfext@gmail.com>
- <20210111110407.GR1551@shell.armlinux.org.uk>
- <CALW65jaqciOiRxJxzPiEADgpmKa7-q2QfQnBdaVMcOa5YDHjRA@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 15/45] net: sched: prevent invalid Scell_log shift count
+Date:   Mon, 11 Jan 2021 14:00:53 +0100
+Message-Id: <20210111130034.390190141@linuxfoundation.org>
+X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210111130033.676306636@linuxfoundation.org>
+References: <20210111130033.676306636@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALW65jaqciOiRxJxzPiEADgpmKa7-q2QfQnBdaVMcOa5YDHjRA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 09:40:00PM +0800, DENG Qingfang wrote:
-> On Mon, Jan 11, 2021 at 7:04 PM Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> >
-> > FYI, Documentation/driver-api/gpio/consumer.rst says:
-> >
-> >   For output GPIOs, the value provided becomes the initial output value.
-> >   This helps avoid signal glitching during system startup.
-> >
-> > Setting the pin to be an output, and then setting its initial value
-> > does not avoid the glitch. You may wish to investigate whether you
-> > can set the value before setting the pin as an output to avoid this
-> > issue.
-> >
-> 
-> So, setting the Output Enable bit _after_ setting the direction and
-> initial value should avoid this issue. Right?
+From: Randy Dunlap <rdunlap@infradead.org>
 
-It depends on the hardware. I don't know how your hardware works, so
-I can't say whether doing anything will result in correct behaviour,
-or even work.
+[ Upstream commit bd1248f1ddbc48b0c30565fce897a3b6423313b8 ]
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Check Scell_log shift size in red_check_params() and modify all callers
+of red_check_params() to pass Scell_log.
+
+This prevents a shift out-of-bounds as detected by UBSAN:
+  UBSAN: shift-out-of-bounds in ./include/net/red.h:252:22
+  shift exponent 72 is too large for 32-bit type 'int'
+
+Fixes: 8afa10cbe281 ("net_sched: red: Avoid illegal values")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com
+Cc: Nogah Frankel <nogahf@mellanox.com>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/net/red.h     |    4 +++-
+ net/sched/sch_choke.c |    2 +-
+ net/sched/sch_gred.c  |    2 +-
+ net/sched/sch_red.c   |    2 +-
+ net/sched/sch_sfq.c   |    2 +-
+ 5 files changed, 7 insertions(+), 5 deletions(-)
+
+--- a/include/net/red.h
++++ b/include/net/red.h
+@@ -167,12 +167,14 @@ static inline void red_set_vars(struct r
+ 	v->qcount	= -1;
+ }
+ 
+-static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog)
++static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog, u8 Scell_log)
+ {
+ 	if (fls(qth_min) + Wlog > 32)
+ 		return false;
+ 	if (fls(qth_max) + Wlog > 32)
+ 		return false;
++	if (Scell_log >= 32)
++		return false;
+ 	if (qth_max < qth_min)
+ 		return false;
+ 	return true;
+--- a/net/sched/sch_choke.c
++++ b/net/sched/sch_choke.c
+@@ -425,7 +425,7 @@ static int choke_change(struct Qdisc *sc
+ 
+ 	ctl = nla_data(tb[TCA_CHOKE_PARMS]);
+ 
+-	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
++	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
+ 		return -EINVAL;
+ 
+ 	if (ctl->limit > CHOKE_MAX_QUEUE)
+--- a/net/sched/sch_gred.c
++++ b/net/sched/sch_gred.c
+@@ -356,7 +356,7 @@ static inline int gred_change_vq(struct
+ 	struct gred_sched *table = qdisc_priv(sch);
+ 	struct gred_sched_data *q = table->tab[dp];
+ 
+-	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
++	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
+ 		return -EINVAL;
+ 
+ 	if (!q) {
+--- a/net/sched/sch_red.c
++++ b/net/sched/sch_red.c
+@@ -184,7 +184,7 @@ static int red_change(struct Qdisc *sch,
+ 	max_P = tb[TCA_RED_MAX_P] ? nla_get_u32(tb[TCA_RED_MAX_P]) : 0;
+ 
+ 	ctl = nla_data(tb[TCA_RED_PARMS]);
+-	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
++	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
+ 		return -EINVAL;
+ 
+ 	if (ctl->limit > 0) {
+--- a/net/sched/sch_sfq.c
++++ b/net/sched/sch_sfq.c
+@@ -645,7 +645,7 @@ static int sfq_change(struct Qdisc *sch,
+ 	}
+ 
+ 	if (ctl_v1 && !red_check_params(ctl_v1->qth_min, ctl_v1->qth_max,
+-					ctl_v1->Wlog))
++					ctl_v1->Wlog, ctl_v1->Scell_log))
+ 		return -EINVAL;
+ 	if (ctl_v1 && ctl_v1->qth_min) {
+ 		p = kmalloc(sizeof(*p), GFP_KERNEL);
+
+
