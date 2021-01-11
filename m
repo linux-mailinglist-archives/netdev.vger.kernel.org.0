@@ -2,199 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBC2A2F1D7E
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:07:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD6E2F1D4F
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:01:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390124AbhAKSHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 13:07:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
+        id S2389978AbhAKSAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 13:00:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390106AbhAKSHb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:07:31 -0500
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC36C0617AB;
-        Mon, 11 Jan 2021 10:06:32 -0800 (PST)
-Received: by mail-qk1-x734.google.com with SMTP id w79so326123qkb.5;
-        Mon, 11 Jan 2021 10:06:32 -0800 (PST)
+        with ESMTP id S2389642AbhAKSAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:00:47 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52187C061794
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:00:07 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id 91so694974wrj.7
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:00:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9lp28zoWOKLPGFRTu8+kIhpE6rBiQRtmpdJvXYx3+tY=;
-        b=ez1SefshWrFxr/3XbQrkWZhJIOzAqVAKha8CL5HWT4x+mLivWRS4dkFUm7HwH2jRFj
-         35RyeXAQJ1GHXy0yh6vjr2sd1FmADkpsLwXV73Eqx0FTfyI91aVGSqsGWrpB9hd9Z3Mg
-         5ezoFNrH++EteGshvlRBQEMzZx+t77f48oPDqewSK7fGTUaO1+wWYAP1lq2kt+bn1Lo7
-         yPIll/9SFKumsFKeGZqH0lHOfeaAkKP6HS5T6doHT5QxygwFwC7rcCi24LCEs+p+bCWm
-         ZwBI0MYIGO+4Ti1un1JlgNvYPrrv0JSyPZwmh/nGNhlvBRp/HWBHY90zCUJJ8OpSDcep
-         tUnQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=i5vkZMIp6m8L5GT9AIEfOu/P1P8j2pgSz4aGREmv2dc=;
+        b=I/AKHGG3HMoRNy9lYcu3nJW8P7K50NkFE3b0sIJR4X1p8WYUTccsLtiyI0q81OljfG
+         /Ejv1bmW1NNaPlUdEzB5SS4Xz0th4TlfipWApn2JyVw0ppDEmVpVAFyk3n3/6CjK96If
+         cpgLvyCfMcQSGUUgQLqZKZjC00no64RfBbpdPs2Os/bNpB3M+HwF2hb6xEz/lrZQjytg
+         Ryg5pOBQZ4cXDp2Vo7+M3qpVIO6HjpUWebrG9MR0meOhjcgFpCGB7jO+jot1bqfIgVuF
+         ebXeYOhdRHmKN7mucpPo2msHkd95Hd38u5js9ulbMtmjSq4JgPZNE4pOu1P1LOfWXK/1
+         gWLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9lp28zoWOKLPGFRTu8+kIhpE6rBiQRtmpdJvXYx3+tY=;
-        b=nyycVbVBFCA5cHX1K+1kZnz0C8sNAy+zEDr/+r0gwk4Z4bb3CNbRUaOCeNnALPFjDN
-         sL3Gldu4LguphJk61D25g4VCuGhKrUpPqWA/WW0qvn5ro7WKC2a81GQZsavlHGmE3ZaC
-         kv/kHjtCuOjODWrZJL0xoEWJd8VbG82kR/tFTna7G0kd9EQkuoFBKWBDi0O2bX7nGbpA
-         Z+e/VYX0bxoFbWUsO5bAAmKUWGbiXT79Orld+rHngvys+hUI+b+kCW0ON2tq2KsrmEeD
-         EhqDrqpNypsg810lbjNw+KpkF1ryDENlFGxlriMfvviJKaQ/EvrjHK2Z5l7a+GObNENH
-         1leQ==
-X-Gm-Message-State: AOAM5332ukz/6db0jEN5Tx7GdduoONZatvOQX3DnvZVmh/aykDipLygz
-        21Feg/00s6A3mBmyrbK7tB+p4Yg9vI2Cgg==
-X-Google-Smtp-Source: ABdhPJwx8k0tYOOZKUoXq0vInH3wbViiSZCtXbNbqNuIHyl1UktVYK4JCeL9x3IbIOGZ87AlhyDxtg==
-X-Received: by 2002:a37:b94:: with SMTP id 142mr536071qkl.318.1610388391183;
-        Mon, 11 Jan 2021 10:06:31 -0800 (PST)
-Received: from localhost.localdomain ([2604:1380:45f1:1d00::1])
-        by smtp.gmail.com with ESMTPSA id g28sm158752qtm.91.2021.01.11.10.06.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jan 2021 10:06:30 -0800 (PST)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Nathan Chancellor <natechancellor@gmail.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH] bpf: Hoise pahole version checks into Kconfig
-Date:   Mon, 11 Jan 2021 11:06:09 -0700
-Message-Id: <20210111180609.713998-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.30.0
-MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=i5vkZMIp6m8L5GT9AIEfOu/P1P8j2pgSz4aGREmv2dc=;
+        b=RZuFwFjmz1OYLa8ySgPiG7soiTc9ZMCLaiASVovlMZVqEZpQqekIJyLMZFdjQ9VPhC
+         cEnk2Xg8r3rwfmqslsNFkEdqIcDLlMk0+aDwDvFeV79gHoSspbQK9aoKg8mHVfiUKrHQ
+         XlyFK568jqHf93dOiShtwpmkdg87mhUA8fKLdHK8VrGvnH4RGWqhFzZrUCVqpn/nSrML
+         Jo0kjikquSvT24PZ1iXYxtJkF58PAOvYa2aNADGXGffZfCtv0xXzAit61Lc+fDxc/Jyb
+         kluhAQHyixaPbutwwAqliIqB6lYoBqh3WGeWTHuUE72hsvIJ5XdO8R0G/zYOfhnT+YGH
+         h1Jw==
+X-Gm-Message-State: AOAM5339sxUuMHwlosuHXJlKYTFe7v5jtGJ9kYWeTbhd+P5A0OyEP8o3
+        r8kKiMwjeA0bKcW8mnkxZrLeFtFcqvkjSQ==
+X-Google-Smtp-Source: ABdhPJyJUY4VchB207CwJz2pmCVJkJfTUIdTxaXswHaiiPtGVLt3mk/Nn2cUZ2JDTVWPpNyeMkyrvw==
+X-Received: by 2002:adf:d085:: with SMTP id y5mr317551wrh.41.1610388006052;
+        Mon, 11 Jan 2021 10:00:06 -0800 (PST)
+Received: from localhost.localdomain ([88.122.66.28])
+        by smtp.gmail.com with ESMTPSA id s12sm77662wmh.29.2021.01.11.10.00.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 11 Jan 2021 10:00:05 -0800 (PST)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        manivannan.sadhasivam@linaro.org,
+        Hemant Kumar <hemantk@codeaurora.org>
+Subject: [PATCH net-next 1/3] bus: mhi: core: Add helper API to return number of free TREs
+Date:   Mon, 11 Jan 2021 19:07:40 +0100
+Message-Id: <1610388462-16322-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit da5fb18225b4 ("bpf: Support pre-2.25-binutils objcopy for
-vmlinux BTF"), having CONFIG_DEBUG_INFO_BTF enabled but lacking a valid
-copy of pahole results in a kernel that will fully compile but fail to
-link. The user then has to either install pahole or disable
-CONFIG_DEBUG_INFO_BTF and rebuild the kernel but only after their build
-has failed, which could have been a significant amount of time depending
-on the hardware.
+From: Hemant Kumar <hemantk@codeaurora.org>
 
-Avoid a poor user experience and require pahole to be installed with an
-appropriate version to select and use CONFIG_DEBUG_INFO_BTF, which is
-standard for options that require a specific tools version.
+Introduce mhi_get_free_desc_count() API to return number
+of TREs available to queue buffer. MHI clients can use this
+API to know before hand if ring is full without calling queue
+API.
 
-Suggested-by: Sedat Dilek <sedat.dilek@gmail.com>
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- MAINTAINERS               |  1 +
- init/Kconfig              |  4 ++++
- lib/Kconfig.debug         |  6 ++----
- scripts/link-vmlinux.sh   | 13 -------------
- scripts/pahole-version.sh | 16 ++++++++++++++++
- 5 files changed, 23 insertions(+), 17 deletions(-)
- create mode 100755 scripts/pahole-version.sh
+ drivers/bus/mhi/core/main.c | 12 ++++++++++++
+ include/linux/mhi.h         |  9 +++++++++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b8db7637263a..6f6e24285a94 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3282,6 +3282,7 @@ F:	net/core/filter.c
- F:	net/sched/act_bpf.c
- F:	net/sched/cls_bpf.c
- F:	samples/bpf/
-+F:	scripts/pahole-version.sh
- F:	tools/bpf/
- F:	tools/lib/bpf/
- F:	tools/testing/selftests/bpf/
-diff --git a/init/Kconfig b/init/Kconfig
-index b77c60f8b963..872c61b5d204 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -74,6 +74,10 @@ config TOOLS_SUPPORT_RELR
- config CC_HAS_ASM_INLINE
- 	def_bool $(success,echo 'void foo(void) { asm inline (""); }' | $(CC) -x c - -c -o /dev/null)
+diff --git a/drivers/bus/mhi/core/main.c b/drivers/bus/mhi/core/main.c
+index 3db1108..4e31f4f 100644
+--- a/drivers/bus/mhi/core/main.c
++++ b/drivers/bus/mhi/core/main.c
+@@ -309,6 +309,18 @@ int mhi_destroy_device(struct device *dev, void *data)
+ 	return 0;
+ }
  
-+config PAHOLE_VERSION
-+	int
-+	default $(shell,$(srctree)/scripts/pahole-version.sh $(PAHOLE))
++int mhi_get_free_desc_count(struct mhi_device *mhi_dev,
++				enum dma_data_direction dir)
++{
++	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
++	struct mhi_chan *mhi_chan = (dir == DMA_TO_DEVICE) ?
++		mhi_dev->ul_chan : mhi_dev->dl_chan;
++	struct mhi_ring *tre_ring = &mhi_chan->tre_ring;
 +
- config CONSTRUCTORS
- 	bool
- 	depends on !UML
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 7937265ef879..70c446af9664 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -267,6 +267,7 @@ config DEBUG_INFO_DWARF4
- 
- config DEBUG_INFO_BTF
- 	bool "Generate BTF typeinfo"
-+	depends on PAHOLE_VERSION >= 116
- 	depends on !DEBUG_INFO_SPLIT && !DEBUG_INFO_REDUCED
- 	depends on !GCC_PLUGIN_RANDSTRUCT || COMPILE_TEST
- 	help
-@@ -274,12 +275,9 @@ config DEBUG_INFO_BTF
- 	  Turning this on expects presence of pahole tool, which will convert
- 	  DWARF type info into equivalent deduplicated BTF type info.
- 
--config PAHOLE_HAS_SPLIT_BTF
--	def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "119")
--
- config DEBUG_INFO_BTF_MODULES
- 	def_bool y
--	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
-+	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_VERSION >= 119
- 	help
- 	  Generate compact split BTF type information for kernel modules.
- 
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 6eded325c837..eef40fa9485d 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -139,19 +139,6 @@ vmlinux_link()
- # ${2} - file to dump raw BTF data into
- gen_btf()
++	return get_nr_avail_ring_elements(mhi_cntrl, tre_ring);
++}
++EXPORT_SYMBOL_GPL(mhi_get_free_desc_count);
++
+ void mhi_notify(struct mhi_device *mhi_dev, enum mhi_callback cb_reason)
  {
--	local pahole_ver
--
--	if ! [ -x "$(command -v ${PAHOLE})" ]; then
--		echo >&2 "BTF: ${1}: pahole (${PAHOLE}) is not available"
--		return 1
--	fi
--
--	pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
--	if [ "${pahole_ver}" -lt "116" ]; then
--		echo >&2 "BTF: ${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.16"
--		return 1
--	fi
--
- 	vmlinux_link ${1}
+ 	struct mhi_driver *mhi_drv;
+diff --git a/include/linux/mhi.h b/include/linux/mhi.h
+index cd571ad..62da830 100644
+--- a/include/linux/mhi.h
++++ b/include/linux/mhi.h
+@@ -614,6 +614,15 @@ void mhi_set_mhi_state(struct mhi_controller *mhi_cntrl,
+ void mhi_notify(struct mhi_device *mhi_dev, enum mhi_callback cb_reason);
  
- 	info "BTF" ${2}
-diff --git a/scripts/pahole-version.sh b/scripts/pahole-version.sh
-new file mode 100755
-index 000000000000..6de6f734a345
---- /dev/null
-+++ b/scripts/pahole-version.sh
-@@ -0,0 +1,16 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Usage: $ ./scripts/pahole-version.sh pahole
-+#
-+# Print the pahole version as a three digit string
-+# such as `119' for pahole v1.19 etc.
+ /**
++ * mhi_get_free_desc_count - Get transfer ring length
++ * Get # of TD available to queue buffers
++ * @mhi_dev: Device associated with the channels
++ * @dir: Direction of the channel
++ */
++int mhi_get_free_desc_count(struct mhi_device *mhi_dev,
++				enum dma_data_direction dir);
 +
-+pahole="$*"
-+
-+if ! [ -x "$(command -v $pahole)" ]; then
-+    echo 0
-+    exit 1
-+fi
-+
-+$pahole --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'
-
-base-commit: e22d7f05e445165e58feddb4e40cc9c0f94453bc
++/**
+  * mhi_prepare_for_power_up - Do pre-initialization before power up.
+  *                            This is optional, call this before power up if
+  *                            the controller does not want bus framework to
 -- 
-2.30.0
+2.7.4
 
