@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E81EC2F0C9B
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A332F0C9F
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:46:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727350AbhAKFpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 00:45:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
+        id S1727385AbhAKFpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 00:45:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726544AbhAKFpe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 00:45:34 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0068C061786;
-        Sun, 10 Jan 2021 21:44:53 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id 11so10294779pfu.4;
-        Sun, 10 Jan 2021 21:44:53 -0800 (PST)
+        with ESMTP id S1725957AbhAKFpq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 00:45:46 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594FBC061794;
+        Sun, 10 Jan 2021 21:45:06 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id f14so7106978pju.4;
+        Sun, 10 Jan 2021 21:45:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=88GcoNGL/AXgeCjNvngovwMr6/msxp3BLQE6/faGv1E=;
-        b=h4+cG8LBG4mJ2vwsd0js8PfV+47sXFW4md16+AhwPXwgU9YZmmW2Lbaanew5uI+efR
-         zxNOSQz+NPgRzUZN54kj7M4CTyLAeDMQ4sI8MlJaKA6U28f5X1Ttwhlvn6ke5ccL99bV
-         IhZ0wc4vjAW+v0aiYBZscmF0Hg5up2X/8PWzw1QVEx2emEkzgZ0isVk5GQuCHEjDh+Au
-         mTjoRy8bwfYWPmGnaPczlFMa5fPx7oQD8HJdtlJki8doIr1dyB0vwKO4zcaRR+nFpvnU
-         kiJOLyZdXC4wL862hDu6srQ8LXH2o98c2u1m2wnEqj2kHNZNPJh4m8P6LZZtKEpgyoQL
-         8EDw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hAuWqa9zlPPGWTNtjhAqXZcvz6sHDTbdxmpDtENLE64=;
+        b=rVbqmT/X02rO8QBcLBtux6QeipDc3s5TLMhcnvsfAnV0FdYwRR4249B8XlG0gTcLYd
+         c9ZL9CdNUraHUjRWCVo8yDXS3mIPiuqp7gkFcOBSStM3l8dnoIOfdUKJqYe9h0ladMAH
+         VRWJSUALWmnPTCPXZZele6O3aQIwtlZqp/lGa6H5OLcaGaRMYOtbCneNSSghgma78Ux0
+         nFN4zeRq1Pq02ync4HzngCCIc1DiaVTqQr61kmqgd08oiTmig90ol8sU5G//3ImlRBr0
+         bVIiUwZ/z38PAoDYNijItNCO8q1+cbF3ShxzHfozfg22e4JDc2ig/QQ4UGa/+4OmAqER
+         67gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=88GcoNGL/AXgeCjNvngovwMr6/msxp3BLQE6/faGv1E=;
-        b=LNKdUuUuQCcQ5wcUU5aJ4Tj+po9sICDBVO8lTdyczJiT8fpS8QZJUAxTjh09FfHjPJ
-         EqJVbL15Sv6N3rmQWjo10AdNvDcbTaOfFc9b7DV6vrGSSC95u+20cT0CETPCuHmCxn/q
-         3/r4Q83FZVvl0SsRJ3Ymnv+5axh5efwjKfeA6GKtcjY0fAoYOPIpcv9DwaJh5zvW7126
-         t5HWCBvvjrsnAjsR+KFU28PlbopKdkZ7PRSXY2QuCY9Vgjn5VEK1WrohLvmGjrXVD1J9
-         Ntq9YUj74GcDNsU+2Fkv/7vMlTdwHmv84Ipctmw7dQwslcorkwIGY0pyCa1VwDXx332p
-         qLVg==
-X-Gm-Message-State: AOAM53158Kwex2hRgZrNckAG+kFTj3lgK06S9A3f51tOkkWbp4V6B+6o
-        xhKXwcPcaq1SLT7i+XH0rsI=
-X-Google-Smtp-Source: ABdhPJxglMNH6WCUJJua0ObPzfzCa/AOfasQge6NqUl2igBLSmJcdZvEEwFVOyUKepzuXmQCloQ5tA==
-X-Received: by 2002:a63:1d59:: with SMTP id d25mr18119366pgm.259.1610343893413;
-        Sun, 10 Jan 2021 21:44:53 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hAuWqa9zlPPGWTNtjhAqXZcvz6sHDTbdxmpDtENLE64=;
+        b=rY9bhtsy/A2KylFy+lS7hFy0wV1Wx8IK2AIhih9PCOaFpGXiJXegqx7SmnCkOPd1gJ
+         +zC9llv5IXG4EYtJNSzRQyCSnhSPGuid5oTSDSp8scUnazCS95vI7zoPEO3Wp96oT6O1
+         85FTYiq3f7ikPW+kty5kh4Xdg3EQG5yCFU/3ONDv5R9Z0Lps2tXUN0Vzi6N5zBv+VHkP
+         sU3Q03c4RI6ZfFCP9Q74KjrFylT6112brlsg65mkG9GPjYfiaMnJL/VB+9ESgI9h/E5z
+         Ge5kRpszoo6cgoVBJxI+T/Xt4d1mbUW0Fy/qB/HyrNmjT6fru9ct5LCFoueqBlv1PQbT
+         02fw==
+X-Gm-Message-State: AOAM530j+ZvB+R/ICGYmFMcPf5HJfscFUEZu6jFViP+b/PLDV3Bufs3P
+        rzKc4fBdwSvWwHmPls5up/A=
+X-Google-Smtp-Source: ABdhPJzo3wpZfqA6rcjyBlf0VOquXBGwi2+VZQkVOwsgg4IQXYtz5suctAmJgG79C9X13kRDPkqZLg==
+X-Received: by 2002:a17:90b:1894:: with SMTP id mn20mr16282586pjb.100.1610343905989;
+        Sun, 10 Jan 2021 21:45:05 -0800 (PST)
 Received: from container-ubuntu.lan ([218.89.163.70])
-        by smtp.gmail.com with ESMTPSA id q16sm17548005pfg.139.2021.01.10.21.44.39
+        by smtp.gmail.com with ESMTPSA id q16sm17548005pfg.139.2021.01.10.21.44.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jan 2021 21:44:52 -0800 (PST)
+        Sun, 10 Jan 2021 21:45:05 -0800 (PST)
 From:   DENG Qingfang <dqfext@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -64,27 +64,42 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Frank Wunderlich <frank-w@public-files.de>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH net-next 0/2] dsa: add MT7530 GPIO support
-Date:   Mon, 11 Jan 2021 13:44:26 +0800
-Message-Id: <20210111054428.3273-1-dqfext@gmail.com>
+Subject: [PATCH net-next 1/2] dt-bindings: net: dsa: add MT7530 GPIO controller binding
+Date:   Mon, 11 Jan 2021 13:44:27 +0800
+Message-Id: <20210111054428.3273-2-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210111054428.3273-1-dqfext@gmail.com>
+References: <20210111054428.3273-1-dqfext@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MT7530's LED controller can be used as GPIO controller. Add support for
-it.
+Add device tree binding to support MT7530 GPIO controller.
 
-DENG Qingfang (2):
-  dt-bindings: net: dsa: add MT7530 GPIO controller binding
-  drivers: net: dsa: mt7530: MT7530 optional GPIO support
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+---
+ Documentation/devicetree/bindings/net/dsa/mt7530.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- .../devicetree/bindings/net/dsa/mt7530.txt    |  6 ++
- drivers/net/dsa/mt7530.c                      | 96 +++++++++++++++++++
- drivers/net/dsa/mt7530.h                      | 20 ++++
- 3 files changed, 122 insertions(+)
-
+diff --git a/Documentation/devicetree/bindings/net/dsa/mt7530.txt b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
+index 560369efad6c..de04626a8e9d 100644
+--- a/Documentation/devicetree/bindings/net/dsa/mt7530.txt
++++ b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
+@@ -76,6 +76,12 @@ phy-mode must be set, see also example 2 below!
+  * mt7621: phy-mode = "rgmii-txid";
+  * mt7623: phy-mode = "rgmii";
+ 
++Optional properties:
++
++- gpio-controller: Boolean; if defined, MT7530's LED controller will run on
++	GPIO mode.
++- #gpio-cells: Must be 2 if gpio-controller is defined.
++
+ See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list of additional
+ required, optional properties and how the integrated switch subnodes must
+ be specified.
 -- 
 2.25.1
+
