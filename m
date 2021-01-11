@@ -2,92 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 716E52F1D6C
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBC2A2F1D7E
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:07:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389662AbhAKSED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 13:04:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35528 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732662AbhAKSED (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 13:04:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 39A0B20738;
-        Mon, 11 Jan 2021 18:03:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610388202;
-        bh=epvKOWonVUFPSyX+WJP6xmKtL5tFzn6K/IuELuQ87mQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nMaTfvy+QxMaNVlN64KekkPukTr4a21sSoJ2bpcy4GIunSUHupTzb/Jm+T4Q9w/Wp
-         ytJQbPmcW+Y65jHfOkPJEruuewown0owS8al1eECk6VN9nvu17F3N98nP5jEYU9cy2
-         KZJ91ZAnLwCgqdDnyCTLJ8zFvvKB9SuxitdKzVGl1VoLwmFszI0xs7/KnOKPNRqHt3
-         uDR0RiVsdkU0kBLU13vUwdOeFN7AAGWLHqFs4VY/plpNMSlXM9XXWD10el9x4k+7/e
-         Lu8K4lxj8yZDNrNHjBKrrvdb06yPyMsIXLCE5tq+lIpbUconwcV/z9hqOL4nzuxW19
-         aOG7PqAOXTzjw==
-Date:   Mon, 11 Jan 2021 10:03:21 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
-        kernel@pengutronix.de, Sean Nyekjaer <sean@geanix.com>,
-        davem@davemloft.net
-Subject: Re: [net-next 15/19] can: tcan4x5x: rework SPI access
-Message-ID: <20210111100321.3f9a0b08@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <7a0e400a-7522-f3f0-55e1-887127636c09@pengutronix.de>
-References: <20210107094900.173046-1-mkl@pengutronix.de>
-        <20210107094900.173046-16-mkl@pengutronix.de>
-        <20210107110035.42a6bb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210107110656.7e49772b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <c98003bf-e62a-ab6a-a526-1f3ed0bb1ab7@pengutronix.de>
-        <20210107143851.51675f8d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <8185f3e1-d0b1-0ea4-ac45-f2ea0b63ced9@pengutronix.de>
-        <20210108083229.6f42479b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <7a0e400a-7522-f3f0-55e1-887127636c09@pengutronix.de>
+        id S2390124AbhAKSHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 13:07:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390106AbhAKSHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:07:31 -0500
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC36C0617AB;
+        Mon, 11 Jan 2021 10:06:32 -0800 (PST)
+Received: by mail-qk1-x734.google.com with SMTP id w79so326123qkb.5;
+        Mon, 11 Jan 2021 10:06:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9lp28zoWOKLPGFRTu8+kIhpE6rBiQRtmpdJvXYx3+tY=;
+        b=ez1SefshWrFxr/3XbQrkWZhJIOzAqVAKha8CL5HWT4x+mLivWRS4dkFUm7HwH2jRFj
+         35RyeXAQJ1GHXy0yh6vjr2sd1FmADkpsLwXV73Eqx0FTfyI91aVGSqsGWrpB9hd9Z3Mg
+         5ezoFNrH++EteGshvlRBQEMzZx+t77f48oPDqewSK7fGTUaO1+wWYAP1lq2kt+bn1Lo7
+         yPIll/9SFKumsFKeGZqH0lHOfeaAkKP6HS5T6doHT5QxygwFwC7rcCi24LCEs+p+bCWm
+         ZwBI0MYIGO+4Ti1un1JlgNvYPrrv0JSyPZwmh/nGNhlvBRp/HWBHY90zCUJJ8OpSDcep
+         tUnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9lp28zoWOKLPGFRTu8+kIhpE6rBiQRtmpdJvXYx3+tY=;
+        b=nyycVbVBFCA5cHX1K+1kZnz0C8sNAy+zEDr/+r0gwk4Z4bb3CNbRUaOCeNnALPFjDN
+         sL3Gldu4LguphJk61D25g4VCuGhKrUpPqWA/WW0qvn5ro7WKC2a81GQZsavlHGmE3ZaC
+         kv/kHjtCuOjODWrZJL0xoEWJd8VbG82kR/tFTna7G0kd9EQkuoFBKWBDi0O2bX7nGbpA
+         Z+e/VYX0bxoFbWUsO5bAAmKUWGbiXT79Orld+rHngvys+hUI+b+kCW0ON2tq2KsrmEeD
+         EhqDrqpNypsg810lbjNw+KpkF1ryDENlFGxlriMfvviJKaQ/EvrjHK2Z5l7a+GObNENH
+         1leQ==
+X-Gm-Message-State: AOAM5332ukz/6db0jEN5Tx7GdduoONZatvOQX3DnvZVmh/aykDipLygz
+        21Feg/00s6A3mBmyrbK7tB+p4Yg9vI2Cgg==
+X-Google-Smtp-Source: ABdhPJwx8k0tYOOZKUoXq0vInH3wbViiSZCtXbNbqNuIHyl1UktVYK4JCeL9x3IbIOGZ87AlhyDxtg==
+X-Received: by 2002:a37:b94:: with SMTP id 142mr536071qkl.318.1610388391183;
+        Mon, 11 Jan 2021 10:06:31 -0800 (PST)
+Received: from localhost.localdomain ([2604:1380:45f1:1d00::1])
+        by smtp.gmail.com with ESMTPSA id g28sm158752qtm.91.2021.01.11.10.06.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jan 2021 10:06:30 -0800 (PST)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Nathan Chancellor <natechancellor@gmail.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH] bpf: Hoise pahole version checks into Kconfig
+Date:   Mon, 11 Jan 2021 11:06:09 -0700
+Message-Id: <20210111180609.713998-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Jan 2021 16:35:30 +0100 Ahmad Fatoum wrote:
-> Hello Jakub,
-> 
-> On 08.01.21 17:32, Jakub Kicinski wrote:
-> > On Fri, 8 Jan 2021 11:07:26 +0100 Ahmad Fatoum wrote:  
-> >>>>> +struct __packed tcan4x5x_map_buf { 
-> >>>>> +	struct tcan4x5x_buf_cmd cmd; 
-> >>>>> +	u8 data[256 * sizeof(u32)]; 
-> >>>>> +} ____cacheline_aligned;       
-> >>>>
-> >>>> Due to the packing of the struct tcan4x5x_buf_cmd it should have a length of 4
-> >>>> bytes. Without __packed, will the "u8 data" come directly after the cmd?    
-> >>>
-> >>> Yup, u8 with no alignment attribute will follow the previous
-> >>> field with no holes.    
-> >>
-> >> __packed has a documentation benefit though. It documents that the author
-> >> considers the current layout to be the only correct one. (and thus extra
-> >> care should be taken when modifying it).  
-> > 
-> > ____cacheline_aligned adds a big architecture dependent padding at the
-> > end of this struct, so the size of this structure is architecture
-> > dependent. Besides using packed forced the compiler to use byte by byte
-> > loads on architectures without unaligned access, so __packed is not
-> > free.  
-> 
-> https://godbolt.org/z/j68x8n
-> 
-> seems to indicate that explicit alignment "overrules" packed's implicit
-> alignment of 1 as
->  there isn't any byte-by-byte access generated for a struct
-> that is both packed and cacheline aligned. packed only structs are accessed
-> byte-by-byte however.
-> 
-> Did I get something wrong in my testcase?
-> 
-> I compiled with ARM gcc 8.2  -mno-unaligned-access -fno-strict-aliasing -O2
+After commit da5fb18225b4 ("bpf: Support pre-2.25-binutils objcopy for
+vmlinux BTF"), having CONFIG_DEBUG_INFO_BTF enabled but lacking a valid
+copy of pahole results in a kernel that will fully compile but fail to
+link. The user then has to either install pahole or disable
+CONFIG_DEBUG_INFO_BTF and rebuild the kernel but only after their build
+has failed, which could have been a significant amount of time depending
+on the hardware.
 
-I see, that's why I said combining ____cacheline_aligned with __packed
-looks very confusing. Good to know which one takes precedence.
-That doesn't change my recommendation to remove __packed, though, let's
-not leave readers of this code scratching their heads.
+Avoid a poor user experience and require pahole to be installed with an
+appropriate version to select and use CONFIG_DEBUG_INFO_BTF, which is
+standard for options that require a specific tools version.
+
+Suggested-by: Sedat Dilek <sedat.dilek@gmail.com>
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ MAINTAINERS               |  1 +
+ init/Kconfig              |  4 ++++
+ lib/Kconfig.debug         |  6 ++----
+ scripts/link-vmlinux.sh   | 13 -------------
+ scripts/pahole-version.sh | 16 ++++++++++++++++
+ 5 files changed, 23 insertions(+), 17 deletions(-)
+ create mode 100755 scripts/pahole-version.sh
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b8db7637263a..6f6e24285a94 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3282,6 +3282,7 @@ F:	net/core/filter.c
+ F:	net/sched/act_bpf.c
+ F:	net/sched/cls_bpf.c
+ F:	samples/bpf/
++F:	scripts/pahole-version.sh
+ F:	tools/bpf/
+ F:	tools/lib/bpf/
+ F:	tools/testing/selftests/bpf/
+diff --git a/init/Kconfig b/init/Kconfig
+index b77c60f8b963..872c61b5d204 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -74,6 +74,10 @@ config TOOLS_SUPPORT_RELR
+ config CC_HAS_ASM_INLINE
+ 	def_bool $(success,echo 'void foo(void) { asm inline (""); }' | $(CC) -x c - -c -o /dev/null)
+ 
++config PAHOLE_VERSION
++	int
++	default $(shell,$(srctree)/scripts/pahole-version.sh $(PAHOLE))
++
+ config CONSTRUCTORS
+ 	bool
+ 	depends on !UML
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 7937265ef879..70c446af9664 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -267,6 +267,7 @@ config DEBUG_INFO_DWARF4
+ 
+ config DEBUG_INFO_BTF
+ 	bool "Generate BTF typeinfo"
++	depends on PAHOLE_VERSION >= 116
+ 	depends on !DEBUG_INFO_SPLIT && !DEBUG_INFO_REDUCED
+ 	depends on !GCC_PLUGIN_RANDSTRUCT || COMPILE_TEST
+ 	help
+@@ -274,12 +275,9 @@ config DEBUG_INFO_BTF
+ 	  Turning this on expects presence of pahole tool, which will convert
+ 	  DWARF type info into equivalent deduplicated BTF type info.
+ 
+-config PAHOLE_HAS_SPLIT_BTF
+-	def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "119")
+-
+ config DEBUG_INFO_BTF_MODULES
+ 	def_bool y
+-	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
++	depends on DEBUG_INFO_BTF && MODULES && PAHOLE_VERSION >= 119
+ 	help
+ 	  Generate compact split BTF type information for kernel modules.
+ 
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 6eded325c837..eef40fa9485d 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -139,19 +139,6 @@ vmlinux_link()
+ # ${2} - file to dump raw BTF data into
+ gen_btf()
+ {
+-	local pahole_ver
+-
+-	if ! [ -x "$(command -v ${PAHOLE})" ]; then
+-		echo >&2 "BTF: ${1}: pahole (${PAHOLE}) is not available"
+-		return 1
+-	fi
+-
+-	pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
+-	if [ "${pahole_ver}" -lt "116" ]; then
+-		echo >&2 "BTF: ${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.16"
+-		return 1
+-	fi
+-
+ 	vmlinux_link ${1}
+ 
+ 	info "BTF" ${2}
+diff --git a/scripts/pahole-version.sh b/scripts/pahole-version.sh
+new file mode 100755
+index 000000000000..6de6f734a345
+--- /dev/null
++++ b/scripts/pahole-version.sh
+@@ -0,0 +1,16 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++#
++# Usage: $ ./scripts/pahole-version.sh pahole
++#
++# Print the pahole version as a three digit string
++# such as `119' for pahole v1.19 etc.
++
++pahole="$*"
++
++if ! [ -x "$(command -v $pahole)" ]; then
++    echo 0
++    exit 1
++fi
++
++$pahole --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'
+
+base-commit: e22d7f05e445165e58feddb4e40cc9c0f94453bc
+-- 
+2.30.0
+
