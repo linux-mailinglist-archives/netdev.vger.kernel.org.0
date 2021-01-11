@@ -2,141 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0FD2F165E
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:52:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9AF2F166A
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:53:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387795AbhAKNv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 08:51:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56240 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730682AbhAKNJM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 08:09:12 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 74D132225E;
-        Mon, 11 Jan 2021 13:08:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1610370537;
-        bh=vWJ89WgJ64urz1PsjPcMt6Y5ukGj9sNADlTrhhycSCc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nkgVnuQB0ZSMDEUR7mYq4qJ4GY8GqIm9minBbHXq93OIbD4R9UOE+HcdQ5tIIjEHI
-         ldpCJA0RKPgyNoIWnlODoZS31W+CQkHdF30zbLpaYS5jKJt2lNA8Tcp7t+deDU9G5+
-         d7A2qg7qZl3uA0BqfwgFa6qk6Sy85yK9bZfoynQg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com,
-        Nogah Frankel <nogahf@mellanox.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        id S1731093AbhAKNIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 08:08:54 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:43244 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731071AbhAKNIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 08:08:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1610370530; x=1641906530;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=SZdfnr5UG13cVDMwC8iTHnUXXEdughCiI8OHKTE/Eno=;
+  b=OOqEIrpur3+E4RlDMLBMON9QSWFKKj42yUKRkRsSh461VJyTFd6yABGx
+   3w4qiXr43WQf4Zv1XRQSVXCM071Q3310CgjOhVCVX2MRqSnguSufU6K7s
+   kKO61sV+HI/+ZUxlCMn0jecSqTYe/+U7HgLnfDFlxxomcDOZznD6DKwII
+   ZTWtWbETmXKoZ/jdH/cUTgUmxWR0rES0CKyTkzusai4sUJlyPLdbxgKzY
+   8A6+rou1qdqmkf5iYmWhFVaR9ry1OBRf1oKZIv97D+z8S2Ezw8RhAuJ3Q
+   vPlcqohHXvRH5chLuMiIDTAx/fApfNMRO1sTEj+cKziUDDEetIVWaQVNd
+   g==;
+IronPort-SDR: s4OBNZPLmmFt6n5nBH+TBuZ7RxSoNm1OcBjhxNOphcfDj+i1qVE/0tTPX9Kyxx28bghgB+mJRF
+ muHXbGJaJ2mFvPGZatWdL9Fc2D7iaFCo4XKthi8CdOoUobz0k7lfazued87cbkwXMfkYjHsiCs
+ S4gRadzTdbA629CAoBqoy9nDCdkSKujK0PfMv9z4nXJthIkouAszhEq4pmAckvezXrINOEC+2Q
+ TACpoNn18/zyYjnkVWm8t4AjpCxejU6LPPi+EwWy9qZp+zeT9YuCEhoW/uxmT1CBCz/SNYTY5f
+ ZM8=
+X-IronPort-AV: E=Sophos;i="5.79,338,1602572400"; 
+   d="scan'208";a="105520718"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Jan 2021 06:07:35 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 11 Jan 2021 06:07:34 -0700
+Received: from soft-dev2.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Mon, 11 Jan 2021 06:07:32 -0700
+From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
+To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        "Heiner Kallweit" <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 35/77] net: sched: prevent invalid Scell_log shift count
-Date:   Mon, 11 Jan 2021 14:01:44 +0100
-Message-Id: <20210111130038.089248250@linuxfoundation.org>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210111130036.414620026@linuxfoundation.org>
-References: <20210111130036.414620026@linuxfoundation.org>
-User-Agent: quilt/0.66
+CC:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
+Subject: [PATCH v1 0/2] Add 100 base-x mode
+Date:   Mon, 11 Jan 2021 14:06:55 +0100
+Message-ID: <20210111130657.10703-1-bjarni.jonasson@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+Adding support for 100 base-x in phylink.
+The Sparx5 switch supports 100 base-x pcs (IEEE 802.3 Clause 24) 4b5b encoded.
+These patches adds phylink support for that mode.
 
-[ Upstream commit bd1248f1ddbc48b0c30565fce897a3b6423313b8 ]
+Tested in Sparx5, using sfp modules:
+Axcen 100fx AXFE-1314-0521 
+Cisco GLC-FE-100LX
+HP SFP 100FX J9054C
+Excom SFP-SX-M1002
 
-Check Scell_log shift size in red_check_params() and modify all callers
-of red_check_params() to pass Scell_log.
+Bjarni Jonasson (2):
+  net: phy: Add 100 base-x mode
+  sfp: add support for 100 base-x SFPs
 
-This prevents a shift out-of-bounds as detected by UBSAN:
-  UBSAN: shift-out-of-bounds in ./include/net/red.h:252:22
-  shift exponent 72 is too large for 32-bit type 'int'
+ drivers/net/phy/sfp-bus.c | 9 +++++++++
+ include/linux/phy.h       | 4 ++++
+ 2 files changed, 13 insertions(+)
 
-Fixes: 8afa10cbe281 ("net_sched: red: Avoid illegal values")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: syzbot+97c5bd9cc81eca63d36e@syzkaller.appspotmail.com
-Cc: Nogah Frankel <nogahf@mellanox.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Cc: netdev@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/net/red.h     |    4 +++-
- net/sched/sch_choke.c |    2 +-
- net/sched/sch_gred.c  |    2 +-
- net/sched/sch_red.c   |    2 +-
- net/sched/sch_sfq.c   |    2 +-
- 5 files changed, 7 insertions(+), 5 deletions(-)
-
---- a/include/net/red.h
-+++ b/include/net/red.h
-@@ -168,12 +168,14 @@ static inline void red_set_vars(struct r
- 	v->qcount	= -1;
- }
- 
--static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog)
-+static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog, u8 Scell_log)
- {
- 	if (fls(qth_min) + Wlog > 32)
- 		return false;
- 	if (fls(qth_max) + Wlog > 32)
- 		return false;
-+	if (Scell_log >= 32)
-+		return false;
- 	if (qth_max < qth_min)
- 		return false;
- 	return true;
---- a/net/sched/sch_choke.c
-+++ b/net/sched/sch_choke.c
-@@ -371,7 +371,7 @@ static int choke_change(struct Qdisc *sc
- 
- 	ctl = nla_data(tb[TCA_CHOKE_PARMS]);
- 
--	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
-+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
- 		return -EINVAL;
- 
- 	if (ctl->limit > CHOKE_MAX_QUEUE)
---- a/net/sched/sch_gred.c
-+++ b/net/sched/sch_gred.c
-@@ -357,7 +357,7 @@ static inline int gred_change_vq(struct
- 	struct gred_sched *table = qdisc_priv(sch);
- 	struct gred_sched_data *q = table->tab[dp];
- 
--	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
-+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
- 		return -EINVAL;
- 
- 	if (!q) {
---- a/net/sched/sch_red.c
-+++ b/net/sched/sch_red.c
-@@ -214,7 +214,7 @@ static int red_change(struct Qdisc *sch,
- 	max_P = tb[TCA_RED_MAX_P] ? nla_get_u32(tb[TCA_RED_MAX_P]) : 0;
- 
- 	ctl = nla_data(tb[TCA_RED_PARMS]);
--	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
-+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
- 		return -EINVAL;
- 
- 	if (ctl->limit > 0) {
---- a/net/sched/sch_sfq.c
-+++ b/net/sched/sch_sfq.c
-@@ -651,7 +651,7 @@ static int sfq_change(struct Qdisc *sch,
- 	}
- 
- 	if (ctl_v1 && !red_check_params(ctl_v1->qth_min, ctl_v1->qth_max,
--					ctl_v1->Wlog))
-+					ctl_v1->Wlog, ctl_v1->Scell_log))
- 		return -EINVAL;
- 	if (ctl_v1 && ctl_v1->qth_min) {
- 		p = kmalloc(sizeof(*p), GFP_KERNEL);
-
+-- 
+2.17.1
 
